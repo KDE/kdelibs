@@ -27,6 +27,7 @@ install_targets(/lib kspell2 )
 
 
 ########### install files ###############
+install_files( /include/kspell2 FILES dialog.h highlighter.h configdialog.h   configwidget.h )
 
 
 kde4_footer()

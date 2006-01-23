@@ -36,6 +36,7 @@ install_targets(/bin kunittestmodrunner )
 
 
 ########### install files ###############
+install_files( /include/kunittest FILES runner.h tester.h module.h )
 
 
 kde4_create_doxygen_docs(  )

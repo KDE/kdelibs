@@ -1,15 +1,15 @@
 kde4_header()
 
-add_subdirectory( misc ) 
-add_subdirectory( dom ) 
-add_subdirectory( css ) 
-add_subdirectory( xml ) 
-add_subdirectory( html ) 
-add_subdirectory( rendering ) 
-add_subdirectory( pics ) 
-add_subdirectory( ecma ) 
-add_subdirectory( imload ) 
-add_subdirectory( kmultipart ) 
+add_subdirectory( misc )
+add_subdirectory( dom )
+add_subdirectory( css )
+add_subdirectory( xml )
+add_subdirectory( html )
+add_subdirectory( rendering )
+add_subdirectory( pics )
+add_subdirectory( ecma )
+add_subdirectory( imload )
+add_subdirectory( kmultipart )
 
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(JAVA_SUBDIR)")
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kwallet/client ${CMAKE_SOURCE_DIR}/kutils ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
@@ -142,6 +142,7 @@ endif(KDE4_BUILD_TESTS)
 
 install_files( ${KDE4_SERVICES_DIR} FILES khtml.desktop khtmlimage.desktop )
 install_files( ${KDE4_DATA_DIR}/khtml FILES khtml.rc khtml_browser.rc khtml_popupmenu.rc )
+install_files( /include FILES khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdeui kio kdefx kparts EXCLUDE test*.* html rendering xml misc pics test  )
 
@@ -177,7 +178,7 @@ kde4_footer()
 #LIBKJAVA=
 #endif
 #
-#SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) ecma imload . kmultipart 
+#SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) ecma imload . kmultipart
 #
 #CLEANFILES = dummy.cpp
 #
@@ -231,7 +232,7 @@ kde4_footer()
 #
 #khtmlimagepart_la_SOURCES = imgdummy.cpp
 #khtmlimagepart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
-#khtmlimagepart_la_LIBADD = libkhtml.la 
+#khtmlimagepart_la_LIBADD = libkhtml.la
 #
 #INCLUDES = -I$(top_srcdir)/kjs -I$(top_builddir)/kjs -I$(top_srcdir)/kimgio \
 #	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
@@ -259,7 +260,7 @@ kde4_footer()
 #	kdoc -H -d $(SRCDOC_DEST) kdecore \
 #	         $(include_HEADERS) -lqt
 #
-#EXTRA_DIST =  CHANGES DESIGN README.HTMLWidget README.tags 
+#EXTRA_DIST =  CHANGES DESIGN README.HTMLWidget README.tags
 #
 #parser:
 #	cd $(srcdir) && \
@@ -271,15 +272,15 @@ kde4_footer()
 #check_PROGRAMS 	= testkhtml
 #EXTRA_PROGRAMS = testkhtml_static testregression
 #testkhtml_SOURCES = testkhtml.cpp domtreeview.cpp
-#testkhtml_LDADD = libkhtml.la 
-#testkhtml_static_SOURCES = testkhtml.cpp domtreeview.cpp 
+#testkhtml_LDADD = libkhtml.la
+#testkhtml_static_SOURCES = testkhtml.cpp domtreeview.cpp
 #testkhtml_static_LDADD = libkhtml.la
 #testkhtml_static_LDFLAGS = -static
 #testregression_SOURCES = test_regression.cpp test_regression_fontoverload.cpp
 #testregression_LDADD = libkhtml.la
 #
 #DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
-#DOXYGEN_EXCLUDE =  test*.* html rendering xml misc pics test 
+#DOXYGEN_EXCLUDE =  test*.* html rendering xml misc pics test
 #include ../admin/Doxyfile.am
 #
 #.PHONY: parser

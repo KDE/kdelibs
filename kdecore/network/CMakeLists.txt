@@ -1,6 +1,6 @@
 kde4_header()
 
-add_subdirectory( tests ) 
+add_subdirectory( tests )
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
@@ -11,6 +11,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 ########### install files ###############
 
 install_files( ${KDE4_CONFIG_DIR} FILES ipv6blacklist )
+install_files( /include FILES kresolver.h    kreverseresolver.h   ksocketaddress.h     ksocketbase.h     ksocketdevice.h   kclientsocketbase.h     kstreamsocket.h   kserversocket.h   kdatagramsocket.h    kmulticastsocketdevice.h   kmulticastsocket.h   knetworkinterface.h     khttpproxysocketdevice.h   ksockssocketdevice.h    kbufferedsocket.h    kiobuffer.h )
 
 kde4_footer()
 
@@ -29,7 +30,7 @@ kde4_footer()
 ## set the include path for X, qt and KDE
 #INCLUDES = $(all_includes)
 #
-## the library search path. 
+## the library search path.
 ## convenience lib - no LDFLAGS or LIBADD !
 ## Note:
 ##  ksocketdevice.cpp must appear before any inclusion of ksocketdevice.h
@@ -67,7 +68,7 @@ kde4_footer()
 #	ksockssocketdevice.h \
 #	kbufferedsocket.h \
 #	kiobuffer.h
-#	
+#
 #noinst_HEADERS = kresolver_p.h \
 #	kresolverworkerbase.h \
 #	kresolverstandardworkers_p.h \

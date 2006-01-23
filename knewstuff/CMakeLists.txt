@@ -77,6 +77,7 @@ endif(KDE4_BUILD_TESTS)
 ########### install files ###############
 
 install_files( ${KDE4_CONFIG_DIR} FILES khotnewstuffrc )
+install_files( /include/knewstuff FILES  testnewstuff.h ghns.h security.h)
 
 kde4_install_icons( hicolor )
 

@@ -7,6 +7,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kio/bookmarks ${CMAKE_SOURCE_DIR}/kde3s
 
 
 ########### install files ###############
+install_files( /include FILES k3bookmarkdrag.h )
 
 
 kde4_create_doxygen_docs(  )

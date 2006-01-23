@@ -1,6 +1,6 @@
 kde4_header()
 
-add_subdirectory( icons ) 
+add_subdirectory( icons )
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
@@ -34,6 +34,7 @@ install_targets(/lib kimproxy )
 
 
 ########### install files ###############
+install_files( /include FILES kimproxy.h kimproxyiface.h )
 
 
 kde4_footer()

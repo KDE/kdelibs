@@ -38,6 +38,7 @@ install_targets(/lib/kde4 kabc_directory )
 ########### install files ###############
 
 install_files( ${KDE4_SERVICES_DIR}/kresources/kabc FILES dir.desktop )
+install_files( /include/kabc FILES resourcedir.h )
 
 kde4_footer()
 
@@ -52,7 +53,7 @@ kde4_footer()
 #
 #lib_LTLIBRARIES = libkabc_dir.la
 #libkabc_dir_la_SOURCES = resourcedir.cpp resourcedirconfig.cpp
-#libkabc_dir_la_LDFLAGS = $(KDE_RPATH) $(all_libraries) -version-info 1:0:0 -no-undefined 
+#libkabc_dir_la_LDFLAGS = $(KDE_RPATH) $(all_libraries) -version-info 1:0:0 -no-undefined
 #libkabc_dir_la_LIBADD = $(LIB_KABC)
 #libkabc_dir_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
 #

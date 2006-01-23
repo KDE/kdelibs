@@ -2,15 +2,15 @@ kde4_header()
 
 find_package(Cups)
 
-add_subdirectory( management ) 
-add_subdirectory( lpdunix ) 
-add_subdirectory( lpr ) 
-add_subdirectory( rlpr ) 
-add_subdirectory( ext ) 
-add_subdirectory( filters ) 
-add_subdirectory( pics ) 
-add_subdirectory( tools ) 
-add_subdirectory( tests ) 
+add_subdirectory( management )
+add_subdirectory( lpdunix )
+add_subdirectory( lpr )
+add_subdirectory( rlpr )
+add_subdirectory( ext )
+add_subdirectory( filters )
+add_subdirectory( pics )
+add_subdirectory( tools )
+add_subdirectory( tests )
 
 if(CUPS_FOUND)
    add_subdirectory(cups)
@@ -119,6 +119,8 @@ install_files(  FILES kdeprint )
 install_files( ${KDE4_SERVICES_DIR}/kded FILES kdeprintd.desktop )
 install_files( ${KDE4_CONFIG_DIR}/ui FILES kprintpreviewui.rc )
 install_files( ${KDE4_DATA_DIR}/kconf_update FILES kdeprintrc.upd )
+install_files( /include FILES kprinter.h kprintaction.h )
+install_files( /include/kdeprint FILES kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h driver.h kmjobmanager.h kmjob.h )
 
 kde4_create_doxygen_docs(  )
 
@@ -161,7 +163,7 @@ kde4_footer()
 #
 #libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 6:0:2 -no-undefined
 #libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ)
-#libkdeprint_la_DEPENDENCIES =  $(LIB_KPARTS) 
+#libkdeprint_la_DEPENDENCIES =  $(LIB_KPARTS)
 #libkdeprint_la_METASOURCES = AUTO
 #
 #noinst_HEADERS = kmdbentry.h kmfactory.h \

@@ -26,6 +26,7 @@ install_targets(/lib kdefx )
 
 
 ########### install files ###############
+install_files( /include FILES kpixmap.h kpixmapsplitter.h   kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h kcpuinfo.h )
 
 
 kde4_create_doxygen_docs( REFERENCES kdecore  )

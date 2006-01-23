@@ -2,7 +2,7 @@ kde4_header()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ksslconfig.h )
 
-add_subdirectory( kssl ) 
+add_subdirectory( kssl )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kwallet/client ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
@@ -11,6 +11,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kwa
 
 
 ########### install files ###############
+install_files( /include FILES kssl.h                        ksslcertificatehome.h         ksslsettings.h                ksslcertificate.h             ksslconnectioninfo.h          ksslcertificatefactory.h      ksslcertificatecache.h        ksslpeerinfo.h                ksslinfodlg.h                 ksslcertdlg.h                 ksslutils.h                   kopenssl.h                    ksslall.h            ksslpkcs12.h            ksslcertchain.h            ksslkeygen.h            ksslx509v3.h            ksslsigners.h           ksslpkcs7.h          ksslpemcallback.h       ksslconfig.h            ksslsession.h           ksslx509map.h           ksmimecrypto.h )
 
 
 kde4_create_doxygen_docs(  )
@@ -21,8 +22,8 @@ kde4_footer()
 
 #original Makefile.am contents follow:
 
-## don't change the order of this one. it breaks when openssl is in /usr/include 
-## and the distro's KDE is there too, but the current "devel" KDE prefix is 
+## don't change the order of this one. it breaks when openssl is in /usr/include
+## and the distro's KDE is there too, but the current "devel" KDE prefix is
 ## somewhere else. Another option for the future (needs testing) would be to
 ## change SSL_INCLUDES to .../include/openssl and make the source use #include <foo.h>
 ## instead of #include <openssl/foo.h>

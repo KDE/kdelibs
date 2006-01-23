@@ -21,6 +21,7 @@ install_targets(/lib kntlm )
 
 
 ########### install files ###############
+install_files( /include/kio FILES kntlm.h )
 
 
 kde4_footer()

@@ -53,6 +53,7 @@ target_link_libraries(testread2  ${QT_AND_KDECORE_LIBS} kabc )
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
+install_files( /include/kabc FILES vcard.h vcardline.h vcardparser.h )
 
 
 kde4_footer()

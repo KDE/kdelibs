@@ -1,14 +1,14 @@
 kde4_header()
 
-add_subdirectory( ksendbugmail ) 
-#add_subdirectory( kpac ) 
-add_subdirectory( kdesasl ) 
-add_subdirectory( kssld ) 
-add_subdirectory( kfile ) 
+add_subdirectory( ksendbugmail )
+#add_subdirectory( kpac )
+add_subdirectory( kdesasl )
+add_subdirectory( kssld )
+add_subdirectory( kfile )
 
 MESSAGE(STATUS "kio/misc/kwalletd/ excluded from build, multiple definition of functions from kwalletwizard.ui3")
-#add_subdirectory( kwalletd ) 
-add_subdirectory( kntlm ) 
+#add_subdirectory( kwalletd )
+add_subdirectory( kntlm )
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
@@ -76,6 +76,7 @@ install_targets(/bin ktelnetservice )
 
 install_files( ${KDE4_SERVICES_DIR} FILES kmailservice.protocol telnet.protocol rlogin.protocol rtsp.protocol ssh.protocol  		mms.protocol mmst.protocol mmsu.protocol pnm.protocol rtspt.protocol rtspu.protocol )
 install_files( ${KDE4_SERVICES_DIR} FILES kio_uiserver.desktop )
+install_files( /include/kio FILES  uiserver.h)
 
 kde4_footer()
 

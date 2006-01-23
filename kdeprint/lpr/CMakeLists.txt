@@ -54,6 +54,7 @@ install_targets(/bin make_driver_db_lpr )
 
 install_files( ${KDE4_DATA_DIR}/kdeprint FILES apsdriver1 apsdriver2 lprngtooldriver1 )
 install_files( ${KDE4_DATA_DIR}/kdeprint/plugins FILES lpr.print )
+install_files( /include/kdeprint/lpr FILES printcapentry.h lprhandler.h lprsettings.h )
 
 kde4_footer()
 
@@ -92,7 +93,7 @@ kde4_footer()
 #
 #bin_PROGRAMS = make_driver_db_lpr
 #make_driver_db_lpr_SOURCES = make_driver_db_lpr.c
-#make_driver_db_lpr_LDFLAGS = $(all_libraries) 
+#make_driver_db_lpr_LDFLAGS = $(all_libraries)
 #make_driver_db_lpr_LDADD = $(top_builddir)/kdecore/libkdefakes.la ../libdriverparse.a $(LIBDL)
 #
 #entry_DATA = lpr.print

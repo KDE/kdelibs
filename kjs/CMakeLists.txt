@@ -114,6 +114,7 @@ target_link_libraries(testkjs  ${QT_AND_KDECORE_LIBS} )
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
+install_files( /include/kjs FILES value.h types.h object.h interpreter.h operations.h             ustring.h lookup.h global.h identifier.h property_map.h           property_slot.h reference.h reference_list.h completion.h            scope_chain.h list.h simple_number.h function.h )
 
 
 kde4_create_doxygen_docs( REFERENCES kdecore  )
@@ -222,7 +223,7 @@ kde4_footer()
 #
 ### test program (in one program for easier profiling/memory debugging)
 #EXTRA_PROGRAMS = testkjs_static
-#testkjs_static_SOURCES = testkjs.cpp 
+#testkjs_static_SOURCES = testkjs.cpp
 #testkjs_static_LDADD = $(LIBPCRE) libkjs.la
 #testkjs_static_LDFLAGS = -static
 #

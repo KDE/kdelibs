@@ -20,6 +20,7 @@ install_targets(/lib kdesasl )
 
 
 ########### install files ###############
+install_files( /include/kio FILES kdesasl.h )
 
 
 kde4_footer()

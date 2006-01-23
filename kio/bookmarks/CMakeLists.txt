@@ -8,6 +8,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES
 
 ########### install files ###############
 
+install_files( /include FILES kbookmark.h kbookmarkbar.h kbookmarkexporter.h     kbookmarkimporter.h kbookmarkmanager.h kbookmarkmenu.h kbookmarknotifier.h    kbookmarkimporter_crash.h kbookmarkimporter_opera.h kbookmarkimporter_ie.h    kbookmarkimporter_ns.h kbookmarkimporter_kde1.h kbookmarkdombuilder.h  )
 
 kde4_create_doxygen_docs(  )
 
@@ -48,7 +49,7 @@ kde4_footer()
 #	kbookmark.h kbookmarkbar.h kbookmarkexporter.h \
 #	kbookmarkimporter.h kbookmarkmanager.h kbookmarkmenu.h kbookmarknotifier.h \
 #	kbookmarkimporter_crash.h kbookmarkimporter_opera.h kbookmarkimporter_ie.h \
-#	kbookmarkimporter_ns.h kbookmarkimporter_kde1.h kbookmarkdombuilder.h 
+#	kbookmarkimporter_ns.h kbookmarkimporter_kde1.h kbookmarkdombuilder.h
 #libkbookmarks_la_SOURCES = \
 #	kbookmark.cc kbookmarkbar.cc \
 #	kbookmarkimporter.cc kbookmarkmanager.cc kbookmarkmenu.cc \

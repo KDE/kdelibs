@@ -2,11 +2,11 @@ kde4_header()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dcop-path.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
 
-add_subdirectory( KDE-ICE ) 
-add_subdirectory( dcopidlng ) 
-add_subdirectory( dcopidl2cpp ) 
-add_subdirectory( client ) 
-add_subdirectory( tests ) 
+add_subdirectory( KDE-ICE )
+add_subdirectory( dcopidlng )
+add_subdirectory( dcopidl2cpp )
+add_subdirectory( client )
+add_subdirectory( tests )
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
@@ -98,6 +98,7 @@ target_link_libraries( dcopserver kdeinit_dcopserver )
 install_targets(/bin dcopserver )
 
 ########### install files ###############
+install_files( /include FILES dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h )
 
 
 kde4_create_doxygen_docs( EXCLUDE KDE-ICE testdcop.h testdcop.cpp  )
@@ -141,7 +142,7 @@ kde4_footer()
 #check_PROGRAMS = testdcop testdcopc
 # # dcop_deadlock_test
 #
-#lib_LTLIBRARIES  = libDCOP.la 
+#lib_LTLIBRARIES  = libDCOP.la
 #libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QTCORE)
 #libDCOP_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
 #libDCOP_la_NMCHECK = $(srcdir)/libDCOP.nmcheck

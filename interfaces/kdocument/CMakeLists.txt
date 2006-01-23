@@ -20,6 +20,7 @@ install_targets(/lib kdocument )
 
 
 ########### install files ###############
+install_files( /include/kdocument FILES factory.h document.h view.h )
 
 
 kde4_create_doxygen_docs( REFERENCES kparts  )

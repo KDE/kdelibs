@@ -26,6 +26,7 @@ install_targets(/lib kwalletclient )
 
 
 ########### install files ###############
+install_files( /include FILES kwallet.h kwallettypes.h )
 
 
 kde4_footer()

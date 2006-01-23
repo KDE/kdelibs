@@ -39,6 +39,7 @@ install_targets(/lib/kde4 kabc_file )
 ########### install files ###############
 
 install_files( ${KDE4_SERVICES_DIR}/kresources/kabc FILES file.desktop )
+install_files( /include/kabc FILES resourcefile.h )
 
 kde4_footer()
 

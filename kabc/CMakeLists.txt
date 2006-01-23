@@ -1,11 +1,11 @@
 kde4_header()
 
-add_subdirectory( kab ) 
-add_subdirectory( vcardparser ) 
-add_subdirectory( formats ) 
-add_subdirectory( plugins ) 
-add_subdirectory( scripts ) 
-add_subdirectory( tests ) 
+add_subdirectory( kab )
+add_subdirectory( vcardparser )
+add_subdirectory( formats )
+add_subdirectory( plugins )
+add_subdirectory( scripts )
+add_subdirectory( tests )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_SOURCE_DIR}/kabc/kab ${CMAKE_CURRENT_SOURCE_DIR}/vcardparser  ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
@@ -109,6 +109,7 @@ message(STATUS "skipped kab2kabc, two moc files with the same name")
 install_files( /share/autostart FILES kab2kabc.desktop )
 install_files( ${KDE4_DATA_DIR}/kabc FILES countrytransl.map )
 install_files( ${KDE4_SERVICES_DIR}/kresources FILES kabc_manager.desktop )
+install_files( /include/kabc FILES address.h addressbook.h addressee.h addresseedialog.h    distributionlist.h distributionlistdialog.h distributionlisteditor.h    errorhandler.h field.h format.h formatfactory.h format.h geo.h key.h    phonenumber.h picture.h plugin.h resource.h    secrecy.h sound.h stdaddressbook.h timezone.h    vcardformat.h vcardconverter.h ldifconverter.h    addresslineedit.h ldapclient.h addresseelist.h lock.h locknull.h ldif.h    ldapurl.h ldapconfigwidget.h sortmode.h )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdeui EXCLUDE scripts  )
 

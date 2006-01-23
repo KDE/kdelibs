@@ -7,6 +7,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 install_files( ${KDE4_SERVICESTYPES_DIR} FILES dcopinstantmessenger.desktop )
 install_files( ${KDE4_DATA_DIR}/kcm_componentchooser FILES kcm_instantmessenger.desktop )
+install_files( /include FILES kimiface.h )
 
 kde4_footer()
 

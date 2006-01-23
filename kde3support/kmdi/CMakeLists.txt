@@ -1,6 +1,6 @@
 kde4_header()
 
-add_subdirectory( test ) 
+add_subdirectory( test )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kde3support/kmdi/res ${CMAKE_SOURCE_DIR}/kde3support/kdeui ${CMAKE_SOURCE_DIR}/kde3support/kparts ${CMAKE_SOURCE_DIR}/kutils ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3supprt/kmdi ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
@@ -10,6 +10,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kde3support/kmdi/res ${CMAKE_SOURCE_DIR
 
 ########### install files ###############
 
+install_files( /include FILES k3mdichildarea.h k3mdichildfrm.h k3mdichildfrmcaption.h k3mdidefines.h                    k3mdiiterator.h k3mdilistiterator.h k3mdimainfrm.h k3mdinulliterator.h                    k3mditaskbar.h k3mdichildview.h k3mditoolviewaccessor.h )
 
 kde4_create_doxygen_docs(  )
 

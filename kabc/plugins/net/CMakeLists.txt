@@ -39,6 +39,7 @@ install_targets(/lib/kde4 kabc_net )
 ########### install files ###############
 
 install_files( ${KDE4_SERVICES_DIR}/kresources/kabc FILES net.desktop )
+install_files( /include/kabc FILES resourcenet.h )
 
 kde4_footer()
 

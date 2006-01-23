@@ -39,6 +39,7 @@ install_targets(/lib/kde4 kabc_ldapkio )
 ########### install files ###############
 
 install_files( ${KDE4_SERVICES_DIR}/kresources/kabc FILES ldapkio.desktop )
+install_files( /include/kabc FILES resourceldapkio.h )
 
 kde4_footer()
 

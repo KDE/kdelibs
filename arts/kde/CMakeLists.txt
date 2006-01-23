@@ -78,6 +78,7 @@ target_link_libraries(kconverttest  ${QT_AND_KDECORE_LIBS} )
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
+install_files( /include/arts FILES kplayobject.h kplayobjectfactory.h kartsfloatwatch.h                           artskde.h kartsdispatcher.h                           kaudiorecordstream.h kaudioplaystream.h                           kartsserver.h kvideowidget.h kaudiomanagerplay.h )
 
 
 kde4_footer()

@@ -71,6 +71,7 @@ endif(KDE4_BUILD_TESTS)
 
 install_files( ${XDG_APPS_DIR} FILES kresources.desktop )
 install_files( ${KDE4_SERVICESTYPES_DIR} FILES kresources_plugin.desktop kresources_manager.desktop )
+install_files( /include/kresources FILES resource.h    configwidget.h    factory.h    manageriface.h    managerimpl.h    manager.h    selectdialog.h    configdialog.h    configpage.h )
 
 kde4_create_doxygen_docs(  )
 

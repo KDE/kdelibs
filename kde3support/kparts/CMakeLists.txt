@@ -7,6 +7,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kutils ${CMAKE_SOURCE_DIR}/kde3support/
 
 
 ########### install files ###############
+install_files( /include FILES dockmainwindow3.h )
 
 
 kde4_create_doxygen_docs(  )

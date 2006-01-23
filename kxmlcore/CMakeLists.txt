@@ -20,6 +20,7 @@ install_targets(/lib kxmlcore )
 
 
 ########### install files ###############
+install_files( /include/kxmlcore FILES HashMap.h         HashTraits.h         HashMapPtrSpec.h           SharedPtr.h          HashSet.h         HashFunctions.h         HashTable.h  )
 
 
 kde4_create_doxygen_docs( REFERENCES kdecore  )
@@ -58,7 +59,7 @@ kde4_footer()
 #			SharedPtr.h \
 #			HashSet.h \
 #			HashFunctions.h \
-#			HashTable.h 
+#			HashTable.h
 #
 #libkxmlcore_la_LDFLAGS = -version-info 3:0:2 -no-undefined $(USER_LDFLAGS) $(all_libraries)
 #

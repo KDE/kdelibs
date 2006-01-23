@@ -21,6 +21,7 @@ install_targets(/lib/kde4 kio_file )
 ########### install files ###############
 
 install_files( ${KDE4_SERVICES_DIR} FILES file.protocol )
+install_files( /include/kio FILES file.h )
 
 kde4_footer()
 
@@ -40,7 +41,7 @@ kde4_footer()
 #
 #kio_file_la_SOURCES = file.cc
 #kio_file_la_LIBADD = $(LIB_KIO)
-#kio_file_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN) 
+#kio_file_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 #noinst_HEADERS = file.h
 #
 #fileinclude_HEADERS = file.h

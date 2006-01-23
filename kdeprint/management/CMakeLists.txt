@@ -109,6 +109,7 @@ install_targets(/bin kaddprinterwizard )
 ########### install files ###############
 
 install_files( ${KDE4_DATA_DIR}/kdeprint FILES tileup.png tiledown.png side.png )
+install_files( /include/kdeprint FILES  kmmainview.h kmjobviewer.h kmprinterpage.h kiconselectaction.h kmtimer.h )
 
 kde4_footer()
 
@@ -123,7 +124,7 @@ kde4_footer()
 #lib_LTLIBRARIES = libkdeprint_management.la
 #kde_module_LTLIBRARIES = libkdeprint_management_module.la
 #kdeinit_LTLIBRARIES = kaddprinterwizard.la
-#bin_PROGRAMS = 
+#bin_PROGRAMS =
 #
 #kaddprinterwizard_la_SOURCES = kaddprinterwizard.cpp
 #kaddprinterwizard_la_LIBADD = libkdeprint_management.la

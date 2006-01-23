@@ -1,7 +1,7 @@
 kde4_header()
 
-add_subdirectory( ksettings ) 
-add_subdirectory( tests ) 
+add_subdirectory( ksettings )
+add_subdirectory( tests )
 
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
@@ -44,6 +44,7 @@ install_targets(/lib kutils )
 ########### install files ###############
 
 install_files( ${KDE4_SERVICESTYPES_DIR} FILES kplugininfo.desktop )
+install_files( /include FILES kfind.h kfinddialog.h kreplace.h kreplacedialog.h                    kcmoduleinfo.h kcmoduleloader.h kcmultidialog.h                    kmultitabbar.h kplugininfo.h kcmoduleproxy.h                    kpluginselector.h kcmodulecontainer.h )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdeui kio  )
 

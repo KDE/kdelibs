@@ -7,6 +7,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdecore ${KDE4_INCLUDE_DIR} ${QT_INCLUD
 
 
 ########### install files ###############
+install_files( /include FILES k3shortcut.h k3keysequence.h k3shortcutmenu.h   k3urldrag.h k3multipledrag.h )
 
 
 kde4_create_doxygen_docs(  )

@@ -6,6 +6,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kio ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} 
 ########### install files ###############
 
 install_files( ${KDE4_SERVICESTYPES_DIR} FILES kregexpeditor.desktop )
+install_files( /include FILES kregexpeditorinterface.h )
 
 kde4_footer()
 

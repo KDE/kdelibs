@@ -29,6 +29,7 @@ install_targets(/lib knotifyconfig )
 
 
 ########### install files ###############
+install_files( /include FILES knotifyconfigwidget.h )
 
 
 kde4_footer()
