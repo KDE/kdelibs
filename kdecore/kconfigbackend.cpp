@@ -273,7 +273,7 @@ KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
          return d->localLockFile;
       }
    }
-   return 0;
+   return KLockFile::Ptr();
 }
 
 KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
