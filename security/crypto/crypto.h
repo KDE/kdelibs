@@ -46,7 +46,7 @@ class KCryptoConfig;
 class KPushButton;
 class KSSLCertBox;
 class KSSLSigners;
-class KURLLabel;
+class KUrlLabel;
 class KUrlRequester;
 
 class CipherItem : public Q3CheckListItem
@@ -322,7 +322,7 @@ private:
   QLabel *fromLabel, *untilLabel;
   QLabel *validFrom, *validUntil;
   QLabel *yValidFrom, *yValidUntil;
-  KURLLabel *untilDate;
+  KUrlLabel *untilDate;
 
   Q3GroupBox  *oInfo;
   KUrlRequester *oPath;

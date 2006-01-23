@@ -626,7 +626,7 @@ QString whatstr;
   cacheGroup = new Q3VButtonGroup(i18n("Cache"), tabOtherSSLCert);
   cachePerm = new QRadioButton(i18n("Permanentl&y"), cacheGroup);
   cacheUntil = new QRadioButton(i18n("&Until"), cacheGroup);
-  untilDate = new KURLLabel(QString(), QString(), cacheGroup);
+  untilDate = new KUrlLabel(QString(), QString(), cacheGroup);
   cacheGroup->setEnabled(false);
   grid->addMultiCellWidget(cacheGroup, 16, 19, 0, 2);
 
