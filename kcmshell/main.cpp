@@ -101,13 +101,13 @@ static KService::Ptr locateModule(const QByteArray& module)
     if (!service)
     {
         kdWarning(780) << "Could not find module '" << module << "'." << endl;
-        return 0;
+        return KService::Ptr();
     }
 
     if(!KCModuleLoader::testModule( module ))
     {
         kdDebug(780) << "According to \"" << module << "\"'s test function, it should Not be loaded." << endl;
-        return 0;
+        return KService::Ptr();
     }
 
     return service;
