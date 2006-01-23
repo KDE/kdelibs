@@ -89,11 +89,15 @@ static inline int inotify_rm_watch (int fd, __u32 wd)
 }
 
 #ifndef  IN_ONLYDIR
-#define  IN_ONLYDIR             0x01000000 
+#define  IN_ONLYDIR 0x01000000 
 #endif
 
 #ifndef IN_DONT_FOLLOW
 #define IN_DONT_FOLLOW 0x02000000
+#endif
+
+#ifndef IN_MOVE_SELF
+#define IN_MOVE_SELF 0x00000800
 #endif
 
 #endif
@@ -269,22 +273,10 @@ KDirWatchPrivate::KDirWatchPrivate()
   }
 
   if ( supports_inotify ) {
-    int wd = inotify_add_watch ( m_inotify_fd, "/", 0x800 );
-    if (wd > 0) {
-      inotify_rm_watch( m_inotify_fd, wd );
-      available += ", INotify";
+    fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
 
-      fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
-
-      mSn = new QSocketNotifier( m_inotify_fd, QSocketNotifier::Read, this );
-      connect( mSn, SIGNAL(activated( int )), this, SLOT( slotActivated() ) );
-    }
-    else {
-      kdDebug(7001) << "kernel too old for inotify" << endl;
-      supports_inotify = false;
-      close(m_inotify_fd);
-      m_inotify_fd = -1;
-    }
+    mSn = new QSocketNotifier( m_inotify_fd, QSocketNotifier::Read, this );
+    connect( mSn, SIGNAL(activated( int )), this, SLOT( slotActivated() ) );
   }
 #endif
 
@@ -718,9 +710,12 @@ bool KDirWatchPrivate::useINotify( Entry* e )
 
   e->m_mode = INotifyMode;
 
-  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|0x800|IN_DONT_FOLLOW;
+  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW;
   if(!e->isDir)
-    mask |= IN_MODIFY|IN_ATTRIB|IN_ONLYDIR;
+    mask |= IN_MODIFY|IN_ATTRIB;
+  else
+    mask |= IN_ONLYDIR;
+
   // if dependant is a file watch, we check for MODIFY & ATTRIB too
   for(Entry* dep=e->m_entries.first();dep;dep=e->m_entries.next()) {
     if (!dep->isDir) { mask |= IN_MODIFY|IN_ATTRIB; break; }
@@ -1138,9 +1133,9 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 
 #if defined ( HAVE_DNOTIFY ) || defined( HAVE_INOTIFY )
   if (e->m_mode == DNotifyMode || e->m_mode == INotifyMode ) {
-    kdDebug(7001) << "scanning " << e->path << " " << e->dirty << " " << e->m_status << " " << e->m_ctime << endl;
     // we know nothing has changed, no need to stat
     if(!e->dirty) return NoChange;
+    kdDebug(7001) << "scanning " << e->path << " " << e->m_status << " " << e->m_ctime << endl;
     e->dirty = false;
   }
 #endif
