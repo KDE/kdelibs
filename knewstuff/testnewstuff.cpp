@@ -47,7 +47,7 @@ bool TestNewStuff::install( const QString &fileName )
   }
   QTextStream ts( &f );
   kdDebug(5850) << "--BEGIN-NEW_STUFF--" << endl;
-  cout << ts.read().toUtf8();
+  cout << ts.read().toUtf8().data();
   kdDebug(5850) << "---END-NEW_STUFF---" << endl;
   return true;
 }

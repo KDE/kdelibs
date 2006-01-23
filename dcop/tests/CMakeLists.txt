@@ -12,12 +12,20 @@ test.cpp
 kde4_automoc(${dcop_test_SRCS})
 
 set( dcop_test_DCOP_SKEL_SRCS
-test.h
+${CMAKE_CURRENT_BINARY_DIR}/test.h
 )
 
 kde4_add_dcop_skels(dcop_test_SRCS ${dcop_test_DCOP_SKEL_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+#shell.generated: $(srcdir)/testcases $(srcdir)/generate.pl
+#	perl $(srcdir)/generate.pl < $(srcdir)/testcases
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/test.h
+COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate.pl < ${CMAKE_CURRENT_SOURCE_DIR}/testcases
+)
+
 kde4_add_executable(dcop_test ${dcop_test_SRCS})
 
 target_link_libraries(dcop_test  ${QT_AND_KDECORE_LIBS} DCOP )

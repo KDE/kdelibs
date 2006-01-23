@@ -63,7 +63,7 @@ kde4_automoc(${testresources_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testresources ${testresources_SRCS})
 
-target_link_libraries(testresources  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(testresources  ${QT_AND_KDECORE_LIBS} kresources)
 
 endif(KDE4_BUILD_TESTS)
 

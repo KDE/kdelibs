@@ -55,7 +55,7 @@ kde4_automoc(${testnewstuff_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testnewstuff ${testnewstuff_SRCS})
 
-target_link_libraries(testnewstuff  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(testnewstuff  ${QT_AND_KDECORE_LIBS} knewstuff)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -70,7 +70,7 @@ kde4_automoc(${ghns_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(ghns ${ghns_SRCS})
 
-target_link_libraries(ghns  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(ghns  ${QT_AND_KDECORE_LIBS} knewstuff)
 
 endif(KDE4_BUILD_TESTS)
 

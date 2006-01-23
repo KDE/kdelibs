@@ -14,7 +14,7 @@ kde4_automoc(${kaboutdialogtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kaboutdialogtest ${kaboutdialogtest_SRCS})
 
-target_link_libraries(kaboutdialogtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kaboutdialogtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -29,7 +29,7 @@ kde4_automoc(${kblendtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kblendtest ${kblendtest_SRCS})
 
-target_link_libraries(kblendtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kblendtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -44,7 +44,7 @@ kde4_automoc(${kbuttonboxtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kbuttonboxtest ${kbuttonboxtest_SRCS})
 
-target_link_libraries(kbuttonboxtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kbuttonboxtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -59,7 +59,7 @@ kde4_automoc(${kcharselecttest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kcharselecttest ${kcharselecttest_SRCS})
 
-target_link_libraries(kcharselecttest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kcharselecttest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -74,7 +74,7 @@ kde4_automoc(${kcolortest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kcolortest ${kcolortest_SRCS})
 
-target_link_libraries(kcolortest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kcolortest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -89,7 +89,7 @@ kde4_automoc(${kcolordlgtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kcolordlgtest ${kcolordlgtest_SRCS})
 
-target_link_libraries(kcolordlgtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kcolordlgtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -104,7 +104,7 @@ kde4_automoc(${kcomboboxtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kcomboboxtest ${kcomboboxtest_SRCS})
 
-target_link_libraries(kcomboboxtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kcomboboxtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -119,7 +119,7 @@ kde4_automoc(${kcompletiontest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kcompletiontest ${kcompletiontest_SRCS})
 
-target_link_libraries(kcompletiontest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kcompletiontest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -134,7 +134,7 @@ kde4_automoc(${kdatepicktest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdatepicktest ${kdatepicktest_SRCS})
 
-target_link_libraries(kdatepicktest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdatepicktest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -149,7 +149,7 @@ kde4_automoc(${kdatewidgettest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdatewidgettest ${kdatewidgettest_SRCS})
 
-target_link_libraries(kdatewidgettest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdatewidgettest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -164,7 +164,7 @@ kde4_automoc(${kdialogbasetest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdialogbasetest ${kdialogbasetest_SRCS})
 
-target_link_libraries(kdialogbasetest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdialogbasetest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -179,7 +179,7 @@ kde4_automoc(${kdualcolortest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdualcolortest ${kdualcolortest_SRCS})
 
-target_link_libraries(kdualcolortest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdualcolortest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -194,7 +194,7 @@ kde4_automoc(${keditlistboxtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(keditlistboxtest ${keditlistboxtest_SRCS})
 
-target_link_libraries(keditlistboxtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(keditlistboxtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -209,7 +209,7 @@ kde4_automoc(${kfontdialogtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kfontdialogtest ${kfontdialogtest_SRCS})
 
-target_link_libraries(kfontdialogtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kfontdialogtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -224,7 +224,7 @@ kde4_automoc(${kgradienttest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kgradienttest ${kgradienttest_SRCS})
 
-target_link_libraries(kgradienttest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kgradienttest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -239,7 +239,7 @@ kde4_automoc(${khashtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(khashtest ${khashtest_SRCS})
 
-target_link_libraries(khashtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(khashtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -254,7 +254,7 @@ kde4_automoc(${kdesattest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdesattest ${kdesattest_SRCS})
 
-target_link_libraries(kdesattest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdesattest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -269,7 +269,7 @@ kde4_automoc(${kledtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kledtest ${kledtest_SRCS})
 
-target_link_libraries(kledtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kledtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -284,7 +284,7 @@ kde4_automoc(${klineedittest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(klineedittest ${klineedittest_SRCS})
 
-target_link_libraries(klineedittest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(klineedittest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -299,7 +299,7 @@ kde4_automoc(${kmessageboxtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kmessageboxtest ${kmessageboxtest_SRCS})
 
-target_link_libraries(kmessageboxtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kmessageboxtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -314,7 +314,7 @@ kde4_automoc(${knuminputtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(knuminputtest ${knuminputtest_SRCS})
 
-target_link_libraries(knuminputtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(knuminputtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -329,7 +329,7 @@ kde4_automoc(${kpalettetest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kpalettetest ${kpalettetest_SRCS})
 
-target_link_libraries(kpalettetest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kpalettetest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -344,7 +344,7 @@ kde4_automoc(${kpopuptest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kpopuptest ${kpopuptest_SRCS})
 
-target_link_libraries(kpopuptest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kpopuptest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -359,7 +359,7 @@ kde4_automoc(${kprogresstest_SRCS})
 if(KDE4_BUILD_TESTS)
 #kde4_add_executable(kprogresstest ${kprogresstest_SRCS})
 
-#target_link_libraries(kprogresstest  ${QT_AND_KDECORE_LIBS} )
+#target_link_libraries(kprogresstest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -374,7 +374,7 @@ kde4_automoc(${krulertest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(krulertest ${krulertest_SRCS})
 
-target_link_libraries(krulertest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(krulertest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -389,7 +389,7 @@ kde4_automoc(${kseparatortest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kseparatortest ${kseparatortest_SRCS})
 
-target_link_libraries(kseparatortest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kseparatortest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -404,7 +404,7 @@ kde4_automoc(${kstatusbartest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kstatusbartest ${kstatusbartest_SRCS})
 
-target_link_libraries(kstatusbartest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kstatusbartest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -419,7 +419,7 @@ kde4_automoc(${ktabctltest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(ktabctltest ${ktabctltest_SRCS})
 
-target_link_libraries(ktabctltest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(ktabctltest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -434,7 +434,7 @@ kde4_automoc(${kunbalancedgrdtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kunbalancedgrdtest ${kunbalancedgrdtest_SRCS})
 
-target_link_libraries(kunbalancedgrdtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kunbalancedgrdtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -449,7 +449,7 @@ kde4_automoc(${kwindowtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kwindowtest ${kwindowtest_SRCS})
 
-target_link_libraries(kwindowtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kwindowtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -464,7 +464,7 @@ kde4_automoc(${kwizardtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kwizardtest ${kwizardtest_SRCS})
 
-target_link_libraries(kwizardtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kwizardtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -479,7 +479,7 @@ kde4_automoc(${itemcontainertest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(itemcontainertest ${itemcontainertest_SRCS})
 
-target_link_libraries(itemcontainertest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(itemcontainertest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -494,7 +494,7 @@ kde4_automoc(${kedittest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kedittest ${kedittest_SRCS})
 
-target_link_libraries(kedittest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kedittest  ${QT_AND_KDECORE_LIBS} kdeui )
 
 endif(KDE4_BUILD_TESTS)
 
@@ -509,7 +509,7 @@ kde4_automoc(${kxmlguitest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kxmlguitest ${kxmlguitest_SRCS})
 
-target_link_libraries(kxmlguitest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kxmlguitest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -524,7 +524,7 @@ kde4_automoc(${kaccelgentest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kaccelgentest ${kaccelgentest_SRCS})
 
-target_link_libraries(kaccelgentest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kaccelgentest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -539,7 +539,7 @@ kde4_automoc(${ksystemtraytest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(ksystemtraytest ${ksystemtraytest_SRCS})
 
-target_link_libraries(ksystemtraytest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(ksystemtraytest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -554,7 +554,7 @@ kde4_automoc(${klistviewtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(klistviewtest ${klistviewtest_SRCS})
 
-target_link_libraries(klistviewtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(klistviewtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -569,7 +569,7 @@ kde4_automoc(${ktextedittest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(ktextedittest ${ktextedittest_SRCS})
 
-target_link_libraries(ktextedittest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(ktextedittest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -584,7 +584,7 @@ kde4_automoc(${kmainwindowtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kmainwindowtest ${kmainwindowtest_SRCS})
 
-target_link_libraries(kmainwindowtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kmainwindowtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -599,7 +599,7 @@ kde4_automoc(${kmainwindowrestoretest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kmainwindowrestoretest ${kmainwindowrestoretest_SRCS})
 
-target_link_libraries(kmainwindowrestoretest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kmainwindowrestoretest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -614,7 +614,7 @@ kde4_automoc(${kactiontest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kactiontest ${kactiontest_SRCS})
 
-target_link_libraries(kactiontest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kactiontest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -629,7 +629,7 @@ kde4_automoc(${kdatetimewidgettest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdatetimewidgettest ${kdatetimewidgettest_SRCS})
 
-target_link_libraries(kdatetimewidgettest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdatetimewidgettest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -644,7 +644,7 @@ kde4_automoc(${kspelltest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kspelltest ${kspelltest_SRCS})
 
-target_link_libraries(kspelltest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kspelltest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -659,7 +659,7 @@ kde4_automoc(${kinputdialogtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kinputdialogtest ${kinputdialogtest_SRCS})
 
-target_link_libraries(kinputdialogtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kinputdialogtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -674,7 +674,7 @@ kde4_automoc(${ktabwidgettest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(ktabwidgettest ${ktabwidgettest_SRCS})
 
-target_link_libraries(ktabwidgettest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(ktabwidgettest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -689,7 +689,7 @@ kde4_automoc(${kwordwraptest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kwordwraptest ${kwordwraptest_SRCS})
 
-target_link_libraries(kwordwraptest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kwordwraptest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -704,7 +704,7 @@ kde4_automoc(${ksqueezedtextlabeltest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(ksqueezedtextlabeltest ${ksqueezedtextlabeltest_SRCS})
 
-target_link_libraries(ksqueezedtextlabeltest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(ksqueezedtextlabeltest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -719,7 +719,7 @@ kde4_automoc(${kpixmapregionselectordialogtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kpixmapregionselectordialogtest ${kpixmapregionselectordialogtest_SRCS})
 
-target_link_libraries(kpixmapregionselectordialogtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kpixmapregionselectordialogtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -734,7 +734,7 @@ kde4_automoc(${kjanuswidgettest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kjanuswidgettest ${kjanuswidgettest_SRCS})
 
-target_link_libraries(kjanuswidgettest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kjanuswidgettest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -749,7 +749,7 @@ kde4_automoc(${ktoolbarlabelactiontest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(ktoolbarlabelactiontest ${ktoolbarlabelactiontest_SRCS})
 
-target_link_libraries(ktoolbarlabelactiontest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(ktoolbarlabelactiontest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -764,7 +764,7 @@ kde4_automoc(${khboxtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(khboxtest ${khboxtest_SRCS})
 
-target_link_libraries(khboxtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(khboxtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -779,7 +779,7 @@ kde4_automoc(${kbugreporttest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kbugreporttest ${kbugreporttest_SRCS})
 
-target_link_libraries(kbugreporttest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kbugreporttest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -794,7 +794,7 @@ kde4_automoc(${kdialogtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdialogtest ${kdialogtest_SRCS})
 
-target_link_libraries(kdialogtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdialogtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 endif(KDE4_BUILD_TESTS)
 

@@ -1,6 +1,6 @@
 kde4_header()
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/kspell2/ui )
 
 
 ########### next target ###############
@@ -67,14 +67,18 @@ endif(KDE4_BUILD_TESTS)
 
 set(test_highlighter_SRCS
 test_highlighter.cpp
+${kspell2_noinst_STAT_SRCS}
 )
 
 kde4_automoc(${test_highlighter_SRCS})
 
 if(KDE4_BUILD_TESTS)
-kde4_add_executable(test_highlighter ${test_highlighter_SRCS})
 
-target_link_libraries(test_highlighter  ${QT_AND_KDECORE_LIBS} kspell2_noinst kspell2base )
+message(STATUS "skipping kabc/tests test_highlighter")
+
+#kde4_add_executable(test_highlighter ${test_highlighter_SRCS})
+#
+#target_link_libraries(test_highlighter  ${QT_AND_KDECORE_LIBS} kspell2base )
 
 endif(KDE4_BUILD_TESTS)
 
@@ -82,14 +86,22 @@ endif(KDE4_BUILD_TESTS)
 
 set(test_configdialog_SRCS
 test_configdialog.cpp
+${kspell2_noinst_STAT_SRCS}
 )
 
-kde4_automoc(${test_configdialog_SRCS})
+
 
 if(KDE4_BUILD_TESTS)
-kde4_add_executable(test_configdialog ${test_configdialog_SRCS})
 
-target_link_libraries(test_configdialog  ${QT_AND_KDECORE_LIBS} kspell2_noinst kspell2base )
+message(STATUS "skipping kabc/tests test_configdialog")
+
+#kde4_automoc(${test_configdialog_SRCS})
+#
+#kde4_add_ui3_files(kspell2_LIB_SRCS  ${CMAKE_SOURCE_DIR}/kspell2/ui/kspell2ui.ui ${CMAKE_SOURCE_DIR}/kspell2/ui/configui.ui)
+#
+#kde4_add_executable(test_configdialog ${test_configdialog_SRCS})
+#
+#target_link_libraries(test_configdialog  ${QT_AND_KDECORE_LIBS} kspell2base )
 
 endif(KDE4_BUILD_TESTS)
 

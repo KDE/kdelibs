@@ -8,8 +8,8 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 macro(GEN_KCFG_TEST_SOURCE _testName)
    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp
    COMMAND ${KDE4_KCFGC_EXECUTABLE} ARGS
-   ${CMAKE_CURRENT_SOURCE_DIR}${_testName}.kcfg ${CMAKE_CURRENT_SOURCE_DIR}${_testName}.kcfgc
-   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}${_testName}.kcfg ${CMAKE_CURRENT_SOURCE_DIR}${_testName}.kcfgc)
+   ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfg ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfgc
+   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfg ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfgc)
 endmacro(GEN_KCFG_TEST_SOURCE)
 
 ########### next target ###############
