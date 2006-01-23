@@ -23,6 +23,10 @@
 #ifndef KXMLCORE_HASH_FUNCTIONS_H
 #define KXMLCORE_HASH_FUNCTIONS_H
 
+#include <stdint.h>
+
+#include "RefPtr.h"
+
 namespace KXMLCore {
 
     template<typename T> class DefaultHash;
@@ -69,6 +73,11 @@ namespace KXMLCore {
     template<typename T> struct PointerHash {
         static unsigned hash(T key) { return pointerHash<sizeof(void *)>((void *)key); }
         static bool equal(T a, T b) { return a == b; }
+    };
+
+    template<typename P> struct PointerHash<RefPtr<P> > {
+        static unsigned hash(const RefPtr<P>& key) { return  pointerHash<sizeof(void *)>((void *)key.get()); }
+        static bool equal(const RefPtr<P>& a, const RefPtr<P>& b) { return a == b; }
     };
     
 } // namespace KXMLCore

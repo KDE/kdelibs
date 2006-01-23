@@ -101,7 +101,7 @@ namespace KXMLCore {
         ReferenceType operator*() const { return *reinterpret_cast<PointerType>(m_impl.operator->()); }
         PointerType operator->() const { return &(operator*()); }
         
-        iterator& operator++()
+        const_iterator& operator++()
         {
             ++m_impl;
             return *this;
@@ -110,12 +110,12 @@ namespace KXMLCore {
         // postfix ++ intentionally omitted
         
         // Comparison.
-        bool operator==(const iterator& other) const
+        bool operator==(const const_iterator& other) const
         { 
             return m_impl == other.m_impl; 
         }
         
-        bool operator!=(const iterator& other) const 
+        bool operator!=(const const_iterator& other) const 
         { 
             return m_impl != other.m_impl; 
         }
@@ -151,15 +151,18 @@ namespace KXMLCore {
         const_iterator begin() const { return m_impl.begin(); }
         const_iterator end() const { return m_impl.end(); }
         
-        iterator find(const KeyType& key) { return m_impl.find(key); }
-        const_iterator find(const KeyType& key) const { return m_impl.find(key); }
-        bool contains(const KeyType& key) const { return m_impl.contains(key); }
-        MappedType get(const KeyType &key) const { return m_impl.get(key); }
+        iterator find(const KeyType& key) { return m_impl.find((void *)(key)); }
+        const_iterator find(const KeyType& key) const { return m_impl.find((void *)(key)); }
+        bool contains(const KeyType& key) const { return m_impl.contains((void *)(key)); }
+        MappedType get(const KeyType &key) const { return m_impl.get((void *)(key)); }
         
         std::pair<iterator, bool> set(const KeyType &key, const MappedType &mapped) 
-        { return m_impl.set(key, mapped); }
+        { return m_impl.set((void *)(key), mapped); }
+
+        std::pair<iterator, bool> add(const KeyType &key, const MappedType &mapped) 
+        { return m_impl.add((void *)(key), mapped); }
         
-        void remove(const KeyType& key) { m_impl.remove(key); }
+        void remove(const KeyType& key) { m_impl.remove((void *)(key)); }
         void remove(iterator it) { m_impl.remove(it.m_impl); }
         void clear() { m_impl.clear(); }
         
@@ -177,8 +180,8 @@ namespace KXMLCore {
         typedef Q *MappedType;
         typedef std::pair<KeyType, MappedType> ValueType;
         typedef typename std::pair<void *, void *> ImplValueType;
-        typedef HashTableIterator<void *, ImplValueType, extractFirst<ImplValueType>, DefaultHash<void *>, PairHashTraits<HashTraits<void *>, HashTraits<void *> > > ImplIterator;
-        typedef HashTableConstIterator<void *, ImplValueType, extractFirst<ImplValueType>, DefaultHash<void *>, PairHashTraits<HashTraits<void *>, HashTraits<void *> > > ImplConstIterator;
+        typedef HashTableIterator<void *, ImplValueType, extractFirst<ImplValueType>, DefaultHash<void *>, PairHashTraits<HashTraits<void *>, HashTraits<void *> >, HashTraits<void *> > ImplIterator;
+        typedef HashTableConstIterator<void *, ImplValueType, extractFirst<ImplValueType>, DefaultHash<void *>, PairHashTraits<HashTraits<void *>, HashTraits<void *> >, HashTraits<void *> > ImplConstIterator;
         
         typedef PointerHashIteratorAdapter<P, Q *> iterator;
         typedef PointerHashConstIteratorAdapter<P, Q *> const_iterator;
@@ -194,15 +197,18 @@ namespace KXMLCore {
         const_iterator begin() const { return m_impl.begin(); }
         const_iterator end() const { return m_impl.end(); }
         
-        iterator find(const KeyType& key) { return m_impl.find(key); }
-        const_iterator find(const KeyType& key) const { return m_impl.find(key); }
-        bool contains(const KeyType& key) const { return m_impl.contains(key); }
-        MappedType get(const KeyType &key) const { return (MappedType)m_impl.get(key); }
+        iterator find(const KeyType& key) { return m_impl.find((void *)(key)); }
+        const_iterator find(const KeyType& key) const { return m_impl.find((void *)(key)); }
+        bool contains(const KeyType& key) const { return m_impl.contains((void *)(key)); }
+        MappedType get(const KeyType &key) const { return reinterpret_cast<MappedType>(m_impl.get((void *)(key))); }
         
         std::pair<iterator, bool> set(const KeyType &key, const MappedType &mapped) 
-        { return m_impl.set(key, mapped); }
+        { return m_impl.set((void *)(key), (void *)(mapped)); }
+
+        std::pair<iterator, bool> add(const KeyType &key, const MappedType &mapped) 
+        { return m_impl.add((void *)(key), (void *)(mapped)); }
         
-        void remove(const KeyType& key) { m_impl.remove(key); }
+        void remove(const KeyType& key) { m_impl.remove((void *)(key)); }
         void remove(iterator it) { m_impl.remove(it.m_impl); }
         void clear() { m_impl.clear(); }
         

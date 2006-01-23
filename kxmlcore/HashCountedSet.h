@@ -20,56 +20,30 @@
  *
  */
 
-#ifndef KXMLCORE_HASH_SET_H
-#define KXMLCORE_HASH_SET_H
+#ifndef KXMLCORE_HASH_COUNTED_SET_H
+#define KXMLCORE_HASH_COUNTED_SET_H
 
-#include "HashTable.h"
-#include "HashTraits.h"
-#include "HashFunctions.h"
+#include "Assertions.h"
+#include "HashMap.h"
 
 namespace KXMLCore {
 
-    template <typename T>
-    inline const T& identityExtract(const T& t) 
-    { 
-        return t; 
-    }
-
-
-    template<typename Value, typename T, typename HashSetTranslator>
-    struct HashSetTranslatorAdapter 
-    {
-        static unsigned hash(const T& key)
-        {
-            return HashSetTranslator::hash(key);
-        }
-        
-        static bool equal(const Value& a, const T& b)
-        {
-            return HashSetTranslator::equal(a, b);
-        }
-        
-        static void translate(Value& location, const T& key, const T&, unsigned hashCode)
-        {
-            HashSetTranslator::translate(location, key, hashCode);
-        }
-    };
-    
     template<typename Value, typename HashFunctions = DefaultHash<Value>, typename Traits = HashTraits<Value> >
-    class HashSet {
+    class HashCountedSet {
     private:
-        typedef HashTable<Value, Value, identityExtract<Value>, HashFunctions, Traits, Traits> ImplType;
+        typedef HashMap<Value, unsigned, HashFunctions, Traits> ImplType;
     public:
         typedef Value ValueType;
         typedef typename ImplType::iterator iterator;
         typedef typename ImplType::const_iterator const_iterator;
         
-        HashSet() {}
+        HashCountedSet() {}
         
         int size() const;
         int capacity() const;
         bool isEmpty() const;
         
+        // iterators iterate over pairs of values and counts
         iterator begin();
         iterator end();
         const_iterator begin() const;
@@ -78,121 +52,129 @@ namespace KXMLCore {
         iterator find(const ValueType& value);
         const_iterator find(const ValueType& value) const;
         bool contains(const ValueType& value) const;
-        
+        unsigned count(const ValueType& value) const;
+
+        // increases the count if an equal value is already present
+        // returns value is a pair of an interator to the new value's location, 
+        // and a bool that is true if an actual new insertion was done
         std::pair<iterator, bool> insert(const ValueType &value);
         
-        // a special version of insert() that finds the object by hashing and comparing
-        // with some other type, to avoid the cost of type conversion if the object is already
-        // in the table. HashTranslator should have the following methods:
-        //   static unsigned hash(const T&);
-        //   static bool equal(const ValueType&, const T&);
-        //   static translate(ValueType&, const T&, unsigned hashCode);
-        template<typename T, typename HashTranslator> 
-        std::pair<iterator, bool> insert(const T& value);
-        
+        // reduces the count of the value, and removes it if count
+        // goes down to zero
         void remove(const ValueType& value);
         void remove(iterator it);
-        void clear();
+ 
+       void clear();
         
     private:
         ImplType m_impl;
     };
     
     template<typename Value, typename HashFunctions, typename Traits>
-    inline int HashSet<Value, HashFunctions, Traits>::size() const
+    inline int HashCountedSet<Value, HashFunctions, Traits>::size() const
     {
         return m_impl.size(); 
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    int HashSet<Value, HashFunctions, Traits>::capacity() const
+    inline int HashCountedSet<Value, HashFunctions, Traits>::capacity() const
     {
         return m_impl.capacity(); 
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    inline bool HashSet<Value, HashFunctions, Traits>::isEmpty() const
+    inline bool HashCountedSet<Value, HashFunctions, Traits>::isEmpty() const
     {
         return size() == 0; 
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    inline typename HashSet<Value, HashFunctions, Traits>::iterator HashSet<Value, HashFunctions, Traits>::begin()
+    inline typename HashCountedSet<Value, HashFunctions, Traits>::iterator HashCountedSet<Value, HashFunctions, Traits>::begin()
     {
         return m_impl.begin(); 
     }
 
     template<typename Value, typename HashFunctions, typename Traits>
-    inline typename HashSet<Value, HashFunctions, Traits>::iterator HashSet<Value, HashFunctions, Traits>::end()
+    inline typename HashCountedSet<Value, HashFunctions, Traits>::iterator HashCountedSet<Value, HashFunctions, Traits>::end()
     {
         return m_impl.end(); 
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    inline typename HashSet<Value, HashFunctions, Traits>::const_iterator HashSet<Value, HashFunctions, Traits>::begin() const
+    inline typename HashCountedSet<Value, HashFunctions, Traits>::const_iterator HashCountedSet<Value, HashFunctions, Traits>::begin() const
     {
         return m_impl.begin(); 
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    inline typename HashSet<Value, HashFunctions, Traits>::const_iterator HashSet<Value, HashFunctions, Traits>::end() const
+    inline typename HashCountedSet<Value, HashFunctions, Traits>::const_iterator HashCountedSet<Value, HashFunctions, Traits>::end() const
     {
         return m_impl.end(); 
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    typename HashSet<Value, HashFunctions, Traits>::iterator HashSet<Value, HashFunctions, Traits>::find(const ValueType& value)
+    inline typename HashCountedSet<Value, HashFunctions, Traits>::iterator HashCountedSet<Value, HashFunctions, Traits>::find(const ValueType& value)
     {
         return m_impl.find(value); 
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    typename HashSet<Value, HashFunctions, Traits>::const_iterator HashSet<Value, HashFunctions, Traits>::find(const ValueType& value) const
+    inline typename HashCountedSet<Value, HashFunctions, Traits>::const_iterator HashCountedSet<Value, HashFunctions, Traits>::find(const ValueType& value) const
     {
         return m_impl.find(value); 
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    inline bool HashSet<Value, HashFunctions, Traits>::contains(const ValueType& value) const
+    inline bool HashCountedSet<Value, HashFunctions, Traits>::contains(const ValueType& value) const
     {
         return m_impl.contains(value); 
     }
-    
+
     template<typename Value, typename HashFunctions, typename Traits>
-    std::pair<typename HashSet<Value, HashFunctions, Traits>::iterator, bool> HashSet<Value, HashFunctions, Traits>::insert(const ValueType &value)
+    inline unsigned HashCountedSet<Value, HashFunctions, Traits>::count(const ValueType& value) const
     {
-        return m_impl.insert(value); 
+        return m_impl.get(value);
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    template<typename T, typename HashSetTranslator> 
-    std::pair<typename HashSet<Value, HashFunctions, Traits>::iterator, bool> HashSet<Value, HashFunctions, Traits>::insert(const T& value)
+    inline std::pair<typename HashCountedSet<Value, HashFunctions, Traits>::iterator, bool> HashCountedSet<Value, HashFunctions, Traits>::insert(const ValueType &value)
     {
-        return m_impl.template insert<T, T, HashSetTranslatorAdapter<ValueType, T, HashSetTranslator> >(value, value); 
+        pair<iterator, bool> result = m_impl.add(value, 0); 
+        ++result.first->second;
+        return result;
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    void HashSet<Value, HashFunctions, Traits>::remove(const ValueType& value)
+    inline void HashCountedSet<Value, HashFunctions, Traits>::remove(const ValueType& value)
     {
-        m_impl.remove(value); 
+        remove(find(value));
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    void HashSet<Value, HashFunctions, Traits>::remove(iterator it)
+    inline void HashCountedSet<Value, HashFunctions, Traits>::remove(iterator it)
     {
-        m_impl.remove(it); 
+        if (it == end())
+            return;
+
+        unsigned oldVal = it->second;
+        ASSERT(oldVal != 0);
+        unsigned newVal = oldVal - 1;
+        if (newVal == 0)
+            m_impl.remove(it);
+        else
+            it->second = newVal;
     }
     
     template<typename Value, typename HashFunctions, typename Traits>
-    void HashSet<Value, HashFunctions, Traits>::clear()
+    inline void HashCountedSet<Value, HashFunctions, Traits>::clear()
     {
         m_impl.clear(); 
     }
 
 } // namespace khtml
 
-using KXMLCore::HashSet;
+using KXMLCore::HashCountedSet;
 
-#endif /* KXMLCORE_HASH_SET_H */
+#endif /* KXMLCORE_HASH_COUNTED_SET_H */
 
 
