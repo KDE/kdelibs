@@ -181,6 +181,11 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
     return true;
 }
 
+KPixmap::KPixmap( uint width, uint height )
+  : QPixmap( width, height )
+{
+}
+
 KPixmap::~KPixmap()
 {
 }

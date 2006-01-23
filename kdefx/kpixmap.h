@@ -79,8 +79,12 @@ public:
          KPixmap() : QPixmap() {}
 
 	/**
+	 * Constructs a pixmap of the given @param width and @param height.
+	 */
+         KPixmap( uint width, uint height );
+
+	/**
 	 * Destructs the pixmap.
-         * ### KDE 4: remove
 	 */
 	~KPixmap();
 
