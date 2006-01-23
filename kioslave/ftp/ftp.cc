@@ -130,7 +130,7 @@ KIO::filesize_t Ftp::UnknownSize = (KIO::filesize_t)-1;
 using namespace KIO;
 using namespace KNetwork;
 
-int kdemain( int argc, char **argv )
+extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
   KLocale::setMainCatalog("kdelibs");
   KInstance instance( "kio_ftp" );

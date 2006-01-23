@@ -35,7 +35,7 @@
 
 using namespace KIO;
 
-int kdemain(int argc, char **argv)
+extern "C" int KDE_EXPORT kdemain(int argc, char **argv)
 {
     KAboutData about("kio_metainfo", "kio_metainfo", "");
     KCmdLineArgs::init(&about);

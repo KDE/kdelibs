@@ -100,7 +100,7 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
                             mode_t type, bool withACL );
 #endif
 
-int kdemain( int argc, char **argv )
+extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
   KLocale::setMainCatalog("kdelibs");
   KInstance instance( "kio_file" );

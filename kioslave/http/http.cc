@@ -88,11 +88,7 @@
 using namespace KIO;
 using namespace KNetwork;
 
-extern "C" {
-  KDE_EXPORT int kdemain(int argc, char **argv);
-}
-
-int kdemain( int argc, char **argv )
+extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
   KLocale::setMainCatalog("kdelibs");
   KInstance instance( "kio_http" );
