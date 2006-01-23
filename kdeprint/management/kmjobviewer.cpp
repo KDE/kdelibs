@@ -333,7 +333,7 @@ void KMJobViewer::initActions()
 		KStatusBar	*statusbar = statusBar();
 		m_stickybox = new QCheckBox( i18n( "Keep window permanent" ), statusbar );
 		statusbar->addWidget( m_stickybox, 1, false );
-		statusbar->insertItem(" " + i18n("Max.: %1").arg(i18n("Unlimited"))+ " ", 0, 0, true);
+		statusbar->insertItem(" " + i18n("Max.: %1").arg(i18n("Unlimited"))+ " ", 0, 0);
 		statusbar->setItemFixed(0);
 		updateStatusBar();
 
