@@ -100,8 +100,8 @@ void Query::customEvent(QCustomEvent* event)
 	if (event->type()==QEvent::User+SD_ADDREMOVE) {
 		AddRemoveEvent *aev = static_cast<AddRemoveEvent*>(event);
 		// m_type has useless trailing dot
-		RemoteService*  svr = new RemoteService(aev->m_name+"."+
-		    	aev->m_type.left(aev->m_type.length()-1)+"."+aev->m_domain);
+		RemoteService::Ptr svr(new RemoteService(aev->m_name+"."+
+			aev->m_type.left(aev->m_type.length()-1)+"."+aev->m_domain));
 		if (aev->m_op==AddRemoveEvent::Add) emit serviceAdded(svr);
 			else emit serviceRemoved(svr);
 		d->m_finished = aev->m_last;

@@ -120,7 +120,7 @@ void ServiceBrowser::serviceResolved(bool success)
 	if (it != itEnd) {
 		if (success) {
 		  	d->m_services+=(*it);
-			emit serviceAdded(svr);
+			emit serviceAdded(RemoteService::Ptr(svr));
 		}
 		d->m_duringResolve.remove(it);
 		queryFinished();
