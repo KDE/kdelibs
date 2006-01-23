@@ -103,21 +103,16 @@ public:
 
   /**
    *  Inserts a text label into the status bar.
-   *  Parameters @p stretch and  @p permanent are passed to
-   * QStatusBar::addWidget .
-   *
-   *  If @p permanent is true, then item will be placed on the far right of
-   *  the statusbar and will never be hidden by QStatusBar::message.
+   *  Parameter @p stretch is passed to QStatusBar::addWidget .
    *
    *  @param text The label's text string.
    *  @param id id of item
    *  @param stretch stretch passed to QStatusBar::addWidget
-   *  @param permanent is item permanent or not (passed to QStatusBar::addWidget )
    *
    *  @see QStatusbar::addWidget
    *
    */
-  void insertItem(const QString& text, int id, int stretch=0, bool permanent=false );
+  void insertItem(const QString& text, int id, int stretch=0 );
 
   /**
    *  Inserts a fixed width text label into status bar. The width will be set
@@ -126,10 +121,9 @@ public:
    *
    *  @param text The label's text string
    *  @param id id of item
-   *  @param permanent permanent flag passed to QStatusBar::addWidget
    */
-  inline void insertFixedItem(const QString& text, int id, bool permanent=false)
-               { insertItem(text, id, 0, permanent); setItemFixed(id); }
+  inline void insertFixedItem(const QString& text, int id)
+               { insertItem(text, id, 0); setItemFixed(id); }
 
   /**
    *  Removes an item.
@@ -164,7 +158,7 @@ public:
    * @p AlignHCenter | @p AlignVCenter. See QLabel::setAlignment for details.
    *
   */
-  void setItemAlignment(int id, int align);
+  void setItemAlignment(int id, Qt::Alignment alignment);
 
   /**
    * Sets item @p id to have fixed width. This cannot be undone, but you can
