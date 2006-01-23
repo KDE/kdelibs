@@ -189,7 +189,7 @@ static QColor mixColors(double p1, QColor c1, QColor c2) {
 void KWordWrap::drawFadeoutText(QPainter *p, int x, int y, int maxW,
                                    const QString &t) {
     QFontMetrics fm = p->fontMetrics();
-    QColor bgColor = p->backgroundColor();
+    QColor bgColor = p->background().color();
     QColor textColor = p->pen().color();
 
     if ( ( fm.boundingRect( t ).width() > maxW ) && ( t.length() > 1 ) ) {
@@ -221,7 +221,7 @@ void KWordWrap::drawFadeoutText(QPainter *p, int x, int y, int maxW,
 void KWordWrap::drawTruncateText(QPainter *p, int x, int y, int maxW,
                                  const QString &t) {
     QString tmpText = KStringHandler::rPixelSqueeze( t, p->fontMetrics(), maxW );
-    p->drawText( x, y, tmpText, maxW );
+    p->drawText( x, y, tmpText );
 }
 
 void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) const

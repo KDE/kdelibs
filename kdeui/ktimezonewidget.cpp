@@ -17,15 +17,15 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kdialog.h>
+#include <QFile>
+#include <QPixmap>
+
 #include <kdebug.h>
-#include <kfile.h>
-#include <klistview.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <ktimezones.h>
 #include <ktimezonewidget.h>
-#include <qpixmap.h>
+
 #include <time.h>
 
 #define COLUMN_CITY 0
@@ -57,7 +57,7 @@ KTimezoneWidget::KTimezoneWidget(QWidget *parent, KTimezones *db) :
         //
         //  "Europe/London", "GB" -> "London", "Europe/GB".
         //  "UTC",           ""   -> "UTC",    "".
-        QStringList continentCity = QStringList::split("/", displayName(zone));
+        QStringList continentCity = displayName(zone).split("/");
         QTreeWidgetItem *listItem = new QTreeWidgetItem(this);
         listItem->setText(0, continentCity[continentCity.count() - 1]);
         continentCity[continentCity.count() - 1] = zone->countryCode();
