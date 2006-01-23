@@ -2,6 +2,15 @@ kde4_header()
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+#test5.cpp test5.h: $(srcdir)/test5.kcfg ../kconfig_compiler $(srcdir)/test5.kcfgc
+#	../kconfig_compiler $(srcdir)/test5.kcfg $(srcdir)/test5.kcfgc
+
+macro(GEN_KCFG_TEST_SOURCE _testName)
+   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp
+   COMMAND ${KDE4_KCFGC_EXECUTABLE} ARGS
+   ${CMAKE_CURRENT_SOURCE_DIR}${_testName}.kcfg ${CMAKE_CURRENT_SOURCE_DIR}${_testName}.kcfgc
+   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}${_testName}.kcfg ${CMAKE_CURRENT_SOURCE_DIR}${_testName}.kcfgc)
+endmacro(GEN_KCFG_TEST_SOURCE)
 
 ########### next target ###############
 
@@ -13,6 +22,9 @@ test1.cpp
 kde4_automoc(${test1_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test1)
+
 kde4_add_executable(test1 ${test1_SRCS})
 
 target_link_libraries(test1  ${QT_AND_KDECORE_LIBS} )
@@ -29,6 +41,9 @@ test2.cpp
 kde4_automoc(${test2_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test2)
+
 kde4_add_executable(test2 ${test2_SRCS})
 
 target_link_libraries(test2  ${QT_AND_KDECORE_LIBS} )
@@ -45,6 +60,9 @@ test3.cpp
 kde4_automoc(${test3_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test3)
+
 kde4_add_executable(test3 ${test3_SRCS})
 
 target_link_libraries(test3  ${QT_AND_KDECORE_LIBS} )
@@ -61,6 +79,9 @@ test4.cpp
 kde4_automoc(${test4_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test4)
+
 kde4_add_executable(test4 ${test4_SRCS})
 
 target_link_libraries(test4  ${QT_AND_KDECORE_LIBS} )
@@ -77,6 +98,9 @@ test5.cpp
 kde4_automoc(${test5_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test5)
+
 kde4_add_executable(test5 ${test5_SRCS})
 
 target_link_libraries(test5  ${QT_AND_KDECORE_LIBS} )
@@ -93,6 +117,9 @@ test6.cpp
 kde4_automoc(${test6_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test6)
+
 kde4_add_executable(test6 ${test6_SRCS})
 
 target_link_libraries(test6  ${QT_AND_KDECORE_LIBS} )
@@ -109,6 +136,9 @@ test7.cpp
 kde4_automoc(${test7_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test7)
+
 kde4_add_executable(test7 ${test7_SRCS})
 
 target_link_libraries(test7  ${QT_AND_KDECORE_LIBS} )
@@ -126,6 +156,10 @@ test8b.cpp
 kde4_automoc(${test8_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test8a)
+gen_kcfg_test_source(test8b)
+
 kde4_add_executable(test8 ${test8_SRCS})
 
 target_link_libraries(test8  ${QT_AND_KDECORE_LIBS} )
@@ -142,6 +176,9 @@ test9.cpp
 kde4_automoc(${test9_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test9)
+
 kde4_add_executable(test9 ${test9_SRCS})
 
 target_link_libraries(test9  ${QT_AND_KDECORE_LIBS} )
@@ -158,6 +195,9 @@ test_dpointer.cpp
 kde4_automoc(${test_dpointer_SRCS})
 
 if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test_dpointer)
+
 kde4_add_executable(test_dpointer ${test_dpointer_SRCS})
 
 target_link_libraries(test_dpointer  ${QT_AND_KDECORE_LIBS} )
@@ -173,9 +213,10 @@ kconfigcompiler_test.cpp
 kde4_automoc(${kconfigcompiler_test_SRCS})
 
 if(KDE4_BUILD_TESTS)
-kde4_add_executable(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
 
-target_link_libraries(kconfigcompiler_test  ${QT_AND_KDECORE_LIBS} QtTest_debug )
+#kde4_add_executable(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
+
+#target_link_libraries(kconfigcompiler_test  ${QT_AND_KDECORE_LIBS} QtTest_debug )
 
 endif(KDE4_BUILD_TESTS)
 

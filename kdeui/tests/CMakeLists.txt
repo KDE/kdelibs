@@ -357,9 +357,9 @@ kprogresstest.cpp
 kde4_automoc(${kprogresstest_SRCS})
 
 if(KDE4_BUILD_TESTS)
-kde4_add_executable(kprogresstest ${kprogresstest_SRCS})
+#kde4_add_executable(kprogresstest ${kprogresstest_SRCS})
 
-target_link_libraries(kprogresstest  ${QT_AND_KDECORE_LIBS} )
+#target_link_libraries(kprogresstest  ${QT_AND_KDECORE_LIBS} )
 
 endif(KDE4_BUILD_TESTS)
 
