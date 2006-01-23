@@ -719,7 +719,7 @@ pid_t KRun::run( const KService& _service, const KUrl::List& _urls, bool tempFil
 pid_t KRun::run( const QString& _exec, const KUrl::List& _urls, const QString& _name,
                 const QString& _icon, const QString&, const QString&)
 {
-  KService::Ptr service = new KService(_name, _exec, _icon);
+  KService::Ptr service(new KService(_name, _exec, _icon));
 
   return run(*service, _urls);
 }
