@@ -63,7 +63,7 @@ message(STATUS "skipping khtml, at least gcc 3.3 required")
 #add_subdirectory( khtml  )
 add_subdirectory( interfaces  )
 add_subdirectory( kdewidgets  )
-add_subdirectory( kate  )
+#add_subdirectory( kate  )
 add_subdirectory( knotify )
 
 
