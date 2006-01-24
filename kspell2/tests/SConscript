@@ -26,9 +26,6 @@ test_dialog_sources = """
 test_dialog.cpp
 """
 
-test_emailquotinghighlighter_sources = """
-test_emailquotinghighlighte.cpp
-"""
 
 """Unhandled Defines 
 AM_CPPFLAGS = -DKDE_NO_COMPAT -DQT_NO_COMPAT -I$(top_srcdir)/kspell2 -I$(top_srcdir)/kspell2/ui $(all_includes)
