@@ -180,6 +180,12 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
         }
         u = KURL::fromPathOrURL( *it );
 
+        // Don't restore if file doesn't exist anymore
+        if (u.isLocalFile() && !QFile(u.path()).exists()) {
+            ++it; 
+            continue;
+        }
+
         item = new KURLComboItem;
         item->url = u;
         item->pixmap = getPixmap( u );

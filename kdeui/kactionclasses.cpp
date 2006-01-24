@@ -34,6 +34,7 @@
 #include <qobjectlist.h>
 #include <qwhatsthis.h>
 #include <qtimer.h>
+#include <qfile.h>
 
 #include <dcopclient.h>
 #include <dcopref.h>
@@ -1187,6 +1188,11 @@ void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
         key = QString( "File%1" ).arg( i );
         value = config->readPathEntry( key );
         url = KURL::fromPathOrURL( value );
+
+        // Don't restore if file doesn't exist anymore
+        if (url.isLocalFile() && !QFile(url.path()).exists())
+          continue;
+
         nameKey = QString( "Name%1" ).arg( i );
         nameValue = config->readPathEntry( nameKey, url.fileName() );
         title = nameValue + " [" + value + "]";
