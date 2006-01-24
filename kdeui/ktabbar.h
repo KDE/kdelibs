@@ -41,15 +41,8 @@ public:
     KTabBar( QWidget* parent=0 );
     virtual ~KTabBar();
 
-    //virtual void setTabEnabled( int, bool );
-
-    // KDE4: colors not supported, disabled
-    const QColor &tabColor( int ) const;
-    void setTabColor( int, const QColor& );
-
     // KDE4 porting: use the QTabBar functions instead
     //virtual int insertTab( QTab *, int index = -1 );
-    //virtual void removeTab( QTab * );
 
     void setTabReorderingEnabled( bool enable );
     bool isTabReorderingEnabled() const;
@@ -66,7 +59,7 @@ public:
     bool tabCloseActivatePrevious() const;
 
     int selectTab(const QPoint& pos) const;
-    
+
 Q_SIGNALS:
     void contextMenu( int, const QPoint & );
     void mouseDoubleClick( int );
@@ -92,13 +85,11 @@ protected:
     virtual void dragMoveEvent( QDragMoveEvent *e );
     virtual void dropEvent( QDropEvent *e );
 
-    //virtual void paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
-
 protected Q_SLOTS:
     //virtual void closeButtonClicked();
     //virtual void enableCloseButton();
     virtual void activateDragSwitchTab();
-    
+
 protected:
     virtual void tabLayoutChange();
 
@@ -107,7 +98,6 @@ private:
     int mReorderStartTab;
     int mReorderPreviousTab;
     int mDragSwitchTab;
-    QMap<int, QColor> mTabColors;
     //QTab *mHoverCloseButtonTab, *mDragSwitchTab;
     //QPushButton *mHoverCloseButton;
     QTimer /*mEnableCloseButtonTimer,*/ *mActivateDragSwitchTabTimer;

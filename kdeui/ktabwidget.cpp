@@ -231,7 +231,7 @@ QString KTabWidget::tabText( int index ) const
 
 QString KTabWidget::tabLabel( QWidget * w ) const
 {
-    return label(indexOf(w));
+    return tabText(indexOf(w));
 }
 
 void KTabWidget::setTabLabel( QWidget *w, const QString &l )

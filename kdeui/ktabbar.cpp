@@ -65,34 +65,6 @@ KTabBar::~KTabBar()
     //delete d;
 }
 
-/*void KTabBar::setTabEnabled( int id, bool enabled )
-{
-    QTab * t = tab( id );
-    if ( t ) {
-        if ( t->isEnabled() != enabled ) {
-            t->setEnabled( enabled );
-            QRect r( t->rect() );
-            if ( !enabled && id == currentTab() && count()>1 ) {
-                Q3PtrList<QTab> *tablist = tabList();
-                if ( mTabCloseActivatePrevious )
-                    t = tablist->at( count()-2 );
-                else {
-                    int index = indexOf( id );
-                    index += ( index+1 == count() ) ? -1 : 1;
-                    t = tabAt( index );
-                }
-
-                if ( t->isEnabled() ) {
-                    r = r.unite( t->rect() );
-                    tablist->append( tablist->take( tablist->findRef( t ) ) );
-                    emit selected( t->identifier() );
-                }
-            }
-            repaint( r );
-        }
-    }
-}*/
-
 void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
 {
     if( e->button() != Qt::LeftButton )
@@ -296,23 +268,6 @@ void KTabBar::wheelEvent( QWheelEvent *e )
 }
 #endif
 
-void KTabBar::setTabColor( int /*id*/, const QColor& /*color*/ )
-{
-    /*QTab *t = tab( id );
-    if ( t ) {
-        mTabColors.insert( id, color );
-        repaint( t->rect(), false );
-    }*/
-}
-
-const QColor &KTabBar::tabColor( int /*id*/  ) const
-{
-    //if ( mTabColors.contains( id ) )
-        //return mTabColors[id];
-
-    return colorGroup().foreground();
-}
-
 /*int KTabBar::insertTab( QTab *t, int index )
 {
     int res = QTabBar::insertTab( t, index );
@@ -324,55 +279,7 @@ const QColor &KTabBar::tabColor( int /*id*/  ) const
 
     return res;
 }
-
-void KTabBar::removeTab( QTab *t )
-{
-    mTabColors.remove( t->identifier() );
-    QTabBar::removeTab( t );
-}*/
-
-/*void KTabBar::paintLabel( QPainter *p, const QRect& br,
-                          QTab *t, bool has_focus ) const
-{
-    QRect r = br;
-    bool selected = currentTab() == t->identifier();
-    if ( t->iconSet() ) {
-        // the tab has an iconset, draw it in the right mode
-        QIcon::Mode mode = ( t->isEnabled() && isEnabled() )
-                                 ? QIcon::Normal : QIcon::Disabled;
-        if ( mode == QIcon::Normal && has_focus )
-            mode = QIcon::Active;
-        QPixmap pixmap = t->iconSet()->pixmap( QIcon::Small, mode );
-        int pixw = pixmap.width();
-        int pixh = pixmap.height();
-        r.setLeft( r.left() + pixw + 4 );
-        r.setRight( r.right() + 2 );
-
-        int inactiveXShift = style().pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, this );
-        int inactiveYShift = style().pixelMetric( QStyle::PM_TabBarTabShiftVertical, this );
-
-        int right = t->text().isEmpty() ? br.right() - pixw : br.left() + 2;
-
-        p->drawPixmap( right + (selected ? 0 : inactiveXShift),
-                       br.center().y() - pixh / 2 + (selected ? 0 : inactiveYShift),
-                       pixmap );
-    }
-
-    QStyle::State flags = QStyle::State_None;
-
-    if ( isEnabled() && t->isEnabled() )
-        flags |= QStyle::State_Enabled;
-    if ( has_focus )
-        flags |= QStyle::State_HasFocus;
-
-    QColorGroup cg( colorGroup() );
-    if ( mTabColors.contains( t->identifier() ) )
-        cg.setColor( QColorGroup::Foreground, mTabColors[t->identifier()] );
-
-    style().drawControl( QStyle::CE_TabBarLabel, p, this, r,
-                             t->isEnabled() ? cg : palette().disabled(),
-                             flags, QStyleOption(t) );
-}*/
+*/
 
 bool KTabBar::isTabReorderingEnabled() const
 {
