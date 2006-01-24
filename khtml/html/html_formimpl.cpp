@@ -2310,7 +2310,7 @@ void HTMLSelectElementImpl::recalcListItems() const
         NodeImpl* const parent = current->parentNode();
         current = current->nextSibling();
         if (!current) {
-            if (parent != this)
+            if (static_cast<const NodeImpl *>(parent) != this)
                 current = parent->nextSibling();
         }
     }
