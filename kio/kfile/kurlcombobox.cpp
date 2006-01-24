@@ -179,6 +179,12 @@ void KUrlComboBox::setURLs( QStringList urls, OverLoadResolving remove )
         }
         u = KUrl::fromPathOrURL( *it );
 
+        // Don't restore if file doesn't exist anymore
+        if (u.isLocalFile() && !QFile(u.path()).exists()) {
+            ++it;
+            continue;
+        }
+
         item = new KUrlComboItem;
         item->url = u;
         item->icon = getIcon( u );
@@ -329,7 +335,7 @@ QIcon KUrlComboBox::getIcon( const KUrl& url ) const
     if ( myMode == Directories )
         return d->dirIcon;
     else
-        return SmallIconSet(KMimeType::iconNameForURL( url, 0)); 
+        return SmallIconSet(KMimeType::iconNameForURL( url, 0));
 }
 
 
