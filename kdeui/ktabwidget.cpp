@@ -39,7 +39,7 @@ public:
     bool m_automaticResizeTabs;
     int m_maxLength;
     int m_minLength;
-    unsigned int m_CurrentMaxLength;
+    int m_currentMaxLength;
 
     //holds the full names of the tab, otherwise all we
     //know about is the shortened name
@@ -50,7 +50,7 @@ public:
         KConfigGroup cg(KGlobal::config(), "General");
         m_maxLength = cg.readEntry("MaximumTabLength", 30);
         m_minLength = cg.readEntry("MinimumTabLength", 3);
-        m_CurrentMaxLength = m_minLength;
+        m_currentMaxLength = m_minLength;
     }
 };
 
@@ -127,23 +127,15 @@ bool KTabWidget::isTabBarHidden() const
     return !( tabBar()->isVisible() );
 }
 
-/*void KTabWidget::setTabColor( QWidget *w, const QColor& color )
+void KTabWidget::setTabTextColor( int index, const QColor& color )
 {
-    QTab *t = tabBar()->tabAt( indexOf( w ) );
-    if (t) {
-        static_cast<KTabBar*>(tabBar())->setTabColor( t->identifier(), color );
-    }
+    tabBar()->setTabTextColor( index, color );
 }
 
-QColor KTabWidget::tabColor( QWidget *w ) const
+QColor KTabWidget::tabTextColor( int index ) const
 {
-    QTab *t = tabBar()->tabAt( indexOf( w ) );
-    if (t) {
-        return static_cast<KTabBar*>(tabBar())->tabColor( t->identifier() );
-    } else {
-        return QColor();
-    }
-}*/
+    return tabBar()->tabTextColor( index );
+}
 
 void KTabWidget::setTabReorderingEnabled( bool on)
 {
@@ -275,8 +267,8 @@ void KTabWidget::resizeTabs( int changeTabIndex )
         newMaxLength = 4711;
 
     // Update hinted or all tabs
-    if ( d->m_CurrentMaxLength != newMaxLength ) {
-        d->m_CurrentMaxLength = newMaxLength;
+    if ( d->m_currentMaxLength != newMaxLength ) {
+        d->m_currentMaxLength = newMaxLength;
         for( int i = 0; i < count(); ++i )
             updateTab( i );
     }
@@ -288,14 +280,14 @@ void KTabWidget::updateTab( int index )
 {
     QString title = d->m_automaticResizeTabs ? d->m_tabNames[ index ] : QTabWidget::tabText( index );
     setTabToolTip(index,QString());
-    if ( title.length() > (int)d->m_CurrentMaxLength ) {
+    if ( title.length() > d->m_currentMaxLength ) {
         if ( Qt::mightBeRichText( title ) )
             setTabToolTip( index, Qt::escape( title ) );
         else
             setTabToolTip( index, title );
     }
 
-    title = KStringHandler::rsqueeze( title, d->m_CurrentMaxLength ).leftJustified( d->m_minLength, ' ' );
+    title = KStringHandler::rsqueeze( title, d->m_currentMaxLength ).leftJustified( d->m_minLength, ' ' );
     title.replace( '&', "&&" );
 
     if ( QTabWidget::tabText( index ) != title )
@@ -538,6 +530,5 @@ void KTabWidget::tabRemoved( int idx )
 {
    d->m_tabNames.removeAt( idx );
 }
-
 
 #include "ktabwidget.moc"

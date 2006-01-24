@@ -61,7 +61,7 @@ private:
   QMenu*     mRightPopup;
   QMenu*     mTabbarContextPopup;
   QMenu*     mContextPopup;
-  QWidget*        mContextWidget;
+  int mContextWidgetIndex;
 };
 
 

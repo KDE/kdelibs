@@ -58,14 +58,19 @@ public:
      * Destructor.
      */
     virtual ~KTabWidget();
+
     /*!
-      Set the tab of the given widget to \a color.
-    *
-    void setTabColor( QWidget *, const QColor& color );
-    *!
-      Returns the tab color for the given widget.
-    *
-    QColor tabColor( QWidget * ) const;*/
+     * Set the tab of the given widget to \a color.
+     * This is simply a convenience method for QTabBar::setTabTextColor.
+     * @since 4.0
+     */
+    void setTabTextColor( int index, const QColor& color );
+    /*!
+     * Returns the tab color for the given widget.
+     * This is simply a convenience method for QTabBar::tabTextColor.
+     * @since 4.0
+     */
+    QColor tabTextColor( int index ) const;
 
     /*!
       Returns true if tab ordering with the middle mouse button

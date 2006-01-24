@@ -23,15 +23,12 @@ Test::Test( QWidget* parent )
   resize( 600,300 );
 
   mWidget = new KTabWidget( this );
-  mWidget->addTab( new QLabel( "Testlabel 1", mWidget ), "One" );
-  mWidget->addTab( new QLabel( "Testlabel 2", mWidget ), "Two" );
-  mWidget->addTab( new QWidget( mWidget), SmallIcon( "konsole" ), "Three" );
-  mWidget->addTab( new QWidget( mWidget), "Four" );
-#warning setTabColor not in Qt-4.0
-#if 0
-  mWidget->setTabColor( mWidget->page(0), Qt::red );
-  mWidget->setTabColor( mWidget->page(1), Qt::blue );
-#endif
+  mWidget->addTab( new QLabel( "Testlabel 1", 0 ), "One" );
+  mWidget->addTab( new QLabel( "Testlabel 2", 0 ), "Two" );
+  mWidget->addTab( new QWidget(), SmallIcon( "konsole" ), "Three" );
+  mWidget->addTab( new QWidget(), "Four" );
+  mWidget->setTabTextColor( 0, Qt::red );
+  mWidget->setTabTextColor( 1, Qt::blue );
 
   connect( mWidget, SIGNAL( currentChanged( QWidget * ) ), SLOT( currentChanged( QWidget * ) ) );
   connect( mWidget, SIGNAL( contextMenu( QWidget *, const QPoint & )), SLOT(contextMenu( QWidget *, const QPoint & )));
@@ -98,14 +95,12 @@ Test::Test( QWidget* parent )
 
 void Test::currentChanged(QWidget* w)
 {
-#if 0
-  mWidget->setTabColor( w, Qt::black );
-#endif
+  mWidget->setTabTextColor( mWidget->indexOf(w), Qt::black );
 }
 
 void Test::addTab()
 {
-  mWidget->addTab( new QWidget( mWidget ), SmallIcon( "konsole" ), QString("Tab %1").arg( mWidget->count()+1 ) );
+  mWidget->addTab( new QWidget(), SmallIcon( "konsole" ), QString("Tab %1").arg( mWidget->count()+1 ) );
 }
 
 void Test::testCanDecode(const QDragMoveEvent *e, bool &accept /* result */)
@@ -118,7 +113,7 @@ void Test::receivedDropEvent( QDropEvent *e )
 {
   QString dropText;
   if (Q3TextDrag::decode(e, dropText)) {
-    mWidget->addTab( new QWidget( mWidget), dropText );
+    mWidget->addTab( new QWidget(), dropText );
   }
 }
 
@@ -126,13 +121,13 @@ void Test::receivedDropEvent( QWidget *w, QDropEvent *e )
 {
   QString dropText;
   if (Q3TextDrag::decode(e, dropText)) {
-    mWidget->changeTab( w, dropText );
+    mWidget->setTabText( mWidget->indexOf( w ), dropText );
   }
 }
 
 void Test::initiateDrag( QWidget *w )
 {
-   Q3DragObject *d = new Q3TextDrag( mWidget->label( mWidget->indexOf( w ) ), this );
+   Q3DragObject *d = new Q3TextDrag( mWidget->tabText( mWidget->indexOf( w ) ), this );
    d->dragCopy(); // do NOT delete d.
 }
 
@@ -184,13 +179,13 @@ void Test::toggleLeftPopup(bool state)
 void Test::leftPopupActivated(int item)
 {
   switch (item) {
-    case 0: mWidget->addTab( new QWidget( mWidget), QString("Tab %1").arg( mWidget->count()+1 ) );
+    case 0: mWidget->addTab( new QWidget(), QString("Tab %1").arg( mWidget->count()+1 ) );
             break;
-    case 1: mWidget->addTab( new QPushButton( "Testbutton", mWidget ), QString("Tab %1").arg( mWidget->count()+1 ) );
+    case 1: mWidget->addTab( new QPushButton( "Testbutton" ), QString("Tab %1").arg( mWidget->count()+1 ) );
             break;
-    case 2: mWidget->addTab( new QLabel( "Testlabel", mWidget ), QString("Tab %1").arg( mWidget->count()+1 ) );
+    case 2: mWidget->addTab( new QLabel( "Testlabel" ), QString("Tab %1").arg( mWidget->count()+1 ) );
             break;
-    case 3: mWidget->insertTab( new QWidget( mWidget), QString("Tab %1").arg( mWidget->count()+1 ), 1 );
+    case 3: mWidget->insertTab( new QWidget(), QString("Tab %1").arg( mWidget->count()+1 ), 1 );
   }
 }
 
@@ -277,25 +272,31 @@ void Test::contextMenu(QWidget *w, const QPoint &p)
   mContextPopup->insertItem( mWidget->tabToolTip(w).isEmpty() ? "Set Tooltip" : "Remove Tooltip", 3);
   connect(mContextPopup, SIGNAL(activated(int)), SLOT(contextMenuActivated(int)));
 
-  mContextWidget = w;
+  mContextWidgetIndex = mWidget->indexOf( w );
   mContextPopup->popup(p);
 }
 
 void Test::contextMenuActivated(int item)
 {
   switch (item) {
-    case 0: mWidget->changeTab( mContextWidget, SmallIcon( "konsole" ), mWidget->label( mWidget->indexOf( mContextWidget ) )  );
-            break;
-    case 1: mWidget->changeTab( mContextWidget, SmallIcon( "konqueror" ), mWidget->label( mWidget->indexOf( mContextWidget ) ) );
-            break;
-    case 2: mWidget->setTabEnabled( mContextWidget, !(mWidget->isTabEnabled(mContextWidget)) );
-            break;
-    case 3: if ( mWidget->tabToolTip(mContextWidget).isEmpty() )
-              mWidget->setTabToolTip( mContextWidget, "This is a tool tip.");
-            else
-              mWidget->removeTabToolTip( mContextWidget );
-            break;
-    case 4: mWidget->showPage( mContextWidget );
+  case 0:
+      mWidget->setTabIcon( mContextWidgetIndex, SmallIcon( "konsole" ) );
+      break;
+  case 1:
+      mWidget->setTabIcon( mContextWidgetIndex, SmallIcon( "konqueror" ) );
+      break;
+  case 2:
+      mWidget->setTabEnabled( mContextWidgetIndex, !(mWidget->isTabEnabled(mContextWidgetIndex)) );
+      break;
+  case 3:
+      if ( mWidget->tabToolTip(mContextWidgetIndex).isEmpty() )
+          mWidget->setTabToolTip( mContextWidgetIndex, "This is a tool tip.");
+      else
+          mWidget->setTabToolTip( mContextWidgetIndex, QString() );
+      break;
+  case 4:
+      mWidget->setCurrentIndex( mContextWidgetIndex );
+      break;
   }
   delete mContextPopup;
   mContextPopup = 0;
@@ -331,15 +332,14 @@ void Test::tabbarContextMenuActivated(int item)
 
 void Test::mouseDoubleClick(QWidget *w)
 {
+  int index = mWidget->indexOf( w );
   bool ok;
   QString text = KInputDialog::getText(
             "Rename Tab", "Enter new name:",
-            mWidget->label( mWidget->indexOf( w ) ), &ok, this );
+            mWidget->tabText( index ), &ok, this );
   if ( ok && !text.isEmpty() ) {
-     mWidget->changeTab( w, text );
-#if 0
-     mWidget->setTabColor( w, Qt::green );
-#endif
+     mWidget->setTabText( index, text );
+     mWidget->setTabTextColor( index, Qt::green );
   }
 }
 
@@ -368,10 +368,9 @@ void Test::toggleLabels(bool state)
 int main(int argc, char** argv )
 {
     KCmdLineArgs::init(argc, argv, "ktabwidgettest", "KTabWidgetTest", "ktabwidget test app", "1.0");
+    KApplication::disableAutoDcopRegistration();
     KApplication app;
     Test *t = new Test();
-
-    app.setMainWidget( t );
     t->show();
     app.exec();
 }
