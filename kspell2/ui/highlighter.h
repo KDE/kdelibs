@@ -25,12 +25,13 @@
 
 #include <QSyntaxHighlighter>
 #include <QStringList>
+#include <kdemacros.h>
 
 class QTextEdit;
 
 namespace KSpell2
 {
-    class Highlighter : public QSyntaxHighlighter
+    class KDE_EXPORT Highlighter : public QSyntaxHighlighter
     {
 	Q_OBJECT
     public:
