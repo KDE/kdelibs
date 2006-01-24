@@ -211,7 +211,7 @@ protected:
 /**
   @internal. Not part of the public API
 */
-class HTMLMappedNameCollection : public HTMLCollection
+class KHTML_EXPORT HTMLMappedNameCollection : public HTMLCollection
 {
 public:
     HTMLMappedNameCollection(NodeImpl *base, int type, const DOMString &name );
