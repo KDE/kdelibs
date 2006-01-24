@@ -776,29 +776,29 @@ void KFileDialog::setLocationText( const QString& text )
        setNonExtSelection();
 }
 
-static QString autocompletionWhatsThisText = i18n("<p>While typing in the text area, you may be presented "
+static const char autocompletionWhatsThisText[] = I18N_NOOP("<p>While typing in the text area, you may be presented "
                                                   "with possible matches. "
                                                   "This feature can be controlled by clicking with the right mouse button "
-                                                  "and selecting a preferred mode from the <b>Text Completion</b> menu.") + "</qt>";
+                                                  "and selecting a preferred mode from the <b>Text Completion</b> menu.")  "</qt>";
 void KFileDialog::updateLocationWhatsThis (void)
 {
     QString whatsThisText;
     if (d->operationMode == KFileDialog::Saving)
     {
         whatsThisText = "<qt>" + i18n("This is the name to save the file as.") +
-                             autocompletionWhatsThisText;
+                             i18n (autocompletionWhatsThisText);
     }
     else if (ops->mode() & KFile::Files)
     {
         whatsThisText = "<qt>" + i18n("This is the list of files to open. More than "
                              "one file can be specified by listing several "
                              "files, separated by spaces.") +
-                              autocompletionWhatsThisText;
+                              i18n (autocompletionWhatsThisText);
     }
     else
     {
         whatsThisText = "<qt>" + i18n("This is the name of the file to open.") +
-                             autocompletionWhatsThisText;
+                             i18n (autocompletionWhatsThisText);
     }
 
     QWhatsThis::add(d->locationLabel, whatsThisText);
@@ -839,7 +839,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     QWhatsThis::add( d->pathCombo, "<qt>" + i18n("This is the currently listed location. "
                                                  "The drop-down list also lists commonly used locations. "
                                                  "This includes standard locations, such as your home folder, as well as "
-                                                 "locations that have been visited recently.") + autocompletionWhatsThisText);
+                                                 "locations that have been visited recently.") + i18n (autocompletionWhatsThisText));
 
     KURL u;
     u.setPath( QDir::rootDirPath() );
