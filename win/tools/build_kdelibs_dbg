@@ -28,7 +28,7 @@ cd win/9x && $make || exit 1
 cd "$pwd"
 
 if [ -d "kstyles/thinkeramik/widget-engine" ] ; then
-	additional="kstyles/thinkeramik/widget-engine"
+	additional="kstyles/thinkeramik/widget-engine/genembed kstyles/thinkeramik/widget-engine "
 fi
 
 # all

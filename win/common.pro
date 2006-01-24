@@ -49,8 +49,9 @@ isEmpty( KDEBINDESTDIR ) {
 	KDEBINDESTDIR = $(KDEDIR)
 }
 
-# global library destination directory
-KDELIBDESTDIR = $$KDEBINDESTDIR\lib
+# global library destination directory 
+KDELIBDESTDIR = $$KDEBINDESTDIR\bin #shared with all binaries
+###KDELIBDESTDIR = $$KDEBINDESTDIR\lib
 
 # dlls suffixes for given target
 isEmpty( KDEBUG ) {
@@ -102,15 +103,15 @@ contains( TEMPLATE, lib ) {
 
 	# lib/kde3 dest dir (for modules)
 	contains( CONFIG, kde3lib ) {
-	  DESTDIR		= $$KDELIBDESTDIR/kde3
-		TARGET_EXT = .dll #- no ver. in filename
+	  DESTDIR = $$KDELIBDESTDIR/kde3
+	  TARGET_EXT = .dll #- no ver. in filename
 	}
 	!contains( CONFIG, kde3lib ) {
-	  DESTDIR		= $$KDELIBDESTDIR
+	  DESTDIR = $$KDELIBDESTDIR
 	}
 	contains( CONFIG, kstyle ) {
-	  DESTDIR		= $$KDELIBDESTDIR/kde3/plugins/styles
-		CONFIG += plugin
+	  DESTDIR = $$KDELIBDESTDIR/kde3/plugins/styles
+	  CONFIG += plugin
 	}
 #  !contains(CONFIG,debug) {
 #    DESTDIR = $$KDEBINDESTDIR\release-lib

@@ -116,7 +116,8 @@ QString convertKFileDialogFilterToQFileDialogFilter(const QString& filter)
 		if (p!=-1) {
 			new_f = current.left(p);
 			new_name = current.mid(p+1);
-		}else {
+		}
+		else {
 			new_f = current;
 			new_name = current; //nothing better
 		}
@@ -134,10 +135,20 @@ QString convertKFileDialogFilterToQFileDialogFilter(const QString& filter)
 		new_name.replace(')',"");
 		new_name = new_name.stripWhiteSpace();
 
+		// make filters unique: remove uppercase extensions (case doesn't matter on win32, BTW)
+		QStringList allfiltersUnique;
+		QStringList origList( QStringList::split(" ", new_f) );
+		for (QStringList::ConstIterator it = origList.constBegin();
+			it!=origList.constEnd(); ++it)
+		{
+			if ((*it) == (*it).lower())
+				allfiltersUnique += *it;
+		}
+
 		if (!converted.isEmpty())
 			converted += ";;";
 
-		converted += (new_name + " (" + new_f + ")");
+		converted += (new_name + " (" + allfiltersUnique.join(" ") + ")");
 	}
 	return converted;
 }
