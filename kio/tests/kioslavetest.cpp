@@ -13,6 +13,7 @@
 #include <qmessagebox.h>
 #include <qdir.h>
 
+#include <kacl.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
