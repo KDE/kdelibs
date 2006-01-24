@@ -55,10 +55,9 @@
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-#if WIN32
+#if defined(_WIN32) || defined(_WIN64)
 #define copysign(x, y) _copysign(x, y)
 #define isfinite(x) _finite(x)
-#define strncasecmp(x, y, z) strnicmp(x, y, z)
 #endif
 
 namespace KJS {
@@ -217,6 +216,7 @@ static UString formatDateUTCVariant(const tm &t)
 static UString formatTime(const tm &t)
 {
     char buffer[100];
+#if !defined(_WIN32) && !defined(_WIN64)
     if (t.tm_gmtoff == 0) {
         snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", t.tm_hour, t.tm_min, t.tm_sec);
     } else {
@@ -225,6 +225,9 @@ static UString formatTime(const tm &t)
             t.tm_hour, t.tm_min, t.tm_sec,
             t.tm_gmtoff < 0 ? '-' : '+', offset / (60*60), (offset / 60) % 60);
     }
+#else
+    snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", t.tm_hour, t.tm_min, t.tm_sec);
+#endif
     return UString(buffer);
 }
 
@@ -291,7 +294,7 @@ static int weekDay(double t)
 
 static long timeZoneOffset(const tm &t)
 {
-#if !WIN32
+#if !defined(_WIN32) && !defined(_WIN64)
     return -(t.tm_gmtoff / 60);
 #else
 #  if __BORLANDC__ || __CYGWIN__
@@ -613,7 +616,7 @@ ValueImp *DateProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
   case GetMilliSeconds:
     return jsNumber(ms);
   case GetTimezoneOffset:
-#if !WIN32
+#if !defined(_WIN32) && !defined(_WIN64)
     return jsNumber(-t.tm_gmtoff / 60);
 #else
 #  if __BORLANDC__
@@ -709,7 +712,7 @@ ObjectImp *DateObjectImp::construct(ExecState *exec, const List &args)
   double value;
 
   if (numArgs == 0) { // new Date() ECMA 15.9.3.3
-#if !WIN32
+#if !defined(_WIN32) && !defined(_WIN64)
     struct timeval tv;
     gettimeofday(&tv, 0);
     double utc = floor(tv.tv_sec * msPerSecond + tv.tv_usec / msPerSecond);
@@ -835,7 +838,7 @@ static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int 
 // We follow the recommendation of RFC 2822 to consider all
 // obsolete time zones not listed here equivalent to "-0000".
 static const struct KnownZone {
-#if !WIN32
+#if !defined(_WIN32) && !defined(_WIN64)
     const
 #endif
         char tzName[4];
@@ -858,21 +861,18 @@ static double makeTime(tm *t, double ms, bool utc)
     int utcOffset;
     if (utc) {
         time_t zero = 0;
-#if !WIN32
         tm t3;
         localtime_r(&zero, &t3);
+#if !defined(_WIN32) && !defined(_WIN64)
         utcOffset = t3.tm_gmtoff;
-        t->tm_isdst = t3.tm_isdst;
 #else
-        // FIXME: not thread safe
-        (void)localtime(&zero);
 #  if __BORLANDC__ || __CYGWIN__
         utcOffset = - _timezone;
 #  else
         utcOffset = - timezone;
 #  endif
-        t->tm_isdst = 0;
 #endif
+        t->tm_isdst = t3.tm_isdst;
     } else {
         utcOffset = 0;
         t->tm_isdst = -1;

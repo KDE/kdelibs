@@ -58,7 +58,7 @@ bool isNaN(double d)
 
 bool isInf(double d)
 {
-#if WIN32
+#if defined(_WIN32) || defined(_WIN64)
   int fpClass = _fpclass(d);
   return _FPCLASS_PINF == fpClass || _FPCLASS_NINF == fpClass;
 #elif defined(HAVE_FUNC_ISINF)
@@ -74,7 +74,7 @@ bool isInf(double d)
 
 bool isPosInf(double d)
 {
-#if WIN32
+#if defined(_WIN32) || defined(_WIN64)
   return _FPCLASS_PINF == _fpclass(d);
 #elif defined(HAVE_FUNC_ISINF)
   return (isinf(d) == 1);
@@ -89,7 +89,7 @@ bool isPosInf(double d)
 
 bool isNegInf(double d)
 {
-#if WIN32
+#if defined(_WIN32) || defined(_WIN64)
   return _FPCLASS_PINF == _fpclass(d);
 #elif defined(HAVE_FUNC_ISINF)
   return (isinf(d) == -1);

@@ -53,7 +53,7 @@ namespace KJS {
      * Run the garbage collection. This involves calling the delete operator
      * on each object and freeing the used memory.
      */
-    KJS_EXPORT static bool collect();
+    static bool collect();
     static size_t size();
     static bool outOfMemory() { return memoryFull; }
 

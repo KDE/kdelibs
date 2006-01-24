@@ -238,7 +238,7 @@ namespace KXMLCore {
 
     using std::swap;
 
-#if !WIN32
+#if !defined(_WIN32) && !defined(_WIN64)
     // Visual C++ has a swap for pairs defined.
 
     // swap pairs by component, in case of pair members that specialize swap

@@ -403,7 +403,7 @@ namespace KJS {
     bool hasInstance(ExecState *exec, ValueImp *value);
 
     virtual const ClassInfo *classInfo() const { return &info; }
-    KJS_EXPORT static const ClassInfo info;
+    static const ClassInfo info;
     Identifier functionName() const { return ident; }
     void setFunctionName(const Identifier& _ident) { ident = _ident; }
   protected:

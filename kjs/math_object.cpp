@@ -33,7 +33,7 @@
 
 #include "math_object.lut.h"
 
-#if WIN32
+#if defined(_WIN32) || defined(_WIN64)
 
 #include <float.h>
 static int signbit(double d)

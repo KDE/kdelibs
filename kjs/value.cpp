@@ -53,7 +53,7 @@ void *AllocatedValueImp::operator new(size_t size)
     return Collector::allocate(size);
 }
 
-bool AllocatedValueImp::getUInt32(unsigned&) const
+bool AllocatedValueImp::getUInt32(uint32_t&) const
 {
     return false;
 }

@@ -25,6 +25,7 @@
 #define _KJS_FUNCTION_H_
 
 #include "internal.h"
+#include "nodes.h"
 
 namespace KJS {
 

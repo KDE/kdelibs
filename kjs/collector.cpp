@@ -38,7 +38,7 @@
 #include <mach/task.h>
 #include <mach/thread_act.h>
 
-#elif WIN32
+#elif defined(_WIN32) || defined(_WIN64)
 
 #include <windows.h>
 
@@ -303,7 +303,7 @@ void Collector::markCurrentThreadConservatively()
 #if __APPLE__
     pthread_t thread = pthread_self();
     void *stackBase = pthread_get_stackaddr_np(thread);
-#elif WIN32
+#elif defined(_WIN32) || defined(_WIN64)
     NT_TIB *pTib;
     __asm {
         MOV EAX, FS:[18h]

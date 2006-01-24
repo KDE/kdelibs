@@ -47,7 +47,7 @@
 
 #include <kxmlcore/HashMap.h>
 
-#if WIN32
+#if defined(_WIN32) || defined(_WIN64)
 #include <float.h>
 #define copysign(a, b) _copysign(a, b)
 #endif
