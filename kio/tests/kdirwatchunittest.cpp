@@ -110,12 +110,23 @@ void KDirWatchTest::allTests()
 
     d->addDir (m_workingDir);
     VERIFY_NOTHING();
-    d->addDir (m_workingDir + "/does/not/exist");
     dir->mkdir ("does");
     VERIFY_DIRTY (m_workingDir);
+    d->addDir (m_workingDir + "/does/not/exist");
+    d->removeDir ("does");
+    VERIFY_NOTHING();
 
+    dir->mkdir ("does/not");
+    VERIFY_NOTHING();
+    dir->mkdir ("does/not/exist");
+    VERIFY_CREATED (m_workingDir + "/does/not/exist");
+
+    dir->rmdir ("does/not/exist");
+    VERIFY_DELETED (m_workingDir + "/does/not/exist");
+    dir->rmdir ("does/not");
+    VERIFY_NOTHING();
     dir->rmdir ("does");
-    VERIFY_DIRTY (m_workingDir);
+    VERIFY_NOTHING();
 
     VERIFY (dir->rmdir (m_workingDir));
     delete d;
