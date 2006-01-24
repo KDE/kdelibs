@@ -208,7 +208,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
             mp->m_device = KStandardDirs::realPath(mp->m_mountedFrom);
       }
       // TODO: Strip trailing '/' ?
-      result.append(mp);
+      result.append( KSharedPtr<KMountPoint>(mp) );
    } //while
 
    f.close();
@@ -251,7 +251,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
             mp->m_device = KStandardDirs::realPath(mp->m_mountedFrom);
       }
       // TODO: Strip trailing '/' ?
-      result.append(mp);
+      result.append( KSharedPtr<KMountPoint>(mp) );
    }
 
 #elif defined(_AIX)
