@@ -873,7 +873,7 @@ bool ArrayObjectImp::implementsCall() const
 }
 
 // ECMA 15.6.1
-ValueImp *ArrayObjectImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *ArrayObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   // equivalent to 'new Array(....)'
   return construct(exec,args);

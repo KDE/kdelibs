@@ -206,7 +206,7 @@ void FunctionImp::processParameters(ExecState *exec, const List &args)
 #endif
 }
 
-void FunctionImp::processVarDecls(ExecState */*exec*/)
+void FunctionImp::processVarDecls(ExecState * /*exec*/)
 {
 }
 
@@ -755,7 +755,7 @@ static double parseFloat(const UString &s)
     return s.toDouble( true /*tolerant*/, false /* NaN for empty string */ );
 }
 
-ValueImp *GlobalFuncImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *GlobalFuncImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   ValueImp *res = jsUndefined();
 

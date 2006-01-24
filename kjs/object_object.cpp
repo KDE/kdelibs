@@ -157,7 +157,7 @@ bool ObjectObjectImp::implementsCall() const
   return true;
 }
 
-ValueImp *ObjectObjectImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *ObjectObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   ValueImp *result;
 

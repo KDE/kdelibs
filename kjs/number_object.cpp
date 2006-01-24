@@ -470,7 +470,7 @@ bool NumberObjectImp::implementsCall() const
 }
 
 // ECMA 15.7.2
-ValueImp *NumberObjectImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *NumberObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   if (args.isEmpty())
     return Number(0);

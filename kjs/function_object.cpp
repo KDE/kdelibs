@@ -58,7 +58,7 @@ bool FunctionPrototypeImp::implementsCall() const
 }
 
 // ECMA 15.3.4
-ValueImp *FunctionPrototypeImp::callAsFunction(ExecState */*exec*/, ObjectImp */*thisObj*/, const List &/*args*/)
+ValueImp *FunctionPrototypeImp::callAsFunction(ExecState * /*exec*/, ObjectImp * /*thisObj*/, const List &/*args*/)
 {
   return Undefined();
 }
@@ -277,7 +277,7 @@ bool FunctionObjectImp::implementsCall() const
 }
 
 // ECMA 15.3.1 The Function Constructor Called as a Function
-ValueImp *FunctionObjectImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *FunctionObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   return construct(exec,args);
 }

@@ -430,7 +430,7 @@ bool RegExpObjectImp::implementsCall() const
 }
 
 // ECMA 15.10.3
-ValueImp *RegExpObjectImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/,
+ValueImp *RegExpObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/,
 			    const List &args)
 {
   // The RegExp argument case is handled by construct()

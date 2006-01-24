@@ -133,7 +133,7 @@ bool BooleanObjectImp::implementsCall() const
 }
 
 // ECMA 15.6.1
-ValueImp *BooleanObjectImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *BooleanObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   if (args.isEmpty())
     return Boolean(false);

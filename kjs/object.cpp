@@ -254,7 +254,7 @@ bool ObjectImp::hasProperty(ExecState *exec, unsigned propertyName) const
 }
 
 // ECMA 8.6.2.5
-bool ObjectImp::deleteProperty(ExecState */*exec*/, const Identifier &propertyName)
+bool ObjectImp::deleteProperty(ExecState * /*exec*/, const Identifier &propertyName)
 {
   int attributes;
   ValueImp *v = _prop.get(propertyName, attributes);
@@ -341,7 +341,7 @@ bool ObjectImp::implementsConstruct() const
   return false;
 }
 
-ObjectImp *ObjectImp::construct(ExecState */*exec*/, const List &/*args*/)
+ObjectImp *ObjectImp::construct(ExecState * /*exec*/, const List &/*args*/)
 {
   assert(false);
   return NULL;
@@ -357,7 +357,7 @@ bool ObjectImp::implementsCall() const
   return false;
 }
 
-ValueImp *ObjectImp::callAsFunction(ExecState */*exec*/, ObjectImp */*thisObj*/, const List &/*args*/)
+ValueImp *ObjectImp::callAsFunction(ExecState * /*exec*/, ObjectImp * /*thisObj*/, const List &/*args*/)
 {
   assert(false);
   return NULL;
@@ -368,7 +368,7 @@ bool ObjectImp::implementsHasInstance() const
   return false;
 }
 
-bool ObjectImp::hasInstance(ExecState */*exec*/, ValueImp */*value*/)
+bool ObjectImp::hasInstance(ExecState * /*exec*/, ValueImp * /*value*/)
 {
   assert(false);
   return false;
@@ -430,7 +430,7 @@ ValueImp *ObjectImp::toPrimitive(ExecState *exec, Type preferredType) const
   return defaultValue(exec,preferredType);
 }
 
-bool ObjectImp::toBoolean(ExecState */*exec*/) const
+bool ObjectImp::toBoolean(ExecState * /*exec*/) const
 {
   return true;
 }
@@ -451,7 +451,7 @@ UString ObjectImp::toString(ExecState *exec) const
   return prim->toString(exec);
 }
 
-ObjectImp *ObjectImp::toObject(ExecState */*exec*/) const
+ObjectImp *ObjectImp::toObject(ExecState * /*exec*/) const
 {
   return const_cast<ObjectImp*>(this);
 }

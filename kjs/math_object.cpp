@@ -163,7 +163,7 @@ bool MathFuncImp::implementsCall() const
   return true;
 }
 
-ValueImp *MathFuncImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *MathFuncImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   double arg = args[0]->toNumber(exec);
   double arg2 = args[1]->toNumber(exec);

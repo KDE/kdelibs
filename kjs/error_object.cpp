@@ -123,7 +123,7 @@ bool ErrorObjectImp::implementsCall() const
 }
 
 // ECMA 15.9.2
-ValueImp *ErrorObjectImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *ErrorObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   // "Error()" gives the sames result as "new Error()"
   return construct(exec,args);
@@ -171,7 +171,7 @@ bool NativeErrorImp::implementsCall() const
   return true;
 }
 
-ValueImp *NativeErrorImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *NativeErrorImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   return construct(exec,args);
 }

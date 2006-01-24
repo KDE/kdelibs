@@ -28,7 +28,7 @@
 
 namespace KJS {
 
-class HashEntry;
+struct HashEntry;
 class ExecState;
 class ObjectImp;
 

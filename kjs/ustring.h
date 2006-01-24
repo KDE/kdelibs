@@ -200,7 +200,7 @@ namespace KJS {
     friend class UCharReference;
     friend class Identifier;
     friend class PropertyMap;
-    friend class PropertyMapHashTableEntry;
+    friend struct PropertyMapHashTableEntry;
 
     /**
      * @internal

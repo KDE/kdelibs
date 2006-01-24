@@ -34,7 +34,7 @@ using namespace KJS;
 // ------------------------------ Debugger -------------------------------------
 
 namespace KJS {
-  struct AttachedInterpreter
+  class AttachedInterpreter
   {
   public:
     AttachedInterpreter(Interpreter *i, AttachedInterpreter *ai) : interp(i), next(ai) { ++Debugger::debuggersPresent; }
@@ -88,37 +88,37 @@ void Debugger::detach(Interpreter *interp)
   }
 }
 
-bool Debugger::sourceParsed(ExecState */*exec*/, int /*sourceId*/, const UString &/*sourceURL*/, 
+bool Debugger::sourceParsed(ExecState * /*exec*/, int /*sourceId*/, const UString &/*sourceURL*/, 
                            const UString &/*source*/, int /*errorLine*/)
 {
   return true;
 }
 
-bool Debugger::sourceUnused(ExecState */*exec*/, int /*sourceId*/)
+bool Debugger::sourceUnused(ExecState * /*exec*/, int /*sourceId*/)
 {
   return true;
 }
 
-bool Debugger::exception(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
-                         ObjectImp */*exceptionObj*/)
+bool Debugger::exception(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
+                         ObjectImp * /*exceptionObj*/)
 {
   return true;
 }
 
-bool Debugger::atStatement(ExecState */*exec*/, int /*sourceId*/, int /*firstLine*/,
+bool Debugger::atStatement(ExecState * /*exec*/, int /*sourceId*/, int /*firstLine*/,
                            int /*lastLine*/)
 {
   return true;
 }
 
-bool Debugger::callEvent(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
-                         ObjectImp */*function*/, const List &/*args*/)
+bool Debugger::callEvent(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
+                         ObjectImp * /*function*/, const List &/*args*/)
 {
   return true;
 }
 
-bool Debugger::returnEvent(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
-                           ObjectImp */*function*/)
+bool Debugger::returnEvent(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
+                           ObjectImp * /*function*/)
 {
   return true;
 }

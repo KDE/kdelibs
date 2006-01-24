@@ -735,7 +735,7 @@ bool StringObjectImp::implementsCall() const
 }
 
 // ECMA 15.5.1
-ValueImp *StringObjectImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *StringObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   if (args.isEmpty())
     return String("");
@@ -759,7 +759,7 @@ bool StringObjectFuncImp::implementsCall() const
   return true;
 }
 
-ValueImp *StringObjectFuncImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp *StringObjectFuncImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
   UString s;
   if (args.size()) {
