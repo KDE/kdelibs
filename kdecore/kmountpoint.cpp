@@ -185,7 +185,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
          continue;
 #endif
 
-      KMountPoint *mp = new KMountPoint;
+      Ptr mp(new KMountPoint);
 
       int i = 0;
       mp->m_mountedFrom = item[i++];
@@ -208,7 +208,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
             mp->m_device = KStandardDirs::realPath(mp->m_mountedFrom);
       }
       // TODO: Strip trailing '/' ?
-      result.append( KSharedPtr<KMountPoint>(mp) );
+      result.append(mp);
    } //while
 
    f.close();
@@ -228,7 +228,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
 
     for (int i=0;i<num_fs;i++) 
     {
-      KMountPoint *mp = new KMountPoint;
+      Ptr mp(new KMountPoint);
       mp->m_mountedFrom = QFile::decodeName(mounted[i].f_mntfromname);
       mp->m_mountPoint = QFile::decodeName(mounted[i].f_mntonname);
 
@@ -251,7 +251,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
             mp->m_device = KStandardDirs::realPath(mp->m_mountedFrom);
       }
       // TODO: Strip trailing '/' ?
-      result.append( KSharedPtr<KMountPoint>(mp) );
+      result.append(mp);
    }
 
 #elif defined(_AIX)
