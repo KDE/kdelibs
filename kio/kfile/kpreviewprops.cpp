@@ -69,7 +69,7 @@ bool KPreviewPropsPlugin::supports( KFileItemList _items )
     if( !KGlobalSettings::showFilePreview(_items.first()->url()))
         return false;
     KMimeType::Ptr mt = KMimeType::findByURL( _items.first()->url() );
-    if ( mt->name() == "inode/directory" || mt->name().startsWith( "media/" ) )
+    if ( mt->inherits("inode/directory") || mt->name() == "application/octet-stream" )
         return false;
     
     //TODO Copy everything of KFileMetaPreview::previewProviderFor() ?
