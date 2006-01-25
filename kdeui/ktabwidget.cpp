@@ -157,7 +157,7 @@ bool KTabWidget::tabCloseActivatePrevious() const
     return static_cast<KTabBar*>(tabBar())->tabCloseActivatePrevious();
 }
 
-unsigned int KTabWidget::tabBarWidthForMaxChars( uint maxLength )
+int KTabWidget::tabBarWidthForMaxChars( int maxLength )
 {
     int hframe, overlap;
     hframe  = tabBar()->style()->pixelMetric( QStyle::PM_TabBarTabHSpace, 0L, tabBar() );
@@ -180,35 +180,6 @@ unsigned int KTabWidget::tabBarWidthForMaxChars( uint maxLength )
     return x;
 }
 
-void KTabWidget::changeTab( QWidget *w, const QString &label )
-{
-    QTabWidget::changeTab( w, label );
-    if ( d->m_automaticResizeTabs ) {
-        int index = indexOf( w );
-        if ( index != -1 ) {
-            d->m_tabNames[ index ] = label;
-            resizeTabs( index );
-        }
-    }
-}
-
-void KTabWidget::changeTab( QWidget *w, const QIcon &iconset, const QString &label )
-{
-    QTabWidget::changeTab( w, iconset, label );
-    if ( d->m_automaticResizeTabs ) {
-        int index = indexOf( w );
-        if ( index != -1 ) {
-            d->m_tabNames[ index ] = label;
-            resizeTabs( index );
-        }
-    }
-}
-
-QString KTabWidget::label( int index ) const
-{
-	return tabText(index);
-}
-
 QString KTabWidget::tabText( int index ) const
 {
     if ( d->m_automaticResizeTabs ) {
@@ -219,16 +190,6 @@ QString KTabWidget::tabText( int index ) const
     }
     else
         return QTabWidget::tabText( index );
-}
-
-QString KTabWidget::tabLabel( QWidget * w ) const
-{
-    return tabText(indexOf(w));
-}
-
-void KTabWidget::setTabLabel( QWidget *w, const QString &l )
-{
-  setTabText(indexOf(w),l);
 }
 
 void KTabWidget::setTabText( int index, const QString &l )
@@ -244,11 +205,11 @@ void KTabWidget::setTabText( int index, const QString &l )
 
 void KTabWidget::resizeTabs( int changeTabIndex )
 {
-    uint newMaxLength;
+    int newMaxLength;
     if ( d->m_automaticResizeTabs ) {
         // Calculate new max length
         newMaxLength=d->m_maxLength;
-        uint lcw=0, rcw=0;
+        int lcw=0, rcw=0;
 
         int tabBarHeight = tabBar()->sizeHint().height();
         if ( cornerWidget( Qt::TopLeftCorner ) && cornerWidget( Qt::TopLeftCorner )->isVisible() )
@@ -256,9 +217,9 @@ void KTabWidget::resizeTabs( int changeTabIndex )
         if ( cornerWidget( Qt::TopRightCorner ) && cornerWidget( Qt::TopRightCorner )->isVisible() )
             rcw = qMax( cornerWidget( Qt::TopRightCorner )->width(), tabBarHeight );
 
-        uint maxTabBarWidth = width() - lcw - rcw;
+        int maxTabBarWidth = width() - lcw - rcw;
 
-        for ( ; newMaxLength > (uint)d->m_minLength; newMaxLength-- ) {
+        for ( ; newMaxLength > d->m_minLength; newMaxLength-- ) {
             if ( tabBarWidthForMaxChars( newMaxLength ) < maxTabBarWidth )
                 break;
         }

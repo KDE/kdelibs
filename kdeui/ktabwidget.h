@@ -133,34 +133,26 @@ public:
     virtual void insertTab( QWidget *, QTab *, int index = -1 );*/
 
     /*!
-      @deprecated use setTabText
-    */
-    void changeTab( QWidget *, const QString & ) KDE_DEPRECATED;
-
-    /*!
-      @deprecated use setTabText and setTabIcon
-    */
-    void changeTab( QWidget *child, const QIcon& iconset, const QString &label ) KDE_DEPRECATED;
-
-    /*!
-      @deprecated use tabText
-    */
-    QString label( int ) const KDE_DEPRECATED;
-
-    /*!
       Reimplemented for internal reasons.
     */
-    QString tabText( int ) const;
+    QString tabText( int ) const; // but it's not virtual...
+
+#ifdef KDE3_SUPPORT
+    /*!
+      @deprecated use tabText
+    */
+    inline KDE_DEPRECATED QString label( int index ) const { return tabText( index ); }
 
     /*!
       @deprecated use tabText
     */
-    QString tabLabel( QWidget * ) const KDE_DEPRECATED;
+    inline KDE_DEPRECATED QString tabLabel( QWidget *w ) const { return tabText( indexOf( w ) ); }
 
     /*!
       @deprecated use setTabText
     */
-    void setTabLabel( QWidget *, const QString & ) KDE_DEPRECATED;
+    inline KDE_DEPRECATED void setTabLabel( QWidget *w, const QString &l ) { setTabText( indexOf( w ),l ); }
+#endif
 
     /*!
       Reimplemented for internal reasons.
@@ -299,7 +291,7 @@ protected:
     virtual void mousePressEvent( QMouseEvent * );
     virtual void dragMoveEvent( QDragMoveEvent * );
     virtual void dropEvent( QDropEvent * );
-    unsigned int tabBarWidthForMaxChars( uint maxLength );
+    int tabBarWidthForMaxChars( int maxLength );
 #ifndef QT_NO_WHEELEVENT
     virtual void wheelEvent( QWheelEvent *e );
 #endif
