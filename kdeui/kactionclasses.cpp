@@ -1190,7 +1190,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
         url = KURL::fromPathOrURL( value );
 
         // Don't restore if file doesn't exist anymore
-        if (url.isLocalFile() && !QFile(url.path()).exists())
+        if (url.isLocalFile() && !QFile::exists(url.path()))
           continue;
 
         nameKey = QString( "Name%1" ).arg( i );
