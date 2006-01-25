@@ -40,6 +40,10 @@
 #include <sys/mman.h>
 #endif
 
+#ifdef Q_OS_SOLARIS
+extern int madvise(caddr_t, size_t, int); 
+#endif
+
 #ifndef MAP_FAILED
 #define MAP_FAILED ((void *) -1)
 #endif
@@ -443,7 +447,8 @@ void KSycoca::flagError()
          return;
       _self->d->readError = true;
       if (_self->d->autoRebuild)
-         system("kbuildsycoca"); // Rebuild the damned thing.
+         if(system("kbuildsycoca") < 0) // Rebuild the damned thing.
+	   qWarning("ERROR: Running KSycoca failed.");
    }
 }
 
