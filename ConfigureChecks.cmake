@@ -278,7 +278,7 @@ check_prototype_exists(srandom stdlib.h HAVE_SRANDOM_PROTO)
 check_prototype_exists(unsetenv stdlib.h HAVE_UNSETENV_PROTO)
 check_prototype_exists(usleep unistd.h HAVE_USLEEP_PROTO)
 check_prototype_exists(gethostname "stdlib.h;unistd.h" HAVE_GETHOSTNAME_PROTO)
-check_prototype_exists(initgroups "sys/types.h;unistd.h;grp.h" HAVE_INITGROUPS_PROTO)
+check_prototype_exists(initgroups "unistd.h;sys/types.h;unistd.h;grp.h" HAVE_INITGROUPS_PROTO)
 
 # check for existing datatypes
 

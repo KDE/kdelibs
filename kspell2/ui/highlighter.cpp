@@ -157,7 +157,8 @@ void Highlighter::setActive( bool active )
     if ( active == d->active )
         return;
     d->active = active;
-    rehighlight();
+#warning ****** doesnt compile right now, rehighlight() undeclared, Alex
+//    rehighlight();
 
     if ( d->active )
         emit activeChanged( i18n("As-you-type spell checking enabled.") );

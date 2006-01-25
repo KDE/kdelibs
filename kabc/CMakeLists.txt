@@ -1,5 +1,7 @@
 kde4_header()
 
+include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_BINARY_DIR}/kabc  ${CMAKE_SOURCE_DIR}/kabc/kab ${CMAKE_CURRENT_SOURCE_DIR}/vcardparser  ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+
 add_subdirectory( kab )
 add_subdirectory( vcardparser )
 add_subdirectory( formats )
@@ -7,7 +9,6 @@ add_subdirectory( plugins )
 add_subdirectory( scripts )
 add_subdirectory( tests )
 
-include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_SOURCE_DIR}/kabc/kab ${CMAKE_CURRENT_SOURCE_DIR}/vcardparser  ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp

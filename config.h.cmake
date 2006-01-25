@@ -333,6 +333,7 @@ int gethostname (char *, unsigned int);
 
 
 #if !defined(HAVE_INITGROUPS_PROTO)
+#include <unistd.h>
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,3 +1,8 @@
+project(kdelibs)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+
+enable_testing()
+include(CTest)
 
 find_package(KDE4 REQUIRED)
 

@@ -4,9 +4,9 @@ if (UNIX)
    include_directories(/usr/local/include)
 endif (UNIX)
 
-exec_program(cmake ARGS -E copy ${CMAKE_SOURCE_DIR}/admin/install-sh ${CMAKE_SOURCE_DIR})
-exec_program(cmake ARGS -E copy ${CMAKE_SOURCE_DIR}/admin/config.sub ${CMAKE_SOURCE_DIR})
-exec_program(cmake ARGS -E copy ${CMAKE_SOURCE_DIR}/admin/config.guess ${CMAKE_SOURCE_DIR})
+#exec_program(${CMAKE_COMMAND} ARGS -E copy ${CMAKE_SOURCE_DIR}/admin/install-sh ${CMAKE_SOURCE_DIR})
+#exec_program(${CMAKE_COMMAND} ARGS -E copy ${CMAKE_SOURCE_DIR}/admin/config.sub ${CMAKE_SOURCE_DIR})
+#exec_program(${CMAKE_COMMAND} ARGS -E copy ${CMAKE_SOURCE_DIR}/admin/config.guess ${CMAKE_SOURCE_DIR})
 
 option(INCLUDE_SVGICONS "Include svg icons")
 
