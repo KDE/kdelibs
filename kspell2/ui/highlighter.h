@@ -73,7 +73,6 @@ namespace KSpell2
 	 */
 	bool isActive() const;
 
-	void rehighlight();
 
     
     Q_SIGNALS:

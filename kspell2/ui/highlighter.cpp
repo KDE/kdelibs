@@ -97,16 +97,6 @@ QStringList Highlighter::personalWords()
     return l;
 }
 
-void Highlighter::rehighlight()
-{
-    QTextCursor cursor(document());
-    cursor.beginEditBlock();
-    for (QTextBlock blk = document()->begin(); blk.isValid(); blk = blk.next())
-        blk.layout()->clearAdditionalFormats();
-    cursor.endEditBlock();
-    d->edit->repaint();
-}
-
 void Highlighter::setActive( bool active )
 {
     if ( active == d->active )
