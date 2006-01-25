@@ -43,7 +43,7 @@ install_targets(/lib kutils )
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICESTYPES_DIR} FILES kplugininfo.desktop )
+install_files( ${KDE4_SERVICETYPES_DIR} FILES kplugininfo.desktop )
 install_files( /include FILES kfind.h kfinddialog.h kreplace.h kreplacedialog.h                    kcmoduleinfo.h kcmoduleloader.h kcmultidialog.h                    kmultitabbar.h kplugininfo.h kcmoduleproxy.h                    kpluginselector.h kcmodulecontainer.h )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdeui kio  )

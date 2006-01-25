@@ -29,7 +29,7 @@ install_targets(/lib kmediaplayer )
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICESTYPES_DIR} FILES kmediaplayerengine.desktop kmediaplayer.desktop )
+install_files( ${KDE4_SERVICETYPES_DIR} FILES kmediaplayerengine.desktop kmediaplayer.desktop )
 install_files( /include/kmediaplayer FILES player.h playerdcopobject.h view.h )
 
 kde4_footer()

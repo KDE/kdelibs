@@ -31,7 +31,7 @@ install_targets(/lib kparts )
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICESTYPES_DIR} FILES kpart.desktop krop.desktop krwp.desktop browserview.desktop  )
+install_files( ${KDE4_SERVICETYPES_DIR} FILES kpart.desktop krop.desktop krwp.desktop browserview.desktop  )
 install_files( /include/kparts FILES part.h plugin.h partmanager.h mainwindow.h event.h   browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h     componentfactory.h browserrun.h statusbarextension.h )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdeui kdefx kio  )

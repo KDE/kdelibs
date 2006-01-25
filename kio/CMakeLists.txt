@@ -81,10 +81,10 @@ install_targets(/lib kio )
 ########### install files ###############
 
 install_files( ${KDE4_MIME_DIR} FILES magic )
-install_files( ${KDE4_SERVICESTYPES_DIR} FILES application.desktop kurifilterplugin.desktop                          kscan.desktop kdatatool.desktop                          kfileplugin.desktop kcmodule.desktop )
+install_files( ${KDE4_SERVICETYPES_DIR} FILES application.desktop kurifilterplugin.desktop kscan.desktop kdatatool.desktop kfileplugin.desktop kcmodule.desktop )
 install_files( ${KDE4_SERVICES_DIR} FILES data.protocol )
 install_files( ${KDE4_SERVICES_DIR}/kded FILES kpasswdserver.desktop )
-install_files( ${KDE4_SERVICESTYPES_DIR} FILES renamedlgplugin.desktop )
+install_files( ${KDE4_SERVICETYPES_DIR} FILES renamedlgplugin.desktop )
 install_files( ${KDE4_DATA_DIR}/kconf_update FILES kioslave.upd )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdefx kjs dcop kdeui kio/kio kio/kfile EXCLUDE kssl/kssl  )

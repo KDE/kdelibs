@@ -76,7 +76,7 @@ add_subdirectory( knotify )
 
 ########### install files ###############
 
-install_files(  FILES kde.pot )
+install_files( /include FILES kde.pot )
 install_files( /include FILES kdelibs_export.h kdemacros.h )
 
 kde4_create_doxygen_docs(  )

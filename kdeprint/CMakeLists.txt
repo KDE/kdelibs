@@ -115,7 +115,6 @@ install_targets(/lib kdeprint )
 
 install_files( ${KDE4_DATA_DIR}/kdeprint FILES testprint.ps specials.desktop )
 install_files( ${KDE4_CONFIG_DIR} FILES kdeprintrc )
-install_files(  FILES kdeprint )
 install_files( ${KDE4_SERVICES_DIR}/kded FILES kdeprintd.desktop )
 install_files( ${KDE4_CONFIG_DIR}/ui FILES kprintpreviewui.rc )
 install_files( ${KDE4_DATA_DIR}/kconf_update FILES kdeprintrc.upd )

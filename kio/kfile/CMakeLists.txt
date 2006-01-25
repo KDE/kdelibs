@@ -8,8 +8,8 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kio/bookmarks
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICESTYPES_DIR} FILES kpropsdlgplugin.desktop )
-install_files( /include FILES kfiledialog.h kencodingfiledialog.h    kdiroperator.h kfileview.h kfilefiltercombo.h   kfiledetailview.h kcombiview.h kdiskfreesp.h    kfileiconview.h krecentdocument.h   kurlrequester.h kfilepreview.h kfile.h    kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h   kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h kfilesharedlg.h   kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h    kdirselectdialog.h kurlbar.h kpropertiesdialog.h knotifydialog.h     kcustommenueditor.h knotifywidgetbase.h )
+install_files( ${KDE4_SERVICETYPES_DIR} FILES kpropsdlgplugin.desktop )
+install_files( /include FILES kfiledialog.h kencodingfiledialog.h    kdiroperator.h kfileview.h kfilefiltercombo.h   kfiledetailview.h kcombiview.h kdiskfreesp.h    kfileiconview.h krecentdocument.h   kurlrequester.h kfilepreview.h kfile.h    kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h   kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h kfilesharedlg.h   kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h    kdirselectdialog.h kurlbar.h kpropertiesdialog.h knotifydialog.h     kcustommenueditor.h ../knotifywidgetbase.h )
 
 kde4_create_doxygen_docs(  )
 
