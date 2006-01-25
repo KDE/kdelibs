@@ -32,5 +32,8 @@ servicebase.h servicebrowser.h settings.h
 env.bksys_insttype( 'KDEINCLUDE', 'dnssd', dnssdinclude_headers )
 
 # TODO make this automatic in kdelibs?
-env.Depends( 'settings.h', '../kdecore/kconfig_compiler/kconfig_compiler' )
+if env['WINDOWS']:
+	env.Depends( 'settings.h', '../kdecore/kconfig_compiler/kconfig_compiler.exe' )
+else:
+	env.Depends( 'settings.h', '../kdecore/kconfig_compiler/kconfig_compiler' )
 
