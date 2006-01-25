@@ -316,7 +316,7 @@ void KTextEdit::wheelEvent( QWheelEvent *e )
 
 void KTextEdit::toggleAutoSpellCheck()
 {
-//    setCheckSpellingEnabled( !d->checkSpellingEnabled );
+    setCheckSpellingEnabled( !d->checkSpellingEnabled );
 }
 
 void KTextEdit::setCheckSpellingEnabled( bool check )
