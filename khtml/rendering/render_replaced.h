@@ -119,6 +119,8 @@ public slots:
 protected:
     virtual bool canHaveBorder() const { return false; }
 
+    virtual bool acceptsSyntheticEvents() const { return true; }
+
     virtual void handleFocusOut() {}
     bool event( QEvent *e );
 

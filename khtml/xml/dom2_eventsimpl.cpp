@@ -582,6 +582,8 @@ KeyEventBaseImpl::KeyEventBaseImpl(EventId id, bool canBubbleArg, bool cancelabl
                                         QKeyEvent *key) :
      UIEventImpl(id, canBubbleArg, cancelableArg, viewArg, 0)
 {
+    m_synthetic = false;
+
     //Here, we need to map Qt's internal info to browser-style info.
     m_keyEvent = new QKeyEvent(key->type(), key->key(), key->ascii(), key->state(), key->text(), key->isAutoRepeat(), key->count() );
 
@@ -611,6 +613,7 @@ void KeyEventBaseImpl::initKeyBaseEvent(const DOMString &typeArg,
                                         unsigned long virtKeyValArg,
                                         unsigned long modifiersArg)
 {
+    m_synthetic = true;
     delete m_keyEvent;
     m_keyEvent = 0;
     initUIEvent(typeArg, canBubbleArg, cancelableArg, viewArg, 1);
@@ -637,6 +640,7 @@ void KeyEventBaseImpl::buildQKeyEvent() const
 {
     delete m_keyEvent;
 
+    assert(m_synthetic);
     //IMPORTANT: we ignore Ctrl, Alt, and Meta modifers on purpose.
     //this is to prevent a website from synthesizing something like Ctrl-V
     //and stealing contents of the user's clipboard.
@@ -654,6 +658,10 @@ void KeyEventBaseImpl::buildQKeyEvent() const
         key   = m_keyVal;
         text  = QChar(key);
     }
+
+    //Neuter F keys as well.
+    if (key >= Qt::Key_F1 && key <= Qt::Key_F35)
+        key = Qt::Key_ScrollLock;
 
     m_keyEvent = new QKeyEvent(id() == KEYUP_EVENT ? QEvent::KeyRelease : QEvent::KeyPress,
                         key, ascii, modifiers, text);

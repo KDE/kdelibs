@@ -1015,8 +1015,8 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 
 	if (!evt->defaultHandled() && m_render && m_render->isWidget()) {
 	    // handle tabbing out, either from a single or repeated key event.
-	    if ( evt->id() == EventImpl::KEYPRESS_EVENT ) {
-	        QKeyEvent* const k = static_cast<TextEventImpl *>(evt)->qKeyEvent();
+	    if ( evt->id() == EventImpl::KEYPRESS_EVENT && evt->isKeyRelatedEvent() ) {
+	        QKeyEvent* const k = static_cast<KeyEventBaseImpl *>(evt)->qKeyEvent();
 	        if ( k && (k->key() == Qt::Key_Tab || k->key() == Qt::Key_BackTab) ) {
 		    QWidget* const widget = static_cast<RenderWidget*>(m_render)->widget();
 		    QFocusEvent::setReason( k->key() == Qt::Key_Tab ? QFocusEvent::Tab : QFocusEvent::Backtab );
@@ -1116,8 +1116,8 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if (m_type != BUTTON && !m_disabled) {
 	bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
-	if (!act && evt->id()==EventImpl::KEYUP_EVENT) {
-	    QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent();
+	if (!act && evt->id()==EventImpl::KEYUP_EVENT && evt->isKeyRelatedEvent()) {
+	    QKeyEvent* const ke = static_cast<KeyEventBaseImpl *>(evt)->qKeyEvent();
 	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
 	}
@@ -1743,8 +1743,8 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         // must dispatch a DOMActivate event - a click event will not do the job.
         if (m_type == IMAGE || m_type == SUBMIT || m_type == RESET) {
 	    bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
-	    if (!act && evt->id() == EventImpl::KEYUP_EVENT) {
-		QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent();
+	    if (!act && evt->id() == EventImpl::KEYUP_EVENT && evt->isKeyRelatedEvent()) {
+		QKeyEvent* const ke = static_cast<KeyEventBaseImpl *>(evt)->qKeyEvent();
 		if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		    act = true;
 	    }
@@ -1828,9 +1828,9 @@ void HTMLLabelElementImpl::defaultEventHandler(EventImpl *evt)
 	if ( evt->id() == EventImpl::CLICK_EVENT ) {
 	    act = true;
 	}
-	else if ( evt->id() == EventImpl::KEYUP_EVENT ||
-	                      evt->id() == EventImpl::KEYPRESS_EVENT ) {
-	    QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent();
+	else if ( evt->isKeyRelatedEvent() && ( evt->id() == EventImpl::KEYUP_EVENT ||
+	                                        evt->id() == EventImpl::KEYPRESS_EVENT ) ) {
+	    QKeyEvent* const ke = static_cast<KeyEventBaseImpl *>(evt)->qKeyEvent();
 	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
 	}

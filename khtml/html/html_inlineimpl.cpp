@@ -51,7 +51,7 @@ NodeImpl::Id HTMLAnchorElementImpl::id() const
 
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    bool keydown = evt->id() == EventImpl::KEYDOWN_EVENT;
+    bool keydown = evt->id() == EventImpl::KEYDOWN_EVENT && evt->isKeyRelatedEvent();
 
     // React on clicks and on keypresses.
     // Don't make this KEYUP_EVENT again, it makes khtml follow links
@@ -63,9 +63,9 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
         if ( evt->id() == EventImpl::CLICK_EVENT )
             e = static_cast<MouseEventImpl*>( evt );
 
-        TextEventImpl *k = 0;
+        KeyEventBaseImpl *k = 0;
         if (keydown)
-            k = static_cast<TextEventImpl *>( evt );
+            k = static_cast<KeyEventBaseImpl *>( evt );
 
         QString utarget;
         QString url;
@@ -75,7 +75,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
         }
 
         if ( k ) {
-            if (k->virtKeyVal() != TextEventImpl::DOM_VK_ENTER) {
+            if (k->virtKeyVal() != KeyEventBaseImpl::DOM_VK_ENTER) {
                 if (k->qKeyEvent())
                     k->qKeyEvent()->ignore();
                 HTMLElementImpl::defaultEventHandler(evt);

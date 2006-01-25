@@ -338,8 +338,11 @@ public:
   bool checkModifier(unsigned long modifierArg);
 
   ~KeyEventBaseImpl();
+
+  //Returns true if the event was synthesized by client use of DOM
+  bool isSynthetic() const { return m_synthetic; }
 protected:
-  KeyEventBaseImpl(): m_keyEvent(0), m_keyVal(0), m_virtKeyVal(0), m_modifier(0)
+  KeyEventBaseImpl(): m_keyEvent(0), m_keyVal(0), m_virtKeyVal(0), m_modifier(0), m_synthetic(false)
   {  m_detail = 0; }
 
   KeyEventBaseImpl(EventId id,
@@ -355,6 +358,8 @@ protected:
 
   // bitfield containing state of modifiers. not part of the dom.
   unsigned long    m_modifier;
+
+  bool             m_synthetic;
 
   void buildQKeyEvent() const; //Construct a Qt key event from m_keyVal/m_virtKeyVal
 };
