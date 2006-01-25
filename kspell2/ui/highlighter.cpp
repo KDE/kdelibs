@@ -50,6 +50,7 @@ public:
     bool automatic;
     int disablePercentage;
     int disableWordCount;
+    int wordCount, errorCount;
 };
 
 Highlighter::Highlighter( QTextEdit *textEdit,
@@ -61,6 +62,12 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     d->edit = textEdit;
     d->active = true;
     d->automatic = true;
+    d->wordCount = 0;
+    d->errorCount = 0;
+
+    textEdit->installEventFilter( this );
+    textEdit->viewport()->installEventFilter( this );
+
     if ( !configFile.isEmpty() )
         d->broker = Broker::openBroker( KSharedConfig::openConfig( configFile ).data() );
     else
@@ -117,12 +124,32 @@ void Highlighter::setAutomatic( bool automatic )
 
     d->automatic = automatic;
     if ( d->automatic )
-        autoDetection();
+        slotAutoDetection();
 }
 
-void Highlighter::autoDetection()
+void Highlighter::slotAutoDetection()
 {
-    //TODO
+    bool savedActive = d->active;
+
+    if ( d->automatic ) {
+	// tme = Too many errors
+        bool tme = ( d->wordCount >= d->disableWordCount ) && ( d->errorCount * 100 >= d->disablePercentage * d->wordCount );
+	if ( d->active && tme )
+	    d->active = false;
+	else if ( !d->active && !tme )
+	    d->active = true;
+    }
+    if ( d->active != savedActive ) {
+	if ( d->wordCount > 1 )
+	    if ( d->active )
+		emit activeChanged( i18n("As-you-type spell checking enabled.") );
+	    else
+		emit activeChanged( i18n( "Too many misspelled words. "
+					  "As-you-type spell checking disabled." ) );
+	//d->completeRehighlightRequired = true;
+	//d->rehighlightRequest->start( 100, true );
+    }
+
 }
 
 void Highlighter::setActive( bool active )
@@ -157,7 +184,9 @@ void Highlighter::highlightBlock ( const QString & text )
         d->filter->setBuffer( text );
         Word w = d->filter->nextWord();
         while ( !w.end ) {
+            ++d->wordCount;
             if ( !d->dict->check( w.word ) ) {
+                ++d->errorCount;
                 setMisspelled( w.start, w.word.length() );
             } else
                 unsetMisspelled( w.start, w.word.length() );
@@ -199,6 +228,8 @@ void Highlighter::setCurrentLanguage( const QString& lang )
         }
     }
     d->dict = d->dictCache[lang];
+    d->wordCount = 0;
+    d->errorCount = 0;
 }
 
 void Highlighter::setMisspelled( int start, int count )
@@ -210,6 +241,75 @@ void Highlighter::unsetMisspelled( int start, int count )
 {
     setFormat( start, count, Qt::black );
 }
+
+bool Highlighter::eventFilter( QObject *o, QEvent *e)
+{
+#if 0
+    if (o == textEdit() && (e->type() == QEvent::FocusIn)) {
+        if ( d->globalConfig ) {
+            QString skey = spellKey();
+            if ( d->spell && d->spellKey != skey ) {
+                d->spellKey = skey;
+                KDictSpellingHighlighter::dictionaryChanged();
+            }
+        }
+    }
+
+    if (o == textEdit() && (e->type() == QEvent::KeyPress)) {
+	QKeyEvent *k = static_cast<QKeyEvent *>(e);
+	d->autoReady = true;
+	if (d->rehighlightRequest->isActive()) // try to stay out of the users way
+	    d->rehighlightRequest->start( 500 );
+	if ( k->key() == Qt::Key_Enter ||
+	     k->key() == Qt::Key_Return ||
+	     k->key() == Qt::Key_Up ||
+	     k->key() == Qt::Key_Down ||
+	     k->key() == Qt::Key_Left ||
+	     k->key() == Qt::Key_Right ||
+	     k->key() == Qt::Key_PageUp ||
+	     k->key() == Qt::Key_PageDown ||
+	     k->key() == Qt::Key_Home ||
+	     k->key() == Qt::Key_End ||
+	     (( k->state() & Qt::ControlModifier ) &&
+	      ((k->key() == Qt::Key_A) ||
+	       (k->key() == Qt::Key_B) ||
+	       (k->key() == Qt::Key_E) ||
+	       (k->key() == Qt::Key_N) ||
+	       (k->key() == Qt::Key_P))) ) {
+	    if ( intraWordEditing() ) {
+		setIntraWordEditing( false );
+		d->completeRehighlightRequired = true;
+		d->rehighlightRequest->start( 500, true );
+	    }
+	    if (d->checksDone != d->checksRequested) {
+		// Handle possible change of paragraph while
+		// words are pending spell checking
+		d->completeRehighlightRequired = true;
+		d->rehighlightRequest->start( 500, true );
+	    }
+	} else {
+	    setIntraWordEditing( true );
+	}
+	if ( k->key() == Qt::Key_Space ||
+	     k->key() == Qt::Key_Enter ||
+	     k->key() == Qt::Key_Return ) {
+	    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
+	}
+    }
+
+    else if ( /*o == document ()->viewport() &&*/
+	 ( e->type() == QEvent::MouseButtonPress )) {
+	d->autoReady = true;
+	if ( intraWordEditing() ) {
+	    setIntraWordEditing( false );
+	    d->completeRehighlightRequired = true;
+	    d->rehighlightRequest->start( 0, true );
+	}
+    }
+#endif
+    return false;
+}
+
 
 /*
 void Highlighter::checkWords()

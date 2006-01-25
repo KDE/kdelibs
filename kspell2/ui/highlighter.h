@@ -85,7 +85,10 @@ namespace KSpell2
         virtual void setMisspelled( int start, int count );
         virtual void unsetMisspelled( int start,  int count );
 
-	void autoDetection();
+	bool eventFilter(QObject *o, QEvent *e);
+
+    public Q_SLOTS:
+	void slotAutoDetection();
 
     private:
         class Private;
