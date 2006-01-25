@@ -676,7 +676,7 @@ KStandardDirs::realPath(const QString &dirname)
 
     /* If the path contains symlinks, get the real name */
     if (realpath( QFile::encodeName(dirname).data(), realpath_buffer) != 0) {
-        // succes, use result from realpath
+        // success, use result from realpath
         int len = strlen(realpath_buffer);
         realpath_buffer[len] = '/';
         realpath_buffer[len+1] = 0;
@@ -694,7 +694,7 @@ KStandardDirs::realFilePath(const QString &filename)
 
     /* If the path contains symlinks, get the real name */
     if (realpath( QFile::encodeName(filename).data(), realpath_buffer) != 0) {
-        // succes, use result from realpath
+        // success, use result from realpath
         return QFile::decodeName(realpath_buffer);
     }
 
