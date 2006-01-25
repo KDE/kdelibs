@@ -3,6 +3,7 @@
  * settings.cpp
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
+ * Copyright (C)  2006  Laurent Montel <montel@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -47,6 +48,9 @@ public:
     bool skipRunTogether;
     bool backgroundCheckerEnabled;
 
+    int disablePercentage;
+    int disableWordCount;
+
     QMap<QString, bool> ignore;
 };
 
@@ -64,7 +68,7 @@ Settings::Settings( Broker *broker, KSharedConfig *config )
 
 Settings::~Settings()
 {
-    delete d; 
+    delete d;
 }
 
 KSharedConfig *Settings::sharedConfig() const
@@ -186,6 +190,16 @@ void Settings::readIgnoreList()
     setQuietIgnoreList( ignores );
 }
 
+int Settings::disablePercentageWordError() const
+{
+    return d->disablePercentage;
+}
+
+int Settings::disableWordErrorCount() const
+{
+    return d->disableWordCount; 
+}
+
 void Settings::save()
 {
     if ( d->modified ) {
@@ -197,6 +211,7 @@ void Settings::save()
         conf.writeEntry( "backgroundCheckerEnabled", d->backgroundCheckerEnabled );
         conf.writeEntry( QString( "ignore_%1" ).arg( d->defaultLanguage ),
                          d->ignore.keys() );
+
         conf.sync();
     }
 }
@@ -204,7 +219,7 @@ void Settings::save()
 void Settings::loadConfig()
 {
     KConfigGroup conf( d->config.data(), "Spelling" );
-    d->defaultClient = conf.readEntry( "defaultClient", 
+    d->defaultClient = conf.readEntry( "defaultClient",
                                         QString() );
     d->defaultLanguage = conf.readEntry(
         "defaultLanguage", KGlobal::locale()->language() );
@@ -218,6 +233,9 @@ void Settings::loadConfig()
 
     d->backgroundCheckerEnabled = conf.readEntry(
         "backgroundCheckerEnabled", true);
+
+    d->disablePercentage = conf.readEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
+    d->disableWordCount = conf.readEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
 
     readIgnoreList();
 }

@@ -73,7 +73,10 @@ namespace KSpell2
 	 */
 	bool isActive() const;
 
+	bool automatic() const;
 
+	void setAutomatic( bool auto );
+	
     
     Q_SIGNALS:
 	void activeChanged(const QString &);
@@ -81,6 +84,9 @@ namespace KSpell2
     protected:
         virtual void setMisspelled( int start, int count );
         virtual void unsetMisspelled( int start,  int count );
+
+	void autoDetection();
+
     private:
         class Private;
         Private* const d;

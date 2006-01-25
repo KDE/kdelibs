@@ -61,6 +61,10 @@ namespace KSpell2
 
         KSharedConfig *sharedConfig() const;
 
+        int disablePercentageWordError() const;
+        int disableWordErrorCount() const;
+
+
     private:
         void loadConfig();
         void readIgnoreList();

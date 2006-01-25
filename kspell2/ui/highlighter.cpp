@@ -47,6 +47,9 @@ public:
     QHash<QString, Dictionary*>dictCache;
     QTextEdit *edit;
     bool active;
+    bool automatic;
+    int disablePercentage;
+    int disableWordCount;
 };
 
 Highlighter::Highlighter( QTextEdit *textEdit,
@@ -57,6 +60,7 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     d->filter = filter;
     d->edit = textEdit;
     d->active = true;
+    d->automatic = true;
     if ( !configFile.isEmpty() )
         d->broker = Broker::openBroker( KSharedConfig::openConfig( configFile ).data() );
     else
@@ -67,6 +71,10 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     Q_ASSERT( d->dict );
     d->dictCache.insert( d->broker->settings()->defaultLanguage(),
                          d->dict );
+
+    d->disablePercentage = d->broker->settings()->disablePercentageWordError();
+
+    d->disableWordCount = d->broker->settings()->disableWordErrorCount();
 
     //Add kde personal word
     const QStringList l = Highlighter::personalWords();
@@ -95,6 +103,26 @@ QStringList Highlighter::personalWords()
     l.append( "Kontact" );
     l.append( "Qt" );
     return l;
+}
+
+bool Highlighter::automatic() const
+{
+    return d->automatic;
+}
+
+void Highlighter::setAutomatic( bool automatic )
+{
+    if ( automatic  == d->automatic )
+        return;
+
+    d->automatic = automatic;
+    if ( d->automatic )
+        autoDetection();
+}
+
+void Highlighter::autoDetection()
+{
+    //TODO
 }
 
 void Highlighter::setActive( bool active )
