@@ -103,14 +103,14 @@ contains( TEMPLATE, lib ) {
 
 	# lib/kde3 dest dir (for modules)
 	contains( CONFIG, kde3lib ) {
-	  DESTDIR = $$KDELIBDESTDIR/kde3
+	  DESTDIR = $$KDEBINDESTDIR/lib/kde3
 	  TARGET_EXT = .dll #- no ver. in filename
 	}
 	!contains( CONFIG, kde3lib ) {
 	  DESTDIR = $$KDELIBDESTDIR
 	}
 	contains( CONFIG, kstyle ) {
-	  DESTDIR = $$KDELIBDESTDIR/kde3/plugins/styles
+	  DESTDIR = $$KDEBINDESTDIR/lib/kde3/plugins/styles
 	  CONFIG += plugin
 	}
 #  !contains(CONFIG,debug) {
