@@ -16,8 +16,6 @@ add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
 
 link_directories(${KDE4_LIB_DIR})
 
-include(ConvenienceLibs.cmake)
-
 if (UNIX)
    link_directories(/usr/local/lib)
    include_directories(/usr/local/include)
