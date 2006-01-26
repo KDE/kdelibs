@@ -30,6 +30,7 @@
 class KActionCollection;
 class KMenu;
 class QWidget;
+class QAction;
 
 class KAboutData;
 class KAboutKDE;
