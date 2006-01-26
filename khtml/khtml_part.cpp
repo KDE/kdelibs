@@ -1593,10 +1593,13 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if( !qData.isEmpty())
       d->m_doc->processHttpEquiv("refresh", qData);
 
-    // Support Content-Location per section 14.14 of RFC 2616.
+    // DISABLED: Support Content-Location per section 14.14 of RFC 2616.
+    // See BR# 51185,BR# 82747
+    /*
     QString baseURL = d->m_job->queryMetaData ("content-location");
     if (!baseURL.isEmpty())
       d->m_doc->setBaseURL(KUrl( d->m_doc->completeURL(baseURL) ));
+    */
 
     if ( !m_url.isLocalFile() ) {
         // Support for http last-modified
@@ -2869,6 +2872,7 @@ void KHTMLPart::slotFindDone()
 
 void KHTMLPart::slotFindAheadText()
 {
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
   KParts::ReadOnlyPart *part = currentFrame();
   if (!part)
     return;
@@ -2878,10 +2882,12 @@ void KHTMLPart::slotFindAheadText()
       return;
   }
   static_cast<KHTMLPart *>( part )->view()->startFindAhead( false );
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 }
 
 void KHTMLPart::slotFindAheadLink()
 {
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
   KParts::ReadOnlyPart *part = currentFrame();
   if (!part)
     return;
@@ -2891,6 +2897,7 @@ void KHTMLPart::slotFindAheadLink()
       return;
   }
   static_cast<KHTMLPart *>( part )->view()->startFindAhead( true );
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 }
 
 void KHTMLPart::enableFindAheadActions( bool enable )

@@ -1172,6 +1172,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     }
 
     if ( mailtoCursor && isVisible() && hasFocus() ) {
+#ifdef Q_WS_X11
         if( !d->cursor_icon_widget ) {
             QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( "mail_generic", KIcon::Small, 0, KIcon::DefaultState, 0, true );
 #ifdef Q_WS_X11
@@ -1202,6 +1203,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         //TODO?
 #endif
         d->cursor_icon_widget->show();
+#endif
     }
     else if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
