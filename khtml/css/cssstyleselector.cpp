@@ -3017,9 +3017,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
                 if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
-                     element && element->getDocument()->view())
+                     view && view->part())
                     size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) *
-                                element->getDocument()->view()->part()->zoomFactor() ) / 100;
+                                view->part()->zoomFactor() ) / 100;
 		else
                     size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) );
             }
@@ -3093,17 +3093,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         if (primitiveValue->getIdent() == CSS_VAL_NORMAL)
             lineHeight = Length( -100, Percent );
         else if (type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
-#ifdef APPLE_CHANGES
-            double multiplier = 1.0;
             // Scale for the font zoom factor only for types other than "em" and "ex", since those are
             // already based on the font size.
-            if (type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS && view && view->part()) {
-                multiplier = view->part()->zoomFactor() / 100.0;
-            }
-            lineHeight = Length(primitiveValue->computeLength(style, paintDeviceMetrics, multiplier), Fixed);
-#else
-            lineHeight = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
-#endif
+		if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
+                    view && view->part())
+                    lineHeight = Length(primitiveValue->computeLength(style, paintDeviceMetrics) *
+                                        view->part()->zoomFactor()/100, Fixed );
+                else
+                    lineHeight = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed );
         } else if (type == CSSPrimitiveValue::CSS_PERCENTAGE)
             lineHeight = Length( ( style->font().pixelSize() * int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)) ) / 100, Fixed );
         else if (type == CSSPrimitiveValue::CSS_NUMBER)
