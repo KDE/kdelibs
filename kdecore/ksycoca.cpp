@@ -41,7 +41,7 @@
 #endif
 
 #ifdef Q_OS_SOLARIS
-extern int madvise(caddr_t, size_t, int); 
+extern "C" extern int madvise(caddr_t, size_t, int); 
 #endif
 
 #ifndef MAP_FAILED
