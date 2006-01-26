@@ -146,7 +146,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
      else
      {
 #ifdef HAVE_MADVISE
-        (void) madvise((void*)m_sycoca_mmap, m_sycoca_size, MADV_WILLNEED);
+        (void) madvise((char*)m_sycoca_mmap, m_sycoca_size, MADV_WILLNEED);
 #endif
         QByteArray b = QByteArray::fromRawData(m_sycoca_mmap, m_sycoca_size);
         QBuffer *buffer = new QBuffer( new QByteArray(b) );
