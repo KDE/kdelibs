@@ -111,8 +111,25 @@ private:
 };
 #else // WIN32, Qt Embedded
 // Let's simply assume KPixmap will do for now. Yes, I know that's broken.
-class KSharedPixmap : public KPixmap
- {};
+class KDEUI_EXPORT KSharedPixmap:
+	public KPixmap
+{
+public:
+    /**
+     * Construct an empty pixmap.
+     */
+    KSharedPixmap() {};
+
+    /**
+     * Destroys the pixmap.
+     */
+    ~KSharedPixmap() {};
+
+    /**
+     * Gives access to the shared pixmap data.
+     */
+    KPixmap pixmap() const { return *this; }
+};
 #endif
 
 #endif
