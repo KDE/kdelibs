@@ -23,9 +23,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef DCOPCLIENT_H
 #define DCOPCLIENT_H
 
-#include <Qt/qobject.h>
-#include <Qt/qlist.h>
-#include <Qt/qstring.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qlist.h>
+#include <QtCore/qstring.h>
 #include <dcoptypes.h>
 #include <kdatastream.h> // needed for proper bool marshalling
 #include <kdelibs_export.h>
