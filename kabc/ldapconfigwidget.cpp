@@ -79,7 +79,7 @@ void LdapConfigWidget::initWidget()
     mUser->setObjectName( "kcfg_ldapuser" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addWidget( mUser, row, row, 1, 3 );
+    mainLayout->addWidget( mUser, row, 1, 1, 3 );
     row++;
   }
 
@@ -89,7 +89,7 @@ void LdapConfigWidget::initWidget()
     mBindDN->setObjectName( "kcfg_ldapbinddn" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addWidget( mBindDN, row, row, 1, 3 );
+    mainLayout->addWidget( mBindDN, row, 1, 1, 3 );
     row++;
   }
 
@@ -99,7 +99,7 @@ void LdapConfigWidget::initWidget()
     mRealm->setObjectName("kcfg_ldaprealm" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addWidget( mRealm, row, row, 1, 3 );
+    mainLayout->addWidget( mRealm, row, 1, 1, 3 );
     row++;
   }
 
@@ -110,7 +110,7 @@ void LdapConfigWidget::initWidget()
     mPassword->setEchoMode( KLineEdit::Password );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addWidget( mPassword, row, row, 1, 3 );
+    mainLayout->addWidget( mPassword, row, 1, 1, 3 );
     row++;
   }
 
@@ -120,7 +120,7 @@ void LdapConfigWidget::initWidget()
     mHost->setObjectName( "kcfg_ldaphost" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addWidget( mHost, row, row, 1, 3 );
+    mainLayout->addWidget( mHost, row, 1, 1, 3 );
     row++;
   }
 
@@ -184,12 +184,12 @@ void LdapConfigWidget::initWidget()
     mDn->setObjectName("kcfg_ldapdn" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addWidget( mDn, row, row, 1, 1 );
+    mainLayout->addWidget( mDn, row, 1, 1, 1 );
     //without host query doesn't make sense
     if ( mHost ) {
       QPushButton *dnquery = new QPushButton( i18n( "Query Server" ), this );
       connect( dnquery, SIGNAL( clicked() ), SLOT( mQueryDNClicked() ) );
-      mainLayout->addWidget( dnquery, row, row, 2, 3 );
+      mainLayout->addWidget( dnquery, row, 2, 1, 1 );
     }
     row++;
   }
@@ -200,7 +200,7 @@ void LdapConfigWidget::initWidget()
     mFilter->setObjectName("kcfg_ldapfilter" );
 
     mainLayout->addWidget( label, row, 0 );
-    mainLayout->addWidget( mFilter, row, row, 1, 3 );
+    mainLayout->addWidget( mFilter, row, 1, 1, 3 );
     row++;
   }
 
@@ -217,7 +217,7 @@ void LdapConfigWidget::initWidget()
     mSecSSL = new QRadioButton( i18n( "SSL" ), btgroup);
     mSecSSL->setObjectName("kcfg_ldapssl" );
     hbox->addWidget( mSecSSL );
-    mainLayout->addWidget( btgroup, row, row, 0, 3 );
+    mainLayout->addWidget( btgroup, row, 0, 1, 4 );
 
     connect( mSecNO, SIGNAL( clicked() ), SLOT( setLDAPPort() ) );
     connect( mSecTLS, SIGNAL( clicked() ), SLOT( setLDAPPort() ) );
@@ -265,7 +265,7 @@ void LdapConfigWidget::initWidget()
       connect( mQueryMech, SIGNAL( clicked() ), SLOT( mQueryMechClicked() ) );
     }
 
-    mainLayout->addWidget( authbox, row, row+1, 0, 3 );
+    mainLayout->addWidget( authbox, row, 0, 2, 4 );
 
     connect( mAnonymous, SIGNAL( toggled(bool) ), SLOT( setAnonymous(bool) ) );
     connect( mSimple, SIGNAL( toggled(bool) ), SLOT( setSimple(bool) ) );
