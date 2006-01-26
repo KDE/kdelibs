@@ -25,7 +25,7 @@
 
 /* needed, because e.g. Q_OS_UNIX is so frequently used */
 #ifdef __cplusplus
-# include <Qt/qglobal.h>
+# include <QtCore/qglobal.h>
 #endif
 
 
