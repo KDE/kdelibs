@@ -210,7 +210,7 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
   case OnDragDrop:
     return getListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT);
   case OnError:
-    return getListener(DOM::EventImpl::KHTML_ERROR_EVENT);
+    return getListener(DOM::EventImpl::ERROR_EVENT);
   case OnFocus:
     return getListener(DOM::EventImpl::FOCUS_EVENT);
   case OnKeyDown:
@@ -351,7 +351,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
     setListener(exec,DOM::EventImpl::KHTML_DRAGDROP_EVENT,value);
     break;
   case OnError:
-    setListener(exec,DOM::EventImpl::KHTML_ERROR_EVENT,value);
+    setListener(exec,DOM::EventImpl::ERROR_EVENT,value);
     break;
   case OnFocus:
     setListener(exec,DOM::EventImpl::FOCUS_EVENT,value);

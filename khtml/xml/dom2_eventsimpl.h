@@ -84,7 +84,6 @@ public:
 	KHTML_ECMA_DBLCLICK_EVENT, // for html ondblclick
 	KHTML_ECMA_CLICK_EVENT, // for html onclick
 	KHTML_DRAGDROP_EVENT,
-	KHTML_ERROR_EVENT,
 	KHTML_MOVE_EVENT,
         // XMLHttpRequest events
         KHTML_READYSTATECHANGE_EVENT

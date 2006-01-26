@@ -752,7 +752,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case Ondragdrop:
       return getListener(exec,DOM::EventImpl::KHTML_DRAGDROP_EVENT);
     case Onerror:
-      return getListener(exec,DOM::EventImpl::KHTML_ERROR_EVENT);
+      return getListener(exec,DOM::EventImpl::ERROR_EVENT);
     case Onfocus:
       return getListener(exec,DOM::EventImpl::FOCUS_EVENT);
     case Onkeydown:
@@ -928,7 +928,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
       return;
     case Onerror:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_ERROR_EVENT,value);
+        setListener(exec,DOM::EventImpl::ERROR_EVENT,value);
       return;
     case Onfocus:
       if (isSafeScript(exec))

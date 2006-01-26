@@ -260,8 +260,6 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
         return "click";
     case KHTML_DRAGDROP_EVENT:
         return "khtml_dragdrop";
-    case KHTML_ERROR_EVENT:
-        return "khtml_error";
     case KHTML_MOVE_EVENT:
         return "khtml_move";
     case KHTML_READYSTATECHANGE_EVENT:
