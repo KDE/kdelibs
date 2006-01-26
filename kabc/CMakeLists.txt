@@ -2,6 +2,22 @@ kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_BINARY_DIR}/kabc  ${CMAKE_SOURCE_DIR}/kabc/kab ${CMAKE_CURRENT_SOURCE_DIR}/vcardparser  ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+# kabc/kab/Makefile.am: kab
+
+set(kab_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kabc/kab/kabapi.cc
+  ${CMAKE_SOURCE_DIR}/kabc/kab/addressbook.cc
+  ${CMAKE_SOURCE_DIR}/kabc/kab/qconfigDB.cc
+)
+
+# kabc/vcardparser/Makefile.am: vcards
+
+set(vcards_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kabc/vcardparser/vcard.cpp
+  ${CMAKE_SOURCE_DIR}/kabc/vcardparser/vcardline.cpp
+  ${CMAKE_SOURCE_DIR}/kabc/vcardparser/vcardparser.cpp
+)
+
 add_subdirectory( kab )
 add_subdirectory( vcardparser )
 add_subdirectory( formats )

@@ -1,5 +1,46 @@
 kde4_header()
 
+# kdecore/svgicons/Makefile.am: kdesvgicons
+
+set(kdesvgicons_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kdecore/svgicons/ksvgiconengine.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/svgicons/ksvgiconpainter.cpp
+)
+
+# kdecore/malloc/Makefile.am: klmalloc
+
+set(klmalloc_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kdecore/malloc/malloc.c
+)
+
+# kdecore/network/Makefile.am: kdecorenetwork
+
+set(kdecorenetwork_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kdecore/network/kresolver.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/kresolvermanager.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/kresolverworkerbase.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/ksocketaddress.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/kresolverstandardworkers.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/kreverseresolver.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/ksocketdevice.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/ksocketbase.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/kclientsocketbase.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/kstreamsocket.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/kserversocket.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/kdatagramsocket.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/khttpproxysocketdevice.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/ksockssocketdevice.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/kbufferedsocket.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/ksocketbuffer.cpp
+  ${CMAKE_SOURCE_DIR}/kdecore/network/knetworkinterface.cpp
+)
+
+# libltdl/Makefile.am: ltdlc
+
+set(ltdlc_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
+)
+
 add_subdirectory( malloc )
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
@@ -26,6 +67,7 @@ target_link_libraries(kdefakes  ${QT_AND_KDECORE_LIBS} )
 
 set_target_properties(kdefakes PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib kdefakes )
+
 
 
 ########### next target ###############
@@ -156,6 +198,8 @@ kde4_add_dcop_skels(kdecore_LIB_SRCS ${kdecore_DCOP_SKEL_SRCS})
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${ZLIB_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP)
+
+project(libkdecore)
 
 if(HAVE_IDNA_H)
    target_link_libraries(kdecore idn)

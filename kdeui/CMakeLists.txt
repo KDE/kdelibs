@@ -1,5 +1,7 @@
 kde4_header()
 
+project(libkdeui)
+
 add_subdirectory( kdetrayproxy )
 add_subdirectory( tests )
 add_subdirectory( about )

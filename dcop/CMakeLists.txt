@@ -12,6 +12,31 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DUNIXCONN -DANSICPP)
 
+# dcop/KDE-ICE/Makefile.am: kICE
+
+set(kICE_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/accept.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/authutil.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/connect.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/error.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/getauth.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/iceauth.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/listen.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/listenwk.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/locking.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/misc.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/ping.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/process.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/protosetup.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/register.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/replywait.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/setauth.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/shutdown.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/watch.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/transport.c
+  ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/globals.c
+)
+
 ########### next target ###############
 
 set(dcopserver_shutdown_SRCS

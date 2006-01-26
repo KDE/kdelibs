@@ -5,6 +5,14 @@ add_subdirectory( tests )
 
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+# kutils/ksettings/Makefile.am: ksettings
+
+set(ksettings_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kutils/ksettings/dispatcher.cpp
+  ${CMAKE_SOURCE_DIR}/kutils/ksettings/dialog.cpp
+  ${CMAKE_SOURCE_DIR}/kutils/ksettings/pluginpage.cpp
+  ${CMAKE_SOURCE_DIR}/kutils/ksettings/componentsdialog.cpp
+)
 
 ########### next target ###############
 

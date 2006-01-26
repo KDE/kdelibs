@@ -2,6 +2,27 @@ kde4_header()
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR}/kutils )
 
+# kspell2/Makefile.am: kspell2base
+
+set(kspell2base_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kspell2/settings.cpp
+  ${CMAKE_SOURCE_DIR}/kspell2/broker.cpp
+  ${CMAKE_SOURCE_DIR}/kspell2/client.cpp
+  ${CMAKE_SOURCE_DIR}/kspell2/filter.cpp
+  ${CMAKE_SOURCE_DIR}/kspell2/backgroundchecker.cpp
+  ${CMAKE_SOURCE_DIR}/kspell2/backgroundthread.cpp
+  ${CMAKE_SOURCE_DIR}/kspell2/backgroundengine.cpp
+  ${CMAKE_SOURCE_DIR}/kspell2/defaultdictionary.cpp
+)
+
+# kspell2/ui/Makefile.am: kspell2_noinst
+
+set(kspell2_noinst_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kspell2/ui/configwidget.cpp
+  ${CMAKE_SOURCE_DIR}/kspell2/ui/highlighter.cpp
+  ${CMAKE_SOURCE_DIR}/kspell2/ui/configdialog.cpp
+)
+
 add_subdirectory( ui )
 add_subdirectory( tests )
 add_subdirectory( plugins )

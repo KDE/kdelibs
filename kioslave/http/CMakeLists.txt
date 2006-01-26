@@ -1,5 +1,7 @@
 kde4_header()
 
+project(kioslave-file)
+
 add_subdirectory( kcookiejar ) 
 
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kio/httpfilter ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
@@ -23,6 +25,12 @@ target_link_libraries( kio_http_cache_cleaner kdeinit_kio_http_cache_cleaner )
 install_targets(/bin kio_http_cache_cleaner )
 
 ########### next target ###############
+
+# kio/httpfilter/Makefile.am: httpfilter
+
+set(httpfilter_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
+)
 
 set(kio_http_PART_SRCS
 http.cc

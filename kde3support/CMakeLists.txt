@@ -14,6 +14,57 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kparts ${CMAKE_CURRENT_SOURCE_D
 ${CMAKE_CURRENT_SOURCE_DIR}/kdeui ${CMAKE_SOURCE_DIR}/kutils ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kio/bookmarks)
 
 add_definitions(-DKDE3_SUPPORT)
+
+# kde3support/kdeui/Makefile.am: kde3ui
+
+set(kde3ui_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3dockwidget.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3dockwidget_private.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3popupmenu.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3textedit.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3colordrag.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3syntaxhighlighter.cpp
+)
+
+# kde3support/kio/Makefile.am: k3io
+
+set(k3io_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kde3support/kio/k3bookmarkdrag.cpp
+)
+
+# kde3support/kmdi/Makefile.am: k3mdi
+
+set(k3mdi_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdichildarea.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdichildfrm.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdichildfrmcaption.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdichildview.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdimainfrm.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mditaskbar.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdidockcontainer.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mditoolviewaccessor.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdiguiclient.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdidocumentviewtabwidget.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdifocuslist.cpp
+)
+
+# kde3support/kparts/Makefile.am: k3parts
+
+set(k3parts_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kde3support/kparts/dockmainwindow3.cpp
+)
+
+# kde3support/kdecore/Makefile.am: kde3core
+
+set(kde3core_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3shortcut.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3keysequence.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3shortcutmenu.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3urldrag.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3multipledrag.cpp
+)
+
+
 ########### next target ###############
 
 set(kde3support_LIB_SRCS

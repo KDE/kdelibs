@@ -8,9 +8,6 @@ find_package(KDE4 REQUIRED)
 
 find_package(Perl REQUIRED)
 
-message(STATUS "********+ kde libs: ${QT_AND_KDECORE_LIBS} ")
-message(STATUS "********+ thread libs: ${CMAKE_THREAD_LIBS_INIT} ")
-
 kde4_header()
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -21,7 +18,20 @@ link_directories(${KDE4_LIB_DIR})
 
 include(ConvenienceLibs.cmake)
 
-include(ManualStuff.cmake)
+if (UNIX)
+   link_directories(/usr/local/lib)
+   include_directories(/usr/local/include)
+endif (UNIX)
+
+option(INCLUDE_SVGICONS "Include svg icons")
+
+include_directories(
+  ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdeui
+  ${CMAKE_SOURCE_DIR}/kio/kio  ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kfile
+  ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kssl
+  ${CMAKE_SOURCE_DIR}/kdefx
+)
+
 
 include(ConfigureChecks.cmake)
 

@@ -43,13 +43,9 @@ install_targets(/lib/kde4 kio_ghelp )
 
 ########### next target ###############
 
-if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/xslt_pure_cmake.cpp)
-  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/xslt_pure_cmake.cpp "#define SIMPLE_XSLT 1\n #include <xslt.cpp>\n")
-endif(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/xslt_pure_cmake.cpp)
-
 set(meinproc_SRCS
 meinproc.cpp
-${CMAKE_CURRENT_BINARY_DIR}/xslt_pure_cmake.cpp
+xslt.cpp
 )
 
 kde4_automoc(${meinproc_SRCS})
@@ -57,6 +53,7 @@ kde4_automoc(${meinproc_SRCS})
 kde4_add_executable(meinproc ${meinproc_SRCS})
 
 target_link_libraries(meinproc  ${QT_AND_KDECORE_LIBS} ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY})
+set_target_properties(meinproc PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
 install_targets(/bin meinproc )
 
