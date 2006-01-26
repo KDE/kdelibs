@@ -1,5 +1,7 @@
 kde4_header()
 
+SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
+
 add_subdirectory( misc )
 add_subdirectory( dom )
 add_subdirectory( css )
@@ -12,7 +14,40 @@ add_subdirectory( imload )
 add_subdirectory( kmultipart )
 
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(JAVA_SUBDIR)")
-include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kwallet/client ${CMAKE_SOURCE_DIR}/kutils ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kwallet/client ${CMAKE_SOURCE_DIR}/kutils ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}) 
+include_directories(${CMAKE_BINARY_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/khtml/rendering ${CMAKE_SOURCE_DIR}/khtml/ecma ${CMAKE_BINARY_DIR}/khtml/ecma ${CMAKE_SOURCE_DIR}/kio/bookmarks)
+include_directories( ${CMAKE_SOURCE_DIR}/khtml/imload ${CMAKE_SOURCE_DIR}/khtml/imload/decoders )
+
+set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
+
+macro(CREATE_LUT _in_FILE _out_FILE)
+
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+    COMMAND ${PERL_EXECUTABLE}
+    ARGS ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} >
+${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
+  )
+
+  kde4_add_file_dependancy(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
+${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
+
+endmacro(CREATE_LUT)
+
+create_lut(ecma/kjs_dom.cpp kjs_dom.lut.h)
+create_lut(ecma/kjs_html.cpp kjs_html.lut.h)
+create_lut(ecma/kjs_window.cpp kjs_window.lut.h)
+create_lut(ecma/kjs_css.cpp kjs_css.lut.h)
+create_lut(ecma/kjs_events.cpp kjs_events.lut.h)
+create_lut(ecma/kjs_navigator.cpp kjs_navigator.lut.h)
+create_lut(ecma/kjs_mozilla.cpp kjs_mozilla.lut.h)
+create_lut(ecma/kjs_range.cpp kjs_range.lut.h)
+create_lut(ecma/kjs_traversal.cpp kjs_traversal.lut.h)
+create_lut(ecma/kjs_views.cpp kjs_views.lut.h)
+create_lut(ecma/xmlhttprequest.cpp xmlhttprequest.lut.h)
+create_lut(ecma/xmlserializer.cpp xmlserializer.lut.h)  
+create_lut(ecma/domparser.cpp domparser.lut.h)
+create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
 
 
 ########### next target ###############
@@ -29,6 +64,15 @@ khtml_pagecache.cpp
 khtml_iface.cc
 khtml_printsettings.cpp
 khtmlimage.cpp
+${khtmlxml_STAT_SRCS}
+${khtmlhtml_STAT_SRCS}
+${khtmlrender_STAT_SRCS}
+${khtmlcss_STAT_SRCS}
+${khtmlmisc_STAT_SRCS}
+${kjs_html_STAT_SRCS}
+${khtmldom_STAT_SRCS}
+${khtmlimload_STAT_SRCS}
+${decoders_STAT_SRCS}
 )
 
 kde4_automoc(${khtml_LIB_SRCS})
@@ -48,7 +92,7 @@ kde4_add_dcop_skels(khtml_LIB_SRCS ${khtml_DCOP_SKEL_SRCS})
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} khtmlxml khtmlhtml khtmlrender khtmlcss khtmlmisc kjs_html khtmldom khtmlimload kparts kdeprint kutils kde3support kwalletclient )
+target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient )
 
 set_target_properties(khtml PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib khtml )
@@ -56,15 +100,20 @@ install_targets(/lib khtml )
 
 ########### next target ###############
 
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
+"#include <kdelibs_export.h>\n
+extern \"C\"  KDE_EXPORT void* init_libkhtml();\n
+extern \"C\"  KDE_EXPORT void* init_libkhtmlpart() { return init_libkhtml(); }\n" )
+
 set(khtmlpart_PART_SRCS
-dummy.cpp
+${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
 )
 
 kde4_automoc(${khtmlpart_PART_SRCS})
 
 kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 
-target_link_libraries(khtmlpart  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(khtmlpart  ${QT_AND_KDECORE_LIBS} khtml )
 
 install_targets(/lib/kde4 khtmlpart )
 

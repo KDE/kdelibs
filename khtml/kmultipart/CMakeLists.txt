@@ -7,13 +7,14 @@ include_directories( ${CMAKE_SOURCE_DIR}/khtml ${CMAKE_SOURCE_DIR}/kio/httpfilte
 
 set(kmultipart_PART_SRCS
 kmultipart.cpp
+${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
 )
 
 kde4_automoc(${kmultipart_PART_SRCS})
 
 kde4_add_plugin(kmultipart WITH_PREFIX ${kmultipart_PART_SRCS})
 
-target_link_libraries(kmultipart  ${QT_AND_KDECORE_LIBS} kparts httpfilter )
+target_link_libraries(kmultipart  ${QT_AND_KDECORE_LIBS} kparts )
 
 install_targets(/lib/kde4 kmultipart )
 

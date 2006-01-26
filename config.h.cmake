@@ -118,7 +118,7 @@
 #cmakedefine01 HAVE_CTYPE_H
 
 /* Define to 1 if you have malloc.h */
-#cmakedefine01 HAVE_MALLOC_H
+#cmakedefine   HAVE_MALLOC_H
 
 /* Define to 1 if you have memory.h */
 #cmakedefine01 HAVE_MEMORY_H
