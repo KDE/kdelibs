@@ -328,6 +328,7 @@ protected:
 
     virtual bool isEditable() const { return true; }
     virtual bool canHaveBorder() const { return true; }
+    virtual bool acceptsSyntheticEvents() const { return false; }
 
     bool m_clicked;
     bool m_haveFocus;

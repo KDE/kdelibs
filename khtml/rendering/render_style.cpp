@@ -745,6 +745,10 @@ bool RenderStyle::contentDataEquivalent(RenderStyle* otherStyle)
             if (c1->_content.counter != c2->_content.counter)
                 return false;
         }
+        else if (c1->_contentType == CONTENT_QUOTE) {
+            if (c1->_content.quote != c2->_content.quote)
+                return false;
+        }
 
         c1 = c1->_nextContent;
         c2 = c2->_nextContent;
@@ -878,9 +882,14 @@ void RenderStyle::setContent(EQuoteContent q, bool add)
     newContentData->_contentType = CONTENT_QUOTE;
 }
 
-void RenderStyle::clearContent() {
+void RenderStyle::setContentNormal() {
     delete content;
     content = 0;
+}
+
+void RenderStyle::setContentNone() {
+    setContentNormal();
+    content = new ContentData;
 }
 
 ContentData::~ContentData()

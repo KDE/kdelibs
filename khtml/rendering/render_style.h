@@ -1275,7 +1275,8 @@ public:
     void setContent(CachedObject* o, bool add);
     void setContent(DOM::CounterImpl* c, bool add);
     void setContent(EQuoteContent q, bool add);
-    void clearContent();
+    void setContentNone();
+    void setContentNormal();
 
     DOM::CSSValueListImpl* counterReset() const { return counter_reset; }
     DOM::CSSValueListImpl* counterIncrement() const { return counter_increment; }

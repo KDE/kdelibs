@@ -4,6 +4,7 @@
  * Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *           (C) 2001 Tobias Anton (anton@stud.fbi.fh-darmstadt.de)
  *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2006 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,6 +20,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
+
  */
 
 #include "dom/dom2_views.h"
@@ -174,6 +176,8 @@ EventImpl::EventId EventImpl::typeToId(DOMString type)
         return KEYDOWN_EVENT;
     else if ( type == "keyup" )
         return KEYUP_EVENT;
+    else if ( type == "textInput" )
+        return KEYPRESS_EVENT;
     else if ( type == "keypress" )
         return KEYPRESS_EVENT;
     else if ( type == "readystatechange" )
@@ -249,7 +253,7 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
     case KEYUP_EVENT:
         return "keyup";
     case KEYPRESS_EVENT:
-        return "keypress";
+        return "keypress"; //DOM3 ev. suggests textInput, but it's better for compat this way
 
     //khtml extensions
     case KHTML_ECMA_DBLCLICK_EVENT:
@@ -286,7 +290,12 @@ bool EventImpl::isMutationEvent() const
     return false;
 }
 
-bool EventImpl::isTextEvent() const
+bool EventImpl::isTextInputEvent() const
+{
+    return false;
+}
+
+bool EventImpl::isKeyboardEvent() const
 {
     return false;
 }
@@ -477,297 +486,406 @@ bool MouseEventImpl::isMouseEvent() const
 }
 
 //---------------------------------------------------------------------------------------------
+/* This class is used to do remapping between different encodings reasonably compactly */
 
-TextEventImpl::TextEventImpl()
+template<typename L, typename R, typename MemL>
+class IDTranslator
 {
-    m_keyEvent = 0;
+public:
+    struct Info {
+        MemL l;
+        R    r;
+    };
+
+    IDTranslator(const Info* table) {
+        for (const Info* cursor = table; cursor->l; ++cursor) {
+            m_lToR.insert(cursor->l,  cursor->r);
+            m_rToL.insert(cursor->r,  cursor->l);
+        }
+    }
+
+    L toLeft(R r) {
+        typename QMap<R,L>::iterator i = m_rToL.find(r);
+        if (i != m_rToL.end())
+            return *i;
+        return L();
+    }
+
+    R toRight(L l) {
+        typename QMap<L,R>::iterator i = m_lToR.find(l);
+        if (i != m_lToR.end())
+            return *i;
+        return R();
+    }
+
+private:
+    QMap<L, R> m_lToR;
+    QMap<R, L> m_rToL;
+};
+
+#define MAKE_TRANSLATOR(name,L,R,MR,table) static IDTranslator<L,R,MR>* s_##name; \
+    static IDTranslator<L,R,MR>* name() { if (!s_##name) s_##name = new IDTranslator<L,R,MR>(table); \
+        return s_##name; }
+//---------------------------------------------------------------------------------------------
+
+/* Mapping between special Qt keycodes and virtual DOM codes */
+IDTranslator<unsigned, unsigned, unsigned>::Info virtKeyToQtKeyTable[] =
+{
+    {KeyEventBaseImpl::DOM_VK_ENTER, Qt::Key_Enter},
+    {KeyEventBaseImpl::DOM_VK_ENTER, Qt::Key_Return},
+    {KeyEventBaseImpl::DOM_VK_NUM_LOCK,  Qt::Key_NumLock},
+    {KeyEventBaseImpl::DOM_VK_RIGHT_ALT,    Qt::Key_Alt},
+    {KeyEventBaseImpl::DOM_VK_LEFT_CONTROL, Qt::Key_Control},
+    {KeyEventBaseImpl::DOM_VK_LEFT_SHIFT,   Qt::Key_Shift},
+    {KeyEventBaseImpl::DOM_VK_META,         Qt::Key_Meta},
+    {KeyEventBaseImpl::DOM_VK_CAPS_LOCK,    Qt::Key_CapsLock},
+    {KeyEventBaseImpl::DOM_VK_DELETE,       Qt::Key_Delete},
+    {KeyEventBaseImpl::DOM_VK_END,          Qt::Key_End},
+    {KeyEventBaseImpl::DOM_VK_ESCAPE,       Qt::Key_Escape},
+    {KeyEventBaseImpl::DOM_VK_HOME,         Qt::Key_Home},
+    {KeyEventBaseImpl::DOM_VK_PAUSE,        Qt::Key_Pause},
+    {KeyEventBaseImpl::DOM_VK_PRINTSCREEN,  Qt::Key_Print},
+    {KeyEventBaseImpl::DOM_VK_SCROLL_LOCK,  Qt::Key_ScrollLock},
+    {KeyEventBaseImpl::DOM_VK_LEFT,         Qt::Key_Left},
+    {KeyEventBaseImpl::DOM_VK_RIGHT,        Qt::Key_Right},
+    {KeyEventBaseImpl::DOM_VK_UP,           Qt::Key_Up},
+    {KeyEventBaseImpl::DOM_VK_DOWN,         Qt::Key_Down},
+    {KeyEventBaseImpl::DOM_VK_PAGE_DOWN,    Qt::Key_Next},
+    {KeyEventBaseImpl::DOM_VK_PAGE_UP,      Qt::Key_Prior},
+    {KeyEventBaseImpl::DOM_VK_F1,           Qt::Key_F1},
+    {KeyEventBaseImpl::DOM_VK_F2,           Qt::Key_F2},
+    {KeyEventBaseImpl::DOM_VK_F3,           Qt::Key_F3},
+    {KeyEventBaseImpl::DOM_VK_F4,           Qt::Key_F4},
+    {KeyEventBaseImpl::DOM_VK_F5,           Qt::Key_F5},
+    {KeyEventBaseImpl::DOM_VK_F6,           Qt::Key_F6},
+    {KeyEventBaseImpl::DOM_VK_F7,           Qt::Key_F7},
+    {KeyEventBaseImpl::DOM_VK_F8,           Qt::Key_F8},
+    {KeyEventBaseImpl::DOM_VK_F9,           Qt::Key_F9},
+    {KeyEventBaseImpl::DOM_VK_F10,          Qt::Key_F10},
+    {KeyEventBaseImpl::DOM_VK_F11,          Qt::Key_F11},
+    {KeyEventBaseImpl::DOM_VK_F12,          Qt::Key_F12},
+    {KeyEventBaseImpl::DOM_VK_F13,          Qt::Key_F13},
+    {KeyEventBaseImpl::DOM_VK_F14,          Qt::Key_F14},
+    {KeyEventBaseImpl::DOM_VK_F15,          Qt::Key_F15},
+    {KeyEventBaseImpl::DOM_VK_F16,          Qt::Key_F16},
+    {KeyEventBaseImpl::DOM_VK_F17,          Qt::Key_F17},
+    {KeyEventBaseImpl::DOM_VK_F18,          Qt::Key_F18},
+    {KeyEventBaseImpl::DOM_VK_F19,          Qt::Key_F19},
+    {KeyEventBaseImpl::DOM_VK_F20,          Qt::Key_F20},
+    {KeyEventBaseImpl::DOM_VK_F21,          Qt::Key_F21},
+    {KeyEventBaseImpl::DOM_VK_F22,          Qt::Key_F22},
+    {KeyEventBaseImpl::DOM_VK_F23,          Qt::Key_F23},
+    {KeyEventBaseImpl::DOM_VK_F24,          Qt::Key_F24},
+    {0,                   0}
+};
+
+MAKE_TRANSLATOR(virtKeyToQtKey, unsigned, unsigned, unsigned, virtKeyToQtKeyTable)
+
+KeyEventBaseImpl::KeyEventBaseImpl(EventId id, bool canBubbleArg, bool cancelableArg, AbstractViewImpl *viewArg,
+                                        QKeyEvent *key) :
+     UIEventImpl(id, canBubbleArg, cancelableArg, viewArg, 0)
+{
+    m_synthetic = false;
+
+    m_keyEvent = new QKeyEvent(key->type(), key->key(), key->modifiers(), key->text(), key->isAutoRepeat(), key->count() );
+
+    //Here, we need to map Qt's internal info to browser-style info.
+    m_detail = key->count();
+    m_keyVal = key->key();
+    m_virtKeyVal = virtKeyToQtKey()->toLeft(key->key());
+
+    // m_keyVal should contain the unicode value
+    // of the pressed key if available.
+    if (m_virtKeyVal == DOM_VK_UNDEFINED && !key->text().isEmpty())
+        m_keyVal = key->text().unicode()[0].unicode();
+
+    // key->state returns enum ButtonState, which is ShiftButton, ControlButton and AltButton or'ed together.
+    m_modifier = key->modifiers();
 }
 
-TextEventImpl::TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *view)
-  : UIEventImpl(KEYDOWN_EVENT,true,true,view,0)
-{
-  m_keyEvent = new QKeyEvent(key->type(), key->key(), key->ascii(), key->state(), key->text(), key->isAutoRepeat(), key->count() );
-  // Events are supposed to be accepted by default in Qt!
-  // This line made QLineEdit's keyevents be ignored, so they were sent to the khtmlview
-  // (and e.g. space would make it scroll down)
-  //m_keyEvent->ignore();
-
-  if( keypress )
-    m_id = KEYPRESS_EVENT;
-  else if( key->type() == QEvent::KeyPress )
-    m_id = KEYDOWN_EVENT;
-  else if( key->type() == QEvent::KeyRelease )
-    m_id = KEYUP_EVENT;
-
-  m_detail = key->count();
-
-  m_numPad = false;
-  m_keyVal = key->ascii();
-  m_virtKeyVal = DOM_VK_UNDEFINED;
-  m_inputGenerated = true;
-
-  switch(key->key())
-  {
-  case Qt::Key_Enter:
-      m_numPad = true;
-      /* fall through */
-  case Qt::Key_Return:
-      m_virtKeyVal = DOM_VK_ENTER;
-      break;
-  case Qt::Key_NumLock:
-      m_numPad = true;
-      m_virtKeyVal = DOM_VK_NUM_LOCK;
-      break;
-  case Qt::Key_Alt:
-      m_virtKeyVal = DOM_VK_RIGHT_ALT;
-      // ### DOM_VK_LEFT_ALT;
-      break;
-  case Qt::Key_Control:
-      m_virtKeyVal = DOM_VK_LEFT_CONTROL;
-      // ### DOM_VK_RIGHT_CONTROL
-      break;
-  case Qt::Key_Shift:
-      m_virtKeyVal = DOM_VK_LEFT_SHIFT;
-      // ### DOM_VK_RIGHT_SHIFT
-      break;
-  case Qt::Key_Meta:
-      m_virtKeyVal = DOM_VK_META;
-      break;
-  case Qt::Key_CapsLock:
-      m_virtKeyVal = DOM_VK_CAPS_LOCK;
-      break;
-  case Qt::Key_Delete:
-      m_virtKeyVal = DOM_VK_DELETE;
-      break;
-  case Qt::Key_End:
-      m_virtKeyVal = DOM_VK_END;
-      break;
-  case Qt::Key_Escape:
-      m_virtKeyVal = DOM_VK_ESCAPE;
-      break;
-  case Qt::Key_Home:
-      m_virtKeyVal = DOM_VK_HOME;
-      break;
-//   case Qt::Key_Insert:
-//       m_virtKeyVal = DOM_VK_INSERT;
-//       break;
-  case Qt::Key_Pause:
-      m_virtKeyVal = DOM_VK_PAUSE;
-      break;
-  case Qt::Key_Print:
-      m_virtKeyVal = DOM_VK_PRINTSCREEN;
-      break;
-  case Qt::Key_ScrollLock:
-      m_virtKeyVal = DOM_VK_SCROLL_LOCK;
-      break;
-  case Qt::Key_Left:
-      m_virtKeyVal = DOM_VK_LEFT;
-      break;
-  case Qt::Key_Right:
-      m_virtKeyVal = DOM_VK_RIGHT;
-      break;
-  case Qt::Key_Up:
-      m_virtKeyVal = DOM_VK_UP;
-      break;
-  case Qt::Key_Down:
-      m_virtKeyVal = DOM_VK_DOWN;
-      break;
-  case Qt::Key_PageDown:
-      m_virtKeyVal = DOM_VK_PAGE_DOWN;
-      break;
-  case Qt::Key_PageUp:
-      m_virtKeyVal = DOM_VK_PAGE_UP;
-      break;
-  case Qt::Key_F1:
-      m_virtKeyVal = DOM_VK_F1;
-      break;
-  case Qt::Key_F2:
-      m_virtKeyVal = DOM_VK_F2;
-      break;
-  case Qt::Key_F3:
-      m_virtKeyVal = DOM_VK_F3;
-      break;
-  case Qt::Key_F4:
-      m_virtKeyVal = DOM_VK_F4;
-      break;
-  case Qt::Key_F5:
-      m_virtKeyVal = DOM_VK_F5;
-      break;
-  case Qt::Key_F6:
-      m_virtKeyVal = DOM_VK_F6;
-      break;
-  case Qt::Key_F7:
-      m_virtKeyVal = DOM_VK_F7;
-      break;
-  case Qt::Key_F8:
-      m_virtKeyVal = DOM_VK_F8;
-      break;
-  case Qt::Key_F9:
-      m_virtKeyVal = DOM_VK_F9;
-      break;
-  case Qt::Key_F10:
-      m_virtKeyVal = DOM_VK_F10;
-      break;
-  case Qt::Key_F11:
-      m_virtKeyVal = DOM_VK_F11;
-      break;
-  case Qt::Key_F12:
-      m_virtKeyVal = DOM_VK_F12;
-      break;
-  case Qt::Key_F13:
-      m_virtKeyVal = DOM_VK_F13;
-      break;
-  case Qt::Key_F14:
-      m_virtKeyVal = DOM_VK_F14;
-      break;
-  case Qt::Key_F15:
-      m_virtKeyVal = DOM_VK_F15;
-      break;
-  case Qt::Key_F16:
-      m_virtKeyVal = DOM_VK_F16;
-      break;
-  case Qt::Key_F17:
-      m_virtKeyVal = DOM_VK_F17;
-      break;
-  case Qt::Key_F18:
-      m_virtKeyVal = DOM_VK_F18;
-      break;
-  case Qt::Key_F19:
-      m_virtKeyVal = DOM_VK_F19;
-      break;
-  case Qt::Key_F20:
-      m_virtKeyVal = DOM_VK_F20;
-      break;
-  case Qt::Key_F21:
-      m_virtKeyVal = DOM_VK_F21;
-      break;
-  case Qt::Key_F22:
-      m_virtKeyVal = DOM_VK_F22;
-      break;
-  case Qt::Key_F23:
-      m_virtKeyVal = DOM_VK_F23;
-      break;
-  case Qt::Key_F24:
-      m_virtKeyVal = DOM_VK_F24;
-      break;
-  default:
-      m_virtKeyVal = DOM_VK_UNDEFINED;
-      break;
-  }
-
-  // m_keyVal should contain the unicode value
-  // of the pressed key if available.
-  if (m_virtKeyVal == DOM_VK_UNDEFINED && !key->text().isEmpty())
-      m_keyVal = key->text()[0].unicode();
-
-  //  m_numPad = ???
-
-  // key->state returns enum ButtonState, which is ShiftButton, ControlButton and AltButton or'ed together.
-  m_modifier = key->state();
-
-  // key->text() returns the unicode sequence as a QString
-  m_outputString = DOMString(key->text());
-}
-
-TextEventImpl::TextEventImpl(EventId _id,
-			   bool canBubbleArg,
-			   bool cancelableArg,
-			   AbstractViewImpl *viewArg,
-			   unsigned short detailArg,
-			   DOMString &outputStringArg,
-			   unsigned long keyValArg,
-			   unsigned long virtKeyValArg,
-			   bool inputGeneratedArg,
-			   bool numPadArg)
-  : UIEventImpl(_id,canBubbleArg,cancelableArg,viewArg,detailArg)
-{
-  m_keyEvent = 0;
-  m_keyVal = keyValArg;
-  m_virtKeyVal = virtKeyValArg;
-  m_inputGenerated = inputGeneratedArg;
-  m_outputString = outputStringArg;
-  m_numPad = numPadArg;
-  m_modifier = 0;
-}
-
-TextEventImpl::~TextEventImpl()
+KeyEventBaseImpl::~KeyEventBaseImpl()
 {
     delete m_keyEvent;
 }
 
-bool TextEventImpl::checkModifier(unsigned long modifierArg)
+void KeyEventBaseImpl::initKeyBaseEvent(const DOMString &typeArg,
+                                        bool canBubbleArg,
+                                        bool cancelableArg,
+                                        AbstractViewImpl* viewArg,
+                                        unsigned long keyValArg,
+                                        unsigned long virtKeyValArg,
+                                        unsigned long modifiersArg)
+{
+    m_synthetic = true;
+    delete m_keyEvent;
+    m_keyEvent = 0;
+    initUIEvent(typeArg, canBubbleArg, cancelableArg, viewArg, 1);
+    m_virtKeyVal = virtKeyValArg;
+    m_keyVal     = keyValArg;
+    m_modifier   = modifiersArg;
+}
+
+bool KeyEventBaseImpl::checkModifier(unsigned long modifierArg)
 {
   return ((m_modifier & modifierArg) == modifierArg);
 }
 
-void TextEventImpl::initTextEvent(const DOMString &typeArg,
-				bool canBubbleArg,
-				bool cancelableArg,
-				AbstractViewImpl* viewArg,
-				long detailArg,
-				const DOMString &outputStringArg,
-				unsigned long keyValArg,
-				unsigned long virtKeyValArg,
-				bool inputGeneratedArg,
-				bool numPadArg)
+void KeyEventBaseImpl::buildQKeyEvent() const
 {
-  UIEventImpl::initUIEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg);
+    delete m_keyEvent;
 
-  m_outputString = outputStringArg;
-  m_keyVal = keyValArg;
-  m_virtKeyVal = virtKeyValArg;
-  m_inputGenerated = inputGeneratedArg;
-  m_numPad = numPadArg;
-}
+    assert(m_synthetic);
+    //IMPORTANT: we ignore Ctrl, Alt, and Meta modifers on purpose.
+    //this is to prevent a website from synthesizing something like Ctrl-V
+    //and stealing contents of the user's clipboard.
+    Qt::KeyboardModifiers modifiers;
+    if (m_modifier & Qt::ShiftModifier)
+        modifiers |= Qt::ShiftModifier;
 
-void TextEventImpl::initModifier(unsigned long modifierArg,
-				bool valueArg)
-{
-  if (valueArg)
-      m_modifier |= modifierArg;
-  else
-      m_modifier &= (modifierArg ^ 0xFFFFFFFF);
-}
+    if (m_modifier & Qt::KeypadModifier)
+        modifiers |= Qt::KeypadModifier;
 
-int TextEventImpl::keyCode() const
-{
-    if (!m_keyEvent)
-        return 0;
-
-    if (m_virtKeyVal != DOM_VK_UNDEFINED) {
-        return m_virtKeyVal;
-    } else {
-        int c = charCode();
-        if (c != 0) {
-            return QChar(c).toUpper().unicode();
-        } else {
-            c = m_keyEvent->key();
-            if (c == Qt::Key_unknown)
-                kdDebug( 6020 ) << "Unknown key" << endl;
-            return c;
-        }
+    int key   = 0;
+    QString text;
+    if (m_virtKeyVal)
+        key = virtKeyToQtKey()->toRight(m_virtKeyVal);
+    if (!key) {
+        key   = m_keyVal;
+        text  = QChar(key);
     }
+
+    //Neuter F keys as well.
+    if (key >= Qt::Key_F1 && key <= Qt::Key_F35)
+        key = Qt::Key_ScrollLock;
+
+    m_keyEvent = new QKeyEvent(id() == KEYUP_EVENT ? QEvent::KeyRelease : QEvent::KeyPress,
+                        key, modifiers, text);
 }
 
-int TextEventImpl::charCode() const
+//------------------------------------------------------------------------------
+
+
+static const IDTranslator<QByteArray, unsigned, const char*>::Info keyIdentifiersToVirtKeysTable[] = {
+    {"Alt",         KeyEventBaseImpl::DOM_VK_LEFT_ALT},
+    {"Control",     KeyEventBaseImpl::DOM_VK_LEFT_CONTROL},
+    {"Shift",       KeyEventBaseImpl::DOM_VK_LEFT_SHIFT},
+    {"Meta",        KeyEventBaseImpl::DOM_VK_META},
+    {"\0x08",       KeyEventBaseImpl::DOM_VK_SPACE},           //1-char virt!
+    {"CapsLock",    KeyEventBaseImpl::DOM_VK_CAPS_LOCK},
+    {"\x7F",        KeyEventBaseImpl::DOM_VK_DELETE},          //1-char virt!
+    {"End",         KeyEventBaseImpl::DOM_VK_END},
+    {"Enter",       KeyEventBaseImpl::DOM_VK_ENTER},
+    {"\x1b",        KeyEventBaseImpl::DOM_VK_ESCAPE},          //1-char virt!
+    {"Home",        KeyEventBaseImpl::DOM_VK_HOME},
+    {"NumLock",     KeyEventBaseImpl::DOM_VK_NUM_LOCK},
+    {"Pause",       KeyEventBaseImpl::DOM_VK_PAUSE},
+    {"PrintScreen", KeyEventBaseImpl::DOM_VK_PRINTSCREEN},
+    {"Scroll",   KeyEventBaseImpl::DOM_VK_SCROLL_LOCK},
+    {" ",        KeyEventBaseImpl::DOM_VK_SPACE},               //1-char virt!
+    {"\t",       KeyEventBaseImpl::DOM_VK_TAB},                 //1-char virt!
+    {"Left",     KeyEventBaseImpl::DOM_VK_LEFT},
+    {"Left",     KeyEventBaseImpl::DOM_VK_LEFT},
+    {"Right",    KeyEventBaseImpl::DOM_VK_RIGHT},
+    {"Up",       KeyEventBaseImpl::DOM_VK_UP},
+    {"Down",     KeyEventBaseImpl::DOM_VK_DOWN},
+    {"PageDown", KeyEventBaseImpl::DOM_VK_PAGE_DOWN},
+    {"PageUp", KeyEventBaseImpl::DOM_VK_PAGE_UP},
+    {"F1", KeyEventBaseImpl::DOM_VK_F1},
+    {"F2", KeyEventBaseImpl::DOM_VK_F2},
+    {"F3", KeyEventBaseImpl::DOM_VK_F3},
+    {"F4", KeyEventBaseImpl::DOM_VK_F4},
+    {"F5", KeyEventBaseImpl::DOM_VK_F5},
+    {"F6", KeyEventBaseImpl::DOM_VK_F6},
+    {"F7", KeyEventBaseImpl::DOM_VK_F7},
+    {"F8", KeyEventBaseImpl::DOM_VK_F8},
+    {"F9", KeyEventBaseImpl::DOM_VK_F9},
+    {"F10", KeyEventBaseImpl::DOM_VK_F10},
+    {"F11", KeyEventBaseImpl::DOM_VK_F11},
+    {"F12", KeyEventBaseImpl::DOM_VK_F12},
+    {"F13", KeyEventBaseImpl::DOM_VK_F13},
+    {"F14", KeyEventBaseImpl::DOM_VK_F14},
+    {"F15", KeyEventBaseImpl::DOM_VK_F15},
+    {"F16", KeyEventBaseImpl::DOM_VK_F16},
+    {"F17", KeyEventBaseImpl::DOM_VK_F17},
+    {"F18", KeyEventBaseImpl::DOM_VK_F18},
+    {"F19", KeyEventBaseImpl::DOM_VK_F19},
+    {"F20", KeyEventBaseImpl::DOM_VK_F20},
+    {"F21", KeyEventBaseImpl::DOM_VK_F21},
+    {"F22", KeyEventBaseImpl::DOM_VK_F22},
+    {"F23", KeyEventBaseImpl::DOM_VK_F23},
+    {"F24", KeyEventBaseImpl::DOM_VK_F24},
+    {0, 0}
+};
+
+MAKE_TRANSLATOR(keyIdentifiersToVirtKeys, QByteArray, unsigned, const char*, keyIdentifiersToVirtKeysTable)
+
+/** These are the modifiers we currently support */
+static const IDTranslator<QByteArray, unsigned, const char*>::Info keyModifiersToCodeTable[] = {
+    {"Alt",         Qt::AltButton},
+    {"Control",     Qt::ControlButton},
+    {"Shift",       Qt::ShiftButton},
+    {"Meta",        Qt::MetaButton},
+    {0,             0}
+};
+
+MAKE_TRANSLATOR(keyModifiersToCode, QByteArray, unsigned, const char*, keyModifiersToCodeTable)
+
+KeyboardEventImpl::KeyboardEventImpl() : m_keyLocation(KeyboardEvent::DOM_KEY_LOCATION_STANDARD)
+{}
+
+DOMString KeyboardEventImpl::keyIdentifier() const
 {
-    if (!m_keyEvent)
-        return 0;
+    if (unsigned special = virtKeyVal())
+        if (const char* id = keyIdentifiersToVirtKeys()->toLeft(special))
+            return QString::fromLatin1(id);
 
-    if (m_outputString.length() != 1)
-        return 0;
+    if (unsigned unicode = keyVal())
+        return QString(QChar(unicode));
 
-    return m_outputString[0].unicode();
+    return "Unidentified";
 }
 
+bool KeyboardEventImpl::getModifierState (const DOMString& keyIdentifierArg) const
+{
+    unsigned mask = keyModifiersToCode()->toRight(keyIdentifierArg.string().latin1());
+    return m_modifier & mask;
+}
 
-bool TextEventImpl::isTextEvent() const
+bool KeyboardEventImpl::isKeyboardEvent() const
 {
     return true;
 }
 
-// -----------------------------------------------------------------------------
+void KeyboardEventImpl::initKeyboardEvent(const DOMString &typeArg,
+                                          bool canBubbleArg,
+                                          bool cancelableArg,
+                                          AbstractViewImpl* viewArg,
+                                          const DOMString &keyIdentifierArg,
+                                          unsigned long keyLocationArg,
+                                          const DOMString& modifiersList)
+{
+    unsigned keyVal     = 0;
+    unsigned virtKeyVal = 0;
 
+    m_keyLocation = keyLocationArg;
+
+    //Figure out the code information from the key identifier.
+    if (keyIdentifierArg.length() == 1) {
+        //Likely to be normal unicode id, unless it's one of the few
+        //special values.
+        unsigned short code = keyIdentifierArg.unicode()[0].unicode();
+        if (code > 0x20 && code != 0x7F)
+            keyVal = code;
+    }
+
+    if (!keyVal) //One of special keys, likely.
+        virtKeyVal = keyIdentifiersToVirtKeys()->toRight(keyIdentifierArg.string().latin1());
+
+    //Process modifier list.
+    QStringList mods =
+        QStringList::split(' ',
+            modifiersList.string().stripWhiteSpace().simplifyWhiteSpace());
+
+    unsigned modifiers = 0;
+    for (QStringList::iterator i = mods.begin(); i != mods.end(); ++i)
+        if (unsigned mask = keyModifiersToCode()->toRight((*i).latin1()))
+            modifiers |= mask;
+
+    initKeyBaseEvent(typeArg, canBubbleArg, cancelableArg, viewArg,
+            keyVal, virtKeyVal, modifiers);
+}
+
+KeyboardEventImpl::KeyboardEventImpl(QKeyEvent* key, DOM::AbstractViewImpl* view) :
+    KeyEventBaseImpl(KEYDOWN_EVENT, true, true, view, key)
+{
+    if (key->type() == QEvent::KeyRelease)
+        m_id = KEYUP_EVENT;
+
+    if (key->modifiers() & Qt::KeypadModifier)
+        m_keyLocation = KeyboardEvent::DOM_KEY_LOCATION_NUMPAD;
+    else {
+        //It's generally standard, but for the modifiers, 
+        //it should be left/right, so guess left.
+        m_keyLocation = KeyboardEvent::DOM_KEY_LOCATION_STANDARD;
+        switch (m_virtKeyVal) {
+            case DOM_VK_LEFT_ALT:
+            case DOM_VK_LEFT_SHIFT:
+            case DOM_VK_LEFT_CONTROL:
+            case DOM_VK_META:
+                m_keyLocation = KeyboardEvent::DOM_KEY_LOCATION_LEFT;
+        }
+    }
+}
+
+int KeyboardEventImpl::keyCode() const
+{
+    //Keycode on key events always identifies the -key- and not the input,
+    //so e.g. 'a' will get 'A'
+    if (m_virtKeyVal != DOM_VK_UNDEFINED)
+        return m_virtKeyVal;
+    else
+        return QChar((unsigned short)m_keyVal).upper().unicode();
+}
+
+int KeyboardEventImpl::charCode() const
+{
+    //IE doesn't support charCode at all, and mozilla returns 0
+    //on key events. So return 0 here
+    return 0;
+}
+
+
+// -----------------------------------------------------------------------------
+TextEventImpl::TextEventImpl()
+{}
+
+bool TextEventImpl::isTextInputEvent() const
+{
+    return true;
+}
+
+TextEventImpl::TextEventImpl(QKeyEvent* key, DOM::AbstractViewImpl* view) :
+    KeyEventBaseImpl(KEYPRESS_EVENT, true, true, view, key)
+{
+    m_outputString = key->text();
+}
+
+void TextEventImpl::initTextEvent(const DOMString &typeArg,
+                       bool canBubbleArg,
+                       bool cancelableArg,
+                       AbstractViewImpl* viewArg,
+                       const DOMString& text)
+{
+    m_outputString = text;
+
+    //See whether we can get a key out of this.
+    unsigned keyCode = 0;
+    if (text.length() == 1)
+        keyCode = text.unicode()[0].unicode();
+    initKeyBaseEvent(typeArg, canBubbleArg, cancelableArg, viewArg,
+        keyCode, 0, 0);
+}
+
+int TextEventImpl::keyCode() const
+{
+    //Mozilla returns 0 here unless this is a non-unicode key.
+    //IE stuffs everything here, and so we try to match it..
+    if (m_keyVal)
+        return m_keyVal;
+    return m_virtKeyVal;
+}
+
+int TextEventImpl::charCode() const
+{
+    //On text events, in Mozilla charCode is 0 for non-unicode keys,
+    //and the unicode key otherwise... IE doesn't support this.
+    if (m_virtKeyVal)
+        return 0;
+    return m_keyVal;
+}
+
+
+// -----------------------------------------------------------------------------
 MutationEventImpl::MutationEventImpl()
 {
     m_relatedNode = 0;
@@ -797,8 +915,8 @@ MutationEventImpl::MutationEventImpl(EventId _id,
     if (m_newValue)
 	m_newValue->ref();
     m_attrName = attrNameArg.implementation();
-    if (m_newValue)
-	m_newValue->ref();
+    if (m_attrName)
+	m_attrName->ref();
     m_attrChange = attrChangeArg;
 }
 

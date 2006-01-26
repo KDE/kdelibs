@@ -474,10 +474,6 @@ TextEvent::TextEvent(const Event &other) : UIEvent()
     (*this)=other;
 }
 
-TextEvent::TextEvent(TextEventImpl *impl) : UIEvent(impl)
-{
-}
-
 TextEvent &TextEvent::operator = (const TextEvent &other)
 {
     UIEvent::operator = (other);
@@ -488,7 +484,7 @@ TextEvent &TextEvent::operator = (const Event &other)
 {
     Event e;
     e = other;
-    if (!e.isNull() && !e.handle()->isTextEvent()) {
+    if (!e.isNull() && !e.handle()->isTextInputEvent()) {
 	if ( impl ) impl->deref();
 	impl = 0;
     } else
@@ -501,77 +497,99 @@ TextEvent::~TextEvent()
 }
 
 void TextEvent::initTextEvent(const DOMString &typeArg,
-        bool canBubbleArg,
-        bool cancelableArg,
-        const AbstractView &viewArg,
-        long detailArg,
-        const DOMString &outputStringArg,
-        unsigned long keyValArg,
-        unsigned long virtKeyValArg,
-        bool inputGeneratedArg,
-        bool numPadArg)
+                      bool canBubbleArg,
+                      bool cancelableArg,
+                      const AbstractView &viewArg,
+                      const DOMString &dataArg)
 {
-    if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+    static_cast<TextEventImpl*>(impl)->initTextEvent(
+        typeArg, canBubbleArg, cancelableArg, viewArg.handle(), dataArg);
+}
+// -----------------------------------------------------------------------------
 
-    return static_cast<TextEventImpl*>(impl)->initTextEvent(typeArg, canBubbleArg, cancelableArg, viewArg.handle(), detailArg, outputStringArg, keyValArg, virtKeyValArg, inputGeneratedArg, numPadArg);
+KeyboardEvent::KeyboardEvent() : UIEvent()
+{
 }
 
-unsigned long TextEvent::keyVal() const
+KeyboardEvent::KeyboardEvent(const KeyboardEvent &other) : UIEvent(other)
 {
-    if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
-
-    return static_cast<TextEventImpl*>(impl)->keyVal();
 }
 
-DOMString TextEvent::outputString() const
+KeyboardEvent::KeyboardEvent(const Event &other) : UIEvent()
 {
-    if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
-
-    return static_cast<TextEventImpl*>(impl)->outputString();
+    (*this)=other;
 }
 
-unsigned long TextEvent::virtKeyVal() const
+KeyboardEvent &KeyboardEvent::operator = (const KeyboardEvent &other)
 {
-    if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
-
-    return static_cast<TextEventImpl*>(impl)->virtKeyVal();
+    UIEvent::operator = (other);
+    return *this;
 }
 
-void TextEvent::initModifier(unsigned long modifierArg, bool valueArg)
+KeyboardEvent &KeyboardEvent::operator = (const Event &other)
 {
-    if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
-
-    return static_cast<TextEventImpl*>(impl)->initModifier(modifierArg,valueArg);
+    Event e;
+    e = other;
+    if (!e.isNull() && !e.handle()->isKeyboardEvent()) {
+	if ( impl ) impl->deref();
+	impl = 0;
+    } else
+	UIEvent::operator = (other);
+    return *this;
 }
 
-bool TextEvent::checkModifier(unsigned long modifierArg) const
+KeyboardEvent::~KeyboardEvent()
 {
-    if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
-
-    return static_cast<TextEventImpl*>(impl)->checkModifier(modifierArg);
 }
 
-bool TextEvent::inputGenerated() const
+DOMString KeyboardEvent::keyIdentifier() const
 {
-    if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
-
-    return static_cast<TextEventImpl*>(impl)->inputGenerated();
+    return static_cast<const KeyboardEventImpl*>(impl)->keyIdentifier();
 }
 
-bool TextEvent::numPad() const
+unsigned long KeyboardEvent::keyLocation() const
 {
-    if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
-
-    return static_cast<TextEventImpl*>(impl)->numPad();
+    return static_cast<const KeyboardEventImpl*>(impl)->keyLocation();
 }
+
+bool KeyboardEvent::ctrlKey() const
+{
+    return static_cast<const KeyboardEventImpl*>(impl)->ctrlKey();
+}
+
+bool KeyboardEvent::shiftKey() const
+{
+    return static_cast<const KeyboardEventImpl*>(impl)->shiftKey();
+}
+
+bool KeyboardEvent::altKey() const
+{
+    return static_cast<const KeyboardEventImpl*>(impl)->altKey();
+}
+
+bool KeyboardEvent::metaKey() const
+{
+    return static_cast<const KeyboardEventImpl*>(impl)->metaKey();
+}
+
+bool KeyboardEvent::getModifierState(DOMString keyIdentifierArg) const
+{
+    return static_cast<const KeyboardEventImpl*>(impl)->getModifierState(keyIdentifierArg);
+}
+
+void KeyboardEvent::initKeyboardEvent(DOMString typeArg,
+                            bool canBubbleArg,
+                            bool cancelableArg,
+                            AbstractView viewArg,
+                            DOMString keyIdentifierArg,
+                            unsigned long keyLocationArg,
+                            DOMString modifiersList)
+{
+    static_cast<KeyboardEventImpl*>(impl)->initKeyboardEvent(typeArg,
+        canBubbleArg, cancelableArg, viewArg.handle(), keyIdentifierArg, keyLocationArg, modifiersList);
+}
+
+
 // -----------------------------------------------------------------------------
 
 MutationEvent::MutationEvent() : Event()

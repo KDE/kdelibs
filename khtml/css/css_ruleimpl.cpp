@@ -368,8 +368,9 @@ void CSSRuleListImpl::deleteRule ( unsigned long index )
     CSSRuleImpl *rule = m_lstCSSRules.take( index );
     if( rule )
         rule->deref();
-    else
-        ; // ### Throw INDEX_SIZE_ERR exception here (TODO)
+    else {
+         // ### Throw INDEX_SIZE_ERR exception here (TODO)
+    }
 }
 
 unsigned long CSSRuleListImpl::insertRule( CSSRuleImpl *rule,

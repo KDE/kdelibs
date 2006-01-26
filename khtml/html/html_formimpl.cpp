@@ -900,7 +900,11 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
     {
         if( p->id() == ID_FORM )
             return static_cast<HTMLFormElementImpl *>(p);
-        p = p->parentNode();
+        NodeImpl *s = p->previousSibling();
+        if (!s)
+            p = p->parentNode();
+        else
+            p = s;
     }
 #ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "couldn't find form!" << endl;
@@ -953,14 +957,21 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 
 bool HTMLGenericFormElementImpl::isFocusable() const
 {
-    return (!disabled() && m_render && m_render->isWidget() &&
-        static_cast<RenderWidget*>(m_render)->widget() &&
-        static_cast<RenderWidget*>(m_render)->widget()->focusPolicy() >= Qt::TabFocus) ||
-		/* INPUT TYPE="image" supports focus too */
-		(
-			id() == ID_INPUT &&
-			static_cast<const HTMLInputElementImpl *>(this)->inputType() == HTMLInputElementImpl::IMAGE
-		);
+    if (disabled())
+	return false;
+
+    //Non-widget INPUT TYPE="image" and <BUTTON> support focus, too.
+    if (id() == ID_INPUT && static_cast<const HTMLInputElementImpl *>(this)->inputType() == HTMLInputElementImpl::IMAGE)
+	return true;
+
+    if (id() == ID_BUTTON)
+	return true;
+
+    if (!m_render)
+	return false;
+
+    QWidget* widget = static_cast<RenderWidget*>(m_render)->widget();
+    return widget && widget->focusPolicy() >= Qt::TabFocus;
 }
 
 class FocusHandleWidget : public QWidget
@@ -1019,8 +1030,8 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 
 	if (!evt->defaultHandled() && m_render && m_render->isWidget()) {
 	    // handle tabbing out, either from a single or repeated key event.
-	    if ( evt->id() == EventImpl::KEYPRESS_EVENT ) {
-	        QKeyEvent* const k = static_cast<TextEventImpl *>(evt)->qKeyEvent();
+	    if ( evt->id() == EventImpl::KEYPRESS_EVENT && evt->isKeyRelatedEvent() ) {
+	        QKeyEvent* const k = static_cast<KeyEventBaseImpl *>(evt)->qKeyEvent();
 	        if ( k && (k->key() == Qt::Key_Tab || k->key() == Qt::Key_BackTab) ) {
 		    QWidget* const widget = static_cast<RenderWidget*>(m_render)->widget();
 		    if (widget)
@@ -1120,8 +1131,8 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if (m_type != BUTTON && !m_disabled) {
 	bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
-	if (!act && evt->id()==EventImpl::KEYUP_EVENT) {
-	    QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent();
+	if (!act && evt->id()==EventImpl::KEYUP_EVENT && evt->isKeyRelatedEvent()) {
+	    QKeyEvent* const ke = static_cast<KeyEventBaseImpl *>(evt)->qKeyEvent();
 	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
 	}
@@ -1747,8 +1758,8 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         // must dispatch a DOMActivate event - a click event will not do the job.
         if (m_type == IMAGE || m_type == SUBMIT || m_type == RESET) {
 	    bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
-	    if (!act && evt->id() == EventImpl::KEYUP_EVENT) {
-		QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent();
+	    if (!act && evt->id() == EventImpl::KEYUP_EVENT && evt->isKeyRelatedEvent()) {
+		QKeyEvent* const ke = static_cast<KeyEventBaseImpl *>(evt)->qKeyEvent();
 		if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		    act = true;
 	    }
@@ -1832,9 +1843,9 @@ void HTMLLabelElementImpl::defaultEventHandler(EventImpl *evt)
 	if ( evt->id() == EventImpl::CLICK_EVENT ) {
 	    act = true;
 	}
-	else if ( evt->id() == EventImpl::KEYUP_EVENT ||
-	                      evt->id() == EventImpl::KEYPRESS_EVENT ) {
-	    QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent();
+	else if ( evt->isKeyRelatedEvent() && ( evt->id() == EventImpl::KEYUP_EVENT ||
+	                                        evt->id() == EventImpl::KEYPRESS_EVENT ) ) {
+	    QKeyEvent* const ke = static_cast<KeyEventBaseImpl *>(evt)->qKeyEvent();
 	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
 	}
@@ -1904,6 +1915,7 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementIm
     // 0 means invalid (i.e. not set)
     m_size = 0;
     m_minwidth = 0;
+    m_length   = 0;
 }
 
 HTMLSelectElementImpl::~HTMLSelectElementImpl()
@@ -1962,15 +1974,9 @@ void HTMLSelectElementImpl::setSelectedIndex( long  index )
 
 long HTMLSelectElementImpl::length() const
 {
-    int len = 0;
-    uint i;
-    QVector<HTMLGenericFormElementImpl*> items = listItems();
-    const uint itemsSize = items.size();
-    for (i = 0; i < itemsSize; ++i) {
-        if (items[i]->id() == ID_OPTION)
-            ++len;
-    }
-    return len;
+    if (m_recalcListItems)
+        recalcListItems();
+    return m_length;
 }
 
 void HTMLSelectElementImpl::add( HTMLElementImpl* element, HTMLElementImpl* before, int& exceptioncode )
@@ -1978,8 +1984,21 @@ void HTMLSelectElementImpl::add( HTMLElementImpl* element, HTMLElementImpl* befo
     if(!element || element->id() != ID_OPTION)
         return;
 
-    insertBefore(element, before, exceptioncode );
-    if (!exceptioncode)
+    HTMLOptionElementImpl* option = static_cast<HTMLOptionElementImpl*>(element);
+    //Fast path for appending an item. Can't be done if it is selected and 
+    //we're single-select, since we may need to drop an implicitly-selected item
+    bool fastAppendLast = false;
+    if (before == 0 && (m_multiple || !option->selected()) && !m_recalcListItems)
+        fastAppendLast = true;
+
+    insertBefore(option, before, exceptioncode );
+
+    if (fastAppendLast) {
+        m_listItems.resize(m_listItems.size() + 1);
+        m_listItems[m_listItems.size() - 1] = option;
+        ++m_length;
+        m_recalcListItems = false;
+    } else if (!exceptioncode)
         setRecalcListItems();
 }
 
@@ -1992,8 +2011,22 @@ void HTMLSelectElementImpl::remove( long index )
     if(listIndex < 0 || index >= int(items.size()))
         return; // ### what should we do ? remove the last item?
 
+    //Fast path for last element, for e.g. clearing the box
+    //Note that if this is a single-select, we may have to recompute
+    //anyway if the item was selected, since we may want to set 
+    //a different one
+    bool fastRemoveLast = false;
+    if ((listIndex == items.size() - 1) && !m_recalcListItems && 
+        (m_multiple || !static_cast<HTMLOptionElementImpl*>(items[listIndex])->selected()))
+            fastRemoveLast = true;
+
     removeChild(items[listIndex], exceptioncode);
-    if( !exceptioncode )
+
+    if (fastRemoveLast) {
+        m_listItems.resize(m_listItems.size() - 1);
+        --m_length;
+        m_recalcListItems = false;
+    } else if( !exceptioncode)
         setRecalcListItems();
 }
 
@@ -2236,6 +2269,11 @@ int HTMLSelectElementImpl::optionToListIndex(int optionIndex) const
     if (optionIndex < 0 || optionIndex >= itemsSize)
         return -1;
 
+    //See if we're asked for the very last item, and check whether it's an <option>
+    //to fastpath clear
+    if (optionIndex == (m_length - 1) && items[itemsSize - 1]->id() == ID_OPTION)
+        return itemsSize - 1;
+
     int listIndex = 0;
     int optionIndex2 = 0;
     for (;
@@ -2263,11 +2301,12 @@ int HTMLSelectElementImpl::listToOptionIndex(int listIndex) const
     return optionIndex;
 }
 
-void HTMLSelectElementImpl::recalcListItems()
+void HTMLSelectElementImpl::recalcListItems() const
 {
     NodeImpl* current = firstChild();
     m_listItems.resize(0);
     HTMLOptionElementImpl* foundSelected = 0;
+    m_length = 0;
     while(current) {
         if (current->id() == ID_OPTGROUP && current->firstChild()) {
             // ### what if optgroup contains just comments? don't want one of no options in it...
@@ -2276,6 +2315,7 @@ void HTMLSelectElementImpl::recalcListItems()
             current = current->firstChild();
         }
         if (current->id() == ID_OPTION) {
+            ++m_length;
             m_listItems.resize(m_listItems.size()+1);
             m_listItems[m_listItems.size()-1] = static_cast<HTMLGenericFormElementImpl*>(current);
             if (!foundSelected && !m_multiple && m_size <= 1) {
@@ -2290,7 +2330,7 @@ void HTMLSelectElementImpl::recalcListItems()
         NodeImpl* const parent = current->parentNode();
         current = current->nextSibling();
         if (!current) {
-            if (parent != this)
+            if (static_cast<const NodeImpl *>(parent) != this)
                 current = parent->nextSibling();
         }
     }

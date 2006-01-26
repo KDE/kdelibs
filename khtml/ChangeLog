@@ -1,3 +1,8 @@
+2006-01-14  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_image.cpp (calcReplacedWidth,calcReplacedHeight):
+        Respect both min/max sizes and aspect-ratio when resizing.
+
 2006-01-03  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * css/cssparser.cpp: Allow content: normal | none

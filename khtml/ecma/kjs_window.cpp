@@ -242,13 +242,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   defaultstatus	Window::DefaultStatus	DontDelete
   status	Window::Status		DontDelete
   document	Window::Document	DontDelete|ReadOnly
-  Node		Window::Node		DontDelete
   frameElement		Window::FrameElement		DontDelete|ReadOnly
-  Event		Window::EventCtor	DontDelete
-  Range		Window::Range		DontDelete
-  NodeFilter	Window::NodeFilter	DontDelete
-  DOMException	Window::DOMException	DontDelete
-  CSSRule	Window::CSSRule		DontDelete
   frames	Window::Frames		DontDelete|ReadOnly
   history	Window::_History	DontDelete|ReadOnly
   external	Window::_External	DontDelete|ReadOnly
@@ -285,11 +279,6 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   window	Window::_Window		DontDelete|ReadOnly
   top		Window::Top		DontDelete|ReadOnly
   screen	Window::_Screen		DontDelete|ReadOnly
-  Image		Window::Image		DontDelete|ReadOnly
-  Option	Window::Option		DontDelete|ReadOnly
-  XMLHttpRequest Window::XMLHttpRequest DontDelete|ReadOnly
-  XMLSerializer	Window::XMLSerializer	DontDelete|ReadOnly
-  DOMParser	Window::DOMParser	DontDelete|ReadOnly
   alert		Window::Alert		DontDelete|Function 1
   confirm	Window::Confirm		DontDelete|Function 1
   prompt	Window::Prompt		DontDelete|Function 2
@@ -341,6 +330,22 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   onselect	Window::Onselect	DontDelete
   onsubmit	Window::Onsubmit	DontDelete
   onunload	Window::Onunload	DontDelete
+
+# Constructors/constant tables
+  Node		Window::Node		DontDelete
+  Event		Window::EventCtor	DontDelete
+  Range		Window::Range		DontDelete
+  NodeFilter	Window::NodeFilter	DontDelete
+  DOMException	Window::DOMException	DontDelete
+  CSSRule	Window::CSSRule		DontDelete
+  MutationEvent Window::MutationEventCtor   DontDelete
+  KeyboardEvent Window::KeyboardEventCtor   DontDelete
+  EventException Window::EventExceptionCtor DontDelete
+  Image		Window::Image		DontDelete|ReadOnly
+  Option	Window::Option		DontDelete|ReadOnly
+  XMLHttpRequest Window::XMLHttpRequest DontDelete|ReadOnly
+  XMLSerializer	Window::XMLSerializer	DontDelete|ReadOnly
+  DOMParser	Window::DOMParser	DontDelete|ReadOnly
 @end
 */
 IMPLEMENT_PROTOFUNC(WindowFunc)
@@ -698,6 +703,12 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
       return getCSSRuleConstructor(exec);
     case EventCtor:
       return getEventConstructor(exec);
+    case MutationEventCtor:
+      return getMutationEventConstructor(exec);
+    case KeyboardEventCtor:
+      return getKeyboardEventConstructor(exec);
+    case EventExceptionCtor:
+      return getEventExceptionConstructor(exec);
     case _History:
       return history ? history :
                    (const_cast<Window*>(this)->history = new History(exec,part));

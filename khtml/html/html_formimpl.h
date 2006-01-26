@@ -438,14 +438,15 @@ public:
     void notifyOptionSelected(HTMLOptionElementImpl *selectedOption, bool selected);
 
 private:
-    void recalcListItems();
+    void recalcListItems() const;
 
 protected:
     mutable QVector<HTMLGenericFormElementImpl*> m_listItems;
     short m_minwidth;
     signed short m_size : 15;
     bool m_multiple : 1;
-    bool m_recalcListItems;
+    mutable bool m_recalcListItems :1;
+    mutable unsigned int   m_length:31;
 };
 
 // -------------------------------------------------------------------------

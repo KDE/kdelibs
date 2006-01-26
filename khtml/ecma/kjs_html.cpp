@@ -960,6 +960,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   type		KJS::HTMLElement::AnchorType		DontDelete
   blur		KJS::HTMLElement::AnchorBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::AnchorFocus		DontDelete|Function 0
+  click		KJS::HTMLElement::AnchorClick		DontDelete|Function 0
 @end
 @begin HTMLImageElementTable 15
   name		KJS::HTMLElement::ImageName		DontDelete
@@ -2169,6 +2170,10 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
         anchor.focus();
         return Undefined();
       }
+      else if (id == KJS::HTMLElement::AnchorClick) {
+        anchor.click();
+        return Undefined();
+      }
     }
     break;
     case ID_TABLE: {
@@ -2791,7 +2796,7 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
     }
     else // remove elements
       while (diff-- > 0)
-        element->remove(newLen);
+        element->remove(newLen + diff);
 
     return;
   }
