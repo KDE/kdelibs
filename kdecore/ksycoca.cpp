@@ -149,7 +149,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
      else
      {
 #ifdef HAVE_MADVISE
-	(void) madvise((void*)m_sycoca_mmap, m_sycoca_size, MADV_WILLNEED);
+	(void) madvise((char*)m_sycoca_mmap, m_sycoca_size, MADV_WILLNEED);
 #endif
         QByteArray b_array;
         b_array.setRawData(m_sycoca_mmap, m_sycoca_size);
