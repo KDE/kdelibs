@@ -100,7 +100,8 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
     *
     * See QLineEdit::createPopupMenu().
     */
-//     virtual void contextMenuEvent( QContextMenuEvent *e );
+
+    virtual void contextMenuEvent( QContextMenuEvent *e );
 
   Q_SIGNALS:
     /**

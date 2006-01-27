@@ -254,6 +254,24 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *e )
     connect( popup, SIGNAL( triggered ( QAction* ) ),
              this, SLOT( menuActivated( QAction* ) ) );
 
+    QList<QAction *> lstAction = popup->actions ();
+
+    if ( !lstAction.isEmpty() )
+    {
+        enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
+        if ( isReadOnly() )
+            lstAction[CopyAct]->setIcon( SmallIconSet("editcopy") );
+        else
+        {
+            lstAction[UndoAct]->setIcon( SmallIconSet("undo") );
+            lstAction[RedoAct]->setIcon( SmallIconSet("redo") );
+            lstAction[CutAct]->setIcon( SmallIconSet("editcut") );
+            lstAction[CopyAct]->setIcon( SmallIconSet("editcopy") );
+            lstAction[PasteAct]->setIcon( SmallIconSet("editpaste") );
+            lstAction[ClearAct]->setIcon( SmallIconSet("editclear") );
+        }
+    }
+
     popup->addSeparator();
     d->spellCheckAction = popup->addAction( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ) );
 
@@ -269,41 +287,6 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *e )
     d->allowTab->setChecked(!tabChangesFocus());
     popup->exec(e->globalPos());
     delete popup;
-
-
-// TODO
-/*
-    enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
-
-    QMenu *menu = createStandardContextMenu();
-
-    if ( isReadOnly() )
-        menu->changeItem( menu->idAt(0), SmallIconSet("editcopy"), menu->text( menu->idAt(0) ) );
-    else {
-        int id = menu->idAt(0);
-        menu->changeItem( id - IdUndo, SmallIconSet("undo"), menu->text( id - IdUndo) );
-        menu->changeItem( id - IdRedo, SmallIconSet("redo"), menu->text( id - IdRedo) );
-        menu->changeItem( id - IdCut, SmallIconSet("editcut"), menu->text( id - IdCut) );
-        menu->changeItem( id - IdCopy, SmallIconSet("editcopy"), menu->text( id - IdCopy) );
-        menu->changeItem( id - IdPaste, SmallIconSet("editpaste"), menu->text( id - IdPaste) );
-        menu->changeItem( id - IdClear, SmallIconSet("editclear"), menu->text( id - IdClear) );
-
-        menu->insertSeparator();
-        id = menu->insertItem( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ),
-                               this, SLOT( checkSpelling() ) );
-
-        if ( text().isEmpty() )
-            menu->setItemEnabled( id, false );
-
-        id = menu->insertItem( i18n( "Auto Spell Check" ),
-                               this, SLOT( toggleAutoSpellCheck() ) );
-        menu->setItemChecked(id, d->checkSpellingEnabled);
-        menu->insertSeparator();
-        id = menu->insertItem(i18n("Allow Tabulations"),this,SLOT(slotAllowTab()));
-        menu->setItemChecked(id, !tabChangesFocus());
-    }
-*/
-
 }
 
 void KTextEdit::wheelEvent( QWheelEvent *e )
