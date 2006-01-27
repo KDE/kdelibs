@@ -234,7 +234,10 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent)
 
         QLabel *titlePane = new QLabel(this);
 
-        QBrush brush( QPixmap(locate("data", "kdeui/pics/ktip-background.png")) );
+//      neither gcc 3.2 nor 3.3 are able to compile this line:, Alex
+//        QBrush brush( QPixmap(locate("data", "kdeui/pics/ktip-background.png")) );
+        QBrush brush;
+        brush.setTexture( QPixmap(locate("data", "kdeui/pics/ktip-background.png")) );
         QPalette pal = titlePane->palette();
         pal.setBrush(QPalette::Window, brush);
         titlePane->setPalette(pal);

@@ -1,5 +1,10 @@
 kde4_header()
 
+find_package(JPEG REQUIRED)
+find_package(GIF  REQUIRED)
+
+# I should add include_directories(${JPEG_INCLUDE_DIRECTORY}) here, but recompiling takes too much time now, Alex
+
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 
 # khtml/dom/Makefile.am: khtmldom
@@ -275,7 +280,7 @@ kde4_add_dcop_skels(khtml_LIB_SRCS ${khtml_DCOP_SKEL_SRCS})
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient )
+target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARY} ${GIF_LIBRARY})
 
 set_target_properties(khtml PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib khtml )
@@ -317,7 +322,7 @@ kde4_automoc(${khtmlimagepart_PART_SRCS})
 
 kde4_add_plugin(khtmlimagepart ${khtmlimagepart_PART_SRCS})
 
-target_link_libraries(khtmlimagepart  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(khtmlimagepart  ${QT_AND_KDECORE_LIBS} khtml)
 
 install_targets(/lib/kde4 khtmlimagepart )
 
