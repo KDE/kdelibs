@@ -86,10 +86,12 @@ namespace KSpell2
         virtual void unsetMisspelled( int start,  int count );
 
 	bool eventFilter(QObject *o, QEvent *e);
+	bool intraWordEditing() const;
+	void setIntraWordEditing( bool editing );
 
     public Q_SLOTS:
 	void slotAutoDetection();
-
+    void slotRehighlight();
     private:
         class Private;
         Private* const d;

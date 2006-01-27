@@ -48,9 +48,12 @@ public:
     QTextEdit *edit;
     bool active;
     bool automatic;
+    bool completeRehighlightRequired;
+    bool intraWordEditing;
     int disablePercentage;
     int disableWordCount;
     int wordCount, errorCount;
+    QTimer *rehighlightRequest;
 };
 
 Highlighter::Highlighter( QTextEdit *textEdit,
@@ -64,6 +67,8 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     d->automatic = true;
     d->wordCount = 0;
     d->errorCount = 0;
+    d->intraWordEditing = false;
+    d->completeRehighlightRequired = false;
 
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
@@ -88,13 +93,34 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
         d->dict->addToSession( *it );
     }
-
+    d->rehighlightRequest = new QTimer(this);
+    connect( d->rehighlightRequest, SIGNAL( timeout() ),
+	     this, SLOT( slotRehighlight() ));
+    d->completeRehighlightRequired = true;
+    d->rehighlightRequest->start( 0, true );
 }
 
 Highlighter::~Highlighter()
 {
     delete d;
 }
+
+void Highlighter::slotRehighlight()
+{
+    kdDebug(0) << "Highlighter::slotRehighlight()" << endl;
+    if (d->completeRehighlightRequired) {
+	rehighlight();
+    } else {
+	//rehighlight the current para only (undo/redo safe)
+        QTextCursor cursor = d->edit->textCursor();
+        int index = cursor.position();
+        cursor.insertText( "" );
+    }
+    //if (d->checksDone == d->checksRequested)
+    //d->completeRehighlightRequired = false;
+    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
+}
+
 
 QStringList Highlighter::personalWords()
 {
@@ -116,6 +142,17 @@ bool Highlighter::automatic() const
 {
     return d->automatic;
 }
+
+bool Highlighter::intraWordEditing() const
+{
+    return d->intraWordEditing;
+}
+
+void Highlighter::setIntraWordEditing( bool editing )
+{
+    d->intraWordEditing = editing;
+}
+
 
 void Highlighter::setAutomatic( bool automatic )
 {
@@ -146,8 +183,9 @@ void Highlighter::slotAutoDetection()
 	    else
 		emit activeChanged( i18n( "Too many misspelled words. "
 					  "As-you-type spell checking disabled." ) );
-	//d->completeRehighlightRequired = true;
-	//d->rehighlightRequest->start( 100, true );
+	d->completeRehighlightRequired = true;
+	d->rehighlightRequest->start( 100, true );
+        kdDebug()<<" Highlighter::slotAutoDetection :"<<d->active<<endl;
     }
 
 }
@@ -157,8 +195,8 @@ void Highlighter::setActive( bool active )
     if ( active == d->active )
         return;
     d->active = active;
-#warning ****** doesnt compile right now, rehighlight() undeclared, Alex
-//    rehighlight();
+#warning "Use qt-copy for rehighlight"
+    rehighlight();
 
     if ( d->active )
         emit activeChanged( i18n("As-you-type spell checking enabled.") );
@@ -231,6 +269,8 @@ void Highlighter::setCurrentLanguage( const QString& lang )
     d->dict = d->dictCache[lang];
     d->wordCount = 0;
     d->errorCount = 0;
+    if ( d->automatic )
+        slotAutoDetection();
 }
 
 void Highlighter::setMisspelled( int start, int count )
@@ -255,10 +295,10 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
             }
         }
     }
-
-    if (o == textEdit() && (e->type() == QEvent::KeyPress)) {
+#endif
+    if (o == d->edit  && (e->type() == QEvent::KeyPress)) {
 	QKeyEvent *k = static_cast<QKeyEvent *>(e);
-	d->autoReady = true;
+	//d->autoReady = true;
 	if (d->rehighlightRequest->isActive()) // try to stay out of the users way
 	    d->rehighlightRequest->start( 500 );
 	if ( k->key() == Qt::Key_Enter ||
@@ -282,12 +322,14 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
 		d->completeRehighlightRequired = true;
 		d->rehighlightRequest->start( 500, true );
 	    }
+#if 0
 	    if (d->checksDone != d->checksRequested) {
 		// Handle possible change of paragraph while
 		// words are pending spell checking
 		d->completeRehighlightRequired = true;
 		d->rehighlightRequest->start( 500, true );
 	    }
+#endif
 	} else {
 	    setIntraWordEditing( true );
 	}
@@ -298,16 +340,15 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
 	}
     }
 
-    else if ( /*o == document ()->viewport() &&*/
+    else if ( o == d->edit->viewport() &&
 	 ( e->type() == QEvent::MouseButtonPress )) {
-	d->autoReady = true;
+	//d->autoReady = true;
 	if ( intraWordEditing() ) {
 	    setIntraWordEditing( false );
 	    d->completeRehighlightRequired = true;
 	    d->rehighlightRequest->start( 0, true );
 	}
     }
-#endif
     return false;
 }
 
