@@ -54,11 +54,12 @@ public:
     int disableWordCount;
     int wordCount, errorCount;
     QTimer *rehighlightRequest;
+    QColor spellColor;
 };
 
 Highlighter::Highlighter( QTextEdit *textEdit,
                           const QString& configFile,
-                          Filter *filter)
+                          Filter *filter, const QColor& _col)
     : QSyntaxHighlighter( textEdit ),d(new Private)
 {
     d->filter = filter;
@@ -69,6 +70,8 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     d->errorCount = 0;
     d->intraWordEditing = false;
     d->completeRehighlightRequired = false;
+
+    d->spellColor = _col.isValid() ? _col : Qt::red;
 
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
@@ -275,7 +278,7 @@ void Highlighter::setCurrentLanguage( const QString& lang )
 
 void Highlighter::setMisspelled( int start, int count )
 {
-    setFormat( start , count, Qt::red );
+    setFormat( start , count, d->spellColor );
 }
 
 void Highlighter::unsetMisspelled( int start, int count )

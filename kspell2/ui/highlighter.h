@@ -37,7 +37,7 @@ namespace KSpell2
     public:
         Highlighter( QTextEdit *textEdit,
                      const QString& configFile = QString(),
-                     Filter *filter = Filter::defaultFilter() );
+                     Filter *filter = Filter::defaultFilter(), const QColor& _col =QColor() );
         ~Highlighter();
 	
 	virtual void highlightBlock ( const QString & text );
