@@ -21,6 +21,6 @@
 #ifndef KSSLCONFIG_H
 #define KSSLCONFIG_H
 
-#cmakedefine KSSL_HAVE_SSL 
+#cmakedefine KSSL_HAVE_SSL 1
 
 #endif
