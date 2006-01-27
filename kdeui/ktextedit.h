@@ -148,7 +148,7 @@ private:
     void posToRowCol( unsigned int pos, unsigned int &line, unsigned int &col );
 
     class KTextEditPrivate;
-    KTextEditPrivate *d;
+    KTextEditPrivate *const d;
 };
 
 #endif // KTEXTEDIT_H

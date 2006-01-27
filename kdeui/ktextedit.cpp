@@ -355,8 +355,7 @@ void KTextEdit::focusInEvent( QFocusEvent *e )
 
 bool KTextEdit::checkSpellingEnabled() const
 {
-//    return d->checkSpellingEnabled;
-    return false;
+	return d->checkSpellingEnabled;
 }
 
 void KTextEdit::setReadOnly( bool readOnly )
