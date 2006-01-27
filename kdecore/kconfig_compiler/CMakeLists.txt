@@ -15,7 +15,7 @@ kde4_automoc(${kconfig_compiler_SRCS})
 
 kde4_add_executable(kconfig_compiler ${kconfig_compiler_SRCS})
 
-target_link_libraries(kconfig_compiler  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kconfig_compiler  ${QT_AND_KDECORE_LIBS} ${QT_QTXML_LIBRARY} )
 
 install_targets(/bin kconfig_compiler )
 

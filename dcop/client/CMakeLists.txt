@@ -13,7 +13,7 @@ kde4_automoc(${dcop_SRCS})
 
 kde4_add_executable(dcop ${dcop_SRCS})
 
-target_link_libraries(dcop  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
+target_link_libraries(dcop  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
 install_targets(/bin dcop )
 
@@ -28,7 +28,7 @@ kde4_automoc(${dcopfind_SRCS})
 
 kde4_add_executable(dcopfind ${dcopfind_SRCS})
 
-target_link_libraries(dcopfind  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
+target_link_libraries(dcopfind  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
 install_targets(/bin dcopfind )
 
@@ -103,7 +103,7 @@ kde4_automoc(${dcopquit_SRCS})
 
 kde4_add_executable(dcopquit ${dcopquit_SRCS})
 
-target_link_libraries(dcopquit  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
+target_link_libraries(dcopquit  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
 install_targets(/bin dcopquit )
 
