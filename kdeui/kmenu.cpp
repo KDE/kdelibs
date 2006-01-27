@@ -231,7 +231,7 @@ void KMenu::keyPressEvent(QKeyEvent* e)
         thisText = thisText.left(seqLen);
 
         // do the search
-        if (!thisText.find(d->keySeq, 0, false)) {
+        if (!thisText.indexOf(d->keySeq, 0, Qt::CaseInsensitive)) {
 
             if (firstpass) {
                 // match
@@ -253,7 +253,8 @@ void KMenu::keyPressEvent(QKeyEvent* e)
                 d->lastHitAction = a;
 
                 // start/restart the clear timer
-                d->clearTimer.start(5000, true);
+                d->clearTimer.setSingleShot(true);
+                d->clearTimer.start(5000);
 
                 // go around for another try, to see if we can execute
                 firstpass = false;

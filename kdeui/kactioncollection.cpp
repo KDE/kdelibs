@@ -35,10 +35,11 @@
 #include <kaccelbase.h>
 #include <kdebug.h>
 
-#include <qmenu.h>
-#include <qvariant.h>
 #include <QHash>
-#include <q3ptrlist.h>
+#include <QList>
+#include <QMenu>
+#include <QVariant>
+
 #include <stdio.h>
 
 class KActionCollection::KActionCollectionPrivate
@@ -71,7 +72,7 @@ public:
   KAccel *m_builderKAccel;
 
   QHash<QByteArray, KAction*> m_actionDict;
-  QHash<void*, Q3PtrList<KAction>*> m_dctHighlightContainers;
+  QHash<void*, QList<KAction*>*> m_dctHighlightContainers;
   bool m_highlight;
   KAction *m_currentHighlightAction;
   bool m_statusCleared;
@@ -149,7 +150,16 @@ KActionCollection::~KActionCollection()
 
   delete d->m_kaccel;
   delete d->m_builderKAccel;
+
+  QHashIterator<void*, QList<KAction*>*> it( d->m_dctHighlightContainers );
+  while ( it.hasNext() ) {
+    it.next();
+    qDeleteAll( *it.value() );
+    it.value()->clear();
+  }
   qDeleteAll(d->m_dctHighlightContainers.values());
+  d->m_dctHighlightContainers.clear();
+
   delete d; d = 0;
 }
 
@@ -517,11 +527,11 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
     return;
 
   // try to locate the thingy
-  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers.value (container);
+  QList<KAction*> *actionList = d->m_dctHighlightContainers.value (container);
 
   if ( !actionList )
   {
-    actionList = new Q3PtrList<KAction>;
+    actionList = new QList<KAction*>;
 
     if ( qobject_cast<QMenu*>( container ) )
     {
@@ -550,12 +560,12 @@ void KActionCollection::disconnectHighlight( QWidget *container, KAction *action
   if ( !d->m_highlight )
     return;
 
-  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers.value (container);
+  QList<KAction*> *actionList = d->m_dctHighlightContainers.value (container);
 
   if ( !actionList )
     return;
 
-  actionList->removeRef( action );
+  actionList->removeAll( action );
 
   if ( actionList->isEmpty() )
   {
@@ -636,15 +646,17 @@ void KActionCollection::slotDestroyed()
 
 KAction *KActionCollection::findAction( QWidget *container, int id )
 {
-  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers.value ( reinterpret_cast<void *>( container ) );
+  QList<KAction*> *actionList = d->m_dctHighlightContainers.value ( reinterpret_cast<void *>( container ) );
 
   if ( !actionList )
     return 0;
 
-  Q3PtrListIterator<KAction> it( *actionList );
-  for (; it.current(); ++it )
-    if ( it.current()->isPlugged( container, id ) )
-      return it.current();
+  QListIterator<KAction*> it( *actionList );
+  while ( it.hasNext() ) {
+    KAction *action = it.next();
+    if ( action->isPlugged( container, id ) )
+      return action;
+  }
 
   return 0;
 }
