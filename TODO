@@ -26,9 +26,6 @@ that we would like to make for the next binary incompatible release.
 
   (Simon, David, Danimo, Zack)
 
-- Remove all KDE_NO_COMPAT from the KDE2 -> KDE3 port before adding new ones for KDE4.
-  (Ben Meyer)
-
 - Remove all KSocks references throughout KDE in favor of KNetwork's
   socket implementations. 
   (Thiago)
@@ -77,12 +74,6 @@ that we would like to make for the next binary incompatible release.
   does this have to do with changing KIO?  It's just a request to have that
   code in a different form....]
   (Martijn)
-
-- Manually, properly clean up the includes in all of the headers.  Remove
-  unnecessary ones and change pointers to use class foo; decorations and move the 
-  headers into the cpp files.  When finished fixkdeincludes shouldn't find
-  anything (but don't rely on fixkdeinclude, it should be done manually first!)
-  (Ben Meyer)
 
 - Use of the C++ keyword "explicit". Make all ctors explicit which can be used
   with one parameter to minimize wrong use of the class (i.e. have a look at 
