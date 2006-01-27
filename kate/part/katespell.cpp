@@ -105,8 +105,8 @@ void KateSpell::spellcheck( const KateTextCursor &from, const KateTextCursor &to
   else if ( mt == "text/html" || mt == "text/xml" )
     type = KSpell::HTML;
 
-  m_kspell = new KSpell( 0, i18n("Spellcheck"),
-                         this, SLOT(ready(KSpell *)), 0, true, false, type );
+  m_kspell = new KSpell( m_view, i18n("Spellcheck"),
+                         this, SLOT(ready(KSpell *)), 0, true, true, type );
 
   connect( m_kspell, SIGNAL(death()),
            this, SLOT(spellCleanDone()) );
