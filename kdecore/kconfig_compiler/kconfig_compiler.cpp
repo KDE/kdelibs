@@ -1224,7 +1224,8 @@ int main( int argc, char **argv )
   if ( !singleton ) {
     h << "    " << className << "(";
     if (cfgFileNameArg)
-       h << " KSharedConfig::Ptr config" << (parameters.isEmpty() ? " = KGlobal::sharedConfig()" : ", ");
+       h << " KSharedConfig::Ptr config"
+         << (parameters.isEmpty() ? " = KSharedConfig::Ptr ( KGlobal::sharedConfig() )" : ", ");
     for (QList<Param>::ConstIterator it = parameters.begin();
          it != parameters.end(); ++it)
     {
