@@ -1794,14 +1794,16 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         // in the document.
         cs = (htmlMode() == XHtml) || (_nsURI && _type != NodeImpl::AttributeId);
 
-        if (!nsid) {
-            // First see if it's a HTML element name
-            // xhtml is lower case - case sensitive, easy to implement
-            if ( cs && (id = lookup(n.string().ascii(), _name->l)) )
-                return id;
-            // compatibility: upper case - case insensitive
-            if ( !cs && (id = lookup(n.string().lower().ascii(), _name->l )) )
-                return id;
+        // First see if it's a HTML element name
+        // xhtml is lower case - case sensitive, easy to implement
+        if ( cs && (id = lookup(n.string().ascii(), _name->l)) ) {
+            map->addAlias(_prefix, _name, cs, id);
+            return nsid + id;
+        }
+        // compatibility: upper case - case insensitive
+        if ( !cs && (id = lookup(n.string().lower().ascii(), _name->l )) ) {
+            map->addAlias(_prefix, _name, cs, id);
+            return nsid + id;
         }
     }
 
@@ -1811,8 +1813,9 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
 
     if (!_nsURI) {
         id = (NodeImpl::Id)(long) map->ids.find( name );
-        if (!id && _type != NodeImpl::NamespaceId)
+        if (!id && _type != NodeImpl::NamespaceId) {
             id = (NodeImpl::Id)(long) map->ids.find( "aliases: " + name );
+	}
     } else {
         id = (NodeImpl::Id)(long) map->ids.find( name );
         if (!readonly && id && _prefix && _prefix->l) {
@@ -1843,18 +1846,8 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     map->ids.insert( name, (void*)cid );
 
     // and register an alias if needed for DOM1 methods compatibility
-    if(_prefix && _prefix->l) {
-        QConstString px( _prefix->s, _prefix->l );
-        QString qn("aliases: " + (cs ? px.string() : px.string().upper()) + ":" + name);
-        if (!map->ids.find( qn )) {
-            map->ids.insert( qn, (void*)cid );
-        }
-    }
+    map->addAlias(_prefix, _name, cs, cid);
 
-    if (map->ids.size() == map->ids.count() && map->ids.size() != khtml_MaxSeed)
-        map->ids.resize( khtml::nextSeed(map->ids.count()) );
-    if (map->names.size() == map->names.count() && map->names.size() != khtml_MaxSeed)
-        map->names.resize( khtml::nextSeed(map->names.count()) );
     return nsid + cid;
  }
 
@@ -1889,8 +1882,9 @@ DOMString DocumentImpl::getName( NodeImpl::IdType _type, NodeImpl::Id _id ) cons
         return DOMString();;
     }
     _id = _id & NodeImpl_IdLocalMask;
-    if (_id >= map->idStart)
+    if (_id >= map->idStart) {
         return map->names[_id];
+    }
     else if (lookup) {
         // ### put them in a cache
         if (hasNS)

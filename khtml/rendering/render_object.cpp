@@ -1149,6 +1149,11 @@ static QTextStream &operator<<(QTextStream &ts, const QRect &r)
     return ts << "at (" << r.x() << "," << r.y() << ") size " << r.width() << "x" << r.height();
 }
 
+//A bit like getTagName, but handles XML, too.
+static QString lookupTagName(NodeImpl* node) {
+    return node->getDocument()->getName(NodeImpl::ElementId, node->id()).string();
+}
+
 void RenderObject::dump(QTextStream &ts, const QString &ind) const
 {
     if ( !layer() )
@@ -1161,13 +1166,13 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     }
 
     if (element()) {
-        QString tagName(getTagName(element()->id()));
+        QString tagName(lookupTagName(element()));
         if (!tagName.isEmpty()) {
             ts << " {" << tagName << "}";
         }
     } else if (isPseudoAnonymous() && style() && style()->styleType() != RenderStyle::NOPSEUDO) {
         QString pseudo;
-        QString tagName(getTagName(node()->id()));
+        QString tagName(lookupTagName(node()));
         switch (style()->styleType()) {
           case RenderStyle::FIRST_LETTER:
             pseudo = ":first-letter"; break;

@@ -31,6 +31,7 @@
 #include "xml/dom2_traversalimpl.h"
 #include "misc/shared.h"
 #include "misc/loader.h"
+#include "misc/seed.h"
 
 #include <qstringlist.h>
 #include <qptrlist.h>
@@ -583,6 +584,27 @@ protected:
         unsigned short count;
         QIntDict<DOM::DOMStringImpl> names;
         QDict<void> ids;
+
+        void expandIfNeeded() {
+            if (ids.size() <= ids.count() && ids.size() != khtml_MaxSeed)
+                ids.resize( khtml::nextSeed(ids.count()) );
+            if (names.size() <= names.count() && names.size() != khtml_MaxSeed)
+                names.resize( khtml::nextSeed(names.count()) );
+        }
+
+        void addAlias(DOMStringImpl* _prefix, DOMStringImpl* _name, bool cs, NodeImpl::Id id) {
+            if(_prefix && _prefix->l) {
+                QConstString n(_name->s, _name->l);
+                QConstString px( _prefix->s, _prefix->l );
+                QString name = cs ? n.string() : n.string().upper();
+                QString qn("aliases: " + (cs ? px.string() : px.string().upper()) + ":" + name);
+                if (!ids.find( qn )) {
+                    ids.insert( qn, (void*)id );
+                }
+            }
+            expandIfNeeded();
+        }
+
     };
 
     IdNameMapping *m_attrMap;
