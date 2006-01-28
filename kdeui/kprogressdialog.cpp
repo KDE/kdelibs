@@ -65,7 +65,8 @@ KProgressDialog::KProgressDialog(QWidget* parent, const QString& caption,
     d->mCancelText = actionButton(KDialog::Cancel)->text();
 
     QWidget *mainWidget = new QWidget(this);
-    QVBoxLayout* layout = new QVBoxLayout(mainWidget, 10);
+    QVBoxLayout* layout = new QVBoxLayout(mainWidget);
+    layout->setMargin(10);
 
     d->mLabel = new QLabel(text, mainWidget);
     layout->addWidget(d->mLabel);
@@ -78,7 +79,8 @@ KProgressDialog::KProgressDialog(QWidget* parent, const QString& caption,
     connect(d->mProgressBar, SIGNAL(valueChanged(int)),
             this, SLOT(slotAutoActions(int)));
     connect(d->mShowTimer, SIGNAL(timeout()), this, SLOT(slotAutoShow()));
-    d->mShowTimer->start(d->mMinDuration, true);
+    d->mShowTimer->setSingleShot(true);
+    d->mShowTimer->start(d->mMinDuration);
 }
 
 KProgressDialog::~KProgressDialog()
@@ -118,7 +120,8 @@ void KProgressDialog::setMinimumDuration(int ms)
     if (!d->mShown)
     {
         d->mShowTimer->stop();
-        d->mShowTimer->start(d->mMinDuration, true);
+        d->mShowTimer->setSingleShot(true);
+        d->mShowTimer->start(d->mMinDuration);
     }
 }
 
