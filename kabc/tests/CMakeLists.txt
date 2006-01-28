@@ -14,7 +14,7 @@ kde4_automoc(${testlock_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testlock ${testlock_SRCS})
 
-target_link_libraries(testlock  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+target_link_libraries(testlock  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -29,7 +29,7 @@ kde4_automoc(${testldapclient_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testldapclient ${testldapclient_SRCS})
 
-target_link_libraries(testldapclient  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+target_link_libraries(testldapclient  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -44,7 +44,7 @@ kde4_automoc(${geotest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(geotest ${geotest_SRCS})
 
-target_link_libraries(geotest  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+target_link_libraries(geotest  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -59,7 +59,7 @@ kde4_automoc(${testkabc_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testkabc ${testkabc_SRCS})
 
-target_link_libraries(testkabc  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+target_link_libraries(testkabc  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -74,7 +74,7 @@ kde4_automoc(${testkabcdlg_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testkabcdlg ${testkabcdlg_SRCS})
 
-target_link_libraries(testkabcdlg  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+target_link_libraries(testkabcdlg  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -89,7 +89,7 @@ kde4_automoc(${testdistlist_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testdistlist ${testdistlist_SRCS})
 
-target_link_libraries(testdistlist  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+target_link_libraries(testdistlist  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -142,7 +142,7 @@ message(STATUS "skipping kabc/tests testdb, mysql check missing")
 
 #kde4_add_executable(testdb ${testdb_SRCS})
 #
-#target_link_libraries(testdb  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+#target_link_libraries(testdb  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -158,7 +158,7 @@ if(KDE4_BUILD_TESTS)
 
 kde4_add_executable(testaddressee ${testaddressee_SRCS})
 
-target_link_libraries(testaddressee  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+target_link_libraries(testaddressee  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -176,7 +176,7 @@ message(STATUS "skipping kabc/tests testaddresseelist")
 
 #kde4_add_executable(testaddresseelist ${testaddresseelist_SRCS})
 #
-#target_link_libraries(testaddresseelist  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+#target_link_libraries(testaddresseelist  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -191,7 +191,7 @@ kde4_automoc(${testaddressfmt_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testaddressfmt ${testaddressfmt_SRCS})
 
-target_link_libraries(testaddressfmt  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+target_link_libraries(testaddressfmt  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -206,7 +206,7 @@ kde4_automoc(${kabcargl_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kabcargl ${kabcargl_SRCS})
 
-target_link_libraries(kabcargl  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+target_link_libraries(kabcargl  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -221,7 +221,7 @@ kde4_automoc(${testaddresslineedit_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testaddresslineedit ${testaddresslineedit_SRCS})
 
-target_link_libraries(testaddresslineedit  ${QT_AND_KDECORE_LIBS} kabc QtTest)
+target_link_libraries(testaddresslineedit  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
 endif(KDE4_BUILD_TESTS)
 
@@ -239,7 +239,7 @@ kde4_footer()
 #           -I$(srcdir)/../vcardparser/ -I$(srcdir)/../vcard/include \
 #           -I$(srcdir)/../vcard/include/generated \
 #           -I$(srcdir)/../vcardparser $(all_includes)
-#LDADD = ../libkabc.la -lQtTest_debug
+#LDADD = ../libkabc.la -l${QT_QTTEST_LIBRARY}_debug
 #
 #METASOURCES = AUTO
 #

@@ -216,7 +216,7 @@ if(KDE4_BUILD_TESTS)
 
 #kde4_add_executable(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
 
-#target_link_libraries(kconfigcompiler_test  ${QT_AND_KDECORE_LIBS} QtTest_debug )
+#target_link_libraries(kconfigcompiler_test  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY}_debug )
 
 endif(KDE4_BUILD_TESTS)
 
@@ -280,7 +280,7 @@ kde4_footer()
 #test_dpointer_SOURCES = test_dpointer_main.cpp test_dpointer.cpp
 #
 #kconfigcompiler_test_SOURCES = kconfigcompiler_test.cpp
-#kconfigcompiler_test_LDADD = $(LIB_KDECORE) -lQtTest_debug
+#kconfigcompiler_test_LDADD = $(LIB_KDECORE) -l${QT_QTTEST_LIBRARY}_debug
 #kconfigcompiler_test_LDFLAGS = $(all_libraries)
 #
 #TESTS = kconfigcompiler_test

@@ -278,13 +278,13 @@ check_prototype_exists(initgroups "unistd.h;sys/types.h;unistd.h;grp.h" HAVE_INI
 
 # check for existing datatypes
 
-SET(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
+set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
 check_type_size("struct ucred" HAVE_STRUCT_UCRED)
 
-SET(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
+set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
 check_type_size("struct addrinfo" HAVE_STRUCT_ADDRINFO)
 
-SET(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
+set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
 check_type_size("struct sockaddr_in6" HAVE_STRUCT_SOCKADDR_IN6)
 SET(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 
