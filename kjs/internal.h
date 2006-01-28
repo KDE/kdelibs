@@ -33,7 +33,7 @@
 #include "scope_chain.h"
 #include <kxmlcore/SharedPtr.h>
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(__APPLE_KDE__)
 #define KJS_MULTIPLE_THREADS 1
 #endif
 
