@@ -85,7 +85,7 @@ void K3MdiDocumentViewTabWidget::removePage ( QWidget * w )
 
 void K3MdiDocumentViewTabWidget::updateIconInView( QWidget *w, QPixmap icon )
 {
-	changeTab( w, icon, tabLabel( w ) );
+	changeTab( w, icon, tabText( indexOf( w ) ) );
 }
 
 void K3MdiDocumentViewTabWidget::updateCaptionInView( QWidget *w, const QString &caption )
