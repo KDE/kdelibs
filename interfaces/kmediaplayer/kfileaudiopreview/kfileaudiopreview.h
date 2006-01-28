@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2003 Carsten Pfeiffer <pfeiffer@kde.org>
+   Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
 
    library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -19,10 +20,9 @@
 #ifndef KFILEAUDIOPREVIEW_H
 #define KFILEAUDIOPREVIEW_H
 
-#include <q3dict.h>
-
 #include <kurl.h>
 #include <kpreviewwidgetbase.h>
+#include <phonon/state.h>
 
 class QCheckBox;
 class QPushButton;
@@ -39,7 +39,7 @@ class KFileAudioPreview : public KPreviewWidgetBase
     Q_OBJECT
 
 public:
-    KFileAudioPreview(QWidget *parent = 0, const char *name = 0 );
+    KFileAudioPreview( QWidget *parent = 0 );
     ~KFileAudioPreview();
 
 public Q_SLOTS:
@@ -47,18 +47,15 @@ public Q_SLOTS:
     virtual void clearPreview();
 
 private Q_SLOTS:
-    void toggleAuto(bool);
+    void toggleAuto( bool );
+    void stateChanged( Phonon::State, Phonon::State );
 
 private:
-    Q3Dict<void> m_supportedFormats;
-    KUrl m_currentURL;
     QCheckBox *m_autoPlay;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
-    class KFileAudioPreviewPrivate;
-    KFileAudioPreviewPrivate *d;
+    class Private;
+    Private *d;
 };
 
 #endif // KFILEAUDIOPREVIEW_H
