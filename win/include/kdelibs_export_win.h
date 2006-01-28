@@ -125,6 +125,14 @@
 # endif
 #endif
 
+#ifndef KCMRESOURCES_EXPORT
+# ifdef MAKE_KCM_KRESOURCES_LIB
+#  define KCM_KRESOURCES_EXPORT KDE_EXPORT
+# else
+#  define KCM_KRESOURCES_EXPORT KDE_IMPORT
+# endif
+#endif
+
 #ifndef KDESU_EXPORT
 # ifdef MAKE_KDESU_LIB
 #  define KDESU_EXPORT KDE_EXPORT
