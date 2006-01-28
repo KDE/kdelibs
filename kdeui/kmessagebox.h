@@ -16,11 +16,10 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef _KMESSAGEBOX_H_
-#define _KMESSAGEBOX_H_
+#ifndef KMESSAGEBOX_H
+#define KMESSAGEBOX_H
 
-#include <qstring.h>
-#include <qmessagebox.h>
+#include <QMessageBox>
 
 #include <kguiitem.h>
 #include <kstdguiitem.h>
@@ -28,7 +27,7 @@
 class QWidget;
 class QStringList;
 class KConfig;
-class KDialogBase;
+class KDialog;
 
  /**
   * Easy message dialog box.
@@ -1113,16 +1112,16 @@ public:
      * @param options  see OptionsType
      * @param details Detailed message string.
      * @since 3.3
-     * @return A KDialogBase button code, not a KMessageBox button code,
+     * @return A KDialog button code, not a KMessageBox button code,
      *         based on the buttonmask given to the constructor of the
-     *         @p dialog (ie. will return KDialogBase::Yes [256] instead of 
+     *         @p dialog (ie. will return KDialog::Yes [256] instead of 
      *         KMessageBox::Yes [3]). Will return KMessageBox::Cancel
      *         if the message box is queued for display instead of 
      *         exec()ed immediately or if the option NoExec is set.
      * @note   The @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
+    static int createKMessageBox(KDialog *dialog, QMessageBox::Icon icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              int options, const QString &details=QString());
@@ -1144,16 +1143,16 @@ public:
      * @param notifyType The type of notification to send when this message
      *                is presentend.
      * @since 3.3
-     * @return A KDialogBase button code, not a KMessageBox button code,
+     * @return A KDialog button code, not a KMessageBox button code,
      *         based on the buttonmask given to the constructor of the
-     *         @p dialog (ie. will return KDialogBase::Yes [256] instead of 
+     *         @p dialog (ie. will return KDialog::Yes [256] instead of 
      *         KMessageBox::Yes [3]). Will return KMessageBox::Cancel
      *         if the message box is queued for display instead of 
      *         exec()ed immediately or if the option NoExec is set.
      * @note   The @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    static int createKMessageBox(KDialogBase *dialog, QPixmap icon,
+    static int createKMessageBox(KDialog *dialog, QPixmap icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              int options, const QString &details=QString(),
