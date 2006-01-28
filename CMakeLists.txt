@@ -1,19 +1,31 @@
 project(kdelibs)
+
+# where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
+# support for Dart: http://public.kitware.com/dashboard.php?name=kde
 enable_testing()
 include(CTest)
 
-find_package(KDE4 REQUIRED)
-
-find_package(Perl REQUIRED)
-
-kde4_header()
-
+# generate non-quiet makefiles
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
+# search packages used by KDE
+find_package(KDE4 REQUIRED)
+find_package(Perl REQUIRED)
 
+find_package(ZLIB)
+find_package(BZip2)
+find_package(PNG)
+find_package(OpenEXR)
+find_package(FAM)
+find_package(Jasper)
+find_package(LibArt)
+find_package(PCRE)
+find_package(OpenSSL)
+find_package(Carbon)
+
+add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
 link_directories(${KDE4_LIB_DIR})
 
 if (UNIX)
@@ -21,24 +33,19 @@ if (UNIX)
    include_directories(/usr/local/include)
 endif (UNIX)
 
-option(INCLUDE_SVGICONS "Include svg icons")
-
 include_directories(
   ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdeui
   ${CMAKE_SOURCE_DIR}/kio/kio  ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kfile
   ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kssl
-  ${CMAKE_SOURCE_DIR}/kdefx
+  ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kabc
+  ${KDE4_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-
+# create config.h
 include(ConfigureChecks.cmake)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(TOPSUBDIRS)")
-include_directories( ${KDE4_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 add_subdirectory( dcop )
 add_subdirectory( libltdl )
@@ -55,7 +62,6 @@ add_subdirectory( kde3support  )
 add_subdirectory( dnssd        )
 add_subdirectory( kconf_update )
 add_subdirectory( kdoctools  )
-#add_subdirectory( kimgio    )
 add_subdirectory( kioslave   )
 add_subdirectory( knewstuff  )
 add_subdirectory( kparts     )
@@ -79,17 +85,12 @@ add_subdirectory( kate  )
 add_subdirectory( knotify )
 
 
-
-
 ########### install files ###############
 
 install_files( /include FILES kde.pot )
 install_files( /include FILES kdelibs_export.h kdemacros.h )
 
 kde4_create_doxygen_docs(  )
-
-kde4_footer()
-
 
 
 #original Makefile.am contents follow:

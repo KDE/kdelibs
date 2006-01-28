@@ -1,11 +1,18 @@
 kde4_header()
 
-# kdecore/svgicons/Makefile.am: kdesvgicons
+project(libkdecore)
 
-set(kdesvgicons_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kdecore/svgicons/ksvgiconengine.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/svgicons/ksvgiconpainter.cpp
-)
+include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+
+find_package(AGG)
+if (AGG_FOUND)
+   set(kdesvgicons_STAT_SRCS svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp )
+   include_directories(${AGG_INCLUDE_DIR})
+endif (AGG_FOUND)
+
+if(BZIP2_FOUND)
+  include_directories(${BZIP2_INCLUDE_DIR})
+endif(BZIP2_FOUND)
 
 # kdecore/malloc/Makefile.am: klmalloc
 
@@ -46,24 +53,10 @@ add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 add_subdirectory( network )
 
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(SVGICONS)")
-include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-if(BZIP2_FOUND)
-  include_directories(${BZIP2_INCLUDE_DIR})
-endif(BZIP2_FOUND)
-
 ########### next target ###############
 
-set(kdefakes_LIB_SRCS
-fakes.c
-)
-
-kde4_automoc(${kdefakes_LIB_SRCS})
-
-kde4_add_library(kdefakes SHARED ${kdefakes_LIB_SRCS})
-
-target_link_libraries(kdefakes  ${QT_AND_KDECORE_LIBS} )
+kde4_add_library(kdefakes SHARED fakes.c)
+#target_link_libraries(kdefakes  ${QT_AND_KDECORE_LIBS} )
 
 set_target_properties(kdefakes PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib kdefakes )
@@ -182,6 +175,7 @@ kdedmodule.cpp
 ${kdecorenetwork_STAT_SRCS}
 ${klmalloc_STAT_SRCS}
 ${ltdlc_STAT_SRCS}
+${kdesvgicons_STAT_SRCS}
 )
 
 kde4_automoc(${kdecore_LIB_SRCS})
@@ -199,8 +193,6 @@ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${ZLIB_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${CARBON_LIBRARY})
 
-project(libkdecore)
-
 if(HAVE_IDNA_H)
    target_link_libraries(kdecore idn)
 endif(HAVE_IDNA_H)
@@ -208,6 +200,10 @@ endif(HAVE_IDNA_H)
 if(BZIP2_FOUND)
    target_link_libraries(kdecore  ${BZIP2_LIBRARY})
 endif(BZIP2_FOUND)
+
+if(AGG_FOUND)
+   target_link_libraries(kdecore  ${AGG_LIBRARY})
+endif(AGG_FOUND)
 
 set_target_properties(kdecore PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib kdecore )

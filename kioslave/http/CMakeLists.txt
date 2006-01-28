@@ -28,13 +28,10 @@ install_targets(/bin kio_http_cache_cleaner )
 
 # kio/httpfilter/Makefile.am: httpfilter
 
-set(httpfilter_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
-)
-
 set(kio_http_PART_SRCS
 http.cc
 ${httpfilter_STAT_SRCS}
+${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
 )
 
 kde4_automoc(${kio_http_PART_SRCS})
