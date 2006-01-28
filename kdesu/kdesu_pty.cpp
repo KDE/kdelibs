@@ -36,6 +36,7 @@
 #endif
 
 #include <qglobal.h>
+#include <QFile>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -156,9 +157,9 @@ int PTY::getpt()
 	{
 	    ptyname.sprintf("/dev/pty%c%c", *c1, *c2);
 	    ttyname.sprintf("/dev/tty%c%c", *c1, *c2);
-	    if (access(ptyname, F_OK) < 0)
+	    if (access(QFile::encodeName(ptyname), F_OK) < 0)
 		goto linux_out;
-	    ptyfd = open(ptyname, O_RDWR);
+	    ptyfd = open(QFile::encodeName(ptyname), O_RDWR);
 	    if (ptyfd >= 0)
 		return ptyfd;
 	}
@@ -171,9 +172,9 @@ linux_out:
     {
 	ptyname.sprintf("/dev/ptyp%d", i);
 	ttyname.sprintf("/dev/ttyp%d", i);
-	if (access(ptyname, F_OK) < 0)
+	if (access(QFile::encodeName(ptyname), F_OK) < 0)
 	    break;
-	ptyfd = open(ptyname, O_RDWR);
+	ptyfd = open(QFile::encodeName(ptyname), O_RDWR);
 	if (ptyfd >= 0)
 	    return ptyfd;
     }
@@ -294,6 +295,6 @@ QByteArray PTY::ptsname()
     if (ptyfd < 0)
 	return 0;
 
-    return ttyname;
+    return QFile::encodeName(ttyname);
 }
 

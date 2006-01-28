@@ -60,7 +60,7 @@ public:
 private:
 
     int ptyfd;
-    QByteArray ptyname, ttyname;
+    QString ptyname, ttyname;
 
     class PTYPrivate;
     PTYPrivate *d;
