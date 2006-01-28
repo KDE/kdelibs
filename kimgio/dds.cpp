@@ -1077,4 +1077,5 @@ QImageIOHandler *DDSPlugin::create(QIODevice *device, const QByteArray &format) 
     return handler;
 }
 
-Q_EXPORT_PLUGIN(DDSPlugin)
+Q_EXPORT_STATIC_PLUGIN(DDSPlugin)
+Q_EXPORT_PLUGIN2(dds, DDSPlugin)

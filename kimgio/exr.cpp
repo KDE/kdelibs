@@ -267,6 +267,6 @@ QImageIOHandler *EXRPlugin::create(QIODevice *device, const QByteArray &format) 
     return handler;
 }
 
-Q_EXPORT_PLUGIN( EXRPlugin )
-
+Q_EXPORT_STATIC_PLUGIN( EXRPlugin )
+Q_EXPORT_PLUGIN2( exr, EXRPlugin )
 #endif

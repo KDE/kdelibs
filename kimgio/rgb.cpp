@@ -641,4 +641,5 @@ QImageIOHandler *RGBPlugin::create(QIODevice *device, const QByteArray &format) 
     return handler;
 }
 
-Q_EXPORT_PLUGIN(RGBPlugin)
+Q_EXPORT_STATIC_PLUGIN(RGBPlugin)
+Q_EXPORT_PLUGIN2(rgb, RGBPlugin)

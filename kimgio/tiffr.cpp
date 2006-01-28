@@ -231,6 +231,7 @@ QImageIOHandler *TIFFRPlugin::create(QIODevice *device, const QByteArray &format
     return handler;
 }
 
-Q_EXPORT_PLUGIN(TIFFRPlugin)
+Q_EXPORT_STATIC_PLUGIN(TIFFRPlugin)
+Q_EXPORT_PLUGIN(tiff, TIFFRPlugin)
 
 #endif

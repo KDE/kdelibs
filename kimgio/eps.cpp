@@ -350,4 +350,5 @@ QImageIOHandler *EPSPlugin::create(QIODevice *device, const QByteArray &format) 
     return handler;
 }
 
-Q_EXPORT_PLUGIN(EPSPlugin)
+Q_EXPORT_STATIC_PLUGIN(EPSPlugin)
+Q_EXPORT_PLUGIN2(eps, EPSPlugin)
