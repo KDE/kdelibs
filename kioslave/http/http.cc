@@ -5462,7 +5462,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     QByteArray challenge;
     KCodecs::base64Decode( strauth.right( len - 5 ), challenge );
     KNTLM::getAuth( buf, challenge, user, passwd, domain,
-		    KNetwork::KResolver::localHostName(), false, false );
+		    KNetwork::KResolver::localHostName() );
   }
   else
   {

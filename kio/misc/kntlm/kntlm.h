@@ -68,6 +68,14 @@ public:
     Negotiate_56              = 0x80000000
   };
 
+  enum AuthFlag { 
+    Force_V1 = 0x1,
+    Force_V2 = 0x2,
+    Add_LM = 0x4
+  };
+
+  Q_DECLARE_FLAGS( AuthFlags, AuthFlag )
+
   typedef struct
   {
     quint16 len;
@@ -151,17 +159,18 @@ public:
    * @param domain - the target domain. If left empty, it will be extracted 
    * from the challenge.
    * @param workstation - the user's workstation.
-   * @param forceNTLM - force the use of NTLM authentication (either v1 or v2).
-   * @param forceNTLMv2 - force the use of NTLMv2 or LMv2 authentication. If false, NTLMv2 
-   * support is autodetected from the challenge.
+   * @param authflags - AuthFlags flags that changes the response generation behavior.
+   * Force_V1 or Force_V2 forces (NT)LMv1 or (NT)LMv2 responses generation, otherwise it's
+   * autodetected from the challenge. Add_LM adds LMv1 or LMv2 responses additional to the 
+   * NTLM response.
    *
    * @return true if auth filled with the Type 3 message, false if an error occured 
-   * (challenge data invalid, or NTLM authentication forced, but the challenge data says
-   * no NTLM supported).
+   * (challenge data invalid, NTLMv2 authentication forced, but the challenge data says
+   * no NTLMv2 supported, or no NTLM supported at all, and Add_LM not specified).
    */
   static bool getAuth( QByteArray &auth, const QByteArray &challenge, const QString &user,
     const QString &password, const QString &domain = QString(), 
-    const QString &workstation = QString(), bool forceNTLM = false, bool forceNTLMv2 = false );
+    const QString &workstation = QString(), AuthFlags authflags = Add_LM );
 
   /**
    * Returns the LanManager response from the password and the server challenge.
@@ -229,5 +238,7 @@ private:
   static void addString( QByteArray &buf, SecBuf &secbuf, const QString &str, bool unicode = false );
   static void convertKey( unsigned char *key_56, void* ks );
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( KNTLM::AuthFlags )
 
 #endif /* KNTLM_H */

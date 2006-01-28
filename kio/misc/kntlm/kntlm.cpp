@@ -109,9 +109,9 @@ bool KNTLM::getNegotiate( QByteArray &negotiate, const QString &domain, const QS
   return true;
 }
 
-bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QString &user, 
-  const QString &password, const QString &domain, const QString &workstation, 
-  bool forceNTLM, bool forceNTLMv2 )
+bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, 
+  const QString &user, const QString &password, const QString &domain, 
+  const QString &workstation, AuthFlags authflags )
 {
   QByteArray rbuf( sizeof(Auth), 0 );
   Challenge *ch = (Challenge *) challenge.data();
@@ -134,30 +134,34 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
   ((Auth*) rbuf.data())->flags = ch->flags;
   QByteArray targetInfo = getBuf( challenge, ch->targetInfo );
 
-  if ( forceNTLMv2 || (!targetInfo.isEmpty() && (qFromLittleEndian(ch->flags) & Negotiate_Target_Info)) /* may support NTLMv2 */ ) {
+  if ( ((authflags & Force_V2) && !(authflags & Force_V1)) || 
+     (!targetInfo.isEmpty() && (qFromLittleEndian(ch->flags) & Negotiate_Target_Info)) /* may support NTLMv2 */ ) {
+    bool ret = false;
     if ( qFromLittleEndian(ch->flags) & Negotiate_NTLM ) {
       if ( targetInfo.isEmpty() ) return false;
       response = getNTLMv2Response( dom, user, password, targetInfo, ch->challengeData );
       addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
-    } else {
-      if ( !forceNTLM ) {
-        response = getLMv2Response( dom, user, password, ch->challengeData );
-        addBuf( rbuf, ((Auth*) rbuf.data())->lmResponse, response );
-      } else 
-        return false;
+      ret = true;
     }
-  } else { //if no targetinfo structure and NTLMv2 or LMv2 not forced, try the older methods
-
+    if ( authflags & Add_LM ) {
+      response = getLMv2Response( dom, user, password, ch->challengeData );
+      addBuf( rbuf, ((Auth*) rbuf.data())->lmResponse, response );
+      ret = true;
+    }
+    if ( !ret ) return false;
+  } else { //if no targetinfo structure and NTLMv2 or LMv2 not forced, or v1 forced, try the older methods
+    bool ret = false;
     if ( qFromLittleEndian(ch->flags) & Negotiate_NTLM ) {
       response = getNTLMResponse( password, ch->challengeData );
       addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
-    } else {
-      if ( !forceNTLM ) {
+      ret = true;
+    }
+    if ( authflags & Add_LM ) {
         response = getLMResponse( password, ch->challengeData );
         addBuf( rbuf, ((Auth*) rbuf.data())->lmResponse, response );
-      } else
-        return false;
+	ret = true;
     }
+    if ( !ret ) return false;
   }
   if ( !dom.isEmpty() )
     addString( rbuf, ((Auth*) rbuf.data())->domain, dom, unicode );
