@@ -390,7 +390,7 @@ bool JP2Handler::canRead(QIODevice *device)
     if (!device) {
         return false;
     }
-    return true;
+    return device->peek(6) == "\x00\x00\x00\x0C\x6A\x50";
 }
 
 bool JP2Handler::read(QImage *image)
