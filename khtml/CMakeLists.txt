@@ -2,10 +2,9 @@ kde4_header()
 
 find_package(JPEG REQUIRED)
 find_package(GIF  REQUIRED)
+find_package(PNG  REQUIRED)
 
-# I should add include_directories(${JPEG_INCLUDE_DIRECTORY}) here, but recompiling takes too much time now, Alex
-
-SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 
 # khtml/dom/Makefile.am: khtmldom
 
@@ -205,6 +204,7 @@ message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(JAVA_SUBDIR)")
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kwallet/client ${CMAKE_SOURCE_DIR}/kutils ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}) 
 include_directories(${CMAKE_BINARY_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/khtml/rendering ${CMAKE_SOURCE_DIR}/khtml/ecma ${CMAKE_BINARY_DIR}/khtml/ecma ${CMAKE_SOURCE_DIR}/kio/bookmarks)
 include_directories( ${CMAKE_SOURCE_DIR}/khtml/imload ${CMAKE_SOURCE_DIR}/khtml/imload/decoders )
+include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
 
 set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
 
@@ -280,7 +280,7 @@ kde4_add_dcop_skels(khtml_LIB_SRCS ${khtml_DCOP_SKEL_SRCS})
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARY} ${GIF_LIBRARY})
+target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARY} ${GIF_LIBRARY} ${PNG_LIBRARY} )
 
 set_target_properties(khtml PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(/lib khtml )
