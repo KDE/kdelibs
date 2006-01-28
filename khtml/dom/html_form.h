@@ -21,7 +21,7 @@
  * This file includes excerpts from the Document Object Model (DOM)
  * Level 1 Specification (Recommendation)
  * http://www.w3.org/TR/REC-DOM-Level-1/
- * Copyright © World Wide Web Consortium , (Massachusetts Institute of
+ * Copyright Â© World Wide Web Consortium , (Massachusetts Institute of
  * Technology , Institut National de Recherche en Informatique et en
  * Automatique , Keio University ). All Rights Reserved.
  *
@@ -1155,6 +1155,44 @@ public:
      * Select the contents of the \c TEXTAREA .
      */
     void select (  );
+
+    /**
+     * Returns the character offset of beginning of selection, or if none,
+     * the cursor position.
+     * NOTE: this method is not part of the DOM, but a Mozilla extension
+     * @since 3.5.2
+     */
+    long selectionStart();
+
+     /**
+      * Move the beginning of the selection to the given offset in text
+      * NOTE: this method is not part of the DOM, but a Mozilla extension
+      * @since 3.5.2
+      */
+    void setSelectionStart(long offset);
+
+    /**
+     * Returns the character offset of end of selection, or if none,
+     * the cursor position.
+     * NOTE: this method is not part of the DOM, but a Mozilla extension
+     * @since 3.5.2
+     */
+     long selectionEnd();
+
+     /**
+      * Move the end of the selection (and the cursor) to the given offset in text
+      * NOTE: this method is not part of the DOM, but a Mozilla extension
+      * @since 3.5.2
+      */
+    void setSelectionEnd(long offset);
+
+
+     /**
+      * Returns the length of the text.
+      * NOTE: this method is not part of the DOM, but a Mozilla extension
+      * @since 3.5.2
+      */
+      long textLength();
 };
 
 // --------------------------------------------------------------------------

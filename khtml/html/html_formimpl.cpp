@@ -2694,7 +2694,6 @@ void HTMLTextAreaElementImpl::setValue(DOMString _value)
     setChanged(true);
 }
 
-
 DOMString HTMLTextAreaElementImpl::defaultValue()
 {
     DOMString val = "";
@@ -2747,6 +2746,60 @@ void HTMLTextAreaElementImpl::focus()
 bool HTMLTextAreaElementImpl::isEditable()
 {
     return true;
+}
+
+//Mozilla extensions.
+long HTMLTextAreaElementImpl::selectionStart()
+{
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        return renderArea->selectionStart();
+    }
+
+    return 0;
+}
+
+long HTMLTextAreaElementImpl::selectionEnd()
+{
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        return renderArea->selectionEnd();
+    }
+
+    return 0;
+}
+
+void HTMLTextAreaElementImpl::setSelectionStart(long pos)
+{
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        renderArea->setSelectionStart( pos );
+    }
+}
+
+void HTMLTextAreaElementImpl::setSelectionEnd(long pos)
+{
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        renderArea->setSelectionEnd( pos );
+    }
+}
+
+long HTMLTextAreaElementImpl::textLength()
+{
+    //First, get the value. This is like ::value, only pure.
+    DOMString val = m_value;
+    if (m_dirtyvalue) {
+        if ( m_render && m_initialized ) {
+            RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+            val = renderArea->text();
+        } else {
+            val = defaultValue();
+        }
+    }
+
+    //now we can get the length.
+    return val.length();
 }
 
 // -------------------------------------------------------------------------

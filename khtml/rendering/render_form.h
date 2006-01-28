@@ -472,6 +472,10 @@ public:
 
     void select();
 
+    long selectionStart();
+    long selectionEnd();
+    void setSelectionStart(long pos);
+    void setSelectionEnd(long pos);
 protected slots:
     void slotTextChanged();
 
@@ -482,6 +486,18 @@ protected:
     virtual bool canHaveBorder() const { return true; }
 
     bool scrollbarsStyled;
+private:
+    //Convert para, index -> offset
+    long computeCharOffset(int para, int index);
+
+    //Convert offset -> para, index
+    void computeParagraphAndIndex(long index, int* para, int* index);
+
+    //Helper for doing the conversion..
+    enum Mode { ParaLength,     //Returns the length of the entire paragraph
+           ParaPortionLength,   //Return length of paragraph portion set by threshold
+           ParaPortionOffset }; //Return offset that matches the length threshold.
+    int queryParagraphInfo(int para, Mode m, int param = -1);
 };
 
 // -------------------------------------------------------------------------

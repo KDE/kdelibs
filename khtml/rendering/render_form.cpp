@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000 Dirk Mueller (mueller@kde.org)
+ *           (C) 2006 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1628,7 +1629,7 @@ void RenderTextArea::updateFromElement()
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     w->setReadOnly(element()->readOnly());
     QString elementText = element()->value().string();
-    if ( elementText != w->text() )
+    if ( elementText != text() )
     {
         w->blockSignals(true);
         int line, col;
@@ -1693,10 +1694,11 @@ QString RenderTextArea::text()
     if(element()->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical) {
         // yeah, QTextEdit has no accessor for getting the visually wrapped text
         for (int p=0; p < w->paragraphs(); ++p) {
-            int pl = w->paragraphLength(p);
             int ll = 0;
             int lindex = w->lineOfChar(p, 0);
             QString paragraphText = w->text(p);
+            int pl = w->paragraphLength(p);
+            paragraphText = paragraphText.left(pl); //Snip invented space.
             for (int l = 0; l < pl; ++l) {
                 if (lindex != w->lineOfChar(p, l)) {
                     paragraphText.insert(l+ll++, QString::fromLatin1("\n"));
@@ -1714,6 +1716,97 @@ QString RenderTextArea::text()
     return expandLF(txt);
 }
 
+static int expandedCnt(unsigned short code)
+{
+    if (code == '\n')
+        return 2;
+    else if (code == '\r')
+        return 0;
+    else
+        return 1;
+}
+
+int RenderTextArea::queryParagraphInfo(int para, Mode m, int param) {
+    /* We have to be a bit careful here, as we need to match up the positions
+    to what our value returns here*/
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int        length = 0;
+
+    bool physWrap     = element()->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical;
+
+    QString paragraphText = w->text(para);
+    int pl                = w->paragraphLength(para);
+    if (m == ParaPortionLength)
+        pl = param;
+
+    if (physWrap) {
+        //Go through all the chars of paragraph, and count line changes, chars, etc.
+        int lindex = w->lineOfChar(para, 0);
+        for (int c = 0; c < pl; ++c) {
+            if (lindex != w->lineOfChar(para, c)) {
+                length += 2;
+                lindex =  w->lineOfChar(para, c);
+            }
+            length += expandedCnt(paragraphText.at(c).unicode());
+            if (m == ParaPortionOffset && length > param)
+                return c;
+        }
+    } else {
+        //Make sure to count the LF, CR as appropriate..
+        for (int c = 0; c < pl; ++c) {
+            length += expandedCnt(paragraphText.at(c).unicode());
+            if (m == ParaPortionOffset && length > param)
+                return c;
+        }
+    }
+    if (m == ParaPortionOffset)
+        return pl;
+    return length;
+}
+
+long RenderTextArea::computeCharOffset(int para, int index) {
+    if (para < 0)
+        return 0;
+
+    long pos = 0;
+    for (int cp = 0; cp < para; ++cp)
+        pos += queryParagraphInfo(cp, ParaLength) + 2;
+
+    if (index >= 0)
+        pos += queryParagraphInfo(para, ParaPortionLength, index);
+    return pos;
+}
+
+void RenderTextArea::computeParagraphAndIndex(long offset, int* para, int* index) {
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+
+    if (!w->paragraphs()) {
+        *para  = -1;
+        *index = -1;
+        return;
+    }
+    
+    //Find the paragraph that contains us..
+    int containingPar = 0;
+    long endPos       = 0;
+    long startPos     = 0;
+    for (int p = 0; p < w->paragraphs(); ++p) {
+        int len = queryParagraphInfo(p, ParaLength) + 2;
+        endPos += len;
+        if (endPos > offset) {
+            containingPar = p;
+            break;
+        }
+        startPos += len;
+    }
+
+    *para = containingPar;
+
+    //Now, scan within the paragraph to find the position..
+    long localOffset = offset - startPos;
+
+    *index = queryParagraphInfo(containingPar, ParaPortionOffset, localOffset);
+}
 
 void RenderTextArea::highLightWord( unsigned int length, unsigned int pos )
 {
@@ -1734,6 +1827,49 @@ void RenderTextArea::select()
 {
     static_cast<TextAreaWidget *>(m_widget)->selectAll();
 }
+
+long RenderTextArea::selectionStart()
+{
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int para, index, dummy1, dummy2;
+    w->getSelection(&para, &index, &dummy1, &dummy2);
+    if (para == -1 || index == -1)
+        w->getCursorPosition(&para, &index);
+
+    return computeCharOffset(para, index);
+}
+
+long RenderTextArea::selectionEnd()
+{
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int para, index, dummy1, dummy2;
+    w->getSelection(&dummy1, &dummy2, &para, &index);
+    if (para == -1 || index == -1)
+        w->getCursorPosition(&para, &index);
+
+    return computeCharOffset(para, index);
+}
+
+void RenderTextArea::setSelectionStart(long offset) {
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int fromPara, fromIndex, toPara, toIndex;
+    w->getSelection(&fromPara, &fromIndex, &toPara, &toIndex);
+    computeParagraphAndIndex(offset, &fromPara, &fromIndex);
+    if (toPara == -1 || toIndex == -1) {
+        toPara  = fromPara;
+        toIndex = fromIndex;
+    }
+    w->setSelection(fromPara, fromIndex, toPara, toIndex);
+}
+
+void RenderTextArea::setSelectionEnd(long offset) {
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int fromPara, fromIndex, toPara, toIndex;
+    w->getSelection(&fromPara, &fromIndex, &toPara, &toIndex);
+    computeParagraphAndIndex(offset, &toPara, &toIndex);
+    w->setSelection(fromPara, fromIndex, toPara, toIndex);
+}
+
 
 // ---------------------------------------------------------------------------
 

@@ -779,6 +779,9 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   tabIndex	KJS::HTMLElement::TextAreaTabIndex	DontDelete
   type		KJS::HTMLElement::TextAreaType		DontDelete|ReadOnly
   value		KJS::HTMLElement::TextAreaValue		DontDelete
+  selectionStart KJS::HTMLElement::TextAreaSelectionStart DontDelete
+  selectionEnd   KJS::HTMLElement::TextAreaSelectionEnd   DontDelete
+  textLength     KJS::HTMLElement::TextAreaTextLength     DontDelete|ReadOnly
   blur		KJS::HTMLElement::TextAreaBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::TextAreaFocus		DontDelete|Function 0
   select	KJS::HTMLElement::TextAreaSelect	DontDelete|Function 0
@@ -1369,6 +1372,9 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case TextAreaTabIndex:        return Number(textarea.tabIndex());
     case TextAreaType:            return String(textarea.type());
     case TextAreaValue:           return String(textarea.value());
+    case TextAreaSelectionStart:  return Number(textarea.selectionStart());
+    case TextAreaSelectionEnd:    return Number(textarea.selectionEnd());
+    case TextAreaTextLength:      return Number(textarea.textLength());
     }
   }
   break;
@@ -2593,6 +2599,8 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case TextAreaTabIndex:        { textarea.setTabIndex(value.toInteger(exec)); return; }
       // read-only: type
       case TextAreaValue:           { textarea.setValue(str); return; }
+      case TextAreaSelectionStart:  { textarea.setSelectionStart(value.toInteger(exec)); return; }
+      case TextAreaSelectionEnd:    { textarea.setSelectionEnd  (value.toInteger(exec)); return; }
       }
     }
     break;

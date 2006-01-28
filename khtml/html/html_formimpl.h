@@ -555,6 +555,12 @@ public:
     virtual bool isEditable();
     void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
 
+    //Mozilla extensions.
+    long selectionStart();
+    long selectionEnd();
+    void setSelectionStart(long pos);
+    void setSelectionEnd  (long pos);
+    long textLength();
 protected:
     int m_rows;
     int m_cols;

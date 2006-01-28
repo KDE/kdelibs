@@ -1065,6 +1065,40 @@ void HTMLTextAreaElement::select(  )
 	((HTMLTextAreaElementImpl *)impl)->select(  );
 }
 
+long HTMLTextAreaElement::selectionStart()
+{
+    if (impl)
+	return ((HTMLTextAreaElementImpl *)impl)->selectionStart(  );
+    return 0;
+}
+
+long HTMLTextAreaElement::selectionEnd()
+{
+    if (impl)
+	return ((HTMLTextAreaElementImpl *)impl)->selectionEnd(  );
+    return 0;
+}
+
+long HTMLTextAreaElement::textLength()
+{
+    if (impl)
+	return ((HTMLTextAreaElementImpl *)impl)->textLength(  );
+    return 0;
+}
+
+void HTMLTextAreaElement::setSelectionStart(long pos)
+{
+    if (impl)
+	((HTMLTextAreaElementImpl *)impl)->setSelectionStart( pos );
+}
+
+void HTMLTextAreaElement::setSelectionEnd(long pos)
+{
+    if (impl)
+	((HTMLTextAreaElementImpl *)impl)->setSelectionEnd( pos );
+}
+
+
 // --------------------------------------------------------------------------
 
 HTMLOptionElement::HTMLOptionElement() : HTMLElement()
