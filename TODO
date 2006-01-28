@@ -143,9 +143,6 @@ that we would like to make for the next binary incompatible release.
 - Replace KPasswordEdit with KLineEdit and adjust KPasswordDialog accordingly.
   (Waldo)
 
-- Merge KPIM::ClickLineEdit with KLineEdit (DONE)
-  (Danimo)
-
 - KProcess needs a major facelift. Not all of these items need to be BIC, but not needing to
   worry about legacy will certainly allow an overall cleaner solution.
   - the internals need to be encapsulated properly. many of the virtuals shouldn't be virtual;
