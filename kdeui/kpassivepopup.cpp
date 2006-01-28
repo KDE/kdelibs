@@ -52,7 +52,7 @@ static const Qt::WindowFlags POPUP_FLAGS = Qt::Tool | Qt::X11BypassWindowManager
 KPassivePopup::KPassivePopup( QWidget *parent, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
-      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
+      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
       m_autoDelete( false )
 {
     init( DEFAULT_POPUP_TYPE );
@@ -61,7 +61,7 @@ KPassivePopup::KPassivePopup( QWidget *parent, Qt::WFlags f )
 KPassivePopup::KPassivePopup( WId win )
     : QFrame( 0 ),
       window( win ), msgView( 0 ), topLayout( 0 ),
-      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
+      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
       m_autoDelete( false )
 {
     init( DEFAULT_POPUP_TYPE );
@@ -70,7 +70,7 @@ KPassivePopup::KPassivePopup( WId win )
 KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
-      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
+      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
       m_autoDelete( false )
 {
     init( popupStyle );
@@ -79,7 +79,7 @@ KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, Qt::WFlags f )
 KPassivePopup::KPassivePopup( int popupStyle, WId win, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       window( win ), msgView( 0 ), topLayout( 0 ),
-      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
+      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
       m_autoDelete( false )
 {
     init( popupStyle );
@@ -118,7 +118,9 @@ void KPassivePopup::setView( QWidget *child )
     msgView = child;
 
     delete topLayout;
-    topLayout = new QVBoxLayout( this, d->popupStyle == Balloon ? 22 : KDialog::marginHint(), KDialog::spacingHint() );
+    topLayout = new QVBoxLayout( this );
+    topLayout->setMargin( d->popupStyle == Balloon ? 22 : KDialog::marginHint() );
+    topLayout->setSpacing( KDialog::spacingHint() );
     topLayout->addWidget( msgView );
     topLayout->activate();
 }
@@ -143,13 +145,13 @@ KVBox * KPassivePopup::standardView( const QString& caption,
 	hb = new KHBox( vb );
 	hb->setMargin( 0 );
 	hb->setSpacing( KDialog::spacingHint() );
-	ttlIcon = new QLabel( hb, "title_icon" );
+	ttlIcon = new QLabel( hb );
 	ttlIcon->setPixmap( icon );
         ttlIcon->setAlignment( Qt::AlignLeft );
     }
 
     if ( !caption.isEmpty() ) {
-	ttl = new QLabel( caption, hb ? hb : vb, "title_label" );
+	ttl = new QLabel( caption, hb ? hb : vb );
 	QFont fnt = ttl->font();
 	fnt.setBold( true );
 	ttl->setFont( fnt );
@@ -159,7 +161,7 @@ KVBox * KPassivePopup::standardView( const QString& caption,
     }
 
     if ( !text.isEmpty() ) {
-        msg = new QLabel( text, vb, "msg_label" );
+        msg = new QLabel( text, vb );
         msg->setAlignment( Qt::AlignLeft );
     }
 
@@ -383,7 +385,8 @@ void KPassivePopup::updateMask()
         QPoint( width() - 50, height() - 50 )
     };
 
-    QBitmap mask( width(), height(), true );
+    QBitmap mask( width(), height() );
+    mask.clear();
     QPainter p( &mask );
     QBrush brush( Qt::white, Qt::SolidPattern );
     p.setBrush( brush );
