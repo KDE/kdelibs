@@ -389,7 +389,7 @@ kde4_automoc(${jobtest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(jobtest ${jobtest_SRCS})
 
-target_link_libraries(jobtest  ${QT_AND_KDECORE_LIBS} kio QtTest )
+target_link_libraries(jobtest  ${QT_AND_KDECORE_LIBS} kio ${QT_QTTEST_LIBRARY} )
 
 endif(KDE4_BUILD_TESTS)
 
@@ -419,7 +419,7 @@ kde4_automoc(${kmimetypetest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kmimetypetest ${kmimetypetest_SRCS})
 
-target_link_libraries(kmimetypetest  ${QT_AND_KDECORE_LIBS} kio QtTest )
+target_link_libraries(kmimetypetest  ${QT_AND_KDECORE_LIBS} kio ${QT_QTTEST_LIBRARY} )
 
 endif(KDE4_BUILD_TESTS)
 
@@ -434,7 +434,7 @@ kde4_automoc(${kbookmarktest_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(kbookmarktest ${kbookmarktest_SRCS})
 
-target_link_libraries(kbookmarktest  ${QT_AND_KDECORE_LIBS} kio QtTest )
+target_link_libraries(kbookmarktest  ${QT_AND_KDECORE_LIBS} kio ${QT_QTTEST_LIBRARY} )
 
 endif(KDE4_BUILD_TESTS)
 
@@ -580,10 +580,10 @@ kde4_footer()
 ##servicesdir = $(kde_servicesdir)
 #
 #kmimetypetest_SOURCES = kmimetypetest.cpp
-#kmimetypetest_LDADD = $(LIB_KIO) -lQtTest
+#kmimetypetest_LDADD = $(LIB_KIO) -l${QT_QTTEST_LIBRARY}
 #
 #kbookmarktest_SOURCES = kbookmarktest.cpp
-#kbookmarktest_LDADD = $(LIB_KIO) -lQtTest
+#kbookmarktest_LDADD = $(LIB_KIO) -l${QT_QTTEST_LIBRARY}
 #
 #jobtest_SOURCES = jobtest.cpp
-#jobtest_LDADD = $(LIB_KIO) -lQtTest
+#jobtest_LDADD = $(LIB_KIO) -l${QT_QTTEST_LIBRARY}
