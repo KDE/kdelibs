@@ -526,6 +526,7 @@ private:
 /* Mapping between special Qt keycodes and virtual DOM codes */
 IDTranslator<unsigned, unsigned, unsigned>::Info virtKeyToQtKeyTable[] =
 {
+    {KeyEventBaseImpl::DOM_VK_BACK_SPACE, Qt::Key_Backspace},
     {KeyEventBaseImpl::DOM_VK_ENTER, Qt::Key_Enter},
     {KeyEventBaseImpl::DOM_VK_ENTER, Qt::Key_Return},
     {KeyEventBaseImpl::DOM_VK_NUM_LOCK,  Qt::Key_NumLock},
