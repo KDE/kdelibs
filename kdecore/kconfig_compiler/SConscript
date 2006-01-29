@@ -6,10 +6,10 @@ obj = env.kdeobj('program', env)
 obj.target = 'kconfig_compiler'
 obj.source = 'kconfig_compiler.cpp '
 obj.libpaths = '.. ../../dcop'
-obj.libs   = 'kdecore DCOP'
-obj.uselib = 'QTCORE QTGUI QTXML QT3SUPPORT QT KDE4 KDECORE'
+obj.uselib = 'QTCORE QTXML QT'
 obj.instdir = env['KDEBIN']
 obj.execute()
+
 
 """
 SUBDIRS = tests

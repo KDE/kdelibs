@@ -22,30 +22,80 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QCoreApplication>
 #include <QFile>
+#include <QFileInfo>
+#include <QSettings>
 #include <QTextStream>
 #include <QDomDocument>
 #include <QRegExp>
+#include <QStringList>
 
-#include <kaboutdata.h>
-#include <kinstance.h>
-#include <kdebug.h>
-#include <klocale.h>
-#include <kcmdlineargs.h>
-#include <ksimpleconfig.h>
-#include <kurl.h>
-
+#include <ostream>
 #include <iostream>
 
-static const KCmdLineOptions options[] =
-{
-  { "d", 0, 0 },
-  { "directory <dir>", I18N_NOOP("Directory to generate files in"), "." },
-  { "+file.kcfg", I18N_NOOP("Input kcfg XML file"), 0 },
-  { "+file.kcfgc", I18N_NOOP("Code generation options file"), 0 },
-  KCmdLineLastOption
-};
 
+static inline std::ostream &operator<<(std::ostream &o, const QString &str)
+{
+    o << str.toLocal8Bit().constData();
+    return o;
+}
+
+static void parseArgs(const QStringList &args, QString &directory, QString &file1, QString &file2)
+{
+    int fileCount = 0;
+    directory = ".";
+
+    for (int i = 1; i < args.count(); ++i) {
+        if (args.at(i).startsWith("-d")) {
+            if (args.at(i).length() == 2) {
+                std::cerr << qPrintable(args.at(i)) << " needs an argument" << std::endl;
+                exit(1);
+            }
+            directory = args.at(i).mid(2);
+        } else if (args.at(i) == "--directory") {
+            if (i + 1 > args.count()) {
+                std::cerr << qPrintable(args.at(i)) << " needs an argument" << std::endl;
+                exit(1);
+            }
+            directory = args.at(++i);
+        } else if (args.at(i) == "--help" || args.at(i) == "-h") {
+            std::cout << "Options:" << std::endl;
+            std::cout << "  -L --license              Display software license" << std::endl;
+            std::cout << "  -d, --directory <dir>     Directory to generate files in [.]" << std::endl;
+            std::cout << "  -h, --help                Display this help" << std::endl;
+            std::cout << std::endl;
+            std::cout << "Arguments:" << std::endl;
+            std::cout << "      file.kcfg                 Input kcfg XML file" << std::endl;
+            std::cout << "      file.kcfgc                Code generation options file" << std::endl;
+            exit(0);
+        } else if (args.at(i) == "--license" || args.at(i) == "-L") {
+            std::cout << "Copyright 2003 Cornelius Schumacher, Waldo Bastian, Zack Rusin," << std::endl;
+            std::cout << "    Reinhold Kainhofer, Duncan Mac-Vicar P., Harald Fernengel" << std::endl;
+            std::cout << "This program comes with ABSOLUTELY NO WARRANTY." << std::endl;
+            std::cout << "You may redistribute copies of this program" << std::endl;
+            std::cout << "under the terms of the GNU Library Public License." << std::endl;
+            std::cout << "For more information about these matters, see the file named COPYING." << std::endl;
+            exit(0);
+        } else if (args.at(i).startsWith("-")) {
+            std::cerr << "Unknown option: " << qPrintable(args.at(i)) << std::endl;
+            exit(1);
+        } else if (fileCount == 0) {
+            file1 = args.at(i);
+            ++fileCount;
+        } else if (fileCount == 1) {
+            file2 = args.at(i);
+            ++fileCount;
+        } else {
+            std::cerr << "Too many arguments" << std::endl;
+            exit(1);
+        }
+    }
+    if (fileCount < 2) {
+        std::cerr << "Too few arguments" << std::endl;
+        exit(1);
+    }
+}
 
 bool globalEnums;
 bool itemAccessors;
@@ -53,7 +103,7 @@ bool dpointer;
 QStringList allNames;
 QRegExp *validNameRegexp;
 QString This;
-QString Const;  
+QString Const;
 
 class CfgEntry
 {
@@ -132,27 +182,27 @@ class CfgEntry
 
     void dump() const
     {
-      kdDebug() << "<entry>" << endl;
-      kdDebug() << "  group: " << mGroup << endl;
-      kdDebug() << "  type: " << mType << endl;
-      kdDebug() << "  key: " << mKey << endl;
-      kdDebug() << "  name: " << mName << endl;
-      kdDebug() << "  label: " << mLabel << endl;
+      std::cerr << "<entry>" << std::endl;
+      std::cerr << "  group: " << qPrintable(mGroup) << std::endl;
+      std::cerr << "  type: " << qPrintable(mType) << std::endl;
+      std::cerr << "  key: " << qPrintable(mKey) << std::endl;
+      std::cerr << "  name: " << qPrintable(mName) << std::endl;
+      std::cerr << "  label: " << qPrintable(mLabel) << std::endl;
 // whatsthis
-      kdDebug() << "  code: " << mCode << endl;
-//      kdDebug() << "  values: " << mValues.join(":") << endl;
+      std::cerr << "  code: " << qPrintable(mCode) << std::endl;
+//      std::cerr << "  values: " << mValues.join(":") << std::endl;
 
       if (!param().isEmpty())
       {
-        kdDebug() << "  param name: "<< mParamName << endl;
-        kdDebug() << "  param type: "<< mParamType << endl;
-        kdDebug() << "  paramvalues: " << mParamValues.join(":") << endl;
+        std::cerr << "  param name: "<< qPrintable(mParamName) << std::endl;
+        std::cerr << "  param type: "<< qPrintable(mParamType) << std::endl;
+        std::cerr << "  paramvalues: " << qPrintable(mParamValues.join(":")) << std::endl;
       }
-      kdDebug() << "  default: " << mDefaultValue << endl;
-      kdDebug() << "  hidden: " << mHidden << endl;
-      kdDebug() << "  min: " << mMin << endl;
-      kdDebug() << "  max: " << mMax << endl;
-      kdDebug() << "</entry>" << endl;
+      std::cerr << "  default: " << qPrintable(mDefaultValue) << std::endl;
+      std::cerr << "  hidden: " << mHidden << std::endl;
+      std::cerr << "  min: " << qPrintable(mMin) << std::endl;
+      std::cerr << "  max: " << qPrintable(mMax) << std::endl;
+      std::cerr << "</entry>" << std::endl;
     }
 
   private:
@@ -390,11 +440,11 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       param = e.attribute( "name" );
       paramType = e.attribute( "type" );
       if ( param.isEmpty() ) {
-        kdError() << "Parameter must have a name: " << dumpNode(e) << endl;
+        std::cerr << "Parameter must have a name: " << qPrintable(dumpNode(e)) << std::endl;
         return 0;
       }
       if ( paramType.isEmpty() ) {
-        kdError() << "Parameter must have a type: " << dumpNode(e) << endl;
+        std::cerr << "Parameter must have a type: " << qPrintable(dumpNode(e)) << std::endl;
         return 0;
       }
       if ((paramType == "Int") || (paramType == "UInt"))
@@ -403,7 +453,8 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
          paramMax = e.attribute("max").toInt(&ok);
          if (!ok)
          {
-           kdError() << "Integer parameter must have a maximum (e.g. max=\"0\"): " << dumpNode(e) << endl;
+           std::cerr << "Integer parameter must have a maximum (e.g. max=\"0\"): "
+                       << qPrintable(dumpNode(e)) << std::endl;
            return 0;
          }
       }
@@ -427,14 +478,16 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
          }
          if (paramValues.isEmpty())
          {
-           kdError() << "No values specified for parameter '" << param << "'." << endl;
+           std::cerr << "No values specified for parameter '" << qPrintable(param)
+                       << "'." << std::endl;
            return 0;
          }
          paramMax = paramValues.count()-1;
       }
       else
       {
-        kdError() << "Parameter '" << param << "' has type " << paramType << " but must be of type int, uint or Enum." << endl;
+        std::cerr << "Parameter '" << qPrintable(param) << "' has type " << qPrintable(paramType)
+                    << " but must be of type int, uint or Enum." << std::endl;
         return 0;
       }
     }
@@ -456,7 +509,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
           CfgEntry::Choice choice;
           choice.name = e2.attribute( "name" );
           if ( choice.name.isEmpty() ) {
-            kdError() << "Tag <choice> requires attribute 'name'." << endl;
+            std::cerr << "Tag <choice> requires attribute 'name'." << std::endl;
           }
           for( n3 = e2.firstChild(); !n3.isNull(); n3 = n3.nextSibling() ) {
             QDomElement e3 = n3.toElement();
@@ -471,7 +524,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 
   bool nameIsEmpty = name.isEmpty();
   if ( nameIsEmpty && key.isEmpty() ) {
-    kdError() << "Entry must have a name or a key: " << dumpNode(element) << endl;
+    std::cerr << "Entry must have a name or a key: " << qPrintable(dumpNode(element)) << std::endl;
     return 0;
   }
 
@@ -483,7 +536,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     name = key;
     name.replace( " ", QString::null );
   } else if ( name.contains( ' ' ) ) {
-    kdWarning()<<"Entry '"<<name<<"' contains spaces! <name> elements can't contain speces!"<<endl;
+      std::cout<<"Entry '"<<qPrintable(name)<<"' contains spaces! <name> elements can't contain speces!"<<std::endl;
     name.remove( ' ' );
   }
 
@@ -491,7 +544,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   {
     if (param.isEmpty())
     {
-      kdError() << "Name may not be parameterized: " << name << endl;
+      std::cerr << "Name may not be parameterized: " << qPrintable(name) << std::endl;
       return 0;
     }
   }
@@ -499,7 +552,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   {
     if (!param.isEmpty())
     {
-      kdError() << "Name must contain '$(" << param << ")': " << name << endl;
+      std::cerr << "Name must contain '$(" << qPrintable(param) << ")': " << qPrintable(name) << std::endl;
       return 0;
     }
   }
@@ -538,14 +591,14 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
           i = paramValues.indexOf(index);
           if (i == -1)
           {
-            kdError() << "Index '" << index << "' for default value is unknown." << endl;
+            std::cerr << "Index '" << qPrintable(index) << "' for default value is unknown." << std::endl;
             return 0;
           }
         }
 
         if ((i < 0) || (i > paramMax))
         {
-          kdError() << "Index '" << i << "' for default value is out of range [0, "<< paramMax<<"]." << endl;
+          std::cerr << "Index '" << i << "' for default value is out of range [0, "<< paramMax<<"]." << std::endl;
           return 0;
         }
 
@@ -562,20 +615,20 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   if (!validNameRegexp->exactMatch(name))
   {
     if (nameIsEmpty)
-      kdError() << "The key '" << key << "' can not be used as name for the entry because "
-                   "it is not a valid name. You need to specify a valid name for this entry." << endl;
+      std::cerr << "The key '" << qPrintable(key) << "' can not be used as name for the entry because "
+                   "it is not a valid name. You need to specify a valid name for this entry." << std::endl;
     else
-      kdError() << "The name '" << name << "' is not a valid name for an entry." << endl;
+      std::cerr << "The name '" << qPrintable(name) << "' is not a valid name for an entry." << std::endl;
     return 0;
   }
 
   if (allNames.contains(name))
   {
     if (nameIsEmpty)
-      kdError() << "The key '" << key << "' can not be used as name for the entry because "
-                   "it does not result in a unique name. You need to specify a unique name for this entry." << endl;
+      std::cerr << "The key '" << qPrintable(key) << "' can not be used as name for the entry because "
+                   "it does not result in a unique name. You need to specify a unique name for this entry." << std::endl;
     else
-      kdError() << "The name '" << name << "' is not unique." << endl;
+      std::cerr << "The name '" << qPrintable(name) << "' is not unique." << std::endl;
     return 0;
   }
   allNames.append(name);
@@ -628,7 +681,7 @@ QString param( const QString &type )
     else if ( type == "PathList" )    return "const QStringList &";
     else if ( type == "Password" )    return "const QString &";
     else {
-        kdError() <<"kconfig_compiler does not support type \""<< type <<"\""<<endl;
+        std::cerr <<"kconfig_compiler does not support type \""<< type <<"\""<<std::endl;
         return "QString"; //For now, but an assert would be better
     }
 }
@@ -658,7 +711,7 @@ QString cppType( const QString &type )
     else if ( type == "PathList" )    return "QStringList";
     else if ( type == "Password" )    return "QString";
     else {
-        kdError()<<"kconfig_compiler does not support type \""<< type <<"\""<<endl;
+        std::cerr<<"kconfig_compiler does not support type \""<< type <<"\""<<std::endl;
         return "QString"; //For now, but an assert would be better
     }
 }
@@ -685,7 +738,7 @@ QString defaultValue( const QString &type )
     else if ( type == "PathList" )    return "QStringList()";
     else if ( type == "Password" )    return "\"\""; // Use empty string, not null string!
     else {
-        kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;
+        std::cerr<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<std::endl;
         return "QString"; //For now, but an assert would be better
     }
 }
@@ -721,7 +774,7 @@ static QString itemVar(const CfgEntry *e)
   QString result;
   if (itemAccessors)
   {
-    if ( !dpointer )  
+    if ( !dpointer )
     {
       result = "m" + e->name() + "Item";
       result[1] = result[1].toUpper();
@@ -839,7 +892,7 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString::null, QStri
 // which should go in the h file if inline
 // or the cpp file if not inline
 QString memberAccessorBody( CfgEntry *e )
-{    
+{
     QString result;
     QTextStream out(&result, QIODevice::WriteOnly);
     QString n = e->name();
@@ -848,7 +901,7 @@ QString memberAccessorBody( CfgEntry *e )
     out << "return " << This << varPath(n);
     if (!e->param().isEmpty()) out << "[i]";
     out << ";" << endl;
-   
+
     return result;
 }
 
@@ -868,18 +921,18 @@ QString memberMutatorBody( CfgEntry *e )
     out << "{" << endl;
     out << "  kdDebug() << \"" << setFunction(n);
     out << ": value \" << v << \" is less than the minimum value of ";
-    out << e->minValue()<< "\" << endl;" << endl;
+    out << e->minValue()<< "\" << std::endl;" << endl;
     out << "  v = " << e->minValue() << ";" << endl;
     out << "}" << endl;
   }
-  
+
   if (!e->maxValue().isEmpty())
   {
     out << endl << "if (v > " << e->maxValue() << ")" << endl;
     out << "{" << endl;
     out << "  kdDebug() << \"" << setFunction(n);
     out << ": value \" << v << \" is greater than the maximum value of ";
-    out << e->maxValue()<< "\" << endl;" << endl;
+    out << e->maxValue()<< "\" << std::endl;" << endl;
     out << "  v = " << e->maxValue() << ";" << endl;
     out << "}" << endl << endl;
   }
@@ -895,7 +948,7 @@ QString memberMutatorBody( CfgEntry *e )
         out << enumName(e->param()) << "ToString[i]";
       else
         out << enumName(e->param()) << "::enumToString[i]";
-        
+
         out << " )";
     }
     else
@@ -912,7 +965,7 @@ QString memberMutatorBody( CfgEntry *e )
   out << "  " << This << varPath(n);
   if (!e->param().isEmpty())
     out << "[i]";
-  out << " = v;" << endl;    
+  out << " = v;" << endl;
 
   return result;
 }
@@ -921,7 +974,7 @@ QString memberMutatorBody( CfgEntry *e )
 // which should go in the h file if inline
 // or the cpp file if not inline
 QString itemAccessorBody( CfgEntry *e )
-{    
+{
     QString result;
     QTextStream out(&result, QIODevice::WriteOnly);
 
@@ -934,7 +987,7 @@ QString itemAccessorBody( CfgEntry *e )
 
 //indents text adding X spaces per line
 QString indent(QString text, int spaces)
-{    
+{
     QString result;
     QTextStream out(&result, QIODevice::WriteOnly);
     QTextStream in(&text, QIODevice::ReadOnly);
@@ -953,74 +1006,50 @@ QString indent(QString text, int spaces)
 
 int main( int argc, char **argv )
 {
-  KAboutData aboutData( "kconfig_compiler", I18N_NOOP("KDE .kcfg compiler"), "0.3",
-    I18N_NOOP("KConfig Compiler") , KAboutData::License_LGPL );
-  aboutData.addAuthor( "Cornelius Schumacher", 0, "schumacher@kde.org" );
-  aboutData.addAuthor( "Waldo Bastian", 0, "bastian@kde.org" );
-  aboutData.addAuthor( "Zack Rusin", 0, "zack@kde.org" );
-  aboutData.addCredit( "Reinhold Kainhofer", "Fix for parametrized entries",
-      "reinhold@kainhofer.com", "http://reinhold.kainhofer.com" );
-  aboutData.addCredit( "Duncan Mac-Vicar P.", "dpointer support",
-      "duncan@kde.org", "http://www.mac-vicar.com/~duncan" );
-
-  KCmdLineArgs::init( argc, argv, &aboutData );
-  KCmdLineArgs::addCmdLineOptions( options );
-
-  KInstance app( &aboutData );
-
-  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
-  if ( args->count() < 2 ) {
-    kdError() << "Too few arguments." << endl;
-    return 1;
-  }
-  if ( args->count() > 2 ) {
-    kdError() << "Too many arguments." << endl;
-    return 1;
-  }
+  QCoreApplication app(argc, argv);
 
   validNameRegexp = new QRegExp("[a-zA-Z_][a-zA-Z0-9_]*");
 
-  QString baseDir = QFile::decodeName(args->getOption("directory"));
+  QString directoryName, inputFilename, codegenFilename;
+  parseArgs(app.arguments(), directoryName, inputFilename, codegenFilename);
+
+  QString baseDir = directoryName;
 #ifdef Q_OS_WIN
   if (!baseDir.endsWith("/") && !baseDir.endsWith("\\"))
-#else 
+#else
   if (!baseDir.endsWith("/"))
-#endif 
+#endif
     baseDir.append("/");
-
-  QString inputFilename = args->url( 0 ).path();
-  QString codegenFilename = args->url( 1 ).path();
 
   if (!codegenFilename.endsWith(".kcfgc"))
   {
-    kdError() << "Codegen options file must have extension .kcfgc" << endl;
+    std::cerr << "Codegen options file must have extension .kcfgc" << std::endl;
     return 1;
   }
-  QString baseName = args->url( 1 ).fileName();
+  QString baseName = QFileInfo(codegenFilename).fileName();
   baseName = baseName.left(baseName.length() - 6);
 
-  KSimpleConfig codegenConfig( codegenFilename, true );
+  QSettings codegenConfig(codegenFilename, QSettings::IniFormat);
 
-  QString nameSpace = codegenConfig.readEntry("NameSpace");
-  QString className = codegenConfig.readEntry("ClassName");
-  QString inherits = codegenConfig.readEntry("Inherits");
-  QString visibility = codegenConfig.readEntry("Visibility");
+  QString nameSpace = codegenConfig.value("NameSpace").toString();
+  QString className = codegenConfig.value("ClassName").toString();
+  QString inherits = codegenConfig.value("Inherits").toString();
+  QString visibility = codegenConfig.value("Visibility").toString();
   if (!visibility.isEmpty()) visibility+=" ";
-  bool singleton = codegenConfig.readEntry("Singleton", false);
+  bool singleton = codegenConfig.value("Singleton", false).toBool();
   bool staticAccessors = singleton;
   //bool useDPointer = codegenConfig.readEntry("DPointer", false);
-  bool customAddons = codegenConfig.readEntry("CustomAdditions", false);
-  QString memberVariables = codegenConfig.readEntry("MemberVariables");
-  QStringList headerIncludes = codegenConfig.readEntry("IncludeFiles", QStringList());
-  QStringList mutators = codegenConfig.readEntry("Mutators", QStringList());
+  bool customAddons = codegenConfig.value("CustomAdditions", false).toBool();
+  QString memberVariables = codegenConfig.value("MemberVariables").toString();
+  QStringList headerIncludes = codegenConfig.value("IncludeFiles", QStringList()).toStringList();
+  QStringList mutators = codegenConfig.value("Mutators", QStringList()).toStringList();
   bool allMutators = false;
-  if ((mutators.count() == 1) && (mutators[0].toLower() == "true"))
+  if ((mutators.count() == 1) && (mutators.at(0).toLower() == "true"))
      allMutators = true;
-  itemAccessors = codegenConfig.readEntry("ItemAccessors", false);
-  bool setUserTexts = codegenConfig.readEntry("SetUserTexts", false);
+  itemAccessors = codegenConfig.value("ItemAccessors", false).toBool();
+  bool setUserTexts = codegenConfig.value("SetUserTexts", false).toBool();
 
-  globalEnums = codegenConfig.readEntry("GlobalEnums", false);
+  globalEnums = codegenConfig.value("GlobalEnums", false).toBool();
 
   dpointer = (memberVariables == "dpointer");
 
@@ -1031,15 +1060,15 @@ int main( int argc, char **argv )
   int errorRow;
   int errorCol;
   if ( !doc.setContent( &input, &errorMsg, &errorRow, &errorCol ) ) {
-    kdError() << "Unable to load document." << endl;
-    kdError() << "Parse error in " << args->url( 0 ).fileName() << ", line " << errorRow << ", col " << errorCol << ": " << errorMsg << endl;
+    std::cerr << "Unable to load document." << std::endl;
+    std::cerr << "Parse error in " << inputFilename << ", line " << errorRow << ", col " << errorCol << ": " << errorMsg << std::endl;
     return 1;
   }
 
   QDomElement cfgElement = doc.documentElement();
 
   if ( cfgElement.isNull() ) {
-    kdError() << "No document in kcfg file" << endl;
+    std::cerr << "No document in kcfg file" << std::endl;
     return 1;
   }
 
@@ -1080,7 +1109,7 @@ int main( int argc, char **argv )
     } else if ( tag == "group" ) {
       QString group = e.attribute( "name" );
       if ( group.isEmpty() ) {
-        kdError() << "Group without name" << endl;
+        std::cerr << "Group without name" << std::endl;
         return 1;
       }
       QDomNode n2;
@@ -1090,7 +1119,7 @@ int main( int argc, char **argv )
         CfgEntry *entry = parseEntry( group, e2 );
         if ( entry ) entries.append( entry );
         else {
-          kdError() << "Can't parse entry." << endl;
+          std::cerr << "Can't parse entry." << std::endl;
           return 1;
         }
       }
@@ -1100,23 +1129,23 @@ int main( int argc, char **argv )
   if ( inherits.isEmpty() ) inherits = "KConfigSkeleton";
 
   if ( className.isEmpty() ) {
-    kdError() << "Class name missing" << endl;
+    std::cerr << "Class name missing" << std::endl;
     return 1;
   }
 
   if ( singleton && !parameters.isEmpty() ) {
-    kdError() << "Singleton class can not have parameters" << endl;
+    std::cerr << "Singleton class can not have parameters" << std::endl;
     return 1;
   }
 
   if ( !cfgFileName.isEmpty() && cfgFileNameArg)
   {
-    kdError() << "Having both a fixed filename and a filename as argument is not possible." << endl;
+    std::cerr << "Having both a fixed filename and a filename as argument is not possible." << std::endl;
     return 1;
   }
 
   if ( entries.isEmpty() ) {
-    kdWarning() << "No entries." << endl;
+    std::cerr << "No entries." << std::endl;
   }
 
 #if 0
@@ -1132,13 +1161,13 @@ int main( int argc, char **argv )
 
   QFile header( baseDir + headerFileName );
   if ( !header.open( QIODevice::WriteOnly ) ) {
-    kdError() << "Can't open '" << baseDir  << headerFileName << "for writing." << endl;
+    std::cerr << "Can't open '" << baseDir  << headerFileName << "for writing." << std::endl;
     return 1;
   }
 
   QTextStream h( &header );
 
-  h << "// This file is generated by kconfig_compiler from " << args->url(0).fileName() << "." << endl;
+  h << "// This file is generated by kconfig_compiler from " << QFileInfo(inputFilename).fileName() << "." << endl;
   h << "// All changes you do to this file will be lost." << endl;
 
   h << "#ifndef " << ( !nameSpace.isEmpty() ? nameSpace.toUpper() + "_" : "" )
@@ -1270,7 +1299,7 @@ int main( int argc, char **argv )
       if ( !dpointer )
       {
         h << endl << "    {" << endl;
-        h << indent(memberMutatorBody(*itEntry), 6 );      
+        h << indent(memberMutatorBody(*itEntry), 6 );
         h << "    }" << endl;
       }
       else
@@ -1294,7 +1323,7 @@ int main( int argc, char **argv )
     if ( !dpointer )
     {
        h << endl << "    {" << endl;
-      h << indent(memberAccessorBody((*itEntry)), 6 );      
+      h << indent(memberAccessorBody((*itEntry)), 6 );
        h << "    }" << endl;
     }
     else
@@ -1387,7 +1416,7 @@ int main( int argc, char **argv )
         h << ";" << endl;
       }
     }
-  
+
   }
   else
   {
@@ -1395,7 +1424,7 @@ int main( int argc, char **argv )
     h << "  private:" << endl;
     h << "    " + className + "Private *d;" << endl;
   }
-  
+
   if (customAddons)
   {
      h << "    // Include custom additions" << endl;
@@ -1413,15 +1442,15 @@ int main( int argc, char **argv )
 
   QFile implementation( baseDir + implementationFileName );
   if ( !implementation.open( QIODevice::WriteOnly ) ) {
-    kdError() << "Can't open '" << implementationFileName << "for writing."
-              << endl;
+    std::cerr << "Can't open '" << qPrintable(implementationFileName) << "for writing."
+              << std::endl;
     return 1;
   }
 
   QTextStream cpp( &implementation );
 
 
-  cpp << "// This file is generated by kconfig_compiler from " << args->url(0).fileName() << "." << endl;
+  cpp << "// This file is generated by kconfig_compiler from " << QFileInfo(inputFilename).fileName() << "." << endl;
   cpp << "// All changes you do to this file will be lost." << endl << endl;
 
   cpp << "#include \"" << headerFileName << "\"" << endl << endl;
@@ -1491,7 +1520,7 @@ int main( int argc, char **argv )
       cpp << "void " << className << "::instance(const char *cfgfilename)" << endl;
       cpp << "{" << endl;
       cpp << "  if (mSelf) {" << endl;
-      cpp << "     kdError() << \"" << className << "::instance called after the first use - ignoring\" << endl;" << endl;
+      cpp << "     kdDebug() << \"" << className << "::instance called after the first use - ignoring\" << endl;" << endl;
       cpp << "     return;" << endl;
       cpp << "  }" << endl;
       cpp << "  static" << className << "Deleter.setObject( mSelf, new " << className << "(cfgfilename) );" << endl;
@@ -1644,7 +1673,7 @@ int main( int argc, char **argv )
     for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
       QString n = (*itEntry)->name();
       QString t = (*itEntry)->type();
-  
+
       // Manipulator
       if (allMutators || mutators.contains(n))
       {
@@ -1655,10 +1684,10 @@ int main( int argc, char **argv )
         // function body inline only if not using dpointer
         // for BC mode
         cpp << "{" << endl;
-        cpp << indent(memberMutatorBody( *itEntry ), 6);      
+        cpp << indent(memberMutatorBody( *itEntry ), 6);
         cpp << "}" << endl << endl;
       }
-  
+
       // Accessor
       cpp << cppType(t) << " " << getFunction(n, className) << "(";
       if ( !(*itEntry)->param().isEmpty() )
@@ -1667,9 +1696,9 @@ int main( int argc, char **argv )
       // function body inline only if not using dpointer
       // for BC mode
       cpp << "{" << endl;
-      cpp << indent(memberAccessorBody( *itEntry ), 2);      
+      cpp << indent(memberAccessorBody( *itEntry ), 2);
       cpp << "}" << endl << endl;
-  
+
       // Item accessor
       if ( itemAccessors )
       {
@@ -1684,7 +1713,7 @@ int main( int argc, char **argv )
         cpp << indent(itemAccessorBody( *itEntry ), 2);
         cpp << "}" << endl;
       }
-  
+
       cpp << endl;
     }
   }
