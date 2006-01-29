@@ -441,6 +441,8 @@ LDAPUrl LdapConfigWidget::url() const
     _url.setExtension( "x-sizelimit", QString::number( mSizeLimit->value() ) );
   if ( mTimeLimit && mTimeLimit->value() != 0 )
     _url.setExtension( "x-timelimit", QString::number( mTimeLimit->value() ) );
+  if ( mPageSize && mPageSize->value() != 0 )
+    _url.setExtension( "x-pagesize", QString::number( mPageSize->value() ) );
   if ( mSecTLS && mSecTLS->isChecked() ) _url.setExtension( "x-tls","" );
   if ( mFilter && !mFilter->text().isEmpty() )
     _url.setFilter( mFilter->text() );
