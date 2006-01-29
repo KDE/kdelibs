@@ -19,29 +19,28 @@
  */
 
 #define INCLUDE_MENUITEM_DEF
-#include <qmenudata.h>
 
 #include "config.h"
 
-#include "kcheckaccelerators.h"
-#include "kacceleratormanager.h"
-#include <qapplication.h>
-#include <qdialog.h>
-#include <qlayout.h>
-#include <q3textview.h>
-#include <qobject.h>
-#include <qmenubar.h>
-#include <qtabbar.h>
-#include <qpushbutton.h>
-#include <qmetaobject.h>
-#include <qcheckbox.h>
+#include <QApplication>
+#include <QCheckBox>
+#include <QDialog>
 #include <QKeyEvent>
+#include <QLayout>
+#include <QMenuBar>
+#include <QMetaObject>
+#include <QPushButton>
+#include <QTextBrowser>
+#include <QTabBar>
 
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kshortcut.h>
 #include <klocale.h>
+#include <kshortcut.h>
+
+#include "kacceleratormanager.h"
+#include "kcheckaccelerators.h"
 
 /*
 
@@ -97,7 +96,7 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
         return false;
 
     switch ( e->type() ) { // just simplify debuggin
-    case QEvent::Accel:
+    case QEvent::Shortcut:
         if ( key && (static_cast<QKeyEvent *>(e)->key() == key) ) {
     	    block = true;
 	    checkAccelerators( false );
@@ -106,14 +105,16 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
 	    return true;
 	}
         break;
-    case QEvent::ChildInserted:
+    case QEvent::ChildAdded:
     case QEvent::ChildRemoved:
     case QEvent::Resize:
-    case QEvent::LayoutHint:
+    case QEvent::LayoutRequest:
     case QEvent::WindowActivate:
     case QEvent::WindowDeactivate:
-        if( autoCheck )
-            autoCheckTimer.start( 20, true ); // 20 ms
+        if( autoCheck ) {
+            autoCheckTimer.setSingleShot( true );
+            autoCheckTimer.start( 20 ); // 20 ms
+        }
         break;
     case QEvent::Timer:
     case QEvent::MouseMove:
@@ -132,7 +133,8 @@ void KCheckAccelerators::autoCheckSlot()
         QWidget::keyboardGrabber() ||
         QApplication::activePopupWidget())
     {
-        autoCheckTimer.start( 20, true );
+        autoCheckTimer.setSingleShot( true );
+        autoCheckTimer.start( 20 );
         return;
     }
     block = true;
@@ -145,19 +147,25 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
     if ( drklash )
         return;
 
-    drklash = new QDialog( actWin, "kapp_accel_check_dlg", false, Qt::WDestructiveClose);
-    drklash->setCaption( i18n( "Dr. Klash' Accelerator Diagnosis" ));
+    drklash = new QDialog( actWin );
+    drklash->setAttribute( Qt::WA_DeleteOnClose );
+    drklash->setObjectName( "kapp_accel_check_dlg" );
+    drklash->setWindowTitle( i18n( "Dr. Klash' Accelerator Diagnosis" ));
     drklash->resize( 500, 460 );
-    QVBoxLayout* layout = new QVBoxLayout( drklash, 11, 6 );
-    layout->setAutoAdd( true );
-    drklash_view = new Q3TextView( drklash );
+    QVBoxLayout* layout = new QVBoxLayout( drklash );
+    layout->setMargin( 11 );
+    layout->setSpacing( 6 );
+    drklash_view = new QTextBrowser( drklash );
+    layout->addWidget( drklash );
     QCheckBox* disableAutoCheck = NULL;
     if( automatic )  {
         disableAutoCheck = new QCheckBox( i18n( "&Disable automatic checking" ), drklash );
         connect(disableAutoCheck, SIGNAL(toggled(bool)), SLOT(slotDisableCheck(bool)));
+        layout->addWidget( disableAutoCheck );
     }
     QPushButton* btnClose = new QPushButton( i18n( "&Close" ), drklash );
     btnClose->setDefault( true );
+    layout->addWidget( btnClose );
     connect( btnClose, SIGNAL( clicked() ), drklash, SLOT( close() ) );
     if (disableAutoCheck)
         disableAutoCheck->setFocus();
@@ -207,7 +215,7 @@ void KCheckAccelerators::checkAccelerators( bool automatic )
     }
 
     createDialog(actWin, automatic);
-    drklash_view->setText(s);
+    drklash_view->setHtml(s);
     drklash->show();
     drklash->raise();
 

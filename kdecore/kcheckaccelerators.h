@@ -21,15 +21,16 @@
 #ifndef KCHECKACCELERATORS_H_
 #define KCHECKACCELERATORS_H_
 
-#include <qpointer.h>
-#include <qobject.h>
-#include <qkeysequence.h>
-#include <qmap.h>
-#include <qstring.h>
-#include <qtimer.h>
+#include <QKeySequence>
+#include <QMap>
+#include <QObject>
+#include <QPointer>
+#include <QString>
+#include <QTimer>
 
+class QDialog;
 class QMenuData;
-class Q3TextView;
+class QTextBrowser;
 
 #include "kdelibs_export.h"
 
@@ -86,7 +87,7 @@ private:
     QTimer autoCheckTimer;
     void createDialog(QWidget *parent, bool automatic);
     QPointer<QDialog> drklash;
-    Q3TextView *drklash_view;
+    QTextBrowser *drklash_view;
 
 private Q_SLOTS:
     void autoCheckSlot();
