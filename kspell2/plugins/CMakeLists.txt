@@ -1,14 +1,17 @@
 kde4_header()
 
+find_package(ASPELL)
+if (ASPELL_FOUND)
+   add_subdirectory( aspell )
+endif (ASPELL_FOUND)
+
+ 
+find_package(HSPELL)
+if (HSPELL_FOUND)
+   add_subdirectory( hspell )
+endif (HSPELL_FOUND)
+
 add_subdirectory( ispell ) 
-
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(LIBASPELLPLUGIN)")
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(LIBHSPELLPLUGIN)")
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-
-########### install files ###############
-
 
 kde4_footer()
 

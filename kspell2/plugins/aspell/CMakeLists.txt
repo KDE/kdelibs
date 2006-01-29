@@ -1,6 +1,6 @@
 kde4_header()
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${ASPELL_INCLUDE_DIR}  )
 
 
 ########### next target ###############
@@ -14,7 +14,7 @@ kde4_automoc(${kspell_aspell_PART_SRCS})
 
 kde4_add_plugin(kspell_aspell ${kspell_aspell_PART_SRCS})
 
-target_link_libraries(kspell_aspell  ${QT_AND_KDECORE_LIBS} kspell2 aspell )
+target_link_libraries(kspell_aspell  ${QT_AND_KDECORE_LIBS} kspell2 ${ASPELL_LIBRARY} )
 
 install_targets(/lib/kde4 kspell_aspell )
 
