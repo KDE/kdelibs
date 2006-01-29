@@ -136,12 +136,7 @@ def generate(env):
 	env['BUILDERS']['Meinproc']=Builder(action='$MEINPROC --check --cache $TARGET $SOURCE',suffix='.cache.bz2')
 
 	def kcfg_buildit(target, source, env):
-		# TODO: why does target[0].dir return under unix only builddir and under windows builddir + subdir
-		# if on unix only builddir is required, why not use builddir at all ? 
-		if env['WINDOWS']:
-			comp='$KCONFIGCOMPILER -d%s %s %s' % (env['_BUILDDIR_'], source[1].path, source[0].path)
-		else:
-			comp='$KCONFIGCOMPILER -d%s %s %s' % (target[0].dir, source[1].path, source[0].path)
+		comp='$KCONFIGCOMPILER -d%s %s %s' % (target[0].dir, source[1].path, source[0].path)
 		return env.Execute(comp)
 	
 	def kcfg_stringit(target, source, env):
