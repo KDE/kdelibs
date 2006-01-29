@@ -18,13 +18,15 @@
 
 #include "config.h"
 
-#include <qtimer.h>
-#include <qevent.h>
-#include <qapplication.h>
+#include <QApplication>
+#include <QKeyEvent>
+#include <QScrollBar>
+#include <QTimer>
 
-#include "kscrollview.h"
 #include <kconfig.h>
 #include <kglobal.h>
+
+#include "kscrollview.h"
 
 struct KScrollView::KScrollViewPrivate {
     KScrollViewPrivate() : dx(0), dy(0), ddx(0), ddy(0), rdx(0), rdy(0), scrolling(false) {}
@@ -39,8 +41,8 @@ struct KScrollView::KScrollViewPrivate {
     bool scrolling;
 };
 
-KScrollView::KScrollView( QWidget *parent, const char *name, Qt::WFlags f )
-    : Q3ScrollView( parent, name, f )
+KScrollView::KScrollView( QWidget *parent )
+    : QScrollArea( parent )
 {
     d = new KScrollViewPrivate;
     connect(&d->timer, SIGNAL(timeout()), this, SLOT(scrollTick()));
@@ -51,11 +53,11 @@ KScrollView::~KScrollView()
     delete d;
 }
 
-void KScrollView::scrollBy(int dx, int dy)
+void KScrollView::scrollContentsBy(int dx, int dy)
 {
     KConfigGroup cfg( KGlobal::config(), "KDE" );
     if( !cfg.readEntry( "SmoothScrolling", true ) ) {
-        Q3ScrollView::scrollBy( dx, dy );
+        QScrollArea::scrollContentsBy( dx, dy );
         return;
     }
     // scrolling destination
@@ -87,47 +89,6 @@ void KScrollView::scrollBy(int dx, int dy)
         startScrolling();
     }
 }
-/*
-void KScrollView::scrollBy(int dx, int dy)
-{
-    if (d->scrolling)
-        setContentsPos( d->x+dx, d->y+dy );
-    else
-        setContentsPos( contentsX() + dx, contentsY() + dy);
-}
-
-void KScrollView::setContentsPos(int x, int y)
-{
-    if (x < 0) x = 0;
-    if (y < 0) y = 0;
-
-    int dx = x - contentsX();
-    int dy = y - contentsY();
-
-    // to large to smooth out
-//     if (dx > 1000 || dy > 1000) return QScrollView::setContentsPos(x,y);
-
-    // scrolling speed
-    int ddx = 0;
-    int ddy = 0;
-
-    int steps = SCROLL_TIME/SCROLL_TICK;
-
-    ddx = (dx*16)/steps;
-    ddy = (dy*16)/steps;
-
-    d->x = x;
-    d->y = y;
-    d->dx = dx;
-    d->dy = dy;
-    d->ddx = ddx;
-    d->ddy = ddy;
-
-    if (!d->scrolling) {
-        scrollTick();
-        startScrolling();
-    }
-} */
 
 void KScrollView::scrollTick() {
     if (d->dx == 0 && d->dy == 0) {
@@ -154,14 +115,13 @@ void KScrollView::scrollTick() {
     d->dx -= ddx;
     d->dy -= ddy;
 
-//    QScrollView::setContentsPos( contentsX() + ddx, contentsY() + ddy);
-    Q3ScrollView::scrollBy(ddx, ddy);
+    QScrollArea::scrollContentsBy(ddx, ddy);
 }
 
 void KScrollView::startScrolling()
 {
     d->scrolling = true;
-    d->timer.start(SCROLL_TICK, false);
+    d->timer.start(SCROLL_TICK);
 }
 
 void KScrollView::stopScrolling()
@@ -171,17 +131,17 @@ void KScrollView::stopScrolling()
     d->scrolling = false;
 }
 
-// Overloaded from QScrollView and QScrollBar
+// Overloaded from QScrollArea and QScrollBar
 void KScrollView::wheelEvent( QWheelEvent *e )
 {
     int pageStep = verticalScrollBar()->pageStep();
-    int lineStep = verticalScrollBar()->lineStep();
+    int lineStep = verticalScrollBar()->singleStep();
     int step = qMin( QApplication::wheelScrollLines()*lineStep, pageStep );
-    if ( ( e->state() & Qt::ControlModifier ) || ( e->state() & Qt::ShiftModifier ) )
+    if ( ( e->modifiers() & Qt::ControlModifier ) || ( e->modifiers() & Qt::ShiftModifier ) )
         step = pageStep;
 
     int dy = (e->delta()*step)/120;
-    scrollBy(0,-dy);
+    scrollContentsBy(0,-dy);
     e->accept();
 }
 

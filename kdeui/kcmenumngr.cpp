@@ -18,116 +18,125 @@
  *  Boston, MA 02110-1301, USA.
  *
  */
-#include <qwidget.h>
-#include <qmenu.h>
-#include "kcmenumngr.h"
-#include "kglobal.h"
-#include "kconfig.h"
-#include "kshortcut.h"
+
+#include <QMenu>
 #include <QMouseEvent>
+#include <QWidget>
+
+#include "kcmenumngr.h"
+#include "kconfig.h"
+#include "kglobal.h"
+#include "kshortcut.h"
 
 #undef KeyPress
 #undef None
 
-template class Q3PtrDict<QMenu>;
-
-KContextMenuManager* KContextMenuManager::manager = 0;
+KContextMenuManager* KContextMenuManager::mSelf = 0;
 
 KContextMenuManager::KContextMenuManager( QObject* parent )
     : QObject( parent )
 {
-    KConfigBase *config = KGlobal::config();
-    QString oldgroup = config->group();
-    config->setGroup( QLatin1String("Shortcuts") ) ;
-    menuKey = KShortcut( config->readEntry(QLatin1String("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyCodeQt();
-    config->setGroup( QLatin1String("ContextMenus") ) ;
-    showOnPress = config->readEntry(QLatin1String("ShowOnPress"), true);
-    config->setGroup( oldgroup );
+  KConfigGroup shortCutGroup( KGlobal::config(), QLatin1String("Shortcuts") );
+  mMenuKey = KShortcut( shortCutGroup.readEntry(QLatin1String("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyCodeQt();
+
+  KConfigGroup contextMenuGroup( &shortCutGroup, QLatin1String("ContextMenus") );
+  mShowOnPress = contextMenuGroup.readEntry(QLatin1String("ShowOnPress"), true);
 }
 
 KContextMenuManager::~KContextMenuManager()
 {
 }
 
-
-bool KContextMenuManager::showOnButtonPress( void )
+bool KContextMenuManager::showOnButtonPress()
 {
-  if ( !manager )
-	manager = new KContextMenuManager;
-  return manager->showOnPress;
+  if ( !mSelf )
+    mSelf = new KContextMenuManager;
+
+  return mSelf->mShowOnPress;
 }
 
 
 void KContextMenuManager::insert( QWidget* widget, QMenu* popup )
 {
-    if ( !manager )
-	manager = new KContextMenuManager;
+  if ( !mSelf )
+    mSelf = new KContextMenuManager;
 
-    manager->connect( widget, SIGNAL( destroyed() ), manager, SLOT( widgetDestroyed() ) );
-    manager->menus.insert( widget, popup );
-    widget->installEventFilter( manager );
+  mSelf->connect( widget, SIGNAL( destroyed() ), mSelf, SLOT( widgetDestroyed() ) );
+  mSelf->mMenus.insert( widget, popup );
+  widget->installEventFilter( mSelf );
 }
 
-bool KContextMenuManager::eventFilter( QObject *o, QEvent * e)
+bool KContextMenuManager::eventFilter( QObject *o, QEvent *e )
 {
-    QMenu* popup = 0;
-    QPoint pos;
-    switch ( e->type() ) {
+  QMenu* popup = 0;
+  QPoint pos;
+
+  switch ( e->type() ) {
     case QEvent::MouseButtonPress:
-	if (((QMouseEvent*) e )->button() != Qt::RightButton )
-	    break;
-	if ( !showOnPress )
-	    return true; // eat event for safety
-	popup = menus[o];
-	pos = ((QMouseEvent*) e )->globalPos();
-	break;
+      if (((QMouseEvent*) e )->button() != Qt::RightButton )
+        break;
+
+      if ( !mShowOnPress )
+        return true; // eat event for safety
+
+      popup = mMenus[o];
+      pos = ((QMouseEvent*) e )->globalPos();
+      break;
     case QEvent::MouseButtonRelease:
-	if ( showOnPress  || ((QMouseEvent*) e )->button() != Qt::RightButton )
-	    break;
-	popup = menus[o];
-	pos = ((QMouseEvent*) e )->globalPos();
-	break;
+      if ( mShowOnPress  || ((QMouseEvent*) e )->button() != Qt::RightButton )
+        break;
+
+      popup = mMenus[o];
+      pos = ((QMouseEvent*) e )->globalPos();
+      break;
     case QEvent::KeyPress:
-	{
-	    if ( !o->isWidgetType() )
-		break;
-	    QKeyEvent *k = (QKeyEvent *)e;
-	    int key = k->key();
-	    if ( k->state() & Qt::ShiftModifier )
-		key |= Qt::SHIFT;
-	    if ( k->state() & Qt::ControlModifier )
-		key |= Qt::CTRL;
-	    if ( k->state() & Qt::AltModifier )
-		key |= Qt::ALT;
-	    if ( key != menuKey )
-		break;
-	    popup = menus[o];
-	    if ( popup ) {
-		QWidget* w = (QWidget*) o ;
+      {
+        if ( !o->isWidgetType() )
+          break;
 
-		// ### workaround
-		pos = w->mapToGlobal( w->rect().center() );
-		// with later Qt snapshot
-		// pos = w->mapToGlobal( w->microFocusHint().center() );
-	    }
-	}
-	break;
+        QKeyEvent *k = (QKeyEvent *)e;
+        int key = k->key();
+
+        if ( k->modifiers() & Qt::ShiftModifier )
+          key |= Qt::SHIFT;
+
+        if ( k->modifiers() & Qt::ControlModifier )
+          key |= Qt::CTRL;
+
+        if ( k->modifiers() & Qt::AltModifier )
+          key |= Qt::ALT;
+
+        if ( key != mMenuKey )
+          break;
+
+        popup = mMenus[o];
+
+        if ( popup ) {
+          QWidget* w = (QWidget*) o ;
+
+          // ### workaround
+          pos = w->mapToGlobal( w->rect().center() );
+          // with later Qt snapshot
+          // pos = w->mapToGlobal( w->microFocusHint().center() );
+        }
+      }
+      break;
     default:
-	break;
-    }
+      break;
+  }
 
-    if ( popup ) {
-	popup->popup( pos );
-	return true;
-    }
+  if ( popup ) {
+    popup->popup( pos );
+    return true;
+  }
 
-    return false;
+  return false;
 }
 
 void KContextMenuManager::widgetDestroyed()
 {
-    if ( menus.find( (QObject*)sender() ) )
-	menus.remove( (QObject*)sender() );
+  if ( mMenus.find( (QObject*)sender() ) )
+    mMenus.remove( (QObject*)sender() );
 }
 
 #include "kcmenumngr.moc"

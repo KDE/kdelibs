@@ -18,12 +18,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qstringlist.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <q3groupbox.h>
-#include <qlabel.h>
+
+#include <QLabel>
+#include <QLayout>
 #include <QListView>
+#include <QStringList>
+#include <QPushButton>
 
 #include <kcombobox.h>
 #include <kdebug.h>
@@ -44,18 +44,18 @@ public:
 };
 
 KEditListBox::KEditListBox(QWidget *parent, const char *name,
-			   bool checkAtEntering, Buttons buttons )
+                           bool checkAtEntering, Buttons buttons )
     :QGroupBox(parent ), d(new KEditListBoxPrivate)
 {
-	setObjectName(name);
+    setObjectName(name);
     init( checkAtEntering, buttons );
 }
 
 KEditListBox::KEditListBox(const QString& title, QWidget *parent,
-			   const char *name, bool checkAtEntering, Buttons buttons)
+                           const char *name, bool checkAtEntering, Buttons buttons)
     :QGroupBox(title, parent ), d(new KEditListBoxPrivate)
 {
-	setObjectName(name);
+    setObjectName(name);
     init( checkAtEntering, buttons );
 }
 
@@ -64,7 +64,7 @@ KEditListBox::KEditListBox(const QString& title, const CustomEditor& custom,
                            bool checkAtEntering, Buttons buttons)
     :QGroupBox(title, parent), d(new KEditListBoxPrivate)
 {
-	setObjectName(name);
+    setObjectName(name);
     m_lineEdit = custom.lineEdit();
     init( checkAtEntering, buttons, custom.representationWidget() );
 }
@@ -83,18 +83,17 @@ void KEditListBox::init( bool checkAtEntering, Buttons buttons,
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding,
                               QSizePolicy::MinimumExpanding));
 
-    QGridLayout * grid = new QGridLayout(this, 7, 2,
-                                         KDialog::marginHint(),
-                                         KDialog::spacingHint());
-    grid->addRowSpacing(0, fontMetrics().lineSpacing());
+    QGridLayout * grid = new QGridLayout(this);
+    grid->setMargin( KDialog::marginHint() );
+    grid->setSpacing( KDialog::spacingHint() );
     grid->setRowStretch( 6, 1 );
 
     grid->setMargin(15);
 
     if ( representationWidget )
-        representationWidget->reparent( this, QPoint(0,0) );
+        representationWidget->setParent(this);
     else
-        m_lineEdit=new KLineEdit(this);
+        m_lineEdit = new KLineEdit(this);
 
     m_model = new QStringListModel();
     m_listView = new QListView(this);
@@ -103,8 +102,8 @@ void KEditListBox::init( bool checkAtEntering, Buttons buttons,
 
     QWidget *editingWidget = representationWidget ?
                              representationWidget : m_lineEdit;
-    grid->addMultiCellWidget(editingWidget,1,1,0,1);
-    grid->addMultiCellWidget(m_listView, 2, 6, 0, 0);
+    grid->addWidget(editingWidget,1,1,0,1);
+    grid->addWidget(m_listView, 2, 6, 0, 0);
 
     setButtons( buttons );
 

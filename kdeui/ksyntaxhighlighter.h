@@ -24,17 +24,16 @@
 #ifndef KSYNTAXHIGHLIGHTER_H
 #define KSYNTAXHIGHLIGHTER_H
 
+#include <QColor>
+#include <QStringList>
+#include <QSyntaxHighlighter>
 #include <QTextEdit>
-#include <qsyntaxhighlighter.h>
-#include <qcolor.h>
-#include <qstringlist.h>
 
 #include <kdelibs_export.h>
 
-class Q3Accel;
-class QTimer;
 class KSpell;
 class KSpellConfig;
+class QTimer;
 
 /**
  * \brief Syntax sensitive text highlighter

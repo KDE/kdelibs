@@ -20,15 +20,14 @@
 #ifndef KCMENUMNGR_H
 #define KCMENUMNGR_H
 
+#include <QHash>
+#include <QKeySequence>
+#include <QObject>
+
+#include <kdelibs_export.h>
 
 class QWidget;
 class QMenu;
-class KContextMenuManagerPrivate;
-#include <qobject.h>
-#include <q3ptrdict.h>
-#include <qkeysequence.h>
-
-#include <kdelibs_export.h>
 
 /**
 @short Convenience class to mangage context menus
@@ -75,8 +74,9 @@ the position of the micro focus hint of the widget ( QWidget::microFocusHint() )
 
 class KDEUI_EXPORT KContextMenuManager : public QObject
 {
-    Q_OBJECT
-public:
+  Q_OBJECT
+
+  public:
 
     /**
        Makes @p popup a context popup menu for widget @p widget.
@@ -96,18 +96,24 @@ public:
      */
      static bool showOnButtonPress( void );
 
-private Q_SLOTS:
+  private Q_SLOTS:
     void widgetDestroyed();
-private:
-    KContextMenuManager( QObject* parent = 0);
+
+  private:
+    KContextMenuManager( QObject* parent = 0 );
     ~KContextMenuManager();
-    bool eventFilter( QObject *, QEvent * );
-    Q3PtrDict<QMenu> menus;
-    bool showOnPress;
-    QKeySequence menuKey;
-    static KContextMenuManager* manager;
+
+    bool eventFilter( QObject*, QEvent* );
+
+    QHash<QObject*, QMenu*> mMenus;
+    bool mShowOnPress;
+    QKeySequence mMenuKey;
+
+    static KContextMenuManager* mSelf;
+
     friend class I_really_like_this_class; // avoid warning
 
+    class KContextMenuManagerPrivate;
     KContextMenuManagerPrivate *d;
 };
 

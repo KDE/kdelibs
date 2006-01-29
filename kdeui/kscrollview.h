@@ -18,38 +18,33 @@
 #ifndef KSCROLLVIEW_H
 #define KSCROLLVIEW_H
 
-#include <q3scrollview.h>
+#include <QScrollArea>
 
 #include <kdelibs_export.h>
 
 /**
- * @short A variant of QScrollView that supports smooth scrolling.
- *
- *
+ * @short A variant of QScrollArea that supports smooth scrolling.
  **/
-class KDEUI_EXPORT KScrollView : public Q3ScrollView
+class KDEUI_EXPORT KScrollView : public QScrollArea
 {
   Q_OBJECT
 
-public:
-    KScrollView( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
+  public:
+    KScrollView( QWidget *parent = 0 );
 
     ~KScrollView();
 
-public Q_SLOTS:
-    void scrollBy(int dx, int dy);
-//    virtual void setContentsPos(int x, int y);
-
-protected:
+  protected:
+    virtual void scrollContentsBy(int dx, int dy);
     virtual void wheelEvent( QWheelEvent *e );
 
     void startScrolling();
     void stopScrolling();
 
-protected Q_SLOTS:
+  protected Q_SLOTS:
     void scrollTick();
 
-private:
+  private:
     // All scrolls must be completed within 240ms of last keypress
     static const int SCROLL_TIME = 240;
     // Each step is 20 ms == 50 frames/second
