@@ -150,7 +150,7 @@ void KNotification::raiseWidget(QWidget *w)
 
 		if( QTabWidget *tab_widget=dynamic_cast<QTabWidget*>(pw))
 		{
-			tab_widget->showPage(w);
+			tab_widget->setCurrentIndex(tab_widget->indexOf(w));
 		}
 	}
 }

@@ -30,10 +30,11 @@ KFontRequester::KFontRequester( QWidget *parent, bool onlyFixed )
     : QWidget( parent ),
     m_onlyFixed( onlyFixed )
 {
-  QHBoxLayout *layout = new QHBoxLayout( this, 0, KDialog::spacingHint() );
+  QHBoxLayout *layout = new QHBoxLayout( this );
+  layout->setSpacing( KDialog::spacingHint() );
 
-  m_sampleLabel = new QLabel( this, "m_sampleLabel" );
-  m_button = new QPushButton( i18n( "Choose..." ), this, "m_button" );
+  m_sampleLabel = new QLabel( this );
+  m_button = new QPushButton( i18n( "Choose..." ), this );
 
   m_sampleLabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
   setFocusProxy( m_button );

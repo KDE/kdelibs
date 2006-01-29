@@ -58,7 +58,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   enableButtonSeparator( true );
   setModal(true);
   QWidget *frame = new QWidget( this );
-  QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
+  QVBoxLayout *layout = new QVBoxLayout( frame );
+  layout->setSpacing( spacingHint() );
 
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
@@ -94,14 +95,14 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   enableButtonSeparator( false );
   setModal(true);
   QWidget *frame = new QWidget( this );
-  QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
+  QVBoxLayout *layout = new QVBoxLayout( frame );
+  layout->setSpacing( spacingHint() );
 
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
 
   d->m_textEdit = new KTextEdit( frame );
-  d->m_textEdit->setTextFormat( Qt::PlainText );
-  d->m_textEdit->setText( value );
+  d->m_textEdit->insertPlainText( value );
   layout->addWidget( d->m_textEdit, 10 );
 
   d->m_textEdit->setFocus();
@@ -122,7 +123,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   setModal(true);
 
   QWidget *frame = new QWidget( this );
-  QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
+  QVBoxLayout *layout = new QVBoxLayout( frame );
+  layout->setSpacing( spacingHint() );
 
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
@@ -148,7 +150,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   setModal(true);
 
   QWidget *frame = new QWidget( this );
-  QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
+  QVBoxLayout *layout = new QVBoxLayout( frame );
+  layout->setSpacing( spacingHint() );
 
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
@@ -175,7 +178,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   showButton( User1, editable );
 
   QWidget *frame = new QWidget( this );
-  QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
+  QVBoxLayout *layout = new QVBoxLayout( frame );
+  layout->setSpacing( spacingHint() );
 
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
@@ -183,8 +187,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   if ( editable )
   {
     d->m_comboBox = new KComboBox( editable, frame );
-    d->m_comboBox->insertStringList( list );
-    d->m_comboBox->setCurrentItem( current );
+    d->m_comboBox->insertItems( 0, list );
+    d->m_comboBox->setCurrentIndex( current );
     layout->addWidget( d->m_comboBox );
 
     connect( d->m_comboBox, SIGNAL( textChanged( const QString & ) ),
@@ -222,7 +226,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   setModal(true);
 
   QWidget *frame = new QWidget(this);
-  QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
+  QVBoxLayout *layout = new QVBoxLayout( frame );
+  layout->setSpacing( spacingHint() );
 
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
@@ -310,7 +315,7 @@ QString KInputDialog::getMultiLineText( const QString &caption,
 
   QString result;
   if ( _ok )
-    result = dlg.textEdit()->text();
+    result = dlg.textEdit()->toPlainText();
 
   return result;
 }
