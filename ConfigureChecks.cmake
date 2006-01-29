@@ -9,7 +9,7 @@ include(CheckTypeSize)
 #check for libz using the cmake supplied FindZLIB.cmake
 if(ZLIB_FOUND)
    set(HAVE_LIBZ 1)
-else(ZLIB_FOUND)                                                   
+else(ZLIB_FOUND)
    set(HAVE_LIBZ 0)
 endif(ZLIB_FOUND)
 
@@ -244,13 +244,13 @@ check_function_exists(mkstemp    HAVE_MPSTEMP)
 check_function_exists(mkdtemp    HAVE_MKDTEMP)
 check_function_exists(ptsname    HAVE_PTSNAME)
 check_function_exists(random     HAVE_RANDOM)
-check_function_exists(revoke     HAVE_REVOKE)  
-check_function_exists(strlcpy    HAVE_STRLCPY) 
-check_function_exists(strlcat    HAVE_STRLCAT) 
+check_function_exists(revoke     HAVE_REVOKE)
+check_function_exists(strlcpy    HAVE_STRLCPY)
+check_function_exists(strlcat    HAVE_STRLCAT)
 check_function_exists(setenv     HAVE_SETENV)
 check_function_exists(seteuid    HAVE_SETEUID)
 check_function_exists(setmntent  HAVE_SETMNTENT)
-check_function_exists(unsetenv   HAVE_UNSETENV)                  
+check_function_exists(unsetenv   HAVE_UNSETENV)
 check_function_exists(usleep     HAVE_USLEEP)
 check_function_exists(_getpty    HAVE__GETPTY)
 
@@ -289,7 +289,7 @@ check_type_size("struct sockaddr_in6" HAVE_STRUCT_SOCKADDR_IN6)
 SET(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 
 
-set(CONFIG_QT_DOCDIR "\"/usr/lib/qt/doc/html/\"")
+set(CONFIG_QT_DOCDIR "\"${QT_DOC_DIR}/html/\"")
 set(CONFIG_KDELIBS_DOXYDIR "\"/tmp/\"")
 
 #CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/config.h.cmake ${CMAKE_BINARY_DIR}/config.h)

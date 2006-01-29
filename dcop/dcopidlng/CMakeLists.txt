@@ -5,6 +5,12 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### install files ###############
 
+if(WIN32)
+   install_programs(/bin FILES dcopidl.bat)
+else(WIN32)
+   install_programs(/bin FILES dcopidl)
+endif(WIN32)
+
 install_files( ${KDE4_DATA_DIR}/dcopidl FILES Ast.pm Iter.pm kalyptusCxxToDcopIDL.pm kdocAstUtil.pm kdocParseDoc.pm kdocUtil.pm )
 
 kde4_footer()
