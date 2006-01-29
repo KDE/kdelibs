@@ -139,6 +139,10 @@ public:
    * no data is actually read from @p Stdout but only
    * the signal receivedStdout(int fd, int &len) is emitted.
    *
+   * @p CTtyOnly tells setUsePty() to create a PTY for the process
+   * and make it the process' controlling TTY, but does not redirect
+   * any I/O channel to the PTY.
+   *
    * If @p MergedStderr is specified in conjunction with @p Stdout,
    * Stderr will be redirected onto the same file handle as Stdout,
    * i.e., all error output will be signalled with receivedStdout().
@@ -149,6 +153,7 @@ public:
        Stdin = 1, Stdout = 2, Stderr = 4,
        AllOutput = 6, All = 7,
        NoRead = 8,
+       CTtyOnly = NoRead,
        MergedStderr = 16
   };
 
@@ -546,9 +551,8 @@ public:
 
   /**
    * Obtains the pty object used by this process. The return value is
-   * valid only after setUsePty() was used to associate at least one
-   * standard I/O stream to a pty. The pty is open only while the process
-   * is running.
+   * valid only after setUsePty() was used with a non-zero argument.
+   * The pty is open only while the process is running.
    * @return a pointer to the pty object
    * @since 3.2
    */
