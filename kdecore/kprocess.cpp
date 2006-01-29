@@ -1005,6 +1005,10 @@ int KProcess::commSetupDoneC()
     if (dup2(out[1], STDOUT_FILENO) < 0 ||
         setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char *)&so, sizeof(so)))
       ok = 0;
+    if (communication & MergedStderr) {
+      if (dup2(out[1], STDERR_FILENO) < 0)
+        ok = 0;
+    }
   }
   if (d->usePty & Stderr) {
     if (dup2(d->pty->slaveFd(), STDERR_FILENO) < 0) ok = 0;

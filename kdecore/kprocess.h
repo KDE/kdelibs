@@ -138,12 +138,18 @@ public:
    * If @p NoRead is specified in conjunction with @p Stdout,
    * no data is actually read from @p Stdout but only
    * the signal receivedStdout(int fd, int &len) is emitted.
+   *
+   * If @p MergedStderr is specified in conjunction with @p Stdout,
+   * Stderr will be redirected onto the same file handle as Stdout,
+   * i.e., all error output will be signalled with receivedStdout().
+   * Don't specify @p Stderr if you specify @p MergedStderr.
    */
   enum Communication {
        NoCommunication = 0,
        Stdin = 1, Stdout = 2, Stderr = 4,
        AllOutput = 6, All = 7,
-       NoRead
+       NoRead = 8,
+       MergedStderr = 16
   };
 
   /**
