@@ -563,7 +563,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
     if (path.contains('*') || path.contains('?')) {
 
-	QRegExp pathExp(path, true, true);
+	QRegExp pathExp(path, Qt::CaseSensitive, QRegExp::Wildcard);
 	DIR *dp = opendir( QFile::encodeName(prefix) );
 	if (!dp) {
 	    return;
@@ -646,7 +646,7 @@ KStandardDirs::findAllResources( const char *type,
     if (filterFile.isEmpty())
 	filterFile = "*";
 
-    QRegExp regExp(filterFile, true, true);
+    QRegExp regExp(filterFile, Qt::CaseSensitive, QRegExp::Wildcard);
 
     for (QStringList::ConstIterator it = candidates.begin();
          it != candidates.end(); ++it)
@@ -1272,7 +1272,7 @@ void KStandardDirs::addResourcesFrom_krcdirs()
             continue;
 
         if(path.makeAbsolute())
-            addResourceDir(key.ascii(), path.path());
+            addResourceDir(key.toAscii(), path.path());
     }
 }
 

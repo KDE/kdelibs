@@ -43,6 +43,7 @@
 #include <klocale.h>
 #include <qfile.h>
 #include <qhash.h>
+#include <qpixmap.h>
 
 #include <qstring.h>
 #include <qdatetime.h>
@@ -109,7 +110,7 @@ static QByteArray getDescrFromNum(unsigned int _num)
   }
 
   uint lineNumber=0;
-  QByteArray line(1024);
+  QByteArray line(1024, 0);
   int len;
 
   while (( len = file.readLine(line.data(),line.size()-1) ) > 0) {
@@ -288,7 +289,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       }
       QFile aOutputFile( kDebug_data->config->readPathEntry(aKey, QLatin1String( "kdebug.dbg" ) ) );
       aOutputFile.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered );
-      aOutputFile.writeBlock( buf, strlen( buf ) );
+      aOutputFile.write( buf, strlen( buf ) );
       aOutputFile.close();
       break;
   }
@@ -425,7 +426,7 @@ kdbgstream::~kdbgstream()
 {
     if (!d->output.isEmpty()) {
 	fprintf(stderr, "ASSERT: debug output not ended with \\n\n");
-        fprintf(stderr, "%s", kdBacktrace().latin1());
+        fprintf(stderr, "%s", qPrintable( kdBacktrace() ) );
 	*this << "\n";
     }
     delete d;
@@ -468,7 +469,7 @@ kdbgstream& kdbgstream::operator << (const QWidget* widget)
       d->output += QLatin1String("[Null pointer]");
   } else {
       d->output += QString::fromAscii("[%1 pointer(0x%2)")
-                         .arg(QString::fromUtf8(widget->className()))
+                         .arg(QString::fromUtf8(widget->metaObject()->className()))
                          .arg(QString::number(ulong(widget), 16)
 		              .rightJustified(8, QLatin1Char('0')));
       if(widget->objectName().isEmpty()) {
@@ -602,7 +603,7 @@ kdbgstream& kdbgstream::operator<<( const QBrush& b) {
     d->output += QLatin1String(s_brushStyles[ b.style() ]);
     d->output += QLatin1String(" color: ");
     d->output += s_makeColorName( b.color() );
-    if ( b.pixmap() )
+    if ( !b.texture().isNull() )
         d->output += QLatin1String(" has a pixmap");
     d->output += QLatin1String(" ]");
     return *this;

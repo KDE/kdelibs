@@ -257,7 +257,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
   for (int index=0; index<aStr.length(); index++) {
     // the following conversion to latin1 is o.k. because
     // we can safely ignore all non-latin1 characters
-    switch (aStr[index].latin1()) {
+    switch (aStr[index].toLatin1()) {
     case '"' : // start or end of quoted string
       if (commentlevel == 0)
         insidequote = !insidequote;
@@ -362,7 +362,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 
    QStringList cmdTokens = KShell::splitArgs(command);
    QString cmd = cmdTokens[0];
-   cmdTokens.remove(cmdTokens.begin());
+   cmdTokens.erase(cmdTokens.begin());
 
    KUrl url;
    QStringList qry;
@@ -370,7 +370,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
    {
      QStringList tos = splitEmailAddressList( to );
      url.setPath( tos.first() );
-     tos.remove( tos.begin() );
+     tos.erase( tos.begin() );
      for (QStringList::ConstIterator it = tos.begin(); it != tos.end(); ++it)
        qry.append( "to=" + KUrl::encode_string( *it ) );
    }
@@ -419,7 +419,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
              }
          } else {
              --it;
-             it = cmdTokens.remove( cmdTokens.remove( it ) );
+             it = cmdTokens.erase( cmdTokens.erase( it ) );
          }
      } else {
          *it = KMacroExpander::expandMacros(*it, keyMap);

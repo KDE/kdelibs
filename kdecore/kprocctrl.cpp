@@ -213,7 +213,7 @@ void KProcessController::slotDoHousekeeping()
   {
     if( waitpid( *uit, 0, WNOHANG ) > 0 )
     {
-      uit = unixProcessList.remove( uit );
+      uit = unixProcessList.erase( uit );
       deref(); // counterpart to addProcess, can invalidate 'this'
     } else
       ++uit;
@@ -265,7 +265,7 @@ void KProcessController::addKProcess( KProcess* p )
 
 void KProcessController::removeKProcess( KProcess* p )
 {
-  kProcessList.remove( p );
+  kProcessList.removeAll( p );
 }
 
 void KProcessController::addProcess( int pid )

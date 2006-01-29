@@ -350,7 +350,9 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
                 {
                    QString t(edit->text());
                    t = t.mid(edit->cursorPosition());
-                   edit->validateAndSet(t, 0, 0, 0);
+                   // TODO: how to port correctly?
+                   // edit->validateAndSet(t, 0, 0, 0);
+                   edit->setText( t );
                 }
                 return true;
              }
@@ -394,8 +396,10 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
                 d->app_started_timer = new QTimer( this );
                 connect( d->app_started_timer, SIGNAL( timeout()), SLOT( checkAppStartedSlot()));
             }
-            if( !d->app_started_timer->isActive())
-                d->app_started_timer->start( 0, true );
+            if( !d->app_started_timer->isActive()) {
+                d->app_started_timer->setSingleShot( true );
+                d->app_started_timer->start( 0 );
+            }
         }
     }
     return QApplication::notify(receiver, event);
@@ -550,7 +554,11 @@ void KApplication::iceIOErrorHandler( _IceConn *conn )
 class KDETranslator : public QTranslator
 {
 public:
-  KDETranslator(QObject *parent) : QTranslator(parent, "kdetranslator") {}
+  KDETranslator(QObject *parent) : QTranslator(parent)
+  {
+    setObjectName("kdetranslator");
+  }
+
   virtual QString translate(const char* context,
 					 const char *sourceText,
 					 const char* message) const
@@ -1057,7 +1065,7 @@ void KApplication::dcopFailure(const QString &msg)
      {
        QMessageBox::critical
          (
-           kapp->mainWidget(),
+           kapp->activeWindow(),
            i18n("DCOP communications error (%1)").arg(kapp->caption()),
            msgStr,
            i18n("&OK")
@@ -1510,60 +1518,65 @@ QPalette KApplication::createApplicationPalette( KConfigBase *config, int contra
     int h, s, v;
     disfg.getHsv( &h, &s, &v );
     if (v > 128)
-	// dark bg, light fg - need a darker disabled fg
-	disfg = disfg.dark(lowlightVal);
+        // dark bg, light fg - need a darker disabled fg
+        disfg = disfg.dark(lowlightVal);
     else if (disfg != Qt::black)
-	// light bg, dark fg - need a lighter disabled fg - but only if !black
-	disfg = disfg.light(highlightVal);
+        // light bg, dark fg - need a lighter disabled fg - but only if !black
+        disfg = disfg.light(highlightVal);
     else
-	// black fg - use darkgray disabled fg
-	disfg = Qt::darkGray;
+        // black fg - use darkgray disabled fg
+        disfg = Qt::darkGray;
 
+    QPalette palette;
+    palette.setColor( QPalette::Active, QPalette::Foreground, foreground );
+    palette.setColor( QPalette::Active, QPalette::Window, background );
+    palette.setColor( QPalette::Active, QPalette::Light, background.light( highlightVal ) );
+    palette.setColor( QPalette::Active, QPalette::Dark, background.dark( lowlightVal ) );
+    palette.setColor( QPalette::Active, QPalette::Midlight, background.dark( 120 ) );
+    palette.setColor( QPalette::Active, QPalette::Text, baseText );
+    palette.setColor( QPalette::Active, QPalette::Base, base );
 
-    QColorGroup disabledgrp(disfg, background,
-                            background.light(highlightVal),
-                            background.dark(lowlightVal),
-                            background.dark(120),
-                            background.dark(120), base);
+    palette.setColor( QPalette::Active, QPalette::Highlight, highlight );
+    palette.setColor( QPalette::Active, QPalette::HighlightedText, highlightedText );
+    palette.setColor( QPalette::Active, QPalette::Button, button );
+    palette.setColor( QPalette::Active, QPalette::ButtonText, buttonText );
+    palette.setColor( QPalette::Active, QPalette::Midlight, background.light( 110 ) );
+    palette.setColor( QPalette::Active, QPalette::Link, link );
+    palette.setColor( QPalette::Active, QPalette::LinkVisited, visitedLink );
 
-    QColorGroup colgrp(foreground, background, background.light(highlightVal),
-                       background.dark(lowlightVal),
-                       background.dark(120),
-                       baseText, base);
+    palette.setColor( QPalette::Disabled, QPalette::Foreground, disfg );
+    palette.setColor( QPalette::Disabled, QPalette::Window, background );
+    palette.setColor( QPalette::Disabled, QPalette::Light, background.light( highlightVal ) );
+    palette.setColor( QPalette::Disabled, QPalette::Dark, background.dark( lowlightVal ) );
+    palette.setColor( QPalette::Disabled, QPalette::Midlight, background.dark( 120 ) );
+    palette.setColor( QPalette::Disabled, QPalette::Text, background.dark( 120 ) );
+    palette.setColor( QPalette::Disabled, QPalette::Base, base );
+    palette.setColor( QPalette::Disabled, QPalette::Button, button );
+
 
     int inlowlightVal = lowlightVal-25;
-    if(inlowlightVal < 120)
+    if (inlowlightVal < 120)
         inlowlightVal = 120;
 
-    colgrp.setColor(QColorGroup::Highlight, highlight);
-    colgrp.setColor(QColorGroup::HighlightedText, highlightedText);
-    colgrp.setColor(QColorGroup::Button, button);
-    colgrp.setColor(QColorGroup::ButtonText, buttonText);
-    colgrp.setColor(QColorGroup::Midlight, background.light(110));
-    colgrp.setColor(QColorGroup::Link, link);
-    colgrp.setColor(QColorGroup::LinkVisited, visitedLink);
-
-    disabledgrp.setColor(QColorGroup::Button, button);
-
     QColor disbtntext = buttonText;
-    disbtntext.hsv( &h, &s, &v );
+    disbtntext.getHsv( &h, &s, &v );
     if (v > 128)
-	// dark button, light buttonText - need a darker disabled buttonText
-	disbtntext = disbtntext.dark(lowlightVal);
+        // dark button, light buttonText - need a darker disabled buttonText
+        disbtntext = disbtntext.dark(lowlightVal);
     else if (disbtntext != Qt::black)
-	// light buttonText, dark button - need a lighter disabled buttonText - but only if !black
-	disbtntext = disbtntext.light(highlightVal);
+        // light buttonText, dark button - need a lighter disabled buttonText - but only if !black
+        disbtntext = disbtntext.light(highlightVal);
     else
-	// black button - use darkgray disabled buttonText
-	disbtntext = Qt::darkGray;
+        // black button - use darkgray disabled buttonText
+        disbtntext = Qt::darkGray;
 
-    disabledgrp.setColor(QColorGroup::ButtonText, disbtntext);
-    disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
-    disabledgrp.setColor(QColorGroup::Highlight, highlight.dark(120));
-    disabledgrp.setColor(QColorGroup::Link, link);
-    disabledgrp.setColor(QColorGroup::LinkVisited, visitedLink);
+    palette.setColor( QPalette::Disabled, QPalette::Highlight, highlight.dark( 120 ) );
+    palette.setColor( QPalette::Disabled, QPalette::ButtonText, disbtntext );
+    palette.setColor( QPalette::Disabled, QPalette::Midlight, background.light( 110 ) );
+    palette.setColor( QPalette::Disabled, QPalette::Link, link );
+    palette.setColor( QPalette::Disabled, QPalette::LinkVisited, visitedLink );
 
-    return QPalette(colgrp, disabledgrp, colgrp);
+    return palette;
 }
 
 
@@ -1578,7 +1591,7 @@ void KApplication::kdisplaySetPalette()
             return;
     }
 #endif
-    QApplication::setPalette( createApplicationPalette(), true);
+    QApplication::setPalette( createApplicationPalette() );
     emit kdisplayPaletteChanged();
     emit appearanceChanged();
 }
@@ -1586,10 +1599,10 @@ void KApplication::kdisplaySetPalette()
 
 void KApplication::kdisplaySetFont()
 {
-    QApplication::setFont(KGlobalSettings::generalFont(), true);
-    QApplication::setFont(KGlobalSettings::menuFont(), true, "QMenuBar");
-    QApplication::setFont(KGlobalSettings::menuFont(), true, "QPopupMenu");
-    QApplication::setFont(KGlobalSettings::menuFont(), true, "KPopupTitle");
+    QApplication::setFont(KGlobalSettings::generalFont());
+    QApplication::setFont(KGlobalSettings::menuFont(), "QMenuBar");
+    QApplication::setFont(KGlobalSettings::menuFont(), "QPopupMenu");
+    QApplication::setFont(KGlobalSettings::menuFont(), "KPopupTitle");
 
     // "patch" standard QStyleSheet to follow our fonts
     Q3StyleSheet* sheet = Q3StyleSheet::defaultSheet();
