@@ -549,11 +549,15 @@ QString KIconThemeDir::iconPath(const QString& name) const
 QStringList KIconThemeDir::iconList() const
 {
     QDir dir(mDir);
+
+    QStringList formats;
 #ifdef HAVE_LIBAGG
-    QStringList lst = dir.entryList("*.png;*.svg;*.svgz;*.xpm", QDir::Files);
+    formats << "*.png" << "*.svg" << "*.svgz" << "*.xpm";
 #else
-    QStringList lst = dir.entryList("*.png;*.xpm", QDir::Files);
+    formats << "*.png" << "*.xpm";
 #endif
+    QStringList lst = dir.entryList( formats, QDir::Files);
+
     QStringList result;
     QStringList::ConstIterator it;
     for (it=lst.begin(); it!=lst.end(); ++it)

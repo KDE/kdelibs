@@ -261,7 +261,7 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
     {
         QImage tmpImg = pixmap.toImage();
         tmpImg = apply(tmpImg, effect, value, col, col2, trans);
-        result.convertFromImage(tmpImg);
+        result = QPixmap::fromImage(tmpImg);
     }
     else
         result = pixmap;
@@ -458,8 +458,6 @@ void KIconEffect::toGamma(QImage &img, float value)
 
 void KIconEffect::semiTransparent(QImage &img)
 {
-    img.setAlphaBuffer(true);
-
     int x, y;
     if (img.depth() == 32)
     {
@@ -536,7 +534,7 @@ void KIconEffect::semiTransparent(QPixmap &pix)
     {
 	QImage img=pix.toImage();
 	semiTransparent(img);
-	pix.convertFromImage(img);
+	pix = QPixmap::fromImage(img);
 	return;
     }
 
@@ -545,7 +543,7 @@ void KIconEffect::semiTransparent(QPixmap &pix)
 	img = pix.mask().toImage();
     else
     {
-	img.create(pix.size(), 1, 2, QImage::BigEndian);
+	img = QImage(pix.size(), QImage::Format_Mono);
 	img.fill(1);
     }
 
@@ -557,23 +555,22 @@ void KIconEffect::semiTransparent(QPixmap &pix)
 	    line[x] &= pattern;
     }
     QBitmap mask;
-    mask.convertFromImage(img);
+    mask = QBitmap::fromImage(img);
     pix.setMask(mask);
 }
 
 QImage KIconEffect::doublePixels(QImage src) const
 {
-    QImage dst;
+    int w = src.width();
+    int h = src.height();
+
+    QImage dst( w*2, h*2, src.format() );
+
     if (src.depth() == 1)
     {
 	kdDebug(265) << "image depth 1 not supported\n";
-	return dst;
+	return QImage();
     }
-
-    int w = src.width();
-    int h = src.height();
-    dst.create(w*2, h*2, src.depth());
-    dst.setAlphaBuffer(src.hasAlphaBuffer());
 
     int x, y;
     if (src.depth() == 32)
@@ -622,7 +619,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 	kdDebug(265) << "Image size src != overlay\n";
 	return;
     }
-    if (!overlay.hasAlphaBuffer())
+    if (overlay.format() == QImage::Format_RGB32)
     {
 	kdDebug(265) << "Overlay doesn't have alpha buffer!\n";
 	return;
