@@ -25,9 +25,9 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QMetaObject>
+#include <QMetaProperty>
 #include <QTimer>
 #include <QRadioButton>
-#include <QHash>
 
 #include <kconfigskeleton.h>
 #include <kdebug.h>
@@ -36,11 +36,11 @@
 
 #include <assert.h>
 
-static QMap<QByteArray, QByteArray> *s_propertyMap = 0;
-static QMap<QString, QByteArray> *s_changedMap = 0;
+static QHash<QString, QByteArray> *s_propertyMap = 0;
+static QHash<QString, QByteArray> *s_changedMap = 0;
 
-static KStaticDeleter< QMap<QByteArray, QByteArray> > s_propertyMapDeleter;
-static KStaticDeleter< QMap<QString, QByteArray> > s_changedMapDeleter;
+static KStaticDeleter< QHash<QString, QByteArray> > s_propertyMapDeleter;
+static KStaticDeleter< QHash<QString, QByteArray> > s_changedMapDeleter;
 	    
 class KConfigDialogManager::Private {
 
@@ -70,58 +70,12 @@ KConfigDialogManager::~KConfigDialogManager()
 void KConfigDialogManager::initMaps()
 {
   if ( s_propertyMap == 0 ) {
-    s_propertyMapDeleter.setObject( s_propertyMap, new QMap<QByteArray,QByteArray> );
-     
-    //Qt
-    s_propertyMap->insert( "Q3DateEdit", "date" );
-    s_propertyMap->insert( "Q3DateTimeEdit", "dateTime" );
-    s_propertyMap->insert( "Q3ListBox", "currentItem" );
-    s_propertyMap->insert( "Q3TimeEdit", "time" );
-    s_propertyMap->insert( "QAbstractButton", "text" );
-    s_propertyMap->insert( "QCheckBox", "checked" );
-    s_propertyMap->insert( "QRadioButton", "checked" );
-    s_propertyMap->insert( "QComboBox", "currentIndex" );
-    s_propertyMap->insert( "QDateTimeEdit", "dateTime" );
-    s_propertyMap->insert( "QDial", "value" );
-    s_propertyMap->insert( "QLabel", "text" );
-    s_propertyMap->insert( "QLCDNumber", "value" );
-    s_propertyMap->insert( "QLineEdit", "text" );
-    s_propertyMap->insert( "QPushButton", "text" );
-    s_propertyMap->insert( "QScrollBar", "value" );
-    s_propertyMap->insert( "QSlider", "value" );
-    s_propertyMap->insert( "QSpinBox", "value" );
-    s_propertyMap->insert( "QTabBar", "currentTab" );
-    s_propertyMap->insert( "QTabWidget", "currentPage" );
-    s_propertyMap->insert( "QTextBrowser", "source" );
-    s_propertyMap->insert( "QTextEdit", "text" );
-    s_propertyMap->insert( "QGroupBox", "checked" );
-
-    //KDE
-    s_propertyMap->insert( "KColorButton", "color" );
-    s_propertyMap->insert( "KComboBox", "currentIndex" );
-    s_propertyMap->insert( "KDatePicker", "date" );
-    s_propertyMap->insert( "KDateWidget", "date" );
-    s_propertyMap->insert( "KDateTimeWidget", "dateTime" );
-    s_propertyMap->insert( "KEditListBox", "items" );
-    s_propertyMap->insert( "KFontCombo", "family" );
-    s_propertyMap->insert( "KFontRequester", "font" );
-    s_propertyMap->insert( "KFontChooser", "font" );
-    s_propertyMap->insert( "KHistoryCombo", "currentItem" );
-    s_propertyMap->insert( "KListBox", "currentItem" );
-    s_propertyMap->insert( "KLineEdit", "text" );
-    s_propertyMap->insert( "KRestrictedLine", "text" );
-    s_propertyMap->insert( "KTextBrowser", "source" );
-    s_propertyMap->insert( "KTextEdit", "text" );
-    s_propertyMap->insert( "KUrlRequester", "url" );
-    s_propertyMap->insert( "KPasswordEdit", "password" );
-    s_propertyMap->insert( "KIntNumInput", "value" );
-    s_propertyMap->insert( "KIntSpinBox", "value" );
-    s_propertyMap->insert( "KDoubleNumInput", "value" );
+    s_propertyMapDeleter.setObject( s_propertyMap, new QHash<QString,QByteArray> );
   }
   									       
   if( s_changedMap == 0 )
   {
-    s_changedMapDeleter.setObject( s_changedMap, new QMap<QString,QByteArray> );
+    s_changedMapDeleter.setObject( s_changedMap, new QHash<QString,QByteArray> );
     // QT
     s_changedMap->insert("QButton", SIGNAL(stateChanged(int)));
     s_changedMap->insert("QCheckBox", SIGNAL(stateChanged(int)));
@@ -172,13 +126,13 @@ void KConfigDialogManager::initMaps()
   }
 }
 	  
-QMap<QByteArray, QByteArray> *KConfigDialogManager::propertyMap()
+QHash<QString, QByteArray> *KConfigDialogManager::propertyMap()
 {
   initMaps();
   return s_propertyMap;
 }
 
-QMap<QString, QByteArray> *KConfigDialogManager::changedMap()
+QHash<QString, QByteArray> *KConfigDialogManager::changedMap()
 {
   initMaps();
   return s_changedMap;
@@ -259,7 +213,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
         setupWidget(childWidget, item);
 
         if ( d->trackChanges ) {
-	  QMap<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->className());
+	  QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->className());
 
           if (changedIt == s_changedMap->end())
           {
@@ -313,7 +267,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 #ifndef NDEBUG
     else if (widgetName && d->trackChanges)
     {
-      QMap<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->className());
+      QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->className());
       if (changedIt != s_changedMap->end())
       {
         if ((!d->insideGroupBox || !qobject_cast<QRadioButton*>(childWidget)) &&
@@ -414,6 +368,25 @@ void KConfigDialogManager::updateSettings()
   }
 }
 
+QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget) 
+{
+  if (!s_propertyMap->contains(widget->metaObject()->className())) {
+    const QMetaObject *metaObject = widget->metaObject();
+    int propertyCount = metaObject->propertyCount();
+    int i;
+    for ( i = 0; i < propertyCount; ++i ) {
+      const QMetaProperty metaProperty = metaObject->property(i);
+      if (metaProperty.isUser()) {
+        s_propertyMap->insert( widget->metaObject()->className(), metaProperty.name() );
+//	kdDebug(178) << "class name: '" << widget->metaObject()->className() << " 's USER property: " << metaProperty.name() << endl;
+        break;
+      }
+    }
+    if ( i == propertyCount ) return QByteArray(); //no USER property
+  }
+  return s_propertyMap->value( widget->metaObject()->className() );
+}
+
 void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 {
   Q3ButtonGroup *bg = dynamic_cast<Q3ButtonGroup *>(w);
@@ -430,14 +403,12 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
     return;
   }
 
-  const QMetaObject* mo = w->metaObject();
-  while (mo && !s_propertyMap->contains(mo->className()))
-    mo = mo->superClass();
-  if (!mo) {
+  QByteArray userproperty = getUserProperty( w );
+  if ( userproperty.isEmpty() ) {
     kdWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
     return;
   }
-  w->setProperty(s_propertyMap->value(mo->className()), v);
+  w->setProperty( userproperty, v );
 }
 
 QVariant KConfigDialogManager::property(QWidget *w)
@@ -450,15 +421,13 @@ QVariant KConfigDialogManager::property(QWidget *w)
   if (cb && cb->editable())
       return QVariant(cb->currentText());
 
-  const QMetaObject* mo = w->metaObject();
-  while (mo && !s_propertyMap->contains(mo->className()))
-    mo = mo->superClass();
-		    
-  if (!mo) {
+  QByteArray userproperty = getUserProperty( w );
+  if ( userproperty.isEmpty() ) {
     kdWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
     return QVariant();
   }
-  return w->property(s_propertyMap->value(mo->className()));
+
+  return w->property( userproperty );
 }
 
 bool KConfigDialogManager::hasChanged()

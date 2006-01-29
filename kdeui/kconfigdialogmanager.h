@@ -22,7 +22,7 @@
 #define KCONFIGDIALOGMANAGER_H
 
 #include <QObject>
-#include <QMap>
+#include <QHash>
 #include "kdelibs_export.h"
 
 class KConfigSkeleton;
@@ -139,12 +139,12 @@ public:
   /**
    * Retrieve the property map
    */
-  static QMap<QByteArray, QByteArray> *propertyMap();
+  static QHash<QString, QByteArray> *propertyMap();
 
   /**
    * Retrieve the widget change map
    */
-  static QMap<QString, QByteArray> *changedMap();
+  static QHash<QString, QByteArray> *changedMap();
 
 public Q_SLOTS:
   /**
@@ -193,6 +193,12 @@ protected:
    * @return bool - If a widget was set to something other then its default.
    */
   bool parseChildren(const QWidget *widget, bool trackChanges);
+
+  /**
+   * Finds the USER property name using Qt's MetaProperty system, and caches
+   * it in the property map (the cache could be retrieved by propertyMap() ).
+   */
+  QByteArray getUserProperty(const QWidget *widget);
 
   /**
    * Set a property
