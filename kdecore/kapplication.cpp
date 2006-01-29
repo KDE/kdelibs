@@ -1660,7 +1660,7 @@ void KApplication::installKDEPropertyMap()
     // QSqlPropertyMap takes ownership of the new default map.
     Q3SqlPropertyMap *kdeMap = new Q3SqlPropertyMap;
     kdeMap->insert( "KColorButton", "color" );
-    kdeMap->insert( "KComboBox", "currentItem" );
+    kdeMap->insert( "KComboBox", "currentIndex" );
     kdeMap->insert( "KDatePicker", "date" );
     kdeMap->insert( "KDateWidget", "date" );
     kdeMap->insert( "KDateTimeWidget", "dateTime" );
