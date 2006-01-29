@@ -21,23 +21,27 @@
 
 #include "kconfigdialogmanager.h"
 
-#include <q3buttongroup.h>
-#include <qcombobox.h>
-#include <qlabel.h>
-#include <qmetaobject.h>
-#include <qobject.h>
-#include <q3sqlpropertymap.h>
-#include <qtimer.h>
+#include <Q3ButtonGroup>
+#include <QComboBox>
+#include <QLabel>
+#include <QMetaObject>
+#include <QTimer>
 #include <QRadioButton>
+#include <QHash>
 
-#include <kapplication.h>
 #include <kconfigskeleton.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <QHash>
+#include <kstaticdeleter.h>
 
 #include <assert.h>
 
+static QMap<QByteArray, QByteArray> *propertyMap = 0;
+static QMap<QString, QByteArray> *changedMap = 0;
+
+static KStaticDeleter< QMap<QByteArray, QByteArray> > propertyMapDeleter;
+static KStaticDeleter< QMap<QString, QByteArray> > changedMapDeleter;
+	    
 class KConfigDialogManager::Private {
 
 public:
@@ -47,15 +51,13 @@ public:
   QHash<QString, QWidget *> knownWidget;
   QHash<QString, QWidget *> buddyWidget;
   bool insideGroupBox;
+  bool trackChanges;
 };
 
 KConfigDialogManager::KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf)
  : QObject(parent), m_conf(conf), m_dialog(parent)
 {
   d = new Private();
-
-  kapp->installKDEPropertyMap();
-  propertyMap = Q3SqlPropertyMap::defaultMap();
 
   init(true);
 }
@@ -67,55 +69,107 @@ KConfigDialogManager::~KConfigDialogManager()
 
 void KConfigDialogManager::init(bool trackChanges)
 {
-  if(trackChanges)
+  d->trackChanges = trackChanges;
+  if ( propertyMap == 0 ) {
+    propertyMapDeleter.setObject( propertyMap, new QMap<QByteArray,QByteArray> );
+     
+    //Qt
+    propertyMap->insert( "Q3DateEdit", "date" );
+    propertyMap->insert( "Q3DateTimeEdit", "dateTime" );
+    propertyMap->insert( "Q3ListBox", "currentItem" );
+    propertyMap->insert( "Q3TimeEdit", "time" );
+    propertyMap->insert( "QAbstractButton", "text" );
+    propertyMap->insert( "QCheckBox", "checked" );
+    propertyMap->insert( "QRadioButton", "checked" );
+    propertyMap->insert( "QComboBox", "currentIndex" );
+    propertyMap->insert( "QDateTimeEdit", "dateTime" );
+    propertyMap->insert( "QDial", "value" );
+    propertyMap->insert( "QLabel", "text" );
+    propertyMap->insert( "QLCDNumber", "value" );
+    propertyMap->insert( "QLineEdit", "text" );
+    propertyMap->insert( "QPushButton", "text" );
+    propertyMap->insert( "QScrollBar", "value" );
+    propertyMap->insert( "QSlider", "value" );
+    propertyMap->insert( "QSpinBox", "value" );
+    propertyMap->insert( "QTabBar", "currentTab" );
+    propertyMap->insert( "QTabWidget", "currentPage" );
+    propertyMap->insert( "QTextBrowser", "source" );
+    propertyMap->insert( "QTextEdit", "text" );
+    propertyMap->insert( "QGroupBox", "checked" );
+
+    //KDE
+    propertyMap->insert( "KColorButton", "color" );
+    propertyMap->insert( "KComboBox", "currentIndex" );
+    propertyMap->insert( "KDatePicker", "date" );
+    propertyMap->insert( "KDateWidget", "date" );
+    propertyMap->insert( "KDateTimeWidget", "dateTime" );
+    propertyMap->insert( "KEditListBox", "items" );
+    propertyMap->insert( "KFontCombo", "family" );
+    propertyMap->insert( "KFontRequester", "font" );
+    propertyMap->insert( "KFontChooser", "font" );
+    propertyMap->insert( "KHistoryCombo", "currentItem" );
+    propertyMap->insert( "KListBox", "currentItem" );
+    propertyMap->insert( "KLineEdit", "text" );
+    propertyMap->insert( "KRestrictedLine", "text" );
+    propertyMap->insert( "KTextBrowser", "source" );
+    propertyMap->insert( "KTextEdit", "text" );
+    propertyMap->insert( "KUrlRequester", "url" );
+    propertyMap->insert( "KPasswordEdit", "password" );
+    propertyMap->insert( "KIntNumInput", "value" );
+    propertyMap->insert( "KIntSpinBox", "value" );
+    propertyMap->insert( "KDoubleNumInput", "value" );
+  }
+  									       
+  if( changedMap == 0 )
   {
+    changedMapDeleter.setObject( changedMap, new QMap<QString,QByteArray> );
     // QT
-    changedMap.insert("QButton", SIGNAL(stateChanged(int)));
-    changedMap.insert("QCheckBox", SIGNAL(stateChanged(int)));
-    changedMap.insert("QPushButton", SIGNAL(stateChanged(int)));
-    changedMap.insert("QRadioButton", SIGNAL(toggled(bool)));
+    changedMap->insert("QButton", SIGNAL(stateChanged(int)));
+    changedMap->insert("QCheckBox", SIGNAL(stateChanged(int)));
+    changedMap->insert("QPushButton", SIGNAL(stateChanged(int)));
+    changedMap->insert("QRadioButton", SIGNAL(toggled(bool)));
     // We can only store one thing, so you can't have
     // a ButtonGroup that is checkable.
-    changedMap.insert("QButtonGroup", SIGNAL(clicked(int)));
-    changedMap.insert("QGroupBox", SIGNAL(toggled(bool)));
-    changedMap.insert("QComboBox", SIGNAL(activated (int)));
+    changedMap->insert("QButtonGroup", SIGNAL(clicked(int)));
+    changedMap->insert("QGroupBox", SIGNAL(toggled(bool)));
+    changedMap->insert("QComboBox", SIGNAL(activated (int)));
     //qsqlproperty map doesn't store the text, but the value!
-    //changedMap.insert("QComboBox", SIGNAL(textChanged(const QString &)));
-    changedMap.insert("QDateEdit", SIGNAL(valueChanged(const QDate &)));
-    changedMap.insert("QDateTimeEdit", SIGNAL(valueChanged(const QDateTime &)));
-    changedMap.insert("QDial", SIGNAL(valueChanged (int)));
-    changedMap.insert("QLineEdit", SIGNAL(textChanged(const QString &)));
-    changedMap.insert("QSlider", SIGNAL(valueChanged(int)));
-    changedMap.insert("QSpinBox", SIGNAL(valueChanged(int)));
-    changedMap.insert("QTimeEdit", SIGNAL(valueChanged(const QTime &)));
-    changedMap.insert("QTextEdit", SIGNAL(textChanged()));
-    changedMap.insert("QTextBrowser", SIGNAL(sourceChanged(const QString &)));
-    changedMap.insert("QMultiLineEdit", SIGNAL(textChanged()));
-    changedMap.insert("QListBox", SIGNAL(selectionChanged()));
-    changedMap.insert("QTabWidget", SIGNAL(currentChanged(QWidget *)));
+    //changedMap->insert("QComboBox", SIGNAL(textChanged(const QString &)));
+    changedMap->insert("QDateEdit", SIGNAL(valueChanged(const QDate &)));
+    changedMap->insert("QDateTimeEdit", SIGNAL(valueChanged(const QDateTime &)));
+    changedMap->insert("QDial", SIGNAL(valueChanged (int)));
+    changedMap->insert("QLineEdit", SIGNAL(textChanged(const QString &)));
+    changedMap->insert("QSlider", SIGNAL(valueChanged(int)));
+    changedMap->insert("QSpinBox", SIGNAL(valueChanged(int)));
+    changedMap->insert("QTimeEdit", SIGNAL(valueChanged(const QTime &)));
+    changedMap->insert("QTextEdit", SIGNAL(textChanged()));
+    changedMap->insert("QTextBrowser", SIGNAL(sourceChanged(const QString &)));
+    changedMap->insert("QMultiLineEdit", SIGNAL(textChanged()));
+    changedMap->insert("QListBox", SIGNAL(selectionChanged()));
+    changedMap->insert("QTabWidget", SIGNAL(currentChanged(QWidget *)));
 
     // KDE
-    changedMap.insert( "KComboBox", SIGNAL(activated (int)));
-    changedMap.insert( "KFontCombo", SIGNAL(activated (int)));
-    changedMap.insert( "KFontRequester", SIGNAL(fontSelected(const QFont &)));
-    changedMap.insert( "KFontChooser",  SIGNAL(fontSelected(const QFont &)));
-    changedMap.insert( "KHistoryCombo", SIGNAL(activated (int)));
+    changedMap->insert( "KComboBox", SIGNAL(activated (int)));
+    changedMap->insert( "KFontCombo", SIGNAL(activated (int)));
+    changedMap->insert( "KFontRequester", SIGNAL(fontSelected(const QFont &)));
+    changedMap->insert( "KFontChooser",  SIGNAL(fontSelected(const QFont &)));
+    changedMap->insert( "KHistoryCombo", SIGNAL(activated (int)));
 
-    changedMap.insert( "KColorButton", SIGNAL(changed(const QColor &)));
-    changedMap.insert( "KDatePicker", SIGNAL(dateSelected (QDate)));
-    changedMap.insert( "KDateWidget", SIGNAL(changed (QDate)));
-    changedMap.insert( "KDateTimeWidget", SIGNAL(valueChanged (const QDateTime &)));
-    changedMap.insert( "KEditListBox", SIGNAL(changed()));
-    changedMap.insert( "KListBox", SIGNAL(selectionChanged()));
-    changedMap.insert( "KLineEdit", SIGNAL(textChanged(const QString &)));
-    changedMap.insert( "KPasswordEdit", SIGNAL(textChanged(const QString &)));
-    changedMap.insert( "KRestrictedLine", SIGNAL(textChanged(const QString &)));
-    changedMap.insert( "KTextBrowser", SIGNAL(sourceChanged(const QString &)));
-    changedMap.insert( "KTextEdit", SIGNAL(textChanged()));
-    changedMap.insert( "KUrlRequester",  SIGNAL(textChanged (const QString& )));
-    changedMap.insert( "KIntNumInput", SIGNAL(valueChanged (int)));
-    changedMap.insert( "KIntSpinBox", SIGNAL(valueChanged (int)));
-    changedMap.insert( "KDoubleNumInput", SIGNAL(valueChanged (double)));
+    changedMap->insert( "KColorButton", SIGNAL(changed(const QColor &)));
+    changedMap->insert( "KDatePicker", SIGNAL(dateSelected (QDate)));
+    changedMap->insert( "KDateWidget", SIGNAL(changed (QDate)));
+    changedMap->insert( "KDateTimeWidget", SIGNAL(valueChanged (const QDateTime &)));
+    changedMap->insert( "KEditListBox", SIGNAL(changed()));
+    changedMap->insert( "KListBox", SIGNAL(selectionChanged()));
+    changedMap->insert( "KLineEdit", SIGNAL(textChanged(const QString &)));
+    changedMap->insert( "KPasswordEdit", SIGNAL(textChanged(const QString &)));
+    changedMap->insert( "KRestrictedLine", SIGNAL(textChanged(const QString &)));
+    changedMap->insert( "KTextBrowser", SIGNAL(sourceChanged(const QString &)));
+    changedMap->insert( "KTextEdit", SIGNAL(textChanged()));
+    changedMap->insert( "KUrlRequester",  SIGNAL(textChanged (const QString& )));
+    changedMap->insert( "KIntNumInput", SIGNAL(valueChanged (int)));
+    changedMap->insert( "KIntSpinBox", SIGNAL(valueChanged (int)));
+    changedMap->insert( "KDoubleNumInput", SIGNAL(valueChanged (double)));
   }
 
   // Go through all of the children of the widgets and find all known widgets
@@ -187,37 +241,38 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
         setupWidget(childWidget, item);
 
-        QMap<QString, QByteArray>::const_iterator changedIt = changedMap.find(childWidget->className());
+        if ( d->trackChanges ) {
+	  QMap<QString, QByteArray>::const_iterator changedIt = changedMap->find(childWidget->className());
 
-        if (changedIt == changedMap.end())
-        {
+          if (changedIt == changedMap->end())
+          {
 		   // If the class name of the widget wasn't in the monitored widgets map, then look for
 		   // it again using the super class name. This fixes a problem with using QtRuby/Korundum
 		   // widgets with KConfigXT where 'Qt::Widget' wasn't being seen a the real deal, even
 		   // though it was a 'QWidget'.
-          changedIt = changedMap.find(childWidget->metaObject()->superClassName());
-        }
+            changedIt = changedMap->find(childWidget->metaObject()->superClassName());
+          }
 
-        if (changedIt == changedMap.end())
-        {
-          kdWarning(178) << "Don't know how to monitor widget '" << childWidget->className() << "' for changes!" << endl;
-        }
-        else
-        {
-          connect(childWidget, *changedIt,
+          if (changedIt == changedMap->end())
+          {
+            kdWarning(178) << "Don't know how to monitor widget '" << childWidget->className() << "' for changes!" << endl;
+          }
+          else
+          {
+            connect(childWidget, *changedIt,
                   this, SIGNAL(widgetModified()));
 
-          Q3GroupBox *gb = dynamic_cast<Q3GroupBox *>(childWidget);
-          if (!gb)
-            bParseChildren = false;
-          else
-            d->insideGroupBox = true;
-
-          QComboBox *cb = dynamic_cast<QComboBox *>(childWidget);
-          if (cb && cb->editable())
-            connect(cb, SIGNAL(textChanged(const QString &)),
+            QComboBox *cb = dynamic_cast<QComboBox *>(childWidget);
+            if (cb && cb->editable())
+              connect(cb, SIGNAL(textChanged(const QString &)),
                     this, SIGNAL(widgetModified()));
+	  }	 
         }
+        Q3GroupBox *gb = dynamic_cast<Q3GroupBox *>(childWidget);
+        if (!gb)
+          bParseChildren = false;
+        else
+          d->insideGroupBox = true;
       }
       else
       {
@@ -239,10 +294,10 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       }
     }
 #ifndef NDEBUG
-    else if (widgetName)
+    else if (widgetName && d->trackChanges)
     {
-      QMap<QString, QByteArray>::const_iterator changedIt = changedMap.find(childWidget->className());
-      if (changedIt != changedMap.end())
+      QMap<QString, QByteArray>::const_iterator changedIt = changedMap->find(childWidget->className());
+      if (changedIt != changedMap->end())
       {
         if ((!d->insideGroupBox || !qobject_cast<QRadioButton*>(childWidget)) &&
             !qobject_cast<QGroupBox*>(childWidget))
@@ -358,7 +413,14 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
     return;
   }
 
-  propertyMap->setProperty(w, v);
+  const QMetaObject* mo = w->metaObject();
+  while (mo && !propertyMap->contains(mo->className()))
+    mo = mo->superClass();
+  if (!mo) {
+    kdWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
+    return;
+  }
+  w->setProperty(propertyMap->value(mo->className()), v);
 }
 
 QVariant KConfigDialogManager::property(QWidget *w)
@@ -371,7 +433,15 @@ QVariant KConfigDialogManager::property(QWidget *w)
   if (cb && cb->editable())
       return QVariant(cb->currentText());
 
-  return propertyMap->property(w);
+  const QMetaObject* mo = w->metaObject();
+  while (mo && !propertyMap->contains(mo->className()))
+    mo = mo->superClass();
+		    
+  if (!mo) {
+    kdWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
+    return QVariant();
+  }
+  return w->property(propertyMap->value(mo->className()));
 }
 
 bool KConfigDialogManager::hasChanged()

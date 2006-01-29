@@ -21,15 +21,13 @@
 #ifndef KCONFIGDIALOGMANAGER_H
 #define KCONFIGDIALOGMANAGER_H
 
-#include <qobject.h>
-#include <qmap.h>
-#include <q3ptrlist.h>
+#include <QObject>
+#include <QMap>
 #include "kdelibs_export.h"
 
 class KConfigSkeleton;
 class KConfigSkeletonItem;
 class QWidget;
-class Q3SqlPropertyMap;
 
 /**
  * @short Provides a means of automatically retrieving,
@@ -213,23 +211,13 @@ protected:
    */
   QWidget *m_dialog;
 
-  /**
-   * Pointer to the property map for easy access.
-   */
-  Q3SqlPropertyMap *propertyMap;
-
-  /**
-   * Map of the classes and the signals that they emit when changed.
-   */
-  QMap<QString, QByteArray> changedMap;
-
+  
 private:
   class Private;
   /**
    * KConfigDialogManager Private class.
    */
   Private *d;
-
 };
 
 #endif // KCONFIGDIALOGMANAGER_H
