@@ -44,12 +44,10 @@ class QWidget;
  * "kcfg_" prefix. For example a widget named "kcfg_MyOption" would be
  * associated to the configuration entry "MyOption".
  *
- * KConfigDialogManager uses the QSqlPropertyMap class to determine if it can do
- * anything to a widget.  Note that KConfigDialogManager doesn't  require a
- * database, it simply uses the functionality that is built into the
- * QSqlPropertyMap class.  New widgets can be added to the map using
- * QSqlPropertyMap::installDefaultMap().  Note that you can't just add any
- * class.  The class must have a matching Q_PROPERTY(...) macro defined.
+ * New widgets can be added to the map using the static functions propertyMap() and
+ * changedMap().  Note that you can't just add any class.  The class must have a 
+ * matching Q_PROPERTY(...) macro defined, and a signal which emitted when the
+ * property changed.
  *
  * For example (note that KColorButton is already added and it doesn't need to
  * manually added):
@@ -58,17 +56,18 @@ class QWidget;
  * \code
  * Q_PROPERTY( QColor color READ color WRITE setColor )
  * \endcode
- *
- * To add KColorButton the following code would be inserted in the main.
- *
+ * and signal:
  * \code
- * kapp->installKDEPropertyMap();
- * QSqlPropertyMap *map = QSqlPropertyMap::defaultMap();
- * map->insert("KColorButton", "color");
+ * void changed( const QColor &newColor );
  * \endcode
  *
- * If you add a new widget to the QSqlPropertyMap and wish to be notified when
- * it is modified you should add its signal using addWidgetChangedSignal().
+ * To add KColorButton the following code would be inserted in the main:
+ *
+ * \code
+ * KConfigDialogManager::propertyMap()->insert("KColorButton", "color");
+ * KConfigDialogManager::changedMap()->insert("KColorButton", SIGNAL(changed(const QColor &)));
+ * \endcode
+ *
 
  * @since 3.2
  * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
@@ -137,6 +136,16 @@ public:
    */
   bool isDefault();
 
+  /**
+   * Retrieve the property map
+   */
+  static QMap<QByteArray, QByteArray> *propertyMap();
+
+  /**
+   * Retrieve the widget change map
+   */
+  static QMap<QString, QByteArray> *changedMap();
+
 public Q_SLOTS:
   /**
    * Traverse the specified widgets, saving the settings of all known
@@ -199,6 +208,12 @@ protected:
    * Setup secondary widget properties
    */
   void setupWidget(QWidget *widget, KConfigSkeletonItem *item);
+
+  /**
+   * Initializes the property maps
+   */
+  static void initMaps();
+
 
 protected:
   /**
