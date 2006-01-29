@@ -47,7 +47,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qmessagebox.h>
 #include <qpushbutton.h>
 #include <qradiobutton.h>
-#include <QX11Info>
 #include <Q3VButtonGroup>
 
 #ifndef QT_NO_TOOLTIP
@@ -67,9 +66,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kapplication.h>
 
 #ifdef Q_WS_X11
+#include <QX11Info>
 #include <X11/Xlib.h>
-#include <kvbox.h>
 #endif
+
+#include <kvbox.h>
 
 KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                         int defaultButton, bool showDetails )
