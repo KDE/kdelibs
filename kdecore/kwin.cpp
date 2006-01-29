@@ -147,6 +147,9 @@ class ContextWidget : public QWidget
 public:
     ContextWidget();
     virtual bool x11Event( XEvent * ev);
+
+private:
+    QEventLoop mLoop;
 };
 
 ContextWidget::ContextWidget()
@@ -163,7 +166,7 @@ ContextWidget::ContextWidget()
 			      LeaveWindowMask ),
 		      GrabModeAsync, GrabModeAsync,
 		      None, c.handle(), CurrentTime );
-	qApp->enter_loop();
+	mLoop.exec();
     }
 
 
@@ -189,7 +192,7 @@ bool ContextWidget::x11Event( XEvent * ev)
 	    e.xbutton.x = lx;
 	    e.xbutton.y = ly;
 	    XSendEvent( QX11Info::display(), w, true, ButtonPressMask, &e );
-	    qApp->exit_loop();
+	    mLoop.exit(0);
 	    return true;
 	}
 	return false;
@@ -298,7 +301,7 @@ void KWin::setMainWindow( QWidget* subwindow, WId mainwindow )
         */
         if( qobject_cast< QDialog* >( subwindow ) != NULL
             && subwindow->parentWidget() == NULL
-            && qApp->mainWidget() != NULL )
+            && qApp->activeWindow() != NULL )
         {
             kdWarning() << "KWin::setMainWindow(): There either mustn't be qApp->mainWidget(),"
                 " or the dialog must have a non-NULL parent, otherwise Qt will reset the change. Bummer." << endl;

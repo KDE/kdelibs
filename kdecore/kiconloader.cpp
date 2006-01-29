@@ -167,7 +167,7 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
          )
         {
         if( (*it).loader == this )
-            it = kiconloaders->remove( it );
+            it = kiconloaders->erase( it );
         else
             ++it;
         }
@@ -370,7 +370,7 @@ void KIconLoader::addExtraDesktopThemes()
 	QDir dir(*it);
 	if (!dir.exists())
 	    continue;
-	QStringList lst = dir.entryList("default.*", QDir::Dirs);
+	QStringList lst = dir.entryList(QStringList( "default.*" ), QDir::Dirs);
 	QStringList::ConstIterator it2;
 	for (it2=lst.begin(); it2!=lst.end(); ++it2)
 	{
@@ -639,9 +639,9 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	    return pix;
 	QImage img(path);
 	if (size != 0)
-	    img=img.smoothScale(size,size);
+	    img=img.scaled(size,size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-	pix.convertFromImage(img);
+	pix = QPixmap::fromImage(img);
 	QPixmapCache::insert(key, pix);
 	return pix;
     }
@@ -756,7 +756,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	QString ext = icon.path.right(3).toUpper();
 	if(ext != "SVG" && ext != "VGZ")
 	{
-	    img = new QImage(icon.path, ext.latin1());
+	    img = new QImage(icon.path, ext.toLatin1());
 	    if (img->isNull()) {
                 delete img;
 		return pix;
@@ -821,12 +821,12 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     // Scale the icon and apply effects if necessary
     if (iconType == KIcon::Scalable && size != img->width())
     {
-        *img = img->smoothScale(size, size);
+        *img = img->scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
     if (iconType == KIcon::Threshold && size != img->width())
     {
 	if ( abs(size-img->width())>iconThreshold )
-	    *img = img->smoothScale(size, size);
+            *img = img->scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
     if (group >= 0 && d->mpGroups[group].dblPixels)
     {
@@ -837,7 +837,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	*img = d->mpEffect.apply(*img, group, state);
     }
 
-    pix.convertFromImage(*img);
+    pix = QPixmap::fromImage(*img);
 
     delete img;
 
@@ -880,7 +880,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	    
             pix.setMask(mask);
         }
-        bitBlt(&pix, x, y, &favIcon);
+        QPainter painter( &pix );
+        painter.drawPixmap( x, y, favIcon );
     }
 
     QPixmapCache::insert(key, pix);
@@ -905,7 +906,7 @@ QImage *KIconLoader::loadOverlay(const QString &name, int size) const
     // In some cases (since size in findMatchingIcon() is more a hint than a
     // constraint) image->size can be != size. If so perform rescaling.
     if ( size != image->width() )
-        *image = image->smoothScale( size, size );
+        *image = image->scaled( size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
     d->imgDict.insert(key, image);
     return image;
 }
@@ -1052,7 +1053,9 @@ int KIconLoader::currentSize(KIcon::Group group) const
 QStringList KIconLoader::queryIconsByDir( const QString& iconsDir ) const
 {
   QDir dir(iconsDir);
-  QStringList lst = dir.entryList("*.png;*.xpm", QDir::Files);
+  QStringList formats;
+  formats << "*.png" << "*.xpm";
+  QStringList lst = dir.entryList(formats, QDir::Files);
   QStringList result;
   QStringList::ConstIterator it;
   for (it=lst.begin(); it!=lst.end(); ++it)
@@ -1217,15 +1220,12 @@ QIcon KIconLoader::loadIconSetNonDelayed( const QString& name,
 {
     QIcon iconset;
     QPixmap tmp = loadIcon(name, g, s, KIcon::ActiveState, NULL, canReturnNull);
-    iconset.setPixmap( tmp, QIcon::Small, QIcon::Active );
+    iconset.addPixmap( tmp, QIcon::Active, QIcon::On );
     // we don't use QIconSet's resizing anyway
-    iconset.setPixmap( tmp, QIcon::Large, QIcon::Active );
     tmp = loadIcon(name, g, s, KIcon::DisabledState, NULL, canReturnNull);
-    iconset.setPixmap( tmp, QIcon::Small, QIcon::Disabled );
-    iconset.setPixmap( tmp, QIcon::Large, QIcon::Disabled );
+    iconset.addPixmap( tmp, QIcon::Disabled, QIcon::On );
     tmp = loadIcon(name, g, s, KIcon::DefaultState, NULL, canReturnNull);
-    iconset.setPixmap( tmp, QIcon::Small, QIcon::Normal );
-    iconset.setPixmap( tmp, QIcon::Large, QIcon::Normal );
+    iconset.addPixmap( tmp, QIcon::Normal, QIcon::On );
     return iconset;
 }
 
@@ -1408,7 +1408,7 @@ QPixmap KIconLoader::unknown()
     if (path.isEmpty())
     {
 	kdDebug(264) << "Warning: Cannot find \"unknown\" icon." << endl;
-	pix.resize(32,32);
+	pix = QPixmap(32,32);
     } else
     {
         pix.load(path);

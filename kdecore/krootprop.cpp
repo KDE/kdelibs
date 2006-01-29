@@ -249,7 +249,7 @@ QString KRootProp::writeEntry( const QString& rKey, const QString& rValue )
     dirty = true;
     if ( propDict.contains( rKey ) ) {
 	QString aValue = propDict[ rKey ];
-	propDict.replace( rKey, rValue );
+	propDict.insert( rKey, rValue );
 	return aValue;
     }
     else {

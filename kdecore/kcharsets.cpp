@@ -370,7 +370,7 @@ QChar KCharsets::fromEntity(const QString &str)
         return res;
     }
 
-    const entity *e = kde_findEntity(str.ascii(), str.length());
+    const entity *e = kde_findEntity(str.toAscii(), str.length());
 
     if(!e)
     {
@@ -435,7 +435,7 @@ QString KCharsets::resolveEntities( const QString &input )
         if ( entityLength == 0 )
             continue;
 
-        const QChar entityValue = KCharsets::fromEntity( QConstString( entityBegin, entityLength ).string() );
+        const QChar entityValue = KCharsets::fromEntity( QString( entityBegin, entityLength ) );
         if ( entityValue.isNull() )
             continue;
 
@@ -464,20 +464,20 @@ QStringList KCharsets::availableEncodingNames() const
 QString KCharsets::languageForEncoding( const QString &encoding ) const
 {
     int lang = kcharsets_array_search< LanguageForEncoding, int >
-        ( language_for_encoding, encoding.latin1());
+        ( language_for_encoding, encoding.toLatin1());
     return i18n( language_names[lang] );
 }
 
 QString KCharsets::encodingForName( const QString &descriptiveName ) const
 {
-    const int left = descriptiveName.findRev( '(' );
+    const int left = descriptiveName.lastIndexOf( '(' );
     
     if (left<0) // No parenthesis, so assume it is a normal encoding name
 	return descriptiveName.trimmed();
     
     QString name(descriptiveName.mid(left+1));
     
-    const int right = name.findRev( ')' );
+    const int right = name.lastIndexOf( ')' );
     
     if (right<0) 
         return name;
@@ -524,7 +524,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     }
 
     // ### TODO: we should check if the name starts with x- and remove it. That would save many mapping entries
-    QByteArray name = n.toLower().latin1();
+    QByteArray name = n.toLower().toLatin1();
     QByteArray key = name;
     if (name.right(8) == "_charset")
        name.truncate(name.length()-8);

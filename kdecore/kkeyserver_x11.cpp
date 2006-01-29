@@ -457,7 +457,7 @@ bool Sym::init( const QString& s )
 
 	// Look up in special names list
 	for( int i = 0; g_rgSymNames[i].sym != 0; i++ ) {
-		if( qstricmp( s.latin1(), g_rgSymNames[i].psName ) == 0 ) {
+		if( qstricmp( s.toLatin1(), g_rgSymNames[i].psName ) == 0 ) {
 			m_sym = g_rgSymNames[i].sym;
 			return true;
 		}
@@ -466,7 +466,7 @@ bool Sym::init( const QString& s )
 #ifdef Q_WS_WIN
 	// search for name in KKeys array
 	for ( KKeys const *pKey  = kde_KKEYS; pKey->code != 0xffff; pKey++) {
-		if( qstricmp( s.latin1(), pKey->name ) == 0 ) {
+		if( qstricmp( s.toLatin1(), pKey->name ) == 0 ) {
 			m_sym = pKey->code;
 			return true;
 		}
@@ -474,13 +474,13 @@ bool Sym::init( const QString& s )
 	m_sym = 0;
 #elif defined(Q_WS_X11)
 	// search X list: 's' as is, all lower, first letter in caps
-	m_sym = XStringToKeysym( s.latin1() );
+	m_sym = XStringToKeysym( s.toLatin1() );
 	if( !m_sym ) {
-		m_sym = XStringToKeysym( s.toLower().latin1() );
+		m_sym = XStringToKeysym( s.toLower().toLatin1() );
 		if( !m_sym ) {
 			QString s2 = s;
 			s2[0] = s2[0].toUpper();
-			m_sym = XStringToKeysym( s2.latin1() );
+			m_sym = XStringToKeysym( s2.toLatin1() );
 		}
 	}
 #endif
@@ -521,8 +521,8 @@ QString Sym::toString( bool bUserSpace ) const
 #endif
 		QChar c = QChar(m_sym).toUpper();
 		// Print all non-space characters directly when output is user-visible.
-		// Otherwise only print alphanumeric latin1 characters directly (A,B,C,1,2,3).
-		if( (c.latin1() && c.isLetterOrNumber())
+		// Otherwise only print alphanumeric toLatin1 characters directly (A,B,C,1,2,3).
+		if( (c.toLatin1() && c.isLetterOrNumber())
 		    || (bUserSpace && !c.isSpace()) )
 				return QString( c );
 	}
@@ -541,7 +541,7 @@ QString Sym::toString( bool bUserSpace ) const
 	s = XKeysymToString( m_sym );
 #endif
 	capitalizeKeyname( s );
-	return bUserSpace ? i18n("QAccel", s.latin1()) : s;
+	return bUserSpace ? i18n("QAccel", s.toLatin1()) : s;
 }
 
 QString Sym::toStringInternal() const { return toString( false ); }

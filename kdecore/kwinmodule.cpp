@@ -167,7 +167,7 @@ const QList<WId>& KWinModule::stackingOrder() const
 
 bool KWinModule::hasWId(WId w) const
 {
-    return d->windows.findIndex( w ) != -1;
+    return d->windows.contains( w );
 }
 
 const QList<WId>& KWinModule::systemTrayWindows() const
@@ -209,7 +209,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	    foreach(KWinModule *m, modules)
 		emit m->showingDesktopChanged( showingDesktop());
         }
-    } else  if ( windows.findIndex( ev->xany.window ) != -1 ){
+    } else  if ( windows.contains( ev->xany.window ) ){
 	NETWinInfo ni( QX11Info::display(), ev->xany.window, QX11Info::appRootWindow(), 0 );
         unsigned long dirty[ 2 ];
 	ni.event( ev, dirty, 2 );
@@ -223,7 +223,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
         }
 	if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 ) {
             removeStrutWindow( ev->xany.window );
-            if ( !possibleStrutWindows.findIndex( ev->xany.window ) != -1  )
+            if ( !possibleStrutWindows.contains( ev->xany.window ) )
         	possibleStrutWindows.append( ev->xany.window );
 	}
 	if ( dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ] ) {
@@ -246,7 +246,7 @@ bool KWinModulePrivate::removeStrutWindow( WId w )
          it != strutWindows.end();
          ++it )
         if( (*it).window == w ) {
-            strutWindows.remove( it );
+            strutWindows.erase( it );
             return true;
         }
     return false;
@@ -284,15 +284,15 @@ void KWinModulePrivate::addClient(Window w)
 void KWinModulePrivate::removeClient(Window w)
 {
     bool emit_strutChanged = removeStrutWindow( w );
-    if( strutSignalConnected && possibleStrutWindows.findIndex( w ) != -1 && modules.count() > 0 ) {
+    if( strutSignalConnected && possibleStrutWindows.contains( w ) && modules.count() > 0 ) {
         NETWinInfo info( QX11Info::display(), w, QX11Info::appRootWindow(), NET::WMStrut );
         NETStrut strut = info.strut();
         if ( strut.left || strut.top || strut.right || strut.bottom ) {
             emit_strutChanged = true;
         }
     }
-    possibleStrutWindows.remove( w );
-    windows.remove( w );
+    possibleStrutWindows.removeAll( w );
+    windows.removeAll( w );
     foreach(KWinModule *m, modules) {
 	emit m->windowRemoved( w );
 	if ( emit_strutChanged )
@@ -309,7 +309,7 @@ void KWinModulePrivate::addSystemTrayWin(Window w)
 
 void KWinModulePrivate::removeSystemTrayWin(Window w)
 {
-    systemTrayWindows.remove( w );
+    systemTrayWindows.removeAll( w );
     foreach(KWinModule *m, modules)
 	emit m->systemTrayWindowRemoved( w );
 }
@@ -356,7 +356,7 @@ QRect KWinModule::workArea( const QList<WId>& exclude, int desktop ) const
     QList<WId>::ConstIterator it1;
     for( it1 = d->windows.begin(); it1 != d->windows.end(); ++it1 ) {
 
-	if(exclude.findIndex(*it1) != -1) continue;
+	if(exclude.contains(*it1)) continue;
 
 // Kicker (very) extensively calls this function, causing hundreds of roundtrips just
 // to repeatedly find out struts of all windows. Therefore strut values for strut
@@ -372,10 +372,10 @@ QRect KWinModule::workArea( const QList<WId>& exclude, int desktop ) const
             if(!((*it2).desktop == desktop || (*it2).desktop == NETWinInfo::OnAllDesktops ))
                 continue;
             strut = (*it2).strut;
-        } else if( d->possibleStrutWindows.findIndex( *it1 ) != -1 ) {
+        } else if( d->possibleStrutWindows.contains( *it1 ) ) {
             NETWinInfo info( QX11Info::display(), (*it1), QX11Info::appRootWindow(), NET::WMStrut | NET::WMDesktop);
 	    strut = info.strut();
-            d->possibleStrutWindows.remove( *it1 );
+            d->possibleStrutWindows.removeAll( *it1 );
             d->strutWindows.append( KWinModulePrivate::StrutData( *it1, info.strut(), info.desktop()));
 	    if(!(info.desktop() == desktop || info.desktop() == NETWinInfo::OnAllDesktops))
                 continue;
