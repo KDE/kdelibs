@@ -178,6 +178,18 @@ void LdapConfigWidget::initWidget()
   }
   if ( mFeatures & ( W_SIZELIMIT | W_TIMELIMIT ) ) row++;
 
+  if ( mFeatures & W_PAGESIZE ) {
+    label = new QLabel( i18n( "Page size:" ), this );
+    mPageSize = new QSpinBox( this );
+    mPageSize->setRange( 0, 9999999 );
+    mPageSize->setObjectName("kcfg_ldappagesize" );
+    mPageSize->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
+    mPageSize->setValue( 0 );
+    mPageSize->setSpecialValueText( i18n("No paging") );
+    mainLayout->addWidget( label, row, 0 );
+    mainLayout->addWidget( mPageSize, row++, 1 );
+  }
+
   if ( mFeatures & W_DN ) {
     label = new QLabel( i18n( "Distinguished Name", "DN:" ), this );
     mDn = new KLineEdit( this);
@@ -630,6 +642,16 @@ void LdapConfigWidget::setTimeLimit( int timelimit )
 int LdapConfigWidget::timeLimit() const
 {
   return ( mTimeLimit ? mTimeLimit->value() : 0 );
+}
+
+void LdapConfigWidget::setPageSize( int pagesize )
+{
+  if ( mPageSize ) mPageSize->setValue( pagesize );
+}
+
+int LdapConfigWidget::pageSize() const
+{
+  return ( mPageSize ? mPageSize->value() : 0 );
 }
 
 LdapConfigWidget::WinFlags LdapConfigWidget::features() const

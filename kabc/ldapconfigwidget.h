@@ -70,6 +70,7 @@ namespace KABC {
     Q_PROPERTY( bool authSASL READ isAuthSASL WRITE setAuthSASL )
     Q_PROPERTY( int sizeLimit READ sizeLimit WRITE setSizeLimit )
     Q_PROPERTY( int timeLimit READ timeLimit WRITE setTimeLimit )
+    Q_PROPERTY( int pageSize READ pageSize WRITE setPageSize )
 
     public:
 
@@ -87,7 +88,8 @@ namespace KABC {
         W_AUTHBOX = 0x400,
         W_TIMELIMIT = 0x800,
         W_SIZELIMIT = 0x1000,
-        W_ALL = 0x1fff
+	W_PAGESIZE = 0x2000,
+        W_ALL = 0x2fff
       };
       
       Q_DECLARE_FLAGS( WinFlags, WinFlag )
@@ -243,6 +245,17 @@ namespace KABC {
        */
       int timeLimit() const;
 
+      /**
+       * Sets the page size.
+       * KConfig widget name: kcfg_ldappagesize
+       */
+      void setPageSize( int pagesize );
+      /**
+       * Returns the page size.
+       * KConfig widget name: kcfg_ldappagesize
+       */
+      int pageSize() const;
+      
       WinFlags features() const;
       void setFeatures( WinFlags features );
 
@@ -272,7 +285,7 @@ namespace KABC {
       KLineEdit *mUser;
       KLineEdit *mPassword;
       KLineEdit *mHost;
-      QSpinBox  *mPort, *mVer, *mSizeLimit, *mTimeLimit;
+      QSpinBox  *mPort, *mVer, *mSizeLimit, *mTimeLimit, *mPageSize;
       KLineEdit *mDn, *mBindDN, *mRealm;
       KLineEdit *mFilter;
       QRadioButton *mAnonymous,*mSimple,*mSASL;
