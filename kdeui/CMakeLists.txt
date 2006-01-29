@@ -2,11 +2,9 @@ kde4_header()
 
 project(libkdeui)
 
-if (UNIX)
-	if (NOT APPLE)
-		add_subdirectory( kdetrayproxy )
-	endif (NOT APPLE)
-endif (UNIX)
+if (UNIX AND NOT APPLE)
+	add_subdirectory( kdetrayproxy )
+endif (UNIX AND NOT APPLE)
 
 add_subdirectory( tests )
 add_subdirectory( about )
