@@ -47,14 +47,15 @@ class QWidget;
  * New widgets can be added to the map using the static functions propertyMap() and
  * changedMap().  Note that you can't just add any class.  The class must have a 
  * matching Q_PROPERTY(...) macro defined, and a signal which emitted when the
- * property changed.
+ * property changed. Note: by default, the property which defined as "USER true" 
+ * is used.
  *
  * For example (note that KColorButton is already added and it doesn't need to
  * manually added):
  *
  * kcolorbutton.h defines the following property:
  * \code
- * Q_PROPERTY( QColor color READ color WRITE setColor )
+ * Q_PROPERTY( QColor color READ color WRITE setColor USER true )
  * \endcode
  * and signal:
  * \code
@@ -64,7 +65,6 @@ class QWidget;
  * To add KColorButton the following code would be inserted in the main:
  *
  * \code
- * KConfigDialogManager::propertyMap()->insert("KColorButton", "color");
  * KConfigDialogManager::changedMap()->insert("KColorButton", SIGNAL(changed(const QColor &)));
  * \endcode
  *
