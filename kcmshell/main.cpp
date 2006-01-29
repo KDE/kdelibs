@@ -24,7 +24,15 @@
 #include <qfile.h>
 #include <QIcon>
 #include <dcopclient.h>
+
+#ifdef Q_WS_X11
+/*
+    FIXME: how are we supposed to handle stuff like this that is so
+    integrated with QX11Embed on alternate platforms?
+*/
 #include <QX11EmbedWidget>
+#endif
+
 #include <QVBoxLayout>
 
 #include <kaboutdata.h>
@@ -150,7 +158,9 @@ void KCMShellMultiDialog::activate( QByteArray asn_id )
 {
     kdDebug(780) << k_funcinfo << endl;
 
+#ifdef Q_WS_X11
     KStartupInfo::setNewStartupId( this, asn_id );
+#endif
 }
 
 void KCMShell::setDCOPName(const DCOPCString &dcopName, bool rootMode )
@@ -280,6 +290,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
     bool idValid;
     int id;
 
+#ifdef Q_WS_X11
     if ( args->isSet( "embed-proxy" ))
     {
         id = args->getOption( "embed-proxy" ).toInt(&idValid);    
@@ -300,6 +311,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         return 0;
 
     }
+#endif
 
     KCMShellMultiDialog *dlg = new KCMShellMultiDialog( dtype, 
             i18n("Configure - %1").arg(kapp->caption()), 0, "", true );
@@ -307,6 +319,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
     for (KService::List::ConstIterator it = modules.begin(); it != modules.end(); ++it)
         dlg->addModule(KCModuleInfo(*it));
 
+#ifdef Q_WS_X11
     if ( args->isSet( "embed" ))
     {
         id = args->getOption( "embed" ).toInt(&idValid);    
@@ -324,6 +337,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 
     }
     else
+#endif
     {
         if ( !args->isSet( "icon" ) && modules.count() == 1)
         {
