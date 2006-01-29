@@ -14,11 +14,17 @@ def detect(lenv,dest):
 		ret = conf.CheckHeader('locale.h')
 		contact.Result(ret)
 		return ret
-	
+
+ 	def Check_errno_h(context):
+ 	 	context.Message('Checking for errno.h...')
+ 	 	ret = conf.CheckHeader('errno.h')
+ 	 	context.Result(ret)
+ 	 	return ret;
 
 	conf = lenv.Configure( custom_tests = {
 		 'Check_limits' : Check_limits ,
-		 'Check_locale_h' : Check_locale_h
+		 'Check_locale_h' : Check_locale_h ,
+		 'Check_errno_h' : Check_errno_h
 		 } )
 	dest.write('/* Define to 1 if you have the <limits.h> header file. */\n')
 	if conf.Check_limits:
@@ -36,6 +42,13 @@ def detect(lenv,dest):
 		print 'Checking for locale.h...no'
 		dest.write('#undef HAVE_LOCALE_H\n')
 	
+	if conf.Check_errno_h:
+		print 'Checking for errno.h...yes'
+		dest.write('#define HAVE_ERRNO_H 1\n')
+	else:
+		print 'Checking for errno.h...no'
+		dest.write('#undef HAVE_ERRNO_H\n')
+
 	lenv = conf.Finish()
 
 	#### Don't fix the stuff below by hand, write proper tests in lowlevel.py
