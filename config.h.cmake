@@ -12,7 +12,6 @@
 #undef HAVE_INOTIFY
 #undef HAVE_LUA
 #undef HAVE_NON_POSIX_ACL_EXTENSIONS
-#undef HAVE_NSGETENVIRON
 #undef HAVE_OLD_SSL_API
 #undef LTDL_DLOPEN_DEPLIBS  /* not supported by KDE */
 #undef HAVE_SHORTSETGROUPS /* if setgroups() takes short *as second arg */
@@ -279,6 +278,7 @@
 #cmakedefine   HAVE_UTEMPTER 1
 #cmakedefine   HAVE_VSNPRINTF 1
 #cmakedefine   HAVE__GETPTY 1
+#cmakedefine   HAVE_NSGETENVIRON 1
 #cmakedefine   HAVE___ARGZ_COUNT 1
 #cmakedefine   HAVE___ARGZ_NEXT  1
 #cmakedefine   HAVE___ARGZ_STRINGIFY 1
@@ -516,3 +516,8 @@ extern "C"
 int snprintf(char *str, size_t n, char const *fmt, ...);
 #endif
 
+#if defined(HAVE_NSGETENVIRON) && defined(HAVE_CRT_EXTERNS_H)
+# include <sys/time.h>
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
+#endif
