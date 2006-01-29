@@ -202,7 +202,7 @@ if(BZIP2_FOUND)
 endif(BZIP2_FOUND)
 
 if(AGG_FOUND)
-   target_link_libraries(kdecore  ${AGG_LIBRARY})
+   target_link_libraries(kdecore  ${QT_QTXML_LIBRARY} ${AGG_LIBRARY})
 endif(AGG_FOUND)
 
 set_target_properties(kdecore PROPERTIES VERSION 4.2.0 SOVERSION 4 )
