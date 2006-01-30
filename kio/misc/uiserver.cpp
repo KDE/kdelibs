@@ -45,6 +45,7 @@
 #include <ksystemtray.h>
 #include <kmenu.h>
 #include <kaction.h>
+#include <kdialogbase.h>
 
 #include "observer_stub.h"
 #include "observer.h" // for static methods only
