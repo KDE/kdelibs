@@ -18,12 +18,10 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KPASSDLG_H
-#define KPASSDLG_H
+#ifndef KPASSWORDDIALOG_H
+#define KPASSWORDDIALOG_H
 
-#include <qstring.h>
-#include <qlineedit.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QLabel;
 class QGridLayout;
@@ -158,7 +156,7 @@ private:
  */
 
 class KDEUI_EXPORT KPasswordDialog
-    : public KDialogBase
+    : public KDialog
 {
     Q_OBJECT
 
@@ -188,7 +186,7 @@ public:
      *        and possible typos are detected immediately.
      * @param enableKeep: if true, a check box is shown in the dialog
      *        which allows the user to keep his password input for later.
-     * @param extraBttn: allows to show additional buttons, KDialogBase.
+     * @param extraBttn: allows to show additional buttons, KDialog.
      * @param parent Passed to lower level constructor.
      *
      * @since 3.0
@@ -396,5 +394,5 @@ private:
     KPasswordDialogPrivate* const d;
 };
 
-#endif // KPASSDLG_H
+#endif // KPASSWORDDIALOG_H
 

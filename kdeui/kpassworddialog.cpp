@@ -18,7 +18,6 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#include <unistd.h>
 
 #include <qwidget.h>
 #include <qlineedit.h>
@@ -26,26 +25,25 @@
 #include <qlayout.h>
 #include <qsize.h>
 #include <qevent.h>
-#include <qnamespace.h>
 #include <qcheckbox.h>
 #include <qregexp.h>
 #include <qprogressbar.h>
-
 #include <q3ptrdict.h>
 #include <qapplication.h>
+#include <qstring.h>
 
 #include <kglobal.h>
-#include <kdebug.h>
+// #include <kdebug.h>
 #include <klocale.h>
-#include <kiconloader.h>
+// #include <kiconloader.h>
 #include <kmessagebox.h>
-#include <kaboutdialog.h>
+// #include <kaboutdialog.h>
 #include <kconfig.h>
-#include <kstandarddirs.h>
+// #include <kstandarddirs.h>
+// #include <kvbox.h>
 
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <kvbox.h>
+// #include <sys/time.h>
+// #include <sys/resource.h>
 
 #include "kpassworddialog.h"
 
@@ -290,18 +288,24 @@ int KPasswordEdit::maxPasswordLength() const
 
 KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn,
                                  QWidget *parent)
-    : KDialogBase(parent, "", true, "", Ok|Cancel|extraBttn,
-                  Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
+    : KDialog(parent, QString(), Ok|Cancel|extraBttn, Qt::Dialog)
+      , m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {
+    setModal( true );
+    enableButtonSeparator( true );
+    setDefaultButton( Ok );
     d->iconName = "password";
     init();
 }
 
 KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn, const QString& icon,
 				  QWidget *parent)
-    : KDialogBase(parent, "", true, "", Ok|Cancel|extraBttn,
-                  Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
+    : KDialog(parent, QString(), Ok|Cancel|extraBttn, Qt::Dialog)
+      , m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {
+    setModal( true );
+    enableButtonSeparator( true );
+    setDefaultButton( Ok );
     if ( icon.trimmed().isEmpty() )
 	d->iconName = "password";
     else
@@ -563,7 +567,7 @@ void KPasswordDialog::disableCoreDumps()
 }
 
 void KPasswordDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 void KPasswordDialog::enableOkBtn()
 {
