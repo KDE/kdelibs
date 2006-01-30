@@ -130,12 +130,75 @@ public:
      * @param filename the file to backup
      * @param backupDir optional directory where to save the backup file in.
      * If empty (the default), the backup will be in the same directory as @p filename.
+     * The backup type (simple, rcs, or numbered), extension string, and maximum
+     * number of backup files are read from the user's global configuration.
+     * Use simpleBackupFile() or numberedBackupFile() to force one of these
+     * specific backup styles.
+     */
+   static bool backupFile( const QString& filename,
+                           const QString& backupDir = QString() );
+
+    /**
+     * Static method to create a backup file before saving.
+     * You can use this method even if you don't use KSaveFile.
+     * @param filename the file to backup
+     * @param backupDir optional directory where to save the backup file in.
+     * If empty (the default), the backup will be in the same directory as @p filename.
      * @param backupExtension the extension to append to @p filename, "~" by default.
      * @since 3.2
      */
-   static bool backupFile( const QString& filename,
-                           const QString& backupDir = QString(),
-                           const QString& backupExtension = QLatin1String( "~" ) );
+   static bool simpleBackupFile( const QString& filename,
+                                 const QString& backupDir = QString(),
+                                 const QString& backupExtension = QLatin1String( "~" ) );
+
+    /**
+     * Static method to create a backup file before saving.
+     * You can use this method even if you don't use KSaveFile.
+     * The backup file names will be of the form:
+     *     <name>.<number><extension>
+     * @example file.1~
+     *
+     * The new backup file will be have the backup number 1.
+     * Each existing backup file will have its number incremented by 1.
+     * Any backup files with numbers greater than the maximum number
+     * permitted (@p maxBackups) will be removed.
+     *
+     * @param filename the file to backup
+     * @param backupDir optional directory where to save the backup file in.
+     * If empty (the default), the backup will be in the same directory as
+     * @p filename.
+     * @param backupExtension the extension to append to @p filename,
+     * which is "~" by default.  Do not use an extension containing digits.
+     * @param maxBackups the maximum number of backup files permitted.
+     * For best performance a small number (10) is recommended.
+     */
+    static bool numberedBackupFile( const QString& filename,
+                                    const QString& backupDir = QString(),
+                                    const QString& backupExtension = QString::fromLatin1( "~" ),
+                               const uint maxBackups = 10
+        );
+
+
+    /**
+     * Static method to create a backup file before saving.
+     * You can use this method even if you don't use KSaveFile.
+     * The backup file names will be of the form:
+     *     <name>,v
+     * @example file,v
+     *
+     * The new backup file will be in rcs format. 
+     * Each existing backup file will be commited as a new revision.
+     *
+     * @param filename the file to backup
+     * @param backupDir optional directory where to save the backup file in.
+     * If empty (the default), the backup will be in the same directory as
+     * @p filename.
+     * @param backupMessage is the RCS commit message for this revision
+     */
+    static bool rcsBackupFile( const QString& filename,
+                               const QString& backupDir = QString(),
+                               const QString& backupMessage = QString()
+        );
 
 private:
 

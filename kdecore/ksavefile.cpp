@@ -1,6 +1,8 @@
 /*
   This file is part of the KDE libraries
   Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
+  Copyright (c) 2006 Allen Winter <winter@kde.org>
+  Copyright (c) 2006 Gregory S. Hayes <syncomm@kde.org>
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -36,12 +38,14 @@
 
 #include <qdir.h>
 #include <qstring.h>
+#include <QProcess>
 
 #include <kde_file.h>
 #include "kapplication.h"
 #include "ksavefile.h"
 #include "kstandarddirs.h"
 #include "ktempfile.h"
+#include "kconfig.h"
 
 class KSaveFile::Private
 {
@@ -160,14 +164,165 @@ write_all(int fd, const char *buf, size_t len)
    return 0;
 }
 
-bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
-                            const QString& backupExtension)
+static bool
+copy_all( int fd, KDE_struct_stat *buff, QString newName )
+{
+   QByteArray cNewName = QFile::encodeName( newName );
+   const char *copyname = cNewName.data();
+   int permissions = buff->st_mode & 07777;
+
+   if ( KDE_stat( copyname, buff ) == 0 )
+   {
+      if ( unlink( copyname ) != 0 )
+      {
+         ::close( fd );
+         return false;
+      }
+   }
+
+   mode_t old_umask = umask( 0 );
+   int fd2 = KDE_open( copyname,
+                       O_WRONLY | O_CREAT | O_EXCL, permissions | S_IWUSR );
+   umask( old_umask );
+
+   if ( fd2 < 0 )
+   {
+      ::close( fd );
+      return false;
+   }
+
+    char buffer[ 32*1024 ];
+
+    while( 1 )
+    {
+       int n = ::read( fd, buffer, 32*1024 );
+       if ( n == -1 )
+       {
+          if ( errno == EINTR )
+              continue;
+          ::close( fd );
+          ::close( fd2 );
+          return false;
+       }
+       if ( n == 0 )
+          break; // Finished
+
+       if ( write_all( fd2, buffer, n ) )
+       {
+          ::close( fd );
+          ::close( fd2 );
+          return false;
+       }
+    }
+
+    ::close( fd );
+
+    if ( ::close( fd2 ) )
+        return false;
+
+    // successfully created copy file
+    return true;
+}
+
+bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir )
+{
+    // get backup type from config, by default use "simple"
+    // get extension from config, by default use "~"
+    // get max number of backups from config, by default set to 10
+
+    KConfigGroup g( KGlobal::config(), "Backups" ); // look in the Backups section
+    QString type = g.readEntry( "Type", "simple" );
+    QString extension = g.readEntry( "Extension", "~" );
+    QString message = g.readEntry( "Message", "Automated KDE Commit" );
+    int maxnum = g.readEntry( "MaxBackups", 10 );
+    if ( type.toLower() == "numbered" ) {
+            return( numberedBackupFile( qFilename, backupDir, extension, maxnum ) );
+    } else if ( type.toLower() == "rcs" ) { 
+            return( rcsBackupFile( qFilename, backupDir, message ) );
+    } else {
+            return( simpleBackupFile( qFilename, backupDir, extension ) );
+    }
+}
+
+bool KSaveFile::simpleBackupFile( const QString& qFilename,
+                                  const QString& backupDir,
+                                  const QString& backupExtension )
 {
    QByteArray cFilename = QFile::encodeName(qFilename);
    const char *filename = cFilename.data();
 
    int fd = KDE_open( filename, O_RDONLY );
-   if (fd < 0)
+   if (fd < 0 )
+      return false;
+
+   KDE_struct_stat buff;
+   if ( KDE_fstat( fd, &buff ) < 0 )
+   {
+      ::close( fd );
+      return false;
+   }
+
+   QString sBackup;
+   if ( backupDir.isEmpty() )
+       sBackup = qFilename;
+   else
+   {
+       QString nameOnly;
+       int slash = qFilename.lastIndexOf('/');
+       if (slash < 0)
+	   nameOnly = qFilename;
+       else
+	   nameOnly = qFilename.mid(slash + 1);
+       sBackup = backupDir;
+       if ( backupDir[backupDir.length()-1] != '/' )
+           sBackup += '/';
+       sBackup += nameOnly;
+   }
+   sBackup += backupExtension;
+
+   return( copy_all( fd, &buff, sBackup ) );
+}
+
+bool KSaveFile::rcsBackupFile( const QString& qFilename,
+                               const QString& backupDir,
+                               const QString& backupMessage )
+{
+   QString qBackupFilename = qFilename;
+   qBackupFilename += QString::fromLatin1( ",v" );
+   // Check in the file unlocked with ci
+   QProcess ci;
+   ci.start("ci", QStringList() << "-u" << qFilename);
+   if ( !ci.waitForStarted() )
+      return false;
+   ci.write(backupMessage.toLatin1());
+   ci.write(".");
+   ci.closeWriteChannel();
+   if( !ci.waitForFinished() )
+      return false;
+   // Use rcs to unset strict locking
+   QProcess rcs;
+   rcs.start("rcs", QStringList() << "-U" << qBackupFilename);
+   if ( !rcs.waitForFinished() )
+      return false;
+   // co the current revision to restore permissions
+   QProcess co;
+   co.start("co", QStringList() << qBackupFilename);
+   if ( !co.waitForFinished() )
+      return false;
+   // TODO: Add moving of backup from/to backupDir 
+   return true;
+}
+
+bool KSaveFile::numberedBackupFile( const QString& qFilename,
+                                    const QString& backupDir,
+                                    const QString& backupExtension,
+                                    const uint maxBackups )
+{
+   QByteArray cFilename = QFile::encodeName( qFilename );
+   const char *filename = cFilename.data();
+
+   int fd = KDE_open( filename, O_RDONLY );
+   if ( fd < 0 )
       return false;
 
    KDE_struct_stat buff;
@@ -177,74 +332,69 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
       return false;
    }
 
-   QByteArray cBackup;
+   QString sBackup;
    if ( backupDir.isEmpty() )
-       cBackup = cFilename;
+       sBackup = qFilename;
    else
    {
-       QByteArray nameOnly;
-       int slash = cFilename.lastIndexOf('/');
-       if (slash < 0)
-	   nameOnly = cFilename;
+       QString nameOnly;
+       int slash = qFilename.lastIndexOf( '/' );
+       if ( slash < 0 )
+	   nameOnly = qFilename;
        else
-	   nameOnly = cFilename.mid(slash + 1);
-       cBackup = QFile::encodeName(backupDir);
+	   nameOnly = qFilename.mid( slash + 1 );
+       sBackup = backupDir;
        if ( backupDir[backupDir.length()-1] != '/' )
-           cBackup += '/';
-       cBackup += nameOnly;
-   }
-   cBackup += QFile::encodeName(backupExtension);
-   const char *backup = cBackup.data();
-   int permissions = buff.st_mode & 07777;
-
-   if ( KDE_stat( backup, &buff) == 0)
-   {
-      if ( unlink( backup ) != 0 )
-      {
-         ::close(fd);
-         return false;
-      }
+           sBackup += '/';
+       sBackup += nameOnly;
    }
 
-   mode_t old_umask = umask(0);
-   int fd2 = KDE_open( backup, O_WRONLY | O_CREAT | O_EXCL, permissions | S_IWUSR);
-   umask(old_umask);
+   // The backup file name template.
+   QString sTemplate = sBackup + "." + "%1" + backupExtension;
 
-   if ( fd2 < 0 )
-   {
-      ::close(fd);
-      return false;
-   }
+   // First, search backupDir for numbered backup files to remove.
+   // Remove all with number 'maxBackups' and greater.
+   QDir d( backupDir );
+   d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
+   QStringList nameFilters = QStringList( sTemplate.arg( "*" ) );
+   d.setNameFilters( nameFilters );
+   d.setSorting( QDir::Name );
 
-    char buffer[ 32*1024 ];
+   QFileInfoList list = d.entryInfoList();
 
-    while( 1 )
-    {
-       int n = ::read( fd, buffer, 32*1024 );
-       if (n == -1)
-       {
-          if (errno == EINTR)
-              continue;
-          ::close(fd);
-          ::close(fd2);
-          return false;
+   uint maxBackupFound = 0;
+   for ( int i=0; i<list.size(); ++i ) {
+       QFileInfo fi = list.at( i );
+       if ( fi.fileName().endsWith( backupExtension ) ) {
+           // sTemp holds the file name, without the ending backupExtension
+           QString sTemp = fi.fileName();
+           sTemp.truncate( fi.fileName().length()-backupExtension.length() );
+           // compute the backup number
+           int idex = sTemp.lastIndexOf( "." );
+           if ( idex > 0 ) {
+               bool ok;
+               uint num = sTemp.mid( idex+1 ).toUInt( &ok );
+               if ( ok ) {
+                   if ( num >= maxBackups ) {
+                       unlink( QFile::encodeName( fi.fileName() ) );
+                   } else {
+                       maxBackupFound = qMax( maxBackupFound, num );
+                   }
+               }
+           }
        }
-       if (n == 0)
-          break; // Finished
+   }
 
-       if (write_all( fd2, buffer, n))
-       {
-          ::close(fd);
-          ::close(fd2);
-          return false;
-       }
-    }
+   // Next, rename max-1 to max, max-2 to max-1, etc.
+   QString to=sTemplate.arg( maxBackupFound+1 );
+   for ( int i=maxBackupFound; i>0; i-- ) {
+       QString from = sTemplate.arg( i );
+       KDE_rename( QFile::encodeName( from ), QFile::encodeName( to ) );
+       to = from;
+   }
 
-    ::close( fd );
-
-    if (::close(fd2))
-        return false;
-    return true;
+   // Finally create most recent backup by copying the file to backup number 1.
+   return( copy_all( fd, &buff, sTemplate.arg( 1 ) ) );
 }
 
 int KSaveFile::status() const

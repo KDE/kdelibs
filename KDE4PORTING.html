@@ -266,6 +266,15 @@ Desktop Entry Spec</a>
 <li>This class has been removed.  Use QRegExp instead</li>
 </ul>
 
+<H4>KSaveFile</H4>
+<ul>
+<li>KSaveFile has been modified from its KDE 3.x behavior to allow for new backup methods:</li>
+<li>KSaveFile::backupFile() will use the backup behvior specified in KConfig.</li>
+<li>KSaveFile::simpleBackupFile() will emulate the KDE 3.x behavior</li>
+<li>KSaveFile::numberedBackupFile() will create a numbered set of backup files (default: 10)</li>
+<li>KSaveFile::rcsBackupFile() will use rcs to maintain the backup file</li>
+</ul>
+
 <H4>KShortcut</H4>
 <ul>
 <li>Is being phased out.  A K3Shortcut class is available.  Watch here for more info.</li>

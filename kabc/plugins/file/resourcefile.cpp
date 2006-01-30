@@ -248,7 +248,7 @@ bool ResourceFile::save( Ticket * )
 
   // create backup file
   QString extension = "_" + QString::number( QDate::currentDate().dayOfWeek() );
-  (void) KSaveFile::backupFile( mFileName, QString() /*directory*/,
+  (void) KSaveFile::simpleBackupFile( mFileName, QString() /*directory*/,
                                 extension );
 
   mDirWatch.stopScan();

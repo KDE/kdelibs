@@ -31,7 +31,7 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	kxerrorhandlertest startserviceby kglobaltest ktimezonestest \
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest klibloadertest \
 	kcompletiontest klockfiletest ktempdirtest ksharedptrtest kfiltertest \
-	kdatetimetest
+	kdatetimetest ksavefiletest
 
 # TODO kurltest4 when it works
 
@@ -100,3 +100,4 @@ ktempdirtest_SOURCES = ktempdirtest.cpp
 ksharedptrtest_SOURCES = ksharedptrtest.cpp
 kfiltertest_SOURCES = kfiltertest.cpp
 kdatetimetest_SOURCES = kdatetimetest.cpp
+ksavefiletest_SOURCES = ksavefiletest.cpp
