@@ -72,9 +72,15 @@ class HashMap {
  public:
     typedef typename ImplType::iterator iterator;
     typedef typename ImplType::const_iterator const_iterator;
-
+#ifdef _MSC_VER
+	HashMap()
+	{
+		ValueType vt;
+		extractFirst( vt );	
+	}
+#else
     HashMap() {}
-
+#endif
     int size() const;
     int capacity() const;
     bool isEmpty() const;

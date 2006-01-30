@@ -40,6 +40,20 @@
 
 namespace KJS {
 
+// MSVC can't export a class which is not fully implemented, so do this here
+#ifdef _MSC_VER
+ValueImp::ValueImp(const ValueImp&)
+{
+  fprintf(stderr,"ValueImp::ValueImp(const ValueImp&) was called");
+}
+
+ValueImp& ValueImp::operator=(const ValueImp&)
+{
+  fprintf(stderr,"ValueImp& ValueImp::operator=(const ValueImp&) was called");
+  return *this;
+}
+#endif
+
 AllocatedValueImp *ConstantValues::undefined = NULL;
 AllocatedValueImp *ConstantValues::null = NULL;
 AllocatedValueImp *ConstantValues::jsTrue = NULL;

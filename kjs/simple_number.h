@@ -32,7 +32,7 @@
 
 // Workaround for a bug in GCC library headers.
 // We'd prefer to just use math.h.
-#if !defined(WIN32)
+#if !defined(_WIN32) && !defined(_WIN64)
 #include <cmath>
 using std::isfinite;
 using std::isinf;
