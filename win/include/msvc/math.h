@@ -128,7 +128,7 @@ __inline long double nearbyintl(long double x)
 #include <../include/math.h>
 
 // convenience function to avoid useless casts from int to whatever
-__inline long double log(int x)
+static __inline long double log(int x)
 {
 	return logl((double)x);	
 }
