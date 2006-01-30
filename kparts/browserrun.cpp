@@ -446,10 +446,8 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
      * error = int kio error code, errText = QString error text from kio
      * The sub-url is the URL that we were trying to open.
      */
-    QString errText( errorText );
-    errText.replace( '#', "%23" ); // a # in the error string would really muck things up...
     KUrl newURL(QString("error:/?error=%1&errText=%2")
-                .arg( error ).arg( errText ), 106 );
+                .arg( error ).arg( KUrl::encode_string( errorText ) ), 106 );
     m_strURL.setPass( QString() ); // don't put the password in the error URL
 
     KUrl::List lst;
