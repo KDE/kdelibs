@@ -45,7 +45,7 @@ void NotifyByPopup::notify( int id, KNotifyConfig * config )
 
 	const QString &appname=config->appname;
 	
-	KPassivePopup *pop = new KPassivePopup( config->winId, 0, 0 );
+	KPassivePopup *pop = new KPassivePopup( 0, config->winId, 0 );
 	
 	KConfigGroup globalgroup( &config->eventsfile, "Global" );
 	QString iconName = globalgroup.readEntry( "IconName", appname );
