@@ -23,6 +23,7 @@ def detect(lenv, dest):
 	content += CheckAndWrite( conf, 'dirent.h' )
 	content += CheckAndWrite( conf, 'dl.h' )
 	content += CheckAndWrite( conf, 'dlfcn.h' )
+	content += CheckAndWrite( conf, 'errno.h' )
 	content += CheckAndWrite( conf, 'float.h' )
 	content += CheckAndWrite( conf, 'fstab.h' )
 	content += CheckAndWrite( conf, 'ieeefp.h' )
