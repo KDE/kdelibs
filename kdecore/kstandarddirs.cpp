@@ -902,10 +902,26 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
     return exePaths;
 }
 
+QString getBundle( const QString& path, bool ignore=false )
+{
+    kdDebug() << "getBundle(" << path << ", " << ignore << ") called" << endl;
+    QFileInfo info;
+    QString bundle = path;
+    bundle += ".app/Contents/MacOS/" + bundle.section('/', -1);
+    info.setFile( bundle );
+    if ( info.exists() && ( ignore || info.isExecutable() )
+         && ( info.isFile() || info.isSymLink() ) ) {
+        kdDebug() << "getBundle(): returning " << bundle << endl;
+        return bundle;
+    }
+    return QString();
+}
 
 QString KStandardDirs::findExe( const QString& appname,
 				const QString& pstr, bool ignore)
 {
+    kdDebug() << "findExe(" << appname << ", pstr, " << ignore << ") called" << endl;
+
 #ifdef Q_WS_WIN
     QString real_appname = appname + ".exe";
 #else
@@ -916,39 +932,82 @@ QString KStandardDirs::findExe( const QString& appname,
     // absolute path ?
     if (!QDir::isRelativePath(real_appname))
     {
+        kdDebug() << "findExe(): absolute path given" << endl;
+#ifdef Q_WS_MAC
+        QString bundle = getBundle( real_appname, ignore );
+        if ( !bundle.isEmpty() ) {
+            kdDebug() << "findExe(): returning " << bundle << endl;
+            return bundle;
+        }
+#endif
         info.setFile( real_appname );
         if( info.exists() && ( ignore || info.isExecutable() )
             && info.isFile() ) {
+            kdDebug() << "indExe(): returning " << real_appname << endl;
             return real_appname;
         }
+        kdDebug() << "findExe(): failed, returning empty string" << endl;
         return QString();
     }
 
+    kdDebug() << "findExe(): relative path given" << endl;
     QString p = QString("%1/%2").arg(kfsstnd_defaultbindir()).arg(real_appname);
+
+#ifdef Q_WS_MAC
+    QString bundle = getBundle( p, ignore );
+    if ( !bundle.isEmpty() ) {
+        kdDebug() << "findExe(): returning " << bundle << endl;
+        return bundle;
+    }
+#endif
+
+#ifndef Q_WS_MAC // we're cooking $PATH, so we don't want to check this until checking the PATHs
     info.setFile( p );
     if( info.exists() && ( ignore || info.isExecutable() )
          && ( info.isFile() || info.isSymLink() )  ) {
+         kdDebug() << "findExe(): returning " << p << endl;
          return p;
     }
+#endif
 
+    kdDebug() << "findExe(): checking system paths" << endl;
     QStringList exePaths = systemPaths( pstr );
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
 	p = (*it) + "/";
 	p += real_appname;
 
+#ifdef Q_WS_MAC
+        QString bundle = getBundle( p, ignore );
+        if ( !bundle.isEmpty() ) {
+            kdDebug() << "findExe(): returning " << bundle << endl;
+            return bundle;
+        }
+#endif
+
 	// Check for executable in this tokenized path
 	info.setFile( p );
 
 	if( info.exists() && ( ignore || info.isExecutable() )
            && ( info.isFile() || info.isSymLink() )  ) {
+            kdDebug() << "findExe(): returning " << p << endl;
 	    return p;
 	}
     }
 
+#ifdef Q_WS_MAC // see $PATH cooking above, now it's time  :)
+    info.setFile( p );
+    if( info.exists() && ( ignore || info.isExecutable() )
+         && ( info.isFile() || info.isSymLink() )  ) {
+         kdDebug() << "findExe(): returning " << p << endl;
+         return p;
+    }
+#endif
+
     // If we reach here, the executable wasn't found.
     // So return empty string.
 
+    kdDebug() << "findExe(): failed, nothing matched" << endl;
     return QString();
 }
 
@@ -1322,7 +1381,11 @@ void KStandardDirs::addKDEDefaults()
     }
     else
     {
+#ifdef Q_WS_MACX
+       localKdeDir =  QDir::homePath() + "/Library/Preferences/KDE/";
+#else
        localKdeDir =  QDir::homePath() + "/.kde/";
+#endif
     }
 
     if (localKdeDir != "-/")
@@ -1366,7 +1429,11 @@ void KStandardDirs::addKDEDefaults()
     }
     else
     {
+#ifdef Q_WS_MACX
+       localXdgDir =  QDir::homePath() + "/Library/Preferences/XDG/";
+#else
        localXdgDir =  QDir::homePath() + "/.config/";
+#endif
     }
 
     localXdgDir = KShell::tildeExpand(localXdgDir);
