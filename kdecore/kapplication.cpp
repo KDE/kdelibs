@@ -1415,7 +1415,11 @@ void KApplication::removeKipcEventMask(int id)
 void KApplication::applyGUIStyle()
 {
     KConfigGroup pConfig (KGlobal::config(), "General");
+#ifdef Q_WS_MACX
+    QString defaultStyle = "macintosh";
+#else
     QString defaultStyle = "plastique";// = KStyle::defaultStyle(); ### wait for KStyle4
+#endif
     QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 
     if (d->overrideStyle.isEmpty()) {
