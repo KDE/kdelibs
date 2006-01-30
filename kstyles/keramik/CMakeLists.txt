@@ -24,7 +24,7 @@ colorutil.cpp
 )
 
 # this actually shouldn't be required, maybe current cmake cvs handles it correctly, Alex
-set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
+#set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
 
 kde4_automoc(${keramik_PART_SRCS})
 
