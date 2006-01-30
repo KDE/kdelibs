@@ -14,6 +14,12 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 find_package(KDE4 REQUIRED)
 find_package(Perl REQUIRED)
 
+# maybe it's a good idea to do this before the other checks ?
+if(WIN32)
+   add_subdirectory( win )
+endif(WIN32)
+
+
 find_package(ZLIB)
 find_package(BZip2)
 find_package(PNG)
