@@ -53,7 +53,7 @@ kde4_automoc(${meinproc_SRCS})
 kde4_add_executable(meinproc ${meinproc_SRCS})
 
 target_link_libraries(meinproc kio ${QT_AND_KDECORE_LIBS} ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY})
-set_target_properties(meinproc PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
+set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
 install_targets(/bin meinproc )
 
