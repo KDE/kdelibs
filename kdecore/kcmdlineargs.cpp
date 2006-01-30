@@ -526,6 +526,10 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
    {
       if (ignoreUnknown)
          return;
+#ifdef Q_WS_MACX
+		if (QString::fromLocal8Bit(_opt).startsWith("-psn_", Qt::CaseInsensitive))
+			return;
+#endif
       enable_i18n();
       usage( i18n("Unknown option '%1'.").arg(QString::fromLocal8Bit(_opt)));
    }
@@ -542,6 +546,10 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
       {
          if (ignoreUnknown)
             return;
+#ifdef Q_WS_MACX
+			if (QString::fromLocal8Bit(_opt).startsWith("-psn_", Qt::CaseInsensitive))
+				return;
+#endif
          enable_i18n();
          usage( i18n("Unknown option '%1'.").arg(QString::fromLocal8Bit(_opt)));
       }
