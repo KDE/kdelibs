@@ -19,31 +19,28 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qwidget.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qsize.h>
-#include <qevent.h>
-#include <qcheckbox.h>
-#include <qregexp.h>
-#include <qprogressbar.h>
-#include <q3ptrdict.h>
-#include <qapplication.h>
-#include <qstring.h>
+#include <sys/resource.h>
 
-#include <kglobal.h>
-// #include <kdebug.h>
-#include <klocale.h>
-// #include <kiconloader.h>
-#include <kmessagebox.h>
-// #include <kaboutdialog.h>
+#include <QApplication>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLineEdit>
+#include <QKeyEvent>
+#include <QProgressBar>
+#include <QRegExp>
+#include <QSize>
+#include <QString>
+#include <QWidget>
+
+#include <Q3PtrDict>
+
 #include <kconfig.h>
-// #include <kstandarddirs.h>
-// #include <kvbox.h>
-
-// #include <sys/time.h>
-// #include <sys/resource.h>
+#include <kglobal.h>
+#include <khbox.h>
+#include <kiconloader.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 
 #include "kpassworddialog.h"
 
