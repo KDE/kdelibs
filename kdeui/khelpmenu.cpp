@@ -33,16 +33,16 @@
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kbugreport.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <khbox.h>
-#include <khelpmenu.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kmessagebox.h>
 #include <kmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
 #include <ktoolinvocation.h>
+
+#include "khelpmenu.h"
 
 #include "config.h"
 #ifdef Q_WS_X11
@@ -229,10 +229,13 @@ void KHelpMenu::aboutApplication()
   {
     if( !d->mAboutApp )
     {
-      d->mAboutApp = new KDialogBase( QString(), // Caption is defined below
-				   KDialogBase::Yes, KDialogBase::Yes,
-				   KDialogBase::Yes, d->mParent, "about",
-				   false, true, KStdGuiItem::ok() );
+      d->mAboutApp = new KDialog( d->mParent, i18n("About %1").arg(kapp->caption()),
+                   KDialog::Yes, Qt::Dialog );
+      d->mAboutApp->setObjectName( "about" );
+      d->mAboutApp->enableButtonSeparator( true );
+      d->mAboutApp->setButtonText( KDialog::Yes, KStdGuiItem::ok().text() );
+      d->mAboutApp->setDefaultButton( KDialog::Yes );
+      d->mAboutApp->setEscapeButton( KDialog::Yes );
       connect( d->mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
 
       KHBox *hbox = new KHBox( d->mAboutApp );
@@ -246,8 +249,6 @@ void KHelpMenu::aboutApplication()
       label1->setPixmap( qApp->windowIcon().pixmap(size,size) );
       QLabel *label2 = new QLabel(hbox);
       label2->setText( d->mAboutAppText );
-
-      d->mAboutApp->setPlainCaption( i18n("About %1").arg(kapp->caption()) );
     }
     d->mAboutApp->show();
   }
