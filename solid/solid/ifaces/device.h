@@ -25,15 +25,10 @@
 #include <QString>
 #include <QMap>
 
+#include <kdehw/ifaces/capability.h>
+
 namespace KDEHW
 {
-    /**
-     * PropertyModified : A property value has changed in the device
-     * PropertyAdded : A new property has been added to the device
-     * PropertyRemoved : A property has been removed from the device
-     */
-    enum PropertyChange { PropertyModified, PropertyAdded, PropertyRemoved };
-
 namespace Ifaces
 {
     /**
@@ -48,7 +43,16 @@ namespace Ifaces
     class Device : public QObject
     {
         Q_OBJECT
+        Q_ENUMS( PropertyChange )
+
     public:
+        /**
+         * PropertyModified : A property value has changed in the device
+         * PropertyAdded : A new property has been added to the device
+         * PropertyRemoved : A property has been removed from the device
+         */
+        enum PropertyChange { PropertyModified, PropertyAdded, PropertyRemoved };
+
         /**
          * Constructs a Device
          */
@@ -57,7 +61,6 @@ namespace Ifaces
          * Destruct the Device object
          */
         virtual ~Device();
-
 
 
         /**
@@ -134,20 +137,28 @@ namespace Ifaces
 
         /**
          * Adds a capability to this device.
-         * FIXME: We shouldn't use a string here... we'll surely need a capability enum or something similar
          *
-         * @param capability the capability name
+         * @param capability the capability type
          * @returns true if the operation succeded, false otherwise
          */
-        virtual bool addCapability( const QString &capability );
+        virtual bool addCapability( const Capability::Type &capability );
 
         /**
          * Tests if a property exist.
          *
-         * @param key the property name
-         * @returns true if the property exists in this device, false otherwise
+         * @param capability the capability type
+         * @returns true if the capability is provided by this device, false otherwise
          */
-        virtual bool queryCapability( const QString &capability ) const = 0;
+        virtual bool queryCapability( const Capability::Type &capability ) const = 0;
+
+        /**
+         * Retrieves a specialized interface to interact with the device corresponding to
+         * a particular capability.
+         *
+         * @param capability the capability type
+         * @returns a pointer to the capability interfaces if it exists, 0 otherwise
+         */
+        virtual Capability *asCapability( const Capability::Type &capability ) = 0;
 
         /**
          * Locks a device, giving a reason for such a lock.

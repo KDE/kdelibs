@@ -40,7 +40,7 @@ public:
     virtual KDEHW::Ifaces::Device *createDevice( const QString &udi );
 
     virtual QStringList findDeviceStringMatch( const QString &key, const QString &value );
-    virtual QStringList findDeviceByCapability( const QString &capability );
+    virtual QStringList findDeviceByCapability( const KDEHW::Ifaces::Capability::Type &capability );
 
 
     FakeDevice *newDevice( const QString &udi );

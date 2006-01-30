@@ -4,7 +4,7 @@ lib_LTLIBRARIES  = libkdehwifaces.la
 libkdehwifaces_la_LIBADD = $(LIB_QTCORE)
 libkdehwifaces_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
 
-include_HEADERS = devicemanager.h device.h
+include_HEADERS = devicemanager.h device.h block.h storage.h cdrom.h volume.h opticaldisc.h
 
 METASOURCES = AUTO
 

@@ -22,7 +22,8 @@
 
 FakeDevice::FakeDevice(const QString &udi, FakeManager *manager)
     : Device(), m_manager( manager ), m_udi( udi ),
-      m_brokenDevice( false ), m_locked( false )
+      m_brokenDevice( false ), m_locked( false ),
+      m_processor( new FakeProcessor() )
 {
 
 }
@@ -61,9 +62,9 @@ bool FakeDevice::setProperty( const QString &key, const QVariant &value )
 {
     if ( m_brokenDevice ) return false;
 
-    KDEHW::PropertyChange change = KDEHW::PropertyModified;
+    Device::PropertyChange change = Device::PropertyModified;
 
-    if ( !m_data.contains( key ) ) change = KDEHW::PropertyAdded;
+    if ( !m_data.contains( key ) ) change = Device::PropertyAdded;
 
     m_data[key] = value;
 
@@ -91,7 +92,7 @@ bool FakeDevice::removeProperty( const QString &key )
     if ( m_brokenDevice ) return false;
 
     m_data.remove( key );
-    emit propertyChanged( key, KDEHW::PropertyRemoved );
+    emit propertyChanged( key, Device::PropertyRemoved );
 
     return true;
 }
@@ -103,27 +104,38 @@ bool FakeDevice::propertyExists( const QString &key ) const
     return m_data.contains( key );
 }
 
-bool FakeDevice::addCapability( const QString &capability )
+bool FakeDevice::addCapability( const KDEHW::Ifaces::Capability::Type &capability )
 {
     if ( m_brokenDevice )
     {
         return false;
     }
 
-    if ( !m_capabilities.contains( capability ) )
+    if ( !( m_capabilities & capability ) )
     {
-        m_capabilities.append( capability );
+        m_capabilities|= capability;
         emit m_manager->newCapability( m_udi, capability );
     }
 
     return true;
 }
 
-bool FakeDevice::queryCapability( const QString &capability ) const
+bool FakeDevice::queryCapability( const KDEHW::Ifaces::Capability::Type &capability ) const
 {
     if ( m_brokenDevice ) return false;
 
-    return m_capabilities.contains( capability );
+    return m_capabilities & capability;
+}
+
+KDEHW::Ifaces::Capability *FakeDevice::asCapability( const KDEHW::Ifaces::Capability::Type &capability )
+{
+    if ( ( capability == KDEHW::Ifaces::Capability::Processor )
+      && queryCapability( capability ) )
+    {
+        return m_processor;
+    }
+
+    return 0;
 }
 
 bool FakeDevice::lock( const QString &reason )

@@ -24,8 +24,8 @@
 #include <kinstance.h>
 #include <kdebug.h>
 
-#include "devicemanager.h"
-#include "device.h"
+#include <kdehw/devicemanager.h>
+#include <kdehw/device.h>
 #include "fakemanager.h"
 #include "fakedevice.h"
 
@@ -50,8 +50,8 @@ void KdeHwTest::initTestCase()
     dev->setProperty( "info.product", "CD22U" );
     dev->setProperty( "info.vendor", "Sona Inc." );
     dev->setProperty( "info.parent", "/fake/computer" );
-    dev->addCapability( "storage" );
-    dev->addCapability( "storage.cdrom" );
+    dev->addCapability( KDEHW::Ifaces::Capability::Storage );
+    dev->addCapability( KDEHW::Ifaces::Capability::Cdrom );
 
     dev = fakeManager->newDevice( "/fake/volume_label_SOLIDMAN_THE_MOVIE" );
     dev->setParent( "/fake/storage_SONA_CD22U" );
@@ -60,8 +60,8 @@ void KdeHwTest::initTestCase()
     dev->setProperty( "volume.label", "SOLIDMAN_THE_MOVIE" );
     dev->setProperty( "volume.disc.type", "dvd_rom" );
     dev->setProperty( "volume.disc.is_videodvd", true );
-    dev->addCapability( "volume" );
-    dev->addCapability( "volume.disc" );
+    dev->addCapability( KDEHW::Ifaces::Capability::Volume );
+    dev->addCapability( KDEHW::Ifaces::Capability::OpticalDisc );
 
     dev = fakeManager->newDevice( "/fake/acpi_LID0" );
     dev->setParent( "/fake/computer" );
@@ -70,7 +70,7 @@ void KdeHwTest::initTestCase()
     dev->setProperty( "button.type", "lid" );
     dev->setProperty( "button.has_state", true );
     dev->setProperty( "button.state", false );
-    dev->addCapability( "button" );
+    //dev->addCapability( "button" );
 }
 
 void KdeHwTest::testAllDevices()
@@ -152,12 +152,12 @@ void KdeHwTest::testDeviceBasicFeatures()
 
 
     // Query capabilities
-    QCOMPARE( valid_dev.queryCapability( "storage" ), true );
-    QCOMPARE( valid_dev.queryCapability( "storage.cdrom" ), true );
-    QCOMPARE( valid_dev.queryCapability( "volume" ), false );
+    QCOMPARE( valid_dev.queryCapability( KDEHW::Ifaces::Capability::Storage ), true );
+    QCOMPARE( valid_dev.queryCapability( KDEHW::Ifaces::Capability::Cdrom ), true );
+    QCOMPARE( valid_dev.queryCapability( KDEHW::Ifaces::Capability::Volume ), false );
 
-    QCOMPARE( invalid_dev.queryCapability( QString() ), false );
-    QCOMPARE( invalid_dev.queryCapability( "storage" ), false );
+    QCOMPARE( invalid_dev.queryCapability( KDEHW::Ifaces::Capability::Unknown ), false );
+    QCOMPARE( invalid_dev.queryCapability( KDEHW::Ifaces::Capability::Storage ), false );
 
 
     // Query parent
@@ -220,8 +220,6 @@ void KdeHwTest::testDeviceLocking()
     QCOMPARE( device.unlock(), false );
 }
 
-
-
 void KdeHwTest::testManagerSignals()
 {
     KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
@@ -244,14 +242,14 @@ void KdeHwTest::testManagerSignals()
 
 
     // Now we add a capability to the newly created device, and spy the signal
-    QSignalSpy new_capability( &manager, SIGNAL( newCapability( QString, QString ) ) );
-    dev->addCapability( "processor" );
+    QSignalSpy new_capability( &manager, SIGNAL( newCapability( QString, int ) ) );
+    dev->addCapability( KDEHW::Ifaces::Capability::Processor );
     QCOMPARE( new_capability.count(), 1 );
     QCOMPARE( new_capability.at( 0 ).at( 0 ).toString(), QString( "/fake/acpi_CPU0" ) );
-    QCOMPARE( new_capability.at( 0 ).at( 1 ).toString(), QString( "processor" ) );
+    QCOMPARE( new_capability.at( 0 ).at( 1 ), QVariant( KDEHW::Ifaces::Capability::Processor ) );
 
     // We also check that the Device object noticed it
-    QVERIFY( cpu.queryCapability( "processor" ) );
+    QVERIFY( cpu.queryCapability( KDEHW::Ifaces::Capability::Processor ) );
 
 
 
@@ -274,8 +272,6 @@ void KdeHwTest::testDeviceSignals()
     FakeDevice *fake = fakeManager->findDevice( "/fake/acpi_LID0" );
     KDEHW::Device device = manager.findDevice( "/fake/acpi_LID0" );
 
-
-
     // We'll spy our button
     QSignalSpy property_changed( &device, SIGNAL( propertyChanged( QString, int ) ) );
     QSignalSpy condition_raised( &device, SIGNAL( conditionRaised( QString, QString ) ) );
@@ -285,22 +281,21 @@ void KdeHwTest::testDeviceSignals()
     fake->setProperty( "hactar", 42 ); // We add a property
     fake->removeProperty( "hactar" ); // We remove a property
 
-
-
     // 3 property changes occured in the device
     QCOMPARE( property_changed.count(), 3 );
 
     // First one is a "PropertyModified" for "button.state"
     QCOMPARE( property_changed.at( 0 ).at( 0 ).toString(), QString( "button.state" ) );
-    QCOMPARE( property_changed.at( 0 ).at( 1 ), QVariant( KDEHW::PropertyModified ) );
+    QCOMPARE( property_changed.at( 0 ).at( 1 ), QVariant( KDEHW::Device::PropertyModified ) );
+
 
     // Second one is a "PropertyAdded" for "hactar"
     QCOMPARE( property_changed.at( 1 ).at( 0 ).toString(), QString( "hactar" ) );
-    QCOMPARE( property_changed.at( 1 ).at( 1 ), QVariant( KDEHW::PropertyAdded ) );
+    QCOMPARE( property_changed.at( 1 ).at( 1 ), QVariant( KDEHW::Device::PropertyAdded ) );
 
     // Third one is a "PropertyRemoved" for "hactar"
     QCOMPARE( property_changed.at( 2 ).at( 0 ).toString(), QString( "hactar" ) );
-    QCOMPARE( property_changed.at( 2 ).at( 1 ), QVariant( KDEHW::PropertyRemoved ) );
+    QCOMPARE( property_changed.at( 2 ).at( 1 ), QVariant( KDEHW::Device::PropertyRemoved ) );
 
 
 
@@ -310,6 +305,23 @@ void KdeHwTest::testDeviceSignals()
     // It must be identical to the condition we raised by hand
     QCOMPARE( condition_raised.at( 0 ).at( 0 ).toString(), QString( "Lid Closed" ) );
     QCOMPARE( condition_raised.at( 0 ).at( 1 ).toString(), QString( "Why not?" ) );
+}
+
+void KdeHwTest::testDeviceCapabilities()
+{
+    FakeDevice *fake = fakeManager->newDevice( "/fake/acpi_CPU0" );
+    fake->addCapability( KDEHW::Ifaces::Capability::Processor );
+    QVERIFY( fake->asCapability( KDEHW::Ifaces::Capability::Processor ) != 0 );
+
+    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
+    KDEHW::Device cpu = manager.findDevice( "/fake/acpi_CPU0" );
+
+    KDEHW::Ifaces::Capability *iface = cpu.asCapability( KDEHW::Ifaces::Capability::Processor );
+    KDEHW::Ifaces::Processor *processor = cpu.as<KDEHW::Ifaces::Processor>();
+
+    QVERIFY( cpu.queryCapability( KDEHW::Ifaces::Capability::Processor ) );
+    QVERIFY( iface!=0 );
+    QCOMPARE( iface, processor );
 }
 
 #include "kdehwtest.moc"

@@ -73,7 +73,7 @@ QStringList FakeManager::findDeviceStringMatch( const QString &key, const QStrin
     return matches;
 }
 
-QStringList FakeManager::findDeviceByCapability( const QString &capability )
+QStringList FakeManager::findDeviceByCapability( const KDEHW::Ifaces::Capability::Type &capability )
 {
     QStringList matches;
 

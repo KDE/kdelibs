@@ -21,6 +21,9 @@
 #define FAKEDEVICE_H
 
 #include <kdehw/ifaces/device.h>
+#include <kdehw/ifaces/capability.h>
+
+#include "fakeprocessor.h"
 
 #include <QStringList>
 
@@ -49,8 +52,9 @@ public:
     virtual bool removeProperty( const QString &key );
     virtual bool propertyExists( const QString &key ) const;
 
-    virtual bool addCapability( const QString &capability );
-    virtual bool queryCapability( const QString &capability ) const;
+    virtual bool addCapability( const KDEHW::Ifaces::Capability::Type &capability );
+    virtual bool queryCapability( const KDEHW::Ifaces::Capability::Type &capability ) const;
+    virtual KDEHW::Ifaces::Capability *asCapability( const KDEHW::Ifaces::Capability::Type &capability );
 
     virtual bool lock(const QString &reason);
     virtual bool unlock();
@@ -66,11 +70,12 @@ private:
     FakeManager *m_manager;
     QString m_udi;
     QString m_parent;
-    QStringList m_capabilities;
+    KDEHW::Ifaces::Capability::Types m_capabilities;
     QMap<QString, QVariant> m_data;
     bool m_brokenDevice;
     bool m_locked;
     QString m_lockReason;
+    FakeProcessor *m_processor;
 };
 
 #endif

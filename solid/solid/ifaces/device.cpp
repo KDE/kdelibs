@@ -45,7 +45,7 @@ bool KDEHW::Ifaces::Device::removeProperty( const QString &/*key*/ )
     return false;
 }
 
-bool KDEHW::Ifaces::Device::addCapability( const QString &/*capability*/ )
+bool KDEHW::Ifaces::Device::addCapability( const Capability::Type &/*capability*/ )
 {
     return false;
 }

@@ -25,6 +25,8 @@
 #include <QString>
 #include <QStringList>
 
+#include <kdehw/ifaces/capability.h>
+
 namespace KDEHW
 {
 namespace Ifaces
@@ -90,9 +92,9 @@ namespace Ifaces
         virtual QStringList findDeviceStringMatch( const QString &key, const QString &value ) = 0;
 
         /**
-         * FIXME: Should use an enum instead of a string
+         * FIXME: Do we really want this here?
          */
-        virtual QStringList findDeviceByCapability( const QString &capability ) = 0;
+        virtual QStringList findDeviceByCapability( const Capability::Type &capability ) = 0;
 
 
 
@@ -113,12 +115,11 @@ namespace Ifaces
 
         /**
          * This signal is emitted when a new capability is detected on a device.
-         * FIXME: Surely requires an enum.
          *
          * @param udi the device identifier
          * @param capability the new capability detected
          */
-        void newCapability( const QString &udi, const QString &capability );
+        void newCapability( const QString &udi, int capability );
     };
 }
 }

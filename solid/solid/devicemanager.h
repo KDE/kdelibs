@@ -25,6 +25,8 @@
 
 #include <kstaticdeleter.h>
 
+#include <kdehw/ifaces/capability.h>
+
 namespace KDEHW
 {
     namespace Ifaces
@@ -33,6 +35,7 @@ namespace KDEHW
     }
     class Device;
     typedef QList<Device> DeviceList;
+    using Ifaces::Capability;
 
     /**
      * This class allow to query the underlying system to obtain information
@@ -131,12 +134,11 @@ namespace KDEHW
 
         /**
          * This signal is emitted when a new capability is detected in a device.
-         * FIXME: Use an enum or something similar also here?
          *
          * @param udi the UDI of the device getting a new capability
-         * @param capability the capability name
+         * @param capability the capability type
          */
-        void newCapability( const QString &udi, const QString &capability );
+        void newCapability( const QString &udi, int capability );
 
     private:
         DeviceManager();
@@ -146,7 +148,7 @@ namespace KDEHW
     private slots:
         void slotDeviceAdded( const QString &udi );
         void slotDeviceRemoved( const QString &udi );
-        void slotNewCapability( const QString &udi, const QString &capability );
+        void slotNewCapability( const QString &udi, int capability );
         void slotDestroyed( QObject *object );
 
     private:

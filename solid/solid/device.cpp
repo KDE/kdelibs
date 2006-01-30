@@ -32,12 +32,12 @@ namespace KDEHW
 }
 
 KDEHW::Device::Device()
-    : QObject(), d( new Private() )
+    : Ifaces::Device(), d( new Private() )
 {
 }
 
 KDEHW::Device::Device( const Device &device )
-    : QObject(), d( new Private() )
+    : Ifaces::Device(), d( new Private() )
 {
     *d = *(device.d );
 
@@ -53,7 +53,7 @@ KDEHW::Device::Device( const Device &device )
 }
 
 KDEHW::Device::Device( Ifaces::Device *data )
-    : QObject(), d( new Private() )
+    : Ifaces::Device(), d( new Private() )
 {
     d->data = data;
 
@@ -215,7 +215,7 @@ bool KDEHW::Device::propertyExists( const QString &key ) const
     }
 }
 
-bool KDEHW::Device::queryCapability( const QString &capability ) const
+bool KDEHW::Device::queryCapability( const Capability::Type &capability ) const
 {
     if ( d->data!=0 )
     {
@@ -224,6 +224,18 @@ bool KDEHW::Device::queryCapability( const QString &capability ) const
     else
     {
         return false;
+    }
+}
+
+KDEHW::Ifaces::Capability *KDEHW::Device::asCapability( const Capability::Type &capability )
+{
+    if ( d->data!=0 )
+    {
+        return d->data->asCapability( capability );
+    }
+    else
+    {
+        return 0;
     }
 }
 

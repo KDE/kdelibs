@@ -241,7 +241,7 @@ void KDEHW::DeviceManager::slotDeviceRemoved( const QString &udi )
     emit deviceRemoved( udi );
 }
 
-void KDEHW::DeviceManager::slotNewCapability( const QString &udi, const QString &capability )
+void KDEHW::DeviceManager::slotNewCapability( const QString &udi, int capability )
 {
     emit newCapability( udi, capability );
 }
@@ -287,8 +287,8 @@ void KDEHW::DeviceManager::Private::registerBackend( Ifaces::DeviceManager *newB
                       q, SLOT( slotDeviceAdded( QString ) ) );
     QObject::connect( backend, SIGNAL( deviceRemoved( QString ) ),
                       q, SLOT( slotDeviceRemoved( QString ) ) );
-    QObject::connect( backend, SIGNAL( newCapability( QString, QString ) ),
-                      q, SLOT( slotNewCapability( QString, QString ) ) );
+    QObject::connect( backend, SIGNAL( newCapability( QString, int ) ),
+                      q, SLOT( slotNewCapability( QString, int ) ) );
 }
 
 void KDEHW::DeviceManager::Private::unregisterBackend()

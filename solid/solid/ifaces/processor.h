@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,27 +17,27 @@
 
 */
 
-#ifndef KDEHWTEST_H
-#define KDEHWTEST_H
+#ifndef KDEHW_IFACES_PROCESSOR_H
+#define KDEHW_IFACES_PROCESSOR_H
 
-#include <qobject.h>
+#include <kdehw/ifaces/capability.h>
 
-class FakeManager;
-
-class KdeHwTest : public QObject
+namespace KDEHW
 {
-    Q_OBJECT
-private slots:
-    void initTestCase();
-    void testAllDevices();
-    void testDeviceExists();
-    void testDeviceBasicFeatures();
-    void testDeviceLocking();
-    void testManagerSignals();
-    void testDeviceSignals();
-    void testDeviceCapabilities();
-private:
-    FakeManager *fakeManager;
-};
+namespace Ifaces
+{
+    class Processor : virtual public Capability
+    {
+    public:
+        virtual ~Processor() {}
+
+        static Type type() { return Capability::Processor; }
+
+        virtual int number() const = 0;
+        virtual long maxSpeed() const = 0;
+        virtual bool canThrottle() const = 0;
+    };
+}
+}
 
 #endif

@@ -25,10 +25,12 @@
 #include <QMap>
 #include <QList>
 
-#include "ifaces/device.h"
+#include <kdehw/ifaces/device.h>
+#include <kdehw/ifaces/capability.h>
 
 namespace KDEHW
 {
+    using Ifaces::Capability;
     class DeviceManager;
 
     /**
@@ -48,7 +50,7 @@ namespace KDEHW
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class Device : public QObject
+    class Device : public Ifaces::Device
     {
         Q_OBJECT
     public:
@@ -103,7 +105,7 @@ namespace KDEHW
          *
          * @return the udi of the device
          */
-        QString udi() const;
+        virtual QString udi() const;
 
         /**
          * Retrieves the Universal Device Identifier (UDI)
@@ -111,7 +113,7 @@ namespace KDEHW
          *
          * @return the udi of the device's parent
          */
-        QString parentUdi() const;
+        virtual QString parentUdi() const;
 
 
         /**
@@ -130,14 +132,14 @@ namespace KDEHW
          *
          * @return the vendor name
          */
-        QString vendor() const;
+        virtual QString vendor() const;
 
         /**
          * Retrieves the name of the product corresponding to this device.
          *
          * @return the product name
          */
-        QString product() const;
+        virtual QString product() const;
 
 
 
@@ -154,7 +156,7 @@ namespace KDEHW
          * @param value the new value for the property
          * @return true if the change succeeded, false otherwise
          */
-        bool setProperty( const QString &key, const QVariant &value );
+        virtual bool setProperty( const QString &key, const QVariant &value );
 
         /**
          * Retrieves a property of the device.
@@ -168,7 +170,7 @@ namespace KDEHW
          * @return the actual value of the property, or QVariant() if the
          * property is unknown
          */
-        QVariant property( const QString &key ) const;
+        virtual QVariant property( const QString &key ) const;
 
         /**
          * Retrieves a key/value map of all the known properties for the device.
@@ -180,7 +182,7 @@ namespace KDEHW
          *
          * @return all the properties of the device
          */
-        QMap<QString, QVariant> allProperties() const;
+        virtual QMap<QString, QVariant> allProperties() const;
 
         /**
          * Tests if a property exist in the device.
@@ -194,19 +196,37 @@ namespace KDEHW
          * @return true if the property is available in the device, false
          * otherwise
          */
-        bool propertyExists( const QString &key ) const;
+        virtual bool propertyExists( const QString &key ) const;
 
         /**
          * Tests if a capability is available from the device.
-         * FIXME: At one point we'll want to switch to an enum or something similar,
-         * QString is not here to stay.
          *
          * @param capability the capability to query
          * @return true if the capability is available, false otherwise
          */
-        bool queryCapability( const QString &capability ) const;
+        virtual bool queryCapability( const Capability::Type &capability ) const;
 
+        /**
+         * Retrieves a specialized interface to interact with the device corresponding to
+         * a particular capability.
+         *
+         * @param capability the capability type
+         * @returns a pointer to the capability interface if it exists, 0 otherwise
+         */
+        virtual Ifaces::Capability *asCapability( const Capability::Type &capability );
 
+        /**
+         * Retrives a specialized interface to interact with the device corresponding
+         * to a given capability interface.
+         *
+         * @returns a pointer to the capability interface if it exists, 0 otherwise
+         */
+        template <class Cap> Cap *as()
+        {
+            Capability::Type type = Cap::type();
+            Ifaces::Capability *iface = asCapability( type );
+            return dynamic_cast<Cap*>( iface );
+        }
 
         /**
          * Acquires a lock on the device for the given reason.
@@ -214,46 +234,28 @@ namespace KDEHW
          * @param reason a message describing the reason for the lock
          * @return true if the lock has been successfully acquired, false otherwise
          */
-        bool lock(const QString &reason);
+        virtual bool lock(const QString &reason);
 
         /**
          * Releases a lock on the device.
          *
          * @return true if the lock has been successfully released
          */
-        bool unlock();
+        virtual bool unlock();
 
         /**
          * Tests if the device is locked.
          *
          * @return true if the device is locked, false otherwise
          */
-        bool isLocked() const;
+        virtual bool isLocked() const;
 
         /**
          * Retrieves the reason for a lock.
          *
          * @return the lock reason if the device is locked, QString() otherwise
          */
-        QString lockReason() const;
-
-    signals:
-        /**
-         * This signal is emitted when a property changed in the device.
-         *
-         * @param key the property key
-         * @param change the type of change that happened to the property,
-         * it's one of the type KDEHW::PropertyChange
-         */
-        void propertyChanged( const QString &key, int change );
-
-        /**
-         * This signal is emitted when a condition has been met in the device.
-         *
-         * @param condition the condition name
-         * @param reason the reason for the condition
-         */
-        void conditionRaised( const QString &condition, const QString &reason );
+        virtual QString lockReason() const;
 
     private slots:
         void slotPropertyChanged( const QString &key, int change );
