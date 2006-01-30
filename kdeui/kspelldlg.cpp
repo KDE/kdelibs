@@ -19,21 +19,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qstringlist.h>
-#include <qpushbutton.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qprogressbar.h>
+#include <QProgressBar>
 
 #include <kconfig.h>
 #include <klocale.h>
-#include <klistbox.h>
-#include <kcombobox.h>
-#include <klistview.h>
-#include <klineedit.h>
-#include <kpushbutton.h>
-#include <kbuttonbox.h>
-#include <kdebug.h>
 
 #include "ksconfig.h"
 #include "kspelldlg.h"
@@ -49,12 +38,14 @@ public:
 };
 
 KSpellDlg::KSpellDlg( QWidget * parent, bool _progressbar, bool _modal )
-  : KDialogBase(
-      parent, 0, _modal, i18n("Check Spelling"), Help|Cancel|User1,
-      Cancel, true, i18n("&Finished")
-    ),
-    d(0),progressbar( false )
+  : KDialog(parent, i18n("Check Spelling"), Help|Cancel|User1)
+    , d(0),progressbar( false )
 {
+  setModal( _modal );
+  setDefaultButton( Cancel );
+  enableButtonSeparator( true );
+  setButtonText( Cancel, i18n("&Finished") );
+
   KConfigGroup cg( KGlobal::config(),"KSpell" );
   kdDebug() << (cg.readEntry("KSpell_DoSpellChecking")) << endl;
   kdDebug() << "dospellchecking is " << cg.readEntry("KSpell_DoSpellChecking", false)  << endl;

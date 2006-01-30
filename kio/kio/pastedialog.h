@@ -19,7 +19,7 @@
 #ifndef PASTEDIALOG_H
 #define PASTEDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QComboBox;
 class KLineEdit;
@@ -32,7 +32,7 @@ namespace KIO {
  * Internal class used by paste.h. DO NOT USE.
  * @since 3.5
  */
-class PasteDialog : public KDialogBase
+class PasteDialog : public KDialog
 {
     Q_OBJECT
 public:

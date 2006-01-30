@@ -20,7 +20,7 @@
 #ifndef KSPELLDLG_H
 #define KSPELLDLG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QStringList;
 class QLabel;
@@ -46,7 +46,7 @@ enum KS_RESULT {
 /**
  * @deprecated, use kspell2 instead
  */
-class KDEUI_EXPORT_DEPRECATED KSpellDlg : public KDialogBase
+class KDEUI_EXPORT_DEPRECATED KSpellDlg : public KDialog
 {
   Q_OBJECT
 

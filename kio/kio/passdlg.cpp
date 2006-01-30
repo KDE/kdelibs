@@ -18,21 +18,19 @@
 
 #include "passdlg.h"
 
-#include <qapplication.h>
-#include <qcheckbox.h>
-
-#include <qlabel.h>
-#include <qlayout.h>
-#include <q3simplerichtext.h>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
 #include <QTextDocument>
+
+#include <Q3SimpleRichText>
 
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <klineedit.h>
 #include <klocale.h>
-#include <kstandarddirs.h>
-#include <kvbox.h>
+#include <khbox.h>
 
 using namespace KIO;
 
@@ -53,10 +51,12 @@ struct PasswordDialog::PasswordDialogPrivate
 };
 
 PasswordDialog::PasswordDialog( const QString& prompt, const QString& user,
-                                bool enableKeep, bool modal, QWidget* parent,
-                                const char* name )
-               :KDialogBase( parent, name, modal, i18n("Password"), Ok|Cancel, Ok, true),d(new PasswordDialogPrivate)
+                                bool enableKeep, bool modal, QWidget* parent )
+               :KDialog( parent, i18n("Password"), Ok|Cancel ),d(new PasswordDialogPrivate)
 {
+    setModal( modal );
+    enableButtonSeparator( true );
+    setDefaultButton( Ok );
     init ( prompt, user, enableKeep );
 }
 
@@ -68,7 +68,8 @@ PasswordDialog::~PasswordDialog()
 void PasswordDialog::init( const QString& prompt, const QString& user,
                            bool enableKeep  )
 {
-    QWidget *main = makeMainWidget();
+    QWidget *main = new QWidget;
+    setMainWidget( main );
 
     d->keep = false;
     d->nRow = 0;
@@ -363,6 +364,6 @@ int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep
  }
 
 void PasswordDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 #include "passdlg.moc"

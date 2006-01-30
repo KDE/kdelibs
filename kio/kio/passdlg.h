@@ -17,10 +17,10 @@
    Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_pass_dlg_h__
-#define __kio_pass_dlg_h__
+#ifndef kio_pass_dlg_h
+#define kio_pass_dlg_h
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QGridLayout;
 
@@ -33,7 +33,7 @@ namespace KIO {
  * instead of directly instantiating this dialog.
  * @short dialog for requesting login and password from the end user
  */
-class KIO_EXPORT PasswordDialog : public KDialogBase
+class KIO_EXPORT PasswordDialog : public KDialog
 {
     Q_OBJECT
 
@@ -46,11 +46,10 @@ public:
      * @param enableKeep    if true, shows checkbox that makes password persistent until KDE is shutdown.
      * @param modal         if true, the dialog will be modal (default:true).
      * @param parent        the parent widget (default:NULL).
-     * @param name          the dialog name (default:NULL).
      */
     PasswordDialog( const QString& prompt, const QString& user,
                     bool enableKeep = false, bool modal=true,
-                    QWidget* parent=0, const char* name=0 );
+                    QWidget* parent=0 );
 
     /**
      * Destructor

@@ -19,22 +19,27 @@
 #include "pastedialog.h"
 
 #include <klineedit.h>
-#include <kmimetype.h>
 #include <klocale.h>
 
-#include <qlayout.h>
-#include <qlabel.h>
-#include <qcombobox.h>
-#include <qapplication.h>
-#include <qclipboard.h>
+#include <QApplication>
+#include <QLabel>
+#include <QLayout>
+#include <QClipboard>
+#include <QComboBox>
 
 KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
                                const QString &value, const QStringList& items,
                                QWidget *parent,
                                bool clipboard )
-    : KDialogBase( parent, 0 /*name*/, true, caption, Ok|Cancel, Ok, true )
+    : KDialog( parent, caption, Ok|Cancel )
 {
-    QFrame *frame = makeMainWidget();
+    setModal( true );
+    enableButtonSeparator( true );
+    setDefaultButton( Ok );
+
+    QFrame *frame = new QFrame;
+    setMainWidget( frame );
+
     QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
     m_label = new QLabel( label, frame );

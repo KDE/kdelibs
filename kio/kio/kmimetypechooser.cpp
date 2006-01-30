@@ -27,11 +27,9 @@
 #include <krun.h>
 #include <ksycoca.h>
 
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <kvbox.h>
+#include <QLabel>
+#include <QLayout>
+#include <QPushButton>
 
 //BEGIN KMimeTypeChooserPrivate
 class KMimeTypeChooserPrivate
@@ -62,7 +60,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
   d->groups = groupsToShow;
   d->visuals = visuals;
 
-  setSpacing( KDialogBase::spacingHint() );
+  setSpacing( KDialog::spacingHint() );
 
   if ( !text.isEmpty() )
   {
@@ -252,8 +250,11 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QStringList &groupsToShow,
                          int visuals,
                          QWidget *parent )
-    : KDialogBase(parent, "", true, caption, Cancel|Ok, Ok)
+    : KDialog(parent, caption, Cancel|Ok)
 {
+  setModal( true );
+  setDefaultButton( Ok );
+
   m_chooser = new KMimeTypeChooser( text, selMimeTypes,
                                   defaultGroup, groupsToShow, visuals,
                                   this );
@@ -266,8 +267,11 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QStringList &selMimeTypes,
                          const QString &defaultGroup,
                          QWidget *parent )
-    : KDialogBase(parent, "", true, caption, Cancel|Ok, Ok)
+    : KDialog(parent, caption, Cancel|Ok)
 {
+  setModal( true );
+  setDefaultButton( Ok );
+
   m_chooser = new KMimeTypeChooser( text, selMimeTypes,
                                   defaultGroup, QStringList(),
                                   KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,

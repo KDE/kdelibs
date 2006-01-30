@@ -16,10 +16,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KMIMETYPE_CHOOSER_H_
-#define _KMIMETYPE_CHOOSER_H_
+#ifndef KMIMETYPE_CHOOSER_H
+#define KMIMETYPE_CHOOSER_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kvbox.h>
 
 class Q3ListViewItem;
@@ -120,7 +120,7 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
   *    QStringList list = QStringList::split( QRegExp("\\s*;\\s*"), leMimetypes->text() );
   *    KMimeTypeChooserDialog *d = new KMimeTypeChooserDialog( this, 0,
   *                  i18n("Select Mime Types"), text, list, "text" );
-  *    if ( d->exec() == KDialogBase::Accepted ) {
+  *    if ( d->exec() == KDialog::Accepted ) {
   *      leWildcards->setText( d->chooser()->patterns().join(";") );
   *      leMimetypes->setText( d->chooser()->mimeTypes().join(";") );
   *    }
@@ -128,7 +128,7 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
   *
   * @author Anders Lund (anders at alweb dk) dec 19, 2001
   */
-class KIO_EXPORT KMimeTypeChooserDialog : public KDialogBase
+class KIO_EXPORT KMimeTypeChooserDialog : public KDialog
 {
   public:
     /**
