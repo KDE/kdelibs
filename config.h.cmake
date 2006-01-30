@@ -457,7 +457,7 @@ unsigned long strlcpy(char*, const char*, unsigned long);
 #ifdef __cplusplus
 extern "C" {
 #endif
-void unsetenv (const char *);
+int unsetenv (const char *);
 #ifdef __cplusplus
 }
 #endif
