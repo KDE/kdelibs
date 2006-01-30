@@ -21,6 +21,8 @@
 #ifndef KPASSWORDDIALOG_H
 #define KPASSWORDDIALOG_H
 
+#include <QLineEdit>
+
 #include <kdialog.h>
 
 class QLabel;

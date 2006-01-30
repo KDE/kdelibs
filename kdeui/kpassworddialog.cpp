@@ -25,7 +25,6 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QLayout>
-#include <QLineEdit>
 #include <QKeyEvent>
 #include <QProgressBar>
 #include <QRegExp>
