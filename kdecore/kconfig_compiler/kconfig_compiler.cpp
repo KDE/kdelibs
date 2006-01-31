@@ -47,13 +47,7 @@ static void parseArgs(const QStringList &args, QString &directory, QString &file
     directory = ".";
 
     for (int i = 1; i < args.count(); ++i) {
-        if (args.at(i).startsWith("-d")) {
-            if (args.at(i).length() == 2) {
-                std::cerr << qPrintable(args.at(i)) << " needs an argument" << std::endl;
-                exit(1);
-            }
-            directory = args.at(i).mid(2);
-        } else if (args.at(i) == "--directory") {
+        if (args.at(i) == "-d" ||  args.at(i) == "--directory") {
             if (i + 1 > args.count()) {
                 std::cerr << qPrintable(args.at(i)) << " needs an argument" << std::endl;
                 exit(1);
