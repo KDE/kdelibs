@@ -51,5 +51,5 @@ def generate(env):
 		else:
 			env.write_lib_header( 'libbz2', have_lib, False, '', '#define HAVE_BZIP2_SUPPORT 1\n' )
 
-	opts.Save(optionFile, env)
+		opts.Save(optionFile, env)
 

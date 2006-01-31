@@ -2,54 +2,6 @@
 
 def detect(lenv,dest):
 	import os
-	lenv['CPPPATH'] = [ '/usr/include','/usr/local/include' ]
-	def Check_limits(context):
-		context.Message('Checking for limits.h...')
-		ret = conf.CheckHeader('limits.h')
-		context.Result(ret)
-		return ret
-	
-	def Check_locale_h(context):
-		context.Message('Checking for locale.h...')
-		ret = conf.CheckHeader('locale.h')
-		contact.Result(ret)
-		return ret
-
- 	def Check_errno_h(context):
- 	 	context.Message('Checking for errno.h...')
- 	 	ret = conf.CheckHeader('errno.h')
- 	 	context.Result(ret)
- 	 	return ret;
-
-	conf = lenv.Configure( custom_tests = {
-		 'Check_limits' : Check_limits ,
-		 'Check_locale_h' : Check_locale_h ,
-		 'Check_errno_h' : Check_errno_h
-		 } )
-	dest.write('/* Define to 1 if you have the <limits.h> header file. */\n')
-	if conf.Check_limits:
-		print 'Checking for limits.h...yes'
-		dest.write('#define HAVE_LIMITS_H 1\n')
-	else:
-		print 'Checking for limits.h...no'
-		dest.write('#undef HAVE_LIMITS_H\n')
-		
-	dest.write('/* Define to 1 if you have the <locale.h> header file */\n')
-	if conf.Check_locale_h:
-		print 'Checking for locale.h...yes'
-		dest.write('#define HAVE_LOCALE_H 1\n')
-	else:
-		print 'Checking for locale.h...no'
-		dest.write('#undef HAVE_LOCALE_H\n')
-	
-	if conf.Check_errno_h:
-		print 'Checking for errno.h...yes'
-		dest.write('#define HAVE_ERRNO_H 1\n')
-	else:
-		print 'Checking for errno.h...no'
-		dest.write('#undef HAVE_ERRNO_H\n')
-
-	lenv = conf.Finish()
 
 	#### Don't fix the stuff below by hand, write proper tests in lowlevel.py
 	content="""
@@ -73,12 +25,6 @@ def detect(lenv,dest):
 /* Define to 1 if you have `alloca', as a function or macro. */
 #define HAVE_ALLOCA 1
 
-/* Define to 1 if you have the <alloca.h> header file. */
-#define HAVE_ALLOCA_H 1
-
-/* Define to 1 if you have the <arpa/nameser8_compat.h> header file. */
-/* #undef HAVE_ARPA_NAMESER8_COMPAT_H */
-
 /* Define if execinfo.h exists and defines backtrace (GLIBC >= 2.1) */
 #define HAVE_BACKTRACE 1
 
@@ -91,20 +37,11 @@ def detect(lenv,dest):
 /* Define if getaddrinfo is broken and should be replaced */
 /* #undef HAVE_BROKEN_GETADDRINFO */
 
-/* Define to 1 if you have the <Carbon/Carbon.h> header file. */
-/* #undef HAVE_CARBON_CARBON_H */
-
 /* Define if you have the CoreAudio API */
 /* #undef HAVE_COREAUDIO */
 
-/* Define to 1 if you have the <crt_externs.h> header file. */
-/* #undef HAVE_CRT_EXTERNS_H */
-
 /* Defines if your system has the crypt function */
 #define HAVE_CRYPT 1
-
-/* Define to 1 if you have the <ctype.h> header file. */
-#define HAVE_CTYPE_H 1
 
 /* Defines if you have CUPS (Common UNIX Printing System) */
 #define HAVE_CUPS 1
@@ -116,24 +53,12 @@ def detect(lenv,dest):
    you don't. */
 #define HAVE_DECL_GETSERVBYNAME_R 1
 
-/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
-   */
-#define HAVE_DIRENT_H 1
 
 /* Define if you have the GNU dld library. */
 /* #undef HAVE_DLD */
 
-/* Define to 1 if you have the <dld.h> header file. */
-/* #undef HAVE_DLD_H */
-
 /* Define to 1 if you have the `dlerror' function. */
 #define HAVE_DLERROR 1
-
-/* Define to 1 if you have the <dlfcn.h> header file. */
-#define HAVE_DLFCN_H 1
-
-/* Define to 1 if you have the <dl.h> header file. */
-/* #undef HAVE_DL_H */
 
 /* Define if your system has Linux Directory Notification */
 /* #undef HAVE_DNOTIFY */
@@ -147,14 +72,8 @@ def detect(lenv,dest):
 /* Define is posix_fadvise is supported */
 #define HAVE_FADVISE 1
 
-/* Define to 1 if you have the <float.h> header file. */
-#define HAVE_FLOAT_H 1
-
 /* Define to 1 if you have the `freeaddrinfo' function. */
 #define HAVE_FREEADDRINFO 1
-
-/* Define to 1 if you have the <fstab.h> header file. */
-#define HAVE_FSTAB_H 1
 
 /* Define if you have finite */
 #define HAVE_FUNC_FINITE 1
@@ -228,9 +147,6 @@ def detect(lenv,dest):
 /* Define to 1 if you have the `grantpt' function. */
 #define HAVE_GRANTPT 1
 
-/* Define to 1 if you have the <ieeefp.h> header file. */
-/* #undef HAVE_IEEEFP_H */
-
 /* Define to 1 if you have the `if_nametoindex' function. */
 #define HAVE_IF_NAMETOINDEX 1
 
@@ -242,10 +158,6 @@ def detect(lenv,dest):
 
 /* Define to 1 if you have the `inet_pton' function. */
 #define HAVE_INET_PTON 1
-
-
-/* Define to 1 if you have the <inttypes.h> header file. */
-#define HAVE_INTTYPES_H 1
 
 /* Define if you have jasper */
 /* #undef HAVE_JASPER */
@@ -271,20 +183,11 @@ def detect(lenv,dest):
 /* Define if you have libtiff */
 #define HAVE_LIBTIFF 1
 
-/* Define to 1 if you have the <libutil.h> header file. */
-/* #undef HAVE_LIBUTIL_H */
-
 /* Define if you have LUA > 5.0 */
 /* #undef HAVE_LUA */
 
-/* Define to 1 if you have the <malloc.h> header file. */
-#define HAVE_MALLOC_H 1
-
 /* Define to 1 if you have the `memcpy' function. */
 #define HAVE_MEMCPY 1
-
-/* Define to 1 if you have the <memory.h> header file. */
-#define HAVE_MEMORY_H 1
 
 /* Define if you want MIT-SHM support */
 #define HAVE_MITSHM 1
@@ -292,23 +195,8 @@ def detect(lenv,dest):
 /* Define to 1 if you have a working `mmap' system call. */
 #define HAVE_MMAP 1
 
-/* Define to 1 if you have the <mntent.h> header file. */
-#define HAVE_MNTENT_H 1
-
 /* Define to 1 if you have the `munmap' function. */
 #define HAVE_MUNMAP 1
-
-/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
-/* #undef HAVE_NDIR_H */
-
-/* Define to 1 if you have the <netinet/in.h> header file. */
-#define HAVE_NETINET_IN_H 1
-
-/* Define to 1 if you have the <net/if.h> header file. */
-#define HAVE_NET_IF_H 1
-
-/* Define to 1 if you have the <nl_types.h> header file. */
-#define HAVE_NL_TYPES_H 1
 
 /* Define if your system needs _NSGetEnviron to set up the environment */
 /* #undef HAVE_NSGETENVIRON */
@@ -318,12 +206,6 @@ def detect(lenv,dest):
 
 /* Define to 1 if you have the `openpty' function. */
 #define HAVE_OPENPTY 1
-
-/* Define to 1 if you have the <paths.h> header file. */
-#define HAVE_PATHS_H 1
-
-/* Define if you have pcreposix libraries and header files. */
-#define HAVE_PCREPOSIX 1
 
 /* Define to 1 if you have the `poll' function. */
 #define HAVE_POLL 1
@@ -336,9 +218,6 @@ def detect(lenv,dest):
 
 /* Define to 1 if you have the `ptsname' function. */
 #define HAVE_PTSNAME 1
-
-/* Define to 1 if you have the <pty.h> header file. */
-#define HAVE_PTY_H 1
 
 /* Define to 1 if you have the `putenv' function. */
 #define HAVE_PUTENV 1
@@ -400,15 +279,6 @@ def detect(lenv,dest):
 /* If we are going to use OpenSSL */
 #define HAVE_SSL 1
 
-/* Define to 1 if you have the <stdint.h> header file. */
-#define HAVE_STDINT_H 1
-
-/* Define to 1 if you have the <stdio.h> header file. */
-#define HAVE_STDIO_H 1
-
-/* Define to 1 if you have the <stdlib.h> header file. */
-#define HAVE_STDLIB_H 1
-
 /* Define to 1 if you have the `stpcpy' function. */
 #define HAVE_STPCPY 1
 
@@ -423,12 +293,6 @@ def detect(lenv,dest):
 
 /* Define to 1 if you have the `strfmon' function. */
 #define HAVE_STRFMON 1
-
-/* Define to 1 if you have the <strings.h> header file. */
-#define HAVE_STRINGS_H 1
-
-/* Define to 1 if you have the <string.h> header file. */
-#define HAVE_STRING_H 1
 
 /* Define to 1 if you have the `strrchr' function. */
 #define HAVE_STRRCHR 1
@@ -451,70 +315,8 @@ def detect(lenv,dest):
 /* Define if struct ucred is present from sys/socket.h */
 #define HAVE_STRUCT_UCRED 1
 
-/* Define to 1 if you have the <sysent.h> header file. */
-/* #undef HAVE_SYSENT_H */
-
-/* Define to 1 if you have the <sys/bitypes.h> header file. */
-#define HAVE_SYS_BITYPES_H 1
-
-/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
-   */
-/* #undef HAVE_SYS_DIR_H */
-
-/* Define to 1 if you have the <sys/filio.h> header file. */
-/* #undef HAVE_SYS_FILIO_H */
-
-/* Define to 1 if you have the <sys/mman.h> header file. */
-#define HAVE_SYS_MMAN_H 1
-
-/* Define to 1 if you have the <sys/mntent.h> header file. */
-/* #undef HAVE_SYS_MNTENT_H */
-
-/* Define to 1 if you have the <sys/mnttab.h> header file. */
-/* #undef HAVE_SYS_MNTTAB_H */
-
-/* Define to 1 if you have the <sys/mount.h> header file. */
-#define HAVE_SYS_MOUNT_H 1
-
-/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
-   */
-/* #undef HAVE_SYS_NDIR_H */
-
-/* Define to 1 if you have the <sys/param.h> header file. */
-#define HAVE_SYS_PARAM_H 1
-
-/* Define to 1 if you have the <sys/select.h> header file. */
-#define HAVE_SYS_SELECT_H 1
-
-/* Define to 1 if you have the <sys/soundcard.h> header file. */
-#define HAVE_SYS_SOUNDCARD_H 1
-
-/* Define to 1 if you have the <sys/stat.h> header file. */
-#define HAVE_SYS_STAT_H 1
-
-/* Define to 1 if you have the <sys/stropts.h> header file. */
-#define HAVE_SYS_STROPTS_H 1
-
-/* Define to 1 if you have the <sys/time.h> header file. */
-#define HAVE_SYS_TIME_H 1
-
-/* Define to 1 if you have the <sys/types.h> header file. */
-#define HAVE_SYS_TYPES_H 1
-
-/* Define to 1 if you have the <sys/ucred.h> header file. */
-/* #undef HAVE_SYS_UCRED_H */
-
 /* Define if sys/stat.h declares S_ISSOCK. */
 #define HAVE_S_ISSOCK 1
-
-/* Define to 1 if you have the <termios.h> header file. */
-#define HAVE_TERMIOS_H 1
-
-/* Define to 1 if you have the <termio.h> header file. */
-#define HAVE_TERMIO_H 1
-
-/* Define to 1 if you have the <unistd.h> header file. */
-#define HAVE_UNISTD_H 1
 
 /* Define to 1 if you have the `unlockpt' function. */
 #define HAVE_UNLOCKPT 1
@@ -522,26 +324,11 @@ def detect(lenv,dest):
 /* Define if you have the utempter helper for utmp managment */
 #define HAVE_UTEMPTER 1
 
-/* Define to 1 if you have the <util.h> header file. */
-/* #undef HAVE_UTIL_H */
-
-/* Define to 1 if you have the <values.h> header file. */
-#define HAVE_VALUES_H 1
-
 /* Define, to enable volume management (Solaris 2.x), if you have -lvolmgt */
 /* #undef HAVE_VOLMGT */
 
 /* Define to 1 if you have the `vsnprintf' function. */
 #define HAVE_VSNPRINTF 1
-
-/* Define to 1 if you have the <X11/extensions/shape.h> header file. */
-#define HAVE_X11_EXTENSIONS_SHAPE_H 1
-
-/* Define to 1 if you have the <X11/extensions/XShm.h> header file. */
-#define HAVE_X11_EXTENSIONS_XSHM_H 1
-
-/* Define to 1 if you have the <X11/ICE/ICElib.h> header file. */
-#define HAVE_X11_ICE_ICELIB_H 1
 
 /* Define to 1 if the assembler supports 3DNOW instructions. */
 #define HAVE_X86_3DNOW 1

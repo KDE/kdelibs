@@ -48,5 +48,5 @@ def generate(env):
 
 		env.write_lib_header( 'libjpeg', have_lib, False )
 
-	opts.Save(optionFile, env)
+		opts.Save(optionFile, env)
 	
