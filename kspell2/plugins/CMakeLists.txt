@@ -1,12 +1,14 @@
 kde4_header()
 
-find_package(ASPELL)
+# you can find optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
+# it is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
+# so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
+optional_find_package(ASPELL)
 if (ASPELL_FOUND)
    add_subdirectory( aspell )
 endif (ASPELL_FOUND)
 
- 
-find_package(HSPELL)
+optional_find_package(HSPELL)
 if (HSPELL_FOUND)
    add_subdirectory( hspell )
 endif (HSPELL_FOUND)
