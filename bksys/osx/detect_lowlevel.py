@@ -3,62 +3,6 @@
 def detect(env,dest):
 	import os, re
 
-	headers = [
-		'alloca.h',
-		'arpa/nameser8_compat.h',
-		'Carbon/Carbon.h',
-		'CoreAudio/CoreAudio.h',
-		'cups/cups.h',
-		'crt_externs.h',
-		'ctype.h',
-		'dirent.h',
-		'dl.h',
-		'dlfcn.h',
-		'float.h',
-		'fstab.h',
-		'ieeefp.h',
-		'inttypes.h',
-		'libutil.h',
-		'limits.h',
-		'locale.h',
-		'malloc.h',
-		'memory.h',
-		'mntent.h',
-		'netinet/in.h',
-		'nl_types.h',
-		'pam/pam_appl.h',
-		'paths.h',
-		'pty.h',
-		'security/pam_appl.h',
-		'stdint.h',
-		'stdio.h',
-		'stdlib.h',
-		'string.h',
-		'strings.h',
-		'sysent.h',
-		'sys/bitypes.h',
-		'sys/filio.h',
-		'sys/mount.h',
-		'sys/mnttab.h',
-		'sys/mntent.h',
-		'sys/param.h',
-		'sys/select.h',
-		'sys/soundcard.h',
-		'sys/stat.h',
-		'sys/stropts.h',
-		'sys/time.h',
-		'sys/types.h',
-		'sys/ucred.h',
-		'termio.h',
-		'termios.h',
-		'unistd.h',
-		'util.h',
-		'values.h',
-		'X11/extensions/shape.h',
-		'X11/extensions/Xshm.h',
-		'X11/ICE/icelib.h',
-	]
-
 	functions = [
 		'_getpty',
 		'_IceTransNoListen',
@@ -104,18 +48,11 @@ def detect(env,dest):
 	content = ""
 
 	conf = env.Configure();
-	define_regex = re.compile("(\\.|\\/)")
-
-	for header in headers:
-		header_define = "HAVE_" + define_regex.sub('_', header).upper()
-		content += define_line(header_define, conf.CheckHeader(header))
+	define_regex = re.compile("(\\.|\\/|\\\\)")
 
 	for function in functions:
 		function_define = "HAVE_" + define_regex.sub('_', function).upper()
 		content += define_line(function_define, conf.CheckFunc(function))
-
-	content += define_line("HAVE_SYS_MMAN_H", conf.CheckHeader(['sys/types.h','sys/mman.h']))
-	content += define_line("HAVE_NET_IF_H", conf.CheckHeader(['sys/types.h','sys/socket.h','net/if.h']))
 
 	env = conf.Finish();
 
@@ -144,7 +81,6 @@ def detect(env,dest):
 #define HAVE_MITSHM 1
 #define HAVE_MMAP 1
 #define HAVE_MUNMAP 1
-#define HAVE_PCREPOSIX 1
 #define HAVE_PRELOADED_SYMBOLS 1
 #define HAVE_PUTENV 1
 #define HAVE_RES_INIT 1

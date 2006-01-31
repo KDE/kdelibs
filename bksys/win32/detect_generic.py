@@ -40,12 +40,17 @@ def detect(env):
 	if env['CC'] == 'cl':
 		# avoid some compiler warnings...
 		env.AppendUnique( GENCCFLAGS = ['-wd4619','-wd4820','-wd4996','-D_CRT_SECURE_NO_DEPRECATE','-DWIN32_LEAN_AND_MEAN'] )
-	
-	if os.environ.has_key('CXXFLAGS'):  env['GENCXXFLAGS']  += SCons.Util.CLVar( os.environ['CXXFLAGS'] )
-	if os.environ.has_key('CFLAGS'): env['GENCCFLAGS'] = SCons.Util.CLVar( os.environ['CFLAGS'] )
-	if os.environ.has_key('LINKFLAGS'): env['GENLINKFLAGS'] += SCons.Util.CLVar( os.environ['LINKFLAGS'] )
-	# for make compatibility 
-	if os.environ.has_key('LDFLAGS'):   env['GENLINKFLAGS'] += SCons.Util.CLVar( os.environ['LDFLAGS'] )
+		env.AppendUnique( GENLINKFLAGS = [ 'ws2_32.lib' ] )
+
+	if os.environ.has_key('CXXFLAGS'):
+		env.AppendUnique( GENCXXFLAGS = SCons.Util.CLVar( os.environ['CXXFLAGS'] ) )
+	if os.environ.has_key('CFLAGS'):
+		env.AppendUnique( GENCCFLAGS = SCons.Util.CLVar( os.environ['CFLAGS'] ) )
+	if os.environ.has_key('LINKFLAGS'):
+		env.AppendUnique( GENLINKFLAGS = SCons.Util.CLVar( os.environ['LINKFLAGS'] ) )
+	# for make compatibility
+	if os.environ.has_key('LDFLAGS'):
+		env.AppendUnique( GENLINKFLAGS = SCons.Util.CLVar( os.environ['LDFLAGS'] ) )
 
 	# no colors if user does not want them
 	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
