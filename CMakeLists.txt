@@ -30,6 +30,7 @@ find_package(LibArt)
 find_package(PCRE)
 find_package(OpenSSL)
 find_package(Carbon)
+find_package(DNSSD)
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
 link_directories(${KDE4_LIB_DIR})
@@ -89,6 +90,9 @@ add_subdirectory( interfaces  )
 add_subdirectory( kdewidgets  )
 add_subdirectory( kate  )
 add_subdirectory( knotify )
+if(DNSSD_FOUND)
+    add_subdirectory( dnssd )
+endif(DNSSD_FOUND)
 
 
 ########### install files ###############
