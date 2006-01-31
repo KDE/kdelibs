@@ -557,6 +557,18 @@ def write_lib_header(lenv, libname, test_result, mandatory=False, headername='',
 
 	dest.close()
 
+#HELPER - returns the path to the platform specific bksys-directory
+#
+def getBksysPlatformPath(lenv, sys):
+	import os
+
+	path = 'bksys'+os.sep
+	if sys.platform == 'darwin':
+		return path+'osx'
+	elif lenv['WINDOWS']:
+		return path+'win32'
+	else:
+		return path+'unix'
 
 ## Scons-specific function, do not remove
 def exists(env):
@@ -1153,6 +1165,7 @@ def generate(env):
 	SConsEnvironment.getInstDirForResType=getInstDirForResType
 	SConsEnvironment.write_lib_header=write_lib_header
 	SConsEnvironment.find_file_ext=find_file_ext
+	SConsEnvironment.getBksysPlatformPath=getBksysPlatformPath
 
 	if env.has_key('GENCXXFLAGS'):   env.AppendUnique( CPPFLAGS  = env['GENCXXFLAGS'] )
 	if env.has_key('GENCCFLAGS'):    env.AppendUnique( CCFLAGS   = env['GENCCFLAGS'] )
