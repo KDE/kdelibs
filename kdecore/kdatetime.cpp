@@ -964,7 +964,7 @@ QString KDateTime::toString(const QString &format) const
         return QString();
     enum { TZNone, UTCOffsetShort, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
     KLocale *locale = KGlobal::locale();
-    KCalendarSystem* calendar = new KCalendarSystemGregorian(locale);
+    KCalendarSystemGregorian calendar(locale);
     QString result;
     QString s;
     int num, numLength, zone;
@@ -1006,10 +1006,10 @@ QString KDateTime::toString(const QString &format) const
                     num = d->date().month();
                     break;
                 case 'B':     // month name, translated
-                    result += calendar->monthName(d->date().month(), 2000, false);
+                    result += calendar.monthName(d->date().month(), 2000, false);
                     break;
                 case 'b':     // month name, translated, short
-                    result += calendar->monthName(d->date().month(), 2000, true);
+                    result += calendar.monthName(d->date().month(), 2000, true);
                     break;
                 case 'd':     // day of month, 01 - 31
                     numLength = 2;
@@ -1018,10 +1018,10 @@ QString KDateTime::toString(const QString &format) const
                     num = d->date().day();
                     break;
                 case 'A':     // week day name, translated
-                    result += calendar->weekDayName(d->date().dayOfWeek(), false);
+                    result += calendar.weekDayName(d->date().dayOfWeek(), false);
                     break;
                 case 'a':     // week day name, translated, short
-                    result += calendar->weekDayName(d->date().dayOfWeek(), true);
+                    result += calendar.weekDayName(d->date().dayOfWeek(), true);
                     break;
                 case 'H':     // hour, 00 - 23
                     numLength = 2;
@@ -1924,7 +1924,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
 
     enum { TZNone, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
     KLocale *locale = KGlobal::locale();
-    KCalendarSystem* calendar = new KCalendarSystemGregorian(locale);
+    KCalendarSystemGregorian calendar(locale);
     int zone;
     int s = 0;
     int send = str.length();
@@ -1976,7 +1976,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'B':
                 case 'b':     // month name, translated or English
                 {
-                    int m = matchMonth(str, s, calendar);
+                    int m = matchMonth(str, s, &calendar);
                     if (m <= 0  ||  month != -1 && month != m)
                         return QDateTime();
                     month = m;
@@ -1990,7 +1990,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'A':
                 case 'a':     // week day name, translated or English
                 {
-                    int dow = matchDay(str, s, calendar);
+                    int dow = matchDay(str, s, &calendar);
                     if (dow <= 0  ||  dayOfWeek != -1 && dayOfWeek != dow)
                         return QDateTime();
                     dayOfWeek = dow;
