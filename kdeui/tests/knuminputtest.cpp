@@ -87,7 +87,7 @@ TopLevel::TopLevel(QWidget *parent)
 
     i7 = new KIntNumInput(i6, 0, b1, 10);
     i7->setLabel("math test:", Qt::AlignVCenter|Qt::AlignLeft );
-    i7->setRange( INT_MIN, INT_MAX, 1 );
+    i7->setRange( 0, 200, 1 );
     conn(i7,int);
     b1->layout()->addWidget(i7);
 
@@ -120,7 +120,7 @@ TopLevel::TopLevel(QWidget *parent)
 
 
     d4 = new KDoubleNumInput(d3, 0,INT_MAX,INT_MAX/10000.0,b2,1,1);
-    d4->setPrecision(3);
+//     d4->setPrecision(3);
     d4->setRange(double(INT_MIN+1)/1000.0, double(INT_MAX)/1000.0, 1);
     d4->setLabel("math test: ", Qt::AlignVCenter | Qt::AlignLeft);
 //    d4->setFormat("%g");

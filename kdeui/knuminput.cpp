@@ -1,14 +1,11 @@
 // -*- c-basic-offset: 4 -*-
-/*
+/* This file is part of the KDE libraries
  * Initial implementation:
  *     Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
  * Rewritten and maintained by:
  *     Copyright (c) 2000 Dirk A. Mueller <mueller@kde.org>
  * KDoubleSpinBox:
  *     Copyright (c) 2002 Marc Mutz <mutz@kde.org>
- *
- *  Requires the Qt widget libraries, available at no cost at
- *  http://www.troll.no/
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -32,23 +29,19 @@
 #endif
 #include <assert.h>
 #include <math.h>
-#include <algorithm>
 
-#include <qapplication.h>
-#include <qevent.h>
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qsize.h>
-#include <qslider.h>
-#include <qspinbox.h>
-#include <qstyle.h>
+#include <QApplication>
+#include <QLabel>
+#include <QLineEdit>
+#include <QResizeEvent>
+#include <QSlider>
 
+#include <kdebug.h>
+#include <kdialog.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kdebug.h>
+#include <knumvalidator.h>
 
-#include "kdialog.h"
-#include "knumvalidator.h"
 #include "knuminput.h"
 
 static inline int calcDiffByTen( int x, int y ) {
@@ -82,7 +75,6 @@ void KNumInput::init()
 {
     m_prev = m_next = 0;
     m_colw1 = m_colw2 = 0;
-
     m_label = 0;
     m_slider = 0;
     m_alignment = 0;
@@ -97,7 +89,7 @@ KNumInput::~KNumInput()
         m_next->m_prev = m_prev;
 }
 
-void KNumInput::setLabel(const QString & label, int a)
+void KNumInput::setLabel(const QString & label, Qt::Alignment a)
 {
     if(label.isEmpty()) {
         delete m_label;
@@ -106,9 +98,9 @@ void KNumInput::setLabel(const QString & label, int a)
     }
     else {
         if (m_label) m_label->setText(label);
-        else m_label = new QLabel(label, this, "KNumInput::QLabel");
-        m_label->setAlignment((a & (~(Qt::AlignTop|Qt::AlignBottom|Qt::AlignVCenter)))
-                              | Qt::AlignVCenter);
+        else m_label = new QLabel(label, this);
+        m_label->setObjectName("KNumInput::QLabel");
+        m_label->setAlignment(a);
         // if no vertical alignment set, use Top alignment
         if(!(a & (Qt::AlignTop|Qt::AlignBottom|Qt::AlignVCenter)))
            a |= Qt::AlignTop;
@@ -194,7 +186,10 @@ QSize KNumInput::sizeHint() const
 void KNumInput::setSteps(int minor, int major)
 {
     if(m_slider)
-        m_slider->setSteps( minor, major );
+    {
+        m_slider->setSingleStep( minor );
+        m_slider->setPageStep( major );
+    }
 }
 
 
@@ -309,7 +304,7 @@ void KIntNumInput::init(int val, int _base)
 
 void KIntNumInput::setReferencePoint( int ref ) {
     // clip to valid range:
-    ref = qMin( maxValue(), qMax( minValue(),  ref ) );
+    ref = qMin( maximum(), qMax( minimum(),  ref ) );
     d->referencePoint = ref;
 }
 
@@ -334,9 +329,9 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 {
     upper = qMax(upper, lower);
     lower = qMin(upper, lower);
-    m_spin->setMinValue(lower);
-    m_spin->setMaxValue(upper);
-    m_spin->setLineStep(step);
+    m_spin->setMinimum(lower);
+    m_spin->setMaximum(upper);
+    m_spin->setSingleStep(step);
 
     step = m_spin->singleStep(); // maybe QRangeControl didn't like out lineStep?
 
@@ -344,9 +339,12 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 	if (m_slider)
 	    m_slider->setRange(lower, upper);
 	else {
-	    m_slider = new QSlider(lower, upper, step, m_spin->value(),
-				   Qt::Horizontal, this);
-	    m_slider->setTickmarks(QSlider::TicksBelow);
+	    m_slider = new QSlider(Qt::Horizontal, this);
+	    m_slider->setMinimum(lower);
+	    m_slider->setMaximum(upper);
+	    m_slider->setPageStep(step);
+	    m_slider->setValue(m_spin->value());
+	    m_slider->setTickPosition(QSlider::TicksBelow);
 	    connect(m_slider, SIGNAL(valueChanged(int)),
 		    m_spin, SLOT(setValue(int)));
 	}
@@ -355,7 +353,8 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
         int major = calcDiffByTen( upper, lower );
 	if ( major==0 ) major = step; // #### workaround Qt bug in 2.1-beta4
 
-        m_slider->setSteps(step, major);
+        m_slider->setSingleStep(step);
+        m_slider->setPageStep(major);
         m_slider->setTickInterval(major);
     }
     else {
@@ -369,24 +368,24 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
     layout(true);
 }
 
-void KIntNumInput::setMinValue(int min)
+void KIntNumInput::setMinimum(int min)
 {
-    setRange(min, m_spin->maxValue(), m_spin->singleStep(), m_slider);
+    setRange(min, m_spin->maximum(), m_spin->singleStep(), m_slider);
 }
 
-int KIntNumInput::minValue() const
+int KIntNumInput::minimum() const
 {
-    return m_spin->minValue();
+    return m_spin->minimum();
 }
 
-void KIntNumInput::setMaxValue(int max)
+void KIntNumInput::setMaximum(int max)
 {
-    setRange(m_spin->minValue(), max, m_spin->singleStep(), m_slider);
+    setRange(m_spin->minimum(), max, m_spin->singleStep(), m_slider);
 }
 
-int KIntNumInput::maxValue() const
+int KIntNumInput::maximum() const
 {
-    return m_spin->maxValue();
+    return m_spin->maximum();
 }
 
 void KIntNumInput::setSuffix(const QString &suffix)
@@ -420,7 +419,7 @@ void KIntNumInput::setEditFocus(bool mark)
 
 QSize KIntNumInput::minimumSizeHint() const
 {
-    constPolish();
+    ensurePolished();
 
     int w;
     int h;
@@ -465,7 +464,7 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
     if(m_label && (m_alignment & Qt::AlignVCenter))
         m_label->setGeometry(0, 0, w, m_sizeSpin.height());
 
-    if (qApp->reverseLayout())
+    if (qApp->layoutDirection())
     {
         m_spin->setGeometry(w, h, m_slider ? m_colw2 : qMax(m_colw2, e->size().width() - w), m_sizeSpin.height());
         w += m_colw2 + 8;
@@ -526,7 +525,7 @@ QString KIntNumInput::specialValueText() const
     return m_spin->specialValueText();
 }
 
-void KIntNumInput::setLabel(const QString & label, int a)
+void KIntNumInput::setLabel(const QString & label, Qt::Alignment a)
 {
     KNumInput::setLabel(label, a);
 
@@ -600,10 +599,10 @@ void KDoubleNumInput::updateLegacyMembers() {
 double KDoubleNumInput::mapSliderToSpin( int val ) const
 {
     // map [slidemin,slidemax] to [spinmin,spinmax]
-    double spinmin = d->spin->minValue();
-    double spinmax = d->spin->maxValue();
-    double slidemin = m_slider->minValue(); // cast int to double to avoid
-    double slidemax = m_slider->maxValue(); // overflow in rel denominator
+    double spinmin = d->spin->minimum();
+    double spinmax = d->spin->maximum();
+    double slidemin = m_slider->minimum(); // cast int to double to avoid
+    double slidemax = m_slider->maximum(); // overflow in rel denominator
     double rel = ( double(val) - slidemin ) / ( slidemax - slidemin );
     return spinmin + rel * ( spinmax - spinmin );
 }
@@ -621,7 +620,7 @@ void KDoubleNumInput::slotEmitRelativeValueChanged( double value )
 
 QSize KDoubleNumInput::minimumSizeHint() const
 {
-    constPolish();
+    ensurePolished();
 
     int w;
     int h;
@@ -657,7 +656,7 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
     if(m_label && (m_alignment & Qt::AlignVCenter))
         m_label->setGeometry(0, 0, w, m_sizeEdit.height());
 
-    if (qApp->reverseLayout())
+    if (qApp->layoutDirection())
     {
         d->spin->setGeometry(w, h, m_slider ? m_colw2
                                             : e->size().width() - w, m_sizeEdit.height());
@@ -705,7 +704,7 @@ void KDoubleNumInput::setRelativeValue( double r )
 void KDoubleNumInput::setReferencePoint( double ref )
 {
     // clip to valid range:
-    ref = qMin( maxValue(), qMax( minValue(), ref ) );
+    ref = qMin( maximum(), qMax( minimum(), ref ) );
     d->referencePoint = ref;
 }
 
@@ -721,20 +720,23 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
     d->spin->setRange( lower, upper, step, d->spin->precision() );
 
     if(slider) {
-	// upcast to base type to get the min/maxValue in int form:
+	// upcast to base type to get the minimum/maximum in int form:
 	QSpinBox * spin = d->spin;
-        int slmax = spin->maxValue();
-	int slmin = spin->minValue();
+        int slmax = spin->maximum();
+	int slmin = spin->minimum();
         int slvalue = spin->value();
 	int slstep = spin->singleStep();
         if (m_slider) {
             m_slider->setRange(slmin, slmax);
-	    m_slider->setLineStep(slstep);
+	    m_slider->setSingleStep(slstep);
             m_slider->setValue(slvalue);
         } else {
-            m_slider = new QSlider(slmin, slmax, slstep, slvalue,
-                                   Qt::Horizontal, this);
-            m_slider->setTickmarks(QSlider::TicksBelow);
+            m_slider = new QSlider(Qt::Horizontal, this);
+            m_slider->setMinimum(slmin);
+            m_slider->setMaximum(slmax);
+            m_slider->setPageStep(slstep);
+            m_slider->setValue(slvalue);
+            m_slider->setTickPosition(QSlider::TicksBelow);
 	    // feedback line: when one moves, the other moves, too:
             connect(m_slider, SIGNAL(valueChanged(int)),
                     SLOT(sliderMoved(int)) );
@@ -756,24 +758,24 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
     updateLegacyMembers();
 }
 
-void KDoubleNumInput::setMinValue(double min)
+void KDoubleNumInput::setMinimum(double min)
 {
-    setRange(min, maxValue(), d->spin->singleStep(), m_slider);
+    setRange(min, maximum(), d->spin->singleStep(), m_slider);
 }
 
-double KDoubleNumInput::minValue() const
+double KDoubleNumInput::minimum() const
 {
-    return d->spin->minValue();
+    return d->spin->minimum();
 }
 
-void KDoubleNumInput::setMaxValue(double max)
+void KDoubleNumInput::setMaximum(double max)
 {
-    setRange(minValue(), max, d->spin->singleStep(), m_slider);
+    setRange(minimum(), max, d->spin->singleStep(), m_slider);
 }
 
-double KDoubleNumInput::maxValue() const
+double KDoubleNumInput::maximum() const
 {
-    return d->spin->maxValue();
+    return d->spin->maximum();
 }
 
 double  KDoubleNumInput::value() const
@@ -836,7 +838,7 @@ void KDoubleNumInput::setSpecialValueText(const QString& text)
     updateLegacyMembers();
 }
 
-void KDoubleNumInput::setLabel(const QString & label, int a)
+void KDoubleNumInput::setLabel(const QString & label, Qt::Alignment a)
 {
     KNumInput::setLabel(label, a);
 
@@ -997,8 +999,8 @@ void KDoubleSpinBox::setRange( double lower, double upper, double step,
   lower = qMin(upper, lower);
   upper = qMax(upper, lower);
   setPrecision( precision, true ); // disable bounds checking, since
-  setMinValue( lower );            // it's done in set{Min,Max}Value
-  setMaxValue( upper );            // anyway and we want lower, upper
+  setMinimum( lower );            // it's done in set{Minimum,Maximum}
+  setMaximum( upper );            // anyway and we want lower, upper
   setSingleStep( step );             // and step to have the right precision
 }
 
@@ -1026,7 +1028,7 @@ int KDoubleSpinBox::maxPrecision() const {
     // ==> 10^precision < INT_MAX / maxAbsValue
     // ==> precision < log10 ( INT_MAX / maxAbsValue )
     // ==> maxPrecision = floor( log10 ( INT_MAX / maxAbsValue ) );
-    double maxAbsValue = qMax( fabs(minValue()), fabs(maxValue()) );
+    double maxAbsValue = qMax( fabs(minimum()), fabs(maximum()) );
     if ( maxAbsValue == 0 ) return 6; // return arbitrary value to avoid dbz...
 
     return int( floor( log10( double(INT_MAX) / maxAbsValue ) ) );
@@ -1038,10 +1040,10 @@ double KDoubleSpinBox::value() const {
 
 void KDoubleSpinBox::setValue( double value ) {
     if ( value == this->value() ) return;
-    if ( value < minValue() )
-	base::setValue( base::minValue() );
-    else if ( value > maxValue() )
-	base::setValue( base::maxValue() );
+    if ( value < minimum() )
+	base::setValue( base::minimum() );
+    else if ( value > maximum() )
+	base::setValue( base::maximum() );
     else {
 	bool ok = false;
 	base::setValue( d->mapToInt( value, &ok ) );
@@ -1049,28 +1051,28 @@ void KDoubleSpinBox::setValue( double value ) {
     }
 }
 
-double KDoubleSpinBox::minValue() const {
-  return d->mapToDouble( base::minValue() );
+double KDoubleSpinBox::minimum() const {
+  return d->mapToDouble( base::minimum() );
 }
 
-void KDoubleSpinBox::setMinValue( double value ) {
+void KDoubleSpinBox::setMinimum( double value ) {
   bool ok = false;
   int min = d->mapToInt( value, &ok );
   if ( !ok ) return;
-  base::setMinValue( min );
+  base::setMinimum( min );
   updateValidator();
 }
 
 
-double KDoubleSpinBox::maxValue() const {
-  return d->mapToDouble( base::maxValue() );
+double KDoubleSpinBox::maximum() const {
+  return d->mapToDouble( base::maximum() );
 }
 
-void KDoubleSpinBox::setMaxValue( double value ) {
+void KDoubleSpinBox::setMaximum( double value ) {
   bool ok = false;
   int max = d->mapToInt( value, &ok );
   if ( !ok ) return;
-  base::setMaxValue( max );
+  base::setMaximum( max );
   updateValidator();
 }
 
@@ -1080,7 +1082,7 @@ double KDoubleSpinBox::singleStep() const {
 
 void KDoubleSpinBox::setSingleStep( double step ) {
   bool ok = false;
-  if ( step > maxValue() - minValue() )
+  if ( step > maximum() - minimum() )
     base::setSingleStep( 1 );
   else
     base::setSingleStep( qMax( d->mapToInt( step, &ok ), 1 ) );
@@ -1102,10 +1104,10 @@ int KDoubleSpinBox::valueFromText( const QString &text ) const{
   else
     value = cleanText().toDouble( &ok );
   if ( !ok ) return 0;
-  if ( value > maxValue() )
-    value = maxValue();
-  else if ( value < minValue() )
-    value = minValue();
+  if ( value > maximum() )
+    value = maximum();
+  else if ( value < minimum() )
+    value = minimum();
   return d->mapToInt( value, &ok );
 }
 
@@ -1119,14 +1121,14 @@ void KDoubleSpinBox::slotValueChanged( int value ) {
 
 void KDoubleSpinBox::updateValidator() {
   if ( !d->mValidator ) {
-    d->mValidator =  new KDoubleSpinBoxValidator(this, minValue(), maxValue(), precision());
+    d->mValidator =  new KDoubleSpinBoxValidator(this, minimum(), maximum(), precision());
     d->mValidator->setObjectName("d->mValidator" );
 #ifdef __GNUC__
 #warning KDE4 we NEED to fix the validation of values here
 #endif
 //    base::setValidator( d->mValidator );
   } else
-    d->mValidator->setRange( minValue(), maxValue(), precision() );
+    d->mValidator->setRange( minimum(), maximum(), precision() );
 }
 
 void KNumInput::virtual_hook( int, void* )

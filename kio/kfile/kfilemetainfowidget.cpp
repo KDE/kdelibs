@@ -221,8 +221,8 @@ QWidget* KFileMetaInfoWidget::makeDoubleWidget()
     {
         if (QDoubleValidator* dv = qobject_cast<QDoubleValidator*>(m_validator))
         {
-            dni->setMinValue(dv->bottom());
-            dni->setMaxValue(dv->top());
+            dni->setMinimum(dv->bottom());
+            dni->setMaximum(dv->top());
         }
         reparentValidator(dni, m_validator);
     }

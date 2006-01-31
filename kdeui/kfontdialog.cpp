@@ -235,7 +235,7 @@ KFontChooser::KFontChooser(QWidget *parent,
 
   sizeListBox = new KListBox( page, "sizeListBox");
   sizeOfFont = new KIntNumInput( page); // "sizeOfFont");
-  sizeOfFont->setMinValue(4);
+  sizeOfFont->setMinimum(4);
 
   sizeListBox->setEnabled( !diff );
   sizeOfFont->setEnabled( !diff );

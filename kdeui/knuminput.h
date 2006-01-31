@@ -1,12 +1,7 @@
-/*
- * knuminput.h
- *
+/* This file is part of the KDE libraries
  *  Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
  *  Copyright (c) 2000 Dirk A. Mueller <mueller@kde.org>
  *  Copyright (c) 2002 Marc Mutz <mutz@kde.org>
- *
- *  Requires the Qt widget libraries, available at no cost at
- *  http://www.troll.no/
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -27,14 +22,13 @@
 #ifndef K_NUMINPUT_H
 #define K_NUMINPUT_H
 
-#include <qwidget.h>
-#include <qspinbox.h>
+#include <QWidget>
+#include <QSpinBox>
+
 #include <kdelibs_export.h>
 
 class QLabel;
 class QSlider;
-class QLineEdit;
-class QLayout;
 class QValidator;
 
 class KIntSpinBox;
@@ -53,7 +47,9 @@ class KDEUI_EXPORT KNumInput : public QWidget
 public:
     /**
      * Default constructor
-     * @param parent If parent is 0, the new widget becomes a top-level window. If parent is another widget, this widget becomes a child window inside parent. The new widget is deleted when its parent is deleted.
+     * @param parent If parent is 0, the new widget becomes a top-level
+     * window. If parent is another widget, this widget becomes a child
+     * window inside parent. The new widget is deleted when its parent is deleted.
      */
     KNumInput(QWidget* parent=0);
 
@@ -61,7 +57,7 @@ public:
      * @param below A pointer to another KNumInput.
      * @param parent parent widget
      */
-    KNumInput(QWidget *parent,KNumInput* below);
+    KNumInput(QWidget *parent, KNumInput* below);
     ~KNumInput();
 
     /**
@@ -70,19 +66,18 @@ public:
      * @param label The text of the label.
      *              Use QString() to remove an existing one.
      *
-     * @param a one of @p AlignLeft, @p AlignHCenter, YAlignRight and
-     *          @p AlignTop, @p AlignVCenter, @p AlignBottom.
-     *          default is @p AlignLeft | @p AlignTop.
+     * @param a The alignment of the label (Qt::Alignment).
+     *          Default is @p Qt:AlignLeft | @p Qt:AlignTop.
      *
      * The vertical alignment flags have special meaning with this
      * widget:
      *
-     *     @li @p AlignTop     The label is placed above the edit/slider
-     *     @li @p AlignVCenter The label is placed left beside the edit
-     *     @li @p AlignBottom  The label is placed below the edit/slider
+     *     @li @p Qt:AlignTop     The label is placed above the edit/slider
+     *     @li @p Qt:AlignVCenter The label is placed left beside the edit
+     *     @li @p Qt:AlignBottom  The label is placed below the edit/slider
      *
      */
-    virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
+    virtual void setLabel(const QString & label, Qt::Alignment a = Qt::AlignLeft | Qt::AlignTop);
 
     /**
      * @return the text of the label.
@@ -141,7 +136,7 @@ protected:
     QSlider* m_slider;
     QSize    m_sizeSlider, m_sizeLabel;
 
-    int      m_alignment;
+    Qt::Alignment m_alignment;
 
 private:
     void init();
@@ -184,8 +179,8 @@ class KDEUI_EXPORT KIntNumInput : public KNumInput
 {
     Q_OBJECT
     Q_PROPERTY( int value READ value WRITE setValue )
-    Q_PROPERTY( int minValue READ minValue WRITE setMinValue )
-    Q_PROPERTY( int maxValue READ maxValue WRITE setMaxValue )
+    Q_PROPERTY( int minimum READ minimum WRITE setMinimum )
+    Q_PROPERTY( int maximum READ maximum WRITE setMaximum )
     Q_PROPERTY( int referencePoint READ referencePoint WRITE setReferencePoint )
     Q_PROPERTY( double relativeValue READ relativeValue WRITE setRelativeValue )
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
@@ -279,19 +274,19 @@ public:
     /**
      * Sets the minimum value.
      */
-    void setMinValue(int min);
+    void setMinimum(int min);
     /**
      * @return the minimum value.
      */
-    int minValue() const;
+    int minimum() const;
     /**
      * Sets the maximum value.
      */
-    void setMaxValue(int max);
+    void setMaximum(int max);
     /**
      * @return the maximum value.
      */
-    int maxValue() const;
+    int maximum() const;
 
     /**
      * Sets the special value text. If set, the SpinBox will display
@@ -301,7 +296,7 @@ public:
      */
     void setSpecialValueText(const QString& text);
 
-    virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
+    virtual void setLabel(const QString & label, Qt::Alignment a = Qt::AlignLeft | Qt::AlignTop);
 
     /**
      * This method returns the minimum size necessary to display the
@@ -427,8 +422,8 @@ class KDEUI_EXPORT KDoubleNumInput : public KNumInput
 {
     Q_OBJECT
     Q_PROPERTY( double value READ value WRITE setValue )
-    Q_PROPERTY( double minValue READ minValue WRITE setMinValue )
-    Q_PROPERTY( double maxValue READ maxValue WRITE setMaxValue )
+    Q_PROPERTY( double minimum READ minimum WRITE setMinimum )
+    Q_PROPERTY( double maximum READ maximum WRITE setMaximum )
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
@@ -526,19 +521,19 @@ public:
     /**
      * Sets the minimum value.
      */
-    void setMinValue(double min);
+    void setMinimum(double min);
     /**
      * @return the minimum value.
      */
-    double minValue() const;
+    double minimum() const;
     /**
      * Sets the maximum value.
      */
-    void setMaxValue(double max);
+    void setMaximum(double max);
     /**
      * @return the maximum value.
      */
-    double maxValue() const;
+    double maximum() const;
 
     /**
      * Specifies the number of digits to use.
@@ -565,7 +560,7 @@ public:
      */
     void setSpecialValueText(const QString& text);
 
-    virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
+    virtual void setLabel(const QString & label, Qt::Alignment a = Qt::AlignLeft | Qt::AlignTop);
     virtual QSize minimumSizeHint() const;
 
 public Q_SLOTS:
@@ -751,7 +746,7 @@ private:
    relationship between precision and available range.
 
    @li precision: The number of digits after the decimal point.
-   @li maxValue/minValue: upper and lower bounds of the valid range
+   @li maximum/minimum: upper and lower bounds of the valid range
    @li lineStep: the size of the step that is made when the user hits
                  the up or down buttons
 
@@ -759,8 +754,8 @@ private:
    precision is a function of the valid range and vice versa. More
    precisely, the following relationships hold:
    \code
-   max( abs(minValue()), abs(maxValue() ) <= INT_MAX/10^precision
-   maxPrecision = floor( log10( INT_MAX/max(abs(minValue()),abs(maxValue())) ) )
+   max( abs(minimum()), abs(maximum() ) <= INT_MAX/10^precision
+   maxPrecision = floor( log10( INT_MAX/max(abs(minimum()),abs(maximum())) ) )
    \endcode
 
    Since the value, bounds and lineStep are rounded to the current
@@ -774,11 +769,11 @@ private:
    // then value and lineStep
    KDoubleSpinBox * spin = new KDoubleSpinBox( 0, 9.999, 0.001, 4.321, 3, this );
 
-   // sets minValue to 0; maxValue to 10.00(!); value to 4.32(!) and only then
+   // sets minimum to 0; maximum to 10.00(!); value to 4.32(!) and only then
    // increases the precision - too late, since e.g. value has already been rounded...
    KDoubleSpinBox * spin = new KDoubleSpinBox( this );
-   spin->setMinValue( 0 );
-   spin->setMaxValue( 9.999 );
+   spin->setMinimum( 0 );
+   spin->setMaximum( 9.999 );
    spin->setValue( 4.321 );
    spin->setPrecision( 3 );
    \endcode
@@ -790,8 +785,8 @@ private:
 class KDEUI_EXPORT KDoubleSpinBox : public QSpinBox {
   Q_OBJECT
   Q_PROPERTY( bool acceptLocalizedNumbers READ acceptLocalizedNumbers WRITE setAcceptLocalizedNumbers )
-  Q_OVERRIDE( double maxValue READ maxValue WRITE setMaxValue )
-  Q_OVERRIDE( double minValue READ minValue WRITE setMinValue )
+  Q_OVERRIDE( double maximum READ maximum WRITE setMaximum )
+  Q_OVERRIDE( double minimum READ minimum WRITE setMinimum )
   Q_OVERRIDE( double singleStep READ singleStep WRITE setSingleStep )
   Q_OVERRIDE( double value READ value WRITE setValue )
   Q_PROPERTY( int precision READ precision WRITE setPrecision )
@@ -849,26 +844,26 @@ public:
   double value() const;
 
   /** @return the current lower bound */
-  double minValue() const;
+  double minimum() const;
 
   /** Sets the lower bound of the range to @p value, subject to the
       contraints that @p value is first rounded to the current
       precision and then clipped to the maximum range interval that can
       be handled at that precision.
-      @see maxValue, minValue, setMaxValue, setRange
+      @see maximum, minimum, setMaximum, setRange
   */
-  void setMinValue( double value );
+  void setMinimum( double value );
 
   /** @return the current upper bound */
-  double maxValue() const;
+  double maximum() const;
 
   /** Sets the upper bound of the range to @p value, subject to the
       contraints that @p value is first rounded to the current
       precision and then clipped to the maximum range interval
       that can be handled at that precision.
-      @see minValue, maxValue, setMinValue, setRange
+      @see minimum, maximum, setMinimum, setRange
   */
-  void setMaxValue( double value );
+  void setMaximum( double value );
 
   /** @return the current step size */
   double singleStep() const;
@@ -876,7 +871,7 @@ public:
   /** Sets the step size for clicking the up/down buttons to @p step,
       subject to the constraints that @p step is first rounded to the
       current precision and then clipped to the meaningful interval
-      [ 1, @p maxValue() - @p minValue() ]. */
+      [ 1, @p maximum() - @p minimum() ]. */
   void setSingleStep( double step );
 
   /** Overridden to ignore any setValidator() calls. */
@@ -889,7 +884,7 @@ Q_SIGNALS:
 public Q_SLOTS:
   /** Sets the current value to @p value, subject to the constraints
       that @p value is first rounded to the current precision and then
-      clipped to the interval [ @p minValue() , @p maxValue() ]. */
+      clipped to the interval [ @p minimum() , @p maximum() ]. */
   virtual void setValue( double value );
 
 protected:
