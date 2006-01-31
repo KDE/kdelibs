@@ -766,7 +766,7 @@ int AutoTableLayout::calcEffectiveWidth()
                         w = kMax( w, cminw*layoutStruct[pos].effWidth.value()/totalPercent );
                         w = kMin(layoutStruct[pos].effMinWidth+(cMinWidth-minw), w);
 #ifdef DEBUG_LAYOUT
-                        qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w
+                        qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
 #endif
                         maxw -= layoutStruct[pos].effMaxWidth;
                         minw -= layoutStruct[pos].effMinWidth;
