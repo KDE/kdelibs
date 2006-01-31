@@ -166,9 +166,9 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	connect(m_view,SIGNAL(doubleClicked(Q3ListViewItem*)),SLOT(slotConfigureClicked()));
 
 	m_info = new KActiveLabel(this);
-	  m_info->setWhatsThis(whatsThisFilterInfoPane);
-	m_info->setVScrollBarMode( Q3ScrollView::Auto );
-	m_info->setHScrollBarMode( Q3ScrollView::Auto );
+	m_info->setWhatsThis(whatsThisFilterInfoPane);
+	m_info->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+	m_info->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
 	m_info->setFrameStyle( QFrame::Panel|QFrame::Sunken );
 	m_info->setMinimumSize( QSize( 240, 100 ) );
 

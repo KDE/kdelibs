@@ -17,14 +17,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kactivelabel.h"
+#include <QWhatsThis>
+#include <Q3SimpleRichText>
 
 #include <ktoolinvocation.h>
-#include <qregexp.h>
-#include <q3simplerichtext.h>
-#include <kdebug.h>
-#include <QFocusEvent>
-#include <QWhatsThis>
+
+#include "kactivelabel.h"
 
 class KActiveLabelPrivate
 {
@@ -39,15 +37,14 @@ public:
 KActiveLabelPrivate::KActiveLabelPrivate(KActiveLabel *qq)
     : q(qq)
 {
-   q->setTextFormat(Qt::RichText);
-   q->setVScrollBarMode(Q3ScrollView::AlwaysOff);
-   q->setHScrollBarMode(Q3ScrollView::AlwaysOff);
+   q->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+   q->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
    q->setFrameStyle(QFrame::NoFrame);
-   q->setFocusPolicy( Qt::TabFocus );
+   q->setFocusPolicy(Qt::TabFocus);
    updatePalette();
 
-   QObject::connect(q, SIGNAL(linkClicked(const QString &)),
-                    q, SLOT(openLink(const QString &)));
+   QObject::connect(q, SIGNAL(anchorClicked (const QUrl &)),
+                    q, SLOT(openLink(const QUrl &)));
 }
 
 void KActiveLabelPrivate::updatePalette()
@@ -58,17 +55,17 @@ void KActiveLabelPrivate::updatePalette()
     q->setPalette(p);
 }
 
-KActiveLabel::KActiveLabel(QWidget * parent, const char * name)
- : Q3TextBrowser(parent, name)
+KActiveLabel::KActiveLabel(QWidget * parent)
+ : KTextBrowser(parent)
 {
     d = new KActiveLabelPrivate(this);
 }
 
-KActiveLabel::KActiveLabel(const QString &text, QWidget * parent, const char * name)
- : Q3TextBrowser(parent, name)
+KActiveLabel::KActiveLabel(const QString &text, QWidget * parent)
+ : KTextBrowser(parent)
 {
     d = new KActiveLabelPrivate(this);
-    setText(text);
+    setHtml(text);
 }
 
 KActiveLabel::~KActiveLabel()
@@ -76,16 +73,16 @@ KActiveLabel::~KActiveLabel()
     delete d;
 }
 
-void KActiveLabel::openLink(const QString & link)
+void KActiveLabel::openLink(const QUrl & link)
 {
    QRegExp whatsthis("whatsthis:/*([^/].*)");
-   if (whatsthis.exactMatch(link)) {
+   if (whatsthis.exactMatch(link.toString())) {
       QWhatsThis::showText(QCursor::pos(),whatsthis.cap(1));
       return;
    }
 
    QStringList args;
-   args << "exec" << link;
+   args << "exec" << link.toString();
    KToolInvocation::kdeinitExec("kfmclient", args);
 }
 
@@ -94,16 +91,16 @@ void KActiveLabel::virtual_hook( int, void* )
 
 void KActiveLabel::focusInEvent( QFocusEvent* fe )
 {
-   Q3TextBrowser::focusInEvent(fe);
+   KTextBrowser::focusInEvent(fe);
    if(fe->reason() == Qt::TabFocusReason || fe->reason() == Qt::BacktabFocusReason)
-      selectAll(true);
+      selectAll();
 }
 
 void KActiveLabel::focusOutEvent( QFocusEvent* fe )
 {
-   Q3TextBrowser::focusOutEvent(fe);
+   KTextBrowser::focusOutEvent(fe);
    if(fe->reason() == Qt::TabFocusReason || fe->reason() == Qt::BacktabFocusReason)
-      selectAll(false);
+      selectAll(); //TODO reimplement: deselect text
 }
 
 void KActiveLabel::keyPressEvent( QKeyEvent *e )
@@ -119,7 +116,7 @@ void KActiveLabel::keyPressEvent( QKeyEvent *e )
         QWidget::keyPressEvent( e );
         break;
     default:
-        Q3TextBrowser::keyPressEvent( e );
+        KTextBrowser::keyPressEvent( e );
     }
 }
 
@@ -127,7 +124,7 @@ bool KActiveLabel::event(QEvent *e)
 {
     // call the base implementation first so it updates
     // our palette
-    const bool result = Q3TextBrowser::event(e);
+    const bool result = KTextBrowser::event(e);
     if (e->type() == QEvent::ApplicationPaletteChange) {
         d->updatePalette();
     }
@@ -144,7 +141,7 @@ QSize KActiveLabel::minimumSizeHint() const
    if (ms.width() > 0)
       w = ms.width();
 
-   QString txt = text();
+   QString txt = toHtml();
    Q3SimpleRichText rt(txt, font());
    rt.setWidth(w - 2*frameWidth() - 10);
    w = 10 + rt.widthUsed() + 2*frameWidth();

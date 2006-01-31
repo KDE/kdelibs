@@ -17,14 +17,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KACTIVELABEL_H_
-#define _KACTIVELABEL_H_
+#ifndef KACTIVELABEL_H
+#define KACTIVELABEL_H
 
-#include <q3textbrowser.h>
-
+#include <ktextbrowser.h>
 #include <kdelibs_export.h>
-
-// ### inherit KTextBrowser in KDE4
 
 class KActiveLabelPrivate;
  /**
@@ -34,7 +31,7 @@ class KActiveLabelPrivate;
   *
   * @author Waldo Bastian (bastian@kde.org)
   */
-class KDEUI_EXPORT KActiveLabel : public Q3TextBrowser
+class KDEUI_EXPORT KActiveLabel : public KTextBrowser
 {
     Q_OBJECT
 public:
@@ -45,7 +42,7 @@ public:
      * "openLink(const QString &)" slot. You will need to disconnect
      * this if you want to process linkClicked() yourself.
      */
-    KActiveLabel(QWidget * parent, const char * name = 0);
+    KActiveLabel(QWidget * parent);
 
     /**
      * Constructor.
@@ -54,7 +51,7 @@ public:
      * "openLink(const QString &)" slot. You will need to disconnect
      * this if you want to process linkClicked() yourself.
      */
-    KActiveLabel(const QString & text, QWidget * parent, const char * name = 0);
+    KActiveLabel(const QString & text, QWidget * parent);
 
     virtual ~KActiveLabel();
 
@@ -69,10 +66,10 @@ public Q_SLOTS:
      * box will appear and then display the rest of the text. The WhatsThis
      * functionality is available since KDE 3.2.
      */
-    virtual void openLink(const QString & link);
+    virtual void openLink(const QUrl & link);
 
 private Q_SLOTS:
-    void setSource( const QString &) { }
+    void setSource( const QUrl &) { }
 
 protected:
     virtual void virtual_hook( int id, void* data );

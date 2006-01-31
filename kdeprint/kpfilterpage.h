@@ -29,7 +29,7 @@ class KListView;
 class KXmlCommand;
 class Q3ListViewItem;
 class QToolButton;
-class Q3TextBrowser;
+class KTextBrowser;
 
 class KPFilterPage : public KPrintDialogPage
 {
@@ -62,7 +62,7 @@ private:
 	Q3Dict<KXmlCommand>	m_activefilters;
 	QToolButton		*m_add, *m_remove, *m_up, *m_down, *m_configure;
 	bool			m_valid;
-	Q3TextBrowser		*m_info;
+	KTextBrowser		*m_info;
 };
 
 #endif
