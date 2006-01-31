@@ -90,7 +90,7 @@ struct PropertyMapHashTable
 class SavedProperty {
 public:
     Identifier key;
-    ProtectedPtr<ValueImp> value;
+    ProtectedPtr<JSValue> value;
     int attributes;
 };
 
@@ -161,11 +161,11 @@ bool PropertyMap::isEmpty() const
         return !_table->keyCount;
 }
 
-ValueImp *PropertyMap::get(const Identifier &name, int &attributes) const
+JSValue *PropertyMap::get(const Identifier &name, int &attributes) const
 {
     assert(!name.isNull());
     
-    UString::Rep *rep = name._ustring.rep;
+    UString::Rep *rep = name._ustring.rep();
     
     if (!_table) {
 #if USE_SINGLE_ENTRY
@@ -202,11 +202,11 @@ ValueImp *PropertyMap::get(const Identifier &name, int &attributes) const
     return 0;
 }
 
-ValueImp *PropertyMap::get(const Identifier &name) const
+JSValue *PropertyMap::get(const Identifier &name) const
 {
     assert(!name.isNull());
     
-    UString::Rep *rep = name._ustring.rep;
+    UString::Rep *rep = name._ustring.rep();
 
     if (!_table) {
 #if USE_SINGLE_ENTRY
@@ -239,11 +239,11 @@ ValueImp *PropertyMap::get(const Identifier &name) const
     return 0;
 }
 
-ValueImp **PropertyMap::getLocation(const Identifier &name)
+JSValue **PropertyMap::getLocation(const Identifier &name)
 {
     assert(!name.isNull());
     
-    UString::Rep *rep = name._ustring.rep;
+    UString::Rep *rep = name._ustring.rep();
 
     if (!_table) {
 #if USE_SINGLE_ENTRY
@@ -296,14 +296,14 @@ static void printAttributes(int attributes)
 }
 #endif
 
-void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
+void PropertyMap::put(const Identifier &name, JSValue *value, int attributes, bool roCheck)
 {
     assert(!name.isNull());
     assert(value != 0);
     
     checkConsistency();
 
-    UString::Rep *rep = name._ustring.rep;
+    UString::Rep *rep = name._ustring.rep();
     
 #if DEBUG_PROPERTIES
     printf("adding property %s, attributes = 0x%08x (", name.ascii(), attributes);
@@ -315,7 +315,7 @@ void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
     if (!_table) {
         UString::Rep *key = _singleEntry.key;
         if (key) {
-            if (rep == key) {
+            if (rep == key && !(roCheck && (_singleEntry.attributes & ReadOnly))) {
                 _singleEntry.value = value;
                 return;
             }
@@ -346,6 +346,8 @@ void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
 #endif
     while (UString::Rep *key = entries[i].key) {
         if (rep == key) {
+            if (roCheck && (_table->entries[i].attributes & ReadOnly)) 
+                return;
             // Put a new value in an existing hash table entry.
             entries[i].value = value;
             // Attributes are intentionally not updated.
@@ -382,7 +384,7 @@ void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
     checkConsistency();
 }
 
-void PropertyMap::insert(UString::Rep *key, ValueImp *value, int attributes, int index)
+void PropertyMap::insert(UString::Rep *key, JSValue *value, int attributes, int index)
 {
     assert(_table);
 
@@ -445,8 +447,8 @@ void PropertyMap::rehash(int newTableSize)
         _singleEntry.key = 0;
         // update the count, because single entries don't count towards
         // the table key count
-	++_table->keyCount;
-	assert(_table->keyCount == 1);
+        ++_table->keyCount;
+        assert(_table->keyCount == 1);
     }
 #endif
     
@@ -478,7 +480,7 @@ void PropertyMap::remove(const Identifier &name)
     
     checkConsistency();
 
-    UString::Rep *rep = name._ustring.rep;
+    UString::Rep *rep = name._ustring.rep();
 
     UString::Rep *key;
 
@@ -542,7 +544,7 @@ void PropertyMap::mark() const
     if (!_table) {
 #if USE_SINGLE_ENTRY
         if (_singleEntry.key) {
-            ValueImp *v = _singleEntry.value;
+            JSValue *v = _singleEntry.value;
             if (!v->marked())
                 v->mark();
         }
@@ -553,7 +555,7 @@ void PropertyMap::mark() const
     int minimumKeysToProcess = _table->keyCount;
     Entry *entries = _table->entries;
     for (int i = 0; i < minimumKeysToProcess; i++) {
-        ValueImp *v = entries[i].value;
+        JSValue *v = entries[i].value;
         if (v) {
             if (!v->marked())
                 v->mark();
@@ -574,7 +576,24 @@ static int comparePropertyMapEntryIndices(const void *a, const void *b)
     return 0;
 }
 
-void PropertyMap::addEnumerablesToReferenceList(ReferenceList &list, ObjectImp *base) const
+bool PropertyMap::containsGettersOrSetters() const
+{
+    if (!_table) {
+#if USE_SINGLE_ENTRY
+        return _singleEntry.attributes & GetterSetter;
+#endif
+        return false;
+    }
+
+    for (int i = 0; i != _table->size; ++i) {
+        if (_table->entries[i].attributes & GetterSetter)
+            return true;
+    }
+    
+    return false;
+}
+
+void PropertyMap::addEnumerablesToReferenceList(ReferenceList &list, JSObject *base) const
 {
     if (!_table) {
 #if USE_SINGLE_ENTRY
@@ -616,7 +635,7 @@ void PropertyMap::addEnumerablesToReferenceList(ReferenceList &list, ObjectImp *
         delete [] sortedEnumerables;
 }
 
-void PropertyMap::addSparseArrayPropertiesToReferenceList(ReferenceList &list, ObjectImp *base) const
+void PropertyMap::addSparseArrayPropertiesToReferenceList(ReferenceList &list, JSObject *base) const
 {
     if (!_table) {
 #if USE_SINGLE_ENTRY
@@ -752,13 +771,13 @@ void PropertyMap::checkConsistency()
         }
         unsigned h = rep->hash();
         int i = h & _table->sizeMask;
-	int k = 0;
+        int k = 0;
         while (UString::Rep *key = _table->entries[i].key) {
             if (rep == key)
                 break;
-	    if (k == 0)
-		k = 1 | (h % _table->sizeMask);
-	    i = (i + k) & _table->sizeMask;
+            if (k == 0)
+                k = 1 | (h % _table->sizeMask);
+            i = (i + k) & _table->sizeMask;
         }
         assert(i == j);
         ++count;

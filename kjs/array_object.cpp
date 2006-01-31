@@ -32,6 +32,7 @@
 #include "reference_list.h"
 #include "types.h"
 #include "value.h"
+#include <kxmlcore/HashSet.h>
 
 #include "array_object.lut.h"
 
@@ -40,27 +41,27 @@
 
 using namespace KJS;
 
-// ------------------------------ ArrayInstanceImp -----------------------------
+// ------------------------------ ArrayInstance -----------------------------
 
 const unsigned sparseArrayCutoff = 10000;
 
-const ClassInfo ArrayInstanceImp::info = {"Array", 0, 0, 0};
+const ClassInfo ArrayInstance::info = {"Array", 0, 0, 0};
 
-ArrayInstanceImp::ArrayInstanceImp(ObjectImp *proto, unsigned initialLength)
-  : ObjectImp(proto)
+ArrayInstance::ArrayInstance(JSObject *proto, unsigned initialLength)
+  : JSObject(proto)
   , length(initialLength)
   , storageLength(initialLength < sparseArrayCutoff ? initialLength : 0)
   , capacity(storageLength)
-  , storage(capacity ? (ValueImp **)fastCalloc(capacity, sizeof(ValueImp *)) : 0)
+  , storage(capacity ? (JSValue **)fastCalloc(capacity, sizeof(JSValue *)) : 0)
 {
 }
 
-ArrayInstanceImp::ArrayInstanceImp(ObjectImp *proto, const List &list)
-  : ObjectImp(proto)
+ArrayInstance::ArrayInstance(JSObject *proto, const List &list)
+  : JSObject(proto)
   , length(list.size())
   , storageLength(length)
   , capacity(storageLength)
-  , storage(capacity ? (ValueImp **)fastMalloc(sizeof(ValueImp *) * capacity) : 0)
+  , storage(capacity ? (JSValue **)fastMalloc(sizeof(JSValue *) * capacity) : 0)
 {
   ListIterator it = list.begin();
   unsigned l = length;
@@ -69,17 +70,17 @@ ArrayInstanceImp::ArrayInstanceImp(ObjectImp *proto, const List &list)
   }
 }
 
-ArrayInstanceImp::~ArrayInstanceImp()
+ArrayInstance::~ArrayInstance()
 {
   fastFree(storage);
 }
 
-ValueImp *ArrayInstanceImp::lengthGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *ArrayInstance::lengthGetter(ExecState *exec, JSObject *originalObject, const Identifier& propertyName, const PropertySlot& slot)
 {
-  return Number(static_cast<ArrayInstanceImp *>(slot.slotBase())->length);
+  return jsNumber(static_cast<ArrayInstance *>(slot.slotBase())->length);
 }
 
-bool ArrayInstanceImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+bool ArrayInstance::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
   if (propertyName == lengthPropertyName) {
     slot.setCustom(this, lengthGetter);
@@ -92,7 +93,7 @@ bool ArrayInstanceImp::getOwnPropertySlot(ExecState *exec, const Identifier& pro
     if (index >= length)
       return false;
     if (index < storageLength) {
-      ValueImp *v = storage[index];
+      JSValue *v = storage[index];
       if (!v || v->isUndefined())
         return false;      
       slot.setValueSlot(this, &storage[index]);
@@ -100,10 +101,10 @@ bool ArrayInstanceImp::getOwnPropertySlot(ExecState *exec, const Identifier& pro
     }
   }
 
-  return ObjectImp::getOwnPropertySlot(exec, propertyName, slot);
+  return JSObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-bool ArrayInstanceImp::getOwnPropertySlot(ExecState *exec, unsigned index, PropertySlot& slot)
+bool ArrayInstance::getOwnPropertySlot(ExecState *exec, unsigned index, PropertySlot& slot)
 {
   if (index > MAX_ARRAY_INDEX)
     return getOwnPropertySlot(exec, Identifier::from(index), slot);
@@ -111,18 +112,18 @@ bool ArrayInstanceImp::getOwnPropertySlot(ExecState *exec, unsigned index, Prope
   if (index >= length)
     return false;
   if (index < storageLength) {
-    ValueImp *v = storage[index];
+    JSValue *v = storage[index];
     if (!v || v->isUndefined())
       return false;
     slot.setValueSlot(this, &storage[index]);
     return true;
   }
 
-  return ObjectImp::getOwnPropertySlot(exec, index, slot);
+  return JSObject::getOwnPropertySlot(exec, index, slot);
 }
 
 // Special implementation of [[Put]] - see ECMA 15.4.5.1
-void ArrayInstanceImp::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
+void ArrayInstance::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
   if (propertyName == lengthPropertyName) {
     unsigned int newLen = value->toUInt32(exec);
@@ -141,10 +142,10 @@ void ArrayInstanceImp::put(ExecState *exec, const Identifier &propertyName, Valu
     return;
   }
   
-  ObjectImp::put(exec, propertyName, value, attr);
+  JSObject::put(exec, propertyName, value, attr);
 }
 
-void ArrayInstanceImp::put(ExecState *exec, unsigned index, ValueImp *value, int attr)
+void ArrayInstance::put(ExecState *exec, unsigned index, JSValue *value, int attr)
 {
   //0xFFFF FFFF is a bit weird --- it should be treated as a non-array index, even when
   //it's a string 
@@ -167,10 +168,10 @@ void ArrayInstanceImp::put(ExecState *exec, unsigned index, ValueImp *value, int
   }
   
   assert(index >= sparseArrayCutoff);
-  ObjectImp::put(exec, Identifier::from(index), value, attr);
+  JSObject::put(exec, Identifier::from(index), value, attr);
 }
 
-bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
+bool ArrayInstance::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
   if (propertyName == lengthPropertyName)
     return false;
@@ -186,10 +187,10 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propert
     }
   }
   
-  return ObjectImp::deleteProperty(exec, propertyName);
+  return JSObject::deleteProperty(exec, propertyName);
 }
 
-bool ArrayInstanceImp::deleteProperty(ExecState *exec, unsigned index)
+bool ArrayInstance::deleteProperty(ExecState *exec, unsigned index)
 {
   if (index > MAX_ARRAY_INDEX)
     return deleteProperty(exec, Identifier::from(index));
@@ -201,19 +202,19 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, unsigned index)
     return true;
   }
   
-  return ObjectImp::deleteProperty(exec, Identifier::from(index));
+  return JSObject::deleteProperty(exec, Identifier::from(index));
 }
 
-ReferenceList ArrayInstanceImp::propList(ExecState *exec, bool recursive)
+ReferenceList ArrayInstance::propList(ExecState *exec, bool recursive)
 {
-  ReferenceList properties = ObjectImp::propList(exec,recursive);
+  ReferenceList properties = JSObject::propList(exec,recursive);
 
   // avoid fetching this every time through the loop
-  ValueImp *undefined = jsUndefined();
+  JSValue *undefined = jsUndefined();
 
   //### FIXME: should avoid duplicates with prototype
   for (unsigned i = 0; i < storageLength; ++i) {
-    ValueImp *imp = storage[i];
+    JSValue *imp = storage[i];
     if (imp && imp != undefined) {
       properties.append(Reference(this, i));
     }
@@ -221,10 +222,10 @@ ReferenceList ArrayInstanceImp::propList(ExecState *exec, bool recursive)
   return properties;
 }
 
-void ArrayInstanceImp::resizeStorage(unsigned newLength)
+void ArrayInstance::resizeStorage(unsigned newLength)
 {
     if (newLength < storageLength) {
-      memset(storage + newLength, 0, sizeof(ValueImp *) * (storageLength - newLength));
+      memset(storage + newLength, 0, sizeof(JSValue *) * (storageLength - newLength));
     }
     if (newLength > capacity) {
       unsigned newCapacity;
@@ -236,14 +237,14 @@ void ArrayInstanceImp::resizeStorage(unsigned newLength)
           newCapacity = sparseArrayCutoff;
         }
       }
-      storage = (ValueImp **)fastRealloc(storage, newCapacity * sizeof (ValueImp *));
-      memset(storage + capacity, 0, sizeof(ValueImp *) * (newCapacity - capacity));
+      storage = (JSValue **)fastRealloc(storage, newCapacity * sizeof (JSValue *));
+      memset(storage + capacity, 0, sizeof(JSValue *) * (newCapacity - capacity));
       capacity = newCapacity;
     }
     storageLength = newLength;
 }
 
-void ArrayInstanceImp::setLength(unsigned newLength, ExecState *exec)
+void ArrayInstance::setLength(unsigned newLength, ExecState *exec)
 {
   if (newLength <= storageLength) {
     resizeStorage(newLength);
@@ -260,7 +261,7 @@ void ArrayInstanceImp::setLength(unsigned newLength, ExecState *exec)
       bool ok;
       unsigned index = ref.getPropertyName(exec).toArrayIndex(&ok);
       if (ok && index > newLength) {
-	ref.deleteValue(exec);
+        ref.deleteValue(exec);
       }
     }
   }
@@ -268,12 +269,12 @@ void ArrayInstanceImp::setLength(unsigned newLength, ExecState *exec)
   length = newLength;
 }
 
-void ArrayInstanceImp::mark()
+void ArrayInstance::mark()
 {
-  ObjectImp::mark();
+  JSObject::mark();
   unsigned l = storageLength;
   for (unsigned i = 0; i < l; ++i) {
-    ValueImp *imp = storage[i];
+    JSValue *imp = storage[i];
     if (imp && !imp->marked())
       imp->mark();
   }
@@ -284,8 +285,8 @@ static ExecState *execForCompareByStringForQSort;
 static int compareByStringForQSort(const void *a, const void *b)
 {
     ExecState *exec = execForCompareByStringForQSort;
-    ValueImp *va = *(ValueImp **)a;
-    ValueImp *vb = *(ValueImp **)b;
+    JSValue *va = *(JSValue **)a;
+    JSValue *vb = *(JSValue **)b;
     if (va->isUndefined()) {
         return vb->isUndefined() ? 0 : 1;
     }
@@ -295,29 +296,29 @@ static int compareByStringForQSort(const void *a, const void *b)
     return compare(va->toString(exec), vb->toString(exec));
 }
 
-void ArrayInstanceImp::sort(ExecState *exec)
+void ArrayInstance::sort(ExecState *exec)
 {
     int lengthNotIncludingUndefined = pushUndefinedObjectsToEnd(exec);
     
     execForCompareByStringForQSort = exec;
-    qsort(storage, lengthNotIncludingUndefined, sizeof(ValueImp *), compareByStringForQSort);
+    qsort(storage, lengthNotIncludingUndefined, sizeof(JSValue *), compareByStringForQSort);
     execForCompareByStringForQSort = 0;
 }
 
 struct CompareWithCompareFunctionArguments {
-    CompareWithCompareFunctionArguments(ExecState *e, ObjectImp *cf)
+    CompareWithCompareFunctionArguments(ExecState *e, JSObject *cf)
         : exec(e)
         , compareFunction(cf)
         , globalObject(e->dynamicInterpreter()->globalObject())
     {
-        arguments.append(Undefined());
-        arguments.append(Undefined());
+        arguments.append(jsUndefined());
+        arguments.append(jsUndefined());
     }
 
     ExecState *exec;
-    ObjectImp *compareFunction;
+    JSObject *compareFunction;
     List arguments;
-    ObjectImp *globalObject;
+    JSObject *globalObject;
 };
 
 static CompareWithCompareFunctionArguments *compareWithCompareFunctionArguments;
@@ -326,8 +327,8 @@ static int compareWithCompareFunctionForQSort(const void *a, const void *b)
 {
     CompareWithCompareFunctionArguments *args = compareWithCompareFunctionArguments;
 
-    ValueImp *va = *(ValueImp **)a;
-    ValueImp *vb = *(ValueImp **)b;
+    JSValue *va = *(JSValue **)a;
+    JSValue *vb = *(JSValue **)b;
     if (va->isUndefined()) {
         return vb->isUndefined() ? 0 : 1;
     }
@@ -343,24 +344,24 @@ static int compareWithCompareFunctionForQSort(const void *a, const void *b)
     return compareResult < 0 ? -1 : compareResult > 0 ? 1 : 0;
 }
 
-void ArrayInstanceImp::sort(ExecState *exec, ObjectImp *compareFunction)
+void ArrayInstance::sort(ExecState *exec, JSObject *compareFunction)
 {
     int lengthNotIncludingUndefined = pushUndefinedObjectsToEnd(exec);
     
     CompareWithCompareFunctionArguments args(exec, compareFunction);
     compareWithCompareFunctionArguments = &args;
-    qsort(storage, lengthNotIncludingUndefined, sizeof(ValueImp *), compareWithCompareFunctionForQSort);
+    qsort(storage, lengthNotIncludingUndefined, sizeof(JSValue *), compareWithCompareFunctionForQSort);
     compareWithCompareFunctionArguments = 0;
 }
 
-unsigned ArrayInstanceImp::pushUndefinedObjectsToEnd(ExecState *exec)
+unsigned ArrayInstance::pushUndefinedObjectsToEnd(ExecState *exec)
 {
-    ValueImp *undefined = jsUndefined();
+    JSValue *undefined = jsUndefined();
 
     unsigned o = 0;
     
     for (unsigned i = 0; i != storageLength; ++i) {
-        ValueImp *v = storage[i];
+        JSValue *v = storage[i];
         if (v && v != undefined) {
             if (o != i)
                 storage[o] = v;
@@ -380,111 +381,119 @@ unsigned ArrayInstanceImp::pushUndefinedObjectsToEnd(ExecState *exec)
     while (it != sparseProperties.end()) {
       Reference ref = it++;
       storage[o] = ref.getValue(exec);
-      ObjectImp::deleteProperty(exec, ref.getPropertyName(exec));
+      JSObject::deleteProperty(exec, ref.getPropertyName(exec));
       o++;
     }
     
     if (newLength != storageLength)
-        memset(storage + o, 0, sizeof(ValueImp *) * (storageLength - o));
+        memset(storage + o, 0, sizeof(JSValue *) * (storageLength - o));
     
     return o;
 }
 
-// ------------------------------ ArrayPrototypeImp ----------------------------
+// ------------------------------ ArrayPrototype ----------------------------
 
-const ClassInfo ArrayPrototypeImp::info = {"Array", &ArrayInstanceImp::info, &arrayTable, 0};
+const ClassInfo ArrayPrototype::info = {"Array", &ArrayInstance::info, &arrayTable, 0};
 
 /* Source for array_object.lut.h
 @begin arrayTable 16
-  toString       ArrayProtoFuncImp::ToString       DontEnum|Function 0
-  toLocaleString ArrayProtoFuncImp::ToLocaleString DontEnum|Function 0
-  concat         ArrayProtoFuncImp::Concat         DontEnum|Function 1
-  join           ArrayProtoFuncImp::Join           DontEnum|Function 1
-  pop            ArrayProtoFuncImp::Pop            DontEnum|Function 0
-  push           ArrayProtoFuncImp::Push           DontEnum|Function 1
-  reverse        ArrayProtoFuncImp::Reverse        DontEnum|Function 0
-  shift          ArrayProtoFuncImp::Shift          DontEnum|Function 0
-  slice          ArrayProtoFuncImp::Slice          DontEnum|Function 2
-  sort           ArrayProtoFuncImp::Sort           DontEnum|Function 1
-  splice         ArrayProtoFuncImp::Splice         DontEnum|Function 2
-  unshift        ArrayProtoFuncImp::UnShift        DontEnum|Function 1
-  every          ArrayProtoFuncImp::Every          DontEnum|Function 5
-  forEach        ArrayProtoFuncImp::ForEach        DontEnum|Function 5
-  some           ArrayProtoFuncImp::Some           DontEnum|Function 5
+  toString       ArrayProtoFunc::ToString       DontEnum|Function 0
+  toLocaleString ArrayProtoFunc::ToLocaleString DontEnum|Function 0
+  concat         ArrayProtoFunc::Concat         DontEnum|Function 1
+  join           ArrayProtoFunc::Join           DontEnum|Function 1
+  pop            ArrayProtoFunc::Pop            DontEnum|Function 0
+  push           ArrayProtoFunc::Push           DontEnum|Function 1
+  reverse        ArrayProtoFunc::Reverse        DontEnum|Function 0
+  shift          ArrayProtoFunc::Shift          DontEnum|Function 0
+  slice          ArrayProtoFunc::Slice          DontEnum|Function 2
+  sort           ArrayProtoFunc::Sort           DontEnum|Function 1
+  splice         ArrayProtoFunc::Splice         DontEnum|Function 2
+  unshift        ArrayProtoFunc::UnShift        DontEnum|Function 1
+  every          ArrayProtoFunc::Every          DontEnum|Function 1
+  forEach        ArrayProtoFunc::ForEach        DontEnum|Function 1
+  some           ArrayProtoFunc::Some           DontEnum|Function 1
+  indexOf        ArrayProtoFunc::IndexOf        DontEnum|Function 1
+  filter         ArrayProtoFunc::Filter         DontEnum|Function 1
+  map            ArrayProtoFunc::Map            DontEnum|Function 1
 @end
 */
 
 // ECMA 15.4.4
-ArrayPrototypeImp::ArrayPrototypeImp(ExecState *exec,
-                                     ObjectPrototypeImp *objProto)
-  : ArrayInstanceImp(objProto, 0)
+ArrayPrototype::ArrayPrototype(ExecState *exec,
+                                     ObjectPrototype *objProto)
+  : ArrayInstance(objProto, 0)
 {
-  setInternalValue(Null());
+  setInternalValue(jsNull());
 }
 
-bool ArrayPrototypeImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+bool ArrayPrototype::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  return getStaticFunctionSlot<ArrayProtoFuncImp, ArrayInstanceImp>(exec, &arrayTable, this, propertyName, slot);
+  return getStaticFunctionSlot<ArrayProtoFunc, ArrayInstance>(exec, &arrayTable, this, propertyName, slot);
 }
 
-// ------------------------------ ArrayProtoFuncImp ----------------------------
+// ------------------------------ ArrayProtoFunc ----------------------------
 
-ArrayProtoFuncImp::ArrayProtoFuncImp(ExecState *exec, int i, int len)
+ArrayProtoFunc::ArrayProtoFunc(ExecState *exec, int i, int len)
   : InternalFunctionImp(
-    static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype())
+    static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype())
     ), id(i)
 {
-  put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum);
+  put(exec,lengthPropertyName,jsNumber(len),DontDelete|ReadOnly|DontEnum);
 }
 
-bool ArrayProtoFuncImp::implementsCall() const
+bool ArrayProtoFunc::implementsCall() const
 {
   return true;
 }
 
-static ValueImp *getProperty(ExecState *exec, ObjectImp *obj, unsigned index)
+static JSValue *getProperty(ExecState *exec, JSObject *obj, unsigned index)
 {
     PropertySlot slot;
     if (!obj->getPropertySlot(exec, index, slot))
         return NULL;
-    return slot.getValue(exec, index);
+    return slot.getValue(exec, obj, index);
 }
 
 // ECMA 15.4.4
-ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   unsigned length = thisObj->get(exec,lengthPropertyName)->toUInt32(exec);
 
-  ValueImp *result = 0; // work around gcc 4.0 bug in uninitialized variable warning
+  JSValue *result = 0; // work around gcc 4.0 bug in uninitialized variable warning
   
   switch (id) {
   case ToLocaleString:
   case ToString:
 
-    if (!thisObj->inherits(&ArrayInstanceImp::info))
+    if (!thisObj->inherits(&ArrayInstance::info))
       return throwError(exec, TypeError);
 
     // fall through
   case Join: {
+    static HashSet<JSObject*> visitedElems;
+    if (visitedElems.contains(thisObj))
+      return jsString("");
+
     UString separator = ",";
     UString str = "";
 
+    visitedElems.add(thisObj);
     if (id == Join && !args[0]->isUndefined())
       separator = args[0]->toString(exec);
     for (unsigned int k = 0; k < length; k++) {
       if (k >= 1)
         str += separator;
       
-      ValueImp *element = thisObj->get(exec, k);
+      JSValue *element = thisObj->get(exec, k);
       if (element->isUndefinedOrNull())
         continue;
 
       bool fallback = false;
       if (id == ToLocaleString) {
-        ObjectImp *o = element->toObject(exec);
-        ValueImp *conversionFunction = o->get(exec, toLocaleStringPropertyName);
-        if (conversionFunction->isObject() && static_cast<ObjectImp *>(conversionFunction)->implementsCall()) {
-          str += static_cast<ObjectImp *>(conversionFunction)->call(exec, o, List())->toString(exec);
+        JSObject *o = element->toObject(exec);
+        JSValue *conversionFunction = o->get(exec, toLocaleStringPropertyName);
+        if (conversionFunction->isObject() && static_cast<JSObject *>(conversionFunction)->implementsCall()) {
+          str += static_cast<JSObject *>(conversionFunction)->call(exec, o, List())->toString(exec);
         } else {
           // try toString() fallback
           fallback = true;
@@ -493,10 +502,10 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
 
       if (id == ToString || id == Join || fallback) {
         if (element->isObject()) {
-          ObjectImp *o = static_cast<ObjectImp *>(element);
-          ValueImp *conversionFunction = o->get(exec, toStringPropertyName);
-          if (conversionFunction->isObject() && static_cast<ObjectImp *>(conversionFunction)->implementsCall()) {
-            str += static_cast<ObjectImp *>(conversionFunction)->call(exec, o, List())->toString(exec);
+          JSObject *o = static_cast<JSObject *>(element);
+          JSValue *conversionFunction = o->get(exec, toStringPropertyName);
+          if (conversionFunction->isObject() && static_cast<JSObject *>(conversionFunction)->implementsCall()) {
+            str += static_cast<JSObject *>(conversionFunction)->call(exec, o, List())->toString(exec);
           } else {
             return throwError(exec, RangeError, "Can't convert " + o->className() + " object to string");
           }
@@ -508,24 +517,25 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
       if ( exec->hadException() )
         break;
     }
-    result = String(str);
+    visitedElems.remove(thisObj);
+    result = jsString(str);
     break;
   }
   case Concat: {
-    ObjectImp *arr = static_cast<ObjectImp *>(exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty()));
+    JSObject *arr = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty()));
     int n = 0;
-    ValueImp *curArg = thisObj;
-    ObjectImp *curObj = static_cast<ObjectImp *>(thisObj);
+    JSValue *curArg = thisObj;
+    JSObject *curObj = static_cast<JSObject *>(thisObj);
     ListIterator it = args.begin();
     for (;;) {
       if (curArg->isObject() &&
-          curObj->inherits(&ArrayInstanceImp::info)) {
+          curObj->inherits(&ArrayInstance::info)) {
         unsigned int k = 0;
         // Older versions tried to optimize out getting the length of thisObj
         // by checking for n != 0, but that doesn't work if thisObj is an empty array.
         length = curObj->get(exec,lengthPropertyName)->toUInt32(exec);
         while (k < length) {
-          if (ValueImp *v = getProperty(exec, curObj, k))
+          if (JSValue *v = getProperty(exec, curObj, k))
             arr->put(exec, n, v);
           n++;
           k++;
@@ -537,20 +547,20 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
       if (it == args.end())
         break;
       curArg = *it;
-      curObj = static_cast<ObjectImp *>(it++); // may be 0
+      curObj = static_cast<JSObject *>(it++); // may be 0
     }
-    arr->put(exec,lengthPropertyName, Number(n), DontEnum | DontDelete);
+    arr->put(exec,lengthPropertyName, jsNumber(n), DontEnum | DontDelete);
 
     result = arr;
     break;
   }
   case Pop:{
     if (length == 0) {
-      thisObj->put(exec, lengthPropertyName, Number(length), DontEnum | DontDelete);
-      result = Undefined();
+      thisObj->put(exec, lengthPropertyName, jsNumber(length), DontEnum | DontDelete);
+      result = jsUndefined();
     } else {
       result = thisObj->get(exec, length - 1);
-      thisObj->put(exec, lengthPropertyName, Number(length - 1), DontEnum | DontDelete);
+      thisObj->put(exec, lengthPropertyName, jsNumber(length - 1), DontEnum | DontDelete);
     }
     break;
   }
@@ -558,8 +568,8 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
     for (int n = 0; n < args.size(); n++)
       thisObj->put(exec, length + n, args[n]);
     length += args.size();
-    thisObj->put(exec,lengthPropertyName, Number(length), DontEnum | DontDelete);
-    result = Number(length);
+    thisObj->put(exec,lengthPropertyName, jsNumber(length), DontEnum | DontDelete);
+    result = jsNumber(length);
     break;
   }
   case Reverse: {
@@ -568,8 +578,8 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
 
     for (unsigned int k = 0; k < middle; k++) {
       unsigned lk1 = length - k - 1;
-      ValueImp *obj2 = getProperty(exec, thisObj, lk1);
-      ValueImp *obj = getProperty(exec, thisObj, k);
+      JSValue *obj2 = getProperty(exec, thisObj, lk1);
+      JSValue *obj = getProperty(exec, thisObj, k);
 
       if (obj2) 
         thisObj->put(exec, k, obj2);
@@ -586,18 +596,18 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
   }
   case Shift: {
     if (length == 0) {
-      thisObj->put(exec, lengthPropertyName, Number(length), DontEnum | DontDelete);
-      result = Undefined();
+      thisObj->put(exec, lengthPropertyName, jsNumber(length), DontEnum | DontDelete);
+      result = jsUndefined();
     } else {
       result = thisObj->get(exec, 0);
       for(unsigned int k = 1; k < length; k++) {
-        if (ValueImp *obj = getProperty(exec, thisObj, k))
+        if (JSValue *obj = getProperty(exec, thisObj, k))
           thisObj->put(exec, k-1, obj);
         else
           thisObj->deleteProperty(exec, k-1);
       }
       thisObj->deleteProperty(exec, length - 1);
-      thisObj->put(exec, lengthPropertyName, Number(length - 1), DontEnum | DontDelete);
+      thisObj->put(exec, lengthPropertyName, jsNumber(length - 1), DontEnum | DontDelete);
     }
     break;
   }
@@ -605,7 +615,7 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
     // http://developer.netscape.com/docs/manuals/js/client/jsref/array.htm#1193713 or 15.4.4.10
 
     // We return a new array
-    ObjectImp *resObj = static_cast<ObjectImp *>(exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty()));
+    JSObject *resObj = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty()));
     result = resObj;
     double begin = 0;
     if (!args[0]->isUndefined()) {
@@ -637,10 +647,10 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
     int b = static_cast<int>(begin);
     int e = static_cast<int>(end);
     for(int k = b; k < e; k++, n++) {
-      if (ValueImp *v = getProperty(exec, thisObj, k))
+      if (JSValue *v = getProperty(exec, thisObj, k))
         resObj->put(exec, n, v);
     }
-    resObj->put(exec, lengthPropertyName, Number(n), DontEnum | DontDelete);
+    resObj->put(exec, lengthPropertyName, jsNumber(n), DontEnum | DontDelete);
     break;
   }
   case Sort:{
@@ -649,7 +659,7 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
     for ( unsigned int i = 0 ; i<length ; ++i )
       printf("KJS Array::Sort: %d: %s\n", i, thisObj->get(exec, i)->toString(exec).ascii() );
 #endif
-    ObjectImp *sortFunction = NULL;
+    JSObject *sortFunction = NULL;
     if (!args[0]->isUndefined())
       {
         sortFunction = args[0]->toObject(exec);
@@ -657,17 +667,17 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
           sortFunction = NULL;
       }
     
-    if (thisObj->classInfo() == &ArrayInstanceImp::info) {
+    if (thisObj->classInfo() == &ArrayInstance::info) {
       if (sortFunction)
-        ((ArrayInstanceImp *)thisObj)->sort(exec, sortFunction);
+        ((ArrayInstance *)thisObj)->sort(exec, sortFunction);
       else
-        ((ArrayInstanceImp *)thisObj)->sort(exec);
+        ((ArrayInstance *)thisObj)->sort(exec);
       result = thisObj;
       break;
     }
 
     if (length == 0) {
-      thisObj->put(exec, lengthPropertyName, Number(0), DontEnum | DontDelete);
+      thisObj->put(exec, lengthPropertyName, jsNumber(0), DontEnum | DontDelete);
       result = thisObj;
       break;
     }
@@ -676,12 +686,12 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
     // or quicksort, and much less swapping than bubblesort/insertionsort.
     for ( unsigned int i = 0 ; i<length-1 ; ++i )
       {
-        ValueImp *iObj = thisObj->get(exec,i);
+        JSValue *iObj = thisObj->get(exec,i);
         unsigned int themin = i;
-        ValueImp *minObj = iObj;
+        JSValue *minObj = iObj;
         for ( unsigned int j = i+1 ; j<length ; ++j )
           {
-            ValueImp *jObj = thisObj->get(exec,j);
+            JSValue *jObj = thisObj->get(exec,j);
             double cmp;
             if (jObj->isUndefined()) {
               cmp = 1; // don't check minObj because there's no need to differentiate == (0) from > (1)
@@ -719,7 +729,7 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
   }
   case Splice: {
     // 15.4.4.12 - oh boy this is huge
-    ObjectImp *resObj = static_cast<ObjectImp *>(exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty()));
+    JSObject *resObj = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty()));
     result = resObj;
     int begin = args[0]->toUInt32(exec);
     if ( begin < 0 )
@@ -730,10 +740,10 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
 
     //printf( "Splicing from %d, deleteCount=%d \n", begin, deleteCount );
     for(unsigned int k = 0; k < deleteCount; k++) {
-      if (ValueImp *v = getProperty(exec, thisObj, k+begin))
+      if (JSValue *v = getProperty(exec, thisObj, k+begin))
         resObj->put(exec, k, v);
     }
-    resObj->put(exec, lengthPropertyName, Number(deleteCount), DontEnum | DontDelete);
+    resObj->put(exec, lengthPropertyName, jsNumber(deleteCount), DontEnum | DontDelete);
 
     unsigned int additionalArgs = maxInt( args.size() - 2, 0 );
     if ( additionalArgs != deleteCount )
@@ -742,7 +752,7 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
       {
         for ( unsigned int k = begin; k < length - deleteCount; ++k )
         {
-          if (ValueImp *v = getProperty(exec, thisObj, k+deleteCount))
+          if (JSValue *v = getProperty(exec, thisObj, k+deleteCount))
             thisObj->put(exec, k+additionalArgs, v);
           else
             thisObj->deleteProperty(exec, k+additionalArgs);
@@ -754,7 +764,7 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
       {
         for ( unsigned int k = length - deleteCount; (int)k > begin; --k )
         {
-          if (ValueImp *obj = getProperty(exec, thisObj, k + deleteCount - 1))
+          if (JSValue *obj = getProperty(exec, thisObj, k + deleteCount - 1))
             thisObj->put(exec, k + additionalArgs - 1, obj);
           else
             thisObj->deleteProperty(exec, k+additionalArgs-1);
@@ -765,23 +775,66 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
     {
       thisObj->put(exec, k+begin, args[k+2]);
     }
-    thisObj->put(exec, lengthPropertyName, Number(length - deleteCount + additionalArgs), DontEnum | DontDelete);
+    thisObj->put(exec, lengthPropertyName, jsNumber(length - deleteCount + additionalArgs), DontEnum | DontDelete);
     break;
   }
   case UnShift: { // 15.4.4.13
     unsigned int nrArgs = args.size();
     for ( unsigned int k = length; k > 0; --k )
     {
-      if (ValueImp *v = getProperty(exec, thisObj, k - 1))
+      if (JSValue *v = getProperty(exec, thisObj, k - 1))
         thisObj->put(exec, k+nrArgs-1, v);
       else
         thisObj->deleteProperty(exec, k+nrArgs-1);
     }
     for ( unsigned int k = 0; k < nrArgs; ++k )
       thisObj->put(exec, k, args[k]);
-    result = Number(length + nrArgs);
+    result = jsNumber(length + nrArgs);
     thisObj->put(exec, lengthPropertyName, result, DontEnum | DontDelete);
     break;
+  }
+  case Filter:
+  case Map: {
+    JSObject *eachFunction = args[0]->toObject(exec);
+    
+    if (!eachFunction->implementsCall())
+      return throwError(exec, TypeError);
+    
+    JSObject *applyThis = args[1]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[1]->toObject(exec);
+    JSObject *resultArray;
+    
+    if (id == Filter)
+      resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty()));
+    else {
+      List args;
+      args.append(jsNumber(length));
+      resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, args));
+    }
+    
+    unsigned filterIndex = 0;
+    for (unsigned k = 0; k < length && !exec->hadException(); ++k) {
+      PropertySlot slot;
+
+      if (!thisObj->getPropertySlot(exec, k, slot))
+         continue;
+        
+      JSValue *v = slot.getValue(exec, thisObj, k);
+      
+      List eachArguments;
+      
+      eachArguments.append(v);
+      eachArguments.append(jsNumber(k));
+      eachArguments.append(thisObj);
+      
+      JSValue *result = eachFunction->call(exec, applyThis, eachArguments);
+      
+      if (id == Map)
+        resultArray->put(exec, k, result);
+      else if (result->toBoolean(exec))
+        resultArray->put(exec, filterIndex++, v);
+    }
+    
+    return resultArray;
   }
   case Every:
   case ForEach:
@@ -791,40 +844,71 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
     //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:forEach
     //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:some
     
-    ObjectImp *eachFunction = args[0]->toObject(exec);
+    JSObject *eachFunction = args[0]->toObject(exec);
     
     if (!eachFunction->implementsCall())
       return throwError(exec, TypeError);
     
-    ObjectImp *applyThis = args[1]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[1]->toObject(exec);
+    JSObject *applyThis = args[1]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[1]->toObject(exec);
     
     if (id == Some || id == Every)
-      result = Boolean(id == Every);
+      result = jsBoolean(id == Every);
     else
       result = thisObj;
     
     for (unsigned k = 0; k < length && !exec->hadException(); ++k) {
-      
+      PropertySlot slot;
+        
+      if (!thisObj->getPropertySlot(exec, k, slot))
+        continue;
+
       List eachArguments;
       
-      eachArguments.append(thisObj->get(exec, k));
-      eachArguments.append(Number(k));
+      eachArguments.append(slot.getValue(exec, thisObj, k));
+      eachArguments.append(jsNumber(k));
       eachArguments.append(thisObj);
       
       bool predicateResult = eachFunction->call(exec, applyThis, eachArguments)->toBoolean(exec);
       
       if (id == Every && !predicateResult) {
-        result = Boolean(false);
+        result = jsBoolean(false);
         break;
       }
       if (id == Some && predicateResult) {
-        result = Boolean(true);
+        result = jsBoolean(true);
         break;
       }
     }
     break;
   }
-    
+
+  case IndexOf: {
+    // JavaScript 1.5 Extension by Mozilla
+    // Documentation: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:indexOf
+
+    unsigned index = 0;
+    double d = args[1]->toInteger(exec);
+    if (d < 0)
+        d += length;
+    if (d > 0) {
+        if (d > length)
+            index = length;
+        else
+            index = static_cast<unsigned>(d);
+    }
+
+    JSValue* searchElement = args[0];
+    for (; index < length; ++index) {
+        JSValue* e = getProperty(exec, thisObj, index);
+        if (!e)
+            e = jsUndefined();
+        if (strictEqual(exec, searchElement, e))
+            return jsNumber(index);
+    }
+
+    return jsNumber(-1);
+  }
+
   default:
     assert(0);
     result = 0;
@@ -836,15 +920,15 @@ ValueImp *ArrayProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj,
 // ------------------------------ ArrayObjectImp -------------------------------
 
 ArrayObjectImp::ArrayObjectImp(ExecState *exec,
-                               FunctionPrototypeImp *funcProto,
-                               ArrayPrototypeImp *arrayProto)
+                               FunctionPrototype *funcProto,
+                               ArrayPrototype *arrayProto)
   : InternalFunctionImp(funcProto)
 {
   // ECMA 15.4.3.1 Array.prototype
-  put(exec,prototypePropertyName, arrayProto, DontEnum|DontDelete|ReadOnly);
+  put(exec, prototypePropertyName, arrayProto, DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
-  put(exec,lengthPropertyName, Number(1), ReadOnly|DontDelete|DontEnum);
+  put(exec, lengthPropertyName, jsNumber(1), ReadOnly|DontDelete|DontEnum);
 }
 
 bool ArrayObjectImp::implementsConstruct() const
@@ -853,18 +937,18 @@ bool ArrayObjectImp::implementsConstruct() const
 }
 
 // ECMA 15.4.2
-ObjectImp *ArrayObjectImp::construct(ExecState *exec, const List &args)
+JSObject *ArrayObjectImp::construct(ExecState *exec, const List &args)
 {
   // a single numeric argument denotes the array size (!)
   if (args.size() == 1 && args[0]->isNumber()) {
     uint32_t n = args[0]->toUInt32(exec);
     if (n != args[0]->toNumber(exec))
       return throwError(exec, RangeError, "Array size is not a small enough positive integer.");
-    return new ArrayInstanceImp(exec->lexicalInterpreter()->builtinArrayPrototype(), n);
+    return new ArrayInstance(exec->lexicalInterpreter()->builtinArrayPrototype(), n);
   }
 
   // otherwise the array is constructed with the arguments in it
-  return new ArrayInstanceImp(exec->lexicalInterpreter()->builtinArrayPrototype(), args);
+  return new ArrayInstance(exec->lexicalInterpreter()->builtinArrayPrototype(), args);
 }
 
 bool ArrayObjectImp::implementsCall() const
@@ -873,7 +957,7 @@ bool ArrayObjectImp::implementsCall() const
 }
 
 // ECMA 15.6.1
-ValueImp *ArrayObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
+JSValue *ArrayObjectImp::callAsFunction(ExecState *exec, JSObject */*thisObj*/, const List &args)
 {
   // equivalent to 'new Array(....)'
   return construct(exec,args);

@@ -24,7 +24,6 @@
 #ifndef _KJSCOLLECTOR_H_
 #define _KJSCOLLECTOR_H_
 
-#include "global.h"
 #include "value.h"
 
 #define KJS_MEM_LIMIT 500000
@@ -63,6 +62,9 @@ namespace KJS {
      */
     static void finalCheck();
 #endif
+
+    static void protect(JSValue *);
+    static void unprotect(JSValue *);
 
     static size_t numInterpreters();
     static size_t numGCNotAllowedObjects();

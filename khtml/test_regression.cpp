@@ -431,13 +431,13 @@ KHTMLPartObject::KHTMLPartObject(ExecState *exec, KHTMLPart *_part)
     putDirect("processEvents", new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::ProcessEvents,0), DontEnum);
 }
 
-KJS::ValueImp *KHTMLPartObject::winGetter(KJS::ExecState *, const KJS::Identifier&, const KJS::PropertySlot& slot)
+KJS::ValueImp *KHTMLPartObject::winGetter(KJS::ExecState *, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot& slot)
 {
     KHTMLPartObject* thisObj = static_cast<KHTMLPartObject*>(slot.slotBase());
     return KJS::Window::retrieveWindow(thisObj->m_part);
 }
 
-KJS::ValueImp *KHTMLPartObject::docGetter(KJS::ExecState *exec, const KJS::Identifier&, const KJS::PropertySlot& slot)
+KJS::ValueImp *KHTMLPartObject::docGetter(KJS::ExecState *exec, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot& slot)
 {
     KHTMLPartObject* thisObj = static_cast<KHTMLPartObject*>(slot.slotBase());
     return getDOMNode(exec, thisObj->m_part->document().handle());
@@ -1424,7 +1424,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     if ( filename.startsWith( "domts/" ) ) {
         QString functionname;
 
-        KJS::Completion comp = m_part->jScriptInterpreter()->evaluate("exposeTestFunctionNames();");
+        KJS::Completion comp = m_part->jScriptInterpreter()->evaluate(filename, 0, "exposeTestFunctionNames();");
         /*
          *  Error handling
          */
@@ -1447,7 +1447,7 @@ void RegressionTest::testStaticFile(const QString & filename)
             return;
         }
 
-        KJS::Completion comp2 = m_part->jScriptInterpreter()->evaluate("setUpPage(); " + functionname + "();" );
+        KJS::Completion comp2 = m_part->jScriptInterpreter()->evaluate(filename, 0, "setUpPage(); " + functionname + "();" );
         bool success = ( comp2.complType() == ReturnValue || comp2.complType() == Normal );
         QString description = "DOMTS";
         if ( comp2.complType() == Throw ) {
@@ -1523,7 +1523,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
 
     saw_failure = false;
     ignore_errors = false;
-    Completion c = interp.evaluate(UString( code ) );
+    Completion c = interp.evaluate(filename, 0, UString( code ) );
 
     if ( report_result && !ignore_errors) {
         bool expected_failure = filename.endsWith( "-n.js" );

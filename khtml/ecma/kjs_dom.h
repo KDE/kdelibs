@@ -94,8 +94,8 @@ namespace KJS {
   private:
     SharedPtr<DOM::NodeListImpl> m_impl;
 
-    static ValueImp *nameGetter(ExecState *, const Identifier&, const PropertySlot&);
-    static ValueImp *lengthGetter(ExecState *, const Identifier&, const PropertySlot&);
+    static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+    static ValueImp *lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
   };
 
   class DOMDocument : public DOMNode {
@@ -151,7 +151,7 @@ namespace KJS {
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
            SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS };
   private:
-    static ValueImp *attributeGetter(ExecState *exec, const Identifier&, const PropertySlot& slot);
+    static ValueImp *attributeGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
   };
 
   DOM::ElementImpl *toElement(ValueImp *); // returns 0 if passed-in value is not a DOMElement object
@@ -203,7 +203,7 @@ namespace KJS {
 
     ValueImp* indexGetter(ExecState *exec, unsigned index);
   private:
-    static ValueImp *lengthGetter(ExecState *, const Identifier&, const PropertySlot& slot);
+    static ValueImp *lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot);
     SharedPtr<DOM::NamedNodeMapImpl> m_impl;
   };
 
@@ -286,7 +286,7 @@ namespace KJS {
 
     ValueImp* indexGetter(ExecState *exec, unsigned index);
   private:
-    static ValueImp *lengthGetter(ExecState *, const Identifier&, const PropertySlot& slot);
+    static ValueImp *lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot);
     QList<SharedPtr<DOM::NodeImpl> > m_nodes;
   };
 

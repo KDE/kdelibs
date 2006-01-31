@@ -30,13 +30,13 @@ libkjs_la_SOURCES =  ustring.cpp date_object.cpp collector.cpp nodes.cpp \
 		     debugger.cpp value.cpp list.cpp object.cpp \
 		     interpreter.cpp property_map.cpp property_slot.cpp nodes2string.cpp \
 		     identifier.cpp reference.cpp reference_list.cpp \
-		     scope_chain.cpp dtoa.cpp protected_values.cpp fpconst.cpp
+		     scope_chain.cpp dtoa.cpp fpconst.cpp JSLock.cpp
 
 kjsincludedir = $(includedir)/kjs
 kjsinclude_HEADERS = value.h types.h object.h interpreter.h operations.h \
 		     ustring.h lookup.h global.h identifier.h property_map.h \
 		     property_slot.h reference.h reference_list.h completion.h \
-		     scope_chain.h list.h simple_number.h function.h
+		     scope_chain.h list.h simple_number.h function.h JSLock.h 
 
 noinst_HEADERS = internal.h collector.h nodes.h lexer.h lexer.lut.h \
 		 grammar.h regexp.cpp function_object.h string_object.h \

@@ -52,7 +52,7 @@ namespace KJS {
 
     ValueImp *indexGetter(ExecState* exec, unsigned index);
   private:
-    static ValueImp *cssPropertyGetter(ExecState *, const Identifier&, const PropertySlot&);
+    static ValueImp *cssPropertyGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
 
     SharedPtr<DOM::CSSStyleDeclarationImpl> m_impl;
   };
@@ -96,7 +96,7 @@ namespace KJS {
     enum { Item, Length };
     ValueImp *indexGetter(ExecState* exec, unsigned index);
   private:
-    static ValueImp *nameGetter(ExecState *, const Identifier&, const PropertySlot&);
+    static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
   
     SharedPtr<DOM::StyleSheetListImpl> m_impl;
     SharedPtr<DOM::DocumentImpl>       m_doc;

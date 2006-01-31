@@ -27,9 +27,9 @@
 
 namespace KJS {
 
-    class ObjectImp;
+    class JSObject;
     class ReferenceList;
-    class ValueImp;
+    class JSValue;
     
     class SavedProperty;
     
@@ -59,8 +59,9 @@ namespace KJS {
     {
         PropertyMapHashTableEntry() : key(0) { }
         UString::Rep *key;
-        ValueImp *value;
-        int attributes;
+        JSValue *value;
+        short attributes;
+        short globalGetterSetterFlag;
         int index;
     };
 /**
@@ -74,27 +75,32 @@ namespace KJS {
 
         void clear();
         
-        void put(const Identifier &name, ValueImp *value, int attributes);
+        void put(const Identifier &name, JSValue *value, int attributes, bool roCheck = false);
         void remove(const Identifier &name);
-        ValueImp *get(const Identifier &name) const;
-        ValueImp *get(const Identifier &name, int &attributes) const;
-        ValueImp **getLocation(const Identifier &name);
+        JSValue *get(const Identifier &name) const;
+        JSValue *get(const Identifier &name, int &attributes) const;
+        JSValue **getLocation(const Identifier &name);
 
         void mark() const;
-        void addEnumerablesToReferenceList(ReferenceList &, ObjectImp *) const;
-	void addSparseArrayPropertiesToReferenceList(ReferenceList &, ObjectImp *) const;
+        void addEnumerablesToReferenceList(ReferenceList &, JSObject *) const;
+        void addSparseArrayPropertiesToReferenceList(ReferenceList &, JSObject *) const;
 
         void save(SavedProperties &) const;
         void restore(const SavedProperties &p);
 
         bool isEmpty() const;
+
+        bool hasGetterSetterProperties() const { return _singleEntry.globalGetterSetterFlag; }
+        void setHasGetterSetterProperties(bool f) { _singleEntry.globalGetterSetterFlag = f; }
+
+        bool containsGettersOrSetters() const;
     private:
         static bool keysMatch(const UString::Rep *, const UString::Rep *);
         void expand();
         void rehash();
         void rehash(int newTableSize);
         
-        void insert(UString::Rep *, ValueImp *value, int attributes, int index);
+        void insert(UString::Rep *, JSValue *value, int attributes, int index);
         
         void checkConsistency();
         
@@ -106,8 +112,9 @@ namespace KJS {
         Entry _singleEntry;
     };
 
-inline PropertyMap::PropertyMap() : _table(NULL)
+inline PropertyMap::PropertyMap() : _table(0)
 {
+    _singleEntry.globalGetterSetterFlag = 0;
 }
 
 } // namespace

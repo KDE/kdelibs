@@ -64,7 +64,7 @@ namespace KJS {
 
 // ------------------------------ Object ---------------------------------------
 
-ValueImp *ObjectImp::call(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
 {
   assert(implementsCall());
 
@@ -93,7 +93,7 @@ ValueImp *ObjectImp::call(ExecState *exec, ObjectImp *thisObj, const List &args)
   }
 #endif
 
-  ValueImp *ret = callAsFunction(exec,thisObj,args); 
+  JSValue *ret = callAsFunction(exec,thisObj,args); 
 
 #if KJS_MAX_STACK > 0
   --depth;
@@ -112,13 +112,13 @@ ValueImp *ObjectImp::call(ExecState *exec, ObjectImp *thisObj, const List &args)
   return ret;
 }
 
-// ------------------------------ ObjectImp ------------------------------------
+// ------------------------------ JSObject ------------------------------------
 
-void ObjectImp::mark()
+void JSObject::mark()
 {
-  AllocatedValueImp::mark();
+  JSCell::mark();
 
-  ValueImp *proto = _proto;
+  JSValue *proto = _proto;
   if (!proto->marked())
     proto->mark();
 
@@ -130,17 +130,17 @@ void ObjectImp::mark()
   _scope.mark();
 }
 
-Type ObjectImp::type() const
+Type JSObject::type() const
 {
   return ObjectType;
 }
 
-const ClassInfo *ObjectImp::classInfo() const
+const ClassInfo *JSObject::classInfo() const
 {
   return 0;
 }
 
-UString ObjectImp::className() const
+UString JSObject::className() const
 {
   const ClassInfo *ci = classInfo();
   if ( ci )
@@ -148,50 +148,55 @@ UString ObjectImp::className() const
   return "Object";
 }
 
-ValueImp *ObjectImp::get(ExecState *exec, const Identifier &propertyName) const
+JSValue *JSObject::get(ExecState *exec, const Identifier &propertyName) const
 {
   PropertySlot slot;
 
-  if (const_cast<ObjectImp *>(this)->getPropertySlot(exec, propertyName, slot))
-    return slot.getValue(exec, propertyName);
+  if (const_cast<JSObject *>(this)->getPropertySlot(exec, propertyName, slot))
+    return slot.getValue(exec, const_cast<JSObject *>(this), propertyName);
     
-  return Undefined();
+  return jsUndefined();
 }
 
-ValueImp *ObjectImp::get(ExecState *exec, unsigned propertyName) const
+JSValue *JSObject::get(ExecState *exec, unsigned propertyName) const
 {
   PropertySlot slot;
-  if (const_cast<ObjectImp *>(this)->getPropertySlot(exec, propertyName, slot))
-    return slot.getValue(exec, propertyName);
+  if (const_cast<JSObject *>(this)->getPropertySlot(exec, propertyName, slot))
+    return slot.getValue(exec, const_cast<JSObject *>(this), propertyName);
     
-  return Undefined();
+  return jsUndefined();
 }
 
-bool ObjectImp::getPropertySlot(ExecState *exec, unsigned propertyName, PropertySlot& slot)
+bool JSObject::getPropertySlot(ExecState *exec, unsigned propertyName, PropertySlot& slot)
 {
-  ObjectImp *imp = this;
+  JSObject *imp = this;
   
   while (true) {
     if (imp->getOwnPropertySlot(exec, propertyName, slot))
       return true;
     
-    ValueImp *proto = imp->_proto;
+    JSValue *proto = imp->_proto;
     if (!proto->isObject())
       break;
     
-    imp = static_cast<ObjectImp *>(proto);
+    imp = static_cast<JSObject *>(proto);
   }
   
   return false;
 }
 
-bool ObjectImp::getOwnPropertySlot(ExecState *exec, unsigned propertyName, PropertySlot& slot)
+bool JSObject::getOwnPropertySlot(ExecState *exec, unsigned propertyName, PropertySlot& slot)
 {
   return getOwnPropertySlot(exec, Identifier::from(propertyName), slot);
 }
 
+static void throwSetterError(ExecState *exec)
+{
+  throwError(exec, TypeError, "setting a property that has only a getter");
+}
+
 // ECMA 8.6.2.2
-void ObjectImp::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
+void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
   assert(value);
 
@@ -213,55 +218,100 @@ void ObjectImp::put(ExecState *exec, const Identifier &propertyName, ValueImp *v
     return;
   }
 
+  // Check if there are any setters or getters in the prototype chain
+  JSObject *obj = this;
+  bool hasGettersOrSetters = false;
+  while (true) {
+    if (obj->_prop.hasGetterSetterProperties()) {
+      hasGettersOrSetters = true;
+      break;
+    }
+
+    if (!obj->_proto->isObject())
+      break;
+
+    obj = static_cast<JSObject *>(obj->_proto);
+  }
+
+  if (hasGettersOrSetters) {
+    obj = this;
+    while (true) {
+      int attributes;
+      if (JSValue *gs = obj->_prop.get(propertyName, attributes)) {
+        if (attributes & GetterSetter) {
+          JSObject *setterFunc = static_cast<GetterSetterImp *>(gs)->getSetter();
+
+         if (!setterFunc) {
+            throwSetterError(exec);
+            return;
+          }
+            
+          List args;
+          args.append(value);
+        
+          setterFunc->call(exec, this, args);
+          return;
+        } else {
+          // If there's an existing property on the object or one of its
+          // prototype it should be replaced, so we just break here.
+          break;
+        }
+      }
+     
+      if (!obj->_proto->isObject())
+        break;
+        
+      obj = static_cast<JSObject *>(obj->_proto);
+    }
+  }
+
   _prop.put(propertyName,value,attr);
 }
 
-void ObjectImp::put(ExecState *exec, unsigned propertyName,
-                     ValueImp *value, int attr)
+void JSObject::put(ExecState *exec, unsigned propertyName,
+                     JSValue *value, int attr)
 {
   put(exec, Identifier::from(propertyName), value, attr);
 }
 
 // ECMA 8.6.2.3
-bool ObjectImp::canPut(ExecState *, const Identifier &propertyName) const
+bool JSObject::canPut(ExecState *, const Identifier &propertyName) const
 {
   int attributes;
-  ValueImp *v = _prop.get(propertyName, attributes);
-  if (v)
-    return!(attributes & ReadOnly);
-
-  // Look in the static hashtable of properties
-  const HashEntry* e = findPropertyHashEntry(propertyName);
-  if (e)
-    return !(e->attr & ReadOnly);
-
+    
   // Don't look in the prototype here. We can always put an override
   // in the object, even if the prototype has a ReadOnly property.
-  return true;
+
+  if (!getPropertyAttributes(propertyName, attributes))
+    return true;
+  else
+    return !(attributes & ReadOnly);
 }
 
 // ECMA 8.6.2.4
-bool ObjectImp::hasProperty(ExecState *exec, const Identifier &propertyName) const
+bool JSObject::hasProperty(ExecState *exec, const Identifier &propertyName) const
 {
   PropertySlot slot;
-  return const_cast<ObjectImp *>(this)->getPropertySlot(exec, propertyName, slot);
+  return const_cast<JSObject *>(this)->getPropertySlot(exec, propertyName, slot);
 }
 
-bool ObjectImp::hasProperty(ExecState *exec, unsigned propertyName) const
+bool JSObject::hasProperty(ExecState *exec, unsigned propertyName) const
 {
   PropertySlot slot;
-  return const_cast<ObjectImp *>(this)->getPropertySlot(exec, propertyName, slot);
+  return const_cast<JSObject *>(this)->getPropertySlot(exec, propertyName, slot);
 }
 
 // ECMA 8.6.2.5
-bool ObjectImp::deleteProperty(ExecState * /*exec*/, const Identifier &propertyName)
+bool JSObject::deleteProperty(ExecState * /*exec*/, const Identifier &propertyName)
 {
   int attributes;
-  ValueImp *v = _prop.get(propertyName, attributes);
+  JSValue *v = _prop.get(propertyName, attributes);
   if (v) {
     if ((attributes & DontDelete))
       return false;
     _prop.remove(propertyName);
+    if (attributes & GetterSetter)
+        _prop.setHasGetterSetterProperties(_prop.containsGettersOrSetters());
     return true;
   }
 
@@ -272,7 +322,7 @@ bool ObjectImp::deleteProperty(ExecState * /*exec*/, const Identifier &propertyN
   return true;
 }
 
-bool ObjectImp::deleteProperty(ExecState *exec, unsigned propertyName)
+bool JSObject::deleteProperty(ExecState *exec, unsigned propertyName)
 {
   return deleteProperty(exec, Identifier::from(propertyName));
 }
@@ -281,13 +331,13 @@ static inline
 #ifdef __GNUC__
 __attribute__((always_inline))
 #endif
-ValueImp *tryGetAndCallProperty(ExecState *exec, const ObjectImp *object, const Identifier &propertyName) {
-  ValueImp *v = object->get(exec, propertyName);
+JSValue *tryGetAndCallProperty(ExecState *exec, const JSObject *object, const Identifier &propertyName) {
+  JSValue *v = object->get(exec, propertyName);
   if (v->isObject()) {
-    ObjectImp *o = static_cast<ObjectImp*>(v);
+    JSObject *o = static_cast<JSObject*>(v);
     if (o->implementsCall()) { // spec says "not primitive type" but ...
-      ObjectImp *thisObj = const_cast<ObjectImp*>(object);
-      ValueImp *def = o->call(exec, thisObj, List::empty());
+      JSObject *thisObj = const_cast<JSObject*>(object);
+      JSValue *def = o->call(exec, thisObj, List::empty());
       Type defType = def->type();
       if (defType == UnspecifiedType || defType == UndefinedType ||
           defType == NullType || defType == BooleanType ||
@@ -300,7 +350,7 @@ ValueImp *tryGetAndCallProperty(ExecState *exec, const ObjectImp *object, const 
 }
 
 // ECMA 8.6.2.6
-ValueImp *ObjectImp::defaultValue(ExecState *exec, Type hint) const
+JSValue *JSObject::defaultValue(ExecState *exec, Type hint) const
 {
   Identifier firstPropertyName;
   Identifier secondPropertyName;
@@ -313,7 +363,7 @@ ValueImp *ObjectImp::defaultValue(ExecState *exec, Type hint) const
     secondPropertyName = toStringPropertyName;
   }
 
-  ValueImp *v;
+  JSValue *v;
   if ((v = tryGetAndCallProperty(exec, this, firstPropertyName)))
     return v;
   if ((v = tryGetAndCallProperty(exec, this, secondPropertyName)))
@@ -325,7 +375,7 @@ ValueImp *ObjectImp::defaultValue(ExecState *exec, Type hint) const
   return throwError(exec, TypeError, "No default value");
 }
 
-const HashEntry* ObjectImp::findPropertyHashEntry(const Identifier& propertyName) const
+const HashEntry* JSObject::findPropertyHashEntry(const Identifier& propertyName) const
 {
   for (const ClassInfo *info = classInfo(); info; info = info->parentClass) {
     if (const HashTable *propHashTable = info->propHashTable) {
@@ -335,46 +385,78 @@ const HashEntry* ObjectImp::findPropertyHashEntry(const Identifier& propertyName
   }
   return 0;
 }
+ 
+void JSObject::defineGetter(ExecState *exec, const Identifier& propertyName, JSObject *getterFunc)
+{
+    JSValue *o = getDirect(propertyName);
+    GetterSetterImp *gs;
 
-bool ObjectImp::implementsConstruct() const
+    if (o && o->type() == GetterSetterType) {
+        gs = static_cast<GetterSetterImp *>(o);
+    } else {
+        gs = new GetterSetterImp;
+        putDirect(propertyName, gs, GetterSetter);
+    }
+
+    _prop.setHasGetterSetterProperties(true);
+    gs->setGetter(getterFunc);
+}
+
+void JSObject::defineSetter(ExecState *exec, const Identifier& propertyName, JSObject *setterFunc)
+{
+    JSValue *o = getDirect(propertyName);
+    GetterSetterImp *gs;
+
+    if (o && o->type() == GetterSetterType) {
+        gs = static_cast<GetterSetterImp *>(o);
+    } else {
+        gs = new GetterSetterImp;
+        putDirect(propertyName, gs, GetterSetter);
+    }
+
+    _prop.setHasGetterSetterProperties(true);
+    gs->setSetter(setterFunc);
+}
+
+bool JSObject::implementsConstruct() const
 {
   return false;
 }
 
-ObjectImp *ObjectImp::construct(ExecState * /*exec*/, const List &/*args*/)
+JSObject *JSObject::construct(ExecState * /*exec*/, const List &/*args*/)
 {
   assert(false);
   return NULL;
 }
 
-ObjectImp *ObjectImp::construct(ExecState *exec, const List &args, const UString &/*sourceURL*/, int /*lineNumber*/)
+JSObject *JSObject::construct(ExecState *exec, const List &args, const UString &/*sourceURL*/, int /*lineNumber*/)
 {
   return construct(exec, args);
 }
 
-bool ObjectImp::implementsCall() const
+bool JSObject::implementsCall() const
 {
   return false;
 }
 
-ValueImp *ObjectImp::callAsFunction(ExecState * /*exec*/, ObjectImp * /*thisObj*/, const List &/*args*/)
+JSValue *JSObject::callAsFunction(ExecState * /*exec*/, JSObject * /*thisObj*/, const List &/*args*/)
 {
   assert(false);
   return NULL;
 }
 
-bool ObjectImp::implementsHasInstance() const
+bool JSObject::implementsHasInstance() const
 {
   return false;
 }
 
-bool ObjectImp::hasInstance(ExecState * /*exec*/, ValueImp * /*value*/)
+bool JSObject::hasInstance(ExecState * /*exec*/, JSValue * /*value*/)
 {
   assert(false);
   return false;
 }
 
-bool ObjectImp::propertyIsEnumerable(ExecState *exec, const Identifier &propertyName) const
+bool JSObject::propertyIsEnumerable(ExecState *exec, const Identifier &propertyName) const
 {
   int attributes;
 
@@ -384,7 +466,7 @@ bool ObjectImp::propertyIsEnumerable(ExecState *exec, const Identifier &property
     return !(attributes & DontEnum);
 }
 
-bool ObjectImp::getPropertyAttributes(const Identifier& propertyName, int& attributes) const
+bool JSObject::getPropertyAttributes(const Identifier& propertyName, int& attributes) const
 {
   if (_prop.get(propertyName, attributes))
     return true;
@@ -400,11 +482,11 @@ bool ObjectImp::getPropertyAttributes(const Identifier& propertyName, int& attri
 }
 
 
-ReferenceList ObjectImp::propList(ExecState *exec, bool recursive)
+ReferenceList JSObject::propList(ExecState *exec, bool recursive)
 {
   ReferenceList list;
   if (_proto->isObject() && recursive)
-    list = static_cast<ObjectImp*>(_proto)->propList(exec,recursive);
+    list = static_cast<JSObject*>(_proto)->propList(exec,recursive);
 
   _prop.addEnumerablesToReferenceList(list, this);
 
@@ -425,45 +507,55 @@ ReferenceList ObjectImp::propList(ExecState *exec, bool recursive)
   return list;
 }
 
-ValueImp *ObjectImp::toPrimitive(ExecState *exec, Type preferredType) const
+JSValue *JSObject::toPrimitive(ExecState *exec, Type preferredType) const
 {
   return defaultValue(exec,preferredType);
 }
 
-bool ObjectImp::toBoolean(ExecState * /*exec*/) const
+bool JSObject::toBoolean(ExecState * /*exec*/) const
 {
   return true;
 }
 
-double ObjectImp::toNumber(ExecState *exec) const
+double JSObject::toNumber(ExecState *exec) const
 {
-  ValueImp *prim = toPrimitive(exec,NumberType);
+  JSValue *prim = toPrimitive(exec,NumberType);
   if (exec->hadException()) // should be picked up soon in nodes.cpp
     return 0.0;
   return prim->toNumber(exec);
 }
 
-UString ObjectImp::toString(ExecState *exec) const
+UString JSObject::toString(ExecState *exec) const
 {
-  ValueImp *prim = toPrimitive(exec,StringType);
+  JSValue *prim = toPrimitive(exec,StringType);
   if (exec->hadException()) // should be picked up soon in nodes.cpp
     return "";
   return prim->toString(exec);
 }
 
-ObjectImp *ObjectImp::toObject(ExecState * /*exec*/) const
+JSObject *JSObject::toObject(ExecState * /*exec*/) const
 {
-  return const_cast<ObjectImp*>(this);
+  return const_cast<JSObject*>(this);
 }
 
-void ObjectImp::putDirect(const Identifier &propertyName, ValueImp *value, int attr)
+void JSObject::putDirect(const Identifier &propertyName, JSValue *value, int attr)
 {
     _prop.put(propertyName, value, attr);
 }
 
-void ObjectImp::putDirect(const Identifier &propertyName, int value, int attr)
+void JSObject::putDirect(const Identifier &propertyName, int value, int attr)
 {
     _prop.put(propertyName, jsNumber(value), attr);
+}
+
+void JSObject::fillGetterPropertySlot(PropertySlot& slot, JSValue **location)
+{
+    GetterSetterImp *gs = static_cast<GetterSetterImp *>(*location);
+    JSObject *getterFunc = gs->getGetter();
+    if (getterFunc)
+        slot.setGetterSlot(this, getterFunc);
+    else
+        slot.setUndefined(this);
 }
 
 // ------------------------------ Error ----------------------------------------
@@ -480,10 +572,10 @@ const char * const errorNamesArr[] = {
 
 const char * const * const Error::errorNames = errorNamesArr;
 
-ObjectImp *Error::create(ExecState *exec, ErrorType errtype, const UString &message,
+JSObject *Error::create(ExecState *exec, ErrorType errtype, const UString &message,
                          int lineno, int sourceId, const UString *sourceURL)
 {
-  ObjectImp *cons;
+  JSObject *cons;
   switch (errtype) {
   case EvalError:
     cons = exec->lexicalInterpreter()->builtinEvalError();
@@ -513,15 +605,15 @@ ObjectImp *Error::create(ExecState *exec, ErrorType errtype, const UString &mess
     args.append(jsString(errorNames[errtype]));
   else
     args.append(jsString(message));
-  ObjectImp *err = static_cast<ObjectImp *>(cons->construct(exec,args));
+  JSObject *err = static_cast<JSObject *>(cons->construct(exec,args));
 
   if (lineno != -1)
-    err->put(exec, "line", Number(lineno));
+    err->put(exec, "line", jsNumber(lineno));
   if (sourceId != -1)
-    err->put(exec, "sourceId", Number(sourceId));
+    err->put(exec, "sourceId", jsNumber(sourceId));
 
   if(sourceURL)
-   err->put(exec,"sourceURL", String(*sourceURL));
+   err->put(exec,"sourceURL", jsString(*sourceURL));
  
   return err;
 
@@ -538,35 +630,35 @@ ObjectImp *Error::create(ExecState *exec, ErrorType errtype, const UString &mess
 */
 }
 
-ObjectImp *Error::create(ExecState *exec, ErrorType type, const char *message)
+JSObject *Error::create(ExecState *exec, ErrorType type, const char *message)
 {
     return create(exec, type, message, -1, -1, NULL);
 }
 
-ObjectImp *throwError(ExecState *exec, ErrorType type)
+JSObject *throwError(ExecState *exec, ErrorType type)
 {
-    ObjectImp *error = Error::create(exec, type, UString(), -1, -1, NULL);
+    JSObject *error = Error::create(exec, type, UString(), -1, -1, NULL);
     exec->setException(error);
     return error;
 }
 
-ObjectImp *throwError(ExecState *exec, ErrorType type, const UString &message)
+JSObject *throwError(ExecState *exec, ErrorType type, const UString &message)
 {
-    ObjectImp *error = Error::create(exec, type, message, -1, -1, NULL);
+    JSObject *error = Error::create(exec, type, message, -1, -1, NULL);
     exec->setException(error);
     return error;
 }
 
-ObjectImp *throwError(ExecState *exec, ErrorType type, const char *message)
+JSObject *throwError(ExecState *exec, ErrorType type, const char *message)
 {
-    ObjectImp *error = Error::create(exec, type, message, -1, -1, NULL);
+    JSObject *error = Error::create(exec, type, message, -1, -1, NULL);
     exec->setException(error);
     return error;
 }
 
-ObjectImp *throwError(ExecState *exec, ErrorType type, const UString &message, int line, int sourceId, const UString *sourceURL)
+JSObject *throwError(ExecState *exec, ErrorType type, const UString &message, int line, int sourceId, const UString *sourceURL)
 {
-    ObjectImp *error = Error::create(exec, type, message, line, sourceId, sourceURL);
+    JSObject *error = Error::create(exec, type, message, line, sourceId, sourceURL);
     exec->setException(error);
     return error;
 }

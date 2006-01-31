@@ -53,7 +53,7 @@ UString::UString( const QString &s )
 {
     UChar* data = new UChar[ s.length() ];
     std::memcpy( data, s.unicode(), s.length() * sizeof( UChar ) );
-    rep = Rep::create( data, s.length() );
+    m_rep = Rep::create( data, s.length() );
 }
 
 namespace
@@ -95,7 +95,7 @@ namespace
         KInetSocketAddress m_address;
     };
 
-    struct Function : public ObjectImp
+    struct Function : public JSObject
     {
         struct ResolveError {};
 
@@ -118,7 +118,7 @@ namespace
             else return std::localtime( &now );
         }
 
-        ValueImp *checkRange( double value, double min, double max )
+        JSValue *checkRange( double value, double min, double max )
         {
             return Boolean(( min <= max && value >= min && value <= max ) || ( min > max && ( value <= min || value >= max ) ));
         }
@@ -128,7 +128,7 @@ namespace
     // @returns true if @p host doesn't contains a domain part
     struct IsPlainHostName : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 1 ) return Undefined();
             return Boolean( args[ 0 ]->toString( exec ).qstring().find( "." ) == -1 );
@@ -139,7 +139,7 @@ namespace
     // @returns true if the domain part of @p host matches @p domain
     struct DNSDomainIs : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 2 ) return Undefined();
             QString host = args[ 0 ]->toString( exec ).qstring().toLower();
@@ -152,7 +152,7 @@ namespace
     // @returns true if @p host is unqualified or equals @p fqdn
     struct LocalHostOrDomainIs : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 2 ) return Undefined();
             UString host = args[ 0 ]->toString( exec ).qstring().toLower();
@@ -166,7 +166,7 @@ namespace
     // @returns true if host can be resolved via DNS
     struct IsResolvable : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 1 ) return Undefined();
             try { Address::resolve( args[ 0 ]->toString( exec ) ); }
@@ -180,7 +180,7 @@ namespace
     //          specified via @p subnet and @p mask
     struct IsInNet : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 3 ) return Undefined();
             try
@@ -203,7 +203,7 @@ namespace
     // @returns the IP address of @p host in dotted quad notation
     struct DNSResolve : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 1 ) return Undefined();
             try { return String(Address::resolve( args[ 0 ]->toString( exec ) )); }
@@ -215,7 +215,7 @@ namespace
     // @returns the local machine's IP address in dotted quad notation
     struct MyIpAddress : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() ) return Undefined();
             char hostname[ 256 ];
@@ -230,7 +230,7 @@ namespace
     // @returns the number of dots ('.') in @p host
     struct DNSDomainLevels : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 1 ) return Undefined();
             UString host = args[ 0 ]->toString( exec );
@@ -244,7 +244,7 @@ namespace
     // @returns true if @p str matches the shell @p pattern
     struct ShExpMatch : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 2 ) return Undefined();
             QRegExp pattern( args[ 1 ]->toString( exec ).qstring(), true, true );
@@ -258,7 +258,7 @@ namespace
     // If the last argument is "GMT", GMT timezone is used, otherwise local time
     struct WeekdayRange : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() < 1 || args.size() > 3 ) return Undefined();
             static const char* const days[] =
@@ -285,7 +285,7 @@ namespace
     // presence of "GMT" as last argument) is within the given range
     struct DateRange : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() < 1 || args.size() > 7 ) return Undefined();
             static const char* const months[] =
@@ -364,7 +364,7 @@ namespace
     // of "GMT" argument) is within the given range
     struct TimeRange : public Function
     {
-        virtual ValueImp *call( ExecState* exec, ObjectImp*, const List& args )
+        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() < 1 || args.size() > 7 ) return Undefined();
 
@@ -400,7 +400,7 @@ namespace
         }
     };
 
-    void registerFunctions( ExecState* exec, ObjectImp *global )
+    void registerFunctions( ExecState* exec, JSObject *global )
     {
         global->put( exec, "isPlainHostName", new IsPlainHostName );
         global->put( exec, "dnsDomainIs", new DNSDomainIs );
@@ -422,10 +422,10 @@ namespace KPAC
     Script::Script( const QString& code )
     {
         ExecState* exec = m_interpreter.globalExec();
-        ObjectImp* global = m_interpreter.globalObject();
+        JSObject* global = m_interpreter.globalObject();
         registerFunctions( exec, global );
 
-        Completion result = m_interpreter.evaluate( code );
+        Completion result = m_interpreter.evaluate( "", 0, code );
         if ( result.complType() == Throw )
             throw Error( result.value()->toString( exec ).qstring() );
     }
@@ -433,19 +433,19 @@ namespace KPAC
     QString Script::evaluate( const KUrl& url )
     {
         ExecState *exec = m_interpreter.globalExec();
-        ValueImp *findFunc = m_interpreter.globalObject()->get( exec, "FindProxyForURL" );
-        ObjectImp *findObj = findFunc->getObject();
+        JSValue *findFunc = m_interpreter.globalObject()->get( exec, "FindProxyForURL" );
+        JSObject *findObj = findFunc->getObject();
         if (!findObj || !findObj->implementsCall())
             throw Error( "No such function FindProxyForURL" );
     
-        ObjectImp *thisObj;
+        JSObject *thisObj;
         List args;
         args.append(String(url.url()));
         args.append(String(url.host()));
-        ValueImp *retval = findObj->call( exec, thisObj, args );
+        JSValue *retval = findObj->call( exec, thisObj, args );
         
         if ( exec->hadException() ) {
-            ValueImp *ex = exec->exception();
+            JSValue *ex = exec->exception();
             exec->clearException();
             throw Error( ex->toString( exec ).qstring() );
         }

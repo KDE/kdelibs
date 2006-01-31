@@ -37,6 +37,7 @@
 #include <sys/time.h>
 #include <assert.h>
 #include <kjs/function.h>
+#include <kjs/JSLock.h>
 
 using namespace KJS;
 
@@ -96,20 +97,21 @@ KJSProxyImpl::~KJSProxyImpl()
     // This allows to delete the global-object properties, like all the protos
     m_script->globalObject()->clearProperties();
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
-    Interpreter::lock();
+    
+    JSLock::lock();
     while (Interpreter::collect())
 	    ;
-    Interpreter::unlock();
+    JSLock::unlock();
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
     delete m_script;
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting again" << endl;
     // Garbage collect - as many times as necessary
     // (we could delete an object which was holding another object, so
     // the deref() will happen too late for deleting the impl of the 2nd object).
-    Interpreter::lock();
+    JSLock::lock();
     while (Interpreter::collect())
 	    ;
-    Interpreter::unlock();
+    JSLock::unlock();
   }
 
 #ifndef NDEBUG
@@ -140,6 +142,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
     filename = "(unknown file)";
   if (KJSDebugWin::debugWindow()) {
     KJSDebugWin::debugWindow()->attach(m_script);
+    //M.O: seems to be not needed anymore?
     KJSDebugWin::debugWindow()->setNextSourceInfo(filename,baseLine);
   //    KJSDebugWin::debugWindow()->setMode(KJSDebugWin::Step);
   }
@@ -155,7 +158,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 
   KJSCPUGuard guard;
   guard.start();
-  Completion comp = m_script->evaluate(code, thisNode);
+  Completion comp = m_script->evaluate(filename, baseLine, code, thisNode);
   guard.stop();
 
   bool success = ( comp.complType() == Normal ) || ( comp.complType() == ReturnValue );
@@ -226,10 +229,10 @@ void KJSProxyImpl::clear() {
 
     // Really delete everything that can be, so that the DOM nodes get deref'ed
     //kdDebug() << k_funcinfo << "all done -> collecting" << endl;
-    Interpreter::lock();
+    JSLock::lock();
     while (Interpreter::collect())
 	    ;
-    Interpreter::unlock();
+    JSLock::unlock();
   }
 }
 

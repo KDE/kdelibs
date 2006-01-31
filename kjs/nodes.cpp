@@ -60,7 +60,7 @@ using namespace KJS;
 #define KJS_CHECKEXCEPTION \
   if (exec->hadException()) { \
     setExceptionDetailsIfNeeded(exec); \
-    ValueImp *ex = exec->exception(); \
+    JSValue *ex = exec->exception(); \
     exec->clearException(); \
     return Completion(Throw, ex); \
   } \
@@ -70,10 +70,10 @@ using namespace KJS;
 #define KJS_CHECKEXCEPTIONVALUE \
   if (exec->hadException()) { \
     setExceptionDetailsIfNeeded(exec); \
-    return Undefined(); \
+    return jsUndefined(); \
   } \
   if (Collector::outOfMemory()) \
-    return Undefined(); // will be picked up by KJS_CHECKEXCEPTION
+    return jsUndefined(); // will be picked up by KJS_CHECKEXCEPTION
 
 #define KJS_CHECKEXCEPTIONLIST \
   if (exec->hadException()) { \
@@ -116,12 +116,12 @@ Completion Node::createErrorCompletion(ExecState *exec, ErrorType e, const char 
     return Completion(Throw, Error::create(exec, e, message, lineNo(), sourceId(), &sourceURL));
 }
 
-ValueImp *Node::throwError(ExecState *exec, ErrorType e, const char *msg)
+JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg)
 {
     return KJS::throwError(exec, e, msg, lineNo(), sourceId(), &sourceURL);
 }
 
-ValueImp *Node::throwError(ExecState *exec, ErrorType e, const char *msg, ValueImp *v, Node *expr)
+JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue *v, Node *expr)
 {
     UString message = msg;
     substitute(message, v->toString(exec));
@@ -130,14 +130,14 @@ ValueImp *Node::throwError(ExecState *exec, ErrorType e, const char *msg, ValueI
 }
 
 
-ValueImp *Node::throwError(ExecState *exec, ErrorType e, const char *msg, const Identifier &label)
+JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, const Identifier &label)
 {
     UString message = msg;
     substitute(message, label.ustring());
     return KJS::throwError(exec, e, message, lineNo(), sourceId(), &sourceURL);
 }
 
-ValueImp *Node::throwError(ExecState *exec, ErrorType e, const char *msg, ValueImp *v, Node *e1, Node *e2)
+JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue *v, Node *e1, Node *e2)
 {
     UString message = msg;
     substitute(message, v->toString(exec));
@@ -146,7 +146,7 @@ ValueImp *Node::throwError(ExecState *exec, ErrorType e, const char *msg, ValueI
     return KJS::throwError(exec, e, message, lineNo(), sourceId(), &sourceURL);
 }
 
-ValueImp *Node::throwError(ExecState *exec, ErrorType e, const char *msg, ValueImp *v, Node *expr, const Identifier &label)
+JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue *v, Node *expr, const Identifier &label)
 {
     UString message = msg;
     substitute(message, v->toString(exec));
@@ -155,7 +155,7 @@ ValueImp *Node::throwError(ExecState *exec, ErrorType e, const char *msg, ValueI
     return KJS::throwError(exec, e, message, lineNo(), sourceId(), &sourceURL);
 }
 
-ValueImp *Node::throwError(ExecState *exec, ErrorType e, const char *msg, ValueImp *v, const Identifier &label)
+JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue *v, const Identifier &label)
 {
     UString message = msg;
     substitute(message, v->toString(exec));
@@ -163,19 +163,19 @@ ValueImp *Node::throwError(ExecState *exec, ErrorType e, const char *msg, ValueI
     return KJS::throwError(exec, e, message, lineNo(), sourceId(), &sourceURL);
 }
 
-ValueImp *Node::throwUndefinedVariableError(ExecState *exec, const Identifier &ident)
+JSValue *Node::throwUndefinedVariableError(ExecState *exec, const Identifier &ident)
 {
     return throwError(exec, ReferenceError, "Can't find variable: %s", ident);
 }
 
 void Node::setExceptionDetailsIfNeeded(ExecState *exec)
 {
-    ValueImp *exceptionValue = exec->exception();
+    JSValue *exceptionValue = exec->exception();
     if (exceptionValue->isObject()) {
-        ObjectImp *exception = static_cast<ObjectImp *>(exceptionValue);
+        JSObject *exception = static_cast<JSObject *>(exceptionValue);
         if (!exception->hasProperty(exec, "line") && !exception->hasProperty(exec, "sourceURL")) {
-            exception->put(exec, "line", Number(line));
-            exception->put(exec, "sourceURL", String(sourceURL));
+            exception->put(exec, "line", jsNumber(line));
+            exception->put(exec, "sourceURL", jsString(sourceURL));
         }
     }
 }
@@ -214,48 +214,48 @@ void StatementNode::processFuncDecl(ExecState *exec)
 
 // ------------------------------ NullNode -------------------------------------
 
-ValueImp *NullNode::evaluate(ExecState *)
+JSValue *NullNode::evaluate(ExecState *)
 {
-  return Null();
+  return jsNull();
 }
 
 // ------------------------------ BooleanNode ----------------------------------
 
-ValueImp *BooleanNode::evaluate(ExecState *)
+JSValue *BooleanNode::evaluate(ExecState *)
 {
   return jsBoolean(value);
 }
 
 // ------------------------------ NumberNode -----------------------------------
 
-ValueImp *NumberNode::evaluate(ExecState *)
+JSValue *NumberNode::evaluate(ExecState *)
 {
   return jsNumber(value);
 }
 
 // ------------------------------ StringNode -----------------------------------
 
-ValueImp *StringNode::evaluate(ExecState *)
+JSValue *StringNode::evaluate(ExecState *)
 {
   return jsString(value);
 }
 
 // ------------------------------ RegExpNode -----------------------------------
 
-ValueImp *RegExpNode::evaluate(ExecState *exec)
+JSValue *RegExpNode::evaluate(ExecState *exec)
 {
   List list;
   list.append(jsString(pattern));
   list.append(jsString(flags));
 
-  ObjectImp *reg = exec->lexicalInterpreter()->imp()->builtinRegExp();
+  JSObject *reg = exec->lexicalInterpreter()->imp()->builtinRegExp();
   return reg->construct(exec,list);
 }
 
 // ------------------------------ ThisNode -------------------------------------
 
 // ECMA 11.1.1
-ValueImp *ThisNode::evaluate(ExecState *exec)
+JSValue *ThisNode::evaluate(ExecState *exec)
 {
   return exec->context().imp()->thisValue();
 }
@@ -263,7 +263,7 @@ ValueImp *ThisNode::evaluate(ExecState *exec)
 // ------------------------------ ResolveNode ----------------------------------
 
 // ECMA 11.1.2 & 10.1.4
-ValueImp *ResolveNode::evaluate(ExecState *exec)
+JSValue *ResolveNode::evaluate(ExecState *exec)
 {
   const ScopeChain& chain = exec->context().imp()->scopeChain();
   ScopeChainIterator iter = chain.begin();
@@ -274,10 +274,10 @@ ValueImp *ResolveNode::evaluate(ExecState *exec)
 
   PropertySlot slot;
   do { 
-    ObjectImp *o = *iter;
+    JSObject *o = *iter;
 
     if (o->getPropertySlot(exec, ident, slot))
-      return slot.getValue(exec, ident);
+      return slot.getValue(exec, o, ident);
     
     ++iter;
   } while (iter != end);
@@ -288,7 +288,7 @@ ValueImp *ResolveNode::evaluate(ExecState *exec)
 // ------------------------------ GroupNode ------------------------------------
 
 // ECMA 11.1.6
-ValueImp *GroupNode::evaluate(ExecState *exec)
+JSValue *GroupNode::evaluate(ExecState *exec)
 {
   return group->evaluate(exec);
 }
@@ -305,12 +305,12 @@ Node *GroupNode::nodeInsideAllParens()
 // ------------------------------ ElementNode ----------------------------------
 
 // ECMA 11.1.4
-ValueImp *ElementNode::evaluate(ExecState *exec)
+JSValue *ElementNode::evaluate(ExecState *exec)
 {
-  ObjectImp *array = exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty());
+  JSObject *array = exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty());
   int length = 0;
-  for (ElementNode *n = this; n; n = n->list.get()) {
-    ValueImp *val = n->node->evaluate(exec);
+  for (ElementNode *n = this; n; n = n->next.get()) {
+    JSValue *val = n->node->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
     length += n->elision;
     array->put(exec, length++, val);
@@ -321,18 +321,18 @@ ValueImp *ElementNode::evaluate(ExecState *exec)
 // ------------------------------ ArrayNode ------------------------------------
 
 // ECMA 11.1.4
-ValueImp *ArrayNode::evaluate(ExecState *exec)
+JSValue *ArrayNode::evaluate(ExecState *exec)
 {
-  ObjectImp *array;
+  JSObject *array;
   int length;
 
   if (element) {
-    array = static_cast<ObjectImp*>(element->evaluate(exec));
+    array = static_cast<JSObject*>(element->evaluate(exec));
     KJS_CHECKEXCEPTIONVALUE
     length = opt ? array->get(exec,lengthPropertyName)->toInt32(exec) : 0;
   } else {
-    ValueImp *newArr = exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty());
-    array = static_cast<ObjectImp*>(newArr);
+    JSValue *newArr = exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty());
+    array = static_cast<JSObject*>(newArr);
     length = 0;
   }
 
@@ -345,7 +345,7 @@ ValueImp *ArrayNode::evaluate(ExecState *exec)
 // ------------------------------ ObjectLiteralNode ----------------------------
 
 // ECMA 11.1.5
-ValueImp *ObjectLiteralNode::evaluate(ExecState *exec)
+JSValue *ObjectLiteralNode::evaluate(ExecState *exec)
 {
   if (list)
     return list->evaluate(exec);
@@ -353,36 +353,57 @@ ValueImp *ObjectLiteralNode::evaluate(ExecState *exec)
   return exec->lexicalInterpreter()->builtinObject()->construct(exec,List::empty());
 }
 
-// ------------------------------ PropertyValueNode ----------------------------
+// ------------------------------ PropertyListNode -----------------------------
 
 // ECMA 11.1.5
-ValueImp *PropertyValueNode::evaluate(ExecState *exec)
+JSValue *PropertyListNode::evaluate(ExecState *exec)
 {
-  ObjectImp *obj = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
+  JSObject *obj = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
   
-  for (PropertyValueNode *p = this; p; p = p->list.get()) {
-    ValueImp *n = p->name->evaluate(exec);
+  for (PropertyListNode *p = this; p; p = p->next.get()) {
+    JSValue *n = p->node->name->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
-    ValueImp *v = p->assign->evaluate(exec);
+    JSValue *v = p->node->assign->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
-
-    obj->put(exec, Identifier(n->toString(exec)), v);
+    
+    Identifier propertyName = Identifier(n->toString(exec));
+    switch (p->node->type) {
+      case PropertyNode::Getter:
+        assert(v->isObject());
+        obj->defineGetter(exec, propertyName, static_cast<JSObject *>(v));
+        break;
+      case PropertyNode::Setter:
+        assert(v->isObject());
+        obj->defineSetter(exec, propertyName, static_cast<JSObject *>(v));
+        break;
+      case PropertyNode::Constant:
+        obj->put(exec, propertyName, v);
+        break;
+    }
   }
 
   return obj;
 }
 
-// ------------------------------ PropertyNode ---------------------------------
+// ------------------------------ PropertyNode -----------------------------
+// ECMA 11.1.5
+JSValue *PropertyNode::evaluate(ExecState *exec)
+{
+  assert(false);
+  return jsNull();
+}
+
+// ---------------------------- PropertyNameNode -------------------------------
 
 // ECMA 11.1.5
-ValueImp *PropertyNode::evaluate(ExecState *)
+JSValue *PropertyNameNode::evaluate(ExecState *)
 {
-  ValueImp *s;
+  JSValue *s;
 
   if (str.isNull()) {
-    s = String(UString::from(numeric));
+    s = jsString(UString::from(numeric));
   } else {
-    s = String(str.ustring());
+    s = jsString(str.ustring());
   }
 
   return s;
@@ -391,13 +412,13 @@ ValueImp *PropertyNode::evaluate(ExecState *)
 // ------------------------------ BracketAccessorNode --------------------------------
 
 // ECMA 11.2.1a
-ValueImp *BracketAccessorNode::evaluate(ExecState *exec)
+JSValue *BracketAccessorNode::evaluate(ExecState *exec)
 {
-  ValueImp *v1 = expr1->evaluate(exec);
+  JSValue *v1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ValueImp *v2 = expr2->evaluate(exec);
+  JSValue *v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ObjectImp *o = v1->toObject(exec);
+  JSObject *o = v1->toObject(exec);
   uint32_t i;
   if (v2->getUInt32(i))
     return o->get(exec, i);
@@ -407,9 +428,9 @@ ValueImp *BracketAccessorNode::evaluate(ExecState *exec)
 // ------------------------------ DotAccessorNode --------------------------------
 
 // ECMA 11.2.1b
-ValueImp *DotAccessorNode::evaluate(ExecState *exec)
+JSValue *DotAccessorNode::evaluate(ExecState *exec)
 {
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   return v->toObject(exec)->get(exec, ident);
 
@@ -417,7 +438,7 @@ ValueImp *DotAccessorNode::evaluate(ExecState *exec)
 
 // ------------------------------ ArgumentListNode -----------------------------
 
-ValueImp *ArgumentListNode::evaluate(ExecState *)
+JSValue *ArgumentListNode::evaluate(ExecState *)
 {
   assert(0);
   return 0; // dummy, see evaluateList()
@@ -428,8 +449,8 @@ List ArgumentListNode::evaluateList(ExecState *exec)
 {
   List l;
 
-  for (ArgumentListNode *n = this; n; n = n->list.get()) {
-    ValueImp *v = n->expr->evaluate(exec);
+  for (ArgumentListNode *n = this; n; n = n->next.get()) {
+    JSValue *v = n->expr->evaluate(exec);
     KJS_CHECKEXCEPTIONLIST
     l.append(v);
   }
@@ -439,7 +460,7 @@ List ArgumentListNode::evaluateList(ExecState *exec)
 
 // ------------------------------ ArgumentsNode --------------------------------
 
-ValueImp *ArgumentsNode::evaluate(ExecState *)
+JSValue *ArgumentsNode::evaluate(ExecState *)
 {
   assert(0);
   return 0; // dummy, see evaluateList()
@@ -458,9 +479,9 @@ List ArgumentsNode::evaluateList(ExecState *exec)
 
 // ECMA 11.2.2
 
-ValueImp *NewExprNode::evaluate(ExecState *exec)
+JSValue *NewExprNode::evaluate(ExecState *exec)
 {
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   List argList;
@@ -473,7 +494,7 @@ ValueImp *NewExprNode::evaluate(ExecState *exec)
     return throwError(exec, TypeError, "Value %s (result of expression %s) is not an object. Cannot be used with new.", v, expr.get());
   }
 
-  ObjectImp *constr = static_cast<ObjectImp*>(v);
+  JSObject *constr = static_cast<JSObject*>(v);
   if (!constr->implementsConstruct()) {
     return throwError(exec, TypeError, "Value %s (result of expression %s) is not a constructor. Cannot be used with new.", v, expr.get());
   }
@@ -482,16 +503,16 @@ ValueImp *NewExprNode::evaluate(ExecState *exec)
 }
 
 // ECMA 11.2.3
-ValueImp *FunctionCallValueNode::evaluate(ExecState *exec)
+JSValue *FunctionCallValueNode::evaluate(ExecState *exec)
 {
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   if (!v->isObject()) {
     return throwError(exec, TypeError, "Value %s (result of expression %s) is not object.", v, expr.get());
   }
   
-  ObjectImp *func = static_cast<ObjectImp*>(v);
+  JSObject *func = static_cast<JSObject*>(v);
 
   if (!func->implementsCall()) {
     return throwError(exec, TypeError, "Object %s (result of expression %s) does not allow calls.", v, expr.get());
@@ -500,13 +521,13 @@ ValueImp *FunctionCallValueNode::evaluate(ExecState *exec)
   List argList = args->evaluateList(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  ObjectImp *thisObj =  exec->dynamicInterpreter()->globalObject();
+  JSObject *thisObj =  exec->dynamicInterpreter()->globalObject();
 
   return func->call(exec, thisObj, argList);
 }
 
 // ECMA 11.2.3
-ValueImp *FunctionCallResolveNode::evaluate(ExecState *exec)
+JSValue *FunctionCallResolveNode::evaluate(ExecState *exec)
 {
   const ScopeChain& chain = exec->context().imp()->scopeChain();
   ScopeChainIterator iter = chain.begin();
@@ -516,18 +537,18 @@ ValueImp *FunctionCallResolveNode::evaluate(ExecState *exec)
   assert(iter != end);
 
   PropertySlot slot;
-  ObjectImp *base;
+  JSObject *base;
   do { 
     base = *iter;
     if (base->getPropertySlot(exec, ident, slot)) {
-      ValueImp *v = slot.getValue(exec, ident);
+      JSValue *v = slot.getValue(exec, base, ident);
       KJS_CHECKEXCEPTIONVALUE
         
       if (!v->isObject()) {
         return throwError(exec, TypeError, "Value %s (result of expression %s) is not object.", v, ident);
       }
       
-      ObjectImp *func = static_cast<ObjectImp*>(v);
+      JSObject *func = static_cast<JSObject*>(v);
       
       if (!func->implementsCall()) {
         return throwError(exec, TypeError, "Object %s (result of expression %s) does not allow calls.", v, ident);
@@ -536,7 +557,7 @@ ValueImp *FunctionCallResolveNode::evaluate(ExecState *exec)
       List argList = args->evaluateList(exec);
       KJS_CHECKEXCEPTIONVALUE
         
-      ObjectImp *thisObj = base;
+      JSObject *thisObj = base;
       // ECMA 11.2.3 says that in this situation the this value should be null.
       // However, section 10.2.3 says that in the case where the value provided
       // by the caller is null, the global object should be used. It also says
@@ -555,29 +576,29 @@ ValueImp *FunctionCallResolveNode::evaluate(ExecState *exec)
 }
 
 // ECMA 11.2.3
-ValueImp *FunctionCallBracketNode::evaluate(ExecState *exec)
+JSValue *FunctionCallBracketNode::evaluate(ExecState *exec)
 {
-  ValueImp *baseVal = base->evaluate(exec);
+  JSValue *baseVal = base->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  ValueImp *subscriptVal = subscript->evaluate(exec);
+  JSValue *subscriptVal = subscript->evaluate(exec);
 
-  ObjectImp *baseObj = baseVal->toObject(exec);
+  JSObject *baseObj = baseVal->toObject(exec);
   uint32_t i;
   PropertySlot slot;
 
-  ValueImp *funcVal;
+  JSValue *funcVal;
   if (subscriptVal->getUInt32(i)) {
     if (baseObj->getPropertySlot(exec, i, slot))
-      funcVal = slot.getValue(exec, i);
+      funcVal = slot.getValue(exec, baseObj, i);
     else
-      funcVal = Undefined();
+      funcVal = jsUndefined();
   } else {
     Identifier ident(subscriptVal->toString(exec));
     if (baseObj->getPropertySlot(exec, ident, slot))
       funcVal = baseObj->get(exec, ident);
     else
-      funcVal = Undefined();
+      funcVal = jsUndefined();
   }
 
   KJS_CHECKEXCEPTIONVALUE
@@ -586,7 +607,7 @@ ValueImp *FunctionCallBracketNode::evaluate(ExecState *exec)
     return throwError(exec, TypeError, "Value %s (result of expression %s[%s]) is not object.", funcVal, base.get(), subscript.get());
   }
   
-  ObjectImp *func = static_cast<ObjectImp*>(funcVal);
+  JSObject *func = static_cast<JSObject*>(funcVal);
 
   if (!func->implementsCall()) {
     return throwError(exec, TypeError, "Object %s (result of expression %s[%s]) does not allow calls.", funcVal, base.get(), subscript.get());
@@ -595,7 +616,7 @@ ValueImp *FunctionCallBracketNode::evaluate(ExecState *exec)
   List argList = args->evaluateList(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  ObjectImp *thisObj = baseObj;
+  JSObject *thisObj = baseObj;
   assert(thisObj);
   assert(thisObj->isObject());
   assert(!thisObj->isActivation());
@@ -614,19 +635,19 @@ static const char *dotExprDoesNotAllowCallsString()
 }
 
 // ECMA 11.2.3
-ValueImp *FunctionCallDotNode::evaluate(ExecState *exec)
+JSValue *FunctionCallDotNode::evaluate(ExecState *exec)
 {
-  ValueImp *baseVal = base->evaluate(exec);
+  JSValue *baseVal = base->evaluate(exec);
 
-  ObjectImp *baseObj = baseVal->toObject(exec);
+  JSObject *baseObj = baseVal->toObject(exec);
   PropertySlot slot;
-  ValueImp *funcVal = baseObj->getPropertySlot(exec, ident, slot) ? slot.getValue(exec, ident) : Undefined();
+  JSValue *funcVal = baseObj->getPropertySlot(exec, ident, slot) ? slot.getValue(exec, baseObj, ident) : jsUndefined();
   KJS_CHECKEXCEPTIONVALUE
 
   if (!funcVal->isObject())
     return throwError(exec, TypeError, dotExprNotAnObjectString(), funcVal, base.get(), ident);
   
-  ObjectImp *func = static_cast<ObjectImp*>(funcVal);
+  JSObject *func = static_cast<JSObject*>(funcVal);
 
   if (!func->implementsCall())
     return throwError(exec, TypeError, dotExprDoesNotAllowCallsString(), funcVal, base.get(), ident);
@@ -634,7 +655,7 @@ ValueImp *FunctionCallDotNode::evaluate(ExecState *exec)
   List argList = args->evaluateList(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  ObjectImp *thisObj = baseObj;
+  JSObject *thisObj = baseObj;
   assert(thisObj);
   assert(thisObj->isObject());
   assert(!thisObj->isActivation());
@@ -646,7 +667,7 @@ ValueImp *FunctionCallDotNode::evaluate(ExecState *exec)
 
 // ------------------------------ PostfixResolveNode ----------------------------------
 
-ValueImp *PostfixResolveNode::evaluate(ExecState *exec)
+JSValue *PostfixResolveNode::evaluate(ExecState *exec)
 {
   const ScopeChain& chain = exec->context().imp()->scopeChain();
   ScopeChainIterator iter = chain.begin();
@@ -656,11 +677,11 @@ ValueImp *PostfixResolveNode::evaluate(ExecState *exec)
   assert(iter != end);
 
   PropertySlot slot;
-  ObjectImp *base;
+  JSObject *base;
   do { 
     base = *iter;
     if (base->getPropertySlot(exec, m_ident, slot)) {
-        ValueImp *v = slot.getValue(exec, m_ident);
+        JSValue *v = slot.getValue(exec, base, m_ident);
 
         double n = v->toNumber(exec);
         
@@ -678,19 +699,19 @@ ValueImp *PostfixResolveNode::evaluate(ExecState *exec)
 
 // ------------------------------ PostfixBracketNode ----------------------------------
 
-ValueImp *PostfixBracketNode::evaluate(ExecState *exec)
+JSValue *PostfixBracketNode::evaluate(ExecState *exec)
 {
-  ValueImp *baseValue = m_base->evaluate(exec);
+  JSValue *baseValue = m_base->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ValueImp *subscript = m_subscript->evaluate(exec);
+  JSValue *subscript = m_subscript->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  ObjectImp *base = baseValue->toObject(exec);
+  JSObject *base = baseValue->toObject(exec);
 
   uint32_t propertyIndex;
   if (subscript->getUInt32(propertyIndex)) {
     PropertySlot slot;
-    ValueImp *v = base->getPropertySlot(exec, propertyIndex, slot) ? slot.getValue(exec, propertyIndex) : Undefined();
+    JSValue *v = base->getPropertySlot(exec, propertyIndex, slot) ? slot.getValue(exec, base, propertyIndex) : jsUndefined();
     KJS_CHECKEXCEPTIONVALUE
 
     double n = v->toNumber(exec);
@@ -703,7 +724,7 @@ ValueImp *PostfixBracketNode::evaluate(ExecState *exec)
 
   Identifier propertyName(subscript->toString(exec));
   PropertySlot slot;
-  ValueImp *v = base->getPropertySlot(exec, propertyName, slot) ? slot.getValue(exec, propertyName) : Undefined();
+  JSValue *v = base->getPropertySlot(exec, propertyName, slot) ? slot.getValue(exec, base, propertyName) : jsUndefined();
   KJS_CHECKEXCEPTIONVALUE
 
   double n = v->toNumber(exec);
@@ -716,14 +737,14 @@ ValueImp *PostfixBracketNode::evaluate(ExecState *exec)
 
 // ------------------------------ PostfixDotNode ----------------------------------
 
-ValueImp *PostfixDotNode::evaluate(ExecState *exec)
+JSValue *PostfixDotNode::evaluate(ExecState *exec)
 {
-  ValueImp *baseValue = m_base->evaluate(exec);
+  JSValue *baseValue = m_base->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ObjectImp *base = baseValue->toObject(exec);
+  JSObject *base = baseValue->toObject(exec);
 
   PropertySlot slot;
-  ValueImp *v = base->getPropertySlot(exec, m_ident, slot) ? slot.getValue(exec, m_ident) : Undefined();
+  JSValue *v = base->getPropertySlot(exec, m_ident, slot) ? slot.getValue(exec, base, m_ident) : jsUndefined();
   KJS_CHECKEXCEPTIONVALUE
 
   double n = v->toNumber(exec);
@@ -737,7 +758,7 @@ ValueImp *PostfixDotNode::evaluate(ExecState *exec)
 // ECMA 11.4.1
 
 // ------------------------------ DeleteResolveNode -----------------------------------
-ValueImp *DeleteResolveNode::evaluate(ExecState *exec)
+JSValue *DeleteResolveNode::evaluate(ExecState *exec)
 {
   const ScopeChain& chain = exec->context().imp()->scopeChain();
   ScopeChainIterator iter = chain.begin();
@@ -747,7 +768,7 @@ ValueImp *DeleteResolveNode::evaluate(ExecState *exec)
   assert(iter != end);
 
   PropertySlot slot;
-  ObjectImp *base;
+  JSObject *base;
   do { 
     base = *iter;
     if (base->getPropertySlot(exec, m_ident, slot)) {
@@ -761,14 +782,14 @@ ValueImp *DeleteResolveNode::evaluate(ExecState *exec)
 }
 
 // ------------------------------ DeleteBracketNode -----------------------------------
-ValueImp *DeleteBracketNode::evaluate(ExecState *exec)
+JSValue *DeleteBracketNode::evaluate(ExecState *exec)
 {
-  ValueImp *baseValue = m_base->evaluate(exec);
+  JSValue *baseValue = m_base->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ValueImp *subscript = m_subscript->evaluate(exec);
+  JSValue *subscript = m_subscript->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  ObjectImp *base = baseValue->toObject(exec);
+  JSObject *base = baseValue->toObject(exec);
 
   uint32_t propertyIndex;
   if (subscript->getUInt32(propertyIndex))
@@ -779,17 +800,17 @@ ValueImp *DeleteBracketNode::evaluate(ExecState *exec)
 }
 
 // ------------------------------ DeleteDotNode -----------------------------------
-ValueImp *DeleteDotNode::evaluate(ExecState *exec)
+JSValue *DeleteDotNode::evaluate(ExecState *exec)
 {
-  ValueImp *baseValue = m_base->evaluate(exec);
-  ObjectImp *base = baseValue->toObject(exec);
+  JSValue *baseValue = m_base->evaluate(exec);
+  JSObject *base = baseValue->toObject(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return jsBoolean(base->deleteProperty(exec, m_ident));
 }
 
 // ------------------------------ DeleteValueNode -----------------------------------
-ValueImp *DeleteValueNode::evaluate(ExecState *exec)
+JSValue *DeleteValueNode::evaluate(ExecState *exec)
 {
   m_expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -801,19 +822,19 @@ ValueImp *DeleteValueNode::evaluate(ExecState *exec)
 // ------------------------------ VoidNode -------------------------------------
 
 // ECMA 11.4.2
-ValueImp *VoidNode::evaluate(ExecState *exec)
+JSValue *VoidNode::evaluate(ExecState *exec)
 {
   expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  return Undefined();
+  return jsUndefined();
 }
 
 // ECMA 11.4.3
 
 // ------------------------------ TypeOfValueNode -----------------------------------
 
-static ValueImp *typeStringForValue(ValueImp *v)
+static JSValue *typeStringForValue(JSValue *v)
 {
     switch (v->type()) {
     case UndefinedType:
@@ -827,14 +848,14 @@ static ValueImp *typeStringForValue(ValueImp *v)
     case StringType:
         return jsString("string");
     default:
-        if (v->isObject() && static_cast<ObjectImp*>(v)->implementsCall())
+        if (v->isObject() && static_cast<JSObject*>(v)->implementsCall())
             return jsString("function");
         else
             return jsString("object");
     }
 }
 
-ValueImp *TypeOfResolveNode::evaluate(ExecState *exec)
+JSValue *TypeOfResolveNode::evaluate(ExecState *exec)
 {
   const ScopeChain& chain = exec->context().imp()->scopeChain();
   ScopeChainIterator iter = chain.begin();
@@ -844,11 +865,11 @@ ValueImp *TypeOfResolveNode::evaluate(ExecState *exec)
   assert(iter != end);
 
   PropertySlot slot;
-  ObjectImp *base;
+  JSObject *base;
   do { 
     base = *iter;
     if (base->getPropertySlot(exec, m_ident, slot)) {
-        ValueImp *v = slot.getValue(exec, m_ident);
+        JSValue *v = slot.getValue(exec, base, m_ident);
         return typeStringForValue(v);
     }
 
@@ -860,9 +881,9 @@ ValueImp *TypeOfResolveNode::evaluate(ExecState *exec)
 
 // ------------------------------ TypeOfValueNode -----------------------------------
 
-ValueImp *TypeOfValueNode::evaluate(ExecState *exec)
+JSValue *TypeOfValueNode::evaluate(ExecState *exec)
 {
-  ValueImp *v = m_expr->evaluate(exec);
+  JSValue *v = m_expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return typeStringForValue(v);
@@ -872,7 +893,7 @@ ValueImp *TypeOfValueNode::evaluate(ExecState *exec)
 
 // ------------------------------ PrefixResolveNode ----------------------------------
 
-ValueImp *PrefixResolveNode::evaluate(ExecState *exec)
+JSValue *PrefixResolveNode::evaluate(ExecState *exec)
 {
   const ScopeChain& chain = exec->context().imp()->scopeChain();
   ScopeChainIterator iter = chain.begin();
@@ -882,16 +903,16 @@ ValueImp *PrefixResolveNode::evaluate(ExecState *exec)
   assert(iter != end);
 
   PropertySlot slot;
-  ObjectImp *base;
+  JSObject *base;
   do { 
     base = *iter;
     if (base->getPropertySlot(exec, m_ident, slot)) {
-        ValueImp *v = slot.getValue(exec, m_ident);
+        JSValue *v = slot.getValue(exec, base, m_ident);
 
         double n = v->toNumber(exec);
         
         double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
-        ValueImp *n2 = jsNumber(newValue);
+        JSValue *n2 = jsNumber(newValue);
         base->put(exec, m_ident, n2);
 
         return n2;
@@ -905,25 +926,25 @@ ValueImp *PrefixResolveNode::evaluate(ExecState *exec)
 
 // ------------------------------ PrefixBracketNode ----------------------------------
 
-ValueImp *PrefixBracketNode::evaluate(ExecState *exec)
+JSValue *PrefixBracketNode::evaluate(ExecState *exec)
 {
-  ValueImp *baseValue = m_base->evaluate(exec);
+  JSValue *baseValue = m_base->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ValueImp *subscript = m_subscript->evaluate(exec);
+  JSValue *subscript = m_subscript->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  ObjectImp *base = baseValue->toObject(exec);
+  JSObject *base = baseValue->toObject(exec);
 
   uint32_t propertyIndex;
   if (subscript->getUInt32(propertyIndex)) {
     PropertySlot slot;
-    ValueImp *v = base->getPropertySlot(exec, propertyIndex, slot) ? slot.getValue(exec, propertyIndex) : Undefined();
+    JSValue *v = base->getPropertySlot(exec, propertyIndex, slot) ? slot.getValue(exec, base, propertyIndex) : jsUndefined();
     KJS_CHECKEXCEPTIONVALUE
 
     double n = v->toNumber(exec);
 
     double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
-    ValueImp *n2 = jsNumber(newValue);
+    JSValue *n2 = jsNumber(newValue);
     base->put(exec, propertyIndex, n2);
 
     return n2;
@@ -931,13 +952,13 @@ ValueImp *PrefixBracketNode::evaluate(ExecState *exec)
 
   Identifier propertyName(subscript->toString(exec));
   PropertySlot slot;
-  ValueImp *v = base->getPropertySlot(exec, propertyName, slot) ? slot.getValue(exec, propertyName) : Undefined();
+  JSValue *v = base->getPropertySlot(exec, propertyName, slot) ? slot.getValue(exec, base, propertyName) : jsUndefined();
   KJS_CHECKEXCEPTIONVALUE
 
   double n = v->toNumber(exec);
   
   double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
-  ValueImp *n2 = jsNumber(newValue);
+  JSValue *n2 = jsNumber(newValue);
   base->put(exec, propertyName, n2);
 
   return n2;
@@ -945,20 +966,20 @@ ValueImp *PrefixBracketNode::evaluate(ExecState *exec)
 
 // ------------------------------ PrefixDotNode ----------------------------------
 
-ValueImp *PrefixDotNode::evaluate(ExecState *exec)
+JSValue *PrefixDotNode::evaluate(ExecState *exec)
 {
-  ValueImp *baseValue = m_base->evaluate(exec);
+  JSValue *baseValue = m_base->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ObjectImp *base = baseValue->toObject(exec);
+  JSObject *base = baseValue->toObject(exec);
 
   PropertySlot slot;
-  ValueImp *v = base->getPropertySlot(exec, m_ident, slot) ? slot.getValue(exec, m_ident) : Undefined();
+  JSValue *v = base->getPropertySlot(exec, m_ident, slot) ? slot.getValue(exec, base, m_ident) : jsUndefined();
   KJS_CHECKEXCEPTIONVALUE
 
   double n = v->toNumber(exec);
   
   double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
-  ValueImp *n2 = jsNumber(newValue);
+  JSValue *n2 = jsNumber(newValue);
   base->put(exec, m_ident, n2);
 
   return n2;
@@ -967,9 +988,9 @@ ValueImp *PrefixDotNode::evaluate(ExecState *exec)
 // ------------------------------ UnaryPlusNode --------------------------------
 
 // ECMA 11.4.6
-ValueImp *UnaryPlusNode::evaluate(ExecState *exec)
+JSValue *UnaryPlusNode::evaluate(ExecState *exec)
 {
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return jsNumber(v->toNumber(exec));
@@ -978,9 +999,9 @@ ValueImp *UnaryPlusNode::evaluate(ExecState *exec)
 // ------------------------------ NegateNode -----------------------------------
 
 // ECMA 11.4.7
-ValueImp *NegateNode::evaluate(ExecState *exec)
+JSValue *NegateNode::evaluate(ExecState *exec)
 {
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   double n = v->toNumber(exec);
@@ -990,9 +1011,9 @@ ValueImp *NegateNode::evaluate(ExecState *exec)
 // ------------------------------ BitwiseNotNode -------------------------------
 
 // ECMA 11.4.8
-ValueImp *BitwiseNotNode::evaluate(ExecState *exec)
+JSValue *BitwiseNotNode::evaluate(ExecState *exec)
 {
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   return jsNumber(~v->toInt32(exec));
 }
@@ -1000,9 +1021,9 @@ ValueImp *BitwiseNotNode::evaluate(ExecState *exec)
 // ------------------------------ LogicalNotNode -------------------------------
 
 // ECMA 11.4.9
-ValueImp *LogicalNotNode::evaluate(ExecState *exec)
+JSValue *LogicalNotNode::evaluate(ExecState *exec)
 {
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   return jsBoolean(!v->toBoolean(exec));
 }
@@ -1010,12 +1031,12 @@ ValueImp *LogicalNotNode::evaluate(ExecState *exec)
 // ------------------------------ MultNode -------------------------------------
 
 // ECMA 11.5
-ValueImp *MultNode::evaluate(ExecState *exec)
+JSValue *MultNode::evaluate(ExecState *exec)
 {
-  ValueImp *v1 = term1->evaluate(exec);
+  JSValue *v1 = term1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  ValueImp *v2 = term2->evaluate(exec);
+  JSValue *v2 = term2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return mult(exec, v1, v2, oper);
@@ -1024,12 +1045,12 @@ ValueImp *MultNode::evaluate(ExecState *exec)
 // ------------------------------ AddNode --------------------------------------
 
 // ECMA 11.6
-ValueImp *AddNode::evaluate(ExecState *exec)
+JSValue *AddNode::evaluate(ExecState *exec)
 {
-  ValueImp *v1 = term1->evaluate(exec);
+  JSValue *v1 = term1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  ValueImp *v2 = term2->evaluate(exec);
+  JSValue *v2 = term2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return add(exec, v1, v2, oper);
@@ -1038,11 +1059,11 @@ ValueImp *AddNode::evaluate(ExecState *exec)
 // ------------------------------ ShiftNode ------------------------------------
 
 // ECMA 11.7
-ValueImp *ShiftNode::evaluate(ExecState *exec)
+JSValue *ShiftNode::evaluate(ExecState *exec)
 {
-  ValueImp *v1 = term1->evaluate(exec);
+  JSValue *v1 = term1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ValueImp *v2 = term2->evaluate(exec);
+  JSValue *v2 = term2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   unsigned int i2 = v2->toUInt32(exec);
   i2 &= 0x1f;
@@ -1056,18 +1077,18 @@ ValueImp *ShiftNode::evaluate(ExecState *exec)
     return jsNumber(v1->toUInt32(exec) >> i2);
   default:
     assert(!"ShiftNode: unhandled switch case");
-    return Undefined();
+    return jsUndefined();
   }
 }
 
 // ------------------------------ RelationalNode -------------------------------
 
 // ECMA 11.8
-ValueImp *RelationalNode::evaluate(ExecState *exec)
+JSValue *RelationalNode::evaluate(ExecState *exec)
 {
-  ValueImp *v1 = expr1->evaluate(exec);
+  JSValue *v1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ValueImp *v2 = expr2->evaluate(exec);
+  JSValue *v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   bool b;
@@ -1088,14 +1109,14 @@ ValueImp *RelationalNode::evaluate(ExecState *exec)
       if (!v2->isObject())
           return throwError(exec,  TypeError,
                              "Value %s (result of expression %s) is not an object. Cannot be used with IN expression.", v2, expr2.get());
-      ObjectImp *o2(static_cast<ObjectImp*>(v2));
+      JSObject *o2(static_cast<JSObject*>(v2));
       b = o2->hasProperty(exec, Identifier(v1->toString(exec)));
   } else {
     if (!v2->isObject())
         return throwError(exec,  TypeError,
                            "Value %s (result of expression %s) is not an object. Cannot be used with instanceof operator.", v2, expr2.get());
 
-    ObjectImp *o2(static_cast<ObjectImp*>(v2));
+    JSObject *o2(static_cast<JSObject*>(v2));
     if (!o2->implementsHasInstance()) {
       // According to the spec, only some types of objects "implement" the [[HasInstance]] property.
       // But we are supposed to throw an exception where the object does not "have" the [[HasInstance]]
@@ -1114,11 +1135,11 @@ ValueImp *RelationalNode::evaluate(ExecState *exec)
 // ------------------------------ EqualNode ------------------------------------
 
 // ECMA 11.9
-ValueImp *EqualNode::evaluate(ExecState *exec)
+JSValue *EqualNode::evaluate(ExecState *exec)
 {
-  ValueImp *v1 = expr1->evaluate(exec);
+  JSValue *v1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ValueImp *v2 = expr2->evaluate(exec);
+  JSValue *v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   bool result;
@@ -1137,11 +1158,11 @@ ValueImp *EqualNode::evaluate(ExecState *exec)
 // ------------------------------ BitOperNode ----------------------------------
 
 // ECMA 11.10
-ValueImp *BitOperNode::evaluate(ExecState *exec)
+JSValue *BitOperNode::evaluate(ExecState *exec)
 {
-  ValueImp *v1 = expr1->evaluate(exec);
+  JSValue *v1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ValueImp *v2 = expr2->evaluate(exec);
+  JSValue *v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   int i1 = v1->toInt32(exec);
   int i2 = v2->toInt32(exec);
@@ -1159,15 +1180,15 @@ ValueImp *BitOperNode::evaluate(ExecState *exec)
 // ------------------------------ BinaryLogicalNode ----------------------------
 
 // ECMA 11.11
-ValueImp *BinaryLogicalNode::evaluate(ExecState *exec)
+JSValue *BinaryLogicalNode::evaluate(ExecState *exec)
 {
-  ValueImp *v1 = expr1->evaluate(exec);
+  JSValue *v1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   bool b1 = v1->toBoolean(exec);
   if ((!b1 && oper == OpAnd) || (b1 && oper == OpOr))
     return v1;
 
-  ValueImp *v2 = expr2->evaluate(exec);
+  JSValue *v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return v2;
@@ -1176,9 +1197,9 @@ ValueImp *BinaryLogicalNode::evaluate(ExecState *exec)
 // ------------------------------ ConditionalNode ------------------------------
 
 // ECMA 11.12
-ValueImp *ConditionalNode::evaluate(ExecState *exec)
+JSValue *ConditionalNode::evaluate(ExecState *exec)
 {
-  ValueImp *v = logical->evaluate(exec);
+  JSValue *v = logical->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   bool b = v->toBoolean(exec);
 
@@ -1195,12 +1216,12 @@ ValueImp *ConditionalNode::evaluate(ExecState *exec)
 
 #if __GNUC__
 // gcc refuses to inline this without the always_inline, but inlining it does help
-static inline ValueImp *valueForReadModifyAssignment(ExecState * exec, ValueImp *v1, ValueImp *v2, Operator oper) __attribute__((always_inline));
+static inline JSValue *valueForReadModifyAssignment(ExecState * exec, JSValue *v1, JSValue *v2, Operator oper) __attribute__((always_inline));
 #endif
 
-static inline ValueImp *valueForReadModifyAssignment(ExecState * exec, ValueImp *v1, ValueImp *v2, Operator oper)
+static inline JSValue *valueForReadModifyAssignment(ExecState * exec, JSValue *v1, JSValue *v2, Operator oper)
 {
-  ValueImp *v;
+  JSValue *v;
   int i1;
   int i2;
   unsigned int ui;
@@ -1255,7 +1276,7 @@ static inline ValueImp *valueForReadModifyAssignment(ExecState * exec, ValueImp 
     break;
   default:
     assert(0);
-    v = Undefined();
+    v = jsUndefined();
   }
   
   return v;
@@ -1263,7 +1284,7 @@ static inline ValueImp *valueForReadModifyAssignment(ExecState * exec, ValueImp 
 
 // ------------------------------ AssignResolveNode -----------------------------------
 
-ValueImp *AssignResolveNode::evaluate(ExecState *exec)
+JSValue *AssignResolveNode::evaluate(ExecState *exec)
 {
   const ScopeChain& chain = exec->context().imp()->scopeChain();
   ScopeChainIterator iter = chain.begin();
@@ -1273,7 +1294,7 @@ ValueImp *AssignResolveNode::evaluate(ExecState *exec)
   assert(iter != end);
 
   PropertySlot slot;
-  ObjectImp *base;
+  JSObject *base;
   do { 
     base = *iter;
     if (base->getPropertySlot(exec, m_ident, slot))
@@ -1286,14 +1307,14 @@ ValueImp *AssignResolveNode::evaluate(ExecState *exec)
     return throwUndefinedVariableError(exec, m_ident);
 
  found:
-  ValueImp *v;
+  JSValue *v;
 
   if (m_oper == OpEqual) {
     v = m_right->evaluate(exec);
   } else {
-    ValueImp *v1 = slot.getValue(exec, m_ident);
+    JSValue *v1 = slot.getValue(exec, base, m_ident);
     KJS_CHECKEXCEPTIONVALUE
-    ValueImp *v2 = m_right->evaluate(exec);
+    JSValue *v2 = m_right->evaluate(exec);
     v = valueForReadModifyAssignment(exec, v1, v2, m_oper);
   }
 
@@ -1305,21 +1326,21 @@ ValueImp *AssignResolveNode::evaluate(ExecState *exec)
 
 // ------------------------------ AssignDotNode -----------------------------------
 
-ValueImp *AssignDotNode::evaluate(ExecState *exec)
+JSValue *AssignDotNode::evaluate(ExecState *exec)
 {
-  ValueImp *baseValue = m_base->evaluate(exec);
+  JSValue *baseValue = m_base->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ObjectImp *base = baseValue->toObject(exec);
+  JSObject *base = baseValue->toObject(exec);
 
-  ValueImp *v;
+  JSValue *v;
 
   if (m_oper == OpEqual) {
     v = m_right->evaluate(exec);
   } else {
     PropertySlot slot;
-    ValueImp *v1 = base->getPropertySlot(exec, m_ident, slot) ? slot.getValue(exec, m_ident) : Undefined();
+    JSValue *v1 = base->getPropertySlot(exec, m_ident, slot) ? slot.getValue(exec, base, m_ident) : jsUndefined();
     KJS_CHECKEXCEPTIONVALUE
-    ValueImp *v2 = m_right->evaluate(exec);
+    JSValue *v2 = m_right->evaluate(exec);
     v = valueForReadModifyAssignment(exec, v1, v2, m_oper);
   }
 
@@ -1331,25 +1352,25 @@ ValueImp *AssignDotNode::evaluate(ExecState *exec)
 
 // ------------------------------ AssignBracketNode -----------------------------------
 
-ValueImp *AssignBracketNode::evaluate(ExecState *exec)
+JSValue *AssignBracketNode::evaluate(ExecState *exec)
 {
-  ValueImp *baseValue = m_base->evaluate(exec);
+  JSValue *baseValue = m_base->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ValueImp *subscript = m_subscript->evaluate(exec);
+  JSValue *subscript = m_subscript->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  ObjectImp *base = baseValue->toObject(exec);
+  JSObject *base = baseValue->toObject(exec);
 
   uint32_t propertyIndex;
   if (subscript->getUInt32(propertyIndex)) {
-    ValueImp *v;
+    JSValue *v;
     if (m_oper == OpEqual) {
       v = m_right->evaluate(exec);
     } else {
       PropertySlot slot;
-      ValueImp *v1 = base->getPropertySlot(exec, propertyIndex, slot) ? slot.getValue(exec, propertyIndex) : Undefined();
+      JSValue *v1 = base->getPropertySlot(exec, propertyIndex, slot) ? slot.getValue(exec, base, propertyIndex) : jsUndefined();
       KJS_CHECKEXCEPTIONVALUE
-      ValueImp *v2 = m_right->evaluate(exec);
+      JSValue *v2 = m_right->evaluate(exec);
       v = valueForReadModifyAssignment(exec, v1, v2, m_oper);
     }
 
@@ -1360,15 +1381,15 @@ ValueImp *AssignBracketNode::evaluate(ExecState *exec)
   }
 
   Identifier propertyName(subscript->toString(exec));
-  ValueImp *v;
+  JSValue *v;
 
   if (m_oper == OpEqual) {
     v = m_right->evaluate(exec);
   } else {
     PropertySlot slot;
-    ValueImp *v1 = base->getPropertySlot(exec, propertyName, slot) ? slot.getValue(exec, propertyName) : Undefined();
+    JSValue *v1 = base->getPropertySlot(exec, propertyName, slot) ? slot.getValue(exec, base, propertyName) : jsUndefined();
     KJS_CHECKEXCEPTIONVALUE
-    ValueImp *v2 = m_right->evaluate(exec);
+    JSValue *v2 = m_right->evaluate(exec);
     v = valueForReadModifyAssignment(exec, v1, v2, m_oper);
   }
 
@@ -1381,11 +1402,11 @@ ValueImp *AssignBracketNode::evaluate(ExecState *exec)
 // ------------------------------ CommaNode ------------------------------------
 
 // ECMA 11.14
-ValueImp *CommaNode::evaluate(ExecState *exec)
+JSValue *CommaNode::evaluate(ExecState *exec)
 {
   expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-  ValueImp *v = expr2->evaluate(exec);
+  JSValue *v = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return v;
@@ -1394,15 +1415,15 @@ ValueImp *CommaNode::evaluate(ExecState *exec)
 // ------------------------------ StatListNode ---------------------------------
 
 StatListNode::StatListNode(StatementNode *s)
-  : statement(s), list(this)
+  : statement(s), next(this)
 {
   setLoc(s->firstLine(), s->lastLine(), s->sourceId());
 }
  
 StatListNode::StatListNode(StatListNode *l, StatementNode *s)
-  : statement(s), list(l->list)
+  : statement(s), next(l->next)
 {
-  l->list = this;
+  l->next = this;
   setLoc(l->firstLine(), s->lastLine(), l->sourceId());
 }
 
@@ -1414,9 +1435,9 @@ Completion StatListNode::execute(ExecState *exec)
   if (c.complType() != Normal)
     return c;
   
-  ValueImp *v = c.value();
+  JSValue *v = c.value();
   
-  for (StatListNode *n = list.get(); n; n = n->list.get()) {
+  for (StatListNode *n = next.get(); n; n = n->next.get()) {
     Completion c2 = n->statement->execute(exec);
     KJS_ABORTPOINT
     if (c2.complType() != Normal)
@@ -1432,14 +1453,14 @@ Completion StatListNode::execute(ExecState *exec)
 
 void StatListNode::processVarDecls(ExecState *exec)
 {
-  for (StatListNode *n = this; n; n = n->list.get())
+  for (StatListNode *n = this; n; n = n->next.get())
     n->statement->processVarDecls(exec);
 }
 
 // ------------------------------ AssignExprNode -------------------------------
 
 // ECMA 12.2
-ValueImp *AssignExprNode::evaluate(ExecState *exec)
+JSValue *AssignExprNode::evaluate(ExecState *exec)
 {
   return expr->evaluate(exec);
 }
@@ -1453,11 +1474,11 @@ VarDeclNode::VarDeclNode(const Identifier &id, AssignExprNode *in, Type t)
 }
 
 // ECMA 12.2
-ValueImp *VarDeclNode::evaluate(ExecState *exec)
+JSValue *VarDeclNode::evaluate(ExecState *exec)
 {
-  ObjectImp *variable = exec->context().imp()->variableObject();
+  JSObject *variable = exec->context().imp()->variableObject();
 
-  ValueImp *val;
+  JSValue *val;
   if (init) {
       val = init->evaluate(exec);
       KJS_CHECKEXCEPTIONVALUE
@@ -1466,7 +1487,7 @@ ValueImp *VarDeclNode::evaluate(ExecState *exec)
       // built-in properties of the global object with var declarations.
       if (variable->getDirect(ident)) 
           return 0;
-      val = Undefined();
+      val = jsUndefined();
   }
 
 #ifdef KJS_VERBOSE
@@ -1486,7 +1507,7 @@ ValueImp *VarDeclNode::evaluate(ExecState *exec)
 
 void VarDeclNode::processVarDecls(ExecState *exec)
 {
-  ObjectImp *variable = exec->context().imp()->variableObject();
+  JSObject *variable = exec->context().imp()->variableObject();
 
   // If a variable by this name already exists, don't clobber it -
   // it might be a function parameter
@@ -1496,25 +1517,25 @@ void VarDeclNode::processVarDecls(ExecState *exec)
       flags |= DontDelete;
     if (varType == VarDeclNode::Constant)
       flags |= ReadOnly;
-    variable->put(exec, ident, Undefined(), flags);
+    variable->put(exec, ident, jsUndefined(), flags);
   }
 }
 
 // ------------------------------ VarDeclListNode ------------------------------
 
 // ECMA 12.2
-ValueImp *VarDeclListNode::evaluate(ExecState *exec)
+JSValue *VarDeclListNode::evaluate(ExecState *exec)
 {
-  for (VarDeclListNode *n = this; n; n = n->list.get()) {
+  for (VarDeclListNode *n = this; n; n = n->next.get()) {
     n->var->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 void VarDeclListNode::processVarDecls(ExecState *exec)
 {
-  for (VarDeclListNode *n = this; n; n = n->list.get())
+  for (VarDeclListNode *n = this; n; n = n->next.get())
     n->var->processVarDecls(exec);
 }
 
@@ -1525,7 +1546,7 @@ Completion VarStatementNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  (void) list->evaluate(exec);
+  (void) next->evaluate(exec);
   KJS_CHECKEXCEPTION
 
   return Completion(Normal);
@@ -1533,7 +1554,7 @@ Completion VarStatementNode::execute(ExecState *exec)
 
 void VarStatementNode::processVarDecls(ExecState *exec)
 {
-  list->processVarDecls(exec);
+  next->processVarDecls(exec);
 }
 
 // ------------------------------ BlockNode ------------------------------------
@@ -1541,8 +1562,8 @@ void VarStatementNode::processVarDecls(ExecState *exec)
 BlockNode::BlockNode(SourceElementsNode *s)
 {
   if (s) {
-    source = s->elements;
-    s->elements = 0;
+    source = s->next;
+    s->next = 0;
     setLoc(s->firstLine(), s->lastLine(), s->sourceId());
   } else {
     source = 0;
@@ -1581,7 +1602,7 @@ Completion ExprStatementNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
 
   return Completion(Normal, v);
@@ -1594,7 +1615,7 @@ Completion IfNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
   bool b = v->toBoolean(exec);
 
@@ -1625,7 +1646,7 @@ Completion DoWhileNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  ValueImp *bv;
+  JSValue *bv;
   Completion c;
 
   do {
@@ -1660,10 +1681,10 @@ Completion WhileNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  ValueImp *bv;
+  JSValue *bv;
   Completion c;
   bool b(false);
-  ValueImp *value = 0;
+  JSValue *value = 0;
 
   while (1) {
     bv = expr->evaluate(exec);
@@ -1703,7 +1724,7 @@ void WhileNode::processVarDecls(ExecState *exec)
 // ECMA 12.6.3
 Completion ForNode::execute(ExecState *exec)
 {
-  ValueImp *v, *cval = 0;
+  JSValue *v, *cval = 0;
 
   if (expr1) {
     v = expr1->evaluate(exec);
@@ -1765,9 +1786,9 @@ ForInNode::ForInNode(const Identifier &i, AssignExprNode *in, Node *e, Statement
 // ECMA 12.6.4
 Completion ForInNode::execute(ExecState *exec)
 {
-  ValueImp *e;
-  ValueImp *retval = 0;
-  ObjectImp *v;
+  JSValue *e;
+  JSValue *retval = 0;
+  JSObject *v;
   Completion c;
   ReferenceList propList;
 
@@ -1799,7 +1820,7 @@ Completion ForInNode::execute(ExecState *exec)
       continue;
     }
 
-    ValueImp *str = jsString(name.ustring());
+    JSValue *str = jsString(name.ustring());
 
     if (lexpr->isResolveNode()) {
         const Identifier &ident = static_cast<ResolveNode *>(lexpr.get())->identifier();
@@ -1812,7 +1833,7 @@ Completion ForInNode::execute(ExecState *exec)
         assert(iter != end);
 
         PropertySlot slot;
-        ObjectImp *o;
+        JSObject *o;
         do { 
             o = *iter;
             if (o->getPropertySlot(exec, ident, slot))
@@ -1825,18 +1846,18 @@ Completion ForInNode::execute(ExecState *exec)
             o->put(exec, ident, str);
     } else if (lexpr->isDotAccessorNode()) {
         const Identifier& ident = static_cast<DotAccessorNode *>(lexpr.get())->identifier();
-        ValueImp *v = static_cast<DotAccessorNode *>(lexpr.get())->base()->evaluate(exec);
+        JSValue *v = static_cast<DotAccessorNode *>(lexpr.get())->base()->evaluate(exec);
         KJS_CHECKEXCEPTION
-        ObjectImp *o = v->toObject(exec);
+        JSObject *o = v->toObject(exec);
 
         o->put(exec, ident, str);
     } else {
         assert(lexpr->isBracketAccessorNode());
-        ValueImp *v = static_cast<BracketAccessorNode *>(lexpr.get())->base()->evaluate(exec);
+        JSValue *v = static_cast<BracketAccessorNode *>(lexpr.get())->base()->evaluate(exec);
         KJS_CHECKEXCEPTION
-        ValueImp *v2 = static_cast<BracketAccessorNode *>(lexpr.get())->subscript()->evaluate(exec);
+        JSValue *v2 = static_cast<BracketAccessorNode *>(lexpr.get())->subscript()->evaluate(exec);
         KJS_CHECKEXCEPTION
-        ObjectImp *o = v->toObject(exec);
+        JSObject *o = v->toObject(exec);
 
         uint32_t i;
         if (v2->getUInt32(i))
@@ -1918,9 +1939,9 @@ Completion ReturnNode::execute(ExecState *exec)
   }
 
   if (!value)
-    return Completion(ReturnValue, Undefined());
+    return Completion(ReturnValue, jsUndefined());
 
-  ValueImp *v = value->evaluate(exec);
+  JSValue *v = value->evaluate(exec);
   KJS_CHECKEXCEPTION
 
   return Completion(ReturnValue, v);
@@ -1933,9 +1954,9 @@ Completion WithNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
-  ObjectImp *o = v->toObject(exec);
+  JSObject *o = v->toObject(exec);
   KJS_CHECKEXCEPTION
   exec->context().imp()->pushScope(o);
   Completion res = statement->execute(exec);
@@ -1952,9 +1973,9 @@ void WithNode::processVarDecls(ExecState *exec)
 // ------------------------------ CaseClauseNode -------------------------------
 
 // ECMA 12.11
-ValueImp *CaseClauseNode::evaluate(ExecState *exec)
+JSValue *CaseClauseNode::evaluate(ExecState *exec)
 {
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
   return v;
@@ -1963,21 +1984,21 @@ ValueImp *CaseClauseNode::evaluate(ExecState *exec)
 // ECMA 12.11
 Completion CaseClauseNode::evalStatements(ExecState *exec)
 {
-  if (list)
-    return list->execute(exec);
+  if (next)
+    return next->execute(exec);
   else
-    return Completion(Normal, Undefined());
+    return Completion(Normal, jsUndefined());
 }
 
 void CaseClauseNode::processVarDecls(ExecState *exec)
 {
-  if (list)
-    list->processVarDecls(exec);
+  if (next)
+    next->processVarDecls(exec);
 }
 
 // ------------------------------ ClauseListNode -------------------------------
 
-ValueImp *ClauseListNode::evaluate(ExecState *)
+JSValue *ClauseListNode::evaluate(ExecState *)
 {
   // should never be called
   assert(false);
@@ -1987,9 +2008,9 @@ ValueImp *ClauseListNode::evaluate(ExecState *)
 // ECMA 12.11
 void ClauseListNode::processVarDecls(ExecState *exec)
 {
-  for (ClauseListNode *n = this; n; n = n->nx.get())
-    if (n->cl)
-      n->cl->processVarDecls(exec);
+  for (ClauseListNode *n = this; n; n = n->next.get())
+    if (n->clause)
+      n->clause->processVarDecls(exec);
 }
 
 // ------------------------------ CaseBlockNode --------------------------------
@@ -1998,8 +2019,8 @@ CaseBlockNode::CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d,
                              ClauseListNode *l2)
 {
   if (l1) {
-    list1 = l1->nx;
-    l1->nx = 0;
+    list1 = l1->next;
+    l1->next = 0;
   } else {
     list1 = 0;
   }
@@ -2007,14 +2028,14 @@ CaseBlockNode::CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d,
   def = d;
 
   if (l2) {
-    list2 = l2->nx;
-    l2->nx = 0;
+    list2 = l2->next;
+    l2->next = 0;
   } else {
     list2 = 0;
   }
 }
  
-ValueImp *CaseBlockNode::evaluate(ExecState *)
+JSValue *CaseBlockNode::evaluate(ExecState *)
 {
   // should never be called
   assert(false);
@@ -2022,17 +2043,17 @@ ValueImp *CaseBlockNode::evaluate(ExecState *)
 }
 
 // ECMA 12.11
-Completion CaseBlockNode::evalBlock(ExecState *exec, ValueImp *input)
+Completion CaseBlockNode::evalBlock(ExecState *exec, JSValue *input)
 {
-  ValueImp *v;
+  JSValue *v;
   Completion res;
   ClauseListNode *a = list1.get();
   ClauseListNode *b = list2.get();
   CaseClauseNode *clause;
 
     while (a) {
-      clause = a->clause();
-      a = a->next();
+      clause = a->getClause();
+      a = a->getNext();
       v = clause->evaluate(exec);
       KJS_CHECKEXCEPTION
       if (strictEqual(exec, input, v)) {
@@ -2040,18 +2061,18 @@ Completion CaseBlockNode::evalBlock(ExecState *exec, ValueImp *input)
 	if (res.complType() != Normal)
 	  return res;
 	while (a) {
-	  res = a->clause()->evalStatements(exec);
+	  res = a->getClause()->evalStatements(exec);
 	  if (res.complType() != Normal)
 	    return res;
-	  a = a->next();
+	  a = a->getNext();
 	}
 	break;
       }
     }
 
   while (b) {
-    clause = b->clause();
-    b = b->next();
+    clause = b->getClause();
+    b = b->getNext();
     v = clause->evaluate(exec);
     KJS_CHECKEXCEPTION
     if (strictEqual(exec, input, v)) {
@@ -2071,11 +2092,11 @@ Completion CaseBlockNode::evalBlock(ExecState *exec, ValueImp *input)
   b = list2.get();
  step18:
   while (b) {
-    clause = b->clause();
+    clause = b->getClause();
     res = clause->evalStatements(exec);
     if (res.complType() != Normal)
       return res;
-    b = b->next();
+    b = b->getNext();
   }
 
   // bail out on error
@@ -2101,7 +2122,7 @@ Completion SwitchNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
 
   exec->context().imp()->seenLabels()->pushSwitch();
@@ -2145,7 +2166,7 @@ Completion ThrowNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  ValueImp *v = expr->evaluate(exec);
+  JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
 
   return Completion(Throw, v);
@@ -2161,7 +2182,7 @@ Completion TryNode::execute(ExecState *exec)
   Completion c = tryBlock->execute(exec);
 
   if (catchBlock && c.complType() == Throw) {
-    ObjectImp *obj = new ObjectImp;
+    JSObject *obj = new JSObject;
     obj->put(exec, exceptionIdent, c.value(), DontDelete);
     exec->context().imp()->pushScope(obj);
     c = catchBlock->execute(exec);
@@ -2189,9 +2210,9 @@ void TryNode::processVarDecls(ExecState *exec)
 // ------------------------------ ParameterNode --------------------------------
 
 // ECMA 13
-ValueImp *ParameterNode::evaluate(ExecState *)
+JSValue *ParameterNode::evaluate(ExecState *)
 {
-  return Undefined();
+  return jsUndefined();
 }
 
 // ------------------------------ FunctionBodyNode -----------------------------
@@ -2218,7 +2239,7 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
   // TODO: let this be an object with [[Class]] property "Function"
   FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), context->scopeChain());
 
-  ObjectImp *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
+  JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
   proto->put(exec, constructorPropertyName, func, ReadOnly|DontDelete|DontEnum);
   func->put(exec, prototypePropertyName, proto, Internal|DontDelete);
 
@@ -2226,7 +2247,7 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
   for(ParameterNode *p = param.get(); p != 0L; p = p->nextParam(), plen++)
     func->addParameter(p->ident());
 
-  func->put(exec, lengthPropertyName, Number(plen), ReadOnly|DontDelete|DontEnum);
+  func->put(exec, lengthPropertyName, jsNumber(plen), ReadOnly|DontDelete|DontEnum);
 
   // ECMA 10.2.2
   context->variableObject()->put(exec, ident, func, Internal | (context->codeType() == EvalCode ? 0 : DontDelete));
@@ -2234,7 +2255,7 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
   if (body) {
     // hack the scope so that the function gets put as a property of func, and it's scope
     // contains the func as well as our current scope
-    ObjectImp *oldVar = context->variableObject();
+    JSObject *oldVar = context->variableObject();
     context->setVariableObject(func);
     context->pushScope(func);
     body->processFuncDecl(exec);
@@ -2251,22 +2272,22 @@ Completion FuncDeclNode::execute(ExecState *)
 // ------------------------------ FuncExprNode ---------------------------------
 
 // ECMA 13
-ValueImp *FuncExprNode::evaluate(ExecState *exec)
+JSValue *FuncExprNode::evaluate(ExecState *exec)
 {
   ContextImp *context = exec->context().imp();
   bool named = !ident.isNull();
-  ObjectImp *functionScopeObject = 0;
+  JSObject *functionScopeObject = 0;
 
   if (named) {
     // named FunctionExpressions can recursively call themselves,
     // but they won't register with the current scope chain and should
     // be contained as single property in an anonymous object.
-    functionScopeObject = new ObjectImp;
+    functionScopeObject = new JSObject;
     context->pushScope(functionScopeObject);
   }
 
   FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), context->scopeChain());
-  ObjectImp *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
+  JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
   proto->put(exec, constructorPropertyName, func, ReadOnly|DontDelete|DontEnum);
   func->put(exec, prototypePropertyName, proto, Internal|DontDelete);
 
@@ -2284,16 +2305,18 @@ ValueImp *FuncExprNode::evaluate(ExecState *exec)
 
 // ------------------------------ SourceElementsNode ---------------------------
 
+int SourceElementsNode::count = 0;
+
 SourceElementsNode::SourceElementsNode(StatementNode *s1)
-  : element(s1), elements(this)
+  : node(s1), next(this)
 {
   setLoc(s1->firstLine(), s1->lastLine(), s1->sourceId());
 }
- 
+
 SourceElementsNode::SourceElementsNode(SourceElementsNode *s1, StatementNode *s2)
-  : element(s2), elements(s1->elements)
+  : node(s2), next(s1->next)
 {
-  s1->elements = this;
+  s1->next = this;
   setLoc(s1->firstLine(), s2->lastLine(), s1->sourceId());
 }
 
@@ -2302,13 +2325,13 @@ Completion SourceElementsNode::execute(ExecState *exec)
 {
   KJS_CHECKEXCEPTION
 
-  Completion c1 = element->execute(exec);
+  Completion c1 = node->execute(exec);
   KJS_CHECKEXCEPTION;
   if (c1.complType() != Normal)
     return c1;
   
-  for (SourceElementsNode *n = elements.get(); n; n = n->elements.get()) {
-    Completion c2 = n->element->execute(exec);
+  for (SourceElementsNode *n = next.get(); n; n = n->next.get()) {
+    Completion c2 = n->node->execute(exec);
     if (c2.complType() != Normal)
       return c2;
     // The spec says to return c2 here, but it seems that mozilla returns c1 if
@@ -2323,14 +2346,14 @@ Completion SourceElementsNode::execute(ExecState *exec)
 // ECMA 14
 void SourceElementsNode::processFuncDecl(ExecState *exec)
 {
-  for (SourceElementsNode *n = this; n; n = n->elements.get())
-    n->element->processFuncDecl(exec);
+  for (SourceElementsNode *n = this; n; n = n->next.get())
+    n->node->processFuncDecl(exec);
 }
 
 void SourceElementsNode::processVarDecls(ExecState *exec)
 {
-  for (SourceElementsNode *n = this; n; n = n->elements.get())
-    n->element->processVarDecls(exec);
+  for (SourceElementsNode *n = this; n; n = n->next.get())
+    n->node->processVarDecls(exec);
 }
 
 ProgramNode::ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s)

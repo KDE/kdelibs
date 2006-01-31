@@ -29,11 +29,17 @@
 
 namespace KXMLCore {
 
-template<typename PairType> 
-inline typename PairType::first_type const& extractFirst(const PairType& value)
+template<typename Key, typename Mapped>
+class PairFirstExtractor
 {
-    return value.first;
-}
+    typedef pair<Key, Mapped> ValueType;
+        
+public:
+    static const Key& extract(const ValueType& value) 
+    { 
+        return value.first;
+    }
+};
 
 template<typename Key, typename Mapped, typename HashFunctions>
 class HashMapTranslator 
@@ -59,7 +65,7 @@ public:
 };
 
 
-template<typename Key, typename Mapped, typename HashFunctions = DefaultHash<Key>, typename KeyTraits = HashTraits<Key>, typename MappedTraits = HashTraits<Mapped> >
+template<typename Key, typename Mapped, typename HashFunctions = typename DefaultHash<Key>::Hash, typename KeyTraits = HashTraits<Key>, typename MappedTraits = HashTraits<Mapped> >
 class HashMap {
  public:
     typedef Key KeyType;
@@ -67,20 +73,12 @@ class HashMap {
     typedef pair<Key, Mapped> ValueType;
     typedef PairHashTraits<KeyTraits, MappedTraits> ValueTraits;
  private:
-    typedef HashTable<KeyType, ValueType, extractFirst<ValueType>, HashFunctions, ValueTraits, KeyTraits> ImplType;
+    typedef HashTable<KeyType, ValueType, PairFirstExtractor<KeyType, MappedType>, HashFunctions, ValueTraits, KeyTraits> ImplType;
     typedef HashMapTranslator<Key, Mapped, HashFunctions> TranslatorType; 
  public:
     typedef typename ImplType::iterator iterator;
     typedef typename ImplType::const_iterator const_iterator;
-#ifdef _MSC_VER
-	HashMap()
-	{
-		ValueType vt;
-		extractFirst( vt );	
-	}
-#else
     HashMap() {}
-#endif
     int size() const;
     int capacity() const;
     bool isEmpty() const;
@@ -179,7 +177,7 @@ bool HashMap<Key, Mapped, HashFunctions, KeyTraits, MappedTraits>::contains(cons
 template<typename Key, typename Mapped, typename HashFunctions, typename KeyTraits, typename MappedTraits>
 pair<typename HashMap<Key, Mapped, HashFunctions, KeyTraits, MappedTraits>::iterator, bool> HashMap<Key, Mapped, HashFunctions, KeyTraits, MappedTraits>::inlineAdd(const KeyType &key, const MappedType &mapped) 
 {
-    return m_impl.template insert<KeyType, MappedType, TranslatorType>(key, mapped); 
+    return m_impl.template add<KeyType, MappedType, TranslatorType>(key, mapped); 
 }
 
 template<typename Key, typename Mapped, typename HashFunctions, typename KeyTraits, typename MappedTraits>
@@ -226,12 +224,13 @@ void HashMap<Key, Mapped, HashFunctions, KeyTraits, MappedTraits>::clear()
     m_impl.clear();
 }
 
-template<typename T>
-void deleteAllValues(T& collection)
+template<typename Key, typename Mapped, typename HashFunctions, typename KeyTraits, typename MappedTraits>
+void deleteAllValues(HashMap<Key, Mapped, HashFunctions, KeyTraits, MappedTraits>& collection)
 {
-    for (typename T::iterator it = collection.begin(); it != collection.end(); ++it) {
+    typedef HashMap<Key, Mapped, HashFunctions, KeyTraits, MappedTraits> T;
+    typename T::iterator end = collection.end();
+    for (typename T::iterator it = collection.begin(); it != end; ++it)
         delete it->second;
-    }
 }
 
 } // namespace KXMLCore

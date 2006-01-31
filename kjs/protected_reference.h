@@ -34,30 +34,30 @@ namespace KJS {
         ProtectedReference(const Reference& r) 
             : Reference(r) 
         {
-            InterpreterLock lock;
+            JSLock lock;
             gcProtectNullTolerant(base); 
         }
 
         ~ProtectedReference()
         { 
-            InterpreterLock lock;
+            JSLock lock;
             gcUnprotectNullTolerant(base);
         }
 
         ProtectedReference& operator=(const Reference &r)
-	{
-            InterpreterLock lock;
-            ValueImp *old = base;
+        {
+            JSLock lock;
+            JSValue *old = base;
             Reference::operator=(r); 
             gcProtectNullTolerant(base);
             gcUnprotectNullTolerant(old); 
             return *this;
-	}
+        }
 
     private:
         ProtectedReference();
-        ProtectedReference(ObjectImp *b, const Identifier& p);
-        ProtectedReference(ObjectImp *b, unsigned p);
+        ProtectedReference(JSObject *b, const Identifier& p);
+        ProtectedReference(JSObject *b, unsigned p);
         ProtectedReference(const Identifier& p);
         ProtectedReference(unsigned p);
     };

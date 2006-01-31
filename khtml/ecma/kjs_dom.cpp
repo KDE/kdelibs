@@ -72,9 +72,9 @@ using namespace KJS;
   item          DOMNode::Item           DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMNode",DOMNodeProto)
-IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMNodeProto,DOMNodeProtoFunc)
+KJS_DEFINE_PROTOTYPE(DOMNodeProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMNode",DOMNodeProto,DOMNodeProtoFunc)
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
 
@@ -594,9 +594,9 @@ ValueImp* DOMNodeProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
   namedItem	DOMNodeList::NamedItem		DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMNodeList", DOMNodeListProto)
-IMPLEMENT_PROTOFUNC(DOMNodeListProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMNodeListProto,DOMNodeListProtoFunc)
+KJS_DEFINE_PROTOTYPE(DOMNodeListProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMNodeListProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMNodeList",DOMNodeListProto,DOMNodeListProtoFunc)
 
 const ClassInfo DOMNodeList::info = { "NodeList", 0, 0, 0 };
 
@@ -613,13 +613,13 @@ ValueImp* DOMNodeList::indexGetter(ExecState *exec, unsigned index)
   return getDOMNode(exec, m_impl->item(index));
 }
 
-ValueImp *DOMNodeList::nameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot)
+ValueImp *DOMNodeList::nameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
 {
   DOMNodeList *thisObj = static_cast<DOMNodeList *>(slot.slotBase());
   return getDOMNode(exec, thisObj->getByName(name));
 }
 
-ValueImp *DOMNodeList::lengthGetter(ExecState *, const Identifier&, const PropertySlot& slot)
+ValueImp *DOMNodeList::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   DOMNodeList *thisObj = static_cast<DOMNodeList *>(slot.slotBase());
   return Number(thisObj->m_impl->length());
@@ -799,9 +799,9 @@ AttrImpl *toAttr(ValueImp *val)
   loadXML            DOMDocument::LoadXML                      DontDelete|Function 2
 @end
 */
-DEFINE_PROTOTYPE("DOMDocument", DOMDocumentProto)
-IMPLEMENT_PROTOFUNC(DOMDocumentProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeProto)
+KJS_DEFINE_PROTOTYPE(DOMDocumentProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMDocumentProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE_WITH_PARENT("DOMDocument",DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeProto)
 
 const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
 
@@ -1035,9 +1035,9 @@ ValueImp* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisO
   hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2
 @end
 */
-DEFINE_PROTOTYPE("DOMElement",DOMElementProto)
-IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMElementProto,DOMElementProtoFunc,DOMNodeProto)
+KJS_DEFINE_PROTOTYPE(DOMElementProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE_WITH_PARENT("DOMElement",DOMElementProto,DOMElementProtoFunc,DOMNodeProto)
 
 const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable, 0 };
 /* Source for DOMElementTable.
@@ -1097,7 +1097,7 @@ bool DOMElement::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
   return false;
 }
 
-ValueImp *DOMElement::attributeGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *DOMElement::attributeGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   DOMElement *thisObj = static_cast<DOMElement *>(slot.slotBase());
 
@@ -1181,9 +1181,9 @@ DOM::ElementImpl *KJS::toElement(ValueImp *v)
   createHTMLDocument    DOMDOMImplementation::CreateHTMLDocument        DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto)
-IMPLEMENT_PROTOFUNC(DOMDOMImplementationProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMDOMImplementationProto,DOMDOMImplementationProtoFunc)
+KJS_DEFINE_PROTOTYPE(DOMDOMImplementationProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMDOMImplementationProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto,DOMDOMImplementationProtoFunc)
 
 const ClassInfo DOMDOMImplementation::info = { "DOMImplementation", 0, 0, 0 };
 
@@ -1306,9 +1306,9 @@ ValueImp* DOMDocumentType::getValueProperty(ExecState *exec, int token) const
   length		DOMNamedNodeMap::Length			DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("NamedNodeMap", DOMNamedNodeMapProto)
-IMPLEMENT_PROTOFUNC(DOMNamedNodeMapProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMNamedNodeMapProto,DOMNamedNodeMapProtoFunc)
+KJS_DEFINE_PROTOTYPE(DOMNamedNodeMapProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMNamedNodeMapProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("NamedNodeMap",DOMNamedNodeMapProto,DOMNamedNodeMapProtoFunc)
 
 const ClassInfo DOMNamedNodeMap::info = { "NamedNodeMap", 0, &DOMNamedNodeMapTable, 0 };
 
@@ -1325,7 +1325,7 @@ ValueImp* DOMNamedNodeMap::indexGetter(ExecState *exec, unsigned index)
   return getDOMNode(exec, m_impl->item(index));
 }
 
-ValueImp *DOMNamedNodeMap::lengthGetter(ExecState *, const Identifier&, const PropertySlot& slot)
+ValueImp *DOMNamedNodeMap::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   DOMNamedNodeMap *thisObj = static_cast<DOMNamedNodeMap *>(slot.slotBase());
   return Number(thisObj->m_impl->length());
@@ -1751,7 +1751,7 @@ ValueImp* DOMNamedNodesCollection::indexGetter(ExecState *exec, unsigned index)
   return getDOMNode(exec, m_nodes[index].get());
 }
 
-ValueImp *DOMNamedNodesCollection::lengthGetter(ExecState *, const Identifier&, const PropertySlot& slot)
+ValueImp *DOMNamedNodesCollection::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   DOMNamedNodesCollection *thisObj = static_cast<DOMNamedNodesCollection *>(slot.slotBase());
   return Number(thisObj->m_nodes.size());
@@ -1791,9 +1791,9 @@ const ClassInfo DOMCharacterData::info = { "CharacterImp",
   replaceData	DOMCharacterData::ReplaceData	DontDelete|Function 2
 @end
 */
-DEFINE_PROTOTYPE("DOMCharacterData",DOMCharacterDataProto)
-IMPLEMENT_PROTOFUNC(DOMCharacterDataProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMCharacterDataProto,DOMCharacterDataProtoFunc, DOMNodeProto)
+KJS_DEFINE_PROTOTYPE(DOMCharacterDataProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMCharacterDataProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE_WITH_PARENT("DOMCharacterData",DOMCharacterDataProto,DOMCharacterDataProtoFunc, DOMNodeProto)
 
 DOMCharacterData::DOMCharacterData(ExecState *exec, DOM::CharacterDataImpl* d)
  : DOMNode(exec, d)
@@ -1870,9 +1870,9 @@ const ClassInfo DOMText::info = { "Text",
   splitText	DOMText::SplitText	DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMText",DOMTextProto)
-IMPLEMENT_PROTOFUNC(DOMTextProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextProto,DOMTextProtoFunc,DOMCharacterDataProto)
+KJS_DEFINE_PROTOTYPE(DOMTextProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMTextProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE_WITH_PARENT("DOMText",DOMTextProto,DOMTextProtoFunc,DOMCharacterDataProto)
 
 DOMText::DOMText(ExecState *exec, DOM::TextImpl* t)
   : DOMCharacterData(exec, t)

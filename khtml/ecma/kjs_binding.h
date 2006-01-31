@@ -35,15 +35,15 @@
 #include <stdlib.h> // for abort
 
 #define KJS_CHECK_THIS( ClassName, theObj ) \
-	if (!theObj || !theObj->inherits(&ClassName::info)) { \
-		KJS::UString errMsg = "Attempt at calling a function that expects a "; \
-		errMsg += ClassName::info.className; \
-		errMsg += " on a "; \
-		errMsg += thisObj->className(); \
-		KJS::ObjectImp *err = KJS::Error::create(exec, KJS::TypeError, errMsg.ascii()); \
-		exec->setException(err); \
-		return err; \
-	}
+       if (!theObj || !theObj->inherits(&ClassName::info)) { \
+               KJS::UString errMsg = "Attempt at calling a function that expects a "; \
+               errMsg += ClassName::info.className; \
+               errMsg += " on a "; \
+               errMsg += theObj->className(); \
+               KJS::ObjectImp *err = KJS::Error::create(exec, KJS::TypeError, errMsg.ascii()); \
+               exec->setException(err); \
+               return err; \
+       }
 
 namespace KParts {
   class ReadOnlyPart;
@@ -55,6 +55,8 @@ namespace khtml {
 }
 
 namespace KJS {
+  typedef JSObject ObjectImp;
+  typedef JSValue  ValueImp;
 
   /**
    * Base class for all objects in this binding. Doesn't manage exceptions any more
@@ -64,6 +66,7 @@ namespace KJS {
     DOMObject() : ObjectImp() {}
     DOMObject(ObjectImp *proto) : ObjectImp(proto) {}
   public:
+    bool shouldMark() const { return _prop.isEmpty(); }
     virtual UString toString(ExecState *exec) const;
   };
 
@@ -185,7 +188,7 @@ namespace KJS {
 
   /* Helper for the below*/
   template<class JSTypeImp>
-  ValueImp *indexGetterAdapter(ExecState* exec, const Identifier& , const PropertySlot& slot)
+  ValueImp *indexGetterAdapter(ExecState* exec, JSObject*, const Identifier& , const PropertySlot& slot)
   {
     JSTypeImp *thisObj = static_cast<JSTypeImp*>(slot.slotBase());
     return thisObj->indexGetter(exec, slot.index());

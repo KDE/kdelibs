@@ -33,6 +33,8 @@
 
 #endif
 
+#include "global.h"
+
 #include <assert.h>
 #include <stdlib.h> // for size_t
 #include "simple_number.h"
@@ -40,9 +42,10 @@
 
 namespace KJS {
 
-struct ClassInfo;
+class ClassInfo;
 class ExecState;
-class ObjectImp;
+class JSCell;
+class JSObject;
 
 /**
  * Primitive types
@@ -54,27 +57,25 @@ enum Type {
     BooleanType       = 3,
     StringType        = 4,
     NumberType        = 5,
-    ObjectType        = 6
+    ObjectType        = 6,
+    GetterSetterType  = 7
 };
 
-// Forward declaration
-class AllocatedValueImp;
-
 /**
- * ValueImp is the base type for all primitives (Undefined, Null, Boolean,
+ * JSValue is the base type for all primitives (Undefined, Null, Boolean,
  * String, Number) and objects in ECMAScript.
  *
- * Note: you should never inherit from ValueImp as it is for primitive types
+ * Note: you should never inherit from JSValue as it is for primitive types
  * only (all of which are provided internally by KJS). Instead, inherit from
- * ObjectImp.
+ * JSObject.
  */
-class KJS_EXPORT ValueImp {
-    friend class AllocatedValueImp; // so it can derive from this class
-    friend class ProtectedValues; // so it can call downcast()
+class KJS_EXPORT JSValue {
+    friend class JSCell; // so it can derive from this class
+    friend class Collector; // so it can call downcast()
 
 private:
-    ValueImp();
-    virtual ~ValueImp();
+    JSValue();
+    virtual ~JSValue();
 
 public:
     // Querying the type.
@@ -94,18 +95,18 @@ public:
     double getNumber() const; // NaN if not a number
     bool getString(UString&) const;
     UString getString() const; // null string if not a string
-    ObjectImp *getObject(); // NULL if not an object
-    const ObjectImp *getObject() const; // NULL if not an object
+    JSObject *getObject(); // NULL if not an object
+    const JSObject *getObject() const; // NULL if not an object
 
     // Extracting integer values.
     bool getUInt32(uint32_t&) const;
 
     // Basic conversions.
-    ValueImp *toPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const;
+    JSValue *toPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
     double toNumber(ExecState *exec) const;
     UString toString(ExecState *exec) const;
-    ObjectImp *toObject(ExecState *exec) const;
+    JSObject *toObject(ExecState *exec) const;
 
     // Integer conversions.
     double toInteger(ExecState *exec) const;
@@ -119,25 +120,26 @@ public:
 
 private:
     // Implementation details.
-    AllocatedValueImp *downcast();
-    const AllocatedValueImp *downcast() const;
+    JSCell *downcast();
+    const JSCell *downcast() const;
 
     // Give a compile time error if we try to copy one of these.
-    ValueImp(const ValueImp&);
-    ValueImp& operator=(const ValueImp&);
+    JSValue(const JSValue&);
+    JSValue& operator=(const JSValue&);
 };
 
-class KJS_EXPORT AllocatedValueImp : public ValueImp {
+class KJS_EXPORT JSCell : public JSValue {
     friend class Collector;
     friend class UndefinedImp;
     friend class NullImp;
     friend class BooleanImp;
     friend class NumberImp;
     friend class StringImp;
-    friend class ObjectImp;
+    friend class JSObject;
+    friend class GetterSetterImp;
 private:
-    AllocatedValueImp();
-    virtual ~AllocatedValueImp();
+    JSCell();
+    virtual ~JSCell();
 public:
     // Querying the type.
     virtual Type type() const = 0;
@@ -153,18 +155,18 @@ public:
     double getNumber() const; // NaN if not a number
     bool getString(UString&) const;
     UString getString() const; // null string if not a string
-    ObjectImp *getObject(); // NULL if not an object
-    const ObjectImp *getObject() const; // NULL if not an object
+    JSObject *getObject(); // NULL if not an object
+    const JSObject *getObject() const; // NULL if not an object
 
     // Extracting integer values.
     virtual bool getUInt32(uint32_t&) const;
 
     // Basic conversions.
-    virtual ValueImp *toPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const = 0;
+    virtual JSValue *toPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const = 0;
     virtual bool toBoolean(ExecState *exec) const = 0;
     virtual double toNumber(ExecState *exec) const = 0;
     virtual UString toString(ExecState *exec) const = 0;
-    virtual ObjectImp *toObject(ExecState *exec) const = 0;
+    virtual JSObject *toObject(ExecState *exec) const = 0;
 
     // Garbage collection.
     void *operator new(size_t);
@@ -175,160 +177,151 @@ private:
     bool m_marked;
 };
 
-KJS_EXPORT AllocatedValueImp *jsUndefined();
-KJS_EXPORT AllocatedValueImp *jsNull();
+KJS_EXPORT JSCell *jsUndefined();
+KJS_EXPORT JSCell *jsNull();
 
-KJS_EXPORT AllocatedValueImp *jsBoolean(bool = false);
+KJS_EXPORT JSCell *jsBoolean(bool);
 
-KJS_EXPORT ValueImp *jsNumber(double);
-KJS_EXPORT ValueImp *jsNaN();
-KJS_EXPORT ValueImp *jsZero();
-KJS_EXPORT ValueImp *jsOne();
-KJS_EXPORT ValueImp *jsTwo();
+KJS_EXPORT JSValue *jsNumber(double);
+KJS_EXPORT JSValue *jsNaN();
 
-KJS_EXPORT AllocatedValueImp *jsString(const UString &); // returns empty string if passed null string
-KJS_EXPORT AllocatedValueImp *jsString(const char * = ""); // returns empty string if passed 0
+KJS_EXPORT JSCell *jsString(const UString &); // returns empty string if passed null string
+KJS_EXPORT JSCell *jsString(const char * = ""); // returns empty string if passed 0
 
 extern const double NaN;
 extern const double Inf;
 
 class KJS_EXPORT ConstantValues {
 public:
-    static AllocatedValueImp *undefined;
-    static AllocatedValueImp *null;
-    static AllocatedValueImp *jsFalse;
-    static AllocatedValueImp *jsTrue;
+    static JSCell *undefined;
+    static JSCell *null;
+    static JSCell *jsFalse;
+    static JSCell *jsTrue;
 
-    static void init();
-    static void clear();
+    static void initIfNeeded();
     static void mark();
 };
 
-inline AllocatedValueImp *jsUndefined()
+inline JSCell *jsUndefined()
 {
     return ConstantValues::undefined;
 }
 
-inline AllocatedValueImp *jsNull()
+inline JSCell *jsNull()
 {
     return ConstantValues::null;
 }
 
-inline AllocatedValueImp *jsBoolean(bool b)
+inline JSCell *jsBoolean(bool b)
 {
     return b ? ConstantValues::jsTrue : ConstantValues::jsFalse;
 }
 
-inline ValueImp *jsNaN()
+inline JSValue *jsNaN()
 {
     return SimpleNumber::make(NaN);
 }
 
-inline ValueImp::ValueImp()
+inline JSValue::JSValue()
 {
 }
 
-inline ValueImp::~ValueImp()
+inline JSValue::~JSValue()
 {
 }
 
-inline AllocatedValueImp::AllocatedValueImp()
+inline JSCell::JSCell()
     : m_marked(false)
 {
 }
 
-inline AllocatedValueImp::~AllocatedValueImp()
+inline JSCell::~JSCell()
 {
 }
 
-inline bool AllocatedValueImp::isBoolean() const
+inline bool JSCell::isBoolean() const
 {
     return type() == BooleanType;
 }
 
-inline bool AllocatedValueImp::isNumber() const
+inline bool JSCell::isNumber() const
 {
     return type() == NumberType;
 }
 
-inline bool AllocatedValueImp::isString() const
+inline bool JSCell::isString() const
 {
     return type() == StringType;
 }
 
-inline bool AllocatedValueImp::isObject() const
+inline bool JSCell::isObject() const
 {
     return type() == ObjectType;
 }
 
-inline bool AllocatedValueImp::marked() const
+inline bool JSCell::marked() const
 {
     return m_marked;
 }
 
-inline void AllocatedValueImp::mark()
+inline void JSCell::mark()
 {
     m_marked = true;
 }
 
-inline AllocatedValueImp *ValueImp::downcast()
+inline JSCell *JSValue::downcast()
 {
     assert(!SimpleNumber::is(this));
-    return static_cast<AllocatedValueImp *>(this);
+    return static_cast<JSCell *>(this);
 }
 
-inline const AllocatedValueImp *ValueImp::downcast() const
+inline const JSCell *JSValue::downcast() const
 {
     assert(!SimpleNumber::is(this));
-    return static_cast<const AllocatedValueImp *>(this);
+    return static_cast<const JSCell *>(this);
 }
 
-inline bool ValueImp::isUndefined() const
+inline bool JSValue::isUndefined() const
 {
     return this == jsUndefined();
 }
 
-inline bool ValueImp::isNull() const
+inline bool JSValue::isNull() const
 {
     return this == jsNull();
 }
 
-inline bool ValueImp::isUndefinedOrNull() const
+inline bool JSValue::isUndefinedOrNull() const
 {
     return this == jsUndefined() || this == jsNull();
 }
 
-inline bool ValueImp::isBoolean() const
+inline bool JSValue::isBoolean() const
 {
     return !SimpleNumber::is(this) && downcast()->isBoolean();
 }
 
-inline bool ValueImp::isNumber() const
+inline bool JSValue::isNumber() const
 {
     return SimpleNumber::is(this) || downcast()->isNumber();
 }
 
-inline bool ValueImp::isString() const
+inline bool JSValue::isString() const
 {
     return !SimpleNumber::is(this) && downcast()->isString();
 }
 
-inline bool ValueImp::isObject() const
+inline bool JSValue::isObject() const
 {
     return !SimpleNumber::is(this) && downcast()->isObject();
 }
 
-inline bool ValueImp::isObject(const ClassInfo *c) const
-{
-    return !SimpleNumber::is(this) && downcast()->isObject(c);
-}
-
-inline bool ValueImp::getBoolean(bool& v) const
+inline bool JSValue::getBoolean(bool& v) const
 {
     return !SimpleNumber::is(this) && downcast()->getBoolean(v);
 }
 
-inline bool ValueImp::getNumber(double& v) const
+inline bool JSValue::getNumber(double& v) const
 {
     if (SimpleNumber::is(this)) {
         v = SimpleNumber::value(this);
@@ -337,32 +330,32 @@ inline bool ValueImp::getNumber(double& v) const
     return downcast()->getNumber(v);
 }
 
-inline double ValueImp::getNumber() const
+inline double JSValue::getNumber() const
 {
     return SimpleNumber::is(this) ? SimpleNumber::value(this) : downcast()->getNumber();
 }
 
-inline bool ValueImp::getString(UString& s) const
+inline bool JSValue::getString(UString& s) const
 {
     return !SimpleNumber::is(this) && downcast()->getString(s);
 }
 
-inline UString ValueImp::getString() const
+inline UString JSValue::getString() const
 {
     return SimpleNumber::is(this) ? UString() : downcast()->getString();
 }
 
-inline ObjectImp *ValueImp::getObject()
+inline JSObject *JSValue::getObject()
 {
     return SimpleNumber::is(this) ? 0 : downcast()->getObject();
 }
 
-inline const ObjectImp *ValueImp::getObject() const
+inline const JSObject *JSValue::getObject() const
 {
     return SimpleNumber::is(this) ? 0 : downcast()->getObject();
 }
 
-inline bool ValueImp::getUInt32(uint32_t& v) const
+inline bool JSValue::getUInt32(uint32_t& v) const
 {
     if (SimpleNumber::is(this)) {
         double d = SimpleNumber::value(this);
@@ -374,28 +367,28 @@ inline bool ValueImp::getUInt32(uint32_t& v) const
     return downcast()->getUInt32(v);
 }
 
-inline void ValueImp::mark()
+inline void JSValue::mark()
 {
     if (!SimpleNumber::is(this))
         downcast()->mark();
 }
 
-inline bool ValueImp::marked() const
+inline bool JSValue::marked() const
 {
     return SimpleNumber::is(this) || downcast()->marked();
 }
 
-inline Type ValueImp::type() const
+inline Type JSValue::type() const
 {
     return SimpleNumber::is(this) ? NumberType : downcast()->type();
 }
 
-inline ValueImp *ValueImp::toPrimitive(ExecState *exec, Type preferredType) const
+inline JSValue *JSValue::toPrimitive(ExecState *exec, Type preferredType) const
 {
-    return SimpleNumber::is(this) ? const_cast<ValueImp *>(this) : downcast()->toPrimitive(exec, preferredType);
+    return SimpleNumber::is(this) ? const_cast<JSValue *>(this) : downcast()->toPrimitive(exec, preferredType);
 }
 
-inline bool ValueImp::toBoolean(ExecState *exec) const
+inline bool JSValue::toBoolean(ExecState *exec) const
 {
     if (SimpleNumber::is(this)) {
         double d = SimpleNumber::value(this);
@@ -405,12 +398,12 @@ inline bool ValueImp::toBoolean(ExecState *exec) const
     return downcast()->toBoolean(exec);
 }
 
-inline double ValueImp::toNumber(ExecState *exec) const
+inline double JSValue::toNumber(ExecState *exec) const
 {
     return SimpleNumber::is(this) ? SimpleNumber::value(this) : downcast()->toNumber(exec);
 }
 
-inline UString ValueImp::toString(ExecState *exec) const
+inline UString JSValue::toString(ExecState *exec) const
 {
     if (SimpleNumber::is(this)) {
         double d = SimpleNumber::value(this);
@@ -422,29 +415,29 @@ inline UString ValueImp::toString(ExecState *exec) const
     return downcast()->toString(exec);
 }
 
-inline ValueImp *jsZero()
+// compatibility names so we don't have to change so much code
+inline JSValue *jsZero()
 {
     return SimpleNumber::make(0.0);
 }
 
-inline ValueImp *jsOne()
+inline JSValue *jsOne()
 {
     return SimpleNumber::make(1.0);
 }
 
-inline ValueImp *jsTwo()
+inline JSValue *jsTwo()
 {
     return SimpleNumber::make(2.0);
 }
 
-// compatibility names so we don't have to change so much code
+inline JSCell *Undefined() { return jsUndefined(); }
+inline JSCell *Null() { return jsNull(); }
+inline JSCell *Boolean(bool b) { return jsBoolean(b); }
+inline JSValue *Number(double n) { return jsNumber(n); }
+inline JSCell *String(const UString& s) { return jsString(s); }
+inline JSCell *String(const char *s) { return jsString(s); }
 
-inline AllocatedValueImp *Undefined() { return jsUndefined(); }
-inline AllocatedValueImp *Null() { return jsNull(); }
-inline AllocatedValueImp *Boolean(bool b) { return jsBoolean(b); }
-inline ValueImp *Number(double n) { return jsNumber(n); }
-inline AllocatedValueImp *String(const UString& s) { return jsString(s); }
-inline AllocatedValueImp *String(const char *s) { return jsString(s); }
 
 } // namespace
 

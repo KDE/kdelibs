@@ -29,6 +29,7 @@
 #include <kjs/ustring.h>
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
+#include "ecma/kjs_binding.h"
 
 class RegressionTest;
 class QTimer;
@@ -94,8 +95,8 @@ public:
 
     virtual bool getOwnPropertySlot(KJS::ExecState *exec, const KJS::Identifier& propertyName, KJS::PropertySlot& slot);
 private:
-    static KJS::ValueImp *winGetter(KJS::ExecState *, const KJS::Identifier&, const KJS::PropertySlot&);
-    static KJS::ValueImp *docGetter(KJS::ExecState *, const KJS::Identifier&, const KJS::PropertySlot&);
+    static KJS::ValueImp *winGetter(KJS::ExecState *, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot&);
+    static KJS::ValueImp *docGetter(KJS::ExecState *, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot&);
     KHTMLPart *m_part;
 };
 

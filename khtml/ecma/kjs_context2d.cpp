@@ -68,6 +68,8 @@
 #include <QColor>
 #include <QtDebug>
 
+#include <math.h>
+
 using namespace DOM;
 using khtml::RenderCanvasImage;
 
@@ -77,7 +79,7 @@ namespace KJS {
 
 ////////////////////// Context2D Object ////////////////////////
 
-IMPLEMENT_PROTOFUNC(Context2DFunction)
+KJS_IMPLEMENT_PROTOFUNC(Context2DFunction)
 
 static bool isGradient(ValueImp *value)
 {
@@ -1235,7 +1237,7 @@ const ClassInfo KJS::Gradient::info = { "Gradient", 0, &GradientTable, 0 };
    @end
 */
 
-IMPLEMENT_PROTOFUNC(GradientFunction)
+KJS_IMPLEMENT_PROTOFUNC(GradientFunction)
 
 ValueImp *GradientFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {

@@ -69,9 +69,9 @@ using khtml::Decoder;
 
 namespace KJS {
 
-DEFINE_PROTOTYPE("XMLHttpRequest",XMLHttpRequestProto)
-IMPLEMENT_PROTOFUNC(XMLHttpRequestProtoFunc)
-IMPLEMENT_PROTOTYPE(XMLHttpRequestProto,XMLHttpRequestProtoFunc)
+KJS_DEFINE_PROTOTYPE(XMLHttpRequestProto)
+KJS_IMPLEMENT_PROTOFUNC(XMLHttpRequestProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("XMLHttpRequest", XMLHttpRequestProto,XMLHttpRequestProtoFunc)
 
 
 XMLHttpRequestQObject::XMLHttpRequestQObject(XMLHttpRequest *_jsObject)

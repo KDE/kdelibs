@@ -37,34 +37,34 @@
 
 using namespace KJS;
 
-// ------------------------------ StringInstanceImp ----------------------------
+// ------------------------------ StringInstance ----------------------------
 
-const ClassInfo StringInstanceImp::info = {"String", 0, 0, 0};
+const ClassInfo StringInstance::info = {"String", 0, 0, 0};
 
-StringInstanceImp::StringInstanceImp(ObjectImp *proto)
-  : ObjectImp(proto)
+StringInstance::StringInstance(JSObject *proto)
+  : JSObject(proto)
 {
-  setInternalValue(String(""));
+  setInternalValue(jsString(""));
 }
 
-StringInstanceImp::StringInstanceImp(ObjectImp *proto, const UString &string)
-  : ObjectImp(proto)
+StringInstance::StringInstance(JSObject *proto, const UString &string)
+  : JSObject(proto)
 {
-  setInternalValue(String(string));
+  setInternalValue(jsString(string));
 }
 
-ValueImp *StringInstanceImp::lengthGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot &slot)
+JSValue *StringInstance::lengthGetter(ExecState *exec, JSObject *originalObject, const Identifier& propertyName, const PropertySlot &slot)
 {
-    return jsNumber(static_cast<StringInstanceImp *>(slot.slotBase())->internalValue()->toString(exec).size());
+    return jsNumber(static_cast<StringInstance *>(slot.slotBase())->internalValue()->toString(exec).size());
 }
 
-ValueImp *StringInstanceImp::indexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot &slot)
+JSValue *StringInstance::indexGetter(ExecState *exec, JSObject *originalObject, const Identifier& propertyName, const PropertySlot &slot)
 {
-    const UChar c = static_cast<StringInstanceImp *>(slot.slotBase())->internalValue()->toString(exec)[slot.index()];
+    const UChar c = static_cast<StringInstance *>(slot.slotBase())->internalValue()->toString(exec)[slot.index()];
     return jsString(UString(&c, 1));
 }
 
-bool StringInstanceImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot &slot)
+bool StringInstance::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot &slot)
 {
   if (propertyName == lengthPropertyName) {
     slot.setCustom(this, lengthGetter);
@@ -77,31 +77,31 @@ bool StringInstanceImp::getOwnPropertySlot(ExecState *exec, const Identifier& pr
     const UString s = internalValue()->toString(exec);
     const unsigned length = s.size();
     if (index < length) {
-      slot.setCustomIndex(this, index, indexGetter);
-      return true;
-    }
+    slot.setCustomIndex(this, index, indexGetter);
+    return true;
+  }
   }
 
-  return ObjectImp::getOwnPropertySlot(exec, propertyName, slot);
+  return JSObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-void StringInstanceImp::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
+void StringInstance::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
   if (propertyName == lengthPropertyName)
     return;
-  ObjectImp::put(exec, propertyName, value, attr);
+  JSObject::put(exec, propertyName, value, attr);
 }
 
-bool StringInstanceImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
+bool StringInstance::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
   if (propertyName == lengthPropertyName)
     return false;
-  return ObjectImp::deleteProperty(exec, propertyName);
+  return JSObject::deleteProperty(exec, propertyName);
 }
 
-ReferenceList StringInstanceImp::propList(ExecState *exec, bool recursive)
+ReferenceList StringInstance::propList(ExecState *exec, bool recursive)
 {
-  ReferenceList properties = ObjectImp::propList(exec,recursive);
+  ReferenceList properties = JSObject::propList(exec,recursive);
 
   //### FIXME: should avoid duplicates with prototype
   UString str = internalValue()->toString(exec);
@@ -110,80 +110,74 @@ ReferenceList StringInstanceImp::propList(ExecState *exec, bool recursive)
   return properties;
 }
 
-// ------------------------------ StringPrototypeImp ---------------------------
-const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, &stringTable, 0};
+// ------------------------------ StringPrototype ---------------------------
+const ClassInfo StringPrototype::info = {"String", &StringInstance::info, &stringTable, 0};
 /* Source for string_object.lut.h
 @begin stringTable 26
-  toString		StringProtoFuncImp::ToString	DontEnum|Function	0
-  valueOf		StringProtoFuncImp::ValueOf	DontEnum|Function	0
-  charAt		StringProtoFuncImp::CharAt	DontEnum|Function	1
-  charCodeAt		StringProtoFuncImp::CharCodeAt	DontEnum|Function	1
-  concat		StringProtoFuncImp::Concat	DontEnum|Function	1
-  indexOf		StringProtoFuncImp::IndexOf	DontEnum|Function	1
-  lastIndexOf		StringProtoFuncImp::LastIndexOf	DontEnum|Function	1
-  match			StringProtoFuncImp::Match	DontEnum|Function	1
-  replace		StringProtoFuncImp::Replace	DontEnum|Function	2
-  search		StringProtoFuncImp::Search	DontEnum|Function	1
-  slice			StringProtoFuncImp::Slice	DontEnum|Function	2
-  split			StringProtoFuncImp::Split	DontEnum|Function	2
-  substr		StringProtoFuncImp::Substr	DontEnum|Function	2
-  substring		StringProtoFuncImp::Substring	DontEnum|Function	2
-  toLowerCase		StringProtoFuncImp::ToLowerCase	DontEnum|Function	0
-  toUpperCase		StringProtoFuncImp::ToUpperCase	DontEnum|Function	0
-  toLocaleLowerCase	StringProtoFuncImp::ToLocaleLowerCase DontEnum|Function	0
-  toLocaleUpperCase     StringProtoFuncImp::ToLocaleUpperCase DontEnum|Function	0
+  toString		StringProtoFunc::ToString	DontEnum|Function	0
+  valueOf		StringProtoFunc::ValueOf	DontEnum|Function	0
+  charAt		StringProtoFunc::CharAt	DontEnum|Function	1
+  charCodeAt		StringProtoFunc::CharCodeAt	DontEnum|Function	1
+  concat		StringProtoFunc::Concat	DontEnum|Function	1
+  indexOf		StringProtoFunc::IndexOf	DontEnum|Function	1
+  lastIndexOf		StringProtoFunc::LastIndexOf	DontEnum|Function	1
+  match			StringProtoFunc::Match	DontEnum|Function	1
+  replace		StringProtoFunc::Replace	DontEnum|Function	2
+  search		StringProtoFunc::Search	DontEnum|Function	1
+  slice			StringProtoFunc::Slice	DontEnum|Function	2
+  split			StringProtoFunc::Split	DontEnum|Function	2
+  substr		StringProtoFunc::Substr	DontEnum|Function	2
+  substring		StringProtoFunc::Substring	DontEnum|Function	2
+  toLowerCase		StringProtoFunc::ToLowerCase	DontEnum|Function	0
+  toUpperCase		StringProtoFunc::ToUpperCase	DontEnum|Function	0
+  toLocaleLowerCase	StringProtoFunc::ToLocaleLowerCase DontEnum|Function	0
+  toLocaleUpperCase     StringProtoFunc::ToLocaleUpperCase DontEnum|Function	0
 #
 # Under here: html extension, should only exist if KJS_PURE_ECMA is not defined
 # I guess we need to generate two hashtables in the .lut.h file, and use #ifdef
 # to select the right one... TODO. #####
-  big			StringProtoFuncImp::Big		DontEnum|Function	0
-  small			StringProtoFuncImp::Small	DontEnum|Function	0
-  blink			StringProtoFuncImp::Blink	DontEnum|Function	0
-  bold			StringProtoFuncImp::Bold	DontEnum|Function	0
-  fixed			StringProtoFuncImp::Fixed	DontEnum|Function	0
-  italics		StringProtoFuncImp::Italics	DontEnum|Function	0
-  strike		StringProtoFuncImp::Strike	DontEnum|Function	0
-  sub			StringProtoFuncImp::Sub		DontEnum|Function	0
-  sup			StringProtoFuncImp::Sup		DontEnum|Function	0
-  fontcolor		StringProtoFuncImp::Fontcolor	DontEnum|Function	1
-  fontsize		StringProtoFuncImp::Fontsize	DontEnum|Function	1
-  anchor		StringProtoFuncImp::Anchor	DontEnum|Function	1
-  link			StringProtoFuncImp::Link	DontEnum|Function	1
+  big			StringProtoFunc::Big		DontEnum|Function	0
+  small			StringProtoFunc::Small	DontEnum|Function	0
+  blink			StringProtoFunc::Blink	DontEnum|Function	0
+  bold			StringProtoFunc::Bold	DontEnum|Function	0
+  fixed			StringProtoFunc::Fixed	DontEnum|Function	0
+  italics		StringProtoFunc::Italics	DontEnum|Function	0
+  strike		StringProtoFunc::Strike	DontEnum|Function	0
+  sub			StringProtoFunc::Sub		DontEnum|Function	0
+  sup			StringProtoFunc::Sup		DontEnum|Function	0
+  fontcolor		StringProtoFunc::Fontcolor	DontEnum|Function	1
+  fontsize		StringProtoFunc::Fontsize	DontEnum|Function	1
+  anchor		StringProtoFunc::Anchor	DontEnum|Function	1
+  link			StringProtoFunc::Link	DontEnum|Function	1
 @end
 */
 // ECMA 15.5.4
-StringPrototypeImp::StringPrototypeImp(ExecState *exec,
-                                       ObjectPrototypeImp *objProto)
-  : StringInstanceImp(objProto)
+StringPrototype::StringPrototype(ExecState *exec,
+                                       ObjectPrototype *objProto)
+  : StringInstance(objProto)
 {
   // The constructor will be added later, after StringObjectImp has been built
-  putDirect(lengthPropertyName, jsZero(), DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, jsNumber(0), DontDelete|ReadOnly|DontEnum);
 }
 
-bool StringPrototypeImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot &slot)
+bool StringPrototype::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot &slot)
 {
-  return getStaticFunctionSlot<StringProtoFuncImp, StringInstanceImp>(exec, &stringTable, this, propertyName, slot);
+  return getStaticFunctionSlot<StringProtoFunc, StringInstance>(exec, &stringTable, this, propertyName, slot);
 }
 
-// ------------------------------ StringProtoFuncImp ---------------------------
+// ------------------------------ StringProtoFunc ---------------------------
 
-StringProtoFuncImp::StringProtoFuncImp(ExecState *exec, int i, int len)
+StringProtoFunc::StringProtoFunc(ExecState *exec, int i, int len)
   : InternalFunctionImp(
-    static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype())
+    static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype())
     ), id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
-bool StringProtoFuncImp::implementsCall() const
+bool StringProtoFunc::implementsCall() const
 {
   return true;
-}
-
-static inline bool regExpIsGlobal(RegExpImp *regExp, ExecState *exec)
-{
-    ValueImp *globalProperty = regExp->get(exec,"global");
-    return !globalProperty->isUndefined() && globalProperty->toBoolean(exec);
 }
 
 static inline void expandSourceRanges(UString::Range * & array, int& count, int& capacity)
@@ -270,9 +264,9 @@ static inline UString substituteBackreferences(const UString &replacement, const
   return substitutedReplacement;
 }
 
-static ValueImp *replace(ExecState *exec, const UString &source, ValueImp *pattern, ValueImp *replacement)
+static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern, JSValue *replacement)
 {
-  ObjectImp *replacementFunction = 0;
+  JSObject *replacementFunction = 0;
   UString replacementString;
 
   if (replacement->isObject() && replacement->toObject(exec)->implementsCall())
@@ -280,10 +274,9 @@ static ValueImp *replace(ExecState *exec, const UString &source, ValueImp *patte
   else
     replacementString = replacement->toString(exec);
 
-  if (pattern->isObject() && pattern->toObject(exec)->inherits(&RegExpImp::info)) {
-    RegExpImp* imp = static_cast<RegExpImp *>( pattern->toObject(exec) );
-    RegExp *reg = imp->regExp();
-    bool global = regExpIsGlobal(imp, exec);
+  if (pattern->isObject() && static_cast<JSObject *>(pattern)->inherits(&RegExpImp::info)) {
+    RegExp *reg = static_cast<RegExpImp *>(pattern)->regExp();
+    bool global = reg->flags() & RegExp::Global;
 
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp());
 
@@ -350,7 +343,7 @@ static ValueImp *replace(ExecState *exec, const UString &source, ValueImp *patte
     delete [] sourceRanges;
     delete [] replacements;
 
-    return String(result);
+    return jsString(result);
   }
   
   // First arg is a string
@@ -359,7 +352,7 @@ static ValueImp *replace(ExecState *exec, const UString &source, ValueImp *patte
   int matchLen = patternString.size();
   // Do the replacement
   if (matchPos == -1)
-    return String(source);
+    return jsString(source);
   
   if (replacementFunction) {
       List args;
@@ -372,20 +365,20 @@ static ValueImp *replace(ExecState *exec, const UString &source, ValueImp *patte
                                                     args)->toString(exec);
   }
 
-  return String(source.substr(0, matchPos) + replacementString + source.substr(matchPos + matchLen));
+  return jsString(source.substr(0, matchPos) + replacementString + source.substr(matchPos + matchLen));
 }
 
 // ECMA 15.5.4.2 - 15.5.4.20
-ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
-  ValueImp *result = NULL;
+  JSValue *result = NULL;
 
   // toString and valueOf are no generic function.
   if (id == ToString || id == ValueOf) {
-    if (!thisObj || !thisObj->inherits(&StringInstanceImp::info))
+    if (!thisObj || !thisObj->inherits(&StringInstance::info))
       return throwError(exec, TypeError);
 
-    return String(thisObj->internalValue()->toString(exec));
+    return jsString(thisObj->internalValue()->toString(exec));
   }
 
   UString u, u2, u3;
@@ -396,8 +389,8 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
   UString s = thisObj->toString(exec);
 
   int len = s.size();
-  ValueImp *a0 = args[0];
-  ValueImp *a1 = args[1];
+  JSValue *a0 = args[0];
+  JSValue *a1 = args[1];
 
   switch (id) {
   case ToString:
@@ -412,14 +405,14 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       u = s.substr(static_cast<int>(dpos), 1);
     else
       u = "";
-    result = String(u);
+    result = jsString(u);
     break;
   case CharCodeAt:
     // Other browsers treat an omitted parameter as 0 rather than NaN.
     // That doesn't match the ECMA standard, but is needed for site compatibility.
     dpos = a0->isUndefined() ? 0 : a0->toInteger(exec);
     if (dpos >= 0 && dpos < len) // false for NaN
-      result = Number(s[static_cast<int>(dpos)].unicode());
+      result = jsNumber(s[static_cast<int>(dpos)].unicode());
     else
       result = jsNaN();
     break;
@@ -428,7 +421,7 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
     for ( ; it != args.end() ; ++it) {
         s += it->toString(exec);
     }
-    result = String(s);
+    result = jsString(s);
     break;
   }
   case IndexOf:
@@ -443,7 +436,7 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       } else
         dpos = 0;
     }
-    result = Number(s.find(u2, static_cast<int>(dpos)));
+    result = jsNumber(s.find(u2, static_cast<int>(dpos)));
     break;
   case LastIndexOf:
     u2 = a0->toString(exec);
@@ -458,16 +451,15 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       } else
         dpos = 0;
     }
-    result = Number(s.rfind(u2, static_cast<int>(dpos)));
+    result = jsNumber(s.rfind(u2, static_cast<int>(dpos)));
     break;
   case Match:
   case Search: {
     u = s;
     RegExp *reg, *tmpReg = 0;
     RegExpImp *imp = 0;
-    if (a0->isObject() && a0->getObject()->inherits(&RegExpImp::info)) {
-      imp = static_cast<RegExpImp *>(a0);
-      reg = imp->regExp();
+    if (a0->isObject() && static_cast<JSObject *>(a0)->inherits(&RegExpImp::info)) {
+      reg = static_cast<RegExpImp *>(a0)->regExp();
     } else { 
       /*
        *  ECMA 15.5.4.12 String.prototype.search (regexp)
@@ -479,13 +471,13 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp());
     UString mstr = regExpObj->performMatch(reg, u, 0, &pos);
     if (id == Search) {
-      result = Number(pos);
+      result = jsNumber(pos);
     } else {
       // Exec
       if ((reg->flags() & RegExp::Global) == 0) {
 	// case without 'g' flag is handled like RegExp.prototype.exec
 	if (mstr.isNull()) {
-	  result = Null();
+	  result = jsNull();
 	} else {
 	  result = regExpObj->arrayOfMatches(exec,mstr);
 	}
@@ -497,18 +489,18 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
           if (mstr.isNull())
             list.append(jsUndefined());
           else
-	    list.append(String(mstr));
+	    list.append(jsString(mstr));
 	  lastIndex = pos;
 	  pos += mstr.isEmpty() ? 1 : mstr.size();
 	  mstr = regExpObj->performMatch(reg, u, pos, &pos);
 	}
 	if (imp)
-	  imp->put(exec, "lastIndex", Number(lastIndex), DontDelete|DontEnum);
+	  imp->put(exec, "lastIndex", jsNumber(lastIndex), DontDelete|DontEnum);
 	if (list.isEmpty()) {
 	  // if there are no matches at all, it's important to return
 	  // Null instead of an empty array, because this matches
 	  // other browsers and because Null is a false value.
-	  result = Null(); 
+	  result = jsNull(); 
 	} else {
 	  result = exec->lexicalInterpreter()->builtinArray()->construct(exec, list);
 	}
@@ -532,25 +524,24 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
           from = 0;
         if (to > len)
           to = len;
-        result = String(s.substr(static_cast<int>(from), static_cast<int>(to - from)));
+        result = jsString(s.substr(static_cast<int>(from), static_cast<int>(to - from)));
       } else {
-        result = String("");
+        result = jsString("");
       }
       break;
     }
     case Split: {
-    ObjectImp *constructor = exec->lexicalInterpreter()->builtinArray();
-    ObjectImp *res = static_cast<ObjectImp *>(constructor->construct(exec,List::empty()));
+    JSObject *constructor = exec->lexicalInterpreter()->builtinArray();
+    JSObject *res = static_cast<JSObject *>(constructor->construct(exec,List::empty()));
     result = res;
     u = s;
     i = p0 = 0;
     uint32_t limit = a1->isUndefined() ? 0xFFFFFFFFU : a1->toUInt32(exec);
-    if (a0->isObject() && static_cast<ObjectImp *>(a0)->inherits(&RegExpImp::info)) {
-      ObjectImp *obj0 = static_cast<ObjectImp *>(a0);
-      RegExp reg(obj0->get(exec,"source")->toString(exec));
-      if (u.isEmpty() && !reg.match(u, 0).isNull()) {
+    if (a0->isObject() && static_cast<JSObject *>(a0)->inherits(&RegExpImp::info)) {
+      RegExp *reg = static_cast<RegExpImp *>(a0)->regExp();
+      if (u.isEmpty() && !reg->match(u, 0).isNull()) {
 	// empty string matched by regexp -> empty array
-	res->put(exec,lengthPropertyName, Number(0));
+	res->put(exec,lengthPropertyName, jsNumber(0));
 	break;
       }
       pos = 0;
@@ -558,13 +549,13 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
 	// TODO: back references
         int mpos;
         int *ovector = 0L;
-	UString mstr = reg.match(u, pos, &mpos, &ovector);
+	UString mstr = reg->match(u, pos, &mpos, &ovector);
         delete [] ovector; ovector = 0L;
 	if (mpos < 0)
 	  break;
 	pos = mpos + (mstr.isEmpty() ? 1 : mstr.size());
 	if (mpos != p0 || !mstr.isEmpty()) {
-	  res->put(exec,i, String(u.substr(p0, mpos-p0)));
+	  res->put(exec,i, jsString(u.substr(p0, mpos-p0)));
 	  p0 = mpos + mstr.size();
 	  i++;
 	}
@@ -574,15 +565,15 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       if (u2.isEmpty()) {
 	if (u.isEmpty()) {
 	  // empty separator matches empty string -> empty array
-	  put(exec,lengthPropertyName, Number(0));
+	  put(exec,lengthPropertyName, jsNumber(0));
 	  break;
 	} else {
 	  while (static_cast<uint32_t>(i) != limit && i < u.size()-1)
-	    res->put(exec, i++, String(u.substr(p0++, 1)));
+	    res->put(exec, i++, jsString(u.substr(p0++, 1)));
 	}
       } else {
 	while (static_cast<uint32_t>(i) != limit && (pos = u.find(u2, p0)) >= 0) {
-	  res->put(exec, i, String(u.substr(p0, pos-p0)));
+	  res->put(exec, i, jsString(u.substr(p0, pos-p0)));
 	  p0 = pos + u2.size();
 	  i++;
 	}
@@ -590,8 +581,8 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
     }
     // add remaining string, if any
     if (static_cast<uint32_t>(i) != limit)
-      res->put(exec, i++, String(u.substr(p0)));
-    res->put(exec,lengthPropertyName, Number(i));
+      res->put(exec, i++, jsString(u.substr(p0)));
+    res->put(exec,lengthPropertyName, jsNumber(i));
     }
     break;
   case Substr: {
@@ -610,7 +601,7 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       if (d2 > len - d)
         d2 = len - d;
     }
-    result = String(s.substr(static_cast<int>(d), static_cast<int>(d2)));
+    result = jsString(s.substr(static_cast<int>(d), static_cast<int>(d2)));
     break;
   }
   case Substring: {
@@ -635,7 +626,7 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       end = start;
       start = temp;
     }
-    result = String(s.substr((int)start, (int)end-(int)start));
+    result = jsString(s.substr((int)start, (int)end-(int)start));
     }
     break;
   case ToLowerCase:
@@ -643,54 +634,54 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
     u = s;
     for (i = 0; i < len; i++)
       u[i] = u[i].toLower();
-    result = String(u);
+    result = jsString(u);
     break;
   case ToUpperCase:
   case ToLocaleUpperCase: // FIXME: To get this 100% right we need to detect Turkish and change i to uppercase I with a dot.
     u = s;
     for (i = 0; i < len; i++)
       u[i] = u[i].toUpper();
-    result = String(u);
+    result = jsString(u);
     break;
 #ifndef KJS_PURE_ECMA
   case Big:
-    result = String("<big>" + s + "</big>");
+    result = jsString("<big>" + s + "</big>");
     break;
   case Small:
-    result = String("<small>" + s + "</small>");
+    result = jsString("<small>" + s + "</small>");
     break;
   case Blink:
-    result = String("<blink>" + s + "</blink>");
+    result = jsString("<blink>" + s + "</blink>");
     break;
   case Bold:
-    result = String("<b>" + s + "</b>");
+    result = jsString("<b>" + s + "</b>");
     break;
   case Fixed:
-    result = String("<tt>" + s + "</tt>");
+    result = jsString("<tt>" + s + "</tt>");
     break;
   case Italics:
-    result = String("<i>" + s + "</i>");
+    result = jsString("<i>" + s + "</i>");
     break;
   case Strike:
-    result = String("<strike>" + s + "</strike>");
+    result = jsString("<strike>" + s + "</strike>");
     break;
   case Sub:
-    result = String("<sub>" + s + "</sub>");
+    result = jsString("<sub>" + s + "</sub>");
     break;
   case Sup:
-    result = String("<sup>" + s + "</sup>");
+    result = jsString("<sup>" + s + "</sup>");
     break;
   case Fontcolor:
-    result = String("<font color=\"" + a0->toString(exec) + "\">" + s + "</font>");
+    result = jsString("<font color=\"" + a0->toString(exec) + "\">" + s + "</font>");
     break;
   case Fontsize:
-    result = String("<font size=\"" + a0->toString(exec) + "\">" + s + "</font>");
+    result = jsString("<font size=\"" + a0->toString(exec) + "\">" + s + "</font>");
     break;
   case Anchor:
-    result = String("<a name=\"" + a0->toString(exec) + "\">" + s + "</a>");
+    result = jsString("<a name=\"" + a0->toString(exec) + "\">" + s + "</a>");
     break;
   case Link:
-    result = String("<a href=\"" + a0->toString(exec) + "\">" + s + "</a>");
+    result = jsString("<a href=\"" + a0->toString(exec) + "\">" + s + "</a>");
     break;
 #endif
   }
@@ -701,8 +692,8 @@ ValueImp *StringProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
 // ------------------------------ StringObjectImp ------------------------------
 
 StringObjectImp::StringObjectImp(ExecState *exec,
-                                 FunctionPrototypeImp *funcProto,
-                                 StringPrototypeImp *stringProto)
+                                 FunctionPrototype *funcProto,
+                                 StringPrototype *stringProto)
   : InternalFunctionImp(funcProto)
 {
   // ECMA 15.5.3.1 String.prototype
@@ -711,7 +702,7 @@ StringObjectImp::StringObjectImp(ExecState *exec,
   putDirect(fromCharCodePropertyName, new StringObjectFuncImp(exec, funcProto), DontEnum);
 
   // no. of arguments for constructor
-  putDirect(lengthPropertyName, jsOne(), ReadOnly|DontDelete|DontEnum);
+  putDirect(lengthPropertyName, jsNumber(1), ReadOnly|DontDelete|DontEnum);
 }
 
 
@@ -721,12 +712,12 @@ bool StringObjectImp::implementsConstruct() const
 }
 
 // ECMA 15.5.2
-ObjectImp *StringObjectImp::construct(ExecState *exec, const List &args)
+JSObject *StringObjectImp::construct(ExecState *exec, const List &args)
 {
-  ObjectImp *proto = exec->lexicalInterpreter()->builtinStringPrototype();
+  JSObject *proto = exec->lexicalInterpreter()->builtinStringPrototype();
   if (args.size() == 0)
-    return new StringInstanceImp(proto);
-  return new StringInstanceImp(proto, args.begin()->toString(exec));
+    return new StringInstance(proto);
+  return new StringInstance(proto, args.begin()->toString(exec));
 }
 
 bool StringObjectImp::implementsCall() const
@@ -735,23 +726,23 @@ bool StringObjectImp::implementsCall() const
 }
 
 // ECMA 15.5.1
-ValueImp *StringObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
+JSValue *StringObjectImp::callAsFunction(ExecState *exec, JSObject */*thisObj*/, const List &args)
 {
   if (args.isEmpty())
-    return String("");
+    return jsString("");
   else {
-    ValueImp *v = args[0];
-    return String(v->toString(exec));
+    JSValue *v = args[0];
+    return jsString(v->toString(exec));
   }
 }
 
 // ------------------------------ StringObjectFuncImp --------------------------
 
 // ECMA 15.5.3.2 fromCharCode()
-StringObjectFuncImp::StringObjectFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto)
+StringObjectFuncImp::StringObjectFuncImp(ExecState *exec, FunctionPrototype *funcProto)
   : InternalFunctionImp(funcProto)
 {
-  putDirect(lengthPropertyName, jsOne(), DontDelete|ReadOnly|DontEnum);
+  putDirect(lengthPropertyName, jsNumber(1), DontDelete|ReadOnly|DontEnum);
 }
 
 bool StringObjectFuncImp::implementsCall() const
@@ -759,7 +750,7 @@ bool StringObjectFuncImp::implementsCall() const
   return true;
 }
 
-ValueImp *StringObjectFuncImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
+JSValue *StringObjectFuncImp::callAsFunction(ExecState *exec, JSObject */*thisObj*/, const List &args)
 {
   UString s;
   if (args.size()) {
@@ -775,5 +766,5 @@ ValueImp *StringObjectFuncImp::callAsFunction(ExecState *exec, ObjectImp * /*thi
   } else
     s = "";
 
-  return String(s);
+  return jsString(s);
 }

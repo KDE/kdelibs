@@ -85,8 +85,8 @@ namespace KJS {
         static const ClassInfo info;
         static ValueImp *pluginByName( ExecState* exec, const QString& name );
     private:
-        static ValueImp *indexGetter(ExecState *, const Identifier&, const PropertySlot&);
-        static ValueImp *nameGetter(ExecState *, const Identifier&, const PropertySlot&);
+        static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
     };
 
 
@@ -99,8 +99,8 @@ namespace KJS {
         ValueImp *getValueProperty(ExecState *exec, int token) const;
         static ValueImp *mimeTypeByName( ExecState* exec, const QString& name );
     private:
-        static ValueImp *indexGetter(ExecState *, const Identifier&, const PropertySlot&);
-        static ValueImp *nameGetter(ExecState *, const Identifier&, const PropertySlot&);
+        static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
     };
 
 
@@ -117,8 +117,8 @@ namespace KJS {
         PluginBase::PluginInfo *pluginInfo() const { return m_info; }
     private:
         PluginBase::PluginInfo *m_info;
-        static ValueImp *indexGetter(ExecState *, const Identifier&, const PropertySlot&);
-        static ValueImp *nameGetter(ExecState *, const Identifier&, const PropertySlot&);
+        static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
     };
 
 
@@ -163,7 +163,7 @@ const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
   javaEnabled	Navigator::JavaEnabled	DontDelete|Function 0
 @end
 */
-IMPLEMENT_PROTOFUNC(NavigatorFunc)
+KJS_IMPLEMENT_PROTOFUNC(NavigatorFunc)
 
 Navigator::Navigator(ExecState *exec, KHTMLPart *p)
   : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype()), m_part(p) { }
@@ -380,7 +380,7 @@ const ClassInfo Plugins::info = { "PluginArray", 0, &PluginsTable, 0 };
   namedItem  	Plugins_NamedItem   	DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC(PluginsFunc)
+KJS_IMPLEMENT_PROTOFUNC(PluginsFunc)
 
 ValueImp *Plugins::getValueProperty(ExecState *exec, int token) const
 {
@@ -388,12 +388,12 @@ ValueImp *Plugins::getValueProperty(ExecState *exec, int token) const
   return Number(plugins->count());
 }
 
-ValueImp *Plugins::indexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *Plugins::indexGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     return new Plugin(exec, plugins->at(slot.index()));
 }
 
-ValueImp *Plugins::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *Plugins::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
 
   return pluginByName(exec, propertyName.qstring());
@@ -471,14 +471,14 @@ const ClassInfo MimeTypes::info = { "MimeTypeArray", 0, &MimeTypesTable, 0 };
   namedItem  	MimeTypes_NamedItem   	DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC(MimeTypesFunc)
+KJS_IMPLEMENT_PROTOFUNC(MimeTypesFunc)
 
-ValueImp *MimeTypes::indexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *MimeTypes::indexGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     return new MimeType(exec, mimes->at(slot.index()));
 }
 
-ValueImp *MimeTypes::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *MimeTypes::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     return mimeTypeByName(exec, propertyName.qstring());
 }
@@ -562,15 +562,15 @@ const ClassInfo Plugin::info = { "Plugin", 0, &PluginTable, 0 };
   namedItem  	Plugin_NamedItem   	DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC(PluginFunc)
+KJS_IMPLEMENT_PROTOFUNC(PluginFunc)
 
-ValueImp *Plugin::indexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *Plugin::indexGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     Plugin *thisObj = static_cast<Plugin *>(slot.slotBase());
     return new MimeType(exec, thisObj->m_info->mimes.at(slot.index()));
 }
 
-ValueImp *Plugin::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *Plugin::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   Plugin *thisObj = static_cast<Plugin *>(slot.slotBase());
   return thisObj->mimeByName(exec, propertyName.qstring());

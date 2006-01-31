@@ -43,7 +43,7 @@
 
 namespace KJS {
 
-#if !APPLE_CHANGES
+#if !__APPLE__
 
 bool isNaN(double d)
 {
@@ -105,7 +105,7 @@ bool isNegInf(double d)
 #endif
 
 // ECMA 11.9.3
-bool equal(ExecState *exec, ValueImp *v1, ValueImp *v2)
+bool equal(ExecState *exec, JSValue *v1, JSValue *v2)
 {
     Type t1 = v1->type();
     Type t2 = v2->type();
@@ -129,8 +129,12 @@ bool equal(ExecState *exec, ValueImp *v1, ValueImp *v2)
         } else {
             if ((t1 == StringType || t1 == NumberType) && t2 >= ObjectType)
                 return equal(exec, v1, v2->toPrimitive(exec));
+            if (t1 == NullType && t2 == ObjectType)
+                return static_cast<JSObject *>(v2)->isEqualToNull(exec);
             if (t1 >= ObjectType && (t2 == StringType || t2 == NumberType))
                 return equal(exec, v1->toPrimitive(exec), v2);
+            if (t1 == ObjectType && t2 == NullType)
+                return static_cast<JSObject *>(v1)->isEqualToNull(exec);
             if (t1 != t2)
                 return false;
         }
@@ -155,7 +159,7 @@ bool equal(ExecState *exec, ValueImp *v1, ValueImp *v2)
     return v1 == v2;
 }
 
-bool strictEqual(ExecState *exec, ValueImp *v1, ValueImp *v2)
+bool strictEqual(ExecState *exec, JSValue *v1, JSValue *v2)
 {
   Type t1 = v1->type();
   Type t2 = v2->type();
@@ -182,10 +186,10 @@ bool strictEqual(ExecState *exec, ValueImp *v1, ValueImp *v2)
   return false;
 }
 
-int relation(ExecState *exec, ValueImp *v1, ValueImp *v2)
+int relation(ExecState *exec, JSValue *v1, JSValue *v2)
 {
-  ValueImp *p1 = v1->toPrimitive(exec,NumberType);
-  ValueImp *p2 = v2->toPrimitive(exec,NumberType);
+  JSValue *p1 = v1->toPrimitive(exec,NumberType);
+  JSValue *p2 = v2->toPrimitive(exec,NumberType);
 
   if (p1->isString() && p2->isString())
     return p1->toString(exec) < p2->toString(exec) ? 1 : 0;
@@ -210,12 +214,12 @@ int minInt(int d1, int d2)
 }
 
 // ECMA 11.6
-ValueImp *add(ExecState *exec, ValueImp *v1, ValueImp *v2, char oper)
+JSValue *add(ExecState *exec, JSValue *v1, JSValue *v2, char oper)
 {
   // exception for the Date exception in defaultValue()
   Type preferred = oper == '+' ? UnspecifiedType : NumberType;
-  ValueImp *p1 = v1->toPrimitive(exec, preferred);
-  ValueImp *p2 = v2->toPrimitive(exec, preferred);
+  JSValue *p1 = v1->toPrimitive(exec, preferred);
+  JSValue *p2 = v2->toPrimitive(exec, preferred);
 
   if ((p1->isString() || p2->isString()) && oper == '+') {
     return jsString(p1->toString(exec) + p2->toString(exec));
@@ -228,7 +232,7 @@ ValueImp *add(ExecState *exec, ValueImp *v1, ValueImp *v2, char oper)
 }
 
 // ECMA 11.5
-ValueImp *mult(ExecState *exec, ValueImp *v1, ValueImp *v2, char oper)
+JSValue *mult(ExecState *exec, JSValue *v1, JSValue *v2, char oper)
 {
   double n1 = v1->toNumber(exec);
   double n2 = v2->toNumber(exec);

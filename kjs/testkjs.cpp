@@ -26,18 +26,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <kxmlcore/HashTraits.h>
 #include "value.h"
 #include "object.h"
 #include "types.h"
 #include "interpreter.h"
+#include "JSLock.h"
 
 using namespace KJS;
+using namespace KXMLCore;
 
-class TestFunctionImp : public ObjectImp {
+class TestFunctionImp : public JSObject {
 public:
   TestFunctionImp(int i, int length);
   virtual bool implementsCall() const { return true; }
-  virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
+  virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
   enum { Print, Debug, Quit, GC };
 
@@ -45,48 +48,49 @@ private:
   int id;
 };
 
-TestFunctionImp::TestFunctionImp(int i, int length) : ObjectImp(), id(i)
+TestFunctionImp::TestFunctionImp(int i, int length) : JSObject(), id(i)
 {
   putDirect(lengthPropertyName,length,DontDelete|ReadOnly|DontEnum);
 }
 
-ValueImp *TestFunctionImp::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+JSValue *TestFunctionImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
   switch (id) {
   case Print:
   case Debug:
     fprintf(stderr,"--> %s\n",args[0]->toString(exec).ascii());
-    return Undefined();
+    return jsUndefined();
   case Quit:
     exit(0);
-    return Undefined();
+    return jsUndefined();
   case GC:
-    Interpreter::lock();
+  {
+    JSLock lock;
     Interpreter::collect();
-    Interpreter::unlock();
+  }
     break;
   default:
     break;
   }
 
-  return Undefined();
+  return jsUndefined();
 }
 
-class VersionFunctionImp : public ObjectImp {
+class VersionFunctionImp : public JSObject {
 public:
-  VersionFunctionImp() : ObjectImp() {}
+  VersionFunctionImp() : JSObject() {}
   virtual bool implementsCall() const { return true; }
-  virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
+  virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 };
 
-ValueImp *VersionFunctionImp::callAsFunction(ExecState */*exec*/, ObjectImp */*thisObj*/, const List &/*args*/)
+JSValue *VersionFunctionImp::callAsFunction(ExecState * /*exec*/, JSObject * /*thisObj*/, const List &/*args*/)
 {
   // We need this function for compatibility with the Mozilla JS tests but for now
   // we don't actually do any version-specific handling
-  return Undefined();
+  return jsUndefined();
 }
 
-class GlobalImp : public ObjectImp {
+class GlobalImp : public JSObject {
 public:
   virtual UString className() const { return "global"; }
 };
@@ -101,9 +105,31 @@ int main(int argc, char **argv)
 
   bool ret = true;
   {
-    InterpreterLock lock;
+    JSLock lock;
+    
+    // Unit tests for KXMLCore::IsInteger. Don't have a better place for them now.
+    // FIXME: move these once we create a unit test directory for KXMLCore.
+    assert(IsInteger<bool>::value);
+    assert(IsInteger<char>::value);
+    assert(IsInteger<signed char>::value);
+    assert(IsInteger<unsigned char>::value);
+    assert(IsInteger<short>::value);
+    assert(IsInteger<unsigned short>::value);
+    assert(IsInteger<int>::value);
+    assert(IsInteger<unsigned int>::value);
+    assert(IsInteger<long>::value);
+    assert(IsInteger<unsigned long>::value);
+    assert(IsInteger<long long>::value);
+    assert(IsInteger<unsigned long long>::value);
 
-    ObjectImp *global(new GlobalImp());
+    assert(!IsInteger<char *>::value);
+    assert(!IsInteger<const char *>::value);
+    assert(!IsInteger<volatile char *>::value);
+    assert(!IsInteger<double>::value);
+    assert(!IsInteger<float>::value);
+    assert(!IsInteger<GlobalImp>::value);
+    
+    JSObject *global(new GlobalImp());
 
     // create interpreter
     Interpreter interp(global);
@@ -125,7 +151,7 @@ int main(int argc, char **argv)
 
       const char *file = argv[i];
       if (strcmp(file, "-f") == 0)
-	continue;
+        continue;
       FILE *f = fopen(file, "r");
       if (!f) {
         fprintf(stderr, "Error opening %s.\n", file);
@@ -133,12 +159,12 @@ int main(int argc, char **argv)
       }
 
       while (!feof(f) && !ferror(f)) {
-	size_t len = fread(code+code_len,1,code_alloc-code_len,f);
-	code_len += len;
-	if (code_len >= code_alloc) {
-	  code_alloc *= 2;
-	  code = (char*)realloc(code,code_alloc);
-	}
+        size_t len = fread(code+code_len,1,code_alloc-code_len,f);
+        code_len += len;
+        if (code_len >= code_alloc) {
+          code_alloc *= 2;
+          code = (char*)realloc(code,code_alloc);
+        }
       }
       code = (char*)realloc(code,code_len+1);
       code[code_len] = '\0';
@@ -150,11 +176,11 @@ int main(int argc, char **argv)
 
       if (comp.complType() == Throw) {
         ExecState *exec = interp.globalExec();
-        ValueImp *exVal = comp.value();
+        JSValue *exVal = comp.value();
         char *msg = exVal->toString(exec).ascii();
         int lineno = -1;
         if (exVal->isObject()) {
-          ValueImp *lineVal = static_cast<ObjectImp *>(exVal)->get(exec,"line");
+          JSValue *lineVal = static_cast<JSObject *>(exVal)->get(exec,"line");
           if (lineVal->isNumber())
             lineno = int(lineVal->toNumber(exec));
         }

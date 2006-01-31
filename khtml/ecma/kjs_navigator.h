@@ -22,6 +22,7 @@
 #define _KJS_NAVIGATOR_H_
 
 #include <kjs/object.h>
+#include "kjs_binding.h"
 
 class KHTMLPart;
 

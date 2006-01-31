@@ -169,8 +169,8 @@ namespace KJS {
     void setListener(ExecState *exec, int eventId, ValueImp* func);
   private:
     KParts::ReadOnlyPart* frameByIndex(unsigned index);
-    static ValueImp *framePartGetter(ExecState *exec, const Identifier&, const PropertySlot& slot);
-    static ValueImp *namedItemGetter(ExecState *exec, const Identifier&, const PropertySlot& slot);
+    static ValueImp *framePartGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
+    static ValueImp *namedItemGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
 
     struct DelayedAction;
     friend struct DelayedAction;

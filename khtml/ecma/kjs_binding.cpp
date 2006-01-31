@@ -88,7 +88,7 @@ void ScriptInterpreter::mark()
   HashMap<void*, DOMObject*>::iterator it = m_domObjects.begin();
   while (it != m_domObjects.end()) {
     DOMObject* obj = it->second;
-    if (obj->hasPropertyMapProps())
+    if (obj->shouldMark())
         obj->mark();
     ++it;
   }
@@ -136,7 +136,7 @@ UString::UString(const QString &d)
   unsigned int len = d.length();
   UChar *dat = static_cast<UChar*>(fastMalloc(sizeof(UChar)*len));
   memcpy(dat, d.unicode(), len * sizeof(UChar));
-  rep = UString::Rep::create(dat, len);
+  m_rep = UString::Rep::create(dat, len);
 }
 
 UString::UString(const DOM::DOMString &d)
@@ -145,14 +145,14 @@ UString::UString(const DOM::DOMString &d)
     // we do a conversion here as null DOMStrings shouldn't cross
     // the boundary to kjs. They should either be empty strings
     // or explicitly converted to KJS::Null via getString().
-    attach(&Rep::empty);
+    m_rep = &Rep::empty;
     return;
   }
 
   unsigned int len = d.length();
   UChar *dat = static_cast<UChar*>(fastMalloc(sizeof(UChar)*len));
   memcpy(dat, d.unicode(), len * sizeof(UChar));
-  rep = UString::Rep::create(dat, len);
+  m_rep = UString::Rep::create(dat, len);
 }
 
 DOM::DOMString UString::domString() const

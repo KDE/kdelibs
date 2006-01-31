@@ -58,7 +58,19 @@
 #if defined(_WIN32) || defined(_WIN64)
 #define copysign(x, y) _copysign(x, y)
 #define isfinite(x) _finite(x)
+#define strncasecmp(x, y, z) strnicmp(x, y, z)
+#define snprintf _snprintf
 #endif
+
+inline int gmtoffset(const tm& t)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    // FIXME: This might not be completely correct if the time is not the current timezone.
+    return -(timezone / 60 - (t.tm_isdst > 0 ? 60 : 0 )) * 60;
+#else
+    return t.tm_gmtoff;
+#endif
+}
 
 namespace KJS {
 
@@ -68,13 +80,14 @@ namespace KJS {
  * Class to implement all methods that are properties of the
  * Date.prototype object
  */
-class DateProtoFuncImp : public InternalFunctionImp {
+class DateProtoFunc : public InternalFunctionImp {
 public:
-    DateProtoFuncImp(ExecState *, int i, int len);
+    DateProtoFunc(ExecState *, int i, int len);
 
     virtual bool implementsCall() const;
-    virtual ValueImp *callAsFunction(ExecState *, ObjectImp *thisObj, const List &args);
+    virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
 
+    Completion execute(const List &);
     enum { ToString, ToDateString, ToTimeString, ToLocaleString,
            ToLocaleDateString, ToLocaleTimeString, ValueOf, GetTime,
            GetFullYear, GetMonth, GetDate, GetDay, GetHours, GetMinutes,
@@ -96,10 +109,10 @@ private:
  */
 class DateObjectFuncImp : public InternalFunctionImp {
 public:
-    DateObjectFuncImp(ExecState *, FunctionPrototypeImp *, int i, int len);
+    DateObjectFuncImp(ExecState *, FunctionPrototype *, int i, int len);
 
     virtual bool implementsCall() const;
-    virtual ValueImp *callAsFunction(ExecState *, ObjectImp *thisObj, const List &args);
+    virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
 
     enum { Parse, UTC };
 
@@ -216,18 +229,14 @@ static UString formatDateUTCVariant(const tm &t)
 static UString formatTime(const tm &t)
 {
     char buffer[100];
-#if !defined(_WIN32) && !defined(_WIN64)
-    if (t.tm_gmtoff == 0) {
+    if (gmtoffset(t) == 0) {
         snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", t.tm_hour, t.tm_min, t.tm_sec);
     } else {
-        int offset = abs(t.tm_gmtoff);
+        int offset = abs(gmtoffset(t));
         snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT%c%02d%02d",
             t.tm_hour, t.tm_min, t.tm_sec,
-            t.tm_gmtoff < 0 ? '-' : '+', offset / (60*60), (offset / 60) % 60);
+            gmtoffset(t) < 0 ? '-' : '+', offset / (60*60), (offset / 60) % 60);
     }
-#else
-    snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", t.tm_hour, t.tm_min, t.tm_sec);
-#endif
     return UString(buffer);
 }
 
@@ -380,110 +389,109 @@ static void fillStructuresUsingDateArgs(ExecState *exec, const List &args, int m
     }
 }
 
-// ------------------------------ DateInstanceImp ------------------------------
+// ------------------------------ DateInstance ------------------------------
 
-const ClassInfo DateInstanceImp::info = {"Date", 0, 0, 0};
+const ClassInfo DateInstance::info = {"Date", 0, 0, 0};
 
-DateInstanceImp::DateInstanceImp(ObjectImp *proto)
-  : ObjectImp(proto)
+DateInstance::DateInstance(JSObject *proto)
+  : JSObject(proto)
 {
 }
 
-// ------------------------------ DatePrototypeImp -----------------------------
+// ------------------------------ DatePrototype -----------------------------
 
-const ClassInfo DatePrototypeImp::info = {"Date", &DateInstanceImp::info, &dateTable, 0};
+const ClassInfo DatePrototype::info = {"Date", &DateInstance::info, &dateTable, 0};
 
 /* Source for date_object.lut.h
    We use a negative ID to denote the "UTC" variant.
 @begin dateTable 61
-  toString		DateProtoFuncImp::ToString		DontEnum|Function	0
-  toUTCString		-DateProtoFuncImp::ToUTCString		DontEnum|Function	0
-  toDateString		DateProtoFuncImp::ToDateString		DontEnum|Function	0
-  toTimeString		DateProtoFuncImp::ToTimeString		DontEnum|Function	0
-  toLocaleString	DateProtoFuncImp::ToLocaleString	DontEnum|Function	0
-  toLocaleDateString	DateProtoFuncImp::ToLocaleDateString	DontEnum|Function	0
-  toLocaleTimeString	DateProtoFuncImp::ToLocaleTimeString	DontEnum|Function	0
-  valueOf		DateProtoFuncImp::ValueOf		DontEnum|Function	0
-  getTime		DateProtoFuncImp::GetTime		DontEnum|Function	0
-  getFullYear		DateProtoFuncImp::GetFullYear		DontEnum|Function	0
-  getUTCFullYear	-DateProtoFuncImp::GetFullYear		DontEnum|Function	0
-  toGMTString		-DateProtoFuncImp::ToGMTString		DontEnum|Function	0
-  getMonth		DateProtoFuncImp::GetMonth		DontEnum|Function	0
-  getUTCMonth		-DateProtoFuncImp::GetMonth		DontEnum|Function	0
-  getDate		DateProtoFuncImp::GetDate		DontEnum|Function	0
-  getUTCDate		-DateProtoFuncImp::GetDate		DontEnum|Function	0
-  getDay		DateProtoFuncImp::GetDay		DontEnum|Function	0
-  getUTCDay		-DateProtoFuncImp::GetDay		DontEnum|Function	0
-  getHours		DateProtoFuncImp::GetHours		DontEnum|Function	0
-  getUTCHours		-DateProtoFuncImp::GetHours		DontEnum|Function	0
-  getMinutes		DateProtoFuncImp::GetMinutes		DontEnum|Function	0
-  getUTCMinutes		-DateProtoFuncImp::GetMinutes		DontEnum|Function	0
-  getSeconds		DateProtoFuncImp::GetSeconds		DontEnum|Function	0
-  getUTCSeconds		-DateProtoFuncImp::GetSeconds		DontEnum|Function	0
-  getMilliseconds	DateProtoFuncImp::GetMilliSeconds	DontEnum|Function	0
-  getUTCMilliseconds	-DateProtoFuncImp::GetMilliSeconds	DontEnum|Function	0
-  getTimezoneOffset	DateProtoFuncImp::GetTimezoneOffset	DontEnum|Function	0
-  setTime		DateProtoFuncImp::SetTime		DontEnum|Function	1
-  setMilliseconds	DateProtoFuncImp::SetMilliSeconds	DontEnum|Function	1
-  setUTCMilliseconds	-DateProtoFuncImp::SetMilliSeconds	DontEnum|Function	1
-  setSeconds		DateProtoFuncImp::SetSeconds		DontEnum|Function	2
-  setUTCSeconds		-DateProtoFuncImp::SetSeconds		DontEnum|Function	2
-  setMinutes		DateProtoFuncImp::SetMinutes		DontEnum|Function	3
-  setUTCMinutes		-DateProtoFuncImp::SetMinutes		DontEnum|Function	3
-  setHours		DateProtoFuncImp::SetHours		DontEnum|Function	4
-  setUTCHours		-DateProtoFuncImp::SetHours		DontEnum|Function	4
-  setDate		DateProtoFuncImp::SetDate		DontEnum|Function	1
-  setUTCDate		-DateProtoFuncImp::SetDate		DontEnum|Function	1
-  setMonth		DateProtoFuncImp::SetMonth		DontEnum|Function	2
-  setUTCMonth		-DateProtoFuncImp::SetMonth		DontEnum|Function	2
-  setFullYear		DateProtoFuncImp::SetFullYear		DontEnum|Function	3
-  setUTCFullYear	-DateProtoFuncImp::SetFullYear		DontEnum|Function	3
-  setYear		DateProtoFuncImp::SetYear		DontEnum|Function	1
-  getYear		DateProtoFuncImp::GetYear		DontEnum|Function	0
+  toString		DateProtoFunc::ToString		DontEnum|Function	0
+  toUTCString		-DateProtoFunc::ToUTCString		DontEnum|Function	0
+  toDateString		DateProtoFunc::ToDateString		DontEnum|Function	0
+  toTimeString		DateProtoFunc::ToTimeString		DontEnum|Function	0
+  toLocaleString	DateProtoFunc::ToLocaleString	DontEnum|Function	0
+  toLocaleDateString	DateProtoFunc::ToLocaleDateString	DontEnum|Function	0
+  toLocaleTimeString	DateProtoFunc::ToLocaleTimeString	DontEnum|Function	0
+  valueOf		DateProtoFunc::ValueOf		DontEnum|Function	0
+  getTime		DateProtoFunc::GetTime		DontEnum|Function	0
+  getFullYear		DateProtoFunc::GetFullYear		DontEnum|Function	0
+  getUTCFullYear	-DateProtoFunc::GetFullYear		DontEnum|Function	0
+  toGMTString		-DateProtoFunc::ToGMTString		DontEnum|Function	0
+  getMonth		DateProtoFunc::GetMonth		DontEnum|Function	0
+  getUTCMonth		-DateProtoFunc::GetMonth		DontEnum|Function	0
+  getDate		DateProtoFunc::GetDate		DontEnum|Function	0
+  getUTCDate		-DateProtoFunc::GetDate		DontEnum|Function	0
+  getDay		DateProtoFunc::GetDay		DontEnum|Function	0
+  getUTCDay		-DateProtoFunc::GetDay		DontEnum|Function	0
+  getHours		DateProtoFunc::GetHours		DontEnum|Function	0
+  getUTCHours		-DateProtoFunc::GetHours		DontEnum|Function	0
+  getMinutes		DateProtoFunc::GetMinutes		DontEnum|Function	0
+  getUTCMinutes		-DateProtoFunc::GetMinutes		DontEnum|Function	0
+  getSeconds		DateProtoFunc::GetSeconds		DontEnum|Function	0
+  getUTCSeconds		-DateProtoFunc::GetSeconds		DontEnum|Function	0
+  getMilliseconds	DateProtoFunc::GetMilliSeconds	DontEnum|Function	0
+  getUTCMilliseconds	-DateProtoFunc::GetMilliSeconds	DontEnum|Function	0
+  getTimezoneOffset	DateProtoFunc::GetTimezoneOffset	DontEnum|Function	0
+  setTime		DateProtoFunc::SetTime		DontEnum|Function	1
+  setMilliseconds	DateProtoFunc::SetMilliSeconds	DontEnum|Function	1
+  setUTCMilliseconds	-DateProtoFunc::SetMilliSeconds	DontEnum|Function	1
+  setSeconds		DateProtoFunc::SetSeconds		DontEnum|Function	2
+  setUTCSeconds		-DateProtoFunc::SetSeconds		DontEnum|Function	2
+  setMinutes		DateProtoFunc::SetMinutes		DontEnum|Function	3
+  setUTCMinutes		-DateProtoFunc::SetMinutes		DontEnum|Function	3
+  setHours		DateProtoFunc::SetHours		DontEnum|Function	4
+  setUTCHours		-DateProtoFunc::SetHours		DontEnum|Function	4
+  setDate		DateProtoFunc::SetDate		DontEnum|Function	1
+  setUTCDate		-DateProtoFunc::SetDate		DontEnum|Function	1
+  setMonth		DateProtoFunc::SetMonth		DontEnum|Function	2
+  setUTCMonth		-DateProtoFunc::SetMonth		DontEnum|Function	2
+  setFullYear		DateProtoFunc::SetFullYear		DontEnum|Function	3
+  setUTCFullYear	-DateProtoFunc::SetFullYear		DontEnum|Function	3
+  setYear		DateProtoFunc::SetYear		DontEnum|Function	1
+  getYear		DateProtoFunc::GetYear		DontEnum|Function	0
 @end
 */
 // ECMA 15.9.4
 
-DatePrototypeImp::DatePrototypeImp(ExecState *, ObjectPrototypeImp *objectProto)
-  : DateInstanceImp(objectProto)
+DatePrototype::DatePrototype(ExecState *, ObjectPrototype *objectProto)
+  : DateInstance(objectProto)
 {
     setInternalValue(jsNaN());
     // The constructor will be added later, after DateObjectImp has been built.
 }
 
-bool DatePrototypeImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+bool DatePrototype::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-    return getStaticFunctionSlot<DateProtoFuncImp, ObjectImp>(exec, &dateTable, this, propertyName, slot);
+    return getStaticFunctionSlot<DateProtoFunc, JSObject>(exec, &dateTable, this, propertyName, slot);
 }
 
-// ------------------------------ DateProtoFuncImp -----------------------------
+// ------------------------------ DateProtoFunc -----------------------------
 
-DateProtoFuncImp::DateProtoFuncImp(ExecState *exec, int i, int len)
-  : InternalFunctionImp(static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype())),
+DateProtoFunc::DateProtoFunc(ExecState *exec, int i, int len)
+  : InternalFunctionImp(static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype())),
     id(abs(i)), utc(i<0)
   // We use a negative ID to denote the "UTC" variant.
 {
     putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
-bool DateProtoFuncImp::implementsCall() const
+bool DateProtoFunc::implementsCall() const
 {
     return true;
 }
 
-ValueImp *DateProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+static bool isTime_tSigned()
 {
-  if ((id == ToString || id == ValueOf || id == GetTime || id == SetTime) &&
-      !thisObj->inherits(&DateInstanceImp::info)) {
-    // non-generic function called on non-date object
+    time_t minusOne = (time_t)(-1);
+    return minusOne < 0;
+}
 
-    // ToString and ValueOf are generic according to the spec, but the mozilla
-    // tests suggest otherwise...
+JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+{
+  if (!thisObj->inherits(&DateInstance::info))
     return throwError(exec, TypeError);
-  }
 
-
-  ValueImp *result = 0;
+  JSValue *result = 0;
   UString s;
 #if !__APPLE__
   const int bufsize=100;
@@ -493,7 +501,7 @@ ValueImp *DateProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
     oldlocale = setlocale(LC_ALL, 0);
   // FIXME: Where's the code to set the locale back to oldlocale?
 #endif
-  ValueImp *v = thisObj->internalValue();
+  JSValue *v = thisObj->internalValue();
   double milli = v->toNumber(exec);
   if (isNaN(milli)) {
     switch (id) {
@@ -524,11 +532,14 @@ ValueImp *DateProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
   
   // check whether time value is outside time_t's usual range
   // make the necessary transformations if necessary
+  static bool time_tIsSigned = isTime_tSigned();
+  static double time_tMin = (time_tIsSigned ? - (double)(1ULL << (8 * sizeof(time_t) - 1)) : 0);
+  static double time_tMax = (time_tIsSigned ? (1ULL << 8 * sizeof(time_t) - 1) - 1 : 2 * (double)(1ULL << 8 * sizeof(time_t) - 1) - 1);
   int realYearOffset = 0;
   double milliOffset = 0.0;
   double secs = floor(milli / msPerSecond);
 
-  if (milli < 0 || milli >= timeFromYear(2038)) {
+  if (secs < time_tMin || secs > time_tMax) {
     // ### ugly and probably not very precise
     int realYear = yearFromTime(milli);
     int base = daysInYear(realYear) == 365 ? 2001 : 2000;
@@ -540,8 +551,7 @@ ValueImp *DateProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
   time_t tv = (time_t) floor(milli / msPerSecond);
   double ms = milli - tv * msPerSecond;
 
-  tm t;
-  utc ? gmtime_r(&tv, &t) : localtime_r(&tv, &t);
+  tm t = *(utc ? gmtime(&tv) : localtime(&tv));
   // We had an out of range year. Restore the year (plus/minus offset
   // found by calculating tm_year) and fix the week day calculation.
   if (realYearOffset != 0) {
@@ -655,16 +665,7 @@ ValueImp *DateProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
     fillStructuresUsingDateArgs(exec, args, 3, &ms, &t);
     break;
   case SetYear:
-     int y = args[0]->toInt32(exec);
-     if (y < 1900) {
-       if (y >= 0 && y <= 99) {
-         t.tm_year = y;
-       } else {
-         fillStructuresUsingDateArgs(exec, args, 3, &ms, &t);
-       }
-     } else {
-       t.tm_year = y - 1900;
-     }
+    t.tm_year = args[0]->toInt32(exec) >= 1900 ? args[0]->toInt32(exec) - 1900 : args[0]->toInt32(exec);
     break;
   }
 
@@ -683,8 +684,8 @@ ValueImp *DateProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
 // TODO: MakeTime (15.9.11.1) etc. ?
 
 DateObjectImp::DateObjectImp(ExecState *exec,
-                             FunctionPrototypeImp *funcProto,
-                             DatePrototypeImp *dateProto)
+                             FunctionPrototype *funcProto,
+                             DatePrototype *dateProto)
   : InternalFunctionImp(funcProto)
 {
   // ECMA 15.9.4.1 Date.prototype
@@ -705,7 +706,7 @@ bool DateObjectImp::implementsConstruct() const
 }
 
 // ECMA 15.9.3
-ObjectImp *DateObjectImp::construct(ExecState *exec, const List &args)
+JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
 {
   int numArgs = args.size();
 
@@ -715,7 +716,7 @@ ObjectImp *DateObjectImp::construct(ExecState *exec, const List &args)
 #if !defined(_WIN32) && !defined(_WIN64)
     struct timeval tv;
     gettimeofday(&tv, 0);
-    double utc = floor(tv.tv_sec * msPerSecond + tv.tv_usec / msPerSecond);
+    double utc = floor(tv.tv_sec * msPerSecond + tv.tv_usec / 1000);
 #else
 #  if __BORLANDC__
     struct timeb timebuffer;
@@ -724,14 +725,19 @@ ObjectImp *DateObjectImp::construct(ExecState *exec, const List &args)
     struct _timeb timebuffer;
     _ftime(&timebuffer);
 #  endif
-    double utc = floor(timebuffer.time * msPerSecond + timebuffer.millitm);
+    double utc = timebuffer.time * msPerSecond + timebuffer.millitm;
 #endif
     value = utc;
   } else if (numArgs == 1) {
-      if (args[0]->isString())
-          value = parseDate(args[0]->toString(exec));
+    if (args[0]->isObject(&DateInstance::info))
+      value = static_cast<JSObject*>(args[0])->internalValue()->toNumber(exec);
+    else {
+      JSValue* primitive = args[0]->toPrimitive(exec);
+      if (primitive->isString())
+        value = parseDate(primitive->getString());
       else
-          value = args[0]->toPrimitive(exec)->toNumber(exec);
+        value = primitive->toNumber(exec);
+    }
   } else {
     if (isNaN(args[0]->toNumber(exec))
         || isNaN(args[1]->toNumber(exec))
@@ -757,7 +763,7 @@ ObjectImp *DateObjectImp::construct(ExecState *exec, const List &args)
     }
   }
   
-  DateInstanceImp *ret = new DateInstanceImp(exec->lexicalInterpreter()->builtinDatePrototype());
+  DateInstance *ret = new DateInstance(exec->lexicalInterpreter()->builtinDatePrototype());
   ret->setInternalValue(jsNumber(timeClip(value)));
   return ret;
 }
@@ -768,17 +774,16 @@ bool DateObjectImp::implementsCall() const
 }
 
 // ECMA 15.9.2
-ValueImp *DateObjectImp::callAsFunction(ExecState * /*exec*/, ObjectImp * /*thisObj*/, const List &/*args*/)
+JSValue *DateObjectImp::callAsFunction(ExecState * /*exec*/, JSObject * /*thisObj*/, const List &/*args*/)
 {
     time_t t = time(0);
-    tm ts;
-    localtime_r(&t, &ts);
+    tm ts = *localtime(&t);
     return jsString(formatDate(ts) + " " + formatTime(ts));
 }
 
 // ------------------------------ DateObjectFuncImp ----------------------------
 
-DateObjectFuncImp::DateObjectFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len)
+DateObjectFuncImp::DateObjectFuncImp(ExecState *exec, FunctionPrototype *funcProto, int i, int len)
     : InternalFunctionImp(funcProto), id(i)
 {
     putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
@@ -790,7 +795,7 @@ bool DateObjectFuncImp::implementsCall() const
 }
 
 // ECMA 15.9.4.2 - 3
-ValueImp *DateObjectFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *DateObjectFuncImp::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   if (id == Parse) {
     return jsNumber(parseDate(args[0]->toString(exec)));
@@ -861,18 +866,21 @@ static double makeTime(tm *t, double ms, bool utc)
     int utcOffset;
     if (utc) {
         time_t zero = 0;
+#if !defined(_WIN32) && !defined(_WIN64)
         tm t3;
         localtime_r(&zero, &t3);
-#if !defined(_WIN32) && !defined(_WIN64)
         utcOffset = t3.tm_gmtoff;
+        t->tm_isdst = t3.tm_isdst;
 #else
+        // FIXME: not thread safe
+        (void)localtime(&zero);
 #  if __BORLANDC__ || __CYGWIN__
         utcOffset = - _timezone;
 #  else
         utcOffset = - timezone;
 #  endif
+        t->tm_isdst = 0;
 #endif
-        t->tm_isdst = t3.tm_isdst;
     } else {
         utcOffset = 0;
         t->tm_isdst = -1;
@@ -898,8 +906,7 @@ static double makeTime(tm *t, double ms, bool utc)
     // produce incorrect results, but there's no other option when calling localtime_r().
     if (!utc) { 
         time_t tval = mktime(t) + (time_t)((ms + yearOffset) / 1000);  
-        struct tm t3;  
-        localtime_r(&tval, &t3);  
+        tm t3 = *localtime(&tval);  
         t->tm_isdst = t3.tm_isdst;  
     }
 

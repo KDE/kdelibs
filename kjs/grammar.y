@@ -20,9 +20,8 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
+
 #include <string.h>
 #include <stdlib.h>
 #include "value.h"
@@ -38,7 +37,7 @@
 
 /* default values for bison */
 #define YYDEBUG 0
-#if !APPLE_CHANGES
+#if !APPLE_CHANGES /* work around the fact that YYERROR_VERBOSE causes a compiler warning in bison code */
 #define YYERROR_VERBOSE
 #endif
 
@@ -54,6 +53,7 @@ using namespace KJS;
 static bool makeAssignNode(Node*& result, Node *loc, Operator op, Node *expr);
 static bool makePrefixNode(Node*& result, Node *expr, Operator op);
 static bool makePostfixNode(Node*& result, Node *expr, Operator op);
+static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier &getOrSet, Identifier& name, ParameterNode *params, FunctionBodyNode *body);
 static Node *makeFunctionCallNode(Node *func, ArgumentsNode *args);
 static Node *makeTypeOfNode(Node *expr);
 static Node *makeDeleteNode(Node *expr);
@@ -84,8 +84,9 @@ static Node *makeDeleteNode(Node *expr);
   CaseClauseNode      *ccl;
   ElementNode         *elm;
   Operator            op;
-  PropertyValueNode   *plist;
-  PropertyNode        *pnode;
+  PropertyListNode   *plist;
+  PropertyNode       *pnode;
+  PropertyNameNode   *pname;
 }
 
 %start Program
@@ -179,9 +180,9 @@ static Node *makeDeleteNode(Node *expr);
 %type <clist> CaseClauses  CaseClausesOpt
 %type <ival>  Elision ElisionOpt
 %type <elm>   ElementList
-%type <plist> PropertyNameAndValueList
-%type <pnode> PropertyName
-
+%type <pname> PropertyName
+%type <pnode> Property
+%type <plist> PropertyList
 %%
 
 Literal:
@@ -202,10 +203,30 @@ Literal:
                                         }
 ;
 
+PropertyName:
+    IDENT                               { $$ = new PropertyNameNode(*$1); }
+  | STRING                              { $$ = new PropertyNameNode(Identifier(*$1)); }
+  | NUMBER                              { $$ = new PropertyNameNode($1); }
+;
+
+Property:
+    PropertyName ':' AssignmentExpr     { $$ = new PropertyNode($1, $3, PropertyNode::Constant); }
+  | IDENT IDENT '(' ')' FunctionBody    { if (!makeGetterOrSetterPropertyNode($$, *$1, *$2, 0, $5)) YYABORT; }
+  | IDENT IDENT '(' FormalParameterList ')' FunctionBody
+                                        { if (!makeGetterOrSetterPropertyNode($$, *$1, *$2, $4, $6)) YYABORT; }
+;
+
+PropertyList:
+    Property                            { $$ = new PropertyListNode($1); }
+  | PropertyList ',' Property           { $$ = new PropertyListNode($3, $1); }
+;
+
 PrimaryExpr:
     PrimaryExprNoBrace
   | '{' '}'                             { $$ = new ObjectLiteralNode(); }
-  | '{' PropertyNameAndValueList '}'    { $$ = new ObjectLiteralNode($2); }
+  | '{' PropertyList '}'                { $$ = new ObjectLiteralNode($2); }
+  /* allow extra comma, see http://bugzilla.opendarwin.org/show_bug.cgi?id=5939 */
+  | '{' PropertyList ',' '}'            { $$ = new ObjectLiteralNode($2); }
 ;
 
 PrimaryExprNoBrace:
@@ -236,18 +257,6 @@ ElisionOpt:
 Elision:
     ','                                 { $$ = 1; }
   | Elision ','                         { $$ = $1 + 1; }
-;
-
-PropertyNameAndValueList:
-    PropertyName ':' AssignmentExpr     { $$ = new PropertyValueNode($1, $3); }
-  | PropertyNameAndValueList ',' PropertyName ':' AssignmentExpr
-                                        { $$ = new PropertyValueNode($3, $5, $1); }
-;
-
-PropertyName:
-    IDENT                               { $$ = new PropertyNode(*$1); }
-  | STRING                              { $$ = new PropertyNode(Identifier(*$1)); }
-  | NUMBER                              { $$ = new PropertyNode($1); }
 ;
 
 MemberExpr:
@@ -806,10 +815,10 @@ FunctionDeclaration:
 FunctionExpr:
     FUNCTION '(' ')' FunctionBody       { $$ = new FuncExprNode(Identifier::null(), $4); }
   | FUNCTION '(' FormalParameterList ')' FunctionBody
-                                        { $$ = new FuncExprNode(Identifier::null(), $3, $5); }
+                                        { $$ = new FuncExprNode(Identifier::null(), $5, $3); }
   | FUNCTION IDENT '(' ')' FunctionBody { $$ = new FuncExprNode(*$2, $5); }
   | FUNCTION IDENT '(' FormalParameterList ')' FunctionBody
-                                        { $$ = new FuncExprNode(*$2, $4, $6); }
+                                        { $$ = new FuncExprNode(*$2, $6, $4); }
 ;
 
 FormalParameterList:
@@ -960,10 +969,28 @@ static Node *makeDeleteNode(Node *expr)
     }
 }
 
-int yyerror(const char * /* s */)  /* Called by yyparse on error */
+static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier& getOrSet, Identifier& name, ParameterNode *params, FunctionBodyNode *body)
 {
-  // fprintf(stderr, "ERROR: %s at line %d\n", s, KJS::Lexer::curr()->lineNo());
-  return 1;
+    PropertyNode::Type type;
+    
+    if (getOrSet == "get")
+        type = PropertyNode::Getter;
+    else if (getOrSet == "set")
+        type = PropertyNode::Setter;
+    else
+        return false;
+    
+    result = new PropertyNode(new PropertyNameNode(name), 
+                              new FuncExprNode(Identifier::null(), body, params), type);
+
+    return true;
+}
+
+/* called by yyparse on error */
+int yyerror(const char *)
+{
+// fprintf(stderr, "ERROR: %s at line %d\n", s, KJS::Lexer::curr()->lineNo());
+    return 1;
 }
 
 /* may we automatically insert a semicolon ? */

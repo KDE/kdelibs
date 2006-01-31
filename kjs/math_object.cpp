@@ -22,6 +22,7 @@
 #include "config.h"
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 #include <assert.h>
 
 #include "value.h"
@@ -101,8 +102,8 @@ const ClassInfo MathObjectImp::info = { "Math", 0, &mathTable, 0 };
 */
 
 MathObjectImp::MathObjectImp(ExecState * /*exec*/,
-                             ObjectPrototypeImp *objProto)
-  : ObjectImp(objProto)
+                             ObjectPrototype *objProto)
+  : JSObject(objProto)
 {
 }
 
@@ -110,10 +111,10 @@ MathObjectImp::MathObjectImp(ExecState * /*exec*/,
 
 bool MathObjectImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot &slot)
 {
-  return getStaticPropertySlot<MathFuncImp, MathObjectImp, ObjectImp>(exec, &mathTable, this, propertyName, slot);
+  return getStaticPropertySlot<MathFuncImp, MathObjectImp, JSObject>(exec, &mathTable, this, propertyName, slot);
 }
 
-ValueImp *MathObjectImp::getValueProperty(ExecState *, int token) const
+JSValue *MathObjectImp::getValueProperty(ExecState *, int token) const
 {
   double d = -42; // ;)
   switch (token) {
@@ -145,14 +146,16 @@ ValueImp *MathObjectImp::getValueProperty(ExecState *, int token) const
     assert(0);
   }
 
-  return Number(d);
+  return jsNumber(d);
 }
 
-// ------------------------------ MathObjectImp --------------------------------
+// ------------------------------ MathFuncImp --------------------------------
+
+static bool randomSeeded = false;
 
 MathFuncImp::MathFuncImp(ExecState *exec, int i, int l)
   : InternalFunctionImp(
-    static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype())
+    static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype())
     ), id(i)
 {
   putDirect(lengthPropertyName, l, DontDelete|ReadOnly|DontEnum);
@@ -163,7 +166,7 @@ bool MathFuncImp::implementsCall() const
   return true;
 }
 
-ValueImp *MathFuncImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
+JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
   double arg = args[0]->toNumber(exec);
   double arg2 = args[1]->toNumber(exec);
@@ -258,8 +261,11 @@ ValueImp *MathFuncImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, 
       result = ::pow(arg, arg2);
     break;
   case MathObjectImp::Random:
-    result = ::rand();
-    result = result / RAND_MAX;
+    if (!randomSeeded) {
+        srand(time(0));
+        randomSeeded = true;
+    }
+    result = (double)rand() / RAND_MAX;
     break;
   case MathObjectImp::Round:
     if (signbit(arg) && arg >= -0.5)
@@ -282,5 +288,5 @@ ValueImp *MathFuncImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, 
     assert(0);
   }
 
-  return Number(result);
+  return jsNumber(result);
 }

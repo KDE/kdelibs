@@ -26,32 +26,33 @@
 
 #include "reference.h"
 #include "value.h"
-#include "protected_values.h"
-#include "interpreter.h"
+#include "collector.h"
+#include "JSLock.h"
 
 namespace KJS {
 
-    inline void gcProtect(ValueImp *val) 
+    inline void gcProtect(JSValue *val) 
     { 
-	ProtectedValues::increaseProtectCount(val);
+        Collector::protect(val);
     }
 
-    inline void gcUnprotect(ValueImp *val)
+    inline void gcUnprotect(JSValue *val)
     { 
-	ProtectedValues::decreaseProtectCount(val);
+        Collector::unprotect(val);
     }
 
-    inline void gcProtectNullTolerant(ValueImp *val) 
+    inline void gcProtectNullTolerant(JSValue *val) 
     {
-	if (val) gcProtect(val);
+        if (val) gcProtect(val);
     }
 
-    inline void gcUnprotectNullTolerant(ValueImp *val) 
+    inline void gcUnprotectNullTolerant(JSValue *val) 
     {
-	if (val) gcUnprotect(val);
+        if (val) gcUnprotect(val);
     }
     
-    // FIXME: Share more code with SharedPtr template? The only difference is the ref/deref operation.
+    // FIXME: Share more code with RefPtr template? The only differences are the ref/deref operation
+    // and the implicit conversion to raw pointer
     template <class T> class ProtectedPtr {
     public:
         ProtectedPtr() : m_ptr(NULL) { }
@@ -66,22 +67,19 @@ namespace KJS {
         T *operator->() const { return m_ptr; }
         
         bool operator!() const { return m_ptr == NULL; }
-        operator bool() const { return m_ptr != NULL; }
-        
+
         ProtectedPtr &operator=(const ProtectedPtr &);
         ProtectedPtr &operator=(T *);
         
     private:
         T *m_ptr;
-        
-        operator int() const; // deliberately not implemented; helps prevent operator bool from converting to int accidentally
     };
 
     template <class T> ProtectedPtr<T>::ProtectedPtr(T *ptr)
         : m_ptr(ptr)
     {
         if (ptr) {
-            InterpreterLock lock;
+            JSLock lock;
             gcProtect(ptr);
         }
     }
@@ -90,7 +88,7 @@ namespace KJS {
         : m_ptr(o.get())
     {
         if (T *ptr = m_ptr) {
-            InterpreterLock lock;
+            JSLock lock;
             gcProtect(ptr);
         }
     }
@@ -98,7 +96,7 @@ namespace KJS {
     template <class T> ProtectedPtr<T>::~ProtectedPtr()
     {
         if (T *ptr = m_ptr) {
-            InterpreterLock lock;
+            JSLock lock;
             gcUnprotect(ptr);
         }
     }
@@ -107,14 +105,14 @@ namespace KJS {
         : m_ptr(o.get())
     {
         if (T *ptr = m_ptr) {
-            InterpreterLock lock;
+            JSLock lock;
             gcProtect(ptr);
         }
     }
 
     template <class T> ProtectedPtr<T> &ProtectedPtr<T>::operator=(const ProtectedPtr<T> &o) 
     {
-        InterpreterLock lock;
+        JSLock lock;
         T *optr = o.m_ptr;
         gcProtectNullTolerant(optr);
         gcUnprotectNullTolerant(m_ptr);
@@ -124,7 +122,7 @@ namespace KJS {
 
     template <class T> inline ProtectedPtr<T> &ProtectedPtr<T>::operator=(T *optr)
     {
-        InterpreterLock lock;
+        JSLock lock;
         gcProtectNullTolerant(optr);
         gcUnprotectNullTolerant(m_ptr);
         m_ptr = optr;

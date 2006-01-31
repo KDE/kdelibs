@@ -23,12 +23,18 @@
 
 #include "config.h"
 #include "property_slot.h"
+#include "object.h"
 
 namespace KJS {
 
-ValueImp *PropertySlot::undefinedGetter(ExecState *, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *PropertySlot::undefinedGetter(ExecState *, JSObject *, const Identifier& propertyName, const PropertySlot& slot)
 {
-    return Undefined();
+    return jsUndefined();
+}
+
+JSValue *PropertySlot::functionGetter(ExecState *exec, JSObject *originalObject, const Identifier&, const PropertySlot& slot)
+{
+    return slot.m_data.getterFunc->call(exec, originalObject, List::empty());
 }
 
 }

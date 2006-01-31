@@ -69,7 +69,7 @@
 
 namespace KJS {
 
-IMPLEMENT_PROTOFUNC(HTMLDocFunction)
+KJS_IMPLEMENT_PROTOFUNC(HTMLDocFunction)
 
 ValueImp* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
@@ -280,7 +280,7 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
   return DOMDocument::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-ValueImp *HTMLDocument::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *HTMLDocument::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
   DOM::DocumentImpl* docImpl = thisObj->impl();
@@ -307,7 +307,7 @@ ValueImp *HTMLDocument::nameGetter(ExecState *exec, const Identifier& propertyNa
   return Undefined();
 }
 
-ValueImp *HTMLDocument::frameNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot)
+ValueImp *HTMLDocument::frameNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
   KHTMLView *view      = thisObj->impl()->view();
@@ -315,14 +315,14 @@ ValueImp *HTMLDocument::frameNameGetter(ExecState *exec, const Identifier& name,
   return Window::retrieve(view->part()->findFrame( name.qstring() ));
 }
 
-ValueImp *HTMLDocument::objectNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot)
+ValueImp *HTMLDocument::objectNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
   DOM::HTMLCollectionImpl objectLike(thisObj->impl(), DOM::HTMLCollectionImpl::DOC_APPLETS);
   return getDOMNode(exec, objectLike.namedItem(name.domString()));
 }
 
-ValueImp *HTMLDocument::layerNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot)
+ValueImp *HTMLDocument::layerNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
   DOM::HTMLCollectionImpl layerLike(thisObj->impl(), DOM::HTMLCollectionImpl::DOC_LAYERS);
@@ -1185,7 +1185,7 @@ static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElem
   return 0L;
 }
 
-ValueImp *HTMLElement::formNameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *HTMLElement::formNameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   HTMLElement *thisObj = static_cast<HTMLElement*>(slot.slotBase());
 
@@ -2534,9 +2534,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
   tags		HTMLCollection::Tags		DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("HTMLCollection", HTMLCollectionProto)
-IMPLEMENT_PROTOFUNC(HTMLCollectionProtoFunc)
-IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
+KJS_DEFINE_PROTOTYPE(HTMLCollectionProto)
+KJS_IMPLEMENT_PROTOFUNC(HTMLCollectionProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("HTMLCollection", HTMLCollectionProto,HTMLCollectionProtoFunc)
 
 const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
@@ -2557,14 +2557,14 @@ ValueImp* HTMLCollection::indexGetter(ExecState *exec, unsigned index)
   return getDOMNode(exec, m_impl->item(index));
 }
 
-ValueImp *HTMLCollection::lengthGetter(ExecState *, const Identifier&, const PropertySlot& slot)
+ValueImp *HTMLCollection::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   HTMLCollection *thisObj = static_cast<HTMLCollection *>(slot.slotBase());
   return Number(thisObj->m_impl->length());
 }
 
 
-ValueImp *HTMLCollection::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *HTMLCollection::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     HTMLCollection *thisObj = static_cast<HTMLCollection *>(slot.slotBase());
     return thisObj->getNamedItems(exec, propertyName);
@@ -2740,13 +2740,13 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
   }
 }
 
-ValueImp *HTMLSelectCollection::selectedIndexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *HTMLSelectCollection::selectedIndexGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
     return Number(thisObj->element->selectedIndex());
 }
 
-ValueImp *HTMLSelectCollection::selectedValueGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *HTMLSelectCollection::selectedValueGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
     return String(thisObj->element->value());

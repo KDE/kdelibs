@@ -29,6 +29,8 @@
 #include "error_object.h"
 #include "dtoa.h"
 
+#include <kxmlcore/Vector.h>
+
 #include "number_object.lut.h"
 
 #include <assert.h>
@@ -36,53 +38,53 @@
 using namespace KJS;
 
 
-// ------------------------------ NumberInstanceImp ----------------------------
+// ------------------------------ NumberInstance ----------------------------
 
-const ClassInfo NumberInstanceImp::info = {"Number", 0, 0, 0};
+const ClassInfo NumberInstance::info = {"Number", 0, 0, 0};
 
-NumberInstanceImp::NumberInstanceImp(ObjectImp *proto)
-  : ObjectImp(proto)
+NumberInstance::NumberInstance(JSObject *proto)
+  : JSObject(proto)
 {
 }
-// ------------------------------ NumberPrototypeImp ---------------------------
+// ------------------------------ NumberPrototype ---------------------------
 
 // ECMA 15.7.4
 
-NumberPrototypeImp::NumberPrototypeImp(ExecState *exec,
-                                       ObjectPrototypeImp *objProto,
-                                       FunctionPrototypeImp *funcProto)
-  : NumberInstanceImp(objProto)
+NumberPrototype::NumberPrototype(ExecState *exec,
+                                       ObjectPrototype *objProto,
+                                       FunctionPrototype *funcProto)
+  : NumberInstance(objProto)
 {
-  setInternalValue(jsZero());
+  setInternalValue(jsNumber(0));
 
   // The constructor will be added later, after NumberObjectImp has been constructed
 
-  putDirect(toStringPropertyName,       new NumberProtoFuncImp(
-            exec,funcProto,NumberProtoFuncImp::ToString,1,toStringPropertyName), DontEnum);
-  putDirect(toLocaleStringPropertyName, new NumberProtoFuncImp(
-            exec,funcProto,NumberProtoFuncImp::ToLocaleString,0,toLocaleStringPropertyName), DontEnum);
-  putDirect(valueOfPropertyName,        new NumberProtoFuncImp(
-            exec,funcProto,NumberProtoFuncImp::ValueOf,0,valueOfPropertyName), DontEnum);
-  putDirect(toFixedPropertyName,        new NumberProtoFuncImp(
-            exec,funcProto,NumberProtoFuncImp::ToFixed,1,toFixedPropertyName), DontEnum);
-  putDirect(toExponentialPropertyName,  new NumberProtoFuncImp(
-            exec,funcProto,NumberProtoFuncImp::ToExponential,1,toExponentialPropertyName), DontEnum);
-  putDirect(toPrecisionPropertyName,    new NumberProtoFuncImp(
-            exec,funcProto,NumberProtoFuncImp::ToPrecision,1,toPrecisionPropertyName), DontEnum);
+  putDirect(toStringPropertyName,       new NumberProtoFunc(
+            exec,funcProto,NumberProtoFunc::ToString,1,toStringPropertyName), DontEnum);
+  putDirect(toLocaleStringPropertyName, new NumberProtoFunc(
+            exec,funcProto,NumberProtoFunc::ToLocaleString,0,toLocaleStringPropertyName), DontEnum);
+  putDirect(valueOfPropertyName,        new NumberProtoFunc(
+            exec,funcProto,NumberProtoFunc::ValueOf,0,valueOfPropertyName), DontEnum);
+  putDirect(toFixedPropertyName,        new NumberProtoFunc(
+            exec,funcProto,NumberProtoFunc::ToFixed,1,toFixedPropertyName), DontEnum);
+  putDirect(toExponentialPropertyName,  new NumberProtoFunc(
+            exec,funcProto,NumberProtoFunc::ToExponential,1,toExponentialPropertyName), DontEnum);
+  putDirect(toPrecisionPropertyName,    new NumberProtoFunc(
+            exec,funcProto,NumberProtoFunc::ToPrecision,1,toPrecisionPropertyName), DontEnum);
 }
 
 
-// ------------------------------ NumberProtoFuncImp ---------------------------
+// ------------------------------ NumberProtoFunc ---------------------------
 
-NumberProtoFuncImp::NumberProtoFuncImp(ExecState *exec,
-                                       FunctionPrototypeImp *funcProto, int i, int len, const Identifier& name)
+NumberProtoFunc::NumberProtoFunc(ExecState *exec,
+                                       FunctionPrototype *funcProto, int i, int len, const Identifier& name)
   : InternalFunctionImp(funcProto, name), id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
 
-bool NumberProtoFuncImp::implementsCall() const
+bool NumberProtoFunc::implementsCall() const
 {
   return true;
 }
@@ -100,20 +102,16 @@ static UString integer_part_noexp(double d)
     } else if (decimalPoint <= 0) {
         str += UString("0");
     } else {
-        char *buf;
+        Vector<char, 1024> buf(decimalPoint + 1);
         
         if (length <= decimalPoint) {
-            buf = (char*)fastMalloc(decimalPoint+1);
-            strcpy(buf,result);
-            memset(buf+length,'0',decimalPoint-length);
-        } else {
-            buf = (char*)fastMalloc(decimalPoint+1);
-            strncpy(buf,result,decimalPoint);
-        }
+            strcpy(buf, result);
+            memset(buf + length, '0', decimalPoint - length);
+        } else
+            strncpy(buf, result, decimalPoint);
         
         buf[decimalPoint] = '\0';
         str += UString(buf);
-        fastFree(buf);
     }
     
     kjs_freedtoa(result);
@@ -123,22 +121,20 @@ static UString integer_part_noexp(double d)
 
 static UString char_sequence(char c, int count)
 {
-    char *buf = (char*)fastMalloc(count+1);
-    memset(buf,c,count);
+    Vector<char, 2048> buf(count + 1, c);
     buf[count] = '\0';
-    UString s(buf);
-    fastFree(buf);
-    return s;
+    
+    return UString(buf);
 }
 
 // ECMA 15.7.4.2 - 15.7.4.7
-ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   // no generic function. "this" has to be a Number object
-  if (!thisObj->inherits(&NumberInstanceImp::info))
+  if (!thisObj->inherits(&NumberInstance::info))
     return throwError(exec, TypeError);
 
-  ValueImp *v = thisObj->internalValue();
+  JSValue *v = thisObj->internalValue();
   switch (id) {
   case ToString: {
     double dradix = 10;
@@ -153,7 +149,7 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       char s[2048 + 3];
       double x = v->toNumber(exec);
       if (isNaN(x) || isInf(x))
-        return String(UString::from(x));
+        return jsString(UString::from(x));
 
       // apply algorithm on absolute value. add sign later.
       bool neg = false;
@@ -168,7 +164,7 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       char *p = dot;
       *p = '\0';
       do {
-        *--p = digits[int(fmod(d, double(radix)))];
+        *--p = digits[static_cast<int>(fmod(d, radix))];
         d /= radix;
       } while ((d <= -1.0 || d >= 1.0) && p > s);
       // any decimal fraction ?
@@ -178,25 +174,25 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
         *dot++ = '.';
         do {
           d *= radix;
-          *dot++ = digits[int(d)];
-          d -= int(d);
-        } while ((d < -eps || d > eps) && dot - s < int(sizeof(s)) - 1);
+          *dot++ = digits[static_cast<int>(d)];
+          d -= static_cast<int>(d);
+        } while ((d < -eps || d > eps) && dot - s < static_cast<int>(sizeof(s)) - 1);
         *dot = '\0';
       }
       // add sign if negative
       if (neg)
         *--p = '-';
-      return String(p);
+      return jsString(p);
     } else
-      return String(v->toString(exec));
+      return jsString(v->toString(exec));
   }
   case ToLocaleString: /* TODO */
-    return String(v->toString(exec));
+    return jsString(v->toString(exec));
   case ValueOf:
-    return Number(v->toNumber(exec));
+    return jsNumber(v->toNumber(exec));
   case ToFixed: 
   {
-      ValueImp *fractionDigits = args[0];
+      JSValue *fractionDigits = args[0];
       double df = fractionDigits->toInteger(exec);
       if (fractionDigits->isUndefined())
             df = 0;
@@ -206,7 +202,7 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       
       double x = v->toNumber(exec);
       if (isNaN(x))
-          return String("NaN");
+          return jsString("NaN");
       
       UString s = "";
       if (x < 0) {
@@ -215,16 +211,16 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       }
       
       if (x >= pow(10.0, 21.0))
-          return String(s+UString::from(x));
+          return jsString(s+UString::from(x));
       
       double n = floor(x*pow(10.0, f));
-      if (fabs(n / pow(10.0, f) - x) > fabs((n + 1) / pow(10.0, f) - x))
+      if (fabs(n / pow(10.0, f) - x) >= fabs((n + 1) / pow(10.0, f) - x))
           n++;
       
       UString m = integer_part_noexp(n);
       
       int k = m.size();
-      if (m.size() < f) {
+      if (k <= f) {
           UString z = "";
           for (int i = 0; i < f+1-k; i++)
               z += "0";
@@ -233,17 +229,17 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
           assert(k == m.size());
       }
       if (k-f < m.size())
-          return String(s+m.substr(0,k-f)+"."+m.substr(k-f));
+          return jsString(s+m.substr(0,k-f)+"."+m.substr(k-f));
       else
-          return String(s+m.substr(0,k-f));
+          return jsString(s+m.substr(0,k-f));
   }
   case ToExponential: {
       double x = v->toNumber(exec);
       
       if (isNaN(x) || isInf(x))
-          return String(UString::from(x));
+          return jsString(UString::from(x));
       
-      ValueImp *fractionDigits = args[0];
+      JSValue *fractionDigits = args[0];
       double df = fractionDigits->toInteger(exec);
       if (!fractionDigits->isUndefined() && !(df >= 0 && df <= 20)) // true for NaN
           return throwError(exec, RangeError, "toExponential() argument must between 0 and 20");
@@ -260,8 +256,8 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
               x = fx;
           else
               x = cx;
-          
-          decimalAdjust = int(logx);
+
+          decimalAdjust = static_cast<int>(logx);
       }
       
       char buf[80];
@@ -269,7 +265,7 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       int sign;
       
       if (isNaN(x))
-          return String("NaN");
+          return jsString("NaN");
       
       char *result = kjs_dtoa(x, 0, 0, &decimalPoint, &sign, NULL);
       int length = strlen(result);
@@ -325,7 +321,7 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       
       kjs_freedtoa(result);
       
-      return String(UString(buf));
+      return jsString(buf);
   }
   case ToPrecision:
   {
@@ -335,7 +331,7 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       double dp = args[0]->toInteger(exec);
       double x = v->toNumber(exec);
       if (isNaN(dp) || isNaN(x) || isInf(x))
-          return String(v->toString(exec));
+          return jsString(v->toString(exec));
       
       UString s = "";
       if (x < 0) {
@@ -348,7 +344,7 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       int p = (int)dp;
       
       if (x != 0) {
-          e = int(log10(x));
+          e = static_cast<int>(log10(x));
           double n = floor(x / pow(10.0, e - p + 1));
           if (n < pow(10.0, p - 1)) {
               e = e - 1;
@@ -365,9 +361,9 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
               if (m.size() > 1)
                   m = m.substr(0,1)+"."+m.substr(1);
               if (e >= 0)
-                  return String(s+m+"e+"+UString::from(e));
+                  return jsString(s+m+"e+"+UString::from(e));
               else
-                  return String(s+m+"e-"+UString::from(-e));
+                  return jsString(s+m+"e-"+UString::from(-e));
           }
       }
       else {
@@ -376,16 +372,16 @@ ValueImp *NumberProtoFuncImp::callAsFunction(ExecState *exec, ObjectImp *thisObj
       }
       
       if (e == p-1) {
-          return String(s+m);
+          return jsString(s+m);
       }
       else if (e >= 0) {
           if (e+1 < m.size())
-              return String(s+m.substr(0,e+1)+"."+m.substr(e+1));
+              return jsString(s+m.substr(0,e+1)+"."+m.substr(e+1));
           else
-              return String(s+m.substr(0,e+1));
+              return jsString(s+m.substr(0,e+1));
       }
       else {
-          return String(s+"0."+char_sequence('0',-(e+1))+m);
+          return jsString(s+"0."+char_sequence('0',-(e+1))+m);
       }
    }
       
@@ -407,15 +403,15 @@ const ClassInfo NumberObjectImp::info = {"Function", &InternalFunctionImp::info,
 @end
 */
 NumberObjectImp::NumberObjectImp(ExecState *exec,
-                                 FunctionPrototypeImp *funcProto,
-                                 NumberPrototypeImp *numberProto)
+                                 FunctionPrototype *funcProto,
+                                 NumberPrototype *numberProto)
   : InternalFunctionImp(funcProto)
 {
   // Number.Prototype
   putDirect(prototypePropertyName, numberProto,DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
-  putDirect(lengthPropertyName, jsOne(), ReadOnly|DontDelete|DontEnum);
+  putDirect(lengthPropertyName, jsNumber(1), ReadOnly|DontDelete|DontEnum);
 }
 
 bool NumberObjectImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
@@ -423,22 +419,22 @@ bool NumberObjectImp::getOwnPropertySlot(ExecState *exec, const Identifier& prop
   return getStaticValueSlot<NumberObjectImp, InternalFunctionImp>(exec, &numberTable, this, propertyName, slot);
 }
 
-ValueImp *NumberObjectImp::getValueProperty(ExecState *, int token) const
+JSValue *NumberObjectImp::getValueProperty(ExecState *, int token) const
 {
   // ECMA 15.7.3
   switch(token) {
   case NaNValue:
     return jsNaN();
   case NegInfinity:
-    return Number(-Inf);
+    return jsNumber(-Inf);
   case PosInfinity:
-    return Number(Inf);
+    return jsNumber(Inf);
   case MaxValue:
-    return Number(1.7976931348623157E+308);
+    return jsNumber(1.7976931348623157E+308);
   case MinValue:
-    return Number(5E-324);
+    return jsNumber(5E-324);
   }
-  return Null();
+  return jsNull();
 }
 
 bool NumberObjectImp::implementsConstruct() const
@@ -448,10 +444,10 @@ bool NumberObjectImp::implementsConstruct() const
 
 
 // ECMA 15.7.1
-ObjectImp *NumberObjectImp::construct(ExecState *exec, const List &args)
+JSObject *NumberObjectImp::construct(ExecState *exec, const List &args)
 {
-  ObjectImp *proto = exec->lexicalInterpreter()->builtinNumberPrototype();
-  ObjectImp *obj(new NumberInstanceImp(proto));
+  JSObject *proto = exec->lexicalInterpreter()->builtinNumberPrototype();
+  JSObject *obj(new NumberInstance(proto));
 
   double n;
   if (args.isEmpty())
@@ -470,10 +466,10 @@ bool NumberObjectImp::implementsCall() const
 }
 
 // ECMA 15.7.2
-ValueImp *NumberObjectImp::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
+JSValue *NumberObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
   if (args.isEmpty())
-    return Number(0);
+    return jsNumber(0);
   else
-    return Number(args[0]->toNumber(exec));
+    return jsNumber(args[0]->toNumber(exec));
 }

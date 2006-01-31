@@ -23,6 +23,7 @@
 #include "collector.h"
 
 #include <kxmlcore/FastMalloc.h>
+#include <kxmlcore/HashCountedSet.h>
 #include "internal.h"
 #include "list.h"
 #include "value.h"
@@ -111,7 +112,7 @@ bool Collector::memoryFull = false;
 
 void* Collector::allocate(size_t s)
 {
-  assert(Interpreter::lockCount() > 0);
+  assert(JSLock::lockCount() > 0);
 
   // collect if needed
   size_t numLiveObjects = heap.numLiveObjects;
@@ -287,7 +288,7 @@ void Collector::markStackObjectsConservatively(void *start, void *end)
 
 gotGoodPointer:
       if (((CollectorCell *)x)->u.freeCell.zeroIfFree != 0) {
-        AllocatedValueImp *imp = reinterpret_cast<AllocatedValueImp *>(x);
+        JSCell *imp = reinterpret_cast<JSCell *>(x);
         if (!imp->marked())
           imp->mark();
       }
@@ -311,23 +312,23 @@ void Collector::markCurrentThreadConservatively()
     }
     void *stackBase = (void *)pTib->StackBase;
 #else
-    static void*     stackBase = 0;
+    static void *stackBase = 0;
     static pthread_t stackThread;
-    pthread_t curThread = pthread_self();
-    if (stackBase == 0 || curThread != stackThread) {
+    pthread_t thread = pthread_self();
+    if (stackBase == 0 || thread != stackThread) {
         pthread_attr_t sattr;
 #ifdef HAVE_PTHREAD_NP_H
         // e.g. on FreeBSD 5.4, neundorf@kde.org
-        pthread_attr_get_np(curThread, &sattr);
+        pthread_attr_get_np(thread, &sattr);
 #else
         // FIXME: this function is non-portable; other POSIX systems may have different np alternatives
-        pthread_getattr_np(curThread, &sattr);
+        pthread_getattr_np(thread, &sattr);
 #endif
         // Should work but fails on Linux (?)
         //  pthread_attr_getstack(&sattr, &stackBase, &stackSize);
         pthread_attr_getstackaddr(&sattr, &stackBase);
         assert(stackBase);
-        stackThread = curThread;
+        stackThread = thread;
     }
 #endif
 
@@ -345,15 +346,15 @@ void Collector::markOtherThreadConservatively(Thread *thread)
 {
   thread_suspend(thread->machThread);
 
-#if __i386__
+#if KJS_CPU_X86
   i386_thread_state_t regs;
   unsigned user_count = sizeof(regs)/sizeof(int);
   thread_state_flavor_t flavor = i386_THREAD_STATE;
-#elif __ppc__ || __PPC__ || __powerpc__
+#elif KJS_CPU_PPC
   ppc_thread_state_t  regs;
   unsigned user_count = PPC_THREAD_STATE_COUNT;
   thread_state_flavor_t flavor = PPC_THREAD_STATE;
-#elif __ppc64__ || __PPC64__
+#elif KJS_CPU_PPC64
   ppc_thread_state64_t  regs;
   unsigned user_count = PPC_THREAD_STATE64_COUNT;
   thread_state_flavor_t flavor = PPC_THREAD_STATE64;
@@ -367,9 +368,9 @@ void Collector::markOtherThreadConservatively(Thread *thread)
   markStackObjectsConservatively((void *)&regs, (void *)((char *)&regs + (user_count * sizeof(usword_t))));
 
   // scan the stack
-#if __i386__
+#if KJS_CPU_X86
   markStackObjectsConservatively((void *)regs.esp, pthread_get_stackaddr_np(thread->posixThread));
-#elif defined(__ppc__) || defined(__ppc64__) || defined(__PPC__) || defined(__powerpc__)
+#elif KJS_CPU_PPC || KJS_CPU_PPC64
   markStackObjectsConservatively((void *)regs.r1, pthread_get_stackaddr_np(thread->posixThread));
 #else
 #error Unknown Architecture
@@ -393,22 +394,51 @@ void Collector::markStackObjectsConservatively()
 #endif
 }
 
+typedef HashCountedSet<JSCell *> ProtectCounts;
+
+static ProtectCounts& protectedValues()
+{
+    static ProtectCounts pv;
+    return pv;
+}
+
+void Collector::protect(JSValue *k)
+{
+    assert(k);
+    assert(JSLock::lockCount() > 0);
+
+    if (SimpleNumber::is(k))
+      return;
+
+    protectedValues().add(k->downcast());
+}
+
+void Collector::unprotect(JSValue *k)
+{
+    assert(k);
+    assert(JSLock::lockCount() > 0);
+
+    if (SimpleNumber::is(k))
+      return;
+
+    protectedValues().remove(k->downcast());
+}
+
+
 void Collector::markProtectedObjects()
 {
-  typedef ProtectedValues::KeyValue Entry;
-  Entry *table = ProtectedValues::_table;
-  Entry *end = table + ProtectedValues::_tableSize;
-  for (Entry *entry = table; entry != end; ++entry) {
-    AllocatedValueImp *val = entry->key;
-    if (val && !val->marked()) {
-      val->mark();
+  ProtectCounts& pv = protectedValues();
+  ProtectCounts::iterator end = pv.end();
+  for (ProtectCounts::iterator it = pv.begin(); it != end; ++it) {
+    JSCell *val = it->first;
+    if (!val->marked())
+       val->mark();
     }
-  }
 }
 
 bool Collector::collect()
 {
-  assert(Interpreter::lockCount() > 0);
+  assert(JSLock::lockCount() > 0);
 
   if (InterpreterImp::s_hook) {
     InterpreterImp *scr = InterpreterImp::s_hook;
@@ -418,6 +448,7 @@ bool Collector::collect()
       scr = scr->next;
     } while (scr != InterpreterImp::s_hook);
   }
+  ConstantValues::mark();
 
   // MARK: first mark all referenced objects recursively starting out from the set of root objects
 
@@ -440,11 +471,11 @@ bool Collector::collect()
       // special case with a block where all cells are used -- testing indicates this happens often
       for (size_t i = 0; i < CELLS_PER_BLOCK; i++) {
         CollectorCell *cell = curBlock->cells + i;
-        AllocatedValueImp *imp = reinterpret_cast<AllocatedValueImp *>(cell);
+        JSCell *imp = reinterpret_cast<JSCell *>(cell);
         if (imp->m_marked) {
           imp->m_marked = false;
         } else {
-          imp->~AllocatedValueImp();
+          imp->~JSCell();
           --usedCells;
           --numLiveObjects;
 
@@ -461,11 +492,11 @@ bool Collector::collect()
         if (cell->u.freeCell.zeroIfFree == 0) {
           ++minimumCellsToProcess;
         } else {
-          AllocatedValueImp *imp = reinterpret_cast<AllocatedValueImp *>(cell);
+          JSCell *imp = reinterpret_cast<JSCell *>(cell);
           if (imp->m_marked) {
             imp->m_marked = false;
           } else {
-            imp->~AllocatedValueImp();
+            imp->~JSCell();
             --usedCells;
             --numLiveObjects;
 
@@ -505,10 +536,10 @@ bool Collector::collect()
 
   size_t cell = 0;
   while (cell < heap.usedOversizeCells) {
-    AllocatedValueImp *imp = (AllocatedValueImp *)heap.oversizeCells[cell];
+    JSCell *imp = (JSCell *)heap.oversizeCells[cell];
 
     if (!imp->m_marked) {
-      imp->~AllocatedValueImp();
+      imp->~JSCell();
 #if DEBUG_COLLECTOR
       heap.oversizeCells[cell]->u.freeCell.zeroIfFree = 0;
 #else
@@ -572,23 +603,12 @@ size_t Collector::numGCNotAllowedObjects()
 
 size_t Collector::numReferencedObjects()
 {
-  size_t count = 0;
-
-  size_t size = ProtectedValues::_tableSize;
-  ProtectedValues::KeyValue *table = ProtectedValues::_table;
-  for (size_t i = 0; i < size; i++) {
-    AllocatedValueImp *val = table[i].key;
-    if (val) {
-      ++count;
-    }
-  }
-
-  return count;
+  return protectedValues().size();
 }
 
 #if APPLE_CHANGES
 
-static const char *className(AllocatedValueImp *val)
+static const char *className(JSCell *val)
 {
   const char *name = "???";
   switch (val->type()) {
@@ -610,27 +630,29 @@ static const char *className(AllocatedValueImp *val)
       name = "number";
       break;
     case ObjectType: {
-      const ClassInfo *info = static_cast<ObjectImp *>(val)->classInfo();
+      const ClassInfo *info = static_cast<JSObject *>(val)->classInfo();
       name = info ? info->className : "Object";
       break;
     }
+    case GetterSetterType:
+      name = "gettersetter";
+      break;
   }
   return name;
 }
 
 const void *Collector::rootObjectClasses()
 {
+  // FIXME: this should be a HashSet (or maybe even CountedHashSet)
   CFMutableSetRef classes = CFSetCreateMutable(NULL, 0, &kCFTypeSetCallBacks);
 
-  int size = ProtectedValues::_tableSize;
-  ProtectedValues::KeyValue *table = ProtectedValues::_table;
-  for (int i = 0; i < size; i++) {
-    AllocatedValueImp *val = table[i].key;
-    if (val) {
-      CFStringRef name = CFStringCreateWithCString(NULL, className(val), kCFStringEncodingASCII);
-      CFSetAddValue(classes, name);
-      CFRelease(name);
-    }
+  ProtectCounts& pv = protectedValues();
+  ProtectCounts::iterator end = pv.end();
+  for (ProtectCounts::iterator it = pv.begin(); it != end; ++it) {
+    JSCell *val = it->first;
+    CFStringRef name = CFStringCreateWithCString(NULL, className(val), kCFStringEncodingASCII);
+    CFSetAddValue(classes, name);
+    CFRelease(name);
   }
 
   return classes;

@@ -38,7 +38,7 @@ const ClassInfo MozillaSidebarExtension::info = { "sidebar", 0, &MozillaSidebarE
 @end
 */
 }
-IMPLEMENT_PROTOFUNC(MozillaSidebarExtensionFunc)
+KJS_IMPLEMENT_PROTOFUNC(MozillaSidebarExtensionFunc)
 
 MozillaSidebarExtension::MozillaSidebarExtension(ExecState *exec, KHTMLPart *p)
   : m_part(p) {

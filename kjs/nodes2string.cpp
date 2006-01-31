@@ -40,7 +40,7 @@ namespace KJS {
     SourceStream& operator<<(char);
     SourceStream& operator<<(Format f);
     SourceStream& operator<<(const Node *);
-    template <typename T> SourceStream& operator<<(SharedPtr<T> n) { return this->operator<<(n.get()); }
+    template <typename T> SourceStream& operator<<(RefPtr<T> n) { return this->operator<<(n.get()); }
   private:
     UString str; /* TODO: buffer */
     UString ind;
@@ -132,7 +132,7 @@ void GroupNode::streamTo(SourceStream &s) const
 
 void ElementNode::streamTo(SourceStream &s) const
 {
-  for (const ElementNode *n = this; n; n = n->list.get()) {
+  for (const ElementNode *n = this; n; n = n->next.get()) {
     for (int i = 0; i < n->elision; i++)
       s << ",";
     s << n->node;
@@ -155,13 +155,35 @@ void ObjectLiteralNode::streamTo(SourceStream &s) const
     s << "{ }";
 }
 
-void PropertyValueNode::streamTo(SourceStream &s) const
+void PropertyListNode::streamTo(SourceStream &s) const
 {
-  for (const PropertyValueNode *n = this; n; n = n->list.get())
-    s << n->name << ": " << n->assign;
+  s << node;
+  
+  for (const PropertyListNode *n = next.get(); n; n = n->next.get())
+    s << ", " << n->node;
 }
 
 void PropertyNode::streamTo(SourceStream &s) const
+{
+  switch (type) {
+    case Constant:
+      s << name << ": " << assign;
+      break;
+    case Getter:
+    case Setter: {
+      const FuncExprNode *func = static_cast<const FuncExprNode *>(assign.get());
+      if (type == Getter)
+        s << "get "; 
+      else
+        s << "set ";
+      
+      s << name << "(" << func->param << ")" << func->body;
+      break;
+    }
+  }
+}
+
+void PropertyNameNode::streamTo(SourceStream &s) const
 {
   if (str.isNull())
     s << UString::from(numeric);
@@ -182,7 +204,7 @@ void DotAccessorNode::streamTo(SourceStream &s) const
 void ArgumentListNode::streamTo(SourceStream &s) const
 {
   s << expr;
-  for (ArgumentListNode *n = list.get(); n; n = n->list.get())
+  for (ArgumentListNode *n = next.get(); n; n = n->next.get())
     s << ", " << n->expr;
 }
 
@@ -503,7 +525,7 @@ void CommaNode::streamTo(SourceStream &s) const
 
 void StatListNode::streamTo(SourceStream &s) const
 {
-  for (const StatListNode *n = this; n; n = n->list.get())
+  for (const StatListNode *n = this; n; n = n->next.get())
     s << n->statement;
 }
 
@@ -520,13 +542,13 @@ void VarDeclNode::streamTo(SourceStream &s) const
 void VarDeclListNode::streamTo(SourceStream &s) const
 {
   s << var;
-  for (VarDeclListNode *n = list.get(); n; n = n->list.get())
+  for (VarDeclListNode *n = next.get(); n; n = n->next.get())
     s << ", " << n->var;
 }
 
 void VarStatementNode::streamTo(SourceStream &s) const
 {
-  s << SourceStream::Endl << "var " << list << ";";
+  s << SourceStream::Endl << "var " << next << ";";
 }
 
 void BlockNode::streamTo(SourceStream &s) const
@@ -581,6 +603,9 @@ void ForInNode::streamTo(SourceStream &s) const
   s << SourceStream::Endl << "for (";
   if (varDecl)
     s << "var " << varDecl;
+  else
+    s << lexpr;
+  
   if (init)
     s << " = " << init;
   s << " in " << expr << ")" << SourceStream::Indent
@@ -625,25 +650,25 @@ void CaseClauseNode::streamTo(SourceStream &s) const
   else
     s << "default";
   s << ":" << SourceStream::Indent;
-  if (list)
-    s << list;
+  if (next)
+    s << next;
   s << SourceStream::Unindent;
 }
 
 void ClauseListNode::streamTo(SourceStream &s) const
 {
-  for (const ClauseListNode *n = this; n; n = n->next())
-    s << n->clause();
+  for (const ClauseListNode *n = this; n; n = n->getNext())
+    s << n->getClause();
 }
 
 void CaseBlockNode::streamTo(SourceStream &s) const
 {
-  for (const ClauseListNode *n = list1.get(); n; n = n->next())
-    s << n->clause();
+  for (const ClauseListNode *n = list1.get(); n; n = n->getNext())
+    s << n->getClause();
   if (def)
     s << def;
-  for (const ClauseListNode *n = list2.get(); n; n = n->next())
-    s << n->clause();
+  for (const ClauseListNode *n = list2.get(); n; n = n->getNext())
+    s << n->getClause();
 }
 
 void SwitchNode::streamTo(SourceStream &s) const
@@ -692,6 +717,6 @@ void FuncExprNode::streamTo(SourceStream &s) const
 
 void SourceElementsNode::streamTo(SourceStream &s) const
 {
-  for (const SourceElementsNode *n = this; n; n = n->elements.get())
-    s << n->element;
+  for (const SourceElementsNode *n = this; n; n = n->next.get())
+    s << n->node;
 }

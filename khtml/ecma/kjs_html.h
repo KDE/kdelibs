@@ -52,10 +52,10 @@ namespace KJS {
            Height, Width, Dir, Frames, CompatMode };
     DOM::HTMLDocumentImpl* impl() const { return static_cast<DOM::HTMLDocumentImpl*>( m_impl.get() ); }
   private:
-    static ValueImp *nameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
-    static ValueImp *frameNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
-    static ValueImp *objectNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
-    static ValueImp *layerNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
+    static ValueImp *nameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot);
+    static ValueImp *frameNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot);
+    static ValueImp *objectNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot);
+    static ValueImp *layerNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot);
   };
 
   class HTMLElement : public DOMElement {
@@ -161,7 +161,7 @@ namespace KJS {
     DOM::HTMLElementImpl* impl() const { return static_cast<DOM::HTMLElementImpl*>(m_impl.get()); }
     ValueImp* indexGetter(ExecState *exec, unsigned index);
   private:
-    static ValueImp *formNameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
+    static ValueImp *formNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot);
 
     QString getURLArg(unsigned id) const;
 
@@ -230,8 +230,8 @@ namespace KJS {
     SharedPtr<DOM::HTMLCollectionImpl> m_impl;
     bool hidden;
   private:
-    static ValueImp *lengthGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
-    static ValueImp *nameGetter(ExecState *exec, const Identifier& name, const PropertySlot& slot);
+    static ValueImp *lengthGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot);
+    static ValueImp *nameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot);
   };
 
   class HTMLSelectCollection : public HTMLCollection {
@@ -242,8 +242,8 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
   private:
     SharedPtr<DOM::HTMLSelectElementImpl> element;
-    static ValueImp *selectedIndexGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot);
-    static ValueImp *selectedValueGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot);
+    static ValueImp *selectedIndexGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot);
+    static ValueImp *selectedValueGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot);
   };
 
   ////////////////////// Option Object ////////////////////////

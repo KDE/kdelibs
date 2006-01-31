@@ -182,11 +182,12 @@ typedef union YYSTYPE {
   CaseClauseNode      *ccl;
   ElementNode         *elm;
   Operator            op;
-  PropertyValueNode   *plist;
-  PropertyNode        *pnode;
+  PropertyListNode   *plist;
+  PropertyNode       *pnode;
+  PropertyNameNode   *pname;
 } YYSTYPE;
 /* Line 1447 of yacc.c.  */
-#line 190 "grammar.tab.h"
+#line 191 "grammar.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

@@ -42,6 +42,7 @@
 #include <kjs/completion.h>
 #include <kjs/interpreter.h>
 #include <kjs/value.h>
+#include <kjs_binding.h>
 
 #include "dom/dom_misc.h"
 

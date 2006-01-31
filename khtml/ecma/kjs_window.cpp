@@ -115,7 +115,7 @@ namespace KJS {
     enum { Length, Location };
     ValueImp *indexGetter(ExecState *, unsigned index);
   private:
-    static ValueImp *nameGetter(ExecState *, const Identifier&, const PropertySlot&);
+    static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
 
@@ -348,7 +348,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   DOMParser	Window::DOMParser	DontDelete|ReadOnly
 @end
 */
-IMPLEMENT_PROTOFUNC(WindowFunc)
+KJS_IMPLEMENT_PROTOFUNC(WindowFunc)
 
 Window::Window(khtml::ChildFrame *p)
   : ObjectImp(/*no proto*/), m_frame(p), screen(0), history(0), external(0), m_frames(0), loc(0), m_evt(0)
@@ -609,7 +609,7 @@ ValueImp* Window::indexGetter(ExecState *exec, unsigned index)
   return Undefined(); //### ?
 }
 
-ValueImp *Window::framePartGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *Window::framePartGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   Window* thisObj = static_cast<Window*>(slot.slotBase());
   KHTMLPart *part = qobject_cast<KHTMLPart*>(thisObj->m_frame->m_part);
@@ -617,7 +617,7 @@ ValueImp *Window::framePartGetter(ExecState *exec, const Identifier& propertyNam
   return thisObj->retrieve(rop);
 }
 
-ValueImp *Window::namedItemGetter(ExecState *exec, const Identifier& p, const PropertySlot& slot)
+ValueImp *Window::namedItemGetter(ExecState *exec, JSObject*, const Identifier& p, const PropertySlot& slot)
 {
   Window* thisObj = static_cast<Window*>(slot.slotBase());
   KHTMLPart *part = qobject_cast<KHTMLPart*>(thisObj->m_frame->m_part);
@@ -2168,7 +2168,7 @@ ValueImp *FrameArray::indexGetter(ExecState *exec, unsigned index)
   return Undefined();
 }
 
-ValueImp *FrameArray::nameGetter(ExecState *exec, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *FrameArray::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   FrameArray *thisObj = static_cast<FrameArray *>(slot.slotBase());
   KParts::ReadOnlyPart *frame = thisObj->part->findFrame(propertyName.qstring());
@@ -2230,7 +2230,7 @@ const ClassInfo Location::info = { "Location", 0, &LocationTable, 0 };
   reload	Location::Reload	DontDelete|Function 0
 @end
 */
-IMPLEMENT_PROTOFUNC(LocationFunc)
+KJS_IMPLEMENT_PROTOFUNC(LocationFunc)
 Location::Location(khtml::ChildFrame *f) : m_frame(f)
 {
   //kdDebug(6070) << "Location::Location " << this << " m_part=" << (void*)m_part << endl;
@@ -2446,7 +2446,7 @@ const ClassInfo External::info = { "External", 0, 0, 0 };
   addFavorite	External::AddFavorite	DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC(ExternalFunc)
+KJS_IMPLEMENT_PROTOFUNC(ExternalFunc)
 
 bool External::getOwnPropertySlot(ExecState *exec, const Identifier &p, PropertySlot& propertySlot)
 {
@@ -2528,7 +2528,7 @@ const ClassInfo History::info = { "History", 0, 0, 0 };
   go		History::Go		DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC(HistoryFunc)
+KJS_IMPLEMENT_PROTOFUNC(HistoryFunc)
 
 bool History::getOwnPropertySlot(ExecState *exec, const Identifier &p, PropertySlot& slot)
 {
