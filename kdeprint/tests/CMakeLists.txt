@@ -1,5 +1,7 @@
 kde4_header()
 
+if(KDE4_BUILD_TESTS)
+		
 include_directories( ${CMAKE_SOURCE_DIR}/kdeprint ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
@@ -13,12 +15,10 @@ richpage.cpp
 
 kde4_automoc(${helpviewer_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(helpviewer ${helpviewer_SRCS})
 
 target_link_libraries(helpviewer  ${QT_AND_KDECORE_LIBS} kdeprint )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -28,7 +28,6 @@ drawdemo.cpp
 
 kde4_automoc(${drawdemo_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(drawdemo ${drawdemo_SRCS})
 
 target_link_libraries(drawdemo  ${QT_AND_KDECORE_LIBS} kdeprint )

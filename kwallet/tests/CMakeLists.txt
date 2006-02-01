@@ -1,5 +1,7 @@
 kde4_header()
 
+if(KDE4_BUILD_TESTS)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
@@ -12,12 +14,10 @@ kwallettest.cpp
 
 kde4_automoc(${kwalletasync_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kwalletasync ${kwalletasync_SRCS})
 
 target_link_libraries(kwalletasync  ${QT_AND_KDECORE_LIBS} kwalletclient )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -27,12 +27,10 @@ kwalletsync.cpp
 
 kde4_automoc(${kwalletsync_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kwalletsync ${kwalletsync_SRCS})
 
 target_link_libraries(kwalletsync  ${QT_AND_KDECORE_LIBS} kwalletclient )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -43,7 +41,6 @@ kwallettest.cpp
 
 kde4_automoc(${kwalletboth_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kwalletboth ${kwalletboth_SRCS})
 
 target_link_libraries(kwalletboth  ${QT_AND_KDECORE_LIBS} kwalletclient )

@@ -1,5 +1,6 @@
 kde4_header()
 
+if(KDE4_BUILD_TESTS)
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
@@ -11,7 +12,6 @@ kcookiejartest.cpp
 
 kde4_automoc(${kcookiejartest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kcookiejartest ${kcookiejartest_SRCS})
 
 target_link_libraries(kcookiejartest  ${QT_AND_KDECORE_LIBS} kio )

@@ -1,5 +1,7 @@
 kde4_header()
 
+if(KDE4_BUILD_TESTS)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdeui ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR}/kde3support/kdeui)
 
 
@@ -11,12 +13,10 @@ kdockwidgetdemo.cpp
 
 kde4_automoc(${kdockwidgetdemo_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdockwidgetdemo ${kdockwidgetdemo_SRCS})
 
 target_link_libraries(kdockwidgetdemo  ${QT_AND_KDECORE_LIBS} kde3support)
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -26,12 +26,10 @@ kdockwidgettest.cpp
 
 kde4_automoc(${kdockwidgettest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdockwidgettest ${kdockwidgettest_SRCS})
 
 target_link_libraries(kdockwidgettest  ${QT_AND_KDECORE_LIBS} kde3support)
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -41,7 +39,6 @@ kdocktest.cpp
 
 kde4_automoc(${kdocktest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdocktest ${kdocktest_SRCS})
 
 target_link_libraries(kdocktest  ${QT_AND_KDECORE_LIBS} kde3support)

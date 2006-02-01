@@ -1,5 +1,7 @@
 kde4_header()
 
+if(KDE4_BUILD_TESTS)
+		
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
@@ -17,7 +19,6 @@ ${CMAKE_CURRENT_BINARY_DIR}/test.h
 
 kde4_add_dcop_skels(dcop_test_SRCS ${dcop_test_DCOP_SKEL_SRCS})
 
-if(KDE4_BUILD_TESTS)
 
 #shell.generated: $(srcdir)/testcases $(srcdir)/generate.pl
 #	perl $(srcdir)/generate.pl < $(srcdir)/testcases
@@ -30,7 +31,6 @@ kde4_add_executable(dcop_test ${dcop_test_SRCS})
 
 target_link_libraries(dcop_test  ${QT_AND_KDECORE_LIBS} DCOP )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -46,7 +46,6 @@ test.h
 
 kde4_add_dcop_stubs(driver_SRCS ${driver_DCOP_STUB_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(driver ${driver_SRCS})
 
 target_link_libraries(driver  ${QT_AND_KDECORE_LIBS} DCOP )

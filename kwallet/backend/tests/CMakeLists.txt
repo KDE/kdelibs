@@ -1,5 +1,7 @@
 kde4_header()
 
+if(KDE4_BUILD_TESTS)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kwallet/backend ${CMAKE_SOURCE_DIR}/kwallet/client ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
@@ -11,12 +13,10 @@ backendtest.cpp
 
 kde4_automoc(${backendtest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(backendtest ${backendtest_SRCS})
 
 target_link_libraries(backendtest  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -26,12 +26,10 @@ testbf.cpp
 
 kde4_automoc(${testbf_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(testbf ${testbf_SRCS})
 
 target_link_libraries(testbf  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -41,7 +39,6 @@ testsha.cpp
 
 kde4_automoc(${testsha_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(testsha ${testsha_SRCS})
 
 target_link_libraries(testsha  ${QT_AND_KDECORE_LIBS} )

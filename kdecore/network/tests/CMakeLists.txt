@@ -1,5 +1,7 @@
 kde4_header()
 
+if(KDE4_BUILD_TESTS) 
+		
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR}/kdecore/network )
 
 
@@ -11,12 +13,10 @@ netif.cpp
 
 kde4_automoc(${netif_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(netif ${netif_SRCS})
 
 target_link_libraries(netif  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -26,12 +26,10 @@ resolution.cpp
 
 kde4_automoc(${resolution_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(resolution ${resolution_SRCS})
 
 target_link_libraries(resolution  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -41,12 +39,10 @@ socketdevicetest.cpp
 
 kde4_automoc(${socketdevicetest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(socketdevicetest ${socketdevicetest_SRCS})
 
 target_link_libraries(socketdevicetest  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -56,12 +52,10 @@ streamsockettest.cpp
 
 kde4_automoc(${streamsockettest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(streamsockettest ${streamsockettest_SRCS})
 
 target_link_libraries(streamsockettest  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -71,7 +65,6 @@ serversockettest.cpp
 
 kde4_automoc(${serversockettest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(serversockettest ${serversockettest_SRCS})
 
 target_link_libraries(serversockettest  ${QT_AND_KDECORE_LIBS} )

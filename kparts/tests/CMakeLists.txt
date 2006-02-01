@@ -1,5 +1,7 @@
 kde4_header()
 
+if(KDE4_BUILD_TESTS)
+		
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kfile ${CMAKE_SOURCE_DIR}/kio ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
@@ -12,12 +14,10 @@ parts.cpp
 
 kde4_automoc(${kpartstest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kpartstest ${kpartstest_SRCS})
 
 target_link_libraries(kpartstest  ${QT_AND_KDECORE_LIBS} kparts )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -28,12 +28,10 @@ parts.cpp
 
 kde4_automoc(${normalktmtest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(normalktmtest ${normalktmtest_SRCS})
 
 target_link_libraries(normalktmtest  ${QT_AND_KDECORE_LIBS} kparts )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -43,12 +41,10 @@ ghostview.cpp
 
 kde4_automoc(${ghostviewtest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(ghostviewtest ${ghostviewtest_SRCS})
 
 target_link_libraries(ghostviewtest  ${QT_AND_KDECORE_LIBS} kparts )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -90,6 +86,8 @@ install_files( ${KDE4_DATA_DIR}/notepadpart FILES notepadpart.rc )
 install_files( ${KDE4_DATA_DIR}/ghostviewtest FILES ghostviewtest_shell.rc )
 install_files( ${KDE4_DATA_DIR}/kpartstest FILES kpartstest_shell.rc )
 install_files( ${KDE4_DATA_DIR}/kpartstestpart FILES kpartstest_part1.rc )
+
+endif(KDE4_BUILD_TESTS)
 
 kde4_footer()
 

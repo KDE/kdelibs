@@ -1,5 +1,7 @@
 kde4_header()
 
+if(KDE4_BUILD_TESTS)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
@@ -12,12 +14,10 @@ kfdtest.cpp
 
 kde4_automoc(${kfstest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kfstest ${kfstest_SRCS})
 
 target_link_libraries(kfstest  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -27,12 +27,10 @@ kurlrequestertest.cpp
 
 kde4_automoc(${kurlrequestertest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kurlrequestertest ${kurlrequestertest_SRCS})
 
 target_link_libraries(kurlrequestertest  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -42,12 +40,10 @@ kfiletreeviewtest.cpp
 
 kde4_automoc(${kfiletreeviewtest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kfiletreeviewtest ${kfiletreeviewtest_SRCS})
 
 target_link_libraries(kfiletreeviewtest  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -57,12 +53,10 @@ kopenwithtest.cpp
 
 kde4_automoc(${kopenwithtest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kopenwithtest ${kopenwithtest_SRCS})
 
 target_link_libraries(kopenwithtest  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -72,12 +66,10 @@ kdirselectdialogtest.cpp
 
 kde4_automoc(${kdirselectdialogtest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kdirselectdialogtest ${kdirselectdialogtest_SRCS})
 
 target_link_libraries(kdirselectdialogtest  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -87,12 +79,10 @@ kicondialogtest.cpp
 
 kde4_automoc(${kicondialogtest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kicondialogtest ${kicondialogtest_SRCS})
 
 target_link_libraries(kicondialogtest  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -102,12 +92,10 @@ knotifytest.cpp
 
 kde4_automoc(${knotifytest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(knotifytest ${knotifytest_SRCS})
 
 target_link_libraries(knotifytest  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -117,7 +105,6 @@ kcustommenueditortest.cpp
 
 kde4_automoc(${kcustommenueditortest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kcustommenueditortest ${kcustommenueditortest_SRCS})
 
 target_link_libraries(kcustommenueditortest  ${QT_AND_KDECORE_LIBS} )

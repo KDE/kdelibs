@@ -1,5 +1,7 @@
 kde4_header()
 
+if(KDE4_BUILD_TESTS)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
@@ -11,12 +13,10 @@ kfindtest.cpp
 
 kde4_automoc(${kfindtest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kfindtest ${kfindtest_SRCS})
 
 target_link_libraries(kfindtest  ${QT_AND_KDECORE_LIBS} kutils )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -26,7 +26,6 @@ kreplacetest.cpp
 
 kde4_automoc(${kreplacetest_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(kreplacetest ${kreplacetest_SRCS})
 
 target_link_libraries(kreplacetest  ${QT_AND_KDECORE_LIBS} kutils )
