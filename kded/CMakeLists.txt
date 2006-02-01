@@ -76,7 +76,7 @@ install_targets(/bin kde-menu )
 
 ########### install files ###############
 
-install_files( /etc/xdg/menus FILES applications.menu )
+install_files( ${KDE4_SYSCONF_DIR}/xdg/menus FILES applications.menu )
 install_files( ${KDE4_SERVICETYPES_DIR} FILES kdedmodule.desktop )
 install_files( ${KDE4_DATA_DIR}/kconf_update FILES kded.upd )
 
