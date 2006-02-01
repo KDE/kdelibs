@@ -216,7 +216,7 @@ namespace KDEHW
         virtual Ifaces::Capability *asCapability( const Capability::Type &capability );
 
         /**
-         * Retrives a specialized interface to interact with the device corresponding
+         * Retrieves a specialized interface to interact with the device corresponding
          * to a given capability interface.
          *
          * @returns a pointer to the capability interface if it exists, 0 otherwise
@@ -227,7 +227,18 @@ namespace KDEHW
             Ifaces::Capability *iface = asCapability( type );
             return dynamic_cast<Cap*>( iface );
         }
+	
+        /**
+         * Tests if a device provides a given capability interface.
+         *
+         * @returns true if the interface is available, false otherwise
+         */
+        template <class Cap> bool is()
+        {
+            return queryCapability( Cap::type() );
+        }
 
+	
         /**
          * Acquires a lock on the device for the given reason.
          *

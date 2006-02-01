@@ -29,7 +29,7 @@ namespace Ifaces
     class Capability
     {
     public:
-        virtual ~Capability() {}
+        virtual ~Capability();
 
         enum Type { Unknown = 0, Processor = 1, Block = 2,
                     Storage = 4, Cdrom = 8,

@@ -21,6 +21,7 @@
 #define KDEHW_IFACES_CDROM_H
 
 #include <QFlags>
+#include <QList>
 #include <kdehw/ifaces/storage.h>
 
 namespace KDEHW
@@ -30,7 +31,7 @@ namespace Ifaces
     class Cdrom : virtual public Storage
     {
     public:
-        virtual ~Cdrom() {}
+        virtual ~Cdrom();
 
         static Type type() { return Capability::Cdrom; }
 

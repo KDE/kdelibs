@@ -30,7 +30,7 @@ namespace Ifaces
     class OpticalDisc : virtual public Volume
     {
     public:
-        virtual ~OpticalDisc() {}
+        virtual ~OpticalDisc();
 
         static Type type() { return Capability::OpticalDisc; }
 
@@ -42,7 +42,7 @@ namespace Ifaces
                         DvdPlusRecordable, DvdPlusRewritable, Unknown };
 
         virtual ContentTypes availableContent() const = 0;
-        virtual DiscType type() const = 0;
+        virtual DiscType discType() const = 0;
         virtual bool isAppendable() const = 0;
         virtual bool isBlank() const = 0;
         virtual bool isRewritable() const = 0;

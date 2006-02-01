@@ -17,27 +17,9 @@
 
 */
 
-#ifndef KDEHW_IFACES_PROCESSOR_H
-#define KDEHW_IFACES_PROCESSOR_H
-
-#include <kdehw/ifaces/capability.h>
-
-namespace KDEHW
+#include "cdrom.h"
+        
+KDEHW::Ifaces::Cdrom::~Cdrom()
 {
-namespace Ifaces
-{
-    class Processor : virtual public Capability
-    {
-    public:
-        virtual ~Processor();
-
-        static Type type() { return Capability::Processor; }
-
-        virtual int number() const = 0;
-        virtual long maxSpeed() const = 0;
-        virtual bool canThrottle() const = 0;
-    };
-}
 }
 
-#endif

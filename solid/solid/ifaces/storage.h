@@ -29,7 +29,7 @@ namespace Ifaces
     class Storage : virtual public Block
     {
     public:
-        virtual ~Storage() {}
+        virtual ~Storage();
 
         static Type type() { return Capability::Storage; }
 

@@ -29,7 +29,7 @@ namespace Ifaces
     class Volume : virtual public Block
     {
     public:
-        virtual ~Volume() {}
+        virtual ~Volume();
 
         static Type type() { return Capability::Volume; }
 
