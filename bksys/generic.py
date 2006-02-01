@@ -381,7 +381,7 @@ class genobj:
 					self.env.AppendUnique(CCFLAGS=self.env['CCFLAGS_'+lib])
 				if self.env.has_key('CPPPATH_'+lib):
 					self.env.AppendUnique(CPPPATH=self.env['CPPPATH_'+lib])
-				if self.env.has_key('RPATH_'+lib) and self.has_key('_WANT_RPATH_') and self.env['_WANT_RPATH_']:
+				if self.env.has_key('RPATH_'+lib) and self.env.has_key('_WANT_RPATH_') and self.env['_WANT_RPATH_']:
 					self.env.AppendUnique(RPATH=self.env['RPATH_'+lib])
 
 		# Settings for static and shared libraries
