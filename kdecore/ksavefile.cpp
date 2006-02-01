@@ -248,11 +248,11 @@ bool KSaveFile::simpleBackupFile( const QString& qFilename,
                                   const QString& backupDir,
                                   const QString& backupExtension )
 {
-   QByteArray cFilename = QFile::encodeName(qFilename);
+   QByteArray cFilename = QFile::encodeName( qFilename );
    const char *filename = cFilename.data();
 
    int fd = KDE_open( filename, O_RDONLY );
-   if (fd < 0 )
+   if ( fd < 0 )
       return false;
 
    KDE_struct_stat buff;
@@ -313,8 +313,24 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
     if ( !co.waitForFinished() )
         return false;
 
-    // TODO: Add moving of backup from/to backupDir
-    return true;
+    if ( !backupDir.isEmpty() ) {
+        QString sBackup = backupDir + "/" + qBackupFilename;
+        QByteArray cFilename = QFile::encodeName( qBackupFilename );
+        const char *filename = cFilename.data();
+        int fd = KDE_open( filename, O_RDONLY );
+        if ( fd < 0 )
+            return false;
+
+        KDE_struct_stat buff;
+        if ( KDE_fstat( fd, &buff ) < 0 )
+        {
+            ::close( fd );
+            return false;
+        }
+        return( copy_all( fd, &buff, sBackup ) );
+    } else {
+        return true;
+    }
 }
 
 bool KSaveFile::numberedBackupFile( const QString& qFilename,

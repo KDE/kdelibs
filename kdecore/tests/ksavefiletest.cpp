@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     KCmdLineArgs::init( argc, argv, "ksavefiletest", 0, 0, 0, 0 );
     KApplication app( false );
 
-    KTempFile f( locateLocal( "tmp", "fred" ), QString(), 0600 );
+    KTempFile f( "fred", QString(), 0600 );
 
     test( "backup file", KSaveFile::backupFile( f.name() ) );
     test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
@@ -71,11 +71,12 @@ int main(int argc, char *argv[])
     test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
 
     // Test a change to f to verify RCS
-    QTextStream *out = f.textStream();
-    //out->setEncoding( QTextStream::UnicodeUTF8 );
-    (*out) << "Testing a change\n";
-    f.close();
-    test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString(), "Testmsg" ) );
-
+    QFile fl( f.name() );
+    if ( fl.open( QFile::WriteOnly | QFile::Truncate ) ) {
+        QTextStream out( &fl );
+        out << "Testing a change\n";
+        fl.close();
+        test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString(), "Testmsg" ) );
+    }
 }
 
