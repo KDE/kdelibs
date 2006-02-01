@@ -186,14 +186,14 @@ public:
      *     <name>,v
      * @example file,v
      *
-     * The new backup file will be in rcs format. 
+     * The new backup file will be in RCS format.
      * Each existing backup file will be commited as a new revision.
      *
      * @param filename the file to backup
      * @param backupDir optional directory where to save the backup file in.
      * If empty (the default), the backup will be in the same directory as
      * @p filename.
-     * @param backupMessage is the RCS commit message for this revision
+     * @param backupMessage is the RCS commit message for this revision.
      */
     static bool rcsBackupFile( const QString& filename,
                                const QString& backupDir = QString(),

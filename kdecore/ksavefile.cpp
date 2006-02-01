@@ -236,11 +236,11 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir )
     QString message = g.readEntry( "Message", "Automated KDE Commit" );
     int maxnum = g.readEntry( "MaxBackups", 10 );
     if ( type.toLower() == "numbered" ) {
-            return( numberedBackupFile( qFilename, backupDir, extension, maxnum ) );
-    } else if ( type.toLower() == "rcs" ) { 
-            return( rcsBackupFile( qFilename, backupDir, message ) );
+        return( numberedBackupFile( qFilename, backupDir, extension, maxnum ) );
+    } else if ( type.toLower() == "rcs" ) {
+        return( rcsBackupFile( qFilename, backupDir, message ) );
     } else {
-            return( simpleBackupFile( qFilename, backupDir, extension ) );
+        return( simpleBackupFile( qFilename, backupDir, extension ) );
     }
 }
 
@@ -287,30 +287,34 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
                                const QString& backupDir,
                                const QString& backupMessage )
 {
-   QString qBackupFilename = qFilename;
-   qBackupFilename += QString::fromLatin1( ",v" );
-   // Check in the file unlocked with ci
-   QProcess ci;
-   ci.start("ci", QStringList() << "-u" << qFilename);
-   if ( !ci.waitForStarted() )
-      return false;
-   ci.write(backupMessage.toLatin1());
-   ci.write(".");
-   ci.closeWriteChannel();
-   if( !ci.waitForFinished() )
-      return false;
-   // Use rcs to unset strict locking
-   QProcess rcs;
-   rcs.start("rcs", QStringList() << "-U" << qBackupFilename);
-   if ( !rcs.waitForFinished() )
-      return false;
-   // co the current revision to restore permissions
-   QProcess co;
-   co.start("co", QStringList() << qBackupFilename);
-   if ( !co.waitForFinished() )
-      return false;
-   // TODO: Add moving of backup from/to backupDir 
-   return true;
+    QString qBackupFilename = qFilename;
+    qBackupFilename += QString::fromLatin1( ",v" );
+
+    // Check in the file unlocked with 'ci'
+    QProcess ci;
+    ci.start( "ci", QStringList() << "-u" << qFilename );
+    if ( !ci.waitForStarted() )
+        return false;
+    ci.write( backupMessage.toLatin1() );
+    ci.write(".");
+    ci.closeWriteChannel();
+    if( !ci.waitForFinished() )
+        return false;
+
+    // Use 'rcs' to unset strict locking
+    QProcess rcs;
+    rcs.start( "rcs", QStringList() << "-U" << qBackupFilename );
+    if ( !rcs.waitForFinished() )
+        return false;
+
+    // Use 'co' to checkout the current revision and restore permissions
+    QProcess co;
+    co.start( "co", QStringList() << qBackupFilename );
+    if ( !co.waitForFinished() )
+        return false;
+
+    // TODO: Add moving of backup from/to backupDir
+    return true;
 }
 
 bool KSaveFile::numberedBackupFile( const QString& qFilename,
