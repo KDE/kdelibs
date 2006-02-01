@@ -405,6 +405,8 @@ bool KURLLabel::event (QEvent *e)
 QRect KURLLabel::activeRect() const
 {
   QRect r( contentsRect() );
+  if (text().isEmpty() || (!d->MarginAltered && sizePolicy() == QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed)))
+      return r; //fixed size is sometimes used with pixmap
   int hAlign = QApplication::horizontalAlignment( alignment() );
   int indentX = (hAlign && indent()>0) ? indent() : 0;
   QFontMetrics fm(font());
@@ -422,16 +424,24 @@ QRect KURLLabel::activeRect() const
 
 void KURLLabel::setMargin( int margin )
 {
-	QLabel::setMargin(margin);
-	d->MarginAltered = true;
+  QLabel::setMargin(margin);
+  d->MarginAltered = true;
 }
 
 void KURLLabel::setFocusPolicy( FocusPolicy policy )
 {
-	QLabel::setFocusPolicy(policy);
-	if (!d->MarginAltered) {
-		QLabel::setMargin(policy == NoFocus ? 0 : 3); //better default : better look when focused
-	}
+  QLabel::setFocusPolicy(policy);
+  if (!d->MarginAltered) {
+      QLabel::setMargin(policy == NoFocus ? 0 : 3); //better default : better look when focused
+  }
+}
+
+void KURLLabel::setSizePolicy ( QSizePolicy policy )
+{
+  QLabel::setSizePolicy(policy);
+  if (!d->MarginAltered && policy.horData()==QSizePolicy::Fixed && policy.verData()==QSizePolicy::Fixed) {
+      QLabel::setMargin(0); //better default : better look when fixed size
+  }
 }
 
 void KURLLabel::virtual_hook( int, void* )

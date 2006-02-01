@@ -163,6 +163,11 @@ public:
    */
   virtual void setFocusPolicy ( FocusPolicy policy );
 
+  /**
+   * Reimplemented for internal reasons, the API is not affected.
+   */
+  virtual void setSizePolicy ( QSizePolicy );
+
 public slots:
   /**
    * Turns on or off the underlining.
