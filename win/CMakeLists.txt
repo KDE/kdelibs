@@ -26,7 +26,7 @@ else (MINGW)
    # we are using msvc, so do whatever required for msvc
    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include/msvc )
    # is this also required for mingw ?
-   add_definitions(-D_WINSOCKAPI_ -DWIN32_LEAN_AND_MEAN )
+   add_definitions(-D_WINSOCKAPI_ -DWIN32_LEAN_AND_MEAN -D_CRT_SECURE_NO_DEPRECATE)
    # find the headers for msvc
    file(GLOB_RECURSE _tmp_headers include/msvc/*.h)
 endif(MINGW)
