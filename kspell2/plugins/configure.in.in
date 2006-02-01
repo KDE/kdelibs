@@ -16,6 +16,12 @@
        AC_LANG_RESTORE
    fi
 
+   aspell_datadir="/usr/lib/aspell"
+   if test "/usr/bin/pspell-config" != NONE; then
+      aspell_datadir=`/usr/bin/pspell-config --pkgdatadir`
+   fi
+   
+   AC_DEFINE_UNQUOTED( ASPELL_DATADIR, ["$aspell_datadir"], [Define where aspell data dir is] )
    AM_CONDITIONAL(include_aspell_plugin, test -n "$ac_cv_header_aspell_h" -a -n "$LIBASPELL")
    
    AC_ARG_WITH(hspell,AC_HELP_STRING([--with-hspell],[Enable hspell support [default=check]]),[hspell_test="$withval"],[hspell_test="yes"])

@@ -17,6 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <config.h>
 
 #include <qcheckbox.h>
 #include <qcombobox.h>
@@ -503,9 +504,9 @@ void KSpellConfig::getAvailDictsAspell () {
   langfnames.append(""); // Default
   dictcombo->insertItem (i18n("ASpell Default"));
 
-  // dictionary path
-  // FIXME: use "aspell dump config" to find out the dict-dir
-  QFileInfo dir ("/usr/lib/aspell");
+  // Aspell now have /usr/lib/aspell as
+  // ASPELL_DATADIR default. 
+  QFileInfo dir ( ASPELL_DATADIR );
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/lib/aspell-0.60");
   if (!dir.exists() || !dir.isDir())
