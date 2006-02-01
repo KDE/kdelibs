@@ -24,9 +24,11 @@
 #include <QTextStream>
 
 #include <kapplication.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kcmdlineargs.h>
+#include <klocale.h>
 #include <ktempfile.h>
 #include <ksavefile.h>
 
@@ -37,45 +39,43 @@ void test( const char *msg, bool result )
 
 int main(int argc, char *argv[])
 {
-  KApplication::disableAutoDcopRegistration();
-  KCmdLineArgs::init( argc, argv, "ksavefiletest", 0, 0, 0, 0 );
-  KApplication app( false );
+    KApplication::disableAutoDcopRegistration();
+    KCmdLineArgs::init( argc, argv, "ksavefiletest", 0, 0, 0, 0 );
+    KApplication app( false );
 
-  KTempFile f( "fred", QString(), 0600 );
-  test( "backup file", KSaveFile::backupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  //test( "numbered backup", KSaveFile::numberedBackupFile( f.name(),5 ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-  //test( "numbered backup", KSaveFile::numberedBackupFile( f.name(),5 ) );
-  test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
-  test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
-  // Test a change to f to verify RCS
-#if 0  
-  if ( f.textStream() ) { 
+    KTempFile f( locateLocal( "tmp", "fred" ), QString(), 0600 );
+
+    test( "backup file", KSaveFile::backupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    //test( "numbered backup", KSaveFile::numberedBackupFile( f.name(),5 ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
+    //test( "numbered backup", KSaveFile::numberedBackupFile( f.name(),5 ) );
+    test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
+    test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
+
+    // Test a change to f to verify RCS
     QTextStream *out = f.textStream();
     //out->setEncoding( QTextStream::UnicodeUTF8 );
-    (*out) << "Testing a change" << endl; 
-    //*f.textStream() << "Testing a change" << endl; 
+    (*out) << "Testing a change\n";
     f.close();
     test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString(), "Testmsg" ) );
-  }
-#endif
+
 }
 
