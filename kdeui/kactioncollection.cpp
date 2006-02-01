@@ -151,12 +151,6 @@ KActionCollection::~KActionCollection()
   delete d->m_kaccel;
   delete d->m_builderKAccel;
 
-  QHashIterator<void*, QList<KAction*>*> it( d->m_dctHighlightContainers );
-  while ( it.hasNext() ) {
-    it.next();
-    qDeleteAll( *it.value() );
-    it.value()->clear();
-  }
   qDeleteAll(d->m_dctHighlightContainers.values());
   d->m_dctHighlightContainers.clear();
 
