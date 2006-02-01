@@ -73,7 +73,6 @@ endif(CARBON_FOUND)
 
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
 
-check_include_files(dlfcn.h HAVE_DLFCN_H)
 check_include_files(stdio.h HAVE_STDIO_H)
 check_include_files(stdlib.h HAVE_STDLIB_H)
 check_include_files(string.h HAVE_STRING_H)

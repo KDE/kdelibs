@@ -9,23 +9,24 @@ endif (NOT WIN32)
 
 find_package(Qt4 REQUIRED)
 
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
 include_directories(${QT_INCLUDES})
+# ugly, let's see if it works
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 # find the headers
 file(GLOB headers include/*.h)
 
 if(MINGW)
    # we are using mingw, so do whatever required for mingw
-   include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include/mingw )
+   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include/mingw )
    # find the headers for mingw
    file(GLOB_RECURSE _tmp_headers include/mingw/*.h)
 else (MINGW)
    # we are using msvc, so do whatever required for msvc
-   include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include/msvc )
+   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include/msvc )
    # is this also required for mingw ?
-   add_definitions(-D_WINSOCKAPI_ -DWIN32_LEAN_AND_MEAN)
+   add_definitions(-D_WINSOCKAPI_ -DWIN32_LEAN_AND_MEAN )
    # find the headers for msvc
    file(GLOB_RECURSE _tmp_headers include/msvc/*.h)
 endif(MINGW)

@@ -10,7 +10,16 @@ add_subdirectory( tests )
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
-add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DUNIXCONN -DANSICPP)
+add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DANSICPP)
+
+if (UNIX)
+   # unix
+   add_definitions(-DUNIXCONN)
+else (UNIX)
+   # windows
+   add_definitions(-DDCOP_EXPORT="" -DSOCKCONN -DTCPCONN -FIkdelibs_global_win.h)
+endif (UNIX)
+
 
 # dcop/KDE-ICE/Makefile.am: kICE
 
