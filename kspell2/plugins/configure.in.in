@@ -17,7 +17,7 @@
    fi
 
    aspell_datadir="/usr/lib/aspell"
-   if [ -f "/usr/bin/pspell-config"; then
+   if [ -f "/usr/bin/pspell-config" ]; then
       aspell_datadir=`/usr/bin/pspell-config --pkgdatadir`
    fi
    
