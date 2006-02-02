@@ -77,7 +77,7 @@ install_targets(/bin ktelnetservice )
 install_files( ${KDE4_SERVICES_DIR} FILES kmailservice.protocol telnet.protocol rlogin.protocol rtsp.protocol ssh.protocol  		mms.protocol mmst.protocol mmsu.protocol pnm.protocol rtspt.protocol rtspu.protocol )
 install_files( ${KDE4_SERVICES_DIR} FILES kio_uiserver.desktop )
 install_files( /include/kio FILES  uiserver.h)
-
+install_files( /bin FILES fileshareset )
 kde4_footer()
 
 
