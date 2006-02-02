@@ -90,8 +90,6 @@ int kde_start
 #  define __gid_t_defined
 # endif
 
-  typedef char* caddr_t;
-
 
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf

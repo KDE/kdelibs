@@ -195,7 +195,9 @@ typedef long BytesReadable_t;
  *      in Berkeley systems in <sys/uio.h>.  See the readv(2) and writev(2)
  *      manual pages for details.
  */
-
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
 struct iovec {
     caddr_t iov_base;
     int iov_len;
