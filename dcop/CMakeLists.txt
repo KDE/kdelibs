@@ -17,7 +17,7 @@ if (UNIX)
    add_definitions(-DUNIXCONN)
 else (UNIX)
    # windows
-   add_definitions(-DDCOP_EXPORT="" -DSOCKCONN -DTCPCONN -FIkdelibs_global_win.h)
+   add_definitions( -DSOCKCONN -DTCPCONN -FIkdelibs_global_win.h)
 endif (UNIX)
 
 
