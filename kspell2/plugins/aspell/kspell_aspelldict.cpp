@@ -38,7 +38,7 @@ ASpellDict::ASpellDict( const QString& lang )
     AspellCanHaveError * possible_err = new_aspell_speller( m_config );
 
     if ( aspell_error_number( possible_err ) != 0 )
-        kdDebug()<< "Error : "<< aspell_error_message( possible_err ) <<endl;
+        kDebug()<< "Error : "<< aspell_error_message( possible_err ) <<endl;
     else
         m_speller = to_aspell_speller( possible_err );
 
@@ -105,7 +105,7 @@ bool ASpellDict::storeReplacement( const QString& bad,
 
 bool ASpellDict::addToPersonal( const QString& word )
 {
-    kdDebug() << "ASpellDict::addToPersonal: word = " << word << endl;
+    kDebug() << "ASpellDict::addToPersonal: word = " << word << endl;
     /* ASpell is expecting length of a string in char representation */
     /* word.length() != word.toUtf8().length() for nonlatin strings    */
     aspell_speller_add_to_personal( m_speller, word.toUtf8(),

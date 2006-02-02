@@ -520,7 +520,7 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
 {
   if( !mPageTab )
   {
-    kdDebug(291) << "addPage: " << "Invalid layout" << endl;
+    kDebug(291) << "addPage: " << "Invalid layout" << endl;
     return 0;
   }
 
@@ -546,7 +546,7 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
 {
   if( !mPageTab )
   {
-    kdDebug(291) << "addPage: " << "Invalid layout" << endl;
+    kDebug(291) << "addPage: " << "Invalid layout" << endl;
     return 0;
   }
 
@@ -574,7 +574,7 @@ QFrame *KAboutContainerBase::addEmptyPage( const QString &title )
 {
   if( !mPageTab )
   {
-    kdDebug(291) << "addPage: " << "Invalid layout" << endl;
+    kDebug(291) << "addPage: " << "Invalid layout" << endl;
     return 0;
   }
 
@@ -608,7 +608,7 @@ void KAboutContainerBase::setTitle( const QString &title )
 {
   if( !mTitleLabel )
   {
-    kdDebug(291) << "setTitle: " << "Invalid layout" << endl;
+    kDebug(291) << "setTitle: " << "Invalid layout" << endl;
     return;
   }
   mTitleLabel->setText(title);
@@ -619,7 +619,7 @@ void KAboutContainerBase::setImage( const QString &fileName )
 {
   if( !mImageLabel )
   {
-    kdDebug(291) << "setImage: " << "Invalid layout" << endl;
+    kDebug(291) << "setImage: " << "Invalid layout" << endl;
     return;
   }
   if( fileName.isNull() )
@@ -649,7 +649,7 @@ void KAboutContainerBase::setProgramLogo( const QPixmap &pixmap )
 {
   if( !mIconLabel )
   {
-    kdDebug(291) << "setProgramLogo: " << "Invalid layout" << endl;
+    kDebug(291) << "setProgramLogo: " << "Invalid layout" << endl;
     return;
   }
   if( !pixmap.isNull() )
@@ -692,7 +692,7 @@ void KAboutContainerBase::setProduct( const QString &appName,
 {
   if( !mIconLabel )
   {
-    kdDebug(291) << "setProduct: " << "Invalid layout" << endl;
+    kDebug(291) << "setProduct: " << "Invalid layout" << endl;
     return;
   }
 
@@ -998,7 +998,7 @@ KAboutContributor::KAboutContributor(QWidget* parent, const char* n)
   // ############################################################
   if(name==0 || email==0)
     { // this will nearly never happen (out of memory in about box?)
-      kdDebug() << "KAboutContributor::KAboutContributor: Out of memory." << endl;
+      kDebug() << "KAboutContributor::KAboutContributor: Out of memory." << endl;
       qApp->quit();
     }
   setFrameStyle(QFrame::Panel | QFrame::Raised);
@@ -1061,7 +1061,7 @@ void
 KAboutContributor::emailClickedSlot(const QString& e)
 {
   // ###########################################################
-  kdDebug() << "KAboutContributor::emailClickedSlot: called." << endl;
+  kDebug() << "KAboutContributor::emailClickedSlot: called." << endl;
   emit(sendEmail(name->text(), e));
   // ###########################################################
 }
@@ -1070,7 +1070,7 @@ void
 KAboutContributor::urlClickedSlot(const QString& u)
 {
   // ###########################################################
-  kdDebug() << "KAboutContributor::urlClickedSlot: called." << endl;
+  kDebug() << "KAboutContributor::urlClickedSlot: called." << endl;
   emit(openURL(u));
   // ###########################################################
 }
@@ -1311,7 +1311,7 @@ KAboutWidget::KAboutWidget(QWidget *_parent)
   if( !version || !cont || !logo || !author || !maintainer )
   {
     // this will nearly never happen (out of memory in about box?)
-    kdDebug() << "KAboutWidget::KAboutWidget: Out of memory." << endl;
+    kDebug() << "KAboutWidget::KAboutWidget: Out of memory." << endl;
     qApp->quit();
   }
   // -----
@@ -1498,7 +1498,7 @@ KAboutDialog::KAboutDialog(QWidget *_parent, bool modal)
   if(!about)
   {
     // this will nearly never happen (out of memory in about box?)
-    kdDebug() << "KAboutDialog::KAboutDialog: Out of memory." << endl;
+    kDebug() << "KAboutDialog::KAboutDialog: Out of memory." << endl;
     qApp->quit();
   }
   setMainWidget(about);
@@ -1606,7 +1606,7 @@ void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
 {
   KToolInvocation::invokeMailer( email, QString() );
   /*
-  kdDebug() << "KAboutDialog::sendEmailSlot: request to send an email to "
+  kDebug() << "KAboutDialog::sendEmailSlot: request to send an email to "
 	<< name << ", " << email << endl;
   emit(sendEmail(name, email));
   */
@@ -1615,7 +1615,7 @@ void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
 void KAboutDialog::openURLSlot(const QString& url)
 {
   KToolInvocation::invokeBrowser( url );
-  //kdDebug() << "KAboutDialog::openURLSlot: request to open URL " << url << endl;
+  //kDebug() << "KAboutDialog::openURLSlot: request to open URL " << url << endl;
   //emit(openURL(url));
 }
 

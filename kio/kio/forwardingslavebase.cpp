@@ -66,7 +66,7 @@ bool ForwardingSlaveBase::internalRewriteURL(const KUrl &url, KUrl &newURL)
 void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
                                           bool listing) const
 {
-    kdDebug() << "ForwardingSlaveBase::prepareUDSEntry: listing=="
+    kDebug() << "ForwardingSlaveBase::prepareUDSEntry: listing=="
               << listing << endl;
 
     const QString name = entry.stringValue( KIO::UDS_NAME );
@@ -82,8 +82,8 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
             new_url.addPath(url.fileName());
         // ## Didn't find a way to use an iterator instead of re-doing a key lookup
         entry.insert( KIO::UDS_URL, new_url.url() );
-        kdDebug() << "URL = " << url << endl;
-        kdDebug() << "New URL = " << urlStr << endl;
+        kDebug() << "URL = " << url << endl;
+        kDebug() << "New URL = " << urlStr << endl;
     }
 
     if (mimetype.isEmpty())
@@ -102,7 +102,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
 
         entry.insert( KIO::UDS_MIME_TYPE, mimetype );
 
-        kdDebug() << "New Mimetype = " << mimetype << endl;
+        kDebug() << "New Mimetype = " << mimetype << endl;
     }
 
     if ( m_processedURL.isLocalFile() )
@@ -119,7 +119,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
 
 void ForwardingSlaveBase::get(const KUrl &url)
 {
-    kdDebug() << "ForwardingSlaveBase::get: " << url << endl;
+    kDebug() << "ForwardingSlaveBase::get: " << url << endl;
 
     KUrl new_url;
     if ( internalRewriteURL(url, new_url) )
@@ -134,7 +134,7 @@ void ForwardingSlaveBase::get(const KUrl &url)
 void ForwardingSlaveBase::put(const KUrl &url, int permissions,
                               bool overwrite, bool resume )
 {
-    kdDebug() << "ForwardingSlaveBase::put: " << url << endl;
+    kDebug() << "ForwardingSlaveBase::put: " << url << endl;
 
     KUrl new_url;
     if ( internalRewriteURL(url, new_url) )
@@ -149,7 +149,7 @@ void ForwardingSlaveBase::put(const KUrl &url, int permissions,
 
 void ForwardingSlaveBase::stat(const KUrl &url)
 {
-    kdDebug() << "ForwardingSlaveBase::stat: " << url << endl;
+    kDebug() << "ForwardingSlaveBase::stat: " << url << endl;
 
     KUrl new_url;
     if ( internalRewriteURL(url, new_url) )
@@ -163,7 +163,7 @@ void ForwardingSlaveBase::stat(const KUrl &url)
 
 void ForwardingSlaveBase::mimetype(const KUrl &url)
 {
-    kdDebug() << "ForwardingSlaveBase::mimetype: " << url << endl;
+    kDebug() << "ForwardingSlaveBase::mimetype: " << url << endl;
 
     KUrl new_url;
     if ( internalRewriteURL(url, new_url) )
@@ -177,7 +177,7 @@ void ForwardingSlaveBase::mimetype(const KUrl &url)
 
 void ForwardingSlaveBase::listDir(const KUrl &url)
 {
-    kdDebug() << "ForwardingSlaveBase::listDir: " << url << endl;
+    kDebug() << "ForwardingSlaveBase::listDir: " << url << endl;
 
     KUrl new_url;
     if ( internalRewriteURL(url, new_url) )
@@ -191,7 +191,7 @@ void ForwardingSlaveBase::listDir(const KUrl &url)
 
 void ForwardingSlaveBase::mkdir(const KUrl &url, int permissions)
 {
-    kdDebug() << "ForwardingSlaveBase::mkdir: " << url << endl;
+    kDebug() << "ForwardingSlaveBase::mkdir: " << url << endl;
 
     KUrl new_url;
     if ( internalRewriteURL(url, new_url) )
@@ -206,7 +206,7 @@ void ForwardingSlaveBase::mkdir(const KUrl &url, int permissions)
 void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
                                  bool overwrite)
 {
-    kdDebug() << "ForwardingSlaveBase::rename: " << src << ", " << dest << endl;
+    kDebug() << "ForwardingSlaveBase::rename: " << src << ", " << dest << endl;
 
     KUrl new_src, new_dest;
     if ( internalRewriteURL(src, new_src) && internalRewriteURL(dest, new_dest) )
@@ -221,7 +221,7 @@ void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
 void ForwardingSlaveBase::symlink(const QString &target, const KUrl &dest,
                                   bool overwrite)
 {
-    kdDebug() << "ForwardingSlaveBase::symlink: " << target << ", " << dest << endl;
+    kDebug() << "ForwardingSlaveBase::symlink: " << target << ", " << dest << endl;
 
     KUrl new_dest;
     if ( internalRewriteURL(dest, new_dest) )
@@ -235,7 +235,7 @@ void ForwardingSlaveBase::symlink(const QString &target, const KUrl &dest,
 
 void ForwardingSlaveBase::chmod(const KUrl &url, int permissions)
 {
-    kdDebug() << "ForwardingSlaveBase::chmod: " << url << endl;
+    kDebug() << "ForwardingSlaveBase::chmod: " << url << endl;
 
     KUrl new_url;
     if ( internalRewriteURL(url, new_url) )
@@ -250,7 +250,7 @@ void ForwardingSlaveBase::chmod(const KUrl &url, int permissions)
 void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
                                int permissions, bool overwrite)
 {
-    kdDebug() << "ForwardingSlaveBase::copy: " << src << ", " << dest << endl;
+    kDebug() << "ForwardingSlaveBase::copy: " << src << ", " << dest << endl;
 
     KUrl new_src, new_dest;
     if ( internalRewriteURL(src, new_src) && internalRewriteURL(dest, new_dest) )
@@ -265,7 +265,7 @@ void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
 
 void ForwardingSlaveBase::del(const KUrl &url, bool isfile)
 {
-    kdDebug() << "ForwardingSlaveBase::del: " << url << endl;
+    kDebug() << "ForwardingSlaveBase::del: " << url << endl;
 
     KUrl new_url;
     if ( internalRewriteURL(url, new_url) )

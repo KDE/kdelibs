@@ -653,7 +653,7 @@ bool KDialog::avoidArea( QWidget *w, const QRect& area, int screen )
       else
         return false;
   }
-  //kdDebug() << "Moving window to " << fg.x() << "," << fg.y() << endl;
+  //kDebug() << "Moving window to " << fg.x() << "," << fg.y() << endl;
   w->move(fg.x(), fg.y());
   return true;
 }

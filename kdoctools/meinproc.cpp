@@ -121,17 +121,17 @@ int main(int argc, char **argv) {
     QFileInfo checkFile(checkFilename);
     if (!checkFile.exists())
     {
-        kdError() << "File '" << checkFilename << "' does not exist." << endl;
+        kError() << "File '" << checkFilename << "' does not exist." << endl;
         return ( 2 );
     }
     if (!checkFile.isFile())
     {
-        kdError() << "'" << checkFilename << "' is not a file." << endl;
+        kError() << "'" << checkFilename << "' is not a file." << endl;
         return ( 2 );
     }
     if (!checkFile.isReadable())
     {
-        kdError() << "File '" << checkFilename << "' is not readable." << endl;
+        kError() << "File '" << checkFilename << "' is not readable." << endl;
         return ( 2 );
     }
 
@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
         char pwd_buffer[250];
         QFileInfo file( QFile::decodeName(args->arg( 0 )) );
         if (!getcwd( pwd_buffer, sizeof(pwd_buffer) )) {
-	   kdError() << "getcwd() failed" << endl;
+	   kError() << "getcwd() failed" << endl;
 	   return 2;
         }
         chdir( QFile::encodeName( file.absolutePath() ) );
@@ -178,7 +178,7 @@ int main(int argc, char **argv) {
             if ( !noout )
                 return 1;
         } else {
-            kdWarning() << "couldn't find xmllint" << endl;
+            kWarning() << "couldn't find xmllint" << endl;
         }
     }
 
@@ -198,7 +198,7 @@ int main(int argc, char **argv) {
             const QByteArray tuple = *it;
             const int ch = tuple.indexOf( '=' );
             if ( ch == -1 ) {
-                kdError() << "Key-Value tuple '" << tuple << "' lacks a '='!" << endl;
+                kError() << "Key-Value tuple '" << tuple << "' lacks a '='!" << endl;
                 return( 2 );
             }
             params.append( qstrdup( tuple.left( ch ) ) );
@@ -245,10 +245,10 @@ int main(int argc, char **argv) {
 
                 xmlFreeDoc(res);
             } else {
-                kdDebug() << "couldn't parse document " << args->arg( 0 ) << endl;
+                kDebug() << "couldn't parse document " << args->arg( 0 ) << endl;
             }
         } else {
-            kdDebug() << "couldn't parse style sheet " << tss << endl;
+            kDebug() << "couldn't parse style sheet " << tss << endl;
         }
 
     } else {
@@ -261,7 +261,7 @@ int main(int argc, char **argv) {
         QString cache = args->getOption( "cache" );
         if ( !cache.isEmpty() ) {
             if ( !saveToCache( output, cache ) ) {
-                kdError() << i18n( "Could not write to cache file %1." ).arg( cache ) << endl;
+                kError() << i18n( "Could not write to cache file %1." ).arg( cache ) << endl;
             }
             goto end;
         }

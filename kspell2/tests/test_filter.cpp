@@ -40,7 +40,7 @@ int main( int argc, char** argv )
     Word w;
 
     while ( ! (w=filter.nextWord()).end ) {
-        kdDebug()<< "Found word \""<< w.word << "\" which starts at position "
+        kDebug()<< "Found word \""<< w.word << "\" which starts at position "
                  << w.start <<endl;
     }
 

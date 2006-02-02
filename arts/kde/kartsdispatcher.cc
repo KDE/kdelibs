@@ -42,7 +42,7 @@ KArtsDispatcher::KArtsDispatcher(QObject *parent, const char *name)
 			artsDispatcher = new Arts::Dispatcher(artsQIOManager);
 		}
 		else
-			kdWarning(400) << "An Arts::Dispatcher() instance exists already while trying to instantiate KArtsDispatcher!" << endl;
+			kWarning(400) << "An Arts::Dispatcher() instance exists already while trying to instantiate KArtsDispatcher!" << endl;
 	}
 }
 

@@ -29,26 +29,26 @@ int main(int argc,char **argv)
   KApplication app;
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
-  kdDebug() << "Creating a" << endl;
+  kDebug() << "Creating a" << endl;
   Addressee a;
   
-  kdDebug() << "tick1" << endl;
+  kDebug() << "tick1" << endl;
   a.setGivenName("Hans");
-  kdDebug() << "tick2" << endl;
+  kDebug() << "tick2" << endl;
   a.setPrefix("Dr.");
 
-  kdDebug() << "Creating b" << endl;
+  kDebug() << "Creating b" << endl;
   Addressee b( a );
   
-  kdDebug() << "tack1" << endl;
+  kDebug() << "tack1" << endl;
   a.setFamilyName("Wurst");
-  kdDebug() << "tack2" << endl;
+  kDebug() << "tack2" << endl;
   a.setNickName("hansi");
 
-  kdDebug() << "Creating c" << endl;
+  kDebug() << "Creating c" << endl;
   Addressee c = a;
   
-  kdDebug() << "tock1" << endl;
+  kDebug() << "tock1" << endl;
   c.setGivenName("Eberhard");
   
   a.dump();  

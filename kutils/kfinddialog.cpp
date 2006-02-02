@@ -282,7 +282,7 @@ void KFindDialog::showEvent( QShowEvent *e )
     if ( !d->m_initialShowDone )
     {
         d->m_initialShowDone = true; // only once
-        kdDebug() << "showEvent\n";
+        kDebug() << "showEvent\n";
         if (!d->findStrings.isEmpty())
             setFindHistory(d->findStrings);
         d->findStrings = QStringList();
@@ -324,7 +324,7 @@ void KFindDialog::setPattern (const QString &pattern)
     m_find->lineEdit()->setText( pattern );
     m_find->lineEdit()->selectAll();
     d->pattern = pattern;
-    kdDebug() << "setPattern " << pattern<<endl;
+    kDebug() << "setPattern " << pattern<<endl;
 }
 
 void KFindDialog::setFindHistory(const QStringList &strings)

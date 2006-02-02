@@ -218,7 +218,7 @@ void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
     if( !rootinfo.isSupported( NET::WMKDESystemTrayWinFor )) {
         DCOPRef ref( "kded", "kded" );
         if( !ref.send( "loadModule", DCOPCString( "kdetrayproxy" )))
-            kdWarning( 176 ) << "Loading of kdetrayproxy failed." << endl;
+            kWarning( 176 ) << "Loading of kdetrayproxy failed." << endl;
     }
 #endif
 }
@@ -303,7 +303,7 @@ void KWin::setMainWindow( QWidget* subwindow, WId mainwindow )
             && subwindow->parentWidget() == NULL
             && qApp->activeWindow() != NULL )
         {
-            kdWarning() << "KWin::setMainWindow(): There either mustn't be qApp->mainWidget(),"
+            kWarning() << "KWin::setMainWindow(): There either mustn't be qApp->mainWidget(),"
                 " or the dialog must have a non-NULL parent, otherwise Qt will reset the change. Bummer." << endl;
         }
         XSetTransientForHint( QX11Info::display(), subwindow->winId(), mainwindow );
@@ -786,7 +786,7 @@ WId KWin::WindowInfo::win() const
 unsigned long KWin::WindowInfo::state() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState ) == 0, 176 )
         << "Pass NET::WMState to KWin::windowInfo()" << endl;
     return d->info->state();
 #else
@@ -797,7 +797,7 @@ unsigned long KWin::WindowInfo::state() const
 NET::MappingState KWin::WindowInfo::mappingState() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::XAWMState ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::XAWMState ) == 0, 176 )
         << "Pass NET::XAWMState to KWin::windowInfo()" << endl;
     return d->info->mappingState();
 #else
@@ -808,7 +808,7 @@ NET::MappingState KWin::WindowInfo::mappingState() const
 NETExtendedStrut KWin::WindowInfo::extendedStrut() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ExtendedStrut ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ExtendedStrut ) == 0, 176 )
         << "Pass NET::WM2ExtendedStrut to second argument of KWin::windowInfo()" << endl;
     NETExtendedStrut ext = d->info->extendedStrut();
     NETStrut str = d->info->strut();
@@ -846,7 +846,7 @@ NETExtendedStrut KWin::WindowInfo::extendedStrut() const
 NETStrut KWin::WindowInfo::strut() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMStrut ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMStrut ) == 0, 176 )
         << "Pass NET::WMStrut to KWin::windowInfo()" << endl;
     return d->info->strut();
 #else
@@ -858,7 +858,7 @@ NETStrut KWin::WindowInfo::strut() const
 NET::WindowType KWin::WindowInfo::windowType( int supported_types ) const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMWindowType ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMWindowType ) == 0, 176 )
         << "Pass NET::WMWindowType to KWin::windowInfo()" << endl;
     return d->info->windowType( supported_types );
 #else
@@ -879,7 +879,7 @@ QString KWin::WindowInfo::visibleNameWithState() const
 QString KWin::WindowInfo::visibleName() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleName ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleName ) == 0, 176 )
         << "Pass NET::WMVisibleName to KWin::windowInfo()" << endl;
     return d->info->visibleName() && d->info->visibleName()[ 0 ] != '\0'
         ? QString::fromUtf8(d->info->visibleName()) : name();
@@ -891,7 +891,7 @@ QString KWin::WindowInfo::visibleName() const
 QString KWin::WindowInfo::name() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMName ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMName ) == 0, 176 )
         << "Pass NET::WMName to KWin::windowInfo()" << endl;
     return d->name_;
 #else
@@ -912,7 +912,7 @@ QString KWin::WindowInfo::visibleIconNameWithState() const
 QString KWin::WindowInfo::visibleIconName() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleIconName ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleIconName ) == 0, 176 )
         << "Pass NET::WMVisibleIconName to KWin::windowInfo()" << endl;
     if( d->info->visibleIconName() && d->info->visibleIconName()[ 0 ] != '\0' )
         return QString::fromUtf8( d->info->visibleIconName());
@@ -927,7 +927,7 @@ QString KWin::WindowInfo::visibleIconName() const
 QString KWin::WindowInfo::iconName() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMIconName ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMIconName ) == 0, 176 )
         << "Pass NET::WMIconName to KWin::windowInfo()" << endl;
     if( d->info->iconName() && d->info->iconName()[ 0 ] != '\0' )
         return QString::fromUtf8( d->info->iconName());
@@ -949,7 +949,7 @@ bool KWin::WindowInfo::isOnCurrentDesktop() const
 bool KWin::WindowInfo::isOnDesktop( int _desktop ) const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
         << "Pass NET::WMDesktop to KWin::windowInfo()" << endl;
     return d->info->desktop() == _desktop || d->info->desktop() == NET::OnAllDesktops;
 #else
@@ -960,7 +960,7 @@ bool KWin::WindowInfo::isOnDesktop( int _desktop ) const
 bool KWin::WindowInfo::onAllDesktops() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
         << "Pass NET::WMDesktop to KWin::windowInfo()" << endl;
     return d->info->desktop() == NET::OnAllDesktops;
 #else
@@ -971,7 +971,7 @@ bool KWin::WindowInfo::onAllDesktops() const
 int KWin::WindowInfo::desktop() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
         << "Pass NET::WMDesktop to KWin::windowInfo()" << endl;
     return d->info->desktop();
 #else
@@ -982,7 +982,7 @@ int KWin::WindowInfo::desktop() const
 QRect KWin::WindowInfo::geometry() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry ) == 0, 176 )
         << "Pass NET::WMGeometry to KWin::windowInfo()" << endl;
     return d->geometry_;
 #else
@@ -993,7 +993,7 @@ QRect KWin::WindowInfo::geometry() const
 QRect KWin::WindowInfo::frameGeometry() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMKDEFrameStrut ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMKDEFrameStrut ) == 0, 176 )
         << "Pass NET::WMKDEFrameStrut to KWin::windowInfo()" << endl;
     return d->frame_geometry_;
 #else
@@ -1004,7 +1004,7 @@ QRect KWin::WindowInfo::frameGeometry() const
 WId KWin::WindowInfo::transientFor() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2TransientFor ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2TransientFor ) == 0, 176 )
         << "Pass NET::WM2TransientFor to KWin::windowInfo()" << endl;
     return d->info->transientFor();
 #else
@@ -1015,7 +1015,7 @@ WId KWin::WindowInfo::transientFor() const
 WId KWin::WindowInfo::groupLeader() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2GroupLeader ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2GroupLeader ) == 0, 176 )
         << "Pass NET::WM2GroupLeader to KWin::windowInfo()" << endl;
     return d->info->groupLeader();
 #else
@@ -1026,7 +1026,7 @@ WId KWin::WindowInfo::groupLeader() const
 QByteArray KWin::WindowInfo::windowClassClass() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
         << "Pass NET::WM2WindowClass to KWin::windowInfo()" << endl;
     return d->info->windowClassClass();
 #else
@@ -1037,7 +1037,7 @@ QByteArray KWin::WindowInfo::windowClassClass() const
 QByteArray KWin::WindowInfo::windowClassName() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
         << "Pass NET::WM2WindowClass to KWin::windowInfo()" << endl;
     return d->info->windowClassName();
 #else
@@ -1048,7 +1048,7 @@ QByteArray KWin::WindowInfo::windowClassName() const
 QByteArray KWin::WindowInfo::windowRole() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowRole ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowRole ) == 0, 176 )
         << "Pass NET::WM2WindowRole to KWin::windowInfo()" << endl;
     return d->info->windowRole();
 #else
@@ -1059,7 +1059,7 @@ QByteArray KWin::WindowInfo::windowRole() const
 QByteArray KWin::WindowInfo::clientMachine() const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ClientMachine ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ClientMachine ) == 0, 176 )
         << "Pass NET::WM2ClientMachine to KWin::windowInfo()" << endl;
     return d->info->clientMachine();
 #else
@@ -1070,7 +1070,7 @@ QByteArray KWin::WindowInfo::clientMachine() const
 bool KWin::WindowInfo::actionSupported( NET::Action action ) const
 {
 #ifdef Q_WS_X11
-    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2AllowedActions ) == 0, 176 )
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2AllowedActions ) == 0, 176 )
         << "Pass NET::WM2AllowedActions to KWin::windowInfo()" << endl;
     if( allowedActionsSupported())
         return d->info->allowedActions() & action;

@@ -104,7 +104,7 @@ KJavaAppletContext * KJavaServerMaintainer::getContext (QObject * w, const QStri
 void KJavaServerMaintainer::releaseContext (QObject * w, const QString & doc) {
     ContextMap::iterator it = m_contextmap.find (qMakePair (w, doc));
     if (it != m_contextmap.end () && --(*it).second <= 0) {
-        kdDebug(6100) << "KJavaServerMaintainer::releaseContext" << endl;
+        kDebug(6100) << "KJavaServerMaintainer::releaseContext" << endl;
         (*it).first->deleteLater ();
         m_contextmap.remove (it);
     }
@@ -240,7 +240,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                 value = value.right (value.length () - 1);
             if (value.at (value.length () - 1) == '\"')
                 value.truncate (value.length () - 1);
-            kdDebug(6100) << "name=" << name << " value=" << value << endl;
+            kDebug(6100) << "name=" << name << " value=" << value << endl;
             if (!name.isEmpty()) {
                 const QString name_lower = name.toLower ();
                 if (name == "__KHTML__PLUGINBASEURL") {
@@ -277,7 +277,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     }
     if (!classid.isEmpty ()) {
         applet->setParameter ("CLSID", classid);
-        kdDebug(6100) << "classid=" << classid << classid.startsWith("clsid:")<< endl;
+        kDebug(6100) << "classid=" << classid << classid.startsWith("clsid:")<< endl;
         if (classid.startsWith ("clsid:"))
             // codeBase contains the URL to the plugin page
             khtml_codebase = baseurl;
@@ -332,7 +332,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         stream << info << m_view->topLevelWidget()->winId();
 
         if (!KApplication::dcopClient ()->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)", params, replyType, reply ) ) {
-            kdWarning() << "Can't communicate with kded_kpasswdserver!" << endl;
+            kWarning() << "Can't communicate with kded_kpasswdserver!" << endl;
         } else if ( replyType == "KIO::AuthInfo" ) {
             QDataStream stream2( reply );
             stream2 >> authResult;
@@ -413,7 +413,7 @@ bool KJavaAppletViewer::openURL (const KUrl & url) {
 }
 
 bool KJavaAppletViewer::closeURL () {
-    kdDebug(6100) << "closeURL" << endl;
+    kDebug(6100) << "closeURL" << endl;
     m_closed = true;
     KJavaApplet* const applet = m_view->appletWidget ()->applet ();
     if (applet->isCreated ())
@@ -502,7 +502,7 @@ void KJavaAppletViewerBrowserExtension::restoreState (QDataStream & stream) {
         stream >> key;
         stream >> val;
         applet->setParameter (key, val);
-        kdDebug(6100) << "restoreState key:" << key << " val:" << val << endl;
+        kDebug(6100) << "restoreState key:" << key << " val:" << val << endl;
     }
     applet->setSize (w->sizeHint ());
     if (w->isVisible())

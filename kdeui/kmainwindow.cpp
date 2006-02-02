@@ -723,7 +723,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 
 void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configGroup)
 {
-    kdDebug(200) << "KMainWindow::saveMainWindowSettings " << configGroup << endl;
+    kDebug(200) << "KMainWindow::saveMainWindowSettings " << configGroup << endl;
     QString oldGroup;
 
     if (!configGroup.isEmpty())
@@ -833,7 +833,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 
 void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &configGroup,bool force)
 {
-    kdDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;
+    kDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;
 
     KConfigGroup cg( config, configGroup.isEmpty() ? config->group() : configGroup );
 
@@ -879,7 +879,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 
 void KMainWindow::finalizeGUI( bool force )
 {
-    //kdDebug(200) << "KMainWindow::finalizeGUI force=" << force << endl;
+    //kDebug(200) << "KMainWindow::finalizeGUI force=" << force << endl;
     // The whole reason for this is that moveToolBar relies on the indexes
     // of the other toolbars, so in theory it should be called only once per
     // toolbar, but in increasing order of indexes.
@@ -984,7 +984,7 @@ void KMainWindow::ignoreInitialGeometry()
 
 void KMainWindow::setSettingsDirty()
 {
-    //kdDebug(200) << "KMainWindow::setSettingsDirty" << endl;
+    //kDebug(200) << "KMainWindow::setSettingsDirty" << endl;
     d->settingsDirty = true;
     if ( d->autoSaveSettings )
     {
@@ -1044,7 +1044,7 @@ QString KMainWindow::autoSaveGroup() const
 void KMainWindow::saveAutoSaveSettings()
 {
     Q_ASSERT( d->autoSaveSettings );
-    //kdDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings" << endl;
+    //kDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings" << endl;
     saveMainWindowSettings( KGlobal::config(), d->autoSaveGroup );
     KGlobal::config()->sync();
     d->settingsDirty = false;

@@ -221,7 +221,7 @@ static void readImage8( QImage &img, QDataStream &s, const PCXHEADER &header )
 
   Q_UINT8 flag;
   s >> flag;
-  kdDebug( 399 ) << "Palette Flag: " << flag << endl;
+  kDebug( 399 ) << "Palette Flag: " << flag << endl;
 
   if ( flag == 12 && ( header.Version == 5 || header.Version == 2 ) )
   {
@@ -442,16 +442,16 @@ bool PCXHandler::read(QImage *outImage)
   int w = header.width();
   int h = header.height();
 
-  kdDebug( 399 ) << "Manufacturer: " << header.Manufacturer << endl;
-  kdDebug( 399 ) << "Version: " << header.Version << endl;
-  kdDebug( 399 ) << "Encoding: " << header.Encoding << endl;
-  kdDebug( 399 ) << "Bpp: " << header.Bpp << endl;
-  kdDebug( 399 ) << "Width: " << w << endl;
-  kdDebug( 399 ) << "Height: " << h << endl;
-  kdDebug( 399 ) << "Window: " << header.XMin << "," << header.XMax << ","
+  kDebug( 399 ) << "Manufacturer: " << header.Manufacturer << endl;
+  kDebug( 399 ) << "Version: " << header.Version << endl;
+  kDebug( 399 ) << "Encoding: " << header.Encoding << endl;
+  kDebug( 399 ) << "Bpp: " << header.Bpp << endl;
+  kDebug( 399 ) << "Width: " << w << endl;
+  kDebug( 399 ) << "Height: " << h << endl;
+  kDebug( 399 ) << "Window: " << header.XMin << "," << header.XMax << ","
                  << header.YMin << "," << header.YMax << endl;
-  kdDebug( 399 ) << "BytesPerLine: " << header.BytesPerLine << endl;
-  kdDebug( 399 ) << "NPlanes: " << header.NPlanes << endl;
+  kDebug( 399 ) << "BytesPerLine: " << header.BytesPerLine << endl;
+  kDebug( 399 ) << "NPlanes: " << header.NPlanes << endl;
 
   QImage img;
 
@@ -472,9 +472,9 @@ bool PCXHandler::read(QImage *outImage)
     readImage24( img, s, header );
   }
 
-  kdDebug( 399 ) << "Image Bytes: " << img.numBytes() << endl;
-  kdDebug( 399 ) << "Image Bytes Per Line: " << img.bytesPerLine() << endl;
-  kdDebug( 399 ) << "Image Depth: " << img.depth() << endl;
+  kDebug( 399 ) << "Image Bytes: " << img.numBytes() << endl;
+  kDebug( 399 ) << "Image Bytes Per Line: " << img.bytesPerLine() << endl;
+  kDebug( 399 ) << "Image Depth: " << img.depth() << endl;
 
   if ( !img.isNull() )
   {
@@ -497,11 +497,11 @@ bool PCXHandler::write(const QImage &image)
   int w = img.width();
   int h = img.height();
 
-  kdDebug( 399 ) << "Width: " << w << endl;
-  kdDebug( 399 ) << "Height: " << h << endl;
-  kdDebug( 399 ) << "Depth: " << img.depth() << endl;
-  kdDebug( 399 ) << "BytesPerLine: " << img.bytesPerLine() << endl;
-  kdDebug( 399 ) << "Num Colors: " << img.numColors() << endl;
+  kDebug( 399 ) << "Width: " << w << endl;
+  kDebug( 399 ) << "Height: " << h << endl;
+  kDebug( 399 ) << "Depth: " << img.depth() << endl;
+  kDebug( 399 ) << "BytesPerLine: " << img.bytesPerLine() << endl;
+  kDebug( 399 ) << "Num Colors: " << img.numColors() << endl;
 
   PCXHEADER header;
 

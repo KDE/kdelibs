@@ -48,7 +48,7 @@ class KABC_EXPORT ErrorHandler
 };
 
 /**
-  This class prints the error messages to stderr via kdError().
+  This class prints the error messages to stderr via kError().
 */
 class KABC_EXPORT ConsoleErrorHandler : public ErrorHandler
 {

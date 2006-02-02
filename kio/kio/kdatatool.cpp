@@ -49,7 +49,7 @@ KDataToolInfo::KDataToolInfo( const KService::Ptr& service, KInstance* instance 
 
     if ( !!m_service && !m_service->serviceTypes().contains( "KDataTool" ) )
     {
-        kdDebug(30003) << "The service " << m_service->name().latin1()
+        kDebug(30003) << "The service " << m_service->name().latin1()
                        << " does not feature the service type KDataTool" << endl;
         m_service = 0;
     }
@@ -188,7 +188,7 @@ QList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QStrin
     } */
 
     // Query the trader
-    //kdDebug() << "KDataToolInfo::query " << constr << endl;
+    //kDebug() << "KDataToolInfo::query " << constr << endl;
     KTrader::OfferList offers = KTrader::self()->query( "KDataTool", constr );
 
     KTrader::OfferList::ConstIterator it = offers.begin();
@@ -199,7 +199,7 @@ QList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QStrin
              .contains( instance->instanceName() ) )
             lst.append( KDataToolInfo( *it, instance ) );
         else
-            kdDebug() << (*it)->entryPath() << " excluded." << endl;
+            kDebug() << (*it)->entryPath() << " excluded." << endl;
     }
 
     return lst;
@@ -243,14 +243,14 @@ QList<KAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
         QStringList commands = (*entry).commands();
         Q_ASSERT(!commands.isEmpty());
         if ( commands.count() != userCommands.count() )
-            kdWarning() << "KDataTool desktop file error (" << (*entry).service()->entryPath()
+            kWarning() << "KDataTool desktop file error (" << (*entry).service()->entryPath()
                         << "). " << commands.count() << " commands and "
                         << userCommands.count() << " descriptions." << endl;
         QStringList::ConstIterator uit = userCommands.begin();
         QStringList::ConstIterator cit = commands.begin();
         for (; uit != userCommands.end() && cit != commands.end(); ++uit, ++cit )
         {
-            //kdDebug() << "creating action " << *uit << " " << *cit << endl;
+            //kDebug() << "creating action " << *uit << " " << *cit << endl;
             KDataToolAction * action = new KDataToolAction( *uit, *entry, *cit );
             connect( action, SIGNAL( toolActivated( const KDataToolInfo &, const QString & ) ),
                      receiver, slot );

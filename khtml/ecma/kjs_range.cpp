@@ -99,7 +99,7 @@ ValueImp *DOMRange::getValueProperty(ExecState *exec, int token) const
     return getDOMNode(exec,range.commonAncestorContainer(exception));
   }
   default:
-    kdDebug(6070) << "WARNING: Unhandled token in DOMRange::getValueProperty : " << token << endl;
+    kDebug(6070) << "WARNING: Unhandled token in DOMRange::getValueProperty : " << token << endl;
     return Null();
   }
 }

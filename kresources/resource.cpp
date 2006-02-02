@@ -73,7 +73,7 @@ Resource::~Resource()
 
 void Resource::writeConfig( KConfig* config )
 {
-  kdDebug(5650) << "Resource::writeConfig()" << endl;
+  kDebug(5650) << "Resource::writeConfig()" << endl;
 
   config->writeEntry( "ResourceType", d->mType );
   config->writeEntry( "ResourceName", d->mName );
@@ -89,7 +89,7 @@ bool Resource::open()
   QMutexLocker guard( &(d->mMutex) );
 #endif
   if ( !d->mOpenCount ) {
-    kdDebug(5650) << "Opening resource " << resourceName() << endl;
+    kDebug(5650) << "Opening resource " << resourceName() << endl;
     d->mIsOpen = doOpen();
   }
   d->mOpenCount++;
@@ -102,16 +102,16 @@ void Resource::close()
   QMutexLocker guard( &(d->mMutex) );
 #endif
   if ( !d->mOpenCount ) {
-    kdDebug(5650) << "ERROR: Resource " << resourceName() << " closed more times than previously opened" << endl;
+    kDebug(5650) << "ERROR: Resource " << resourceName() << " closed more times than previously opened" << endl;
     return;
   }
   d->mOpenCount--;
   if ( !d->mOpenCount ) {
-    kdDebug(5650) << "Closing resource " << resourceName() << endl;
+    kDebug(5650) << "Closing resource " << resourceName() << endl;
     doClose();
     d->mIsOpen = false;
   } else {
-    kdDebug(5650) << "Not yet closing resource " << resourceName() << ", open count = " << d->mOpenCount << endl;
+    kDebug(5650) << "Not yet closing resource " << resourceName() << ", open count = " << d->mOpenCount << endl;
   }
 }
 
@@ -172,14 +172,14 @@ bool Resource::isActive() const
 
 void Resource::dump() const
 {
-  kdDebug(5650) << "Resource:" << endl;
-  kdDebug(5650) << "  Name: " << d->mName << endl;
-  kdDebug(5650) << "  Identifier: " << d->mIdentifier << endl;
-  kdDebug(5650) << "  Type: " << d->mType << endl;
-  kdDebug(5650) << "  OpenCount: " << d->mOpenCount << endl;
-  kdDebug(5650) << "  ReadOnly: " << ( d->mReadOnly ? "yes" : "no" ) << endl;
-  kdDebug(5650) << "  Active: " << ( d->mActive ? "yes" : "no" ) << endl;
-  kdDebug(5650) << "  IsOpen: " << ( d->mIsOpen ? "yes" : "no" ) << endl;
+  kDebug(5650) << "Resource:" << endl;
+  kDebug(5650) << "  Name: " << d->mName << endl;
+  kDebug(5650) << "  Identifier: " << d->mIdentifier << endl;
+  kDebug(5650) << "  Type: " << d->mType << endl;
+  kDebug(5650) << "  OpenCount: " << d->mOpenCount << endl;
+  kDebug(5650) << "  ReadOnly: " << ( d->mReadOnly ? "yes" : "no" ) << endl;
+  kDebug(5650) << "  Active: " << ( d->mActive ? "yes" : "no" ) << endl;
+  kDebug(5650) << "  IsOpen: " << ( d->mIsOpen ? "yes" : "no" ) << endl;
 }
 
 #include "resource.moc"

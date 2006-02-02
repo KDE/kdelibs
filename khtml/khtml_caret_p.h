@@ -307,7 +307,7 @@ protected:
   CaretBoxLine(InlineFlowBox *basefb) : caret_boxes(8), basefb(basefb) {}
 public:
 #if DEBUG_CARETMODE > 3
-  ~CaretBoxLine() { kdDebug(6200) << k_funcinfo << "called" << endl; }
+  ~CaretBoxLine() { kDebug(6200) << k_funcinfo << "called" << endl; }
 #endif
 
   CaretBoxIterator begin()

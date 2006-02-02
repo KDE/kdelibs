@@ -45,8 +45,8 @@ int main( int argc, char **argv )
 
   prefs->setAnotherOption(17);
 
-  kdWarning() << "Another Option  = " << prefs->anotherOption() << endl;
-  kdWarning() << "Another Option2 = " << prefs->anotherOption2() << endl;
-  kdWarning() << "MyPaths         = " << prefs->myPaths() << endl;
-  kdWarning() << "MyPaths2        = " << prefs->myPaths2() << endl;
+  kWarning() << "Another Option  = " << prefs->anotherOption() << endl;
+  kWarning() << "Another Option2 = " << prefs->anotherOption2() << endl;
+  kWarning() << "MyPaths         = " << prefs->myPaths() << endl;
+  kWarning() << "MyPaths2        = " << prefs->myPaths2() << endl;
 }

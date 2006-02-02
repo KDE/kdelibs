@@ -365,7 +365,7 @@ int KWalletD::internalOpen(const QByteArray& appid, const QString& wallet, bool 
 
 	if (rc == -1) {
 		if (_wallets.count() > 20) {
-			kdDebug() << "Too many wallets open." << endl;
+			kDebug() << "Too many wallets open." << endl;
 			return -1;
 		}
 

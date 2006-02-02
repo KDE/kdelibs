@@ -48,7 +48,7 @@ static const KCmdLineOptions options[] =
 
 void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
 {
-  kdDebug() << "KMAILENTRY: " << kmailEntry << endl;
+  kDebug() << "KMAILENTRY: " << kmailEntry << endl;
 
   QString entry = kmailEntry.simplified();
   if ( entry.isEmpty() ) return;
@@ -101,9 +101,9 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
     }
   }
 
-  kdDebug() << "  EMAIL   : " << email   << endl;
-  kdDebug() << "  NAME    : " << name    << endl;
-  kdDebug() << "  COMMENT : " << comment << endl;
+  kDebug() << "  EMAIL   : " << email   << endl;
+  kDebug() << "  NAME    : " << name    << endl;
+  kDebug() << "  COMMENT : " << comment << endl;
 
   KABC::Addressee::List al = ab->findByEmail( email );
   if ( al.isEmpty() ) {
@@ -114,7 +114,7 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
 
     ab->insertAddressee( a );
 
-    kdDebug() << "--INSERTED: " << a.realName() << endl;
+    kDebug() << "--INSERTED: " << a.realName() << endl;
   }
 }
 
@@ -128,13 +128,13 @@ void importKMailAddressBook( KABC::AddressBook *ab )
     fileName = cfg.readPathEntry( "default", fileName );
   }
   if ( !KStandardDirs::exists( fileName ) ) {
-    kdDebug(5700) << "Couldn't find KMail addressbook." << endl;
+    kDebug(5700) << "Couldn't find KMail addressbook." << endl;
     return;
   }
 
   QFile f( fileName );
   if ( !f.open(QIODevice::ReadOnly) ) {
-    kdDebug(5700) << "Couldn't open file '" << fileName << "'" << endl;
+    kDebug(5700) << "Couldn't open file '" << fileName << "'" << endl;
     return;
   }
 
@@ -287,16 +287,16 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
       KMessageBox::error( 0, "<qt>" + i18n( "Address book file <b>%1</b> not found! Make sure the old address book is located there and you have read permission for this file." )
                           .arg( fileName ) + "</qt>" );
     }
-    kdDebug(5700) << "No KDE 2 addressbook found." << endl;
+    kDebug(5700) << "No KDE 2 addressbook found." << endl;
     return;
   }
 
-  kdDebug(5700) << "Converting old-style kab addressbook to "
+  kDebug(5700) << "Converting old-style kab addressbook to "
                "new-style kabc addressbook." << endl;
 
   KabAPI kab( 0 );
   if ( kab.init() != ::AddressBook::NoError ) {
-    kdDebug(5700) << "Error initing kab" << endl;
+    kDebug(5700) << "Error initing kab" << endl;
     exit( 1 );
   }
 
@@ -305,15 +305,15 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
 
   int num = kab.addressbook()->noOfEntries();
 
-  kdDebug(5700) << "kab Addressbook has " << num << " entries." << endl;
+  kDebug(5700) << "kab Addressbook has " << num << " entries." << endl;
 
   for ( int i = 0; i < num; ++i ) {
     if ( ::AddressBook::NoError != kab.addressbook()->getKey( i, key ) ) {
-      kdDebug(5700) << "Error getting key for index " << i << " from kab." << endl;
+      kDebug(5700) << "Error getting key for index " << i << " from kab." << endl;
       continue;
     }
     if ( ::AddressBook::NoError != kab.addressbook()->getEntry( key, entry ) ) {
-      kdDebug(5700) << "Error getting entry for index " << i << " from kab." << endl;
+      kDebug(5700) << "Error getting entry for index " << i << " from kab." << endl;
       continue;
     }
 
@@ -339,9 +339,9 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
       entry.custom << "X-KABC-UID:" + a.uid();
       ::AddressBook::ErrorCode error = kab.addressbook()->change( key, entry );
       if ( error != ::AddressBook::NoError ) {
-        kdDebug(5700) << "kab.change returned with error " << error << endl;
+        kDebug(5700) << "kab.change returned with error " << error << endl;
       } else {
-        kdDebug(5700) << "Wrote back to kab uid " << a.uid() << endl;
+        kDebug(5700) << "Wrote back to kab uid " << a.uid() << endl;
       }
     }
 
@@ -373,7 +373,7 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
     if ( entry.URLs.count() > 0 ) {
       a.setUrl( KUrl( entry.URLs.first() ) );
       if ( entry.URLs.count() > 1 ) {
-        kdWarning() << "More than one URL. Ignoring all but the first." << endl;
+        kWarning() << "More than one URL. Ignoring all but the first." << endl;
       }
     }
 
@@ -422,7 +422,7 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
 
     a.setCategories( entry.categories );
 
-    kdDebug(5700) << "Addressee: " << a.familyName() << endl;
+    kDebug(5700) << "Addressee: " << a.familyName() << endl;
 
     ab->insertAddressee( a );
   }
@@ -445,7 +445,7 @@ int main( int argc, char **argv )
   bool override = false;
 
   if ( args->isSet( "override" ) ) {
-    kdDebug() << "Override existing entries." << endl;
+    kDebug() << "Override existing entries." << endl;
 
     override = true;
   }
@@ -456,7 +456,7 @@ int main( int argc, char **argv )
     quiet = true;
 
   if ( args->isSet( "disable-autostart" ) ) {
-    kdDebug() << "Disable autostart." << endl;
+    kDebug() << "Disable autostart." << endl;
 
     KConfigGroup cg(KGlobal::config(), "Startup" );
     cg.writeEntry( "EnableAutostart", false );
@@ -470,6 +470,6 @@ int main( int argc, char **argv )
 
   StdAddressBook::save();
 
-  kdDebug(5700) << "Saved kabc addressbook to '" << kabcBook->identifier() << "'" << endl;
+  kDebug(5700) << "Saved kabc addressbook to '" << kabcBook->identifier() << "'" << endl;
 }
 

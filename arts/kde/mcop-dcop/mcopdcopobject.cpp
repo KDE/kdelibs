@@ -73,7 +73,7 @@ Arts::Buffer *MCOPDCOPObject::callFunction(MCOPEntryInfo *entry, Q3CString iface
 		{
 			Q3CString param = *it;
 
-			kdDebug() << "PARAM: " << param << endl;
+			kDebug() << "PARAM: " << param << endl;
 			
 			QDataStream argStream(data);
 

@@ -140,7 +140,7 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   QWidget( parent ),
   mAddressBook( addressBook )
 {
-  kdDebug(5700) << "DistributionListEditor()" << endl;
+  kDebug(5700) << "DistributionListEditor()" << endl;
 
   QBoxLayout *topLayout = new QVBoxLayout( this );
   topLayout->setSpacing( KDialog::spacingHint() );
@@ -215,7 +215,7 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
 
 DistributionListEditorWidget::~DistributionListEditorWidget()
 {
-  kdDebug(5700) << "~DistributionListEditor()" << endl;
+  kDebug(5700) << "~DistributionListEditor()" << endl;
 
   delete mManager;
 }
@@ -288,7 +288,7 @@ void DistributionListEditorWidget::addEntry()
 {
   QList<QTreeWidgetItem*> selected = mAddresseeView->selectedItems();
   if ( selected.count() == 0 ) {
-    kdDebug(5700) << "DLE::addEntry(): No addressee selected." << endl;
+    kDebug(5700) << "DLE::addEntry(): No addressee selected." << endl;
     return;
   }
   AddresseeItem *addresseeItem =
@@ -296,7 +296,7 @@ void DistributionListEditorWidget::addEntry()
 
   DistributionList *list = mManager->list( mNameCombo->currentText() );
   if ( !list ) {
-    kdDebug(5700) << "DLE::addEntry(): No dist list '" << mNameCombo->currentText() << "'" << endl;
+    kDebug(5700) << "DLE::addEntry(): No dist list '" << mNameCombo->currentText() << "'" << endl;
     return;
   }
 

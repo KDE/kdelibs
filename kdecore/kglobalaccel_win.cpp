@@ -105,7 +105,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 {
 	/*
 	if( !key.code() ) {
-		kdWarning(125) << "KGlobalAccelPrivate::grabKey( " << key.key().toStringInternal() << ", " << bGrab << ", \"" << (pAction ? pAction->name().latin1() : "(null)") << "\" ): Tried to grab key with null code." << endl;
+		kWarning(125) << "KGlobalAccelPrivate::grabKey( " << key.key().toStringInternal() << ", " << bGrab << ", \"" << (pAction ? pAction->name().latin1() : "(null)") << "\" ): Tried to grab key with null code." << endl;
 		return false;
 	}
 
@@ -121,7 +121,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 	    keyCodeX = 111;
 	}
 
-	kdDebug(125) << QString( "grabKey( key: '%1', bGrab: %2 ): keyCodeX: %3 keyModX: %4\n" )
+	kDebug(125) << QString( "grabKey( key: '%1', bGrab: %2 ): keyCodeX: %3 keyModX: %4\n" )
 		.arg( key.key().toStringInternal() ).arg( bGrab )
 		.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 );
 	if( !keyCodeX )
@@ -149,7 +149,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 		}
 	}
 #ifndef NDEBUG
-	kdDebug(125) << sDebug << endl;
+	kDebug(125) << sDebug << endl;
 #endif
 
         bool failed = false;
@@ -159,7 +159,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 #endif
         	// If grab failed, then ungrab any grabs that could possibly succeed
 		if( failed ) {
-			kdDebug(125) << "grab failed!\n";
+			kDebug(125) << "grab failed!\n";
 			for( uint m = 0; m <= 0xff; m++ ) {
 				if( m & keyModMaskX == 0 )
 					XUngrabKey( QX11Info::display(), keyCodeX, keyModX | m, QX11Info::appRootWindow() );
@@ -185,7 +185,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 
 /*bool KGlobalAccelPrivate::x11Event( XEvent* pEvent )
 {
-	//kdDebug(125) << "x11EventFilter( type = " << pEvent->type << " )" << endl;
+	//kDebug(125) << "x11EventFilter( type = " << pEvent->type << " )" << endl;
 	switch( pEvent->type ) {
 	 case MappingNotify:
 	        XRefreshKeyboardMapping( &pEvent->xmapping );
@@ -201,7 +201,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 
 void KGlobalAccelPrivate::x11MappingNotify()
 {
-	kdDebug(125) << "KGlobalAccelPrivate::x11MappingNotify()" << endl;
+	kDebug(125) << "KGlobalAccelPrivate::x11MappingNotify()" << endl;
 	if( m_bEnabled ) {
 		// Maybe the X modifier map has been changed.
 		KKeyServer::initializeMods();
@@ -253,7 +253,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 	KKeyNative keyNative( pEvent );
 	KKey key = keyNative;
 
-	kdDebug(125) << "x11KeyPress: seek " << key.toStringInternal()
+	kDebug(125) << "x11KeyPress: seek " << key.toStringInternal()
 		<< QString( " keyCodeX: %1 state: %2 keyModX: %3" )
 			.arg( codemod.code, 0, 16 ).arg( pEvent->xkey.state, 0, 16 ).arg( codemod.mod, 0, 16 ) << endl;
 
@@ -262,7 +262,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 #ifndef NDEBUG
 		for( CodeModMap::ConstIterator it = m_rgCodeModToAction.begin(); it != m_rgCodeModToAction.end(); ++it ) {
 			KAccelAction* pAction = *it;
-			kdDebug(125) << "\tcode: " << QString::number(it.key().code, 16) << " mod: " << QString::number(it.key().mod, 16)
+			kDebug(125) << "\tcode: " << QString::number(it.key().code, 16) << " mod: " << QString::number(it.key().mod, 16)
 				<< (pAction ? QString(" name: \"%1\" shortcut: %2").arg(pAction->name()).arg(pAction->shortcut().toStringInternal()) : QString())
 				<< endl;
 		}
@@ -292,7 +292,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 
 void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& seq )
 {
-	kdDebug(125) << "KGlobalAccelPrivate::activate( \"" << pAction->name() << "\" ) " << endl;
+	kDebug(125) << "KGlobalAccelPrivate::activate( \"" << pAction->name() << "\" ) " << endl;
 
 	QRegExp rexPassIndex( "([ ]*int[ ]*)" );
 	QRegExp rexPassInfo( " QString" );
@@ -303,7 +303,7 @@ void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& s
 	//  then send the slot the given index #.
 	if( rexPassIndex.search( pAction->methodSlotPtr() ) >= 0 && rexIndex.search( pAction->name() ) >= 0 ) {
 		int n = rexIndex.cap(1).toInt();
-		kdDebug(125) << "Calling " << pAction->methodSlotPtr() << " int = " << n << endl;
+		kDebug(125) << "Calling " << pAction->methodSlotPtr() << " int = " << n << endl;
                 int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( QMetaObject::normalizedSignature( pAction->methodSlotPtr() ).data() + 1 );
                 if( slot_id >= 0 ) {
                     QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), QMetaObject::normalizedSignature( pAction->methodSlotPtr() ).data() + 1, Q_ARG(int, n));

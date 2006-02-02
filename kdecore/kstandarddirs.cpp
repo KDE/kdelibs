@@ -308,12 +308,12 @@ QString KStandardDirs::findResource( const char *type,
 	return filename; // absolute dirs are absolute dirs, right? :-/
 
 #if 0
-kdDebug() << "Find resource: " << type << endl;
+kDebug() << "Find resource: " << type << endl;
 for (QStringList::ConstIterator pit = prefixes.begin();
      pit != prefixes.end();
      pit++)
 {
-  kdDebug() << "Prefix: " << *pit << endl;
+  kDebug() << "Prefix: " << *pit << endl;
 }
 #endif
 
@@ -401,7 +401,7 @@ QString KStandardDirs::findResourceDir( const char *type,
 {
 #ifndef NDEBUG
     if (filename.isEmpty()) {
-      kdWarning() << "filename for type " << type << " in KStandardDirs::findResourceDir is not supposed to be empty!!" << endl;
+      kWarning() << "filename for type " << type << " in KStandardDirs::findResourceDir is not supposed to be empty!!" << endl;
       return QString();
     }
 #endif
@@ -417,7 +417,7 @@ QString KStandardDirs::findResourceDir( const char *type,
 #ifdef Q_WS_WIN //this ensures we're using installed .la files
           if ((*it).isEmpty() && filename.right(3)==".la") {
 #ifndef NDEBUG
-              kdDebug() << "KStandardDirs::findResourceDir() found .la in cwd: skipping. (fname=" << filename  << ")" << endl;
+              kDebug() << "KStandardDirs::findResourceDir() found .la in cwd: skipping. (fname=" << filename  << ")" << endl;
 #endif
               continue;
           }
@@ -428,7 +428,7 @@ QString KStandardDirs::findResourceDir( const char *type,
 
 #ifndef NDEBUG
     if(false && type != "locale")
-      kdDebug() << "KStdDirs::findResDir(): can't find \"" << filename << "\" in type \"" << type << "\"." << endl;
+      kDebug() << "KStdDirs::findResDir(): can't find \"" << filename << "\" in type \"" << type << "\"." << endl;
 #endif
 
     return QString();
@@ -486,7 +486,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 
       QString pathfn = path + fn;
       if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
-	kdDebug() << "Error stat'ing " << pathfn << " : " << perror << endl;
+	kDebug() << "Error stat'ing " << pathfn << " : " << perror << endl;
 	continue; // Couldn't stat (e.g. no read permissions)
       }
       if ( recursive ) {
@@ -585,7 +585,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 		QString rfn = relPart+fn;
 		fn = prefix + fn;
 		if ( KDE_stat( QFile::encodeName(fn), &buff ) != 0 ) {
-		    kdDebug() << "Error statting " << fn << " : " << perror << endl;
+		    kDebug() << "Error statting " << fn << " : " << perror << endl;
 		    continue; // Couldn't stat (e.g. no permissions)
 		}
 		if ( S_ISDIR( buff.st_mode ))
@@ -845,7 +845,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
     }
 
 #if 0
-    kdDebug() << "found dirs for resource " << type << ":" << endl;
+    kDebug() << "found dirs for resource " << type << ":" << endl;
     for (QStringList::ConstIterator pit = candidates.begin();
 	 pit != candidates.end();
 	 pit++)
@@ -904,14 +904,14 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
 
 QString getBundle( const QString& path, bool ignore=false )
 {
-    kdDebug() << "getBundle(" << path << ", " << ignore << ") called" << endl;
+    kDebug() << "getBundle(" << path << ", " << ignore << ") called" << endl;
     QFileInfo info;
     QString bundle = path;
     bundle += ".app/Contents/MacOS/" + bundle.section('/', -1);
     info.setFile( bundle );
     if ( info.exists() && ( ignore || info.isExecutable() )
          && ( info.isFile() || info.isSymLink() ) ) {
-        kdDebug() << "getBundle(): returning " << bundle << endl;
+        kDebug() << "getBundle(): returning " << bundle << endl;
         return bundle;
     }
     return QString();
@@ -920,7 +920,7 @@ QString getBundle( const QString& path, bool ignore=false )
 QString KStandardDirs::findExe( const QString& appname,
 				const QString& pstr, bool ignore)
 {
-    kdDebug() << "findExe(" << appname << ", pstr, " << ignore << ") called" << endl;
+    kDebug() << "findExe(" << appname << ", pstr, " << ignore << ") called" << endl;
 
 #ifdef Q_WS_WIN
     QString real_appname = appname + ".exe";
@@ -932,31 +932,31 @@ QString KStandardDirs::findExe( const QString& appname,
     // absolute path ?
     if (!QDir::isRelativePath(real_appname))
     {
-        kdDebug() << "findExe(): absolute path given" << endl;
+        kDebug() << "findExe(): absolute path given" << endl;
 #ifdef Q_WS_MAC
         QString bundle = getBundle( real_appname, ignore );
         if ( !bundle.isEmpty() ) {
-            kdDebug() << "findExe(): returning " << bundle << endl;
+            kDebug() << "findExe(): returning " << bundle << endl;
             return bundle;
         }
 #endif
         info.setFile( real_appname );
         if( info.exists() && ( ignore || info.isExecutable() )
             && info.isFile() ) {
-            kdDebug() << "indExe(): returning " << real_appname << endl;
+            kDebug() << "indExe(): returning " << real_appname << endl;
             return real_appname;
         }
-        kdDebug() << "findExe(): failed, returning empty string" << endl;
+        kDebug() << "findExe(): failed, returning empty string" << endl;
         return QString();
     }
 
-    kdDebug() << "findExe(): relative path given" << endl;
+    kDebug() << "findExe(): relative path given" << endl;
     QString p = QString("%1/%2").arg(kfsstnd_defaultbindir()).arg(real_appname);
 
 #ifdef Q_WS_MAC
     QString bundle = getBundle( p, ignore );
     if ( !bundle.isEmpty() ) {
-        kdDebug() << "findExe(): returning " << bundle << endl;
+        kDebug() << "findExe(): returning " << bundle << endl;
         return bundle;
     }
 #endif
@@ -965,12 +965,12 @@ QString KStandardDirs::findExe( const QString& appname,
     info.setFile( p );
     if( info.exists() && ( ignore || info.isExecutable() )
          && ( info.isFile() || info.isSymLink() )  ) {
-         kdDebug() << "findExe(): returning " << p << endl;
+         kDebug() << "findExe(): returning " << p << endl;
          return p;
     }
 #endif
 
-    kdDebug() << "findExe(): checking system paths" << endl;
+    kDebug() << "findExe(): checking system paths" << endl;
     QStringList exePaths = systemPaths( pstr );
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
@@ -980,7 +980,7 @@ QString KStandardDirs::findExe( const QString& appname,
 #ifdef Q_WS_MAC
         QString bundle = getBundle( p, ignore );
         if ( !bundle.isEmpty() ) {
-            kdDebug() << "findExe(): returning " << bundle << endl;
+            kDebug() << "findExe(): returning " << bundle << endl;
             return bundle;
         }
 #endif
@@ -990,7 +990,7 @@ QString KStandardDirs::findExe( const QString& appname,
 
 	if( info.exists() && ( ignore || info.isExecutable() )
            && ( info.isFile() || info.isSymLink() )  ) {
-            kdDebug() << "findExe(): returning " << p << endl;
+            kDebug() << "findExe(): returning " << p << endl;
 	    return p;
 	}
     }
@@ -999,7 +999,7 @@ QString KStandardDirs::findExe( const QString& appname,
     info.setFile( p );
     if( info.exists() && ( ignore || info.isExecutable() )
          && ( info.isFile() || info.isSymLink() )  ) {
-         kdDebug() << "findExe(): returning " << p << endl;
+         kDebug() << "findExe(): returning " << p << endl;
          return p;
     }
 #endif
@@ -1007,7 +1007,7 @@ QString KStandardDirs::findExe( const QString& appname,
     // If we reach here, the executable wasn't found.
     // So return empty string.
 
-    kdDebug() << "findExe(): failed, nothing matched" << endl;
+    kDebug() << "findExe(): failed, nothing matched" << endl;
     return QString();
 }
 
@@ -1162,7 +1162,7 @@ QString KStandardDirs::saveLocation(const char *type,
     if (KDE_stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
 #ifndef NDEBUG
-	    kdDebug() << QString("save location %1 doesn't exist").arg(fullPath) << endl;
+	    kDebug() << QString("save location %1 doesn't exist").arg(fullPath) << endl;
 #endif
 	    return fullPath;
 	}
@@ -1294,7 +1294,7 @@ QString KStandardDirs::kfsstnd_defaultprefix()
    s->defaultprefix = KDEDIR;
 #endif
    if (s->defaultprefix.isEmpty())
-      kdWarning() << "KStandardDirs::kfsstnd_defaultprefix(): default KDE prefix not found!" << endl;
+      kWarning() << "KStandardDirs::kfsstnd_defaultprefix(): default KDE prefix not found!" << endl;
    return s->defaultprefix;
 }
 
@@ -1311,7 +1311,7 @@ QString KStandardDirs::kfsstnd_defaultbindir()
       s->defaultbindir = kfsstnd_defaultprefix() + QLatin1String("/bin");
 #endif
    if (s->defaultbindir.isEmpty())
-      kdWarning() << "KStandardDirs::kfsstnd_defaultbindir(): default binary KDE dir not found!" << endl;
+      kWarning() << "KStandardDirs::kfsstnd_defaultbindir(): default binary KDE dir not found!" << endl;
   return s->defaultbindir;
 }
 

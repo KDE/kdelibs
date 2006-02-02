@@ -135,7 +135,7 @@ void ResourceFile::writeConfig( KConfig *config )
 
 Ticket *ResourceFile::requestSaveTicket()
 {
-  kdDebug(5700) << "ResourceFile::requestSaveTicket()" << endl;
+  kDebug(5700) << "ResourceFile::requestSaveTicket()" << endl;
 
   if ( !addressBook() ) return 0;
 
@@ -146,7 +146,7 @@ Ticket *ResourceFile::requestSaveTicket()
     addressBook()->emitAddressBookLocked();
   } else {
     addressBook()->error( mLock->error() );
-    kdDebug(5700) << "ResourceFile::requestSaveTicket(): Unable to lock file '"
+    kDebug(5700) << "ResourceFile::requestSaveTicket(): Unable to lock file '"
                   << mFileName << "': " << mLock->error() << endl;
     return 0;
   }
@@ -203,7 +203,7 @@ void ResourceFile::doClose()
 
 bool ResourceFile::load()
 {
-  kdDebug(5700) << "ResourceFile::load(): '" << mFileName << "'" << endl;
+  kDebug(5700) << "ResourceFile::load(): '" << mFileName << "'" << endl;
 
   mAsynchronous = false;
 
@@ -221,7 +221,7 @@ bool ResourceFile::asyncLoad()
   mAsynchronous = true;
 
   if ( mLocalTempFile ) {
-    kdDebug(5700) << "stale temp file detected " << mLocalTempFile->name() << endl;
+    kDebug(5700) << "stale temp file detected " << mLocalTempFile->name() << endl;
     delete mLocalTempFile;
   }
 
@@ -244,7 +244,7 @@ bool ResourceFile::asyncLoad()
 
 bool ResourceFile::save( Ticket * )
 {
-  kdDebug(5700) << "ResourceFile::save()" << endl;
+  kDebug(5700) << "ResourceFile::save()" << endl;
 
   // create backup file
   QString extension = "_" + QString::number( QDate::currentDate().dayOfWeek() );
@@ -334,7 +334,7 @@ void ResourceFile::fileChanged()
     asyncLoad();
   else {
     load();
-    kdDebug() << "addressBookChanged() " << endl;
+    kDebug() << "addressBookChanged() " << endl;
     addressBook()->emitAddressBookChanged();
   }
 }

@@ -41,7 +41,7 @@ public:
 KAr::KAr( const QString& filename )
     : KArchive( 0 ),d(new KArPrivate)
 {
-    //kdDebug(7042) << "KAr(filename) reached." << endl;
+    //kDebug(7042) << "KAr(filename) reached." << endl;
     m_filename = filename;
     setDevice( new QFile( filename ) );
 }
@@ -49,13 +49,13 @@ KAr::KAr( const QString& filename )
 KAr::KAr( QIODevice * dev )
     : KArchive( dev ),d(new KArPrivate)
 {
-    //kdDebug(7042) << "KAr::KAr( QIODevice * dev) reached." << endl;
+    //kDebug(7042) << "KAr::KAr( QIODevice * dev) reached." << endl;
 }
 
 KAr::~KAr()
 {
     // mjarrett: Closes to prevent ~KArchive from aborting w/o device
-    //kdDebug(7042) << "~KAr reached." << endl;
+    //kDebug(7042) << "~KAr reached." << endl;
     if( isOpened() )
         close();
     if ( !m_filename.isEmpty() )
@@ -67,13 +67,13 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
 {
     // Open archive
 
-    //kdDebug(7042) << "openarchive reached." << endl;
+    //kDebug(7042) << "openarchive reached." << endl;
 
     if ( mode == QIODevice::WriteOnly )
         return true;
     if ( mode != QIODevice::ReadOnly && mode != QIODevice::ReadWrite )
     {
-        kdWarning(7042) << "Unsupported mode " << mode << endl;
+        kWarning(7042) << "Unsupported mode " << mode << endl;
         return false;
     }
 
@@ -84,7 +84,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
     char magic[8];
     dev->readBlock (magic, 8);
     if (qstrncmp(magic, "!<arch>", 7) != 0) {
-        kdWarning(7042) << "Invalid main magic" << endl;
+        kWarning(7042) << "Invalid main magic" << endl;
         return false;
     }
 
@@ -99,14 +99,14 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
         dev->at( dev->at() + (2 - (dev->at() % 2)) % 2 ); // Ar headers are padded to byte boundary
 
         if ( dev->read(ar_header.data(), 60) != 60 ) { // Read ar header
-            kdWarning(7042) << "Couldn't read header" << endl;
+            kWarning(7042) << "Couldn't read header" << endl;
             delete[] ar_longnames;
             //return false;
             return true; // Probably EOF / trailing junk
         }
 
         if (!ar_header.endsWith("`\n")) { // Check header magic
-            kdWarning(7042) << "Invalid magic" << endl;
+            kWarning(7042) << "Invalid magic" << endl;
             delete[] ar_longnames;
             return false;
         }
@@ -126,15 +126,15 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
                 ar_longnames[size] = '\0';
                 dev->read(ar_longnames, size);
                 skip_entry = true;
-                kdDebug(7042) << "Read in longnames entry" << endl;
+                kDebug(7042) << "Read in longnames entry" << endl;
             } else if (name.mid(1, 1) == " ") { // Symbol table entry
-                kdDebug(7042) << "Skipped symbol entry" << endl;
+                kDebug(7042) << "Skipped symbol entry" << endl;
                 dev->at( dev->at() + size );
                 skip_entry = true;
             } else { // Longfilename
-                kdDebug(7042) << "Longfilename #" << name.mid(1, 15).toInt() << endl;
+                kDebug(7042) << "Longfilename #" << name.mid(1, 15).toInt() << endl;
                 if (! ar_longnames) {
-                    kdWarning(7042) << "Invalid longfilename reference" << endl;
+                    kWarning(7042) << "Invalid longfilename reference" << endl;
                     delete[] ar_longnames;
                     return false;
                 }
@@ -146,7 +146,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
 
         name = name.trimmed(); // Process filename
         name.replace( "/", "" );
-        kdDebug(7042) << "Filename: " << name << " Size: " << size << endl;
+        kDebug(7042) << "Filename: " << name << " Size: " << size << endl;
 
         KArchiveEntry* entry;
         entry = new KArchiveFile(this, name, mode, date, /*uid*/ 0, /*gid*/ 0, 0, dev->at(), size);

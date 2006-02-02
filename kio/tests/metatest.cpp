@@ -30,7 +30,7 @@
 void printKeyValues(KFileMetaInfo& info)
 {    
     QStringList l = info.preferredKeys();
-    kdDebug() << "found " << l.size() << " keys\n";
+    kDebug() << "found " << l.size() << " keys\n";
     
     QString s;
     QStringList::Iterator it;
@@ -38,13 +38,13 @@ void printKeyValues(KFileMetaInfo& info)
     {
         s +=" - " + *it;
     }
-    kdDebug() << "keys: " << s << endl;
+    kDebug() << "keys: " << s << endl;
     
     for (it = l.begin(); it!=l.end(); ++it)
     {
         KFileMetaInfoItem item = info.item(*it);
         if ( item.isValid() && item.value().canCast(QVariant::String)) {
-            kdDebug() << item.key() << "(" << item.translatedKey() << ") -> "
+            kDebug() << item.key() << "(" << item.translatedKey() << ") -> "
                       << item.string() << endl;
         }
     }
@@ -55,128 +55,128 @@ void printMimeTypeInfo(QString mimetype)
     const KFileMimeTypeInfo* info = KFileMetaInfoProvider::self()->mimeTypeInfo(mimetype);
 
     if (!info) return;
-    kdDebug() << "Preferred groups:\n";
-    kdDebug() << "=================\n";
+    kDebug() << "Preferred groups:\n";
+    kDebug() << "=================\n";
     QStringList groups = info->preferredGroups();
 
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
     {
-        kdDebug() << *it << endl;
+        kDebug() << *it << endl;
     }
 
-    kdDebug() << endl;
-    kdDebug() << "Supported groups:\n";
-    kdDebug() << "=================\n";
+    kDebug() << endl;
+    kDebug() << "Supported groups:\n";
+    kDebug() << "=================\n";
     groups = info->supportedGroups();
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
     {
-        kdDebug() << *it << endl;
+        kDebug() << *it << endl;
     }
         
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
     {
         const KFileMimeTypeInfo::GroupInfo* groupinfo = info->groupInfo(*it);
 
-        kdDebug() << endl;
-        kdDebug() << "Group \"" << *it << "\"\n";
-        kdDebug() << "==================\n";
+        kDebug() << endl;
+        kDebug() << "Group \"" << *it << "\"\n";
+        kDebug() << "==================\n";
 
-        if (!groupinfo) kdDebug() << "argh! no group info\n";
+        if (!groupinfo) kDebug() << "argh! no group info\n";
 
-        kdDebug() << endl;
-        kdDebug() << "  Supported keys:\n";
+        kDebug() << endl;
+        kDebug() << "  Supported keys:\n";
         QStringList keys = groupinfo->supportedKeys();
-        if (!keys.count()) kdDebug() << "  none\n";
+        if (!keys.count()) kDebug() << "  none\n";
         for (QStringList::Iterator kit=keys.begin(); kit!=keys.end(); ++kit)
         {
-            kdDebug() << "  " << *kit << endl;
+            kDebug() << "  " << *kit << endl;
                 
             const KFileMimeTypeInfo::ItemInfo* iti = groupinfo->itemInfo(*kit);
-            kdDebug() << "    Key:        " << iti->key() << endl;
-            kdDebug() << "    Translated: " << iti->key() << endl;
-            kdDebug() << "    Type:       " << QVariant::typeToName(iti->type()) << endl;
-            kdDebug() << "    Unit:       " << iti->unit() << endl;
-            kdDebug() << "    Hint:       " << iti->hint() << endl;
-            kdDebug() << "    Attributes: " << iti->attributes() << endl;
-            kdDebug() << "    Prefix:     " << iti->prefix() << endl;
-            kdDebug() << "    Suffix:     " << iti->suffix() << endl;
+            kDebug() << "    Key:        " << iti->key() << endl;
+            kDebug() << "    Translated: " << iti->key() << endl;
+            kDebug() << "    Type:       " << QVariant::typeToName(iti->type()) << endl;
+            kDebug() << "    Unit:       " << iti->unit() << endl;
+            kDebug() << "    Hint:       " << iti->hint() << endl;
+            kDebug() << "    Attributes: " << iti->attributes() << endl;
+            kDebug() << "    Prefix:     " << iti->prefix() << endl;
+            kDebug() << "    Suffix:     " << iti->suffix() << endl;
         }
             
-        kdDebug() << "  name:       " << groupinfo->name() << endl;
-        kdDebug() << "  translated: " << groupinfo->translatedName() << endl;
-        kdDebug() << "  attributes: " << groupinfo->attributes() << endl;
-        kdDebug() << "  variable keys: " << (groupinfo->supportsVariableKeys() ? "Yes" : "No") << endl;
+        kDebug() << "  name:       " << groupinfo->name() << endl;
+        kDebug() << "  translated: " << groupinfo->translatedName() << endl;
+        kDebug() << "  attributes: " << groupinfo->attributes() << endl;
+        kDebug() << "  variable keys: " << (groupinfo->supportsVariableKeys() ? "Yes" : "No") << endl;
         if (groupinfo->supportsVariableKeys())
         {
             const KFileMimeTypeInfo::ItemInfo* iti = groupinfo->variableItemInfo();
-            kdDebug() << "  variable key type/attr: " << QVariant::typeToName(iti->type()) << " / " << iti->attributes() << endl;
+            kDebug() << "  variable key type/attr: " << QVariant::typeToName(iti->type()) << " / " << iti->attributes() << endl;
         }
     }
         
-    kdDebug() << endl;
-    kdDebug() << "Preferred keys:\n";
-    kdDebug() << "===============\n";
+    kDebug() << endl;
+    kDebug() << "Preferred keys:\n";
+    kDebug() << "===============\n";
     QStringList prefKeys = info->preferredKeys();
-    if (!prefKeys.count()) kdDebug() << "  none\n";
+    if (!prefKeys.count()) kDebug() << "  none\n";
     for (QStringList::Iterator kit=prefKeys.begin(); kit!=prefKeys.end(); ++kit)
     {
-        kdDebug() << *kit << endl;
+        kDebug() << *kit << endl;
     }
 
-    kdDebug() << endl;
-    kdDebug() << "Supported keys:\n";
-    kdDebug() << "===============\n";
+    kDebug() << endl;
+    kDebug() << "Supported keys:\n";
+    kDebug() << "===============\n";
     QStringList supKeys = info->supportedKeys();
-    if (!supKeys.count()) kdDebug() << "  none\n";
+    if (!supKeys.count()) kDebug() << "  none\n";
     for (QStringList::Iterator kit=supKeys.begin(); kit!=supKeys.end(); ++kit)
     {
-        kdDebug() << *kit << endl;
+        kDebug() << *kit << endl;
     }
 }
 
 void addGroup(KFileMetaInfo& info, QString group)
 {
-    kdDebug() << "trying to add group " << group << endl;
+    kDebug() << "trying to add group " << group << endl;
 
-    kdDebug() << "groups before: \n";
+    kDebug() << "groups before: \n";
     QStringList groups = info.groups();
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
-        kdDebug() << "  " << *it << endl;
+        kDebug() << "  " << *it << endl;
       
     if (info.addGroup(group))
-       kdDebug() << "addGroup succeeded\n";
+       kDebug() << "addGroup succeeded\n";
     else
-       kdDebug() << "addGroup failed\n";
+       kDebug() << "addGroup failed\n";
     
-    kdDebug() << "trying another addGroup to see what happens\n";
+    kDebug() << "trying another addGroup to see what happens\n";
     
     if (info.addGroup(group))
-       kdDebug() << "addGroup succeeded\n";
+       kDebug() << "addGroup succeeded\n";
     else
-       kdDebug() << "addGroup failed\n";
+       kDebug() << "addGroup failed\n";
     
         
-    kdDebug() << "and afterwards: \n";
+    kDebug() << "and afterwards: \n";
     groups = info.groups();
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
-        kdDebug() << "  " << *it << endl;
+        kDebug() << "  " << *it << endl;
 }
 
 void removeGroup(KFileMetaInfo& info, QString group)
 {
-    kdDebug() << "trying to remove group " << group << endl;
+    kDebug() << "trying to remove group " << group << endl;
 
-    kdDebug() << "groups before: \n";
+    kDebug() << "groups before: \n";
     QStringList groups = info.groups();
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
-        kdDebug() << "  " << *it << endl;
+        kDebug() << "  " << *it << endl;
       
     info.removeGroup(group);
         
-    kdDebug() << "and afterwards: \n";
+    kDebug() << "and afterwards: \n";
     groups = info.groups();
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
-        kdDebug() << "  " << *it << endl;
+        kDebug() << "  " << *it << endl;
 }
   
 int main( int argc, char **argv )
@@ -210,7 +210,7 @@ int main( int argc, char **argv )
         QStringList groups = info.groups();
         for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
         {
-            kdDebug() << "group " << *it << endl;
+            kDebug() << "group " << *it << endl;
         }
         return 0;
     }
@@ -235,38 +235,38 @@ int main( int argc, char **argv )
         KFileMetaInfoGroup g = info[group];
         if (!g.isValid() && args->isSet("autogroupadd"))
         {
-            kdDebug() << "group is not there, adding it\n";
+            kDebug() << "group is not there, adding it\n";
             info.addGroup(group);
         }
         // add the item
         KFileMetaInfoItem i = info[group].addItem(item);
         if (i.isValid())
-            kdDebug() << "additem success\n";
+            kDebug() << "additem success\n";
         else
-            kdDebug() << "additem failed\n";
+            kDebug() << "additem failed\n";
 
         if (i.setValue(ov))
-            kdDebug() << "setValue success\n";
+            kDebug() << "setValue success\n";
         else
-            kdDebug() << "setValue failed\n";
+            kDebug() << "setValue failed\n";
     }
     
     ov = args->getOption("set");
     if (!ov.isEmpty() && !group.isNull() && !item.isNull())
     {
         if (info[group][item].setValue(QString(ov)))
-            kdDebug() << "setValue success\n";
+            kDebug() << "setValue success\n";
         else
-            kdDebug() << "setValue failed\n";
+            kDebug() << "setValue failed\n";
     }
     
     ov = args->getOption("removeitem");
     if (!ov.isEmpty() && !group.isNull())
     {
         if (info[group].removeItem(ov))
-            kdDebug() << "removeitem success\n";
+            kDebug() << "removeitem success\n";
         else
-            kdDebug() << "removeitem failed\n";
+            kDebug() << "removeitem failed\n";
     }
 
     if (args->isSet("validator") && !group.isNull() && !item.isNull())
@@ -274,25 +274,25 @@ int main( int argc, char **argv )
         const KFileMimeTypeInfo* kfmti = KFileMetaInfoProvider::self()->mimeTypeInfo(info.mimeType());
         QValidator* v = kfmti->createValidator(group, item);
         if (!v)
-            kdDebug() << "got no validator\n";
+            kDebug() << "got no validator\n";
         else
         {
-            kdDebug() << "validator is a " << v->className() << endl;
+            kDebug() << "validator is a " << v->className() << endl;
             delete v;
         }
         
     }
     
-    kdDebug() << "is it valid?\n";
+    kDebug() << "is it valid?\n";
 
     if (!info.isValid()) return 1;
 
-    kdDebug() << "it is!\n";
+    kDebug() << "it is!\n";
 
     printKeyValues(info);
 
       
-    kdDebug() << "========= again after applyChanges() =========\n";
+    kDebug() << "========= again after applyChanges() =========\n";
     
     info.applyChanges();
     
@@ -301,9 +301,9 @@ int main( int argc, char **argv )
     KFileMetaInfoItem thumbitem = info.item(KFileMimeTypeInfo::Thumbnail);
 //    KFileMetaInfoItem thumbitem = info.item("Thumbnail");
     
-    if (!thumbitem.isValid()) kdDebug() << "no thumbnail\n";
+    if (!thumbitem.isValid()) kDebug() << "no thumbnail\n";
     else
-        kdDebug() << "type of thumbnail is " << thumbitem.value().typeName() << endl;
+        kDebug() << "type of thumbnail is " << thumbitem.value().typeName() << endl;
     
     
     if (thumbitem.isValid() && thumbitem.value().canCast(QVariant::Image))

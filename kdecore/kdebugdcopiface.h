@@ -36,12 +36,12 @@ public:
 k_dcop:
 	/**
 	 * The kdebugrc has been changed and should be reparsed now.
-	 * This will simply call kdClearDebugConfig
+	 * This will simply call kClearDebugConfig
 	 **/
 	void notifyKDebugConfigChanged();
 
 	/**
-	 * Print out a kdBacktrace. Useful when trying to understand why
+	 * Print out a kBacktrace. Useful when trying to understand why
 	 * a dialog is popping up, without having to launch gdb
 	 */
 	void printBacktrace();

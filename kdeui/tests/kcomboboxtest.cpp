@@ -200,22 +200,22 @@ void KComboBoxTest::slotTimeout ()
 
 void KComboBoxTest::slotActivated( int index )
 {
-  kdDebug() << "Activated Combo: " << sender()->name() << ", index:" << index << endl;
+  kDebug() << "Activated Combo: " << sender()->name() << ", index:" << index << endl;
 }
 
 void KComboBoxTest::slotActivated (const QString& item)
 {
-  kdDebug() << "Activated Combo: " << sender()->name() << ", item: " << item << endl;
+  kDebug() << "Activated Combo: " << sender()->name() << ", item: " << item << endl;
 }
 
 void KComboBoxTest::slotReturnPressed ()
 {
-  kdDebug() << "Return Pressed: " << sender()->name() << endl;
+  kDebug() << "Return Pressed: " << sender()->name() << endl;
 }
 
 void KComboBoxTest::slotReturnPressed(const QString& item)
 {
-  kdDebug() << "Return Pressed, value = " << item << endl;
+  kDebug() << "Return Pressed, value = " << item << endl;
 }
 
 void KComboBoxTest::quitApp()

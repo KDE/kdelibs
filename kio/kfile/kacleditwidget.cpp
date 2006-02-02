@@ -243,7 +243,7 @@ void KACLListViewItem::updatePermPixmaps()
 void KACLListViewItem::repaint()
 {
     int idx = 0;
-    kdWarning() << "painting tyupe: " << type << endl;
+    kWarning() << "painting tyupe: " << type << endl;
     switch ( type )
     {
       case KACLListView::User:
@@ -521,7 +521,7 @@ void EditACLEntryDialog::slotOk()
 {
     KACLListView::EntryType type = static_cast<KACLListView::EntryType>( m_buttonIds[m_buttonGroup->checkedButton()] );
 
-    kdWarning() << "Type 2: " << type << endl;
+    kWarning() << "Type 2: " << type << endl;
 
     QString qualifier;
     if ( type == KACLListView::NamedUser )

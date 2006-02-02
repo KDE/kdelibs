@@ -99,8 +99,8 @@ PrintcapEntry* PrintcapReader::nextEntry()
     }
 
     // now parse the entry
-    kdDebug() << "COMMENT: " << comment << endl;
-    kdDebug() << "LINE: " << buf << endl;
+    kDebug() << "COMMENT: " << comment << endl;
+    kDebug() << "LINE: " << buf << endl;
     int p = buf.find(':');
     if (p == -1)
         name = buf;
@@ -117,17 +117,17 @@ PrintcapEntry* PrintcapReader::nextEntry()
         QStringList l = QStringList::split('|', name, false);
         entry->name = l[0];
         entry->comment = comment;
-        // kdDebug() << "Printer: " << entry->name << endl;
-        // kdDebug() << "Aliases:" << endl;
+        // kDebug() << "Printer: " << entry->name << endl;
+        // kDebug() << "Aliases:" << endl;
         for (int i=1; i<l.count(); i++)
         {
             entry->aliases << l[i];
-            // kdDebug() << "  " << l[i] << endl;
+            // kDebug() << "  " << l[i] << endl;
         }
         if (!fields.isEmpty())
         {
-            // kdDebug() << "Fields:" << endl;
-            // kdDebug() << "(" << fields << ")" << endl;
+            // kDebug() << "Fields:" << endl;
+            // kDebug() << "(" << fields << ")" << endl;
             l = QStringList::split(':', fields, false);
             for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
             {
@@ -169,7 +169,7 @@ PrintcapEntry* PrintcapReader::nextEntry()
                 entry->fields[f.name] = f;
             }
         }
-        // kdDebug() << endl;
+        // kDebug() << endl;
         return entry;
     }
     return NULL;

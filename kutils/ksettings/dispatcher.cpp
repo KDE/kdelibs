@@ -41,7 +41,7 @@ Dispatcher * Dispatcher::m_self = 0;
 
 Dispatcher * Dispatcher::self()
 {
-    kdDebug( 701 ) << k_funcinfo << endl;
+    kDebug( 701 ) << k_funcinfo << endl;
     if( m_self == 0 )
         ksd_kpd.setObject( m_self, new Dispatcher() );
     return m_self;
@@ -51,12 +51,12 @@ Dispatcher::Dispatcher( QObject * parent )
     : QObject( parent )
     //, d( 0 )
 {
-    kdDebug( 701 ) << k_funcinfo << endl;
+    kDebug( 701 ) << k_funcinfo << endl;
 }
 
 Dispatcher::~Dispatcher()
 {
-    kdDebug( 701 ) << k_funcinfo << endl;
+    kDebug( 701 ) << k_funcinfo << endl;
     //delete d;
 }
 
@@ -66,7 +66,7 @@ void Dispatcher::registerInstance( KInstance * instance, QObject * recv, const c
     // keep the KInstance around and call
     // instance->config()->reparseConfiguration when the app should reparse
     QByteArray instanceName = instance->instanceName();
-    kdDebug( 701 ) << k_funcinfo << instanceName << endl;
+    kDebug( 701 ) << k_funcinfo << instanceName << endl;
     m_instanceName[ recv ] = instanceName;
     Q3Signal * sig;
     if( m_instanceInfo.contains( instanceName ) )
@@ -87,7 +87,7 @@ void Dispatcher::registerInstance( KInstance * instance, QObject * recv, const c
 
 KConfig * Dispatcher::configForInstanceName( const QByteArray & instanceName )
 {
-    kdDebug( 701 ) << k_funcinfo << endl;
+    kDebug( 701 ) << k_funcinfo << endl;
     if( m_instanceInfo.contains( instanceName ) )
     {
         KInstance * inst = m_instanceInfo[ instanceName ].instance;
@@ -101,7 +101,7 @@ KConfig * Dispatcher::configForInstanceName( const QByteArray & instanceName )
 
 QList<QByteArray> Dispatcher::instanceNames() const
 {
-    kdDebug( 701 ) << k_funcinfo << endl;
+    kDebug( 701 ) << k_funcinfo << endl;
     QList<QByteArray> names;
     for( QMap<QByteArray, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
         if( ( *it ).count > 0 )
@@ -111,7 +111,7 @@ QList<QByteArray> Dispatcher::instanceNames() const
 
 void Dispatcher::reparseConfiguration( const QByteArray & instanceName )
 {
-    kdDebug( 701 ) << k_funcinfo << instanceName << endl;
+    kDebug( 701 ) << k_funcinfo << instanceName << endl;
     // check if the instanceName is valid:
     if( ! m_instanceInfo.contains( instanceName ) )
         return;
@@ -121,7 +121,7 @@ void Dispatcher::reparseConfiguration( const QByteArray & instanceName )
     Q3Signal * sig = m_instanceInfo[ instanceName ].signal;
     if( sig )
     {
-        kdDebug( 701 ) << "emit signal to instance" << endl;
+        kDebug( 701 ) << "emit signal to instance" << endl;
         sig->activate();
     }
 }
@@ -136,7 +136,7 @@ void Dispatcher::syncConfiguration()
 
 void Dispatcher::unregisterInstance( QObject * obj )
 {
-    kdDebug( 701 ) << k_funcinfo << endl;
+    kDebug( 701 ) << k_funcinfo << endl;
     QByteArray name = m_instanceName[ obj ];
     m_instanceName.remove( obj ); //obj will be destroyed when we return, so we better remove this entry
     --m_instanceInfo[ name ].count;

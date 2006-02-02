@@ -47,10 +47,10 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
     if( abs_path )
     {
         m_filterData->setAbsolutePath( QLatin1String( abs_path ) );
-        kdDebug() << "Filtering: " << a << " with abs_path=" << abs_path << endl;
+        kDebug() << "Filtering: " << a << " with abs_path=" << abs_path << endl;
     }
     else
-        kdDebug() << "Filtering: " << a << endl;
+        kDebug() << "Filtering: " << a << endl;
 
     if (KURIFilter::self()->filterURI(*m_filterData, list))
     {
@@ -68,29 +68,29 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
             case KURIFilterData::LOCAL_FILE:
             case KURIFilterData::LOCAL_DIR:
             case KURIFilterData::HELP:
-                kdDebug() << "*** Result: Local Resource =>  '"
+                kDebug() << "*** Result: Local Resource =>  '"
                           << m_filterData->uri().url() << "'" << endl;
                 break;
             case KURIFilterData::NET_PROTOCOL:
-                kdDebug() << "*** Result: Network Resource => '"
+                kDebug() << "*** Result: Network Resource => '"
                           << m_filterData->uri().url() << "'" << endl;
                 break;
             case KURIFilterData::SHELL:
             case KURIFilterData::EXECUTABLE:
                 if( m_filterData->hasArgsAndOptions() )
                     cmd += m_filterData->argsAndOptions();
-                kdDebug() << "*** Result: Executable/Shell => '" << cmd << "'"<< endl;
+                kDebug() << "*** Result: Executable/Shell => '" << cmd << "'"<< endl;
                 break;
             case KURIFilterData::ERROR:
-                kdDebug() << "*** Result: Encountered error. See reason below." << endl;
+                kDebug() << "*** Result: Encountered error. See reason below." << endl;
                 break;
             default:
-                kdDebug() << "*** Result: Unknown or invalid resource." << endl;
+                kDebug() << "*** Result: Unknown or invalid resource." << endl;
         }
 
         if ( expectedUriType != -1 && expectedUriType != m_filterData->uriType() )
         {
-            kdError() << " Got URI type " << s_uritypes[m_filterData->uriType()]
+            kError() << " Got URI type " << s_uritypes[m_filterData->uriType()]
                       << " expected " << s_uritypes[expectedUriType] << endl;
             ::exit(1);
         }
@@ -101,7 +101,7 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
             cmd = cmd.replace( QRegExp( "www\\.google\\.[^/]*/" ), "www.google.com/" );
             if ( cmd != QLatin1String( expectedResult ) )
             {
-                kdError() << " Got " << cmd << " expected " << expectedResult << endl;
+                kError() << " Got " << cmd << " expected " << expectedResult << endl;
                 ::exit(1);
             }
         }
@@ -109,13 +109,13 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
     else
     {
         if ( expectedUriType == NO_FILTERING )
-            kdDebug() << "*** No filtering required." << endl;
+            kDebug() << "*** No filtering required." << endl;
         else
         {
-            kdDebug() << "*** Could not be filtered." << endl;
+            kDebug() << "*** Could not be filtered." << endl;
             if( expectedUriType != m_filterData->uriType() )
             {
-                kdError() << " Got URI type " << s_uritypes[m_filterData->uriType()]
+                kError() << " Got URI type " << s_uritypes[m_filterData->uriType()]
                           << " expected " << s_uritypes[expectedUriType] << endl;
                 ::exit(1);
             }
@@ -123,7 +123,7 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
     }
 
     delete m_filterData;
-    kdDebug() << "-----" << endl;
+    kDebug() << "-----" << endl;
 }
 
 void testLocalFile( const QString& filename )
@@ -138,7 +138,7 @@ void testLocalFile( const QString& filename )
         tmpFile.remove();
     }
     else
-        kdDebug() << "Couldn't create " << tmpFile.name() << ", skipping test" << endl;
+        kDebug() << "Couldn't create " << tmpFile.name() << ", skipping test" << endl;
 }
 
 static const char appName[] = "kurifiltertest";
@@ -357,6 +357,6 @@ int main(int argc, char **argv)
     // Clean up
     KIO::NetAccess::del( kdehome, 0 );
 
-    kdDebug() << "All tests done. Go home..." << endl;
+    kDebug() << "All tests done. Go home..." << endl;
     return 0;
 }

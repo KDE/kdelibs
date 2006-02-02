@@ -122,7 +122,7 @@ void LdapClient::startQuery( const QString& filter )
   url.setScope( mScope == "one" ? LDAPUrl::One : LDAPUrl::Sub );
   url.setFilter( "("+filter+")" );
 
-  kdDebug(5700) << "Doing query: " << url.prettyURL() << endl;
+  kDebug(5700) << "Doing query: " << url.prettyURL() << endl;
 
   startParseLDIF();
   mActive = true;
@@ -149,7 +149,7 @@ void LdapClient::slotData( KIO::Job*, const QByteArray& data )
 {
 #ifndef NDEBUG // don't create the QString
 //  QString str( data );
-//  kdDebug(5700) << "LdapClient: Got \"" << str << "\"\n";
+//  kDebug(5700) << "LdapClient: Got \"" << str << "\"\n";
 #endif
   parseLDIF( data );
 }
@@ -392,7 +392,7 @@ void LdapSearch::makeSearchData( QStringList& ret, LdapResultList& resList )
     else if ( name.isEmpty() )
       ret.append( mail );
     else {
-      kdDebug(5700) << "<" << name << "><" << mail << ">" << endl;
+      kDebug(5700) << "<" << name << "><" << mail << ">" << endl;
       ret.append( QString( "%1 <%2>" ).arg( name ).arg( mail ) );
     }
 

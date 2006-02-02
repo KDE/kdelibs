@@ -1584,19 +1584,19 @@ yyreduce:
 	if ( yyvsp[-1].valueList ) {
 	    p->valueList = yyvsp[-1].valueList;
 #ifdef CSS_DEBUG
-	    kdDebug( 6080 ) << "   got property for " << p->id <<
+	    kDebug( 6080 ) << "   got property for " << p->id <<
 		(p->important?" important":"")<< endl;
 	    bool ok =
 #endif
 		p->parseValue( p->id, p->important );
 #ifdef CSS_DEBUG
 	    if ( !ok )
-		kdDebug( 6080 ) << "     couldn't parse value!" << endl;
+		kDebug( 6080 ) << "     couldn't parse value!" << endl;
 #endif
 	}
 #ifdef CSS_DEBUG
 	else
-	    kdDebug( 6080 ) << "     no value found!" << endl;
+	    kDebug( 6080 ) << "     no value found!" << endl;
 #endif
 	delete p->valueList;
 	p->valueList = 0;
@@ -1607,7 +1607,7 @@ yyreduce:
 
     {
 #ifdef CSS_DEBUG
-     kdDebug( 6080 ) << "charset rule: " << qString(yyvsp[-2].string) << endl;
+     kDebug( 6080 ) << "charset rule: " << qString(yyvsp[-2].string) << endl;
 #endif
  ;}
     break;
@@ -1628,7 +1628,7 @@ yyreduce:
 
     {
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "@import: " << qString(yyvsp[-3].string) << endl;
+	kDebug( 6080 ) << "@import: " << qString(yyvsp[-3].string) << endl;
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( yyvsp[-1].mediaList && p->styleElement && p->styleElement->isCSSStyleSheet() )
@@ -1656,7 +1656,7 @@ yyreduce:
 
     {
 #ifdef CSS_DEBUG
-    kdDebug( 6080 ) << "@namespace: " << qString(yyvsp[-2].string) << endl;
+    kDebug( 6080 ) << "@namespace: " << qString(yyvsp[-2].string) << endl;
 #endif
       CSSParser *p = static_cast<CSSParser *>(parser);
     if (p->styleElement && p->styleElement->isCSSStyleSheet())
@@ -1823,7 +1823,7 @@ yyreduce:
 
     {
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "got ruleset" << endl << "  selector:" << endl;
+	kDebug( 6080 ) << "got ruleset" << endl << "  selector:" << endl;
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( yyvsp[-1].selectorList && yyvsp[0].ok && p->numParsedProperties ) {
@@ -1847,7 +1847,7 @@ yyreduce:
 	    yyval.selectorList = new Q3PtrList<CSSSelector>;
             yyval.selectorList->setAutoDelete( true );
 #ifdef CSS_DEBUG
-	    kdDebug( 6080 ) << "   got simple selector:" << endl;
+	    kDebug( 6080 ) << "   got simple selector:" << endl;
 	    yyvsp[0].selector->print();
 #endif
 	    yyval.selectorList->append( yyvsp[0].selector );
@@ -1864,7 +1864,7 @@ yyreduce:
 	    yyval.selectorList = yyvsp[-3].selectorList;
 	    yyval.selectorList->append( yyvsp[0].selector );
 #ifdef CSS_DEBUG
-	    kdDebug( 6080 ) << "   got simple selector:" << endl;
+	    kDebug( 6080 ) << "   got simple selector:" << endl;
 	    yyvsp[0].selector->print();
 #endif
 	} else {
@@ -2332,7 +2332,7 @@ yyreduce:
 	if ( yyvsp[-4].prop_id && yyvsp[-1].valueList ) {
 	    p->valueList = yyvsp[-1].valueList;
 #ifdef CSS_DEBUG
-	    kdDebug( 6080 ) << "   got property: " << yyvsp[-4].prop_id <<
+	    kDebug( 6080 ) << "   got property: " << yyvsp[-4].prop_id <<
 		(yyvsp[0].b?" important":"")<< endl;
 #endif
 	        bool ok = p->parseValue( yyvsp[-4].prop_id, yyvsp[0].b );
@@ -2340,7 +2340,7 @@ yyreduce:
 		    yyval.ok = ok;
 #ifdef CSS_DEBUG
 	        else
-		    kdDebug( 6080 ) << "     couldn't parse value!" << endl;
+		    kDebug( 6080 ) << "     couldn't parse value!" << endl;
 #endif
 	} else {
             delete yyvsp[-1].valueList;
@@ -2597,7 +2597,7 @@ yyreduce:
     {
 	yyval.rule = 0;
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid @-rule" << endl;
+	kDebug( 6080 ) << "skipped invalid @-rule" << endl;
 #endif
     ;}
     break;
@@ -2607,7 +2607,7 @@ yyreduce:
     {
 	yyval.rule = 0;
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid @-rule" << endl;
+	kDebug( 6080 ) << "skipped invalid @-rule" << endl;
 #endif
     ;}
     break;
@@ -2617,7 +2617,7 @@ yyreduce:
     {
 	yyval.rule = 0;
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid rule" << endl;
+	kDebug( 6080 ) << "skipped invalid rule" << endl;
 #endif
     ;}
     break;

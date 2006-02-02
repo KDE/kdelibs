@@ -70,13 +70,13 @@ void KBzip2Filter::init( int mode )
     if ( mode == QIODevice::ReadOnly )
     {
         (void)bzDecompressInit(&d->zStream, 0, 0);
-        //kdDebug(7118) << "bzDecompressInit returned " << result << endl;
+        //kDebug(7118) << "bzDecompressInit returned " << result << endl;
         // No idea what to do with result :)
     } else if ( mode == QIODevice::WriteOnly ) {
         (void)bzCompressInit(&d->zStream, 5, 0, 0);
-        //kdDebug(7118) << "bzDecompressInit returned " << result << endl;
+        //kDebug(7118) << "bzDecompressInit returned " << result << endl;
     } else
-        kdWarning(7118) << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported" << endl;
+        kWarning(7118) << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported" << endl;
     m_mode = mode;
 }
 
@@ -85,19 +85,19 @@ void KBzip2Filter::terminate()
     if ( m_mode == QIODevice::ReadOnly )
     {
         int result = bzDecompressEnd(&d->zStream);
-        kdDebug(7118) << "bzDecompressEnd returned " << result << endl;
+        kDebug(7118) << "bzDecompressEnd returned " << result << endl;
     } else if ( m_mode == QIODevice::WriteOnly )
     {
         int result = bzCompressEnd(&d->zStream);
-        kdDebug(7118) << "bzCompressEnd returned " << result << endl;
+        kDebug(7118) << "bzCompressEnd returned " << result << endl;
     } else
-        kdWarning(7118) << "Unsupported mode " << m_mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported" << endl;
+        kWarning(7118) << "Unsupported mode " << m_mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported" << endl;
 }
 
 
 void KBzip2Filter::reset()
 {
-    kdDebug(7118) << "KBzip2Filter::reset" << endl;
+    kDebug(7118) << "KBzip2Filter::reset" << endl;
     // bzip2 doesn't seem to have a reset call...
     terminate();
     init( m_mode );
@@ -127,12 +127,12 @@ int KBzip2Filter::outBufferAvailable() const
 
 KBzip2Filter::Result KBzip2Filter::uncompress()
 {
-    //kdDebug(7118) << "Calling bzDecompress with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
+    //kDebug(7118) << "Calling bzDecompress with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
     int result = bzDecompress(&d->zStream);
     if ( result != BZ_OK )
     {
-        kdDebug(7118) << "bzDecompress returned " << result << endl;
-        kdDebug(7118) << "KBzip2Filter::uncompress " << ( result == BZ_OK ? OK : ( result == BZ_STREAM_END ? END : ERROR ) ) << endl;
+        kDebug(7118) << "bzDecompress returned " << result << endl;
+        kDebug(7118) << "KBzip2Filter::uncompress " << ( result == BZ_OK ? OK : ( result == BZ_STREAM_END ? END : ERROR ) ) << endl;
     }
 
     switch (result) {
@@ -147,7 +147,7 @@ KBzip2Filter::Result KBzip2Filter::uncompress()
 
 KBzip2Filter::Result KBzip2Filter::compress( bool finish )
 {
-    //kdDebug(7118) << "Calling bzCompress with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
+    //kDebug(7118) << "Calling bzCompress with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
     int result = bzCompress(&d->zStream, finish ? BZ_FINISH : BZ_RUN );
 
     switch (result) {
@@ -158,11 +158,11 @@ KBzip2Filter::Result KBzip2Filter::compress( bool finish )
                 return OK;
                 break;
         case BZ_STREAM_END:
-                kdDebug(7118) << "  bzCompress returned " << result << endl;
+                kDebug(7118) << "  bzCompress returned " << result << endl;
                 return END;
 		break;
         default:
-                kdDebug(7118) << "  bzCompress returned " << result << endl;
+                kDebug(7118) << "  bzCompress returned " << result << endl;
                 return ERROR;
                 break;
     }

@@ -609,7 +609,7 @@ bool BuildHelper::processActionElement( const QDomElement &e, int idx )
     // look up the action and plug it in
     KAction *action = m_state.guiClient->action( e );
 
-    //kdDebug() << "BuildHelper::processActionElement " << e.attribute( "name" ) << " -> " << action << " (in " << m_state.guiClient->actionCollection() << ")" << endl;
+    //kDebug() << "BuildHelper::processActionElement " << e.attribute( "name" ) << " -> " << action << " (in " << m_state.guiClient->actionCollection() << ")" << endl;
     if ( !action )
         return false;
 
@@ -681,12 +681,12 @@ void BuildHelper::processMergeElement( const QString &tag, const QString &name, 
     {
         if ( tag == tagDefineGroup )
         {
-            kdError(1000) << "cannot define group without name!" << endl;
+            kError(1000) << "cannot define group without name!" << endl;
             return;
         }
         if ( tag == tagActionList )
         {
-            kdError(1000) << "cannot define actionlist without name!" << endl;
+            kError(1000) << "cannot define actionlist without name!" << endl;
             return;
         }
         mergingName = defaultMergingName;

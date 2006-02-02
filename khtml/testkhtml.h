@@ -32,7 +32,7 @@ private Q_SLOTS:
 
   void toggleEditable(bool s)
   {
-  kdDebug() << "editable: " << s << endl;
+  kDebug() << "editable: " << s << endl;
       m_part->setEditable(s);
   }
 

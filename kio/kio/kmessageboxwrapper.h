@@ -37,7 +37,7 @@ public:
 	if (qApp && qApp->type() == QApplication::GuiClient) {
       	  KMessageBox::error( parent, text, caption );
 	} else 
-	  kdWarning() << text << endl;
+	  kWarning() << text << endl;
     }
 
   static void sorry(QWidget *parent, 
@@ -47,7 +47,7 @@ public:
       if (qApp && qApp->type() == QApplication::GuiClient) {
          KMessageBox::sorry( parent, text, caption );
       } else
-	kdWarning() << text << endl;
+	kWarning() << text << endl;
     }
   
 };

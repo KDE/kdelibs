@@ -147,7 +147,7 @@ static void initialize( StdAccel id )
 	KStdAccelInfo* pInfo = infoPtr( id );
 
 	if( !pInfo ) {
-		kdWarning(125) << "KStdAccel: id not found!" << endl; // -- ellis
+		kWarning(125) << "KStdAccel: id not found!" << endl; // -- ellis
 		return;
 	}
 

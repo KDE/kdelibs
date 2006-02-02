@@ -49,7 +49,7 @@ void KStringListValidator::fixup( QString & /* input */ ) const {
   // warn (but only once!) about non-implemented fixup():
   static bool warn = true;
   if ( warn ) {
-    kdDebug() << "KStringListValidator::fixup() isn't yet implemented!"
+    kDebug() << "KStringListValidator::fixup() isn't yet implemented!"
 	      << endl;
     warn = false;
   }

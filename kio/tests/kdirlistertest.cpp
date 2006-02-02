@@ -143,9 +143,9 @@ void KDirListerTest::completed()
     {
         KFileItem* item = lister->findByURL( "/tmp" );
         if ( item )
-            kdDebug() << "Found /tmp: " << item << endl;
+            kDebug() << "Found /tmp: " << item << endl;
         else
-            kdWarning() << "/tmp not found! Bug in findByURL?" << endl;
+            kWarning() << "/tmp not found! Bug in findByURL?" << endl;
     }
 }
 

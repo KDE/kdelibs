@@ -436,7 +436,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    if (!rFile.isOpen()) // come back, if you have real work for us ;->
       return;
 
-   //using kdDebug() here leads to an infinite loop
+   //using kDebug() here leads to an infinite loop
    //remove this for the release, aleXXX
    //qWarning("Parsing %s, global = %s default = %s",
    //           rFile.name().toLatin1(), bGlobal ? "true" : "false", bDefault ? "true" : "false");

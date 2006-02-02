@@ -598,7 +598,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 
 void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 {
-	kdDebug( 500 ) << "Saving PPD file with template=" << driver->get( "template" ) << endl;
+	kDebug( 500 ) << "Saving PPD file with template=" << driver->get( "template" ) << endl;
 	QIODevice *in = KFilterDev::deviceForFile( driver->get( "template" ) );
 	QFile	out(filename);
 	if (in && in->open(QIODevice::ReadOnly) && out.open(QIODevice::WriteOnly))
@@ -877,7 +877,7 @@ QString KMCupsManager::stateInformation()
 
 void KMCupsManager::checkUpdatePossibleInternal()
 {
-	kdDebug(500) << "Checking for update possible" << endl;
+	kDebug(500) << "Checking for update possible" << endl;
 	connect( &m_socket, SIGNAL( connected( const KNetwork::KResolverEntry& ) ),
 		 SLOT( slotConnectionSuccess() ) );
 	connect( &m_socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
@@ -886,7 +886,7 @@ void KMCupsManager::checkUpdatePossibleInternal()
 
 void KMCupsManager::slotConnectionSuccess()
 {
-	kdDebug(500) << "Connection success, trying to send a request..." << endl;
+	kDebug(500) << "Connection success, trying to send a request..." << endl;
 	m_socket.close();
 
 	IppRequest req;
@@ -896,7 +896,7 @@ void KMCupsManager::slotConnectionSuccess()
 		setUpdatePossible( true );
 	else
 	{
-		kdDebug(500) << "Unable to get printer list" << endl;
+		kDebug(500) << "Unable to get printer list" << endl;
 		if ( trials > 0 )
 		{
 			trials--;
@@ -913,14 +913,14 @@ void KMCupsManager::slotConnectionSuccess()
 
 void KMCupsManager::slotAsyncConnect()
 {
-	kdDebug(500) << "Starting async connect" << endl;
+	kDebug(500) << "Starting async connect" << endl;
 	m_socket.connect( CupsInfos::self()->host(),
 			  QString::number( CupsInfos::self()->port() ) );
 }
 
 void KMCupsManager::slotConnectionFailed( int errcode )
 {
-	kdDebug(500) << "Connection failed trials=" << trials << endl;
+	kDebug(500) << "Connection failed trials=" << trials << endl;
 	if ( trials > 0 )
 	{
 		trials--;

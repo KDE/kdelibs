@@ -169,7 +169,7 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
 {
     if (!widget)
     {
-        kdDebug(125) << "null pointer given to manage" << endl;
+        kDebug(125) << "null pointer given to manage" << endl;
         return;
     }
 
@@ -236,7 +236,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
         if ( dynamic_cast<Q3GroupBox*>( it->m_widget ) )
              continue;
 
-        kdDebug(125) << "write " << cnt << " " << it->m_widget->className() << " " <<contents[cnt].accelerated() << endl;
+        kDebug(125) << "write " << cnt << " " << it->m_widget->className() << " " <<contents[cnt].accelerated() << endl;
 
         int tprop = it->m_widget->metaObject()->indexOfProperty("text");
         if (tprop != -1)  {
@@ -252,7 +252,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     // calculate the accelerators for the children
     foreach(Item *it, *item->m_children)
     {
-        kdDebug(125) << "children " << it->m_widget->className() << endl;
+        kDebug(125) << "children " << it->m_widget->className() << endl;
         if (it->m_widget && it->m_widget->isVisibleTo( item->m_widget ) )
             calculateAccelerators(it, used);
     }
@@ -446,7 +446,7 @@ void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
 
 void KAcceleratorManager::manage(QWidget *widget, bool programmers_mode)
 {
-    kdDebug(125) << "KAcceleratorManager::manage\n";
+    kDebug(125) << "KAcceleratorManager::manage\n";
     KAcceleratorManagerPrivate::changed_string.clear();
     KAcceleratorManagerPrivate::added_string.clear();
     KAcceleratorManagerPrivate::removed_string.clear();
@@ -486,7 +486,7 @@ KAccelString::KAccelString(const QString &input, int initialWeight)
 
     m_orig_accel = m_accel = stripAccelerator(m_pureText);
 
-    kdDebug(125) << input << " " << m_orig_accel << " " << m_accel << " " << m_pureText << endl;
+    kDebug(125) << input << " " << m_orig_accel << " " << m_accel << " " << m_pureText << endl;
     if (initialWeight == -1)
         initialWeight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
 
@@ -566,7 +566,7 @@ void KAccelString::calculateWeights(int initialWeight)
     // try to preserve the wanted accelarators
     if ((int)pos == accel()) {
         weight += KAccelManagerAlgorithm::WANTED_ACCEL_EXTRA_WEIGHT;
-        // kdDebug(125) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText) << endl;
+        // kDebug(125) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText) << endl;
         if (KAcceleratorManagerPrivate::standardName(m_origText))  {
             weight += KAccelManagerAlgorithm::STANDARD_ACCEL;
         }
@@ -637,7 +637,7 @@ void KAccelString::dump()
   QString s;
   for (int i=0; i<m_weight.count(); ++i)
     s += QString("%1(%2) ").arg(pure()[i]).arg(m_weight[i]);
-  kdDebug() << "s " << s << endl;
+  kDebug() << "s " << s << endl;
 }
 
 
@@ -676,19 +676,19 @@ void KAccelString::dump()
 
 void KAccelManagerAlgorithm::findAccelerators(KAccelStringList &result, QString &used)
 {
-    kdDebug(125) << "findAccelerators\n";
+    kDebug(125) << "findAccelerators\n";
   KAccelStringList accel_strings = result;
 
   // initally remove all accelerators
   for (KAccelStringList::Iterator it = result.begin(); it != result.end(); ++it) {
-      kdDebug(125) << "reset " << ( *it ).pure() << endl;
+      kDebug(125) << "reset " << ( *it ).pure() << endl;
     (*it).setAccel(-1);
   }
 
   // pick the highest bids
   for (int cnt=0; cnt<accel_strings.count(); ++cnt)
   {
-      kdDebug(125) << "cnt " << accel_strings[cnt].pure() << endl;
+      kDebug(125) << "cnt " << accel_strings[cnt].pure() << endl;
     int max = 0, index = -1, accel = -1;
 
     // find maximum weight
@@ -853,7 +853,7 @@ void QWidgetStackAccelManager::currentChanged(int child)
 {
     if (child < 0 || child >= static_cast<QStackedWidget*>(parent())->count())
     {
-        kdDebug(125) << k_funcinfo << "invalid index provided" << endl;
+        kDebug(125) << k_funcinfo << "invalid index provided" << endl;
         return;
     }
 

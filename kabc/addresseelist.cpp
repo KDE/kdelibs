@@ -132,8 +132,8 @@ AddresseeList::AddresseeList( const QList<Addressee> &l )
 
 void AddresseeList::dump() const
 {
-  kdDebug(5700) << "AddresseeList {" << endl;
-  kdDebug(5700) << "reverse order: " << ( mReverseSorting ? "true" : "false" ) << endl;
+  kDebug(5700) << "AddresseeList {" << endl;
+  kDebug(5700) << "reverse order: " << ( mReverseSorting ? "true" : "false" ) << endl;
 
   QString crit;
   if ( Uid == mActiveSortingCriterion ) {
@@ -150,13 +150,13 @@ void AddresseeList::dump() const
     crit = "unknown -- update dump method";
   }
 
-  kdDebug(5700) << "sorting criterion: " << crit << endl;
+  kDebug(5700) << "sorting criterion: " << crit << endl;
 
   for ( const_iterator it = begin(); it != end(); ++it ) {
     (*it).dump();
   }
 
-  kdDebug(5700) << "}" << endl;
+  kDebug(5700) << "}" << endl;
 }
 
 void AddresseeList::sortBy( SortingCriterion c )
@@ -173,7 +173,7 @@ void AddresseeList::sortBy( SortingCriterion c )
   } else if ( GivenName==c ) {
     sortByTrait<SortingTraits::GivenName>();
   } else {
-    kdError(5700) << "AddresseeList sorting criterion passed for which a trait is not known. No sorting done." << endl;
+    kError(5700) << "AddresseeList sorting criterion passed for which a trait is not known. No sorting done." << endl;
   }
 }
 
@@ -221,7 +221,7 @@ void AddresseeList::sortByTrait()
 void AddresseeList::sortByField( Field *field )
 {
   if ( !field ) {
-    kdWarning(5700) << "sortByField called with no active sort field" << endl;
+    kWarning(5700) << "sortByField called with no active sort field" << endl;
     return;
   }
 

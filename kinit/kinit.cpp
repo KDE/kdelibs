@@ -528,7 +528,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
        QString argvexe = s_instance->dirs()->findExe(QString::fromLatin1(d.argv[0]));
        if (!argvexe.isEmpty()) {
           QByteArray cstr = argvexe.local8Bit();
-          kdDebug() << "kdeinit: launch() setting argv: " << cstr.data() << endl;
+          kDebug() << "kdeinit: launch() setting argv: " << cstr.data() << endl;
           d.argv[0] = strdup(cstr.data());
        }
 #endif

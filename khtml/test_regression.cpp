@@ -700,7 +700,7 @@ int main(int argc, char *argv[])
         }
         dc.sync();
 
-        kdClearDebugConfig();
+        kClearDebugConfig();
     }
 
     // create widgets
@@ -1133,7 +1133,7 @@ QImage RegressionTest::renderToImage()
 bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
 {
     if ( lhsi.width() != rhsi.width() || lhsi.height() != rhsi.height() ) {
-        kdDebug() << "dimensions different " << lhsi.size() << " " << rhsi.size() << endl;
+        kDebug() << "dimensions different " << lhsi.size() << " " << rhsi.size() << endl;
         return false;
     }
     int w = lhsi.width();
@@ -1155,7 +1155,7 @@ bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
                      ( abs( qGreen( l ) - qGreen(r ) ) < 20 ) &&
                      ( abs( qBlue( l ) - qBlue(r ) ) < 20 ) )
                     continue;
-                 kdDebug() << "pixel (" << x << ", " << y << ") is different " << QColor(  lhsi.pixel (  x, y ) ) << " " << QColor(  rhsi.pixel (  x, y ) ) << endl;
+                 kDebug() << "pixel (" << x << ", " << y << ") is different " << QColor(  lhsi.pixel (  x, y ) ) << " " << QColor(  rhsi.pixel (  x, y ) ) << endl;
                 return false;
             }
         }
@@ -1191,7 +1191,7 @@ void RegressionTest::doJavascriptReport( const QString &test )
 {
     QFile compare( m_outputDir + "/" + test + "-compare.html" );
     if ( !compare.open( QIODevice::WriteOnly|QIODevice::Truncate ) )
-        kdDebug() << "failed to open " << m_outputDir + "/" + test + "-compare.html" << endl;
+        kDebug() << "failed to open " << m_outputDir + "/" + test + "-compare.html" << endl;
     QString cl;
     cl = QString( "<html><head><title>%1</title>" ).arg( test );
     cl += "<body><tt>";
@@ -1221,8 +1221,8 @@ static QString makeRelativePath(const QString &base, const QString &path)
 {
     QString absBase = QFileInfo(base).absoluteFilePath();
     QString absPath = QFileInfo(path).absoluteFilePath();
-//     kdDebug() << "absPath: \"" << absPath << "\"" << endl;
-//     kdDebug() << "absBase: \"" << absBase << "\"" << endl;
+//     kDebug() << "absPath: \"" << absPath << "\"" << endl;
+//     kDebug() << "absBase: \"" << absBase << "\"" << endl;
 
     // walk up to common ancestor directory
     int pos = 0;
@@ -1232,16 +1232,16 @@ static QString makeRelativePath(const QString &base, const QString &path)
         if (newpos == -1) newpos = absBase.length();
         QConstString cmpPathComp(absPath.unicode() + pos, newpos - pos);
         QConstString cmpBaseComp(absBase.unicode() + pos, newpos - pos);
-//         kdDebug() << "cmpPathComp: \"" << cmpPathComp.string() << "\"" << endl;
-//         kdDebug() << "cmpBaseComp: \"" << cmpBaseComp.string() << "\"" << endl;
-//         kdDebug() << "pos: " << pos << " newpos: " << newpos << endl;
+//         kDebug() << "cmpPathComp: \"" << cmpPathComp.string() << "\"" << endl;
+//         kDebug() << "cmpBaseComp: \"" << cmpBaseComp.string() << "\"" << endl;
+//         kDebug() << "pos: " << pos << " newpos: " << newpos << endl;
         if (cmpPathComp.string() != cmpBaseComp.string()) { pos--; break; }
         pos = newpos;
     } while (pos < (int)absBase.length() && pos < (int)absPath.length());
     int basepos = pos < (int)absBase.length() ? pos + 1 : pos;
     int pathpos = pos < (int)absPath.length() ? pos + 1 : pos;
 
-//     kdDebug() << "basepos " << basepos << " pathpos " << pathpos << endl;
+//     kDebug() << "basepos " << basepos << " pathpos " << pathpos << endl;
 
     QString rel;
     {
@@ -1443,7 +1443,7 @@ void RegressionTest::testStaticFile(const QString & filename)
             }
         }
         if ( functionname.isNull() ) {
-            kdDebug() << "DOM " << filename << " doesn't expose 1 function name - ignoring" << endl;
+            kDebug() << "DOM " << filename << " doesn't expose 1 function name - ignoring" << endl;
             return;
         }
 

@@ -27,7 +27,7 @@ QTEST_KDEMAIN( KUrlMimeTest, NoGUI )
 
 void KUrlMimeTest::testURLList()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     QMimeData* mimeData = new QMimeData;
     QVERIFY( !KUrl::List::canDecode( mimeData ) );
 

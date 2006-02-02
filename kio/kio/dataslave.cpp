@@ -59,14 +59,14 @@ using namespace KIO;
 DataSlave::DataSlave() :
 	Slave(true, 0, "data", QString())
 {
-  //kdDebug() << this << k_funcinfo << endl;
+  //kDebug() << this << k_funcinfo << endl;
   _suspended = false;
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), SLOT(dispatchNext()));
 }
 
 DataSlave::~DataSlave() {
-  //kdDebug() << this << k_funcinfo << endl;
+  //kDebug() << this << k_funcinfo << endl;
 }
 
 void DataSlave::hold(const KUrl &/*url*/) {
@@ -75,13 +75,13 @@ void DataSlave::hold(const KUrl &/*url*/) {
 
 void DataSlave::suspend() {
   _suspended = true;
-  //kdDebug() << this << k_funcinfo << endl;
+  //kDebug() << this << k_funcinfo << endl;
   timer->stop();
 }
 
 void DataSlave::resume() {
   _suspended = false;
-  //kdDebug() << this << k_funcinfo << endl;
+  //kDebug() << this << k_funcinfo << endl;
   // aarrrgh! This makes the once hyper fast and efficient data protocol
   // implementation slow as molasses. But it wouldn't work otherwise,
   // and I don't want to start messing around with threads
@@ -103,7 +103,7 @@ void DataSlave::dispatchNext() {
   }
 
   const QueueStruct &q = dispatchQueue.front();
-  //kdDebug() << this << k_funcinfo << "dispatching " << q.type << " " << dispatchQueue.size() << " left" << endl;
+  //kDebug() << this << k_funcinfo << "dispatching " << q.type << " " << dispatchQueue.size() << " left" << endl;
   switch (q.type) {
     case Queue_mimeType:	mimeType(q.s); break;
     case Queue_totalSize:	totalSize(q.size); break;

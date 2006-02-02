@@ -44,7 +44,7 @@ ManagerImpl::ManagerImpl( ManagerNotifier *notifier, const QString &family )
     mFamily( family ), mConfig( 0 ), mStdConfig( 0 ), mStandard( 0 ),
     mFactory( 0 ), mConfigRead( false )
 {
-  kdDebug(5650) << "ManagerImpl::ManagerImpl()" << endl;
+  kDebug(5650) << "ManagerImpl::ManagerImpl()" << endl;
 
   mId = KRandom::randomString( 8 );
 
@@ -54,28 +54,28 @@ ManagerImpl::ManagerImpl( ManagerNotifier *notifier, const QString &family )
     KApplication::dcopClient()->setDefaultObject( objId() );
   }
 
-  kdDebug(5650) << "Connecting DCOP signals..." << endl;
+  kDebug(5650) << "Connecting DCOP signals..." << endl;
   if ( !connectDCOPSignal( 0, "ManagerIface_" + family.toUtf8(),
                            "signalKResourceAdded( QString, QString )",
                            "dcopKResourceAdded( QString, QString )", false ) )
-    kdWarning(5650) << "Could not connect ResourceAdded signal!" << endl;
+    kWarning(5650) << "Could not connect ResourceAdded signal!" << endl;
 
   if ( !connectDCOPSignal( 0, "ManagerIface_" + family.toUtf8(),
                            "signalKResourceModified( QString, QString )",
                            "dcopKResourceModified( QString, QString )", false ) )
-    kdWarning(5650) << "Could not connect ResourceModified signal!" << endl;
+    kWarning(5650) << "Could not connect ResourceModified signal!" << endl;
 
   if ( !connectDCOPSignal( 0, "ManagerIface_" + family.toUtf8(),
                            "signalKResourceDeleted( QString, QString )",
                            "dcopKResourceDeleted( QString, QString )", false ) )
-    kdWarning(5650) << "Could not connect ResourceDeleted signal!" << endl;
+    kWarning(5650) << "Could not connect ResourceDeleted signal!" << endl;
 
   KApplication::dcopClient()->setNotifications( true );
 }
 
 ManagerImpl::~ManagerImpl()
 {
-  kdDebug(5650) << "ManagerImpl::~ManagerImpl()" << endl;
+  kDebug(5650) << "ManagerImpl::~ManagerImpl()" << endl;
 
   Resource::List::ConstIterator it;
   for ( it = mResources.begin(); it != mResources.end(); ++it ) {
@@ -97,7 +97,7 @@ void ManagerImpl::createStandardConfig()
 
 void ManagerImpl::readConfig( KConfig *cfg )
 {
-  kdDebug(5650) << "ManagerImpl::readConfig()" << endl;
+  kDebug(5650) << "ManagerImpl::readConfig()" << endl;
 
   delete mFactory;
   mFactory = Factory::self( mFamily );
@@ -126,7 +126,7 @@ void ManagerImpl::readConfig( KConfig *cfg )
 
 void ManagerImpl::writeConfig( KConfig *cfg )
 {
-  kdDebug(5650) << "ManagerImpl::writeConfig()" << endl;
+  kDebug(5650) << "ManagerImpl::writeConfig()" << endl;
 
   if ( !cfg ) {
     createStandardConfig();
@@ -151,7 +151,7 @@ void ManagerImpl::writeConfig( KConfig *cfg )
 
   // And then the general group
 
-  kdDebug(5650) << "Saving general info" << endl;
+  kDebug(5650) << "Saving general info" << endl;
   mConfig->setGroup( "General" );
   mConfig->writeEntry( "ResourceKeys", activeKeys );
   mConfig->writeEntry( "PassiveResourceKeys", passiveKeys );
@@ -161,7 +161,7 @@ void ManagerImpl::writeConfig( KConfig *cfg )
     mConfig->writeEntry( "Standard", "" );
 
   mConfig->sync();
-  kdDebug(5650) << "ManagerImpl::save() finished" << endl;
+  kDebug(5650) << "ManagerImpl::save() finished" << endl;
 }
 
 void ManagerImpl::add( Resource *resource )
@@ -191,7 +191,7 @@ void ManagerImpl::remove( Resource *resource )
 
   delete resource;
 
-  kdDebug(5650) << "Finished ManagerImpl::remove()" << endl;
+  kDebug(5650) << "Finished ManagerImpl::remove()" << endl;
 }
 
 void ManagerImpl::change( Resource *resource )
@@ -223,13 +223,13 @@ void ManagerImpl::setStandardResource( Resource *resource )
 void ManagerImpl::dcopKResourceAdded( QString managerId, QString resourceId )
 {
   if ( managerId == mId ) {
-    kdDebug(5650) << "Ignore DCOP notification to myself" << endl;
+    kDebug(5650) << "Ignore DCOP notification to myself" << endl;
     return;
   }
-  kdDebug(5650) << "Receive DCOP call: added resource " << resourceId << endl;
+  kDebug(5650) << "Receive DCOP call: added resource " << resourceId << endl;
 
   if ( getResource( resourceId ) ) {
-    kdDebug(5650) << "This resource is already known to me." << endl;
+    kDebug(5650) << "This resource is already known to me." << endl;
   }
 
   if ( !mConfig ) createStandardConfig();
@@ -240,45 +240,45 @@ void ManagerImpl::dcopKResourceAdded( QString managerId, QString resourceId )
   if ( resource ) {
     mNotifier->notifyResourceAdded( resource );
   } else 
-    kdError() << "Received DCOP: resource added for unknown resource "
+    kError() << "Received DCOP: resource added for unknown resource "
               << resourceId << endl;
 }
 
 void ManagerImpl::dcopKResourceModified( QString managerId, QString resourceId )
 {
   if ( managerId == mId ) {
-    kdDebug(5650) << "Ignore DCOP notification to myself" << endl;
+    kDebug(5650) << "Ignore DCOP notification to myself" << endl;
     return;
   }
-  kdDebug(5650) << "Receive DCOP call: modified resource " << resourceId << endl;
+  kDebug(5650) << "Receive DCOP call: modified resource " << resourceId << endl;
 
   Resource *resource = getResource( resourceId );
   if ( resource ) {
     mNotifier->notifyResourceModified( resource );
   } else 
-    kdError() << "Received DCOP: resource modified for unknown resource "
+    kError() << "Received DCOP: resource modified for unknown resource "
               << resourceId << endl;
 }
 
 void ManagerImpl::dcopKResourceDeleted( QString managerId, QString resourceId )
 {
   if ( managerId == mId ) {
-    kdDebug(5650) << "Ignore DCOP notification to myself" << endl;
+    kDebug(5650) << "Ignore DCOP notification to myself" << endl;
     return;
   }
-  kdDebug(5650) << "Receive DCOP call: deleted resource " << resourceId << endl;
+  kDebug(5650) << "Receive DCOP call: deleted resource " << resourceId << endl;
 
   Resource *resource = getResource( resourceId );
   if ( resource ) {
     mNotifier->notifyResourceDeleted( resource );
 
-    kdDebug(5650) << "Removing item from mResources" << endl;
+    kDebug(5650) << "Removing item from mResources" << endl;
     // Now delete item
     if ( mStandard == resource )
       mStandard = 0;
     mResources.remove( resource );
   } else
-    kdError() << "Received DCOP: resource deleted for unknown resource "
+    kError() << "Received DCOP: resource deleted for unknown resource "
               << resourceId << endl;
 }
 
@@ -318,10 +318,10 @@ QList<Resource *> ManagerImpl::resources( bool active )
 Resource *ManagerImpl::readResourceConfig( const QString &identifier,
                                            bool checkActive )
 {
-  kdDebug(5650) << "ManagerImpl::readResourceConfig() " << identifier << endl;
+  kDebug(5650) << "ManagerImpl::readResourceConfig() " << identifier << endl;
 
   if ( !mFactory ) {
-    kdError(5650) << "ManagerImpl::readResourceConfig: mFactory is 0. Did the app forget to call readConfig?" << endl;
+    kError(5650) << "ManagerImpl::readResourceConfig: mFactory is 0. Did the app forget to call readConfig?" << endl;
     return 0;
   }
 
@@ -331,7 +331,7 @@ Resource *ManagerImpl::readResourceConfig( const QString &identifier,
   QString name = mConfig->readEntry( "ResourceName" );
   Resource *resource = mFactory->resource( type, mConfig );
   if ( !resource ) {
-    kdDebug(5650) << "Failed to create resource with id " << identifier << endl;
+    kDebug(5650) << "Failed to create resource with id " << identifier << endl;
     return 0;
   }
 
@@ -358,7 +358,7 @@ void ManagerImpl::writeResourceConfig( Resource *resource, bool checkActive )
 {
   QString key = resource->identifier();
 
-  kdDebug(5650) << "Saving resource " << key << endl;
+  kDebug(5650) << "Saving resource " << key << endl;
 
   if ( !mConfig ) createStandardConfig();
 

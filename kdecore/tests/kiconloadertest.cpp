@@ -24,19 +24,19 @@ int main(int argc, char *argv[])
   int count = 0;
   for ( int mGroup = 0; mGroup < KIcon::LastGroup ; ++mGroup )
   {
-      kdDebug() << "queryIcons " << mGroup << "," << mContext << endl;
+      kDebug() << "queryIcons " << mGroup << "," << mContext << endl;
       const QStringList filelist = mpLoader->queryIcons(mGroup, mContext);
-      kdDebug() << " -> found " << filelist.count() << " icons." << endl;
+      kDebug() << " -> found " << filelist.count() << " icons." << endl;
       int i=0;
       for(QStringList::ConstIterator it = filelist.begin();
           it != filelist.end() /*&& i<10*/;
           ++it, ++i )
       {
-          //kdDebug() << ( i==9 ? "..." : (*it) ) << endl;
+          //kDebug() << ( i==9 ? "..." : (*it) ) << endl;
           mpLoader->loadIcon( (*it), (KIcon::Group)mGroup );
           ++count;
       }
   }
-  kdDebug() << "Loading " << count << " icons took " << (float)(dt.elapsed()) / 1000 << " seconds" << endl;
+  kDebug() << "Loading " << count << " icons took " << (float)(dt.elapsed()) / 1000 << " seconds" << endl;
 }
 

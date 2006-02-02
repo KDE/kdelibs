@@ -50,7 +50,7 @@ void KNSBookmarkImporterImpl::parse()
         while(f.readLine(s.data(), g_lineLimit)>=0) {
             if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than g_lineLimit. Skipping.
             {
-               kdWarning() << "Netscape bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
+               kWarning() << "Netscape bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
                continue;
             }
             QByteArray t = s.trimmed();
@@ -179,7 +179,7 @@ void KNSBookmarkExporterImpl::write(KBookmarkGroup parent) {
    QFile file(m_fileName);
 
    if (!file.open(QIODevice::WriteOnly)) {
-      kdError(7043) << "Can't write to file " << m_fileName << endl;
+      kError(7043) << "Can't write to file " << m_fileName << endl;
       return;
    }
 

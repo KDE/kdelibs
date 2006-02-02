@@ -226,7 +226,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
           if (changedIt == s_changedMap->end())
           {
-            kdWarning(178) << "Don't know how to monitor widget '" << childWidget->className() << "' for changes!" << endl;
+            kWarning(178) << "Don't know how to monitor widget '" << childWidget->className() << "' for changes!" << endl;
           }
           else
           {
@@ -247,7 +247,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       }
       else
       {
-        kdWarning(178) << "A widget named '" << widgetName << "' was found but there is no setting named '" << configId << "'" << endl;
+        kWarning(178) << "A widget named '" << widgetName << "' was found but there is no setting named '" << configId << "'" << endl;
         assert(false);
       }
     }
@@ -272,7 +272,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       {
         if ((!d->insideGroupBox || !qobject_cast<QRadioButton*>(childWidget)) &&
             !qobject_cast<QGroupBox*>(childWidget))
-          kdDebug(178) << "Widget '" << widgetName << "' (" << childWidget->className() << ") remains unmanaged." << endl;
+          kDebug(178) << "Widget '" << widgetName << "' (" << childWidget->className() << ") remains unmanaged." << endl;
       }
     }
 #endif
@@ -303,7 +303,7 @@ void KConfigDialogManager::updateWidgets()
      KConfigSkeletonItem *item = m_conf->findItem(it.key());
      if (!item)
      {
-        kdWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
+        kWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
         continue;
      }
 
@@ -311,7 +311,7 @@ void KConfigDialogManager::updateWidgets()
      if (p != property(widget))
      {
         setProperty(widget, p);
-//        kdDebug(178) << "The setting '" << it.currentKey() << "' [" << widget->className() << "] has changed" << endl;
+//        kDebug(178) << "The setting '" << it.currentKey() << "' [" << widget->className() << "] has changed" << endl;
         changed = true;
      }
      if (item->isImmutable())
@@ -350,7 +350,7 @@ void KConfigDialogManager::updateSettings()
      KConfigSkeletonItem *item = m_conf->findItem(it.key());
      if (!item)
      {
-        kdWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
+        kWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
         continue;
      }
 
@@ -378,7 +378,7 @@ QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget)
       const QMetaProperty metaProperty = metaObject->property(i);
       if (metaProperty.isUser()) {
         s_propertyMap->insert( widget->metaObject()->className(), metaProperty.name() );
-//	kdDebug(178) << "class name: '" << widget->metaObject()->className() << " 's USER property: " << metaProperty.name() << endl;
+//	kDebug(178) << "class name: '" << widget->metaObject()->className() << " 's USER property: " << metaProperty.name() << endl;
         break;
       }
     }
@@ -405,7 +405,7 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 
   QByteArray userproperty = getUserProperty( w );
   if ( userproperty.isEmpty() ) {
-    kdWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
+    kWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
     return;
   }
   w->setProperty( userproperty, v );
@@ -423,7 +423,7 @@ QVariant KConfigDialogManager::property(QWidget *w)
 
   QByteArray userproperty = getUserProperty( w );
   if ( userproperty.isEmpty() ) {
-    kdWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
+    kWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
     return QVariant();
   }
 
@@ -442,14 +442,14 @@ bool KConfigDialogManager::hasChanged()
      KConfigSkeletonItem *item = m_conf->findItem(it.key());
      if (!item)
      {
-        kdWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
+        kWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
         continue;
      }
 
      QVariant p = property(widget);
      if (p != item->property())
      {
-//        kdDebug(178) << "Widget for '" << it.currentKey() << "' has changed." << endl;
+//        kDebug(178) << "Widget for '" << it.currentKey() << "' has changed." << endl;
         return true;
      }
   }

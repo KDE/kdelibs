@@ -38,18 +38,18 @@ void PreviewTest::slotGenerate()
 
 void PreviewTest::slotResult(KIO::Job*)
 {
-    kdDebug() << "PreviewTest::slotResult(...)" << endl;
+    kDebug() << "PreviewTest::slotResult(...)" << endl;
 }
 
 void PreviewTest::slotPreview(const KFileItem *, const QPixmap &pix)
 {
-    kdDebug() << "PreviewTest::slotPreview()" << endl;
+    kDebug() << "PreviewTest::slotPreview()" << endl;
     m_preview->setPixmap(pix);
 }
 
 void PreviewTest::slotFailed()
 {
-    kdDebug() << "PreviewTest::slotFailed()" << endl;
+    kDebug() << "PreviewTest::slotFailed()" << endl;
     m_preview->setText("failed");
 }
 

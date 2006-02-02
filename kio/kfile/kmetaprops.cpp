@@ -83,7 +83,7 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
 {
 
     KFileItem * fileitem = properties->item();
-    kdDebug(250) << "KFileMetaPropsPlugin constructor" << endl;
+    kDebug(250) << "KFileMetaPropsPlugin constructor" << endl;
 
     d->m_info  = fileitem->metaInfo();
     if (!d->m_info.isValid())
@@ -109,7 +109,7 @@ void KFileMetaPropsPlugin::createLayout()
 {
     QFileInfo file_info(properties->item()->url().path());
 
-    kdDebug(250) << "KFileMetaPropsPlugin::createLayout" << endl;
+    kDebug(250) << "KFileMetaPropsPlugin::createLayout" << endl;
 
     // is there any valid and non-empty info at all?
     if ( !d->m_info.isValid() || (d->m_info.preferredKeys()).isEmpty() )
@@ -122,7 +122,7 @@ void KFileMetaPropsPlugin::createLayout()
     const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
     if (!mtinfo)
     {
-        kdDebug(7034) << "no mimetype info there\n";
+        kDebug(7034) << "no mimetype info there\n";
         return;
     }
 
@@ -144,7 +144,7 @@ void KFileMetaPropsPlugin::createLayout()
     for (QStringList::Iterator git=groupList.begin();
             git!=groupList.end(); ++git)
     {
-        kdDebug(7033) << *git << endl;
+        kDebug(7033) << *git << endl;
 
         QStringList itemList = d->m_info.group(*git).preferredKeys();
         if (itemList.isEmpty())
@@ -181,7 +181,7 @@ void KFileMetaPropsPlugin::createLayout()
             QLabel* l = new QLabel((*iit).translatedKey() + ":", groupBox);
             l->setAlignment( Qt::AlignAuto | Qt::AlignTop | Qt::ExpandTabs );
             QValidator* val = mtinfo->createValidator(*git, (*iit).key());
-            if (!val) kdDebug(7033) << "didn't get a validator for " << *git << "/" << (*iit).key() << endl;
+            if (!val) kDebug(7033) << "didn't get a validator for " << *git << "/" << (*iit).key() << endl;
             w = new KFileMetaInfoWidget(*iit, val, groupBox);
             d->m_editWidgets.append( w );
             connect(w, SIGNAL(valueChanged(const QVariant&)), this, SIGNAL(changed()));
@@ -219,10 +219,10 @@ void KFileMetaPropsPlugin::createLayout()
                 if ( l.find(*it)==l.end() )
                 {
                     d->m_add->setEnabled(true);
-                    kdDebug(250) << "**first addable key is " << (*it).latin1() << "**" <<endl;
+                    kDebug(250) << "**first addable key is " << (*it).latin1() << "**" <<endl;
                     break;
                 }
-                kdDebug(250) << "**already existing key is " << (*it).latin1() << "**" <<endl;
+                kDebug(250) << "**already existing key is " << (*it).latin1() << "**" <<endl;
         }
     } */
 }
@@ -256,7 +256,7 @@ bool KFileMetaPropsPlugin::supports( KFileItemList _items )
 
 void KFileMetaPropsPlugin::applyChanges()
 {
-  kdDebug(250) << "applying changes" << endl;
+  kDebug(250) << "applying changes" << endl;
   // insert the fields that changed into the info object
 
   Q3PtrListIterator<KFileMetaInfoWidget> it( d->m_editWidgets );

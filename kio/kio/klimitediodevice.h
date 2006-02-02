@@ -41,13 +41,13 @@ public:
     KLimitedIODevice( QIODevice *dev, int start, int length )
         : m_dev( dev ), m_start( start ), m_length( length )
     {
-        //kdDebug(7005) << "KLimitedIODevice::KLimitedIODevice start=" << start << " length=" << length << endl;
+        //kDebug(7005) << "KLimitedIODevice::KLimitedIODevice start=" << start << " length=" << length << endl;
         open( QIODevice::ReadOnly );
     }
     virtual ~KLimitedIODevice() {}
 
     virtual bool open( QIODevice::OpenMode m ) {
-        //kdDebug(7005) << "KLimitedIODevice::open m=" << m << endl;
+        //kDebug(7005) << "KLimitedIODevice::open m=" << m << endl;
         if ( m & QIODevice::ReadOnly ) {
             /*bool ok = false;
             if ( m_dev->isOpen() )
@@ -58,7 +58,7 @@ public:
                 m_dev->seek( m_start ); // No concurrent access !
         }
         else
-            kdWarning(7005) << "KLimitedIODevice::open only supports QIODevice::ReadOnly!" << endl;
+            kWarning(7005) << "KLimitedIODevice::open only supports QIODevice::ReadOnly!" << endl;
         setOpenMode( QIODevice::ReadOnly );
         return true;
     }

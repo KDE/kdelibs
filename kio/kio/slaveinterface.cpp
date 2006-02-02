@@ -114,7 +114,7 @@ SlaveInterface::SlaveInterface( Connection * connection )
 
 SlaveInterface::~SlaveInterface()
 {
-    // Note: no kdDebug() here (scheduler is deleted very late)
+    // Note: no kDebug() here (scheduler is deleted very late)
     m_pConnection = 0; // a bit like the "wasDeleted" of QObject...
 
     delete d;
@@ -175,7 +175,7 @@ void SlaveInterface::calcSpeed()
 
     KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
 
-//     kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " "
+//     kDebug() << "proceeed " << (long)d->filesize << " " << diff << " "
 // 	      << long(d->sizes[d->nums-1] - d->sizes[0]) << " "
 // 	      <<  d->times[d->nums-1] - d->times[0] << " "
 // 	      << long(lspeed) << " " << double(d->filesize) / diff
@@ -194,7 +194,7 @@ void SlaveInterface::calcSpeed()
 
 bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 {
-    //kdDebug(7007) << "dispatch " << _cmd << endl;
+    //kDebug(7007) << "dispatch " << _cmd << endl;
 
     QDataStream stream( rawdata );
 
@@ -211,7 +211,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         emit dataReq();
 	break;
     case MSG_FINISHED:
-	//kdDebug(7007) << "Finished [this = " << this << "]" << endl;
+	//kDebug(7007) << "Finished [this = " << this << "]" << endl;
         d->offset = 0;
         d->speed_timer.stop();
 	emit finished();
@@ -250,7 +250,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         break;
     case MSG_ERROR:
 	stream >> i >> str1;
-	kdDebug(7007) << "error " << i << " " << str1 << endl;
+	kDebug(7007) << "error " << i << " " << str1 << endl;
 	emit error( i, str1 );
 	break;
     case MSG_SLAVE_STATUS:
@@ -325,7 +325,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     }
     case INF_MESSAGEBOX: {
-	kdDebug(7007) << "needs a msg box" << endl;
+	kDebug(7007) << "needs a msg box" << endl;
 	QString text, caption, buttonYes, buttonNo, dontAskAgainName;
         int type;
 	stream >> type >> text >> caption >> buttonYes >> buttonNo;
@@ -368,7 +368,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         break;
     }
     default:
-        kdWarning(7007) << "Slave sends unknown command (" << _cmd << "), dropping slave" << endl;
+        kWarning(7007) << "Slave sends unknown command (" << _cmd << "), dropping slave" << endl;
         return false;
     }
     return true;
@@ -383,7 +383,7 @@ KIO::filesize_t SlaveInterface::offset() const { return d->offset; }
 
 void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 {
-    kdDebug(7007) << "requestNetwork " << host << slaveid << endl;
+    kDebug(7007) << "requestNetwork " << host << slaveid << endl;
     QByteArray packedArgs;
     QDataStream stream( &packedArgs, QIODevice::WriteOnly );
     stream << true;
@@ -392,12 +392,12 @@ void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 
 void SlaveInterface::dropNetwork(const QString &host, const QString &slaveid)
 {
-    kdDebug(7007) << "dropNetwork " << host << slaveid << endl;
+    kDebug(7007) << "dropNetwork " << host << slaveid << endl;
 }
 
 void SlaveInterface::sendResumeAnswer( bool resume )
 {
-    kdDebug(7007) << "SlaveInterface::sendResumeAnswer ok for resuming :" << resume << endl;
+    kDebug(7007) << "SlaveInterface::sendResumeAnswer ok for resuming :" << resume << endl;
     m_pConnection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
 }
 
@@ -426,7 +426,7 @@ void SlaveInterface::openPassDlg( const QString& prompt, const QString& user,
 
 void SlaveInterface::openPassDlg( AuthInfo& info )
 {
-    kdDebug(7007) << "SlaveInterface::openPassDlg: "
+    kDebug(7007) << "SlaveInterface::openPassDlg: "
                   << "User= " << info.username
                   << ", Message= " << info.prompt << endl;
     bool result = Observer::self()->openPassDlg( info );
@@ -437,7 +437,7 @@ void SlaveInterface::openPassDlg( AuthInfo& info )
         if ( result )
         {
             stream << info;
-            kdDebug(7007) << "SlaveInterface:::openPassDlg got: "
+            kDebug(7007) << "SlaveInterface:::openPassDlg got: "
                           << "User= " << info.username
                           << ", Password= [hidden]" << endl;
             m_pConnection->sendnow( CMD_USERPASS, data );
@@ -456,7 +456,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,
                                  const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
 {
-    kdDebug(7007) << "messageBox " << type << " " << text << " - " << _caption << " " << dontAskAgainName << endl;
+    kDebug(7007) << "messageBox " << type << " " << text << " - " << _caption << " " << dontAskAgainName << endl;
     QByteArray packedArgs;
     QDataStream stream( &packedArgs, QIODevice::WriteOnly );
 
@@ -465,14 +465,14 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
         caption = QString::fromUtf8(KApplication::dcopClient()->appId()); // hack, see observer.cpp
 
     emit needProgressId();
-    kdDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
+    kDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
     QPointer<SlaveInterface> me = this;
     m_pConnection->suspend();
     int result = Observer::/*self()->*/messageBox( m_progressId, type, text, caption, buttonYes, buttonNo, dontAskAgainName );
     if ( me && m_pConnection ) // Don't do anything if deleted meanwhile
     {
         m_pConnection->resume();
-        kdDebug(7007) << this << " SlaveInterface result=" << result << endl;
+        kDebug(7007) << this << " SlaveInterface result=" << result << endl;
         stream << result;
         m_pConnection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
     }

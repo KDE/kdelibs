@@ -33,7 +33,7 @@ K3ShortcutMenu::K3ShortcutMenu( QWidget* pParent, KAccelActions* pActions, K3Key
 	m_pActions( pActions ),
 	m_seq( seq )
 {
-	kdDebug() << seq.toStringInternal() << endl;
+	kDebug() << seq.toStringInternal() << endl;
 }
 
 bool K3ShortcutMenu::insertAction( uint iAction, K3KeySequence seq )
@@ -63,7 +63,7 @@ void K3ShortcutMenu::updateShortcuts()
 				for( uint iKey = m_seq.count() + 1; iKey < seq.count(); iKey++ )
 					sSeq += QString(",") + seq.key(iKey).toString();
 
-				kdDebug(125) << "seq = " << seq.toStringInternal() << " sSeq = " << sSeq << endl;
+				kDebug(125) << "seq = " << seq.toStringInternal() << " sSeq = " << sSeq << endl;
 				changeItem( iAction, pAction->label() + "\t" + sSeq );
 			}
 		}
@@ -72,7 +72,7 @@ void K3ShortcutMenu::updateShortcuts()
 
 void K3ShortcutMenu::keyPressEvent( QKeyEvent* pEvent )
 {
-	kdDebug() << "keypress; " << pEvent->key() << endl;
+	kDebug() << "keypress; " << pEvent->key() << endl;
 	KKey key( pEvent );
 	
 	switch( pEvent->key() ) {
@@ -117,7 +117,7 @@ int K3ShortcutMenu::searchForKey( KKey key )
 	for( uint iItem = 0; iItem < count(); iItem++ ) {
 		if( m_seqs.contains( iItem ) ) {
 			KKey keyItem = m_seqs[iItem].key( iKey );
-			//kdDebug(125) << "iItem = " << iItem << " key = " << key.toStringInternal() << " keyItem = " << keyItem.toStringInternal() << endl;
+			//kDebug(125) << "iItem = " << iItem << " key = " << key.toStringInternal() << " keyItem = " << keyItem.toStringInternal() << endl;
 			if( key == keyItem ) {
 				if( iItemFound == -1 )
 					iItemFound = iItem;
@@ -132,7 +132,7 @@ int K3ShortcutMenu::searchForKey( KKey key )
 
 void K3ShortcutMenu::keepItemsMatching( KKey key )
 {
-	kdDebug(125) << "MyAccel::keepItemsMatching( " << key.toStringInternal() << " )" << endl;
+	kDebug(125) << "MyAccel::keepItemsMatching( " << key.toStringInternal() << " )" << endl;
 	
 	uint iKey = m_seq.count();
 	m_seq.setKey( iKey, key );

@@ -94,7 +94,7 @@ KLibFactory::KLibFactory( QObject* _parent )
 
 KLibFactory::~KLibFactory()
 {
-//    kdDebug(150) << "Deleting KLibFactory " << this << endl;
+//    kDebug(150) << "Deleting KLibFactory " << this << endl;
 }
 
 QObject* KLibFactory::create( QObject* _parent, const char* _name, const char* classname, const QStringList &args )
@@ -127,7 +127,7 @@ KLibrary::KLibrary( const QString& libname, const QString& filename, void * hand
 
 KLibrary::~KLibrary()
 {
-//    kdDebug(150) << "Deleting KLibrary " << this << "  " << m_libname << endl;
+//    kDebug(150) << "Deleting KLibrary " << this << "  " << m_libname << endl;
     if ( m_timer && m_timer->isActive() )
 	m_timer->stop();
 
@@ -137,7 +137,7 @@ KLibrary::~KLibrary()
 	    while (!m_objs.isEmpty())
 		{
 		    QObject *obj = m_objs.takeFirst();
-		    kdDebug(150) << "Factory still has object " << obj << " " << obj->objectName() << " Library = " << m_libname << endl;
+		    kDebug(150) << "Factory still has object " << obj << " " << obj->objectName() << " Library = " << m_libname << endl;
 		    disconnect( obj, SIGNAL( destroyed() ),
 				this, SLOT( slotObjectDestroyed() ) );
 		    delete obj;
@@ -145,7 +145,7 @@ KLibrary::~KLibrary()
 	}
 
     if ( m_factory ) {
-//	kdDebug(150) << " ... deleting the factory " << m_factory << endl;
+//	kDebug(150) << " ... deleting the factory " << m_factory << endl;
 	delete m_factory;
         m_factory = 0L;
     }
@@ -173,7 +173,7 @@ KLibFactory* KLibrary::factory()
     if ( !sym )
     {
         KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer an %2 function." ).arg( name(), QLatin1String("init_") + name() );
-        kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
+        kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
 
@@ -184,7 +184,7 @@ KLibFactory* KLibrary::factory()
     if( !m_factory )
     {
         KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer a KDE compatible factory." ).arg( name() );
-        kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
+        kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
 
@@ -200,7 +200,7 @@ void* KLibrary::symbol( const char* symname ) const
     if ( !sym )
     {
         KLibLoader::self()->d->errorMessage = QLatin1String("KLibrary: ") + QString::fromLocal8Bit( lt_dlerror() );
-        kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
+        kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
 
@@ -242,7 +242,7 @@ void KLibrary::slotObjectDestroyed()
 
   if ( m_objs.count() == 0 )
   {
-//    kdDebug(150) << "KLibrary: shutdown timer for " << name() << " started!"
+//    kDebug(150) << "KLibrary: shutdown timer for " << name() << " started!"
 //                 << endl;
 
     if ( !m_timer )
@@ -280,7 +280,7 @@ KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, lt_dlhandle h)
 {
     unload_mode = KLibLoader_cpp::UNKNOWN;
     if (lt_dlsym(handle, "__kde_do_not_unload") != 0) {
-//        kdDebug(150) << "Will not unload " << name << endl;
+//        kDebug(150) << "Will not unload " << name << endl;
         unload_mode = KLibLoader_cpp::DONT_UNLOAD;
     } else if (lt_dlsym(handle, "__kde_do_unload") != 0) {
         unload_mode = KLibLoader_cpp::UNLOAD;
@@ -317,12 +317,12 @@ KLibLoader::KLibLoader( QObject* _parent )
 
 KLibLoader::~KLibLoader()
 {
-//    kdDebug(150) << "Deleting KLibLoader " << this << "  " << name() << endl;
+//    kDebug(150) << "Deleting KLibLoader " << this << "  " << name() << endl;
 
     for (QHash<QString, KLibWrapPrivate*>::Iterator it = m_libs.begin(); it != m_libs.end(); ++it)
     {
       Q_ASSERT((*it) != 0);
-      kdDebug(150) << "The KLibLoader contains the library " << (*it)->name
+      kDebug(150) << "The KLibLoader contains the library " << (*it)->name
         << " (" << (*it)->lib << ")" << endl;
       d->pending_close.append(*it);
     }
@@ -364,7 +364,7 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
         libfile = instance->dirs()->findResource( "lib", libname );
 #ifndef NDEBUG
         if ( !libfile.isEmpty() && libname.left(3) == "lib" ) // don't warn for kdeinit modules
-          kdDebug(150) << "library " << libname << " not found under 'module' but under 'lib'" << endl;
+          kDebug(150) << "library " << libname << " not found under 'module' but under 'lib'" << endl;
 #endif
       }
     }
@@ -378,7 +378,7 @@ KLibrary *tmp;
 int olt_dlopen_flag = lt_dlopen_flag;
 
    lt_dlopen_flag |= LT_GLOBAL;
-   kdDebug(150) << "Loading the next library global with flag "
+   kDebug(150) << "Loading the next library global with flag "
                 << lt_dlopen_flag
                 << "." << endl;
    tmp = library(_name);
@@ -421,7 +421,7 @@ KLibrary* KLibLoader::library( const char *_name )
       {
         const QByteArray libname = makeLibName( _name );
 #ifndef NDEBUG
-        kdDebug(150) << "library=" << _name << ": No file named " << libname << " found in paths." << endl;
+        kDebug(150) << "library=" << _name << ": No file named " << libname << " found in paths." << endl;
 #endif
         d->errorMessage = i18n("Library files for \"%1\" not found in paths.").arg( QString(libname) );
         return 0;
@@ -467,7 +467,7 @@ void KLibLoader::unloadLibrary( const char *libname )
   if (--wrap->ref_count)
     return;
 
-//  kdDebug(150) << "closing library " << libname << endl;
+//  kDebug(150) << "closing library " << libname << endl;
 
   m_libs.remove( libname );
 
@@ -540,11 +540,11 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
     if (!d->pending_close.contains( wrap )) {
       if (!deleted_one)
         /* Only diagnose, if we really haven't deleted anything. */
-//        kdDebug(150) << "try to dlclose " << wrap->name << ": not yet" << endl;
+//        kDebug(150) << "try to dlclose " << wrap->name << ": not yet" << endl;
       break;
     }
 
-//    kdDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
+//    kDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
 
     if ( !deleted_one ) {
       /* Only do the hack once in this loop.

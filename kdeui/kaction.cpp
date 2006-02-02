@@ -150,7 +150,7 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 
 KAction::~KAction()
 {
-    kdDebug(129) << "KAction::~KAction( this = \"" << name() << "\" )" << endl; // -- ellis
+    kDebug(129) << "KAction::~KAction( this = \"" << name() << "\" )" << endl; // -- ellis
 
     // If actionCollection hasn't already been destructed,
     if ( m_parentCollection ) {
@@ -179,7 +179,7 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
     d->m_cutDefault = cut;
 
     m_parentCollection = dynamic_cast<KActionCollection *>( parent() );
-    kdDebug(129) << "KAction::initPrivate(): this = " << this << " name = \"" << name << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
+    kDebug(129) << "KAction::initPrivate(): this = " << this << " name = \"" << name << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
     if ( m_parentCollection )
         m_parentCollection->insert( this );
 
@@ -187,7 +187,7 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
         connect( this, SIGNAL( activated() ), receiver, slot );
 
     if( !cut.isNull() && objectName().isEmpty() )
-        kdWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
+        kWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
     d->setText( text );
     initShortcut( cut );
 }
@@ -317,7 +317,7 @@ void KAction::plugShortcut()
 {
   KAccel* const kaccel = kaccelCurrent();
 
-  //kdDebug(129) << "KAction::plugShortcut(): this = " << this << " kaccel() = " << (m_parentCollection ? m_parentCollection->kaccel() : 0) << endl;
+  //kDebug(129) << "KAction::plugShortcut(): this = " << this << " kaccel() = " << (m_parentCollection ? m_parentCollection->kaccel() : 0) << endl;
   if( kaccel && !objectName().isEmpty() ) {
     // Check if already plugged into current KAccel object
     if(d->m_kaccelList.contains(kaccel)) return;
@@ -366,7 +366,7 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
 
   if ( !kaccel->actions().actionPtr( name() ) ) {
     if(!d->m_cut.isNull() ) {
-      kdDebug(129) << "Inserting " << name() << ", " << d->text() << ", " << d->plainText() << endl;
+      kDebug(129) << "Inserting " << name() << ", " << d->text() << ", " << d->plainText() << endl;
       b = kaccel->insert( name(), d->plainText(), QString(),
           d->m_cut,
           this, SLOT(slotActivated()),
@@ -381,7 +381,7 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
 
 void KAction::insertKAccel( KAccel* kaccel )
 {
-  //kdDebug(129) << "KAction::insertKAccel( " << kaccel << " ): this = " << this << endl;
+  //kDebug(129) << "KAction::insertKAccel( " << kaccel << " ): this = " << this << endl;
   if ( !kaccel->actions().actionPtr( name() ) ) {
     if( updateKAccelShortcut( kaccel ) ) {
       d->m_kaccelList.append( kaccel );
@@ -389,12 +389,12 @@ void KAction::insertKAccel( KAccel* kaccel )
     }
   }
   else
-    kdWarning(129) << "KAction::insertKAccel( kaccel = " << kaccel << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
+    kWarning(129) << "KAction::insertKAccel( kaccel = " << kaccel << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
 }
 
 void KAction::removeKAccel( KAccel* kaccel )
 {
-  //kdDebug(129) << "KAction::removeKAccel( " << i << " ): this = " << this << endl;
+  //kDebug(129) << "KAction::removeKAccel( " << i << " ): this = " << this << endl;
   foreach(KAccel *a, d->m_kaccelList) {
     if( a == kaccel ) {
       kaccel->remove( name() );
@@ -421,7 +421,7 @@ void KAction::updateShortcut( int i )
 
 void KAction::updateShortcut( QMenu* menu, int id )
 {
-  //kdDebug(129) << "KAction::updateShortcut(): this = " << this << " d->m_kaccelList.count() = " << d->m_kaccelList.count() << endl;
+  //kDebug(129) << "KAction::updateShortcut(): this = " << this << " d->m_kaccelList.count() = " << d->m_kaccelList.count() << endl;
   // If the action has a KAccel object,
   //  show the string representation of its shortcut.
   if ( d->m_kaccel || d->m_kaccelList.count() ) {
@@ -439,7 +439,7 @@ void KAction::updateShortcut( QMenu* menu, int id )
     // This is a fall-hack in case the KAction is missing a proper parent collection.
     //  It should be removed eventually. --ellis
     menu->setAccel( d->m_cut.keyCodeQt(), id );
-    kdDebug(129) << "KAction::updateShortcut(): name = \"" << name() << "\", cut = " << d->m_cut.toStringInternal() << "; No KAccel, probably missing a parent collection." << endl;
+    kDebug(129) << "KAction::updateShortcut(): name = \"" << name() << "\", cut = " << d->m_cut.toStringInternal() << "; No KAccel, probably missing a parent collection." << endl;
   }
 }
 
@@ -517,9 +517,9 @@ QString KAction::toolTip() const
 
 int KAction::plug( QWidget *w, int index )
 {
-  //kdDebug(129) << "KAction::plug( " << w << ", " << index << " )" << endl;
+  //kDebug(129) << "KAction::plug( " << w << ", " << index << " )" << endl;
   if (!w ) {
-  kdWarning(129) << "KAction::plug called with 0 argument\n";
+  kWarning(129) << "KAction::plug called with 0 argument\n";
   return -1;
   }
 
@@ -529,7 +529,7 @@ int KAction::plug( QWidget *w, int index )
 #if 0 //ndef NDEBUG
   KAccel* kaccel = kaccelCurrent();
   if( !d->m_cut.isNull() && !kaccel ) {
-    kdDebug(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
+    kDebug(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
   }
 #endif
 
@@ -662,9 +662,9 @@ void KAction::unplug( QWidget *w )
 
 void KAction::plugAccel(KAccel *kacc, bool configurable)
 {
-  kdWarning(129) << "KAction::plugAccel(): call to deprecated action." << endl;
-  kdDebug(129) << kdBacktrace() << endl;
-  //kdDebug(129) << "KAction::plugAccel( kacc = " << kacc << " ): name \"" << name() << "\"" << endl;
+  kWarning(129) << "KAction::plugAccel(): call to deprecated action." << endl;
+  kDebug(129) << kBacktrace() << endl;
+  //kDebug(129) << "KAction::plugAccel( kacc = " << kacc << " ): name \"" << name() << "\"" << endl;
   if ( d->m_kaccel )
     unplugAccel();
 
@@ -685,12 +685,12 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
     //connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
   }
   else
-    kdWarning(129) << "KAction::plugAccel( kacc = " << kacc << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
+    kWarning(129) << "KAction::plugAccel( kacc = " << kacc << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
 }
 
 void KAction::unplugAccel()
 {
-  //kdDebug(129) << "KAction::unplugAccel() " << this << " " << name() << endl;
+  //kDebug(129) << "KAction::unplugAccel() " << this << " " << name() << endl;
   if ( d->m_kaccel )
   {
     d->m_kaccel->remove(name());
@@ -710,12 +710,12 @@ void KAction::plugMainWindowAccel( QWidget *w )
   if (mw)
     plugAccel( mw->accel() );
   else
-    kdDebug(129) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
+    kDebug(129) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
 }
 
 void KAction::setEnabled(bool enable)
 {
-  //kdDebug(129) << "KAction::setEnabled( " << enable << " ): this = " << this << " d->m_kaccelList.count() = " << d->m_kaccelList.count() << endl;
+  //kDebug(129) << "KAction::setEnabled( " << enable << " ): this = " << this << " d->m_kaccelList.count() = " << d->m_kaccelList.count() << endl;
   if ( enable == d->isEnabled() )
     return;
 
@@ -1011,7 +1011,7 @@ void KAction::slotPopupActivated()
             buttons = kpm->mouseButtons();
             modifiers = kpm->keyboardModifiers();
         } else { // just a QMenu? We'll ask for the state now then (small race condition?)
-            //kdDebug(129) << "KAction::slotPopupActivated not a KMenu -> using QApplication methods" << endl;
+            //kDebug(129) << "KAction::slotPopupActivated not a KMenu -> using QApplication methods" << endl;
             buttons = QApplication::mouseButtons();
             modifiers = QApplication::keyboardModifiers();
         }
@@ -1025,7 +1025,7 @@ void KAction::slotPopupActivated()
     }
   }
 
-  kdWarning(129)<<"Don't connect KAction::slotPopupActivated() to anything, expect into QMenus which are in containers. Use slotActivated instead."<<endl;
+  kWarning(129)<<"Don't connect KAction::slotPopupActivated() to anything, expect into QMenus which are in containers. Use slotActivated instead."<<endl;
 #ifdef QT3_SUPPORT
   emit activated( KAction::PopupMenuActivation, Qt::NoButton );
 #endif
@@ -1035,7 +1035,7 @@ void KAction::slotPopupActivated()
 
 void KAction::slotButtonClicked( int, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers )
 {
-  kdDebug(129) << "slotButtonClicked() buttons=" << buttons << " modifiers=" << modifiers << endl;
+  kDebug(129) << "slotButtonClicked() buttons=" << buttons << " modifiers=" << modifiers << endl;
   emit activated( KAction::ToolBarActivation, buttons, modifiers );
 
   // RightButton isn't really an activation
@@ -1046,7 +1046,7 @@ void KAction::slotButtonClicked( int, Qt::MouseButtons buttons, Qt::KeyboardModi
 
 void KAction::slotDestroyed()
 {
-  kdDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << name() << "\", sender = " << sender() << endl;
+  kDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << name() << "\", sender = " << sender() << endl;
   const QObject* const o = sender();
 
 
@@ -1101,7 +1101,7 @@ void KAction::removeContainer( int index )
 // FIXME: Remove this (ellis)
 void KAction::slotKeycodeChanged()
 {
-  kdDebug(129) << "KAction::slotKeycodeChanged()" << endl; // -- ellis
+  kDebug(129) << "KAction::slotKeycodeChanged()" << endl; // -- ellis
   KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
   if( pAction )
     setShortcut(pAction->shortcut());

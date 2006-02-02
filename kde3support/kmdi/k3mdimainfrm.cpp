@@ -183,7 +183,7 @@ K3MdiMainFrm::K3MdiMainFrm( QWidget* parentWidget, const char* name, K3Mdi::MdiM
 		, m_managedDockPositionMode( false )
 		, m_documentTabWidget( 0 )
 {
-	kdDebug(760) << k_funcinfo << endl;
+	kDebug(760) << k_funcinfo << endl;
 	// Create the local lists of windows
 	m_pDocumentViews = new Q3PtrList<K3MdiChildView>;
 	m_pDocumentViews->setAutoDelete( false );
@@ -241,20 +241,20 @@ K3MdiMainFrm::K3MdiMainFrm( QWidget* parentWidget, const char* name, K3Mdi::MdiM
 	switch ( mdiMode )
 	{
 	case K3Mdi::IDEAlMode:
-		kdDebug(760) << k_funcinfo << "Switching to IDEAl mode" << endl;
+		kDebug(760) << k_funcinfo << "Switching to IDEAl mode" << endl;
 		switchToIDEAlMode();
 		break;
 	case K3Mdi::TabPageMode:
-		kdDebug(760) << k_funcinfo << "Switching to tab page mode" << endl;
+		kDebug(760) << k_funcinfo << "Switching to tab page mode" << endl;
 		switchToTabPageMode();
 		break;
 	case K3Mdi::ToplevelMode:
-		kdDebug(760) << k_funcinfo << "Switching to top level mode" << endl;
+		kDebug(760) << k_funcinfo << "Switching to top level mode" << endl;
 		switchToToplevelMode();
 		break;
 	default:
 		m_mdiMode = K3Mdi::ChildframeMode;
-		kdDebug(760) << k_funcinfo << "Switching to child frame mode" << endl;
+		kDebug(760) << k_funcinfo << "Switching to child frame mode" << endl;
 		break;
 	}
 
@@ -272,7 +272,7 @@ void K3MdiMainFrm::verifyToplevelHeight()
 	if ( m_mdiMode != K3Mdi::ToplevelMode )
 		return;
 	
-	//kdDebug(760) << k_funcinfo << endl;
+	//kDebug(760) << k_funcinfo << endl;
 	int topDockHeight = topDock() ? topDock()->height() : 0;
 	int menuBarHeight = hasMenuBar() ? menuBar()->height() : 0;
 	setFixedHeight( topDockHeight + menuBarHeight );
@@ -352,12 +352,12 @@ void K3MdiMainFrm::applyOptions()
 		QWidget* childFrame = 0L;
 		if ( ( *it )->mdiParent() )
 		{
-			kdDebug(760) << k_funcinfo << "using child view's mdi parent for resize hack" << endl;
+			kDebug(760) << k_funcinfo << "using child view's mdi parent for resize hack" << endl;
 			childFrame = ( *it )->mdiParent();
 		}
 		else
 		{
-			kdDebug(760) << k_funcinfo << "using child view for resize hack" << endl;
+			kDebug(760) << k_funcinfo << "using child view for resize hack" << endl;
 			childFrame = ( *it );
 		}
 		
@@ -371,7 +371,7 @@ void K3MdiMainFrm::applyOptions()
 //============ createMdiManager ============//
 void K3MdiMainFrm::createMdiManager()
 {
-	kdDebug(760) << k_funcinfo << "creating MDI manager" << endl;
+	kDebug(760) << k_funcinfo << "creating MDI manager" << endl;
 	m_pMdi = new K3MdiChildArea( this );
 	setCentralWidget( m_pMdi );
 	QObject::connect( m_pMdi, SIGNAL( nowMaximized( bool ) ),
@@ -858,7 +858,7 @@ void K3MdiMainFrm::closeWindow( K3MdiChildView *pWnd, bool layoutTaskBar )
 		if ( m_pDocumentViews->count() == 0 )
 			m_pClose->hide();
 		pWnd->reparent( 0L, QPoint( 0, 0 ) );
-		kdDebug(760) << "-------- 1" << endl;
+		kDebug(760) << "-------- 1" << endl;
 		if ( m_pDocumentViews->count() == 1 )
 		{
 			m_pDocumentViews->last() ->activate(); // all other views are activated by tab switch
@@ -1234,7 +1234,7 @@ bool K3MdiMainFrm::eventFilter( QObject * /*obj*/, QEvent *e )
 			}
 			else
 			{
-				kdDebug(760) << "KAction( \"view_last_window\") not found." << endl;
+				kDebug(760) << "KAction( \"view_last_window\") not found." << endl;
 			}
 		}
 	}
@@ -1265,7 +1265,7 @@ void K3MdiMainFrm::closeAllViews()
  */
 void K3MdiMainFrm::iconifyAllViews()
 {
-	kdDebug(760) << k_funcinfo << "minimizing all the views" << endl;
+	kDebug(760) << k_funcinfo << "minimizing all the views" << endl;
 	Q3PtrListIterator<K3MdiChildView> it( *m_pDocumentViews );
 	for ( ; ( *it ); ++it )
 		( *it )->minimize();
@@ -1276,7 +1276,7 @@ void K3MdiMainFrm::iconifyAllViews()
  */
 void K3MdiMainFrm::closeActiveView()
 {
-	kdDebug(760) << k_funcinfo << "closing the active view" << endl;
+	kDebug(760) << k_funcinfo << "closing the active view" << endl;
 	if ( m_pCurrentWindow )
 		m_pCurrentWindow->close();
 }
@@ -1336,7 +1336,7 @@ void K3MdiMainFrm::findRootDockWidgets( Q3PtrList<K3DockWidget>* rootDockWidgetL
 			if ( !found || rootDockWidgetList->isEmpty() )
 			{
 					rootDockWidgetList->append( dockWindow );
-					kdDebug(760) << k_funcinfo << "Appending " << rootDockWindow << " to our list of " <<
+					kDebug(760) << k_funcinfo << "Appending " << rootDockWindow << " to our list of " <<
 						"root dock windows" << endl;
 					QPoint p = rootDockWindow->mapToGlobal( rootDockWindow->pos() ) - rootDockWindow->pos();
 					QRect r( p.x(), p.y() + m_undockPositioningOffset.y(),
@@ -1418,11 +1418,11 @@ void K3MdiMainFrm::switchToToplevelMode()
 			setFixedHeight( height() - m_pDockbaseAreaOfDocumentViews->height() );
 		else
 		{
-			kdDebug(760) << k_funcinfo << "height is: " << height() << endl;
-			kdDebug(760) << k_funcinfo << "top dock height: " << topDockHeight << endl;
-			kdDebug(760) << k_funcinfo << "bottom dock height: " << bottomDockHeight << endl;
-			kdDebug(760) << k_funcinfo << "menu bar height: " << menuBarHeight << endl;
-			kdDebug(760) << k_funcinfo << "dock base area height: " << m_pDockbaseAreaOfDocumentViews->height() << endl;
+			kDebug(760) << k_funcinfo << "height is: " << height() << endl;
+			kDebug(760) << k_funcinfo << "top dock height: " << topDockHeight << endl;
+			kDebug(760) << k_funcinfo << "bottom dock height: " << bottomDockHeight << endl;
+			kDebug(760) << k_funcinfo << "menu bar height: " << menuBarHeight << endl;
+			kDebug(760) << k_funcinfo << "dock base area height: " << m_pDockbaseAreaOfDocumentViews->height() << endl;
 			setFixedHeight( topDockHeight + menuBarHeight );
 		}
 	} 
@@ -1450,7 +1450,7 @@ void K3MdiMainFrm::switchToToplevelMode()
 	m_pDockbaseAreaOfDocumentViews->setDockSite( K3DockWidget::DockNone );
 	m_mdiMode = K3Mdi::ToplevelMode;
 	
-	kdDebug(760) << k_funcinfo << "Switch to toplevel mode completed" << endl;
+	kDebug(760) << k_funcinfo << "Switch to toplevel mode completed" << endl;
 	emit mdiModeHasBeenChangedTo( K3Mdi::ToplevelMode );
 
 }
@@ -1476,10 +1476,10 @@ void K3MdiMainFrm::switchToChildframeMode()
 	
 	if ( m_mdiMode == K3Mdi::TabPageMode )
 	{
-		kdDebug(760) << k_funcinfo << "finishing tab page mode" << endl;
+		kDebug(760) << k_funcinfo << "finishing tab page mode" << endl;
 		// select the dockwidgets to be undocked and store their geometry
 		findRootDockWidgets( &rootDockWidgetList, &positionList );
-		kdDebug(760) << k_funcinfo << "Found " << rootDockWidgetList.count() << " widgets to undock" << endl;
+		kDebug(760) << k_funcinfo << "Found " << rootDockWidgetList.count() << " widgets to undock" << endl;
 		
 		// undock all these found oldest ancestors (being K3DockWidgets)
 		Q3PtrListIterator<K3DockWidget> it( rootDockWidgetList );
@@ -1494,12 +1494,12 @@ void K3MdiMainFrm::switchToChildframeMode()
 	}
 	else if ( m_mdiMode == K3Mdi::IDEAlMode )
 	{
-		kdDebug(760) << k_funcinfo << "finishing ideal mode" << endl;
+		kDebug(760) << k_funcinfo << "finishing ideal mode" << endl;
 		finishIDEAlMode( false );
 
 		// select the dockwidgets to be undocked and store their geometry
 		findRootDockWidgets( &rootDockWidgetList, &positionList );
-		kdDebug(760) << k_funcinfo << "Found " << rootDockWidgetList.count() << " widgets to undock" << endl;
+		kDebug(760) << k_funcinfo << "Found " << rootDockWidgetList.count() << " widgets to undock" << endl;
 		
 		// undock all these found oldest ancestors (being K3DockWidgets)
 		Q3PtrListIterator<K3DockWidget> it( rootDockWidgetList );
@@ -1519,7 +1519,7 @@ void K3MdiMainFrm::switchToChildframeMode()
 		m_pDockbaseAreaOfDocumentViews->setEnableDocking( K3DockWidget::DockNone );
 		m_pDockbaseAreaOfDocumentViews->setDockSite( K3DockWidget::DockCorner );
 		m_pDockbaseAreaOfDocumentViews->setWidget( m_pMdi );
-		kdDebug(760) << k_funcinfo << "childarea is now covered by a dockwidget" << endl;
+		kDebug(760) << k_funcinfo << "childarea is now covered by a dockwidget" << endl;
 	}
 	
 	if ( m_pDockbaseAreaOfDocumentViews->isTopLevel() )
@@ -1529,14 +1529,14 @@ void K3MdiMainFrm::switchToChildframeMode()
 		setMainDockWidget( m_pDockbaseAreaOfDocumentViews );
 		m_pDockbaseAreaOfDocumentViews->setEnableDocking( K3DockWidget::DockNone );
 		m_pDockbaseAreaOfDocumentViews->setDockSite( K3DockWidget::DockCorner );
-		kdDebug(760) << k_funcinfo << "Dock base area has been set to the main view" << endl;
+		kDebug(760) << k_funcinfo << "Dock base area has been set to the main view" << endl;
 	}
 	m_pDockbaseAreaOfDocumentViews->setWidget( m_pMdi ); //JW
 	m_pDockbaseAreaOfDocumentViews->show();
 	
 	if ( ( m_mdiMode == K3Mdi::TabPageMode ) || ( m_mdiMode == K3Mdi::IDEAlMode ) )
 	{
-		kdDebug(760) << k_funcinfo << "trying to dock back the undock toolviews" << endl;
+		kDebug(760) << k_funcinfo << "trying to dock back the undock toolviews" << endl;
 		Q3PtrListIterator<K3DockWidget> it( rootDockWidgetList );
 		for ( ; ( *it ); ++it )
 			( *it )->dockBack();
@@ -1545,7 +1545,7 @@ void K3MdiMainFrm::switchToChildframeMode()
 	if ( m_mdiMode == K3Mdi::ToplevelMode && m_pTempDockSession )
 	{
 		// restore the old dock scenario which we memorized at the time we switched to toplevel mode
-		kdDebug(760) << k_funcinfo << "Restoring old dock scenario memorized from toplevel mode" << endl;
+		kDebug(760) << k_funcinfo << "Restoring old dock scenario memorized from toplevel mode" << endl;
 		QDomElement oldDockState = m_pTempDockSession->namedItem( "cur_dock_state" ).toElement();
 		readDockConfig( oldDockState );
 	}
@@ -1573,7 +1573,7 @@ void K3MdiMainFrm::switchToChildframeMode()
 		setMaximumHeight( m_oldMainFrmMaxHeight );
 		resize( width(), m_oldMainFrmHeight );
 		m_oldMainFrmHeight = 0;
-		kdDebug(760) << k_funcinfo << "left top level mode completely" << endl;
+		kDebug(760) << k_funcinfo << "left top level mode completely" << endl;
 		emit leftTopLevelMode();
 	}
 	emit mdiModeHasBeenChangedTo( K3Mdi::ChildframeMode );
@@ -1582,7 +1582,7 @@ void K3MdiMainFrm::switchToChildframeMode()
 void K3MdiMainFrm::finishChildframeMode()
 {
 	// save the old dock scenario of the dockwidget-like tool views to a DOM tree
-	kdDebug(760) << k_funcinfo << "saving the current dock scenario" << endl;
+	kDebug(760) << k_funcinfo << "saving the current dock scenario" << endl;
 	delete m_pTempDockSession;
 	m_pTempDockSession = new QDomDocument( "docksession" );
 	QDomElement curDockState = m_pTempDockSession->createElement( "cur_dock_state" );
@@ -1590,7 +1590,7 @@ void K3MdiMainFrm::finishChildframeMode()
 	writeDockConfig( curDockState );
 
 	// detach all non-tool-views to toplevel
-	kdDebug(760) << k_funcinfo << "detaching all document views and moving them to toplevel" << endl;
+	kDebug(760) << k_funcinfo << "detaching all document views and moving them to toplevel" << endl;
 	Q3PtrListIterator<K3MdiChildView> it( *m_pDocumentViews );
 	for ( ; ( *it ); ++it )
 	{
@@ -1649,9 +1649,9 @@ void K3MdiMainFrm::switchToTabPageMode()
 			m_pClose->show();
 	}
 	else
-		kdDebug(760) << "close button nonexistant. strange things might happen" << endl;
+		kDebug(760) << "close button nonexistant. strange things might happen" << endl;
 	
-	kdDebug(760) << "Switch to tab page mode complete" << endl;
+	kDebug(760) << "Switch to tab page mode complete" << endl;
 	emit mdiModeHasBeenChangedTo( K3Mdi::TabPageMode );
 }
 
@@ -1669,7 +1669,7 @@ void K3MdiMainFrm::finishTabPageMode()
 			K3MdiChildView* pView = it.current();
 			if ( pView->isToolView() )
 				continue;
-			kdDebug(760) << "K3MdiMainFrm::finishTabPageMode: in loop" << endl;
+			kDebug(760) << "K3MdiMainFrm::finishTabPageMode: in loop" << endl;
 			QSize mins = pView->minimumSize();
 			QSize maxs = pView->maximumSize();
 			QSize sz = pView->size();
@@ -1832,7 +1832,7 @@ void K3MdiMainFrm::setToolviewStyle( int flag )
  */
 void K3MdiMainFrm::switchToIDEAlMode()
 {
-	kdDebug(760) << k_funcinfo << "switching to IDEAl mode" << endl;
+	kDebug(760) << k_funcinfo << "switching to IDEAl mode" << endl;
 	
 	if ( m_mdiMode == K3Mdi::IDEAlMode )
 	{
@@ -1874,9 +1874,9 @@ void K3MdiMainFrm::switchToIDEAlMode()
 			m_pClose->show();
 	}
 	else
-		kdWarning(760) << k_funcinfo << "close button pointer does not exist!" << endl;
+		kWarning(760) << k_funcinfo << "close button pointer does not exist!" << endl;
 
-	kdDebug(760) << k_funcinfo << "switch to IDEAl mode complete" << endl;
+	kDebug(760) << k_funcinfo << "switch to IDEAl mode complete" << endl;
 
 	emit mdiModeHasBeenChangedTo( K3Mdi::IDEAlMode );
 }
@@ -1903,7 +1903,7 @@ void K3MdiMainFrm::findToolViewsDockedToMain( Q3PtrList<K3DockWidget>* list, K3D
 
 	if ( !mainDock )
 	{
-		kdDebug(760) << k_funcinfo << "mainDock invalid. No main dock widget found." << endl;
+		kDebug(760) << k_funcinfo << "mainDock invalid. No main dock widget found." << endl;
 		return;
 	}
 	
@@ -1917,7 +1917,7 @@ void K3MdiMainFrm::findToolViewsDockedToMain( Q3PtrList<K3DockWidget>* list, K3D
 			K3DockTabGroup* tg = dynamic_cast<K3DockTabGroup*>( widget->getWidget() );
 			if ( tg )
 			{
-				kdDebug(760) << k_funcinfo << "K3DockTabGroup found" << endl;
+				kDebug(760) << k_funcinfo << "K3DockTabGroup found" << endl;
 				for ( int i = 0;i < tg->count();i++ )
 					list->append( static_cast<K3DockWidget*>( tg->page( i ) ) );
 			}
@@ -1925,10 +1925,10 @@ void K3MdiMainFrm::findToolViewsDockedToMain( Q3PtrList<K3DockWidget>* list, K3D
 				list->append( widget );
 		}
 		else
-			kdDebug(760) << k_funcinfo << "no widget found" << endl;
+			kDebug(760) << k_funcinfo << "no widget found" << endl;
 	}
 	else
-		kdDebug(760) << "No main dock widget found" << endl;
+		kDebug(760) << "No main dock widget found" << endl;
 }
 
 
@@ -2055,10 +2055,10 @@ void K3MdiMainFrm::finishIDEAlMode( bool full )
 		int bottomHeight = m_bottomContainer->height();
 
 
-		kdDebug(760) << "leftNames" << leftNames << endl;
-		kdDebug(760) << "rightNames" << rightNames << endl;
-		kdDebug(760) << "topNames" << topNames << endl;
-		kdDebug(760) << "bottomNames" << bottomNames << endl;
+		kDebug(760) << "leftNames" << leftNames << endl;
+		kDebug(760) << "rightNames" << rightNames << endl;
+		kDebug(760) << "topNames" << topNames << endl;
+		kDebug(760) << "bottomNames" << bottomNames << endl;
 
 		delete m_leftContainer;
 		m_leftContainer = 0;
@@ -2157,7 +2157,7 @@ void K3MdiMainFrm::idealToolViewsToStandardTabs( QStringList widgetNames, K3Dock
 		K3DockWidget *dwpd = manager() ->getDockWidgetFromName( *it );
 		if ( !dwpd )
 		{
-			kdDebug(760) << "Fatal error in finishIDEAlMode" << endl;
+			kDebug(760) << "Fatal error in finishIDEAlMode" << endl;
 			return ;
 		}
 		dwpd->manualDock( mainDock, pos, 20 );
@@ -2167,7 +2167,7 @@ void K3MdiMainFrm::idealToolViewsToStandardTabs( QStringList widgetNames, K3Dock
 			K3DockWidget *tmpdw = manager() ->getDockWidgetFromName( *it );
 			if ( !tmpdw )
 			{
-				kdDebug(760) << "Fatal error in finishIDEAlMode" << endl;
+				kDebug(760) << "Fatal error in finishIDEAlMode" << endl;
 				return ;
 			}
 			tmpdw->manualDock( dwpd, K3DockWidget::DockCenter, 20 );
@@ -2434,7 +2434,7 @@ void K3MdiMainFrm::setEnableMaximizedChildFrmMode( bool enableMaxChildFrameMode 
 {
 	if ( enableMaxChildFrameMode )
 	{
-		kdDebug(760) << k_funcinfo << "Turning on maximized child frame mode" << endl;
+		kDebug(760) << k_funcinfo << "Turning on maximized child frame mode" << endl;
 		m_bMaximizedChildFrmMode = true;
 		
 		K3MdiChildFrm* pCurrentChild = m_pMdi->topChild();
@@ -2463,7 +2463,7 @@ void K3MdiMainFrm::setEnableMaximizedChildFrmMode( bool enableMaxChildFrameMode 
 				m_pClose->show();
 			}
 			else
-				kdDebug(760) << k_funcinfo << "no close button. things won't behave correctly" << endl;
+				kDebug(760) << k_funcinfo << "no close button. things won't behave correctly" << endl;
 		}
 	}
 	else
@@ -2471,7 +2471,7 @@ void K3MdiMainFrm::setEnableMaximizedChildFrmMode( bool enableMaxChildFrameMode 
 		if ( !m_bMaximizedChildFrmMode )
 			return ;  // already set, nothing to do
 
-		kdDebug(760) << k_funcinfo << "Turning off maximized child frame mode" << endl;
+		kDebug(760) << k_funcinfo << "Turning off maximized child frame mode" << endl;
 		m_bMaximizedChildFrmMode = false;
 
 		K3MdiChildFrm* pFrmChild = m_pMdi->topChild();

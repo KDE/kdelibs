@@ -117,37 +117,37 @@ void Addressee::detach()
 bool Addressee::operator==( const Addressee &a ) const
 {
   if ( uid() != a.uid() ) {
-    kdDebug(5700) << "uid differs" << endl;
+    kDebug(5700) << "uid differs" << endl;
     return false;
   }
   --EQUALSTEST--
   if ( ( mData->url.isValid() || a.mData->url.isValid() ) &&
        ( mData->url != a.mData->url ) ) {
-    kdDebug(5700) << "url differs" << endl;
+    kDebug(5700) << "url differs" << endl;
     return false;
   }
   if ( !listEquals( mData->phoneNumbers, a.mData->phoneNumbers ) ) {
-    kdDebug(5700) << "phoneNumbers differs" << endl;
+    kDebug(5700) << "phoneNumbers differs" << endl;
     return false;
   }
   if ( !listEquals( mData->addresses, a.mData->addresses ) ) {
-    kdDebug(5700) << "addresses differs" << endl;
+    kDebug(5700) << "addresses differs" << endl;
     return false;
   }
   if ( !listEquals( mData->keys, a.mData->keys ) ) {
-    kdDebug(5700) << "keys differs" << endl;
+    kDebug(5700) << "keys differs" << endl;
     return false;
   }
   if ( !emailsEquals( mData->emails, a.mData->emails ) ) {
-    kdDebug(5700) << "emails differs" << endl;
+    kDebug(5700) << "emails differs" << endl;
     return false;
   }
   if ( !listEquals( mData->categories, a.mData->categories ) ) {
-    kdDebug(5700) << "categories differs" << endl;
+    kDebug(5700) << "categories differs" << endl;
     return false;
   }
   if ( !listEquals( mData->custom, a.mData->custom ) ) {
-    kdDebug(5700) << "custom differs" << endl;
+    kDebug(5700) << "custom differs" << endl;
     return false;
   }
 
@@ -597,27 +597,27 @@ QString Addressee::asString() const
 
 void Addressee::dump() const
 {
-  kdDebug(5700) << "Addressee {" << endl;
+  kDebug(5700) << "Addressee {" << endl;
 
-  kdDebug(5700) << "  Uid: '" << uid() << "'" << endl;
+  kDebug(5700) << "  Uid: '" << uid() << "'" << endl;
 
   --DEBUG--
 
-  kdDebug(5700) << "  Emails {" << endl;
+  kDebug(5700) << "  Emails {" << endl;
   const QStringList e = emails();
   QStringList::ConstIterator it;
   for ( it = e.begin(); it != e.end(); ++it ) {
-    kdDebug(5700) << "    " << (*it) << endl;
+    kDebug(5700) << "    " << (*it) << endl;
   }
-  kdDebug(5700) << "  }" << endl;
+  kDebug(5700) << "  }" << endl;
 
-  kdDebug(5700) << "  PhoneNumbers {" << endl;
+  kDebug(5700) << "  PhoneNumbers {" << endl;
   const PhoneNumber::List p = phoneNumbers();
   PhoneNumber::List::ConstIterator it2;
   for ( it2 = p.begin(); it2 != p.end(); ++it2 ) {
-    kdDebug(5700) << "    Type: " << int((*it2).type()) << " Number: " << (*it2).number() << endl;
+    kDebug(5700) << "    Type: " << int((*it2).type()) << " Number: " << (*it2).number() << endl;
   }
-  kdDebug(5700) << "  }" << endl;
+  kDebug(5700) << "  }" << endl;
 
   const Address::List a = addresses();
   Address::List::ConstIterator it3;
@@ -625,17 +625,17 @@ void Addressee::dump() const
     (*it3).dump();
   }
 
-  kdDebug(5700) << "  Keys {" << endl;
+  kDebug(5700) << "  Keys {" << endl;
   const Key::List k = keys();
   Key::List::ConstIterator it4;
   for ( it4 = k.begin(); it4 != k.end(); ++it4 ) {
-    kdDebug(5700) << "    Type: " << int((*it4).type()) <<
+    kDebug(5700) << "    Type: " << int((*it4).type()) <<
                      " Key: " << (*it4).textData() <<
                      " CustomString: " << (*it4).customTypeString() << endl;
   }
-  kdDebug(5700) << "  }" << endl;
+  kDebug(5700) << "  }" << endl;
 
-  kdDebug(5700) << "}" << endl;
+  kDebug(5700) << "}" << endl;
 }
 
 

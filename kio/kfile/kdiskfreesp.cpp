@@ -86,7 +86,7 @@ int KDiskFreeSp::readDF( const QString & mountPoint )
   dfProc->clearArguments();
   (*dfProc) << QString::fromLocal8Bit(DF_COMMAND) << QString::fromLocal8Bit(DF_ARGS);
   if (!dfProc->start( KProcess::NotifyOnExit, KProcess::AllOutput ))
-     kdError() << "could not execute ["<< DF_COMMAND << "]" << endl;
+     kError() << "could not execute ["<< DF_COMMAND << "]" << endl;
   return 1;
 }
 
@@ -101,27 +101,27 @@ void KDiskFreeSp::dfDone()
   QTextStream t (dfStringErrOut, QIODevice::ReadOnly);
   QString s=t.readLine();
   if ( (s.isEmpty()) || ( !s.startsWith( QLatin1String("Filesystem") ) ) )
-    kdError() << "Error running df command... got [" << s << "]" << endl;
+    kError() << "Error running df command... got [" << s << "]" << endl;
   while ( !t.atEnd() ) {
     QString u,v;
     s=t.readLine();
     s=s.simplified();
     if ( !s.isEmpty() ) {
-      //kdDebug(kfile_area) << "GOT: [" << s << "]" << endl;
+      //kDebug(kfile_area) << "GOT: [" << s << "]" << endl;
 
       if (s.indexOf(BLANK)<0)      // devicename was too long, rest in next line
 	if ( !t.atEnd() ) {       // just appends the next line
             v=t.readLine();
             s=s.append(v);
             s=s.simplified();
-            //kdDebug(kfile_area) << "SPECIAL GOT: [" << s << "]" << endl;
+            //kDebug(kfile_area) << "SPECIAL GOT: [" << s << "]" << endl;
 	 }//if silly linefeed
 
-      //kdDebug(kfile_area) << "[" << s << "]" << endl;
+      //kDebug(kfile_area) << "[" << s << "]" << endl;
 
       //QString deviceName = s.left(s.find(BLANK));
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kdDebug(kfile_area) << "    DeviceName:    [" << deviceName << "]" << endl;
+      //kDebug(kfile_area) << "    DeviceName:    [" << deviceName << "]" << endl;
 
       if (!NO_FS_TYPE)
           s=s.remove(0,s.indexOf(BLANK)+1 ); // eat fs type
@@ -129,26 +129,26 @@ void KDiskFreeSp::dfDone()
       u=s.left(s.indexOf(BLANK));
       unsigned long kBSize = u.toULong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kdDebug(kfile_area) << "    Size:       [" << kBSize << "]" << endl;
+      //kDebug(kfile_area) << "    Size:       [" << kBSize << "]" << endl;
 
       u=s.left(s.indexOf(BLANK));
       unsigned long kBUsed = u.toULong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kdDebug(kfile_area) << "    Used:       [" << kBUsed << "]" << endl;
+      //kDebug(kfile_area) << "    Used:       [" << kBUsed << "]" << endl;
 
       u=s.left(s.indexOf(BLANK));
       unsigned long kBAvail = u.toULong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kdDebug(kfile_area) << "    Avail:       [" << kBAvail << "]" << endl;
+      //kDebug(kfile_area) << "    Avail:       [" << kBAvail << "]" << endl;
 
 
       s=s.remove(0,s.indexOf(BLANK)+1 );  // delete the capacity 94%
       QString mountPoint = s.trimmed();
-      //kdDebug(kfile_area) << "    MountPoint:       [" << mountPoint << "]" << endl;
+      //kDebug(kfile_area) << "    MountPoint:       [" << mountPoint << "]" << endl;
 
       if ( mountPoint == m_mountPoint )
       {
-        //kdDebug(kfile_area) << "Found mount point. Emitting" << endl;
+        //kDebug(kfile_area) << "Found mount point. Emitting" << endl;
         emit foundMountPoint( mountPoint, kBSize, kBUsed, kBAvail );
         emit foundMountPoint( kBSize, kBUsed, kBAvail, mountPoint ); // sic!
       }

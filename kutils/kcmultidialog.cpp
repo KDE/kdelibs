@@ -83,7 +83,7 @@ KCMultiDialog::KCMultiDialog( int dialogFace, const KGuiItem &user2,
             KStdGuiItem::reset(), user2, user3 )
     , dialogface( dialogFace ), d( new KCMultiDialogPrivate )
 {
-    kdDebug( 710 ) << "Root modules will not work with this constructor. See the API documentation." << endl;
+    kDebug( 710 ) << "Root modules will not work with this constructor. See the API documentation." << endl;
     init();
     if ( buttonMask & User2 )
         showButton( User2, true );
@@ -145,7 +145,7 @@ void KCMultiDialog::apply()
         {
             m->save();
             const QStringList names = moduleParentComponents.value( m );
-            kdDebug(710) << k_funcinfo << names << " saved and added to the list" << endl;
+            kDebug(710) << k_funcinfo << names << " saved and added to the list" << endl;
             for( QStringList::ConstIterator it = names.begin(); it != names.end(); ++it )
                 if( updatedModules.find( *it ) == updatedModules.end() )
                     updatedModules.append( *it );
@@ -153,7 +153,7 @@ void KCMultiDialog::apply()
     }
     for( QStringList::const_iterator it = updatedModules.begin(); it != updatedModules.end(); ++it )
     {
-        kdDebug(710) << k_funcinfo << *it << " " << ( *it ).toLatin1() << endl;
+        kDebug(710) << k_funcinfo << *it << " " << ( *it ).toLatin1() << endl;
         emit configCommitted( ( *it ).toLatin1() );
     }
     emit configCommitted();
@@ -207,7 +207,7 @@ void KCMultiDialog::slotHelp()
 
 void KCMultiDialog::clientChanged(bool state)
 {
-    kdDebug( 710 ) << k_funcinfo << state << endl;
+    kDebug( 710 ) << k_funcinfo << state << endl;
     ModuleList::Iterator end = m_modules.end();
     for( ModuleList::Iterator it = m_modules.begin(); it != end; ++it )
         if( ( *it ).kcm->changed() )
@@ -233,7 +233,7 @@ void KCMultiDialog::addModule(const QString& path, bool withfallback)
 void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
         QStringList parentmodulenames, bool withfallback)
 {
-    kdDebug(710) << "KCMultiDialog::addModule "
+    kDebug(710) << "KCMultiDialog::addModule "
         << moduleinfo.moduleName() << endl;
 
     if( !moduleinfo.service() )
@@ -265,7 +265,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
                 ( new QHBoxLayout( page ) )->setAutoAdd( true );
                 break;
             default:
-                kdError( 710 ) << "unsupported dialog face for KCMultiDialog"
+                kError( 710 ) << "unsupported dialog face for KCMultiDialog"
                     << endl;
                 break;
         }
@@ -280,7 +280,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
         // removeAllModules
         module = m_orphanModules[ moduleinfo.service() ];
         m_orphanModules.remove( moduleinfo.service() );
-        kdDebug( 710 ) << "Use KCModule from the list of orphans for " <<
+        kDebug( 710 ) << "Use KCModule from the list of orphans for " <<
             moduleinfo.moduleName() << ": " << module << endl;
 
         module->reparent( page, 0, QPoint( 0, 0 ), true );
@@ -320,11 +320,11 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
 
 void KCMultiDialog::removeAllModules()
 {
-    kdDebug( 710 ) << k_funcinfo << endl;
+    kDebug( 710 ) << k_funcinfo << endl;
     ModuleList::Iterator end = m_modules.end();
     for( ModuleList::Iterator it = m_modules.begin(); it != end; ++it )
     {
-        kdDebug( 710 ) << "remove 2" << endl;
+        kDebug( 710 ) << "remove 2" << endl;
         KCModuleProxy * kcm = ( *it ).kcm;
         QObject * page = kcm->parent();
         kcm->hide();
@@ -335,7 +335,7 @@ void KCMultiDialog::removeAllModules()
             delete page;
         }
         m_orphanModules[ ( *it ).service ] = kcm;
-        kdDebug( 710 ) << "added KCModule to the list of orphans: " <<
+        kDebug( 710 ) << "added KCModule to the list of orphans: " <<
             kcm << endl;
     }
     m_modules.clear();
@@ -350,7 +350,7 @@ void KCMultiDialog::show()
 
 void KCMultiDialog::slotCurrentPageChanged(QWidget *page)
 {
-    kdDebug(710) << k_funcinfo << endl;
+    kDebug(710) << k_funcinfo << endl;
 
     QObject * obj = page->child( 0, "KCModuleProxy" );
     if( ! obj )
@@ -394,7 +394,7 @@ void KCMultiDialog::disableRModeButton()
 
 void KCMultiDialog::dialogClosed()
 {
-    kdDebug(710) << k_funcinfo << endl;
+    kDebug(710) << k_funcinfo << endl;
 
     /* If we don't delete them, the DCOP registration stays, and trying to load the KCMs
      * in other situations will lead to "module already loaded in Foo," while to the user

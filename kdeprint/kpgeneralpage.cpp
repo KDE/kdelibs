@@ -506,7 +506,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 			}
 			else
 			{
-				kdWarning() << "media option '" << value << "' not handled." << endl;
+				kWarning() << "media option '" << value << "' not handled." << endl;
 			}
 		}
 		value = opts["PageSize"];
@@ -557,7 +557,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 				else if ((index=findOption(default_source,DEFAULT_SOURCE,value)) >= 0)
 					m_inputslot->setCurrentItem(index);
 				else
-					kdWarning() << "media option '" << value << "' not handled." << endl;
+					kWarning() << "media option '" << value << "' not handled." << endl;
 			}
 		}
 

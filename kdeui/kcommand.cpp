@@ -302,7 +302,7 @@ void KCommandHistory::slotUndoAboutToShow()
 
 void KCommandHistory::slotUndoActivated( int pos )
 {
-    kdDebug(230) << "KCommandHistory::slotUndoActivated " << pos << endl;
+    kDebug(230) << "KCommandHistory::slotUndoActivated " << pos << endl;
     for ( int i = 0 ; i < pos+1; ++i )
         undo();
 }
@@ -320,7 +320,7 @@ void KCommandHistory::slotRedoAboutToShow()
 
 void KCommandHistory::slotRedoActivated( int pos )
 {
-    kdDebug(230) << "KCommandHistory::slotRedoActivated " << pos << endl;
+    kDebug(230) << "KCommandHistory::slotRedoActivated " << pos << endl;
     for ( int i = 0 ; i < pos+1; ++i )
         redo();
 }

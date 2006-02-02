@@ -145,14 +145,14 @@ BackgroundTest::BackgroundTest()
 
 void BackgroundTest::slotDone()
 {
-    kdDebug()<<"Text of length "<<m_len<<" checked in "
+    kDebug()<<"Text of length "<<m_len<<" checked in "
              << m_timer.elapsed() << " msec."<<endl;
     QApplication::exit();
 }
 
 void BackgroundTest::slotMisspelling( const QString& word, int start )
 {
-    kdDebug()<<"Misspelling \""<< word << "\" at " << start << endl;
+    kDebug()<<"Misspelling \""<< word << "\" at " << start << endl;
     m_checker->continueChecking();
 }
 

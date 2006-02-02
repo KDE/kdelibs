@@ -88,7 +88,7 @@ int SshProcess::exec(const char *password, int check)
     if (ret < 0)
     {
         if (!check)
-            kdError(900) << k_lineinfo << "Conversation with ssh failed\n";
+            kError(900) << k_lineinfo << "Conversation with ssh failed\n";
         return ret;
     }
     if (check == 2)
@@ -108,7 +108,7 @@ int SshProcess::exec(const char *password, int check)
     if (ret < 0)
     {
         if (!check)
-            kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
+            kError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
         return ret;
     }
     else if (ret == 1)

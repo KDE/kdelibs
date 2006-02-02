@@ -40,7 +40,7 @@ bool LockNull::lock()
 {
   if ( !mAllowAccess ) return false;
   
-  kdWarning() << "LockNull::lock() force success. Doesn't actually lock."
+  kWarning() << "LockNull::lock() force success. Doesn't actually lock."
               << endl;
   
   emit locked();

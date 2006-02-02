@@ -148,7 +148,7 @@ void
 KCrash::defaultCrashHandler (int sig)
 {
 #ifdef Q_OS_UNIX
-  // WABA: Do NOT use kdDebug() in this function because it is much too risky!
+  // WABA: Do NOT use kDebug() in this function because it is much too risky!
   // Handle possible recursions
   static int crashRecursionCounter = 0;
   crashRecursionCounter++; // Nothing before this, please !

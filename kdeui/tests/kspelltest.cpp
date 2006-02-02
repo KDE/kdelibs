@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 
     KSpell::modalCheck( text );
 
-    kdDebug() << "Returned " << text << endl;
+    kDebug() << "Returned " << text << endl;
 
     QLabel* l = new QLabel( text, (QWidget*)0 );
     l->show();

@@ -113,7 +113,7 @@ int PTY::getpt()
 	return ptyfd;
     }
     ptyfd = -1;
-    kdDebug(900) << k_lineinfo << "Opening pty failed.\n";
+    kDebug(900) << k_lineinfo << "Opening pty failed.\n";
     return -1;
 
 #elif defined(HAVE__GETPTY)
@@ -124,7 +124,7 @@ int PTY::getpt()
 	ptyfd = master_fd;
     else{
 	ptyfd = -1;
-	kdDebug(900) << k_lineinfo << "Opening pty failed.error" << errno << '\n';
+	kDebug(900) << k_lineinfo << "Opening pty failed.error" << errno << '\n';
     }
     return ptyfd;
 
@@ -182,7 +182,7 @@ linux_out:
 
     // Other systems ??
     ptyfd = -1;
-    kdDebug(900) << k_lineinfo << "Unknown system or all methods failed.\n";
+    kDebug(900) << k_lineinfo << "Unknown system or all methods failed.\n";
     return -1;
 
 #endif // HAVE_GETPT && HAVE_PTSNAME
@@ -214,7 +214,7 @@ int PTY::grantpt()
     // Use konsole_grantpty:
     if (KStandardDirs::findExe("konsole_grantpty").isEmpty())
     {
-	kdError(900) << k_lineinfo << "konsole_grantpty not found.\n";
+	kError(900) << k_lineinfo << "konsole_grantpty not found.\n";
 	return -1;
     }
 
@@ -224,7 +224,7 @@ int PTY::grantpt()
     pid_t pid;
     if ((pid = fork()) == -1)
     {
-	kdError(900) << k_lineinfo << "fork(): " << perror << "\n";
+	kError(900) << k_lineinfo << "fork(): " << perror << "\n";
 	return -1;
     }
 
@@ -235,7 +235,7 @@ int PTY::grantpt()
 	waitpid(pid, &ret, 0);
 	if (WIFEXITED(ret) && !WEXITSTATUS(ret))
 	    return 0;
-	kdError(900) << k_lineinfo << "konsole_grantpty returned with error: "
+	kError(900) << k_lineinfo << "konsole_grantpty returned with error: "
 		     << WEXITSTATUS(ret) << "\n";
 	return -1;
     } else
@@ -244,7 +244,7 @@ int PTY::grantpt()
 	if (ptyfd != pty_fileno && dup2(ptyfd, pty_fileno) < 0)
 	    _exit(1);
 	execlp("konsole_grantpty", "konsole_grantpty", "--grant", (void *)0);
-	kdError(900) << k_lineinfo << "exec(): " << perror << "\n";
+	kError(900) << k_lineinfo << "exec(): " << perror << "\n";
 	_exit(1);
     }
 

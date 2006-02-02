@@ -110,7 +110,7 @@ KMJobViewer::~KMJobViewer()
 {
 	if (m_standalone)
 	{
-		kdDebug( 500 ) << "Destroying stand-alone job viewer window" << endl;
+		kDebug( 500 ) << "Destroying stand-alone job viewer window" << endl;
 		KConfig *conf = KMFactory::self()->printConfig();
 		conf->setGroup( "Jobs" );
 		conf->writeEntry( "Size", size() );

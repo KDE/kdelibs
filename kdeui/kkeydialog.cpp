@@ -267,7 +267,7 @@ bool KKeyChooser::insert( KShortcutList* pList )
 
 void KKeyChooser::commitChanges()
 {
-	kdDebug(125) << "KKeyChooser::commitChanges()" << endl;
+	kDebug(125) << "KKeyChooser::commitChanges()" << endl;
 
 	Q3ListViewItemIterator it( d->pList );
 	for( ; it.current(); ++it ) {
@@ -472,7 +472,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 	uint nSize = pList->count();
 	for( uint iAction = 0; iAction < nSize; iAction++ ) {
 		QString sName = pList->name(iAction);
-		kdDebug(125) << "Key: " << sName << endl;
+		kDebug(125) << "Key: " << sName << endl;
 		if( sName.startsWith( "Program:" ) ) {
 			pItem = new KListViewItem( d->pList, pProgramItem, pList->label(iAction) );
 			pItem->setSelectable( false );
@@ -554,7 +554,7 @@ void KKeyChooser::slotNoKey()
 	// return if no key is selected
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( d->pList->currentItem() );
 	if( pItem ) {
-		//kdDebug(125) << "no Key" << d->pList->currentItem()->text(0) << endl;
+		//kDebug(125) << "no Key" << d->pList->currentItem()->text(0) << endl;
 		pItem->setShortcut( KShortcut() );
 		updateButtons();
 		emit keyChange();
@@ -611,7 +611,7 @@ void KKeyChooser::fontChange( const QFont & )
 // ones after pressing the 'Default' button rather a misfeature.
 void KKeyChooser::allDefault()
 {
-	kdDebug(125) << "KKeyChooser::allDefault()" << endl;
+	kDebug(125) << "KKeyChooser::allDefault()" << endl;
 
 	Q3ListViewItemIterator it( d->pList );
 	for( ; it.current(); ++it ) {
@@ -658,7 +658,7 @@ void KKeyChooser::capturedShortcut( const KShortcut& cut )
 // TODO: Check lxr.kde.org to see if it's used anywhere
 void KKeyChooser::listSync()
 {
-/*	kdDebug(125) << "KKeyChooser::listSync()" << endl;
+/*	kDebug(125) << "KKeyChooser::listSync()" << endl;
 
 	if( d->pColl ) {
 		// TODO: This is very inefficient.  Come up with something better.
@@ -674,7 +674,7 @@ void KKeyChooser::listSync()
 
 void KKeyChooser::syncToConfig( const QString& sConfigGroup, KConfigBase* pConfig, bool bClearUnset )
 {
-	kdDebug(125) << "KKeyChooser::syncToConfig( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
+	kDebug(125) << "KKeyChooser::syncToConfig( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
 	if( !pConfig )
 		pConfig = KGlobal::config();
 	KConfigGroup cg( pConfig, sConfigGroup );
@@ -689,16 +689,16 @@ void KKeyChooser::syncToConfig( const QString& sConfigGroup, KConfigBase* pConfi
 					sEntry.clear();
 				pItem->setShortcut( sEntry );
 			}
-			kdDebug(125) << pItem->actionName() << " = " << pItem->shortcut().toStringInternal() << endl;
+			kDebug(125) << pItem->actionName() << " = " << pItem->shortcut().toStringInternal() << endl;
 		}
 	}
 	updateButtons();
-	kdDebug(125) << "KKeyChooser::syncToConfig() done" << endl;
+	kDebug(125) << "KKeyChooser::syncToConfig() done" << endl;
 }
 
 void KKeyChooser::setShortcut( const KShortcut& cut )
 {
-	kdDebug(125) << "KKeyChooser::setShortcut( " << cut.toString() << " )" << endl;
+	kDebug(125) << "KKeyChooser::setShortcut( " << cut.toString() << " )" << endl;
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(d->pList->currentItem());
 	if( !pItem )
 		return;
@@ -1167,7 +1167,7 @@ int KKeyDialog::configure( KGlobalAccel* keys, bool bAllowLetterShortcuts, QWidg
 
 int KKeyDialog::configure( KActionCollection* coll, bool bAllowLetterShortcuts, QWidget *parent, bool bSaveSettings )
 {
-	kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << bSaveSettings << " )" << endl;
+	kDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << bSaveSettings << " )" << endl;
 	KKeyDialog dlg( bAllowLetterShortcuts, parent );
 	dlg.m_pKeyChooser->insert( coll );
 	return dlg.configure( bSaveSettings );
@@ -1175,7 +1175,7 @@ int KKeyDialog::configure( KActionCollection* coll, bool bAllowLetterShortcuts, 
 
 /*int KKeyDialog::configure( KActionPtrList* coll, const QString& file, QWidget *parent, bool bSaveSettings )
 {
-	kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << file << ", " << bSaveSettings << " )" << endl;
+	kDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << file << ", " << bSaveSettings << " )" << endl;
 	KAccelActions actions;
 	coll->createKeyMap( actions );
 

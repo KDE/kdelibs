@@ -39,7 +39,7 @@ KDETrayProxy::KDETrayProxy()
     foreach( WId id, module.windows() )
         windowAdded( id );
     kapp->installX11EventFilter( this ); // XSelectInput( StructureNotifyMask ) on windows is done by KWinModule
-//    kdDebug() << "Init done" << endl;
+//    kDebug() << "Init done" << endl;
     }
 
 Atom KDETrayProxy::makeSelectionAtom()
@@ -54,7 +54,7 @@ void KDETrayProxy::windowAdded( WId w )
     WId trayWinFor = ni.kdeSystemTrayWinFor();
     if ( !trayWinFor ) // not a KDE tray window
         return;
-//    kdDebug() << "New tray window:" << w << endl;
+//    kDebug() << "New tray window:" << w << endl;
     if( !tray_windows.contains( w ))
         tray_windows.append( w );
     withdrawWindow( w );
@@ -65,7 +65,7 @@ void KDETrayProxy::windowAdded( WId w )
     Window owner = selection.owner();
     if( owner == None ) // no tray owner, sorry
         {
-//        kdDebug() << "No owner, left in pending" << endl;
+//        kDebug() << "No owner, left in pending" << endl;
         return;
         }
     dockWindow( w, owner );
@@ -73,7 +73,7 @@ void KDETrayProxy::windowAdded( WId w )
     
 void KDETrayProxy::newOwner( Window owner )
     {
-//    kdDebug() << "New owner:" << owner << endl;
+//    kDebug() << "New owner:" << owner << endl;
     for( QList< Window >::ConstIterator it = pending_windows.begin();
          it != pending_windows.end();
          ++it )
@@ -97,7 +97,7 @@ bool KDETrayProxy::x11Event( XEvent* e )
             {
             if( !docked_windows.contains( e->xreparent.window ) || e->xreparent.serial >= docked_windows[ e->xreparent.window ] )
                 {
-//                kdDebug() << "Window released:" << e->xreparent.window << endl;
+//                kDebug() << "Window released:" << e->xreparent.window << endl;
                 docked_windows.remove( e->xreparent.window );
                 if( !pending_windows.contains( e->xreparent.window ))
                     pending_windows.append( e->xreparent.window );
@@ -105,7 +105,7 @@ bool KDETrayProxy::x11Event( XEvent* e )
             }
         else
             {
-//            kdDebug() << "Window away:" << e->xreparent.window << ":" << e->xreparent.parent << endl;
+//            kDebug() << "Window away:" << e->xreparent.window << ":" << e->xreparent.parent << endl;
             pending_windows.removeAll( e->xreparent.window );
             }
         }
@@ -113,7 +113,7 @@ bool KDETrayProxy::x11Event( XEvent* e )
         {
         if( docked_windows.contains( e->xunmap.window ) && e->xunmap.serial >= docked_windows[ e->xunmap.window ] )
             {
-//            kdDebug() << "Window unmapped:" << e->xunmap.window << endl;
+//            kDebug() << "Window unmapped:" << e->xunmap.window << endl;
             XReparentWindow( QX11Info::display(), e->xunmap.window, QX11Info::appRootWindow(), 0, 0 );
             // ReparentNotify will take care of the rest
             }
@@ -123,7 +123,7 @@ bool KDETrayProxy::x11Event( XEvent* e )
 
 void KDETrayProxy::dockWindow( Window w, Window owner )
     {
-//    kdDebug() << "Docking " << w << " into " << owner << endl;
+//    kDebug() << "Docking " << w << " into " << owner << endl;
     docked_windows[ w ] = XNextRequest( QX11Info::display());
     static Atom prop = XInternAtom( QX11Info::display(), "_XEMBED_INFO", False );
     long data[ 2 ] = { 0, 1 };

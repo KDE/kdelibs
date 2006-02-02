@@ -531,7 +531,7 @@ if (whatType == "application/x-pkcs12") {
 	}
 
 	/*
-	   kdDebug() << "Reading in a file in "
+	   kDebug() << "Reading in a file in "
 	   << (isPEM ? "PEM" : "DER")
 	   << " format." << endl;
 	 */
@@ -577,7 +577,7 @@ if (whatType == "application/x-pkcs12") {
 				new KX509Item(_parentCA, xc);
 			else new KX509Item(_sideList, xc);
 		} else if (x5i->crl) {   // a crl
-			kdDebug() << "Found a CRL..." << endl;
+			kDebug() << "Found a CRL..." << endl;
 		}
 	}
 

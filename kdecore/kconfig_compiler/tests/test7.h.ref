@@ -54,13 +54,13 @@ class Test7 : public KConfigSkeleton
     {
       if (v < 8)
       {
-        kdDebug() << "setAge: value " << v << " is less than the minimum value of 8" << endl;
+        kDebug() << "setAge: value " << v << " is less than the minimum value of 8" << endl;
         v = 8;
       }
 
       if (v > 88)
       {
-        kdDebug() << "setAge: value " << v << " is greater than the maximum value of 88" << endl;
+        kDebug() << "setAge: value " << v << " is greater than the maximum value of 88" << endl;
         v = 88;
       }
 

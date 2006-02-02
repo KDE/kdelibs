@@ -70,7 +70,7 @@ KJavaProcess::~KJavaProcess()
 {
     if ( isRunning() )
     {
-        kdDebug(6100) << "stopping java process" << endl;
+        kDebug(6100) << "stopping java process" << endl;
         stopJava();
     }
 	qDeleteAll(d->BufferList);
@@ -166,7 +166,7 @@ void KJavaProcess::storeSize( QByteArray* buff )
 {
     const int size = buff->size() - 8;  //subtract out the length of the size_str
     const QString size_str = QString("%1").arg( size, 8 );
-    kdDebug(6100) << "KJavaProcess::storeSize, size = " << size_str << endl;
+    kDebug(6100) << "KJavaProcess::storeSize, size = " << size_str << endl;
 
     const char* size_ptr = size_str.latin1();
     for( int i = 0; i < 8; ++i )
@@ -188,7 +188,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
     {
         QByteArray* const buff = addArgs( cmd_code, args );
         storeSize( buff );
-        kdDebug(6100) << "<KJavaProcess::send " << (int)cmd_code << endl;
+        kDebug(6100) << "<KJavaProcess::send " << (int)cmd_code << endl;
         sendBuffer( buff );
     }
 }
@@ -198,7 +198,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args,
 {
     if( isRunning() )
     {
-        kdDebug(6100) << "KJavaProcess::send, qbytearray is size = " << data.size() << endl;
+        kDebug(6100) << "KJavaProcess::send, qbytearray is size = " << data.size() << endl;
 
         QByteArray* const buff = addArgs( cmd_code, args );
         const int cur_size = buff->size();
@@ -217,23 +217,23 @@ void KJavaProcess::popBuffer()
     if( buf )
     {
 //        DEBUG stuff...
-//	kdDebug(6100) << "Sending buffer to java, buffer = >>";
+//	kDebug(6100) << "Sending buffer to java, buffer = >>";
 //        for( unsigned int i = 0; i < buf->size(); i++ )
 //        {
 //            if( buf->at(i) == (char)0 )
-//                kdDebug(6100) << "<SEP>";
+//                kDebug(6100) << "<SEP>";
 //            else if( buf->at(i) > 0 && buf->at(i) < 10 )
-//                kdDebug(6100) << "<CMD " << (int) buf->at(i) << ">";
+//                kDebug(6100) << "<CMD " << (int) buf->at(i) << ">";
 //            else
-//                kdDebug(6100) << buf->at(i);
+//                kDebug(6100) << buf->at(i);
 //        }
-//        kdDebug(6100) << "<<" << endl;
+//        kDebug(6100) << "<<" << endl;
 
         //write the data
         if ( !javaProcess->writeStdin( buf->data(),
                                        buf->size() ) )
         {
-            kdError(6100) << "Could not write command" << endl;
+            kError(6100) << "Could not write command" << endl;
         }
     }
 }
@@ -242,7 +242,7 @@ void KJavaProcess::slotWroteData( )
 {
     //do this here- we can't free the data until we know it went through
     d->BufferList.removeFirst();  //this should delete it since we setAutoDelete(true)
-    kdDebug(6100) << "slotWroteData " << d->BufferList.count() << endl;
+    kDebug(6100) << "slotWroteData " << d->BufferList.count() << endl;
 
     if ( !d->BufferList.isEmpty() )
     {
@@ -298,14 +298,14 @@ bool KJavaProcess::invokeJVM()
     if ( !d->classArgs.isNull() )
         *javaProcess << d->classArgs;
 
-    kdDebug(6100) << "Invoking JVM now...with arguments = " << endl;
+    kDebug(6100) << "Invoking JVM now...with arguments = " << endl;
     QString argStr;
     QTextOStream stream( &argStr );
     const QList<QByteArray> args = javaProcess->args();
     QListIterator<QByteArray> bit(args);
     while (bit.hasNext())
 	stream << bit.next();
-    kdDebug(6100) << argStr << endl;
+    kDebug(6100) << argStr << endl;
 
     KProcess::Communication flags =  (KProcess::Communication)
                                      (KProcess::Stdin | KProcess::Stdout |
@@ -354,7 +354,7 @@ void KJavaProcess::slotReceivedData( int fd, int& len )
     }
     if( num_bytes == -1 )
     {
-        kdError(6100) << "could not read 8 characters for the message length!!!!" << endl;
+        kError(6100) << "could not read 8 characters for the message length!!!!" << endl;
         len = 0;
         return;
     }
@@ -364,7 +364,7 @@ void KJavaProcess::slotReceivedData( int fd, int& len )
     const int num_len = lengthstr.toInt( &ok );
     if( !ok )
     {
-        kdError(6100) << "could not parse length out of: " << lengthstr << endl;
+        kError(6100) << "could not parse length out of: " << lengthstr << endl;
         len = num_bytes;
         return;
     }
@@ -374,7 +374,7 @@ void KJavaProcess::slotReceivedData( int fd, int& len )
     const int num_bytes_msg = ::read( fd, msg, num_len );
     if( num_bytes_msg == -1 || num_bytes_msg != num_len )
     {
-        kdError(6100) << "could not read the msg, num_bytes_msg = " << num_bytes_msg << endl;
+        kError(6100) << "could not read the msg, num_bytes_msg = " << num_bytes_msg << endl;
         delete[] msg;
         len = num_bytes;
         return;
@@ -393,7 +393,7 @@ void KJavaProcess::slotExited( KProcess *process )
     if (!d->processKilled) {
      status = javaProcess->exitStatus();
     }
-    kdDebug(6100) << "jvm exited with status " << status << endl; 
+    kDebug(6100) << "jvm exited with status " << status << endl; 
     emit exited(status);
   }
 }

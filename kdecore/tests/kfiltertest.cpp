@@ -59,11 +59,11 @@ void KFilterTest::test_block_write( const QString & fileName )
 
 void KFilterTest::test_block_write()
 {
-    kdDebug() << " -- test_block_write gzip -- " << endl;
+    kDebug() << " -- test_block_write gzip -- " << endl;
     test_block_write(pathgz);
     QVERIFY( QFileInfo( pathgz ).size() == 33 ); // size of test.gz
 
-    kdDebug() << " -- test_block_write bzip2 -- " << endl;
+    kDebug() << " -- test_block_write bzip2 -- " << endl;
     test_block_write(pathbz2);
     QVERIFY( QFileInfo( pathbz2 ).size() == 52 ); // size of test.bz2
 }
@@ -84,10 +84,10 @@ void KFilterTest::test_block_read( const QString & fileName )
     {
         QVERIFY( n > 0 );
         read += QByteArray( array, n );
-        //kdDebug() << "read returned " << n << endl;
-        //kdDebug() << "read='" << read << "'" << endl;
+        //kDebug() << "read returned " << n << endl;
+        //kDebug() << "read='" << read << "'" << endl;
         QCOMPARE( (int)dev->at(), (int)read.size() );
-        //kdDebug() << "dev.at = " << dev->at() << endl;
+        //kDebug() << "dev.at = " << dev->at() << endl;
     }
     QCOMPARE( read, testData );
     dev->close();
@@ -96,9 +96,9 @@ void KFilterTest::test_block_read( const QString & fileName )
 
 void KFilterTest::test_block_read()
 {
-    kdDebug() << " -- test_block_read gzip -- " << endl;
+    kDebug() << " -- test_block_read gzip -- " << endl;
     test_block_read(pathgz);
-    kdDebug() << " -- test_block_read bzip2 -- " << endl;
+    kDebug() << " -- test_block_read bzip2 -- " << endl;
     test_block_read(pathbz2);
 }
 
@@ -121,9 +121,9 @@ void KFilterTest::test_getch( const QString & fileName )
 
 void KFilterTest::test_getch()
 {
-    kdDebug() << " -- test_getch gzip -- " << endl;
+    kDebug() << " -- test_getch gzip -- " << endl;
     test_getch(pathgz);
-    kdDebug() << " -- test_getch bzip2 -- " << endl;
+    kDebug() << " -- test_getch bzip2 -- " << endl;
     test_getch(pathbz2);
 }
 
@@ -144,9 +144,9 @@ void KFilterTest::test_textstream(  const QString & fileName )
 
 void KFilterTest::test_textstream()
 {
-    kdDebug() << " -- test_textstream gzip -- " << endl;
+    kDebug() << " -- test_textstream gzip -- " << endl;
     test_textstream(pathgz);
-    kdDebug() << " -- test_textstream bzip2 -- " << endl;
+    kDebug() << " -- test_textstream bzip2 -- " << endl;
     test_textstream(pathbz2);
 }
 

@@ -212,7 +212,7 @@ KCalendarSystemJalali::~KCalendarSystemJalali()
 int KCalendarSystemJalali::year(const QDate& date) const
 
 {
-  kdDebug(5400) << "Jalali year..." <<  endl;
+  kDebug(5400) << "Jalali year..." <<  endl;
 int y;
   gregorianToJalali(date, &y, 0, 0);
   return y;
@@ -221,7 +221,7 @@ int y;
 int KCalendarSystemJalali::month (const QDate& date) const
 
 {
-  kdDebug(5400) << "Jalali month..." <<  endl;
+  kDebug(5400) << "Jalali month..." <<  endl;
 int m;
   gregorianToJalali(date, 0 , &m, 0);
   return m;
@@ -230,7 +230,7 @@ int m;
 int KCalendarSystemJalali::day(const QDate& date) const
 
 {
-  kdDebug(5400) << "Jalali day..." <<  endl;
+  kDebug(5400) << "Jalali day..." <<  endl;
 int d;
   gregorianToJalali(date, 0, 0, &d);
   return d;

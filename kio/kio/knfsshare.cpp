@@ -63,7 +63,7 @@ bool KNFSSharePrivate::findExportsFile() {
   if ( QFile::exists("/etc/exports") )
     exportsFile = "/etc/exports";
   else {
-    kdDebug(7000) << "KNFSShare: Could not found exports file!" << endl;
+    kDebug(7000) << "KNFSShare: Could not found exports file!" << endl;
     return false;
   }
       
@@ -78,10 +78,10 @@ bool KNFSSharePrivate::findExportsFile() {
 bool KNFSSharePrivate::readExportsFile() {
   QFile f(exportsFile);
 
-  kdDebug(7000) << "KNFSShare::readExportsFile " << exportsFile << endl;
+  kDebug(7000) << "KNFSShare::readExportsFile " << exportsFile << endl;
 
   if (!f.open(QIODevice::ReadOnly)) {
-    kdError() << "KNFSShare: Could not open " << exportsFile << endl;
+    kError() << "KNFSShare: Could not open " << exportsFile << endl;
     return false;
   }
 
@@ -124,7 +124,7 @@ bool KNFSSharePrivate::readExportsFile() {
     if ( completeLine.startsWith(QLatin1String("\"")) ) {
       int i = completeLine.indexOf(QLatin1Char('"'), 1);
       if (i == -1) {
-        kdError() << "KNFSShare: Parse error: Missing quotation mark: " << completeLine << endl;
+        kError() << "KNFSShare: Parse error: Missing quotation mark: " << completeLine << endl;
         continue;
       }
       path = completeLine.mid(1,i-1);
@@ -141,7 +141,7 @@ bool KNFSSharePrivate::readExportsFile() {
 
     }
 
-    kdDebug(7000) << "KNFSShare: Found path: " << path << endl;
+    kDebug(7000) << "KNFSShare: Found path: " << path << endl;
 
     // normalize path
     if ( !path.endsWith(QLatin1String("/")) )

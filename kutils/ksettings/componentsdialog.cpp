@@ -129,7 +129,7 @@ void ComponentsDialog::show()
 
 void ComponentsDialog::executed( Q3ListViewItem * item )
 {
-    kdDebug( 704 ) << k_funcinfo << endl;
+    kDebug( 704 ) << k_funcinfo << endl;
     if( item == 0 )
         return;
     if( item->rtti() != 1 ) // check for QCheckListItem
@@ -138,7 +138,7 @@ void ComponentsDialog::executed( Q3ListViewItem * item )
     Q3CheckListItem * citem = static_cast<Q3CheckListItem *>( item );
     bool checked = citem->isOn();
 
-    kdDebug( 704 ) << "it's a " << ( checked ? "checked" : "unchecked" )
+    kDebug( 704 ) << "it's a " << ( checked ? "checked" : "unchecked" )
         << " QCheckListItem" << endl;
 
     KPluginInfo * info = d->plugininfomap[ citem ];

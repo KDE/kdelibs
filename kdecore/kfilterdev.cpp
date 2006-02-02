@@ -100,7 +100,7 @@ QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype, b
 
 bool KFilterDev::open( QIODevice::OpenMode mode )
 {
-    //kdDebug(7005) << "KFilterDev::open " << mode << endl;
+    //kDebug(7005) << "KFilterDev::open " << mode << endl;
     if ( mode == QIODevice::ReadOnly )
     {
         d->buffer.resize(0);
@@ -118,7 +118,7 @@ bool KFilterDev::open( QIODevice::OpenMode mode )
     d->result = KFilterBase::OK;
 
     if ( !ret )
-        kdWarning(7005) << "KFilterDev::open: Couldn't open underlying device" << endl;
+        kWarning(7005) << "KFilterDev::open: Couldn't open underlying device" << endl;
     else
         setOpenMode( mode );
 
@@ -130,10 +130,10 @@ void KFilterDev::close()
 {
     if ( !isOpen() )
         return;
-    //kdDebug(7005) << "KFilterDev::close" << endl;
+    //kDebug(7005) << "KFilterDev::close" << endl;
     if ( filter->mode() == QIODevice::WriteOnly )
         writeBlock( 0L, 0 ); // finish writing
-    //kdDebug(7005) << "KFilterDev::close. Calling terminate()." << endl;
+    //kDebug(7005) << "KFilterDev::close. Calling terminate()." << endl;
 
     filter->terminate();
     if ( d->bOpenedUnderlyingDevice )
@@ -149,7 +149,7 @@ qint64 KFilterDev::size() const
 
     // But readAll, which is not virtual, needs the size.........
 
-    kdWarning(7005) << "KFilterDev::size - can't be implemented !!!!!!!! Returning -1 " << endl;
+    kWarning(7005) << "KFilterDev::size - can't be implemented !!!!!!!! Returning -1 " << endl;
     //abort();
     return (uint)-1;
 }
@@ -161,7 +161,7 @@ qint64 KFilterDev::pos() const
 
 bool KFilterDev::seek( qint64 pos )
 {
-    //kdDebug(7005) << "KFilterDev::at " << pos << "  currently at " << ioIndex << endl;
+    //kDebug(7005) << "KFilterDev::at " << pos << "  currently at " << ioIndex << endl;
 
     if ( ioIndex == pos )
         return true;
@@ -190,7 +190,7 @@ bool KFilterDev::seek( qint64 pos )
             return false;
     }
 
-    //kdDebug(7005) << "KFilterDev::at : reading " << pos << " dummy bytes" << endl;
+    //kDebug(7005) << "KFilterDev::at : reading " << pos << " dummy bytes" << endl;
     QByteArray dummy( QMIN( pos, (qint64)3*BUFFER_SIZE ) );
     d->bIgnoreData = true;
     bool result = ( (qint64)readBlock( dummy.data(), pos ) == pos );
@@ -207,7 +207,7 @@ bool KFilterDev::atEnd() const
 qint64 KFilterDev::readData( char *data, qint64 maxlen )
 {
     Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
-    //kdDebug(7005) << "KFilterDev::readBlock maxlen=" << maxlen << endl;
+    //kDebug(7005) << "KFilterDev::readBlock maxlen=" << maxlen << endl;
 
     uint dataReceived = 0;
     if ( !d->ungetchBuffer.isEmpty() )
@@ -270,12 +270,12 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
                 if ( decompressedAll )
                 {
                     // We decoded everything there was to decode. So -> done.
-                    //kdDebug(7005) << "Seems we're done. dataReceived=" << dataReceived << endl;
+                    //kDebug(7005) << "Seems we're done. dataReceived=" << dataReceived << endl;
                     d->result = KFilterBase::END;
                     break;
                 }
             }
-            //kdDebug(7005) << "KFilterDev::readBlock got " << size << " bytes from device" << endl;
+            //kDebug(7005) << "KFilterDev::readBlock got " << size << " bytes from device" << endl;
         }
         if (d->bNeedHeader)
         {
@@ -287,15 +287,15 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
 
         if (d->result == KFilterBase::ERROR)
         {
-            kdWarning(7005) << "KFilterDev: Error when uncompressing data" << endl;
+            kWarning(7005) << "KFilterDev: Error when uncompressing data" << endl;
             break;
         }
 
         // We got that much data since the last time we went here
         uint outReceived = availOut - filter->outBufferAvailable();
-        //kdDebug(7005) << "avail_out = " << filter->outBufferAvailable() << " result=" << d->result << " outReceived=" << outReceived << endl;
+        //kDebug(7005) << "avail_out = " << filter->outBufferAvailable() << " result=" << d->result << " outReceived=" << outReceived << endl;
         if( availOut < (uint)filter->outBufferAvailable() )
-            kdWarning(7005) << " last availOut " << availOut << " smaller than new avail_out=" << filter->outBufferAvailable() << " !" << endl;
+            kWarning(7005) << " last availOut " << availOut << " smaller than new avail_out=" << filter->outBufferAvailable() << " !" << endl;
 
         dataReceived += outReceived;
         if ( !d->bIgnoreData )  // Move on in the output buffer
@@ -310,7 +310,7 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
         ioIndex += outReceived;
         if (d->result == KFilterBase::END)
         {
-            //kdDebug(7005) << "KFilterDev::readBlock got END. dataReceived=" << dataReceived << endl;
+            //kDebug(7005) << "KFilterDev::readBlock got END. dataReceived=" << dataReceived << endl;
             break; // Finished.
         }
         if (filter->inBufferEmpty() && filter->outBufferAvailable() != 0 )
@@ -350,7 +350,7 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
 
         if (d->result == KFilterBase::ERROR)
         {
-            kdWarning(7005) << "KFilterDev: Error when compressing data" << endl;
+            kWarning(7005) << "KFilterDev: Error when compressing data" << endl;
             // What to do ?
             break;
         }
@@ -361,7 +361,7 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
             // We got that much data since the last time we went here
             uint wrote = availIn - filter->inBufferAvailable();
 
-            //kdDebug(7005) << " Wrote everything for now. avail_in = " << filter->inBufferAvailable() << " result=" << d->result << " wrote=" << wrote << endl;
+            //kDebug(7005) << " Wrote everything for now. avail_in = " << filter->inBufferAvailable() << " result=" << d->result << " wrote=" << wrote << endl;
 
             // Move on in the input buffer
             data += wrote;
@@ -369,31 +369,31 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
             ioIndex += wrote;
 
             availIn = len - dataWritten;
-            //kdDebug(7005) << " KFilterDev::writeBlock availIn=" << availIn << " dataWritten=" << dataWritten << " ioIndex=" << ioIndex << endl;
+            //kDebug(7005) << " KFilterDev::writeBlock availIn=" << availIn << " dataWritten=" << dataWritten << " ioIndex=" << ioIndex << endl;
             if ( availIn > 0 ) // Not sure this will ever happen
                 filter->setInBuffer( data, availIn );
         }
 
         if (filter->outBufferFull() || (d->result == KFilterBase::END))
         {
-            //kdDebug(7005) << " KFilterDev::writeBlock writing to underlying. avail_out=" << filter->outBufferAvailable() << endl;
+            //kDebug(7005) << " KFilterDev::writeBlock writing to underlying. avail_out=" << filter->outBufferAvailable() << endl;
             int towrite = d->buffer.size() - filter->outBufferAvailable();
             if ( towrite > 0 )
             {
                 // Write compressed data to underlying device
                 int size = filter->device()->writeBlock( d->buffer.data(), towrite );
                 if ( size != towrite ) {
-                    kdWarning(7005) << "KFilterDev::writeBlock. Could only write " << size << " out of " << towrite << " bytes" << endl;
+                    kWarning(7005) << "KFilterDev::writeBlock. Could only write " << size << " out of " << towrite << " bytes" << endl;
                     return 0; // indicate an error (happens on disk full)
                 }
                 //else
-                    //kdDebug(7005) << " KFilterDev::writeBlock wrote " << size << " bytes" << endl;
+                    //kDebug(7005) << " KFilterDev::writeBlock wrote " << size << " bytes" << endl;
             }
             d->buffer.resize( 8*1024 );
             filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
             if (d->result == KFilterBase::END)
             {
-                //kdDebug(7005) << " KFilterDev::writeBlock END" << endl;
+                //kDebug(7005) << " KFilterDev::writeBlock END" << endl;
                 Q_ASSERT(finish); // hopefully we don't get end before finishing
                 break;
             }
@@ -406,24 +406,24 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
 int KFilterDev::getChar()
 {
     Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
-    //kdDebug(7005) << "KFilterDev::getch" << endl;
+    //kDebug(7005) << "KFilterDev::getch" << endl;
     if ( !d->ungetchBuffer.isEmpty() ) {
         int len = d->ungetchBuffer.length();
         int ch = d->ungetchBuffer[ len-1 ];
         d->ungetchBuffer.truncate( len - 1 );
         ioIndex++;
-        //kdDebug(7005) << "KFilterDev::getch from ungetch: " << QString(QChar(ch)) << endl;
+        //kDebug(7005) << "KFilterDev::getch from ungetch: " << QString(QChar(ch)) << endl;
         return ch;
     }
     char buf[1];
     int ret = readBlock( buf, 1 ) == 1 ? buf[0] : EOF;
-    //kdDebug(7005) << "KFilterDev::getch ret=" << QString(QChar(ret)) << endl;
+    //kDebug(7005) << "KFilterDev::getch ret=" << QString(QChar(ret)) << endl;
     return ret;
 }
 
 int KFilterDev::putChar( int c )
 {
-    //kdDebug(7005) << "KFilterDev::putch" << endl;
+    //kDebug(7005) << "KFilterDev::putch" << endl;
     char buf[1];
     buf[0] = c;
     return writeBlock( buf, 1 ) == 1 ? c : -1;
@@ -431,7 +431,7 @@ int KFilterDev::putChar( int c )
 
 int KFilterDev::ungetChar( int ch )
 {
-    //kdDebug(7005) << "KFilterDev::ungetch " << QString(QChar(ch)) << endl;
+    //kDebug(7005) << "KFilterDev::ungetch " << QString(QChar(ch)) << endl;
     if ( ch == EOF )                            // cannot unget EOF
         return ch;
 

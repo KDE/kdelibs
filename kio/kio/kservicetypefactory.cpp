@@ -278,12 +278,12 @@ KServiceType * KServiceTypeFactory::createEntry(int offset)
         break;
 
      default:
-        kdError(7011) << QString("KServiceTypeFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) << endl;
+        kError(7011) << QString("KServiceTypeFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) << endl;
         break;
    }
    if (!newEntry->isValid())
    {
-      kdError(7011) << "KServiceTypeFactory: corrupt object in KSycoca database!\n" << endl;
+      kError(7011) << "KServiceTypeFactory: corrupt object in KSycoca database!\n" << endl;
       delete newEntry;
       newEntry = 0;
    }

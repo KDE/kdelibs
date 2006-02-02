@@ -213,7 +213,7 @@ bool DistributionListManager::load()
     QString name = it.key();
     QStringList value = cfg.readEntry( name, QStringList() );
 
-    kdDebug(5700) << "DLM::load(): " << name << ": " << value.join(",") << endl;
+    kDebug(5700) << "DLM::load(): " << name << ": " << value.join(",") << endl;
 
     DistributionList *list = new DistributionList( this, name );
 
@@ -223,7 +223,7 @@ bool DistributionListManager::load()
       QString id = *entryIt++;
       QString email = entryIt != value.constEnd() ? *entryIt : QString();
 
-      kdDebug(5700) << "----- Entry " << id << endl;
+      kDebug(5700) << "----- Entry " << id << endl;
 
       Addressee a = d->mAddressBook->findByUid( id );
       if ( !a.isEmpty() ) {
@@ -245,7 +245,7 @@ bool DistributionListManager::load()
 
 bool DistributionListManager::save()
 {
-  kdDebug(5700) << "DistListManager::save()" << endl;
+  kDebug(5700) << "DistListManager::save()" << endl;
 
   KSimpleConfig cfg( locateLocal( "data", "kabc/distlists" ) );
 
@@ -255,7 +255,7 @@ bool DistributionListManager::save()
   QListIterator<DistributionList*> it( mLists );
   while ( it.hasNext() ) {
     DistributionList *list = it.next();
-    kdDebug(5700) << "  Saving '" << list->name() << "'" << endl;
+    kDebug(5700) << "  Saving '" << list->name() << "'" << endl;
 
     QStringList value;
     const DistributionList::Entry::List entries = list->entries();
@@ -303,7 +303,7 @@ DistributionListWatcher::~DistributionListWatcher()
 
 DistributionListWatcher *DistributionListWatcher::self()
 {
-  kdWarning( !qApp ) << "No QApplication object available, you'll get a memleak!" << endl;
+  kWarning( !qApp ) << "No QApplication object available, you'll get a memleak!" << endl;
 
   if ( !mSelf )
     mSelf = new DistributionListWatcher();

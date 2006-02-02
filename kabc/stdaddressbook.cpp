@@ -56,7 +56,7 @@ void StdAddressBook::handleCrash()
 
 StdAddressBook *StdAddressBook::self()
 {
-  kdDebug(5700) << "StdAddressBook::self()" << endl;
+  kDebug(5700) << "StdAddressBook::self()" << endl;
 
   if ( !mSelf )
     addressBookDeleter.setObject( mSelf, new StdAddressBook );
@@ -66,7 +66,7 @@ StdAddressBook *StdAddressBook::self()
 
 StdAddressBook *StdAddressBook::self( bool asynchronous )
 {
-  kdDebug(5700) << "StdAddressBook::self()" << endl;
+  kDebug(5700) << "StdAddressBook::self()" << endl;
 
   if ( !mSelf )
     addressBookDeleter.setObject( mSelf, new StdAddressBook( asynchronous ) );
@@ -77,7 +77,7 @@ StdAddressBook *StdAddressBook::self( bool asynchronous )
 StdAddressBook::StdAddressBook()
   : AddressBook( "" )
 {
-  kdDebug(5700) << "StdAddressBook::StdAddressBook()" << endl;
+  kDebug(5700) << "StdAddressBook::StdAddressBook()" << endl;
 
   init( false );
 }
@@ -85,7 +85,7 @@ StdAddressBook::StdAddressBook()
 StdAddressBook::StdAddressBook( bool asynchronous )
   : AddressBook( "" )
 {
-  kdDebug(5700) << "StdAddressBook::StdAddressBook( bool )" << endl;
+  kDebug(5700) << "StdAddressBook::StdAddressBook( bool )" << endl;
 
   init( asynchronous );
 }
@@ -124,7 +124,7 @@ void StdAddressBook::init( bool asynchronous )
     if ( res )
       addResource( res );
     else
-      kdDebug(5700) << "No resource available!!!" << endl;
+      kDebug(5700) << "No resource available!!!" << endl;
   }
 
   setStandardResource( res );
@@ -138,7 +138,7 @@ void StdAddressBook::init( bool asynchronous )
 
 bool StdAddressBook::saveAll()
 {
-  kdDebug(5700) << "StdAddressBook::saveAll()" << endl;
+  kDebug(5700) << "StdAddressBook::saveAll()" << endl;
   bool ok = true;
 
   deleteRemovedAddressees();
@@ -166,7 +166,7 @@ bool StdAddressBook::saveAll()
 
 bool StdAddressBook::save()
 {
-  kdDebug(5700) << "StdAddressBook::save()" << endl;
+  kDebug(5700) << "StdAddressBook::save()" << endl;
 
   if ( mSelf ) 
     return mSelf->saveAll();

@@ -174,7 +174,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
       query += ", ";
       query += _genericServiceType;
   }
-  kdDebug(7014) << "query for " << query
+  kDebug(7014) << "query for " << query
                 << " : returning " << ret.count() << " offers" << endl;
 #endif
   return ret;

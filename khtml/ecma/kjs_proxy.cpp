@@ -93,18 +93,18 @@ KJSProxyImpl::KJSProxyImpl(khtml::ChildFrame *frame)
 KJSProxyImpl::~KJSProxyImpl()
 {
   if ( m_script ) {
-    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl clearing global object " << m_script->globalObject().imp() << endl;
+    //kDebug() << "KJSProxyImpl::~KJSProxyImpl clearing global object " << m_script->globalObject().imp() << endl;
     // This allows to delete the global-object properties, like all the protos
     m_script->globalObject()->clearProperties();
-    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
+    //kDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
     
     JSLock::lock();
     while (Interpreter::collect())
 	    ;
     JSLock::unlock();
-    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
+    //kDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
     delete m_script;
-    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting again" << endl;
+    //kDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting again" << endl;
     // Garbage collect - as many times as necessary
     // (we could delete an object which was holding another object, so
     // the deref() will happen too late for deleting the impl of the 2nd object).
@@ -135,7 +135,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   // expected value in all cases.
   // See smart window.open policy for where this is used.
   bool inlineCode = filename.isNull();
-  //kdDebug(6070) << "KJSProxyImpl::evaluate inlineCode=" << inlineCode << endl;
+  //kDebug(6070) << "KJSProxyImpl::evaluate inlineCode=" << inlineCode << endl;
 
 #ifdef KJS_DEBUGGER
   if (inlineCode)
@@ -180,7 +180,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
     if ( comp.complType() == Throw )
     {
         UString msg = comp.value()->toString(m_script->globalExec());
-        kdDebug(6070) << "WARNING: Script threw exception: " << msg.qstring() << endl;
+        kDebug(6070) << "WARNING: Script threw exception: " << msg.qstring() << endl;
     }
     return QVariant();
   }
@@ -228,7 +228,7 @@ void KJSProxyImpl::clear() {
     }
 
     // Really delete everything that can be, so that the DOM nodes get deref'ed
-    //kdDebug() << k_funcinfo << "all done -> collecting" << endl;
+    //kDebug() << k_funcinfo << "all done -> collecting" << endl;
     JSLock::lock();
     while (Interpreter::collect())
 	    ;
@@ -347,7 +347,7 @@ void KJSProxyImpl::applyUserAgent()
   {
     m_script->setCompatMode(Interpreter::IECompat);
 #ifdef KJS_VERBOSE
-    kdDebug() << "Setting IE compat mode" << endl;
+    kDebug() << "Setting IE compat mode" << endl;
 #endif
   }
   else
@@ -358,7 +358,7 @@ void KJSProxyImpl::applyUserAgent()
     {
       m_script->setCompatMode(Interpreter::NetscapeCompat);
 #ifdef KJS_VERBOSE
-      kdDebug() << "Setting NS compat mode" << endl;
+      kDebug() << "Setting NS compat mode" << endl;
 #endif
     }
 }
@@ -401,7 +401,7 @@ void KJSCPUGuard::stop()
 }
 
 bool KJSCPUGuard::confirmTerminate() {
-  kdDebug(6070) << "alarmhandler" << endl;
+  kDebug(6070) << "alarmhandler" << endl;
   return KMessageBox::warningYesNo(0L, i18n("A script on this page is causing KHTML to freeze. If it continues to run, other applications may become less responsive.\nDo you want to abort the script?"), i18n("JavaScript"), i18n("&Abort"), KStdGuiItem::cont(), "kjscupguard_alarmhandler") == KMessageBox::Yes;
 }
 

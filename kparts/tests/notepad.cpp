@@ -53,7 +53,7 @@ KAboutData* NotepadPart::createAboutData()
 
 bool NotepadPart::openFile()
 {
-  kdDebug() << "NotepadPart: opening " << m_file << endl;
+  kDebug() << "NotepadPart: opening " << m_file << endl;
   QFile f(m_file);
   QString s;
   if ( f.open(QIODevice::ReadOnly) ) {

@@ -157,7 +157,7 @@ void KBookmarkBar::clear()
 void KBookmarkBar::slotBookmarksChanged( const QString & group )
 {
     KBookmarkGroup tb = getToolbar(); // heavy for non cached toolbar version
-    kdDebug(7043) << "slotBookmarksChanged( " << group << " )" << endl;
+    kDebug(7043) << "slotBookmarksChanged( " << group << " )" << endl;
 
     if ( tb.isNull() )
         return;
@@ -363,7 +363,7 @@ static QString handleToolbarDragMoveEvent(
         KBookmark bk = mgr->findByAddress( address );
         if (bk.isGroup()) // TODO - fix this ****!!!, manhatten distance should be used!!!
         {
-            kdDebug() << "kbookmarkbar:: popping up " << bk.text() << endl;
+            kDebug() << "kbookmarkbar:: popping up " << bk.text() << endl;
             KBookmarkActionMenu *menu = dynamic_cast<KBookmarkActionMenu*>(a);
             Q_ASSERT(menu);
             menu->popup(tb->mapToGlobal(b->geometry().center()));
@@ -479,12 +479,12 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
         if ( list.isEmpty() )
             return false;
         if (list.count() > 1)
-            kdWarning(7043) << "Sorry, currently you can only drop one address "
+            kWarning(7043) << "Sorry, currently you can only drop one address "
                 "onto the bookmark bar!" << endl;
         KBookmark toInsert = list.first();
         KBookmark bookmark = m_pManager->findByAddress( d->m_dropAddress );
         Q_ASSERT(!bookmark.isNull());
-        kdDebug(7043) << "inserting "
+        kDebug(7043) << "inserting "
             << QString(d->m_atFirst ? "before" : "after")
             << " d->m_dropAddress == " << d->m_dropAddress << endl;
         KBookmarkGroup parentBookmark = bookmark.parentGroup();
@@ -520,13 +520,13 @@ static bool showInToolbar( const KBookmark &bk ) {
 }
 
 void ToolbarFilter::visit( const KBookmark &bk ) {
-    //kdDebug() << "visit(" << bk.text() << ")" << endl;
+    //kDebug() << "visit(" << bk.text() << ")" << endl;
     if ( m_visible || showInToolbar(bk) )
         KXBELBookmarkImporterImpl::visit(bk);
 }
 
 void ToolbarFilter::visitEnter( const KBookmarkGroup &grp ) {
-    //kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
+    //kDebug() << "visitEnter(" << grp.text() << ")" << endl;
     if ( !m_visible && showInToolbar(grp) )
     {
         m_visibleStart = grp;
@@ -537,7 +537,7 @@ void ToolbarFilter::visitEnter( const KBookmarkGroup &grp ) {
 }
 
 void ToolbarFilter::visitLeave( const KBookmarkGroup &grp ) {
-    //kdDebug() << "visitLeave()" << endl;
+    //kDebug() << "visitLeave()" << endl;
     if ( m_visible )
         KXBELBookmarkImporterImpl::visitLeave(grp);
     if ( m_visible && grp.address() == m_visibleStart.address() )

@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 
     if(!KUniqueApplication::start())
 	{
-		kdDebug() << "Running kmcop found" << endl;
+		kDebug() << "Running kmcop found" << endl;
 		return 0;
     }
 

@@ -541,7 +541,7 @@ void KFontChooser::style_chosen_slot(const QString& style)
     sizeListBox->blockSignals(false);
     sizeListBox->ensureCurrentVisible();
 
-    //kdDebug() << "Showing: " << familyListBox->currentText() << ", " << currentStyles[currentStyle] << ", " << selectedSize-diff << endl;
+    //kDebug() << "Showing: " << familyListBox->currentText() << ", " << currentStyles[currentStyle] << ", " << selectedSize-diff << endl;
     selFont = dbase.font(familyListBox->currentText(), currentStyles[currentStyle], selectedSize-diff);
     emit fontSelected(selFont);
     if (!style.isEmpty())
@@ -556,8 +556,8 @@ void KFontChooser::displaySample(const QFont& font)
   xlfdEdit->setCursorPosition(0);
 
   //QFontInfo a = QFontInfo(font);
-  //kdDebug() << "font: " << a.family () << ", " << a.pointSize () << endl;
-  //kdDebug() << "      (" << font.toString() << ")\n";
+  //kDebug() << "font: " << a.family () << ", " << a.pointSize () << endl;
+  //kDebug() << "      (" << font.toString() << ")\n";
 }
 
 void KFontChooser::setupDisplay()

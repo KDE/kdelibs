@@ -913,7 +913,7 @@ QString memberMutatorBody( CfgEntry *e )
   {
     out << "if (v < " << e->minValue() << ")" << endl;
     out << "{" << endl;
-    out << "  kdDebug() << \"" << setFunction(n);
+    out << "  kDebug() << \"" << setFunction(n);
     out << ": value \" << v << \" is less than the minimum value of ";
     out << e->minValue()<< "\" << endl;" << endl;
     out << "  v = " << e->minValue() << ";" << endl;
@@ -924,7 +924,7 @@ QString memberMutatorBody( CfgEntry *e )
   {
     out << endl << "if (v > " << e->maxValue() << ")" << endl;
     out << "{" << endl;
-    out << "  kdDebug() << \"" << setFunction(n);
+    out << "  kDebug() << \"" << setFunction(n);
     out << ": value \" << v << \" is greater than the maximum value of ";
     out << e->maxValue()<< "\" << endl;" << endl;
     out << "  v = " << e->maxValue() << ";" << endl;
@@ -1500,7 +1500,7 @@ int main( int argc, char **argv )
     cpp << "{" << endl;
     if ( cfgFileNameArg ) {
       cpp << "  if (!mSelf)" << endl;
-      cpp << "     kdFatal() << \"you need to call " << className << "::instance before using\" << endl;" << endl;
+      cpp << "     kFatal() << \"you need to call " << className << "::instance before using\" << endl;" << endl;
     } else {
     cpp << "  if ( !mSelf ) {" << endl;
     cpp << "    static" << className << "Deleter.setObject( mSelf, new " << className << "() );" << endl;
@@ -1514,7 +1514,7 @@ int main( int argc, char **argv )
       cpp << "void " << className << "::instance(const char *cfgfilename)" << endl;
       cpp << "{" << endl;
       cpp << "  if (mSelf) {" << endl;
-      cpp << "     kdDebug() << \"" << className << "::instance called after the first use - ignoring\" << endl;" << endl;
+      cpp << "     kDebug() << \"" << className << "::instance called after the first use - ignoring\" << endl;" << endl;
       cpp << "     return;" << endl;
       cpp << "  }" << endl;
       cpp << "  static" << className << "Deleter.setObject( mSelf, new " << className << "(cfgfilename) );" << endl;

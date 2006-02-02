@@ -77,7 +77,7 @@ void KReplaceTest::replace( const QString &pattern, const QString &replacement, 
 
 void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int matchedLength )
 {
-    kdDebug() << "slotHighlight Index:" << matchingIndex << " Length:" << matchedLength
+    kDebug() << "slotHighlight Index:" << matchingIndex << " Length:" << matchedLength
               << " Substr:" << str.mid(matchingIndex, matchedLength)
               << endl;
     // Emulate the user saying yes
@@ -93,13 +93,13 @@ void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int mat
 
 void KReplaceTest::slotReplace(const QString &text, int replacementIndex, int replacedLength, int matchedLength)
 {
-    kdDebug() << "slotReplace index=" << replacementIndex << " replacedLength=" << replacedLength << " matchedLength=" << matchedLength << " text=" << text.left( 50 ) << endl;
+    kDebug() << "slotReplace index=" << replacementIndex << " replacedLength=" << replacedLength << " matchedLength=" << matchedLength << " text=" << text.left( 50 ) << endl;
     *m_currentPos = text; // KReplace hacked the replacement into 'text' in already.
 }
 
 void KReplaceTest::slotReplaceNext()
 {
-    //kdDebug() << k_funcinfo << endl;
+    //kDebug() << k_funcinfo << endl;
     KFind::Result res = KFind::NoMatch;
     int backwards = m_replace->options() & KFind::FindBackwards;
     while ( res == KFind::NoMatch ) {
@@ -140,20 +140,20 @@ void KReplaceTest::print()
 {
     QStringList::Iterator it = m_text.begin();
     for ( ; it != m_text.end() ; ++it )
-        kdDebug() << *it << endl;
+        kDebug() << *it << endl;
 }
 
 /* button is the button that we emulate pressing, when options includes PromptOnReplace.
    Valid possibilities are User1 (replace all) and User3 (replace) */
 static void testReplaceSimple( int options, int button = 0 )
 {
-    kdDebug() << "testReplaceSimple: " << options << endl;
+    kDebug() << "testReplaceSimple: " << options << endl;
     KReplaceTest test( QStringList() << QString( "hellohello" ), button );
     test.replace( "hello", "HELLO", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
     if ( textLines[ 0 ] != "HELLOHELLO" ) {
-        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'HELLOHELLO'" << endl;
+        kError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'HELLOHELLO'" << endl;
         exit(1);
     }
 }
@@ -162,13 +162,13 @@ static void testReplaceSimple( int options, int button = 0 )
 // input="aaaaaa", expected output=""
 static void testReplaceBlank( int options, int button = 0 )
 {
-    kdDebug() << "testReplaceBlank: " << options << endl;
+    kDebug() << "testReplaceBlank: " << options << endl;
     KReplaceTest test( QStringList() << QString( "aaaaaa" ), button );
     test.replace( "a", "", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
     if ( !textLines[ 0 ].isEmpty() ) {
-        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of ''" << endl;
+        kError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of ''" << endl;
         exit(1);
     }
 }
@@ -177,55 +177,55 @@ static void testReplaceBlank( int options, int button = 0 )
 // input="bbbb", expected output="foobfoobfoobfoobfoo"
 static void testReplaceBlankSearch( int options, int button = 0 )
 {
-    kdDebug() << "testReplaceBlankSearch: " << options << endl;
+    kDebug() << "testReplaceBlankSearch: " << options << endl;
     KReplaceTest test( QStringList() << QString( "bbbb" ), button );
     test.replace( "", "foo", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
     if ( textLines[ 0 ] != "foobfoobfoobfoobfoo" ) {
-        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'foobfoobfoobfoobfoo'" << endl;
+        kError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'foobfoobfoobfoobfoo'" << endl;
         exit(1);
     }
 }
 
 static void testReplaceLonger( int options, int button = 0 )
 {
-    kdDebug() << "testReplaceLonger: " << options << endl;
+    kDebug() << "testReplaceLonger: " << options << endl;
     // Standard test of a replacement string longer than the matched string
     KReplaceTest test( QStringList() << QString( "aaaa" ), button );
     test.replace( "a", "bb", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
     if ( textLines[ 0 ] != "bbbbbbbb" ) {
-        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'bbbbbbbb'" << endl;
+        kError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'bbbbbbbb'" << endl;
         exit(1);
     }
 }
 
 static void testReplaceLongerInclude( int options, int button = 0 )
 {
-    kdDebug() << "testReplaceLongerInclude: " << options << endl;
+    kDebug() << "testReplaceLongerInclude: " << options << endl;
     // Similar test, where the replacement string includes the search string
     KReplaceTest test( QStringList() << QString( "a foo b" ), button );
     test.replace( "foo", "foobar", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
     if ( textLines[ 0 ] != "a foobar b" ) {
-        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'a foobar b'" << endl;
+        kError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'a foobar b'" << endl;
         exit(1);
     }
 }
 
 static void testReplaceLongerInclude2( int options, int button = 0 )
 {
-    kdDebug() << "testReplaceLongerInclude2: " << options << endl;
+    kDebug() << "testReplaceLongerInclude2: " << options << endl;
     // Similar test, but with more chances of matches inside the replacement string
     KReplaceTest test( QStringList() << QString( "aaaa" ), button );
     test.replace( "a", "aa", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
     if ( textLines[ 0 ] != "aaaaaaaa" ) {
-        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'aaaaaaaa'" << endl;
+        kError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'aaaaaaaa'" << endl;
         exit(1);
     }
 }
@@ -233,14 +233,14 @@ static void testReplaceLongerInclude2( int options, int button = 0 )
 // Test for the \0 backref
 static void testReplaceBackRef( int options, int button = 0 )
 {
-    kdDebug() << "testReplaceBackRef: " << options << endl;
+    kDebug() << "testReplaceBackRef: " << options << endl;
     KReplaceTest test( QStringList() << QString( "abc def" ), button );
     test.replace( "abc", "(\\0)", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
     QString expected = options & KReplaceDialog::BackReference ? "(abc) def" : "(\\0) def";
     if ( textLines[ 0 ] != expected ) {
-        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of '"<< expected << "'" << endl;
+        kError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of '"<< expected << "'" << endl;
         exit(1);
     }
 }

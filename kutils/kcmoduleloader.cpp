@@ -79,7 +79,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
           return module;
       }
       // else do a fallback
-      kdDebug(1208) << "Unable to load module using ComponentFactory. Falling back to old loader." << endl;
+      kDebug(1208) << "Unable to load module using ComponentFactory. Falling back to old loader." << endl;
     }
 
     // get the create_ function
@@ -223,7 +223,7 @@ bool KCModuleLoader::testModule( const KCModuleInfo& module )
 {
   if (!module.service())
   {
-    kdDebug(1208) << "Module '" << module.fileName() << "' not found." << endl;
+    kDebug(1208) << "Module '" << module.fileName() << "' not found." << endl;
     return true;
   }
 
@@ -259,11 +259,11 @@ bool KCModuleLoader::testModule( const KCModuleInfo& module )
       }
       else
       {
-        kdDebug(1208) << "The test function for module '" << module.fileName() << "' could not be found." << endl;
+        kDebug(1208) << "The test function for module '" << module.fileName() << "' could not be found." << endl;
         return true;
       }
     }
-    kdDebug(1208) << "The library '" << module.library() << "' could not be found." << endl;
+    kDebug(1208) << "The library '" << module.library() << "' could not be found." << endl;
     return true;
   }
 }

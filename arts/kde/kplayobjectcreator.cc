@@ -66,7 +66,7 @@ bool KDE::PlayObjectCreator::create(const KUrl& url, bool createBUS, const QObje
 
 		return true;
 	}
-	kdDebug( 400 ) << "stream is local file: " << url.url() << endl;
+	kDebug( 400 ) << "stream is local file: " << url.url() << endl;
 
 	// usual stuff if we have a local file
 	KMimeType::Ptr mimetype = KMimeType::findByURL(url);
@@ -81,7 +81,7 @@ bool KDE::PlayObjectCreator::create(const KUrl& url, bool createBUS, const QObje
 void KDE::PlayObjectCreator::slotMimeType(const QString& mimetype)
 {
 
-	kdDebug( 400 ) << "slotMimeType called: " << mimetype << endl;
+	kDebug( 400 ) << "slotMimeType called: " << mimetype << endl;
 
 	QString mimetype_copy = mimetype;
 

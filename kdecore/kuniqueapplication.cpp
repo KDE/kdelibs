@@ -121,7 +121,7 @@ KUniqueApplication::start()
      if(dcopClient()->registerAs(appName, false).isEmpty()) {
         startKdeinit();
         if(dcopClient()->registerAs(appName, false).isEmpty()) {
-           kdError() << "KUniqueApplication: Can't setup DCOP communication." << endl;
+           kError() << "KUniqueApplication: Can't setup DCOP communication." << endl;
            ::exit(255);
         }
      }
@@ -135,13 +135,13 @@ KUniqueApplication::start()
   signed char result;
   if (0 > pipe(fd))
   {
-     kdError() << "KUniqueApplication: pipe() failed!" << endl;
+     kError() << "KUniqueApplication: pipe() failed!" << endl;
      ::exit(255);
   }
   int fork_result = fork();
   switch(fork_result) {
   case -1:
-     kdError() << "KUniqueApplication: fork() failed!" << endl;
+     kError() << "KUniqueApplication: fork() failed!" << endl;
      ::exit(255);
      break;
   case 0:
@@ -157,7 +157,7 @@ KUniqueApplication::start()
            // Check DISPLAY
            if (QByteArray(getenv(DISPLAY)).isEmpty())
            {
-              kdError() << "KUniqueApplication: Can't determine DISPLAY. Aborting." << endl;
+              kError() << "KUniqueApplication: Can't determine DISPLAY. Aborting." << endl;
               result = -1; // Error
               ::write(fd[1], &result, 1);
               ::exit(255);
@@ -168,7 +168,7 @@ KUniqueApplication::start()
            regName = dc->registerAs(appName, false);
            if (regName.isEmpty())
            {
-              kdError() << "KUniqueApplication: Can't setup DCOP communication." << endl;
+              kError() << "KUniqueApplication: Can't setup DCOP communication." << endl;
               result = -1;
               delete dc;	// Clean up DCOP commmunication
               ::write(fd[1], &result, 1);
@@ -245,12 +245,12 @@ KUniqueApplication::start()
        if (n == 1) break;
        if (n == 0)
        {
-          kdError() << "KUniqueApplication: Pipe closed unexpectedly." << endl;
+          kError() << "KUniqueApplication: Pipe closed unexpectedly." << endl;
           ::exit(255);
        }
        if (errno != EINTR)
        {
-          kdError() << "KUniqueApplication: Error reading from pipe." << endl;
+          kError() << "KUniqueApplication: Error reading from pipe." << endl;
           ::exit(255);
        }
      }
@@ -262,12 +262,12 @@ KUniqueApplication::start()
      dc = new DCOPClient();
      if (!dc->attach())
      {
-        kdError() << "KUniqueApplication: Parent process can't attach to DCOP." << endl;
+        kError() << "KUniqueApplication: Parent process can't attach to DCOP." << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
      if (!dc->isApplicationRegistered(appName)) {
-        kdError() << "KUniqueApplication: Registering failed!" << endl;
+        kError() << "KUniqueApplication: Registering failed!" << endl;
      }
 
      QByteArray new_asn_id;
@@ -292,14 +292,14 @@ KUniqueApplication::start()
      DCOPCString replyType;
      if (!dc->call( DCOPCString( appName ), DCOPCString( KCmdLineArgs::about->appName() ), "newInstance()", data, replyType, reply))
      {
-        kdError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl;
+        kError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
      dc->setPriorityCall(false);
      if (replyType != "int")
      {
-        kdError() << "KUniqueApplication: DCOP communication error!" << endl;
+        kError() << "KUniqueApplication: DCOP communication error!" << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }

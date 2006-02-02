@@ -94,15 +94,15 @@ Decoder::~Decoder()
 void Decoder::setEncoding(const char *_encoding, EncodingType type)
 {
 #ifdef DECODE_DEBUG
-    kdDebug(6005) << "setEncoding " << _encoding << " " << type << endl;
+    kDebug(6005) << "setEncoding " << _encoding << " " << type << endl;
 #endif
     enc = _encoding;
 #ifdef DECODE_DEBUG
-    kdDebug(6005) << "old encoding is:" << m_codec->name() << endl;
+    kDebug(6005) << "old encoding is:" << m_codec->name() << endl;
 #endif
     enc = enc.toLower();
 #ifdef DECODE_DEBUG
-    kdDebug(6005) << "requesting:" << enc << endl;
+    kDebug(6005) << "requesting:" << enc << endl;
 #endif
     if(enc.isNull() || enc.isEmpty())
         return;
@@ -149,7 +149,7 @@ void Decoder::setEncoding(const char *_encoding, EncodingType type)
     }
 
 #ifdef DECODE_DEBUG
-    kdDebug(6005) << "Decoder::encoding used is" << m_codec->name() << endl;
+    kDebug(6005) << "Decoder::encoding used is" << m_codec->name() << endl;
 #endif
 }
 
@@ -301,7 +301,7 @@ QString Decoder::decode(const char *data, int len)
 
     if (lookForMetaTag) {
 #ifdef DECODE_DEBUG
-        kdDebug(6005) << "looking for charset definition" << endl;
+        kDebug(6005) << "looking for charset definition" << endl;
 #endif
         { // extra level of braces to keep indenting matching original for better diff'ing
 #ifdef APPLE_CHANGES
@@ -408,7 +408,7 @@ QString Decoder::decode(const char *data, int len)
 				endpos++;
 			    enc = str.mid(pos, endpos-pos);
 #ifdef DECODE_DEBUG
-			    kdDebug( 6005 ) << "Decoder: found charset: " << enc.data() << endl;
+			    kDebug( 6005 ) << "Decoder: found charset: " << enc.data() << endl;
 #endif
 			    setEncoding(enc, EncodingFromMetaTag);
 			    if( m_type == EncodingFromMetaTag ) goto found;
@@ -441,7 +441,7 @@ QString Decoder::decode(const char *data, int len)
                     case (ID_HEAD+ID_CLOSE_TAG):
                         body = true;
 #ifdef DECODE_DEBUG
-			kdDebug( 6005 ) << "Decoder: no charset found. Id=" << id << endl;
+			kDebug( 6005 ) << "Decoder: no charset found. Id=" << id << endl;
 #endif
                         goto found;
                     default:
@@ -450,7 +450,7 @@ QString Decoder::decode(const char *data, int len)
                         if (invalid > 2)  {
                             body = true;
 #ifdef DECODE_DEBUG
-                            kdDebug( 6005 ) << "Decoder: no charset found. Id=" << id << endl;
+                            kDebug( 6005 ) << "Decoder: no charset found. Id=" << id << endl;
 #endif
                             goto found;
                         }
@@ -471,7 +471,7 @@ QString Decoder::decode(const char *data, int len)
     if (m_type == DefaultEncoding)
     {
 #ifdef DECODE_DEBUG
-	kdDebug( 6005 ) << "Decoder: use auto-detect (" << strlen(data) << ")" << endl;
+	kDebug( 6005 ) << "Decoder: use auto-detect (" << strlen(data) << ")" << endl;
 #endif
 
         switch ( m_autoDetectLanguage) {
@@ -514,7 +514,7 @@ QString Decoder::decode(const char *data, int len)
         }
 
 #ifdef DECODE_DEBUG
-        kdDebug( 6005 ) << "Decoder: auto detect encoding is " << enc.data() << endl;
+        kDebug( 6005 ) << "Decoder: auto detect encoding is " << enc.data() << endl;
 #endif
         if ( !enc.isEmpty() )
             setEncoding( enc.data(), AutoDetectedEncoding);

@@ -118,7 +118,7 @@ bool KKeyNative::init( const KKey& key )
 		m_code = XKeysymToKeycode( QX11Info::display(), m_sym );
 
 	if( !m_code && m_sym )
-		kdDebug(125) << "Couldn't get code for sym" << endl;
+		kDebug(125) << "Couldn't get code for sym" << endl;
 	// Now get the true sym formed by the modifiers
 	//  E.g., Shift+Equal => Plus on the en layout.
 	if( key.modFlags() && ( ( m_sym < XK_Home || m_sym > XK_Begin ) && 

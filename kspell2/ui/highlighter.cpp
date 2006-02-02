@@ -110,7 +110,7 @@ Highlighter::~Highlighter()
 
 void Highlighter::slotRehighlight()
 {
-    kdDebug(0) << "Highlighter::slotRehighlight()" << endl;
+    kDebug(0) << "Highlighter::slotRehighlight()" << endl;
     if (d->completeRehighlightRequired) {
 	rehighlight();
     } else {
@@ -188,7 +188,7 @@ void Highlighter::slotAutoDetection()
 					  "As-you-type spell checking disabled." ) );
 	d->completeRehighlightRequired = true;
 	d->rehighlightRequest->start( 100, true );
-        kdDebug()<<" Highlighter::slotAutoDetection :"<<d->active<<endl;
+        kDebug()<<" Highlighter::slotAutoDetection :"<<d->active<<endl;
     }
 
 }
@@ -262,7 +262,7 @@ void Highlighter::setCurrentLanguage( const QString& lang )
         if ( dict ) {
             d->dictCache.insert( lang, dict );
         } else {
-            kdDebug()<<"No dictionary for \""
+            kDebug()<<"No dictionary for \""
                      <<lang
                      <<"\" staying with the current language."
                      <<endl;

@@ -256,7 +256,7 @@ public:
     }
     void newScrollTimer(QWidget *view, int tid)
     {
-        //kdDebug(6000) << "newScrollTimer timer " << tid << endl;
+        //kDebug(6000) << "newScrollTimer timer " << tid << endl;
         view->killTimer(scrollTimerId);
         scrollTimerId = tid;
         scrollSuspended = false;
@@ -628,7 +628,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     d->pixelbooth += ew*eh;
     d->repaintbooth++;
 #endif
-    // kdDebug( 6000 ) << "drawContents this="<< this <<" x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
+    // kDebug( 6000 ) << "drawContents this="<< this <<" x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;
@@ -639,7 +639,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     }
 
     if (d->painting) {
-        kdDebug( 6000 ) << "WARNING: drawContents reentered! " << endl;
+        kDebug( 6000 ) << "WARNING: drawContents reentered! " << endl;
         return;
     }
     d->painting = true;
@@ -700,7 +700,7 @@ static int cnt=0;
 	ex = contentsX(); ey = contentsY();
 	ew = visibleWidth(); eh = visibleHeight();
 	QRect pr(ex,ey,ew,eh);
-	kdDebug() << "[" << ++cnt << "]" << " clip region: " << pr << endl;
+	kDebug() << "[" << ++cnt << "]" << " clip region: " << pr << endl;
 //	p->setClipRegion(QRect(0,0,ew,eh));
 //        p->translate(-ex, -ey);
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
@@ -789,7 +789,7 @@ void KHTMLView::layout()
         }
 #if 0
     ElementImpl *listitem = m_part->xmlDocImpl()->getElementById("__test_element__");
-    if (listitem) kdDebug(6000) << "after layout, before repaint" << endl;
+    if (listitem) kDebug(6000) << "after layout, before repaint" << endl;
     if (listitem) dumpLineBoxes(static_cast<RenderFlow *>(listitem->renderer()));
 #endif
 #ifndef KHTML_NO_CARET
@@ -807,7 +807,7 @@ void KHTMLView::layout()
             emit hideAccessKeys();
             displayAccessKeys();
         }
-        //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
+        //kDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     }
     else
        _width = visibleWidth();
@@ -825,7 +825,7 @@ void KHTMLView::closeChildDialogs()
         KDialogBase* dlgbase = dynamic_cast<KDialogBase *>( dlg );
         if ( dlgbase ) {
             if ( dlgbase->testAttribute( Qt::WA_ShowModal ) ) {
-                kdDebug(6000) << "closeChildDialogs: closing dialog " << dlgbase << endl;
+                kDebug(6000) << "closeChildDialogs: closing dialog " << dlgbase << endl;
                 // close() ends up calling QButton::animateClick, which isn't immediate
                 // we need something the exits the event loop immediately (#49068)
                 dlgbase->reject();
@@ -833,7 +833,7 @@ void KHTMLView::closeChildDialogs()
         }
         else
         {
-            kdWarning() << "closeChildDialogs: not a KDialogBase! Don't use QDialogs in KDE! " << static_cast<QWidget*>(dlg) << endl;
+            kWarning() << "closeChildDialogs: not a KDialogBase! Don't use QDialogs in KDE! " << static_cast<QWidget*>(dlg) << endl;
             static_cast<QWidget*>(dlg)->hide();
         }
     }
@@ -870,14 +870,14 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-    //kdDebug( 6000 ) << "mousePressEvent: viewport=("<<_mouse->x()<<"/"<<_mouse->y()<<"), contents=(" << xm << "/" << ym << ")\n";
+    //kDebug( 6000 ) << "mousePressEvent: viewport=("<<_mouse->x()<<"/"<<_mouse->y()<<"), contents=(" << xm << "/" << ym << ")\n";
 
     d->isDoubleClick = false;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
-    //kdDebug(6000) << "innerNode="<<mev.innerNode.nodeName().string()<<endl;
+    //kDebug(6000) << "innerNode="<<mev.innerNode.nodeName().string()<<endl;
 
     if ( (_mouse->button() == Qt::MidButton) &&
           !m_part->d->m_bOpenMiddleClick && !d->m_mouseScrollTimer &&
@@ -985,7 +985,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
-    kdDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
+    kDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
 
     d->isDoubleClick = true;
 
@@ -1079,7 +1079,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     // Do not modify :hover/:active state while mouse is pressed.
     m_part->xmlDocImpl()->prepareMouseEvent( _mouse->state() & Qt::MouseButtonMask /*readonly ?*/, xm, ym, &mev );
 
-//     kdDebug(6000) << "mouse move: " << _mouse->pos()
+//     kDebug(6000) << "mouse move: " << _mouse->pos()
 // 		  << " button " << _mouse->button()
 // 		  << " state " << _mouse->state() << endl;
 
@@ -1741,7 +1741,7 @@ bool KHTMLView::focusNextPrevChild( bool next )
     if (m_part->xmlDocImpl() && focusNextPrevNode(next))
     {
 	if (m_part->xmlDocImpl()->focusNode())
-	    kdDebug() << "focusNode.name: "
+	    kDebug() << "focusNode.name: "
 		      << m_part->xmlDocImpl()->focusNode()->nodeName().string() << endl;
 	return true; // focus node found
     }
@@ -1818,11 +1818,11 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 {
     if ( e->type() == QEvent::ShortcutOverride ) {
 	QKeyEvent* ke = (QKeyEvent*) e;
-//kdDebug(6200) << "QEvent::AccelOverride" << endl;
+//kDebug(6200) << "QEvent::AccelOverride" << endl;
 	if (m_part->isEditable() || m_part->isCaretMode()
 	    || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
 		&& m_part->xmlDocImpl()->focusNode()->contentEditable())) {
-//kdDebug(6200) << "editable/navigable" << endl;
+//kDebug(6200) << "editable/navigable" << endl;
 	    if ( (ke->state() & Qt::ControlModifier) || (ke->state() & Qt::ShiftModifier) ) {
 		switch ( ke->key() ) {
 		case Qt::Key_Left:
@@ -1832,7 +1832,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		case Qt::Key_Home:
 		case Qt::Key_End:
 		    ke->accept();
-//kdDebug(6200) << "eaten" << endl;
+//kDebug(6200) << "eaten" << endl;
 		    return true;
 		default:
 		    break;
@@ -1951,7 +1951,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	}
     }
 
-//    kdDebug(6000) <<"passing event on to sv event filter object=" << o->className() << " event=" << e->type() << endl;
+//    kDebug(6000) <<"passing event on to sv event filter object=" << o->className() << " event=" << e->type() << endl;
     return Q3ScrollView::eventFilter(o, e);
 }
 
@@ -1976,7 +1976,7 @@ bool KHTMLView::scrollTo(const QRect &bounds)
     xe = bounds.right();
     ye = bounds.bottom();
 
-    //kdDebug(6000)<<"scrolling coords: x="<<x<<" y="<<y<<" width="<<xe-x<<" height="<<ye-y<<endl;
+    //kDebug(6000)<<"scrolling coords: x="<<x<<" y="<<y<<" width="<<xe-x<<" height="<<ye-y<<endl;
 
     int deltax;
     int deltay;
@@ -2117,7 +2117,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
     if (d->tabMovePending && next != d->lastTabbingDirection)
     {
-	//kdDebug ( 6000 ) << " tab move pending and tabbing direction changed!\n";
+	//kDebug ( 6000 ) << " tab move pending and tabbing direction changed!\n";
 	newFocusNode = oldFocusNode;
     }
     else if (next)
@@ -2161,7 +2161,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
     if (targetVisible)
     {
-	//kdDebug ( 6000 ) << " target reached.\n";
+	//kDebug ( 6000 ) << " target reached.\n";
 	d->tabMovePending = false;
 
 	m_part->xmlDocImpl()->setFocusNode(newFocusNode);
@@ -2744,7 +2744,7 @@ void KHTMLView::print(bool quick)
 
         Q3PaintDeviceMetrics metrics( printer );
 
-        kdDebug(6000) << "printing: physical page width = " << metrics.width()
+        kDebug(6000) << "printing: physical page width = " << metrics.width()
                       << " height = " << metrics.height() << endl;
         root->setStaticMode(true);
         root->setPagedMode(true);
@@ -2781,11 +2781,11 @@ void KHTMLView::print(bool quick)
         }
 
         // ok. now print the pages.
-        kdDebug(6000) << "printing: html page width = " << root->docWidth()
+        kDebug(6000) << "printing: html page width = " << root->docWidth()
                       << " height = " << root->docHeight() << endl;
-        kdDebug(6000) << "printing: margins left = " << printer->margins().width()
+        kDebug(6000) << "printing: margins left = " << printer->margins().width()
                       << " top = " << printer->margins().height() << endl;
-        kdDebug(6000) << "printing: paper width = " << metrics.width()
+        kDebug(6000) << "printing: paper width = " << metrics.width()
                       << " height = " << metrics.height() << endl;
         // if the width is too large to fit on the paper we just scale
         // the whole thing.
@@ -2806,7 +2806,7 @@ void KHTMLView::print(bool quick)
             headerHeight = (int) (headerHeight/scale);
         }
 #endif
-        kdDebug(6000) << "printing: scaled html width = " << pageWidth
+        kDebug(6000) << "printing: scaled html width = " << pageWidth
                       << " height = " << pageHeight << endl;
 
         root->setHeight(pageHeight);
@@ -2876,7 +2876,7 @@ void KHTMLView::print(bool quick)
 //             m_part->xmlDocImpl()->renderer()->layer()->paint(p, QRect(0, top, pageWidth, pageHeight));
 //             root->repaint();
 //             p->flush();
-            kdDebug(6000) << "printed: page " << page <<" bottom At = " << bottom << endl;
+            kDebug(6000) << "printed: page " << page <<" bottom At = " << bottom << endl;
 
             top = bottom;
             p->resetXForm();
@@ -3364,7 +3364,7 @@ void KHTMLView::slotScrollBarMoved()
 
 void KHTMLView::timerEvent ( QTimerEvent *e )
 {
-//    kdDebug() << "timer event " << e->timerId() << endl;
+//    kDebug() << "timer event " << e->timerId() << endl;
     if ( e->timerId() == d->scrollTimerId ) {
         if( d->scrollSuspended )
             return;
@@ -3435,7 +3435,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 
     setStaticBackground(d->useSlowRepaints);
 
-//        kdDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
+//        kDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
     killTimer(d->repaintTimerId);
     d->repaintTimerId = 0;
 
@@ -3521,8 +3521,8 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h, bool asap)
 {
     bool parsing = !m_part->xmlDocImpl() || m_part->xmlDocImpl()->parsing();
 
-//     kdDebug() << "parsing " << parsing << endl;
-//     kdDebug() << "complete " << d->complete << endl;
+//     kDebug() << "parsing " << parsing << endl;
+//     kDebug() << "complete " << d->complete << endl;
 
     int time = parsing ? 300 : (!asap ? ( !d->complete ? 100 : 20 ) : 0);
 
@@ -3544,19 +3544,19 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h, bool asap)
     if ( !d->repaintTimerId )
         d->repaintTimerId = startTimer( time );
 
-//     kdDebug() << "starting timer " << time << endl;
+//     kDebug() << "starting timer " << time << endl;
 }
 
 void KHTMLView::complete( bool pendingAction )
 {
-//     kdDebug() << "KHTMLView::complete()" << endl;
+//     kDebug() << "KHTMLView::complete()" << endl;
 
     d->complete = true;
 
     // is there a relayout pending?
     if (d->layoutTimerId)
     {
-//         kdDebug() << "requesting relayout now" << endl;
+//         kDebug() << "requesting relayout now" << endl;
         // do it now
         killTimer(d->layoutTimerId);
         d->layoutTimerId = startTimer( 0 );
@@ -3567,7 +3567,7 @@ void KHTMLView::complete( bool pendingAction )
     // is there a repaint pending?
     if (d->repaintTimerId)
     {
-//         kdDebug() << "requesting repaint now" << endl;
+//         kDebug() << "requesting repaint now" << endl;
         // do it now
         killTimer(d->repaintTimerId);
         d->repaintTimerId = startTimer( 20 );
@@ -3600,7 +3600,7 @@ void KHTMLView::slotMouseScrollTimer()
 void KHTMLView::initCaret(bool keepSelection)
 {
 #if DEBUG_CARETMODE > 0
-  kdDebug(6200) << "begin initCaret" << endl;
+  kDebug(6200) << "begin initCaret" << endl;
 #endif
   // save caretMoved state as moveCaretTo changes it
   if (m_part->xmlDocImpl()) {
@@ -3619,16 +3619,16 @@ void KHTMLView::initCaret(bool keepSelection)
       // been created.
       if (!m_part->d->caretNode().handle()->renderer()) return;
     }/*end if*/
-//    kdDebug(6200) << "d->m_selectionStart " << m_part->d->m_selectionStart.handle()
+//    kDebug(6200) << "d->m_selectionStart " << m_part->d->m_selectionStart.handle()
 //    		<< " d->m_selectionEnd " << m_part->d->m_selectionEnd.handle() << endl;
     // ### does not repaint the selection on keepSelection!=false
     moveCaretTo(m_part->d->caretNode().handle(), m_part->d->caretOffset(), !keepSelection);
-//    kdDebug(6200) << "d->m_selectionStart " << m_part->d->m_selectionStart.handle()
+//    kDebug(6200) << "d->m_selectionStart " << m_part->d->m_selectionStart.handle()
 //    		<< " d->m_selectionEnd " << m_part->d->m_selectionEnd.handle() << endl;
     d->m_caretViewContext->caretMoved = cmoved;
   }/*end if*/
 #if DEBUG_CARETMODE > 0
-  kdDebug(6200) << "end initCaret" << endl;
+  kDebug(6200) << "end initCaret" << endl;
 #endif
 }
 
@@ -3666,7 +3666,7 @@ void KHTMLView::ensureNodeHasFocus(NodeImpl *node)
 
   // Set focus node on the document
 #if DEBUG_CARETMODE > 1
-  kdDebug(6200) << k_funcinfo << "firstAncestor " << firstAncestor << ": "
+  kDebug(6200) << k_funcinfo << "firstAncestor " << firstAncestor << ": "
   	<< (firstAncestor ? firstAncestor->nodeName().string() : QString()) << endl;
 #endif
   doc->setFocusNode(firstAncestor);
@@ -3679,7 +3679,7 @@ void KHTMLView::recalcAndStoreCaretPos(CaretBox *hintBox)
     d->caretViewContext();
     NodeImpl *caretNode = m_part->d->caretNode().handle();
 #if DEBUG_CARETMODE > 0
-  kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString()) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, qMin(static_cast<RenderText *>(caretNode->renderer())->str->l, 15u)).string() + "\"" : QString()) << endl;
+  kDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString()) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, qMin(static_cast<RenderText *>(caretNode->renderer())->str->l, 15u)).string() + "\"" : QString()) << endl;
 #endif
     caretNode->getCaret(m_part->d->caretOffset(), caretOverrides(),
     		d->m_caretViewContext->x, d->m_caretViewContext->y,
@@ -3688,7 +3688,7 @@ void KHTMLView::recalcAndStoreCaretPos(CaretBox *hintBox)
 
     if (hintBox && d->m_caretViewContext->x == -1) {
 #if DEBUG_CARETMODE > 1
-        kdDebug(6200) << "using hint inline box coordinates" << endl;
+        kDebug(6200) << "using hint inline box coordinates" << endl;
 #endif
 	RenderObject *r = caretNode->renderer();
 	const QFontMetrics &fm = r->style()->fontMetrics();
@@ -3705,10 +3705,10 @@ void KHTMLView::recalcAndStoreCaretPos(CaretBox *hintBox)
     }/*end if*/
 
 #if DEBUG_CARETMODE > 4
-//    kdDebug(6200) << "freqTimerId: "<<d->m_caretViewContext->freqTimerId<<endl;
+//    kDebug(6200) << "freqTimerId: "<<d->m_caretViewContext->freqTimerId<<endl;
 #endif
 #if DEBUG_CARETMODE > 0
-    kdDebug(6200) << "caret: ofs="<<m_part->d->caretOffset()<<" "
+    kDebug(6200) << "caret: ofs="<<m_part->d->caretOffset()<<" "
     	<<" x="<<d->m_caretViewContext->x<<" y="<<d->m_caretViewContext->y
 	<<" h="<<d->m_caretViewContext->height<<endl;
 #endif
@@ -3734,7 +3734,7 @@ void KHTMLView::caretOn()
 	    		d->m_caretViewContext->width,
 			d->m_caretViewContext->height);
 	}/*end if*/
-//        kdDebug(6200) << "caret on" << endl;
+//        kDebug(6200) << "caret on" << endl;
     }/*end if*/
 }
 
@@ -3750,7 +3750,7 @@ void KHTMLView::caretOff()
 	    		d->m_caretViewContext->width,
 	    		d->m_caretViewContext->height);
 	}/*end if*/
-//        kdDebug(6200) << "caret off" << endl;
+//        kDebug(6200) << "caret off" << endl;
     }/*end if*/
 }
 
@@ -3769,7 +3769,7 @@ void KHTMLView::showCaret(bool forceRepaint)
 	    		d->m_caretViewContext->height);
 	    }/*end if*/
    	}/*end if*/
-//        kdDebug(6200) << "caret shown" << endl;
+//        kDebug(6200) << "caret shown" << endl;
     }/*end if*/
 }
 
@@ -3794,7 +3794,7 @@ void KHTMLView::hideCaret()
 {
     if (d->m_caretViewContext) {
         if (d->m_caretViewContext->visible) {
-//            kdDebug(6200) << "redraw caret hidden" << endl;
+//            kDebug(6200) << "redraw caret hidden" << endl;
 	    d->m_caretViewContext->visible = false;
 	    // force repaint, otherwise the event won't be handled
 	    // before the focus leaves the window
@@ -3804,7 +3804,7 @@ void KHTMLView::hideCaret()
 	    d->m_caretViewContext->visible = true;
 	}/*end if*/
         d->m_caretViewContext->displayed = false;
-//        kdDebug(6200) << "caret hidden" << endl;
+//        kDebug(6200) << "caret hidden" << endl;
     }/*end if*/
 }
 
@@ -4047,12 +4047,12 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
   CaretBoxIterator cbit;
   CaretBoxLine *cbl = findCaretBoxLine(node, offset, &cblDeleter, base, r_ofs, cbit);
   if(!cbl) {
-      kdWarning() << "KHTMLView::moveCaretTo - findCaretBoxLine() returns NULL" << endl;
+      kWarning() << "KHTMLView::moveCaretTo - findCaretBoxLine() returns NULL" << endl;
       return false;
   }
 
 #if DEBUG_CARETMODE > 3
-  if (cbl) kdDebug(6200) << cbl->information() << endl;
+  if (cbl) kDebug(6200) << cbl->information() << endl;
 #endif
   CaretBox *box = *cbit;
   if (cbit != cbl->end() && box->object() != node->renderer()) {
@@ -4061,12 +4061,12 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
       			box->isOutsideEnd(), node, offset);
       //if (!outside) offset = node->minOffset();
 #if DEBUG_CARETMODE > 1
-      kdDebug(6200) << "set new node " << node->nodeName().string() << "@" << node << endl;
+      kDebug(6200) << "set new node " << node->nodeName().string() << "@" << node << endl;
 #endif
     } else {	// box has no associated element -> do not use
       // this case should actually never happen.
       box = 0;
-      kdError(6200) << "Box contains no node! Crash imminent" << endl;
+      kError(6200) << "Box contains no node! Crash imminent" << endl;
     }/*end if*/
   }
 
@@ -4085,11 +4085,11 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
   if (clearSel || !oldStartSel || !oldEndSel) {
     selChanged = foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
   } else {
-    //kdDebug(6200) << "moveToCaret: extendSelection: m_extendAtEnd " << m_part->d->m_extendAtEnd << endl;
-    //kdDebug(6200) << "selection: start(" << m_part->d->m_selectionStart.handle() << "," << m_part->d->m_startOffset << "), end(" << m_part->d->m_selectionEnd.handle() << "," << m_part->d->m_endOffset << "), caret(" << m_part->d->caretNode().handle() << "," << m_part->d->caretOffset() << ")" << endl;
+    //kDebug(6200) << "moveToCaret: extendSelection: m_extendAtEnd " << m_part->d->m_extendAtEnd << endl;
+    //kDebug(6200) << "selection: start(" << m_part->d->m_selectionStart.handle() << "," << m_part->d->m_startOffset << "), end(" << m_part->d->m_selectionEnd.handle() << "," << m_part->d->m_endOffset << "), caret(" << m_part->d->caretNode().handle() << "," << m_part->d->caretOffset() << ")" << endl;
     selChanged = extendSelection(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
-    //kdDebug(6200) << "after extendSelection: m_extendAtEnd " << m_part->d->m_extendAtEnd << endl;
-    //kdDebug(6200) << "selection: start(" << m_part->d->m_selectionStart.handle() << "," << m_part->d->m_startOffset << "), end(" << m_part->d->m_selectionEnd.handle() << "," << m_part->d->m_endOffset << "), caret(" << m_part->d->caretNode().handle() << "," << m_part->d->caretOffset() << ")" << endl;
+    //kDebug(6200) << "after extendSelection: m_extendAtEnd " << m_part->d->m_extendAtEnd << endl;
+    //kDebug(6200) << "selection: start(" << m_part->d->m_selectionStart.handle() << "," << m_part->d->m_startOffset << "), end(" << m_part->d->m_selectionEnd.handle() << "," << m_part->d->m_endOffset << "), caret(" << m_part->d->caretNode().handle() << "," << m_part->d->caretOffset() << ")" << endl;
   }/*end if*/
 
   d->caretViewContext()->caretMoved = true;
@@ -4112,7 +4112,7 @@ void KHTMLView::moveCaretByLine(bool next, int count)
   if (caretNodeRef.isNull()) return;
 
   NodeImpl *caretNode = caretNodeRef.handle();
-//  kdDebug(6200) << ": caretNode=" << caretNode << endl;
+//  kDebug(6200) << ": caretNode=" << caretNode << endl;
   long offset = m_part->d->caretOffset();
 
   CaretViewContext *cv = d->caretViewContext();
@@ -4145,11 +4145,11 @@ void KHTMLView::placeCaretOnLine(CaretBox *caretBox, int x, int absx, int absy)
   RenderObject *caretRender = caretBox->object();
 
 #if DEBUG_CARETMODE > 0
-  kdDebug(6200) << "got valid caretBox " << caretBox << endl;
-  kdDebug(6200) << "xPos: " << caretBox->xPos() << " yPos: " << caretBox->yPos()
+  kDebug(6200) << "got valid caretBox " << caretBox << endl;
+  kDebug(6200) << "xPos: " << caretBox->xPos() << " yPos: " << caretBox->yPos()
   		<< " width: " << caretBox->width() << " height: " << caretBox->height() << endl;
   InlineTextBox *tb = static_cast<InlineTextBox *>(caretBox->inlineBox());
-  if (caretBox->isInlineTextBox()) { kdDebug(6200) << "contains \"" << QString(static_cast<RenderText *>(tb->object())->str->s + tb->m_start, tb->m_len) << "\"" << endl;}
+  if (caretBox->isInlineTextBox()) { kDebug(6200) << "contains \"" << QString(static_cast<RenderText *>(tb->object())->str->s + tb->m_start, tb->m_len) << "\"" << endl;}
 #endif
   // inquire height of caret
   int caretHeight = caretBox->height();
@@ -4191,7 +4191,7 @@ void KHTMLView::placeCaretOnLine(CaretBox *caretBox, int x, int absx, int absy)
         r_ofs = static_cast<InlineTextBox *>(caretBox->inlineBox())
       		->offsetForPoint(x, d->m_caretViewContext->x);
 #if DEBUG_CARETMODE > 2
-        kdDebug(6200) << "deviation from origX " << d->m_caretViewContext->x - x << endl;
+        kDebug(6200) << "deviation from origX " << d->m_caretViewContext->x - x << endl;
 #endif
 #if 0
       } else {	// snap to nearest end
@@ -4211,7 +4211,7 @@ void KHTMLView::placeCaretOnLine(CaretBox *caretBox, int x, int absx, int absy)
     offset = r_ofs;
   }/*end if*/
 #if DEBUG_CARETMODE > 0
-      kdDebug(6200) << "new offset: " << offset << endl;
+      kDebug(6200) << "new offset: " << offset << endl;
 #endif
 
   m_part->d->caretNode() = caretNode;
@@ -4221,7 +4221,7 @@ void KHTMLView::placeCaretOnLine(CaretBox *caretBox, int x, int absx, int absy)
   d->m_caretViewContext->y += absy;
 
 #if DEBUG_CARETMODE > 1
-	kdDebug(6200) << "new caret position: x " << d->m_caretViewContext->x << " y " << d->m_caretViewContext->y << " w " << d->m_caretViewContext->width << " h " << d->m_caretViewContext->height << " absx " << absx << " absy " << absy << endl;
+	kDebug(6200) << "new caret position: x " << d->m_caretViewContext->x << " y " << d->m_caretViewContext->y << " w " << d->m_caretViewContext->width << " h " << d->m_caretViewContext->height << " absx " << absx << " absy " << absy << endl;
 #endif
 
   ensureVisible(d->m_caretViewContext->x, d->m_caretViewContext->y,
@@ -4238,7 +4238,7 @@ void KHTMLView::moveCaretToLineBoundary(bool end)
   if (caretNodeRef.isNull()) return;
 
   NodeImpl *caretNode = caretNodeRef.handle();
-//  kdDebug(6200) << ": caretNode=" << caretNode << endl;
+//  kDebug(6200) << ": caretNode=" << caretNode << endl;
   long offset = m_part->d->caretOffset();
 
   ElementImpl *baseElem = determineBaseElement(caretNode);
@@ -4268,7 +4268,7 @@ void KHTMLView::moveCaretToDocumentBoundary(bool end)
   if (caretNodeRef.isNull()) return;
 
   NodeImpl *caretNode = caretNodeRef.handle();
-//  kdDebug(6200) << ": caretNode=" << caretNode << endl;
+//  kDebug(6200) << ": caretNode=" << caretNode << endl;
   long offset = m_part->d->caretOffset();
 
   ElementImpl *baseElem = determineBaseElement(caretNode);
@@ -4299,7 +4299,7 @@ void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
   if (caretNodeRef.isNull()) return;
 
   NodeImpl *caretNode = caretNodeRef.handle();
-//  kdDebug(6200) << ": caretNode=" << caretNode << endl;
+//  kDebug(6200) << ": caretNode=" << caretNode << endl;
   long &offset = m_part->d->caretOffset();
 
   ElementImpl *baseElem = determineBaseElement(caretNode);
@@ -4316,25 +4316,25 @@ void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
       if (next) moveItToNextWord(it);
       else moveItToPrevWord(it);
     }/*end if*/
-//kdDebug(6200) << "movecaret" << endl;
+//kDebug(6200) << "movecaret" << endl;
   }/*wend*/
   CaretBox *hintBox = 0;	// make gcc uninit warning disappear
   if (!it.isEnd()) {
     NodeImpl *node = caretNodeRef.handle();
     hintBox = it.caretBox();
-//kdDebug(6200) << "hintBox = " << hintBox << endl;
-//kdDebug(6200) << " outside " << hintBox->isOutside() << " outsideEnd " << hintBox->isOutsideEnd() << " r " << it.renderer() << " ofs " << it.offset() << " cb " << hintBox->containingBlock() << endl;
+//kDebug(6200) << "hintBox = " << hintBox << endl;
+//kDebug(6200) << " outside " << hintBox->isOutside() << " outsideEnd " << hintBox->isOutsideEnd() << " r " << it.renderer() << " ofs " << it.offset() << " cb " << hintBox->containingBlock() << endl;
     mapRenderPosToDOMPos(it.renderer(), it.offset(), hintBox->isOutside(),
     		hintBox->isOutsideEnd(), node, offset);
-//kdDebug(6200) << "mapRTD" << endl;
+//kDebug(6200) << "mapRTD" << endl;
     caretNodeRef = node;
 #if DEBUG_CARETMODE > 2
-    kdDebug(6200) << "set by valid node " << node << " " << (node?node->nodeName().string():QString()) << " offset: " << offset << endl;
+    kDebug(6200) << "set by valid node " << node << " " << (node?node->nodeName().string():QString()) << " offset: " << offset << endl;
 #endif
   } else {
     offset = next ? caretNode->maxOffset() : caretNode->minOffset();
 #if DEBUG_CARETMODE > 0
-    kdDebug(6200) << "set by INvalid node. offset: " << offset << endl;
+    kDebug(6200) << "set by INvalid node. offset: " << offset << endl;
 #endif
   }/*end if*/
   placeCaretOnChar(hintBox);
@@ -4349,7 +4349,7 @@ void KHTMLView::placeCaretOnChar(CaretBox *hintBox)
   d->m_caretViewContext->origX = d->m_caretViewContext->x;
   d->scrollBarMoved = false;
 #if DEBUG_CARETMODE > 3
-  //if (caretNode->isTextNode())  kdDebug(6200) << "text[0] = " << (int)*((TextImpl *)caretNode)->data().unicode() << " text :\"" << ((TextImpl *)caretNode)->data().string() << "\"" << endl;
+  //if (caretNode->isTextNode())  kDebug(6200) << "text[0] = " << (int)*((TextImpl *)caretNode)->data().unicode() << " text :\"" << ((TextImpl *)caretNode)->data().string() << "\"" << endl;
 #endif
   ensureNodeHasFocus(m_part->d->caretNode().handle());
   caretOn();
@@ -4360,7 +4360,7 @@ void KHTMLView::moveCaretByPage(bool next)
   Node &caretNodeRef = m_part->d->caretNode();
 
   NodeImpl *caretNode = caretNodeRef.handle();
-//  kdDebug(6200) << ": caretNode=" << caretNode << endl;
+//  kDebug(6200) << ": caretNode=" << caretNode << endl;
   long offset = m_part->d->caretOffset();
 
   int offs = (clipper()->height() < 30) ? clipper()->height() : 30;

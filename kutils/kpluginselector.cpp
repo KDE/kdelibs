@@ -131,7 +131,7 @@ bool KPluginSelectionWidget::eventFilter( QObject *obj, QEvent *ev )
             "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>" ).arg( item->pluginInfo()->comment(),
             item->pluginInfo()->author(), item->pluginInfo()->version(), item->pluginInfo()->license() );
 
-        //kdDebug( 702 ) << k_funcinfo << "Adding tooltip: itemRect: " << itemRect << ", tooltip:  " << toolTip << endl;
+        //kDebug( 702 ) << k_funcinfo << "Adding tooltip: itemRect: " << itemRect << ", tooltip:  " << toolTip << endl;
         QToolTip::showText( he->globalPos(), toolTip, d->listview->viewport() );
         return true;
     }
@@ -290,7 +290,7 @@ inline void KPluginSelectionWidget::updateConfigPage()
 void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
         bool checked )
 {
-    //kdDebug( 702 ) << k_funcinfo << endl;
+    //kDebug( 702 ) << k_funcinfo << endl;
     d->currentplugininfo = plugininfo;
     d->currentchecked = checked;
 
@@ -325,14 +325,14 @@ void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
 
 void KPluginSelectionWidget::clientChanged( bool didchange )
 {
-    kdDebug( 702 ) << k_funcinfo << endl;
+    kDebug( 702 ) << k_funcinfo << endl;
     d->changed += didchange ? 1 : -1;
     if( d->changed == 1 )
         emit changed( true );
     else if( d->changed == 0 )
         emit changed( false );
     else if( d->changed < 0 )
-        kdError( 702 ) << "negative changed value: " << d->changed << endl;
+        kError( 702 ) << "negative changed value: " << d->changed << endl;
 }
 
 void KPluginSelectionWidget::tabWidgetChanged( QWidget * widget )
@@ -348,7 +348,7 @@ void KPluginSelectionWidget::tabWidgetChanged( QWidget * widget )
 
 void KPluginSelectionWidget::executed( Q3ListViewItem * item )
 {
-    kdDebug( 702 ) << k_funcinfo << endl;
+    kDebug( 702 ) << k_funcinfo << endl;
     if( item == 0 )
         return;
 
@@ -360,7 +360,7 @@ void KPluginSelectionWidget::executed( Q3ListViewItem * item )
 
     Q3CheckListItem * citem = static_cast<Q3CheckListItem *>( item );
     bool checked = citem->isOn();
-    //kdDebug( 702 ) << "it's a " << ( checked ? "checked" : "unchecked" )
+    //kDebug( 702 ) << "it's a " << ( checked ? "checked" : "unchecked" )
     //    << " QCheckListItem" << endl;
 
     KPluginInfo * info = d->pluginInfoMap[ citem ];
@@ -368,7 +368,7 @@ void KPluginSelectionWidget::executed( Q3ListViewItem * item )
 
     if ( info->isPluginEnabled() != checked )
     {
-        kdDebug( 702 ) << "Item changed state, emitting changed()" << endl;
+        kDebug( 702 ) << "Item changed state, emitting changed()" << endl;
 
         if( ! d->plugincheckedchanged[ info ] )
         {
@@ -397,7 +397,7 @@ void KPluginSelectionWidget::executed( Q3ListViewItem * item )
 
 void KPluginSelectionWidget::load()
 {
-    //kdDebug( 702 ) << k_funcinfo << endl;
+    //kDebug( 702 ) << k_funcinfo << endl;
 
     for( QMap<Q3CheckListItem*, KPluginInfo*>::Iterator it =
             d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
@@ -420,7 +420,7 @@ void KPluginSelectionWidget::load()
 
 void KPluginSelectionWidget::save()
 {
-    kdDebug( 702 ) << k_funcinfo << endl;
+    kDebug( 702 ) << k_funcinfo << endl;
 
     for( QMap<Q3CheckListItem*, KPluginInfo*>::Iterator it =
             d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
@@ -449,7 +449,7 @@ void KPluginSelectionWidget::save()
         emit configCommitted( ( *it ).toLatin1() );
 
     updateConfigPage();
-    kdDebug( 702 ) << "syncing config file" << endl;
+    kDebug( 702 ) << "syncing config file" << endl;
     d->config->sync();
     d->changed = 0;
     emit changed( false );
@@ -529,15 +529,15 @@ KPluginSelector::~KPluginSelector()
 
 void KPluginSelector::checkNeedForTabWidget()
 {
-    kdDebug( 702 ) << k_funcinfo << endl;
+    kDebug( 702 ) << k_funcinfo << endl;
     if( ! d->tabwidget && d->pswidgets.size() == 1 )
     {
-        kdDebug( 702 ) << "no TabWidget and one KPluginSelectionWidget" << endl;
+        kDebug( 702 ) << "no TabWidget and one KPluginSelectionWidget" << endl;
         // there's only one KPluginSelectionWidget yet, we need a TabWidget
         KPluginSelectionWidget * w = d->pswidgets.first();
         if( w )
         {
-            kdDebug( 702 ) << "create TabWidget" << endl;
+            kDebug( 702 ) << "create TabWidget" << endl;
             d->tabwidget = new KTabWidget( d->frame  );
             d->tabwidget->setObjectName( "KPluginSelector TabWidget" );
             w->reparent( d->tabwidget, QPoint( 0, 0 ) );
@@ -569,7 +569,7 @@ void KPluginSelector::addPlugins( const QString & instanceName,
     if ( !config ) // KDE4: ensure that config is always set; make it second in the arg list?
         config = new KSimpleConfig(  instanceName ); // memleak!
     KConfigGroup * cfgGroup = new KConfigGroup( config, "KParts Plugins" );
-    kdDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
+    kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
     addPluginsInternal( plugininfos, catname, category, cfgGroup );
 }
 
@@ -610,7 +610,7 @@ void KPluginSelector::addPlugins( const QList<KPluginInfo*> & plugininfos,
     checkNeedForTabWidget();
     // the KConfigGroup becomes owned by KPluginSelectionWidget
     KConfigGroup * cfgGroup = new KConfigGroup( config ? config : KGlobal::config(), "Plugins" );
-    kdDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
+    kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
     addPluginsInternal( plugininfos, catname, category, cfgGroup );
 }
 
@@ -664,7 +664,7 @@ void KPluginSelector::save()
 
 void KPluginSelector::defaults()
 {
-    kdDebug( 702 ) << k_funcinfo << endl;
+    kDebug( 702 ) << k_funcinfo << endl;
 
     // what should defaults do? here's what I think:
     // Pressing a button in the dialog should not change any widgets that are
@@ -677,7 +677,7 @@ void KPluginSelector::defaults()
     KCModuleProxy * kcm = qobject_cast<KCModuleProxy *>( pluginconfig );
     if( kcm )
     {
-        kdDebug( 702 ) << "call KCModule::defaults() for the plugins KCM"
+        kDebug( 702 ) << "call KCModule::defaults() for the plugins KCM"
             << endl;
         kcm->defaults();
         return;

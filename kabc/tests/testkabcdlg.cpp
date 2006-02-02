@@ -28,18 +28,18 @@ int main(int argc,char **argv)
   if (args->isSet("multiple")) {
     Addressee::List al = AddresseeDialog::getAddressees( 0 );
     Addressee::List::ConstIterator it;
-    kdDebug() << "Selected Addressees:" << endl;
+    kDebug() << "Selected Addressees:" << endl;
     for( it = al.begin(); it != al.end(); ++it ) {
-      kdDebug() << "  " << (*it).fullEmail() << endl;
+      kDebug() << "  " << (*it).fullEmail() << endl;
     }
   } else {
     Addressee a = AddresseeDialog::getAddressee( 0 );
   
     if ( !a.isEmpty() ) {
-      kdDebug() << "Selected Addressee:" << endl;
+      kDebug() << "Selected Addressee:" << endl;
       a.dump();
     } else {
-      kdDebug() << "No Addressee selected." << endl;
+      kDebug() << "No Addressee selected." << endl;
     }
   }
 }

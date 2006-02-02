@@ -743,7 +743,7 @@ void UIServer::slotApplyConfig()
 
 int UIServer::newJob( QByteArray observerAppId, bool showProgress )
 {
-  kdDebug(7024) << "UIServer::newJob observerAppId=" << observerAppId << ". "
+  kDebug(7024) << "UIServer::newJob observerAppId=" << observerAppId << ". "
             << "Giving id=" << s_jobId+1 << endl;
 
   Q3ListViewItemIterator it( listProgress );
@@ -803,7 +803,7 @@ void UIServer::setItemVisible( ProgressItem * item, bool visible )
 // Called by Observer when opening a skip or rename dialog
 void UIServer::setJobVisible( int id, bool visible )
 {
-  kdDebug(7024) << "UIServer::setJobVisible id=" << id << " visible=" << visible << endl;
+  kDebug(7024) << "UIServer::setJobVisible id=" << id << " visible=" << visible << endl;
   ProgressItem *item = findItem( id );
   Q_ASSERT( item );
   if ( item )
@@ -812,7 +812,7 @@ void UIServer::setJobVisible( int id, bool visible )
 
 void UIServer::jobFinished( int id )
 {
-  kdDebug(7024) << "UIServer::jobFinished id=" << id << endl;
+  kDebug(7024) << "UIServer::jobFinished id=" << id << endl;
   ProgressItem *item = findItem( id );
 
   // remove item from the list and delete the corresponding defaultprogress
@@ -830,7 +830,7 @@ void UIServer::totalSize( int id, unsigned long size )
 
 void UIServer::totalSize64( int id, KIO::filesize_t size )
 {
-//  kdDebug(7024) << "UIServer::totalSize " << id << " " << KIO::number(size) << endl;
+//  kDebug(7024) << "UIServer::totalSize " << id << " " << KIO::number(size) << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -840,7 +840,7 @@ void UIServer::totalSize64( int id, KIO::filesize_t size )
 
 void UIServer::totalFiles( int id, unsigned long files )
 {
-  kdDebug(7024) << "UIServer::totalFiles " << id << " " << (unsigned int) files << endl;
+  kDebug(7024) << "UIServer::totalFiles " << id << " " << (unsigned int) files << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -850,7 +850,7 @@ void UIServer::totalFiles( int id, unsigned long files )
 
 void UIServer::totalDirs( int id, unsigned long dirs )
 {
-  kdDebug(7024) << "UIServer::totalDirs " << id << " " << (unsigned int) dirs << endl;
+  kDebug(7024) << "UIServer::totalDirs " << id << " " << (unsigned int) dirs << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -863,7 +863,7 @@ void UIServer::processedSize( int id, unsigned long size )
 
 void UIServer::processedSize64( int id, KIO::filesize_t size )
 {
-  //kdDebug(7024) << "UIServer::processedSize " << id << " " << KIO::number(size) << endl;
+  //kDebug(7024) << "UIServer::processedSize " << id << " " << KIO::number(size) << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -873,7 +873,7 @@ void UIServer::processedSize64( int id, KIO::filesize_t size )
 
 void UIServer::processedFiles( int id, unsigned long files )
 {
-  //kdDebug(7024) << "UIServer::processedFiles " << id << " " << (unsigned int) files << endl;
+  //kDebug(7024) << "UIServer::processedFiles " << id << " " << (unsigned int) files << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -883,7 +883,7 @@ void UIServer::processedFiles( int id, unsigned long files )
 
 void UIServer::processedDirs( int id, unsigned long dirs )
 {
-  kdDebug(7024) << "UIServer::processedDirs " << id << " " << (unsigned int) dirs << endl;
+  kDebug(7024) << "UIServer::processedDirs " << id << " " << (unsigned int) dirs << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -893,7 +893,7 @@ void UIServer::processedDirs( int id, unsigned long dirs )
 
 void UIServer::percent( int id, unsigned long ipercent )
 {
-  //kdDebug(7024) << "UIServer::percent " << id << " " << (unsigned int) ipercent << endl;
+  //kDebug(7024) << "UIServer::percent " << id << " " << (unsigned int) ipercent << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -903,7 +903,7 @@ void UIServer::percent( int id, unsigned long ipercent )
 
 void UIServer::speed( int id, unsigned long bytes_per_second )
 {
-  //kdDebug(7024) << "UIServer::speed " << id << " " << (unsigned int) bytes_per_second << endl;
+  //kDebug(7024) << "UIServer::speed " << id << " " << (unsigned int) bytes_per_second << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -913,7 +913,7 @@ void UIServer::speed( int id, unsigned long bytes_per_second )
 
 void UIServer::infoMessage( int id, const QString & msg )
 {
-  //kdDebug(7024) << "UIServer::infoMessage " << id << " " << msg << endl;
+  //kDebug(7024) << "UIServer::infoMessage " << id << " " << msg << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -926,7 +926,7 @@ void UIServer::canResume( int id, unsigned long offset )
 
 void UIServer::canResume64( int id, KIO::filesize_t offset )
 {
-  //kdDebug(7024) << "UIServer::canResume " << id << " " << offset << endl;
+  //kDebug(7024) << "UIServer::canResume " << id << " " << offset << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -936,7 +936,7 @@ void UIServer::canResume64( int id, KIO::filesize_t offset )
 
 void UIServer::copying( int id, KUrl from, KUrl to )
 {
-  //kdDebug(7024) << "UIServer::copying " << id << " " << from.url() << "  " << to.url() << endl;
+  //kDebug(7024) << "UIServer::copying " << id << " " << from.url() << "  " << to.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -946,7 +946,7 @@ void UIServer::copying( int id, KUrl from, KUrl to )
 
 void UIServer::moving( int id, KUrl from, KUrl to )
 {
-  //kdDebug(7024) << "UIServer::moving " << id << " " << from.url() << "  " << to.url() << endl;
+  //kDebug(7024) << "UIServer::moving " << id << " " << from.url() << "  " << to.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -956,7 +956,7 @@ void UIServer::moving( int id, KUrl from, KUrl to )
 
 void UIServer::deleting( int id, KUrl url )
 {
-  //kdDebug(7024) << "UIServer::deleting " << id << " " << url.url() << endl;
+  //kDebug(7024) << "UIServer::deleting " << id << " " << url.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -966,7 +966,7 @@ void UIServer::deleting( int id, KUrl url )
 
 void UIServer::transferring( int id, KUrl url )
 {
-  //kdDebug(7024) << "UIServer::transferring " << id << " " << url.url() << endl;
+  //kDebug(7024) << "UIServer::transferring " << id << " " << url.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -976,7 +976,7 @@ void UIServer::transferring( int id, KUrl url )
 
 void UIServer::creatingDir( int id, KUrl dir )
 {
-  kdDebug(7024) << "UIServer::creatingDir " << id << " " << dir.url() << endl;
+  kDebug(7024) << "UIServer::creatingDir " << id << " " << dir.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -986,7 +986,7 @@ void UIServer::creatingDir( int id, KUrl dir )
 
 void UIServer::stating( int id, KUrl url )
 {
-  kdDebug(7024) << "UIServer::stating " << id << " " << url.url() << endl;
+  kDebug(7024) << "UIServer::stating " << id << " " << url.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -996,7 +996,7 @@ void UIServer::stating( int id, KUrl url )
 
 void UIServer::mounting( int id, QString dev, QString point )
 {
-  kdDebug(7024) << "UIServer::mounting " << id << " " << dev << " " << point << endl;
+  kDebug(7024) << "UIServer::mounting " << id << " " << dev << " " << point << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -1006,7 +1006,7 @@ void UIServer::mounting( int id, QString dev, QString point )
 
 void UIServer::unmounting( int id, QString point )
 {
-  kdDebug(7024) << "UIServer::unmounting " << id << " " << point << endl;
+  kDebug(7024) << "UIServer::unmounting " << id << " " << point << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -1023,7 +1023,7 @@ void UIServer::killJob( QByteArray observerAppId, int progressId )
 }
 
 void UIServer::slotJobCanceled( ProgressItem *item ) {
-  kdDebug(7024) << "UIServer::slotJobCanceled appid=" << item->appId() << " jobid=" << item->jobId() << endl;
+  kDebug(7024) << "UIServer::slotJobCanceled appid=" << item->appId() << " jobid=" << item->jobId() << endl;
   // kill the corresponding job
   killJob( item->appId(), item->jobId() );
 
@@ -1170,7 +1170,7 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, 
       if (ncl.count() > 0)
          x->chain().setChain(ncl);
 
-      kdDebug(7024) << "ssl_cert_errors=" << meta["ssl_cert_errors"] << endl;
+      kDebug(7024) << "ssl_cert_errors=" << meta["ssl_cert_errors"] << endl;
       kid->setCertState(meta["ssl_cert_errors"]);
       QString ip = meta.contains("ssl_proxied") ? "" : meta["ssl_peer_ip"];
       kid->setup( x,
@@ -1182,14 +1182,14 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, 
                   meta["ssl_cipher_used_bits"].toInt(),
                   meta["ssl_cipher_bits"].toInt(),
                   KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()));
-      kdDebug(7024) << "Showing SSL Info dialog" << endl;
+      kDebug(7024) << "Showing SSL Info dialog" << endl;
 #ifndef Q_WS_WIN
       if( mainwindow != 0 )
           KWin::setMainWindow( kid, mainwindow );
 #endif
       kid->exec();
       delete x;
-      kdDebug(7024) << "SSL Info dialog closed" << endl;
+      kDebug(7024) << "SSL Info dialog closed" << endl;
    } else {
       KMessageBox::information( 0L, // parent ?
                               i18n("The peer SSL certificate appears to be corrupt."), i18n("SSL") );
@@ -1210,7 +1210,7 @@ KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringLis
       KSSLCertDlg *kcd = new KSSLCertDlg(0L, 0L, true);
       kcd->setupDialog(certList);
       kcd->setHost(host);
-      kdDebug(7024) << "Showing SSL certificate dialog" << endl;
+      kDebug(7024) << "Showing SSL certificate dialog" << endl;
 #ifndef Q_WS_WIN
       if( mainwindow != 0 )
           KWin::setMainWindow( kcd, mainwindow );
@@ -1220,7 +1220,7 @@ KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringLis
       rc.choice = kcd->getChoice();
       rc.save = kcd->saveChoice();
       rc.send = kcd->wantsToSend();
-      kdDebug(7024) << "SSL certificate dialog closed" << endl;
+      kDebug(7024) << "SSL certificate dialog closed" << endl;
       delete kcd;
    }
    return rc;
@@ -1259,13 +1259,13 @@ QByteArray UIServer::open_RenameDlg64( int id,
   if ( item )
     setItemVisible( item, false );
   QString newDest;
-  kdDebug(7024) << "Calling KIO::open_RenameDlg" << endl;
+  kDebug(7024) << "Calling KIO::open_RenameDlg" << endl;
   KIO::RenameDlg_Result result = KIO::open_RenameDlg( caption, src, dest,
                                                       (KIO::RenameDlg_Mode) mode, newDest,
                                                       sizeSrc, sizeDest,
                                                       (time_t)ctimeSrc, (time_t)ctimeDest,
                                                       (time_t)mtimeSrc, (time_t)mtimeDest );
-  kdDebug(7024) << "KIO::open_RenameDlg done" << endl;
+  kDebug(7024) << "KIO::open_RenameDlg done" << endl;
   QByteArray data;
   QDataStream stream( &data, QIODevice::WriteOnly );
   stream << quint8(result) << newDest;
@@ -1282,7 +1282,7 @@ int UIServer::open_SkipDlg( int id,
   ProgressItem *item = findItem( id );
   if ( item )
     setItemVisible( item, false );
-  kdDebug(7024) << "Calling KIO::open_SkipDlg" << endl;
+  kDebug(7024) << "Calling KIO::open_SkipDlg" << endl;
   KIO::SkipDlg_Result result = KIO::open_SkipDlg( (bool)multi, error_text );
   if ( item && result != KIO::S_CANCEL )
     setItemVisible( item, true );
@@ -1369,7 +1369,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
     if (!KUniqueApplication::start())
     {
-      kdDebug(7024) << "kio_uiserver is already running!" << endl;
+      kDebug(7024) << "kio_uiserver is already running!" << endl;
       return (0);
     }
 

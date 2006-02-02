@@ -93,16 +93,16 @@ void testFrame::urlsDropped( QWidget* , QDropEvent* , KUrl::List& list )
 {
    KUrl::List::ConstIterator it = list.begin();
    for ( ; it != list.end(); ++it ) {
-      kdDebug() << "Url dropped: " << (*it).prettyURL() << endl;
+      kDebug() << "Url dropped: " << (*it).prettyURL() << endl;
    }
 }
 
 void testFrame::copyURLs( KUrl::List& list, KUrl& to )
 {
    KUrl::List::ConstIterator it = list.begin();
-   kdDebug() << "Copy to " << to.prettyURL() << endl;
+   kDebug() << "Copy to " << to.prettyURL() << endl;
    for ( ; it != list.end(); ++it ) {
-      kdDebug() << "Url: " << (*it).prettyURL() << endl;
+      kDebug() << "Url: " << (*it).prettyURL() << endl;
    }
 
 }
@@ -115,14 +115,14 @@ void testFrame::slotPopulateFinished(KFileTreeViewItem *item )
 #if 0
       int cc = item->childCount();
 
-      kdDebug() << "setting column 2 of treeview with count " << cc << endl;
+      kDebug() << "setting column 2 of treeview with count " << cc << endl;
 
       item->setText( 1, QString::number( cc ));
 #endif
    }
    else
    {
-      kdDebug() << "slotPopFinished for uninitalised item" << endl;
+      kDebug() << "slotPopFinished for uninitalised item" << endl;
    }
 }
 
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
        for( int i = 1; i < argc; i++ )
        {
 	  argv1 = QLatin1String(argv[i]);
-	  kdDebug() << "Opening " << argv1 << endl;
+	  kDebug() << "Opening " << argv1 << endl;
 	  if( argv1 == "-d" )
 	     tf->setDirOnly();
 	  else

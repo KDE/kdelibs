@@ -70,7 +70,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
         return;
     }
 
-    //kdDebug(6050) << "KHTMLRun::foundMimeType " << _type << " couldn't open" << endl;
+    //kDebug(6050) << "KHTMLRun::foundMimeType " << _type << " couldn't open" << endl;
     KRun::foundMimeType( mimeType );
 
     // "open" is finished -> flag completed

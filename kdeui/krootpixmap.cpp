@@ -205,7 +205,7 @@ void KRootPixmap::desktopChanged( WId window, unsigned int properties )
 	return;
 #endif
 
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     repaint(true);
 }
 
@@ -278,7 +278,7 @@ QString KRootPixmap::pixmapName(int desk) {
 void KRootPixmap::enableExports()
 {
 #ifdef Q_WS_X11
-    kdDebug(270) << k_lineinfo << "activating background exports.\n";
+    kDebug(270) << k_lineinfo << "activating background exports.\n";
     DCOPClient *client = KApplication::dcopClient();
     if (!client->isAttached())
 	client->attach();
@@ -300,7 +300,7 @@ void KRootPixmap::slotDone(bool success)
 {
     if (!success)
     {
-	kdWarning(270) << k_lineinfo << "loading of desktop background failed.\n";
+	kWarning(270) << k_lineinfo << "loading of desktop background failed.\n";
 	return;
     }
 

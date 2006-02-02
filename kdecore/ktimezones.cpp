@@ -607,17 +607,17 @@ void KSystemTimezonesPrivate::readZoneTab()
     f.setName(m_zoneinfoDir + "/zone.tab");
     if (!f.open(QIODevice::ReadOnly))
     {
-        kdDebug() << "Can't open " << f.name() << endl;
+        kDebug() << "Can't open " << f.name() << endl;
         m_zoneinfoDir = "/usr/lib/zoneinfo";
         f.setName(m_zoneinfoDir + "/zone.tab");
         if (!f.open(QIODevice::ReadOnly))
         {
-            kdDebug() << "Can't open " << f.name() << endl;
+            kDebug() << "Can't open " << f.name() << endl;
             m_zoneinfoDir = ::getenv("TZDIR");
             f.setName(m_zoneinfoDir + "/zone.tab");
             if (m_zoneinfoDir.isEmpty() || !f.open(QIODevice::ReadOnly))
             {
-                kdDebug() << "Can't open " << f.name() << endl;
+                kDebug() << "Can't open " << f.name() << endl;
 
                 // Solaris support. Synthesise something that looks like a zone.tab.
                 //
@@ -636,7 +636,7 @@ void KSystemTimezonesPrivate::readZoneTab()
                 f.setName(temp.name());
                 if (!temp.status() || !f.open(QIODevice::ReadOnly))
                 {
-                    kdDebug() << "Can't open " << f.name() << endl;
+                    kDebug() << "Can't open " << f.name() << endl;
                     m_zoneinfoDir.clear();
                 }
             }
@@ -659,7 +659,7 @@ void KSystemTimezonesPrivate::readZoneTab()
             int n = tokens.count();
             if (n < 3)
             {
-                kdError() << "invalid record: " << line << endl;
+                kError() << "invalid record: " << line << endl;
                 continue;
             }
 
@@ -667,7 +667,7 @@ void KSystemTimezonesPrivate::readZoneTab()
             QStringList ordinates = KStringHandler::perlSplit(ordinateSeparator, tokens[1], 2);
             if (ordinates.count() < 2)
             {
-                kdError() << "invalid coordinates: " << tokens[1] << endl;
+                kError() << "invalid coordinates: " << tokens[1] << endl;
                 continue;
             }
 
@@ -724,7 +724,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
                     // We've got the zoneinfo file path.
                     // The timezone name is the part of the path after the zoneinfo directory.
                     QString name = zoneInfoFileName.mid(m_zoneinfoDir.length() + 1);
-                    // kdDebug() << "local=" << name << endl;
+                    // kDebug() << "local=" << name << endl;
                     local = zone(name);
                 }
             }
@@ -788,7 +788,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
                     QString candidateMd5Sum = calcChecksum(zonename, referenceSize);
                     if (candidateMd5Sum == referenceMd5Sum)
                     {
-                        // kdDebug() << "local=" << zone->name() << endl;
+                        // kDebug() << "local=" << zone->name() << endl;
                         local = zone;
                         break;
                     }
@@ -811,7 +811,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
                 QString candidateMd5Sum = calcChecksum(zonename, referenceSize);
                 if (candidateMd5Sum == referenceMd5Sum)
                 {
-                    // kdDebug() << "local=" << zonename << endl;
+                    // kDebug() << "local=" << zonename << endl;
                     local = zone(zonename);
                     break;
                 }
@@ -828,14 +828,14 @@ const KTimezone *KSystemTimezonesPrivate::local()
     f.setName("/etc/timezone");
     if (!f.open(QIODevice::ReadOnly))
     {
-        kdDebug() << "Can't open " << f.name() << endl;
+        kDebug() << "Can't open " << f.name() << endl;
 
         // SOLUTION 5: DEFINITIVE.
         // Solaris support using /etc/default/init.
         f.setName("/etc/default/init");
         if (!f.open(QIODevice::ReadOnly))
         {
-            kdDebug() << "Can't open " << f.name() << endl;
+            kDebug() << "Can't open " << f.name() << endl;
         }
         else
         {
@@ -850,7 +850,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
                 {
                     fileZone = fileZone.mid(3);
 
-                    // kdDebug() << "local=" << fileZone << endl;
+                    // kDebug() << "local=" << fileZone << endl;
                     local = zone(fileZone);
                 }
             }
@@ -867,7 +867,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
         {
             fileZone = ts.readLine();
 
-            // kdDebug() << "local=" << fileZone << endl;
+            // kDebug() << "local=" << fileZone << endl;
             local = zone(fileZone);
         }
         f.close();
@@ -897,7 +897,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
                 QList<QByteArray> abbrs = zone->abbreviations();
                 if (abbrs.contains(tzname0)  &&  abbrs.contains(tzname1))
                 {
-                    // kdDebug() << "local=" << zone->name() << endl;
+                    // kDebug() << "local=" << zone->name() << endl;
                     local = zone;
                     bestOffset = candidateOffset;
                     if (!bestOffset)

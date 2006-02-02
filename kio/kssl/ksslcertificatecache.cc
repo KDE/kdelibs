@@ -52,17 +52,17 @@ KSSLCertificateCache::~KSSLCertificateCache() {
 
 
 void KSSLCertificateCache::saveToDisk() {
-   kdDebug() << "Deprecated function KSSLCertificateCache::saveToDisk() called" << endl;
+   kDebug() << "Deprecated function KSSLCertificateCache::saveToDisk() called" << endl;
 }
 
 
 void KSSLCertificateCache::clearList() {
-   kdDebug() << "Deprecated function KSSLCertificateCache::clearList() called" << endl;
+   kDebug() << "Deprecated function KSSLCertificateCache::clearList() called" << endl;
 }
 
 
 void KSSLCertificateCache::loadDefaultPolicies() {
-   kdDebug() << "Deprecated function KSSLCertificateCache::loadDefaultPolicies() called" << endl;
+   kDebug() << "Deprecated function KSSLCertificateCache::loadDefaultPolicies() called" << endl;
 }
 
 

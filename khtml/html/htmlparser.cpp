@@ -128,7 +128,7 @@ public:
 
 KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
 {
-    //kdDebug( 6035 ) << "parser constructor" << endl;
+    //kDebug( 6035 ) << "parser constructor" << endl;
 #if SPEED_DEBUG > 0
     qt.start();
 #endif
@@ -167,7 +167,7 @@ KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentPtr *doc )
 KHTMLParser::~KHTMLParser()
 {
 #if SPEED_DEBUG > 0
-    kdDebug( ) << "TIME: parsing time was = " << qt.elapsed() << endl;
+    kDebug( ) << "TIME: parsing time was = " << qt.elapsed() << endl;
 #endif
 
     freeBlock();
@@ -211,7 +211,7 @@ void KHTMLParser::parseToken(Token *t)
 {
     if (t->tid > 2*ID_CLOSE_TAG)
     {
-      kdDebug( 6035 ) << "Unknown tag!! tagID = " << t->tid << endl;
+      kDebug( 6035 ) << "Unknown tag!! tagID = " << t->tid << endl;
       return;
     }
     if(discard_until) {
@@ -224,9 +224,9 @@ void KHTMLParser::parseToken(Token *t)
     }
 
 #ifdef PARSER_DEBUG
-    kdDebug( 6035 ) << "\n\n==> parser: processing token " << getTagName(t->tid) << "(" << t->tid << ")"
+    kDebug( 6035 ) << "\n\n==> parser: processing token " << getTagName(t->tid) << "(" << t->tid << ")"
                     << " current = " << getTagName(current->id()) << "(" << current->id() << ")" << endl;
-    kdDebug(6035) << "inline=" << m_inline << " inBody=" << inBody << " haveFrameSet=" << haveFrameSet << " haveContent=" << haveContent << endl;
+    kDebug(6035) << "inline=" << m_inline << " inBody=" << inBody << " haveFrameSet=" << haveFrameSet << " haveContent=" << haveContent << endl;
 #endif
 
     // holy shit. apparently some sites use </br> instead of <br>
@@ -247,7 +247,7 @@ void KHTMLParser::parseToken(Token *t)
            current->id() != ID_SCRIPT &&
            !t->text->containsOnlyWhitespace()) haveContent = true;
 #ifdef PARSER_DEBUG
-        kdDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
+        kDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
 #endif
     }
 
@@ -271,7 +271,7 @@ void KHTMLParser::parseToken(Token *t)
     // blocks until we are allowed to add it...
     while(forbiddenTag[t->tid]) {
 #ifdef PARSER_DEBUG
-        kdDebug( 6035 ) << "t->id: " << t->tid << " is forbidden :-( " << endl;
+        kDebug( 6035 ) << "t->id: " << t->tid << " is forbidden :-( " << endl;
 #endif
         popOneBlock();
     }
@@ -290,19 +290,19 @@ void KHTMLParser::parseToken(Token *t)
     if ( !insertNode(n, t->flat) ) {
         // we couldn't insert the node...
 #ifdef PARSER_DEBUG
-        kdDebug( 6035 ) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
+        kDebug( 6035 ) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
 #endif
         if (map == n)
         {
 #ifdef PARSER_DEBUG
-            kdDebug( 6035 ) << "  --> resetting map!" << endl;
+            kDebug( 6035 ) << "  --> resetting map!" << endl;
 #endif
             map = 0;
         }
         if (form == n)
         {
 #ifdef PARSER_DEBUG
-            kdDebug( 6035 ) << "   --> resetting form!" << endl;
+            kDebug( 6035 ) << "   --> resetting form!" << endl;
 #endif
             form = 0;
         }
@@ -328,7 +328,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
     NodeImpl *newNode = current->addChild(n);
     if ( newNode ) {
 #ifdef PARSER_DEBUG
-        kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
+        kDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
 #endif
 
 	// don't push elements without end tag on the stack
@@ -361,7 +361,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         return true;
     } else {
 #ifdef PARSER_DEBUG
-        kdDebug( 6035 ) << "ADDING NODE FAILED!!!! current = " << current->nodeName().string() << ", new = " << n->nodeName().string() << endl;
+        kDebug( 6035 ) << "ADDING NODE FAILED!!!! current = " << current->nodeName().string() << ", new = " << n->nodeName().string() << endl;
 #endif
         // error handling...
         HTMLElementImpl *e;
@@ -440,7 +440,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 #endif
                 } else {
 #ifdef PARSER_DEBUG
-                    kdDebug( 6035 ) << "adding style before to body failed!!!!" << endl;
+                    kDebug( 6035 ) << "adding style before to body failed!!!!" << endl;
 #endif
                     discard_until = ID_STYLE + ID_CLOSE_TAG;
                     return false;
@@ -669,14 +669,14 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                     NodeImpl *parent = node->parentNode();
                     int exceptioncode = 0;
 #ifdef PARSER_DEBUG
-                    kdDebug( 6035 ) << "calling insertBefore(" << n->nodeName().string() << "," << node->nodeName().string() << ")" << endl;
+                    kDebug( 6035 ) << "calling insertBefore(" << n->nodeName().string() << "," << node->nodeName().string() << ")" << endl;
 #endif
                     parent->insertBefore(n, node, exceptioncode);
                     if (exceptioncode) {
 #ifndef PARSER_DEBUG
                         if (!n->isTextNode())
 #endif
-                            kdDebug(6035) << "adding content before table failed.." << endl;
+                            kDebug(6035) << "adding content before table failed.." << endl;
                         break;
                     }
                     if ( n->isElementNode() && tagPriority[id] != 0 &&
@@ -785,7 +785,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         // if we couldn't handle the error, just rethrow the exception...
         if(!handled)
         {
-            //kdDebug( 6035 ) << "Exception handler failed in HTMLPArser::insertNode()" << endl;
+            //kDebug( 6035 ) << "Exception handler failed in HTMLPArser::insertNode()" << endl;
             return false;
         }
 
@@ -1163,7 +1163,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
 // text
     case ID_TEXT:
-//        kdDebug(6035) << "ID_TEXT: \"" << DOMString(t->text).string() << "\"" << endl;
+//        kDebug(6035) << "ID_TEXT: \"" << DOMString(t->text).string() << "\"" << endl;
         n = new TextImpl(document, t->text);
         break;
     case ID_COMMENT:
@@ -1172,7 +1172,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 #endif
         break;
     default:
-        kdDebug( 6035 ) << "Unknown tag " << t->tid << "!" << endl;
+        kDebug( 6035 ) << "Unknown tag " << t->tid << "!" << endl;
     }
     return n;
 }
@@ -1209,17 +1209,17 @@ void KHTMLParser::processCloseTag(Token *t)
     }
 
 #ifdef PARSER_DEBUG
-    kdDebug( 6035 ) << "added the following children to " << current->nodeName().string() << endl;
+    kDebug( 6035 ) << "added the following children to " << current->nodeName().string() << endl;
     NodeImpl *child = current->firstChild();
     while(child != 0)
     {
-        kdDebug( 6035 ) << "    " << child->nodeName().string() << endl;
+        kDebug( 6035 ) << "    " << child->nodeName().string() << endl;
         child = child->nextSibling();
     }
 #endif
     popBlock(t->tid-ID_CLOSE_TAG);
 #ifdef PARSER_DEBUG
-    kdDebug( 6035 ) << "closeTag --> current = " << current->nodeName().string() << endl;
+    kDebug( 6035 ) << "closeTag --> current = " << current->nodeName().string() << endl;
 #endif
 }
 
@@ -1499,9 +1499,9 @@ void KHTMLParser::popBlock( int _id )
     int maxLevel = 0;
 
 #ifdef PARSER_DEBUG
-    kdDebug( 6035 ) << "popBlock(" << getTagName(_id) << ")" << endl;
+    kDebug( 6035 ) << "popBlock(" << getTagName(_id) << ")" << endl;
     while(Elem) {
-        kdDebug( 6035) << "   > " << getTagName(Elem->id) << endl;
+        kDebug( 6035) << "   > " << getTagName(Elem->id) << endl;
         Elem = Elem->next;
     }
     Elem = blockStack;
@@ -1587,7 +1587,7 @@ void KHTMLParser::popOneBlock(bool delBlock)
 #ifndef PARSER_DEBUG
     if(!Elem) return;
 #else
-    kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id) << "(" << Elem->id << ")" << endl;
+    kDebug( 6035 ) << "popping block: " << getTagName(Elem->id) << "(" << Elem->id << ")" << endl;
 #endif
 
 #if SPEED_DEBUG < 1
@@ -1645,7 +1645,7 @@ void KHTMLParser::createHead()
     doc()->firstChild()->insertBefore(head, body, exceptioncode);
     if ( exceptioncode ) {
 #ifdef PARSER_DEBUG
-        kdDebug( 6035 ) << "creation of head failed!!!!" << endl;
+        kDebug( 6035 ) << "creation of head failed!!!!" << endl;
 #endif
         delete head;
         head = 0;

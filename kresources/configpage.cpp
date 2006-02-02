@@ -171,7 +171,7 @@ ConfigPage::~ConfigPage()
 
 void ConfigPage::load()
 {
-  kdDebug(5650) << "ConfigPage::load()" << endl;
+  kDebug(5650) << "ConfigPage::load()" << endl;
 
   mListView->clear();
   mFamilyMap.clear();
@@ -264,7 +264,7 @@ void ConfigPage::slotFamilyChanged( int pos )
   mCurrentConfig = mInfoMap[ pos ]->mConfig;
 
   if ( !mCurrentManager )
-    kdDebug(5650) << "ERROR: cannot create ResourceManager<Resource>( mFamily )" << endl;
+    kDebug(5650) << "ERROR: cannot create ResourceManager<Resource>( mFamily )" << endl;
 
   mListView->clear();
 
@@ -445,7 +445,7 @@ void ConfigPage::slotSelectionChanged()
 
 void ConfigPage::resourceAdded( Resource *resource )
 {
-  kdDebug(5650) << "ConfigPage::resourceAdded( " << resource->resourceName()
+  kDebug(5650) << "ConfigPage::resourceAdded( " << resource->resourceName()
                 << " )" << endl;
 
   ConfigViewItem *item = new ConfigViewItem( mListView, resource );
@@ -459,7 +459,7 @@ void ConfigPage::resourceAdded( Resource *resource )
 
 void ConfigPage::resourceModified( Resource *resource )
 {
-  kdDebug(5650) << "ConfigPage::resourceModified( " << resource->resourceName()
+  kDebug(5650) << "ConfigPage::resourceModified( " << resource->resourceName()
                 << " )" << endl;
   ConfigViewItem *item = findItem( resource );
   if ( !item ) return;
@@ -471,7 +471,7 @@ void ConfigPage::resourceModified( Resource *resource )
 
 void ConfigPage::resourceDeleted( Resource *resource )
 {
-  kdDebug(5650) << "ConfigPage::resourceDeleted( " << resource->resourceName()
+  kDebug(5650) << "ConfigPage::resourceDeleted( " << resource->resourceName()
                 << " )" << endl;
 
   ConfigViewItem *item = findItem( resource );

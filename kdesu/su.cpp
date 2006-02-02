@@ -88,20 +88,20 @@ int SuProcess::exec(const char *password, int check)
             return check ? SuNotFound : -1;
     }
 
-    // kdDebug(900) << k_lineinfo << "Call StubProcess::exec()" << endl;
+    // kDebug(900) << k_lineinfo << "Call StubProcess::exec()" << endl;
     if (StubProcess::exec(command, args) < 0)
     {
         return check ? SuNotFound : -1;
     }
-    // kdDebug(900) << k_lineinfo << "Done StubProcess::exec()" << endl;
+    // kDebug(900) << k_lineinfo << "Done StubProcess::exec()" << endl;
 
     SuErrors ret = (SuErrors) ConverseSU(password);
-    // kdDebug(900) << k_lineinfo << "Conversation returned " << ret << endl;
+    // kDebug(900) << k_lineinfo << "Conversation returned " << ret << endl;
 
     if (ret == error)
     {
         if (!check)
-            kdError(900) << k_lineinfo << "Conversation with su failed\n";
+            kError(900) << k_lineinfo << "Conversation with su failed\n";
         return ret;
     }
     if (check == NeedPassword)
@@ -136,7 +136,7 @@ int SuProcess::exec(const char *password, int check)
     if (iret < 0)
     {
         if (!check)
-            kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
+            kError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
         return iret;
     }
     else if (iret == 1)
@@ -166,7 +166,7 @@ int SuProcess::ConverseSU(const char *password)
     enum { WaitForPrompt, CheckStar, HandleStub } state = WaitForPrompt;
     int colon;
     unsigned i, j;
-    // kdDebug(900) << k_lineinfo << "ConverseSU starting." << endl;
+    // kDebug(900) << k_lineinfo << "ConverseSU starting." << endl;
 
     QByteArray line;
     while (true)
@@ -174,7 +174,7 @@ int SuProcess::ConverseSU(const char *password)
         line = readLine();
         if (line.isNull())
             return ( state == HandleStub ? notauthorized : error);
-        kdDebug(900) << k_lineinfo << "Read line <" << line << ">" << endl;
+        kDebug(900) << k_lineinfo << "Read line <" << line << ">" << endl;
 
         switch (state)
         {
@@ -199,7 +199,7 @@ int SuProcess::ConverseSU(const char *password)
                         break;
 
                     line = more;
-                    kdDebug(900) << k_lineinfo << "Read line <" << more << ">" << endl;
+                    kDebug(900) << k_lineinfo << "Read line <" << more << ">" << endl;
                 }
 
                 // Match "Password: " with the regex ^[^:]+:[\w]*$.
@@ -220,7 +220,7 @@ int SuProcess::ConverseSU(const char *password)
                         return killme;
                     if (!checkPid(m_Pid))
                     {
-                        kdError(900) << "su has exited while waiting for pwd." << endl;
+                        kError(900) << "su has exited while waiting for pwd." << endl;
                         return error;
                     }
                     if ((WaitSlave() == 0) && checkPid(m_Pid))

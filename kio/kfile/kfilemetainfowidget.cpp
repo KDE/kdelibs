@@ -70,7 +70,7 @@ KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
 
 void KFileMetaInfoWidget::init(KFileMetaInfoItem item, Mode mode)
 {
-    kdDebug(7033) << "*** item "  << m_item.key()
+    kDebug(7033) << "*** item "  << m_item.key()
                   << " is a " << value().typeName() << endl;
 
     if (m_item.isEditable() && !(mode & ReadOnly))
@@ -165,12 +165,12 @@ QWidget* KFileMetaInfoWidget::makeWidget()
             w = makeStringWidget();
     }
 
-    kdDebug(7033) << "*** item " << m_item.key()
+    kDebug(7033) << "*** item " << m_item.key()
                   << "is a " << m_item.value().typeName() << endl;
     if (m_validator)
-        kdDebug(7033) << " and validator is a " << m_validator->className() << endl;
+        kDebug(7033) << " and validator is a " << m_validator->className() << endl;
 
-    kdDebug(7033) << "*** created a " << w->className() << " for it\n";
+    kDebug(7033) << "*** created a " << w->className() << " for it\n";
 
     return w;
 }

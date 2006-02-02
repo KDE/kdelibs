@@ -130,7 +130,7 @@ void LockWidget::updateLockView()
     QString app;
     int pid;
     if ( !Lock::readLockFile( dir.filePath( *it ), pid, app ) ) {
-      kdWarning() << "Unable to open lock file '" << *it << "'" << endl; 
+      kWarning() << "Unable to open lock file '" << *it << "'" << endl; 
     } else {
       new Q3ListViewItem( mLockView, *it, QString::number( pid ), app );
     }

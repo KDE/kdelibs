@@ -480,7 +480,7 @@ void KCodecs::base64Decode( const QByteArray& in, QByteArray& out )
         }
     }
 
-    // kdDebug() << "Tail size = " << tail << ", Length size = " << len << endl;
+    // kDebug() << "Tail size = " << tail << ", Length size = " << len << endl;
 
     // 4-byte to 3-byte conversion
     len = (tail>(len/4)) ? tail-(len/4) : 0;
@@ -719,7 +719,7 @@ void KMD5::update(const unsigned char* in, int len)
         return;
 
     if (m_finalized) {
-        kdWarning() << "KMD5::update called after state was finalized!" << endl;
+        kWarning() << "KMD5::update called after state was finalized!" << endl;
         return;
     }
 
@@ -1097,7 +1097,7 @@ void KMD4::update(const unsigned char *in, int len)
       return;
 
   if (m_finalized) {
-      kdWarning() << "KMD4::update called after state was finalized!" << endl;
+      kWarning() << "KMD4::update called after state was finalized!" << endl;
       return;
   }
 
@@ -1241,7 +1241,7 @@ QByteArray KMD4::hexDigest()
             m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4], m_digest[5],
             m_digest[6], m_digest[7], m_digest[8], m_digest[9], m_digest[10], m_digest[11],
             m_digest[12], m_digest[13], m_digest[14], m_digest[15]);
-//    kdDebug() << "KMD4::hexDigest() " << s << endl;
+//    kDebug() << "KMD4::hexDigest() " << s << endl;
     return s;
 }
 

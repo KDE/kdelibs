@@ -475,7 +475,7 @@ addComment:
   if ( fieldname == QLatin1String( "objectclass" ) ) // ignore
     return true;
 
-  kdWarning() << QString("LDIFConverter: Unknown field for '%1': '%2=%3'\n")
+  kWarning() << QString("LDIFConverter: Unknown field for '%1': '%2=%3'\n")
                              .arg(a.formattedName()).arg(fieldname).arg(value);
 
   return true;

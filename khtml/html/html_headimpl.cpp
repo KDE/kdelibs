@@ -266,7 +266,7 @@ void HTMLLinkElementImpl::error( int, const QString& )
 
 bool HTMLLinkElementImpl::isLoading() const
 {
-//    kdDebug( 6030 ) << "link: checking if loading!" << endl;
+//    kDebug( 6030 ) << "link: checking if loading!" << endl;
     if(m_loading) return true;
     if(!m_sheet) return false;
     //if(!m_sheet->isCSSStyleSheet()) return false;

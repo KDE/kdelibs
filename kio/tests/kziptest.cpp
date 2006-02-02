@@ -54,7 +54,7 @@ void recursive_transfer(const KArchiveDirectory * dir,
     for( ; it != l.end(); ++it )
     {
         const KArchiveEntry* e = dir->entry( (*it) );
-	kdDebug() << "actual file: " << e->name() << endl;
+	kDebug() << "actual file: " << e->name() << endl;
 	if (e->isFile())
 	{
     	    Q_ASSERT( e && e->isFile() );
@@ -236,7 +236,7 @@ int main( int argc, char** argv )
         QIODevice *dev = static_cast<const KZipFileEntry *>(entry)->device();
         if ( dev ) {
             QByteArray contents = dev->readAll();
-            kdDebug() << "contents=" << contents << endl;
+            kDebug() << "contents=" << contents << endl;
         }
     } else
         printf("entry=%p - not found if 0, otherwise not a file\n", (void*)entry);
@@ -245,20 +245,20 @@ int main( int argc, char** argv )
   else if (command == "print" )
   {
     KZip zip( argv[2] );
-    kdDebug() << "Opening zip file" << endl;
+    kDebug() << "Opening zip file" << endl;
     if ( !zip.open( QIODevice::ReadOnly ) )
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;
     }
     const KArchiveDirectory* dir = zip.directory();
-    kdDebug() << "Listing toplevel of zip file" << endl;
+    kDebug() << "Listing toplevel of zip file" << endl;
     QStringList l = dir->entries();
     QStringList::Iterator it = l.begin();
     for( ; it != l.end(); ++it )
     {
         const KArchiveEntry* e = dir->entry( (*it) );
-	kdDebug() << "Printing " << (*it) << endl;
+	kDebug() << "Printing " << (*it) << endl;
 	if (e->isFile())
 	{
     	    Q_ASSERT( e && e->isFile() );

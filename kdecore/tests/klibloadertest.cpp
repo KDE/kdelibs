@@ -44,7 +44,7 @@ void KLibLoaderTest::testWorking()
     KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() );
     QObject* obj = KLibLoader::createInstance<QObject>( s_module, 0, 0, QStringList(), &error );
     if ( error )
-        kdWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
+        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
     QVERIFY( obj != 0 );
 }
 

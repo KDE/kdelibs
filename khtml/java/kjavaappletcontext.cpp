@@ -135,27 +135,27 @@ void KJavaAppletContext::processCmd( QString cmd, QStringList args )
 
 void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
 {
-    kdDebug(6100) << "KJavaAppletContext::received, cmd = >>" << cmd << "<<" << endl;
-    kdDebug(6100) << "arg count = " << arg.count() << endl;
+    kDebug(6100) << "KJavaAppletContext::received, cmd = >>" << cmd << "<<" << endl;
+    kDebug(6100) << "arg count = " << arg.count() << endl;
 
     if ( cmd == QLatin1String("showstatus")
 	 && !arg.empty() )
     {
         QString tmp = arg.first();
         tmp.replace(QRegExp("[\n\r]"), "");
-        kdDebug(6100) << "status message = " << tmp << endl;
+        kDebug(6100) << "status message = " << tmp << endl;
         emit showStatus( tmp );
     }
     else if ( cmd == QLatin1String( "showurlinframe" )
               && arg.count() > 1 )
     {
-        kdDebug(6100) << "url = " << arg[0] << ", frame = " << arg[1] << endl;
+        kDebug(6100) << "url = " << arg[0] << ", frame = " << arg[1] << endl;
         emit showDocument( arg[0], arg[1] );
     }
     else if ( cmd == QLatin1String( "showdocument" )
               && !arg.empty() )
     {
-        kdDebug(6100) << "url = " << arg.first() << endl;
+        kDebug(6100) << "url = " << arg.first() << endl;
         emit showDocument( arg.first(), "_top" );
     }
     else if ( cmd == QLatin1String( "resizeapplet" )
@@ -171,7 +171,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
 
         if( !ok )
         {
-            kdError(DEBUGAREA) << "could not parse out parameters for resize" << endl;
+            kError(DEBUGAREA) << "could not parse out parameters for resize" << endl;
         }
         else
         {
@@ -181,7 +181,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         }
     }
     else if (cmd.startsWith(QLatin1String("audioclip_"))) {
-        kdDebug(DEBUGAREA) << "process Audio command (not yet implemented): " << cmd  << " " << arg[0] << endl;
+        kDebug(DEBUGAREA) << "process Audio command (not yet implemented): " << cmd  << " " << arg[0] << endl;
     }
     else if ( cmd == QLatin1String( "JS_Event" )
               && arg.count() > 2 )
@@ -196,7 +196,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
             applet->jsData(js_args);
         }
         else
-            kdError(DEBUGAREA) << "parse JS event " << arg[0] << " " << arg[1] << endl;
+            kError(DEBUGAREA) << "parse JS event " << arg[0] << " " << arg[1] << endl;
     }
     else if ( cmd == QLatin1String( "AppletStateNotification" ) )
     {
@@ -212,15 +212,15 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
                 {
                     applet->stateChange(newState);
                     if (newState == KJavaApplet::INITIALIZED) {
-                        kdDebug(DEBUGAREA) << "emit appletLoaded" << endl;
+                        kDebug(DEBUGAREA) << "emit appletLoaded" << endl;
                         emit appletLoaded();
                     }
                 } else
-                    kdError(DEBUGAREA) << "AppletStateNotification: status is not numerical" << endl;
+                    kError(DEBUGAREA) << "AppletStateNotification: status is not numerical" << endl;
             } else
-                kdWarning(DEBUGAREA) << "AppletStateNotification:  No such Applet with ID=" << arg[0] << endl;
+                kWarning(DEBUGAREA) << "AppletStateNotification:  No such Applet with ID=" << arg[0] << endl;
         } else
-            kdError(DEBUGAREA) << "AppletStateNotification: Applet ID is not numerical" << endl;
+            kError(DEBUGAREA) << "AppletStateNotification: Applet ID is not numerical" << endl;
     }
     else if ( cmd == QLatin1String( "AppletFailed" ) ) {
         bool ok;

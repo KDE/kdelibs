@@ -95,7 +95,7 @@ void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
 
     propList->append(prop);
 #ifdef CSS_DEBUG
-    kdDebug( 6080 ) << "added property: " << getPropertyName(propId).string()
+    kDebug( 6080 ) << "added property: " << getPropertyName(propId).string()
                     // non implemented yet << ", value: " << parsedValue->cssText().string()
                     << " important: " << prop->m_bImportant
                     << " nonCSS: " << prop->nonCSSHint << endl;
@@ -122,12 +122,12 @@ StyleListImpl::~StyleListImpl()
 
 void CSSSelector::print(void)
 {
-    kdDebug( 6080 ) << "[Selector: tag = " <<       QString::number(tag,16) << ", attr = \"" << attr << "\", match = \"" << match
+    kDebug( 6080 ) << "[Selector: tag = " <<       QString::number(tag,16) << ", attr = \"" << attr << "\", match = \"" << match
 		    << "\" value = \"" << value.string().latin1() << "\" relation = " << (int)relation
 		    << "]" << endl;
     if ( tagHistory )
         tagHistory->print();
-    kdDebug( 6080 ) << "    specificity = " << specificity() << endl;
+    kDebug( 6080 ) << "    specificity = " << specificity() << endl;
 }
 
 unsigned int CSSSelector::specificity() const
@@ -386,7 +386,7 @@ DOMString CSSSelector::selectorText() const
                 str += "*=";
                 break;
             default:
-                kdWarning(6080) << "Unhandled case in CSSStyleRuleImpl::selectorText : match=" << cs->match << endl;
+                kWarning(6080) << "Unhandled case in CSSStyleRuleImpl::selectorText : match=" << cs->match << endl;
             }
             str += "\"";
             str += cs->value;

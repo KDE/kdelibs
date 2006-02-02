@@ -82,10 +82,10 @@ QString Lock::lockFileName() const
 
 bool Lock::lock()
 {
-  kdDebug(5700) << "Lock::lock()" << endl;
+  kDebug(5700) << "Lock::lock()" << endl;
 
   QString lockName = lockFileName();
-  kdDebug(5700) << "-- lock name: " << lockName << endl;
+  kDebug(5700) << "-- lock name: " << lockName << endl;
 
   if ( QFile::exists( lockName ) ) {  // check if it is a stale lock file
     int pid;
@@ -99,7 +99,7 @@ bool Lock::lock()
     int retval = ::kill( pid, 0 );
     if ( retval == -1 && errno == ESRCH ) { // process doesn't exists anymore
       QFile::remove( lockName );
-      kdWarning(5700) << "Removed stale lock file from process '" << app << "'"
+      kWarning(5700) << "Removed stale lock file from process '" << app << "'"
                       << endl;
     } else {
       QString identifier( mIdentifier );
@@ -114,7 +114,7 @@ bool Lock::lock()
   QString lockUniqueName;
   lockUniqueName = mIdentifier + KRandom::randomString( 8 );
   mLockUniqueName = locateLocal( "data", "kabc/lock/" + lockUniqueName );
-  kdDebug(5700) << "-- lock unique name: " << mLockUniqueName << endl;
+  kDebug(5700) << "-- lock unique name: " << mLockUniqueName << endl;
 
   // Create unique file
   writeLockFile( mLockUniqueName );
@@ -147,7 +147,7 @@ bool Lock::unlock()
     } else {
       mError = i18n("Unlock failed. Lock file is owned by other process: %1 (%2)")
                .arg( app ).arg( QString::number( pid ) );
-      kdDebug() << "Lock::unlock(): " << mError << endl;
+      kDebug() << "Lock::unlock(): " << mError << endl;
       return false;
     }
   }

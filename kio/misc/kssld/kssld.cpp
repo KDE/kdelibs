@@ -189,7 +189,7 @@ KSSLCNode *node;
 			for (KSSLCertificate *c = cl.first();
 							c != 0;
 							c = cl.next()) {
-				//kdDebug() << "Certificate in chain: "
+				//kDebug() << "Certificate in chain: "
 				//	    <<  c->toString() << endl;
 				qsl << c->toString();
 			}
@@ -904,7 +904,7 @@ QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 	QStringList rc;
 	QMap<QString, QVector<KSSLCertificate*> >::iterator it = skEmail.find(email.toLower());
 
-	kdDebug() << "GETKDEKey " << email.latin1() << endl;
+	kDebug() << "GETKDEKey " << email.latin1() << endl;
 
 	if (it == skEmail.end())
 		return rc;
@@ -917,7 +917,7 @@ QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 		}
 	}
 
-	kdDebug() << "ergebnisse: " << rc.size() << " " << elem.size() << endl;
+	kDebug() << "ergebnisse: " << rc.size() << " " << elem.size() << endl;
 	return rc;
 }
 
@@ -925,13 +925,13 @@ QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 KSSLCertificate KSSLD::getCertByMD5Digest(const QString &key) {
 	QMap<QString, KSSLCertificate *>::iterator iter = skMD5Digest.find(key);
 	
-	kdDebug() << "Searching cert for " << key.latin1() << endl;
+	kDebug() << "Searching cert for " << key.latin1() << endl;
 
 	if (iter != skMD5Digest.end())
 		return **iter;
 	
 	KSSLCertificate rc; // FIXME: Better way to return a not found condition?
-	kdDebug() << "Not found: " << rc.toString().latin1() << endl;
+	kDebug() << "Not found: " << rc.toString().latin1() << endl;
 	return rc;
 }	
 

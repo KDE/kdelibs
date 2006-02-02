@@ -147,7 +147,7 @@ QString& KJavaApplet::archives()
 
 void KJavaApplet::resizeAppletWidget( int width, int height )
 {
-    kdDebug(6100) << "KJavaApplet, id = " << id << ", ::resizeAppletWidget to " << width << ", " << height << endl;
+    kDebug(6100) << "KJavaApplet, id = " << id << ", ::resizeAppletWidget to " << width << ", " << height << endl;
 
     QStringList sl;
     sl.push_back( QString::number( 0 ) ); // applet itself has id 0
@@ -253,7 +253,7 @@ void KJavaApplet::stateChange( const int newStateInt ) {
     if (ok) {
         d->state = newState;
     } else {
-        kdError(6100) << "KJavaApplet::stateChange : don't want to switch from state "
+        kError(6100) << "KJavaApplet::stateChange : don't want to switch from state "
             << d->state << " to " << newState << endl;
     } 
 }

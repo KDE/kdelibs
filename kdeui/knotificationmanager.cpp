@@ -58,7 +58,7 @@ KNotificationManager::KNotificationManager() : DCOPObject("KNotification") , d(n
 					  "actionInvoked (int,int)", 
 					  "notificationActivated(int,int)", false);
 	
-	kdDebug() << k_funcinfo << b1 << " " << b2 << endl;
+	kDebug() << k_funcinfo << b1 << " " << b2 << endl;
 }
 
 
@@ -71,7 +71,7 @@ KNotificationManager::~KNotificationManager()
 
 ASYNC KNotificationManager::notificationActivated( int id, int action )
 {
-	kdDebug() << k_funcinfo << id << " " << action << endl;
+	kDebug() << k_funcinfo << id << " " << action << endl;
 	if(d->notifications.contains(id))
 	{
 		KNotification *n = d->notifications[id];
@@ -99,14 +99,14 @@ void KNotificationManager::close( int id)
 	arg << id;
 	if (!client->send("knotify", "Notify", "closeNotification( int)", data))
 	{
-		kdDebug() << k_funcinfo << "error while contacting knotify server" << endl;
+		kDebug() << k_funcinfo << "error while contacting knotify server" << endl;
 	}
 }
 
 unsigned int KNotificationManager::notify( KNotification* n , const QPixmap &pix , const QStringList &actions , 
 										   const KNotification::ContextList & contexts , const QString &appname)
 {
-	kdDebug() << k_funcinfo << endl;
+	kDebug() << k_funcinfo << endl;
 	WId winId=n->widget() ? n->widget()->topLevelWidget()->winId()  : 0;
 
 	DCOPClient *client=KApplication::dcopClient();
@@ -117,7 +117,7 @@ unsigned int KNotificationManager::notify( KNotification* n , const QPixmap &pix
 	if (!client->call("knotify", "Notify", "event(QString,QString,ContextList,QString,QPixmap,QStringList,int)" ,
 		 	 data, replyType, replyData))
 	{
-		kdDebug() << k_funcinfo << "error while contacting knotify server" << endl;
+		kDebug() << k_funcinfo << "error while contacting knotify server" << endl;
 	}
 	else 
 	{
@@ -127,11 +127,11 @@ unsigned int KNotificationManager::notify( KNotification* n , const QPixmap &pix
 			int result;
 			reply >> result;
 			d->notifications.insert(result, n);
-			kdDebug() << k_funcinfo << "got id " << result << endl;
+			kDebug() << k_funcinfo << "got id " << result << endl;
 			return result;
 		}
 		else
-			kdDebug() << k_funcinfo << "bad reply from server" << endl;
+			kDebug() << k_funcinfo << "bad reply from server" << endl;
 	}
 	return 0;
 }

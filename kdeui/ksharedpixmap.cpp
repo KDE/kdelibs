@@ -147,7 +147,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     if ((ev->target != d->pixmap) || (ev->property == None))
     {
-	kdWarning(270) << k_funcinfo << "illegal selection notify event.\n";
+	kWarning(270) << k_funcinfo << "illegal selection notify event.\n";
 	d->selection = None;
 	emit done(false);
 	return true;
@@ -166,7 +166,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     if (nitems != 1)
     {
-	kdWarning(270) << k_funcinfo << "could not read property, nitems = " << nitems << "\n";
+	kWarning(270) << k_funcinfo << "could not read property, nitems = " << nitems << "\n";
 	emit done(false);
 	return true;
     }

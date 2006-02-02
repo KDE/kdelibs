@@ -79,7 +79,7 @@ bool K3KeySequence::init( const K3KeySequence& seq )
 	m_nKeys = seq.m_nKeys;
 	for( uint i = 0; i < m_nKeys; i++ ) {
 		if( seq.m_rgkey[i].isNull() ) {
-			kdDebug(125) << "K3KeySequence::init( seq ): key[" << i << "] is null." << endl;
+			kDebug(125) << "K3KeySequence::init( seq ): key[" << i << "] is null." << endl;
 			m_nKeys = 0;
 			return false;
 		}
@@ -91,7 +91,7 @@ bool K3KeySequence::init( const K3KeySequence& seq )
 bool K3KeySequence::init( const QString& s )
 {
 	m_bTriggerOnRelease = false;
-	//kdDebug(125) << "K3KeySequence::init( " << s << " )" << endl;
+	//kDebug(125) << "K3KeySequence::init( " << s << " )" << endl;
 	QStringList rgs = QStringList::split( ',', s );
 	if( s == "none" || rgs.size() == 0 ) {
 		clear();
@@ -100,7 +100,7 @@ bool K3KeySequence::init( const QString& s )
 		m_nKeys = rgs.size();
 		for( uint i = 0; i < m_nKeys; i++ ) {
 			m_rgkey[i].init( KKey(rgs[i]) );
-			//kdDebug(125) << "\t'" << rgs[i] << "' => " << m_rgkey[i].toStringInternal() << endl;
+			//kDebug(125) << "\t'" << rgs[i] << "' => " << m_rgkey[i].toStringInternal() << endl;
 		}
 		return true;
 	} else {

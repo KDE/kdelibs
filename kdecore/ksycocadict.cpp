@@ -109,11 +109,11 @@ KSycocaDict::remove(const QString &key)
 int
 KSycocaDict::find_string(const QString &key )
 {
-   //kdDebug(7011) << QString("KSycocaDict::find_string(%1)").arg(key) << endl;
+   //kDebug(7011) << QString("KSycocaDict::find_string(%1)").arg(key) << endl;
 
    if (!mStr || !mOffset)
    {
-      kdError(7011) << "No database available!" << endl;
+      kError(7011) << "No database available!" << endl;
       return 0;
    }
 
@@ -122,16 +122,16 @@ KSycocaDict::find_string(const QString &key )
 
    // Read hash-table data
    uint hash = hashKey(key) % mHashTableSize;
-   //kdDebug(7011) << QString("hash is %1").arg(hash) << endl;
+   //kDebug(7011) << QString("hash is %1").arg(hash) << endl;
 
    uint off = mOffset+sizeof(qint32)*hash;
-   //kdDebug(7011) << QString("off is %1").arg(off,8,16) << endl;
+   //kDebug(7011) << QString("off is %1").arg(off,8,16) << endl;
    mStr->device()->seek( off );
 
    qint32 offset;
    (*mStr) >> offset;
 
-   //kdDebug(7011) << QString("offset is %1").arg(offset,8,16) << endl;
+   //kDebug(7011) << QString("offset is %1").arg(offset,8,16) << endl;
    if (offset == 0)
       return 0;
 
@@ -142,7 +142,7 @@ KSycocaDict::find_string(const QString &key )
    offset = -offset;
 
    mStr->device()->seek(offset);
-   //kdDebug(7011) << QString("Looking up duplicate list at %1").arg(offset,8,16) << endl;
+   //kDebug(7011) << QString("Looking up duplicate list at %1").arg(offset,8,16) << endl;
 
    while(true)
    {
@@ -150,10 +150,10 @@ KSycocaDict::find_string(const QString &key )
        if (offset == 0) break;
        QString dupkey;
        (*mStr) >> dupkey;
-       //kdDebug(7011) << QString(">> %1 %2").arg(offset,8,16).arg(dupkey) << endl;
+       //kDebug(7011) << QString(">> %1 %2").arg(offset,8,16).arg(dupkey) << endl;
        if (dupkey == key) return offset;
    }
-   //kdWarning(7011) << "Not found!" << endl;
+   //kWarning(7011) << "Not found!" << endl;
 
    return 0;
 }
@@ -285,12 +285,12 @@ KSycocaDict::save(QDataStream &str)
 
    mOffset = str.device()->pos();
 
-   //kdDebug(7011) << QString("KSycocaDict: %1 entries.").arg(count()) << endl;
+   //kDebug(7011) << QString("KSycocaDict: %1 entries.").arg(count()) << endl;
 
-   //kdDebug(7011) << "Calculating hash keys.." << endl;
+   //kDebug(7011) << "Calculating hash keys.." << endl;
 
    int maxLength = 0;
-   //kdDebug(7011) << "Finding maximum string length" << endl;
+   //kDebug(7011) << "Finding maximum string length" << endl;
    for(KSycocaDictStringList::Iterator it = d->begin(); it != d->end(); ++it)
    {
       string_entry* entry = *it;
@@ -299,7 +299,7 @@ KSycocaDict::save(QDataStream &str)
          maxLength = entry->length;
    }
 
-   //kdDebug(7011) << QString("Max string length = %1").arg(maxLength) << endl;
+   //kDebug(7011) << QString("Max string length = %1").arg(maxLength) << endl;
 
    // use "almost prime" number for sz (to calculate diversity) and later
    // for the table size of big tables
@@ -369,14 +369,14 @@ KSycocaDict::save(QDataStream &str)
 
    hashtable_entry *hashTable = new hashtable_entry[ sz ];
 
-   //kdDebug(7011) << "Clearing hashtable..." << endl;
+   //kDebug(7011) << "Clearing hashtable..." << endl;
    for (unsigned int i=0; i < sz; i++)
    {
       hashTable[i].entry = 0;
       hashTable[i].duplicates = 0;
    }
 
-   //kdDebug(7011) << "Filling hashtable..." << endl;
+   //kDebug(7011) << "Filling hashtable..." << endl;
    for(KSycocaDictStringList::Iterator it = d->begin(); it != d->end(); ++it)
    {
       string_entry* entry = *it;
@@ -401,7 +401,7 @@ KSycocaDict::save(QDataStream &str)
    str << mHashList;
 
    mOffset = str.device()->pos(); // mOffset points to start of hashTable
-   //kdDebug(7011) << QString("Start of Hash Table, offset = %1").arg(mOffset,8,16) << endl;
+   //kDebug(7011) << QString("Start of Hash Table, offset = %1").arg(mOffset,8,16) << endl;
 
    // Write the hashtable + the duplicates twice.
    // The duplicates are after the normal hashtable, but the offset of each
@@ -409,7 +409,7 @@ KSycocaDict::save(QDataStream &str)
    for(int pass = 1; pass <= 2; pass++)
    {
       str.device()->seek(mOffset);
-      //kdDebug(7011) << QString("Writing hash table (pass #%1)").arg(pass) << endl;
+      //kDebug(7011) << QString("Writing hash table (pass #%1)").arg(pass) << endl;
       for(uint i=0; i < mHashTableSize; i++)
       {
          qint32 tmpid;
@@ -420,11 +420,11 @@ KSycocaDict::save(QDataStream &str)
          else
             tmpid = (qint32) -hashTable[i].duplicate_offset; // Negative ID
          str << tmpid;
-         //kdDebug(7011) << QString("Hash table : %1").arg(tmpid,8,16) << endl;
+         //kDebug(7011) << QString("Hash table : %1").arg(tmpid,8,16) << endl;
       }
-      //kdDebug(7011) << QString("End of Hash Table, offset = %1").arg(str.device()->at(),8,16) << endl;
+      //kDebug(7011) << QString("End of Hash Table, offset = %1").arg(str.device()->at(),8,16) << endl;
 
-      //kdDebug(7011) << QString("Writing duplicate lists (pass #%1)").arg(pass) << endl;
+      //kDebug(7011) << QString("Writing duplicate lists (pass #%1)").arg(pass) << endl;
       for(uint i=0; i < mHashTableSize; i++)
       {
          QList<string_entry*> *dups = hashTable[i].duplicates;
@@ -432,7 +432,7 @@ KSycocaDict::save(QDataStream &str)
          {
             hashTable[i].duplicate_offset = str.device()->pos();
 
-            /*kdDebug(7011) << QString("Duplicate lists: Offset = %1 list_size = %2")                           .arg(hashTable[i].duplicate_offset,8,16).arg(dups->count()) << endl;
+            /*kDebug(7011) << QString("Duplicate lists: Offset = %1 list_size = %2")                           .arg(hashTable[i].duplicate_offset,8,16).arg(dups->count()) << endl;
 */
 	    for(QList<string_entry*>::Iterator dup = dups->begin(); dup != dups->end(); ++dup)
             {
@@ -444,10 +444,10 @@ KSycocaDict::save(QDataStream &str)
             str << (qint32) 0;               // End of list marker (0)
          }
       }
-      //kdDebug(7011) << QString("End of Dict, offset = %1").arg(str.device()->at(),8,16) << endl;
+      //kDebug(7011) << QString("End of Dict, offset = %1").arg(str.device()->at(),8,16) << endl;
    }
 
-   //kdDebug(7011) << "Cleaning up hash table." << endl;
+   //kDebug(7011) << "Cleaning up hash table." << endl;
    for(uint i=0; i < mHashTableSize; i++)
    {
       delete hashTable[i].duplicates;

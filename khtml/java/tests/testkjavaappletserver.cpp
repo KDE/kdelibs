@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     path = args->getOption("kdelibspath");
     if (path.isEmpty())
     {
-      kdWarning() << "you need to specify a path to your kdelibs source dir, see \"--help\"" << endl;
+      kWarning() << "you need to specify a path to your kdelibs source dir, see \"--help\"" << endl;
       return -1;
     }
 #else

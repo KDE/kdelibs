@@ -254,13 +254,13 @@ void KProcess::clearArguments()
 bool KProcess::start(RunMode runmode, Communication comm)
 {
   if (runs) {
-    kdDebug(175) << "Attempted to start an already running process" << endl;
+    kDebug(175) << "Attempted to start an already running process" << endl;
     return false;
   }
 
   uint n = arguments.count();
   if (n == 0) {
-    kdDebug(175) << "Attempted to start a process without arguments" << endl;
+    kDebug(175) << "Attempted to start a process without arguments" << endl;
     return false;
   }
 #ifdef Q_OS_UNIX
@@ -269,7 +269,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   if (d->useShell)
   {
       if (d->shell.isEmpty()) {
-        kdDebug(175) << "Invalid shell specified" << endl;
+        kDebug(175) << "Invalid shell specified" << endl;
         return false;
       }
 
@@ -296,7 +296,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
   if (!setupCommunication(comm))
   {
-      kdDebug(175) << "Could not setup Communication!" << endl;
+      kDebug(175) << "Could not setup Communication!" << endl;
       free(arglist);
       return false;
   }
@@ -325,7 +325,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
         fcntl(fd[1], F_SETFD, FD_CLOEXEC);
 
         if (!commSetupDoneC())
-          kdDebug(175) << "Could not finish comm setup in child!" << endl;
+          kDebug(175) << "Could not finish comm setup in child!" << endl;
 
         // reset all signal handlers
         struct sigaction act;
@@ -373,7 +373,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   free(arglist);
 
   if (!commSetupDoneP())
-    kdDebug(175) << "Could not finish comm setup in parent!" << endl;
+    kDebug(175) << "Could not finish comm setup in parent!" << endl;
 
   // Check whether client could be started.
   close(fd[1]);
@@ -711,7 +711,7 @@ void KProcess::slotSendData(int)
     }
     else if ((errno != EAGAIN) && (errno != EINTR))
     {
-       kdDebug(175) << "Error writing to stdin of child process" << endl;
+       kDebug(175) << "Error writing to stdin of child process" << endl;
        closeStdin();
     }
   }
@@ -834,7 +834,7 @@ int KProcess::setupCommunication(Communication comm)
   {
     // cannot communicate on both stderr and stdout if they are both on the pty
     if (!(~(comm & d->usePty) & (Stdout | Stderr))) {
-       kdWarning(175) << "Invalid usePty/communication combination (" << d->usePty << "/" << comm << ")" << endl;
+       kWarning(175) << "Invalid usePty/communication combination (" << d->usePty << "/" << comm << ")" << endl;
        return 0;
     }
     if (!d->pty->open())

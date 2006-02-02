@@ -455,9 +455,9 @@ if (c) {
 	d->kossl->X509_check_purpose(c, -1, 0);    // setup the fields (!!)
 
 #if 0
-	kdDebug(7029) << "---------------- Certificate ------------------" 
+	kDebug(7029) << "---------------- Certificate ------------------" 
 		      << endl;
-	kdDebug(7029) << getSubject() << endl;
+	kDebug(7029) << getSubject() << endl;
 #endif
 
 	for (int j = 0; j < d->kossl->X509_PURPOSE_get_count(); j++) {
@@ -466,7 +466,7 @@ if (c) {
 		for (int ca = 0; ca < 2; ca++) {
 			int idret = d->kossl->X509_check_purpose(c, id, ca);
 			if (idret == 1 || idret == 2) {   // have it
-//				kdDebug() << "PURPOSE: " << id << (ca?" CA":"") << endl;
+//				kDebug() << "PURPOSE: " << id << (ca?" CA":"") << endl;
 				if (!ca)
 					d->_extensions.flags |= (1L <<(id-1));
 				else d->_extensions.flags |= (1L <<(16+id-1));
@@ -479,64 +479,64 @@ if (c) {
 	}
 
 #if 0
-	kdDebug(7029) << "flags: " << QString::number(c->ex_flags, 2)
+	kDebug(7029) << "flags: " << QString::number(c->ex_flags, 2)
 		      << "\nkeyusage: " << QString::number(c->ex_kusage, 2)
 		      << "\nxkeyusage: " << QString::number(c->ex_xkusage, 2)
 		      << "\nnscert: " << QString::number(c->ex_nscert, 2)
 		      << endl;
 	if (c->ex_flags & EXFLAG_KUSAGE)
-		kdDebug(7029) << "     --- Key Usage extensions found" << endl;
-        else kdDebug(7029) << "     --- Key Usage extensions NOT found" << endl;
+		kDebug(7029) << "     --- Key Usage extensions found" << endl;
+        else kDebug(7029) << "     --- Key Usage extensions NOT found" << endl;
 
 	if (c->ex_flags & EXFLAG_XKUSAGE)
-		kdDebug(7029) << "     --- Extended key usage extensions found" << endl;
-        else kdDebug(7029) << "     --- Extended key usage extensions NOT found" << endl;
+		kDebug(7029) << "     --- Extended key usage extensions found" << endl;
+        else kDebug(7029) << "     --- Extended key usage extensions NOT found" << endl;
 
 	if (c->ex_flags & EXFLAG_NSCERT)
-		kdDebug(7029) << "     --- NS extensions found" << endl;
-        else kdDebug(7029) << "     --- NS extensions NOT found" << endl;
+		kDebug(7029) << "     --- NS extensions found" << endl;
+        else kDebug(7029) << "     --- NS extensions NOT found" << endl;
 
         if (d->_extensions.certTypeSSLCA())
-                kdDebug(7029) << "NOTE: this is an SSL CA file." << endl;
-        else kdDebug(7029) << "NOTE: this is NOT an SSL CA file." << endl;
+                kDebug(7029) << "NOTE: this is an SSL CA file." << endl;
+        else kDebug(7029) << "NOTE: this is NOT an SSL CA file." << endl;
 
         if (d->_extensions.certTypeEmailCA())
-                kdDebug(7029) << "NOTE: this is an EMAIL CA file." << endl;
-        else kdDebug(7029) << "NOTE: this is NOT an EMAIL CA file." << endl;
+                kDebug(7029) << "NOTE: this is an EMAIL CA file." << endl;
+        else kDebug(7029) << "NOTE: this is NOT an EMAIL CA file." << endl;
 
         if (d->_extensions.certTypeCodeCA())
-                kdDebug(7029) << "NOTE: this is a CODE CA file." << endl;
-        else kdDebug(7029) << "NOTE: this is NOT a CODE CA file." << endl;
+                kDebug(7029) << "NOTE: this is a CODE CA file." << endl;
+        else kDebug(7029) << "NOTE: this is NOT a CODE CA file." << endl;
 
         if (d->_extensions.certTypeSSLClient())
-                kdDebug(7029) << "NOTE: this is an SSL client." << endl;
-        else kdDebug(7029) << "NOTE: this is NOT an SSL client." << endl;
+                kDebug(7029) << "NOTE: this is an SSL client." << endl;
+        else kDebug(7029) << "NOTE: this is NOT an SSL client." << endl;
 
         if (d->_extensions.certTypeSSLServer())
-                kdDebug(7029) << "NOTE: this is an SSL server." << endl;
-        else kdDebug(7029) << "NOTE: this is NOT an SSL server." << endl;
+                kDebug(7029) << "NOTE: this is an SSL server." << endl;
+        else kDebug(7029) << "NOTE: this is NOT an SSL server." << endl;
 
         if (d->_extensions.certTypeNSSSLServer())
-                kdDebug(7029) << "NOTE: this is a NETSCAPE SSL server." << endl;
-        else kdDebug(7029) << "NOTE: this is NOT a NETSCAPE SSL server." << endl;
+                kDebug(7029) << "NOTE: this is a NETSCAPE SSL server." << endl;
+        else kDebug(7029) << "NOTE: this is NOT a NETSCAPE SSL server." << endl;
 
         if (d->_extensions.certTypeSMIME())
-                kdDebug(7029) << "NOTE: this is an SMIME certificate." << endl;
-        else kdDebug(7029) << "NOTE: this is NOT an SMIME certificate." << endl;
+                kDebug(7029) << "NOTE: this is an SMIME certificate." << endl;
+        else kDebug(7029) << "NOTE: this is NOT an SMIME certificate." << endl;
 
         if (d->_extensions.certTypeSMIMEEncrypt())
-                kdDebug(7029) << "NOTE: this is an SMIME encrypt cert." << endl;
-        else kdDebug(7029) << "NOTE: this is NOT an SMIME encrypt cert." << endl;
+                kDebug(7029) << "NOTE: this is an SMIME encrypt cert." << endl;
+        else kDebug(7029) << "NOTE: this is NOT an SMIME encrypt cert." << endl;
 
         if (d->_extensions.certTypeSMIMESign())
-                kdDebug(7029) << "NOTE: this is an SMIME sign cert." << endl;
-        else kdDebug(7029) << "NOTE: this is NOT an SMIME sign cert." << endl;
+                kDebug(7029) << "NOTE: this is an SMIME sign cert." << endl;
+        else kDebug(7029) << "NOTE: this is NOT an SMIME sign cert." << endl;
 
         if (d->_extensions.certTypeCRLSign())
-                kdDebug(7029) << "NOTE: this is a CRL signer." << endl;
-        else kdDebug(7029) << "NOTE: this is NOT a CRL signer." << endl;
+                kDebug(7029) << "NOTE: this is a CRL signer." << endl;
+        else kDebug(7029) << "NOTE: this is NOT a CRL signer." << endl;
 
-	kdDebug(7029) << "-----------------------------------------------" 
+	kDebug(7029) << "-----------------------------------------------" 
 		      << endl;
 #endif
 }
@@ -671,7 +671,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 
 		if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
 			// error accessing directory and loading pems
-			kdDebug(7029) << "KSSL couldn't read CA root: " 
+			kDebug(7029) << "KSSL couldn't read CA root: " 
 					<< _j << endl;
 			ksslv = KSSLCertificate::ErrorReadingRoot;
 			d->kossl->X509_STORE_free(certStore);
@@ -684,7 +684,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		// this is a bad error - could mean no free memory.
 		// This may be the wrong thing to do here
 		if (!certStoreCTX) {
-			kdDebug(7029) << "KSSL couldn't create an X509 store context." << endl;
+			kDebug(7029) << "KSSL couldn't create an X509 store context." << endl;
 			d->kossl->X509_STORE_free(certStore);
 			continue;
 		}
@@ -694,7 +694,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 			d->kossl->X509_STORE_CTX_set_chain(certStoreCTX, (STACK_OF(X509)*)d->_chain.rawChain());
 		}
 
-		//kdDebug(7029) << "KSSL setting CRL.............." << endl;
+		//kDebug(7029) << "KSSL setting CRL.............." << endl;
 		// int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x);
 
 		d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX, purposeToOpenSSL(purpose));
@@ -727,11 +727,11 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		// end of checking code
 		//
 
-		//kdDebug(7029) << "KSSL Validation procedure RC: " 
+		//kDebug(7029) << "KSSL Validation procedure RC: " 
 		//		<< rc << endl;
-		//kdDebug(7029) << "KSSL Validation procedure errcode: "
+		//kDebug(7029) << "KSSL Validation procedure errcode: "
 		//		<< errcode << endl;
-		//kdDebug(7029) << "KSSL Validation procedure RESULTS: "
+		//kDebug(7029) << "KSSL Validation procedure RESULTS: "
 		//		<< ksslv << endl;
 
 		if (ksslv != NoCARoot && ksslv != InvalidCA) {
@@ -829,7 +829,7 @@ rc = KSSLCertificate::Unknown;
 	case X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD:
 	case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
 		rc = KSSLCertificate::Expired;
-		kdDebug(7029) << "KSSL apparently this is expired.  Not after: "
+		kDebug(7029) << "KSSL apparently this is expired.  Not after: "
 				<< getNotAfter() << endl;
 	break;
 

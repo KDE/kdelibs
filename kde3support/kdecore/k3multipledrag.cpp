@@ -30,7 +30,7 @@ K3MultipleDrag::K3MultipleDrag( QWidget *dragSource, const char *name )
 
 void K3MultipleDrag::addDragObject( Q3DragObject *dragObject )
 {
-    //kdDebug() << "K3MultipleDrag::addDragObject" << endl;
+    //kDebug() << "K3MultipleDrag::addDragObject" << endl;
     m_dragObjects.append( dragObject );
     // We need to find out how many formats this dragObject supports
     int i = 0;
@@ -41,7 +41,7 @@ void K3MultipleDrag::addDragObject( Q3DragObject *dragObject )
 
 QByteArray K3MultipleDrag::encodedData( const char *mime ) const
 {
-    //kdDebug() << "K3MultipleDrag::encodedData " << mime << endl;
+    //kDebug() << "K3MultipleDrag::encodedData " << mime << endl;
     // Iterate over the drag objects, and find the format in the right one
     Q3PtrListIterator<Q3DragObject> it( m_dragObjects );
     for ( ; it.current(); ++it )
@@ -57,7 +57,7 @@ QByteArray K3MultipleDrag::encodedData( const char *mime ) const
 
 const char* K3MultipleDrag::format( int i ) const
 {
-    //kdDebug() << "K3MultipleDrag::format " << i << endl;
+    //kDebug() << "K3MultipleDrag::format " << i << endl;
     // example: m_numberFormats: 1, 4
     //          m_dragObjects: storeddrag, textdrag
     // i=0 -> storeddrag->format( 0 )

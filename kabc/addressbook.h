@@ -474,7 +474,7 @@ class KABC_EXPORT AddressBook : public QObject
 
     /**
       Used for debug output. This function prints out the list
-      of all addressees to kdDebug(5700).
+      of all addressees to kDebug(5700).
      */
     void dump() const;
 

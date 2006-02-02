@@ -90,7 +90,7 @@ static void printError(const QString& text, QString* error)
     if (error)
         *error = text;
     else
-        kdError() << text << endl;
+        kError() << text << endl;
 }
 
 
@@ -181,7 +181,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
                QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
                i18n("Could not launch the KDE Help Center:\n\n%1").arg(error), i18n("&OK"));
            else
-               kdWarning() << "Could not launch help:\n" << error << endl;
+               kWarning() << "Could not launch help:\n" << error << endl;
 	   return;
 #endif
        }
@@ -271,7 +271,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
         if (commentlevel > 0)
           commentlevel--;
         else {
-          //kdDebug() << "Error in address splitting: Unmatched ')'"
+          //kDebug() << "Error in address splitting: Unmatched ')'"
           //          << endl;
           return list;
         }
@@ -297,7 +297,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
       list += addr.simplified();
   }
   //else
-  //  kdDebug() << "Error in address splitting: "
+  //  kDebug() << "Error in address splitting: "
   //            << "Unexpected end of address list"
   //            << endl;
 
@@ -440,7 +440,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
        QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Mail Client"),
              i18n("Could not launch the mail client:\n\n%1").arg(error), i18n("&OK"));
      else
-       kdWarning() << "Could not launch mail client:\n" << error << endl;
+       kWarning() << "Could not launch mail client:\n" << error << endl;
 #endif
 }
 
@@ -461,7 +461,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
           QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Browser"),
                i18n("Could not launch the browser:\n\n%1").arg(error), i18n("&OK"));
       else
-          kdWarning() << "Could not launch browser:\n" << error << endl;
+          kWarning() << "Could not launch browser:\n" << error << endl;
       return;
 #endif
    }

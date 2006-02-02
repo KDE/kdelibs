@@ -68,12 +68,12 @@ void JobTest::initTestCase()
     if ( !QFile::exists( homeTmpDir() ) ) {
         bool ok = dir.mkdir( homeTmpDir() );
         if ( !ok )
-            kdFatal() << "Couldn't create " << homeTmpDir() << endl;
+            kFatal() << "Couldn't create " << homeTmpDir() << endl;
     }
     if ( !QFile::exists( otherTmpDir() ) ) {
         bool ok = dir.mkdir( otherTmpDir() );
         if ( !ok )
-            kdFatal() << "Couldn't create " << otherTmpDir() << endl;
+            kFatal() << "Couldn't create " << otherTmpDir() << endl;
     }
 }
 
@@ -87,7 +87,7 @@ static void createTestFile( const QString& path )
 {
     QFile f( path );
     if ( !f.open( QIODevice::WriteOnly ) )
-        kdFatal() << "Can't create " << path << endl;
+        kFatal() << "Can't create " << path << endl;
     f.writeBlock( "Hello world", 11 );
     f.close();
 }
@@ -99,7 +99,7 @@ static void createTestSymlink( const QString& path )
     if ( KDE_lstat( QFile::encodeName( path ), &buf ) != 0 ) {
         bool ok = symlink( "/IDontExist", QFile::encodeName( path ) ) == 0; // broken symlink
         if ( !ok )
-            kdFatal() << "couldn't create symlink: " << strerror( errno ) << endl;
+            kFatal() << "couldn't create symlink: " << strerror( errno ) << endl;
         QVERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
         QVERIFY( S_ISLNK( buf.st_mode ) );
     } else {
@@ -114,7 +114,7 @@ static void createTestDirectory( const QString& path )
     QDir dir;
     bool ok = dir.mkdir( path );
     if ( !ok && !dir.exists() )
-        kdFatal() << "couldn't create " << path << endl;
+        kFatal() << "couldn't create " << path << endl;
     createTestFile( path + "/testfile" );
     createTestSymlink( path + "/testlink" );
     QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
@@ -130,7 +130,7 @@ void JobTest::enterLoop()
 
 void JobTest::get()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString filePath = homeTmpDir() + "fileFromHome";
     createTestFile( filePath );
     KUrl u; u.setPath( filePath );
@@ -193,7 +193,7 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& dest )
 
 void JobTest::copyFileToSamePartition()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = homeTmpDir() + "fileFromHome_copied";
     createTestFile( filePath );
@@ -202,7 +202,7 @@ void JobTest::copyFileToSamePartition()
 
 void JobTest::copyDirectoryToSamePartition()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = homeTmpDir() + "dirFromHome_copied";
     createTestDirectory( src );
@@ -211,7 +211,7 @@ void JobTest::copyDirectoryToSamePartition()
 
 void JobTest::copyFileToOtherPartition()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = otherTmpDir() + "fileFromHome_copied";
     createTestFile( filePath );
@@ -220,7 +220,7 @@ void JobTest::copyFileToOtherPartition()
 
 void JobTest::copyDirectoryToOtherPartition()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = homeTmpDir() + "dirFromHome_copied";
     // src is already created by copyDirectoryToSamePartition()
@@ -260,7 +260,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     // move the symlink with move, NOT with file_move
     bool ok = KIO::NetAccess::move( u, d );
     if ( !ok )
-        kdWarning() << KIO::NetAccess::lastError() << endl;
+        kWarning() << KIO::NetAccess::lastError() << endl;
     QVERIFY( ok );
     QVERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) == 0 );
     QVERIFY( !QFile::exists( src ) ); // not there anymore
@@ -274,7 +274,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
 
 void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 {
-    kdDebug() << k_funcinfo << src << " " << dest << endl;
+    kDebug() << k_funcinfo << src << " " << dest << endl;
     QVERIFY( QFile::exists( src ) );
     QVERIFY( QFileInfo( src ).isDir() );
     QVERIFY( QFileInfo( src + "/testfile" ).isFile() );
@@ -296,7 +296,7 @@ void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 
 void JobTest::moveFileToSamePartition()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = homeTmpDir() + "fileFromHome_moved";
     createTestFile( filePath );
@@ -305,7 +305,7 @@ void JobTest::moveFileToSamePartition()
 
 void JobTest::moveDirectoryToSamePartition()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = homeTmpDir() + "dirFromHome_moved";
     createTestDirectory( src );
@@ -314,7 +314,7 @@ void JobTest::moveDirectoryToSamePartition()
 
 void JobTest::moveFileToOtherPartition()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = otherTmpDir() + "fileFromHome_moved";
     createTestFile( filePath );
@@ -323,7 +323,7 @@ void JobTest::moveFileToOtherPartition()
 
 void JobTest::moveSymlinkToOtherPartition()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString filePath = homeTmpDir() + "testlink";
     const QString dest = otherTmpDir() + "testlink_moved";
     createTestSymlink( filePath );
@@ -332,7 +332,7 @@ void JobTest::moveSymlinkToOtherPartition()
 
 void JobTest::moveDirectoryToOtherPartition()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = otherTmpDir() + "dirFromHome_moved";
     createTestDirectory( src );
@@ -341,7 +341,7 @@ void JobTest::moveDirectoryToOtherPartition()
 
 void JobTest::moveFileNoPermissions()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     const QString src = "/etc/passwd";
     const QString dest = homeTmpDir() + "passwd";
     QVERIFY( QFile::exists( src ) );
@@ -368,7 +368,7 @@ void JobTest::moveFileNoPermissions()
 
 void JobTest::moveDirectoryNoPermissions()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
 #if 0
     QString src = "/etc/cups";
     if ( !QFile::exists( src ) )

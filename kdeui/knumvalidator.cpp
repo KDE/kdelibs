@@ -351,7 +351,7 @@ QValidator::State KDoubleValidator::validate( QString & input, int & p ) const {
     if ( ( !n.isEmpty() && n.find('.') != -1 ) ||
 	 ( !d.isEmpty() && d.find('-') != -1 ) ) {
       // make sure we don't replace something twice:
-      kdWarning() << "KDoubleValidator: decimal symbol contains '-' or "
+      kWarning() << "KDoubleValidator: decimal symbol contains '-' or "
 		     "negative sign contains '.' -> improve algorithm" << endl;
       return Invalid;
     }

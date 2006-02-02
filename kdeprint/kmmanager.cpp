@@ -225,7 +225,7 @@ KMPrinter* KMManager::defaultPrinter()
 Q3PtrList<KMPrinter>* KMManager::printerList(bool reload)
 {
 	setErrorMsg(QString());
-	//kdDebug(500) << "Getting printer list: " << reload << endl;
+	//kDebug(500) << "Getting printer list: " << reload << endl;
 
 	if (reload || m_printers.count() == 0)
 	{

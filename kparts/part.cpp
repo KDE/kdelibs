@@ -149,7 +149,7 @@ Part::Part( QObject *parent )
 
 Part::~Part()
 {
-  kdDebug(1000) << "Part::~Part " << this << endl;
+  kDebug(1000) << "Part::~Part " << this << endl;
 
   if ( m_widget )
   {
@@ -163,7 +163,7 @@ Part::~Part()
 
   if ( m_widget )
   {
-    kdDebug(1000) << "deleting widget " << m_widget << " " << m_widget->name() << endl;
+    kDebug(1000) << "deleting widget " << m_widget << " " << m_widget->name() << endl;
     delete (QWidget*) m_widget;
   }
 
@@ -271,7 +271,7 @@ QWidget *Part::hostContainer( const QString &containerName )
 
 void Part::slotWidgetDestroyed()
 {
-  kdDebug(1000) << "KPart::slotWidgetDestroyed(), deleting part " << name() << endl;
+  kDebug(1000) << "KPart::slotWidgetDestroyed(), deleting part " << name() << endl;
   m_widget = 0;
   delete this;
 }
@@ -382,7 +382,7 @@ void ReadOnlyPart::abortLoad()
 {
   if ( d->m_job )
   {
-    //kdDebug(1000) << "Aborting job " << d->m_job << endl;
+    //kDebug(1000) << "Aborting job " << d->m_job << endl;
     d->m_job->kill();
     d->m_job = 0;
   }
@@ -405,7 +405,7 @@ bool ReadOnlyPart::closeURL()
 
 void ReadOnlyPart::slotJobFinished( KIO::Job * job )
 {
-  kdDebug(1000) << "ReadOnlyPart::slotJobFinished" << endl;
+  kDebug(1000) << "ReadOnlyPart::slotJobFinished" << endl;
   assert( job == d->m_job );
   d->m_job = 0;
   if (job->error())
@@ -424,7 +424,7 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
   {
     if (!m_url.isEmpty())
     {
-      kdDebug(1000) << "ReadOnlyPart::guiActivateEvent -> " << m_url.prettyURL() << endl;
+      kDebug(1000) << "ReadOnlyPart::guiActivateEvent -> " << m_url.prettyURL() << endl;
       emit setWindowCaption( m_url.prettyURL() );
     } else emit setWindowCaption( "" );
   }
@@ -477,10 +477,10 @@ void ReadWritePart::setReadWrite( bool readwrite )
 
 void ReadWritePart::setModified( bool modified )
 {
-  kdDebug(1000) << "ReadWritePart::setModified( " << (modified ? "true" : "false") << ")" << endl;
+  kDebug(1000) << "ReadWritePart::setModified( " << (modified ? "true" : "false") << ")" << endl;
   if ( !m_bReadWrite && modified )
   {
-      kdError(1000) << "Can't set a read-only document to 'modified' !" << endl;
+      kError(1000) << "Can't set a read-only document to 'modified' !" << endl;
       return;
   }
   m_bModified = modified;
@@ -566,7 +566,7 @@ bool ReadWritePart::saveAs( const KUrl & kurl )
 {
   if (!kurl.isValid())
   {
-      kdError(1000) << "saveAs: Malformed URL " << kurl.url() << endl;
+      kError(1000) << "saveAs: Malformed URL " << kurl.url() << endl;
       return false;
   }
   d->m_duringSaveAs = true;

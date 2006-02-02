@@ -176,13 +176,13 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             plugin_offers = KTrader::self()->query(d->mimeDest, "'RenameDlg/Plugin' in ServiceTypes");
         }
         if(!plugin_offers.isEmpty() ){
-            kdDebug(7024) << "Offers" << endl;
+            kDebug(7024) << "Offers" << endl;
             KTrader::OfferList::ConstIterator it = plugin_offers.begin();
             KTrader::OfferList::ConstIterator end = plugin_offers.end();
             for( ; it != end; ++it ){
                 QString libName = (*it)->library();
                 if( libName.isEmpty() ){
-                    kdDebug(7024) << "lib is empty" << endl;
+                    kDebug(7024) << "lib is empty" << endl;
                     continue;
                 }
                 KLibrary *lib = KLibLoader::self()->library(libName.toLocal8Bit() );
@@ -210,7 +210,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                                         mtimeSrc, mtimeDest ) ) {
                     d->plugin = true;
                     pLayout->addWidget(plugin );
-                    kdDebug(7024) << "RenameDlgPlugin" << endl;
+                    kDebug(7024) << "RenameDlgPlugin" << endl;
                     break;
                 } else {
                     delete obj;
@@ -539,8 +539,8 @@ void RenameDlg::pluginHandling()
   d->mimeSrc = mime( d->src );
   d->mimeDest = mime(d->dest );
 
-  kdDebug(7024) << "Source Mimetype: "<< d->mimeSrc << endl;
-  kdDebug(7024) << "Dest Mimetype: "<< d->mimeDest << endl;
+  kDebug(7024) << "Source Mimetype: "<< d->mimeSrc << endl;
+  kDebug(7024) << "Dest Mimetype: "<< d->mimeDest << endl;
 }
 
 

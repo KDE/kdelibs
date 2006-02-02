@@ -49,7 +49,7 @@ KDE_EXPORT int kdemain(int argc, char **argv)
 
     // initialize application
     if ( !KUniqueApplication::start() ) {
-        kdDebug() << "Running knotify found" << endl;
+        kDebug() << "Running knotify found" << endl;
         return 0;
     }
 

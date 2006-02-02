@@ -65,7 +65,7 @@ int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
     if ( offers.isEmpty() ) {
         if ( error )
             *error = i18n("No service implementing %1").arg( serviceType );
-        kdWarning() << "KDCOPServiceStarter: No service implementing " << serviceType << endl;
+        kWarning() << "KDCOPServiceStarter: No service implementing " << serviceType << endl;
         return -1;
     }
     KService::Ptr ptr = offers.first();
@@ -76,11 +76,11 @@ int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
         QString error;
         if ( startServiceFor( serviceType, constraint, preferences, &error, &dcopService, flags ) != 0 )
         {
-            kdDebug() << "KDCOPServiceStarter: Couldn't start service: " << error << endl;
+            kDebug() << "KDCOPServiceStarter: Couldn't start service: " << error << endl;
             return -2;
         }
     }
-    kdDebug() << "KDCOPServiceStarter: DCOP service is available now, as " << dcopService << endl;
+    kDebug() << "KDCOPServiceStarter: DCOP service is available now, as " << dcopService << endl;
     if ( pDcopService )
         *pDcopService = dcopService;
     return 0;
@@ -95,6 +95,6 @@ int KDCOPServiceStarter::startServiceFor( const QString& serviceType,
     if ( offers.isEmpty() )
         return -1;
     KService::Ptr ptr = offers.first();
-    kdDebug() << "KDCOPServiceStarter: starting " << ptr->desktopEntryPath() << endl;
+    kDebug() << "KDCOPServiceStarter: starting " << ptr->desktopEntryPath() << endl;
     return KToolInvocation::startServiceByDesktopPath( ptr->desktopEntryPath(), QStringList(), error, dcopService );
 }

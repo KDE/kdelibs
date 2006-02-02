@@ -197,7 +197,7 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const KBookmark &b
 
 KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & text, const KUrl & url, const QString & icon, bool emitSignal )
 {
-    //kdDebug(7043) << "KBookmarkGroup::addBookmark " << text << " into " << m_address << endl;
+    //kDebug(7043) << "KBookmarkGroup::addBookmark " << text << " into " << m_address << endl;
     QDomDocument doc = element.ownerDocument();
     QDomElement elem = doc.createElement( "bookmark" );
     elem.setAttribute( "href", url.url( 0, 106 ) ); // write utf8 URL (106 is mib enum for utf8)
@@ -345,7 +345,7 @@ QString KBookmark::address() const
             if ( bk.element == element )
                 return parentAddress + "/" + QString::number(counter);
         }
-        kdWarning() << "KBookmark::address : this can't happen!  " << parentAddress << endl;
+        kWarning() << "KBookmark::address : this can't happen!  " << parentAddress << endl;
         return "ERROR";
     }
 }
@@ -364,7 +364,7 @@ KBookmark KBookmark::standaloneBookmark( const QString & text, const KUrl & url,
 // That breaks commonParent()
 QString KBookmark::left(const QString & str, uint len)
 {
-    //kdDebug()<<"********"<<QString("").left(0).isNull()<<endl;
+    //kDebug()<<"********"<<QString("").left(0).isNull()<<endl;
     if(len == 0)
         return QString("");
     else
@@ -448,7 +448,7 @@ bool KBookmark::hasMetaData() const
 
 void KBookmark::updateAccessMetadata()
 {
-    kdDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url().prettyURL() << endl;
+    kDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url().prettyURL() << endl;
 
     const uint timet = QDateTime::currentDateTime().toTime_t();
     setMetaDataItem( "time_added", QString::number( timet ), DontOverwriteMetaData );
@@ -598,7 +598,7 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
         KUrl::List::ConstIterator uEnd = urls.end();
         for ( ; uit != uEnd ; ++uit )
         {
-            //kdDebug(7043) << k_funcinfo << "url=" << (*uit) << endl;
+            //kDebug(7043) << k_funcinfo << "url=" << (*uit) << endl;
             bookmarks.append( KBookmark::standaloneBookmark(
                                   (*uit).prettyURL(), (*uit) ));
         }

@@ -108,13 +108,13 @@ static KService::Ptr locateModule(const QByteArray& module)
     KService::Ptr service = KService::serviceByStorageId( path );
     if (!service)
     {
-        kdWarning(780) << "Could not find module '" << module << "'." << endl;
+        kWarning(780) << "Could not find module '" << module << "'." << endl;
         return KService::Ptr();
     }
 
     if(!KCModuleLoader::testModule( module ))
     {
-        kdDebug(780) << "According to \"" << module << "\"'s test function, it should Not be loaded." << endl;
+        kDebug(780) << "According to \"" << module << "\"'s test function, it should Not be loaded." << endl;
         return KService::Ptr();
     }
 
@@ -126,7 +126,7 @@ bool KCMShell::isRunning()
     if( dcopClient()->appId() == m_dcopName )
         return false; // We are the one and only.
 
-    kdDebug(780) << "kcmshell with modules '" << 
+    kDebug(780) << "kcmshell with modules '" << 
         m_dcopName << "' is already running." << endl;
 
     dcopClient()->attach(); // Reregister as anonymous
@@ -140,7 +140,7 @@ bool KCMShell::isRunning()
     if (!dcopClient()->call(m_dcopName, "dialog", "activate(QCString)", 
                 data, replyType, replyData))
     {
-        kdDebug(780) << "Calling DCOP function dialog::activate() failed." << endl;
+        kDebug(780) << "Calling DCOP function dialog::activate() failed." << endl;
         return false; // Error, we have to do it ourselves.
     }
 
@@ -156,7 +156,7 @@ KCMShellMultiDialog::KCMShellMultiDialog( int dialogFace, const QString& caption
 
 void KCMShellMultiDialog::activate( QByteArray asn_id )
 {
-    kdDebug(780) << k_funcinfo << endl;
+    kDebug(780) << k_funcinfo << endl;
 
 #ifdef Q_WS_X11
     KStartupInfo::setNewStartupId( this, asn_id );
@@ -176,7 +176,7 @@ void KCMShell::setDCOPName(const DCOPCString &dcopName, bool rootMode )
 
 void KCMShell::waitForExit()
 {
-    kdDebug(780) << k_funcinfo << endl;
+    kDebug(780) << k_funcinfo << endl;
 
     connect(dcopClient(), SIGNAL(applicationRemoved(const QByteArray&)),
             SLOT( appExit(const QByteArray&) ));
@@ -185,11 +185,11 @@ void KCMShell::waitForExit()
 
 void KCMShell::appExit(const QByteArray &appId)
 {
-    kdDebug(780) << k_funcinfo << endl;
+    kDebug(780) << k_funcinfo << endl;
 
     if( appId == m_dcopName )
     {
-        kdDebug(780) << "'" << appId << "' closed, dereferencing." << endl;
+        kDebug(780) << "'" << appId << "' closed, dereferencing." << endl;
         deref();
     }
 }
@@ -306,7 +306,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
             delete module;
         }
         else
-            kdDebug(780) << "Supplied id '" << id << "' is not valid." << endl;
+            kDebug(780) << "Supplied id '" << id << "' is not valid." << endl;
 
         return 0;
 
@@ -333,7 +333,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
             delete dlg;
         }
         else
-            kdDebug(780) << "Supplied id '" << id << "' is not valid." << endl;
+            kDebug(780) << "Supplied id '" << id << "' is not valid." << endl;
 
     }
     else

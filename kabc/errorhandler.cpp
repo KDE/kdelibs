@@ -31,7 +31,7 @@ using namespace KABC;
 void ConsoleErrorHandler::error( const QString &msg )
 {
   // no debug area is ok here
-  kdError() << msg << endl;
+  kError() << msg << endl;
 }
 
 

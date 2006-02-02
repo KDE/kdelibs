@@ -75,7 +75,7 @@ KZoneAllocator::~KZoneAllocator()
     count++;
   }
 #ifndef NDEBUG // as this is called quite late in the app, we don't care
-	       // to use kdDebug
+	       // to use kDebug
   if (count > 1)
     qDebug("zone still contained %d blocks", count);
 #endif

@@ -29,15 +29,15 @@ int main( int, char )
   Test9 *t = new Test9( QString::null, QString::null );
 
   QStringList myPathsList2 = t->myPathsList2();
-  kdWarning() << myPathsList2 << endl;
+  kWarning() << myPathsList2 << endl;
 
   // add another path
   QStringList newlist; 
   myPathsList2 << QDir::homePath() + QString::fromLatin1("/.kde");
-  kdWarning() << myPathsList2 << endl;
+  kWarning() << myPathsList2 << endl;
 
   t->setMyPathsList2(myPathsList2);
-  kdWarning() << t->myPathsList2() << endl;
+  kWarning() << t->myPathsList2() << endl;
 
   delete t;
 }

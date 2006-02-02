@@ -45,7 +45,7 @@
 KAccelBase::KAccelBase( int fInitCode )
 :	m_rgActions( this )
 {
-	kdDebug(125) << "KAccelBase(): this = " << this << endl;
+	kDebug(125) << "KAccelBase(): this = " << this << endl;
 	m_bNativeKeys = fInitCode & NATIVE_KEYS;
 	m_bEnabled = true;
 	m_sConfigGroup = "Shortcuts";
@@ -56,7 +56,7 @@ KAccelBase::KAccelBase( int fInitCode )
 
 KAccelBase::~KAccelBase()
 {
-	kdDebug(125) << "~KAccelBase(): this = " << this << endl;
+	kDebug(125) << "~KAccelBase(): this = " << this << endl;
 }
 
 // see KGlobalAccel::blockShortcuts() stuff - it's to temporarily block
@@ -84,7 +84,7 @@ bool KAccelBase::setActionEnabled( const QString& sAction, bool bEnable )
 	KAccelAction* pAction = actionPtr( sAction );
 	if( pAction ) {
 		if( pAction->m_bEnabled != bEnable ) {
-			kdDebug(125) << "KAccelBase::setActionEnabled( " << sAction << ", " << bEnable << " )" << endl;
+			kDebug(125) << "KAccelBase::setActionEnabled( " << sAction << ", " << bEnable << " )" << endl;
 			pAction->m_bEnabled = bEnable;
 			if( m_bAutoUpdate ) {
 				// FIXME: the action may already have it's connections inserted!
@@ -101,7 +101,7 @@ bool KAccelBase::setActionEnabled( const QString& sAction, bool bEnable )
 
 bool KAccelBase::setAutoUpdate( bool bAuto )
 {
-	kdDebug(125) << "KAccelBase::setAutoUpdate( " << bAuto << " ): m_bAutoUpdate on entrance = " << m_bAutoUpdate << endl;
+	kDebug(125) << "KAccelBase::setAutoUpdate( " << bAuto << " ): m_bAutoUpdate on entrance = " << m_bAutoUpdate << endl;
 	bool b = m_bAutoUpdate;
 	if( !m_bAutoUpdate && bAuto )
 		updateConnections();
@@ -115,7 +115,7 @@ KAccelAction* KAccelBase::insert( const QString& sAction, const QString& sDesc, 
 			const QObject* pObjSlot, const char* psMethodSlot,
 			bool bConfigurable, bool bEnabled )
 {
-	//kdDebug(125) << "KAccelBase::insert() begin" << endl;
+	//kDebug(125) << "KAccelBase::insert() begin" << endl;
 	KAccelAction* pAction = m_rgActions.insert(
 		sAction, sDesc, sHelp,
 //		rgCutDefaults3, rgCutDefaults4,
@@ -126,7 +126,7 @@ KAccelAction* KAccelBase::insert( const QString& sAction, const QString& sDesc, 
 	if( pAction && m_bAutoUpdate )
 		insertConnection( pAction );
 
-	//kdDebug(125) << "KAccelBase::insert() end" << endl;
+	//kDebug(125) << "KAccelBase::insert() end" << endl;
 	return pAction;
 }
 
@@ -145,12 +145,12 @@ void KAccelBase::slotRemoveAction( KAccelAction* pAction )
 
 bool KAccelBase::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
 {
-	kdDebug(125) << "KAccelBase::setActionSlot( " << sAction << ", " << pObjSlot << ", " << psMethodSlot << " )\n";
+	kDebug(125) << "KAccelBase::setActionSlot( " << sAction << ", " << pObjSlot << ", " << psMethodSlot << " )\n";
 	KAccelAction* pAction = m_rgActions.actionPtr( sAction );
 	if( pAction ) {
 		// If there was a previous connection, remove it.
 		if( m_bAutoUpdate && pAction->isConnected() ) {
-			kdDebug(125) << "\tm_pObjSlot = " << pAction->m_pObjSlot << " m_psMethodSlot = " << pAction->m_psMethodSlot << endl;
+			kDebug(125) << "\tm_pObjSlot = " << pAction->m_pObjSlot << " m_psMethodSlot = " << pAction->m_psMethodSlot << endl;
 			removeConnection( pAction );
 		}
 
@@ -300,7 +300,7 @@ struct KAccelBase::X
 bool KAccelBase::updateConnections()
 {
 #ifdef Q_WS_X11
-	kdDebug(125) << "KAccelBase::updateConnections()  this = " << this << endl;
+	kDebug(125) << "KAccelBase::updateConnections()  this = " << this << endl;
 	// Retrieve the list of keys to be connected, sorted by priority.
 	//  (key, variation, seq)
 	QVector<X> rgKeys;
@@ -328,7 +328,7 @@ bool KAccelBase::updateConnections()
 			if( info.iVariation == rgKeys[i+1].iVari && info.iSeq == rgKeys[i+1].iSeq )
 				bNonUnique = true;
 
-			kdDebug(125) << "key conflict = " << key.key().toStringInternal()
+			kDebug(125) << "key conflict = " << key.key().toStringInternal()
 				<< " action1 = " << info.pAction->name()
 				<< " action2 = " << m_rgActions.actionPtr( rgKeys[i+1].iAction )->name()
 				<< " non-unique = " << bNonUnique << endl;
@@ -354,7 +354,7 @@ bool KAccelBase::updateConnections()
 			info.pAction = 0;
 		}
 
-		//kdDebug(125) << "mapKeyToAction[" << key.toStringInternal() << "] = " << info.pAction << endl;
+		//kDebug(125) << "mapKeyToAction[" << key.toStringInternal() << "] = " << info.pAction << endl;
 		mapKeyToAction[key] = info;
 	}
 
@@ -394,7 +394,7 @@ bool KAccelBase::updateConnections()
 
 #ifndef NDEBUG
 	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
-		kdDebug(125) << "Key: " << it.key().key().toStringInternal() << " => '"
+		kDebug(125) << "Key: " << it.key().key().toStringInternal() << " => '"
 			<< (((*it).pAction) ? (*it).pAction->name() : QString()) << "'" << endl;
 	}
 #endif
@@ -406,7 +406,7 @@ bool KAccelBase::updateConnections()
 // Construct a list of keys to be connected, sorted highest priority first.
 void KAccelBase::createKeyList( QVector<struct X>& rgKeys )
 {
-	//kdDebug(125) << "KAccelBase::createKeyList()" << endl;
+	//kDebug(125) << "KAccelBase::createKeyList()" << endl;
 	if( !isEnabledInternal())
 		return;
 
@@ -424,11 +424,11 @@ void KAccelBase::createKeyList( QVector<struct X>& rgKeys )
 					for( uint iVari = 0; iVari < vars.count(); iVari++ ) {
 						if( vars.key(iVari).code() && vars.key(iVari).sym() )
 							rgKeys.push_back( X( iAction, iSeq, iVari, vars.key( iVari ) ) );
-						//kdDebug(125) << "\t" << pAction->name() << ": " << vars.key(iVari).toStringInternal() << endl;
+						//kDebug(125) << "\t" << pAction->name() << ": " << vars.key(iVari).toStringInternal() << endl;
 					}
 				}
 				//else
-				//	kdDebug(125) << "\t*" << pAction->name() << ":" << endl;
+				//	kDebug(125) << "\t*" << pAction->name() << ":" << endl;
 			}
 		}
 	}
@@ -443,7 +443,7 @@ bool KAccelBase::insertConnection( KAccelAction* pAction )
 	if( !pAction->m_pObjSlot || !pAction->m_psMethodSlot )
 		return true;
 
-	kdDebug(125) << "KAccelBase::insertConnection( " << pAction << "=\"" << pAction->m_sName << "\"; shortcut = " << pAction->shortcut().toStringInternal() << " )  this = " << this << endl;
+	kDebug(125) << "KAccelBase::insertConnection( " << pAction << "=\"" << pAction->m_sName << "\"; shortcut = " << pAction->shortcut().toStringInternal() << " )  this = " << this << endl;
 
 	// For each sequence associated with the given action:
 	for( uint iSeq = 0; iSeq < pAction->shortcut().count(); iSeq++ ) {
@@ -477,7 +477,7 @@ bool KAccelBase::insertConnection( KAccelAction* pAction )
 					// TODO: make this more efficient where possible.
 					if( m_mapKeyToAction[key].pAction != pAction
 					    && m_mapKeyToAction[key].pAction != 0 ) {
-						kdDebug(125) << "Key conflict with action = " << m_mapKeyToAction[key].pAction->name() 
+						kDebug(125) << "Key conflict with action = " << m_mapKeyToAction[key].pAction->name() 
 							<< " key = " << key.key().toStringInternal() << " : call updateConnections()" << endl;
 						return updateConnections();
 					}
@@ -486,16 +486,16 @@ bool KAccelBase::insertConnection( KAccelAction* pAction )
 		}
 	}
 
-	//kdDebug(125) << "\tActions = " << m_rgActions.size() << endl;
+	//kDebug(125) << "\tActions = " << m_rgActions.size() << endl;
 	//for( KAccelActions::const_iterator it = m_rgActions.begin(); it != m_rgActions.end(); ++it ) {
-	//	kdDebug(125) << "\t" << &(*it) << " '" << (*it).m_sName << "'" << endl;
+	//	kDebug(125) << "\t" << &(*it) << " '" << (*it).m_sName << "'" << endl;
 	//}
 
-	//kdDebug(125) << "\tKeys = " << m_mapKeyToAction.size() << endl;
+	//kDebug(125) << "\tKeys = " << m_mapKeyToAction.size() << endl;
 	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
-	//	//kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << endl;
-	//	kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << *it << "'" << endl;
-	//	kdDebug(125) << "\t\t'" << (*it)->m_sName << "'" << endl;
+	//	//kDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << endl;
+	//	kDebug(125) << "\tKey: " << it.key().toString() << " => '" << *it << "'" << endl;
+	//	kDebug(125) << "\t\t'" << (*it)->m_sName << "'" << endl;
 	//}
 
 	return true;
@@ -503,10 +503,10 @@ bool KAccelBase::insertConnection( KAccelAction* pAction )
 
 bool KAccelBase::removeConnection( KAccelAction* pAction )
 {
-	kdDebug(125) << "KAccelBase::removeConnection( " << pAction << " = \"" << pAction->m_sName << "\"; shortcut = " << pAction->m_cut.toStringInternal() << " ): this = " << this << endl;
+	kDebug(125) << "KAccelBase::removeConnection( " << pAction << " = \"" << pAction->m_sName << "\"; shortcut = " << pAction->m_cut.toStringInternal() << " ): this = " << this << endl;
 
 	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it )
-	//	kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
+	//	kDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
 
 	if( m_rgActionsNonUnique.findIndex( pAction ) >= 0 ) {
 		mtemp_pActionRemoving = pAction;
@@ -589,8 +589,8 @@ QMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& seq )
 
 				pMenu->insertAction( i, seqAction );
 
-				//kdDebug(125) << "sLabel = " << sLabel << ", seq = " << (QString)seqMenu.qt() << ", i = " << i << endl;
-				//kdDebug(125) << "pMenu->accel(" << i << ") = " << (QString)pMenu->accel(i) << endl;
+				//kDebug(125) << "sLabel = " << sLabel << ", seq = " << (QString)seqMenu.qt() << ", i = " << i << endl;
+				//kDebug(125) << "pMenu->accel(" << i << ") = " << (QString)pMenu->accel(i) << endl;
 				bActionInserted = true;
 				break;
 			}

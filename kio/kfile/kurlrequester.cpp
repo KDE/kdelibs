@@ -260,7 +260,7 @@ void KUrlRequester::changeEvent(QEvent *e)
 {
    if (e->type()==QEvent::WindowTitleChange) {
      if (myFileDialog) {
-	//kdDebug()<<"CHANGEEVENT"<<endl;
+	//kDebug()<<"CHANGEEVENT"<<endl;
         myFileDialog->setWindowTitle( windowTitle() );
      }
    }
@@ -402,7 +402,7 @@ KEditListBox::CustomEditor KUrlRequester::customEditor()
 
 #ifndef NDEBUG
     if ( !edit )
-        kdWarning() << "KUrlRequester's lineedit is not a KLineEdit!??\n";
+        kWarning() << "KUrlRequester's lineedit is not a KLineEdit!??\n";
 #endif
 
     KEditListBox::CustomEditor editor( this, edit );

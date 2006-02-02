@@ -186,13 +186,13 @@ void NetworkScanner::slotNext()
 
 	d->timer->stop();
 	d->socket->connect( d->prefixaddress + "." + QString::number( d->currentaddress ), QString::number(d->port) );
-	kdDebug() << "Address: " << d->socket->peerAddress().toString() << endl;
+	kDebug() << "Address: " << d->socket->peerAddress().toString() << endl;
 	d->timer->start( d->timeout, true );
 }
 
 void NetworkScanner::next()
 {
-	//kdDebug() << "Next" << endl;
+	//kDebug() << "Next" << endl;
 	d->currentaddress++;
 	if ( d->currentaddress >= 256 )
 		finish();
@@ -205,7 +205,7 @@ void NetworkScanner::next()
 
 void NetworkScanner::slotTimeout()
 {
-	kdDebug() << "Timeout" << endl;
+	kDebug() << "Timeout" << endl;
 	if ( !d->scanning )
 		return;
 
@@ -215,9 +215,9 @@ void NetworkScanner::slotTimeout()
 
 void NetworkScanner::slotConnectionSuccess( const KResolverEntry& target )
 {
-	kdDebug() << "Success" << endl;
-	kdDebug() << "Connection success: " << target.address().toString() << endl;
-	//kdDebug() << "Socket: " << d->socket->socket() << endl;
+	kDebug() << "Success" << endl;
+	kDebug() << "Connection success: " << target.address().toString() << endl;
+	//kDebug() << "Socket: " << d->socket->socket() << endl;
 
 	KInetSocketAddress addr = target.address().asInet();
 	if ( addr.ipVersion() )
@@ -232,13 +232,13 @@ void NetworkScanner::slotConnectionSuccess( const KResolverEntry& target )
 		d->socket->close();
 	}
 	else
-		kdDebug() << "Connected to something odd!" << endl;
+		kDebug() << "Connected to something odd!" << endl;
 	next();
 }
 
 void NetworkScanner::slotConnectionFailed( int )
 {
-	kdDebug() << "Failure" << endl;
+	kDebug() << "Failure" << endl;
 	next();
 }
 

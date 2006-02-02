@@ -144,7 +144,7 @@ void KUrlBarItem::setApplicationLocal( bool local )
 {
     if ( !local && !isPersistent() )
     {
-        kdWarning() << "KUrlBar: dynamic (non-persistent) items can not be global." << endl;
+        kWarning() << "KUrlBar: dynamic (non-persistent) items can not be global." << endl;
         return;
     }
 

@@ -186,7 +186,7 @@ void RenderBox::setStyle(RenderStyle *_style)
 
 RenderBox::~RenderBox()
 {
-    //kdDebug( 6040 ) << "Element destructor: this=" << nodeName().string() << endl;
+    //kDebug( 6040 ) << "Element destructor: this=" << nodeName().string() << endl;
 }
 
 void RenderBox::detach()
@@ -223,7 +223,7 @@ short RenderBox::contentWidth() const
     if (m_layer && style()->scrollsOverflow())
         w -= m_layer->verticalScrollbarWidth();
 
-    //kdDebug( 6040 ) << "RenderBox::contentWidth(2) = " << w << endl;
+    //kDebug( 6040 ) << "RenderBox::contentWidth(2) = " << w << endl;
     return w;
 }
 
@@ -312,7 +312,7 @@ void RenderBox::paint(PaintInfo& i, int _tx, int _ty)
 
 void RenderBox::paintRootBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << renderName() << "::paintRootBoxDecorations()" << _tx << "/" << _ty << endl;
+    //kDebug( 6040 ) << renderName() << "::paintRootBoxDecorations()" << _tx << "/" << _ty << endl;
     const BackgroundLayer* bgLayer = style()->backgroundLayers();
     QColor bgColor = style()->backgroundColor();
     if (document()->isHTMLDocument() && !style()->hasBackground()) {
@@ -335,7 +335,7 @@ void RenderBox::paintRootBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     int w = width();
     int h = height();
 
-    //    kdDebug(0) << "width = " << w <<endl;
+    //    kDebug(0) << "width = " << w <<endl;
 
     int rw, rh;
     if (canvas()->view()) {
@@ -346,7 +346,7 @@ void RenderBox::paintRootBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
         rh = canvas()->docHeight();
     }
 
-    //    kdDebug(0) << "rw = " << rw <<endl;
+    //    kDebug(0) << "rw = " << rw <<endl;
 
     int bx = _tx - marginLeft();
     int by = _ty - marginTop();
@@ -367,7 +367,7 @@ void RenderBox::paintRootBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 
 void RenderBox::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
+    //kDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
 
     if(isRoot())
         return paintRootBoxDecorations(paintInfo, _tx, _ty);
@@ -529,7 +529,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             QRect ele(_tx+bleft,_ty+borderTop(),w-vpab,h-hpab);
             QRect b = fix.intersect(ele);
 
-            //kdDebug() <<" ele is " << ele << " b is " << b << " fix is " << fix << endl;
+            //kDebug() <<" ele is " << ele << " b is " << b << " fix is " << fix << endl;
             sx+=b.x()-cx;
             sy+=b.y()-cy;
             cx=b.x();cy=b.y();cw=b.width();ch=b.height();
@@ -608,7 +608,7 @@ QRect RenderBox::getClipRect(int tx, int ty)
     clipw = clipright-clipleft;
     cliph = clipbottom-cliptop;
 
-    //kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
+    //kDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
 
     return QRect(clipx,clipy,clipw,cliph);
 }
@@ -713,7 +713,7 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool immediate, boo
 
     if (style()->position()==FIXED) f=true;
 
-    // kdDebug( 6040 ) << "RenderBox(" <<this << ", " << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
+    // kDebug( 6040 ) << "RenderBox(" <<this << ", " << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
     if( o ) {
         if (o->style()->hidesOverflow() && o->layer())
@@ -745,7 +745,7 @@ void RenderBox::relativePositionOffset(int &tx, int &ty) const
 void RenderBox::calcWidth()
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "RenderBox("<<renderName()<<")::calcWidth()" << endl;
+    kDebug( 6040 ) << "RenderBox("<<renderName()<<")::calcWidth()" << endl;
 #endif
     if (isPositioned())
     {
@@ -805,13 +805,13 @@ void RenderBox::calcWidth()
             }
 
             if (widthType == Variable) {
-    //          kdDebug( 6040 ) << "variable" << endl;
+    //          kDebug( 6040 ) << "variable" << endl;
                 m_marginLeft = ml.minWidth(cw);
                 m_marginRight = mr.minWidth(cw);
             }
             else
             {
-//              kdDebug( 6040 ) << "non-variable " << w.type << ","<< w.value << endl;
+//              kDebug( 6040 ) << "non-variable " << w.type << ","<< w.value << endl;
                 calcHorizontalMargins(ml,mr,cw);
             }
         }
@@ -826,8 +826,8 @@ void RenderBox::calcWidth()
     }
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "RenderBox::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
-    kdDebug( 6040 ) << "m_marginLeft=" << m_marginLeft << " m_marginRight=" << m_marginRight << endl;
+    kDebug( 6040 ) << "RenderBox::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
+    kDebug( 6040 ) << "m_marginLeft=" << m_marginLeft << " m_marginRight=" << m_marginRight << endl;
 #endif
 }
 
@@ -906,7 +906,7 @@ void RenderBox::calcHeight()
 {
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "RenderBox::calcHeight()" << endl;
+    kDebug( 6040 ) << "RenderBox::calcHeight()" << endl;
 #endif
 
     //cell height is managed by table, inline elements do not have a height property.
@@ -1605,13 +1605,13 @@ void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width
 
     // propagate it downwards to its children, someone will feel responsible
     RenderObject *child = firstChild();
-//    if (child) kdDebug(6040) << "delegating caretPos to " << child->renderName() << endl;
+//    if (child) kDebug(6040) << "delegating caretPos to " << child->renderName() << endl;
     if (child) child->caretPos(offset, override, _x, _y, width, height);
 
     // if not, use the extents of this box. offset 0 means left, offset 1 means
     // right
     if (_x == -1) {
-        //kdDebug(6040) << "no delegation" << endl;
+        //kDebug(6040) << "no delegation" << endl;
         _x = xPos() + (offset == 0 ? 0 : m_width);
 	_y = yPos();
 	height = m_height;
@@ -1629,7 +1629,7 @@ void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width
         RenderObject *cb = containingBlock();
 
         if (cb && cb != this && cb->absolutePosition(absx,absy)) {
-            //kdDebug(6040) << "absx=" << absx << " absy=" << absy << endl;
+            //kDebug(6040) << "absx=" << absx << " absy=" << absy << endl;
             _x += absx;
             _y += absy;
         } else {
@@ -1642,7 +1642,7 @@ void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width
 
     _x = xPos();
     _y = yPos();
-//     kdDebug(6040) << "_x " << _x << " _y " << _y << endl;
+//     kDebug(6040) << "_x " << _x << " _y " << _y << endl;
     width = 1;		// no override is indicated in boxes
 
     RenderBlock *cb = containingBlock();
@@ -1707,7 +1707,7 @@ void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width
 
     int absx, absy;
     if (cb && cb != this && cb->absolutePosition(absx,absy)) {
-//         kdDebug(6040) << "absx=" << absx << " absy=" << absy << endl;
+//         kDebug(6040) << "absx=" << absx << " absy=" << absy << endl;
         _x += absx;
         _y += absy;
     } else {

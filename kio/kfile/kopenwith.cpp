@@ -230,7 +230,7 @@ void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem
       }
       else
       {
-         kdWarning(250) << "KServiceGroup: Unexpected object in list!" << endl;
+         kWarning(250) << "KServiceGroup: Unexpected object in list!" << endl;
          continue;
       }
 
@@ -548,7 +548,7 @@ void KOpenWithDlg::slotClear()
 
 void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec )
 {
-    kdDebug(250)<<"KOpenWithDlg::slotSelected"<<endl;
+    kDebug(250)<<"KOpenWithDlg::slotSelected"<<endl;
     KService::Ptr pService = d->curService;
     edit->setURL( _exec ); // calls slotTextChanged :(
     d->curService = pService;
@@ -559,7 +559,7 @@ void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec 
 
 void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 {
-    kdDebug(250)<<"KOpenWithDlg::slotHighlighted"<<endl;
+    kDebug(250)<<"KOpenWithDlg::slotHighlighted"<<endl;
     qName = _name;
     d->curService = KService::serviceByName( qName );
     if (!m_terminaldirty)
@@ -576,7 +576,7 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 
 void KOpenWithDlg::slotTextChanged()
 {
-    kdDebug(250)<<"KOpenWithDlg::slotTextChanged"<<endl;
+    kDebug(250)<<"KOpenWithDlg::slotTextChanged"<<endl;
     // Forget about the service
     d->curService = 0L;
     d->ok->setEnabled( !edit->url().isEmpty());
@@ -624,12 +624,12 @@ void KOpenWithDlg::slotOK()
       return;
     }
     initialServiceName = serviceName;
-    kdDebug(250) << "initialServiceName=" << initialServiceName << endl;
+    kDebug(250) << "initialServiceName=" << initialServiceName << endl;
     int i = 1; // We have app, app-2, app-3... Looks better for the user.
     bool ok = false;
     // Check if there's already a service by that name, with the same Exec line
     do {
-        kdDebug(250) << "looking for service " << serviceName << endl;
+        kDebug(250) << "looking for service " << serviceName << endl;
         KService::Ptr serv = KService::serviceByDesktopName( serviceName );
         ok = !serv; // ok if no such service yet
         // also ok if we find the exact same service (well, "kwrite" == "kwrite %U"
@@ -648,7 +648,7 @@ void KOpenWithDlg::slotOK()
             {
                 ok = true;
                 m_pService = serv;
-                kdDebug(250) << k_funcinfo << "OK, found identical service: " << serv->desktopEntryPath() << endl;
+                kDebug(250) << k_funcinfo << "OK, found identical service: " << serv->desktopEntryPath() << endl;
             }
         }
         if (!ok) // service was found, but it was different -> keep looking
@@ -677,7 +677,7 @@ void KOpenWithDlg::slotOK()
       m_command += QString::fromLatin1(" --noclose");
     m_command += QString::fromLatin1(" -e ");
     m_command += edit->url();
-    kdDebug(250) << "Setting m_command to " << m_command << endl;
+    kDebug(250) << "Setting m_command to " << m_command << endl;
   }
   if ( m_pService && terminal->isChecked() != m_pService->terminal() )
       m_pService = 0L; // It's not exactly this service we're running
@@ -717,12 +717,12 @@ void KOpenWithDlg::slotOK()
     oldPath = m_pService->desktopEntryPath();
     newPath = m_pService->locateLocal();
     menuId = m_pService->menuId();
-    kdDebug(250) << "Updating exitsing service " << m_pService->desktopEntryPath() << " ( " << newPath << " ) " << endl;
+    kDebug(250) << "Updating exitsing service " << m_pService->desktopEntryPath() << " ( " << newPath << " ) " << endl;
   }
   else
   {
     newPath = KService::newServicePath(false /* hidden */, serviceName, &menuId);
-    kdDebug(250) << "Creating new service " << serviceName << " ( " << newPath << " ) " << endl;
+    kDebug(250) << "Creating new service " << serviceName << " ( " << newPath << " ) " << endl;
   }
 
   int maxPreference = 1;

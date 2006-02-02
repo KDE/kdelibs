@@ -180,7 +180,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
     m_pMimeType = KMimeType::findByURL( url, m_fileMode, isLocalURL,
                                         // use fast mode if not mimetype on demand
                                         _determineMimeTypeOnDemand, &accurate );
-    //kdDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
+    //kDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
     // if we didn't use fast mode, or if we got a result, then this is the mimetype
     // otherwise, determineMimeType will be able to do better.
     m_bMimeTypeKnown = (!_determineMimeTypeOnDemand) || accurate;
@@ -435,7 +435,7 @@ KMimeType::Ptr KFileItem::determineMimeType()
     KUrl url = mostLocalURL(isLocalURL);
 
     m_pMimeType = KMimeType::findByURL( url, m_fileMode, isLocalURL );
-    //kdDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
+    //kDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
     m_bMimeTypeKnown = true;
   }
 
@@ -458,7 +458,7 @@ QString KFileItem::mimeComment()
  KUrl url = mostLocalURL(isLocalURL);
 
  QString comment = mType->comment( url, isLocalURL );
- //kdDebug() << "finding comment for " << url.url() << " : " << m_pMimeType->name() << endl;
+ //kDebug() << "finding comment for " << url.url() << " : " << m_pMimeType->name() << endl;
   if (!comment.isEmpty())
     return comment;
   else
@@ -472,7 +472,7 @@ QString KFileItem::iconName()
   bool isLocalURL;
   KUrl url = mostLocalURL(isLocalURL);
 
-  //kdDebug() << "finding icon for " << url.url() << " : " << m_pMimeType->name() << endl;
+  //kDebug() << "finding icon for " << url.url() << " : " << m_pMimeType->name() << endl;
   return determineMimeType()->icon(url, isLocalURL);
 }
 
@@ -494,7 +494,7 @@ int KFileItem::overlays() const
     if (KSambaShare::instance()->isDirectoryShared( m_url.path() ) ||
         KNFSShare::instance()->isDirectoryShared( m_url.path() ))
     {
-      //kdDebug()<<"KFileShare::isDirectoryShared : "<<m_url.path()<<endl;
+      //kDebug()<<"KFileShare::isDirectoryShared : "<<m_url.path()<<endl;
       _state |= KIcon::ShareOverlay;
     }
   }
@@ -535,7 +535,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   {
       KUrl sf;
       sf.setPath( m_url.path().left( m_url.path().length() - 3 ) );
-      //kdDebug() << "KFileItem::pixmap subFileName=" << subFileName << endl;
+      //kDebug() << "KFileItem::pixmap subFileName=" << subFileName << endl;
       mime = KMimeType::findByURL( sf, 0, m_bIsLocalURL );
   }
 
@@ -543,9 +543,9 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   KUrl url = mostLocalURL(isLocalURL);
 
   QPixmap p = mime->pixmap( url, KIcon::Desktop, _size, _state );
-  //kdDebug() << "finding pixmap for " << url.url() << " : " << mime->name() << endl;
+  //kDebug() << "finding pixmap for " << url.url() << " : " << mime->name() << endl;
   if (p.isNull())
-      kdWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
+      kWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
 
   return p;
 }
@@ -607,7 +607,7 @@ bool KFileItem::isDir() const
 {
   if ( m_fileMode == KFileItem::Unknown )
   {
-    kdDebug() << " KFileItem::isDir can't say -> false " << endl;
+    kDebug() << " KFileItem::isDir can't say -> false " << endl;
     return false; // can't say for sure, so no
   }
   return (S_ISDIR(m_fileMode));
@@ -749,8 +749,8 @@ QString KFileItem::getToolTipText(int maxcount)
   }
   tip += "</table>";
 
-  //kdDebug() << "making this the tool tip rich text:\n";
-  //kdDebug() << tip << endl;
+  //kDebug() << "making this the tool tip rich text:\n";
+  //kDebug() << tip << endl;
 
   return tip;
 }

@@ -317,7 +317,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
           return true;
        }
        else
-          kdWarning(125) << "kde_g_bKillAccelOverride set, but received an event other than AccelOverride." << endl;
+          kWarning(125) << "kde_g_bKillAccelOverride set, but received an event other than AccelOverride." << endl;
     }
 
     if ((t == QEvent::ShortcutOverride) || (t == QEvent::KeyPress))
@@ -828,13 +828,13 @@ KConfig* KApplication::sessionConfig()
 void KApplication::ref()
 {
     d->refCount++;
-    //kdDebug() << "KApplication::ref() : refCount = " << d->refCount << endl;
+    //kDebug() << "KApplication::ref() : refCount = " << d->refCount << endl;
 }
 
 void KApplication::deref()
 {
     d->refCount--;
-    //kdDebug() << "KApplication::deref() : refCount = " << d->refCount << endl;
+    //kDebug() << "KApplication::deref() : refCount = " << d->refCount << endl;
     if ( d->refCount <= 0 )
         quit();
 }
@@ -1396,7 +1396,7 @@ void KApplication::addKipcEventMask(int id)
 {
     if (id >= 32)
     {
-        kdDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
+        kDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
         return;
     }
     kipcEventMask |= (1 << id);
@@ -1406,7 +1406,7 @@ void KApplication::removeKipcEventMask(int id)
 {
     if (id >= 32)
     {
-        kdDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
+        kDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
         return;
     }
     kipcEventMask &= ~(1 << id);
@@ -1711,7 +1711,7 @@ QString KApplication::tempSaveName( const QString& pFilename )
 
   if( QDir::isRelativePath(pFilename) )
     {
-      kdWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
+      kWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
       aFilename = QFileInfo( QDir( "." ), pFilename ).absoluteFilePath();
     }
   else
@@ -1740,7 +1740,7 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
 
   if( QDir::isRelativePath(pFilename) )
     {
-      kdWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
+      kWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
       aFilename = QFileInfo( QDir( "." ), pFilename ).absoluteFilePath();
     }
   else

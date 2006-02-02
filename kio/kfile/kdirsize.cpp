@@ -48,7 +48,7 @@ void KDirSize::processList()
 	{
             if ( item->isDir() )
             {
-                kdDebug(kfile_area) << "KDirSize::processList dir -> listing" << endl;
+                kDebug(kfile_area) << "KDirSize::processList dir -> listing" << endl;
                 KUrl url = item->url();
                 startNextJob( url );
                 return; // we'll come back later, when this one's finished
@@ -56,12 +56,12 @@ void KDirSize::processList()
             else
             {
                 m_totalSize += item->size();
-// no long long with kdDebug()
-//            kdDebug(kfile_area) << "KDirSize::processList file -> " << m_totalSize << endl;
+// no long long with kDebug()
+//            kDebug(kfile_area) << "KDirSize::processList file -> " << m_totalSize << endl;
             }
 	}
     }
-    kdDebug(kfile_area) << "KDirSize::processList finished" << endl;
+    kDebug(kfile_area) << "KDirSize::processList finished" << endl;
     if ( !m_bAsync )
         qApp->exit_loop();
     emitResult();
@@ -98,7 +98,7 @@ void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
               m_totalFiles++;
             else
               m_totalSubdirs++;
-            //kdDebug(kfile_area) << name << ":" << size << endl;
+            //kDebug(kfile_area) << name << ":" << size << endl;
         }
     }
 }
@@ -127,7 +127,7 @@ KIO::filesize_t KDirSize::dirSize( const KUrl & directory )
 
 void KDirSize::slotResult( KIO::Job * job )
 {
-    kdDebug(kfile_area) << " KDirSize::slotResult( KIO::Job * job ) m_lstItems:" << m_lstItems.count() << endl;
+    kDebug(kfile_area) << " KDirSize::slotResult( KIO::Job * job ) m_lstItems:" << m_lstItems.count() << endl;
     if ( !m_lstItems.isEmpty() )
     {
         removeSubjob(job);

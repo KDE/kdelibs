@@ -318,13 +318,13 @@ QString Address::typeLabel( int type )
 
 void Address::dump() const
 {
-  kdDebug(5700) << "  Address {" << endl;
-  kdDebug(5700) << "    Id: " << id() << endl;
-  kdDebug(5700) << "    Extended: " << extended() << endl;
-  kdDebug(5700) << "    Street: " << street() << endl;
-  kdDebug(5700) << "    Postal Code: " << postalCode() << endl;
-  kdDebug(5700) << "    Locality: " << locality() << endl;
-  kdDebug(5700) << "  }" << endl;
+  kDebug(5700) << "  Address {" << endl;
+  kDebug(5700) << "    Id: " << id() << endl;
+  kDebug(5700) << "    Extended: " << extended() << endl;
+  kDebug(5700) << "    Street: " << street() << endl;
+  kDebug(5700) << "    Postal Code: " << postalCode() << endl;
+  kDebug(5700) << "    Locality: " << locality() << endl;
+  kDebug(5700) << "  }" << endl;
 }
 
 
@@ -358,7 +358,7 @@ QString Address::formattedAddress( const QString &realName,
   // in the case there's no format found at all, default to what we've always
   // used:
   if ( addrTemplate.isEmpty() ) {
-    kdWarning(5700) << "address format database incomplete "
+    kWarning(5700) << "address format database incomplete "
         << "(no format for locale " << ciso
         << " found). Using default address formatting." << endl;
     addrTemplate = "%0(%n\\n)%0(%cm\\n)%0(%s\\n)%0(PO BOX %p\\n)%0(%l%w%r)%,%z";

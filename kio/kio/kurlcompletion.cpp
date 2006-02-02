@@ -205,7 +205,7 @@ void DirectoryListThread::run()
 		if ( !dir ) {
 			dir = ::opendir( QFile::encodeName( *it ) );
 			if ( ! dir ) {
-				kdDebug() << "Failed to open dir: " << *it << endl;
+				kDebug() << "Failed to open dir: " << *it << endl;
 				return;
 			}
 		}
@@ -274,7 +274,7 @@ void DirectoryListThread::run()
 
 					}
 					else {
-						kdDebug() << "Could not stat file " << file << endl;
+						kDebug() << "Could not stat file " << file << endl;
 						continue;
 					}
 				}
@@ -568,7 +568,7 @@ void KUrlCompletion::setReplaceHome( bool replace )
  */
 QString KUrlCompletion::makeCompletion(const QString &text)
 {
-	//kdDebug() << "KUrlCompletion::makeCompletion: " << text << " d->cwd=" << d->cwd << endl;
+	//kDebug() << "KUrlCompletion::makeCompletion: " << text << " d->cwd=" << d->cwd << endl;
 
 	MyURL url(text, d->cwd);
 
@@ -597,7 +597,7 @@ QString KUrlCompletion::makeCompletion(const QString &text)
 	// Replace user directories and variables
 	url.filter( d->replace_home, d->replace_env );
 
-	//kdDebug() << "Filtered: proto=" << url.protocol()
+	//kDebug() << "Filtered: proto=" << url.protocol()
 	//          << ", dir=" << url.dir()
 	//          << ", file=" << url.file()
 	//          << ", kurl url=" << *url.kurl() << endl;
@@ -896,7 +896,7 @@ bool KUrlCompletion::fileCompletion(const MyURL &url, QString *pMatch)
 		}
 	}
 
-	//kdDebug() << "fileCompletion " << url.url() << " dir=" << dir << endl;
+	//kDebug() << "fileCompletion " << url.url() << " dir=" << dir << endl;
 
 	// Find directories to search for completions, either
 	//
@@ -954,7 +954,7 @@ bool KUrlCompletion::fileCompletion(const MyURL &url, QString *pMatch)
 
 bool KUrlCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 {
-	//kdDebug() << "urlCompletion: url = " << *url.kurl() << endl;
+	//kDebug() << "urlCompletion: url = " << *url.kurl() << endl;
 	if (d->onlyLocalProto && KProtocolInfo::protocolClass(url.protocol()) != QLatin1String(":local"))
 		return false;
 
@@ -1062,7 +1062,7 @@ QString KUrlCompletion::listDirectories(
 
 	if ( !::getenv("KURLCOMPLETION_LOCAL_KIO") ) {
 
-		//kdDebug() << "Listing (listDirectories): " << dirList << " filter=" << filter << " without KIO" << endl;
+		//kDebug() << "Listing (listDirectories): " << dirList << " filter=" << filter << " without KIO" << endl;
 
 		// Don't use KIO
 
@@ -1091,7 +1091,7 @@ QString KUrlCompletion::listDirectories(
 	}
 
 	// Use KIO
-	//kdDebug() << "Listing (listDirectories): " << dirList << " with KIO" << endl;
+	//kDebug() << "Listing (listDirectories): " << dirList << " with KIO" << endl;
 
 	QList<KUrl*> url_list;
 
@@ -1128,7 +1128,7 @@ void KUrlCompletion::listURLs(
 	d->list_urls_only_exe = only_exe;
 	d->list_urls_no_hidden = no_hidden;
 
-//	kdDebug() << "Listing URLs: " << urls[0]->prettyURL() << ",..." << endl;
+//	kDebug() << "Listing URLs: " << urls[0]->prettyURL() << ",..." << endl;
 
 	// Start it off by calling slotIOFinished
 	//
@@ -1162,13 +1162,13 @@ void KUrlCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 
 		QString entry_name;
 		if (!url.isEmpty()) {
-			// kdDebug() << "KUrlCompletion::slotEntries url: " << url << endl;
+			// kDebug() << "KUrlCompletion::slotEntries url: " << url << endl;
 			entry_name = KUrl(url).fileName();
 		} else {
 			entry_name = entry.stringValue( KIO::UDS_NAME );
 		}
 
-		// kdDebug() << "KUrlCompletion::slotEntries name: " << name << endl;
+		// kDebug() << "KUrlCompletion::slotEntries name: " << name << endl;
 
 		if ( entry_name.at(0) == QLatin1Char('.') &&
 		     ( d->list_urls_no_hidden ||
@@ -1204,7 +1204,7 @@ void KUrlCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
  */
 void KUrlCompletion::slotIOFinished( KIO::Job * job )
 {
-//	kdDebug() << "slotIOFinished() " << endl;
+//	kDebug() << "slotIOFinished() " << endl;
 
 	assert( job == d->list_job );
 
@@ -1221,7 +1221,7 @@ void KUrlCompletion::slotIOFinished( KIO::Job * job )
 
 //		d->list_urls.removeAll( kurl );
 
-//		kdDebug() << "Start KIO: " << kurl->prettyURL() << endl;
+//		kDebug() << "Start KIO: " << kurl->prettyURL() << endl;
 
 		d->list_job = KIO::listDir( *kurl, false );
 		d->list_job->addMetaData("no-auth-prompt", "true");
@@ -1253,7 +1253,7 @@ void KUrlCompletion::slotIOFinished( KIO::Job * job )
  */
 void KUrlCompletion::postProcessMatch( QString *pMatch ) const
 {
-//	kdDebug() << "KUrlCompletion::postProcess: " << *pMatch << endl;
+//	kDebug() << "KUrlCompletion::postProcess: " << *pMatch << endl;
 
 	if ( !pMatch->isEmpty() ) {
 
@@ -1274,7 +1274,7 @@ void KUrlCompletion::postProcessMatch( QString *pMatch ) const
 			if ( QDir::isRelativePath(copy) )
 				copy.prepend( d->cwd + QLatin1Char('/') );
 
-//			kdDebug() << "postProcess: stating " << copy << endl;
+//			kDebug() << "postProcess: stating " << copy << endl;
 
 			KDE_struct_stat sbuff;
 
@@ -1285,7 +1285,7 @@ void KUrlCompletion::postProcessMatch( QString *pMatch ) const
 					pMatch->append( QLatin1Char( '/' ) );
 			}
 			else {
-				kdDebug() << "Could not stat file " << copy << endl;
+				kDebug() << "Could not stat file " << copy << endl;
 			}
 		}
 	}

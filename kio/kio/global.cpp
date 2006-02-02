@@ -1388,13 +1388,13 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	QByteArray devname;
 
 	if( (volpath = volmgt_root()) == NULL ) {
-		kdDebug( 7007 ) << "findDeviceMountPoint: "
+		kDebug( 7007 ) << "findDeviceMountPoint: "
 			<< "VOLMGT: can't find volmgt root dir" << endl;
 		return QString();
 	}
 
 	if( (mnttab = fopen( MNTTAB, "r" )) == NULL ) {
-		kdDebug( 7007 ) << "findDeviceMountPoint: "
+		kDebug( 7007 ) << "findDeviceMountPoint: "
 			<< "VOLMGT: can't open mnttab" << endl;
 		return QString();
 	}
@@ -1403,7 +1403,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	devname += QFile::encodeName( filename );
 	devname += '/';
 	len = devname.length();
-//	kdDebug( 7007 ) << "findDeviceMountPoint: "
+//	kDebug( 7007 ) << "findDeviceMountPoint: "
 //		<< "VOLMGT: searching mountpoint for \"" << devname << "\""
 //		<< endl;
 
@@ -1442,7 +1442,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
       // succes, use result from realpath
       realname = realpath_buffer;
 
-    //kdDebug(7007) << "findDeviceMountPoint realname=" << realname << endl;
+    //kDebug(7007) << "findDeviceMountPoint realname=" << realname << endl;
 
 #ifdef HAVE_GETMNTINFO
 
@@ -1567,7 +1567,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
       if (device_name.isEmpty() || (device_name == "none"))
          continue;
 
-      //kdDebug( 7007 ) << "device_name=" << device_name << endl;
+      //kDebug( 7007 ) << "device_name=" << device_name << endl;
 
       // If the path contains symlinks, get
       // the real name
@@ -1575,7 +1575,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
           // succes, use result from realpath
          device_name = realpath_buffer;
 
-      //kdDebug( 7007 ) << "device_name after realpath =" << device_name << endl;
+      //kDebug( 7007 ) << "device_name after realpath =" << device_name << endl;
 
       if (realname == device_name)
       {
@@ -1589,7 +1589,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 #endif /* GET_MNTINFO */
 #endif /* HAVE_VOLMGT */
 
-    //kdDebug( 7007 ) << "Returning result " << result << endl;
+    //kDebug( 7007 ) << "Returning result " << result << endl;
     return result;
 }
 
@@ -1952,7 +1952,7 @@ bool KIO::testFileSystemFlag(const QString& filename, FileSystemFlag flag)
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
   QString fstype;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
-    kdDebug() << "testFileSystemFlag: fstype=" << fstype << endl;
+    kDebug() << "testFileSystemFlag: fstype=" << fstype << endl;
   if (mountPoint.isNull())
       return false;
   bool isMsDos = ( fstype == "msdos" || fstype == "fat" || fstype == "vfat" );
@@ -1984,7 +1984,7 @@ KIO::CacheControl KIO::parseCacheControl(const QString &cacheControl)
   if (tmp == "reload")
      return KIO::CC_Reload;
 
-  kdDebug() << "unrecognized Cache control option:"<<cacheControl<<endl;
+  kDebug() << "unrecognized Cache control option:"<<cacheControl<<endl;
   return KIO::CC_Verify;
 }
 
@@ -2000,6 +2000,6 @@ QString KIO::getCacheControlString(KIO::CacheControl cacheControl)
 	return "Refresh";
     if (cacheControl == KIO::CC_Reload)
 	return "Reload";
-    kdDebug() << "unrecognized Cache control enum value:"<<cacheControl<<endl;
+    kDebug() << "unrecognized Cache control enum value:"<<cacheControl<<endl;
     return QString();
 }

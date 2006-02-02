@@ -102,7 +102,7 @@ bool K3Shortcut::init( const QString& s )
 			if( sSeq.startsWith( "default(" ) )
 				sSeq = sSeq.mid( 8, sSeq.length() - 9 );
 			m_rgseq[i].init( sSeq );
-			//kdDebug(125) << "*\t'" << sSeq << "' => " << m_rgseq[i].toStringInternal() << endl;
+			//kDebug(125) << "*\t'" << sSeq << "' => " << m_rgseq[i].toStringInternal() << endl;
 		}
 	} else {
 		clear();
@@ -120,7 +120,7 @@ bool K3Shortcut::init( const QString& s )
 			for( uint j = 0; j < vars.count(); j++ )
 				os << QString::number(vars.m_rgkey[j].keyCodeQt(),16) << ',';
 		}
-		kdDebug(125) << sDebug << endl;
+		kDebug(125) << sDebug << endl;
 	}
 
 	return bRet;

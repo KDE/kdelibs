@@ -207,7 +207,7 @@ void KLanguageButton::insertSubmenu( const QString &text, const QString &id,
 
 void KLanguageButton::slotTriggered( QAction *a )
 {
-  //kdDebug() << "slotActivated" << index << endl;
+  //kDebug() << "slotActivated" << index << endl;
 
   if (!a) return;
 
@@ -219,7 +219,7 @@ void KLanguageButton::slotTriggered( QAction *a )
 
 void KLanguageButton::slotHovered( QAction *a )
 {
-  //kdDebug() << "slotHighlighted" << index << endl;
+  //kDebug() << "slotHighlighted" << index << endl;
 
   emit ( highlighted(a->data().toString()) );
 }
@@ -265,7 +265,7 @@ QString KLanguageButton::id( int i ) const
 {
   if ( i < 0 || i >= count() )
   {
-    kdDebug() << "KLanguageButton::tag(), unknown tag " << i << endl;
+    kDebug() << "KLanguageButton::tag(), unknown tag " << i << endl;
     return QString();
   }
   return m_ids->at( i );

@@ -166,12 +166,12 @@ QImage KIconEffect::apply(QImage image, int group, int state) const
 {
     if (state >= KIcon::LastState)
     {
-	kdDebug(265) << "Illegal icon state: " << state << "\n";
+	kDebug(265) << "Illegal icon state: " << state << "\n";
 	return image;
     }
     if (group >= KIcon::LastGroup)
     {
-	kdDebug(265) << "Illegal icon group: " << group << "\n";
+	kDebug(265) << "Illegal icon group: " << group << "\n";
 	return image;
     }
     return apply(image, mEffect[group][state], mValue[group][state],
@@ -187,7 +187,7 @@ QImage KIconEffect::apply(QImage image, int effect, float value, const QColor &c
 {
     if (effect >= LastEffect )
     {
-	kdDebug(265) << "Illegal icon effect: " << effect << "\n";
+	kDebug(265) << "Illegal icon effect: " << effect << "\n";
 	return image;
     }
     if (value > 1.0)
@@ -223,12 +223,12 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state) const
 {
     if (state >= KIcon::LastState)
     {
-	kdDebug(265) << "Illegal icon state: " << state << "\n";
+	kDebug(265) << "Illegal icon state: " << state << "\n";
 	return pixmap;
     }
     if (group >= KIcon::LastGroup)
     {
-	kdDebug(265) << "Illegal icon group: " << group << "\n";
+	kDebug(265) << "Illegal icon group: " << group << "\n";
 	return pixmap;
     }
     return apply(pixmap, mEffect[group][state], mValue[group][state],
@@ -248,7 +248,7 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
 
     if (effect >= LastEffect )
     {
-	kdDebug(265) << "Illegal icon effect: " << effect << "\n";
+	kDebug(265) << "Illegal icon effect: " << effect << "\n";
 	return result;
     }
 
@@ -568,7 +568,7 @@ QImage KIconEffect::doublePixels(QImage src) const
 
     if (src.depth() == 1)
     {
-	kdDebug(265) << "image depth 1 not supported\n";
+	kDebug(265) << "image depth 1 not supported\n";
 	return QImage();
     }
 
@@ -611,17 +611,17 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 {
     if (src.depth() != overlay.depth())
     {
-	kdDebug(265) << "Image depth src != overlay!\n";
+	kDebug(265) << "Image depth src != overlay!\n";
 	return;
     }
     if (src.size() != overlay.size())
     {
-	kdDebug(265) << "Image size src != overlay\n";
+	kDebug(265) << "Image size src != overlay\n";
 	return;
     }
     if (overlay.format() == QImage::Format_RGB32)
     {
-	kdDebug(265) << "Overlay doesn't have alpha buffer!\n";
+	kDebug(265) << "Overlay doesn't have alpha buffer!\n";
 	return;
     }
 
@@ -631,7 +631,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 
     if (src.depth() == 1)
     {
-	kdDebug(265) << "1bpp not supported!\n";
+	kDebug(265) << "1bpp not supported!\n";
 	return;
     }
 
@@ -641,7 +641,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
     {
 	if (src.numColors() + overlay.numColors() > 255)
 	{
-	    kdDebug(265) << "Too many colors in src + overlay!\n";
+	    kDebug(265) << "Too many colors in src + overlay!\n";
 	    return;
 	}
 
@@ -651,13 +651,13 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 	{
 	    if (qAlpha(overlay.color(trans)) == 0)
 	    {
-		kdDebug(265) << "transparent pixel found at " << trans << "\n";
+		kDebug(265) << "transparent pixel found at " << trans << "\n";
 		break;
 	    }
 	}
 	if (trans == overlay.numColors())
 	{
-	    kdDebug(265) << "transparent pixel not found!\n";
+	    kDebug(265) << "transparent pixel not found!\n";
 	    return;
 	}
 
@@ -760,7 +760,7 @@ KIconEffect::visualActivate(QWidget * widget, const QRect &rect)
 
     unsigned int actDelay = (1000 * (100 - actSpeed)) / actCount;
 
-    //kdDebug() << "actCount=" << actCount << " actDelay=" << actDelay << endl;
+    //kDebug() << "actCount=" << actCount << " actDelay=" << actDelay << endl;
 
     QPoint c = rect.center();
 

@@ -44,7 +44,7 @@ KProcIO::KProcIO ( QTextCodec *_codec)
      codec = QTextCodec::codecForName("ISO 8859-1");
      if (!codec)
      {
-        kdError(174) << "Can't create ISO 8859-1 codec!" << endl;
+        kError(174) << "Can't create ISO 8859-1 codec!" << endl;
      }
   }
 }
@@ -231,7 +231,7 @@ int KProcIO::readln (QString &line, bool autoAck, bool *partial)
 
   len=recvbuffer.find ('\n',rbi)-rbi;
 
-  //kdDebug(174) << "KPIO::readln" << endl;
+  //kDebug(174) << "KPIO::readln" << endl;
 
   //in case there's no '\n' at the end of the buffer
   if ((len<0) && 

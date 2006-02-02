@@ -46,7 +46,7 @@ extern "C" int KDE_EXPORT kdemain(int argc, char **argv)
 
     if (argc != 4)
     {
-        kdError() << "Usage: kio_metainfo protocol domain-socket1 domain-socket2" << endl;
+        kError() << "Usage: kio_metainfo protocol domain-socket1 domain-socket2" << endl;
         exit(-1);
     }
 

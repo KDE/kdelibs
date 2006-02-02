@@ -78,7 +78,7 @@ void KUrlComboBox::init( Mode mode )
 
 QStringList KUrlComboBox::urls() const
 {
-    kdDebug(250) << "::urls()" << endl;
+    kDebug(250) << "::urls()" << endl;
     //static const QString &fileProt = KGlobal::staticQString("file:");
     QStringList list;
     QString url;
@@ -245,7 +245,7 @@ void KUrlComboBox::setURL( const KUrl& url )
         item->text = url.path( myMode );
     else
         item->text = url.prettyURL( myMode );
-     kdDebug(250) << "setURL: text=" << item->text << endl;
+     kDebug(250) << "setURL: text=" << item->text << endl;
 
     int id = count();
     QString text = /*isEditable() ? item->url.prettyURL( myMode ) : */ item->text;
@@ -276,7 +276,7 @@ void KUrlComboBox::slotActivated( int index )
 
 void KUrlComboBox::insertURLItem( const KUrlComboItem *item )
 {
-// kdDebug(250) << "insertURLItem " << item->text << endl;
+// kDebug(250) << "insertURLItem " << item->text << endl;
     int id = count();
     KComboBox::insertItem(id, item->icon, item->text);
     itemMapper.insert( id, item );

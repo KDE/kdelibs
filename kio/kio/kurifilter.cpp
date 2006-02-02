@@ -238,7 +238,7 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
         use_plugins = m_lstPlugins;  // Use everything that is loaded...
     else
     {
-        //kdDebug() << "Named plugins requested..."  << endl;
+        //kDebug() << "Named plugins requested..."  << endl;
         for( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst )
         {
             Q3PtrListIterator<KURIFilterPlugin> it( m_lstPlugins );
@@ -246,7 +246,7 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
             {
                 if( (*lst) == it.current()->name() )
                 {
-                    //kdDebug() << "Will use filter plugin named: " << it.current()->name() << endl;
+                    //kDebug() << "Will use filter plugin named: " << it.current()->name() << endl;
                     use_plugins.append( it.current() );
                     break;  // We already found it ; so lets test the next named filter...
                 }
@@ -255,11 +255,11 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
     }
 
     Q3PtrListIterator<KURIFilterPlugin> it( use_plugins );
-    //kdDebug() << "Using " << use_plugins.count() << " out of the "
+    //kDebug() << "Using " << use_plugins.count() << " out of the "
     //          << m_lstPlugins.count() << " available plugins" << endl;
     for (; it.current() && !filtered; ++it)
     {
-        //kdDebug() << "Using a filter plugin named: " << it.current()->name() << endl;
+        //kDebug() << "Using a filter plugin named: " << it.current()->name() << endl;
         filtered |= it.current()->filterURI( data );
     }
     return filtered;

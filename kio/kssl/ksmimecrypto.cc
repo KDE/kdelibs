@@ -277,7 +277,7 @@ KSMIMECrypto::rc KSMIMECryptoPrivate::sslErrToRc(void) {
 	    break;
     }
 
-    kdDebug(7029) <<"KSMIMECrypto: uncaught error " <<ERR_GET_LIB(cerr)
+    kDebug(7029) <<"KSMIMECrypto: uncaught error " <<ERR_GET_LIB(cerr)
 		  <<" " <<ERR_GET_REASON(cerr) <<endl;
     return KSMIMECrypto::KSC_R_OTHER;
 }    

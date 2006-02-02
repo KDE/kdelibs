@@ -89,7 +89,7 @@ QString KSSLCSessionCache::getSessionForURL(const KUrl &kurl) {
 
     // Negative caching disabled: cache pollution
 #if 0 
-    kdDebug(7029) <<"Negative caching " <<key <<endl;
+    kDebug(7029) <<"Negative caching " <<key <<endl;
     if (sessions->count() >= MAX_ENTRIES) sessions->removeLast();
     sessions->prepend(new KSSLCSession(key, QString()));
 #endif

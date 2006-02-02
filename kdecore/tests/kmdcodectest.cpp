@@ -77,7 +77,7 @@ long readContent (const QFile& f, long count, QByteArray& buf)
     }
     else if ( result == -1 )
     {
-      kdError() << "Could not read the file!" << endl;
+      kError() << "Could not read the file!" << endl;
     }
 
     return result;
@@ -96,14 +96,14 @@ void testCodec (const char* msg, Codec type, bool isFile)
 
         if (!f.exists())
         {
-          kdError() << "Could not find: " << f.name () << endl;
+          kError() << "Could not find: " << f.name () << endl;
           return;
         }
 
         if (!f.open(QIODevice::ReadOnly))
         {
           f.close ();
-          kdError() << "Could not open: " << f.name() << endl;
+          kError() << "Could not open: " << f.name() << endl;
           return;
         }
 
@@ -115,7 +115,7 @@ void testCodec (const char* msg, Codec type, bool isFile)
         // Error! Exit!
         if ( count == -1 )
         {
-          kdError () << "Error reading from: " << f.name() << endl;
+          kError () << "Error reading from: " << f.name() << endl;
           f.close ();
           return;
         }
@@ -254,7 +254,7 @@ void MD5_verify( const char *input, const char *digest, bool isFile )
     if (!f.open (QIODevice::ReadOnly))
     {
       f.close ();
-      kdFatal() << "Cannot open file for reading!"  << endl;
+      kFatal() << "Cannot open file for reading!"  << endl;
     }
 
     result = context.verify (digest);
@@ -275,7 +275,7 @@ void MD5_file (const char *filename, bool rawOutput )
   if (!f.open(QIODevice::ReadOnly))
   {
     f.close();
-    kdError() << "(" << filename << ") cannot be opened!" << endl;
+    kError() << "(" << filename << ") cannot be opened!" << endl;
     return;
   }
 

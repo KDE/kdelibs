@@ -46,7 +46,7 @@ extern "C"
 
 bool BinaryFormat::load( Addressee &addressee, QFile *file )
 {
-  kdDebug(5700) << "BinaryFormat::load()" << endl;
+  kDebug(5700) << "BinaryFormat::load()" << endl;
   QDataStream stream( file );
 
   if ( !checkHeader( stream ) )
@@ -59,7 +59,7 @@ bool BinaryFormat::load( Addressee &addressee, QFile *file )
 
 bool BinaryFormat::loadAll( AddressBook*, Resource *resource, QFile *file )
 {
-  kdDebug(5700) << "BinaryFormat::loadAll()" << endl;
+  kDebug(5700) << "BinaryFormat::loadAll()" << endl;
 
   QDataStream stream( file );
 
@@ -83,7 +83,7 @@ bool BinaryFormat::loadAll( AddressBook*, Resource *resource, QFile *file )
 
 void BinaryFormat::save( const Addressee &addressee, QFile *file )
 {
-  kdDebug(5700) << "BinaryFormat::save()" << endl;
+  kDebug(5700) << "BinaryFormat::save()" << endl;
 
   QDataStream stream( file );
 
@@ -96,7 +96,7 @@ void BinaryFormat::save( const Addressee &addressee, QFile *file )
 
 void BinaryFormat::saveAll( AddressBook*, Resource *resource, QFile *file )
 {
-  kdDebug(5700) << "BinaryFormat::saveAll()" << endl;
+  kDebug(5700) << "BinaryFormat::saveAll()" << endl;
 
   quint32 counter = 0;
   QDataStream stream( file );
@@ -119,7 +119,7 @@ void BinaryFormat::saveAll( AddressBook*, Resource *resource, QFile *file )
 
 bool BinaryFormat::checkFormat( QFile *file ) const
 {
-  kdDebug(5700) << "BinaryFormat::checkFormat()" << endl;
+  kDebug(5700) << "BinaryFormat::checkFormat()" << endl;
 
   QDataStream stream( file );
 
@@ -135,17 +135,17 @@ bool BinaryFormat::checkHeader( QDataStream &stream ) const
   QFile *file = dynamic_cast<QFile*>( stream.device() );
 
   if ( !file ) {
-    kdError() << i18n("Not a file?") << endl;
+    kError() << i18n("Not a file?") << endl;
     return false;
   }
 
   if ( magic != 0x2e93e ) {
-    kdError() << i18n("File '%1' is not binary format.").arg( file->fileName() ) << endl;
+    kError() << i18n("File '%1' is not binary format.").arg( file->fileName() ) << endl;
     return false;
   }
 
   if ( version != BINARY_FORMAT_VERSION ) {
-    kdError() << i18n("File '%1' is the wrong version.").arg( file->fileName() ) << endl;
+    kError() << i18n("File '%1' is the wrong version.").arg( file->fileName() ) << endl;
     return false;
   }
 
@@ -173,7 +173,7 @@ void BinaryFormat::loadAddressee( Addressee &addressee, QDataStream &stream )
   if ( photo.isIntern() ) {
     QImage img;
     if ( !img.load( locateLocal( "data", "kabc/photos/" ) + addressee.uid() ) )
-      kdDebug(5700) << "No photo available for '" << addressee.uid() << "'." << endl;
+      kDebug(5700) << "No photo available for '" << addressee.uid() << "'." << endl;
 
     addressee.setPhoto( img );
   }
@@ -181,7 +181,7 @@ void BinaryFormat::loadAddressee( Addressee &addressee, QDataStream &stream )
   if ( logo.isIntern() ) {
     QImage img;
     if ( !img.load( locateLocal( "data", "kabc/logos/" ) + addressee.uid() ) )
-      kdDebug(5700) << "No logo available for '" << addressee.uid() << "'." << endl;
+      kDebug(5700) << "No logo available for '" << addressee.uid() << "'." << endl;
 
     addressee.setLogo( img );
   }
@@ -204,7 +204,7 @@ void BinaryFormat::saveAddressee( const Addressee &addressee, QDataStream &strea
     QString fileName = locateLocal( "data", "kabc/photos/" ) + addressee.uid();
 
     if ( !img.save( fileName, "PNG" ) )
-      kdDebug(5700) << "Unable to save photo for '" << addressee.uid() << "'." << endl;
+      kDebug(5700) << "Unable to save photo for '" << addressee.uid() << "'." << endl;
   }
 
   if ( logo.isIntern() ) {
@@ -212,7 +212,7 @@ void BinaryFormat::saveAddressee( const Addressee &addressee, QDataStream &strea
     QString fileName = locateLocal( "data", "kabc/logos/" ) + addressee.uid();
 
     if ( !img.save( fileName, "PNG" ) )
-      kdDebug(5700) << "Unable to save logo for '" << addressee.uid() << "'." << endl;
+      kDebug(5700) << "Unable to save logo for '" << addressee.uid() << "'." << endl;
   }
 
   // save sound

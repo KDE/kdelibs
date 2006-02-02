@@ -144,7 +144,7 @@ bool KKey::init( const QString& sSpec )
 	if( m_sym == 0 )
 		m_mod = 0;
 
-	kdDebug(125) << "KKey::init( \"" << sSpec << "\" ):"
+	kDebug(125) << "KKey::init( \"" << sSpec << "\" ):"
 		<< " m_sym = " << QString::number(m_sym, 16)
 		<< ", m_mod = " << QString::number(m_mod, 16) << endl;
 
@@ -186,7 +186,7 @@ QString KKey::toString() const
 
 QString KKey::toStringInternal() const
 {
-	//kdDebug(125) << "KKey::toStringInternal(): this = " << this
+	//kDebug(125) << "KKey::toStringInternal(): this = " << this
 	//	<< " mod = " << QString::number(m_mod, 16)
 	//	<< " key = " << QString::number(m_sym, 16) << endl;
 	QString s;
@@ -410,7 +410,7 @@ bool KShortcut::init( const QString& s )
 			if( sSeq.startsWith( "default(" ) )
 				sSeq = sSeq.mid( 8, sSeq.length() - 9 );
 			m_seq[i].init( sSeq );
-			//kdDebug(125) << "*\t'" << sSeq << "' => " << m_seq[i].toStringInternal() << endl;
+			//kDebug(125) << "*\t'" << sSeq << "' => " << m_seq[i].toStringInternal() << endl;
 		}
 	} else {
 		clear();
@@ -435,7 +435,7 @@ bool KShortcut::init( const QString& s )
 #endif
 		}
 #ifndef NDEBUG
-		kdDebug(125) << sDebug << endl;
+		kDebug(125) << sDebug << endl;
 #endif
 	}
 

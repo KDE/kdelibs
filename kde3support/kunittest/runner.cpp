@@ -59,7 +59,7 @@ namespace KUnitTest
         // Add the folder to the "module" resource such that the KLibLoader can
         // find the modules in this folder.
         KGlobal::dirs()->addResourceDir("module", folder);
-        kdDebug() << "Looking in folder: " << dir.absPath() << endl;
+        kDebug() << "Looking in folder: " << dir.absPath() << endl;
 
         // Get a list of all modules.
         QStringList modules = dir.entryList();
@@ -67,7 +67,7 @@ namespace KUnitTest
         for ( int i = 0; i < modules.count(); ++i )
         {
             QString module = modules[i];
-            kdDebug() << "Module: " << dir.absPath() + "/" + module << endl;
+            kDebug() << "Module: " << dir.absPath() + "/" + module << endl;
 
             if ( reQuery.search(module) != -1 )
             {
@@ -77,12 +77,12 @@ namespace KUnitTest
                 if ( factory )
                     factory->create();
                 else {
-                    kdWarning() << "\tError loading " << module << " : " << KLibLoader::self()->lastErrorMessage() << endl;
+                    kWarning() << "\tError loading " << module << " : " << KLibLoader::self()->lastErrorMessage() << endl;
                     ::exit( 1 );
                 }
             }
             else
-                kdDebug() << "\tModule doesn't match." << endl;
+                kDebug() << "\tModule doesn't match." << endl;
         }
     }
 

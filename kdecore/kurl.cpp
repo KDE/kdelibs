@@ -1084,7 +1084,7 @@ void KUrl::parseURL( const QString& _url, int encoding_hint )
   while( pos < len && buf[pos] != '#' && buf[pos]!='?' ) pos++;
 
   tmp = QString( buf + start, pos - start );
-  //kdDebug(126)<<" setting encoded path to:"<<tmp<<endl;
+  //kDebug(126)<<" setting encoded path to:"<<tmp<<endl;
   setEncodedPath( tmp, encoding_hint );
 
   if ( pos == len )
@@ -1114,10 +1114,10 @@ void KUrl::parseURL( const QString& _url, int encoding_hint )
       _setQuery(tmp, encoding_hint);
 
  NodeOk:
-  //kdDebug(126)<<"parsing finished. m_strProtocol="<<m_strProtocol<<" m_strHost="<<m_strHost<<" m_strPath="<<m_strPath<<endl;
+  //kDebug(126)<<"parsing finished. m_strProtocol="<<m_strProtocol<<" m_strHost="<<m_strHost<<" m_strPath="<<m_strPath<<endl;
   m_bIsMalformed = false; // Valid URL
 
-  //kdDebug()<<"Prot="<<m_strProtocol<<"\nUser="<<m_strUser<<"\nPass="<<m_strPass<<"\nHost="<<m_strHost<<"\nPath="<<m_strPath<<"\nQuery="<<m_strQuery_encoded<<"\nRef="<<m_strRef_encoded<<"\nPort="<<m_iPort<<endl;
+  //kDebug()<<"Prot="<<m_strProtocol<<"\nUser="<<m_strUser<<"\nPass="<<m_strPass<<"\nHost="<<m_strHost<<"\nPath="<<m_strPath<<"\nQuery="<<m_strQuery_encoded<<"\nRef="<<m_strRef_encoded<<"\nPort="<<m_iPort<<endl;
   if (m_strProtocol.isEmpty())
   {
     m_iUriMode = URL;
@@ -1126,7 +1126,7 @@ void KUrl::parseURL( const QString& _url, int encoding_hint )
   return;
 
  NodeErr:
-//  kdDebug(126) << "KUrl couldn't parse URL \"" << _url << "\"" << endl;
+//  kDebug(126) << "KUrl couldn't parse URL \"" << _url << "\"" << endl;
   reset();
   m_strProtocol = _url;
   m_iUriMode = Invalid;
@@ -1310,10 +1310,10 @@ bool KUrl::isParentOf( const KUrl& _u ) const
     if ( p2[p2.length()-1] != '/' )
         p2 += '/';
 
-    //kdDebug(126) << "p1=" << p1 << endl;
-    //kdDebug(126) << "p2=" << p2 << endl;
-    //kdDebug(126) << "p1.length()=" << p1.length() << endl;
-    //kdDebug(126) << "p2.left(!$)=" << p2.left( p1.length() ) << endl;
+    //kDebug(126) << "p1=" << p1 << endl;
+    //kDebug(126) << "p2=" << p2 << endl;
+    //kDebug(126) << "p1.length()=" << p1.length() << endl;
+    //kDebug(126) << "p2.left(!$)=" << p2.left( p1.length() ) << endl;
     return p2.startsWith( p1 );
   }
   return false;
@@ -1901,7 +1901,7 @@ void KUrl::addPath( const QString& _txt )
   }
 
   m_strPath += _txt.mid( i );
-  //kdDebug(126)<<"addPath: resultpath="<<m_strPath<<endl;
+  //kDebug(126)<<"addPath: resultpath="<<m_strPath<<endl;
 
 }
 

@@ -88,12 +88,12 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 #ifdef KSSL_HAVE_SSL
 	QRegExp rx;
 
-	kdDebug(7029) << "Matching CN=[" << cn << "] to ["
+	kDebug(7029) << "Matching CN=[" << cn << "] to ["
 		      << d->peerHost << "]" << endl;
 
 	// Check for invalid characters
 	if (QRegExp("[^a-zA-Z0-9\\.\\*\\-]").search(cn) >= 0) {
-		kdDebug(7029) << "CN contains invalid characters!  Failing." << endl;
+		kDebug(7029) << "CN contains invalid characters!  Failing." << endl;
 		return false;
 	}
 

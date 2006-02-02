@@ -83,7 +83,7 @@ KActionCollection::KActionCollection( QWidget *parent,
                                       KInstance *instance )
   : QObject( parent )
 {
-  kdDebug(129) << "KActionCollection::KActionCollection( " << parent << ", " << " ): this = " << this << endl; // ellis
+  kDebug(129) << "KActionCollection::KActionCollection( " << parent << ", " << " ): this = " << this << endl; // ellis
   d = new KActionCollectionPrivate;
   if( parent )
     setWidget( parent );
@@ -96,7 +96,7 @@ KActionCollection::KActionCollection( QWidget *watch, QObject* parent,
                                       KInstance *instance )
   : QObject( parent )
 {
-  kdDebug(129) << "KActionCollection::KActionCollection( " << watch << ", " << parent << " ): this = " << this << endl; //ellis
+  kDebug(129) << "KActionCollection::KActionCollection( " << watch << ", " << parent << " ): this = " << this << endl; //ellis
   d = new KActionCollectionPrivate;
   if( watch )
     setWidget( watch );
@@ -110,8 +110,8 @@ KActionCollection::KActionCollection( QObject *parent,
                                       KInstance *instance )
   : QObject( parent )
 {
-  kdWarning(129) << "KActionCollection::KActionCollection( QObject *parent, KInstance *instance )" << endl; //ellis
-  kdDebug(129) << kdBacktrace() << endl;
+  kWarning(129) << "KActionCollection::KActionCollection( QObject *parent, KInstance *instance )" << endl; //ellis
+  kDebug(129) << kBacktrace() << endl;
   d = new KActionCollectionPrivate;
   QWidget* w = dynamic_cast<QWidget*>( parent );
   if( w )
@@ -123,7 +123,7 @@ KActionCollection::KActionCollection( QObject *parent,
 KActionCollection::KActionCollection( const KActionCollection &copy )
     : QObject()
 {
-  kdWarning(129) << "KActionCollection::KActionCollection( const KActionCollection & ): function is severely deprecated." << endl;
+  kWarning(129) << "KActionCollection::KActionCollection( const KActionCollection & ): function is severely deprecated." << endl;
   d = new KActionCollectionPrivate;
   *this = copy;
 }
@@ -140,7 +140,7 @@ KActionCollection::KActionCollection( const char *name, const KXMLGUIClient *par
 
 KActionCollection::~KActionCollection()
 {
-  kdDebug(129) << "KActionCollection::~KActionCollection(): this = " << this << endl;
+  kDebug(129) << "KActionCollection::~KActionCollection(): this = " << this << endl;
   foreach ( KAction* pAction, d->m_actionDict ) {
     Q_ASSERT (pAction != 0);
 
@@ -160,8 +160,8 @@ KActionCollection::~KActionCollection()
 void KActionCollection::setWidget( QWidget* w )
 {
   //if ( d->m_actionDict.count() > 0 ) {
-  //  kdError(129) << "KActionCollection::setWidget(): must be called before any actions are added to collection!" << endl;
-  //  kdDebug(129) << kdBacktrace() << endl;
+  //  kError(129) << "KActionCollection::setWidget(): must be called before any actions are added to collection!" << endl;
+  //  kDebug(129) << kBacktrace() << endl;
   //}
   //else
   if ( !d->m_widget ) {
@@ -169,7 +169,7 @@ void KActionCollection::setWidget( QWidget* w )
     d->m_kaccel = new KAccel( w, this, "KActionCollection-KAccel" );
   }
   else if ( d->m_widget != w )
-    kdWarning(129) << "KActionCollection::setWidget(): tried to change widget from " << d->m_widget << " to " << w << endl;
+    kWarning(129) << "KActionCollection::setWidget(): tried to change widget from " << d->m_widget << " to " << w << endl;
 }
 
 void KActionCollection::setAutoConnectShortcuts( bool b )
@@ -190,7 +190,7 @@ bool KActionCollection::addDocCollection( KActionCollection* pDoc )
 
 void KActionCollection::beginXMLPlug( QWidget *widget )
 {
-	kdDebug(129) << "KActionCollection::beginXMLPlug( buildWidget = " << widget << " ): this = " <<  this << " d->m_builderKAccel = " << d->m_builderKAccel << endl;
+	kDebug(129) << "KActionCollection::beginXMLPlug( buildWidget = " << widget << " ): this = " <<  this << " d->m_builderKAccel = " << d->m_builderKAccel << endl;
 
 	if( widget && !d->m_builderKAccel ) {
             d->m_builderKAccel = new KAccel( widget, this, "KActionCollection-BuilderKAccel" );
@@ -199,13 +199,13 @@ void KActionCollection::beginXMLPlug( QWidget *widget )
 
 void KActionCollection::endXMLPlug()
 {
-	kdDebug(129) << "KActionCollection::endXMLPlug(): this = " <<  this << endl;
+	kDebug(129) << "KActionCollection::endXMLPlug(): this = " <<  this << endl;
 	//s_kaccelXML = 0;
 }
 
 void KActionCollection::prepareXMLUnplug()
 {
-	kdDebug(129) << "KActionCollection::prepareXMLUnplug(): this = " <<  this << endl;
+	kDebug(129) << "KActionCollection::prepareXMLUnplug(): this = " <<  this << endl;
 	unplugShortcuts( d->m_kaccel );
 
 	if( d->m_builderKAccel ) {
@@ -228,7 +228,7 @@ void KActionCollection::unplugShortcuts( KAccel* kaccel )
 /*void KActionCollection::addWidget( QWidget* w )
 {
   if( !d->m_bOneKAccelOnly ) {
-    kdDebug(129) << "KActionCollection::addWidget( " << w << " ): this = " << this << endl;
+    kDebug(129) << "KActionCollection::addWidget( " << w << " ): this = " << this << endl;
     for( uint i = 0; i < d->m_widgetList.count(); i++ ) {
       if( d->m_widgetList[i] == w ) {
         d->m_iWidgetCurrent = i;
@@ -244,7 +244,7 @@ void KActionCollection::unplugShortcuts( KAccel* kaccel )
 void KActionCollection::removeWidget( QWidget* w )
 {
   if( !d->m_bOneKAccelOnly ) {
-    kdDebug(129) << "KActionCollection::removeWidget( " << w << " ): this = " << this << endl;
+    kDebug(129) << "KActionCollection::removeWidget( " << w << " ): this = " << this << endl;
     for( uint i = 0; i < d->m_widgetList.count(); i++ ) {
       if( d->m_widgetList[i] == w ) {
         // Remove KAccel object from children.
@@ -267,7 +267,7 @@ void KActionCollection::removeWidget( QWidget* w )
         return;
       }
     }
-    kdWarning(129) << "KActionCollection::removeWidget( " << w << " ): widget not in list." << endl;
+    kWarning(129) << "KActionCollection::removeWidget( " << w << " ): widget not in list." << endl;
   }
 }
 
@@ -331,7 +331,7 @@ void KActionCollection::insert( KAction* action )
   while (it != d->m_actionDict.end() && it.key() == name)
   {
     if ( it.value() == action ) {
-      kdDebug() << "WARNING: collection already has action " << action << " " << name << ", it got inserted twice" << endl;
+      kDebug() << "WARNING: collection already has action " << action << " " << name << ", it got inserted twice" << endl;
       return;
     }
 
@@ -340,7 +340,7 @@ void KActionCollection::insert( KAction* action )
   // Having more than one action with the same name is a problem,
   // since everything is based on the name: xmlgui, shortcuts, custom properties, etc.
   if ( foundAction )
-    kdDebug() << "WARNING: collection already has an action named '" << name << "'" << endl;
+    kDebug() << "WARNING: collection already has an action named '" << name << "'" << endl;
 
   // really insert action
   d->m_actionDict.insertMulti (name, action);
@@ -664,7 +664,7 @@ const KXMLGUIClient *KActionCollection::parentGUIClient() const
 // KDE 4: remove
 KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
 {
-  kdWarning(129) << "KActionCollection::operator+(): function is severely deprecated." << endl;
+  kWarning(129) << "KActionCollection::operator+(): function is severely deprecated." << endl;
   KActionCollection ret( *this );
 
   QList<KAction *> actions = c.actions();
@@ -678,7 +678,7 @@ KActionCollection KActionCollection::operator+(const KActionCollection &c ) cons
 
 KActionCollection &KActionCollection::operator=( const KActionCollection &copy )
 {
-  kdWarning(129) << "KActionCollection::operator=(): function is severely deprecated." << endl;
+  kWarning(129) << "KActionCollection::operator=(): function is severely deprecated." << endl;
   //d->m_bOneKAccelOnly = copy.d->m_bOneKAccelOnly;
   //d->m_iWidgetCurrent = copy.d->m_iWidgetCurrent;
   //d->m_widgetList = copy.d->m_widgetList;
@@ -692,7 +692,7 @@ KActionCollection &KActionCollection::operator=( const KActionCollection &copy )
 
 KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
 {
-  kdWarning(129) << "KActionCollection::operator+=(): function is severely deprecated." << endl;
+  kWarning(129) << "KActionCollection::operator+=(): function is severely deprecated." << endl;
 
   foreach( KAction* pAction, c.d->m_actionDict )
     insert( pAction );
@@ -739,7 +739,7 @@ bool KActionShortcutList::save() const
 {
 	const KXMLGUIClient* guiClient=m_actions.parentGUIClient();
 	const QString xmlFile=guiClient ? guiClient->xmlFile() : m_actions.xmlFile();
-	kdDebug(129) << "KActionShortcutList::save(): xmlFile = " << xmlFile << endl;
+	kDebug(129) << "KActionShortcutList::save(): xmlFile = " << xmlFile << endl;
 
 	if( m_actions.xmlFile().isEmpty() )
 		return writeSettings();
@@ -763,7 +763,7 @@ bool KActionShortcutList::save() const
 		const QString& sName = name(i);
 
 		bool bSameAsDefault = (shortcut(i) == shortcutDefault(i));
-		//kdDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
+		//kDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
 
 		// now see if this element already exists
                 // and create it if necessary (unless bSameAsDefault)
@@ -774,7 +774,7 @@ bool KActionShortcutList::save() const
 		act_elem.removeAttribute( attrAccel );
 		if( bSameAsDefault ) {
 			act_elem.removeAttribute( attrShortcut );
-			//kdDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
+			//kDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
 			if( act_elem.attributes().count() == 1 )
 				elem.removeChild( act_elem );
 		} else {

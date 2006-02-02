@@ -34,7 +34,7 @@ SMTP::SMTP(char *serverhost, unsigned short int port, int timeout)
     if(domainName.isEmpty())
         domainName = "somemachine.example.net";
 
-    kdDebug() << "SMTP object created" << endl;
+    kDebug() << "SMTP object created" << endl;
 
     connect(&connectTimer, SIGNAL(timeout()), this, SLOT(connectTimerTick()));
     connect(&timeOutTimer, SIGNAL(timeout()), this, SLOT(connectTimedOut()));
@@ -115,7 +115,7 @@ void SMTP::setMessageHeader(const QString &header)
 
 void SMTP::openConnection(void)
 {
-    kdDebug() << "started connect timer" << endl;
+    kDebug() << "started connect timer" << endl;
     connectTimer.start(100, true);
 }
 
@@ -129,14 +129,14 @@ void SMTP::sendMessage(void)
     if(!connected)
         connectTimerTick();
     if(state == FINISHED && connected){
-        kdDebug() << "state was == FINISHED\n" << endl;
+        kDebug() << "state was == FINISHED\n" << endl;
         finished = false;
         state = IN;
         writeString = QString::fromLatin1("helo %1\r\n").arg(domainName);
         sock->write(writeString.ascii(), writeString.length());
     }
     if(connected){
-        kdDebug() << "enabling read on sock...\n" << endl;
+        kDebug() << "enabling read on sock...\n" << endl;
         interactTimer.start(timeOut, true);
         sock->enableRead(true);
     }
@@ -148,19 +148,19 @@ void SMTP::connectTimerTick(void)
     connectTimer.stop();
 //    timeOutTimer.start(timeOut, true);
 
-    kdDebug() << "connectTimerTick called..." << endl;
+    kDebug() << "connectTimerTick called..." << endl;
 
     if(sock){
         delete sock;
         sock = 0L;
     }
 
-    kdDebug() << "connecting to " << serverHost << ":" << hostPort << " ..... " << endl;
+    kDebug() << "connecting to " << serverHost << ":" << hostPort << " ..... " << endl;
     sock = new KNetwork::KBufferedSocket(serverHost.ascii(), QString::number(hostPort));
 
     if (!sock->connect()) {
         timeOutTimer.stop();
-        kdDebug() << "connection failed!" << endl;
+        kDebug() << "connection failed!" << endl;
         socketClosed();
         emit error(CONNECTERROR);
         connected = false;
@@ -175,7 +175,7 @@ void SMTP::connectTimerTick(void)
     connect(sock, SIGNAL(closed()), this, SLOT(socketCloseded()));
     //    sock->enableRead(true);
     timeOutTimer.stop();
-    kdDebug() << "connected" << endl;
+    kDebug() << "connected" << endl;
 }
 
 void SMTP::connectTimedOut(void)
@@ -184,7 +184,7 @@ void SMTP::connectTimedOut(void)
 
     if(sock)
 	sock->enableRead(false);
-    kdDebug() << "socket connection timed out" << endl;
+    kDebug() << "socket connection timed out" << endl;
     socketClosed();
     emit error(CONNECTTIMEOUT);
 }
@@ -195,7 +195,7 @@ void SMTP::interactTimedOut(void)
 
     if(sock)
         sock->enableRead(false);
-    kdDebug() << "time out waiting for server interaction" << endl;
+    kDebug() << "time out waiting for server interaction" << endl;
     socketClosed();
     emit error(INTERACTTIMEOUT);
 }
@@ -204,7 +204,7 @@ void SMTP::socketReadyToRead()
 {
     int n, nl;
 
-    kdDebug() << "socketRead() called..." << endl;
+    kDebug() << "socketRead() called..." << endl;
     interactTimer.stop();
 
     if (!sock)
@@ -229,7 +229,7 @@ void SMTP::socketClosed()
     disconnect(sock, SIGNAL(readyRead()), this, SLOT(socketReadyToRead()));
     disconnect(sock, SIGNAL(closed()), this, SLOT(socketClosed()));
     sock->enableRead(false);
-    kdDebug() << "connection terminated" << endl;
+    kDebug() << "connection terminated" << endl;
     connected = false;
     if(sock){
         delete sock;
@@ -246,18 +246,18 @@ void SMTP::processLine(QString *line)
     i = line->indexOf(' ');
     tmpstr = line->left(i);
     if(i > 3)
-        kdDebug() << "warning: SMTP status code longer then 3 digits: " << tmpstr << endl;
+        kDebug() << "warning: SMTP status code longer then 3 digits: " << tmpstr << endl;
     stat = tmpstr.toInt();
     serverState = (SMTPServerStatus)stat;
     lastState = state;
 
-    kdDebug() << "smtp state: [" << stat << "][" << *line << "]" << endl;
+    kDebug() << "smtp state: [" << stat << "][" << *line << "]" << endl;
 
     switch(stat){
     case GREET:     //220
         state = IN;
         writeString = QString::fromLatin1("helo %1\r\n").arg(domainName);
-        kdDebug() << "out: " << writeString << endl;
+        kDebug() << "out: " << writeString << endl;
         sock->write(writeString.ascii(), writeString.length());
         break;
     case GOODBYE:   //221
@@ -268,19 +268,19 @@ void SMTP::processLine(QString *line)
         case IN:
             state = READY;
             writeString = QString::fromLatin1("mail from: %1\r\n").arg(senderAddress);
-            kdDebug() << "out: " << writeString << endl;
+            kDebug() << "out: " << writeString << endl;
             sock->write(writeString.ascii(), writeString.length());
             break;
         case READY:
             state = SENTFROM;
             writeString = QString::fromLatin1("rcpt to: %1\r\n").arg(recipientAddress);
-             kdDebug() << "out: " << writeString << endl;
+             kDebug() << "out: " << writeString << endl;
             sock->write(writeString.ascii(), writeString.length());
             break;
         case SENTFROM:
             state = SENTTO;
             writeString = QLatin1String("data\r\n");
-             kdDebug() << "out: " << writeString << endl;
+             kDebug() << "out: " << writeString << endl;
             sock->write(writeString.ascii(), writeString.length());
             break;
         case DATA:
@@ -291,7 +291,7 @@ void SMTP::processLine(QString *line)
             break;
         default:
             state = CERROR;
-            kdDebug() << "smtp error (state error): [" << lastState << "]:[" << stat << "][" << *line << "]" << endl;
+            kDebug() << "smtp error (state error): [" << lastState << "]:[" << stat << "][" << *line << "]" << endl;
             socketClosed();
             emit error(COMMAND);
             break;
@@ -304,24 +304,24 @@ void SMTP::processLine(QString *line)
         writeString += "\r\n";
         writeString += messageBody;
         writeString += QLatin1String(".\r\n");
-        kdDebug() << "out: " << writeString;
+        kDebug() << "out: " << writeString;
         sock->write(writeString.ascii(), writeString.length());
         break;
     case ERROR:     //501
         state = CERROR;
-        kdDebug() << "smtp error (command error): [" << lastState << "]:[" << stat << "][" << *line << "]\n" << endl;
+        kDebug() << "smtp error (command error): [" << lastState << "]:[" << stat << "][" << *line << "]\n" << endl;
         socketClosed();
         emit error(COMMAND);
         break;
     case UNKNOWN:   //550
         state = CERROR;
-        kdDebug() << "smtp error (unknown user): [" << lastState << "]:[" << stat << "][" << *line << "]" << endl;
+        kDebug() << "smtp error (unknown user): [" << lastState << "]:[" << stat << "][" << *line << "]" << endl;
         socketClosed();
         emit error(UNKNOWNUSER);
         break;
     default:
         state = CERROR;
-        kdDebug() << "unknown response: [" << lastState << "]:[" << stat << "][" << *line << "]" << endl;
+        kDebug() << "unknown response: [" << lastState << "]:[" << stat << "][" << *line << "]" << endl;
         socketClosed();
         emit error(UNKNOWNRESPONSE);
     }

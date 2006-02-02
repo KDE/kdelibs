@@ -237,7 +237,7 @@ void K3MDIGUIClient::setupActions()
 		addList.append( m_gotoToolDockMenu );
 	if ( m_mdiModeAction )
 		addList.append( m_mdiModeAction );
-	kdDebug( 760 ) << "K3MDIGUIClient::setupActions: plugActionList" << endl;
+	kDebug( 760 ) << "K3MDIGUIClient::setupActions: plugActionList" << endl;
 	plugActionList( actionListName, addList );
 
 	//    connectToActionContainers();
@@ -245,8 +245,8 @@ void K3MDIGUIClient::setupActions()
 
 void K3MDIGUIClient::addToolView( K3MdiToolViewAccessor* mtva )
 {
-	kdDebug( 760 ) << "*****void K3MDIGUIClient::addToolView(K3MdiToolViewAccessor* mtva)*****" << endl;
-	//	kdDebug()<<"name: "<<mtva->wrappedWidget()->name()<<endl;
+	kDebug( 760 ) << "*****void K3MDIGUIClient::addToolView(K3MdiToolViewAccessor* mtva)*****" << endl;
+	//	kDebug()<<"name: "<<mtva->wrappedWidget()->name()<<endl;
 	QString aname = QString( "k3mdi_toolview_" ) + mtva->wrappedWidget() ->name();
 
 	// try to read the action shortcut
@@ -289,7 +289,7 @@ void K3MDIGUIClient::clientAdded( KXMLGUIClient *client )
 
 void K3MDIGUIClient::mdiModeHasBeenChangedTo( K3Mdi::MdiMode mode )
 {
-	kdDebug( 760 ) << "K3MDIGUIClient::mdiModeHasBennChangeTo" << endl;
+	kDebug( 760 ) << "K3MDIGUIClient::mdiModeHasBennChangeTo" << endl;
 	m_mdiMode = mode;
 	if ( m_mdiModeAction )
 	{

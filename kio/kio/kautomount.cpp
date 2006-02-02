@@ -35,7 +35,7 @@ KAutoMount::KAutoMount( bool _readonly, const QString& _format, const QString& _
   : m_strDevice( _device ),
     m_desktopFile( _desktopFile )
 {
-  //kdDebug(7015) << "KAutoMount device=" << _device << " mountpoint=" << _mountpoint << endl;
+  //kDebug(7015) << "KAutoMount device=" << _device << " mountpoint=" << _mountpoint << endl;
   m_bShowFilemanagerWindow = _show_filemanager_window;
 
   KIO::Job* job = KIO::mount( _readonly, _format.ascii(), _device, _mountpoint );
@@ -52,11 +52,11 @@ void KAutoMount::slotResult( KIO::Job * job )
   {
     KUrl mountpoint;
     mountpoint.setPath( KIO::findDeviceMountPoint( m_strDevice ) );
-    //kdDebug(7015) << "KAutoMount: m_strDevice=" << m_strDevice << " -> mountpoint=" << mountpoint << endl;
+    //kDebug(7015) << "KAutoMount: m_strDevice=" << m_strDevice << " -> mountpoint=" << mountpoint << endl;
     Q_ASSERT( mountpoint.isValid() );
 
     if ( mountpoint.path().isEmpty() )
-        kdWarning(7015) << m_strDevice << " was correctly mounted, but KIO::findDeviceMountPoint didn't find it. "
+        kWarning(7015) << m_strDevice << " was correctly mounted, but KIO::findDeviceMountPoint didn't find it. "
                         << "This looks like a bug, please report it on http://bugs.kde.org, together with your /etc/fstab line" << endl;
     else if ( m_bShowFilemanagerWindow )
       KRun::runURL( mountpoint, "inode/directory" );
@@ -66,7 +66,7 @@ void KAutoMount::slotResult( KIO::Job * job )
     allDirNotify.FilesAdded( mountpoint );
 
     // Update the desktop file which is used for mount/unmount (icon change)
-    kdDebug(7015) << " mount finished : updating " << m_desktopFile << endl;
+    kDebug(7015) << " mount finished : updating " << m_desktopFile << endl;
     KUrl dfURL;
     dfURL.setPath( m_desktopFile );
     allDirNotify.FilesChanged( dfURL );
@@ -94,7 +94,7 @@ void KAutoUnmount::slotResult( KIO::Job * job )
   {
     KDirNotify_stub allDirNotify("*", "KDirNotify*");
     // Update the desktop file which is used for mount/unmount (icon change)
-    kdDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
+    kDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
     KUrl dfURL;
     dfURL.setPath( m_desktopFile );
     allDirNotify.FilesChanged( dfURL );

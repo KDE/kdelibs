@@ -107,13 +107,13 @@ bool XCFImageFormat::readXCF(QIODevice *device, QImage *outImage)
 	char tag[14];;
 
 	if (xcf_io.readRawData(tag, sizeof(tag)) != sizeof(tag)) {
-            kdDebug(399) << "XCF: read failure on header tag" << endl;
+            kDebug(399) << "XCF: read failure on header tag" << endl;
             return false;
 	}
 
 	xcf_io >> xcf_image.width >> xcf_image.height >> xcf_image.type;
 
-kdDebug() << tag << " " << xcf_image.width << " " << xcf_image.height << " " <<  xcf_image.type << endl;
+kDebug() << tag << " " << xcf_image.width << " " << xcf_image.height << " " <<  xcf_image.type << endl;
 	if (!loadImageProperties(xcf_io, xcf_image))
 		return false;
 
@@ -139,7 +139,7 @@ kdDebug() << tag << " " << xcf_image.width << " " << xcf_image.height << " " << 
 	xcf_image.num_layers = layer_offsets.size();
 
 	if (layer_offsets.size() == 0) {
-		kdDebug(399) << "XCF: no layers!" << endl;
+		kDebug(399) << "XCF: no layers!" << endl;
 		return false;
 	}
 
@@ -154,7 +154,7 @@ kdDebug() << tag << " " << xcf_image.width << " " << xcf_image.height << " " << 
 	}
 
 	if (!xcf_image.initialized) {
-		kdDebug(399) << "XCF: no visible layers!" << endl;
+		kDebug(399) << "XCF: no visible layers!" << endl;
 		return false;
 	}
 
@@ -177,7 +177,7 @@ bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_imag
 		QByteArray bytes;
 
 		if (!loadProperty(xcf_io, type, bytes)) {
-			kdDebug(399) << "XCF: error loading global image properties" << endl;
+			kDebug(399) << "XCF: error loading global image properties" << endl;
 			return false;
 		}
 
@@ -243,7 +243,7 @@ bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_imag
 					break;
 
 				default:
-					kdDebug(399) << "XCF: unimplemented image property" << type
+					kDebug(399) << "XCF: unimplemented image property" << type
 							<< ", size " << bytes.size() << endl;
 		}
 	}
@@ -292,7 +292,7 @@ bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArra
 			xcf_io >> unit_strings;
 
 			if (xcf_io.device()->atEnd()) {
-				kdDebug(399) << "XCF: read failure on property " << type << endl;
+				kDebug(399) << "XCF: read failure on property " << type << endl;
 				return false;
 			}
 
@@ -403,7 +403,7 @@ bool XCFImageFormat::loadLayerProperties(QDataStream& xcf_io, Layer& layer)
 		QByteArray bytes;
 
 		if (!loadProperty(xcf_io, type, bytes)) {
-			kdDebug(399) << "XCF: error loading layer properties" << endl;
+			kDebug(399) << "XCF: error loading layer properties" << endl;
 			return false;
 		}
 
@@ -458,7 +458,7 @@ bool XCFImageFormat::loadLayerProperties(QDataStream& xcf_io, Layer& layer)
 				break;
 
 			default:
-				kdDebug(399) << "XCF: unimplemented layer property " << type
+				kDebug(399) << "XCF: unimplemented layer property " << type
 						<< ", size " << bytes.size() << endl;
 		}
 	}
@@ -688,7 +688,7 @@ bool XCFImageFormat::loadHierarchy(QDataStream& xcf_io, Layer& layer)
 		xcf_io >> junk;
 
 		if (xcf_io.device()->atEnd()) {
-			kdDebug(399) << "XCF: read failure on layer " << layer.name << " level offsets" << endl;
+			kDebug(399) << "XCF: read failure on layer " << layer.name << " level offsets" << endl;
 			return false;
 		}
 	} while (junk != 0);
@@ -727,7 +727,7 @@ bool XCFImageFormat::loadLevel(QDataStream& xcf_io, Layer& layer, Q_INT32 bpp)
 		for (uint i = 0; i < layer.ncols; i++) {
 
 			if (offset == 0) {
-				kdDebug(399) << "XCF: incorrect number of tiles in layer " << layer.name << endl;
+				kDebug(399) << "XCF: incorrect number of tiles in layer " << layer.name << endl;
 				return false;
 			}
 
@@ -831,7 +831,7 @@ bool XCFImageFormat::loadTileRLE(QDataStream& xcf_io, uchar* tile, int image_siz
 
 	if (xcf_io.device()->status() != IO_Ok) {
 		delete[] xcfodata;
-		kdDebug(399) << "XCF: read failure on tile" << endl;
+		kDebug(399) << "XCF: read failure on tile" << endl;
 		return false;
 	}
 
@@ -909,7 +909,7 @@ bool XCFImageFormat::loadTileRLE(QDataStream& xcf_io, uchar* tile, int image_siz
 
 bogus_rle:
 
-	kdDebug(399) << "The run length encoding could not be decoded properly" << endl;
+	kDebug(399) << "The run length encoding could not be decoded properly" << endl;
 	delete[] xcfodata;
 	return false;
 }
@@ -929,7 +929,7 @@ bool XCFImageFormat::loadChannelProperties(QDataStream& xcf_io, Layer& layer)
 		QByteArray bytes;
 
 		if (!loadProperty(xcf_io, type, bytes)) {
-			kdDebug(399) << "XCF: error loading channel properties" << endl;
+			kDebug(399) << "XCF: error loading channel properties" << endl;
 			return false;
 		}
 
@@ -961,7 +961,7 @@ bool XCFImageFormat::loadChannelProperties(QDataStream& xcf_io, Layer& layer)
 				break;
 
 			default:
-				kdDebug(399) << "XCF: unimplemented channel property " << type
+				kDebug(399) << "XCF: unimplemented channel property " << type
 						<< ", size " << bytes.size() << endl;
 		}
 	}

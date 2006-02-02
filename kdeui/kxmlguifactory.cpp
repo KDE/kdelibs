@@ -118,7 +118,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
     QFile file( xml_file );
     if ( !file.open( QIODevice::ReadOnly ) )
     {
-        kdError(240) << "No such XML file " << filename << endl;
+        kError(240) << "No such XML file " << filename << endl;
         if ( never_null )
             return QLatin1String( "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>" );
         else
@@ -142,7 +142,7 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
     QFile file( xml_file );
     if ( !file.open( QIODevice::WriteOnly ) )
     {
-        kdError(240) << "Could not write to " << filename << endl;
+        kError(240) << "Could not write to " << filename << endl;
         return false;
     }
 
@@ -213,7 +213,7 @@ KXMLGUIFactory::~KXMLGUIFactory()
 
 void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 {
-    kdDebug(1002) << "KXMLGUIFactory::addClient( " << client << " )" << endl; // ellis
+    kDebug(1002) << "KXMLGUIFactory::addClient( " << client << " )" << endl; // ellis
     static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
 
     if ( client->factory() ) {
@@ -233,7 +233,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     if ( !d->m_clients.contains( client ) )
         d->m_clients.append( client );
     else
-        kdDebug(1002) << "XMLGUI client already added " << client << endl;
+        kDebug(1002) << "XMLGUI client already added " << client << endl;
 
     // Tell the client that plugging in is process and
     //  let it know what builder widget its mainwindow shortcuts
@@ -300,12 +300,12 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     foreach (KXMLGUIClient *child, client->childClients())
         addClient( child );
 
-//    kdDebug() << "addClient took " << dt.elapsed() << endl;
+//    kDebug() << "addClient took " << dt.elapsed() << endl;
 }
 
 void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 {
-    kdDebug(1002) << "KXMLGUIFactory::removeClient( " << client << " )" << endl; // ellis
+    kDebug(1002) << "KXMLGUIFactory::removeClient( " << client << " )" << endl; // ellis
 
     // don't try to remove the client's GUI if we didn't build it
     if ( !client || client->factory() != this )
@@ -320,7 +320,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     foreach (KXMLGUIClient *child, childClients)
         removeClient(child);
 
-    kdDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive" << endl;
+    kDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive" << endl;
 
     d->pushState();
 

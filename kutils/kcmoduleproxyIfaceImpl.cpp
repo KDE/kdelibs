@@ -41,19 +41,19 @@ KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const QByteArray& name,
 
 void KCModuleProxyIfaceImpl::save()
 {
-	kdDebug(711) << k_funcinfo << endl;
+	kDebug(711) << k_funcinfo << endl;
 	p->save();
 }
 
 void KCModuleProxyIfaceImpl::load()
 {
-	kdDebug(711) << k_funcinfo << endl;
+	kDebug(711) << k_funcinfo << endl;
 	p->load();
 }
 
 void KCModuleProxyIfaceImpl::defaults()
 {
-	kdDebug(711) << k_funcinfo << endl;
+	kDebug(711) << k_funcinfo << endl;
 	p->defaults();
 }
 
@@ -115,13 +115,13 @@ KCModuleProxyRootCommunicatorImpl::KCModuleProxyRootCommunicatorImpl
 /* Reimplementations of DCOP members */
 void KCModuleProxyRootCommunicatorImpl::changed( bool c )
 {
-	kdDebug(711) << k_funcinfo << endl;
+	kDebug(711) << k_funcinfo << endl;
 	p->moduleChanged( c );
 }
 
 void KCModuleProxyRootCommunicatorImpl::quickHelpChanged()
 {
-	kdDebug(711) << k_funcinfo << endl;
+	kDebug(711) << k_funcinfo << endl;
 	p->emitQuickHelpChanged();
 }
 

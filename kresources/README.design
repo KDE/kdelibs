@@ -60,10 +60,10 @@ Opening all resources of resource family "calendar". The associated
     // Open resources
     ResourceCalendar *resource;
     for ( resource = mResources.first(); resource; resource = mResources.next() ) {
-      kdDebug() << "Opening resource " + resource->name() << endl;
+      kDebug() << "Opening resource " + resource->name() << endl;
       bool result = resource->open();
       if ( ! result )
-        kdDebug() << "Error opening resource" << endl;
+        kDebug() << "Error opening resource" << endl;
     }
 
 Note that the resources are configured by the user in a kcontrol

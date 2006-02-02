@@ -57,7 +57,7 @@ int KabAPI::exec()
   // -----
   if (book==0)
     {
-      kdDebug(KAB_KDEBUG_AREA)
+      kDebug(KAB_KDEBUG_AREA)
 	<< "KabAPI::exec: you have to call init before using the API."
 	<< endl;
       return -1;
@@ -75,7 +75,7 @@ int KabAPI::exec()
 	  resize(minimumSize());
 	  return KDialogBase::exec();
 	} else {
-	  kdDebug(KAB_KDEBUG_AREA) << "KabAPI::exec: error creating interface."
+	  kDebug(KAB_KDEBUG_AREA) << "KabAPI::exec: error creating interface."
 				   << endl;
 	  return -1;
 	}
@@ -168,19 +168,19 @@ AddressBook::ErrorCode KabAPI::getEntryByName(const AddressBook::Entry&,
 
 AddressBook::ErrorCode KabAPI::getEntries(list<AddressBook::Entry>& entries)
 {
-  kdDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: called." << endl;
+  kDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: called." << endl;
   // ############################################################################
   if (book->noOfEntries()==0)
     { // ----- database is valid, but empty:
-      kdDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: no entries." << endl;
+      kDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: no entries." << endl;
       return AddressBook::NoEntry;
     }
   if (book->getEntries(entries)!=AddressBook::NoError)
     {
-      kdDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: intern error." << endl;
+      kDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: intern error." << endl;
       return AddressBook::InternError;
     } else {
-      kdDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: done." << endl;
+      kDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: done." << endl;
       return AddressBook::NoError;
     }
   // ############################################################################
@@ -207,7 +207,7 @@ AddressBook::ErrorCode KabAPI::save(bool force)
 
 void KabAPI::entrySelected(int index)
 {
-  kdDebug(KAB_KDEBUG_AREA) << "KabAPI::entrySelected: entry " << index
+  kDebug(KAB_KDEBUG_AREA) << "KabAPI::entrySelected: entry " << index
 			   <<" selected." << endl;
   selection=index;
 }

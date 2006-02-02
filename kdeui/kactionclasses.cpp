@@ -137,7 +137,7 @@ int KToggleAction::plug( QWidget* widget, int index )
 {
   if ( !qobject_cast<QMenu*>( widget ) && !qobject_cast<KToolBar*>( widget ) )
   {
-    kdWarning() << "Can not plug KToggleAction in " << widget->metaObject()->className() << endl;
+    kWarning() << "Can not plug KToggleAction in " << widget->metaObject()->className() << endl;
     return -1;
   }
   if (!KAuthorized::authorizeKAction(name()))
@@ -164,7 +164,7 @@ void KToggleAction::setChecked( bool c )
 {
   if ( c == d->m_checked )
     return;
-  //kdDebug(129) << "KToggleAction::setChecked(" << c << ") " << this << " " << name() << endl;
+  //kDebug(129) << "KToggleAction::setChecked(" << c << ") " << this << " " << name() << endl;
 
   d->m_checked = c;
 
@@ -484,7 +484,7 @@ void KSelectAction::setMaxComboViewCount( int n )
 
 QMenu* KSelectAction::popupMenu() const
 {
-	kdDebug(129) << "KAction::popupMenu()" << endl; // remove -- ellis
+	kDebug(129) << "KAction::popupMenu()" << endl; // remove -- ellis
   if ( !d->m_menu )
   {
       d->m_menu = new KMenu();
@@ -517,7 +517,7 @@ void KSelectAction::changeItem( int index, const QString& text )
 {
   if ( index < 0 || index >= (int)d->m_list.count() )
   {
-    kdWarning() << "KSelectAction::changeItem Index out of scope" << endl;
+    kWarning() << "KSelectAction::changeItem Index out of scope" << endl;
     return;
   }
 
@@ -616,7 +616,7 @@ void KSelectAction::updateComboWidth( int id )
 
 void KSelectAction::updateItems( int id )
 {
-  kdDebug(129) << "KAction::updateItems( " << id << ", lst )" << endl; // remove -- ellis
+  kDebug(129) << "KAction::updateItems( " << id << ", lst )" << endl; // remove -- ellis
   QWidget* w = container( id );
   if ( qobject_cast<KToolBar*>( w ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
@@ -640,7 +640,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 {
   if (!KAuthorized::authorizeKAction(name()))
     return -1;
-  kdDebug(129) << "KSelectAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  kDebug(129) << "KSelectAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( qobject_cast<QMenu*>( widget) )
   {
     // Create the PopupMenu and store it in m_menu
@@ -718,7 +718,7 @@ int KSelectAction::plug( QWidget *widget, int index )
     return containerCount() - 1;
   }
 
-  kdWarning() << "Can not plug KAction in " << widget->metaObject()->className() << endl;
+  kWarning() << "Can not plug KAction in " << widget->metaObject()->className() << endl;
   return -1;
 }
 
@@ -799,7 +799,7 @@ void KSelectAction::slotActivated( const QString &text )
 void KSelectAction::slotActivated()
 {
   KAction::slotActivated();
-  kdDebug(129) << "KSelectAction::slotActivated currentItem=" << currentItem() << " currentText=" << currentText() << endl;
+  kDebug(129) << "KSelectAction::slotActivated currentItem=" << currentItem() << " currentText=" << currentText() << endl;
   emit activated( currentItem() );
   emit activated( currentText() );
 }
@@ -1475,7 +1475,7 @@ void KFontAction::setFont( const QString &family )
           return;
        }
     }
-    kdDebug(129) << "Font not found " << family.toLower() << endl;
+    kDebug(129) << "Font not found " << family.toLower() << endl;
 }
 
 int KFontAction::plug( QWidget *w, int index )
@@ -1599,7 +1599,7 @@ void KFontSizeAction::setFontSize( int size )
     }
 
     if ( size < 1 ) {
-        kdWarning() << "KFontSizeAction: Size " << size << " is out of range" << endl;
+        kWarning() << "KFontSizeAction: Size " << size << " is out of range" << endl;
         return;
     }
 
@@ -1707,7 +1707,7 @@ KActionMenu::KActionMenu( const QString& text, const QString& icon,
 KActionMenu::~KActionMenu()
 {
     unplugAll();
-    kdDebug(129) << "KActionMenu::~KActionMenu()" << endl; // ellis
+    kDebug(129) << "KActionMenu::~KActionMenu()" << endl; // ellis
     delete d; d = 0;
 }
 
@@ -1753,7 +1753,7 @@ int KActionMenu::plug( QWidget* widget, int index )
 {
   if (!KAuthorized::authorizeKAction(name()))
     return -1;
-  kdDebug(129) << "KActionMenu::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  kDebug(129) << "KActionMenu::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( qobject_cast<QMenu*>( widget ) )
   {
     QMenu* menu = static_cast<QMenu*>( widget );
@@ -2112,11 +2112,11 @@ int KWidgetAction::plug( QWidget* w, int index )
       return -1;
 
   if ( !qobject_cast<KToolBar*>( w ) ) {
-    kdError() << "KWidgetAction::plug: KWidgetAction must be plugged into KToolBar." << endl;
+    kError() << "KWidgetAction::plug: KWidgetAction must be plugged into KToolBar." << endl;
     return -1;
   }
   if ( !m_widget ) {
-    kdError() << "KWidgetAction::plug: Widget was deleted or null!" << endl;
+    kError() << "KWidgetAction::plug: Widget was deleted or null!" << endl;
     return -1;
   }
 
@@ -2312,7 +2312,7 @@ void KPasteTextAction::menuItemActivated( int id)
       QString clipboardText = reply;
       reply = klipper.call("setClipboardContents(QString)", clipboardText);
       if (reply.isValid())
-        kdDebug(129) << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard) << endl;
+        kDebug(129) << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard) << endl;
     }
     QTimer::singleShot(20, this, SLOT(slotActivated()));
 }

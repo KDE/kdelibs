@@ -110,18 +110,18 @@ void Slave::unlinkSocket()
 void Slave::timeout()
 {
    if (!serv) return;
-   kdDebug(7002) << "slave failed to connect to application pid=" << m_pid << " protocol=" << m_protocol << endl;
+   kDebug(7002) << "slave failed to connect to application pid=" << m_pid << " protocol=" << m_protocol << endl;
    if (m_pid && (::kill(m_pid, 0) == 0))
    {
       int delta_t = (int) difftime(time(0), contact_started);
-      kdDebug(7002) << "slave is slow... pid=" << m_pid << " t=" << delta_t << endl;
+      kDebug(7002) << "slave is slow... pid=" << m_pid << " t=" << delta_t << endl;
       if (delta_t < SLAVE_CONNECTION_TIMEOUT_MAX)
       {
          QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, this, SLOT(timeout()));
          return;
       }
    }
-   kdDebug(7002) << "Houston, we lost our slave, pid=" << m_pid << endl;
+   kDebug(7002) << "Houston, we lost our slave, pid=" << m_pid << endl;
    delete serv;
    serv = 0;
    unlinkSocket();
@@ -129,7 +129,7 @@ void Slave::timeout()
    QString arg = m_protocol;
    if (!m_host.isEmpty())
       arg += "://"+m_host;
-   kdDebug(7002) << "slave died pid = " << m_pid << endl;
+   kDebug(7002) << "slave died pid = " << m_pid << endl;
    ref();
    // Tell the job about the problem.
    emit error(ERR_SLAVE_DIED, arg);
@@ -185,7 +185,7 @@ Slave::Slave(bool /*derived*/, KServerSocket *socket, const QString &protocol,
 
 Slave::~Slave()
 {
-    // kdDebug(7002) << "destructing slave object pid = " << m_pid << endl;
+    // kDebug(7002) << "destructing slave object pid = " << m_pid << endl;
     if (serv != 0) {
         delete serv;
         serv = 0;
@@ -307,7 +307,7 @@ void Slave::gotInput()
         QString arg = m_protocol;
         if (!m_host.isEmpty())
             arg += "://"+m_host;
-        kdDebug(7002) << "slave died pid = " << m_pid << endl;
+        kDebug(7002) << "slave died pid = " << m_pid << endl;
         // Tell the job about the problem.
         emit error(ERR_SLAVE_DIED, arg);
         // Tell the scheduler about the problem.
@@ -320,7 +320,7 @@ void Slave::gotInput()
 void Slave::kill()
 {
     dead = true; // OO can be such simple.
-    kdDebug(7002) << "killing slave pid=" << m_pid << " (" << m_protocol << "://"
+    kDebug(7002) << "killing slave pid=" << m_pid << " (" << m_protocol << "://"
 		  << m_host << ")" << endl;
     if (m_pid)
     {
@@ -357,7 +357,7 @@ void Slave::setConfig(const MetaData &config)
 
 Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error, QString& error_text )
 {
-    //kdDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyURL() << endl;
+    //kDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyURL() << endl;
     // Firstly take into account all special slaves
     if (protocol == "data")
         return new DataProtocol();
@@ -422,7 +422,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
        KProcess proc;
 
        proc << locate("exe", "kioslave") << lib_path << protocol << "" << sockname;
-       kdDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << sockname << endl;
+       kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << sockname << endl;
 
        proc.start(KProcess::DontCare);
 
@@ -467,7 +467,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
 
 Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
 {
-    //kdDebug(7002) << "holdSlave '" << protocol << "' for " << url.prettyURL() << endl;
+    //kDebug(7002) << "holdSlave '" << protocol << "' for " << url.prettyURL() << endl;
     // Firstly take into account all special slaves
     if (protocol == "data")
         return 0;

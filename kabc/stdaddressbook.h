@@ -44,7 +44,7 @@ namespace KABC {
   if ( ticket ) {
     KABC::AddressBook::Iterator it;
     for ( it = ab->begin(); it != ab->end(); ++it ) {
-      kdDebug() << "UID=" << (*it).uid() << endl;
+      kDebug() << "UID=" << (*it).uid() << endl;
 
       // do some other stuff
     }

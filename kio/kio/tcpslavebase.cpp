@@ -444,8 +444,8 @@ void TCPSlaveBase::cleanSSL()
 bool TCPSlaveBase::atEnd()
 {
     // this doesn't work!!
-    kdError(7029) << k_funcinfo << " called! It doesn't work.  Fix caller"
-		  << endl << kdBacktrace();
+    kError(7029) << k_funcinfo << " called! It doesn't work.  Fix caller"
+		  << endl << kBacktrace();
     return d->socket.atEnd();
 }
 
@@ -462,10 +462,10 @@ int TCPSlaveBase::startTLS()
 
     if ( !d->realHost.isEmpty() )
     {
-      kdDebug(7029) << "Setting real hostname: " << d->realHost << endl;
+      kDebug(7029) << "Setting real hostname: " << d->realHost << endl;
       d->kssl->setPeerHost(d->realHost);
     } else {
-      kdDebug(7029) << "Setting real hostname: " << d->host << endl;
+      kDebug(7029) << "Setting real hostname: " << d->host << endl;
       d->kssl->setPeerHost(d->host);
     }
 
@@ -695,7 +695,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
          delete pkcs;  // we don't need this anymore
          pkcs = 0L;
       } else {
-         kdDebug(7029) << "Client SSL certificate is being used." << endl;
+         kDebug(7029) << "Client SSL certificate is being used." << endl;
          setMetaData("ssl_using_client_cert", "TRUE");
          if (save) {
                 KSSLCertificateHome::setDefaultCertificate(certname, ourHost,
@@ -810,7 +810,7 @@ int TCPSlaveBase::verifyCertificate()
       setMetaData("ssl_action", "accept");
    }
 
-   kdDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request") << endl;
+   kDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request") << endl;
    if (!hasMetaData("main_frame_request") || metaData("main_frame_request") == "TRUE") {
       // Since we're the parent, we need to teach the child.
       setMetaData("ssl_parent_ip", d->ip);
@@ -912,7 +912,7 @@ int TCPSlaveBase::verifyCertificate()
           break;
             }
          default:
-          kdDebug(7029) << "TCPSlaveBase/SSL error in cert code."
+          kDebug(7029) << "TCPSlaveBase/SSL error in cert code."
                               << "Please report this to kfm-devel@kde.org."
                               << endl;
           break;
@@ -1098,7 +1098,7 @@ int TCPSlaveBase::verifyCertificate()
    }   // if ssl_activate_warnings
 
 
-   kdDebug(7029) << "SSL connection information follows:" << endl
+   kDebug(7029) << "SSL connection information follows:" << endl
           << "+-----------------------------------------------" << endl
           << "| Cipher: " << d->kssl->connectionInfo().getCipher() << endl
           << "| Description: " << d->kssl->connectionInfo().getCipherDescription() << endl
@@ -1132,7 +1132,7 @@ bool TCPSlaveBase::isConnectionValid()
     // retval ==  0 ==> Connection Idle
     // retval ==  1 ==> either Active or Closed
     // retval >   1 ==> Connection Active
-    //kdDebug(7029) << "TCPSlaveBase::isConnectionValid: select returned: "
+    //kDebug(7029) << "TCPSlaveBase::isConnectionValid: select returned: "
     //              << retval << endl;
 
     if (retval == -1)
@@ -1201,7 +1201,7 @@ void TCPSlaveBase::setRealHost( const QString& realHost )
 
 bool TCPSlaveBase::doSSLHandShake( bool sendError )
 {
-    kdDebug(7029) << "TCPSlaveBase::doSSLHandShake: " << endl;
+    kDebug(7029) << "TCPSlaveBase::doSSLHandShake: " << endl;
     QString msgHost = d->host;
 
     d->kssl->reInitialize();
@@ -1220,7 +1220,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
       msgHost = d->realHost;
     }
 
-    kdDebug(7029) << "Setting real hostname: " << msgHost << endl;
+    kDebug(7029) << "Setting real hostname: " << msgHost << endl;
     d->kssl->setPeerHost(msgHost);
 
     d->status = d->kssl->connect(&d->socket);

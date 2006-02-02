@@ -672,7 +672,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 
     assert(0); //If there is no item with such an ID, we should never get here
 
-    //kdDebug() << "WARNING: *DocumentImpl::getElementById not found " << elementId.string() << endl;
+    //kDebug() << "WARNING: *DocumentImpl::getElementById not found " << elementId.string() << endl;
 
     return 0;
 }
@@ -970,7 +970,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 
 // text
     case ID_TEXT:
-        kdDebug( 6020 ) << "Use document->createTextNode()" << endl;
+        kDebug( 6020 ) << "Use document->createTextNode()" << endl;
         break;
 
     default:
@@ -1082,7 +1082,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
             fontDef.size = m_styleSelector->fontSizes()[3];
         }
 
-        //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
+        //kDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
         _style->setFontDef(fontDef);
 	_style->htmlFont().update( paintDeviceMetrics() );
         if ( inCompatMode() )
@@ -1104,7 +1104,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
     for (n = _first; n; n = n->nextSibling())
         if ( change>= Inherit || n->hasChangedChild() || n->changed() )
             n->recalcStyle( change );
-    //kdDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
+    //kDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
 
     if (changed() && m_view)
 	m_view->layout();
@@ -1123,7 +1123,7 @@ void DocumentImpl::updateRendering()
 
 //     QTime time;
 //     time.start();
-//     kdDebug() << "UPDATERENDERING: "<<endl;
+//     kDebug() << "UPDATERENDERING: "<<endl;
 
     StyleChange change = NoChange;
 #if 0
@@ -1134,7 +1134,7 @@ void DocumentImpl::updateRendering()
 #endif
     recalcStyle( change );
 
-//    kdDebug() << "UPDATERENDERING time used="<<time.elapsed()<<endl;
+//    kDebug() << "UPDATERENDERING time used="<<time.elapsed()<<endl;
 }
 
 void DocumentImpl::updateDocumentsRendering()
@@ -1371,7 +1371,7 @@ void DocumentImpl::determineParseMode( const QString &/*str*/ )
     // For XML documents, use strict parse mode
     pMode = Strict;
     hMode = XHtml;
-    kdDebug(6020) << " using strict parseMode" << endl;
+    kDebug(6020) << " using strict parseMode" << endl;
 }
 
 NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
@@ -1767,7 +1767,7 @@ typedef int (*IdLookupFunction)(const char *tagStr, int len);
 NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_prefix,
                                   DOMStringImpl *_name, bool readonly, bool /*lookupHTML*/, int *pExceptioncode)
 {
-    /*kdDebug() << "DocumentImpl::getId( type: " << _type << ", uri: " << DOMString(_nsURI).string()
+    /*kDebug() << "DocumentImpl::getId( type: " << _type << ", uri: " << DOMString(_nsURI).string()
               << ", prefix: " << DOMString(_prefix).string() << ", name: " << DOMString(_name).string()
               << ", readonly: " << readonly
               << ", lookupHTML: " << lookupHTML
@@ -1989,7 +1989,7 @@ void DocumentImpl::removeStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
 
 void DocumentImpl::updateStyleSelector()
 {
-//    kdDebug() << "PENDING " << m_pendingStylesheets << endl;
+//    kDebug() << "PENDING " << m_pendingStylesheets << endl;
 
     // Don't bother updating, since we haven't loaded all our style info yet.
     if (m_pendingStylesheets > 0)

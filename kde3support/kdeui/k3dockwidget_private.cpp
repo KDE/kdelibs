@@ -104,7 +104,7 @@ void K3DockSplitter::activate(QWidget *c0, QWidget *c1)
 /*
 void K3DockSplitter::delayedResize()
 {
-	kdDebug(282)<<"*********************** DELAYED RESIZE !!!!!!!!!!!!!!!"<<endl;
+	kDebug(282)<<"*********************** DELAYED RESIZE !!!!!!!!!!!!!!!"<<endl;
 	resizeEvent(0);
 }*/
 
@@ -116,7 +116,7 @@ void K3DockSplitter::setForcedFixedWidth(K3DockWidget *dw,int w)
 		if (w==fixedWidth0) return;
                 fixedWidth0=w;
 		setSeparatorPos(w*factor/width(),true);
-//		kdDebug(282)<<"Set forced fixed width for widget 0 :"<<w<<endl;
+//		kDebug(282)<<"Set forced fixed width for widget 0 :"<<w<<endl;
 	}
         else
 	{
@@ -124,7 +124,7 @@ void K3DockSplitter::setForcedFixedWidth(K3DockWidget *dw,int w)
 		if (w==fixedWidth1) return;
                 fixedWidth1=w;
 		setSeparatorPos((width()-w)*factor/width(),true);
-//		kdDebug(282)<<"Set forced fixed width for widget 1 :"<<w<<endl;
+//		kDebug(282)<<"Set forced fixed width for widget 1 :"<<w<<endl;
 	}
 	setupMinMaxSize();
     if (divider) divider->hide();
@@ -138,7 +138,7 @@ void K3DockSplitter::setForcedFixedHeight(K3DockWidget *dw,int h)
 		if (h==fixedHeight0) return;
                 fixedHeight0=h;
 		setSeparatorPos(h*factor/height(),true);
-// //		kdDebug(282)<<"Set forced fixed width for widget 0 :"<<h<<endl;
+// //		kDebug(282)<<"Set forced fixed width for widget 0 :"<<h<<endl;
 	}
         else
 	{
@@ -146,7 +146,7 @@ void K3DockSplitter::setForcedFixedHeight(K3DockWidget *dw,int h)
 		if (h==fixedHeight1) return;
                 fixedHeight1=h;
 		setSeparatorPos((height()-h)*factor/height(),true);
-//		kdDebug(282)<<"Set forced fixed height for widget 1 :"<<h<<endl;
+//		kDebug(282)<<"Set forced fixed height for widget 1 :"<<h<<endl;
 	}
 	setupMinMaxSize();
     if (divider) divider->hide();
@@ -251,7 +251,7 @@ void K3DockSplitter::resizeEvent(QResizeEvent *ev)
   // be a dockcontainer.
   //
 
-//  kdDebug(282)<<"ResizeEvent :"<< ((initialised) ? "initialised":"not initialised")<<", "<< ((ev) ? "real event":"")<<", "<<(isVisible() ?"visible":"")<<endl;
+//  kDebug(282)<<"ResizeEvent :"<< ((initialised) ? "initialised":"not initialised")<<", "<< ((ev) ? "real event":"")<<", "<<(isVisible() ?"visible":"")<<endl;
 
   if (initialised) {
     K3DockContainer *dc = 0L;
@@ -267,7 +267,7 @@ void K3DockSplitter::resizeEvent(QResizeEvent *ev)
     //
     if (ev && isVisible() && divider->isVisible()) {
       // real resize event.
-//       kdDebug(282)<<"mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
+//       kDebug(282)<<"mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
 
       if (mKeepSize) {
         // keep the splitter on a fixed position. This may be a bit inaccurate, because
@@ -322,26 +322,26 @@ void K3DockSplitter::resizeEvent(QResizeEvent *ev)
             xpos = checkValue(width()-fixedWidth1) * factor / width();
         }
       }
-//      else kdDebug(282)<<"Something else happened"<<endl;
+//      else kDebug(282)<<"Something else happened"<<endl;
     }
 
 /*
     // --- debugging information ---
-    kdDebug(282) << "isVisible() is         : " << isVisible() << endl;
-    kdDebug(282) << "Orientation            : " << (m_orientation==Horizontal?"Horizontal":"Vertical")
+    kDebug(282) << "isVisible() is         : " << isVisible() << endl;
+    kDebug(282) << "Orientation            : " << (m_orientation==Horizontal?"Horizontal":"Vertical")
                                                 << endl;
-    kdDebug(282) << "Splitter visibility    : " << divider->isVisible() << endl;;
-    kdDebug(282) << "Splitter procentual pos: " << xpos << endl;
+    kDebug(282) << "Splitter visibility    : " << divider->isVisible() << endl;;
+    kDebug(282) << "Splitter procentual pos: " << xpos << endl;
     if (c0->getWidget()) {
         dc=dynamic_cast<K3DockContainer*>(c0->getWidget());
-        kdDebug(282) << "Child 0 K3DockContainer?: " << dc << endl;
+        kDebug(282) << "Child 0 K3DockContainer?: " << dc << endl;
     }
     if (c1->getWidget()) {
         dc=dynamic_cast<K3DockContainer*>(c1->getWidget());
-        kdDebug(282) << "Child 1 K3DockContainer?: " << dc << endl;
+        kDebug(282) << "Child 1 K3DockContainer?: " << dc << endl;
     }
-    kdDebug(282) << "Child0                 : " << child0 << endl;
-    kdDebug(282) << "child1                 : " << child1 << endl;
+    kDebug(282) << "Child0                 : " << child0 << endl;
+    kDebug(282) << "child1                 : " << child1 << endl;
 */
 
     //

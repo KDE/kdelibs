@@ -47,7 +47,7 @@ def KDEuse(lenv, flags):
 		for v in lst: v.execute()
 	else: lenv['nosmart_includes']=1
 
-	## To use kdDebug(intvalue)<<"some trace"<<endl; you need to define -DDEBUG
+	## To use kDebug(intvalue)<<"some trace"<<endl; you need to define -DDEBUG
 	## it is done in admin/generic.py automatically when you do scons configure debug=1
 
 def exists(env):

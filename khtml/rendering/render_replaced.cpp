@@ -67,7 +67,7 @@ void RenderReplaced::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown());
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
+    kDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
     m_width = calcReplacedWidth();
@@ -526,7 +526,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     QPixmap* const pm = PaintBuffer::grab( widget->size() );
     if (!pm)
     {
-        kdWarning(6040) << "Rendering widget [ " << widget->className() << " ] failed due to invalid size." << endl;
+        kWarning(6040) << "Rendering widget [ " << widget->className() << " ] failed due to invalid size." << endl;
         return;
     }
 
@@ -591,7 +591,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 
     bool filtered = false;
 
-    //kdDebug() << "RenderWidget::eventFilter type=" << e->type() << endl;
+    //kDebug() << "RenderWidget::eventFilter type=" << e->type() << endl;
     switch(e->type()) {
     case QEvent::FocusOut:
         // Don't count popup as a valid reason for losing the focus
@@ -600,7 +600,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
             handleFocusOut();
         break;
     case QEvent::FocusIn:
-        //kdDebug(6000) << "RenderWidget::eventFilter captures FocusIn" << endl;
+        //kDebug(6000) << "RenderWidget::eventFilter captures FocusIn" << endl;
         element()->getDocument()->setFocusNode(element());
 //         if ( isEditable() ) {
 //             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );
@@ -729,7 +729,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                 state |= Qt::MetaModifier;
         }
 
-//     kdDebug(6000) << "sending event to widget "
+//     kDebug(6000) << "sending event to widget "
 //                   << " pos=" << p << " type=" << type
 //                   << " button=" << button << " state=" << state << endl;
         QMouseEvent e(type, p, button, state);
@@ -808,7 +808,7 @@ void RenderWidget::deref()
 FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &)
 {
 #if 0
-    kdDebug(6040) << "RenderReplaced::checkSelectionPoint(_x="<<_x<<",_y="<<_y<<",_tx="<<_tx<<",_ty="<<_ty<<")" << endl
+    kDebug(6040) << "RenderReplaced::checkSelectionPoint(_x="<<_x<<",_y="<<_y<<",_tx="<<_tx<<",_ty="<<_ty<<")" << endl
                     << "xPos: " << xPos() << " yPos: " << yPos() << " width: " << width() << " height: " << height() << endl
                 << "_ty + yPos: " << (_ty + yPos()) << " + height: " << (_ty + yPos() + height()) << "; _tx + xPos: " << (_tx + xPos()) << " + width: " << (_tx + xPos() + width()) << endl;
 #endif

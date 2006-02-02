@@ -260,7 +260,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
   if ( serv )
     addUnique(lst, hash, KServiceFactory::self()->offers( serv->offset() ), false);
   else
-    kdWarning(7009) << "KServiceType::offers : servicetype " << _servicetype << " not found" << endl;
+    kWarning(7009) << "KServiceType::offers : servicetype " << _servicetype << " not found" << endl;
 
   // Find services associated with any mimetype parents. e.g. text/x-java -> text/plain
   bool isAMimeType = serv && serv->isType( KST_KMimeType );
@@ -286,7 +286,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
 
   //debug
   //foreach( KService::Ptr serv, lst )
-  //    kdDebug() << serv.get() << " " << serv->name() << endl;
+  //    kDebug() << serv.get() << " " << serv->name() << endl;
 
   // Support for all/* is deactivated by KServiceTypeProfile::configurationMode()
   // (and makes no sense when querying for an "all" servicetype itself
@@ -302,7 +302,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
         addUnique(lst, hash, KServiceFactory::self()->offers( servAll->offset() ), true);
     }
     else
-      kdWarning(7009) << "KServiceType::offers : servicetype all/all not found" << endl;
+      kWarning(7009) << "KServiceType::offers : servicetype all/all not found" << endl;
 
     // Support for services associated with "allfiles"
     if ( _servicetype != "inode/directory" && _servicetype != "inode/directory-locked" )
@@ -313,7 +313,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
         addUnique(lst, hash, KServiceFactory::self()->offers( servAllFiles->offset() ), true);
       }
       else
-        kdWarning(7009) << "KServiceType::offers : servicetype all/allfiles not found" << endl;
+        kWarning(7009) << "KServiceType::offers : servicetype all/allfiles not found" << endl;
     }
   }
 
@@ -338,7 +338,7 @@ KServiceType::Ptr KServiceType::parentType()
   {
     d->parentType = KServiceTypeFactory::self()->findServiceTypeByName( parentSt );
     if (!d->parentType)
-      kdWarning(7009) << "'" << desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'" << endl;
+      kWarning(7009) << "'" << desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'" << endl;
   }
 
   d->parentTypeLoaded = true;

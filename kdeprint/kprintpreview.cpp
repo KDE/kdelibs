@@ -68,7 +68,7 @@ void KPreviewProc::slotProcessExited(KProcess* proc)
 	if ( proc->normalExit() && proc->exitStatus() == 0 )
 		m_bOk = true;
 	else
-		kdDebug(500) << "KPreviewProc::slotProcessExited: normalExit=" << proc->normalExit()
+		kDebug(500) << "KPreviewProc::slotProcessExited: normalExit=" << proc->normalExit()
 			<< " exitStatus=" << proc->exitStatus() << endl;
 }
 
@@ -106,7 +106,7 @@ public:
 
 static KLibFactory* componentFactory()
 {
-	kdDebug(500) << "kdeprint: querying trader for 'application/postscript' service" << endl;
+	kDebug(500) << "kdeprint: querying trader for 'application/postscript' service" << endl;
 	KLibFactory	*factory(0);
 	KTrader::OfferList	offers = KTrader::self()->query(QLatin1String("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"), QString(), QString());
 	for (KTrader::OfferList::ConstIterator it = offers.begin(); it != offers.end(); ++it)
@@ -144,7 +144,7 @@ static bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly
 KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 : KDialogBase(parent, "PreviewDlg", true, i18n("Print Preview"), 0),d(new KPrintPreviewPrivate(this))
 {
-	kdDebug(500) << "kdeprint: creating preview dialog" << endl;
+	kDebug(500) << "kdeprint: creating preview dialog" << endl;
 	d->previewonly_ = previewOnly;
 
 	// create main view and actions
@@ -238,7 +238,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	KMimeType::Ptr mime = KMimeType::findByPath( file );
 	bool isPS = ( mime->name() == "application/postscript" );
 	if ( !isPS )
-		kdDebug( 500 ) << "Previewing a non PostScript file, built-in preview disabled" << endl;
+		kDebug( 500 ) << "Previewing a non PostScript file, built-in preview disabled" << endl;
 
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");

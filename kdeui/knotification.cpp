@@ -108,7 +108,7 @@ void KNotification::activate(unsigned int action)
 	if(action==0)
 		emit activated();
 	emit activated(action);
-	kdDebug() << k_funcinfo << d->id << " " << action << endl;
+	kDebug() << k_funcinfo << d->id << " " << action << endl;
 	deleteLater();
 }
 
@@ -234,7 +234,7 @@ void KNotification::sendEvent()
 	d->id=KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , d->appname );
 	if(d->id>0)
 		ref();
-//	kdDebug() << k_funcinfo << d->id << endl;
+//	kDebug() << k_funcinfo << d->id << endl;
 	
 	//after a small timeout, the notification will be deleted if all presentation are finished
 	QTimer::singleShot(1000, this, SLOT(deref()));

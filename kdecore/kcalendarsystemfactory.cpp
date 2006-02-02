@@ -34,7 +34,7 @@
 
 KCalendarSystemFactory::KCalendarSystemFactory()
 {
-  kdDebug(5400) << "Created factory calendar" << endl;
+  kDebug(5400) << "Created factory calendar" << endl;
 }
 
 KCalendarSystemFactory::~KCalendarSystemFactory()
@@ -53,7 +53,7 @@ KCalendarSystem *KCalendarSystemFactory::create( const QString &calType,
   if ( calType == "jalali" )
     return new KCalendarSystemJalali(locale);
 
-  kdDebug(5400) << "Calendar " << calType << " not found, defaulting to gregorian" << endl;
+  kDebug(5400) << "Calendar " << calType << " not found, defaulting to gregorian" << endl;
 
   // ### HPB: Should it really be a default here?
   return new KCalendarSystemGregorian(locale);

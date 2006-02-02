@@ -66,7 +66,7 @@ public:
       m_reason = static_cast<QFocusEvent *>( ev )->reason();
       break;
     default:
-      kdWarning(1000) << "PartManagerPrivate::setReason got unexpected ev type " << ev->type() << endl;
+      kWarning(1000) << "PartManagerPrivate::setReason got unexpected ev type " << ev->type() << endl;
       break;
     }
   }
@@ -192,7 +192,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
   {
       mev = static_cast<QMouseEvent *>( ev );
 #ifdef DEBUG_PARTMANAGER
-      kdDebug(1000) << "PartManager::eventFilter button: " << mev->button() << " " << "d->m_activationButtonMask=" << d->m_activationButtonMask << endl;
+      kDebug(1000) << "PartManager::eventFilter button: " << mev->button() << " " << "d->m_activationButtonMask=" << d->m_activationButtonMask << endl;
 #endif
       if ( ( mev->button() & d->m_activationButtonMask ) == 0 )
         return false; // ignore this button
@@ -231,7 +231,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
             return false;
 
 #ifdef DEBUG_PARTMANAGER
-          kdDebug(1000) << "PartManager::eventFilter dblclick -> setActivePart" << part << endl;
+          kDebug(1000) << "PartManager::eventFilter dblclick -> setActivePart" << part << endl;
 #endif
           d->setReason( ev );
           setActivePart( part, w );
@@ -246,7 +246,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
             setSelectedPart( part, w );
           else {
 #ifdef DEBUG_PARTMANAGER
-              kdDebug(1000) << "Part " << part << " (non-selectable) made active because " << w->className() << " got event" << " " << evType << endl;
+              kDebug(1000) << "Part " << part << " (non-selectable) made active because " << w->className() << " got event" << " " << evType << endl;
 #endif
               d->setReason( ev );
               setActivePart( part, w );
@@ -257,7 +257,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
         else if ( d->m_selectedWidget == w && d->m_selectedPart == part )
         {
 #ifdef DEBUG_PARTMANAGER
-          kdDebug(1000) << "Part " << part << " made active (from selected) because " << w->className() << " got event" << " " << evType << endl;
+          kDebug(1000) << "Part " << part << " made active (from selected) because " << w->className() << " got event" << " " << evType << endl;
 #endif
           d->setReason( ev );
           setActivePart( part, w );
@@ -275,7 +275,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
       else if ( part != d->m_activePart )
       {
 #ifdef DEBUG_PARTMANAGER
-        kdDebug(1000) << "Part " << part << " made active because " << w->className() << " got event" << " " << evType << endl;
+        kDebug(1000) << "Part " << part << " made active because " << w->className() << " got event" << " " << evType << endl;
 #endif
         d->setReason( ev );
         setActivePart( part, w );
@@ -291,7 +291,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
                 ( w->windowFlags() && Qt::WType_Popup ) || ( w->windowFlags() && Qt::WStyle_Tool ) ) )
     {
 #ifdef DEBUG_PARTMANAGER
-      kdDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;
+      kDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;
 #endif
       return false;
     }
@@ -299,7 +299,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
   }
 
 #ifdef DEBUG_PARTMANAGER
-  kdDebug(1000) << QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) << endl;
+  kDebug(1000) << QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) << endl;
 #endif
   return false;
 }
@@ -330,7 +330,7 @@ void PartManager::addPart( Part *part, bool setActive )
   if ( d->m_parts.contains( part ) ) // don't add parts more than once :)
   {
 #ifdef DEBUG_PARTMANAGER
-    kdWarning(1000) << k_funcinfo << part << " already added" << kdBacktrace(5) << endl;
+    kWarning(1000) << k_funcinfo << part << " already added" << kBacktrace(5) << endl;
 #endif
     return;
   }
@@ -349,11 +349,11 @@ void PartManager::addPart( Part *part, bool setActive )
   // Prevent focus problems
   if ( part->widget() && part->widget()->focusPolicy() == Qt::NoFocus )
   {
-    kdWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of NoFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
+    kWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of NoFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
   }
   if ( part->widget() && part->widget()->focusPolicy() == Qt::TabFocus )
   {
-    kdWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of TabFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
+    kWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of TabFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
   }
 
   if ( setActive && part->widget() )
@@ -365,12 +365,12 @@ void PartManager::removePart( Part *part )
 {
   if ( !d->m_parts.contains( part ) )
   {
-    kdFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()) << endl;
+    kFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()) << endl;
     return;
   }
 
   //Warning. The part could be already deleted
-  //kdDebug(1000) << QString("Part %1 removed").arg(part->name()) << endl;
+  //kDebug(1000) << QString("Part %1 removed").arg(part->name()) << endl;
   int nb = d->m_parts.count();
   bool ok = d->m_parts.remove( part );
   Q_ASSERT( ok );
@@ -387,11 +387,11 @@ void PartManager::removePart( Part *part )
 
 void PartManager::replacePart( Part * oldPart, Part * newPart, bool setActive )
 {
-  //kdDebug(1000) << "replacePart " << oldPart->name() << "-> " << newPart->name() << " setActive=" << setActive << endl;
+  //kDebug(1000) << "replacePart " << oldPart->name() << "-> " << newPart->name() << " setActive=" << setActive << endl;
   // This methods does exactly removePart + addPart but without calling setActivePart(0) in between
   if ( !d->m_parts.contains( oldPart ) )
   {
-    kdFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(oldPart->name()) << endl;
+    kFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(oldPart->name()) << endl;
     return;
   }
 
@@ -407,7 +407,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
 {
   if ( part && !d->m_parts.contains( part ) )
   {
-      kdWarning( 1000 ) << "PartManager::setActivePart : trying to activate a non-registered part! " << part->name() << endl;
+      kWarning( 1000 ) << "PartManager::setActivePart : trying to activate a non-registered part! " << part->name() << endl;
       return; // don't allow someone call setActivePart with a part we don't know about
   }
 
@@ -425,7 +425,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
   }
 
 #ifdef DEBUG_PARTMANAGER
-  kdDebug(1000) << "PartManager::setActivePart d->m_activePart=" << d->m_activePart << "<->part=" << part
+  kDebug(1000) << "PartManager::setActivePart d->m_activePart=" << d->m_activePart << "<->part=" << part
                 << " d->m_activeWidget=" << d->m_activeWidget << "<->widget=" << widget << endl;
 #endif
 
@@ -477,7 +477,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
   // Set the new active instance in KGlobal
   setActiveInstance( d->m_activePart ? d->m_activePart->instance() : 0L );
 
-  kdDebug(1000) << this << " emitting activePartChanged " << d->m_activePart << endl;
+  kDebug(1000) << this << " emitting activePartChanged " << d->m_activePart << endl;
   emit activePartChanged( d->m_activePart );
 }
 
@@ -538,13 +538,13 @@ QWidget *PartManager::selectedWidget() const
 
 void PartManager::slotObjectDestroyed()
 {
-  kdDebug(1000) << "KPartManager::slotObjectDestroyed()" << endl;
+  kDebug(1000) << "KPartManager::slotObjectDestroyed()" << endl;
   removePart( const_cast<Part *>( static_cast<const Part *>( sender() ) ) );
 }
 
 void PartManager::slotWidgetDestroyed()
 {
-  kdDebug(1000) << "KPartsManager::slotWidgetDestroyed()" << endl;
+  kDebug(1000) << "KPartsManager::slotWidgetDestroyed()" << endl;
   if ( static_cast<const QWidget *>( sender() ) == d->m_activeWidget )
     setActivePart( 0L ); //do not remove the part because if the part's widget dies, then the
                          //part will delete itself anyway, invoking removePart() in its destructor

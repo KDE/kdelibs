@@ -199,7 +199,7 @@ ValueImp *DOMCSSStyleDeclaration::cssPropertyGetter(ExecState *exec, JSObject*, 
 bool DOMCSSStyleDeclaration::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMCSSStyleDeclaration::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMCSSStyleDeclaration::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
 
   if (getStaticOwnValueSlot(&DOMCSSStyleDeclarationTable, this, propertyName, slot))
@@ -221,7 +221,7 @@ bool DOMCSSStyleDeclaration::getOwnPropertySlot(ExecState *exec, const Identifie
 void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr )
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMCSSStyleDeclaration::put " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMCSSStyleDeclaration::put " << propertyName.qstring() << endl;
 #endif
   DOMExceptionTranslator exception(exec);
   CSSStyleDeclarationImpl &styleDecl = *m_impl;
@@ -237,7 +237,7 @@ void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName
     if (pxSuffix)
       propvalue += "px";
 #ifdef KJS_VERBOSE
-    kdDebug(6070) << "DOMCSSStyleDeclaration: prop=" << prop << " propvalue=" << propvalue << endl;
+    kDebug(6070) << "DOMCSSStyleDeclaration: prop=" << prop << " propvalue=" << propvalue << endl;
 #endif
     // Look whether the property is known.d In that case add it as a CSS property.
     if (int pId = cssPropertyId(prop)) {
@@ -419,7 +419,7 @@ ValueImp *DOMStyleSheetList::nameGetter(ExecState *exec, JSObject*, const Identi
 bool DOMStyleSheetList::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMStyleSheetList::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMStyleSheetList::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
   if (getStaticOwnPropertySlot<DOMStyleSheetListFunc, DOMStyleSheetList>(&DOMStyleSheetTable, this, propertyName, slot))
     return true;
@@ -801,7 +801,7 @@ const ClassInfo* DOMCSSRule::classInfo() const
 bool DOMCSSRule::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMCSSRule::tryGet " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMCSSRule::tryGet " << propertyName.qstring() << endl;
 #endif
   //First do the rule-type-specific stuff
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable
@@ -903,7 +903,7 @@ void DOMCSSRule::putValueProperty(ExecState *exec, int token, ValueImp *value, i
     return;
 
   default:
-    kdDebug(6070) << "DOMCSSRule::putValueProperty unhandled token " << token << endl;
+    kDebug(6070) << "DOMCSSRule::putValueProperty unhandled token " << token << endl;
   }
 }
 

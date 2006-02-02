@@ -113,7 +113,7 @@ void KConfigDialog::addPageInternal(QWidget *page,
 {
   if(d->shown)
   {
-    kdDebug(240) << "KConfigDialog::addPage: can not add a page after the dialog has been shown.";
+    kDebug(240) << "KConfigDialog::addPage: can not add a page after the dialog has been shown.";
     return;
   }
   switch(d->type)
@@ -145,7 +145,7 @@ void KConfigDialog::addPageInternal(QWidget *page,
     break;
 
     default:
-      kdDebug(240) << "KConfigDialog::addpage: unknown type.";
+      kDebug(240) << "KConfigDialog::addpage: unknown type.";
   }
 }
 

@@ -133,7 +133,7 @@ void ResourceLDAPKIO::entries( KIO::Job*, const KIO::UDSEntryList & list )
     if ( !urlStr.isEmpty() ) {
       KUrl tmpurl( urlStr );
       d->mResultDn = tmpurl.path();
-      kdDebug(7125) << "findUid(): " << d->mResultDn << endl;
+      kDebug(7125) << "findUid(): " << d->mResultDn << endl;
       if ( d->mResultDn.startsWith("/") ) d->mResultDn.remove(0,1);
       return;
     }
@@ -161,7 +161,7 @@ QString ResourceLDAPKIO::findUid( const QString &uid )
   url.setFilter( "(" + mAttributes[ "uid" ] + "=" + uid + ")" + mFilter );
   url.setExtension( "x-dir", "one" );
 
-  kdDebug(7125) << "ResourceLDAPKIO::findUid() uid: " << uid << " url " <<
+  kDebug(7125) << "ResourceLDAPKIO::findUid() uid: " << uid << " url " <<
     url.prettyURL() << endl;
 
   KIO::ListJob * listJob = KIO::listDir( url, false /* no GUI */ );
@@ -301,7 +301,7 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
   }
 
   tmp += "\n";
-  kdDebug(7125) << "ldif: " << QString::fromUtf8(tmp) << endl;
+  kDebug(7125) << "ldif: " << QString::fromUtf8(tmp) << endl;
   ldif = tmp;
   return true;
 }
@@ -407,7 +407,7 @@ void ResourceLDAPKIO::init()
 
   d->mReadOnly = readOnly();
 
-  kdDebug(7125) << "resource_ldapkio url: " << d->mLDAPUrl.prettyURL() << endl;
+  kDebug(7125) << "resource_ldapkio url: " << d->mLDAPUrl.prettyURL() << endl;
 }
 
 void ResourceLDAPKIO::writeConfig( KConfig *config )
@@ -446,7 +446,7 @@ void ResourceLDAPKIO::writeConfig( KConfig *config )
 Ticket *ResourceLDAPKIO::requestSaveTicket()
 {
   if ( !addressBook() ) {
-    kdDebug(7125) << "no addressbook" << endl;
+    kDebug(7125) << "no addressbook" << endl;
     return 0;
   }
 
@@ -512,7 +512,7 @@ KIO::Job *ResourceLDAPKIO::loadFromCache()
 
 bool ResourceLDAPKIO::load()
 {
-  kdDebug(7125) << "ResourceLDAPKIO::load()" << endl;
+  kDebug(7125) << "ResourceLDAPKIO::load()" << endl;
   KIO::Job *job;
 
   clear();
@@ -542,10 +542,10 @@ bool ResourceLDAPKIO::load()
     enter_loop();
   }
   if ( mErrorMsg.isEmpty() ) {
-    kdDebug(7125) << "ResourceLDAPKIO load ok!" << endl;
+    kDebug(7125) << "ResourceLDAPKIO load ok!" << endl;
     return true;
   } else {
-    kdDebug(7125) << "ResourceLDAPKIO load finished with error: " << mErrorMsg << endl;
+    kDebug(7125) << "ResourceLDAPKIO load finished with error: " << mErrorMsg << endl;
     addressBook()->error( mErrorMsg );
     return false;
   }
@@ -593,7 +593,7 @@ void ResourceLDAPKIO::data( KIO::Job *, const QByteArray &data )
     ret = d->mLdif.nextItem();
     switch ( ret ) {
       case LDIF::NewEntry:
-        kdDebug(7125) << "new entry: " << d->mLdif.dn() << endl;
+        kDebug(7125) << "new entry: " << d->mLdif.dn() << endl;
         break;
       case LDIF::Item:
         name = d->mLdif.attr().toLower();
@@ -719,7 +719,7 @@ void ResourceLDAPKIO::result( KIO::Job *job )
 
 bool ResourceLDAPKIO::save( Ticket* )
 {
-  kdDebug(7125) << "ResourceLDAPKIO save" << endl;
+  kDebug(7125) << "ResourceLDAPKIO save" << endl;
 
   d->mSaveIt = begin();
   KIO::Job *job = KIO::put( d->mLDAPUrl, -1, true, false, false );
@@ -729,10 +729,10 @@ bool ResourceLDAPKIO::save( Ticket* )
     this, SLOT( syncLoadSaveResult( KIO::Job* ) ) );
   enter_loop();
   if ( mErrorMsg.isEmpty() ) {
-    kdDebug(7125) << "ResourceLDAPKIO save ok!" << endl;
+    kDebug(7125) << "ResourceLDAPKIO save ok!" << endl;
     return true;
   } else {
-    kdDebug(7125) << "ResourceLDAPKIO finished with error: " << mErrorMsg << endl;
+    kDebug(7125) << "ResourceLDAPKIO finished with error: " << mErrorMsg << endl;
     addressBook()->error( mErrorMsg );
     return false;
   }
@@ -740,7 +740,7 @@ bool ResourceLDAPKIO::save( Ticket* )
 
 bool ResourceLDAPKIO::asyncSave( Ticket* )
 {
-  kdDebug(7125) << "ResourceLDAPKIO asyncSave" << endl;
+  kDebug(7125) << "ResourceLDAPKIO asyncSave" << endl;
   d->mSaveIt = begin();
   KIO::Job *job = KIO::put( d->mLDAPUrl, -1, true, false, false );
   connect( job, SIGNAL( dataReq( KIO::Job*, QByteArray& ) ),
@@ -777,15 +777,15 @@ void ResourceLDAPKIO::saveData( KIO::Job*, QByteArray& data )
        !(*d->mSaveIt).changed() ) d->mSaveIt++;
 
   if ( d->mSaveIt == end() ) {
-    kdDebug(7125) << "ResourceLDAPKIO endData" << endl;
+    kDebug(7125) << "ResourceLDAPKIO endData" << endl;
     data.resize(0);
     return;
   }
 
-  kdDebug(7125) << "ResourceLDAPKIO saveData: " << (*d->mSaveIt).assembledName() << endl;
+  kDebug(7125) << "ResourceLDAPKIO saveData: " << (*d->mSaveIt).assembledName() << endl;
 
   AddresseeToLDIF( data, *d->mSaveIt, findUid( (*d->mSaveIt).uid() ) );
-//  kdDebug(7125) << "ResourceLDAPKIO save LDIF: " << QString::fromUtf8(data) << endl;
+//  kDebug(7125) << "ResourceLDAPKIO save LDIF: " << QString::fromUtf8(data) << endl;
   // mark as unchanged
   (*d->mSaveIt).setChanged( false );
 
@@ -796,14 +796,14 @@ void ResourceLDAPKIO::removeAddressee( const Addressee& addr )
 {
   QString dn = findUid( addr.uid() );
 
-  kdDebug(7125) << "ResourceLDAPKIO: removeAddressee: " << dn << endl;
+  kDebug(7125) << "ResourceLDAPKIO: removeAddressee: " << dn << endl;
 
   if ( !mErrorMsg.isEmpty() ) {
     addressBook()->error( mErrorMsg );
     return;
   }
   if ( !dn.isEmpty() ) {
-    kdDebug(7125) << "ResourceLDAPKIO: found uid: " << dn << endl;
+    kDebug(7125) << "ResourceLDAPKIO: found uid: " << dn << endl;
     LDAPUrl url( d->mLDAPUrl );
     url.setPath( "/" + dn );
     url.setExtension( "x-dir", "base" );

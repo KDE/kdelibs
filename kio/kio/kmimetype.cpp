@@ -272,7 +272,7 @@ KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
   }
 
   // Do some magic for local files
-  //kdDebug(7009) << QString("Mime Type finding for '%1'").arg(path) << endl;
+  //kDebug(7009) << QString("Mime Type finding for '%1'").arg(path) << endl;
   KMimeMagicResult* result = KMimeMagic::self()->findFileType( path );
 
   // If we still did not find it, we must assume the default mime type
@@ -363,7 +363,7 @@ KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath )
   init ( &_cfg );
 
   if ( !isValid() )
-    kdWarning(7009) << "mimetype not valid '" << m_strName << "' (missing entry in the file ?)" << endl;
+    kWarning(7009) << "mimetype not valid '" << m_strName << "' (missing entry in the file ?)" << endl;
 }
 
 KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config )
@@ -371,7 +371,7 @@ KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config )
   init( config );
 
   if ( !isValid() )
-    kdWarning(7009) << "mimetype not valid '" << m_strName << "' (missing entry in the file ?)" << endl;
+    kWarning(7009) << "mimetype not valid '" << m_strName << "' (missing entry in the file ?)" << endl;
 }
 
 void KMimeType::init( KDesktopFile * config )
@@ -394,7 +394,7 @@ void KMimeType::init( KDesktopFile * config )
     if ( inherits != name() )
         m_mapProps.insert( XKDEIsAlso, inherits );
     else
-        kdWarning(7009) << "Error: " << inherits << " inherits from itself!!!!" << endl;
+        kWarning(7009) << "Error: " << inherits << " inherits from itself!!!!" << endl;
   }
 
   QString XKDEPatternsAccuracy = QLatin1String("X-KDE-PatternsAccuracy");
@@ -415,7 +415,7 @@ void KMimeType::load( QDataStream& _str )
 
 void KMimeType::loadInternal( QDataStream& _str )
 {
-  // kdDebug(7009) << "KMimeType::load( QDataStream& ) : loading list of patterns" << endl;
+  // kDebug(7009) << "KMimeType::load( QDataStream& ) : loading list of patterns" << endl;
   _str >> m_lstPatterns;
 }
 
@@ -562,10 +562,10 @@ bool KMimeType::is( const QString& mimeTypeName ) const
   if ( name() == mimeTypeName )
       return true;
   QString st = parentMimeType();
-  //if (st.isEmpty()) kdDebug(7009)<<"Parent mimetype is empty"<<endl;
+  //if (st.isEmpty()) kDebug(7009)<<"Parent mimetype is empty"<<endl;
   while ( !st.isEmpty() )
   {
-      //kdDebug(7009)<<"Checking parent mime type: "<<st<<endl;
+      //kDebug(7009)<<"Checking parent mime type: "<<st<<endl;
       KMimeType::Ptr ptr = KMimeType::mimeType( st );
       if (!ptr) return false; //error
       if ( ptr->name() == mimeTypeName )
@@ -800,7 +800,7 @@ pid_t KDEDesktopMimeType::run( const KUrl& u, bool _is_local )
     return 0;
   }
 
-  //kdDebug(7009) << "TYPE = " << type.data() << endl;
+  //kDebug(7009) << "TYPE = " << type.data() << endl;
 
   if ( type == "FSDevice" )
     return runFSDevice( u, cfg );
@@ -1009,7 +1009,7 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
     DCOPCString object   =  dcopcall.section(' ', 1,-2).toUtf8();
     DCOPCString function =  dcopcall.section(' ', -1).toUtf8();
     if(!function.endsWith("(KUrl::List)")) {
-      kdWarning() << "Desktop file " << path << " contains an invalid X-KDE-ShowIfDcopCall - the function must take the exact parameter (KUrl::List) and must be specified." << endl;
+      kWarning() << "Desktop file " << path << " contains an invalid X-KDE-ShowIfDcopCall - the function must take the exact parameter (KUrl::List) and must be specified." << endl;
     } else {
       if(KApplication::dcopClient()->call( app, object,
                    function,
@@ -1032,7 +1032,7 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
   QStringList::ConstIterator end = keys.end();
   for ( ; it != end; ++it )
   {
-    //kdDebug(7009) << "CURRENT KEY = " << (*it) << endl;
+    //kDebug(7009) << "CURRENT KEY = " << (*it) << endl;
 
     QString group = *it;
 
@@ -1092,11 +1092,11 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
 
 void KDEDesktopMimeType::executeService( const KUrl::List& urls, KDEDesktopMimeType::Service& _service )
 {
-  //kdDebug(7009) << "EXECUTING Service " << _service.m_strName << endl;
+  //kDebug(7009) << "EXECUTING Service " << _service.m_strName << endl;
 
   if ( _service.m_type == ST_USER_DEFINED )
   {
-    kdDebug() << "KDEDesktopMimeType::executeService " << _service.m_strName
+    kDebug() << "KDEDesktopMimeType::executeService " << _service.m_strName
               << " first url's path=" << urls.first().path() << " exec=" << _service.m_strExec << endl;
     KRun::run( _service.m_strExec, urls, _service.m_strName, _service.m_strIcon, _service.m_strIcon );
     // The action may update the desktop file. Example: eject unmounts (#5129).
@@ -1108,7 +1108,7 @@ void KDEDesktopMimeType::executeService( const KUrl::List& urls, KDEDesktopMimeT
   {
     Q_ASSERT( urls.count() == 1 );
     QString path = urls.first().path();
-    //kdDebug(7009) << "MOUNT&UNMOUNT" << endl;
+    //kDebug(7009) << "MOUNT&UNMOUNT" << endl;
 
     KSimpleConfig cfg( path, true );
     cfg.setDesktopGroup();
@@ -1126,7 +1126,7 @@ void KDEDesktopMimeType::executeService( const KUrl::List& urls, KDEDesktopMimeT
       // Already mounted? Strange, but who knows ...
       if ( !mp.isEmpty() )
       {
-        kdDebug(7009) << "ALREADY Mounted" << endl;
+        kDebug(7009) << "ALREADY Mounted" << endl;
         return;
       }
 

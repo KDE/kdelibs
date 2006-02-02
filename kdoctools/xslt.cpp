@@ -142,11 +142,11 @@ QString splitOut(const QString &parsed, int index)
         int endindex = parsed.indexOf("</FILENAME>", index);
         int startindex = parsed.indexOf("<FILENAME ", index) + 1;
 
-//        kdDebug() << "FILENAME " << startindex << " " << endindex << " " << inside << " " << parsed.mid(startindex + 18, 15)<< " " << parsed.length() << endl;
+//        kDebug() << "FILENAME " << startindex << " " << endindex << " " << inside << " " << parsed.mid(startindex + 18, 15)<< " " << parsed.length() << endl;
 
         if (startindex > 0) {
             if (startindex < endindex) {
-                //              kdDebug() << "finding another" << endl;
+                //              kDebug() << "finding another" << endl;
                 index = startindex + 8;
                 inside++;
             } else {
@@ -218,13 +218,13 @@ bool saveToCache( const QString &contents, const QString &filename )
 static bool readCache( const QString &filename,
                        const QString &cache, QString &output)
 {
-    kdDebug( 7119 ) << "verifyCache " << filename << " " << cache << endl;
+    kDebug( 7119 ) << "verifyCache " << filename << " " << cache << endl;
     if ( !compareTimeStamps( filename, cache ) )
         return false;
     if ( !compareTimeStamps( locate( "dtd", "customization/kde-chunk.xsl"), cache ) )
         return false;
 
-    kdDebug( 7119 ) << "create filter" << endl;
+    kDebug( 7119 ) << "create filter" << endl;
     QIODevice *fd = ::getBZip2device(cache);
 
     if (!fd->open(QIODevice::ReadOnly))
@@ -234,7 +234,7 @@ static bool readCache( const QString &filename,
        return false;
     }
 
-    kdDebug( 7119 ) << "reading" << endl;
+    kDebug( 7119 ) << "reading" << endl;
 
     char buffer[32000];
     int n;
@@ -245,7 +245,7 @@ static bool readCache( const QString &filename,
         buffer[n] = 0;
         text += buffer;
     }
-    kdDebug( 7119 ) << "read " << text.length() << endl;
+    kDebug( 7119 ) << "read " << text.length() << endl;
     fd->close();
 
     output = QString::fromUtf8( text );
@@ -254,14 +254,14 @@ static bool readCache( const QString &filename,
     if (n == -1)
         return false;
 
-    kdDebug( 7119 ) << "finished " << endl;
+    kDebug( 7119 ) << "finished " << endl;
 
     return true;
 }
 
 QString lookForCache( const QString &filename )
 {
-    kdDebug() << "lookForCache " << filename << endl;
+    kDebug() << "lookForCache " << filename << endl;
     assert( filename.endsWith( ".docbook" ) );
     assert( filename.at( 0 ) == '/' );
 

@@ -77,11 +77,11 @@ KXmlCommand::KXmlCommand(const QString& xmlId)
 
 KXmlCommand::~KXmlCommand()
 {
-	//kdDebug(500) << "deleting driver" << endl;
+	//kDebug(500) << "deleting driver" << endl;
 	delete d->m_driver;
-	//kdDebug(500) << "deleting private data" << endl;
+	//kDebug(500) << "deleting private data" << endl;
 	delete d;
-	//kdDebug(500) << "finished" << endl;
+	//kDebug(500) << "finished" << endl;
 }
 
 void KXmlCommand::init()
@@ -774,7 +774,7 @@ bool KXmlCommandManager::checkCommand(const QString& xmlId, int inputCheck, int 
 	KXmlCommand	*xmlCmd = command(xmlId);
 	QString	errmsg;
 	bool	needDestroy(false);
-	//kdDebug(500) << "checking command: " << xmlId << " (" << (xmlCmd != NULL) << ")" << endl;
+	//kDebug(500) << "checking command: " << xmlId << " (" << (xmlCmd != NULL) << ")" << endl;
 	if (!xmlCmd)
 	{
 		xmlCmd = loadCommand(xmlId, true);

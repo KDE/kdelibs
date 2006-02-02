@@ -87,7 +87,7 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	m_proc.clearArguments();
 	QString	exestr = KMFactory::self()->manager()->driverDbCreationProgram();
 	m_proc << exestr << dirname << filename;
-	kdDebug() << "executing : " << exestr << " " << dirname << " " << filename << endl;
+	kDebug() << "executing : " << exestr << " " << dirname << " " << filename << endl;
 	QString	msg;
 	if (exestr.isEmpty())
 		msg = i18n("No executable defined for the creation of the "

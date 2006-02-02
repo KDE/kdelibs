@@ -243,7 +243,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
     KLibrary *lib = loader->library(QFile::encodeName(libname));
     if (!lib)
     {
-      kdWarning() << k_funcinfo << "Could not load library. [ "
+      kWarning() << k_funcinfo << "Could not load library. [ "
                  << loader->lastErrorMessage() << " ]" << endl;
       libname.prepend("lib");
       lib = loader->library(QFile::encodeName(libname));
@@ -264,7 +264,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
           m_modules.insert(obj, module);
           m_libs.insert(obj, lib);
           connect(module, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(slotKDEDModuleRemoved(KDEDModule *)));
-          kdDebug(7020) << "Successfully loaded module '" << obj << "'\n";
+          kDebug(7020) << "Successfully loaded module '" << obj << "'\n";
           return module;
         }
       }
@@ -272,10 +272,10 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
     }
     else
     {
-       kdWarning() << k_funcinfo << "Could not load library. [ "
+       kWarning() << k_funcinfo << "Could not load library. [ "
                    << loader->lastErrorMessage() << " ]" << endl;
     }
-    kdDebug(7020) << "Could not load module '" << obj << "'\n";
+    kDebug(7020) << "Could not load module '" << obj << "'\n";
   }
   return 0;
 }
@@ -285,7 +285,7 @@ bool Kded::unloadModule(const DCOPCString &obj)
   KDEDModule *module = m_modules.value(obj, 0);
   if (!module)
      return false;
-  kdDebug(7020) << "Unloading module '" << obj << "'\n";
+  kDebug(7020) << "Unloading module '" << obj << "'\n";
   m_modules.remove(obj);
   delete module;
   return true;
@@ -527,7 +527,7 @@ void Kded::readDirectory( const QString& _path )
 
   if ( !d.exists() )                            // exists&isdir?
   {
-    kdDebug(7020) << QString("Does not exist! (%1)").arg(_path) << endl;
+    kDebug(7020) << QString("Does not exist! (%1)").arg(_path) << endl;
     return;                             // return false
   }
 
@@ -837,7 +837,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
         DCOPCString dcopName = testDCOP.registerAs("kded", false);
         if (dcopName.isEmpty())
         {
-           kdFatal() << "DCOP communication problem!" << endl;
+           kFatal() << "DCOP communication problem!" << endl;
            return 1;
         }
      }

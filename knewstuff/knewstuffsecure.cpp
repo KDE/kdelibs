@@ -115,7 +115,7 @@ void KNewStuffSecure::slotValidated(int result)
       {
          if (result & Security::TRUSTED)
          {
-            kdDebug() << "Signed and trusted " << endl;
+            kDebug() << "Signed and trusted " << endl;
          } else
          {
             errorString += "<br>-    " + i18n("The signature is valid, but untrusted.");

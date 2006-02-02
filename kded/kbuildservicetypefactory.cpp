@@ -89,7 +89,7 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
   {
     QString tmp = QString("The service/mime type config file\n%1\n"
                   "does not contain a ServiceType=...\nor MimeType=... entry").arg( file );
-    kdWarning(7012) << tmp << endl;
+    kWarning(7012) << tmp << endl;
     return 0;
   }
 
@@ -113,7 +113,7 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 
   if ( !(e->isValid()) )
   {
-    kdWarning(7012) << "Invalid ServiceType : " << file << endl;
+    kWarning(7012) << "Invalid ServiceType : " << file << endl;
     delete e;
     return 0;
   }
@@ -209,7 +209,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
      // Justify to 6 chars with spaces, so that the size remains constant
      // in the database file.
      QString paddedPattern = (*it).leftJustified(6).right(4); // remove leading "*."
-     //kdDebug(7021) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()) << endl;
+     //kDebug(7021) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()) << endl;
      str << paddedPattern;
      str << dict[(*it)]->offset();
      entrySize = str.device()->pos() - start;
@@ -230,7 +230,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    it = otherPatterns.begin();
    for ( ; it != otherPatterns.end() ; ++it )
    {
-     //kdDebug(7021) << QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()) << endl;
+     //kDebug(7021) << QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()) << endl;
      str << (*it);
      str << dict[(*it)]->offset();
    }
@@ -260,7 +260,7 @@ KBuildServiceTypeFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
      if (!m_propertyTypeDict.contains(pit.key()))
        m_propertyTypeDict.insert(pit.key(), pit.value());
      else if (m_propertyTypeDict.value(pit.key()) != static_cast<int>(pit.value()))
-       kdWarning(7021) << "Property '"<< pit.key() << "' is defined multiple times ("<< serviceType->name() <<")" <<endl;
+       kWarning(7021) << "Property '"<< pit.key() << "' is defined multiple times ("<< serviceType->name() <<")" <<endl;
    }
 }
 

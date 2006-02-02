@@ -260,7 +260,7 @@ KActionCollection * KFilePreview::actionCollection() const
     if ( left )
         return left->actionCollection();
     else {
-        kdWarning() << "KFilePreview::actionCollection(): called before setFileView()." << endl; //ellis
+        kWarning() << "KFilePreview::actionCollection(): called before setFileView()." << endl; //ellis
         return KFileView::actionCollection();
     }
 }

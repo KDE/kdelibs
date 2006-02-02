@@ -25,10 +25,10 @@ static bool check(QString txt, QString a, QString b)
   if (b.isEmpty())
      b.clear();
   if (a == b) {
-    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
+    kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
   }
   else {
-    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
+    kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
     exit(1);
   }
   return true;
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
 
   const KUrl::List splitted = KUrl::split( url1 );
   assert( splitted.count() == 3 );
-  kdDebug() << splitted << endl;
+  kDebug() << splitted << endl;
   check( "", splitted[0].url(), QString("file:///home/dfaure/my%20tar%20file.tgz#myref") );
   check( "", splitted[1].url(), QString("gzip:/#myref") );
   check( "", splitted[2].url(), QString("tar:/#myref") );

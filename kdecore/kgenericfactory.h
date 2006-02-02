@@ -63,7 +63,7 @@ protected:
         if ( m_aboutData )
             return new KInstance( m_aboutData );
         if ( m_instanceName.isNull() ) {
-            kdWarning() << "KGenericFactory: instance requested but no instance name or about data passed to the constructor!" << endl;
+            kWarning() << "KGenericFactory: instance requested but no instance name or about data passed to the constructor!" << endl;
             return 0;
         }
         return new KInstance( m_instanceName );

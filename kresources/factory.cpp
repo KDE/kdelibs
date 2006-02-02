@@ -39,7 +39,7 @@ static KStaticDeleter< QMap<QString, Factory*> > staticDeleter;
 
 Factory *Factory::self( const QString& resourceFamily )
 {
-  kdDebug(5650) << "Factory::self()" << endl;
+  kDebug(5650) << "Factory::self()" << endl;
 
   Factory *factory = 0;
   if ( !mSelves )
@@ -85,7 +85,7 @@ ConfigWidget *Factory::configWidget( const QString& type, QWidget *parent )
   KService::Ptr ptr = mTypeMap[ type ];
   KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
   if ( !factory ) {
-    kdDebug(5650) << "KRES::Factory::configWidget(): Factory creation failed "
+    kDebug(5650) << "KRES::Factory::configWidget(): Factory creation failed "
                   << KLibLoader::self()->lastErrorMessage() << endl;
     return 0;
   }
@@ -93,14 +93,14 @@ ConfigWidget *Factory::configWidget( const QString& type, QWidget *parent )
   PluginFactoryBase *pluginFactory = static_cast<PluginFactoryBase *>( factory );
 
   if ( !pluginFactory ) {
-    kdDebug(5650) << "KRES::Factory::configWidget(): no plugin factory."
+    kDebug(5650) << "KRES::Factory::configWidget(): no plugin factory."
                   << endl;
     return 0;
   }
 
   ConfigWidget *wdg = pluginFactory->configWidget( parent );
   if ( !wdg ) {
-    kdDebug(5650) << "'" << ptr->library() << "' doesn't provide a ConfigWidget" << endl;
+    kDebug(5650) << "'" << ptr->library() << "' doesn't provide a ConfigWidget" << endl;
     return 0;
   }
 
@@ -127,17 +127,17 @@ QString Factory::typeDescription( const QString &type ) const
 
 Resource *Factory::resource( const QString& type, const KConfig *config )
 {
-  kdDebug(5650) << "Factory::resource( " << type << ", config )" << endl;
+  kDebug(5650) << "Factory::resource( " << type << ", config )" << endl;
 
   if ( type.isEmpty() || !mTypeMap.contains( type ) ) {
-    kdDebug(5650) << "Factory::resource() no such type " << type << endl;
+    kDebug(5650) << "Factory::resource() no such type " << type << endl;
     return 0;
   }
 
   KService::Ptr ptr = mTypeMap[ type ];
   KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
   if ( !factory ) {
-    kdDebug(5650) << "KRES::Factory::resource(): Factory creation failed "
+    kDebug(5650) << "KRES::Factory::resource(): Factory creation failed "
                   << KLibLoader::self()->lastErrorMessage() << endl;
     return 0;
   }
@@ -145,13 +145,13 @@ Resource *Factory::resource( const QString& type, const KConfig *config )
   PluginFactoryBase *pluginFactory = static_cast<PluginFactoryBase *>( factory );
 
   if ( !pluginFactory ) {
-    kdDebug(5650) << "KRES::Factory::resource(): no plugin factory." << endl;
+    kDebug(5650) << "KRES::Factory::resource(): no plugin factory." << endl;
     return 0;
   }
 
   Resource *resource = pluginFactory->resource( config );
   if ( !resource ) {
-    kdDebug(5650) << "'" << ptr->library() << "' is not a " + mResourceFamily +
+    kDebug(5650) << "'" << ptr->library() << "' is not a " + mResourceFamily +
                      " plugin." << endl;
     return 0;
   }

@@ -112,7 +112,7 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
         {
         if( !force_P )
             {
-//            kdDebug() << "Selection already owned, failing" << endl;
+//            kDebug() << "Selection already owned, failing" << endl;
             return false;
             }
         XSelectInput( dpy, prev_owner, StructureNotifyMask );
@@ -121,7 +121,7 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
     attrs.override_redirect = True;
     window = XCreateWindow( dpy, RootWindow( dpy, screen ), 0, 0, 1, 1, 
         0, CopyFromParent, InputOnly, CopyFromParent, CWOverrideRedirect, &attrs );
-//    kdDebug() << "Using owner window " << window << endl;
+//    kDebug() << "Using owner window " << window << endl;
     Atom tmp = XA_ATOM;
     XSelectInput( dpy, window, PropertyChangeMask );
     XChangeProperty( dpy, window, XA_ATOM, XA_ATOM, 32, PropModeReplace,
@@ -135,14 +135,14 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
     Window new_owner = XGetSelectionOwner( dpy, selection );
     if( new_owner != window )
         {
-//        kdDebug() << "Failed to claim selection : " << new_owner << endl;
+//        kDebug() << "Failed to claim selection : " << new_owner << endl;
         XDestroyWindow( dpy, window );
         timestamp = CurrentTime;
         return false;
         }
     if( prev_owner != None )
         {
-//        kdDebug() << "Waiting for previous owner to disown" << endl;
+//        kDebug() << "Waiting for previous owner to disown" << endl;
         for( int cnt = 0;
              ;
              ++cnt )
@@ -155,7 +155,7 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
                 {
                 if( force_kill_P )
                     {
-//                    kdDebug() << "Killing previous owner" << endl;
+//                    kDebug() << "Killing previous owner" << endl;
                     XKillClient( dpy, prev_owner );
                     }
                 break;
@@ -173,7 +173,7 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
     ev.xclient.data.l[ 3 ] = extra1;
     ev.xclient.data.l[ 4 ] = extra2;
     XSendEvent( dpy, RootWindow( dpy, screen ), False, StructureNotifyMask, &ev );
-//    kdDebug() << "Claimed selection" << endl;
+//    kDebug() << "Claimed selection" << endl;
     return true;
     }
 
@@ -183,7 +183,7 @@ void KSelectionOwner::release()
     if( timestamp == CurrentTime )
         return;
     XDestroyWindow( QX11Info::display(), window ); // also makes the selection not owned
-//    kdDebug() << "Releasing selection" << endl;
+//    kDebug() << "Releasing selection" << endl;
     timestamp = CurrentTime;
     }
 
@@ -214,7 +214,7 @@ bool KSelectionOwner::filterEvent( XEvent* ev_P )
 	    if( timestamp == CurrentTime || ev_P->xselectionclear.selection != selection )
 	        return false;
 	    timestamp = CurrentTime;
-//	    kdDebug() << "Lost selection" << endl;
+//	    kDebug() << "Lost selection" << endl;
 	    emit lostOwnership();
 	    XSelectInput( QX11Info::display(), window, 0 );
 	    XDestroyWindow( QX11Info::display(), window );
@@ -225,7 +225,7 @@ bool KSelectionOwner::filterEvent( XEvent* ev_P )
 	    if( timestamp == CurrentTime || ev_P->xdestroywindow.window != window )
 	        return false;
 	    timestamp = CurrentTime;
-//	    kdDebug() << "Lost selection (destroyed)" << endl;
+//	    kDebug() << "Lost selection (destroyed)" << endl;
 	    emit lostOwnership();
 	  return false;
 	    }
@@ -255,7 +255,7 @@ void KSelectionOwner::filter_selection_request( XSelectionRequestEvent& ev_P )
     if( ev_P.time != CurrentTime
         && ev_P.time - timestamp > 1U << 31 )
         return; // too old or too new request
-//    kdDebug() << "Got selection request" << endl;
+//    kDebug() << "Got selection request" << endl;
     bool handled = false;
     if( ev_P.target == xa_multiple )
         {
@@ -314,7 +314,7 @@ bool KSelectionOwner::handle_selection( Atom target_P, Atom property_P, Window r
     {
     if( target_P == xa_timestamp )
         {
-//        kdDebug() << "Handling timestamp request" << endl;
+//        kDebug() << "Handling timestamp request" << endl;
         XChangeProperty( QX11Info::display(), requestor_P, property_P, XA_INTEGER, 32,
             PropModeReplace, reinterpret_cast< unsigned char* >( &timestamp ), 1 );
         }
@@ -330,7 +330,7 @@ bool KSelectionOwner::handle_selection( Atom target_P, Atom property_P, Window r
 void KSelectionOwner::replyTargets( Atom property_P, Window requestor_P )
     {
     Atom atoms[ 3 ] = { xa_multiple, xa_timestamp, xa_targets };
-//    kdDebug() << "Handling targets request" << endl;
+//    kDebug() << "Handling targets request" << endl;
     XChangeProperty( QX11Info::display(), requestor_P, property_P, XA_ATOM, 32, PropModeReplace,
         reinterpret_cast< unsigned char* >( atoms ), 3 );
     }
@@ -440,7 +440,7 @@ Window KSelectionWatcher::owner()
     XSelectInput( dpy, current_owner, StructureNotifyMask );
     if( !handler.error( true ) && current_owner == XGetSelectionOwner( dpy, selection ))
         {
-//        kdDebug() << "isOwner: " << current_owner << endl;
+//        kDebug() << "isOwner: " << current_owner << endl;
         selection_owner = current_owner;
         emit newOwner( selection_owner );
         }
@@ -454,11 +454,11 @@ void KSelectionWatcher::filterEvent( XEvent* ev_P )
     {
     if( ev_P->type == ClientMessage )
         {
-//        kdDebug() << "got ClientMessage" << endl;
+//        kDebug() << "got ClientMessage" << endl;
         if( ev_P->xclient.message_type != manager_atom
             || ev_P->xclient.data.l[ 1 ] != static_cast< long >( selection ))
             return;
-//        kdDebug() << "handling message" << endl;
+//        kDebug() << "handling message" << endl;
         if( static_cast< long >( owner()) == ev_P->xclient.data.l[ 2 ] )
             {
             // owner() emits newOwner() if needed, no need to do it twice

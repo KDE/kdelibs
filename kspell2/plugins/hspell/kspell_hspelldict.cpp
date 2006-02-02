@@ -32,7 +32,7 @@ HSpellDict::HSpellDict( const QString& lang )
 {
    int int_error = hspell_init( &m_speller, HSPELL_OPT_DEFAULT );
    if ( int_error == -1 )
-      kdDebug() << "HSpellDict::HSpellDict: Init failed" << endl;
+      kDebug() << "HSpellDict::HSpellDict: Init failed" << endl;
     /* hspell understans only iso8859-8-i            */
     codec = QTextCodec::codecForName( "iso8859-8-i" );
 }
@@ -45,7 +45,7 @@ HSpellDict::~HSpellDict()
 
 bool HSpellDict::check( const QString& word )
 {
-    kdDebug() << "HSpellDict::check word = " << word <<endl;
+    kDebug() << "HSpellDict::check word = " << word <<endl;
     int preflen;
     QByteArray wordISO = codec->fromUnicode( word );
     /* returns 1 if the word is correct, 0 otherwise */
@@ -88,20 +88,20 @@ bool HSpellDict::storeReplacement( const QString& bad,
                                    const QString& good )
 {
     // hspell-0.9 cannot do this
-    kdDebug() << "HSpellDict::storeReplacement: Sorry, cannot." << endl; 
+    kDebug() << "HSpellDict::storeReplacement: Sorry, cannot." << endl; 
     return false;
 }
 
 bool HSpellDict::addToPersonal( const QString& word )
 {
     // hspell-0.9 cannot do this
-    kdDebug() << "HSpellDict::addToPersonal: Sorry, cannot." << endl; 
+    kDebug() << "HSpellDict::addToPersonal: Sorry, cannot." << endl; 
     return false;
 }
 
 bool HSpellDict::addToSession( const QString& word )
 {
     // hspell-0.9 cannot do this
-    kdDebug() << "HSpellDict::addToSession: Sorry, cannot." << endl; 
+    kDebug() << "HSpellDict::addToSession: Sorry, cannot." << endl; 
     return false;
 }

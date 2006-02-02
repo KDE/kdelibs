@@ -177,12 +177,12 @@ DOMString khtml::stringForListStyleType(EListStyleType type)
 RenderStyleDeclarationImpl::RenderStyleDeclarationImpl( DOM::NodeImpl *node )
     : CSSStyleDeclarationImpl(0), m_node(node)
 {
-    kdDebug() << "Render Style Declaration created" << endl;
+    kDebug() << "Render Style Declaration created" << endl;
 }
 
 RenderStyleDeclarationImpl::~RenderStyleDeclarationImpl()
 {
-    kdDebug() << "Render Style Declaration destroyed" << endl;
+    kDebug() << "Render Style Declaration destroyed" << endl;
 }
 
 DOM::DOMString RenderStyleDeclarationImpl::cssText() const

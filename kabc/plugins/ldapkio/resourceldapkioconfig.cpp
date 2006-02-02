@@ -81,7 +81,7 @@ void ResourceLDAPKIOConfig::loadSettings( KRES::Resource *res )
   ResourceLDAPKIO *resource = dynamic_cast<ResourceLDAPKIO*>( res );
 
   if ( !resource ) {
-    kdDebug(5700) << "ResourceLDAPKIOConfig::loadSettings(): cast failed" << endl;
+    kDebug(5700) << "ResourceLDAPKIOConfig::loadSettings(): cast failed" << endl;
     return;
   }
 
@@ -117,7 +117,7 @@ void ResourceLDAPKIOConfig::saveSettings( KRES::Resource *res )
   ResourceLDAPKIO *resource = dynamic_cast<ResourceLDAPKIO*>( res );
 
   if ( !resource ) {
-    kdDebug(5700) << "ResourceLDAPKIOConfig::saveSettings(): cast failed" << endl;
+    kDebug(5700) << "ResourceLDAPKIOConfig::saveSettings(): cast failed" << endl;
     return;
   }
 
@@ -280,7 +280,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
       i = 0;
       j = 2;
     }
-    kdDebug(7125) << "itkey: " << it.key() << " i: " << i << endl;
+    kDebug(7125) << "itkey: " << it.key() << " i: " << i << endl;
     label = new QLabel( mNameDict[ it.key() ] + ":", page );
     KLineEdit *lineedit = new KLineEdit( page );
     mLineEditDict.insert( it.key(), lineedit );

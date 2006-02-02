@@ -90,13 +90,13 @@ int KHTMLPartBrowserExtension::yOffset()
 
 void KHTMLPartBrowserExtension::saveState( QDataStream &stream )
 {
-  //kdDebug( 6050 ) << "saveState!" << endl;
+  //kDebug( 6050 ) << "saveState!" << endl;
   m_part->saveState( stream );
 }
 
 void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 {
-  //kdDebug( 6050 ) << "restoreState!" << endl;
+  //kDebug( 6050 ) << "restoreState!" << endl;
   m_part->restoreState( stream );
 }
 
@@ -210,7 +210,7 @@ void KHTMLPartBrowserExtension::copy()
         return;
     }
 
-    kdDebug( 6050 ) << "************! KHTMLPartBrowserExtension::copy()" << endl;
+    kDebug( 6050 ) << "************! KHTMLPartBrowserExtension::copy()" << endl;
     if ( !m_editableFormWidget )
     {
         // get selected text and paste to the clipboard
@@ -734,7 +734,7 @@ void KHTMLPopupGUIClient::slotCopyImage()
   safeURL.populateMimeData( mimeData );
   QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
 #else
-  kdDebug() << "slotCopyImage called when the clipboard does not support this.  This should not be possible." << endl;
+  kDebug() << "slotCopyImage called when the clipboard does not support this.  This should not be possible." << endl;
 #endif
 }
 
@@ -874,7 +874,7 @@ void KHTMLPopupGUIClient::saveURL( const KUrl &url, const KUrl &destURL,
             if (!downloadManger.isEmpty())
             {
                 // then find the download manager location
-                kdDebug(1000) << "Using: "<<downloadManger <<" as Download Manager" <<endl;
+                kDebug(1000) << "Using: "<<downloadManger <<" as Download Manager" <<endl;
                 QString cmd = KStandardDirs::findExe(downloadManger);
                 if (cmd.isEmpty())
                 {
@@ -891,7 +891,7 @@ void KHTMLPopupGUIClient::saveURL( const KUrl &url, const KUrl &destURL,
                     cleanDest.setPass( QString() ); // don't put password into commandline
                     cmd += " " + KProcess::quote(url.url()) + " " +
                            KProcess::quote(cleanDest.url());
-                    kdDebug(1000) << "Calling command  "<<cmd<<endl;
+                    kDebug(1000) << "Calling command  "<<cmd<<endl;
                     KRun::runCommand(cmd);
                 }
             }

@@ -331,7 +331,7 @@ AddressBook::~AddressBook()
 
 bool AddressBook::load()
 {
-  kdDebug(5700) << "AddressBook::load()" << endl;
+  kDebug(5700) << "AddressBook::load()" << endl;
 
   clear();
 
@@ -349,7 +349,7 @@ bool AddressBook::load()
 
 bool AddressBook::asyncLoad()
 {
-  kdDebug(5700) << "AddressBook::asyncLoad()" << endl;
+  kDebug(5700) << "AddressBook::asyncLoad()" << endl;
 
   clear();
 
@@ -368,7 +368,7 @@ bool AddressBook::asyncLoad()
 
 bool AddressBook::save( Ticket *ticket )
 {
-  kdDebug(5700) << "AddressBook::save()"<< endl;
+  kDebug(5700) << "AddressBook::save()"<< endl;
 
   if ( ticket->resource() ) {
     deleteRemovedAddressees();
@@ -382,7 +382,7 @@ bool AddressBook::save( Ticket *ticket )
 
 bool AddressBook::asyncSave( Ticket *ticket )
 {
-  kdDebug(5700) << "AddressBook::asyncSave()"<< endl;
+  kDebug(5700) << "AddressBook::asyncSave()"<< endl;
 
   if ( ticket->resource() ) {
     d->mPendingSaveResources.append( ticket->resource() );
@@ -483,7 +483,7 @@ void AddressBook::clear()
 
 Ticket *AddressBook::requestSaveTicket( Resource *resource )
 {
-  kdDebug(5700) << "AddressBook::requestSaveTicket()" << endl;
+  kDebug(5700) << "AddressBook::requestSaveTicket()" << endl;
 
   if ( !resource )
     resource = standardResource();
@@ -620,14 +620,14 @@ Addressee::List AddressBook::findByCategory( const QString &category ) const
 
 void AddressBook::dump() const
 {
-  kdDebug(5700) << "AddressBook::dump() --- begin ---" << endl;
+  kDebug(5700) << "AddressBook::dump() --- begin ---" << endl;
 
   ConstIterator it;
   for ( it = begin(); it != end(); ++it ) {
     (*it).dump();
   }
 
-  kdDebug(5700) << "AddressBook::dump() ---  end  ---" << endl;
+  kDebug(5700) << "AddressBook::dump() ---  end  ---" << endl;
 }
 
 QString AddressBook::identifier() const
@@ -700,7 +700,7 @@ QDataStream &KABC::operator>>( QDataStream &s, AddressBook &ab )
 bool AddressBook::addResource( Resource *resource )
 {
   if ( !resource->open() ) {
-    kdDebug(5700) << "AddressBook::addResource(): can't add resource" << endl;
+    kDebug(5700) << "AddressBook::addResource(): can't add resource" << endl;
     return false;
   }
 
@@ -773,7 +773,7 @@ void AddressBook::error( const QString& msg )
   if ( d->mErrorHandler )
     d->mErrorHandler->error( msg );
   else
-    kdError(5700) << "no error handler defined" << endl;
+    kError(5700) << "no error handler defined" << endl;
 }
 
 void AddressBook::deleteRemovedAddressees()

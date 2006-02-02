@@ -26,7 +26,7 @@ int main(int /*argc*/,char /* **argv*/)
   KApplication app;
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs(); */
 
-  kdDebug() << "Creating addressees" << endl;
+  kDebug() << "Creating addressees" << endl;
   Addressee a, b, c, d, e, f;
   a.setGivenName ("Peter");
   a.setFamilyName("Pan");
@@ -54,7 +54,7 @@ int main(int /*argc*/,char /* **argv*/)
   f.setFormattedName("Dantes, Edmond");
   f.setUid("78ze");
 
-  kdDebug() << "Adding to list" << endl;
+  kDebug() << "Adding to list" << endl;
   AddresseeList list;
   list.append(a);
   list.append(b);
@@ -71,11 +71,11 @@ int main(int /*argc*/,char /* **argv*/)
          && (*list.at(4)).uid()=="Asdf"
          && (*list.at(5)).uid()=="Z2hk"
         ) ) {
-      kdError() << "SORTING BY FAMILY NAME NOT CORRECT!" << endl;
-      kdDebug() << "list sorted by family name:" << endl;
+      kError() << "SORTING BY FAMILY NAME NOT CORRECT!" << endl;
+      kDebug() << "list sorted by family name:" << endl;
       list.dump();
   } else {
-      kdDebug() << "Sorting by family name correct." << endl;
+      kDebug() << "Sorting by family name correct." << endl;
   }
   list.setReverseSorting(true);
   list.sort();
@@ -86,11 +86,11 @@ int main(int /*argc*/,char /* **argv*/)
          && (*list.at(1)).uid()=="Asdf"
          && (*list.at(0)).uid()=="Z2hk"
         ) ) {
-      kdError() << "REVERSE SORTING BY FAMILY NAME NOT CORRECT!" << endl;
-      kdDebug() << "list reverse sorted by family name:" << endl;
+      kError() << "REVERSE SORTING BY FAMILY NAME NOT CORRECT!" << endl;
+      kDebug() << "list reverse sorted by family name:" << endl;
       list.dump();
   } else {
-      kdDebug() << "Reverse sorting by family name correct." << endl;
+      kDebug() << "Reverse sorting by family name correct." << endl;
   }
 
   list.setReverseSorting(false);
@@ -102,11 +102,11 @@ int main(int /*argc*/,char /* **argv*/)
          && (*list.at(4)).uid()=="Z2hk"
          && (*list.at(5)).uid()=="Asdf"
         ) ) {
-      kdError() << "SORTING BY FORMATTED NAME NOT CORRECT!" << endl;
-      kdDebug() << "list sorted by formatted name:" << endl;
+      kError() << "SORTING BY FORMATTED NAME NOT CORRECT!" << endl;
+      kDebug() << "list sorted by formatted name:" << endl;
       list.dump();
   } else {
-      kdDebug() << "Sorting by formatted name correct." << endl;
+      kDebug() << "Sorting by formatted name correct." << endl;
   }
   list.setReverseSorting(true);
   list.sort();
@@ -117,11 +117,11 @@ int main(int /*argc*/,char /* **argv*/)
          && (*list.at(1)).uid()=="Z2hk"
          && (*list.at(0)).uid()=="Asdf"
         ) ) {
-      kdError() << "REVERSE SORTING BY FORMATTED NAME NOT CORRECT!" << endl;
-      kdDebug() << "list reverse sorted by formatted name:" << endl;
+      kError() << "REVERSE SORTING BY FORMATTED NAME NOT CORRECT!" << endl;
+      kDebug() << "list reverse sorted by formatted name:" << endl;
       list.dump();
   } else {
-      kdDebug() << "Reverse sorting by formatted name correct." << endl;
+      kDebug() << "Reverse sorting by formatted name correct." << endl;
   }
 
 
@@ -134,11 +134,11 @@ int main(int /*argc*/,char /* **argv*/)
          && (*list.at(4)).uid()=="Z2hk"
          && (*list.at(5)).uid()=="kk45"
         ) ) {
-      kdError() << "SORTING BY UID NOT CORRECT!" << endl;
-      kdDebug() << "list sorted by Uid:" << endl;
+      kError() << "SORTING BY UID NOT CORRECT!" << endl;
+      kDebug() << "list sorted by Uid:" << endl;
       list.dump();
   } else {
-      kdDebug() << "Sorting by Uid correct." << endl;
+      kDebug() << "Sorting by Uid correct." << endl;
   }
   list.setReverseSorting(true);
   list.sortBy(Uid);
@@ -149,46 +149,46 @@ int main(int /*argc*/,char /* **argv*/)
          && (*list.at(1)).uid()=="Z2hk"
          && (*list.at(0)).uid()=="kk45"
         ) ) {
-      kdError() << "REVERSE SORTING BY UID NOT CORRECT!" << endl;
-      kdDebug() << "list sorted by Uid:" << endl;
+      kError() << "REVERSE SORTING BY UID NOT CORRECT!" << endl;
+      kDebug() << "list sorted by Uid:" << endl;
       list.dump();
   } else {
-      kdDebug() << "Reverse sorting by Uid correct." << endl;
+      kDebug() << "Reverse sorting by Uid correct." << endl;
   }
 
   // zero, one or two entries might give errors in a poor sorting 
   // implementation
-  kdDebug() << "sorting empty list" << endl;
+  kDebug() << "sorting empty list" << endl;
   AddresseeList list2;
   list2.sort();
 
-  kdDebug() << "sorting one entry list" << endl;
+  kDebug() << "sorting one entry list" << endl;
   list2.append(a);
   list2.sort();
 
-  kdDebug() << "sorting two entry list" << endl;
+  kDebug() << "sorting two entry list" << endl;
   list2.append(f);
   list2.setReverseSorting(false);
   list2.sort();
   if ( !(   (*list2.at(0)).uid()=="78ze"
          && (*list2.at(1)).uid()=="Asdf"
         ) ) {
-      kdError() << "SORTING BY FORMATTED NAME IN A TWO ENTRY LIST NOT CORRECT!" << endl;
-      kdDebug() << "list sorted by formatted name, two entries:" << endl;
+      kError() << "SORTING BY FORMATTED NAME IN A TWO ENTRY LIST NOT CORRECT!" << endl;
+      kDebug() << "list sorted by formatted name, two entries:" << endl;
       list2.dump();
   } else {
-      kdDebug() << "Sorting by FormattedName in a two entry list correct." << endl;
+      kDebug() << "Sorting by FormattedName in a two entry list correct." << endl;
   }
   list2.setReverseSorting(true);
   list2.sort();
   if ( !(   (*list2.at(1)).uid()=="78ze"
          && (*list2.at(0)).uid()=="Asdf"
         ) ) {
-      kdError() << "REVERSE SORTING BY FORMATTED NAME IN A TWO ENTRY LIST NOT CORRECT!" << endl;
-      kdDebug() << "list reverse sorted by formatted name, two entries:" << endl;
+      kError() << "REVERSE SORTING BY FORMATTED NAME IN A TWO ENTRY LIST NOT CORRECT!" << endl;
+      kDebug() << "list reverse sorted by formatted name, two entries:" << endl;
       list2.dump();
   } else {
-      kdDebug() << "Reverse sorting by FormattedName in a two entry list correct." << endl;
+      kDebug() << "Reverse sorting by FormattedName in a two entry list correct." << endl;
   }
 
 }

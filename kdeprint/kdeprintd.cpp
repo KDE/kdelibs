@@ -283,10 +283,10 @@ void KDEPrintd::processRequest()
 				authString = result.username + ":" + result.password + ":" + QString::number( seqNbr );
 		}
 		else
-			kdWarning( 500 ) << "DCOP returned type error, expected KIO::AuthInfo, received " << replyType << endl;
+			kWarning( 500 ) << "DCOP returned type error, expected KIO::AuthInfo, received " << replyType << endl;
 	}
 	else
-		kdWarning( 500 ) << "Cannot communicate with kded_kpasswdserver" << endl;
+		kWarning( 500 ) << "Cannot communicate with kded_kpasswdserver" << endl;
 
 	QByteArray outputData;
 	QDataStream output( &outputData, QIODevice::WriteOnly );
@@ -316,7 +316,7 @@ void KDEPrintd::initPassword( const QString& user, const QString& passwd, const 
 
 	if ( !callingDcopClient()->call( "kded", "kpasswdserver", "addAuthInfo(KIO::AuthInfo,long int)",
 			params, replyType, reply ) )
-		kdWarning( 500 ) << "Unable to initialize password, cannot communicate with kded_kpasswdserver" << endl;
+		kWarning( 500 ) << "Unable to initialize password, cannot communicate with kded_kpasswdserver" << endl;
 }
 
 #include "kdeprintd.moc"

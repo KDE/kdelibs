@@ -137,14 +137,14 @@ void Dialog::activeAutoCorrect( bool _active )
 
 void Dialog::slotAutocorrect()
 {
-    kdDebug()<<"void Dialog::slotAutocorrect()\n";
+    kDebug()<<"void Dialog::slotAutocorrect()\n";
     emit autoCorrect(d->currentWord.word, d->ui->m_replacement->text() );
     slotReplaceWord();
 }
 
 void Dialog::slotFinished()
 {
-    kdDebug()<<"void Dialog::slotFinished() \n";
+    kDebug()<<"void Dialog::slotFinished() \n";
     emit stop();
     //FIXME: should we emit done here?
     emit done( d->checker->filter()->buffer() );
@@ -153,7 +153,7 @@ void Dialog::slotFinished()
 
 void Dialog::slotCancel()
 {
-    kdDebug()<<"void Dialog::slotCancel() \n";
+    kDebug()<<"void Dialog::slotCancel() \n";
     emit cancel();
     reject();
 }
@@ -190,7 +190,7 @@ void Dialog::updateDialog( const QString& word )
 
 void Dialog::show()
 {
-    kdDebug()<<"Showing dialog"<<endl;
+    kDebug()<<"Showing dialog"<<endl;
     if ( d->originalBuffer.isEmpty() )
         d->checker->start();
     else
@@ -258,7 +258,7 @@ void Dialog::fillSuggestions( const QStringList& suggs )
 
 void Dialog::slotMisspelling(const QString& word, int start )
 {
-    kdDebug()<<"Dialog misspelling!!"<<endl;
+    kDebug()<<"Dialog misspelling!!"<<endl;
     d->currentWord = Word( word, start );
     if ( d->replaceAllMap.contains( word ) ) {
         d->ui->m_replacement->setText( d->replaceAllMap[ word ] );
@@ -271,7 +271,7 @@ void Dialog::slotMisspelling(const QString& word, int start )
 
 void Dialog::slotDone()
 {
-    kdDebug()<<"Dialog done!"<<endl;
+    kDebug()<<"Dialog done!"<<endl;
     emit done( d->checker->filter()->buffer() );
     accept();
 }

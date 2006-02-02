@@ -191,7 +191,7 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
       // however if a non-empty file gets passed and we can't find it we might
       // inform the developer using some debug output
       if ( !_file.isEmpty() )
-          kdWarning() << "KXMLGUIClient::setXMLFile: cannot find .rc file " << _file << endl;
+          kWarning() << "KXMLGUIClient::setXMLFile: cannot find .rc file " << _file << endl;
 
       setXML( QString(), true );
       return;
@@ -622,7 +622,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
 
   foreach (QString file, files)
   {
-    //kdDebug() << "KXMLGUIClient::findMostRecentXMLFile " << *it << endl;
+    //kDebug() << "KXMLGUIClient::findMostRecentXMLFile " << *it << endl;
     QString data = KXMLGUIFactory::readConfigFile( file );
     DocStruct d;
     d.file = file;
@@ -645,12 +645,12 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
     uint version = versionStr.toUInt( &ok );
     if ( !ok )
       continue;
-    //kdDebug() << "FOUND VERSION " << version << endl;
+    //kDebug() << "FOUND VERSION " << version << endl;
 
     if ( version > bestVersion )
     {
       best = docIt;
-      //kdDebug() << "best version is now " << version << endl;
+      //kDebug() << "best version is now " << version << endl;
       bestVersion = version;
     }
   }
@@ -704,7 +704,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
   }
   else if ( files.count() > 0 )
   {
-    //kdDebug() << "returning first one..." << endl;
+    //kDebug() << "returning first one..." << endl;
     doc = (*allDocuments.begin()).data;
     return (*allDocuments.begin()).file;
   }
@@ -867,7 +867,7 @@ void KXMLGUIClient::addStateActionEnabled(const QString& state,
   StateChange stateChange = getActionsToChangeForState(state);
 
   stateChange.actionsToEnable.append( action );
-  //kdDebug() << "KXMLGUIClient::addStateActionEnabled( " << state << ", " << action << ")" << endl;
+  //kDebug() << "KXMLGUIClient::addStateActionEnabled( " << state << ", " << action << ")" << endl;
 
   m_actionsStateMap.replace( state, stateChange );
 }
@@ -879,7 +879,7 @@ void KXMLGUIClient::addStateActionDisabled(const QString& state,
   StateChange stateChange = getActionsToChangeForState(state);
 
   stateChange.actionsToDisable.append( action );
-  //kdDebug() << "KXMLGUIClient::addStateActionDisabled( " << state << ", " << action << ")" << endl;
+  //kDebug() << "KXMLGUIClient::addStateActionDisabled( " << state << ", " << action << ")" << endl;
 
   m_actionsStateMap.replace( state, stateChange );
 }

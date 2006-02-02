@@ -91,7 +91,7 @@ void KJavaAppletWidget::setWindow( WId w )
     if ( m_swallowTitle == w_info.name() ||
          m_swallowTitle == w_info.visibleName() )
     {
-        kdDebug(6100) << "swallowing our window: " << m_swallowTitle
+        kDebug(6100) << "swallowing our window: " << m_swallowTitle
                       << ", window id = " << w << endl;
         delete d->tmplabel;
         d->tmplabel = 0;
@@ -110,7 +110,7 @@ void KJavaAppletWidget::setWindow( WId w )
 
 QSize KJavaAppletWidget::sizeHint() const
 {
-    kdDebug(6100) << "KJavaAppletWidget::sizeHint()" << endl;
+    kDebug(6100) << "KJavaAppletWidget::sizeHint()" << endl;
     QSize rval = QX11EmbedContainer::sizeHint();
 
     if( rval.width() == 0 || rval.height() == 0 )
@@ -121,7 +121,7 @@ QSize KJavaAppletWidget::sizeHint() const
         }
     }
 
-    kdDebug(6100) << "returning: (" << rval.width() << ", " << rval.height() << ")" << endl;
+    kDebug(6100) << "returning: (" << rval.width() << ", " << rval.height() << ")" << endl;
 
     return rval;
 }

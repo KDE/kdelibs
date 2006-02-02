@@ -197,7 +197,7 @@ DrMain* Foomatic2Loader::buildDriver() const
 					}
 				}
 				else
-					kdWarning( 500 ) << "Failed to create option: " << ( *it ).toMap()[ "name" ].toString() << endl;
+					kWarning( 500 ) << "Failed to create option: " << ( *it ).toMap()[ "name" ].toString() << endl;
 			}
 		}
 		return driver;
@@ -227,7 +227,7 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 					if ( opt )
 						optList.append( opt );
 					else
-						kdWarning( 500 ) << "Failed to create option: " << ( *it ).toMap()[ "name" ].toString() << endl;
+						kWarning( 500 ) << "Failed to create option: " << ( *it ).toMap()[ "name" ].toString() << endl;
 				}
 			}
 			else
@@ -244,7 +244,7 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 						if ( opt )
 							optList.append( opt );
 						else
-							kdWarning( 500 ) << "Failed to create option: " << ( *it ).toMap()[ "name" ].toString() << endl;
+							kWarning( 500 ) << "Failed to create option: " << ( *it ).toMap()[ "name" ].toString() << endl;
 					}
 				}
 			}

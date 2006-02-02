@@ -244,7 +244,7 @@ DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
         return getShortHandValue( properties, 3 );
     }
     }
-    //kdDebug() << k_funcinfo << "property not found:" << propertyID << endl;
+    //kDebug() << k_funcinfo << "property not found:" << propertyID << endl;
     return DOMString();
 }
 
@@ -357,7 +357,7 @@ bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
     CSSParser parser( strictParsing );
     bool success = parser.parseValue( this, id, value, important, nonCSSHint );
     if(!success)
-	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
+	kDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
 			<< "] value: [" << value.string() << "]"<< endl;
     else
         setChanged();
@@ -448,7 +448,7 @@ void CSSStyleDeclarationImpl::setCssText(DOM::DOMString text)
 
 bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/, bool )
 {
-    kdDebug() << "WARNING: CSSStyleDeclarationImpl::parseString, unimplemented, was called" << endl;
+    kDebug() << "WARNING: CSSStyleDeclarationImpl::parseString, unimplemented, was called" << endl;
     return false;
     // ###
 }
@@ -686,7 +686,7 @@ unsigned short CSSPrimitiveValueImpl::cssValueType() const
 bool CSSPrimitiveValueImpl::parseString( const DOMString &/*string*/, bool )
 {
     // ###
-    kdDebug() << "WARNING: CSSPrimitiveValueImpl::parseString, unimplemented, was called" << endl;
+    kDebug() << "WARNING: CSSPrimitiveValueImpl::parseString, unimplemented, was called" << endl;
     return false;
 }
 
@@ -889,7 +889,7 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     const QString &available = KHTMLSettings::availableFamilies();
 
     parsedFontName = parsedFontName.toLower();
-    // kdDebug(0) << "searching for face '" << parsedFontName << "'" << endl;
+    // kDebug(0) << "searching for face '" << parsedFontName << "'" << endl;
 
     int pos = available.find( ',' + parsedFontName + ',', 0, false );
     if ( pos == -1 ) {
@@ -908,7 +908,7 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
        int p = available.find(',', pos);
        assert( p != -1 ); // available is supposed to start and end with ,
        parsedFontName = available.mid( pos, p - pos);
-       // kdDebug(0) << "going for '" << parsedFontName << "'" << endl;
+       // kDebug(0) << "going for '" << parsedFontName << "'" << endl;
     } else
         parsedFontName.clear();
 
@@ -995,7 +995,7 @@ QString QuotesValueImpl::openQuote(int level) const
 {
     if (levels == 0) return "";
     level--; // increments are calculated before openQuote is called
-//     kdDebug( 6080 ) << "Open quote level:" << level << endl;
+//     kDebug( 6080 ) << "Open quote level:" << level << endl;
     if (level < 0) level = 0;
     else
     if (level >= (int) levels) level = (int) (levels-1);
@@ -1005,7 +1005,7 @@ QString QuotesValueImpl::openQuote(int level) const
 QString QuotesValueImpl::closeQuote(int level) const
 {
     if (levels == 0) return "";
-//     kdDebug( 6080 ) << "Close quote level:" << level << endl;
+//     kDebug( 6080 ) << "Close quote level:" << level << endl;
     if (level < 0) level = 0;
     else
     if (level >= (int) levels) level = (int) (levels-1);

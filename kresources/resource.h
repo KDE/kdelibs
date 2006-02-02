@@ -175,7 +175,7 @@ void ResourceExampleConfig::loadSettings( KRES::Resource *resource )
     mHostEdit->setText( res->host() );
     mPasswordEdit->setText( res->password() );
   } else
-    kdDebug() << "ERROR: ResourceExampleConfig::loadSettings(): no ResourceExample, cast failed" << endl;
+    kDebug() << "ERROR: ResourceExampleConfig::loadSettings(): no ResourceExample, cast failed" << endl;
 }
 
 void ResourceExampleConfig::saveSettings( KRES::Resource *resource )
@@ -185,7 +185,7 @@ void ResourceExampleConfig::saveSettings( KRES::Resource *resource )
     res->setHost( mHostEdit->text() );
     res->setPassword( mPasswordEdit->text() );
   } else
-    kdDebug() << "ERROR: ResourceExampleConfig::saveSettings(): no ResourceExample, cast failed" << endl;
+    kDebug() << "ERROR: ResourceExampleConfig::saveSettings(): no ResourceExample, cast failed" << endl;
 }
 \endcode
 

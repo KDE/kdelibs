@@ -109,7 +109,7 @@ void RenderFrameSet::layout( )
     }
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(FrameSet)::layout( ) width=" << width() << ", height=" << height() << endl;
+    kDebug( 6040 ) << renderName() << "(FrameSet)::layout( ) width=" << width() << ", height=" << height() << endl;
 #endif
 
     int remainingLen[2];
@@ -220,7 +220,7 @@ void RenderFrameSet::layout( )
     if(!m_hSplitVar && !m_vSplitVar)
     {
 #ifdef DEBUG_LAYOUT
-        kdDebug( 6031 ) << "calculationg fixed Splitters" << endl;
+        kDebug( 6031 ) << "calculationg fixed Splitters" << endl;
 #endif
         if(!m_vSplitVar && element()->totalCols() > 1)
         {
@@ -247,7 +247,7 @@ void RenderFrameSet::layout( )
                 if(fixed)
                 {
 #ifdef DEBUG_LAYOUT
-                    kdDebug( 6031 ) << "found fixed cell " << r << "/" << c << "!" << endl;
+                    kDebug( 6031 ) << "found fixed cell " << r << "/" << c << "!" << endl;
 #endif
                     if( element()->totalCols() > 1)
                     {
@@ -264,7 +264,7 @@ void RenderFrameSet::layout( )
                 }
 #ifdef DEBUG_LAYOUT
                 else
-                    kdDebug( 6031 ) << "not fixed: " << r << "/" << c << "!" << endl;
+                    kDebug( 6031 ) << "not fixed: " << r << "/" << c << "!" << endl;
 #endif
             }
         }
@@ -296,7 +296,7 @@ void RenderFrameSet::positionFrames()
     {
       child->setPos( xPos, yPos );
 #ifdef DEBUG_LAYOUT
-      kdDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_gridLayout[1][c] << "/" << m_gridLayout[0][r] << ")" << endl;
+      kDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_gridLayout[1][c] << "/" << m_gridLayout[0][r] << ")" << endl;
 #endif
       // has to be resized and itself resize its contents
       if ((m_gridLayout[1][c] != child->width()) || (m_gridLayout[0][r] != child->height())) {
@@ -339,7 +339,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
   if ( !m_resizing && evt->id() == EventImpl::MOUSEMOVE_EVENT || evt->id() == EventImpl::MOUSEDOWN_EVENT )
   {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6031 ) << "mouseEvent:check" << endl;
+    kDebug( 6031 ) << "mouseEvent:check" << endl;
 #endif
 
     m_hSplit = -1;
@@ -354,7 +354,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
       {
         if(m_vSplitVar && m_vSplitVar[c-1] == true) m_vSplit = c-1;
 #ifdef DEBUG_LAYOUT
-        kdDebug( 6031 ) << "vsplit!" << endl;
+        kDebug( 6031 ) << "vsplit!" << endl;
 #endif
         res = true;
         break;
@@ -369,8 +369,8 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
       {
         if(m_hSplitVar && m_hSplitVar[r-1] == true) m_hSplit = r-1;
 #ifdef DEBUG_LAYOUT
-        kdDebug( 6031 ) << "hsplitvar = " << m_hSplitVar << endl;
-        kdDebug( 6031 ) << "hsplit!" << endl;
+        kDebug( 6031 ) << "hsplitvar = " << m_hSplitVar << endl;
+        kDebug( 6031 ) << "hsplit!" << endl;
 #endif
         res = true;
         break;
@@ -378,7 +378,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
       pos += m_gridLayout[0][r] + element()->border();
     }
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6031 ) << m_hSplit << "/" << m_vSplit << endl;
+    kDebug( 6031 ) << m_hSplit << "/" << m_vSplit << endl;
 #endif
   }
 
@@ -409,7 +409,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
     if(m_vSplit != -1 )
     {
 #ifdef DEBUG_LAYOUT
-      kdDebug( 6031 ) << "split xpos=" << _x << endl;
+      kDebug( 6031 ) << "split xpos=" << _x << endl;
 #endif
       int delta = m_vSplitPos - _x;
       m_gridDelta[1][m_vSplit] -= delta;
@@ -418,7 +418,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
     if(m_hSplit != -1 )
     {
 #ifdef DEBUG_LAYOUT
-      kdDebug( 6031 ) << "split ypos=" << _y << endl;
+      kDebug( 6031 ) << "split ypos=" << _y << endl;
 #endif
       int delta = m_hSplitPos - _y;
       m_gridDelta[0][m_hSplit] -= delta;
@@ -515,7 +515,7 @@ RenderPart::RenderPart(DOM::HTMLElementImpl* node)
 void RenderPart::setWidget( QWidget *widget )
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(6031) << "RenderPart::setWidget()" << endl;
+    kDebug(6031) << "RenderPart::setWidget()" << endl;
 #endif
 
     setQWidget( widget );
@@ -564,7 +564,7 @@ void RenderFrame::slotViewCleared()
 #endif
     if(m_widget->inherits("Q3ScrollView")) {
 #ifdef DEBUG_LAYOUT
-        kdDebug(6031) << "frame is a scrollview!" << endl;
+        kDebug(6031) << "frame is a scrollview!" << endl;
 #endif
         Q3ScrollView *view = static_cast<Q3ScrollView *>(m_widget);
         if(!element()->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(element()->parentNode()))->frameBorder()))
@@ -573,7 +573,7 @@ void RenderFrame::slotViewCleared()
 	    view->setHScrollBarMode(element()->scrolling );
         if(view->inherits("KHTMLView")) {
 #ifdef DEBUG_LAYOUT
-            kdDebug(6031) << "frame is a KHTMLview!" << endl;
+            kDebug(6031) << "frame is a KHTMLview!" << endl;
 #endif
             KHTMLView *htmlView = static_cast<KHTMLView *>(view);
             if(element()->marginWidth != -1) htmlView->setMarginWidth(element()->marginWidth);
@@ -715,7 +715,7 @@ void RenderPartObject::updateWidget()
                   serviceType = "video/x-msvideo";
 
               else
-                  kdDebug(6031) << "ActiveX classId " << objbase->classId << endl;
+                  kDebug(6031) << "ActiveX classId " << objbase->classId << endl;
 
               // TODO: add more plugins here
           }
@@ -739,7 +739,7 @@ void RenderPartObject::close()
 bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType )
 {
     KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
-    kdDebug(6031) << "RenderPartObject::partLoadingErrorNotify serviceType=" << serviceType << endl;
+    kDebug(6031) << "RenderPartObject::partLoadingErrorNotify serviceType=" << serviceType << endl;
     // Check if we just tried with e.g. nsplugin
     // and fallback to the activexhandler if there is a classid
     // and a codebase, where we may download the ocx if it's missing
@@ -760,7 +760,7 @@ bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, co
         {
             KParts::URLArgs args;
             args.serviceType = "application/x-activex-handler";
-            kdDebug(6031) << "set to activex" << endl;
+            kDebug(6031) << "set to activex" << endl;
             if (part->requestObject( childFrame, url, args ))
                 return true; // success
 
@@ -859,7 +859,7 @@ void RenderPartObject::slotViewCleared()
 {
   if(m_widget->inherits("Q3ScrollView") ) {
 #ifdef DEBUG_LAYOUT
-      kdDebug(6031) << "iframe is a scrollview!" << endl;
+      kDebug(6031) << "iframe is a scrollview!" << endl;
 #endif
       Q3ScrollView *view = static_cast<Q3ScrollView *>(m_widget);
       int frameStyle = QFrame::NoFrame;
@@ -879,7 +879,7 @@ void RenderPartObject::slotViewCleared()
       view->setHScrollBarMode(scroll );
       if(view->inherits("KHTMLView")) {
 #ifdef DEBUG_LAYOUT
-          kdDebug(6031) << "frame is a KHTMLview!" << endl;
+          kDebug(6031) << "frame is a KHTMLview!" << endl;
 #endif
           KHTMLView *htmlView = static_cast<KHTMLView *>(view);
           htmlView->setIgnoreWheelEvents( element()->id() == ID_IFRAME );

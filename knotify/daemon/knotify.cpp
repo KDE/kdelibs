@@ -101,7 +101,7 @@ void KNotify::closeNotification(int id)
 int KNotify::event( const QString & event, const QString & appname, const ContextList & contexts, const QString & text, const QPixmap & pixmap, const QStringList & actions, int winId )
 {
 	m_counter++;
-	kdDebug() << k_funcinfo << event << " : " << m_counter << "  winid:" << winId << endl;
+	kDebug() << k_funcinfo << event << " : " << m_counter << "  winid:" << winId << endl;
 
 	KNotifyConfig config(appname , contexts , event );
 	config.text=text;
@@ -117,7 +117,7 @@ int KNotify::event( const QString & event, const QString & appname, const Contex
 	QString presentstring=config.readEntry("Action");
 	QStringList presents=presentstring.split ("|");
 	
-	kdDebug() << k_funcinfo << presentstring << " - " << presents << endl;
+	kDebug() << k_funcinfo << presentstring << " - " << presents << endl;
 	
 	foreach(const QString & action , presents)
 	{

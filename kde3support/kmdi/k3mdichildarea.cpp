@@ -74,7 +74,7 @@ K3MdiChildArea::~K3MdiChildArea()
 
 void K3MdiChildArea::manageChild( K3MdiChildFrm* child, bool show, bool cascade )
 {
-	kdDebug( 760 ) << k_funcinfo << "Adding child " << child << " to be managed" << endl;
+	kDebug( 760 ) << k_funcinfo << "Adding child " << child << " to be managed" << endl;
 	K3MdiChildFrm* top = topChild();
 	
 	//remove old references. There can be more than one so we remove them all
@@ -98,7 +98,7 @@ void K3MdiChildArea::manageChild( K3MdiChildFrm* child, bool show, bool cascade 
 	{
 		if ( top && top->state() == K3MdiChildFrm::Maximized )
 		{
-			kdDebug( 760 ) << k_funcinfo << "Maximizing the new child" << endl;
+			kDebug( 760 ) << k_funcinfo << "Maximizing the new child" << endl;
 			emit sysButtonConnectionsMustChange( top, child );
 			top->setState( K3MdiChildFrm::Normal, false /*animate*/ );
 			child->setState( K3MdiChildFrm::Maximized, false /*animate*/ );
@@ -111,7 +111,7 @@ void K3MdiChildArea::manageChild( K3MdiChildFrm* child, bool show, bool cascade 
 
 void K3MdiChildArea::destroyChild( K3MdiChildFrm *child, bool focusTop )
 {
-	kdDebug( 760 ) << k_funcinfo << "Removing child " << child->caption() << endl;
+	kDebug( 760 ) << k_funcinfo << "Removing child " << child->caption() << endl;
 	bool wasMaximized = ( child->state() == K3MdiChildFrm::Maximized );
 
 	// destroy the old one
@@ -143,7 +143,7 @@ void K3MdiChildArea::destroyChild( K3MdiChildFrm *child, bool focusTop )
 
 void K3MdiChildArea::destroyChildButNotItsView( K3MdiChildFrm* child, bool focusTop )
 {
-	kdDebug( 760 ) << k_funcinfo << "Removing child " << child->caption() << endl;
+	kDebug( 760 ) << k_funcinfo << "Removing child " << child->caption() << endl;
 	bool wasMaximized = ( child->state() == K3MdiChildFrm::Maximized );
 
 	// destroy the old one
@@ -178,7 +178,7 @@ void K3MdiChildArea::setTopChild( K3MdiChildFrm* child, bool /* bSetFocus */ )
 	
 	if ( topChild() != child )
 	{
-		kdDebug( 760 ) << k_funcinfo << "Setting " << child->caption() << " as the new top child" << endl;
+		kDebug( 760 ) << k_funcinfo << "Setting " << child->caption() << " as the new top child" << endl;
 		m_pZ->setAutoDelete( false );
 		if ( child )
 			m_pZ->removeRef( child );
@@ -262,14 +262,14 @@ QPoint K3MdiChildArea::getCascadePoint( int indexOfWindow )
 	if ( indexOfWindow < 0 )
 	{
 		indexOfWindow = m_pZ->count(); //use the window count
-		kdDebug( 760 ) << k_funcinfo << "indexOfWindow was less than zero, using "
+		kDebug( 760 ) << k_funcinfo << "indexOfWindow was less than zero, using "
 			<< indexOfWindow << " as new index" << endl;
 	}
 
 	QPoint pnt( 0, 0 );
 	if ( indexOfWindow == 0 )
 	{
-		kdDebug( 760 ) << k_funcinfo << "No windows. Returning QPoint( 0, 0 ) as the cascade point" << endl;
+		kDebug( 760 ) << k_funcinfo << "No windows. Returning QPoint( 0, 0 ) as the cascade point" << endl;
 		return pnt;
 	}
 
@@ -277,8 +277,8 @@ QPoint K3MdiChildArea::getCascadePoint( int indexOfWindow )
 	if ( height() == 1 ) 	// hacky?!
 		topLevelMode = true;
 
-	kdDebug( 760 ) << k_funcinfo << "Getting the cascade point for window index " << indexOfWindow << endl;
-	kdDebug( 760 ) << k_funcinfo << "Do we think we're in top level mode? " << topLevelMode << endl;
+	kDebug( 760 ) << k_funcinfo << "Getting the cascade point for window index " << indexOfWindow << endl;
+	kDebug( 760 ) << k_funcinfo << "Do we think we're in top level mode? " << topLevelMode << endl;
 	
 	K3MdiChildFrm* child = m_pZ->first();
 	
@@ -294,7 +294,7 @@ QPoint K3MdiChildArea::getCascadePoint( int indexOfWindow )
 	
 	if ( child )
 	{
-		kdDebug( 760 ) << k_funcinfo << "child frame exists. resetting height and width values" << endl;
+		kDebug( 760 ) << k_funcinfo << "child frame exists. resetting height and width values" << endl;
 		step = child->m_pCaption->heightHint() + K3MDI_CHILDFRM_BORDER;
 		availableHeight = h - child->minimumHeight();
 		availableWidth = w - child->minimumWidth();
@@ -323,11 +323,11 @@ void K3MdiChildArea::childMinimized( K3MdiChildFrm *minimizedChild, bool wasMaxi
 	//can't find the child in our list, so we don't care.
 	if ( m_pZ->findRef( minimizedChild ) == -1 )
 	{
-		kdDebug( 760 ) << k_funcinfo << "child was minimized but wasn't in our list!" << endl;
+		kDebug( 760 ) << k_funcinfo << "child was minimized but wasn't in our list!" << endl;
 		return;
 	}
 	
-	kdDebug( 760 ) << k_funcinfo << endl;
+	kDebug( 760 ) << k_funcinfo << endl;
 	if ( m_pZ->count() > 1 )
 	{
 		//move the minimized child to the bottom
@@ -338,7 +338,7 @@ void K3MdiChildArea::childMinimized( K3MdiChildFrm *minimizedChild, bool wasMaxi
 		
 		if ( wasMaximized )
 		{ // Need to maximize the new top child
-			kdDebug( 760 ) << k_funcinfo << "child just minimized from maximized state. maximize new top child" << endl;
+			kDebug( 760 ) << k_funcinfo << "child just minimized from maximized state. maximize new top child" << endl;
 			minimizedChild = topChild();
 			if ( !minimizedChild )
 				return; //??
@@ -359,7 +359,7 @@ void K3MdiChildArea::focusTopChild()
 	K3MdiChildFrm* lastChild = topChild();
 	if ( !lastChild )
 	{
-		kdDebug( 760 ) << k_funcinfo << "No more child windows left" << endl;
+		kDebug( 760 ) << k_funcinfo << "No more child windows left" << endl;
 		emit lastChildFrmClosed();
 		return;
 	}
@@ -374,7 +374,7 @@ void K3MdiChildArea::focusTopChild()
 				( *it )->m_pCaption->setActive( false );
 		}
 
-		kdDebug( 760 ) << k_funcinfo << "Giving focus to " << lastChild->caption() << endl;
+		kDebug( 760 ) << k_funcinfo << "Giving focus to " << lastChild->caption() << endl;
 		lastChild->raise();
 		lastChild->m_pClient->activate();
 	}
@@ -383,7 +383,7 @@ void K3MdiChildArea::focusTopChild()
 
 void K3MdiChildArea::cascadeWindows()
 {
-	kdDebug( 760 ) << k_funcinfo << "cascading windows but not changing their size" << endl;
+	kDebug( 760 ) << k_funcinfo << "cascading windows but not changing their size" << endl;
 	int idx = 0;
 	Q3PtrList<K3MdiChildFrm> list( *m_pZ );
 	list.setAutoDelete( false );
@@ -405,7 +405,7 @@ void K3MdiChildArea::cascadeWindows()
 
 void K3MdiChildArea::cascadeMaximized()
 {
-	kdDebug( 760 ) << k_funcinfo << "cascading windows. will make sure they are minimum sized" << endl;
+	kDebug( 760 ) << k_funcinfo << "cascading windows. will make sure they are minimum sized" << endl;
 	int idx = 0;
 	Q3PtrList<K3MdiChildFrm> list( *m_pZ );
 
@@ -439,7 +439,7 @@ void K3MdiChildArea::cascadeMaximized()
 
 void K3MdiChildArea::expandVertical()
 {
-	kdDebug( 760 ) << k_funcinfo << "expanding all child frames vertically" << endl;
+	kDebug( 760 ) << k_funcinfo << "expanding all child frames vertically" << endl;
 	int idx = 0;
 	Q3PtrList<K3MdiChildFrm> list( *m_pZ );
 	list.setAutoDelete( false );
@@ -461,7 +461,7 @@ void K3MdiChildArea::expandVertical()
 
 void K3MdiChildArea::expandHorizontal()
 {
-	kdDebug( 760 ) << k_funcinfo << "expanding all child frames horizontally" << endl;
+	kDebug( 760 ) << k_funcinfo << "expanding all child frames horizontally" << endl;
 	int idx = 0;
 	Q3PtrList<K3MdiChildFrm> list( *m_pZ );
 	list.setAutoDelete( false );
@@ -495,13 +495,13 @@ int K3MdiChildArea::getVisibleChildCount() const
 
 void K3MdiChildArea::tilePragma()
 {
-	kdDebug( 760 ) << k_funcinfo << endl;
+	kDebug( 760 ) << k_funcinfo << endl;
 	tileAllInternal( 9 );
 }
 
 void K3MdiChildArea::tileAllInternal( int maxWnds )
 {
-	kdDebug( 760 ) << k_funcinfo << endl;
+	kDebug( 760 ) << k_funcinfo << endl;
 	//NUM WINDOWS =           1,2,3,4,5,6,7,8,9
 	static int colstable[ 9 ] = { 1, 1, 1, 2, 2, 2, 3, 3, 3 }; //num columns
 	static int rowstable[ 9 ] = { 1, 2, 3, 2, 3, 3, 3, 3, 3 }; //num rows
@@ -512,7 +512,7 @@ void K3MdiChildArea::tileAllInternal( int maxWnds )
 	int numVisible = getVisibleChildCount();
 	if ( numVisible < 1 )
 	{
-		kdDebug( 760 ) << k_funcinfo << "No visible child windows to tile" << endl;
+		kDebug( 760 ) << k_funcinfo << "No visible child windows to tile" << endl;
 		return;
 	}
 

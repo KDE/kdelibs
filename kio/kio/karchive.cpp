@@ -131,13 +131,13 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     QFileInfo fileInfo( fileName );
     if ( !fileInfo.isFile() && !fileInfo.isSymLink() )
     {
-        kdWarning() << "KArchive::addLocalFile " << fileName << " doesn't exist or is not a regular file." << endl;
+        kWarning() << "KArchive::addLocalFile " << fileName << " doesn't exist or is not a regular file." << endl;
         return false;
     }
 
     KDE_struct_stat fi;
     if (KDE_lstat(QFile::encodeName(fileName),&fi) == -1) {
-        kdWarning() << "KArchive::addLocalFile stating " << fileName
+        kWarning() << "KArchive::addLocalFile stating " << fileName
         	<< " failed: " << strerror(errno) << endl;
         return false;
     }
@@ -156,14 +156,14 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     QFile file( fileName );
     if ( !file.open( QIODevice::ReadOnly ) )
     {
-        kdWarning() << "KArchive::addLocalFile couldn't open file " << fileName << endl;
+        kWarning() << "KArchive::addLocalFile couldn't open file " << fileName << endl;
         return false;
     }
 
     if ( !prepareWriting( destName, fileInfo.owner(), fileInfo.group(), size,
     		fi.st_mode, fi.st_atime, fi.st_mtime, fi.st_ctime ) )
     {
-        kdWarning() << "KArchive::addLocalFile prepareWriting " << destName << " failed" << endl;
+        kWarning() << "KArchive::addLocalFile prepareWriting " << destName << " failed" << endl;
         return false;
     }
 
@@ -175,7 +175,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     {
         if ( !writeData( array.data(), n ) )
         {
-            kdWarning() << "KArchive::addLocalFile writeData failed" << endl;
+            kWarning() << "KArchive::addLocalFile writeData failed" << endl;
             return false;
         }
         total += n;
@@ -184,7 +184,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
 
     if ( !finishWriting( size ) )
     {
-        kdWarning() << "KArchive::addLocalFile finishWriting failed" << endl;
+        kWarning() << "KArchive::addLocalFile finishWriting failed" << endl;
         return false;
     }
     return true;
@@ -203,7 +203,7 @@ bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
         if ( *it != dot && *it != dotdot )
         {
             QString fileName = path + "/" + *it;
-//            kdDebug() << "storing " << fileName << endl;
+//            kDebug() << "storing " << fileName << endl;
             QString dest = destName.isEmpty() ? *it : (destName + "/" + *it);
             QFileInfo fileInfo( fileName );
 
@@ -223,7 +223,7 @@ bool KArchive::writeFile( const QString& name, const QString& user,
 {
     if ( !prepareWriting( name, user, group, size, perm, atime, mtime, ctime ) )
     {
-        kdWarning() << "KArchive::writeFile prepareWriting failed" << endl;
+        kWarning() << "KArchive::writeFile prepareWriting failed" << endl;
         return false;
     }
 
@@ -231,13 +231,13 @@ bool KArchive::writeFile( const QString& name, const QString& user,
     // Note: if data is 0L, don't call writeBlock, it would terminate the KFilterDev
     if ( data && size && !writeData( data, size ) )
     {
-        kdWarning() << "KArchive::writeFile writeData failed" << endl;
+        kWarning() << "KArchive::writeFile writeData failed" << endl;
         return false;
     }
 
     if ( !finishWriting( size ) )
     {
-        kdWarning() << "KArchive::writeFile finishWriting failed" << endl;
+        kWarning() << "KArchive::writeFile finishWriting failed" << endl;
         return false;
     }
     return true;
@@ -287,7 +287,7 @@ KArchiveDirectory * KArchive::rootDir()
 {
     if ( !d->rootDir )
     {
-        //kdDebug() << "Making root dir " << endl;
+        //kDebug() << "Making root dir " << endl;
         struct passwd* pw =  getpwuid( getuid() );
         struct group* grp = getgrgid( getgid() );
         QString username = pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
@@ -300,10 +300,10 @@ KArchiveDirectory * KArchive::rootDir()
 
 KArchiveDirectory * KArchive::findOrCreate( const QString & path )
 {
-    //kdDebug() << "KArchive::findOrCreate " << path << endl;
+    //kDebug() << "KArchive::findOrCreate " << path << endl;
     if ( path.isEmpty() || path == "/" || path == "." ) // root dir => found
     {
-        //kdDebug() << "KArchive::findOrCreate returning rootdir" << endl;
+        //kDebug() << "KArchive::findOrCreate returning rootdir" << endl;
         return rootDir();
     }
     // Important note : for tar files containing absolute paths
@@ -317,10 +317,10 @@ KArchiveDirectory * KArchive::findOrCreate( const QString & path )
     if ( ent )
     {
         if ( ent->isDirectory() )
-            //kdDebug() << "KArchive::findOrCreate found it" << endl;
+            //kDebug() << "KArchive::findOrCreate found it" << endl;
             return (KArchiveDirectory *) ent;
         else
-            kdWarning() << "Found " << path << " but it's not a directory" << endl;
+            kWarning() << "Found " << path << " but it's not a directory" << endl;
     }
 
     // Otherwise go up and try again
@@ -339,7 +339,7 @@ KArchiveDirectory * KArchive::findOrCreate( const QString & path )
         parent = findOrCreate( left ); // recursive call... until we find an existing dir.
     }
 
-    //kdDebug() << "KTar : found parent " << parent->name() << " adding " << dirname << " to ensure " << path << endl;
+    //kDebug() << "KTar : found parent " << parent->name() << " adding " << dirname << " to ensure " << path << endl;
     // Found -> add the missing piece
     KArchiveDirectory * e = new KArchiveDirectory( this, dirname, d->rootDir->permissions(),
                                                    d->rootDir->date(), d->rootDir->user(),
@@ -488,7 +488,7 @@ const KArchiveEntry* KArchiveDirectory::entry( const QString& _name ) const
     QString left = name.left( pos );
     QString right = name.mid( pos + 1 );
 
-    //kdDebug() << "KArchiveDirectory::entry left=" << left << " right=" << right << endl;
+    //kDebug() << "KArchiveDirectory::entry left=" << left << " right=" << right << endl;
 
     const KArchiveEntry* e = m_entries.value( left );
     if ( !e || !e->isDirectory() )
@@ -503,7 +503,7 @@ void KArchiveDirectory::addEntry( KArchiveEntry* entry )
 {
   Q_ASSERT( !entry->name().isEmpty() );
   if( m_entries.value( entry->name() ) ) {
-      kdWarning() << "KArchiveDirectory::addEntry: directory " << name()
+      kWarning() << "KArchiveDirectory::addEntry: directory " << name()
                   << " has entry " << entry->name() << " already" << endl;
   }
   m_entries.insert( entry->name(), entry );

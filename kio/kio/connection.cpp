@@ -193,14 +193,14 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
     size_t n = fwrite( buffer, 1, 10, f_out );
 
     if ( n != 10 ) {
-	kdError(7017) << "Could not send header" << endl;
+	kError(7017) << "Could not send header" << endl;
 	return false;
     }
 
     n = fwrite( data.data(), 1, data.size(), f_out );
 
     if ( n != (size_t)data.size() ) {
-	kdError(7017) << "Could not write data" << endl;
+	kError(7017) << "Could not write data" << endl;
 	return false;
     }
 
@@ -212,7 +212,7 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 int Connection::read( int* _cmd, QByteArray &data )
 {
     if (fd_in == -1 ) {
-	kdError(7017) << "read: not yet inited" << endl;
+	kError(7017) << "read: not yet inited" << endl;
 	return -1;
     }
 
@@ -224,12 +224,12 @@ int Connection::read( int* _cmd, QByteArray &data )
 	goto again1;
 
     if ( n == -1) {
-	kdError(7017) << "Header read failed, errno=" << errno << endl;
+	kError(7017) << "Header read failed, errno=" << errno << endl;
     }
 
     if ( n != 10 ) {
       if ( n ) // 0 indicates end of file
-        kdError(7017) << "Header has invalid size (" << n << ")" << endl;
+        kError(7017) << "Header has invalid size (" << n << ")" << endl;
       return -1;
     }
 
@@ -255,7 +255,7 @@ int Connection::read( int* _cmd, QByteArray &data )
 		if (errno == EINTR)
 		    continue;
 
-		kdError(7017) << "Data read failed, errno=" << errno << endl;
+		kError(7017) << "Data read failed, errno=" << errno << endl;
 		return -1;
 	    }
 

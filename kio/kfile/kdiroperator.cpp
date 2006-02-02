@@ -611,7 +611,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
         accept();
     }
 #endif
-    kdDebug(kfile_area) << "TODO KDirOperator::checkPath()" << endl;
+    kDebug(kfile_area) << "TODO KDirOperator::checkPath()" << endl;
 }
 
 void KDirOperator::setURL(const KUrl& _newurl, bool clearforward)
@@ -1095,7 +1095,7 @@ void KDirOperator::setDirLister( KDirLister *lister )
 
     QWidget* mainWidget = topLevelWidget();
     dir->setMainWindow (mainWidget);
-    kdDebug (kfile_area) << "mainWidget=" << mainWidget << endl;
+    kDebug (kfile_area) << "mainWidget=" << mainWidget << endl;
 
     connect( dir, SIGNAL( percent( int )),
              SLOT( slotProgress( int ) ));

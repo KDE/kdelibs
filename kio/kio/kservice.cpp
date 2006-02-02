@@ -125,7 +125,7 @@ KService::init( const KDesktopFile *config )
   entryMap.remove("Type");
   if ( m_strType.isEmpty() )
   {
-    /*kdWarning(7012) << "The desktop entry file " << entryPath()
+    /*kWarning(7012) << "The desktop entry file " << entryPath()
                     << " has no Type=... entry."
                     << " It should be \"Application\" or \"Service\"" << endl;
     m_bValid = false;
@@ -133,7 +133,7 @@ KService::init( const KDesktopFile *config )
     m_strType = "Application";
   } else if ( m_strType != "Application" && m_strType != "Service" )
   {
-    kdWarning(7012) << "The desktop entry file " << entryPath()
+    kWarning(7012) << "The desktop entry file " << entryPath()
                     << " has Type=" << m_strType
                     << " instead of \"Application\" or \"Service\"" << endl;
     m_bValid = false;
@@ -154,7 +154,7 @@ KService::init( const KDesktopFile *config )
        (resource != "apps") &&
        !absPath)
   {
-    kdWarning(7012) << "The desktop entry file " << entryPath()
+    kWarning(7012) << "The desktop entry file " << entryPath()
            << " has Type=" << m_strType << " but is located under \"" << resource
            << "\" instead of \"apps\"" << endl;
     m_bValid = false;
@@ -166,7 +166,7 @@ KService::init( const KDesktopFile *config )
        (resource != "services") &&
        !absPath)
   {
-    kdWarning(7012) << "The desktop entry file " << entryPath()
+    kWarning(7012) << "The desktop entry file " << entryPath()
            << " has Type=" << m_strType << " but is located under \"" << resource
            << "\" instead of \"services\"" << endl;
     m_bValid = false;
@@ -335,7 +335,7 @@ bool KService::hasServiceType( const QString& _servicetype ) const
 {
   if (!m_bValid) return false; // safety test
 
-  //kdDebug(7012) << "Testing " << m_strDesktopEntryName << " for " << _servicetype << endl;
+  //kDebug(7012) << "Testing " << m_strDesktopEntryName << " for " << _servicetype << endl;
 
   KMimeType::Ptr mimePtr = KMimeType::mimeType( _servicetype );
   if ( mimePtr && mimePtr == KMimeType::defaultMimeTypePtr() )
@@ -350,7 +350,7 @@ bool KService::hasServiceType( const QString& _servicetype ) const
       it->toInt(&isNumber);
       if (isNumber)
          continue;
-      //kdDebug(7012) << "    has " << (*it) << endl;
+      //kDebug(7012) << "    has " << (*it) << endl;
       KServiceType::Ptr ptr = KServiceType::serviceType( *it );
       if ( ptr && ptr->inherits( _servicetype ) )
           return true;
@@ -377,7 +377,7 @@ int KService::initialPreferenceForMimeType( const QString& mimeType ) const
       it->toInt(&isNumber);
       if (isNumber)
          continue;
-      //kdDebug(7012) << "    has " << (*it) << endl;
+      //kDebug(7012) << "    has " << (*it) << endl;
       KServiceType::Ptr ptr = KServiceType::serviceType( *it );
       if ( !ptr || !ptr->inherits( mimeType ) )
           continue;
@@ -513,7 +513,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
     t = KServiceTypeFactory::self()->findPropertyTypeByName(_name);
     if (t == QVariant::Invalid)
     {
-      kdDebug(7012) << "Request for unknown property '" << _name << "'\n";
+      kDebug(7012) << "Request for unknown property '" << _name << "'\n";
       return QVariant(); // Unknown property: Invalid variant.
     }
   }
@@ -523,7 +523,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( (it == m_mapProps.end()) || (!it->isValid()))
   {
-     //kdDebug(7012) << "Property not found " << _name << endl;
+     //kDebug(7012) << "Property not found " << _name << endl;
      return QVariant(); // No property set.
   }
 

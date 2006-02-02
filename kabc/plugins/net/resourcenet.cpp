@@ -112,7 +112,7 @@ void ResourceNet::writeConfig( KConfig *config )
 
 Ticket *ResourceNet::requestSaveTicket()
 {
-  kdDebug(5700) << "ResourceNet::requestSaveTicket()" << endl;
+  kDebug(5700) << "ResourceNet::requestSaveTicket()" << endl;
 
   if ( mTempFile.isEmpty() )
     return 0;
@@ -161,7 +161,7 @@ bool ResourceNet::load()
 bool ResourceNet::asyncLoad()
 {
   if ( mLocalTempFile ) {
-    kdDebug(5700) << "stale temp file detected " << mLocalTempFile->name() << endl;
+    kDebug(5700) << "stale temp file detected " << mLocalTempFile->name() << endl;
     mLocalTempFile->setAutoDelete( true );
     delete mLocalTempFile;
   }

@@ -60,7 +60,7 @@ int main(int argc, char **argv)
         else if ( url.protocol() == "rlogin" )
             cmd << "rlogin";
         else {
-            kdError() << "Invalid protocol " << url.protocol() << endl;
+            kError() << "Invalid protocol " << url.protocol() << endl;
             return 2;
         }
         
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
         if (host.isEmpty() || host.startsWith("-"))
         {
-            kdError() << "Invalid hostname " << host << endl;
+            kError() << "Invalid hostname " << host << endl;
             return 2;
         }
 

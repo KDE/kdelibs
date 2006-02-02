@@ -71,11 +71,11 @@ KAudioRecordStream::KAudioRecordStream( KArtsServer * kserver, const QString & t
 	d->effectStack = Arts::DynamicCast( d->kserver->server().createObject( "Arts::StereoEffectStack" ) );
 	d->convert = Arts::DynamicCast( d->kserver->server().createObject( "Arts::AudioToByteStream" ) );
 	if( d->in.isNull() )
-		kdFatal( 400 ) << "couldn't create a Synth_AMAN_RECORD on the aRts server\n";
+		kFatal( 400 ) << "couldn't create a Synth_AMAN_RECORD on the aRts server\n";
 	if( d->effectStack.isNull() )
-		kdFatal( 400 ) << "couldn't create a StereoEffectStack on the aRts server\n";
+		kFatal( 400 ) << "couldn't create a StereoEffectStack on the aRts server\n";
 	if( d->convert.isNull() )
-		kdFatal( 400 ) << "couldn't create a AudioToByteStream on the aRts server\n";
+		kFatal( 400 ) << "couldn't create a AudioToByteStream on the aRts server\n";
 
 	d->in.title( ( const char * ) d->title.toLocal8Bit() );
 	Arts::connect( d->in, d->effectStack );
@@ -94,7 +94,7 @@ KAudioRecordStream::~KAudioRecordStream()
 
 int KAudioRecordStream::read( char * buffer, int size )
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kDebug( 400 ) << k_funcinfo << endl;
 	unsigned int remaining = size;
 	while( remaining )
 	{
@@ -157,7 +157,7 @@ bool KAudioRecordStream::running() const
 
 void KAudioRecordStream::stop()
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kDebug( 400 ) << k_funcinfo << endl;
 	if( d->attached )
 	{
 		d->receiver.stop();
@@ -176,7 +176,7 @@ void KAudioRecordStream::stop()
 
 void KAudioRecordStream::start( int samplingRate, int bits, int channels )
 {
-	kdDebug( 400 ) << k_funcinfo << "samplingRate: " << samplingRate << " bits: " << bits << " channels: " << channels << endl;
+	kDebug( 400 ) << k_funcinfo << "samplingRate: " << samplingRate << " bits: " << bits << " channels: " << channels << endl;
 	if( ! d->attached )
 	{
 		assert( d->kserver );
@@ -184,7 +184,7 @@ void KAudioRecordStream::start( int samplingRate, int bits, int channels )
 		if( ( samplingRate < 500 || samplingRate > 2000000 )
 				|| ( channels != 1 && channels != 2 ) || ( bits != 8 && bits != 16 ) )
 		{
-			kdWarning( 400 ) << "invalid stream parameters: rate=" << samplingRate << ", " << bits << " bit, " << channels << " channels\n";
+			kWarning( 400 ) << "invalid stream parameters: rate=" << samplingRate << ", " << bits << " bit, " << channels << " channels\n";
 		}
 		else
 		{
@@ -212,7 +212,7 @@ void KAudioRecordStream::start( int samplingRate, int bits, int channels )
 
 void KAudioRecordStream::flush()
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kDebug( 400 ) << k_funcinfo << endl;
 	d->inqueue.clear();
 }
 
@@ -220,21 +220,21 @@ void KAudioRecordStream::slotRestartedServer() { }
 
 void KAudioRecordStream::slotData( const char * contents, unsigned int size )
 {
-	//kdDebug( 400 ) << k_funcinfo << endl;
+	//kDebug( 400 ) << k_funcinfo << endl;
 	QByteArray * bytearray = new QByteArray( size );
 	// copy the contents to the bytearray
 	// this has to be deleted later
 	bytearray->duplicate( contents, size );
 	if( d->polling )
 	{
-		kdDebug( 400 ) << "enqueue the data\n";
+		kDebug( 400 ) << "enqueue the data\n";
 		d->inqueue.enqueue( bytearray );
 	}
 	else
 	{
-		//kdDebug( 400 ) << "emit the data\n";
+		//kDebug( 400 ) << "emit the data\n";
 		emit data( *bytearray );
-		//kdDebug( 400 ) << "delete the data\n";
+		//kDebug( 400 ) << "delete the data\n";
 		delete bytearray;
 	}
 }
@@ -257,7 +257,7 @@ KByteSoundReceiver::~KByteSoundReceiver()
 
 void KByteSoundReceiver::process_indata( Arts::DataPacket<Arts::mcopbyte> * inpacket )
 {
-	//kdDebug( 400 ) << k_funcinfo << " size of the packet: " << inpacket->size << endl;
+	//kDebug( 400 ) << k_funcinfo << " size of the packet: " << inpacket->size << endl;
 	emit data( (char *)inpacket->contents, inpacket->size );
 	inpacket->processed();
 }

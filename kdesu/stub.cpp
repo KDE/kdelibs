@@ -152,7 +152,7 @@ int StubProcess::ConverseStub(int check)
 	    return 0;
 	} else
 	{
-	    kdWarning(900) << k_lineinfo << "Unknown request: -->" << line 
+	    kWarning(900) << k_lineinfo << "Unknown request: -->" << line 
 		           << "<--\n";
 	    return 1;
 	}

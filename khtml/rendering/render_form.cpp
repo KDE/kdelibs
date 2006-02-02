@@ -638,7 +638,7 @@ RenderObject* RenderFieldset::findLegend()
 
 void RenderFieldset::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
+    //kDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
 
     RenderObject* legend = findLegend();
     if (!legend)
@@ -1317,7 +1317,7 @@ Q3PopupMenu *TextAreaWidget::createPopupMenu(const QPoint& pos)
 void TextAreaWidget::slotFindHighlight(const QString& text, int matchingIndex, int matchingLength)
 {
     Q_UNUSED(text)
-    //kdDebug() << "Highlight: [" << text << "] mi:" << matchingIndex << " ml:" << matchingLength << endl;
+    //kDebug() << "Highlight: [" << text << "] mi:" << matchingIndex << " ml:" << matchingLength << endl;
     if (sender() == m_replace) {
         setSelection(m_repPara, matchingIndex, m_repPara, matchingIndex + matchingLength);
         setCursorPosition(m_repPara, matchingIndex);
@@ -1331,7 +1331,7 @@ void TextAreaWidget::slotFindHighlight(const QString& text, int matchingIndex, i
 
 void TextAreaWidget::slotReplaceText(const QString &text, int replacementIndex, int /*replacedLength*/, int matchedLength) {
     Q_UNUSED(text)
-    //kdDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength << endl;
+    //kDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength << endl;
     setSelection(m_repPara, replacementIndex, m_repPara, replacementIndex + matchedLength);
     removeSelectedText();
     insertAt(m_repDlg->replacement(), m_repPara, replacementIndex);

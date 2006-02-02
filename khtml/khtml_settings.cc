@@ -46,15 +46,15 @@ struct KPerDomainSettings {
 
 #ifdef DEBUG_SETTINGS
     void dump(const QString &infix = QString()) const {
-      kdDebug() << "KPerDomainSettings " << infix << " @" << this << ":" << endl;
-      kdDebug() << "  m_bEnableJava: " << m_bEnableJava << endl;
-      kdDebug() << "  m_bEnableJavaScript: " << m_bEnableJavaScript << endl;
-      kdDebug() << "  m_bEnablePlugins: " << m_bEnablePlugins << endl;
-      kdDebug() << "  m_windowOpenPolicy: " << m_windowOpenPolicy << endl;
-      kdDebug() << "  m_windowStatusPolicy: " << m_windowStatusPolicy << endl;
-      kdDebug() << "  m_windowFocusPolicy: " << m_windowFocusPolicy << endl;
-      kdDebug() << "  m_windowMovePolicy: " << m_windowMovePolicy << endl;
-      kdDebug() << "  m_windowResizePolicy: " << m_windowResizePolicy << endl;
+      kDebug() << "KPerDomainSettings " << infix << " @" << this << ":" << endl;
+      kDebug() << "  m_bEnableJava: " << m_bEnableJava << endl;
+      kDebug() << "  m_bEnableJavaScript: " << m_bEnableJavaScript << endl;
+      kDebug() << "  m_bEnablePlugins: " << m_bEnablePlugins << endl;
+      kDebug() << "  m_windowOpenPolicy: " << m_windowOpenPolicy << endl;
+      kDebug() << "  m_windowStatusPolicy: " << m_windowStatusPolicy << endl;
+      kDebug() << "  m_windowFocusPolicy: " << m_windowFocusPolicy << endl;
+      kDebug() << "  m_windowMovePolicy: " << m_windowMovePolicy << endl;
+      kDebug() << "  m_windowResizePolicy: " << m_windowResizePolicy << endl;
     }
 #endif
 };
@@ -117,7 +117,7 @@ static KPerDomainSettings &setup_per_domain_policy(
 				KHTMLSettingsPrivate* const d,
 				const QString &domain) {
   if (domain.isEmpty()) {
-    kdWarning() << "setup_per_domain_policy: domain is empty" << endl;
+    kWarning() << "setup_per_domain_policy: domain is empty" << endl;
   }
   const QString ldomain = domain.toLower();
   PolicyMap::iterator it = d->domainPolicy.find(ldomain);
@@ -651,7 +651,7 @@ static const KPerDomainSettings &lookup_hostname_policy(
 			const QString& hostname)
 {
 #ifdef DEBUG_SETTINGS
-  kdDebug() << "lookup_hostname_policy(" << hostname << ")" << endl;
+  kDebug() << "lookup_hostname_policy(" << hostname << ")" << endl;
 #endif
   if (hostname.isEmpty()) {
 #ifdef DEBUG_SETTINGS
@@ -666,7 +666,7 @@ static const KPerDomainSettings &lookup_hostname_policy(
   PolicyMap::const_iterator it = d->domainPolicy.find(hostname);
   if( it != notfound ) {
 #ifdef DEBUG_SETTINGS
-    kdDebug() << "perfect match" << endl;
+    kDebug() << "perfect match" << endl;
     (*it).dump(hostname);
 #endif
     // yes, use it (unless dunno)
@@ -683,7 +683,7 @@ static const KPerDomainSettings &lookup_hostname_policy(
     Q_ASSERT(notfound == d->domainPolicy.end());
     if( it != notfound ) {
 #ifdef DEBUG_SETTINGS
-      kdDebug() << "partial match" << endl;
+      kDebug() << "partial match" << endl;
       (*it).dump(host_part);
 #endif
       return *it;
@@ -694,7 +694,7 @@ static const KPerDomainSettings &lookup_hostname_policy(
 
   // No domain-specific entry: use global domain
 #ifdef DEBUG_SETTINGS
-  kdDebug() << "no match" << endl;
+  kDebug() << "no match" << endl;
   d->global.dump("global");
 #endif
   return d->global;
@@ -736,7 +736,7 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
             {
                 if ((*it).search(url) != -1)
                 {
-                    kdDebug( 6080 ) << "Filtered: " << url << endl;
+                    kDebug( 6080 ) << "Filtered: " << url << endl;
                     return true;
                 }
             }

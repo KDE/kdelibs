@@ -951,7 +951,7 @@ static int get_parent(WId winid, Window *out_parent)
 //        See doc in qxembed.h.
 void QXEmbed::embed(WId w)
 {
-    kdDebug() << "*** Embed " << w << " into " << winId() << ". window=" << window << endl;
+    kDebug() << "*** Embed " << w << " into " << winId() << ". window=" << window << endl;
     if (!w)
         return;
     // L1701: The has_window variable prevents embedding a same window twice.
@@ -977,7 +977,7 @@ void QXEmbed::embed(WId w)
         //        time to create the embedded application main window.
         Window parent = 0;
         get_parent(w, &parent);
-        kdDebug() << QString("> before reparent: parent=0x%1").arg(parent,0,16) << endl;
+        kDebug() << QString("> before reparent: parent=0x%1").arg(parent,0,16) << endl;
         for (int i = 0; i < 50; i++) {
             // this is done once more when finishing embedding, but it's done also here
             // just in case we crash before reaching that place
@@ -985,13 +985,13 @@ void QXEmbed::embed(WId w)
                 XAddToSaveSet( QX11Info::display(), w );
             XReparentWindow(QX11Info::display(), w, winId(), 0, 0);
             if (get_parent(w, &parent) && parent == winId()) {
-               kdDebug() << QString("> Loop %1: ").arg(i)
+               kDebug() << QString("> Loop %1: ").arg(i)
                          << QString("> reparent of 0x%1").arg(w,0,16)
                          << QString(" into 0x%1").arg(winId(),0,16)
                          << QString(" successful") << endl;
                 break;
             }
-            kdDebug() << QString("> Loop %1: ").arg(i)
+            kDebug() << QString("> Loop %1: ").arg(i)
                       << QString("> reparent of 0x%1").arg(w,0,16)
                       << QString(" into 0x%1").arg(winId(),0,16)
                       << QString(" failed") << endl;

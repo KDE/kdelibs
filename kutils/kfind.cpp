@@ -202,7 +202,7 @@ void KFind::setData( int id, const QString& data, int startPos )
         else
             m_index = 0;
 #ifdef DEBUG_FIND
-        kdDebug() << "setData: '" << m_text << "' m_index=" << m_index << endl;
+        kDebug() << "setData: '" << m_text << "' m_index=" << m_index << endl;
 #endif
         Q_ASSERT( m_index != INDEX_NOMATCH );
         m_lastResult = NoMatch;
@@ -333,7 +333,7 @@ KFind::Result KFind::find()
     }
 
 #ifdef DEBUG_FIND
-    kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
+    kDebug() << k_funcinfo << "m_index=" << m_index << endl;
 #endif
     do
     {
@@ -400,7 +400,7 @@ KFind::Result KFind::find()
                         findNextDialog(true)->show();
 
 #ifdef DEBUG_FIND
-                    kdDebug() << k_funcinfo << "Match. Next m_index=" << m_index << endl;
+                    kDebug() << k_funcinfo << "Match. Next m_index=" << m_index << endl;
 #endif
                     m_lastResult = Match;
                     return Match;
@@ -430,7 +430,7 @@ KFind::Result KFind::find()
     while (m_index != INDEX_NOMATCH);
 
 #ifdef DEBUG_FIND
-    kdDebug() << k_funcinfo << "NoMatch. m_index=" << m_index << endl;
+    kDebug() << k_funcinfo << "NoMatch. m_index=" << m_index << endl;
 #endif
     m_lastResult = NoMatch;
     return NoMatch;

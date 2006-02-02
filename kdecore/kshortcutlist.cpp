@@ -70,7 +70,7 @@ bool KShortcutList::setOther( Other, uint, const QVariant &)
 
 bool KShortcutList::readSettings( const QString& sConfigGroup, KConfigBase* pConfig )
 {
-	kdDebug(125) << "KShortcutList::readSettings( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
+	kDebug(125) << "KShortcutList::readSettings( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
 	if( !pConfig )
 		pConfig = KGlobal::config();
 	QString sGroup = (!sConfigGroup.isEmpty()) ? sConfigGroup : QString("Shortcuts");
@@ -81,7 +81,7 @@ bool KShortcutList::readSettings( const QString& sConfigGroup, KConfigBase* pCon
 		readSettings( "Keys", pConfig );
 	}
 
-	kdDebug(125) << "\treadSettings( \"" << sGroup << "\", " << pConfig << " )" << endl;
+	kDebug(125) << "\treadSettings( \"" << sGroup << "\", " << pConfig << " )" << endl;
 	if( !pConfig->hasGroup( sGroup ) )
 		return true;
 	KConfigGroup cg( pConfig, sGroup );
@@ -98,17 +98,17 @@ bool KShortcutList::readSettings( const QString& sConfigGroup, KConfigBase* pCon
 			}
 			else // default shortcut
 				setShortcut( i, shortcutDefault(i) );
-			kdDebug(125) << "\t" << name(i) << " = '" << sEntry << "'" << endl;
+			kDebug(125) << "\t" << name(i) << " = '" << sEntry << "'" << endl;
 		}
 	}
 
-	kdDebug(125) << "KShortcutList::readSettings done" << endl;
+	kDebug(125) << "KShortcutList::readSettings done" << endl;
 	return true;
 }
 
 bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pConfig, bool bWriteAll, bool bGlobal ) const
 {
-	kdDebug(125) << "KShortcutList::writeSettings( " << sConfigGroup << ", " << pConfig << ", " << bWriteAll << ", " << bGlobal << " )" << endl;
+	kDebug(125) << "KShortcutList::writeSettings( " << sConfigGroup << ", " << pConfig << ", " << bWriteAll << ", " << bGlobal << " )" << endl;
 	if( !pConfig )
 		pConfig = KGlobal::config();
 
@@ -132,13 +132,13 @@ bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pCo
 				QString s = shortcut(i).toStringInternal();
 				if( s.isEmpty() )
 					s = "none";
-				kdDebug(125) << "\twriting " << sName << " = " << s << endl;
+				kDebug(125) << "\twriting " << sName << " = " << s << endl;
 				cg.writeEntry( sName, s, (bGlobal?KConfigBase::Global:KConfigBase::Normal) );
 			}
 			// Otherwise, this key is the same as default
 			//  but exists in config file.  Remove it.
 			else if( bConfigHasAction ) {
-				kdDebug(125) << "\tremoving " << sName << " because == default" << endl;
+				kDebug(125) << "\tremoving " << sName << " because == default" << endl;
 				cg.deleteEntry( sName, (bGlobal?KConfigBase::Global:KConfigBase::Normal) );
 			}
 		}

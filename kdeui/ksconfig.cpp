@@ -54,7 +54,7 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   , encodingcombo(0)
   , clientcombo(0)
 {
-  kdDebug(750) << "Entering KSpellConfig::KSpellConfig(KSpellConfig&)" << endl;
+  kDebug(750) << "Entering KSpellConfig::KSpellConfig(KSpellConfig&)" << endl;
   d = new KSpellConfigPrivate;
   setDoSpellChecking( _ksc.doSpellChecking() );
   setReplaceAllList( _ksc.replaceAllList() );
@@ -187,7 +187,7 @@ KSpellConfig::dictFromList() const
 bool
 KSpellConfig::readGlobalSettings()
 {
-  kdDebug(750) << "Entering KSpellConfig::readGlobalSettings (see ksconfig.cpp)" << endl;
+  kDebug(750) << "Entering KSpellConfig::readGlobalSettings (see ksconfig.cpp)" << endl;
   KConfigGroup cg( kc,"KSpell" );
 
   setDoSpellChecking ( cg.readEntry("KSpell_DoSpellChecking", false ) );
@@ -221,7 +221,7 @@ KSpellConfig::writeGlobalSettings ()
 void
 KSpellConfig::sChangeEncoding( int i )
 {
-  kdDebug(750) << "KSpellConfig::sChangeEncoding(" << i << ")" << endl;
+  kDebug(750) << "KSpellConfig::sChangeEncoding(" << i << ")" << endl;
   setEncoding( i );
   emit configChanged();
 }
@@ -259,7 +259,7 @@ KSpellConfig::interpret( const QString &fname, QString &lname,
 
 {
 
-  kdDebug(750) << "KSpellConfig::interpret [" << fname << "]" << endl;
+  kDebug(750) << "KSpellConfig::interpret [" << fname << "]" << endl;
 
   QString dname( fname );
 
@@ -383,7 +383,7 @@ KSpellConfig::fillInDialog ()
   if ( nodialog )
     return;
 
-  kdDebug(750) << "KSpellConfig::fillinDialog" << endl;
+  kDebug(750) << "KSpellConfig::fillinDialog" << endl;
 
   cb0->setChecked( doSpellChecking() );
   cb1->setChecked( noRootAffix() );
@@ -461,14 +461,14 @@ void KSpellConfig::getAvailDictsIspell () {
   */
   if (!dir.exists() || !dir.isDir()) return;
 
-  kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
+  kDebug(750) << "KSpellConfig::getAvailDictsIspell "
 	       << dir.filePath() << " " << dir.path() << endl;
 
   const QDir thedir (dir.filePath(),"*.hash");
   const QStringList entryList = thedir.entryList();
 
-  kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
-  kdDebug(750) << "entryList().count()="
+  kDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+  kDebug(750) << "entryList().count()="
 	       << entryList.count() << endl;
 
   QStringList::const_iterator entryListItr = entryList.constBegin();
@@ -525,14 +525,14 @@ void KSpellConfig::getAvailDictsAspell () {
     dir.setFile ("/usr/local/share/aspell");
   if (!dir.exists() || !dir.isDir()) return;
 
-  kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
+  kDebug(750) << "KSpellConfig::getAvailDictsAspell "
 	       << dir.filePath() << " " << dir.path() << endl;
 
   const QDir thedir (dir.filePath(),"*");
   const QStringList entryList = thedir.entryList();
 
-  kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
-  kdDebug(750) << "entryList().count()="
+  kDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+  kDebug(750) << "entryList().count()="
 	       << entryList.count() << endl;
 
   QStringList::const_iterator entryListItr = entryList.constBegin();
@@ -611,14 +611,14 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       */
       if (!dir.exists() || !dir.isDir()) return;
 
-      kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
+      kDebug(750) << "KSpellConfig::getAvailDictsIspell "
                    << dir.filePath() << " " << dir.path() << endl;
 
       const QDir thedir (dir.filePath(),"*.hash");
       const QStringList entryList = thedir.entryList();
 
-      kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
-      kdDebug(750) << "entryList().count()="
+      kDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+      kDebug(750) << "entryList().count()="
                    << entryList.count() << endl;
 
       QStringList::const_iterator entryListItr = entryList.constBegin();
@@ -681,14 +681,14 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
         dir.setFile ("/usr/local/share/aspell");
       if (!dir.exists() || !dir.isDir()) return;
 
-      kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
+      kDebug(750) << "KSpellConfig::getAvailDictsAspell "
                    << dir.filePath() << " " << dir.path() << endl;
 
       const QDir thedir (dir.filePath(),"*");
       const QStringList entryList = thedir.entryList();
 
-      kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
-      kdDebug(750) << "entryList().count()="
+      kDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+      kDebug(750) << "entryList().count()="
                    << entryList.count() << endl;
 
       QStringList::const_iterator entryListItr = entryList.constBegin();

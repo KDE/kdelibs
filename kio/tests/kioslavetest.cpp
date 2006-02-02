@@ -331,7 +331,7 @@ void KioslaveTest::slotResult( KIO::Job * _job )
   }
   else if ( selectedOperation == Mimetype )
   {
-      kdDebug() << "mimetype is " << ((KIO::MimetypeJob*)_job)->mimetype() << endl;
+      kDebug() << "mimetype is " << ((KIO::MimetypeJob*)_job)->mimetype() << endl;
   }
 
   if (job == _job)
@@ -342,12 +342,12 @@ void KioslaveTest::slotResult( KIO::Job * _job )
 
 void KioslaveTest::slotSlaveConnected()
 {
-   kdDebug() << "Slave connected." << endl;
+   kDebug() << "Slave connected." << endl;
 }
 
 void KioslaveTest::slotSlaveError()
 {
-   kdDebug() << "Error connected." << endl;
+   kDebug() << "Error connected." << endl;
    slave = 0;
 }
 
@@ -359,36 +359,36 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
     for( ; it != entry.end(); it++ ) {
         switch ( it.key() ) {
             case KIO::UDS_FILE_TYPE:
-                kdDebug() << "File Type : " << (mode_t)(it.value().toNumber()) << endl;
+                kDebug() << "File Type : " << (mode_t)(it.value().toNumber()) << endl;
                 if ( S_ISDIR( (mode_t)(it.value().toNumber()) ) )
                 {
-                    kdDebug() << "is a dir" << endl;
+                    kDebug() << "is a dir" << endl;
                 }
                 break;
             case KIO::UDS_ACCESS:
-                kdDebug() << "Access permissions : " << (mode_t)(it.value().toNumber()) << endl;
+                kDebug() << "Access permissions : " << (mode_t)(it.value().toNumber()) << endl;
                 break;
             case KIO::UDS_USER:
-                kdDebug() << "User : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "User : " << (it.value().toString().ascii() ) << endl;
                 break;
             case KIO::UDS_GROUP:
-                kdDebug() << "Group : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "Group : " << (it.value().toString().ascii() ) << endl;
                 break;
             case KIO::UDS_NAME:
-                kdDebug() << "Name : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "Name : " << (it.value().toString().ascii() ) << endl;
                 //m_strText = decodeFileName( it.value().toString() );
                 break;
             case KIO::UDS_URL:
-                kdDebug() << "URL : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "URL : " << (it.value().toString().ascii() ) << endl;
                 break;
             case KIO::UDS_MIME_TYPE:
-                kdDebug() << "MimeType : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "MimeType : " << (it.value().toString().ascii() ) << endl;
                 break;
             case KIO::UDS_LINK_DEST:
-                kdDebug() << "LinkDest : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "LinkDest : " << (it.value().toString().ascii() ) << endl;
                 break;
             case KIO::UDS_SIZE:
-                kdDebug() << "Size: " << KIO::convertSize(it.value().toNumber()) << endl;
+                kDebug() << "Size: " << KIO::convertSize(it.value().toNumber()) << endl;
                 break;
         }
     }
@@ -402,7 +402,7 @@ void KioslaveTest::slotEntries(KIO::Job* job, const KIO::UDSEntryList& list) {
     for (; it != list.end(); ++it) {
         // For each file...
         QString name = (*it).stringValue( KIO::UDS_NAME );
-        kdDebug() << name << endl;
+        kDebug() << name << endl;
 
         KProtocolInfo::ExtraFieldList::Iterator extraFieldsIt = extraFields.begin();
         UDSEntry::ConstIterator it2 = (*it).begin();
@@ -411,10 +411,10 @@ void KioslaveTest::slotEntries(KIO::Job* job, const KIO::UDSEntryList& list) {
                 if ( extraFieldsIt != extraFields.end() ) {
                     QString column = (*extraFieldsIt).name;
                     //QString type = (*extraFieldsIt).type;
-                    kdDebug() << "  Extra data (" << column << ") :" << it2.value().toString() << endl;
+                    kDebug() << "  Extra data (" << column << ") :" << it2.value().toString() << endl;
                     ++extraFieldsIt;
                 } else {
-                    kdDebug() << "  Extra data (UNDEFINED) :" << it2.value().toString() << endl;
+                    kDebug() << "  Extra data (UNDEFINED) :" << it2.value().toString() << endl;
                 }
             }
         }
@@ -425,11 +425,11 @@ void KioslaveTest::slotData(KIO::Job*, const QByteArray &data)
 {
     if (data.size() == 0)
     {
-       kdDebug(0) << "Data: <End>" << endl;
+       kDebug(0) << "Data: <End>" << endl;
     }
     else
     {
-       kdDebug(0) << "Data: \"" << QString( data ) << "\"" << endl;
+       kDebug(0) << "Data: \"" << QString( data ) << "\"" << endl;
     }
 }
 
@@ -447,18 +447,18 @@ void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
 
     if (!fileData)
     {
-       kdDebug(0) << "DataReq: <End>" << endl;
+       kDebug(0) << "DataReq: <End>" << endl;
        return;
     }
     if (!strcmp(fileData, "BIG\n"))
 	data.fill(0, 29*1024*1024);
     else
 	data.duplicate(fileData, strlen(fileData));
-    kdDebug(0) << "DataReq: \"" << fileData << "\"" << endl;
+    kDebug(0) << "DataReq: \"" << fileData << "\"" << endl;
 }
 
 void KioslaveTest::stopJob() {
-  kdDebug() << "KioslaveTest::stopJob()" << endl;
+  kDebug() << "KioslaveTest::stopJob()" << endl;
   job->kill();
   job = 0L;
 

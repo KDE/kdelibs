@@ -179,7 +179,7 @@ void KFileShare::readShareList()
     KProcIO proc;
     proc << exe;
     if ( !proc.start( KProcess::Block ) ) {
-        kdError() << "Can't run " << exe << endl;
+        kError() << "Can't run " << exe << endl;
         s_authorization = ErrorNotFound;
         return;
     }
@@ -194,7 +194,7 @@ void KFileShare::readShareList()
             if ( line[length-1] != '/' )
                 line += '/';
             s_shareList->append(line);
-            kdDebug(7000) << "Shared dir:" << line << endl;
+            kDebug(7000) << "Shared dir:" << line << endl;
         }
     } while (length > -1);
 }
@@ -225,7 +225,7 @@ QString KFileShare::findExe( const char* exeName )
    QString path = QString::fromLocal8Bit(getenv("PATH")) + QLatin1String(":/usr/sbin");
    QString exe = KStandardDirs::findExe( exeName, path );
    if (exe.isEmpty())
-       kdError() << exeName << " not found in " << path << endl;
+       kError() << exeName << " not found in " << path << endl;
    return exe;
 }
 
@@ -235,7 +235,7 @@ bool KFileShare::setShared( const QString& path, bool shared )
           KFileShare::shareMode() == Advanced)
        return false;
 
-    kdDebug(7000) << "KFileShare::setShared " << path << "," << shared << endl;
+    kDebug(7000) << "KFileShare::setShared " << path << "," << shared << endl;
     QString exe = KFileShare::findExe( "fileshareset" );
     if (exe.isEmpty())
         return false;
@@ -249,9 +249,9 @@ bool KFileShare::setShared( const QString& path, bool shared )
     proc << path;
     proc.start( KProcess::Block ); // should be ok, the perl script terminates fast
     bool ok = proc.normalExit() && (proc.exitStatus() == 0);
-    kdDebug(7000) << "KFileSharePropsPlugin::setShared normalExit=" 
+    kDebug(7000) << "KFileSharePropsPlugin::setShared normalExit=" 
                   << proc.normalExit() << endl;
-    kdDebug(7000) << "KFileSharePropsPlugin::setShared exitStatus=" 
+    kDebug(7000) << "KFileSharePropsPlugin::setShared exitStatus=" 
                   << proc.exitStatus() << endl;
     if ( proc.normalExit() ) {
       switch( proc.exitStatus() ) {

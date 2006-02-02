@@ -116,9 +116,9 @@ void RenderFlow::addChildWithContinuation(RenderObject* newChild, RenderObject* 
 void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderFlow)::addChild( " << newChild->renderName() <<
+    kDebug( 6040 ) << renderName() << "(RenderFlow)::addChild( " << newChild->renderName() <<
                        ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
-    kdDebug( 6040 ) << "current height = " << m_height << endl;
+    kDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
 
     if (continuation())

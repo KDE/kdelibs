@@ -279,12 +279,12 @@ public:
 			m_instances.pop();
 		else if (!m_instances.isEmpty())
 		{
-			kdWarning(160) << "Tried to remove an Instance that is not the current," << endl;
-			kdWarning(160) << "Resetting to the main KApplication." << endl;
+			kWarning(160) << "Tried to remove an Instance that is not the current," << endl;
+			kWarning(160) << "Resetting to the main KApplication." << endl;
 			m_instances.clear();
 		}
 		else
-			kdWarning(160) << "Tried to remove an Instance, but the stack was empty." << endl;
+			kWarning(160) << "Tried to remove an Instance, but the stack was empty." << endl;
     }
 
 	Instance *currentInstance()

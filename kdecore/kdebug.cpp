@@ -28,8 +28,8 @@
 #include "kdebug.h"
 
 #ifdef NDEBUG
-#undef kdDebug
-#undef kdBacktrace
+#undef kDebug
+#undef kBacktrace
 #endif
 
 #include "kdebugdcopiface.h"
@@ -325,47 +325,47 @@ kdbgstream &perror( kdbgstream &s)
 {
     return s << QString::fromLocal8Bit(strerror(errno));
 }
-kdbgstream kdDebug(int area)
+kdbgstream kDebug(int area)
 {
     return kdbgstream(area, KDEBUG_INFO);
 }
-kdbgstream kdDebug(bool cond, int area)
+kdbgstream kDebug(bool cond, int area)
 {
     if (cond)
-        return kdDebug(area);
+        return kDebug(area);
     return kdbgstream(0, 0, false);
 }
 
-kdbgstream kdError(int area)
+kdbgstream kError(int area)
 {
     return kdbgstream("ERROR: ", area, KDEBUG_ERROR);
 }
-kdbgstream kdError(bool cond, int area)
+kdbgstream kError(bool cond, int area)
 {
     if (cond)
-        return kdError(area);
+        return kError(area);
     return kdbgstream(0,0,false);
 }
 
-kdbgstream kdWarning(int area)
+kdbgstream kWarning(int area)
 {
     return kdbgstream("WARNING: ", area, KDEBUG_WARN);
 }
-kdbgstream kdWarning(bool cond, int area)
+kdbgstream kWarning(bool cond, int area)
 {
      if (cond)
-         return kdWarning(area);
+         return kWarning(area);
      return kdbgstream(0,0,false);
 }
 
-kdbgstream kdFatal(int area)
+kdbgstream kFatal(int area)
 {
     return kdbgstream("FATAL: ", area, KDEBUG_FATAL);
 }
-kdbgstream kdFatal(bool cond, int area)
+kdbgstream kFatal(bool cond, int area)
 {
     if (cond)
-        return kdFatal(area);
+        return kFatal(area);
     return kdbgstream(0,0,false);
 }
 
@@ -426,7 +426,7 @@ kdbgstream::~kdbgstream()
 {
     if (!d->output.isEmpty()) {
 	fprintf(stderr, "ASSERT: debug output not ended with \\n\n");
-        fprintf(stderr, "%s", qPrintable( kdBacktrace() ) );
+        fprintf(stderr, "%s", qPrintable( kBacktrace() ) );
 	*this << "\n";
     }
     delete d;
@@ -648,7 +648,7 @@ kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
     return *this;
 }
 
-QString kdBacktrace(int levels)
+QString kBacktrace(int levels)
 {
     QString s;
 #ifdef HAVE_BACKTRACE
@@ -673,7 +673,7 @@ QString kdBacktrace(int levels)
     return s;
 }
 
-void kdClearDebugConfig()
+void kClearDebugConfig()
 {
     delete kDebug_data->config;
     kDebug_data->config = 0;
@@ -681,5 +681,5 @@ void kdClearDebugConfig()
 
 // Needed for --enable-final
 #ifdef NDEBUG
-#define kdDebug kndDebug
+#define kDebug kndDebug
 #endif

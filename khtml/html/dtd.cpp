@@ -562,7 +562,7 @@ static bool check_array(ushort child, const ushort *tagList)
 
 bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
 {
-    //kdDebug( 6030 ) << "checkChild: " << tagID << "/" << childID << endl;
+    //kDebug( 6030 ) << "checkChild: " << tagID << "/" << childID << endl;
 
     // ### allow comments inside ANY node that can contain children
 
@@ -768,7 +768,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
             return false;
         }
     default:
-        kdDebug( 6030 ) << "unhandled tag in dtd.cpp:checkChild(): tagID=" << tagID << "!" << endl;
+        kDebug( 6030 ) << "unhandled tag in dtd.cpp:checkChild(): tagID=" << tagID << "!" << endl;
         return false;
     }
 }

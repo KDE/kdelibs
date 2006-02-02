@@ -31,13 +31,13 @@ int main(int argc, char **argv)
   KUrl tmpURL( "file:/tmp/netaccesstest_README" );
 
   for ( uint i = 0; i < 4 ; ++i ) {
-    kdDebug() << "file_copy" << endl;
+    kDebug() << "file_copy" << endl;
     if ( !KIO::NetAccess::file_copy(srcURL, tmpURL, -1, true, false, 0) )
-      kdError() << "file_copy failed: " << KIO::NetAccess::lastErrorString() << endl;
+      kError() << "file_copy failed: " << KIO::NetAccess::lastErrorString() << endl;
     else {
       QFile f( tmpURL.path() );
       if (!f.open(QIODevice::ReadOnly))
-        kdFatal() << "Cannot open: " << f.name() << ". The error was: " << f.errorString() << endl;
+        kFatal() << "Cannot open: " << f.name() << ". The error was: " << f.errorString() << endl;
       else {
         f.close();
       }

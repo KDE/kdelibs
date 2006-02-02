@@ -1513,7 +1513,7 @@ else writeEntry(pKey, Menum.valueToKey(value), flags);                    \
  * just output error, or any wrong config file will
  * let the app exit, which is IMHO bad
  */
-#define kcbError kdWarning
+#define kcbError kWarning
 
 template <typename T>
 QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) const

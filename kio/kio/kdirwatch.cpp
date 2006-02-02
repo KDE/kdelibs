@@ -133,7 +133,7 @@ void KDirWatchPrivate::dnotify_handler(int, siginfo_t *si, void *)
 
   Entry* e = dwp_self->fd_Entry.find(si->si_fd);
 
-//  kdDebug(7001) << "DNOTIFY Handler: fd " << si->si_fd << " path "
+//  kDebug(7001) << "DNOTIFY Handler: fd " << si->si_fd << " path "
 //		<< QString(e ? e->path:"unknown") << endl;
 
   if(!e || e->dn_fd != si->si_fd) {
@@ -245,7 +245,7 @@ KDirWatchPrivate::KDirWatchPrivate()
  	     this, SLOT(famEventReceived()) );
   }
   else {
-    kdDebug(7001) << "Can't use FAM (fam daemon not running?)" << endl;
+    kDebug(7001) << "Can't use FAM (fam daemon not running?)" << endl;
     use_fam=false;
   }
 #endif
@@ -256,7 +256,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   m_inotify_fd = inotify_init();
 
   if ( m_inotify_fd <= 0 ) {
-    kdDebug(7001) << "Can't use Inotify, kernel doesn't support it" << endl;
+    kDebug(7001) << "Can't use Inotify, kernel doesn't support it" << endl;
     supports_inotify = false;
   }
 
@@ -268,7 +268,7 @@ KDirWatchPrivate::KDirWatchPrivate()
     else if (sscanf(uts.release, "%d.%d.%d", &major, &minor, &patch) != 3)
       supports_inotify = false; // *shrug*
     else if( major * 1000000 + minor * 1000 + patch < 2006014 ) { // <2.6.14
-      kdDebug(7001) << "Can't use INotify, Linux kernel too old" << endl;
+      kDebug(7001) << "Can't use INotify, Linux kernel too old" << endl;
       supports_inotify = false;
     }
   }
@@ -299,7 +299,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   else if (sscanf(uts.release, "%d.%d.%d", &major, &minor, &patch) != 3)
     supports_dnotify = false; // *shrug*
   else if( major * 1000000 + minor * 1000 + patch < 2004019 ) { // <2.4.19
-    kdDebug(7001) << "Can't use DNotify, Linux kernel too old" << endl;
+    kDebug(7001) << "Can't use DNotify, Linux kernel too old" << endl;
     supports_dnotify = false;
   }
 
@@ -338,7 +338,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   }
 #endif
 
-  kdDebug(7001) << "Available methods: " << available << endl;
+  kDebug(7001) << "Available methods: " << available << endl;
 }
 
 /* This should never be called, but doesn't harm */
@@ -352,7 +352,7 @@ KDirWatchPrivate::~KDirWatchPrivate()
 #ifdef HAVE_FAM
   if (use_fam) {
     FAMClose(&fc);
-    kdDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
+    kDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
   }
 #endif
 #ifdef HAVE_INOTIFY
@@ -531,7 +531,7 @@ void KDirWatchPrivate::useFreq(Entry* e, int newFreq)
   if (e->freq < freq) {
     freq = e->freq;
     if (timer->isActive()) timer->start(freq);
-    kdDebug(7001) << "Global Poll Freq is now " << freq << " msec" << endl;
+    kDebug(7001) << "Global Poll Freq is now " << freq << " msec" << endl;
   }
 }
 
@@ -562,7 +562,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
 	use_fam=false;
 	return false;
       }
-      kdDebug(7001) << " Setup FAM (Req "
+      kDebug(7001) << " Setup FAM (Req "
 		    << FAMREQUEST_GETREQNUM(&(e->fr))
 		    << ") for " << e->path << endl;
     }
@@ -581,7 +581,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
 	return false;
       }
 
-      kdDebug(7001) << " Setup FAM (Req "
+      kDebug(7001) << " Setup FAM (Req "
 		    << FAMREQUEST_GETREQNUM(&(e->fr))
 		    << ") for " << e->path << endl;
     }
@@ -641,7 +641,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
       if(fcntl(fd, F_SETSIG, dnotify_signal) < 0 ||
 	 fcntl(fd, F_NOTIFY, mask) < 0) {
 
-	kdDebug(7001) << "Not using Linux Directory Notifications."
+	kDebug(7001) << "Not using Linux Directory Notifications."
 		      << endl;
 	supports_dnotify = false;
 	::close(fd);
@@ -652,7 +652,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
       fd_Entry.replace(fd, e);
       e->dn_fd = fd;
 
-      kdDebug(7001) << " Setup DNotify (fd " << fd
+      kDebug(7001) << " Setup DNotify (fd " << fd
 		    << ") for " << e->path << endl;
     }
     else { // NotExisting
@@ -718,11 +718,11 @@ bool KDirWatchPrivate::useStat(Entry* e)
     if ( statEntries == 1 ) {
       // if this was first STAT entry (=timer was stopped)
       timer->start(freq);      // then start the timer
-      kdDebug(7001) << " Started Polling Timer, freq " << freq << endl;
+      kDebug(7001) << " Started Polling Timer, freq " << freq << endl;
     }
   }
 
-  kdDebug(7001) << " Setup Stat (freq " << e->freq
+  kDebug(7001) << " Setup Stat (freq " << e->freq
 		<< ") for " << e->path << endl;
 
   return true;
@@ -749,7 +749,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   {
     if (sub_entry) {
        (*it).m_entries.append(sub_entry);
-       kdDebug(7001) << "Added already watched Entry " << path
+       kDebug(7001) << "Added already watched Entry " << path
 		     << " (for " << sub_entry->path << ")" << endl;
 #ifdef HAVE_DNOTIFY
        Entry* e = &(*it);
@@ -773,7 +773,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     }
     else {
        (*it).addClient(instance);
-       kdDebug(7001) << "Added already watched Entry " << path
+       kDebug(7001) << "Added already watched Entry " << path
 		     << " (now " <<  (*it).clients() << " clients)"
 		     << QString(" [%1]").arg(instance->name()) << endl;
     }
@@ -816,7 +816,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   else
     e->addClient(instance);
 
-  kdDebug(7001) << "Added " << (e->isDir ? "Dir ":"File ") << path
+  kDebug(7001) << "Added " << (e->isDir ? "Dir ":"File ") << path
 		<< (e->m_status == NonExistent ? " NotExisting" : "")
 		<< (sub_entry ? QString(" for %1").arg(sub_entry->path) : QString(""))
 		<< (instance ? QString(" [%1]").arg(instance->name()) : QString(""))
@@ -851,7 +851,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 {
   Entry* e = entry(_path);
   if (!e) {
-    kdWarning(7001) << "KDirWatch::removeDir can't handle '" << _path << "'" << endl;
+    kWarning(7001) << "KDirWatch::removeDir can't handle '" << _path << "'" << endl;
     return;
   }
 
@@ -875,7 +875,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   if (e->m_mode == FAMMode) {
     if ( e->m_status == Normal) {
       FAMCancelMonitor(&fc, &(e->fr) );
-      kdDebug(7001) << "Cancelled FAM (Req "
+      kDebug(7001) << "Cancelled FAM (Req "
 		    << FAMREQUEST_GETREQNUM(&(e->fr))
 		    << ") for " << e->path << endl;
     }
@@ -892,7 +892,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   if (e->m_mode == INotifyMode) {
     if ( e->m_status == Normal ) {
       (void) inotify_rm_watch( m_inotify_fd, e->wd );
-      kdDebug(7001) << "Cancelled INotify (fd " <<
+      kDebug(7001) << "Cancelled INotify (fd " <<
         m_inotify_fd << ", "  << e->wd <<
         ") for " << e->path << endl;
     }
@@ -913,7 +913,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 	  ::close(e->dn_fd);
 	  fd_Entry.remove(e->dn_fd);
 
-	  kdDebug(7001) << "Cancelled DNotify (fd " << e->dn_fd
+	  kDebug(7001) << "Cancelled DNotify (fd " << e->dn_fd
 			<< ") for " << e->path << endl;
 	  e->dn_fd = 0;
 
@@ -930,11 +930,11 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
     statEntries--;
     if ( statEntries == 0 ) {
       timer->stop(); // stop timer if lists are empty
-      kdDebug(7001) << " Stopped Polling Timer" << endl;
+      kDebug(7001) << " Stopped Polling Timer" << endl;
     }
   }
 
-  kdDebug(7001) << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
+  kDebug(7001) << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
 		<< (sub_entry ? QString(" for %1").arg(sub_entry->path) : QString(""))
 		<< (instance ? QString(" [%1]").arg(instance->name()) : QString(""))
 		<< endl;
@@ -975,7 +975,7 @@ void KDirWatchPrivate::removeEntries( KDirWatch* instance )
     // we can decrease the global polling frequency
     freq = minfreq;
     if (timer->isActive()) timer->start(freq);
-    kdDebug(7001) << "Poll Freq now " << freq << " msec" << endl;
+    kDebug(7001) << "Poll Freq now " << freq << " msec" << endl;
   }
 }
 
@@ -990,7 +990,7 @@ bool KDirWatchPrivate::stopEntryScan( KDirWatch* instance, Entry* e)
       stillWatching += client->count;
   }
 
-  kdDebug(7001) << instance->name() << " stopped scanning " << e->path
+  kDebug(7001) << instance->name() << " stopped scanning " << e->path
 		<< " (now " << stillWatching << " watchers)" << endl;
 
   if (stillWatching == 0) {
@@ -1021,7 +1021,7 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
   if (newWatching == 0)
     return false;
 
-  kdDebug(7001) << instance->name() << " restarted scanning " << e->path
+  kDebug(7001) << instance->name() << " restarted scanning " << e->path
 		<< " (now " << wasWatching+newWatching << " watchers)" << endl;
 
   // restart watching and emit pending events
@@ -1344,7 +1344,7 @@ void KDirWatchPrivate::famEventReceived()
 
   while(use_fam && FAMPending(&fc)) {
     if (FAMNextEvent(&fc, &fe) == -1) {
-      kdWarning(7001) << "FAM connection problem, switching to polling."
+      kWarning(7001) << "FAM connection problem, switching to polling."
 		      << endl;
       use_fam = false;
       delete sn; sn = 0;
@@ -1392,7 +1392,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
   // Entry* e = static_cast<Entry*>(fe->userdata);
 
 #if 0 // #88538
-  kdDebug(7001) << "Processing FAM event ("
+  kDebug(7001) << "Processing FAM event ("
 		<< ((fe->code == FAMChanged) ? "FAMChanged" :
 		    (fe->code == FAMDeleted) ? "FAMDeleted" :
 		    (fe->code == FAMStartExecuting) ? "FAMStartExecuting" :
@@ -1409,12 +1409,12 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
   if (!e) {
     // this happens e.g. for FAMAcknowledge after deleting a dir...
-    //    kdDebug(7001) << "No entry for FAM event ?!" << endl;
+    //    kDebug(7001) << "No entry for FAM event ?!" << endl;
     return;
   }
 
   if (e->m_status == NonExistent) {
-    kdDebug(7001) << "FAM event for nonExistent entry " << e->path << endl;
+    kDebug(7001) << "FAM event for nonExistent entry " << e->path << endl;
     return;
   }
 
@@ -1435,7 +1435,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
           e->m_status = NonExistent;
           FAMCancelMonitor(&fc, &(e->fr) ); // needed ?
-          kdDebug(7001) << "Cancelled FAMReq "
+          kDebug(7001) << "Cancelled FAMReq "
                         << FAMREQUEST_GETREQNUM(&(e->fr))
                         << " for " << e->path << endl;
           // Scan parent for a new creation
@@ -1476,15 +1476,15 @@ void KDirWatchPrivate::statistics()
 {
   EntryMap::Iterator it;
 
-  kdDebug(7001) << "Entries watched:" << endl;
+  kDebug(7001) << "Entries watched:" << endl;
   if (m_mapEntries.count()==0) {
-    kdDebug(7001) << "  None." << endl;
+    kDebug(7001) << "  None." << endl;
   }
   else {
     it = m_mapEntries.begin();
     for( ; it != m_mapEntries.end(); ++it ) {
       Entry* e = &(*it);
-      kdDebug(7001) << "  " << e->path << " ("
+      kDebug(7001) << "  " << e->path << " ("
 		    << ((e->m_status==Normal)?"":"Nonexistent ")
 		    << (e->isDir ? "Dir":"File") << ", using "
 		    << ((e->m_mode == FAMMode) ? "FAM" :
@@ -1502,14 +1502,14 @@ void KDirWatchPrivate::statistics()
 	  if (!pending.isEmpty()) pending = " (pending: " + pending + ")";
 	  pending = ", stopped" + pending;
 	}
-	kdDebug(7001) << "    by " << c->instance->name()
+	kDebug(7001) << "    by " << c->instance->name()
 		      << " (" << c->count << " times)"
 		      << pending << endl;
       }
       if (e->m_entries.count()>0) {
-	kdDebug(7001) << "    dependent entries:" << endl;
+	kDebug(7001) << "    dependent entries:" << endl;
         foreach(Entry *d, e->m_entries) {
-	  kdDebug(7001) << "      " << d->path << endl;
+	  kDebug(7001) << "      " << d->path << endl;
 	}
       }
     }
@@ -1571,7 +1571,7 @@ void KDirWatch::addDir( const QString& _path,
 			bool watchFiles, bool recursive)
 {
   if (watchFiles || recursive) {
-    kdDebug(7001) << "addDir - recursive/watchFiles not supported yet in KDE 3.x" << endl;
+    kDebug(7001) << "addDir - recursive/watchFiles not supported yet in KDE 3.x" << endl;
   }
   if (d) d->addEntry(this, _path, 0, true);
 }
@@ -1653,7 +1653,7 @@ bool KDirWatch::contains( const QString& _path ) const
 void KDirWatch::statistics()
 {
   if (!dwp_self) {
-    kdDebug(7001) << "KDirWatch not used" << endl;
+    kDebug(7001) << "KDirWatch not used" << endl;
     return;
   }
   dwp_self->statistics();
@@ -1662,19 +1662,19 @@ void KDirWatch::statistics()
 
 void KDirWatch::setCreated( const QString & _file )
 {
-  kdDebug(7001) << name() << " emitting created " << _file << endl;
+  kDebug(7001) << name() << " emitting created " << _file << endl;
   emit created( _file );
 }
 
 void KDirWatch::setDirty( const QString & _file )
 {
-  kdDebug(7001) << name() << " emitting dirty " << _file << endl;
+  kDebug(7001) << name() << " emitting dirty " << _file << endl;
   emit dirty( _file );
 }
 
 void KDirWatch::setDeleted( const QString & _file )
 {
-  kdDebug(7001) << name() << " emitting deleted " << _file << endl;
+  kDebug(7001) << name() << " emitting deleted " << _file << endl;
   emit deleted( _file );
 }
 

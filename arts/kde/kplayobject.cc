@@ -50,7 +50,7 @@ void KPlayObject::seek(Arts::poTime newTime)
 	if(!m_isStream)
 		object().seek(newTime);
 	else
-		kdDebug( 400 ) << "Seeking in a Stream? huh?" << endl;
+		kDebug( 400 ) << "Seeking in a Stream? huh?" << endl;
 }
 
 void KPlayObject::pause()
@@ -152,7 +152,7 @@ KDE::PlayObject::PlayObject(Arts::PlayObject playobject, bool isStream) : QObjec
 
 KDE::PlayObject::PlayObject( Arts::SoundServerV2 server, const KUrl& url, bool isStream, bool createBUS ) : QObject()
 {
-	kdDebug( 400 ) << "KDE::PlayObject: created as proxy for URL " << url.url()<< endl;
+	kDebug( 400 ) << "KDE::PlayObject: created as proxy for URL " << url.url()<< endl;
 
 	m_playObject = Arts::PlayObject::null();
 	m_isStream = isStream;
@@ -165,14 +165,14 @@ KDE::PlayObject::PlayObject( Arts::SoundServerV2 server, const KUrl& url, bool i
 
 KDE::PlayObject::~PlayObject()
 {
-	kdDebug( 400 ) << "KDE::PlayObject: destroyed" << endl;
+	kDebug( 400 ) << "KDE::PlayObject: destroyed" << endl;
 
 	delete d;
 }
 
 void KDE::PlayObject::play()
 {
-	kdDebug( 400 ) << "KDE::PlayObject::play()" << endl;
+	kDebug( 400 ) << "KDE::PlayObject::play()" << endl;
 
 	if ( object().isNull() ) {
 		if ( m_isStream ) {
@@ -180,7 +180,7 @@ void KDE::PlayObject::play()
 				delete d->creator;
 			d->creator = new KDE::PlayObjectCreator( d->server );
 			d->creator->create( d->url, d->createBUS, this, SLOT( attachPlayObject( Arts::PlayObject ) ) );
-			kdDebug( 400 ) << "KDE::PlayObject::play(): creator called" << endl;
+			kDebug( 400 ) << "KDE::PlayObject::play(): creator called" << endl;
 			d->internalState = Arts::posPlaying;
 		}
 		return;
@@ -190,7 +190,7 @@ void KDE::PlayObject::play()
 
 void KDE::PlayObject::attachPlayObject( Arts::PlayObject playObject )
 {
-	kdDebug( 400 ) << "KDE::PlayObject::attachPlayObject()" << endl;
+	kDebug( 400 ) << "KDE::PlayObject::attachPlayObject()" << endl;
 
 	m_playObject = playObject;
 	emit playObjectCreated();
@@ -216,7 +216,7 @@ void KDE::PlayObject::seek(Arts::poTime newTime)
 	if(!m_isStream)
 		object().seek(newTime);
 	else
-		kdDebug( 400 ) << "Seeking in a Stream? huh?" << endl;
+		kDebug( 400 ) << "Seeking in a Stream? huh?" << endl;
 }
 
 void KDE::PlayObject::pause()
@@ -228,13 +228,13 @@ void KDE::PlayObject::pause()
 
 void KDE::PlayObject::halt()
 {
-	kdDebug( 400 ) << "KDE::PlayObject::halt()" << endl;
+	kDebug( 400 ) << "KDE::PlayObject::halt()" << endl;
 	if ( !object().isNull() )
 		object().halt();
 	else if ( d->creator ) {
 		delete d->creator;
 		d->creator = 0;
-		kdDebug( 400 ) << "KDE::PlayObject::halt(): creator destroyed" << endl;
+		kDebug( 400 ) << "KDE::PlayObject::halt(): creator destroyed" << endl;
 	}
 	d->internalState = Arts::posIdle;
 }

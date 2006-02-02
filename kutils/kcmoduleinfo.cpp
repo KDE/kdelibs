@@ -126,7 +126,7 @@ void KCModuleInfo::init(KService::Ptr s)
     _service = s;
   else
   {
-    kdDebug(712) << "Could not find the service." << endl;
+    kDebug(712) << "Could not find the service." << endl;
     return;
   }
 

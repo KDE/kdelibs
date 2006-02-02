@@ -110,7 +110,7 @@ void KReplace::displayFinalDialog() const
 KFind::Result KReplace::replace()
 {
 #ifdef DEBUG_REPLACE
-    kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
+    kDebug() << k_funcinfo << "m_index=" << m_index << endl;
 #endif
     if ( m_index == INDEX_NOMATCH && m_lastResult == Match )
     {
@@ -121,7 +121,7 @@ KFind::Result KReplace::replace()
     do // this loop is only because validateMatch can fail
     {
 #ifdef DEBUG_REPLACE
-        kdDebug() << k_funcinfo << "beginning of loop: m_index=" << m_index << endl;
+        kDebug() << k_funcinfo << "beginning of loop: m_index=" << m_index << endl;
 #endif
         // Find the next match.
         if ( m_options & KFind::RegularExpression )
@@ -129,7 +129,7 @@ KFind::Result KReplace::replace()
         else
             m_index = KFind::find(m_text, m_pattern, m_index, m_options, &m_matchedLength);
 #ifdef DEBUG_REPLACE
-        kdDebug() << k_funcinfo << "KFind::find returned m_index=" << m_index << endl;
+        kDebug() << k_funcinfo << "KFind::find returned m_index=" << m_index << endl;
 #endif
         if ( m_index != -1 )
         {
@@ -139,7 +139,7 @@ KFind::Result KReplace::replace()
                 if ( m_options & KReplaceDialog::PromptOnReplace )
                 {
 #ifdef DEBUG_REPLACE
-                    kdDebug() << k_funcinfo << "PromptOnReplace" << endl;
+                    kDebug() << k_funcinfo << "PromptOnReplace" << endl;
 #endif
                     // Display accurate initial string and replacement string, they can vary
                     QString matchedText = m_text.mid( m_index, m_matchedLength );
@@ -259,7 +259,7 @@ void KReplace::doReplace()
     // highlight it.
     emit replace(m_text, m_index, replacedLength, m_matchedLength);
 #ifdef DEBUG_REPLACE
-    kdDebug() << k_funcinfo << "after replace() signal: m_index=" << m_index << " replacedLength=" << replacedLength << endl;
+    kDebug() << k_funcinfo << "after replace() signal: m_index=" << m_index << " replacedLength=" << replacedLength << endl;
 #endif
     m_replacements++;
     if (m_options & KFind::FindBackwards)
@@ -271,7 +271,7 @@ void KReplace::doReplace()
             ++m_index;
     }
 #ifdef DEBUG_REPLACE
-    kdDebug() << k_funcinfo << "after adjustement: m_index=" << m_index << endl;
+    kDebug() << k_funcinfo << "after adjustement: m_index=" << m_index << endl;
 #endif
 }
 

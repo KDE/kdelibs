@@ -94,7 +94,7 @@ Broker::Broker( KSharedConfig *config )
 
 Broker::~Broker()
 {
-    kdDebug()<<"Removing broker : "<< this << endl;
+    kDebug()<<"Removing broker : "<< this << endl;
     s_brokers->remove( d->settings->sharedConfig() );
     KPluginInfo::List::iterator it = d->plugins.begin();
     while ( it != d->plugins.end() ) {
@@ -129,7 +129,7 @@ Dictionary* Broker::dictionary( const QString& language, const QString& clientNa
     QList<Client*> lClients = d->languageClients[ plang ];
 
     if ( lClients.isEmpty() ) {
-        kdError()<<"No language dictionaries for the language : "<< plang <<endl;
+        kError()<<"No language dictionaries for the language : "<< plang <<endl;
         return 0;
     }
 
@@ -187,7 +187,7 @@ void Broker::loadPlugin( const QString& pluginId )
 {
     int error = 0;
 
-    kdDebug()<<"Loading plugin " << pluginId << endl;
+    kDebug()<<"Loading plugin " << pluginId << endl;
 
     Client *client = KParts::ComponentFactory::createInstanceFromQuery<Client>(
         QLatin1String( "KSpell/Client" ),
@@ -208,7 +208,7 @@ void Broker::loadPlugin( const QString& pluginId )
                 d->languageClients[ *itr ].prepend( client );
         }
 
-        kdDebug() << k_funcinfo << "Successfully loaded plugin '"
+        kDebug() << k_funcinfo << "Successfully loaded plugin '"
                   << pluginId << "'" << endl;
     }
     else
@@ -216,28 +216,28 @@ void Broker::loadPlugin( const QString& pluginId )
         switch( error )
         {
         case KParts::ComponentFactory::ErrNoServiceFound:
-            kdDebug() << k_funcinfo << "No service implementing the given mimetype "
+            kDebug() << k_funcinfo << "No service implementing the given mimetype "
                       << "and fullfilling the given constraint expression can be found."
                       << endl;
             break;
         case KParts::ComponentFactory::ErrServiceProvidesNoLibrary:
-            kdDebug() << "the specified service provides no shared library." << endl;
+            kDebug() << "the specified service provides no shared library." << endl;
             break;
         case KParts::ComponentFactory::ErrNoLibrary:
-            kdDebug() << "the specified library could not be loaded." << endl;
+            kDebug() << "the specified library could not be loaded." << endl;
             break;
         case KParts::ComponentFactory::ErrNoFactory:
-            kdDebug() << "the library does not export a factory for creating components."
+            kDebug() << "the library does not export a factory for creating components."
                       << endl;
             break;
         case KParts::ComponentFactory::ErrNoComponent:
-            kdDebug() << "the factory does not support creating "
+            kDebug() << "the factory does not support creating "
                       << "components of the specified type."
                       << endl;
             break;
         }
 
-        kdDebug() << k_funcinfo << "Loading plugin '" << pluginId
+        kDebug() << k_funcinfo << "Loading plugin '" << pluginId
                   << "' failed, KLibLoader reported error: '" << endl
                   << KLibLoader::self()->lastErrorMessage() << "'" << endl;
     }

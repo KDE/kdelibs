@@ -228,7 +228,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
    if ( ev->type() == QEvent::MouseButtonPress )
    {
       QMouseEvent *mev= (QMouseEvent *)(ev);
-      //kdDebug() << QString("click at  %1,%2").arg( mev->x() ).arg( mev->y() ) << endl;
+      //kDebug() << QString("click at  %1,%2").arg( mev->x() ).arg( mev->y() ) << endl;
 
       if ( mev->button() == Qt::RightButton )
       {
@@ -264,7 +264,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
    {
       QMouseEvent *mev= (QMouseEvent *)(ev);
 
-      //kdDebug() << QString("move to  %1,%2").arg( mev->x() ).arg( mev->y() ) << endl;
+      //kDebug() << QString("move to  %1,%2").arg( mev->x() ).arg( mev->y() ) << endl;
 
       if ( m_state == Resizing )
       {
@@ -435,8 +435,8 @@ void KPixmapRegionSelectorWidget::setMaximumWidgetSize(int width, int height)
    m_originalPixmap=m_unzoomedPixmap;
    if (m_selectedRegion == m_originalPixmap.rect()) m_selectedRegion=QRect();
 
-//   kdDebug() << QString(" original Pixmap :") << m_originalPixmap.rect() << endl;
-//   kdDebug() << QString(" unzoomed Pixmap : %1 x %2 ").arg(m_unzoomedPixmap.width()).arg(m_unzoomedPixmap.height()) << endl;
+//   kDebug() << QString(" original Pixmap :") << m_originalPixmap.rect() << endl;
+//   kDebug() << QString(" unzoomed Pixmap : %1 x %2 ").arg(m_unzoomedPixmap.width()).arg(m_unzoomedPixmap.height()) << endl;
 
    if ( !m_originalPixmap.isNull() &&
        ( m_originalPixmap.width() > m_maxWidth ||

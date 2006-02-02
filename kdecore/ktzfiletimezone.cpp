@@ -394,7 +394,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     QFile f(d->location + '/' + zone->name());
     if (!f.open(QIODevice::ReadOnly))
     {
-        kdError() << "Cannot open " << f.name() << endl;
+        kError() << "Cannot open " << f.name() << endl;
         return 0;
     }
     QDataStream str(&f);
@@ -403,7 +403,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     str >> T_ >> Z_ >> i_ >> f_;
     if (T_ != 'T' || Z_ != 'Z' || i_ != 'i' || f_ != 'f')
     {
-        kdError() << "Not a TZFILE: " << f.name() << endl;
+        kError() << "Not a TZFILE: " << f.name() << endl;
         return 0;
     }
     // Discard 16 bytes reserved for future use
@@ -420,7 +420,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
         >> data->m_nTransitionTimes
         >> data->m_nLocalTimeTypes
         >> abbrCharCount;
-    // kdDebug() << "header: " << data->n_isUTC << ", " << data->n_isStandard << ", " << data->m_leapSecondAdjusts << ", " <<
+    // kDebug() << "header: " << data->n_isUTC << ", " << data->n_isStandard << ", " << data->m_leapSecondAdjusts << ", " <<
     //    data->n_transitionTimes << ", " << data->n_localTimeTypes << ", " << abbrCharCount << endl;
 
     // Read the transition times, at which the rules for computing local time change
@@ -449,7 +449,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
         // Add the UTC offset to the complete list of UTC offsets
         if (data->d->utcOffsets.indexOf(ltt->gmtoff) < 0)
             data->d->utcOffsets.append(ltt->gmtoff);
-        // kdDebug() << "local type: " << ltt->gmtoff << ", " << is << ", " << ltt->abbrIndex << endl;
+        // kDebug() << "local type: " << ltt->gmtoff << ", " << is << ", " << ltt->abbrIndex << endl;
     }
     qSort(data->d->utcOffsets);
 
@@ -458,7 +458,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     // Make sure we don't fall foul of maliciously coded time zone abbreviations.
     if (abbrCharCount > 64)
     {
-        kdError() << "excessive length for timezone abbreviations: " << abbrCharCount << endl;
+        kError() << "excessive length for timezone abbreviations: " << abbrCharCount << endl;
         delete data;
         return 0;
     }
@@ -468,7 +468,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     if (abbrs[abbrCharCount - 1] != 0)
     {
         // These abbrevations are corrupt!
-        kdError() << "timezone abbreviations not null terminated: " << abbrs[abbrCharCount - 1] << endl;
+        kError() << "timezone abbreviations not null terminated: " << abbrs[abbrCharCount - 1] << endl;
         delete data;
         return 0;
     }
@@ -491,7 +491,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     for (i = 0;  i < data->m_nLeapSecondAdjusts;  ++lsa, ++i)
     {
         str >> lsa->time >> lsa->leapSeconds;
-        // kdDebug() << "leap entry: " << lsa->time << ", " << lsa->leapSeconds << endl;
+        // kDebug() << "leap entry: " << lsa->time << ", " << lsa->leapSeconds << endl;
     }
 
     // Read the standard/wall time indicators.
@@ -503,7 +503,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     {
         str >> is;
         *iss = (is != 0);
-        // kdDebug() << "standard: " << is << endl;
+        // kDebug() << "standard: " << is << endl;
     }
 
     // Read the UTC/local time indicators.
@@ -515,7 +515,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     {
         str >> is;
         *isu = (is != 0);
-        // kdDebug() << "UTC: " << is << endl;
+        // kDebug() << "UTC: " << is << endl;
     }
     return data;
 }

@@ -156,7 +156,7 @@ bool HTMLCollectionImpl::nodeMatches(NodeImpl *current, bool& deep) const
         deep = false;
         break;
     default:
-        kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
+        kDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
     }
 
     return check;

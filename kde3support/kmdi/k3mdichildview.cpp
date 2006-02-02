@@ -102,7 +102,7 @@ K3MdiChildView::K3MdiChildView( QWidget* parentWidget, const char* name, Qt::WFl
 
 K3MdiChildView::~K3MdiChildView()
 {
-	kdDebug( 760 ) << k_funcinfo << endl;
+	kDebug( 760 ) << k_funcinfo << endl;
 }
 
 void K3MdiChildView::trackIconAndCaptionChanges( QWidget *view )
@@ -441,7 +441,7 @@ void K3MdiChildView::activate()
 		if ( !m_bFocusInEventIsPending )
 			setFocus();
 		
-		kdDebug( 760 ) << k_funcinfo << endl;
+		kDebug( 760 ) << k_funcinfo << endl;
 		emit activated( this );
 	}
 

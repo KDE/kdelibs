@@ -788,7 +788,7 @@ static QString translatePath( QString path )
    if (cleanHomeDirPath(path, homeDir0) ||
        cleanHomeDirPath(path, homeDir1) ||
        cleanHomeDirPath(path, homeDir2) ) {
-     // kdDebug() << "Path was replaced\n";
+     // kDebug() << "Path was replaced\n";
    }
 
    if (startsWithFile)

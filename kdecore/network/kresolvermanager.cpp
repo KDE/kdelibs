@@ -141,7 +141,7 @@ public:
     
     if (mTime != st.st_mtime)
       {
-	kdDebug(179) << "shouldResInit: /etc/resolv.conf updated" << endl;
+	kDebug(179) << "shouldResInit: /etc/resolv.conf updated" << endl;
 	return true;
       }
     return false;
@@ -153,7 +153,7 @@ public:
       {
 	// don't call it the first time
 	// let it be initialised naturally
-	kdDebug(179) << "callResInit: calling res_init()" << endl;
+	kDebug(179) << "callResInit: calling res_init()" << endl;
 	res_init();
       }
     

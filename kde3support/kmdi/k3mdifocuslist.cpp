@@ -32,14 +32,14 @@ void K3MdiFocusList::addWidgetTree( QWidget* w )
 	//this method should never be called twice on the same hierarchy
 	m_list.insert( w, w->focusPolicy() );
 	w->setFocusPolicy( Qt::ClickFocus );
-	kdDebug( 760 ) << "K3MdiFocusList::addWidgetTree: adding toplevel" << endl;
+	kDebug( 760 ) << "K3MdiFocusList::addWidgetTree: adding toplevel" << endl;
 	connect( w, SIGNAL( destroyed( QObject * ) ), this, SLOT( objectHasBeenDestroyed( QObject* ) ) );
 	
 	QList<QWidget*> l = w->findChildren<QWidget *>();
 	foreach ( QWidget *wid, l ) {
 		m_list.insert( wid, wid->focusPolicy() );
 		wid->setFocusPolicy( Qt::ClickFocus );
-		kdDebug( 760 ) << "K3MdiFocusList::addWidgetTree: adding widget" << endl;
+		kDebug( 760 ) << "K3MdiFocusList::addWidgetTree: adding widget" << endl;
 		connect( wid, SIGNAL( destroyed( QObject * ) ), this, SLOT( objectHasBeenDestroyed( QObject* ) ) );
 	}
 }

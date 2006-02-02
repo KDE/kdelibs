@@ -22,7 +22,7 @@ int main(int argc,char **argv)
   
   ResourceSql r( &ab, "root", "kde4ever", "localhost" );
   if ( ! r.open() ) {
-    kdDebug() << "Failed to open resource." << endl;
+    kDebug() << "Failed to open resource." << endl;
   }
   
   r.load( &ab );

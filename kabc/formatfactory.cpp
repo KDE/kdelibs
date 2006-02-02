@@ -37,7 +37,7 @@ static KStaticDeleter<FormatFactory> factoryDeleter;
 
 FormatFactory *FormatFactory::self()
 {
-  kdDebug(5700) << "FormatFactory::self()" << endl;
+  kDebug(5700) << "FormatFactory::self()" << endl;
 
   if ( !mSelf )
     factoryDeleter.setObject( mSelf, new FormatFactory );
@@ -135,7 +135,7 @@ Format *FormatFactory::format( const QString& type )
     format->setNameLabel( fi.nameLabel );
     format->setDescriptionLabel( fi.descriptionLabel );
   } else {
-    kdDebug( 5700 ) << "'" << libName << "' is not a format plugin." << endl;
+    kDebug( 5700 ) << "'" << libName << "' is not a format plugin." << endl;
     return 0;
   }
 
@@ -150,14 +150,14 @@ KLibrary *FormatFactory::openLibrary( const QString& libName )
   QString path = KLibLoader::findLibrary( QFile::encodeName( libName ) );
 
   if ( path.isEmpty() ) {
-    kdDebug( 5700 ) << "No format plugin library was found!" << endl;
+    kDebug( 5700 ) << "No format plugin library was found!" << endl;
     return 0;
   }
 
   library = KLibLoader::self()->library( QFile::encodeName( path ) );
 
   if ( !library ) {
-    kdDebug( 5700 ) << "Could not load library '" << libName << "'" << endl;
+    kDebug( 5700 ) << "Could not load library '" << libName << "'" << endl;
     return 0;
   }
 

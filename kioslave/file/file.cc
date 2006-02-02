@@ -106,7 +106,7 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
   KInstance instance( "kio_file" );
   ( void ) KGlobal::locale();
 
-  kdDebug(7101) << "Starting " << getpid() << endl;
+  kDebug(7101) << "Starting " << getpid() << endl;
 
   if (argc != 4)
   {
@@ -117,7 +117,7 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
   FileProtocol slave(argv[2], argv[3]);
   slave.dispatchLoop();
 
-  kdDebug(7101) << "Done" << endl;
+  kDebug(7101) << "Done" << endl;
   return 0;
 }
 
@@ -146,7 +146,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
         if ( acl_valid( acl ) == 0 ) { // let's be safe
             ret = acl_set_file( path, ACL_TYPE_ACCESS, acl );
             ssize_t size = acl_size( acl );
-            kdDebug(7101) << "Set ACL on: " << path << " to: " << acl_to_text( acl, &size ) << endl;
+            kDebug(7101) << "Set ACL on: " << path << " to: " << acl_to_text( acl, &size ) << endl;
         }
         acl_free( acl );
         if ( ret != 0 ) return ret; // better stop trying right away
@@ -161,7 +161,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
             if ( acl_valid( acl ) == 0 ) { // let's be safe
                 ret += acl_set_file( path, ACL_TYPE_DEFAULT, acl );
                 ssize_t size = acl_size( acl );
-                kdDebug(7101) << "Set Default ACL on: " << path << " to: " << acl_to_text( acl, &size ) << endl;
+                kDebug(7101) << "Set Default ACL on: " << path << " to: " << acl_to_text( acl, &size ) << endl;
             }
             acl_free( acl );
         }
@@ -205,7 +205,7 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
 {
     QByteArray _path( QFile::encodeName(url.path()));
 
-    kdDebug(7101) << "mkdir(): " << _path << ", permission = " << permissions << endl;
+    kDebug(7101) << "mkdir(): " << _path << ", permission = " << permissions << endl;
 
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
@@ -230,7 +230,7 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-        kdDebug(7101) << "ERR_DIR_ALREADY_EXIST" << endl;
+        kDebug(7101) << "ERR_DIR_ALREADY_EXIST" << endl;
         error( KIO::ERR_DIR_ALREADY_EXIST, url.path() );
         return;
     }
@@ -295,7 +295,7 @@ void FileProtocol::get( const KUrl& url )
             {
                 canResume ();
                 processed_size = offset;
-                kdDebug( 7101 ) << "Resume offset: " << KIO::number(offset) << endl;
+                kDebug( 7101 ) << "Resume offset: " << KIO::number(offset) << endl;
             }
         }
     }
@@ -326,7 +326,7 @@ void FileProtocol::get( const KUrl& url )
        processed_size += n;
        processedSize( processed_size );
 
-       //kdDebug( 7101 ) << "Processed: " << KIO::number (processed_size) << endl;
+       //kDebug( 7101 ) << "Processed: " << KIO::number (processed_size) << endl;
     }
 
     data( QByteArray() );
@@ -360,7 +360,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
     QString dest_orig = url.path();
     QByteArray _dest_orig( QFile::encodeName(dest_orig));
 
-    kdDebug(7101) << "put(): " << dest_orig << ", mode=" << _mode << endl;
+    kDebug(7101) << "put(): " << dest_orig << ", mode=" << _mode << endl;
 
     QString dest_part( dest_orig );
     dest_part += QLatin1String(".part");
@@ -378,7 +378,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
 
         if (bPartExists && !_resume && !_overwrite && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
         {
-            kdDebug(7101) << "FileProtocol::put : calling canResume with "
+            kDebug(7101) << "FileProtocol::put : calling canResume with "
                           << KIO::number(buff_part.st_size) << endl;
 
             // Maybe we can use this partial file for resuming
@@ -386,7 +386,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
             // if it's ok to resume or not.
             _resume = canResume( buff_part.st_size );
 
-            kdDebug(7101) << "FileProtocol::put got answer " << _resume << endl;
+            kDebug(7101) << "FileProtocol::put got answer " << _resume << endl;
         }
     }
 
@@ -418,11 +418,11 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
             {
                 if (bMarkPartial)
                 {
-                    kdDebug(7101) << "Appending .part extension to " << dest_orig << endl;
+                    kDebug(7101) << "Appending .part extension to " << dest_orig << endl;
                     dest = dest_part;
                     if ( bPartExists && !_resume )
                     {
-                        kdDebug(7101) << "Deleting partial file " << dest_part << endl;
+                        kDebug(7101) << "Deleting partial file " << dest_part << endl;
                         remove( _dest_part.data() );
                         // Catch errors when we try to open the file.
                     }
@@ -432,7 +432,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
                     dest = dest_orig;
                     if ( bOrigExists && !_resume )
                     {
-                        kdDebug(7101) << "Deleting destination file " << dest_orig << endl;
+                        kDebug(7101) << "Deleting destination file " << dest_orig << endl;
                         remove( _dest_orig.data() );
                         // Catch errors when we try to open the file.
                     }
@@ -460,8 +460,8 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
 
                 if ( fd < 0 )
                 {
-                    kdDebug(7101) << "####################### COULD NOT WRITE " << dest << " _mode=" << _mode << endl;
-                    kdDebug(7101) << "errno==" << errno << "(" << strerror(errno) << ")" << endl;
+                    kDebug(7101) << "####################### COULD NOT WRITE " << dest << " _mode=" << _mode << endl;
+                    kDebug(7101) << "errno==" << errno << "(" << strerror(errno) << ")" << endl;
                     if ( errno == EACCES )
                         error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
                     else
@@ -479,7 +479,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
                 }
                 else
                 {
-                  kdWarning(7101) << "Couldn't write. Error:" << strerror(errno) << endl;
+                  kWarning(7101) << "Couldn't write. Error:" << strerror(errno) << endl;
                   error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
                   result = -1;
                 }
@@ -491,7 +491,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
     // An error occurred deal with it.
     if (result < 0)
     {
-        kdDebug(7101) << "Error during 'put'. Aborting." << endl;
+        kDebug(7101) << "Error during 'put'. Aborting." << endl;
 
         if (fd != -1)
         {
@@ -517,7 +517,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
 
     if ( close(fd) )
     {
-        kdWarning(7101) << "Error when closing file descriptor:" << strerror(errno) << endl;
+        kWarning(7101) << "Error when closing file descriptor:" << strerror(errno) << endl;
         error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
         return;
     }
@@ -533,7 +533,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
 
         if ( ::rename( _dest.data(), _dest_orig.data() ) )
         {
-            kdWarning(7101) << " Couldn't rename " << _dest << " to " << _dest_orig << endl;
+            kWarning(7101) << " Couldn't rename " << _dest << " to " << _dest_orig << endl;
             error( KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig );
             return;
         }
@@ -558,7 +558,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
 void FileProtocol::copy( const KUrl &src, const KUrl &dest,
                          int _mode, bool _overwrite )
 {
-    kdDebug(7101) << "copy(): " << src << " -> " << dest << ", mode=" << _mode << endl;
+    kDebug(7101) << "copy(): " << src << " -> " << dest << ", mode=" << _mode << endl;
 
     QByteArray _src( QFile::encodeName(src.path()));
     QByteArray _dest( QFile::encodeName(dest.path()));
@@ -605,7 +605,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
         // the symlink actually points to current source!
         if (_overwrite && S_ISLNK(buff_dest.st_mode))
         {
-            kdDebug(7101) << "copy(): LINK DESTINATION" << endl;
+            kDebug(7101) << "copy(): LINK DESTINATION" << endl;
             remove( _dest.data() );
         }
     }
@@ -629,7 +629,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 
     int dest_fd = KDE_open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
     if ( dest_fd < 0 ) {
-	kdDebug(7101) << "###### COULD NOT WRITE " << dest.url() << endl;
+	kDebug(7101) << "###### COULD NOT WRITE " << dest.url() << endl;
         if ( errno == EACCES ) {
             error( KIO::ERR_WRITE_ACCESS_DENIED, dest.path() );
         } else {
@@ -646,7 +646,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 #ifdef USE_POSIX_ACL
     acl = acl_get_fd(src_fd);
     if ( acl && !isExtendedACL( acl ) ) {
-        kdDebug(7101) << _dest.data() << " doesn't have extended ACL" << endl;
+        kDebug(7101) << _dest.data() << " doesn't have extended ACL" << endl;
         acl_free( acl );
         acl = NULL;
     }
@@ -667,7 +667,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
             n = ::sendfile( dest_fd, src_fd, &sf, MAX_IPC_SIZE );
             processed_size = sf;
             if ( n == -1 && errno == EINVAL ) { //not all filesystems support sendfile()
-                kdDebug(7101) << "sendfile() not supported, falling back " << endl;
+                kDebug(7101) << "sendfile() not supported, falling back " << endl;
                 use_sendfile = false;
             }
        }
@@ -681,7 +681,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
               continue;
 #ifdef USE_SENDFILE
           if ( use_sendfile ) {
-            kdDebug(7101) << "sendfile() error:" << strerror(errno) << endl;
+            kDebug(7101) << "sendfile() error:" << strerror(errno) << endl;
             if ( errno == ENOSPC ) // disk full
             {
                 error( KIO::ERR_DISK_FULL, dest.path());
@@ -719,7 +719,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
            }
            else
            {
-              kdWarning(7101) << "Couldn't write[2]. Error:" << strerror(errno) << endl;
+              kWarning(7101) << "Couldn't write[2]. Error:" << strerror(errno) << endl;
               error( KIO::ERR_COULD_NOT_WRITE, dest.path());
            }
 #ifdef USE_POSIX_ACL
@@ -738,7 +738,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 
     if (close( dest_fd))
     {
-        kdWarning(7101) << "Error when closing file descriptor[2]:" << strerror(errno) << endl;
+        kWarning(7101) << "Error when closing file descriptor[2]:" << strerror(errno) << endl;
         error( KIO::ERR_COULD_NOT_WRITE, dest.path());
 #ifdef USE_POSIX_ACL
         if (acl) acl_free(acl);
@@ -770,7 +770,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     ut.modtime = buff_src.st_mtime;
     if ( ::utime( _dest.data(), &ut ) != 0 )
     {
-        kdWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg( dest.path() ) << endl;
+        kWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg( dest.path() ) << endl;
     }
 
     processedSize( buff_src.st_size );
@@ -876,7 +876,7 @@ void FileProtocol::del( const KUrl& url, bool isfile)
      *****/
 
     if (isfile) {
-	kdDebug( 7101 ) <<  "Deleting file "<< url.url() << endl;
+	kDebug( 7101 ) <<  "Deleting file "<< url.url() << endl;
 
 	// TODO deletingFile( source );
 
@@ -895,13 +895,13 @@ void FileProtocol::del( const KUrl& url, bool isfile)
        * Delete empty directory
        *****/
 
-      kdDebug( 7101 ) << "Deleting directory " << url.url() << endl;
+      kDebug( 7101 ) << "Deleting directory " << url.url() << endl;
 
       if ( ::rmdir( _path.data() ) == -1 ) {
 	if ((errno == EACCES) || (errno == EPERM))
 	  error( KIO::ERR_ACCESS_DENIED, url.path());
 	else {
-	  kdDebug( 7101 ) << "could not rmdir " << perror << endl;
+	  kDebug( 7101 ) << "could not rmdir " << perror << endl;
 	  error( KIO::ERR_COULD_NOT_RMDIR, url.path() );
 	  return;
 	}
@@ -982,7 +982,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
             }
         }
     } else {
-        // kdWarning() << "lstat didn't work on " << path.data() << endl;
+        // kWarning() << "lstat didn't work on " << path.data() << endl;
         return false;
     }
 
@@ -1020,7 +1020,7 @@ void FileProtocol::stat( const KUrl & url )
         KUrl redir(url);
 	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
-	kdDebug(7101) << "redirecting to " << redir.url() << endl;
+	kDebug(7101) << "redirecting to " << redir.url() << endl;
 	finished();
 	return;
     }
@@ -1036,7 +1036,7 @@ void FileProtocol::stat( const KUrl & url )
 
     QString sDetails = metaData(QLatin1String("details"));
     int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
-    kdDebug(7101) << "FileProtocol::stat details=" << details << endl;
+    kDebug(7101) << "FileProtocol::stat details=" << details << endl;
 
     UDSEntry entry;
     if ( !createUDSEntry( url.fileName(), _path, entry, details, true /*with acls*/ ) )
@@ -1048,7 +1048,7 @@ void FileProtocol::stat( const KUrl & url )
 ///////// debug code
     MetaData::iterator it1 = mOutgoingMetaData.begin();
     for ( ; it1 != mOutgoingMetaData.end(); it1++ ) {
-        kdDebug(7101) << it1.key() << " = " << it1.data() << endl;
+        kDebug(7101) << it1.key() << " = " << it1.data() << endl;
     }
 /////////
 #endif
@@ -1059,12 +1059,12 @@ void FileProtocol::stat( const KUrl & url )
 
 void FileProtocol::listDir( const KUrl& url)
 {
-    kdDebug(7101) << "========= LIST " << url.url() << " =========" << endl;
+    kDebug(7101) << "========= LIST " << url.url() << " =========" << endl;
     if (!url.isLocalFile()) {
         KUrl redir(url);
 	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
-	kdDebug(7101) << "redirecting to " << redir.url() << endl;
+	kDebug(7101) << "redirecting to " << redir.url() << endl;
 	finished();
 	return;
     }
@@ -1144,7 +1144,7 @@ void FileProtocol::listDir( const KUrl& url)
 
     listEntry( entry, true ); // ready
 
-    kdDebug(7101) << "============= COMPLETED LIST ============" << endl;
+    kDebug(7101) << "============= COMPLETED LIST ============" << endl;
 
     chdir(path_buffer);
 
@@ -1186,7 +1186,7 @@ void FileProtocol::special( const QByteArray &data)
 
 	bool ro = ( iRo != 0 );
 
-	kdDebug(7101) << "MOUNTING fstype=" << fstype << " dev=" << dev << " point=" << point << " ro=" << ro << endl;
+	kDebug(7101) << "MOUNTING fstype=" << fstype << " dev=" << dev << " point=" << point << " ro=" << ro << endl;
 	bool ok = pmount( dev );
 	if (ok)
 	    finished();
@@ -1215,20 +1215,20 @@ void FileProtocol::special( const QByteArray &data)
 // Connected to KShred
 void FileProtocol::slotProcessedSize( KIO::filesize_t bytes )
 {
-  kdDebug(7101) << "FileProtocol::slotProcessedSize (" << (unsigned int) bytes << ")" << endl;
+  kDebug(7101) << "FileProtocol::slotProcessedSize (" << (unsigned int) bytes << ")" << endl;
   processedSize( bytes );
 }
 
 // Connected to KShred
 void FileProtocol::slotInfoMessage( const QString & msg )
 {
-  kdDebug(7101) << "FileProtocol::slotInfoMessage (" << msg << ")" << endl;
+  kDebug(7101) << "FileProtocol::slotInfoMessage (" << msg << ")" << endl;
   infoMessage( msg );
 }
 
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
-    kdDebug(7101) << "FileProtocol::mount _fstype=" << _fstype << endl;
+    kDebug(7101) << "FileProtocol::mount _fstype=" << _fstype << endl;
 
 #ifdef HAVE_VOLMGT
 	/*
@@ -1238,22 +1238,22 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 	QByteArray devname = QFile::encodeName( _dev );
 
 	if( volmgt_running() ) {
-//		kdDebug(7101) << "VOLMGT: vold ok." << endl;
+//		kDebug(7101) << "VOLMGT: vold ok." << endl;
 		if( volmgt_check( devname.data() ) == 0 ) {
-			kdDebug(7101) << "VOLMGT: no media in "
+			kDebug(7101) << "VOLMGT: no media in "
 					<< devname.data() << endl;
 			err = i18n("No Media inserted or Media not recognized.");
 			error( KIO::ERR_COULD_NOT_MOUNT, err );
 			return;
 		} else {
-			kdDebug(7101) << "VOLMGT: " << devname.data()
+			kDebug(7101) << "VOLMGT: " << devname.data()
 				<< ": media ok" << endl;
 			finished();
 			return;
 		}
 	} else {
 		err = i18n("\"vold\" is not running.");
-		kdDebug(7101) << "VOLMGT: " << err << endl;
+		kDebug(7101) << "VOLMGT: " << err << endl;
 		error( KIO::ERR_COULD_NOT_MOUNT, err );
 		return;
 	}
@@ -1313,7 +1313,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
                 buffer += readonly + " -t " + fstype + " " + dev + " " + point;
 #endif
         buffer += " 2>" + tmpFileName;
-        kdDebug(7101) << buffer << endl;
+        kDebug(7101) << buffer << endl;
 
         int mount_ret = system( buffer.constData() );
 
@@ -1330,7 +1330,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
             // Is the device mounted ?
             if ( !mp.isEmpty() && mount_ret == 0)
             {
-                kdDebug(7101) << "mount got a warning: " << err << endl;
+                kDebug(7101) << "mount got a warning: " << err << endl;
                 warning( err );
                 finished();
                 return;
@@ -1339,8 +1339,8 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
             {
                 if ( (step == 0) && !_point.isEmpty())
                 {
-                    kdDebug(7101) << err << endl;
-                    kdDebug(7101) << "Mounting with those options didn't work, trying with only mountpoint" << endl;
+                    kDebug(7101) << err << endl;
+                    kDebug(7101) << "Mounting with those options didn't work, trying with only mountpoint" << endl;
                     fstype = "";
                     fstype_empty = true;
                     dev = "";
@@ -1383,12 +1383,12 @@ void FileProtocol::unmount( const QString& _point )
 	struct mnttab mnt;
 
 	if( volmgt_running() ) {
-		kdDebug(7101) << "VOLMGT: looking for "
+		kDebug(7101) << "VOLMGT: looking for "
 			<< _point.toLocal8Bit() << endl;
 
 		if( (mnttab = KDE_fopen( MNTTAB, "r" )) == NULL ) {
 			err = "couldn't open mnttab";
-			kdDebug(7101) << "VOLMGT: " << err << endl;
+			kDebug(7101) << "VOLMGT: " << err << endl;
 			error( KIO::ERR_COULD_NOT_UNMOUNT, err );
 			return;
 		}
@@ -1411,7 +1411,7 @@ void FileProtocol::unmount( const QString& _point )
 
 		if( devname == NULL ) {
 			err = "not in mnttab";
-			kdDebug(7101) << "VOLMGT: "
+			kDebug(7101) << "VOLMGT: "
 				<< QFile::encodeName(_point).data()
 				<< ": " << err << endl;
 			error( KIO::ERR_COULD_NOT_UNMOUNT, err );
@@ -1427,7 +1427,7 @@ void FileProtocol::unmount( const QString& _point )
 		*ptr = '\0';
                 QByteArray qdevname(QFile::encodeName(KProcess::quote(QFile::decodeName(QByteArray(devname)))).data());
 		buffer = "/usr/bin/eject " + qdevname + " 2>" + tmpFileName;
-		kdDebug(7101) << "VOLMGT: eject " << qdevname << endl;
+		kDebug(7101) << "VOLMGT: eject " << qdevname << endl;
 
 		/*
 		 *  from eject(1): exit status == 0 => need to manually eject
@@ -1450,7 +1450,7 @@ void FileProtocol::unmount( const QString& _point )
 		 *  during the user's session, so it should be restarted...
 		 */
 		err = i18n("\"vold\" is not running.");
-		kdDebug(7101) << "VOLMGT: " << err << endl;
+		kDebug(7101) << "VOLMGT: " << err << endl;
 		error( KIO::ERR_COULD_NOT_UNMOUNT, err );
 		return;
 	}
@@ -1618,7 +1618,7 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
         defaultAcl = acl_get_file( path.data(), ACL_TYPE_DEFAULT );
     }
     if ( acl || defaultAcl ) {
-      kdDebug(7101) << path.data() << " has extended ACL entries " << endl;
+      kDebug(7101) << path.data() << " has extended ACL entries " << endl;
       entry.insert( KIO::UDS_EXTENDED_ACL, 1 );
     }
     if ( withACL ) {
@@ -1626,13 +1626,13 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
             ssize_t size = acl_size( acl );
             const QString str = QString::fromLatin1( acl_to_text( acl, &size ) );
             entry.insert( KIO::UDS_ACL_STRING, str );
-            kdDebug(7101) << path.data() << "ACL: " << str << endl;
+            kDebug(7101) << path.data() << "ACL: " << str << endl;
         }
         if ( defaultAcl ) {
             ssize_t size = acl_size( defaultAcl );
             const QString str = QString::fromLatin1( acl_to_text( defaultAcl, &size ) );
             entry.insert( KIO::UDS_DEFAULT_ACL_STRING, str );
-            kdDebug(7101) << path.data() << "DEFAULT ACL: " << str << endl;
+            kDebug(7101) << path.data() << "DEFAULT ACL: " << str << endl;
         }
     }
     if ( acl ) acl_free( acl );

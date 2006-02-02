@@ -237,7 +237,7 @@ void KMVirtualManager::virtualList(Q3PtrList<KMPrinter>& list, const QString& pr
 	// then look for instances
 	list.setAutoDelete(false);
 	list.clear();
-	kdDebug(500) << "KMVirtualManager::virtualList() prname=" << prname << endl;
+	kDebug(500) << "KMVirtualManager::virtualList() prname=" << prname << endl;
 	Q3PtrListIterator<KMPrinter>	it(m_manager->m_printers);
 	for (;it.current();++it)
 		if (it.current()->printerName() == prname)

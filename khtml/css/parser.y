@@ -277,19 +277,19 @@ khtml_value:
 	if ( $4 ) {
 	    p->valueList = $4;
 #ifdef CSS_DEBUG
-	    kdDebug( 6080 ) << "   got property for " << p->id <<
+	    kDebug( 6080 ) << "   got property for " << p->id <<
 		(p->important?" important":"")<< endl;
 	    bool ok =
 #endif
 		p->parseValue( p->id, p->important );
 #ifdef CSS_DEBUG
 	    if ( !ok )
-		kdDebug( 6080 ) << "     couldn't parse value!" << endl;
+		kDebug( 6080 ) << "     couldn't parse value!" << endl;
 #endif
 	}
 #ifdef CSS_DEBUG
 	else
-	    kdDebug( 6080 ) << "     no value found!" << endl;
+	    kDebug( 6080 ) << "     no value found!" << endl;
 #endif
 	delete p->valueList;
 	p->valueList = 0;
@@ -311,7 +311,7 @@ maybe_charset:
    /* empty */
  | CHARSET_SYM maybe_space STRING maybe_space ';' {
 #ifdef CSS_DEBUG
-     kdDebug( 6080 ) << "charset rule: " << qString($3) << endl;
+     kDebug( 6080 ) << "charset rule: " << qString($3) << endl;
 #endif
  }
   | CHARSET_SYM error invalid_block
@@ -333,7 +333,7 @@ import_list:
 import:
     IMPORT_SYM maybe_space string_or_uri maybe_space maybe_media_list ';' {
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "@import: " << qString($3) << endl;
+	kDebug( 6080 ) << "@import: " << qString($3) << endl;
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( $5 && p->styleElement && p->styleElement->isCSSStyleSheet() )
@@ -357,7 +357,7 @@ maybe_namespace
 namespace:
 NAMESPACE_SYM maybe_space maybe_ns_prefix string_or_uri maybe_space ';' {
 #ifdef CSS_DEBUG
-    kdDebug( 6080 ) << "@namespace: " << qString($4) << endl;
+    kDebug( 6080 ) << "@namespace: " << qString($4) << endl;
 #endif
       CSSParser *p = static_cast<CSSParser *>(parser);
     if (p->styleElement && p->styleElement->isCSSStyleSheet())
@@ -503,7 +503,7 @@ unary_operator:
 ruleset:
     selector_list declaration_block {
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "got ruleset" << endl << "  selector:" << endl;
+	kDebug( 6080 ) << "got ruleset" << endl << "  selector:" << endl;
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( $1 && $2 && p->numParsedProperties ) {
@@ -526,7 +526,7 @@ selector_list:
 	    $$ = new QPtrList<CSSSelector>;
             $$->setAutoDelete( true );
 #ifdef CSS_DEBUG
-	    kdDebug( 6080 ) << "   got simple selector:" << endl;
+	    kDebug( 6080 ) << "   got simple selector:" << endl;
 	    $1->print();
 #endif
 	    $$->append( $1 );
@@ -539,7 +539,7 @@ selector_list:
 	    $$ = $1;
 	    $$->append( $4 );
 #ifdef CSS_DEBUG
-	    kdDebug( 6080 ) << "   got simple selector:" << endl;
+	    kDebug( 6080 ) << "   got simple selector:" << endl;
 	    $4->print();
 #endif
 	} else {
@@ -872,7 +872,7 @@ declaration:
 	if ( $1 && $4 ) {
 	    p->valueList = $4;
 #ifdef CSS_DEBUG
-	    kdDebug( 6080 ) << "   got property: " << $1 <<
+	    kDebug( 6080 ) << "   got property: " << $1 <<
 		($5?" important":"")<< endl;
 #endif
 	        bool ok = p->parseValue( $1, $5 );
@@ -880,7 +880,7 @@ declaration:
 		    $$ = ok;
 #ifdef CSS_DEBUG
 	        else
-		    kdDebug( 6080 ) << "     couldn't parse value!" << endl;
+		    kDebug( 6080 ) << "     couldn't parse value!" << endl;
 #endif
 	} else {
             delete $4;
@@ -1015,13 +1015,13 @@ invalid_at:
     '@' error invalid_block {
 	$$ = 0;
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid @-rule" << endl;
+	kDebug( 6080 ) << "skipped invalid @-rule" << endl;
 #endif
     }
   | '@' error ';' {
 	$$ = 0;
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid @-rule" << endl;
+	kDebug( 6080 ) << "skipped invalid @-rule" << endl;
 #endif
     }
     ;
@@ -1030,7 +1030,7 @@ invalid_rule:
     error invalid_block {
 	$$ = 0;
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid rule" << endl;
+	kDebug( 6080 ) << "skipped invalid rule" << endl;
 #endif
     }
 /*
@@ -1040,13 +1040,13 @@ invalid_rule:
   | error ';' {
 	$$ = 0;
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid rule" << endl;
+	kDebug( 6080 ) << "skipped invalid rule" << endl;
 #endif
     }
   | error '}' {
 	$$ = 0;
 #ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid rule" << endl;
+	kDebug( 6080 ) << "skipped invalid rule" << endl;
 #endif
     }
 */

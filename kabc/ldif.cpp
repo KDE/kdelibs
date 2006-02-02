@@ -93,14 +93,14 @@ bool LDIF::splitLine( const QByteArray &line, QString &fieldname, QByteArray &va
   QByteArray tmp;
   int linelen;
 
-//  kdDebug(5700) << "splitLine line: " << QString::fromUtf8(line) << endl;
+//  kDebug(5700) << "splitLine line: " << QString::fromUtf8(line) << endl;
 
   position = line.indexOf( ":" );
   if ( position == -1 ) {
     // strange: we did not find a fieldname
     fieldname = "";
     value = line.trimmed();
-//    kdDebug(5700) << "value : " << value[0] << endl;
+//    kDebug(5700) << "value : " << value[0] << endl;
     return false;
   }
 
@@ -142,7 +142,7 @@ bool LDIF::splitControl( const QByteArray &line, QString &oid, bool &critical,
   critical = false;
   bool url = splitLine( line, tmp, value );
   
-  kdDebug(5700) << "splitControl: value: " << QString::fromUtf8(value, value.size()) << endl;
+  kDebug(5700) << "splitControl: value: " << QString::fromUtf8(value, value.size()) << endl;
   if ( tmp.isEmpty() ) {
     tmp = QString::fromUtf8( value, value.size() );
     value.resize( 0 );
@@ -175,7 +175,7 @@ LDIF::ParseVal LDIF::processLine()
       if ( attrLower == "version" ) {
         if ( !mDn.isEmpty() ) retval = Err;
       } else if ( attrLower == "dn" ) {
-        kdDebug(5700) << "ldapentry dn: " << QString::fromUtf8( mVal, mVal.size() ) << endl;
+        kDebug(5700) << "ldapentry dn: " << QString::fromUtf8( mVal, mVal.size() ) << endl;
         mDn = QString::fromUtf8( mVal, mVal.size() );
         mModType = Mod_None;
         retval = NewEntry;
@@ -184,7 +184,7 @@ LDIF::ParseVal LDIF::processLine()
           retval = Err;
         else {
           QString tmpval = QString::fromUtf8( mVal, mVal.size() );
-          kdDebug(5700) << "changetype: " << tmpval << endl;
+          kDebug(5700) << "changetype: " << tmpval << endl;
           if ( tmpval == "add" ) mEntryType = Entry_Add;
           else if ( tmpval == "delete" ) mEntryType = Entry_Del;
           else if ( tmpval == "modrdn" || tmpval == "moddn" ) {
@@ -218,7 +218,7 @@ LDIF::ParseVal LDIF::processLine()
       break;
     case Entry_Mod:
       if ( mModType == Mod_None ) {
-        kdDebug(5700) << "kio_ldap: new modtype " << mAttr << endl;
+        kDebug(5700) << "kio_ldap: new modtype " << mAttr << endl;
         if ( mAttr.isEmpty() && mVal.size() == 0 ) {
           retval = EndEntry;
         } else if ( attrLower == "add" ) {

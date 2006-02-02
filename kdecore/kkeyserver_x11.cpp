@@ -379,7 +379,7 @@ bool initializeMods()
 
 	g_bInitializedMods = true;
 
-	kdDebug(125) << "KKeyServer::initializeMods(): Win Mod = 0x" << QString::number(g_rgModInfo[3].modX, 16) << endl;
+	kDebug(125) << "KKeyServer::initializeMods(): Win Mod = 0x" << QString::number(g_rgModInfo[3].modX, 16) << endl;
 	return true;
 }
 
@@ -441,7 +441,7 @@ bool Sym::initQt( int keyQt )
 	m_sym = 0;
 	if( symQt != Qt::Key_Shift && symQt != Qt::Key_Control && symQt != Qt::Key_Alt &&
 	    symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R )
-		kdDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
+		kDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
 	return false;
 
 #endif
@@ -731,7 +731,7 @@ bool modToModX( uint mod, uint& modX )
 	for( int i = 0; i < KKey::MOD_FLAG_COUNT; i++ ) {
 		if( mod & g_rgModInfo[i].mod ) {
 			if( !g_rgModInfo[i].modX ) {
-				kdDebug(125) << "Invalid modifier flag." << endl;
+				kDebug(125) << "Invalid modifier flag." << endl;
 				modX = 0;
 				return false;
 			}
@@ -854,7 +854,7 @@ uint stringUserToMod( const QString& mod )
 		for( int i = 0; i < NB_KEYS; i++ ) {
 			if( keySymQt == (uint) KKEYS[i].code ) {
 				psKeySym = KKEYS[i].name;
-				//kdDebug(125) << " symbol found: \"" << psKeySym << "\"" << endl;
+				//kDebug(125) << " symbol found: \"" << psKeySym << "\"" << endl;
 				break;
 			}
 		}

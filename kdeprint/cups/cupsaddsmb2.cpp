@@ -151,7 +151,7 @@ void CupsAddSmb::slotReceived(KProcess*, char *buf, int buflen)
 	bool	partial(false);
 	static bool incomplete(false);
 
-	kdDebug(500) << "slotReceived()" << endl;
+	kDebug(500) << "slotReceived()" << endl;
 	while (1)
 	{
 		// read a line
@@ -171,11 +171,11 @@ void CupsAddSmb::slotReceived(KProcess*, char *buf, int buflen)
 
 		if (line.isEmpty())
 		{
-			kdDebug(500) << "NOTHING TO READ" << endl;
+			kDebug(500) << "NOTHING TO READ" << endl;
 			return;
 		}
 
-		kdDebug(500) << "ANSWER = " << line << " (END = " << line.length() << ")" << endl;
+		kDebug(500) << "ANSWER = " << line << " (END = " << line.length() << ")" << endl;
 		if (!partial)
 		{
 			if (incomplete && m_buffer.count() > 0)
@@ -183,22 +183,22 @@ void CupsAddSmb::slotReceived(KProcess*, char *buf, int buflen)
 			else
 				m_buffer << line;
 			incomplete = false;
-			kdDebug(500) << "COMPLETE LINE READ (" << m_buffer.count() << ")" << endl;
+			kDebug(500) << "COMPLETE LINE READ (" << m_buffer.count() << ")" << endl;
 		}
 		else
 		{
 			if (line.startsWith("smb:") || line.startsWith("rpcclient $"))
 			{
-				kdDebug(500) << "END OF ACTION" << endl;
+				kDebug(500) << "END OF ACTION" << endl;
 				checkActionStatus();
 				if (m_status)
 					nextAction();
 				else
 				{
 					// quit program
-					kdDebug(500) << "EXITING PROGRAM..." << endl;
+					kDebug(500) << "EXITING PROGRAM..." << endl;
 					m_proc.writeStdin("quit\n", 5);
-					kdDebug(500) << "SENT" << endl;
+					kDebug(500) << "SENT" << endl;
 				}
 				return;
 			}
@@ -209,7 +209,7 @@ void CupsAddSmb::slotReceived(KProcess*, char *buf, int buflen)
 				else
 					m_buffer << line;
 				incomplete = true;
-				kdDebug(500) << "INCOMPLETE LINE READ (" << m_buffer.count() << ")" << endl;
+				kDebug(500) << "INCOMPLETE LINE READ (" << m_buffer.count() << ")" << endl;
 			}
 		}
 	}
@@ -237,7 +237,7 @@ void CupsAddSmb::checkActionStatus()
 			m_status = (m_buffer.count() == 1 || !m_buffer[1].startsWith("result"));
 			break;
 	}
-	kdDebug(500) << "ACTION STATUS = " << m_status << endl;
+	kDebug(500) << "ACTION STATUS = " << m_status << endl;
 }
 
 void CupsAddSmb::nextAction()
@@ -254,7 +254,7 @@ void CupsAddSmb::doNextAction()
 	{
 		QByteArray	s = m_actions[m_actionindex++].toLatin1();
 		m_bar->setValue(m_bar->value()+1);
-		kdDebug(500) << "NEXT ACTION = " << s << endl;
+		kDebug(500) << "NEXT ACTION = " << s << endl;
 		if (s == "quit")
 		{
 			// do nothing
@@ -297,12 +297,12 @@ void CupsAddSmb::doNextAction()
 		}
 		else
 		{
-			kdDebug(500) << "ACTION = unknown action" << endl;
+			kDebug(500) << "ACTION = unknown action" << endl;
 			m_proc.kill();
 			return;
 		}
 		// send action
-		kdDebug(500) << "ACTION = " << s << endl;
+		kDebug(500) << "ACTION = " << s << endl;
 		s.append("\n");
 		m_proc.writeStdin(s.data(), s.length());
 	}
@@ -310,7 +310,7 @@ void CupsAddSmb::doNextAction()
 
 void CupsAddSmb::slotProcessExited(KProcess*)
 {
-	kdDebug(500) << "PROCESS EXITED (" << m_state << ")" << endl;
+	kDebug(500) << "PROCESS EXITED (" << m_state << ")" << endl;
 	if (m_proc.normalExit() && m_state != Start && m_status)
 	{
 		// last process went OK. If it was smbclient, then switch to rpcclient
@@ -468,7 +468,7 @@ bool CupsAddSmb::startProcess()
 	m_state = Start;
 	m_actionindex = 0;
 	m_buffer.clear();
-	kdDebug(500) << "PROCESS STARTED = " << m_proc.args()[0] << endl;
+	kDebug(500) << "PROCESS STARTED = " << m_proc.args()[0] << endl;
 	return m_proc.start(KProcess::NotifyOnExit, KProcess::All);
 }
 

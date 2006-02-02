@@ -37,29 +37,29 @@ int main(int argc,char **argv)
   times( &start );
 
 #if 0
-  kdDebug() << "utime : " << int( start.tms_utime ) << endl;
-  kdDebug() << "stime : " << int( start.tms_stime ) << endl;
-  kdDebug() << "cutime: " << int( start.tms_cutime ) << endl;
-  kdDebug() << "cstime: " << int( start.tms_cstime ) << endl;
+  kDebug() << "utime : " << int( start.tms_utime ) << endl;
+  kDebug() << "stime : " << int( start.tms_stime ) << endl;
+  kDebug() << "cutime: " << int( start.tms_cutime ) << endl;
+  kDebug() << "cstime: " << int( start.tms_cstime ) << endl;
 #endif
 	    
-  kdDebug() << "Start load" << endl;
+  kDebug() << "Start load" << endl;
   ab.load();
-  kdDebug() << "Finished load" << endl;
+  kDebug() << "Finished load" << endl;
 
   struct tms end;
 
   times( &end );
 
 #if 0
-  kdDebug() << "utime : " << int( end.tms_utime ) << endl;
-  kdDebug() << "stime : " << int( end.tms_stime ) << endl;
-  kdDebug() << "cutime: " << int( end.tms_cutime ) << endl;
-  kdDebug() << "cstime: " << int( end.tms_cstime ) << endl;
+  kDebug() << "utime : " << int( end.tms_utime ) << endl;
+  kDebug() << "stime : " << int( end.tms_stime ) << endl;
+  kDebug() << "cutime: " << int( end.tms_cutime ) << endl;
+  kDebug() << "cstime: " << int( end.tms_cstime ) << endl;
 #endif
 
-  kdDebug() << "UTime: " << int( end.tms_utime ) - int( start.tms_utime ) << endl; 
-  kdDebug() << "STime: " << int( end.tms_stime ) - int( start.tms_stime ) << endl; 
+  kDebug() << "UTime: " << int( end.tms_utime ) - int( start.tms_utime ) << endl; 
+  kDebug() << "STime: " << int( end.tms_stime ) - int( start.tms_stime ) << endl; 
 
 //  ab.dump();
 }

@@ -42,7 +42,7 @@ static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElem
    QMap<QString,QDomElement>::iterator it = dupeList.find(s);
    if (it != dupeList.end())
    {
-      kdDebug(7021) << e.tagName() << " and " << s << " requires combining!" << endl;
+      kDebug(7021) << e.tagName() << " and " << s << " requires combining!" << endl;
 
       docElem.removeChild(*it);
       dupeList.erase(it);
@@ -64,7 +64,7 @@ static void replaceNode(QDomElement &docElem, QDomNode &n, const QStringList &li
    QDomNode next = n.nextSibling();
    docElem.removeChild(n);
    n = next;
-//   kdDebug(7021) << "Next tag = " << n.toElement().tagName() << endl;
+//   kDebug(7021) << "Next tag = " << n.toElement().tagName() << endl;
 }
 
 void VFolderMenu::registerFile(const QString &file)
@@ -475,14 +475,14 @@ VFolderMenu::loadDoc()
    QFile file( m_docInfo.path );
    if ( !file.open( QIODevice::ReadOnly ) )
    {
-      kdWarning(7021) << "Could not open " << m_docInfo.path << endl;
+      kWarning(7021) << "Could not open " << m_docInfo.path << endl;
       return doc;
    }
    QString errorMsg;
    int errorRow;
    int errorCol;
    if ( !doc.setContent( &file, &errorMsg, &errorRow, &errorCol ) ) {
-      kdWarning(7021) << "Parse error in " << m_docInfo.path << ", line " << errorRow << ", col " << errorCol << ": " << errorMsg << endl;
+      kWarning(7021) << "Parse error in " << m_docInfo.path << ", line " << errorRow << ", col " << errorCol << ": " << errorMsg << endl;
       file.close();
       return doc;
    }
@@ -502,7 +502,7 @@ VFolderMenu::loadDoc()
 void
 VFolderMenu::mergeFile(QDomElement &parent, const QDomNode &mergeHere)
 {
-kdDebug(7021) << "VFolderMenu::mergeFile: " << m_docInfo.path << endl;
+kDebug(7021) << "VFolderMenu::mergeFile: " << m_docInfo.path << endl;
    QDomDocument doc = loadDoc();
 
    QDomElement docElem = doc.documentElement();
@@ -545,7 +545,7 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
    while( !n.isNull() ) {
       QDomElement e = n.toElement(); // try to convert the node to an element.
       if( e.isNull() ) {
-// kdDebug(7021) << "Empty node" << endl;
+// kDebug(7021) << "Empty node" << endl;
       }
       else if( e.tagName() == "DefaultAppDirs") {
          // Replace with m_defaultAppDirs
@@ -708,7 +708,7 @@ VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
    {
       m_docInfo.baseDir.clear();
       m_docInfo.baseName.clear();
-      kdDebug(7021) << "Menu " << fileName << " not found." << endl;
+      kDebug(7021) << "Menu " << fileName << " not found." << endl;
       return;
    }
    int i;
@@ -825,7 +825,7 @@ VFolderMenu::loadMenu(const QString &fileName)
 
    if (m_doc.isNull())
    {
-      kdWarning(7021) << "Load error (" << m_docInfo.path << ")" << endl;
+      kWarning(7021) << "Load error (" << m_docInfo.path << ")" << endl;
       return;
    }
 
@@ -930,7 +930,7 @@ VFolderMenu::processCondition(QDomElement &domElem, QHash<QString,KService::Ptr>
    else if (domElem.tagName() == "Filename")
    {
       QString filename = domElem.text();
-kdDebug(7021) << "Adding file " << filename << endl;
+kDebug(7021) << "Adding file " << filename << endl;
       KService::Ptr s = findApplication(filename);
       if (s)
          items.insert(filename, s);
@@ -940,7 +940,7 @@ kdDebug(7021) << "Adding file " << filename << endl;
 void
 VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
 {
-   kdDebug(7021) << "Looking up applications under " << dir << endl;
+   kDebug(7021) << "Looking up applications under " << dir << endl;
 
    // We look for a set of files.
    DIR *dp = opendir( QFile::encodeName(dir));
@@ -985,7 +985,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
 void
 VFolderMenu::processKDELegacyDirs()
 {
-kdDebug(7021) << "processKDELegacyDirs()" << endl;
+kDebug(7021) << "processKDELegacyDirs()" << endl;
 
    QHash<QString,KService::Ptr> items;
    QString prefix = "kde-";
@@ -1049,7 +1049,7 @@ kdDebug(7021) << "processKDELegacyDirs()" << endl;
 void
 VFolderMenu::processLegacyDir(const QString &dir, const QString &relDir, const QString &prefix)
 {
-kdDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")" << endl;
+kDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")" << endl;
 
    QHash<QString,KService::Ptr> items;
    // We look for a set of files.
@@ -1202,7 +1202,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
       }
       if (directoryFile.isEmpty())
       {
-         kdDebug(7021) << "Menu " << name << " does not specify a directory file." << endl;
+         kDebug(7021) << "Menu " << name << " does not specify a directory file." << endl;
       }
 
       // Override previous directoryFile iff available
@@ -1255,7 +1255,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
             createAppsInfo();
             if (!kdeLegacyDirsDone)
             {
-kdDebug(7021) << "Processing KDE Legacy dirs for <KDE>" << endl;
+kDebug(7021) << "Processing KDE Legacy dirs for <KDE>" << endl;
                SubMenu *oldMenu = m_currentMenu;
                m_currentMenu = new SubMenu;
 
@@ -1278,7 +1278,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for <KDE>" << endl;
             {
                if (!kdeLegacyDirsDone)
                {
-kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
+kDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
                   SubMenu *oldMenu = m_currentMenu;
                   m_currentMenu = new SubMenu;
 
@@ -1416,7 +1416,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
                   dest = e2.text();
                n2 = n2.nextSibling();
             }
-            kdDebug(7021) << "Moving " << orig << " to " << dest << endl;
+            kDebug(7021) << "Moving " << orig << " to " << dest << endl;
             if (!orig.isEmpty() && !dest.isEmpty())
             {
               SubMenu *menu = takeSubMenu(m_currentMenu, orig);
@@ -1452,7 +1452,7 @@ static QString parseAttribute( const QDomElement &e)
         else if ( str=="false" )
             option= "NME ";
         else
-            kdDebug()<<" Error in parsing show_empty attribute :"<<str<<endl;
+            kDebug()<<" Error in parsing show_empty attribute :"<<str<<endl;
     }
     if ( e.hasAttribute( "inline" ) )
     {
@@ -1462,7 +1462,7 @@ static QString parseAttribute( const QDomElement &e)
         else if ( str=="false" )
             option+="NI ";
         else
-            kdDebug()<<" Error in parsing inlibe attribute :"<<str<<endl;
+            kDebug()<<" Error in parsing inlibe attribute :"<<str<<endl;
     }
     if ( e.hasAttribute( "inline_limit" ) )
     {
@@ -1479,7 +1479,7 @@ static QString parseAttribute( const QDomElement &e)
         else if ( str == "false" )
             option+="NIH ";
         else
-            kdDebug()<<" Error in parsing of inline_header attribute :"<<str<<endl;
+            kDebug()<<" Error in parsing of inline_header attribute :"<<str<<endl;
 
     }
     if ( e.hasAttribute( "inline_alias" ) && e.attribute( "inline_alias" )=="true")
@@ -1490,7 +1490,7 @@ static QString parseAttribute( const QDomElement &e)
         else if ( str=="false" )
             option+="NIA";
         else
-            kdDebug()<<" Error in parsing inline_alias attribute :"<<str<<endl;
+            kDebug()<<" Error in parsing inline_alias attribute :"<<str<<endl;
     }
     if( !option.isEmpty())
     {

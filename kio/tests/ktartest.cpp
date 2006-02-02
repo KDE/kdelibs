@@ -166,7 +166,7 @@ int main( int argc, char** argv )
     {
         QIODevice *dev = static_cast<const KArchiveFile *>(entry)->device();
         QByteArray contents = dev->readAll();
-        kdDebug() << "contents=" << contents << endl;
+        kDebug() << "contents=" << contents << endl;
     } else
         printf("entry=%p - not found if 0, otherwise not a file\n", (void*)entry);
     return 0;

@@ -47,12 +47,12 @@ private:
 
 void KUrlCompletionTest::setup( bool setDirAsURL )
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     m_completion = new KUrlCompletion;
     m_tempDir = new KTempDir;
     m_tempDir->setAutoDelete( true );
     m_dir = m_tempDir->name();
-    kdDebug() << "m_dir=" << m_dir << endl;
+    kDebug() << "m_dir=" << m_dir << endl;
     Q_ASSERT( m_dir.endsWith( "/" ) );
     if ( setDirAsURL ) {
         KUrl d; d.setPath( m_dir );
@@ -83,14 +83,14 @@ void KUrlCompletionTest::teardown()
 void KUrlCompletionTest::waitForCompletion()
 {
     while ( m_completion->isRunning() ) {
-        kdDebug() << "waiting for thread..." << endl;
+        kDebug() << "waiting for thread..." << endl;
         usleep( 10 );
     }
 }
 
 void KUrlCompletionTest::testLocalRelativePath()
 {
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     // Completion from relative path, with two matches
     m_completion->makeCompletion( "f" );
     waitForCompletion();
@@ -102,11 +102,11 @@ void KUrlCompletionTest::testLocalRelativePath()
     assert( comp1 == "file1" );
 
     // Completion from relative path
-    kdDebug() << endl << k_funcinfo << "now completing on 'file#'" << endl;
+    kDebug() << endl << k_funcinfo << "now completing on 'file#'" << endl;
     m_completion->makeCompletion( "file#" );
     waitForCompletion();
     QStringList compall = m_completion->allMatches();
-    kdDebug() << compall << endl;
+    kDebug() << compall << endl;
     assert( compall.count() == 1 );
     assert( compall.first() == "file#a" );
     QString comp2 = m_completion->replacedPath( compall.first() ); // like KUrlRequester does
@@ -116,11 +116,11 @@ void KUrlCompletionTest::testLocalRelativePath()
 void KUrlCompletionTest::testLocalAbsolutePath()
 {
     // Completion from absolute path
-    kdDebug() << k_funcinfo << m_dir+"file#" << endl;
+    kDebug() << k_funcinfo << m_dir+"file#" << endl;
     m_completion->makeCompletion( m_dir + "file#" );
     waitForCompletion();
     QStringList compall = m_completion->allMatches();
-    kdDebug() << compall << endl;
+    kDebug() << compall << endl;
     assert( compall.count() == 1 );
     QString comp = compall.first();
     assert( comp == m_dir + "file#a" );
@@ -131,23 +131,23 @@ void KUrlCompletionTest::testLocalAbsolutePath()
 void KUrlCompletionTest::testLocalURL()
 {
     // Completion from URL
-    kdDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo << endl;
     KUrl url = KUrl::fromPathOrURL( m_dirURL.path() + "file" );
     m_completion->makeCompletion( url.prettyURL() );
     waitForCompletion();
     QStringList comp1all = m_completion->allMatches();
-    kdDebug() << comp1all << endl;
+    kDebug() << comp1all << endl;
     assert( comp1all.count() == 2 );
     assert( comp1all.find( m_dirURL.url() + "file1" ) != comp1all.end() );
     QString filehash = m_dirURL.url() + "file%23a";
     assert( comp1all.find( filehash ) != comp1all.end() );
     QString filehashPath = m_completion->replacedPath( filehash ); // note that it returns a path!!
-    kdDebug() << filehashPath << endl;
+    kDebug() << filehashPath << endl;
     assert( filehashPath == m_dirURL.path() + "file#a" );
 
     // Completion from URL with no match
     url = KUrl::fromPathOrURL( m_dirURL.path() + "foobar" );
-    kdDebug() << k_funcinfo << "makeCompletion(" << url << ")" << endl;
+    kDebug() << k_funcinfo << "makeCompletion(" << url << ")" << endl;
     QString comp2 = m_completion->makeCompletion( url.prettyURL() );
     assert( comp2.isEmpty() );
     waitForCompletion();
@@ -156,7 +156,7 @@ void KUrlCompletionTest::testLocalURL()
     // Completion from URL with a ref -> no match
     url = KUrl::fromPathOrURL( m_dirURL.path() + "f" );
     url.setRef( "ref" );
-    kdDebug() << k_funcinfo << "makeCompletion(" << url << ")" << endl;
+    kDebug() << k_funcinfo << "makeCompletion(" << url << ")" << endl;
     m_completion->makeCompletion( url.prettyURL() );
     waitForCompletion();
     assert( m_completion->allMatches().isEmpty() );

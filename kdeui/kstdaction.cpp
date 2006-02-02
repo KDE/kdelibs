@@ -46,7 +46,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 {
 	KAction* pAction = 0;
 	const KStdActionInfo* pInfo = infoPtr( id );
-	kdDebug(125) << "KStdAction::create( " << id << "=" << (pInfo ? pInfo->psName : (const char*)0) << ", " << parent << ", " << name << " )" << endl; // ellis
+	kDebug(125) << "KStdAction::create( " << id << "=" << (pInfo ? pInfo->psName : (const char*)0) << ", " << parent << ", " << name << " )" << endl; // ellis
 	if( pInfo ) {
 		QString sLabel, iconName = pInfo->psIconName;
 		switch( id ) {

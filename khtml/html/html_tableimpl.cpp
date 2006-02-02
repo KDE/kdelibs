@@ -220,7 +220,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
     if(!firstBody && !head && !foot && !hasChildNodes())
         setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
 
-    kdDebug(6030) << k_funcinfo << index << endl;
+    kDebug(6030) << k_funcinfo << index << endl;
     HTMLTableSectionElementImpl* section = 0L;
     HTMLTableSectionElementImpl* lastSection = 0L;
     NodeImpl *node = firstChild();
@@ -235,7 +235,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         {
             section = static_cast<HTMLTableSectionElementImpl *>(node);
             lastSection = section;
-            //kdDebug(6030) << k_funcinfo << "section=" << section->tagName() << " rows:" << section->numRows() << endl;
+            //kDebug(6030) << k_funcinfo << "section=" << section->tagName() << " rows:" << section->numRows() << endl;
             if ( !append )
             {
                 int rows = section->numRows();
@@ -244,7 +244,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
                     break;
                 } else
                     index -= rows;
-                //kdDebug(6030) << "       index is now " << index << endl;
+                //kDebug(6030) << "       index is now " << index << endl;
             }
         }
     }
@@ -260,7 +260,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         index = section ? section->numRows() : 0;
     }
     if ( section && (index >= 0 || append) ) {
-        //kdDebug(6030) << "Inserting row into section " << section << "(" << section->tagName().string() << ") at index " << index << endl;
+        //kDebug(6030) << "Inserting row into section " << section << "(" << section->tagName().string() << ") at index " << index << endl;
         return section->insertRow( index, exceptioncode );
     } else {
         // No more sections => index is too big
@@ -325,7 +325,7 @@ NodeImpl *HTMLTableElementImpl::appendChild(NodeImpl *child, int &exceptioncode)
 NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6030 ) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )" << endl;
+    kDebug( 6030 ) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )" << endl;
 #endif
 
     int exceptioncode = 0;
@@ -638,7 +638,7 @@ HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index, int& except
     HTMLTableRowElementImpl *r = 0L;
     NodeListImpl *children = childNodes();
     int numRows = children ? (int)children->length() : 0;
-    //kdDebug(6030) << k_funcinfo << "index=" << index << " numRows=" << numRows << endl;
+    //kDebug(6030) << k_funcinfo << "index=" << index << " numRows=" << numRows << endl;
     if ( index < -1 || index > numRows ) {
         exceptioncode = DOMException::INDEX_SIZE_ERR; // per the DOM
     }

@@ -257,19 +257,19 @@ bool PSDHandler::read(QImage *image)
 
     // Check image file format.
     if( s.atEnd() || !IsValid( header ) ) {
-        kdDebug(399) << "This PSD file is not valid." << endl;
+        kDebug(399) << "This PSD file is not valid." << endl;
         return false;
     }
 
     // Check if it's a supported format.
     if( !IsSupported( header ) ) {
-        kdDebug(399) << "This PSD file is not supported." << endl;
+        kDebug(399) << "This PSD file is not supported." << endl;
         return false;
     }
 
     QImage img;
     if( !LoadPSD(s, header, img) ) {
-        kdDebug(399) << "Error loading PSD file." << endl;
+        kDebug(399) << "Error loading PSD file." << endl;
         return false;
     }
 

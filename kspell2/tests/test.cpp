@@ -35,8 +35,8 @@ int main( int argc, char** argv )
 
     Broker::Ptr broker = Broker::openBroker();
 
-    kdDebug()<< "Clients are "   << broker->clients()   << endl;
-    kdDebug()<< "Languages are " << broker->languages() << endl;
+    kDebug()<< "Clients are "   << broker->clients()   << endl;
+    kDebug()<< "Languages are " << broker->languages() << endl;
 
     Dictionary *dict = broker->dictionary( "en_US" );
 
@@ -87,13 +87,13 @@ int main( int argc, char** argv )
     mtime.start();
     for ( QStringList::Iterator itr = words.begin(); itr != words.end(); ++itr ) {
         if ( dict && !dict->check( *itr ) ) {
-            //kdDebug()<<"Word " << *itr <<" is misspelled"<<endl;
+            //kDebug()<<"Word " << *itr <<" is misspelled"<<endl;
             QStringList sug = dict->suggest( *itr );
-            //kdDebug()<<"Suggestions : "<<sug<<endl;
+            //kDebug()<<"Suggestions : "<<sug<<endl;
         }
     }
     //mtime.stop();
-    kdDebug()<<"Elapsed time is "<<mtime.elapsed()<<endl;
+    kDebug()<<"Elapsed time is "<<mtime.elapsed()<<endl;
 
     delete dict;
 

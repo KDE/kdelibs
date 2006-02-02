@@ -557,7 +557,7 @@ public:
 #if 0
         // debug code
         for ( QStringList::Iterator it = tmpDirs.begin() ; it != tmpDirs.end() ; ++it )
-            kdDebug(7018) << " atimeDir: " << *it << endl;
+            kDebug(7018) << " atimeDir: " << *it << endl;
 #endif
     }
 
@@ -565,7 +565,7 @@ public:
     {
         QString dir = file.left( file.lastIndexOf( '/' ) );
         bool res = tmpDirs.contains( dir );
-        //kdDebug(7018) << "restoreAccessTime " << file << " dir=" << dir << " result=" << res << endl;
+        //kDebug(7018) << "restoreAccessTime " << file << " dir=" << dir << " result=" << res << endl;
         return res;
     }
     QStringList tmpDirs;
@@ -589,7 +589,7 @@ test_table()
 	struct magic *m;
 	struct magic *prevm = NULL;
 
-	kdDebug(7018) << "test_table : started" << endl;
+	kDebug(7018) << "test_table : started" << endl;
 	for (m = conf->magic; m; m = m->next) {
 		if (isprint((((unsigned long) m) >> 24) & 255) &&
 		    isprint((((unsigned long) m) >> 16) & 255) &&
@@ -658,7 +658,7 @@ int KMimeMagic::apprentice( const QString& magicfile )
 	fname = QFile::encodeName(magicfile);
 	f = fopen(fname.constData(), "r");
 	if (f == NULL) {
-		kdError(7018) << "can't read magic file " << fname.constData() << ": " << strerror(errno) << endl;
+		kError(7018) << "can't read magic file " << fname.constData() << ": " << strerror(errno) << endl;
 		return -1;
 	}
 
@@ -670,8 +670,8 @@ int KMimeMagic::apprentice( const QString& magicfile )
 	fclose(f);
 
 #ifdef DEBUG_APPRENTICE
-	kdDebug(7018) << "apprentice: conf=" << conf << " file=" << magicfile << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
-	kdDebug(7018) << "apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
+	kDebug(7018) << "apprentice: conf=" << conf << " file=" << magicfile << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
+	kDebug(7018) << "apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
 #endif
 
 #ifdef MIME_MAGIC_DEBUG_TABLE
@@ -710,8 +710,8 @@ int KMimeMagic::buff_apprentice(char *buff)
 	} while (len > 0);
 
 #ifdef DEBUG_APPRENTICE
-	kdDebug(7018) << "buff_apprentice: conf=" << conf << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
-	kdDebug(7018) << "buff_apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
+	kDebug(7018) << "buff_apprentice: conf=" << conf << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
+	kDebug(7018) << "buff_apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
 #endif
 
 #ifdef MIME_MAGIC_DEBUG_TABLE
@@ -753,7 +753,7 @@ signextend(struct magic *m, unsigned long v)
 			case STRING:
 				break;
 			default:
-				kdError(7018) << "" << "signextend" << ": can't happen: m->type=" << m->type << endl;
+				kError(7018) << "" << "signextend" << ": can't happen: m->type=" << m->type << endl;
 				return 998; //good value
 		}
 	return v;
@@ -774,7 +774,7 @@ int KMimeMagic::parse(char *l, int
 	*s;
 	/* allocate magic structure entry */
 	if ((m = (struct magic *) calloc(1, sizeof(struct magic))) == NULL) {
-		kdError(7018) << "parse: Out of memory." << endl;
+		kError(7018) << "parse: Out of memory." << endl;
 		return -1;
 	}
 	/* append to linked list */
@@ -805,7 +805,7 @@ int KMimeMagic::parse(char *l, int
 	/* get offset, then skip over it */
 	m->offset = (int) strtol(l, &t, 0);
 	if (l == t) {
-            kdError(7018) << "parse: offset " << l << " invalid" << endl;
+            kError(7018) << "parse: offset " << l << " invalid" << endl;
 	}
 	l = t;
 
@@ -827,7 +827,7 @@ int KMimeMagic::parse(char *l, int
 					m->in.type = BYTE;
 					break;
 				default:
-					kdError(7018) << "parse: indirect offset type " << *l << " invalid" << endl;
+					kError(7018) << "parse: indirect offset type " << *l << " invalid" << endl;
 					break;
 			}
 			l++;
@@ -842,7 +842,7 @@ int KMimeMagic::parse(char *l, int
 		} else
 			t = l;
 		if (*t++ != ')') {
-			kdError(7018) << "parse: missing ')' in indirect offset" << endl;
+			kError(7018) << "parse: missing ')' in indirect offset" << endl;
 		}
 		l = t;
 	}
@@ -901,7 +901,7 @@ int KMimeMagic::parse(char *l, int
 		m->type = LEDATE;
 		l += NLEDATE;
 	} else {
-		kdError(7018) << "parse: type " << l << " invalid" << endl;
+		kError(7018) << "parse: type " << l << " invalid" << endl;
 		return -1;
 	}
 	/* New-style anding: "0 byte&0x80 =0x80 dynamically linked" */
@@ -969,7 +969,7 @@ int KMimeMagic::parse(char *l, int
 	//while ((m->desc[i++] = *l++) != '\0' && i < MAXDESC) /* NULLBODY */ ;
 
 #ifdef DEBUG_APPRENTICE
-	kdDebug(7018) << "parse: line=" << lineno << " m=" << m << " next=" << m->next << " cont=" << m->cont_level << " desc=" << (m->desc ? m->desc : "NULL") << endl;
+	kDebug(7018) << "parse: line=" << lineno << " m=" << m << " next=" << m->next << " cont=" << m->cont_level << " desc=" << (m->desc ? m->desc : "NULL") << endl;
 #endif
 	return 0;
 }
@@ -1010,7 +1010,7 @@ getstr(register char *s, register char *p, int plen, int *slen)
 		if (isspace((unsigned char) c))
 			break;
 		if (p >= pmax) {
-			kdError(7018) << "String too long: " << origs << endl;
+			kError(7018) << "String too long: " << origs << endl;
 			break;
 		}
 		if (c == '\\') {
@@ -1098,7 +1098,7 @@ getstr(register char *s, register char *p, int plen, int *slen)
 	*p = '\0';
 	*slen = p - origp;
 	//for ( char* foo = origp; foo < p ; ++foo )
-	//	kdDebug(7018) << "  " << *foo << endl;
+	//	kDebug(7018) << "  " << *foo << endl;
 	return s;
 }
 
@@ -1162,7 +1162,7 @@ mconvert(union VALUETYPE *p, struct magic *m)
 			    ((p->hl[3] << 24) | (p->hl[2] << 16) | (p->hl[1] << 8) | (p->hl[0]));
 			return 1;
 		default:
-			kdError(7018) << "mconvert: invalid type " << m->type << endl;
+			kError(7018) << "mconvert: invalid type " << m->type << endl;
 			return 0;
 	}
 }
@@ -1246,7 +1246,7 @@ mcheck(union VALUETYPE *p, struct magic *m)
 	int matched;
 
 	if ((m->value.s[0] == 'x') && (m->value.s[1] == '\0')) {
-		kdError(7018) << "BOINK" << endl;
+		kError(7018) << "BOINK" << endl;
 		return 1;
 	}
 	switch (m->type) {
@@ -1289,7 +1289,7 @@ mcheck(union VALUETYPE *p, struct magic *m)
 			}
 			break;
 		default:
-			kdError(7018) << "mcheck: invalid type " << m->type << endl;
+			kError(7018) << "mcheck: invalid type " << m->type << endl;
 			return 0;	/* NOTREACHED */
 	}
 #if 0
@@ -1337,7 +1337,7 @@ mcheck(union VALUETYPE *p, struct magic *m)
 
 		default:
 			matched = 0;
-			kdError(7018) << "mcheck: can't happen: invalid relation " << m->reln << "." << endl;
+			kError(7018) << "mcheck: can't happen: invalid relation " << m->reln << "." << endl;
 			break;  /* NOTREACHED */
 	}
 
@@ -1371,7 +1371,7 @@ void process(struct config_rec* conf, const QString & fn)
 		 * if (sb.st_mode & 0002) addResult("writable, ");
 		 * if (sb.st_mode & 0111) addResult("executable, ");
 		 */
-		//kdDebug(7018) << "can't read `" << fn << "' (" << strerror(errno) << ")." << endl;
+		//kDebug(7018) << "can't read `" << fn << "' (" << strerror(errno) << ")." << endl;
 		conf->resultBuf = MIME_BINARY_UNREADABLE;
 		return;
 	}
@@ -1379,7 +1379,7 @@ void process(struct config_rec* conf, const QString & fn)
 	 * try looking at the first HOWMANY bytes
 	 */
 	if ((nbytes = read(fd, (char *) buf, HOWMANY)) == -1) {
-		kdError(7018) << "" << fn << " read failed (" << strerror(errno) << ")." << endl;
+		kError(7018) << "" << fn << " read failed (" << strerror(errno) << ")." << endl;
 		conf->resultBuf = MIME_BINARY_UNREADABLE;
 		(void)close(fd);
 		return;
@@ -1533,7 +1533,7 @@ fsmagic(struct config_rec* conf, const char *fn, KDE_struct_stat *sb)
     case S_IFREG:
         break;
     default:
-        kdError(7018) << "KMimeMagic::fsmagic: invalid mode 0" << sb->st_mode << "." << endl;
+        kError(7018) << "KMimeMagic::fsmagic: invalid mode 0" << sb->st_mode << "." << endl;
         /* NOTREACHED */
     }
 
@@ -1581,13 +1581,13 @@ match(struct config_rec* conf, unsigned char *s, int nbytes)
 	struct magic *m;
 
 #ifdef DEBUG_MIMEMAGIC
-	kdDebug(7018) << "match: conf=" << conf << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
+	kDebug(7018) << "match: conf=" << conf << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
 	for (m = conf->magic; m; m = m->next) {
 		if (isprint((((unsigned long) m) >> 24) & 255) &&
 		    isprint((((unsigned long) m) >> 16) & 255) &&
 		    isprint((((unsigned long) m) >> 8) & 255) &&
 		    isprint(((unsigned long) m) & 255)) {
-			kdDebug(7018) << "match: POINTER CLOBBERED! " << endl;
+			kDebug(7018) << "match: POINTER CLOBBERED! " << endl;
 			break;
 		}
 	}
@@ -1595,7 +1595,7 @@ match(struct config_rec* conf, unsigned char *s, int nbytes)
 
 	for (m = conf->magic; m; m = m->next) {
 #ifdef DEBUG_MIMEMAGIC
-		kdDebug(7018) << "match: line=" << m->lineno << " desc=" << m->desc << endl;
+		kDebug(7018) << "match: line=" << m->lineno << " desc=" << m->desc << endl;
 #endif
 		memset(&p, 0, sizeof(union VALUETYPE));
 
@@ -1613,7 +1613,7 @@ match(struct config_rec* conf, unsigned char *s, int nbytes)
 			m_cont = m->next;
 			while (m_cont && (m_cont->cont_level != 0)) {
 #ifdef DEBUG_MIMEMAGIC
-				kdDebug(7018) << "match: line=" << m->lineno << " cont=" << m_cont->cont_level << " mc=" << m_cont->lineno << " mc->next=" << m_cont << " " << endl;
+				kDebug(7018) << "match: line=" << m->lineno << " cont=" << m_cont->cont_level << " mc=" << m_cont->lineno << " mc->next=" << m_cont << " " << endl;
 #endif
 				/*
 				 * this trick allows us to keep *m in sync
@@ -1627,7 +1627,7 @@ match(struct config_rec* conf, unsigned char *s, int nbytes)
 		/* if we get here, the main entry rule was a match */
 		/* this will be the last run through the loop */
 #ifdef DEBUG_MIMEMAGIC
-		kdDebug(7018) << "match: rule matched, line=" << m->lineno << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
+		kDebug(7018) << "match: rule matched, line=" << m->lineno << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
 #endif
 
 		/* remember the match */
@@ -1641,7 +1641,7 @@ match(struct config_rec* conf, unsigned char *s, int nbytes)
 		m = m->next;
 		while (m && (m->cont_level != 0)) {
 #ifdef DEBUG_MIMEMAGIC
-                    kdDebug(7018) << "match: line=" << m->lineno << " cont=" << m->cont_level << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
+                    kDebug(7018) << "match: line=" << m->lineno << " cont=" << m->cont_level << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
 #endif
                     if (cont_level >= m->cont_level) {
 				if (cont_level > m->cont_level) {
@@ -1660,7 +1660,7 @@ match(struct config_rec* conf, unsigned char *s, int nbytes)
 					 * and this item isn't empty.
 					 */
 #ifdef DEBUG_MIMEMAGIC
-                                    kdDebug(7018) << "continuation matched" << endl;
+                                    kDebug(7018) << "continuation matched" << endl;
 #endif
                                     conf->resultBuf = m->desc;
 					cont_level++;
@@ -1674,13 +1674,13 @@ match(struct config_rec* conf, unsigned char *s, int nbytes)
                 if ( !conf->resultBuf.isEmpty() )
                 {
 #ifdef DEBUG_MIMEMAGIC
-                    kdDebug(7018) << "match: matched" << endl;
+                    kDebug(7018) << "match: matched" << endl;
 #endif
                     return 1;       /* all through */
                 }
 	}
 #ifdef DEBUG_MIMEMAGIC
-	kdDebug(7018) << "match: failed" << endl;
+	kDebug(7018) << "match: failed" << endl;
 #endif
 	return 0;               /* no match at all */
 }
@@ -1836,7 +1836,7 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
         // we stop at '>' too, because of "<title>blah</title>" on HTML pages
 	while ((token = tokenizer.nextToken())->length > 0) {
 #ifdef DEBUG_MIMEMAGIC
-            kdDebug(7018) << "KMimeMagic::ascmagic token=" << token << endl;
+            kDebug(7018) << "KMimeMagic::ascmagic token=" << token << endl;
 #endif
             if (linecomment && tokenizer.isNewLine())
                 linecomment = false;
@@ -1847,7 +1847,7 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
             for (p = names; p->name ; p++) {
                 if (STREQ(token, p->name)) {
 #ifdef DEBUG_MIMEMAGIC
-                    kdDebug(7018) << "KMimeMagic::ascmagic token matches ! name=" << p->name << " type=" << p->type << endl;
+                    kDebug(7018) << "KMimeMagic::ascmagic token matches ! name=" << p->name << " type=" << p->type << endl;
 #endif
                     tokencount++;
                     typeset |= p->type;
@@ -1892,7 +1892,7 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
 		conf->accuracy = 60;
 	        if (!(typeset & ~(L_C|L_CPP|L_JAVA|L_OBJC))) {
 #ifdef DEBUG_MIMEMAGIC
-                        kdDebug(7018) << "C/C++/Java/ObjC: jonly=" << jonly << " conly=" << conly << " jconly=" << jconly << " objconly=" << objconly << endl;
+                        kDebug(7018) << "C/C++/Java/ObjC: jonly=" << jonly << " conly=" << conly << " jconly=" << jconly << " objconly=" << objconly << endl;
 #endif
 			if (jonly > 1 && foundClass) {
 				// At least two java-only tokens have matched, including "class"
@@ -1939,7 +1939,7 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
 		    mostaccurate = i;
 		  }
 #ifdef DEBUG_MIMEMAGIC
-		  kdDebug(7018) << "" << types[i].type << " has " << typecount[i] << " hits, " << types[i].kwords << " kw, weight " << types[i].weight << ", " << pct << " -> max = " << maxpct << "\n" << endl;
+		  kDebug(7018) << "" << types[i].type << " has " << typecount[i] << " hits, " << types[i].kwords << " kw, weight " << types[i].weight << ", " << pct << " -> max = " << maxpct << "\n" << endl;
 #endif
 	  }
 	}
@@ -1948,7 +1948,7 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
             {
 		conf->accuracy = (int)(pcts[mostaccurate] / pctsum * 60);
 #ifdef DEBUG_MIMEMAGIC
-                kdDebug(7018) << "mostaccurate=" << mostaccurate << " pcts=" << pcts[mostaccurate] << " pctsum=" << pctsum << " accuracy=" << conf->accuracy << endl;
+                kDebug(7018) << "mostaccurate=" << mostaccurate << " pcts=" << pcts[mostaccurate] << " pctsum=" << pctsum << " accuracy=" << conf->accuracy << endl;
 #endif
 		conf->resultBuf = QString(types[mostaccurate].type);
 		return 1;
@@ -2122,7 +2122,7 @@ KMimeMagic::KMimeMagic()
     QStringList snippets = KGlobal::dirs()->findAllResources( "config", "magic/*.magic", true );
     for ( QStringList::Iterator it = snippets.begin() ; it != snippets.end() ; ++it )
         if ( !mergeConfig( *it ) )
-            kdWarning() << k_funcinfo << "Failed to parse " << *it << endl;
+            kWarning() << k_funcinfo << "Failed to parse " << *it << endl;
 }
 
 KMimeMagic::KMimeMagic(const QString & _configfile)
@@ -2173,7 +2173,7 @@ KMimeMagic::~KMimeMagic()
 bool
 KMimeMagic::mergeConfig(const QString & _configfile)
 {
-	kdDebug(7018) << k_funcinfo << _configfile << endl;
+	kDebug(7018) << k_funcinfo << _configfile << endl;
 	int result;
 
 	if (_configfile.isEmpty())
@@ -2291,7 +2291,7 @@ KMimeMagic::findBufferFileType( const QByteArray &data,
 KMimeMagicResult* KMimeMagic::findFileType(const QString & fn)
 {
 #ifdef DEBUG_MIMEMAGIC
-    kdDebug(7018) << "KMimeMagic::findFileType " << fn << endl;
+    kDebug(7018) << "KMimeMagic::findFileType " << fn << endl;
 #endif
     conf->resultBuf.clear();
 

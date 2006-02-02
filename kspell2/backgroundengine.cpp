@@ -110,7 +110,7 @@ void BackgroundEngine::checkNext()
     Dictionary *dict = ( m_dict ) ? m_dict : static_cast<Dictionary*>( m_defaultDict );
 
     if ( !dict->check( w.word ) ) {
-        //kdDebug()<<"found misspelling "<< w.word <<endl;
+        //kDebug()<<"found misspelling "<< w.word <<endl;
         emit misspelling( w.word, w.start );
         //wait for the handler. the parent will decide itself when to continue
     } else

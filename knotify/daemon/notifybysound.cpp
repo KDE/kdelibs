@@ -170,7 +170,7 @@ void NotifyBySound::loadConfig()
 
 void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 {
-	kdDebug() << k_funcinfo << endl;
+	kDebug() << k_funcinfo << endl;
 	
 	QString soundFile = config->readEntry( "sound" , true );
 	if (soundFile.isEmpty())
@@ -196,7 +196,7 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 		return;
 	}
 
-//     kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
+//     kDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
 
 	if (!external)
 	{

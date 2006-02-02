@@ -200,7 +200,7 @@ bool EXRHandler::read( QImage *outImage )
     }
     catch (const std::exception &exc)
     {
-		kdDebug() << exc.what() << endl;
+		kDebug() << exc.what() << endl;
         return false;
     }
 }

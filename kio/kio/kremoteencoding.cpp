@@ -84,7 +84,7 @@ void KRemoteEncoding::setEncoding(const char *name)
   if (codec == 0L)
     codec = QTextCodec::codecForMib(1);
 
-  kdDebug() << k_funcinfo << "setting encoding " << codec->name() 
+  kDebug() << k_funcinfo << "setting encoding " << codec->name() 
 	    << " for name=" << name << endl;
 }
 

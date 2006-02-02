@@ -68,7 +68,7 @@ void KDateTimeWidget::slotValueChanged()
   QDateTime datetime(d->dateWidget->date(),
                      d->timeWidget->time());
 
-  kdDebug() << "slotValueChanged(): " << datetime << "\n";
+  kDebug() << "slotValueChanged(): " << datetime << "\n";
 
   emit valueChanged(datetime);
 }

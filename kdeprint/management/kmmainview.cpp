@@ -330,7 +330,7 @@ void KMMainView::slotRefresh()
 
 void KMMainView::slotTimer()
 {
-	kdDebug() << "KMMainView::slotTimer" << endl;
+	kDebug() << "KMMainView::slotTimer" << endl;
 	Q3PtrList<KMPrinter>	*printerlist = m_manager->printerList();
 	bool ok = m_manager->errorMsg().isEmpty();
 	m_printerview->setPrinterList(printerlist);
@@ -418,7 +418,7 @@ int KMMainView::viewType() const
 
 void KMMainView::slotChangeView(int ID)
 {
-	kdDebug() << "KMMainView::slotChangeView" << endl;
+	kDebug() << "KMMainView::slotChangeView" << endl;
 	if (ID >= KMPrinterView::Icons && ID <= KMPrinterView::Tree)
 		m_printerview->setViewType((KMPrinterView::ViewType)ID);
 }
@@ -902,7 +902,7 @@ void KMMainView::slotHelp()
 		KToolInvocation::kdeinitExec( "kfmclient", args );
 	}
 	else
-		kdDebug( 500 ) << "Unknown help invokator: " << s << endl;
+		kDebug( 500 ) << "Unknown help invokator: " << s << endl;
 }
 
 #include "kmmainview.moc"

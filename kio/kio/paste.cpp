@@ -59,7 +59,7 @@ static KUrl getNewFileName( const KUrl &u, const QString& text )
 
   if (KIO::NetAccess::exists(myurl, false, 0))
   {
-      kdDebug(7007) << "Paste will overwrite file.  Prompting..." << endl;
+      kDebug(7007) << "Paste will overwrite file.  Prompting..." << endl;
       KIO::RenameDlg_Result res = KIO::R_OVERWRITE;
 
       QString newPath;
@@ -133,7 +133,7 @@ static KIO::CopyJob* chooseAndPaste( const KUrl& u, const QMimeData* mimeData,
     const QString result = dlg.lineEditText();
     const QString chosenFormat = formats[ dlg.comboItem() ];
 
-    kdDebug() << " result=" << result << " chosenFormat=" << chosenFormat << endl;
+    kDebug() << " result=" << result << " chosenFormat=" << chosenFormat << endl;
     KUrl newUrl( u );
     newUrl.addPath( result );
     // if "data" came from QClipboard, then it was deleted already - by a nice 0-seconds timer

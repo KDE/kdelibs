@@ -682,7 +682,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 
 	  // Eh, what!?
 	  // One of the two above has to have matched
-	  kdError() << "I wasn't supposed to get here!";
+	  kError() << "I wasn't supposed to get here!";
 	}
     } while (false);
 

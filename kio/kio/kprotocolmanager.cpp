@@ -394,7 +394,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
               else
               {
                 d->protocol = d->url.protocol();
-                kdDebug () << "slaveProtocol: " << d->protocol << endl;
+                kDebug () << "slaveProtocol: " << d->protocol << endl;
               }
 
               d->url = url;

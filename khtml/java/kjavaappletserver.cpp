@@ -248,16 +248,16 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
     // Prepare classpath variable
     QString kjava_class = locate("data", "kjava/kjava.jar");
-    kdDebug(6100) << "kjava_class = " << kjava_class << endl;
+    kDebug(6100) << "kjava_class = " << kjava_class << endl;
     if( kjava_class.isNull() ) // Should not happen
         return;
 
     QDir dir( kjava_class );
     dir.cdUp();
-    kdDebug(6100) << "dir = " << dir.absolutePath() << endl;
+    kDebug(6100) << "dir = " << dir.absolutePath() << endl;
 
     const QStringList entries = dir.entryList( "*.jar" );
-    kdDebug(6100) << "entries = " << entries.join( ":" ) << endl;
+    kDebug(6100) << "entries = " << entries.join( ":" ) << endl;
 
     QString classes;
     {
@@ -300,7 +300,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         // FIXME
         const KUrl dummyURL( "http://www.kde.org/" );
         const QString httpProxy = KProtocolManager::proxyForURL(dummyURL);
-        kdDebug(6100) << "httpProxy is " << httpProxy << endl;
+        kDebug(6100) << "httpProxy is " << httpProxy << endl;
 
         const KUrl url( httpProxy );
         p->setSystemProperty( "http.proxyHost", url.host() );
@@ -313,7 +313,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
 void KJavaAppletServer::createContext( int contextId, KJavaAppletContext* context )
 {
-//    kdDebug(6100) << "createContext: " << contextId << endl;
+//    kDebug(6100) << "createContext: " << contextId << endl;
     if ( d->javaProcessFailed ) return;
 
     d->contexts.insert( contextId, context );
@@ -325,7 +325,7 @@ void KJavaAppletServer::createContext( int contextId, KJavaAppletContext* contex
 
 void KJavaAppletServer::destroyContext( int contextId )
 {
-//    kdDebug(6100) << "destroyContext: " << contextId << endl;
+//    kDebug(6100) << "destroyContext: " << contextId << endl;
     if ( d->javaProcessFailed ) return;
     d->contexts.remove( contextId );
 
@@ -342,7 +342,7 @@ bool KJavaAppletServer::createApplet( int contextId, int appletId,
                              QSize size, const QMap<QString,QString>& params,
                              const QString & windowTitle )
 {
-//    kdDebug(6100) << "createApplet: contextId = " << contextId     << endl
+//    kDebug(6100) << "createApplet: contextId = " << contextId     << endl
 //              << "              appletId  = " << appletId      << endl
 //              << "              name      = " << name          << endl
 //              << "              clazzName = " << clazzName     << endl
@@ -510,9 +510,9 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 it.data()->data(qba);
                 qba.resetRawData(qb.data() + index, qb.size() - index - 1);
             }
-            kdDebug(6100) << "PutData(" << ID_num << ") size=" << qb.size() - index << endl;
+            kDebug(6100) << "PutData(" << ID_num << ") size=" << qb.size() - index << endl;
         } else
-            kdError(6100) << "PutData error " << ok << endl;
+            kError(6100) << "PutData error " << ok << endl;
         return;
     }
     //now parse out the arguments
@@ -520,10 +520,10 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     {
         int sep_pos = qb.indexOf( "0", index );
         if (sep_pos < 0) {
-            kdError(6100) << "Missing separation byte" << endl;
+            kError(6100) << "Missing separation byte" << endl;
             sep_pos = qb_size;
         }
-        //kdDebug(6100) << "KJavaAppletServer::slotJavaRequest: "<< QString::fromLocal8Bit( qb.data() + index, sep_pos - index ) << endl;
+        //kDebug(6100) << "KJavaAppletServer::slotJavaRequest: "<< QString::fromLocal8Bit( qb.data() + index, sep_pos - index ) << endl;
         args.append( QString::fromLocal8Bit( qb.data() + index, sep_pos - index ) );
         index = sep_pos + 1; //skip the sep
     }
@@ -550,18 +550,18 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         case KJAS_GET_URLDATA:
             if (ok && !args.empty() ) {
                 d->kiojobs.insert(ID_num, new KJavaDownloader(ID_num, args.first()));
-                kdDebug(6100) << "GetURLData(" << ID_num << ") url=" << args.first() << endl;
+                kDebug(6100) << "GetURLData(" << ID_num << ") url=" << args.first() << endl;
             } else
-                kdError(6100) << "GetURLData error " << ok << " args:" << args.size() << endl;
+                kError(6100) << "GetURLData error " << ok << " args:" << args.size() << endl;
             return;
         case KJAS_PUT_URLDATA:
             if (ok && !args.empty()) {
                 KJavaUploader* const job = new KJavaUploader(ID_num, args.first());
                 d->kiojobs.insert(ID_num, job);
                 job->start();
-                kdDebug(6100) << "PutURLData(" << ID_num << ") url=" << args.first() << endl;
+                kDebug(6100) << "PutURLData(" << ID_num << ") url=" << args.first() << endl;
             } else
-                kdError(6100) << "PutURLData error " << ok << " args:" << args.size() << endl;
+                kError(6100) << "PutURLData error " << ok << " args:" << args.size() << endl;
             return;
         case KJAS_DATA_COMMAND:
             if (ok && !args.empty()) {
@@ -569,13 +569,13 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 KIOJobMap::iterator it = d->kiojobs.find( ID_num );
                 if (ok && it != d->kiojobs.end())
                     it.data()->jobCommand( cmd );
-                kdDebug(6100) << "KIO Data command: " << ID_num << " " << args.first() << endl;
+                kDebug(6100) << "KIO Data command: " << ID_num << " " << args.first() << endl;
             } else
-                kdError(6100) << "KIO Data command error " << ok << " args:" << args.size() << endl;
+                kError(6100) << "KIO Data command error " << ok << " args:" << args.size() << endl;
             return;
         case KJAS_JAVASCRIPT_EVENT:
             cmd = QLatin1String( "JS_Event" );
-            kdDebug(6100) << "Javascript request: "<< contextID
+            kDebug(6100) << "Javascript request: "<< contextID
                           << " code: " << args[0] << endl;
             break;
         case KJAS_GET_MEMBER:
@@ -584,33 +584,33 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             const int ticket = args[0].toInt();
             JSStack::iterator it = d->jsstack.find(ticket);
             if (it != d->jsstack.end()) {
-                kdDebug(6100) << "slotJavaRequest: " << ticket << endl;
+                kDebug(6100) << "slotJavaRequest: " << ticket << endl;
                 args.pop_front();
                 it.data()->args.operator=(args); // just in case ..
                 it.data()->ready = true;
                 it.data()->exit = true;
             } else
-                kdDebug(6100) << "Error: Missed return member data" << endl;
+                kDebug(6100) << "Error: Missed return member data" << endl;
             return;
         }
         case KJAS_AUDIOCLIP_PLAY:
             cmd = QLatin1String( "audioclip_play" );
-            kdDebug(6100) << "Audio Play: url=" << args[0] << endl;
+            kDebug(6100) << "Audio Play: url=" << args[0] << endl;
             break;
         case KJAS_AUDIOCLIP_LOOP:
             cmd = QLatin1String( "audioclip_loop" );
-            kdDebug(6100) << "Audio Loop: url=" << args[0] << endl;
+            kDebug(6100) << "Audio Loop: url=" << args[0] << endl;
             break;
         case KJAS_AUDIOCLIP_STOP:
             cmd = QLatin1String( "audioclip_stop" );
-            kdDebug(6100) << "Audio Stop: url=" << args[0] << endl;
+            kDebug(6100) << "Audio Stop: url=" << args[0] << endl;
             break;
         case KJAS_APPLET_STATE:
-            kdDebug(6100) << "Applet State Notification for Applet " << args[0] << ". New state=" << args[1] << endl;
+            kDebug(6100) << "Applet State Notification for Applet " << args[0] << ". New state=" << args[1] << endl;
             cmd = QLatin1String( "AppletStateNotification" );
             break;
         case KJAS_APPLET_FAILED:
-            kdDebug(6100) << "Applet " << args[0] << " Failed: " << args[1] << endl;
+            kDebug(6100) << "Applet " << args[0] << " Failed: " << args[1] << endl;
             cmd = QLatin1String( "AppletFailed" );
             break;
         case KJAS_SECURITY_CONFIRM: {
@@ -676,7 +676,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                         text += subject.mid(1);
                     }
                 }
-                kdDebug(6100) << "Security confirm " << args.first() << certs.count() << endl;
+                kDebug(6100) << "Security confirm " << args.first() << certs.count() << endl;
 		if ( !certs.isEmpty() ) {
                     KSSLCertChain chain;
                     chain.setChain( certs );
@@ -697,7 +697,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
 
     if( !ok )
     {
-        kdError(6100) << "could not parse out contextID to call command on" << endl;
+        kError(6100) << "could not parse out contextID to call command on" << endl;
         return;
     }
 
@@ -705,7 +705,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     if( context )
         context->processCmd( cmd, args );
     else if (cmd != "AppletStateNotification")
-        kdError(6100) << "no context object for this id" << endl;
+        kError(6100) << "no context object for this id" << endl;
 }
 
 void KJavaAppletServer::killTimers()
@@ -714,7 +714,7 @@ void KJavaAppletServer::killTimers()
 }
 
 void KJavaAppletServer::endWaitForReturnData() {
-    kdDebug(6100) << "KJavaAppletServer::endWaitForReturnData" << endl;
+    kDebug(6100) << "KJavaAppletServer::endWaitForReturnData" << endl;
     killTimers();
     JSStack::iterator it = d->jsstack.begin();
     JSStack::iterator itEnd = d->jsstack.end();
@@ -724,18 +724,18 @@ void KJavaAppletServer::endWaitForReturnData() {
 
 void KJavaAppletServer::timerEvent(QTimerEvent *) {
     endWaitForReturnData();
-    kdDebug(6100) << "KJavaAppletServer::timerEvent timeout" << endl;
+    kDebug(6100) << "KJavaAppletServer::timerEvent timeout" << endl;
 }
 
 void KJavaAppletServer::waitForReturnData(JSStackFrame * frame) {
-    kdDebug(6100) << ">KJavaAppletServer::waitForReturnData" << endl;
+    kDebug(6100) << ">KJavaAppletServer::waitForReturnData" << endl;
     killTimers();
     startTimer(15000);
     while (!frame->exit)
 		QAbstractEventDispatcher::instance()->processEvents (QEventLoop::AllEvents | QEventLoop::WaitForMore);
     if (d->jsstack.size() <= 1)
         killTimers();
-    kdDebug(6100) << "<KJavaAppletServer::waitForReturnData stacksize:" << d->jsstack.size() << endl;
+    kDebug(6100) << "<KJavaAppletServer::waitForReturnData stacksize:" << d->jsstack.size() << endl;
 }
 
 bool KJavaAppletServer::getMember(QStringList & args, QStringList & ret_args) {

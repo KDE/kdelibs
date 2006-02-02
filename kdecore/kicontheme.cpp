@@ -117,7 +117,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
     if (mDir.isEmpty())
     {
-        kdDebug(264) << "Icon theme " << name << " not found.\n";
+        kDebug(264) << "Icon theme " << name << " not found.\n";
         return;
     }
 
@@ -163,7 +163,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	        KIconThemeDir *dir = new KIconThemeDir(*itDir + *it, &cfg);
 	        if (!dir->isValid())
 	        {
-	            kdDebug(264) << "Icon directory " << *itDir << " group " << *it << " not valid.\n";
+	            kDebug(264) << "Icon directory " << *itDir << " group " << *it << " not valid.\n";
 	            delete dir;
 	        }
 	        else
@@ -239,7 +239,7 @@ int KIconTheme::defaultSize(KIcon::Group group) const
 {
     if ((group < 0) || (group >= KIcon::LastGroup))
     {
-        kdDebug(264) << "Illegal icon group: " << group << "\n";
+        kDebug(264) << "Illegal icon group: " << group << "\n";
         return -1;
     }
     return mDefSize[group];
@@ -250,7 +250,7 @@ QList<int> KIconTheme::querySizes(KIcon::Group group) const
     QList<int> empty;
     if ((group < 0) || (group >= KIcon::LastGroup))
     {
-        kdDebug(264) << "Illegal icon group: " << group << "\n";
+        kDebug(264) << "Illegal icon group: " << group << "\n";
         return empty;
     }
     return mSizes[group];
@@ -511,7 +511,7 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
     else if (tmp == "Actions")
         mContext = KIcon::Action;
     else {
-        kdDebug(264) << "Invalid Context= line for icon theme: " << mDir << "\n";
+        kDebug(264) << "Invalid Context= line for icon theme: " << mDir << "\n";
         return;
     }
     tmp = config->readEntry("Type");
@@ -522,7 +522,7 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
     else if (tmp == "Threshold")
         mType = KIcon::Threshold;
     else {
-        kdDebug(264) << "Invalid Type= line for icon theme: " <<  mDir << "\n";
+        kDebug(264) << "Invalid Type= line for icon theme: " <<  mDir << "\n";
         return;
     }
     if (mType == KIcon::Scalable)

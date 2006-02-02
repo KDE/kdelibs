@@ -1850,7 +1850,7 @@ QMatrix KSVGIconPainter::parseTransform(const QString &transform)
 
         if(subtransform.size() == 0)
         {
-            // do kdDebug on empty QStringList ?
+            // do kDebug on empty QStringList ?
             continue;
         }
 

@@ -192,7 +192,7 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
      return Null();
    }
   default:
-    kdWarning() << "XMLHttpRequest::getValueProperty unhandled token " << token << endl;
+    kWarning() << "XMLHttpRequest::getValueProperty unhandled token " << token << endl;
     return 0;
   }
 }
@@ -214,7 +214,7 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, ValueImp *valu
     if (onLoadListener) onLoadListener->ref();
     break;
   default:
-    kdWarning() << "XMLHttpRequest::putValue unhandled token " << token << endl;
+    kWarning() << "XMLHttpRequest::putValue unhandled token " << token << endl;
   }
 }
 
@@ -369,7 +369,7 @@ void XMLHttpRequest::send(const QString& _body)
     documentURL.setPass(QString());
     documentURL.setUser(QString());
     job->addMetaData("referrer", documentURL.url());
-    // kdDebug() << "Adding referrer: " << documentURL << endl;
+    // kDebug() << "Adding referrer: " << documentURL << endl;
   }
 
   if (!async) {
@@ -449,7 +449,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
   }
 
   // Reject all banned headers. See BANNED_HTTP_HEADERS above.
-  // kdDebug() << "Banned HTTP Headers: " << BANNED_HTTP_HEADERS << endl;
+  // kDebug() << "Banned HTTP Headers: " << BANNED_HTTP_HEADERS << endl;
   QStringList bannedHeaders = QStringList::split(',',
                                   QString::fromLatin1(BANNED_HTTP_HEADERS));
 

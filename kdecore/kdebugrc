@@ -1,11 +1,11 @@
 # This files includes the default behavior for some specific debug areas
-# This allows to leave the kdDebug* calls in the code, but still have them
+# This allows to leave the kDebug* calls in the code, but still have them
 # disabled for most users.
 #
 # This file will be installed as $KDEDIR/share/config/kdebugrc
 #
 # There are four levels of output: Info, Warn, Error and Fatal
-# corresponding to kdDebug(), kdWarn(), kdError(), kdFatal()
+# corresponding to kDebug(), kdWarn(), kError(), kFatal()
 #
 # For every of them you can define a target by *Output=n
 # using the following numbers:

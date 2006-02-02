@@ -134,7 +134,7 @@ KDE::PlayObject *KDE::PlayObjectFactory::createPlayObject(const KUrl& url, const
 	// bus
 	if( d->amanPlay && createBUS )
 	{
-		kdWarning( 400 ) << "KDE::PlayObjectFactory was instructed to use a Synth_AMAN_PLAY for output but the program also asked for a Synth_BUS_UPLINK" << endl;
+		kWarning( 400 ) << "KDE::PlayObjectFactory was instructed to use a Synth_AMAN_PLAY for output but the program also asked for a Synth_BUS_UPLINK" << endl;
 		createBUS = false;
 	}
 
@@ -214,7 +214,7 @@ QStringList KDE::PlayObjectFactory::mimeTypes(void)
 /* ### KDE4
 void KDE::PlayObjectFactory::connectAmanPlay()
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kDebug( 400 ) << k_funcinfo << endl;
 	if( d->playObj->object().isNull() )
 		return;
 
@@ -227,7 +227,7 @@ void KDE::PlayObjectFactory::connectAmanPlay()
 
 void KDE::POFHelper::connectAmanPlay()
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kDebug( 400 ) << k_funcinfo << endl;
 	if( po->object().isNull() )
 		return;
 

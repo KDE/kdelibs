@@ -97,7 +97,7 @@ void RemoteService::resolveAsync()
 {
 	if (d->isRunning()) return;
 	d->m_resolved = false;
-	kdDebug() << this << ":Starting resolve of : " << m_serviceName << " " << m_type << " " << m_domain << "\n";
+	kDebug() << this << ":Starting resolve of : " << m_serviceName << " " << m_type << " " << m_domain << "\n";
 #ifdef HAVE_DNSSD
 	DNSServiceRef ref;
 	if (DNSServiceResolve(&ref,0,0,m_serviceName.toUtf8(), m_type.ascii(), 
@@ -176,7 +176,7 @@ void resolve_callback    (    DNSServiceRef,
 	char key[256];
 	int index=0;
 	unsigned char valueLen;
-	kdDebug() << "Resolve callback\n";
+	kDebug() << "Resolve callback\n";
 	QMap<QString,QString> map;
         const void *voidValue = 0;
 	while (TXTRecordGetItemAtIndex(txtLen,txtRecord,index++,256,key,&valueLen,

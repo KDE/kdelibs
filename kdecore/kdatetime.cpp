@@ -191,13 +191,13 @@ QDateTime KDateTimePrivate::toUTC(const KTimezone *local) const
                 local = KSystemTimezones::local();
             if (tz == local)
 #ifdef KDATETIME_TEST
-                kdDebug() << "toUTC(): cached -> " << utc << endl,
+                kDebug() << "toUTC(): cached -> " << utc << endl,
 #endif
                 return utc;
         }
         else
 #ifdef KDATETIME_TEST
-            kdDebug() << "toUTC(): cached -> " << utc << endl,
+            kDebug() << "toUTC(): cached -> " << utc << endl,
 #endif
             return utc;
     }
@@ -208,7 +208,7 @@ QDateTime KDateTimePrivate::toUTC(const KTimezone *local) const
         utc = mDt;
         utcCached = true;
 #ifdef KDATETIME_TEST
-        kdDebug() << "toUTC(): cached -> invalid" << endl;
+        kDebug() << "toUTC(): cached -> invalid" << endl;
 #endif
         return mDt;
     }
@@ -220,7 +220,7 @@ QDateTime KDateTimePrivate::toUTC(const KTimezone *local) const
             utc = QDateTime(mDt.date(), mDt.time(), Qt::UTC).addSecs(-utcOffset);
             utcCached = true;
 #ifdef KDATETIME_TEST
-            kdDebug() << "toUTC(): calculated -> " << utc << endl,
+            kDebug() << "toUTC(): calculated -> " << utc << endl,
 #endif
             return utc;
         case stClockTime:
@@ -232,7 +232,7 @@ QDateTime KDateTimePrivate::toUTC(const KTimezone *local) const
             utc = tz->toUTC(mDt);
             utcCached = true;
 #ifdef KDATETIME_TEST
-            kdDebug() << "toUTC(): calculated -> " << utc << endl,
+            kDebug() << "toUTC(): calculated -> " << utc << endl,
 #endif
             return utc;
         default:

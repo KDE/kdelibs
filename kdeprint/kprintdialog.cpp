@@ -947,7 +947,7 @@ void KPrintDialog::enableDialogPage( int index, bool flag )
 {
 	if ( index < 0 || index >= ( int )d->m_pages.count() )
 	{
-		kdWarning() << "KPrintDialog: page index out of bound" << endl;
+		kWarning() << "KPrintDialog: page index out of bound" << endl;
 		return;
 	}
 

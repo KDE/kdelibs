@@ -143,7 +143,7 @@ static void genericsig_handler(int sigNumber)
    signal(sigNumber,SIG_IGN);
    //WABA: Don't do anything that requires malloc, we can deadlock on it since
    //a SIGTERM signal can come in while we are in malloc/free.
-   //kdDebug()<<"kioslave : exiting due to signal "<<sigNumber<<endl;
+   //kDebug()<<"kioslave : exiting due to signal "<<sigNumber<<endl;
    //set the flag which will be checked in dispatchLoop() and which *should* be checked
    //in lengthy operations in the various slaves
    if (globalSlave!=0)
@@ -305,7 +305,7 @@ void SlaveBase::dispatchLoop()
        }
        else if ((retval<0) && (errno != EINTR))
        {
-          kdDebug(7019) << "dispatchLoop(): select returned " << retval << " "
+          kDebug(7019) << "dispatchLoop(): select returned " << retval << " "
             << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
             << " (" << errno << ")" << endl;
           return;
@@ -313,7 +313,7 @@ void SlaveBase::dispatchLoop()
        //I think we get here when we were killed in dispatch() and not in select()
        if (wasKilled())
        {
-          kdDebug(7019)<<" dispatchLoop() slave was killed, returning"<<endl;
+          kDebug(7019)<<" dispatchLoop() slave was killed, returning"<<endl;
           return;
        }
     }
@@ -329,7 +329,7 @@ void SlaveBase::connectSlave(const QString& path)
 
     if (!appconn->inited())
     {
-        kdDebug(7019) << "SlaveBase: failed to connect to " << path << endl
+        kDebug(7019) << "SlaveBase: failed to connect to " << path << endl
 		      << "Reason: " << sock->errorString() << endl;
         exit();
     }
@@ -516,7 +516,7 @@ void SlaveBase::processedSize( KIO::filesize_t _bytes )
 
 void SlaveBase::processedPercent( float /* percent */ )
 {
-  kdDebug(7019) << "SlaveBase::processedPercent: STUB" << endl;
+  kDebug(7019) << "SlaveBase::processedPercent: STUB" << endl;
 }
 
 
@@ -553,14 +553,14 @@ static bool isSubCommand(int cmd)
 
 void SlaveBase::mimeType( const QString &_type)
 {
-  // kdDebug(7019) << "(" << getpid() << ") SlaveBase::mimeType '" << _type << "'" << endl;
+  // kDebug(7019) << "(" << getpid() << ") SlaveBase::mimeType '" << _type << "'" << endl;
   int cmd;
   do
   {
     // Send the meta-data each time we send the mime-type.
     if (!mOutgoingMetaData.isEmpty())
     {
-      // kdDebug(7019) << "(" << getpid() << ") mimeType: emitting meta data" << endl;
+      // kDebug(7019) << "(" << getpid() << ") mimeType: emitting meta data" << endl;
       KIO_DATA << mOutgoingMetaData;
       m_pConnection->send( INF_META_DATA, data );
     }
@@ -570,10 +570,10 @@ void SlaveBase::mimeType( const QString &_type)
     {
        cmd = 0;
        if ( m_pConnection->read( &cmd, data ) == -1 ) {
-           kdDebug(7019) << "SlaveBase: mimetype: read error" << endl;
+           kDebug(7019) << "SlaveBase: mimetype: read error" << endl;
            exit();
        }
-       // kdDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd << endl;
+       // kDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd << endl;
        if ( cmd == CMD_HOST) // Ignore.
           continue;
        if ( isSubCommand(cmd) )
@@ -794,7 +794,7 @@ bool SlaveBase::dispatch()
     QByteArray data;
     if ( m_pConnection->read( &cmd, data ) == -1 )
     {
-        kdDebug(7019) << "SlaveBase::dispatch() has read error." << endl;
+        kDebug(7019) << "SlaveBase::dispatch() has read error." << endl;
         return false;
     }
 
@@ -807,7 +807,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
 
-    kdDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << endl;
+    kDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << endl;
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
@@ -826,7 +826,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     if ( !reply.isValid() )
     {
-       kdWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
+       kWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
        return false;
     }
 
@@ -838,7 +838,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     }
     else
     {
-       kdError(7019) << "DCOP function queryAuthInfo(...) returns "
+       kError(7019) << "DCOP function queryAuthInfo(...) returns "
                      << reply.type << ", expected KIO::AuthInfo" << endl;
        return false;
     }
@@ -848,8 +848,8 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     info = authResult;
 
-    kdDebug(7019) << "SlaveBase::openPassDlg: username=" << info.username << endl;
-    kdDebug(7019) << "SlaveBase::openPassDlg: password=[hidden]" << endl;
+    kDebug(7019) << "SlaveBase::openPassDlg: username=" << info.username << endl;
+    kDebug(7019) << "SlaveBase::openPassDlg: password=[hidden]" << endl;
 
     return true;
 }
@@ -863,7 +863,7 @@ int SlaveBase::messageBox( MessageBoxType type, const QString &text, const QStri
 int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QString &caption,
                            const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
 {
-    kdDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo << endl;
+    kDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo << endl;
     KIO_DATA << (qint32)type << text << caption << buttonYes << buttonNo << dontAskAgainName;
     m_pConnection->send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
@@ -871,7 +871,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
         QDataStream stream( data );
         int answer;
         stream >> answer;
-        kdDebug(7019) << "got messagebox answer" << answer << endl;
+        kDebug(7019) << "got messagebox answer" << answer << endl;
         return answer;
     } else
         return 0; // communication failure
@@ -879,7 +879,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
 
 bool SlaveBase::canResume( KIO::filesize_t offset )
 {
-    kdDebug(7019) << "SlaveBase::canResume offset=" << KIO::number(offset) << endl;
+    kDebug(7019) << "SlaveBase::canResume offset=" << KIO::number(offset) << endl;
     d->needSendCanResume = false;
     KIO_DATA << KIO_FILESIZE_T(offset);
     m_pConnection->send( MSG_RESUME, data );
@@ -888,7 +888,7 @@ bool SlaveBase::canResume( KIO::filesize_t offset )
         int cmd;
         if ( waitForAnswer( CMD_RESUMEANSWER, CMD_NONE, data, &cmd ) != -1 )
         {
-            kdDebug(7019) << "SlaveBase::canResume returning " << (cmd == CMD_RESUMEANSWER) << endl;
+            kDebug(7019) << "SlaveBase::canResume returning " << (cmd == CMD_RESUMEANSWER) << endl;
             return cmd == CMD_RESUMEANSWER;
         } else
             return false;
@@ -907,7 +907,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
         result = m_pConnection->read( &cmd, data );
         if ( result == -1 )
         {
-            kdDebug(7019) << "SlaveBase::waitForAnswer has read error." << endl;
+            kDebug(7019) << "SlaveBase::waitForAnswer has read error." << endl;
             return -1;
         }
         if ( cmd == expected1 || cmd == expected2 )
@@ -921,7 +921,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
         }
         else
         {
-            kdWarning() << "Got cmd " << cmd << " while waiting for an answer!" << endl;
+            kWarning() << "Got cmd " << cmd << " while waiting for an answer!" << endl;
         }
     }
 }
@@ -930,7 +930,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
 int SlaveBase::readData( QByteArray &buffer)
 {
    int result = waitForAnswer( MSG_DATA, 0, buffer );
-   //kdDebug(7019) << "readData: length = " << result << " " << endl;
+   //kDebug(7019) << "readData: length = " << result << " " << endl;
    return result;
 }
 
@@ -1081,7 +1081,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         special( data );
         break;
     case CMD_META_DATA:
-        //kdDebug(7019) << "(" << getpid() << ") Incoming meta-data..." << endl;
+        //kDebug(7019) << "(" << getpid() << ") Incoming meta-data..." << endl;
         stream >> mIncomingMetaData;
         break;
     case CMD_SUBURL:
@@ -1131,10 +1131,10 @@ bool SlaveBase::pingCacheDaemon() const
         success = client.startServer();
         if( success == -1 )
         {
-            kdDebug(7019) << "Cannot start a new deamon!!" << endl;
+            kDebug(7019) << "Cannot start a new deamon!!" << endl;
             return false;
         }
-        kdDebug(7019) << "Sucessfully started new cache deamon!!" << endl;
+        kDebug(7019) << "Sucessfully started new cache deamon!!" << endl;
     }
     return true;
 #else
@@ -1147,7 +1147,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
 
-    kdDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl;
+    kDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl;
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
@@ -1159,13 +1159,13 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     if ( !reply.isValid() )
     {
-       kdWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
+       kWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
        return false;
     }
 
     if (!reply.get(authResult, "KIO::AuthInfo" ) )
     {
-       kdError(7019) << "DCOP function checkAuthInfo(...) returns "
+       kError(7019) << "DCOP function checkAuthInfo(...) returns "
                      << reply.type << ", expected KIO::AuthInfo" << endl;
        return false;
     }

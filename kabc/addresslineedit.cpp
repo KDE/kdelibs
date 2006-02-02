@@ -372,8 +372,8 @@ void AddressLineEdit::doCompletion(bool ctrlT)
                 {
                     int index = items.first().indexOf( s );
                     QString newText = prevAddr + items.first().mid( index );
-                    //kdDebug() << "OLD TEXT: " << text() << endl;
-                    //kdDebug() << "NEW TEXT: " << newText << endl;
+                    //kDebug() << "OLD TEXT: " << text() << endl;
+                    //kDebug() << "NEW TEXT: " << newText << endl;
                     setUserSelection(false);
                     setCompletedText(newText,true);
                 }

@@ -629,7 +629,7 @@ void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _
         // We must have child boxes and have decorations defined.
         _tx += borderLeft() + paddingLeft();
         int w = m_width - (borderLeft() + paddingLeft() + borderRight() + paddingRight());
-//    kdDebug() << k_funcinfo << "w: " << w << " deco: " << deco << endl;
+//    kDebug() << k_funcinfo << "w: " << w << " deco: " << deco << endl;
         if ( !w )
             return;
         const QFontMetrics &fm = object()->fontMetrics( m_firstLine );

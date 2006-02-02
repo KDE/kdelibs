@@ -72,7 +72,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
       DCOPCString dcopName = KApplication::dcopClient()->registerAs(name, false);
       if (dcopName.isEmpty())
       {
-         kdWarning() << "DCOP communication problem!" << endl;
+         kWarning() << "DCOP communication problem!" << endl;
          return 1;
       }
       if (dcopName == cname)
@@ -80,12 +80,12 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
 
       if (--maxTry == 0)
       {
-         kdWarning() << "Another instance of klauncher is already running!" << endl;
+         kWarning() << "Another instance of klauncher is already running!" << endl;
          return 1;
       }
       
       // Wait a bit...
-      kdWarning() << "Waiting for already running klauncher to exit." << endl;
+      kWarning() << "Waiting for already running klauncher to exit." << endl;
       sleep(1);
 
       // Try again...

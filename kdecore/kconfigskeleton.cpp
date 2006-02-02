@@ -759,7 +759,7 @@ QVariant KConfigSkeleton::ItemIntList::property() const
 KConfigSkeleton::KConfigSkeleton( const QString &configname )
   : mCurrentGroup( "No Group" ), mUseDefaults(false)
 {
-  kdDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")" << endl;
+  kDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")" << endl;
 
   if ( !configname.isEmpty() )
   {
@@ -774,7 +774,7 @@ KConfigSkeleton::KConfigSkeleton( const QString &configname )
 KConfigSkeleton::KConfigSkeleton(KSharedConfig::Ptr pConfig)
   : mCurrentGroup( "No Group" ), mUseDefaults(false)
 {
-  kdDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")" << endl;
+  kDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")" << endl;
   mConfig = pConfig;
 }
 
@@ -831,7 +831,7 @@ void KConfigSkeleton::setDefaults()
 
 void KConfigSkeleton::readConfig()
 {
-  kdDebug(177) << "KConfigSkeleton::readConfig()" << endl;
+  kDebug(177) << "KConfigSkeleton::readConfig()" << endl;
   
   QString origGroup = mConfig->group();
 
@@ -849,7 +849,7 @@ void KConfigSkeleton::readConfig()
 
 void KConfigSkeleton::writeConfig()
 {
-  kdDebug(177) << "KConfigSkeleton::writeConfig()" << endl;
+  kDebug(177) << "KConfigSkeleton::writeConfig()" << endl;
 
   QString origGroup = mConfig->group();
 

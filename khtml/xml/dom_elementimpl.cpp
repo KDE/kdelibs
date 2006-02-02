@@ -894,7 +894,7 @@ DOMString ElementImpl::openTagStartToString(bool expandurls) const
 			    result += Qt::escape(safeURL.prettyURL());
 			}
 		        else {
-		 	    kdWarning() << "getDocument() returned false";
+		 	    kWarning() << "getDocument() returned false";
 			    result += attribute->value();
 			}
 		    else
@@ -957,7 +957,7 @@ bool ElementImpl::contentEditable() const {
     DOM::CSSPrimitiveValueImpl *val = static_cast<DOM::CSSPrimitiveValueImpl *>
     		(const_cast<ElementImpl *>(this)->styleRules()
 		->getPropertyCSSValue(CSS_PROP__KONQ_USER_INPUT));
-//    kdDebug() << "val" << val << endl;
+//    kDebug() << "val" << val << endl;
     return val ? val->getIdent() == CSS_VAL_ENABLED : false;
 #endif
     return NodeImpl::contentEditable();
@@ -977,7 +977,7 @@ void ElementImpl::setContentEditable(bool enabled) {
         // FIXME: reset caret if it is in this node or a child
     }/*end if*/
     // FIXME: use addCSSProperty when I get permission to move it here
-//    kdDebug(6000) << "CSS_PROP__KHTML_USER_INPUT: "<< value << endl;
+//    kDebug(6000) << "CSS_PROP__KHTML_USER_INPUT: "<< value << endl;
     styleRules()->setProperty(CSS_PROP__KHTML_USER_INPUT, value, false, true);
     setChanged();
 

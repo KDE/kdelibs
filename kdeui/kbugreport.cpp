@@ -307,7 +307,7 @@ void KBugReport::appChanged(int i)
     int index = appName.indexOf( '/' );
     if ( index > 0 )
         appName = appName.left( index );
-    kdDebug() << "appName " << appName << endl;
+    kDebug() << "appName " << appName << endl;
 
     if (d->appname == appName && m_aboutData)
         m_strVersion = m_aboutData->version();
@@ -330,7 +330,7 @@ void KBugReport::slotConfigureEmail()
   connect(m_process, SIGNAL(processExited(KProcess *)), SLOT(slotSetFrom()));
   if (!m_process->start())
   {
-    kdDebug() << "Couldn't start kcmshell.." << endl;
+    kDebug() << "Couldn't start kcmshell.." << endl;
     delete m_process;
     m_process = 0;
     return;
@@ -443,7 +443,7 @@ void KBugReport::closeEvent( QCloseEvent * e)
 
 QString KBugReport::text() const
 {
-    kdDebug() << d->severityButtons[d->currentSeverity()]->objectName() << endl;
+    kDebug() << d->severityButtons[d->currentSeverity()]->objectName() << endl;
     // Prepend the pseudo-headers to the contents of the mail
   QString severity = d->severityButtons[d->currentSeverity()]->objectName();
   QString appname = d->appcombo->currentText();
@@ -512,7 +512,7 @@ bool KBugReport::sendBugReport()
   FILE * fd = popen(QFile::encodeName(command), "w");
   if (!fd)
   {
-    kdError() << "Unable to open a pipe to " << command << endl;
+    kError() << "Unable to open a pipe to " << command << endl;
     return false;
   }
 
@@ -521,7 +521,7 @@ bool KBugReport::sendBugReport()
   fflush(fd);
 
   int error = pclose(fd);
-  kdDebug() << "exit status1 " << error << " " << (WIFEXITED(error)) << " " <<  WEXITSTATUS(error) << endl;
+  kDebug() << "exit status1 " << error << " " << (WIFEXITED(error)) << " " <<  WEXITSTATUS(error) << endl;
 
   if ((WIFEXITED(error)) && WEXITSTATUS(error) == 1) {
       QFile of(outputfile.name());

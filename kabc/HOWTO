@@ -103,7 +103,7 @@ address book of the user automatically. You can use it the following way:
  3:  for ( it = ab->begin(); it != ab->end(); ++it ) {
  4:    KABC::Addressee addr = (*it);
  5:
- 6:    kdDebug() << "Name = " << addr.formattedName() << endl;
+ 6:    kDebug() << "Name = " << addr.formattedName() << endl;
  7:  }
 
 The above example prints out the names of all the contacts in the user's address
@@ -134,12 +134,12 @@ The following code will create a file resource and save a contact into it:
  4:  KABC::Resource *res = new KABC::ResourceFile( "/home/user/myvcard.vcf", "vcard" );
  5:
  6:  if ( !ab.addResource( res ) ) {
- 7:    kdDebug() << "Unable to open resource" << endl;
+ 7:    kDebug() << "Unable to open resource" << endl;
  8:    return 1;
  9:  }
 10:
 11:  if ( !ab.load() ) {
-12:    kdDebug() << "Unable to load address book!" << endl;
+12:    kDebug() << "Unable to load address book!" << endl;
 13:    return 2;
 14:  }
 15:
@@ -203,10 +203,10 @@ The following code will create a file resource and save a contact into it:
 73:
 74:  KABC::Ticket *ticket = ab.requestSaveTicket( res );
 75:  if ( !ticket ) {
-76:    kdError() << "Resource is locked by other application!" << endl;
+76:    kError() << "Resource is locked by other application!" << endl;
 77:  } else {
 78:    if ( !ab.save( ticket ) ) {
-79:      kdError() << "Saving failed!" << endl;
+79:      kError() << "Saving failed!" << endl;
 80:      ab.releaseSaveTicket( ticket );
 81:    }
 82:
@@ -332,12 +332,12 @@ representation of one list.
  7:  QStringList::Iterator it;
  8:  for ( it = listNames.begin(); it != listNames.end(); ++it ) {
  9:    KABC::DistributionList *list = manager.list( *it );
-10:    kdDebug() << list->name() << endl;
+10:    kDebug() << list->name() << endl;
 11:
 12:    QStringList emails = list->emails();
 13:    QStringList::Iterator eit;
 14:    for ( eit = emails.begin(); eit != emails.end(); ++eit )
-15:      kdDebug() << QString( "\t%1" ).arg( (*eit).latin1() ) << endl;
+15:      kDebug() << QString( "\t%1" ).arg( (*eit).latin1() ) << endl;
 16:  }
 
 In the first line a KABC::DistributionListManager is created. The manager takes

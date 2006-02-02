@@ -192,7 +192,7 @@ bool KRun::displayOpenWithDialog( const KUrl::List& lst, bool tempFiles )
       if ( !!service )
         return KRun::run( *service, lst, tempFiles );
 
-      kdDebug(7010) << "No service set, running " << l.text() << endl;
+      kDebug(7010) << "No service set, running " << l.text() << endl;
       return KRun::run( l.text(), lst ); // TODO handle tempFiles
     }
     return false;
@@ -237,7 +237,7 @@ KRunMX1::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
       break;
    case 'm':
 //       ret << "-miniicon" << service.icon().replace( '%', "%%" );
-      kdWarning() << k_funcinfo << "-miniicon isn't supported anymore (service "
+      kWarning() << k_funcinfo << "-miniicon isn't supported anymore (service "
                   << service.name() << ')' << endl;
       break;
    case 'u':
@@ -310,9 +310,9 @@ KRunMX2::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
    case 'v':
       if( urls.isEmpty() ) {
          if (!ignFile)
-            kdDebug() << "KRun::processDesktopExec: No URLs supplied to single-URL service " << str << endl;
+            kDebug() << "KRun::processDesktopExec: No URLs supplied to single-URL service " << str << endl;
       } else if( urls.count() > 1 )
-          kdWarning() << "KRun::processDesktopExec: " << urls.count() << " URLs supplied to single-URL service " << str << endl;
+          kWarning() << "KRun::processDesktopExec: " << urls.count() << " URLs supplied to single-URL service " << str << endl;
       else
          subst( option, urls.first(), ret );
       break;
@@ -426,7 +426,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     terminal += " ";
     terminal += _service.terminalOptions();
     if( !mx1.expandMacrosShellQuote( terminal ) ) {
-      kdWarning() << "KRun: syntax error in command `" << terminal << "', service `" << _service.name() << "'" << endl;
+      kWarning() << "KRun: syntax error in command `" << terminal << "', service `" << _service.name() << "'" << endl;
       return QStringList();
     }
     mx2.expandMacrosShellQuote( terminal );
@@ -476,7 +476,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
   return result;
 
  synerr:
-  kdWarning() << "KRun: syntax error in command `" << _service.exec() << "', service `" << _service.name() << "'" << endl;
+  kWarning() << "KRun: syntax error in command `" << _service.exec() << "', service `" << _service.name() << "'" << endl;
   return QStringList();
 }
 
@@ -498,7 +498,7 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
   if (service && !service->desktopEntryPath().isEmpty()
       && !KDesktopFile::isAuthorizedDesktopFile( service->desktopEntryPath() ))
   {
-     kdWarning() << "No authorization to execute " << service->desktopEntryPath() << endl;
+     kWarning() << "No authorization to execute " << service->desktopEntryPath() << endl;
      KMessageBox::sorry(0, i18n("You are not authorized to execute this file."));
      return 0;
   }
@@ -589,7 +589,7 @@ bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* servi
 static pid_t runTempService( const KService& _service, const KUrl::List& _urls, bool tempFiles )
 {
   if (!_urls.isEmpty()) {
-    kdDebug(7010) << "runTempService: first url " << _urls.first().url() << endl;
+    kDebug(7010) << "runTempService: first url " << _urls.first().url() << endl;
   }
 
   QStringList args;
@@ -615,7 +615,7 @@ static pid_t runTempService( const KService& _service, const KUrl::List& _urls, 
   {
       args = KRun::processDesktopExec(_service, _urls, false, tempFiles);
   }
-  kdDebug(7010) << "runTempService: KProcess args=" << args << endl;
+  kDebug(7010) << "runTempService: KProcess args=" << args << endl;
 
   KProcess * proc = new KProcess;
   *proc << args;
@@ -641,21 +641,21 @@ static KUrl::List resolveURLs( const KUrl::List& _urls, const KService& _service
     if ( supportedProtocols.isEmpty() ) // compat: assume KIO if not set
       supportedProtocols.append( "KIO" );
   }
-  kdDebug(7010) << "supportedProtocols:" << supportedProtocols << endl;
+  kDebug(7010) << "supportedProtocols:" << supportedProtocols << endl;
 
   KUrl::List urls( _urls );
   if ( supportedProtocols.find( "KIO" ) == supportedProtocols.end() ) {
     for( KUrl::List::Iterator it = urls.begin(); it != urls.end(); ++it ) {
       const KUrl url = *it;
       bool supported = url.isLocalFile() || supportedProtocols.find( url.protocol().toLower() ) != supportedProtocols.end();
-      kdDebug(7010) << "Looking at url=" << url << " supported=" << supported << endl;
+      kDebug(7010) << "Looking at url=" << url << " supported=" << supported << endl;
       if ( !supported && KProtocolInfo::protocolClass(url.protocol()) == ":local" )
       {
         // Maybe we can resolve to a local URL?
         KUrl localURL = KIO::NetAccess::mostLocalURL( url, 0 );
         if ( localURL != url ) {
           *it = localURL;
-          kdDebug(7010) << "Changed to " << localURL << endl;
+          kDebug(7010) << "Changed to " << localURL << endl;
         }
       }
     }
@@ -668,7 +668,7 @@ pid_t KRun::run( const KService& _service, const KUrl::List& _urls, bool tempFil
   if (!_service.desktopEntryPath().isEmpty() &&
       !KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
   {
-     kdWarning() << "No authorization to execute " << _service.desktopEntryPath() << endl;
+     kWarning() << "No authorization to execute " << _service.desktopEntryPath() << endl;
      KMessageBox::sorry(0, i18n("You are not authorized to execute this service."));
      return 0;
   }
@@ -678,7 +678,7 @@ pid_t KRun::run( const KService& _service, const KUrl::List& _urls, bool tempFil
       // Remember we opened those urls, for the "recent documents" menu in kicker
       KUrl::List::ConstIterator it = _urls.begin();
       for(; it != _urls.end(); ++it) {
-          //kdDebug(7010) << "KRecentDocument::adding " << (*it).url() << endl;
+          //kDebug(7010) << "KRecentDocument::adding " << (*it).url() << endl;
           KRecentDocument::add( *it, _service.desktopEntryName() );
       }
   }
@@ -688,10 +688,10 @@ pid_t KRun::run( const KService& _service, const KUrl::List& _urls, bool tempFil
      return runTempService(_service, _urls, tempFiles);
   }
 
-  kdDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
+  kDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
 
   if (!_urls.isEmpty()) {
-    kdDebug(7010) << "First url " << _urls.first().url() << endl;
+    kDebug(7010) << "First url " << _urls.first().url() << endl;
   }
 
   // Resolve urls if needed, depending on what the app supports
@@ -706,12 +706,12 @@ pid_t KRun::run( const KService& _service, const KUrl::List& _urls, bool tempFil
 
   if (i != 0)
   {
-     kdDebug(7010) << error << endl;
+     kDebug(7010) << error << endl;
      KMessageBox::sorry( 0L, error );
      return 0;
   }
 
-  kdDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
+  kDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
   return (pid_t) pid;
 }
 
@@ -731,7 +731,7 @@ pid_t KRun::runCommand( const QString &cmd )
 
 pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName )
 {
-  kdDebug(7010) << "runCommand " << cmd << "," << execName << endl;
+  kDebug(7010) << "runCommand " << cmd << "," << execName << endl;
   KProcess * proc = new KProcess;
   proc->setUseShell(true);
   *proc << cmd;
@@ -769,14 +769,14 @@ void KRun::init ( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFil
   m_bInit = true;
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
   m_timer.start( 0, true );
-  kdDebug(7010) << " new KRun " << this << " " << url.prettyURL() << " timer=" << &m_timer << endl;
+  kDebug(7010) << " new KRun " << this << " " << url.prettyURL() << " timer=" << &m_timer << endl;
 
   kapp->ref();
 }
 
 void KRun::init()
 {
-  kdDebug(7010) << "INIT called" << endl;
+  kDebug(7010) << "INIT called" << endl;
   if ( !m_strURL.isValid() )
   {
     d->m_showingError = true;
@@ -828,12 +828,12 @@ void KRun::init()
 
     KMimeType::Ptr mime = KMimeType::findByURL( m_strURL, m_mode, m_bIsLocalFile );
     assert( mime );
-    kdDebug(7010) << "MIME TYPE is " << mime->name() << endl;
+    kDebug(7010) << "MIME TYPE is " << mime->name() << endl;
     foundMimeType( mime->name() );
     return;
   }
   else if ( !exec.isEmpty() || KProtocolInfo::isHelperProtocol( m_strURL ) ) {
-    kdDebug(7010) << "Helper protocol" << endl;
+    kDebug(7010) << "Helper protocol" << endl;
 
     bool ok = false;
     KUrl::List urls;
@@ -886,13 +886,13 @@ void KRun::init()
 
   if ( !KProtocolInfo::supportsListing( m_strURL ) )
   {
-    //kdDebug(7010) << "Protocol has no support for listing" << endl;
+    //kDebug(7010) << "Protocol has no support for listing" << endl;
     // No support for listing => it can't be a directory (example: http)
     scanFile();
     return;
   }
 
-  kdDebug(7010) << "Testing directory (stating)" << endl;
+  kDebug(7010) << "Testing directory (stating)" << endl;
 
   // It may be a directory or a file, let's stat
   KIO::StatJob *job = KIO::stat( m_strURL, true, 0 /* no details */, m_bProgressInfo );
@@ -900,22 +900,22 @@ void KRun::init()
   connect( job, SIGNAL( result( KIO::Job * ) ),
            this, SLOT( slotStatResult( KIO::Job * ) ) );
   m_job = job;
-  kdDebug(7010) << " Job " << job << " is about stating " << m_strURL.url() << endl;
+  kDebug(7010) << " Job " << job << " is about stating " << m_strURL.url() << endl;
 }
 
 KRun::~KRun()
 {
-  kdDebug(7010) << "KRun::~KRun() " << this << endl;
+  kDebug(7010) << "KRun::~KRun() " << this << endl;
   m_timer.stop();
   killJob();
   kapp->deref();
-  kdDebug(7010) << "KRun::~KRun() done " << this << endl;
+  kDebug(7010) << "KRun::~KRun() done " << this << endl;
   delete d;
 }
 
 void KRun::scanFile()
 {
-  kdDebug(7010) << "###### KRun::scanFile " << m_strURL.url() << endl;
+  kDebug(7010) << "###### KRun::scanFile " << m_strURL.url() << endl;
   // First, let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
   if ( m_strURL.query().isEmpty() )
@@ -924,7 +924,7 @@ void KRun::scanFile()
     assert( mime );
     if ( mime->name() != "application/octet-stream" || m_bIsLocalFile )
     {
-      kdDebug(7010) << "Scanfile: MIME TYPE is " << mime->name() << endl;
+      kDebug(7010) << "Scanfile: MIME TYPE is " << mime->name() << endl;
       foundMimeType( mime->name() );
       return;
     }
@@ -936,13 +936,13 @@ void KRun::scanFile()
 
   if ( !KProtocolInfo::supportsReading( m_strURL ) )
   {
-    kdError(7010) << "#### NO SUPPORT FOR READING!" << endl;
+    kError(7010) << "#### NO SUPPORT FOR READING!" << endl;
     m_bFault = true;
     m_bFinished = true;
     m_timer.start( 0, true );
     return;
   }
-  kdDebug(7010) << this << " Scanning file " << m_strURL.url() << endl;
+  kDebug(7010) << this << " Scanning file " << m_strURL.url() << endl;
 
   KIO::TransferJob *job = KIO::get( m_strURL, false /*reload*/, m_bProgressInfo );
   job->setWindow (d->m_window);
@@ -951,12 +951,12 @@ void KRun::scanFile()
   connect(job, SIGNAL( mimetype(KIO::Job *, const QString &)),
           this, SLOT( slotScanMimeType(KIO::Job *, const QString &)));
   m_job = job;
-  kdDebug(7010) << " Job " << job << " is about getting from " << m_strURL.url() << endl;
+  kDebug(7010) << " Job " << job << " is about getting from " << m_strURL.url() << endl;
 }
 
 void KRun::slotTimeout()
 {
-  kdDebug(7010) << this << " slotTimeout called" << endl;
+  kDebug(7010) << this << " slotTimeout called" << endl;
   if ( m_bInit )
   {
     m_bInit = false;
@@ -999,9 +999,9 @@ void KRun::slotStatResult( KIO::Job * job )
   if (job->error())
   {
     d->m_showingError = true;
-    kdError(7010) << this << " ERROR " << job->error() << " " << job->errorString() << endl;
+    kError(7010) << this << " ERROR " << job->error() << " " << job->errorString() << endl;
     job->showErrorDialog();
-    //kdDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
+    //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
     d->m_showingError = false;
 
     m_bFault = true;
@@ -1012,9 +1012,9 @@ void KRun::slotStatResult( KIO::Job * job )
 
   } else {
 
-    kdDebug(7010) << "Finished" << endl;
+    kDebug(7010) << "Finished" << endl;
     if(!dynamic_cast<KIO::StatJob*>(job))
-        kdFatal() << "job is a " << typeid(*job).name() << " should be a StatJob" << endl;
+        kFatal() << "job is a " << typeid(*job).name() << " should be a StatJob" << endl;
 
     const KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
     const mode_t mode = entry.numberValue( KIO::UDS_FILE_TYPE );
@@ -1047,7 +1047,7 @@ void KRun::slotStatResult( KIO::Job * job )
 void KRun::slotScanMimeType( KIO::Job *, const QString &mimetype )
 {
   if ( mimetype.isEmpty() )
-    kdWarning(7010) << "KRun::slotScanFinished : MimetypeJob didn't find a mimetype! Probably a kioslave bug." << endl;
+    kWarning(7010) << "KRun::slotScanFinished : MimetypeJob didn't find a mimetype! Probably a kioslave bug." << endl;
   foundMimeType( mimetype );
   m_job = 0;
 }
@@ -1058,9 +1058,9 @@ void KRun::slotScanFinished( KIO::Job *job )
   if (job->error())
   {
     d->m_showingError = true;
-    kdError(7010) << this << " ERROR (stat) : " << job->error() << " " << job->errorString() << endl;
+    kError(7010) << this << " ERROR (stat) : " << job->error() << " " << job->errorString() << endl;
     job->showErrorDialog();
-    //kdDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
+    //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
     d->m_showingError = false;
 
     m_bFault = true;
@@ -1073,7 +1073,7 @@ void KRun::slotScanFinished( KIO::Job *job )
 
 void KRun::foundMimeType( const QString& type )
 {
-  kdDebug(7010) << "Resulting mime type is " << type << endl;
+  kDebug(7010) << "Resulting mime type is " << type << endl;
 
 /*
   // Automatically unzip stuff
@@ -1112,7 +1112,7 @@ void KRun::foundMimeType( const QString& type )
     // Create the new URL
     m_strURL = KUrl::join( lst );
 
-    kdDebug(7010) << "Now trying with " << debugString(m_strURL.url()) << endl;
+    kDebug(7010) << "Now trying with " << debugString(m_strURL.url()) << endl;
 
     killJob();
 
@@ -1139,7 +1139,7 @@ void KRun::foundMimeType( const QString& type )
 
   // Suport for preferred service setting, see setPreferredService
   if ( !d->m_preferredService.isEmpty() ) {
-      kdDebug(7010) << "Attempting to open with preferred service: " << d->m_preferredService << endl;
+      kDebug(7010) << "Attempting to open with preferred service: " << d->m_preferredService << endl;
       KService::Ptr serv = KService::serviceByDesktopName( d->m_preferredService );
       if ( serv && serv->hasServiceType( type ) )
       {
@@ -1175,7 +1175,7 @@ void KRun::killJob()
 {
   if ( m_job )
   {
-    kdDebug(7010) << "KRun::killJob run=" << this << " m_job=" << m_job << endl;
+    kDebug(7010) << "KRun::killJob run=" << this << " m_job=" << m_job << endl;
     m_job->kill();
     m_job = 0L;
   }
@@ -1183,7 +1183,7 @@ void KRun::killJob()
 
 void KRun::abort()
 {
-  kdDebug(7010) << "KRun::abort " << this << " m_showingError=" << d->m_showingError << endl;
+  kDebug(7010) << "KRun::abort " << this << " m_showingError=" << d->m_showingError << endl;
   killJob();
   // If we're showing an error message box, the rest will be done
   // after closing the msgbox -> don't autodelete nor emit signals now.
@@ -1288,9 +1288,9 @@ KProcessRunner::slotProcessExited(KProcess * p)
   if (p != process_)
     return; // Eh ?
 
-  kdDebug(7010) << "slotProcessExited " << binName << endl;
-  kdDebug(7010) << "normalExit " << process_->normalExit() << endl;
-  kdDebug(7010) << "exitStatus " << process_->exitStatus() << endl;
+  kDebug(7010) << "slotProcessExited " << binName << endl;
+  kDebug(7010) << "normalExit " << process_->normalExit() << endl;
+  kDebug(7010) << "exitStatus " << process_->exitStatus() << endl;
   bool showErr = process_->normalExit()
                  && ( process_->exitStatus() == 127 || process_->exitStatus() == 1 );
   if ( !binName.isEmpty() && ( showErr || process_->pid() == 0 ) )

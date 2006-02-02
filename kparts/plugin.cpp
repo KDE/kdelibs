@@ -52,7 +52,7 @@ public:
 Plugin::Plugin( QObject* parent )
     : QObject( parent ),d(new PluginPrivate())
 {
-  //kdDebug() << className() << endl;
+  //kDebug() << className() << endl;
 }
 
 Plugin::~Plugin()
@@ -88,7 +88,7 @@ QString Plugin::localXMLFile() const
 QList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
 {
   if ( !instance )
-    kdError(1000) << "No instance ???" << endl;
+    kError(1000) << "No instance ???" << endl;
 
   QList<PluginInfo> plugins;
 
@@ -123,7 +123,7 @@ QList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
       if ( info.m_absXMLFileName.isEmpty() )
           continue;
 
-      kdDebug( 1000 ) << "found KParts Plugin : " << info.m_absXMLFileName << endl;
+      kDebug( 1000 ) << "found KParts Plugin : " << info.m_absXMLFileName << endl;
       info.m_relXMLFileName = "kpartplugins/";
       info.m_relXMLFileName += mapIt.key();
 
@@ -247,11 +247,11 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
             QString relPath = QString( instance->instanceName() ) + "/" + (*pIt).m_relXMLFileName;
             relPath.truncate( relPath.lastIndexOf( '.' ) ); // remove extension
             relPath += ".desktop";
-            //kdDebug(1000) << "looking for " << relPath << endl;
+            //kDebug(1000) << "looking for " << relPath << endl;
             const QString desktopfile = instance->dirs()->findResource( "data", relPath );
             if( !desktopfile.isEmpty() )
             {
-                //kdDebug(1000) << "loadPlugins found desktop file for " << name << ": " << desktopfile << endl;
+                //kDebug(1000) << "loadPlugins found desktop file for " << name << ": " << desktopfile << endl;
                 KSimpleConfig desktop( desktopfile, true );
                 desktop.setDesktopGroup();
                 pluginEnabled = desktop.readEntry( "X-KDE-PluginInfo-EnabledByDefault",
@@ -261,14 +261,14 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
                     const int version = desktop.readEntry( "X-KDE-InterfaceVersion", 1 );
                     if ( version != interfaceVersionRequired )
                     {
-                        kdDebug(1000) << "Discarding plugin " << name << ", interface version " << version << ", expected " << interfaceVersionRequired << endl;
+                        kDebug(1000) << "Discarding plugin " << name << ", interface version " << version << ", expected " << interfaceVersionRequired << endl;
                         pluginEnabled = false;
                     }
                 }
             }
             else
             {
-                //kdDebug(1000) << "loadPlugins no desktop file found in " << relPath << endl;
+                //kDebug(1000) << "loadPlugins no desktop file found in " << relPath << endl;
             }
         }
 
@@ -284,7 +284,7 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
                 // delete and unload disabled plugins
                 if( !pluginEnabled )
                 {
-                    kdDebug( 1000 ) << "remove plugin " << name << endl;
+                    kDebug( 1000 ) << "remove plugin " << name << endl;
                     KXMLGUIFactory * factory = plugin->factory();
                     if( factory )
                         factory->removeClient( plugin );
@@ -301,7 +301,7 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
         if( pluginFound || !pluginEnabled )
             continue;
 
-        kdDebug( 1000 ) << "load plugin " << name << endl;
+        kDebug( 1000 ) << "load plugin " << name << endl;
         Plugin *plugin = loadPlugin( parent, QFile::encodeName(library) );
 
         if ( plugin )

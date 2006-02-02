@@ -48,7 +48,7 @@ MozillaSidebarExtension::MozillaSidebarExtension(ExecState *exec, KHTMLPart *p)
 bool MozillaSidebarExtension::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "MozillaSidebarExtension::get " << propertyName.ascii() << endl;
+  kDebug(6070) << "MozillaSidebarExtension::get " << propertyName.ascii() << endl;
 #endif
   return getStaticPropertySlot<MozillaSidebarExtensionFunc,MozillaSidebarExtension,ObjectImp>
             (exec,&MozillaSidebarExtensionTable,this, propertyName, slot);
@@ -59,7 +59,7 @@ ValueImp *MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) 
   Q_UNUSED(exec);
   switch (token) {
   default:
-    kdDebug(6070) << "WARNING: Unhandled token in MozillaSidebarExtension::getValueProperty : " << token << endl;
+    kDebug(6070) << "WARNING: Unhandled token in MozillaSidebarExtension::getValueProperty : " << token << endl;
     return Null();
   }
 }

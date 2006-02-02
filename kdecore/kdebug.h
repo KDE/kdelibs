@@ -68,13 +68,13 @@ typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
 /**
  * kdbgstream is a text stream that allows you to print debug messages.
  * Using the overloaded "<<" operator you can send messages. Usually
- * you do not create the kdbgstream yourself, but use kdDebug()
- * kdWarning(), kdError() or kdFatal() to obtain one.
+ * you do not create the kdbgstream yourself, but use kDebug()
+ * kWarning(), kError() or kFatal() to obtain one.
  *
  * Example:
  * \code
  *    int i = 5;
- *    kdDebug() << "The value of i is " << i << endl;
+ *    kDebug() << "The value of i is " << i << endl;
  * \endcode
  */
 class KDECORE_EXPORT kdbgstream {
@@ -440,7 +440,8 @@ inline kndbgstream &perror( kndbgstream & s) { return s; }
  * @param area an id to identify the output, 0 for default
  * @see kndDebug()
  */
-KDECORE_EXPORT kdbgstream kdDebug(int area = 0);
+KDECORE_EXPORT kdbgstream kDebug(int area = 0);
+inline KDECORE_EXPORT_DEPRECATED kdbgstream kdDebug(int area = 0) { return kDebug( area ); }
 /**
  * \relates KGlobal
  * Returns a debug stream. You can use it to conditionally
@@ -448,7 +449,8 @@ KDECORE_EXPORT kdbgstream kdDebug(int area = 0);
  * @param cond the condition to test, if true print debugging info
  * @param area an id to identify the output, 0 for default
  */
-KDECORE_EXPORT kdbgstream kdDebug(bool cond, int area = 0);
+KDECORE_EXPORT kdbgstream kDebug(bool cond, int area = 0);
+inline KDECORE_EXPORT_DEPRECATED kdbgstream kdDebug(bool cond, int area = 0) { return kDebug( cond, area ); }
 
 /**
  * \relates KGlobal
@@ -457,7 +459,8 @@ KDECORE_EXPORT kdbgstream kdDebug(bool cond, int area = 0);
  * @return a backtrace
  * @since 3.1
  */
-KDECORE_EXPORT QString kdBacktrace(int levels=-1);
+KDECORE_EXPORT QString kBacktrace(int levels=-1);
+inline KDECORE_EXPORT_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }
 
 inline kndbgstream kndDebug(int = 0) { return kndbgstream(); }
 inline kndbgstream kndDebug(bool , int  = 0) { return kndbgstream(); }
@@ -469,7 +472,8 @@ inline QString kndBacktrace(int = -1) { return QString(); }
  * information.
  * @param area an id to identify the output, 0 for default
  */
-KDECORE_EXPORT kdbgstream kdWarning(int area = 0);
+KDECORE_EXPORT kdbgstream kWarning(int area = 0);
+inline KDECORE_EXPORT_DEPRECATED kdbgstream kdWarning(int area = 0) { return kWarning( area ); }
 /**
  * \relates KGlobal
  * Returns a warning stream. You can use it to conditionally
@@ -477,14 +481,16 @@ KDECORE_EXPORT kdbgstream kdWarning(int area = 0);
  * @param cond the condition to test, if true print warning
  * @param area an id to identify the output, 0 for default
  */
-KDECORE_EXPORT kdbgstream kdWarning(bool cond, int area = 0);
+KDECORE_EXPORT kdbgstream kWarning(bool cond, int area = 0);
+inline KDECORE_EXPORT_DEPRECATED kdbgstream kdWarning(bool cond, int area = 0) { return kWarning( cond, area ); }
 /**
  * \relates KGlobal
  * Returns an error stream. You can use it to print error
  * information.
  * @param area an id to identify the output, 0 for default
  */
-KDECORE_EXPORT kdbgstream kdError(int area = 0);
+KDECORE_EXPORT kdbgstream kError(int area = 0);
+inline KDECORE_EXPORT_DEPRECATED kdbgstream kdError(int area = 0) { return kError( area ); }
 /**
  * \relates KGlobal
  * Returns an error stream. You can use it to conditionally
@@ -492,14 +498,16 @@ KDECORE_EXPORT kdbgstream kdError(int area = 0);
  * @param cond the condition to test, if true print error
  * @param area an id to identify the output, 0 for default
  */
-KDECORE_EXPORT kdbgstream kdError(bool cond, int area = 0);
+KDECORE_EXPORT kdbgstream kError(bool cond, int area = 0);
+inline KDECORE_EXPORT_DEPRECATED kdbgstream kdError(bool cond, int area = 0) { return kError( cond, area ); }
 /**
  * \relates KGlobal
  * Returns a fatal error stream. You can use it to print fatal error
  * information.
  * @param area an id to identify the output, 0 for default
  */
-KDECORE_EXPORT kdbgstream kdFatal(int area = 0);
+KDECORE_EXPORT kdbgstream kFatal(int area = 0);
+inline KDECORE_EXPORT_DEPRECATED kdbgstream kdFatal(int area = 0) { return kFatal( area ); }
 /**
  * \relates KGlobal
  * Returns a fatal error stream. You can use it to conditionally
@@ -507,20 +515,22 @@ KDECORE_EXPORT kdbgstream kdFatal(int area = 0);
  * @param cond the condition to test, if true print error
  * @param area an id to identify the output, 0 for default
  */
-KDECORE_EXPORT kdbgstream kdFatal(bool cond, int area = 0);
+KDECORE_EXPORT kdbgstream kFatal(bool cond, int area = 0);
+inline KDECORE_EXPORT_DEPRECATED kdbgstream kdFatal(bool cond, int area = 0) { return kFatal( cond, area ); }
 
 /**
  * \relates KGlobal
  * Deletes the kdebugrc cache and therefore forces KDebug to reread the
  * config file
  */
-KDECORE_EXPORT void kdClearDebugConfig();
+KDECORE_EXPORT void kClearDebugConfig();
+inline KDECORE_EXPORT_DEPRECATED void kdClearDebugConfig() { return kClearDebugConfig(); }
 
 /** @} */
 
 #ifdef NDEBUG
-#define kdDebug kndDebug
-#define kdBacktrace kndBacktrace
+#define kDebug kndDebug
+#define kBacktrace kndBacktrace
 #endif
 
 #endif

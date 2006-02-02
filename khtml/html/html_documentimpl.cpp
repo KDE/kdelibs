@@ -73,7 +73,7 @@ using namespace khtml;
 HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
   : DocumentImpl(_implementation, v)
 {
-//    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
+//    kDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
     htmlElement = 0;
 
     m_doAutoFill = false;
@@ -120,13 +120,13 @@ DOMString HTMLDocumentImpl::cookie() const
 
     if ( !reply.isValid() )
     {
-       kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
+       kWarning(6010) << "Can't communicate with cookiejar!" << endl;
        return DOMString();
     }
 
     QString result;
     if ( !reply.get(result, "QString") ) {
-         kdError(6010) << "DCOP function findDOMCookies(...) returns "
+         kError(6010) << "DCOP function findDOMCookies(...) returns "
                        << reply.type << ", expected QString" << endl;
          return DOMString();
     }
@@ -155,7 +155,7 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
          KToolInvocation::startServiceByDesktopName( "kcookiejar");
          if (!KApplication::dcopClient()->send("kcookiejar", "kcookiejar",
                                        "addCookies(QString,QCString,long int)", params))
-             kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
+             kWarning(6010) << "Can't communicate with cookiejar!" << endl;
     }
 }
 
@@ -231,7 +231,7 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
     QString url = _url.string();
     QString s;
     int pos = url.find('#');
-    //kdDebug(0) << "map pos of #:" << pos << endl;
+    //kDebug(0) << "map pos of #:" << pos << endl;
     s = QString(_url.unicode() + pos + 1, _url.length() - pos - 1);
 
     QMap<QString,HTMLMapElementImpl*>::const_iterator it = mapMap.find(s);
@@ -266,7 +266,7 @@ void HTMLDocumentImpl::close()
         // the first(IE)/last(Moz/Konq) registered onload on a <frame> and the
         // first(IE)/last(Moz/Konq) registered onload on a <frameset>.
 
-        //kdDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
+        //kDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
 
         //Make sure to flush any pending image events now, as we want them out before the document's load event
         dispatchImageLoadEventsNow();
@@ -426,7 +426,7 @@ static bool parseDocTypeDeclaration(const QString& buffer,
 
 void HTMLDocumentImpl::determineParseMode( const QString &str )
 {
-    //kdDebug() << "DocumentImpl::determineParseMode str=" << str<< endl;
+    //kDebug() << "DocumentImpl::determineParseMode str=" << str<< endl;
     int oldPMode = pMode;
 
     // This code more or less mimics Mozilla's implementation (specifically the
@@ -514,14 +514,14 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
 
     m_styleSelector->strictParsing = !inCompatMode();
 
-    // kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicID << " systemId = " << systemID << endl;
-    // kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
+    // kDebug() << "DocumentImpl::determineParseMode: publicId =" << publicID << " systemId = " << systemID << endl;
+    // kDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
     if( pMode == Strict )
-        kdDebug(6030) << " using strict parseMode" << endl;
+        kDebug(6030) << " using strict parseMode" << endl;
     else if (pMode == Compat )
-        kdDebug(6030) << " using compatibility parseMode" << endl;
+        kDebug(6030) << " using compatibility parseMode" << endl;
     else
-        kdDebug(6030) << " using transitional parseMode" << endl;
+        kDebug(6030) << " using transitional parseMode" << endl;
 
     // not sure this is needed
     if ( pMode != oldPMode && styleSelector() )

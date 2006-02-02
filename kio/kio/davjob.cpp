@@ -74,8 +74,8 @@ void DavJob::slotData( const QByteArray& data )
 
 void DavJob::slotFinished()
 {
-  // kdDebug(7113) << "DavJob::slotFinished()" << endl;
-  // kdDebug(7113) << d->str_response << endl;
+  // kDebug(7113) << "DavJob::slotFinished()" << endl;
+  // kDebug(7113) << d->str_response << endl;
 	if (!m_redirectionURL.isEmpty() && m_redirectionURL.isValid() && (m_command == CMD_SPECIAL)) {
 		QDataStream istream( m_packedArgs );
 		int s_cmd, s_method;
@@ -102,7 +102,7 @@ void DavJob::slotFinished()
 	} else {
 		delete d; // Should be in virtual destructor
 	}
-  // kdDebug(7113) << m_response.toString() << endl;
+  // kDebug(7113) << m_response.toString() << endl;
 	TransferJob::slotFinished();
 	if( d ) staticData = d->savedStaticData; // Need to send DAV request to this host too
 }

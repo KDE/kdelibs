@@ -343,7 +343,7 @@ void KNotifyWidget::showAdvanced( bool show )
 
 Application * KNotifyWidget::addApplicationEvents( const QString& path )
 {
-    kdDebug() << "**** knotify: adding path: " << path << endl;
+    kDebug() << "**** knotify: adding path: " << path << endl;
     QString relativePath = path;
 
     if ( path.at(0) == '/' && KStandardDirs::exists( path ) )
@@ -804,7 +804,7 @@ void KNotifyWidget::reload( bool revertToDefaults )
 
 void KNotifyWidget::save()
 {
-    kdDebug() << "save\n";
+    kDebug() << "save\n";
 
     ApplicationListIterator it( m_allApps );
 	while(it.hasNext())
@@ -1008,7 +1008,7 @@ Application::Application( const QString &path )
     if ( index >= 0 )
         m_appname = path.left( index );
     else
-        kdDebug() << "Cannot determine application name from path: " << path << endl;
+        kDebug() << "Cannot determine application name from path: " << path << endl;
 }
 
 Application::~Application()

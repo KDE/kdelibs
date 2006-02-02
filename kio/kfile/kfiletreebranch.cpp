@@ -47,7 +47,7 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KUrl& url,
       m_recurseChildren(true),
       m_showExtensions(true)
 {
-    kdDebug( 250) << "Creating branch for url " << url.prettyURL() << endl;
+    kDebug( 250) << "Creating branch for url " << url.prettyURL() << endl;
 
     /* if non exists, create one */
     if( ! branchRoot )
@@ -107,7 +107,7 @@ void KFileTreeBranch::setOpenPixmap( const QPixmap& pix )
 void KFileTreeBranch::slotListerStarted( const KUrl &url )
 {
     /* set the parent correct if it is zero. */
-    kdDebug( 250) << "Starting to list " << url.prettyURL() << endl;
+    kDebug( 250) << "Starting to list " << url.prettyURL() << endl;
 }
 
 
@@ -121,20 +121,20 @@ KFileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
      * and check again.
      */
     KUrl url = item->url();
-    // kdDebug(250) << "Item's url is " << url.prettyURL() << endl;
+    // kDebug(250) << "Item's url is " << url.prettyURL() << endl;
     KUrl dirUrl( url );
     dirUrl.setFileName( QString() );
-    // kdDebug(250) << "Directory url is " << dirUrl.prettyURL() << endl;
+    // kDebug(250) << "Directory url is " << dirUrl.prettyURL() << endl;
 
     parent  = findTVIByURL( dirUrl );
-    // kdDebug(250) << "Returning as parent item <" << parent <<  ">" << endl;
+    // kDebug(250) << "Returning as parent item <" << parent <<  ">" << endl;
     return( parent );
 }
 
 
 void KFileTreeBranch::slotRefreshItems( const KFileItemList& list )
 {
-    kdDebug(250) << "Refreshing " << list.count() << " items !" << endl;
+    kDebug(250) << "Refreshing " << list.count() << " items !" << endl;
 
     KFileItemList::const_iterator kit = list.begin();
     const KFileItemList::const_iterator kend = list.end();
@@ -150,7 +150,7 @@ void KFileTreeBranch::slotRefreshItems( const KFileItemList& list )
 
 void KFileTreeBranch::addItems( const KFileItemList& list )
 {
-    kdDebug(250) << "Adding " << list.count() << " items !" << endl;
+    kDebug(250) << "Adding " << list.count() << " items !" << endl;
     KFileTreeViewItemList treeViewItList;
     KFileTreeViewItem *parentItem = 0;
 
@@ -196,12 +196,12 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
             /* do the stat trick of Carsten. The problem is, that the hardlink
              *  count only contains directory links. Thus, this method only seem
              * to work in dir-only mode */
-            kdDebug(250) << "Doing stat on " << filename << endl;
+            kDebug(250) << "Doing stat on " << filename << endl;
             KDE_struct_stat statBuf;
             if( KDE_stat( QFile::encodeName( filename ), &statBuf ) == 0 )
             {
                 int hardLinks = statBuf.st_nlink;  /* Count of dirs */
-                kdDebug(250) << "stat succeeded, hardlinks: " << hardLinks << endl;
+                kDebug(250) << "stat succeeded, hardlinks: " << hardLinks << endl;
                 // If the link count is > 2, the directory likely has subdirs. If it's < 2
                 // it's something weird like a mounted SMB share. In that case we don't know
                 // if there are subdirs, thus show it as expandable.
@@ -216,13 +216,13 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
                 }
                 if( hardLinks >= 2 ) // "Normal" directory with subdirs
                 {
-                    kdDebug(250) << "Emitting for " << url.prettyURL() << endl;
+                    kDebug(250) << "Emitting for " << url.prettyURL() << endl;
                     emit( directoryChildCount( newKFTVI, hardLinks-2)); // parentItem, hardLinks-1 ));
                 }
             }
             else
             {
-                kdDebug(250) << "stat of " << filename << " failed !" << endl;
+                kDebug(250) << "stat of " << filename << " failed !" << endl;
             }
         }
         treeViewItList.append( newKFTVI );
@@ -243,7 +243,7 @@ KFileTreeViewItem* KFileTreeBranch::createTreeViewItem( KFileTreeViewItem *paren
     }
     else
     {
-        kdDebug(250) << "createTreeViewItem: Have no parent" << endl;
+        kDebug(250) << "createTreeViewItem: Have no parent" << endl;
     }
     return( tvi );
 }
@@ -274,27 +274,27 @@ bool KFileTreeBranch::showExtensions( ) const
 void KFileTreeBranch::slotDeleteItem( KFileItem *it )
 {
     if( !it ) return;
-    kdDebug(250) << "Slot Delete Item hitted for " << it->url().prettyURL() << endl;
+    kDebug(250) << "Slot Delete Item hitted for " << it->url().prettyURL() << endl;
 
     KFileTreeViewItem *kfti = static_cast<KFileTreeViewItem*>(it->extraData(this));
 
     if( kfti )
     {
-        kdDebug( 250 ) << "Child count: " << kfti->childCount() << endl;
+        kDebug( 250 ) << "Child count: " << kfti->childCount() << endl;
         if( kfti->childCount() > 0 )
         {
             KFileTreeViewItem *child = static_cast<KFileTreeViewItem*>(kfti->firstChild());
 
             while( child )
             {
-                kdDebug(250) << "Calling child to be deleted !" << endl;
+                kDebug(250) << "Calling child to be deleted !" << endl;
                 KFileTreeViewItem *nextChild = static_cast<KFileTreeViewItem*>(child->nextSibling());
                 slotDeleteItem( child->fileItem());
                 child = nextChild;
             }
         }
 
-        kdDebug(250) << "Found corresponding KFileTreeViewItem" << endl;
+        kDebug(250) << "Found corresponding KFileTreeViewItem" << endl;
         if( m_lastFoundURL.equals(it->url(), true ))
         {
           m_lastFoundURL = KUrl();
@@ -304,7 +304,7 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
     }
     else
     {
-        kdDebug(250) << "Error: kfiletreeviewitem: "<< kfti << endl;
+        kDebug(250) << "Error: kfiletreeviewitem: "<< kfti << endl;
     }
 }
 
@@ -323,7 +323,7 @@ void KFileTreeBranch::slotCanceled( const KUrl& url )
 
 void KFileTreeBranch::slotDirlisterClear()
 {
-    kdDebug(250)<< "*** Clear all !" << endl;
+    kDebug(250)<< "*** Clear all !" << endl;
     /* this slots needs to clear all listed items, but NOT the root item */
     if( m_root )
         deleteChildrenOf( m_root );
@@ -331,7 +331,7 @@ void KFileTreeBranch::slotDirlisterClear()
 
 void KFileTreeBranch::slotDirlisterClearURL( const KUrl& url )
 {
-    kdDebug(250)<< "*** Clear for URL !" << url.prettyURL() << endl;
+    kDebug(250)<< "*** Clear for URL !" << url.prettyURL() << endl;
     KFileItem *item = findByURL( url );
     if( item )
     {
@@ -366,17 +366,17 @@ KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KUrl& url )
 
     if( m_startURL.equals(url, true) )
     {
-        kdDebug(250) << "findByURL: Returning root as a parent !" << endl;
+        kDebug(250) << "findByURL: Returning root as a parent !" << endl;
         resultItem = m_root;
     }
     else if( m_lastFoundURL.equals( url, true ))
     {
-        kdDebug(250) << "findByURL: Returning from lastFoundURL!" << endl;
+        kDebug(250) << "findByURL: Returning from lastFoundURL!" << endl;
         resultItem = m_lastFoundItem;
     }
     else
     {
-        kdDebug(250) << "findByURL: searching by dirlister: " << url.url() << endl;
+        kDebug(250) << "findByURL: searching by dirlister: " << url.url() << endl;
 
         KFileItem *it = findByURL( url );
 
@@ -394,11 +394,11 @@ KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KUrl& url )
 
 void KFileTreeBranch::slCompleted( const KUrl& url )
 {
-    kdDebug(250) << "SlotCompleted hit for " << url.prettyURL() << endl;
+    kDebug(250) << "SlotCompleted hit for " << url.prettyURL() << endl;
     KFileTreeViewItem *currParent = findTVIByURL( url );
     if( ! currParent ) return;
 
-    kdDebug(250) << "current parent " << currParent << " is already listed: "
+    kDebug(250) << "current parent " << currParent << " is already listed: "
                  << currParent->alreadyListed() << endl;
 
     emit( populateFinished(currParent));
@@ -414,9 +414,9 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
     /* Set bit that the parent dir was listed completely */
     currParent->setListed(true);
 
-    kdDebug(250) << "recurseChildren: " << m_recurseChildren << endl;
-    kdDebug(250) << "isLocalFile: " << m_startURL.isLocalFile() << endl;
-    kdDebug(250) << "dirOnlyMode: " << dirOnlyMode() << endl;
+    kDebug(250) << "recurseChildren: " << m_recurseChildren << endl;
+    kDebug(250) << "isLocalFile: " << m_startURL.isLocalFile() << endl;
+    kDebug(250) << "dirOnlyMode: " << dirOnlyMode() << endl;
 
 
     if( m_recurseChildren && (!m_startURL.isLocalFile() || ! dirOnlyMode()) )
@@ -432,7 +432,7 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
         }
 
         KFileTreeViewItem    *nextChild = 0;
-        kdDebug(250) << "Recursing " << url.prettyURL() << "? " << wantRecurseUrl << endl;
+        kDebug(250) << "Recursing " << url.prettyURL() << "? " << wantRecurseUrl << endl;
 
         if( wantRecurseUrl && currParent )
         {
@@ -446,7 +446,7 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
             if( ! nextChild )
             {
                 /* This happens if there is no child at all */
-                kdDebug( 250 ) << "No children to recuse" << endl;
+                kDebug( 250 ) << "No children to recuse" << endl;
             }
 
             /* Since we have listed the children to recurse, we can remove the entry
@@ -471,18 +471,18 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
                     if( kfi && kfi->isReadable())
                     {
                         KUrl recurseUrl = kfi->url();
-                        kdDebug(250) << "Starting to recurse NOW " << recurseUrl.prettyURL() << endl;
+                        kDebug(250) << "Starting to recurse NOW " << recurseUrl.prettyURL() << endl;
                         openURL( recurseUrl, true );
                     }
                 }
                 nextChild = static_cast<KFileTreeViewItem*>(static_cast<Q3ListViewItem*>(nextChild->nextSibling()));
-                // kdDebug(250) << "Next child " << m_nextChild << endl;
+                // kDebug(250) << "Next child " << m_nextChild << endl;
             }
         }
     }
     else
     {
-        kdDebug(250) << "skipping to recurse in complete-slot" << endl;
+        kDebug(250) << "skipping to recurse in complete-slot" << endl;
     }
 }
 
@@ -493,13 +493,13 @@ bool KFileTreeBranch::populate( const KUrl& url,  KFileTreeViewItem *currItem )
     if( ! currItem )
         return ret;
 
-    kdDebug(250) << "Populating <" << url.prettyURL() << ">" << endl;
+    kDebug(250) << "Populating <" << url.prettyURL() << ">" << endl;
 
     /* Add this url to the list of urls to recurse for children */
     if( m_recurseChildren )
     {
         m_openChildrenURLs.append( url );
-        kdDebug(250) << "Appending to list " << url.prettyURL() << endl;
+        kDebug(250) << "Appending to list " << url.prettyURL() << endl;
     }
 
     if( ! currItem->alreadyListed() )
@@ -509,7 +509,7 @@ bool KFileTreeBranch::populate( const KUrl& url,  KFileTreeViewItem *currItem )
     }
     else
     {
-        kdDebug(250) << "Children already existing in treeview!" << endl;
+        kDebug(250) << "Children already existing in treeview!" << endl;
         slCompleted( url );
         ret = true;
     }

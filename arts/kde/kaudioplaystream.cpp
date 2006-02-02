@@ -44,31 +44,31 @@ KAudioPlayStreamPrivate::KAudioPlayStreamPrivate( KArtsServer* server, const QSt
  , _effectrack( Arts::StereoEffectStack::null() )
  , _polling( true ), _attached( false ), _effects( true )
 {
-kdDebug( 400 ) << k_funcinfo << endl;
+kDebug( 400 ) << k_funcinfo << endl;
 	initaRts();
 }
 
 KAudioPlayStreamPrivate::~KAudioPlayStreamPrivate()
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kDebug( 400 ) << k_funcinfo << endl;
 	_play->stop();
 	if ( _effects ) _effectrack.stop();
 	_bs2a.stop();
 }
 
 void KAudioPlayStreamPrivate::initaRts() {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kDebug( 400 ) << k_funcinfo << endl;
 
 	_effectrack = Arts::DynamicCast( _server->server().createObject( "Arts::StereoEffectStack" ) );
 	if ( _effectrack.isNull() )
 	{
-		kdWarning( 400 ) << "Couldn't create EffectStack!" << endl;
+		kWarning( 400 ) << "Couldn't create EffectStack!" << endl;
 		_effects = false;
 	}
 
 	_bs2a = Arts::DynamicCast( _server->server().createObject( "Arts::ByteStreamToAudio" ) );
 	if ( _bs2a.isNull() )
-		kdFatal( 400 ) << "Couldn't create ByteStreamToAudio" << endl;
+		kFatal( 400 ) << "Couldn't create ByteStreamToAudio" << endl;
 
 	if ( _effects )
 	{
@@ -86,11 +86,11 @@ KAudioPlayStream::KAudioPlayStream( KArtsServer* server, const QString title, QO
  : QObject( p,n )
  , d( new KAudioPlayStreamPrivate( server, title, this ) )
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kDebug( 400 ) << k_funcinfo << endl;
 }
 KAudioPlayStream::~KAudioPlayStream()
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kDebug( 400 ) << k_funcinfo << endl;
 }
 
 void KAudioPlayStream::setPolling( bool n ) { d->_polling = n; }
@@ -104,7 +104,7 @@ Arts::StereoEffectStack KAudioPlayStream::effectStack() const {
 
 void KAudioPlayStream::start( int samplingRate, int bits, int channels )
 {
-	kdDebug( 400 ) << k_funcinfo << "samplingRate: " << samplingRate << " bits: " << bits << " channels: " << channels << endl;
+	kDebug( 400 ) << k_funcinfo << "samplingRate: " << samplingRate << " bits: " << bits << " channels: " << channels << endl;
 	if ( !d->_attached )
 	{
 		d->_bs2a.samplingRate( samplingRate );
@@ -127,7 +127,7 @@ void KAudioPlayStream::start( int samplingRate, int bits, int channels )
 }
 void KAudioPlayStream::stop()
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kDebug( 400 ) << k_funcinfo << endl;
 	if ( d->_attached )
 	{
 		d->_attached = false;
@@ -153,7 +153,7 @@ void KAudioPlayStream::write( QByteArray& )
 
 void KAudioPlayStream::fillData( Arts::DataPacket<Arts::mcopbyte> *packet )
 {
-	//kdDebug( 400 ) << k_funcinfo << "packet->size=" << packet->size << endl;
+	//kDebug( 400 ) << k_funcinfo << "packet->size=" << packet->size << endl;
 	if ( d->_polling )
 	{
 		QByteArray bytearray( packet->size );
@@ -163,7 +163,7 @@ void KAudioPlayStream::fillData( Arts::DataPacket<Arts::mcopbyte> *packet )
 		bytearray.resetRawData( ( char* )packet->contents, packet->size );
 
 		//for ( int i=0; i<10; i++ )
-		//	kdDebug() << packet->contents[ i ] << " : " << bytearray.data()[ i ] << endl;
+		//	kDebug() << packet->contents[ i ] << " : " << bytearray.data()[ i ] << endl;
 	} else {
 		/// TODO: Implement a queue and fetching from it...
 	}
@@ -186,7 +186,7 @@ KByteSoundProducer::KByteSoundProducer( KAudioPlayStream* impl, float minBufferT
 		streamBufferTime = ( float )( _packets * packetCapacity * 1000 )
 			/ ( float )( _samplingRate * _channels * 2 );
 	} while ( streamBufferTime < minBufferTime );
-	//kdDebug( 400 ) << k_funcinfo << "_packets:" << _packets << " packetCapacity:" << packetCapacity << endl;
+	//kDebug( 400 ) << k_funcinfo << "_packets:" << _packets << " packetCapacity:" << packetCapacity << endl;
 }
 
 KByteSoundProducer::~KByteSoundProducer()

@@ -40,12 +40,12 @@ KGlobalAccel::KGlobalAccel( QObject* pParent )
 : QObject( pParent ),
 		d(new KGlobalAccelPrivate())
 {
-	kdDebug(125) << "KGlobalAccel(): this = " << this << endl;
+	kDebug(125) << "KGlobalAccel(): this = " << this << endl;
 }
 
 KGlobalAccel::~KGlobalAccel()
 {
-	kdDebug(125) << "~KGlobalAccel(): this = " << this << endl;
+	kDebug(125) << "~KGlobalAccel(): this = " << this << endl;
 	delete d;
 }
 

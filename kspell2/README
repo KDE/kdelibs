@@ -55,15 +55,15 @@ Dictionary *deDict = broker->dictionary( "de_DE" );
 void someFunc( const QString& word )
 {
     if ( enDict->check( word ) ) {
-        kdDebug()<<"Word \""<<word<<"\" is misspelled." <<endl;
+        kDebug()<<"Word \""<<word<<"\" is misspelled." <<endl;
         QStringList suggestion = enDict->suggest( word );	
-        kdDebug()<<"Suggestions: "<< suggestions <<endl;
+        kDebug()<<"Suggestions: "<< suggestions <<endl;
     }
 
     QStringList suggestions;
     if ( deDict->checkAndSuggest( word, suggestions ) ) {
-       kdDebug()<<"Wort \""<<word<<"\" ist fehlbuchstabiert." <<endl;
-       kdDebug()<<"Vorschlage: "<< suggestions <<endl;
+       kDebug()<<"Wort \""<<word<<"\" ist fehlbuchstabiert." <<endl;
+       kDebug()<<"Vorschlage: "<< suggestions <<endl;
     }
 }
 

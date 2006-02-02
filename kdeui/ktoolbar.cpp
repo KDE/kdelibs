@@ -685,7 +685,7 @@ void KToolBar::removeItem(int id)
     Id2WidgetMap::Iterator it = id2widget.find( id );
     if ( it == id2widget.end() )
     {
-        kdDebug(220) << name() << " KToolBar::removeItem item " << id << " not found" << endl;
+        kDebug(220) << name() << " KToolBar::removeItem item " << id << " not found" << endl;
         return;
     }
     QWidget * w = (*it);
@@ -701,7 +701,7 @@ void KToolBar::removeItemDelayed(int id)
     Id2WidgetMap::Iterator it = id2widget.find( id );
     if ( it == id2widget.end() )
     {
-        kdDebug(220) << name() << " KToolBar::removeItem item " << id << " not found" << endl;
+        kDebug(220) << name() << " KToolBar::removeItem item " << id << " not found" << endl;
         return;
     }
     QWidget * w = (*it);
@@ -761,7 +761,7 @@ void KToolBar::setBarPos (BarPosition bpos)
     if ( !mainWindow() )
         return;
     mainWindow()->moveDockWindow( this, (Qt::ToolBarDock)bpos );
-    //kdDebug(220) << name() << " setBarPos dockWindowIndex=" << dockWindowIndex() << endl;
+    //kDebug(220) << name() << " setBarPos dockWindowIndex=" << dockWindowIndex() << endl;
 }
 
 
@@ -798,10 +798,10 @@ void KToolBar::setIconText(IconText icontext, bool update)
     if (icontext != d->m_iconText) {
         d->m_iconText = icontext;
         doUpdate=true;
-        //kdDebug(220) << name() << "  icontext has changed, doUpdate=true" << endl;
+        //kDebug(220) << name() << "  icontext has changed, doUpdate=true" << endl;
     }
     else {
-        //kdDebug(220) << name() << "  icontext hasn't changed, doUpdate=false" << endl;
+        //kDebug(220) << name() << "  icontext hasn't changed, doUpdate=false" << endl;
     }
 
     if (!update)
@@ -919,7 +919,7 @@ void KToolBar::saveState()
 {
     // first, try to save to the xml file
     if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() ) {
-        //kdDebug(220) << name() << " saveState: saving to " << d->m_xmlguiClient->xmlFile() << endl;
+        //kDebug(220) << name() << " saveState: saving to " << d->m_xmlguiClient->xmlFile() << endl;
         QString barname(objectName().isEmpty() ? "mainToolBar" : name());
         // try to find our toolbar
         d->modified = false;
@@ -1001,13 +1001,13 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     QString configGroup = _configGroup;
     if (configGroup.isEmpty())
         configGroup = settingsGroup();
-    //kdDebug(220) << name() << " saveSettings() group=" << _configGroup << " -> " << configGroup << endl;
+    //kDebug(220) << name() << " saveSettings() group=" << _configGroup << " -> " << configGroup << endl;
 
     QString position, icontext;
     int index;
     getAttributes( position, icontext, index );
 
-    //kdDebug(220) << name() << "                position=" << position << " index=" << index << " offset=" << offset() << " newLine=" << newLine() << endl;
+    //kDebug(220) << name() << "                position=" << position << " index=" << index << " offset=" << offset() << " newLine=" << newLine() << endl;
 
     KConfigGroup cg(config, configGroup);
 
@@ -1016,16 +1016,16 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     else
       cg.writeEntry("Position", position);
 
-    //kdDebug(220) << name() << "                icontext=" << icontext << " hasDefault:" << config->hasDefault( "IconText" ) << " d->IconTextDefault=" << d->IconTextDefault << endl;
+    //kDebug(220) << name() << "                icontext=" << icontext << " hasDefault:" << config->hasDefault( "IconText" ) << " d->IconTextDefault=" << d->IconTextDefault << endl;
 
     if(d->m_honorStyle && icontext == d->IconTextDefault && !cg.hasDefault("IconText") )
     {
-      //kdDebug(220) << name() << "                reverting icontext to default" << endl;
+      //kDebug(220) << name() << "                reverting icontext to default" << endl;
       cg.revertToDefault("IconText");
     }
     else
     {
-      //kdDebug(220) << name() << "                writing icontext " << icontext << endl;
+      //kDebug(220) << name() << "                writing icontext " << icontext << endl;
       cg.writeEntry("IconText", icontext);
     }
 
@@ -1048,7 +1048,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     // one toolbar, if we only saved the changed indexes, the toolbars wouldn't
     // reappear at the same position the next time.
     // The whole set of indexes has to be saved.
-    //kdDebug(220) << name() << "                writing index " << index << endl;
+    //kDebug(220) << name() << "                writing index " << index << endl;
     KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
     // don't save if there's only one toolbar
 
@@ -1384,7 +1384,7 @@ void KToolBar::slotIconChanged(int group)
 
 void KToolBar::slotReadConfig()
 {
-    //kdDebug(220) << name() << " slotReadConfig" << endl;
+    //kDebug(220) << name() << " slotReadConfig" << endl;
     // Read appearance settings (hmm, we used to do both here,
     // but a well behaved application will call applyMainWindowSettings
     // anyway, right ?)
@@ -1437,7 +1437,7 @@ KToolBar::IconText KToolBar::iconTextSetting()
 void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGroup, bool forceGlobal)
 {
     QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
-    //kdDebug(220) << name() << " applyAppearanceSettings: configGroup=" << configGroup << " forceGlobal=" << forceGlobal << endl;
+    //kDebug(220) << name() << " applyAppearanceSettings: configGroup=" << configGroup << " forceGlobal=" << forceGlobal << endl;
 
     // If we have application-specific settings in the XML file,
     // and nothing in the application's config file, then
@@ -1498,7 +1498,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
             if ( config->hasKey( attrIconText ) ) {
                 iconText = config->readEntry(attrIconText, QString());
                 applyIconText = true;
-                //kdDebug(220) << name() << " read icontext=" << d->IconTextDefault << ", that will be the default" << endl;
+                //kDebug(220) << name() << " read icontext=" << d->IconTextDefault << ", that will be the default" << endl;
             }
 
             // now get the size
@@ -1525,7 +1525,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
     // check if the icon/text has changed
     if (icon_text != d->m_iconText && applyIconText) {
-        //kdDebug(220) << name() << " applyAppearanceSettings setIconText " << icon_text << endl;
+        //kDebug(220) << name() << " applyAppearanceSettings setIconText " << icon_text << endl;
         setIconText(icon_text, false);
         doUpdate = true;
     }
@@ -1558,7 +1558,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
 void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool force)
 {
-    //kdDebug(220) << name() << " applySettings group=" << _configGroup << endl;
+    //kDebug(220) << name() << " applySettings group=" << _configGroup << endl;
 
     QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
 
@@ -1610,7 +1610,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool 
         else if ( position == "Flat" )
             pos = Qt::DockMinimized;
 
-        //kdDebug(220) << name() << " applySettings hidden=" << hidden << endl;
+        //kDebug(220) << name() << " applySettings hidden=" << hidden << endl;
         if (hidden)
             hide();
         else
@@ -1618,7 +1618,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool 
 
         if ( mainWindow() )
         {
-            //kdDebug(220) << name() << " applySettings updating ToolbarInfo" << endl;
+            //kDebug(220) << name() << " applySettings updating ToolbarInfo" << endl;
             d->toolBarInfo = KToolBarPrivate::ToolBarInfo( pos, index, newLine, offset );
             positionYourself( true );
         }
@@ -1739,14 +1739,14 @@ void KToolBar::loadState( const QDomElement &element )
         d->PositionDefault = element.attribute( "positionDefault" );
         d->IconTextDefault = element.attribute( "iconTextDefault" );
     }
-    //kdDebug(220) << name() << " loadState loadingAppDefaults=" << loadingAppDefaults << endl;
+    //kDebug(220) << name() << " loadState loadingAppDefaults=" << loadingAppDefaults << endl;
 
     Qt::ToolBarDock dock = stringToDock( element.attribute( "position" ).toLower() );
 
     {
         QByteArray attrIconText = element.attribute( "iconText" ).toLower().toLatin1();
         if ( !attrIconText.isEmpty() ) {
-            //kdDebug(220) << name() << " loadState attrIconText=" << attrIconText << endl;
+            //kDebug(220) << name() << " loadState attrIconText=" << attrIconText << endl;
             if ( attrIconText == "icontextright" )
                 setIconText( KToolBar::IconTextRight );
             else if ( attrIconText == "textonly" )
@@ -1757,7 +1757,7 @@ void KToolBar::loadState( const QDomElement &element )
                 setIconText( KToolBar::IconOnly );
         } else
 	{
-	    //kdDebug(220) << name() << " loadState no iconText attribute in XML, using iconTextSetting=" << iconTextSetting() << endl;
+	    //kDebug(220) << name() << " loadState no iconText attribute in XML, using iconTextSetting=" << iconTextSetting() << endl;
             // Use global setting
             if (d->m_honorStyle)
                 setIconText( iconTextSetting() );
@@ -1818,13 +1818,13 @@ void KToolBar::loadState( const QDomElement &element )
     if ( loadingAppDefaults )
     {
         getAttributes( d->PositionDefault, d->IconTextDefault, index );
-        //kdDebug(220) << name() << " loadState IconTextDefault=" << d->IconTextDefault << endl;
+        //kDebug(220) << name() << " loadState IconTextDefault=" << d->IconTextDefault << endl;
         d->OffsetDefault = offset;
         d->NewLineDefault = newLine;
         d->HiddenDefault = hidden;
         d->IconSizeDefault = iconSize;
     }
-    //kdDebug(220) << name() << " loadState hidden=" << hidden << endl;
+    //kDebug(220) << name() << " loadState hidden=" << hidden << endl;
 
     // Apply transparent-toolbar-moving setting (ok, this is global to the mainwindow,
     // but we do it only if there are toolbars...)
@@ -1888,7 +1888,7 @@ void KToolBar::getAttributes( QString &position, QString &icontext, int &index )
         icontext = "IconOnly";
         break;
     }
-    //kdDebug(220) << name() << " getAttributes: icontext=" << icontext << endl;
+    //kDebug(220) << name() << " getAttributes: icontext=" << icontext << endl;
 }
 
 void KToolBar::saveState( QDomElement &current )
@@ -1917,7 +1917,7 @@ void KToolBar::saveState( QDomElement &current )
     current.setAttribute( "positionDefault", d->PositionDefault );
     current.setAttribute( "iconTextDefault", d->IconTextDefault );
 
-    //kdDebug(220) << name() << " saveState: saving index=" << index << " iconText=" << icontext << " hidden=" << isHidden() << endl;
+    //kDebug(220) << name() << " saveState: saving index=" << index << " iconText=" << icontext << " hidden=" << isHidden() << endl;
 }
 
 // Called by KMainWindow::finalizeGUI
@@ -1928,19 +1928,19 @@ void KToolBar::positionYourself( bool force )
 
     if ( d->positioned || !mainWindow() )
     {
-        //kdDebug(220) << name() << " positionYourself d->positioned=true  ALREADY DONE" << endl;
+        //kDebug(220) << name() << " positionYourself d->positioned=true  ALREADY DONE" << endl;
         return;
     }
     // we can't test for ForceHide after moveDockWindow because QDockArea
     // does a reparent() with showIt == true
     bool hidden = isHidden();
-    //kdDebug(220) << name() << " positionYourself  dock=" << d->toolBarInfo.dock << " newLine=" << d->toolBarInfo.newline << " index=" << d->toolBarInfo.index << " offset=" << d->toolBarInfo.offset << endl;
+    //kDebug(220) << name() << " positionYourself  dock=" << d->toolBarInfo.dock << " newLine=" << d->toolBarInfo.newline << " index=" << d->toolBarInfo.index << " offset=" << d->toolBarInfo.offset << endl;
     mainWindow()->moveDockWindow( this, d->toolBarInfo.dock,
                                   d->toolBarInfo.newline,
                                   d->toolBarInfo.index,
                                   d->toolBarInfo.offset );
 
-    //kdDebug(220) << name() << " positionYourself dockWindowIndex=" << dockWindowIndex() << endl;
+    //kDebug(220) << name() << " positionYourself dockWindowIndex=" << dockWindowIndex() << endl;
     if ( hidden )
         hide();
     else

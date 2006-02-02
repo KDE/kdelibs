@@ -368,7 +368,7 @@ class Manager : private ManagerNotifier
     */
     void notifyResourceAdded( Resource *res )
     {
-      kdDebug(5650) << "Manager::resourceAdded " << res->resourceName() << endl;
+      kDebug(5650) << "Manager::resourceAdded " << res->resourceName() << endl;
       T *resource = dynamic_cast<T *>( res );
       if ( resource ) {
         for(int i = 0; i < mObservers.size(); ++i)
@@ -381,7 +381,7 @@ class Manager : private ManagerNotifier
     */
     void notifyResourceModified( Resource *res )
     {
-      kdDebug(5650) << "Manager::resourceModified " << res->resourceName()
+      kDebug(5650) << "Manager::resourceModified " << res->resourceName()
                     << endl;
       T *resource = dynamic_cast<T *>( res );
       if ( resource ) {
@@ -395,13 +395,13 @@ class Manager : private ManagerNotifier
     */
     void notifyResourceDeleted( Resource *res )
     {
-      kdDebug(5650) << "Manager::resourceDeleted " << res->resourceName()
+      kDebug(5650) << "Manager::resourceDeleted " << res->resourceName()
                     << endl;
       T *resource = dynamic_cast<T *>( res );
       if ( resource ) {
         for(int i = 0; i < mObservers.size(); ++i)
           mObservers.at(i)->resourceDeleted( resource ); {
-          kdDebug(5650) << "Notifying a observer to Manager..." << endl;
+          kDebug(5650) << "Notifying a observer to Manager..." << endl;
         }
       }
     }

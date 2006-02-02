@@ -272,7 +272,7 @@ bool KPty::open()
     }
   }
 
-  kdWarning(175) << "Can't open a pseudo teletype" << endl;
+  kWarning(175) << "Can't open a pseudo teletype" << endl;
   return false;
 
  gotpty:
@@ -285,7 +285,7 @@ bool KPty::open()
        (st.st_mode & (S_IRGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH))) &&
       !chownpty(true))
   {
-    kdWarning(175)
+    kWarning(175)
       << "chownpty failed for device " << ptyName << "::" << d->ttyName
       << "\nThis means the communication can be eavesdropped." << endl;
   }
@@ -301,7 +301,7 @@ bool KPty::open()
   d->slaveFd = ::open(d->ttyName.data(), O_RDWR | O_NOCTTY);
   if (d->slaveFd < 0)
   {
-    kdWarning(175) << "Can't open slave pseudo teletype" << endl;
+    kWarning(175) << "Can't open slave pseudo teletype" << endl;
     ::close(d->masterFd);
     d->masterFd = -1;
     return false;

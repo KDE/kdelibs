@@ -44,12 +44,12 @@ void SpeedTest::entries(KIO::Job*, const UDSEntryList& list) {
     UDSEntryList::ConstIterator it = list.begin();
     const UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it)
-        kdDebug() << (*it).stringValue( UDS_NAME ) << endl;
+        kDebug() << (*it).stringValue( UDS_NAME ) << endl;
 }
 
 
 void SpeedTest::finished(Job*) {
-    kdDebug() << "job finished" << endl;
+    kDebug() << "job finished" << endl;
     qApp->quit();
 }
 
@@ -75,27 +75,27 @@ int main(int argc, char **argv) {
     else
       url = "file:" + QDir::currentPath();
 
-    kdDebug() << url.url() << " is probably " << (KIO::probably_slow_mounted(url.path()) ? "slow" : "normal") << " mounted\n";
-    kdDebug() << url.url() << " is " << (KIO::manually_mounted(url.path()) ? "manually" : "system") << " mounted\n";
+    kDebug() << url.url() << " is probably " << (KIO::probably_slow_mounted(url.path()) ? "slow" : "normal") << " mounted\n";
+    kDebug() << url.url() << " is " << (KIO::manually_mounted(url.path()) ? "manually" : "system") << " mounted\n";
     QString mp = KIO::findDeviceMountPoint(url.path());
     if (mp.isEmpty()) {
-        kdDebug() << "no mount point for device " << url.url() << " found\n";
+        kDebug() << "no mount point for device " << url.url() << " found\n";
     } else
-        kdDebug() << mp << " is the mount point for device " << url.url() << endl;
+        kDebug() << mp << " is the mount point for device " << url.url() << endl;
 
     mp = KIO::findPathMountPoint(url.path());
     if (mp.isEmpty()) {
-        kdDebug() << "no mount point for path " << url.url() << " found\n";
+        kDebug() << "no mount point for path " << url.url() << " found\n";
     } else
-        kdDebug() << mp << " is the mount point for path " << url.url() << endl;
+        kDebug() << mp << " is the mount point for path " << url.url() << endl;
     // SpeedTest test( url );
     // app.exec();
 
     mp = KIO::findPathMountPoint(url.path());
     if (mp.isEmpty()) {
-        kdDebug() << "no mount point for path " << url.url() << " found\n";
+        kDebug() << "no mount point for path " << url.url() << " found\n";
     } else
-        kdDebug() << mp << " is the mount point for path " << url.url() << endl;
+        kDebug() << mp << " is the mount point for path " << url.url() << endl;
     // SpeedTest test( url );
     // app.exec();
 
@@ -103,17 +103,17 @@ int main(int argc, char **argv) {
 
     mp = KIO::findPathMountPoint(url.path());
     if (mp.isEmpty()) {
-        kdDebug() << "no mount point for path " << url.url() << " found\n";
+        kDebug() << "no mount point for path " << url.url() << " found\n";
     } else
-        kdDebug() << mp << " is the mount point for path " << url.url() << endl;
+        kDebug() << mp << " is the mount point for path " << url.url() << endl;
     // SpeedTest test( url );
     // app.exec();
 
     mp = KIO::findPathMountPoint(url.path());
     if (mp.isEmpty()) {
-        kdDebug() << "no mount point for path " << url.url() << " found\n";
+        kDebug() << "no mount point for path " << url.url() << " found\n";
     } else
-        kdDebug() << mp << " is the mount point for path " << url.url() << endl;
+        kDebug() << mp << " is the mount point for path " << url.url() << endl;
     // SpeedTest test( url );
     // app.exec();
 
@@ -124,9 +124,9 @@ int main(int argc, char **argv) {
 
     mp = KIO::findPathMountPoint(url.path());
     if (mp.isEmpty()) {
-        kdDebug() << "no mount point for path " << url.url() << " found\n";
+        kDebug() << "no mount point for path " << url.url() << " found\n";
     } else
-        kdDebug() << mp << " is the mount point for path " << url.url() << endl;
+        kDebug() << mp << " is the mount point for path " << url.url() << endl;
     // SpeedTest test( url );
     // app.exec();
 

@@ -170,7 +170,7 @@ void KNumInput::layout(bool deep)
         p = p->m_next;
     }
 
-//    kdDebug() << "w1 " << w1 << " w2 " << w2 << endl;
+//    kDebug() << "w1 " << w1 << " w2 " << w2 << endl;
 }
 
 QSizePolicy KNumInput::sizePolicy() const
@@ -936,13 +936,13 @@ public:
     assert( ok );
     const double f = factor();
     if ( value > double(INT_MAX) / f ) {
-      kdWarning() << "KDoubleSpinBox: can't represent value " << value
+      kWarning() << "KDoubleSpinBox: can't represent value " << value
 		  << "in terms of fixed-point numbers with precision "
 		  << mPrecision << endl;
       *ok = false;
       return INT_MAX;
     } else if ( value < double(INT_MIN) / f ) {
-      kdWarning() << "KDoubleSpinBox: can't represent value " << value
+      kWarning() << "KDoubleSpinBox: can't represent value " << value
 		  << "in terms of fixed-point numbers with precision "
 		  << mPrecision << endl;
       *ok = false;

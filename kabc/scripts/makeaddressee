@@ -114,12 +114,12 @@ if (!open( CPP_OUT, ">$builddir/../addressee.cpp" ) ) {
             if ( $entryTypes[$i] =~ "QString" ) {
               print CPP_OUT "  if ( mData->$entryNames[$i] != a.mData->$entryNames[$i] &&\n";
               print CPP_OUT "     !( mData->$entryNames[$i].isEmpty() && a.mData->$entryNames[$i].isEmpty() ) ) {\n";
-              print CPP_OUT "    kdDebug(5700) << \"$entryNames[$i] differs\" << endl;\n";
+              print CPP_OUT "    kDebug(5700) << \"$entryNames[$i] differs\" << endl;\n";
               print CPP_OUT "    return false;\n";
               print CPP_OUT "  }\n";
             } else {
               print CPP_OUT "  if ( mData->$entryNames[$i] != a.mData->$entryNames[$i] ) {\n";
-              print CPP_OUT "    kdDebug(5700) << \"$entryNames[$i] differs\" << endl;\n";
+              print CPP_OUT "    kDebug(5700) << \"$entryNames[$i] differs\" << endl;\n";
               print CPP_OUT "    return false;\n";
               print CPP_OUT "  }\n";
             }
@@ -141,7 +141,7 @@ if (!open( CPP_OUT, ">$builddir/../addressee.cpp" ) ) {
     } elsif (/--DEBUG--/) {
       for( $i=0; $i<@entryNames; ++$i ) {
         if ( $entryCtrl[$i] !~ /A/ ) { next; }
-        print CPP_OUT "  kdDebug(5700) << \"  " . ucfirst($entryNames[$i]);
+        print CPP_OUT "  kDebug(5700) << \"  " . ucfirst($entryNames[$i]);
         print CPP_OUT ": '\" << $entryNames[$i]()$entryDebug[$i] << \"'\" << endl;\n";
       }
     } else {

@@ -126,7 +126,7 @@ void KIconView::slotSettingsChanged(int category)
     if ( category != KApplication::SETTINGS_MOUSE )
       return;
     m_bUseSingle = KGlobalSettings::singleClick();
-    //kdDebug() << "KIconView::slotSettingsChanged for mouse, usesingle=" << m_bUseSingle << endl;
+    //kDebug() << "KIconView::slotSettingsChanged for mouse, usesingle=" << m_bUseSingle << endl;
 
     disconnect( this, SIGNAL( mouseButtonClicked( int, Q3IconViewItem *,
 						  const QPoint & ) ),
@@ -232,14 +232,14 @@ void KIconView::slotAutoSelect()
       setSelected( m_pCurrentItem, true );
   }
   else
-    kdDebug() << "KIconView: That's not supposed to happen!!!!" << endl;
+    kDebug() << "KIconView: That's not supposed to happen!!!!" << endl;
 }
 
 void KIconView::emitExecute( Q3IconViewItem *item, const QPoint &pos )
 {
   if ( d->mode != Execute )
   {
-    // kdDebug() << "KIconView::emitExecute : not in execute mode !" << endl;
+    // kDebug() << "KIconView::emitExecute : not in execute mode !" << endl;
     return;
   }
 
@@ -320,7 +320,7 @@ void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 
 void KIconView::slotMouseButtonClicked( int btn, Q3IconViewItem *item, const QPoint &pos )
 {
-  //kdDebug() << " KIconView::slotMouseButtonClicked() item=" << item << endl;
+  //kDebug() << " KIconView::slotMouseButtonClicked() item=" << item << endl;
   if( d->doubleClickIgnoreTimer.isActive() )
     return; // Ignore double click
 
@@ -475,11 +475,11 @@ void KIconViewItem::calcRect( const QString& text_ )
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
     if ( !qobject_cast<KIconView*>(iconView()) )
     {
-        kdWarning() << "KIconViewItem used in a " << iconView()->metaObject()->className() << " !!" << endl;
+        kWarning() << "KIconViewItem used in a " << iconView()->metaObject()->className() << " !!" << endl;
         return;
     }
 #endif
-    //kdDebug() << "KIconViewItem::calcRect - " << text() << endl;
+    //kDebug() << "KIconViewItem::calcRect - " << text() << endl;
     KIconView *view = static_cast<KIconView *>(iconView());
     QRect itemIconRect = pixmapRect();
     QRect itemTextRect = textRect();
@@ -633,7 +633,7 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
     if ( !qobject_cast<KIconView*>(view) )
     {
-        kdWarning() << "KIconViewItem used in a " << view->metaObject()->className() << " !!" << endl;
+        kWarning() << "KIconViewItem used in a " << view->metaObject()->className() << " !!" << endl;
         return;
     }
 #endif

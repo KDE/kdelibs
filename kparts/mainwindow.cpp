@@ -82,7 +82,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::createGUI( Part * part )
 {
-  kdDebug(1000) << "MainWindow::createGUI, part=" << part << " " << ( part ? part->className() : "" )
+  kDebug(1000) << "MainWindow::createGUI, part=" << part << " " << ( part ? part->className() : "" )
                 << " " << ( part ? part->name() : "" )
                 << endl;
 
@@ -94,7 +94,7 @@ void MainWindow::createGUI( Part * part )
 
   if ( d->m_activePart )
   {
-    kdDebug(1000) << "deactivating GUI for " << d->m_activePart << " " << d->m_activePart->className()
+    kDebug(1000) << "deactivating GUI for " << d->m_activePart << " " << d->m_activePart->className()
                   << " " << d->m_activePart->name() << endl;
 
     GUIActivateEvent ev( false );

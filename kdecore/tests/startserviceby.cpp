@@ -36,6 +36,6 @@ main(int argc, char *argv[])
    QByteArray dcopService;
    int pid;
    KToolInvocation::startServiceByDesktopName( "kaddressbook", QString(), &error, &dcopService, &pid );
-   kdDebug() << "Started. error=" << error << " dcopService=" << dcopService << " pid=" << pid << endl;
+   kDebug() << "Started. error=" << error << " dcopService=" << dcopService << " pid=" << pid << endl;
    a.exec();
 }

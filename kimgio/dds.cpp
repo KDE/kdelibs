@@ -967,7 +967,7 @@ bool DDSHandler::read(QImage *image)
     uint fourcc;
     s >> fourcc;
     if( fourcc != FOURCC_DDS ) {
-        kdDebug(399) << "This is not a DDS file." << endl;
+        kDebug(399) << "This is not a DDS file." << endl;
         return false;
     }
 
@@ -977,13 +977,13 @@ bool DDSHandler::read(QImage *image)
 
     // Check image file format.
     if( s.atEnd() || !IsValid( header ) ) {
-        kdDebug(399) << "This DDS file is not valid." << endl;
+        kDebug(399) << "This DDS file is not valid." << endl;
         return false;
     }
 
     // Determine image type, by now, we only support 2d textures.
     if( !IsSupported( header ) ) {
-        kdDebug(399) << "This DDS file is not supported." << endl;
+        kDebug(399) << "This DDS file is not supported." << endl;
         return false;
     }
 

@@ -144,7 +144,7 @@ void KIconViewSearchLine::clear()
 	}
     }
   if ( ! d->hiddenItems.isEmpty() )
-    kdDebug() << __FILE__ << ":" << __LINE__ <<
+    kDebug() << __FILE__ << ":" << __LINE__ <<
       "hiddenItems is not empty as it should be. " <<
       d->hiddenItems.count() << " items are still there.\n" << endl;
 
@@ -224,7 +224,7 @@ void KIconViewSearchLine::showItem( Q3IconViewItem *item )
 {
   if ( d->iconView == NULL )
     {
-      kdDebug() << __FILE__ << ":" << __LINE__ <<
+      kDebug() << __FILE__ << ":" << __LINE__ <<
 	"showItem() could not be called while there's no iconView set." <<
 	endl;
       return;

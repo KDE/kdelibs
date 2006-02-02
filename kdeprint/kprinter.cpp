@@ -700,7 +700,7 @@ bool KPrinter::autoConfigure(const QString& prname, QWidget *parent)
 void reportError(KPrinter *p)
 {
 	if (!KNotifyClient::event(0,"printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1").arg(p->errorMessage())))
-		kdDebug(500) << "could not send notify event" << endl;
+		kDebug(500) << "could not send notify event" << endl;
 }
 
 KPrinter::PageSize pageNameToPageSize(const QString& _name)
@@ -780,15 +780,15 @@ const char* pageSizeToPageName(KPrinter::PageSize s)
 // FIXME: remove for 4.0
 QSize rangeToSize( const QString& )
 {
-	kdWarning( 500 ) << "rangeToSize(QString) is obsolete, do not use (no effect)" << endl;
+	kWarning( 500 ) << "rangeToSize(QString) is obsolete, do not use (no effect)" << endl;
 	return QSize();
 }
 
 static void dumpOptions(const QMap<QString,QString>& opts)
 {
-	kdDebug(500) << "********************" << endl;
+	kDebug(500) << "********************" << endl;
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
-		kdDebug(500) << it.key() << " = " << it.data() << endl;
+		kDebug(500) << it.key() << " = " << it.data() << endl;
 }
 
 KPrinterImpl* KPrinter::implementation() const
@@ -967,7 +967,7 @@ void KPrinter::setMargins( uint top, uint left, uint bottom, uint right )
 // FIXME: remove for 4.0
 QSize KPrinter::realPageSize() const
 {
-	kdWarning( 500 ) << "KPrinter::realPageSize() is obsolete, do not use" << endl;
+	kWarning( 500 ) << "KPrinter::realPageSize() is obsolete, do not use" << endl;
 	if ( d->m_pagesize )
 		return d->m_pagesize->pageSize();
 	else
@@ -978,15 +978,15 @@ void KPrinter::setRealPageSize(DrPageSize *p)
 {
 	if ( p )
 	{
-		kdDebug( 500 ) << "Page size:  width =" << p->pageWidth() << endl;
-		kdDebug( 500 ) << "Page size: height =" << p->pageHeight() << endl;
-		kdDebug( 500 ) << "Page size:   left =" << p->leftMargin() << endl;
-		kdDebug( 500 ) << "Page size:    top =" << p->topMargin() << endl;
-		kdDebug( 500 ) << "Page size:  right =" << p->rightMargin() << endl;
-		kdDebug( 500 ) << "Page size: bottom =" << p->bottomMargin() << endl;
+		kDebug( 500 ) << "Page size:  width =" << p->pageWidth() << endl;
+		kDebug( 500 ) << "Page size: height =" << p->pageHeight() << endl;
+		kDebug( 500 ) << "Page size:   left =" << p->leftMargin() << endl;
+		kDebug( 500 ) << "Page size:    top =" << p->topMargin() << endl;
+		kDebug( 500 ) << "Page size:  right =" << p->rightMargin() << endl;
+		kDebug( 500 ) << "Page size: bottom =" << p->bottomMargin() << endl;
 	}
 	else
-		kdDebug( 500 ) << "Resetting page size" << endl;
+		kDebug( 500 ) << "Resetting page size" << endl;
 
 	/* we copy the page size structure internally
 	 * as the original object is owned by the driver
@@ -1000,19 +1000,19 @@ void KPrinter::setRealPageSize(DrPageSize *p)
 // FIXME: remove for 4.0
 void KPrinter::setRealPageSize( QSize )
 {
-	kdWarning( 500 ) << "KPrinter::setRealPageSize(QSize) is obsolete, do not use (no effect)" << endl;
+	kWarning( 500 ) << "KPrinter::setRealPageSize(QSize) is obsolete, do not use (no effect)" << endl;
 }
 
 // FIXME: remove for 4.0
 void KPrinter::setRealDrawableArea( const QRect& )
 {
-	kdWarning( 500 ) << "KPrinter::setRealDrawableArea(QRect) is obsolete, do not use (no effect)" << endl;
+	kWarning( 500 ) << "KPrinter::setRealDrawableArea(QRect) is obsolete, do not use (no effect)" << endl;
 }
 
 // FIXME: remove for 4.0
 QRect KPrinter::realDrawableArea() const
 {
-	kdWarning( 500 ) << "KPrinter::realDrawableArea() is obsolete, do not use" << endl;
+	kWarning( 500 ) << "KPrinter::realDrawableArea() is obsolete, do not use" << endl;
 	if ( d->m_pagesize )
 		return d->m_pagesize->pageRect();
 	else

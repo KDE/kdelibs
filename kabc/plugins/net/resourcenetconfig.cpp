@@ -74,7 +74,7 @@ void ResourceNetConfig::loadSettings( KRES::Resource *res )
   ResourceNet *resource = dynamic_cast<ResourceNet*>( res );
 
   if ( !resource ) {
-    kdDebug(5700) << "ResourceNetConfig::loadSettings(): cast failed" << endl;
+    kDebug(5700) << "ResourceNetConfig::loadSettings(): cast failed" << endl;
     return;
   }
 
@@ -88,7 +88,7 @@ void ResourceNetConfig::saveSettings( KRES::Resource *res )
   ResourceNet *resource = dynamic_cast<ResourceNet*>( res );
 
   if ( !resource ) {
-    kdDebug(5700) << "ResourceNetConfig::saveSettings(): cast failed" << endl;
+    kDebug(5700) << "ResourceNetConfig::saveSettings(): cast failed" << endl;
     return;
   }
 

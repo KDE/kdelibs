@@ -296,24 +296,24 @@ bool KShortcutDialog::x11Event( XEvent *pEvent )
 				return true;
 		case XFocusIn:
 			if (!m_bGrab) {
-				//kdDebug(125) << "FocusIn and Grab!" << endl;
+				//kDebug(125) << "FocusIn and Grab!" << endl;
 				grabKeyboard();
 				m_bGrab = true;
 			}
 			//else
-			//	kdDebug(125) << "FocusIn" << endl;
+			//	kDebug(125) << "FocusIn" << endl;
 			break;
 		case XFocusOut:
 			if (m_bGrab) {
-				//kdDebug(125) << "FocusOut and Ungrab!" << endl;
+				//kDebug(125) << "FocusOut and Ungrab!" << endl;
 				releaseKeyboard();
 				m_bGrab = false;
 			}
 			//else
-			//	kdDebug(125) << "FocusOut" << endl;
+			//	kDebug(125) << "FocusOut" << endl;
 			break;
 		default:
-			//kdDebug(125) << "x11Event->type = " << pEvent->type << endl;
+			//kDebug(125) << "x11Event->type = " << pEvent->type << endl;
 			break;
 	}
 	return KDialog::x11Event( pEvent );
@@ -397,7 +397,7 @@ void KShortcutDialog::x11KeyReleaseEvent( XEvent* pEvent )
 #elif defined(Q_WS_WIN)
 void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 {
-	kdDebug() << e->text() << " " << (int)e->text()[0].toLatin1()<<  " " << (int)e->ascii() << endl;
+	kDebug() << e->text() << " " << (int)e->text()[0].toLatin1()<<  " " << (int)e->ascii() << endl;
 	//if key is a letter, it must be stored as lowercase
 	int keyQt = QChar( e->key() & 0xff ).isLetter() ? 
 		(QChar( e->key() & 0xff ).toLower().toLatin1() | (e->key() & 0xffff00) )
@@ -494,7 +494,7 @@ bool KShortcutDialog::event ( QEvent * e )
 
 void KShortcutDialog::keyPressed( KKey key )
 {
-	kdDebug(125) << "keyPressed: " << key.toString() << endl;
+	kDebug(125) << "keyPressed: " << key.toString() << endl;
 
 	key.simplify();
 	if( m_bQtShortcut ) {

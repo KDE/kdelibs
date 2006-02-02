@@ -85,7 +85,7 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     QString openStr = url.url();
     openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded
 
-    kdDebug(250) << "KRecentDocument::add for " << openStr << endl;
+    kDebug(250) << "KRecentDocument::add for " << openStr << endl;
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup(QLatin1String("RecentDocuments"));

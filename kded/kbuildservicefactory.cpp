@@ -87,7 +87,7 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
      return serv;
   } else {
      if (!serv->isDeleted())
-        kdWarning(7012) << "Invalid Service : " << file << endl;
+        kWarning(7012) << "Invalid Service : " << file << endl;
      delete serv;
      return 0L;
   }
@@ -145,7 +145,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    {
       KService::Ptr service = KService::Ptr::staticCast(*itserv);
       const QStringList serviceTypeList = service->serviceTypes();
-      //kdDebug(7021) << "service " << service->desktopEntryPath() << " has serviceTypes " << serviceTypeList << endl;
+      //kDebug(7021) << "service " << service->desktopEntryPath() << " has serviceTypes " << serviceTypeList << endl;
       KServiceType::List serviceTypes;
       QStringList::ConstIterator it = serviceTypeList.begin();
       for( ; it != serviceTypeList.end(); ++it )
@@ -157,7 +157,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
          KServiceType::Ptr serviceType = KServiceType::serviceType(*it);
          if (!serviceType)
          {
-           kdWarning() << "'"<< service->desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< (*it) << "'" << endl;
+           kWarning() << "'"<< service->desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< (*it) << "'" << endl;
            continue;
          }
          serviceTypes.append(serviceType);

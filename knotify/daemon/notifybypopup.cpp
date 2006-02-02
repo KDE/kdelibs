@@ -41,7 +41,7 @@ NotifyByPopup::~NotifyByPopup()
 
 void NotifyByPopup::notify( int id, KNotifyConfig * config )
 {
-	kdDebug() << k_funcinfo << endl;
+	kDebug() << k_funcinfo << endl;
 
 	const QString &appname=config->appname;
 	
@@ -130,7 +130,7 @@ void NotifyByPopup::slotLinkClicked( const QString &adr )
 	unsigned int id=adr.section(":" , 0 , 0).toUInt();
 	unsigned int action=adr.section(":" , 1 , 1).toUInt();
 
-//	kdDebug() << k_funcinfo << id << " " << action << endl;
+//	kDebug() << k_funcinfo << id << " " << action << endl;
         
 	if(id==0 || action==0)
 		return;

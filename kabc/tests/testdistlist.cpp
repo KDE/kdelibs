@@ -37,10 +37,10 @@ int main(int argc,char **argv)
     manager->load();
     DistributionList *list = manager->list( name );
     if ( !list ) {
-      kdDebug() << "No list with name '" << name << "'" << endl;
+      kDebug() << "No list with name '" << name << "'" << endl;
       return 1;
     } else {
-      kdDebug() << "RESULT: " << list->emails().join(", ") << endl;
+      kDebug() << "RESULT: " << list->emails().join(", ") << endl;
       return 0; 
     }
   }

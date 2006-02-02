@@ -330,7 +330,7 @@ KDictSpellingHighlighter::~KDictSpellingHighlighter()
 
 void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
 {
-    kdDebug(0) << "KDictSpellingHighlighter::slotSpellReady( " << spell << " )" << endl;
+    kDebug(0) << "KDictSpellingHighlighter::slotSpellReady( " << spell << " )" << endl;
     if ( d->globalConfig ) {
         connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
                  this, SLOT( slotDictionaryChanged() ));
@@ -362,7 +362,7 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 	return false;
 
     // This debug is expensive, only enable it locally
-    //kdDebug(0) << "KDictSpellingHighlighter::isMisspelled( \"" << word << "\" )" << endl;
+    //kDebug(0) << "KDictSpellingHighlighter::isMisspelled( \"" << word << "\" )" << endl;
     // Normally isMisspelled would look up a dictionary and return
     // true or false, but kspell is asynchronous and slow so things
     // get tricky...
@@ -417,7 +417,7 @@ void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, con
                                                 unsigned int pos)
 {
     Q_UNUSED( suggestions );
-    // kdDebug() << suggestions.join( " " ).toLatin1() << endl;
+    // kDebug() << suggestions.join( " " ).toLatin1() << endl;
     if ( d->globalConfig )
         d->sDict()->insert( originalWord, NotOkay );
     else
@@ -457,7 +457,7 @@ void KDictSpellingHighlighter::dictionaryChanged()
 
 void KDictSpellingHighlighter::restartBackgroundSpellCheck()
 {
-    kdDebug(0) << "KDictSpellingHighlighter::restartBackgroundSpellCheck()" << endl;
+    kDebug(0) << "KDictSpellingHighlighter::restartBackgroundSpellCheck()" << endl;
     slotDictionaryChanged();
 }
 
@@ -496,7 +496,7 @@ bool KDictSpellingHighlighter::automatic() const
 
 void KDictSpellingHighlighter::slotRehighlight()
 {
-    kdDebug(0) << "KDictSpellingHighlighter::slotRehighlight()" << endl;
+    kDebug(0) << "KDictSpellingHighlighter::slotRehighlight()" << endl;
     if (d->completeRehighlightRequired) {
 	//rehighlight();
     } else {
@@ -524,7 +524,7 @@ void KDictSpellingHighlighter::slotDictionaryChanged()
 
 void KDictSpellingHighlighter::slotLocalSpellConfigChanged()
 {
-    kdDebug(0) << "KDictSpellingHighlighter::slotSpellConfigChanged()" << endl;
+    kDebug(0) << "KDictSpellingHighlighter::slotSpellConfigChanged()" << endl;
     // the spell config has been changed, so we have to restart from scratch
     d->mDict->clear();
     slotDictionaryChanged();

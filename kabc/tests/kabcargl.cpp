@@ -46,7 +46,7 @@ int main(int argc,char **argv)
   
   QFile f( filename );
   if ( !f.open( QIODevice::ReadOnly ) ) {
-    kdDebug() << "Error opening file '" << filename << "' for reading." << endl;
+    kDebug() << "Error opening file '" << filename << "' for reading." << endl;
     return 1;
   }
   
@@ -59,7 +59,7 @@ int main(int argc,char **argv)
   text.replace( "\n", "\r\n" );
   
   if ( !f.open( QIODevice::WriteOnly ) ) {
-    kdDebug() << "Error opening file '" << filename << "' for writing." << endl;
+    kDebug() << "Error opening file '" << filename << "' for writing." << endl;
     return 1;
   }
   

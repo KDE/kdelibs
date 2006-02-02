@@ -405,16 +405,16 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
           strPath = QLatin1Char('/');
     }
     setPath( strPath );
-    kdDebug() << "url()=" << url() << " rUrl=" << rUrl << endl;
+    kDebug() << "url()=" << url() << " rUrl=" << rUrl << endl;
     KUrl tmp( url() + rUrl);
-    kdDebug() << "assigning tmp=" << tmp.url() << endl;
+    kDebug() << "assigning tmp=" << tmp.url() << endl;
     *this = tmp;
     cleanPath(false);
   }
   else
   {
     KUrl tmp( rUrl );
-    kdDebug() << "not relative; assigning tmp=" << tmp.url() << endl;
+    kDebug() << "not relative; assigning tmp=" << tmp.url() << endl;
     *this = tmp;
     // Preserve userinfo if applicable.
     if (!_u.userInfo().isEmpty() && userInfo().isEmpty()
@@ -979,7 +979,7 @@ void KUrl::addPath( const QString& _txt )
   }
 
   setPath( strPath + _txt.mid( i ) );
-  //kdDebug(126)<<"addPath: resultpath="<<path()<<endl;
+  //kDebug(126)<<"addPath: resultpath="<<path()<<endl;
 }
 
 QString KUrl::directory( bool _strip_trailing_slash_from_result,

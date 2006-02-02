@@ -7,12 +7,12 @@
 
 void output( const KUrl& u )
 {
-    kdDebug() << "Looking up auto login for: " << u.url() << endl;
+    kDebug() << "Looking up auto login for: " << u.url() << endl;
     KIO::NetRC::AutoLogin l;
     bool result = KIO::NetRC::self()->lookup( u, l, true );
     if ( !result )
     {
-       kdDebug() << "Either no .netrc and/or .kionetrc file was "
+       kDebug() << "Either no .netrc and/or .kionetrc file was "
                     "found or there was problem when attempting to "
                     "read from them!  Please make sure either or both "
                     "of the above files exist and have the correct "
@@ -21,7 +21,7 @@ void output( const KUrl& u )
        return;
     }
 
-    kdDebug() << "Type: " << l.type << endl
+    kDebug() << "Type: " << l.type << endl
               << "Machine: " << l.machine << endl
               << "Login: " << l.login << endl
               << "Password: " << l.password << endl;
@@ -29,7 +29,7 @@ void output( const KUrl& u )
     QMap<QString,QStringList>::ConstIterator it = l.macdef.begin();
     for ( ; it != l.macdef.end(); ++it )
     {
-        kdDebug() << "Macro: " << it.key() << "= "
+        kDebug() << "Macro: " << it.key() << "= "
                   << it.data().join("   ") << endl;
     }
 }
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
             u = args->arg(i);
             if ( !u.isValid() )
             {
-              kdDebug() << u.url() << " is invalid! Ignoring..." << endl;
+              kDebug() << u.url() << " is invalid! Ignoring..." << endl;
               continue;
             }
             output( u );

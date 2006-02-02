@@ -65,13 +65,13 @@ void KIOInputStream_impl::streamStart()
 {
 	// prevent kill/reconnect
 	if (m_streamStarted) {
-		kdDebug( 400 ) << "not restarting stream!\n";
+		kDebug( 400 ) << "not restarting stream!\n";
 		if (m_job->isSuspended())
 			m_job->resume();
 		return;
 	}
 
-	kdDebug( 400 ) << "(re)starting stream\n";
+	kDebug( 400 ) << "(re)starting stream\n";
 
 	if(m_job != 0)
 		m_job->kill();
@@ -94,7 +94,7 @@ void KIOInputStream_impl::streamStart()
 
 void KIOInputStream_impl::streamEnd()
 {
-	kdDebug( 400 ) << "streamEnd()\n";
+	kDebug( 400 ) << "streamEnd()\n";
 
 	if(m_job != 0)
 	{
@@ -131,7 +131,7 @@ void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 
 	QDataStream dataStream(&m_data, QIODevice::WriteOnly | QIODevice::Append);
 	dataStream.writeRawBytes(data.data(), data.size());
-	//kdDebug( 400 ) << "STREAMING: buffersize = " << m_data.size() << " bytes" << endl;
+	//kDebug( 400 ) << "STREAMING: buffersize = " << m_data.size() << " bytes" << endl;
 	
 	processQueue();
 }
@@ -153,7 +153,7 @@ void KIOInputStream_impl::slotResult(KIO::Job *job)
 
 void KIOInputStream_impl::slotScanMimeType(KIO::Job *, const QString &mimetype)
 {
-	kdDebug( 400 ) << "got mimetype: " << mimetype << endl;
+	kDebug( 400 ) << "got mimetype: " << mimetype << endl;
 	emit mimeTypeFound(mimetype);
 }
 
@@ -188,19 +188,19 @@ void KIOInputStream_impl::processQueue()
 	{
 		if(m_data.size() > (m_packetBuffer * m_packetSize * 2) && !m_job->isSuspended())
 		{
-			kdDebug( 400 ) << "STREAMING: suspend job" << endl;
+			kDebug( 400 ) << "STREAMING: suspend job" << endl;
 			m_job->suspend();
 		}
 		else if(m_data.size() < (m_packetBuffer * m_packetSize) && m_job->isSuspended())
 		{
-			kdDebug( 400 ) << "STREAMING: resume job" << endl;
+			kDebug( 400 ) << "STREAMING: resume job" << endl;
 			m_job->resume();
 		}
 	}
 
 	if (!m_firstBuffer) {
 		if(m_data.size() < (m_packetBuffer * m_packetSize * 2) ) {
-			kdDebug( 400 ) << "STREAMING: Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize * 2) - m_data.size()) << ")" << endl;
+			kDebug( 400 ) << "STREAMING: Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize * 2) - m_data.size()) << ")" << endl;
 			return;
 		} else {
 			m_firstBuffer = true;
@@ -214,7 +214,7 @@ void KIOInputStream_impl::request_outdata(DataPacket<mcopbyte> *packet)
 {
 	processQueue();
 	packet->size = std::min(m_packetSize, m_data.size());
-	kdDebug( 400 ) << "STREAMING: Filling one DataPacket with " << packet->size << " bytes of the stream!" << endl;
+	kDebug( 400 ) << "STREAMING: Filling one DataPacket with " << packet->size << " bytes of the stream!" << endl;
 
 	if (!m_finished) {
 		if( (unsigned)packet->size < m_packetSize || ! m_firstBuffer) {

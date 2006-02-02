@@ -442,7 +442,7 @@ namespace
 
 	addrinfo *result;
 	int res = getaddrinfo(m_node, m_serv, &hint, &result);
-	//    kdDebug(179) << k_funcinfo << "getaddrinfo(\""
+	//    kDebug(179) << k_funcinfo << "getaddrinfo(\""
 	//		 << m_node << "\", \"" << m_serv << "\", af="
 	//		 << m_af << ") returned " << res << endl;
 

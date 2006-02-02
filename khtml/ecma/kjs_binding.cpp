@@ -51,7 +51,7 @@ ScriptInterpreter::ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* fram
     m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "ScriptInterpreter::ScriptInterpreter " << this << " for part=" << m_frame << endl;
+  kDebug(6070) << "ScriptInterpreter::ScriptInterpreter " << this << " for part=" << m_frame << endl;
 #endif
   if ( !interpreterList )
     interpreterList = new InterpreterList;
@@ -61,7 +61,7 @@ ScriptInterpreter::ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* fram
 ScriptInterpreter::~ScriptInterpreter()
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_frame << endl;
+  kDebug(6070) << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_frame << endl;
 #endif
   assert( interpreterList && interpreterList->contains( this ) );
   interpreterList->remove( this );
@@ -83,7 +83,7 @@ void ScriptInterpreter::mark()
 {
   Interpreter::mark();
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.size() << " DOM objects" << endl;
+  kDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.size() << " DOM objects" << endl;
 #endif
   HashMap<void*, DOMObject*>::iterator it = m_domObjects.begin();
   while (it != m_domObjects.end()) {
@@ -113,7 +113,7 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
       // other accepted events
       id == DOM::EventImpl::SELECT_EVENT || id == DOM::EventImpl::CHANGE_EVENT ||
       id == DOM::EventImpl::SUBMIT_EVENT );
-    kdDebug(6070) << "Window.open, smart policy: id=" << id << " eventOk=" << eventOk << endl;
+    kDebug(6070) << "Window.open, smart policy: id=" << id << " eventOk=" << eventOk << endl;
     if (eventOk)
       return true;
   } else // no event
@@ -122,10 +122,10 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
     {
       // This is the <a href="javascript:window.open('...')> case -> we let it through
       return true;
-      kdDebug(6070) << "Window.open, smart policy, no event, inline code -> ok" << endl;
+      kDebug(6070) << "Window.open, smart policy, no event, inline code -> ok" << endl;
     }
     else // This is the <script>window.open(...)</script> case or a timer callback -> block it
-      kdDebug(6070) << "Window.open, smart policy, no event, <script> tag -> refused" << endl;
+      kDebug(6070) << "Window.open, smart policy, no event, <script> tag -> refused" << endl;
   }
   return false;
 }

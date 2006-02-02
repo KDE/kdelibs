@@ -157,12 +157,12 @@ void RenderCanvas::layout()
 	recalcMinMaxWidths();
 
 #ifdef SPEED_DEBUG
-    kdDebug() << "RenderCanvas::calcMinMax time used=" << qt.elapsed() << endl;
+    kDebug() << "RenderCanvas::calcMinMax time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
 
 #ifdef SPEED_DEBUG
-    kdDebug() << "RenderCanvas::layout time used=" << qt.elapsed() << endl;
+    kDebug() << "RenderCanvas::layout time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
 
@@ -220,10 +220,10 @@ void RenderCanvas::layout()
     layoutPositionedObjects( true );
 
 #ifdef SPEED_DEBUG
-    kdDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
+    kDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
 #endif
 
-//     kdDebug(6040) << "RenderCanvas::resize layer to " << qMax( docW,int( m_width ) ) << "x"  << qMax( docH,m_height ) << endl;
+//     kDebug(6040) << "RenderCanvas::resize layer to " << qMax( docW,int( m_width ) ) << "x"  << qMax( docH,m_height ) << endl;
 
     layer()->resize( qMax( docW,int( m_width ) ), qMax( docH,m_height ) );
     layer()->updateLayerPositions( layer(), needsFullRepaint(), true );
@@ -263,7 +263,7 @@ bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
 void RenderCanvas::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
+    kDebug( 6040 ) << renderName() << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
 
     // 1. paint background, borders etc
@@ -304,7 +304,7 @@ void RenderCanvas::paintBoxDecorations(PaintInfo& paintInfo, int /*_tx*/, int /*
 void RenderCanvas::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
 {
     if (m_staticMode) return;
-//    kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
+//    kDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
 
     if (f && m_pagedMode) {
         y += m_pageTop;
@@ -341,7 +341,7 @@ void RenderCanvas::scheduleDeferredRepaints()
         for ( it = m_dirtyChildren.begin(); it != m_dirtyChildren.end(); ++it )
             (*it)->repaint();
     }
-    //kdDebug(6040) << "scheduled deferred repaints: " << m_dirtyChildren.count() << " needed full repaint: " << needsFullRepaint() << endl;
+    //kDebug(6040) << "scheduled deferred repaints: " << m_dirtyChildren.count() << " needed full repaint: " << needsFullRepaint() << endl;
     m_dirtyChildren.clear();
 }
 
@@ -416,10 +416,10 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     // around, to find the case where this happened.
     if ( !s || !e )
     {
-        kdWarning(6040) << "RenderCanvas::setSelection() called with start=" << s << " end=" << e << endl;
+        kWarning(6040) << "RenderCanvas::setSelection() called with start=" << s << " end=" << e << endl;
         return;
     }
-//     kdDebug( 6040 ) << "RenderCanvas::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
+//     kDebug( 6040 ) << "RenderCanvas::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
 
     bool changedSelectionBorder = ( s != m_selectionStart || e != m_selectionEnd );
 
@@ -488,8 +488,8 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     m_selectionEndPos = ep;
 
 #if 0
-    kdDebug( 6040 ) << "old selection (" << oldStart << "," << oldStartPos << "," << oldEnd << "," << oldEndPos << ")" << endl;
-    kdDebug( 6040 ) << "new selection (" << s << "," << sp << "," << e << "," << ep << ")" << endl;
+    kDebug( 6040 ) << "old selection (" << oldStart << "," << oldStartPos << "," << oldEnd << "," << oldEndPos << ")" << endl;
+    kDebug( 6040 ) << "new selection (" << s << "," << sp << "," << e << "," << ep << ")" << endl;
 #endif
 
     // update selection status of all objects between m_selectionStart and m_selectionEnd
@@ -498,7 +498,7 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     while (o && o!=e)
     {
         o->setSelectionState(SelectionInside);
-//      kdDebug( 6040 ) << "setting selected " << o << ", " << o->isText() << endl;
+//      kDebug( 6040 ) << "setting selected " << o << ", " << o->isText() << endl;
         RenderObject* no;
         if ( !(no = o->firstChild()) )
             if ( !(no = o->nextSibling()) )
@@ -653,11 +653,11 @@ QRect RenderCanvas::viewRect() const
 {
     if (m_pagedMode)
         if (m_pageTop == m_pageBottom) {
-            kdDebug(6040) << "viewRect: " << QRect(0, m_pageTop, m_width, m_height) << endl;
+            kDebug(6040) << "viewRect: " << QRect(0, m_pageTop, m_width, m_height) << endl;
             return QRect(0, m_pageTop, m_width, m_height);
         }
         else {
-            kdDebug(6040) << "viewRect: " << QRect(0, m_pageTop, m_width, m_pageBottom - m_pageTop) << endl;
+            kDebug(6040) << "viewRect: " << QRect(0, m_pageTop, m_width, m_pageBottom - m_pageTop) << endl;
             return QRect(0, m_pageTop, m_width, m_pageBottom - m_pageTop);
         }
     else if (m_view)
@@ -681,7 +681,7 @@ int RenderCanvas::docHeight() const
     if(fc) {
         int dh = fc->overflowHeight() + fc->marginTop() + fc->marginBottom();
         int lowestPos = fc->lowestPosition(false);
-// kdDebug(6040) << "h " << h << " lowestPos " << lowestPos << " dh " << dh << " fc->rh " << fc->effectiveHeight() << " fc->height() " << fc->height() << endl;
+// kDebug(6040) << "h " << h << " lowestPos " << lowestPos << " dh " << dh << " fc->rh " << fc->effectiveHeight() << " fc->height() " << fc->height() << endl;
         if( lowestPos > dh )
             dh = lowestPos;
         lowestPos = lowestAbsolutePosition();
@@ -693,7 +693,7 @@ int RenderCanvas::docHeight() const
 
     RenderLayer *layer = m_layer;
     h = qMax( h, layer->yPos() + layer->height() );
-// kdDebug(6040) << "h " << h << " layer(" << layer->renderer()->renderName() << "@" << layer->renderer() << ")->height " << layer->height() << " lp " << (layer->yPos() + layer->height()) << " height() " << layer->renderer()->height() << " rh " << layer->renderer()->effectiveHeight() << endl;
+// kDebug(6040) << "h " << h << " layer(" << layer->renderer()->renderName() << "@" << layer->renderer() << ")->height " << layer->height() << " lp " << (layer->yPos() + layer->height()) << " height() " << layer->renderer()->height() << " rh " << layer->renderer()->effectiveHeight() << endl;
     return h;
 }
 
@@ -709,7 +709,7 @@ int RenderCanvas::docWidth() const
     if(fc) {
         int dw = fc->effectiveWidth() + fc->marginLeft() + fc->marginRight();
         int rightmostPos = fc->rightmostPosition(false);
-// kdDebug(6040) << "w " << w << " rightmostPos " << rightmostPos << " dw " << dw << " fc->rw " << fc->effectiveWidth() << " fc->width() " << fc->width() << endl;
+// kDebug(6040) << "w " << w << " rightmostPos " << rightmostPos << " dw " << dw << " fc->rw " << fc->effectiveWidth() << " fc->width() " << fc->width() << endl;
         if( rightmostPos > dw )
             dw = rightmostPos;
         rightmostPos = rightmostAbsolutePosition();
@@ -721,7 +721,7 @@ int RenderCanvas::docWidth() const
 
     RenderLayer *layer = m_layer;
     w = qMax( w, layer->xPos() + layer->width() );
-// kdDebug(6040) << "w " << w << " layer(" << layer->renderer()->renderName() << ")->width " << layer->width() << " rm " << (layer->xPos() + layer->width()) << " width() " << layer->renderer()->width() << " rw " << layer->renderer()->effectiveWidth() << endl;
+// kDebug(6040) << "w " << w << " layer(" << layer->renderer()->renderName() << ")->width " << layer->width() << " rm " << (layer->xPos() + layer->width()) << " width() " << layer->renderer()->width() << " rw " << layer->renderer()->effectiveWidth() << endl;
     return w;
 }
 

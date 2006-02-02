@@ -145,7 +145,7 @@ void KMWBackend::addBackend( int ID, bool on, int nextpage )
 			addBackend( ID, QString(), on, QString(), nextpage );
 			break;
 		default:
-			kdError( 500 ) << "Non standard wizard page ID: " << ID << endl;
+			kError( 500 ) << "Non standard wizard page ID: " << ID << endl;
 	}
 }
 

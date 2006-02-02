@@ -403,7 +403,7 @@ int Backend::open(const QByteArray& password) {
 	t++;
 
 	if (fsize < 0 || fsize > long(encrypted.size()) - blksz - 4) {
-		//kdDebug() << "fsize: " << fsize << " encrypted.size(): " << encrypted.size() << " blksz: " << blksz << endl;
+		//kDebug() << "fsize: " << fsize << " encrypted.size(): " << encrypted.size() << " blksz: " << blksz << endl;
 		encrypted.fill(0);
 		return -9;         // file structure error.
 	}

@@ -62,7 +62,7 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
     {
         if ( s[s.length()-1] != '\n' )
         {
-            kdWarning() << "Crash bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
+            kWarning() << "Crash bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
             continue;
         }
         QString t = codec->toUnicode( s.trimmed() );
@@ -103,7 +103,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
         if ( !dcop->call( clientId, "KonquerorIface",
                           "crashLogFile()", data, replyType, replyData) )
         {
-            kdWarning() << "can't find dcop function KonquerorIface::crashLogFile()" << endl;
+            kWarning() << "can't find dcop function KonquerorIface::crashLogFile()" << endl;
             continue;
         }
 

@@ -23,7 +23,7 @@ static KCmdLineOptions options[] = {
 };
 
 void BugMailer::slotError(int errornum) {
-    kdDebug() << "slotError\n";
+    kDebug() << "slotError\n";
     QString str, lstr;
 
     switch(errornum) {
@@ -50,7 +50,7 @@ void BugMailer::slotError(int errornum) {
 }
 
 void BugMailer::slotSend() {
-    kdDebug() << "slotSend\n";
+    kDebug() << "slotSend\n";
     ::exit(0);
 }
 
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
             recipient = recipient.mid(1).left(recipient.length() - 2);
         }
     }
-    kdDebug() << "recp \"" << recipient << "\"\n";
+    kDebug() << "recp \"" << recipient << "\"\n";
 
     QByteArray subject = args->getOption("subject");
     if (subject.isEmpty())
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
         line = input.readLine();
         text += line + "\r\n";
     }
-    kdDebug() << text << endl;
+    kDebug() << text << endl;
 
     KEMailSettings emailConfig;
     emailConfig.setProfile(emailConfig.defaultProfileName());
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
 	    buffer[sizeof(buffer)-1] = '\0';
         fromaddr += buffer;
     }
-    kdDebug() << "fromaddr \"" << fromaddr << "\"" << endl;
+    kDebug() << "fromaddr \"" << fromaddr << "\"" << endl;
 
     QString  server = emailConfig.getSetting(KEMailSettings::OutServer);
     if (server.isEmpty())
@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
     sm->sendMessage();
 
     int r = a.exec();
-    kdDebug() << "execing " << r << endl;
+    kDebug() << "execing " << r << endl;
     delete sm;
     return r;
 }

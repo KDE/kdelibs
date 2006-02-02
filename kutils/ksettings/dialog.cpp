@@ -147,7 +147,7 @@ class PageNode
 		{
 			int w = ( KCM == m_type ) ? m_value.kcm->weight()
 				: m_value.group->weight;
-			kdDebug( 700 ) << k_funcinfo << name() << " " << w << endl;
+			kDebug( 700 ) << k_funcinfo << name() << " " << w << endl;
 			return w;
 		}
 
@@ -176,7 +176,7 @@ class PageNode
 				}
 				m_dirty = false;
 			}
-			kdDebug( 700 ) << k_funcinfo << "returns " << m_visible << endl;
+			kDebug( 700 ) << k_funcinfo << "returns " << m_visible << endl;
 			return m_visible;
 		}
 
@@ -210,7 +210,7 @@ class PageNode
 
 		void addToDialog( KCMultiDialog * dlg )
 		{
-			kdDebug( 700 ) << k_funcinfo << "for " << name() << endl;
+			kDebug( 700 ) << k_funcinfo << "for " << name() << endl;
 			if( ! isVisible() )
 				return;
 
@@ -238,7 +238,7 @@ class PageNode
 
 		void removeFromDialog( KCMultiDialog * dlg )
 		{
-			kdDebug( 700 ) << k_funcinfo << "for " << name() << endl;
+			kDebug( 700 ) << k_funcinfo << "for " << name() << endl;
 			if( KCM == m_type )
 				return;
 			if( Root == m_type )
@@ -255,7 +255,7 @@ class PageNode
 
 		void sort()
 		{
-			kdDebug( 700 ) << k_funcinfo << name() << endl;
+			kDebug( 700 ) << k_funcinfo << name() << endl;
 			if( m_children.isEmpty() )
 				return;
 			List::Iterator begin = m_children.begin();
@@ -275,8 +275,8 @@ class PageNode
 					return true;
 				}
 				else
-					kdFatal( 700 ) << "wrong PageNode insertion"
-						<< kdBacktrace() << endl;
+					kFatal( 700 ) << "wrong PageNode insertion"
+						<< kBacktrace() << endl;
 			}
 			if( Group == m_type && group.parentid == m_value.group->id )
 			{
@@ -306,8 +306,8 @@ class PageNode
 					return true;
 				}
 				else
-					kdFatal( 700 ) << "wrong PageNode insertion"
-						<< kdBacktrace() << endl;
+					kFatal( 700 ) << "wrong PageNode insertion"
+						<< kBacktrace() << endl;
 			}
 			if( Group == m_type && parentid == m_value.group->id )
 			{
@@ -423,10 +423,10 @@ KCMultiDialog * Dialog::dialog()
 
 QList<KService::Ptr> Dialog::instanceServices() const
 {
-	kdDebug( 700 ) << k_funcinfo << endl;
+	kDebug( 700 ) << k_funcinfo << endl;
 	QString instanceName = KGlobal::instance()->instanceName();
 	d->registeredComponents.append( instanceName );
-	kdDebug( 700 ) << "calling KServiceGroup::childGroup( " << instanceName
+	kDebug( 700 ) << "calling KServiceGroup::childGroup( " << instanceName
 		<< " )" << endl;
 	KServiceGroup::Ptr service = KServiceGroup::childGroup( instanceName );
 
@@ -434,7 +434,7 @@ QList<KService::Ptr> Dialog::instanceServices() const
 
 	if( service && service->isValid() )
 	{
-		kdDebug( 700 ) << "call was successfull" << endl;
+		kDebug( 700 ) << "call was successfull" << endl;
 		KServiceGroup::List list = service->entries();
 		for( KServiceGroup::List::ConstIterator it = list.begin();
 				it != list.end(); ++it )
@@ -442,11 +442,11 @@ QList<KService::Ptr> Dialog::instanceServices() const
 			KSycocaEntry::Ptr p = (*it);
 			if( p->isType( KST_KService ) )
 			{
-				//kdDebug( 700 ) << "found service" << endl;
+				//kDebug( 700 ) << "found service" << endl;
 				ret << KService::Ptr::staticCast( p );
 			}
 			else
-				kdWarning( 700 ) << "KServiceGroup::childGroup returned"
+				kWarning( 700 ) << "KServiceGroup::childGroup returned"
 					" something else than a KService" << endl;
 		}
 	}
@@ -462,7 +462,7 @@ QList<KService::Ptr> Dialog::parentComponentsServices(
 			"' in [X-KDE-ParentComponents]) or ('" );
 	constraint = "('" + constraint + "' in [X-KDE-ParentComponents])";
 
-	kdDebug( 700 ) << "constraint = " << constraint << endl;
+	kDebug( 700 ) << "constraint = " << constraint << endl;
 	return KTrader::self()->query( "KCModule", constraint );
 }
 
@@ -471,7 +471,7 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 	// if the user of this class requested to hide disabled modules
 	// we check whether it should be enabled or not
 	bool enabled = true;
-	kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName()
+	kDebug( 700 ) << "check whether the " << moduleinfo->moduleName()
 		<< " KCM should be shown" << endl;
 	// for all parent components
 	QStringList parentComponents = moduleinfo->service()->property(
@@ -496,7 +496,7 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 		KPluginInfo * pinfo = d->plugininfomap[ *pcit ];
 		pinfo->load();
 		enabled = pinfo->isPluginEnabled();
-		kdDebug( 700 ) << "parent " << *pcit << " is "
+		kDebug( 700 ) << "parent " << *pcit << " is "
 			<< ( enabled ? "enabled" : "disabled" ) << endl;
 		// if it is enabled we're done for this KCModuleInfo
 		if( enabled )
@@ -563,7 +563,7 @@ void Dialog::createDialogFromServices()
 	else if( d->pagetree.singleChild() )
 		dialogface = KJanusWidget::Plain;
 
-	kdDebug( 700 ) << "creating KCMultiDialog" << endl;
+	kDebug( 700 ) << "creating KCMultiDialog" << endl;
 	d->dlg = new KCMultiDialog( dialogface, i18n( "Configure" ),
 			d->parentwidget );
 
@@ -601,7 +601,7 @@ void Dialog::createDialogFromServices()
 
 void Dialog::configureTree()
 {
-	kdDebug( 700 ) << k_funcinfo << endl;
+	kDebug( 700 ) << k_funcinfo << endl;
 	ComponentsDialog * subdlg = new ComponentsDialog( d->dlg );
 	subdlg->setPluginInfos( d->plugininfomap );
 	subdlg->show();
@@ -616,7 +616,7 @@ void Dialog::configureTree()
 
 void Dialog::updateTreeList()
 {
-	kdDebug( 700 ) << k_funcinfo << endl;
+	kDebug( 700 ) << k_funcinfo << endl;
 
 	d->pagetree.makeDirty();
 

@@ -250,7 +250,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       {
          QByteArray filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
          unlink(filename.data());
-//         kdDebug () << appName << ": Object too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
+//         kDebug () << appName << ": Object too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
       }
    }
 
@@ -262,7 +262,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       {
          QByteArray filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
          unlink(filename.data());
-//         kdDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << fileInfo->size << ")" << endl;
+//         kDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << fileInfo->size << ")" << endl;
       }
       else
       {
@@ -270,7 +270,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 // fprintf(stderr, "Keep in cache: %s %d %d total = %d\n", fileInfo->name.ascii(), fileInfo->size, fileInfo->age, totalSize);
       }
    }
-   kdDebug () << appName << ": Current size of cache = " << totalSize << " kB." << endl;
+   kDebug () << appName << ": Current size of cache = " << totalSize << " kB." << endl;
    return 0;
 }
 

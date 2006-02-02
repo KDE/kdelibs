@@ -38,7 +38,7 @@ TestSpell::TestSpell()
 
 void TestSpell::contextMenuEvent(QContextMenuEvent *e)
 {
-	kdDebug()<<"TestSpell::contextMenuEvent\n";
+	kDebug()<<"TestSpell::contextMenuEvent\n";
 	QMenu *popup = createStandardContextMenu();
     QMenu *subMenu = new QMenu( popup );
 	connect( subMenu, SIGNAL( triggered ( QAction* ) ),
@@ -54,7 +54,7 @@ void TestSpell::contextMenuEvent(QContextMenuEvent *e)
 
 void TestSpell::slotActivate()
 {
-	kdDebug()<<"Activate or not highlight :"<<endl;
+	kDebug()<<"Activate or not highlight :"<<endl;
 	hl->setActive(!hl->isActive());
 }
 

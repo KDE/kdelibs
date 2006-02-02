@@ -79,7 +79,7 @@ KStatusBar::~KStatusBar ()
 void KStatusBar::insertItem( const QString& text, int id, int stretch)
 {
   if (items[id])
-    kdDebug() << "KStatusBar::insertItem: item id " << id << " already exists." << endl;
+    kDebug() << "KStatusBar::insertItem: item id " << id << " already exists." << endl;
 
   KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
   l->setFixedHeight(fontMetrics().height()+2);
@@ -98,7 +98,7 @@ void KStatusBar::removeItem (int id)
     delete l;
   }
   else
-    kdDebug() << "KStatusBar::removeItem: bad item id: " << id << endl;
+    kDebug() << "KStatusBar::removeItem: bad item id: " << id << endl;
 }
 
 bool KStatusBar::hasItem( int id ) const
@@ -122,7 +122,7 @@ void KStatusBar::changeItem( const QString& text, int id )
     }
   }
   else
-    kdDebug() << "KStatusBar::changeItem: bad item id: " << id << endl;
+    kDebug() << "KStatusBar::changeItem: bad item id: " << id << endl;
 }
 
 void KStatusBar::setItemAlignment (int id, Qt::Alignment alignment)
@@ -133,7 +133,7 @@ void KStatusBar::setItemAlignment (int id, Qt::Alignment alignment)
     l->setAlignment(alignment);
   }
   else
-    kdDebug() << "KStatusBar::setItemAlignment: bad item id: " << id << endl;
+    kDebug() << "KStatusBar::setItemAlignment: bad item id: " << id << endl;
 }
 
 void KStatusBar::setItemFixed(int id, int w)
@@ -147,7 +147,7 @@ void KStatusBar::setItemFixed(int id, int w)
     l->setFixedWidth(w);
   }
   else
-    kdDebug() << "KStatusBar::setItemFixed: bad item id: " << id << endl;
+    kDebug() << "KStatusBar::setItemFixed: bad item id: " << id << endl;
 }
 
 #include "kstatusbar.moc"

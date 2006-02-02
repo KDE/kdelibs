@@ -155,7 +155,7 @@ KCModule * KCModuleProxy::realModule() const
 	 * that leads to an infinite loop.
 	 */
 
-	kdDebug(711) << k_funcinfo << endl;
+	kDebug(711) << k_funcinfo << endl;
 
 	/* Already loaded */
 	if( d->kcm )
@@ -188,7 +188,7 @@ KCModule * KCModuleProxy::realModule() const
 	if( d->dcopClient->appId() == d->dcopName || d->bogusOccupier )
 	{ /* We got the name we requested, because no one was before us,
 	   * or, it was an random application which had picked that name */
-		kdDebug(711) << "Module not already loaded, loading module" << endl;
+		kDebug(711) << "Module not already loaded, loading module" << endl;
 
 		d->dcopObject = new KCModuleProxyIfaceImpl( d->dcopName, that );
 
@@ -236,7 +236,7 @@ KCModule * KCModuleProxy::realModule() const
 	}
 	else
 	{
-		kdDebug(711) << "Module already loaded, loading KCMError" << endl;
+		kDebug(711) << "Module already loaded, loading KCMError" << endl;
 
 		d->dcopClient->detach();
  		/* Re-register as anonymous */
@@ -265,7 +265,7 @@ KCModule * KCModuleProxy::realModule() const
 		}
 		else
 		{
-			kdDebug(711) << "Calling KCModuleProxy's DCOP interface for fetching the name failed." << endl;
+			kDebug(711) << "Calling KCModuleProxy's DCOP interface for fetching the name failed." << endl;
 			d->bogusOccupier = true;
 			QApplication::restoreOverrideCursor();
 			return realModule();
@@ -294,7 +294,7 @@ void KCModuleProxy::applicationRemoved( const QByteArray & app )
 void KCModuleProxy::showEvent( QShowEvent * ev )
 {
 
-	kdDebug(711) << k_funcinfo << endl;
+	kDebug(711) << k_funcinfo << endl;
 	( void )realModule();
 
 	/* We have no kcm, if we're in root mode */
@@ -408,7 +408,7 @@ void KCModuleProxy::runAsRoot()
 void KCModuleProxy::rootExited()
 {
 #ifdef Q_WS_X11
-	kdDebug(711) << k_funcinfo << endl;
+	kDebug(711) << k_funcinfo << endl;
 
 	if ( d->embedWidget->containerWinId() )
 		XDestroyWindow(QX11Info::display(), d->embedWidget->containerWinId());
@@ -460,7 +460,7 @@ void KCModuleProxy::deleteClient()
 	d->dcopObject = 0;
 
 	if( d->dcopClient && !d->dcopClient->detach() )
-		kdDebug(711) << "Unregistering from DCOP failed." << endl;
+		kDebug(711) << "Unregistering from DCOP failed." << endl;
 
 	delete d->dcopClient;
 	d->dcopClient = 0;
@@ -513,7 +513,7 @@ KCModuleProxy::KCModuleProxy( const QString& serviceName, bool withFallback,
 
 void KCModuleProxy::init( const KCModuleInfo& info )
 {
-	kdDebug(711) << k_funcinfo << endl;
+	kDebug(711) << k_funcinfo << endl;
 
 	d = new KCModuleProxyPrivate( info );
 
@@ -557,7 +557,7 @@ void KCModuleProxy::callRootModule( const QByteArray& function )
 	 * the loaded module(and it's not "us" when this function is called) */
 	if( !KApplication::dcopClient()->call( d->dcopName, d->dcopName, function, sendData,
 			replyType, replyData, true, -1 ))
-		kdDebug(711) << "Calling function '" << function << "' failed." << endl;
+		kDebug(711) << "Calling function '" << function << "' failed." << endl;
 
 }
 
@@ -581,7 +581,7 @@ QString KCModuleProxy::quickHelp() const
 
 		if (KApplication::dcopClient()->call(d->dcopName, d->dcopName, "quickHelp()",
 				  data, replyType, replyData))
-			kdDebug(711) << "Calling DCOP function bool changed() failed." << endl;
+			kDebug(711) << "Calling DCOP function bool changed() failed." << endl;
 		else
 		{
 			QDataStream reply(replyData);
@@ -592,7 +592,7 @@ QString KCModuleProxy::quickHelp() const
 				return result;
 			}
 			else
-				kdDebug(711) << "DCOP function changed() returned mumbo jumbo." << endl;
+				kDebug(711) << "DCOP function changed() returned mumbo jumbo." << endl;
 		}
 		return QString();
 	}

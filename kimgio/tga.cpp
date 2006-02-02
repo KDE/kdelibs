@@ -181,7 +181,7 @@ namespace {	// Private.
 		TgaHeaderInfo info(tga);
 		if( !info.supported ) {
 			// File not supported.
-  			kdDebug(399) << "This TGA file is not supported." << endl;
+  			kDebug(399) << "This TGA file is not supported." << endl;
 			return false;
 		}
 
@@ -320,7 +320,7 @@ bool TGAHandler::canRead() const
 
 bool TGAHandler::read(QImage *outImage)
 {
-    //kdDebug(399) << "Loading TGA file!" << endl;
+    //kDebug(399) << "Loading TGA file!" << endl;
 
     QDataStream s( device() );
     s.setByteOrder( QDataStream::LittleEndian );
@@ -333,13 +333,13 @@ bool TGAHandler::read(QImage *outImage)
 
     // Check image file format.
     if( s.atEnd() ) {
-        kdDebug(399) << "This TGA file is not valid." << endl;
+        kDebug(399) << "This TGA file is not valid." << endl;
         return false;
     }
 
     // Check supported file types.
     if( !IsSupported(tga) ) {
-        kdDebug(399) << "This TGA file is not supported." << endl;
+        kDebug(399) << "This TGA file is not supported." << endl;
         return false;
     }
 
@@ -348,7 +348,7 @@ bool TGAHandler::read(QImage *outImage)
     bool result = LoadTGA(s, tga, img);
 
     if( result == false ) {
-        kdDebug(399) << "Error loading TGA file." << endl;
+        kDebug(399) << "Error loading TGA file." << endl;
         return false;
     }
 

@@ -94,7 +94,7 @@ void showResults(const KResolverResults& r)
   if (r.size() > 0)
     {
       for (int i = 0; i < r.size(); ++i)
-	kdDebug() << i << ": family=" << family(r.at(i).family())
+	kDebug() << i << ": family=" << family(r.at(i).family())
 		  << ", len=" << r.at(i).length()
 		  << ", address=" << r.at(i).address().toString()
 		  << ", socktype=" << socktype(r.at(i).socketType())
@@ -104,7 +104,7 @@ void showResults(const KResolverResults& r)
 		  << endl;
     }
   else
-    kdDebug() << "Resolution failed: " 
+    kDebug() << "Resolution failed: " 
 	      << KResolver::errorString(r.error(), r.systemError())
 	      << endl;
 }
@@ -126,12 +126,12 @@ int main(int argc, char **argv)
   if (argc < 2)
     return 1;
 
-  kdDebug() << "Attempting synchronous resolution" << endl;
+  kDebug() << "Attempting synchronous resolution" << endl;
   showResults(KResolver::resolve(QString::fromLocal8Bit(argv[1]), 
 				 QString::fromLocal8Bit(argv[2]),
 				 KResolver::CanonName));
 
-  kdDebug() << endl << "Attempting asynchronous resolution" << endl;
+  kDebug() << endl << "Attempting asynchronous resolution" << endl;
   Test t;
   KResolver::resolveAsync(&t, SLOT(results(const KNetwork::KResolverResults&)),
 			  QString::fromLocal8Bit(argv[1]), 

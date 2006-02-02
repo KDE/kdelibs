@@ -240,7 +240,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
 
     QPainter* p = paintInfo.p;
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::paintObject(" << _tx << ", " << _ty << ")" << endl;
+    kDebug( 6040 ) << nodeName().string() << "(ListMarker)::paintObject(" << _tx << ", " << _ty << ")" << endl;
 #endif
     p->setFont(style()->font());
     const QFontMetrics fm = p->fontMetrics();

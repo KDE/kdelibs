@@ -251,7 +251,7 @@ QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
 {
   if( !mValid )
   {
-    kdDebug() << "addPage: Invalid object" << endl;
+    kDebug() << "addPage: Invalid object" << endl;
     return 0;
   }
 
@@ -288,7 +288,7 @@ KVBox *KJanusWidget::addVBoxPage( const QStringList &items,
 {
   if( !mValid )
   {
-    kdDebug() << "addPage: Invalid object" << endl;
+    kDebug() << "addPage: Invalid object" << endl;
     return 0;
   }
 
@@ -314,7 +314,7 @@ KHBox *KJanusWidget::addHBoxPage( const QStringList &items,
 				  const QPixmap &pixmap )
 {
   if( !mValid ) {
-    kdDebug() << "addPage: Invalid object" << endl;
+    kDebug() << "addPage: Invalid object" << endl;
     return 0;
   }
 
@@ -342,7 +342,7 @@ Q3Grid *KJanusWidget::addGridPage( int n, Qt::Orientation dir,
 {
   if( !mValid )
   {
-    kdDebug() << "addPage: Invalid object" << endl;
+    kDebug() << "addPage: Invalid object" << endl;
     return 0;
   }
 
@@ -416,7 +416,7 @@ void KJanusWidget::insertTreeListItem(const QStringList &items, const QPixmap &p
     else if (child) {
       // we found the given name in this child.
       if (!isPath) {
-        kdDebug() << "The element inserted was already in the TreeList box!" << endl;
+        kDebug() << "The element inserted was already in the TreeList box!" << endl;
         return;
       }
       else {
@@ -476,7 +476,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
     mPageStack->insertWidget( 0,page );
 
     if (items.isEmpty()) {
-      kdDebug() << "Invalid QStringList, with zero items" << endl;
+      kDebug() << "Invalid QStringList, with zero items" << endl;
       return;
     }
 
@@ -515,7 +515,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
   }
   else
   {
-    kdDebug() << "KJanusWidget::addPageWidget: can only add a page in Tabbed, TreeList or IconList modes" << endl;
+    kDebug() << "KJanusWidget::addPageWidget: can only add a page in Tabbed, TreeList or IconList modes" << endl;
   }
 
 }

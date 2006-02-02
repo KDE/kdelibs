@@ -67,7 +67,7 @@ void BackgroundChecker::start()
 {
     d->currentText = getMoreText();
     // ## what if d->currentText.isEmpty()?
-    //kdDebug()<<"KSpell BackgroundChecker: starting with : \"" << d->currentText << "\""<<endl;
+    //kDebug()<<"KSpell BackgroundChecker: starting with : \"" << d->currentText << "\""<<endl;
     //d->thread.setText( d->currentText );
     d->engine->setText( d->currentText );
     d->engine->start();
@@ -108,7 +108,7 @@ Broker *BackgroundChecker::broker() const
 
 bool BackgroundChecker::checkWord( const QString& word )
 {
-    //kdDebug()<<"checking word \""<<word<< "\""<<endl;
+    //kDebug()<<"checking word \""<<word<< "\""<<endl;
     return d->engine->checkWord( word );
 }
 
@@ -154,12 +154,12 @@ void BackgroundChecker::customEvent( QCustomEvent *event )
 {
     if ( (int)event->type() == FoundMisspelling ) {
         MisspellingEvent *me = static_cast<MisspellingEvent*>( event );
-        kdDebug()<<"Found misspelling of \"" << me->word() << "\"" <<endl;
+        kDebug()<<"Found misspelling of \"" << me->word() << "\"" <<endl;
         QString currentWord = d->currentText.mid( me->position(), me->word().length() );
         if ( currentWord == me->word() )
             emit misspelling( me->word(), me->position() );
         else {
-            kdDebug()<<"Cleaning up misspelling for old text which is \""<<currentWord
+            kDebug()<<"Cleaning up misspelling for old text which is \""<<currentWord
                      <<"\" and should be \""<<me->word()<<"\""<<endl;
         }
     } else if ( (int)event->type() == FinishedChecking ) {

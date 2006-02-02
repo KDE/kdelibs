@@ -68,7 +68,7 @@ void RenderContainer::detach()
 void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << this << ": " <<  renderName() << "(RenderObject)::addChild( " << newChild << ": " <<
+    kDebug( 6040 ) << this << ": " <<  renderName() << "(RenderObject)::addChild( " << newChild << ": " <<
         newChild->renderName() << ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
 
@@ -95,17 +95,17 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         case TABLE_HEADER_GROUP:
         case TABLE_FOOTER_GROUP:
 
-            //kdDebug( 6040 ) << "adding section" << endl;
+            //kDebug( 6040 ) << "adding section" << endl;
             if ( !isTable() )
                 needsTable = true;
             break;
         case TABLE_ROW:
-            //kdDebug( 6040 ) << "adding row" << endl;
+            //kDebug( 6040 ) << "adding row" << endl;
             if ( !isTableSection() )
                 needsTable = true;
             break;
         case TABLE_CELL:
-            //kdDebug( 6040 ) << "adding cell" << endl;
+            //kDebug( 6040 ) << "adding cell" << endl;
             if ( !isTableRow() )
                 needsTable = true;
             // I'm not 100% sure this is the best way to fix this, but without this
@@ -128,7 +128,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         if ( last && last->isTable() && last->isAnonymous() ) {
             table = static_cast<RenderTable *>(last);
         } else {
-	    //kdDebug( 6040 ) << "creating anonymous table, before=" << beforeChild << endl;
+	    //kDebug( 6040 ) << "creating anonymous table, before=" << beforeChild << endl;
             table = new (renderArena()) RenderTable(document() /* is anonymous */);
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());

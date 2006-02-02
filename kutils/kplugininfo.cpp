@@ -191,19 +191,19 @@ bool KPluginInfo::isHidden() const
 
 void KPluginInfo::setPluginEnabled( bool enabled )
 {
-    kdDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo << endl;
     d->pluginenabled = enabled;
 }
 
 bool KPluginInfo::isPluginEnabled() const
 {
-    kdDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo << endl;
     return d->pluginenabled;
 }
 
 bool KPluginInfo::isPluginEnabledByDefault() const
 {
-    kdDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo << endl;
     return d->enabledbydefault;
 }
 
@@ -278,7 +278,7 @@ const QList<KService::Ptr> & KPluginInfo::kcmServices() const
     {
         d->kcmservices = KTrader::self()->query( "KCModule", "'" + d->pluginName +
             "' in [X-KDE-ParentComponents]" );
-        kdDebug( 703 ) << "found " << d->kcmservices.count() << " offers for " <<
+        kDebug( 703 ) << "found " << d->kcmservices.count() << " offers for " <<
             d->pluginName << endl;
 
         d->kcmservicesCached = true;
@@ -318,12 +318,12 @@ QVariant KPluginInfo::operator[]( const QString & key ) const
 
 void KPluginInfo::save( KConfigGroup * config )
 {
-    kdDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo << endl;
     if( 0 == config )
     {
         if( 0 == d->config )
         {
-            kdWarning( 703 ) << "no KConfigGroup, cannot save" << endl;
+            kWarning( 703 ) << "no KConfigGroup, cannot save" << endl;
             return;
         }
         d->config->setGroup( d->configgroup );
@@ -335,12 +335,12 @@ void KPluginInfo::save( KConfigGroup * config )
 
 void KPluginInfo::load( KConfigGroup * config )
 {
-    kdDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo << endl;
     if( 0 == config )
     {
         if( 0 == d->config )
         {
-            kdWarning( 703 ) << "no KConfigGroup, cannot load" << endl;
+            kWarning( 703 ) << "no KConfigGroup, cannot load" << endl;
             return;
         }
         d->config->setGroup( d->configgroup );
@@ -352,7 +352,7 @@ void KPluginInfo::load( KConfigGroup * config )
 
 void KPluginInfo::defaults()
 {
-    kdDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo << endl;
     setPluginEnabled( isPluginEnabledByDefault() );
 }
 

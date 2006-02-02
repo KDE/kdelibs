@@ -104,7 +104,7 @@ KPixmapIO::KPixmapIO()
     }
     if (!m_bShm)
     {
-	kdDebug(290) << k_lineinfo << "MIT-SHM not available!\n";
+	kDebug(290) << k_lineinfo << "MIT-SHM not available!\n";
         d->ximage = 0;
 	d->shminfo = 0;
 	d->shmsize = 0;
@@ -159,11 +159,11 @@ KPixmapIO::KPixmapIO()
     else
     {
 	m_bShm = false;
-	kdWarning(290) << "Byte order not supported!" << endl;
-	kdWarning(290) << "red = " << red_shift
+	kWarning(290) << "Byte order not supported!" << endl;
+	kWarning(290) << "red = " << red_shift
 		<< ", green = " << green_shift
 		<< ", blue = " << blue_shift << endl;
-	kdWarning(290) << "Please report to <jansen@kde.org>\n";
+	kWarning(290) << "Please report to <jansen@kde.org>\n";
     }
 #else
     d->shmsize = 0;
@@ -378,7 +378,7 @@ static int kpixmapio_errorhandler(Display *dpy, XErrorEvent *ev)
         /* assuming that xshm errors mean it can't be used at all
            (e.g. remote display) */
         use_xshm = false;
-        kdDebug(290) << "Disabling Xshm" << endl;
+        kDebug(290) << "Disabling Xshm" << endl;
         return 0;
     } else {
         // another error
@@ -392,7 +392,7 @@ bool KPixmapIO::createShmSegment(int size)
     d->shminfo->shmid = shmget(IPC_PRIVATE, size, IPC_CREAT|0600);
     if ( d->shminfo->shmid < 0)
     {
-	kdWarning(290) << "Could not get shared memory segment.\n";
+	kWarning(290) << "Could not get shared memory segment.\n";
 	m_bShm = false;
 	return false;
     }
@@ -400,7 +400,7 @@ bool KPixmapIO::createShmSegment(int size)
     d->shminfo->shmaddr = (char *) shmat(d->shminfo->shmid, 0, 0);
     if (d->shminfo->shmaddr == (char *)-1)
     {
-	kdWarning(290) << "Could not attach shared memory segment.\n";
+	kWarning(290) << "Could not attach shared memory segment.\n";
 	m_bShm = false;
 	shmctl(d->shminfo->shmid, IPC_RMID, 0);
 	return false;
@@ -417,7 +417,7 @@ bool KPixmapIO::createShmSegment(int size)
 
     if ( !XShmAttach(QX11Info::display(), d->shminfo))
     {
-	kdWarning() << "X-Server could not attach shared memory segment.\n";
+	kWarning() << "X-Server could not attach shared memory segment.\n";
 	m_bShm = false;
 	shmdt(d->shminfo->shmaddr);
 	shmctl(d->shminfo->shmid, IPC_RMID, 0);

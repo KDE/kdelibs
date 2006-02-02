@@ -63,7 +63,7 @@ QString get_entry( QString* ll )
 int main()
     {
     KInstance inst( "kdostartupconfig" );
-    kdDebug() << "Running kdostartupconfig." << endl;
+    kDebug() << "Running kdostartupconfig." << endl;
     QString keysname = locateLocal( "config", "startupconfigkeys" );
     QFile keys( keysname );
     if( !keys.open( QIODevice::ReadOnly ))
