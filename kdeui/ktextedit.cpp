@@ -24,6 +24,7 @@
 #include <QClipboard>
 #include <QKeyEvent>
 #include <QScrollBar>
+#include <QTextCursor>
 
 //#include <ksyntaxhighlighter.h>
 //#include <kspell.h>
@@ -206,7 +207,7 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
     }
 
     // ignore Ctrl-Return so that KDialogs can close the dialog
-    else if ( e->state() == Qt::ControlModifier &&
+    else if ( e->modifiers() == Qt::ControlModifier &&
               (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) &&
               qobject_cast<KDialog*>(topLevelWidget()) )
     {
@@ -275,7 +276,7 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *e )
     popup->addSeparator();
     d->spellCheckAction = popup->addAction( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ) );
 
-    if ( text().isEmpty() )
+    if ( document()->isEmpty() )
         d->spellCheckAction->setEnabled( false );
 
     d->autoSpellCheckAction = popup->addAction( i18n( "Auto Spell Check" ) );
@@ -350,9 +351,9 @@ void KTextEdit::setReadOnly( bool readOnly )
     {
         d->customPalette = testAttribute( Qt::WA_SetPalette );
         QPalette p = palette();
-        QColor color = p.color( QPalette::Disabled, QColorGroup::Background );
-        p.setColor( QColorGroup::Base, color );
-        p.setColor( QColorGroup::Background, color );
+        QColor color = p.color( QPalette::Disabled, QPalette::Background );
+        p.setColor( QPalette::Base, color );
+        p.setColor( QPalette::Background, color );
         setPalette( p );
     }
     else
@@ -360,9 +361,9 @@ void KTextEdit::setReadOnly( bool readOnly )
         if ( d->customPalette && testAttribute( Qt::WA_SetPalette ) )
         {
             QPalette p = palette();
-            QColor color = p.color( QPalette::Normal, QColorGroup::Base );
-            p.setColor( QColorGroup::Base, color );
-            p.setColor( QColorGroup::Background, color );
+            QColor color = p.color( QPalette::Normal, QPalette::Base );
+            p.setColor( QPalette::Base, color );
+            p.setColor( QPalette::Background, color );
             setPalette( p );
         }
         else
