@@ -15,7 +15,7 @@ kde4_add_library(kdocument SHARED ${kdocument_LIB_SRCS})
 
 target_link_libraries(kdocument  ${QT_AND_KDECORE_LIBS} kparts )
 
-set_target_properties(kdocument PROPERTIES VERSION 1.0.0 SOVERSION 1 )
+set_target_properties(kdocument PROPERTIES VERSION 0.0.0 SOVERSION 0 )
 install_targets(${KDE4_LIB_INSTALL_DIR} kdocument )
 
 
