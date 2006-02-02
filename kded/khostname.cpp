@@ -362,7 +362,9 @@ int main(int argc, char **argv)
 
    KHostName hn;
 
-   hn.changeX();
+   if(!getenv("XAUTHLOCALHOSTNAME"))
+       hn.changeX();
+
    hn.changeDcop();
    hn.changeStdDirs("socket");
    hn.changeStdDirs("tmp");
