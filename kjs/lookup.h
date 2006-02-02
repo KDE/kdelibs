@@ -298,7 +298,7 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
   class ClassProto : public KJS::JSObject { \
     friend KJS::JSObject *cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName); \
   public: \
-    static KJS::JSObject *ClassProto::self(KJS::ExecState *exec); \
+    static KJS::JSObject *self(KJS::ExecState *exec); \
     virtual const KJS::ClassInfo *classInfo() const { return &info; } \
     static const KJS::ClassInfo info; \
     bool getOwnPropertySlot(KJS::ExecState *, const KJS::Identifier&, KJS::PropertySlot&); \
