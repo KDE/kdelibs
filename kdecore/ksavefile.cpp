@@ -293,9 +293,9 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
     // If backupDir is specified, copy qFilename to the
     // backupDir and perform the commit there, unlinking
     // backupDir/qFilename when finished.
-    if ( !backupDir.isEmpty() ) 
+    if ( !backupDir.isEmpty() )
     {
-        QString sBackup = backupDir + "/" + qFilename;
+        QString sBackup = backupDir + '/' + qFilename;
         QByteArray cFilename = QFile::encodeName( qFilename );
         const char *filename = cFilename.data();
         int fd = KDE_open( filename, O_RDONLY );
