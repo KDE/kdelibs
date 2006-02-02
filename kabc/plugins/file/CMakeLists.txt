@@ -18,7 +18,7 @@ kde4_add_library(kabc_file SHARED ${kabc_file_LIB_SRCS})
 target_link_libraries(kabc_file  ${QT_AND_KDECORE_LIBS} kabc)
 
 set_target_properties(kabc_file PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(/lib kabc_file )
+install_targets(${KDE4_LIB_INSTALL_DIR} kabc_file )
 
 
 ########### next target ###############
@@ -33,7 +33,7 @@ kde4_add_plugin(kabc_file ${kabc_file_PART_SRCS})
 
 target_link_libraries(kabc_file  ${QT_AND_KDECORE_LIBS} )
 
-install_targets(/lib/kde4 kabc_file )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kabc_file )
 
 
 ########### install files ###############

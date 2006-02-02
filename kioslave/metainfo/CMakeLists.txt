@@ -15,7 +15,7 @@ kde4_add_plugin(kio_metainfo ${kio_metainfo_PART_SRCS})
 
 target_link_libraries(kio_metainfo  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(/lib/kde4 kio_metainfo )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kio_metainfo )
 
 
 ########### install files ###############

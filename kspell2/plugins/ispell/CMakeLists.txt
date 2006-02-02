@@ -23,7 +23,7 @@ kde4_add_plugin(kspell_ispell ${kspell_ispell_PART_SRCS})
 
 target_link_libraries(kspell_ispell  ${QT_AND_KDECORE_LIBS} kspell2 )
 
-install_targets(/lib/kde4 kspell_ispell )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kspell_ispell )
 
 
 ########### install files ###############

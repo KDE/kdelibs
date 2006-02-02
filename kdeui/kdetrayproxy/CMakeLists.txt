@@ -22,7 +22,7 @@ kde4_add_plugin(kded_kdetrayproxy ${kded_kdetrayproxy_PART_SRCS})
 
 target_link_libraries(kded_kdetrayproxy  ${QT_AND_KDECORE_LIBS})
 
-install_targets(/lib/kde4 kded_kdetrayproxy )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kdetrayproxy )
 
 
 ########### install files ###############

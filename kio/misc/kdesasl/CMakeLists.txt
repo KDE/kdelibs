@@ -16,7 +16,7 @@ kde4_add_library(kdesasl SHARED ${kdesasl_LIB_SRCS})
 target_link_libraries(kdesasl  ${QT_AND_KDECORE_LIBS} )
 
 set_target_properties(kdesasl PROPERTIES VERSION 1.2.0 SOVERSION 1 )
-install_targets(/lib kdesasl )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdesasl )
 
 
 ########### install files ###############

@@ -37,7 +37,7 @@ kde4_add_klm( kio_uiserver ${kio_uiserver_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kio_uiserver  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(/lib kdeinit_kio_uiserver )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kio_uiserver )
 
 target_link_libraries( kio_uiserver kdeinit_kio_uiserver )
 install_targets(/bin kio_uiserver )

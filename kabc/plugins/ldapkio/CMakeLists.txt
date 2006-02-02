@@ -18,7 +18,7 @@ kde4_add_library(kabc_ldapkio SHARED ${kabc_ldapkio_LIB_SRCS})
 target_link_libraries(kabc_ldapkio  ${QT_AND_KDECORE_LIBS} kabc kio )
 
 set_target_properties(kabc_ldapkio PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(/lib kabc_ldapkio )
+install_targets(${KDE4_LIB_INSTALL_DIR} kabc_ldapkio )
 
 
 ########### next target ###############
@@ -33,7 +33,7 @@ kde4_add_plugin(kabc_ldapkio ${kabc_ldapkio_PART_SRCS})
 
 target_link_libraries(kabc_ldapkio  ${QT_AND_KDECORE_LIBS} )
 
-install_targets(/lib/kde4 kabc_ldapkio )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kabc_ldapkio )
 
 
 ########### install files ###############

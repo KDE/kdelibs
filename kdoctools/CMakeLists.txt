@@ -21,7 +21,7 @@ kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
 target_link_libraries(kio_help  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY} )
 
-install_targets(/lib/kde4 kio_help )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kio_help )
 
 
 ########### next target ###############
@@ -38,7 +38,7 @@ kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 
 target_link_libraries(kio_ghelp  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY} )
 
-install_targets(/lib/kde4 kio_ghelp )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kio_ghelp )
 
 
 ########### next target ###############

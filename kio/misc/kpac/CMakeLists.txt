@@ -26,7 +26,7 @@ kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 
 target_link_libraries(kded_proxyscout  ${QT_AND_KDECORE_LIBS} kio kjs resolv)
 
-install_targets(/lib/kde4 kded_proxyscout )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_proxyscout )
 
 
 ########### next target ###############

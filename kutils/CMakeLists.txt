@@ -46,7 +46,7 @@ kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
 target_link_libraries(kutils  ${QT_AND_KDECORE_LIBS} kdeui kio)
 
 set_target_properties(kutils PROPERTIES VERSION 1.2.0 SOVERSION 1 )
-install_targets(/lib kutils )
+install_targets(${KDE4_LIB_INSTALL_DIR} kutils )
 
 
 ########### install files ###############

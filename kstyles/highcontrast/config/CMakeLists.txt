@@ -15,7 +15,7 @@ kde4_add_plugin(kstyle_highcontrast_config ${kstyle_highcontrast_config_PART_SRC
 
 target_link_libraries(kstyle_highcontrast_config  ${QT_AND_KDECORE_LIBS} kdeui )
 
-install_targets(/lib/kde4 kstyle_highcontrast_config )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kstyle_highcontrast_config )
 
 
 ########### install files ###############

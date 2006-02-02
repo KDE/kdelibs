@@ -16,7 +16,7 @@ kde4_add_library(kxmlcore SHARED ${kxmlcore_LIB_SRCS})
 target_link_libraries(kxmlcore  ${QT_AND_KDECORE_LIBS} )
 
 set_target_properties(kxmlcore PROPERTIES VERSION 1.2.0 SOVERSION 1 )
-install_targets(/lib kxmlcore )
+install_targets(${KDE4_LIB_INSTALL_DIR} kxmlcore )
 
 
 ########### install files ###############

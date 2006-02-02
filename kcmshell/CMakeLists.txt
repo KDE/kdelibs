@@ -21,7 +21,7 @@ kde4_add_klm( kcmshell ${kcmshell_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kcmshell  ${QT_AND_KDECORE_LIBS} kutils )
 
-install_targets(/lib kdeinit_kcmshell )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kcmshell )
 
 target_link_libraries( kcmshell kdeinit_kcmshell )
 install_targets(/bin kcmshell )

@@ -17,7 +17,7 @@ kde4_add_klm( kcookiejar ${kcookiejar_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kcookiejar  ${QT_AND_KDECORE_LIBS} )
 
-install_targets(/lib kdeinit_kcookiejar )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kcookiejar )
 
 target_link_libraries( kcookiejar kdeinit_kcookiejar )
 install_targets(/bin kcookiejar )
@@ -42,7 +42,7 @@ kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 
 target_link_libraries(kded_kcookiejar  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(/lib/kde4 kded_kcookiejar )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kcookiejar )
 
 
 ########### install files ###############

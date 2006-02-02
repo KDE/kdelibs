@@ -37,7 +37,7 @@ kde4_add_klm( cupsdconf ${cupsdconf_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_cupsdconf  ${QT_AND_KDECORE_LIBS} kio ${CUPS_LIBRARY})
 
-install_targets(/lib kdeinit_cupsdconf )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_cupsdconf )
 
 target_link_libraries( cupsdconf kdeinit_cupsdconf )
 install_targets(/bin cupsdconf )

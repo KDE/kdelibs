@@ -16,7 +16,7 @@ kde4_add_plugin(kspell_hspell ${kspell_hspell_PART_SRCS})
 
 target_link_libraries(kspell_hspell  ${QT_AND_KDECORE_LIBS} kspell2 ${HSPELL_LIBRARY} ${ZLIB_LIBRARIES} )
 
-install_targets(/lib/kde4 kspell_hspell )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kspell_hspell )
 
 
 ########### install files ###############

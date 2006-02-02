@@ -16,7 +16,7 @@ kde4_add_plugin(kmultipart WITH_PREFIX ${kmultipart_PART_SRCS})
 
 target_link_libraries(kmultipart  ${QT_AND_KDECORE_LIBS} kparts )
 
-install_targets(/lib/kde4 kmultipart )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kmultipart )
 
 
 ########### install files ###############

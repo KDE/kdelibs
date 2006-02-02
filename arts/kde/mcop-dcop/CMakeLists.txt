@@ -22,7 +22,7 @@ kde4_add_klm( kmcop ${kmcop_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kmcop  ${QT_AND_KDECORE_LIBS} artskde )
 
-install_targets(/lib kdeinit_kmcop )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kmcop )
 
 target_link_libraries( kmcop kdeinit_kmcop )
 install_targets(/bin kmcop )

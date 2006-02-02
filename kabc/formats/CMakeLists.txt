@@ -15,7 +15,7 @@ kde4_add_plugin(kabcformat_binary ${kabcformat_binary_PART_SRCS})
 
 target_link_libraries(kabcformat_binary  ${QT_AND_KDECORE_LIBS} kabc )
 
-install_targets(/lib/kde4 kabcformat_binary )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kabcformat_binary )
 
 
 ########### install files ###############

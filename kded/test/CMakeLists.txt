@@ -21,7 +21,7 @@ kde4_add_plugin(kded_test ${kded_test_PART_SRCS})
 
 target_link_libraries(kded_test  ${QT_AND_KDECORE_LIBS} )
 
-install_targets(/lib/kde4 kded_test )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_test )
 
 
 ########### install files ###############

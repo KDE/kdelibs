@@ -16,7 +16,7 @@ kde4_add_plugin(kcm_spellchecking ${kcm_spellchecking_PART_SRCS})
 
 target_link_libraries(kcm_spellchecking  ${QT_AND_KDECORE_LIBS} kdeui kutils)
 
-install_targets(/lib/kde4 kcm_spellchecking )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kcm_spellchecking )
 
 
 ########### install files ###############

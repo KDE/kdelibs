@@ -18,7 +18,7 @@ kde4_add_plugin(plastik ${plastik_PART_SRCS})
 
 target_link_libraries(plastik  ${QT_AND_KDECORE_LIBS} kdefx )
 
-install_targets(/lib/kde4 plastik )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 plastik )
 
 
 ########### install files ###############

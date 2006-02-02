@@ -20,7 +20,7 @@ kde4_add_plugin(kdeprint_lpd ${kdeprint_lpd_PART_SRCS})
 
 target_link_libraries(kdeprint_lpd  ${QT_AND_KDECORE_LIBS} kdeprint_management )
 
-install_targets(/lib/kde4 kdeprint_lpd )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_lpd )
 
 
 ########### next target ###############

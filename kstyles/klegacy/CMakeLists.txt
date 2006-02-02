@@ -17,7 +17,7 @@ kde4_add_library(klegacystyle SHARED ${klegacystyle_LIB_SRCS})
 target_link_libraries(klegacystyle  ${QT_AND_KDECORE_LIBS} )
 
 set_target_properties(klegacystyle PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(/lib klegacystyle )
+install_targets(${KDE4_LIB_INSTALL_DIR} klegacystyle )
 
 
 ########### install files ###############

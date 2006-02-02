@@ -17,7 +17,7 @@ kde4_add_library(kntlm SHARED ${kntlm_LIB_SRCS})
 target_link_libraries(kntlm  ${QT_AND_KDECORE_LIBS} )
 
 set_target_properties(kntlm PROPERTIES VERSION 0.0.0 SOVERSION 0 )
-install_targets(/lib kntlm )
+install_targets(${KDE4_LIB_INSTALL_DIR} kntlm )
 
 
 ########### install files ###############

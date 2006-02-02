@@ -30,7 +30,7 @@ kde4_add_library(kimproxy SHARED ${kimproxy_LIB_SRCS})
 target_link_libraries(kimproxy  ${QT_AND_KDECORE_LIBS} kio )
 
 set_target_properties(kimproxy PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(/lib kimproxy )
+install_targets(${KDE4_LIB_INSTALL_DIR} kimproxy )
 
 
 ########### install files ###############

@@ -41,7 +41,7 @@ kde4_add_plugin(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
 
 target_link_libraries(kded_kdeprintd  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(/lib/kde4 kded_kdeprintd )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kdeprintd )
 
 
 ########### next target ###############
@@ -111,7 +111,7 @@ kde4_add_library(kdeprint SHARED ${kdeprint_LIB_SRCS})
 target_link_libraries(kdeprint  ${QT_AND_KDECORE_LIBS} kparts )
 
 set_target_properties(kdeprint PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(/lib kdeprint )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdeprint )
 
 
 ########### install files ###############

@@ -29,7 +29,7 @@ kde4_add_klm( knotify ${knotify_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_knotify  ${QT_AND_KDECORE_LIBS} kdeui )
 
-install_targets(/lib kdeinit_knotify )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_knotify )
 
 target_link_libraries( knotify kdeinit_knotify )
 install_targets(/bin knotify )

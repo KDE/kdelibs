@@ -21,7 +21,7 @@ kde4_add_plugin(kded_kssld ${kded_kssld_PART_SRCS})
 
 target_link_libraries(kded_kssld  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(/lib/kde4 kded_kssld )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kssld )
 
 
 ########### install files ###############

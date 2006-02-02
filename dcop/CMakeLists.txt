@@ -110,7 +110,7 @@ kde4_add_library(DCOP SHARED ${DCOP_LIB_SRCS})
 target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY})
 
 set_target_properties(DCOP PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(/lib DCOP )
+install_targets(${KDE4_LIB_INSTALL_DIR} DCOP )
 
 
 ########### next target ###############
@@ -126,7 +126,7 @@ kde4_add_klm( dcopserver ${dcopserver_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP)
 
-install_targets(/lib kdeinit_dcopserver )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_dcopserver )
 
 target_link_libraries( dcopserver kdeinit_dcopserver )
 install_targets(/bin dcopserver )

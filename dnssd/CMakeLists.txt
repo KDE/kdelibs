@@ -28,7 +28,7 @@ kde4_add_library(kdnssd SHARED ${kdnssd_LIB_SRCS})
 target_link_libraries(kdnssd  ${QT_AND_KDECORE_LIBS} kdecore )
 
 set_target_properties(kdnssd PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(/lib kdnssd )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdnssd )
 
 
 ########### install files ###############

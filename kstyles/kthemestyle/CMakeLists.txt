@@ -17,7 +17,7 @@ kde4_add_plugin(kthemestyle ${kthemestyle_PART_SRCS})
 
 target_link_libraries(kthemestyle  ${QT_AND_KDECORE_LIBS} kdefx kdecore )
 
-install_targets(/lib/kde4 kthemestyle )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kthemestyle )
 
 
 ########### install files ###############

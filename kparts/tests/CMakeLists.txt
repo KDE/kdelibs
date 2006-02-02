@@ -58,7 +58,7 @@ kde4_add_plugin(spellcheckplugin WITH_PREFIX ${spellcheckplugin_PART_SRCS})
 
 target_link_libraries(spellcheckplugin  ${QT_AND_KDECORE_LIBS} kparts )
 
-install_targets(/lib/kde4 spellcheckplugin )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 spellcheckplugin )
 
 
 ########### next target ###############
@@ -73,7 +73,7 @@ kde4_add_plugin(notepadpart WITH_PREFIX ${notepadpart_PART_SRCS})
 
 target_link_libraries(notepadpart  ${QT_AND_KDECORE_LIBS} kparts )
 
-install_targets(/lib/kde4 notepadpart )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 notepadpart )
 
 
 ########### next target ###############

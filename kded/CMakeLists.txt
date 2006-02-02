@@ -15,7 +15,7 @@ kde4_add_klm( kded ${kded_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kded  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(/lib kdeinit_kded )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kded )
 
 target_link_libraries( kded kdeinit_kded )
 install_targets(/bin kded )
@@ -39,7 +39,7 @@ kde4_add_klm( kbuildsycoca ${kbuildsycoca_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kbuildsycoca  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(/lib kdeinit_kbuildsycoca )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kbuildsycoca )
 
 target_link_libraries( kbuildsycoca kdeinit_kbuildsycoca )
 install_targets(/bin kbuildsycoca )

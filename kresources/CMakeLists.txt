@@ -34,7 +34,7 @@ kde4_add_library(kresources SHARED ${kresources_LIB_SRCS})
 target_link_libraries(kresources  ${QT_AND_KDECORE_LIBS} kdeui kio )
 
 set_target_properties(kresources PROPERTIES VERSION 1.2.0 SOVERSION 1 )
-install_targets(/lib kresources )
+install_targets(${KDE4_LIB_INSTALL_DIR} kresources )
 
 
 ########### next target ###############
@@ -49,7 +49,7 @@ kde4_add_plugin(kcm_kresources ${kcm_kresources_PART_SRCS})
 
 target_link_libraries(kcm_kresources  ${QT_AND_KDECORE_LIBS} kresources )
 
-install_targets(/lib/kde4 kcm_kresources )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kcm_kresources )
 
 
 ########### next target ###############

@@ -17,7 +17,7 @@ kde4_add_library(webstyle SHARED ${webstyle_LIB_SRCS})
 target_link_libraries(webstyle  ${QT_AND_KDECORE_LIBS} kdeui )
 
 set_target_properties(webstyle PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(/lib webstyle )
+install_targets(${KDE4_LIB_INSTALL_DIR} webstyle )
 
 
 ########### install files ###############

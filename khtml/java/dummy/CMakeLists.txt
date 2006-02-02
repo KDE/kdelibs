@@ -17,7 +17,7 @@ kde4_add_library(kjava SHARED ${kjava_LIB_SRCS})
 target_link_libraries(kjava  ${QT_AND_KDECORE_LIBS} )
 
 set_target_properties(kjava PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(/lib kjava )
+install_targets(${KDE4_LIB_INSTALL_DIR} kjava )
 
 
 ########### install files ###############

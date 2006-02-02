@@ -62,7 +62,7 @@ kde4_add_library(kdefakes SHARED fakes.c)
 #target_link_libraries(kdefakes  ${QT_AND_KDECORE_LIBS} )
 
 set_target_properties(kdefakes PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(/lib kdefakes )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdefakes )
 
 
 
@@ -209,7 +209,7 @@ if(AGG_FOUND)
 endif(AGG_FOUND)
 
 set_target_properties(kdecore PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(/lib kdecore )
+install_targets(${KDE4_LIB_INSTALL_DIR} kdecore )
 
 
 ########### next target ###############

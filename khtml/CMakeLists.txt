@@ -283,7 +283,7 @@ kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARY} ${GIF_LIBRARY} ${PNG_LIBRARY} )
 
 set_target_properties(khtml PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(/lib khtml )
+install_targets(${KDE4_LIB_INSTALL_DIR} khtml )
 
 
 ########### next target ###############
@@ -303,7 +303,7 @@ kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 
 target_link_libraries(khtmlpart  ${QT_AND_KDECORE_LIBS} khtml )
 
-install_targets(/lib/kde4 khtmlpart )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 khtmlpart )
 
 
 ########### next target ###############
@@ -324,7 +324,7 @@ kde4_add_plugin(khtmlimagepart ${khtmlimagepart_PART_SRCS})
 
 target_link_libraries(khtmlimagepart  ${QT_AND_KDECORE_LIBS} khtml)
 
-install_targets(/lib/kde4 khtmlimagepart )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 khtmlimagepart )
 
 
 ########### next target ###############

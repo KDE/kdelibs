@@ -24,7 +24,7 @@ kde4_add_library(kmediaplayer SHARED ${kmediaplayer_LIB_SRCS})
 target_link_libraries(kmediaplayer  ${QT_AND_KDECORE_LIBS} kparts )
 
 set_target_properties(kmediaplayer PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(/lib kmediaplayer )
+install_targets(${KDE4_LIB_INSTALL_DIR} kmediaplayer )
 
 
 ########### install files ###############

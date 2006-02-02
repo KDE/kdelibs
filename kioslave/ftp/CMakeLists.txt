@@ -17,7 +17,7 @@ kde4_add_plugin(kio_ftp ${kio_ftp_PART_SRCS})
 
 target_link_libraries(kio_ftp  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(/lib/kde4 kio_ftp )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kio_ftp )
 
 
 ########### install files ###############

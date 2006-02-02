@@ -29,7 +29,7 @@ kde4_add_plugin(kded_kwalletd ${kded_kwalletd_PART_SRCS})
 
 target_link_libraries(kded_kwalletd  ${QT_AND_KDECORE_LIBS} kio kwalletbackend kwalletclient )
 
-install_targets(/lib/kde4 kded_kwalletd )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kwalletd )
 
 
 ########### install files ###############

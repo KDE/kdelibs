@@ -47,7 +47,7 @@ kde4_add_plugin(kdeprint_cups ${kdeprint_cups_PART_SRCS})
 
 target_link_libraries(kdeprint_cups  ${QT_AND_KDECORE_LIBS} kdeprint_management kio kdefakes ${CUPS_LIBRARY} )
 
-install_targets(/lib/kde4 kdeprint_cups )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_cups )
 
 
 ########### next target ###############

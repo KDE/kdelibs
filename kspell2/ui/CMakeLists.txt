@@ -20,7 +20,7 @@ kde4_add_library(kspell2 SHARED ${kspell2_LIB_SRCS})
 target_link_libraries(kspell2  ${QT_AND_KDECORE_LIBS} kdeui kio kutils)
 
 set_target_properties(kspell2 PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(/lib kspell2 )
+install_targets(${KDE4_LIB_INSTALL_DIR} kspell2 )
 
 
 ########### next target ###############

@@ -17,7 +17,7 @@ kde4_add_plugin(kdeprint_foomatic ${kdeprint_foomatic_PART_SRCS})
 
 target_link_libraries(kdeprint_foomatic  ${QT_AND_KDECORE_LIBS} kdeprint_management )
 
-install_targets(/lib/kde4 kdeprint_foomatic )
+install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_foomatic )
 
 
 ########### next target ###############

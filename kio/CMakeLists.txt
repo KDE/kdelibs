@@ -238,7 +238,7 @@ endif(FAM_FOUND)
    
 
 set_target_properties(kio PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(/lib kio )
+install_targets(${KDE4_LIB_INSTALL_DIR} kio )
 
 
 ########### install files ###############
