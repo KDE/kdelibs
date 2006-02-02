@@ -342,7 +342,7 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
         return false;
 
     if ( !backupDir.isEmpty() ) {
-        return( QFile::remove( QString( backupDir + "/" + qFilename ) ) );
+        return( QFile::remove( backupDir + '/' + qFilename ) );
     } else {
         return true;
     }
