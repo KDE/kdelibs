@@ -169,6 +169,8 @@ install_files( /include FILES kprogressbar.h kprogressdialog.h kcolordialog.h ks
 
 kde4_create_doxygen_docs( INTERNAL_DOCS REFERENCES kdecore kdefx dcop kio kutils  )
 
+install_files( /bin preparetips )
+
 kde4_footer()
 
 
