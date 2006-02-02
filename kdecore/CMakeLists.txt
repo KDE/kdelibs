@@ -11,6 +11,7 @@ optional_find_package(AGG)
 if (AGG_FOUND)
    set(kdesvgicons_STAT_SRCS svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp )
    include_directories(${AGG_INCLUDE_DIR})
+	install_files( /include FILES svgicons/ksvgiconengine.h )
 endif (AGG_FOUND)
 
 if(BZIP2_FOUND)
