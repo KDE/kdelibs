@@ -1,0 +1,2 @@
+pty.h which is a link with kdesu_pty.h (see into kdesu/ )
+kjava.policy create from kjava.policy.in (java directory)
