@@ -723,11 +723,7 @@ bool KDirWatchPrivate::useINotify( Entry* e )
 
   if ( ( e->wd = inotify_add_watch( m_inotify_fd,
         QFile::encodeName( e->path ), mask) ) > 0 )
-  {
-    kdDebug(7001) << "** inotify watching " << e->path << " " << e->wd << endl;
     return true;
-  } else
-    kdDebug(7001) << "** inotify failed " << e->path << " " << errno << endl;
 
   if ( e->m_status == NonExistent ) {
     addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
