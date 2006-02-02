@@ -13,8 +13,4 @@ METASOURCES = AUTO
 messages:
 	$(XGETTEXT) $(kioexec_SOURCES) -o $(podir)/kioexec.pot
 
-install-exec-local:
-	@rm -f $(DESTDIR)$(bindir)/kfmexec
-	@$(LN_S) kioexec $(DESTDIR)$(bindir)/kfmexec
-
 include $(top_srcdir)/admin/Doxyfile.am
