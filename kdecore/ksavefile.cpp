@@ -290,32 +290,13 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
     QString qBackupFilename = qFilename;
     qBackupFilename += QString::fromLatin1( ",v" );
 
-    // Check in the file unlocked with 'ci'
-    QProcess ci;
-    ci.start( "ci", QStringList() << "-u" << qFilename );
-    if ( !ci.waitForStarted() )
-        return false;
-    ci.write( backupMessage.toLatin1() );
-    ci.write(".");
-    ci.closeWriteChannel();
-    if( !ci.waitForFinished() )
-        return false;
-
-    // Use 'rcs' to unset strict locking
-    QProcess rcs;
-    rcs.start( "rcs", QStringList() << "-U" << qBackupFilename );
-    if ( !rcs.waitForFinished() )
-        return false;
-
-    // Use 'co' to checkout the current revision and restore permissions
-    QProcess co;
-    co.start( "co", QStringList() << qBackupFilename );
-    if ( !co.waitForFinished() )
-        return false;
-
-    if ( !backupDir.isEmpty() ) {
-        QString sBackup = backupDir + "/" + qBackupFilename;
-        QByteArray cFilename = QFile::encodeName( qBackupFilename );
+    // If backupDir is specified, copy qFilename to the
+    // backupDir and perform the commit there, unlinking
+    // backupDir/qFilename when finished.
+    if ( !backupDir.isEmpty() ) 
+    {
+        QString sBackup = backupDir + "/" + qFilename;
+        QByteArray cFilename = QFile::encodeName( qFilename );
         const char *filename = cFilename.data();
         int fd = KDE_open( filename, O_RDONLY );
         if ( fd < 0 )
@@ -327,7 +308,41 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
             ::close( fd );
             return false;
         }
-        return( copy_all( fd, &buff, sBackup ) );
+        if( !copy_all( fd, &buff, sBackup ) )
+            return false;
+    }
+
+    // Check in the file unlocked with 'ci'
+    QProcess ci;
+    if ( !backupDir.isEmpty() )
+        ci.setWorkingDirectory( backupDir );
+    ci.start( "ci", QStringList() << "-u" << qFilename );
+    if ( !ci.waitForStarted() )
+        return false;
+    ci.write( backupMessage.toLatin1() );
+    ci.write(".");
+    ci.closeWriteChannel();
+    if( !ci.waitForFinished() )
+        return false;
+
+    // Use 'rcs' to unset strict locking
+    QProcess rcs;
+    if ( !backupDir.isEmpty() )
+        rcs.setWorkingDirectory( backupDir );
+    rcs.start( "rcs", QStringList() << "-U" << qBackupFilename );
+    if ( !rcs.waitForFinished() )
+        return false;
+
+    // Use 'co' to checkout the current revision and restore permissions
+    QProcess co;
+    if ( !backupDir.isEmpty() )
+        co.setWorkingDirectory( backupDir );
+    co.start( "co", QStringList() << qBackupFilename );
+    if ( !co.waitForFinished() )
+        return false;
+
+    if ( !backupDir.isEmpty() ) {
+        QFile::remove( QString( backupDir + "/" + qFilename ) );
     } else {
         return true;
     }

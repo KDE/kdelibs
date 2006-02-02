@@ -67,16 +67,22 @@ int main(int argc, char *argv[])
     test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
     test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
     //test( "numbered backup", KSaveFile::numberedBackupFile( f.name(),5 ) );
+    
     test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
     test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
-
-    // Test a change to f to verify RCS
     QFile fl( f.name() );
     if ( fl.open( QFile::WriteOnly | QFile::Truncate ) ) {
         QTextStream out( &fl );
         out << "Testing a change\n";
         fl.close();
-        test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString(), "Testmsg" ) );
+        test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString("/tmp"), "Testmsg" ) );
+    }
+    test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString(), "BROKE IF YOU SEE ME IN /tmp" ) );
+    if ( fl.open( QFile::WriteOnly | QFile::Truncate ) ) {
+        QTextStream out( &fl );
+        out << "Testing another change\n";
+        fl.close();
+        test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString("/tmp"), "Another Testmsg" ) );
     }
 }
 
