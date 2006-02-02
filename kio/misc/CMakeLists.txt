@@ -77,7 +77,16 @@ install_targets(/bin ktelnetservice )
 install_files( ${KDE4_SERVICES_DIR} FILES kmailservice.protocol telnet.protocol rlogin.protocol rtsp.protocol ssh.protocol  		mms.protocol mmst.protocol mmsu.protocol pnm.protocol rtspt.protocol rtspu.protocol )
 install_files( ${KDE4_SERVICES_DIR} FILES kio_uiserver.desktop )
 install_files( /include/kio FILES  uiserver.h)
-install_files( /bin FILES fileshareset )
+
+# install the fileshareset and filesharelist scripts, they are not required on windows
+if (UNIX)
+   install_programs(/bin FILES fileshareset)
+   # write a cmake script file which creates the symlink
+   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake "exec_program(${CMAKE_COMMAND} ARGS -E create_symlink ${CMAKE_INSTALL_PREFIX}/bin/fileshareset ${CMAKE_INSTALL_PREFIX}/bin/filesharelist)\n")
+   # and add it as post-install script to any of the installed targets, so it will be executed during "make install"
+   set_target_properties(kio_uiserver PROPERTIES POST_INSTALL_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake)
+endif (UNIX)
+
 kde4_footer()
 
 

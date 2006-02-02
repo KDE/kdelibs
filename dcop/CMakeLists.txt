@@ -109,6 +109,11 @@ kde4_add_library(DCOP SHARED ${DCOP_LIB_SRCS})
 
 target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY})
 
+if (WIN32)
+   target_link_libraries(DCOP kdewin32 ws2_32)
+endif (WIN32)
+
+
 set_target_properties(DCOP PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${KDE4_LIB_INSTALL_DIR} DCOP )
 
