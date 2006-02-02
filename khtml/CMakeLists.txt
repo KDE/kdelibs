@@ -200,7 +200,11 @@ add_subdirectory( ecma )
 add_subdirectory( imload )
 add_subdirectory( kmultipart )
 
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(JAVA_SUBDIR)")
+if(NOT KDE4_USE_QT_EMB)
+	add_subdirectory( java )
+endif(NOT KDE4_USE_QT_EMB )
+
+message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}")
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kwallet/client ${CMAKE_SOURCE_DIR}/kutils ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}) 
 include_directories(${CMAKE_BINARY_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/khtml/rendering ${CMAKE_SOURCE_DIR}/khtml/ecma ${CMAKE_BINARY_DIR}/khtml/ecma ${CMAKE_SOURCE_DIR}/kio/bookmarks)
 include_directories( ${CMAKE_SOURCE_DIR}/khtml/imload ${CMAKE_SOURCE_DIR}/khtml/imload/decoders )
