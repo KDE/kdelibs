@@ -1,10 +1,22 @@
 kde4_header()
 
-if(KDE4_BUILD_TESTS)
-
 include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/bookmarks ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
+
+set(ktradertest_SRCS
+ktradertest.cpp
+)
+
+kde4_automoc(${ktradertest_SRCS})
+
+kde4_add_executable(ktradertest ${ktradertest_SRCS})
+
+target_link_libraries(ktradertest  ${QT_AND_KDECORE_LIBS} kio)
+
+install_targets(/bin ktradertest )
+
+if(KDE4_BUILD_TESTS)
 ########### next target ###############
 
 set(ksycocatest_SRCS
@@ -406,21 +418,6 @@ kde4_add_executable(kdirwatchtest_gui ${kdirwatchtest_gui_SRCS})
 
 target_link_libraries(kdirwatchtest_gui  ${QT_AND_KDECORE_LIBS} kio)
 
-
-########### next target ###############
-
-
-set(ktradertest_SRCS
-ktradertest.cpp
-)
-
-kde4_automoc(${ktradertest_SRCS})
-
-kde4_add_executable(ktradertest ${ktradertest_SRCS})
-
-target_link_libraries(ktradertest  ${QT_AND_KDECORE_LIBS} kio)
-
-install_targets(/bin ktradertest )
 
 endif(KDE4_BUILD_TESTS)
 
