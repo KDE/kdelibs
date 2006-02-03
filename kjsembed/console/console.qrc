@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>images/runto.png</file>
+        <file>images/start.png</file>
+        <file>images/step.png</file>
+        <file>images/stop.png</file>
+        <file>images/class.png</file>
+        <file>images/method.png</file>
+        <file>images/property.png</file>
+        <file>images/constant.png</file>
+        <file>images/no.png</file>
+        <file>images/next.png</file>
+        <file>images/bug.png</file>
+    </qresource>
+</RCC>

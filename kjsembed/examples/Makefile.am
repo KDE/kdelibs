@@ -1,0 +1,2 @@
+SUBDIRS = embed designer 
+# editor

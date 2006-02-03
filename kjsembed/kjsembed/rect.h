@@ -1,0 +1,44 @@
+/*
+*  Copyright (C) 2005, Ian Reinhart Geiser <geiseri@kde.org>
+*  Copyright (C) 2006, Matt Broadstone <mbroadst@gmail.com>
+*
+*  This library is free software; you can redistribute it and/or
+*  modify it under the terms of the GNU Library General Public
+*  License as published by the Free Software Foundation; either
+*  version 2 of the License, or (at your option) any later version.
+*
+*  This library is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*  Library General Public License for more details.
+*
+*  You should have received a copy of the GNU Library General Public License
+*  along with this library; see the file COPYING.LIB.  If not, write to
+*  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+*  Boston, MA 02111-1307, USA.
+*/
+
+#ifndef RECT_H
+#define RECT_H
+
+#include <value_binding.h>
+#include <static_binding.h>
+
+class QRect;
+
+namespace KJSEmbed
+{
+    class RectBinding : public ValueBinding
+    {
+        public:
+            RectBinding( KJS::ExecState *exec, const QRect &value );
+    };
+
+    /**
+    * Constructors:
+    *
+    * Methods:
+    */
+    KJS_BINDING( Rect )
+}
+#endif
