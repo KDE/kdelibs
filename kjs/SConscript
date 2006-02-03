@@ -3,27 +3,26 @@
 Import('env')
 
 
-kjs_files="""
-ustring.cpp date_object.cpp collector.cpp nodes.cpp 
-grammar.cpp lexer.cpp lookup.cpp operations.cpp 
-regexp.cpp function_object.cpp string_object.cpp 
-bool_object.cpp number_object.cpp internal.cpp 
-array_object.cpp math_object.cpp object_object.cpp 
-regexp_object.cpp error_object.cpp function.cpp 
-debugger.cpp value.cpp list.cpp object.cpp 
-interpreter.cpp property_map.cpp nodes2string.cpp 
-identifier.cpp reference.cpp reference_list.cpp 
-scope_chain.cpp dtoa.cpp protected_values.cpp
-property_slot.cpp
+kjs_files ="""
+ustring.cpp date_object.cpp collector.cpp nodes.cpp
+grammar.cpp lexer.cpp lookup.cpp operations.cpp
+regexp.cpp function_object.cpp string_object.cpp
+bool_object.cpp number_object.cpp internal.cpp
+array_object.cpp math_object.cpp object_object.cpp
+regexp_object.cpp error_object.cpp function.cpp
+debugger.cpp value.cpp list.cpp object.cpp
+interpreter.cpp property_map.cpp property_slot.cpp nodes2string.cpp
+identifier.cpp reference.cpp reference_list.cpp
+scope_chain.cpp dtoa.cpp fpconst.cpp JSLock.cpp
 """
 
 inst_headers="""
-value.h types.h object.h interpreter.h operations.h 
-ustring.h lookup.h global.h identifier.h property_map.h 
-reference.h reference_list.h completion.h scope_chain.h 
-list.h simple_number.h function.h
+value.h types.h object.h interpreter.h operations.h
+ustring.h lookup.h global.h identifier.h property_map.h
+property_slot.h reference.h reference_list.h completion.h
+scope_chain.h list.h simple_number.h function.h JSLock.h
 """
-
+ 
 env.CFile(target="grammar.tab.cpp", source="grammar.y", YACCFLAGS="-d -p kjsyy")
 
 env['BUILDERS']['Hash']    = Builder(action="perl kjs/create_hash_table $SOURCE -i > $TARGET" ,suffix='.lut.h',src_suffix='.cpp')
