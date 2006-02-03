@@ -63,7 +63,7 @@ class MD5Digest : public QByteArray {
  */
 class KDE_EXPORT Backend {
 	public:
-		Backend(const QString& name = "kdewallet", bool isPath = false);
+		explicit Backend(const QString& name = QLatin1String("kdewallet"), bool isPath = false);
 		~Backend();
 
 		// Open and unlock the wallet.

@@ -92,8 +92,8 @@ public:
 	};
 	Settings* settings() const	{ return m_settings; }
 
-	QPair<QString,QString> requestPassword( int& seqNbr, const QString& user, const QString& host = "localhost", int port = 0 );
-	void initPassword( const QString& user, const QString& password, const QString& host = "localhsot", int port = 0 );
+	QPair<QString,QString> requestPassword( int& seqNbr, const QString& user, const QString& host = QLatin1String( "localhost" ), int port = 0 );
+	void initPassword( const QString& user, const QString& password, const QString& host = QLatin1String( "localhsot" ), int port = 0 );
 
 k_dcop:
 	ASYNC slot_pluginChanged(pid_t);

@@ -73,7 +73,7 @@ public:
 	 *  @param name if this is not empty, it will be parsed and used as
 	 *         the new map internally
 	 */
-	void reset(const QString& name = "");
+	void reset(const QString& name = QLatin1String(""));
   
 private:
 	class KSSLX509MapPrivate;

@@ -55,12 +55,12 @@ class KABC_EXPORT ResourceFile : public Resource
 
       @param cfg The config object where custom resource settings are stored.
      */
-    ResourceFile( const KConfig *cfg );
+    explicit ResourceFile( const KConfig *cfg );
 
     /**
       Construct file resource on file @arg fileName using format @arg formatName.
      */
-    ResourceFile( const QString &fileName, const QString &formatName = "vcard" );
+    explicit ResourceFile( const QString &fileName, const QString &formatName = QLatin1String( "vcard" ) );
 
     /**
       Destructor.

@@ -43,8 +43,8 @@ class KABC_EXPORT ResourceDir : public Resource
   Q_OBJECT
 
   public:
-    ResourceDir( const KConfig* );
-    ResourceDir( const QString &path, const QString &type = "vcard" );
+    explicit ResourceDir( const KConfig* );
+    explicit ResourceDir( const QString &path, const QString &type = QLatin1String( "vcard" ) );
     ~ResourceDir();
 
     virtual void writeConfig( KConfig* );

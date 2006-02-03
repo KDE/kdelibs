@@ -80,7 +80,7 @@ public:
 	 *  @param password a password for the certificate if encrypted
 	 *  @return the PKCS#12 object, or NULL on failure.
 	 */
-	static KSSLPKCS12* fromString(const QString &base64, const QString &password = "");
+	static KSSLPKCS12* fromString(const QString &base64, const QString &password = QLatin1String(""));
 
 	/**
 	 *  Create a KSSLPKCS12 object by reading a PKCS#12 file.
@@ -88,7 +88,7 @@ public:
 	 *  @param password a password for the certificate if encrypted
 	 *  @return the PKCS#12 object, or NULL on failure.
 	 */
-	static KSSLPKCS12* loadCertFile(const QString &filename, const QString &password = "");
+	static KSSLPKCS12* loadCertFile(const QString &filename, const QString &password = QLatin1String(""));
 
 	/**
 	 *  Convert to a Base64 string.

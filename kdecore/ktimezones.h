@@ -383,7 +383,7 @@ public:
     /**
      * Construct a UTC time zone.
      */
-    KTimezone(const QString &name = "UTC");
+    explicit KTimezone(const QString &name = QLatin1String("UTC"));
 
     KTimezone(const KTimezone &);
     virtual ~KTimezone();
