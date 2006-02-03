@@ -21,9 +21,10 @@
 #ifndef SCALAR_BINDING_H
 #define SCALAR_BINDING_H
 
-#include "static_binding.h"
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
+
+#include "static_binding.h"
 #include "pointer.h"
 
 /**
@@ -49,6 +50,9 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 #define END_SCALAR_METHOD \
                 imp->setValue(value); \
         } \
+        else { \
+            KJS::throwError(exec, KJS::GeneralError, "Problem in ScalarBinding here");\
+        }\
         return result; \
 }
 
@@ -161,7 +165,7 @@ namespace KJSEmbed
     {
         KJS::JSObject *parent = exec->interpreter()->globalObject();
         KJS::JSObject *returnValue = StaticConstructor::construct( exec, parent, className );
-        if( !returnValue )
+        if( returnValue )
         {
             // If its a value type setValue
             KJSEmbed::ScalarBinding *imp =

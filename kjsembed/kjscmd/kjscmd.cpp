@@ -65,7 +65,7 @@ int main( int argc, char **argv )
         args.append( KJS::String( argv[i] ) );
     }
 
-    KJS::JSObject *argobj( js->builtinArray()->construct( exec, args ) );
+    KJS::JSObject *argobj = new KJS::JSObject( js->builtinArray()->construct( exec, args ) );
     appobj->put( exec, "args", argobj );
 
     Engine::ExitStatus result = Engine::Failure;
@@ -81,8 +81,8 @@ int main( int argc, char **argv )
 
     if ( result != Engine::Success )
     {
-            KJS::Completion jsres = kernel.completion();
-            (*KJSEmbed::conerr()) << jsres.value()->toString(exec).qstring() << endl;
+        KJS::Completion jsres = kernel.completion();
+       (*KJSEmbed::conerr()) << jsres.value()->toString(exec).qstring() << endl;
     }
     return (int) result;
 }

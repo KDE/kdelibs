@@ -1,5 +1,4 @@
 #include "scalar_binding.h"
-
 #include "static_binding.h"
 
 using namespace KJSEmbed;
