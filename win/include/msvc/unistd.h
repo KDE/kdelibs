@@ -112,16 +112,15 @@ KDEWIN32_EXPORT char* getlogin();
 
 KDEWIN32_EXPORT int fsync (int fd);
 
-KDEWIN32_EXPORT void usleep(unsigned int usec);
-#define HAVE_USLEEP
+KDEWIN32_EXPORT void usleep(useconds_t useconds);
 
 KDEWIN32_EXPORT void sleep(unsigned int sec);
 		
 KDEWIN32_EXPORT long int random();
-#define HAVE_RANDOM
 
-#define HAVE_SETEUID
 KDEWIN32_EXPORT int setreuid(uid_t ruid, uid_t euid);
+
+KDEWIN32_EXPORT int mkstemps(char* _template, int suffix_len);
 
 #ifdef __cplusplus
 }

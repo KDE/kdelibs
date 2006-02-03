@@ -39,7 +39,7 @@ def detect(env):
 
 	if env['CC'] == 'cl':
 		# avoid some compiler warnings...
-		env.AppendUnique( GENCCFLAGS = ['-wd4619','-wd4820','-wd4996','-D_CRT_SECURE_NO_DEPRECATE','-DWIN32_LEAN_AND_MEAN'] )
+		env.AppendUnique( GENCCFLAGS = ['-wd4661','-wd4619','-wd4820','-wd4996','-D_CRT_SECURE_NO_DEPRECATE','-DWIN32_LEAN_AND_MEAN'] )
 		env.AppendUnique( GENLINKFLAGS = [ 'ws2_32.lib' ] )
 
 	if os.environ.has_key('CXXFLAGS'):

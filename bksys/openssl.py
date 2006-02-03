@@ -46,6 +46,6 @@ def generate(env):
 
 		env.write_lib_header( 'openssl', have_lib, False, 'ksslconfig.h', '#define KSSL_HAVE_SSL 1\n' )
 # using another header name than config-%s.h doesn't work because of env.write_config_h()
-		env.write_lib_header( 'openssl', have_lib, False )
+		env.write_lib_header( 'openssl', have_lib, False, '', '#define KSSL_HAVE_SSL 1\n' )
 
 	opts.Save(optionFile, env)
