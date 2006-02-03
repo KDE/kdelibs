@@ -48,12 +48,7 @@ class KSSLCertChain;
 class KSSLX509V3;
 
 #include <kdelibs_export.h>
-
-#ifdef Q_WS_WIN
-#include "ksslconfig_win.h"
-#else
 #include "ksslconfig.h"
-#endif
 
 #ifdef KSSL_HAVE_SSL
 typedef struct x509_st X509;
