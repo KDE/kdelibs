@@ -382,7 +382,7 @@ KAboutData::translateInternalProgramName() const
   delete[] d->mTranslatedProgramName;
   d->mTranslatedProgramName = 0;
   if( KGlobal::locale())
-      d->mTranslatedProgramName = qstrdup( i18n( mProgramName ).toUtf8());
+      d->mTranslatedProgramName = qstrdup( programName().toUtf8() );
 }
 
 QImage
