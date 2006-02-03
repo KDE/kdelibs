@@ -83,6 +83,8 @@ install_files( ${KDE4_DATA_DIR}/kconf_update FILES kio_help.upd )
 
 install_files( /bin FILES checkXML )
 
+install_files(${KDE4_KCONF_UPDATE_DIR} FILES move_kio_help_cache.sh )
+
 kde4_create_doxygen_docs(  )
 
 kde4_footer()
