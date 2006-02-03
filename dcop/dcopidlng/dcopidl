@@ -9,16 +9,33 @@ if test "$1" = "--srcdir"; then
    shift
 fi
 
+OUTFILE=
+if test "$1" = "-o"; then
+   shift
+   OUTFILE=$1
+   shift
+fi
+
 if test -z "$LIBDIR"; then
    if test -z "$KDECONFIG"; then
       KDECONFIG=kde-config
    fi
    LIBDIR="`$KDECONFIG --install data --expandvars`/dcopidl"
 fi
-perl -I"$LIBDIR" "$LIBDIR/kalyptus" --allow_k_dcop_accessors -f dcopidl $1 2> dcopidl.stderr.$$
-RET=$?
-if [ $RET -ne 0 ]
-then
+
+# Compat for old syntax without -o
+if test -z "$OUTFILE"; then
+  perl -I"$LIBDIR" "$LIBDIR/kalyptus" --allow_k_dcop_accessors -f dcopidl $1 2> dcopidl.stderr.$$
+  RET=$?
+else
+  perl -I"$LIBDIR" "$LIBDIR/kalyptus" --allow_k_dcop_accessors -f dcopidl "$1" >"$OUTFILE" 2> dcopidl.stderr.$$
+  RET=$?
+fi
+
+if test $RET -ne 0; then
    cat dcopidl.stderr.$$ >&2
+   if test -n "$OUTFILE"; then
+       rm -f "$OUTFILE"
+   fi
 fi
 exit $RET
