@@ -188,8 +188,8 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
             case EACCES:
                 error( KIO::ERR_ACCESS_DENIED, url.path() );
                 break;
-            case ENOTSUP:
-                error( KIO::ERR_UNSUPPORTED_ACTION, url.path() );
+            case ENOTSUP: // from setACL since chmod can't return ENOTSUP
+                error( KIO::ERR_UNSUPPORTED_ACTION, i18n( "Setting ACL for %1" ).arg( url.path() ) );
                 break;
             case ENOSPC:
                 error( KIO::ERR_DISK_FULL, url.path() );
