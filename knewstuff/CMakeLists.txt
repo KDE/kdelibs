@@ -79,7 +79,7 @@ endif(KDE4_BUILD_TESTS)
 install_files( ${KDE4_CONFIG_DIR} FILES khotnewstuffrc )
 install_files( /include/knewstuff FILES downloaddialog.h engine.h entry.h knewstuffgeneric.h knewstuff.h providerdialog.h provider.h uploaddialog.h knewstuffbutton.h knewstuffsecure.h )
 
-kde4_install_icons( hicolor )
+kde4_install_icons( crystalsvg )
 
 kde4_create_doxygen_docs(  )
 
