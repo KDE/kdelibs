@@ -7,6 +7,9 @@ include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/b
 
 include_directories(${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR})
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
+
+
 ########### next target ###############
 
 set(kio_help_PART_SRCS
@@ -77,6 +80,8 @@ target_link_libraries(genshortcutents  ${QT_AND_KDECORE_LIBS} )
 
 install_files( ${KDE4_SERVICES_DIR} FILES help.protocol ghelp.protocol )
 install_files( ${KDE4_DATA_DIR}/kconf_update FILES kio_help.upd )
+
+install_files( /bin FILES checkXML )
 
 kde4_create_doxygen_docs(  )
 
