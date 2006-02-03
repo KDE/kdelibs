@@ -1,11 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
+# This file is put in the public domain.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2005-06-13 01:26+0200\n"
+"Report-Msgid-Bugs-To: http://bugs.kde.org\n"
+"POT-Creation-Date: 2006-02-03 22:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <kde-i18n-doc@kde.org>\n"
@@ -561,6 +563,7 @@ msgstr ""
 msgid "&Update"
 msgstr ""
 
+#. i18n( "Layout");
 #: common_texts.cpp:163
 msgid "Highscore"
 msgstr ""
@@ -574,9 +577,8 @@ msgid "&Insert"
 msgstr ""
 
 #: common_texts.cpp:168
-msgid ""
-"_: Opposite to Previous\n"
-"&Next"
+msgctxt "Opposite to Previous"
+msgid "&Next"
 msgstr ""
 
 #: common_texts.cpp:169
@@ -676,363 +678,303 @@ msgid "Do not show this message again"
 msgstr ""
 
 #: common_texts.cpp:194
-msgid ""
-"_: QAccel\n"
-"Escape"
+msgctxt "QAccel"
+msgid "Escape"
 msgstr ""
 
 #: common_texts.cpp:195
-msgid ""
-"_: QAccel\n"
-"Tab"
+msgctxt "QAccel"
+msgid "Tab"
 msgstr ""
 
 #: common_texts.cpp:196
-msgid ""
-"_: QAccel\n"
-"Backtab"
+msgctxt "QAccel"
+msgid "Backtab"
 msgstr ""
 
 #: common_texts.cpp:197
-msgid ""
-"_: QAccel\n"
-"Backspace"
+msgctxt "QAccel"
+msgid "Backspace"
 msgstr ""
 
 #: common_texts.cpp:198
-msgid ""
-"_: QAccel\n"
-"Return"
+msgctxt "QAccel"
+msgid "Return"
 msgstr ""
 
 #: common_texts.cpp:199
-msgid ""
-"_: QAccel\n"
-"Enter"
+msgctxt "QAccel"
+msgid "Enter"
 msgstr ""
 
 #: common_texts.cpp:200
-msgid ""
-"_: QAccel\n"
-"Insert"
+msgctxt "QAccel"
+msgid "Insert"
 msgstr ""
 
 #: common_texts.cpp:201
-msgid ""
-"_: QAccel\n"
-"Delete"
+msgctxt "QAccel"
+msgid "Delete"
 msgstr ""
 
 #: common_texts.cpp:202
-msgid ""
-"_: QAccel\n"
-"Pause"
+msgctxt "QAccel"
+msgid "Pause"
 msgstr ""
 
 #: common_texts.cpp:203
-msgid ""
-"_: QAccel\n"
-"Print"
+msgctxt "QAccel"
+msgid "Print"
 msgstr ""
 
 #: common_texts.cpp:204
-msgid ""
-"_: QAccel\n"
-"SysReq"
+msgctxt "QAccel"
+msgid "SysReq"
 msgstr ""
 
 #: common_texts.cpp:205
-msgid ""
-"_: QAccel\n"
-"Home"
+msgctxt "QAccel"
+msgid "Home"
 msgstr ""
 
 #: common_texts.cpp:206
-msgid ""
-"_: QAccel\n"
-"End"
+msgctxt "QAccel"
+msgid "End"
 msgstr ""
 
 #: common_texts.cpp:207
-msgid ""
-"_: QAccel\n"
-"Left"
+msgctxt "QAccel"
+msgid "Left"
 msgstr ""
 
 #: common_texts.cpp:208
-msgid ""
-"_: QAccel\n"
-"Up"
+msgctxt "QAccel"
+msgid "Up"
 msgstr ""
 
 #: common_texts.cpp:209
-msgid ""
-"_: QAccel\n"
-"Right"
+msgctxt "QAccel"
+msgid "Right"
 msgstr ""
 
 #: common_texts.cpp:210
-msgid ""
-"_: QAccel\n"
-"Down"
+msgctxt "QAccel"
+msgid "Down"
 msgstr ""
 
 #: common_texts.cpp:211
-msgid ""
-"_: QAccel\n"
-"Prior"
+msgctxt "QAccel"
+msgid "Prior"
 msgstr ""
 
 #: common_texts.cpp:212
-msgid ""
-"_: QAccel\n"
-"Next"
+msgctxt "QAccel"
+msgid "Next"
 msgstr ""
 
 #: common_texts.cpp:213
-msgid ""
-"_: QAccel\n"
-"Shift"
+msgctxt "QAccel"
+msgid "Shift"
 msgstr ""
 
 #: common_texts.cpp:214
-msgid ""
-"_: QAccel\n"
-"Control"
+msgctxt "QAccel"
+msgid "Control"
 msgstr ""
 
 #: common_texts.cpp:215
-msgid ""
-"_: QAccel\n"
-"Meta"
+msgctxt "QAccel"
+msgid "Meta"
 msgstr ""
 
 #: common_texts.cpp:216
-msgid ""
-"_: QAccel\n"
-"Alt"
+msgctxt "QAccel"
+msgid "Alt"
 msgstr ""
 
 #: common_texts.cpp:217
-msgid ""
-"_: QAccel\n"
-"CapsLock"
+msgctxt "QAccel"
+msgid "CapsLock"
 msgstr ""
 
 #: common_texts.cpp:218
-msgid ""
-"_: QAccel\n"
-"NumLock"
+msgctxt "QAccel"
+msgid "NumLock"
 msgstr ""
 
 #: common_texts.cpp:219
-msgid ""
-"_: QAccel\n"
-"ScrollLock"
+msgctxt "QAccel"
+msgid "ScrollLock"
 msgstr ""
 
 #: common_texts.cpp:220
-msgid ""
-"_: QAccel\n"
-"Space"
+msgctxt "QAccel"
+msgid "Space"
 msgstr ""
 
 #: common_texts.cpp:221
-msgid ""
-"_: QAccel\n"
-"ParenLeft"
+msgctxt "QAccel"
+msgid "ParenLeft"
 msgstr ""
 
 #: common_texts.cpp:222
-msgid ""
-"_: QAccel\n"
-"ParenRight"
+msgctxt "QAccel"
+msgid "ParenRight"
 msgstr ""
 
 #: common_texts.cpp:223
-msgid ""
-"_: QAccel\n"
-"Asterisk"
+msgctxt "QAccel"
+msgid "Asterisk"
 msgstr ""
 
 #: common_texts.cpp:224
-msgid ""
-"_: QAccel\n"
-"Plus"
+msgctxt "QAccel"
+msgid "Plus"
 msgstr ""
 
 #: common_texts.cpp:225
-msgid ""
-"_: QAccel\n"
-"Comma"
+msgctxt "QAccel"
+msgid "Comma"
 msgstr ""
 
 #: common_texts.cpp:226
-msgid ""
-"_: QAccel\n"
-"Minus"
+msgctxt "QAccel"
+msgid "Minus"
 msgstr ""
 
 #: common_texts.cpp:227
-msgid ""
-"_: QAccel\n"
-"Period"
+msgctxt "QAccel"
+msgid "Period"
 msgstr ""
 
 #: common_texts.cpp:228
-msgid ""
-"_: QAccel\n"
-"Slash"
+msgctxt "QAccel"
+msgid "Slash"
 msgstr ""
 
 #: common_texts.cpp:229
-msgid ""
-"_: QAccel\n"
-"Colon"
+msgctxt "QAccel"
+msgid "Colon"
 msgstr ""
 
 #: common_texts.cpp:230
-msgid ""
-"_: QAccel\n"
-"Semicolon"
+msgctxt "QAccel"
+msgid "Semicolon"
 msgstr ""
 
 #: common_texts.cpp:231
-msgid ""
-"_: QAccel\n"
-"Less"
+msgctxt "QAccel"
+msgid "Less"
 msgstr ""
 
 #: common_texts.cpp:232
-msgid ""
-"_: QAccel\n"
-"Equal"
+msgctxt "QAccel"
+msgid "Equal"
 msgstr ""
 
 #: common_texts.cpp:233
-msgid ""
-"_: QAccel\n"
-"Greater"
+msgctxt "QAccel"
+msgid "Greater"
 msgstr ""
 
 #: common_texts.cpp:234
-msgid ""
-"_: QAccel\n"
-"Question"
+msgctxt "QAccel"
+msgid "Question"
 msgstr ""
 
 #: common_texts.cpp:235
-msgid ""
-"_: QAccel\n"
-"BracketLeft"
+msgctxt "QAccel"
+msgid "BracketLeft"
 msgstr ""
 
 #: common_texts.cpp:236
-msgid ""
-"_: QAccel\n"
-"Backslash"
+msgctxt "QAccel"
+msgid "Backslash"
 msgstr ""
 
 #: common_texts.cpp:237
-msgid ""
-"_: QAccel\n"
-"BracketRight"
+msgctxt "QAccel"
+msgid "BracketRight"
 msgstr ""
 
 #: common_texts.cpp:238
-msgid ""
-"_: QAccel\n"
-"AsciiCircum"
+msgctxt "QAccel"
+msgid "AsciiCircum"
 msgstr ""
 
 #: common_texts.cpp:239
-msgid ""
-"_: QAccel\n"
-"Underscore"
+msgctxt "QAccel"
+msgid "Underscore"
 msgstr ""
 
 #: common_texts.cpp:240
-msgid ""
-"_: QAccel\n"
-"QuoteLeft"
+msgctxt "QAccel"
+msgid "QuoteLeft"
 msgstr ""
 
 #: common_texts.cpp:241
-msgid ""
-"_: QAccel\n"
-"BraceLeft"
+msgctxt "QAccel"
+msgid "BraceLeft"
 msgstr ""
 
 #: common_texts.cpp:242
-msgid ""
-"_: QAccel\n"
-"BraceRight"
+msgctxt "QAccel"
+msgid "BraceRight"
 msgstr ""
 
 #: common_texts.cpp:243
-msgid ""
-"_: QAccel\n"
-"AsciiTilde"
+msgctxt "QAccel"
+msgid "AsciiTilde"
 msgstr ""
 
 #: common_texts.cpp:244
-msgid ""
-"_: QAccel\n"
-"PgUp"
+msgctxt "QAccel"
+msgid "PgUp"
 msgstr ""
 
 #: common_texts.cpp:245
-msgid ""
-"_: QAccel\n"
-"PgDown"
+msgctxt "QAccel"
+msgid "PgDown"
 msgstr ""
 
 #: common_texts.cpp:246
-msgid ""
-"_: QAccel\n"
-"Apostrophe"
+msgctxt "QAccel"
+msgid "Apostrophe"
 msgstr ""
 
 #: common_texts.cpp:247
-msgid ""
-"_: QAccel\n"
-"Ampersand"
+msgctxt "QAccel"
+msgid "Ampersand"
 msgstr ""
 
 #: common_texts.cpp:248
-msgid ""
-"_: QAccel\n"
-"Exclam"
+msgctxt "QAccel"
+msgid "Exclam"
 msgstr ""
 
 #: common_texts.cpp:249
-msgid ""
-"_: QAccel\n"
-"Dollar"
+msgctxt "QAccel"
+msgid "Dollar"
 msgstr ""
 
 #: common_texts.cpp:250
-msgid ""
-"_: QAccel\n"
-"Percent"
+msgctxt "QAccel"
+msgid "Percent"
 msgstr ""
 
 #: common_texts.cpp:251
-msgid ""
-"_: QAccel\n"
-"Menu"
+msgctxt "QAccel"
+msgid "Menu"
 msgstr ""
 
 #: common_texts.cpp:252
-msgid ""
-"_: QAccel\n"
-"Help"
+msgctxt "QAccel"
+msgid "Help"
 msgstr ""
 
 #: common_texts.cpp:253
-msgid ""
-"_: QAccel\n"
-"NumberSign"
+msgctxt "QAccel"
+msgid "NumberSign"
 msgstr ""
 
 #: common_texts.cpp:254
@@ -1040,55 +982,46 @@ msgid "Main Toolbar"
 msgstr ""
 
 #: common_texts.cpp:257 common_texts.cpp:261
-msgid ""
-"_: font style\n"
-"Demi-bold"
+msgctxt "font style"
+msgid "Demi-bold"
 msgstr ""
 
 #: common_texts.cpp:258
-msgid ""
-"_: font style\n"
-"Light"
+msgctxt "font style"
+msgid "Light"
 msgstr ""
 
 #: common_texts.cpp:259
-msgid ""
-"_: font style\n"
-"Light Italic"
+msgctxt "font style"
+msgid "Light Italic"
 msgstr ""
 
 #: common_texts.cpp:260 common_texts.cpp:262
-msgid ""
-"_: font style\n"
-"Demi-bold Italic"
+msgctxt "font style"
+msgid "Demi-bold Italic"
 msgstr ""
 
 #: common_texts.cpp:263
-msgid ""
-"_: font style\n"
-"Oblique"
+msgctxt "font style"
+msgid "Oblique"
 msgstr ""
 
 #: common_texts.cpp:264
-msgid ""
-"_: font style\n"
-"Book"
+msgctxt "font style"
+msgid "Book"
 msgstr ""
 
 #: common_texts.cpp:265
-msgid ""
-"_: font style\n"
-"Book Oblique"
+msgctxt "font style"
+msgid "Book Oblique"
 msgstr ""
 
 #: common_texts.cpp:268
-msgid ""
-"_: window operation\n"
-"Sticky"
+msgctxt "window operation"
+msgid "Sticky"
 msgstr ""
 
 #: common_texts.cpp:269
-msgid ""
-"_: window operation\n"
-"Un-Sticky"
+msgctxt "window operation"
+msgid "Un-Sticky"
 msgstr ""
