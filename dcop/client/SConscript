@@ -10,10 +10,8 @@ for prog in progs1:
 	obj.libpaths  = '.. '
 	obj.libs      = 'DCOP '
 	if env['WINDOWS']:
-		obj.libpaths += ' ../../win '
-		obj.libs     += ' kdewin32 ws2_32 '
-		if env['CC'] == 'gcc':
-			obj.ccflags  += '-Dkdemain=main'
+		obj.libs     += ' ws2_32 '
+		obj.ccflags  += '-Dkdemain=main'
 		
 
 	obj.uselib    = 'QT QTCORE QT3SUPPORT KDE4'

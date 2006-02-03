@@ -1324,8 +1324,8 @@ void DCOPServer::slotShutdown()
 #ifndef NDEBUG
     fprintf( stderr, "DCOPServer : slotShutdown() -> waiting for clients to disconnect.\n" );
 #endif
-    char c;
 #ifndef Q_OS_WIN
+    char c;
     read(pipeOfDeath[0], &c, 1);
 #endif
     if (!shutdown)
@@ -1718,7 +1718,7 @@ void myMessageOutput(QtMsgType type, const char *msg)
 #endif 
 
 
-extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
+extern "C" KDE_EXPORT int kdemain( int argc, char* argv[] )
 {
 #ifdef Q_OS_WIN
     qInstallMsgHandler(myMessageOutput);

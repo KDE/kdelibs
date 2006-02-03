@@ -45,8 +45,6 @@ obj.includes = 'KDE-ICE'
 obj.ccflags += ice_ccflags
 if env['WINDOWS']:
 	obj.ccflags  += ' -DKICE_EXPORT=DCOP_EXPORT -DKDECORE_EXPORT= '
-	obj.libpaths += ' ../win/'
-	obj.libs     += ' kdewin32 ws2_32'
 obj.execute()
 
 # dcopserver program
@@ -57,12 +55,8 @@ obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.libpaths = '.'
 obj.libs     = 'DCOP'
 
-if env['WINDOWS']: 
-	if env['CC'] != 'cl':
-		obj.ccflags  += ' -Dkdemain=main'
-
-	obj.libpaths += ' ../win/'
-	obj.libs     += ' kdewin32 ws2_32'
+if env['WINDOWS']:
+	obj.ccflags  += ' -Dkdemain=main'
  		
 obj.execute()
 
@@ -82,9 +76,6 @@ obj=env.genobj('program', env)
 obj.target='dcopserver_shutdown'
 obj.source='dcopserver_shutdown.c'
 obj.instdir  = env['KDEBIN']
-if env['WINDOWS']:
-	obj.libpaths = '../win/'
-	obj.libs     = 'kdewin32 ws2_32'
 
 obj.execute()
 
