@@ -312,11 +312,15 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
             return false;
     }
 
+    // The following may need to be adjusted for different platforms
+    QStringList pth( "PATH=/bin:/usr/bin:/usr/local/bin" );
+    QString env( "/usr/bin/env" );
+
     // Check in the file unlocked with 'ci'
     QProcess ci;
     if ( !backupDir.isEmpty() )
         ci.setWorkingDirectory( backupDir );
-    ci.start( "ci", QStringList() << "-u" << qFilename );
+    ci.start( env, QStringList() << pth << "ci" << "-u" << qFilename );
     if ( !ci.waitForStarted() )
         return false;
     ci.write( backupMessage.toLatin1() );
@@ -329,7 +333,7 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
     QProcess rcs;
     if ( !backupDir.isEmpty() )
         rcs.setWorkingDirectory( backupDir );
-    rcs.start( "rcs", QStringList() << "-U" << qBackupFilename );
+    rcs.start( env, QStringList() << pth << "rcs" << "-U" << qBackupFilename );
     if ( !rcs.waitForFinished() )
         return false;
 
@@ -337,7 +341,7 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
     QProcess co;
     if ( !backupDir.isEmpty() )
         co.setWorkingDirectory( backupDir );
-    co.start( "co", QStringList() << qBackupFilename );
+    co.start( env, QStringList() << pth << "co" << qBackupFilename );
     if ( !co.waitForFinished() )
         return false;
 
@@ -385,7 +389,7 @@ bool KSaveFile::numberedBackupFile( const QString& qFilename,
    }
 
    // The backup file name template.
-   QString sTemplate = sBackup + "." + "%1" + backupExtension;
+   QString sTemplate = sBackup + '.' + "%1" + backupExtension;
 
    // First, search backupDir for numbered backup files to remove.
    // Remove all with number 'maxBackups' and greater.
