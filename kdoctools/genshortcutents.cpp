@@ -309,7 +309,7 @@ int main( int argc, char **argv )
 	KCmdLineArgs::addCmdLineOptions( cmdLineOptions );
 
 	KApplication::disableAutoDcopRegistration();
-	KApplication app( false );
+	KApplication app;
 
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
