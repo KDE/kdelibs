@@ -319,6 +319,25 @@ static const TransKey g_rgQtToSymX[] =
 #endif //Q_WS_X11
 
 //---------------------------------------------------------------------
+// Debugging
+//---------------------------------------------------------------------
+#ifndef NDEBUG 
+inline void checkDisplay()
+{
+#ifdef Q_WS_X11
+	// Some non-GUI apps might try to use us.
+	if ( !QX11Info::display() ) {
+		kError() << "QX11Info::display() returns 0.  I'm probably going to crash now." << endl;
+		kError() << "If this is a KApplication initialized without GUI stuff, change it to be "
+	                "initialized with GUI stuff." << endl;
+	}
+#endif // Q_WS_X11
+}
+#else // NDEBUG
+# define checkDisplay()
+#endif
+
+//---------------------------------------------------------------------
 // Initialization
 //---------------------------------------------------------------------
 static bool g_bInitializedMods, g_bInitializedVariations, g_bInitializedKKeyLabels;
@@ -328,6 +347,7 @@ static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch, g_alt_mask, g_met
 
 bool initializeMods()
 {
+	checkDisplay();
 	XModifierKeymap* xmk = XGetModifierMapping( QX11Info::display() );
 
 	g_rgModInfo[3].modX = g_modXNumLock = g_modXScrollLock = g_modXModeSwitch = 0; 
@@ -385,6 +405,7 @@ bool initializeMods()
 
 static void initializeVariations()
 {
+	checkDisplay();
 	for( int i = 0; g_rgSymVariation[i].sym != 0; i++ )
 		g_rgSymVariation[i].bActive = (XKeysymToKeycode( QX11Info::display(), g_rgSymVariation[i].symVariation ) != 0);
 	g_bInitializedVariations = true;
@@ -561,6 +582,8 @@ uint Sym::getModsRequired() const
 			return KKey::SHIFT;
 	}
 
+	checkDisplay();
+	
 	uchar code = XKeysymToKeycode( QX11Info::display(), m_sym );
 	if( code ) {
 		// need to check index 0 before the others, so that a null-mod
@@ -779,6 +802,8 @@ bool codeXToSym( uchar codeX, uint modX, uint& sym )
 {
 	KeySym keySym;
 	XKeyPressedEvent event;
+
+	checkDisplay();
 
 	event.type = KeyPress;
 	event.display = QX11Info::display();
