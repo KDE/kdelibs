@@ -73,6 +73,17 @@ endif(CARBON_FOUND)
 
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
 
+if (WIN32)
+   set(CMAKE_REQUIRED_INCLUDES ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/win/include )
+
+   if (MSVC)
+      set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${CMAKE_SOURCE_DIR}/win/include/msvc )
+   endif (MSVC)
+   if (MINGW)
+      set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${CMAKE_SOURCE_DIR}/win/include/mingw )
+   endif (MINGW)
+endif (WIN32)
+
 check_include_files(stdio.h HAVE_STDIO_H)
 check_include_files(stdlib.h HAVE_STDLIB_H)
 check_include_files(string.h HAVE_STRING_H)
@@ -287,6 +298,14 @@ check_type_size("struct addrinfo" HAVE_STRUCT_ADDRINFO)
 set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
 check_type_size("struct sockaddr_in6" HAVE_STRUCT_SOCKADDR_IN6)
 SET(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
+
+if (WIN32)
+   # since some of the functions for which is tested above come from
+   # kdelibs/win/ which hasn't been built yet, adjust the results accordingly
+   # in ConfigureChecksWin.cmake
+   include (ConfigureChecksWin.cmake)
+endif (WIN32)
+
 
 
 set(CONFIG_QT_DOCDIR "\"${QT_DOC_DIR}/html/\"")

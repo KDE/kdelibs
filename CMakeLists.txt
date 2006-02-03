@@ -40,10 +40,6 @@ include_directories(
   ${KDE4_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-if (UNIX)
-   link_directories(/usr/local/lib)
-   include_directories(/usr/local/include)
-endif (UNIX)
 
 # create config.h
 include(ConfigureChecks.cmake)
@@ -51,6 +47,16 @@ include(ConfigureChecks.cmake)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
+
+if (UNIX)
+   link_directories(/usr/local/lib)
+   include_directories(/usr/local/include)
+endif (UNIX)
+
+if (WIN32)
+   add_subdirectory(win)
+endif (WIN32)
+
 
 add_subdirectory( dcop )
 add_subdirectory( libltdl )
