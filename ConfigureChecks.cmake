@@ -74,7 +74,7 @@ endif(CARBON_FOUND)
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
 
 if (WIN32)
-   set(CMAKE_REQUIRED_INCLUDES ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/win/include )
+   set(CMAKE_REQUIRED_INCLUDES ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/win/include ${QT_INCLUDES} )
 
    if (MSVC)
       set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${CMAKE_SOURCE_DIR}/win/include/msvc )
