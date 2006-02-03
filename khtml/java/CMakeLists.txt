@@ -30,14 +30,12 @@ target_link_libraries(kjavaappletviewer  ${QT_AND_KDECORE_LIBS} kparts )
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kjavaappletviewer )
 
-#Laurent create : kjava.policy 
-
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kjava.policy.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
 
 ########### install files ###############
 
 # kjava.policy 
-#install_files( ${KDE4_DATA_DIR}/kjava/ FILES kjava.jar kjava.policy pluginsinfo )
-install_files( ${KDE4_DATA_DIR}/kjava/ FILES kjava.jar pluginsinfo )
+install_files( ${KDE4_DATA_DIR}/kjava/ FILES kjava.jar kjava.policy pluginsinfo )
 install_files( ${KDE4_SERVICES_DIR} FILES kjavaappletviewer.desktop )
 install_files( ${KDE4_DATA_DIR}/kjava/icons FILES  )
 
