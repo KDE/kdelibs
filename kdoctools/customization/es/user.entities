@@ -33,6 +33,7 @@
 <!ENTITY konversation "<application>Konversation</application>">
 <!ENTITY kubuntu "<application>Kubuntu</application>">
 <!ENTITY kmenu  "menú <guimenu>K</guimenu>">
+<!ENTITY liloconfig "Configuración de LILO">
 <!ENTITY LMB    "<mousebutton>botón izquierdo</mousebutton>">
 <!ENTITY MMB    "<mousebutton>botón central</mousebutton>">
 <!ENTITY OS "Sistema operativo">
