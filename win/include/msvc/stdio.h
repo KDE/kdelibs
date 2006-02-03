@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDE_STDIO_H
-#define KDE_STDIO_H
+#ifndef MSVC_STDIO_H
+#define MSVC_STDIO_H
 
 #include <kdelibs_export.h>
 
@@ -28,4 +28,4 @@
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
 
-#endif	// KDE_STDIO_H
+#endif	// MSVC_STDIO_H

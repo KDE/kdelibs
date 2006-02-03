@@ -22,7 +22,47 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
+#endif
+
+// from kdecore/fakes.c
+KDEWIN32_EXPORT unsigned long strlcpy(char *d, const char *s, unsigned long bufsize)
+{
+	unsigned long len, ret = strlen(s);
+
+	if (ret >= bufsize) {
+		if (bufsize) {
+			len = bufsize - 1;
+			memcpy(d, s, len);
+			d[len] = '\0';
+		}
+	} else
+		memcpy(d, s, ret + 1);
+
+    return ret;
+}
+
+// from kdecore/fakes.c
+KDEWIN32_EXPORT unsigned long strlcat(char *d, const char *s, unsigned long bufsize)
+{
+	char *cp;
+	unsigned long ret, len1, len2 = strlen(s);
+
+	cp = memchr (d, '\0', bufsize);
+	if (!cp)
+		return bufsize + len2;
+	len1 = cp - d;
+	ret = len1 + len2;
+	if (ret >= bufsize) {
+		len2 = bufsize - len1 - 1;
+		memcpy(cp, s, len2);
+		cp[len2] = '\0';
+	} else
+		memcpy(cp, s, len2 + 1);
+
+	return ret;
+}
 
 KDEWIN32_EXPORT char* strndup(const char *src, size_t n)
 {
