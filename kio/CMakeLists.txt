@@ -238,10 +238,11 @@ endif(FAM_FOUND)
    
 
 set_target_properties(kio PROPERTIES VERSION 4.2.0 SOVERSION 4 )
+########### install files ###############
+
 install_targets(${KDE4_LIB_INSTALL_DIR} kio )
 
-
-########### install files ###############
+install_files(${KDE4_KCONF_UPDATE_DIR} FILES useragent.pl proxytype.pl )
 
 install_files( ${KDE4_MIME_DIR} FILES magic )
 install_files( ${KDE4_SERVICETYPES_DIR} FILES application.desktop kurifilterplugin.desktop kscan.desktop kdatatool.desktop kfileplugin.desktop kcmodule.desktop )
