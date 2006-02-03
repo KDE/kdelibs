@@ -112,9 +112,6 @@ def detect(env):
 
 	# normal detection functions go here
 	if env['CC'] == 'cl':
-		if env['_IN_KDELIBS_']:
-			env.AppendUnique(KDECCFLAGS = ['/FI./win/include/kdelibs_global_win.h'])
-			env.AppendUnique(KDECXXFLAGS = ['/FI./win/include/kdelibs_global_win.h'])
 		env.AppendUnique(KDECCFLAGS = ['-DKDE_FULL_TEMPLATE_EXPORT_INSTANTIATION'])
 		env.AppendUnique(KDECXXFLAGS = ['-DKDE_FULL_TEMPLATE_EXPORT_INSTANTIATION'])
 

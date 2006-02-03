@@ -1,8 +1,9 @@
-
 #include <QString>
 #include <QByteArray>
 #include <QDir>
 #include <QFileInfo>
+
+#include <kdelibs_export.h>
 
 #include <windows.h>
 #include <shellapi.h>

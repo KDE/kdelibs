@@ -38,6 +38,7 @@ def generate(env):
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('CACHED_LIBWINPOSIX')):
 		p=env.pprint
 		winposixdir = 'win'
+		winposixpro = 'win.pro'
 		# we need Qt4
 		from SCons.Tool import Tool
 		Tool('qt4', ['./bksys']).generate(env)
@@ -59,7 +60,7 @@ def generate(env):
 		if os.environ.has_key('QMAKESPEC'):
 			spec = ''
 		# create Makefile
-		execute( env, env['QT_QMAKE'] + ' ' + winposixdir + '/winposix.pro ' + spec )
+		execute( env, env['QT_QMAKE'] + ' ' + winposixdir + '/' + winposixpro + ' ' + spec )
 		# create libwinposix
 		execute( env, 'cd ' + winposixdir + ' && ' + make + ' -f Makefile' )
 		# 'install' it

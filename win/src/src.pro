@@ -8,7 +8,7 @@ win32-g++: {
 } else {
 	LIBS += ws2_32.lib advapi32.lib shell32.lib
 }
-DEFINES += MAKE_KDE
+DEFINES += MAKE_KDE MAKE_KDEWIN32_LIB
 
 SOURCES = \
 bootstrap.cpp \

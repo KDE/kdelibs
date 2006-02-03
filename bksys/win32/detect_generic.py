@@ -73,7 +73,7 @@ def detect(env):
 
 	if env['CC'] == 'cl':
 		env.AppendUnique(CPPPATH = os.environ['INCLUDE'].split(';'))
-		env['GENCCFLAGS']   += ['/Iwin\\include','/Iwin\\include\\msvc']
+#		env['GENCCFLAGS']   += ['/Iwin\\include','/Iwin\\include\\msvc']
 # TODO (rh) don't know required cl flags, don't know how to set not in win dir 
 #		env['GENLINKFLAGS'] += ['']
 
@@ -90,12 +90,12 @@ def detect(env):
 	elif os.environ.has_key('MINGW'):  
 		env.pprint('CYAN','Checking for mingw installation: ok ',os.environ['MINGW'])
 		# this is required to make gcc on windows happy
-		if not env['ARGS'].has_key('kdedir'):
-			env['GENCCFLAGS']   += ['-Iwin\\include','-Iwin\\include\\mingw','-I'+os.environ['MINGW']+'\\include']
+#		if not env['ARGS'].has_key('kdedir'):
+#			env['GENCCFLAGS']   += ['-Iwin\\include','-Iwin\\include\\mingw','-I'+os.environ['MINGW']+'\\include']
 
 		# required libraries should be installed under mingw installation root, so add the search pathes 
 		# INCLUDES_LAST is used by kde4.py to make sure mingw include dir is searched last 
-		env['INCLUDES_LAST'] = [os.environ['MINGW'] + '\\include']
+#		env['INCLUDES_LAST'] = [os.environ['MINGW'] + '\\include']
 		env['GENLINKFLAGS'] += ['-Wl,--enable-runtime-pseudo-reloc','-Wl,--export-all-symbols','-Wl,--script,bksys\\win32\\i386pe.x-no-rdata','-L' + os.environ['MINGW'] + '\\lib']
 
 	env['LIBSUFFIXEXT'] = '.dll'

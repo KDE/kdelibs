@@ -11,6 +11,9 @@
 DEFINES += _WINDOWS WIN32_LEAN_AND_MEAN
 
 INCLUDEPATH += .. ../include
+# fixme
+INCLUDEPATH += ../..
+
 win32-g++: {
 	INCLUDEPATH += ../include/mingw
 }

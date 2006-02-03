@@ -124,12 +124,12 @@ def detect(env):
 	qtlibs		= os.getenv("QTLIBS")
 	if not qtdir:
 		qtdir=env.find_path('include/', [ # lets find the qt include directory
-				'c:/Qt/4.0.3/', # one never knows
-				'c:/Qt/4.0.2/',
+				'c:/Qt/4.1.1/',
+				'c:/Qt/4.1.0/',
 				'c:/Qt/4.0.1/',
 				'c:/Qt/4.0.0/'])
 		if qtdir:
-			p('YELLOW', 'The qtdir was found as '+qtdir)
+			p('YELLOW', 'The QTDIR was found as '+qtdir)
 		else:
 			p('YELLOW', 'There is no QTDIR set')
 			return
@@ -156,6 +156,9 @@ def detect(env):
 		p('RED',"%s was not found - make sure Qt4-devel is installed, or set $QTDIR or $PATH" % prog)
 		env.Exit(1)
 	
+	print "Checking for qmake             :",
+	env['QT_QMAKE']  = find_qt_bin(['qmake', 'qmake-qt4'])
+
 	print "Checking for uic               :",
 	env['QT_UIC']  = find_qt_bin(['uic', 'uic-qt4'])
 
@@ -198,10 +201,10 @@ def detect(env):
 	else:
 		if os.path.isfile(qtdir+'/include/QtGui/QFont'):
 			# Automatic detection
-			p('GREEN','ok '+qtdir+"/include/")
+			p('GREEN','fine - '+qtdir+"/include/")
 			qtincludes = qtdir + "/include/"
 		else:
-			p('RED',"the qt headers were not found")
+			p('RED',"the Qt headers were not found")
 			env.Exit(1)
 
 
