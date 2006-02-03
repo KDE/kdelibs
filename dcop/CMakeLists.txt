@@ -17,7 +17,9 @@ if (UNIX)
    add_definitions(-DUNIXCONN)
 else (UNIX)
    # windows
-   add_definitions( -DSOCKCONN -DTCPCONN -FIkdelibs_global_win.h)
+   add_definitions( -DSOCKCONN -DTCPCONN)
+
+   set (KDEWIN32_LIBRARIES kdewin32 ws2_32)
 endif (UNIX)
 
 
@@ -56,7 +58,7 @@ dcopserver_shutdown.c
 
 kde4_add_executable(dcopserver_shutdown ${dcopserver_shutdown_SRCS})
 
-target_link_libraries(dcopserver_shutdown )
+target_link_libraries(dcopserver_shutdown ${KDEWIN32_LIBRARIES})
 
 install_targets(/bin dcopserver_shutdown )
 
@@ -107,12 +109,7 @@ kde4_automoc(${DCOP_LIB_SRCS})
 
 kde4_add_library(DCOP SHARED ${DCOP_LIB_SRCS})
 
-target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY})
-
-if (WIN32)
-   target_link_libraries(DCOP kdewin32 ws2_32)
-endif (WIN32)
-
+target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARIES})
 
 set_target_properties(DCOP PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${KDE4_LIB_INSTALL_DIR} DCOP )
@@ -129,7 +126,7 @@ kde4_automoc(${dcopserver_KDEINIT_SRCS})
 
 kde4_add_klm( dcopserver ${dcopserver_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP)
+target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP ${KDEWIN32_LIBRARIES})
 
 install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_dcopserver )
 

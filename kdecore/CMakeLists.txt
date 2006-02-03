@@ -48,9 +48,11 @@ set(kdecorenetwork_STAT_SRCS
 
 # libltdl/Makefile.am: ltdlc
 
-set(ltdlc_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
-)
+set(ltdlc_STAT_SRCS ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c )
+
+if (WIN32)
+   set(ltdlc_STAT_SRCS ${ltdlc_STAT_SRCS} ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c )
+endif (WIN32)
 
 add_subdirectory( malloc )
 add_subdirectory( kconfig_compiler )
