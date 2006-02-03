@@ -90,7 +90,7 @@ def checkForHeaders(env, dest):
 
 	# why do we need this?
 	if not env['WINDOWS']:
-		env['CPPPATH'] += [ '/usr/include','/usr/local/include' ]
+		env.AppendUnique(CPPPATH=[ '/usr/include','/usr/local/include' ])
 
 	conf = env.Configure()
 
