@@ -5,29 +5,25 @@ def exists(env):
 
 def generate(env):
 	import SCons.Util, os
+	from SCons.Options import Options
+
+	optionFile = env['CACHEDIR'] + 'pkgconfig.cache.py'
+	opts = Options(optionFile)
+	opts.AddOptions(('HAVE_PKGCONFIG', 'whether to use pkg-config'))
+	opts.Update(env)
 
 	# This funtion detects pkg-config
 	from SCons.Script.SConscript import SConsEnvironment
 	def Check_pkg_config(context, version):
 
 		from SCons.Options import Options
-		
-		optionFile = env['CACHEDIR'] + 'pkgconfig.cache.py'
-		opts = Options(optionFile)
-		opts.AddOptions(('CACHED_PKGCONFIG', 'whether pkg-config was found'))
-		opts.Update(env)
 
 		context.Message('Checking for pkg-config ... ')
 			
-		if not env.has_key('CACHED_PKGCONFIG'):
-			pkg_config_command = 'pkg-config'
-			if os.environ.has_key("PKG_CONFIG_PATH"):
-				pkg_config_command = "PKG_CONFIG_PATH="+os.environ["PKG_CONFIG_PATH"]+" pkg-config "
-			ret = context.TryAction(pkg_config_command+' --atleast-pkgconfig-version=%s' % version)[0]
-			env['CACHED_PKGCONFIG'] = ret
-			opts.Save(optionFile, env)
-		else:
-			ret = env['CACHED_PKGCONFIG']
+		pkg_config_command = 'pkg-config'
+		if os.environ.has_key("PKG_CONFIG_PATH"):
+			pkg_config_command = "PKG_CONFIG_PATH="+os.environ["PKG_CONFIG_PATH"]+" pkg-config "
+		ret = context.TryAction(pkg_config_command+' --atleast-pkgconfig-version=%s' % version)[0]
 			
 		context.Result(ret)
 		
@@ -73,7 +69,7 @@ def generate(env):
 			for i in ['CXXFLAGS_'+pkgname, 'LINKFLAGS_'+pkgname, 'CCFLAGS_'+pkgname]:
 				if env.has_key(i): env.__delitem__(i)
 
-			if not env.has_key('CACHED_PKGCONFIG'):
+			if not env.has_key('HAVE_PKGCONFIG'):
 				if not conf.Check_pkg_config('0.15'):
 					print 'pkg-config >= 0.15 not found.'
 					env.Exit(1)
@@ -89,14 +85,16 @@ def generate(env):
 			
 		return haveModule
 
-	if not env['HELP'] and (env['_CONFIGURE_'] and not env.has_key('CACHED_PKGCONFIG')) or not env.has_key('CACHED_PKGCONFIG'):
+	if not env['HELP'] and (env['_CONFIGURE_'] and not env.has_key('HAVE_PKGCONFIG')) or not env.has_key('HAVE_PKGCONFIG'):
 		conf = env.Configure(custom_tests =
 				     { 'Check_pkg_config' : Check_pkg_config  }
 				     )
+
 		env['HAVE_PKGCONFIG'] = conf.Check_pkg_config('0.15')
 		
 		if env['WINDOWS']:
 		    env['HAVE_PKGCONFIG'] = False
 		env = conf.Finish()
+		opts.Save(optionFile, env)
 
 	SConsEnvironment.pkgConfig_findPackage = pkgConfig_findPackage
