@@ -53,6 +53,8 @@ static void parseArgs(const QStringList &args, QString &directory, QString &file
                 exit(1);
             }
             directory = args.at(++i);
+        } else if (args.at(i).startsWith("-d")) {
+            directory = args.at(i).mid(2);
         } else if (args.at(i) == "--help" || args.at(i) == "-h") {
             std::cout << "Options:" << std::endl;
             std::cout << "  -L --license              Display software license" << std::endl;
