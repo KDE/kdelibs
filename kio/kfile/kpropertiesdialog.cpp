@@ -1465,6 +1465,7 @@ public:
   bool hasExtendedACL;
   KACL extendedACL;
   KACL defaultACL;
+  bool fileSystemSupportsACLs;
 };
 
 #define UniOwner    (S_IRUSR|S_IWUSR|S_IXUSR)
@@ -1521,6 +1522,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   d->hasExtendedACL = item->ACL().isExtended() || item->defaultACL().isValid();
   d->extendedACL = item->ACL();
   d->defaultACL = item->defaultACL();
+  d->fileSystemSupportsACLs = false;
 
   if ( properties->items().count() > 1 )
   {
@@ -1822,6 +1824,22 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   box->addStretch (10);
 }
 
+#ifdef USE_POSIX_ACL
+static bool fileSystemSupportsACL( const QByteArray& path )
+{
+    bool fileSystemSupportsACLs = false;
+#ifdef Q_OS_FREEBSD
+    struct statfs buf;
+    fileSystemSupportsACLs = ( statfs( path.data(), &buf ) == 0 ) && ( buf.f_flags & MNT_ACLS );
+#else
+    fileSystemSupportsACLs =
+      getxattr( path.data(), "system.posix_acl_access", NULL, 0 ) >= 0 || errno == ENODATA;
+#endif
+    return fileSystemSupportsACLs;
+}
+#endif
+
+
 void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   bool isDir = (d->pmode == PermissionsOnlyDirs) || (d->pmode == PermissionsMixed);
@@ -2026,15 +2044,13 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
 #ifdef USE_POSIX_ACL
   KACLEditWidget *extendedACLs = 0;
-  bool fileSystemSupportsACLs = false;
 
   // FIXME make it work with partial entries
   if ( properties->items().count() == 1 ) {
-    QByteArray pathCString = QFile::encodeName( properties->item()->url().path() );
-    fileSystemSupportsACLs =
-      getxattr( pathCString.data(), "system.posix_acl_access", NULL, 0 ) >= 0 || errno == ENODATA;
+    QByteArray path = QFile::encodeName( properties->item()->url().path() );
+    d->fileSystemSupportsACLs = fileSystemSupportsACL( path );
   }
-  if ( fileSystemSupportsACLs  ) {
+  if ( d->fileSystemSupportsACLs  ) {
     std::for_each( theNotSpecials.begin(), theNotSpecials.end(), std::mem_fun( &QWidget::hide ) );
     extendedACLs = new KACLEditWidget( mainVBox );
     if ( d->extendedACL.isValid() && d->extendedACL.isExtended() )
@@ -2428,9 +2444,9 @@ void KFilePermissionsPropsPlugin::applyChanges()
     if (files.count() > 0) {
       job = KIO::chmod( files, orFilePermissions, ~andFilePermissions,
 			owner, group, false );
-    if ( ACLChange )
+    if ( ACLChange && d->fileSystemSupportsACLs )
       job->addMetaData( "ACL_STRING", d->extendedACL.isValid()?d->extendedACL.asString():"ACL_DELETE" );
-    if ( defaultACLChange )
+    if ( defaultACLChange && d->fileSystemSupportsACLs )
       job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
 
       connect( job, SIGNAL( result( KIO::Job * ) ),
@@ -2443,9 +2459,9 @@ void KFilePermissionsPropsPlugin::applyChanges()
     if (dirs.count() > 0) {
       job = KIO::chmod( dirs, orDirPermissions, ~andDirPermissions,
 			owner, group, recursive );
-    if ( ACLChange )
+    if ( ACLChange && d->fileSystemSupportsACLs )
       job->addMetaData( "ACL_STRING", d->extendedACL.isValid()?d->extendedACL.asString():"ACL_DELETE" );
-    if ( defaultACLChange )
+    if ( defaultACLChange && d->fileSystemSupportsACLs )
       job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
 
       connect( job, SIGNAL( result( KIO::Job * ) ),
