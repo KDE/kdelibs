@@ -118,8 +118,7 @@ obj.libs     = 'ltdlc DCOP '
 obj.iskdelib = 1
 obj.includes = 'network'
 if env['WINDOWS']:
-	obj.libpaths += ' ../win '
-	obj.libs     += ' kdewin32 ws2_32 user32 shell32 '
+	obj.libs     += ' ws2_32 user32 shell32 '
 	obj.ccflags  += ' -DKIO_EXPORT= '
 
 if env['MAC']:

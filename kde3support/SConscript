@@ -63,12 +63,13 @@ obj.source = kde3support_sources
 #obj.libpaths = 'kmdi kparts kio kdeui kdecore '
 #obj.libs = 'k3mdi k3parts k3io kde3ui kde3core '
 obj.includes = 'kdecore kdeui kio kmdi kparts #/kio/bookmarks #/kde3support/kdecore #/kde3support/kmdi/res #/kde3support/kdeui #/kde3support/kparts #/kutils #/kde3support #/kde3supprt/kmdi'
-obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 '
-obj.libs = 'kdecore DCOP kdeui kparts kio kdefx kutils '
+obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KDECORE KDEUI KIO KDEFX DCOP'
 if not env['WINDOWS']:
-	obj.libs += ' kdesu'
-obj.libpaths = '../kdecore ../kdeui ../kparts ../kio ../dcop ../kdefx ../kdesu ../kutils '
-obj.ccflags += ' -DMAKE_KDE3SUPPORT_LIB -DKDE3_SUPPORT ' # todo: will be generated automatically
+	obj.libs += ' kdesu '
+	obj.libpaths = ' ../kdesu '
+obj.libs += ' kparts kutils '
+obj.libpaths = ' ../kparts ../kutils '
+obj.ccflags += ' -DKDE3_SUPPORT '
 obj.execute()
 
 #env.CreateFile('dummy.cpp', Value(''))

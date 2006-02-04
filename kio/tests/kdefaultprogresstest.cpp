@@ -1,6 +1,6 @@
 #include <kapplication.h>
-#include <kio/defaultprogress.h>
 #include <kurl.h>
+#include <kio/defaultprogress.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 using namespace KIO;

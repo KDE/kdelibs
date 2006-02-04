@@ -29,7 +29,7 @@ for appname in check_PROGRAMS.split():
 	obj.libs     = 'kio kdeui kdecore DCOP kdefx kwalletclient'
 	obj.includes = '. .. ../kssl ../bookmarks ../kfile ../kio ../misc ../../kdecore ../../kdefx ../../qttestlib '
 	if env['WINDOWS']:
-		obj.libs     += ' kdewin32 ws2_32'
+		obj.libs     += ' ws2_32'
 	else:
 		obj.libs     += ' kdesu'
 		

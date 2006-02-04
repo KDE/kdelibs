@@ -211,7 +211,7 @@ KLocale         *KGlobal::_locale	= 0;
 KCharsets       *KGlobal::_charsets	= 0;
 KStaticDeleterList *KGlobal::_staticDeleters = 0;
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include <windows.h>
 static void kglobal_init();
 static void kglobal_freeAll();

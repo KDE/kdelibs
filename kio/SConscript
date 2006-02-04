@@ -100,6 +100,8 @@ kio/kdcopservicestarter.cpp
 kio/dataslave.cpp 
 kio/dataprotocol.cpp
 """
+"""kio/kimageio.cpp
+"""
 
 if not env['WINDOWS']:
 	ksycoca_sources += """
@@ -349,32 +351,30 @@ env.Moc("bookmarks/kbookmarkmenu_p.h")
 
 obj = env.kdeobj('shlib', env)
 obj.target   = 'kio'
+obj.iskdelib = 1
 obj.vnum     = '6.0.2'
 obj.source   = kiocore_sources + ksycoca_sources + kssl_sources + kfile_sources + bookmarks_sources
 obj.includes = '. .. kio kssl ../interfaces kfile bookmarks misc ../kdecore/network '
+
 # kssl 
 obj.includes += ' ../kwallet/client'
+obj.libpaths += ' ../kwallet/client '
 #kfile
-obj.includes += ' ../kdefx ../libltdl '
+obj.includes += ' ../libltdl '
+obj.libpaths += ' ../libltdl '
 
-obj.iskdelib = 1
-# kiocore 
-obj.uselib = "Z FAM VOLMGT"
+obj.libpaths += ' ../dcop ../kwallet/client ../kdesu '
 
-obj.libpaths = '../kdeui ../kdesu ../kwallet/client ../kdecore ../dcop ../kdefx '
+obj.libs     += ' DCOP kwalletclient '
 if env['WINDOWS']:
-	obj.libpaths += ' ../libltdl ../win '
-	obj.libs     = 'kdeui kwalletclient kdecore DCOP kdewin32 kdefx ltdlc '
+	obj.libs     += 'ltdlc '
 else:
-	obj.libs     = 'kdeui kdesu kwalletclient kdecore DCOP kdefx z '
-obj.uselib    += ' QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
+	obj.libs     += 'kdesu '
 
-if env.has_key("CACHED_LIBART") and env['CACHED_LIBART']:
-    obj.uselib += ' LIBART'
+obj.uselib    += ' QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KDECORE KDEUI KDEFX '
+# additonal external libs
+obj.uselib += ' Z LIBART OPENSSL FAM VOLMGT'
 
-if env.has_key("CACHED_OPENSSL") and env['CACHED_OPENSSL']:
-	obj.uselib += ' OPENSSL'
-           
 #$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 obj.execute()
