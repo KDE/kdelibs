@@ -38,7 +38,7 @@ AC_DEFUN([AC_CHECK_PCREPOSIX],
       ac_LDFLAGS_save="$LDFLAGS"
       LDFLAGS="$LDFLAGS $all_libraries"
       AC_TRY_LINK(
-         [#include <pcreposix.h>],
+         [#include <pcre.h>],
          [regfree(0);],
          [ac_cv_have_pcreposix="yes"],
          [ac_cv_have_pcreposix="no"]
