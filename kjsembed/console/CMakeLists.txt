@@ -6,7 +6,8 @@ INCLUDE_DIRECTORIES( ${KDE3_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURC
 SET(console_SRCS
 main.cpp
 console.cpp
-\
+kjs_object_model.cpp
+numberedtextview.cpp
 )
 
 KDE3_AUTOMOC(${console_SRCS})
@@ -37,7 +38,7 @@ KDE3_PLACEHOLDER()
 #
 #bin_PROGRAMS = console 
 #
-#console_SOURCES = jsconsole.ui console.qrc main.cpp console.cpp \ 
+#console_SOURCES = jsconsole.ui console.qrc main.cpp console.cpp \
 #                  kjs_object_model.cpp numberedtextview.cpp
 #console_METASOURCES = AUTO
 #console_LDFLAGS = $(all_libraries) 
