@@ -117,7 +117,7 @@ void KMultiTabBarInternal::setStyle(enum KMultiTabBar::KMultiTabBarStyle style)
 		mainLayout->setAutoAdd(true);
 
 	}
-        viewport()->repaint();
+	viewport()->update();
 }
 
 void KMultiTabBarInternal::drawContents ( QPainter * paint, int clipx, int clipy, int clipw, int cliph )
@@ -387,7 +387,7 @@ void KMultiTabBarInternal::setPosition(enum KMultiTabBar::KMultiTabBarPosition p
 	m_position=pos;
 	for (int i=0;i<m_tabs.count();i++)
 		m_tabs.at(i)->setTabsPosition(m_position);
-	viewport()->repaint();
+	viewport()->update();
 }
 
 KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic,const QString& text, QMenu *popup,
@@ -443,13 +443,13 @@ void KMultiTabBarButton::slotClicked()
 void KMultiTabBarButton::setPosition(KMultiTabBar::KMultiTabBarPosition pos)
 {
 	m_position=pos;
-	repaint();
+	update();
 }
 
 void KMultiTabBarButton::setStyle(KMultiTabBar::KMultiTabBarStyle style)
 {
 	m_style=style;
-	repaint();
+	update();
 }
 
 void KMultiTabBarButton::hideEvent( QHideEvent* he) {
@@ -545,7 +545,6 @@ void KMultiTabBarTab::setTabsPosition(KMultiTabBar::KMultiTabBarPosition pos)
 	}
 
 	setPosition(pos);
-//	repaint();
 }
 
 void KMultiTabBarTab::setIcon(const QString& icon)
@@ -1022,11 +1021,10 @@ KMultiTabBar::KMultiTabBarPosition KMultiTabBar::position() const
 }
 void KMultiTabBar::fontChange(const QFont& /* oldFont */)
 {
-	for (int i=0;i<tabs()->count();i++)
-		tabs()->at(i)->resize();
-	repaint();
+	foreach( KMultiTabBarTab* tab, * m_internal->tabs() )
+		tab->resize();
+	update();
 }
 
-QList<KMultiTabBarTab*>* KMultiTabBar::tabs() {return m_internal->tabs();}
-QList<KMultiTabBarButton*>* KMultiTabBar::buttons() {return &m_buttons;}
-
+QList<KMultiTabBarTab*> KMultiTabBar::tabs() const {return * m_internal->tabs();}
+QList<KMultiTabBarButton*> KMultiTabBar::buttons() const {return m_buttons;}

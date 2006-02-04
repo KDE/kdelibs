@@ -45,6 +45,8 @@ class KMultiTabBarInternal;
 
 /**
  * A Widget for horizontal and vertical tabs.
+ * (Note that in Qt4, QTabBar can be vertical as well)
+ *
  * It is possible to add normal buttons to the top/left
  * The handling if only one tab at a time or multiple tabs
  * should be raisable is left to the "user".
@@ -132,13 +134,15 @@ public:
 	 */
 	KMultiTabBarStyle tabStyle() const;
 	/**
-	 * be carefull, don't delete tabs yourself and don't delete the list itself
+	 * @return the list of tabs
+	 * be careful, don't delete the tabs yourself
 	 */
-        QList<KMultiTabBarTab*>* tabs();
+        QList<KMultiTabBarTab*> tabs() const;
 	/**
-	 * be carefull, don't delete buttons yourself and don't delete the list itself
+	 * @return the list of buttons
+	 * be careful, don't delete the buttons yourself
 	 */
-	QList<KMultiTabBarButton*>* buttons();
+	QList<KMultiTabBarButton*> buttons() const;
 
 	/**
 	 * might vanish, not sure yet
