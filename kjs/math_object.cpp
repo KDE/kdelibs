@@ -31,6 +31,7 @@
 #include "interpreter.h"
 #include "operations.h"
 #include "math_object.h"
+#include "nodes.h"
 
 #include "math_object.lut.h"
 

@@ -28,6 +28,7 @@
 #include "operations.h"
 #include "bool_object.h"
 #include "error_object.h"
+#include "nodes.h"
 
 #include <assert.h>
 

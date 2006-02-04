@@ -32,6 +32,7 @@
 #include "regexp.h"
 #include "regexp_object.h"
 #include "error_object.h"
+#include "nodes.h"
 #include <stdio.h>
 #include "string_object.lut.h"
 

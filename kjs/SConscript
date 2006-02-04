@@ -36,16 +36,10 @@ obj = env.kdeobj('shlib', env)
 obj.vnum     = '3.0.2'
 obj.target   = 'kjs'
 obj.source   = kjs_files
-obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
-obj.cxxflags += ' -DHAVE_CONFIG_H '
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 PCRE'
 obj.iskdelib = 1
 obj.includes = 'network'
-if env.has_key("CACHED_PCRE") and env["CACHED_PCRE"]:
-	obj.uselib += ' PCRE'
-if env['WINDOWS']:
-	obj.libpaths += ' ../win '
-	obj.libs     += ' kdewin32 '
-else:
+if not env['WINDOWS']:
 	obj.libs     += 'm'
 
 obj.execute()

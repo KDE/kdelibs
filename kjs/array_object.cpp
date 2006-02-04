@@ -32,6 +32,7 @@
 #include "reference_list.h"
 #include "types.h"
 #include "value.h"
+#include "nodes.h"
 #include <kxmlcore/HashSet.h>
 
 #include "array_object.lut.h"

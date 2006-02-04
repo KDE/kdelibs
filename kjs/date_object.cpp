@@ -50,16 +50,25 @@
 
 #include "error_object.h"
 #include "operations.h"
+#include "nodes.h"
 
 #if __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)
-#define copysign(x, y) _copysign(x, y)
-#define isfinite(x) _finite(x)
-#define strncasecmp(x, y, z) strnicmp(x, y, z)
-#define snprintf _snprintf
+# ifndef HAVE_COPYSIGN
+#  define copysign(x, y) _copysign(x, y)
+# endif
+# ifndef HAVE_ISFINITE
+#  define isfinite(x) _finite(x)
+# endif
+# ifndef HAVE_STRNCASECMP
+#  define strncasecmp(x, y, z) strnicmp(x, y, z)
+# endif
+# ifndef HAVE_SNPRINTF
+#  define snprintf _snprintf
+# endif
 #endif
 
 inline int gmtoffset(const tm& t)

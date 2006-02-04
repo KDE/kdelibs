@@ -27,6 +27,7 @@
 #include "interpreter.h"
 #include "operations.h"
 #include "error_object.h"
+#include "nodes.h"
 //#include "debugger.h"
 
 using namespace KJS;

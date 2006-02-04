@@ -123,7 +123,7 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
         ExecState *exec = rep->globalExec();
         CString f = sourceURL.UTF8String();
         CString message = comp.value()->toObject(exec)->toString(exec).UTF8String();
-#ifdef WIN32
+#if defined (_WIN32) || defined (_WIN64)
                 printf("%s:%s\n", f.c_str(), message.c_str());
 #else
                 printf("[%d] %s:%s\n", getpid(), f.c_str(), message.c_str());

@@ -35,6 +35,7 @@
 #include "regexp.h"
 #include "error_object.h"
 #include "lookup.h"
+#include "nodes.h"
 
 using namespace KJS;
 

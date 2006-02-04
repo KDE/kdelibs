@@ -27,6 +27,7 @@
 #include "operations.h"
 #include "object_object.h"
 #include "function_object.h"
+#include "nodes.h"
 #include <stdio.h>
 #include <assert.h>
 

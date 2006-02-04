@@ -27,6 +27,7 @@
 #include "operations.h"
 #include "number_object.h"
 #include "error_object.h"
+#include "nodes.h"
 #include "dtoa.h"
 
 #include <kxmlcore/Vector.h>

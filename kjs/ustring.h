@@ -199,7 +199,7 @@ namespace KJS {
    * @short Unicode string class
    */
   class KJS_EXPORT UString {
-    friend bool operator==(const UString&, const UString&);
+    KJS_EXPORT friend bool operator==(const UString&, const UString&);
 
   public:
     /**
