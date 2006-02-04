@@ -1,4 +1,4 @@
- #    This file is part of the KDE libraries
+#    This file is part of the KDE libraries
 #    Copyright (C) 1996-1997 Matthias Kalle Dalheimer (kalle@kde.org)
 #              (C) 1997,1998 Stephan Kulow (coolo@kde.org)
 
@@ -44,10 +44,10 @@ include_HEADERS = kdelibs_export.h kdemacros.h
 
 messages:
 	cd kabc/scripts && perl ./makeaddressee
-	find . -type d | grep -v CVS | grep -v '\.svn' | sed -e 's,$$,/,' > dirs
+	find . -type d | fgrep -v '.svn' | sed -e 's,$$,/,' > dirs
 	mfs=`find . -name Makefile.am | xargs egrep -l '^messages:'` ;\
 	for dir in $$mfs; do \
-	  if test ! "$$dir" = "./Makefile.am"; then \
+	  if test "$$dir" != "./Makefile.am"; then \
 	    dir=`dirname $$dir` ;\
 	    egrep -v "^$$dir" dirs > dirs.new && mv dirs.new dirs ;\
 	  fi ;\
