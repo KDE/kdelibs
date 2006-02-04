@@ -16,49 +16,39 @@ kbuildsycoca.cpp kbuildservicetypefactory.cpp kbuildservicefactory.cpp
 kbuildservicegroupfactory.cpp kbuildprotocolinfofactory.cpp 
 kctimefactory.cpp vfolder_menu.cpp
 """
-obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT QTXML KDE4 KIO KDECORE KDEUI'
-obj.libpaths = ' ../kdefx ../dcop '
-obj.libs     = ' kdefx DCOP '
+obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT QTXML KDE4 KDECORE KIO KDEUI KDEFX'
+obj.libpaths = ' ../dcop '
+obj.libs     = ' DCOP '
 obj.instdir = env['KDEBIN']
-if env['WINDOWS']:
-	obj.libpaths += ' ../win'
-	obj.libs     += ' kdewin32'
 obj.execute()
 
 obj = env.kdeinitobj(env)
 obj.target   = 'kded'
 obj.source   = 'kded.cpp'
-obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KIO KDECORE KDEUI '
-obj.libpaths = ' ../kdefx ../dcop '
-obj.libs     = ' kdefx DCOP'
+obj.uselib   = 'QTCORE QTGUI QT3SUPPORT QT KDE4 KDECORE KIO KDEUI KDEFX'
+obj.libpaths = ' ../dcop '
+obj.libs     = ' DCOP'
 obj.instdir = env['KDEBIN']
 if env['WINDOWS']:
-	obj.libpaths += ' ../win '
-	obj.libs     += ' kdewin32 '
+	obj.ccflags  += ' -Dkdemain=main'
 obj.execute()
 
 obj=env.kdeobj('program', env)
 obj.target='kdontchangehostname'
 obj.source='khostname.cpp'
-obj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4 KDECORE'
-obj.libpaths = ' ../kdefx ../kdeui ../dcop ../kio/kio'
-obj.libs     = ' kdefx DCOP'
+obj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4 KDECORE KIO KDEUI KDEFX'
+obj.libpaths = ' ../dcop '
+obj.libs     = ' DCOP '
 obj.instdir = env['KDEBIN']
-if env['WINDOWS']:
-	obj.libpaths += ' ../win'
-	obj.libs     += ' kdewin32'
 obj.execute()
 
 obj=env.kdeobj('program', env)
 obj.target='kdemenu'
 obj.source='kde-menu.cpp'
-obj.uselib   = 'QTCORE QT QTGUI QT3SUPPORT KDE4 KIO'
-obj.libpaths = '../kdecore ../kdefx ../kdeui ../dcop ../kio/kio'
-obj.libs     = 'kdecore kdefx kdeui DCOP'
+obj.uselib   = 'QTCORE QT QTGUI QT3SUPPORT KDE4 KDECORE KIO KDEUI KDEFX'
+obj.libpaths = ' ../dcop '
+obj.libs     = ' DCOP '
 obj.instdir = env['KDEBIN']
-if env['WINDOWS']:
-	obj.libpaths += ' ../win'
-	obj.libs     += ' kdewin32'
 obj.execute()
 
 env.bksys_insttype( 'KDEDATA', 'kconf_update', 'kded.upd' )

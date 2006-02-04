@@ -202,8 +202,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    str << entrySize;
 
    // For each fast pattern
-   QStringList::ConstIterator it = fastPatterns.begin();
-   for ( ; it != fastPatterns.end() ; ++it )
+   for ( QStringList::ConstIterator it = fastPatterns.begin(); it != fastPatterns.end() ; ++it )
    {
      int start = str.device()->pos();
      // Justify to 6 chars with spaces, so that the size remains constant
@@ -227,8 +226,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    // For the other patterns
    str.device()->seek(m_otherPatternOffset);
 
-   it = otherPatterns.begin();
-   for ( ; it != otherPatterns.end() ; ++it )
+   for ( QStringList::ConstIterator it = otherPatterns.begin(); it != otherPatterns.end() ; ++it )
    {
      //kDebug(7021) << QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()) << endl;
      str << (*it);

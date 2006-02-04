@@ -19,9 +19,9 @@ obj = env.kdeobj('shlib')
 obj.target = 'kdocument'
 obj.source = kdocument_sources
 obj.includes = includes
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
-obj.libpaths = '../../kparts ../../kdeui'
-obj.libs = 'kparts kdeui'
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDEUI '
+obj.libpaths += '../../kparts '
+obj.libs     += ' kparts '
 obj.execute()
 
 env.bksys_insttype('KDEINCLUDE', 'kdocument', kdocumentinclude_headers)
