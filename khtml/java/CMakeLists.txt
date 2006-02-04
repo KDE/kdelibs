@@ -37,7 +37,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kjava.policy.in.cmake ${CMAKE_CURRENT
 # kjava.policy 
 install_files( ${KDE4_DATA_DIR}/kjava/ FILES kjava.jar kjava.policy pluginsinfo )
 install_files( ${KDE4_SERVICES_DIR} FILES kjavaappletviewer.desktop )
-install_files( ${KDE4_DATA_DIR}/kjava/icons FILES  )
+kde4_install_icons( crystalsvg /share/apps/kjava/ )
 
 kde4_footer()
 

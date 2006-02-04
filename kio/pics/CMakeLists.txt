@@ -5,7 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kio_uiserver/icons FILES  )
+kde4_install_icons( crystalsvg /share/apps/kio_uiserver/ )
 
 kde4_footer()
 
