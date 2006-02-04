@@ -151,7 +151,7 @@ autostart.cpp
 
 kde4_automoc(${klauncher_KDEINIT_SRCS})
 
-kde4_add_klm( klauncher ${klauncher_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( klauncher ${klauncher_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_klauncher  ${QT_AND_KDECORE_LIBS} kio )
 

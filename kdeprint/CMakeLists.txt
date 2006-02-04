@@ -1,9 +1,9 @@
 kde4_header()
 
-# you can find optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
+# you can find macro_optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
 # it is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
-optional_find_package(Cups)
+macro_optional_find_package(Cups)
 
 add_subdirectory( management )
 add_subdirectory( lpdunix )

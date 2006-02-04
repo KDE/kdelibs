@@ -1,27 +1,29 @@
-INCLUDE_DIRECTORIES( ${KDE3_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+kde4_header()
+
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
-SET(embed_SRCS
+set(embed_SRCS
 embed.cpp
 test_object.cpp
 test_pointer.cpp
 )
 
-KDE3_AUTOMOC(${embed_SRCS})
+kde4_automoc(${embed_SRCS})
 
-KDE3_ADD_EXECUTABLE(embed ${embed_SRCS})
+kde4_add_executable(embed ${embed_SRCS})
 
-TARGET_LINK_LIBRARIES(embed  ${QT_AND_KDECORE_LIBS} kjsembed )
+target_link_libraries(embed  ${QT_AND_KDECORE_LIBS} kjsembed )
 
-INSTALL_TARGETS(/bin embed )
+install_targets(/bin embed )
 
 
 ########### install files ###############
 
 
-KDE3_PLACEHOLDER()
+kde4_footer()
 
 
 

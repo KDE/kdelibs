@@ -33,7 +33,7 @@ main.cpp
 
 kde4_automoc(${cupsdconf_KDEINIT_SRCS})
 
-kde4_add_klm( cupsdconf ${cupsdconf_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( cupsdconf ${cupsdconf_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_cupsdconf  ${QT_AND_KDECORE_LIBS} kio ${CUPS_LIBRARY})
 

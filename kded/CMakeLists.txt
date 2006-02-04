@@ -11,7 +11,7 @@ kded.cpp
 
 kde4_automoc(${kded_KDEINIT_SRCS})
 
-kde4_add_klm( kded ${kded_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( kded ${kded_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kded  ${QT_AND_KDECORE_LIBS} kio )
 
@@ -35,7 +35,7 @@ vfolder_menu.cpp
 
 kde4_automoc(${kbuildsycoca_KDEINIT_SRCS})
 
-kde4_add_klm( kbuildsycoca ${kbuildsycoca_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( kbuildsycoca ${kbuildsycoca_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kbuildsycoca  ${QT_AND_KDECORE_LIBS} kio )
 

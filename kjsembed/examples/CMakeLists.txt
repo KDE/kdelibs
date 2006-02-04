@@ -1,13 +1,15 @@
-ADD_SUBDIRECTORY( embed ) 
-ADD_SUBDIRECTORY( designer ) 
+kde4_header()
 
-INCLUDE_DIRECTORIES( ${KDE3_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+add_subdirectory( embed ) 
+add_subdirectory( designer ) 
+
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### install files ###############
 
 
-KDE3_PLACEHOLDER()
+kde4_footer()
 
 
 

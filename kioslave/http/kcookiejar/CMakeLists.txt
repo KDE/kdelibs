@@ -13,7 +13,7 @@ main.cpp
 
 kde4_automoc(${kcookiejar_KDEINIT_SRCS})
 
-kde4_add_klm( kcookiejar ${kcookiejar_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( kcookiejar ${kcookiejar_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kcookiejar  ${QT_AND_KDECORE_LIBS} )
 

@@ -1,9 +1,11 @@
-INCLUDE_DIRECTORIES( ${KDE3_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+kde4_header()
+
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
-SET(editor_SRCS
+set(editor_SRCS
 bind_qaction.cpp
 bind_qdialog.cpp
 bind_qicon.cpp
@@ -19,19 +21,25 @@ mdichild.cpp
 numberedtextview.cpp
 )
 
-KDE3_AUTOMOC(${editor_SRCS})
+kde4_automoc(${editor_SRCS})
 
-KDE3_ADD_EXECUTABLE(editor ${editor_SRCS})
+set( editor_QRC
+mdi.qrc
+)
 
-TARGET_LINK_LIBRARIES(editor  ${QT_AND_KDECORE_LIBS} kjsembed )
+qt4_add_resources(editor_SRCS ${editor_QRC} )
 
-INSTALL_TARGETS(/bin editor )
+kde4_add_executable(editor ${editor_SRCS})
+
+target_link_libraries(editor  ${QT_AND_KDECORE_LIBS} kjsembed )
+
+install_targets(/bin editor )
 
 
 ########### install files ###############
 
 
-KDE3_PLACEHOLDER()
+kde4_footer()
 
 
 

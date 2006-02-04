@@ -1,9 +1,11 @@
-INCLUDE_DIRECTORIES( ${KDE3_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+kde4_header()
+
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
-SET(kjsembed_LIB_SRCS
+set(kjsembed_LIB_SRCS
 global.cpp
 binding_support.cpp
 static_binding.cpp
@@ -26,24 +28,25 @@ qpainter_binding.cpp
 settings.cpp
 svg_binding.cpp
 filedialog_binding.cpp
-\
+brush.cpp color.cpp dom.cpp font.cpp image.cpp pen.cpp
+pixmap.cpp point.cpp rect.cpp size.cpp url.cpp
 )
 
-KDE3_AUTOMOC(${kjsembed_LIB_SRCS})
+kde4_automoc(${kjsembed_LIB_SRCS})
 
-ADD_LIBRARY(kjsembed SHARED ${kjsembed_LIB_SRCS})
+kde4_add_library(kjsembed SHARED ${kjsembed_LIB_SRCS})
 
-TARGET_LINK_LIBRARIES(kjsembed  ${QT_AND_KDECORE_LIBS} kdeui kparts QtSvg_debug )
+target_link_libraries(kjsembed  ${QT_AND_KDECORE_LIBS} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTDESIGNER_LIBRARY} kdeui kparts kjs khtml )
 
-SET_TARGET_PROPERTIES(kjsembed PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-INSTALL_TARGETS(/lib kjsembed )
+set_target_properties(kjsembed PROPERTIES VERSION 1.0.0 SOVERSION 1 )
+install_targets(${KDE4_LIB_INSTALL_DIR} kjsembed )
 
 
 ########### install files ###############
 
-INSTALL_FILES( /include/kjsembed FILES global.h binding_support.h static_binding.h value_binding.h                            object_binding.h builtins.h fileio.h jseventmapper.h                            eventproxy.h slotproxy.h jseventutils.h qobject_binding.h                            kjsembed.h scalar_binding.h iosupport.h qwidget_binding.h                            widgetfactory.h qformbuilder_binding.h qpainter_binding.h                            settings.h svg_binding.h filedialog_binding.h                            brush.h color.h dom.h font.h image.h pen.h                            pixmap.h point.h rect.h size.h url.h pointer.h )
+install_files( /include/kjsembed FILES global.h binding_support.h static_binding.h value_binding.h                            object_binding.h builtins.h fileio.h jseventmapper.h                            eventproxy.h slotproxy.h jseventutils.h qobject_binding.h                            kjsembed.h scalar_binding.h iosupport.h qwidget_binding.h                            widgetfactory.h qformbuilder_binding.h qpainter_binding.h                            settings.h svg_binding.h filedialog_binding.h                            brush.h color.h dom.h font.h image.h pen.h                            pixmap.h point.h rect.h size.h url.h pointer.h )
 
-KDE3_PLACEHOLDER()
+kde4_footer()
 
 
 

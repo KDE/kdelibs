@@ -1,40 +1,48 @@
-INCLUDE_DIRECTORIES( ${KDE3_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+kde4_header()
+
+include_directories( ${CMAKE_SOURCE_DIR}/kjsembed ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
-SET(console_SRCS
+set(console_SRCS
 main.cpp
 console.cpp
 kjs_object_model.cpp
 numberedtextview.cpp
 )
 
-KDE3_AUTOMOC(${console_SRCS})
+kde4_automoc(${console_SRCS})
 
-SET( console_UI
+set( console_UI
 jsconsole.ui
 )
 
-KDE3_ADD_UI_FILES(console_SRCS ${console_UI} )
+kde4_add_ui_files(console_SRCS ${console_UI} )
 
-KDE3_ADD_EXECUTABLE(console ${console_SRCS})
+set( console_QRC
+console.qrc
+)
 
-TARGET_LINK_LIBRARIES(console  ${QT_AND_KDECORE_LIBS} kjsembed )
+qt4_add_resources(console_SRCS ${console_QRC} )
 
-INSTALL_TARGETS(/bin console )
+kde4_add_executable(console ${console_SRCS})
+
+target_link_libraries(console  ${QT_AND_KDECORE_LIBS} kjsembed )
+
+install_targets(/bin console )
 
 
 ########### install files ###############
 
 
-KDE3_PLACEHOLDER()
+kde4_footer()
 
 
 
 #original Makefile.am contents follow:
 
-#INCLUDES = $(all_includes) -I../kjsembed
+#INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kjsembed $(all_includes)
 #
 #bin_PROGRAMS = console 
 #
@@ -42,4 +50,4 @@ KDE3_PLACEHOLDER()
 #                  kjs_object_model.cpp numberedtextview.cpp
 #console_METASOURCES = AUTO
 #console_LDFLAGS = $(all_libraries) 
-#console_LDADD = -lkjsembed 
+#console_LDADD = ../kjsembed/libkjsembed.la

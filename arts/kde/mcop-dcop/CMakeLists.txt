@@ -18,7 +18,7 @@ kmcop.h
 
 kde4_add_dcop_skels(kmcop_KDEINIT_SRCS ${kmcop_DCOP_SKEL_SRCS})
 
-kde4_add_klm( kmcop ${kmcop_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( kmcop ${kmcop_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kmcop  ${QT_AND_KDECORE_LIBS} artskde )
 

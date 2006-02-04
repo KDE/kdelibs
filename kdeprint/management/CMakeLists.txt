@@ -97,7 +97,7 @@ kaddprinterwizard.cpp
 
 kde4_automoc(${kaddprinterwizard_KDEINIT_SRCS})
 
-kde4_add_klm( kaddprinterwizard ${kaddprinterwizard_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( kaddprinterwizard ${kaddprinterwizard_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kaddprinterwizard  ${QT_AND_KDECORE_LIBS} kdeprint_management)
 

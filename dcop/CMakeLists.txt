@@ -124,7 +124,7 @@ dcopsignals.cpp
 
 kde4_automoc(${dcopserver_KDEINIT_SRCS})
 
-kde4_add_klm( dcopserver ${dcopserver_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( dcopserver ${dcopserver_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP ${KDEWIN32_LIBRARIES})
 

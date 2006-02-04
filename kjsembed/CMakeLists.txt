@@ -1,15 +1,10 @@
-ADD_SUBDIRECTORY( kjsembed ) 
-ADD_SUBDIRECTORY( kjscmd ) 
-ADD_SUBDIRECTORY( console ) 
+kde4_header()
 
-INCLUDE_DIRECTORIES( ${KDE3_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+add_subdirectory( kjsembed )
+add_subdirectory( kjscmd ) 
+add_subdirectory( console ) 
 
-
-########### install files ###############
-
-
-KDE3_PLACEHOLDER()
-
+kde4_footer()
 
 
 #original Makefile.am contents follow:

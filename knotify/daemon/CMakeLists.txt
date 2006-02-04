@@ -25,7 +25,7 @@ knotify.h
 
 kde4_add_dcop_skels(knotify_KDEINIT_SRCS ${knotify_DCOP_SKEL_SRCS})
 
-kde4_add_klm( knotify ${knotify_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( knotify ${knotify_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_knotify  ${QT_AND_KDECORE_LIBS} kdeui )
 

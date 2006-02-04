@@ -11,7 +11,7 @@ kconf_update.cpp
 
 kde4_automoc(${kconf_update_KDEINIT_SRCS})
 
-kde4_add_klm( kconf_update ${kconf_update_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( kconf_update ${kconf_update_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kconf_update  ${QT_AND_KDECORE_LIBS} )
 

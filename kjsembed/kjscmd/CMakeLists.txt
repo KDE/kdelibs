@@ -1,25 +1,33 @@
-INCLUDE_DIRECTORIES( ${KDE3_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+kde4_header()
+
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
-SET(kjscmd_SRCS
+set(kjscmd_SRCS
 kjscmd.cpp
 )
 
-KDE3_AUTOMOC(${kjscmd_SRCS})
+kde4_automoc(${kjscmd_SRCS})
 
-KDE3_ADD_EXECUTABLE(kjscmd ${kjscmd_SRCS})
+set( kjscmd_QRC
+kjscmd.qrc
+)
 
-TARGET_LINK_LIBRARIES(kjscmd  ${QT_AND_KDECORE_LIBS} kjsembed )
+qt4_add_resources(kjscmd_SRCS ${kjscmd_QRC} )
 
-INSTALL_TARGETS(/bin kjscmd )
+kde4_add_executable(kjscmd ${kjscmd_SRCS})
+
+target_link_libraries(kjscmd  ${QT_AND_KDECORE_LIBS} kjsembed )
+
+install_targets(/bin kjscmd )
 
 
 ########### install files ###############
 
 
-KDE3_PLACEHOLDER()
+kde4_footer()
 
 
 

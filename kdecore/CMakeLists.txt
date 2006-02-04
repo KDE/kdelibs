@@ -4,10 +4,10 @@ project(libkdecore)
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
-# you can find optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
+# you can find macro_optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
 # it is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
-optional_find_package(AGG)
+macro_optional_find_package(AGG)
 if (AGG_FOUND)
    set(kdesvgicons_STAT_SRCS svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp )
    include_directories(${AGG_INCLUDE_DIR})

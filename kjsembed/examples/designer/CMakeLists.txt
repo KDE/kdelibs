@@ -1,25 +1,27 @@
-INCLUDE_DIRECTORIES( ${KDE3_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+kde4_header()
+
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
-SET(designer_SRCS
+set(designer_SRCS
 main.cpp
 )
 
-KDE3_AUTOMOC(${designer_SRCS})
+kde4_automoc(${designer_SRCS})
 
-KDE3_ADD_EXECUTABLE(designer ${designer_SRCS})
+kde4_add_executable(designer ${designer_SRCS})
 
-TARGET_LINK_LIBRARIES(designer  ${QT_AND_KDECORE_LIBS} kjsembed QtDesignerComponents_debug )
+target_link_libraries(designer  ${QT_AND_KDECORE_LIBS} kjsembed QtDesignerComponents_debug )
 
-INSTALL_TARGETS(/bin designer )
+install_targets(/bin designer )
 
 
 ########### install files ###############
 
 
-KDE3_PLACEHOLDER()
+kde4_footer()
 
 
 
