@@ -258,3 +258,5 @@ bool NumberedTextView::eventFilter( QObject *obj, QEvent *event )
 
     return false;
 }
+
+#include "numberedtextview.moc"

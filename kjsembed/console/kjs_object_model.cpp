@@ -151,3 +151,5 @@ QVariant KJSObjectModel::data(const QModelIndex &index, int role) const
         return item->name;
     return QVariant();
 }
+
+#include "kjs_object_model.moc"
