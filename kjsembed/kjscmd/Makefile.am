@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kjsembed $(all_includes)
+INCLUDES = -I$(top_srcdir)/kjsembed/kjsembed $(all_includes)
 
 bin_PROGRAMS = kjscmd 
 
