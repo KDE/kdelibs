@@ -1,0 +1,21 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+embed_sources = """
+embed.cpp test_object.cpp test_pointer.cpp
+"""
+
+includes = ' '
+
+obj = env.kdeobj('program')
+obj.target = 'embed'
+obj.source = embed_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+
+"""Unhandled Defines 
+embed_LDADD = -lkjsembed
+"""

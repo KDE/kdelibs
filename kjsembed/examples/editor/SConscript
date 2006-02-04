@@ -1,0 +1,24 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+editor_sources = """
+bind_qaction.cpp bind_qdialog.cpp bind_qicon.cpp bind_qlcdnumber.cpp
+bind_qtextcursor.cpp bind_qtextedit.cpp bind_qtimer.cpp bind_qwidget.cpp
+bind_qworkspace.cpp main.cpp mainwindow.cpp mdi.qrc
+mdichild.cpp numberedtextview.cpp
+"""
+
+includes = ' '
+
+obj = env.kdeobj('program')
+obj.target = 'editor'
+obj.source = editor_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+
+"""Unhandled Defines 
+editor_LDADD = -lkjsembed
+"""

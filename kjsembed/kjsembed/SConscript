@@ -1,0 +1,43 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kjsembed_sources = """
+binding_support.cpp builtins.cpp eventproxy.cpp
+filedialog_binding.cpp fileio.cpp global.cpp iosupport.cpp
+jseventmapper.cpp jseventutils.cpp kjsembed.cpp object_binding.cpp
+qformbuilder_binding.cpp qobject_binding.cpp qpainter_binding.cpp qwidget_binding.cpp
+scalar_binding.cpp settings.cpp slotproxy.cpp static_binding.cpp
+svg_binding.cpp value_binding.cpp widgetfactory.cpp
+"""
+
+kjsembedinclude_headers = """
+binding_support.h brush.h builtins.h color.h
+dom.h eventproxy.h filedialog_binding.h fileio.h
+font.h global.h image.h iosupport.h
+jseventmapper.h jseventutils.h kjsembed.h object_binding.h
+pen.h pixmap.h point.h pointer.h
+qformbuilder_binding.h qobject_binding.h qpainter_binding.h qwidget_binding.h
+rect.h scalar_binding.h settings.h size.h
+slotproxy.h static_binding.h svg_binding.h url.h
+value_binding.h widgetfactory.h
+"""
+
+includes = ' '
+
+obj = env.kdeobj('shlib')
+obj.it_is_a_kdelib()
+obj.target = 'kjsembed'
+obj.vnum = '1.0.0'
+obj.source = kjsembed_sources
+obj.includes = includes
+obj.libpaths = ' '
+obj.libs = '-lQtSvg_debug '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 QT QTNETWORK QTDESIGNER KDECORE KDEUI KFILE KHTML KJS SOCKET KPARTS QTXML '
+obj.execute()
+
+
+"""Unhandled Defines 
+kjsembedincludedir = $(includedir)/kjsembed
+INCLUDES + = -DQT_CLEAN_NAMESPACE -DQT_NO_ASCII_CAST
+"""

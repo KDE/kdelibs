@@ -1,0 +1,21 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+kjscmd_sources = """
+kjscmd.cpp kjscmd.qrc
+"""
+
+includes = '../kjsembed '
+
+obj = env.kdeobj('program')
+obj.target = 'kjscmd'
+obj.source = kjscmd_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.execute()
+
+
+"""Unhandled Defines 
+kjscmd_LDADD = ../kjsembed/libkjsembed.la
+"""
