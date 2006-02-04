@@ -88,6 +88,49 @@ def checkForHeaders(env, dest):
 		['sys/types.h','sys/mman.h'],
 	]
 
+	functions = [
+		'_getpty',
+		'_IceTransNoListen',
+		'_NSGetEnviron',
+		'freeaddrinfo',
+		'gai_strerror',
+		'getaddrinfo',
+		'getgroups',
+		'gethostbyname2_r',
+		'gethostbyname_r',
+		'gethostbyname2',
+		'getnameinfo',
+		'getpeername',
+		'getpt',
+		'getpeereid',
+		'getprotobyname_r',
+		'getservbyname_r',
+		'getservbyport_r',
+		'getsockname',
+		'getsockopt',
+		'gettimeofday',
+		'grantpt',
+		'if_nametoindex',
+		'inet_ntop',
+		'inet_pton',
+		'initgroups',
+		'openpty',
+		'poll',
+		'ptsname',
+		'random',
+		'seteuid',
+		'setegid',
+		'setfsent',
+		'setgroups',
+		'setpriority',
+		'socket',
+		'stpcpy',
+		'strtoll',
+		'strfmon',
+		'unlockpt',
+		'usleep',
+	]
+
 	# why do we need this?
 	if not env['WINDOWS']:
 		env.AppendUnique(CPPPATH=[ '/usr/include','/usr/local/include' ])
@@ -106,6 +149,11 @@ def checkForHeaders(env, dest):
 		header_define = "HAVE_" + define_regex.sub('_', header).upper()
 		content += "/* Define to 1 if you have the <" + header + "> header file. */\n"
 		content += define_line(header_define, conf.CheckHeader(header))
+
+	for function in functions:
+		function_define = "HAVE_" + define_regex.sub('_', function).upper()
+		content += "/* Define to 1 if you have the <" + function + ">. */\n"
+		content += define_line(function_define, conf.CheckFunc(function))
 
 	dest.write(content)
 	env = conf.Finish()

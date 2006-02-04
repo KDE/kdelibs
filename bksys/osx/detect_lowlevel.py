@@ -3,59 +3,6 @@
 def detect(env,dest):
 	import os, re
 
-	functions = [
-		'_getpty',
-		'_IceTransNoListen',
-		'_NSGetEnviron',
-		'freeaddrinfo',
-		'gai_strerror',
-		'getaddrinfo',
-		'getnameinfo',
-		'getpeername',
-		'getpt',
-		'getgroups',
-		'gethostbyname2_r',
-		'gethostbyname_r',
-		'gethostbyname2',
-		'getpeereid',
-		'getprotobyname_r',
-		'getservbyname_r',
-		'getservbyport_r',
-		'getsockname',
-		'getsockopt',
-		'gettimeofday',
-		'grantpt',
-		'if_nametoindex',
-		'inet_ntop',
-		'inet_pton',
-		'initgroups',
-		'openpty',
-		'poll',
-		'ptsname',
-		'seteuid',
-		'setegid',
-		'setfsent',
-		'setgroups',
-		'setpriority',
-		'socket',
-		'stpcpy',
-		'strtoll',
-		'strfmon',
-		'unlockpt',
-		'usleep',
-	]
-
-	content = ""
-
-	conf = env.Configure();
-	define_regex = re.compile("(\\.|\\/|\\\\)")
-
-	for function in functions:
-		function_define = "HAVE_" + define_regex.sub('_', function).upper()
-		content += define_line(function_define, conf.CheckFunc(function))
-
-	env = conf.Finish();
-
 	content += """
 #define HAVE_BOOL 1
 #define HAVE_CUPS 1
@@ -72,11 +19,7 @@ def detect(env,dest):
 #define HAVE_LC_MESSAGES 1
 #define HAVE_LIBDL 1
 #define HAVE_LIBGSSAPI 1
-#define HAVE_LIBJPEG 1
-#define HAVE_LIBPNG 1
 #define HAVE_LIBPTHREAD 1
-#define HAVE_LIBTIFF 1
-#define HAVE_LIBZ 1
 #define HAVE_MEMCPY 1
 #define HAVE_MITSHM 1
 #define HAVE_MMAP 1
@@ -89,7 +32,6 @@ def detect(env,dest):
 #define HAVE_SETLOCALE 1
 #define HAVE_SGI_STL 1
 #define HAVE_SNPRINTF 1
-#define HAVE_SSL 1
 #define HAVE_STRCASECMP 1
 #define HAVE_STRCHR 1
 #define HAVE_STRCMP 1

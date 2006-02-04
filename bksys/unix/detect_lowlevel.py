@@ -72,9 +72,6 @@ def detect(lenv,dest):
 /* Define is posix_fadvise is supported */
 #define HAVE_FADVISE 1
 
-/* Define to 1 if you have the `freeaddrinfo' function. */
-#define HAVE_FREEADDRINFO 1
-
 /* Define if you have finite */
 #define HAVE_FUNC_FINITE 1
 
@@ -87,77 +84,17 @@ def detect(lenv,dest):
 /* Define if you have _finite */
 /* #undef HAVE_FUNC__FINITE */
 
-/* Define to 1 if you have the `gai_strerror' function. */
-#define HAVE_GAI_STRERROR 1
-
-/* Define to 1 if you have the `getaddrinfo' function. */
-#define HAVE_GETADDRINFO 1
-
 /* Define to 1 if you have the `getcwd' function. */
 #define HAVE_GETCWD 1
-
-/* Define to 1 if you have the `getgroups' function. */
-#define HAVE_GETGROUPS 1
-
-/* Define to 1 if you have the `gethostbyname2' function. */
-#define HAVE_GETHOSTBYNAME2 1
-
-/* Define to 1 if you have the `gethostbyname2_r' function. */
-#define HAVE_GETHOSTBYNAME2_R 1
-
-/* Define to 1 if you have the `gethostbyname_r' function. */
-#define HAVE_GETHOSTBYNAME_R 1
 
 /* Define to 1 if you have the `getmntinfo' function. */
 /* #undef HAVE_GETMNTINFO */
 
-/* Define to 1 if you have the `getnameinfo' function. */
-#define HAVE_GETNAMEINFO 1
-
 /* Define to 1 if you have the `getpagesize' function. */
 #define HAVE_GETPAGESIZE 1
 
-/* Define to 1 if you have the `getpeereid' function. */
-/* #undef HAVE_GETPEEREID */
-
-/* Define to 1 if you have the `getpeername' function. */
-#define HAVE_GETPEERNAME 1
-
-/* Define to 1 if you have the `getprotobyname_r' function. */
-#define HAVE_GETPROTOBYNAME_R 1
-
-/* Define to 1 if you have the `getpt' function. */
-#define HAVE_GETPT 1
-
-/* Define to 1 if you have the `getservbyname_r' function. */
-#define HAVE_GETSERVBYNAME_R 1
-
-/* Define to 1 if you have the `getservbyport_r' function. */
-#define HAVE_GETSERVBYPORT_R 1
-
-/* Define to 1 if you have the `getsockname' function. */
-#define HAVE_GETSOCKNAME 1
-
-/* Define to 1 if you have the `getsockopt' function. */
-#define HAVE_GETSOCKOPT 1
-
-/* Define to 1 if you have the `gettimeofday' function. */
-#define HAVE_GETTIMEOFDAY 1
-
-/* Define to 1 if you have the `grantpt' function. */
-#define HAVE_GRANTPT 1
-
-/* Define to 1 if you have the `if_nametoindex' function. */
-#define HAVE_IF_NAMETOINDEX 1
-
 /* Define to 1 if you have the `index' function. */
 /* #undef HAVE_INDEX */
-
-/* Define to 1 if you have the `inet_ntop' function. */
-#define HAVE_INET_NTOP 1
-
-/* Define to 1 if you have the `inet_pton' function. */
-#define HAVE_INET_PTON 1
 
 /* Define if you have jasper */
 /* #undef HAVE_JASPER */
@@ -180,9 +117,6 @@ def detect(lenv,dest):
 /* Defined if you have libthai and want to have it compiled in */
 /* #undef HAVE_LIBTHAI */
 
-/* Define if you have libtiff */
-#define HAVE_LIBTIFF 1
-
 /* Define if you have LUA > 5.0 */
 /* #undef HAVE_LUA */
 
@@ -198,26 +132,14 @@ def detect(lenv,dest):
 /* Define to 1 if you have the `munmap' function. */
 #define HAVE_MUNMAP 1
 
-/* Define if your system needs _NSGetEnviron to set up the environment */
-/* #undef HAVE_NSGETENVIRON */
-
 /* Define if you have OpenSSL < 0.9.6 */
 /* #undef HAVE_OLD_SSL_API */
-
-/* Define to 1 if you have the `openpty' function. */
-#define HAVE_OPENPTY 1
-
-/* Define to 1 if you have the `poll' function. */
-#define HAVE_POLL 1
 
 /* Define to 1 if the assembler supports AltiVec instructions. */
 /* #undef HAVE_PPC_ALTIVEC */
 
 /* Define if libtool can extract symbol lists from object files. */
 #define HAVE_PRELOADED_SYMBOLS 1
-
-/* Define to 1 if you have the `ptsname' function. */
-#define HAVE_PTSNAME 1
 
 /* Define to 1 if you have the `putenv' function. */
 #define HAVE_PUTENV 1
@@ -240,26 +162,11 @@ def detect(lenv,dest):
 /* Define if you want sendfile() support */
 /* #undef HAVE_SENDFILE */
 
-/* Define to 1 if you have the `setegid' function. */
-#define HAVE_SETEGID 1
-
-/* Define to 1 if you have the `seteuid' function. */
-#define HAVE_SETEUID 1
-
-/* Define to 1 if you have the `setfsent' function. */
-#define HAVE_SETFSENT 1
-
-/* Define to 1 if you have the `setgroups' function. */
-#define HAVE_SETGROUPS 1
-
 /* Define to 1 if you have the `setlocale' function. */
 #define HAVE_SETLOCALE 1
 
 /* Define to 1 if you have the `setmntent' function. */
 #define HAVE_SETMNTENT 1
-
-/* Define to 1 if you have the `setpriority' function. */
-#define HAVE_SETPRIORITY 1
 
 /* Define if you have a STL implementation by SGI */
 #define HAVE_SGI_STL 1
@@ -273,15 +180,6 @@ def detect(lenv,dest):
 /* Define to 1 if you have the `snprintf' function. */
 #define HAVE_SNPRINTF 1
 
-/* Define to 1 if you have the `socket' function. */
-#define HAVE_SOCKET 1
-
-/* If we are going to use OpenSSL */
-#define HAVE_SSL 1
-
-/* Define to 1 if you have the `stpcpy' function. */
-#define HAVE_STPCPY 1
-
 /* Define to 1 if you have the `strcasecmp' function. */
 #define HAVE_STRCASECMP 1
 
@@ -291,14 +189,8 @@ def detect(lenv,dest):
 /* Define to 1 if you have the `strcmp' function. */
 #define HAVE_STRCMP 1
 
-/* Define to 1 if you have the `strfmon' function. */
-#define HAVE_STRFMON 1
-
 /* Define to 1 if you have the `strrchr' function. */
 #define HAVE_STRRCHR 1
-
-/* Define to 1 if you have the `strtoll' function. */
-#define HAVE_STRTOLL 1
 
 /* Define to 1 if the system has the type `struct addrinfo'. */
 #define HAVE_STRUCT_ADDRINFO 1
@@ -317,9 +209,6 @@ def detect(lenv,dest):
 
 /* Define if sys/stat.h declares S_ISSOCK. */
 #define HAVE_S_ISSOCK 1
-
-/* Define to 1 if you have the `unlockpt' function. */
-#define HAVE_UNLOCKPT 1
 
 /* Define if you have the utempter helper for utmp managment */
 #define HAVE_UTEMPTER 1
@@ -344,12 +233,6 @@ def detect(lenv,dest):
 
 /* Defined if your system has XRender support */
 #define HAVE_XRENDER 1
-
-/* Define to 1 if you have the `_getpty' function. */
-/* #undef HAVE__GETPTY */
-
-/* Define to 1 if you have the `_IceTransNoListen' function. */
-#define HAVE__ICETRANSNOLISTEN 1
 
 /* Define to 1 if you have the `__argz_count' function. */
 #define HAVE___ARGZ_COUNT 1
@@ -412,9 +295,6 @@ def detect(lenv,dest):
 
 /* Define the file for mount entries */
 #define MTAB_FILE "/etc/mtab"
-
-/* Define if the libbz2 functions need the BZ2_ prefix */
-#define NEED_BZ2_PREFIX 1
 
 /* Define if dlsym() requires a leading underscode in symbol names. */
 /* #undef NEED_USCORE */
