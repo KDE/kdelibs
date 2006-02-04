@@ -355,6 +355,12 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     connect (applet, SIGNAL(jsEvent (const QStringList &)), m_liveconnect, SLOT(jsEvent (const QStringList &)));
 }
 
+CoverWidget * KJavaAppletViewer::view () const
+{
+   return m_view;
+}
+
+
 bool KJavaAppletViewer::eventFilter (QObject *o, QEvent *e) {
     if (m_liveconnect->jsSessions () > 0) {
         switch (e->type()) {
