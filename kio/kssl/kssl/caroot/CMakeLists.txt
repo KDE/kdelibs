@@ -1,0 +1,19 @@
+kde4_header()
+
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+
+
+########### install files ###############
+
+install_files( ${KDE4_DATA_DIR}/kssl FILES ca-bundle.crt )
+
+kde4_footer()
+
+
+
+#original Makefile.am contents follow:
+
+#
+#kssldatadir = $(kde_datadir)/kssl
+#kssldata_DATA = ca-bundle.crt
+#
