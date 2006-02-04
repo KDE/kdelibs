@@ -25,7 +25,7 @@
 
 class KHistoryCombo;
 class QPushButton;
-class Q3PopupMenu;
+class QMenu;
 class QGridLayout;
 class QLabel;
 class QCheckBox;
@@ -253,7 +253,7 @@ private:
     QCheckBox *m_caseSensitive;
     QCheckBox *m_findBackwards;
 
-    Q3PopupMenu *m_patterns;
+    QMenu *m_patterns;
 
     // Our dirty little secret is that we also implement the "replace" dialog. But we
     // keep that fact hidden from all but our friends.
@@ -279,7 +279,7 @@ private:
 
     QCheckBox* m_promptOnReplace;
 
-    Q3PopupMenu *m_placeholders;
+    QMenu *m_placeholders;
 
     // Binary compatible extensibility.
     class KFindDialogPrivate;

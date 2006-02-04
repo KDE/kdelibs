@@ -28,7 +28,7 @@
 #include <q3scrollview.h>
 #include <qlayout.h>
 #include <qstring.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 #include <qpushbutton.h>
 
 #include <kdelibs_export.h>
@@ -134,11 +134,11 @@ public:
 	/**
 	 * be carefull, don't delete tabs yourself and don't delete the list itself
 	 */
-        Q3PtrList<KMultiTabBarTab>* tabs();
+        QList<KMultiTabBarTab*>* tabs();
 	/**
 	 * be carefull, don't delete buttons yourself and don't delete the list itself
 	 */
-	Q3PtrList<KMultiTabBarButton>* buttons();
+	QList<KMultiTabBarButton*>* buttons();
 
 	/**
 	 * might vanish, not sure yet
@@ -152,7 +152,7 @@ private:
 	class KMultiTabBarInternal *m_internal;
 	QBoxLayout *m_l;
 	QFrame *m_btnTabSep;
-	Q3PtrList<KMultiTabBarButton> m_buttons;
+	QList<KMultiTabBarButton*> m_buttons;
 	KMultiTabBarPosition m_position;
 	KMultiTabBarPrivate *d;
 };

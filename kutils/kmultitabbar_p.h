@@ -32,26 +32,27 @@ class KMultiTabBarInternal: public Q3ScrollView
         Q_OBJECT
 public:
         KMultiTabBarInternal(QWidget *parent,KMultiTabBar::KMultiTabBarMode bm);
+        virtual ~KMultiTabBarInternal();
         int appendTab(const QPixmap &,int=-1,const QString& =QString());
         KMultiTabBarTab *tab(int) const;
         void removeTab(int);
         void setPosition(enum KMultiTabBar::KMultiTabBarPosition pos);
         void setStyle(enum KMultiTabBar::KMultiTabBarStyle style);
         void showActiveTabTexts(bool show);
-        Q3PtrList<KMultiTabBarTab>* tabs(){return &m_tabs;}
+        QList<KMultiTabBarTab*>* tabs(){return &m_tabs;}
 private:
         friend class KMultiTabBar;
         QWidget *box;
-	QBoxLayout *mainLayout;
-        Q3PtrList<KMultiTabBarTab> m_tabs;
+        QBoxLayout *mainLayout;
+        QList<KMultiTabBarTab*> m_tabs;
         enum KMultiTabBar::KMultiTabBarPosition m_position;
         bool m_showActiveTabTexts;
         enum  KMultiTabBar::KMultiTabBarStyle m_style;
-	int m_expandedTabSize;
-	int m_lines;
-	KMultiTabBar::KMultiTabBarMode m_barMode;
+        int m_expandedTabSize;
+        int m_lines;
+        KMultiTabBar::KMultiTabBarMode m_barMode;
 protected:
-	virtual bool eventFilter(QObject *,QEvent*);
+        virtual bool eventFilter(QObject *,QEvent*);
         virtual void drawContents ( QPainter *, int, int, int, int);
 
         /**
@@ -61,7 +62,7 @@ protected:
          */
         virtual void contentsMousePressEvent(QMouseEvent *);
         virtual void mousePressEvent(QMouseEvent *);
-	virtual void resizeEvent(QResizeEvent *);
+        virtual void resizeEvent(QResizeEvent *);
 };
 #endif
 

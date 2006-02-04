@@ -24,7 +24,7 @@
 #include <qgroupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <qpushbutton.h>
 #include <qregexp.h>
 #include <kcombobox.h>
@@ -184,8 +184,8 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     topLayout->addWidget(m_optionGrp);
 
     // We delay creation of these until needed.
-    m_patterns = 0L;
-    m_placeholders = 0L;
+    m_patterns = 0;
+    m_placeholders = 0;
 
     // signals and slots connections
     connect(m_selectedText, SIGNAL(toggled(bool)), this, SLOT(slotSelectedTextToggled(bool)));
@@ -436,8 +436,8 @@ void KFindDialog::showPatterns()
     {
         typedef struct
         {
-            const char *description;
-            const char *regExp;
+            char *description;
+            char *regExp;
             int cursorAdjustment;
         } term;
         static const term items[] =
@@ -456,29 +456,70 @@ void KFindDialog::showPatterns()
                 { I18N_NOOP("White Space"),                   "\\s",      0 },
                 { I18N_NOOP("Digit"),                         "\\d",      0 },
             };
+
+
+        class RegExpAction : public QAction
+        {
+          public:
+            RegExpAction( QObject *parent, const QString &text, const QString &regExp, int cursor )
+              : QAction( text, parent ), mText( text ), mRegExp( regExp ), mCursor( cursor )
+            {
+            }
+
+            QString text() const { return mText; }
+            QString regExp() const { return mRegExp; }
+            int cursor() const { return mCursor; }
+
+          private:
+            QString mText;
+            QString mRegExp;
+            int mCursor;
+        };
+
         int i;
 
         // Populate the popup menu.
         if (!m_patterns)
         {
-            m_patterns = new Q3PopupMenu(this);
+            m_patterns = new QMenu(this);
             for (i = 0; (unsigned)i < sizeof(items) / sizeof(items[0]); i++)
             {
-                m_patterns->insertItem(i18n(items[i].description), i, i);
+                m_patterns->addAction(new RegExpAction(m_patterns, i18n(items[i].description),
+                                                       items[i].regExp,
+                                                       items[i].cursorAdjustment));
             }
         }
 
         // Insert the selection into the edit control.
-        i = m_patterns->exec(m_regExpItem->mapToGlobal(m_regExpItem->rect().bottomLeft()));
-        if (i != -1)
+        QAction *action = m_patterns->exec(m_regExpItem->mapToGlobal(m_regExpItem->rect().bottomLeft()));
+        if (action)
         {
-            QLineEdit *editor = m_find->lineEdit();
+            RegExpAction *regExpAction = static_cast<RegExpAction*>( action );
+            if ( regExpAction ) {
+              QLineEdit *editor = m_find->lineEdit();
 
-            editor->insert(items[i].regExp);
-            editor->setCursorPosition(editor->cursorPosition() + items[i].cursorAdjustment);
+              editor->insert(regExpAction->regExp());
+              editor->setCursorPosition(editor->cursorPosition() + regExpAction->cursor());
+            }
         }
     }
 }
+
+class PlaceHolderAction : public QAction
+{
+  public:
+    PlaceHolderAction( QObject *parent, const QString &text, int id )
+      : QAction( text, parent ), mText( text ), mId( id )
+    {
+    }
+
+    QString text() const { return mText; }
+    int id() const { return mId; }
+
+  private:
+    QString mText;
+    int mId;
+};
 
 // Create a popup menu with a list of backreference terms, to help the user
 // compose a regular expression replacement pattern.
@@ -487,28 +528,31 @@ void KFindDialog::showPlaceholders()
     // Populate the popup menu.
     if (!m_placeholders)
     {
-        m_placeholders = new Q3PopupMenu(this);
+        m_placeholders = new QMenu(this);
         connect( m_placeholders, SIGNAL(aboutToShow()), this, SLOT(slotPlaceholdersAboutToShow()) );
     }
 
     // Insert the selection into the edit control.
-    int i = m_placeholders->exec(m_backRefItem->mapToGlobal(m_backRefItem->rect().bottomLeft()));
-    if (i != -1)
+    QAction *action = m_placeholders->exec(m_backRefItem->mapToGlobal(m_backRefItem->rect().bottomLeft()));
+    if (action)
     {
-        QLineEdit *editor = m_replace->lineEdit();
-        editor->insert( QString("\\%1").arg( i ) );
+        PlaceHolderAction *placeHolderAction = static_cast<PlaceHolderAction*>(action);
+        if (placeHolderAction) {
+          QLineEdit *editor = m_replace->lineEdit();
+          editor->insert( QString("\\%1").arg( placeHolderAction->id() ) );
+        }
     }
 }
 
 void KFindDialog::slotPlaceholdersAboutToShow()
 {
     m_placeholders->clear();
-    m_placeholders->insertItem( i18n("Complete Match"), 0 );
+    m_placeholders->addAction( new PlaceHolderAction(m_placeholders, i18n("Complete Match"), 0));
 
     QRegExp r( pattern() );
     uint n = r.numCaptures();
     for ( uint i=0; i < n; i++ )
-        m_placeholders->insertItem( i18n("Captured Text (%1)").arg( i+1 ), i+1 );
+        m_placeholders->addAction( new PlaceHolderAction(m_placeholders, i18n("Captured Text (%1)").arg( i+1 ), i+1 ) );
 }
 
 void KFindDialog::slotOk()
