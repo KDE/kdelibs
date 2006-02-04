@@ -523,11 +523,11 @@ void K3MdiDockContainer::save( QDomElement& dockEl )
 	el = doc.createElement( "overlapMode" );
 	el.appendChild( doc.createTextNode( isOverlapMode() ? "true" : "false" ) );
 	dockEl.appendChild( el );
-	Q3PtrList<KMultiTabBarTab>* tl = m_tb->tabs();
-	Q3PtrListIterator<KMultiTabBarTab> it( *tl );
-	QStringList::Iterator it2 = itemNames.begin();
+	QList<KMultiTabBarTab *> tl = m_tb->tabs();
+	QList<KMultiTabBarTab *>::ConstIterator it = tl.begin();
+	QStringList::ConstIterator it2 = itemNames.begin();
 	int i = 0;
-	for ( ;it.current() != 0;++it, ++it2 )
+	for ( ;it != tl.end() && it2 != itemNames.end() ;++it, ++it2, ++i )
 	{
 		el = doc.createElement( "child" );
 		el.setAttribute( "pos", QString( "%1" ).arg( i ) );
@@ -543,13 +543,12 @@ void K3MdiDockContainer::save( QDomElement& dockEl )
 		}
 		el.appendChild( doc.createTextNode( *it2 ) );
 		dockEl.appendChild( el );
-		if ( m_tb->isTabRaised( it.current() ->id() ) )
+		if ( m_tb->isTabRaised( (*it)->id() ) )
 		{
 			QDomElement el2 = doc.createElement( "raised" );
-			el2.appendChild( doc.createTextNode( m_ws->widget( it.current() ->id() ) ->name() ) );
+			el2.appendChild( doc.createTextNode( m_ws->widget( (*it)->id() ) ->name() ) );
 			el.appendChild( el2 );
 		}
-		++i;
 	}
 
 
@@ -589,16 +588,16 @@ void K3MdiDockContainer::load( QDomElement& dockEl )
 		}
 	}
 
-	Q3PtrList<KMultiTabBarTab>* tl = m_tb->tabs();
-	Q3PtrListIterator<KMultiTabBarTab> it1( *tl );
 	m_ws->hide();
 	if ( !m_horizontal )
 		parentDockWidget()->setForcedFixedWidth( m_tb->width() );
 	else
 		parentDockWidget()->setForcedFixedHeight( m_tb->height() );
 
-	for ( ;it1.current() != 0;++it1 )
-		m_tb->setTab( it1.current() ->id(), false );
+	QList<KMultiTabBarTab *> tl = m_tb->tabs();
+	QList<KMultiTabBarTab *>::ConstIterator it1 = tl.begin();
+	for ( ; it1 != tl.end(); ++it1 )
+		m_tb->setTab( (*it1)->id(), false );
 
 	kapp->syncX();
 	m_delayedRaise = -1;
@@ -644,13 +643,13 @@ void K3MdiDockContainer::save( KConfig* cfg, const QString& group_or_prefix )
 			cfg->writeEntry( "separatorPosition", m_separatorPos );
 	}
 
-	Q3PtrList<KMultiTabBarTab>* tl = m_tb->tabs();
-	Q3PtrListIterator<KMultiTabBarTab> it( *tl );
-	QStringList::Iterator it2 = itemNames.begin();
+	QList<KMultiTabBarTab *> tl = m_tb->tabs();
+	QList<KMultiTabBarTab *>::ConstIterator it = tl.begin();
+	QStringList::ConstIterator it2 = itemNames.begin();
 	int i = 0;
-	for ( ;it.current() != 0;++it, ++it2 )
+	for ( ;it != tl.end() && it2 != itemNames.end() ;++it, ++it2, ++i )
 	{
-		//    cfg->writeEntry(QString("widget%1").arg(i),m_ws->widget(it.current()->id())->name());
+		//    cfg->writeEntry(QString("widget%1").arg(i),m_ws->widget((*it)->id())->name());
 		cfg->writeEntry( QString( "widget%1" ).arg( i ), ( *it2 ) );
 		QString s = tabCaptions[ *it2 ];
 		if ( !s.isEmpty() )
@@ -662,9 +661,9 @@ void K3MdiDockContainer::save( KConfig* cfg, const QString& group_or_prefix )
 		{
 			cfg->writeEntry( QString( "widget%1-tabTooltip" ).arg( i ), s );
 		}
-		//    kDebug(760)<<"****************************************Saving: "<<m_ws->widget(it.current()->id())->name()<<endl;
-		if ( m_tb->isTabRaised( it.current() ->id() ) )
-			cfg->writeEntry( m_ws->widget( it.current() ->id() ) ->name(), true );
+		//    kDebug(760)<<"****************************************Saving: "<<m_ws->widget((*it)->id())->name()<<endl;
+		if ( m_tb->isTabRaised( (*it) ->id() ) )
+			cfg->writeEntry( m_ws->widget( (*it) ->id() ) ->name(), true );
 		++i;
 	}
 	cfg->sync();
@@ -713,17 +712,16 @@ void K3MdiDockContainer::load( KConfig* cfg, const QString& group_or_prefix )
 
 	}
 
-	Q3PtrList<KMultiTabBarTab>* tl = m_tb->tabs();
-	Q3PtrListIterator<KMultiTabBarTab> it1( *tl );
 	m_ws->hide();
 	if ( !m_horizontal )
 		parentDockWidget() ->setForcedFixedWidth( m_tb->width() );
 	else
 		parentDockWidget() ->setForcedFixedHeight( m_tb->height() );
-	for ( ;it1.current() != 0;++it1 )
-	{
-		m_tb->setTab( it1.current() ->id(), false );
-	}
+	QList<KMultiTabBarTab *> tl = m_tb->tabs();
+	QList<KMultiTabBarTab *>::ConstIterator it1 = tl.begin();
+	for ( ; it1 != tl.end(); ++it1 )
+		m_tb->setTab( (*it1)->id(), false );
+
 	kapp->syncX();
 	m_delayedRaise = -1;
 
@@ -772,14 +770,14 @@ void K3MdiDockContainer::collapseOverlapped()
 
 	if ( isOverlapMode() )
 	{
-		Q3PtrList<KMultiTabBarTab>* tl = m_tb->tabs();
-		Q3PtrListIterator<KMultiTabBarTab> it( *tl );
-		for ( ;it.current();++it )
+		QList<KMultiTabBarTab *> tl = m_tb->tabs();
+		QList<KMultiTabBarTab *>::ConstIterator it = tl.begin();
+		for ( ; it != tl.end(); ++it )
 		{
-			if ( it.current()->isOn() )
+			if ( (*it)->isOn() )
 			{
 				kDebug( 760 ) << k_funcinfo << "lowering tab with id " << ( *it )->id() << endl;
-				it.current()->setState( false );
+				(*it)->setState( false );
 				tabClicked( ( *it )->id() );
 			}
 		}
@@ -804,10 +802,10 @@ void K3MdiDockContainer::toggle()
 		kDebug( 760 ) << k_funcinfo << "raising tab" << endl;
 		if ( m_tb->tab( m_previousTab ) == 0 )
 		{
-			if ( m_tb->tabs() ->count() == 0 )
+			if ( m_tb->tabs().count() == 0 )
 				return ;
 
-			m_previousTab = m_tb->tabs() ->getFirst() ->id();
+			m_previousTab = m_tb->tabs().first()->id();
 		}
 		m_tb->setTab( m_previousTab, true );
 		tabClicked( m_previousTab );
@@ -817,17 +815,17 @@ void K3MdiDockContainer::toggle()
 void K3MdiDockContainer::prevToolView()
 {
 	kDebug( 760 ) << k_funcinfo << endl;
-	Q3PtrList<KMultiTabBarTab>* tabs = m_tb->tabs();
-	int pos = tabs->findRef( m_tb->tab( oldtab ) );
+	QList<KMultiTabBarTab *> tabs = m_tb->tabs();
+	int pos = tabs.indexOf( m_tb->tab( oldtab ) );
 
 	if ( pos == -1 )
 		return ;
 
 	pos--;
 	if ( pos < 0 )
-		pos = tabs->count() - 1;
+		pos = tabs.count() - 1;
 
-	KMultiTabBarTab *tab = tabs->at( pos );
+	KMultiTabBarTab *tab = tabs.at( pos );
 	if ( !tab )
 		return ; //can never happen here, but who knows
 
@@ -838,17 +836,17 @@ void K3MdiDockContainer::prevToolView()
 void K3MdiDockContainer::nextToolView()
 {
 	kDebug( 760 ) << k_funcinfo << endl;
-	Q3PtrList<KMultiTabBarTab>* tabs = m_tb->tabs();
-	int pos = tabs->findRef( m_tb->tab( oldtab ) );
+	QList<KMultiTabBarTab *> tabs = m_tb->tabs();
+	int pos = tabs.indexOf( m_tb->tab( oldtab ) );
 
 	if ( pos == -1 )
 		return ;
 
 	pos++;
-	if ( pos >= ( int ) tabs->count() )
+	if ( pos >= ( int ) tabs.count() )
 		pos = 0;
 
-	KMultiTabBarTab *tab = tabs->at( pos );
+	KMultiTabBarTab *tab = tabs.at( pos );
 	if ( !tab )
 		return ; //can never happen here, but who knows
 
