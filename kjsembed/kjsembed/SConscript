@@ -26,7 +26,6 @@ value_binding.h widgetfactory.h
 includes = ' '
 
 obj = env.kdeobj('shlib')
-obj.it_is_a_kdelib()
 obj.target = 'kjsembed'
 obj.vnum = '1.0.0'
 obj.source = kjsembed_sources
