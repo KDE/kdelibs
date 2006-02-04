@@ -185,7 +185,8 @@ qint64 KTar::readRawHeader(char *buffer) {
       // only compare those of the 6 checksum digits that mean something,
       // because the other digits are filled with all sorts of different chars by different tars ...
       if( strncmp( buffer + 148 + 6 - s.length(), s.data(), s.length() ) ) {
-        kWarning(7041) << "KTar: invalid TAR file. Header is: " << QByteArray( buffer+257, 5 ) << endl;
+        kWarning(7041) << "KTar: invalid TAR file. Header is: " << QByteArray( buffer+257, 5 )
+                       << " checksum=" << QByteArray( buffer + 148 + 6 - s.length(), s.length() ) << endl;
         return -1;
       }
     }/*end if*/
@@ -204,7 +205,7 @@ bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
   buffer[ 0x88 ] = 0; // was 0x87, but 0x88 fixes BR #26437
   const char* p = buffer + 0x7c;
   while( *p == ' ' ) ++p;
-  qint64 size = QByteArray( p, 8 ).toLongLong();
+  qint64 size = QByteArray( p, 12 ).toLongLong();
 
   longlink.resize(size);
   size--;    // ignore trailing null
@@ -392,8 +393,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 isdir = false;
                 isDumpDir = true;
             }
-            //bool islink = ( typeflag == '1' || typeflag == '2' );
-            //kDebug(7041) << "typeflag=" << typeflag << " islink=" << islink << endl;
+            //kDebug(7041) << "typeflag=" << typeflag << " islink=" << ( typeflag == '1' || typeflag == '2' ) << endl;
 
             if (isdir)
                 access |= S_IFDIR; // f*cking broken tar files
@@ -407,10 +407,8 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             else
             {
                 // read size
-                buffer[ 0x88 ] = 0; // was 0x87, but 0x88 fixes BR #26437
-                const char* p = buffer + 0x7c;
-                while( *p == ' ' ) ++p;
-                qint64 size = QByteArray( p, 8 ).toLongLong();
+                QByteArray sizeBuffer( buffer + 0x7c, 12 );
+                qint64 size = sizeBuffer.trimmed().toLongLong();
 
                 // for isDumpDir we will skip the additional info about that dirs contents
                 if ( isDumpDir )
@@ -705,7 +703,7 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
     memset(buffer+0x9d, 0, 0x200 - 0x9d);
 
     QByteArray permstr = QByteArray::number( perm, 8 );
-    permstr.rightJustified(6, ' ');
+    permstr = permstr.rightJustified(6, ' ');
     fillBuffer(buffer, permstr, size, mtime, 0x30, uname, gname);
 
     // Write header
@@ -758,6 +756,7 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 
     QByteArray permstr = QByteArray::number( perm, 8 );
     permstr.rightJustified(6, ' ');
+    permstr = permstr.rightJustified(6, ' ');
     fillBuffer( buffer, permstr, 0, mtime, 0x35, uname, gname);
 
     // Write header
@@ -813,6 +812,7 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
 
     QByteArray permstr = QByteArray::number( perm, 8 );
     permstr.rightJustified(6, ' ');
+    permstr = permstr.rightJustified(6, ' ');
     fillBuffer(buffer, permstr, 0, mtime, 0x32, uname, gname);
 
     // Write header
