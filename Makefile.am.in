@@ -58,11 +58,12 @@ messages:
 	find $$dirs -maxdepth 1 -name "*.cc" -print >> files ;\
 	find $$dirs -maxdepth 1 -name "*.h" -print >> files ;\
 	echo ./kdecore/kde-config.cpp.in >> files ;\
-	$(EXTRACTRC) `find $$dirs -maxdepth 1 -name "*.rc" -o -name "*.ui"` > rc.cpp	;\
+	echo rc.cpp >> files ; \
+	$(EXTRACTRC) `find $$dirs -maxdepth 1 -name "*.rc" -o -name "*.ui"` >> rc.cpp	;\
 	: > kde.pot ;\
-	$(XGETTEXT) -ktranslate -x qt-messages.pot rc.cpp `cat files` && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot
+	$(XGETTEXT) -ktranslate:1,1t -ktranslate:1c,2,2t -x qt-messages.pot --files-from=files && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot
 	$(XGETTEXT) common_texts.cpp -o kde.pot
-	rm -f rc.cpp dirs
+	rm -f dirs
 
 EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot \
 	COMPILING COMPILING.html COPYING.BSD DEBUG \
@@ -81,6 +82,8 @@ kdedoc:
 	cd $(top_srcdir) && \
 	makekdedoc -p'--skip-internal' --outputdir=$(top_builddir)/srcdoc
 
+### TODO: adapt to Qt4
+### TODO: adapt to xgettext 0.15-pre. Probably: --qt --omit-header (and -k parameters)
 qtmessages:
 	if test x$(top_srcdir) = x; then top_srcdir=. ; else top_srcdir=$(top_srcdir); fi ;\
 	cd $$top_srcdir/../qt-copy/src ;\
