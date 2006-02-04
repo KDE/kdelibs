@@ -3,7 +3,7 @@
 #include <QMainWindow>
 #include <QStandardItemModel>
 
-#include <kjsembed/kjsembed.h>
+#include "kjsembed/kjsembed.h"
 
 class KJSObjectModel;
 
