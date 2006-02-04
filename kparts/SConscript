@@ -21,15 +21,11 @@ obj.target = 'kparts'
 obj.vnum = '3.0.1'
 obj.source = libkparts_sources
 obj.includes = includes
-obj.libpaths = "../kdecore ../kdeui ../kio ../dcop ../kdefx ../kdesu ../kwallet/client"
-obj.libs = "kdecore kdeui kio DCOP kdefx kwalletclient"
-obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4'
-if env['WINDOWS']:
-	obj.libpaths += " ../win"
-	obj.libs     += " kdewin32"
-else:
+obj.libpaths = "../dcop ../kdesu ../kwallet/client"
+obj.libs = " DCOP kwalletclient"
+obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KIO KDEUI KDECORE KDEFX '
+if not env['WINDOWS']:
 	obj.libs     += " kdesu"
-obj.cxxflags += ' -DMAKE_KPARTS_LIB ' # todo: will be generated automatically
 obj.execute()
 
 if env['MAC']:
