@@ -1847,9 +1847,9 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case FrameContentDocument: return checkNodeSecurity(exec,frameElement.contentDocument()) ?
 				      getDOMNode(exec, frameElement.contentDocument()) : Undefined();
     case FrameContentWindow:   {
-        KHTMLView *view = static_cast<DOM::DocumentImpl*>(frameElement.contentDocument().handle())->view();
-        if (view && view->part())
-            return Value(Window::retrieveWindow(view->part()));
+        KHTMLPart* part = static_cast<DOM::HTMLFrameElementImpl*>(frameElement.handle())->contentPart();
+        if (part)
+            return Value(Window::retrieveWindow(part));
         else
             return Undefined();
     }
@@ -1872,13 +1872,9 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case IFrameContentDocument: return checkNodeSecurity(exec,iFrame.contentDocument()) ?
 				       getDOMNode(exec, iFrame.contentDocument()) : Undefined();
     case IFrameContentWindow:       {
-        DOM::DocumentImpl* contentDoc = static_cast<DOM::DocumentImpl*>(iFrame.contentDocument().handle());
-        if (!contentDoc)
-            return Undefined();
-
-        KHTMLView *view = contentDoc->view();
-        if (view && view->part())
-            return Value(Window::retrieveWindow(view->part()));
+        KHTMLPart* part = static_cast<DOM::HTMLIFrameElementImpl*>(iFrame.handle())->contentPart();
+        if (part)
+            return Value(Window::retrieveWindow(part));
         else
             return Undefined();
     }

@@ -34,6 +34,7 @@
 #include <qscrollview.h>
 
 class KHTMLView;
+class KHTMLPart;
 
 namespace khtml {
     class RenderFrameSet;
@@ -95,6 +96,7 @@ public:
     virtual void setFocus(bool);
 
     DocumentImpl* contentDocument() const;
+    KHTMLPart*    contentPart() const;
 
     DOMString url;
     DOMString name;
