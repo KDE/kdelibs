@@ -109,9 +109,7 @@ KDEWIN32_EXPORT void usleep(unsigned int usec);
 KDEWIN32_EXPORT void sleep(unsigned int sec);
 		
 KDEWIN32_EXPORT long int random();
-#define HAVE_RANDOM
 
-#define HAVE_SETEUID
 KDEWIN32_EXPORT int setreuid(uid_t ruid, uid_t euid);
 
 #ifdef __cplusplus
