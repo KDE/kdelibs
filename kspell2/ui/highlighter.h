@@ -75,7 +75,7 @@ namespace KSpell2
 
 	bool automatic() const;
 
-	void setAutomatic( bool auto );
+	void setAutomatic( bool automatic );
 	
     
     Q_SIGNALS:
