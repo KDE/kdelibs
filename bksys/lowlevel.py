@@ -123,6 +123,7 @@ def checkForHeaders(env, dest):
 		'setfsent',
 		'setgroups',
 		'setpriority',
+		'setreuid',
 		'socket',
 		'stpcpy',
 		'strtoll',
