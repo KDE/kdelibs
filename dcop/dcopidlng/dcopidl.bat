@@ -17,7 +17,18 @@ if "%LIBDIR%" == "" (
   echo "TODO: implement -> LIBDIR='`$KDECONFIG --install data --expandvars`/dcopidl'
   rem set LIBDIR="`$KDECONFIG --install data --expandvars`/dcopidl"
 )
-perl  -I%LIBDIR% %LIBDIR%\\kalyptus --quiet --allow_k_dcop_accessors -f dcopidl %1 >%2
+
+set SOURCE=
+set TARGET=
+if "%1" == "-o" (
+       set SOURCE=%3
+       set TARGET=%2
+) else (
+       set SOURCE=%1
+       set TARGET=%2
+)
+
+perl  -I%LIBDIR% %LIBDIR%\\kalyptus --quiet --allow_k_dcop_accessors -f dcopidl %SOURCE% > %TARGET%
 set RET=ERRORLEVEL
 if %RET%==0 (
 	rem

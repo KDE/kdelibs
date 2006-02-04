@@ -51,7 +51,7 @@ set(kdecorenetwork_STAT_SRCS
 set(ltdlc_STAT_SRCS ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c )
 
 if (WIN32)
-   set(ltdlc_STAT_SRCS ${ltdlc_STAT_SRCS} ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c )
+   set(ltdlc_STAT_SRCS ${ltdlc_STAT_SRCS} ${CMAKE_SOURCE_DIR}/libltdl/ltdl_win.c )
 endif (WIN32)
 
 add_subdirectory( malloc )
