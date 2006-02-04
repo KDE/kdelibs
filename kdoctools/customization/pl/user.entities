@@ -131,15 +131,15 @@ ktnef
 
 <!ENTITY kmail-mianownik    '<application>Kmail</application>'>
 <!ENTITY kmail-dopelniacz    '<application>Kmaila</application>'>
-<!ENTITY kmail-celownik    '<application>Kmail-owi</application>'>
+<!ENTITY kmail-celownik    '<application>Kmailowi</application>'>
 <!ENTITY kmail-biernik    '<application>Kmaila</application>'>
-<!ENTITY kmail-miejscownik    '<application>Kmail-u</application>'>
+<!ENTITY kmail-narzednik    '<application>Kmailem</application>'>
+<!ENTITY kmail-miejscownik    '<application>Kmailu</application>'>
 
 <!ENTITY kmenu    'Menu K'>
 <!ENTITY kmenu-mianownik    'Menu K'>
 <!ENTITY kmenu-dopelniacz    '&kmenu-mianownik;'>
 <!ENTITY kmenu-celownik    '&kmenu-mianownik;'>
-<!ENTITY kmenu-biernik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-biernik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-miejscownik    '&kmenu-mianownik;'>
 
@@ -147,6 +147,7 @@ ktnef
 <!ENTITY knode-dopelniacz    '<application>Knode</application>'>
 <!ENTITY knode-celownik    '<application>Knode</application>'>
 <!ENTITY knode-biernik    '<application>Knode</application>'>
+<!ENTITY knode-narzednik    '<application>Knode</application>'>
 <!ENTITY knode-miejscownik    '<application>Knode</application>'>
 
 <!ENTITY konqueror-mianownik    '<application>Konqueror</application>'>
@@ -227,11 +228,11 @@ ktnef
 <!ENTITY OS-miejscownik    'systemie operacyjnym'>
 
 <!ENTITY Sendmail-mianownik    '<application>Sendmail</application>'>
-<!ENTITY Sendmail-dopelniacz    '<application>Sendmail-a</application>'>
-<!ENTITY Sendmail-celownik    '<application>Sendmail-owi</application>'>
-<!ENTITY Sendmail-biernik    '<application>Sendmail-a</application>'>
-<!ENTITY Sendmail-narzednik    '<application>Sendmail-em</application>'>
-<!ENTITY Sendmail-miejscownik    '<application>Sendmail-u/application>'>
+<!ENTITY Sendmail-dopelniacz    '<application>Sendmaila</application>'>
+<!ENTITY Sendmail-celownik    '<application>Sendmailowi</application>'>
+<!ENTITY Sendmail-biernik    '<application>Sendmaila</application>'>
+<!ENTITY Sendmail-narzednik    '<application>Sendmailem</application>'>
+<!ENTITY Sendmail-miejscownik    '<application>Sendmailu/application>'>
 
 <!ENTITY Shift        		"<keycap>Shift</keycap>">
 <!ENTITY Tab        		"<keycap>Tab</keycap>">
