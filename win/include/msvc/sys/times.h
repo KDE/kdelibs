@@ -20,7 +20,7 @@
 #ifndef _SYS_TIMES_H
 #define _SYS_TIMES_H
 
-#include <kdelibs_export.h>
+#include <winposix_export.h>
 //#include <_ansi.h>
 #include <machine/types.h>
 

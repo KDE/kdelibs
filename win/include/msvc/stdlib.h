@@ -21,7 +21,7 @@
  * Definitions for common types, variables, and functions.
  */
 
-#include <kdelibs_export.h>
+#include <winposix_export.h>
 
 /* regular header from msvc includes */
 # include <../include/stdlib.h>

@@ -27,7 +27,7 @@
 #include <fcntl.h>
 #include <ctype.h>
 
-#include <kdelibs_export.h> 
+#include <winposix_export.h> 
 
 #ifdef __cplusplus
 extern "C" {

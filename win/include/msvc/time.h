@@ -20,7 +20,7 @@
 #ifndef KDE_TIME_H
 #define KDE_TIME_H
 
-#include <kdelibs_export.h>
+#include <winposix_export.h>
 #include <../include/time.h>
 
 #ifdef __cplusplus

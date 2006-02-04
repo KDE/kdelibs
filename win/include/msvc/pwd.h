@@ -35,7 +35,7 @@
 
 #ifndef _PWD_H_
 
-#include <kdelibs_export.h>
+#include <winposix_export.h>
 
 #include <sys/types.h>
 

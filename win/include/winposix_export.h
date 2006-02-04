@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (C) 2006 Christian Ehrlicher <ch.ehrlicher@gmx.de>
+   Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,15 +17,24 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef MSVC_STDIO_H
-#define MSVC_STDIO_H
+#ifndef WINPOSX_IEXPORT_H
+#define WINPOSX_IEXPORT_H
 
-#include <winposix_export.h>
+/* We need to be independent from kdelibs so we can't use kdelibs_export.h */
+#ifdef _MSC_VER
+#define KDE_EXPORT __declspec(dllexport)
+#define KDE_IMPORT __declspec(dllimport)
+#else
+#define KDE_EXPORT
+#define KDE_IMPORT
+#endif
 
-/* regular header from msvc includes */
-# include <../include/stdio.h>
+#ifndef KDEWIN32_EXPORT
+# ifdef MAKE_KDEWIN32_LIB
+#  define KDEWIN32_EXPORT KDE_EXPORT
+# else
+#  define KDEWIN32_EXPORT KDE_IMPORT
+# endif
+#endif 
 
-#define snprintf _snprintf
-#define vsnprintf _vsnprintf
-
-#endif	// MSVC_STDIO_H
+#endif	// WINPOSX_IEXPORT_H

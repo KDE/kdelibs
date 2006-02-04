@@ -32,7 +32,7 @@ typedef unsigned int nlink_t;
 #include <stdint.h>
 
 #ifdef __cplusplus
-#include <kdelibs_export.h>
+#include <winposix_export.h>
 #else
 #define KDECORE_EXPORT
 #define KDEWIN32_EXPORT
