@@ -27,7 +27,7 @@
 namespace KNetwork { class KResolverEntry; }
 
 
-class KDEPRINT_EXPORT NetworkScanner : public QWidget
+class KDEPRINT_MANAGEMENT_EXPORT NetworkScanner : public QWidget
 {
 	Q_OBJECT
 

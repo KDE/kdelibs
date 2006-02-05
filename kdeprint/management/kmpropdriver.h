@@ -26,7 +26,7 @@
 
 class QLabel;
 
-class KDEPRINT_EXPORT KMPropDriver : public KMPropWidget
+class KDEPRINT_MANAGEMENT_EXPORT KMPropDriver : public KMPropWidget
 {
 public:
 	KMPropDriver(QWidget *parent = 0);

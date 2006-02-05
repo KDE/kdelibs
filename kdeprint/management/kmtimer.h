@@ -34,7 +34,7 @@
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class KDEPRINT_EXPORT KMTimer : public QTimer
+class KDEPRINT_MANAGEMENT_EXPORT KMTimer : public QTimer
 {
 	Q_OBJECT
 public:

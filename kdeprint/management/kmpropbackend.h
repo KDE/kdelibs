@@ -26,7 +26,7 @@
 
 class QLabel;
 
-class KDEPRINT_EXPORT KMPropBackend : public KMPropWidget
+class KDEPRINT_MANAGEMENT_EXPORT KMPropBackend : public KMPropWidget
 {
 public:
 	KMPropBackend(QWidget *parent = 0);

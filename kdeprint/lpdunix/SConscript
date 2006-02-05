@@ -16,9 +16,9 @@ obj = env.kdeobj('module')
 obj.target = 'kdeprint_lpdunix'
 obj.source = kdeprint_lpdunix_sources
 obj.includes = includes
-obj.libpaths = '##/kdeprint/management '
-obj.libs = 'kdeprint_management '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.libpaths = ' ../../kdeprint/management ../../kdeprint '
+obj.libs = 'kdeprint_management kdeprint '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE '
 obj.execute()
 
 env.bksys_insttype('KDEAPPS', 'kdeprint/plugins', 'lpdunix.print')

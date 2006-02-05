@@ -55,7 +55,7 @@ protected:
 
 extern "C"
 {
-	void* init_kdeprint_tool_escputil() KDE_EXPORT;
+	KDE_EXPORT void* init_kdeprint_tool_escputil();
 	void* init_kdeprint_tool_escputil()
 	{
 		return new EscpFactory;

@@ -16,9 +16,9 @@ obj = env.kdeobj('module')
 obj.target = 'kdeprint_ext'
 obj.source = kdeprint_ext_sources
 obj.includes = includes
-obj.libpaths = '##/kdeprint '
+obj.libpaths = ' ../../kdeprint '
 obj.libs = 'kdeprint '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE '
 obj.ccflags += ' -D_KDEPRINT_COMPILE '
 obj.execute()
 

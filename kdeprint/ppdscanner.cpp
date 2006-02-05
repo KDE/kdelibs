@@ -324,7 +324,7 @@ void kdeprint_ppdfree (void *  );
 
 /* Begin user sect3 */
 
-#define kdeprint_ppdwrap(n) 1
+static int kdeprint_ppdwrap (void ) { return true; }
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -601,7 +601,7 @@ char *kdeprint_ppdtext;
 
 #include <qstringlist.h>
 #include <qiodevice.h>
-#if __MINGW32__
+#if defined(__MINGW32__) || defined(_MSC_VER)
 // isatty
 #include <io.h>
 #endif 

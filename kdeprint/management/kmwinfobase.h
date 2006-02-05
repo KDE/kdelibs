@@ -26,7 +26,7 @@
 class QLabel;
 class QLineEdit;
 
-class KDEPRINT_EXPORT KMWInfoBase : public KMWizardPage
+class KDEPRINT_MANAGEMENT_EXPORT KMWInfoBase : public KMWizardPage
 {
 public:
 	KMWInfoBase(int n = 1, QWidget *parent = 0);

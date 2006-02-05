@@ -40,7 +40,7 @@ sys.path.append('bksys')
 ## Import the main configuration tool
 from generic import configure
 config = {
-	'modules'  : 'generic lowlevel kdefakes compiler libxml kde4 libz libpng libjpeg libagg libidn libpcre openssl fam libgif libbz2 yacc lua libtiff',
+	'modules'  : 'generic libwinposix lowlevel kdefakes compiler libxml kde4 libz libpng libjpeg libagg libidn libpcre openssl fam libgif libbz2 yacc lua libtiff',
 	'builddir' : 'build', # put all object files under 'build/'
 	'config.h' : 1, # mechanism should be ok
 	'rpath'    : 1, # incomplete
@@ -92,6 +92,7 @@ kdeui
 kwallet
 kde3support
 kio
+kdeprint
 kinit
 kded
 kparts
@@ -116,7 +117,6 @@ licenses
 # currently not on windows 
 subdirs_last = """
 kdesu
-kdeprint
 """
 
 if env['WINDOWS']:

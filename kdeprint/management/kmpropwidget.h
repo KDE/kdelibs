@@ -27,7 +27,7 @@
 class KMPrinter;
 class KMWizard;
 
-class KDEPRINT_EXPORT KMPropWidget : public QWidget
+class KDEPRINT_MANAGEMENT_EXPORT KMPropWidget : public QWidget
 {
 	Q_OBJECT
 public:

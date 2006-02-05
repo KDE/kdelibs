@@ -27,7 +27,7 @@
 class Q3ButtonGroup;
 class QVBoxLayout;
 
-class KDEPRINT_EXPORT KMWBackend : public KMWizardPage
+class KDEPRINT_MANAGEMENT_EXPORT KMWBackend : public KMWizardPage
 {
 public:
 	KMWBackend(QWidget *parent = 0);

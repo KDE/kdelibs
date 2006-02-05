@@ -71,7 +71,9 @@ public:
 
 QString NetworkScanner::NetworkScannerPrivate::localPrefix()
 {
+#ifdef __GNUC__
 #warning "Upgrade NetworkScanner with KNetworkInterface"
+#endif
 	char	buf[256];
 	buf[0] = '\0';
 	if (!gethostname(buf, sizeof(buf)))

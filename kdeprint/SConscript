@@ -56,26 +56,23 @@ printerfilter.h treecombobox.h util.h
 includes = '#/kdefx #/kded #/kdecore/network '
 
 obj = env.kdeobj('shlib')
-obj.target = 'libkdeprint'
+obj.target = 'kdeprint'
 obj.vnum = '6.0.2'
 obj.source = libkdeprint_sources
 obj.includes = includes
 obj.ccflags += ' -D_KDEPRINT_COMPILE '
-obj.libpaths = "../kdecore ../kdeui ../kio ../dcop ../kdefx "
+obj.libpaths = " ../dcop ../kdefx "
 # I know what you're thinking... kdeinit_kded? well, there *is* no libkded,
 # just "kded.so" or "kded.dylib" -- it's a loadable module, not an shlib,
 # we can't link against it -- kded needs rearranging but I'm not sure how
 # there appears to be a libkded now, so does this even apply anymore? (mattr)
 # KDEDModule is now in kdecore, no need for kded stuff here
-obj.libs = "kdecore kdeui kio DCOP kdefx "
-obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KPARTS Z '
+obj.libs = " DCOP kdefx "
+obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KDECORE KDEUI KIO KPARTS Z '
 if not env['WINDOWS']:
     obj.libs     += " kdesu"
     obj.libpaths += " ../kdesu "
 obj.ccflags = '-DYY_NO_UNISTD_H -DKDE3_SUPPORT'
-if env['WINDOWS']:
-	obj.libpaths += " ../win"
-	obj.libs += " kdewin32"
 	
 obj.execute()
 
@@ -83,13 +80,10 @@ obj = env.kdeobj('module')
 obj.target = 'kded_kdeprintd'
 obj.source = kded_kdeprintd_sources
 obj.includes = includes
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kdefx"
-obj.libs = "kdecore kdeui kio DCOP kdefx"
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
+obj.libpaths = " ../dcop ../kdefx"
+obj.libs = " DCOP kdefx"
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE KDEUI KIO '
 obj.ccflags += ' -D_KDEPRINT_COMPILE '
-if env['WINDOWS']:
-	obj.libpaths += " ../win"
-	obj.libs += " kdewin32"
 obj.execute()
 
 

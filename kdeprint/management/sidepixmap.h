@@ -25,7 +25,7 @@
 
 #include <kdelibs_export.h>
 
-class KDEPRINT_EXPORT SidePixmap : public QFrame
+class KDEPRINT_MANAGEMENT_EXPORT SidePixmap : public QFrame
 {
 public:
 	SidePixmap(QWidget *parent = 0, const char *name = 0);

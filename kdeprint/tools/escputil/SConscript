@@ -16,7 +16,7 @@ obj = env.kdeobj('module')
 obj.target = 'kdeprint_tool_escputil'
 obj.source = kdeprint_tool_escputil_sources
 obj.includes = includes
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDEUI '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDEUI KDECORE '
 obj.execute()
 
 env.bksys_insttype('KDEAPPS', 'kdeprint/tools', 'escputil.desktop')

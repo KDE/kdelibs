@@ -18,10 +18,10 @@ obj = env.kdeobj('module')
 obj.target = 'kdeprint_rlpr'
 obj.source = kdeprint_rlpr_sources
 obj.includes = includes
-obj.libpaths = '##/kdeprint/management '
-obj.libs = 'kdeprint_management '
+obj.libpaths = ' ../../kdeprint ../../kdeprint/management '
+obj.libs = ' kdeprint kdeprint_management '
 obj.ccflags += ' -D_KDEPRINT_COMPILE '
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE KDEUI '
 obj.execute()
 
 env.bksys_insttype('KDEAPPS', 'kdeprint/plugins', 'rlpr.print')

@@ -25,8 +25,9 @@
 
 #include <kdelibs_export.h>
 
-struct KDEPRINT_EXPORT KMDBEntry
+class KDEPRINT_EXPORT KMDBEntry
 {
+	public:
 	// the file location of the driver
 	QString	file;
 	// normal information

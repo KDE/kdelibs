@@ -29,7 +29,7 @@
 class KMPropWidget;
 class KMPrinter;
 
-class KDEPRINT_EXPORT KMPropertyPage : public CJanusWidget, public KMPrinterPage, public KPReloadObject
+class KDEPRINT_MANAGEMENT_EXPORT KMPropertyPage : public CJanusWidget, public KMPrinterPage, public KPReloadObject
 {
 	Q_OBJECT
 public:

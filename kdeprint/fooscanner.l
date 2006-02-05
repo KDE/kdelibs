@@ -20,7 +20,7 @@
 
 #include <qvariant.h>
 #include <qiodevice.h>
-#if __MINGW32__
+#if defined(__MINGW32__) || defined(_MSC_VER)
 // isatty
 #include <io.h>
 #endif 

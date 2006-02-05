@@ -33,7 +33,7 @@ class KMPrinter;
 class KMWBackend;
 class SidePixmap;
 
-class KDEPRINT_EXPORT KMWizard : public QDialog
+class KDEPRINT_MANAGEMENT_EXPORT KMWizard : public QDialog
 {
 	Q_OBJECT
 public:

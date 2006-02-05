@@ -32,7 +32,7 @@ class QLabel;
 class QPushButton;
 class KDialogBase;
 
-class KDEPRINT_EXPORT KXmlCommandSelector : public QWidget
+class KDEPRINT_MANAGEMENT_EXPORT KXmlCommandSelector : public QWidget
 {
 	Q_OBJECT
 public:

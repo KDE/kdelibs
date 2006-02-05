@@ -24,7 +24,7 @@
 
 class Q3TextView;
 
-class KDEPRINT_EXPORT KMPropMembers : public KMPropWidget
+class KDEPRINT_MANAGEMENT_EXPORT KMPropMembers : public KMPropWidget
 {
 public:
 	KMPropMembers(QWidget *parent = 0);

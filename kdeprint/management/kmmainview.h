@@ -50,7 +50,7 @@ class QMenuBar;
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class KDEPRINT_EXPORT KMMainView : public QWidget, public KPReloadObject
+class KDEPRINT_MANAGEMENT_EXPORT KMMainView : public QWidget, public KPReloadObject
 {
 	Q_OBJECT
 public:
@@ -127,6 +127,6 @@ private:
 	KToolBar *m_menubar;
 };
 
-KDEPRINT_EXPORT int kdeprint_management_add_printer_wizard( QWidget* parent );
+KDEPRINT_MANAGEMENT_EXPORT int kdeprint_management_add_printer_wizard( QWidget* parent );
 
 #endif

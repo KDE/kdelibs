@@ -324,7 +324,7 @@ void kdeprint_foomatic2free (void *  );
 
 /* Begin user sect3 */
 
-#define kdeprint_foomatic2wrap(n) 1
+static int kdeprint_foomatic2wrap (void ) { return true; }
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -507,7 +507,7 @@ char *kdeprint_foomatic2text;
 
 #include <qvariant.h>
 #include <qiodevice.h>
-#if __MINGW32__
+#if defined(__MINGW32__) || defined(_MSC_VER)
 // isatty
 #include <io.h>
 #endif 
