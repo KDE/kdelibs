@@ -93,7 +93,7 @@ qtmessages:
 		qurloperator qftp qhttp qlocal qerrormessage; do \
 		fgrep -v $$file list > list.new && mv list.new list ;\
 	done ;\
-	xgettext --omit-header -C --qt -ktr:1,1t -ktr:1c,2,2t -kQT_TRANSLATE_NOOP:1,1t -kQT_TRANSLATE_NOOP:1c,2,2t --files-from=list -o$$kdelibsdir/qt-messages.pot; \
+	xgettext --omit-header -C --qt -ktr:1,1t -ktr:1,2c,2t -kQT_TRANSLATE_NOOP:1,1t -kQT_TRANSLATE_NOOP:1c,2,2t --files-from=list -o$$kdelibsdir/qt-messages.pot; \
 	cd $$kdelibsdir
 
 include admin/Doxyfile.am
