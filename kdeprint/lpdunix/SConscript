@@ -21,7 +21,7 @@ obj.libs = 'kdeprint_management '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
-env.bksys_insttype('KDEDATA', 'kdeprint/plugins', 'lpdunix.print')
+env.bksys_insttype('KDEAPPS', 'kdeprint/plugins', 'lpdunix.print')
 
 
 """Unhandled Defines 
