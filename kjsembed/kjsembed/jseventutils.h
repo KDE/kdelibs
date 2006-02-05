@@ -70,7 +70,7 @@ namespace JSEventUtils
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QDragMoveEvent *ev);
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QTimerEvent *ev);
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QContextMenuEvent *ev);
-};
+}
 
 } // KJSEmbed
 

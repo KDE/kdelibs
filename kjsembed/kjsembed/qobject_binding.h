@@ -86,7 +86,7 @@ class KDE_EXPORT QObjectBinding : public ObjectBinding
         KJS::UString toString(KJS::ExecState *exec) const;
         KJS::UString className() const;
 
-        void QObjectBinding::watchObject( QObject *object );
+        void watchObject( QObject *object );
 
     private:
         EventProxy *m_evproxy;

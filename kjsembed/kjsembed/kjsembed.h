@@ -30,7 +30,7 @@ namespace KJS {
     class Interpreter;
     class Object;
     class Completion;
-};
+}
 
 namespace KJSEmbed {
 

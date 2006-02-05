@@ -36,7 +36,7 @@ class NAME \
     static const KJSEmbed::Method p_statics[]; \
     static const KJSEmbed::Enumerator p_enums[]; \
     static const KJSEmbed::Constructor p_constructor; \
-    static KJS::JSObject *NAME::ctorMethod( KJS::ExecState *exec, const KJS::List &args );\
+    static KJS::JSObject *ctorMethod( KJS::ExecState *exec, const KJS::List &args );\
     static const KJSEmbed::Enumerator *enums() { return p_enums;} \
     static const KJSEmbed::Method *methods() { return p_methods;} \
     static const KJSEmbed::Method *statics() { return p_statics;} \
