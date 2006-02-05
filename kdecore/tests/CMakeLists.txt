@@ -601,11 +601,11 @@ klockfiletest.cpp
 
 kde4_automoc(${klockfiletest_SRCS})
 
-kde4_add_executable(klockfiletest ${klockfiletest_SRCS})
+kde4_add_executable(lt-klockfiletest ${klockfiletest_SRCS})
 
-target_link_libraries(klockfiletest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(lt-klockfiletest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-add_test(kdecore-klockfiletest ${EXECUTABLE_OUTPUT_PATH}/klockfiletest)
+add_test(kdecore-klockfiletest ${EXECUTABLE_OUTPUT_PATH}/lt-klockfiletest)
 
 ########### next target ###############
 
