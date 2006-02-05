@@ -22,6 +22,7 @@ obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
 obj.execute()
 
 env.bksys_insttype('KDEINCLUDE', 'kmediaplayer', kmediaplayerinclude_headers )
+env.bksys_insttype('KDESERVTYPES', '', 'kmediaplayerengine.desktop kmediaplayer.desktop')
 
 """Unhandled Defines 
 kmediaplayerincludedir = $(includedir)/kmediaplayer

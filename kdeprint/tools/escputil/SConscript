@@ -19,5 +19,5 @@ obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDEUI '
 obj.execute()
 
-env.bksys_insttype('KDEDATA', 'kdeprint/tools', 'escputil.desktop')
+env.bksys_insttype('KDEAPPS', 'kdeprint/tools', 'escputil.desktop')
 
