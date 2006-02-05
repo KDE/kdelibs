@@ -103,7 +103,7 @@ IdleSlave::gotInput()
       pid_t pid;
       DCOPCString protocol;
       QString host;
-      Q_INT8 b;
+      qint8 b;
       stream >> pid >> protocol >> host >> b;
 // Overload with (bool) onHold, (KUrl) url.
       if (!stream.atEnd())

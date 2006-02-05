@@ -365,7 +365,7 @@ QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* e
              paths = QString(path).split( QRegExp( "[:\b]" ));
      }
      else
-         paths = QStringList::split( QRegExp( "[:\b]" ), getenv( "PATH" ), true );
+         paths = QString( getenv("PATH") ).split( QRegExp( "[:\b]" ), QString::KeepEmptyParts );
      QByteArray execpath = QFile::encodeName(
          s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
      if( avoid_loops && !execpath.isEmpty())
