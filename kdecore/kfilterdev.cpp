@@ -132,7 +132,7 @@ void KFilterDev::close()
         return;
     //kDebug(7005) << "KFilterDev::close" << endl;
     if ( filter->mode() == QIODevice::WriteOnly )
-        writeBlock( 0L, 0 ); // finish writing
+        write( 0L, 0 ); // finish writing
     //kDebug(7005) << "KFilterDev::close. Calling terminate()." << endl;
 
     filter->terminate();
@@ -186,14 +186,14 @@ bool KFilterDev::seek( qint64 pos )
     {
         // we have to start from 0 ! Ugly and slow, but better than the previous
         // solution (KTarGz was allocating everything into memory)
-        if (!at(0)) // sets ioIndex to 0
+        if (!seek(0)) // sets ioIndex to 0
             return false;
     }
 
     //kDebug(7005) << "KFilterDev::at : reading " << pos << " dummy bytes" << endl;
-    QByteArray dummy( QMIN( pos, (qint64)3*BUFFER_SIZE ) );
+    QByteArray dummy( qMin( pos, (qint64)3*BUFFER_SIZE ), 0 );
     d->bIgnoreData = true;
-    bool result = ( (qint64)readBlock( dummy.data(), pos ) == pos );
+    bool result = ( (qint64)read( dummy.data(), pos ) == pos );
     d->bIgnoreData = false;
     return result;
 }
@@ -224,7 +224,7 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
         }
         else
         {
-            dataReceived = QMIN( (qint64)len, maxlen );
+            dataReceived = qMin( (qint64)len, maxlen );
         }
         d->ungetchBuffer.truncate( len - dataReceived );
         ioIndex += dataReceived;
@@ -240,17 +240,17 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
         return -1;
 
 
-    Q_ULONG outBufferSize;
+    qint64 outBufferSize;
     if ( d->bIgnoreData )
     {
-        outBufferSize = QMIN( maxlen, (qint64)3*BUFFER_SIZE );
+        outBufferSize = qMin( maxlen, (qint64)3*BUFFER_SIZE );
     }
     else
     {
         outBufferSize = maxlen;
     }
     outBufferSize -= dataReceived;
-    Q_ULONG availOut = outBufferSize;
+    qint64 availOut = outBufferSize;
     filter->setOutBuffer( data, outBufferSize );
 
     bool decompressedAll = false;
@@ -262,8 +262,8 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
             // For sure, it should be bigger than the header size (see comment in readHeader)
             d->buffer.resize( BUFFER_SIZE );
             // Request data from underlying device
-            int size = filter->device()->readBlock( d->buffer.data(),
-                                                    d->buffer.size() );
+            int size = filter->device()->read( d->buffer.data(),
+                                               d->buffer.size() );
             if ( size )
                 filter->setInBuffer( d->buffer.data(), size );
             else {
@@ -381,7 +381,7 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
             if ( towrite > 0 )
             {
                 // Write compressed data to underlying device
-                int size = filter->device()->writeBlock( d->buffer.data(), towrite );
+                int size = filter->device()->write( d->buffer.data(), towrite );
                 if ( size != towrite ) {
                     kWarning(7005) << "KFilterDev::writeBlock. Could only write " << size << " out of " << towrite << " bytes" << endl;
                     return 0; // indicate an error (happens on disk full)
@@ -416,7 +416,7 @@ int KFilterDev::getChar()
         return ch;
     }
     char buf[1];
-    int ret = readBlock( buf, 1 ) == 1 ? buf[0] : EOF;
+    int ret = read( buf, 1 ) == 1 ? buf[0] : EOF;
     //kDebug(7005) << "KFilterDev::getch ret=" << QString(QChar(ret)) << endl;
     return ret;
 }
@@ -426,7 +426,7 @@ int KFilterDev::putChar( int c )
     //kDebug(7005) << "KFilterDev::putch" << endl;
     char buf[1];
     buf[0] = c;
-    return writeBlock( buf, 1 ) == 1 ? c : -1;
+    return write( buf, 1 ) == 1 ? c : -1;
 }
 
 int KFilterDev::ungetChar( int ch )

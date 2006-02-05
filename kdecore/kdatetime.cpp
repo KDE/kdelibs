@@ -1717,19 +1717,19 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                 const KTimezones::ZoneMap z = zones->zones();
                 for (KTimezones::ZoneMap::ConstIterator it = z.begin();  it != z.end();  ++it)
                 {
-                    if (it.data()->abbreviations().indexOf(zoneAbbrev) >= 0)
+                    if (it.value()->abbreviations().indexOf(zoneAbbrev) >= 0)
                     {
                         int offset2;
-                        int offset = it.data()->offsetAtZoneTime(qdt, &offset2);
+                        int offset = it.value()->offsetAtZoneTime(qdt, &offset2);
                         QDateTime ut = qdt;
                         ut.setTimeSpec(Qt::UTC);
                         ut.addSecs(-offset);
-                        if (it.data()->abbreviation(ut) != zoneAbbrev)
+                        if (it.value()->abbreviation(ut) != zoneAbbrev)
                         {
                             if (offset == offset2)
                                 continue;     // abbreviation doesn't apply at specified time
                             ut.addSecs(offset - offset2);
-                            if (it.data()->abbreviation(ut) != zoneAbbrev)
+                            if (it.value()->abbreviation(ut) != zoneAbbrev)
                                 continue;     // abbreviation doesn't apply at specified time
                             offset = offset2;
                         }
@@ -1743,7 +1743,7 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                         }
                         else
                         {
-                            zone = it.data();
+                            zone = it.value();
                             utcOffset = offset;
                         }
                     }
@@ -1768,9 +1768,9 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                 const KTimezones::ZoneMap z = zones->zones();
                 for (KTimezones::ZoneMap::ConstIterator it = z.begin();  it != z.end();  ++it)
                 {
-                    QList<int> offsets = it.data()->UTCOffsets();
+                    QList<int> offsets = it.value()->UTCOffsets();
                     if ((offsets.isEmpty() || offsets.indexOf(utcOffset) >= 0)
-                    &&  it.data()->offsetAtUTC(dtUTC) == utcOffset)
+                    &&  it.value()->offsetAtUTC(dtUTC) == utcOffset)
                     {
                         // Found a time zone which uses this offset at the specified time
                         if (zone  ||  !utcOffset)
@@ -1789,7 +1789,7 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                             qdt.setTimeSpec(Qt::LocalTime);
                             return KDateTime(qdt, OffsetFromUTC, utcOffset);
                         }
-                        zone = it.data();
+                        zone = it.value();
                     }
                 }
             }

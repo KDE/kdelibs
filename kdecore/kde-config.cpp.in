@@ -98,7 +98,7 @@ QString expandvars(const char *_input)
         changed = true;
     }
     if (changed)
-        return expandvars(result.latin1());
+        return expandvars(result.toLatin1());
     else
         return result;
 }
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
     QString type = args->getOption("path");
     if (!type.isEmpty())
     {
-        printResult(KGlobal::dirs()->resourceDirs(type.latin1()).join(":"));
+        printResult(KGlobal::dirs()->resourceDirs(type.toLatin1()).join(":"));
         return 0;
     }
 
