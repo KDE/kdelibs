@@ -62,7 +62,7 @@ dest.write('#include "global.h.in"\n')
 dest.close()
 
 
-install_headers = "kdelibs_export.h kdemacros.h kdemacros.h.in"
+install_headers = "kdelibs_export.h kdemacros.h"
 
 def build_kdemacros_h(target = None, source = None, env = None):
 	dest = open(str(target[0]), 'w')
@@ -91,6 +91,7 @@ kdecore
 kdeui
 kwallet
 kio
+kinit
 kded
 kparts
 kutils
