@@ -82,6 +82,9 @@ if (WIN32)
       # maybe broken on systems with a Studio installation
       set(MS_SDK ENV{MSSdk}/include)
       set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${MS_SDK} ${CMAKE_SOURCE_DIR}/win/include/msvc )
+      # flags for the check_fuction, check_symbol; 
+      # maybe we should here include ALL headers in/msvc to get ALL declarations, or we use the prototype_check
+      set(CMAKE_REQUIRED_FLAGS "-FI${CMAKE_SOURCE_DIR}/win/include/msvc/unistd.h -I${CMAKE_SOURCE_DIR}/win/include -I${CMAKE_SOURCE_DIR}/win/include/msvc")
    endif (MSVC)
    if (MINGW)
       set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${CMAKE_SOURCE_DIR}/win/include/mingw )
