@@ -37,8 +37,9 @@ namespace KWallet {
  */
 class MD5Digest : public QByteArray {
 	public:
-		MD5Digest() : QByteArray(16) {}
-		MD5Digest(const KMD5::Digest d) : QByteArray() { duplicate(reinterpret_cast<const char *>(d), 16); }
+		MD5Digest() : QByteArray(16, 0) {}
+		MD5Digest(const char *data) : QByteArray(data, 16) {}
+		MD5Digest(const KMD5::Digest d) : QByteArray(reinterpret_cast<const char *>(d), 16) {}
 		virtual ~MD5Digest() {}
 
 		int operator<(const MD5Digest& r) const {

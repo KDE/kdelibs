@@ -53,7 +53,7 @@ void Entry::setValue(const QByteArray& val) {
 	// do a direct copy from one into the other without
 	// temporary variables
 	_value.fill(0);
-	_value.duplicate(val);
+	_value = val;
 }
 
 
@@ -83,7 +83,7 @@ void Entry::copy(const Entry* x) {
 	_type = x->_type;
 	_key = x->_key;
 	_value.fill(0);
-	_value.duplicate(x->_value);
+	_value = x->_value;
 }
 
 

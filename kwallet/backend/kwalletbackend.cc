@@ -75,8 +75,8 @@ Backend::~Backend() {
 
 int Backend::close() {
 	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
-		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
-			delete j.data();
+		for (EntryMap::ConstIterator j = i.value().begin(); j != i.value().end(); ++j) {
+			delete j.value();
 		}
 	}
 	_entries.clear();
@@ -90,7 +90,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 	if (QFile::exists("/dev/urandom")) {
 		QFile devrand("/dev/urandom");
 		if (devrand.open(QIODevice::ReadOnly)) {
-			int rc = devrand.readBlock(randBlock.data(), randBlock.size());
+			int rc = devrand.read(randBlock.data(), randBlock.size());
 
 			if (rc != randBlock.size()) {
 				return -3;		// not enough data read
@@ -109,7 +109,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 		int cnt = 0;
 
 			do {
-				int rc2 = devrand.readBlock(randBlock.data() + rc, randBlock.size());
+				int rc2 = devrand.read(randBlock.data() + rc, randBlock.size());
 
 				if (rc2 < 0) {
 					return -3;	// read error
@@ -132,7 +132,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 		if (QFile::exists(randFilename)) {
 			QFile devrand(randFilename);
 			if (devrand.open(QIODevice::ReadOnly)) {
-				int rc = devrand.readBlock(randBlock.data(), randBlock.size());
+				int rc = devrand.read(randBlock.data(), randBlock.size());
 				if (rc != randBlock.size()) {
 					return -3;      // not enough data read
 				}
@@ -154,7 +154,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 	assert(shasz >= 20);
 
-	QByteArray block1(shasz);
+	QByteArray block1(shasz, 0);
 
 	sha.process(password.data(), qMin(password.size(), 16));
 
@@ -169,7 +169,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 	if (password.size() > 16) {
 		sha.process(password.data() + 16, qMin(password.size() - 16, 16));
-		QByteArray block2(shasz);
+		QByteArray block2(shasz, 0);
 		// To make brute force take longer
 		for (int i = 0; i < 2000; i++) {
 			memcpy(block2.data(), sha.hash(), shasz);
@@ -182,7 +182,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 		if (password.size() > 32) {
 			sha.process(password.data() + 32, qMin(password.size() - 32, 16));
 
-			QByteArray block3(shasz);
+			QByteArray block3(shasz, 0);
 			// To make brute force take longer
 			for (int i = 0; i < 2000; i++) {
 				memcpy(block3.data(), sha.hash(), shasz);
@@ -195,7 +195,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 			if (password.size() > 48) {
 				sha.process(password.data() + 48, password.size() - 48);
 
-				QByteArray block4(shasz);
+				QByteArray block4(shasz, 0);
 				// To make brute force take longer
 				for (int i = 0; i < 2000; i++) {
 					memcpy(block4.data(), sha.hash(), shasz);
@@ -303,12 +303,12 @@ int Backend::open(const QByteArray& password) {
 	}
 
 	char magicBuf[KWMAGIC_LEN];
-	db.readBlock(magicBuf, KWMAGIC_LEN);
+	db.read(magicBuf, KWMAGIC_LEN);
 	if (memcmp(magicBuf, KWMAGIC, KWMAGIC_LEN) != 0) {
 		return -3;         // bad magic
 	}
 
-	db.readBlock(magicBuf, 4);
+	db.read(magicBuf, 4);
 
 	// First byte is major version, second byte is minor version
 	if (magicBuf[0] != KWALLET_VERSION_MAJOR) {
@@ -342,13 +342,13 @@ int Backend::open(const QByteArray& password) {
 		QMap<MD5Digest,QList<MD5Digest> >::iterator it;
 		quint32 fsz;
 		if (hds.atEnd()) return -43;
-		hds.readRawBytes(reinterpret_cast<char *>(d), 16);
+		hds.readRawData(reinterpret_cast<char *>(d), 16);
 		hds >> fsz;
-		ba.duplicate(reinterpret_cast<char *>(d), 16);
+		ba = MD5Digest(reinterpret_cast<char *>(d));
 		it = _hashes.insert(ba, QList<MD5Digest>());
 		for (size_t j = 0; j < fsz; ++j) {
-			hds.readRawBytes(reinterpret_cast<char *>(d2), 16);
-			ba.duplicate(reinterpret_cast<char *>(d2), 16);
+			hds.readRawData(reinterpret_cast<char *>(d2), 16);
+			ba = MD5Digest(reinterpret_cast<char *>(d2));
 			(*it).append(ba);
 		}
 	}
@@ -426,11 +426,10 @@ int Backend::open(const QByteArray& password) {
 	sha.reset();
 
 	// chop off the leading blksz+4 bytes
-	QByteArray tmpenc;
-	tmpenc.duplicate(encrypted.data()+blksz+4, fsize);
-	encrypted.fill(0);
-	encrypted.duplicate(tmpenc.data(), tmpenc.size());
-	tmpenc.fill(0);
+	QByteArray tmpenc(encrypted.data()+blksz+4, fsize);
+	tmpenc.fill( 0 );
+	encrypted = QByteArray(tmpenc.data(), tmpenc.size());
+	encrypted.fill( 0 );
 
 	// Load the data structures up
 	QDataStream eStream(encrypted);
@@ -491,15 +490,15 @@ int Backend::sync(const QByteArray& password) {
 		return -1;		// error opening file
 	}
 
-	qf->writeBlock(KWMAGIC, KWMAGIC_LEN);
+	qf->write(KWMAGIC, KWMAGIC_LEN);
 
 	// Write the version number
-	QByteArray version(4);
+	QByteArray version(4, 0);
 	version[0] = KWALLET_VERSION_MAJOR;
 	version[1] = KWALLET_VERSION_MINOR;
 	version[2] = KWALLET_CIPHER_BLOWFISH_CBC;
 	version[3] = KWALLET_HASH_SHA1;
-	qf->writeBlock(version, 4);
+	qf->write(version, 4);
 
 	// Holds the hashes we write out
 	QByteArray hashes;
@@ -518,25 +517,25 @@ int Backend::sync(const QByteArray& password) {
 	QDataStream dStream(&decrypted, QIODevice::WriteOnly);
 	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
 		dStream << i.key();
-		dStream << static_cast<quint32>(i.data().count());
+		dStream << static_cast<quint32>(i.value().count());
 
 		md5.reset();
 		md5.update(i.key().toUtf8());
-		hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
-		hashStream << static_cast<quint32>(i.data().count());
+		hashStream.writeRawData(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
+		hashStream << static_cast<quint32>(i.value().count());
 
-		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
+		for (EntryMap::ConstIterator j = i.value().begin(); j != i.value().end(); ++j) {
 			dStream << j.key();
-			dStream << static_cast<qint32>(j.data()->type());
-			dStream << j.data()->value();
+			dStream << static_cast<qint32>(j.value()->type());
+			dStream << j.value()->value();
 
 			md5.reset();
 			md5.update(j.key().toUtf8());
-			hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
+			hashStream.writeRawData(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
 		}
 	}
 
-	qf->writeBlock(hashes, hashes.size());
+	qf->write(hashes, hashes.size());
 
 	// calculate the hash of the file
 	SHA1 sha;
@@ -613,7 +612,7 @@ int Backend::sync(const QByteArray& password) {
 	passhash.fill(0);        // passhash is UNUSABLE NOW
 
 	// write the file
-	qf->writeBlock(wholeFile, wholeFile.size());
+	qf->write(wholeFile, wholeFile.size());
 	if (!sf.close()) {
 		wholeFile.fill(0);
 		sf.abort();
@@ -674,12 +673,12 @@ QList<Entry*> Backend::readEntryList(const QString& key) {
 		return rc;
 	}
 
-	QRegExp re(key, true, true);
+	QRegExp re(key, Qt::CaseSensitive, QRegExp::Wildcard);
 
 	const EntryMap& map = _entries[_folder];
 	for (EntryMap::ConstIterator i = map.begin(); i != map.end(); ++i) {
 		if (re.exactMatch(i.key())) {
-			rc.append(i.data());
+			rc.append(i.value());
 		}
 	}
 	return rc;
@@ -707,8 +706,8 @@ EntryMap::Iterator oi = emap.find(oldName);
 EntryMap::Iterator ni = emap.find(newName);
 
 	if (oi != emap.end() && ni == emap.end()) {
-		Entry *e = oi.data();
-		emap.remove(oi);
+		Entry *e = oi.value();
+		emap.erase(oi);
 		emap[newName] = e;
 
 		KMD5 folderMd5;
@@ -719,8 +718,8 @@ EntryMap::Iterator ni = emap.find(newName);
 			KMD5 oldMd5, newMd5;
 			oldMd5.update(oldName.toUtf8());
 			newMd5.update(newName.toUtf8());
-			i.data().remove(MD5Digest(oldMd5.rawDigest()));
-			i.data().append(MD5Digest(newMd5.rawDigest()));
+			i.value().removeAll(MD5Digest(oldMd5.rawDigest()));
+			i.value().append(MD5Digest(newMd5.rawDigest()));
 		}
 		return 0;
 	}
@@ -745,7 +744,7 @@ void Backend::writeEntry(Entry *e) {
 	if (i != _hashes.end()) {
 		KMD5 md5;
 		md5.update(e->key().toUtf8());
-		i.data().append(MD5Digest(md5.rawDigest()));
+		i.value().append(MD5Digest(md5.rawDigest()));
 	}
 }
 
@@ -761,11 +760,11 @@ bool Backend::removeEntry(const QString& key) {
 	}
 
 	FolderMap::Iterator fi = _entries.find(_folder);
-	EntryMap::Iterator ei = fi.data().find(key);
+	EntryMap::Iterator ei = fi.value().find(key);
 
-	if (fi != _entries.end() && ei != fi.data().end()) {
-		delete ei.data();
-		fi.data().remove(ei);
+	if (fi != _entries.end() && ei != fi.value().end()) {
+		delete ei.value();
+		fi.value().erase(ei);
 		KMD5 folderMd5;
 		folderMd5.update(_folder.toUtf8());
 
@@ -773,7 +772,7 @@ bool Backend::removeEntry(const QString& key) {
 		if (i != _hashes.end()) {
 			KMD5 md5;
 			md5.update(key.toUtf8());
-			i.data().remove(MD5Digest(md5.rawDigest()));
+			i.value().removeAll(MD5Digest(md5.rawDigest()));
 		}
 		return true;
 	}
@@ -794,15 +793,15 @@ bool Backend::removeFolder(const QString& f) {
 			_folder.clear();
 		}
 
-		for (EntryMap::Iterator ei = fi.data().begin(); ei != fi.data().end(); ++ei) {
-			delete ei.data();
+		for (EntryMap::Iterator ei = fi.value().begin(); ei != fi.value().end(); ++ei) {
+			delete ei.value();
 		}
 
-		_entries.remove(fi);
+		_entries.erase(fi);
 
 		KMD5 folderMd5;
 		folderMd5.update(f.toUtf8());
-		_hashes.erase(MD5Digest(folderMd5.rawDigest()));
+		_hashes.remove(MD5Digest(folderMd5.rawDigest()));
 		return true;
 	}
 
@@ -824,7 +823,7 @@ bool Backend::entryDoesNotExist(const QString& folder, const QString& entry) con
 	if (i != _hashes.end()) {
 		md5.reset();
 		md5.update(entry.toUtf8());
-		return !i.data().contains(MD5Digest(md5.rawDigest()));
+		return !i.value().contains(MD5Digest(md5.rawDigest()));
 	}
 	return true;
 }

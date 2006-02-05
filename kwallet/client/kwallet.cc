@@ -26,6 +26,7 @@
 #include <dcopclient.h>
 #include <dcopref.h>
 #include <qapplication.h>
+#include <qwidget.h>
 
 #include <assert.h>
 
@@ -477,8 +478,8 @@ int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString>
 		QMap<QString,QByteArray> unparsed;
 		r.get(unparsed);
 		for (QMap<QString,QByteArray>::ConstIterator i = unparsed.begin(); i != unparsed.end(); ++i) {
-			if (!i.data().isEmpty()) {
-				QDataStream ds(i.data());
+			if (!i.value().isEmpty()) {
+				QDataStream ds(i.value());
 				QMap<QString,QString> v;
 				ds >> v;
 				value.insert(i.key(), v);

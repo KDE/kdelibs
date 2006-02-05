@@ -1,5 +1,6 @@
 
 INCLUDES = -I$(srcdir)/../client $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 lib_LTLIBRARIES = libkwalletbackend.la
 
