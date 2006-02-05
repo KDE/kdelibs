@@ -11,7 +11,7 @@ kdeprint_revportrait.png    kdeprint_uncollate.png      kdeprint_uncollate_rever
 kdeprint_nupother.png   kdeprint_prettyprint.png
 """
 
-env.bksys_insttype('KDEDATA', 'kdeprint/pics', 'kdeprint_pics')
+env.bksys_insttype('KDEDATA', 'kdeprint/pics', kdeprint_pics)
 
 
 # Laurent Define a method to install standard icons.
