@@ -64,7 +64,7 @@ obj.source = kde3support_sources
 #obj.linkflags = '-Wl,--whole-archive build/kde3support/kmdi/libk3mdi.a build/kde3support/kparts/libk3parts.a build/kde3support/kio/libk3io.a build/kde3support/kdeui/libkde3ui.a build/kde3support/kdecore/libkde3core.a -Wl,--no-whole-archive'
 #obj.libpaths = 'kmdi kparts kio kdeui kdecore '
 #obj.libs = 'k3mdi k3parts k3io kde3ui kde3core '
-obj.includes = 'kdecore kdeui kio kmdi kparts #/kio/bookmarks #/kde3support/kdecore #/kde3support/kmdi/res #/kde3support/kdeui #/kde3support/kparts #/kutils #/kde3support #/kde3supprt/kmdi'
+obj.includes = 'kdecore kdeui kio kmdi kparts #/kio/bookmarks #/kde3support/kdecore #/kde3support/kmdi/res #/kde3support/kdeui #/kde3support/kparts #/kutils #/kde3support #/kde3support/kmdi'
 obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KDECORE KDEUI KIO KDEFX DCOP'
 if not env['WINDOWS']:
 	obj.libs += ' kdesu '
