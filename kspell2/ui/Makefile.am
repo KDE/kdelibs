@@ -11,8 +11,8 @@ kspell2includedir = $(includedir)/kspell2
 kspell2include_HEADERS = dialog.h highlighter.h configdialog.h \
 	configwidget.h
 
-libkspell2_noinst_la_SOURCES = kspell2ui.ui configwidget.cpp \
-	highlighter.cpp configui.ui configdialog.cpp
+libkspell2_noinst_la_SOURCES = kspell2ui.ui3 configwidget.cpp \
+	highlighter.cpp configui.ui3 configdialog.cpp
 
 dialog.lo: kspell2ui.h
 

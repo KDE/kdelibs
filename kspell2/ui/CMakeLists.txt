@@ -13,7 +13,7 @@ ${kspell2_noinst_STAT_SRCS}
 
 kde4_automoc(${kspell2_LIB_SRCS})
 
-kde4_add_ui3_files(kspell2_LIB_SRCS kspell2ui.ui configui.ui)
+kde4_add_ui3_files(kspell2_LIB_SRCS kspell2ui.ui3 configui.ui3)
 
 kde4_add_library(kspell2 SHARED ${kspell2_LIB_SRCS})
 
