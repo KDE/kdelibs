@@ -269,7 +269,6 @@ install_targets(/bin kde-config )
 
 ########### install files ###############
 
-$(kde_datadir)/knotify/eventsrc
 install_files( ${KDE4_DATA_DIR}/knotify FILES eventsrc )
 install_files( ${KDE4_CONFIG_DIR} FILES kdebug.areas kdebugrc language.codes )
 install_files( ${KDE4_CONFIG_DIR}/colors FILES 40.colors Web.colors Royal.colors Rainbow.colors )
