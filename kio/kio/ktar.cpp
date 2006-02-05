@@ -202,10 +202,7 @@ bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
   QIODevice *dev = device();
   // read size of longlink from size field in header
   // size is in bytes including the trailing null (which we ignore)
-  buffer[ 0x88 ] = 0; // was 0x87, but 0x88 fixes BR #26437
-  const char* p = buffer + 0x7c;
-  while( *p == ' ' ) ++p;
-  qint64 size = QByteArray( p, 12 ).toLongLong();
+  qint64 size = QByteArray( buffer + 0x7c, 12 ).trimmed().toLongLong( 0, 8 /*octal*/ );
 
   longlink.resize(size);
   size--;    // ignore trailing null
@@ -408,7 +405,8 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             {
                 // read size
                 QByteArray sizeBuffer( buffer + 0x7c, 12 );
-                qint64 size = sizeBuffer.trimmed().toLongLong();
+                qint64 size = sizeBuffer.trimmed().toLongLong( 0, 8 /*octal*/ );
+                //kDebug(7041) << "sizeBuffer='" << sizeBuffer << "' -> size=" << size << endl;
 
                 // for isDumpDir we will skip the additional info about that dirs contents
                 if ( isDumpDir )
