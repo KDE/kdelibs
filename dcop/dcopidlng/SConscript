@@ -5,7 +5,7 @@ Import("env")
 env.bksys_insttype('KDEBIN', subdir='', files='dcopidl', perms=0755)
 
 pmfiles="Ast.pm Iter.pm kalyptusCxxToDcopIDL.pm kdocAstUtil.pm kdocParseDoc.pm kdocUtil.pm"
-env.bksys_insttype('KDEDATA', subdir='dcopidl', files=pmfiles, perms=0755)
+env.bksys_insttype('KDEAPPS', subdir='dcopidl', files=pmfiles, perms=0755)
 
 """
 bin_SCRIPTS = dcopidl

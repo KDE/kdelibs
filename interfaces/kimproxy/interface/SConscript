@@ -10,7 +10,7 @@ includes = ' '
 
 env.bksys_insttype('KDESERVTYPES', '', 'dcopinstantmessenger.desktop')
 
-env.bksys_insttype('KDEDATA', 'kcm_componentchooser', 'kcm_instantmessenger.desktop')
+env.bksys_insttype('KDEAPPS', 'kcm_componentchooser', 'kcm_instantmessenger.desktop')
 
 env.bksys_insttype('KDEINCLUDE', '', kimifaceinclude_headers )
 

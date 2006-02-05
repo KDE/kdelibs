@@ -88,6 +88,6 @@ obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.ccflags += ' -D_KDEPRINT_COMPILE '
 obj.execute()
 
-env.bksys_insttype('KDEDATA', 'kdeprint', 'tileup.png tiledown.png side.png')
+env.bksys_insttype('KDEAPPS', 'kdeprint', 'tileup.png tiledown.png side.png')
 env.bksys_insttype('KDEINCLUDE', 'kdeprint', kdeprint_headers )
 
