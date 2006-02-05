@@ -23,7 +23,7 @@ html_inline.h html_list.h html_misc.h html_object.h
 html_table.h
 """
 
-env.bksys_insttype( 'KDEINCLUDE', '', myinclude_headers )
+env.bksys_insttype( 'KDEINCLUDE', 'dom', myinclude_headers )
 
 #includes = '#/kimgio #/kio #/dcop #/khtml '
 
