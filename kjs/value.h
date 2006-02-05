@@ -40,6 +40,8 @@
 #include "simple_number.h"
 #include "ustring.h"
 
+class QString;
+
 namespace KJS {
 
 struct ClassInfo;
@@ -437,6 +439,12 @@ inline JSCell *Boolean(bool b) { return jsBoolean(b); }
 inline JSValue *Number(double n) { return jsNumber(n); }
 inline JSCell *String(const UString& s) { return jsString(s); }
 inline JSCell *String(const char *s) { return jsString(s); }
+/*
+     * Convenience declaration only ! You'll be on your own to write the
+     * implementation for a construction from QString.
+     * see also UString(const QString&)
+*/
+inline JSCell *String(const QString& s);
 
 
 } // namespace

@@ -130,6 +130,11 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
   return false;
 }
 
+// convenience function implementation to handle QString
+JSCell *String(const QString& s)
+{
+	return jsString(s.local8Bit().constData());
+}
 
 UString::UString(const QString &d)
 {
@@ -309,9 +314,10 @@ EmbedLiveConnect::~EmbedLiveConnect() {
   if (m_liveconnect)
     m_liveconnect->unregister(objid);
 }
-
+#ifdef __GNUC__
 #ifdef __GNUC__
     #warning "LiveConnect stuff is broken"
+#endif
 #endif
 KDE_NO_EXPORT
 bool EmbedLiveConnect::getOwnPropertySlot(ExecState *, const Identifier& prop, PropertySlot& slot)
