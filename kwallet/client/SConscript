@@ -22,3 +22,4 @@ obj.libs = "DCOP"
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE '
 obj.execute()
 
+env.bksys_insttype( 'KDEINCLUDE', '', include_headers )
