@@ -113,7 +113,7 @@ int main( int argc, char **argv ) {
         if ( output.open( QIODevice::WriteOnly ) ) {
             QTextStream ts( &output );
             buildFile( ts, group, fileName , pluginName, iconPath );
-            QString mocFile = output.name();
+            QString mocFile = output.fileName();
             mocFile.replace(".cpp", ".moc");
             ts << QString( "#include <%1>\n" ).arg(mocFile) << endl;
         }
@@ -136,7 +136,7 @@ void buildFile( QTextStream &ts, const QString& group, const QString& fileName, 
 
     QStringList includes = input.readEntry( "Includes", QStringList(), ',' );
     QStringList classes = input.groupList();
-    classes.remove( classes.find( "Global" ) );
+    classes.removeAll( "Global" );
 
     foreach ( QString myInclude, classes )
       includes += buildWidgetInclude( myInclude, input );
