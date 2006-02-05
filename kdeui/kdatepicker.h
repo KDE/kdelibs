@@ -221,7 +221,7 @@ private:
   void init( const QDate &dt );
   void fillWeeksCombo(const QDate &date);
   class KDatePickerPrivate;
-  KDatePickerPrivate *d;
+  KDatePickerPrivate *const d;
 };
 
 #endif //  KDATEPICKER_H

@@ -94,20 +94,19 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
 }
 
 KDatePicker::KDatePicker(QWidget* parent)
-  : QFrame(parent)
+  : QFrame(parent),d(new KDatePickerPrivate())
 {
   init( QDate::currentDate() );
 }
 
 KDatePicker::KDatePicker(const QDate& dt, QWidget* parent)
-  : QFrame(parent)
+  : QFrame(parent),d(new KDatePickerPrivate())
 {
   init( dt );
 }
 
 void KDatePicker::init( const QDate &dt )
 {
-  d = new KDatePickerPrivate();
 
   QBoxLayout * topLayout = new QVBoxLayout(this);
 

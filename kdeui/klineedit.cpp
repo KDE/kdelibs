@@ -125,7 +125,6 @@ KLineEdit::KLineEdit( QWidget *parent )
 KLineEdit::~KLineEdit ()
 {
     delete d;
-    d = 0;
 }
 
 void KLineEdit::init()

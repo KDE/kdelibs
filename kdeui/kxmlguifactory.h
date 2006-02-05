@@ -210,7 +210,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KXMLGUIFactoryPrivate *d;
+  KXMLGUIFactoryPrivate *const d;
 };
 
 #endif

@@ -572,7 +572,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class KLineEditPrivate;
-    KLineEditPrivate *d;
+    KLineEditPrivate *const d;
 };
 
 #endif

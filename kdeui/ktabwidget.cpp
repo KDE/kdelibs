@@ -55,10 +55,9 @@ public:
 };
 
 KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags f )
-    : QTabWidget( parent )
+    : QTabWidget( parent ),d(new KTabWidgetPrivate)
 {
     setWindowFlags( f );
-    d = new KTabWidgetPrivate;
     setTabBar( new KTabBar(this) );
     setObjectName( "tabbar" );
     setAcceptDrops( true );

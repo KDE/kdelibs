@@ -194,9 +194,8 @@ void KXMLGUIFactory::removeDOMComments( QDomNode &node )
 }
 
 KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent )
-    : QObject( parent )
+    : QObject( parent ),d(new KXMLGUIFactoryPrivate)
 {
-    d = new KXMLGUIFactoryPrivate;
     d->builder = builder;
     d->guiClient = 0;
     if ( d->builder )

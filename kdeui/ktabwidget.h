@@ -316,7 +316,7 @@ private:
     void resizeTabs( int changedTabIndex = -1 );
     void updateTab( int index );
 
-    KTabWidgetPrivate *d;
+    KTabWidgetPrivate *const d;
 };
 
 #endif
