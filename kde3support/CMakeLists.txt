@@ -24,6 +24,7 @@ set(kde3ui_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3textedit.cpp
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3colordrag.cpp
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3syntaxhighlighter.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3wizard.cpp
 )
 
 # kde3support/kio/Makefile.am: k3io

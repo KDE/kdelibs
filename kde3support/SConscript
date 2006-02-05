@@ -16,6 +16,7 @@ kdeui/k3dockwidget.cpp
 kdeui/k3colordrag.cpp
 kdeui/k3popupmenu.cpp
 kdeui/k3syntaxhighlighter.cpp
+kdeui/k3wizard.cpp
 kio/k3bookmarkdrag.cpp
 kmdi/k3mdidockcontainer.cpp
 kmdi/k3mdichildfrm.cpp
@@ -41,6 +42,7 @@ kdeui/k3dockwidget.h
 kdeui/k3popupmenu.h 
 kdeui/k3textedit.h
 kdeui/k3syntaxhighlighter.h
+kdeui/k3wizard.h
 kio/k3bookmarkdrag.h
 kmdi/k3mdichildarea.h
 kmdi/k3mdichildfrm.h
