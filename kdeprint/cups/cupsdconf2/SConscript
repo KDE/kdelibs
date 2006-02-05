@@ -29,7 +29,7 @@ obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO CUPS '
 obj.execute()
 
-env.bksys_insttype('KDEDATA', 'kdeprint', 'kde_logo.png cups_logo.png cupsd.conf.template')
+env.bksys_insttype('KDEAPPS', 'kdeprint', 'kde_logo.png cups_logo.png cupsd.conf.template')
 
 
 """Unhandled Targets 
