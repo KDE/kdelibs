@@ -48,6 +48,7 @@ env.Depends('kcm_kresources.so','libkresources.so')
 
 env.bksys_insttype('KDESERVTYPES', '', 'kresources_plugin.desktop kresources_manager.desktop')
 
+env.bksys_insttype('KDEINCLUDE','kresources', kresinclude_headers )
 
 """Unhandled Defines 
 testresources_LDADD = libkresources.la
