@@ -10,6 +10,8 @@ obj = env.kdeinitobj(env)
 obj.target   = 'kconf_update'
 obj.source = kconf_update_sources
 obj.uselib   = 'QT QTCORE KDE4 KDECORE '
+obj.libpaths = '../kdecore ../dcop'
+obj.libs     = 'kdecore DCOP'
 obj.instdir  = env['KDEBIN']
 obj.includes = '../kded '
 if env['WINDOWS']:
