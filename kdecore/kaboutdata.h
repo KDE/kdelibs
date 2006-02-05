@@ -311,11 +311,6 @@ class KDECORE_EXPORT KAboutData
      * If there is no translation or the application is used with the
      * default language, this function call is ignored.
      *
-     * Note: If you are using the default KDE automake environment,
-     * there is no need to use this function, because the two
-     * default strings above are added to the applications po file
-     * automatically.
-     *
      * @param name the name of the translator
      * @param emailAddress the email address of the translator
      * @see KAboutTranslator
