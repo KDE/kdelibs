@@ -31,9 +31,8 @@ class KArrowButtonPrivate
 };
 
 KArrowButton::KArrowButton(QWidget *parent, Qt::ArrowType arrow)
-	: QPushButton(parent)
+	: QPushButton(parent),d(new KArrowButtonPrivate())
 {
-	d = new KArrowButtonPrivate();
 	d->arrow = arrow;
 }
 
