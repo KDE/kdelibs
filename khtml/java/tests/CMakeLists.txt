@@ -15,7 +15,7 @@ kde4_automoc(${testserver_SRCS})
 
 kde4_add_executable(testserver ${testserver_SRCS})
 
-target_link_libraries(testserver  ${QT_AND_KDECORE_LIBS} kjava )
+target_link_libraries(testserver  ${QT_AND_KDECORE_LIBS} kjava khtml)
 
 endif(KDE4_BUILD_TESTS)
 

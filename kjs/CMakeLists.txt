@@ -83,6 +83,8 @@ set_target_properties(kjs PROPERTIES VERSION 1.2.0 SOVERSION 1 )
 install_targets(${KDE4_LIB_INSTALL_DIR} kjs )
 
 
+if(KDE4_BUILD_TESTS)
+
 ########### next target ###############
 
 set(testkjs_static_SRCS
@@ -91,12 +93,9 @@ testkjs.cpp
 
 kde4_automoc(${testkjs_static_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(testkjs_static ${testkjs_static_SRCS})
 
-target_link_libraries(testkjs_static  ${QT_AND_KDECORE_LIBS} )
-
-endif(KDE4_BUILD_TESTS)
+target_link_libraries(testkjs_static  ${QT_AND_KDECORE_LIBS} kjs)
 
 ########### next target ###############
 
@@ -106,10 +105,9 @@ testkjs.cpp
 
 kde4_automoc(${testkjs_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(testkjs ${testkjs_SRCS})
 
-target_link_libraries(testkjs  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(testkjs  ${QT_AND_KDECORE_LIBS} kjs )
 
 endif(KDE4_BUILD_TESTS)
 

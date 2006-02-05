@@ -207,7 +207,7 @@ endif(NOT KDE4_USE_QT_EMB )
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}")
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kwallet/client ${CMAKE_SOURCE_DIR}/kutils ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}) 
 include_directories(${CMAKE_BINARY_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/khtml/rendering ${CMAKE_SOURCE_DIR}/khtml/ecma ${CMAKE_BINARY_DIR}/khtml/ecma ${CMAKE_SOURCE_DIR}/kio/bookmarks)
-include_directories( ${CMAKE_SOURCE_DIR}/khtml/imload ${CMAKE_SOURCE_DIR}/khtml/imload/decoders )
+include_directories( ${CMAKE_SOURCE_DIR}/khtml/imload ${CMAKE_SOURCE_DIR}/khtml/imload/decoders ${CMAKE_CURRENT_SOURCE_DIR}/misc ${CMAKE_CURRENT_SOURCE_DIR}/dom ${CMAKE_CURRENT_SOURCE_DIR}/html )
 include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
 
 set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
@@ -265,6 +265,7 @@ ${kjs_html_STAT_SRCS}
 ${khtmldom_STAT_SRCS}
 ${khtmlimload_STAT_SRCS}
 ${decoders_STAT_SRCS}
+${kjava_STAT_SRCS}
 )
 
 kde4_automoc(${khtml_LIB_SRCS})
@@ -331,6 +332,8 @@ target_link_libraries(khtmlimagepart  ${QT_AND_KDECORE_LIBS} khtml)
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 khtmlimagepart )
 
 
+if(KDE4_BUILD_TESTS)
+
 ########### next target ###############
 
 set(testkhtml_SRCS
@@ -340,12 +343,9 @@ domtreeview.cpp
 
 kde4_automoc(${testkhtml_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(testkhtml ${testkhtml_SRCS})
 
-target_link_libraries(testkhtml  ${QT_AND_KDECORE_LIBS} )
-
-endif(KDE4_BUILD_TESTS)
+target_link_libraries(testkhtml  ${QT_AND_KDECORE_LIBS} khtml )
 
 ########### next target ###############
 
@@ -356,12 +356,9 @@ domtreeview.cpp
 
 kde4_automoc(${testkhtml_static_SRCS})
 
-if(KDE4_BUILD_TESTS)
-kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS})
+kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS} )
 
-target_link_libraries(testkhtml_static  ${QT_AND_KDECORE_LIBS} )
-
-endif(KDE4_BUILD_TESTS)
+target_link_libraries(testkhtml_static  ${QT_AND_KDECORE_LIBS} khtml )
 
 ########### next target ###############
 
@@ -372,10 +369,10 @@ test_regression_fontoverload.cpp
 
 kde4_automoc(${testregression_SRCS})
 
-if(KDE4_BUILD_TESTS)
-kde4_add_executable(testregression ${testregression_SRCS})
+## can't find private/qfontengine_p.h
+#kde4_add_executable(testregression ${testregression_SRCS})
 
-target_link_libraries(testregression  ${QT_AND_KDECORE_LIBS} )
+#target_link_libraries(testregression  ${QT_AND_KDECORE_LIBS} khtml)
 
 endif(KDE4_BUILD_TESTS)
 
