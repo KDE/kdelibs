@@ -78,6 +78,8 @@ if (WIN32)
    
    set(CMAKE_REQUIRED_INCLUDES ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/win/include ${QT_INCLUDES} )
    if (MSVC)
+      # this is the default path of the MS Platform SDK
+      # maybe broken on systems with a Studio installation
       set(MS_SDK ENV{MSSdk}/include)
       set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${MS_SDK} ${CMAKE_SOURCE_DIR}/win/include/msvc )
    endif (MSVC)
