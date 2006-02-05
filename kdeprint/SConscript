@@ -98,6 +98,7 @@ env.bksys_insttype( 'KDECONF', 'ui', 'kprintpreviewui.rc' )
 env.bksys_insttype( 'KDEAPPS', 'kdeprint', 'testprint.ps specials.desktop' )
 env.bksys_insttype( 'KDESERV', 'kded', 'kdeprintd.desktop' )
 env.bksys_insttype( 'KDEINCLUDE', 'kdeprint', kdeprint_headers )
+env.bksys_insttype( 'KDEINCLUDE', 'kdeprint', include_headers)
 
 """Unhandled Defines 
 KDE_OPTIONS = nofinal

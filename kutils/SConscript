@@ -2,6 +2,8 @@
 #generated from kutils/Makefile.am by am2bksys.py
 Import('env')
 
+env.subdirs('tests ksettings')
+
 kutils_sources = """
 kcmoduleinfo.cpp kcmoduleloader.cpp kfind.cpp
 kfinddialog.cpp kmultitabbar.cpp 
@@ -44,10 +46,11 @@ obj.target = 'kutils'
 obj.vnum = '3.0.2'
 obj.source = kutils_sources + ksettings_sources
 obj.includes = includes
-obj.libpaths = '../kdecore ../kdeui ../dcop ../kio ../kdesu ../kdefx ../kwallet/client '
+obj.libpaths = '../kdecore ../kdeui ../dcop ../kio ../kdefx ../kwallet/client '
 obj.libs = 'kdecore kdeui DCOP kio kdefx kwalletclient '
 if not env['WINDOWS']:
 	obj.libs += ' kdesu'
+	obj.libpaths = ' ../kdesu '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 

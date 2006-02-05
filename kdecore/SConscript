@@ -2,7 +2,7 @@
 
 Import('env')
 
-env.subdirs('kconfig_compiler tests')
+env.subdirs('kconfig_compiler tests network')
 	
 core_files="""
 kapplication.cpp kauthorized.cpp

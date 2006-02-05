@@ -39,6 +39,8 @@ obj.libs = 'kdecore kdeui kio kdefx DCOP kutils libkspell2_noinst.a kspell2base 
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
+env.bksys_insttype('KDEINCLUDE', 'kspell2', kspell2include_headers)
+
 """Unhandled Defines 
 KDE_CXXFLAGS = -DKDE_NO_COMPAT -DQT_NO_COMPAT
 kspell2includedir = $(includedir)/kspell2

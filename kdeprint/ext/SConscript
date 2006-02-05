@@ -22,5 +22,5 @@ obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.ccflags += ' -D_KDEPRINT_COMPILE '
 obj.execute()
 
-env.bksys_insttype('KDEDATA', 'kdeprint/plugins', 'ext.print')
+env.bksys_insttype('KDEAPPS', 'kdeprint/plugins', 'ext.print')
 
