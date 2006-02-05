@@ -55,8 +55,8 @@ obj.target = 'klauncher'
 obj.source = klauncher_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO '
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts"
-obj.libs = "kdecore kdeui kio DCOP kparts"
+obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts ../kdesu ../kdefx"
+obj.libs = "kdecore kdeui kio DCOP kparts kdesu kdefx"
 obj.instdir = env['KDEBIN']
 obj.execute()
 
@@ -64,8 +64,9 @@ obj = env.kdeobj('program')
 obj.target = 'kdeinit'
 obj.source = kdeinit_sources
 obj.includes = includes
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts"
+obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts ../kdefx"
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS KIO '
+obj.libs = "kdecore kdeui kio DCOP kparts kdefx"
 obj.instdir = env['KDEBIN']
 obj.execute()
 
@@ -74,8 +75,8 @@ obj.target = 'kdeinit_wrapper'
 obj.source = kdeinit_wrapper_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS KIO '
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts"
-obj.libs = "kdecore kdeui kio DCOP kparts"
+obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts ../kdefx"
+obj.libs = "kdecore kdeui kio DCOP kparts kdefx"
 obj.instdir = env['KDEBIN']
 obj.execute()
 
@@ -92,8 +93,8 @@ obj.target = 'kdeinit_shutdown'
 obj.source = kdeinit_shutdown_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts"
-obj.libs = "kdecore kdeui kio DCOP kparts"
+obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts ../kdesu ../kdefx "
+obj.libs = "kdecore kdeui kio DCOP kparts kdesu kdefx"
 obj.instdir = env['KDEBIN']
 obj.execute()
 
@@ -102,8 +103,8 @@ obj.target = 'lnusertemp'
 obj.source = lnusertemp_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts"
-obj.libs = "kdecore kdeui kio DCOP kparts"
+obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts ../kdesu ../kdefx"
+obj.libs = "kdecore kdeui kio DCOP kparts kdesu kdefx"
 obj.instdir = env['KDEBIN']
 obj.execute()
 
@@ -112,8 +113,8 @@ obj.target = 'kwrapper'
 obj.source = kwrapper_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts"
-obj.libs = "kdecore kdeui kio DCOP kparts"
+obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts ../kdesu ../kdefx"
+obj.libs = "kdecore kdeui kio DCOP kparts kdesu kdefx"
 obj.instdir = env['KDEBIN']
 obj.execute()
 
@@ -122,8 +123,8 @@ obj.target = 'kioslave'
 obj.source = kioslave_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts"
-obj.libs = "kdecore kdeui kio DCOP kparts"
+obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts ../kdesu ../kdefx"
+obj.libs = "kdecore kdeui kio DCOP kparts kdesu kdefx"
 obj.instdir = env['KDEBIN']
 obj.execute()
 
@@ -132,8 +133,8 @@ obj.target = 'kstartupconfig'
 obj.source = kstartupconfig_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts"
-obj.libs = "kdecore kdeui kio DCOP kparts"
+obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts ../kdesu ../kdefx"
+obj.libs = "kdecore kdeui kio DCOP kparts kdefx kdesu"
 obj.instdir = env['KDEBIN']
 obj.execute()
 
@@ -142,8 +143,8 @@ obj.target = 'kdostartupconfig'
 obj.source = kdostartupconfig_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts"
-obj.libs = "kdecore kdeui kio DCOP kparts"
+obj.libpaths = "../kdecore ../kio ../kdeui ../dcop ../kparts ../kdesu ../kdefx"
+obj.libs = "kdecore kdeui kio DCOP kparts kdesu kdefx"
 obj.instdir = env['KDEBIN']
 obj.execute()
 
