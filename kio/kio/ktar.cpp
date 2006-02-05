@@ -753,7 +753,6 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
     memset(buffer+0x9d, 0, 0x200 - 0x9d);
 
     QByteArray permstr = QByteArray::number( perm, 8 );
-    permstr.rightJustified(6, ' ');
     permstr = permstr.rightJustified(6, ' ');
     fillBuffer( buffer, permstr, 0, mtime, 0x35, uname, gname);
 
@@ -809,7 +808,6 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
     memset(buffer+0x9d+100, 0, 0x200 - 100 - 0x9d);
 
     QByteArray permstr = QByteArray::number( perm, 8 );
-    permstr.rightJustified(6, ' ');
     permstr = permstr.rightJustified(6, ' ');
     fillBuffer(buffer, permstr, 0, mtime, 0x32, uname, gname);
 
