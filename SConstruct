@@ -108,6 +108,7 @@ kioslave
 kxmlcore
 knewstuff
 kutils
+kspell2
 licenses
 """
 
