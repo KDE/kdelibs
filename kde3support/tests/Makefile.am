@@ -22,7 +22,7 @@ INCLUDES = -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -
 
 AM_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-check_PROGRAMS = kdockwidgetdemo kdockwidgettest kdocktest
+check_PROGRAMS = kdockwidgetdemo kdockwidgettest kdocktest k3wizardtest
 
 METASOURCES = AUTO
 
@@ -31,3 +31,5 @@ LDADD = ../libkde3support.la
 kdockwidgetdemo_SOURCES = kdockwidgetdemo.cpp
 kdockwidgettest_SOURCES = kdockwidgettest.cpp
 kdocktest_SOURCES = kdocktest.cpp
+k3wizardtest_SOURCES = k3wizardtest.cpp
+

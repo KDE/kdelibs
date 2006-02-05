@@ -24,13 +24,13 @@
 #include <QHBoxLayout>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <kwizard.h>
+#include <k3wizard.h>
 
 int main(int argc, char **argv)
 {
   KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
   KApplication a;
-  KWizard *wiz = new KWizard(0, "kwizardtest", false);
+  K3Wizard *wiz = new K3Wizard(0, "kwizardtest", false);
   QObject::connect((QObject*) wiz->cancelButton(), SIGNAL(clicked()),
 		   &a, SLOT(quit()));
   QObject::connect((QObject*) wiz->finishButton(), SIGNAL(clicked()),
