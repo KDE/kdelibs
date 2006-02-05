@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 Import('env')
-env.subdirs('tests');
+env.subdirs('tests about');
 
 ui_files="""
 ksharedpixmap.cpp
