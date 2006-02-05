@@ -2,7 +2,7 @@
 #generated from kdeprint/Makefile.am by am2bksys.py
 Import('env')
 
-# Laurent ? $(CUPSSUBDIR)
+# Laurent ? $(CUPSSUBDIR) lpr
 # disable tests for the moment
 env.subdirs('management lpdunix rlpr ext filters pics tools')
 
