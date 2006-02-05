@@ -24,7 +24,7 @@ obj.execute()
 
 env.bksys_insttype('KDESERV', '', 'kcertpart.desktop')
 
-env.bksys_insttype('KDEDATA', 'kcertpart', 'kcertpart.rc')
+env.bksys_insttype('KDEAPPS', 'kcertpart', 'kcertpart.rc')
 
 
 """Unhandled Defines 
