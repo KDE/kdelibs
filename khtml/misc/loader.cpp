@@ -758,11 +758,15 @@ void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimati
 #if 0
     m_showAnimations = showAnimations;
     if ( (m_showAnimations == KHTMLSettings::KAnimationDisabled) && imgSource ) {
+#ifdef __GNUC__
 #warning QDataSource
+#endif
         // imgSource->cleanBuffer();
         delete p;
         p = new QPixmap(m->framePixmap());
+#ifdef __GNUC__
 #warning QMovie requires different API now
+#endif
         //m->disconnectUpdate( this, SLOT( movieUpdated( const QRect &) ));
         //m->disconnectStatus( this, SLOT( movieStatus( int ) ));
         // m->disconnectResize( this, SLOT( movieResize( const QSize& ) ) );
