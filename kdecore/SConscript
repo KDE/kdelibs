@@ -137,8 +137,10 @@ if env.hasConfig('Z'):
 if env.hasConfig('AGG') and env.hasConfig('Z'):
 	obj.uselib += ' QTXML AGG Z'
 	obj.source   += ' svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp'
+	env.bksys_insttype( 'KDEINCLUDE', '', 'svgicons/ksvgiconengine.h' )
 obj.execute()
 
 
 env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
+env.bksys_insttype( 'KDECONF','', 'kdebugrc kdebug.areas language.codes' )
 

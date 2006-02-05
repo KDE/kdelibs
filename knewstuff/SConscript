@@ -53,6 +53,7 @@ obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
 obj.execute()
 
 env.bksys_insttype('KDEINCLUDE','knewstuff',kns_headers)
+env.bksys_insttype('KDECONF','','khotnewstuffrc')
 
 """Unhandled Defines 
 KDE_ICON = AUTO
