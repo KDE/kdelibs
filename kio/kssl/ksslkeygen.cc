@@ -40,7 +40,7 @@
 
 
 KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal) 
-:KWizard(parent,name,modal) {
+:K3Wizard(parent,name,modal) {
 	_idx = -1;
 
 #ifdef KSSL_HAVE_SSL

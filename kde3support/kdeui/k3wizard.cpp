@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kwizard.h"
+#include "k3wizard.h"
 
 #include <qpushbutton.h>
 #include <qstring.h>
@@ -28,7 +28,7 @@
 #include <kguiitem.h>
 #include <kstdguiitem.h>
 
-KWizard::KWizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f )
+K3Wizard::K3Wizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f )
             : Q3Wizard( parent, name, modal, f )
 {
   bool useIcons = KGlobalSettings::showIconsOnPushButtons();
@@ -54,4 +54,4 @@ KWizard::KWizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f )
   setTitleFont( font );
 }
 
-#include "kwizard.moc"
+#include "k3wizard.moc"

@@ -24,7 +24,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <kwizard.h>
+#include "../../kde3support/kdeui/k3wizard.h"
 
 
 class KOpenSSLProxy;
@@ -41,7 +41,7 @@ class KGWizardPage2;
  * @see KSSL, KSSLCertificate, KSSLPKCS12
  * @short KDE Key Generation Dialog
  */
-class KIO_EXPORT KSSLKeyGen : public KWizard {
+class KIO_EXPORT KSSLKeyGen : public K3Wizard {
 	Q_OBJECT
 public:
 	/**

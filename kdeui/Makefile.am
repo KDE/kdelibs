@@ -37,7 +37,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 	kdatepicker.h kdatetable.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h \
 	kstatusbar.h kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h knuminput.h \
 	kseparator.h klineedit.h krestrictedline.h kcolorbutton.h ksystemtray.h \
-	kbuttonbox.h keditcl.h kled.h keditlistbox.h kwizard.h kkeydialog.h kkeybutton.h \
+	kbuttonbox.h keditcl.h kled.h keditlistbox.h kkeydialog.h kkeybutton.h \
 	kurllabel.h kruler.h kcursor.h kinputdialog.h kactivelabel.h kcharselect.h \
 	kcolormimedata.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdialog.h \
 	kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h \
@@ -79,7 +79,7 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kpixmapio.cpp kmenu.cpp ktoolbar.cpp \
 	kpushbutton.cpp kcompletionbox.cpp ksqueezedtextlabel.cpp kcmodule.cpp kcommand.cpp \
 	kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp kdatewidget.cpp karrowbutton.cpp \
 	kmainwindowiface.cpp kmainwindowiface.skel kguiitem.cpp kstdguiitem.cpp kstringvalidator.cpp \
-	kactivelabel.cpp kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp \
+	kactivelabel.cpp kwindowinfo.cpp ktextedit.cpp kpassivepopup.cpp \
 	ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp ksconfig.cpp kspelldlg.cpp \
 	kspell.cpp ktabbar.cpp ktabwidget.cpp ksplashscreen.cpp \
 	kspellui.ui kconfigdialog.cpp kactionselector.cpp klanguagebutton.cpp \

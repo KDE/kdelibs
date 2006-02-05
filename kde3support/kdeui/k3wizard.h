@@ -20,8 +20,8 @@
     Boston, MA 02110-1301, USA.
 */  
 
-#ifndef KWIZARD_H
-#define KWIZARD_H
+#ifndef K3WIZARD_H
+#define K3WIZARD_H
 
 #include <q3wizard.h>
 
@@ -43,20 +43,20 @@
 * @author Harri Porten <porten@kde.org>
 * @version 0.3 
 */
-class KDEUI_EXPORT KWizard : public Q3Wizard
+class KDE3SUPPORT_EXPORT K3Wizard : public Q3Wizard
 {
   Q_OBJECT
 public:
 /**
 * Constructor
 */
-  KWizard(QWidget *parent = 0, const char *name = 0, bool modal = false, Qt::WFlags f = 0);
+  K3Wizard(QWidget *parent = 0, const char *name = 0, bool modal = false, Qt::WFlags f = 0);
 /**
 * Destructor
 */
-  ~KWizard() {}
+  ~K3Wizard() {}
 };
 
-#endif // KWIZARD_H
+#endif // K3WIZARD_H
 
 
