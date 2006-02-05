@@ -263,7 +263,7 @@ private:
   /**
    * Private class.
    */
-  KConfigDialogPrivate *d;
+  KConfigDialogPrivate *const d;
 };
 
 #endif //KCONFIGDIALOG_H

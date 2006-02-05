@@ -351,7 +351,7 @@ private:
 
     /* @internal */
     class Private;
-    Private *d;
+    Private *const d;
 };
 
 #endif // KPASSIVEPOPUP_H

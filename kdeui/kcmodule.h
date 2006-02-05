@@ -340,7 +340,7 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KCModulePrivate *d;
+  KCModulePrivate *const d;
 
   /**
    * Internal function for initialization of the class.

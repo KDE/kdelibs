@@ -62,7 +62,7 @@ public:
 };
 
 KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
-    : QWidget(parent)
+    : QWidget(parent), d(new KCModulePrivate)
 {
     init();
     if (name && strlen(name)) {
@@ -76,7 +76,7 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
 }
     
 KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
-    : QWidget( parent )
+    : QWidget( parent ), d(new KCModulePrivate)
 {
     if ( instance )
         setObjectName( instance->instanceName() );
@@ -89,7 +89,6 @@ KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
 
 void KCModule::init()
 {
-    d = new KCModulePrivate;
    _btn = Help|Default|Apply;
 }
 

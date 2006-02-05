@@ -53,7 +53,7 @@ KPassivePopup::KPassivePopup( QWidget *parent, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
-      m_autoDelete( false )
+      m_autoDelete( false ),d(new Private)
 {
     init( DEFAULT_POPUP_TYPE );
 }
@@ -62,7 +62,7 @@ KPassivePopup::KPassivePopup( WId win )
     : QFrame( 0 ),
       window( win ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
-      m_autoDelete( false )
+      m_autoDelete( false ),d(new Private)
 {
     init( DEFAULT_POPUP_TYPE );
 }
@@ -71,7 +71,7 @@ KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
-      m_autoDelete( false )
+      m_autoDelete( false ),d(new Private)
 {
     init( popupStyle );
 }
@@ -80,7 +80,7 @@ KPassivePopup::KPassivePopup( int popupStyle, WId win, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       window( win ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
-      m_autoDelete( false )
+      m_autoDelete( false ),d(new Private)
 {
     init( popupStyle );
 }
@@ -91,7 +91,6 @@ void KPassivePopup::init( int popupStyle )
     setFrameStyle( QFrame::Box| QFrame::Plain );
     setLineWidth( 2 );
 
-    d = new Private;
     d->popupStyle = popupStyle;
     if( popupStyle == Boxed )
     {

@@ -120,7 +120,7 @@ struct KFontComboPrivate
 };
 
 KFontCombo::KFontCombo(QWidget *parent)
-    : KComboBox(true, parent)
+    : KComboBox(true, parent), d(new KFontComboPrivate)
 {
     init();
     QStringList families;
@@ -129,7 +129,7 @@ KFontCombo::KFontCombo(QWidget *parent)
 }
 
 KFontCombo::KFontCombo(const QStringList &fonts, QWidget *parent)
-    : KComboBox(true, parent)
+    : KComboBox(true, parent), d(new KFontComboPrivate)
 {
     init();
     setFonts(fonts);
@@ -207,7 +207,6 @@ void KFontCombo::setCurrentItem(int i)
 
 void KFontCombo::init()
 {
-    d = new KFontComboPrivate;
     d->displayFonts = displayFonts();
     setItemDelegate( new KFontComboDelegate( view(), this ) );
     setInsertPolicy(NoInsert);

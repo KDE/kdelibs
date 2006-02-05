@@ -61,7 +61,7 @@ KAnimWidget::~KAnimWidget()
 {
   d->timer.stop();
 
-  delete d; d = 0;
+  delete d;
 }
 
 void KAnimWidget::start()

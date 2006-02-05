@@ -136,7 +136,7 @@ protected Q_SLOTS:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KAnimWidgetPrivate *d;
+  KAnimWidgetPrivate *const d;
 };
 
 #endif // _KANIMWIDGET_H
