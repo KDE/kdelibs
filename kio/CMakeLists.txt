@@ -11,6 +11,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
 ${CMAKE_SOURCE_DIR}/kwallet/client
 ${CMAKE_SOURCE_DIR}/kdecore/network
 ${CMAKE_BINARY_DIR}/kio/kssl
+${CMAKE_BINARY_DIR}/kio
 )
 
 
@@ -47,7 +48,6 @@ set(kiocore_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kio/kio/kurifilter.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/kshellcompletion.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/kurlcompletion.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kautomount.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/krun.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/kfileitem.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/kdirlister.cpp
@@ -102,6 +102,12 @@ set(kiocore_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kio/kio/kremoteencoding.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/kmimetypechooser.cpp
 )
+
+if(UNIX)
+    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
+        ${CMAKE_SOURCE_DIR}/kio/kio/kautomount.cpp )
+endif(UNIX)
+
 
 # kio/bookmarks/Makefile.am: kbookmarks
 
