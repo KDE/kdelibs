@@ -22,13 +22,13 @@ msgstr ""
 msgid "Paste special..."
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2140 widgets/qlineedit.cpp:2142
-#: widgets/qtextedit.cpp:5483
+#: attic/qtmultilineedit.cpp:2140 widgets/qlineedit.cpp:2160
+#: widgets/qtextedit.cpp:5524
 msgid "Clear"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2142 widgets/qlineedit.cpp:2144
-#: widgets/qtextedit.cpp:5487 widgets/qtextedit.cpp:5489
+#: attic/qtmultilineedit.cpp:2142 widgets/qlineedit.cpp:2162
+#: widgets/qtextedit.cpp:5528 widgets/qtextedit.cpp:5530
 msgid "Select All"
 msgstr ""
 
@@ -39,6 +39,12 @@ msgstr ""
 
 #: dialogs/qdialog.cpp:541
 msgid "What's This?"
+msgstr ""
+
+#: dialogs/qprogressdialog.cpp:251 dialogs/qfontdialog.cpp:289
+#: dialogs/qinputdialog.cpp:150 dialogs/qtabdialog.cpp:848
+#: widgets/qdialogbuttons.cpp:270
+msgid "Cancel"
 msgstr ""
 
 #: dialogs/qfontdialog.cpp:165
@@ -75,7 +81,7 @@ msgid "Scr&ipt"
 msgstr ""
 
 #: dialogs/qfontdialog.cpp:280 dialogs/qinputdialog.cpp:148
-#: dialogs/qmessagebox.cpp:1575 dialogs/qtabdialog.cpp:195
+#: dialogs/qmessagebox.cpp:1581 dialogs/qtabdialog.cpp:195
 #: dialogs/qtabdialog.cpp:1069 widgets/qdialogbuttons.cpp:264
 msgid "OK"
 msgstr ""
@@ -85,14 +91,8 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:289 dialogs/qinputdialog.cpp:150
-#: dialogs/qprogressdialog.cpp:251 dialogs/qtabdialog.cpp:848
-#: widgets/qdialogbuttons.cpp:270
-msgid "Cancel"
-msgstr ""
-
 #: dialogs/qfontdialog.cpp:289 widgets/qtitlebar.cpp:113
-#: workspace/qworkspace.cpp:1522
+#: workspace/qworkspace.cpp:1526
 msgid "Close"
 msgstr ""
 
@@ -145,17 +145,18 @@ msgctxt "QMessageBox"
 msgid "N&o to All"
 msgstr ""
 
-#: dialogs/qmessagebox.cpp:588
+#: dialogs/qmessagebox.cpp:587
+#, qt-format
 msgid ""
 "<h3>About Qt</h3><p>This program uses Qt version %1.</p><p>Qt is a C++ "
 "toolkit for multiplatform GUI &amp; application development.</p><p>Qt "
-"provides single-source portability across MS&nbsp;Windows, "
-"Mac&nbsp;OS&nbsp;X, Linux, and all major commercial Unix variants.<br>Qt is "
-"also available for embedded devices.</p><p>Qt is a Trolltech product. See "
-"<tt>http://www.trolltech.com/qt/</tt> for more information.</p>"
+"provides single-source portability across MS&nbsp;Windows, Mac&nbsp;OS&nbsp;"
+"X, Linux, and all major commercial Unix variants.<br>Qt is also available "
+"for embedded devices.</p><p>Qt is a Trolltech product. See <tt>http://www."
+"trolltech.com/qt/</tt> for more information.</p>"
 msgstr ""
 
-#: dialogs/qmessagebox.cpp:1551
+#: dialogs/qmessagebox.cpp:1557
 msgid "About Qt"
 msgstr ""
 
@@ -184,14 +185,16 @@ msgid "&Help"
 msgstr ""
 
 #: kernel/qaccel.cpp:470
+#, qt-format
 msgid "%1, %2 not defined"
 msgstr ""
 
 #: kernel/qaccel.cpp:506
+#, qt-format
 msgid "Ambiguous \"%1\" not handled"
 msgstr ""
 
-#: kernel/qapplication.cpp:2896
+#: kernel/qapplication.cpp:2905
 msgctxt "QT_LAYOUT_DIRECTION"
 msgid ""
 "Translate this string to the string 'LTR' in left-to-right languages or to "
@@ -199,292 +202,292 @@ msgid ""
 "widget layout."
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1956
+#: kernel/qfontdatabase.cpp:1959
 msgctxt "QFont"
 msgid "Latin"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1959
+#: kernel/qfontdatabase.cpp:1962
 msgctxt "QFont"
 msgid "Greek"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1962
+#: kernel/qfontdatabase.cpp:1965
 msgctxt "QFont"
 msgid "Cyrillic"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1965
+#: kernel/qfontdatabase.cpp:1968
 msgctxt "QFont"
 msgid "Armenian"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1968
+#: kernel/qfontdatabase.cpp:1971
 msgctxt "QFont"
 msgid "Georgian"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1971
+#: kernel/qfontdatabase.cpp:1974
 msgctxt "QFont"
 msgid "Runic"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1974
+#: kernel/qfontdatabase.cpp:1977
 msgctxt "QFont"
 msgid "Ogham"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1977
+#: kernel/qfontdatabase.cpp:1980
 msgctxt "QFont"
 msgid "SpacingModifiers"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1980
+#: kernel/qfontdatabase.cpp:1983
 msgctxt "QFont"
 msgid "CombiningMarks"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1983
+#: kernel/qfontdatabase.cpp:1986
 msgctxt "QFont"
 msgid "Hebrew"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1986
+#: kernel/qfontdatabase.cpp:1989
 msgctxt "QFont"
 msgid "Arabic"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1989
+#: kernel/qfontdatabase.cpp:1992
 msgctxt "QFont"
 msgid "Syriac"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1992
+#: kernel/qfontdatabase.cpp:1995
 msgctxt "QFont"
 msgid "Thaana"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1995
+#: kernel/qfontdatabase.cpp:1998
 msgctxt "QFont"
 msgid "Devanagari"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1998
+#: kernel/qfontdatabase.cpp:2001
 msgctxt "QFont"
 msgid "Bengali"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2001
+#: kernel/qfontdatabase.cpp:2004
 msgctxt "QFont"
 msgid "Gurmukhi"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2004
+#: kernel/qfontdatabase.cpp:2007
 msgctxt "QFont"
 msgid "Gujarati"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2007
+#: kernel/qfontdatabase.cpp:2010
 msgctxt "QFont"
 msgid "Oriya"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2010
+#: kernel/qfontdatabase.cpp:2013
 msgctxt "QFont"
 msgid "Tamil"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2013
+#: kernel/qfontdatabase.cpp:2016
 msgctxt "QFont"
 msgid "Telugu"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2016
+#: kernel/qfontdatabase.cpp:2019
 msgctxt "QFont"
 msgid "Kannada"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2019
+#: kernel/qfontdatabase.cpp:2022
 msgctxt "QFont"
 msgid "Malayalam"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2022
+#: kernel/qfontdatabase.cpp:2025
 msgctxt "QFont"
 msgid "Sinhala"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2025
+#: kernel/qfontdatabase.cpp:2028
 msgctxt "QFont"
 msgid "Thai"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2028
+#: kernel/qfontdatabase.cpp:2031
 msgctxt "QFont"
 msgid "Lao"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2031
+#: kernel/qfontdatabase.cpp:2034
 msgctxt "QFont"
 msgid "Tibetan"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2034
+#: kernel/qfontdatabase.cpp:2037
 msgctxt "QFont"
 msgid "Myanmar"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2037
+#: kernel/qfontdatabase.cpp:2040
 msgctxt "QFont"
 msgid "Khmer"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2040
+#: kernel/qfontdatabase.cpp:2043
 msgctxt "QFont"
 msgid "Han"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2043
+#: kernel/qfontdatabase.cpp:2046
 msgctxt "QFont"
 msgid "Hiragana"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2046
+#: kernel/qfontdatabase.cpp:2049
 msgctxt "QFont"
 msgid "Katakana"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2049
+#: kernel/qfontdatabase.cpp:2052
 msgctxt "QFont"
 msgid "Hangul"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2052
+#: kernel/qfontdatabase.cpp:2055
 msgctxt "QFont"
 msgid "Bopomofo"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2055
+#: kernel/qfontdatabase.cpp:2058
 msgctxt "QFont"
 msgid "Yi"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2058
+#: kernel/qfontdatabase.cpp:2061
 msgctxt "QFont"
 msgid "Ethiopic"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2061
+#: kernel/qfontdatabase.cpp:2064
 msgctxt "QFont"
 msgid "Cherokee"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2064
+#: kernel/qfontdatabase.cpp:2067
 msgctxt "QFont"
 msgid "Canadian Aboriginal"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2067
+#: kernel/qfontdatabase.cpp:2070
 msgctxt "QFont"
 msgid "Mongolian"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2071
+#: kernel/qfontdatabase.cpp:2074
 msgctxt "QFont"
 msgid "Currency Symbols"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2075
+#: kernel/qfontdatabase.cpp:2078
 msgctxt "QFont"
 msgid "Letterlike Symbols"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2079
+#: kernel/qfontdatabase.cpp:2082
 msgctxt "QFont"
 msgid "Number Forms"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2083
+#: kernel/qfontdatabase.cpp:2086
 msgctxt "QFont"
 msgid "Mathematical Operators"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2087
+#: kernel/qfontdatabase.cpp:2090
 msgctxt "QFont"
 msgid "Technical Symbols"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2091
+#: kernel/qfontdatabase.cpp:2094
 msgctxt "QFont"
 msgid "Geometric Symbols"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2095
+#: kernel/qfontdatabase.cpp:2098
 msgctxt "QFont"
 msgid "Miscellaneous Symbols"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2099
+#: kernel/qfontdatabase.cpp:2102
 msgctxt "QFont"
 msgid "Enclosed and Square"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2103
+#: kernel/qfontdatabase.cpp:2106
 msgctxt "QFont"
 msgid "Braille"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2107
+#: kernel/qfontdatabase.cpp:2110
 msgctxt "QFont"
 msgid "Unicode"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2111
+#: kernel/qfontdatabase.cpp:2114
 msgctxt "QFont"
 msgid "Tagalog"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2115
+#: kernel/qfontdatabase.cpp:2118
 msgctxt "QFont"
 msgid "Hanunoo"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2119
+#: kernel/qfontdatabase.cpp:2122
 msgctxt "QFont"
 msgid "Buhid"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2123
+#: kernel/qfontdatabase.cpp:2126
 msgctxt "QFont"
 msgid "Tagbanwa"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2127
+#: kernel/qfontdatabase.cpp:2130
 msgctxt "QFont"
 msgid "Katakana Half-Width Forms"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2131
+#: kernel/qfontdatabase.cpp:2134
 msgctxt "QFont"
 msgid "Han (Japanese)"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2135
+#: kernel/qfontdatabase.cpp:2138
 msgctxt "QFont"
 msgid "Han (Simplified Chinese)"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2139
+#: kernel/qfontdatabase.cpp:2142
 msgctxt "QFont"
 msgid "Han (Traditional Chinese)"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2143
+#: kernel/qfontdatabase.cpp:2146
 msgctxt "QFont"
 msgid "Han (Korean)"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:2147
+#: kernel/qfontdatabase.cpp:2150
 msgctxt "QFont"
 msgid "Unknown Script"
 msgstr ""
@@ -864,29 +867,29 @@ msgctxt "QAccel"
 msgid "System Request"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:406 kernel/qkeysequence.cpp:484
+#: kernel/qkeysequence.cpp:408 kernel/qkeysequence.cpp:486
 msgid "Ctrl"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:407 kernel/qkeysequence.cpp:494
+#: kernel/qkeysequence.cpp:409 kernel/qkeysequence.cpp:496
 msgid "Shift"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:408 kernel/qkeysequence.cpp:489
+#: kernel/qkeysequence.cpp:410 kernel/qkeysequence.cpp:491
 msgid "Alt"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:409 kernel/qkeysequence.cpp:480
+#: kernel/qkeysequence.cpp:411 kernel/qkeysequence.cpp:482
 msgid "Meta"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:483 kernel/qkeysequence.cpp:488
-#: kernel/qkeysequence.cpp:493 kernel/qkeysequence.cpp:532
+#: kernel/qkeysequence.cpp:485 kernel/qkeysequence.cpp:490
+#: kernel/qkeysequence.cpp:495 kernel/qkeysequence.cpp:534
 msgid "+"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:509
-#, c-format
+#: kernel/qkeysequence.cpp:511
+#, qt-format
 msgid "F%1"
 msgstr ""
 
@@ -894,23 +897,23 @@ msgstr ""
 msgid "Operation stopped by the user"
 msgstr ""
 
-#: sql/qdatatable.cpp:273
+#: sql/qdatatable.cpp:275
 msgid "True"
 msgstr ""
 
-#: sql/qdatatable.cpp:274
+#: sql/qdatatable.cpp:276
 msgid "False"
 msgstr ""
 
-#: sql/qdatatable.cpp:786
+#: sql/qdatatable.cpp:788
 msgid "Insert"
 msgstr ""
 
-#: sql/qdatatable.cpp:787
+#: sql/qdatatable.cpp:789
 msgid "Update"
 msgstr ""
 
-#: sql/qdatatable.cpp:788
+#: sql/qdatatable.cpp:790
 msgid "Delete"
 msgstr ""
 
@@ -929,23 +932,88 @@ msgctxt "QFile"
 msgid "Could not write to the file"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2136 widgets/qtextedit.cpp:5471
+#: tools/qfile.cpp:64
+msgctxt "QFile"
+msgid "Permission denied"
+msgstr ""
+
+#: tools/qfile.cpp:65
+msgctxt "QFile"
+msgid "Too many open files"
+msgstr ""
+
+#: tools/qfile.cpp:66
+msgctxt "QFile"
+msgid "No such file or directory"
+msgstr ""
+
+#: tools/qfile.cpp:67
+msgctxt "QFile"
+msgid "No space left on device"
+msgstr ""
+
+#: tools/qregexp.cpp:63
+msgctxt "QRegExp"
+msgid "no error occurred"
+msgstr ""
+
+#: tools/qregexp.cpp:64
+msgctxt "QRegExp"
+msgid "disabled feature used"
+msgstr ""
+
+#: tools/qregexp.cpp:65
+msgctxt "QRegExp"
+msgid "bad char class syntax"
+msgstr ""
+
+#: tools/qregexp.cpp:66
+msgctxt "QRegExp"
+msgid "bad lookahead syntax"
+msgstr ""
+
+#: tools/qregexp.cpp:67
+msgctxt "QRegExp"
+msgid "bad repetition syntax"
+msgstr ""
+
+#: tools/qregexp.cpp:68
+msgctxt "QRegExp"
+msgid "invalid octal value"
+msgstr ""
+
+#: tools/qregexp.cpp:69
+msgctxt "QRegExp"
+msgid "missing left delim"
+msgstr ""
+
+#: tools/qregexp.cpp:70
+msgctxt "QRegExp"
+msgid "unexpected end"
+msgstr ""
+
+#: tools/qregexp.cpp:71
+msgctxt "QRegExp"
+msgid "met internal limit"
+msgstr ""
+
+#: widgets/qlineedit.cpp:2154 widgets/qtextedit.cpp:5512
 msgid "&Undo"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2137 widgets/qtextedit.cpp:5472
+#: widgets/qlineedit.cpp:2155 widgets/qtextedit.cpp:5513
 msgid "&Redo"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2139 widgets/qtextedit.cpp:5477
+#: widgets/qlineedit.cpp:2157 widgets/qtextedit.cpp:5518
 msgid "Cu&t"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2140 widgets/qtextedit.cpp:5478
+#: widgets/qlineedit.cpp:2158 widgets/qtextedit.cpp:5519
 msgid "&Copy"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2141 widgets/qtextedit.cpp:5480
+#: widgets/qlineedit.cpp:2159 widgets/qtextedit.cpp:5521
 msgid "&Paste"
 msgstr ""
 
@@ -973,7 +1041,7 @@ msgstr ""
 msgid "Normalize"
 msgstr ""
 
-#: widgets/qtitlebar.cpp:102 workspace/qworkspace.cpp:1498
+#: widgets/qtitlebar.cpp:102 workspace/qworkspace.cpp:1502
 msgid "Minimize"
 msgstr ""
 
@@ -1053,136 +1121,137 @@ msgstr ""
 msgid "Stay on &Top"
 msgstr ""
 
-#: workspace/qworkspace.cpp:336 workspace/qworkspace.cpp:1717
+#: workspace/qworkspace.cpp:336 workspace/qworkspace.cpp:1721
 msgid "Sh&ade"
 msgstr ""
 
-#: workspace/qworkspace.cpp:1218 workspace/qworkspace.cpp:1426
-#: workspace/qworkspace.cpp:1431
+#: workspace/qworkspace.cpp:1218 workspace/qworkspace.cpp:1430
+#: workspace/qworkspace.cpp:1435
+#, qt-format
 msgid "%1 - [%2]"
 msgstr ""
 
-#: workspace/qworkspace.cpp:1510
+#: workspace/qworkspace.cpp:1514
 msgid "Restore Down"
 msgstr ""
 
-#: workspace/qworkspace.cpp:1715
+#: workspace/qworkspace.cpp:1719
 msgid "&Unshade"
 msgstr ""
 
-#: qxml_clean.cpp:54
+#: xml/qxml.cpp:54 qxml_clean.cpp:54
 msgctxt "QXml"
 msgid "no error occurred"
 msgstr ""
 
-#: qxml_clean.cpp:55
+#: xml/qxml.cpp:55 qxml_clean.cpp:55
 msgctxt "QXml"
 msgid "error triggered by consumer"
 msgstr ""
 
-#: qxml_clean.cpp:56
+#: xml/qxml.cpp:56 qxml_clean.cpp:56
 msgctxt "QXml"
 msgid "unexpected end of file"
 msgstr ""
 
-#: qxml_clean.cpp:57
+#: xml/qxml.cpp:57 qxml_clean.cpp:57
 msgctxt "QXml"
 msgid "more than one document type definition"
 msgstr ""
 
-#: qxml_clean.cpp:58
+#: xml/qxml.cpp:58 qxml_clean.cpp:58
 msgctxt "QXml"
 msgid "error occurred while parsing element"
 msgstr ""
 
-#: qxml_clean.cpp:59
+#: xml/qxml.cpp:59 qxml_clean.cpp:59
 msgctxt "QXml"
 msgid "tag mismatch"
 msgstr ""
 
-#: qxml_clean.cpp:60
+#: xml/qxml.cpp:60 qxml_clean.cpp:60
 msgctxt "QXml"
 msgid "error occurred while parsing content"
 msgstr ""
 
-#: qxml_clean.cpp:61
+#: xml/qxml.cpp:61 qxml_clean.cpp:61
 msgctxt "QXml"
 msgid "unexpected character"
 msgstr ""
 
-#: qxml_clean.cpp:62
+#: xml/qxml.cpp:62 qxml_clean.cpp:62
 msgctxt "QXml"
 msgid "invalid name for processing instruction"
 msgstr ""
 
-#: qxml_clean.cpp:63
+#: xml/qxml.cpp:63 qxml_clean.cpp:63
 msgctxt "QXml"
 msgid "version expected while reading the XML declaration"
 msgstr ""
 
-#: qxml_clean.cpp:64
+#: xml/qxml.cpp:64 qxml_clean.cpp:64
 msgctxt "QXml"
 msgid "wrong value for standalone declaration"
 msgstr ""
 
-#: qxml_clean.cpp:65
+#: xml/qxml.cpp:65 qxml_clean.cpp:65
 msgctxt "QXml"
 msgid ""
 "encoding declaration or standalone declaration expected while reading the "
 "XML declaration"
 msgstr ""
 
-#: qxml_clean.cpp:66
+#: xml/qxml.cpp:66 qxml_clean.cpp:66
 msgctxt "QXml"
 msgid "standalone declaration expected while reading the XML declaration"
 msgstr ""
 
-#: qxml_clean.cpp:67
+#: xml/qxml.cpp:67 qxml_clean.cpp:67
 msgctxt "QXml"
 msgid "error occurred while parsing document type definition"
 msgstr ""
 
-#: qxml_clean.cpp:68
+#: xml/qxml.cpp:68 qxml_clean.cpp:68
 msgctxt "QXml"
 msgid "letter is expected"
 msgstr ""
 
-#: qxml_clean.cpp:69
+#: xml/qxml.cpp:69 qxml_clean.cpp:69
 msgctxt "QXml"
 msgid "error occurred while parsing comment"
 msgstr ""
 
-#: qxml_clean.cpp:70
+#: xml/qxml.cpp:70 qxml_clean.cpp:70
 msgctxt "QXml"
 msgid "error occurred while parsing reference"
 msgstr ""
 
-#: qxml_clean.cpp:71
+#: xml/qxml.cpp:71 qxml_clean.cpp:71
 msgctxt "QXml"
 msgid "internal general entity reference not allowed in DTD"
 msgstr ""
 
-#: qxml_clean.cpp:72
+#: xml/qxml.cpp:72 qxml_clean.cpp:72
 msgctxt "QXml"
 msgid "external parsed general entity reference not allowed in attribute value"
 msgstr ""
 
-#: qxml_clean.cpp:73
+#: xml/qxml.cpp:73 qxml_clean.cpp:73
 msgctxt "QXml"
 msgid "external parsed general entity reference not allowed in DTD"
 msgstr ""
 
-#: qxml_clean.cpp:74
+#: xml/qxml.cpp:74 qxml_clean.cpp:74
 msgctxt "QXml"
 msgid "unparsed entity reference in wrong context"
 msgstr ""
 
-#: qxml_clean.cpp:75
+#: xml/qxml.cpp:75 qxml_clean.cpp:75
 msgctxt "QXml"
 msgid "recursive entities"
 msgstr ""
 
-#: qxml_clean.cpp:76
+#: xml/qxml.cpp:76 qxml_clean.cpp:76
 msgctxt "QXml"
 msgid "error in the text declaration of an external entity"
 msgstr ""
