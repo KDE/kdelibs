@@ -21,11 +21,12 @@ obj.target = 'kparts'
 obj.vnum = '3.0.1'
 obj.source = libkparts_sources
 obj.includes = includes
-obj.libpaths = "../dcop ../kdesu ../kwallet/client"
+obj.libpaths = "../dcop ../kwallet/client"
 obj.libs = " DCOP kwalletclient"
 obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KIO KDEUI KDECORE KDEFX '
 if not env['WINDOWS']:
 	obj.libs     += " kdesu"
+	obj.libpaths += " ../kdesu "
 obj.execute()
 
 if env['MAC']:
