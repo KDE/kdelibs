@@ -8,6 +8,7 @@ kspeech.h kspeechsink.h
 
 includes = '#/dcop '
 
+env.bksys_insttype('KDEINCLUDE', '', include_headers)
 
 """Unhandled Defines 
 DOXYGEN_REFERENCES = kdecore dcop kio kdeui kparts
