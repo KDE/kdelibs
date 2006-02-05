@@ -15,7 +15,7 @@ ps2pdf.desktop ps2pdf.xml
 poster.desktop poster.xml
 """
 
-env.bksys_insttype('KDEDATA', 'kdeprint/filters', kdeprint_filter)
+env.bksys_insttype('KDEAPPS', 'kdeprint/filters', kdeprint_filter)
 
 env.bksys_insttype('KDEBIN','','imagetops')
 
