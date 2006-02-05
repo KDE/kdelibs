@@ -92,3 +92,5 @@ obj.execute()
 env.Depends('libkdeui.so.6.0.2', '../kdefx/libkdefx.so')
 
 env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
+env.bksys_insttype( 'KDEAPPS', 'kdeui/pics', 'aboutkde.png ktip-bulb.png ktip-background.png' )
+				
