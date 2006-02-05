@@ -4,193 +4,211 @@ project(libkdecore)
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+
+# kdecore_OPTIONAL_SRCS is used to collect source files
+# which are not always compiled into kdecore
+# if it's used, *always* append to it
+set(kdecore_OPTIONAL_SRCS)
+
+
 # you can find macro_optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
 # it is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
 macro_optional_find_package(AGG)
 if (AGG_FOUND)
-   set(kdesvgicons_STAT_SRCS svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp )
    include_directories(${AGG_INCLUDE_DIR})
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp )
 	install_files( /include FILES svgicons/ksvgiconengine.h )
 endif (AGG_FOUND)
 
+
+# compile bzip2 support if available
 if(BZIP2_FOUND)
   include_directories(${BZIP2_INCLUDE_DIR})
+  set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} kbzip2filter.cpp )
 endif(BZIP2_FOUND)
 
-# kdecore/malloc/Makefile.am: klmalloc
 
-set(klmalloc_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kdecore/malloc/malloc.c
-)
+# compile zlib support if available
+if(ZLIB_FOUND)
+   include_directories(${ZLIB_INCLUDE_DIR})
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} kgzipfilter.cpp )
+endif(ZLIB_FOUND)
 
-# kdecore/network/Makefile.am: kdecorenetwork
-
-set(kdecorenetwork_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kdecore/network/kresolver.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/kresolvermanager.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/kresolverworkerbase.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/ksocketaddress.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/kresolverstandardworkers.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/kreverseresolver.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/ksocketdevice.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/ksocketbase.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/kclientsocketbase.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/kstreamsocket.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/kserversocket.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/kdatagramsocket.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/khttpproxysocketdevice.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/ksockssocketdevice.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/kbufferedsocket.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/ksocketbuffer.cpp
-  ${CMAKE_SOURCE_DIR}/kdecore/network/knetworkinterface.cpp
-)
-
-# libltdl/Makefile.am: ltdlc
-
-set(ltdlc_STAT_SRCS ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c )
 
 if (WIN32)
-   set(ltdlc_STAT_SRCS ${ltdlc_STAT_SRCS} ${CMAKE_SOURCE_DIR}/libltdl/ltdl_win.c )
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+      ${CMAKE_SOURCE_DIR}/libltdl/ltdl_win.c
+      netsupp_win32.cpp
+      kapplication_win.cpp 
+      kglobalaccel_win.cpp
+      ktoolinvocation_win.cpp
+   )
 endif (WIN32)
+
+
+if (UNIX)
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+      kglobalaccel_x11.cpp 
+      ktoolinvocation_x11.cpp 
+      ksocks.cpp
+      netsupp.cpp
+      netwm.cpp
+      kpty.cpp
+      kwin.cpp
+      kwinmodule.cpp 
+      network/khttpproxysocketdevice.cpp
+      network/ksockssocketdevice.cpp
+      network/knetworkinterface.cpp
+   )
+endif (UNIX)
+
 
 add_subdirectory( malloc )
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 add_subdirectory( network )
 
+
 ########### next target ###############
 
 kde4_add_library(kdefakes SHARED fakes.c)
-#target_link_libraries(kdefakes  ${QT_AND_KDECORE_LIBS} )
-
 set_target_properties(kdefakes PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${KDE4_LIB_INSTALL_DIR} kdefakes )
 
+
+########### next target ###############
+
+kde4_add_executable(kgrantpty kgrantpty.c)
+target_link_libraries(kgrantpty  kdefakes )
+install_targets(/bin kgrantpty )
 
 
 ########### next target ###############
 
 set(kdecore_LIB_SRCS
-kapplication.cpp
-kauthorized.cpp
-ktoolinvocation_x11.cpp
-kdebug.cpp
-netwm.cpp
-kconfigbase.cpp
-kconfig.cpp
-ksimpleconfig.cpp
-kconfigbackend.cpp
-kmanagerselection.cpp
-kdesktopfile.cpp
-kstandarddirs.cpp
-kpty.cpp
-kprocess.cpp
-kprocctrl.cpp
-klocale.cpp
-krfcdate.cpp
-kiconeffect.cpp
-kicontheme.cpp
-kiconloader.cpp
-kwin.cpp
-kwinmodule.cpp
-krootprop.cpp
-kcharsets.cpp
-kckey.cpp
-kshortcut.cpp
-kkeynative_x11.cpp
-kkeyserver_x11.cpp
-kaccelaction.cpp
-kshortcutmenu.cpp
-kaccelbase.cpp
-kaccel.cpp
-kglobalaccel_x11.cpp
-kglobalaccel.cpp
-kstdaccel.cpp
-kshortcutlist.cpp
-kcrash.cpp
-kurl.cpp
-kglobal.cpp
-kglobalsettings.cpp
-kallocator.cpp
-kvmallocator.cpp
-kmimesourcefactory.cpp
-kinstance.cpp
-kpalette.cpp
-kipc.cpp
-klibloader.cpp
-ktempfile.cpp
-kuniqueapplication.cpp
-kacceleratormanager.cpp
-ksavefile.cpp
-krandomsequence.cpp
-kstringhandler.cpp
-kcompletion.cpp
-kcmdlineargs.cpp
-kaboutdata.cpp
-kcompletionbase.cpp
-knotifyclient.cpp
-kaudioplayer.cpp
-kdcoppropertyproxy.cpp
-netsupp.cpp
-kprocio.cpp
-krandom.cpp
-kpixmapprovider.cpp
-ktoolinvocation.cpp
-kcodecs.cpp
-ksocks.cpp
-fakes.c
-ksycoca.cpp
-ksycocadict.cpp
-ksycocafactory.cpp
-kxmessages.cpp
-kstartupinfo.cpp
-kcatalog.cpp
-kstaticdeleter.cpp
-kappdcopiface.cpp
-kclipboard.cpp
-kcheckaccelerators.cpp
-kdeversion.cpp
-kdebugdcopiface.cpp
-kcalendarsystem.cpp
-kcalendarsystemgregorian.cpp
-kcalendarsystemhijri.cpp
-kcalendarsystemhebrew.cpp
-kcalendarsystemfactory.cpp
-kmacroexpander.cpp
-kidna.cpp
-ktempdir.cpp
-kshell.cpp
-kmountpoint.cpp
-kcalendarsystemjalali.cpp
-kprotocolinfo_kdecore.cpp
-kprotocolinfofactory.cpp
-kxerrorhandler.cpp
-kuser.cpp
-kconfigskeleton.cpp
-klockfile.cpp
-ktimezones.cpp
-ktzfiletimezone.cpp
-kdatetime.cpp
-kmath.cpp
-kfilterbase.cpp
-kfilterdev.cpp
-kgzipfilter.cpp
-kbzip2filter.cpp
-kdedmodule.cpp
-${kdecorenetwork_STAT_SRCS}
-${klmalloc_STAT_SRCS}
-${ltdlc_STAT_SRCS}
-${kdesvgicons_STAT_SRCS}
+   kapplication.cpp
+   kauthorized.cpp
+   kdebug.cpp
+   kconfigbase.cpp
+   kconfig.cpp
+   ksimpleconfig.cpp
+   kconfigbackend.cpp
+   kmanagerselection.cpp
+   kdesktopfile.cpp
+   kstandarddirs.cpp
+   kprocess.cpp
+   kprocctrl.cpp
+   klocale.cpp
+   krfcdate.cpp
+   kiconeffect.cpp
+   kicontheme.cpp
+   kiconloader.cpp
+   krootprop.cpp
+   kcharsets.cpp
+   kckey.cpp
+   kshortcut.cpp
+   kkeynative_x11.cpp
+   kkeyserver_x11.cpp
+   kaccelaction.cpp
+   kshortcutmenu.cpp
+   kaccelbase.cpp
+   kaccel.cpp
+   kglobalaccel.cpp
+   kstdaccel.cpp
+   kshortcutlist.cpp
+   kcrash.cpp
+   kurl.cpp
+   kglobal.cpp
+   kglobalsettings.cpp
+   kallocator.cpp
+   kvmallocator.cpp
+   kmimesourcefactory.cpp
+   kinstance.cpp
+   kpalette.cpp
+   kipc.cpp
+   klibloader.cpp
+   ktempfile.cpp
+   kuniqueapplication.cpp
+   kacceleratormanager.cpp
+   ksavefile.cpp
+   krandomsequence.cpp
+   kstringhandler.cpp
+   kcompletion.cpp
+   kcmdlineargs.cpp
+   kaboutdata.cpp
+   kcompletionbase.cpp
+   knotifyclient.cpp
+   kaudioplayer.cpp
+   kdcoppropertyproxy.cpp
+   kprocio.cpp
+   krandom.cpp
+   kpixmapprovider.cpp
+   ktoolinvocation.cpp
+   kcodecs.cpp
+   ksycoca.cpp
+   ksycocadict.cpp
+   ksycocafactory.cpp
+   kxmessages.cpp
+   kstartupinfo.cpp
+   kcatalog.cpp
+   kstaticdeleter.cpp
+   kappdcopiface.cpp
+   kclipboard.cpp
+   kcheckaccelerators.cpp
+   kdeversion.cpp
+   kdebugdcopiface.cpp
+   kcalendarsystem.cpp
+   kcalendarsystemgregorian.cpp
+   kcalendarsystemhijri.cpp
+   kcalendarsystemhebrew.cpp
+   kcalendarsystemfactory.cpp
+   kmacroexpander.cpp
+   kidna.cpp
+   ktempdir.cpp
+   kshell.cpp
+   kmountpoint.cpp
+   kcalendarsystemjalali.cpp
+   kprotocolinfo_kdecore.cpp
+   kprotocolinfofactory.cpp
+   kxerrorhandler.cpp
+   kuser.cpp
+   kconfigskeleton.cpp
+   klockfile.cpp
+   ktimezones.cpp
+   ktzfiletimezone.cpp
+   kdatetime.cpp
+   kmath.cpp
+   kfilterbase.cpp
+   kfilterdev.cpp
+   kdedmodule.cpp
+   network/kresolver.cpp
+   network/kresolvermanager.cpp
+   network/kresolverworkerbase.cpp
+   network/ksocketaddress.cpp
+   network/kresolverstandardworkers.cpp
+   network/kreverseresolver.cpp
+   network/ksocketdevice.cpp
+   network/ksocketbase.cpp
+   network/kclientsocketbase.cpp
+   network/kstreamsocket.cpp
+   network/kserversocket.cpp
+   network/kdatagramsocket.cpp
+   network/kbufferedsocket.cpp
+   network/ksocketbuffer.cpp
+   ${kdecore_OPTIONAL_SRCS}
+   malloc/malloc.c
+   fakes.c
+   ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
 )
 
 kde4_automoc(${kdecore_LIB_SRCS})
 
 set( kdecore_DCOP_SKEL_SRCS
-ksycoca.h
-kappdcopiface.h
-kdebugdcopiface.h
-kdedmodule.h
+   ksycoca.h
+   kappdcopiface.h
+   kdebugdcopiface.h
+   kdedmodule.h
 )
 
 kde4_add_dcop_skels(kdecore_LIB_SRCS ${kdecore_DCOP_SKEL_SRCS})
@@ -247,21 +265,6 @@ kde4_add_executable(kde-config ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
 target_link_libraries(kde-config  ${QT_AND_KDECORE_LIBS} )
 
 install_targets(/bin kde-config )
-
-
-########### next target ###############
-
-set(kgrantpty_SRCS
-kgrantpty.c
-)
-
-kde4_automoc(${kgrantpty_SRCS})
-
-kde4_add_executable(kgrantpty ${kgrantpty_SRCS})
-
-target_link_libraries(kgrantpty  ${QT_AND_KDECORE_LIBS} kdefakes )
-
-install_targets(/bin kgrantpty )
 
 
 ########### install files ###############
