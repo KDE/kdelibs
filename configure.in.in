@@ -232,6 +232,7 @@ AC_SUBST(LIB_KPARTS, '$(top_builddir)/kparts/libkparts.la')
 AC_SUBST(LIB_KIMGIO, '$(top_builddir)/kimgio/libkimgio.la')
 AC_SUBST(LIB_KNEWSTUFF, '$(top_builddir)/knewstuff/libknewstuff.la')
 AC_SUBST(LIB_KUNITTEST, '$(top_builddir)/kunittest/libkunittest.la')
+AC_SUBST(LIB_KJS, '$(top_builddir)/kjs/libkjs.la')
 case $host in 
 	*cygwin*) lib_kded='$(top_builddir)/kded/libkdeinit_kded.la' ;;
 	*) lib_kded='' ;;
