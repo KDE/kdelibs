@@ -2,20 +2,13 @@
 #generated from Makefile.am by am2bksys.py
 Import('env')
 
-kconf_update_sources = """
-kconf_update.cpp
-"""
-
 obj = env.kdeinitobj(env)
 obj.target   = 'kconf_update'
-obj.source = kconf_update_sources
+obj.source   = 'kconf_update.cpp'
 obj.uselib   = 'QT QTCORE KDE4 KDECORE '
 obj.libpaths = '../kdecore ../dcop'
 obj.libs     = 'kdecore DCOP'
 obj.instdir  = env['KDEBIN']
-obj.includes = '../kded '
 if env['WINDOWS']:
-	obj.libs += ' kdewin32 '
-	obj.libpaths += ' ../win '
+	obj.ccflags  += ' -Dkdemain=main'
 obj.execute()
-
