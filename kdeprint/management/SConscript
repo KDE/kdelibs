@@ -57,8 +57,11 @@ obj.source = kaddprinterwizard_sources
 obj.includes = includes
 obj.libs = 'kdeprint_management '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.libpaths = '../../kdecore ../../kdefx ../../kdeui ../../kio ../../kdesu ../../dcop ../../kdeprint ../../kdeprint/management '
-obj.libs     = 'kdecore kdefx kdeui DCOP kdeprint_management kdeprint kio kdesu '
+obj.libpaths = '../../kdecore ../../kdefx ../../kdeui ../../kio  ../../dcop ../../kdeprint ../../kdeprint/management '
+obj.libs     = 'kdecore kdefx kdeui DCOP kdeprint_management kdeprint kio  '
+if not env['WINDOWS']:
+    obj.libs     += " kdesu"
+    obj.libpaths += " ../../kdesu "
 obj.execute()
 
 obj = env.kdeobj('shlib')
@@ -66,9 +69,12 @@ obj.target = 'kdeprint_management'
 obj.vnum = '6.0.2'
 obj.source = kdeprint_management_sources
 obj.includes = includes
-obj.libpaths = '.. ../../kdecore ../../kio ../../kdeui ../../dcop ../../kded ../../kdefx ../../kio/kio ../../kdeprint ../../kdesu '
-obj.libs = 'kdecore kdeui DCOP kdeprint kio kdefx kdesu'
+obj.libpaths = '.. ../../kdecore ../../kio ../../kdeui ../../dcop ../../kded ../../kdefx ../../kio/kio ../../kdeprint  '
+obj.libs = 'kdecore kdeui DCOP kdeprint kio kdefx '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO'
+if not env['WINDOWS']:
+    obj.libs     += " kdesu"
+    obj.libpaths += " ../../kdesu "
 obj.ccflags += ' -D_KDEPRINT_COMPILE '
 obj.execute()
 
