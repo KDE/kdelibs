@@ -20,7 +20,7 @@ inst_headers="""
 value.h types.h object.h interpreter.h operations.h
 ustring.h lookup.h global.h identifier.h property_map.h
 property_slot.h reference.h reference_list.h completion.h
-scope_chain.h list.h simple_number.h function.h 
+scope_chain.h list.h simple_number.h function.h JSLock.h 
 """
  
 env.CFile(target="grammar.tab.cpp", source="grammar.y", YACCFLAGS="-d -p kjsyy")
