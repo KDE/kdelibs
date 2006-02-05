@@ -48,7 +48,7 @@ class AM2Bksys(amtool.AMFile):
 			'kde_appsdir' : 'KDEAPPS',
 			'kde_icondir' : 'KDEICONS',
 			'kde_sounddir' : '',
-			'kde_datadir' : 'KDEDATA',
+			'kde_datadir' : 'KDEAPPS',
 			'kde_locale' : 'KDELOCALE',
 			'kde_cgidir' : '',
 			'kde_confdir' : 'KDECONF',
