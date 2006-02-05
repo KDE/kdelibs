@@ -525,7 +525,9 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
     }
   } else if (!part) {
 
+#ifdef __GNUC__
 #warning "FIXME:Liveconnect stuff!"
+#endif
 #if 0
     // not a  KHTMLPart
     QString rvalue;
