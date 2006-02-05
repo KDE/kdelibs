@@ -466,7 +466,7 @@ bool KAccelBase::insertConnection( KAccelAction* pAction )
 					else {
 						m_mapKeyToAction[key] = ActionInfo( 0, 0, 0 );
 						// Insert into non-unique list if it's not already there.
-						if( m_rgActionsNonUnique.findIndex( pAction ) == -1 )
+						if( !m_rgActionsNonUnique.contains( pAction ) )
 							m_rgActionsNonUnique.append( pAction );
 						if( connectKey( key ) )
 							pAction->incConnections();
@@ -508,7 +508,7 @@ bool KAccelBase::removeConnection( KAccelAction* pAction )
 	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it )
 	//	kDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
 
-	if( m_rgActionsNonUnique.findIndex( pAction ) >= 0 ) {
+	if( m_rgActionsNonUnique.contains( pAction ) ) {
 		mtemp_pActionRemoving = pAction;
 		bool b = updateConnections();
 		mtemp_pActionRemoving = 0;
@@ -526,7 +526,7 @@ bool KAccelBase::removeConnection( KAccelAction* pAction )
 			pAction->decConnections();
 
 			KKeyToActionMap::iterator itRemove = it++;
-			m_mapKeyToAction.remove( itRemove );
+			m_mapKeyToAction.erase( itRemove );
 		} else
 			++it;
 	}
@@ -583,7 +583,7 @@ QMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& seq )
 			const KKeySequence& seqAction = pAction->shortcut().seq(iSeq);
 			if( seqAction.startsWith( seq ) ) {
 				if( bInsertSeparator ) {
-					pMenu->insertSeparator();
+					pMenu->addSeparator();
 					bInsertSeparator = false;
 				}
 
