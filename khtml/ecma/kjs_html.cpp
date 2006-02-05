@@ -1221,7 +1221,9 @@ bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &pro
       if (getIndexSlot(this, propertyName, slot))
         return true;
       break;
+#ifdef __GNUC__
 #warning "FIXME: LiveConnect!"
+#endif
 #if 0
     case ID_APPLET:
     case ID_OBJECT:
@@ -1933,7 +1935,9 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
 {
   if (impl()->id() == ID_A)
     return UString(getURLArg(ATTR_HREF));
+#ifdef __GNUC__
 #warning "LiveConnect stuff stubbed out!"
+#endif
 #if 0
   else if (node.elementId() == ID_APPLET) {
     KParts::LiveConnectExtension *lc = getLiveConnectExtension(node);
@@ -2282,7 +2286,9 @@ void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, Valu
       }
       break;
     }
+#ifdef __GNUC__
 #warning "FIXME: LiveConnect!"
+#endif
 #if 0
     case ID_APPLET:
     case ID_OBJECT:
@@ -2777,7 +2783,7 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
   }
   // resize ?
   else if (propertyName == lengthPropertyName) {
-    unsigned newLen;
+    uint32_t newLen;
     bool converted = value->getUInt32(newLen);
 
     if (!converted) {
