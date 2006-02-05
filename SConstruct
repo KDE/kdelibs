@@ -90,6 +90,7 @@ mimetypes
 kdecore
 kdeui
 kwallet
+kde3support
 kio
 kinit
 kded
@@ -97,7 +98,6 @@ kparts
 kutils
 kjs
 khtml
-kde3support
 kcert
 kconf_update
 kresources
