@@ -29,7 +29,7 @@
 
 static void parsePythonRange( const QByteArray &range, int &start, int &end )
 {
-    const int colon = range.find( ':' );
+    const int colon = range.indexOf( ':' );
     if ( colon == -1 ) {
         start = range.toUInt();
         end = start;
@@ -113,7 +113,8 @@ QString KStringHandler::setword( const QString &text , const QString &word , int
         list.append( word );
     else
     {
-        list.insert( list.remove( list.at(pos) ) , word );
+        list.removeAt( pos );
+        list.insert( pos, word );
     }
 
     // Rejoin
@@ -159,7 +160,7 @@ QString KStringHandler::remword( const QString &text , int pos )
     QStringList list = text.split( " ", QString::KeepEmptyParts);
 
     if ( pos < list.count() )
-        list.remove( list.at( pos ) );
+        list.removeAt( pos );
 
     // Rejoin
     return list.join( " " );
@@ -178,10 +179,8 @@ QString KStringHandler::remword( const QString &text , const QString &word )
     // Split words and add into list
     QStringList list = text.split( " ", QString::KeepEmptyParts);
 
-    QStringList::Iterator it = list.find(word);
-
-    if (it != list.end())
-       list.remove( it );
+    if ( list.contains( word ) )
+      list.removeAll( word );
 
     // Rejoin
     return list.join( " " );
@@ -411,7 +410,7 @@ bool KStringHandler::matchFileName( const QString& filename, const QString& patt
    if ( pattern[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len ) {
       if ( pattern[ 0 ] == '*' )
       {
-         return filename.find(pattern.mid(1, pattern_len - 2)) != -1;
+         return filename.indexOf(pattern.mid(1, pattern_len - 2)) != -1;
       }
 
       const QChar *c1 = pattern.unicode();
@@ -446,7 +445,7 @@ KStringHandler::perlSplit(const QString & sep, const QString & s, int max)
 
   int searchStart = 0;
 
-  int tokenStart = s.find(sep, searchStart);
+  int tokenStart = s.indexOf(sep, searchStart);
 
   while (-1 != tokenStart && (ignoreMax || l.count() < max - 1))
   {
@@ -454,7 +453,7 @@ KStringHandler::perlSplit(const QString & sep, const QString & s, int max)
       l << s.mid(searchStart, tokenStart - searchStart);
 
     searchStart = tokenStart + sep.length();
-    tokenStart = s.find(sep, searchStart);
+    tokenStart = s.indexOf(sep, searchStart);
   }
 
   if (!s.mid(searchStart, s.length() - searchStart).isEmpty())
@@ -472,7 +471,7 @@ KStringHandler::perlSplit(const QChar & sep, const QString & s, int max)
 
   int searchStart = 0;
 
-  int tokenStart = s.find(sep, searchStart);
+  int tokenStart = s.indexOf(sep, searchStart);
 
   while (-1 != tokenStart && (ignoreMax || l.count() < max - 1))
   {
@@ -480,7 +479,7 @@ KStringHandler::perlSplit(const QChar & sep, const QString & s, int max)
       l << s.mid(searchStart, tokenStart - searchStart);
 
     searchStart = tokenStart + 1;
-    tokenStart = s.find(sep, searchStart);
+    tokenStart = s.indexOf(sep, searchStart);
   }
 
   if (!s.mid(searchStart, s.length() - searchStart).isEmpty())
@@ -497,7 +496,7 @@ KStringHandler::perlSplit(const QRegExp & sep, const QString & s, int max)
   QStringList l;
 
   int searchStart = 0;
-  int tokenStart = sep.search(s, searchStart);
+  int tokenStart = sep.indexIn(s, searchStart);
   int len = sep.matchedLength();
 
   while (-1 != tokenStart && (ignoreMax || l.count() < max - 1))
@@ -506,7 +505,7 @@ KStringHandler::perlSplit(const QRegExp & sep, const QString & s, int max)
       l << s.mid(searchStart, tokenStart - searchStart);
 
     searchStart = tokenStart + len;
-    tokenStart = sep.search(s, searchStart);
+    tokenStart = sep.indexIn(s, searchStart);
     len = sep.matchedLength();
   }
 
@@ -523,7 +522,7 @@ KStringHandler::tagURLs( const QString& text )
 
     QString richText( text );
     int urlPos = 0, urlLen;
-    while ((urlPos = urlEx.search(richText, urlPos)) >= 0)
+    while ((urlPos = urlEx.indexIn(richText, urlPos)) >= 0)
     {
         urlLen = urlEx.matchedLength();
         QString href = richText.mid( urlPos, urlLen );

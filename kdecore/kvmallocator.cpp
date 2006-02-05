@@ -92,9 +92,9 @@ KVMAllocator::allocate(size_t _size)
    it = d->free_blocks.begin();
    while (it != d->free_blocks.end())
    {
-      if (it.data().size > _size)
+      if (it.value().size > _size)
       {
-         Block &free_block = it.data();
+         Block &free_block = it.value();
          Block block;
          kDebug(180)<<"VM alloc: using block from free list "<<(long)free_block.start<<" size ="<<(long)free_block.size<<" request = "<<_size<< endl;
          block.start = free_block.start;
@@ -104,9 +104,9 @@ KVMAllocator::allocate(size_t _size)
          free_block.size -= block.size;
          free_block.start += block.size;
          if (!free_block.size)
-            d->free_blocks.remove(it);
-         it = d->used_blocks.replace(block.start, block);
-         return &(it.data());
+            d->free_blocks.erase(it);
+         it = d->used_blocks.insert(block.start, block);
+         return &(it.value());
       }
       ++it;
    } 
@@ -119,9 +119,9 @@ KVMAllocator::allocate(size_t _size)
    block.size = (_size + KVM_ALIGN) & ~KVM_ALIGN;
    block.mmap = 0;
    kDebug(180)<<"VM alloc: using new block "<<(long)block.start<<" size ="<<(long)block.size<<" request = "<<_size<< endl;
-   it = d->used_blocks.replace(block.start, block);
+   it = d->used_blocks.insert(block.start, block);
    d->max_length += block.size;
-   return &(it.data());
+   return &(it.value());
 }
 
 /**
@@ -143,13 +143,13 @@ KVMAllocator::free(Block *block_p)
       kDebug(180)<<"VM free: Block "<<(long)block.start<<" is not allocated."<<endl;
       return;
    }
-   d->used_blocks.remove(it);
-   it = d->free_blocks.replace(block.start, block);
+   d->used_blocks.erase(it);
+   it = d->free_blocks.insert(block.start, block);
    QMap<off_t,KVMAllocator::Block>::iterator before = it;
    --before;
    if (before != d->free_blocks.end())
    {
-      Block &block_before = before.data();
+      Block &block_before = before.value();
       if ((block_before.start + off_t(block_before.size)) == block.start)
       {
          // Merge blocks.
@@ -157,8 +157,8 @@ KVMAllocator::free(Block *block_p)
                            " with "<< (long)block.start<< " (before)" << endl;
          block.size += block_before.size;
          block.start = block_before.start;
-         it.data() = block;
-         d->free_blocks.remove(before);
+         it.value() = block;
+         d->free_blocks.erase(before);
       }
    }
    
@@ -166,15 +166,15 @@ KVMAllocator::free(Block *block_p)
    ++after;
    if (after != d->free_blocks.end())
    {
-      Block &block_after = after.data();
+      Block &block_after = after.value();
       if ((block.start + off_t(block.size)) == block_after.start)
       {
          // Merge blocks.
          kDebug(180) << "VM merging: Block "<< (long)block.start<<
                            " with "<< (long)block_after.start<< " (after)" << endl;
          block.size += block_after.size;
-         it.data() = block;
-         d->free_blocks.remove(after);
+         it.value() = block;
+         d->free_blocks.erase(after);
       }
    }
 }

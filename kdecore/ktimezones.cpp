@@ -100,8 +100,8 @@ public:
         // Autodelete behavior.
         for (KTimezones::ZoneMap::ConstIterator it = zones->begin(), end = zones->end();  it != end;  ++it)
         {
-            if (nonconstZones.contains(const_cast<KTimezone*>(it.data())))   // only delete zones actually owned
-                delete it.data();
+            if (nonconstZones.contains(const_cast<KTimezone*>(it.value())))   // only delete zones actually owned
+                delete it.value();
         }
         delete zones;
     }
@@ -156,9 +156,9 @@ const KTimezone *KTimezones::detach(const KTimezone *zone)
     {
         for (ZoneMap::Iterator it = d->zones->begin(), end = d->zones->end();  it != end;  ++it)
         {
-            if (it.data() == zone)
+            if (it.value() == zone)
             {
-                d->zones->remove(it);
+                d->zones->erase(it);
                 d->nonconstZones.remove(const_cast<KTimezone*>(zone));
                 return (zone == utc()) ? 0 : zone;
             }
@@ -174,8 +174,8 @@ const KTimezone *KTimezones::detach(const QString &name)
         ZoneMap::Iterator it = d->zones->find(name);
         if (it != d->zones->end())
         {
-            const KTimezone *zone = it.data();
-            d->zones->remove(it);
+            const KTimezone *zone = it.value();
+            d->zones->erase(it);
             d->nonconstZones.remove(const_cast<KTimezone*>(zone));
             return (zone == utc()) ? 0 : zone;
         }
@@ -189,7 +189,7 @@ const KTimezone *KTimezones::zone(const QString &name) const
     {
         ZoneMap::ConstIterator it = d->zones->find(name);
         if (it != d->zones->end())
-            return it.data();
+            return it.value();
     }
     return 0;    // error
 }
@@ -544,7 +544,7 @@ public:
 private:
     KSystemTimezonesPrivate() {}
     void readZoneTab();
-    static QString calcChecksum(const QString &zoneName, QIODevice::Offset size);
+    static QString calcChecksum(const QString &zoneName, qlonglong size);
     static float convertCoordinate(const QString &coordinate);
 
     static KSystemTimezonesPrivate *m_instance;
@@ -604,20 +604,20 @@ void KSystemTimezonesPrivate::readZoneTab()
     // Find and open zone.tab - it's all easy except knowing where to look. Try the LSB location first.
     QFile f;
     m_zoneinfoDir = "/usr/share/zoneinfo";
-    f.setName(m_zoneinfoDir + "/zone.tab");
+    f.setFileName(m_zoneinfoDir + "/zone.tab");
     if (!f.open(QIODevice::ReadOnly))
     {
-        kDebug() << "Can't open " << f.name() << endl;
+        kDebug() << "Can't open " << f.fileName() << endl;
         m_zoneinfoDir = "/usr/lib/zoneinfo";
-        f.setName(m_zoneinfoDir + "/zone.tab");
+        f.setFileName(m_zoneinfoDir + "/zone.tab");
         if (!f.open(QIODevice::ReadOnly))
         {
-            kDebug() << "Can't open " << f.name() << endl;
+            kDebug() << "Can't open " << f.fileName() << endl;
             m_zoneinfoDir = ::getenv("TZDIR");
-            f.setName(m_zoneinfoDir + "/zone.tab");
+            f.setFileName(m_zoneinfoDir + "/zone.tab");
             if (m_zoneinfoDir.isEmpty() || !f.open(QIODevice::ReadOnly))
             {
-                kDebug() << "Can't open " << f.name() << endl;
+                kDebug() << "Can't open " << f.fileName() << endl;
 
                 // Solaris support. Synthesise something that looks like a zone.tab.
                 //
@@ -633,10 +633,10 @@ void KSystemTimezonesPrivate::readZoneTab()
                 // Note the use of blocking here...it is a trivial amount of data!
                 temp.close();
                 reader.start(KProcess::Block);
-                f.setName(temp.name());
+                f.setFileName(temp.name());
                 if (!temp.status() || !f.open(QIODevice::ReadOnly))
                 {
-                    kDebug() << "Can't open " << f.name() << endl;
+                    kDebug() << "Can't open " << f.fileName() << endl;
                     m_zoneinfoDir.clear();
                 }
             }
@@ -709,7 +709,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
         // SOLUTION 2: DEFINITIVE.
         // Try to follow any /etc/localtime symlink to a zoneinfo file.
         QFile f;
-        f.setName("/etc/localtime");
+        f.setFileName("/etc/localtime");
         QFileInfo fi(f);
         if (fi.isSymLink())
         {
@@ -738,7 +738,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
             KMD5 context("");
             context.reset();
             context.update(f);
-            QIODevice::Offset referenceSize = f.size();
+            qlonglong referenceSize = f.size();
             QString referenceMd5Sum = context.hexDigest();
             f.close();
 
@@ -747,7 +747,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
             MD5Map oldChecksums = m_md5Sums;   // save a copy of the existing checksums
             for (MD5Map::ConstIterator it5 = m_md5Sums.begin(), end5 = m_md5Sums.end();  it5 != end5;  ++it5)
             {
-                if (it5.data() == referenceMd5Sum)
+                if (it5.value() == referenceMd5Sum)
                 {
                     // The cached checksum matches. Ensure that the file hasn't changed.
                     QString zoneName = it5.key();
@@ -781,7 +781,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
             const ZoneMap zmap = zones();
             for (ZoneMap::ConstIterator zit = zmap.begin(), zend = zmap.end();  zit != zend;  ++zit)
             {
-                const KTimezone *zone = zit.data();
+                const KTimezone *zone = zit.value();
                 QString zonename = zone->name();
                 if (!m_md5Sums.contains(zonename))
                 {
@@ -825,22 +825,22 @@ const KTimezone *KSystemTimezonesPrivate::local()
     // BSD support.
     QString fileZone;
     QFile f;
-    f.setName("/etc/timezone");
+    f.setFileName("/etc/timezone");
     if (!f.open(QIODevice::ReadOnly))
     {
-        kDebug() << "Can't open " << f.name() << endl;
+        kDebug() << "Can't open " << f.fileName() << endl;
 
         // SOLUTION 5: DEFINITIVE.
         // Solaris support using /etc/default/init.
-        f.setName("/etc/default/init");
+        f.setFileName("/etc/default/init");
         if (!f.open(QIODevice::ReadOnly))
         {
-            kDebug() << "Can't open " << f.name() << endl;
+            kDebug() << "Can't open " << f.fileName() << endl;
         }
         else
         {
             QTextStream ts(&f);
-            ts.setCodec(QTextCodec::codecForName("ISO-8859-1"));
+            ts.setCodec("ISO-8859-1");
 
             // Read the last line starting "TZ=".
             while (!ts.atEnd())
@@ -860,7 +860,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
     else
     {
         QTextStream ts(&f);
-        ts.setCodec(QTextCodec::codecForName("ISO-8859-1"));
+        ts.setCodec("ISO-8859-1");
 
         // Read the first line.
         if (!ts.atEnd())
@@ -889,8 +889,8 @@ const KTimezone *KSystemTimezonesPrivate::local()
         const ZoneMap zmap = zones();
         for (ZoneMap::ConstIterator it = zmap.begin(), end = zmap.end();  it != end;  ++it)
         {
-            const KSystemTimezone *zone = static_cast<const KSystemTimezone*>(it.data());
-            int candidateOffset = QABS(zone->currentOffset(Qt::LocalTime));
+            const KSystemTimezone *zone = static_cast<const KSystemTimezone*>(it.value());
+            int candidateOffset = qAbs(zone->currentOffset(Qt::LocalTime));
             if (candidateOffset < bestOffset
             &&  zone->parse())
             {
@@ -916,15 +916,15 @@ const KTimezone *KSystemTimezonesPrivate::local()
 
 // Calculate the MD5 checksum for the given zone file, provided that its size matches.
 // The calculated checksum is cached.
-QString KSystemTimezonesPrivate::calcChecksum(const QString &zoneName, QIODevice::Offset size)
+QString KSystemTimezonesPrivate::calcChecksum(const QString &zoneName, qlonglong size)
 {
     QString path = m_zoneinfoDir + '/' + zoneName;
     QFileInfo fi(path);
-    if (static_cast<QIODevice::Offset>(fi.size()) == size)
+    if (static_cast<qlonglong>(fi.size()) == size)
     {
         // Only do the heavy lifting for file sizes which match.
         QFile f;
-        f.setName(path);
+        f.setFileName(path);
         if (f.open(QIODevice::ReadOnly))
         { 
             KMD5 context("");

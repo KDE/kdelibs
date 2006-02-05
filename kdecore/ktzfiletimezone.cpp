@@ -76,13 +76,13 @@ int KTzfileTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *second
             time_t tztime = static_cast<time_t>(ut);
             if (ut != (uint)-1  &&  tztime >= 0)
             {
-                Q_UINT32 count = tdata->nTransitionTimes();
-                for (Q_UINT32 i = 0;  i < count;  ++i)
+                quint32 count = tdata->nTransitionTimes();
+                for (quint32 i = 0;  i < count;  ++i)
                 {
                     const KTzfileTimezoneData::TransitionTime *tt = tdata->transitionTime(i);
                     if (!tt)
                         break;    // how the hell did we reach the end??
-                    Q_INT32 t = tt->time;
+                    qint32 t = tt->time;
                     const KTzfileTimezoneData::LocalTimeType *ltt = tdata->localTimeType(tt->localTimeIndex);
                     if (!ltt)
                         continue;   // something funny is going on here ...
@@ -320,7 +320,7 @@ QList<int> KTzfileTimezoneData::UTCOffsets() const
 
 QByteArray KTzfileTimezoneData::abbreviation(int index) const
 {
-    Q_UINT8 i = static_cast<Q_UINT8>(index);
+    quint8 i = static_cast<quint8>(index);
     if (index >= 0  &&  static_cast<int>(i) == index  &&  i < m_abbreviations.count())
         return m_abbreviations[i];
     return QByteArray();
@@ -328,7 +328,7 @@ QByteArray KTzfileTimezoneData::abbreviation(int index) const
 
 const KTzfileTimezoneData::TransitionTime *KTzfileTimezoneData::getTransitionTime(time_t t) const
 {
-    Q_UINT32 i;
+    quint32 i;
     for (i = 0;  i < m_nTransitionTimes;  ++i)
     {
         if (m_transitionTimes[i].time > t)
@@ -349,9 +349,9 @@ const KTzfileTimezoneData::LocalTimeType *KTzfileTimezoneData::getLocalTime(time
     return 0;
 }
 
-Q_UINT32 KTzfileTimezoneData::getLeapSeconds(time_t t) const
+quint32 KTzfileTimezoneData::getLeapSeconds(time_t t) const
 {
-    Q_UINT32 i;
+    quint32 i;
     for (i = 0;  i < m_nLeapSecondAdjusts;  ++i)
     {
         if (m_leapSecondAdjusts[i].time > t)
@@ -386,15 +386,15 @@ KTzfileTimezoneSource::~KTzfileTimezoneSource()
 
 KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
 {
-    Q_UINT32 abbrCharCount;     // the number of characters of time zone abbreviation strings
-    Q_UINT32 ttisgmtcnt;
-    Q_UINT8  is;
-    Q_UINT8  T_, Z_, i_, f_;    // tzfile identifier prefix
+    quint32 abbrCharCount;     // the number of characters of time zone abbreviation strings
+    quint32 ttisgmtcnt;
+    quint8  is;
+    quint8  T_, Z_, i_, f_;    // tzfile identifier prefix
 
     QFile f(d->location + '/' + zone->name());
     if (!f.open(QIODevice::ReadOnly))
     {
-        kError() << "Cannot open " << f.name() << endl;
+        kError() << "Cannot open " << f.fileName() << endl;
         return 0;
     }
     QDataStream str(&f);
@@ -403,7 +403,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     str >> T_ >> Z_ >> i_ >> f_;
     if (T_ != 'T' || Z_ != 'Z' || i_ != 'i' || f_ != 'f')
     {
-        kError() << "Not a TZFILE: " << f.name() << endl;
+        kError() << "Not a TZFILE: " << f.fileName() << endl;
         return 0;
     }
     // Discard 16 bytes reserved for future use
@@ -462,8 +462,8 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
         delete data;
         return 0;
     }
-    QByteArray array(abbrCharCount);
-    str.readRawBytes(array.data(), array.size());
+    QByteArray array(abbrCharCount, 0);
+    str.readRawData(array.data(), array.size());
     char *abbrs = array.data();
     if (abbrs[abbrCharCount - 1] != 0)
     {
@@ -472,7 +472,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
         delete data;
         return 0;
     }
-    Q_UINT8 n = 0;
+    quint8 n = 0;
     for (i = 0; i < abbrCharCount; ++n, i += strlen(abbrs + i) + 1)
     {
         data->m_abbreviations.append(QByteArray(abbrs + i));

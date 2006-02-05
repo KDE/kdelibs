@@ -207,7 +207,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const Q
       DEMARSHAL( List, ListType )
       DEMARSHAL( Map, MapType )
       DEMARSHAL( String, QString )
-      DEMARSHAL( CString, QByteArray )
+      DEMARSHAL( ByteArray, QByteArray )
       DEMARSHAL( StringList, QStringList )
       DEMARSHAL( Font, QFont )
       DEMARSHAL( Pixmap, QPixmap )
@@ -218,7 +218,6 @@ bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const Q
       DEMARSHAL( Size, QSize )
       DEMARSHAL( Color, QColor )
       DEMARSHAL( Palette, QPalette )
-      DEMARSHAL( ColorGroup, QColorGroup )
       case QVariant::Icon:
       {
         QPixmap val;
@@ -230,9 +229,9 @@ bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const Q
       DEMARSHAL( UInt, uint )
       case QVariant::Bool:
       {
-        qint8 v;
+        bool v;
         stream >> v;
-        prop = QVariant( static_cast<bool>( v ), 1 );
+        prop = QVariant( v );
       }
         break;
       DEMARSHAL( Double, double )
@@ -284,7 +283,6 @@ bool KDCOPPropertyProxy::processPropertyRequest( const DCOPCString &fun, const Q
       MARSHAL( Size )
       MARSHAL( Color )
       MARSHAL( Palette )
-      MARSHAL( ColorGroup )
       MARSHAL( Icon )
       MARSHAL2( Int )
       MARSHAL2( UInt )
@@ -320,7 +318,7 @@ bool KDCOPPropertyProxy::decodePropertyRequestInternal( const DCOPCString &fun, 
     propName.detach();
     set = true;
     propName = propName.mid( 3 );
-    int p1 = propName.find( '(' );
+    int p1 = propName.indexOf( '(' );
 
     uint len = propName.length();
 

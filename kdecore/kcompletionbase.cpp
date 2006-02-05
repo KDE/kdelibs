@@ -121,9 +121,9 @@ bool KCompletionBase::setKeyBinding( KeyBindingType item, const KShortcut& cut )
     if( !cut.isNull() )
     {
         for( KeyBindingMap::Iterator it = m_keyMap.begin(); it != m_keyMap.end(); ++it )
-            if( it.data() == cut )  return false;
+            if( it.value() == cut )  return false;
     }
-    m_keyMap.replace( item, cut );
+    m_keyMap.insert( item, cut );
     return true;
 }
 

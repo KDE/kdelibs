@@ -227,33 +227,33 @@ public:
     /** Details of a change in the rules for computing local time. */
     struct TransitionTime
     {
-        Q_INT32 time;             /**< Time (as returned by time(2)) at which the rules for computing local time change. */
-        Q_UINT8  localTimeIndex;  /**< Index into the LocalTimeType array. */
+        qint32 time;             /**< Time (as returned by time(2)) at which the rules for computing local time change. */
+        quint8  localTimeIndex;  /**< Index into the LocalTimeType array. */
     };
     /** The characteristics of a local time type. */
     struct LocalTimeType
     {
-        Q_INT32 gmtoff;     /**< Number of seconds to be added to UTC. */
+        qint32 gmtoff;     /**< Number of seconds to be added to UTC. */
         bool    isdst;      /**< Whether tm_isdst should be set by localtime(3). */
-        Q_UINT8 abbrIndex;  /**< Index into the list of time zone abbreviations. */
+        quint8 abbrIndex;  /**< Index into the list of time zone abbreviations. */
     };
     /** Details of a leap second adjustment. */
     struct LeapSecondAdjust
     {
-        Q_INT32 time;          /**< Time (as returned by time(2)) at which the leap second occurs. */
-        Q_UINT32 leapSeconds;  /**< Total number of leap seconds to be applied after this time. */
+        qint32 time;          /**< Time (as returned by time(2)) at which the leap second occurs. */
+        quint32 leapSeconds;  /**< Total number of leap seconds to be applied after this time. */
     };
 
     /** The number of transition times in the array m_transitionTimes */
-    Q_UINT32 nTransitionTimes() const   { return m_nTransitionTimes; }
+    quint32 nTransitionTimes() const   { return m_nTransitionTimes; }
     /** The number of local time types in the array m_localTimeTypes */
-    Q_UINT32 nLocalTimeTypes() const   { return m_nLocalTimeTypes; }
+    quint32 nLocalTimeTypes() const   { return m_nLocalTimeTypes; }
     /** The number of leap seconds adjustments in the array m_leapSecondAdjusts */
-    Q_UINT32 nLeapSecondAdjustments() const   { return m_nLeapSecondAdjusts; }
+    quint32 nLeapSecondAdjustments() const   { return m_nLeapSecondAdjusts; }
     /** The number of standard/wall indicators in the array m_isStandard */
-    Q_UINT32 nIsStandard() const   { return m_nIsStandard; }
+    quint32 nIsStandard() const   { return m_nIsStandard; }
     /** The number of UTC/local indicators in the array m_isUTC */
-    Q_UINT32 nIsUTC() const   { return m_nIsUTC; }
+    quint32 nIsUTC() const   { return m_nIsUTC; }
 
     const TransitionTime *transitionTime(int index) const;
     const LocalTimeType *localTimeType(int index) const;
@@ -286,7 +286,7 @@ public:
      *          (as returned by time(2))
      * @return adjustment, or 0 if the time is before the start of data
      */
-    Q_UINT32 getLeapSeconds(time_t t) const;
+    quint32 getLeapSeconds(time_t t) const;
 
     /**
      * Returns the complete list of time zone abbreviations.
@@ -312,11 +312,11 @@ public:
     virtual QList<int> UTCOffsets() const;
 
 protected:
-    Q_UINT32 m_nTransitionTimes;
-    Q_UINT32 m_nLocalTimeTypes;
-    Q_UINT32 m_nLeapSecondAdjusts;
-    Q_UINT32 m_nIsStandard;
-    Q_UINT32 m_nIsUTC;
+    quint32 m_nTransitionTimes;
+    quint32 m_nLocalTimeTypes;
+    quint32 m_nLeapSecondAdjusts;
+    quint32 m_nIsStandard;
+    quint32 m_nIsUTC;
     TransitionTime *m_transitionTimes;
     LocalTimeType  *m_localTimeTypes;
     QList<QByteArray> m_abbreviations;

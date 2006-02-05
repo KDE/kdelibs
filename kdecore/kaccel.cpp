@@ -282,7 +282,7 @@ bool KAccelPrivate::disconnectKey( KAccelAction& action, const KKeyServer::Key& 
 			kDebug(125) << "KAccelPrivate::disconnectKey( \"" << action.name() << "\", 0x" << QString::number(keyQt,16) << " ) : id = " << nID << " m_pObjSlot = " << action.objSlotPtr() << endl;
 			((Q3Accel*)m_pAccel)->removeItem( nID );
 			m_mapIDToAction.remove( nID );
-			m_mapIDToKey.remove( it );
+			m_mapIDToKey.erase( it );
 			return true;
 		}
 	}
@@ -299,7 +299,7 @@ bool KAccelPrivate::disconnectKey( const KKeyServer::Key& key )
 	for( ; it != m_mapIDToKey.end(); ++it ) {
 		if( *it == keyQt ) {
 			((Q3Accel*)m_pAccel)->removeItem( it.key() );
-			m_mapIDToKey.remove( it );
+			m_mapIDToKey.erase( it );
 			return true;
 		}
 	}

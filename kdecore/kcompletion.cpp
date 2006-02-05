@@ -271,7 +271,7 @@ QStringList KCompletion::substringCompletion( const QString& string ) const
 
     for( ; it != list.end(); ++it ) {
         QString item = *it;
-        if ( item.find( string, 0, false ) != -1 ) { // always case insensitive
+        if ( item.indexOf( string, 0, Qt::CaseInsensitive ) != -1 ) { // always case insensitive
             postProcessMatch( &item );
             matches.append( item );
         }
@@ -798,7 +798,7 @@ void KCompletionMatches::removeDuplicates()
             if( (*it1).value() == (*it2).value()) {
                 // use the max height
                 (*it1).first = qMax( (*it1).index(), (*it2).index());
-                it2 = remove( it2 );
+                it2 = erase( it2 );
                 continue;
             }
             ++it2;
