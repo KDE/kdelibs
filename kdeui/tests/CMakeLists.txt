@@ -395,19 +395,6 @@ target_link_libraries(kwindowtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 ########### next target ###############
 
-set(kwizardtest_SRCS
-kwizardtest.cpp
-)
-
-kde4_automoc(${kwizardtest_SRCS})
-
-kde4_add_executable(kwizardtest ${kwizardtest_SRCS})
-
-target_link_libraries(kwizardtest  ${QT_AND_KDECORE_LIBS} kdeui)
-
-
-########### next target ###############
-
 set(itemcontainertest_SRCS
 itemcontainertest.cpp
 )

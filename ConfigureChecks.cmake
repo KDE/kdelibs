@@ -248,8 +248,8 @@ endif (HAVE_OPENPTY)
 #set(CMAKE_REQUIRED_LIBRARIES)
 
 #dlopen stuff
-check_function_exists(dlopen   HAVE_LIBDL)
-check_function_exists(dlerror  HAVE_DLERROR)
+check_library_exists(dl dlopen ""  HAVE_LIBDL)
+check_library_exists(dl dlerror ""  HAVE_DLERROR)
 check_function_exists(shl_load HAVE_SHL_LOAD)
 check_function_exists(dld_init HAVE_DLD)
 

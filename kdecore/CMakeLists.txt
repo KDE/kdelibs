@@ -229,6 +229,10 @@ if(AGG_FOUND)
    target_link_libraries(kdecore  ${QT_QTXML_LIBRARY} ${AGG_LIBRARY})
 endif(AGG_FOUND)
 
+if(HAVE_LIBDL)
+   target_link_libraries(kdecore  dl)
+endif(HAVE_LIBDL)
+
 set_target_properties(kdecore PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${KDE4_LIB_INSTALL_DIR} kdecore )
 
