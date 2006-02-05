@@ -31,7 +31,7 @@ obj.source = kresources_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDEUI KIO KDECORE '
 obj.libpaths = ' ../dcop ../kutils '
-obj.libs = ' dcop kutils '
+obj.libs = ' DCOP kutils '
 obj.execute()
 
 obj = env.kdeobj('module')
