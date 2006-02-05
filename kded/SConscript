@@ -51,7 +51,7 @@ obj.libs     = ' DCOP kdefx '
 obj.instdir = env['KDEBIN']
 obj.execute()
 
-env.bksys_insttype( 'KDEDATA', 'kconf_update', 'kded.upd' )
+env.bksys_insttype( 'KDEAPPS', 'kconf_update', 'kded.upd' )
 env.bksys_insttype( 'KDESERVTYPES', '', 'kdedmodule.desktop' )
 env.bksys_insttype( 'KDEMENU', '', 'applications.menu' )
 
