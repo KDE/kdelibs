@@ -237,9 +237,8 @@ render_view( gs_t& gs, QImage* outImage )
             return false;
     } // for
 
-    if( !qti.create( jas_image_width( gs.altimage ),
-                     jas_image_height( gs.altimage ), 32 ) )
-        return false;
+    qti = QImage( jas_image_width( gs.altimage ), jas_image_height( gs.altimage ),
+                  QImage::Format_RGB32 );
 
     uint32_t* data = (uint32_t*)qti.bits();
 

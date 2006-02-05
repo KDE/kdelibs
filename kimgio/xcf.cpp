@@ -96,7 +96,7 @@ XCFImageFormat::XCFImageFormat()
 
 inline
 int XCFImageFormat::add_lut( int a, int b ) {
-	return QMIN( a + b, 255 );
+	return qMin( a + b, 255 );
 }
 
 bool XCFImageFormat::readXCF(QIODevice *device, QImage *outImage)
@@ -123,10 +123,10 @@ kDebug() << tag << " " << xcf_image.width << " " << xcf_image.height << " " <<  
 	// all the data of all layers before beginning to construct the
 	// merged image).
 
-	QStack<Q_INT32> layer_offsets;
+	QStack<qint32> layer_offsets;
 
 	while (true) {
-		Q_INT32 layer_offset;
+		qint32 layer_offset;
 
 		xcf_io >> layer_offset;
 
@@ -145,9 +145,9 @@ kDebug() << tag << " " << xcf_image.width << " " << xcf_image.height << " " <<  
 
 	// Load each layer and add it to the image
 	while (!layer_offsets.isEmpty()) {
-		Q_INT32 layer_offset = layer_offsets.pop();
+		qint32 layer_offset = layer_offsets.pop();
 
-		xcf_io.device()->at(layer_offset);
+		xcf_io.device()->seek(layer_offset);
 
 		if (!loadLayer(xcf_io, xcf_image))
 			return false;
@@ -202,11 +202,11 @@ bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_imag
 			case PROP_PARASITES:
 				while (!property.atEnd()) {
 					char* tag;
-					Q_UINT32 size;
+					quint32 size;
 
 					property.readBytes(tag, size);
 
-					Q_UINT32 flags;
+					quint32 flags;
 					char* data=0;
 					property >> flags >> data;
 
@@ -259,12 +259,12 @@ bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_imag
  * \return true if there were no IO errors.  */
 bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArray& bytes)
 {
-	Q_UINT32 foo;
+	quint32 foo;
 	xcf_io >> foo;
 	type=PropType(foo);	// TODO urks
 
-	char* data;
-	Q_UINT32 size;
+	char* data = 0;
+	quint32 size;
 
 	// The colormap property size is not the correct number of bytes:
 	// The GIMP source xcf.c has size = 4 + ncolors, but it should be
@@ -279,11 +279,11 @@ bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArra
 		size = 3 * (size - 4) + 4;
 		data = new char[size];
 
-		xcf_io.readRawBytes(data, size);
+		xcf_io.readRawData(data, size);
 	} else if (type == PROP_USER_UNIT) {
 		// The USER UNIT property size is not correct. I'm not sure why, though.
 		float factor;
-		Q_INT32 digits;
+		qint32 digits;
 		char* unit_strings;
 
 		xcf_io >> size >> factor >> digits;
@@ -305,7 +305,7 @@ bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArra
                 if(size >256000)
                     return false;
                 data = new char[size];
-		xcf_io.readRawBytes(data, size);
+		xcf_io.readRawData(data, size);
         }
 
 	if (size != 0 && data) {
@@ -355,7 +355,7 @@ bool XCFImageFormat::loadLayer(QDataStream& xcf_io, XCFImage& xcf_image)
 
 	if( !composeTiles(xcf_image))
 		return false;
-	xcf_io.device()->at(layer.hierarchy_offset);
+	xcf_io.device()->seek(layer.hierarchy_offset);
 
 	// As tiles are loaded, they are copied into the layers tiles by
 	// this routine. (loadMask(), below, uses a slightly different
@@ -367,7 +367,7 @@ bool XCFImageFormat::loadLayer(QDataStream& xcf_io, XCFImage& xcf_image)
 		return false;
 
 	if (layer.mask_offset != 0) {
-		xcf_io.device()->at(layer.mask_offset);
+		xcf_io.device()->seek(layer.mask_offset);
 
 		if (!loadMask(xcf_io, layer))
 			return false;
@@ -509,61 +509,66 @@ bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
 
 			switch (layer.type) {
 				case RGB_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, 32, 0);
+					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_RGB32);
+					layer.image_tiles[j][i].setNumColors(0);
 					if( layer.image_tiles[j][i].isNull())
 						return false;
-					layer.image_tiles[j][i].setAlphaBuffer(false);
 					break;
 
 				case RGBA_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, 32, 0);
+					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_ARGB32);
+					layer.image_tiles[j][i].setNumColors(0);
 					if( layer.image_tiles[j][i].isNull())
 						return false;
-					layer.image_tiles[j][i].setAlphaBuffer(true);
 					break;
 
 				case GRAY_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, 8, 256);
+					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+					layer.image_tiles[j][i].setNumColors(256);
 					if( layer.image_tiles[j][i].isNull())
 						return false;
 					setGrayPalette(layer.image_tiles[j][i]);
 					break;
 
 				case GRAYA_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, 8, 256);
+					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+					layer.image_tiles[j][i].setNumColors(256);
 					if( layer.image_tiles[j][i].isNull())
 						return false;
 					setGrayPalette(layer.image_tiles[j][i]);
 
-					layer.alpha_tiles[j][i] = QImage( tile_width, tile_height, 8, 256);
+					layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+					layer.alpha_tiles[j][i].setNumColors(256);
 					if( layer.alpha_tiles[j][i].isNull())
 						return false;
 					setGrayPalette(layer.alpha_tiles[j][i]);
 					break;
 
 				case INDEXED_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, 8,
-							xcf_image.num_colors);
+					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+					layer.image_tiles[j][i].setNumColors(xcf_image.num_colors);
 					if( layer.image_tiles[j][i].isNull())
 						return false;
 					setPalette(xcf_image, layer.image_tiles[j][i]);
 					break;
 
 				case INDEXEDA_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height,8,
-							xcf_image.num_colors);
+					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+					layer.image_tiles[j][i].setNumColors(xcf_image.num_colors);
 					if( layer.image_tiles[j][i].isNull())
 						return false;
 					setPalette(xcf_image, layer.image_tiles[j][i]);
 
-					layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, 8, 256);
+					layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+					layer.alpha_tiles[j][i].setNumColors(256);
 					if( layer.alpha_tiles[j][i].isNull())
 						return false;
 					setGrayPalette(layer.alpha_tiles[j][i]);
 			}
 
 			if (layer.mask_offset != 0) {
-				layer.mask_tiles[j][i] = QImage(tile_width, tile_height, 8, 256);
+				layer.mask_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+				layer.mask_tiles[j][i].setNumColors(256);
 				if( layer.mask_tiles[j][i].isNull())
 					return false;
 				setGrayPalette(layer.mask_tiles[j][i]);
@@ -672,10 +677,10 @@ void XCFImageFormat::assignImageBytes(Layer& layer, uint i, uint j)
  */
 bool XCFImageFormat::loadHierarchy(QDataStream& xcf_io, Layer& layer)
 {
-	Q_INT32 width;
-	Q_INT32 height;
-	Q_INT32 bpp;
-	Q_UINT32 offset;
+	qint32 width;
+	qint32 height;
+	qint32 bpp;
+	quint32 offset;
 
 	xcf_io >> width >> height >> bpp >> offset;
 
@@ -683,7 +688,7 @@ bool XCFImageFormat::loadHierarchy(QDataStream& xcf_io, Layer& layer)
 	// increasingly lower resolution). Only the top level is used here,
 	// however.
 
-	Q_UINT32 junk;
+	quint32 junk;
 	do {
 		xcf_io >> junk;
 
@@ -712,11 +717,11 @@ bool XCFImageFormat::loadHierarchy(QDataStream& xcf_io, Layer& layer)
  * \return true if there were no I/O errors.
  * \sa loadTileRLE().
  */
-bool XCFImageFormat::loadLevel(QDataStream& xcf_io, Layer& layer, Q_INT32 bpp)
+bool XCFImageFormat::loadLevel(QDataStream& xcf_io, Layer& layer, qint32 bpp)
 {
-	Q_INT32 width;
-	Q_INT32 height;
-	Q_UINT32 offset;
+	qint32 width;
+	qint32 height;
+	quint32 offset;
 
 	xcf_io >> width >> height >> offset;
 
@@ -731,7 +736,7 @@ bool XCFImageFormat::loadLevel(QDataStream& xcf_io, Layer& layer, Q_INT32 bpp)
 				return false;
 			}
 
-			qint64 saved_pos = xcf_io.device()->at();
+			qint64 saved_pos = xcf_io.device()->pos();
 			quint32 offset2;
 			xcf_io >> offset2;
 
@@ -769,8 +774,8 @@ bool XCFImageFormat::loadLevel(QDataStream& xcf_io, Layer& layer, Q_INT32 bpp)
  */
 bool XCFImageFormat::loadMask(QDataStream& xcf_io, Layer& layer)
 {
-	Q_INT32 width;
-	Q_INT32 height;
+	qint32 width;
+	qint32 height;
 	char* name;
 
 	xcf_io >> width >> height >> name;
@@ -780,7 +785,7 @@ bool XCFImageFormat::loadMask(QDataStream& xcf_io, Layer& layer)
 	if (!loadChannelProperties(xcf_io, layer))
 		return false;
 
-	Q_UINT32 hierarchy_offset;
+	quint32 hierarchy_offset;
 	xcf_io >> hierarchy_offset;
 
 	xcf_io.device()->seek(hierarchy_offset);
@@ -817,7 +822,7 @@ bool XCFImageFormat::loadMask(QDataStream& xcf_io, Layer& layer)
  * the RLE data.
  */
 bool XCFImageFormat::loadTileRLE(QDataStream& xcf_io, uchar* tile, int image_size,
-		int data_length, Q_INT32 bpp)
+		int data_length, qint32 bpp)
 {
 	uchar* data;
 
@@ -827,9 +832,9 @@ bool XCFImageFormat::loadTileRLE(QDataStream& xcf_io, uchar* tile, int image_siz
 
 	xcfdata = xcfodata = new uchar[data_length];
 
-	xcf_io.readRawBytes((char*)xcfdata, data_length);
+	xcf_io.readRawData((char*)xcfdata, data_length);
 
-	if (xcf_io.device()->status() != IO_Ok) {
+	if (!xcf_io.device()->isOpen()) {
 		delete[] xcfodata;
 		kDebug(399) << "XCF: read failure on tile" << endl;
 		return false;
@@ -1024,7 +1029,7 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
 	switch (layer.type) {
 		case RGB_GIMAGE:
 			if (layer.opacity == OPAQUE_OPACITY) {
-				image.create( xcf_image.width, xcf_image.height, 32);
+				image = QImage( xcf_image.width, xcf_image.height, QImage::Format_RGB32);
 				if( image.isNull())
 					return false;
 				image.fill(qRgb(255, 255, 255));
@@ -1032,18 +1037,16 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
 			} // else, fall through to 32-bit representation
 
 		case RGBA_GIMAGE:
-			image.create(xcf_image.width, xcf_image.height, 32);
+			image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
 			if( image.isNull())
 				return false;
 			image.fill(qRgba(255, 255, 255, 0));
-			// Turning this on prevents fill() from affecting the alpha channel,
-			// by the way.
-			image.setAlphaBuffer(true);
 			break;
 
 		case GRAY_GIMAGE:
 			if (layer.opacity == OPAQUE_OPACITY) {
-				image.create(xcf_image.width, xcf_image.height, 8, 256);
+				image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+				image.setNumColors(256);
 				if( image.isNull())
 					return false;
 				setGrayPalette(image);
@@ -1052,11 +1055,10 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
 			} // else, fall through to 32-bit representation
 
 		case GRAYA_GIMAGE:
-			image.create(xcf_image.width, xcf_image.height, 32);
+			image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
 			if( image.isNull())
 				return false;
 			image.fill(qRgba(255, 255, 255, 0));
-			image.setAlphaBuffer(true);
 			break;
 
 		case INDEXED_GIMAGE:
@@ -1073,17 +1075,15 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
 			// or two-color palette. Have to ask about this...
 
 			if (xcf_image.num_colors <= 2) {
-				image.create(xcf_image.width, xcf_image.height,
-						1, xcf_image.num_colors,
-						QImage::LittleEndian);
+				image = QImage(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
+				image.setNumColors(xcf_image.num_colors);
 				if( image.isNull())
 					return false;
 				image.fill(0);
 				setPalette(xcf_image, image);
 			} else if (xcf_image.num_colors <= 256) {
-				image.create(xcf_image.width, xcf_image.height,
-				8, xcf_image.num_colors,
-				QImage::LittleEndian);
+				image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+				image.setNumColors(xcf_image.num_colors);
 				if( image.isNull())
 					return false;
 				image.fill(0);
@@ -1099,14 +1099,12 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
 				xcf_image.palette[1] = xcf_image.palette[0];
 				xcf_image.palette[0] = qRgba(255, 255, 255, 0);
 
-				image.create(xcf_image.width, xcf_image.height,
-						1, xcf_image.num_colors,
-						QImage::LittleEndian);
+				image = QImage(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
+				image.setNumColors(xcf_image.num_colors);
 				if( image.isNull())
 					return false;
 				image.fill(0);
 				setPalette(xcf_image, image);
-				image.setAlphaBuffer(true);
 			} else if (xcf_image.num_colors < 256) {
 				// Plenty of room to add a transparent color
 				xcf_image.num_colors++;
@@ -1115,22 +1113,20 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
 					xcf_image.palette[c] = xcf_image.palette[c - 1];
 
 				xcf_image.palette[0] = qRgba(255, 255, 255, 0);
-				image.create( xcf_image.width, xcf_image.height,
-						8, xcf_image.num_colors);
+				image = QImage( xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+				image.setNumColors(xcf_image.num_colors);
 				if( image.isNull())
 					return false;
 				image.fill(0);
 				setPalette(xcf_image, image);
-				image.setAlphaBuffer(true);
 			} else {
 				// No room for a transparent color, so this has to be promoted to
 				// true color. (There is no equivalent PNG representation output
 				// from The GIMP as of v1.2.)
-				image.create(xcf_image.width, xcf_image.height, 32);
+				image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
 				if( image.isNull())
 					return false;
 				image.fill(qRgba(255, 255, 255, 0));
-				image.setAlphaBuffer(true);
 			}
 			break;
 	}

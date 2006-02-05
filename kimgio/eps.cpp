@@ -16,13 +16,13 @@
 #define BBOX "%%BoundingBox:"
 #define BBOX_LEN strlen(BBOX)
 
-static bool seekToCodeStart( QIODevice * io, Q_UINT32 & ps_offset, Q_UINT32 & ps_size )
+static bool seekToCodeStart( QIODevice * io, quint32 & ps_offset, quint32 & ps_size )
 {
     char buf[4]; // We at most need to read 4 bytes at a time
     ps_offset=0L;
     ps_size=0L;
 
-    if ( io->readBlock(buf, 2)!=2 ) // Read first two bytes
+    if ( io->read(buf, 2)!=2 ) // Read first two bytes
     {
         kError(399) << "kimgio EPS: EPS file has less than 2 bytes." << endl;
         return false;
@@ -34,14 +34,14 @@ static bool seekToCodeStart( QIODevice * io, Q_UINT32 & ps_offset, Q_UINT32 & ps
     }
     else if ( buf[0]==char(0xc5) && buf[1]==char(0xd0) ) // Check start of MS-DOS EPS magic
     {   // May be a MS-DOS EPS file
-        if ( io->readBlock(buf+2, 2)!=2 ) // Read further bytes of MS-DOS EPS magic
+        if ( io->read(buf+2, 2)!=2 ) // Read further bytes of MS-DOS EPS magic
         {
             kError(399) << "kimgio EPS: potential MS-DOS EPS file has less than 4 bytes." << endl;
             return false;
         }
         if ( buf[2]==char(0xd3) && buf[3]==char(0xc6) ) // Check last bytes of MS-DOS EPS magic
         {
-            if (io->readBlock(buf, 4)!=4) // Get offset of PostScript code in the MS-DOS EPS file.
+            if (io->read(buf, 4)!=4) // Get offset of PostScript code in the MS-DOS EPS file.
             {
                 kError(399) << "kimgio EPS: cannot read offset of MS-DOS EPS file" << endl;
                 return false;
@@ -51,7 +51,7 @@ static bool seekToCodeStart( QIODevice * io, Q_UINT32 & ps_offset, Q_UINT32 & ps
                 + ((unsigned char) buf[1] << 8)
                 + ((unsigned char) buf[2] << 16)
                 + ((unsigned char) buf[3] << 24);
-            if (io->readBlock(buf, 4)!=4) // Get size of PostScript code in the MS-DOS EPS file.
+            if (io->read(buf, 4)!=4) // Get size of PostScript code in the MS-DOS EPS file.
             {
                 kError(399) << "kimgio EPS: cannot read size of MS-DOS EPS file" << endl;
                 return false;
@@ -62,12 +62,12 @@ static bool seekToCodeStart( QIODevice * io, Q_UINT32 & ps_offset, Q_UINT32 & ps
                 + ((unsigned char) buf[2] << 16)
                 + ((unsigned char) buf[3] << 24);
             kDebug(399) << "kimgio EPS: Offset: " << ps_offset <<" Size: " << ps_size << endl;
-            if ( !io->at(ps_offset) ) // Get offset of PostScript code in the MS-DOS EPS file.
+            if ( !io->seek(ps_offset) ) // Get offset of PostScript code in the MS-DOS EPS file.
             {
                 kError(399) << "kimgio EPS: cannot seek in MS-DOS EPS file" << endl;
                 return false;
             }
-            if ( io->readBlock(buf, 2)!=2 ) // Read first two bytes of what should be the Postscript code
+            if ( io->read(buf, 2)!=2 ) // Read first two bytes of what should be the Postscript code
             {
                 kError(399) << "kimgio EPS: PostScript code has less than 2 bytes." << endl;
                 return false;
@@ -144,7 +144,7 @@ bool EPSHandler::read(QImage *image)
     QString tmp;
 
     QIODevice* io = device();
-    Q_UINT32 ps_offset, ps_size;
+    quint32 ps_offset, ps_size;
 
     // find start of PostScript code
     if ( !seekToCodeStart(io, ps_offset, ps_size) )
@@ -212,7 +212,7 @@ bool EPSHandler::read(QImage *image)
 
     io->reset(); // Go back to start of file to give all the file to GhostScript
     if (ps_offset>0L) // We have an offset
-        io->at(ps_offset);
+        io->seek(ps_offset);
     QByteArray buffer ( io->readAll() );
 
     // If we have no MS-DOS EPS file or if the size seems wrong, then choose the buffer size
@@ -244,7 +244,8 @@ bool EPSHandler::write(const QImage &image)
 
     // making some definitions (papersize, output to file, filename):
     psOut.setCreator( "KDE " KDE_VERSION_STRING  );
-    psOut.setOutputToFile( true );
+    if ( psOut.outputFileName().isEmpty() )
+      psOut.setOutputFileName( "untitled_printer_document" );
 
     // Extension must be .eps so that Qt generates EPS file
     KTempFile tmpFile(QString::null, ".eps");
@@ -268,9 +269,9 @@ bool EPSHandler::write(const QImage &image)
     inFile.open( QIODevice::ReadOnly );
 
     QTextStream in( &inFile );
-    in.setEncoding( QTextStream::Latin1 );
+    in.setCodec( "ISO-8859-1" );
     QTextStream out( device() );
-    out.setEncoding( QTextStream::Latin1 );
+    out.setCodec( "ISO-8859-1" );
 
     QString szInLine = in.readLine();
     out << szInLine << '\n';

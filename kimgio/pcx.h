@@ -41,9 +41,9 @@ class RGB
       b = qBlue( color );
     }
 
-    Q_UINT8 r;
-    Q_UINT8 g;
-    Q_UINT8 b;
+    quint8 r;
+    quint8 g;
+    quint8 b;
 };
 
 class Palette
@@ -73,8 +73,8 @@ class PCXHEADER
     inline int height() const { return ( YMax-YMin ) + 1; }
     inline bool isCompressed() const { return ( Encoding==1 ); }
 
-    Q_UINT8  Manufacturer;    // Constant Flag, 10 = ZSoft .pcx
-    Q_UINT8  Version;         // Version information·
+    quint8  Manufacturer;    // Constant Flag, 10 = ZSoft .pcx
+    quint8  Version;         // Version information·
                               // 0 = Version 2.5 of PC Paintbrush·
                               // 2 = Version 2.8 w/palette information·
                               // 3 = Version 2.8 w/o palette information·
@@ -84,26 +84,26 @@ class PCXHEADER
                               //     and PC Paintbrush +, includes
                               //     Publisher's Paintbrush . Includes
                               //     24-bit .PCX files·
-    Q_UINT8  Encoding;        // 1 = .PCX run length encoding
-    Q_UINT8  Bpp;             // Number of bits to represent a pixel
+    quint8  Encoding;        // 1 = .PCX run length encoding
+    quint8  Bpp;             // Number of bits to represent a pixel
                               // (per Plane) - 1, 2, 4, or 8·
-    Q_UINT16 XMin;
-    Q_UINT16 YMin;
-    Q_UINT16 XMax;
-    Q_UINT16 YMax;
-    Q_UINT16 HDpi;
-    Q_UINT16 YDpi;
+    quint16 XMin;
+    quint16 YMin;
+    quint16 XMax;
+    quint16 YMax;
+    quint16 HDpi;
+    quint16 YDpi;
     Palette  ColorMap;
-    Q_UINT8  Reserved;        // Should be set to 0.
-    Q_UINT8  NPlanes;         // Number of color planes
-    Q_UINT16 BytesPerLine;    // Number of bytes to allocate for a scanline
+    quint8  Reserved;        // Should be set to 0.
+    quint8  NPlanes;         // Number of color planes
+    quint16 BytesPerLine;    // Number of bytes to allocate for a scanline
                               // plane.  MUST be an EVEN number.  Do NOT
                               // calculate from Xmax-Xmin.·
-    Q_UINT16 PaletteInfo;     // How to interpret palette- 1 = Color/BW,
+    quint16 PaletteInfo;     // How to interpret palette- 1 = Color/BW,
                               // 2 = Grayscale ( ignored in PB IV/ IV + )·
-    Q_UINT16 HScreenSize;     // Horizontal screen size in pixels. New field
+    quint16 HScreenSize;     // Horizontal screen size in pixels. New field
                               // found only in PB IV/IV Plus
-    Q_UINT16 VScreenSize;     // Vertical screen size in pixels. New field
+    quint16 VScreenSize;     // Vertical screen size in pixels. New field
                               // found only in PB IV/IV Plus
 } KDE_PACKED;
 

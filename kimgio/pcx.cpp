@@ -45,8 +45,8 @@ static QDataStream &operator>>( QDataStream &s, PCXHEADER &ph )
   s >> ph.VScreenSize;
 
   // Skip the rest of the header
-  Q_UINT8 byte;
-  while ( s.device()->at() < 128 )
+  quint8 byte;
+  while ( s.device()->pos() < 128 )
     s >> byte;
 
   return s;
@@ -83,7 +83,7 @@ static QDataStream &operator<<( QDataStream &s, const PCXHEADER &ph )
   s << ph.HScreenSize;
   s << ph.VScreenSize;
 
-  Q_UINT8 byte = 0;
+  quint8 byte = 0;
   for ( int i=0; i<54; ++i )
     s << byte;
 
@@ -93,7 +93,7 @@ static QDataStream &operator<<( QDataStream &s, const PCXHEADER &ph )
 PCXHEADER::PCXHEADER()
 {
   // Initialize all data to zero
-  QByteArray dummy( 128 );
+  QByteArray dummy( 128, 0 );
   dummy.fill( 0 );
   QDataStream s( &dummy, QIODevice::ReadOnly );
   s >> *this;
@@ -101,9 +101,9 @@ PCXHEADER::PCXHEADER()
 
 static void readLine( QDataStream &s, QByteArray &buf, const PCXHEADER &header )
 {
-  Q_UINT32 i=0;
-  Q_UINT32 size = buf.size();
-  Q_UINT8 byte, count;
+  quint32 i=0;
+  quint32 size = buf.size();
+  quint8 byte, count;
 
   if ( header.isCompressed() )
   {
@@ -134,22 +134,22 @@ static void readLine( QDataStream &s, QByteArray &buf, const PCXHEADER &header )
 
 static void readImage1( QImage &img, QDataStream &s, const PCXHEADER &header )
 {
-  QByteArray buf( header.BytesPerLine );
+  QByteArray buf( header.BytesPerLine, 0 );
 
-  if(!img.create( header.width(), header.height(), 1, 2, QImage::BigEndian ))
-    return;
+  img = QImage( header.width(), header.height(), QImage::Format_Mono );
+  img.setNumColors( 2 );
 
   for ( int y=0; y<header.height(); ++y )
   {
     if ( s.atEnd() )
     {
-      img.reset();
+      img = QImage();
       return;
     }
 
     readLine( s, buf, header );
     uchar *p = img.scanLine( y );
-    unsigned int bpl = qMin((Q_UINT16)((header.width()+7)/8), header.BytesPerLine);
+    unsigned int bpl = qMin((quint16)((header.width()+7)/8), header.BytesPerLine);
     for ( unsigned int x=0; x< bpl; ++x )
       p[ x ] = buf[x];
   }
@@ -161,17 +161,17 @@ static void readImage1( QImage &img, QDataStream &s, const PCXHEADER &header )
 
 static void readImage4( QImage &img, QDataStream &s, const PCXHEADER &header )
 {
-  QByteArray buf( header.BytesPerLine*4 );
-  QByteArray pixbuf( header.width() );
+  QByteArray buf( header.BytesPerLine*4, 0 );
+  QByteArray pixbuf( header.width(), 0 );
 
-  if(!img.create( header.width(), header.height(), 8, 16 ))
-    return;
+  img = QImage( header.width(), header.height(), QImage::Format_Indexed8 );
+  img.setNumColors( 16 );
 
   for ( int y=0; y<header.height(); ++y )
   {
     if ( s.atEnd() )
     {
-      img.reset();
+      img = QImage();
       return;
     }
 
@@ -180,7 +180,7 @@ static void readImage4( QImage &img, QDataStream &s, const PCXHEADER &header )
 
     for ( int i=0; i<4; i++ )
     {
-      Q_UINT32 offset = i*header.BytesPerLine;
+      quint32 offset = i*header.BytesPerLine;
       for ( int x=0; x<header.width(); ++x )
         if ( buf[ offset + ( x/8 ) ] & ( 128 >> ( x%8 ) ) )
           pixbuf[ x ] = (int)(pixbuf[ x ]) + ( 1 << i );
@@ -198,35 +198,35 @@ static void readImage4( QImage &img, QDataStream &s, const PCXHEADER &header )
 
 static void readImage8( QImage &img, QDataStream &s, const PCXHEADER &header )
 {
-  QByteArray buf( header.BytesPerLine );
+  QByteArray buf( header.BytesPerLine, 0 );
 
-  if(!img.create( header.width(), header.height(), 8, 256 ))
-    return;
+  img = QImage( header.width(), header.height(), QImage::Format_Indexed8 );
+  img.setNumColors( 256 );
 
   for ( int y=0; y<header.height(); ++y )
   {
     if ( s.atEnd() )
     {
-      img.reset();
+      img = QImage();
       return;
     }
 
     readLine( s, buf, header );
 
     uchar *p = img.scanLine( y );
-    unsigned int bpl = qMin(header.BytesPerLine, (Q_UINT16)header.width());
+    unsigned int bpl = qMin(header.BytesPerLine, (quint16)header.width());
     for ( unsigned int x=0; x<bpl; ++x )
       p[ x ] = buf[ x ];
   }
 
-  Q_UINT8 flag;
+  quint8 flag;
   s >> flag;
   kDebug( 399 ) << "Palette Flag: " << flag << endl;
 
   if ( flag == 12 && ( header.Version == 5 || header.Version == 2 ) )
   {
     // Read the palette
-    Q_UINT8 r, g, b;
+    quint8 r, g, b;
     for ( int i=0; i<256; ++i )
     {
       s >> r >> g >> b;
@@ -237,18 +237,17 @@ static void readImage8( QImage &img, QDataStream &s, const PCXHEADER &header )
 
 static void readImage24( QImage &img, QDataStream &s, const PCXHEADER &header )
 {
-  QByteArray r_buf( header.BytesPerLine );
-  QByteArray g_buf( header.BytesPerLine );
-  QByteArray b_buf( header.BytesPerLine );
+  QByteArray r_buf( header.BytesPerLine, 0 );
+  QByteArray g_buf( header.BytesPerLine, 0 );
+  QByteArray b_buf( header.BytesPerLine, 0 );
 
-  if(!img.create( header.width(), header.height(), 32 ))
-    return;
+  img = QImage( header.width(), header.height(), QImage::Format_RGB32 );
 
   for ( int y=0; y<header.height(); ++y )
   {
     if ( s.atEnd() )
     {
-      img.reset();
+      img = QImage();
       return;
     }
 
@@ -264,9 +263,9 @@ static void readImage24( QImage &img, QDataStream &s, const PCXHEADER &header )
 
 static void writeLine( QDataStream &s, QByteArray &buf )
 {
-  Q_UINT32 i = 0;
-  Q_UINT32 size = buf.size();
-  Q_UINT8 count, data;
+  quint32 i = 0;
+  quint32 size = buf.size();
+  quint8 count, data;
   char byte;
 
   while ( i < size )
@@ -294,7 +293,7 @@ static void writeLine( QDataStream &s, QByteArray &buf )
 
 static void writeImage1( QImage &img, QDataStream &s, PCXHEADER &header )
 {
-  img = img.convertBitOrder( QImage::BigEndian );
+  img.convertToFormat( QImage::Format_Mono );
 
   header.Bpp = 1;
   header.NPlanes = 1;
@@ -302,11 +301,11 @@ static void writeImage1( QImage &img, QDataStream &s, PCXHEADER &header )
 
   s << header;
 
-  QByteArray buf( header.BytesPerLine );
+  QByteArray buf( header.BytesPerLine, 0 );
 
   for ( int y=0; y<header.height(); ++y )
   {
-    Q_UINT8 *p = img.scanLine( y );
+    quint8 *p = img.scanLine( y );
 
     // Invert as QImage uses reverse palette for monochrome images?
     for ( int i=0; i<header.BytesPerLine; ++i )
@@ -334,7 +333,7 @@ static void writeImage4( QImage &img, QDataStream &s, PCXHEADER &header )
 
   for ( int y=0; y<header.height(); ++y )
   {
-    Q_UINT8 *p = img.scanLine( y );
+    quint8 *p = img.scanLine( y );
 
     for ( int i=0; i<4; ++i )
       buf[ i ].fill( 0 );
@@ -359,11 +358,11 @@ static void writeImage8( QImage &img, QDataStream &s, PCXHEADER &header )
 
   s << header;
 
-  QByteArray buf( header.BytesPerLine );
+  QByteArray buf( header.BytesPerLine, 0 );
 
   for ( int y=0; y<header.height(); ++y )
   {
-    Q_UINT8 *p = img.scanLine( y );
+    quint8 *p = img.scanLine( y );
 
     for ( int i=0; i<header.BytesPerLine; ++i )
       buf[ i ] = p[ i ];
@@ -372,7 +371,7 @@ static void writeImage8( QImage &img, QDataStream &s, PCXHEADER &header )
   }
 
   // Write palette flag
-  Q_UINT8 byte = 12;
+  quint8 byte = 12;
   s << byte;
 
   // Write palette
@@ -388,9 +387,9 @@ static void writeImage24( QImage &img, QDataStream &s, PCXHEADER &header )
 
   s << header;
 
-  QByteArray r_buf( header.width() );
-  QByteArray g_buf( header.width() );
-  QByteArray b_buf( header.width() );
+  QByteArray r_buf( header.width(), 0 );
+  QByteArray g_buf( header.width(), 0 );
+  QByteArray b_buf( header.width(), 0 );
 
   for ( int y=0; y<header.height(); ++y )
   {

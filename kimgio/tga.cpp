@@ -27,9 +27,9 @@
 
 #include <kdebug.h>
 
-typedef Q_UINT32 uint;
-typedef Q_UINT16 ushort;
-typedef Q_UINT8 uchar;
+typedef quint32 uint;
+typedef quint16 ushort;
+typedef quint8 uchar;
 
 namespace {	// Private.
 
@@ -174,9 +174,7 @@ namespace {	// Private.
 	static bool LoadTGA( QDataStream & s, const TgaHeader & tga, QImage &img )
 	{
 		// Create image.
-		if( !img.create( tga.width, tga.height, 32 )) {
-			return false;
-		}
+		img = QImage( tga.width, tga.height, QImage::Format_RGB32 );
 
 		TgaHeaderInfo info(tga);
 		if( !info.supported ) {
@@ -189,7 +187,7 @@ namespace {	// Private.
                 const int numAlphaBits = tga.flags & 0xf;
                 // However alpha exists only in the 32 bit format.
 		if( ( tga.pixel_size == 32 ) && ( tga.flags & 0xf ) ) {
-			img.setAlphaBuffer( true );
+			img.convertToFormat( QImage::Format_ARGB32 );
 		}
 
 		uint pixel_size = (tga.pixel_size/8);
@@ -200,7 +198,7 @@ namespace {	// Private.
 		char palette[768];
 		if( info.pal ) {
 			// @todo Support palettes in other formats!
-			s.readRawBytes( palette, 3 * tga.colormap_length );
+			s.readRawData( palette, 3 * tga.colormap_length );
 		}
 
 		// Allocate image.
@@ -223,7 +221,7 @@ namespace {	// Private.
 					// RLE pixels.
                                         assert(pixel_size <= 8);
 					char pixel[8];
-					s.readRawBytes( pixel, pixel_size );
+					s.readRawData( pixel, pixel_size );
 					do {
 						memcpy(dst, pixel, pixel_size);
 						dst += pixel_size;
@@ -232,14 +230,14 @@ namespace {	// Private.
 				else {
 					// Raw pixels.
 					count *= pixel_size;
-					s.readRawBytes( dst, count );
+					s.readRawData( dst, count );
 					dst += count;
 				}
 			}
 		}
 		else {
 			// Read raw image.
-			s.readRawBytes( (char *)image, size );
+			s.readRawData( (char *)image, size );
 		}
 
 		// Convert image to internal format.
@@ -329,7 +327,7 @@ bool TGAHandler::read(QImage *outImage)
     // Read image header.
     TgaHeader tga;
     s >> tga;
-    s.device()->at( TgaHeader::SIZE + tga.id_length );
+    s.device()->seek( TgaHeader::SIZE + tga.id_length );
 
     // Check image file format.
     if( s.atEnd() ) {
@@ -363,24 +361,24 @@ bool TGAHandler::write(const QImage &image)
     s.setByteOrder( QDataStream::LittleEndian );
 
     const QImage& img = image;
-    const bool hasAlpha = img.hasAlphaBuffer();
+    const bool hasAlpha = (img.format() == QImage::Format_ARGB32);
     for( int i = 0; i < 12; i++ )
         s << targaMagic[i];
 
     // write header
-    s << Q_UINT16( img.width() ); // width
-    s << Q_UINT16( img.height() ); // height
-    s << Q_UINT8( hasAlpha ? 32 : 24 ); // depth (24 bit RGB + 8 bit alpha)
-    s << Q_UINT8( hasAlpha ? 0x24 : 0x20 ); // top left image (0x20) + 8 bit alpha (0x4)
+    s << quint16( img.width() ); // width
+    s << quint16( img.height() ); // height
+    s << quint8( hasAlpha ? 32 : 24 ); // depth (24 bit RGB + 8 bit alpha)
+    s << quint8( hasAlpha ? 0x24 : 0x20 ); // top left image (0x20) + 8 bit alpha (0x4)
 
     for( int y = 0; y < img.height(); y++ )
         for( int x = 0; x < img.width(); x++ ) {
             const QRgb color = img.pixel( x, y );
-            s << Q_UINT8( qBlue( color ) );
-            s << Q_UINT8( qGreen( color ) );
-            s << Q_UINT8( qRed( color ) );
+            s << quint8( qBlue( color ) );
+            s << quint8( qGreen( color ) );
+            s << quint8( qRed( color ) );
             if( hasAlpha )
-                s << Q_UINT8( qAlpha( color ) );
+                s << quint8( qAlpha( color ) );
         }
 
     return true;

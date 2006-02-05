@@ -34,9 +34,9 @@
 #define sqrtf(x) ((float)sqrt(x))
 #endif
 
-typedef Q_UINT32 uint;
-typedef Q_UINT16 ushort;
-typedef Q_UINT8 uchar;
+typedef quint32 uint;
+typedef quint16 ushort;
+typedef quint8 uchar;
 
 #if !defined(MAKEFOURCC)
 #	define MAKEFOURCC(ch0, ch1, ch2, ch3) \
@@ -805,16 +805,14 @@ static TextureLoader GetTextureLoader( DDSType type ) {
 static bool LoadTexture( QDataStream & s, const DDSHeader & header, QImage & img )
 {
     // Create dst image.
-    if( !img.create( header.width, header.height, 32 )) {
-        return false;
-    }
+    img = QImage( header.width, header.height, QImage::Format_RGB32 );
 
     // Read image.
     DDSType type = GetType( header );
 
     // Enable alpha buffer for transparent or DDS images.
     if( HasAlpha( header ) || type >= DDS_DXT1 ) {
-        img.setAlphaBuffer( true );
+        img.convertToFormat( QImage::Format_ARGB32 );
     }
 
     TextureLoader loader = GetTextureLoader( type );
@@ -876,20 +874,16 @@ static bool LoadCubeMap( QDataStream & s, const DDSHeader & header, QImage & img
 {
     // Create dst image.
 #if CUBE_LAYOUT == HORIZONTAL
-    if( !img.create( 4 * header.width, 3 * header.height, 32 )) {
-        return false;	// duplicate code for correct syntax coloring.
-    }
+    img = QImage( 4 * header.width, 3 * header.height, QImage::Format_RGB32 );
 #elif CUBE_LAYOUT == VERTICAL
-    if( !img.create( 3 * header.width, 4 * header.height, 32 )) {
-        return false;
-    }
+    img = QImage( 3 * header.width, 4 * header.height, QImage::Format_RGB32 );
 #endif
 
     DDSType type = GetType( header );
 
     // Enable alpha buffer for transparent or DDS images.
     if( HasAlpha( header ) || type >= DDS_DXT1 ) {
-        img.setAlphaBuffer( true );
+        img.convertToFormat( QImage::Format_ARGB32 );
     }
 
     // Select texture loader.
@@ -902,12 +896,9 @@ static bool LoadCubeMap( QDataStream & s, const DDSHeader & header, QImage & img
     img.fill( 0 );
 
     // Create face image.
-    QImage face;
-    if( !face.create( header.width, header.height, 32 )) {
-        return false;
-    }
+    QImage face(header.width, header.height, QImage::Format_RGB32);
 
-    int offset = s.device()->at();
+    int offset = s.device()->pos();
     int size = FaceOffset( header );
 
     for( int i = 0; i < 6; i++ ) {
@@ -918,7 +909,7 @@ static bool LoadCubeMap( QDataStream & s, const DDSHeader & header, QImage & img
         }
 
         // Seek device.
-        s.device()->at( offset );
+        s.device()->seek( offset );
         offset += size;
 
         // Load face from stream.

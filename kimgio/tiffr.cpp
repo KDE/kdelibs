@@ -17,7 +17,7 @@
 static tsize_t tiff_read( thandle_t handle, tdata_t buf, tsize_t size )
 {
     QIODevice *dev = reinterpret_cast<QIODevice *>( handle );
-    return dev->readBlock( reinterpret_cast<char *>( buf ), size );
+    return dev->read( reinterpret_cast<char *>( buf ), size );
 }
 
 static tsize_t tiff_write( thandle_t, tdata_t, tsize_t )
@@ -30,14 +30,14 @@ static toff_t tiff_seek( thandle_t handle, toff_t off, int whence )
     QIODevice *dev = reinterpret_cast<QIODevice *>( handle );
 
     if ( whence == SEEK_CUR )
-	off += dev->at();
+	off += dev->pos();
     else if ( whence == SEEK_END )
 	off += dev->size();
 
-    if ( !dev->at( off ) )
+    if ( !dev->seek( off ) )
 	return ( toff_t )-1;
 
-    return dev->at();
+    return dev->pos();
 }
 
 static toff_t tiff_size( thandle_t handle )
@@ -92,7 +92,7 @@ bool TIFFRHandler::read(QImage *outImage)
         || TIFFGetField( tiff, TIFFTAG_IMAGELENGTH, &height ) != 1 )
         return false;
 
-    QImage image( width, height, 32 );
+    QImage image( width, height, QImage::Format_RGB32 );
     if( image.isNull()) {
         TIFFClose( tiff );
         return false;

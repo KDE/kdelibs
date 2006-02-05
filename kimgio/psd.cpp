@@ -24,9 +24,9 @@
 
 #include <kdebug.h>
 
-typedef Q_UINT32 uint;
-typedef Q_UINT16 ushort;
-typedef Q_UINT8 uchar;
+typedef quint32 uint;
+typedef quint16 ushort;
+typedef quint8 uchar;
 
 namespace {	// Private.
 
@@ -72,7 +72,7 @@ namespace {	// Private.
                 while (bytes) {
                         unsigned int num= qMin(bytes,( unsigned int )sizeof(buf));
                         unsigned int l = num;
-                        s.readRawBytes(buf, l);
+                        s.readRawData(buf, l);
                         if(l != num)
                           return false;
                         bytes -= num;
@@ -111,23 +111,21 @@ namespace {	// Private.
 	static bool LoadPSD( QDataStream & s, const PSDHeader & header, QImage & img )
 	{
 		// Create dst image.
-		if( !img.create( header.width, header.height, 32 )) {
-			return false;
-		}
+		img = QImage( header.width, header.height, QImage::Format_RGB32 );
 
 		uint tmp;
 
 		// Skip mode data.
 		s >> tmp;
-		s.device()->at( s.device()->at() + tmp );
+		s.device()->seek( s.device()->pos() + tmp );
 
 		// Skip image resources.
 		s >> tmp;
-		s.device()->at( s.device()->at() + tmp );
+		s.device()->seek( s.device()->pos() + tmp );
 
 		// Skip the reserved data.
 		s >> tmp;
-		s.device()->at( s.device()->at() + tmp );
+		s.device()->seek( s.device()->pos() + tmp );
 
 		// Find out if the data is compressed.
 		// Known values:
@@ -149,7 +147,7 @@ namespace {	// Private.
 		}
 		else {
 			// Enable alpha.
-			img.setAlphaBuffer( true );
+			img.convertToFormat(QImage::Format_ARGB32);
 
 			// Ignore the other channels.
 			channel_num = 4;

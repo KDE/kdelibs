@@ -73,12 +73,12 @@ private:
 	 */
 	class Layer {
 	public:
-		Q_UINT32 width;			//!< Width of the layer
-		Q_UINT32 height;		//!< Height of the layer
-		Q_INT32 type;			//!< Type of the layer (GimpImageType)
+		quint32 width;			//!< Width of the layer
+		quint32 height;		//!< Height of the layer
+		qint32 type;			//!< Type of the layer (GimpImageType)
 		char* name;			//!< Name of the layer
-		Q_UINT32 hierarchy_offset;	//!< File position of Tile hierarchy
-		Q_UINT32 mask_offset;		//!< File position of mask image
+		quint32 hierarchy_offset;	//!< File position of Tile hierarchy
+		quint32 mask_offset;		//!< File position of mask image
 
 		uint nrows;			//!< Number of rows of tiles (y direction)
 		uint ncols;			//!< Number of columns of tiles (x direction)
@@ -91,25 +91,25 @@ private:
 
 		//! Additional information about a layer mask.
 		struct {
-			Q_UINT32 opacity;
-			Q_UINT32 visible;
-			Q_UINT32 show_masked;
+			quint32 opacity;
+			quint32 visible;
+			quint32 show_masked;
 			uchar red, green, blue;
-			Q_UINT32 tattoo;
+			quint32 tattoo;
 		} mask_channel;
 
 		bool active;			//!< Is this layer the active layer?
-		Q_UINT32 opacity;		//!< The opacity of the layer
-		Q_UINT32 visible;		//!< Is the layer visible?
-		Q_UINT32 linked;		//!< Is this layer linked (geometrically)
-		Q_UINT32 preserve_transparency; //!< Preserve alpha when drawing on layer?
-		Q_UINT32 apply_mask;		//!< Apply the layer mask?
-		Q_UINT32 edit_mask;		//!< Is the layer mask the being edited?
-		Q_UINT32 show_mask;		//!< Show the layer mask rather than the image?
-		Q_INT32 x_offset;		//!< x offset of the layer relative to the image
-		Q_INT32 y_offset;		//!< y offset of the layer relative to the image
-		Q_UINT32 mode;			//!< Combining mode of layer (LayerModeEffects)
-		Q_UINT32 tattoo;		//!< (unique identifier?)
+		quint32 opacity;		//!< The opacity of the layer
+		quint32 visible;		//!< Is the layer visible?
+		quint32 linked;		//!< Is this layer linked (geometrically)
+		quint32 preserve_transparency; //!< Preserve alpha when drawing on layer?
+		quint32 apply_mask;		//!< Apply the layer mask?
+		quint32 edit_mask;		//!< Is the layer mask the being edited?
+		quint32 show_mask;		//!< Show the layer mask rather than the image?
+		qint32 x_offset;		//!< x offset of the layer relative to the image
+		qint32 y_offset;		//!< y offset of the layer relative to the image
+		quint32 mode;			//!< Combining mode of layer (LayerModeEffects)
+		quint32 tattoo;		//!< (unique identifier?)
 
 		//! As each tile is read from the file, it is buffered here.
 		uchar tile[TILE_WIDTH * TILE_HEIGHT * sizeof(QRgb)];
@@ -131,16 +131,16 @@ private:
 	 */
 	class XCFImage {
 	public:
-		Q_UINT32 width;			//!< width of the XCF image
-		Q_UINT32 height;		//!< height of the XCF image
-		Q_INT32 type;			//!< type of the XCF image (GimpImageBaseType)
+		quint32 width;			//!< width of the XCF image
+		quint32 height;		//!< height of the XCF image
+		qint32 type;			//!< type of the XCF image (GimpImageBaseType)
 
-		Q_UINT8 compression;		//!< tile compression method (CompressionType)
+		quint8 compression;		//!< tile compression method (CompressionType)
 		float x_resolution;		//!< x resolution in dots per inch
 		float y_resolution;		//!< y resolution in dots per inch
-		Q_INT32 tattoo;			//!< (unique identifier?)
-		Q_UINT32 unit;			//!< Units of The GIMP (inch, mm, pica, etc...)
-		Q_INT32 num_colors;		//!< number of colors in an indexed image
+		qint32 tattoo;			//!< (unique identifier?)
+		quint32 unit;			//!< Units of The GIMP (inch, mm, pica, etc...)
+		qint32 num_colors;		//!< number of colors in an indexed image
 		QVector<QRgb> palette;	        //!< indexed image color palette
 
 		int num_layers;			//!< number of layers
@@ -191,13 +191,13 @@ private:
 	void setPalette(XCFImage& xcf_image, QImage& image);
 	static void assignImageBytes(Layer& layer, uint i, uint j);
 	bool loadHierarchy(QDataStream& xcf_io, Layer& layer);
-	bool loadLevel(QDataStream& xcf_io, Layer& layer, Q_INT32 bpp);
+	bool loadLevel(QDataStream& xcf_io, Layer& layer, qint32 bpp);
 	static void assignMaskBytes(Layer& layer, uint i, uint j);
 	bool loadMask(QDataStream& xcf_io, Layer& layer);
 	bool loadChannelProperties(QDataStream& xcf_io, Layer& layer);
 	bool initializeImage(XCFImage& xcf_image);
 	bool loadTileRLE(QDataStream& xcf_io, uchar* tile, int size,
-			int data_length, Q_INT32 bpp);
+			int data_length, qint32 bpp);
 	static void copyLayerToImage(XCFImage& xcf_image);
 	static void copyRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
 			QImage& image, int m, int n);

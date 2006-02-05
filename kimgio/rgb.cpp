@@ -86,8 +86,8 @@ bool SGIImage::getRow(uchar *dest)
 bool SGIImage::readData(QImage& img)
 {
 	QRgb *c;
-	Q_UINT32 *start = m_starttab;
-	QByteArray lguard(m_xsize);
+	quint32 *start = m_starttab;
+	QByteArray lguard(m_xsize, 0);
 	uchar *line = (uchar *)lguard.data();
 	unsigned x, y;
 
@@ -148,9 +148,9 @@ bool SGIImage::readData(QImage& img)
 
 bool SGIImage::readImage(QImage& img)
 {
-    Q_INT8 u8;
-    Q_INT16 u16;
-    Q_INT32 u32;
+    qint8 u8;
+    qint16 u16;
+    qint32 u32;
 
     kDebug(399) << "reading rgb " << endl;
 
@@ -187,7 +187,7 @@ bool SGIImage::readImage(QImage& img)
     kDebug(399) << "z: " << m_zsize << endl;
 
     // name
-    m_stream.readRawBytes(m_imagename, 80);
+    m_stream.readRawData(m_imagename, 80);
     m_imagename[79] = '\0';
 
     m_stream >> m_colormap;
@@ -208,25 +208,22 @@ bool SGIImage::readImage(QImage& img)
 
     m_numrows = m_ysize * m_zsize;
 
-    if (!img.create(m_xsize, m_ysize, 32)) {
-        kDebug(399) << "cannot create image" << endl;
-        return false;
-    }
+    img = QImage( m_xsize, m_ysize, QImage::Format_RGB32 );
 
     if (m_zsize == 2 || m_zsize == 4)
-        img.setAlphaBuffer(true);
+        img.convertToFormat(QImage::Format_ARGB32);
     else if (m_zsize > 4)
         kDebug(399) << "using first 4 of " << m_zsize << " channels" << endl;
 
     if (m_rle) {
         uint l;
-        m_starttab = new Q_UINT32[m_numrows];
+        m_starttab = new quint32[m_numrows];
         for (l = 0; !m_stream.atEnd() && l < m_numrows; l++) {
             m_stream >> m_starttab[l];
-            m_starttab[l] -= 512 + m_numrows * 2 * sizeof(Q_UINT32);
+            m_starttab[l] -= 512 + m_numrows * 2 * sizeof(quint32);
         }
 
-        m_lengthtab = new Q_UINT32[m_numrows];
+        m_lengthtab = new quint32[m_numrows];
         for (l = 0; l < m_numrows; l++)
             m_stream >> m_lengthtab[l];
     }
@@ -274,7 +271,7 @@ void RLEData::write(QDataStream& s)
 bool RLEData::operator<(const RLEData& b) const
 {
 	uchar ac, bc;
-	for (int i = 0; i < QMIN(size(), b.size()); i++) {
+	for (int i = 0; i < qMin(size(), b.size()); i++) {
 		ac = at(i);
 		bc = b[i];
 		if (ac != bc)
@@ -289,10 +286,10 @@ uint RLEMap::insert(const uchar *d, uint l)
 	RLEData data = RLEData(d, l, m_offset);
 	Iterator it = find(data);
 	if (it != end())
-		return it.data();
+		return it.value();
 
 	m_offset += l;
-	return QMap<RLEData, uint>::insert(data, m_counter++).data();
+	return QMap<RLEData, uint>::insert(data, m_counter++).value();
 }
 
 
@@ -300,7 +297,7 @@ QVector<const RLEData*> RLEMap::vector()
 {
     QVector<const RLEData*> v(size());
     for (Iterator it = begin(); it != end(); ++it)
-        v.insert(it.data(), &it.key());
+        v.insert(it.value(), &it.key());
 
     return v;
 }
@@ -353,9 +350,9 @@ uint SGIImage::compact(uchar *d, uchar *s)
 
 bool SGIImage::scanData(const QImage& img)
 {
-	Q_UINT32 *start = m_starttab;
-	QByteArray lineguard(m_xsize * 2);
-	QByteArray bufguard(m_xsize);
+	quint32 *start = m_starttab;
+	QByteArray lineguard(m_xsize * 2, 0);
+	QByteArray bufguard(m_xsize, 0);
 	uchar *line = (uchar *)lineguard.data();
 	uchar *buf = (uchar *)bufguard.data();
 	const QRgb *c;
@@ -408,15 +405,15 @@ bool SGIImage::scanData(const QImage& img)
 
 void SGIImage::writeHeader()
 {
-	m_stream << Q_UINT16(0x01da);
+	m_stream << quint16(0x01da);
 	m_stream << m_rle << m_bpc << m_dim;
 	m_stream << m_xsize << m_ysize << m_zsize;
 	m_stream << m_pixmin << m_pixmax;
-	m_stream << Q_UINT32(0);
+	m_stream << quint32(0);
 
 	m_stream << m_colormap;
 	for (int i = 0; i < 404; i++)
-		m_stream << Q_UINT8(0);
+		m_stream << quint8(0);
 }
 
 
@@ -429,11 +426,11 @@ void SGIImage::writeRle()
 
 	// write start table
 	for (i = 0; i < m_numrows; i++)
-		m_stream << Q_UINT32(m_rlevector[m_starttab[i]]->offset());
+		m_stream << quint32(m_rlevector[m_starttab[i]]->offset());
 
 	// write length table
 	for (i = 0; i < m_numrows; i++)
-		m_stream << Q_UINT32(m_rlevector[m_starttab[i]]->size());
+		m_stream << quint32(m_rlevector[m_starttab[i]]->size());
 
 	// write data
 	for (i = 0; (int)i < m_rlevector.size(); i++)
@@ -453,7 +450,7 @@ void SGIImage::writeVerbatim(const QImage& img)
 	for (y = 0; y < m_ysize; y++) {
 		c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 		for (x = 0; x < m_xsize; x++)
-			m_stream << Q_UINT8(qRed(*c++));
+			m_stream << quint8(qRed(*c++));
 	}
 
 	if (m_zsize == 1)
@@ -463,13 +460,13 @@ void SGIImage::writeVerbatim(const QImage& img)
 		for (y = 0; y < m_ysize; y++) {
 			c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 			for (x = 0; x < m_xsize; x++)
-				m_stream << Q_UINT8(qGreen(*c++));
+				m_stream << quint8(qGreen(*c++));
 		}
 
 		for (y = 0; y < m_ysize; y++) {
 			c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 			for (x = 0; x < m_xsize; x++)
-				m_stream << Q_UINT8(qBlue(*c++));
+				m_stream << quint8(qBlue(*c++));
 		}
 
 		if (m_zsize == 3)
@@ -479,7 +476,7 @@ void SGIImage::writeVerbatim(const QImage& img)
 	for (y = 0; y < m_ysize; y++) {
 		c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 		for (x = 0; x < m_xsize; x++)
-			m_stream << Q_UINT8(qAlpha(*c++));
+			m_stream << quint8(qAlpha(*c++));
 	}
 }
 
@@ -493,10 +490,10 @@ bool SGIImage::writeImage(const QImage& image)
 	else
 		m_dim = 3, m_zsize = 3;
 
-	if (img.hasAlphaBuffer())
+	if (img.format() == QImage::Format_ARGB32)
 		m_dim = 3, m_zsize++;
 
-	img = img.convertDepth(32);
+	img = img.convertToFormat(QImage::Format_RGB32);
 	if (img.isNull()) {
 		kDebug(399) << "can't convert image to depth 32" << endl;
 		return false;
@@ -511,8 +508,8 @@ bool SGIImage::writeImage(const QImage& image)
 
 	m_numrows = m_ysize * m_zsize;
 
-	m_starttab = new Q_UINT32[m_numrows];
-	m_rlemap.setBaseOffset(512 + m_numrows * 2 * sizeof(Q_UINT32));
+	m_starttab = new quint32[m_numrows];
+	m_rlemap.setBaseOffset(512 + m_numrows * 2 * sizeof(quint32));
 
 	if (!scanData(img)) {
 		kDebug(399) << "this can't happen" << endl;
@@ -522,7 +519,7 @@ bool SGIImage::writeImage(const QImage& image)
 	m_rlevector = m_rlemap.vector();
 
 	long verbatim_size = m_numrows * m_xsize;
-	long rle_size = m_numrows * 2 * sizeof(Q_UINT32);
+	long rle_size = m_numrows * 2 * sizeof(quint32);
 	for (int i = 0; i < m_rlevector.size(); i++)
 		rle_size += m_rlevector[i]->size();
 

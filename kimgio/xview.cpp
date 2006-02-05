@@ -75,13 +75,17 @@ bool XVHandler::read(QImage *retImage)
     if(!block)
         return false;
 
-    if (iodev->readBlock(block, blocksize) != blocksize )
+    if (iodev->read(block, blocksize) != blocksize )
     {
         return false;
     }
 
     // Create the image
-    QImage image( x, y, 8, maxval + 1, QImage::BigEndian );
+    QImage image( x, y, QImage::Format_Indexed8 );
+    int numColors;
+    numColors = qMin( maxval + 1, 0 );
+    numColors = qMax( 0, maxval + 1 );
+    image.setNumColors( numColors );
 
     // how do the color handling? they are absolute 24bpp
     // or at least can be calculated as such.
@@ -118,26 +122,26 @@ bool XVHandler::write(const QImage &image)
     char str[ 1024 ];
 
     // magic number must be "P7 332"
-    f.writeBlock( "P7 332\n", 7 );
+    f.write( "P7 332\n", 7 );
 
     // next line #XVVERSION
-    f.writeBlock( "#XVVERSION:\n", 12 );
+    f.write( "#XVVERSION:\n", 12 );
 
     // now it gets interesting, #BUILTIN means we are out.
     // if IMGINFO comes, we are happy!
-    f.writeBlock( "#IMGINFO:\n", 10 );
+    f.write( "#IMGINFO:\n", 10 );
 
     // after this an #END_OF_COMMENTS signals everything to be ok!
-    f.writeBlock( "#END_OF_COMMENTS:\n", 18 );
+    f.write( "#END_OF_COMMENTS:\n", 18 );
 
     // now a last line with width, height, maxval which is supposed to be 255
     sprintf( str, "%i %i 255\n", w, h );
-    f.writeBlock( str, strlen( str ) );
+    f.write( str, strlen( str ) );
 
 
     if ( image.depth() == 1 )
     {
-        image.convertDepth( 8 );
+        image.convertToFormat( QImage::Format_Indexed8, Qt::AutoColor );
     }
 
     uchar buffer[ 128 ];
@@ -166,7 +170,7 @@ bool XVHandler::write(const QImage &image)
             }
             buffer[ px ] = ( r << 5 ) | ( g << 2 ) | b;
         }
-        f.writeBlock( (const char*)buffer, w );
+        f.write( (const char*)buffer, w );
     }
 
     return true;

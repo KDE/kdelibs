@@ -71,19 +71,19 @@ private:
 	QIODevice		*m_dev;
 	QDataStream		m_stream;
 
-	Q_UINT8			m_rle;
-	Q_UINT8			m_bpc;
-	Q_UINT16		m_dim;
-	Q_UINT16		m_xsize;
-	Q_UINT16		m_ysize;
-	Q_UINT16		m_zsize;
-	Q_UINT32		m_pixmin;
-	Q_UINT32		m_pixmax;
+	quint8			m_rle;
+	quint8			m_bpc;
+	quint16		m_dim;
+	quint16		m_xsize;
+	quint16		m_ysize;
+	quint16		m_zsize;
+	quint32		m_pixmin;
+	quint32		m_pixmax;
 	char			m_imagename[80];
-	Q_UINT32		m_colormap;
+	quint32		m_colormap;
 
-	Q_UINT32		*m_starttab;
-	Q_UINT32		*m_lengthtab;
+	quint32		*m_starttab;
+	quint32		*m_lengthtab;
 	QByteArray		m_data;
 	QByteArray::Iterator	m_pos;
 	RLEMap			m_rlemap;

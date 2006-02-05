@@ -27,9 +27,9 @@ namespace
     struct IcoHeader
     {
         enum Type { Icon = 1, Cursor };
-        Q_UINT16 reserved;
-        Q_UINT16 type;
-        Q_UINT16 count;
+        quint16 reserved;
+        quint16 type;
+        quint16 count;
     };
 
     inline QDataStream& operator >>( QDataStream& s, IcoHeader& h )
@@ -41,21 +41,21 @@ namespace
     // (c) 1992-2002 Trolltech AS.
     struct BMP_INFOHDR
     {
-        static const Q_UINT32 Size = 40;
-        Q_UINT32  biSize;                // size of this struct
-        Q_UINT32  biWidth;               // pixmap width
-        Q_UINT32  biHeight;              // pixmap height
-        Q_UINT16  biPlanes;              // should be 1
-        Q_UINT16  biBitCount;            // number of bits per pixel
+        static const quint32 Size = 40;
+        quint32  biSize;                // size of this struct
+        quint32  biWidth;               // pixmap width
+        quint32  biHeight;              // pixmap height
+        quint16  biPlanes;              // should be 1
+        quint16  biBitCount;            // number of bits per pixel
         enum Compression { RGB = 0 };
-        Q_UINT32  biCompression;         // compression method
-        Q_UINT32  biSizeImage;           // size of image
-        Q_UINT32  biXPelsPerMeter;       // horizontal resolution
-        Q_UINT32  biYPelsPerMeter;       // vertical resolution
-        Q_UINT32  biClrUsed;             // number of colors used
-        Q_UINT32  biClrImportant;        // number of important colors
+        quint32  biCompression;         // compression method
+        quint32  biSizeImage;           // size of image
+        quint32  biXPelsPerMeter;       // horizontal resolution
+        quint32  biYPelsPerMeter;       // vertical resolution
+        quint32  biClrUsed;             // number of colors used
+        quint32  biClrImportant;        // number of important colors
     };
-    const Q_UINT32 BMP_INFOHDR::Size;
+    const quint32 BMP_INFOHDR::Size;
 
     QDataStream& operator >>( QDataStream &s, BMP_INFOHDR &bi )
     {
@@ -90,11 +90,11 @@ namespace
     {
         unsigned char width;
         unsigned char height;
-        Q_UINT16 colors;
-        Q_UINT16 hotspotX;
-        Q_UINT16 hotspotY;
-        Q_UINT32 size;
-        Q_UINT32 offset;
+        quint16 colors;
+        quint16 hotspotX;
+        quint16 hotspotY;
+        quint32 size;
+        quint32 offset;
     };
 
     inline QDataStream& operator >>( QDataStream& s, IconRec& r )
@@ -163,9 +163,8 @@ namespace
 
         // Always create a 32-bit image to get the mask right
         // Note: this is safe as rec.width, rec.height are bytes
-        icon.create( rec.width, rec.height, 32 );
+        icon = QImage( rec.width, rec.height, QImage::Format_ARGB32 );
         if ( icon.isNull() ) return false;
-        icon.setAlphaBuffer( true );
 
         QVector< QRgb > colorTable( paletteSize );
 
@@ -173,7 +172,7 @@ namespace
         for ( unsigned i = 0; i < paletteEntries; ++i )
         {
             unsigned char rgb[ 4 ];
-            stream.readRawBytes( reinterpret_cast< char* >( &rgb ),
+            stream.readRawData( reinterpret_cast< char* >( &rgb ),
                                  sizeof( rgb ) );
             colorTable[ i ] = qRgb( rgb[ 2 ], rgb[ 1 ], rgb[ 0 ] );
         }
@@ -184,7 +183,7 @@ namespace
         unsigned char** lines = icon.jumpTable();
         for ( unsigned y = rec.height; !stream.atEnd() && y--; )
         {
-            stream.readRawBytes( reinterpret_cast< char* >( buf ), bpl );
+            stream.readRawData( reinterpret_cast< char* >( buf ), bpl );
             unsigned char* pixel = buf;
             QRgb* p = reinterpret_cast< QRgb* >( lines[ y ] );
             switch ( header.biBitCount )
@@ -227,7 +226,7 @@ namespace
             buf = new unsigned char[ bpl ];
             for ( unsigned y = rec.height; y--; )
             {
-                stream.readRawBytes( reinterpret_cast< char* >( buf ), bpl );
+                stream.readRawData( reinterpret_cast< char* >( buf ), bpl );
                 QRgb* p = reinterpret_cast< QRgb* >( lines[ y ] );
                 for ( unsigned x = 0; x < rec.width; ++x, ++p )
                     if ( ( ( buf[ x / 8 ] >> ( 7 - ( x & 0x07 ) ) ) & 1 ) )
@@ -251,7 +250,7 @@ bool ICOHandler::canRead() const
 bool ICOHandler::read(QImage *outImage)
 {
 
-    qint64 offset = device()->at();
+    qint64 offset = device()->pos();
 
     QDataStream stream( device() );
     stream.setByteOrder( QDataStream::LittleEndian );
@@ -305,7 +304,7 @@ bool ICOHandler::read(QImage *outImage)
          offset + selected->offset > device()->size() )
         return false;
 
-    device()->at( offset + selected->offset );
+    device()->seek( offset + selected->offset );
     QImage icon;
     if ( loadFromDIB( stream, *selected, icon ) )
     {
