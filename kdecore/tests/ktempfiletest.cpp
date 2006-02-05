@@ -47,7 +47,7 @@ void KTempFileTest::testBasic()
 void KTempFileTest::testFixedExtension()
 {
     printf("Making tempfile with \".ps\" extension.\n");
-    KTempFile f2(QString(), ".ps");
+    KTempFile f2(QString::null, ".ps");
     f2.setAutoDelete( true );
     qDebug("Filename = %s", qPrintable(f2.name()));
     QCOMPARE( f2.name().right(3), QLatin1String(".ps") );
