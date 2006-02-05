@@ -310,7 +310,9 @@ EmbedLiveConnect::~EmbedLiveConnect() {
     m_liveconnect->unregister(objid);
 }
 
-#warning "LiveConnect stuff is broken"
+#ifdef __GNUC__
+    #warning "LiveConnect stuff is broken"
+#endif
 KDE_NO_EXPORT
 bool EmbedLiveConnect::getOwnPropertySlot(ExecState *, const Identifier& prop, PropertySlot& slot)
 {
