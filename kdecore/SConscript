@@ -98,7 +98,7 @@ kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h
 kmanagerselection.h kmountpoint.h kuser.h klockfile.h
 kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h
 kde_file.h ktimezones.h ktzfiletimezone.h kmath.h
-kdedmodule.h qtest_kde.h conversion_check.h
+kdedmodule.h qtest_kde.h conversion_check.h kfilterbase.h kfilterdev.h
 """
 
 # not finished (ita)
