@@ -31,7 +31,7 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 
-#define _WINSOCKAPI_ /* skip winsock */
+#include <winsock2.h>
 
 #include <sys/stat.h>
 
