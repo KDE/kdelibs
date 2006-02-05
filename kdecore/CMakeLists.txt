@@ -269,6 +269,8 @@ install_targets(/bin kde-config )
 
 ########### install files ###############
 
+$(kde_datadir)/knotify/eventsrc
+install_files( ${KDE4_DATA_DIR}/knotify FILES eventsrc )
 install_files( ${KDE4_CONFIG_DIR} FILES kdebug.areas kdebugrc language.codes )
 install_files( ${KDE4_CONFIG_DIR}/colors FILES 40.colors Web.colors Royal.colors Rainbow.colors )
 install_files( /include FILES kconfig.h kconfigskeleton.h   kconfigdata.h ksimpleconfig.h    kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h   kcmdlineargs.h kconfigbackend.h kapplication.h kauthorized.h ktoolinvocation.h   kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h   kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h   kwinmodule.h kwin.h krootprop.h kshortcut.h kkeynative.h kaccel.h    kglobalaccel.h kstdaccel.h kshortcutlist.h kcatalog.h    kcompletion.h kstringhandler.h   kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h    kallocator.h kvmallocator.h kcrash.h krfcdate.h    kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h   krandomsequence.h knotifyclient.h kiconeffect.h    kaudioplayer.h kdcoppropertyproxy.h netwm.h kacceleratormanager.h    netwm_def.h kpixmapprovider.h kstaticdeleter.h     kprocio.h kasyncio.h krandom.h   kbufferedio.h kmimesourcefactory.h kcodecs.h ksocks.h    ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h   kgenericfactory.h kgenericfactory.tcc     ktypelist.h ksortablevaluelist.h kclipboard.h   kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h    kmanagerselection.h kmountpoint.h kuser.h klockfile.h    kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h   kde_file.h ktimezones.h ktzfiletimezone.h kmath.h     kfilterbase.h kfilterdev.h kdatetime.h qtest_kde.h conversion_check.h   kdedmodule.h )
