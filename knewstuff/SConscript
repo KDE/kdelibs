@@ -44,8 +44,11 @@ obj = env.kdeobj('program')
 obj.target = 'khotnewstuff'
 obj.source = khotnewstuff_sources
 obj.includes = includes
-obj.libpaths = '../kdecore .'
-obj.libs = 'kdecore knewstuff'
+obj.libpaths = '../kdecore . ../dcop ../kdeui ../kio ../kdefx'
+obj.libs = 'kdecore knewstuff DCOP kdeui kio kdefx'
+if not env['WINDOWS']:
+    obj.libs += ' kdesu '
+    obj.libpaths += ' ../kdesu '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
 obj.execute()
 
