@@ -20,13 +20,13 @@
 #ifndef kurl_h
 #define kurl_h
 
-#include <qstring.h>
+#include <QString>
 #include <QList>
+#include <QMap>
+#include <QUrl>
 #include "kdelibs_export.h"
-#include <qmap.h>
 
 class QMimeData;
-class Q3Url;
 class QStringList;
 //template <typename K, typename V> class QMap;
 
@@ -318,7 +318,7 @@ public:
    * Converts from a QUrl.
    * @param u the QUrl
    */
-  KUrl( const Q3Url &u );
+  KUrl( const QUrl &u );
   /**
    * Constructor allowing relative URLs.
    *
@@ -857,7 +857,7 @@ public:
   KUrl& operator=( const KUrl& _u );
   KUrl& operator=( const QString& _url );
   KUrl& operator=( const char * _url );
-  KUrl& operator=( const Q3Url & u );
+  KUrl& operator=( const QUrl & u );
 
   bool operator==( const KUrl& _u ) const;
   bool operator==( const QString& _u ) const;

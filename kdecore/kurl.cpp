@@ -39,14 +39,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <q3url.h>
-#include <qdir.h>
-#include <qstringlist.h>
-#include <qregexp.h>
-#include <qmimedata.h>
-#include <qmap.h>
-#include <qtextcodec.h>
-#include <qmutex.h>
+#include <QUrl>
+#include <QDir>
+#include <QStringList>
+#include <QRegExp>
+#include <QMimeData>
+#include <QMap>
+#include <QTextCodec>
+#include <QMutex>
 
 #ifdef Q_WS_WIN
 # define KURL_ROOTDIR_PATH "C:/"
@@ -622,7 +622,7 @@ QDataStream & operator>> (QDataStream & s, KUrl & a)
 }
 
 #ifndef QT_NO_NETWORKPROTOCOL
-KUrl::KUrl( const Q3Url &u )
+KUrl::KUrl( const QUrl &u )
 {
   *this = u;
 }
@@ -1149,14 +1149,14 @@ KUrl& KUrl::operator=( const char * _url )
 }
 
 #ifndef QT_NO_NETWORKPROTOCOL
-KUrl& KUrl::operator=( const Q3Url & u )
+KUrl& KUrl::operator=( const QUrl & u )
 {
   m_strProtocol = u.protocol();
   m_iUriMode = Auto;
   m_strUser = u.user();
   m_strPass = u.password();
   m_strHost = u.host();
-  m_strPath = u.path( false );
+  m_strPath = u.path();
   m_strPath_encoded.clear();
   m_strQuery_encoded = u.query();
   m_strRef_encoded = u.ref();
