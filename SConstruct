@@ -107,6 +107,8 @@ dnssd
 kioslave
 kxmlcore
 knewstuff
+kutils
+licenses
 """
 
 # currently not on windows 

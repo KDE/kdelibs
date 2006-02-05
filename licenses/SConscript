@@ -2,5 +2,5 @@
 #generated from Makefile.am by am2bksys.py
 Import('env')
 
-env.bksys_insttype('KDEDATA', 'LICENSES', 'BSD GPL_V2 LGPL_V2 QPL_V1.0 ARTISTIC')
+env.bksys_insttype('KDEAPPS', 'LICENSES', 'BSD GPL_V2 LGPL_V2 QPL_V1.0 ARTISTIC')
 
