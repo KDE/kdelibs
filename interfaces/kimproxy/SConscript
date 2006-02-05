@@ -2,5 +2,5 @@
 #generated from Makefile.am by am2bksys.py
 Import('env')
 
-env.subdirs('interface library')
-
+env.subdirs('interface')
+#Readd library
