@@ -22,10 +22,29 @@ ksocketbuffer.cpp
 knetworkinterface.cpp
 """
 
+install_headers="""
+kresolver.h
+kreverseresolver.h    
+ksocketaddress.h
+ksocketbase.h 
+ksocketdevice.h 
+kclientsocketbase.h 
+kstreamsocket.h 
+kserversocket.h 
+kdatagramsocket.h 
+kmulticastsocketdevice.h 
+kmulticastsocket.h 
+knetworkinterface.h 
+khttpproxysocketdevice.h 
+ksockssocketdevice.h 
+kbufferedsocket.h 
+kiobuffer.h
+"""
+
 obj = env.qt4obj('convenience',env)
 obj.target   = 'libkdecorenetwork'
 obj.source   = sources
 obj.uselib   = 'QTCORE QT QT3SUPPORT KDE4'
 obj.execute()
 
-
+env.bksys_insttype( 'KDEINCLUDE', '', install_headers )

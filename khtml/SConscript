@@ -5,6 +5,7 @@ Import('env')
 #FIXME java is optional
 env.subdirs("""
 """)
+env.subdirs('dom')
 #java
 
 testkhtml_sources = """

@@ -3,6 +3,17 @@
 
 Import('env')
 
+install_headers="""
+defaults.h 
+client.h 
+process.h 
+kdesu_pty.h 
+kcookie.h 
+su.h 
+ssh.h 
+stub.h
+"""
+
 obj = env.qt4obj('shlib', env)
 obj.vnum     = '6.0.2'
 obj.target   = 'libkdesu'
@@ -20,3 +31,6 @@ stubobj.target = 'kdesu_stub'
 stubobj.source = 'kdesu_stub.c'
 stubobj.includes = '../kdecore'
 stubobj.execute()
+
+env.bksys_insttype( 'KDEINCLUDE', 'kdesu', install_headers )
+
