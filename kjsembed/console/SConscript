@@ -3,7 +3,7 @@
 Import('env')
 
 console_sources = """
-\ console.cpp console.qrc jsconsole.ui
+console.cpp console.qrc jsconsole.ui
 main.cpp
 """
 
