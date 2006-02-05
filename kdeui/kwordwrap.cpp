@@ -32,8 +32,9 @@ public:
   QString m_text;
 };
 
-KWordWrap::KWordWrap(const QRect & r) {
-    d = new KWordWrapPrivate;
+KWordWrap::KWordWrap(const QRect & r)
+:	d(new KWordWrapPrivate)
+{
     d->m_constrainingRect = r;
 }
 

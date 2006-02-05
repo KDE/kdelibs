@@ -51,7 +51,7 @@ class KDEUI_EXPORT KScrollView : public QScrollArea
     static const int SCROLL_TICK = 20;
 
     struct KScrollViewPrivate;
-    KScrollViewPrivate *d;
+    KScrollViewPrivate *const d;
 };
 
 #endif

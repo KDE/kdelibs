@@ -287,7 +287,7 @@ Q_SIGNALS:
     void configChanged();
 
 private:
-    KSpellConfigPrivate *d;
+    KSpellConfigPrivate *const d;
     void getAvailDictsIspell();
     void getAvailDictsAspell();
 };

@@ -363,7 +363,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   class Private;
-  Private* d;
+  Private* const d;
 };
 
 #endif // KUrlLABEL_H

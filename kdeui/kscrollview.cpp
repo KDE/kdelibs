@@ -42,9 +42,8 @@ struct KScrollView::KScrollViewPrivate {
 };
 
 KScrollView::KScrollView( QWidget *parent )
-    : QScrollArea( parent )
+    : QScrollArea( parent ), d(new KScrollViewPrivate)
 {
-    d = new KScrollViewPrivate;
     connect(&d->timer, SIGNAL(timeout()), this, SLOT(scrollTick()));
 }
 

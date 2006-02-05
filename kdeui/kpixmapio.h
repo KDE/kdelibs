@@ -178,7 +178,7 @@ private:
     void convertToXImage(const QImage &);
     QImage convertFromXImage();
 private:
-    KPixmapIOPrivate* d;
+    KPixmapIOPrivate* const d;
 };
 
 #endif // KPixmapIO_H

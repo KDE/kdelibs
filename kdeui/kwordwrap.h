@@ -139,7 +139,7 @@ public:
 
 private:
     KWordWrap( const QRect & r );
-    class KWordWrapPrivate* d;
+    class KWordWrapPrivate* const d;
 };
 
 #endif

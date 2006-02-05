@@ -53,9 +53,9 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   , dictcombo(0)
   , encodingcombo(0)
   , clientcombo(0)
+  , d(new KSpellConfigPrivate)
 {
   kDebug(750) << "Entering KSpellConfig::KSpellConfig(KSpellConfig&)" << endl;
-  d = new KSpellConfigPrivate;
   setDoSpellChecking( _ksc.doSpellChecking() );
   setReplaceAllList( _ksc.replaceAllList() );
   setNoRootAffix( _ksc.noRootAffix() );
@@ -80,8 +80,8 @@ KSpellConfig::KSpellConfig( QWidget *parent,
   , dictcombo(0)
   , encodingcombo(0)
   , clientcombo(0)
+  , d(new KSpellConfigPrivate)
 {
-  d = new KSpellConfigPrivate;
   kc = KGlobal::config();
 
   if( !_ksc )

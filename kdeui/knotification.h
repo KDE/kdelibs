@@ -298,7 +298,7 @@ private Q_SLOTS:
 
 private:
 	struct Private;
-	Private *d;
+	Private *const d;
 	KNotification(QObject *parent=0L);
 	/**
 	 * recursive function that raise the widget. @p w

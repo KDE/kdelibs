@@ -155,7 +155,7 @@ protected:
 
 private:
     class KDualColorPrivate;
-    KDualColorPrivate *d;
+    KDualColorPrivate *const d;
 };
 
 #endif

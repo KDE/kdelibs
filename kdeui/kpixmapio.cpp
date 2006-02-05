@@ -86,9 +86,9 @@ static int lowest_bit(uint val)
 /*** KPixmapIO ***/
 
 KPixmapIO::KPixmapIO()
+    :d(new KPixmapIOPrivate)
 {
     m_bShm = false;
-    d = new KPixmapIOPrivate;
 
 #ifdef HAVE_MITSHM
     setShmPolicy(ShmDontKeep);
