@@ -20,7 +20,7 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/kio/bookmarks $(a
 LDADD = $(LIB_KIO)
 AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
+check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest karchivetest \
                  kioslavetest kdirwatchtest speed kurifiltertest \
                  kdefaultprogresstest kmimemagictest \
                  kiopassdlgtest kscantest kdirlistertest \
@@ -35,7 +35,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
 check-local: kziptest
 	./kziptest list $(srcdir)/wronglocalsizes.zip
 
-TESTS = kmimetypetest kbookmarktest
+TESTS = kmimetypetest kbookmarktest karchivetest
 
 bin_PROGRAMS = ktradertest
 
@@ -82,11 +82,16 @@ kdirwatchtest_gui_SOURCES = kdirwatchtest_gui.cpp
 #services_DATA = dummymeta.desktop
 #servicesdir = $(kde_servicesdir)
 
+LIB_QTTEST = -lQtTest_debug
+
 kmimetypetest_SOURCES = kmimetypetest.cpp
-kmimetypetest_LDADD = $(LIB_KIO) -lQtTest_debug
+kmimetypetest_LDADD = $(LIB_KIO) $(LIB_QTTEST)
 
 kbookmarktest_SOURCES = kbookmarktest.cpp
-kbookmarktest_LDADD = $(LIB_KIO) -lQtTest_debug
+kbookmarktest_LDADD = $(LIB_KIO) $(LIB_QTTEST)
 
 jobtest_SOURCES = jobtest.cpp
-jobtest_LDADD = $(LIB_KIO) -lQtTest_debug
+jobtest_LDADD = $(LIB_KIO) $(LIB_QTTEST)
+
+karchivetest_SOURCES = karchivetest.cpp
+karchivetest_LDADD = $(LIB_KIO) $(LIB_QTTEST)

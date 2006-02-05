@@ -163,7 +163,7 @@ void KTar::setOrigFileName( const QByteArray & fileName ) {
     d->origFileName = fileName;
 }
 
-qint64 KTar::readRawHeader(char *buffer) {
+qint64 KTar::readRawHeader( char *buffer ) {
   // Read header
   qint64 n = device()->readBlock( buffer, 0x200 );
   if ( n == 0x200 && buffer[0] != 0 ) {
@@ -186,6 +186,7 @@ qint64 KTar::readRawHeader(char *buffer) {
       // because the other digits are filled with all sorts of different chars by different tars ...
       if( strncmp( buffer + 148 + 6 - s.length(), s.data(), s.length() ) ) {
         kWarning(7041) << "KTar: invalid TAR file. Header is: " << QByteArray( buffer+257, 5 )
+                       << " instead of ustar. Reading from wrong pos in file?"
                        << " checksum=" << QByteArray( buffer + 148 + 6 - s.length(), s.length() ) << endl;
         return -1;
       }
@@ -199,13 +200,14 @@ qint64 KTar::readRawHeader(char *buffer) {
 
 bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
   qint64 n = 0;
+  //kDebug() << k_funcinfo << "reading longlink from pos " << device()->at()  << endl;
   QIODevice *dev = device();
   // read size of longlink from size field in header
   // size is in bytes including the trailing null (which we ignore)
   qint64 size = QByteArray( buffer + 0x7c, 12 ).trimmed().toLongLong( 0, 8 /*octal*/ );
 
-  longlink.resize(size);
   size--;    // ignore trailing null
+  longlink.resize(size);
   qint64 offset = 0;
   while (size > 0) {
     int chunksize = qMin(size, 0x200LL);
@@ -223,7 +225,7 @@ bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
   return true;
 }
 
-qint64 KTar::readHeader(char *buffer, QString &name, QString &symlink) {
+qint64 KTar::readHeader( char *buffer, QString &name, QString &symlink ) {
   name.truncate(0);
   symlink.truncate(0);
   while (true) {
@@ -248,9 +250,9 @@ qint64 KTar::readHeader(char *buffer, QString &name, QString &symlink) {
   if (name.isEmpty())
     // there are names that are exactly 100 bytes long
     // and neither longlink nor \0 terminated (bug:101472)
-    name = QFile::decodeName(QByteArray(buffer, 101));
+    name = QFile::decodeName(QByteArray(buffer, 100));
   if (symlink.isEmpty())
-    symlink = QFile::decodeName(QByteArray(buffer + 0x9d, 101));
+    symlink = QFile::decodeName(QByteArray(buffer + 0x9d, 100));
 
   return 0x200;
 }
@@ -340,24 +342,20 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
         QString symlink;
 
         // Read header
-        qint64 n = readHeader(buffer,name,symlink);
+        qint64 n = readHeader( buffer, name, symlink );
         if (n < 0) return false;
         if (n == 0x200)
         {
             bool isdir = false;
-            QString nm;
 
             if ( name.endsWith( QLatin1Char( '/' ) ) )
             {
                 isdir = true;
-                name = name.left( name.length() - 1 );
+                name.truncate( name.length() - 1 );
             }
 
             int pos = name.lastIndexOf( '/' );
-            if ( pos == -1 )
-                nm = name;
-            else
-                nm = name.mid( pos + 1 );
+            QString nm = ( pos == -1 ) ? name : name.mid( pos + 1 );
 
             // read access
             buffer[ 0x6b ] = 0;
@@ -685,10 +683,10 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
     memset( buffer, 0, 0x200 );
     if ( mode() & QIODevice::ReadWrite ) device()->at(d->tarEnd); // Go to end of archive as might have moved with a read
 
-    // provide converted stuff we need lateron
-    QByteArray encodedFilename = QFile::encodeName(fileName);
-    QByteArray uname = user.toLocal8Bit();
-    QByteArray gname = group.toLocal8Bit();
+    // provide converted stuff we need later on
+    const QByteArray encodedFilename = QFile::encodeName(fileName);
+    const QByteArray uname = user.toLocal8Bit();
+    const QByteArray gname = group.toLocal8Bit();
 
     // If more than 100 chars, we need to use the LongLink trick
     if ( fileName.length() > 99 )

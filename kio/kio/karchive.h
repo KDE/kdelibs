@@ -548,6 +548,9 @@ public:
 
     /**
      * Returns a list of sub-entries.
+     * Note that the list is not sorted, it's even in random order (due to using a hashtable).
+     * Use sort() on the result to sort the list by filename.
+     *
      * @return the names of all entries in this directory (filenames, no path).
      */
     QStringList entries() const;

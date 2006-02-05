@@ -20,14 +20,12 @@
 #include <stdio.h>
 #include <kinstance.h>
 #include <kdebug.h>
-#include <qfile.h>
-
-#include <assert.h>
 
 void recursive_print( const KArchiveDirectory * dir, const QString & path )
 {
   QStringList l = dir->entries();
-  QStringList::Iterator it = l.begin();
+  l.sort();
+  QStringList::ConstIterator it = l.begin();
   for( ; it != l.end(); ++it )
   {
     const KArchiveEntry* entry = dir->entry( (*it) );
@@ -39,25 +37,19 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
 
 int main( int argc, char** argv )
 {
-  if (argc != 3)
-  {
-    printf("\n"
- " Usage :\n"
- " ./ktartest list /path/to/existing_file.tar.gz       tests listing an existing tar.gz\n"
- " ./ktartest readwrite newfile.tar.gz                 will create the tar.gz, then close and reopen it.\n"
- " ./ktartest maxlength newfile.tar.gz                 tests the maximum filename length allowed.\n"
- " ./ktartest iodevice /path/to/existing_file.tar.gz   tests KArchiveFile::device()\n");
-    return 1;
-  }
-  KInstance instance("ktartest");
-  QString command = argv[1];
-  if ( command == "list" )
-  {
-    KTar tar( argv[2] );
+    if (argc != 2)
+    {
+        printf("\n"
+               " Usage :\n"
+               " ./ktartest /path/to/existing_file.tar.gz       tests listing an existing tar.gz\n" );
+        return 1;
+    }
+    KInstance instance("ktartest");
+    KTar tar( argv[1] );
 
     if ( !tar.open( QIODevice::ReadOnly ) )
     {
-      printf("Could not open %s for reading\n", argv[2] );
+      printf("Could not open %s for reading\n", argv[1] );
       return 1;
     }
 
@@ -70,108 +62,5 @@ int main( int argc, char** argv )
     tar.close();
 
     return 0;
-  }
-  else if (command == "readwrite" )
-  {
-    KTar tar( argv[2] );
-
-    if ( !tar.open( QIODevice::WriteOnly ) )
-    {
-      printf("Could not open %s for writing\n", argv[1]);
-      return 1;
-    }
-
-    tar.writeFile( "empty", "weis", "users", "", 0 );
-    tar.writeFile( "test1", "weis", "users", "Hallo", 5 );
-    tar.writeFile( "test2", "weis", "users", "Hallo Du", 8 );
-    tar.writeFile( "mydir/test3", "weis", "users", "Noch so einer", 13 );
-    tar.writeFile( "my/dir/test3", "dfaure", "hackers", "I don't speak German (David)", 29 );
-
-#define SIZE1 100
-    // Now a medium file : 100 null bytes
-    char medium[ SIZE1 ];
-    memset( medium, 0, SIZE1 );
-    tar.writeFile( "mediumfile", "user", "group", medium, SIZE1 );
-    // Another one, with an absolute path
-    tar.writeFile( "/dir/subdir/mediumfile2", "user", "group", medium, SIZE1 );
-
-    // Now a huge file : 20000 null bytes
-    int n = 20000;
-    char * huge = new char[ n ];
-    memset( huge, 0, n );
-    tar.writeFile( "hugefile", "user", "group", huge, n );
-    delete [] huge;
-
-    tar.close();
-
-    printf("-----------------------\n");
-
-    if ( !tar.open( QIODevice::ReadOnly ) )
-    {
-      printf("Could not open %s for reading\n", argv[1] );
-      return 1;
-    }
-
-    const KArchiveDirectory* dir = tar.directory();
-    recursive_print(dir, "");
-
-    const KArchiveEntry* e = dir->entry( "mydir/test3" );
-    Q_ASSERT( e && e->isFile() );
-    const KArchiveFile* f = (KArchiveFile*)e;
-
-    QByteArray arr( f->data() );
-    printf("SIZE=%i\n",arr.size() );
-    QString str( arr );
-    printf("DATA=%s\n", str.latin1());
-
-    tar.close();
-
-    return 0;
-  }
-  else if ( command == "maxlength" )
-  {
-    KTar tar( argv[2] );
-
-    if ( !tar.open( QIODevice::WriteOnly ) )
-    {
-      printf("Could not open %s for writing\n", argv[1]);
-      return 1;
-    }
-    // Generate long filenames of each possible length bigger than 98...
-    // Also exceed 512 byte block size limit to see how well the ././@LongLink
-    // implementation fares
-    for (int i = 98; i < 514 ; i++ )
-    {
-      QString str, num;
-      str.fill( 'a', i-10 );
-      num.setNum( i );
-      num = num.rightJustified( 10, '0' );
-      tar.writeFile( str+num, "testu", "testg", "hum", 3 );
-    }
-    // Result of this test : works perfectly now (failed at 482 formerly and
-    // before that at 154).
-    tar.close();
-    printf("Now run 'tar tvzf %s'\n", argv[2]);
-    return 0;
-  }
-  else if ( command == "iodevice" )
-  {
-    KTar tar( argv[2] );
-    if ( !tar.open( QIODevice::ReadOnly ) )
-      return 1;
-    const KArchiveDirectory* dir = tar.directory();
-    assert(dir);
-    const KArchiveEntry* entry = dir->entry( "my/dir/test3" );
-    if ( entry && entry->isFile() )
-    {
-        QIODevice *dev = static_cast<const KArchiveFile *>(entry)->device();
-        QByteArray contents = dev->readAll();
-        kDebug() << "contents=" << contents << endl;
-    } else
-        printf("entry=%p - not found if 0, otherwise not a file\n", (void*)entry);
-    return 0;
-  }
-  else
-    printf("Unknown command\n");
 }
 
