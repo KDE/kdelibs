@@ -50,7 +50,7 @@ obj.libpaths = '../kdecore ../kdeui ../dcop ../kio ../kdefx ../kwallet/client '
 obj.libs = 'kdecore kdeui DCOP kio kdefx kwalletclient '
 if not env['WINDOWS']:
 	obj.libs += ' kdesu'
-	obj.libpaths = ' ../kdesu '
+	obj.libpaths += ' ../kdesu '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()
 
