@@ -1,0 +1,34 @@
+#! /usr/bin/env python
+#generated from Makefile.am by am2bksys.py
+Import('env')
+
+knotify_sources = """
+knotify.cpp knotify.skel knotifyconfig.cpp knotifyplugin.cpp
+main.cpp notifybyexecute.cpp notifybylogfile.cpp notifybypopup.cpp
+notifybysound.cpp notifybytaskbar.cpp
+"""
+
+noinst_headers = """
+knotify.h
+"""
+
+includes = 'akode_includes '
+
+obj = env.kdeinitobj()
+obj.target = 'knotify'
+obj.source = knotify_sources
+obj.includes = includes
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDEUI '
+obj.execute()
+
+for i in "knotifyplugin.h notifybyexecute.h notifybylogfile.h notifybypopup.h notifybysound.h notifybytaskbar.h".split():
+    env.Moc(i)
+
+env.bksys_insttype('KDESERV', '', 'knotify.desktop')
+
+env.bksys_insttype('KDEAPPS', 'kde', 'kde.notifyrc')
+
+
+"""Unhandled Targets 
+messages = ###$(XGETTEXT) knotify.cpp -o $(podir)/knotify.pot
+"""
