@@ -101,6 +101,26 @@ kde_file.h ktimezones.h ktzfiletimezone.h kmath.h
 kdedmodule.h qtest_kde.h conversion_check.h kfilterbase.h kfilterdev.h
 """
 
+install_network_headers="""
+network/kresolver.h
+network/kreverseresolver.h
+network/ksocketaddress.h
+network/ksocketbase.h
+network/ksocketdevice.h
+network/kclientsocketbase.h
+network/kstreamsocket.h
+network/kserversocket.h
+network/kdatagramsocket.h
+network/kmulticastsocketdevice.h
+network/kmulticastsocket.h
+network/knetworkinterface.h
+network/khttpproxysocketdevice.h
+network/ksockssocketdevice.h
+network/kbufferedsocket.h
+network/kiobuffer.h
+"""
+
+
 # not finished (ita)
 for i in "kacceleratormanager_private.h kaccelprivate.h".split():
 	env.Moc(i)
@@ -143,4 +163,5 @@ obj.execute()
 
 env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
 env.bksys_insttype( 'KDECONF','', 'kdebugrc kdebug.areas language.codes' )
+env.bksys_insttype( 'KDEINCLUDE', '', install_network_headers )
 
