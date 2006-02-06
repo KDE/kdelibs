@@ -94,12 +94,12 @@ void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
 void KPlotWidget::updateTickmarks() {
 	// Determine the number and spacing of tickmarks for the current plot limits.
 	if ( dataWidth() == 0.0 ) {
-		kdWarning() << "KPlotWidget::updateTickmarks(): X range [" << x() << ", " << x2() << "] invalid!" << endl;
+		kWarning() << "KPlotWidget::updateTickmarks(): X range [" << x() << ", " << x2() << "] invalid!" << endl;
 		DataRect.setWidth( 1.0 );
 		return;
 	}
 	if ( dataHeight() == 0.0 ) {
-		kdWarning() << "KPlotWidget::updateTickmarks(): Y range [" << y() << ", " << y2() << "] invalid!" << endl;
+		kWarning() << "KPlotWidget::updateTickmarks(): Y range [" << y() << ", " << y2() << "] invalid!" << endl;
 		DataRect.setHeight( 1.0 );
 		return;
 	}
@@ -171,7 +171,7 @@ void KPlotWidget::replaceObject( int i, KPlotObject *o ) {
 
 KPlotObject *KPlotWidget::object( int i ) {
 	if ( i < 0 || i >= ObjectList.count() ) {
-		kdWarning() << "KPlotWidget::object(): index " << i << " out of range!" << endl;
+		kWarning() << "KPlotWidget::object(): index " << i << " out of range!" << endl;
 		return 0;
 	}
 	return ObjectList.at(i);
@@ -350,7 +350,7 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 
 				case KPlotObject::UNKNOWN_TYPE :
 				default:
-					kdDebug() << "KPlotWidget::drawObjects(): Unknown object type: " << po->type() << endl;
+					kDebug() << "KPlotWidget::drawObjects(): Unknown object type: " << po->type() << endl;
 			}
 		}
 	}

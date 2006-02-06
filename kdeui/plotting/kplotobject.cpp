@@ -42,7 +42,7 @@ KPlotObject::~KPlotObject()
 
 QPointF* KPlotObject::point( int index ) {
 	if ( index < 0 || index >= pList.count() ) {
-		kdWarning() << "KPlotObject::object(): index " << index << " out of range!" << endl;
+		kWarning() << "KPlotObject::object(): index " << index << " out of range!" << endl;
 		return 0;
 	}
 	return pList.at(index);
@@ -56,7 +56,7 @@ void KPlotObject::addPoint( QPointF *p ) {
 
 void KPlotObject::removePoint( int index ) {
 	if ( ( index < 0 ) || ( index >= pList.count() ) ) {
-		kdWarning() << "KPlotObject::removePoint(): index " << index << " out of range!" << endl;
+		kWarning() << "KPlotObject::removePoint(): index " << index << " out of range!" << endl;
 		return;
 	}
 
