@@ -51,6 +51,8 @@ KDEWIN32_EXPORT void * mmap(void *start, size_t length, int prot , int flags, in
 
 KDEWIN32_EXPORT int munmap(void *start, size_t length);
 
+KDEWIN32_EXPORT long getpagesize (void);
+
 #ifdef __cplusplus
 }
 #endif

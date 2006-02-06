@@ -22,6 +22,7 @@
  */
 
 #include <winposix_export.h>
+#include <kdelibs_export.h>
 
 /* regular header from msvc includes */
 # include <../include/stdlib.h>
@@ -43,11 +44,12 @@ extern "C" {
 #define EXIT_FAILURE 1
 #define EXIT_SUCCESS 0
 
-/* from fakes.c */
-/*KDECORE_EXPORT int setenv(const char *__string, const char *__value, int __overwrite);
-KDECORE_EXPORT void unsetenv(const char *__string);*/
-
 KDEWIN32_EXPORT void srandom(unsigned int seed);
+
+/* from fakes.c */
+KDECORE_EXPORT int setenv(const char *, const char *, int );
+KDECORE_EXPORT void unsetenv(const char *);
+
 
 #ifdef __cplusplus
 }

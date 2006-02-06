@@ -31,9 +31,12 @@
 extern "C" {
 #endif
 
+KDEWIN32_EXPORT char* strndup(const char *src, size_t n);
+
+// implementation in kdecore/fakes.c
 KDEWIN32_EXPORT unsigned long strlcpy(char *dst, const char *src, unsigned long siz);
 KDEWIN32_EXPORT unsigned long strlcat(char *dst, const char *src, unsigned long siz);
-KDEWIN32_EXPORT char* strndup(const char *src, size_t n);
+
 
 #ifdef __cplusplus
 }

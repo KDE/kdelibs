@@ -124,6 +124,11 @@ KDEWIN32_EXPORT int setreuid(uid_t ruid, uid_t euid);
 
 KDEWIN32_EXPORT int mkstemps(char* _template, int suffix_len);
 
+// implementation in kdecore/fakes.c
+KDEWIN32_EXPORT int seteuid(uid_t euid);
+KDEWIN32_EXPORT int mkstemp (char* _template);
+KDEWIN32_EXPORT char* mkdtemp (char* _template);
+
 #ifdef __cplusplus
 }
 #endif
