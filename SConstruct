@@ -108,7 +108,6 @@ dnssd
 kioslave
 kxmlcore
 knewstuff
-kutils
 kspell2
 pics
 licenses

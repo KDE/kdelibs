@@ -1,0 +1,20 @@
+#! /usr/bin/env python
+Import('env')
+
+obj = env.kdeobj('program', env)
+obj.vnum     = '6.0.2'
+obj.target   = 'kfindtest'
+obj.source   = 'kfindtest.cpp'
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT QTEST KDE4 KDECORE '
+obj.libpaths = '../../dcop ../../kutils '
+obj.libs     = 'DCOP kutils'
+obj.execute()
+
+obj = env.kdeobj('program', env)
+obj.vnum     = '6.0.2'
+obj.target   = 'kreplacetest'
+obj.source   = 'kreplacetest.cpp'
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT QTEST KDE4 KDECORE KDEUI '
+obj.libpaths = '../../dcop ../../kutils '
+obj.libs     = 'DCOP kutils'
+obj.execute()
