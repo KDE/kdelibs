@@ -354,7 +354,7 @@ obj.target   = 'kio'
 obj.iskdelib = 1
 obj.vnum     = '6.0.2'
 obj.source   = kiocore_sources + ksycoca_sources + kssl_sources + kfile_sources + bookmarks_sources
-obj.includes = '. .. kio kssl ../interfaces kfile bookmarks misc ../kde3support/kdeui ../kdecore/network '
+obj.includes = '. .. kio kssl ../interfaces kfile bookmarks misc ../kdecore/network '
 
 # kssl 
 obj.includes += ' ../kwallet/client'
@@ -363,7 +363,7 @@ obj.libpaths += ' ../kwallet/client '
 obj.includes += ' ../libltdl '
 obj.libpaths += ' ../libltdl '
 
-obj.libpaths += ' ../dcop ../kwallet/client ../kdesu ../kde3support/kdeui ../kde3support/ '
+obj.libpaths += ' ../dcop ../kwallet/client ../kdesu '
 
 obj.libs     += ' DCOP kwalletclient '
 if env['WINDOWS']:
