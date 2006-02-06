@@ -33,7 +33,7 @@ env.Command('global.h','global.h.in',Copy("$TARGET", "$SOURCE"))
 env.Command('lexer.lut.h','keywords.lut.h',Move("$TARGET", "$SOURCE"))
 
 obj = env.kdeobj('shlib', env)
-obj.vnum     = '3.0.2'
+obj.vnum     = '1.2.0'
 obj.target   = 'kjs'
 obj.source   = kjs_files
 obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 PCRE'
