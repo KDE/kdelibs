@@ -79,9 +79,13 @@ install_targets(${KDE4_LIB_INSTALL_DIR} kdefakes )
 
 ########### next target ###############
 
+#no ttyname on windows
+if(UNIX)
 kde4_add_executable(kgrantpty kgrantpty.c)
 target_link_libraries(kgrantpty  kdefakes )
 install_targets(/bin kgrantpty )
+endif(UNIX)
+
 
 
 ########### next target ###############
@@ -217,6 +221,10 @@ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${ZLIB_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${CARBON_LIBRARY})
 
+if (WIN32)
+    add_definitions(-DKIO_EXPORT=)
+endif (WIN32)
+
 if(HAVE_IDNA_H)
    target_link_libraries(kdecore idn)
 endif(HAVE_IDNA_H)
@@ -262,13 +270,20 @@ set(kde_wallpaperdir ${KDE4_DIR}${KDE4_WALLPAPER_DIR})
 set(xdg_appsdir  ${KDE4_DIR}${XDG_APPS_DIR})
 set(xdg_directorydir ${KDE4_DIR}${XDG_DIRECTORY_DIR})
 
+
+if(MSVC)
+    set(KDE_CONFIG_NAME kdeconfig)
+else(MSVC)
+    set(KDE_CONFIG_NAME kde-config)
+endif(MSVC)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kde-config.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp @ONLY)
 
-kde4_add_executable(kde-config ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
+kde4_add_executable(${KDE_CONFIG_NAME} ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
 
-target_link_libraries(kde-config  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(${KDE_CONFIG_NAME}  ${QT_AND_KDECORE_LIBS} )
 
-install_targets(/bin kde-config )
+install_targets(/bin ${KDE_CONFIG_NAME} )
 
 
 ########### install files ###############
