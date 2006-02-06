@@ -2289,7 +2289,7 @@ ValueImp* Location::getValueProperty(ExecState *exec, int token) const
     case Host: {
       UString str = url.host();
       if (url.port())
-        str += ":" + QString::number((int)url.port());
+        str = str + QString(":") + QString::number((int)url.port());
       return String(str);
       // Note: this is the IE spec. The NS spec swaps the two, it says
       // "The hostname property is the concatenation of the host and port properties, separated by a colon."
