@@ -43,7 +43,7 @@ obj.instdir = env['KDEBIN']
 obj.execute()
 
 obj=env.kdeobj('program', env)
-obj.target='kdemenu'
+obj.target='kde-menu'
 obj.source='kde-menu.cpp'
 obj.uselib   = 'QTCORE QT QTGUI QT3SUPPORT KDE4 KDECORE KIO KDEUI KDEFX'
 obj.libpaths = ' ../dcop ../kdefx '
