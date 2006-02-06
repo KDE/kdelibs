@@ -18,7 +18,7 @@ includes = '../ #/kio/ #/libltdl #/kfile '
 
 obj = env.kdeobj('shlib')
 obj.target = 'kparts'
-obj.vnum = '3.0.1'
+obj.vnum = '2.1.0'
 obj.source = libkparts_sources
 obj.includes = includes
 obj.libpaths = "../dcop ../kwallet/client"
@@ -30,9 +30,9 @@ if not env['WINDOWS']:
 obj.execute()
 
 if env['MAC']:
-	env.Depends('libkparts.3.0.1.dylib', '../kio/libkio.dylib')
+	env.Depends('libkparts.2.1.0.dylib', '../kio/libkio.dylib')
 elif not env['WINDOWS']:
-	env.Depends('libkparts.so.3.0.1', '../kio/libkio.so')
+	env.Depends('libkparts.so.2.1.0', '../kio/libkio.so')
 
 env.bksys_insttype('KDEINCLUDE','kparts',kpartsinclude_headers)
 env.bksys_insttype('KDESERVTYPES', '', 'kpart.desktop krop.desktop krwp.desktop browserview.desktop')
