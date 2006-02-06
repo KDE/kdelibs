@@ -26,6 +26,7 @@
 #include <qmap.h>
 #include <qstring.h>
 #include <ksharedptr.h>
+
 class KTimezoneDetails;
 class KTimezoneDetailsPrivate;
 class KTimezonePrivate;
@@ -187,6 +188,9 @@ public:
     bool parse(KTimezoneDetails &dataReceiver) const;
 
 private:
+    KTimezone(const KTimezone&);
+    KTimezone& operator=(const KTimezone&);
+
     KSharedPtr<KTimezoneSource> m_db;
     QString m_name;
     QString m_countryCode;
@@ -333,6 +337,9 @@ public:
     void add(KTimezone *zone);
 
 private:
+    KTimezones(const KTimezones&);
+    KTimezones& operator=(const KTimezones&);
+
     float convertCoordinate(const QString &coordinate);
 
     QString m_zoneinfoDir;
