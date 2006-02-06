@@ -16,14 +16,15 @@
  ***************************************************************************/
 
 #include <math.h> //for log10(), pow(), modf()
+
 #include <kdebug.h>
+
 #include <qevent.h>
-#include <qpainter.h>
-#include <qpalette.h>
-#include <qpixmap.h>
-#include <qpolygon.h>
+#include <QPainter>
+#include <QPixmap>
+#include <QPolygon>
+#include <QToolTip>
 #include <QtAlgorithms>
-#include <qtooltip.h>
 
 #include "kplotwidget.h"
 #include "kplotwidget.moc"
