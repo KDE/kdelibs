@@ -75,7 +75,10 @@ add_subdirectory( network )
 kde4_add_library(kdefakes SHARED fakes.c)
 set_target_properties(kdefakes PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${KDE4_LIB_INSTALL_DIR} kdefakes )
-
+if(WIN32)
+    # because of setreuid 
+    target_link_libraries(kdefakes  kdewin32 )
+endif(WIN32)
 
 ########### next target ###############
 
