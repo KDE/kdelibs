@@ -36,6 +36,7 @@
 #include <kstandarddirs.h>
 #include <kprocess.h>
 #include <kde_file.h>
+#include <kdebug.h>
 
 static KCmdLineOptions options[] = {
    { "+old", I18N_NOOP("Old hostname"), 0 },
@@ -155,9 +156,9 @@ void KHostName::changeX()
          continue;
 
       QCString newNetId = newName+netId.mid(i);
-
-      cmd = "xauth remove "+KProcess::quote(netId);
-      system(QFile::encodeName(cmd));
+      
+//      cmd = "xauth remove "+KProcess::quote(netId);
+//      system(QFile::encodeName(cmd));
       cmd = "xauth add ";
       cmd += KProcess::quote(newNetId);
       cmd += " ";
@@ -364,9 +365,7 @@ int main(int argc, char **argv)
 
    KHostName hn;
 
-   if(!getenv("XAUTHLOCALHOSTNAME"))
-       hn.changeX();
-
+   hn.changeX();
    hn.changeDcop();
    hn.changeStdDirs("socket");
    hn.changeStdDirs("tmp");
