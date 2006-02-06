@@ -62,8 +62,13 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
 {
    mTempFile = new KTempFile(true);
 
+   QString real_filename = filename;
+   // make absolute if needed
+   if ( QDir::isRelativePath( filename ) )
+       real_filename = QDir::current().absoluteFilePath( filename );
+
    // follow symbolic link, if any
-   QString real_filename = KStandardDirs::realFilePath(filename);
+   real_filename = KStandardDirs::realFilePath( real_filename );
 
    // we only check here if the directory can be written to
    // the actual filename isn't written to, but replaced later
