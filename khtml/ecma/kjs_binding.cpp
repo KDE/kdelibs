@@ -130,12 +130,6 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
   return false;
 }
 
-// convenience function implementation to handle QString
-JSCell *String(const QString& s)
-{
-	return jsString(s.local8Bit().constData());
-}
-
 UString::UString(const QString &d)
 {
   unsigned int len = d.length();

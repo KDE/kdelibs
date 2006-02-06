@@ -39,8 +39,7 @@
 #include <stdlib.h> // for size_t
 #include "simple_number.h"
 #include "ustring.h"
-
-class QString;
+#include <QString>
 
 namespace KJS {
 
@@ -444,7 +443,7 @@ inline JSCell *String(const char *s) { return jsString(s); }
      * implementation for a construction from QString.
      * see also UString(const QString&)
 */
-inline JSCell *String(const QString& s);
+inline JSCell *String(const QString& s) { return jsString(s.local8Bit().constData());}
 
 
 } // namespace
