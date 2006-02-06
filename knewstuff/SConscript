@@ -44,8 +44,8 @@ obj = env.kdeobj('program')
 obj.target = 'khotnewstuff'
 obj.source = khotnewstuff_sources
 obj.includes = includes
-obj.libpaths = '../kdecore . ../dcop ../kdeui ../kio ../kdefx'
-obj.libs = 'kdecore knewstuff DCOP kdeui kio kdefx'
+obj.libpaths = '../kdecore . ../dcop ../kdeui ../kio ../kdefx ../kwallet/client '
+obj.libs = 'kdecore knewstuff DCOP kdeui kio kdefx kwalletclient'
 if not env['WINDOWS']:
     obj.libs += ' kdesu '
     obj.libpaths += ' ../kdesu '
