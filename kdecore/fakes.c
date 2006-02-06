@@ -19,6 +19,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifdef _WIN32
+#include <winposix_export.h> // #define KDE_EXPORT__declspec(dllexport)
+#endif
 #include "kdelibs_export.h"
 
 #include <config.h>
