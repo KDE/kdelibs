@@ -1151,15 +1151,15 @@ KUrl& KUrl::operator=( const char * _url )
 #ifndef QT_NO_NETWORKPROTOCOL
 KUrl& KUrl::operator=( const QUrl & u )
 {
-  m_strProtocol = u.protocol();
+  m_strProtocol = u.scheme();
   m_iUriMode = Auto;
-  m_strUser = u.user();
+  m_strUser = u.userName();
   m_strPass = u.password();
   m_strHost = u.host();
   m_strPath = u.path();
   m_strPath_encoded.clear();
-  m_strQuery_encoded = u.query();
-  m_strRef_encoded = u.ref();
+  m_strQuery_encoded = u.encodedQuery();
+  m_strRef_encoded = u.fragment();
   m_bIsMalformed = !u.isValid();
   m_iPort = u.port();
 
