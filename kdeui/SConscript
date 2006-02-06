@@ -94,3 +94,5 @@ env.Depends('libkdeui.so.4.2.0', '../kdefx/libkdefx.so')
 env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
 env.bksys_insttype( 'KDEAPPS', 'kdeui/pics', 'aboutkde.png ktip-bulb.png ktip-background.png' )
 env.bksys_insttype( 'KDECONF', 'ui' , 'ui_standards.rc')	
+env.bksys_insttype( 'KDEBIN','','preparetips' )
+
