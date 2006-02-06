@@ -30,7 +30,7 @@
 #endif 
 
 #ifndef KDECORE_EXPORT
-# ifdef MAKE_KDECORE_LIB
+# if defined(MAKE_KDECORE_LIB) || defined(MAKE_KDEFAKES_LIB)
 #  define KDECORE_EXPORT KDE_EXPORT
 # else
 #  define KDECORE_EXPORT KDE_IMPORT //for apps and other libs
