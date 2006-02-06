@@ -16,14 +16,14 @@ obj.target = 'kdnssd'
 obj.vnum = '1.0'
 obj.source = kdnssd_sources
 obj.includes = includes
-obj.libpaths = '../kdecore '
-obj.libs = 'kdecore '
+obj.libpaths = '../kdecore ../kdeui '
+obj.libs = 'kdecore kdeui '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 DNSSD '
 if env['WINDOWS']:
     obj.libs    += ' ws2_32'
 obj.execute()
 
-
+env.Depends('libkdnssd.so.1.0', '../kdecore/libkdecore.so')
 dnssdinclude_headers = """
 domainbrowser.h publicservice.h query.h remoteservice.h
 servicebase.h servicebrowser.h settings.h
