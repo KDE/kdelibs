@@ -219,23 +219,6 @@ public:
 	bool areObjectToolTipsShown() const { return ShowObjectToolTips; }
 
 	/**
-	 * Sets the X-axis label.
-	 * Set the label to an empty string to omit the axis label.
-	 *
-	 * @deprecated set the label property in the BottomAxis directly
-	 * @param xlabel a short string describing the data plotted on the x-axis.
-	 */
-	KDE_DEPRECATED void setXAxisLabel( const QString& xlabel );
-	/**
-	 * Sets the Y-axis label
-	 * Set the label to an empty string to omit the axis label.
-	 *
-	 * @deprecated set the label property in the LeftAxis directly
-	 * @param ylabel a short string describing the data plotted on the y-axis.
-	 */
-	KDE_DEPRECATED void setYAxisLabel( const QString& ylabel );
-
-	/**
 	 * @returns the number of pixels to the left of the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
@@ -360,17 +343,6 @@ protected:
 	 * @param p pointer to the painter on which we are drawing
 	 */
 	virtual void drawBox( QPainter *p );
-
-	/**
-	 * Modulus function for double variables.
-	 * For example:
-	 * @code
-	 * double m = dmod( 17.0, 7.0 ); // m == 3.0
-	 * @endcode
-	 * @deprecated use fmod (already defined in \<math.h\>)
-	 * @return the remainder after dividing @p b into @p a.
-	 */
-	KDE_DEPRECATED double dmod( double a, double b );
 
 	virtual void recalcPixRect();
 

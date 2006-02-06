@@ -357,9 +357,6 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 	}
 }
 
-// DEPRECATED
-double KPlotWidget::dmod( double a, double b ) { return ( b * ( ( a / b ) - int( a / b ) ) ); }
-
 void KPlotWidget::drawBox( QPainter *p ) {
 	if ( ShowGrid ) {
 		//Grid lines are placed at locations of primary axes' major tickmarks
@@ -500,17 +497,6 @@ void KPlotWidget::drawBox( QPainter *p ) {
 
 
 }
-
-// DEPRECATED
-void KPlotWidget::setXAxisLabel( const QString& xlabel ) {
-	mAxes[BottomAxis]->setLabel(xlabel);
-}
-
-// DEPRECATED
-void KPlotWidget::setYAxisLabel( const QString& ylabel ) {
-	mAxes[LeftAxis]->setLabel(ylabel);
-}
-
 
 int KPlotWidget::leftPadding() const {
 	if ( LeftPadding >= 0 ) return LeftPadding;
