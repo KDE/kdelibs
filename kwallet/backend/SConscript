@@ -16,7 +16,7 @@ includes = '../client '
 
 obj = env.kdeobj('shlib')
 obj.target = 'kwalletbackend'
-obj.vnum = '1.0'
+obj.vnum = '1.0.1'
 obj.source = kwalletbackend_sources
 obj.includes = includes
 obj.libpaths = '../../kdecore ../../dcop '

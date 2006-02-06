@@ -106,7 +106,7 @@ for i in "kacceleratormanager_private.h kaccelprivate.h".split():
 	env.Moc(i)
 
 obj = env.kdeobj('shlib', env)
-obj.vnum     = '6.0.2'
+obj.vnum     = '4.2.0'
 obj.target   = 'kdecore'
 obj.source   = core_files
 #FIXME: DL is required for ../libltdl/libltdlc.a, although it is specified

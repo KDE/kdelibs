@@ -352,7 +352,7 @@ env.Moc("bookmarks/kbookmarkmenu_p.h")
 obj = env.kdeobj('shlib', env)
 obj.target   = 'kio'
 obj.iskdelib = 1
-obj.vnum     = '6.0.2'
+obj.vnum     = '4.2.0'
 obj.source   = kiocore_sources + ksycoca_sources + kssl_sources + kfile_sources + bookmarks_sources
 obj.includes = '. .. kio kssl ../interfaces kfile bookmarks misc ../kdecore/network '
 
@@ -380,12 +380,12 @@ obj.uselib += ' Z LIBART OPENSSL FAM VOLMGT'
 obj.execute()
 # For now ;(
 if env['MAC']:
-	env.Depends('libkio.6.0.2.dylib', '../kdesu/libkdesu.dylib')
-	env.Depends('libkio.6.0.2.dylib', '../kwallet/client/libkwalletclient.dylib')
+	env.Depends('libkio.4.2.0.dylib', '../kdesu/libkdesu.dylib')
+	env.Depends('libkio.4.2.0.dylib', '../kwallet/client/libkwalletclient.dylib')
 elif not env['WINDOWS']:
-	env.Depends('libkio.so.6.0.2', '../kdesu/libkdesu.so')
-	env.Depends('libkio.so.6.0.2', '../kwallet/client/libkwalletclient.so')
-	env.Depends('libkio.so.6.0.2', '../kdeui/libkdeui.so')
+	env.Depends('libkio.so.4.2.0', '../kdesu/libkdesu.so')
+	env.Depends('libkio.so.4.2.0', '../kwallet/client/libkwalletclient.so')
+	env.Depends('libkio.so.4.2.0', '../kdeui/libkdeui.so')
 
 servicetypes = [ 'application.desktop', 'kurifilterplugin.desktop', 'kscan.desktop', 
 'kdatatool.desktop', 'kfileplugin.desktop', 'kcmodule.desktop', 'renamedlgplugin.desktop' ]

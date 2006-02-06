@@ -14,7 +14,7 @@ includes = '. '
 
 obj = env.kdeobj('shlib')
 obj.target = 'kwalletclient'
-obj.vnum = '1.1'
+obj.vnum = '1.0.1'
 obj.source = kwalletclient_sources
 obj.includes = includes
 obj.libpaths = "../../dcop"
@@ -23,3 +23,4 @@ obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE '
 obj.execute()
 
 env.bksys_insttype( 'KDEINCLUDE', '', include_headers )
+

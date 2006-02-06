@@ -15,7 +15,7 @@ stub.h
 """
 
 obj = env.qt4obj('shlib', env)
-obj.vnum     = '6.0.2'
+obj.vnum     = '4.2.0'
 obj.target   = 'libkdesu'
 obj.source   = "client.cpp process.cpp kcookie.cpp su.cpp ssh.cpp stub.cpp kdesu_pty.cpp"
 obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
@@ -23,7 +23,7 @@ obj.libpaths = '../kdecore ../dcop'
 obj.libs     = 'kdecore DCOP'
 obj.execute()
 
-env.Depends('libkdesu.so.6.0.2','../kdecore/libkdecore.so')
+env.Depends('libkdesu.so.4.2.0','../kdecore/libkdecore.so')
 
 
 stubobj = env.qt4obj('program', env)

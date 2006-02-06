@@ -80,7 +80,7 @@ for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h 
        env.Moc(i)
 
 obj = env.kdeobj('shlib', env)
-obj.vnum     = '6.0.2'
+obj.vnum     = '4.2.0'
 obj.target   = 'kdeui'
 obj.source   = ui_files
 obj.uselib   = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KDECORE '
@@ -89,7 +89,7 @@ obj.libs     = 'kdefx DCOP'
 obj.iskdelib = 1
 obj.execute()
 
-env.Depends('libkdeui.so.6.0.2', '../kdefx/libkdefx.so')
+env.Depends('libkdeui.so.4.2.0', '../kdefx/libkdefx.so')
 
 env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
 env.bksys_insttype( 'KDEAPPS', 'kdeui/pics', 'aboutkde.png ktip-bulb.png ktip-background.png' )

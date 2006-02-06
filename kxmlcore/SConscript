@@ -13,7 +13,7 @@ HashTable.h HashTraits.h SharedPtr.h
 
 obj = env.kdeobj('shlib')
 obj.target = 'kxmlcore'
-obj.vnum = '3.0.2'
+obj.vnum = '1.2.0'
 obj.source = kxmlcore_sources
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()

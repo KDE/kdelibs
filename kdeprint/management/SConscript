@@ -68,7 +68,7 @@ obj.execute()
 
 obj = env.kdeobj('shlib')
 obj.target = 'kdeprint_management'
-obj.vnum = '6.0.2'
+obj.vnum = '4.2.0'
 obj.source = kdeprint_management_sources
 obj.includes = includes
 obj.libpaths = '.. ../../dcop ../../kded ../../kdefx ../../kdeprint  '

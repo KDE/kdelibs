@@ -69,7 +69,7 @@ if env.has_key('RUNTESTS') and env['RUNTESTS']:
 				appname = appname[1:]
 				
 		obj = env.kdeobj('program', env)
-		obj.vnum     = '6.0.2'
+		obj.vnum     = '4.2.0'
 		obj.target   = appname
 		obj.source   = appname + '.cpp'
 		obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT QTEST KDE4'

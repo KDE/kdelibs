@@ -57,7 +57,7 @@ includes = '#/kdefx #/kded #/kdecore/network '
 
 obj = env.kdeobj('shlib')
 obj.target = 'kdeprint'
-obj.vnum = '6.0.2'
+obj.vnum = '4.2.0'
 obj.source = libkdeprint_sources
 obj.includes = includes
 obj.ccflags += ' -D_KDEPRINT_COMPILE '
