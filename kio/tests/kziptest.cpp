@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002, 2003 David Faure   <faure@kde.org>
+ *  Copyright (C) 2002-2006 David Faure   <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -89,7 +89,6 @@ int main( int argc, char** argv )
     printf("\n"
  " Usage :\n"
  " ./kziptest list /path/to/existing_file.zip       tests listing an existing zip\n"
- " ./kziptest readwrite $PWD/newfile.zip            will create the zip, then close and reopen it.\n"
  " ./kziptest maxlength newfile.zip                 tests the maximum filename length allowed.\n"
  " ./kziptest print file.zip                        prints contents of all files.\n"
  " ./kziptest print2 file.zip filename              prints contents of one file.\n"
@@ -115,85 +114,6 @@ int main( int argc, char** argv )
     //printf("calling recursive_print\n");
     recursive_print( dir, "" );
     //printf("recursive_print called\n");
-
-    zip.close();
-
-    return 0;
-  }
-  else if (command == "readwrite" )
-  {
-    KZip zip( argv[2] );
-
-    if ( !zip.open( QIODevice::WriteOnly ) )
-    {
-      printf("Could not open %s for writing\n", argv[2]);
-      return 1;
-    }
-
-    zip.setCompression( KZip::NoCompression );
-    zip.writeFile( "typeid", "", "", "application/x-kword", 19 );
-    zip.setCompression( KZip::DeflateCompression );
-    zip.writeFile( "empty", "weis", "users", "", 0 );
-    zip.writeFile( "test1", "weis", "users", "Hallo", 5 );
-    zip.writeFile( "test2", "weis", "users", "Hallo Du", 8 );
-    zip.writeFile( "mydir/test3", "weis", "users", "Noch so einer", 13 );
-    zip.writeFile( "my/dir/test3", "dfaure", "hackers", "I don't speak German (David)", 29 );
-    zip.writeSymLink( "a_link", "mydir/test3", "leo", "leo", 0120777,
-    		1000000000l, 1000000000l, 1000000000l);
-
-#define SIZE1 100
-    // Now a medium file : 100 null bytes
-    char medium[ SIZE1 ];
-    memset( medium, 0, SIZE1 );
-    zip.writeFile( "mediumfile", "user", "group", medium, SIZE1 );
-    // Another one, with an absolute path
-    zip.writeFile( "/dir/subdir/mediumfile2", "user", "group", medium, SIZE1 );
-
-    // Now a huge file : 20000 null bytes
-    int n = 20000;
-    char * huge = new char[ n ];
-    memset( huge, 0, n );
-    zip.writeFile( "hugefile", "user", "group", huge, n );
-    delete [] huge;
-
-    // Now a file from the harddisk
-    zip.addLocalFile( ".libs/lt-kziptest", "lt-kziptest" );
-
-    printf( "calling close\n" );
-
-    zip.close();
-
-    printf("-----------------------\n");
-
-    if ( !zip.open( QIODevice::ReadOnly ) )
-    {
-      printf("Could not open %s for reading\n", argv[2] );
-      return 1;
-    }
-
-    const KArchiveDirectory* dir = zip.directory();
-    recursive_print(dir, "");
-
-    const KArchiveEntry* e = dir->entry( "mydir/test3" );
-    Q_ASSERT( e && e->isFile() );
-    const KArchiveFile* f = (KArchiveFile*)e;
-
-    QByteArray arr( f->data() );
-    Q_ASSERT( arr.size() == 13 );
-    printf("SIZE=%i\n",arr.size() );
-    QString str( arr );
-    Q_ASSERT( str == "Noch so einer" );
-    printf("DATA=%s\n", str.latin1());
-
-    e = dir->entry( "mediumfile" );
-    Q_ASSERT( e && e->isFile() );
-    f = (KArchiveFile*)e;
-    Q_ASSERT( f->data().size() == SIZE1 );
-
-    e = dir->entry( "hugefile" );
-    Q_ASSERT( e && e->isFile() );
-    f = (KArchiveFile*)e;
-    Q_ASSERT( f->data().size() == 20000 );
 
     zip.close();
 

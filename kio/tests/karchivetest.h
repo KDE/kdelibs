@@ -10,7 +10,11 @@ private Q_SLOTS:
     void testCreateTar();
     void testReadTar();
     void testTarFileData();
-    void testMaxLength();
+    void testTarMaxLength();
+
+    void testCreateZip();
+    void testReadZip();
+    void testZipFileData();
 };
 
 

@@ -814,9 +814,10 @@ a listDir result.</li>
 <H4>KArchive/KTar/KZip/KAr</H4>
 <ul>
 <li>All sizes and file offsets now use qint64 (similar to QIODevice)</li>
-<li>The API has changed for subclasses: writeDir is doWriteDir, prepareWriting is doPrepareWriting etc.</li>
-<li>API changes for users of the class: doneWriting was renamed to finishWriting, and 
-   the order of the arguments for writeFile() is more usual: data comes before size.</li>
+<li>The API has changed for subclasses: there is a KArchive constructor that takes a filename, and which provides KSaveFile support automatically, writeDir is doWriteDir, prepareWriting is doPrepareWriting etc.</li>
+<li>API changes for users of the class: isOpened() was renamed to isOpen(),
+   doneWriting() to finishWriting(), and the order of the arguments for writeFile() is more usual:
+   data comes before size.</li>
 <li>KTarDirectory -&gt; KArchiveDirectory</li>
 <li>KTarFile -&gt; KArchiveFile</li>
 <li>KTarEntry -&gt; KArchiveEntry</li>
