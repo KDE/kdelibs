@@ -18,6 +18,7 @@ obj = env.kdeobj('shlib')
 obj.target = 'kmediaplayer'
 obj.source = kmediaplayer_sources
 obj.includes = includes
+obj.vnum = '0.0.0'
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
 obj.execute()
 
