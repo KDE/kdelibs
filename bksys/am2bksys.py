@@ -165,7 +165,14 @@ Import('env')
 				if index < len(flags):
 					version = flags[index]
 					if version.replace(':','').isdigit():
-						out_buf += "obj.vnum = '%s'\n" % version.replace(':','.')
+						tab = version.split(':')
+						
+						if len(tab) == 3:
+							val = eval(tab[0])-eval(tab[2])
+							newVal = str(val) + "." + tab[2]+ "." + tab[1]
+						else:
+							newVal = tab[0] + "." + tab[1]+ ".0"
+						out_buf += "obj.vnum = '%s'\n" % newVal 
 					else:
 						print "WARNING: version-info format is incorrect"
 		
