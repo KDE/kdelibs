@@ -57,8 +57,8 @@ obj.source = kaddprinterwizard_sources
 obj.includes = includes
 obj.libs = 'kdeprint_management '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE KDEUI KIO KDEFX'
-obj.libpaths = ' ../../dcop ../../kdeprint ../../kdeprint/management '
-obj.libs     = ' DCOP kdeprint_management kdeprint '
+obj.libpaths = ' ../../dcop ../../kdeprint ../../kdeprint/management ../../kdefx '
+obj.libs     = ' DCOP kdeprint_management kdeprint kdefx'
 if env['WINDOWS']:
 	obj.ccflags += ' -Dkdemain=main '
 else:
