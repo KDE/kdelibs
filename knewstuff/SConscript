@@ -34,7 +34,7 @@ includes = ' '
 
 obj = env.kdeobj('shlib')
 obj.target = 'knewstuff'
-obj.vnum = '1.0'
+obj.vnum = '1.0.0'
 obj.source = knewstuff_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QTXML QT3SUPPORT KDE4 KDECORE KDEUI KIO '
