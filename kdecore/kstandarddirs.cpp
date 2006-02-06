@@ -102,7 +102,7 @@ static const char* const types[] = {"html", "icon", "apps", "sound",
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
 
-KStandardDirs::KStandardDirs() 
+KStandardDirs::KStandardDirs()
 	: addedCustoms(false),
 	d(new KStandardDirsPrivate)
 {
@@ -668,6 +668,7 @@ KStandardDirs::findAllResources( const char *type,
     return findAllResources(type, filter, recursive, unique, relList);
 }
 
+// ####### KDE4: should this be removed, in favour of QDir::canonicalPath()?
 QString
 KStandardDirs::realPath(const QString &dirname)
 {
@@ -686,6 +687,7 @@ KStandardDirs::realPath(const QString &dirname)
     return dirname;
 }
 
+// ####### KDE4: should this be removed, in favour of QDir::canonicalPath()?
 QString
 KStandardDirs::realFilePath(const QString &filename)
 {
