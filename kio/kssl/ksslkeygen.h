@@ -41,7 +41,7 @@ class KGWizardPage2;
  * @see KSSL, KSSLCertificate, KSSLPKCS12
  * @short KDE Key Generation Dialog
  */
-class KIO_EXPORT KSSLKeyGen : public K3Wizard {
+class KIO_EXPORT KSSLKeyGen : public Q3Wizard {
 	Q_OBJECT
 public:
 	/**
