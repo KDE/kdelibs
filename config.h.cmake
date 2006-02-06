@@ -320,7 +320,7 @@ cmakedefine   HAVE__ICETRANSNOLISTEN
 
 /*********************/
 
-#if !defined(HAVE_GETHOSTNAME_PROTO)
+#if !defined(HAVE_GETHOSTNAME_PROTO) && !defined(HAVE_GETHOSTNAME)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -332,8 +332,13 @@ int gethostname (char *, unsigned int);
 
 
 
-#if !defined(HAVE_INITGROUPS_PROTO)
+#if !defined(HAVE_INITGROUPS_PROTO) && !defined(HAVE_INITGROUPS)
+#ifndef _WIN32
 #include <unistd.h>
+#else
+//don't include msvc/unistd.h
+typedef unsigned int gid_t;
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -345,7 +350,7 @@ int initgroups(const char *, gid_t);
 
 
 
-#if !defined(HAVE_MKDTEMP_PROTO)
+#if !defined(HAVE_MKDTEMP_PROTO) && !defined(HAVE_MKDTEMP)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -357,7 +362,7 @@ char *mkdtemp(char *);
 
 
 
-#if !defined(HAVE_MKSTEMPS_PROTO)
+#if !defined(HAVE_MKSTEMPS_PROTO) && !defined(HAVE_MKSTEMPS)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -369,7 +374,7 @@ int mkstemps(char *, int);
 
 
 
-#if !defined(HAVE_MKSTEMP_PROTO)
+#if !defined(HAVE_MKSTEMP_PROTO) && !defined(HAVE_MKSTEMP)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -381,7 +386,7 @@ int mkstemp(char *);
 
 
 
-#if !defined(HAVE_RANDOM_PROTO)
+#if !defined(HAVE_RANDOM_PROTO) && !defined(HAVE_RANDOM)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -393,7 +398,7 @@ long int random(void);
 
 
 
-#if !defined(HAVE_RES_INIT_PROTO)
+#if !defined(HAVE_RES_INIT_PROTO) && !defined(HAVE_RES_INIT)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -405,7 +410,7 @@ int res_init(void);
 
 
 
-#if !defined(HAVE_SETENV_PROTO)
+#if !defined(HAVE_SETENV_PROTO) && !defined(HAVE_SETENV)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -417,7 +422,7 @@ int setenv (const char *, const char *, int);
 
 
 
-#if !defined(HAVE_SRANDOM_PROTO)
+#if !defined(HAVE_SRANDOM_PROTO) && !defined(HAVE_SRANDOM)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -429,7 +434,7 @@ void srandom(unsigned int);
 
 
 
-#if !defined(HAVE_STRLCAT_PROTO)
+#if !defined(HAVE_STRLCAT_PROTO) && !defined(HAVE_STRLCAT)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -441,7 +446,7 @@ unsigned long strlcat(char*, const char*, unsigned long);
 
 
 
-#if !defined(HAVE_STRLCPY_PROTO)
+#if !defined(HAVE_STRLCPY_PROTO) && !defined(HAVE_STRLCPY)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -453,7 +458,7 @@ unsigned long strlcpy(char*, const char*, unsigned long);
 
 
 
-#if !defined(HAVE_UNSETENV_PROTO)
+#if !defined(HAVE_UNSETENV_PROTO) && !defined(HAVE_UNSETENV)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -465,7 +470,7 @@ int unsetenv (const char *);
 
 
 
-#if !defined(HAVE_USLEEP_PROTO)
+#if !defined(HAVE_USLEEP_PROTO) && !defined(HAVE_USLEEP)
 #ifdef __cplusplus
 extern "C" {
 #endif
