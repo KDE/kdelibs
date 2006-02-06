@@ -69,13 +69,6 @@ public:
     virtual ~KZip();
 
     /**
-     * The name of the zip file, as passed to the constructor.
-     * Null if you used the QIODevice constructor.
-     * @return the zip's file name, or null if a QIODevice is used
-     */
-    QString fileName() { return m_filename; }
-
-    /**
      * Describes the contents of the "extra field" for a given file in the Zip archive.
      */
     enum ExtraField { NoExtraField = 0,      ///< No extra field
@@ -167,11 +160,8 @@ protected:
 
 protected:
     virtual void virtual_hook( int id, void* data );
-private:
-    void abort();
 
 private:
-    QString m_filename;
     class KZipPrivate;
     KZipPrivate * d;
 };

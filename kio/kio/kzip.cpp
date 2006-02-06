@@ -41,7 +41,6 @@
 #include "kfilterdev.h"
 #include "klimitediodevice.h"
 #include <kmimetype.h>
-#include <ksavefile.h>
 #include <kdebug.h>
 
 #include <q3asciidict.h>
@@ -108,7 +107,6 @@ static time_t transformFromMsDos(const char* buffer)
 /** all relevant information about parsing file information */
 struct ParseFileInfo {
   // file related info
-//  QCString name;		// filename
   mode_t perm;			// permissions of this file
   time_t atime;			// last access time (UNIX format)
   time_t mtime;			// modification time (UNIX format)
@@ -312,12 +310,12 @@ class KZip::KZipPrivate
 public:
     KZipPrivate()
         : m_crc( 0 ),
-          m_currentFile( 0L ),
-          m_currentDev( 0L ),
+          m_currentFile( 0 ),
+          m_currentDev( 0 ),
           m_compression( 8 ),
           m_extraField( KZip::NoExtraField ),
-	  m_offset( 0L ),
-          m_saveFile( 0 ) {}
+	  m_offset( 0 )
+    {}
 
     unsigned long           m_crc;         // checksum
     KZipFileEntry*          m_currentFile; // file currently being written
@@ -325,42 +323,28 @@ public:
     Q3PtrList<KZipFileEntry> m_fileList;    // flat list of all files, for the index (saves a recursive method ;)
     int                     m_compression;
     KZip::ExtraField        m_extraField;
-    unsigned int            m_offset; // holds the offset of the place in the zip,
+    // m_offset holds the offset of the place in the zip,
     // where new data can be appended. after openarchive it points to 0, when in
     // writeonly mode, or it points to the beginning of the central directory.
     // each call to writefile updates this value.
-    KSaveFile*              m_saveFile;
+    unsigned int            m_offset;
 };
 
-KZip::KZip( const QString& filename )
-    : KArchive( 0L ),d(new KZipPrivate)
+KZip::KZip( const QString& fileName )
+    : KArchive( fileName ),d(new KZipPrivate)
 {
-    //kDebug(7040) << "KZip(filename) reached." << endl;
-    Q_ASSERT( !filename.isEmpty() );
-    m_filename = filename;
-    // unusual: this ctor leaves the device set to 0.
-    // This is for the use of KSaveFile, see openArchive.
-    // KDE4: move KSaveFile support to base class, KArchive.
 }
 
 KZip::KZip( QIODevice * dev )
     : KArchive( dev ),d(new KZipPrivate)
 {
-    //kDebug(7040) << "KZip::KZip( QIODevice * dev) reached." << endl;
 }
 
 KZip::~KZip()
 {
-    // mjarrett: Closes to prevent ~KArchive from aborting w/o device
     //kDebug(7040) << "~KZip reached." << endl;
-    if( isOpened() )
+    if( isOpen() )
         close();
-    if ( !m_filename.isEmpty() ) { // we created the device ourselves
-        if ( d->m_saveFile ) // writing mode
-            delete d->m_saveFile;
-        else // reading mode
-            delete device(); // (the QFile)
-    }
     delete d;
 }
 
@@ -369,48 +353,13 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
     //kDebug(7040) << "openarchive reached." << endl;
     d->m_fileList.clear();
 
-    switch ( mode ) {
-    case QIODevice::WriteOnly:
-        // The use of KSaveFile can't be done in the ctor (no mode known yet)
-        // Ideally we would reimplement open() and do it there (BIC)
-        if ( !m_filename.isEmpty() ) {
-            kDebug(7040) << "Writing to a file using KSaveFile" << endl;
-            d->m_saveFile = new KSaveFile( m_filename );
-            if ( d->m_saveFile->status() != 0 ) {
-                kWarning(7040) << "KSaveFile creation for " << m_filename << " failed, " << strerror( d->m_saveFile->status() ) << endl;
-                delete d->m_saveFile;
-                d->m_saveFile = 0;
-                return false;
-            }
-            Q_ASSERT( d->m_saveFile->file() );
-            setDevice( d->m_saveFile->file() );
-        }
+    if ( mode == QIODevice::WriteOnly )
         return true;
-    case QIODevice::ReadOnly:
-    case QIODevice::ReadWrite:
-    {
-        // ReadWrite mode still uses QFile for now; we'd need to copy to the tempfile, in fact.
-        if ( !m_filename.isEmpty() ) {
-            setDevice( new QFile( m_filename ) );
-            if ( !device()->open( mode ) )
-                return false;
-        }
-        break; // continued below
-    }
-    default:
-        kWarning(7040) << "Unsupported mode " << mode << endl;
-        return false;
-    }
 
     char buffer[47];
 
     // Check that it's a valid ZIP file
     // KArchive::open() opened the underlying device already.
-    QIODevice* dev = device();
-
-    if (!dev) {
-        return false;
-    }
 
     uint offset = 0; // holds offset, where we read
     int n;
@@ -419,14 +368,16 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
     Q3AsciiDict<ParseFileInfo> pfi_map(1009, true /*case sensitive */, true /*copy keys*/);
     pfi_map.setAutoDelete(true);
 
+    QIODevice* dev = device();
+
     // We set a bool for knowing if we are allowed to skip the start of the file
     bool startOfFile = true;
 
     for (;;) // repeat until 'end of entries' signature is reached
     {
-kDebug(7040) << "loop starts" << endl;
-kDebug(7040) << "dev->at() now : " << dev->at() << endl;
-        n = dev->readBlock( buffer, 4 );
+        //kDebug(7040) << "loop starts" << endl;
+        //kDebug(7040) << "dev->pos() now : " << dev->pos() << endl;
+        n = dev->read( buffer, 4 );
 
         if (n < 4)
         {
@@ -437,20 +388,20 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 
         if ( !memcmp( buffer, "PK\5\6", 4 ) ) // 'end of entries'
         {
-	    kDebug(7040) << "PK56 found end of archive" << endl;
+	    //kDebug(7040) << "PK56 found end of archive" << endl;
             startOfFile = false;
 	    break;
 	}
 
 	if ( !memcmp( buffer, "PK\3\4", 4 ) ) // local file header
         {
-	    kDebug(7040) << "PK34 found local file header" << endl;
+	    //kDebug(7040) << "PK34 found local file header" << endl;
             startOfFile = false;
             // can this fail ???
-	    dev->at( dev->at() + 2 ); // skip 'version needed to extract'
+	    dev->seek( dev->pos() + 2 ); // skip 'version needed to extract'
 
 	    // read static header stuff
-            n = dev->readBlock( buffer, 24 );
+            n = dev->read( buffer, 24 );
 	    if (n < 24) {
                 kWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#4)" << endl;
                 return false;
@@ -467,34 +418,37 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 	    int namelen = (uchar)buffer[20] | (uchar)buffer[21] << 8;
 	    int extralen = (uchar)buffer[22] | (uchar)buffer[23] << 8;
 
+            /*
 	    kDebug(7040) << "general purpose bit flag: " << gpf << endl;
 	    kDebug(7040) << "compressed size: " << compr_size << endl;
 	    kDebug(7040) << "uncompressed size: " << uncomp_size << endl;
 	    kDebug(7040) << "namelen: " << namelen << endl;
 	    kDebug(7040) << "extralen: " << extralen << endl;
 	    kDebug(7040) << "archive size: " << dev->size() << endl;
+	    */
 
-	    // read filename
-	    QByteArray filename(namelen+1);
-	    n = dev->readBlock(filename.data(), namelen);
-            if ( n < namelen ) {
+	    // read fileName
+            Q_ASSERT( namelen > 0 );
+	    QByteArray fileName = dev->read(namelen);
+            if ( fileName.size() < namelen ) {
                 kWarning(7040) << "Invalid ZIP file. Name not completely read (#2)" << endl;
 		return false;
 	    }
 
 	    ParseFileInfo *pfi = new ParseFileInfo();
 	    pfi->mtime = mtime;
-	    pfi_map.insert(filename.data(), pfi);
+	    pfi_map.insert(fileName.data(), pfi);
 
             // read and parse the beginning of the extra field,
             // skip rest of extra field in case it is too long
-            unsigned int extraFieldEnd = dev->at() + extralen;
+            unsigned int extraFieldEnd = dev->pos() + extralen;
 	    pfi->extralen = extralen;
 	    int handledextralen = qMin(extralen, (int)sizeof buffer);
 
-	    kDebug(7040) << "handledextralen: " << handledextralen << endl;
+            if ( handledextralen )
+                kDebug(7040) << "handledextralen: " << handledextralen << endl;
 
-	    n = dev->readBlock(buffer, handledextralen);
+	    n = dev->read(buffer, handledextralen);
 	    // no error msg necessary as we deliberately truncate the extra field
 	    if (!parseExtraField(buffer, handledextralen, true, *pfi))
 	    {
@@ -503,7 +457,7 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 	    }
 
             // jump to end of extra field
-            dev->at( extraFieldEnd );
+            dev->seek( extraFieldEnd );
 
 	    // we have to take care of the 'general purpose bit flag'.
             // if bit 3 is set, the header doesn't contain the length of
@@ -517,7 +471,7 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 
                 while (!foundSignature)
                 {
-                    n = dev->readBlock( buffer, 1 );
+                    n = dev->read( buffer, 1 );
                     if (n < 1)
                     {
                         kWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#2)" << endl;
@@ -527,7 +481,7 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
                     if ( buffer[0] != 'P' )
                         continue;
 
-                    n = dev->readBlock( buffer, 3 );
+                    n = dev->read( buffer, 3 );
                     if (n < 3)
                     {
                         kWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#3)" << endl;
@@ -542,18 +496,18 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 		    if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
                     {
                         foundSignature = true;
-                        dev->at( dev->at() + 12 ); // skip the 'data_descriptor'
+                        dev->seek( dev->pos() + 12 ); // skip the 'data_descriptor'
                     }
 		    else if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
 		         || ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
                     {
                         foundSignature = true;
-                        dev->at( dev->at() - 4 ); // go back 4 bytes, so that the magic bytes can be found...
+                        dev->seek( dev->pos() - 4 ); // go back 4 bytes, so that the magic bytes can be found...
                     }
                     else if ( buffer[0] == 'P' || buffer[1] == 'P' || buffer[2] == 'P' )
                     {
                         // We have another P character so we must go back a little to check if it is a magic
-                        dev->at( dev->at() - 3 );
+                        dev->seek( dev->pos() - 3 );
                     }
 
                 }
@@ -561,16 +515,15 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
             else
             {
 	    	// here we skip the compressed data and jump to the next header
-	        kDebug(7040) << "general purpose bit flag indicates, that local file header contains valid size" << endl;
+	        //kDebug(7040) << "general purpose bit flag indicates, that local file header contains valid size" << endl;
 		// check if this could be a symbolic link
 		if (compression_mode == NoCompression
 	    		&& uncomp_size <= max_path_len
 			&& uncomp_size > 0) {
 		    // read content and store it
-		    pfi->guessed_symlink.resize(uncomp_size + 1);
-       	            kDebug(7040) << "guessed symlink size: " << uncomp_size << endl;
-		    n = dev->readBlock(pfi->guessed_symlink.data(), uncomp_size);
-		    if (n < uncomp_size) {
+                    // If it's not a symlink, then we'll just discard the data for now.
+		    pfi->guessed_symlink = dev->read(uncomp_size);
+		    if (pfi->guessed_symlink.size() < uncomp_size) {
 			kWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#5)" << endl;
 			return false;
 		    }
@@ -584,7 +537,7 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 
 			while (!foundSignature)
 			{
-				n = dev->readBlock( buffer, 1 );
+				n = dev->read( buffer, 1 );
 				if (n < 1)
 				{
 					kWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#2)" << endl;
@@ -594,7 +547,7 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 				if ( buffer[0] != 'P' )
 					continue;
 
-				n = dev->readBlock( buffer, 3 );
+				n = dev->read( buffer, 3 );
 				if (n < 3)
 				{
 					kWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#3)" << endl;
@@ -609,14 +562,14 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 				if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
 				{
 					foundSignature = true;
-					dev->at( dev->at() + 12 ); // skip the 'data_descriptor'
+					dev->seek( dev->pos() + 12 ); // skip the 'data_descriptor'
 				}
 
 				if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
 					|| ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
 				{
 					foundSignature = true;
-					dev->at( dev->at() - 4 );
+					dev->seek( dev->pos() - 4 );
 					// go back 4 bytes, so that the magic bytes can be found
 					// in the next cycle...
 				}
@@ -624,10 +577,10 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 		    }
 		    else
 		    {
-// 			kDebug(7040) << "before interesting dev->at(): " << dev->at() << endl;
-			bool success;
-			success = dev->at( dev->at() + compr_size ); // can this fail ???
-/*			kDebug(7040) << "after interesting dev->at(): " << dev->at() << endl;
+// 			kDebug(7040) << "before interesting dev->pos(): " << dev->pos() << endl;
+			bool success = dev->seek( dev->pos() + compr_size ); // can this fail ???
+                        Q_ASSERT( success ); // let's see...
+/*			kDebug(7040) << "after interesting dev->pos(): " << dev->pos() << endl;
 			if ( success )
 				kDebug(7040) << "dev->at was successful... " << endl;
 			else
@@ -645,18 +598,18 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
         }
         else if ( !memcmp( buffer, "PK\1\2", 4 ) ) // central block
         {
-	    kDebug(7040) << "PK12 found central block" << endl;
+	    //kDebug(7040) << "PK12 found central block" << endl;
             startOfFile = false;
 
             // so we reached the central header at the end of the zip file
             // here we get all interesting data out of the central header
             // of a file
-            offset = dev->at() - 4;
+            offset = dev->pos() - 4;
 
             //set offset for appending new files
             if ( d->m_offset == 0L ) d->m_offset = offset;
 
-            n = dev->readBlock( buffer + 4, 42 );
+            n = dev->read( buffer + 4, 42 );
             if (n < 42) {
                 kWarning(7040) << "Invalid ZIP file, central entry too short" << endl; // not long enough for valid entry
                 return false;
@@ -664,11 +617,11 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 
             //int gpf = (uchar)buffer[9] << 8 | (uchar)buffer[10];
             //kDebug() << "general purpose flag=" << gpf << endl;
-            // length of the filename (well, pathname indeed)
+            // length of the fileName (well, pathname indeed)
             int namelen = (uchar)buffer[29] << 8 | (uchar)buffer[28];
-            QByteArray bufferName( namelen + 1 );
-            n = dev->readBlock( bufferName.data(), namelen );
-            if ( n < namelen )
+            Q_ASSERT( namelen > 0 );
+            QByteArray bufferName = dev->read( namelen );
+            if ( bufferName.size() < namelen )
                 kWarning(7040) << "Invalid ZIP file. Name not completely read" << endl;
 
             ParseFileInfo *pfi = pfi_map[bufferName];
@@ -790,7 +743,7 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 
             //calculate offset to next entry
             offset += 46 + commlen + extralen + namelen;
-            bool b = dev->at(offset);
+            bool b = dev->seek(offset);
             Q_ASSERT( b );
             if ( !b )
               return false;
@@ -805,7 +758,7 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
 
             while (!foundSignature)
             {
-                n = dev->readBlock( buffer, 1 );
+                n = dev->read( buffer, 1 );
                 if (n < 1)
                 {
                     kWarning(7040) << "Invalid ZIP file. Unexpected end of file. " << k_funcinfo << endl;
@@ -815,7 +768,7 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
                 if ( buffer[0] != 'P' )
                     continue;
 
-                n = dev->readBlock( buffer, 3 );
+                n = dev->read( buffer, 3 );
                 if (n < 3)
                 {
                     kWarning(7040) << "Invalid ZIP file. Unexpected end of file. " << k_funcinfo << endl;
@@ -830,12 +783,12 @@ kDebug(7040) << "dev->at() now : " << dev->at() << endl;
                 if ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 )
                 {
                     foundSignature = true;
-                    dev->at( dev->at() - 4 ); // go back 4 bytes, so that the magic bytes can be found...
+                    dev->seek( dev->pos() - 4 ); // go back 4 bytes, so that the magic bytes can be found...
                 }
                 else if ( buffer[0] == 'P' || buffer[1] == 'P' || buffer[2] == 'P' )
                 {
                         // We have another P character so we must go back a little to check if it is a magic
-                    dev->at( dev->at() - 3 );
+                    dev->seek( dev->pos() - 3 );
                 }
             }
         }
@@ -861,23 +814,20 @@ bool KZip::closeArchive()
     //ReadWrite or WriteOnly
     //write all central dir file entries
 
-    if ( !device() ) // saving aborted
-        return false;
-
     // to be written at the end of the file...
     char buffer[ 22 ]; // first used for 12, then for 22 at the end
     uLong crc = crc32(0L, Z_NULL, 0);
 
-    qint64 centraldiroffset = device()->at();
+    qint64 centraldiroffset = device()->pos();
     //kDebug(7040) << "closearchive: centraldiroffset: " << centraldiroffset << endl;
     qint64 atbackup = centraldiroffset;
     Q3PtrListIterator<KZipFileEntry> it( d->m_fileList );
 
     for ( ; it.current() ; ++it )
     {	//set crc and compressed size in each local file header
-        if ( !device()->at( it.current()->headerStart() + 14 ) )
+        if ( !device()->seek( it.current()->headerStart() + 14 ) )
             return false;
-	//kDebug(7040) << "closearchive setcrcandcsize: filename: "
+	//kDebug(7040) << "closearchive setcrcandcsize: fileName: "
 	//    << it.current()->path()
 	//    << " encoding: "<< it.current()->encoding() << endl;
 
@@ -899,14 +849,14 @@ bool KZip::closeArchive()
         buffer[10] = char(myusize >> 16);
         buffer[11] = char(myusize >> 24);
 
-        if ( device()->writeBlock( buffer, 12 ) != 12 )
+        if ( device()->write( buffer, 12 ) != 12 )
             return false;
     }
-    device()->at( atbackup );
+    device()->seek( atbackup );
 
     for ( it.toFirst(); it.current() ; ++it )
     {
-        //kDebug(7040) << "closearchive: filename: " << it.current()->path()
+        //kDebug(7040) << "closearchive: fileName: " << it.current()->path()
         //              << " encoding: "<< it.current()->encoding() << endl;
 
         QByteArray path = QFile::encodeName(it.current()->path());
@@ -926,7 +876,7 @@ bool KZip::closeArchive()
 
 	// I do not know why memcpy is not working here
         //memcpy(buffer, head, sizeof(head));
-        qmemmove(buffer, head, sizeof(head));
+        memmove(buffer, head, sizeof(head));
 
         buffer[ 10 ] = char(it.current()->encoding()); // compression method
         buffer[ 11 ] = char(it.current()->encoding() >> 8);
@@ -951,7 +901,7 @@ bool KZip::closeArchive()
         buffer[ 26 ] = char(mysize >> 16);
         buffer[ 27 ] = char(mysize >> 24);
 
-        buffer[ 28 ] = char(it.current()->path().length()); // filename length
+        buffer[ 28 ] = char(it.current()->path().length()); // fileName length
         buffer[ 29 ] = char(it.current()->path().length() >> 8);
 
 	buffer[ 30 ] = char(extra_field_len);
@@ -986,14 +936,14 @@ bool KZip::closeArchive()
 	extfield[8] = char(time >> 24);
 
         crc = crc32(crc, (Bytef *)buffer, bufferSize );
-        bool ok = ( device()->writeBlock( buffer, bufferSize ) == bufferSize );
+        bool ok = ( device()->write( buffer, bufferSize ) == bufferSize );
         delete[] buffer;
         if ( !ok )
             return false;
     }
-    qint64 centraldirendoffset = device()->at();
+    qint64 centraldirendoffset = device()->pos();
     //kDebug(7040) << "closearchive: centraldirendoffset: " << centraldirendoffset << endl;
-    //kDebug(7040) << "closearchive: device()->at(): " << device()->at() << endl;
+    //kDebug(7040) << "closearchive: device()->pos(): " << device()->pos() << endl;
 
     //write end of central dir record.
     buffer[ 0 ] = 'P'; //end of central dir signature
@@ -1034,15 +984,8 @@ bool KZip::closeArchive()
     buffer[ 20 ] = 0; //zipfile comment length
     buffer[ 21 ] = 0;
 
-    if ( device()->writeBlock( buffer, 22 ) != 22 )
+    if ( device()->write( buffer, 22 ) != 22 )
         return false;
-
-    if ( d->m_saveFile ) {
-        d->m_saveFile->close();
-        setDevice( 0 );
-        delete d->m_saveFile;
-        d->m_saveFile = 0;
-    }
 
     //kDebug(7040) << __FILE__" reached." << endl;
     return true;
@@ -1052,7 +995,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
                                const QString &group, qint64 /*size*/, mode_t perm,
                                time_t atime, time_t mtime, time_t ctime) {
     //kDebug(7040) << "prepareWriting reached." << endl;
-    if ( !isOpened() )
+    if ( !isOpen() )
     {
         qWarning( "KZip::writeFile: You must open the zip file before writing to it\n");
         return false;
@@ -1064,28 +1007,24 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
         return false;
     }
 
-    if ( !device() ) { // aborted
-        //kWarning(7040) << "prepareWriting: no device" << endl;
-        return false;
-    }
+    Q_ASSERT( device() );
 
     // set right offset in zip.
-    if ( !device()->at( d->m_offset ) ) {
+    if ( !device()->seek( d->m_offset ) ) {
         kWarning(7040) << "doPrepareWriting: cannot seek in ZIP file. Disk full?" << endl;
-        abort();
         return false;
     }
 
-    // delete entries in the filelist with the same filename as the one we want
+    // delete entries in the filelist with the same fileName as the one we want
     // to save, so that we don't have duplicate file entries when viewing the zip
     // with konqi...
     // CAUTION: the old file itself is still in the zip and won't be removed !!!
     Q3PtrListIterator<KZipFileEntry> it( d->m_fileList );
 
-	//kDebug(7040) << "filename to write: " << name <<endl;
+	//kDebug(7040) << "fileName to write: " << name <<endl;
     for ( ; it.current() ; ++it )
     {
-    	//kDebug(7040) << "prepfilename: " << it.current()->path() <<endl;
+    	//kDebug(7040) << "prepfileName: " << it.current()->path() <<endl;
 		if (name == it.current()->path() )
         {
 	    	//kDebug(7040) << "removing following entry: " << it.current()->path() <<endl;
@@ -1107,9 +1046,9 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
 
     // construct a KZipFileEntry and add it to list
     KZipFileEntry * e = new KZipFileEntry( this, fileName, perm, mtime, user, group, QString(),
-                                           name, device()->at() + 30 + name.length(), // start
+                                           name, device()->pos() + 30 + name.length(), // start
                                            0 /*size unknown yet*/, d->m_compression, 0 /*csize unknown yet*/ );
-    e->setHeaderStart( device()->at() );
+    e->setHeaderStart( device()->pos() );
     //kDebug(7040) << "wrote file start: " << e->position() << " name: " << name << endl;
     parentDir->addEntry( e );
 
@@ -1157,7 +1096,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     buffer[ 24 ] = 'I';
     buffer[ 25 ] = 'Z';
 
-    buffer[ 26 ] = (uchar)(encodedName.length()); //filename length
+    buffer[ 26 ] = (uchar)(encodedName.length()); //fileName length
     buffer[ 27 ] = (uchar)(encodedName.length() >> 8);
 
     buffer[ 28 ] = (uchar)(extra_field_len); // extra field length
@@ -1194,13 +1133,12 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     }
 
     // Write header
-    bool b = (device()->writeBlock( buffer, bufferSize ) == bufferSize );
+    bool b = (device()->write( buffer, bufferSize ) == bufferSize );
     d->m_crc = 0L;
     delete[] buffer;
 
     Q_ASSERT( b );
     if (!b) {
-        abort();
         return false;
     }
 
@@ -1214,7 +1152,6 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     d->m_currentDev = KFilterDev::device( device(), "application/x-gzip", false );
     Q_ASSERT( d->m_currentDev );
     if ( !d->m_currentDev ) {
-        abort();
         return false; // ouch
     }
     static_cast<KFilterDev *>(d->m_currentDev)->setSkipHeaders(); // Just zlib, not gzip
@@ -1228,7 +1165,7 @@ bool KZip::doFinishWriting( qint64 size )
 {
     if ( d->m_currentFile->encoding() == 8 ) {
         // Finish
-        (void)d->m_currentDev->writeBlock( 0, 0 );
+        (void)d->m_currentDev->write( 0, 0 );
         delete d->m_currentDev;
     }
     // If 0, d->m_currentDev was device() - don't delete ;)
@@ -1236,14 +1173,14 @@ bool KZip::doFinishWriting( qint64 size )
 
     Q_ASSERT( d->m_currentFile );
     //kDebug(7040) << "donewriting reached." << endl;
-    //kDebug(7040) << "filename: " << d->m_currentFile->path() << endl;
-    //kDebug(7040) << "getpos (at): " << device()->at() << endl;
+    //kDebug(7040) << "fileName: " << d->m_currentFile->path() << endl;
+    //kDebug(7040) << "getpos (at): " << device()->pos() << endl;
     d->m_currentFile->setSize(size);
     int extra_field_len = 0;
     if ( d->m_extraField == ModificationTime )
         extra_field_len = 17;	// value also used in finishWriting()
 
-    int csize = device()->at() -
+    int csize = device()->pos() -
         d->m_currentFile->headerStart() - 30 -
 		d->m_currentFile->path().length() - extra_field_len;
     d->m_currentFile->setCompressedSize(csize);
@@ -1257,7 +1194,7 @@ bool KZip::doFinishWriting( qint64 size )
     d->m_currentFile = 0L;
 
     // update saved offset for appending new files
-    d->m_offset = device()->at();
+    d->m_offset = device()->pos();
     return true;
 }
 
@@ -1303,7 +1240,6 @@ bool KZip::writeData(const char * data, qint64 size)
     Q_ASSERT( d->m_currentFile );
     Q_ASSERT( d->m_currentDev );
     if (!d->m_currentFile || !d->m_currentDev) {
-        abort();
         return false;
     }
 
@@ -1313,10 +1249,7 @@ bool KZip::writeData(const char * data, qint64 size)
 
     qint64 written = d->m_currentDev->write( data, size );
     //kDebug(7040) << "KZip::writeData wrote " << size << " bytes." << endl;
-    bool ok = written == size;
-    if ( !ok )
-        abort();
-    return ok;
+    return written == size;
 }
 
 void KZip::setCompression( Compression c )
@@ -1337,14 +1270,6 @@ void KZip::setExtraField( ExtraField ef )
 KZip::ExtraField KZip::extraField() const
 {
     return d->m_extraField;
-}
-
-void KZip::abort()
-{
-    if ( d->m_saveFile ) {
-        d->m_saveFile->abort();
-        setDevice( 0 );
-    }
 }
 
 

@@ -318,7 +318,8 @@ void KURIFilter::loadPlugins()
 
     for (; it != end; ++it )
     {
-      KURIFilterPlugin *plugin = KParts::ComponentFactory::createInstanceFromService<KURIFilterPlugin>( *it, 0, (*it)->desktopEntryName().latin1() );
+      KURIFilterPlugin *plugin = KParts::ComponentFactory::createInstanceFromService<KURIFilterPlugin>( *it );
+      plugin->setObjectName( (*it)->desktopEntryName() );
       if ( plugin )
         m_lstPlugins.append( plugin );
     }

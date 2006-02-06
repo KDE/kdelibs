@@ -139,7 +139,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
     while( it != lst.end() )
     {
       if ( matchConstraint( constr.data(), (*it).service(), lst ) != 1 )
-	it = lst.remove( it );
+	it = lst.erase( it );
       else
 	++it;
     }

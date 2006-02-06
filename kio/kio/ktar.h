@@ -61,13 +61,6 @@ public:
     virtual ~KTar();
 
     /**
-     * The name of the tar file, as passed to the constructor
-     * Null if you used the QIODevice constructor.
-     * @return the name of the file, or QString() if unknown
-     */
-    QString fileName() const { return m_filename; }
-
-    /**
      * Special function for setting the "original file name" in the gzip header,
      * when writing a tar.gz file. It appears when using in the "file" command,
      * for instance. Should only be called if the underlying device is a KFilterDev!
@@ -98,6 +91,8 @@ protected:
      */
     virtual bool openArchive( QIODevice::OpenMode mode );
     virtual bool closeArchive();
+
+    virtual bool createDevice( QIODevice::OpenMode mode );
 
 private:
     /**
@@ -133,7 +128,6 @@ private:
     bool readLonglink(char *buffer, QByteArray &longlink);
     qint64 readHeader(char *buffer, QString &name, QString &symlink);
 
-    QString m_filename;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

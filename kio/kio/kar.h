@@ -50,12 +50,6 @@ public:
      */
     virtual ~KAr();
 
-    /**
-     * The name of the ar file, as passed to the constructor.
-     * @return the filename. Null if you used the QIODevice constructor
-     */
-    QString fileName() const { return m_filename; }
-
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
@@ -105,7 +99,6 @@ protected:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    QString m_filename;
     class KArPrivate;
     KArPrivate* const d;
 };

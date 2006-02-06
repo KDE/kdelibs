@@ -44,8 +44,18 @@ class KIO_EXPORT KArchive
 protected:
     /**
      * Base constructor (protected since this is a pure virtual class).
+     * @param filename is a local path (e.g. "/tmp/myfile.ext"),
+     * from which the archive will be read from, or into which the archive
+     * will be written, depending on the mode given to open().
+     */
+    KArchive( const QString& fileName );
+
+    /**
+     * Base constructor (protected since this is a pure virtual class).
      * @param dev the I/O device where the archive reads its data
      * Note that this can be a file, but also a data buffer, a compression filter, etc.
+     * For a file in writing mode it is better to use the other constructor
+     * though, to benefit from the use of KSaveFile when saving.
      */
     KArchive( QIODevice * dev );
 
@@ -73,20 +83,27 @@ public:
      * Checks whether the archive is open.
      * @return true if the archive is opened
      */
-    bool isOpened() const { return m_open; }
+    bool isOpen() const;
 
     /**
      * Returns the mode in which the archive was opened
      * @return the mode in which the archive was opened (QIODevice::ReadOnly or QIODevice::WriteOnly)
      * @see open()
      */
-    QIODevice::OpenMode mode() const { return static_cast<QIODevice::OpenMode>(m_mode); }
+    QIODevice::OpenMode mode() const;
 
     /**
      * The underlying device.
      * @return the underlying device.
      */
     QIODevice * device() const { return m_dev; }
+
+    /**
+     * The name of the archive file, as passed to the constructor that takes a
+     * fileName, or an empty string if you used the QIODevice constructor.
+     * @return the name of the file, or QString() if unknown
+     */
+    QString fileName() const;
 
     /**
      * If an archive is opened for reading, then the contents
@@ -120,6 +137,8 @@ public:
      */
     bool addLocalDirectory( const QString& path, const QString& destName );
 
+    enum { UnknownTime = static_cast<time_t>( -1 ) };
+
     /**
      * If an archive is opened for writing then you can add new directories
      * using this function. KArchive won't write one directory twice.
@@ -137,8 +156,8 @@ public:
      * @since 3.2
      */
     virtual bool writeDir( const QString& name, const QString& user, const QString& group,
-                           mode_t perm = 040755, time_t atime = (time_t)-1,
-                           time_t mtime = (time_t)-1, time_t ctime = (time_t)-1 );
+                           mode_t perm = 040755, time_t atime = UnknownTime,
+                           time_t mtime = UnknownTime, time_t ctime = UnknownTime );
 
     /**
      * Writes a symbolic link to the archive if supported.
@@ -156,8 +175,8 @@ public:
      */
     virtual bool writeSymLink(const QString &name, const QString &target,
                               const QString &user, const QString &group,
-                              mode_t perm = 040755, time_t atime = (time_t)-1,
-                              time_t mtime = (time_t)-1, time_t ctime = (time_t)-1 );
+                              mode_t perm = 040755, time_t atime = UnknownTime,
+                              time_t mtime = UnknownTime, time_t ctime = UnknownTime );
 
     /**
      * If an archive is opened for writing then you can add a new file
@@ -181,8 +200,8 @@ public:
      */
     virtual bool writeFile( const QString& name, const QString& user, const QString& group,
                             const char* data, qint64 size,
-                            mode_t perm = 040755, time_t atime = (time_t)-1,
-                            time_t mtime = (time_t)-1, time_t ctime = (time_t)-1 );
+                            mode_t perm = 040755, time_t atime = UnknownTime,
+                            time_t mtime = UnknownTime, time_t ctime = UnknownTime );
 
     /**
      * Here's another way of writing a file into an archive:
@@ -206,8 +225,8 @@ public:
      */
     virtual bool prepareWriting( const QString& name, const QString& user,
                                  const QString& group, qint64 size,
-                                 mode_t perm = 0100644, time_t atime = (time_t)-1,
-                                 time_t mtime = (time_t)-1, time_t ctime = (time_t)-1 );
+                                 mode_t perm = 0100644, time_t atime = UnknownTime,
+                                 time_t mtime = UnknownTime, time_t ctime = UnknownTime );
 
     /**
      * Write data into the current file - to be called after calling prepareWriting
@@ -320,22 +339,31 @@ protected:
     KArchiveDirectory * findOrCreate( const QString & path );
 
     /**
-     * @internal for inherited constructors
+     * Can be reimplemented in order to change the creation of the device
+     * (when using the fileName constructor). By default this method uses
+     * KSaveFile when saving, and a simple QFile on reading.
+     * This method is called by open().
+     */
+    virtual bool createDevice( QIODevice::OpenMode mode );
+
+    /**
+     * Can be called by derived classes in order to set the underlying device.
+     * Note that KArchive will -not- own the device, it must be deleted by the derived class.
      */
     void setDevice( QIODevice *dev );
 
     /**
-     * @internal for inherited classes
+     * Derived classes call setRootDir from openArchive,
+     * to set the root directory after parsing an existing archive.
      */
     void setRootDir( KArchiveDirectory *rootDir );
 
 private:
-    QIODevice * m_dev;
-    bool m_open;
-    char m_mode;
+    void abortWriting();
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
+    QIODevice * m_dev;
     class KArchivePrivate;
     KArchivePrivate* const d;
 };

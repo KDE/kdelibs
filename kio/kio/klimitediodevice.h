@@ -68,7 +68,7 @@ public:
 
     virtual qint64 readData ( char * data, qint64 maxlen )
     {
-        maxlen = QMIN( maxlen, m_length - pos() ); // Apply upper limit
+        maxlen = qMin( maxlen, m_length - pos() ); // Apply upper limit
         return m_dev->read( data, maxlen );
     }
     virtual qint64 writeData ( const char *, qint64 ) { return -1; } // unsupported
@@ -85,10 +85,10 @@ public:
     virtual qint64 pos() const { return m_dev->pos() - m_start; }
     virtual bool seek( qint64 pos ) {
         Q_ASSERT( pos <= m_length );
-        pos = QMIN( pos, m_length ); // Apply upper limit
-        return m_dev->at( m_start + pos );
+        pos = qMin( pos, m_length ); // Apply upper limit
+        return m_dev->seek( m_start + pos );
     }
-    virtual bool atEnd() const { return m_dev->at() >= m_start + m_length; }
+    virtual bool atEnd() const { return m_dev->pos() >= m_start + m_length; }
 private:
     QIODevice* m_dev;
     qint64 m_start;

@@ -47,22 +47,20 @@ public:
     QString mimetype;
     QByteArray origFileName;
 
-    bool fillTempFile(const QString & filename);
-    bool writeBackTempFile( const QString & filename );
+    bool fillTempFile(const QString & fileName);
+    bool writeBackTempFile( const QString & fileName );
 };
 
-KTar::KTar( const QString& filename, const QString & _mimetype )
-    : KArchive( 0 ),d(new KTarPrivate)
+KTar::KTar( const QString& fileName, const QString & _mimetype )
+    : KArchive( fileName ), d(new KTarPrivate)
 {
-    m_filename = filename;
     QString mimetype( _mimetype );
-    bool forced = true;
     if ( mimetype.isEmpty() ) // Find out mimetype manually
     {
-        if ( QFile::exists( filename ) )
-            mimetype = KMimeType::findByFileContent( filename )->name();
+        if ( QFile::exists( fileName ) )
+            mimetype = KMimeType::findByFileContent( fileName )->name();
         else
-            mimetype = KMimeType::findByPath( filename, 0, true )->name();
+            mimetype = KMimeType::findByPath( fileName, 0, true )->name();
         kDebug(7041) << "KTar::KTar mimetype = " << mimetype << endl;
 
         // Don't move to prepareDevice - the other constructor theoretically allows ANY filter
@@ -78,59 +76,54 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
         }
         else
         {
-            // Something else. Check if it's not really gzip though (e.g. for KOffice docs)
-            QFile file( filename );
+            // Something else. Check if it's not really gzip though (e.g. for old-style KOffice files)
+            QFile file( fileName );
             if ( file.open( QIODevice::ReadOnly ) )
             {
-                unsigned char firstByte = file.getch();
-                unsigned char secondByte = file.getch();
-                unsigned char thirdByte = file.getch();
-                if ( firstByte == 0037 && secondByte == 0213 )
-                    mimetype = "application/x-gzip";
-                else if ( firstByte == 'B' && secondByte == 'Z' && thirdByte == 'h' )
-                    mimetype = "application/x-bzip2";
-                else if ( firstByte == 'P' && secondByte == 'K' && thirdByte == 3 )
-                {
-                    unsigned char fourthByte = file.getch();
-                    if ( fourthByte == 4 )
-                        mimetype = "application/x-zip";
+                char firstByte, secondByte, thirdByte;
+                if ( file.getChar( &firstByte ) &&
+                     file.getChar( &secondByte ) &&
+                     file.getChar( &thirdByte ) ) {
+                    if ( firstByte == 0037 && secondByte == static_cast<char>(0213) )
+                        mimetype = "application/x-gzip";
+                    else if ( firstByte == 'B' && secondByte == 'Z' && thirdByte == 'h' )
+                        mimetype = "application/x-bzip2";
+                    else if ( firstByte == 'P' && secondByte == 'K' && thirdByte == 3 )
+                    {
+                        char fourthByte;
+                        if ( file.getChar(&fourthByte) && fourthByte == 4 )
+                            mimetype = "application/x-zip";
+                    }
                 }
             }
             file.close();
         }
-        forced = false;
     }
     d->mimetype = mimetype;
-
-    prepareDevice( filename, mimetype, forced );
 }
 
-void KTar::prepareDevice( const QString & filename,
-                            const QString & mimetype, bool /*forced*/ )
+bool KTar::createDevice( QIODevice::OpenMode mode )
 {
-  if( "application/x-tar" == mimetype )
-      setDevice( new QFile( filename ) );
-  else
-  {
-    // The compression filters are very slow with random access.
-    // So instead of applying the filter to the device,
-    // the file is completly extracted instead,
-    // and we work on the extracted tar file.
-    // This improves the extraction speed by the tar ioslave dramatically,
-    // if the archive file contains many files.
-    // This is because the tar ioslave extracts one file after the other and normally
-    // has to walk through the decompression filter each time.
-    // Which is in fact nearly as slow as a complete decompression for each file.
-    d->tmpFile = new KTempFile(locateLocal("tmp", "ktar-"),".tar");
-    kDebug( 7041 ) << "KTar::prepareDevice creating TempFile: " << d->tmpFile->name() << endl;
-    d->tmpFile->setAutoDelete(true);
+    Q_UNUSED( mode );
+    if( d->mimetype != "application/x-tar" )
+    {
+        // The compression filters are very slow with random access.
+        // So instead of applying the filter to the device,
+        // the file is completely extracted instead,
+        // and we work on the extracted tar file.
+        // This improves the extraction speed by the tar ioslave dramatically,
+        // if the archive file contains many files.
+        // This is because the tar ioslave extracts one file after the other and normally
+        // has to walk through the decompression filter each time.
+        // Which is in fact nearly as slow as a complete decompression for each file.
 
-    // KTempFile opens the file automatically,
-    // the device must be closed, however, for KArchive.setDevice()
-    QFile* file = d->tmpFile->file();
-    file->close();
-    setDevice(file);
-  }
+        d->tmpFile = new KTempFile(locateLocal("tmp", "ktar-"),".tar");
+        kDebug( 7041 ) << "KTar::createDevice creating TempFile: " << d->tmpFile->name() << endl;
+        d->tmpFile->setAutoDelete(true);
+
+        setDevice( d->tmpFile->file() );
+    }
+    return true;
 }
 
 KTar::KTar( QIODevice * dev )
@@ -142,20 +135,15 @@ KTar::KTar( QIODevice * dev )
 KTar::~KTar()
 {
     // mjarrett: Closes to prevent ~KArchive from aborting w/o device
-    if( isOpened() )
+    if( isOpen() )
         close();
 
-    if (d->tmpFile)
-        delete d->tmpFile; // will delete the device
-    else if ( !m_filename.isEmpty() )
-        delete device(); // we created it ourselves
-
-
+    delete d->tmpFile;
     delete d;
 }
 
 void KTar::setOrigFileName( const QByteArray & fileName ) {
-    if ( !isOpened() || !(mode() & QIODevice::WriteOnly) )
+    if ( !isOpen() || !(mode() & QIODevice::WriteOnly) )
     {
         kWarning(7041) << "KTar::setOrigFileName: File must be opened for writing first.\n";
         return;
@@ -165,7 +153,7 @@ void KTar::setOrigFileName( const QByteArray & fileName ) {
 
 qint64 KTar::readRawHeader( char *buffer ) {
   // Read header
-  qint64 n = device()->readBlock( buffer, 0x200 );
+  qint64 n = device()->read( buffer, 0x200 );
   if ( n == 0x200 && buffer[0] != 0 ) {
     // Make sure this is actually a tar header
     if (strncmp(buffer + 257, "ustar", 5)) {
@@ -200,7 +188,7 @@ qint64 KTar::readRawHeader( char *buffer ) {
 
 bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
   qint64 n = 0;
-  //kDebug() << k_funcinfo << "reading longlink from pos " << device()->at()  << endl;
+  //kDebug() << k_funcinfo << "reading longlink from pos " << device()->pos()  << endl;
   QIODevice *dev = device();
   // read size of longlink from size field in header
   // size is in bytes including the trailing null (which we ignore)
@@ -211,7 +199,7 @@ bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
   qint64 offset = 0;
   while (size > 0) {
     int chunksize = qMin(size, 0x200LL);
-    n = dev->readBlock( longlink.data() + offset, chunksize );
+    n = dev->read( longlink.data() + offset, chunksize );
     if (n == -1) return false;
     size -= chunksize;
     offset += 0x200;
@@ -262,20 +250,18 @@ qint64 KTar::readHeader( char *buffer, QString &name, QString &symlink ) {
  * to decompress the original file now and write
  * the contents to the temporary file.
  */
-bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
+bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
     if ( ! tmpFile )
         return true;
 
-    kDebug( 7041 ) <<
-        "KTar::openArchive: filling tmpFile of mimetype '" << mimetype <<
-        "' ... " << endl;
+    kDebug( 7041 ) << "KTar::openArchive: filling tmpFile of mimetype '" << mimetype << "'" << endl;
 
     bool forced = false;
     if( "application/x-gzip" == mimetype
     || "application/x-bzip2" == mimetype)
         forced = true;
 
-    QIODevice *filterDev = KFilterDev::deviceForFile( filename, mimetype, forced );
+    QIODevice *filterDev = KFilterDev::deviceForFile( fileName, mimetype, forced );
 
     if( filterDev ) {
         QFile* file = tmpFile->file();
@@ -285,7 +271,8 @@ bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
             delete filterDev;
             return false;
         }
-        QByteArray buffer(8*1024);
+        QByteArray buffer;
+        buffer.resize(8*1024);
         if ( ! filterDev->open( QIODevice::ReadOnly ) )
         {
             delete filterDev;
@@ -293,12 +280,15 @@ bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
         }
         qint64 len;
         while ( !filterDev->atEnd() ) {
-            len = filterDev->readBlock(buffer.data(),buffer.size());
+            len = filterDev->read(buffer.data(),buffer.size());
             if ( len <= 0 ) { // corrupted archive
                 delete filterDev;
                 return false;
             }
-            file->writeBlock(buffer.data(),len);
+            if ( file->write(buffer.data(), len) != len ) { // disk full
+                delete filterDev;
+                return false;
+            }
         }
         filterDev->close();
         delete filterDev;
@@ -310,22 +300,22 @@ bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
     else
         kDebug( 7041 ) << "KTar::openArchive: no filterdevice found!" << endl;
 
-    kDebug( 7041 ) << "KTar::openArchive: filling tmpFile finished." << endl;
+    //kDebug( 7041 ) << "KTar::openArchive: filling tmpFile finished." << endl;
     return true;
 }
 
 bool KTar::openArchive( QIODevice::OpenMode mode ) {
-    kDebug( 7041 ) << "KTar::openArchive" << endl;
+
     if ( !(mode & QIODevice::ReadOnly) )
         return true;
 
-    if ( !d->fillTempFile( m_filename ) )
+    if ( !d->fillTempFile( fileName() ) )
         return false;
 
     // We'll use the permission and user/group of d->rootDir
     // for any directory we emulate (see findOrCreate)
     //struct stat buf;
-    //stat( m_filename, &buf );
+    //stat( fileName(), &buf );
 
     d->dirList.clear();
     QIODevice* dev = device();
@@ -377,7 +367,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             // read type flag
             char typeflag = buffer[ 0x9c ];
             // '0' for files, '1' hard link, '2' symlink, '5' for directory
-            // (and 'L' for longlink filenames, 'K' for longlink symlink targets)
+            // (and 'L' for longlink fileNames, 'K' for longlink symlink targets)
             // and 'D' for GNU tar extension DUMPDIR
             if ( typeflag == '5' )
                 isdir = true;
@@ -424,14 +414,14 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
 
                     //kDebug(7041) << "KTar::openArchive file " << nm << " size=" << size << endl;
                     e = new KArchiveFile( this, nm, access, time, user, group, symlink,
-                                          dev->at(), size );
+                                          dev->pos(), size );
                 }
 
                 // Skip contents + align bytes
                 int rest = size % 0x200;
                 int skip = size + (rest ? 0x200 - rest : 0);
-                //kDebug(7041) << "KTar::openArchive, at()=" << dev->at() << " rest=" << rest << " skipping " << skip << endl;
-                if (! dev->at( dev->at() + skip ) )
+                //kDebug(7041) << "KTar::openArchive, pos()=" << dev->pos() << " rest=" << rest << " skipping " << skip << endl;
+                if (! dev->seek( dev->pos() + skip ) )
                     kWarning(7041) << "KTar::openArchive skipping " << skip << " failed" << endl;
             }
 
@@ -458,7 +448,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
         else
         {
             //qDebug("Terminating. Read %d bytes, first one is %d", n, buffer[0]);
-            d->tarEnd = dev->at() - n; // Remember end of archive
+            d->tarEnd = dev->pos() - n; // Remember end of archive
             ende = true;
         }
     } while( !ende );
@@ -470,20 +460,23 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
  * to the original file.
  * Must only be called if in QIODevice::WriteOnly mode
  */
-bool KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
+bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName ) {
     if ( ! tmpFile )
         return true;
 
     kDebug(7041) << "Write temporary file to compressed file" << endl;
-    kDebug(7041) << filename << " " << mimetype << endl;
+    kDebug(7041) << fileName << " " << mimetype << endl;
 
     bool forced = false;
     if( "application/x-gzip" == mimetype
         || "application/x-bzip2" == mimetype)
         forced = true;
 
+    // #### TODO this should use KSaveFile to avoid problems on disk full
+    // (KArchive uses KSaveFile by default, but the temp-uncompressed-file trick
+    // circumvents that).
 
-    QIODevice *dev = KFilterDev::deviceForFile( filename, mimetype, forced );
+    QIODevice *dev = KFilterDev::deviceForFile( fileName, mimetype, forced );
     if( dev ) {
         QFile* file = tmpFile->file();
         file->close();
@@ -495,11 +488,12 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
         }
         if ( forced )
             static_cast<KFilterDev *>(dev)->setOrigFileName( origFileName );
-        QByteArray buffer(8*1024);
+        QByteArray buffer;
+        buffer.resize(8*1024);
         qint64 len;
         while ( !file->atEnd()) {
             len = file->read(buffer.data(), buffer.size());
-            dev->writeBlock(buffer.data(),len);
+            dev->write(buffer.data(),len); // TODO error checking
         }
         file->close();
         dev->close();
@@ -517,7 +511,7 @@ bool KTar::closeArchive() {
     // a temporary tar file, we have to write
     // back the changes to the original file
     if( mode() == QIODevice::WriteOnly)
-        return d->writeBackTempFile( m_filename );
+        return d->writeBackTempFile( fileName() );
 
     return true;
 }
@@ -526,13 +520,13 @@ bool KTar::doFinishWriting( qint64 size ) {
     // Write alignment
     int rest = size % 0x200;
     if ( mode() & QIODevice::ReadWrite )
-        d->tarEnd = device()->at() + (rest ? 0x200 - rest : 0); // Record our new end of archive
+        d->tarEnd = device()->pos() + (rest ? 0x200 - rest : 0); // Record our new end of archive
     if ( rest )
     {
         char buffer[ 0x201 ];
         for( uint i = 0; i < 0x200; ++i )
             buffer[i] = 0;
-        qint64 nwritten = device()->writeBlock( buffer, 0x200 - rest );
+        qint64 nwritten = device()->write( buffer, 0x200 - rest );
         return nwritten == 0x200 - rest;
     }
     return true;
@@ -564,7 +558,7 @@ struct posix_header
 void KTar::fillBuffer( char * buffer,
                        const char * mode, qint64 size, time_t mtime, char typeflag,
                        const char * uname, const char * gname ) {
-  // mode (as in stat())
+  // mode (as in stpos())
   assert( strlen(mode) == 6 );
   strcpy( buffer+0x64, mode );
   buffer[ 0x6a ] = ' ';
@@ -629,13 +623,13 @@ void KTar::writeLonglink(char *buffer, const QByteArray &name, char typeflag,
   strcpy( buffer, "././@LongLink" );
   qint64 namelen = name.length() + 1;
   fillBuffer( buffer, "     0", namelen, 0, typeflag, uname, gname );
-  device()->writeBlock( buffer, 0x200 );
+  device()->write( buffer, 0x200 ); // TODO error checking
   qint64 offset = 0;
   while (namelen > 0) {
     int chunksize = qMin(namelen, 0x200LL);
     memcpy(buffer, name.data()+offset, chunksize);
     // write long name
-    device()->writeBlock( buffer, 0x200 );
+    device()->write( buffer, 0x200 ); // TODO error checking
     // not even needed to reclear the buffer, tar doesn't do it
     namelen -= chunksize;
     offset += 0x200;
@@ -645,7 +639,7 @@ void KTar::writeLonglink(char *buffer, const QByteArray &name, char typeflag,
 bool KTar::doPrepareWriting(const QString &name, const QString &user,
                           const QString &group, qint64 size, mode_t perm,
                           time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
-    if ( !isOpened() )
+    if ( !isOpen() )
     {
         kWarning(7041) << "KTar::prepareWriting: You must open the tar file before writing to it\n";
         return false;
@@ -681,19 +675,19 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
 
     char buffer[ 0x201 ];
     memset( buffer, 0, 0x200 );
-    if ( mode() & QIODevice::ReadWrite ) device()->at(d->tarEnd); // Go to end of archive as might have moved with a read
+    if ( mode() & QIODevice::ReadWrite ) device()->seek(d->tarEnd); // Go to end of archive as might have moved with a read
 
     // provide converted stuff we need later on
-    const QByteArray encodedFilename = QFile::encodeName(fileName);
+    const QByteArray encodedFileName = QFile::encodeName(fileName);
     const QByteArray uname = user.toLocal8Bit();
     const QByteArray gname = group.toLocal8Bit();
 
     // If more than 100 chars, we need to use the LongLink trick
     if ( fileName.length() > 99 )
-        writeLonglink(buffer,encodedFilename,'L',uname,gname);
+        writeLonglink(buffer,encodedFileName,'L',uname,gname);
 
     // Write (potentially truncated) name
-    strncpy( buffer, encodedFilename, 99 );
+    strncpy( buffer, encodedFileName, 99 );
     buffer[99] = 0;
     // zero out the rest (except for what gets filled anyways)
     memset(buffer+0x9d, 0, 0x200 - 0x9d);
@@ -703,13 +697,13 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
     fillBuffer(buffer, permstr, size, mtime, 0x30, uname, gname);
 
     // Write header
-    return device()->writeBlock( buffer, 0x200 ) == 0x200;
+    return device()->write( buffer, 0x200 ) == 0x200;
 }
 
 bool KTar::doWriteDir(const QString &name, const QString &user,
                       const QString &group, mode_t perm,
                       time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
-    if ( !isOpened() )
+    if ( !isOpen() )
     {
         kWarning(7041) << "KTar::writeDir: You must open the tar file before writing to it\n";
         return false;
@@ -733,7 +727,7 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 
     char buffer[ 0x201 ];
     memset( buffer, 0, 0x200 );
-    if ( mode() & QIODevice::ReadWrite ) device()->at(d->tarEnd); // Go to end of archive as might have moved with a read
+    if ( mode() & QIODevice::ReadWrite ) device()->seek(d->tarEnd); // Go to end of archive as might have moved with a read
 
     // provide converted stuff we need lateron
     QByteArray encodedDirname = QFile::encodeName(dirName);
@@ -755,8 +749,9 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
     fillBuffer( buffer, permstr, 0, mtime, 0x35, uname, gname);
 
     // Write header
-    device()->writeBlock( buffer, 0x200 );
-    if ( mode() & QIODevice::ReadWrite )  d->tarEnd = device()->at();
+    device()->write( buffer, 0x200 );
+    if ( mode() & QIODevice::ReadWrite )
+        d->tarEnd = device()->pos();
 
     d->dirList.append( dirName ); // contains trailing slash
     return true; // TODO if wanted, better error control
@@ -765,7 +760,7 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 bool KTar::doWriteSymLink(const QString &name, const QString &target,
                         const QString &user, const QString &group,
                         mode_t perm, time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
-    if ( !isOpened() )
+    if ( !isOpen() )
     {
         kWarning(7041) << "KTar::writeSymLink: You must open the tar file before writing to it\n";
         return false;
@@ -782,10 +777,10 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
 
     char buffer[ 0x201 ];
     memset( buffer, 0, 0x200 );
-    if ( mode() & QIODevice::ReadWrite ) device()->at(d->tarEnd); // Go to end of archive as might have moved with a read
+    if ( mode() & QIODevice::ReadWrite ) device()->seek(d->tarEnd); // Go to end of archive as might have moved with a read
 
     // provide converted stuff we need lateron
-    QByteArray encodedFilename = QFile::encodeName(fileName);
+    QByteArray encodedFileName = QFile::encodeName(fileName);
     QByteArray encodedTarget = QFile::encodeName(target);
     QByteArray uname = user.toLocal8Bit();
     QByteArray gname = group.toLocal8Bit();
@@ -794,10 +789,10 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
     if (target.length() > 99)
         writeLonglink(buffer,encodedTarget,'K',uname,gname);
     if ( fileName.length() > 99 )
-        writeLonglink(buffer,encodedFilename,'L',uname,gname);
+        writeLonglink(buffer,encodedFileName,'L',uname,gname);
 
     // Write (potentially truncated) name
-    strncpy( buffer, encodedFilename, 99 );
+    strncpy( buffer, encodedFileName, 99 );
     buffer[99] = 0;
     // Write (potentially truncated) symlink target
     strncpy(buffer+0x9d, encodedTarget, 99);
@@ -810,8 +805,9 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
     fillBuffer(buffer, permstr, 0, mtime, 0x32, uname, gname);
 
     // Write header
-    bool retval = device()->writeBlock( buffer, 0x200 ) == 0x200;
-    if ( mode() & QIODevice::ReadWrite )  d->tarEnd = device()->at();
+    bool retval = device()->write( buffer, 0x200 ) == 0x200;
+    if ( mode() & QIODevice::ReadWrite )
+        d->tarEnd = device()->pos();
     return retval;
 }
 

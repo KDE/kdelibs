@@ -39,27 +39,22 @@ public:
 };
 
 KAr::KAr( const QString& filename )
-    : KArchive( 0 ),d(new KArPrivate)
+    : KArchive( filename ), d(new KArPrivate)
 {
     //kDebug(7042) << "KAr(filename) reached." << endl;
-    m_filename = filename;
-    setDevice( new QFile( filename ) );
 }
 
 KAr::KAr( QIODevice * dev )
-    : KArchive( dev ),d(new KArPrivate)
+    : KArchive( dev ), d(new KArPrivate)
 {
     //kDebug(7042) << "KAr::KAr( QIODevice * dev) reached." << endl;
 }
 
 KAr::~KAr()
 {
-    // mjarrett: Closes to prevent ~KArchive from aborting w/o device
     //kDebug(7042) << "~KAr reached." << endl;
-    if( isOpened() )
+    if( isOpen() )
         close();
-    if ( !m_filename.isEmpty() )
-        delete device(); // we created it ourselves
     delete d;
 }
 

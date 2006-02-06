@@ -555,12 +555,12 @@ bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* servi
   if( service && service->property( "StartupNotify" ).isValid())
   {
       silent = !service->property( "StartupNotify" ).toBool();
-      wmclass = service->property( "StartupWMClass" ).toString().latin1();
+      wmclass = service->property( "StartupWMClass" ).toString().toLatin1();
   }
   else if( service && service->property( "X-KDE-StartupNotify" ).isValid())
   {
       silent = !service->property( "X-KDE-StartupNotify" ).toBool();
-      wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
+      wmclass = service->property( "X-KDE-WMClass" ).toString().toLatin1();
   }
   else // non-compliant app
   {
@@ -644,10 +644,10 @@ static KUrl::List resolveURLs( const KUrl::List& _urls, const KService& _service
   kDebug(7010) << "supportedProtocols:" << supportedProtocols << endl;
 
   KUrl::List urls( _urls );
-  if ( supportedProtocols.find( "KIO" ) == supportedProtocols.end() ) {
+  if ( !supportedProtocols.contains( "KIO" ) ) {
     for( KUrl::List::Iterator it = urls.begin(); it != urls.end(); ++it ) {
       const KUrl url = *it;
-      bool supported = url.isLocalFile() || supportedProtocols.find( url.protocol().toLower() ) != supportedProtocols.end();
+      bool supported = url.isLocalFile() || supportedProtocols.contains( url.protocol().toLower() );
       kDebug(7010) << "Looking at url=" << url << " supported=" << supported << endl;
       if ( !supported && KProtocolInfo::protocolClass(url.protocol()) == ":local" )
       {
@@ -741,8 +741,10 @@ pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QStri
 
 KRun::KRun( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
             bool showProgressInfo )
-     :m_timer(0,"KRun::timer"),d(new KRunPrivate)
+     : m_timer(), d(new KRunPrivate)
 {
+  m_timer.setObjectName( "KRun::timer" );
+  m_timer.setSingleShot( true );
   init (url, window, mode, isLocalFile, showProgressInfo);
 }
 
@@ -768,7 +770,7 @@ void KRun::init ( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFil
   // Reason: We must complete the constructor before we do anything else.
   m_bInit = true;
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
-  m_timer.start( 0, true );
+  m_timer.start( 0 );
   kDebug(7010) << " new KRun " << this << " " << url.prettyURL() << " timer=" << &m_timer << endl;
 
   kapp->ref();
@@ -784,7 +786,7 @@ void KRun::init()
     d->m_showingError = false;
     m_bFault = true;
     m_bFinished = true;
-    m_timer.start( 0, true );
+    m_timer.start( 0 );
     return;
   }
   if ( !KAuthorized::authorizeURLAction( "open", KUrl(), m_strURL))
@@ -795,7 +797,7 @@ void KRun::init()
     d->m_showingError = false;
     m_bFault = true;
     m_bFinished = true;
-    m_timer.start( 0, true );
+    m_timer.start( 0 );
     return;
   }
 
@@ -820,7 +822,7 @@ void KRun::init()
         d->m_showingError = false;
         m_bFault = true;
         m_bFinished = true;
-        m_timer.start( 0, true );
+        m_timer.start( 0 );
         return;
       }
       m_mode = buff.st_mode;
@@ -870,7 +872,7 @@ void KRun::init()
     {
        m_bFinished = true;
        // will emit the error and autodelete this
-       m_timer.start( 0, true );
+       m_timer.start( 0 );
        return;
     }
   }
@@ -939,7 +941,7 @@ void KRun::scanFile()
     kError(7010) << "#### NO SUPPORT FOR READING!" << endl;
     m_bFault = true;
     m_bFinished = true;
-    m_timer.start( 0, true );
+    m_timer.start( 0 );
     return;
   }
   kDebug(7010) << this << " Scanning file " << m_strURL.url() << endl;
@@ -1008,7 +1010,7 @@ void KRun::slotStatResult( KIO::Job * job )
     m_bFinished = true;
 
     // will emit the error and autodelete this
-    m_timer.start( 0, true );
+    m_timer.start( 0 );
 
   } else {
 
@@ -1040,7 +1042,7 @@ void KRun::slotStatResult( KIO::Job * job )
     // Start the timer. Once we get the timer event this
     // protocol server is back in the pool and we can reuse it.
     // This gives better performance than starting a new slave
-    m_timer.start( 0, true );
+    m_timer.start( 0 );
   }
 }
 
@@ -1067,7 +1069,7 @@ void KRun::slotScanFinished( KIO::Job *job )
     m_bFinished = true;
 
     // will emit the error and autodelete this
-    m_timer.start( 0, true );
+    m_timer.start( 0 );
   }
 }
 
@@ -1168,7 +1170,7 @@ void KRun::foundMimeType( const QString& type )
      m_bFault = true;
   }
 
-  m_timer.start( 0, true );
+  m_timer.start( 0 );
 }
 
 void KRun::killJob()
@@ -1195,7 +1197,7 @@ void KRun::abort()
   m_bScanFile = false;
 
   // will emit the error and autodelete this
-  m_timer.start( 0, true );
+  m_timer.start( 0 );
 }
 
 void KRun::setEnableExternalBrowser(bool b)
