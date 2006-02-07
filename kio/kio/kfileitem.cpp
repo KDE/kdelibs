@@ -861,23 +861,17 @@ void KFileItem::setExtraData( const void *key, void *value )
     if ( !key )
         return;
 
-    m_extra.replace( key, value );
+    m_extra.insert( key, value ); // replaces the value of key if already there
 }
 
 const void * KFileItem::extraData( const void *key ) const
 {
-    QMap<const void*,void*>::const_iterator it = m_extra.find( key );
-    if ( it != m_extra.end() )
-        return it.value();
-    return 0L;
+    return m_extra.value( key, 0 );
 }
 
 void * KFileItem::extraData( const void *key )
 {
-    QMap<const void*,void*>::iterator it = m_extra.find( key );
-    if ( it != m_extra.end() )
-        return it.value();
-    return 0L;
+    return m_extra.value( key, 0 );
 }
 
 void KFileItem::removeExtraData( const void *key )

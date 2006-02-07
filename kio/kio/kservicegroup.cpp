@@ -353,10 +353,11 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
         else
           name = p->name() + " " + static_cast<KService *>(p.data())->genericName();
 
-        QByteArray key( name.length() * 4 + 1 );
+        QByteArray key;
         // strxfrm() crashes on Solaris
 #ifndef USE_SOLARIS
         // maybe it'd be better to use wcsxfrm() where available
+        key.resize( name.length() * 4 + 1 );
         size_t ln = strxfrm( key.data(), name.toLocal8Bit().data(), key.size());
         if( ln != size_t( -1 ))
         {
@@ -403,7 +404,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
              const KServiceGroup::Ptr group = KServiceGroup::Ptr::staticCast( (*it2).value() );
              if (group->relPath() == groupPath)
              {
-                glist.remove(it2);
+                glist.erase(it2);
                 break;
              }
           }
@@ -418,7 +419,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
              const KService::Ptr service = KService::Ptr::staticCast( (*it2).value() );
              if (service->menuId() == item)
              {
-                slist.remove(it2);
+                slist.erase(it2);
                 break;
              }
           }
@@ -447,9 +448,9 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
               //todo parse attribute:
               QString tmp(  item );
               tmp = tmp.remove(":O");
-              QStringList optionAttribute = QStringList::split(" ",tmp);
-              if( optionAttribute.count()==0)
-                  optionAttribute.append(tmp);
+              QStringList optionAttribute = tmp.split(' ', QString::SkipEmptyParts);
+              if ( optionAttribute.isEmpty() )
+                  optionAttribute.append( tmp );
               bool showEmptyMenu = false;
               bool showInline = false;
               bool showInlineHeader = false;
@@ -544,11 +545,11 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
 
                         if ( nextItem.startsWith( ":O" ) )
                         {
-                            QString tmp(  nextItem );
+                            QString tmp( nextItem );
                             tmp = tmp.remove(":O");
-                            QStringList optionAttribute = QStringList::split(" ",tmp);
-                            if( optionAttribute.count()==0)
-                                optionAttribute.append(tmp);
+                            QStringList optionAttribute = tmp.split(' ', QString::SkipEmptyParts);
+                            if ( optionAttribute.isEmpty() )
+                                optionAttribute.append( tmp );
                             bool bShowEmptyMenu = false;
                             bool bShowInline = false;
                             bool bShowInlineHeader = false;

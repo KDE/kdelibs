@@ -342,9 +342,8 @@ KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
   QFile f(fileName);
   if (f.open(QIODevice::ReadOnly))
   {
-     unsigned char buf[10+1];
-     int l = f.readBlock((char *)buf, 10);
-     if ((l > 2) && (buf[0] == GZIP_MAGIC1) && (buf[1] == GZIP_MAGIC2))
+     const QByteArray buf = f.read(3);
+     if ((buf.size() >= 2) && ((unsigned char)buf[0] == GZIP_MAGIC1) && ((unsigned char)buf[1] == GZIP_MAGIC2))
         result.compression = Format::GZipCompression;
   }
   return result;
@@ -851,7 +850,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KUrl& _url, const KSimpleConfig &cf
       fstype.clear();
     QString point = cfg.readEntry( "MountPoint" );
 #ifndef Q_WS_WIN
-    (void) new KAutoMount( ro, fstype, dev, point, _url.path() );
+    (void) new KAutoMount( ro, fstype.toLatin1(), dev, point, _url.path() );
 #endif
     retval = -1; // we don't want to return 0, but we don't want to return a pid
   }
@@ -1136,7 +1135,7 @@ void KDEDesktopMimeType::executeService( const KUrl::List& urls, KDEDesktopMimeT
           fstype.clear();
       QString point = cfg.readEntry( "MountPoint" );
 #ifndef Q_WS_WIN
-      (void)new KAutoMount( ro, fstype, dev, point, path, false );
+      (void)new KAutoMount( ro, fstype.toLatin1(), dev, point, path, false );
 #endif
     }
     else if ( _service.m_type == ST_UNMOUNT )

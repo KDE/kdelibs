@@ -54,7 +54,7 @@ public:
    * @param show_filemanager_window if true, a file-manager window for that mountpoint is shown after
    * the mount, if successful.
    */
-  KAutoMount( bool readonly, const QString& format, const QString& device, const QString& mountpoint,
+  KAutoMount( bool readonly, const QByteArray& format, const QString& device, const QString& mountpoint,
               const QString & desktopFile, bool show_filemanager_window = true );
 
 Q_SIGNALS:

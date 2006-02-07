@@ -40,10 +40,10 @@ KServiceGroupFactory::KServiceGroupFactory()
       (*m_str) >> i;
       m_baseGroupDictOffset = i;
 
-      int saveOffset = m_str->device()->at();
+      const int saveOffset = m_str->device()->pos();
       // Init index tables
       m_baseGroupDict = new KSycocaDict(m_str, m_baseGroupDictOffset);
-      m_str->device()->at(saveOffset);
+      m_str->device()->seek(saveOffset);
    }
    else
    {

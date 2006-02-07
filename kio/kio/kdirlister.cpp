@@ -110,7 +110,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KUrl& _u,
 
     lister->d->rootFileItem = 0;
   }
-  else if ( lister->d->lstDirs.find( _url ) != lister->d->lstDirs.end() )
+  else if ( lister->d->lstDirs.contains( _url ) )
   {
     // stop the job listing _url for this lister
     stop( lister, _url );
@@ -118,7 +118,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KUrl& _u,
     // remove the _url as well, it will be added in a couple of lines again!
     // forgetDirs with three args does not do this
     // TODO: think about moving this into forgetDirs
-    lister->d->lstDirs.remove( lister->d->lstDirs.find( _url ) );
+    lister->d->lstDirs.removeAll( _url );
 
     // clear _url for lister
     forgetDirs( lister, _url, true );
@@ -457,7 +457,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
 
       if ( notify )
       {
-        lister->d->lstDirs.remove( url );
+        lister->d->lstDirs.removeAll( url );
         emit lister->clear( url );
       }
 
@@ -733,7 +733,7 @@ void KDirListerCache::FilesChanged( const KUrl::List &fileList )
       // Let's update the dir.
       KUrl dir( *it );
       dir.setPath( dir.directory( true ) );
-      if ( dirsToUpdate.find( dir ) == dirsToUpdate.end() )
+      if ( !dirsToUpdate.contains( dir ) )
         dirsToUpdate.prepend( dir );
     }
   }
@@ -845,11 +845,13 @@ void KDirListerCache::slotFileDirty( const QString& _file )
     dir.setPath( dir.directory() );
     if ( checkUpdate( dir.url() ) )
     {
+      QTimer *timer = new QTimer( this );
       // Nice hack to save memory: use the qt object name to store the filename
-      QTimer *timer = new QTimer( this, _file.toUtf8() );
+      timer->setObjectName( _file );
+      timer->setSingleShot( true );
       connect( timer, SIGNAL(timeout()), this, SLOT(slotFileDirtyDelayed()) );
       pendingUpdates.insert( _file, timer );
-      timer->start( 500, true );
+      timer->start( 500 );
     }
   }
 }
@@ -857,7 +859,7 @@ void KDirListerCache::slotFileDirty( const QString& _file )
 // delayed updating of files, FAM is flooding us with events
 void KDirListerCache::slotFileDirtyDelayed()
 {
-  QString file = QString::fromUtf8( sender()->name() );
+  QString file = sender()->objectName(); // file name stored as timer object name
 
   kDebug(7004) << k_funcinfo << file << endl;
 
@@ -1062,9 +1064,10 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
       kdl->d->url = newUrl;
     }
 
-    *kdl->d->lstDirs.find( oldUrl ) = newUrl;
+    KUrl::List& lstDirs = kdl->d->lstDirs;
+    lstDirs[ lstDirs.indexOf( oldUrl ) ] = newUrl;
 
-    if ( kdl->d->lstDirs.count() == 1 )
+    if ( lstDirs.count() == 1 )
     {
       emit kdl->clear();
       emit kdl->redirection( newUrl );
@@ -1099,7 +1102,8 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
         kdl->d->url = newUrl;
       }
 
-      *kdl->d->lstDirs.find( oldUrl ) = newUrl;
+      KUrl::List& lstDirs = kdl->d->lstDirs;
+      lstDirs[ lstDirs.indexOf( oldUrl ) ] = newUrl;
 
       if ( kdl->d->lstDirs.count() == 1 )
       {
@@ -1301,6 +1305,8 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
       // Update URL in dir item and in itemsInUse
       dir->redirect( newDirUrl );
       itemsInUse.remove( itu.currentKey() ); // implies ++itu
+      // TODO when porting to a Qt4 collection class: itu = itemsInUse.erase( itu );
+      // but double check the iteration over all...
       itemsInUse.insert( newDirUrl.url(-1), dir );
       goNext = false; // because of the implied ++itu above
       // Rename all items under that dir
@@ -1379,9 +1385,10 @@ void KDirListerCache::emitRedirections( const KUrl &oldUrl, const KUrl &url )
     // And notify the dirlisters of the redirection
     for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
     {
-      *kdl->d->lstDirs.find( oldUrl ) = url;
+      KUrl::List& lstDirs = kdl->d->lstDirs;
+      lstDirs[ lstDirs.indexOf( oldUrl ) ] = url;
 
-      if ( kdl->d->lstDirs.count() == 1 )
+      if ( lstDirs.count() == 1 )
         emit kdl->redirection( url );
 
       emit kdl->redirection( oldUrl, url );
@@ -1694,7 +1701,7 @@ void KDirListerCache::deleteDir( const KUrl& dirUrl )
               kdl->d->lstDirs.clear();
             }
             else
-              kdl->d->lstDirs.remove( kdl->d->lstDirs.find( deletedUrl ) );
+              kdl->d->lstDirs.removeAll( deletedUrl );
 
             forgetDirs( kdl, deletedUrl, treeview );
           }
@@ -2027,9 +2034,9 @@ void KDirLister::setNameFilter( const QString& nameFilter )
   d->nameFilter = nameFilter;
 
   // Split on white space
-  QStringList list = QStringList::split( ' ', nameFilter );
-  for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
-    d->lstFilters.append( QRegExp(*it, false, true ) );
+  const QStringList list = nameFilter.split( ' ', QString::SkipEmptyParts );
+  for ( QStringList::const_iterator it = list.begin(); it != list.end(); ++it )
+    d->lstFilters.append( QRegExp(*it, Qt::CaseInsensitive, QRegExp::Wildcard ) );
 
   d->changes |= NAME_FILTER;
 }
@@ -2044,8 +2051,8 @@ void KDirLister::setMimeFilter( const QStringList& mimeFilter )
   if ( !(d->changes & MIME_FILTER) )
     d->oldMimeFilter = d->mimeFilter;
 
-  if ( mimeFilter.find("all/allfiles") != mimeFilter.end() ||
-       mimeFilter.find("all/all") != mimeFilter.end() )
+  if ( mimeFilter.contains("all/allfiles") ||
+       mimeFilter.contains("all/all") )
     d->mimeFilter.clear();
   else
     d->mimeFilter = mimeFilter;

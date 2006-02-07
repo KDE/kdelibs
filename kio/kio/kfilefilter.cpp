@@ -47,17 +47,17 @@ void KSimpleFileFilter::setFilterSpecials( bool filter )
 }
 
 void KSimpleFileFilter::setNameFilters( const QString& nameFilters,
-                                        bool caseSensitive, 
+                                        Qt::CaseSensitivity caseSensitive,
                                         const QChar& separator )
 {
     m_nameFilters.clear();
 
     // Split on white space
-    QStringList list = QStringList::split(separator, nameFilters);
+    const QStringList list = nameFilters.split(separator, QString::SkipEmptyParts);
 
     QStringList::ConstIterator it = list.begin();
     for ( ; it != list.end(); ++it )
-        m_nameFilters.append(QRegExp(*it, caseSensitive, true));
+        m_nameFilters.append(QRegExp(*it, caseSensitive, QRegExp::Wildcard));
 }
 
 void KSimpleFileFilter::setMimeFilters( const QStringList& mimeFilters )

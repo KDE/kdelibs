@@ -69,7 +69,7 @@ int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
         return -1;
     }
     KService::Ptr ptr = offers.first();
-    DCOPCString dcopService = ptr->property("X-DCOP-ServiceName").toString().latin1();
+    DCOPCString dcopService = ptr->property("X-DCOP-ServiceName").toString().toLatin1();
 
     if ( !KApplication::dcopClient()->isApplicationRegistered( dcopService ) )
     {

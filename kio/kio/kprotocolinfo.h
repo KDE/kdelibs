@@ -545,7 +545,7 @@ public:
    *
    * @since 3.2
    */
-  static KUrl::URIMode uriParseMode( const QString& protocol );
+  //static KUrl::URIMode uriParseMode( const QString& protocol ); - gone in Qt-4.x
 
   /**
    * Returns the list of capabilities provided by the kioslave implementing

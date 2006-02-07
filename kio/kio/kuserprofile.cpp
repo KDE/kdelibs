@@ -161,7 +161,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
         if (_genericServiceType.isEmpty() /*no constraint*/ || (*it)->hasServiceType( _genericServiceType ))
         {
             // Check that we don't already have it ;)
-            if ( serviceList.find( (*it)->desktopEntryPath() ) == serviceList.end() )
+            if ( serviceList.contains( (*it)->desktopEntryPath() ) )
             {
                 bool allow = (*it)->allowAsDefault();
                 KServiceOffer o( (*it), (*it)->initialPreferenceForMimeType(_servicetype), allow );
@@ -216,7 +216,7 @@ int KServiceTypeProfile::preference( const QString& _service ) const
   if ( it == m_mapServices.end() )
     return 0;
 
-  return it.data().m_iPreference;
+  return it.value().m_iPreference;
 }
 
 bool KServiceTypeProfile::allowAsDefault( const QString& _service ) const
@@ -234,7 +234,7 @@ bool KServiceTypeProfile::allowAsDefault( const QString& _service ) const
   if ( it == m_mapServices.end() )
     return 0;
 
-  return it.data().m_bAllowAsDefault;
+  return it.value().m_bAllowAsDefault;
 }
 
 KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _servicetype, const QString& _genericServiceType )
@@ -276,11 +276,11 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
       if( it2 != m_mapServices.end() )
       {
         //kDebug(7014) << "found in mapServices pref=" << it2.data().m_iPreference << endl;
-        if ( it2.data().m_iPreference > 0 ) {
+        if ( it2.value().m_iPreference > 0 ) {
           bool allow = (*it)->allowAsDefault();
           if ( allow )
-            allow = it2.data().m_bAllowAsDefault;
-          KServiceOffer o( (*it), it2.data().m_iPreference, allow );
+            allow = it2.value().m_bAllowAsDefault;
+          KServiceOffer o( (*it), it2.value().m_iPreference, allow );
           offers.append( o );
         }
       }

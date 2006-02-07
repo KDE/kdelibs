@@ -111,7 +111,7 @@ public Q_SLOTS:
   void slotRemoveDelayed();
 
 public:
-  QTimer *timer;
+  QTimer timer;
   EntryMap m_mapEntries;
 
   int freq;

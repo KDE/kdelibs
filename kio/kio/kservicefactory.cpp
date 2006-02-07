@@ -53,14 +53,14 @@ KServiceFactory::KServiceFactory()
       (*m_str) >> i;
       m_menuIdDictOffset = i;
 
-      int saveOffset = m_str->device()->at();
+      const int saveOffset = m_str->device()->pos();
       // Init index tables
       m_nameDict = new KSycocaDict(m_str, m_nameDictOffset);
       // Init index tables
       m_relNameDict = new KSycocaDict(m_str, m_relNameDictOffset);
       // Init index tables
       m_menuIdDict = new KSycocaDict(m_str, m_menuIdDictOffset);
-      saveOffset = m_str->device()->at(saveOffset);
+      m_str->device()->seek(saveOffset);
    }
    else
    {
@@ -227,7 +227,7 @@ KService::List KServiceFactory::allInitServices()
 
    // Assume we're NOT building a database
 
-   m_str->device()->at(m_initListOffset);
+   m_str->device()->seek(m_initListOffset);
    qint32 entryCount;
    (*m_str) >> entryCount;
 
@@ -256,7 +256,7 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
 
    QDataStream *str = m_str;
    // Jump to the offer list
-   str->device()->at( m_offerListOffset );
+   str->device()->seek( m_offerListOffset );
 
    qint32 aServiceTypeOffset;
    qint32 aServiceOffset;
@@ -271,14 +271,14 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
          if ( aServiceTypeOffset == serviceTypeOffset )
          {
             // Save stream position !
-            const int savedPos = str->device()->at();
+            const int savedPos = str->device()->pos();
             // Create Service
             KService * serv = createEntry( aServiceOffset );
             if (serv) {
                 list.append( KService::Ptr( serv ) );
             }
             // Restore position
-            str->device()->at( savedPos );
+            str->device()->seek( savedPos );
          } else if ( aServiceTypeOffset > (qint32)serviceTypeOffset )
             break; // too far
       }

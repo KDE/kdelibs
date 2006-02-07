@@ -29,7 +29,7 @@
  *
  ***********************************************************************/
 
-KAutoMount::KAutoMount( bool _readonly, const QString& _format, const QString& _device,
+KAutoMount::KAutoMount( bool _readonly, const QByteArray& _format, const QString& _device,
                         const QString&  _mountpoint, const QString & _desktopFile,
                         bool _show_filemanager_window )
   : m_strDevice( _device ),
@@ -38,7 +38,7 @@ KAutoMount::KAutoMount( bool _readonly, const QString& _format, const QString& _
   //kDebug(7015) << "KAutoMount device=" << _device << " mountpoint=" << _mountpoint << endl;
   m_bShowFilemanagerWindow = _show_filemanager_window;
 
-  KIO::Job* job = KIO::mount( _readonly, _format.ascii(), _device, _mountpoint );
+  KIO::Job* job = KIO::mount( _readonly, _format, _device, _mountpoint );
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotResult( KIO::Job * ) ) );
 }
 

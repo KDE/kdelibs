@@ -56,9 +56,10 @@ public:
     KMimeTypeResolverHelper( KMimeTypeResolverBase *resolver,
                              Q3ScrollView *view )
         : m_resolver( resolver ),
-          m_timer( new QTimer( this ) )
+          m_timer()
     {
-        connect( m_timer, SIGNAL( timeout() ), SLOT( slotProcessMimeIcons() ));
+        m_timer.setSingleShot( true );
+        connect( &m_timer, SIGNAL( timeout() ), SLOT( slotProcessMimeIcons() ));
 
         connect( view->horizontalScrollBar(), SIGNAL( sliderMoved(int) ),
                  SLOT( slotAdjust() ) );
@@ -68,9 +69,9 @@ public:
         view->viewport()->installEventFilter( this );
     }
 
-    void start( int delay, bool singleShot )
+    void start( int delay )
     {
-        m_timer->start( delay, singleShot );
+        m_timer.start( delay );
     }
 
 protected:
@@ -97,7 +98,7 @@ private Q_SLOTS:
 
 private:
     KMimeTypeResolverBase *m_resolver;
-    QTimer *m_timer;
+    QTimer m_timer;
 };
 
 /**
@@ -142,7 +143,7 @@ public:
      */
     void start( uint delayNonVisibleIcons = 10 )
     {
-        m_helper->start( 0, true /* single shot */ );
+        m_helper->start( 0 );
         m_delayNonVisibleIcons = delayNonVisibleIcons;
     }
 
@@ -212,7 +213,7 @@ inline void KMimeTypeResolver<IconItem, Parent>::slotProcessMimeIcons()
 
     m_parent->determineIcon(item);
     m_lstPendingMimeIconItems.remove(item);
-    m_helper->start( nextDelay, true /* single shot */ );
+    m_helper->start( nextDelay );
 }
 
 template<class IconItem, class Parent>
@@ -224,7 +225,7 @@ inline void KMimeTypeResolver<IconItem, Parent>::slotViewportAdjusted()
     {
         m_parent->determineIcon( item );
         m_lstPendingMimeIconItems.remove(item);
-        m_helper->start( 0, true /* single shot */ );
+        m_helper->start( 0 );
     }
 }
 

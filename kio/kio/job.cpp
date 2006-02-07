@@ -753,7 +753,7 @@ SimpleJob *KIO::special(const KUrl& url, const QByteArray & data, bool showProgr
     return new SimpleJob(url, CMD_SPECIAL, data, showProgressInfo);
 }
 
-SimpleJob *KIO::mount( bool ro, const char *fstype, const QString& dev, const QString& point, bool showProgressInfo )
+SimpleJob *KIO::mount( bool ro, const QByteArray& fstype, const QString& dev, const QString& point, bool showProgressInfo )
 {
     KIO_ARGS << int(1) << qint8( ro ? 1 : 0 )
              << QString::fromLatin1(fstype) << dev << point;

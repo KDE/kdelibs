@@ -49,7 +49,7 @@ KDataToolInfo::KDataToolInfo( const KService::Ptr& service, KInstance* instance 
 
     if ( !!m_service && !m_service->serviceTypes().contains( "KDataTool" ) )
     {
-        kDebug(30003) << "The service " << m_service->name().latin1()
+        kDebug(30003) << "The service " << m_service->name()
                        << " does not feature the service type KDataTool" << endl;
         m_service = 0;
     }
@@ -140,7 +140,7 @@ QStringList KDataToolInfo::userCommands() const
     if ( !m_service )
         return QStringList();
 
-    return QStringList::split( ',', m_service->comment() );
+    return m_service->comment().split( ',', QString::SkipEmptyParts );
 }
 
 KDataTool* KDataToolInfo::createTool( QObject* parent, const char* name ) const
@@ -150,7 +150,7 @@ KDataTool* KDataToolInfo::createTool( QObject* parent, const char* name ) const
 
     KDataTool* tool = KParts::ComponentFactory::createInstanceFromService<KDataTool>( m_service, parent, name );
     if ( tool )
-    tool->setInstance( m_instance );
+        tool->setInstance( m_instance );
     return tool;
 }
 

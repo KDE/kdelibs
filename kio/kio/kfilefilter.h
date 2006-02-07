@@ -52,7 +52,7 @@ protected:
 };
 
 /**
- * A simple file filter that can filter hidden dot files, by name, 
+ * A simple file filter that can filter hidden dot files, by name,
  * by mime type and by mode.
  * @short A simple file filter.
  */
@@ -69,7 +69,7 @@ public:
     /**
      * Enable or disable filtering hidden dot files.
      * This option is enabled by default.
-     * @param filter true to enable filtering dot files, false to 
+     * @param filter true to enable filtering dot files, false to
      *        disable
      * @see filterDotFiles
      */
@@ -99,13 +99,12 @@ public:
      * expressions.
      * @param nameFilters a list of regular expressions, separated by
      *                    the character @p separator
-     * @param caseSensitive if true, matches case sensitive. False 
-     *                      otherwise
+     * @param caseSensitive Qt::CaseSensitive or Qt::CaseInsensitive
      * @param separator the separator in the @p nameFilter
      * @since 3.1
      */
-    virtual void setNameFilters( const QString& nameFilters, bool caseSensitive = false ,
-                         const QChar& separator = ' ' );
+    virtual void setNameFilters( const QString& nameFilters, Qt::CaseSensitivity caseSensitive = Qt::CaseSensitive,
+                                 const QChar& separator = ' ' );
     /**
      * Sets a list of mime filters. A file can only pass if its
      * mime type is contained in this list.
@@ -122,7 +121,7 @@ public:
 
     /**
      * Sets the mode filter. If the @p mode is 0, the filter is
-     * disabled. 
+     * disabled.
      * When enabled, a file will only pass if the files mode
      * ANDed with @p mode is not zero.
      * @param mode the new mode. 0 to disable

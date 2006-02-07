@@ -84,36 +84,36 @@ void KFileSharePrivate::slotFileChange(const QString &file)
 }
 
 void KFileShare::readConfig() // static
-{    
+{
     // Create KFileSharePrivate instance
     KFileSharePrivate::self();
     KSimpleConfig config(QLatin1String(FILESHARECONF),true);
-    
+
     s_sharingEnabled = config.readEntry("FILESHARING", "yes") == "yes";
     s_restricted = config.readEntry("RESTRICT", "yes") == "yes";
     s_fileShareGroup = config.readEntry("FILESHAREGROUP", "fileshare");
-    
-    
-    if (!s_sharingEnabled) 
+
+
+    if (!s_sharingEnabled)
         s_authorization = UserNotAllowed;
-    else 
+    else
     if (!s_restricted )
         s_authorization = Authorized;
     else {
         // check if current user is in fileshare group
         KUserGroup shareGroup(s_fileShareGroup);
-        if (shareGroup.users().findIndex(KUser()) > -1 ) 
+        if (shareGroup.users().contains(KUser()) )
             s_authorization = Authorized;
         else
             s_authorization = UserNotAllowed;
     }
-                
-    if (config.readEntry("SHARINGMODE", "simple") == "simple") 
+
+    if (config.readEntry("SHARINGMODE", "simple") == "simple")
         s_shareMode = Simple;
-    else        
+    else
         s_shareMode = Advanced;
-          
-        
+
+
     s_sambaEnabled = config.readEntry("SAMBA", "yes") == "yes";
     s_nfsEnabled = config.readEntry("NFS", "yes") == "yes";
 }
@@ -121,48 +121,48 @@ void KFileShare::readConfig() // static
 KFileShare::ShareMode KFileShare::shareMode() {
   if ( s_authorization == NotInitialized )
       readConfig();
-  
+
   return s_shareMode;
 }
 
 bool KFileShare::sharingEnabled() {
   if ( s_authorization == NotInitialized )
       readConfig();
-  
+
   return s_sharingEnabled;
 }
-   
+
 bool KFileShare::isRestricted() {
   if ( s_authorization == NotInitialized )
       readConfig();
-  
+
   return s_restricted;
 }
-    
+
 QString KFileShare::fileShareGroup() {
   if ( s_authorization == NotInitialized )
       readConfig();
-  
+
   return s_fileShareGroup;
 }
 
-    
+
 bool KFileShare::sambaEnabled() {
   if ( s_authorization == NotInitialized )
       readConfig();
-  
+
   return s_sambaEnabled;
 }
-    
+
 bool KFileShare::nfsEnabled() {
   if ( s_authorization == NotInitialized )
       readConfig();
-  
+
   return s_nfsEnabled;
 }
 
 
-void KFileShare::readShareList() 
+void KFileShare::readShareList()
 {
     KFileSharePrivate::self();
     if ( !s_shareList )
@@ -239,7 +239,7 @@ bool KFileShare::setShared( const QString& path, bool shared )
     QString exe = KFileShare::findExe( "fileshareset" );
     if (exe.isEmpty())
         return false;
-        
+
     KProcess proc;
     proc << exe;
     if ( shared )
@@ -249,13 +249,13 @@ bool KFileShare::setShared( const QString& path, bool shared )
     proc << path;
     proc.start( KProcess::Block ); // should be ok, the perl script terminates fast
     bool ok = proc.normalExit() && (proc.exitStatus() == 0);
-    kDebug(7000) << "KFileSharePropsPlugin::setShared normalExit=" 
+    kDebug(7000) << "KFileSharePropsPlugin::setShared normalExit="
                   << proc.normalExit() << endl;
-    kDebug(7000) << "KFileSharePropsPlugin::setShared exitStatus=" 
+    kDebug(7000) << "KFileSharePropsPlugin::setShared exitStatus="
                   << proc.exitStatus() << endl;
     if ( proc.normalExit() ) {
       switch( proc.exitStatus() ) {
-        case 1: 
+        case 1:
           // User is not authorized
           break;
         case 3:
@@ -267,27 +267,27 @@ bool KFileShare::setShared( const QString& path, bool shared )
         case 4:
           // Invalid mount point
           break;
-        case 5: 
+        case 5:
           // Called script with --remove, but path was not shared before.
           // Result is nevertheless what the client wanted, so
           // this is alright.
-          ok = true; 
+          ok = true;
           break;
         case 6:
           // There is no export method
-          break;                    
+          break;
         case 7:
           // file sharing is disabled
-          break;            
+          break;
         case 8:
           // advanced sharing is enabled
-          break;          
+          break;
         case 255:
           // Abitrary error
-          break;                
+          break;
       }
-    } 
-    
+    }
+
     return ok;
 }
 

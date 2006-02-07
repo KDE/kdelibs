@@ -37,14 +37,16 @@ static ParseTreeBase::Ptr *pTree = 0;
 
 ParseTreeBase::Ptr KIO::parseConstraints( const QString& _constr )
 {
-  KTraderParse_mainParse( _constr.ascii() );
+  const QByteArray buffer = _constr.toUtf8();
+  KTraderParse_mainParse( buffer.constData() );
   assert( pTree );
   return *pTree;
 }
 
 ParseTreeBase::Ptr KIO::parsePreferences( const QString& _prefs )
 {
-  KTraderParse_mainParse( _prefs.ascii() );
+  const QByteArray buffer = _prefs.toUtf8();
+  KTraderParse_mainParse( buffer.constData() );
   assert( pTree );
   return *pTree;
 }

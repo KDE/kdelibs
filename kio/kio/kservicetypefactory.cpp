@@ -102,12 +102,7 @@ QVariant::Type KServiceTypeFactory::findPropertyTypeByName(const QString &_name)
 
    assert (!KSycoca::self()->isBuilding());
 
-   QMap<QString,int>::const_iterator it = m_propertyTypeDict.find(_name);
-   if (it != m_propertyTypeDict.end()) {
-     return (QVariant::Type)it.data();
-   }
-
-   return QVariant::Invalid;
+   return static_cast<QVariant::Type>( m_propertyTypeDict.value( _name, QVariant::Invalid ) );
 }
 
 KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QString *match)
@@ -118,14 +113,14 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
    // Get stream to the header
    QDataStream *str = m_str;
 
-   str->device()->at( m_fastPatternOffset );
+   str->device()->seek( m_fastPatternOffset );
 
    qint32 nrOfEntries;
    (*str) >> nrOfEntries;
    qint32 entrySize;
    (*str) >> entrySize;
 
-   qint32 fastOffset =  str->device()->at( );
+   qint32 fastOffset =  str->device()->pos();
 
    qint32 matchingOffset = 0;
 
@@ -145,7 +140,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
       while (left <= right) {
          middle = (left + right) / 2;
          // read pattern at position "middle"
-         str->device()->at( middle * entrySize + fastOffset );
+         str->device()->seek( middle * entrySize + fastOffset );
          KSycocaEntry::read(*str, pattern);
          int cmp = pattern.compare( extension );
          if (cmp < 0)
@@ -166,7 +161,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
 
    // Now try the "other" Pattern table
    if ( m_patterns.isEmpty() ) {
-      str->device()->at( m_otherPatternOffset );
+      str->device()->seek( m_otherPatternOffset );
 
       QString pattern;
       qint32 mimetypeOffset;

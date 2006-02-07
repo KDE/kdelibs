@@ -32,19 +32,19 @@ class KSambaSharePrivate
 {
 public:
   KSambaSharePrivate();
-  
+
   bool readSmbConf();
   bool findSmbConf();
   bool load();
-  
+
   QSet<QString> sharedPaths;
   QString smbConf;
 };
 
-KSambaSharePrivate::KSambaSharePrivate() 
+KSambaSharePrivate::KSambaSharePrivate()
 {
     load();
-}  
+}
 
 
 #define FILESHARECONF "/etc/security/fileshare.conf"
@@ -52,7 +52,7 @@ KSambaSharePrivate::KSambaSharePrivate()
 bool KSambaSharePrivate::load() {
   if (!findSmbConf())
       return false;
-      
+
   return readSmbConf();
 }
 
@@ -90,7 +90,7 @@ bool KSambaSharePrivate::findSmbConf() {
     kDebug(7000) << "KSambaShare: Could not found smb.conf!" << endl;
     return false;
   }
-      
+
   return true;
 }
 
@@ -103,12 +103,12 @@ bool KSambaSharePrivate::readSmbConf() {
   QFile f(smbConf);
 
   kDebug(7000) << "KSambaShare::readSmbConf " << smbConf << endl;
-  
+
   if (!f.open(QIODevice::ReadOnly)) {
     kError() << "KSambaShare: Could not open " << smbConf << endl;
     return false;
   }
-  
+
   sharedPaths.clear();
 
   QTextStream s(&f);
@@ -123,7 +123,7 @@ bool KSambaSharePrivate::readSmbConf() {
     if (continuedLine) {
       completeLine += currentLine;
       continuedLine = false;
-    }      
+    }
     else
       completeLine = currentLine;
 
@@ -132,10 +132,10 @@ bool KSambaSharePrivate::readSmbConf() {
     {
       continuedLine = true;
       // remove the ending backslash
-      completeLine.truncate( completeLine.length()-1 ); 
+      completeLine.truncate( completeLine.length()-1 );
       continue;
     }
-    
+
     // comments or empty lines
     if (completeLine.isEmpty() ||
         '#' == completeLine[0] ||
@@ -145,7 +145,7 @@ bool KSambaSharePrivate::readSmbConf() {
     }
 
     // parameter
-    int i = completeLine.find('=');
+    const int i = completeLine.indexOf('=');
 
     if (i>-1)
     {
@@ -172,7 +172,7 @@ bool KSambaSharePrivate::readSmbConf() {
 
   f.close();
 
-  return true;  
+  return true;
 
 }
 
@@ -183,7 +183,7 @@ KSambaShare::KSambaShare() {
     KDirWatch::self()->addFile(FILESHARECONF);
     connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
    	        SLOT(slotFileChange(const QString&)));
-  } 
+  }
 }
 
 KSambaShare::~KSambaShare() {
@@ -220,11 +220,11 @@ void KSambaShare::slotFileChange( const QString & path ) {
   emit changed();
 }
 
-KSambaShare* KSambaShare::_instance = 0L; 
+KSambaShare* KSambaShare::_instance = 0L;
 static KStaticDeleter<KSambaShare> ksdSambaShare;
 
 KSambaShare* KSambaShare::instance() {
-  if (! _instance ) 
+  if (! _instance )
       _instance = ksdSambaShare.setObject(_instance, new KSambaShare());
 
   return _instance;

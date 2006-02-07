@@ -76,9 +76,8 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
     if ( !dev )
         return false;
 
-    char magic[8];
-    dev->readBlock (magic, 8);
-    if (qstrncmp(magic, "!<arch>", 7) != 0) {
+    QByteArray magic = dev->read( 7 );
+    if ( magic != "!<arch>" ) {
         kWarning(7042) << "Invalid main magic" << endl;
         return false;
     }
@@ -91,7 +90,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
         int date, uid, gid, mode;
         qint64 size;
 
-        dev->at( dev->at() + (2 - (dev->at() % 2)) % 2 ); // Ar headers are padded to byte boundary
+        dev->seek( dev->pos() + (2 - (dev->pos() % 2)) % 2 ); // Ar headers are padded to byte boundary
 
         if ( dev->read(ar_header.data(), 60) != 60 ) { // Read ar header
             kWarning(7042) << "Couldn't read header" << endl;
@@ -124,7 +123,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
                 kDebug(7042) << "Read in longnames entry" << endl;
             } else if (name.mid(1, 1) == " ") { // Symbol table entry
                 kDebug(7042) << "Skipped symbol entry" << endl;
-                dev->at( dev->at() + size );
+                dev->seek( dev->pos() + size );
                 skip_entry = true;
             } else { // Longfilename
                 kDebug(7042) << "Longfilename #" << name.mid(1, 15).toInt() << endl;
@@ -134,7 +133,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
                     return false;
                 }
                 name = &ar_longnames[name.mid(1, 15).toInt()];
-                name = name.left(name.find("/"));
+                name = name.left(name.indexOf("/"));
             }
         }
         if (skip_entry) continue;
@@ -144,10 +143,10 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
         kDebug(7042) << "Filename: " << name << " Size: " << size << endl;
 
         KArchiveEntry* entry;
-        entry = new KArchiveFile(this, name, mode, date, /*uid*/ 0, /*gid*/ 0, 0, dev->at(), size);
+        entry = new KArchiveFile(this, name, mode, date, /*uid*/ 0, /*gid*/ 0, 0, dev->pos(), size);
         rootDir()->addEntry(entry); // Ar files don't support directorys, so everything in root
 
-        dev->at( dev->at() + size ); // Skip contents
+        dev->seek( dev->pos() + size ); // Skip contents
     }
     delete[] ar_longnames;
 

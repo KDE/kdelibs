@@ -261,7 +261,7 @@ void PreviewJob::removeItem( const KFileItem *item )
     for (QLinkedList<PreviewItem>::Iterator it = d->items.begin(); it != d->items.end(); ++it)
         if ((*it).item == item)
         {
-            d->items.remove(it);
+            d->items.erase(it);
             break;
         }
 
@@ -302,7 +302,7 @@ void PreviewJob::determineNextFile()
         d->state = PreviewJobPrivate::STATE_STATORIG;
         d->currentItem = d->items.first();
         d->succeeded = false;
-        d->items.remove(d->items.begin());
+        d->items.removeFirst();
         KIO::Job *job = KIO::stat( d->currentItem.item->url(), false );
         job->addMetaData( "no-auth-prompt", "true" );
         addSubjob(job);
@@ -471,12 +471,13 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
 #ifdef Q_OS_UNIX
     if (d->shmaddr)
     {
+        // Keep this in sync with kdebase/kioslave/thumbnail.cpp
         QDataStream str(data);
-        int width, height, depth;
-        bool alpha;
-        str >> width >> height >> depth >> alpha;
-        thumb = QImage(d->shmaddr, width, height, depth, 0, 0, QImage::IgnoreEndian);
-        thumb.setAlphaBuffer(alpha);
+        int width, height;
+        quint8 iFormat;
+        str >> width >> height >> iFormat;
+        QImage::Format format = static_cast<QImage::Format>( iFormat );
+        thumb = QImage(d->shmaddr, width, height, format );
     }
     else
 #endif
@@ -504,15 +505,9 @@ void PreviewJob::emitPreview(const QImage &thumb)
 {
     QPixmap pix;
     if (thumb.width() > d->width || thumb.height() > d->height)
-    {
-        double imgRatio = (double)thumb.height() / (double)thumb.width();
-        if (imgRatio > (double)d->height / (double)d->width)
-            pix=QPixmap::fromImage(
-                thumb.smoothScale(QMAX(int((double)d->height / imgRatio), 1), d->height));
-        else pix=QPixmap::fromImage(
-            thumb.smoothScale(d->width, QMAX(int((double)d->width * imgRatio), 1)));
-    }
-    else pix=QPixmap::fromImage(thumb);
+        pix = QPixmap::fromImage( thumb.scaled(thumb.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation) );
+    else
+        pix = QPixmap::fromImage( thumb );
     emit gotPreview(d->currentItem.item, pix);
 }
 

@@ -83,7 +83,7 @@ KServiceType::init( KDesktopFile *config)
 
   for( ; gIt != tmpList.end(); ++gIt )
   {
-    if ( (*gIt).find( "Property::" ) == 0 )
+    if ( (*gIt).startsWith( "Property::" ) )
     {
       config->setGroup( *gIt );
       QVariant v = QVariant::nameToType( config->readEntry( "Type" ).toLatin1().constData() );
@@ -97,7 +97,7 @@ KServiceType::init( KDesktopFile *config)
   gIt = tmpList.begin();
   for( ; gIt != tmpList.end(); ++gIt )
   {
-    if( (*gIt).find( "PropertyDef::" ) == 0 )
+    if( (*gIt).startsWith( "PropertyDef::" ) )
     {
       config->setGroup( *gIt );
       m_mapPropDefs.insert( (*gIt).mid( 13 ),
@@ -183,11 +183,8 @@ KServiceType::property( const QString& _name ) const
     v = QVariant( m_strIcon );
   else if ( _name == "Comment" )
     v = QVariant( m_strComment );
-  else {
-    QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
-    if ( it != m_mapProps.end() )
-      v = it.data();
-  }
+  else
+    v = m_mapProps.value( _name );
 
   return v;
 }
@@ -195,38 +192,23 @@ KServiceType::property( const QString& _name ) const
 QStringList
 KServiceType::propertyNames() const
 {
-  QStringList res;
-
-  QMap<QString,QVariant>::ConstIterator it = m_mapProps.begin();
-  for( ; it != m_mapProps.end(); ++it )
-    res.append( it.key() );
-
+  QStringList res = m_mapProps.keys();
   res.append( "Name" );
   res.append( "Comment" );
   res.append( "Icon" );
-
   return res;
 }
 
 QVariant::Type
 KServiceType::propertyDef( const QString& _name ) const
 {
-  QMap<QString,QVariant::Type>::ConstIterator it = m_mapPropDefs.find( _name );
-  if ( it == m_mapPropDefs.end() )
-    return QVariant::Invalid;
-  return it.data();
+  return static_cast<QVariant::Type>( m_mapPropDefs.value( _name, QVariant::Invalid ) );
 }
 
 QStringList
 KServiceType::propertyDefNames() const
 {
-  QStringList l;
-
-  QMap<QString,QVariant::Type>::ConstIterator it = m_mapPropDefs.begin();
-  for( ; it != m_mapPropDefs.end(); ++it )
-    l.append( it.key() );
-
-  return l;
+  return m_mapPropDefs.keys();
 }
 
 KServiceType::Ptr KServiceType::serviceType( const QString& _name )

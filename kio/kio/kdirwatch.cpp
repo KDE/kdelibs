@@ -215,14 +215,16 @@ void KDirWatchPrivate::dnotify_sigio_handler(int sig, siginfo_t *si, void *p)
  */
 
 KDirWatchPrivate::KDirWatchPrivate()
-  : rescan_timer(0, "KDirWatchPrivate::rescan_timer")
+  : timer(),
+    freq( 3600000 ), // 1 hour as upper bound
+    statEntries( 0 ),
+    m_ref( 0 ),
+    delayRemove( false ),
+    rescan_all( false ),
+    rescan_timer()
 {
-  timer = new QTimer(this, "KDirWatchPrivate::timer");
-  connect (timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
-  freq = 3600000; // 1 hour as upper bound
-  statEntries = 0;
-  delayRemove = false;
-  m_ref = 0;
+  timer.setObjectName( "KDirWatchPrivate::timer" );
+  connect (&timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
 
   KConfigGroup config(KGlobal::config(), QLatin1String("DirWatch"));
   m_nfsPollInterval = config.readEntry("NFSPollInterval", 5000);
@@ -231,7 +233,8 @@ KDirWatchPrivate::KDirWatchPrivate()
   QString available("Stat");
 
   // used for FAM and DNOTIFY
-  rescan_all = false;
+  rescan_timer.setObjectName( "KDirWatchPrivate::rescan_timer" );
+  rescan_timer.setSingleShot( true );
   connect(&rescan_timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
 
 #ifdef HAVE_FAM
@@ -344,7 +347,7 @@ KDirWatchPrivate::KDirWatchPrivate()
 /* This should never be called, but doesn't harm */
 KDirWatchPrivate::~KDirWatchPrivate()
 {
-  timer->stop();
+  timer.stop();
 
   /* remove all entries being watched */
   removeEntries(0);
@@ -376,7 +379,7 @@ void KDirWatchPrivate::slotActivated()
     read(mPipe[0], &dummy_buf, 4096);
 
     if (!rescan_timer.isActive())
-      rescan_timer.start(m_PollInterval, true /* singleshot */);
+      rescan_timer.start(m_PollInterval); // single-shot
 
     return;
   }
@@ -403,7 +406,8 @@ void KDirWatchPrivate::slotActivated()
       struct inotify_event ev;
       memcpy( &ev, &buf[offset], sizeof( struct inotify_event ) );
 
-      QByteArray path( ev.len );
+      QByteArray path;
+      path.resize( ev.len );
       memcpy( path.data(), &buf[offset+sizeof( struct inotify_event )], ev.len );
 
       // now we're in deep trouble of finding the
@@ -426,7 +430,7 @@ void KDirWatchPrivate::slotActivated()
           }
 
           if (!rescan_timer.isActive())
-            rescan_timer.start(m_PollInterval, true /* singleshot */);
+            rescan_timer.start(m_PollInterval); // singleshot
         }
       }
 
@@ -530,7 +534,7 @@ void KDirWatchPrivate::useFreq(Entry* e, int newFreq)
   // a reasonable frequency for the global polling timer
   if (e->freq < freq) {
     freq = e->freq;
-    if (timer->isActive()) timer->start(freq);
+    if (timer.isActive()) timer.start(freq);
     kDebug(7001) << "Global Poll Freq is now " << freq << " msec" << endl;
   }
 }
@@ -681,7 +685,7 @@ bool KDirWatchPrivate::useINotify( Entry* e )
   e->m_mode = INotifyMode;
 
   if ( e->m_status == NonExistent ) {
-    addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
+    addEntry(0, QDir::cleanPath(e->path+"/.."), e, true);
     return true;
   }
 
@@ -717,7 +721,7 @@ bool KDirWatchPrivate::useStat(Entry* e)
 
     if ( statEntries == 1 ) {
       // if this was first STAT entry (=timer was stopped)
-      timer->start(freq);      // then start the timer
+      timer.start(freq);      // then start the timer
       kDebug(7001) << " Started Polling Timer, freq " << freq << endl;
     }
   }
@@ -775,7 +779,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
        (*it).addClient(instance);
        kDebug(7001) << "Added already watched Entry " << path
 		     << " (now " <<  (*it).clients() << " clients)"
-		     << QString(" [%1]").arg(instance->name()) << endl;
+		     << QString(" [%1]").arg(instance->objectName()) << endl;
     }
     return;
   }
@@ -795,9 +799,9 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     e->isDir = S_ISDIR(stat_buf.st_mode);
 
     if (e->isDir && !isDir)
-      qWarning("KDirWatch: %s is a directory. Use addDir!", path.ascii());
+      qWarning("KDirWatch: %s is a directory. Use addDir!", qPrintable(path));
     else if (!e->isDir && isDir)
-      qWarning("KDirWatch: %s is a file. Use addFile!", path.ascii());
+      qWarning("KDirWatch: %s is a file. Use addFile!", qPrintable(path));
 
     e->m_ctime = stat_buf.st_ctime;
     e->m_status = Normal;
@@ -819,7 +823,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   kDebug(7001) << "Added " << (e->isDir ? "Dir ":"File ") << path
 		<< (e->m_status == NonExistent ? " NotExisting" : "")
 		<< (sub_entry ? QString(" for %1").arg(sub_entry->path) : QString(""))
-		<< (instance ? QString(" [%1]").arg(instance->name()) : QString(""))
+		<< (instance ? QString(" [%1]").arg(instance->objectName()) : QString(""))
 		<< endl;
 
 
@@ -897,7 +901,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
         ") for " << e->path << endl;
     }
     else
-      removeEntry( 0, QDir::cleanDirPath( e->path+"/.." ), e );
+      removeEntry( 0, QDir::cleanPath( e->path+"/.." ), e );
   }
 #endif
 
@@ -929,14 +933,14 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   if (e->m_mode == StatMode) {
     statEntries--;
     if ( statEntries == 0 ) {
-      timer->stop(); // stop timer if lists are empty
+      timer.stop(); // stop timer if lists are empty
       kDebug(7001) << " Stopped Polling Timer" << endl;
     }
   }
 
   kDebug(7001) << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
 		<< (sub_entry ? QString(" for %1").arg(sub_entry->path) : QString(""))
-		<< (instance ? QString(" [%1]").arg(instance->name()) : QString(""))
+		<< (instance ? QString(" [%1]").arg(instance->objectName()) : QString(""))
 		<< endl;
   m_mapEntries.remove( e->path ); // <e> not valid any more
 }
@@ -974,7 +978,7 @@ void KDirWatchPrivate::removeEntries( KDirWatch* instance )
   if (minfreq > freq) {
     // we can decrease the global polling frequency
     freq = minfreq;
-    if (timer->isActive()) timer->start(freq);
+    if (timer.isActive()) timer.start(freq);
     kDebug(7001) << "Poll Freq now " << freq << " msec" << endl;
   }
 }
@@ -990,7 +994,7 @@ bool KDirWatchPrivate::stopEntryScan( KDirWatch* instance, Entry* e)
       stillWatching += client->count;
   }
 
-  kDebug(7001) << instance->name() << " stopped scanning " << e->path
+  kDebug(7001) << instance->objectName() << " stopped scanning " << e->path
 		<< " (now " << stillWatching << " watchers)" << endl;
 
   if (stillWatching == 0) {
@@ -1021,7 +1025,7 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
   if (newWatching == 0)
     return false;
 
-  kDebug(7001) << instance->name() << " restarted scanning " << e->path
+  kDebug(7001) << instance->objectName() << " restarted scanning " << e->path
 		<< " (now " << wasWatching+newWatching << " watchers)" << endl;
 
   // restart watching and emit pending events
@@ -1229,9 +1233,9 @@ void KDirWatchPrivate::slotRescan()
   // People can do very long things in the slot connected to dirty(),
   // like showing a message box. We don't want to keep polling during
   // that time, otherwise the value of 'delayRemove' will be reset.
-  bool timerRunning = timer->isActive();
+  bool timerRunning = timer.isActive();
   if ( timerRunning )
-    timer->stop();
+    timer.stop();
 
   // We delay deletions of entries this way.
   // removeDir(), when called in slotDirty(), can cause a crash otherwise
@@ -1316,7 +1320,7 @@ void KDirWatchPrivate::slotRescan()
 #endif
 
   if ( timerRunning )
-    timer->start(freq);
+    timer.start(freq);
 
   QTimer::singleShot(0, this, SLOT(slotRemoveDelayed()));
 }
@@ -1421,7 +1425,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
   // Delayed handling. This rechecks changes with own stat calls.
   e->dirty = true;
   if (!rescan_timer.isActive())
-    rescan_timer.start(m_PollInterval, true);
+    rescan_timer.start(m_PollInterval); // singleshot
 
   // needed FAM control actions on FAM events
   if (e->isDir)
@@ -1502,7 +1506,7 @@ void KDirWatchPrivate::statistics()
 	  if (!pending.isEmpty()) pending = " (pending: " + pending + ")";
 	  pending = ", stopped" + pending;
 	}
-	kDebug(7001) << "    by " << c->instance->name()
+	kDebug(7001) << "    by " << c->instance->objectName()
 		      << " (" << c->count << " times)"
 		      << pending << endl;
       }
@@ -1662,19 +1666,19 @@ void KDirWatch::statistics()
 
 void KDirWatch::setCreated( const QString & _file )
 {
-  kDebug(7001) << name() << " emitting created " << _file << endl;
+  kDebug(7001) << objectName() << " emitting created " << _file << endl;
   emit created( _file );
 }
 
 void KDirWatch::setDirty( const QString & _file )
 {
-  kDebug(7001) << name() << " emitting dirty " << _file << endl;
+  kDebug(7001) << objectName() << " emitting dirty " << _file << endl;
   emit dirty( _file );
 }
 
 void KDirWatch::setDeleted( const QString & _file )
 {
-  kDebug(7001) << name() << " emitting deleted " << _file << endl;
+  kDebug(7001) << objectName() << " emitting deleted " << _file << endl;
   emit deleted( _file );
 }
 

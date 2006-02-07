@@ -109,13 +109,13 @@ namespace KIO {
      * Special job for @p kio_file.
      *
      * @param ro Mount read-only if @p true.
-     * @param fstype File system type (e.g. "ext2", can be 0L).
+     * @param fstype File system type (e.g. "ext2", can be empty).
      * @param dev Device (e.g. /dev/sda0).
      * @param point Mount point, can be @p null.
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob *mount( bool ro, const char *fstype, const QString& dev, const QString& point, bool showProgressInfo = true );
+    KIO_EXPORT SimpleJob *mount( bool ro, const QByteArray& fstype, const QString& dev, const QString& point, bool showProgressInfo = true );
 
     /**
      * Unmount filesystem.
