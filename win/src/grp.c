@@ -20,7 +20,7 @@
 #include <windows.h>
 #include <winposix_export.h>
 
-#include< grp.h>
+#include <grp.h>
 
 /* these functions always fail. for win32 */
 
