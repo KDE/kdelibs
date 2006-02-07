@@ -5,8 +5,10 @@ add_subdirectory( kdeui )
 add_subdirectory( kio ) 
 add_subdirectory( kparts ) 
 add_subdirectory( kmdi ) 
+if(UNIX)
 add_subdirectory( kunittest ) 
 add_subdirectory( tests ) 
+endif(UNIX)
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
