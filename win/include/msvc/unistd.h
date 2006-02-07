@@ -92,6 +92,7 @@ KDEWIN32_EXPORT int readlink(const char *__path, char *__buf, int __buflen);
 
 /* just copies __name1 to __name2 */
 KDEWIN32_EXPORT int symlink(const char *__name1, const char *__name2);
+
 /* just copies __name1 to __name2 */
 KDEWIN32_EXPORT int link(const char *__name1, const char *__name2);
 
