@@ -131,6 +131,12 @@ KDEWIN32_EXPORT pid_t setsid(void)
   return -1;
 }
 
+KDEWIN32_EXPORT unsigned alarm(unsigned __secs )
+{
+  /** @todo */
+  return 1;
+}
+
 typedef unsigned int size_t;
 
 /*#define INCL_WINSOCK_API_PROTOTYPES 0
@@ -251,6 +257,13 @@ KDEWIN32_EXPORT int mkstemps (char* _template, int suffix_len)
   _template[0] = '\0';
   return -1;
 }
+
+// from kdecore/fakes.c
+KDEWIN32_EXPORT int mkstemp (char* _template)
+{
+  return mkstemps( _template, 0 );
+}
+
 
 // from kdecore/fakes.c
 KDEWIN32_EXPORT int setenv(const char *name, const char *value, int overwrite) {
