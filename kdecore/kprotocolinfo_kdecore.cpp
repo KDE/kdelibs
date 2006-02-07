@@ -491,6 +491,7 @@ bool KProtocolInfo::showFilePreview( const QString& _protocol )
   return prot->d->showPreviews;
 }
 
+/* "gone in Qt-4.x"
 KUrl::URIMode KProtocolInfo::uriParseMode( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
@@ -499,6 +500,7 @@ KUrl::URIMode KProtocolInfo::uriParseMode( const QString& _protocol )
 
   return prot->d->uriMode;
 }
+*/
 
 QStringList KProtocolInfo::capabilities( const QString& _protocol )
 {
