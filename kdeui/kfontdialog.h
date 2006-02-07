@@ -301,8 +301,8 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KFontChooserPrivate;
-  KFontChooserPrivate *d;
+  class Private;
+  Private *d;
 };
 
 /**

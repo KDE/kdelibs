@@ -34,7 +34,7 @@
 #include "ktabwidget.h"
 #include "ktabbar.h"
 
-class KTabWidgetPrivate {
+class KTabWidget::Private {
 public:
     bool m_automaticResizeTabs;
     int m_maxLength;
@@ -45,7 +45,7 @@ public:
     //know about is the shortened name
     QStringList m_tabNames;
 
-    KTabWidgetPrivate() {
+    Private() {
         m_automaticResizeTabs = false;
         KConfigGroup cg(KGlobal::config(), "General");
         m_maxLength = cg.readEntry("MaximumTabLength", 30);
@@ -55,7 +55,7 @@ public:
 };
 
 KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags f )
-    : QTabWidget( parent ),d(new KTabWidgetPrivate)
+    : QTabWidget( parent ), d(new Private())
 {
     setWindowFlags( f );
     setTabBar( new KTabBar(this) );

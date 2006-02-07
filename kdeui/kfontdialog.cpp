@@ -78,10 +78,10 @@ static int minimumListHeight( const Q3ListBox *list, int numVisibleEntry )
   return ( w * numVisibleEntry + 2 * list->frameWidth() );
 }
 
-class KFontChooser::KFontChooserPrivate
+class KFontChooser::Private
 {
 public:
-    KFontChooserPrivate()
+    Private()
         { m_palette.setColor(QPalette::Active, QColorGroup::Text, Qt::black);
           m_palette.setColor(QPalette::Active, QColorGroup::Base, Qt::white); }
     QPalette m_palette;
@@ -92,14 +92,13 @@ KFontChooser::KFontChooser(QWidget *parent,
 			   bool onlyFixed, const QStringList &fontList,
 			   bool makeFrame, int visibleListSize, bool diff,
                            Qt::CheckState *sizeIsRelativeState )
-  : QWidget(parent), usingFixed(onlyFixed)
+  : QWidget(parent), usingFixed(onlyFixed), d(new KFontChooser::Private)
 {
 
   QString mainWhatsThisText =
     i18n( "Here you can choose the font to be used." );
   setWhatsThis(mainWhatsThisText );
 
-  d = new KFontChooserPrivate;
   QVBoxLayout *topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
   int checkBoxGap = KDialog::spacingHint() / 2;
 

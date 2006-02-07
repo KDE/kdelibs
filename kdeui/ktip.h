@@ -94,8 +94,8 @@ private:
     QStringList mTips;
 
     int mCurrent;
-    class KTipDatabasePrivate;
-    KTipDatabasePrivate *d;
+    class Private;
+    Private *d;
 };
 
 /**
@@ -180,8 +180,8 @@ private:
     QCheckBox *mTipOnStart;
     KTextBrowser *mTipText;
 
-    class KTipDialogPrivate;
-    KTipDialogPrivate *d;
+    class Private;
+    Private *d;
 
     static KTipDialog *mInstance;
 

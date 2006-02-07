@@ -188,7 +188,8 @@ Q_SIGNALS:
 
 private:
   QHash<int, KStatusBarLabel*> items;
-  class KStatusBarPrivate* d;
+  class Private;
+  Private * d;
 };
 
 #endif // KSTATUSBAR_H

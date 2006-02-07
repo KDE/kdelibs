@@ -28,7 +28,6 @@
 
 class QTimer;
 class QPushButton;
-class KTabBarPrivate;
 
 /**
  * @since 3.2
@@ -107,7 +106,8 @@ private:
     bool mTabReorderingEnabled;
     bool mTabCloseActivatePrevious;
 
-    KTabBarPrivate * d;
+    class Private;
+    Private * d;
 };
 
 #endif

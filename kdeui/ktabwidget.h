@@ -28,7 +28,6 @@
 
 class QTab;
 
-class KTabWidgetPrivate;
 
 /**
  * \brief A widget containing multiple tabs
@@ -316,7 +315,8 @@ private:
     void resizeTabs( int changedTabIndex = -1 );
     void updateTab( int index );
 
-    KTabWidgetPrivate *const d;
+    class Private;
+    Private * const d;
 };
 
 #endif
