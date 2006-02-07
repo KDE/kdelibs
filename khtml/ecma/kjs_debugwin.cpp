@@ -31,6 +31,7 @@
 #include <q3listbox.h>
 #include <q3multilineedit.h>
 #include <qapplication.h>
+#include <ktoolbar.h>
 #include <qsplitter.h>
 #include <qcombobox.h>
 #include <qbitmap.h>
@@ -56,7 +57,7 @@
 #include <kconfigbase.h>
 #include <kapplication.h>
 #include <dcop/dcopclient.h>
-#include <kstringhandler.h> 
+#include <kstringhandler.h>
 
 #include "kjs_dom.h"
 #include "kjs_binding.h"
@@ -440,18 +441,16 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   KMenu *debugMenu = new KMenu(this);
   menuBar()->insertItem("&Debug",debugMenu);
 
-  m_actionCollection = new KActionCollection(this);
-  m_actionCollection->setInstance(this);
   m_nextAction       = new KAction(i18n("Next breakpoint","&Next"),"dbgnext",KShortcut(),this,SLOT(slotNext()),
-				   m_actionCollection,"next");
+				   actionCollection(),"next");
   m_stepAction       = new KAction(i18n("&Step"),"dbgstep",KShortcut(),this,SLOT(slotStep()),
-				   m_actionCollection,"step");
+				   actionCollection(),"step");
   m_continueAction   = new KAction(i18n("&Continue"),"dbgrun",KShortcut(),this,SLOT(slotContinue()),
-				   m_actionCollection,"cont");
+				   actionCollection(),"cont");
   m_stopAction       = new KAction(i18n("St&op"),"stop",KShortcut(),this,SLOT(slotStop()),
-				   m_actionCollection,"stop");
+				   actionCollection(),"stop");
   m_breakAction      = new KAction(i18n("&Break at Next Statement"),"dbgrunto",KShortcut(),this,SLOT(slotBreakNext()),
-				   m_actionCollection,"breaknext");
+				   actionCollection(),"breaknext");
 
   m_nextAction->setToolTip(i18n("Next breakpoint","Next"));
   m_stepAction->setToolTip(i18n("Step"));

@@ -59,7 +59,7 @@ namespace KJS {
   class SourceFile : public DOM::DomShared
   {
    public:
-    SourceFile(QString u, QString c, Interpreter *interp) 
+    SourceFile(QString u, QString c, Interpreter *interp)
 	: url(u), code(c), interpreter(interp) {}
     QString getCode();
     QString url;
@@ -263,7 +263,6 @@ namespace KJS {
     QMap<int,SourceFragment*> m_sourceFragments; /* maps SourceId->SourceFragment */
     Q3PtrList<SourceFile> m_sourceSelFiles; /* maps combobox index->SourceFile */
 
-    KActionCollection *m_actionCollection;
     QPixmap m_stopIcon;
     QPixmap m_emptyIcon;
     SourceDisplay *m_sourceDisplay;
