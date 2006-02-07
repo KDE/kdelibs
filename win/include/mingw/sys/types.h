@@ -34,7 +34,6 @@ typedef unsigned int nlink_t;
 #ifdef __cplusplus
 #include <winposix_export.h>
 #else
-#define KDECORE_EXPORT
 #define KDEWIN32_EXPORT
 #endif 
 

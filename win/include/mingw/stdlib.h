@@ -47,10 +47,10 @@ extern "C" {
 #define EXIT_SUCCESS 0
 */
 /* from fakes.c */
-KDECORE_EXPORT int setenv(const char *__string, const char *__value, int __overwrite);
-KDECORE_EXPORT void unsetenv(const char *__string);
-KDECORE_EXPORT int mkstemps (char* _template, int suffix_len);
-KDECORE_EXPORT char* mkdtemp (char* _template);
+KDEWIN32_EXPORT int setenv(const char *__string, const char *__value, int __overwrite);
+KDEWIN32_EXPORT void unsetenv(const char *__string);
+KDEWIN32_EXPORT int mkstemps (char* _template, int suffix_len);
+KDEWIN32_EXPORT char* mkdtemp (char* _template);
 
 #ifdef __cplusplus
 }
