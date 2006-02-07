@@ -97,7 +97,7 @@ void DefaultProgress::init()
   topLayout->setSpacing(KDialog::spacingHint() );
   topLayout->addStrut( 360 );   // makes dlg at least that wide
 
-  QGridLayout *grid = new QGridLayout( 2, 3 );
+  QGridLayout *grid = new QGridLayout( 0 );
   topLayout->addLayout(grid);
   grid->addItem(new QSpacerItem(KDialog::spacingHint(),0),0,1); //addColSpacing(1, KDialog::spacingHint());
   // filenames or action name

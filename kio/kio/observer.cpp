@@ -300,8 +300,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
             KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toLocal8Bit());
             if (x) {
                // Set the chain back onto the certificate
-               QStringList cl =
-                      QStringList::split(QString("\n"), meta["ssl_peer_chain"]);
+               QStringList cl = meta["ssl_peer_chain"].split('\n', QString::SkipEmptyParts);
                Q3PtrList<KSSLCertificate> ncl;
 
                ncl.setAutoDelete(true);

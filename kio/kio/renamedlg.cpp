@@ -78,7 +78,6 @@ class RenameDlg::RenameDlgPrivate
   KUrl dest;
   QString mimeSrc;
   QString mimeDest;
-  bool modal;
   bool plugin;
 };
 
@@ -90,27 +89,16 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                      time_t ctimeSrc,
                      time_t ctimeDest,
                      time_t mtimeSrc,
-                     time_t mtimeDest,
-                     bool _modal)
-  : QDialog ( parent, "KIO::RenameDialog" , _modal ),d(new RenameDlgPrivate( ))
+                     time_t mtimeDest)
+  : QDialog ( parent ), d(new RenameDlgPrivate)
 {
-    d->modal = _modal;
-#if 0
-    // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,
-    // i.e. in a separate process.
-    // ####### This isn't the case anymore - remove?
-#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN) //FIXME(E): Implement for QT Embedded & win32
-    if (d->modal)
-        KWin::setState( winId(), NET::StaysOnTop );
-#endif
-#endif
+    setObjectName( "KIO::RenameDialog" );
 
     d->src = _src;
     d->dest = _dest;
     d->plugin = false;
 
-
-    setCaption( _caption );
+    setWindowTitle( _caption );
 
     d->bCancel = new KPushButton( KStdGuiItem::cancel(), this );
     connect(d->bCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
@@ -152,8 +140,9 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         }
     }
 
-    QVBoxLayout* pLayout = new QVBoxLayout( this, KDialog::marginHint(),
-                                    KDialog::spacingHint() );
+    QVBoxLayout* pLayout = new QVBoxLayout( this );
+    pLayout->setMargin( KDialog::marginHint() );
+    pLayout->setSpacing( KDialog::spacingHint() );
     pLayout->addStrut( 360 );	// makes dlg at least that wide
 
     // User tries to overwrite a file with itself ?
@@ -194,7 +183,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                     lib->unload();
                     continue;
                 }
-                QObject *obj = factory->create( this, (*it)->name().latin1() );
+                QObject *obj = factory->create( this, QFile::encodeName( (*it)->name() ) );
                 if(!obj) {
                     lib->unload();
                     continue;
@@ -221,11 +210,12 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
         if( !d->plugin ){
             // No plugin found, build default dialog
-            QGridLayout * gridLayout = new QGridLayout( 0L, 9, 2, KDialog::marginHint(),
-                                                        KDialog::spacingHint() );
+            QGridLayout * gridLayout = new QGridLayout( 0 );
+            gridLayout->setMargin( KDialog::marginHint() );
+            gridLayout->setSpacing( KDialog::spacingHint() );
             pLayout->addLayout(gridLayout);
-            gridLayout->setColStretch(0,0);
-            gridLayout->setColStretch(1,10);
+            gridLayout->setColumnStretch(0,0);
+            gridLayout->setColumnStretch(1,10);
 
             QString sentence1;
             if (mtimeDest < mtimeSrc)
@@ -557,9 +547,8 @@ RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
 {
   Q_ASSERT(kapp);
 
-  RenameDlg dlg( 0L, _caption, _src, _dest, _mode,
-                 sizeSrc, sizeDest, ctimeSrc, ctimeDest, mtimeSrc, mtimeDest,
-                 true /*modal*/ );
+  RenameDlg dlg( 0, _caption, _src, _dest, _mode,
+                 sizeSrc, sizeDest, ctimeSrc, ctimeDest, mtimeSrc, mtimeDest );
   int i = dlg.exec();
   _new = dlg.newDestURL().path();
 

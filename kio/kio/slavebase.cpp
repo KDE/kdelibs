@@ -345,7 +345,7 @@ void SlaveBase::disconnectSlave()
 
 void SlaveBase::setMetaData(const QString &key, const QString &value)
 {
-   mOutgoingMetaData.replace(key, value);
+    mOutgoingMetaData.insert(key, value); // replaces existing key if already there
 }
 
 QString SlaveBase::metaData(const QString &key) const
@@ -386,7 +386,8 @@ KRemoteEncoding *SlaveBase::remoteEncoding()
    if (d->remotefile != 0)
       return d->remotefile;
 
-   return d->remotefile = new KRemoteEncoding(metaData("Charset").latin1());
+   QByteArray charset = metaData("Charset").toLatin1();
+   return d->remotefile = new KRemoteEncoding( charset );
 }
 
 void SlaveBase::data( const QByteArray &data )

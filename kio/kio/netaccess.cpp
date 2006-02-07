@@ -226,7 +226,7 @@ void NetAccess::removeTempFile(const QString& name)
   if (tmpfiles->contains(name))
   {
     unlink(QFile::encodeName(name));
-    tmpfiles->remove(name);
+    tmpfiles->removeAll(name);
   }
 }
 
@@ -355,9 +355,8 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString command,
 
       if (resultFile.open( QIODevice::ReadOnly ))
       {
-        QTextStream ts( &resultFile );
-        ts.setEncoding( QTextStream::Locale ); // Locale??
-        resultData = ts.read();
+        QTextStream ts( &resultFile ); // default encoding is Locale
+        resultData = ts.readAll();
         resultFile.close();
         NetAccess::del( tempPathUrl, window );
       }
@@ -378,7 +377,7 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
   m_metaData = metaData;
   if ( m_metaData ) {
       for ( QMap<QString, QString>::iterator it = m_metaData->begin(); it != m_metaData->end(); ++it ) {
-          job->addMetaData( it.key(), it.data() );
+          job->addMetaData( it.key(), it.value() );
       }
   }
 
@@ -434,8 +433,9 @@ void NetAccess::slotResult( KIO::Job * job )
       lastErrorMsg = new QString;
     *lastErrorMsg = job->errorString();
   }
-  if ( job->isA("KIO::StatJob") )
-    m_entry = static_cast<KIO::StatJob *>(job)->statResult();
+  KIO::StatJob* statJob = qobject_cast<KIO::StatJob *>( job );
+  if ( statJob )
+    m_entry = statJob->statResult();
 
   if ( m_metaData )
     *m_metaData = job->metaData();

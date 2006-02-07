@@ -32,6 +32,7 @@
 
 #include <klistview.h>
 #include <kstatusbar.h>
+#include <ktoolbar.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kmenu.h>

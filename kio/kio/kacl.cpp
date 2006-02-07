@@ -40,10 +40,6 @@
 #include <QPair>
 
 
-#ifdef USE_POSIX_ACL
-static void printACL( acl_t acl, const QString &comment );
-#endif
-
 class KACL::KACLPrivate {
 public:
     KACLPrivate() : m_acl( 0 ) {}
@@ -167,15 +163,19 @@ static void permissionsToEntry( acl_entry_t entry, unsigned short v )
     if ( v & 1 ) acl_add_perm( permset, ACL_EXECUTE );
 }
 
+#ifdef USE_POSIX_ACL
+#if 0
 static void printACL( acl_t acl, const QString &comment )
 {
     ssize_t size = acl_size( acl );
     kDebug() << comment << acl_to_text( acl, &size ) << endl;
 }
+#endif
+#endif
 
 static int getUidForName( const QString& name )
 {
-    struct passwd *user = getpwnam( name.latin1() );
+    struct passwd *user = getpwnam( name.toLocal8Bit() );
     if ( user )
         return user->pw_uid;
     else
@@ -184,7 +184,7 @@ static int getUidForName( const QString& name )
 
 static int getGidForName( const QString& name )
 {
-    struct group *group = getgrnam( name.latin1() );
+    struct group *group = getgrnam( name.toLocal8Bit() );
     if ( group )
         return group->gr_gid;
     else
@@ -580,7 +580,7 @@ bool KACL::setACL( const QString &aclStr )
 {
     bool ret = false;
 #ifdef USE_POSIX_ACL
-    acl_t temp = acl_from_text( aclStr.latin1() );
+    acl_t temp = acl_from_text( aclStr.toLatin1() );
     if ( acl_valid( temp ) != 0 ) {
         // TODO errno is set, what to do with it here?
         acl_free( temp );

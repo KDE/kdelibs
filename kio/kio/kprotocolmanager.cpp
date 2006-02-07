@@ -115,7 +115,7 @@ int KProtocolManager::readTimeout()
   KConfig *cfg = config();
   cfg->setGroup( QString() );
   int val = cfg->readEntry( "ReadTimeout", DEFAULT_READ_TIMEOUT );
-  return QMAX(MIN_TIMEOUT_VALUE, val);
+  return qMax(MIN_TIMEOUT_VALUE, val);
 }
 
 int KProtocolManager::connectTimeout()
@@ -123,7 +123,7 @@ int KProtocolManager::connectTimeout()
   KConfig *cfg = config();
   cfg->setGroup( QString() );
   int val = cfg->readEntry( "ConnectTimeout", DEFAULT_CONNECT_TIMEOUT );
-  return QMAX(MIN_TIMEOUT_VALUE, val);
+  return qMax(MIN_TIMEOUT_VALUE, val);
 }
 
 int KProtocolManager::proxyConnectTimeout()
@@ -131,7 +131,7 @@ int KProtocolManager::proxyConnectTimeout()
   KConfig *cfg = config();
   cfg->setGroup( QString() );
   int val = cfg->readEntry( "ProxyConnectTimeout", DEFAULT_PROXY_CONNECT_TIMEOUT );
-  return QMAX(MIN_TIMEOUT_VALUE, val);
+  return qMax(MIN_TIMEOUT_VALUE, val);
 }
 
 int KProtocolManager::responseTimeout()
@@ -139,7 +139,7 @@ int KProtocolManager::responseTimeout()
   KConfig *cfg = config();
   cfg->setGroup( QString() );
   int val = cfg->readEntry( "ResponseTimeout", DEFAULT_RESPONSE_TIMEOUT );
-  return QMAX(MIN_TIMEOUT_VALUE, val);
+  return qMax(MIN_TIMEOUT_VALUE, val);
 }
 
 /*========================== PROXY SETTINGS =================================*/
@@ -360,9 +360,9 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
         if (!noProxy.isEmpty())
         {
            QString qhost = url.host().toLower();
-           const char *host = qhost.latin1();
+           QByteArray host = qhost.toLatin1();
            QString qno_proxy = noProxy.trimmed().toLower();
-           const char *no_proxy = qno_proxy.latin1();
+           const QByteArray no_proxy = qno_proxy.toLatin1();
            isRevMatch = revmatch(host, no_proxy);
 
            // If no match is found and the request url has a port
@@ -371,13 +371,13 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
            if (!isRevMatch && url.port() > 0)
            {
               qhost += ':' + QString::number (url.port());
-              host = qhost.latin1();
+              host = qhost.toLatin1();
               isRevMatch = revmatch (host, no_proxy);
            }
 
            // If the hostname does not contain a dot, check if
            // <local> is part of noProxy.
-           if (!isRevMatch && host && (strchr(host, '.') == NULL))
+           if (!isRevMatch && !host.isEmpty() && (strchr(host, '.') == NULL))
               isRevMatch = revmatch("<local>", no_proxy);
         }
 
@@ -467,14 +467,16 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
     }
     if( modifiers.contains('l') )
     {
+      static const QString & english = KGlobal::staticQString( "en" );
+
       QStringList languageList = KGlobal::locale()->languageList();
-      QStringList::Iterator it = languageList.find( QLatin1String("C") );
-      if( it != languageList.end() )
+      int idx = languageList.indexOf( QLatin1String("C") );
+      if( idx != -1 )
       {
-        if( languageList.contains( QLatin1String("en") ) > 0 )
-          languageList.remove( it );
+        if( languageList.contains( english ) )
+          languageList.removeAt( idx );
         else
-          (*it) = QLatin1String("en");
+          languageList[idx] = english;
       }
       if( languageList.count() )
         supp += QString("; %1").arg(languageList.join(", "));

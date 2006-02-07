@@ -200,7 +200,7 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & te
     //kDebug(7043) << "KBookmarkGroup::addBookmark " << text << " into " << m_address << endl;
     QDomDocument doc = element.ownerDocument();
     QDomElement elem = doc.createElement( "bookmark" );
-    elem.setAttribute( "href", url.url( 0, 106 ) ); // write utf8 URL (106 is mib enum for utf8)
+    elem.setAttribute( "href", url.url() ); // gives us utf8
     QString _icon = icon;
     if ( _icon.isEmpty() )
         _icon = KMimeType::iconNameForURL( url );
@@ -293,7 +293,7 @@ QString KBookmark::fullText() const
 
 KUrl KBookmark::url() const
 {
-    return KUrl(element.attribute("href"), 106); // Decode it from utf8 (106 is mib enum for utf8)
+    return KUrl(element.attribute("href")); // Decodes it from utf8
 }
 
 QString KBookmark::icon() const

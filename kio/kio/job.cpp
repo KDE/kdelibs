@@ -199,7 +199,7 @@ void Job::emitSpeed( unsigned long bytes_per_second )
   //kDebug(7007) << "Job " << this << " emitSpeed " << bytes_per_second << endl;
   if ( !m_speedTimer )
   {
-    m_speedTimer = new QTimer();
+    m_speedTimer = new QTimer(this);
     connect( m_speedTimer, SIGNAL( timeout() ), SLOT( slotSpeedTimeout() ) );
   }
   emit speed( this, bytes_per_second );
@@ -219,7 +219,7 @@ void Job::emitResult()
 
 void Job::kill( bool quietly )
 {
-  kDebug(7007) << "Job::kill this=" << this << " " << className() << " m_progressId=" << m_progressId << " quietly=" << quietly << endl;
+  kDebug(7007) << "Job::kill this=" << this << " " << metaObject()->className() << " m_progressId=" << m_progressId << " quietly=" << quietly << endl;
   // kill all subjobs, without triggering their result slot
   QList<Job *>::const_iterator it = m_subjobs.begin();
   const QList<Job *>::const_iterator end = m_subjobs.end();
@@ -381,14 +381,16 @@ void Job::addMetaData( const QMap<QString,QString> &values)
 {
     QMap<QString,QString>::const_iterator it = values.begin();
     for(;it != values.end(); ++it)
-      m_outgoingMetaData.insert(it.key(), it.data());
+      m_outgoingMetaData.insert(it.key(), it.value());
 }
 
 void Job::mergeMetaData( const QMap<QString,QString> &values)
 {
     QMap<QString,QString>::const_iterator it = values.begin();
     for(;it != values.end(); ++it)
-      m_outgoingMetaData.insert(it.key(), it.data(), false);
+        // there's probably a faster way
+        if ( !m_outgoingMetaData.contains( it.key() ) )
+            m_outgoingMetaData.insert( it.key(), it.value() );
 }
 
 MetaData Job::outgoingMetaData() const
@@ -785,8 +787,8 @@ StatJob::StatJob( const KUrl& url, int command,
 
 void StatJob::start(Slave *slave)
 {
-    m_outgoingMetaData.replace( "statSide", m_bSource ? "source" : "dest" );
-    m_outgoingMetaData.replace( "details", QString::number(m_details) );
+    m_outgoingMetaData.insert( "statSide", m_bSource ? "source" : "dest" );
+    m_outgoingMetaData.insert( "details", QString::number(m_details) );
 
     connect( slave, SIGNAL( statEntry( const KIO::UDSEntry& ) ),
              SLOT( slotStatEntry( const KIO::UDSEntry & ) ) );
@@ -1055,7 +1057,7 @@ void TransferJob::slotDataReq()
     if (dataForSlave.size() > max_size)
     {
        kDebug(7007) << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";
-       staticData.duplicate(dataForSlave.data() + max_size ,  dataForSlave.size() - max_size);
+       staticData = QByteArray(dataForSlave.data() + max_size ,  dataForSlave.size() - max_size);
        dataForSlave.truncate(max_size);
     }
 
@@ -1389,13 +1391,13 @@ void StoredTransferJob::slotStoredDataReq( KIO::Job *, QByteArray &data )
   int remainingBytes = m_data.size() - m_uploadOffset;
   if( remainingBytes > MAX_CHUNK_SIZE ) {
     // send MAX_CHUNK_SIZE bytes to the receiver (deep copy)
-    data.duplicate( m_data.data() + m_uploadOffset, MAX_CHUNK_SIZE );
+    data = QByteArray( m_data.data() + m_uploadOffset, MAX_CHUNK_SIZE );
     m_uploadOffset += MAX_CHUNK_SIZE;
     //kDebug() << "Sending " << MAX_CHUNK_SIZE << " bytes ("
     //                << remainingBytes - MAX_CHUNK_SIZE << " bytes remain)\n";
   } else {
     // send the remaining bytes to the receiver (deep copy)
-    data.duplicate( m_data.data() + m_uploadOffset, remainingBytes );
+    data = QByteArray( m_data.data() + m_uploadOffset, remainingBytes );
     m_data = QByteArray();
     m_uploadOffset = 0;
     //kDebug() << "Sending " << remainingBytes << " bytes\n";
@@ -2190,7 +2192,7 @@ void CopyJob::slotStart()
     m_reportTimer = new QTimer(this);
 
     connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
-    m_reportTimer->start(REPORT_TIMEOUT,false);
+    m_reportTimer->start(REPORT_TIMEOUT);
 
     // Stat the dest
     KIO::Job * job = KIO::stat( m_dest, false, 2, false );
@@ -2669,16 +2671,11 @@ void CopyJob::startListing( const KUrl & src )
 
 void CopyJob::skip( const KUrl & sourceUrl )
 {
-    // Check if this is one if toplevel sources
-    // If yes, remove it from m_srcList, for a correct FilesRemoved() signal
+    // If this is one if toplevel sources,
+    // remove it from m_srcList, for a correct FilesRemoved() signal
     //kDebug(7007) << "CopyJob::skip: looking for " << sourceUrl << endl;
-    KUrl::List::Iterator sit = m_srcList.find( sourceUrl );
-    if ( sit != m_srcList.end() )
-    {
-        //kDebug(7007) << "CopyJob::skip: removing " << sourceUrl << " from list" << endl;
-        m_srcList.remove( sit );
-    }
-    dirsToRemove.remove( sourceUrl );
+    m_srcList.removeAll( sourceUrl );
+    dirsToRemove.removeAll( sourceUrl );
 }
 
 bool CopyJob::shouldOverwrite( const QString& path ) const
@@ -2718,13 +2715,13 @@ void CopyJob::slotResultCreatingDirs( Job * job )
                 // We don't want to copy files in this directory, so we put it on the skip list
                 m_skipList.append( oldURL.path( 1 ) );
                 skip( oldURL );
-                dirs.remove( it ); // Move on to next dir
+                dirs.erase( it ); // Move on to next dir
             } else {
                 // Did the user choose to overwrite already?
                 const QString destFile = (*it).uDest.path();
                 if ( shouldOverwrite( destFile ) ) { // overwrite => just skip
                     emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
-                    dirs.remove( it ); // Move on to next dir
+                    dirs.erase( it ); // Move on to next dir
                 } else {
                     if ( !isInteractive() ) {
                         Job::slotResult( job ); // will set the error and emit result(this)
@@ -2757,7 +2754,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
     {
        //this is required for the undo feature
         emit copyingDone( this, (*it).uSource, (*it).uDest, true, false );
-        dirs.remove( it );
+        dirs.erase( it );
     }
 
     m_processedDirs++;
@@ -2811,7 +2808,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
                                          (*it).ctime, destctime,
                                          (*it).mtime, destmtime );
     if (m_reportTimer)
-        m_reportTimer->start(REPORT_TIMEOUT,false);
+        m_reportTimer->start(REPORT_TIMEOUT);
     switch ( r ) {
         case R_CANCEL:
             m_error = ERR_USER_CANCELED;
@@ -2869,21 +2866,21 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             m_skipList.append( existingDest );
             skip( (*it).uSource );
             // Move on to next dir
-            dirs.remove( it );
+            dirs.erase( it );
             m_processedDirs++;
             break;
         case R_OVERWRITE:
             m_overwriteList.append( existingDest );
             emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
             // Move on to next dir
-            dirs.remove( it );
+            dirs.erase( it );
             m_processedDirs++;
             break;
         case R_OVERWRITE_ALL:
             m_bOverwriteAll = true;
             emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
             // Move on to next dir
-            dirs.remove( it );
+            dirs.erase( it );
             m_processedDirs++;
             break;
         default:
@@ -2906,7 +2903,7 @@ void CopyJob::createNextDir()
         {
             const QString dir = (*it).uDest.path();
             if ( shouldSkip( dir ) ) {
-                dirs.remove( it );
+                dirs.erase( it );
                 it = dirs.begin();
             } else
                 udir = (*it).uDest;
@@ -2947,7 +2944,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         {
             skip( (*it).uSource );
             m_fileProcessedSize = (*it).size;
-            files.remove( it ); // Move on to next file
+            files.erase( it ); // Move on to next file
         }
         else
         {
@@ -2979,7 +2976,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
                     // Very special case, see a few lines below
                     // We are deleting the source of a symlink we successfully moved... ignore error
                     m_fileProcessedSize = (*it).size;
-                    files.remove( it );
+                    files.erase( it );
                 } else {
                     // Go directly to the conflict resolution, there is nothing to stat
                     slotResultConflictCopyingFiles( job );
@@ -3013,7 +3010,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
             //required for the undo feature
             emit copyingDone( this, (*it).uSource, (*it).uDest, false, false );
         // remove from list, to move on to next file
-        files.remove( it );
+        files.erase( it );
     }
     m_processedFiles++;
 
@@ -3103,7 +3100,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
     }
 
     if (m_reportTimer)
-        m_reportTimer->start(REPORT_TIMEOUT,false);
+        m_reportTimer->start(REPORT_TIMEOUT);
 
     removeSubjob( job );
     assert ( !hasSubjobs() );
@@ -3131,7 +3128,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             // Move on to next file
             skip( (*it).uSource );
             m_processedSize += (*it).size;
-            files.remove( it );
+            files.erase( it );
             m_processedFiles++;
             break;
        case R_OVERWRITE_ALL:
@@ -3161,7 +3158,7 @@ void CopyJob::copyNextFile()
         const QString destFile = (*it).uDest.path();
         bCopyFile = !shouldSkip( destFile );
         if ( !bCopyFile ) {
-            files.remove( it );
+            files.erase( it );
             it = files.begin();
         }
     }
@@ -3231,7 +3228,7 @@ void CopyJob::copyNextFile()
                         else
                             config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("unknown") );
                         config.sync();
-                        files.remove( it );
+                        files.erase( it );
                         m_processedFiles++;
                         //emit processedFiles( this, m_processedFiles );
                         copyNextFile();
@@ -3326,7 +3323,7 @@ void CopyJob::deleteNextDir()
         KUrl::List::Iterator it = --dirsToRemove.end();
         SimpleJob *job = KIO::rmdir( *it );
         Scheduler::scheduleJob(job);
-        dirsToRemove.remove(it);
+        dirsToRemove.erase(it);
         addSubjob( job );
     }
     else
@@ -3515,7 +3512,7 @@ void CopyJob::slotResultRenaming( Job* job )
                     ctimeSrc, ctimeDest,
                     mtimeSrc, mtimeDest );
                 if (m_reportTimer)
-                    m_reportTimer->start(REPORT_TIMEOUT,false);
+                    m_reportTimer->start(REPORT_TIMEOUT);
 
                 switch ( r )
                 {
@@ -3743,7 +3740,7 @@ DeleteJob::DeleteJob( const KUrl::List& src, bool /*shred*/, bool showProgressIn
      m_reportTimer=new QTimer(this);
      connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
      //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
-     m_reportTimer->start(REPORT_TIMEOUT,false);
+     m_reportTimer->start(REPORT_TIMEOUT);
   }
 
   QTimer::singleShot(0, this, SLOT(slotStart()));
@@ -3894,9 +3891,9 @@ void DeleteJob::deleteNextFile()
                 m_currentURL=(*it);
             }
             if ( isLink )
-                symlinks.remove(it);
+                symlinks.erase(it);
             else
-                files.remove(it);
+                files.erase(it);
             if ( job ) {
                 addSubjob(job);
                 return;
@@ -3933,11 +3930,11 @@ void DeleteJob::deleteNextDir()
                     job = KIO::rmdir( *it );
                 }
                 Scheduler::scheduleJob(job);
-                dirs.remove(it);
+                dirs.erase(it);
                 addSubjob( job );
                 return;
             }
-            dirs.remove(it);
+            dirs.erase(it);
         } while ( !dirs.isEmpty() );
     }
 

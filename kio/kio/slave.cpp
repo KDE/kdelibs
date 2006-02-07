@@ -411,7 +411,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
           delete slave;
           return 0;
        }
-       QString lib_path = KLibLoader::findLibrary(_name.latin1());
+       QString lib_path = KLibLoader::findLibrary(QFile::encodeName(_name));
        if (lib_path.isEmpty())
        {
           error_text = i18n("Can not find io-slave for protocol '%1'.").arg(protocol);

@@ -390,7 +390,7 @@ void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
 
 /*    menu->exec(e->globalPos());
             delete menu;*/
-            
+
     if ( !popup ) {
         return;
     }
@@ -543,7 +543,7 @@ void RenderLineEdit::calcMinMaxWidth()
     const QFontMetrics &fm = style()->fontMetrics();
     QSize s;
 
-    
+
     int size = element()->size();
 
     int h = fm.lineSpacing();
@@ -818,7 +818,7 @@ void RenderFileButton::slotReturnPressed()
 
 void RenderFileButton::slotTextChanged(const QString &/*string*/)
 {
-   element()->m_value = KUrl( widget()->url() ).prettyURL( 0, KUrl::StripFileProtocol );
+   element()->m_value = KUrl( widget()->url() ).pathOrURL();
 }
 
 void RenderFileButton::select()

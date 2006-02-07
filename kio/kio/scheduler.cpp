@@ -34,6 +34,7 @@
 #include <q3dict.h>
 #include <dcopclient.h>
 #include <q3ptrdict.h>
+#include <qwidget.h>
 
 
 // Slaves may be idle for MAX_SLAVE_IDLE time before they are being returned
@@ -122,13 +123,16 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &protocol)
 
 
 Scheduler::Scheduler()
-          : DCOPObject( "KIO::Scheduler" ),
-           QObject(kapp),
-           slaveTimer(0, "Scheduler::slaveTimer"),
-           coSlaveTimer(0, "Scheduler::coSlaveTimer"),
-           cleanupTimer(0, "Scheduler::cleanupTimer")
+    : DCOPObject( "KIO::Scheduler" ),
+      QObject(kapp)
 {
     setObjectName( "scheduler" );
+    slaveTimer.setObjectName( "Scheduler::slaveTimer" );
+    slaveTimer.setSingleShot( true );
+    coSlaveTimer.setObjectName( "Scheduler::coSlaveTimer" );
+    coSlaveTimer.setSingleShot( true );
+    cleanupTimer.setObjectName( "Scheduler::cleanupTimer" );
+    cleanupTimer.setSingleShot( true );
     checkOnHold = true; // !! Always check with KLauncher for the first request.
     slaveOnHold = 0;
     protInfoDict = new ProtocolInfoDict;
@@ -208,7 +212,7 @@ void Scheduler::_doJob(SimpleJob *job) {
     }
     extraJobData->replace(job, jobData);
     newJobs.append(job);
-    slaveTimer.start(0, true);
+    slaveTimer.start(0);
 #ifndef NDEBUG
     if (newJobs.count() > 150)
 	kDebug() << "WARNING - KIO::Scheduler got more than 150 jobs! This shows a misuse in your app (yes, a job is a QObject)." << endl;
@@ -228,7 +232,7 @@ void Scheduler::_scheduleJob(SimpleJob *job) {
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
     protInfo->joblist.append(job);
 
-    slaveTimer.start(0, true);
+    slaveTimer.start(0);
 }
 
 void Scheduler::_cancelJob(SimpleJob *job) {
@@ -314,7 +318,7 @@ void Scheduler::setupSlave(KIO::Slave *slave, const KUrl &url, const QString &pr
                     QString macdef;
                     QMap<QString, QStringList>::ConstIterator it = l.macdef.begin();
                     for ( ; it != l.macdef.end(); ++it )
-                        macdef += it.key() + '\\' + it.data().join( "\\" ) + '\n';
+                        macdef += it.key() + '\\' + it.value().join( "\\" ) + '\n';
                     configData["autoLoginMacro"] = macdef;
                 }
             }
@@ -384,7 +388,7 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
           newSlave = true;
           slave = createSlave(protInfo, job, job->url());
           if (!slave)
-             slaveTimer.start(0, true);
+             slaveTimer.start(0);
        }
     }
 
@@ -405,7 +409,7 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
     setupSlave(slave, job->url(), jobData->protocol, jobData->proxy, newSlave);
     job->start(slave);
 
-    slaveTimer.start(0, true);
+    slaveTimer.start(0);
     return true;
 }
 
@@ -579,7 +583,7 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
           assert(!coIdleSlaves->contains(slave));
           coIdleSlaves->append(slave);
           if (!list->isEmpty())
-             coSlaveTimer.start(0, true);
+             coSlaveTimer.start(0);
           return;
        }
        else
@@ -593,7 +597,7 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
     }
     if (protInfo->joblist.count())
     {
-       slaveTimer.start(0, true);
+       slaveTimer.start(0);
     }
 }
 
@@ -649,7 +653,7 @@ void Scheduler::_scheduleCleanup()
     if (idleSlaves->count())
     {
         if (!cleanupTimer.isActive())
-            cleanupTimer.start( MAX_SLAVE_IDLE*1000, true );
+            cleanupTimer.start( MAX_SLAVE_IDLE*1000 );
     }
 }
 
@@ -766,7 +770,7 @@ Scheduler::slotSlaveConnected()
     emit slaveConnected(slave);
     assert(!coIdleSlaves->contains(slave));
     coIdleSlaves->append(slave);
-    coSlaveTimer.start(0, true);
+    coSlaveTimer.start(0);
 }
 
 void
@@ -805,7 +809,7 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 
     assert(list->contains(job) == 0);
     list->append(job);
-    coSlaveTimer.start(0, true); // Start job on timer event
+    coSlaveTimer.start(0); // Start job on timer event
 
     return true;
 }
@@ -885,10 +889,10 @@ Scheduler::slotUnregisterWindow(QObject *obj)
    QMap<QObject *, WId>::Iterator it = m_windowList.find(obj);
    if (it == m_windowList.end())
       return;
-   WId windowId = it.data();
+   WId windowId = it.value();
    disconnect( it.key(), SIGNAL(destroyed(QObject *)),
               this, SLOT(slotUnregisterWindow(QObject*)));
-   m_windowList.remove( it );
+   m_windowList.erase( it );
    if (kapp)
    {
       QByteArray params;

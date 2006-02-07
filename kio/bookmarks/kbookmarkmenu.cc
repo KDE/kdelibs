@@ -322,7 +322,7 @@ void RMB::slotRMBActionProperties( int val )
   if ( !dlg.finalUrl().isNull() )
   {
     KUrl u = KUrl::fromPathOrURL(dlg.finalUrl());
-    bookmark.internalElement().setAttribute("href", u.url(0, 106));
+    bookmark.internalElement().setAttribute("href", u.url()); // utf8
   }
 
 #ifdef __GNUC__

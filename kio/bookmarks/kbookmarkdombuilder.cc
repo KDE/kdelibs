@@ -52,7 +52,7 @@ void KBookmarkDomBuilder::newBookmark(
 ) {
    KBookmark bk = m_stack.top().addBookmark(
                                     m_manager, text,
-                                    KUrl( url, 106 /*utf8*/ ),
+                                    KUrl( url ), // utf8
                                     QString(), false);
    // store additional info
    bk.internalElement().setAttribute("netscapeinfo", additionalInfo);

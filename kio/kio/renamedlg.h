@@ -62,7 +62,6 @@ public:
    * @param ctimeDest creation time of destination file
    * @param mtimeSrc modification time of source file
    * @param mtimeDest modification time of destination file
-   * @param modal set to true for a modal dialog
    * @see RenameDlg_Mode
    */
   RenameDlg( QWidget *parent, const QString & caption,
@@ -74,8 +73,7 @@ public:
              time_t ctimeSrc = (time_t) -1,
              time_t ctimeDest = (time_t) -1,
              time_t mtimeSrc = (time_t) -1,
-             time_t mtimeDest = (time_t) -1,
-             bool modal = false );
+             time_t mtimeDest = (time_t) -1 );
   ~RenameDlg();
 
   /**

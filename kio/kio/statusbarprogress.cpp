@@ -57,7 +57,7 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   m_pProgressBar = new QProgressBar( this );
 //   m_pProgressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
 //   m_pProgressBar->setLineWidth( 1 );
-  m_pProgressBar->setBackgroundMode( Qt::PaletteBackground );
+  m_pProgressBar->setBackgroundRole( QPalette::Window ); // ### KDE4: still needed?
   m_pProgressBar->installEventFilter( this );
   m_pProgressBar->setMinimumWidth( w );
   stack->insertWidget( 1,m_pProgressBar );

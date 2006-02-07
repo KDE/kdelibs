@@ -136,7 +136,7 @@ bool KFileMetaInfoItem::setValue( const QVariant& value )
     if ( d == Data::null ) return false;
 
     if ( ! (d->mimeTypeInfo->attributes() & KFileMimeTypeInfo::Modifiable ) ||
-         ! (value.canCast(d->mimeTypeInfo->type())))
+         ! (value.canConvert(d->mimeTypeInfo->type())))
     {
         kDebug(7033) << "setting the value of " << key() << "failed\n";
         return false;
@@ -149,9 +149,9 @@ bool KFileMetaInfoItem::setValue( const QVariant& value )
 
     d->dirty = true;
     d->value = value;
-    // If we don't cast (and test for canCast in the above if), QVariant is
+    // If we don't cast (and test for canConvert in the above if), QVariant is
     // very picky about types (e.g. QString vs. QCString or int vs. uint)
-    d->value.cast(d->mimeTypeInfo->type());
+    d->value.convert(d->mimeTypeInfo->type());
 
     return true;
 }
@@ -399,16 +399,15 @@ QStringList KFileMetaInfo::preferredGroups() const
     QStringList list = groups();
     QStringList newlist;
     QStringList preferred = d->mimeTypeInfo->preferredGroups();
-    QStringList::Iterator pref;
 
     // move all keys from the preferred groups that are in our list to a new list
-    for ( pref = preferred.begin(); pref != preferred.end(); ++pref )
+    for ( QStringList::Iterator pref = preferred.begin(); pref != preferred.end(); ++pref )
     {
-        QStringList::Iterator group = list.find(*pref);
-        if ( group != list.end() )
+        const int idx = list.indexOf(*pref);
+        if ( idx != -1 )
         {
-             newlist.append( *group );
-             list.remove(group);
+             newlist.append( *pref );
+             list.removeAt( idx );
         }
     }
 
@@ -434,11 +433,7 @@ QStringList KFileMetaInfo::preferredKeys() const
 
 KFileMetaInfoGroup KFileMetaInfo::group(const QString& key) const
 {
-    QMap<QString,KFileMetaInfoGroup>::iterator it = d->groups.find( key );
-    if ( it != d->groups.end() )
-        return it.data();
-    else
-        return KFileMetaInfoGroup();
+    return d->groups.value( key );
 }
 
 bool KFileMetaInfo::addGroup( const QString& name )
@@ -485,7 +480,7 @@ bool KFileMetaInfo::removeGroup( const QString& name )
         !((*it).attributes() & KFileMimeTypeInfo::Removable))
         return false;
 
-    d->groups.remove(it);
+    d->groups.erase(it);
     d->removedGroups.append(name);
     return true;
 }
@@ -636,7 +631,7 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
         }
 
         if ( it != d->groups.end() ) {
-            KFileMetaInfoItem item = it.data().addItem( key );
+            KFileMetaInfoItem item = it.value().addItem( key );
             if ( item.isValid() )
                 return item;
         }
@@ -652,7 +647,7 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
         QMap<QString,KFileMetaInfoGroup>::iterator it = d->groups.find( *groupIt );
         if ( it != d->groups.end() )
         {
-            KFileMetaInfoGroup group = it.data();
+            KFileMetaInfoGroup group = it.value();
             item = findEditableItem( group, key );
             if ( item.isValid() )
                 return item;
@@ -969,7 +964,7 @@ KFilePlugin* KFileMetaInfoProvider::loadAndRegisterPlugin( const QString& mimeTy
         }
         // Hopefully the above includes the mimetype we asked for!
         if ( m_pendingMimetypeInfos.find( mimeType ) == 0 )
-            kWarning(7033) << plugin->className() << " was created for " << mimeType << " but doesn't call addMimeTypeInfo for it!" << endl;
+            kWarning(7033) << plugin->metaObject()->className() << " was created for " << mimeType << " but doesn't call addMimeTypeInfo for it!" << endl;
     }
     m_pendingMimetypeInfos.clear();
     return plugin;
@@ -1102,7 +1097,7 @@ QStringList KFileMetaInfoProvider::supportedMimeTypes() const
         const QStringList mimeTypes = (*it)->serviceTypes();
         QStringList::ConstIterator it2 = mimeTypes.begin();
         for ( ; it2 != mimeTypes.end(); ++it2 )
-            if ( allMimeTypes.find( *it2 ) == allMimeTypes.end() &&
+            if ( !allMimeTypes.contains( *it2 ) &&
                  *it2 != kfilePlugin ) // also in serviceTypes()
                 allMimeTypes.append( *it2 );
     }
@@ -1208,11 +1203,11 @@ QStringList KFileMetaInfoGroup::preferredKeys() const
     // move all keys from the preferred keys that are in our list to a new list
     for ( pref = begin; pref!=end; ++pref )
     {
-        QStringList::Iterator item = list.find(*pref);
-        if ( item != list.end() )
+        const int idx = list.indexOf(*pref);
+        if ( idx != -1 )
         {
-             newlist.append( *item );
-             list.remove(item);
+             newlist.append( *pref );
+             list.removeAt( idx );
         }
     }
 
@@ -1265,11 +1260,7 @@ bool KFileMetaInfoGroup::contains( const QString& key ) const
 
 KFileMetaInfoItem KFileMetaInfoGroup::item( const QString& key) const
 {
-    QMap<QString,KFileMetaInfoItem>::iterator it = d->items.find( key );
-    if ( it != d->items.end() )
-        return it.data();
-
-    return KFileMetaInfoItem();
+    return d->items.value( key );
 }
 
 KFileMetaInfoItem KFileMetaInfoGroup::item(uint hint) const
@@ -1328,7 +1319,7 @@ KFileMetaInfoItem KFileMetaInfoGroup::addItem( const QString& key )
     assert(isValid());
     QMap<QString,KFileMetaInfoItem>::iterator it = d->items.find( key );
     if ( it != d->items.end() )
-        return it.data();
+        return it.value();
 
     const KFileMimeTypeInfo::GroupInfo* ginfo = d->mimeTypeInfo->groupInfo(d->name);
 
@@ -1379,7 +1370,7 @@ bool KFileMetaInfoGroup::removeItem( const QString& key )
     }
 
     (*it).setRemoved();
-    d->items.remove(it);
+    d->items.erase(it);
     d->removedItems.append(key);
     d->dirty = true;
     return true;
@@ -1497,10 +1488,10 @@ QStringList KFileMimeTypeInfo::supportedKeys() const
     while (i != m_groups.constEnd()) {
         QStringList list = i.value()->supportedKeys();
         for ( lit = list.begin(); lit != list.end(); ++lit ) {
-            if ( keys.find( *lit ) == keys.end() )
+            if ( !keys.contains( *lit ) ) // use QSet?
                 keys.append( *lit );
         }
-		++i;
+        ++i;
     }
 
     return keys;

@@ -120,8 +120,6 @@ using namespace DOM;
 #include "misc/loader.h"
 #include <kwin.h>
 
-#define HINT_UTF8	106
-
 namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
@@ -585,7 +583,7 @@ bool KHTMLPart::openURL( const KUrl &url )
       int error = mainURL.queryItem( "error" ).toInt();
       // error=0 isn't a valid error code, so 0 means it's missing from the URL
       if ( error == 0 ) error = KIO::ERR_UNKNOWN;
-      QString errorText = mainURL.queryItem( "errText", HINT_UTF8 );
+      QString errorText = mainURL.queryItem( "errText" );
       urls.pop_front();
       d->m_workingURL = KUrl::join( urls );
       //kDebug(6050) << "Emitting fixed URL " << d->m_workingURL.prettyURL() << endl;
@@ -1143,7 +1141,7 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
 
   if (!proxy || proxy->paused())
     return QVariant();
-    
+
   //Make sure to initialize the interpreter before creating Completion
   (void)proxy->interpreter();
 
@@ -1921,7 +1919,9 @@ void KHTMLPart::write( const char *str, int len )
   //kDebug(6050) << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
+#if 0
       d->m_doc->setDecoderCodec(d->m_decoder->codec());
+#endif
       d->m_doc->recalcStyle( NodeImpl::Force );
   }
 
@@ -2297,8 +2297,10 @@ KUrl KHTMLPart::completeURL( const QString &url )
 {
   if ( !d->m_doc ) return KUrl( url );
 
+#if 0
   if (d->m_decoder)
     return KUrl(d->m_doc->completeURL(url), d->m_decoder->codec()->mibEnum());
+#endif
 
   return KUrl( d->m_doc->completeURL( url ) );
 }

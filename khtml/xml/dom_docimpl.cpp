@@ -176,7 +176,7 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     if (doc->doctype() && dtype)
         doc->doctype()->copyFrom(*dtype);
 
-    // the document must be created empty if all parameters are null 
+    // the document must be created empty if all parameters are null
     // (or empty for qName/nsURI as a tolerance) - see DOM 3 Core.
     if (dtype || !qualifiedName.isEmpty() || !namespaceURI.isEmpty()) {
         ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
@@ -306,7 +306,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     document->doc = this;
     m_paintDeviceMetrics = 0;
     m_paintDevice = 0;
-    m_decoderMibEnum = 0;
+    //m_decoderMibEnum = 0;
     m_textColor = Qt::black;
 
     m_view = v;
@@ -627,7 +627,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 
     ElementMappingCache::ItemInfo* info = m_getElementByIdCache.get(stringKey);
 
-    if (!info) 
+    if (!info)
         return 0;
 
     //See if cache has an unambiguous answer.
@@ -1278,7 +1278,7 @@ void DocumentImpl::open( bool clearEventListeners )
         m_windowEventListeners.clear();
 
     m_tokenizer = createTokenizer();
-    m_decoderMibEnum = 0;
+    //m_decoderMibEnum = 0;
     connect(m_tokenizer,SIGNAL(finishedParsing()),this,SIGNAL(finishedParsing()));
     m_tokenizer->begin();
 }
@@ -2523,10 +2523,10 @@ void DocumentImpl::timerEvent(QTimerEvent *)
     dispatchImageLoadEventsNow();
 }
 
-void DocumentImpl::setDecoderCodec(const QTextCodec *codec)
+/*void DocumentImpl::setDecoderCodec(const QTextCodec *codec)
 {
     m_decoderMibEnum = codec->mibEnum();
-}
+}*/
 
 ElementImpl *DocumentImpl::ownerElement() const
 {

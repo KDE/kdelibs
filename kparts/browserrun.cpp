@@ -447,7 +447,8 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
      * The sub-url is the URL that we were trying to open.
      */
     KUrl newURL(QString("error:/?error=%1&errText=%2")
-                .arg( error ).arg( KUrl::encode_string( errorText ) ), 106 );
+                .arg( error )
+                .arg( QString::fromUtf8( QUrl::toPercentEncoding( errorText ) ) ) );
     m_strURL.setPass( QString() ); // don't put the password in the error URL
 
     KUrl::List lst;

@@ -301,7 +301,7 @@ public:
     // to get visually ordered hebrew and arabic pages right
     void setVisuallyOrdered();
     // to get URL decoding right
-    void setDecoderCodec(const QTextCodec *codec);
+    //void setDecoderCodec(const QTextCodec *codec);
 
     void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
     void clearSelection();
@@ -322,7 +322,7 @@ public:
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
 
-    QString completeURL(const QString& url) const { return KUrl(baseURL(),url,m_decoderMibEnum).url(); };
+    QString completeURL(const QString& url) const { return KUrl(baseURL(),url /*,m_decoderMibEnum*/).url(); };
     DOMString canonURL(const DOMString& url) const { return url.isEmpty() ? url : completeURL(url.string()); }
 
     void setUserStyleSheet(const QString& sheet);
@@ -619,7 +619,7 @@ protected:
     DOMString m_preferredStylesheetSet;
     khtml::CachedCSSStyleSheet *m_loadingXMLDoc;
 
-    int m_decoderMibEnum;
+    //int m_decoderMibEnum;
 
     //Forms, images, etc., must be quickly accessible via document.name.
     ElementMappingCache m_underDocNamedCache;

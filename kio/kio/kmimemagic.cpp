@@ -2268,7 +2268,7 @@ refineResult(KMimeMagicResult *r, const QString & _filename)
 	else
 	if ( tmp == "application/x-sharedlib" )
 	{
-		if ( _filename.find( ".so" ) == -1 ) 
+		if ( !_filename.contains( ".so" ) )
 		{
 			tmp = "application/x-executable";
 			r->setMimeType( tmp );

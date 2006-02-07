@@ -823,7 +823,6 @@ void ElementImpl::updateId(DOMStringImpl* oldId, DOMStringImpl* newId)
     if (!inDocument())
         return;
 
-    DocumentImpl* doc = getDocument();
     if (oldId && oldId->l)
         removeId(DOMString(oldId).string());
 

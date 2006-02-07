@@ -236,8 +236,8 @@ SessionData::~SessionData()
 void SessionData::configDataFor( MetaData &configData, const QString &proto,
                              const QString & )
 {
-  if ( (proto.find("http", 0, false) == 0 ) ||
-     (proto.find("webdav", 0, false) == 0) )
+  if ( (proto.startsWith("http", Qt::CaseInsensitive) ) ||
+       (proto.startsWith("webdav", Qt::CaseInsensitive) ) )
   {
     if (!d->initDone)
         reset();
@@ -271,22 +271,22 @@ void SessionData::reset()
 
     static const QString & english = KGlobal::staticQString( "en" );
 
-    // Get language settings...
+    // Get language settings... (see KProtocolManager::defaultUserAgent)
     QStringList languageList = KGlobal::locale()->languagesTwoAlpha();
-    QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
-    if ( it != languageList.end() )
+    int idx = languageList.indexOf( QString::fromLatin1("C") );
+    if ( idx != -1 )
     {
-        if ( languageList.contains( english ) > 0 )
-          languageList.remove( it );
+        if ( languageList.contains( english ) )
+          languageList.removeAt( idx );
         else
-          (*it) = english;
+          languageList[idx] = english;
     }
     if ( !languageList.contains( english ) )
        languageList.append( english );
 
     d->language = languageList.join( ", " );
 
-    d->charsets = QString::fromLatin1(QTextCodec::codecForLocale()->mimeName()).toLower();
+    d->charsets = QString::fromLatin1(QTextCodec::codecForLocale()->name()).toLower();
     KProtocolManager::reparseConfiguration();
 }
 

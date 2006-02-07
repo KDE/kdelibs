@@ -23,7 +23,7 @@
 #include "kremoteencoding.h"
 
 KRemoteEncoding::KRemoteEncoding(const char *name)
-  : codec(0L), d(0L)
+  : codec(0), d(0)
 {
   setEncoding(name);
 }
@@ -52,8 +52,8 @@ QByteArray KRemoteEncoding::encode(const QString& name) const
 {
   QByteArray result = codec->fromUnicode(name);
   if (codec->toUnicode(result) != name)
-    return name.latin1();
- 
+    return name.toLatin1();
+
   return result;
 }
 
@@ -81,10 +81,10 @@ void KRemoteEncoding::setEncoding(const char *name)
   if (name)
     codec = QTextCodec::codecForName(name);
 
-  if (codec == 0L)
+  if (codec == 0)
     codec = QTextCodec::codecForMib(1);
 
-  kDebug() << k_funcinfo << "setting encoding " << codec->name() 
+  kDebug() << k_funcinfo << "setting encoding " << codec->name()
 	    << " for name=" << name << endl;
 }
 

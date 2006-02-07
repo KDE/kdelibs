@@ -175,12 +175,12 @@ KIO_EXPORT QString KIO::encodeFileName( const QString & _str )
   QString str( _str );
 
   int i = 0;
-  while ( ( i = str.find( "%", i ) ) != -1 )
+  while ( ( i = str.indexOf( "%", i ) ) != -1 )
   {
     str.replace( i, 1, "%%");
     i += 2;
   }
-  while ( ( i = str.find( "/" ) ) != -1 )
+  while ( ( i = str.indexOf( "/" ) ) != -1 )
       str.replace( i, 1, "%2f");
   return str;
 }

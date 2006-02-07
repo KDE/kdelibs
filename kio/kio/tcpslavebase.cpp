@@ -613,11 +613,14 @@ KSSLCertificateHome::KSSLAuthAction aa;
   if (prompt || forcePrompt) {
     QStringList certs = KSSLCertificateHome::getCertificateList();
 
-    for (QStringList::Iterator it = certs.begin(); it != certs.end(); ++it) {
+    QStringList::Iterator it = certs.begin();
+    while ( it != certs.end() ) {
       KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(*it);
       if (pkcs && (!pkcs->getCertificate() ||
           !pkcs->getCertificate()->x509V3Extensions().certTypeSSLClient())) {
-        certs.remove(*it);
+        it = certs.erase(it);
+      } else {
+        ++it;
       }
     }
 

@@ -129,8 +129,8 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
 
   foreach (const KMimeType::Ptr& mt, mimetypes)
   {
-    QString mimetype = mt->name();
-    int index = mimetype.find("/");
+    const QString mimetype = mt->name();
+    const int index = mimetype.indexOf('/');
     QString maj = mimetype.left(index);
 
     if ( d->groups.count() && !d->groups.contains( maj ) )
@@ -147,7 +147,7 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
          idefault = groupItem;
     }
     else
-        groupItem = mit.data();
+        groupItem = mit.value();
 
     Q3CheckListItem *item = new Q3CheckListItem( groupItem, min, Q3CheckListItem::CheckBox );
     item->setPixmap( 0, SmallIcon( mt->icon(QString(),false) ) );

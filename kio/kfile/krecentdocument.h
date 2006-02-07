@@ -68,7 +68,8 @@ public:
 
     /**
      * Add a new item to the Recent Document menu, specifying the application to open it with.
-     * The above add() method uses argv[0] for the app name, which isn't always flexible enough.
+     * The above add() method uses KGlobal::instance()->instanceName() for the app name,
+     * which isn't always flexible enough.
      * This method is used when an application launches another one to open a document.
      *
      * @param url The url to add.

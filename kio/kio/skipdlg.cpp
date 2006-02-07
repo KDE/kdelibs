@@ -32,7 +32,7 @@
 #include <kpushbutton.h>
 #include <kstdguiitem.h>
 
-#ifdef Q_WS_X11 
+#ifdef Q_WS_X11
 #include <kwin.h>
 #endif
 
@@ -68,7 +68,9 @@ SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool 
     connect(b2, SIGNAL(clicked()), this, SLOT(b2Pressed()));
   }
 
-  QVBoxLayout *vlayout = new QVBoxLayout( this, 10, 0 );
+  QVBoxLayout *vlayout = new QVBoxLayout( this );
+  vlayout->setMargin( 10 );
+  vlayout->setSpacing( 0 );
   // vlayout->addStrut( 360 );	makes dlg at least that wide
 
   QLabel * lb = new QLabel( _error_text, this );

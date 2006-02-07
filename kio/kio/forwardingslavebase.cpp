@@ -49,7 +49,7 @@ bool ForwardingSlaveBase::internalRewriteURL(const KUrl &url, KUrl &newURL)
 {
     bool result = true;
 
-    if ( url.protocol().ascii()==mProtocol )
+    if ( url.protocol() == mProtocol )
     {
         result = rewriteURL(url, newURL);
     }

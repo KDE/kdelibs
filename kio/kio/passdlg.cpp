@@ -77,7 +77,9 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
 
     KConfigGroup cg( KGlobal::config(), "Passwords" );
 
-    d->layout = new QGridLayout( main, 9, 3, spacingHint(), marginHint());
+    d->layout = new QGridLayout( main, 9, 3 );
+    d->layout->setSpacing( spacingHint() );
+    d->layout->setMargin( marginHint() );
     d->layout->addItem(new QSpacerItem(5,0),0,1); //addColSpacing(1, 5);
 
     // Row 0: pixmap  prompt

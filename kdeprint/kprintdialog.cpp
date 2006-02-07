@@ -161,7 +161,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" <p><b>Note:</b> The <em>KDE Add Printer Wizard</em> does <b>not</b> work, "
 						" and this button is disabled if you use "
 						" <em>\"Generic LPD</em>\", <em>\"LPRng\"</em>, or <em>\"Print Through "
-						" an External Program</em>\".) </p> " 
+						" an External Program</em>\".) </p> "
 						" </qt>" );
 	QString whatsThisExternalPrintCommand = i18n( " <qt><b>External Print Command</b>"
 						" <p>Here you can enter any command that would also print for you in "
@@ -215,7 +215,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 					        " </qt>" );
 
 	QString whatsThisOutputFileLineedit = i18n(" <qt><b>Output File Name and Path:</b> Edit this line to create a "
-						" path and filename that suits your needs." 
+						" path and filename that suits your needs."
 						" (Button and Lineedit field are only available if you \"Print to File\")"
 					        " </qt>" );
 
@@ -415,7 +415,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->b_optionsEnabled = KAuthorized::authorize("print/options") && KAuthorized::authorize("print/selection");
 	d->b_propertiesEnabled = KAuthorized::authorize("print/properties") && KAuthorized::authorize("print/selection");
 	d->b_systemEnabled = KAuthorized::authorize("print/system") && KAuthorized::authorize("print/selection");
-	                
+
 	if (!d->b_systemEnabled)
 	{
 		d->m_plugin->hide();
@@ -425,7 +425,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	{
 		d->m_options->hide();
 	}
-	
+
 	if (!d->b_propertiesEnabled)
 	{
 		d->m_properties->hide();
@@ -733,7 +733,7 @@ bool KPrintDialog::checkOutputFile()
 				//value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absoluteFilePath())) == KMessageBox::Yes);
 				time_t mtimeDest = f.lastModified().toTime_t();
 				KIO::RenameDlg dlg( this, i18n( "Print" ), QString(), d->m_file->url(),
-						KIO::M_OVERWRITE, ( time_t ) -1, f.size(), ( time_t ) -1, f.created().toTime_t() , mtimeDest+1, mtimeDest, true );
+                                                    KIO::M_OVERWRITE, ( time_t ) -1, f.size(), ( time_t ) -1, f.created().toTime_t() , mtimeDest+1, mtimeDest );
 				int result = dlg.exec();
 				switch ( result )
 				{

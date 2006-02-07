@@ -699,11 +699,15 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
       entry.clear();
 
       QString urlStr = href.text();
+#if 0 // qt4/kde4 say: it's all utf8...
       int encoding = remoteEncoding()->encodingMib();
       if ((encoding == 106) && (!KStringHandler::isUtf8(KUrl::decode_string(urlStr, 4).toLatin1())))
         encoding = 4; // Use latin1 if the file is not actually utf-8
 
       KUrl thisURL ( urlStr, encoding );
+#else
+      KUrl thisURL( urlStr );
+#endif
 
       if ( thisURL.isValid() ) {
         // don't list the base dir of a listDir()

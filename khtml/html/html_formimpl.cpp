@@ -325,14 +325,14 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
                         hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
                         if (path.isValid()) {
-                            fileUploads << path.prettyURL(0, KUrl::StripFileProtocol);
+                            fileUploads << path.pathOrURL();
                             const KMimeType::Ptr ptr = KMimeType::findByURL(path);
                             if (!ptr->name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
                                 hstr += ptr->name().ascii();
                             }
                         } else if (!val.isEmpty()) {
-                            fileNotUploads << path.prettyURL(0, KUrl::StripFileProtocol);
+                            fileNotUploads << path.pathOrURL();
                         }
                     }
 
@@ -1985,7 +1985,7 @@ void HTMLSelectElementImpl::add( HTMLElementImpl* element, HTMLElementImpl* befo
         return;
 
     HTMLOptionElementImpl* option = static_cast<HTMLOptionElementImpl*>(element);
-    //Fast path for appending an item. Can't be done if it is selected and 
+    //Fast path for appending an item. Can't be done if it is selected and
     //we're single-select, since we may need to drop an implicitly-selected item
     bool fastAppendLast = false;
     if (before == 0 && (m_multiple || !option->selected()) && !m_recalcListItems)
@@ -2013,10 +2013,10 @@ void HTMLSelectElementImpl::remove( long index )
 
     //Fast path for last element, for e.g. clearing the box
     //Note that if this is a single-select, we may have to recompute
-    //anyway if the item was selected, since we may want to set 
+    //anyway if the item was selected, since we may want to set
     //a different one
     bool fastRemoveLast = false;
-    if ((listIndex == items.size() - 1) && !m_recalcListItems && 
+    if ((listIndex == items.size() - 1) && !m_recalcListItems &&
         (m_multiple || !static_cast<HTMLOptionElementImpl*>(items[listIndex])->selected()))
             fastRemoveLast = true;
 

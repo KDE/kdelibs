@@ -40,7 +40,8 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
     QFrame *frame = new QFrame;
     setMainWidget( frame );
 
-    QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
+    QVBoxLayout *layout = new QVBoxLayout( frame );
+    layout->setSpacing( spacingHint() );
 
     m_label = new QLabel( label, frame );
     layout->addWidget( m_label );
@@ -83,7 +84,7 @@ QString KIO::PasteDialog::lineEditText() const
 
 int KIO::PasteDialog::comboItem() const
 {
-    return m_comboBox->currentItem();
+    return m_comboBox->currentIndex();
 }
 
 #include "pastedialog.moc"
