@@ -26,7 +26,7 @@
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #endif
 
-/*
+
 // from kdecore/fakes.c
 KDEWIN32_EXPORT unsigned long strlcpy(char *d, const char *s, unsigned long bufsize)
 {
@@ -43,8 +43,7 @@ KDEWIN32_EXPORT unsigned long strlcpy(char *d, const char *s, unsigned long bufs
 
     return ret;
 }
-*/
-/*
+
 // from kdecore/fakes.c
 KDEWIN32_EXPORT unsigned long strlcat(char *d, const char *s, unsigned long bufsize)
 {
@@ -65,7 +64,7 @@ KDEWIN32_EXPORT unsigned long strlcat(char *d, const char *s, unsigned long bufs
 
 	return ret;
 }
-*/
+
 KDEWIN32_EXPORT char* strndup(const char *src, size_t n)
 {
 	const size_t len = MIN(strlen(src), n);
