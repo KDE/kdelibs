@@ -37,7 +37,7 @@ extern "C" {
 #define	SIGEMT	7	/* EMT instruction */
 /* #define	SIGFPE	8*/	/* floating point exception */
 #define	SIGKILL	9	/* kill (cannot be caught or ignored) */
-#define	SIGBUS	10	/* bus error */
+//#define	SIGBUS	10	/* bus error */ //only used in kconfigbackend.cpp but this signal.h is not complete
 #define	SIGSEGV	11	/* segmentation violation */
 #define	SIGSYS	12	/* bad argument to system call */
 #define	SIGPIPE	13	/* write on a pipe with no one to read it */
