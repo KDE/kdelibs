@@ -28,6 +28,7 @@
 #include <dom/dom_node.h>
 #include <qvariant.h>
 #include <qhash.h>
+#include <qstring.h>
 #include <kurl.h>
 #include <kjs/lookup.h>
 #include <kjs/function.h>
@@ -306,7 +307,8 @@ namespace KJS {
 
   ValueImp* getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
 
-
+  // convenience function
+  inline JSCell* String(const QString& s) { return jsString(s.local8Bit().constData()); }
 
 } // namespace
 
