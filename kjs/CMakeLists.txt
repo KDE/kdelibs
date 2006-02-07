@@ -4,8 +4,15 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/global.h.cmake ${CMAKE_CURRENT_BINARY
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+macro_optional_find_package(PCRE)
 if(PCRE_FOUND)
    include_directories(${PCRE_INCLUDE_DIR})
+else(PCRE_FOUND)
+# if pcre is not installed, at least the posix regex.h has to be available
+   check_include_files(regex.h HAVE_REGEX_H)
+   if (NOT HAVE_REGEX_H)
+      message(FATAL_ERROR "Neither the PCRE regular expression library nor the POSIX regex.h header have been found. Consider installing PCRE.")
+   endif (NOT HAVE_REGEX_H)
 endif(PCRE_FOUND)
 
 

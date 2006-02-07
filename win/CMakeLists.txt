@@ -4,6 +4,11 @@ if (NOT WIN32)
    message(FATAL_ERROR "This directory can only be built under Windows")
 endif (NOT WIN32)
 
+# where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/modules")
+
+find_package(Qt4 REQUIRED)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
 include_directories(${QT_INCLUDES})
 
@@ -38,34 +43,34 @@ else (MINGW)
 
 endif(MINGW)
 
-add_definitions(-DUNICODE )
+add_definitions(-DUNICODE -DWIN32_LEAN_AND_MEAN )
 
 set(win_LIB_SRCS
-${CMAKE_CURRENT_SOURCE_DIR}/src/bootstrap.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/src/dummy.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/src/fcntl.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/fsync.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/getenv.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/grp.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/kde_file_win.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/mmap.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/net.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/pwd.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/readdir.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/realpath.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/resource.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/signal.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/string.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/syslog.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/time.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/uname.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/unistd.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/win32_utils.c
-${CMAKE_CURRENT_SOURCE_DIR}/src/win32_utils2.cpp
-)
+   src/bootstrap.cpp
+   src/dummy.cpp
+   src/fcntl.c
+   src/fsync.c
+   src/getenv.c
+   src/grp.c
+   src/kde_file_win.c
+   src/mmap.c
+   src/net.c
+   src/pwd.c
+   src/readdir.c
+   src/realpath.c
+   src/resource.c
+   src/signal.c
+   src/string.c
+   src/syslog.c
+   src/time.c
+   src/uname.c
+   src/unistd.c
+   src/win32_utils.c
+   src/win32_utils2.cpp
+   )
 
 
-kde4_add_library(kdewin32 SHARED ${win_LIB_SRCS} )
+add_library(kdewin32 SHARED ${win_LIB_SRCS} )
 target_link_libraries(kdewin32 ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ws2_32 )
 set_target_properties(kdecore PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 
@@ -79,7 +84,3 @@ install_files(/include/${_incDirPrefix}/net FILES ${_net_headers} )
 install_files(/include/${_incDirPrefix}/sys FILES ${_sys_headers} )
 install_files(/include/${_incDirPrefix} FILES ${_headers} )
 install_files(/include FILES ${_win_headers} )
-
-
-
-

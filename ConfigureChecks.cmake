@@ -74,22 +74,8 @@ endif(CARBON_FOUND)
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
 
 if (WIN32)
-   set(CMAKE_REQUIRED_LIBRARIES ws2_32)
-   
-   set(CMAKE_REQUIRED_INCLUDES ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/win/include ${QT_INCLUDES} )
-   if (MSVC)
-      # this is the default path of the MS Platform SDK
-      # maybe broken on systems with a Studio installation
-      set(MS_SDK ENV{MSSdk}/include)
-      set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${MS_SDK} ${CMAKE_SOURCE_DIR}/win/include/msvc )
-      # flags for the check_fuction, check_symbol; 
-      # maybe we should here include ALL headers in/msvc to get ALL declarations, or we use the prototype_check
-      # it should work without the following line, Alex
-      # set(CMAKE_REQUIRED_FLAGS "-FI${CMAKE_SOURCE_DIR}/win/include/msvc/unistd.h -I${CMAKE_SOURCE_DIR}/win/include -I${CMAKE_SOURCE_DIR}/win/include/msvc")
-   endif (MSVC)
-   if (MINGW)
-      set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${CMAKE_SOURCE_DIR}/win/include/mingw )
-   endif (MINGW)
+   set(CMAKE_REQUIRED_LIBRARIES ${KDEWIN32_LIBRARY} ws2_32)
+   set(CMAKE_REQUIRED_INCLUDES  ${KDEWIN32_INCLUDES} )
 endif (WIN32)
 
 check_include_files(stdio.h HAVE_STDIO_H)
@@ -282,7 +268,6 @@ check_function_exists(isnan      HAVE_FUNC_ISNAN)
 
 # check for prototypes
 
-
 check_prototype_exists(mkstemps "stdlib.h;unistd.h" HAVE_MKSTEMPS_PROTO)
 check_prototype_exists(mkdtemp "stdlib.h;unistd.h" HAVE_MKDTEMP_PROTO)
 check_prototype_exists(mkstemp "stdlib.h;unistd.h" HAVE_MKSTEMP_PROTO)
@@ -311,19 +296,7 @@ set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
 check_type_size("struct sockaddr_in6" HAVE_STRUCT_SOCKADDR_IN6)
 SET(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 
-if (WIN32)
-   # since some of the functions for which is tested above come from
-   # kdelibs/win/ which hasn't been built yet, adjust the results accordingly
-   # in ConfigureChecksWin.cmake
-   include (ConfigureChecksWin.cmake)
-endif (WIN32)
-
-
-
 set(CONFIG_QT_DOCDIR "\"${QT_DOC_DIR}/html/\"")
 set(CONFIG_KDELIBS_DOXYDIR "\"/tmp/\"")
 
-#CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/config.h.cmake ${CMAKE_BINARY_DIR}/config.h)
-
-#CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/kdecore/kdemacros.h.in ${CMAKE_BINARY_DIR}/kdecore/kdemacros.h)
 

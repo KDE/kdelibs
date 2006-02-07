@@ -14,6 +14,10 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 find_package(KDE4 REQUIRED)
 find_package(Perl REQUIRED)
 
+if (APPLE)
+   find_package(Carbon REQUIRED)
+endif (APPLE)
+
 include (MacroOptionalFindPackage)
 # macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
@@ -24,9 +28,7 @@ macro_optional_find_package(OpenEXR)
 macro_optional_find_package(FAM)
 macro_optional_find_package(Jasper)
 macro_optional_find_package(LibArt)
-macro_optional_find_package(PCRE)
 macro_optional_find_package(OpenSSL)
-macro_optional_find_package(Carbon)
 macro_optional_find_package(DNSSD)
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
@@ -40,25 +42,17 @@ include_directories(
   ${KDE4_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-
-# for windows this seems to be required in advance to the configure checks...
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
-
 # create config.h
 include(ConfigureChecks.cmake)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 if (UNIX)
    link_directories(/usr/local/lib)
    include_directories(/usr/local/include)
 endif (UNIX)
-
-if (WIN32)
-   add_subdirectory(win)
-endif (WIN32)
-
 
 add_subdirectory( dcop )
 add_subdirectory( libltdl )
