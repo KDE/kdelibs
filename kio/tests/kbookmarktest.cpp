@@ -47,7 +47,7 @@ void KBookmarkTest::testMimeDataOneBookmark()
     kDebug() << k_funcinfo << endl;
     QMimeData* mimeData = new QMimeData;
 
-    KBookmark bookmark = KBookmark::standaloneBookmark( "KDE", "http://www.kde.org", "icon" );
+    KBookmark bookmark = KBookmark::standaloneBookmark( "KDE", KUrl( "http://www.kde.org" ), "icon" );
     QVERIFY( !bookmark.isNull() );
     bookmark.populateMimeData( mimeData );
 
@@ -67,9 +67,9 @@ void KBookmarkTest::testMimeDataBookmarkList()
     kDebug() << k_funcinfo << endl;
     QMimeData* mimeData = new QMimeData;
 
-    KBookmark bookmark1 = KBookmark::standaloneBookmark( "KDE", "http://www.kde.org", "icon" );
+    KBookmark bookmark1 = KBookmark::standaloneBookmark( "KDE", KUrl( "http://www.kde.org" ), "icon" );
     QVERIFY( !bookmark1.isNull() );
-    KBookmark bookmark2 = KBookmark::standaloneBookmark( "KOffice", "http://www.koffice.org", "koicon" );
+    KBookmark bookmark2 = KBookmark::standaloneBookmark( "KOffice", KUrl( "http://www.koffice.org" ), "koicon" );
     QVERIFY( !bookmark2.isNull() );
     bookmark2.setMetaDataItem( "key", "value" );
 

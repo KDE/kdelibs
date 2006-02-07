@@ -23,8 +23,6 @@
 #include <iostream>
 using namespace std;
 
-class KUrl;
-
 class TestSlave {
 public:
   TestSlave() {
@@ -275,7 +273,7 @@ int main(int /*argc*/,char* /*argv*/[]) {
     exp_content.setRawData(testcases[i].exp_content,exp_content_len);
     kio_data.setExpectedContent(exp_content);
 
-    kio_data.get(testcases[i].url);
+    kio_data.get(KUrl(testcases[i].url));
 
     kio_data.endTestcase();
     exp_content.resetRawData(testcases[i].exp_content,exp_content_len);

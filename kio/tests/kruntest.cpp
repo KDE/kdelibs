@@ -133,9 +133,9 @@ int main(int argc, char **argv)
   checkBN( " 'leading space'   arg1", true, "leading space" );
 
   KUrl::List l0;
-  KUrl::List l1; l1 << "file:/tmp";
-  KUrl::List l2; l2 << "http://localhost/foo";
-  KUrl::List l3; l3 << "file:/local/file" << "http://remotehost.org/bar";
+  KUrl::List l1; l1 << KUrl( "file:/tmp" );
+  KUrl::List l2; l2 << KUrl( "http://localhost/foo" );
+  KUrl::List l3; l3 << KUrl( "file:/local/file" ) << KUrl( "http://remotehost.org/bar" );
 
   static const char
     *execs[] = { "Exec=date -u", "Exec=echo $$PWD" },

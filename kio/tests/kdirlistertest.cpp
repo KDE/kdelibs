@@ -141,7 +141,7 @@ void KDirListerTest::completed()
 {
     if ( lister->url().path() == "/")
     {
-        KFileItem* item = lister->findByURL( "/tmp" );
+        KFileItem* item = lister->findByURL( KUrl( "/tmp" ) );
         if ( item )
             kDebug() << "Found /tmp: " << item << endl;
         else

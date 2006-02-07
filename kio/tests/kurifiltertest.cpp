@@ -355,7 +355,7 @@ int main(int argc, char **argv)
     filter( "config", kdehome+"/share/config", KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), kdehome+"/share" );
 
     // Clean up
-    KIO::NetAccess::del( kdehome, 0 );
+    KIO::NetAccess::del( KUrl::fromPath( kdehome ), 0 );
 
     kDebug() << "All tests done. Go home..." << endl;
     return 0;

@@ -46,10 +46,10 @@ int main(int argc, char **argv) {
 
     assert( KProtocolInfo::showFilePreview( "file" ) == true );
     assert( KProtocolInfo::showFilePreview( "audiocd" ) == false );
-    assert( KGlobalSettings::showFilePreview( "audiocd:/" ) == false );
+    assert( KGlobalSettings::showFilePreview( KUrl( "audiocd:/" ) ) == false );
 
     QString proxy;
-    QString protocol = KProtocolManager::slaveProtocol( "http://bugs.kde.org", proxy );
+    QString protocol = KProtocolManager::slaveProtocol( KUrl( "http://bugs.kde.org" ), proxy );
     assert( protocol == "http" );
 
     QStringList capabilities = KProtocolInfo::capabilities( "imap" );
