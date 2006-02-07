@@ -2657,7 +2657,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             QString url = (*it).url;
             it = data.remove( it );
             // assign the same accesskey also to other elements pointing to the same url
-            if( !url.isEmpty()) {
+            if( !url.isEmpty() && !url.startsWith( "javascript:", false )) {
                 for( QList< AccessKeyData >::Iterator it2 = data.begin();
                      it2 != data.end();
                      ) {
