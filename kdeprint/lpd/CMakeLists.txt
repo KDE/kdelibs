@@ -18,6 +18,8 @@ kde4_automoc(${kdeprint_lpd_PART_SRCS})
 
 kde4_add_plugin(kdeprint_lpd ${kdeprint_lpd_PART_SRCS})
 
+kde4_create_libtool_file(kdeprint_lpd / )
+
 target_link_libraries(kdeprint_lpd  ${QT_AND_KDECORE_LIBS} kdeprint_management )
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_lpd )

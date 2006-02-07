@@ -15,6 +15,8 @@ kde4_automoc(${highcontrast_PART_SRCS})
 
 kde4_add_plugin(highcontrast ${highcontrast_PART_SRCS})
 
+kde4_create_libtool_file(highcontrast / )
+
 target_link_libraries(highcontrast  ${QT_AND_KDECORE_LIBS} kdefx )
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 highcontrast )

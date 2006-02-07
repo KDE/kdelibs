@@ -30,6 +30,8 @@ kde4_automoc(${kabc_directory_PART_SRCS})
 
 kde4_add_plugin(kabc_directory ${kabc_directory_PART_SRCS})
 
+kde4_create_libtool_file(kabc_directory / )
+
 target_link_libraries(kabc_directory  ${QT_AND_KDECORE_LIBS} kabc_dir)
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kabc_directory )

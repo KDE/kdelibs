@@ -56,6 +56,8 @@ kde4_automoc(${spellcheckplugin_PART_SRCS})
 
 kde4_add_plugin(spellcheckplugin WITH_PREFIX ${spellcheckplugin_PART_SRCS})
 
+kde4_create_libtool_file(spellcheckplugin / )
+
 target_link_libraries(spellcheckplugin  ${QT_AND_KDECORE_LIBS} kparts )
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 spellcheckplugin )
@@ -70,6 +72,8 @@ notepadpart.cpp
 kde4_automoc(${notepadpart_PART_SRCS})
 
 kde4_add_plugin(notepadpart WITH_PREFIX ${notepadpart_PART_SRCS})
+
+kde4_create_libtool_file(notepadpart / )
 
 target_link_libraries(notepadpart  ${QT_AND_KDECORE_LIBS} kparts )
 

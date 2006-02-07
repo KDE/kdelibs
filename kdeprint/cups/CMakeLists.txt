@@ -45,6 +45,8 @@ kde4_automoc(${kdeprint_cups_PART_SRCS})
 
 kde4_add_plugin(kdeprint_cups ${kdeprint_cups_PART_SRCS})
 
+kde4_create_libtool_file(kdeprint_cups / )
+
 target_link_libraries(kdeprint_cups  ${QT_AND_KDECORE_LIBS} kdeprint_management kio kdefakes ${CUPS_LIBRARY} )
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_cups )

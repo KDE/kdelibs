@@ -84,6 +84,8 @@ kde4_automoc(${kdeprint_management_module_PART_SRCS})
 
 kde4_add_plugin(kdeprint_management_module WITH_PREFIX ${kdeprint_management_module_PART_SRCS})
 
+kde4_create_libtool_file(kdeprint_management_module / )
+
 target_link_libraries(kdeprint_management_module  ${QT_AND_KDECORE_LIBS} kdeprint_management)
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_management_module )

@@ -19,6 +19,8 @@ kde4_add_dcop_skels(kded_kssld_PART_SRCS ${kded_kssld_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kssld ${kded_kssld_PART_SRCS})
 
+kde4_create_libtool_file(kded_kssld / )
+
 target_link_libraries(kded_kssld  ${QT_AND_KDECORE_LIBS} kio )
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kssld )

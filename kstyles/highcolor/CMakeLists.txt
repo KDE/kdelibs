@@ -13,6 +13,8 @@ kde4_automoc(${highcolor_PART_SRCS})
 
 kde4_add_plugin(highcolor ${highcolor_PART_SRCS})
 
+kde4_create_libtool_file(highcolor / )
+
 target_link_libraries(highcolor  ${QT_AND_KDECORE_LIBS} kdefx )
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 highcolor )

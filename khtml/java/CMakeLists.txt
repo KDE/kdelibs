@@ -26,6 +26,8 @@ kde4_automoc(${kjavaappletviewer_PART_SRCS})
 
 kde4_add_plugin(kjavaappletviewer ${kjavaappletviewer_PART_SRCS})
 
+kde4_create_libtool_file(  kjavaappletviewer / )
+
 target_link_libraries(kjavaappletviewer  ${QT_AND_KDECORE_LIBS} kparts )
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kjavaappletviewer )

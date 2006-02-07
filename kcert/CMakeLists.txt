@@ -14,6 +14,8 @@ kde4_automoc(${kcertpart_PART_SRCS})
 
 kde4_add_plugin(kcertpart WITH_PREFIX ${kcertpart_PART_SRCS})
 
+kde4_create_libtool_file(kcertpart / )
+
 target_link_libraries(kcertpart  ${QT_AND_KDECORE_LIBS} kparts )
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kcertpart )

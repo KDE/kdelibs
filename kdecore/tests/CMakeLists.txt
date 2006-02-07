@@ -673,6 +673,8 @@ kde4_automoc(${klibloadertestmodule_PART_SRCS})
 
 kde4_add_plugin(klibloadertestmodule WITH_PREFIX ${klibloadertestmodule_PART_SRCS})
 
+kde4_create_libtool_file(klibloadertestmodule / )
+
 target_link_libraries(klibloadertestmodule  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 klibloadertestmodule )

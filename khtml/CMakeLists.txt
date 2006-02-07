@@ -306,6 +306,8 @@ kde4_automoc(${khtmlpart_PART_SRCS})
 
 kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 
+kde4_create_libtool_file( khtmlpart / )
+
 target_link_libraries(khtmlpart  ${QT_AND_KDECORE_LIBS} khtml )
 
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 khtmlpart )
@@ -326,6 +328,8 @@ ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp
 kde4_automoc(${khtmlimagepart_PART_SRCS})
 
 kde4_add_plugin(khtmlimagepart ${khtmlimagepart_PART_SRCS})
+
+kde4_create_libtool_file(khtmlimagepart / )
 
 target_link_libraries(khtmlimagepart  ${QT_AND_KDECORE_LIBS} khtml)
 
