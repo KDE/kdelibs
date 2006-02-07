@@ -33,6 +33,7 @@ target_link_libraries(kjavaappletviewer  ${QT_AND_KDECORE_LIBS} kparts )
 install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kjavaappletviewer )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kjava.policy.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
+macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES  ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
 
 ########### install files ###############
 

@@ -298,9 +298,9 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
 extern \"C\"  KDE_EXPORT void* init_libkhtml();\n
 extern \"C\"  KDE_EXPORT void* init_libkhtmlpart() { return init_libkhtml(); }\n" )
 
-set(khtmlpart_PART_SRCS
-${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
-)
+macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp )
+
+set(khtmlpart_PART_SRCS ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp )
 
 kde4_automoc(${khtmlpart_PART_SRCS})
 
@@ -321,9 +321,9 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp
 extern \"C\"  KDE_EXPORT void* init_khtmlimagefactory();\n
 extern \"C\"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefactory(); }\n" )
 
-set(khtmlimagepart_PART_SRCS
-${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp
-)
+macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp )
+
+set(khtmlimagepart_PART_SRCS ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp )
 
 kde4_automoc(${khtmlimagepart_PART_SRCS})
 
