@@ -39,6 +39,7 @@
 #include <qstringlist.h>
 #include <qguardedptr.h>
 #include <qdatetime.h>
+#include <qpopupmenu.h>
 
 class KateHlContext;
 class KateHlItem;
@@ -50,8 +51,6 @@ class KateSyntaxDocument;
 class KateTextLine;
 class KateSyntaxModeListItem;
 class KateSyntaxContextData;
-
-class QPopupMenu;
 
 // some typedefs
 typedef QPtrList<KateAttribute> KateAttributeList;
