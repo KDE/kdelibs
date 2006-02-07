@@ -19,8 +19,8 @@
 
 // helper functions
 
-#include <kdelibs_export.h>
-#include "win32_utils.h"
+#include <windows.h>
+#include <winposix_export.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -28,6 +28,7 @@
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
+#include <win32_utils.h>
 
 //---------------------------------------------
 #define _fcopy_BUFLEN 1024*32

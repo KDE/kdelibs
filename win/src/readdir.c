@@ -56,7 +56,8 @@
  * University of Illinois, Urbana-Champaign.
  */
 
-#include <kdelibs_export.h>
+#include <windows.h>
+#include <winposix_export.h>
 
 #include <malloc.h>
 #include <string.h>

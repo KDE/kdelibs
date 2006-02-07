@@ -17,11 +17,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kdelibs_export.h>
+#include <windows.h>
+#include <winposix_export.h>
+
 #include <sys/types.h>
 
-KDEWIN32_EXPORT unsigned long int
-htonl (unsigned long int x)
+KDEWIN32_EXPORT unsigned long int htonl (unsigned long int x)
 {
   return ((((x & 0x000000ffU) << 24) |
 	((x & 0x0000ff00U) << 8) |
@@ -29,21 +30,18 @@ htonl (unsigned long int x)
 	((x & 0xff000000U) >> 24)));
 }
 
-KDEWIN32_EXPORT unsigned long int
-ntohl (unsigned long int x)
+KDEWIN32_EXPORT unsigned long int ntohl (unsigned long int x)
 {
 	return htonl (x);
 }
 
-KDEWIN32_EXPORT unsigned short
-htons (unsigned short x)
+KDEWIN32_EXPORT unsigned short htons (unsigned short x)
 {
 	return ((((x & 0x000000ffU) << 8) |
 		((x & 0x0000ff00U) >> 8)));
 }
 
-KDEWIN32_EXPORT unsigned short
-ntohs (unsigned short x)
+KDEWIN32_EXPORT unsigned short ntohs (unsigned short x)
 {
 	return htons (x);
 }

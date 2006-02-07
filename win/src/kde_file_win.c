@@ -17,12 +17,13 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kdelibs_export.h>
+#include <windows.h>
+#include <winposix_export.h>
 
 #include <sys/stat.h>
 #include <stdarg.h>
 
-#include "kde_file_win.h"
+#include <kde_file_win.h>
 
 KDEWIN32_EXPORT int kdewin32_stat(const char *file_name, struct stat *buf)
 {

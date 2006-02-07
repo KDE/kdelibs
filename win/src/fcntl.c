@@ -17,8 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kdelibs_export.h>
-#include "fcntl.h"
+#include <windows.h>
+#include <winposix_export.h>
+
+#include <fcntl.h>
 
 KDEWIN32_EXPORT int fcntl (int fd, int cmd,...)
 {

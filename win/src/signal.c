@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kdelibs_export.h>
 #include <windows.h>
+#include <winposix_export.h>
 
 #include <sys/types.h>
 #include <errno.h>

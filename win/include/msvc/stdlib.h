@@ -22,10 +22,9 @@
  */
 
 #include <winposix_export.h>
-#include <kdelibs_export.h>
 
 /* regular header from msvc includes */
-# include <../include/stdlib.h>
+#include <../include/stdlib.h>
 
 #define __need_size_t
 #define __need_wchar_t
@@ -48,9 +47,9 @@ KDEWIN32_EXPORT void srandom(unsigned int seed);
 
 // from kdecore/fakes.c
 
-KDECORE_EXPORT int setenv(const char *, const char *, int );
+KDEWIN32_EXPORT int setenv(const char *, const char *, int );
 
-KDECORE_EXPORT void unsetenv(const char *);
+KDEWIN32_EXPORT void unsetenv(const char *);
 
 
 #ifdef __cplusplus

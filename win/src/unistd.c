@@ -17,10 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#define _WINSOCKAPI_ /* skip winsock */
-
 #include <windows.h>
-#include <kdelibs_export.h>
+#include <winposix_export.h>
 
 #include <unistd.h>
 #include <sys/stat.h>
@@ -264,61 +262,6 @@ KDEWIN32_EXPORT int mkstemp (char* _template)
   return mkstemps( _template, 0 );
 }
 
-
-// from kdecore/fakes.c
-KDEWIN32_EXPORT int setenv(const char *name, const char *value, int overwrite) {
-    int i;
-    char * a;
-
-    if (!overwrite && getenv(name)) return 0;
-
-    i = strlen(name) + strlen(value) + 2;
-    a = (char*)malloc(i);
-    if (!a) return 1;
-
-    strcpy(a, name);
-    strcat(a, "=");
-    strcat(a, value);
-
-    return putenv(a);
-}
-
-
-// from kdecore/fakes.c
-#ifndef environ
-extern char ** environ;
-#endif
-KDEWIN32_EXPORT void unsetenv (name)
-     const char *name;
-{
-  size_t len;
-  char **ep;
-
-  if (name == NULL || *name == '\0' || strchr (name, '=') != NULL)
-    {
-      errno = EINVAL;
-      return;
-    }
-
-  len = strlen (name);
-
-  ep = environ;
-  while (*ep != NULL)
-    if (!strncmp (*ep, name, len) && (*ep)[len] == '=')
-      {
-	/* Found it.  Remove this pointer by moving later ones back.  */
-	char **dp = ep;
-
-	do
-	  dp[0] = dp[1];
-	while (*dp++);
-	/* Continue the loop in case NAME appears again.  */
-      }
-    else
-      ++ep;
-
-}
-
 // from kdecore/fakes.c
 int seteuid(uid_t euid)
 {
@@ -376,8 +319,8 @@ KDEWIN32_EXPORT char* mkdtemp (char* _template)
 	 with (module 2^32).  */
       value += 7777;
 
-      if (!kdewin32_mkdir(_template,0700))
-	return _template;	
+      if (!mkdir(_template))
+		return _template;	
     }
     return 0;
 }

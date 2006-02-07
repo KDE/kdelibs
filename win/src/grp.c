@@ -17,8 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kdelibs_export.h>
-#include "grp.h"
+#include <windows.h>
+#include <winposix_export.h>
+
+#include< grp.h>
 
 /* these functions always fail. for win32 */
 

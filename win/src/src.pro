@@ -25,6 +25,7 @@ realpath.c \
 readdir.c \
 resource.c \
 signal.c \
+stdlib.c \
 string.c \
 syslog.c \
 time.c \

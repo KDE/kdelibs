@@ -19,7 +19,7 @@
 */
 
 #include <windows.h>
-#include <kdelibs_export.h>
+#include <winposix_export.h>
 
 #include <time.h>
 #include <sys/time.h>
