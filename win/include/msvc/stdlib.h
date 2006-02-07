@@ -46,8 +46,10 @@ extern "C" {
 
 KDEWIN32_EXPORT void srandom(unsigned int seed);
 
-/* from fakes.c */
+// from kdecore/fakes.c
+
 KDECORE_EXPORT int setenv(const char *, const char *, int );
+
 KDECORE_EXPORT void unsetenv(const char *);
 
 
