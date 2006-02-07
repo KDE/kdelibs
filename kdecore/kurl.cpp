@@ -2502,8 +2502,13 @@ KUrl::URIMode KUrl::uriModeForProtocol(const QString& protocol)
     KUrl::URIMode mode = Auto;
     if (protocol == fileProt)
         return URL;
+#ifdef __GNUC__
+#warning currently KProtocolInfo::uriParseMode not implemented
+#endif
+#if 0
     if (KGlobal::_instance)
         mode = KProtocolInfo::uriParseMode(protocol);
+#endif
     if (mode == Auto ) {
 #else
         KUrl::URIMode mode = Auto;
