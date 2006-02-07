@@ -1,8 +1,25 @@
---- normal-install.txt	2006-02-05 14:08:32.000000000 +0100
-+++ normal-install-cmake.txt	2006-02-05 14:08:48.000000000 +0100
+--- /home/lmontel/normal-install.txt	2006-02-06 14:30:00.000000000 +0100
++++ /home/lmontel/normal-install-cmake.txt	2006-02-07 08:56:23.000000000 +0100
 @@ -15,7 +15,6 @@
+ ./bin/dcopstart
+ ./bin/fileshareset
+ ./bin/imagetops
 -./bin/kab2kabc
+ ./bin/kaddprinterwizard
+ ./bin/kbuildsycoca
+ ./bin/kcmshell
+@@ -58,7 +57,6 @@
+ ./bin/makekdewidgets
+ ./bin/meinproc
+ ./bin/preparetips
 -./etc/xdg/menus/applications.menu
+ ./include/conversion_check.h
+ ./include/dcopclient.h
+ ./include/dcopobject.h
+@@ -742,38 +740,22 @@
+ ./include/netwm_def.h
+ ./include/qtest_kde.h
+ ./include/renamedlgplugin.h
 -./lib/kde4/cupsdconf.la
 -./lib/kde4/cupsdconf.so
 -./lib/kde4/dcopserver.la
@@ -20,10 +37,18 @@
  ./lib/kde4/kabc_net.la
 -./lib/kde4/kabc_net.so
 +./lib/kde4/kabc_net.so.1.0.0
+ ./lib/kde4/kabcformat_binary.la
+ ./lib/kde4/kabcformat_binary.so
 -./lib/kde4/kaddprinterwizard.la
 -./lib/kde4/kaddprinterwizard.so
+ ./lib/kde4/katepart.la
+ ./lib/kde4/katepart.so
 -./lib/kde4/kbuildsycoca.la
 -./lib/kde4/kbuildsycoca.so
+ ./lib/kde4/kcm_kresources.la
+ ./lib/kde4/kcm_kresources.so
+ ./lib/kde4/kcm_spellchecking.la
+ ./lib/kde4/kcm_spellchecking.so
 -./lib/kde4/kcmshell.la
 -./lib/kde4/kcmshell.so
 -./lib/kde4/kconf_update.la
@@ -32,24 +57,57 @@
 -./lib/kde4/kcookiejar.so
 -./lib/kde4/kded.la
 -./lib/kde4/kded.so
+ ./lib/kde4/kded_kcookiejar.la
+ ./lib/kde4/kded_kcookiejar.so
+ ./lib/kde4/kded_kdeprintd.la
+@@ -784,8 +766,6 @@
+ ./lib/kde4/kded_kpasswdserver.so
+ ./lib/kde4/kded_kssld.la
+ ./lib/kde4/kded_kssld.so
 -./lib/kde4/kded_kwalletd.la
 -./lib/kde4/kded_kwalletd.so
+ ./lib/kde4/kded_proxyscout.la
+ ./lib/kde4/kded_proxyscout.so
+ ./lib/kde4/kdeprint_cups.la
+@@ -800,6 +780,8 @@
+ ./lib/kde4/kdeprint_rlpr.so
+ ./lib/kde4/kdeprint_tool_escputil.la
+ ./lib/kde4/kdeprint_tool_escputil.so
 +./lib/kde4/kdewidgets.la
-+./lib/kde4/kdewidgets.so
 +./lib/kde4/keramik.la
-+./lib/kde4/keramik.so
+ ./lib/kde4/khtmlimagepart.la
+ ./lib/kde4/khtmlimagepart.so
+ ./lib/kde4/kio_file.la
+@@ -812,18 +794,10 @@
+ ./lib/kde4/kio_help.so
+ ./lib/kde4/kio_http.la
+ ./lib/kde4/kio_http.so
 -./lib/kde4/kio_http_cache_cleaner.la
 -./lib/kde4/kio_http_cache_cleaner.so
+ ./lib/kde4/kio_metainfo.la
+ ./lib/kde4/kio_metainfo.so
 -./lib/kde4/kio_uiserver.la
 -./lib/kde4/kio_uiserver.so
+ ./lib/kde4/kjavaappletviewer.la
+ ./lib/kde4/kjavaappletviewer.so
 -./lib/kde4/klauncher.la
 -./lib/kde4/klauncher.so
 -./lib/kde4/knotify.la
 -./lib/kde4/knotify.so
+ ./lib/kde4/kspell_aspell.la
+ ./lib/kde4/kspell_aspell.so
+ ./lib/kde4/kspell_hspell.la
+@@ -848,143 +822,57 @@
+ ./lib/kde4/libkdeprint_management_module.so
+ ./lib/kde4/libkhtmlpart.la
+ ./lib/kde4/libkhtmlpart.so
 -./lib/kde4/libklibloadertestmodule.la
 -./lib/kde4/libklibloadertestmodule.so.0.0.0
+ ./lib/kde4/libkmultipart.la
+ ./lib/kde4/libkmultipart.so
 -./lib/kde4/plugins/designer/kdewidgets.la
--./lib/kde4/plugins/designer/kdewidgets.so
++./lib/kde4/plastik.la
+ ./lib/kde4/plugins/designer/kdewidgets.so
 -./lib/kde4/plugins/imageformats/kimg_dds.la
 -./lib/kde4/plugins/imageformats/kimg_dds.so
 -./lib/kde4/plugins/imageformats/kimg_eps.la
@@ -75,14 +133,15 @@
 -./lib/kde4/plugins/imageformats/kimg_xview.la
 -./lib/kde4/plugins/imageformats/kimg_xview.so
 -./lib/kde4/plugins/styles/keramik.la
--./lib/kde4/plugins/styles/keramik.so
+ ./lib/kde4/plugins/styles/keramik.so
 -./lib/kde4/plugins/styles/plastik.la
--./lib/kde4/plugins/styles/plastik.so
+ ./lib/kde4/plugins/styles/plastik.so
 -./lib/libDCOP.la
-+./lib/kde4/plastik.la
-+./lib/kde4/plastik.so
+ ./lib/libDCOP.so.4.2.0
 -./lib/libkabc.la
+ ./lib/libkabc.so.1.2.0
 -./lib/libkabc_dir.la
+ ./lib/libkabc_dir.so.1.0.0
 -./lib/libkabc_file.la
 -./lib/libkabc_file.so.1.0.0
 -./lib/libkabc_ldapkio.la
@@ -90,59 +149,114 @@
 -./lib/libkabc_net.la
 -./lib/libkabc_net.so.1.0.0
 -./lib/libkde3support.la
+ ./lib/libkde3support.so.0.0.0
 -./lib/libkdecore.la
+ ./lib/libkdecore.so.4.2.0
 -./lib/libkdefakes.la
+ ./lib/libkdefakes.so.4.2.0
 -./lib/libkdefakes_nonpic.a
 -./lib/libkdefx.la
+ ./lib/libkdefx.so.4.2.0
 -./lib/libkdeinit_cupsdconf.la
+ ./lib/libkdeinit_cupsdconf.so
 -./lib/libkdeinit_dcopserver.la
+ ./lib/libkdeinit_dcopserver.so
 -./lib/libkdeinit_kaddprinterwizard.la
+ ./lib/libkdeinit_kaddprinterwizard.so
 -./lib/libkdeinit_kbuildsycoca.la
+ ./lib/libkdeinit_kbuildsycoca.so
 -./lib/libkdeinit_kcmshell.la
+ ./lib/libkdeinit_kcmshell.so
 -./lib/libkdeinit_kconf_update.la
+ ./lib/libkdeinit_kconf_update.so
 -./lib/libkdeinit_kcookiejar.la
+ ./lib/libkdeinit_kcookiejar.so
 -./lib/libkdeinit_kded.la
+ ./lib/libkdeinit_kded.so
 -./lib/libkdeinit_kio_http_cache_cleaner.la
+ ./lib/libkdeinit_kio_http_cache_cleaner.so
 -./lib/libkdeinit_kio_uiserver.la
+ ./lib/libkdeinit_kio_uiserver.so
 -./lib/libkdeinit_klauncher.la
+ ./lib/libkdeinit_klauncher.so
 -./lib/libkdeinit_knotify.la
+ ./lib/libkdeinit_knotify.so
 -./lib/libkdeprint.la
+ ./lib/libkdeprint.so.4.2.0
 -./lib/libkdeprint_management.la
+ ./lib/libkdeprint_management.so.4.2.0
 -./lib/libkdesasl.la
+ ./lib/libkdesasl.so.1.2.0
 -./lib/libkdesu.la
+ ./lib/libkdesu.so.4.2.0
 -./lib/libkdeui.la
+ ./lib/libkdeui.so.4.2.0
 -./lib/libkdnssd.la
+ ./lib/libkdnssd.so.1.0.0
 -./lib/libkdocument.la
+ ./lib/libkdocument.so.0.0.0
 -./lib/libkhtml.la
+ ./lib/libkhtml.so.4.2.0
 -./lib/libkimproxy.la
+ ./lib/libkimproxy.so.0.0.0
 -./lib/libkio.la
+ ./lib/libkio.so.4.2.0
 -./lib/libkjava.la
+ ./lib/libkjava.so.1.0.0
 -./lib/libkjs.la
+ ./lib/libkjs.so.1.2.0
 -./lib/libkjsembed.la
+ ./lib/libkjsembed.so.1.0.0
 -./lib/libkmediaplayer.la
+ ./lib/libkmediaplayer.so.0.0.0
 -./lib/libknewstuff.la
+ ./lib/libknewstuff.so.1.0.0
 -./lib/libknotifyconfig.la
+ ./lib/libknotifyconfig.so.1.0.1
 -./lib/libkntlm.la
+ ./lib/libkntlm.so.0.0.0
 -./lib/libkparts.la
+ ./lib/libkparts.so.2.1.0
 -./lib/libkresources.la
+ ./lib/libkresources.so.1.2.0
 -./lib/libkspell2.la
+ ./lib/libkspell2.so.1.0.0
 -./lib/libktexteditor.la
+ ./lib/libktexteditor.so.0.0.0
 -./lib/libkunittest.la
+ ./lib/libkunittest.so.0.0.0
 -./lib/libkutils.la
+ ./lib/libkutils.so.1.2.0
 -./lib/libkwalletbackend.la
+ ./lib/libkwalletbackend.so.1.0.0
 -./lib/libkwalletclient.la
+ ./lib/libkwalletclient.so.1.0.1
 -./lib/libkxmlcore.la
+ ./lib/libkxmlcore.so.1.2.0
 -./man/man1/artsmessage.1
 -./man/man1/checkXML.1
 -./man/man1/dcop.1
 -./man/man7/kdeoptions.7
 -./man/man7/qtoptions.7
 -./man/man8/kbuildsycoca.8
--./share/apps/dcopidl/kalyptus
+ ./share/applications/kde/kresources.desktop
+ ./share/applications/kde/spellchecking.desktop
+ ./share/apps/LICENSES/ARTISTIC
+@@ -1338,6 +1226,10 @@
+ ./share/apps/khtml/icons/crystalsvg/16x16/actions/images_display.png
+ ./share/apps/khtml/icons/crystalsvg/16x16/actions/wallet_open.png
+ ./share/apps/khtml/icons/crystalsvg/22x22/actions/bug.png
 +./share/apps/khtml/icons/crystalsvg/22x22/actions/dbgnext.png
 +./share/apps/khtml/icons/crystalsvg/22x22/actions/dbgrun.png
 +./share/apps/khtml/icons/crystalsvg/22x22/actions/dbgrunto.png
 +./share/apps/khtml/icons/crystalsvg/22x22/actions/dbgstep.png
+ ./share/apps/khtml/icons/crystalsvg/22x22/actions/images_display.png
+ ./share/apps/khtml/icons/crystalsvg/32x32/actions/bug.png
+ ./share/apps/khtml/icons/crystalsvg/32x32/actions/images_display.png
+@@ -1352,1433 +1244,6 @@
+ ./share/apps/kjava/kjava.policy
+ ./share/apps/kjava/pluginsinfo
+ ./share/apps/knotify/eventsrc
 -./share/apps/ksgmltools2/customization/README
 -./share/apps/ksgmltools2/customization/af/catalog
 -./share/apps/ksgmltools2/customization/af/entities/fdl-notice.docbook
@@ -1570,22 +1684,91 @@
 -./share/apps/ksgmltools2/docbook/xsl/params/xref.properties.xml
 -./share/apps/ksgmltools2/docbook/xsl/params/xref.title-page.separator.xml
 -./share/apps/ksgmltools2/docbook/xsl/params/xref.with.number.and.title.xml
+ ./share/apps/kssl/ca-bundle.crt
+ ./share/apps/kstyle/themes/plastik.themerc
+ ./share/apps/ktexteditor_docwordcompletion/docwordcompletionui.rc
+@@ -2857,9 +1322,6 @@
+ ./share/doc/HTML/en/common/web-doctop.png
+ ./share/doc/HTML/en/common/x11-license.html
+ ./share/doc/HTML/en/common/xml.dcl
 -./share/doc/HTML/en/kspell/CMakeLists.txt
 -./share/doc/HTML/en/kspell/index.cache.bz2
 -./share/doc/HTML/en/kspell/index.docbook
+ ./share/emoticons/Default/angry.png
+ ./share/emoticons/Default/bat.png
+ ./share/emoticons/Default/beer.png
+@@ -3505,10 +1967,6 @@
+ ./share/icons/crystalsvg/22x22/actions/contents2.png
+ ./share/icons/crystalsvg/22x22/actions/contexthelp.png
+ ./share/icons/crystalsvg/22x22/actions/crop.png
 -./share/icons/crystalsvg/22x22/actions/dbgnext.png
 -./share/icons/crystalsvg/22x22/actions/dbgrun.png
 -./share/icons/crystalsvg/22x22/actions/dbgrunto.png
 -./share/icons/crystalsvg/22x22/actions/dbgstep.png
+ ./share/icons/crystalsvg/22x22/actions/decrypted.png
+ ./share/icons/crystalsvg/22x22/actions/down.png
+ ./share/icons/crystalsvg/22x22/actions/edit.png
+@@ -4838,7 +3296,6 @@
+ ./share/icons/crystalsvg/scalable/mimetypes/wordprocessing.svgz
+ ./share/icons/crystalsvg/scalable/mimetypes/zip.svgz
+ ./share/icons/hicolor/index.theme
 -./share/locale/all_languages
+ ./share/mimelnk/all/all.desktop
+ ./share/mimelnk/all/allfiles.desktop
+ ./share/mimelnk/application/fits.desktop
+@@ -4904,7 +3361,6 @@
+ ./share/mimelnk/application/x-ace.desktop
+ ./share/mimelnk/application/x-afm.desktop
+ ./share/mimelnk/application/x-amipro.desktop
 -./share/mimelnk/application/x-applix.desktop
+ ./share/mimelnk/application/x-applixgraphics.desktop
+ ./share/mimelnk/application/x-applixspread.desktop
+ ./share/mimelnk/application/x-applixword.desktop
+@@ -4977,8 +3433,6 @@
+ ./share/mimelnk/application/x-mswrite.desktop
+ ./share/mimelnk/application/x-object.desktop
+ ./share/mimelnk/application/x-ogg.desktop
 -./share/mimelnk/application/x-ooimpress.desktop
 -./share/mimelnk/application/x-oowriter.desktop
+ ./share/mimelnk/application/x-pak.desktop
+ ./share/mimelnk/application/x-perl-module.desktop
+ ./share/mimelnk/application/x-perl.desktop
+@@ -5058,7 +3512,6 @@
+ ./share/mimelnk/image/svg+xml.desktop
+ ./share/mimelnk/image/svg-xml.desktop
+ ./share/mimelnk/image/tiff.desktop
 -./share/mimelnk/image/wmf.desktop
+ ./share/mimelnk/image/x-bmp.desktop
+ ./share/mimelnk/image/x-dds.desktop
+ ./share/mimelnk/image/x-djvu.desktop
+@@ -5122,15 +3575,12 @@
+ ./share/mimelnk/text/x-latex.desktop
+ ./share/mimelnk/text/x-ldif.desktop
+ ./share/mimelnk/text/x-log.desktop
 -./share/mimelnk/text/x-lyx.desktop
+ ./share/mimelnk/text/x-makefile.desktop
+ ./share/mimelnk/text/x-moc.desktop
+ ./share/mimelnk/text/x-mswinurl.desktop
+ ./share/mimelnk/text/x-objchdr.desktop
+ ./share/mimelnk/text/x-objcsrc.desktop
+ ./share/mimelnk/text/x-pascal.desktop
 -./share/mimelnk/text/x-perl.desktop
 -./share/mimelnk/text/x-python.desktop
+ ./share/mimelnk/text/x-tcl.desktop
+ ./share/mimelnk/text/x-tex.desktop
+ ./share/mimelnk/text/x-vcalendar.desktop
+@@ -5172,7 +3622,6 @@
+ ./share/services/kded/kdetrayproxy.desktop
+ ./share/services/kded/kpasswdserver.desktop
+ ./share/services/kded/kssld.desktop
 -./share/services/kded/kwalletd.desktop
+ ./share/services/kded/proxyscout.desktop
+ ./share/services/khtml.desktop
+ ./share/services/khtmlimage.desktop
+@@ -5198,29 +3647,6 @@
+ ./share/services/mmst.protocol
+ ./share/services/mmsu.protocol
+ ./share/services/pnm.protocol
 -./share/services/qimageioplugins/bmp.desktop
 -./share/services/qimageioplugins/dds.desktop
 -./share/services/qimageioplugins/eps.desktop
@@ -1609,5 +1792,13 @@
 -./share/services/qimageioplugins/xcf.desktop
 -./share/services/qimageioplugins/xpm.desktop
 -./share/services/qimageioplugins/xv.desktop
+ ./share/services/rlogin.protocol
+ ./share/services/rtsp.protocol
+ ./share/services/rtspt.protocol
+@@ -5253,5 +3679,5 @@
+ ./share/servicetypes/ktexteditor.desktop
+ ./share/servicetypes/ktexteditorplugin.desktop
+ ./share/servicetypes/kurifilterplugin.desktop
 -./share/servicetypes/qimageio_plugin.desktop
+ ./share/servicetypes/renamedlgplugin.desktop
 +./xdg/menus/applications.menu
