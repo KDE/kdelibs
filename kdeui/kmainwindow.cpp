@@ -32,13 +32,14 @@
 
 #include <QCloseEvent>
 #include <QDesktopWidget>
+#include <QDockWidget>
 #include <qlayout.h>
 #include <qobject.h>
 #include <qsessionmanager.h>
 #include <qstyle.h>
 #include <qtimer.h>
 #include <qwidget.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 #include <kaccel.h>
 #include <kaction.h>
 #include <kapplication.h>
@@ -80,7 +81,7 @@ public:
     QTimer* settingsTimer;
     KToggleAction *showStatusBarAction;
     QRect defaultWindowSize;
-    Q3PtrList<Q3DockWindow> hiddenDockWindows;
+    QList<QDockWidget*> hiddenDockWindows;
 };
 
 QList<KMainWindow*> KMainWindow::sMemberList;
@@ -393,9 +394,9 @@ const QString KMainWindow::classNameOfToplevel( int number )
 void KMainWindow::show()
 {
     Q3MainWindow::show();
-
-    for ( Q3PtrListIterator<Q3DockWindow> it( d->hiddenDockWindows ); it.current(); ++it )
-	it.current()->show();
+    QListIterator<QDockWidget*> it( d->hiddenDockWindows );
+    while ( it.hasNext() )
+        it.next()->show();
 
     d->hiddenDockWindows.clear();
 }
@@ -406,8 +407,8 @@ void KMainWindow::hide()
 
         d->hiddenDockWindows.clear();
 
-        QList<Q3DockWindow *> list = findChildren<Q3DockWindow *>();
-        foreach ( Q3DockWindow *dw, list ) {
+        QList<QDockWidget *> list = findChildren<QDockWidget *>();
+        foreach ( QDockWidget *dw, list ) {
             if ( dw->isTopLevel() && dw->isVisible() ) {
                 d->hiddenDockWindows.append( dw );
                 dw->hide();
