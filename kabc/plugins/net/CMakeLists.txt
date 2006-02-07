@@ -16,8 +16,8 @@ kde4_automoc(${kabc_net_LIB_SRCS})
 kde4_add_library(kabc_net SHARED ${kabc_net_LIB_SRCS})
 
 target_link_libraries(kabc_net  ${QT_AND_KDECORE_LIBS} kabc kio )
+kde4_create_libtool_file( kabc_net /kde4/ )
 
-set_target_properties(kabc_net PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install_targets(${KDE4_LIB_INSTALL_DIR} kabc_net )
 
 
