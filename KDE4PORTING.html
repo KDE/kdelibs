@@ -306,10 +306,13 @@ Desktop Entry Spec</a>
 <H4>KURL</H4>
 <ul>
 <li>Has been renamed to KUrl, but a typedef is available for source compatibility</li>
+<li>KUrl inherits QUrl now, but the API offered by KUrl is mostly unchanged</li>
 <li>filename() has been removed, use fileName() instead</li>
 <li>isMalformed -&gt; !isValid()</li>
+<li>prettyURL(0,KUrl::StripFileProtocol) -&gt; pathOrURL()</li>
 <li>htmlURL() had to be removed, please use Qt::escape(url.prettyURL()) now, with #include &lt;QTextDocument&gt;.
 This requires libQtGui, which is why it can't be in KUrl anymore.</li>
+<li>url(0,106) or any other use of the 'mib enum' for encoding has been removed. QUrl is UTF8 based, and the world is becoming more and more utf8 based as well, the old encoding hacks inside urls should disappear.</li>
 </ul>
 
 <H4>KURLDrag</H4>
