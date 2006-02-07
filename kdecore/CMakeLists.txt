@@ -72,13 +72,13 @@ add_subdirectory( network )
 
 ########### next target ###############
 
+if(NOT WIN32)
+
 kde4_add_library(kdefakes SHARED fakes.c)
 set_target_properties(kdefakes PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${KDE4_LIB_INSTALL_DIR} kdefakes )
-if(WIN32)
-    # because of setreuid 
-    target_link_libraries(kdefakes  kdewin32 )
-endif(WIN32)
+
+endif(NOT WIN32)
 
 ########### next target ###############
 
@@ -205,7 +205,6 @@ set(kdecore_LIB_SRCS
    network/ksocketbuffer.cpp
    ${kdecore_OPTIONAL_SRCS}
    malloc/malloc.c
-   fakes.c
    ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
 )
 
@@ -217,6 +216,10 @@ set( kdecore_DCOP_SKEL_SRCS
    kdebugdcopiface.h
    kdedmodule.h
 )
+
+if(UNIX)
+    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} fakes.c)
+endif(UNIX)
 
 kde4_add_dcop_skels(kdecore_LIB_SRCS ${kdecore_DCOP_SKEL_SRCS})
 
