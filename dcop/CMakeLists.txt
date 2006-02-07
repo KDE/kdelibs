@@ -1,6 +1,7 @@
 kde4_header()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dcop-path.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
+macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
 
 add_subdirectory( KDE-ICE )
 add_subdirectory( dcopidlng )
@@ -18,8 +19,6 @@ if (UNIX)
 else (UNIX)
    # windows
    add_definitions( -DSOCKCONN -DTCPCONN)
-
-   set (KDEWIN32_LIBRARIES kdewin32 ws2_32)
 endif (UNIX)
 
 
@@ -58,40 +57,31 @@ dcopserver_shutdown.c
 
 kde4_add_executable(dcopserver_shutdown ${dcopserver_shutdown_SRCS})
 
-target_link_libraries(dcopserver_shutdown ${KDEWIN32_LIBRARIES})
+target_link_libraries(dcopserver_shutdown ${KDEWIN32_LIBRARY})
 
 install_targets(/bin dcopserver_shutdown )
 
 
 ########### next target ###############
 
-set(testdcop_SRCS
-testdcop.cpp
-)
-
-kde4_automoc(${testdcop_SRCS})
-
 if(KDE4_BUILD_TESTS)
-kde4_add_executable(testdcop ${testdcop_SRCS})
 
-target_link_libraries(testdcop  ${QT_AND_KDECORE_LIBS} )
-
-endif(KDE4_BUILD_TESTS)
-
-########### next target ###############
-
-set(testdcopc_SRCS
-testdcopc.c
-dcopc.c
-${kICE_STAT_SRCS}
-)
-
-kde4_automoc(${testdcopc_SRCS})
-
-if(KDE4_BUILD_TESTS)
-kde4_add_executable(testdcopc ${testdcopc_SRCS})
-
-target_link_libraries(testdcopc  ${QT_AND_KDECORE_LIBS})
+   set(testdcop_SRCS testdcop.cpp ${kICE_STAT_SRCS} )
+   
+   kde4_automoc(${testdcop_SRCS})
+   
+   kde4_add_executable(testdcop ${testdcop_SRCS})
+   
+   target_link_libraries(testdcop  ${QT_QTCORE_LIBRARY} DCOP)
+   
+   
+   ########### next target ###############
+   
+#   set(testdcopc_SRCS testdcopc.c dcopc.c ${kICE_STAT_SRCS} )
+   
+#   kde4_add_executable(testdcopc ${testdcopc_SRCS})
+   
+#   target_link_libraries(testdcopc  ${QT_QTCORE_LIBRARY} DCOP)
 
 endif(KDE4_BUILD_TESTS)
 
@@ -109,7 +99,7 @@ kde4_automoc(${DCOP_LIB_SRCS})
 
 kde4_add_library(DCOP SHARED ${DCOP_LIB_SRCS})
 
-target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARIES})
+target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARY})
 
 set_target_properties(DCOP PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 kde4_create_libtool_file(DCOP /kde4/ )
@@ -127,7 +117,7 @@ kde4_automoc(${dcopserver_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( dcopserver ${dcopserver_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP ${KDEWIN32_LIBRARIES})
+target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP ${KDEWIN32_LIBRARY})
 
 install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_dcopserver )
 

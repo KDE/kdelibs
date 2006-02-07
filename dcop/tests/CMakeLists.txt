@@ -29,7 +29,7 @@ COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate.pl < ${CMAKE_CUR
 
 kde4_add_executable(dcop_test ${dcop_test_SRCS})
 
-target_link_libraries(dcop_test  ${QT_AND_KDECORE_LIBS} DCOP )
+target_link_libraries(dcop_test  ${QT_QTCORE_LIBRARY} DCOP )
 
 
 ########### next target ###############
@@ -48,7 +48,7 @@ kde4_add_dcop_stubs(driver_SRCS ${driver_DCOP_STUB_SRCS})
 
 kde4_add_executable(driver ${driver_SRCS})
 
-target_link_libraries(driver  ${QT_AND_KDECORE_LIBS} DCOP )
+target_link_libraries(driver  ${QT_QTCORE_LIBRARY} DCOP )
 
 endif(KDE4_BUILD_TESTS)
 

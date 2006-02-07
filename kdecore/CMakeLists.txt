@@ -284,6 +284,7 @@ else(MSVC)
 endif(MSVC)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kde-config.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp @ONLY)
+macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  )
 
 kde4_add_executable(${KDE_CONFIG_NAME} ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
 

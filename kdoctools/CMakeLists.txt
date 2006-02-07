@@ -8,6 +8,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/b
 include_directories(${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
+macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 
 
 ########### next target ###############

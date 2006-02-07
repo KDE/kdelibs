@@ -19,6 +19,8 @@ if (APPLE)
 endif (APPLE)
 
 include (MacroOptionalFindPackage)
+include (MacroAppendDirectoryProperties)
+
 # macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
 macro_optional_find_package(ZLIB)
@@ -46,8 +48,12 @@ include_directories(
 include(ConfigureChecks.cmake)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
+
+macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
+
 
 if (UNIX)
    link_directories(/usr/local/lib)

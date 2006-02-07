@@ -221,8 +221,8 @@ ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
   )
 
-  kde4_add_file_dependancy(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
-${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
+  macro_append_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
+#  kde4_add_file_dependancy(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
 
 endmacro(CREATE_LUT)
 
