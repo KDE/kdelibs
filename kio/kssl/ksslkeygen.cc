@@ -42,7 +42,9 @@
 KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal) 
 :Q3Wizard(parent,name,modal) {
 	_idx = -1;
+#ifdef __GNUC__
 #warning "KDE4 PORTING TO NEW KWIZARD"
+#endif
 #ifdef KSSL_HAVE_SSL
 	page1 = new KGWizardPage1(this, "Wizard Page 1");
 	addPage(page1, i18n("KDE Certificate Request"));
