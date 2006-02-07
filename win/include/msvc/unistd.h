@@ -30,6 +30,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
+#include <sys/mman.h>
 
 #define NOGDI
 #include <winsock2.h>
