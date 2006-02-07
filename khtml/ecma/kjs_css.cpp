@@ -1024,8 +1024,10 @@ void DOMCSSValue::put(ExecState *exec, const Identifier &propertyName, ValueImp 
 {
   CSSValueImpl &cssValue = *m_impl;
   if (propertyName == "cssText") {
+#ifdef __GNUC__
 #warning "FIXME, we need cssText, currently b0rken"
-    //cssValue.setCssText(value->toString(exec).domString());
+#endif    
+  //cssValue.setCssText(value->toString(exec).domString());
   } else
     DOMObject::put(exec, propertyName, value, attr);
 }
