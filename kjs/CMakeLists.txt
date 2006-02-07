@@ -2,7 +2,7 @@ kde4_header()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
-include_directories( ${REGEXP_INCUDE_DIR}  ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 if(PCRE_FOUND)
    include_directories(${PCRE_INCLUDE_DIR})
@@ -20,9 +20,6 @@ macro(CREATE_LUT _in_FILE _out_FILE _dep_FILE)
       COMMAND ${PERL_EXECUTABLE}
       ARGS ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} -i > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} )
-
-   set(${generated_lut_h} ${generated_lut_h} ${_out_FILE})
-   
 endmacro(CREATE_LUT)
 
 create_lut(date_object.cpp date_object.lut.h date_object.cpp)
@@ -69,19 +66,13 @@ scope_chain.cpp
 dtoa.cpp
 fpconst.cpp
 JSLock.cpp
-${generated_lut_h}
 )
 
 kde4_automoc(${kjs_LIB_SRCS})
 
 kde4_add_library(kjs SHARED ${kjs_LIB_SRCS})
 
-target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS} ${REGEXP_LIB} m kxmlcore pthread )
-
-if(WIN32)
-#target_link_libraries(kjs .lib )
-add_definitions( -DHAVE_PCREPOSIX )
-endif(WIN32)
+target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS} m kxmlcore pthread )
 
 if(PCRE_FOUND)
    target_link_libraries(kjs ${PCRE_LIBRARY})
