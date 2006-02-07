@@ -22,7 +22,7 @@ INCLUDES = -I$(top_srcdir)/kdecore $(all_includes)
 AM_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
-	kstddirstest kurltest kurltest4 kuniqueapptest krandomsequencetest \
+	kstddirstest kurltest4 kuniqueapptest krandomsequencetest \
 	kdebugtest kstringhandlertest kcmdlineargstest kapptest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
 	cplusplustest kiconloadertest kmdcodectest knotifytest kdatetimetest \
@@ -36,7 +36,7 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 # TODO kurltest4 when it works
 
 # List of tests to run automatically from "make check"
-TESTS = kurltest kcompletiontest\
+TESTS = kcompletiontest\
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest \
 	kstringhandlertest krfcdatetest kcalendartest klibloadertest
 
@@ -56,7 +56,6 @@ klocaletest_SOURCES = klocaletest.cpp
 #klocaletest2_SOURCES = klocaletest2.cpp klocale.cpp libintl.cpp kcatalog.cpp
 #kcatalog_SOURCES = kcatalog.cpp libintl.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
-kurltest_SOURCES = kurltest.cpp
 kstddirstest_SOURCES = kstddirstest.cpp
 kprocesstest_SOURCES = kprocesstest.cpp
 kuniqueapptest_SOURCES = kuniqueapptest.cpp
@@ -91,7 +90,7 @@ kconfigtest_SOURCES = kconfigtest.cpp
 krfcdatetest_SOURCES = krfcdatetest.cpp
 kstdacceltest_SOURCES = kstdacceltest.cpp
 kstringhandlertest_SOURCES = kstringhandlertest.cpp
-kurltest4_SOURCES = kurltest4.cpp kurl4.cpp
+kurltest4_SOURCES = kurltest4.cpp
 kcalendartest_SOURCES = kcalendartest.cpp
 klibloadertest_SOURCES = klibloadertest.cpp
 kcompletiontest_SOURCES = kcompletiontest.cpp

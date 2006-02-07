@@ -37,7 +37,7 @@ public:
   bool canRenameToFile;
   bool canDeleteRecursive;
   bool fileNameUsedForCopying; // true if using UDS_NAME, false if using KUrl::fileName() [default]
-  KUrl::URIMode uriMode;
+  //KUrl::URIMode uriMode;
   QStringList capabilities;
   QString proxyProtocol;
 };
@@ -114,6 +114,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 
   d->showPreviews = config.readEntry( "ShowPreviews", d->protClass == ":local" );
 
+#if 0
   tmp = config.readEntry( "URIMode", QString() ).toLower();
   if (tmp == "rawuri")
      d->uriMode = KUrl::RawURI;
@@ -123,6 +124,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
      d->uriMode = KUrl::URL;
   else
      d->uriMode = KUrl::Auto;
+#endif
 
   d->capabilities = config.readEntry( "Capabilities", QStringList() );
   d->proxyProtocol = config.readEntry( "ProxiedBy" );
@@ -189,7 +191,9 @@ KProtocolInfo::load( QDataStream& _str)
    d->fileNameUsedForCopying = (i_fileNameUsedForCopying != 0);
    m_determineMimetypeFromExtension = (i_determineMimetypeFromExtension != 0);
    d->showPreviews = (i_showPreviews != 0);
+#if 0
    d->uriMode = (KUrl::URIMode) i_uriMode;
+#endif
 }
 
 void
@@ -228,7 +232,11 @@ KProtocolInfo::save( QDataStream& _str)
    i_fileNameUsedForCopying = d->fileNameUsedForCopying ? 1 : 0;
    i_determineMimetypeFromExtension = m_determineMimetypeFromExtension ? 1 : 0;
    i_showPreviews = d->showPreviews ? 1 : 0;
+#if 0
    i_uriMode = d->uriMode;
+#eise
+   i_uriMode = 0;
+#endif
 
    _str << m_name << m_exec << m_listing << m_defaultMimetype
         << i_determineMimetypeFromExtension
@@ -491,7 +499,7 @@ bool KProtocolInfo::showFilePreview( const QString& _protocol )
   return prot->d->showPreviews;
 }
 
-/* "gone in Qt-4.x"
+/*
 KUrl::URIMode KProtocolInfo::uriParseMode( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);

@@ -25,9 +25,9 @@
 QTEST_KDEMAIN( KUrlTest, NoGUI )
 
 #include <config.h>
-#include <kcmdlineargs.h> // before the #define
+#include <kcmdlineargs.h>
 
-#include "kurl4.h"
+#include "kurl.h"
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kcharsets.h>
@@ -37,8 +37,6 @@ QTEST_KDEMAIN( KUrlTest, NoGUI )
 #include <qmap.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#define KUrl KUrl4
 
 void KUrlTest::testEmptyURL()
 {
@@ -52,7 +50,7 @@ void KUrlTest::testEmptyURL()
   QVERIFY( !emptyURL.isValid() );
   QVERIFY( emptyURL.isEmpty() );
 
-  KUrl fileURL = "file:/";
+  KUrl fileURL( "file:/" );
   QVERIFY( !fileURL.isEmpty() );
 
   fileURL = "file:///";
@@ -69,7 +67,7 @@ void KUrlTest::testEmptyURL()
 void KUrlTest::testIsValid()
 {
   qDebug("* isValid tests\n");
-  KUrl url1 = "gg:www.kde.org";
+  KUrl url1( "gg:www.kde.org" );
   QVERIFY( url1.isValid() );
 
   url1 = "KDE";
@@ -167,7 +165,7 @@ void KUrlTest::testIsLocalFile()
 
 void KUrlTest::testSimpleMethods() // to test parsing, mostly
 {
-  KUrl mlc = "http://mlc:80/";
+  KUrl mlc( "http://mlc:80/" );
   QVERIFY( mlc.isValid() );
   QCOMPARE( mlc.port(), 80 );
   QCOMPARE( mlc.path(), QString("/") );
@@ -315,7 +313,7 @@ void KUrlTest::testEmptyQueryOrRef()
   // Empty queries should be preserved!
   //QUrl qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi?", QUrl::TolerantMode);
   //QCOMPARE( qurl.toEncoded(), QByteArray("http://www.kde.org/cgi/test.cgi?"));
-  KUrl waba1 = "http://www.kde.org/cgi/test.cgi?";
+  KUrl waba1( "http://www.kde.org/cgi/test.cgi?");
   QCOMPARE( waba1.url(), QString( "http://www.kde.org/cgi/test.cgi?" ) );
   QCOMPARE( waba1.query(), QString( "?" ) ); // empty query
 
@@ -328,7 +326,7 @@ void KUrlTest::testEmptyQueryOrRef()
   //qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi#", QUrl::TolerantMode);
   //QCOMPARE( qurl.toEncoded(), QByteArray("http://www.kde.org/cgi/test.cgi#") );
 
-  KUrl tobi1 = "http://host.net/path/?#http://broken-adsfk-poij31-029mu-2890zupyc-*!*'O-+-0i";
+  KUrl tobi1( "http://host.net/path/?#http://broken-adsfk-poij31-029mu-2890zupyc-*!*'O-+-0i" );
   QCOMPARE(tobi1.query(), QString("?")); // query is empty
 
   tobi1 = "http://host.net/path/#no-query";
@@ -347,7 +345,7 @@ void KUrlTest::testParsingTolerance()
            QByteArray("http://www.kde.org/cgi/qurl.cgi?hello=My%20Value") );
 
   // URLs who forgot to encode spaces in the query.
-  KUrl waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value";
+  KUrl waba1( "http://www.kde.org/cgi/test.cgi?hello=My Value" );
   //QVERIFY( waba1.isValid() );
   QCOMPARE( waba1.url(), QString("http://www.kde.org/cgi/test.cgi?hello=My%20Value") );
 
@@ -376,7 +374,7 @@ void KUrlTest::testNewLine()
 
 void KUrlTest::testQueryParsing()
 {
-  KUrl ldap = "ldap://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Babs%20Jensen)";
+  KUrl ldap( "ldap://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Babs%20Jensen)" );
   QCOMPARE( ldap.host(), QString("host.com") );
   QCOMPARE( ldap.port(), 6666 );
   QCOMPARE( ldap.path(), QString("/o=University of Michigan,c=US") );
@@ -390,7 +388,7 @@ void KUrlTest::testQueryParsing()
 void KUrlTest::testURLsWithoutPath()
 {
   // Urls without path (BR21387)
-  KUrl waba1 = "http://meine.db24.de?link=home_c_login_login"; // has query
+  KUrl waba1( "http://meine.db24.de?link=home_c_login_login" ); // has query
   QCOMPARE( waba1.url(), QString("http://meine.db24.de?link=home_c_login_login") );
   QCOMPARE( waba1.path(), QString("") );
   QCOMPARE( waba1.query(), QString("?link=home_c_login_login") );
@@ -431,7 +429,7 @@ void KUrlTest::testPathAndQuery()
   QCOMPARE( tobi0.query(), QString("?theQuery") );
 #endif
 
-  KUrl tobi1 = "http://host.net/path?myfirstquery#andsomeReference";
+  KUrl tobi1( "http://host.net/path?myfirstquery#andsomeReference" );
   tobi1.setEncodedPathAndQuery("another/path/?another&query");
   QCOMPARE( tobi1.query(), QString("?another&query") );
   QCOMPARE( tobi1.path(), QString("another/path/") );
@@ -439,7 +437,7 @@ void KUrlTest::testPathAndQuery()
   QCOMPARE( tobi1.query(), QString("?another&query") );
   QCOMPARE( tobi1.path(), QString("another/path") );
 
-  KUrl url1 = "ftp://user%40host.com@ftp.host.com/var/www/";
+  KUrl url1( "ftp://user%40host.com@ftp.host.com/var/www/" );
   QCOMPARE( url1.user(), QString("user@host.com" ) );
   QCOMPARE( url1.host(), QString("ftp.host.com" ) );
   KUrl up = url1.upURL();
@@ -453,7 +451,7 @@ void KUrlTest::testPathAndQuery()
 void KUrlTest::testSetFileName() // and addPath
 {
   kDebug() << k_funcinfo << endl;
-  KUrl u2 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README";
+  KUrl u2( "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README" );
   //qDebug( "* URL is %s", qPrintable( u2.url() ) );
 
   u2.setFileName( "myfile.txt" );
@@ -622,15 +620,15 @@ void KUrlTest::testRelativePath()
 
 void KUrlTest::testRelativeURL()
 {
-  KUrl baseURL = "http://www.kde.org/index.html";
-  QCOMPARE( KUrl::relativeURL(baseURL, "http://www.kde.org/index.html#help"), QString("#help") );
-  QCOMPARE( KUrl::relativeURL(baseURL, "http://www.kde.org/index.html?help=true"), QString("index.html?help=true") );
-  QCOMPARE( KUrl::relativeURL(baseURL, "http://www.kde.org/contact.html"), QString("contact.html") );
-  QCOMPARE( KUrl::relativeURL(baseURL, "ftp://ftp.kde.org/pub/kde"), QString("ftp://ftp.kde.org/pub/kde") );
-  QCOMPARE( KUrl::relativeURL(baseURL, "http://www.kde.org/index.html"), QString("./") );
+  KUrl baseURL( "http://www.kde.org/index.html" );
+  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("http://www.kde.org/index.html#help") ), QString("#help") );
+  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("http://www.kde.org/index.html?help=true") ), QString("index.html?help=true") );
+  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("http://www.kde.org/contact.html") ), QString("contact.html") );
+  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("ftp://ftp.kde.org/pub/kde") ), QString("ftp://ftp.kde.org/pub/kde") );
+  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("http://www.kde.org/index.html") ), QString("./") );
 
   baseURL = "http://www.kde.org/info/index.html";
-  QCOMPARE( KUrl::relativeURL(baseURL, "http://www.kde.org/bugs/contact.html"), QString( "../bugs/contact.html") );
+  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("http://www.kde.org/bugs/contact.html") ), QString( "../bugs/contact.html") );
 }
 
 void KUrlTest::testAdjustPath()
@@ -692,7 +690,7 @@ void KUrlTest::testIPV6()
 
   kDebug() << k_funcinfo << endl;
   // IPV6
-  KUrl waba1 = "http://[::FFFF:129.144.52.38]:81/index.html";
+  KUrl waba1( "http://[::FFFF:129.144.52.38]:81/index.html" );
   QCOMPARE( waba1.host(), QString("::ffff:129.144.52.38") );
   QCOMPARE( waba1.port(), 81 );
 
@@ -731,7 +729,7 @@ void KUrlTest::testIPV6()
   QCOMPARE( waba1.port(), 81 );
   QCOMPARE( waba1.ref(), QString("ref") );
 
-  KUrl weird = "http://[::fff:1:23]/";
+  KUrl weird( "http://[::fff:1:23]/" );
   QVERIFY( weird.isValid() );
   QCOMPARE( weird.host(), QString("::fff:1:23") );
 }
@@ -739,13 +737,13 @@ void KUrlTest::testIPV6()
 void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) constructor
 {
   kDebug() << k_funcinfo << endl;
-  KUrl com1("http://server.com/dir/", ".");
+  KUrl com1(KUrl("http://server.com/dir/"), ".");
   QCOMPARE( com1.url(), QString("http://server.com/dir/") );
 
-  KUrl com2("http://server.com/dir/blubb/", "blah/");
+  KUrl com2(KUrl("http://server.com/dir/blubb/") , "blah/");
   QCOMPARE( com2.url(), QString("http://server.com/dir/blubb/blah/") );
 
-  KUrl baseURL ("http://www.foo.bar:80" );
+  KUrl baseURL("http://www.foo.bar:80" );
   QVERIFY( baseURL.isValid() );
   QCOMPARE( baseURL.protocol(), QString( "http" ) ); // lowercase
   QCOMPARE( baseURL.port(), 80 );
@@ -1044,15 +1042,15 @@ void KUrlTest::testComparisons()
   qDebug("* URL is %s",ftpUrl.url().latin1());
   QCOMPARE( ftpUrl.path(), QString());
   ftpUrl = "ftp://ftp.de.kde.org/";
-  QVERIFY( ftpUrl.isParentOf( "ftp://ftp.de.kde.org/host/subdir/") );
+  QVERIFY( ftpUrl.isParentOf( KUrl("ftp://ftp.de.kde.org/host/subdir/") ) );
   ftpUrl = "ftp://ftp/host/subdir/";
-  QVERIFY( ftpUrl.isParentOf( "ftp://ftp/host/subdir/") );
-  QVERIFY( ftpUrl.isParentOf( "ftp://ftp/host/subdir") );
-  QVERIFY( !ftpUrl.isParentOf( "ftp://ftp/host/subdi") );
-  QVERIFY( ftpUrl.isParentOf( "ftp://ftp/host/subdir/blah/") );
-  QVERIFY( !ftpUrl.isParentOf( "ftp://ftp/blah/subdir") );
-  QVERIFY( !ftpUrl.isParentOf( "file:////ftp/host/subdir/") );
-  QVERIFY( ftpUrl.isParentOf( "ftp://ftp/host/subdir/subsub") );
+  QVERIFY( ftpUrl.isParentOf( KUrl("ftp://ftp/host/subdir/") ) );
+  QVERIFY( ftpUrl.isParentOf( KUrl("ftp://ftp/host/subdir") ) );
+  QVERIFY( !ftpUrl.isParentOf( KUrl("ftp://ftp/host/subdi") ) );
+  QVERIFY( ftpUrl.isParentOf( KUrl("ftp://ftp/host/subdir/blah/") ) );
+  QVERIFY( !ftpUrl.isParentOf( KUrl("ftp://ftp/blah/subdir") ) );
+  QVERIFY( !ftpUrl.isParentOf( KUrl("file:////ftp/host/subdir/") ) );
+  QVERIFY( ftpUrl.isParentOf( KUrl("ftp://ftp/host/subdir/subsub") ) );
 }
 
 void KUrlTest::testStreaming()
@@ -1060,10 +1058,10 @@ void KUrlTest::testStreaming()
   kDebug() << k_funcinfo << endl;
   // Streaming operators
   KUrl origURL( "http://www.website.com/directory/?#ref" );
-  KUrl empty = "";
-  KUrl invalid = "ptal://mlc:usb";
+  KUrl empty( "" );
+  KUrl invalid( "ptal://mlc:usb" );
   QVERIFY( !invalid.isValid() );
-  KUrl waba1 = "http://[::ffff:129.144.52.38]:81?query";
+  KUrl waba1( "http://[::ffff:129.144.52.38]:81?query" );
   QByteArray buffer;
   {
       QDataStream stream( &buffer, QIODevice::WriteOnly );
@@ -1094,7 +1092,7 @@ void KUrlTest::testBrokenStuff()
 {
   kDebug() << k_funcinfo << endl;
   // Broken stuff
-  KUrl waba1 = "file:a";
+  KUrl waba1( "file:a" );
   QCOMPARE( waba1.path(), QString("a") );
   QCOMPARE( waba1.fileName(false), QString("a") );
   QCOMPARE( waba1.fileName(true), QString("a") );
@@ -1220,7 +1218,7 @@ void KUrlTest::testMailto()
   KUrl mailtoOnly( "mailto:" );
   QVERIFY( mailtoOnly.isValid() ); // KDE3 said invalid, QUrl is more tolerant
 
-  KUrl url1 = "mailto:user@host.com";
+  KUrl url1( "mailto:user@host.com" );
   QCOMPARE( url1.url(), QString("mailto:user@host.com") );
   QCOMPARE( url1.url(0), QString("mailto:user@host.com") );
 
@@ -1259,13 +1257,13 @@ void KUrlTest::testOtherProtocols()
   QCOMPARE(about.path(),QString("konqueror") );
 
 
-  KUrl leo = "data:text/html,http://www.invalid/";
+  KUrl leo( "data:text/html,http://www.invalid/" );
   QVERIFY( leo.isValid() );
   QCOMPARE( leo.protocol(), QString("data" ) );
   QCOMPARE( leo.url(), QString("data:text/html,http://www.invalid/" ) );
   QCOMPARE( leo.path(), QString("text/html,http://www.invalid/" ) );
 
-  KUrl ptal = "ptal://mlc:usb@PC_970"; // User=mlc, password=usb, host=PC_970
+  KUrl ptal( "ptal://mlc:usb@PC_970" ); // User=mlc, password=usb, host=PC_970
   QVERIFY( ptal.isValid() );
   QCOMPARE( ptal.host(), QString("pc_970") );
   QCOMPARE( ptal.user(), QString("mlc") );
@@ -1311,7 +1309,7 @@ void KUrlTest::testOtherEncodings()
 {
   kDebug() << k_funcinfo << endl;
   QTextCodec::setCodecForLocale( KGlobal::charsets()->codecForName( "koi8-r" ) );
-  KUrl baseURL = "file:/home/coolo";
+  KUrl baseURL( "file:/home/coolo" );
   KUrl russian = baseURL.directory(false, true) + QString::fromUtf8( "фгн7" );
   //QCOMPARE( russian.url(), QString("file:///home/%C6%C7%CE7" ) ); // KDE3: was not using utf8
   QCOMPARE( russian.url(), QString("/home/%D1%84%D0%B3%D0%BD7") ); // QUrl uses utf8
@@ -1365,7 +1363,7 @@ void KUrlTest::testPathOrURL()
 void KUrlTest::testQueryItem()
 {
   kDebug() << k_funcinfo << endl;
-  KUrl theKow = "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25";
+  KUrl theKow( "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25" );
   QCOMPARE( theKow.queryItem("q"), QString("frerich") );
   QCOMPARE( theKow.queryItem("hl"), QString("de") );
   QCOMPARE( theKow.queryItem("lr"), QString("lang de") ); // the '+' got decoded

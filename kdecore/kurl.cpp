@@ -1,6 +1,7 @@
+// -*- c-basic-offset: 2 -*-
 /*
     Copyright (C) 1999 Torben Weis <weis@kde.org>
-    Copyright (C) 2005 David Faure <faure@kde.org>
+    Copyright (C) 2005-2006 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,12 +21,14 @@
 
 /// KDE4 TODO: maybe we should use QUrl::resolved()
 
+#undef QT3_SUPPORT
+
 /*
  * The currently active RFC for URL/URIs is RFC3986
  * Previous (and now deprecated) RFCs are RFC1738 and RFC2396
  */
 
-#include "kurl4.h"
+#include "kurl.h"
 
 // KDE_QT_ONLY is first used for dcop/client (e.g. marshalling)
 #ifndef KDE_QT_ONLY
@@ -121,7 +124,7 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
   }
 
 #ifdef Q_WS_WIN // prepend drive letter if exists (js)
-  if (orig_pos >= 2 && isalpha(path[0].latin1()) && path[1]==':') {
+  if (orig_pos >= 2 && isalpha(path[0].toLatin1()) && path[1]==':') {
     result.prepend(QString(path[0])+":");
   }
 #endif
@@ -191,8 +194,8 @@ QStringList KUrl::List::toStringList() const
 
 
 void KUrl::List::populateMimeData( QMimeData* mimeData,
-                                const KUrl::MetaDataMap& metaData,
-                                MimeDataFlags flags )
+                                   const KUrl::MetaDataMap& metaData,
+                                   MimeDataFlags flags ) const
 {
     QList<QByteArray> urlStringList;
     KUrl::List::ConstIterator uit = begin();
@@ -200,8 +203,8 @@ void KUrl::List::populateMimeData( QMimeData* mimeData,
     for ( ; uit != uEnd ; ++uit )
     {
         // Get each URL encoded in utf8 - and since we get it in escaped
-        // form on top of that, .latin1() is fine.
-        urlStringList.append( (*uit).toMimeDataString().latin1() );
+        // form on top of that, .toLatin1() is fine.
+        urlStringList.append( (*uit).toMimeDataString().toLatin1() );
     }
 
     QByteArray uriListData;
@@ -231,7 +234,7 @@ void KUrl::List::populateMimeData( QMimeData* mimeData,
         {
             metaDataData += it.key().toUtf8();
             metaDataData += "$@@$";
-            metaDataData += it.data().toUtf8();
+            metaDataData += it.value().toUtf8();
             metaDataData += "$@@$";
         }
         mimeData->setData( "application/x-kio-metadata", metaDataData );
@@ -241,6 +244,11 @@ void KUrl::List::populateMimeData( QMimeData* mimeData,
 bool KUrl::List::canDecode( const QMimeData *mimeData )
 {
     return mimeData->hasFormat( "text/uri-list" ) || mimeData->hasFormat( "application/x-kde-urilist" );
+}
+
+QStringList KUrl::List::mimeDataTypes()
+{
+    return QStringList()<<( "application/x-kde-urilist" )<<( "text/uri-list" );
 }
 
 KUrl::List KUrl::List::fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMap* metaData )
@@ -275,8 +283,10 @@ KUrl::List KUrl::List::fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMa
         const QByteArray metaDataPayload = mimeData->data( "application/x-kio-metadata" );
         if ( !metaDataPayload.isEmpty() )
         {
-            const QString str = QString::fromUtf8( metaDataPayload );
-            const QStringList lst = str.split( "$@@$");
+            QString str = QString::fromUtf8( metaDataPayload );
+            Q_ASSERT( str.endsWith( "$@@$" ) );
+            str.truncate( str.length() - 4 );
+            const QStringList lst = str.split( "$@@$" );
             QStringList::ConstIterator it = lst.begin();
             bool readingKey = true; // true, then false, then true, etc.
             QString key;
@@ -405,16 +415,16 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
           strPath = QLatin1Char('/');
     }
     setPath( strPath );
-    kDebug() << "url()=" << url() << " rUrl=" << rUrl << endl;
+    //kDebug(126) << "url()=" << url() << " rUrl=" << rUrl << endl;
     KUrl tmp( url() + rUrl);
-    kDebug() << "assigning tmp=" << tmp.url() << endl;
+    //kDebug(126) << "assigning tmp=" << tmp.url() << endl;
     *this = tmp;
     cleanPath(false);
   }
   else
   {
     KUrl tmp( rUrl );
-    kDebug() << "not relative; assigning tmp=" << tmp.url() << endl;
+    //kDebug(126) << "not relative; assigning tmp=" << tmp.url() << endl;
     *this = tmp;
     // Preserve userinfo if applicable.
     if (!_u.userInfo().isEmpty() && userInfo().isEmpty()
@@ -1171,7 +1181,7 @@ void KUrl::setQuery( const QString &_txt )
 
 void KUrl::_setQuery( const QString& query )
 {
-    setEncodedQuery( query.isNull() ? 0 : query.ascii() ); // ### TODO encoding ok?
+    setEncodedQuery( query.isNull() ? QByteArray() : query.toLatin1() ); // ### TODO encoding ok?
 }
 
 QString KUrl::query() const
@@ -1447,6 +1457,14 @@ void KUrl::addQueryItem( const QString& _item, const QString& _value )
      strQueryEncoded += '&';
   strQueryEncoded += item + value;
   setEncodedQuery( strQueryEncoded.toLatin1() );
+}
+
+void KUrl::populateMimeData( QMimeData* mimeData,
+                             const MetaDataMap& metaData,
+                             MimeDataFlags flags ) const
+{
+  KUrl::List lst( *this );
+  lst.populateMimeData( mimeData, metaData, flags );
 }
 
 bool KUrl::hasRef() const

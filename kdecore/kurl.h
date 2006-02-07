@@ -1,6 +1,7 @@
+// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
  *  Copyright (C) 1999 Torben Weis <weis@kde.org>
- *  Copyright (C) 2005 David Faure <faure@kde.org>
+ *  Copyright (C) 2005-2006 David Faure <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -16,7 +17,7 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
- **/
+ */
 
 #ifndef kurl_h
 #define kurl_h
@@ -29,7 +30,6 @@ class QStringList;
 class QMimeData;
 
 class KUrlPrivate;
-#define KUrl KUrl4
 
 // maybe we should encapsulate QUrl instead of inheriting from it.
 // this would even allow us to inherit from KUri instead.
@@ -37,6 +37,81 @@ class KUrlPrivate;
 // half KDE code using setScheme() and the other half using setProtocol(), etc.
 // (DF)
 // TODO: fromPath(), since if we use QUrl::fromLocalFile, we then have to make a QUrl->KUrl copy.
+
+/**
+ * Represents and parses a URL.
+ *
+ * A prototypical URL looks like:
+ * \code
+ *   protocol://user:password\@hostname:port/path/to/file.ext#reference
+ * \endcode
+ *
+ * KUrl handles escaping of URLs. This means that the specification
+ * of a full URL will differ from the corresponding string that would specify a
+ * local file or directory in file-operations like fopen. This is because an URL
+ * doesn't allow certain characters and escapes them. (e.g. '#'->"%23", space->"%20")
+ * (In a URL the hash-character '#' is used to specify a "reference", i.e. the position
+ * within a document).
+ *
+ * The constructor KUrl(const QString&) expects a string properly escaped,
+ * or at least non-ambiguous.
+ * For instance a local file or directory "/bar/#foo#" would have the URL
+ * file:///bar/%23foo%23.
+ * If you have the absolute path and need the URL-escaping you should create
+ * KUrl via the default-constructor and then call setPath(const QString&).
+ * \code
+ *     KUrl kurl;
+ *     kurl.setPath("/bar/#foo#");
+ *     QString url = kurl.url();    // -> "file:///bar/%23foo%23"
+ * \endcode
+ *
+ * If you have the URL of a local file or directory and need the absolute path,
+ * you would use path().
+ * \code
+ *    KUrl url( "file:///bar/%23foo%23" );
+ *    ...
+ *    if ( url.isLocalFile() )
+ *       QString path = url.path();       // -> "/bar/#foo#"
+ * \endcode
+ *
+ * The other way round: if the user can enter a string, that can be either a
+ * path or a URL, then you need to use KUrl::fromPathOrURL() to build a KUrl.
+ *
+ * This must also be considered, when you have separated directory and file
+ * strings and need to put them together.
+ * While you can simply concatenate normal path strings, you must take care if
+ * the directory-part is already an escaped URL.
+ * (This might be needed if the user specifies a relative path, and your
+ * program supplies the rest from elsewhere.)
+ *
+ * Wrong:
+ * \code
+ *    QString dirUrl = "file:///bar/";
+ *    QString fileName = "#foo#";
+ *    QString invalidURL = dirUrl + fileName;   // -> "file:///bar/#foo#" won't behave like you would expect.
+ * \endcode
+ * Instead you should use addPath():
+ * Right:
+ * \code
+ *    KUrl url( "file:///bar/" );
+ *    QString fileName = "#foo#";
+ *    url.addPath( fileName );
+ *    QString validURL = url.url();    // -> "file:///bar/%23foo%23"
+ * \endcode
+ *
+ * Also consider that some URLs contain the password, but this shouldn't be
+ * visible. Your program should use prettyURL() every time it displays a
+ * URL, whether in the GUI or in debug output or...
+ *
+ * \code
+ *    KUrl url( "ftp://name:password@ftp.faraway.org/bar/%23foo%23");
+ *    QString visibleURL = url.prettyURL(); // -> "ftp://name@ftp.faraway.org/bar/%23foo%23"
+ * \endcode
+ * Note that prettyURL() doesn't change the character escapes (like "%23").
+ * Otherwise the URL would be invalid and the user wouldn't be able to use it in another
+ * context.
+ *
+ */
 class KDECORE_EXPORT KUrl : public QUrl
 {
 public:
@@ -94,14 +169,20 @@ public:
        * @since 4.0
        */
       void populateMimeData( QMimeData* mimeData,
-                          const KUrl::MetaDataMap& metaData = MetaDataMap(),
-                          MimeDataFlags flags = DefaultMimeDataFlags );
+                             const KUrl::MetaDataMap& metaData = MetaDataMap(),
+                             MimeDataFlags flags = DefaultMimeDataFlags ) const;
 
       /**
        * Return true if @p mimeData contains URI data
        * @since 4.0
        */
       static bool canDecode( const QMimeData *mimeData );
+
+      /**
+        * Return the list of mimeTypes that can be decoded by fromMimeData
+        * @since 4.0
+        */
+      static QStringList mimeDataTypes();
 
       /**
        * Extract a list of KUrls from the contents of @p mimeData.
@@ -147,7 +228,7 @@ public:
    * @param url A encoded URL. If the URL does not have a protocol part,
    *            "file:" is assumed.
    */
-  KUrl( const char * url );
+  explicit KUrl( const char * url );
   /**
    * Constructor taking a QByteArray @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
@@ -155,7 +236,7 @@ public:
    * @param url A encoded URL. If the URL does not have a protocol part,
    *            "file:" is assumed.
    */
-  KUrl( const QByteArray& url );
+  explicit KUrl( const QByteArray& url );
 
   /**
    * Copy constructor.
@@ -344,13 +425,13 @@ public:
    * The reference is @em never decoded automatically.
    * @return the undecoded reference, or QString() if there is none
    */
-  QString ref() const { return QUrl::toPercentEncoding( fragment() ); }
+  QString ref() const { return QString::fromLatin1( QUrl::toPercentEncoding( fragment() ) ); }
 
   /**
    * Sets the reference part (everything after '#').
    * @param fragment the encoded reference (or QString() to remove it).
    */
-  void setRef( const QString& fragment ) { setFragment( QUrl::fromPercentEncoding( fragment.latin1() ) ); }
+  void setRef( const QString& fragment ) { setFragment( QUrl::fromPercentEncoding( fragment.toLatin1() ) ); }
 
   /**
    * Checks whether the URL has a reference part.
@@ -615,10 +696,12 @@ public:
 
 #if 0
   KUrl& operator=( const KUrl& _u );
-  KUrl& operator=( const QString& _url );
-  KUrl& operator=( const char * _url );
   KUrl& operator=( const QUrl & u );
 #endif
+
+  // Define those, since the constructors are explicit
+  KUrl& operator=( const char * _url ) { *this = KUrl(_url); return *this; }
+  KUrl& operator=( const QString& _url ) { *this = KUrl(_url); return *this; }
 
   bool operator==( const KUrl& _u ) const;
   bool operator==( const QString& _u ) const;
@@ -646,7 +729,7 @@ public:
    * ignore trailing '/' characters.
    * @since 3.1
    */
-  bool equals( const KUrl &u, bool ignore_trailing = false ) const; // TODO KDE4: add bool _ignore_ref = false
+  bool equals( const KUrl &u, bool ignore_trailing = false ) const; // TODO KDE4: use QUrl::FormattingOptions to add support for ignore_ref too
 
   /**
    * Checks whether the given URL is parent of this URL.
@@ -743,8 +826,8 @@ public:
    * @since 4.0
    */
   void populateMimeData( QMimeData* mimeData,
-                      const MetaDataMap& metaData = MetaDataMap(),
-                      MimeDataFlags flags = DefaultMimeDataFlags );
+                         const MetaDataMap& metaData = MetaDataMap(),
+                         MimeDataFlags flags = DefaultMimeDataFlags ) const;
 
   /**
    * Convenience function.
@@ -767,7 +850,7 @@ public:
    * @param str String to encode
    */
   static KDE_DEPRECATED QString encode_string_no_slash(const QString &str) {
-      return QLatin1String( QUrl::toPercentEncoding( str, "/" ) );
+      return QString::fromLatin1( QUrl::toPercentEncoding( str, "/" ) );
   }
 
   /**
@@ -779,7 +862,7 @@ public:
    * @param str String to decode (can be QString()).
    **/
   static KDE_DEPRECATED QString decode_string(const QString &str) {
-      return QUrl::fromPercentEncoding( str.latin1() ); // ## TODO check encoding
+      return QUrl::fromPercentEncoding( str.toLatin1() ); // ## TODO check encoding
   }
 
 
