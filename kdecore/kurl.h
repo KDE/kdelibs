@@ -36,7 +36,6 @@ class KUrlPrivate;
 // and this way hacks like setPath() would be less ugly, and we could avoid
 // half KDE code using setScheme() and the other half using setProtocol(), etc.
 // (DF)
-// TODO: fromPath(), since if we use QUrl::fromLocalFile, we then have to make a QUrl->KUrl copy.
 
 /**
  * Represents and parses a URL.
@@ -783,6 +782,21 @@ public:
    * @return the joined URL
    */
   static KUrl join( const List& _list );
+
+  /**
+   * Creates a KUrl object from a QString representing an absolute path.
+   * Use this method instead of
+   * \code
+   * QString someDir = ...
+   * KUrl url = someDir;
+   * \endcode
+   *
+   * Otherwise some characters (e.g. the '#') won't be encoded properly.
+   * @param text the string representation of the URL to convert
+   * @return the new KUrl
+   * @since 4.0
+   */
+  static KUrl fromPath( const QString& text ) { KUrl u; u.setPath( text ); return u; }
 
   /**
    * Creates a KUrl object from a QString representing either an absolute path
