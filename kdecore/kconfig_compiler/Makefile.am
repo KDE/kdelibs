@@ -6,7 +6,7 @@ KDE_CXXFLAGS = -UQT3_SUPPORT
 bin_PROGRAMS = kconfig_compiler
 
 kconfig_compiler_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kconfig_compiler_LDADD = $(LIB_KDECORE)
+kconfig_compiler_LDADD = $(LIB_QTXML)
 kconfig_compiler_SOURCES = kconfig_compiler.cpp
 
 check_PROGRAMS = example # autoexample

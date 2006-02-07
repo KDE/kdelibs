@@ -1,21 +1,19 @@
 kde4_header()
 
-add_subdirectory( tests ) 
+add_subdirectory( tests )
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
-set(kconfig_compiler_SRCS
-kconfig_compiler.cpp
-)
+set(kconfig_compiler_SRCS kconfig_compiler.cpp)
 
 kde4_automoc(${kconfig_compiler_SRCS})
 
 kde4_add_executable(kconfig_compiler ${kconfig_compiler_SRCS})
 
-target_link_libraries(kconfig_compiler  ${QT_AND_KDECORE_LIBS} ${QT_QTXML_LIBRARY} )
+target_link_libraries(kconfig_compiler  ${QT_QTXML_LIBRARY} )
 
 install_targets(/bin kconfig_compiler )
 
