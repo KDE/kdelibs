@@ -16,7 +16,7 @@ kde4_automoc(${plastik_PART_SRCS})
 
 kde4_add_plugin(plastik ${plastik_PART_SRCS})
 
-kde4_create_libtool_file(plastik /plugins/styles/ )
+kde4_create_libtool_file(plastik /kde4/plugins/styles/ )
 
 target_link_libraries(plastik  ${QT_AND_KDECORE_LIBS} kdefx )
 

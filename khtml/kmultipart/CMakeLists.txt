@@ -14,7 +14,7 @@ kde4_automoc(${kmultipart_PART_SRCS})
 
 kde4_add_plugin(kmultipart WITH_PREFIX ${kmultipart_PART_SRCS})
 
-kde4_create_libtool_file(kmultipart / )
+kde4_create_libtool_file(kmultipart /kde4/ )
 
 target_link_libraries(kmultipart  ${QT_AND_KDECORE_LIBS} kparts )
 

@@ -15,7 +15,7 @@ kde4_automoc(${kio_file_PART_SRCS})
 
 kde4_add_plugin(kio_file ${kio_file_PART_SRCS})
 
-kde4_create_libtool_file( kio_file / )
+kde4_create_libtool_file( kio_file /kde4/ )
 
 target_link_libraries(kio_file  ${QT_AND_KDECORE_LIBS} kio )
 

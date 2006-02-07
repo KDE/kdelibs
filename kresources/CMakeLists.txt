@@ -47,7 +47,7 @@ kde4_automoc(${kcm_kresources_PART_SRCS})
 
 kde4_add_plugin(kcm_kresources ${kcm_kresources_PART_SRCS})
 
-kde4_create_libtool_file(kcm_kresources / )
+kde4_create_libtool_file(kcm_kresources /kde4/ )
 
 target_link_libraries(kcm_kresources  ${QT_AND_KDECORE_LIBS} kresources )
 

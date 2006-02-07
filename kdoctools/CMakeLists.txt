@@ -22,7 +22,7 @@ kde4_automoc(${kio_help_PART_SRCS})
 
 kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
-kde4_create_libtool_file( kio_help / )
+kde4_create_libtool_file( kio_help /kde4/ )
 
 target_link_libraries(kio_help  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY} )
 
@@ -41,7 +41,7 @@ kde4_automoc(${kio_ghelp_PART_SRCS})
 
 kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 
-kde4_create_libtool_file( kio_ghelp / )
+kde4_create_libtool_file( kio_ghelp /kde4/ )
 
 target_link_libraries(kio_ghelp  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY} )
 

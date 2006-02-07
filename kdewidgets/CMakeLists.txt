@@ -46,7 +46,7 @@ qt4_add_resources(kdewidgets_PART_SRCS ${kdewidgets_QRC} )
 
 kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
-kde4_create_libtool_file(kdewidgets /plugins/designer/ )
+kde4_create_libtool_file(kdewidgets /kde4/plugins/designer/ )
 
 target_link_libraries(kdewidgets  ${QT_AND_KDECORE_LIBS} kio )
 

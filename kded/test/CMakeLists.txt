@@ -19,7 +19,7 @@ kde4_add_dcop_skels(kded_test_PART_SRCS ${kded_test_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_test ${kded_test_PART_SRCS})
 
-kde4_create_libtool_file(kded_test / )
+kde4_create_libtool_file(kded_test /kde4/ )
 
 target_link_libraries(kded_test  ${QT_AND_KDECORE_LIBS} )
 

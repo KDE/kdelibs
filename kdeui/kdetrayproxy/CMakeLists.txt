@@ -20,7 +20,7 @@ kde4_add_dcop_skels(kded_kdetrayproxy_PART_SRCS ${kded_kdetrayproxy_DCOP_SKEL_SR
 
 kde4_add_plugin(kded_kdetrayproxy ${kded_kdetrayproxy_PART_SRCS})
 
-kde4_create_libtool_file(kded_kdetrayproxy / )
+kde4_create_libtool_file(kded_kdetrayproxy /kde4/ )
 
 target_link_libraries(kded_kdetrayproxy  ${QT_AND_KDECORE_LIBS})
 

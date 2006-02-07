@@ -13,7 +13,7 @@ kde4_automoc(${kstyle_plastik_config_PART_SRCS})
 
 kde4_add_plugin(kstyle_plastik_config ${kstyle_plastik_config_PART_SRCS})
 
-kde4_create_libtool_file(kstyle_plastik_config / )
+kde4_create_libtool_file(kstyle_plastik_config /kde4/ )
 
 target_link_libraries(kstyle_plastik_config  ${QT_AND_KDECORE_LIBS} kdeui )
 

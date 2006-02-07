@@ -16,7 +16,7 @@ kde4_automoc(${kdeprint_lpdunix_PART_SRCS})
 
 kde4_add_plugin(kdeprint_lpdunix ${kdeprint_lpdunix_PART_SRCS})
 
-kde4_create_libtool_file(kdeprint_lpdunix / )
+kde4_create_libtool_file(kdeprint_lpdunix /kde4/ )
 
 target_link_libraries(kdeprint_lpdunix  ${QT_AND_KDECORE_LIBS} kdeprint_management )
 

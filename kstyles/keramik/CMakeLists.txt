@@ -30,7 +30,7 @@ kde4_automoc(${keramik_PART_SRCS})
 
 kde4_add_plugin(keramik ${keramik_PART_SRCS})
 
-kde4_create_libtool_file(keramik /plugins/styles/ )
+kde4_create_libtool_file(keramik /kde4/plugins/styles/ )
 
 target_link_libraries(keramik  ${QT_AND_KDECORE_LIBS} kdefx )
 

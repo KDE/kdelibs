@@ -31,7 +31,7 @@ kde4_automoc(${kabc_net_PART_SRCS})
 
 kde4_add_plugin(kabc_net ${kabc_net_PART_SRCS})
 
-kde4_create_libtool_file(kabc_net / )
+kde4_create_libtool_file(kabc_net /kde4/ )
 
 target_link_libraries(kabc_net  ${QT_AND_KDECORE_LIBS} )
 

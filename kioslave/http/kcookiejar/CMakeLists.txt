@@ -40,7 +40,7 @@ kde4_add_dcop_skels(kded_kcookiejar_PART_SRCS ${kded_kcookiejar_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 
-kde4_create_libtool_file(kded_kcookiejar / )
+kde4_create_libtool_file(kded_kcookiejar /kde4/ )
 
 target_link_libraries(kded_kcookiejar  ${QT_AND_KDECORE_LIBS} kio )
 

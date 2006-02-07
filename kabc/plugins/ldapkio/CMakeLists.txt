@@ -31,7 +31,7 @@ kde4_automoc(${kabc_ldapkio_PART_SRCS})
 
 kde4_add_plugin(kabc_ldapkio ${kabc_ldapkio_PART_SRCS})
 
-kde4_create_libtool_file(kabc_ldapkio / )
+kde4_create_libtool_file(kabc_ldapkio /kde4/ )
 
 target_link_libraries(kabc_ldapkio  ${QT_AND_KDECORE_LIBS} )
 

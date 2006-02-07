@@ -13,7 +13,7 @@ kde4_automoc(${kstyle_highcontrast_config_PART_SRCS})
 
 kde4_add_plugin(kstyle_highcontrast_config ${kstyle_highcontrast_config_PART_SRCS})
 
-kde4_create_libtool_file(kstyle_highcontrast_config / )
+kde4_create_libtool_file(kstyle_highcontrast_config /kde4/ )
 
 target_link_libraries(kstyle_highcontrast_config  ${QT_AND_KDECORE_LIBS} kdeui )
 

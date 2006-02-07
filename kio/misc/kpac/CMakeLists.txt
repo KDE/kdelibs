@@ -24,7 +24,7 @@ kde4_add_dcop_skels(kded_proxyscout_PART_SRCS ${kded_proxyscout_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 
-kde4_create_libtool_file(kded_proxyscout / )
+kde4_create_libtool_file(kded_proxyscout /kde4/ )
 
 target_link_libraries(kded_proxyscout  ${QT_AND_KDECORE_LIBS} kio kjs )
 

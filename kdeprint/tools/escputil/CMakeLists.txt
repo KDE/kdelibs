@@ -13,7 +13,7 @@ kde4_automoc(${kdeprint_tool_escputil_PART_SRCS})
 
 kde4_add_plugin(kdeprint_tool_escputil ${kdeprint_tool_escputil_PART_SRCS})
 
-kde4_create_libtool_file( kdeprint_tool_escputil / )
+kde4_create_libtool_file( kdeprint_tool_escputil /kde4/ )
 
 target_link_libraries(kdeprint_tool_escputil  ${QT_AND_KDECORE_LIBS} kdeui )
 

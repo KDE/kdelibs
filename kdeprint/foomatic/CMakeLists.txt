@@ -15,7 +15,7 @@ kde4_automoc(${kdeprint_foomatic_PART_SRCS})
 
 kde4_add_plugin(kdeprint_foomatic ${kdeprint_foomatic_PART_SRCS})
 
-kde4_create_libtool_file(kdeprint_foomatic / )
+kde4_create_libtool_file(kdeprint_foomatic /kde4/ )
 
 target_link_libraries(kdeprint_foomatic  ${QT_AND_KDECORE_LIBS} kdeprint_management )
 

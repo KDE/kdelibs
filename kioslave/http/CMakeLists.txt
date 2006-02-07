@@ -38,7 +38,7 @@ kde4_automoc(${kio_http_PART_SRCS})
 
 kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
 
-kde4_create_libtool_file(kio_http / )
+kde4_create_libtool_file(kio_http /kde4/ )
 
 target_link_libraries(kio_http  ${QT_AND_KDECORE_LIBS} kio kntlm )
 

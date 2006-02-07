@@ -13,7 +13,7 @@ kde4_automoc(${kfileaudiopreview_PART_SRCS})
 
 kde4_add_plugin(kfileaudiopreview ${kfileaudiopreview_PART_SRCS})
 
-kde4_create_libtool_file(kfileaudiopreview / )
+kde4_create_libtool_file(kfileaudiopreview /kde4/ )
 
 target_link_libraries(kfileaudiopreview  ${QT_AND_KDECORE_LIBS} kmediaplayer artskde kio )
 

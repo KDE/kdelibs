@@ -15,7 +15,7 @@ kde4_automoc(${light_PART_SRCS})
 
 kde4_add_plugin(light ${light_PART_SRCS})
 
-kde4_create_libtool_file(light / )
+kde4_create_libtool_file(light /kde4/ )
 
 target_link_libraries(light  ${QT_AND_KDECORE_LIBS} kdefx )
 

@@ -14,7 +14,7 @@ kde4_automoc(${kspell_aspell_PART_SRCS})
 
 kde4_add_plugin(kspell_aspell ${kspell_aspell_PART_SRCS})
 
-kde4_create_libtool_file(kspell_aspell / )
+kde4_create_libtool_file(kspell_aspell /kde4/ )
 
 target_link_libraries(kspell_aspell  ${QT_AND_KDECORE_LIBS} kspell2 ${ASPELL_LIBRARY} )
 
