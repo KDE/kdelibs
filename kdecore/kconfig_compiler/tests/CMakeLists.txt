@@ -188,6 +188,25 @@ target_link_libraries(test_dpointer  ${QT_AND_KDECORE_LIBS} )
 
 ########### next target ###############
 
+set(test_signal_SRCS
+test_signal_main.cpp
+test_signal.cpp
+)
+
+kde4_automoc(${test_signal_SRCS})
+
+if(KDE4_BUILD_TESTS)
+
+gen_kcfg_test_source(test_signal)
+
+kde4_add_executable(test_signal ${test_signal_SRCS})
+
+target_link_libraries(test_signal  ${QT_AND_KDECORE_LIBS} )
+
+endif(KDE4_BUILD_TESTS)
+
+########### next target ###############
+
 set(kconfigcompiler_test_SRCS
 kconfigcompiler_test.cpp
 )

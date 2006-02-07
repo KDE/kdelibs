@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--  kcfg XSD v1.0 -->
 <xsd:schema
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -15,6 +15,7 @@
             Copyright (c) 2003 Waldo Bastian &lt;bastian@kde.org&gt;
             Copyright (c) 2003 Zack Rusin &lt;zack@kde.org&gt;
             Copyright (c) 2004 Frans Englich &lt;frans.englich@telia.com&gt;
+			Copyright (c) 2006 Michaël Larouche &lt;michael.larouche@kdemail.net&gt;
             
             Permission to use, copy, modify and distribute this DTD
             and its accompanying documentation for any purpose and without fee
@@ -65,11 +66,12 @@
 		    	<xsd:sequence>
 				<xsd:element name="parameter" type="kcfg:parameter" minOccurs="0" maxOccurs="unbounded" />
 				<!-- FIXME: Are really unbounded occurances of parameter allowed? -->
-			</xsd:sequence>
+				</xsd:sequence>
                         <xsd:attribute name="name" type="xsd:string" use="optional"/>
                         <xsd:attribute name="arg" type="xsd:boolean" use="optional"/>
                     </xsd:complexType>
                 </xsd:element>
+				<xsd:element name="signal" type="kcfg:signal" minOccurs="0" maxOccurs="unbounded" />
                 <xsd:element name="group" maxOccurs="unbounded" >
                     <xsd:complexType>
                         <xsd:sequence>
@@ -128,6 +130,16 @@
                                             </xsd:complexType>
                                         </xsd:element>
                                         
+                                       <xsd:element name="emit" minOccurs="0">
+                                            <xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:string">
+														<xsd:attribute name="signal" use="required" type="xsd:string"/>
+													</xsd:extension>
+                                                </xsd:simpleContent>
+                                            </xsd:complexType>
+                                       </xsd:element>
+									   
                                     </xsd:choice>
                                     <xsd:attribute name="name" use="optional" type="xsd:string"/>
                                     <xsd:attribute name="key" use="optional" type="xsd:string"/>
@@ -188,5 +200,20 @@
         </xsd:simpleContent>
     </xsd:complexType>
     
+	<xsd:complexType name="signal">
+		<xsd:sequence>
+			<xsd:element name="label" minOccurs="0" type="xsd:string"/>
+			<xsd:element name="argument" maxOccurs="unbounded" minOccurs="0" >
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="xsd:string">
+							<xsd:attribute use="required" name="type" type="kcfg:datatype"/>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+            </xsd:element>
+		<xsd:sequence>
+		<xsd:attribute name="name" use="required" type="xsd:string" />
+	</xsd:complexType>
 </xsd:schema>
 

@@ -346,6 +346,7 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
    * 
    * You can write the data to the configuration file by calling @ref writeConfig()
    * and read the data from the configuration file by calling @ref readConfig().
+   * If you want to watch for config changes, use @ref configChanged() signal.
    * 
    * If you have items, which are not covered by the existing addItem() functions
    * you can add customized code for reading, writing and default setting by
@@ -360,10 +361,10 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
    * subclasses yourself, but you can use \ref kconfig_compiler to automatically
    * generate the C++ code from an XML description of the configuration options.
    */
-class KDECORE_EXPORT KConfigSkeleton
+class KDECORE_EXPORT KConfigSkeleton : public QObject
 {
+  Q_OBJECT
 public:
-
   /**
    * Class for handling a string preferences item.
    */
@@ -1116,6 +1117,12 @@ public:
    * @return The state prior to this call
    */
   bool useDefaults(bool b);
+
+Q_SIGNALS:
+  /**
+   * This signal is emitted when the configuration change.
+   */
+  void configChanged();
 
 protected:
   /**

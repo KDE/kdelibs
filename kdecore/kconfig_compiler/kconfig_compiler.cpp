@@ -5,6 +5,7 @@
     Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 Waldo Bastian <bastian@kde.org>
     Copyright (c) 2003 Zack Rusin <zack@kde.org>
+    Copyright (c) 2006 Michaël Larouche <michael.larouche@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -101,6 +102,19 @@ QRegExp *validNameRegexp;
 QString This;
 QString Const;
 
+struct SignalArguments
+{
+      QString type;
+      QString variableName;
+};
+
+class Signal {
+public:
+  QString name;
+  QString label;
+  QList<SignalArguments> arguments;
+};
+
 class CfgEntry
 {
   public:
@@ -114,12 +128,12 @@ class CfgEntry
     CfgEntry( const QString &group, const QString &type, const QString &key,
               const QString &name, const QString &label,
               const QString &whatsThis, const QString &code,
-              const QString &defaultValue, const QList<Choice> &choices,
+              const QString &defaultValue, const QList<Choice> &choices, const QList<Signal> signalList,
               bool hidden )
       : mGroup( group ), mType( type ), mKey( key ), mName( name ),
         mLabel( label ), mWhatsThis( whatsThis ), mCode( code ),
-        mDefaultValue( defaultValue ),
-        mChoices( choices ), mHidden( hidden )
+        mDefaultValue( defaultValue ), mChoices(choices), 
+	mSignalList(signalList), mHidden( hidden )
     {
     }
 
@@ -174,6 +188,9 @@ class CfgEntry
     void setParamMax( int d ) { mParamMax = d; }
     int paramMax() const { return mParamMax; }
 
+    void setSignalList( const QList<Signal> &value ) { mSignalList = value; }
+    QList<Signal> signalList() const { return mSignalList; }
+
     bool hidden() const { return mHidden; }
 
     void dump() const
@@ -214,6 +231,7 @@ class CfgEntry
     QString mParamName;
     QString mParamType;
     QList<Choice> mChoices;
+    QList<Signal> mSignalList;
     QStringList mParamValues;
     QStringList mParamDefaultValues;
     int mParamMax;
@@ -334,6 +352,15 @@ static QString filenameOnly(QString path)
    return path;
 }
 
+static QString signalEnumName(const QString &signalName)
+{
+  QString result;
+  result = "signal" + signalName;
+  result[6] = result[6].toUpper();
+
+  return result;
+}
+
 static void preProcessDefault( QString &defaultValue, const QString &name,
                                const QString &type,
                                const QList<CfgEntry::Choice> &choices,
@@ -416,6 +443,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString paramName;
   QString paramType;
   QList<CfgEntry::Choice> choices;
+  QList<Signal> signalList;
   QStringList paramValues;
   QStringList paramDefaultValues;
   QString minValue;
@@ -516,7 +544,14 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
         }
       }
     }
+   else if ( tag == "emit" ) {
+    QDomNode signalNode;
+    Signal signal;
+    signal.name = e.attribute( "signal" );
+    signalList.append( signal);
+   }
   }
+  
 
   bool nameIsEmpty = name.isEmpty();
   if ( nameIsEmpty && key.isEmpty() ) {
@@ -635,7 +670,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   }
 
   CfgEntry *result = new CfgEntry( group, type, key, name, label, whatsThis,
-                                   code, defaultValue, choices,
+                                   code, defaultValue, choices, signalList,
                                    hidden == "true" );
   if (!param.isEmpty())
   {
@@ -957,11 +992,18 @@ QString memberMutatorBody( CfgEntry *e )
   {
     out << n << "\" )";
   }
-  out << " ))" << endl;
+  out << " ))" << (!e->signalList().empty() ? " {" : "") << endl;
   out << "  " << This << varPath(n);
   if (!e->param().isEmpty())
     out << "[i]";
   out << " = v;" << endl;
+  
+  if ( !e->signalList().empty() ) {
+    foreach(Signal signal, e->signalList()) {
+      out << "  " << This << varPath("settingsChanged") << " |= " << signalEnumName(signal.name) << ";" << endl;
+    }
+    out << "}" << endl;
+  }
 
   return result;
 }
@@ -1071,7 +1113,9 @@ int main( int argc, char **argv )
   QString cfgFileName;
   bool cfgFileNameArg = false;
   QList<Param> parameters;
+  QList<Signal> signalList;
   QStringList includes;
+  bool hasSignals = false;
 
   QList<CfgEntry*> entries;
 
@@ -1120,6 +1164,34 @@ int main( int argc, char **argv )
         }
       }
     }
+    else if ( tag == "signal" ) {
+     QString signalName = e.attribute( "name" );
+     if ( signalName.isEmpty() ) {
+       std::cerr << "Signal without name." << std::endl;
+       return 1;
+     }
+     Signal theSignal;
+     theSignal.name = signalName;
+
+     QDomNode n2;
+     for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
+       QDomElement e2 = n2.toElement();
+       if ( e2.tagName() == "argument") {
+         SignalArguments argument;
+         argument.type = e2.attribute("type");
+         if ( argument.type.isEmpty() ) {
+           std::cerr << "Signal argument without type." << std::endl;
+           return 1;
+        }
+       argument.variableName = e2.text();
+       theSignal.arguments.append(argument);
+      }
+      else if( e2.tagName() == "label") {
+        theSignal.label = e2.text();
+      }
+     }
+     signalList.append(theSignal);
+    }
   }
 
   if ( inherits.isEmpty() ) inherits = "KConfigSkeleton";
@@ -1151,8 +1223,10 @@ int main( int argc, char **argv )
   }
 #endif
 
+  hasSignals = !signalList.empty();
   QString headerFileName = baseName + ".h";
   QString implementationFileName = baseName + ".cpp";
+  QString mocFileName = baseName + ".moc";
   QString cppPreamble; // code to be inserted at the beginnin of the cpp file, e.g. initialization of static values
 
   QFile header( baseDir + headerFileName );
@@ -1190,7 +1264,6 @@ int main( int argc, char **argv )
     h << "#include <" << *it << ">" << endl;
   }
 
-
   if ( !nameSpace.isEmpty() )
     h << "namespace " << nameSpace << " {" << endl << endl;
 
@@ -1200,7 +1273,11 @@ int main( int argc, char **argv )
 
   // Class declaration header
   h << "class " << visibility << className << " : public " << inherits << endl;
+
   h << "{" << endl;
+  // Add Q_OBJECT macro if the config need signals.
+  if( hasSignals )
+   h << "  Q_OBJECT" << endl;
   h << "  public:" << endl;
 
   // enums
@@ -1242,7 +1319,17 @@ int main( int argc, char **argv )
       }
     }
   }
-
+  if ( hasSignals ) {
+   h << "    enum { ";
+   QList<Signal>::ConstIterator it, itEnd = signalList.constEnd();
+   for ( it = signalList.constBegin(); it != itEnd; ) {
+     Signal signal = *it;
+     h << signalEnumName(signal.name);
+     if ( ++it != itEnd )
+      h << ", ";
+   }
+   h << " };" << endl;
+  }
   h << endl;
 
   // Constructor or singleton accessor
@@ -1364,6 +1451,31 @@ int main( int argc, char **argv )
     h << "    }" << endl;
   }
 
+  // Signal definition.
+  if( hasSignals ) {
+    h << endl;
+    h << "  Q_SIGNALS:";
+    foreach(Signal signal, signalList) {
+      h << endl;
+      if ( !signal.label.isEmpty() ) {
+        h << "    /**" << endl;
+        h << "      " << signal.label << endl;
+        h << "    */" << endl;
+      }
+      h << "    void " << signal.name << "(";
+      QList<SignalArguments>::ConstIterator it, itEnd = signal.arguments.constEnd();
+      for ( it = signal.arguments.constBegin(); it != itEnd; ) {
+        SignalArguments argument = *it;
+        h << param(argument.type) << argument.variableName;
+        if ( ++it != itEnd ) {
+         h << ", ";
+        }
+      }
+      h << ");" << endl;
+    }
+    h << endl;
+  }
+  
   h << "  protected:" << endl;
 
   // Private constructor for singleton
@@ -1373,6 +1485,10 @@ int main( int argc, char **argv )
       h << "const char *arg";
     h << ");" << endl;
     h << "    static " << className << " *mSelf;" << endl << endl;
+  }
+
+  if ( hasSignals ) {
+    h << "    virtual void usrWriteConfig();" << endl;
   }
 
   // Member variables
@@ -1412,6 +1528,8 @@ int main( int argc, char **argv )
         h << ";" << endl;
       }
     }
+    if ( hasSignals )
+     h << "    uint " << varName("settingsChanged") << ";" << endl;
 
   }
   else
@@ -1488,6 +1606,9 @@ int main( int argc, char **argv )
       cpp << "    KConfigSkeleton::Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry );
       if ( !(*itEntry)->param().isEmpty() ) cpp << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
         cpp << ";" << endl;
+    }
+    if ( hasSignals ) {
+      cpp << "    uint " << varName("settingsChanged") << ";" << endl;
     }
 
     cpp << "};" << endl << endl;
@@ -1724,6 +1845,32 @@ int main( int argc, char **argv )
     cpp << "    static" << className << "Deleter.setObject( mSelf, 0, false );" << endl;
   }
   cpp << "}" << endl << endl;
+
+  if ( hasSignals ) {
+    cpp << "void " << className << "::" << "usrWriteConfig()" << endl;
+    cpp << "{" << endl;
+    foreach(Signal signal, signalList) {
+      cpp << "  if ( " << varPath("settingsChanged") << " & " << signalEnumName(signal.name) << " ) " << endl;
+      cpp << "    emit " << signal.name << "(";
+      QList<SignalArguments>::ConstIterator it, itEnd = signal.arguments.constEnd();
+      for ( it = signal.arguments.constBegin(); it != itEnd; ) {
+        SignalArguments argument = *it;
+        cpp << varPath(argument.variableName);
+        if ( ++it != itEnd )
+          cpp << ", ";
+      }
+      cpp << ");" << endl << endl;
+    }
+    cpp << "  " << varPath("settingsChanged") << " = 0;" << endl;
+    cpp << "}" << endl;
+  }
+
+  // Add includemoc if they are signals defined.
+  if( hasSignals ) {
+    cpp << endl;
+    cpp << "#include \"" << mocFileName << "\"" << endl;
+    cpp << endl;
+  }
 
   // clear entries list
   qDeleteAll( entries );

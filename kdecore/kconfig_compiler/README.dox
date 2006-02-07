@@ -121,7 +121,7 @@ The following options are read from the kcfgc file:
 </tr>
 <tr>
   <td><b>MemberVariables</b></td>
-  <td>string: public|protected|private</td>
+  <td>string: public|protected|private|dpointer</td>
   <td>private</td>
   <td>C++ access modifier used for memeber variables holding the configuration
   valuse</td>
@@ -247,8 +247,38 @@ void setSound(int SoundEvent, const QString &v) function.
 ...STILL TODO...
 
 
+- Signal support.
 
+An entry can emit a signal when it gets changed. First of all, you must
+define a list of signals for the configuration class. 
+A signal definition can contain a \<label\> tag which will be
+the documentation line in the generated file. Also the \<argument\> tag
+is to define arguments to emit with the signals. It supports all type as defined in
+the KConfigXT DTD. For the variable name, you must use a valid entry name without spaces.
 
+\verbatim
+<signal name="emoticonSettingsChanged" />
+
+<signal name="styleChanged">
+  <label>Tell when a complete style change.</label>
+    <argument type="String">stylePath</argument>
+    <argument type="String">StyleCSSVariant</argument>
+</signal>
+\endverbatim
+
+After defining the signals, you must tell which signal to emit for the entry.
+A signal can be emitted by multiple entries. Also, you don't need to specify the arguments
+for a signal, the signal name will suffice.
+
+\verbatim
+<entry key="stylePath" type="String">
+  <label>Absolute path to a directory containing a Adium/Kopete chat window style.</label>
+  <emit signal="styleChanged" />
+</entry>
+\endverbatim
+
+You can also use the generic configChanged() signal from KConfigSkelton to notify your application
+about configuration changes.
 
 If you have questions or comments please contact Cornelius Schumacher
 <schumacher@kde.org> or Waldo Bastian <bastian@kde.org>

@@ -4,7 +4,7 @@ METASOURCES = AUTO
 
 LDADD = $(LIB_KDECORE)
 
-check_PROGRAMS = test1 test2 test3 test4 test5 test6 test7 test8 test9 test_dpointer kconfigcompiler_test
+check_PROGRAMS = test1 test2 test3 test4 test5 test6 test7 test8 test9 test_dpointer test_signal kconfigcompiler_test
 
 CLEANFILES = test1.cpp test1.h \
              test2.cpp test2.h \
@@ -16,6 +16,7 @@ CLEANFILES = test1.cpp test1.h \
              test8a.cpp test8a.h test8b.cpp test8b.h \
              test9.cpp test9.h \
 						 test_dpointer.cpp test_dpointer.h \
+	     test_signal.cpp test_signal.h \
              md5sums
 
 test1_LDFLAGS = $(all_libraries) $(KDE_RPATH)
@@ -47,6 +48,9 @@ test9_SOURCES = test9main.cpp test9.cpp
 
 test_dpointer_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 test_dpointer_SOURCES = test_dpointer_main.cpp test_dpointer.cpp
+
+test_signal_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+test_signal_SOURCES = test_signal_main.cpp test_signal.cpp
 
 kconfigcompiler_test_SOURCES = kconfigcompiler_test.cpp
 kconfigcompiler_test_LDADD = $(LIB_KDECORE) -lQtTest_debug
@@ -116,6 +120,12 @@ test_dpointer_main.o test_dpointer.o: test_dpointer.h
 test_dpointer.cpp: test_dpointer.h
 test_dpointer.cpp test_dpointer.h: $(srcdir)/test_dpointer.kcfg ../kconfig_compiler $(srcdir)/test_dpointer.kcfgc
 	../kconfig_compiler $(srcdir)/test_dpointer.kcfg $(srcdir)/test_dpointer.kcfgc
+
+test_signal_main.o test_signal.o: test_signal.h
+# avoid running the below command in parallel
+test_signal.cpp: test_signal.h
+test_signal.cpp test_signal.h: $(srcdir)/test_signal.kcfg ../kconfig_compiler $(srcdir)/test_signal.kcfgc
+	../kconfig_compiler $(srcdir)/test_signal.kcfg $(srcdir)/test_signal.kcfgc
 
 md5sums:
 	$(MD5SUM) $(srcdir)/test*.ref | sed -e "s,$(srcdir)/,,; s,\.ref$$,," > md5sums

@@ -772,7 +772,7 @@ KConfigSkeleton::KConfigSkeleton( const QString &configname )
 }
 
 KConfigSkeleton::KConfigSkeleton(KSharedConfig::Ptr pConfig)
-  : mCurrentGroup( "No Group" ), mUseDefaults(false)
+  : QObject(0), mCurrentGroup( "No Group" ), mUseDefaults(false)
 {
   kDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")" << endl;
   mConfig = pConfig;
@@ -866,6 +866,8 @@ void KConfigSkeleton::writeConfig()
   readConfig();
 
   mConfig->setGroup(origGroup);
+
+  emit configChanged();
 }
 
 void KConfigSkeleton::addItem( KConfigSkeletonItem *item, const QString &name )
@@ -1067,3 +1069,6 @@ KConfigSkeletonItem *KConfigSkeleton::findItem(const QString &name)
 {
   return mItemDict.value(name);
 }
+
+#include "kconfigskeleton.moc"
+
