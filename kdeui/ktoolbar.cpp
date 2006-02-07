@@ -1272,7 +1272,7 @@ QSize KToolBar::sizeHint() const
     {
      case KToolBar::Top:
      case KToolBar::Bottom:
-       Q_FOREACH( QWidget *w , ncThis->widgets ) 
+       Q_FOREACH( QWidget *w , ncThis->widgets )
        {
           QSize sh = w->sizeHint();
           if ( w->sizePolicy().horData() == QSizePolicy::Ignored )
@@ -1418,20 +1418,25 @@ bool KToolBar::transparentSetting()
     return cg.readEntry(QLatin1String("TransparentMoving"), true);
 }
 
+static KToolBar::IconText stringToIconText( const QString& icontext )
+{
+    if ( icontext == "IconTextRight" )
+        return KToolBar::IconTextRight;
+    else if ( icontext == "IconTextBottom" )
+        return KToolBar::IconTextBottom;
+    else if ( icontext == "TextOnly" )
+        return KToolBar::TextOnly;
+    else
+        return KToolBar::IconOnly;
+}
+
 //static
 KToolBar::IconText KToolBar::iconTextSetting()
 {
     QString grpToolbar(QLatin1String("Toolbar style"));
     KConfigGroup cg(KGlobal::config(), grpToolbar);
     QString icontext = cg.readEntry(QLatin1String("IconText"),QString::fromLatin1("IconTextBottom"));
-    if ( icontext == "IconTextRight" )
-        return IconTextRight;
-    else if ( icontext == "IconTextBottom" )
-        return IconTextBottom;
-    else if ( icontext == "TextOnly" )
-        return TextOnly;
-    else
-        return IconOnly;
+    return stringToIconText( icontext );
 }
 
 void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGroup, bool forceGlobal)
@@ -1762,7 +1767,7 @@ void KToolBar::loadState( const QDomElement &element )
             if (d->m_honorStyle)
                 setIconText( iconTextSetting() );
             else
-                setIconText( d->IconTextDefault );
+                setIconText( stringToIconText( d->IconTextDefault ) );
 	}
     }
 

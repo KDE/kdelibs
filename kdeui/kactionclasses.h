@@ -27,14 +27,13 @@
 #define kactionclasses_h
 
 #include <qkeysequence.h>
-#include <qobject.h>
+#include <qwidget.h>
 #include <qpointer.h>
 
 #include <kguiitem.h>
 #include <kshortcut.h>
 #include <kstdaction.h>
 #include <kicontheme.h>
-#include <ktoolbar.h>
 #include <kaction.h>
 
 class QMenuBar;
@@ -834,7 +833,7 @@ public Q_SLOTS:
    *  @param name The user visible pretty name that appears before the URL
    *  @since 3.5
    */
-  void addURL( const KUrl& url, const QString& name = QString() ); 
+  void addURL( const KUrl& url, const QString& name = QString() );
 
 
   /**
@@ -1009,12 +1008,12 @@ public:
 
     /**
      * Returns true if this action creates a delayed popup menu
-     * when plugged in a KToolbar.
+     * when plugged in a KToolBar.
      */
     bool delayed() const;
     /**
      * If set to true, this action will create a delayed popup menu
-     * when plugged in a KToolbar. Otherwise it creates a normal popup.
+     * when plugged in a KToolBar. Otherwise it creates a normal popup.
      * Default: delayed
      *
      * Remember that if the "main" action (the toolbar button itself)
@@ -1034,7 +1033,7 @@ public:
     bool stickyMenu() const;
     /**
      * If set to true, this action will create a sticky popup menu
-     * when plugged in a KToolbar.
+     * when plugged in a KToolBar.
      * "Sticky", means it's visible until a selection is made or the mouse is
      * clicked elsewhere. This feature allows you to make a selection without
      * having to press and hold down the mouse while making a selection.
@@ -1131,12 +1130,12 @@ public:
 
     /**
      * Returns true if this action creates a delayed popup menu
-     * when plugged in a KToolbar.
+     * when plugged in a KToolBar.
      */
     bool delayed() const;
     /**
      * If set to true, this action will create a delayed popup menu
-     * when plugged in a KToolbar. Otherwise it creates a normal popup.
+     * when plugged in a KToolBar. Otherwise it creates a normal popup.
      * Default: delayed.
      */
     void setDelayed(bool delayed);
@@ -1147,7 +1146,7 @@ public:
     bool stickyMenu() const;
     /**
      * If set to true, this action will create a sticky popup menu
-     * when plugged in a KToolbar.
+     * when plugged in a KToolBar.
      * "Sticky", means it's visible until a selection is made or the mouse is
      * clicked elsewhere. This feature allows you to make a selection without
      * having to press and hold down the mouse while making a selection.
@@ -1198,7 +1197,7 @@ public:
 
     virtual int plug( QWidget * widget, int index = -1 );
 
-    KToolBar *toolBar() { return (KToolBar*)m_toolBar; }
+    KToolBar *toolBar();
 
 public Q_SLOTS:
     virtual void setChecked( bool );

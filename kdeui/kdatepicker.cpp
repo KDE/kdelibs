@@ -405,6 +405,9 @@ KDatePicker::selectYearClicked()
   delete popup;
 }
 
+
+// ####### KDE4: setEnabled isn't virtual anymore, so this isn't polymorphic.
+// Better reimplement changeEvent() instead.
 void
 KDatePicker::setEnabled(bool enable)
 {

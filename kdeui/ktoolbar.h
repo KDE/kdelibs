@@ -1021,10 +1021,6 @@ public:
      */
     static IconText iconTextSetting();
 
-public Q_SLOTS:
-    virtual void setIconText( const QString &txt )
-    { Q3ToolBar::setIconText( txt ); }
-
 protected:
     void mousePressEvent( QMouseEvent * );
     void childEvent( QChildEvent *e );

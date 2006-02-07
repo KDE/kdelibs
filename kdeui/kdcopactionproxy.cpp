@@ -26,6 +26,7 @@
 #include <kdcoppropertyproxy.h>
 
 #include <ctype.h>
+#include <qmap.h>
 
 class KDCOPActionProxy::KDCOPActionProxyPrivate
 {

@@ -363,7 +363,7 @@ public Q_SLOTS:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    KActionCollection( const char* name, const KXMLGUIClient* parent );
+    KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
     class KActionCollectionPrivate;
     KActionCollectionPrivate *d;
 };

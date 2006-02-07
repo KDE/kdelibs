@@ -2019,6 +2019,11 @@ void KToggleToolBarAction::setChecked( bool c )
   KToggleAction::setChecked( c );
 }
 
+KToolBar * KToggleToolBarAction::toolBar()
+{
+    return static_cast<KToolBar *>( m_toolBar );
+}
+
 ////////
 
 KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut,

@@ -129,14 +129,13 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 }
 #endif // KDE 4: remove end
 
-KActionCollection::KActionCollection( const char *name, const KXMLGUIClient *parent )
+KActionCollection::KActionCollection( const KXMLGUIClient *parent )
     : QObject( 0 )
 {
   d = new KActionCollectionPrivate;
   d->m_parentGUIClient=parent;
   d->m_instance=parent->instance();
 }
-
 
 KActionCollection::~KActionCollection()
 {
