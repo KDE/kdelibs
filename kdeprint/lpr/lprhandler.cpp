@@ -147,7 +147,7 @@ PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 			lp.append( "%9100" );
 		else
 			lp.append( "%" ).append( QString::number( uri.port() ) );
-		entry->addField("lp", lp);
+		entry->addField("lp", Field::String, lp);
 	}
 	else
 	{
