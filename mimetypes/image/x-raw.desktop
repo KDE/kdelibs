@@ -5,4 +5,3 @@ MimeType=image/x-raw
 Icon=image
 Patterns=*.crw;*.CRW;*.cr2,*.CR2;*.nef;*.NEF;*.mrw;*.MRW;
 Comment=RAW Camera File
-Comment[x-test]=xxRAW Camera Filexx
