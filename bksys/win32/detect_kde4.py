@@ -31,6 +31,7 @@ def bootstrap(env):
 	env['KDEAPPS']   = env.join( env['PREFIX'], 'share\\apps')
 	env['KDEKCFG']   = env.join( env['PREFIX'], 'share\\config.kcfg')
 	env['KDEICONS']  = env.join( env['PREFIX'], 'share\\icons')
+	env['KDEMENU']   = env.join( env['PREFIX'], 'share\\menus')	# fixme (see detect_qt4.py)
 	env['KDEMIME']   = env.join( env['PREFIX'], 'share\\mimelnk')
 	env['KDEDOC']    = env.join( env['PREFIX'], 'share\\doc')
 	env['KDESERV']   = env.join( env['PREFIX'], 'share\\services')
