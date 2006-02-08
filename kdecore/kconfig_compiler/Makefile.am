@@ -31,7 +31,7 @@ METASOURCES = AUTO
 
 CLEANFILES = exampleprefs_base.h exampleprefs_base.cpp
 
-TESTFILES = test1.kcfg test2.kcfg test3.kcfg test4.kcfg test_dpointer.kcfg
+TESTFILES = test1.kcfg test2.kcfg test3.kcfg test4.kcfg test_dpointer.kcfg test_signal.kcfg
 
 check-local:
 	for i in $(TESTFILES); \

@@ -211,8 +211,8 @@
 						</xsd:extension>
 					</xsd:simpleContent>
 				</xsd:complexType>
-            </xsd:element>
-		<xsd:sequence>
+			</xsd:element>
+		</xsd:sequence>
 		<xsd:attribute name="name" use="required" type="xsd:string" />
 	</xsd:complexType>
 </xsd:schema>
