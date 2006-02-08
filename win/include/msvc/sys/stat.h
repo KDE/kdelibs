@@ -77,6 +77,8 @@ extern "C" {
 
 KDEWIN32_EXPORT int lstat( const char *__path, struct stat *__buf);
 
+KDEWIN32_EXPORT int fchmod(int __fd, mode_t __mode);
+
 // KDEWIN32_EXPORT int mkdir( const char *_path, mode_t __mode );
  extern int mkdir( const char *_path );
  extern int chdir( const char *dirname );
