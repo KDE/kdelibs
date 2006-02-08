@@ -94,7 +94,7 @@ int main( int argc, char** argv )
  " ./kziptest print file.zip                        prints contents of all files.\n"
  " ./kziptest print2 file.zip filename              prints contents of one file.\n"
  " ./kziptest update file.zip filename              updates contents of one file.\n"
- " ./kziptest transfer file.zip newfile.zip         complete transfer.\n"
+ " ./kziptest transfer file.zip newfile.zip         complete transfer.\n" );
     return 1;
   }
   KInstance instance("kziptest");
