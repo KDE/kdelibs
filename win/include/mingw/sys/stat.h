@@ -33,4 +33,6 @@
 #define	S_ISGID		0002000	/* set group id on execution */
 #define	S_ISVTX		0001000	/* save swapped text even after use */
 
+KDEWIN32_EXPORT int fchmod(int __fd, mode_t __mode);
+
 #endif
