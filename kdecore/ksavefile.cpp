@@ -317,15 +317,17 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
             return false;
     }
 
-    // The following may need to be adjusted for different platforms
-    QStringList pth( "PATH=/bin:/usr/bin:/usr/local/bin" );
-    QString env( "/usr/bin/env" );
-
+    QString cipath = KStandardDirs::findExe("ci");
+    QString copath = KStandardDirs::findExe("co");
+    QString rcspath = KStandardDirs::findExe("rcs");
+    if ( cipath.isEmpty() || copath.isEmpty() || rcspath.isEmpty() )
+        return false;
+ 
     // Check in the file unlocked with 'ci'
     QProcess ci;
     if ( !backupDir.isEmpty() )
         ci.setWorkingDirectory( backupDir );
-    ci.start( env, QStringList() << pth << "ci" << "-u" << qFilename );
+    ci.start( cipath, QStringList() << "-u" << qFilename );
     if ( !ci.waitForStarted() )
         return false;
     ci.write( backupMessage.toLatin1() );
@@ -338,7 +340,7 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
     QProcess rcs;
     if ( !backupDir.isEmpty() )
         rcs.setWorkingDirectory( backupDir );
-    rcs.start( env, QStringList() << pth << "rcs" << "-U" << qBackupFilename );
+    rcs.start( rcspath, QStringList() << "-U" << qBackupFilename );
     if ( !rcs.waitForFinished() )
         return false;
 
@@ -346,7 +348,7 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
     QProcess co;
     if ( !backupDir.isEmpty() )
         co.setWorkingDirectory( backupDir );
-    co.start( env, QStringList() << pth << "co" << qBackupFilename );
+    co.start( copath, QStringList() << qBackupFilename );
     if ( !co.waitForFinished() )
         return false;
 
