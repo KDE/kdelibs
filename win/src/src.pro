@@ -4,7 +4,10 @@ TARGET		= kdewin32
 include( ../common.pro )
 
 win32-g++: {
-	LIBS += -lws2_32 -ladvapi32 -lshell32
+	LIBS += -lws2_32 -ladvapi32 -lshell32 
+	# (rh) otherwise ld does not export any symbol
+	QMAKE_LFLAGS_DEBUG += -Wl,--export-all-symbols
+	QMAKE_LFLAGS_RELEASE += -Wl,--export-all-symbols
 } else {
 	LIBS += ws2_32.lib advapi32.lib shell32.lib
 }
