@@ -112,7 +112,7 @@ class KDE_EXPORT SlotBinding : public KJS::InternalFunctionImp
 * the QObject binding.
 */
 template< typename T>
-KJS::JSObject *KDE_EXPORT createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBinding::Ownership owner = KJSEmbed::ObjectBinding::JSOwned)
+KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBinding::Ownership owner = KJSEmbed::ObjectBinding::JSOwned)
 {
     if ( 0 == value )
         return new KJS::JSObject();

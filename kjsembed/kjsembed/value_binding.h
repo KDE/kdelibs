@@ -165,7 +165,7 @@ namespace KJSEmbed
     * that are supported by QVariant will work.
     */
     template< typename T>
-    KJS::JSValue* KDE_EXPORT createValue(KJS::ExecState *exec, const KJS::UString &className, const T &value)
+    KJS::JSValue* createValue(KJS::ExecState *exec, const KJS::UString &className, const T &value)
     {
         KJS::JSObject *parent;
         //if( exec->context().imp() != 0 )
@@ -227,7 +227,7 @@ namespace KJSEmbed
     * If the type is supported by QVariant, but is not supported by KJSEmbed then it will just be wrapped.
     * This wrapped value can be used just like normal value bindings, save for the lack of methods available to the object.
     */
-    KJS::JSValue* KDE_EXPORT convertToValue( KJS::ExecState *exec, const QVariant &value );
+    KJS::JSValue* convertToValue( KJS::ExecState *exec, const QVariant &value );
 
     /**
     * The Bindings for the KJSEmbed::ValueBinding

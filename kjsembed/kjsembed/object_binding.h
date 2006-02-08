@@ -149,7 +149,7 @@ namespace KJSEmbed
     * is not used with KJSEmbed::ObjectBinding objects because the cast will fail.
     */
     template< typename T>
-    T * KDE_EXPORT extractObject( KJS::ExecState *exec, KJS::JSValue *arg, T *defaultValue )
+    T * extractObject( KJS::ExecState *exec, KJS::JSValue *arg, T *defaultValue )
     {
         if( !arg )
             return defaultValue;
@@ -171,7 +171,7 @@ namespace KJSEmbed
     * is returned.
     */
     template< typename T>
-    T * KDE_EXPORT extractObject( KJS::ExecState *exec, const KJS::List &args, int idx, T *defaultValue = 0L)
+    T * extractObject( KJS::ExecState *exec, const KJS::List &args, int idx, T *defaultValue = 0L)
     {
         if( args.size() > idx )
         {
@@ -186,7 +186,7 @@ namespace KJSEmbed
     * On failure a KJS::Null will be returned and the exception set.
     */
     template< typename T>
-    KJS::JSValue *KDE_EXPORT createObject(KJS::ExecState *exec, const KJS::UString &className, const T *value, KJSEmbed::ObjectBinding::Ownership owner = KJSEmbed::ObjectBinding::JSOwned )
+    KJS::JSValue *createObject(KJS::ExecState *exec, const KJS::UString &className, const T *value, KJSEmbed::ObjectBinding::Ownership owner = KJSEmbed::ObjectBinding::JSOwned )
     {
         if ( 0 == value )
             return KJS::Null();
