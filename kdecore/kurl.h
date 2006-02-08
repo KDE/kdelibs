@@ -844,39 +844,46 @@ public:
                          MimeDataFlags flags = DefaultMimeDataFlags ) const;
 
   /**
-   * Convenience function.
-   *
    * Convert unicoded string to local encoding and use %-style
    * encoding for all common delimiters / non-ascii characters.
    * @param str String to encode (can be QString()).
    * @return the encoded string
+   *
+   * @deprecated use QUrl::toPercentEncoding instead, but note that it
+   * returns a QByteArray and not a QString. Which makes sense since
+   * everything is 7 bit (ascii) after being percent-encoded.
    */
   static KDE_DEPRECATED QString encode_string(const QString &str) {
       return QLatin1String( QUrl::toPercentEncoding( str ) );
   }
 
   /**
-   * Convenience function.
-   *
    * Convert unicoded string to local encoding and use %-style
    * encoding for all common delimiters / non-ascii characters
    * as well as the slash '/'.
    * @param str String to encode
+   *
+   * @deprecated use QUrl::toPercentEncoding(str,"/") instead, but note that it
+   * returns a QByteArray and not a QString. Which makes sense since
+   * everything is 7 bit (ascii) after being percent-encoded.
+   *
    */
   static KDE_DEPRECATED QString encode_string_no_slash(const QString &str) {
       return QString::fromLatin1( QUrl::toPercentEncoding( str, "/" ) );
   }
 
   /**
-   * Convenience function.
-   *
    * Decode %-style encoding and convert from local encoding to unicode.
-   *
    * Reverse of encode_string()
    * @param str String to decode (can be QString()).
-   **/
+   *
+   * @deprecated use QUrl::fromPercentEncoding(encodedURL) instead, but
+   * note that it takes a QByteArray and not a QString. Which makes sense since
+   * everything is 7 bit (ascii) when being percent-encoded.
+   *
+   */
   static KDE_DEPRECATED QString decode_string(const QString &str) {
-      return QUrl::fromPercentEncoding( str.toLatin1() ); // ## TODO check encoding
+      return QUrl::fromPercentEncoding( str.toLatin1() );
   }
 
 
