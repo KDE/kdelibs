@@ -17,6 +17,7 @@
 #include <kmenubar.h>
 #include <Q3PopupMenu>
 Shell::Shell()
+    : KMainWindow()
 {
   // We can do this "switch active part" because we have a splitter with
   // two items in it.
@@ -28,7 +29,7 @@ Shell::Shell()
 
   Q3PopupMenu * pFile = new Q3PopupMenu( this );
   menuBar()->insertItem( "File", pFile );
-  KActionCollection * coll = new KActionCollection(this);
+  KActionCollection * coll = actionCollection();
   KAction * paLocal = new KAction( "&View local file", 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
   // No XML : we need to plug our actions ourselves
   paLocal->plug( pFile );
