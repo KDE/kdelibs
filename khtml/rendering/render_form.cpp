@@ -1566,6 +1566,10 @@ void RenderTextArea::handleFocusOut()
     if ( w && element()->m_dirtyvalue ) {
         element()->m_value = text();
         element()->m_dirtyvalue = false;
+    }
+
+    if ( w && element()->m_changed ) {
+        element()->m_changed = false;
         element()->onChange();
     }
 }
@@ -1649,38 +1653,6 @@ void RenderTextArea::close( )
     RenderFormElement::close();
 }
 
-static QString expandLF(const QString& s)
-{
-    // LF -> CRLF
-    unsigned crs = s.contains( '\n' );
-    if (crs == 0)
-	return s;
-    unsigned len = s.length();
-
-    QString r;
-    r.reserve(len + crs + 1);
-    unsigned pos2 = 0;
-    for(unsigned pos = 0; pos < len; pos++)
-    {
-       QChar c = s.at(pos);
-       switch(c.unicode())
-       {
-         case '\n':
-           r[pos2++] = '\r';
-           r[pos2++] = '\n';
-           break;
-
-         case '\r':
-           break;
-
-         default:
-           r[pos2++]= c;
-           break;
-       }
-    }
-    r.squeeze();
-    return r;
-}
 
 QString RenderTextArea::text()
 {
@@ -1709,17 +1681,7 @@ QString RenderTextArea::text()
     else
         txt = w->text();
 
-    return expandLF(txt);
-}
-
-static int expandedCnt(unsigned short code)
-{
-    if (code == '\n')
-        return 2;
-    else if (code == '\r')
-        return 0;
-    else
-        return 1;
+    return txt;
 }
 
 int RenderTextArea::queryParagraphInfo(int para, Mode m, int param) {
@@ -1732,6 +1694,7 @@ int RenderTextArea::queryParagraphInfo(int para, Mode m, int param) {
 
     QString paragraphText = w->text(para);
     int pl                = w->paragraphLength(para);
+    int physicalPL        = pl;
     if (m == ParaPortionLength)
         pl = param;
 
@@ -1739,25 +1702,28 @@ int RenderTextArea::queryParagraphInfo(int para, Mode m, int param) {
         //Go through all the chars of paragraph, and count line changes, chars, etc.
         int lindex = w->lineOfChar(para, 0);
         for (int c = 0; c < pl; ++c) {
-            if (lindex != w->lineOfChar(para, c)) {
-                length += 2;
-                lindex =  w->lineOfChar(para, c);
+            ++length;
+            // Is there a change after this char?
+            if (c+1 < physicalPL && lindex != w->lineOfChar(para, c+1)) {
+                lindex =  w->lineOfChar(para, c+1);
+                ++length;
             }
-            length += expandedCnt(paragraphText.at(c).unicode());
             if (m == ParaPortionOffset && length > param)
                 return c;
         }
     } else {
-        //Make sure to count the LF, CR as appropriate..
+        //Make sure to count the LF, CR as appropriate. ### this is stupid now, simplify
         for (int c = 0; c < pl; ++c) {
-            length += expandedCnt(paragraphText.at(c).unicode());
+            ++length;
             if (m == ParaPortionOffset && length > param)
                 return c;
         }
     }
     if (m == ParaPortionOffset)
         return pl;
-    return length;
+    if (m == ParaPortionLength)
+        return length;
+    return length + 1;
 }
 
 long RenderTextArea::computeCharOffset(int para, int index) {
@@ -1766,7 +1732,7 @@ long RenderTextArea::computeCharOffset(int para, int index) {
 
     long pos = 0;
     for (int cp = 0; cp < para; ++cp)
-        pos += queryParagraphInfo(cp, ParaLength) + 2;
+        pos += queryParagraphInfo(cp, ParaLength);
 
     if (index >= 0)
         pos += queryParagraphInfo(para, ParaPortionLength, index);
@@ -1787,7 +1753,7 @@ void RenderTextArea::computeParagraphAndIndex(long offset, int* para, int* index
     long endPos       = 0;
     long startPos     = 0;
     for (int p = 0; p < w->paragraphs(); ++p) {
-        int len = queryParagraphInfo(p, ParaLength) + 2;
+        int len = queryParagraphInfo(p, ParaLength);
         endPos += len;
         if (endPos > offset) {
             containingPar = p;
@@ -1815,6 +1781,7 @@ void RenderTextArea::highLightWord( unsigned int length, unsigned int pos )
 void RenderTextArea::slotTextChanged()
 {
     element()->m_dirtyvalue = true;
+    element()->m_changed    = true;
     if (element()->m_value != text())
         element()->m_unsubmittedFormChange = true;
 }

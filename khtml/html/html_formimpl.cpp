@@ -2550,7 +2550,8 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormEleme
     m_rows = 2;
     m_cols = 20;
     m_wrap = ta_Virtual;
-    m_dirtyvalue = true;
+    m_changed     = false;
+    m_dirtyvalue  = true;
     m_initialized = false;
     m_unsubmittedFormChange = false;
 }
@@ -2649,12 +2650,47 @@ void HTMLTextAreaElementImpl::attach()
     _style->deref();
 }
 
+
+static QString expandLF(const QString& s)
+{
+    // LF -> CRLF
+    unsigned crs = s.contains( '\n' );
+    if (crs == 0)
+	return s;
+    unsigned len = s.length();
+
+    QString r;
+    r.reserve(len + crs + 1);
+    unsigned pos2 = 0;
+    for(unsigned pos = 0; pos < len; pos++)
+    {
+       QChar c = s.at(pos);
+       switch(c.unicode())
+       {
+         case '\n':
+           r[pos2++] = '\r';
+           r[pos2++] = '\n';
+           break;
+
+         case '\r':
+           break;
+
+         default:
+           r[pos2++]= c;
+           break;
+       }
+    }
+    r.squeeze();
+    return r;
+}
+
+
 bool HTMLTextAreaElementImpl::encoding(const QTextCodec* codec, encodingList& encoding, bool)
 {
     if (name().isEmpty()) return false;
 
     encoding += fixUpfromUnicode(codec, name().string());
-    encoding += fixUpfromUnicode(codec, value().string());
+    encoding += fixUpfromUnicode(codec, expandLF(value().string()));
 
     return true;
 }
@@ -2664,14 +2700,14 @@ void HTMLTextAreaElementImpl::reset()
     setValue(defaultValue());
 }
 
+
 DOMString HTMLTextAreaElementImpl::value()
 {
     if ( m_dirtyvalue) {
         if ( m_render && m_initialized ) {
             RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
             m_value = renderArea->text();
-            m_dirtyvalue = false; // before onChange (#100963)
-            onChange();
+            m_dirtyvalue = false;
         } else {
             m_value = defaultValue().string();
             m_initialized = true;
@@ -2787,19 +2823,7 @@ void HTMLTextAreaElementImpl::setSelectionEnd(long pos)
 
 long HTMLTextAreaElementImpl::textLength()
 {
-    //First, get the value. This is like ::value, only pure.
-    DOMString val = m_value;
-    if (m_dirtyvalue) {
-        if ( m_render && m_initialized ) {
-            RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
-            val = renderArea->text();
-        } else {
-            val = defaultValue();
-        }
-    }
-
-    //now we can get the length.
-    return val.length();
+    return value().length();
 }
 
 // -------------------------------------------------------------------------
