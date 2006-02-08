@@ -799,10 +799,6 @@ void RenderFileButton::updateFromElement()
     edit->blockSignals(true);
     edit->setText(element()->value().string());
     edit->blockSignals(false);
-    int ml = element()->maxLength();
-    if ( ml < 0 || ml > 1024 )
-        ml = 1024;
-    edit->setMaxLength( ml );
     edit->setEdited( false );
 
     RenderFormElement::updateFromElement();
