@@ -43,6 +43,8 @@ AM_KDE_GNU_GETTEXT
 AM_GNU_GETTEXT([external])
 dnl TODO: some of this becomes redundant with introduction of standard Gettext
 
+CXXFLAGS="$CXXFLAGS -DQT3_SUPPORT_WARNINGS"
+
 dnl Checks for header files.
 KDE_CHECK_STL
 AC_HEADER_DIRENT
