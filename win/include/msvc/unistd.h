@@ -32,7 +32,6 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 
-#define NOGDI
 #include <winsock2.h>
 #include "fixwinh.h"
 

@@ -56,8 +56,8 @@
  * University of Illinois, Urbana-Champaign.
  */
 
-#include <windows.h>
 #include <winposix_export.h>
+#include <windows.h>
 
 #include <malloc.h>
 #include <string.h>

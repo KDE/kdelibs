@@ -83,7 +83,6 @@ char* index( const char* s, int c )
 #endif
 // template <---
 
-#if 0
 // OPTIONAL is defined '#define OPTIONAL' - so what to do here?
 #ifdef OPTIONAL
 #ifndef FIXWINH_OPTIONAL
@@ -111,8 +110,6 @@ const int RELATIVE = WRELATIVE;
 #endif
 #undef RELATIVE
 #endif
-
-#endif	// 0
 
 #ifdef FOCUS_EVENT
 # ifndef FIXWINH_FOCUS_EVENT

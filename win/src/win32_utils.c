@@ -19,8 +19,8 @@
 
 // helper functions
 
-#include <windows.h>
 #include <winposix_export.h>
+#include <windows.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

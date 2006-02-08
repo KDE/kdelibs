@@ -21,7 +21,6 @@
 #define _SYS_TIMES_H
 
 #include <winposix_export.h>
-//#include <_ansi.h>
 #include <machine/types.h>
 
 #ifdef __cplusplus
