@@ -38,7 +38,6 @@ AUTOMAKE_OPTIONS = foreign 1.5
 potdir = $(kde_includes)
 pot_DATA = kde.pot
 
-### TODO: what about *.kcfg files?
 messages:
 	cd kabc/scripts && perl ./makeaddressee
 	find . -type d | grep -v CVS | grep -v '\.svn' | sed -e 's,$$,/,' > dirs
@@ -55,7 +54,7 @@ messages:
 	find $$dirs -maxdepth 1 -name "*.cc" -print >> files ;\
 	find $$dirs -maxdepth 1 -name "*.h" -print >> files ;\
 	echo ./kdecore/kde-config.cpp.in >> files ;\
-	$(EXTRACTRC) `find $$dirs -maxdepth 1 \( -name "*.rc" -o -name "*.ui" \) ` > rc.cpp; \
+	$(EXTRACTRC) `find $$dirs -maxdepth 1 \( -name "*.rc" -o -name "*.ui" \) ` ./dnssd/kcm_kdnssd.kcfg > rc.cpp; \
 	: > kde.pot ;\
 	$(XGETTEXT) -ktranslate -x qt-messages.pot rc.cpp `cat files` && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot
 	$(XGETTEXT) common_texts.cpp -o kde.pot
