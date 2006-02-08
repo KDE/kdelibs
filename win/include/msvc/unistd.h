@@ -132,6 +132,8 @@ KDEWIN32_EXPORT char* mkdtemp (char* _template);
 
 KDEWIN32_EXPORT int revoke(const char *tty);
 
+KDEWIN32_EXPORT long getpagesize (void);
+
 
 #ifdef __cplusplus
 }
