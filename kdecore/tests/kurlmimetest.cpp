@@ -55,7 +55,7 @@ void KUrlMimeTest::testURLList()
 
 void KUrlMimeTest::testOneURL()
 {
-    KUrl oneURL = "file:///tmp";
+    KUrl oneURL( "file:///tmp" );
     QMimeData* mimeData = new QMimeData;
 
     oneURL.populateMimeData( mimeData );

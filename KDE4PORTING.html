@@ -313,6 +313,7 @@ Desktop Entry Spec</a>
 <li>htmlURL() had to be removed, please use Qt::escape(url.prettyURL()) now, with #include &lt;QTextDocument&gt;.
 This requires libQtGui, which is why it can't be in KUrl anymore.</li>
 <li>url(0,106) or any other use of the 'mib enum' for encoding has been removed. QUrl is UTF8 based, and the world is becoming more and more utf8 based as well, the old encoding hacks inside urls should disappear.</li>
+<li>Runtime behavior change: port() used to return 0 if no port was specified. It now returns -1 in that case, or you can use port(defaultPort) to set what it should return if no port was specified.</li>
 </ul>
 
 <H4>KURLDrag</H4>

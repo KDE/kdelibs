@@ -165,6 +165,10 @@ void KUrlTest::testIsLocalFile()
 
 void KUrlTest::testSimpleMethods() // to test parsing, mostly
 {
+  KUrl kde( "http://www.kde.org" );
+  QVERIFY( kde.isValid() );
+  QCOMPARE( kde.port(), -1 ); // KDE3 DIFFERENCE: was 0.
+
   KUrl mlc( "http://mlc:80/" );
   QVERIFY( mlc.isValid() );
   QCOMPARE( mlc.port(), 80 );
