@@ -582,6 +582,23 @@
 0 	string		II\x2a\x00
 >8	string		CR\x02		image/x-raw
 
+# Phase One RAW image, big-endian
+32	string		MMMMRawT	image/x-raw
+# Phase One RAW image, little-endian
+32	string		IIIITwaR	image/x-raw
+# Canon RAW image
+6	string		HEAPCCDR	image/x-raw
+# Canon CR2 image (20D, 1Dmk2, ...)
+0	string		II*\000\020\000\000\000CR	image/x-raw
+# Minolta RAW image
+0	string		\x00MRM		image/x-raw
+# Fuji RAW image
+0	string		FUJIFILM	image/x-raw
+# Rollei RAW image
+0	string		DSC-Image	image/x-raw
+# Foveon RAW image
+0	string		FOVb		image/x-raw
+
 # TIFF and friends
 #					TIFF file, big-endian
 0	string		MM\x00\x2a		image/tiff
