@@ -153,7 +153,7 @@ private:
 };
 
 ContextWidget::ContextWidget()
-	: QWidget(0,0)
+	: QWidget()
     {
 	kwin_net_create_atoms();
 	kapp->installX11EventFilter( this );

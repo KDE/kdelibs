@@ -724,7 +724,7 @@ void KApplication::init()
   // register a communication window for desktop changes (Matthias)
   if (type() == GuiClient && kde_have_kipc )
   {
-    smw = new QWidget(0,0);
+    smw = new QWidget();
     long data = 1;
     XChangeProperty(QX11Info::display(), smw->winId(),
 		    atom_DesktopWindow, atom_DesktopWindow,
