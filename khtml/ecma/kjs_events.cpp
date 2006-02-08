@@ -868,8 +868,9 @@ Value DOMKeyboardEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const
                             args[4].toString(exec).string(), // keyIdentifierArg
                             args[5].toInteger(exec),         // keyLocationArg
                             args[6].toString(exec).string()); //modifiersList
-
-      return Undefined();
+      break;
+    case DOMKeyboardEvent::GetModifierState:
+      return Boolean(keyEvent->getModifierState(args[0].toString(exec).string()));
   }
   return Undefined();
 }

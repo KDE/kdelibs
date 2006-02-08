@@ -1321,6 +1321,7 @@ QString HTMLInputElementImpl::state( )
 
 void HTMLInputElementImpl::restoreState(const QString &state)
 {
+    qDebug("RestoreState from:%s", state.latin1());
     switch (m_type) {
     case CHECKBOX:
     case RADIO:
