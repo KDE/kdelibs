@@ -2,30 +2,27 @@ kde4_header()
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
-if(WIN32)
-   add_definitions(-Dkdemain=main)
-endif(WIN32)
-
 ########### next target ###############
 
-set(dcop_SRCS
-dcop.cpp
-)
+set(dcop_SRCS dcop.cpp )
 
 kde4_automoc(${dcop_SRCS})
 
-kde4_add_executable(dcop ${dcop_SRCS})
 
-target_link_libraries(dcop  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
+# in MSVC both target "dcop" (the executable listed here) and DCOP (the library) are
+# considered the same and so it complains, that's why rename the target here and give the
+# resulting executable the original name
+kde4_add_executable(dcop_executable ${dcop_SRCS})
+set_target_properties(dcop_executable PROPERTIES OUTPUT_NAME dcop)
 
-install_targets(/bin dcop )
+target_link_libraries(dcop_executable  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
+
+install_targets(/bin dcop_executable )
 
 
 ########### next target ###############
 
-set(dcopfind_SRCS
-dcopfind.cpp
-)
+set(dcopfind_SRCS dcopfind.cpp )
 
 kde4_automoc(${dcopfind_SRCS})
 
@@ -38,13 +35,9 @@ install_targets(/bin dcopfind )
 
 ########### next target ###############
 
-set(dcopclient_SRCS
-dcopclient.c
-)
+set(dcopclient_SRCS dcopclient.c )
 
-kde4_automoc(${dcopclient_SRCS})
-
-kde4_add_executable(dcopclient ${dcopclient_SRCS})
+kde4_add_executable(dcopclient ${dcopclient_SRCS} )
 
 target_link_libraries(dcopclient  ${QT_QTCORE_LIBRARY} DCOP)
 

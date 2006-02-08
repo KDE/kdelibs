@@ -55,8 +55,8 @@ obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.libpaths = '.'
 obj.libs     = 'DCOP'
 
-if env['WINDOWS']:
-	obj.ccflags  += ' -Dkdemain=main'
+#if env['WINDOWS']:
+#	obj.ccflags  += ' -Dkdemain=main'
  		
 obj.execute()
 

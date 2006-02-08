@@ -277,6 +277,7 @@ set(xdg_appsdir  ${KDE4_DIR}${XDG_APPS_DIR})
 set(xdg_directorydir ${KDE4_DIR}${XDG_DIRECTORY_DIR})
 
 
+message(STATUS "******** kde-config renamed to kdeconfig for nmake, remove ASAP, it's already fixed in cmake cvs")
 if(MSVC)
     set(KDE_CONFIG_NAME kdeconfig)
 else(MSVC)
@@ -284,7 +285,7 @@ else(MSVC)
 endif(MSVC)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kde-config.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp @ONLY)
-macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  )
+macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  )
 
 kde4_add_executable(${KDE_CONFIG_NAME} ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
 

@@ -1,7 +1,7 @@
 kde4_header()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
-macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/global.h )
+macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 

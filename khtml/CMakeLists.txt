@@ -214,15 +214,12 @@ set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
 
 macro(CREATE_LUT _in_FILE _out_FILE)
 
-  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
-    COMMAND ${PERL_EXECUTABLE}
-    ARGS ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} >
-${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
-  )
-
-  macro_append_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
-#  kde4_add_file_dependancy(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
+   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+      COMMAND ${PERL_EXECUTABLE}
+      ARGS ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
+   )
+   macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
 
 endmacro(CREATE_LUT)
 
@@ -298,7 +295,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
 extern \"C\"  KDE_EXPORT void* init_libkhtml();\n
 extern \"C\"  KDE_EXPORT void* init_libkhtmlpart() { return init_libkhtml(); }\n" )
 
-macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp )
+macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp )
 
 set(khtmlpart_PART_SRCS ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp )
 
@@ -321,7 +318,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp
 extern \"C\"  KDE_EXPORT void* init_khtmlimagefactory();\n
 extern \"C\"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefactory(); }\n" )
 
-macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp )
+macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp )
 
 set(khtmlimagepart_PART_SRCS ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp )
 

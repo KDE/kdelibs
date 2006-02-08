@@ -185,9 +185,9 @@ void TestObject::slotCallBack(int callId, const DCOPCString &replyType, const QB
    qWarning("Value = %s", qPrintable(arg1));
 }
 
-#ifdef Q_OS_WIN
+/*#ifdef Q_OS_WIN
 # define main kdemain
-#endif
+#endif*/
 
 int main(int argc, char **argv)
 {

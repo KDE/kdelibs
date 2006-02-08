@@ -15,7 +15,7 @@ ${CMAKE_BINARY_DIR}/kio
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
-macro_append_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES  ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
+macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 add_subdirectory( kssl )
 add_subdirectory( kio ) 

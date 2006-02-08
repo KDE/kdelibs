@@ -5,6 +5,17 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
+add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DANSICPP)
+
+if (UNIX)
+   # unix
+   add_definitions(-DUNIXCONN)
+else (UNIX)
+   # windows
+   add_definitions( -DSOCKCONN -DTCPCONN)
+endif (UNIX)
+
+kde4_add_library(kICE STATIC ${kICE_STAT_SRCS})
 
 ########### install files ###############
 

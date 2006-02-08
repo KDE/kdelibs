@@ -13,9 +13,7 @@ test.cpp
 
 kde4_automoc(${dcop_test_SRCS})
 
-set( dcop_test_DCOP_SKEL_SRCS
-${CMAKE_CURRENT_BINARY_DIR}/test.h
-)
+set( dcop_test_DCOP_SKEL_SRCS ${CMAKE_CURRENT_BINARY_DIR}/test.h )
 
 kde4_add_dcop_skels(dcop_test_SRCS ${dcop_test_DCOP_SKEL_SRCS})
 
