@@ -61,7 +61,7 @@ messages:
 	$(XGETTEXT) common_texts.cpp -o kde.pot
 	rm -f rc.cpp dirs
 
-EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot \
+EXTRA_DIST = admin kde.pot \
 	COMPILING COMPILING.html COPYING.BSD DEBUG \
 	KDE2PORTING.html NAMING common_texts.cpp kdelibs.lsm kdoc.rules \
 	qt-messages.pot configure.in.in configure.in.mid configure.in.bot
