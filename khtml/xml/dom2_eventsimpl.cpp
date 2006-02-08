@@ -640,12 +640,10 @@ void KeyEventBaseImpl::buildQKeyEvent() const
     delete m_keyEvent;
 
     assert(m_synthetic);
-    //IMPORTANT: we ignore Ctrl, Alt, and Meta modifers on purpose.
-    //this is to prevent a website from synthesizing something like Ctrl-V
-    //and stealing contents of the user's clipboard.
+    //IMPORTANT: we ignore modifers on purpose.
+    //this is to prevent a website from synthesizing something
+    //like Ctrl-V or Shift-Insert and stealing contents of the user's clipboard.
     unsigned modifiers = 0;
-    if (m_modifier & Qt::ShiftButton)
-        modifiers |= Qt::ShiftButton;
 
     int key   = 0;
     int ascii = 0;
