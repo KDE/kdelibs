@@ -68,8 +68,6 @@ extern "C" {
 
 KDEWIN32_EXPORT int chown(const char *__path, uid_t __owner, gid_t __group);
 
-KDEWIN32_EXPORT int fchmod(int __fd, mode_t __mode);
-
 KDEWIN32_EXPORT int fchown(int __fd, uid_t __owner, gid_t __group );
 
 /* Get the real user ID of the calling process.  */
@@ -97,8 +95,6 @@ KDEWIN32_EXPORT int symlink(const char *__name1, const char *__name2);
 /* just copies __name1 to __name2 */
 KDEWIN32_EXPORT int link(const char *__name1, const char *__name2);
 
-KDEWIN32_EXPORT char* realpath(const char *path,char *resolved_path);
-
 KDEWIN32_EXPORT int pipe(int *fd);
 
 KDEWIN32_EXPORT pid_t fork(void);
@@ -119,12 +115,12 @@ KDEWIN32_EXPORT int fsync (int fd);
 KDEWIN32_EXPORT void usleep(useconds_t useconds);
 
 KDEWIN32_EXPORT void sleep(unsigned int sec);
-		
-KDEWIN32_EXPORT long int random();
 
 KDEWIN32_EXPORT int setreuid(uid_t ruid, uid_t euid);
 
 KDEWIN32_EXPORT int mkstemps(char* _template, int suffix_len);
+
+KDEWIN32_EXPORT int initgroups(const char *name, int basegid);
 
 // from kdecore/fakes.c
 
@@ -133,6 +129,9 @@ KDEWIN32_EXPORT int seteuid(uid_t euid);
 KDEWIN32_EXPORT int mkstemp (char* _template);
 
 KDEWIN32_EXPORT char* mkdtemp (char* _template);
+
+KDEWIN32_EXPORT int revoke(const char *tty);
+
 
 #ifdef __cplusplus
 }
