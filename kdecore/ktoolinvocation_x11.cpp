@@ -365,29 +365,43 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
    cmdTokens.erase(cmdTokens.begin());
 
    KUrl url;
-   QStringList qry;
+   //QStringList qry;
    if (!to.isEmpty())
    {
      QStringList tos = splitEmailAddressList( to );
      url.setPath( tos.first() );
      tos.erase( tos.begin() );
      for (QStringList::ConstIterator it = tos.begin(); it != tos.end(); ++it)
-       qry.append( "to=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
+       url.addQueryItem("to",*it);
+       //qry.append( "to=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
    }
    const QStringList ccs = splitEmailAddressList( cc );
    for (QStringList::ConstIterator it = ccs.begin(); it != ccs.end(); ++it)
-      qry.append( "cc=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
+      url.addQueryItem("cc",*it);
+      //qry.append( "cc=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
    const QStringList bccs = splitEmailAddressList( bcc );
    for (QStringList::ConstIterator it = bccs.begin(); it != bccs.end(); ++it)
-      qry.append( "bcc=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
+      url.addQueryItem("bcc",*it);
+      //qry.append( "bcc=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
    for (QStringList::ConstIterator it = attachURLs.begin(); it != attachURLs.end(); ++it)
-      qry.append( "attach=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
+      url.addQueryItem("attach",*it);
+      //qry.append( "attach=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
    if (!subject.isEmpty())
-      qry.append( "subject=" + QLatin1String(KUrl::toPercentEncoding( subject ) ));
+      url.addQueryItem("subject",subject);
+      //qry.append( "subject=" + QLatin1String(KUrl::toPercentEncoding( subject ) ));
    if (!body.isEmpty())
-      qry.append( "body=" + QLatin1String(KUrl::toPercentEncoding( body ) ));
-   url.setQuery( qry.join( "&" ) );
-   if ( ! (to.isEmpty() && qry.isEmpty()) )
+      url.addQueryItem("body",body);
+      //qry.append( "body=" + QLatin1String(KUrl::toPercentEncoding( body ) ));
+   //url.setQuery( qry.join( "&" ) );
+   
+   const bool hasQuery = !url.encodedQuery().isEmpty();
+#if QT_VERSION >= 0x040200
+#ifdef __GNUC__
+#warning Qt-4.2, use QUrl::hasQuery()
+#endif
+#endif
+
+   if ( ! (to.isEmpty() && (!hasQuery)) )
       url.setProtocol("mailto");
 
    QHash<QChar, QString> keyMap;
