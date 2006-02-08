@@ -75,3 +75,13 @@ KDEWIN32_EXPORT void unsetenv (const char *name)
       ++ep;
 
 }
+
+KDEWIN32_EXPORT long int random()
+{
+	return rand();
+}
+
+KDEWIN32_EXPORT void srandom(unsigned int seed)
+{
+	srand(seed);
+}
