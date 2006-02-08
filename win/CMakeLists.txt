@@ -60,6 +60,7 @@ set(win_LIB_SRCS
    src/realpath.c
    src/resource.c
    src/signal.c
+   src/stdlib.c
    src/string.c
    src/syslog.c
    src/time.c
