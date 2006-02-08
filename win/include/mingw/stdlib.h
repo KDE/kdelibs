@@ -46,11 +46,13 @@ extern "C" {
 #define EXIT_FAILURE 1
 #define EXIT_SUCCESS 0
 */
+
+KDEWIN32_EXPORT long int random();
+KDEWIN32_EXPORT char* realpath(const char *path,char *resolved_path);
+
 /* from fakes.c */
 KDEWIN32_EXPORT int setenv(const char *__string, const char *__value, int __overwrite);
 KDEWIN32_EXPORT void unsetenv(const char *__string);
-KDEWIN32_EXPORT int mkstemps (char* _template, int suffix_len);
-KDEWIN32_EXPORT char* mkdtemp (char* _template);
 
 #ifdef __cplusplus
 }
