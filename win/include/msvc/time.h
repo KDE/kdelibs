@@ -23,6 +23,12 @@
 #include <winposix_export.h>
 #include <../include/time.h>
 
+struct timezone 
+{
+  int tz_minuteswest;
+  int tz_dsttime;
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif 
