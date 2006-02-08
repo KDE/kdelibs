@@ -15,6 +15,7 @@ private Q_SLOTS:
     void testCreateZip();
     void testReadZip();
     void testZipFileData();
+    void testZipMaxLength();
 };
 
 

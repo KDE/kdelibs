@@ -134,6 +134,7 @@ static void testFileData( KArchive* archive )
 static const char* s_tarFileName = "karchivetest.tar.gz";
 static const char* s_tarMaxLengthFileName = "karchivetest-maxlength.tar.gz";
 static const char* s_zipFileName = "karchivetest.zip";
+static const char* s_zipMaxLengthFileName = "karchivetest-maxlength.zip";
 
 void KArchiveTest::testCreateTar()
 {
@@ -331,6 +332,43 @@ void KArchiveTest::testZipFileData()
     QVERIFY( ok );
 
     testFileData( &zip );
+
+    ok = zip.close();
+    QVERIFY( ok );
+}
+
+void KArchiveTest::testZipMaxLength()
+{
+    KZip zip( s_zipMaxLengthFileName );
+
+    bool ok = zip.open( QIODevice::WriteOnly );
+    QVERIFY( ok );
+
+    // Similar to testTarMaxLength just to make sure, but of course zip doesn't have
+    // those limitations in the first place.
+    for (int i = 98; i < 514 ; i++ )
+    {
+      QString str, num;
+      str.fill( 'a', i-10 );
+      num.setNum( i );
+      num = num.rightJustified( 10, '0' );
+      zip.writeFile( str+num, "testu", "testg", "hum", 3 );
+    }
+    ok = zip.close();
+    QVERIFY( ok );
+
+    ok = zip.open( QIODevice::ReadOnly );
+    QVERIFY( ok );
+
+    const KArchiveDirectory* dir = zip.directory();
+    QVERIFY( dir != 0 );
+    const QStringList listing = recursiveListEntries( dir, "", 0 );
+
+    QCOMPARE( listing[  0], QString("mode=40755 path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000098 type=file size=3") );
+    QCOMPARE( listing[  3], QString("mode=40755 path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000101 type=file size=3") );
+    QCOMPARE( listing[  4], QString("mode=40755 path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000102 type=file size=3") );
+
+    QCOMPARE( listing.count(), 514 - 98 );
 
     ok = zip.close();
     QVERIFY( ok );

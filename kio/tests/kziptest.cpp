@@ -86,15 +86,15 @@ int main( int argc, char** argv )
 {
   if (argc < 3)
   {
+    // ###### Note: please consider adding new tests to karchivetest (so that they can be automated)
+    // rather than here (interactive)
     printf("\n"
  " Usage :\n"
  " ./kziptest list /path/to/existing_file.zip       tests listing an existing zip\n"
- " ./kziptest maxlength newfile.zip                 tests the maximum filename length allowed.\n"
  " ./kziptest print file.zip                        prints contents of all files.\n"
  " ./kziptest print2 file.zip filename              prints contents of one file.\n"
  " ./kziptest update file.zip filename              updates contents of one file.\n"
  " ./kziptest transfer file.zip newfile.zip         complete transfer.\n"
- " ./kziptest iodevice /path/to/existing_file.zip   tests KArchiveFile::device()\n");
     return 1;
   }
   KInstance instance("kziptest");
@@ -117,49 +117,6 @@ int main( int argc, char** argv )
 
     zip.close();
 
-    return 0;
-  }
-  else if ( command == "maxlength" )
-  {
-    KZip zip( argv[2] );
-
-    if ( !zip.open( QIODevice::WriteOnly ) )
-    {
-      printf("Could not open %s for writing\n", argv[2]);
-      return 1;
-    }
-    // Generate long filenames of each possible length bigger than 98...
-    for (int i = 98; i < 500 ; i++ )
-    {
-      QString str, num;
-      str.fill( 'a', i-10 );
-      num.setNum( i );
-      num = num.rightJustified( 10, '0' );
-      zip.writeFile( str+num, "testu", "testg", "hum", 3 );
-    }
-    // Result of this test : it fails at 482 (instead of 154 previously).
-    // Ok, I think we can do with that :)
-    zip.close();
-    printf("Now run 'unzip -l %s'\n", argv[2]);
-    return 0;
-  }
-  else if ( command == "iodevice" )
-  {
-    KZip zip( argv[2] );
-    if ( !zip.open( QIODevice::ReadOnly ) )
-      return 1;
-    const KArchiveDirectory* dir = zip.directory();
-    assert(dir);
-    const KArchiveEntry* entry = dir->entry( "my/dir/test3" );
-    if ( entry && entry->isFile() )
-    {
-        QIODevice *dev = static_cast<const KZipFileEntry *>(entry)->device();
-        if ( dev ) {
-            QByteArray contents = dev->readAll();
-            kDebug() << "contents=" << contents << endl;
-        }
-    } else
-        printf("entry=%p - not found if 0, otherwise not a file\n", (void*)entry);
     return 0;
   }
   else if (command == "print" )
