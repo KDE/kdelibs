@@ -43,13 +43,18 @@ extern "C" {
 #define EXIT_FAILURE 1
 #define EXIT_SUCCESS 0
 
+
+KDEWIN32_EXPORT long int random();
+
 KDEWIN32_EXPORT void srandom(unsigned int seed);
+
+KDEWIN32_EXPORT char* realpath(const char *path,char *resolved_path);
 
 // from kdecore/fakes.c
 
-KDEWIN32_EXPORT int setenv(const char *, const char *, int );
+KDEWIN32_EXPORT int setenv(const char *name, const char *value, int overwrite);
 
-KDEWIN32_EXPORT void unsetenv(const char *);
+KDEWIN32_EXPORT void unsetenv(const char *name);
 
 
 #ifdef __cplusplus
