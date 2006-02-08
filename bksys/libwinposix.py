@@ -68,25 +68,21 @@ def generate(env):
 
 		# add the lib & include path to the standard libs
 		if env['ARGS'].get('debug', None) != None:
-			winposixlib = 'kdewin32d.lib'
+			winposixlib = 'kdewin32d'
 		else:
-			winposixlib = 'kdewin32.lib'
+			winposixlib = 'kdewin32'
 
 		if env['CC'] == 'cl':
 			env['CCFLAGS_LIBWINPOSIX']   = [ '/I'+winposixdir+'\\include','/I'+winposixdir+'\\include\\msvc' ]
-			env['CXXFLAGS_LIBWINPOSIX']  = [ '/I'+winposixdir+'\\include','/I'+winposixdir+'\\include\\msvc' ]
-			env['LFLAGS_LIBWINPOSIX']    = [ '/LIBPATH:'+winposixdir+'\\lib',winposixlib ]
+			env['LFLAGS_LIBWINPOSIX']    = [ '/LIBPATH:'+winposixdir+'\\lib',winposixlib + '.lib' ]
 		elif env['CC'] == 'gcc':
 			env['CCFLAGS_LIBWINPOSIX']   = [ '-I'+winposixdir+'\\include','-I'+winposixdir+'\\include\\mingw' ]
-			env['CXXFLAGS_LIBWINPOSIX']  = [ '-I'+winposixdir+'\\include','-I'+winposixdir+'\\include\\mingw' ]
-			env['LFLAGS_LIBWINPOSIX']    = [ '-l'+winposixdir+'\\lib\\'+winposixlib ]
+			env['LFLAGS_LIBWINPOSIX']    = [ '-L'+winposixdir+'\\lib','-l'+winposixlib]
 
 		env['CACHED_LIBWINPOSIX'] = 1
 		opts.Save(optionFile, env)
 
 	if env.has_key('CCFLAGS_LIBWINPOSIX'):
-		env.AppendUnique( CPPFLAGS  = env['CCFLAGS_LIBWINPOSIX'] )
-	if env.has_key('CXXFLAGS_LIBWINPOSIX'):
-		env.AppendUnique( CCFLAGS   = env['CXXFLAGS_LIBWINPOSIX'] )
+		env.AppendUnique( CCFLAGS  = env['CCFLAGS_LIBWINPOSIX'] )
 	if env.has_key('LFLAGS_LIBWINPOSIX'):
 		env.AppendUnique( LINKFLAGS = env['LFLAGS_LIBWINPOSIX'] )
