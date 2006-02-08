@@ -578,7 +578,7 @@ bool KCookieJar::parseURL(const QString &_url,
        return false;
 
     _fqdn = kurl.host().toLower();
-    if (kurl.port() != -1)
+    if (kurl.port() > 0)
     {
        if (((kurl.protocol() == L1("http")) && (kurl.port() != 80)) ||
            ((kurl.protocol() == L1("https")) && (kurl.port() != 443)))

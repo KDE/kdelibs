@@ -143,10 +143,8 @@ PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 	else if ( prot == "socket" )
 	{
 		QString lp = uri.host();
-		if ( uri.port() == 0 )
-			lp.append( "%9100" );
-		else
-			lp.append( "%" ).append( QString::number( uri.port() ) );
+		lp.append( "%" ).append( QString::number( uri.port(9100) ) );
+		entry->addField( "lp", lp );
 	}
 	else
 	{

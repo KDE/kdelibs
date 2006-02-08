@@ -90,8 +90,8 @@ int main(int argc, char **argv)
         }
 
         cmd << host;
-        
-	if (url.port()){
+
+	if (url.port() > 0){
             if ( url.protocol() == "ssh" )
 		cmd << "-p" << QString::number(url.port());
 	    else

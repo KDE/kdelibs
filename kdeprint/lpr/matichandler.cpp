@@ -190,7 +190,7 @@ QString MaticHandler::createPostpipe(const QString& _url)
 	{
 		str += ("| " + m_ncpath);
 		str += (" " + url.host());
-		if (url.port() != 0)
+		if (url.port() > 0)
 			str += (" " + QString::number(url.port()));
 	}
 	else if (prot == "lpd")

@@ -1765,7 +1765,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case AnchorHostname: {
       KUrl url(href);
       kDebug(6070) << "anchor::hostname uses:" <<url.url()<<endl;
-      if (url.port()==0)
+      if (url.port()<=0)
         return String(url.host());
       else
         return String(url.host() + ":" + QString::number(url.port()));
@@ -1817,7 +1817,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
       case AreaHash:            return String(url.isEmpty() ? "" : '#'+url.ref());
       case AreaHost:            return String(url.host());
       case AreaHostName: {
-        if (url.port()==0)
+        if (url.port()<=0)
           return String(url.host());
         else
           return String(url.host() + ":" + QString::number(url.port()));

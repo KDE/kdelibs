@@ -290,10 +290,7 @@ PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 		comment.append("SOCKET ");
 		KUrl url( prt->device() );
 		lp = url.host();
-		if (url.port() == 0)
-			lp.append("%9100");
-		else
-			lp.append("%").append(QString::number(url.port()));
+		lp.append("%").append(QString::number(url.port(9100)));
 	}
 	else if (prot == "lpd")
 	{
