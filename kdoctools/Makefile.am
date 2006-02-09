@@ -49,7 +49,7 @@ messages:
 
 install-data-local: kde-standard-accels.entities
 	@(for subdir in customization docbook; do \
-	   for dir in `( cd $(srcdir)/$$subdir && find . -type d ! -name CVS | grep -v '\.svn' )`; do \
+	   for dir in `( cd $(srcdir)/$$subdir && find . -type d | grep -v '\.svn' )`; do \
 		$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/ksgmltools2/$$subdir/$$dir ;\
 		for file in `(cd $(srcdir)/$$subdir && ls -1 $$dir/*)`; do \
 		    if test -f $(srcdir)/$$subdir/$$file; then \
