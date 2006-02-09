@@ -162,7 +162,7 @@ public:
    * Sets the state of the widget to On or Off.
    *
    * The widget will be painted immediately.
-   * @see on() off() toggle() toggleState()
+   * @see on() off() toggle() 
    *
    * @param state The LED state: on or off.
    * @short Set LED state.
@@ -252,7 +252,7 @@ public Q_SLOTS:
    * Sets the state of the widget to On.
    *
    * The widget will be painted immediately.
-   * @see off() toggle() toggleState() setState()
+   * @see off() toggle()  setState()
    */
   void on();
 
@@ -260,7 +260,7 @@ public Q_SLOTS:
    * Sets the state of the widget to Off.
    *
    * The widget will be painted immediately.
-   * @see on() toggle() toggleState() setState()
+   * @see on() toggle()  setState()
    */
   void off();
 
