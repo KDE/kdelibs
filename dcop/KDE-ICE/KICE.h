@@ -4,7 +4,7 @@
 #include <kdelibs_export.h>
 
 #ifndef KICE_EXPORT
-# ifdef MAKE_DCOP_LIB
+# if defined(MAKE_DCOP_LIB) || defined(MAKE_KICE_LIB)
 # define KICE_EXPORT KDE_EXPORT
 # else
 # define KICE_EXPORT KDE_IMPORT
