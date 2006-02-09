@@ -48,7 +48,7 @@ messages:
 	    egrep -v "^$$dir" dirs > dirs.new && mv dirs.new dirs ;\
 	  fi ;\
 	done
-	egrep -v "/tests" dirs > dirs.new && mv dirs.new dirs ;\
+	fgrep -v "/tests" dirs > dirs.new && mv dirs.new dirs ;\
 	dirs=`cat dirs` ;\
 	find $$dirs -maxdepth 1 -name "*.cpp" -print > files ;\
 	find $$dirs -maxdepth 1 -name "*.cc" -print >> files ;\
