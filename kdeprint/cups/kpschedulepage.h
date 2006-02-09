@@ -23,7 +23,7 @@
 #include <kprintdialogpage.h>
 
 class QComboBox;
-class Q3TimeEdit;
+class QDateTimeEdit;
 class QLineEdit;
 class KIntNumInput;
 
@@ -43,7 +43,7 @@ protected Q_SLOTS:
 
 private:
 	QComboBox	*m_time;
-	Q3TimeEdit	*m_tedit;
+	QDateTimeEdit	*m_tedit;
 	QLineEdit	*m_billing, *m_pagelabel;
 	KIntNumInput	*m_priority;
 	int	m_gmtdiff;

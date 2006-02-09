@@ -23,7 +23,7 @@
 #include <qlayout.h>
 #include <qcombobox.h>
 #include <qregexp.h>
-#include <q3datetimeedit.h>
+#include <QDateTimeEdit>
 #include <qdatetime.h>
 #include <qlineedit.h>
 #include <klocale.h>
@@ -143,8 +143,9 @@ KPSchedulePage::KPSchedulePage(QWidget *parent)
 	m_time->insertItem(i18n("Third Shift (12 am - 8 am)"));
 	m_time->insertItem(i18n("Specified Time"));
         m_time->setWhatsThis(whatsThisScheduledPrinting);
-	m_tedit = new Q3TimeEdit(this);
-	m_tedit->setAutoAdvance(true);
+	m_tedit = new QDateTimeEdit(this);
+#warning "kde4: How to port m_tedit->setAutoAdvance ?"	
+	//m_tedit->setAutoAdvance(true);
 	m_tedit->setTime(QTime::currentTime());
 	m_tedit->setEnabled(false);
         m_tedit->setWhatsThis(whatsThisScheduledPrinting);
