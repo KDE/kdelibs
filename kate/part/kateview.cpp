@@ -1771,7 +1771,7 @@ void KateView::lineAsHTML (KateTextLine::Ptr line, uint startCol, uint length, Q
 
 void KateView::exportAsHTML ()
 {
-  KURL url = KFileDialog::getSaveURL(QString::null,"text/html",0,i18n("Export File as HTML"));
+  KURL url = KFileDialog::getSaveURL(m_doc->docName(),"text/html",0,i18n("Export File as HTML"));
 
   if ( url.isEmpty() )
     return;
