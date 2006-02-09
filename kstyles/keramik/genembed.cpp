@@ -53,7 +53,7 @@ so that one can do (R*T+GreyAdd, G*T+GreyAdd, B*T+GreyAdd, SrcAlpha) as pixel va
 */
 
 
-int evalSuffix(QString suffix)
+int evalSuffix(const QString &suffix)
 {
 	if (suffix == "-tl")
 		return 0;
