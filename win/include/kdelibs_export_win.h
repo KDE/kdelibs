@@ -262,4 +262,3 @@
 #  define KNEWSTUFF_EXPORT KDE_IMPORT
 # endif
 #endif
-
