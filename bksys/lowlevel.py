@@ -137,6 +137,10 @@ def checkForHeaders(env, dest):
 		env.AppendUnique(CPPPATH=[ '/usr/include','/usr/local/include' ])
 
 	conf = env.Configure()
+	
+	# for gcc the libraries must be located after the object files, otherwise they will not be found
+	if env['WINDOWS'] and env['CC'] == 'gcc':
+		conf.env['LINKCOM'] = '$LINK -o $TARGET $SOURCES $LINKFLAGS $_LIBDIRFLAGS $_LIBFLAGS'
 
 	content = ""
 	define_regex = re.compile("(\\.|\\/|\\\\)")
