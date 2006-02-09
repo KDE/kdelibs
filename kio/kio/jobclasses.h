@@ -1283,10 +1283,6 @@ namespace KIO {
          */
         void setSourceSize64(KIO::filesize_t size);
 
-        /**
-         * @deprecated
-         */
-        void setSourceSize( off_t size ) KDE_DEPRECATED;
 
 	/**
 	 * Returns the source URL.

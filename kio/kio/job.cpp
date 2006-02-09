@@ -1599,12 +1599,6 @@ FileCopyJob::~FileCopyJob()
     delete d;
 }
 
-void FileCopyJob::setSourceSize( off_t size )
-{
-    d->m_sourceSize = size;
-    if (size != (off_t) -1)
-       m_totalSize = size;
-}
 
 void FileCopyJob::setSourceSize64( KIO::filesize_t size )
 {

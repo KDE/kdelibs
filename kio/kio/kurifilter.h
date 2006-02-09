@@ -134,14 +134,6 @@ public:
      */
     ~KURIFilterData();
 
-    /**
-     * This method has been deprecated and will always return
-     * true.  You should instead use the result from the
-     * KURIFilter::filterURI() calls.
-     *
-     * @deprecated
-     */
-    KDE_DEPRECATED bool hasBeenFiltered() const { return true; }
 
     /**
      * Returns the filtered or the original URL.
