@@ -5,3 +5,7 @@ MimeType=image/x-raw
 Icon=image
 Patterns=*.crw;*.CRW;*.cr2,*.CR2;*.nef;*.NEF;*.mrw;*.MRW;
 Comment=RAW Camera File
+Comment[nl]=RAW-camerabestand
+Comment[pt]=Ficheiro de Máquina Fotográfica RAW
+Comment[pt_BR]=Ficheiro de Máquina Fotográfica RAW
+Comment[sv]=Obehandlad kamerafil
