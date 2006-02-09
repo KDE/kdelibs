@@ -14,15 +14,33 @@
 #include <QPixmap>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
+#include <kaboutapplication.h>
 #include <kapplication.h>
 #include <klocale.h>
 
 int main(int argc, char** argv)
 {
-  KAboutData aboutData("KAboutDialogTest", "KAboutDialogTest", "version");
+  KAboutData aboutData("KAboutDialogTest", "KAboutDialogTest", "version", "KAboutDialog Test, Enjoy!", KAboutData::License_GPL, I18N_NOOP("(c) 1997-2006, The KDE Developers"));
+  aboutData.addAuthor("Bob Dobbs", I18N_NOOP("Current Maintainer"), "bob@subgenius.com");
+  aboutData.addAuthor("Gregory S. Hayes", I18N_NOOP("Developer"), "syncomm@gmail.com");
+  aboutData.addAuthor("Random Authors from KFind");
+  aboutData.addAuthor("Beppe Grimaldi", I18N_NOOP("UI Design & more search options"), "grimalkin@ciaoweb.it");
+  aboutData.addAuthor("Martin Hartig");
+  aboutData.addAuthor("Stephan Kulow", 0, "coolo@kde.org");
+  aboutData.addAuthor("Mario Weilguni",0, "mweilguni@sime.com");
+  aboutData.addAuthor("Alex Zepeda",0, "zipzippy@sonic.net");
+  aboutData.addAuthor("Miroslav Fl�r",0, "flidr@kky.zcu.cz");
+  aboutData.addAuthor("Harri Porten",0, "porten@kde.org");
+  aboutData.addAuthor("Dima Rogozin",0, "dima@mercury.co.il");
+  aboutData.addAuthor("Carsten Pfeiffer",0, "pfeiffer@kde.org");
+  aboutData.addAuthor("Hans Petter Bieker", 0, "bieker@kde.org");
+  aboutData.addAuthor("Waldo Bastian", I18N_NOOP("UI Design"), "bastian@kde.org");
+  aboutData.addAuthor("Alexander Neundorf", 0, "neundorf@kde.org");
+  aboutData.addAuthor("Clarence Dang", 0, "dang@kde.org");
+
   KCmdLineArgs::init(argc, argv, &aboutData);
 
-  (void) new KApplication();
+  KApplication app;
 
   QImage logo;
   QImage bg;
@@ -32,6 +50,7 @@ int main(int argc, char** argv)
   // kimgioRegister();
   if(logo.load("RayTracedGear.png"))
     {
+      aboutData.setProgramLogo( logo );
       pix=logo;
       about.setLogo(pix);
     } else {
@@ -74,6 +93,8 @@ int main(int argc, char** argv)
   about.adjust();
   about.exec();
   // -----
+  KAboutApplication aboutApp(&aboutData, app.activeWindow(), true);
+  aboutApp.exec();
   return 0;
 }
 
