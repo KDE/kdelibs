@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 
   MyDCOPObject *obj1 = new MyDCOPObject("object1");
 
-  bool connectResult = client->connectDCOPSignal("", "alive(int , DCOPCString)", "object1", "isAliveSlot(int)", false);
+  bool connectResult = client->connectDCOPSignal("", "", "alive(int , DCOPCString)", "object1", "isAliveSlot(int)", false);
   qDebug("connectDCOPSignal returns %s", connectResult ? "true" : "false");
 
   QDataStream ds(&data, QIODevice::WriteOnly);
