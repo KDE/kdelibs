@@ -583,6 +583,7 @@ bool KCookieJar::parseURL(const QString &_url,
        if (((kurl.protocol() == L1("http")) && (kurl.port() != 80)) ||
            ((kurl.protocol() == L1("https")) && (kurl.port() != 443)))
        {
+          // It's <port>:<host> so that the sorting works as expected
           _fqdn = L1("%1:%2").arg(kurl.port()).arg(_fqdn);
        }
     }
