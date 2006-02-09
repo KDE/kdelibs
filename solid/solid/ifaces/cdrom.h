@@ -35,7 +35,7 @@ namespace Ifaces
 
         static Type type() { return Capability::Cdrom; }
 
-        enum MediumType { Cdr, Cdrw, Dvd, Dvdr, Dvdrw, Dvdram, Dvdplusr, Dvdplurw, Dvdplusdl };
+        enum MediumType { Cdr, Cdrw, Dvd, Dvdr, Dvdrw, Dvdram, Dvdplusr, Dvdplusrw, Dvdplusdl };
         Q_DECLARE_FLAGS( MediumTypes, MediumType );
 
         virtual MediumTypes supportedMedia() const = 0;

@@ -20,12 +20,14 @@
 #ifndef FAKEPROCESSOR_H
 #define FAKEPROCESSOR_H
 
+#include <kdehw/ifaces/abstractcapability.h>
 #include <kdehw/ifaces/processor.h>
 
-class FakeProcessor : public KDEHW::Ifaces::Processor
+class FakeProcessor : public KDEHW::Ifaces::AbstractCapability,
+                      virtual public KDEHW::Ifaces::Processor
 {
 public:
-    FakeProcessor() {}
+    FakeProcessor() : KDEHW::Ifaces::AbstractCapability() {}
     virtual ~FakeProcessor() {}
 
     virtual int number() const { return 1; }

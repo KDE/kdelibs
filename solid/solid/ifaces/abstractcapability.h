@@ -17,31 +17,26 @@
 
 */
 
-#ifndef KDEHW_IFACES_CAPABILITY_H
-#define KDEHW_IFACES_CAPABILITY_H
+#ifndef KDEHW_IFACES_ABSTRACTCAPABILITY_H
+#define KDEHW_IFACES_ABSTRACTCAPABILITY_H
 
 #include <QObject>
-#include <QFlags>
+#include <kdehw/ifaces/capability.h>
 
 namespace KDEHW
 {
 namespace Ifaces
 {
-    class Capability
+    class AbstractCapability : public QObject, virtual public Capability
     {
+        Q_OBJECT
     public:
-        virtual ~Capability();
+        AbstractCapability( QObject *parent = 0 );
+        virtual ~AbstractCapability();
 
-	virtual const QObject *qobject() const = 0;
-	virtual QObject *qobject() = 0;
-
-        enum Type { Unknown = 0, Processor = 1, Block = 2,
-                    Storage = 4, Cdrom = 8,
-                    Volume = 16, OpticalDisc = 32 };
-        Q_DECLARE_FLAGS( Types, Type );
+	virtual const QObject *qobject() const;
+	virtual QObject *qobject();
     };
-
-    Q_DECLARE_OPERATORS_FOR_FLAGS( Capability::Types )
 }
 }
 

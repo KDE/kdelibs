@@ -41,11 +41,11 @@ namespace Ifaces
         virtual UsageType usage() const = 0;
         virtual QString fsType() const = 0;
         virtual QString label() const = 0;
-
+        // TODO add UUID and size
+	// TODO Allow to mount/unmount
     protected:
     //signals:
-        virtual void mount( QString device, QString mountPoint ) = 0;
-        virtual void unmount( QString device, QString mountPoint, bool forced ) = 0;
+        virtual void mountStateChanged( bool newState ) = 0;
     };
 }
 }
