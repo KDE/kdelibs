@@ -146,7 +146,10 @@ bool KStreamSocket::connect(const QString& node, const QString& service,
   if (timeout() > 0)
     {
       if (!blocking() && !d->timer.isActive())
-	d->timer.start(timeout(), true);
+       {
+         d->timer.setSingleShot(true);
+	     d->timer.start(timeout());
+       }
       else
 	{
 	  // blocking connection with timeout
@@ -198,7 +201,10 @@ void KStreamSocket::hostFoundSlot()
 {
   QObject::disconnect(this, SLOT(hostFoundSlot()));
   if (timeout() > 0)
-    d->timer.start(timeout(), true);
+   {
+    d->timer.setSingleShot(true);
+    d->timer.start(timeout());
+   }
   QTimer::singleShot(0, this, SLOT(connectionEvent()));
 }
 

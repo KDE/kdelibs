@@ -836,7 +836,7 @@ KSocketDevice* KSocketDevice::createDefault(KSocketBase* parent, int capabilitie
   for ( ; it != factories.constEnd(); ++it)
     if ((it.key() & capabilities) == capabilities)
       // found a match
-      return it.data()->create(parent);
+      return it.value()->create(parent);
 
   return 0L;			// no default
 }

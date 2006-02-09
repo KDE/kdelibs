@@ -155,7 +155,8 @@ KDatagramPacket KDatagramSocket::receive()
       size = bytesAvailable();
     }
 
-  QByteArray data(size);
+  QByteArray data;
+  data.resize(size);
   KSocketAddress address;
   
   // now do the reading

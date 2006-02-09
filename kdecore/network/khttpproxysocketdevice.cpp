@@ -216,13 +216,14 @@ bool KHttpProxySocketDevice::parseServerReply()
       else if (avail < 0)
 	return false;		// error!
 
-      QByteArray buf(avail);
+      QByteArray buf;
+      buf.resize(avail);
       if (peekData(buf.data(), avail) < 0)
 	return false;		// error!
 
       QByteArray fullHeaders = d->reply + buf;
       // search for the end of the headers
-      index = fullHeaders.find("\r\n\r\n");
+      index = fullHeaders.indexOf("\r\n\r\n");
       if (index == -1)
 	{
 	  // no, headers not yet finished...
@@ -251,7 +252,8 @@ bool KHttpProxySocketDevice::parseServerReply()
 	state = 1;
       while (state != 4)
 	{
-	  char c = getch();
+	  char c;
+	  getChar(&c);
 	  d->reply += c;
 
 	  if ((state == 3 && c == '\n') ||
@@ -265,9 +267,9 @@ bool KHttpProxySocketDevice::parseServerReply()
 
   // now really parse the reply
   qDebug("KHttpProxySocketDevice: get reply: %s\n",
-	 d->reply.left(d->reply.find('\r')).data());
+	 d->reply.left(d->reply.indexOf('\r')).data());
   if (d->reply.left(7) != "HTTP/1." ||
-      (index = d->reply.find(' ')) == -1 ||
+      (index = d->reply.indexOf(' ')) == -1 ||
       d->reply[index + 1] != '2')
     {
       setError(NetFailure);

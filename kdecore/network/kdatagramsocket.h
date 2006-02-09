@@ -160,7 +160,7 @@ public:
    * Sets the data to the given buffer and size.
    */
   void setData(const char* data, uint length)
-  { m_data.duplicate(data, length); }
+  { m_data = QByteArray(data, length); }
 };
 
 class KDatagramSocketPrivate;
