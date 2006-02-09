@@ -488,7 +488,7 @@ QFrame *KAboutContainerBase::addTextPage( const QString &title,
     KTextBrowser *const browser = new KTextBrowser( page );
     browser->setObjectName( "browser" );
     browser->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-    browser->setPlainText( text );
+    browser->setHtml( text );
     browser->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
 
     vbox->addWidget(browser);
