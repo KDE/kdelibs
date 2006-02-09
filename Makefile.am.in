@@ -40,10 +40,10 @@ pot_DATA = kde.pot
 
 messages:
 	cd kabc/scripts && perl ./makeaddressee
-	find . -type d | grep -v CVS | grep -v '\.svn' | sed -e 's,$$,/,' > dirs
+	find . -type d | grep -v '\.svn' | sed -e 's,$$,/,' > dirs
 	mfs=`find . -name Makefile.am | xargs egrep -l '^messages:'` ;\
 	for dir in $$mfs; do \
-	  if test ! "$$dir" = "./Makefile.am"; then \
+	  if test "$$dir" != "./Makefile.am"; then \
 	    dir=`dirname $$dir` ;\
 	    egrep -v "^$$dir" dirs > dirs.new && mv dirs.new dirs ;\
 	  fi ;\
@@ -56,9 +56,9 @@ messages:
 	echo ./kdecore/kde-config.cpp.in >> files ;\
 	$(EXTRACTRC) `find $$dirs -maxdepth 1 \( -name "*.rc" -o -name "*.ui" \) ` ./dnssd/kcm_kdnssd.kcfg > rc.cpp; \
 	: > kde.pot ;\
-	$(XGETTEXT) -ktranslate -x qt-messages.pot rc.cpp `cat files` && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot
+	$(XGETTEXT) -ktranslate -x qt-messages.pot `cat files` && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot
 	$(XGETTEXT) common_texts.cpp -o kde.pot
-	rm -f rc.cpp dirs
+	rm -f dirs
 
 EXTRA_DIST = admin kde.pot \
 	COMPILING COMPILING.html COPYING.BSD DEBUG \
