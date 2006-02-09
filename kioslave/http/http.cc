@@ -2631,7 +2631,7 @@ try_again:
   }
 
   QByteArray locationStr; // In case we get a redirect.
-  Q3CString cookieStr; // In case we get a cookie.
+  QByteArray cookieStr; // In case we get a cookie.
 
   QString disposition; // Incase we get a Content-Disposition
   QString mediaValue;
@@ -4441,7 +4441,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
 }
 
 
-void HTTPProtocol::addCookies( const QString &url, const Q3CString &cookieHeader )
+void HTTPProtocol::addCookies( const QString &url, const QByteArray &cookieHeader )
 {
    long windowId = m_request.window.toLong();
    QByteArray params;

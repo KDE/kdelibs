@@ -331,7 +331,7 @@ protected:
   /**
    * Send a cookie to the cookiejar
    */
-  void addCookies( const QString &url, const Q3CString &cookieHeader);
+  void addCookies( const QString &url, const QByteArray &cookieHeader);
 
   /**
    * Look for cookies in the cookiejar
