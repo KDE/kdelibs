@@ -1,6 +1,7 @@
 /*
    This file is part of the KDE libraries
    Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
+   Copyright (C) 2006 Ralf Habacker <ralf.habacker@freenet.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,25 +18,22 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef WINPOSX_IEXPORT_H
-#define WINPOSX_IEXPORT_H
+#ifndef WINPOSIX_EXPORT_H
+#define WINPOSIX_EXPORT_H
 
-/* We need to be independent from kdelibs so we can't use kdelibs_export.h */
-#ifdef _MSC_VER
-#define KDE_EXPORT __declspec(dllexport)
-#define KDE_IMPORT __declspec(dllimport)
-#else
-#define KDE_EXPORT
-#define KDE_IMPORT
-#endif
-
-#ifndef KDEWIN32_EXPORT
-# ifdef MAKE_KDEWIN32_LIB
-#  define KDEWIN32_EXPORT KDE_EXPORT
+#ifndef WINPOSIX_EXPORT
+# if defined(MAKE_WINPOSIX_LIB) || defined(MAKE_KDEWIN32_LIB)
+#  define WINPOSIX_EXPORT __declspec(dllexport)
 # else
-#  define KDEWIN32_EXPORT KDE_IMPORT
+#  define WINPOSIX_EXPORT __declspec(dllimport)
 # endif
+#  define WINPOSIX_IMPORT __declspec(dllimport)
 #endif
+
+/* for compatibility */
+#define KDEWIN32_EXPORT WINPOSIX_EXPORT
+#define KDEWIN32_IMPORT WINPOSIX_IMPORT
+
 
 #ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE

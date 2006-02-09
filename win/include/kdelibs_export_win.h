@@ -23,12 +23,6 @@
 #define popen _popen
 #define pclose _pclose
 
-#if defined(__MINGW32__)
-# define KDE_IMPORT
-#else 
-# define KDE_IMPORT __declspec(dllimport)
-#endif 
-
 #ifndef KDECORE_EXPORT
 # if defined(MAKE_KDECORE_LIB) || defined(MAKE_KDEFAKES_LIB)
 #  define KDECORE_EXPORT KDE_EXPORT
@@ -36,14 +30,6 @@
 #  define KDECORE_EXPORT KDE_IMPORT //for apps and other libs
 # endif
 #endif
-
-#ifndef KDEWIN32_EXPORT
-# ifdef MAKE_KDEWIN32_LIB
-#  define KDEWIN32_EXPORT KDE_EXPORT
-# else
-#  define KDEWIN32_EXPORT KDE_IMPORT
-# endif
-#endif 
 
 #ifndef KDEUI_EXPORT
 # ifdef MAKE_KDEUI_LIB
