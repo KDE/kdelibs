@@ -36,7 +36,7 @@ class KSSLSigners;
 class KSSLPKCS12;
 class KSSLCertificate;
 class QTabWidget;
-class Q3MultiLineEdit;
+class QTextEdit;
 class KAboutData;
 class QGridLayout;
 class QPushButton;
@@ -101,14 +101,14 @@ protected:
          *_p12_serialNum, *_p12_certState;
   QLabel *_p12_digest;
   KComboBox *_p12_chain;
-  Q3MultiLineEdit *_p12_pubkey, *_p12_sig;
+  QTextEdit*_p12_pubkey, *_p12_sig;
   KSSLCertBox *_p12_subject, *_p12_issuer;
 
   // for the CA widget
   QLabel *_ca_filenameLabel, *_ca_validFrom, *_ca_validUntil, 
          *_ca_serialNum, *_ca_certState;
   QLabel *_ca_digest;
-  Q3MultiLineEdit *_ca_pubkey, *_ca_sig;
+  QTextEdit *_ca_pubkey, *_ca_sig;
   KSSLCertBox *_ca_subject, *_ca_issuer;
 
 

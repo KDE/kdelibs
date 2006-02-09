@@ -41,7 +41,7 @@
 #include <kseparator.h>
 #include <klistview.h>
 #include <kio/kmimemagic.h>
-#include <q3multilineedit.h>
+#include <QTextEdit>
 #include <qregexp.h>
 #include <kcombobox.h>
 #include <kparts/browserextension.h>
@@ -235,7 +235,7 @@ tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
 _p12_digest = new QLabel(tab);
 tabGrid->addMultiCellWidget(_p12_digest, 0, 0, 1, 4);
 tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
-_p12_sig = new Q3MultiLineEdit(tab);
+_p12_sig = new QTextEdit(tab);
 tabGrid->addMultiCellWidget(_p12_sig, 1, 3, 1, 4);
 _p12_sig->setReadOnly(true);
 
@@ -249,7 +249,7 @@ tab = new QFrame(_pkcsFrame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
-_p12_pubkey = new Q3MultiLineEdit(tab);
+_p12_pubkey = new QTextEdit(tab);
 tabGrid->addMultiCellWidget(_p12_pubkey, 0, 3, 1, 4);
 _p12_pubkey->setReadOnly(true);
 
@@ -322,7 +322,7 @@ tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
 _ca_digest = new QLabel(tab);
 tabGrid->addMultiCellWidget(_ca_digest, 0, 0, 1, 4);
 tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
-_ca_sig = new Q3MultiLineEdit(tab);
+_ca_sig = new QTextEdit(tab);
 tabGrid->addMultiCellWidget(_ca_sig, 1, 3, 1, 4);
 _ca_sig->setReadOnly(true);
 
@@ -336,7 +336,7 @@ tab = new QFrame(_x509Frame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
-_ca_pubkey = new Q3MultiLineEdit(tab);
+_ca_pubkey = new QTextEdit(tab);
 tabGrid->addMultiCellWidget(_ca_pubkey, 0, 3, 1, 4);
 _ca_pubkey->setReadOnly(true);
 
@@ -660,9 +660,9 @@ void KCertPart::displayCACert(KSSLCertificate *c) {
 	_ca_certState->setPalette(cspl);
 	_ca_certState->setText(KSSLCertificate::verifyText(c->validate()));
 
-	_ca_pubkey->setText(c->getPublicKeyText());
+	_ca_pubkey->setText (c->getPublicKeyText());
 	_ca_digest->setText(c->getMD5DigestText());
-	_ca_sig->setText(c->getSignatureText());
+	_ca_sig->setPlainText(c->getSignatureText());
 }
 
 
@@ -701,9 +701,9 @@ void KCertPart::displayPKCS12Cert(KSSLCertificate *c) {
 	_p12_certState->setPalette(cspl);
 	_p12_certState->setText(KSSLCertificate::verifyText(c->validate()));
 
-	_p12_pubkey->setText(c->getPublicKeyText());
+	_p12_pubkey->setPlainText(c->getPublicKeyText());
 	_p12_digest->setText(c->getMD5DigestText());
-	_p12_sig->setText(c->getSignatureText());
+	_p12_sig->setPlainText(c->getSignatureText());
 }
 
 
