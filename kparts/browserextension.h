@@ -322,10 +322,9 @@ public:
 
   virtual ~BrowserExtension();
 
-  typedef uint PopupFlags;
-
   /**
    * Set of flags passed via the popupMenu signal, to ask for some items in the popup menu.
+   *
    * DefaultPopupItems: default value, no additional menu item
    * ShowNavigationItems: show "back" and "forward" (usually done when clicking the background of the view, but not an item)
    * ShowUp: show "up" (same thing, but not over e.g. HTTP). Requires ShowNavigationItems.
@@ -336,17 +335,17 @@ public:
    * ShowTextSelectionItems: set when selecting text, for a popup that only contains text-related items.
    * NoDeletion: deletion, trashing and renaming not allowed (e.g. parent dir not writeable).
    *            (this is only needed if the protocol itself supports deletion, unlike e.g. HTTP)
-   *
-   * KDE4 TODO: add IsLink flag, for "Bookmark This Link" and linkactions merging group.
-   *                    [currently it depends on which signal is emitted]
-   *            add ShowURLOperation flags for copy,cut,paste,rename,trash,del [same thing]
+   * IsLink: show "Bookmark This Link" and other link-related actions (linkactions merging group)
+   * ShowURLOperations: show copy,cut,paste, as well as rename+trash+delete, if NoDeletion is not set.
    */
-  enum { DefaultPopupItems=0x0000, ShowNavigationItems=0x0001,
+  enum PopupFlag { DefaultPopupItems=0x0000, ShowNavigationItems=0x0001,
          ShowUp=0x0002, ShowReload=0x0004, ShowBookmark=0x0008,
          ShowCreateDirectory=0x0010, ShowTextSelectionItems=0x0020,
-         NoDeletion=0x0040 ///< @since 3.4
-       };
-
+         NoDeletion=0x0040, ///< @since 3.4
+         IsLink=0x0080,           ///< @since 4.0
+         ShowURLOperations=0x0100 ///< @since 4.0
+  };
+  Q_DECLARE_FLAGS( PopupFlags, PopupFlag )
 
   /**
    * Set the parameters to use for opening the next URL.
@@ -706,6 +705,8 @@ protected:
 private:
   BrowserExtensionPrivate *d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( KParts::BrowserExtension::PopupFlags )
 
 /**
  * An extension class for container parts, i.e. parts that contain

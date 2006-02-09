@@ -4868,6 +4868,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     popupURL = completeURL( linkUrl );
     linkKUrl = popupURL;
     referrer = this->referrer();
+    itemflags |= KParts::BrowserExtension::IsLink;
 
     if (!(d->m_strSelectedURLTarget).isEmpty() &&
            (d->m_strSelectedURLTarget.toLower() != "_top") &&
