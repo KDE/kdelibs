@@ -114,11 +114,6 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
   return 0;
 }
 
-KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, bool withfallback, QWidget * parent, const char * name, const QStringList & args )
-{
-  return loadModule( mod, None, withfallback, parent, name, args );
-}
-
 KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting report, bool withfallback, QWidget * parent, const char * name, const QStringList & args )
 {
   /*
@@ -176,11 +171,6 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
   return 0;
 }
 
-KCModule* KCModuleLoader::loadModule(const QString &module, QWidget *parent,
-      const char *name, const QStringList & args)
-{
-  return loadModule(KCModuleInfo(module), None, false, parent, name, args);
-}
 
 KCModule* KCModuleLoader::loadModule(const QString &module, ErrorReporting
     report, QWidget *parent, const char *name, const QStringList & args)

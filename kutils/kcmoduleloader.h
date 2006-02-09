@@ -46,32 +46,6 @@ class KUTILS_EXPORT KCModuleLoader
   public:
 
     /**
-     * Loads a @ref KCModule. If loading fails a zero pointer is returned.
-     * @param module what module to load
-     * @param withFallback if true and loading failed a separate window
-     * with the module may appear and a zero pointer is a returned
-     *
-     * @return a pointer to the loaded @ref KCModule
-     *
-     * @deprecated use the function which explicitly states the error reporting
-     * method
-     */
-    static KCModule *loadModule(const KCModuleInfo &module, bool withFallback=true, 
-        QWidget * parent = 0, const char * name = 0,
-        const QStringList & args = QStringList() ) KDE_DEPRECATED;
-
-    /**
-     * Loads a @ref KCModule. If loading fails a zero pointer is returned.
-     * @param module what module to load
-     * with the module may appear and a zero pointer is a returned
-     *
-     * @deprecated use the function which explicitly states the error reporting
-     * method
-     */
-    static KCModule *loadModule(const QString &module, QWidget *parent = 0,
-        const char *name = 0, const QStringList & args = QStringList()) KDE_DEPRECATED;
-
-    /**
      * Determines the way errors are reported
      */
     enum ErrorReporting {
