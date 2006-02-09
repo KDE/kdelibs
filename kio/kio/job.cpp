@@ -1600,7 +1600,7 @@ FileCopyJob::~FileCopyJob()
 }
 
 
-void FileCopyJob::setSourceSize64( KIO::filesize_t size )
+void FileCopyJob::setSourceSize( KIO::filesize_t size )
 {
     d->m_sourceSize = size;
     if (size != (KIO::filesize_t) -1)
@@ -3267,7 +3267,7 @@ void CopyJob::copyNextFile()
         } else if (m_mode == Move) // Moving a file
         {
             KIO::FileCopyJob * moveJob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
-            moveJob->setSourceSize64( (*it).size );
+            moveJob->setSourceSize( (*it).size );
             newjob = moveJob;
             //kDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource << " to " << (*it).uDest << endl;
             //emit moving( this, (*it).uSource, (*it).uDest );
@@ -3286,7 +3286,7 @@ void CopyJob::copyNextFile()
                 permissions = -1;
             KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
             copyJob->setParentJob( this ); // in case of rename dialog
-            copyJob->setSourceSize64( (*it).size );
+            copyJob->setSourceSize( (*it).size );
             newjob = copyJob;
             //kDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource << " to " << (*it).uDest << endl;
             m_currentSrcURL=(*it).uSource;

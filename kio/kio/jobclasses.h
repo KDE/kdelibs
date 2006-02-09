@@ -1281,7 +1281,7 @@ namespace KIO {
 	 * @param size the size of the source file
 	 * @since 3.2
          */
-        void setSourceSize64(KIO::filesize_t size);
+        void setSourceSize(KIO::filesize_t size);
 
 
 	/**
