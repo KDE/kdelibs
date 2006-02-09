@@ -117,6 +117,17 @@ AutoStart::loadAutoStartList()
           continue;
        if (config.readBoolEntry("Hidden", false))
           continue;
+
+       if (config.hasKey("OnlyShowIn"))
+       {
+          if (!config.readListEntry("OnlyShowIn", ';').contains("KDE"))
+              continue;
+       }
+       if (config.hasKey("NotShowIn"))
+       {
+           if (config.readListEntry("NotShowIn", ';').contains("KDE"))
+               continue;
+       }
        
        AutoStartItem *item = new AutoStartItem;
        item->name = extractName(*it);
