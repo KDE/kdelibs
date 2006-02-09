@@ -140,7 +140,7 @@ class KDEUI_EXPORT KAboutContributor : public QFrame
 
     KAboutContributorPrivate* const d;
 
-	virtual void setName(const char *_name) { QFrame::setName(_name); }
+	virtual void setName(const char *_name) { QObject::setObjectName(_name); }
 };
 
 /**

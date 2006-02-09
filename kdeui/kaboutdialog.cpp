@@ -192,7 +192,8 @@ void KAboutContributor::updateLayout( void )
   QGridLayout *gbox;
   if( row == 0 )
   {
-    gbox = new QGridLayout( this, 1, 1, 0 );
+    gbox = new QGridLayout( this );
+    gbox->setSpacing(1);
     for( int i=0; i<4; ++i )
     {
       mLabel[i]->hide();
@@ -203,16 +204,20 @@ void KAboutContributor::updateLayout( void )
   {
     if( mText[0]->text().isEmpty() && !mShowHeader )
     {
-      gbox = new QGridLayout( this, row, 1, frameWidth()+1, 2 );
+      gbox = new QGridLayout( this );
+      gbox->setMargin( frameWidth()+1 );
+      gbox->setSpacing(2);
     }
     else
     {
-      gbox = new QGridLayout( this, row, 2, frameWidth()+1, 2 );
+      gbox = new QGridLayout( this );
+      gbox->setMargin( frameWidth()+1 );
+      gbox->setSpacing(2);
       if( !mShowHeader )
       {
-	gbox->addColSpacing( 0, KDialog::spacingHint()*2 );
+        gbox->addItem( new QSpacerItem( KDialog::spacingHint()*2, 0), 0, 0 );
       }
-      gbox->setColStretch( 1, 10 );
+      gbox->setColumnStretch( 1, 10 );
     }
 
     for( int i=0, r=0; i<4; ++i )
@@ -237,7 +242,7 @@ void KAboutContributor::updateLayout( void )
 	  mLabel[i]->hide();
 	  if( !i )
 	  {
-	    gbox->addMultiCellWidget( mText[i], r, r, 0, 1, Qt::AlignLeft );
+	    gbox->addWidget( mText[i], r, 0, 0, 1, Qt::AlignLeft );
 	  }
 	  else
 	  {
@@ -298,7 +303,9 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
     mImageLabel(0), mTitleLabel(0), mIconLabel(0),mVersionLabel(0),
     mAuthorLabel(0), mImageFrame(0),mPageTab(0),mPlainSpace(0),d(0)
 {
-  mTopLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
+  mTopLayout = new QVBoxLayout( this );
+  mTopLayout->setMargin(0);
+  mTopLayout->setSpacing( KDialog::spacingHint() );
   if( !mTopLayout ) { return; }
 
   if( layoutType & AbtImageOnly )
@@ -312,7 +319,8 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
 
   if( layoutType & AbtTitle )
   {
-    mTitleLabel = new QLabel( this, "title" );
+    mTitleLabel = new QLabel( this );
+    mTitleLabel->setObjectName( "title" );
     mTitleLabel->setAlignment(Qt::AlignCenter);
     mTopLayout->addWidget( mTitleLabel );
     mTopLayout->addSpacing( KDialog::spacingHint() );
@@ -323,7 +331,9 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
       QWidget* const productArea = new  QWidget( this );
       mTopLayout->addWidget( productArea, 0, QApplication::isRightToLeft() ? Qt::AlignRight : Qt::AlignLeft );
 
-      QHBoxLayout* const hbox = new QHBoxLayout(productArea,0,KDialog::spacingHint());
+      QHBoxLayout* const hbox = new QHBoxLayout( productArea );
+      hbox->setMargin(0);
+      hbox->setSpacing( KDialog::spacingHint() );
       if( !hbox ) { return; }
 
       mIconLabel = new QLabel( productArea );
@@ -333,8 +343,10 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
       if( !vbox ) { return; }
       hbox->addLayout( vbox );
 
-      mVersionLabel = new QLabel( productArea, "version" );
-      mAuthorLabel  = new QLabel( productArea, "author" );
+      mVersionLabel = new QLabel( productArea );
+      mVersionLabel->setObjectName( "version" );
+      mAuthorLabel  = new QLabel( productArea );
+      mAuthorLabel->setObjectName( "author" );
       vbox->addWidget( mVersionLabel );
       vbox->addWidget( mAuthorLabel );
       hbox->activate();
@@ -356,7 +368,8 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
     vbox->addWidget( mImageFrame );
     vbox->addSpacing(1);
 
-    vbox = new QVBoxLayout( mImageFrame, 1 );
+    vbox = new QVBoxLayout( mImageFrame );
+    vbox->setSpacing(1);
     mImageLabel = new KImageTrackLabel( mImageFrame );
     connect( mImageLabel, SIGNAL(mouseTrack( int, const QMouseEvent * )),
 	     SLOT( slotMouseTrack( int, const QMouseEvent * )) );
@@ -378,11 +391,13 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
     setImageFrame( true );
     hbox->addWidget( mImageFrame, 10 );
 
-    QGridLayout* const gbox = new QGridLayout(mImageFrame, 3, 3, 1, 0 );
+    QGridLayout* const gbox = new QGridLayout( mImageFrame );
+    gbox->setMargin(1);
+    gbox->setSpacing(0);
     gbox->setRowStretch( 0, 10 );
     gbox->setRowStretch( 2, 10 );
-    gbox->setColStretch( 0, 10 );
-    gbox->setColStretch( 2, 10 );
+    gbox->setColumnStretch( 0, 10 );
+    gbox->setColumnStretch( 2, 10 );
 
     mImageLabel = new KImageTrackLabel( mImageFrame );
     connect( mImageLabel, SIGNAL(mouseTrack( int, const QMouseEvent * )),
@@ -407,7 +422,8 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
     vbox->addWidget( mImageFrame );
     vbox->addSpacing(1);
 
-    vbox = new QVBoxLayout( mImageFrame, 1 );
+    vbox = new QVBoxLayout( mImageFrame );
+    vbox->setSpacing(1);
     mImageLabel = new KImageTrackLabel( mImageFrame );
     connect( mImageLabel, SIGNAL(mouseTrack( int, const QMouseEvent * )),
 	     SLOT( slotMouseTrack( int, const QMouseEvent * )) );
@@ -464,14 +480,15 @@ QFrame *KAboutContainerBase::addTextPage( const QString &title,
   if( !page ) { return 0; }
   if( numLines <= 0 ) { numLines = 10; }
 
-  QVBoxLayout* const vbox = new QVBoxLayout( page, KDialog::spacingHint() );
+  QVBoxLayout* const vbox = new QVBoxLayout( page );
+  vbox->setSpacing( KDialog::spacingHint() );
 
   if( richText )
   {
     KTextBrowser *const browser = new KTextBrowser( page );
     browser->setObjectName( "browser" );
     browser->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-    browser->setText( text );
+    browser->setPlainText( text );
     browser->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
 
     vbox->addWidget(browser);
@@ -500,14 +517,15 @@ QFrame *KAboutContainerBase::addLicensePage( const QString &title,
   if( !page ) { return 0; }
   if( numLines <= 0 ) { numLines = 10; }
 
-  QVBoxLayout* const vbox = new QVBoxLayout( page, KDialog::spacingHint() );
+  QVBoxLayout* const vbox = new QVBoxLayout( page );
+  vbox->setSpacing( KDialog::spacingHint() );
 
   KTextEdit* const textEdit = new KTextEdit( page );
   textEdit->setObjectName( "license" );
   textEdit->setFont( KGlobalSettings::fixedFont() );
   textEdit->setReadOnly( true );
   textEdit->setLineWrapMode( QTextEdit::NoWrap );
-  textEdit->setText( text );
+  textEdit->setPlainText( text );
   textEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
   vbox->addWidget( textEdit );
   return page;
@@ -551,7 +569,8 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
   }
 
   QFrame *const page = addEmptyPage( title );
-  QVBoxLayout* const vbox = new QVBoxLayout( page, KDialog::spacingHint() );
+  QVBoxLayout* const vbox = new QVBoxLayout( page );
+  vbox->setSpacing( KDialog::spacingHint() );
   QScrollArea* const scrollView = new QScrollArea( page );
   vbox->addWidget( scrollView );
 
@@ -578,7 +597,8 @@ QFrame *KAboutContainerBase::addEmptyPage( const QString &title )
     return 0;
   }
 
-  QFrame *const page = new QFrame( 0, title.toLatin1() );
+  QFrame *const page = new QFrame();
+  page->setObjectName( title.toLatin1() );
   page->setFrameStyle( QFrame::NoFrame );
 
   mPageTab->addTab( page, title );
@@ -662,7 +682,9 @@ void KAboutContainerBase::setImageBackgroundColor( const QColor &color )
 {
   if( mImageFrame )
   {
-    mImageFrame->setBackgroundColor( color );
+    QPalette palette( mImageFrame->palette() );
+    palette.setColor( QPalette::Window, color );
+    mImageFrame->setPalette( palette );
   }
 }
 
@@ -744,19 +766,21 @@ KAboutContainer::KAboutContainer( QWidget *_parent,
 {
   mAlignment = innerAlignment;
 
-  QGridLayout* const gbox = new QGridLayout( this, 3, 3, _margin, _spacing );
+  QGridLayout* const gbox = new QGridLayout( this );
+  gbox->setMargin( _margin );
+  gbox->setMargin( _spacing );
   if( childAlignment & Qt::AlignHCenter )
   {
-    gbox->setColStretch( 0, 10 );
-    gbox->setColStretch( 2, 10 );
+    gbox->setColumnStretch( 0, 10 );
+    gbox->setColumnStretch( 2, 10 );
   }
   else if( childAlignment & Qt::AlignRight )
   {
-    gbox->setColStretch( 0, 10 );
+    gbox->setColumnStretch( 0, 10 );
   }
   else
   {
-    gbox->setColStretch( 2, 10 );
+    gbox->setColumnStretch( 2, 10 );
   }
 
   if( childAlignment & Qt::AlignVCenter )
@@ -773,7 +797,8 @@ KAboutContainer::KAboutContainer( QWidget *_parent,
     gbox->setRowStretch( 2, 10 );
   }
 
-  mVbox = new QVBoxLayout( _spacing );
+  mVbox = new QVBoxLayout();
+  mVbox->setSpacing( _spacing );
   gbox->addLayout( mVbox, 1, 1 );
   gbox->activate();
 }
@@ -781,7 +806,7 @@ KAboutContainer::KAboutContainer( QWidget *_parent,
 
 void KAboutContainer::childEvent( QChildEvent *e )
 {
-  if( !e->inserted() || !e->child()->isWidgetType() )
+  if( !e->added() || !e->child()->isWidgetType() )
   {
     return;
   }
@@ -863,7 +888,8 @@ QSize KAboutContainer::minimumSizeHint( void ) const
 
 void KAboutContainer::addWidget( QWidget *widget )
 {
-  widget->reparent( this, 0, QPoint(0,0) );
+  widget->setParent( this );
+  widget->move( QPoint(0,0) );
 }
 
 
@@ -886,7 +912,8 @@ void KAboutContainer::addTitle( const QString &title, Qt::Alignment alignment,
 				bool showFrame, bool showBold )
 {
 
-  QLabel* const label = new QLabel( title, this, "title" );
+  QLabel* const label = new QLabel( title, this );
+  label->setObjectName( "title" );
   if( showBold  )
   {
     QFont labelFont( font() );
@@ -913,7 +940,7 @@ void KAboutContainer::addImage( const QString &fileName, Qt::Alignment alignment
   if( !logo.isNull() )
   {
     QPixmap pix;
-    pix = logo;
+    pix = QPixmap::fromImage( logo, 0 );
     label->setPixmap( pix );
   }
   label->setAlignment( alignment );
