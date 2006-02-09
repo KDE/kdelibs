@@ -94,3 +94,4 @@ Comment[zu]=Ithuluzi lokuguqula le-libkab kuyaku-libkabc
 Terminal=false
 NoDisplay=true
 X-KDE-autostart-condition=kab2kabcrc:Startup:EnableAutostart:true
+OnlyShowIn=KDE;
