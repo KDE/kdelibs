@@ -81,14 +81,22 @@ dcopstub.cpp
 dcopref.cpp
 dcopobject.cpp
 dcopclient.cpp
-#${kICE_STAT_SRCS}
 )
+
+if(UNIX)
+   set(LINK_WITH_kICE kICE)
+else(UNIX)
+   add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DANSICPP)
+   add_definitions(-DSOCKCONN -DTCPCONN)
+   set(DCOP_LIB_SRCS ${DCOP_LIB_SRCS} ${kICE_STAT_SRCS})
+   set(LINK_WITH_kICE )
+endif(UNIX)
 
 kde4_automoc(${DCOP_LIB_SRCS})
 
 kde4_add_library(DCOP SHARED ${DCOP_LIB_SRCS})
 
-target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARY} kICE )
+target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARY} ${LINK_WITH_kICE} )
 
 set_target_properties(DCOP PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 kde4_create_libtool_file(DCOP /kde4 )
