@@ -37,7 +37,6 @@
 #ifndef _KSPEECHSINK_H_
 #define _KSPEECHSINK_H_
 
-#include <Q3CString>
 #include <dcopobject.h>
 
 class KSpeechSink : virtual public DCOPObject {
@@ -85,7 +84,7 @@ class KSpeechSink : virtual public DCOPObject {
          * @param markerName     The name of the marker seen.
          * @see markers
          */
-        virtual ASYNC markerSeen(const Q3CString& appId, const QString& markerName) { Q_UNUSED(appId); Q_UNUSED(markerName); };
+        virtual ASYNC markerSeen(const DCOPCString& appId, const QString& markerName) { Q_UNUSED(appId); Q_UNUSED(markerName); };
         /**
          * This signal is emitted whenever a sentence begins speaking.
          * @param appId          DCOP application ID of the application that queued the text.
@@ -93,7 +92,7 @@ class KSpeechSink : virtual public DCOPObject {
          * @param seq            Sequence number of the text.
          * @see getTextCount
          */
-        virtual ASYNC sentenceStarted(const Q3CString& appId, uint jobNum, uint seq) { Q_UNUSED(appId); Q_UNUSED(jobNum); Q_UNUSED(seq); };
+        virtual ASYNC sentenceStarted(const DCOPCString& appId, uint jobNum, uint seq) { Q_UNUSED(appId); Q_UNUSED(jobNum); Q_UNUSED(seq); };
         /**
          * This signal is emitted when a sentence has finished speaking.
          * @param appId          DCOP application ID of the application that queued the text.
@@ -101,14 +100,14 @@ class KSpeechSink : virtual public DCOPObject {
          * @param seq            Sequence number of the text.
          * @see getTextCount
          */
-        virtual ASYNC sentenceFinished(const Q3CString& appId, uint jobNum, uint seq) { Q_UNUSED(appId); Q_UNUSED(jobNum); Q_UNUSED(seq); };
+        virtual ASYNC sentenceFinished(const DCOPCString& appId, uint jobNum, uint seq) { Q_UNUSED(appId); Q_UNUSED(jobNum); Q_UNUSED(seq); };
 
         /**
          * This signal is emitted whenever a new text job is added to the queue.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textSet(const Q3CString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
+        virtual ASYNC textSet(const DCOPCString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
 
         /**
         * This signal is emitted whenever a new part is appended to a text job.
@@ -117,14 +116,14 @@ class KSpeechSink : virtual public DCOPObject {
         * @param partNum        Part number of the new part.  Parts are numbered starting
         *                       at 1.
         */
-        virtual ASYNC textAppended(const Q3CString& appId, uint jobNum, int partNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); Q_UNUSED(partNum); };
+        virtual ASYNC textAppended(const DCOPCString& appId, uint jobNum, int partNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); Q_UNUSED(partNum); };
 
         /**
          * This signal is emitted whenever speaking of a text job begins.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textStarted(const Q3CString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
+        virtual ASYNC textStarted(const DCOPCString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
         /**
          * This signal is emitted whenever a text job is finished.  The job has
          * been marked for deletion from the queue and will be deleted when another
@@ -134,32 +133,32 @@ class KSpeechSink : virtual public DCOPObject {
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textFinished(const Q3CString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
+        virtual ASYNC textFinished(const DCOPCString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
         /**
          * This signal is emitted whenever a speaking text job stops speaking.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textStopped(const Q3CString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
+        virtual ASYNC textStopped(const DCOPCString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
         /**
          * This signal is emitted whenever a speaking text job is paused.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textPaused(const Q3CString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
+        virtual ASYNC textPaused(const DCOPCString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
         /**
          * This signal is emitted when a text job, that was previously paused, resumes speaking.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textResumed(const Q3CString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
+        virtual ASYNC textResumed(const DCOPCString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
         /**
          * This signal is emitted whenever a text job is deleted from the queue.
          * The job is no longer in the queue when this signal is emitted.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textRemoved(const Q3CString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
+        virtual ASYNC textRemoved(const DCOPCString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
 };
 
 #endif // _KSPEECHSINK_H_

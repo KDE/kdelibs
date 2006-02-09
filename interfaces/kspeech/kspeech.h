@@ -21,7 +21,6 @@
 #ifndef _KSPEECH_H_
 #define _KSPEECH_H_
 
-#include <Q3CString>
 #include <dcopobject.h>
 #include <qstringlist.h>
 
@@ -1194,7 +1193,7 @@ class KSpeech : virtual public DCOPObject {
         *
         * @see markers
         */
-        void markerSeen(const Q3CString& appId, const QString& markerName);
+        void markerSeen(const DCOPCString& appId, const QString& markerName);
         /**
         * This signal is emitted whenever a sentence begins speaking.
         * @param appId          DCOP application ID of the application that queued the text.
@@ -1203,7 +1202,7 @@ class KSpeech : virtual public DCOPObject {
         *
         * @see getTextCount
         */
-        void sentenceStarted(const Q3CString& appId, uint jobNum, uint seq);
+        void sentenceStarted(const DCOPCString& appId, uint jobNum, uint seq);
         /**
         * This signal is emitted when a sentence has finished speaking.
         * @param appId          DCOP application ID of the application that queued the text.
@@ -1212,14 +1211,14 @@ class KSpeech : virtual public DCOPObject {
         *
         * @see getTextCount
         */
-        void sentenceFinished(const Q3CString& appId, uint jobNum, uint seq);
+        void sentenceFinished(const DCOPCString& appId, uint jobNum, uint seq);
 
         /**
         * This signal is emitted whenever a new text job is added to the queue.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textSet(const Q3CString& appId, uint jobNum);
+        void textSet(const DCOPCString& appId, uint jobNum);
 
         /**
         * This signal is emitted whenever a new part is appended to a text job.
@@ -1228,14 +1227,14 @@ class KSpeech : virtual public DCOPObject {
         * @param partNum        Part number of the new part.  Parts are numbered starting
         *                       at 1.
         */
-        void textAppended(const Q3CString& appId, uint jobNum, int partNum);
+        void textAppended(const DCOPCString& appId, uint jobNum, int partNum);
 
         /**
         * This signal is emitted whenever speaking of a text job begins.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textStarted(const Q3CString& appId, uint jobNum);
+        void textStarted(const DCOPCString& appId, uint jobNum);
         /**
         * This signal is emitted whenever a text job is finished.  The job has
         * been marked for deletion from the queue and will be deleted when another
@@ -1245,7 +1244,7 @@ class KSpeech : virtual public DCOPObject {
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textFinished(const Q3CString& appId, uint jobNum);
+        void textFinished(const DCOPCString& appId, uint jobNum);
         /**
         * This signal is emitted whenever a speaking text job stops speaking.
         * @param appId          The DCOP senderId of the application that created the job.
@@ -1254,26 +1253,26 @@ class KSpeech : virtual public DCOPObject {
         * The signal is only emitted if stopText() is called and the job is currently
         * speaking.
         */
-        void textStopped(const Q3CString& appId, uint jobNum);
+        void textStopped(const DCOPCString& appId, uint jobNum);
         /**
         * This signal is emitted whenever a speaking text job is paused.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textPaused(const Q3CString& appId, uint jobNum);
+        void textPaused(const DCOPCString& appId, uint jobNum);
         /**
         * This signal is emitted when a text job, that was previously paused, resumes speaking.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textResumed(const Q3CString& appId, uint jobNum);
+        void textResumed(const DCOPCString& appId, uint jobNum);
         /**
         * This signal is emitted whenever a text job is deleted from the queue.
         * The job is no longer in the queue when this signal is emitted.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textRemoved(const Q3CString& appId, uint jobNum);
+        void textRemoved(const DCOPCString& appId, uint jobNum);
         //@}
 };
 
