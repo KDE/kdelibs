@@ -5,7 +5,7 @@ macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
-macro_optional_find_package(PCRE)
+# the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND)
    include_directories(${PCRE_INCLUDE_DIR})
 else(PCRE_FOUND)
@@ -15,8 +15,6 @@ else(PCRE_FOUND)
       message(FATAL_ERROR "Neither the PCRE regular expression library nor the POSIX regex.h header have been found. Consider installing PCRE.")
    endif (NOT HAVE_REGEX_H)
 endif(PCRE_FOUND)
-
-
 
 ########### next target ###############
 

@@ -484,7 +484,7 @@ bool KBuildSycoca::recreate()
 {
   QString path(sycocaPath());
 #ifdef Q_WS_WIN
-  printf("kbuildsycoca: path='%s'\n", path.toAscii());
+  printf("kbuildsycoca: path='%s'\n", qPrintable(path));
 #endif
 
   // KSaveFile first writes to a temp file.

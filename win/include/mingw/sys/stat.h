@@ -11,7 +11,12 @@
 #ifndef KDE_STAT_H_
 #define KDE_STAT_H_
 
+#include <sys/types.h>
 #include_next <sys/stat.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define _S_IFLNK	0xF000  /* Pretend */
 #define S_IFLNK	_S_IFLNK  /* kio/kio/kzip.cpp */ 
@@ -34,5 +39,9 @@
 #define	S_ISVTX		0001000	/* save swapped text even after use */
 
 KDEWIN32_EXPORT int fchmod(int __fd, mode_t __mode);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
