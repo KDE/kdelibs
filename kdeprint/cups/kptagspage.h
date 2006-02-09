@@ -22,7 +22,7 @@
 
 #include <kprintdialogpage.h>
 
-class Q3Table;
+class QTableWidget;
 
 class KPTagsPage : public KPrintDialogPage
 {
@@ -38,7 +38,7 @@ public:
 	QSize minimumSizeHint() const;
 
 private:
-	Q3Table	*m_tags;
+	QTableWidget 	*m_tags;
 };
 
 #endif

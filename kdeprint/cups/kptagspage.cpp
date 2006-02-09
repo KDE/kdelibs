@@ -19,8 +19,9 @@
 
 #include "kptagspage.h"
 
-#include <q3table.h>
-#include <q3header.h>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QHeaderView>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qregexp.h>
@@ -76,11 +77,14 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
 	setTitle(i18n("Additional Tags"));
 	setOnlyRealPrinters(true);
 
-	m_tags = new Q3Table(10, 2, this);
-	m_tags->horizontalHeader()->setStretchEnabled(true);
-	m_tags->horizontalHeader()->setLabel(0, i18n("Name"));
-	m_tags->horizontalHeader()->setLabel(1, i18n("Value"));
-	m_tags->setReadOnly(ro);
+	QStringList lst;
+	lst << i18n("Name")<<i18n("Value");
+	m_tags = new QTableWidget(10, 2, this);
+	m_tags->horizontalHeader()->resizeSections ( QHeaderView::Stretch );
+	m_tags->setVerticalHeaderLabels(lst);
+
+#warning "kde4: port m_tags->setReadOnly(ro);!!!!!\n";
+	//m_tags->setReadOnly(ro);
 	m_tags->setWhatsThis(whatsThisAdditionalTagsTable);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 5);
@@ -104,9 +108,9 @@ KPTagsPage::~KPTagsPage()
 bool KPTagsPage::isValid(QString& msg)
 {
 	QRegExp	re("\\s");
-	for (int r=0; r<m_tags->numCols(); r++)
+	for (int r=0; r<m_tags->columnCount(); r++)
 	{
-		QString	tag(m_tags->text(r, 0));
+		QString	tag(m_tags->itemAt( 0, r)->text());
 		if (tag.isEmpty())
 			continue;
 		else if (tag.find(re) != -1)
@@ -122,28 +126,28 @@ void KPTagsPage::setOptions(const QMap<QString,QString>& opts)
 {
 	int	r(0);
 	QRegExp	re("^\"|\"$");
-	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end() && r<m_tags->numRows(); ++it)
+	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end() && r<m_tags->rowCount (); ++it)
 	{
 		if (it.key().startsWith("KDEPrint-"))
 		{
-			m_tags->setText(r, 0, it.key().mid(9));
+			m_tags->itemAt( 0, r)->setText(it.key().mid(9));
 			QString	data = it.data();
-			m_tags->setText(r, 1, data.replace(re, ""));
+			m_tags->itemAt(1, r )-> setText(data.replace(re, ""));
 			r++;
 		}
 	}
-	for (; r<m_tags->numRows(); r++)
+	for (; r<m_tags->rowCount(); r++)
 	{
-		m_tags->setText(r, 0, QString());
-		m_tags->setText(r, 1, QString());
+		m_tags->itemAt(0,r)->setText(QString());
+		m_tags->itemAt(1,r)->setText(QString());
 	}
 }
 
 void KPTagsPage::getOptions(QMap<QString,QString>& opts, bool)
 {
-	for (int r=0; r<m_tags->numRows(); r++)
+	for (int r=0; r<m_tags->rowCount(); r++)
 	{
-		QString	tag(m_tags->text(r, 0)), val(m_tags->text(r, 1));
+		QString	tag(m_tags->itemAt(0,r)->text()), val(m_tags->itemAt(1,r)->text());
 		if (!tag.isEmpty())
 		{
 			tag.prepend("KDEPrint-");
