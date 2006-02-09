@@ -44,7 +44,7 @@ class KUrl;
 class ContactPresenceListCurrent;
 
 /** FIXME: remove for KDE4, binary compability again. */
-typedef QMap<Q3CString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
+typedef QMap<DCOPCString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
 typedef Q3Dict<AppPresence> PresenceMap;			// uid->AppPresence; contains a AppPresences for all users
 /** FIXME: remove presenceMap and call this presenceMap in KDE4.  This hack is for binary compatibility */
 typedef QMap<QString, ContactPresenceListCurrent> PresenceStringMap;

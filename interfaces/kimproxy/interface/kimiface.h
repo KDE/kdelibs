@@ -189,7 +189,7 @@ k_dcop_signals:
 	 * @param appId the dcop application id of the program the signal originates from.
 	 * @param presence the new numeric presence @ref presenceStatus
 	 */
-	void contactPresenceChanged( QString uid, Q3CString appId, int presence );
+	void contactPresenceChanged( QString uid, DCOPCString appId, int presence );
 };
 
 #endif
