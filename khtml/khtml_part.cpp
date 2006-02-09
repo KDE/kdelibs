@@ -302,7 +302,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   if ( config->hasGroup( "HTML Settings" ) ) {
     config->setGroup( "HTML Settings" );
     khtml::Decoder::AutoDetectLanguage language;
-    Q3CString name = QTextCodec::codecForLocale()->name();
+    QByteArray name = QTextCodec::codecForLocale()->name();
     name = name.toLower();
 
     if ( name == "cp1256" || name == "iso-8859-6" ) {
