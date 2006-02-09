@@ -7,7 +7,12 @@ What to do here?
 - call qmake to create correct Makefile
 - execute Makefile
 - add winposix-lib to the buildsystem
+
+Notes
+- could be used in uselib attribute 
+- include/library settings are added for the following configure process and the build process
 """
+
 
 def exists(env):
 	return true
@@ -28,14 +33,14 @@ def generate(env):
 	optionFile = env['CACHEDIR'] + 'libwinposix.cache.py'
 	opts = Options(optionFile)
 	opts.AddOptions(
-		('CACHED_LIBWINPOSIX', 'Whether libwinposix is available'),
-		('CCFLAGS_LIBWINPOSIX',''),
-		('CXXFLAGS_LIBWINPOSIX',''),
-		('LFLAGS_LIBWINPOSIX',''),
+		('CACHED_WINPOSIX', 'Whether libwinposix is available'),
+		('CPPPATH_WINPOSIX',''),
+		('LIBPATH_WINPOSIX',''),
+		('LIB_WINPOSIX',''),
 		)
 	opts.Update(env)
 
-	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('CACHED_LIBWINPOSIX')):
+	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('CACHED_WINPOSIX')):
 		p=env.pprint
 		winposixdir = 'win'
 		winposixpro = 'win.pro'
@@ -73,16 +78,19 @@ def generate(env):
 			winposixlib = 'kdewin32'
 
 		if env['CC'] == 'cl':
-			env['CCFLAGS_LIBWINPOSIX']   = [ '/I'+winposixdir+'\\include','/I'+winposixdir+'\\include\\msvc' ]
-			env['LFLAGS_LIBWINPOSIX']    = [ '/LIBPATH:'+winposixdir+'\\lib',winposixlib + '.lib' ]
+			env['CPPPATH_WINPOSIX']  = [ env.join(os.getcwd(),winposixdir,'include'),env.join(os.getcwd(),winposixdir,'include','msvc')]
+			env['LIBPATH_WINPOSIX']   = [ env.join(os.getcwd(),winposixdir,'lib')]
+			env['LIB_WINPOSIX']       = [ winposixlib,'ws2_32' ]
 		elif env['CC'] == 'gcc':
-			env['CCFLAGS_LIBWINPOSIX']   = [ '-I'+winposixdir+'\\include','-I'+winposixdir+'\\include\\mingw' ]
-			env['LFLAGS_LIBWINPOSIX']    = [ '-L'+winposixdir+'\\lib','-l'+winposixlib]
+			env['CPPPATH_WINPOSIX']  = [ env.join(os.getcwd(),winposixdir,'include'),env.join(os.getcwd(),winposixdir,'include','mingw')]
+			env['LIBPATH_WINPOSIX']   = [ env.join(os.getcwd(),winposixdir,'lib')]
+			env['LIB_WINPOSIX']       = [ winposixlib,'ws2_32']
 
-		env['CACHED_LIBWINPOSIX'] = 1
+		env['CACHED_WINPOSIX'] = 1
 		opts.Save(optionFile, env)
 
-	if env.has_key('CCFLAGS_LIBWINPOSIX'):
-		env.AppendUnique( CCFLAGS  = env['CCFLAGS_LIBWINPOSIX'] )
-	if env.has_key('LFLAGS_LIBWINPOSIX'):
-		env.AppendUnique( LINKFLAGS = env['LFLAGS_LIBWINPOSIX'] )
+	# add winposix to environment by default 
+	if env.has_key('CACHED_WINPOSIX') and env['CACHED_WINPOSIX']:
+		env.AppendUnique( CPPPATH = env['CPPPATH_WINPOSIX'] )
+		env.AppendUnique( LIBPATH = env['LIBPATH_WINPOSIX'] )
+		env.AppendUnique( LIBS = env['LIB_WINPOSIX'] )
