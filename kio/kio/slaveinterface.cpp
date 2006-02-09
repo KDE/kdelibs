@@ -401,28 +401,6 @@ void SlaveInterface::sendResumeAnswer( bool resume )
     m_pConnection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
 }
 
-void SlaveInterface::openPassDlg( const QString& prompt, const QString& user, bool readOnly )
-{
-    AuthInfo info;
-    info.prompt = prompt;
-    info.username = user;
-    info.readOnly = readOnly;
-    openPassDlg( info );
-}
-
-void SlaveInterface::openPassDlg( const QString& prompt, const QString& user,
-                                  const QString& caption, const QString& comment,
-                                  const QString& label, bool readOnly )
-{
-    AuthInfo info;
-    info.prompt = prompt;
-    info.username = user;
-    info.caption = caption;
-    info.comment = comment;
-    info.commentLabel = label;
-    info.readOnly = readOnly;
-    openPassDlg( info );
-}
 
 void SlaveInterface::openPassDlg( AuthInfo& info )
 {

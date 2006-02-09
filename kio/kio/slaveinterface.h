@@ -193,17 +193,6 @@ protected:
      */
     void openPassDlg( KIO::AuthInfo& info );
 
-   /**
-    * @deprecated. Use openPassDlg( AuthInfo& ) instead.
-    */
-    void openPassDlg( const QString& prompt, const QString& user,
-                      const QString& caption, const QString& comment,
-                      const QString& label, bool readOnly ) KDE_DEPRECATED;
-
-   /**
-    * @deprecated. Use openPassDlg( AuthInfo& ) instead.
-    */
-    void openPassDlg( const QString& prompt, const QString& user, bool readOnly ) KDE_DEPRECATED;
 
     void messageBox( int type, const QString &text, const QString &caption,
                      const QString &buttonYes, const QString &buttonNo );
