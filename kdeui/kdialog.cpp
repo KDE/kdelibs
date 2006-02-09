@@ -20,31 +20,15 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <kconfig.h>
-#include <kapplication.h>
-#include <kdialog.h>
-#include <kwhatsthismanager_p.h>
-#include <kdebug.h>
-#include <kstaticdeleter.h>
+#include "kdialog.h"
 
 #include <qlayout.h>
-#include <qobject.h>
 #include <qpointer.h>
 #include <qlineedit.h>
-
 #include <qtimer.h>
 #include <qcursor.h>
-#include <QKeyEvent>
 #include <QDesktopWidget>
-
-#include <stdlib.h>
-
-#ifdef KDE3_SUPPORT
-#include <q3grid.h>
-#endif
-
 #include <qlayout.h>
-#include <qtimer.h>
 #include <QKeyEvent>
 #include <QHideEvent>
 #include <QDesktopWidget>
@@ -56,15 +40,16 @@
 #include <ktoolinvocation.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kpushbutton.h>
+#include <kapplication.h>
+#include <kwhatsthismanager_p.h>
+#include <kdebug.h>
+#include <kstaticdeleter.h>
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kseparator.h>
 #include <kurllabel.h>
-#include <kdebug.h>
-#include <khbox.h>
-#include <kvbox.h>
-
 
 #include "config.h"
 #ifdef Q_WS_X11
@@ -72,9 +57,7 @@
 #include <netwm.h>
 #endif
 
-
-
-#include <kpushbutton.h>
+#include <stdlib.h>
 
 const int KDialog::mMarginSize = 11;
 const int KDialog::mSpacingSize = 6;
@@ -783,7 +766,7 @@ void KDialog::setupLayout()
 	delete d->mTopLayout;
 	
 	d->mTopLayout = (d->mButtonOrientation == Qt::Horizontal) ?
-			(QBoxLayout*)new QVBoxLayout( this ) : (QBoxLayout*)new QHBoxLayout( this);
+			(QBoxLayout*)new QVBoxLayout( this ) : (QBoxLayout*)new QHBoxLayout( this );
 
 	d->mTopLayout->setMargin(marginHint());
 	d->mTopLayout->setSpacing(spacingHint());

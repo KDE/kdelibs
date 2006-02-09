@@ -49,28 +49,21 @@ class KDEUI_EXPORT KSeparator : public QFrame
    * @param f extra QWidget flags.
    **/
   KSeparator(Qt::Orientation orientation, QWidget* parent=0, Qt::WFlags f=0);
-  
+
   /**
    * Returns the orientation of the separator.
    * @return int Possible values Horizontal or Vertical.
    **/
   Qt::Orientation orientation() const;
-  
+
   /**
    * Set the orientation of the separator to @p orientation
    *
    * @param orientation Possible values are Vertical and Horizontal.
    */
   void setOrientation(Qt::Orientation orientation);
-  
-  /**
-   * The recommended height (width) for a horizontal (vertical) separator.
-   **/
-  QSize sizeHint() const;
 
 protected:
-  void paintEvent(QPaintEvent* event);
-
   virtual void virtual_hook( int id, void* data );
 
 private:

@@ -53,42 +53,10 @@ void KSeparator::setOrientation(Qt::Orientation orientation)
    }
 }
 
-
 Qt::Orientation KSeparator::orientation() const
 {
    return ( frameStyle() & VLine ) ? Qt::Vertical : Qt::Horizontal;
 }
-
-
-void KSeparator::paintEvent(QPaintEvent*)
-{
-   QPainter p(this);
-
-   QStyleOption opt;
-   opt.init(this);
-
-   QPoint	p1, p2;
-   QRect	r     = frameRect();
-   if ( frameStyle() & HLine ) {
-      p1 = QPoint( r.x(), r.height()/2 );
-      p2 = QPoint( r.x()+r.width(), p1.y() );
-   }
-   else {
-      p1 = QPoint( r.x()+r.width()/2, 0 );
-      p2 = QPoint( p1.x(), r.height() );
-   }
-
-   opt.rect = QRect(p1, p2);
-
-   style()->drawPrimitive( QStyle::PE_Q3Separator, &opt, &p);
-}
-
-
-QSize KSeparator::sizeHint() const
-{
-   return ( frameStyle() & VLine ) ? QSize(2, 0) : QSize(0, 2);
-}
-
 
 void KSeparator::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
