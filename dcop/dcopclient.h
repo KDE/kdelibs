@@ -411,13 +411,6 @@ class DCOP_EXPORT DCOPClient : public QObject
                           const DCOPCString &receiverObj, const DCOPCString &slot,
                           bool Volatile);
 
-  /**
-   * @deprecated
-   * For backwards compatibility
-   */
-  bool connectDCOPSignal( const DCOPCString &sender,      const DCOPCString &signal,
-                          const DCOPCString &receiverObj, const DCOPCString &slot,
-                          bool Volatile) KDE_DEPRECATED;
 
   /**
    * Disconnects a DCOP signal.
@@ -440,12 +433,6 @@ class DCOP_EXPORT DCOPClient : public QObject
                           const DCOPCString &signal,
                           const DCOPCString &receiverObj, const DCOPCString &slot);
 
-  /**
-   * @deprecated
-   * For backwards compatibility
-   */
-  bool disconnectDCOPSignal( const DCOPCString &sender,      const DCOPCString &signal,
-                             const DCOPCString &receiverObj, const DCOPCString &slot) KDE_DEPRECATED;
 
   /**
    * Reimplement this function to handle app-wide function calls unassociated w/an object.

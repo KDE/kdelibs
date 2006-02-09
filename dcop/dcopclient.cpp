@@ -2214,12 +2214,6 @@ DCOPClient::connectDCOPSignal( const DCOPCString &sender, const DCOPCString &sen
     return (result != 0);
 }
 
-bool
-DCOPClient::connectDCOPSignal( const DCOPCString &sender, const DCOPCString &signal,
-  const DCOPCString &receiverObj, const DCOPCString &slot, bool Volatile)
-{
-    return connectDCOPSignal( sender, 0, signal, receiverObj, slot, Volatile);
-}
 
 bool
 DCOPClient::disconnectDCOPSignal( const DCOPCString &sender, const DCOPCString &senderObj,
@@ -2250,12 +2244,6 @@ DCOPClient::disconnectDCOPSignal( const DCOPCString &sender, const DCOPCString &
     return (result != 0);
 }
 
-bool
-DCOPClient::disconnectDCOPSignal( const DCOPCString &sender, const DCOPCString &signal,
-  const DCOPCString &receiverObj, const DCOPCString &slot)
-{
-    return disconnectDCOPSignal( sender, 0, signal, receiverObj, slot);
-}
 
 void
 DCOPClient::setPriorityCall(bool b)
