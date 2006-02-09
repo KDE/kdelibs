@@ -11,3 +11,4 @@ Comment[x-test]=xxlibkab to libkabc conversion tool.xx
 Terminal=false
 NoDisplay=true
 X-KDE-autostart-condition=kab2kabcrc:Startup:EnableAutostart:true
+OnlyShowIn=KDE;
