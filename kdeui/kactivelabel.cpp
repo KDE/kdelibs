@@ -56,15 +56,13 @@ void KActiveLabelPrivate::updatePalette()
 }
 
 KActiveLabel::KActiveLabel(QWidget * parent)
- : KTextBrowser(parent)
+ : KTextBrowser(parent),d(new KActiveLabelPrivate(this))
 {
-    d = new KActiveLabelPrivate(this);
 }
 
 KActiveLabel::KActiveLabel(const QString &text, QWidget * parent)
- : KTextBrowser(parent)
+ : KTextBrowser(parent),d(new KActiveLabelPrivate(this))
 {
-    d = new KActiveLabelPrivate(this);
     setHtml(text);
 }
 

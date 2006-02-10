@@ -78,7 +78,7 @@ protected:
     virtual void keyPressEvent ( QKeyEvent * e );
     virtual bool event(QEvent *e);
 private:
-    KActiveLabelPrivate *d;
+    KActiveLabelPrivate *const d;
 };
 
 #endif
