@@ -41,7 +41,7 @@ static QHash<QString, QByteArray> *s_changedMap = 0;
 
 static KStaticDeleter< QHash<QString, QByteArray> > s_propertyMapDeleter;
 static KStaticDeleter< QHash<QString, QByteArray> > s_changedMapDeleter;
-	    
+
 class KConfigDialogManager::Private {
 
 public:
@@ -72,7 +72,7 @@ void KConfigDialogManager::initMaps()
   if ( s_propertyMap == 0 ) {
     s_propertyMapDeleter.setObject( s_propertyMap, new QHash<QString,QByteArray> );
   }
-  									       
+
   if( s_changedMap == 0 )
   {
     s_changedMapDeleter.setObject( s_changedMap, new QHash<QString,QByteArray> );
@@ -125,7 +125,7 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert( "KDoubleNumInput", SIGNAL(valueChanged (double)));
   }
 }
-	  
+
 QHash<QString, QByteArray> *KConfigDialogManager::propertyMap()
 {
   initMaps();
@@ -237,7 +237,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
             if (cb && cb->editable())
               connect(cb, SIGNAL(textChanged(const QString &)),
                     this, SIGNAL(widgetModified()));
-	  }	 
+	  }
         }
         Q3GroupBox *gb = dynamic_cast<Q3GroupBox *>(childWidget);
         if (!gb)
@@ -368,7 +368,7 @@ void KConfigDialogManager::updateSettings()
   }
 }
 
-QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget) 
+QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget)
 {
   if (!s_propertyMap->contains(widget->metaObject()->className())) {
     const QMetaObject *metaObject = widget->metaObject();
