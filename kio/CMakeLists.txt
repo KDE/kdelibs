@@ -4,6 +4,7 @@ kde4_header()
 if(HAVE_SSL)
    set(KSSL_HAVE_SSL 1)
    add_definitions(-DKSSL_HAVE_SSL )
+   include_directories(${OPENSSL_INCLUDE_DIR})
 endif(HAVE_SSL)
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
@@ -22,9 +23,9 @@ add_subdirectory( kio )
 add_subdirectory( bookmarks ) 
 add_subdirectory( kfile ) 
 add_subdirectory( kpasswdserver ) 
-if(UNIX)
-add_subdirectory( misc ) 
-endif(UNIX)
+if (UNIX)
+   add_subdirectory( misc ) 
+endif (UNIX)
 add_subdirectory( pics ) 
 add_subdirectory( tests ) 
 add_subdirectory( kioexec ) 
@@ -107,8 +108,7 @@ set(kiocore_STAT_SRCS
 )
 
 if(UNIX)
-    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
-        ${CMAKE_SOURCE_DIR}/kio/kio/kautomount.cpp )
+    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_SOURCE_DIR}/kio/kio/kautomount.cpp )
 endif(UNIX)
 
 
@@ -201,35 +201,35 @@ set(kssl_STAT_SRCS
 ########### next target ###############
 
 set(kio_LIB_SRCS
-${kiocore_STAT_SRCS}
-${kbookmarks_STAT_SRCS}
-${kfile_STAT_SRCS}
-${kssl_STAT_SRCS}
+   ${kiocore_STAT_SRCS}
+   ${kbookmarks_STAT_SRCS}
+   ${kfile_STAT_SRCS}
+   ${kssl_STAT_SRCS}
 )
 
 set(kio_STUB_HEADERS
-${CMAKE_CURRENT_SOURCE_DIR}/misc/uiserver.h
-${CMAKE_CURRENT_SOURCE_DIR}/kio/observer.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/misc/uiserver.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/kio/observer.h
 )
 
 kde4_add_dcop_stubs(kio_LIB_SRCS ${kio_STUB_HEADERS} )
 
 set(kio_SKEL_HEADERS
-#${CMAKE_CURRENT_SOURCE_DIR}/misc/uiserver.h
-${CMAKE_CURRENT_SOURCE_DIR}/kio/observer.h
-${CMAKE_CURRENT_SOURCE_DIR}/kio/kdirnotify.h
-${CMAKE_CURRENT_SOURCE_DIR}/bookmarks/kbookmarkmanager.h
-${CMAKE_CURRENT_SOURCE_DIR}/bookmarks/kbookmarknotifier.h
+   #${CMAKE_CURRENT_SOURCE_DIR}/misc/uiserver.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/kio/observer.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/kio/kdirnotify.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks/kbookmarkmanager.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks/kbookmarknotifier.h
 )
 
 kde4_add_dcop_skels(kio_LIB_SRCS ${kio_SKEL_HEADERS} )
 
 kde4_add_ui3_files(kio_LIB_SRCS
-${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesdesktopbase.ui3
-${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesmimetypebase.ui3
-${CMAKE_CURRENT_SOURCE_DIR}/kfile/knotifywidgetbase.ui3
-${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard.ui3
-${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard2.ui3
+   ${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesdesktopbase.ui3
+   ${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesmimetypebase.ui3
+   ${CMAKE_CURRENT_SOURCE_DIR}/kfile/knotifywidgetbase.ui3
+   ${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard.ui3
+   ${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard2.ui3
 )
 
 kde4_add_ui_files(kio_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesdesktopadvbase.ui)
@@ -241,9 +241,9 @@ kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 target_link_libraries(kio  ${QT_AND_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} )
 
 if (UNIX)
-target_link_libraries(kio kdesu)
+   target_link_libraries(kio kdesu)
 else (UNIX)
-#target_link_libraries(kio ltdlc)
+   #target_link_libraries(kio ltdlc)
 endif (UNIX)
 
 if(FAM_FOUND)
