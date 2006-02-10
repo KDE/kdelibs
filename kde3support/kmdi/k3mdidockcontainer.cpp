@@ -216,7 +216,7 @@ void K3MdiDockContainer::insertWidget ( K3DockWidget *dwdg, QPixmap pixmap, cons
 			K3DockWidgetHeader *hdr = qobject_cast<K3DockWidgetHeader*>(w->getHeader());
 			K3DockButton_Private *btn = new K3DockButton_Private( hdr, "OverlapButton" );
 
-			QToolTip::add( btn, i18n( "Switch between overlap and side by side mode", "Overlap" ) );
+			btn->setToolTip(i18n( "Switch between overlap and side by side mode", "Overlap" ) );
 
 			btn->setToggleButton( true );
 			btn->setPixmap( const_cast< const char** >( k3mdi_not_close_xpm ) );
@@ -500,8 +500,7 @@ void K3MdiDockContainer::setToolTip ( K3DockWidget* w, QString &s )
 	kDebug( 760 ) << k_funcinfo << "Setting tooltip '" << s << "' for widget " << w << endl;
 	int tabId = m_map[w];
 	KMultiTabBarTab *mbTab = m_tb->tab( tabId );
-	QToolTip::remove( mbTab );
-	QToolTip::add( mbTab, s );
+	mbTab->setToolTip(s);
 }
 
 void K3MdiDockContainer::setPixmap( K3DockWidget* widget , const QPixmap& pixmap )

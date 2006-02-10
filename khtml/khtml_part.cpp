@@ -604,10 +604,8 @@ bool KHTMLPart::openURL( const KUrl &url )
         d->m_statusBarUALabel->setUseCursor(false);
         d->m_statusBarExtension->addStatusBarItem(d->m_statusBarUALabel, 0, false);
         d->m_statusBarUALabel->setPixmap(SmallIcon("agent", instance()));
-      } else {
-        QToolTip::remove(d->m_statusBarUALabel);
-      }
-      QToolTip::add(d->m_statusBarUALabel, i18n("The fake user-agent '%1' is in use.").arg(userAgent));
+      } 
+      d->m_statusBarUALabel->setToolTip(i18n("The fake user-agent '%1' is in use.").arg(userAgent));
     } else if (d->m_statusBarUALabel) {
       d->m_statusBarExtension->removeStatusBarItem(d->m_statusBarUALabel);
       delete d->m_statusBarUALabel;
@@ -1070,7 +1068,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
     d->m_statusBarJSErrorLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     d->m_statusBarJSErrorLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarJSErrorLabel, 0, false);
-    QToolTip::add(d->m_statusBarJSErrorLabel, i18n("This web page contains coding errors."));
+    d->m_statusBarJSErrorLabel->setToolTip(i18n("This web page contains coding errors."));
     d->m_statusBarJSErrorLabel->setPixmap(SmallIcon("bug", instance()));
     connect(d->m_statusBarJSErrorLabel, SIGNAL(leftClickedURL()), SLOT(launchJSErrorDialog()));
     connect(d->m_statusBarJSErrorLabel, SIGNAL(rightClickedURL()), SLOT(jsErrorDialogContextMenu()));
@@ -7180,10 +7178,8 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
     d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet_open", instance()));
     connect(d->m_statusBarWalletLabel, SIGNAL(leftClickedURL()), SLOT(launchWalletManager()));
     connect(d->m_statusBarWalletLabel, SIGNAL(rightClickedURL()), SLOT(walletMenu()));
-  } else {
-    QToolTip::remove(d->m_statusBarWalletLabel);
-  }
-  QToolTip::add(d->m_statusBarWalletLabel, i18n("The wallet '%1' is open and being used for form data and passwords.").arg(KWallet::Wallet::NetworkWallet()));
+  } 
+  d->m_statusBarWalletLabel->setToolTip(i18n("The wallet '%1' is open and being used for form data and passwords.").arg(KWallet::Wallet::NetworkWallet()));
 #endif // KHTML_NO_WALLET
 }
 
@@ -7317,7 +7313,8 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
         d->m_statusBarPopupLabel->setUseCursor( false );
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );
         d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window_suppressed", instance() ) );
-        QToolTip::add( d->m_statusBarPopupLabel, i18n("This page was prevented from opening a new window via JavaScript." ) );
+        
+		d->m_statusBarPopupLabel->setToolTip(i18n("This page was prevented from opening a new window via JavaScript." ) );
 
         connect(d->m_statusBarPopupLabel, SIGNAL(leftClickedURL()), SLOT(suppressedPopupMenu()));
         if (d->m_settings->jsPopupBlockerPassivePopup()) {
@@ -7326,7 +7323,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
             KPassivePopup::message(i18n("Popup Window Blocked"),i18n("This page has attempted to open a popup window but was blocked.\nYou can click on this icon in the status bar to control this behavior\nor to open the popup."),px,d->m_statusBarPopupLabel);
         }
     } else if ( !enable && d->m_statusBarPopupLabel ) {
-        QToolTip::remove( d->m_statusBarPopupLabel );
+        d->m_statusBarPopupLabel->setToolTip("" );
         d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarPopupLabel );
         delete d->m_statusBarPopupLabel;
         d->m_statusBarPopupLabel = 0L;

@@ -396,7 +396,7 @@ void KLineEdit::setSqueezedText()
     {
       QLineEdit::setText(fullText);
 
-          QToolTip::remove( this );
+          this->setToolTip("" );
           QToolTip::showText(pos(), QString()); // hide
        }
 
