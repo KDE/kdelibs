@@ -51,13 +51,13 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 	m_edit->setPixmap(SmallIcon("configure"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddCommand()));
 	connect(m_edit, SIGNAL(clicked()), SLOT(slotEditCommand()));
-	QToolTip::add(m_add, i18n("New command"));
-	QToolTip::add(m_edit, i18n("Edit command"));
+	m_add->setToolTip( i18n("New command"));
+	m_edit->setToolTip( i18n("Edit command"));
 	m_shortinfo = new QLabel(this);
 	m_helpbtn = new KPushButton( this );
 	m_helpbtn->setIcon( SmallIconSet( "help" ) );
 	connect( m_helpbtn, SIGNAL( clicked() ), SLOT( slotHelpCommand() ) );
-	QToolTip::add( m_helpbtn, i18n( "Information" ) );
+	m_helpbtn->setToolTip( i18n( "Information" ) );
         m_helpbtn->setEnabled( false );
 
 	m_line = 0;

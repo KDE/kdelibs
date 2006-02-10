@@ -62,8 +62,7 @@ K3MdiTaskBarButton::K3MdiTaskBarButton( K3MdiTaskBar *pTaskBar, K3MdiChildView *
 {
 	setToggleButton( true );
 	m_pWindow = win_ptr;
-	QToolTip::add
-		( this, win_ptr->caption() );
+	this->setToolTip( win_ptr->caption() );
 	setFocusPolicy( Qt::NoFocus );
 }
 

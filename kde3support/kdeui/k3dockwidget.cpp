@@ -230,28 +230,28 @@ K3DockWidgetHeader::K3DockWidgetHeader( K3DockWidget* parent, const char* name )
   drag = new K3DockWidgetHeaderDrag( this, parent );
 
   closeButton = new K3DockButton_Private( this, "DockCloseButton" );
-  QToolTip::add( closeButton, i18n("Close") );
+  closeButton->setToolTip(  i18n("Close") );
   closeButton->setIcon( QIcon( style()->standardPixmap(QStyle::SP_TitleBarCloseButton) ) );
 //  closeButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( closeButton, SIGNAL(clicked()), parent, SIGNAL(headerCloseButtonClicked()));
   connect( closeButton, SIGNAL(clicked()), parent, SLOT(undock()));
 
   stayButton = new K3DockButton_Private( this, "DockStayButton" );
-  QToolTip::add( stayButton, i18n("Freeze the window geometry", "Freeze") );
+  stayButton->setToolTip( i18n("Freeze the window geometry", "Freeze") );
   stayButton->setToggleButton( true );
   stayButton->setIcon( QIcon(not_close_xpm) );
 //  stayButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( stayButton, SIGNAL(clicked()), this, SLOT(slotStayClicked()));
 
   dockbackButton = new K3DockButton_Private( this, "DockbackButton" );
-  QToolTip::add( dockbackButton, i18n("Dock this window", "Dock") );
+  dockbackButton->setToolTip( i18n("Dock this window", "Dock") );
   dockbackButton->setIcon( QIcon(dockback_xpm));
 //  dockbackButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( dockbackButton, SIGNAL(clicked()), parent, SIGNAL(headerDockbackButtonClicked()));
   connect( dockbackButton, SIGNAL(clicked()), parent, SLOT(dockBack()));
 
   d->toDesktopButton = new K3DockButton_Private( this, "ToDesktopButton" );
-  QToolTip::add( d->toDesktopButton, i18n("Detach") );
+  d->toDesktopButton->setToolTip( i18n("Detach") );
   d->toDesktopButton->setIcon( QIcon(todesktop_xpm));
 //  d->toDesktopButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( d->toDesktopButton, SIGNAL(clicked()), parent, SLOT(toDesktop()));

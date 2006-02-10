@@ -319,7 +319,7 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
         grid->addMultiCellWidget( btnNext, 8, 8, 0, 1 );
         connect( btnNext, SIGNAL(clicked()), SLOT(slotNextCookie()) );
 #ifndef QT_NO_TOOLTIP
-        QToolTip::add( btnNext, i18n("Show details of the next cookie") );
+        btnNext->setToolTip(i18n("Show details of the next cookie") );
 #endif
     }
     m_cookieList = cookieList;
