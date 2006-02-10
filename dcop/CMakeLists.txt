@@ -28,7 +28,6 @@ set(kICE_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/globals.c
 )
 
-add_subdirectory( KDE-ICE )
 add_subdirectory( dcopidlng )
 add_subdirectory( dcopidl2cpp )
 add_subdirectory( client )
@@ -38,11 +37,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(dcopserver_shutdown_SRCS
-dcopserver_shutdown.c
-)
-
-#kde4_automoc(${dcopserver_shutdown_SRCS})
+set(dcopserver_shutdown_SRCS dcopserver_shutdown.c )
 
 kde4_add_executable(dcopserver_shutdown ${dcopserver_shutdown_SRCS})
 
@@ -55,13 +50,13 @@ install_targets(/bin dcopserver_shutdown )
 
 if(KDE4_BUILD_TESTS)
 
-   set(testdcop_SRCS testdcop.cpp ) #${kICE_STAT_SRCS} )
+   set(testdcop_SRCS testdcop.cpp ${kICE_STAT_SRCS} )
    
    kde4_automoc(${testdcop_SRCS})
    
    kde4_add_executable(testdcop ${testdcop_SRCS})
    
-   target_link_libraries(testdcop  ${QT_QTCORE_LIBRARY} DCOP kICE)
+   target_link_libraries(testdcop  ${QT_QTCORE_LIBRARY} DCOP )
    
    
    ########### next target ###############
@@ -77,26 +72,26 @@ endif(KDE4_BUILD_TESTS)
 ########### next target ###############
 
 set(DCOP_LIB_SRCS
-dcopstub.cpp
-dcopref.cpp
-dcopobject.cpp
-dcopclient.cpp
+   dcopstub.cpp
+   dcopref.cpp
+   dcopobject.cpp
+   dcopclient.cpp
+   ${kICE_STAT_SRCS}
 )
-
-if(UNIX)
-   set(LINK_WITH_kICE kICE)
-else(UNIX)
-   add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DANSICPP)
+   
+add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DANSICPP)
+   
+if (UNIX)
+   add_definitions(-DUNIXCONN)
+else (UNIX)
    add_definitions(-DSOCKCONN -DTCPCONN -DKICE_EXPORT=DCOP_EXPORT)
-   set(DCOP_LIB_SRCS ${DCOP_LIB_SRCS} ${kICE_STAT_SRCS})
-   set(LINK_WITH_kICE )
-endif(UNIX)
+endif (UNIX)
 
 kde4_automoc(${DCOP_LIB_SRCS})
 
 kde4_add_library(DCOP SHARED ${DCOP_LIB_SRCS})
 
-target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARY} ${LINK_WITH_kICE} )
+target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARY} )
 
 set_target_properties(DCOP PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 kde4_create_libtool_file(DCOP /kde4 )
@@ -105,10 +100,7 @@ install_targets(${KDE4_LIB_INSTALL_DIR} DCOP )
 
 ########### next target ###############
 
-set(dcopserver_KDEINIT_SRCS
-dcopserver.cpp
-dcopsignals.cpp
-)
+set(dcopserver_KDEINIT_SRCS dcopserver.cpp dcopsignals.cpp )
 
 kde4_automoc(${dcopserver_KDEINIT_SRCS})
 
