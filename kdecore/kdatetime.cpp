@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -488,6 +488,51 @@ KDateTime KDateTime::toUTC() const
     return KDateTime(udt, UTC);
 }
 
+KDateTime KDateTime::toOffsetFromUTC() const
+{
+    if (!isValid())
+        return KDateTime();
+    const KTimezone *tz = 0;
+    switch (d->spec)
+    {
+        case stOffsetFromUTC:
+            return *this;
+        case stUTC:
+        {
+            if (d->dateOnly())
+                return KDateTime(d->date(), OffsetFromUTC, 0);
+            QDateTime qdt = d->dt();
+            qdt.setTimeSpec(Qt::LocalTime);
+            return KDateTime(qdt, OffsetFromUTC, 0);
+        }
+        case stTimeZone:
+            tz = d->tz;
+            break;
+        case stClockTime:
+            tz = KSystemTimezones::local();
+            break;
+        default:
+            return KDateTime();
+    }
+    int offset = tz->offsetAtZoneTime(d->dt());
+    if (d->dateOnly())
+	    return KDateTime(d->date(), OffsetFromUTC, offset);
+    return KDateTime(d->dt(), OffsetFromUTC, offset);
+}
+
+KDateTime KDateTime::toOffsetFromUTC(int utcOffset) const
+{
+    if (d->spec == stOffsetFromUTC  &&  utcOffset == d->utcOffset)
+        return *this;
+    if (d->dateOnly())
+    {
+        if (!isValid())
+            return KDateTime();
+        return KDateTime(d->date(), OffsetFromUTC, utcOffset);
+    }
+    return KDateTime(d->toUTC(), OffsetFromUTC, utcOffset);
+}
+
 KDateTime KDateTime::toLocalZone() const
 {
     const KTimezone *local = KSystemTimezones::local();
@@ -712,6 +757,41 @@ bool KDateTime::compareTimeSpec(const KDateTime &other) const
         }
     }
     return false;
+}
+
+KDateTime KDateTime::addMSecs(int msecs) const
+{
+    if (!isValid())
+        return KDateTime();
+    if (d->dateOnly())
+    {
+        KDateTime result(*this);
+        result.d->setDate(d->date().addDays(msecs / 86400000));
+        return result;
+    }
+    int secs = msecs / 1000;
+    int oldms = d->dt().time().msec();
+    int ms = oldms  +  msecs % 1000;
+    if (msecs >= 0)
+    {
+        if (ms >= 1000)
+        {
+    	    ++secs;
+    	    ms -= 1000;
+        }
+    }
+    else
+    {
+        if (ms < 0)
+        {
+    	    --secs;
+    	    ms += 1000;
+        }
+    }
+    KDateTime result = addSecs(secs);
+    QTime t = result.time();
+    result.d->setTime(QTime(t.hour(), t.minute(), t.second(), ms));
+    return result;
 }
 
 KDateTime KDateTime::addSecs(int secs) const

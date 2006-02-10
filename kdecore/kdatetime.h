@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -521,9 +521,40 @@ class KDECORE_EXPORT KDateTime
      * with the date unchanged.
      *
      * @return converted time
-     * @see toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimezone::convert()
+     * @see toOffsetFromUTC(), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimezone::convert()
      */
     KDateTime toUTC() const;
+
+    /**
+     * Returns the time expressed as an offset from UTC, using the UTC offset
+     * associated with this instance's date/time. The date and time
+     * components are unchanged. For example, 14:15 on 12 Jan 2001, US Eastern
+     * time zone would return a KDateTime value of 14:15 on 12 Jan 2001 with a
+     * UTC offset of -18000 seconds (i.e. -5 hours).
+     *
+     * If the instance is a local clock time, the offset is set to that of the
+     * local time zone.
+     * If the instance is a date-only value, the offset is set to that at the
+     * start of the day.
+     *
+     * @return converted time
+     * @see toUTC(), toOffsetFromUTC(int), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimezone::convert()
+     */
+    KDateTime toOffsetFromUTC() const;
+
+    /**
+     * Returns the time expressed as a specified offset from UTC.
+     *
+     * If the instance is a local clock time, it is first set to the local time
+     * zone, and then converted to the UTC offset.
+     * If the instance is a date-only value, a date-only clock time value is
+     * returned, with the date unchanged.
+     *
+     * @param utcOffset number of seconds to add to UTC to get the local time.
+     * @return converted time
+     * @see toUTC(), toOffsetFromUTC(), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimezone::convert()
+     */
+    KDateTime toOffsetFromUTC(int utcOffset) const;
 
     /**
      * Returns the time converted to the current local system time zone.
@@ -531,7 +562,7 @@ class KDECORE_EXPORT KDateTime
      * is returned, with the date unchanged.
      *
      * @return converted time
-     * @see toUTC(), toZone(), toTimeSpec(), KTimezone::convert()
+     * @see toUTC(), toOffsetFromUTC(), toZone(), toTimeSpec(), KTimezone::convert()
      */
     KDateTime toLocalZone() const;
 
@@ -556,7 +587,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @param zone time zone to convert to
      * @return converted time
-     * @see toUTC(), toLocal(), toTimeSpec(), KTimezone::convert()
+     * @see toUTC(), toOffsetFromUTC(), toLocal(), toTimeSpec(), KTimezone::convert()
      */
     KDateTime toZone(const KTimezone *zone) const;
 
@@ -568,7 +599,7 @@ class KDECORE_EXPORT KDateTime
      * with the date unchanged.
      *
      * @return converted time
-     * @see toLocal(), toUTC(), toZone(), compareTimeSpec(), KTimezone::convert()
+     * @see toLocal(), toUTC(), toOffsetFromUTC(), toZone(), compareTimeSpec(), KTimezone::convert()
      */
     KDateTime toTimeSpec(const KDateTime &other) const;
 
@@ -673,6 +704,26 @@ class KDECORE_EXPORT KDateTime
     void setTimeSpec(const KDateTime &other);
 
     /**
+     * Returns a date/time @p msecs milliseconds later than the stored date/time.
+     *
+     * Except when the instance is a local clock time (type @c ClockTime), the
+     * calculation is done in UTC to ensure that the result takes proper account
+     * of clock changes (e.g. daylight savings) in the time zone. The result is
+     * expressed using the same time specification as the original instance.
+     *
+     * Note that if the instance is a local clock time (type @c ClockTime), any
+     * daylight savings changes or time zone changes during the period will
+     * render the result inaccurate.
+     *
+     * If the instance is date-only, @p msecs is rounded down to a whole number
+     * of days and that value is added to the date to find the result.
+     *
+     * @return resultant date/time
+     * @see addSecs(), addDays(), addMonths(), addYears(), secsTo()
+     */
+    KDateTime addMSecs(int msecs) const;
+
+    /**
      * Returns a date/time @p secs seconds later than the stored date/time.
      *
      * Except when the instance is a local clock time (type @c ClockTime), the
@@ -688,7 +739,7 @@ class KDECORE_EXPORT KDateTime
      * of days and that value is added to the date to find the result.
      *
      * @return resultant date/time
-     * @see addDays(), addMonths(), addYears(), secsTo()
+     * @see addMSecs(), addDays(), addMonths(), addYears(), secsTo()
      */
     KDateTime addSecs(int secs) const;
 
@@ -801,52 +852,54 @@ class KDECORE_EXPORT KDateTime
      * identical to those used by strftime(3). Conversion specifiers are
      * introduced by a '%' character, and are replaced in @p format as follows:
      *
-     * Date
-     * ====
-     * %y   2-digit year excluding century (00 - 99)
-     * %Y   full year number
-     * %:m  month number, without leading zero (1 - 12)
-     * %m   month number, 2 digits (01 - 12)
-     * %b   abbreviated month name in current locale
-     * %B   full month name in current locale
-     * %:b  abbreviated month name in English (Jan, Feb, ...)
-     * %:B  full month name in English
-     * %e   day of the month (1 - 31)
-     * %d   day of the month, 2 digits (01 - 31)
-     * %a   abbreviated weekday name in current locale
-     * %A   full weekday name in current locale
-     * %:a  abbreviated weekday name in English (Mon, Tue, ...)
-     * %:A  full weekday name in English
+     * \b Date
      *
-     * Time
-     * ====
-     * %H   hour in the 24 hour clock, 2 digits (00 - 23)
-     * %k   hour in the 24 hour clock, without leading zero (0 - 23)
-     * %I   hour in the 12 hour clock, 2 digits (01 - 12)
-     * %l   hour in the 12 hour clock, without leading zero (1 - 12)
-     * %M   minute, 2 digits (00 - 59)
-     * %S   seconds (00 - 59)
-     * %:S  seconds preceded with ':', but omitted if seconds value is zero
-     * %:s  milliseconds, 3 digits (000 - 999)
-     * %P   "am" or "pm" in the current locale, or if undefined there, in English
-     * %p   "AM" or "PM" in the current locale, or if undefined there, in English
-     * %:P  "am" or "pm"
-     * %:p  "AM" or "PM"
+     * - %y   2-digit year excluding century (00 - 99)
+     * - %Y   full year number
+     * - %:m  month number, without leading zero (1 - 12)
+     * - %m   month number, 2 digits (01 - 12)
+     * - %b   abbreviated month name in current locale
+     * - %B   full month name in current locale
+     * - %:b  abbreviated month name in English (Jan, Feb, ...)
+     * - %:B  full month name in English
+     * - %e   day of the month (1 - 31)
+     * - %d   day of the month, 2 digits (01 - 31)
+     * - %a   abbreviated weekday name in current locale
+     * - %A   full weekday name in current locale
+     * - %:a  abbreviated weekday name in English (Mon, Tue, ...)
+     * - %:A  full weekday name in English
      *
-     * Time zone
-     * =========
-     * %:u  UTC offset of the time zone in hours, e.g. -02. If the offset
-     *      is not a whole number of hours, the output is the same as for '%U'.
-     * %z   UTC offset of the time zone in hours and minutes, e.g. -0200.
-     * %:z  UTC offset of the time zone in hours and minutes, e.g. +02:00.
-     * %Z   time zone abbreviation, e.g. UTC, EDT, GMT. This is not guaranteed
-     *      to be unique among different time zones. If not applicable (i.e. if
-     *      the instance is type OffsetFromUTC), the UTC offset is substituted.
-     * %:Z  time zone name, e.g. Europe/London. This is system dependent. If
-     *      not applicable (i.e. if the instance is type OffsetFromUTC), the
-     *      UTC offset is substituted.
+     * \b Time
      *
-     * %%   literal '%' character
+     * - %H   hour in the 24 hour clock, 2 digits (00 - 23)
+     * - %k   hour in the 24 hour clock, without leading zero (0 - 23)
+     * - %I   hour in the 12 hour clock, 2 digits (01 - 12)
+     * - %l   hour in the 12 hour clock, without leading zero (1 - 12)
+     * - %M   minute, 2 digits (00 - 59)
+     * - %S   seconds (00 - 59)
+     * - %:S  seconds preceded with ':', but omitted if seconds value is zero
+     * - %:s  milliseconds, 3 digits (000 - 999)
+     * - %P   "am" or "pm" in the current locale, or if undefined there, in English
+     * - %p   "AM" or "PM" in the current locale, or if undefined there, in English
+     * - %:P  "am" or "pm"
+     * - %:p  "AM" or "PM"
+     *
+     * \b Time zone
+     *
+     * - %:u  UTC offset of the time zone in hours, e.g. -02. If the offset
+     *        is not a whole number of hours, the output is the same as for '%U'.
+     * - %z   UTC offset of the time zone in hours and minutes, e.g. -0200.
+     * - %:z  UTC offset of the time zone in hours and minutes, e.g. +02:00.
+     * - %Z   time zone abbreviation, e.g. UTC, EDT, GMT. This is not guaranteed
+     *        to be unique among different time zones. If not applicable (i.e. if
+     *        the instance is type OffsetFromUTC), the UTC offset is substituted.
+     * - %:Z  time zone name, e.g. Europe/London. This is system dependent. If
+     *        not applicable (i.e. if the instance is type OffsetFromUTC), the
+     *        UTC offset is substituted.
+     *
+     * \b Other
+     *
+     * - %%   literal '%' character
      *
      * Note that if the instance has a time specification of ClockTime, the
      * time zone or UTC offset in the result will be blank.
@@ -941,64 +994,64 @@ class KDECORE_EXPORT KDateTime
      * 0 - 59, so the maximum number of digits consumed is 2). All non-numeric
      * values are case insensitive.
      *
-     * Date
-     * ====
-     * %y   year excluding century (0 - 99). Years 0 - 50 return 2000 - 2050,
-     *      while years 51 - 99 return 1951 - 1999.
-     * %Y   full year number
-     * %:m
-     * %m   month number (1 - 12)
-     * %b
-     * %B   month name in the current locale or, if no match, in English,
-     *      abbreviated or in full
-     * %:b
-     * %:B  month name in English, abbreviated or in full
-     * %e
-     * %d   day of the month (1 - 31)
-     * %a
-     * %A   weekday name in the current locale or, if no match, in English,
-     *      abbreviated or in full
-     * %:a
-     * %:A  weekday name in English, abbreviated or in full
+     * \b Date
      *
-     * Time
-     * ====
-     * %H
-     * %k   hour in the 24 hour clock (0 - 23)
-     * %I
-     * %l   hour in the 12 hour clock (1 - 12)
-     * %M   minute (0 - 59)
-     * %S   seconds (0 - 59)
-     * %:S  optional seconds value (0 - 59) preceded with ':'. If no colon is
-     *      found in @p string, no input is consumed and the seconds value is
-     *      set to zero.
-     * %:s  fractional seconds value, preceded with a decimal point (either '.'
-     *      or the locale's decimal point symbol)
-     * %P
-     * %p   "am" or "pm", in the current locale or, if no match, in
-     *      English. This format is only useful when used with %I or %l.
-     * %:P
-     * %:p  "am" or "pm" in English. This format is only useful when used with
-     *      %I or %l.
+     * - %y   year excluding century (0 - 99). Years 0 - 50 return 2000 - 2050,
+     *        while years 51 - 99 return 1951 - 1999.
+     * - %Y   full year number
+     * - %:m
+     * - %m   month number (1 - 12)
+     * - %b
+     * - %B   month name in the current locale or, if no match, in English,
+     *        abbreviated or in full
+     * - %:b
+     * - %:B  month name in English, abbreviated or in full
+     * - %e
+     * - %d   day of the month (1 - 31)
+     * - %a
+     * - %A   weekday name in the current locale or, if no match, in English,
+     *        abbreviated or in full
+     * - %:a
+     * - %:A  weekday name in English, abbreviated or in full
      *
-     * Time zone
-     * =========
-     * %:u
-     * %z   UTC offset of the time zone in hours and optionally minutes,
-     *      e.g. -02, -0200.
-     * %:z  UTC offset of the time zone in hours and minutes, colon separated,
-     *      e.g. +02:00.
-     * %Z   time zone abbreviation, consisting of alphanumeric characters,
-     *      e.g. UTC, EDT, GMT.
-     * %:Z  time zone name, e.g. Europe/London. The name may contain any
-     *      characters and is delimited by the following character in the
-     *      @p format string. It will not work if you follow %:Z with another
-     *      escape sequence (except %% or %t).
+     * \b Time
      *
-     * Other
-     * =====
-     * %t   matches one or more whitespace characters
-     * %%   literal '%' character
+     * - %H
+     * - %k   hour in the 24 hour clock (0 - 23)
+     * - %I
+     * - %l   hour in the 12 hour clock (1 - 12)
+     * - %M   minute (0 - 59)
+     * - %S   seconds (0 - 59)
+     * - %:S  optional seconds value (0 - 59) preceded with ':'. If no colon is
+     *        found in @p string, no input is consumed and the seconds value is
+     *        set to zero.
+     * - %:s  fractional seconds value, preceded with a decimal point (either '.'
+     *        or the locale's decimal point symbol)
+     * - %P
+     * - %p   "am" or "pm", in the current locale or, if no match, in
+     *        English. This format is only useful when used with %I or %l.
+     * - %:P
+     * - %:p  "am" or "pm" in English. This format is only useful when used with
+     *        %I or %l.
+     *
+     * \b Time zone
+     *
+     * - %:u
+     * - %z   UTC offset of the time zone in hours and optionally minutes,
+     *        e.g. -02, -0200.
+     * - %:z  UTC offset of the time zone in hours and minutes, colon separated,
+     *        e.g. +02:00.
+     * - %Z   time zone abbreviation, consisting of alphanumeric characters,
+     *        e.g. UTC, EDT, GMT.
+     * - %:Z  time zone name, e.g. Europe/London. The name may contain any
+     *        characters and is delimited by the following character in the
+     *        @p format string. It will not work if you follow %:Z with another
+     *        escape sequence (except %% or %t).
+     *
+     * \b Other
+     *
+     * - %t   matches one or more whitespace characters
+     * - %%   literal '%' character
      *
      * Any other character must have a matching character in @p string, except
      * that a space will match zero or more whitespace characters in the input

@@ -27,6 +27,7 @@ class KDateTimeTest : public QObject
 private Q_SLOTS:
     void constructors();
     void toUTC();
+    void toOffsetFromUTC();
     void toLocalZone();
     void toClockTime();
     void toZone();
@@ -34,6 +35,7 @@ private Q_SLOTS:
     void set();
     void compare();
     void addSubtract();
+    void addMSecs();
     void addSubtractDate();
     void strings_iso8601();
     void strings_rfc2822();

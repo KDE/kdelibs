@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2005 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -528,6 +528,181 @@ void KDateTimeTest::toUTC()
     utcUtc = utc.toUTC();
     QVERIFY(utcUtc.isDateOnly());
     QCOMPARE(utcUtc.dateTime(), QDateTime(QDate(2005,6,6), QTime(0,0,0), Qt::UTC));
+
+    // Restore the original local time zone
+    if (!originalZone)
+        ::unsetenv("TZ");
+    else
+        ::setenv("TZ", originalZone, 1);
+    ::tzset();
+}
+
+void KDateTimeTest::toOffsetFromUTC()
+{
+    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+
+    // Ensure that local time is different from UTC and different from 'london'
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    ::setenv("TZ", ":America/Los_Angeles", 1);
+    ::tzset();
+
+    // ***** toOffsetFromUTC(void) *****
+
+    // Zone -> UTC offset
+    KDateTime londonWinter(QDate(2005,1,1), QTime(2,0,0), london);
+    KDateTime offsetWinter = londonWinter.toOffsetFromUTC();
+    QVERIFY(offsetWinter.isOffsetFromUTC());
+    QCOMPARE(offsetWinter.UTCOffset(), 0);
+    QCOMPARE(offsetWinter.dateTime(), QDateTime(QDate(2005,1,1), QTime(2,0,0), Qt::LocalTime));
+    QVERIFY(londonWinter == offsetWinter);
+    KDateTime londonSummer(QDate(2005,6,1), QTime(14,0,0), london);
+    KDateTime offsetSummer = londonSummer.toOffsetFromUTC();
+    QVERIFY(offsetSummer.isOffsetFromUTC());
+    QCOMPARE(offsetSummer.UTCOffset(), 3600);
+    QCOMPARE(offsetSummer.dateTime(), QDateTime(QDate(2005,6,1), QTime(14,0,0), Qt::LocalTime));
+    QVERIFY(londonSummer == offsetSummer);
+    QVERIFY(!(londonSummer == offsetWinter));
+    QVERIFY(!(londonWinter == offsetSummer));
+
+    // UTC offset -> UTC offset
+    KDateTime offset(QDate(2005,6,6), QTime(11,2,30), KDateTime::OffsetFromUTC, -5400);  // -0130
+    KDateTime offsetOffset = offset.toOffsetFromUTC();
+    QVERIFY(offsetOffset.isOffsetFromUTC());
+    QCOMPARE(offsetOffset.UTCOffset(), -5400);
+    QCOMPARE(offsetOffset.dateTime(), QDateTime(QDate(2005,6,6), QTime(11,2,30), Qt::LocalTime));
+    QVERIFY(offset == offsetOffset);
+    QVERIFY(!(offset == offsetSummer));
+
+    // Clock time -> UTC offset
+    KDateTime clock(QDate(2005,6,6), QTime(1,2,30), KDateTime::ClockTime);
+    KDateTime offsetClock = clock.toOffsetFromUTC();
+    QVERIFY(offsetClock.isOffsetFromUTC());
+    QCOMPARE(offsetClock.UTCOffset(), -7*3600);
+    QCOMPARE(offsetClock.dateTime(), QDateTime(QDate(2005,6,6), QTime(1,2,30), Qt::LocalTime));
+    QVERIFY(clock == offsetClock);
+    QVERIFY(!(clock == offsetOffset));
+
+    // UTC -> UTC offset
+    KDateTime utc(QDate(2005,6,6), QTime(11,2,30), KDateTime::UTC);
+    KDateTime offsetUtc = utc.toOffsetFromUTC();
+    QVERIFY(offsetUtc.isOffsetFromUTC());
+    QCOMPARE(offsetUtc.UTCOffset(), 0);
+    QCOMPARE(offsetUtc.dateTime(), QDateTime(QDate(2005,6,6), QTime(11,2,30), Qt::LocalTime));
+    QVERIFY(utc == offsetUtc);
+    QVERIFY(!(utc == offsetClock));
+
+    // ** Date only ** //
+
+    // Zone -> UTC offset
+    londonSummer.setDateOnly(true);
+    offsetSummer = londonSummer.toOffsetFromUTC();
+    QVERIFY(offsetSummer.isDateOnly());
+    QVERIFY(offsetSummer.isOffsetFromUTC());
+    QCOMPARE(offsetSummer.UTCOffset(), 3600);
+    QCOMPARE(offsetSummer.dateTime(), QDateTime(QDate(2005,6,1), QTime(0,0,0), Qt::LocalTime));
+
+    // UTC offset -> UTC offset
+    offset.setDateOnly(true);
+    offsetOffset = offset.toOffsetFromUTC();
+    QVERIFY(offsetOffset.isDateOnly());
+    QVERIFY(offsetOffset.isOffsetFromUTC());
+    QCOMPARE(offsetOffset.UTCOffset(), -5400);
+    QCOMPARE(offsetOffset.dateTime(), QDateTime(QDate(2005,6,6), QTime(0,0,0), Qt::LocalTime));
+
+    // Clock time -> UTC offset
+    clock.setDateOnly(true);
+    offsetClock = clock.toOffsetFromUTC();
+    QVERIFY(offsetClock.isDateOnly());
+    QVERIFY(offsetClock.isOffsetFromUTC());
+    QCOMPARE(offsetClock.UTCOffset(), -7*3600);
+    QCOMPARE(offsetClock.dateTime(), QDateTime(QDate(2005,6,6), QTime(0,0,0), Qt::LocalTime));
+
+    // UTC -> UTC offset
+    utc.setDateOnly(true);
+    offsetUtc = utc.toOffsetFromUTC();
+    QVERIFY(offsetUtc.isDateOnly());
+    QVERIFY(offsetUtc.isOffsetFromUTC());
+    QCOMPARE(offsetUtc.UTCOffset(), 0);
+    QCOMPARE(offsetUtc.dateTime(), QDateTime(QDate(2005,6,6), QTime(0,0,0), Qt::LocalTime));
+
+    // ***** toOffsetFromUTC(int utcOffset) *****
+
+    // Zone -> UTC offset
+    KDateTime londonWinter2(QDate(2005,1,1), QTime(2,0,0), london);
+    offsetWinter = londonWinter2.toOffsetFromUTC(5400);    // +1H30M
+    QVERIFY(offsetWinter.isOffsetFromUTC());
+    QCOMPARE(offsetWinter.UTCOffset(), 5400);
+    QCOMPARE(offsetWinter.dateTime(), QDateTime(QDate(2005,1,1), QTime(3,30,0), Qt::LocalTime));
+    QVERIFY(londonWinter2 == offsetWinter);
+    KDateTime londonSummer2(QDate(2005,6,1), QTime(14,0,0), london);
+    offsetSummer = londonSummer2.toOffsetFromUTC(5400);
+    QVERIFY(offsetSummer.isOffsetFromUTC());
+    QCOMPARE(offsetSummer.UTCOffset(), 5400);
+    QCOMPARE(offsetSummer.dateTime(), QDateTime(QDate(2005,6,1), QTime(14,30,0), Qt::LocalTime));
+    QVERIFY(londonSummer2 == offsetSummer);
+    QVERIFY(!(londonSummer2 == offsetWinter));
+    QVERIFY(!(londonWinter2 == offsetSummer));
+
+    // UTC offset -> UTC offset
+    KDateTime offset2(QDate(2005,6,6), QTime(11,2,30), KDateTime::OffsetFromUTC, -5400);  // -0130
+    offsetOffset = offset2.toOffsetFromUTC(3600);
+    QVERIFY(offsetOffset.isOffsetFromUTC());
+    QCOMPARE(offsetOffset.UTCOffset(), 3600);
+    QCOMPARE(offsetOffset.dateTime(), QDateTime(QDate(2005,6,6), QTime(13,32,30), Qt::LocalTime));
+    QVERIFY(offset2 == offsetOffset);
+    QVERIFY(!(offset2 == offsetSummer));
+
+    // Clock time -> UTC offset
+    KDateTime clock2(QDate(2005,6,6), QTime(1,2,30), KDateTime::ClockTime);
+    offsetClock = clock2.toOffsetFromUTC(0);
+    QVERIFY(offsetClock.isOffsetFromUTC());
+    QCOMPARE(offsetClock.UTCOffset(), 0);
+    QCOMPARE(offsetClock.dateTime(), QDateTime(QDate(2005,6,6), QTime(8,2,30), Qt::LocalTime));
+    QVERIFY(clock2 == offsetClock);
+    QVERIFY(!(clock2 == offsetOffset));
+
+    // UTC -> UTC offset
+    KDateTime utc2(QDate(2005,6,6), QTime(11,2,30), KDateTime::UTC);
+    offsetUtc = utc2.toOffsetFromUTC(-3600);
+    QVERIFY(offsetUtc.isOffsetFromUTC());
+    QCOMPARE(offsetUtc.UTCOffset(), -3600);
+    QCOMPARE(offsetUtc.dateTime(), QDateTime(QDate(2005,6,6), QTime(10,2,30), Qt::LocalTime));
+    QVERIFY(utc2 == offsetUtc);
+    QVERIFY(!(utc2 == offsetClock));
+
+    // ** Date only ** //
+
+    // Zone -> UTC offset
+    londonSummer2.setDateOnly(true);
+    offsetSummer = londonSummer2.toOffsetFromUTC(5400);
+    QVERIFY(offsetSummer.isDateOnly());
+    QVERIFY(offsetSummer.isOffsetFromUTC());
+    QCOMPARE(offsetSummer.UTCOffset(), 5400);
+    QCOMPARE(offsetSummer.dateTime(), QDateTime(QDate(2005,6,1), QTime(0,0,0), Qt::LocalTime));
+
+    // UTC offset -> UTC offset
+    offset2.setDateOnly(true);
+    offsetOffset = offset2.toOffsetFromUTC(-3600);
+    QVERIFY(offsetOffset.isDateOnly());
+    QVERIFY(offsetOffset.isOffsetFromUTC());
+    QCOMPARE(offsetOffset.UTCOffset(), -3600);
+    QCOMPARE(offsetOffset.dateTime(), QDateTime(QDate(2005,6,6), QTime(0,0,0), Qt::LocalTime));
+
+    // Clock time -> UTC offset
+    clock2.setDateOnly(true);
+    offsetClock = clock2.toOffsetFromUTC(6*3600);
+    QVERIFY(offsetClock.isDateOnly());
+    QVERIFY(offsetClock.isOffsetFromUTC());
+    QCOMPARE(offsetClock.UTCOffset(), 6*3600);
+    QCOMPARE(offsetClock.dateTime(), QDateTime(QDate(2005,6,6), QTime(0,0,0), Qt::LocalTime));
+
+    // UTC -> UTC offset
+    utc2.setDateOnly(true);
+    offsetUtc = utc2.toOffsetFromUTC(1800);
+    QVERIFY(offsetUtc.isDateOnly());
+    QVERIFY(offsetUtc.isOffsetFromUTC());
+    QCOMPARE(offsetUtc.UTCOffset(), 1800);
+    QCOMPARE(offsetUtc.dateTime(), QDateTime(QDate(2005,6,6), QTime(0,0,0), Qt::LocalTime));
 
     // Restore the original local time zone
     if (!originalZone)
@@ -1474,6 +1649,111 @@ void KDateTimeTest::addSubtract()
     QVERIFY(local1 >= clock1);
     QVERIFY(!(local1 < clock1));
     QVERIFY(!(local1 > clock1));
+
+    // Restore the original local time zone
+    if (!originalZone)
+        ::unsetenv("TZ");
+    else
+        ::setenv("TZ", originalZone, 1);
+    ::tzset();
+}
+
+void KDateTimeTest::addMSecs()
+{
+    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    const KTimezone *losAngeles = KSystemTimezones::zone("America/Los_Angeles");
+
+    // Ensure that local time is different from UTC and different from 'london'
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    ::setenv("TZ", ":America/Los_Angeles", 1);
+    ::tzset();
+
+    // UTC
+    KDateTime utc1(QDate(2005,7,6), QTime(23,59,0,100), KDateTime::UTC);
+    KDateTime utc2 = utc1.addMSecs(59899);
+    QVERIFY(utc2.isUTC());
+    QCOMPARE(utc2.dateTime(), QDateTime(QDate(2005,7,6), QTime(23,59,59,999), Qt::UTC));
+    utc2 = utc1.addMSecs(59900);
+    QVERIFY(utc2.isUTC());
+    QCOMPARE(utc2.dateTime(), QDateTime(QDate(2005,7,7), QTime(0,0,0,0), Qt::UTC));
+    KDateTime utc1a(QDate(2005,7,6), QTime(0,0,5,100), KDateTime::UTC);
+    utc2 = utc1a.addMSecs(-5100);
+    QVERIFY(utc2.isUTC());
+    QCOMPARE(utc2.dateTime(), QDateTime(QDate(2005,7,6), QTime(0,0,0,0), Qt::UTC));
+    utc2 = utc1a.addMSecs(-5101);
+    QVERIFY(utc2.isUTC());
+    QCOMPARE(utc2.dateTime(), QDateTime(QDate(2005,7,5), QTime(23,59,59,999), Qt::UTC));
+
+    // UTC offset
+    KDateTime offset1(QDate(2005,7,6), QTime(3,40,0,100), KDateTime::OffsetFromUTC, -5400);  // -0130
+    KDateTime offset2 = offset1.addMSecs(5899);
+    QVERIFY(offset2.isOffsetFromUTC());
+    QCOMPARE(offset2.UTCOffset(), -5400);
+    QCOMPARE(offset2.dateTime(), QDateTime(QDate(2005,7,6), QTime(3,40,5,999), Qt::LocalTime));
+    offset2 = offset1.addMSecs(5900);
+    QVERIFY(offset2.isOffsetFromUTC());
+    QCOMPARE(offset2.UTCOffset(), -5400);
+    QCOMPARE(offset2.dateTime(), QDateTime(QDate(2005,7,6), QTime(3,40,6,0), Qt::LocalTime));
+    offset2 = offset1.addMSecs(-5100);
+    QVERIFY(offset2.isOffsetFromUTC());
+    QCOMPARE(offset2.UTCOffset(), -5400);
+    QCOMPARE(offset2.dateTime(), QDateTime(QDate(2005,7,6), QTime(3,39,55,0), Qt::LocalTime));
+    offset2 = offset1.addMSecs(-5101);
+    QVERIFY(offset2.isOffsetFromUTC());
+    QCOMPARE(offset2.UTCOffset(), -5400);
+    QCOMPARE(offset2.dateTime(), QDateTime(QDate(2005,7,6), QTime(3,39,54,999), Qt::LocalTime));
+
+    // Zone
+    KDateTime zone1(QDate(2002,3,31), QTime(0,40,0,100), london);   // time changes at 01:00 UTC
+    KDateTime zone2 = zone1.addMSecs(3600*1000+899);
+    QCOMPARE(zone2.timeZone(), london);
+    QCOMPARE(zone2.dateTime(), QDateTime(QDate(2002,3,31), QTime(2,40,0,999), Qt::LocalTime));
+    zone2 = zone1.addMSecs(3600*1000+900);
+    QCOMPARE(zone2.timeZone(), london);
+    QCOMPARE(zone2.dateTime(), QDateTime(QDate(2002,3,31), QTime(2,40,1,0), Qt::LocalTime));
+    KDateTime zone1a(QDate(2002,3,31), QTime(2,40,0,100), london);   // time changes at 01:00 UTC
+    zone2 = zone1a.addMSecs(-(3600*1000+100));
+    QCOMPARE(zone2.timeZone(), london);
+    QCOMPARE(zone2.dateTime(), QDateTime(QDate(2002,3,31), QTime(0,40,0,0), Qt::LocalTime));
+    zone2 = zone1a.addMSecs(-(3600*1000+101));
+    QCOMPARE(zone2.timeZone(), london);
+    QCOMPARE(zone2.dateTime(), QDateTime(QDate(2002,3,31), QTime(0,39,59,999), Qt::LocalTime));
+
+    // Local zone
+    KDateTime local1(QDate(2002,4,7), QTime(1,59,0,100), KDateTime::LocalZone);   // time changes at 02:00 local
+    KDateTime local2 = local1.addMSecs(59899);
+    QVERIFY(local2.isLocalZone());
+    QCOMPARE(local2.timeZone(), losAngeles);
+    QCOMPARE(local2.dateTime(), QDateTime(QDate(2002,4,7), QTime(1,59,59,999), Qt::LocalTime));
+    local2 = local1.addMSecs(59900);
+    QVERIFY(local2.isLocalZone());
+    QCOMPARE(local2.timeZone(), losAngeles);
+    QCOMPARE(local2.dateTime(), QDateTime(QDate(2002,4,7), QTime(3,0,0,0), Qt::LocalTime));
+    KDateTime local1a(QDate(2002,4,7), QTime(3,0,0,100), KDateTime::LocalZone);   // time changes at 02:00 local
+    local2 = local1a.addMSecs(-100);
+    QVERIFY(local2.isLocalZone());
+    QCOMPARE(local2.timeZone(), losAngeles);
+    QCOMPARE(local2.dateTime(), QDateTime(QDate(2002,4,7), QTime(3,0,0,0), Qt::LocalTime));
+    local2 = local1a.addMSecs(-101);
+    QVERIFY(local2.isLocalZone());
+    QCOMPARE(local2.timeZone(), losAngeles);
+    QCOMPARE(local2.dateTime(), QDateTime(QDate(2002,4,7), QTime(1,59,59,999), Qt::LocalTime));
+
+    // Clock time
+    KDateTime clock1(QDate(2002,4,7), QTime(1,59,0,100), KDateTime::ClockTime);
+    KDateTime clock2 = clock1.addMSecs(59899);
+    QVERIFY(clock2.isClockTime());
+    QCOMPARE(clock2.dateTime(), QDateTime(QDate(2002,4,7), QTime(1,59,59,999), Qt::LocalTime));
+    clock2 = clock1.addMSecs(59900);
+    QVERIFY(clock2.isClockTime());
+    QCOMPARE(clock2.dateTime(), QDateTime(QDate(2002,4,7), QTime(2,0,0,0), Qt::LocalTime));
+    KDateTime clock1a(QDate(2002,4,7), QTime(0,0,0,100), KDateTime::ClockTime);
+    clock2 = clock1a.addMSecs(-100);
+    QVERIFY(clock2.isClockTime());
+    QCOMPARE(clock2.dateTime(), QDateTime(QDate(2002,4,7), QTime(0,0,0,0), Qt::LocalTime));
+    clock2 = clock1a.addMSecs(-101);
+    QVERIFY(clock2.isClockTime());
+    QCOMPARE(clock2.dateTime(), QDateTime(QDate(2002,4,6), QTime(23,59,59,999), Qt::LocalTime));
 
     // Restore the original local time zone
     if (!originalZone)
