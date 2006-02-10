@@ -40,10 +40,6 @@
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <qwidget.h>
-#ifndef QT_NO_SQL
-#include <q3sqlpropertymap.h> // no equivilant in Qt4
-#endif
-
 #include <QList>
 
 #undef QT_NO_TRANSLATION
@@ -1662,43 +1658,6 @@ void KApplication::propagateSettings(SettingsCategory arg)
     emit settingsChanged(arg);
 }
 
-void KApplication::installKDEPropertyMap()
-{
-#ifndef QT_NO_SQL
-    static bool installed = false;
-    if (installed) return;
-    installed = true;
-    /**
-     * If you are adding a widget that was missing please
-     * make sure to also add it to KConfigDialogManager's retrieveSettings()
-     * function.
-     * Thanks.
-     */
-    // QSqlPropertyMap takes ownership of the new default map.
-    Q3SqlPropertyMap *kdeMap = new Q3SqlPropertyMap;
-    kdeMap->insert( "KColorButton", "color" );
-    kdeMap->insert( "KComboBox", "currentIndex" );
-    kdeMap->insert( "KDatePicker", "date" );
-    kdeMap->insert( "KDateWidget", "date" );
-    kdeMap->insert( "KDateTimeWidget", "dateTime" );
-    kdeMap->insert( "KEditListBox", "items" );
-    kdeMap->insert( "KFontCombo", "family" );
-    kdeMap->insert( "KFontRequester", "font" );
-    kdeMap->insert( "KFontChooser", "font" );
-    kdeMap->insert( "KHistoryCombo", "currentItem" );
-    kdeMap->insert( "KListBox", "currentItem" );
-    kdeMap->insert( "KLineEdit", "text" );
-    kdeMap->insert( "KRestrictedLine", "text" );
-    kdeMap->insert( "KTextBrowser", "source" );
-    kdeMap->insert( "KTextEdit", "text" );
-    kdeMap->insert( "KUrlRequester", "url" );
-    kdeMap->insert( "KPasswordEdit", "password" );
-    kdeMap->insert( "KIntNumInput", "value" );
-    kdeMap->insert( "KIntSpinBox", "value" );
-    kdeMap->insert( "KDoubleNumInput", "value" );
-    Q3SqlPropertyMap::installDefaultMap( kdeMap );
-#endif
-}
 
 QByteArray KApplication::launcher()
 {

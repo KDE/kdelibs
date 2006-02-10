@@ -138,6 +138,17 @@ by QX11Info::display()</li>
 <li>propagateSessionManager() and requestShutDown() have been moved into the kworkspace library (kdebase/workspace/lib).</li>
 <li>The shutDown() signal has been removed, use QApplication's signal aboutToQuit()</li>
 <li>enableStyles(), disableStyles(), and the constructor argument has been removed.</li>
+<li>installKDEPropertyMap has been removed.  Use User in the meta object to determine which Q_PROPERTY to use for any widget.
+<pre>
+  const QMetaObject *metaObject = widget->metaObject();
+  for (int i = 0; i < metaObject->propertyCount(); ++i) {
+    const QMetaProperty metaProperty = metaObject->property(i);
+    if (metaProperty.isUser()) {
+      QString propertyToUse = metaProperty.name();
+      break;
+    }
+  }
+</pre></li>
 </ul>
 
 <H4>KCatalogue</H4>

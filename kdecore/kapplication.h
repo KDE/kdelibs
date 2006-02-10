@@ -38,6 +38,9 @@ class DCOPObject;
 #include <kicontheme.h>
 #include <qpixmap.h>
 #include <qicon.h>
+#ifndef QT_NO_SQL
+#include <q3sqlpropertymap.h>
+#endif
 #endif
 
 typedef unsigned long Atom;
@@ -460,13 +463,63 @@ public:
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString();
   };
-#endif
 
   /**
    * Install a Qt SQL property map with entries for all KDE widgets
    * Call this in any application using KDE widgets in QSqlForm or QDataView.
+   *
+   * @deprecated use User in the meta object to determine which Q_PROPERTY to use for any widget.
+   *
+   * <code>
+   *  const QMetaObject *metaObject = widget->metaObject();
+   *  for (int i = 0; i < metaObject->propertyCount(); ++i) {
+   *    const QMetaProperty metaProperty = metaObject->property(i);
+   *    if (metaProperty.isUser()) {
+   *      QString propertyToUse = metaProperty.name();
+   *      break;
+   *    }
+   *  }
+   * </code>
    */
-  static void installKDEPropertyMap();
+  static inline KDE_DEPRECATED void installKDEPropertyMap()
+  {
+#ifndef QT_NO_SQL
+    static bool installed = false;
+    if (installed) return;
+    installed = true;
+    /**
+     * If you are adding a widget that was missing please
+     * make sure to also add it to KConfigDialogManager's retrieveSettings()
+     * function.
+     * Thanks.
+     */
+    // QSqlPropertyMap takes ownership of the new default map.
+    Q3SqlPropertyMap *kdeMap = new Q3SqlPropertyMap;
+    kdeMap->insert( "KColorButton", "color" );
+    kdeMap->insert( "KComboBox", "currentIndex" );
+    kdeMap->insert( "KDatePicker", "date" );
+    kdeMap->insert( "KDateWidget", "date" );
+    kdeMap->insert( "KDateTimeWidget", "dateTime" );
+    kdeMap->insert( "KEditListBox", "items" );
+    kdeMap->insert( "KFontCombo", "family" );
+    kdeMap->insert( "KFontRequester", "font" );
+    kdeMap->insert( "KFontChooser", "font" );
+    kdeMap->insert( "KHistoryCombo", "currentItem" );
+    kdeMap->insert( "KListBox", "currentItem" );
+    kdeMap->insert( "KLineEdit", "text" );
+    kdeMap->insert( "KRestrictedLine", "text" );
+    kdeMap->insert( "KTextBrowser", "source" );
+    kdeMap->insert( "KTextEdit", "text" );
+    kdeMap->insert( "KUrlRequester", "url" );
+    kdeMap->insert( "KPasswordEdit", "password" );
+    kdeMap->insert( "KIntNumInput", "value" );
+    kdeMap->insert( "KIntSpinBox", "value" );
+    kdeMap->insert( "KDoubleNumInput", "value" );
+    Q3SqlPropertyMap::installDefaultMap( kdeMap );
+#endif
+  }
+
+#endif
 
 public Q_SLOTS:
   /**
