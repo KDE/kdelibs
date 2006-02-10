@@ -31,8 +31,13 @@ def generate(env):
 		have_lib = 0
 		if env['HAVE_PKGCONFIG'] == 0:
 			conf = env.Configure()
-			if conf.CheckHeader('opensslconf.h'):
-				if conf.CheckLib('eay32'):
+			if conf.CheckHeader('openssl/opensslconf.h'):
+				# 0.9.7 
+				if conf.CheckLib('ssl'):
+					conf.env['INCLUDES_OPENSSL'] = ['']
+					conf.env['LIB_OPENSSL']      = ['ssl','crypto']
+					have_lib = 1
+				elif conf.CheckLib('eay32'):
 					conf.env['INCLUDES_OPENSSL'] = ['']
 					conf.env['LIB_OPENSSL']      = ['eay32']
 					have_lib = 1
