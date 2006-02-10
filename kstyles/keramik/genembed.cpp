@@ -252,7 +252,7 @@ int main(int argc, char** argv)
 			//cout<<(int)destAlpha.alphas[pos]<<"\n";
 			QColor clr(basePix);
 			int h,s,v;
-			clr.hsv(&h,&s,&v);
+			clr.getHsv(&h,&s,&v);
 
 			v=qGray(basePix);
 

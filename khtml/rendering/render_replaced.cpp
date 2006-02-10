@@ -291,7 +291,7 @@ void RenderWidget::updateFromElement()
 
                 QColor disfg = color;
                 int h, s, v;
-                disfg.hsv( &h, &s, &v );
+                disfg.getHsv( &h, &s, &v );
                 if (v > 128)
                     // dark bg, light fg - need a darker disabled fg
                     disfg = disfg.dark(lowlightVal);
