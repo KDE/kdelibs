@@ -36,6 +36,10 @@
 #include <kdialog.h>
 #include <QMenu>
 
+//TODO: Use kspell2 in the future. 
+//Use ksyntaxhighlighter from kspell2
+
+
 class KTextEdit::KTextEditPrivate
 {
 public:
@@ -305,7 +309,6 @@ void KTextEdit::toggleAutoSpellCheck()
 
 void KTextEdit::setCheckSpellingEnabled( bool check )
 {
-#if 0
     if ( check == d->checkSpellingEnabled )
         return;
 
@@ -314,6 +317,7 @@ void KTextEdit::setCheckSpellingEnabled( bool check )
     // off we should remove the old one.
 
     d->checkSpellingEnabled = check;
+#if 0	
     if ( check )
     {
         if ( hasFocus() )
