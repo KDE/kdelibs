@@ -316,7 +316,7 @@ public:
 	QString dir() const { return m_kurl->directory(false, false); }
 	QString file() const { return m_kurl->fileName(false); }
 
-    // The initial, unparsed, url, as a string.
+	// The initial, unparsed, url, as a string.
 	QString url() const { return m_url; }
 
 	// Is the initial string a URL, or just a path (whether absolute or relative)
@@ -1032,7 +1032,7 @@ void KUrlCompletion::addMatches( const QStringList &matchList )
 
 	if ( d->complete_url )
 		for ( ; it != end; ++it )
-			addItem( d->prepend + KUrl::encode_string(*it));
+			addItem( d->prepend + QUrl::toPercentEncoding(*it) );
 	else
 		for ( ; it != end; ++it )
 			addItem( d->prepend + (*it));
