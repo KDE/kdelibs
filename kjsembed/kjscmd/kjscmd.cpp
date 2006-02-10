@@ -65,7 +65,7 @@ int main( int argc, char **argv )
         args.append( KJS::String( argv[i] ) );
     }
 
-    KJS::JSObject *argobj = new KJS::JSObject( js->builtinArray()->construct( exec, args ) );
+    KJS::JSObject *argobj = js->builtinArray()->construct( exec, args );
     appobj->put( exec, "args", argobj );
 
     Engine::ExitStatus result = Engine::Failure;
