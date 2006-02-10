@@ -1179,7 +1179,7 @@ void Loader::slotFinished( KIO::Job* job )
           static_cast<CachedImage*>( r->object )->setSuggestedTitle(fn);
           KTempFile tf;
           tf.setAutoDelete(true);
-          tf.file()->writeBlock((const char*)r->m_buffer.buffer().data(), r->m_buffer.size());
+          tf.file()->write((const char*)r->m_buffer.buffer().data(), r->m_buffer.size());
           tf.sync();
           KFileMetaInfo kfmi(tf.name());
           if (!kfmi.isEmpty()) {
@@ -1220,7 +1220,7 @@ void Loader::slotData( KIO::Job*job, const QByteArray &data )
     if ( !r->m_buffer.isOpen() )
         r->m_buffer.open( QIODevice::WriteOnly );
 
-    r->m_buffer.writeBlock( data.data(), data.size() );
+    r->m_buffer.write( data.data(), data.size() );
 
     if(r->incremental)
         r->object->data( r->m_buffer, false );

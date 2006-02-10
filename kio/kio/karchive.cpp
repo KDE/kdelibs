@@ -310,7 +310,7 @@ bool KArchive::writeFile( const QString& name, const QString& user,
     }
 
     // Write data
-    // Note: if data is 0L, don't call writeBlock, it would terminate the KFilterDev
+    // Note: if data is 0L, don't call write, it would terminate the KFilterDev
     if ( data && size && !writeData( data, size ) )
     {
         kWarning() << "KArchive::writeFile writeData failed" << endl;

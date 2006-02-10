@@ -67,7 +67,7 @@ KTempFile ktf;
     if (base64.isEmpty()) return NULL;
     QByteArray qba, qbb = Q3CString(base64.latin1()).copy();
     KCodecs::base64Decode(qbb, qba);
-    ktf.file()->writeBlock(qba);
+    ktf.file()->write(qba);
     ktf.close();
     KSSLPKCS7* rc = loadCertFile(ktf.name());
     ktf.unlink();

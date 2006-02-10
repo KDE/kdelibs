@@ -659,9 +659,9 @@ QStringList x = cfg.groupList();
 		for (unsigned int j = 0; j < xx/64; j++) {
 			cert.insert(64*(j+1)+j, '\n');
 		}
-		out.writeBlock("-----BEGIN CERTIFICATE-----\n", 28);
-		out.writeBlock(cert.latin1(), cert.length());
-		out.writeBlock("\n-----END CERTIFICATE-----\n\n", 28);
+		out.write("-----BEGIN CERTIFICATE-----\n", 28);
+		out.write(cert.latin1(), cert.length());
+		out.write("\n-----END CERTIFICATE-----\n\n", 28);
 		out.flush();
 	}
 

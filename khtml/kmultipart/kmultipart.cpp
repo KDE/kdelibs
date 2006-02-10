@@ -470,7 +470,7 @@ void KMultiPart::reallySendData( const QByteArray& line )
     }
     else if ( m_tempFile )
     {
-        m_tempFile->file()->writeBlock( line.data(), line.size() );
+        m_tempFile->file()->write( line.data(), line.size() );
     }
 }
 

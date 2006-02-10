@@ -340,7 +340,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
             QTextStream stream(&str, QIODevice::WriteOnly);
             stream << root().findToolbar();
             const QByteArray cstr = str.toUtf8();
-            cacheFile.file()->writeBlock( cstr.data(), cstr.length() );
+            cacheFile.file()->write( cstr.data(), cstr.length() );
             cacheFile.close();
         }
     }
@@ -354,7 +354,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     {
         file.simpleBackupFile( file.name(), QString(), ".bak" );
         QByteArray cstr = internalDocument().toByteArray(); // is in UTF8
-        file.file()->writeBlock( cstr.data(), cstr.length() );
+        file.file()->write( cstr.data(), cstr.length() );
         if ( file.close() )
             return true;
     }

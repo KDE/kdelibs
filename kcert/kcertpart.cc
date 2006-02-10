@@ -434,7 +434,7 @@ if (_p12) {
 
 	QFile of(certFile);
 
-	if (!of.open(QIODevice::WriteOnly) || of.writeBlock(enc) != enc.size()) {
+	if (!of.open(QIODevice::WriteOnly) || of.write(enc) != enc.size()) {
 		KMessageBox::sorry(_frame, i18n("Save failed."), i18n("Certificate Import"));
 		return false;
 	}

@@ -371,7 +371,7 @@ bool KMManager::uncompressFile(const QString& filename, QString& destname)
 				gzFile	in = gzopen(filename.latin1(),"r");
 				int	n(0);
 				while ((n=gzread(in,buf,1024)) > 0)
-					if (f.writeBlock(buf,n) != n)
+					if (f.write(buf,n) != n)
 						break;
 				if (n != 0) result = false;
 				gzclose(in);

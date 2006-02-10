@@ -369,31 +369,31 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
             ioIndex += wrote;
 
             availIn = len - dataWritten;
-            //kDebug(7005) << " KFilterDev::writeBlock availIn=" << availIn << " dataWritten=" << dataWritten << " ioIndex=" << ioIndex << endl;
+            //kDebug(7005) << " KFilterDev::write availIn=" << availIn << " dataWritten=" << dataWritten << " ioIndex=" << ioIndex << endl;
             if ( availIn > 0 ) // Not sure this will ever happen
                 filter->setInBuffer( data, availIn );
         }
 
         if (filter->outBufferFull() || (d->result == KFilterBase::END))
         {
-            //kDebug(7005) << " KFilterDev::writeBlock writing to underlying. avail_out=" << filter->outBufferAvailable() << endl;
+            //kDebug(7005) << " KFilterDev::write writing to underlying. avail_out=" << filter->outBufferAvailable() << endl;
             int towrite = d->buffer.size() - filter->outBufferAvailable();
             if ( towrite > 0 )
             {
                 // Write compressed data to underlying device
                 int size = filter->device()->write( d->buffer.data(), towrite );
                 if ( size != towrite ) {
-                    kWarning(7005) << "KFilterDev::writeBlock. Could only write " << size << " out of " << towrite << " bytes" << endl;
+                    kWarning(7005) << "KFilterDev::write. Could only write " << size << " out of " << towrite << " bytes" << endl;
                     return 0; // indicate an error (happens on disk full)
                 }
                 //else
-                    //kDebug(7005) << " KFilterDev::writeBlock wrote " << size << " bytes" << endl;
+                    //kDebug(7005) << " KFilterDev::write wrote " << size << " bytes" << endl;
             }
             d->buffer.resize( 8*1024 );
             filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
             if (d->result == KFilterBase::END)
             {
-                //kDebug(7005) << " KFilterDev::writeBlock END" << endl;
+                //kDebug(7005) << " KFilterDev::write END" << endl;
                 Q_ASSERT(finish); // hopefully we don't get end before finishing
                 break;
             }
