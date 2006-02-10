@@ -1027,7 +1027,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	  }
 	  else if (type == Saturation || type == HueShift) {
 	      clr.setRgb(color1);
-	      clr.hsv(&h, &s, &v);
+	      clr.getHsv(&h, &s, &v);
       	      mod = (channel == Red) ? qRed(color2) :
 		    (channel == Green) ? qGreen(color2) :
 	    	    (channel == Blue) ? qBlue(color2) :
@@ -1273,7 +1273,7 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
 
     {
         int rcol, gcol, bcol;
-        clr.rgb(&rcol, &gcol, &bcol);
+        clr.getRgb(&rcol, &gcol, &bcol);
 
 #ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
         register unsigned char *data = (unsigned char *)dst.bits() + 1;
@@ -2189,7 +2189,7 @@ QImage& KImageEffect::desaturate(QImage &img, float desat)
     QColor clr; // keep constructor out of loop (mosfet)
     for(i=0; i < pixels; ++i){
         clr.setRgb(data[i]);
-	clr.hsv(&h, &s, &v);
+	clr.getHsv(&h, &s, &v);
 	clr.setHsv(h, (int)(s * (1. - desat)), v);
 	data[i] = clr.rgb();
     }
@@ -2652,7 +2652,7 @@ QRect KImageEffect::computeDestinationRect(const QSize &lowerSize,
                     w-1, h-1);
         break;
     case Scaled:
-        upper = upper.smoothScale(w, h);
+        upper = upper.scaled(QSize(w, h),Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         d.setRect(0, 0, w, h);
         break;
     case CenteredAutoFit:
@@ -2671,7 +2671,7 @@ QRect KImageEffect::computeDestinationRect(const QSize &lowerSize,
             wh = (int)(sx * wh);
             ww = w;
         }
-        upper = upper.smoothScale(ww, wh);
+        upper = upper.scaled(QSize(ww, wh),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
         d.setRect((w - ww) / 2, (h - wh) / 2, ww, wh);
         break;
     }
@@ -2685,7 +2685,7 @@ QRect KImageEffect::computeDestinationRect(const QSize &lowerSize,
             wh = (int)(sx * wh);
             ww = w;
         }
-        upper = upper.smoothScale(ww, wh);
+        upper = upper.scaled(QSize(ww, wh),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
         d.setRect(0, 0, w, h);
         break;
     }
@@ -4635,7 +4635,7 @@ void KImageEffect::contrastHSV(QImage &img, bool sharpen)
     }
     for(i=0; i < count; ++i){
         c.setRgb(data[i]);
-        c.hsv(&h, &s, &v);
+        c.getHsv(&h, &s, &v);
         brightness = v/255.0;
         theta=(brightness-0.5)*M_PI;
         brightness+=scale*(((scale*((sin(theta)+1.0)))-brightness)*sign);

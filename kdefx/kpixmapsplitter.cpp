@@ -90,6 +90,6 @@ QRect KPixmapSplitter::coordinates( int pos )
 
 QRect KPixmapSplitter::coordinates( const QChar& ch )
 {
-    return coordinates( (unsigned char) ch.latin1() );
+    return coordinates( (unsigned char) ch.toLatin1() );
 }
 

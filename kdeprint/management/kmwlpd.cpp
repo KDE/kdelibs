@@ -86,7 +86,7 @@ bool checkLpdQueue(const char *host, const char *queue)
 
 	char	buf[1024] = {0};
 	int	n, tot(1);
-	while ((n = sock.readBlock(res, 63)) > 0)
+	while ((n = sock.read(res, 63)) > 0)
 	{
 		res[n] = 0;
 		tot += n;

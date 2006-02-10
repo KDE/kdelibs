@@ -521,7 +521,7 @@ char *kdeprint_foomatic2text;
 	{ \
 		if ( kdeprint_foomatic2scanner_device ) \
 		{ \
-			result = kdeprint_foomatic2scanner_device->readBlock( buf, max_size ); \
+			result = kdeprint_foomatic2scanner_device->read( buf, max_size ); \
 			if ( result < 0 ) \
 				result = 0; \
 		} \

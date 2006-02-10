@@ -359,7 +359,7 @@ bool KMManager::uncompressFile(const QString& filename, QString& destname)
 	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		char	buf[1024] = {0};
-		f.readBlock(buf,2);
+		f.read(buf,2);
 		if ((uchar)(buf[0]) == 037 && (uchar)(buf[1]) == 0213)
 		{
 			f.close();

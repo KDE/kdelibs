@@ -271,7 +271,7 @@ qint64 KSocketBuffer::sendTo(KActiveSocketBase* dev, qint64 len)
 	}
 
       // now try to write those bytes
-      qint64 wrote = dev->writeBlock(buf, count);
+      qint64 wrote = dev->write(buf, count);
 
       if (wrote == -1)
 	// error?
@@ -312,7 +312,7 @@ qint64 KSocketBuffer::receiveFrom(KActiveSocketBase* dev, qint64 len)
 
   // now do the reading
   QByteArray a(len);
-  len = dev->readBlock(a.data(), len);
+  len = dev->read(a.data(), len);
 
   if (len == -1)
     // error?

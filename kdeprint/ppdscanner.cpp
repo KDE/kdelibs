@@ -615,7 +615,7 @@ QIODevice *kdeprint_ppdscanner_device = NULL;
 	{ \
 		if (kdeprint_ppdscanner_device) \
 		{ \
-			result = kdeprint_ppdscanner_device->readBlock(buf,max_size); \
+			result = kdeprint_ppdscanner_device->read(buf,max_size); \
 			if (result < 0) \
 				result = 0; \
 		} \

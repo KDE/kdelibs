@@ -207,7 +207,7 @@ bool KFilterDev::atEnd() const
 qint64 KFilterDev::readData( char *data, qint64 maxlen )
 {
     Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
-    //kDebug(7005) << "KFilterDev::readBlock maxlen=" << maxlen << endl;
+    //kDebug(7005) << "KFilterDev::read maxlen=" << maxlen << endl;
 
     uint dataReceived = 0;
     if ( !d->ungetchBuffer.isEmpty() )
@@ -275,7 +275,7 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
                     break;
                 }
             }
-            //kDebug(7005) << "KFilterDev::readBlock got " << size << " bytes from device" << endl;
+            //kDebug(7005) << "KFilterDev::read got " << size << " bytes from device" << endl;
         }
         if (d->bNeedHeader)
         {
@@ -310,7 +310,7 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
         ioIndex += outReceived;
         if (d->result == KFilterBase::END)
         {
-            //kDebug(7005) << "KFilterDev::readBlock got END. dataReceived=" << dataReceived << endl;
+            //kDebug(7005) << "KFilterDev::read got END. dataReceived=" << dataReceived << endl;
             break; // Finished.
         }
         if (filter->inBufferEmpty() && filter->outBufferAvailable() != 0 )

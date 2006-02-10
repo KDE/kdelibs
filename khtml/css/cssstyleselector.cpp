@@ -303,7 +303,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 	f.open(QIODevice::ReadOnly);
 
 	QByteArray file( f.size()+1 );
-	int readbytes = f.readBlock( file.data(), f.size() );
+	int readbytes = f.read( file.data(), f.size() );
 	f.close();
 	if ( readbytes >= 0 )
 	    file[readbytes] = '\0';
@@ -328,7 +328,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 	f.open(QIODevice::ReadOnly);
 
 	QByteArray file( f.size()+1 );
-	int readbytes = f.readBlock( file.data(), f.size() );
+	int readbytes = f.read( file.data(), f.size() );
 	f.close();
 	if ( readbytes >= 0 )
 	    file[readbytes] = '\0';

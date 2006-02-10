@@ -1619,7 +1619,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                         QFile file(local);
                         filearray.resize(file.size()+1);
                         if ( file.open( QIODevice::ReadOnly ) ) {
-                            const int readbytes = file.readBlock( filearray.data(), file.size());
+                            const int readbytes = file.read( filearray.data(), file.size());
                             if ( readbytes >= 0 )
                                 filearray[readbytes] = '\0';
                             file.close();
