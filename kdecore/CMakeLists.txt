@@ -277,21 +277,15 @@ set(xdg_appsdir  ${KDE4_DIR}${XDG_APPS_DIR})
 set(xdg_directorydir ${KDE4_DIR}${XDG_DIRECTORY_DIR})
 
 
-message(STATUS "******** kde-config renamed to kdeconfig for nmake, remove ASAP, it's already fixed in cmake cvs")
-if(MSVC)
-    set(KDE_CONFIG_NAME kdeconfig)
-else(MSVC)
-    set(KDE_CONFIG_NAME kde-config)
-endif(MSVC)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kde-config.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp @ONLY)
 macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  )
 
-kde4_add_executable(${KDE_CONFIG_NAME} ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
+kde4_add_executable(kde-config ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
 
-target_link_libraries(${KDE_CONFIG_NAME}  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kde-config ${QT_AND_KDECORE_LIBS} )
 
-install_targets(/bin ${KDE_CONFIG_NAME} )
+install_targets(/bin kde-config)
 
 
 ########### install files ###############
