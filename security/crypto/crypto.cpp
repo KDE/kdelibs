@@ -1822,7 +1822,7 @@ void KCryptoConfig::slotCAImport() {
 			qf.open(QIODevice::ReadOnly);
 			char *cr;
 			cr = new char[qf.size()+1];
-			qf.readBlock(cr, qf.size());
+			qf.read(cr, qf.size());
 			QByteArray qba;
 			qba.duplicate(cr, qf.size());
 			certtext = KCodecs::base64Encode(qba);
