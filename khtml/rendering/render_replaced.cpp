@@ -199,7 +199,8 @@ void RenderWidget::setQWidget(QWidget *widget)
         if (m_widget) {
             m_widget->removeEventFilter(this);
             disconnect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
-            delete m_widget;
+            m_widget->hide();
+            m_widget->deleteLater(); //Might happen due to event on the widget, so be careful
             m_widget = 0;
         }
         m_widget = widget;
