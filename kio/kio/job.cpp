@@ -50,7 +50,6 @@ extern "C" {
 #include <kdialog.h>
 #include <kmessagebox.h>
 #include <kdatastream.h>
-#include <kmainwindow.h>
 #include <kde_file.h>
 
 #include <errno.h>

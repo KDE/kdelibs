@@ -86,8 +86,7 @@ KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::makeNull()
         // where the d-pointer is compared against null.
 
         KFileMimeTypeInfo::ItemInfo* info = new KFileMimeTypeInfo::ItemInfo();
-        null = new Data(info, QString(), QVariant());
-        sd_KFileMetaInfoItemData.setObject( null );
+        sd_KFileMetaInfoItemData.setObject( null, new Data(info, QString(), QVariant()) );
     }
     return null;
 }
@@ -747,7 +746,7 @@ KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-	null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(KUrl(), 0) );
+        sd_KFileMetaInfoData.setObject( null, new KFileMetaInfo::Data(KUrl(), 0) );
     return null;
 }
 
@@ -887,7 +886,7 @@ static KStaticDeleter<KFileMetaInfoProvider> sd;
 KFileMetaInfoProvider * KFileMetaInfoProvider::self()
 {
     if ( !s_self )
-        s_self = sd.setObject( s_self, new KFileMetaInfoProvider() );
+        sd.setObject( s_self, new KFileMetaInfoProvider() );
 
     return s_self;
 }
@@ -899,8 +898,8 @@ KFileMetaInfoProvider::KFileMetaInfoProvider()
 KFileMetaInfoProvider::~KFileMetaInfoProvider()
 {
     qDeleteAll(m_plugins);
-	m_plugins.clear();
-    sd.setObject( 0 );
+        m_plugins.clear();
+    sd.setObject( s_self, 0, false );
 }
 
 KFilePlugin* KFileMetaInfoProvider::loadPlugin( const QString& mimeType, const QString& protocol )
@@ -1420,9 +1419,8 @@ KFileMetaInfoGroup::Data* KFileMetaInfoGroup::Data::makeNull()
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-        null = new Data(QString());
+        sd_KFileMetaInfoGroupData.setObject( null, new Data(QString()));
         null->mimeTypeInfo = new KFileMimeTypeInfo();
-        sd_KFileMetaInfoGroupData.setObject( null );
     }
     return null;
 }
