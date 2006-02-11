@@ -88,6 +88,18 @@ void KStatusBar::insertItem( const QString& text, int id, int stretch)
   l->show();
 }
 
+void KStatusBar::insertPermanentItem( const QString& text, int id, int stretch)
+{
+  if (items[id])
+    kDebug() << "KStatusBar::insertItem: item id " << id << " already exists." << endl;
+
+  KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
+  l->setFixedHeight(fontMetrics().height()+2);
+  items.insert(id, l);
+  addPermanentWidget (l, stretch);
+  l->show();
+}
+
 void KStatusBar::removeItem (int id)
 {
   KStatusBarLabel *l = items[id];

@@ -102,7 +102,7 @@ public:
   ~KStatusBar();
 
   /**
-   *  Inserts a text label into the status bar.
+   *  Inserts a temporary text label into the status bar.
    *  Parameter @p stretch is passed to QStatusBar::addWidget .
    *
    *  @param text The label's text string.
@@ -115,15 +115,39 @@ public:
   void insertItem(const QString& text, int id, int stretch=0 );
 
   /**
-   *  Inserts a fixed width text label into status bar. The width will be set
-   *  according to @p text, but will remain fixed even if you change text.
-   *  You can change fixed width by calling setItemFixed.
+   *  Inserts a permanent text label into the status bar.
+   *  Parameter @p stretch is passed to QStatusBar::addWidget .
+   *
+   *  @param text The label's text string.
+   *  @param id id of item
+   *  @param stretch stretch passed to QStatusBar::addPermanentWidget
+   *
+   *  @see QStatusbar::addPermanentWidget
+   *
+   */
+  void insertPermanentItem(const QString& text, int id, int stretch=0 );
+
+  /**
+   *  Inserts a fixed width temporary text label into status bar. The width
+   *  will be set according to @p text, but will remain fixed even if you
+   *  change text.  You can change fixed width by calling setItemFixed.
    *
    *  @param text The label's text string
    *  @param id id of item
    */
   inline void insertFixedItem(const QString& text, int id)
                { insertItem(text, id, 0); setItemFixed(id); }
+
+  /**
+   *  Inserts a fixed width permanent text label into status bar. The width
+   *  will be set according to @p text, but will remain fixed even if you
+   *  change text.  You can change fixed width by calling setItemFixed.
+   *
+   *  @param text The label's text string
+   *  @param id id of item
+   */
+  inline void insertPermanentFixedItem(const QString& text, int id)
+               { insertPermanentItem(text, id, 0); setItemFixed(id); }
 
   /**
    *  Removes an item.
