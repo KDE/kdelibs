@@ -51,6 +51,15 @@ typedef struct {
     size_t size;
 } RenderArenaDebugHeader;
 
+#ifdef VALGRIND_SUPPORT
+Arena* findContainingArena(ArenaPool* pool, void* ptr) {
+    uword ptrBits = reinterpret_cast<uword>(ptr);
+    for (Arena* a = &pool->first; a; a = a->next)
+        if (ptrBits >= a->base && ptrBits < a->limit)
+            return a;
+    return 0; //Should not happen
+}
+#endif
 
 RenderArena::RenderArena(unsigned int arenaSize)
 {
@@ -88,6 +97,9 @@ void* RenderArena::allocate(size_t size)
 
         result = m_recyclers[index];
         if (result) {
+#ifdef VALGRIND_SUPPORT
+            VALGRIND_MEMPOOL_ALLOC(findContainingArena(&m_pool, result)->base, result, size);
+#endif
             // Need to move to the next object
             void* next = *((void**)result);
             m_recyclers[index] = next;
@@ -113,6 +125,11 @@ void RenderArena::free(size_t size, void* ptr)
     assert(header->arena == this);
     ::free(header);
 #else
+
+#ifdef VALGRIND_SUPPORT
+    VALGRIND_MEMPOOL_FREE(findContainingArena(&m_pool, ptr)->base, ptr);
+#endif
+
     // Ensure we have correct alignment for pointers.  Important for Tru64
     size = KHTML_ROUNDUP(size, sizeof(void*));
 
