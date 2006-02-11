@@ -222,7 +222,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    QDir cacheDir( strCacheDir );
    if (!cacheDir.exists())
    {
-      fprintf(stderr, "%s: '%s' does not exist.\n", appName, strCacheDir.ascii());
+      fprintf(stderr, "%s: '%s' does not exist.\n", appName, qPrintable(strCacheDir));
       return 0;
    }
 

@@ -261,8 +261,7 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
      {
         // Make sure we get the last bytes still in the pipe.
         // Needed with "deflate".
-        QByteArray flush(4);
-        flush.fill(0);
+        QByteArray flush(4, 0);
         slotInput(flush);
         if (!bHasFinished && !bHasHeader)
         {
@@ -337,10 +336,8 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
      int bytesOut = 8192 - zstr.avail_out;
      if (bytesOut)
      {
-        QByteArray d;
-        d.setRawData( buf, bytesOut );
+        QByteArray d( buf, bytesOut );
         emit output(d);
-        d.resetRawData( buf, bytesOut );
      }
      if (result == Z_STREAM_END)
      {

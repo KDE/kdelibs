@@ -101,7 +101,7 @@ void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _p
             {
                 // maybe its an IE Favourite..
                 KSimpleConfig cfg( file.path(), true );
-                QStringList grp = cfg.groupList().grep( "internetshortcut", false );
+                QStringList grp = cfg.groupList().filter( "internetshortcut", Qt::CaseInsensitive );
                 if ( grp.count() == 0 )
                     continue;
                 cfg.setGroup( *grp.begin() );
