@@ -37,6 +37,7 @@
 #define RENDERARENA_H
 
 #include "misc/arena.h"
+#include "misc/shared.h"
 
 #include <stdlib.h>
 
@@ -45,7 +46,7 @@ namespace khtml {
 #define KHTML_MAX_RECYCLED_SIZE 400
 #define KHTML_ROUNDUP(x,y) ((((x)+((y)-1))/(y))*(y))
 
-class RenderArena {
+class RenderArena: public Shared<RenderArena> {
 public:
    RenderArena(unsigned int arenaSize = 4096);
     ~RenderArena();

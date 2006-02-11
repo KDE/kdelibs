@@ -296,7 +296,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_textColor = Qt::black;
 
     m_view = v;
-    m_renderArena = 0;
+    m_renderArena.reset();
 
     KHTMLFactory::ref();
 
@@ -393,10 +393,7 @@ DocumentImpl::~DocumentImpl()
     if ( m_hoverNode )
         m_hoverNode->deref();
 
-    if (m_renderArena){
-	delete m_renderArena;
-	m_renderArena = 0;
-    }
+    m_renderArena.reset();
 
     KHTMLFactory::deref();
 }
@@ -1160,13 +1157,13 @@ void DocumentImpl::attach()
         setPaintDevice( m_view );
 
     if (!m_renderArena)
-	m_renderArena = new RenderArena();
+	m_renderArena.reset(new RenderArena());
 
     // Create the rendering tree
     assert(!m_styleSelector);
     m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
                                             !inCompatMode() );
-    m_render = new (m_renderArena) RenderCanvas(this, m_view);
+    m_render = new (m_renderArena.get()) RenderCanvas(this, m_view);
     m_styleSelector->computeFontSizes(paintDeviceMetrics(), m_view ? m_view->part()->zoomFactor() : 100);
     recalcStyle( Force );
 
@@ -1197,10 +1194,7 @@ void DocumentImpl::detach()
 
     m_view = 0;
 
-    if ( m_renderArena ) {
-	delete m_renderArena;
-	m_renderArena = 0;
-    }
+    m_renderArena.reset();
 }
 
 void DocumentImpl::setVisuallyOrdered()

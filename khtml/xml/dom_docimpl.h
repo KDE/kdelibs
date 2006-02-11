@@ -295,7 +295,7 @@ public:
     virtual void attach();
     virtual void detach();
 
-    khtml::RenderArena* renderArena() { return m_renderArena; }
+    khtml::RenderArena* renderArena() { return m_renderArena.get(); }
 
     // to get visually ordered hebrew and arabic pages right
     void setVisuallyOrdered();
@@ -654,7 +654,7 @@ protected:
     //Cache for getElementById
     mutable ElementMappingCache m_getElementByIdCache;
 
-    khtml::RenderArena* m_renderArena;
+    khtml::SharedPtr<khtml::RenderArena> m_renderArena;
 private:
     mutable DOMString m_domain;
 };

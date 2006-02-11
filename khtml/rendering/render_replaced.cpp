@@ -97,7 +97,8 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_widget = 0;
     // a widget doesn't support being anonymous
     assert(!isAnonymous());
-    m_view = node->getDocument()->view();
+    m_view  = node->getDocument()->view();
+    m_arena.reset(renderArena());
     m_resizePending = false;
     m_discardResizes = false;
 
@@ -810,8 +811,11 @@ void RenderWidget::deref()
 {
     if (_ref) _ref--;
 //     qDebug( "deref(%p): width get count is %d", this, _ref);
-    if (!_ref)
-        arenaDelete(renderArena());
+    if (!_ref) {
+        khtml::SharedPtr guard(m_arena); //Since delete on us gets called -first-,
+                                         //before the arena free
+        arenaDelete(m_arena.get());
+    }
 }
 
 FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &)
