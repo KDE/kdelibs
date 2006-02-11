@@ -277,7 +277,6 @@ set(xdg_appsdir  ${KDE4_DIR}${XDG_APPS_DIR})
 set(xdg_directorydir ${KDE4_DIR}${XDG_DIRECTORY_DIR})
 
 
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kde-config.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp @ONLY)
 macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  )
 

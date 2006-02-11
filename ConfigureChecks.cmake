@@ -76,7 +76,12 @@ else(CARBON_FOUND)
 endif(CARBON_FOUND)
 
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
-
+# If definitions like -D_GNU_SOURCE are needed for these checks they
+# should be added to _KDE4_PLATFORM_DEFINITIONS when it is originally
+# defined outside this file.  Here we include these definitions in
+# CMAKE_REQUIRED_DEFINITIONS so they will be included in the build of
+# checks below.
+set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 if (WIN32)
    set(CMAKE_REQUIRED_LIBRARIES ${KDEWIN32_LIBRARY} ws2_32)
    set(CMAKE_REQUIRED_INCLUDES  ${KDEWIN32_INCLUDES} )
@@ -154,9 +159,24 @@ check_include_files( X11/extensions/Xrender.h HAVE_XRENDER)
 
 
 #check_symbol_exists(sockaddr_in6 "netinet/in.h" HAVE_STRUCT_SOCKADDR_IN6)
-check_symbol_exists(LC_MESSAGES "locale.h" HAVE_LC_MESSAGES)
-check_symbol_exists(res_init "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT)
-check_symbol_exists(S_ISSOCK sys/stat.h HAVE_S_ISSOCK)
+# Use check_symbol_exists to check for symbols in a reliable
+# cross-platform manner.  It accounts for different calling
+# conventions and the possibility that the symbol is defined as a
+# macro.  Note that some symbols require multiple includes in a
+# specific order.  Refer to the man page for each symbol for which a
+# check is to be added to get the proper set of headers.
+check_symbol_exists(stpcpy          "string.h"                 HAVE_STPCPY)
+check_symbol_exists(strcasecmp      "strings.h"                HAVE_STRCASECMP)
+check_symbol_exists(strchr          "string.h"                 HAVE_STRCHR)
+check_symbol_exists(strcmp          "string.h"                 HAVE_STRCMP)
+check_symbol_exists(strrchr         "string.h"                 HAVE_STRRCHR)
+check_symbol_exists(strtoll         "stdlib.h"                 HAVE_STRTOLL)
+check_symbol_exists(snprintf        "stdio.h"                  HAVE_SNPRINTF)
+check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)
+check_symbol_exists(strfmon         "monetary.h"               HAVE_STRFMON)
+check_symbol_exists(LC_MESSAGES     "locale.h"                 HAVE_LC_MESSAGES)
+check_symbol_exists(S_ISSOCK        "sys/stat.h"               HAVE_S_ISSOCK)
+check_symbol_exists(res_init        "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT)
 
 check_function_exists(posix_fadvise  HAVE_FADVISE)
 check_function_exists(index     HAVE_INDEX)
@@ -201,18 +221,9 @@ check_function_exists(setfsent        HAVE_SETFSENT)
 check_function_exists(setgroups       HAVE_SETGROUPS)
 check_function_exists(setlocale       HAVE_SETLOCALE)
 check_function_exists(setlocale       HAVE_SETPRIORITY)
-check_function_exists(snprintf        HAVE_SNPRINTF)
 check_function_exists(socket          HAVE_SOCKET)
 check_function_exists(srandom         HAVE_SRANDOM)
-check_function_exists(stpcpy          HAVE_STPCPY)
-check_function_exists(strcasecmp      HAVE_STRCASECMP)
-check_function_exists(strfmon         HAVE_STRFMON)
-check_function_exists(strrchr         HAVE_STRRCHR)
-check_function_exists(strcmp          HAVE_STRCMP)
-check_function_exists(strchr          HAVE_STRCHR)
-check_function_exists(strtoll         HAVE_STRTOLL)
 check_function_exists(unlockpt        HAVE_UNLOCKPT)
-check_function_exists(vsnprintf       HAVE_VSNPRINTF)
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)
 check_function_exists(__argz_count    HAVE___ARGZ_COUNT)
 check_function_exists(__argz_next     HAVE___ARGZ_NEXT)

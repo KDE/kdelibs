@@ -28,24 +28,26 @@ add_subdirectory( tests )
 
 
 add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
-  COMMAND ${CMAKE_COMMAND}
-  ARGS -E chdir ${CMAKE_CURRENT_BINARY_DIR}/scripts ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
-  DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts
+   COMMAND ${PERL_EXECUTABLE}
+   ARGS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+   DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.h
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/entrylist
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/field.src.cpp
-  )
+   )
 
 add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/field.cpp
-  COMMAND ${CMAKE_COMMAND}
-  ARGS -E chdir ${CMAKE_CURRENT_BINARY_DIR}/scripts ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
-  DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts
+   COMMAND  ${PERL_EXECUTABLE}
+   ARGS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+   DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.h
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/entrylist
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/field.src.cpp
-  )
+   )
 
 ########### next target ###############
 
