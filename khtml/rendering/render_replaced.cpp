@@ -812,8 +812,8 @@ void RenderWidget::deref()
     if (_ref) _ref--;
 //     qDebug( "deref(%p): width get count is %d", this, _ref);
     if (!_ref) {
-        khtml::SharedPtr guard(m_arena); //Since delete on us gets called -first-,
-                                         //before the arena free
+        khtml::SharedPtr<RenderArena> guard(m_arena); //Since delete on us gets called -first-,
+                                                      //before the arena free
         arenaDelete(m_arena.get());
     }
 }
