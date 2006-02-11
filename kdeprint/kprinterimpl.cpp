@@ -114,7 +114,7 @@ void KPrinterImpl::preparePrinting(KPrinter *printer)
 		if ( !res.isEmpty() )
 		{
 			QRegExp re( "(\\d+)(?:x(\\d+))?dpi" );
-			if ( re.search( res ) != -1 )
+			if ( re.indexIn( res ) != -1 )
 			{
 				if ( !re.cap( 2 ).isEmpty() )
 					printer->setOption( "kde-resolution", re.cap( 2 ) );
@@ -253,7 +253,7 @@ bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QS
 
 	QString	command(cmd), filestr;
 	QStringList	printfiles;
-	if (command.find("%in") == -1) command.append(" %in");
+	if (command.indexOf("%in") == -1) command.append(" %in");
 
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 		if (QFile::exists(*it))
@@ -303,7 +303,7 @@ QString KPrinterImpl::tempFile()
 
 int KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 {
-	QStringList	flist = QStringList::split(',',printer->option("_kde-filters"),false);
+	QStringList	flist = printer->option("_kde-filters").split(',', QString::SkipEmptyParts);
 	QMap<QString,QString>	opts = printer->options();
 
 	// generic page selection mechanism (using psselect filter)
@@ -318,7 +318,7 @@ int KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 	     !printer->option("kde-range").isEmpty() ||
 	     printer->pageSet() != KPrinter::AllPages))
 	{
-		if (flist.findIndex("psselect") == -1)
+		if (!flist.contains("psselect"))
 		{
 			int	index = KXmlCommandManager::self()->insertCommand(flist, "psselect", false);
 			if (index == -1 || !KXmlCommandManager::self()->checkCommand("psselect"))
@@ -380,7 +380,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it)
 	{
 		QString	mime = KMimeMagic::self()->findFileType(*it)->mimeType();
-		if (inputMimeTypes.find(mime) == inputMimeTypes.end())
+		if (!inputMimeTypes.contains(mime))
 		{
 			if (KMessageBox::warningContinueCancel(0,
 				"<p>" + i18n("The MIME type %1 is not supported as input of the filter chain "
@@ -489,10 +489,10 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 					QString(), "emptyFileNotPrinted" );
 			if ( flag )
 				QFile::remove( *it );
-			it = files.remove( it );
+			it = files.erase( it );
 			continue;
 		}
-		else if (mimeTypes.findIndex(mime) == -1)
+		else if (!mimeTypes.contains(mime))
 		{
 			if ((result=KMessageBox::warningYesNoCancel(NULL,
 					       i18n("<qt>The file format <em> %1 </em> is not directly supported by the current print system. You "
@@ -527,7 +527,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 							      i18n("Print"));
 					if (flag)
 						QFile::remove(*it);
-					it = files.remove(it);
+					it = files.erase(it);
 					continue;
 				}
 				QStringList	l(*it);
@@ -597,7 +597,7 @@ void KPrinterImpl::saveAppOptions()
 	QStringList	optlist;
 	for (QMap<QString,QString>::ConstIterator it=m_options.begin(); it!=m_options.end(); ++it)
 		if (it.key().startsWith("app-"))
-			optlist << it.key() << it.data();
+			optlist << it.key() << it.value();
 
 	KConfig	*conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");

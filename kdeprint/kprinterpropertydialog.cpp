@@ -35,11 +35,8 @@ KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent, co
 : KDialogBase(parent, name, true, QString(), KDialogBase::Ok|KDialogBase::Cancel|KDialogBase::User1, KDialogBase::Ok, false, KStdGuiItem::save()),
   m_printer(p), m_driver(0), m_current(0)
 {
-	m_pages.setAutoDelete(false);
-
 	// set a margin
 	m_tw = new QTabWidget(this);
-	m_tw->setMargin(10);
 	connect(m_tw,SIGNAL(currentChanged(QWidget*)),SLOT(slotCurrentChanged(QWidget*)));
 	setMainWidget(m_tw);
 
@@ -49,6 +46,9 @@ KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent, co
 
 KPrinterPropertyDialog::~KPrinterPropertyDialog()
 {
+	qDeleteAll(m_pages);
+	m_pages.clear();
+
 	delete m_driver;
 }
 
@@ -69,11 +69,12 @@ bool KPrinterPropertyDialog::synchronize()
 {
 	if (m_current) m_current->getOptions(m_options,true);
 	QString	msg;
-	Q3PtrListIterator<KPrintDialogPage>	it(m_pages);
-	for (;it.current();++it)
+	QListIterator<KPrintDialogPage*> it(m_pages);
+	while (it.hasNext())
 	{
-		it.current()->setOptions(m_options);
-		if (!it.current()->isValid(msg))
+		KPrintDialogPage *page = it.next();
+		page->setOptions(m_options);
+		if (!page->isValid(msg))
 		{
 			KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("Printer Configuration"));
 			return false;
@@ -86,11 +87,11 @@ void KPrinterPropertyDialog::setOptions(const QMap<QString,QString>& opts)
 {
 	// merge the 2 options sets
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
-		m_options[it.key()] = it.data();
+		m_options[it.key()] = it.value();
 	// update all existing pages
-	Q3PtrListIterator<KPrintDialogPage>	it(m_pages);
-	for (; it.current(); ++it)
-		it.current()->setOptions(m_options);
+	QListIterator<KPrintDialogPage*> it(m_pages);
+	while (it.hasNext())
+		it.next()->setOptions(m_options);
 }
 
 void KPrinterPropertyDialog::getOptions(QMap<QString,QString>& opts, bool incldef)
@@ -100,9 +101,9 @@ void KPrinterPropertyDialog::getOptions(QMap<QString,QString>& opts, bool inclde
 
 void KPrinterPropertyDialog::collectOptions(QMap<QString,QString>& opts, bool incldef)
 {
-	Q3PtrListIterator<KPrintDialogPage>	it(m_pages);
-	for (;it.current();++it)
-		it.current()->getOptions(opts,incldef);
+	QListIterator<KPrintDialogPage*> it(m_pages);
+	while (it.hasNext())
+		it.next()->getOptions(opts,incldef);
 }
 
 void KPrinterPropertyDialog::slotOk()

@@ -57,16 +57,22 @@ OptionNumericView::OptionNumericView(QWidget *parent)
 {
 	m_edit = new QLineEdit(this);
 	m_slider = new QSlider(Qt::Horizontal,this);
-	m_slider->setTickmarks(QSlider::TicksBelow);
+	m_slider->setTickPosition(QSlider::TicksBelow);
 	QLabel	*lab = new QLabel(i18n("Value:"),this);
 	m_minval = new QLabel(this);
 	m_maxval = new QLabel(this);
 
 	m_integer = true;
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
-	QHBoxLayout	*sub_ = new QHBoxLayout(0, 0, 10);
-	QHBoxLayout	*sub2_ = new QHBoxLayout(0, 0, 5);
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
+  main_->setMargin(0);
+  main_->setSpacing(10);
+	QHBoxLayout	*sub_ = new QHBoxLayout(0);
+  sub_->setMargin(0);
+  sub_->setSpacing(10);
+	QHBoxLayout	*sub2_ = new QHBoxLayout(0);
+  sub2_->setMargin(0);
+  sub2_->setSpacing(5);
 	main_->addStretch(1);
 	main_->addLayout(sub_,0);
 	main_->addLayout(sub2_,0);
@@ -94,7 +100,8 @@ void OptionNumericView::setOption(DrBase *opt)
 		int	min_ = opt->get("minval").toInt();
 		int	max_ = opt->get("maxval").toInt();
 		m_slider->setRange(min_,max_);
-		m_slider->setSteps(1,QMAX((max_-min_)/20,1));
+    m_slider->setSingleStep(1);
+    m_slider->setPageStep(qMax((max_-min_)/20,1));
 		m_minval->setText(QString::number(min_));
 		m_maxval->setText(QString::number(max_));
 	}
@@ -104,7 +111,8 @@ void OptionNumericView::setOption(DrBase *opt)
 		int	min_ = (int)rint(opt->get("minval").toFloat()*1000);
 		int	max_ = (int)rint(opt->get("maxval").toFloat()*1000);
 		m_slider->setRange(min_,max_);
-		m_slider->setSteps(1,QMAX((max_-min_)/20,1));
+		m_slider->setSingleStep(1);
+    m_slider->setPageStep(qMax((max_-min_)/20,1));
 		m_minval->setText(opt->get("minval"));
 		m_maxval->setText(opt->get("maxval"));
 	}
@@ -166,7 +174,9 @@ OptionStringView::OptionStringView(QWidget *parent)
 	m_edit = new QLineEdit(this);
 	QLabel	*lab = new QLabel(i18n("String value:"),this);
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 5);
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
+	main_->setMargin(0);
+	main_->setSpacing(5);
 	main_->addStretch(1);
 	main_->addWidget(lab,0);
 	main_->addWidget(m_edit,0);
@@ -193,7 +203,9 @@ OptionListView::OptionListView(QWidget *parent)
 {
 	m_list = new KListBox(this);
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
+	main_->setMargin(0);
+	main_->setSpacing(10);
 	main_->addWidget(m_list);
 
 	connect(m_list,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
@@ -218,7 +230,7 @@ void OptionListView::setOption(DrBase *opt)
 
 void OptionListView::setValue(const QString& val)
 {
-	m_list->setCurrentItem(m_choices.findIndex(val));
+	m_list->setCurrentItem(m_choices.indexOf(val));
 }
 
 void OptionListView::slotSelectionChanged()
@@ -242,7 +254,9 @@ OptionBooleanView::OptionBooleanView(QWidget *parent)
 	btn = new QRadioButton(m_group);
 	btn->setCursor(KCursor::handCursor());
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
+	main_->setMargin(0);
+	main_->setSpacing(10);
 	main_->addWidget(m_group);
 
 	connect(m_group,SIGNAL(clicked(int)),SLOT(slotSelected(int)));
@@ -264,7 +278,7 @@ void OptionBooleanView::setOption(DrBase *opt)
 
 void OptionBooleanView::setValue(const QString& val)
 {
-	int	ID = m_choices.findIndex(val);
+	int	ID = m_choices.indexOf(val);
 	m_group->setButton(ID);
 }
 
@@ -307,8 +321,10 @@ DrOptionView::DrOptionView(QWidget *parent, const char *name)
 	setColumnLayout(0, Qt::Vertical );
 	layout()->setSpacing( KDialog::spacingHint() );
 	layout()->setMargin( KDialog::marginHint() );
-	QVBoxLayout	*main_ = new QVBoxLayout(layout(), KDialog::marginHint());
+	QVBoxLayout	*main_ = new QVBoxLayout(0);
+	main_->setMargin(KDialog::marginHint());
 	main_->addWidget(m_stack);
+	layout()->addItem(main_);
 
 	m_item = 0;
 	m_block = false;

@@ -216,7 +216,7 @@ bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
 
 QString KMPrinter::deviceProtocol() const
 {
-	int p = m_device.find( ':' );
+	int p = m_device.indexOf( ':' );
 	if ( p != -1 )
 		return m_device.left( p );
 	else

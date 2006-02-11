@@ -364,11 +364,11 @@ bool KMManager::uncompressFile(const QString& filename, QString& destname)
 		{
 			f.close();
 			destname = locateLocal("tmp","kdeprint_") + KRandom::randomString(8);
-			f.setName(destname);
+			f.setFileName(destname);
 
 			if (f.open(QIODevice::WriteOnly))
 			{
-				gzFile	in = gzopen(filename.latin1(),"r");
+				gzFile	in = gzopen(filename.toLatin1(),"r");
 				int	n(0);
 				while ((n=gzread(in,buf,1024)) > 0)
 					if (f.write(buf,n) != n)

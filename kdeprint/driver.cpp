@@ -454,7 +454,7 @@ void DrIntegerOption::setValueText(const QString& s)
 
 QString DrIntegerOption::fixedVal()
 {
-	QStringList	vals = QStringList::split("|", get("fixedvals"), false);
+	QStringList	vals = get("fixedvals").split("|", QString::SkipEmptyParts);
 	if (vals.count() == 0)
 		return valueText();
 	int	d(0);
@@ -504,7 +504,7 @@ void DrFloatOption::setValueText(const QString& s)
 
 QString DrFloatOption::fixedVal()
 {
-	QStringList	vals = QStringList::split("|", get("fixedvals"), false);
+	QStringList	vals = get("fixedvals").split("|", QString::SkipEmptyParts);
 	if (vals.count() == 0)
 		return valueText();
 	float	d(0);

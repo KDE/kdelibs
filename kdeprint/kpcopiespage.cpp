@@ -214,30 +214,40 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 	QWidget::setTabOrder( m_collate, m_order );
 
 	// layout creation
-	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 0, 5);
+	QGridLayout	*l1 = new QGridLayout(this);
+	l1->setMargin(0);
+	l1->setSpacing(5);
 	l1->setRowStretch(1,1);
-	l1->setColStretch(0,1);
-	l1->setColStretch(1,1);
+	l1->setColumnStretch(0,1);
+	l1->setColumnStretch(1,1);
 	l1->addWidget(m_pagebox,0,0);
 	l1->addWidget(m_copybox,0,1);
-	QVBoxLayout	*l3 = new QVBoxLayout(m_pagebox->layout(), 5);
+	QVBoxLayout	*l3 = new QVBoxLayout(0);
+	l3->setMargin(5);
+	m_pagebox->layout()->addItem(l3);
 	l3->addWidget(m_all);
 	l3->addWidget(m_current);
-	QHBoxLayout	*l4 = new QHBoxLayout(0, 0, 5);
+	QHBoxLayout	*l4 = new QHBoxLayout(0);
+	l4->setMargin(0);
+	l4->setSpacing(5);
 	l3->addLayout(l4);
 	l4->addWidget(m_range,0);
 	l4->addWidget(m_rangeedit,1);
 	//l3->addWidget(m_rangeexpl);
 	l3->addWidget(sepline);
-	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 5);
+	QHBoxLayout	*l2 = new QHBoxLayout(0);
+	l2->setMargin(0);
+	l2->setSpacing(5);
 	l3->addLayout(l2);
 	l2->addWidget(m_pagesetlabel,0);
 	l2->addWidget(m_pageset,1);
-	QGridLayout	*l5 = new QGridLayout(m_copybox->layout(), 4, 2, 10);
+	QGridLayout	*l5 = new QGridLayout(0);
+	m_copybox->layout()->addItem(l5);
+	l5->setMargin(10);
 	l5->setRowStretch(4,1);
 	l5->addWidget(m_copieslabel,0,0);
 	l5->addWidget(m_copies,0,1);
-	l5->addMultiCellWidget(m_collatepix,1,2,0,0);
+	l5->addWidget(m_collatepix,1,2,0,0);
 	l5->addWidget(m_collate,1,1);
 	l5->addWidget(m_order,2,1);
 
@@ -321,9 +331,9 @@ void KPCopiesPage::setOptions(const QMap<QString,QString>& options)
 	// page set
 	value = options["kde-pageset"];
 	if (!value.isEmpty() && m_pageset->isEnabled())
-		m_pageset->setCurrentItem(value.toInt());
+		m_pageset->setCurrentIndex(value.toInt());
 	else
-		m_pageset->setCurrentItem(0);
+		m_pageset->setCurrentIndex(0);
 }
 
 void KPCopiesPage::getOptions(QMap<QString,QString>& options, bool incldef)
@@ -338,7 +348,7 @@ void KPCopiesPage::getOptions(QMap<QString,QString>& options, bool incldef)
 	options["kde-current"] = (m_current->isChecked() ? "1" : "0");
 	options["kde-range"] = (m_range->isChecked() ? m_rangeedit->text() : (incldef ? QLatin1String("1-") : QString::fromLatin1("")));
 	// page set
-	options["kde-pageset"] = QString::number(m_pageset->currentItem());
+	options["kde-pageset"] = QString::number(m_pageset->currentIndex());
 }
 
 void KPCopiesPage::reload()

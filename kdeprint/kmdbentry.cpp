@@ -43,13 +43,13 @@ bool KMDBEntry::validate(bool checkIt)
 	// check manufacturer
 	if (manufacturer.isEmpty())
 	{
-		int	p = model.find(' ',0);
+		int	p = model.indexOf(' ',0);
 		if (p != -1) manufacturer = model.left(p);
 		if (manufacturer.isEmpty()) return false;
 	}
 
 	// extract manufacturer from model
-	if (model.find(manufacturer,0,false) == 0)
+	if (model.indexOf(manufacturer,0,Qt::CaseInsensitive) == 0)
 	{
 		model = model.right(model.length()-manufacturer.length()-1).trimmed();
 		if (model.isEmpty()) return false;

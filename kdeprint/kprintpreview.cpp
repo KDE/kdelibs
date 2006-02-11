@@ -214,7 +214,9 @@ void KPrintPreview::initView(KLibFactory *factory)
 	//d->adjustSize();
 
 	// construct the layout
-	QVBoxLayout	*l0 = new QVBoxLayout(d->mainwidget_, 0, 0);
+	QVBoxLayout	*l0 = new QVBoxLayout(d->mainwidget_);
+	l0->setMargin(0);
+	l0->setSpacing(0);
 	l0->addWidget(d->toolbar_, Qt::AlignTop);
 	if (d->gvpart_)
 		l0->addWidget(d->gvpart_->widget());

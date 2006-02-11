@@ -186,14 +186,14 @@ void KMVirtualManager::refresh()
 	if (getuid() == 0)
 		fi.setFile(fi2.absoluteFilePath());
 
-	if (!m_checktime.isValid() || m_checktime < QMAX(fi.lastModified(),fi2.lastModified()))
+	if (!m_checktime.isValid() || m_checktime < qMax(fi.lastModified(),fi2.lastModified()))
 	{
                 m_defaultprinter.clear();
 		if (fi2.exists())
 			loadFile(fi2.absoluteFilePath());
-		if (fi.exists() && fi.absoluteFilePath() != fi2.absFilePath())
+		if (fi.exists() && fi.absoluteFilePath() != fi2.absoluteFilePath())
                 	loadFile(fi.absoluteFilePath());
-		m_checktime = QMAX(fi.lastModified(),fi2.lastModified());
+		m_checktime = qMax(fi.lastModified(),fi2.lastModified());
 	}
         else
         { // parse printers looking for instances -> undiscarded them, real printers
@@ -260,9 +260,9 @@ void KMVirtualManager::loadFile(const QString& filename)
 		{
 			line = t.readLine().trimmed();
 			if (line.isEmpty()) continue;
-			words = QStringList::split(' ',line,false);
+			words = line.split(' ', QString::SkipEmptyParts);
 			if (words.count() < 2) continue;
-			pair = QStringList::split('/',words[1],false);
+			pair = words[1].split('/', QString::SkipEmptyParts);
 			realprinter = m_manager->findPrinter(KUrl::decode_string(pair[0]));
 			if (realprinter && !realprinter->isDiscarded())
 			{ // keep only instances corresponding to an existing and
@@ -279,7 +279,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 				// parse options
 				for (int i=2; i<words.count(); i++)
 				{
-					pair = QStringList::split('=',words[i],false);
+					pair = words[i].split('=', QString::SkipEmptyParts);
 					printer->setDefaultOption(pair[0],(pair.count() > 1 ? pair[1] : QString()));
 				}
 				// add printer to the manager
@@ -331,8 +331,8 @@ void KMVirtualManager::saveFile(const QString& filename)
 			for (QMap<QString,QString>::ConstIterator oit=opts.begin(); oit!=opts.end(); ++oit)
 			{
 				t << ' ' << oit.key();
-				if (!oit.data().isEmpty())
-					t << '=' << oit.data();
+				if (!oit.value().isEmpty())
+					t << '=' << oit.value();
 			}
 			t << endl;
 		}

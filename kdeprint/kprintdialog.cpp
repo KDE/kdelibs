@@ -295,14 +295,14 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_default = new KPushButton(KGuiItem(i18n("Set as &Default"), "kdeprint_defaultsoft"), m_pbox);
 	d->m_default->setWhatsThis(whatsThisSetDefaultPrinter);
 	d->m_filter = new QPushButton(m_pbox);
-	d->m_filter->setPixmap(SmallIcon("filter"));
+	d->m_filter->setIcon(SmallIcon("filter"));
 	d->m_filter->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
-	d->m_filter->setToggleButton(true);
-	d->m_filter->setOn(KMManager::self()->isFilterEnabled());
+	d->m_filter->setCheckable(true);
+	d->m_filter->setDown(KMManager::self()->isFilterEnabled());
 	d->m_filter->setToolTip(i18n("Toggle selective view on printer list"));
 	d->m_filter->setWhatsThis(whatsThisPrinterFilter);
 	d->m_wizard = new QPushButton(m_pbox);
-	d->m_wizard->setPixmap(SmallIcon("wizard"));
+	d->m_wizard->setIcon(SmallIcon("wizard"));
 	d->m_wizard->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	d->m_wizard->setToolTip(i18n("Add printer..."));
 	d->m_wizard->setWhatsThis(whatsThisAddPrinterWizard);
@@ -350,12 +350,16 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QWidget::setTabOrder( d->m_ok, m_cancel );
 
 	// layout creation
-	QVBoxLayout	*l1 = new QVBoxLayout(this, 10, 10);
+	QVBoxLayout	*l1 = new QVBoxLayout(this);
+	l1->setMargin(10);
+	l1->setSpacing(10);
 	l1->addWidget(m_pbox,0);
 	l1->addWidget(d->m_dummy,1);
 	l1->addWidget(d->m_plugin,0);
 	l1->addWidget(d->m_persistent);
-	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 10);
+	QHBoxLayout	*l2 = new QHBoxLayout(0);
+	l2->setMargin(0);
+	l2->setSpacing(10);
 	l1->addLayout(l2);
 	l2->addWidget(d->m_extbtn,0);
 	l2->addWidget(d->m_options,0);
@@ -363,17 +367,23 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l2->addStretch(1);
 	l2->addWidget(d->m_ok,0);
 	l2->addWidget(m_cancel,0);
-	QGridLayout	*l3 = new QGridLayout(m_pbox->layout(),3,3,7);
-	l3->setColStretch(1,1);
+	QGridLayout	*l3 = new QGridLayout(0);
+	m_pbox->layout()->addItem(l3);
+	l3->setMargin(7);
+	l3->setColumnStretch(1,1);
 	l3->setRowStretch(0,1);
-	QGridLayout	*l4 = new QGridLayout(0, 5, 2, 0, 5);
-	l3->addMultiCellLayout(l4,0,0,0,1);
+	QGridLayout	*l4 = new QGridLayout(0);
+	l4->setMargin(0);
+	l4->setSpacing(5);
+	l3->addLayout(l4,0,0,0,1);
 	l4->addWidget(m_printerlabel,0,0);
 	l4->addWidget(m_statelabel,1,0);
 	l4->addWidget(m_typelabel,2,0);
 	l4->addWidget(m_locationlabel,3,0);
 	l4->addWidget(m_commentlabel,4,0);
-	QHBoxLayout	*ll4 = new QHBoxLayout(0, 0, 3);
+	QHBoxLayout	*ll4 = new QHBoxLayout(0);
+	ll4->setMargin(0);
+	ll4->setSpacing(3);
 	l4->addLayout(ll4,0,1);
 	ll4->addWidget(d->m_printers,1);
 	ll4->addWidget(d->m_filter,0);
@@ -383,8 +393,10 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l4->addWidget(d->m_type,2,1);
 	l4->addWidget(d->m_location,3,1);
 	l4->addWidget(d->m_comment,4,1);
-	l4->setColStretch(1,1);
-	QVBoxLayout	*l5 = new QVBoxLayout(0, 0, 10);
+	l4->setColumnStretch(1,1);
+	QVBoxLayout	*l5 = new QVBoxLayout(0);
+	l5->setMargin(0);
+	l5->setSpacing(10);
 	l3->addLayout(l5,0,2);
 	l5->addWidget(d->m_properties,0);
 	l5->addWidget(d->m_default,0);
@@ -395,7 +407,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l3->addWidget(d->m_file,1,1);
 	//***
 	l3->addWidget(d->m_cmdlabel,2,0);
-	l3->addMultiCellWidget(d->m_cmd,2,2,1,2);
+	l3->addWidget(d->m_cmd,2,2,1,2);
 
 	// connections
 	connect(d->m_ok,SIGNAL(clicked()),SLOT(accept()));
@@ -484,20 +496,20 @@ void KPrintDialog::setDialogPages(Q3PtrList<KPrintDialogPage> *pages)
 		// QTabWidget child if any.
 		if (pages->count() > 0)
 			d->m_pages.append(pages->take(0));
-		d->m_pages.first()->reparent(d->m_dummy, QPoint(0,0));
+		d->m_pages.first()->setParent(d->m_dummy);
 		d->m_pages.first()->show();
-		delete d->m_dummy->child("TabWidget", "QTabWidget");
+		delete d->m_dummy->findChild<QTabWidget*>("TabWidget");
 	}
 	else
 	{
 		// more than one page.
-		QTabWidget	*tabs = static_cast<QTabWidget*>(d->m_dummy->child("TabWidget", "QTabWidget"));
+		QTabWidget	*tabs = d->m_dummy->findChild<QTabWidget*>("TabWidget");
 		if (!tabs)
 		{
 			// QTabWidget doesn't exist. Create it and reparent all
 			// already existing pages.
-			tabs = new QTabWidget(d->m_dummy, "TabWidget");
-			tabs->setMargin(10);
+			tabs = new QTabWidget(d->m_dummy);
+			tabs->setObjectName("TabWidget");
 			for (d->m_pages.first(); d->m_pages.current(); d->m_pages.next())
 			{
 				tabs->addTab(d->m_pages.current(), d->m_pages.current()->title());
@@ -582,8 +594,8 @@ void KPrintDialog::initialize(KPrinter *printer)
 			else if (defsearch == -1 && it.current()->name() == printer->searchName())
 				defsearch = d->m_printers->count()-1;
 		}
-		int	defindex = (defsearch != -1 ? defsearch : (defsoft != -1 ? defsoft : QMAX(defhard,0)));
-		d->m_printers->setCurrentItem(defindex);
+		int	defindex = (defsearch != -1 ? defsearch : (defsoft != -1 ? defsoft : qMax(defhard,0)));
+		d->m_printers->setCurrentIndex(defindex);
 		//slotPrinterSelected(defindex);
 	}
 
@@ -594,7 +606,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 		d->m_file->setURL( d->m_printer->docDirectory()+"/"+d->m_printer->docFileName()+".ps" );
 
 	if ( d->m_printers->count() > 0 )
-		slotPrinterSelected( d->m_printers->currentItem() );
+		slotPrinterSelected( d->m_printers->currentIndex() );
 
 	// update with KPrinter options
 	if (d->m_printer->option("kde-preview") == "1" || d->m_printer->previewOnly())
@@ -616,7 +628,7 @@ void KPrintDialog::slotPrinterSelected(int index)
 	if (index >= 0 && index < d->m_printers->count())
 	{
 		KMManager	*mgr = KMFactory::self()->manager();
-		KMPrinter	*p = mgr->findPrinter(d->m_printers->text(index));
+		KMPrinter	*p = mgr->findPrinter(d->m_printers->itemText(index));
 		if (p)
 		{
 			if (!p->isSpecial()) mgr->completePrinterShort(p);
@@ -696,7 +708,7 @@ void KPrintDialog::done(int result)
 		// merge options with KMPrinter object options
 		QMap<QString,QString>	popts = (prt->isEdited() ? prt->editedOptions() : prt->defaultOptions());
 		for (QMap<QString,QString>::ConstIterator it=popts.begin(); it!=popts.end(); ++it)
-			opts[it.key()] = it.data();
+			opts[it.key()] = it.value();
 
 		// update KPrinter object
 		d->m_printer->setOptions(opts);
@@ -787,7 +799,7 @@ void KPrintDialog::enableSpecial(bool on)
 	d->m_default->setDisabled(on);
 	d->m_cmdlabel->setDisabled(on);
 	d->m_cmd->setDisabled(on);
-	KPCopiesPage	*copypage = (KPCopiesPage*)child("CopiesPage","KPCopiesPage");
+	KPCopiesPage	*copypage = findChild<KPCopiesPage*>("CopiesPage");
 	if (copypage)
 		copypage->initialize(!on);
 	// disable/enable all other pages (if needed)
@@ -824,13 +836,13 @@ void KPrintDialog::slotWizard()
 void KPrintDialog::reload()
 {
 	// remove printer dependent pages (usually from plugin)
-	QTabWidget	*tabs = static_cast<QTabWidget*>(d->m_dummy->child("TabWidget", "QTabWidget"));
+	QTabWidget	*tabs = d->m_dummy->findChild<QTabWidget*>("TabWidget");
 	for (uint i=0; i<d->m_pages.count(); i++)
 		if (d->m_pages.at(i)->onlyRealPrinters())
 		{
 			KPrintDialogPage	*page = d->m_pages.take(i--);
 			if (tabs)
-				tabs->removePage(page);
+				tabs->removeTab(tabs->indexOf(page));
 			delete page;
 		}
 	// reload printer dependent pages from plugin
@@ -953,8 +965,8 @@ void KPrintDialog::enableDialogPage( int index, bool flag )
 
 	if ( d->m_pages.count() > 1 )
 	{
-		QTabWidget	*tabs = static_cast<QTabWidget*>(d->m_dummy->child("TabWidget", "QTabWidget"));
-		tabs->setTabEnabled( d->m_pages.at( index ), flag );
+		QTabWidget	*tabs = d->m_dummy->findChild<QTabWidget*>("TabWidget");
+		tabs->setTabEnabled( index, flag );
 	}
 	else
 		d->m_pages.at( 0 )->setEnabled( flag );

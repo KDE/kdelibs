@@ -97,7 +97,9 @@ DriverView::DriverView( QWidget *parent )
 	m_optview = new DrOptionView(this);
 	  m_optview->setWhatsThis(whatsThisOptionSettingsDriverPage);
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
+	main_->setMargin(0);
+	main_->setSpacing(10);
 	main_->addWidget(m_view,1);
 	main_->addWidget(m_optview,0);
 

@@ -309,7 +309,6 @@ void KPrinter::translateQtOptions()
 		d->m_printer->setPageSize( ( QPrinter::PageSize )option( "kde-printsize" ).toInt() );
 	else
 		d->m_printer->setPageSize((QPrinter::PageSize)pageSize());
-	d->m_printer->setOutputToFile(true);
 	d->m_printer->setOutputFileName(d->m_tmpbuffer);
 	d->m_printer->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
 	if (!option("kde-margin-top").isEmpty())
@@ -345,15 +344,15 @@ void KPrinter::translateQtOptions()
 		{
 			// Printers can often print very close to the edges (PPD files say ImageArea==PaperDimension).
 			// But that doesn't mean it looks good. Apps which use setFullPage(false) assume that
-			// KPrinter will give them reasonable margins, so let's QMAX with defaults from Qt in that case.
+			// KPrinter will give them reasonable margins, so let's qMax with defaults from Qt in that case.
 			// Keep this in sync with KPMarginPage::initPageSize
 			
 			unsigned int it, il, ib, ir;
 			d->m_printer->margins( &it, &il, &ib, &ir );
-			top = QMAX( top, (int)it );
-			left = QMAX( left, (int)il );
-			bottom = QMAX( bottom, (int)ib );
-			right = QMAX( right, (int)ir );
+			top = qMax( top, (int)it );
+			left = qMax( left, (int)il );
+			bottom = qMax( bottom, (int)ib );
+			right = qMax( right, (int)ir );
 		}
 		d->m_printer->setMargins( top, left, bottom, right );*/
 	}
@@ -495,10 +494,10 @@ QList<int> KPrinter::pageList() const
 			// process range specification
 			if (!option("kde-range").isEmpty())
 			{
-				QStringList	ranges = QStringList::split(',',option("kde-range"),false);
+				QStringList	ranges = option("kde-range").split(',', QString::SkipEmptyParts);
 				for (QStringList::ConstIterator it=ranges.begin();it!=ranges.end();++it)
 				{
-					int	p = (*it).find('-');
+					int	p = (*it).indexOf('-');
 					bool	ok;
 					if (p == -1)
 					{
@@ -514,8 +513,8 @@ QList<int> KPrinter::pageList() const
 						if (ok && p1 <= p2)
 						{
 							// clip to min/max
-							p1 = QMAX(mp,p1);
-							p2 = QMIN(MP,p2);
+							p1 = qMax(mp,p1);
+							p2 = qMin(MP,p2);
 							for (int i=p1;i<=p2;i++)
 								list.append(i);
 						}
@@ -540,7 +539,7 @@ QList<int> KPrinter::pageList() const
 				bool	keepEven = (pageSet() == EvenPages);
 				for (QList<int>::Iterator it=list.begin();it!=list.end();)
 					if ((((*it) % 2) != 0 && keepEven) ||
-					    (((*it) % 2) == 0 && !keepEven)) it = list.remove(it);
+					    (((*it) % 2) == 0 && !keepEven)) it = list.erase(it);
 					else ++it;
 			}
 		}
@@ -651,7 +650,7 @@ void KPrinter::setOptions(const QMap<QString,QString>& opts)
 	tmpset.remove( "kde-fonts" );
 	for (QMap<QString,QString>::ConstIterator it=tmpset.begin();it!=tmpset.end();++it)
 		if (it.key().left(4) == "kde-" && !(d->m_options.contains(it.key())))
-			d->m_options[it.key()] = it.data();
+			d->m_options[it.key()] = it.value();
 }
 
 void KPrinter::initOptions(const QMap<QString,QString>& opts)
@@ -660,9 +659,9 @@ void KPrinter::initOptions(const QMap<QString,QString>& opts)
   // all listed printers (non-global => start with "kde-...")
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 	{
-		setOption(it.key(), it.data());
+		setOption(it.key(), it.value());
 		if (it.key().left(4) != "kde-")
-			d->m_impl->broadcastOption(it.key(),it.data());
+			d->m_impl->broadcastOption(it.key(),it.value());
 	}
 }
 
@@ -788,7 +787,7 @@ static void dumpOptions(const QMap<QString,QString>& opts)
 {
 	kDebug(500) << "********************" << endl;
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
-		kDebug(500) << it.key() << " = " << it.data() << endl;
+		kDebug(500) << it.key() << " = " << it.value() << endl;
 }
 
 KPrinterImpl* KPrinter::implementation() const
@@ -892,9 +891,9 @@ void KPrinter::setPrintProgram(const QString& prg)
 	else
 	{
 		QString	s(prg);
-		if (s.find("%in") == -1)
+		if (s.indexOf("%in") == -1)
 			s.append(" %in");
-		setOutputToFile( s.find( "%out" ) != -1 );
+		setOutputToFile( s.indexOf( "%out" ) != -1 );
 		setOption("kde-isspecial", "1");
 		setOption("kde-special-command", s);
 	}

@@ -100,9 +100,9 @@ KMFactory::KMFactory()
 	// By default, embed PS fonts
 	bool ok = false;
 	QSettings settings;
-	settings.readBoolEntry( "/qt/embedFonts", true, &ok );
+	ok = settings.value( "/qt/embedFonts", true ).toBool();
 	if ( !ok )
-		settings.writeEntry( "/qt/embedFonts", true );
+		settings.setValue( "/qt/embedFonts", true );
 
 	KGlobal::iconLoader()->addAppDir("kdeprint");
         KGlobal::locale()->insertCatalog("kdeprint");
@@ -432,7 +432,7 @@ QPair<QString,QString> KMFactory::requestPassword( int& seqNbr, const QString& u
 		QString replyString = reply;
 		if ( replyString != "::" )
 		{
-			QStringList l = QStringList::split( ':', replyString, true );
+			QStringList l = replyString.split( ':', QString::KeepEmptyParts );
 			if ( l.count() == 3 )
 			{
 				seqNbr = l[ 2 ].toInt();

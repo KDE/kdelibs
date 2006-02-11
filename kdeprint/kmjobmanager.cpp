@@ -22,9 +22,11 @@
 #include "kmthreadjob.h"
 #include "kmfactory.h"
 
-#include <kaction.h>
 #include <kdebug.h>
 #include <kconfig.h>
+
+class KAction;
+class KActionCollection;
 
 KMJobManager::KMJobManager(QObject *parent)
 : QObject(parent)
@@ -230,7 +232,7 @@ void KMJobManager::removePrinter(const QString& pr, KMJobManager::JobType type)
 	struct JobFilter	*jf = m_filter.find(pr);
 	if (jf)
 	{
-		jf->m_type[type] = QMAX(0, jf->m_type[type]-1);
+		jf->m_type[type] = qMax(0, jf->m_type[type]-1);
 		if (!jf->m_type[0] && !jf->m_type[1])
 			m_filter.remove(pr);
 	}
