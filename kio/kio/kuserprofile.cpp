@@ -161,7 +161,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
         if (_genericServiceType.isEmpty() /*no constraint*/ || (*it)->hasServiceType( _genericServiceType ))
         {
             // Check that we don't already have it ;)
-            if ( serviceList.contains( (*it)->desktopEntryPath() ) )
+            if ( !serviceList.contains( (*it)->desktopEntryPath() ) )
             {
                 bool allow = (*it)->allowAsDefault();
                 KServiceOffer o( (*it), (*it)->initialPreferenceForMimeType(_servicetype), allow );
