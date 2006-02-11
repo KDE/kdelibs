@@ -704,9 +704,10 @@ void KApplication::init()
   bool rtl = isRightToLeft();
   installTranslator(new KDETranslator(this));
   setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
-  if (i18n( "_: Dear Translator! Translate this string to the string 'LTR' in "
+  if (i18n( "Dear Translator! Translate this string to the string 'LTR' in "
 	 "left-to-right languages (as english) or to 'RTL' in right-to-left "
-	 "languages (such as Hebrew and Arabic) to get proper widget layout." ) == "RTL")
+	 "languages (such as Hebrew and Arabic) to get proper widget layout.",
+         "LTR" ) == "RTL")
   rtl = !rtl;	
   setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
 
