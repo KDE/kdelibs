@@ -115,7 +115,7 @@ void Security::slotDataArrived(KProcIO *procIO)
                 key.secret = false;
               else
                 key.secret = true;
-              QStringList line = QStringList::split(":", data, true);
+              QStringList line = data.split(":", QString::KeepEmptyParts);
               key.id = line[4];
               QString shortId = key.id.right(8);
               QString trustStr = line[1];
@@ -126,7 +126,7 @@ void Security::slotDataArrived(KProcIO *procIO)
               key.mail=data.section('<', -1, -1);
               key.mail.truncate(key.mail.length() - 1);
               key.name=data.section('<',0,0);
-              if (key.name.find("(")!=-1)
+              if (key.name.contains("("))
                   key.name=key.name.section('(',0,0);
               m_keys[shortId] = key;
           }
@@ -171,7 +171,7 @@ void Security::slotDataArrived(KProcIO *procIO)
           break;
 
        case Sign:
-         if (data.find("passphrase.enter") != -1)
+         if (data.contains("passphrase.enter"))
          {
            QByteArray password;
            KeyStruct key = m_keys[m_secretKey];
@@ -188,7 +188,7 @@ void Security::slotDataArrived(KProcIO *procIO)
              return;
            }
          } else
-         if (data.find("BAD_PASSPHRASE") != -1)
+         if (data.contains("BAD_PASSPHRASE"))
          {
            m_result |= BAD_PASSPHRASE;
          }
@@ -231,7 +231,7 @@ void Security::slotCheckValidity()
      md5sum = context.hexDigest();
      file.close();
   }
-  file.setName(f.path() + "/md5sum");
+  file.setFileName(f.path() + "/md5sum");
   if (file.open(QIODevice::ReadOnly))
   {
      QByteArray md5sum_file;
@@ -278,7 +278,7 @@ void Security::slotSignFile()
   QStringList secretKeys;
   for (QMap<QString, KeyStruct>::Iterator it = m_keys.begin(); it != m_keys.end(); ++it)
   {
-    if (it.data().secret)
+    if (it.value().secret)
       secretKeys.append(it.key());
   }
   
@@ -303,7 +303,7 @@ void Security::slotSignFile()
     md5sum = context.hexDigest();
     file.close();
   }
-  file.setName(f.path() + "/md5sum");
+  file.setFileName(f.path() + "/md5sum");
   if (file.open(QIODevice::WriteOnly))
   {
     QTextStream stream(&file);

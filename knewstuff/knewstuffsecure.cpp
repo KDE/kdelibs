@@ -149,7 +149,7 @@ void KNewStuffSecure::slotValidated(int result)
     cfg->setGroup("KNewStuffStatus");
     for (QMap<QString, QString>::ConstIterator it = m_installedResources.constBegin(); it != m_installedResources.constEnd(); ++it)
     {
-      cfg->writeEntry(it.key(), it.data());
+      cfg->writeEntry(it.key(), it.value());
     }
     cfg->sync();
   }

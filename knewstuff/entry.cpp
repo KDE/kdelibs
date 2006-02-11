@@ -90,7 +90,8 @@ void Entry::setSummary( const QString &text, const QString &lang )
 {
   mSummaryMap.insert( lang, text );
 
-  if ( mLangs.find( lang ) == mLangs.end() ) mLangs.append( lang );
+  if ( !mLangs.contains( lang ) )
+    mLangs.append( lang );
 }
 
 QString Entry::summary( const QString &lang ) const
@@ -145,7 +146,8 @@ void Entry::setPayload( const KUrl &url, const QString &lang )
 {
   mPayloadMap.insert( lang, url );
 
-  if ( mLangs.find( lang ) == mLangs.end() ) mLangs.append( lang );
+  if ( !mLangs.contains( lang ) )
+    mLangs.append( lang );
 }
 
 KUrl Entry::payload( const QString &lang ) const
@@ -167,8 +169,9 @@ KUrl Entry::payload( const QString &lang ) const
 void Entry::setPreview( const KUrl &url, const QString &lang )
 {
   mPreviewMap.insert( lang, url );
-  
-  if ( mLangs.find( lang ) == mLangs.end() ) mLangs.append( lang );
+
+  if ( !mLangs.contains( lang ) )
+    mLangs.append( lang );
 }
 
 KUrl Entry::preview( const QString &lang ) const

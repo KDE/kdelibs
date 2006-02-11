@@ -360,7 +360,7 @@ bool Engine::createMetaFile( Entry *entry )
   }
 
   QTextStream ts( &f );
-  ts.setEncoding( QTextStream::UnicodeUTF8 );
+  ts.setCodec( "UTF-8" );
   ts << doc.toString();
 
   f.close();

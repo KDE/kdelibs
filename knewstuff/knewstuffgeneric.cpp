@@ -68,7 +68,7 @@ bool KNewStuffGeneric::install( const QString &fileName )
   QString cmd = mConfig->readEntry( "InstallationCommand" );
   if ( !cmd.isEmpty() ) {
     kDebug(5850) << "InstallationCommand: " << cmd << endl;
-    list = QStringList::split( " ", cmd );
+    list = cmd.split( " " );
     for ( QStringList::iterator it = list.begin(); it != list.end(); ++it ) {
         list2 << (*it).replace("%f", fileName);
     }
