@@ -62,6 +62,7 @@ ktnef
 <!ENTITY GUI-dopelniacz    'graficznego interfejsu użytkownika'>
 <!ENTITY GUI-celownik    'graficznemu interfejsowi użytkownika'>
 <!ENTITY GUI-biernik    'graficzny interfejs użytkownika'>
+<!ENTITY GUI-narzednik    'graficznym interfejsem użytkownika'>
 <!ENTITY GUI-miejscownik    'graficznym interfejsie użytkownika'>
 
 <!ENTITY juk-mianownik    '<application>Juk</application>'>
@@ -70,6 +71,14 @@ ktnef
 <!ENTITY juk-biernik    '<application>Juka</application>'>
 <!ENTITY juk-narzednik    '<application>Jukiem</application>'>
 <!ENTITY juk-miejscownik    '<application>Juku</application>'>
+
+<!ENTITY kaddressbook-mianownik    '<application>Książka adresowa</application>'>
+<!ENTITY kaddressbook-dopelniacz    '<application>Książki adresowej</application>'>
+<!ENTITY kaddressbook-celownik    '<application>Książce adresowej</application>'>
+<!ENTITY kaddressbook-biernik    '<application>Książkę adresową</application>'>
+<!ENTITY kaddressbook-narzednik    '<application>Książką adresową</application>'>
+<!ENTITY kaddressbook-miejscownik    '<application>Książce adresowej</application>'>
+
 
 <!ENTITY kappfinder-mianownik    '<application>Kappfinder</application>'>
 <!ENTITY kappfinder-dopelniacz    '<application>Kappfinder</application>'>
@@ -90,18 +99,21 @@ ktnef
 <!ENTITY kcontrolcenter-dopelniacz    '<application>Centrum sterowania &kde;</application>'>
 <!ENTITY kcontrolcenter-celownik    '<application>Centrum sterowania &kde;</application>'>
 <!ENTITY kcontrolcenter-biernik    '<application>Centrum sterowania &kde;</application>'>
+<!ENTITY kcontrolcenter-narzednik    '<application>Centrum sterowania &kde;</application>'>
 <!ENTITY kcontrolcenter-miejscownik    '<application>Centrum sterowania &kde;</application>'>
 
 <!ENTITY kdm-mianownik    '<application>KDM</application>'>
 <!ENTITY kdm-dopelniacz    '<application>KDM</application>'>
 <!ENTITY kdm-celownik    '<application>KDM</application>'>
 <!ENTITY kdm-biernik    '<application>KDM</application>'>
+<!ENTITY kdm-narzednik    '<application>KDM</application>'>
 <!ENTITY kdm-miejscownik    '<application>KDM</application>'>
 
 <!ENTITY khelpcenter-mianownik    '<application>Centrum pomocy &kde;</application>'>
 <!ENTITY khelpcenter-dopelniacz    '<application>Centrum pomocy &kde;</application>'>
 <!ENTITY khelpcenter-celownik    '<application>Centrum pomocy &kde;</application>'>
 <!ENTITY khelpcenter-biernik    '<application>Centrum pomocy &kde;</application>'>
+<!ENTITY khelpcenter-narzednik    '<application>Centrum pomocy &kde;</application>'>
 <!ENTITY khelpcenter-miejscownik    '<application>Centrum pomocy &kde;</application>'>
 
 <!ENTITY kicker-mianownik    '<application>Kicker</application>'>
@@ -141,6 +153,7 @@ ktnef
 <!ENTITY kmenu-dopelniacz    '&kmenu-mianownik;'>
 <!ENTITY kmenu-celownik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-biernik    '&kmenu-mianownik;'>
+<!ENTITY kmenu-narzednik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-miejscownik    '&kmenu-mianownik;'>
 
 <!ENTITY knode-mianownik    '<application>Knode</application>'>
