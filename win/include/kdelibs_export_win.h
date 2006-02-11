@@ -262,3 +262,11 @@
 #  define KNEWSTUFF_EXPORT KDE_IMPORT
 # endif
 #endif
+
+#ifndef _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_DEPRECATE
+#endif
+
+#ifndef _CRT_NONSTDC_NO_DEPRECATE
+#define _CRT_NONSTDC_NO_DEPRECATE
+#endif
