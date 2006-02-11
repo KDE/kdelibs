@@ -506,7 +506,7 @@ KAboutData::aboutTranslationTeam()
             "<p>KDE is translated into many languages thanks to the work "
             "of the translation teams all over the world.</p>"
             "<p>For more information on KDE internationalization "
-            "visit http://i18n.kde.org</p>");
+            "visit http://l10n.kde.org</p>");
 }
 
 QString
