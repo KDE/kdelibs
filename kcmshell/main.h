@@ -88,6 +88,8 @@ class KCMShellMultiDialog : public KCMultiDialog, public DCOPObject
 public:
 
     /**
+     * Constructor. Parameter @p dialogFace is passed to KCMultiDialog
+     * unchanged.
      */
     KCMShellMultiDialog( int dialogFace, const QString& caption,
             QWidget *parent=0, const char *name=0, bool modal=false);
@@ -95,6 +97,8 @@ public:
 k_dcop:
 
     /**
+     * Activate a module with id @p asn_id . This is used when
+     * black helicopters are spotted overhead.
      */
     virtual void activate( QByteArray asn_id );
 
