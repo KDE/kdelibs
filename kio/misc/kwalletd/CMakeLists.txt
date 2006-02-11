@@ -6,32 +6,29 @@ include_directories( ${CMAKE_SOURCE_DIR}/kwallet/backend ${CMAKE_SOURCE_DIR}/kwa
 ########### next target ###############
 
 set(kded_kwalletd_PART_SRCS
-kwalletd.cpp
-ktimeout.cpp
+   kwalletd.cpp
+   ktimeout.cpp
 )
 
 kde4_automoc(${kded_kwalletd_PART_SRCS})
 
 set( kded_kwalletd_UI3
-kwalletwizard.ui3
-kbetterthankdialogbase.ui3
+   kwalletwizard.ui3
+   kbetterthankdialogbase.ui3
 )
 
 kde4_add_ui3_files(kded_kwalletd_PART_SRCS ${kded_kwalletd_UI3} )
 
-set( kded_kwalletd_DCOP_SKEL_SRCS
-kwalletd.h
-)
+set( kded_kwalletd_DCOP_SKEL_SRCS kwalletd.h )
 
 kde4_add_dcop_skels(kded_kwalletd_PART_SRCS ${kded_kwalletd_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kwalletd ${kded_kwalletd_PART_SRCS})
 
-kde4_create_libtool_file(kded_kwalletd /kde4/ )
-
 target_link_libraries(kded_kwalletd  ${QT_AND_KDECORE_LIBS} kio kwalletbackend kwalletclient )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kwalletd )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kded_kwalletd )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kded_kwalletd )
 
 
 ########### install files ###############

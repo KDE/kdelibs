@@ -5,25 +5,20 @@ include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${KDE4_INCLUDE_DIR} ${QT_INCLU
 
 ########### next target ###############
 
-set(kded_kssld_PART_SRCS
-kssld.cpp
-)
+set(kded_kssld_PART_SRCS kssld.cpp )
 
 kde4_automoc(${kded_kssld_PART_SRCS})
 
-set( kded_kssld_DCOP_SKEL_SRCS
-kssld.h
-)
+set( kded_kssld_DCOP_SKEL_SRCS kssld.h )
 
 kde4_add_dcop_skels(kded_kssld_PART_SRCS ${kded_kssld_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kssld ${kded_kssld_PART_SRCS})
 
-kde4_create_libtool_file(kded_kssld /kde4/ )
-
 target_link_libraries(kded_kssld  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kssld )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kded_kssld )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kded_kssld )
 
 
 ########### install files ###############

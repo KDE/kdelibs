@@ -8,23 +8,19 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 ########### next target ###############
 
 set(kded_proxyscout_PART_SRCS
-proxyscout.cpp
-script.cpp
-downloader.cpp
-discovery.cpp
+   proxyscout.cpp
+   script.cpp
+   downloader.cpp
+   discovery.cpp
 )
 
 kde4_automoc(${kded_proxyscout_PART_SRCS})
 
-set( kded_proxyscout_DCOP_SKEL_SRCS
-proxyscout.h
-)
+set( kded_proxyscout_DCOP_SKEL_SRCS proxyscout.h )
 
 kde4_add_dcop_skels(kded_proxyscout_PART_SRCS ${kded_proxyscout_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
-
-kde4_create_libtool_file(kded_proxyscout /kde4/ )
 
 target_link_libraries(kded_proxyscout  ${QT_AND_KDECORE_LIBS} kio kjs )
 
@@ -34,14 +30,13 @@ if (HAVE_RESOLV_LIBRARY)
    target_link_libraries(kded_proxyscout resolv)
 endif (HAVE_RESOLV_LIBRARY)
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_proxyscout )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kded_proxyscout )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kded_proxyscout )
 
 
 ########### next target ###############
 
-set(kpac_dhcp_helper_SRCS
-kpac_dhcp_helper.c
-)
+set(kpac_dhcp_helper_SRCS kpac_dhcp_helper.c )
 
 kde4_automoc(${kpac_dhcp_helper_SRCS})
 

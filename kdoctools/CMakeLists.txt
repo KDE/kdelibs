@@ -14,47 +14,42 @@ macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 ########### next target ###############
 
 set(kio_help_PART_SRCS
-kio_help.cpp
-main.cpp
-xslt.cpp
+   kio_help.cpp
+   main.cpp
+   xslt.cpp
 )
 
 kde4_automoc(${kio_help_PART_SRCS})
 
 kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
-kde4_create_libtool_file( kio_help /kde4/ )
-
 target_link_libraries(kio_help  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY} )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kio_help )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}  kio_help )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kio_help )
 
 
 ########### next target ###############
 
 set(kio_ghelp_PART_SRCS
-kio_help.cpp
-main_ghelp.cpp
-xslt.cpp
+   kio_help.cpp
+   main_ghelp.cpp
+   xslt.cpp
 )
 
 kde4_automoc(${kio_ghelp_PART_SRCS})
 
 kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 
-kde4_create_libtool_file( kio_ghelp /kde4/ )
-
 target_link_libraries(kio_ghelp  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARY} ${LIBXSLT_LIBRARY} )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kio_ghelp )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kio_ghelp )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kio_ghelp )
 
 
 ########### next target ###############
 
-set(meinproc_SRCS
-meinproc.cpp
-xslt.cpp
-)
+set(meinproc_SRCS meinproc.cpp xslt.cpp )
 
 kde4_automoc(${meinproc_SRCS})
 

@@ -6,20 +6,19 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES
 ########### next target ###############
 
 set(light_PART_SRCS
-light.cpp
-lightstyle-v2.cpp
-lightstyle-v3.cpp
+   light.cpp
+   lightstyle-v2.cpp
+   lightstyle-v3.cpp
 )
 
 kde4_automoc(${light_PART_SRCS})
 
 kde4_add_plugin(light ${light_PART_SRCS})
 
-kde4_create_libtool_file(light /kde4/ )
-
 target_link_libraries(light  ${QT_AND_KDECORE_LIBS} kdefx )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 light )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} light )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} light )
 
 
 ########### install files ###############

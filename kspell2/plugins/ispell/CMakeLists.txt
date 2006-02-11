@@ -21,11 +21,10 @@ kde4_automoc(${kspell_ispell_PART_SRCS})
 
 kde4_add_plugin(kspell_ispell ${kspell_ispell_PART_SRCS})
 
-kde4_create_libtool_file(kspell_ispell /kde4/ )
-
 target_link_libraries(kspell_ispell  ${QT_AND_KDECORE_LIBS} kspell2 )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kspell_ispell )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kspell_ispell )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kspell_ispell )
 
 
 ########### install files ###############

@@ -5,19 +5,16 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(kstyle_highcontrast_config_PART_SRCS
-highcontrastconfig.cpp
-)
+set(kstyle_highcontrast_config_PART_SRCS highcontrastconfig.cpp )
 
 kde4_automoc(${kstyle_highcontrast_config_PART_SRCS})
 
 kde4_add_plugin(kstyle_highcontrast_config ${kstyle_highcontrast_config_PART_SRCS})
 
-kde4_create_libtool_file(kstyle_highcontrast_config /kde4/ )
-
 target_link_libraries(kstyle_highcontrast_config  ${QT_AND_KDECORE_LIBS} kdeui )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kstyle_highcontrast_config )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kstyle_highcontrast_config )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kstyle_highcontrast_config )
 
 
 ########### install files ###############

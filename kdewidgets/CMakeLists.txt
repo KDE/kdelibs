@@ -38,19 +38,16 @@ qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_BINA
 
 kde4_automoc(classpreviews.cpp)
 
-set( kdewidgets_QRC
-kdewidgets.qrc
-)
+set( kdewidgets_QRC kdewidgets.qrc )
 
 qt4_add_resources(kdewidgets_PART_SRCS ${kdewidgets_QRC} )
 
 kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
-kde4_create_libtool_file(kdewidgets /kde4/plugins/designer/ )
-
 target_link_libraries(kdewidgets  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4/plugins/designer/ kdewidgets )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/plugins/designer kdewidgets )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR}/plugins/designer kdewidgets )
 
 
 ########### install files ###############

@@ -6,20 +6,19 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdeprint ${KDE4_INCLUDE_DIR} ${QT_INCLU
 ########### next target ###############
 
 set(kdeprint_foomatic_PART_SRCS
-kmfoomaticfactory.cpp
-kmfoomaticmanager.cpp
-kfoomaticprinterimpl.cpp
+   kmfoomaticfactory.cpp
+   kmfoomaticmanager.cpp
+   kfoomaticprinterimpl.cpp
 )
 
 kde4_automoc(${kdeprint_foomatic_PART_SRCS})
 
 kde4_add_plugin(kdeprint_foomatic ${kdeprint_foomatic_PART_SRCS})
 
-kde4_create_libtool_file(kdeprint_foomatic /kde4/ )
-
 target_link_libraries(kdeprint_foomatic  ${QT_AND_KDECORE_LIBS} kdeprint_management )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_foomatic )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_foomatic )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_foomatic )
 
 
 ########### next target ###############

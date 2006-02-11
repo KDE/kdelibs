@@ -24,26 +24,20 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kded ${CMAKE_
 
 ########### next target ###############
 
-set(kded_kdeprintd_PART_SRCS
-kdeprintd.cpp
-kprintprocess.cpp
-)
+set(kded_kdeprintd_PART_SRCS kdeprintd.cpp kprintprocess.cpp )
 
 kde4_automoc(${kded_kdeprintd_PART_SRCS})
 
-set( kded_kdeprintd_DCOP_SKEL_SRCS
-kdeprintd.h
-)
+set( kded_kdeprintd_DCOP_SKEL_SRCS kdeprintd.h )
 
 kde4_add_dcop_skels(kded_kdeprintd_PART_SRCS ${kded_kdeprintd_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
 
-kde4_create_libtool_file(kded_kdeprintd /kde4/ )
-
 target_link_libraries(kded_kdeprintd  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kdeprintd )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kded_kdeprintd )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kded_kdeprintd )
 
 
 ########### next target ###############

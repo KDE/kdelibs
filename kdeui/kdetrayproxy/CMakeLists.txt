@@ -5,26 +5,20 @@ include_directories( ${CMAKE_SOURCE_DIR}/kded ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}
 
 ########### next target ###############
 
-set(kded_kdetrayproxy_PART_SRCS
-kdetrayproxy.cpp
-module.cpp
-)
+set(kded_kdetrayproxy_PART_SRCS kdetrayproxy.cpp module.cpp )
 
 kde4_automoc(${kded_kdetrayproxy_PART_SRCS})
 
-set( kded_kdetrayproxy_DCOP_SKEL_SRCS
-module.h
-)
+set( kded_kdetrayproxy_DCOP_SKEL_SRCS module.h )
 
 kde4_add_dcop_skels(kded_kdetrayproxy_PART_SRCS ${kded_kdetrayproxy_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kdetrayproxy ${kded_kdetrayproxy_PART_SRCS})
 
-kde4_create_libtool_file(kded_kdetrayproxy /kde4/ )
-
 target_link_libraries(kded_kdetrayproxy  ${QT_AND_KDECORE_LIBS})
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kdetrayproxy )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kded_kdetrayproxy )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kded_kdetrayproxy )
 
 
 ########### install files ###############

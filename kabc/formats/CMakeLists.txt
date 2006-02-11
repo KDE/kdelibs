@@ -5,19 +5,16 @@ include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_BINARY_DIR}/kabc ${KDE4_IN
 
 ########### next target ###############
 
-set(kabcformat_binary_PART_SRCS
-binaryformat.cpp
-)
+set(kabcformat_binary_PART_SRCS binaryformat.cpp )
 
 kde4_automoc(${kabcformat_binary_PART_SRCS})
 
 kde4_add_plugin(kabcformat_binary ${kabcformat_binary_PART_SRCS})
 
-kde4_create_libtool_file(kabcformat_binary /kde4/ )
-
 target_link_libraries(kabcformat_binary  ${QT_AND_KDECORE_LIBS} kabc )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kabcformat_binary )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kabcformat_binary )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kabcformat_binary )
 
 
 ########### install files ###############

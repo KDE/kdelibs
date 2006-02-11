@@ -6,20 +6,19 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES
 ########### next target ###############
 
 set(kthemestyle_PART_SRCS
-kthemebase.cpp
-kthemestyle.cpp
-kstyledirs.cpp
+   kthemebase.cpp
+   kthemestyle.cpp
+   kstyledirs.cpp
 )
 
 kde4_automoc(${kthemestyle_PART_SRCS})
 
 kde4_add_plugin(kthemestyle ${kthemestyle_PART_SRCS})
 
-kde4_create_libtool_file(kthemestyle /kde4/ )
-
 target_link_libraries(kthemestyle  ${QT_AND_KDECORE_LIBS} kdefx kdecore )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kthemestyle )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kthemestyle )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kthemestyle )
 
 
 ########### install files ###############

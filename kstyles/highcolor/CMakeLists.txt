@@ -5,19 +5,16 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES
 
 ########### next target ###############
 
-set(highcolor_PART_SRCS
-highcolor.cpp
-)
+set(highcolor_PART_SRCS highcolor.cpp )
 
 kde4_automoc(${highcolor_PART_SRCS})
 
 kde4_add_plugin(highcolor ${highcolor_PART_SRCS})
 
-kde4_create_libtool_file(highcolor /kde4/ )
-
 target_link_libraries(highcolor  ${QT_AND_KDECORE_LIBS} kdefx )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 highcolor )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} highcolor )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} highcolor )
 
 
 ########### install files ###############

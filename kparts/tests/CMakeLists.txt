@@ -48,36 +48,30 @@ target_link_libraries(ghostviewtest  ${QT_AND_KDECORE_LIBS} kparts )
 
 ########### next target ###############
 
-set(spellcheckplugin_PART_SRCS
-plugin_spellcheck.cpp
-)
+set(spellcheckplugin_PART_SRCS plugin_spellcheck.cpp )
 
 kde4_automoc(${spellcheckplugin_PART_SRCS})
 
 kde4_add_plugin(spellcheckplugin WITH_PREFIX ${spellcheckplugin_PART_SRCS})
 
-kde4_create_libtool_file(spellcheckplugin /kde4/ )
-
 target_link_libraries(spellcheckplugin  ${QT_AND_KDECORE_LIBS} kparts )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 spellcheckplugin )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} spellcheckplugin )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} spellcheckplugin )
 
 
 ########### next target ###############
 
-set(notepadpart_PART_SRCS
-notepadpart.cpp
-)
+set(notepadpart_PART_SRCS notepadpart.cpp )
 
 kde4_automoc(${notepadpart_PART_SRCS})
 
 kde4_add_plugin(notepadpart WITH_PREFIX ${notepadpart_PART_SRCS})
 
-kde4_create_libtool_file(notepadpart /kde4/ )
-
 target_link_libraries(notepadpart  ${QT_AND_KDECORE_LIBS} kparts )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 notepadpart )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} notepadpart )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} notepadpart )
 
 
 ########### next target ###############

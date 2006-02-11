@@ -39,20 +39,16 @@ install_targets(${KDE4_LIB_INSTALL_DIR} kresources )
 
 ########### next target ###############
 
-set(kcm_kresources_PART_SRCS
-kcmkresources.cpp
-)
+set(kcm_kresources_PART_SRCS kcmkresources.cpp )
 
 kde4_automoc(${kcm_kresources_PART_SRCS})
 
 kde4_add_plugin(kcm_kresources ${kcm_kresources_PART_SRCS})
 
-kde4_create_libtool_file(kcm_kresources /kde4/ )
-
 target_link_libraries(kcm_kresources  ${QT_AND_KDECORE_LIBS} kresources )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kcm_kresources )
-
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kcm_kresources )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kcm_kresources )
 
 ########### next target ###############
 

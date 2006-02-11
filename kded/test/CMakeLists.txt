@@ -5,25 +5,20 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(kded_test_PART_SRCS
-test.cpp
-)
+set(kded_test_PART_SRCS test.cpp )
 
 kde4_automoc(${kded_test_PART_SRCS})
 
-set( kded_test_DCOP_SKEL_SRCS
-test.h
-)
+set( kded_test_DCOP_SKEL_SRCS test.h )
 
 kde4_add_dcop_skels(kded_test_PART_SRCS ${kded_test_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_test ${kded_test_PART_SRCS})
 
-kde4_create_libtool_file(kded_test /kde4/ )
-
 target_link_libraries(kded_test  ${QT_AND_KDECORE_LIBS} )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_test )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kded_test )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kded_test )
 
 
 ########### install files ###############

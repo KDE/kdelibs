@@ -7,19 +7,16 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(kio_file_PART_SRCS
-file.cc
-)
+set(kio_file_PART_SRCS file.cc )
 
 kde4_automoc(${kio_file_PART_SRCS})
 
 kde4_add_plugin(kio_file ${kio_file_PART_SRCS})
 
-kde4_create_libtool_file( kio_file /kde4/ )
-
 target_link_libraries(kio_file  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kio_file )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kio_file )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kio_file )
 
 
 ########### install files ###############

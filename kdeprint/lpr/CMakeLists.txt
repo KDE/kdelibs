@@ -29,11 +29,10 @@ kde4_automoc(${kdeprint_lpr_PART_SRCS})
 
 kde4_add_plugin(kdeprint_lpr ${kdeprint_lpr_PART_SRCS})
 
-kde4_create_libtool_file(kdeprint_lpr /kde4/ )
-
 target_link_libraries(kdeprint_lpr  ${QT_AND_KDECORE_LIBS} kdeprint_management kdefakes )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_lpr )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_lpr )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_lpr )
 
 
 ########### next target ###############

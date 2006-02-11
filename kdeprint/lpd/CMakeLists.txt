@@ -6,23 +6,22 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/kdeprint/m
 ########### next target ###############
 
 set(kdeprint_lpd_PART_SRCS
-kmlpdfactory.cpp
-kmlpdmanager.cpp
-klpdprinterimpl.cpp
-kmlpduimanager.cpp
-lpdtools.cpp
-gschecker.cpp
+   kmlpdfactory.cpp
+   kmlpdmanager.cpp
+   klpdprinterimpl.cpp
+   kmlpduimanager.cpp
+   lpdtools.cpp
+   gschecker.cpp
 )
 
 kde4_automoc(${kdeprint_lpd_PART_SRCS})
 
 kde4_add_plugin(kdeprint_lpd ${kdeprint_lpd_PART_SRCS})
 
-kde4_create_libtool_file(kdeprint_lpd /kde4/ )
-
 target_link_libraries(kdeprint_lpd  ${QT_AND_KDECORE_LIBS} kdeprint_management )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_lpd )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_lpd )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_lpd )
 
 
 ########### next target ###############

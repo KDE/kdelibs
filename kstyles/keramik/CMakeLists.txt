@@ -17,10 +17,10 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h
 ########### next target ###############
 
 set(keramik_PART_SRCS
-keramik.cpp
-pixmaploader.cpp
-gradients.cpp
-colorutil.cpp
+   keramik.cpp
+   pixmaploader.cpp
+   gradients.cpp
+  colorutil.cpp
 )
 
 # this actually shouldn't be required, maybe current cmake cvs handles it correctly, Alex
@@ -30,11 +30,10 @@ kde4_automoc(${keramik_PART_SRCS})
 
 kde4_add_plugin(keramik ${keramik_PART_SRCS})
 
-kde4_create_libtool_file(keramik /kde4/plugins/styles/ )
-
 target_link_libraries(keramik  ${QT_AND_KDECORE_LIBS} kdefx )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4/plugins/styles/ keramik )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/plugins/styles keramik )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR}/plugins/styles/ keramik )
 
 
 ########### next target ###############

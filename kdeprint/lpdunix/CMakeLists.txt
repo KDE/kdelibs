@@ -6,21 +6,20 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdeprint ${KDE4_INCLUDE_DIR} ${QT_INCLU
 ########### next target ###############
 
 set(kdeprint_lpdunix_PART_SRCS
-kmlpdunixfactory.cpp
-kmlpdunixmanager.cpp
-klpdunixprinterimpl.cpp
-kmlpdunixuimanager.cpp
+   kmlpdunixfactory.cpp
+   kmlpdunixmanager.cpp
+   klpdunixprinterimpl.cpp
+   kmlpdunixuimanager.cpp
 )
 
 kde4_automoc(${kdeprint_lpdunix_PART_SRCS})
 
 kde4_add_plugin(kdeprint_lpdunix ${kdeprint_lpdunix_PART_SRCS})
 
-kde4_create_libtool_file(kdeprint_lpdunix /kde4/ )
-
 target_link_libraries(kdeprint_lpdunix  ${QT_AND_KDECORE_LIBS} kdeprint_management )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_lpdunix )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_lpdunix )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_lpdunix )
 
 
 ########### install files ###############

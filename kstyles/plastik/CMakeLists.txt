@@ -7,20 +7,16 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(plastik_PART_SRCS
-plastik.cpp
-misc.cpp
-)
+set(plastik_PART_SRCS plastik.cpp misc.cpp )
 
 kde4_automoc(${plastik_PART_SRCS})
 
 kde4_add_plugin(plastik ${plastik_PART_SRCS})
 
-kde4_create_libtool_file(plastik /kde4/plugins/styles/ )
-
 target_link_libraries(plastik  ${QT_AND_KDECORE_LIBS} kdefx )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4/plugins/styles/ plastik )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/plugins/styles plastik)
+install_targets(${KDE4_PLUGIN_INSTALL_DIR}/plugins/styles/ plastik )
 
 
 ########### install files ###############

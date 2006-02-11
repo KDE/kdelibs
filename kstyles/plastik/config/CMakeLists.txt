@@ -5,19 +5,16 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(kstyle_plastik_config_PART_SRCS
-plastikconf.cpp
-)
+set(kstyle_plastik_config_PART_SRCS plastikconf.cpp )
 
 kde4_automoc(${kstyle_plastik_config_PART_SRCS})
 
 kde4_add_plugin(kstyle_plastik_config ${kstyle_plastik_config_PART_SRCS})
 
-kde4_create_libtool_file(kstyle_plastik_config /kde4/ )
-
 target_link_libraries(kstyle_plastik_config  ${QT_AND_KDECORE_LIBS} kdeui )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kstyle_plastik_config )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kstyle_plastik_config )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kstyle_plastik_config )
 
 
 ########### install files ###############

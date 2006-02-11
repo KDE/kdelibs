@@ -5,19 +5,16 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(kdeprint_tool_escputil_PART_SRCS
-escpwidget.cpp
-)
+set(kdeprint_tool_escputil_PART_SRCS escpwidget.cpp )
 
 kde4_automoc(${kdeprint_tool_escputil_PART_SRCS})
 
 kde4_add_plugin(kdeprint_tool_escputil ${kdeprint_tool_escputil_PART_SRCS})
 
-kde4_create_libtool_file( kdeprint_tool_escputil /kde4/ )
-
 target_link_libraries(kdeprint_tool_escputil  ${QT_AND_KDECORE_LIBS} kdeui )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_tool_escputil )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}  kdeprint_tool_escputil )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_tool_escputil )
 
 
 ########### install files ###############

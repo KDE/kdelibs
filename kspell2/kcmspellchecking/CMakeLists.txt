@@ -6,19 +6,18 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 ########### next target ###############
 
 set(kcm_spellchecking_PART_SRCS
-spellchecking.cpp
-${kspell2base_STAT_SRCS}
+   spellchecking.cpp
+   ${kspell2base_STAT_SRCS}
 )
 
 kde4_automoc(${kcm_spellchecking_PART_SRCS})
 
 kde4_add_plugin(kcm_spellchecking ${kcm_spellchecking_PART_SRCS})
 
-kde4_create_libtool_file(kcm_spellchecking /kde4/ )
-
 target_link_libraries(kcm_spellchecking  ${QT_AND_KDECORE_LIBS} kdeui kutils)
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kcm_spellchecking )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kcm_spellchecking )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kcm_spellchecking )
 
 
 ########### install files ###############

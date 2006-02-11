@@ -26,11 +26,10 @@ kde4_automoc(${kjavaappletviewer_PART_SRCS})
 
 kde4_add_plugin(kjavaappletviewer ${kjavaappletviewer_PART_SRCS})
 
-kde4_create_libtool_file(  kjavaappletviewer /kde4/ )
-
 target_link_libraries(kjavaappletviewer  ${QT_AND_KDECORE_LIBS} kparts )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kjavaappletviewer )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kjavaappletviewer )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kjavaappletviewer )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kjava.policy.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
 macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )

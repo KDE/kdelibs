@@ -6,19 +6,16 @@ include_directories(${OPENSSL_INCLUDE_DIR} ${CMAKE_BINARY_DIR}/kio/kssl )
 
 ########### next target ###############
 
-set(kcertpart_PART_SRCS
-kcertpart.cc
-)
+set(kcertpart_PART_SRCS kcertpart.cc )
 
 kde4_automoc(${kcertpart_PART_SRCS})
 
 kde4_add_plugin(kcertpart WITH_PREFIX ${kcertpart_PART_SRCS})
 
-kde4_create_libtool_file(kcertpart /kde4/ )
-
 target_link_libraries(kcertpart  ${QT_AND_KDECORE_LIBS} kparts )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kcertpart )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kcertpart )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kcertpart )
 
 
 ########### install files ###############

@@ -6,21 +6,20 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdeprint ${KDE4_INCLUDE_DIR} ${QT_INCLU
 ########### next target ###############
 
 set(kdeprint_ext_PART_SRCS
-kmextfactory.cpp
-kmextmanager.cpp
-kextprinterimpl.cpp
-kmextuimanager.cpp
+   kmextfactory.cpp
+   kmextmanager.cpp
+   kextprinterimpl.cpp
+   kmextuimanager.cpp
 )
 
 kde4_automoc(${kdeprint_ext_PART_SRCS})
 
 kde4_add_plugin(kdeprint_ext ${kdeprint_ext_PART_SRCS})
 
-kde4_create_libtool_file( kdeprint_ext /kde4/ )
-
 target_link_libraries(kdeprint_ext  ${QT_AND_KDECORE_LIBS} kdeprint )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kdeprint_ext )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_ext )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_ext )
 
 
 ########### install files ###############

@@ -22,19 +22,16 @@ install_targets(${KDE4_LIB_INSTALL_DIR} kabc_dir )
 
 ########### next target ###############
 
-set(kabc_directory_PART_SRCS
-resourcedirplugin.cpp
-)
+set(kabc_directory_PART_SRCS resourcedirplugin.cpp )
 
 kde4_automoc(${kabc_directory_PART_SRCS})
 
 kde4_add_plugin(kabc_directory ${kabc_directory_PART_SRCS})
 
-kde4_create_libtool_file(kabc_directory /kde4/ )
-
 target_link_libraries(kabc_directory  ${QT_AND_KDECORE_LIBS} kabc_dir)
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kabc_directory )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kabc_directory )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kabc_directory )
 
 
 ########### install files ###############

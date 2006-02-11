@@ -6,19 +6,18 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 ########### next target ###############
 
 set(kspell_hspell_PART_SRCS
-kspell_hspellclient.cpp
-kspell_hspelldict.cpp
+   kspell_hspellclient.cpp
+   kspell_hspelldict.cpp
 )
 
 kde4_automoc(${kspell_hspell_PART_SRCS})
 
 kde4_add_plugin(kspell_hspell ${kspell_hspell_PART_SRCS})
 
-kde4_create_libtool_file(kspell_hspell /kde4/ )
-
 target_link_libraries(kspell_hspell  ${QT_AND_KDECORE_LIBS} kspell2 ${HSPELL_LIBRARY} ${ZLIB_LIBRARIES} )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kspell_hspell )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kspell_hspell )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kspell_hspell )
 
 
 ########### install files ###############

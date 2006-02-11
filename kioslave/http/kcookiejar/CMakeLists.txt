@@ -25,26 +25,23 @@ install_targets(/bin kcookiejar )
 ########### next target ###############
 
 set(kded_kcookiejar_PART_SRCS
-kcookiejar.cpp
-kcookieserver.cpp
-kcookiewin.cpp
+   kcookiejar.cpp
+   kcookieserver.cpp
+   kcookiewin.cpp
 )
 
 kde4_automoc(${kded_kcookiejar_PART_SRCS})
 
-set( kded_kcookiejar_DCOP_SKEL_SRCS
-kcookieserver.h
-)
+set( kded_kcookiejar_DCOP_SKEL_SRCS kcookieserver.h )
 
 kde4_add_dcop_skels(kded_kcookiejar_PART_SRCS ${kded_kcookiejar_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 
-kde4_create_libtool_file(kded_kcookiejar /kde4/ )
-
 target_link_libraries(kded_kcookiejar  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 kded_kcookiejar )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kded_kcookiejar )
+install_targets(${KDE4_PLUGIN_INSTALL_DIR} kded_kcookiejar )
 
 
 ########### install files ###############
