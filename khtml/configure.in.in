@@ -52,5 +52,6 @@ fi
 AC_MSG_RESULT($ac_libthai)
 ])
 
-
 KDE_CHECK_LIBTHAI
+
+KDE_CHECK_HEADERS(valgrind/memcheck.h)
