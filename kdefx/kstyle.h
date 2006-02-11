@@ -111,9 +111,12 @@ protected:
         QPalette::ColorRole role;
     public:
 
+	/// Constructor, using a the given palette role @p _role
+	/// and a default mode.
         ColorMode(QPalette::ColorRole _role): mode(PaletteEntryMode), role(_role)
         {}
 
+	/// Constructor with explicit color mode and palette roles.
         ColorMode(Mode _mode, QPalette::ColorRole _role): mode(_mode), role(_role)
         {}
 
@@ -395,20 +398,22 @@ protected:
      */
     struct CheckBox
     {
+	/** Layout properties for checkboxes. */
         enum LayoutProp
         {
-            Size,               //Size of the checkbox
-            BoxTextSpace,       //Space to leave between checkbox and text
-            NoLabelFocusMargin, //Rectangle to apply to the checkbox rectangle to get where to
-                                //paint the focus rectangle in case of a labelless checkbox
+            Size,               ///< Size of the checkbox
+            BoxTextSpace,       ///< Space to leave between checkbox and text
+            NoLabelFocusMargin, ///< Rectangle to apply to the checkbox rectangle to get where to
+                                ///< paint the focus rectangle in case of a labelless checkbox
             FocusMargin = NoLabelFocusMargin + MarginInc
         };
         
+	/** Primitive state of the checkbox, translated to drawing style. */
         enum Primitive
         {
-            CheckOff,
-            CheckOn,
-            CheckTriState
+            CheckOff,      ///< The check is off
+            CheckOn,       ///< The check is on
+            CheckTriState  ///< The check is tristate and neither off nor on
         };
     };
 
@@ -947,26 +952,35 @@ public:
     /*
      The methods below implement the QStyle interface
     */
+    /** Reimplemented from QStyle */
     void drawControl      (ControlElement   elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
     
+    /** Reimplemented from QStyle */
     void drawPrimitive    (PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
     
+    /** Reimplemented from QStyle */
     int  pixelMetric      (PixelMetric    metric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
     
+    /** Reimplemented from QStyle */
     QRect subElementRect  (SubElement    subRect, const QStyleOption* opt, const QWidget* w) const;
     
+    /** Reimplemented from QStyle */
     QSize sizeFromContents(ContentsType     type, const QStyleOption* opt,
                                                 const QSize& contentsSize, const QWidget* w) const;
     
+    /** Reimplemented from QStyle */
     int   styleHint       (StyleHint        hint, const QStyleOption* opt, const QWidget* w,
                                                                QStyleHintReturn* returnData) const;
                                                                
+    /** Reimplemented from QStyle */
     QRect subControlRect (ComplexControl control, const QStyleOptionComplex* opt,
                                                     SubControl subControl, const QWidget* w) const;
 
+    /** Reimplemented from QStyle */
     SubControl hitTestComplexControl(ComplexControl cc, const QStyleOptionComplex* opt,
                                              const QPoint& pt, const QWidget* w) const;
 
+    /** Reimplemented from QStyle */
     void       drawComplexControl   (ComplexControl cc, const QStyleOptionComplex* opt,
                                              QPainter *p,      const QWidget* w) const;
 };

@@ -79,7 +79,7 @@ public:
          KPixmap() : QPixmap() {}
 
 	/**
-	 * Constructs a pixmap of the given @param width and @param height.
+	 * Constructs a pixmap of the given @p width and @p height.
 	 */
          KPixmap( uint width, uint height );
 
