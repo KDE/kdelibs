@@ -78,7 +78,11 @@ kde4_automoc(${kjs_LIB_SRCS})
 
 kde4_add_library(kjs SHARED ${kjs_LIB_SRCS})
 
-target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS} m )
+if(UNIX)
+   target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS} m )
+else(UNIX)
+   target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS} ${PCRE_LIBRARY})
+endif(UNIX)
 
 if(PCRE_FOUND)
    target_link_libraries(kjs ${PCRE_LIBRARIES})
