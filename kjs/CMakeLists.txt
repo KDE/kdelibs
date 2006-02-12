@@ -81,11 +81,11 @@ kde4_add_library(kjs SHARED ${kjs_LIB_SRCS})
 if(UNIX)
    target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS} m )
 else(UNIX)
-   target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS} ${PCRE_LIBRARY})
+   target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS})
 endif(UNIX)
 
 if(PCRE_FOUND)
-   target_link_libraries(kjs ${PCRE_LIBRARIES})
+   target_link_libraries(kjs ${PCRE_LIBRARY})
 endif(PCRE_FOUND)
 
 set_target_properties(kjs PROPERTIES VERSION 1.2.0 SOVERSION 1 )
