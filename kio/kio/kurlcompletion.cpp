@@ -729,7 +729,7 @@ bool KUrlCompletion::userCompletion(const MyURL &url, QString *pMatch)
 {
 	if ( url.protocol() != QLatin1String("file")
 	      || !url.dir().isEmpty()
-	      || url.file().at(0) != QLatin1Char('~') )
+	      || !url.file().startsWith( QLatin1Char('~') ) )
 		return false;
 
 	if ( !isListedURL( CTUser ) ) {
