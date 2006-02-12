@@ -16,8 +16,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _ARPA_INET_H
-#define _ARPA_INET_H
+#ifndef KDEWIN_ARPA_INET_H
+#define KDEWIN_ARPA_INET_H
+
+// include everywhere
+#include <sys/types.h>
 
 #include <netinet/in.h>
 
@@ -32,4 +35,4 @@ typedef unsigned int in_addr_t;
 };
 #endif
 
-#endif /* _ARPA_INET_H */
+#endif // KDEWIN_ARPA_INET_H

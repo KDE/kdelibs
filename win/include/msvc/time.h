@@ -17,10 +17,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDE_TIME_H
-#define KDE_TIME_H
+#ifndef KDEWIN32_TIME_H
+#define KDEWIN32_TIME_H
 
-#include <winposix_export.h>
+// include everywhere
+#include <sys/types.h>
+
 #include <../include/time.h>
 
 struct timezone 
@@ -40,4 +42,4 @@ KDEWIN32_EXPORT struct tm *gmtime_r(const time_t *clock, struct tm *result);
 }
 #endif 
 
-#endif 
+#endif  // KDEWIN32_TIME_H

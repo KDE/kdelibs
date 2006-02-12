@@ -17,11 +17,14 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef SIGNAL_H
-#define SIGNAL_H
+#ifndef KDEWIN_SIGNAL_H
+#define KDEWIN_SIGNAL_H
 
-#include <winposix_export.h>
+// include everywhere
 #include <sys/types.h>
+
+/* regular header from msvc includes */
+#include <../include/signal.h>
 
 #ifdef  __cplusplus
 extern "C" {
@@ -68,7 +71,4 @@ KDEWIN32_EXPORT int kill(pid_t pid, int sig);
 }
 #endif
 
-/* regular header from msvc includes */
-#include <../include/signal.h>
-
-#endif SIGNAL_H
+#endif  // KDEWIN_SIGNAL_H

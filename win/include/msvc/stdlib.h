@@ -17,24 +17,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-/*
- * Definitions for common types, variables, and functions.
- */
+#ifndef KDEWIN_STDLIB_H
+#define KDEWIN_STDLIB_H
 
-#include <winposix_export.h>
+// include everywhere
+#include <sys/types.h>
 
 /* regular header from msvc includes */
 #include <../include/stdlib.h>
 
-#define __need_size_t
-#define __need_wchar_t
-#include <stddef.h>
-
-#ifndef _STDLIB_H_
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define _STDLIB_H_
 
 #ifndef NULL
 #define NULL 0
@@ -61,4 +55,4 @@ KDEWIN32_EXPORT void unsetenv(const char *name);
 }
 #endif
 
-#endif /* _STDLIB_H_ */
+#endif // KDEWIN_STDLIB_H

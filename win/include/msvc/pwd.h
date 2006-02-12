@@ -33,17 +33,14 @@
  *	@(#)pwd.h	5.13 (Berkeley) 5/28/91
  */
 
-#ifndef _PWD_H_
+#ifndef KDEWIN_PWD_H
 
-#include <winposix_export.h>
-
+// include everywhere
 #include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define _PWD_H_
 
 struct passwd {
 	char	*pw_name;		/* user name */
@@ -58,11 +55,8 @@ struct passwd {
 
 KDEWIN32_EXPORT struct passwd	*getpwuid (uid_t);
 KDEWIN32_EXPORT struct passwd	*getpwnam (const char *);
-KDEWIN32_EXPORT int getpwnam_r (const char *, struct passwd *,
-			char *, size_t , struct passwd **);
-KDEWIN32_EXPORT int	getpwuid_r (uid_t, struct passwd *, char *,
-			size_t, struct passwd **);
-
+KDEWIN32_EXPORT int getpwnam_r (const char *, struct passwd *, char *, size_t , struct passwd **);
+KDEWIN32_EXPORT int	getpwuid_r (uid_t, struct passwd *, char *, size_t, struct passwd **);
 KDEWIN32_EXPORT struct passwd	*getpwent (void);
 KDEWIN32_EXPORT void		 setpwent (void);
 KDEWIN32_EXPORT void		 endpwent (void);
@@ -70,4 +64,5 @@ KDEWIN32_EXPORT void		 endpwent (void);
 #ifdef __cplusplus
 }
 #endif
-#endif /* _PWD_H_ */
+
+#endif // KDEWIN_PWD_H

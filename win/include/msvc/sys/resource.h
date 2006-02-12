@@ -17,10 +17,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _SYS_RESOURCE_H_
-#define _SYS_RESOURCE_H_
+#ifndef KDEWIN_SYS_RESOURCE_H
+#define KDEWIN_SYS_RESOURCE_H
 
-#include <winposix_export.h>
+// include everywhere
+#include <sys/types.h>
+
 #include <sys/time.h>
 
 #ifdef __cplusplus
@@ -87,5 +89,5 @@ KDEWIN32_EXPORT int getrusage (int __who, struct rusage *__rusage);
 }
 #endif
 
-#endif
+#endif  // KDEWIN_SYS_RESOURCE_H
 

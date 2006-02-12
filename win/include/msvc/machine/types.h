@@ -17,8 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _MACHTYPES_H_
-#define _MACHTYPES_H_
+#ifndef KDEWIN_MACHTYPES_H
+#define KDEWIN_MACHTYPES_H
+
+// include everywhere
+#include <sys/types.h>
 
 /*
  *  The following section is RTEMS specific and is needed to more
@@ -61,5 +64,4 @@ typedef long int __loff_t;
 #endif
 #endif
 
-#endif	/* _MACHTYPES_H_ */
-
+#endif	// KDEWIN_MACHTYPES_H

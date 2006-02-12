@@ -17,10 +17,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _SOCKET_H
-#define _SOCKET_H
+#ifndef KDEWIN_SYS_SOCKET_H
+#define KDEWIN_SYS_SOCKET_H
 
+// include everywhere
 #include <sys/types.h>
+
+//#define IPV6STRICT      // this maybe breaks a lot of things... but we also maybe need it !?
+#include <winsock2.h>
+#include "fixwinh.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -168,4 +173,4 @@ struct msghdr
 };
 #endif
 
-#endif
+#endif  // KDEWIN_SYS_SOCKET_H

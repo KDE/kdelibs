@@ -17,18 +17,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _NETINET_IN_H
-#define _NETINET_IN_H
+#ifndef KDEWIN_NETINET_IN_H
+#define KDEWIN_NETINET_IN_H
 
-#ifndef INCL_WINSOCK_API_PROTOTYPES
-#define INCL_WINSOCK_API_PROTOTYPES 0
-#endif
+// include everywhere
+#include <sys/types.h>
 
-#undef INCL_WINSOCK_API_PROTOTYPES
-#define INCL_WINSOCK_API_PROTOTYPES 1 //for ntohl(), etc.
 #include <winsock2.h>
 #include "fixwinh.h"
 
 #include <asm/byteorder.h>  /* htons(), etc. */
 
-#endif
+#endif	// KDEWIN_NETINET_IN_H

@@ -20,6 +20,13 @@
 #ifndef KDEWIN_MATH_H
 #define KDEWIN_MATH_H
 
+// include everywhere
+#include <sys/types.h>
+
+/* regular header from msvc includes */
+#define _USE_MATH_DEFINES
+#include <../include/math.h>
+
 // some functions which aren't available with msvc
 // float rintf( float x )
 // double rint( double x )
@@ -123,10 +130,6 @@ __inline long double nearbyintl(long double x)
         fldcw tmpMSW1
     }
 }
-
-/* regular header from msvc includes */
-#define _USE_MATH_DEFINES
-#include <../include/math.h>
 
 // convenience function to avoid useless casts from int to whatever
 static __inline long double log(int x)

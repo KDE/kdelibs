@@ -17,15 +17,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _SYS_TIME_H_
-#define _SYS_TIME_H_
+#ifndef KDEWIN_SYS_TIME_H
+#define KDEWIN_SYS_TIME_H
 
-#include <winposix_export.h>
+// include everywhere
+#include <sys/types.h>
 
-//??#if !defined(_INC_TIME)
-
-#undef INCL_WINSOCK_API_PROTOTYPES
-#define INCL_WINSOCK_API_PROTOTYPES 1 //for ntohl(), etc.
 #include <winsock2.h>
 #include "fixwinh.h"
 
@@ -45,4 +42,4 @@ KDEWIN32_EXPORT int settimeofday(const struct timeval *, const struct timezone *
 }
 #endif
 
-#endif //_SYS_TIME_H_
+#endif // KDEWIN_SYS_TIME_H

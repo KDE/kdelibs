@@ -17,9 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef GRP_H_
-#define GRP_H_
+#ifndef KDEWIN_GRP_H
+#define KDEWIN_GRP_H
 
+// include everywhere
 #include <sys/types.h>
 
 #ifdef __cplusplus
@@ -43,5 +44,4 @@ KDEWIN32_EXPORT void endgrent(void);
 }
 #endif
 
-#endif /* GRP_H_ */
-
+#endif // KDEWIN_GRP_H

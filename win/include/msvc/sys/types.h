@@ -17,8 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _SYS_TYPES_H_
-#define _SYS_TYPES_H_
+#ifndef KDEWIN_SYS_TYPES_H
+#define KDEWIN_SYS_TYPES_H
+
+#include <winposix_export.h>
 
 /* regular header from msvc includes */
 #include <../include/sys/types.h>
@@ -79,4 +81,4 @@ typedef unsigned int __u32;
 #endif /* _ASM_TYPES_H */
 
 
-#endif
+#endif  // KDEWIN_SYS_TYPES_H

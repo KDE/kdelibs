@@ -17,6 +17,13 @@
    Boston, MA 02110-1301, USA.
 */
 
-//empty for now, to avoid #ifdefs
+#ifndef KDEWIN_STRINGS_H
+#define KDEWIN_STRINGS_H
 
+// include everywhere
+#include <sys/types.h>
 
+// str(n)casecmp is sometimes defined in string.h and sometimes strings.h ...
+#include <string.h>
+
+#endif KDEWIN_STRINGS_H

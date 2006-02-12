@@ -21,10 +21,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _SYS_LOG_H
-#define _SYS_LOG_H
+#ifndef KDEWIN_SYSLOG_H
+#define KDEWIN_SYSLOG_H
 
-#include <winposix_export.h>
+// include everywhere
+#include <sys/types.h>
 
 #define	LOG_EMERG	0
 #define	LOG_ALERT	1
@@ -96,4 +97,4 @@ KDEWIN32_EXPORT void syslog (int priority, const char * format, ...);
 }
 #endif
 
-#endif /* _SYS_LOG_H */
+#endif /* KDEWIN_SYSLOG_H */

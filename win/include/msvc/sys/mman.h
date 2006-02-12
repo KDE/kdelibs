@@ -20,11 +20,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _MMAP_H
-#define _MMAP_H
+#ifndef KDEWIN_SYS_MMAN_H
+#define KDEWIN_SYS_MMAN_H
 
-#include <winposix_export.h>
-
+// include everywhere
 #include <sys/types.h>
 
 #ifdef __cplusplus
@@ -56,4 +55,4 @@ KDEWIN32_EXPORT int munmap(void *start, size_t length);
 }
 #endif
 
-#endif
+#endif  // KDEWIN_SYS_MMAN_H

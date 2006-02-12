@@ -17,11 +17,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _BYTEORDER_H
-#define _BYTEORDER_H
+#ifndef KDEWIN_BYTEORDER_H
+#define KDEWIN_BYTEORDER_H
 
-#undef INCL_WINSOCK_API_PROTOTYPES
-#define INCL_WINSOCK_API_PROTOTYPES 1 //for ntohl(), etc.
+// include everywhere
+#include <sys/types.h>
+
 #include <winsock2.h>
 #include "fixwinh.h"
 
@@ -118,4 +119,4 @@ __ntohs(unsigned short int x)
 }
 #endif
 
-#endif
+#endif	// KDEWIN_BYTEORDER_H

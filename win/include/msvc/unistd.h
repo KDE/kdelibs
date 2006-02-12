@@ -17,16 +17,16 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KDEWIN_UNISTD_H
-#define _KDEWIN_UNISTD_H
+#ifndef KDEWIN_UNISTD_H
+#define KDEWIN_UNISTD_H
 
-#include <winposix_export.h>
+// include everywhere
+#include <sys/types.h>
 
 #include <io.h> /* access(), etc.*/
 #include <process.h> /* getpid(), etc.*/
 
 /* include most headers here to avoid redefining gethostname() */
-#include <sys/types.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
@@ -138,4 +138,4 @@ KDEWIN32_EXPORT long getpagesize (void);
 }
 #endif
 
-#endif /* _KDEWIN_UNISTD_H */
+#endif // KDEWIN_UNISTD_H

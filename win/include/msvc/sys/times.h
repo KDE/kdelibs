@@ -17,16 +17,17 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _SYS_TIMES_H
-#define _SYS_TIMES_H
+#ifndef KDEWIN_SYS_TIMES_H
+#define KDEWIN_SYS_TIMES_H
 
-#include <winposix_export.h>
+// include everywhere
+#include <sys/types.h>
+
 #include <machine/types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 #if !defined(__clock_t_defined) && !defined(_CLOCK_T_DEFINED)
 typedef _CLOCK_T_ clock_t;
@@ -45,4 +46,5 @@ KDEWIN32_EXPORT clock_t times(struct tms *);
 #ifdef __cplusplus
 }
 #endif
-#endif	/* !_SYS_TIMES_H */
+
+#endif	// KDEWIN_SYS_TIMES_H

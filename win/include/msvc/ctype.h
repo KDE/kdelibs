@@ -20,6 +20,9 @@
 #ifndef KDEWIN_CTYPE_H
 #define KDEWIN_CTYPE_H
 
+// include everywhere
+#include <sys/types.h>
+
 #include <../include/ctype.h>
 
 #ifdef __cplusplus

@@ -17,10 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef MSVC_STDIO_H
-#define MSVC_STDIO_H
+#ifndef KDEWIN_STDIO_H
+#define KDEWIN_STDIO_H
 
-#include <winposix_export.h>
+// include everywhere
+#include <sys/types.h>
 
 /* regular header from msvc includes */
 # include <../include/stdio.h>
@@ -28,4 +29,4 @@
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
 
-#endif	// MSVC_STDIO_H
+#endif	// KDEWIN_STDIO_H

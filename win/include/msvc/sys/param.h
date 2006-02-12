@@ -17,8 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KDEWIN_SYS_PARAM_H
-#define _KDEWIN_SYS_PARAM_H
+#ifndef KDEWIN_SYS_PARAM_H
+#define KDEWIN_SYS_PARAM_H
+
+// include everywhere
+#include <sys/types.h>
 
 /* This is defined to be the same as MAX_PATH which is used internally.
    The Posix version is PATH_MAX.  */
@@ -35,4 +38,4 @@
 #define NULL 0L
 #endif
 
-#endif
+#endif  // KDEWIN_SYS_PARAM_H

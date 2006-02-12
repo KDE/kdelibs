@@ -17,8 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __SYS_LOCK_H__
-#define __SYS_LOCK_H__
+#ifndef KDEWIN_SYS_LOCK_H
+#define KDEWIN_SYS_LOCK_H
+
+// include everywhere
+#include <sys/types.h>
 
 /* dummy lock routines for single-threaded aps */
 
@@ -38,4 +41,4 @@ typedef int _LOCK_RECURSIVE_T;
 #define __lock_release(lock) {}
 #define __lock_release_recursive(lock) {}
 
-#endif /* __SYS_LOCK_H__ */
+#endif // KDEWIN_SYS_LOCK_H

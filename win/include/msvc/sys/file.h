@@ -17,8 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _FILE_H_
-#define _FILE_H_
+#ifndef KDEWIN_SYS_FILE_H
+#define KDEWIN_SYS_FILE_H
+
+// include everywhere
+#include <sys/types.h>
 
 #include <fcntl.h>
 
@@ -32,4 +35,4 @@
 #define	W_OK		2	/* is it writable by caller */
 #define	R_OK		4	/* is it readable by caller */
 
-#endif
+#endif  // KDEWIN_SYS_FILE_H

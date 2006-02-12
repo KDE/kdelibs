@@ -17,8 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _STDINT_H
-#define _STDINT_H
+#ifndef KDEIWN_STDINT_H
+#define KDEIWN_STDINT_H
+
+// include everywhere
+#include <sys/types.h>
 
 /* Exact-width integer types */
 

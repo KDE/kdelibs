@@ -17,8 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _ASM_SOCKET_H
-#define _ASM_SOCKET_H
+#ifndef KDEWIN_ASM_SOCKET_H
+#define KDEWIN_ASM_SOCKET_H
+
+// include everywhere
+#include <sys/types.h>
 
 #define IOCPARM_MASK    0x7f            /* parameters must be < 128 bytes */
 #define IOC_VOID        0x20000000      /* no parameters */
@@ -74,5 +77,4 @@
 #define SO_ERROR        0x1007          /* get error status and clear */
 #define SO_TYPE         0x1008          /* get socket type */
 
-#endif /* _ASM_SOCKET_H */
-
+#endif // KDEWIN_ASM_SOCKET_H

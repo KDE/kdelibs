@@ -17,17 +17,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _FCNTL_H
-#define _FCNTL_H
+#ifndef KDEWIN_FCNTL_H
+#define KDEWIN_FCNTL_H
 
-#include <winposix_export.h>
+// include everywhere
+#include <sys/types.h>
+
+/* regular header from msvc includes */
+# include <../include/fcntl.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* regular header from msvc includes */
-# include <../include/fcntl.h>
 
 #define O_NDELAY	_FNDELAY
 
@@ -95,5 +96,5 @@ int KDEWIN32_EXPORT __cdecl fcntl (int fd, int cmd,...);
 }
 #endif
 
-#endif /* _FCNTL_H */
+#endif // KDEWIN_FCNTL_H
 

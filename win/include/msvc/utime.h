@@ -17,7 +17,13 @@
    Boston, MA 02110-1301, USA.
 */
 
-/* jump to sys/ in your compiler's library */
+#ifndef KDEWIN_UTIME_H
+#define KDEWIN_UTIME_H
+
+// include everywhere
+#include <sys/types.h>
 
 /* regular header from msvc includes */
 #include <../include/sys/utime.h>
+
+#endif  // KDEWIN_UTIME_H

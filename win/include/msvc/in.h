@@ -17,8 +17,11 @@
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  */
-#ifndef _IN_H
-#define _IN_H
+#ifndef KDEWIN_IN_H
+#define KDEWIN_IN_H
+
+// include everywhere
+#include <sys/types.h>
 
 #include <asm/byteorder.h>
 
@@ -181,4 +184,4 @@ struct sockaddr_in
 };
 #endif
 
-#endif
+#endif  // KDEWIN_IN_H

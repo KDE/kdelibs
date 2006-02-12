@@ -20,12 +20,14 @@
 #ifndef KDEWIN_STRING_H
 #define KDEWIN_STRING_H
 
-#include <winposix_export.h>
+// include everywhere
+#include <sys/types.h>
+
+/* regular header from msvc includes */
+#include <../include/string.h>
 
 #define strncasecmp strnicmp
 #define strcasecmp stricmp
-
-#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,8 +45,5 @@ KDEWIN32_EXPORT unsigned long strlcat(char *dst, const char *src, unsigned long 
 #ifdef __cplusplus
 }
 #endif
-
-/* regular header from msvc includes */
-#include <../include/string.h>
 
 #endif /* KDEWIN_STRING_H */
