@@ -7,6 +7,10 @@ if(HAVE_SSL)
    include_directories(${OPENSSL_INCLUDE_DIR})
 endif(HAVE_SSL)
 
+if(ZLIB_FOUND)
+   include_directories(${ZLIB_INCLUDE_DIR})
+endif(ZLIB_FOUND)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
 ${CMAKE_SOURCE_DIR}/kwallet/client
