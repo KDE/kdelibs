@@ -199,7 +199,7 @@ namespace Ifaces
          * property (added/removed/modified), it's one of the type
          * KDEHW::PropertyChange
          */
-        void propertyChanged( const QString &key, int change );
+        void propertyChanged( const QMap<QString,int> &changes );
 
         /**
          * This signal is emitted when an event occured in the device.

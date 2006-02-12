@@ -20,7 +20,8 @@
 #ifndef KDEHWTEST_H
 #define KDEHWTEST_H
 
-#include <qobject.h>
+#include <QObject>
+#include <QMap>
 
 class FakeManager;
 
@@ -36,8 +37,11 @@ private slots:
     void testManagerSignals();
     void testDeviceSignals();
     void testDeviceCapabilities();
+
+    void slotPropertyChanged( const QMap<QString,int> &changes );
 private:
     FakeManager *fakeManager;
+    QList< QMap<QString,int> > m_changesList;
 };
 
 #endif

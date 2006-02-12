@@ -227,7 +227,7 @@ namespace KDEHW
             Ifaces::Capability *iface = asCapability( type );
             return dynamic_cast<Cap*>( iface );
         }
-	
+
         /**
          * Tests if a device provides a given capability interface.
          *
@@ -238,7 +238,7 @@ namespace KDEHW
             return queryCapability( Cap::type() );
         }
 
-	
+
         /**
          * Acquires a lock on the device for the given reason.
          *
@@ -269,7 +269,7 @@ namespace KDEHW
         virtual QString lockReason() const;
 
     private slots:
-        void slotPropertyChanged( const QString &key, int change );
+        void slotPropertyChanged( const QMap<QString,int> &changes );
         void slotConditionRaised( const QString &condition, const QString &reason );
         void slotDestroyed( QObject *object );
 

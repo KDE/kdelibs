@@ -43,8 +43,8 @@ KDEHW::Device::Device( const Device &device )
 
     if ( d->data )
     {
-        connect( d->data, SIGNAL( propertyChanged( const QString &, int ) ),
-                 this, SLOT( slotPropertyChanged( const QString &, int ) ) );
+        connect( d->data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
+                 this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
         connect( d->data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
                  this, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
         connect( d->data, SIGNAL( destroyed( QObject * ) ),
@@ -59,8 +59,8 @@ KDEHW::Device::Device( Ifaces::Device *data )
 
     if ( d->data )
     {
-        connect( d->data, SIGNAL( propertyChanged( const QString &, int ) ),
-                 this, SLOT( slotPropertyChanged( const QString &, int ) ) );
+        connect( d->data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
+                 this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
         connect( d->data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
                  this, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
         connect( d->data, SIGNAL( destroyed( QObject * ) ),
@@ -77,8 +77,8 @@ KDEHW::Device &KDEHW::Device::operator=( const KDEHW::Device &device )
 {
     if ( d->data )
     {
-        disconnect( d->data, SIGNAL( propertyChanged( const QString &, int ) ),
-                    this, SLOT( slotPropertyChanged( const QString &, int ) ) );
+        disconnect( d->data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
+                    this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
         disconnect( d->data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
                     this, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
         disconnect( d->data, SIGNAL( destroyed( QObject * ) ),
@@ -89,8 +89,8 @@ KDEHW::Device &KDEHW::Device::operator=( const KDEHW::Device &device )
 
     if ( d->data )
     {
-        connect( d->data, SIGNAL( propertyChanged( const QString &, int ) ),
-                 this, SLOT( slotPropertyChanged( const QString &, int ) ) );
+        connect( d->data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
+                 this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
         connect( d->data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
                  this, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
         connect( d->data, SIGNAL( destroyed( QObject * ) ),
@@ -287,9 +287,9 @@ QString KDEHW::Device::lockReason() const
     }
 }
 
-void KDEHW::Device::slotPropertyChanged( const QString &key, int change )
+void KDEHW::Device::slotPropertyChanged( const QMap<QString,int> &changes )
 {
-    emit propertyChanged( key, change );
+    emit propertyChanged( changes );
 }
 
 void KDEHW::Device::slotConditionRaised( const QString &condition, const QString &reason )

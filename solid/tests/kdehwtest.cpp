@@ -273,7 +273,8 @@ void KdeHwTest::testDeviceSignals()
     KDEHW::Device device = manager.findDevice( "/fake/acpi_LID0" );
 
     // We'll spy our button
-    QSignalSpy property_changed( &device, SIGNAL( propertyChanged( QString, int ) ) );
+    connect( &device, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
+             this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
     QSignalSpy condition_raised( &device, SIGNAL( conditionRaised( QString, QString ) ) );
 
     fake->setProperty( "button.state", true ); // The button is now pressed (modified property)
@@ -282,20 +283,27 @@ void KdeHwTest::testDeviceSignals()
     fake->removeProperty( "hactar" ); // We remove a property
 
     // 3 property changes occured in the device
-    QCOMPARE( property_changed.count(), 3 );
+    QCOMPARE( m_changesList.count(), 3 );
+
+    QMap<QString,int> changes;
 
     // First one is a "PropertyModified" for "button.state"
-    QCOMPARE( property_changed.at( 0 ).at( 0 ).toString(), QString( "button.state" ) );
-    QCOMPARE( property_changed.at( 0 ).at( 1 ), QVariant( KDEHW::Device::PropertyModified ) );
-
+    changes = m_changesList.at( 0 );
+    QCOMPARE( changes.count(), 1 );
+    QVERIFY( changes.contains( "button.state" ) );
+    QCOMPARE( changes["button.state"], (int)KDEHW::Device::PropertyModified );
 
     // Second one is a "PropertyAdded" for "hactar"
-    QCOMPARE( property_changed.at( 1 ).at( 0 ).toString(), QString( "hactar" ) );
-    QCOMPARE( property_changed.at( 1 ).at( 1 ), QVariant( KDEHW::Device::PropertyAdded ) );
+    changes = m_changesList.at( 1 );
+    QCOMPARE( changes.count(), 1 );
+    QVERIFY( changes.contains( "hactar" ) );
+    QCOMPARE( changes["hactar"], (int)KDEHW::Device::PropertyAdded );
 
     // Third one is a "PropertyRemoved" for "hactar"
-    QCOMPARE( property_changed.at( 2 ).at( 0 ).toString(), QString( "hactar" ) );
-    QCOMPARE( property_changed.at( 2 ).at( 1 ), QVariant( KDEHW::Device::PropertyRemoved ) );
+    changes = m_changesList.at( 2 );
+    QCOMPARE( changes.count(), 1 );
+    QVERIFY( changes.contains( "hactar" ) );
+    QCOMPARE( changes["hactar"], (int)KDEHW::Device::PropertyRemoved );
 
 
 
@@ -322,6 +330,11 @@ void KdeHwTest::testDeviceCapabilities()
     QVERIFY( cpu.queryCapability( KDEHW::Ifaces::Capability::Processor ) );
     QVERIFY( iface!=0 );
     QCOMPARE( iface, processor );
+}
+
+void KdeHwTest::slotPropertyChanged( const QMap<QString,int> &changes )
+{
+    m_changesList << changes;
 }
 
 #include "kdehwtest.moc"

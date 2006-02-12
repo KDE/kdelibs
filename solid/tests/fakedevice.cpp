@@ -68,7 +68,9 @@ bool FakeDevice::setProperty( const QString &key, const QVariant &value )
 
     m_data[key] = value;
 
-    emit propertyChanged( key, change );
+    QMap<QString,int> changes;
+    changes[key] = change;
+    emit propertyChanged( changes );
 
     return true;
 }
@@ -92,7 +94,10 @@ bool FakeDevice::removeProperty( const QString &key )
     if ( m_brokenDevice ) return false;
 
     m_data.remove( key );
-    emit propertyChanged( key, Device::PropertyRemoved );
+
+    QMap<QString,int> changes;
+    changes[key] = Device::PropertyRemoved;
+    emit propertyChanged( changes );
 
     return true;
 }
