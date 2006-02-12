@@ -85,7 +85,7 @@ else(UNIX)
 endif(UNIX)
 
 if(PCRE_FOUND)
-   target_link_libraries(kjs ${PCRE_LIBRARY})
+   target_link_libraries(kjs ${PCRE_LIBRARIES})
 endif(PCRE_FOUND)
 
 set_target_properties(kjs PROPERTIES VERSION 1.2.0 SOVERSION 1 )
