@@ -1,11 +1,11 @@
-THIS DOCUMENT DESCRIBES HOW YOU CAN COMPILE KDE WHEN USING CVS
+THIS DOCUMENT DESCRIBES HOW YOU CAN COMPILE KDE WHEN USING SVN
 
 (If you use source tarballs, you can skip "make -f Makefile.cvs" and should use
 "make distclean" instead of "make cvs-clean")
 
 What you need
 
-Make sure you get the following stuff from CVS:
+Make sure you get the following stuff from SVN:
 
   * qt-copy (currently a snapshot of qt-4.x)
   * arts
@@ -55,7 +55,7 @@ ldconfig -m $QTDIR/lib
 
 You probably also want to add $KDEDIR/bin and $QTDIR/bin to your path.
 
-Preparing CVS modules
+Preparing SVN modules
 
 NOTE: Is this still so?
 
@@ -148,7 +148,7 @@ New directories
 
 :
 
-When a new directory gets added to CVS it usually only contains a Makefile.am
+When a new directory gets added to SVN it usually only contains a Makefile.am
 but not a Makefile. If you try to compile such a directory you will get an
 error like:
 
@@ -180,7 +180,7 @@ If you encounter missing include files, especially if the files start with a
 'q', you probably have not setup your QTDIR correct or have the wrong version
 of Qt.
 
-If you encounter compile errors after updating from CVS, check whether you need
+If you encounter compile errors after updating from SVN, check whether you need
 to update kdelibs as well. If the problems persists, wait a few hours, usually
 compile errors are fixed shortly after they have been introduced.
 
