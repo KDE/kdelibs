@@ -5,4 +5,7 @@ WARN_IF_UNDOCUMENTED = YES
 ## from function definitions.
 PREDEFINED = KDECORE_EXPORT="" \
 	KDEUI_EXPORT="" \
-	Q_OS_UNIX=""
+	Q_OS_UNIX="" \
+	Q_SLOTS="slots" \
+	Q_SIGNALS="signals"
+
