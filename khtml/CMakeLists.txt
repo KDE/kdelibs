@@ -282,7 +282,7 @@ kde4_add_dcop_skels(khtml_LIB_SRCS ${khtml_DCOP_SKEL_SRCS})
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARY} ${GIF_LIBRARY} ${PNG_LIBRARY} )
+target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
 set_target_properties(khtml PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${KDE4_LIB_INSTALL_DIR} khtml )

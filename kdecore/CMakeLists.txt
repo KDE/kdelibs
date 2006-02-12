@@ -225,7 +225,7 @@ kde4_add_dcop_skels(kdecore_LIB_SRCS ${kdecore_DCOP_SKEL_SRCS})
 
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
-target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${ZLIB_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${CARBON_LIBRARY})
+target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${ZLIB_LIBRARIES} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${CARBON_LIBRARY})
 
 if (WIN32)
     add_definitions(-DKIO_EXPORT=)
@@ -236,15 +236,15 @@ if(HAVE_IDNA_H)
 endif(HAVE_IDNA_H)
 
 if(BZIP2_FOUND)
-   target_link_libraries(kdecore  ${BZIP2_LIBRARY})
+   target_link_libraries(kdecore  ${BZIP2_LIBRARIES})
 endif(BZIP2_FOUND)
 
 if(AGG_FOUND)
-   target_link_libraries(kdecore  ${QT_QTXML_LIBRARY} ${AGG_LIBRARY})
+   target_link_libraries(kdecore  ${QT_QTXML_LIBRARY} ${AGG_LIBRARIES})
 endif(AGG_FOUND)
 
 if(HAVE_LIBDL)
-   target_link_libraries(kdecore  dl)
+   target_link_libraries(kdecore dl)
 endif(HAVE_LIBDL)
 
 set_target_properties(kdecore PROPERTIES VERSION 4.2.0 SOVERSION 4 )

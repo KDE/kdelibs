@@ -9,20 +9,25 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 macro(GEN_KCFG_TEST_SOURCE _testName)
    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp
-   COMMAND ${KDE4_KCFGC_EXECUTABLE} ARGS
-   ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfg ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfgc
-   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfg ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfgc)
+      COMMAND ${KDE4_KCFGC_EXECUTABLE} ARGS
+      ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfg ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfgc
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfg ${CMAKE_CURRENT_SOURCE_DIR}/${_testName}.kcfgc kconfig_compiler)
+
+   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${_testName}.h PROPERTIES GENERATED TRUE)
+   qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/${_testName}.h ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.moc )
+
+   macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.moc )
+
 endmacro(GEN_KCFG_TEST_SOURCE)
 
 ########### next target ###############
 
 set(test1_SRCS
-test1main.cpp
-test1.cpp
+   test1main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test1.cpp
 )
 
 kde4_automoc(${test1_SRCS})
-
 
 gen_kcfg_test_source(test1)
 
@@ -34,12 +39,11 @@ target_link_libraries(test1  ${QT_AND_KDECORE_LIBS} )
 ########### next target ###############
 
 set(test2_SRCS
-test2main.cpp
-test2.cpp
+   test2main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test2.cpp
 )
 
 kde4_automoc(${test2_SRCS})
-
 
 gen_kcfg_test_source(test2)
 
@@ -51,12 +55,11 @@ target_link_libraries(test2  ${QT_AND_KDECORE_LIBS} )
 ########### next target ###############
 
 set(test3_SRCS
-test3main.cpp
-test3.cpp
+   test3main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test3.cpp
 )
 
 kde4_automoc(${test3_SRCS})
-
 
 gen_kcfg_test_source(test3)
 
@@ -68,12 +71,11 @@ target_link_libraries(test3  ${QT_AND_KDECORE_LIBS} )
 ########### next target ###############
 
 set(test4_SRCS
-test4main.cpp
-test4.cpp
+   test4main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test4.cpp
 )
 
 kde4_automoc(${test4_SRCS})
-
 
 gen_kcfg_test_source(test4)
 
@@ -85,12 +87,11 @@ target_link_libraries(test4  ${QT_AND_KDECORE_LIBS} )
 ########### next target ###############
 
 set(test5_SRCS
-test5main.cpp
-test5.cpp
+   test5main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test5.cpp
 )
 
 kde4_automoc(${test5_SRCS})
-
 
 gen_kcfg_test_source(test5)
 
@@ -102,12 +103,11 @@ target_link_libraries(test5  ${QT_AND_KDECORE_LIBS} )
 ########### next target ###############
 
 set(test6_SRCS
-test6main.cpp
-test6.cpp
+   test6main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test6.cpp
 )
 
 kde4_automoc(${test6_SRCS})
-
 
 gen_kcfg_test_source(test6)
 
@@ -119,12 +119,11 @@ target_link_libraries(test6  ${QT_AND_KDECORE_LIBS} )
 ########### next target ###############
 
 set(test7_SRCS
-test7main.cpp
-test7.cpp
+   test7main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test7.cpp
 )
 
 kde4_automoc(${test7_SRCS})
-
 
 gen_kcfg_test_source(test7)
 
@@ -136,13 +135,12 @@ target_link_libraries(test7  ${QT_AND_KDECORE_LIBS} )
 ########### next target ###############
 
 set(test8_SRCS
-test8main.cpp
-test8a.cpp
-test8b.cpp
+   test8main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test8a.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test8b.cpp
 )
 
 kde4_automoc(${test8_SRCS})
-
 
 gen_kcfg_test_source(test8a)
 gen_kcfg_test_source(test8b)
@@ -155,12 +153,11 @@ target_link_libraries(test8  ${QT_AND_KDECORE_LIBS} )
 ########### next target ###############
 
 set(test9_SRCS
-test9main.cpp
-test9.cpp
+   test9main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test9.cpp
 )
 
 kde4_automoc(${test9_SRCS})
-
 
 gen_kcfg_test_source(test9)
 
@@ -172,12 +169,11 @@ target_link_libraries(test9  ${QT_AND_KDECORE_LIBS} )
 ########### next target ###############
 
 set(test_dpointer_SRCS
-test_dpointer_main.cpp
-test_dpointer.cpp
+   test_dpointer_main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test_dpointer.cpp
 )
 
 kde4_automoc(${test_dpointer_SRCS})
-
 
 gen_kcfg_test_source(test_dpointer)
 
@@ -189,13 +185,11 @@ target_link_libraries(test_dpointer  ${QT_AND_KDECORE_LIBS} )
 ########### next target ###############
 
 set(test_signal_SRCS
-test_signal_main.cpp
-test_signal.cpp
+   test_signal_main.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/test_signal.cpp
 )
 
 kde4_automoc(${test_signal_SRCS})
-
-if(KDE4_BUILD_TESTS)
 
 gen_kcfg_test_source(test_signal)
 
@@ -203,7 +197,6 @@ kde4_add_executable(test_signal ${test_signal_SRCS})
 
 target_link_libraries(test_signal  ${QT_AND_KDECORE_LIBS} )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 

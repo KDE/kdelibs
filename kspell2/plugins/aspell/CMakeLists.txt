@@ -14,7 +14,7 @@ kde4_automoc(${kspell_aspell_PART_SRCS})
 
 kde4_add_plugin(kspell_aspell ${kspell_aspell_PART_SRCS})
 
-target_link_libraries(kspell_aspell  ${QT_AND_KDECORE_LIBS} kspell2 ${ASPELL_LIBRARY} )
+target_link_libraries(kspell_aspell  ${QT_AND_KDECORE_LIBS} kspell2 ${ASPELL_LIBRARIES} )
 
 kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kspell_aspell )
 install_targets(${KDE4_PLUGIN_INSTALL_DIR} kspell_aspell )

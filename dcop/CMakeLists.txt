@@ -41,7 +41,7 @@ set(dcopserver_shutdown_SRCS dcopserver_shutdown.c )
 
 kde4_add_executable(dcopserver_shutdown ${dcopserver_shutdown_SRCS})
 
-target_link_libraries(dcopserver_shutdown ${KDEWIN32_LIBRARY})
+target_link_libraries(dcopserver_shutdown ${KDEWIN32_LIBRARIES})
 
 install_targets(/bin dcopserver_shutdown )
 
@@ -91,7 +91,7 @@ kde4_automoc(${DCOP_LIB_SRCS})
 
 kde4_add_library(DCOP SHARED ${DCOP_LIB_SRCS})
 
-target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARY} )
+target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARIES} )
 
 set_target_properties(DCOP PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 
@@ -107,7 +107,7 @@ kde4_automoc(${dcopserver_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( dcopserver ${dcopserver_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP ${KDEWIN32_LIBRARY})
+target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP ${KDEWIN32_LIBRARIES})
 
 install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_dcopserver )
 
