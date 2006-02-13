@@ -1,36 +1,38 @@
 kde4_header()
 
+project(kjsembed-kjsembed)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
 set(kjsembed_LIB_SRCS
-global.cpp
-binding_support.cpp
-static_binding.cpp
-value_binding.cpp
-object_binding.cpp
-builtins.cpp
-fileio.cpp
-jseventmapper.cpp
-eventproxy.cpp
-slotproxy.cpp
-jseventutils.cpp
-qobject_binding.cpp
-kjsembed.cpp
-scalar_binding.cpp
-iosupport.cpp
-qwidget_binding.cpp
-widgetfactory.cpp
-qformbuilder_binding.cpp
-qpainter_binding.cpp
-settings.cpp
-svg_binding.cpp
-filedialog_binding.cpp
-brush.cpp color.cpp dom.cpp font.cpp image.cpp pen.cpp
-pixmap.cpp point.cpp rect.cpp size.cpp url.cpp
-)
+   global.cpp
+   binding_support.cpp
+   static_binding.cpp
+   value_binding.cpp
+   object_binding.cpp
+   builtins.cpp
+   fileio.cpp
+   jseventmapper.cpp
+   eventproxy.cpp
+   slotproxy.cpp
+   jseventutils.cpp
+   qobject_binding.cpp
+   kjsembed.cpp
+   scalar_binding.cpp
+   iosupport.cpp
+   qwidget_binding.cpp
+   widgetfactory.cpp
+   qformbuilder_binding.cpp
+   qpainter_binding.cpp
+   settings.cpp
+   svg_binding.cpp
+   filedialog_binding.cpp
+   brush.cpp color.cpp dom.cpp font.cpp image.cpp pen.cpp
+   pixmap.cpp point.cpp rect.cpp size.cpp url.cpp
+   )
 
 kde4_automoc(${kjsembed_LIB_SRCS})
 

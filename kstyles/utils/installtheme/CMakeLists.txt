@@ -5,9 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(kinstalltheme_SRCS
-main.cpp
-)
+set(kinstalltheme_SRCS main.cpp )
 
 kde4_automoc(${kinstalltheme_SRCS})
 

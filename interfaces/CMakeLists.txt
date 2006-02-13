@@ -1,5 +1,7 @@
 kde4_header()
 
+project(interfaces)
+
 add_subdirectory( kdocument ) 
 add_subdirectory( ktexteditor ) 
 add_subdirectory( kregexpeditor ) 

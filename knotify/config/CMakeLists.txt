@@ -14,9 +14,7 @@ knotifyconfigwidget.cpp
 
 kde4_automoc(${knotifyconfig_LIB_SRCS})
 
-set( knotifyconfig_UI
-knotifyconfigactionswidgetbase.ui
-)
+set( knotifyconfig_UI knotifyconfigactionswidgetbase.ui )
 
 kde4_add_ui_files(knotifyconfig_LIB_SRCS ${knotifyconfig_UI} )
 

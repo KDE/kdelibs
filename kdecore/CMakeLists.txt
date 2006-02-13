@@ -1,6 +1,6 @@
 kde4_header()
 
-project(libkdecore)
+project(kdecore)
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
@@ -42,8 +42,7 @@ if (WIN32)
       netsupp_win32.cpp
       kapplication_win.cpp 
       kglobalaccel_win.cpp
-      ktoolinvocation_win.cpp
-   )
+      ktoolinvocation_win.cpp )
 endif (WIN32)
 
 
@@ -59,8 +58,7 @@ if (UNIX)
       kwinmodule.cpp 
       network/khttpproxysocketdevice.cpp
       network/ksockssocketdevice.cpp
-      network/knetworkinterface.cpp
-   )
+      network/knetworkinterface.cpp )
 endif (UNIX)
 
 
@@ -72,22 +70,18 @@ add_subdirectory( network )
 
 ########### next target ###############
 
-if(NOT WIN32)
+if (NOT WIN32)
 
-kde4_add_library(kdefakes SHARED fakes.c)
-set_target_properties(kdefakes PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(${KDE4_LIB_INSTALL_DIR} kdefakes )
+   kde4_add_library(kdefakes SHARED fakes.c)
+   set_target_properties(kdefakes PROPERTIES VERSION 4.2.0 SOVERSION 4 )
+   install_targets(${KDE4_LIB_INSTALL_DIR} kdefakes )
 
-endif(NOT WIN32)
-
-########### next target ###############
-
-#no ttyname on windows
-if(UNIX)
-kde4_add_executable(kgrantpty kgrantpty.c)
-target_link_libraries(kgrantpty  kdefakes )
-install_targets(/bin kgrantpty )
-endif(UNIX)
+   #no ttyname on windows
+   kde4_add_executable(kgrantpty kgrantpty.c)
+   target_link_libraries(kgrantpty  kdefakes )
+   install_targets(/bin kgrantpty )
+   
+endif (NOT WIN32)
 
 
 

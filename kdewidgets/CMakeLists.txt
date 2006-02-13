@@ -1,5 +1,7 @@
 kde4_header()
 
+project(kdewidgets)
+
 add_subdirectory( pics ) 
 add_subdirectory( tests ) 
 
@@ -8,9 +10,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kfile ${KDE4_INCLUDE_DIR} ${QT_INCLUDES
 
 ########### next target ###############
 
-set(makekdewidgets_SRCS
-makekdewidgets.cpp
-)
+set(makekdewidgets_SRCS makekdewidgets.cpp )
 
 kde4_automoc(${makekdewidgets_SRCS})
 
@@ -30,8 +30,8 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
   DEPENDS kde.widgets makekdewidgets)
 
 set(kdewidgets_PART_SRCS
-classpreviews.cpp
-${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
+   classpreviews.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
 )
 
 qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.moc)

@@ -1,14 +1,13 @@
 kde4_header()
 
+project(kstyle-web)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
-set(webstyle_LIB_SRCS
-webstyle.cpp
-plugin.cpp
-)
+set(webstyle_LIB_SRCS webstyle.cpp plugin.cpp )
 
 kde4_automoc(${webstyle_LIB_SRCS})
 

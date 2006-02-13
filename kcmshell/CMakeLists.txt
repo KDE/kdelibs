@@ -1,19 +1,17 @@
 kde4_header()
 
+project(kcmshell)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR}/kutils)
 
 
 ########### next target ###############
 
-set(kcmshell_KDEINIT_SRCS
-main.cpp
-)
+set(kcmshell_KDEINIT_SRCS main.cpp )
 
 kde4_automoc(${kcmshell_KDEINIT_SRCS})
 
-set( kcmshell_DCOP_SKEL_SRCS
-main.h
-)
+set( kcmshell_DCOP_SKEL_SRCS main.h )
 
 kde4_add_dcop_skels(kcmshell_KDEINIT_SRCS ${kcmshell_DCOP_SKEL_SRCS})
 

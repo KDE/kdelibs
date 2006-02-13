@@ -1,23 +1,25 @@
 kde4_header()
 
+project(kparts)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kio/ ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kfile ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
 set(kparts_LIB_SRCS
-part.cpp
-plugin.cpp
-partmanager.cpp
-mainwindow.cpp
-event.cpp
-browserextension.cpp
-factory.cpp
-historyprovider.cpp
-browserinterface.cpp
-browserrun.cpp
-statusbarextension.cpp
-)
+   part.cpp
+   plugin.cpp
+   partmanager.cpp
+   mainwindow.cpp
+   event.cpp
+   browserextension.cpp
+   factory.cpp
+   historyprovider.cpp
+   browserinterface.cpp
+   browserrun.cpp
+   statusbarextension.cpp
+   )
 
 kde4_automoc(${kparts_LIB_SRCS})
 

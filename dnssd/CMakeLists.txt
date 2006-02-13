@@ -1,25 +1,25 @@
 kde4_header()
 
+project(dnssd)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
 set(kdnssd_LIB_SRCS
-remoteservice.cpp
-responder.cpp
-servicebase.cpp
-publicservice.cpp
-query.cpp
-domainbrowser.cpp
-servicebrowser.cpp
-)
+   remoteservice.cpp
+   responder.cpp
+   servicebase.cpp
+   publicservice.cpp
+   query.cpp
+   domainbrowser.cpp
+   servicebrowser.cpp
+   )
 
 kde4_automoc(${kdnssd_LIB_SRCS})
 
-set( kdnssd_KCFG_SRCS
-settings.kcfgc
-)
+set( kdnssd_KCFG_SRCS settings.kcfgc )
 
 kde4_add_kcfg_files(kdnssd_LIB_SRCS ${kdnssd_KCFG_SRCS})
 

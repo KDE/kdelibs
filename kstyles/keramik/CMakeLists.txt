@@ -1,5 +1,7 @@
 kde4_header()
 
+project(kstyle-keramik)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 #pixmaps.keramik keramikrc.h: genembed

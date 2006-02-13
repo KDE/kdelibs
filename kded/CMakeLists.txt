@@ -1,13 +1,13 @@
 kde4_header()
 
+project(kded)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
-set(kded_KDEINIT_SRCS
-kded.cpp
-)
+set(kded_KDEINIT_SRCS kded.cpp )
 
 kde4_automoc(${kded_KDEINIT_SRCS})
 
@@ -23,15 +23,15 @@ install_targets(/bin kded )
 ########### next target ###############
 
 set(kbuildsycoca_KDEINIT_SRCS
-kbuildsycoca.cpp
-kbuildservicetypefactory.cpp
-kbuildservicefactory.cpp
-kbuildservicegroupfactory.cpp
-#kbuildimageiofactory.cpp
-kbuildprotocolinfofactory.cpp
-kctimefactory.cpp
-vfolder_menu.cpp
-)
+   kbuildsycoca.cpp
+   kbuildservicetypefactory.cpp
+   kbuildservicefactory.cpp
+   kbuildservicegroupfactory.cpp
+   #kbuildimageiofactory.cpp
+   kbuildprotocolinfofactory.cpp
+   kctimefactory.cpp
+   vfolder_menu.cpp
+   )
 
 kde4_automoc(${kbuildsycoca_KDEINIT_SRCS})
 
@@ -46,9 +46,7 @@ install_targets(/bin kbuildsycoca )
 
 ########### next target ###############
 
-set(kdontchangethehostname_SRCS
-khostname.cpp
-)
+set(kdontchangethehostname_SRCS khostname.cpp )
 
 kde4_automoc(${kdontchangethehostname_SRCS})
 
@@ -61,9 +59,7 @@ install_targets(/bin kdontchangethehostname )
 
 ########### next target ###############
 
-set(kde-menu_SRCS
-kde-menu.cpp
-)
+set(kde-menu_SRCS kde-menu.cpp )
 
 kde4_automoc(${kde-menu_SRCS})
 

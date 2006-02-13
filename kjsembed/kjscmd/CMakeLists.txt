@@ -1,22 +1,18 @@
 kde4_header()
 
+project(kjsembed-kjscmd)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 include_directories( ${CMAKE_SOURCE_DIR}/kjsembed/kjsembed )
 
 
 ########### next target ###############
 
-set(kjscmd_SRCS
-kjscmd.cpp
-)
+set(kjscmd_SRCS kjscmd.cpp )
 
 kde4_automoc(${kjscmd_SRCS})
 
-set( kjscmd_QRC
-kjscmd.qrc
-)
-
-qt4_add_resources(kjscmd_SRCS ${kjscmd_QRC} )
+qt4_add_resources(kjscmd_SRCS kjscmd.qrc )
 
 kde4_add_executable(kjscmd ${kjscmd_SRCS})
 

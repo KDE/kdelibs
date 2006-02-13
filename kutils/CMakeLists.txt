@@ -1,5 +1,7 @@
 kde4_header()
 
+project(kutils)
+
 add_subdirectory( ksettings )
 add_subdirectory( tests )
 

@@ -5,9 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(kxmlcore_LIB_SRCS
-HashTable.cpp
-)
+set(kxmlcore_LIB_SRCS HashTable.cpp )
 
 kde4_automoc(${kxmlcore_LIB_SRCS})
 

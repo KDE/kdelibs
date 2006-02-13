@@ -1,5 +1,7 @@
 kde4_header()
 
+project(kio)
+
 
 if(HAVE_SSL)
    set(KSSL_HAVE_SSL 1)

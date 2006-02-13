@@ -1,19 +1,21 @@
 kde4_header()
 
+project(kdesu)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kio/ ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
 set(kdesu_LIB_SRCS
-client.cpp
-process.cpp
-kcookie.cpp
-su.cpp
-ssh.cpp
-stub.cpp
-kdesu_pty.cpp
-)
+   client.cpp
+   process.cpp
+   kcookie.cpp
+   su.cpp
+   ssh.cpp
+   stub.cpp
+   kdesu_pty.cpp
+   )
 
 kde4_automoc(${kdesu_LIB_SRCS})
 
@@ -27,11 +29,7 @@ install_targets(${KDE4_LIB_INSTALL_DIR} kdesu )
 
 ########### next target ###############
 
-set(kdesu_stub_SRCS
-kdesu_stub.c
-)
-
-kde4_automoc(${kdesu_stub_SRCS})
+set(kdesu_stub_SRCS kdesu_stub.c )
 
 kde4_add_executable(kdesu_stub ${kdesu_stub_SRCS})
 

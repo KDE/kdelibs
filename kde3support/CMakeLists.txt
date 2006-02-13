@@ -1,19 +1,21 @@
 kde4_header()
 
+project(kde3support)
+
 add_subdirectory( kdecore ) 
 add_subdirectory( kdeui ) 
 add_subdirectory( kio ) 
 add_subdirectory( kparts ) 
-add_subdirectory( kmdi ) 
+add_subdirectory( kmdi )
+
 if(UNIX)
-add_subdirectory( kunittest ) 
-add_subdirectory( tests ) 
+   add_subdirectory( kunittest ) 
+   add_subdirectory( tests ) 
 endif(UNIX)
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kparts ${CMAKE_CURRENT_SOURCE_DIR}/kmdi ${CMAKE_CURRENT_SOURCE_DIR}/kmdi/res
-${CMAKE_CURRENT_SOURCE_DIR}/kdeui ${CMAKE_SOURCE_DIR}/kutils ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kio/bookmarks)
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kparts ${CMAKE_CURRENT_SOURCE_DIR}/kmdi ${CMAKE_CURRENT_SOURCE_DIR}/kmdi/res)
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdeui ${CMAKE_SOURCE_DIR}/kutils ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kio/bookmarks)
 
 add_definitions(-DKDE3_SUPPORT)
 

@@ -1,5 +1,7 @@
 kde4_header()
 
+project(kdeinit)
+
 add_subdirectory( tests ) 
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
@@ -7,10 +9,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/net
 
 ########### next target ###############
 
-set(kdeinit_SRCS
-kinit.cpp
-setproctitle.cpp
-)
+set(kdeinit_SRCS kinit.cpp setproctitle.cpp )
 
 kde4_automoc(${kdeinit_SRCS})
 
@@ -23,11 +22,7 @@ install_targets(/bin kdeinit )
 
 ########### next target ###############
 
-set(kdeinit_wrapper_SRCS
-wrapper.c
-)
-
-kde4_automoc(${kdeinit_wrapper_SRCS})
+set(kdeinit_wrapper_SRCS wrapper.c )
 
 kde4_add_executable(kdeinit_wrapper ${kdeinit_wrapper_SRCS})
 
@@ -38,11 +33,7 @@ install_targets(/bin kdeinit_wrapper )
 
 ########### next target ###############
 
-set(kshell_SRCS
-shell.c
-)
-
-kde4_automoc(${kshell_SRCS})
+set(kshell_SRCS shell.c )
 
 kde4_add_executable(kshell ${kshell_SRCS})
 
@@ -53,11 +44,7 @@ install_targets(/bin kshell )
 
 ########### next target ###############
 
-set(kdeinit_shutdown_SRCS
-wrapper.c
-)
-
-kde4_automoc(${kdeinit_shutdown_SRCS})
+set(kdeinit_shutdown_SRCS wrapper.c )
 
 kde4_add_executable(kdeinit_shutdown ${kdeinit_shutdown_SRCS})
 
@@ -68,11 +55,7 @@ install_targets(/bin kdeinit_shutdown )
 
 ########### next target ###############
 
-set(lnusertemp_SRCS
-lnusertemp.c
-)
-
-kde4_automoc(${lnusertemp_SRCS})
+set(lnusertemp_SRCS lnusertemp.c )
 
 kde4_add_executable(lnusertemp ${lnusertemp_SRCS})
 
@@ -83,11 +66,7 @@ install_targets(/bin lnusertemp )
 
 ########### next target ###############
 
-set(kwrapper_SRCS
-kwrapper.c
-)
-
-kde4_automoc(${kwrapper_SRCS})
+set(kwrapper_SRCS kwrapper.c )
 
 kde4_add_executable(kwrapper ${kwrapper_SRCS})
 
@@ -98,9 +77,7 @@ install_targets(/bin kwrapper )
 
 ########### next target ###############
 
-set(kioslave_SRCS
-kioslave.cpp
-)
+set(kioslave_SRCS kioslave.cpp )
 
 kde4_automoc(${kioslave_SRCS})
 
@@ -113,9 +90,7 @@ install_targets(/bin kioslave )
 
 ########### next target ###############
 
-set(kstartupconfig_SRCS
-kstartupconfig.cpp
-)
+set(kstartupconfig_SRCS kstartupconfig.cpp )
 
 kde4_automoc(${kstartupconfig_SRCS})
 
@@ -128,9 +103,7 @@ install_targets(/bin kstartupconfig )
 
 ########### next target ###############
 
-set(kdostartupconfig_SRCS
-kdostartupconfig.cpp
-)
+set(kdostartupconfig_SRCS kdostartupconfig.cpp )
 
 kde4_automoc(${kdostartupconfig_SRCS})
 
@@ -144,10 +117,10 @@ install_targets(/bin kdostartupconfig )
 ########### next target ###############
 
 set(klauncher_KDEINIT_SRCS
-klauncher.cpp
-klauncher_main.cpp
-autostart.cpp
-)
+   klauncher.cpp
+   klauncher_main.cpp
+   autostart.cpp
+   )
 
 kde4_automoc(${klauncher_KDEINIT_SRCS})
 

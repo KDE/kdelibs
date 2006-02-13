@@ -1,31 +1,29 @@
 kde4_header()
 
+project(kresources)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
 set(kresources_LIB_SRCS
-resource.cpp
-factory.cpp
-managerimpl.cpp
-configwidget.cpp
-configdialog.cpp
-selectdialog.cpp
-configpage.cpp
-)
+   resource.cpp
+   factory.cpp
+   managerimpl.cpp
+   configwidget.cpp
+   configdialog.cpp
+   selectdialog.cpp
+   configpage.cpp
+   )
 
 kde4_automoc(${kresources_LIB_SRCS})
 
-set( kresources_DCOP_SKEL_SRCS
-manageriface.h
-)
+set( kresources_DCOP_SKEL_SRCS manageriface.h )
 
 kde4_add_dcop_skels(kresources_LIB_SRCS ${kresources_DCOP_SKEL_SRCS})
 
-set( kresources_DCOP_STUB_SRCS
-manageriface.h
-)
+set( kresources_DCOP_STUB_SRCS manageriface.h )
 
 kde4_add_dcop_stubs(kresources_LIB_SRCS ${kresources_DCOP_STUB_SRCS})
 
@@ -52,13 +50,12 @@ install_targets(${KDE4_PLUGIN_INSTALL_DIR} kcm_kresources )
 
 ########### next target ###############
 
-set(testresources_SRCS
-testresources.cpp
-)
+if(KDE4_BUILD_TESTS)
+
+set(testresources_SRCS testresources.cpp )
 
 kde4_automoc(${testresources_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(testresources ${testresources_SRCS})
 
 target_link_libraries(testresources  ${QT_AND_KDECORE_LIBS} kresources)

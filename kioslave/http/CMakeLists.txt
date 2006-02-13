@@ -1,6 +1,6 @@
 kde4_header()
 
-project(kioslave-file)
+project(kioslave-http)
 
 add_subdirectory( kcookiejar ) 
 

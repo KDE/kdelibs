@@ -1,5 +1,7 @@
 kde4_header()
 
+project(khtml)
+
 find_package(JPEG REQUIRED)
 find_package(GIF  REQUIRED)
 find_package(PNG  REQUIRED)

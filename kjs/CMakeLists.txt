@@ -1,5 +1,7 @@
 kde4_header()
 
+project(kjs)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 

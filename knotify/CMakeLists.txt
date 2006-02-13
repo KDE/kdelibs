@@ -1,5 +1,7 @@
 kde4_header()
 
+project(knotify)
+
 add_subdirectory( daemon ) 
 add_subdirectory( config ) 
 

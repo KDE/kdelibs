@@ -1,23 +1,25 @@
 kde4_header()
 
+project(knewstuff)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
 set(knewstuff_LIB_SRCS
-engine.cpp
-entry.cpp
-downloaddialog.cpp
-uploaddialog.cpp
-providerdialog.cpp
-provider.cpp
-knewstuff.cpp
-knewstuffgeneric.cpp
-knewstuffbutton.cpp
-knewstuffsecure.cpp
-security.cpp
-)
+   engine.cpp
+   entry.cpp
+   downloaddialog.cpp
+   uploaddialog.cpp
+   providerdialog.cpp
+   provider.cpp
+   knewstuff.cpp
+   knewstuffgeneric.cpp
+   knewstuffbutton.cpp
+   knewstuffsecure.cpp
+   security.cpp
+   )
 
 kde4_automoc(${knewstuff_LIB_SRCS})
 
@@ -31,9 +33,7 @@ install_targets(${KDE4_LIB_INSTALL_DIR} knewstuff )
 
 ########### next target ###############
 
-set(khotnewstuff_SRCS
-khotnewstuff.cpp
-)
+set(khotnewstuff_SRCS khotnewstuff.cpp )
 
 kde4_automoc(${khotnewstuff_SRCS})
 
@@ -46,28 +46,23 @@ install_targets(/bin khotnewstuff )
 
 ########### next target ###############
 
-set(testnewstuff_SRCS
-testnewstuff.cpp
-)
+if(KDE4_BUILD_TESTS)
+
+set(testnewstuff_SRCS testnewstuff.cpp )
 
 kde4_automoc(${testnewstuff_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(testnewstuff ${testnewstuff_SRCS})
 
 target_link_libraries(testnewstuff  ${QT_AND_KDECORE_LIBS} knewstuff)
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
-set(ghns_SRCS
-ghns.cpp
-)
+set(ghns_SRCS ghns.cpp )
 
 kde4_automoc(${ghns_SRCS})
 
-if(KDE4_BUILD_TESTS)
 kde4_add_executable(ghns ${ghns_SRCS})
 
 target_link_libraries(ghns  ${QT_AND_KDECORE_LIBS} knewstuff)

@@ -1,5 +1,7 @@
 kde4_header()
 
+project(kabc)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_BINARY_DIR}/kabc  ${CMAKE_SOURCE_DIR}/kabc/kab ${CMAKE_CURRENT_SOURCE_DIR}/vcardparser  ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 # kabc/kab/Makefile.am: kab

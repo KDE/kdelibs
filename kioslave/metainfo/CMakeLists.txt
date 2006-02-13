@@ -1,13 +1,13 @@
 kde4_header()
 
+project(kioslave-metainfo)
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
 
-set(kio_metainfo_PART_SRCS
-metainfo.cpp
-)
+set(kio_metainfo_PART_SRCS metainfo.cpp )
 
 kde4_automoc(${kio_metainfo_PART_SRCS})
 
