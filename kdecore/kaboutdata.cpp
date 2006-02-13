@@ -145,6 +145,10 @@ QString KAboutTranslator::emailAddress() const
 #undef mName
 #undef mEmail
 
+#ifdef _GCC_
+# warning KAboutData use the KDE3 trick for translating the data of the translators instead of using correctly i18n( "context", "text" );
+#endif
+
 class KAboutData::Private
 {
 public:
