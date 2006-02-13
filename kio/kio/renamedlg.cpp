@@ -226,11 +226,11 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                 sentence1 = i18n("A newer item named '%1' already exists.");
 
             QLabel * lb1 = new KSqueezedTextLabel( sentence1.arg(d->dest.pathOrURL() ), this );
-            gridLayout->addWidget( lb1, 0, 0, 0, 1 ); // takes the complete first line
+            gridLayout->addWidget( lb1, 0, 0, 1, 2 ); // takes the complete first line
 
             lb1 = new QLabel( this );
             lb1->setPixmap( KMimeType::pixmapForURL( d->dest ) );
-            gridLayout->addWidget( lb1, 1, 3, 0, 0 ); // takes the first column on rows 1-3
+            gridLayout->addWidget( lb1, 1, 0, 3, 1 ); // takes the first column on rows 1-3
 
             int row = 1;
             if ( sizeDest != (KIO::filesize_t)-1 )
@@ -260,11 +260,11 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                 // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
 
                 QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'").arg(d->src.pathOrURL()), this );
-                gridLayout->addWidget( lb2, 5, 5, 0, 1 ); // takes the complete first line
+                gridLayout->addWidget( lb2, 5, 0, 1, 2 ); // takes the complete first line
 
                 lb2 = new QLabel( this );
                 lb2->setPixmap( KMimeType::pixmapForURL( d->src ) );
-                gridLayout->addWidget( lb2, 6, 8, 0, 0 ); // takes the first column on rows 6-8
+                gridLayout->addWidget( lb2, 6, 0, 3, 1 ); // takes the first column on rows 6-8
 
                 row = 6;
 
