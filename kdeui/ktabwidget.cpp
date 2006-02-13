@@ -261,10 +261,10 @@ void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
         // The receivers of the testCanDecode() signal has to adjust
         // 'accept' accordingly.
         emit testCanDecode( e, accept);
-        e->accept( accept );
+        e->setAccepted( accept );
         return;
     }
-    e->accept( false );
+    e->setAccepted( false );
     QTabWidget::dragMoveEvent( e );
 }
 
@@ -294,7 +294,7 @@ void KTabWidget::wheelDelta( int delta )
     if ( count() < 2 )
         return;
 
-    int page = currentPageIndex();
+    int page = currentIndex();
     if ( delta < 0 )
          page = (page + 1) % count();
     else {
@@ -363,7 +363,7 @@ void KTabWidget::moveTab( int from, int to )
 {
     QString tablabel = tabText( from );
     QWidget *w = widget( from );
-    //QColor color = tabColor( w );
+    QColor color = tabTextColor( from );
     QIcon tabiconset = tabIcon( from );
     QString tabtooltip = tabToolTip( from );
     bool current = ( from == currentIndex() );
@@ -383,7 +383,7 @@ void KTabWidget::moveTab( int from, int to )
     setTabIcon(to,tabiconset);
     setTabText(to,tablabel);
     setTabToolTip( to, tabtooltip );
-    //setTabColor( w, color );
+    setTabTextColor( to, color );
     if ( current )
         setCurrentIndex( to );
     setTabEnabled( to, enabled );
