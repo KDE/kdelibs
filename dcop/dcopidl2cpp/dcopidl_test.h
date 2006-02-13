@@ -99,7 +99,7 @@ class SignalTest : virtual public DCOPObject
 {
    K_DCOP
 public:
-   SignalTest(Q3CString objId = "KBookmarkNotifier") : DCOPObject(objId) {}
+   SignalTest(DCOPCString objId = "KBookmarkNotifier") : DCOPObject(objId) {}
 k_dcop_signals:
    void signal1( QString filename, QString url, QString text, QString address, QString icon );
    void signal2( QString filename, QString text, QString address );
