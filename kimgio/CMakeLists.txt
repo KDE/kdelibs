@@ -5,8 +5,16 @@ include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SO
 
 ########### install files ###############
 
-# FIX : $(KIMGIO_TIFF_SERVICEFILES) $(KIMGIO_JP2_SERVICEFILES)  $(KIMGIO_EXR_SERVICEFILES)
+# FIX : $(KIMGIO_TIFF_SERVICEFILES) $(KIMGIO_EXR_SERVICEFILES)
 install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES png.desktop xpm.desktop bmp.desktop pbm.desktop pgm.desktop  ppm.desktop xbm.desktop jpeg.desktop xv.desktop eps.desktop ico.desktop gif.desktop pcx.desktop tga.desktop rgb.desktop xcf.desktop dds.desktop mng.desktop psd.desktop hdr.desktop )
+
+if(JASPER_FOUND)
+	install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES jp2.desktop)
+endif(JASPER_FOUND)
+
+if(OPENEXR_FOUND)
+	install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES exr.desktop)
+endif(OPENEXR_FOUND)
 
 kde4_create_doxygen_docs(  )
 
