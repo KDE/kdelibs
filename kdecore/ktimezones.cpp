@@ -677,8 +677,8 @@ void KSystemTimezonesPrivate::readZoneTab()
             // Add entry to list.
             if (tokens[0] == "??")
                 tokens[0] = "";
-            KTimezone *timezone = new KSystemTimezone(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
-            add(timezone);
+            KTimezone *tzone = new KSystemTimezone(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
+            add(tzone);
         }
     }
     f.close();

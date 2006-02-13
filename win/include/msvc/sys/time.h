@@ -35,8 +35,10 @@ struct itimerval {
 extern "C" {
 #endif
 
-KDEWIN32_EXPORT int gettimeofday(struct timeval *__p, struct timezone *__z);
-KDEWIN32_EXPORT int settimeofday(const struct timeval *, const struct timezone *); 
+KDEWIN32_EXPORT int gettimeofday(struct timeval *__p, void *__t);
+
+// this is no posix function
+//KDEWIN32_EXPORT int settimeofday(const struct timeval *, const struct timezone *); 
 
 #ifdef __cplusplus
 }

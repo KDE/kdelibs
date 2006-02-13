@@ -31,7 +31,7 @@
 //
 // sys/time.h fnctions
 //
-KDEWIN32_EXPORT int gettimeofday(struct timeval *__p, struct timezone *__t)
+KDEWIN32_EXPORT int gettimeofday(struct timeval *__p, void *__t)
 {
 	union {
 		unsigned long long ns100; /*time since 1 Jan 1601 in 100ns units */
@@ -45,6 +45,8 @@ KDEWIN32_EXPORT int gettimeofday(struct timeval *__p, struct timezone *__t)
 	return (0); 
 }
 
+// this is no posix function
+#if 0
 KDEWIN32_EXPORT int settimeofday(const struct timeval *__p, const struct timezone *__t)
 {
 	union {
@@ -59,6 +61,7 @@ KDEWIN32_EXPORT int settimeofday(const struct timeval *__p, const struct timezon
 	SetSystemTime( &st );
 	return 1;
 }
+#endif 
 
 //
 // time.h functions

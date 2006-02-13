@@ -25,11 +25,7 @@
 
 #include <../include/time.h>
 
-struct timezone 
-{
-  int tz_minuteswest;
-  int tz_dsttime;
-};
+#define timezone _timezone
 
 #ifdef __cplusplus
 extern "C" {

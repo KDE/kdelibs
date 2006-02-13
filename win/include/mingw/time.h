@@ -22,6 +22,8 @@
 #include <sys/types.h>
 #include_next <time.h>
 
+#define timezone _timezone
+
 #ifdef __cplusplus
 extern "C" {
 #endif 
