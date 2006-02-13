@@ -96,7 +96,7 @@ void KTabBar::mousePressEvent( QMouseEvent *e )
 
 void KTabBar::mouseMoveEvent( QMouseEvent *e )
 {
-    if ( e->state() == Qt::LeftButton ) {
+    if ( e->buttons() == Qt::LeftButton ) {
         int tab = selectTab( e->pos() );
         if ( mDragSwitchTab && tab != mDragSwitchTab ) {
           mActivateDragSwitchTabTimer->stop();
@@ -114,7 +114,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
            }
        }
     }
-    else if ( e->state() == Qt::MidButton ) {
+    else if ( e->buttons() == Qt::MidButton ) {
         if (mReorderStartTab==-1) {
             int delay = KGlobalSettings::dndEventDelay();
             QPoint newPos = e->pos();

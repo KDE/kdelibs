@@ -21,6 +21,7 @@
 class QBitmap;
 #include <QBrush>
 #include <QWidget>
+#include <QBitmap>
 
 #include <kdelibs_export.h>
 
@@ -143,7 +144,7 @@ protected:
     virtual void dropEvent(QDropEvent *ev);
 
 private:
-    QBitmap *arrowBitmap;
+    QBitmap arrowBitmap;
     QPixmap *resetPixmap;
     QBrush fg, bg;
     QPoint mPos;

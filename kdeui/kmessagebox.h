@@ -68,7 +68,7 @@ public:
    QuestionYesNoCancel = 9
  };
 
- enum OptionsType
+ enum Option
  {
    Notify = 1,        ///< Emit a KNotify event
    AllowLink = 2,     ///< The message may contain links.
@@ -80,6 +80,8 @@ public:
 			   @since 3.4
 		       */
  };
+
+ Q_DECLARE_FLAGS(Options,Option)
 
  /**
   * Display a simple "question" dialog.
@@ -101,7 +103,7 @@ public:
   *                The setting is stored in the "Notification Messages" group.
   *                If @p dontAskAgainName starts with a ':' then the setting
   *                is stored in the global config file.
-  * @param options  see OptionsType
+  * @param options  see Option
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -117,7 +119,7 @@ public:
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo =  KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
-                          int options = Notify);
+                          Options options = Notify);
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
@@ -129,7 +131,7 @@ public:
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo =  KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
-                          int options = Notify);
+                          Options options = Notify);
  /**
   * Display a simple "question" dialog.
   *
@@ -150,7 +152,7 @@ public:
   *                The setting is stored in the "Notification Messages" group.
   *                If @p dontAskAgainName starts with a ':' then the setting
   *                is stored in the global config file.
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -168,7 +170,7 @@ public:
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo  = KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
-                          int options = Notify);
+                          Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -181,7 +183,7 @@ public:
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo  = KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
-                          int options = Notify);
+                          Options options = Notify);
 
  /**
   * Display a "question" dialog with a listbox to show information to the user
@@ -205,7 +207,7 @@ public:
   *                The setting is stored in the "Notification Messages" group.
   *                If @p dontAskAgainName starts with a ':' then the setting
   *                is stored in the global config file.
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -224,7 +226,7 @@ public:
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo = KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
-                          int options = Notify);
+                          Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -238,7 +240,7 @@ public:
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo = KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
-                          int options = Notify);
+                          Options options = Notify);
 
  /**
   * Display a "warning" dialog.
@@ -260,7 +262,7 @@ public:
   *                The setting is stored in the "Notification Messages" group.
   *                If @p dontAskAgainName starts with a ':' then the setting
   *                is stored in the global config file.
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed.
@@ -276,7 +278,7 @@ public:
                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
                          const KGuiItem &buttonNo = KStdGuiItem::no(),
                          const QString &dontAskAgainName = QString(),
-                         int options = Notify | Dangerous);
+                         Options options = Notify | Dangerous);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -289,7 +291,7 @@ public:
                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
                          const KGuiItem &buttonNo = KStdGuiItem::no(),
                          const QString &dontAskAgainName = QString(),
-                         int options = Notify | Dangerous);
+                         Options options = Notify | Dangerous);
 
  /**
   * Display a "warning" dialog with a listbox to show information to the user
@@ -313,7 +315,7 @@ public:
   *                The setting is stored in the "Notification Messages" group.
   *                If @p dontAskAgainName starts with a ':' then the setting
   *                is stored in the global config file.
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -332,7 +334,7 @@ public:
                             const KGuiItem &buttonYes = KStdGuiItem::yes(),
                             const KGuiItem &buttonNo = KStdGuiItem::no(),
                             const QString &dontAskAgainName = QString(),
-                            int options = Notify | Dangerous);
+                            Options options = Notify | Dangerous);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -346,7 +348,7 @@ public:
                             const KGuiItem &buttonYes = KStdGuiItem::yes(),
                             const KGuiItem &buttonNo = KStdGuiItem::no(),
                             const QString &dontAskAgainName = QString(),
-                            int options = Notify | Dangerous);
+                            Options options = Notify | Dangerous);
 
  /**
   * Display a "warning" dialog.
@@ -365,7 +367,7 @@ public:
   *                The setting is stored in the "Notification Messages" group.
   *                If @p dontAskAgainName starts with a ':' then the setting
   *                is stored in the global config file.
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * The second button always has the text "Cancel".
   *
@@ -382,7 +384,7 @@ public:
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStdGuiItem::cont(),
                          const QString &dontAskAgainName = QString(),
-                         int options = Notify);
+                         Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -394,7 +396,7 @@ public:
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStdGuiItem::cont(),
                          const QString &dontAskAgainName = QString(),
-                         int options = Notify);
+                         Options options = Notify);
 
  /**
   * Display a "warning" dialog with a listbox to show information to the user.
@@ -417,7 +419,7 @@ public:
   *                If @p dontAskAgainName starts with a ':' then the setting
   *                is stored in the global config file.
   *
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * The second button always has the text "Cancel".
   *
@@ -435,7 +437,7 @@ public:
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStdGuiItem::cont(),
                          const QString &dontAskAgainName = QString(),
-                         int options = Notify);
+                         Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -448,7 +450,7 @@ public:
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStdGuiItem::cont(),
                          const QString &dontAskAgainName = QString(),
-                         int options = Notify);
+                         Options options = Notify);
 
  /**
   * Display a Yes/No/Cancel "warning" dialog.
@@ -472,7 +474,7 @@ public:
   *                The setting is stored in the "Notification Messages" group.
   *                If @p dontAskAgainName starts with a ':' then the setting
   *                is stored in the global config file.
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed. @p Cancel is retunred if the Cancel-
@@ -492,7 +494,7 @@ public:
                                 const KGuiItem &buttonYes = KStdGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStdGuiItem::no(),
                                 const QString &dontAskAgainName = QString(),
-                                int options = Notify);
+                                Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -505,7 +507,7 @@ public:
                                 const KGuiItem &buttonYes = KStdGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStdGuiItem::no(),
                                 const QString &dontAskAgainName = QString(),
-                                int options = Notify);
+                                Options options = Notify);
 
  /**
   * Display a Yes/No/Cancel "warning" dialog with a listbox to show information
@@ -533,7 +535,7 @@ public:
   *                The setting is stored in the "Notification Messages" group.
   *                If @p dontAskAgainName starts with a ':' then the setting
   *                is stored in the global config file.
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed. @p Cancel is retunred if the Cancel-
@@ -555,7 +557,7 @@ public:
                                 const KGuiItem &buttonYes = KStdGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStdGuiItem::no(),
                                 const QString &dontAskAgainName = QString(),
-                                int options = Notify);
+                                Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -569,7 +571,7 @@ public:
                                 const KGuiItem &buttonYes = KStdGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStdGuiItem::no(),
                                 const QString &dontAskAgainName = QString(),
-                                int options = Notify);
+                                Options options = Notify);
 
  /**
   * Display an "Error" dialog.
@@ -580,7 +582,7 @@ public:
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
@@ -597,7 +599,7 @@ public:
   static void error(QWidget *parent,
                     const QString &text,
                     const QString &caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -608,7 +610,7 @@ public:
   static void errorWId(WId parent_id,
                     const QString &text,
                     const QString &caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
  /**
   * Display an "Error" dialog with a listbox.
@@ -622,7 +624,7 @@ public:
   *                as error().
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
@@ -642,7 +644,7 @@ public:
                     const QString &text,
                     const QStringList &strlist,
                     const QString &caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -654,7 +656,7 @@ public:
                     const QString &text,
                     const QStringList &strlist,
                     const QString &caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
  /**
   * Displays an "Error" dialog with a "Details >>" button.
@@ -666,7 +668,7 @@ public:
   * @param details Detailed message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
@@ -686,7 +688,7 @@ public:
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -697,7 +699,7 @@ public:
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
   /**
    * Like detailedError
@@ -749,7 +751,7 @@ public:
   static void sorry(QWidget *parent,
                     const QString &text,
                     const QString &caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -759,7 +761,7 @@ public:
   static void sorryWId(WId parent_id,
                     const QString &text,
                     const QString &caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
  /**
   * Displays a "Sorry" dialog with a "Details >>" button.
@@ -771,7 +773,7 @@ public:
   * @param details Detailed message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   * Either your program messed up and asks for understanding
   * or your user did something stupid.
@@ -793,7 +795,7 @@ public:
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -804,7 +806,7 @@ public:
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
  /**
   * Display an "Information" dialog.
@@ -820,7 +822,7 @@ public:
   *                The string is used to lookup and store the setting
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   *
   * Your program wants to tell the user something.
@@ -836,7 +838,7 @@ public:
                           const QString &text,
                           const QString &caption = QString(),
                           const QString &dontShowAgainName = QString(),
-                          int options = Notify);
+                          Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -847,7 +849,7 @@ public:
                           const QString &text,
                           const QString &caption = QString(),
                           const QString &dontShowAgainName = QString(),
-                          int options = Notify);
+                          Options options = Notify);
 
  /**
   * Display an "Information" dialog with a listbox.
@@ -866,7 +868,7 @@ public:
   *                The string is used to lookup and store the setting
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
-  * @param options  see OptionsType
+  * @param options  see Options
   *
   *
   * Your program wants to tell the user something.
@@ -884,7 +886,7 @@ public:
 			      const QStringList & strlist,
 			      const QString &caption = QString(),
 			      const QString &dontShowAgainName = QString(),
-			      int options = Notify);
+			      Options options = Notify);
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -896,7 +898,7 @@ public:
 			      const QStringList & strlist,
 			      const QString &caption = QString(),
 			      const QString &dontShowAgainName = QString(),
-			      int options = Notify);
+			      Options options = Notify);
 
   /**
    * Enable all messages which have been turned off with the
@@ -922,7 +924,7 @@ public:
    * @param text    Message string.
    * @param caption Message box title. The application name is added to
    *                the title. The default title is i18n("About \<appname\>").
-   * @param options  see OptionsType
+   * @param options  see Options
    *
    *
    * Your program wants to show some general information about the application
@@ -935,7 +937,7 @@ public:
   static void about(QWidget *parent,
 		    const QString& text,
 		    const QString& caption = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
     /**
      * Alternate method to show a messagebox:
@@ -956,7 +958,7 @@ public:
      *                last answer (either Yes or No), if the message box needs an answer.
      *                The string is used to lookup and store the setting
      *                in the applications config file.
-     * @param options  see OptionsType
+     * @param options  see Options
      * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
      *       and for Information, none is used.
      * @return a button code, as defined in KMessageBox.
@@ -966,7 +968,7 @@ public:
                     const KGuiItem &buttonYes,
                     const KGuiItem &buttonNo,
                     const QString &dontShowAskAgainName,
-                    int options = Notify);
+                    Options options = Notify);
 
     /**
      * Alternate method to show a messagebox:
@@ -981,7 +983,7 @@ public:
      *                  The default is i18n("&Yes").
      * @param buttonNo  The text for the second button.
      *                  The default is i18n("&No").
-     * @param options  see OptionsType
+     * @param options  see Options
      * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
      *       and for Information, none is used.
      * @return a button code, as defined in KMessageBox.
@@ -991,7 +993,7 @@ public:
                     const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStdGuiItem::yes(),
                     const KGuiItem &buttonNo = KStdGuiItem::no(),
-                    int options = Notify);
+                    Options options = Notify);
 
     /**
      * This function accepts the window id of the parent window, instead
@@ -1003,7 +1005,7 @@ public:
                     const KGuiItem &buttonYes = KStdGuiItem::yes(),
                     const KGuiItem &buttonNo = KStdGuiItem::no(),
                     const QString &dontShowAskAgainName = QString(),
-                    int options = Notify);
+                    Options options = Notify);
 
     /**
      * Like messageBox
@@ -1020,7 +1022,7 @@ public:
     static void queuedMessageBox( QWidget *parent,
                     DialogType type, const QString &text,
                     const QString &caption,
-                    int options );
+                    Options options );
 
     /**
      * This function accepts the window id of the parent window, instead
@@ -1030,7 +1032,7 @@ public:
     static void queuedMessageBoxWId( WId parent_id,
                     DialogType type, const QString &text,
                     const QString &caption,
-                    int options );
+                    Options options );
 
     /**
      * @overload
@@ -1109,7 +1111,7 @@ public:
      * @param ask     The text of the checkbox. If empty none will be shown.
      * @param checkboxReturn The result of the checkbox. If it's initially
      *                true then the checkbox will be checked by default.
-     * @param options  see OptionsType
+     * @param options  see Options
      * @param details Detailed message string.
      * @since 3.3
      * @return A KDialog button code, not a KMessageBox button code,
@@ -1124,7 +1126,7 @@ public:
     static int createKMessageBox(KDialog *dialog, QMessageBox::Icon icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
-                             int options, const QString &details=QString());
+                             Options options, const QString &details=QString());
 
     /**
      * Create content and layout of a standard dialog
@@ -1138,7 +1140,7 @@ public:
      * @param ask     The text of the checkbox. If empty none will be shown.
      * @param checkboxReturn The result of the checkbox. If it's initially
      *                true then the checkbox will be checked by default.
-     * @param options  see OptionsType
+     * @param options  see Options
      * @param details Detailed message string.
      * @param notifyType The type of notification to send when this message
      *                is presentend.
@@ -1155,7 +1157,7 @@ public:
     static int createKMessageBox(KDialog *dialog, QPixmap icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
-                             int options, const QString &details=QString(),
+                             Options options, const QString &details=QString(),
                              QMessageBox::Icon notifyType=QMessageBox::Information);
 
     // KDE4 make a constructor that takes a QIcon
@@ -1163,5 +1165,8 @@ public:
 private:
     static KConfig* againConfig;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KMessageBox::Options)
+
 
 #endif
