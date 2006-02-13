@@ -561,9 +561,6 @@ int auth_initialize (authfilename)
 
     register_signals ();
 
-#ifdef _WIN32
-#define bzero(a,b) memset(a,0,b)
-#endif
     bzero ((char *) hexvalues, sizeof hexvalues);
     hexvalues['0'] = 0;
     hexvalues['1'] = 1;
