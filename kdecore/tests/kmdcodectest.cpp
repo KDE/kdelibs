@@ -154,7 +154,9 @@ void testCodec (const char* msg, Codec type, bool isFile)
     {
         QCString result;
 
-        memcpy (output.data(), msg, strlen(msg));
+        const size_t len = strlen(msg);
+        output.resize(len);
+        memcpy (output.data(), msg, len);
 
         switch (type)
         {
