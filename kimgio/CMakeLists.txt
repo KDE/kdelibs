@@ -119,7 +119,7 @@ install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES png.desktop xpm.deskt
 
 
 
-install_files( ${KDE4_SERVICES_DIR}/ FILES qimageio_plugin.desktop)
+install_files( ${KDE4_SERVICETYPES_DIR}/ FILES qimageio_plugin.desktop)
 
 kde4_create_doxygen_docs(  )
 
