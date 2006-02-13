@@ -1,11 +1,14 @@
 kde4_header()
 
+macro_optional_find_package(Jasper)
+macro_optional_find_package(TIFF)
+macro_optional_find_package(OpenEXR)
 include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### install files ###############
 
-# FIX : $(KIMGIO_TIFF_SERVICEFILES) $(KIMGIO_EXR_SERVICEFILES)
+# FIX : $(KIMGIO_TIFF_SERVICEFILES) 
 install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES png.desktop xpm.desktop bmp.desktop pbm.desktop pgm.desktop  ppm.desktop xbm.desktop jpeg.desktop xv.desktop eps.desktop ico.desktop gif.desktop pcx.desktop tga.desktop rgb.desktop xcf.desktop dds.desktop mng.desktop psd.desktop hdr.desktop )
 
 if(JASPER_FOUND)
@@ -15,6 +18,12 @@ endif(JASPER_FOUND)
 if(OPENEXR_FOUND)
 	install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES exr.desktop)
 endif(OPENEXR_FOUND)
+
+if(TIFF_FOUND)
+	install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES tiff.desktop)
+endif(TIFF_FOUND)
+
+install_files( ${KDE4_SERVICES_DIR}/ FILES qimageio_plugin.desktop)
 
 kde4_create_doxygen_docs(  )
 
