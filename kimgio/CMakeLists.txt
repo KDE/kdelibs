@@ -5,15 +5,22 @@ macro_optional_find_package(TIFF)
 macro_optional_find_package(OpenEXR)
 include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+if(JASPER_FOUND)
+	set(kimg_jp2_LIB_SRCS jp2.cpp)
+	kde4_add_plugin(kimg_jp2 ${kimg_jp2_LIB_SRCS})
+	target_link_libraries(kimg_jp2  ${QT_AND_KDECORE_LIBS} ${JASPER_LIBRARIES})
+	
+	kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
+	install_targets(${KDE4_PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
+	install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES jp2.desktop)
+endif(JASPER_FOUND)		
+
 
 ########### install files ###############
 
 # FIX : $(KIMGIO_TIFF_SERVICEFILES) 
 install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES png.desktop xpm.desktop bmp.desktop pbm.desktop pgm.desktop  ppm.desktop xbm.desktop jpeg.desktop xv.desktop eps.desktop ico.desktop gif.desktop pcx.desktop tga.desktop rgb.desktop xcf.desktop dds.desktop mng.desktop psd.desktop hdr.desktop )
 
-if(JASPER_FOUND)
-	install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES jp2.desktop)
-endif(JASPER_FOUND)
 
 if(OPENEXR_FOUND)
 	install_files( ${KDE4_SERVICES_DIR}/qimageioplugins/ FILES exr.desktop)
