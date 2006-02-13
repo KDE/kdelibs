@@ -26,6 +26,10 @@
 // str(n)casecmp is sometimes defined in string.h and sometimes strings.h ...
 #include <string.h>
 
-#define bzero(a,b) memset(a,0,b)
+void bzero(void *s, size_t n)
+{
+	memset(s,0,n);
+);
+
 
 #endif KDEWIN_STRINGS_H
