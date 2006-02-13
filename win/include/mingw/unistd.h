@@ -24,6 +24,9 @@
 #include_next <unistd.h>
 
 #include <winsock2.h>
+
+#define environ _environ
+
 #ifdef __cplusplus
 extern "C" {
 #endif

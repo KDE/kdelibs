@@ -37,6 +37,8 @@
 
 #include <sys/stat.h>
 
+#define environ _environ
+
 #ifdef __cplusplus
 extern "C" {
 #endif
