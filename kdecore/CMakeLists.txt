@@ -288,7 +288,8 @@ install_targets(/bin kde-config)
 
 
 ########### install files ###############
-
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)
+install_files( ${KDE4_LOCALE_DIR} FILES all_languages )
 install_files( ${KDE4_DATA_DIR}/knotify FILES eventsrc )
 install_files( ${KDE4_CONFIG_DIR} FILES kdebug.areas kdebugrc language.codes )
 install_files( ${KDE4_CONFIG_DIR}/colors FILES 40.colors Web.colors Royal.colors Rainbow.colors )
