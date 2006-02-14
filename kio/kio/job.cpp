@@ -4316,7 +4316,7 @@ QString CacheInfo::cachedFileName()
       dir += "0";
 
    unsigned long hash = 0x00000000;
-   QString u = m_url.url().latin1();
+   QString u = m_url.url().toLatin1();
    for(int i = u.length(); i--;)
    {
       hash = (hash * 12211 + u[i]) % 2147483563;

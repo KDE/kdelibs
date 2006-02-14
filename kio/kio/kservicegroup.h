@@ -51,7 +51,7 @@ class KBuildServiceGroupFactory;
  *    if (p->isType(KST_KService))
  *    {
  *       KService *s = static_cast<KService *>(p);
- *       printf("Name = %s\n", s->name().latin1());
+ *       printf("Name = %s\n", s->name().toLatin1());
  *    }
  *    else if (p->isType(KST_KServiceGroup))
  *    {

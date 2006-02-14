@@ -660,7 +660,7 @@ QStringList x = cfg.groupList();
 			cert.insert(64*(j+1)+j, '\n');
 		}
 		out.write("-----BEGIN CERTIFICATE-----\n", 28);
-		out.write(cert.latin1(), cert.length());
+		out.write(cert.toLatin1(), cert.length());
 		out.write("\n-----END CERTIFICATE-----\n\n", 28);
 		out.flush();
 	}
@@ -904,7 +904,7 @@ QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 	QStringList rc;
 	QMap<QString, QVector<KSSLCertificate*> >::iterator it = skEmail.find(email.toLower());
 
-	kDebug() << "GETKDEKey " << email.latin1() << endl;
+	kDebug() << "GETKDEKey " << email.toLatin1() << endl;
 
 	if (it == skEmail.end())
 		return rc;
@@ -925,13 +925,13 @@ QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 KSSLCertificate KSSLD::getCertByMD5Digest(const QString &key) {
 	QMap<QString, KSSLCertificate *>::iterator iter = skMD5Digest.find(key);
 	
-	kDebug() << "Searching cert for " << key.latin1() << endl;
+	kDebug() << "Searching cert for " << key.toLatin1() << endl;
 
 	if (iter != skMD5Digest.end())
 		return **iter;
 	
 	KSSLCertificate rc; // FIXME: Better way to return a not found condition?
-	kDebug() << "Not found: " << rc.toString().latin1() << endl;
+	kDebug() << "Not found: " << rc.toString().toLatin1() << endl;
 	return rc;
 }	
 

@@ -251,7 +251,7 @@ static const QPixmap& qembed_findImage( const QString& name )
     QPixmap* pixmap = dict.find( name ).value();
     if ( !pixmap ) {
 	for ( int i = 0; embed_image_vec[i].data; i++ ) {
-	    if ( strcmp(embed_image_vec[i].name, name.latin1()) == 0 ) {
+	    if ( strcmp(embed_image_vec[i].name, name.toLatin1()) == 0 ) {
 		QImage *img = new QImage((uchar*)embed_image_vec[i].data,
 			    embed_image_vec[i].width,
 			    embed_image_vec[i].height,
