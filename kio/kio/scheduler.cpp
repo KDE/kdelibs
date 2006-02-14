@@ -807,7 +807,7 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
         return false;
     }
 
-    assert(list->contains(job) == 0);
+    assert(!list->contains(job));
     list->append(job);
     coSlaveTimer.start(0); // Start job on timer event
 
