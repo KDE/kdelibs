@@ -91,6 +91,7 @@ const ColorPaletteNameType colorPaletteName[]=
 };
 
 const int recentColorIndex = 0;
+const int customColorIndex = 1;
 
 class KColorSpinBox : public QSpinBox
 {
@@ -869,12 +870,12 @@ KPaletteTable::slotColorTextSelected( const QString &colorText )
 void
 KPaletteTable::addToCustomColors( const QColor &color)
 {
-  setPalette(i18n_customColors);
+  setPalette(i18n( "palette name", colorPaletteName[ customColorIndex ].m_displayName ));
   mPalette->addColor( color );
   mPalette->save();
   delete mPalette;
   mPalette = 0;
-  setPalette(i18n_customColors);
+  setPalette(i18n( "palette name", colorPaletteName[ customColorIndex ].m_displayName ));
 }
 
 void
