@@ -1002,7 +1002,7 @@ QStringList DocumentImpl::docState()
 bool DocumentImpl::unsubmittedFormChanges()
 {
     for (Q3PtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
-        if (it.current()->state().right(1)=="M")
+        if (it.current()->state().endsWith('M'))
             return true;
 
     return false;

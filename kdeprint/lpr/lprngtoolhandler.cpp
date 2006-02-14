@@ -207,7 +207,7 @@ QList< QPair<QString,QStringList> > LPRngToolHandler::loadChoiceDict(const QStri
 					dict << QPair<QString,QStringList>(key, l);
 				l.clear();
 				key.clear();
-				if (line.contains('|') == 2 || line.right(7) == "BOOLEAN")
+				if (line.contains('|') == 2 || line.endsWith("BOOLEAN"))
 				{
 					int	p = line.find('|', 7);
 					key = line.mid(7, p-7);

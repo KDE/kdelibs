@@ -45,7 +45,7 @@ ApsHandler::ApsHandler(KMManager *mgr)
 
 bool ApsHandler::validate(PrintcapEntry *entry)
 {
-	return (entry->field("if").right(9) == "apsfilter");
+    return (entry->field("if").endsWith("apsfilter"));
 }
 
 KMPrinter* ApsHandler::createPrinter(PrintcapEntry *entry)

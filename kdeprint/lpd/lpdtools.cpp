@@ -404,7 +404,7 @@ QString getPrintcapLine(QTextStream& t, QString *lastcomment)
 			continue;
 		}
 		line.append(buffer);
-		if (line.right(1) == "\\")
+		if (line.endsWith('\\'))
 		{
 			line.truncate(line.length()-1);
 			line = line.trimmed();

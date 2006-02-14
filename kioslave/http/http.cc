@@ -1191,7 +1191,7 @@ void HTTPProtocol::put( const KUrl &url, int, bool overwrite, bool)
     return;
 
   // Webdav hosts are capable of observing overwrite == false
-  if (!overwrite && m_protocol.left(6) == "webdav") {
+  if (!overwrite && m_protocol.startsWith("webdav")) {
     // check to make sure this host supports WebDAV
     if ( !davHostOk() )
       return;
@@ -3636,10 +3636,10 @@ try_again:
   // Prefer application/x-tgz or x-gzpostscript over application/x-gzip.
   else if (m_strMimeType == "application/x-gzip")
   {
-     if ((m_request.url.path().right(7) == ".tar.gz") ||
-         (m_request.url.path().right(4) == ".tar"))
+     if ((m_request.url.path().endsWith(".tar.gz")) ||
+         (m_request.url.path().endsWith(".tar")))
         m_strMimeType = QString::fromLatin1("application/x-tgz");
-     if ((m_request.url.path().right(6) == ".ps.gz"))
+     if ((m_request.url.path().endsWith(".ps.gz")))
         m_strMimeType = QString::fromLatin1("application/x-gzpostscript");
   }
 

@@ -72,7 +72,7 @@ QString HelpProtocol::langLookup(const QString &fname)
         if (info.exists() && info.isFile() && info.isReadable())
             return *it;
 
-        if ( ( *it ).right( 5 ) == ".html" )
+        if ( ( *it ).endsWith( ".html" ) )
         {
             QString file = (*it).left((*it).lastIndexOf('/')) + "/index.docbook";
             kDebug( 7119 ) << "Looking for help in: " << file << endl;
@@ -253,7 +253,7 @@ void HelpProtocol::get( const KUrl& url )
 
             // if we have a query, look if it contains an anchor
             if (!query.isEmpty())
-                if (query.left(8) == "?anchor=") {
+                if (query.startsWith("?anchor=")) {
                     anchor = query.mid(8).toLower();
 
 			    KUrl redirURL(url);

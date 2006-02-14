@@ -426,7 +426,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      name = _name;
      name = name.mid( name.lastIndexOf('/') + 1);
      exec = _name;
-     if (lib.right(3) == ".la")
+     if (lib.endsWith(".la"))
         libpath = lib;
      else
         execpath = exec;

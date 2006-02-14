@@ -55,7 +55,7 @@ MaticHandler::MaticHandler(KMManager *mgr)
 bool MaticHandler::validate(PrintcapEntry *entry)
 {
 	if (entry)
-		return (entry->field("if").right(9) == "lpdomatic");
+		return (entry->field("if").endsWith("lpdomatic"));
 	return false;
 }
 
@@ -132,7 +132,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 	if (args.count() != 0)
 	{
 		// socket printer
-		if (args[0].right(3) == "/nc")
+		if (args[0].endsWith("/nc"))
 		{
 			url = "socket://" + args[ 1 ];
 			if ( args.count() > 2 )
@@ -141,7 +141,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 				url += ":9100";
 		}
 		// smb printer
-		else if (args[0].right(10) == "/smbclient")
+		else if (args[0].endsWith("/smbclient"))
 		{
 			QStringList	host_components = QStringList::split(QRegExp("/|\\\\\""), args[1], false);
 			QString	workgrp, user, pass;
@@ -157,7 +157,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 			url = buildSmbURI( workgrp, host_components[ 0 ], host_components[ 1 ], user, pass );
 		}
 		// remote printer
-		else if (args[0].right(5) == "/rlpr")
+		else if (args[0].endsWith("/rlpr"))
 		{
 			int	i=1;
 			while (i < args.count())

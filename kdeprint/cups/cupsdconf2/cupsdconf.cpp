@@ -155,7 +155,7 @@ bool CupsdConf::loadFromFile(const QString& filename)
 				else continue;
 			}
 			else if (line[0] == '#') continue;
-			else if (line.left(9).toLower() == "<location")
+			else if (line.startsWith("<location", Qt::CaseInsensitive))
 			{
 				CupsLocation	*location = new CupsLocation();
 				locations_.append(location);
@@ -819,8 +819,8 @@ int CupsResource::typeFromPath(const QString& path)
 {
 	if (path == "/admin") return RESOURCE_ADMIN;
 	else if (path == "/printers" || path == "/classes" || path == "/" || path == "/jobs") return RESOURCE_GLOBAL;
-	else if (path.left(9) == "/printers") return RESOURCE_PRINTER;
-	else if (path.left(8) == "/classes") return RESOURCE_CLASS;
+	else if (path.startsWith("/printers")) return RESOURCE_PRINTER;
+	else if (path.startsWith("/classes")) return RESOURCE_CLASS;
 	else return RESOURCE_GLOBAL;
 }
 

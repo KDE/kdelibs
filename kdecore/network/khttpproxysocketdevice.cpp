@@ -244,11 +244,11 @@ bool KHttpProxySocketDevice::parseServerReply()
   else
     {
       int state = 0;
-      if (d->reply.right(3) == "\r\n\r")
+      if (d->reply.endsWith("\r\n\r"))
 	state = 3;
-      else if (d->reply.right(2) == "\r\n")
+      else if (d->reply.endsWith("\r\n"))
 	state = 2;
-      else if (d->reply.right(1) == "\r")
+      else if (d->reply.endsWith("\r"))
 	state = 1;
       while (state != 4)
 	{

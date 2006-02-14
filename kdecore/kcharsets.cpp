@@ -526,7 +526,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     // ### TODO: we should check if the name starts with x- and remove it. That would save many mapping entries
     QByteArray name = n.toLower().toLatin1();
     QByteArray key = name;
-    if (name.right(8) == "_charset")
+    if (name.endsWith("_charset"))
        name.truncate(name.length()-8);
 
     if (name.isEmpty()) {

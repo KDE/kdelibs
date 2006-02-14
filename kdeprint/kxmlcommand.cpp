@@ -388,8 +388,8 @@ QString KXmlCommand::buildCommand(const QMap<QString,QString>& opts, bool pipein
 				QString value = dopt->valueText();
 				if ( format.find( quotedRe ) != -1 )
 				{
-					if ( ( value.right( 1 ) == "'" && value.left( 1 ) == "'" )  ||
-					     ( value.right( 1 ) == "\"" && value.left( 1 ) == "\"" ) )
+					if ( ( value.endsWith( '\'' ) && value.startsWith( '\'' ) )  ||
+					     ( value.endsWith( '\"' ) && value.startsWith( '\"' ) ) )
 						format.replace( quotedRe, value );
 					else
 						format.replace( re, value );

@@ -98,7 +98,7 @@ int main()
         def = get_entry( &tmp );
         if( file.isEmpty() || group.isEmpty())
             return 6;
-        if( group.left( 1 ) == "[" && group.right( 1 ) == "]" )
+        if( group.startsWith( '[' ) && group.endsWith( ']' ) )
             { // whole config group
             KConfig cfg( file );
             group = group.mid( 1, group.length() - 2 );

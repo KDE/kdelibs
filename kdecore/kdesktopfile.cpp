@@ -112,7 +112,7 @@ QString KDesktopFile::locateLocal(const QString &path)
 bool KDesktopFile::isDesktopFile(const QString& path)
 {
   return (path.length() > 8
-	   && path.right(8) == QLatin1String(".desktop"));
+          && path.endsWith(QLatin1String(".desktop")));
 }
 
 bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)

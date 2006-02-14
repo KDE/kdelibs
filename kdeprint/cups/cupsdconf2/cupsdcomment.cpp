@@ -54,15 +54,15 @@ bool Comment::load(QFile *f)
         while (!f->atEnd())
         {
                 f->readLine(line.data(), 1024);
-                if (line.left(2) == "$$")
+                if (line.startsWith("$$"))
                 {
                         current = &example_;
                 }
-		else if (line.left(2) == "%%")
+		else if (line.startsWith("%%"))
 		{
 			key_ = line.mid(2).trimmed();
 		}
-                else if (line.left(2) == "@@")
+                else if (line.startsWith("@@"))
                 {
                         return true;
                 }

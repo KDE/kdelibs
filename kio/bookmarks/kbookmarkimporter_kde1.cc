@@ -127,13 +127,13 @@ void KBookmarkImporter::parseBookmark( QDomElement & parentElem, const QByteArra
 
     QString url = _cfg.readPathEntry( "URL" );
     QString icon = _cfg.readEntry( "Icon" );
-    if (icon.right( 4 ) == ".xpm" ) // prevent warnings
+    if (icon.endsWith( ".xpm" ) ) // prevent warnings
         icon.truncate( icon.length() - 4 );
 
     QString text = KIO::decodeFileName( QString::fromLocal8Bit(_text) );
-    if ( text.length() > 8 && text.right( 8 ) == ".desktop" )
+    if ( text.length() > 8 && text.endsWith( ".desktop" ) )
         text.truncate( text.length() - 8 );
-    if ( text.length() > 7 && text.right( 7 ) == ".kdelnk" )
+    if ( text.length() > 7 && text.endsWith( ".kdelnk" ) )
         text.truncate( text.length() - 7 );
 
     QDomElement elem = m_pDoc->createElement( "bookmark" );

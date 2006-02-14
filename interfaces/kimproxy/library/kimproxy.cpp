@@ -282,7 +282,7 @@ void KIMProxy::registeredToDCOP( const QByteArray& appId )
 	{
 		DCOPCString dcopObjectId = "KIMIface";
 		DCOPCString dcopService = (*it)->property("X-DCOP-ServiceName").toString().latin1();
-		if ( appId.left( dcopService.length() ) == dcopService )
+		if ( appId.startsWith( dcopService ) )
 		{
 			// if it's not already known, insert it
 			if ( !m_im_client_stubs.find( appId ) )

@@ -81,7 +81,7 @@ int getServerPid()
 			QString	line;
 			t >> line;
 			f.close();
-			if (line.right(5) == "cupsd" ||
+			if (line.endsWith("cupsd") ||
 			    line.right(6).left(5) == "cupsd")	// second condition for 2.4.x kernels
 								// which add a null byte at the end
 				return dir[i].toInt();

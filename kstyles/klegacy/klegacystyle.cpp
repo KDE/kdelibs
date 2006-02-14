@@ -1572,7 +1572,7 @@ bool KLegacyStylePrivate::parseStyle() {
 	    continue;
 	}
 
-	if (next.left(5) == "base[") {
+	if (next.startsWith("base[")) {
 	    int l = next.find('['), r = next.find(']'), state;
 
 	    if (l < 1 || r < 1 || r < l) continue;
@@ -1618,7 +1618,7 @@ bool KLegacyStylePrivate::parseStyle() {
 		int Qt::blue  = (int) (255 * bi);
 		styledata->base[state].setRgb(Qt::red, Qt::green, Qt::blue);
 	    }
-	} else if (next.left(3) == "bg[") {
+	} else if (next.startsWith("bg[")) {
 	    int l = next.find('['), r = next.find(']'), state;
 
 	    if (l < 1 || r < 1 || r < l) continue;
@@ -1667,7 +1667,7 @@ bool KLegacyStylePrivate::parseStyle() {
 	} else if (next == "engine") {
 	    if (! parseEngine(styledata))
 		fprintf(stderr, "engine parse error\n");
-	} else if (next.left(3) == "fg[") {
+	} else if (next.startsWith("fg[")) {
 	    int l = next.find('['), r = next.find(']'), state;
 
 	    if (l < 1 || r < 1 || r < l) continue;

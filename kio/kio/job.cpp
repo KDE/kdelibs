@@ -2823,7 +2823,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             for( ; renamedirit != dirs.end() ; ++renamedirit )
             {
                 QString path = (*renamedirit).uDest.path();
-                if ( path.left(oldPath.length()) == oldPath ) {
+                if ( path.startsWith( oldPath ) ) {
                     QString n = path;
                     n.replace( 0, oldPath.length(), newPath );
                     kDebug(7007) << "dirs list: " << (*renamedirit).uSource.path()
@@ -2837,7 +2837,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             for( ; renamefileit != files.end() ; ++renamefileit )
             {
                 QString path = (*renamefileit).uDest.path();
-                if ( path.left(oldPath.length()) == oldPath ) {
+                if ( path.startsWith( oldPath ) ) {
                     QString n = path;
                     n.replace( 0, oldPath.length(), newPath );
                     kDebug(7007) << "files list: " << (*renamefileit).uSource.path()

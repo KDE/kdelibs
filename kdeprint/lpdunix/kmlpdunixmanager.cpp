@@ -84,7 +84,7 @@ QString readLine(KTextBuffer& t)
 		if (buffer[0] == '|' || buffer[0] == ':' || lineContinue || line.isEmpty())
 		{
 			line.append(buffer);
-			if (line.right(1) == "\\")
+			if (line.endsWith('\\'))
 			{
 				line.truncate(line.length()-1);
 				line = line.trimmed();

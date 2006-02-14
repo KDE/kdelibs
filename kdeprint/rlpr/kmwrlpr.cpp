@@ -173,7 +173,7 @@ void KMWRlpr::initialize()
 				if (line.isEmpty() || line[0] == '#')
 					continue;
 				buffer.append(line);
-				if (buffer.right(1) == "\\")
+				if (buffer.endsWith('\\'))
 					buffer = buffer.left(buffer.length()-1).trimmed();
 				else
 					break;

@@ -415,7 +415,7 @@ QString KStandardDirs::findResourceDir( const char *type,
       it != candidates.end(); ++it) {
       if (exists(*it + filename)) {
 #ifdef Q_WS_WIN //this ensures we're using installed .la files
-          if ((*it).isEmpty() && filename.right(3)==".la") {
+          if ((*it).isEmpty() && filename.endsWith(".la")) {
 #ifndef NDEBUG
               kDebug() << "KStandardDirs::findResourceDir() found .la in cwd: skipping. (fname=" << filename  << ")" << endl;
 #endif

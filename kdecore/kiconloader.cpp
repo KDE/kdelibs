@@ -424,7 +424,7 @@ QString KIconLoader::removeIconExtension(const QString &name) const
 	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
 	static const QString &svg_ext = KGlobal::staticQString(".svg");
 
-	if (name.right(5) == svgz_ext)
+	if (name.endsWith(svgz_ext))
 	    extensionLength=5;
 	else if (ext == svg_ext)
 	    extensionLength=4;

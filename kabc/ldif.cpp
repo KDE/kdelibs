@@ -147,10 +147,10 @@ bool LDIF::splitControl( const QByteArray &line, QString &oid, bool &critical,
     tmp = QString::fromUtf8( value, value.size() );
     value.resize( 0 );
   }
-  if ( tmp.right( 4 ) == "true" ) {
+  if ( tmp.endsWith( "true" ) ) {
     critical = true;
     tmp.truncate( tmp.length() - 5 );
-  } else  if ( tmp.right( 5 ) == "false" ) {
+  } else  if ( tmp.endsWith( "false" ) ) {
     critical = false;
     tmp.truncate( tmp.length() - 6 );
   }

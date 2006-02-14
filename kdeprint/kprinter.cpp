@@ -649,7 +649,7 @@ void KPrinter::setOptions(const QMap<QString,QString>& opts)
 	tmpset.remove( "kde-resolution" );
 	tmpset.remove( "kde-fonts" );
 	for (QMap<QString,QString>::ConstIterator it=tmpset.begin();it!=tmpset.end();++it)
-		if (it.key().left(4) == "kde-" && !(d->m_options.contains(it.key())))
+		if (it.key().startsWith("kde-") && !(d->m_options.contains(it.key())))
 			d->m_options[it.key()] = it.value();
 }
 

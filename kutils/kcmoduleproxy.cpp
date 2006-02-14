@@ -354,7 +354,7 @@ void KCModuleProxy::runAsRoot()
 
 	/* Prepare the process to run the kcmshell */
 	QString cmd = moduleInfo().service()->exec().trimmed();
-	if (cmd.left(5) == "kdesu")
+	if (cmd.startsWith("kdesu"))
 	{
 		cmd = cmd.remove(0,5).trimmed();
 
@@ -363,7 +363,7 @@ void KCModuleProxy::runAsRoot()
 			cmd = cmd.remove( 0, cmd.indexOf( ' ' ) ).trimmed();
 	}
 
-	if (cmd.left(8) == "kcmshell")
+	if (cmd.startsWith("kcmshell"))
 		cmd = cmd.remove(0,8).trimmed();
 
 	/* Run the process */

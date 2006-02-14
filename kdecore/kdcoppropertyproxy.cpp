@@ -313,7 +313,7 @@ bool KDCOPPropertyProxy::decodePropertyRequestInternal( const DCOPCString &fun, 
 
   propName = fun;
 
-  if ( propName.left( 3 ) == "set" )
+  if ( propName.startsWith( "set" ) )
   {
     propName.detach();
     set = true;

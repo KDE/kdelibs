@@ -64,7 +64,7 @@ void KNSBookmarkImporterImpl::parse()
                 int endTag = t.find('>', secondQuotes+1);
                 QByteArray name = t.mid(endTag+1);
                 name = name.left(name.lastIndexOf('<'));
-                if ( name.right(4) == "</A>" )
+                if ( name.endsWith("</A>" ) )
                     name = name.left( name.length() - 4 );
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
                 QByteArray additionalInfo = t.mid( secondQuotes+1, endTag-secondQuotes-1 );

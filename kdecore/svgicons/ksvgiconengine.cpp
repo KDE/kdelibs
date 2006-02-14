@@ -522,7 +522,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
     QDomDocument svgDocument("svg");
     QFile file(path);
 
-    if(path.right(3).toUpper() == "SVG")
+    if(path.endsWith("SVG", Qt::CaseInsensitive))
     {
         // Open SVG Icon
         if(!file.open(QIODevice::ReadOnly))

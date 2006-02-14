@@ -63,7 +63,7 @@ bool KLpdUnixPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 		if (!exe.isEmpty())
 		{
 			cmd = exe;
-			if (exe.right(3) == "lpr")
+			if (exe.endsWith("lpr"))
 				initLprPrint(cmd,printer);
 			else
 				initLpPrint(cmd,printer);
