@@ -23,7 +23,6 @@
 
 #include <klocale.h>
 #include <ktabctl.h>
-#include <klistview.h>
 #include <kdebug.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
@@ -37,12 +36,15 @@
 #include <knewstuff/knewstuffgeneric.h>
 #include <knewstuff/engine.h>
 
-#include <qlayout.h>
-#include <qpushbutton.h>
-#include <qdom.h>
-#include <qlabel.h>
-#include <qtimer.h> // hack
+#include <QDomDocument>
+#include <QDomElement>
+#include <QLabel>
+#include <QLayout>
+#include <QPushButton>
 #include <QTextBrowser>
+#include <QTimer> // hack
+#include <QTreeWidget>
+
 
 using namespace KNS;
 
@@ -50,45 +52,40 @@ struct DownloadDialog::Private
 {
     QString m_providerlist;
     QWidget *m_page;
-    KListView *m_lvtmp_r, *m_lvtmp_d, *m_lvtmp_l;
+    QTreeWidget *m_lvtmp_r, *m_lvtmp_d, *m_lvtmp_l;
 };
 
-class NumSortListViewItem : public KListViewItem
+class NumSortListViewItem : public QTreeWidgetItem
 {
   public:
-  NumSortListViewItem( Q3ListView * parent, QString label1, QString label2 = QString(), QString label3 = QString(), QString label4 = QString(), QString label5 = QString(), QString label6 = QString(), QString label7 = QString(), QString label8 = QString() )  :
-  KListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )
+  NumSortListViewItem( QTreeWidget * parent, const QStringList &texts )
+    : QTreeWidgetItem( parent, texts )
   {
   }
 
-  QString key(int col, bool asc) const {
-    if (col == 2)
-    {
-      QString s;
-      s.sprintf("%08d", text(col).toInt());
-      return s;
-    }
-    return KListViewItem::key( col, asc );
+  bool operator<( const QTreeWidgetItem &other ) const
+  {
+    int thisValue = text(2).toInt();
+    int otherValue = other.text(2).toInt();
+
+    return (thisValue < otherValue);
   }
 };
 
-class DateSortListViewItem : public KListViewItem
+class DateSortListViewItem : public QTreeWidgetItem
 {
   public:
-  DateSortListViewItem( Q3ListView * parent, QString label1, QString label2 = QString(), QString label3 = QString(), QString label4 = QString(), QString label5 = QString(), QString label6 = QString(), QString label7 = QString(), QString label8 = QString() )  :
-  KListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )
+  DateSortListViewItem( QTreeWidget * parent, const QStringList &texts )
+    : QTreeWidgetItem( parent, texts )
   {
   }
 
-  QString key(int col, bool asc) const {
-    if (col == 2)
-    {
-      QString s;
-      QDate date = KGlobal::locale()->readDate(text(col));
-      s.sprintf("%08d", date.year() * 366 + date.dayOfYear());
-      return s;
-    }
-    return KListViewItem::key( col, asc );
+  bool operator<( const QTreeWidgetItem &other ) const
+  {
+    QDate thisDate = KGlobal::locale()->readDate(text(2));
+    QDate otherDate = KGlobal::locale()->readDate(other.text(2));
+
+    return (thisDate < otherDate);
   }
 };
 
@@ -128,11 +125,11 @@ void DownloadDialog::load(const QString &providerList)
 
 void DownloadDialog::clear()
 {
-  QMap<QWidget*, QList<KListView*>* >::Iterator it;
-  QMap<QWidget*, QList<KListView*>* >::Iterator end(m_map.end());
+  QMap<QWidget*, QList<QTreeWidget*>* >::Iterator it;
+  QMap<QWidget*, QList<QTreeWidget*>* >::Iterator end(m_map.end());
   for(it = m_map.begin(); it != end; ++it)
   {
-    QList<KListView*> *v = it.data();
+    QList<QTreeWidget*> *v = it.value();
     kDebug() << "clear listviews in " << v << endl;
     if(v)
     {
@@ -218,29 +215,26 @@ void DownloadDialog::addProvider(Provider *p)
   connect(ctl, SIGNAL(tabSelected(int)), SLOT(slotTab(int)));
 
   QHBoxLayout *box = new QHBoxLayout(frame);
-  box->add(ctl);
+  box->addWidget(ctl);
 
-  d->m_lvtmp_r = new KListView(w_r);
-  d->m_lvtmp_r->addColumn(i18n("Name"));
-  d->m_lvtmp_r->addColumn(i18n("Version"));
-  d->m_lvtmp_r->addColumn(i18n("Rating"));
-  d->m_lvtmp_r->setSorting(2, false);
+  QStringList headerLabels;
+  d->m_lvtmp_r = new QTreeWidget(w_r);
+  headerLabels << i18n("Name") << i18n("Version") << i18n("Rating");
+  d->m_lvtmp_r->setHeaderLabels( headerLabels );
 
-  d->m_lvtmp_d = new KListView(w_d);
-  d->m_lvtmp_d->addColumn(i18n("Name"));
-  d->m_lvtmp_d->addColumn(i18n("Version"));
-  d->m_lvtmp_d->addColumn(i18n("Downloads"));
-  d->m_lvtmp_d->setSorting(2, false);
+  d->m_lvtmp_d = new QTreeWidget(w_d);
+  headerLabels.clear();
+  headerLabels << i18n("Name") << i18n("Version") << i18n("Downloads");
+  d->m_lvtmp_d->setHeaderLabels( headerLabels );
 
-  d->m_lvtmp_l = new KListView(w_l);
-  d->m_lvtmp_l->addColumn(i18n("Name"));
-  d->m_lvtmp_l->addColumn(i18n("Version"));
-  d->m_lvtmp_l->addColumn(i18n("Release Date"));
-  d->m_lvtmp_l->setSorting(2, false);
+  d->m_lvtmp_l = new QTreeWidget(w_l);
+  headerLabels.clear();
+  headerLabels << i18n("Name") << i18n("Version") << i18n("Release Date");
+  d->m_lvtmp_l->setHeaderLabels( headerLabels );
 
-  connect(d->m_lvtmp_r, SIGNAL(selectionChanged()), SLOT(slotSelected()));
-  connect(d->m_lvtmp_d, SIGNAL(selectionChanged()), SLOT(slotSelected()));
-  connect(d->m_lvtmp_l, SIGNAL(selectionChanged()), SLOT(slotSelected()));
+  connect(d->m_lvtmp_r, SIGNAL(itemSelectionChanged()), SLOT(slotSelected()));
+  connect(d->m_lvtmp_d, SIGNAL(itemSelectionChanged()), SLOT(slotSelected()));
+  connect(d->m_lvtmp_l, SIGNAL(itemSelectionChanged()), SLOT(slotSelected()));
 
   rt = new QTextBrowser(frame);
   rt->setMinimumWidth(150);
@@ -251,28 +245,33 @@ void DownloadDialog::addProvider(Provider *p)
   de->setEnabled(false);
 
   box->addSpacing(spacingHint());
-  QVBoxLayout *vbox = new QVBoxLayout(box);
-  vbox->add(rt);
+  QVBoxLayout *vbox = new QVBoxLayout();
+  vbox->addWidget(rt);
   vbox->addSpacing(spacingHint());
-  vbox->add(de);
-  vbox->add(in);
+  vbox->addWidget(de);
+  vbox->addWidget(in);
+
+  box->addLayout(vbox);
 
   connect(in, SIGNAL(clicked()), SLOT(slotInstall()));
   connect(de, SIGNAL(clicked()), SLOT(slotDetails()));
 
   QVBoxLayout *box2 = new QVBoxLayout(w_r);
-  box2->add(d->m_lvtmp_r);
+  box2->addWidget(d->m_lvtmp_r);
   QVBoxLayout *box3 = new QVBoxLayout(w_d);
-  box3->add(d->m_lvtmp_d);
+  box3->addWidget(d->m_lvtmp_d);
   QVBoxLayout *box4 = new QVBoxLayout(w_l);
-  box4->add(d->m_lvtmp_l);
+  box4->addWidget(d->m_lvtmp_l);
 
-  QList<KListView*> *v = new QList<KListView*>;
-  *v << d->m_lvtmp_r << d->m_lvtmp_d << d->m_lvtmp_l;
+  QList<QTreeWidget*> *v = new QList<QTreeWidget*>;
+  v->append(d->m_lvtmp_r);
+  v->append(d->m_lvtmp_d);
+  v->append(d->m_lvtmp_l);
   m_map[frame] = v;
   m_rts[frame] = rt;
   QList<QPushButton*> *vb = new QList<QPushButton*>;
-  *vb << in << de;
+  vb->append(in);
+  vb->append(de);
   m_buttons[frame] = vb;
   m_providers[frame] = p;
 
@@ -360,16 +359,22 @@ void DownloadDialog::addEntry(Entry *entry)
   else if(installed < 0) pix = KGlobal::iconLoader()->loadIcon("history", KIcon::Small);
   else pix = QPixmap();
 
-  KListViewItem *tmp_r = new NumSortListViewItem(lv_r,
-    entry->name(), entry->version(), QString("%1").arg(entry->rating()));
-  KListViewItem *tmp_d = new NumSortListViewItem(lv_d,
-    entry->name(), entry->version(), QString("%1").arg(entry->downloads()));
-  KListViewItem *tmp_l = new DateSortListViewItem(lv_l,
-    entry->name(), entry->version(), KGlobal::locale()->formatDate(entry->releaseDate()));
+  QStringList texts;
 
-  tmp_r->setPixmap(0, pix);
-  tmp_d->setPixmap(0, pix);
-  tmp_l->setPixmap(0, pix);
+  texts << entry->name() << entry->version() << QString("%1").arg(entry->rating());
+  QTreeWidgetItem *tmp_r = new NumSortListViewItem(lv_r, texts );
+
+  texts.clear();
+  texts << entry->name() << entry->version() << QString("%1").arg(entry->downloads());
+  QTreeWidgetItem *tmp_d = new NumSortListViewItem(lv_d, texts);
+
+  texts.clear();
+  texts << entry->name() << entry->version() << KGlobal::locale()->formatDate(entry->releaseDate());
+  QTreeWidgetItem *tmp_l = new DateSortListViewItem(lv_l, texts);
+
+  tmp_r->setIcon(0, pix);
+  tmp_d->setIcon(0, pix);
+  tmp_l->setIcon(0, pix);
 
   m_entries.append(entry);
 
@@ -421,7 +426,7 @@ void DownloadDialog::slotDetails()
   KMessageBox::information(this, info, i18n("Details"));
 }
 
-Q3ListViewItem *DownloadDialog::currentEntryItem()
+QTreeWidgetItem *DownloadDialog::currentEntryItem()
 {
   switch(m_curtab)
   {
@@ -474,7 +479,7 @@ void DownloadDialog::install(Entry *e)
   QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
 
   if(m_entryitem)
-    m_entryitem->setPixmap(0, pix);
+    m_entryitem->setIcon(0, pix);
 
   if(currentEntryItem() == m_entryitem)
   {
@@ -529,13 +534,13 @@ void DownloadDialog::slotSelected()
   {
     if(!e->preview(lang).isValid())
     {
-      m_rt->setText(QString("<b>%1</b><br>%2<br>%3<br><br><i>%4</i><br>(%5)").arg(
+      m_rt->setHtml(QString("<b>%1</b><br>%2<br>%3<br><br><i>%4</i><br>(%5)").arg(
         e->name()).arg(e->author()).arg(KGlobal::locale()->formatDate(e->releaseDate())).arg(e->summary(lang)).arg(e->license()));
     }
     else
     {
       KIO::NetAccess::download(e->preview(lang), tmp, this);
-      m_rt->setText(QString("<b>%1</b><br>%2<br>%3<br><br><img src='%4'><br><i>%5</i><br>(%6)").arg(
+      m_rt->setHtml(QString("<b>%1</b><br>%2<br>%3<br><br><img src='%4'><br><i>%5</i><br>(%6)").arg(
         e->name()).arg(e->author()).arg(KGlobal::locale()->formatDate(e->releaseDate())).arg(tmp).arg(e->summary(lang)).arg(e->license()));
     }
 

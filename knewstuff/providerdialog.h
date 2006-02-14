@@ -22,7 +22,7 @@
 
 #include <kdialogbase.h>
 
-class KListView;
+class QTreeWidget;
 
 namespace KNS {
 
@@ -68,7 +68,7 @@ class ProviderDialog : public KDialogBase
   private:
     Engine *mEngine;
 
-    KListView *mListView;
+    QTreeWidget *mListWidget;
 };
 
 }

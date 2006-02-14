@@ -26,7 +26,6 @@
 #include <qstring.h>
 #include <ktextedit.h>
 
-#include <klistview.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kurlrequester.h>
@@ -71,23 +70,23 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
   QLabel *releaseLabel = new QLabel( i18n("Release:"), topPage );
   topLayout->addWidget( releaseLabel, 3, 0 );  
   mReleaseSpin = new QSpinBox( topPage );
-  mReleaseSpin->setMinValue( 1 );
+  mReleaseSpin->setMinimum( 1 );
   topLayout->addWidget( mReleaseSpin, 3, 1 );
 
   QLabel *licenceLabel = new QLabel( i18n("License:"), topPage );
   topLayout->addWidget( licenceLabel, 4, 0 );
   mLicenceCombo = new QComboBox( topPage );
   mLicenceCombo->setEditable( true );
-  mLicenceCombo->insertItem( i18n("GPL") );
-  mLicenceCombo->insertItem( i18n("LGPL") );
-  mLicenceCombo->insertItem( i18n("BSD") );
+  mLicenceCombo->addItem( i18n("GPL") );
+  mLicenceCombo->addItem( i18n("LGPL") );
+  mLicenceCombo->addItem( i18n("BSD") );
   topLayout->addWidget( mLicenceCombo, 4, 1 );
 
   QLabel *languageLabel = new QLabel( i18n("Language:"), topPage );
   topLayout->addWidget( languageLabel, 5, 0 );
   mLanguageCombo = new QComboBox( topPage );
   topLayout->addWidget( mLanguageCombo, 5, 1 );
-  mLanguageCombo->insertStringList( KGlobal::locale()->languageList() );
+  mLanguageCombo->addItems( KGlobal::locale()->languageList() );
 
   QLabel *previewLabel = new QLabel( i18n("Preview URL:"), topPage );
   topLayout->addWidget( previewLabel, 6, 0 );
@@ -95,9 +94,9 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
   topLayout->addWidget( mPreviewUrl, 6, 1 );
 
   QLabel *summaryLabel = new QLabel( i18n("Summary:"), topPage );
-  topLayout->addMultiCellWidget( summaryLabel, 7, 7, 0, 1 );
+  topLayout->addWidget( summaryLabel, 7, 7, 0, 1 );
   mSummaryEdit = new KTextEdit( topPage );
-  topLayout->addMultiCellWidget( mSummaryEdit, 8, 8, 0, 1 );
+  topLayout->addWidget( mSummaryEdit, 8, 8, 0, 1 );
 
   KUser user;
   mAuthorEdit->setText(user.fullName());
@@ -126,7 +125,7 @@ void UploadDialog::slotOk()
   entry->setRelease( mReleaseSpin->value() );
   entry->setLicence( mLicenceCombo->currentText() );
   entry->setPreview( KUrl( mPreviewUrl->url().section("/", -1) ), mLanguageCombo->currentText() );
-  entry->setSummary( mSummaryEdit->text(), mLanguageCombo->currentText() );
+  entry->setSummary( mSummaryEdit->toPlainText(), mLanguageCombo->currentText() );
 
   if ( mPayloadUrl.isValid() ) {
     KConfigGroup cg(KGlobal::config(), QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()));
@@ -136,7 +135,7 @@ void UploadDialog::slotOk()
     cg.writeEntry("release", mReleaseSpin->value());
     cg.writeEntry("licence", mLicenceCombo->currentText());
     cg.writeEntry("preview", mPreviewUrl->url());
-    cg.writeEntry("summary", mSummaryEdit->text());
+    cg.writeEntry("summary", mSummaryEdit->toPlainText());
     cg.writeEntry("language", mLanguageCombo->currentText());
     KGlobal::config()->sync();
   }
@@ -175,9 +174,9 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
       mVersionEdit->setText(version);
       mReleaseSpin->setValue(release.toInt());
       mPreviewUrl->setURL(preview);
-      mSummaryEdit->setText(summary);
-      if(!lang.isEmpty()) mLanguageCombo->setCurrentText(lang);
-      if(!licence.isEmpty()) mLicenceCombo->setCurrentText(licence);
+      mSummaryEdit->setPlainText(summary);
+      if(!lang.isEmpty()) mLanguageCombo->setCurrentIndex(mLanguageCombo->findText(lang));
+      if(!licence.isEmpty()) mLicenceCombo->setCurrentIndex(mLicenceCombo->findText(licence));
     }
   }
 }

@@ -30,10 +30,10 @@ namespace KIO
   class Job;
 }
 
-class KListView;
-class QTextBrowser;
 class QFrame;
-class Q3ListViewItem;
+class QTreeWidget;
+class QTreeWidgetItem;
+class QTextBrowser;
 template<typename T> class QList;
 
 class KNewStuffGeneric;
@@ -168,19 +168,19 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
     void loadProvider(Provider *p);
     void install(Entry *e);
     int installStatus(Entry *e);
-    Q3ListViewItem *currentEntryItem();
+    QTreeWidgetItem *currentEntryItem();
 
     ProviderLoader *m_loader;
     QString m_entryname;
-    KListView *lv_r, *lv_d, *lv_l;
+    QTreeWidget *lv_r, *lv_d, *lv_l;
     QTextBrowser *m_rt;
     QFrame *m_frame;
-    Q3ListViewItem *m_entryitem;
+    QTreeWidgetItem *m_entryitem;
     QList<Entry*> m_entries;
     Entry *m_entry;
     KNewStuffGeneric *m_s;
     int m_curtab;
-    QMap<QWidget*, QList<KListView*>* > m_map;
+    QMap<QWidget*, QList<QTreeWidget*>* > m_map;
     QMap<QWidget*, Provider*> m_providers;
     QMap<QWidget*, QTextBrowser*> m_rts;
     QMap<QWidget*, QList<QPushButton*>* > m_buttons;

@@ -18,11 +18,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qlayout.h>
-#include <qstring.h>
-#include <qlabel.h>
+#include <QLabel>
+#include <QLayout>
+#include <QTreeWidget>
+#include <QString>
 
-#include <klistview.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 
@@ -34,11 +34,11 @@
 
 using namespace KNS;
 
-class ProviderItem : public KListViewItem
+class ProviderItem : public QTreeWidgetItem
 {
   public:
-    ProviderItem( KListView *parent, Provider *provider ) :
-      KListViewItem( parent ), mProvider( provider )
+    ProviderItem( QTreeWidget *parent, Provider *provider ) :
+      QTreeWidgetItem( parent ), mProvider( provider )
     {
       setText( 0, provider->name() );
     }
@@ -61,29 +61,32 @@ ProviderDialog::ProviderDialog( Engine *engine, QWidget *parent ) :
   QLabel *description = new QLabel( i18n("Please select one of the providers listed below:"), topPage );
   topLayout->addWidget( description );
 
-  mListView = new KListView( topPage );
-  mListView->addColumn( i18n("Name") );
-  topLayout->addWidget( mListView );
+  mListWidget = new QTreeWidget( topPage );
+  mListWidget->setHeaderLabels( QStringList( i18n("Name") ) );
+  topLayout->addWidget( mListWidget );
 }
 
 void ProviderDialog::clear()
 {
-  mListView->clear();
+  mListWidget->clear();
 }
 
 void ProviderDialog::addProvider( Provider *provider )
 {
-  new ProviderItem( mListView, provider );
-  if ( mListView->childCount() == 1 ) {
-    mListView->setSelected(mListView->firstChild(), true);
-  } else if (mListView->childCount() > 1) {
-    mListView->setSelected(mListView->firstChild(), false);
+  new ProviderItem( mListWidget, provider );
+  if ( mListWidget->model()->rowCount() == 1 ) {
+    QModelIndex index = mListWidget->model()->index( 0, 0 );
+    mListWidget->selectionModel()->setCurrentIndex( index, QItemSelectionModel::Select );
+  } else if (mListWidget->model()->rowCount() > 1) {
+    QModelIndex index = mListWidget->model()->index( 0, 0 );
+    mListWidget->selectionModel()->setCurrentIndex( index, QItemSelectionModel::Deselect );
   }
 }
 
 void ProviderDialog::slotOk()
 {
-  ProviderItem *item = static_cast<ProviderItem *>( mListView->selectedItem() );
+  QList<QTreeWidgetItem*> items = mListWidget->selectedItems();
+  ProviderItem *item = static_cast<ProviderItem *>( items.first() );
   if ( !item ) {
     KMessageBox::error( this, i18n("No provider selected.") );
     return;
