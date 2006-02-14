@@ -40,5 +40,6 @@
 <!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
 <!ENTITY Shift "<keycap>Mayúsculas</keycap>">
 <!ENTITY Tab  "<keycap>Tab</keycap>">
+<!ENTITY the.framework "la estructura de Bluetooth para KDE">
 <!ENTITY TODO "Pendiente">
 <!ENTITY X-Windows      "Sistema de ventanas X">
