@@ -79,7 +79,7 @@ int main(int argc, char **argv)
     for (QMap<QString, QString>::Iterator  i = themes.begin(); i!=themes.end(); ++i)
     {
         cache.setGroup(i.key().toLower());
-        cache.writePathEntry("file",QFileInfo(i.data()).fileName());
+        cache.writePathEntry("file",QFileInfo(i.value()).fileName());
         themeNames.push_back(i.key());
     }
 
