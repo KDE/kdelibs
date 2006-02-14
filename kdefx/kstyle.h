@@ -133,6 +133,8 @@ protected:
             role = QPalette::ColorRole(encoded & (~BWAutoContrastMode));
         }
 
+	///Return the color corresponding to our role from the palette,
+	///automatically compensating for the contrast mode.
         QColor color(const QPalette& palette)
         {
             QColor palColor = palette.color(role);
@@ -209,6 +211,7 @@ protected:
     */
     struct KDEFX_EXPORT ColorOption: public OptionBase<ColorOption, Option>
     {
+        /** Color to use for the drawing. Public, modifiable. */
         ColorMode color;
 
         ColorOption(): color(QPalette::ButtonText)
@@ -442,9 +445,10 @@ protected:
     */
     struct DockWidgetTitle
     {
+        /** Enumerate the layout properties in the expected way. */
         enum LayoutProp
         {
-            Margin //Margin for the title: note that this is a symmetric margin always!
+            Margin ///<Margin for the title: note that this is a symmetric margin always!
         };
     };
     
@@ -453,14 +457,15 @@ protected:
     */
     struct ProgressBar
     {
+	/** Layour properties for the progress bar. */
         enum LayoutProp
         {
-            GrooveMargin,        //Margin to allocate for the groove. Content area will be inside of it.
-            SideText = GrooveMargin + MarginInc, //Set this to true to have the text positionned to the side
-            SideTextSpace,       //Extra space besides that needed for text to allocate to side indicator (on both sides)
-            Precision,           //The indicator size will always be a multiple of this (modulo busy indicator size clamping)
-            BusyIndicatorSize,   //The busy indicator size, in percent of area size
-            MaxBusyIndicatorSize //Size limit on the busy indicator size;
+            GrooveMargin,        ///<Margin to allocate for the groove. Content area will be inside of it.
+            SideText = GrooveMargin + MarginInc, ///<Set this to true to have the text positionned to the side
+            SideTextSpace,       ///<Extra space besides that needed for text to allocate to side indicator (on both sides)
+            Precision,           ///<The indicator size will always be a multiple of this (modulo busy indicator size clamping)
+            BusyIndicatorSize,   ///<The busy indicator size, in percent of area size
+            MaxBusyIndicatorSize ///<Size limit on the busy indicator size;
             
         };
     
