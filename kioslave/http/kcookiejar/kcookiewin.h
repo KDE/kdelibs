@@ -26,7 +26,7 @@
 #ifndef _KCOOKIEWIN_H_
 #define _KCOOKIEWIN_H_
 
-#include <q3groupbox.h>
+#include <qgroupbox.h>
 
 #include <kdialog.h>
 #include "kcookiejar.h"
@@ -35,13 +35,12 @@ class KLineEdit;
 class QPushButton;
 class Q3VButtonGroup;
 
-class KCookieDetail : public Q3GroupBox
+class KCookieDetail : public QGroupBox
 {
     Q_OBJECT
 
 public :
-    KCookieDetail( KHttpCookieList cookieList, int cookieCount, QWidget *parent=0,
-                   const char *name=0 );
+    KCookieDetail( KHttpCookieList cookieList, int cookieCount, QWidget *parent=0 );
     ~KCookieDetail();
 
 private :

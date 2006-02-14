@@ -38,15 +38,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiewin.h"
 
 
-#include <q3accel.h>
 #include <qlabel.h>
 #include <qwidget.h>
 #include <qlayout.h>
-#include <q3groupbox.h>
+#include <qgroupbox.h>
 #include <qdatetime.h>
 #include <qmessagebox.h>
 #include <qpushbutton.h>
 #include <qradiobutton.h>
+#include <qshortcut.h>
 #include <Q3VButtonGroup>
 
 #ifndef QT_NO_TOOLTIP
@@ -80,7 +80,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 	setObjectName("cookiealert");
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
-    setIcon( SmallIcon("cookie") );
+    setWindowIcon( SmallIcon("cookie") );
     // all cookies in the list should have the same window at this time, so let's take the first
 # ifdef Q_WS_X11
     if( cookieList.first()->windowIds().count() > 0 )
@@ -96,8 +96,10 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 # endif
 #endif
     // Main widget's layout manager...
-    QVBoxLayout* vlayout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
-    vlayout->setResizeMode( QLayout::Fixed );
+    QVBoxLayout* vlayout = new QVBoxLayout( this );
+    vlayout->setMargin( KDialog::marginHint() );
+    vlayout->setSpacing( KDialog::spacingHint() );
+    vlayout->setSizeConstraint( QLayout::Fixed );
 
     // Cookie image and message to user
     KHBox* hBox = new KHBox( this );
@@ -117,7 +119,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     KHttpCookiePtr cookie = cookieList.first();
 
     QString host (cookie->host());
-    int pos = host.find(':');
+    int pos = host.indexOf(':');
     if ( pos > 0 )
     {
       QString portNum = host.left(pos);
@@ -190,10 +192,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     connect( btn, SIGNAL(clicked()), SLOT(reject()) );
     bbLay->addWidget( btn );
     bbLay->addStretch( 1 );
-#ifndef QT_NO_ACCEL
-    Q3Accel* a = new Q3Accel( this );
-    a->connectItem( a->insertItem(Qt::Key_Escape), btn, SLOT(animateClick()) );
-#endif
+    QShortcut( Qt::Key_Escape, btn, SLOT(animateClick()) );
 
     m_button = new QPushButton( bbox );
     m_button->setText( m_showDetails ? i18n("&Details <<"):i18n("&Details >>") );
@@ -259,15 +258,15 @@ KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )
 }
 
 KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
-                              QWidget* parent, const char* name )
-              :Q3GroupBox( parent, name )
+                              QWidget* parent )
+              :QGroupBox( parent )
 {
     setTitle( i18n("Cookie Details") );
-    QGridLayout* grid = new QGridLayout( this, 9, 2,
-                                         KDialog::spacingHint(),
-                                         KDialog::marginHint() );
-    grid->addRowSpacing( 0, fontMetrics().lineSpacing() );
-    grid->setColStretch( 1, 3 );
+    QGridLayout* grid = new QGridLayout( this );
+    grid->setMargin( KDialog::marginHint() );
+    grid->setSpacing( KDialog::spacingHint() );
+    grid->addItem( new QSpacerItem(0, fontMetrics().lineSpacing()), 0, 0 );
+    grid->setColumnStretch( 1, 3 );
 
     QLabel* label = new QLabel( i18n("Name:"), this );
     grid->addWidget( label, 1, 0 );
@@ -316,7 +315,7 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
     {
         QPushButton* btnNext = new QPushButton( i18n("Next cookie","&Next >>"), this );
         btnNext->setFixedSize( btnNext->sizeHint() );
-        grid->addMultiCellWidget( btnNext, 8, 8, 0, 1 );
+        grid->addWidget( btnNext, 8, 0, 1, 2 );
         connect( btnNext, SIGNAL(clicked()), SLOT(slotNextCookie()) );
 #ifndef QT_NO_TOOLTIP
         btnNext->setToolTip(i18n("Show details of the next cookie") );

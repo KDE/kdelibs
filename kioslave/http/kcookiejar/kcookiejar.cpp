@@ -55,9 +55,6 @@
 //#include <arpa/inet.h>
 
 #include <qstring.h>
-#include <q3strlist.h>
-#include <q3ptrlist.h>
-#include <q3ptrdict.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <qregexp.h>
@@ -88,9 +85,6 @@
 
 // L1 is used to indicate latin1 constants
 #define L1(x) QString::fromLatin1(x)
-
-template class Q3PtrList<KHttpCookie>;
-template class Q3PtrDict<KHttpCookieList>;
 
 QString KCookieJar::adviceToStr(KCookieAdvice _advice)
 {
@@ -299,7 +293,7 @@ static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePt
                 it != cookie->windowIds().end(); ++it)
             {
                long windowId = *it;
-               if (windowId && (cookiePtr->windowIds().find(windowId) == cookiePtr->windowIds().end()))
+               if (windowId && (cookiePtr->windowIds().indexOf(windowId) == -1))
                {
                   cookiePtr->windowIds().append(windowId);
                }
@@ -335,8 +329,8 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     if (!parseURL(_url, fqdn, path))
         return cookieStr;
 
-    bool secureRequest = (_url.find( L1("https://"), 0, false) == 0 ||
-                          _url.find( L1("webdavs://"), 0, false) == 0);
+    bool secureRequest = _url.startsWith( L1("https://"), Qt::CaseInsensitive ) ||
+                         _url.startsWith( L1("webdavs://"), Qt::CaseInsensitive );
 
     extractDomains(fqdn, domains);
 
@@ -398,7 +392,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
              continue;
           }
 
-          if (windowId && (cookie->windowIds().find(windowId) == cookie->windowIds().end()))
+          if (windowId && (cookie->windowIds().indexOf(windowId) == -1))
           {
              cookie->windowIds().append(windowId);
           }
@@ -591,7 +585,7 @@ bool KCookieJar::parseURL(const QString &_url,
     // Cookie spoofing protection.  Since there is no way a path separator
     // or escape encoded character is allowed in the hostname according
     // to RFC 2396, reject attempts to include such things there!
-    if(_fqdn.find('/') > -1 || _fqdn.find('%') > -1)
+    if(_fqdn.contains('/') || _fqdn.contains('%'))
     {
         return false;  // deny everything!!
     }
@@ -602,7 +596,7 @@ bool KCookieJar::parseURL(const QString &_url,
 
     QRegExp exp(L1("[\\\\/]\\.\\.[\\\\/]"));
     // Weird path, cookie stealing attempt?
-    if (exp.search(_path) != -1)
+    if (exp.indexIn(_path) != -1)
        return false; // Deny everything!!
 
     return true;
@@ -623,7 +617,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
        bool allNumeric = true;
        for(int i = _fqdn.length(); i--;)
        {
-          if (!strchr("0123456789:.", _fqdn[i].latin1()))
+          if (!strchr("0123456789:.", _fqdn[i].toLatin1()))
           {
              allNumeric = false;
              break;
@@ -636,10 +630,10 @@ void KCookieJar::extractDomains(const QString &_fqdn,
        }
     }
 
-    QStringList partList = QStringList::split('.', _fqdn, false);
+    QStringList partList = _fqdn.split('.', QString::SkipEmptyParts);
 
     if (partList.count())
-        partList.remove(partList.begin()); // Remove hostname
+        partList.erase(partList.begin()); // Remove hostname
 
     while(partList.count())
     {
@@ -670,7 +664,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
        QString domain = partList.join(L1("."));
        _domains.append(domain);
        _domains.append('.' + domain);
-       partList.remove(partList.begin()); // Remove part
+       partList.erase(partList.begin()); // Remove part
     }
 
     // Always add the FQDN at the start of the list for
@@ -1033,7 +1027,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
           if (cookieList)
              advice = cookieList->getAdvice();
        }
-       domains.remove(it);
+       domains.erase(it);
        it = domains.begin(); // Continue from begin of remaining list
     }
 
@@ -1087,7 +1081,7 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
         {
             // This deletes cookieList!
             m_cookieDomains.remove(domain);
-            m_domainList.remove(domain);
+            m_domainList.removeAll(domain);
         }
     }
     else
@@ -1175,7 +1169,7 @@ void KCookieJar::eatCookie(KHttpCookiePtr cookiePtr)
             // This deletes cookieList!
             m_cookieDomains.remove(domain);
 
-            m_domainList.remove(domain);
+            m_domainList.removeAll(domain);
         }
     }
 }
@@ -1190,7 +1184,7 @@ void KCookieJar::eatCookiesForDomain(const QString &domain)
    {
        // This deletes cookieList!
        m_cookieDomains.remove(domain);
-       m_domainList.remove(domain);
+       m_domainList.removeAll(domain);
    }
    m_cookiesChanged = true;
 }
@@ -1241,7 +1235,7 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
             }
 
             QList<long> &ids = cookie->windowIds();
-            if (!ids.remove(windowId) || !ids.isEmpty())
+            if (!ids.removeAll(windowId) || !ids.isEmpty())
             {
                cookie = cookieList->next();
                continue;
@@ -1307,13 +1301,13 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 domain += cookie->domain();
                 domain += '"';
                 fprintf(fStream, "%-20s %-20s %-12s %10lu  %3d %-20s %-4i %s\n",
-                        cookie->host().latin1(), domain.latin1(),
-                        path.latin1(), (unsigned long) cookie->expireDate(),
+                        cookie->host().toLatin1().constData(), domain.toLatin1().constData(),
+                        path.toLatin1().constData(), (unsigned long) cookie->expireDate(),
                         cookie->protocolVersion(),
-                        cookie->name().isEmpty() ? cookie->value().latin1() : cookie->name().latin1(),
+                        cookie->name().isEmpty() ? cookie->value().toLatin1().constData() : cookie->name().toLatin1().constData(),
                         (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0) + 
                         (cookie->hasExplicitPath() ? 4 : 0) + (cookie->name().isEmpty() ? 8 : 0),
-                        cookie->value().latin1());
+                        cookie->value().toLatin1().constData());
                 cookie = cookieList->prev();
             }
             else
