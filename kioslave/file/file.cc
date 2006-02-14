@@ -71,7 +71,6 @@
 #include <ktempfile.h>
 #include <klocale.h>
 #include <qfile.h>
-#include <q3strlist.h>
 #include "file.h"
 #include <limits.h>
 #include <kprocess.h>
@@ -1105,7 +1104,7 @@ void FileProtocol::listDir( const KUrl& url)
     // Don't make this a QStringList. The locale file name we get here
     // should be passed intact to createUDSEntry to avoid problems with
     // files where QFile::encodeName(QFile::decodeName(a)) != a.
-    Q3StrList entryNames;
+    QList<QByteArray> entryNames;
 
     while ( ( ep = KDE_readdir( dp ) ) != 0L )
 	entryNames.append( ep->d_name );
@@ -1131,8 +1130,9 @@ void FileProtocol::listDir( const KUrl& url)
     }
 
     UDSEntry entry;
-    Q3StrListIterator it(entryNames);
-    for (; it.current(); ++it) {
+    QList<QByteArray>::ConstIterator it = entryNames.constBegin();
+    QList<QByteArray>::ConstIterator end = entryNames.constEnd();
+    for (; it != end; ++it) {
         entry.clear();
         if ( createUDSEntry( QFile::decodeName(*it),
                              *it /* we can use the filename as relative path*/,
