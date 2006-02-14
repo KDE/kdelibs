@@ -33,7 +33,7 @@ KSSLX509Map::~KSSLX509Map() {
 
 
 void KSSLX509Map::setValue(const QString& key, const QString& value) {
-	m_pairs.replace(key, value);
+	m_pairs.insert(key, value);
 }
 
 
@@ -63,7 +63,7 @@ unsigned int length = str.length();
 	for(head = 0, tail = 0; tail < length-1; head = tail+1) {
 		QString thisline;
 
-		tail = str.find(tok, head);
+		tail = str.indexOf(tok, head);
 
 		if (tail > length)           // last token - none at end
 			tail = length;
@@ -89,7 +89,7 @@ QStringList vl = tokenizeBy(name, QRegExp("/[A-Za-z]+="), false);
 			QString oldValue = m_pairs[apair[0]];
 			oldValue += "\n";
 			oldValue += apair[1];
-			m_pairs.replace(apair[0], oldValue);
+			m_pairs.insert(apair[0], oldValue);
 		} else {
 			m_pairs.insert(apair[0], apair[1]);
 		}
