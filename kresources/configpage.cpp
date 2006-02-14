@@ -164,7 +164,7 @@ ConfigPage::~ConfigPage()
     (*it)->mManager->removeObserver( this );
   }
 
-  mConfig->writeEntry( "CurrentFamily", mFamilyCombo->currentItem() );
+  mConfig->writeEntry( "CurrentFamily", mFamilyCombo->currentIndex() );
   delete mConfig;
   mConfig = 0;
 }
@@ -196,7 +196,7 @@ void ConfigPage::load()
     familyDisplayNames.append( displayName );
     QString family = (*m_it)->property( "X-KDE-ResourceFamily" ).toString();
     if ( !family.isEmpty() ) {
-      compatFamilyNames.remove( family );
+      compatFamilyNames.removeAll( family );
       mFamilyMap.append( family );
       loadManager( family );
     }
@@ -306,7 +306,7 @@ void ConfigPage::slotAdd()
   if ( !ok )
     return;
 
-  QString type = types[ descs.findIndex( desc ) ];
+  QString type = types[ descs.indexOf( desc ) ];
 
   // Create new resource
   Resource *resource = mCurrentManager->createResource( type );

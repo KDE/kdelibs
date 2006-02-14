@@ -83,7 +83,7 @@ ConfigWidget *Factory::configWidget( const QString& type, QWidget *parent )
     return 0;
 
   KService::Ptr ptr = mTypeMap[ type ];
-  KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
+  KLibFactory *factory = KLibLoader::self()->factory( ptr->library().toLatin1() );
   if ( !factory ) {
     kDebug(5650) << "KRES::Factory::configWidget(): Factory creation failed "
                   << KLibLoader::self()->lastErrorMessage() << endl;
@@ -135,7 +135,7 @@ Resource *Factory::resource( const QString& type, const KConfig *config )
   }
 
   KService::Ptr ptr = mTypeMap[ type ];
-  KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
+  KLibFactory *factory = KLibLoader::self()->factory( ptr->library().toLatin1() );
   if ( !factory ) {
     kDebug(5650) << "KRES::Factory::resource(): Factory creation failed "
                   << KLibLoader::self()->lastErrorMessage() << endl;

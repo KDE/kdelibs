@@ -185,7 +185,7 @@ void ManagerImpl::remove( Resource *resource )
   if ( mStandard == resource ) mStandard = 0;
   removeResource( resource );
 
-  mResources.remove( resource );
+  mResources.removeAll( resource );
 
   signalKResourceDeleted( mId, resource->identifier() );
 
@@ -276,7 +276,7 @@ void ManagerImpl::dcopKResourceDeleted( QString managerId, QString resourceId )
     // Now delete item
     if ( mStandard == resource )
       mStandard = 0;
-    mResources.remove( resource );
+    mResources.removeAll( resource );
   } else
     kError() << "Received DCOP: resource deleted for unknown resource "
               << resourceId << endl;
@@ -378,7 +378,7 @@ void ManagerImpl::writeResourceConfig( Resource *resource, bool checkActive )
     QStringList passiveKeys = mConfig->readEntry( "PassiveResourceKeys", QStringList() );
     if ( resource->isActive() ) {
       if ( passiveKeys.contains( key ) ) { // remove it from passive list
-        passiveKeys.remove( key );
+        passiveKeys.removeAll( key );
         mConfig->writeEntry( "PassiveResourceKeys", passiveKeys );
       }
       if ( !activeKeys.contains( key ) ) { // add it to active list
@@ -387,7 +387,7 @@ void ManagerImpl::writeResourceConfig( Resource *resource, bool checkActive )
       }
     } else if ( !resource->isActive() ) {
       if ( activeKeys.contains( key ) ) { // remove it from active list
-        activeKeys.remove( key );
+        activeKeys.removeAll( key );
         mConfig->writeEntry( "ResourceKeys", activeKeys );
       }
       if ( !passiveKeys.contains( key ) ) { // add it to passive list
@@ -409,11 +409,11 @@ void ManagerImpl::removeResource( Resource *resource )
   mConfig->setGroup( "General" );
   QStringList activeKeys = mConfig->readEntry( "ResourceKeys", QStringList() );
   if ( activeKeys.contains( key ) ) {
-    activeKeys.remove( key );
+    activeKeys.removeAll( key );
     mConfig->writeEntry( "ResourceKeys", activeKeys );
   } else {
     QStringList passiveKeys = mConfig->readEntry( "PassiveResourceKeys", QStringList() );
-    passiveKeys.remove( key );
+    passiveKeys.removeAll( key );
     mConfig->writeEntry( "PassiveResourceKeys", passiveKeys );
   }
 
