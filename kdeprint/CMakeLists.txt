@@ -21,6 +21,10 @@ if(CUPS_FOUND)
    add_subdirectory(cups)
 endif(CUPS_FOUND)
 
+if(ZLIB_FOUND)
+   include_directories(${ZLIB_INCLUDE_DIR})
+endif(ZLIB_FOUND)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kded ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
