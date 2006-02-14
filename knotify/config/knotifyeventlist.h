@@ -21,19 +21,19 @@
 #define KNOTIFYEVENTLIST_H
 
 #include "knotifyconfigelement.h"
-#include <klistview.h>
 #include <kconfig.h>
+
 #include <QString>
+#include <QTreeWidget>
 
 class KNotifyConfigElement;
 class KNotifyEventListItem;
 class KConfigBase;
-class KListView;
 
 /**
 	@author Olivier Goffart <ogoffart at kde.org>
 */
-class KNotifyEventList : public KListView
+class KNotifyEventList : public QTreeWidget
 {
 	Q_OBJECT
 public:
@@ -56,12 +56,12 @@ Q_SIGNALS:
 
 };
 
-class KNotifyEventListItem : public KListViewItem
+class KNotifyEventListItem : public QTreeWidgetItem
 {
 	public:
-		KNotifyEventListItem(KListView *parent , const QString & eventName , const QString & name , const QString & description , 
-			KConfigBase* locconf , KConfigBase *defconf);
-		//~KNotifyEventList();
+		KNotifyEventListItem(QTreeWidget *parent , const QString & eventName , const QString & name ,
+                         const QString & description , KConfigBase* locconf , KConfigBase *defconf);
+		~KNotifyEventListItem();
 		void save();
 		
 		KNotifyConfigElement *configElement() { return &m_config; }

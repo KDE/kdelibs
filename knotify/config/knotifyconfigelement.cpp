@@ -52,7 +52,7 @@ void KNotifyConfigElement::save(  )
 	QMap<QString, QString>::const_iterator it = m_cache.constBegin();
 	for ( ; it != m_cache.constEnd() ; ++it)
 	{
-		m_config.writeEntry(it.key() , it.data() );
+		m_config.writeEntry(it.key() , it.value() );
 	}
 	m_config.sync();
 }

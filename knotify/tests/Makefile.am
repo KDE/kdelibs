@@ -1,5 +1,6 @@
 
 INCLUDES = -I../client -I../config $(all_includes) -I../client
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 bin_PROGRAMS = knotifytest
 

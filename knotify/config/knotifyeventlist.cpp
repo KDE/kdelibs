@@ -18,14 +18,16 @@
 #include "knotifyeventlist.h"
 
 #include <kdebug.h>
+#include <klocale.h>
 
 KNotifyEventList::KNotifyEventList(QWidget *parent)
- : KListView(parent)  , config(0l) , loconf(0l)
+ : QTreeWidget(parent)  , config(0l) , loconf(0l)
 {
-	addColumn("Titre");
-	addColumn("Description");
-	addColumn("Etat");
-	connect(this, SIGNAL(selectionChanged()) , this , SLOT(slotSelectionChanged()));
+  QStringList headerLabels;
+  headerLabels << i18n( "Titre" ) << i18n( "Description" ) << i18n( "Etat" );
+  setHeaderLabels( headerLabels );
+
+	connect(this, SIGNAL(itemSelectionChanged()) , this , SLOT(slotSelectionChanged()));
 }
 
 
@@ -88,14 +90,18 @@ void KNotifyEventList::slotSelectionChanged( )
 
 
 
-KNotifyEventListItem::KNotifyEventListItem( KListView * parent, const QString & eventName, 
+KNotifyEventListItem::KNotifyEventListItem( QTreeWidget * parent, const QString & eventName, 
 				const QString & name, const QString & description , KConfigBase* locconf , KConfigBase *defconf)
-	: KListViewItem(parent, name , description) ,
+	: QTreeWidgetItem(parent) ,
 	m_config(eventName , defconf, locconf )
 {
-	
+  setText( 0, name );
+  setText( 1, description );
 }
 
+KNotifyEventListItem::~KNotifyEventListItem()
+{
+}
 
 void KNotifyEventListItem::save()
 {

@@ -1,6 +1,7 @@
 
 
 INCLUDES= -I$(srcdir) $(all_includes)
+KDE_CXXFLAGS = -UQT3_SUPPORT
 
 lib_LTLIBRARIES = libknotifyconfig.la
 
