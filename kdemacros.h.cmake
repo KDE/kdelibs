@@ -146,9 +146,6 @@
 # if defined(__GNUC__) && (__GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2))
   /* gcc >= 3.2 */
 #  define KDE_DEPRECATED __attribute__ ((deprecated))
-# elif defined(_MSC_VER) && (_MSC_VER >= 1300) && (_MSC_VER < 1400)
-  /* msvc >= 7 */
-#  define KDE_DEPRECATED __declspec(deprecated)
 # else
 #  define KDE_DEPRECATED
 # endif
