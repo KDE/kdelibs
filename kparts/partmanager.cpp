@@ -349,11 +349,11 @@ void PartManager::addPart( Part *part, bool setActive )
   // Prevent focus problems
   if ( part->widget() && part->widget()->focusPolicy() == Qt::NoFocus )
   {
-    kWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of NoFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
+    kWarning(1000) << "Part '" << part->objectName() << "' has a widget " << part->widget()->objectName() << " with a focus policy of NoFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
   }
   if ( part->widget() && part->widget()->focusPolicy() == Qt::TabFocus )
   {
-    kWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of TabFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
+    kWarning(1000) << "Part '" << part->objectName() << "' has a widget " << part->widget()->objectName() << " with a focus policy of TabFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
   }
 
   if ( setActive && part->widget() )
@@ -365,14 +365,14 @@ void PartManager::removePart( Part *part )
 {
   if ( !d->m_parts.contains( part ) )
   {
-    kFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()) << endl;
+    kFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(part->objectName()) << endl;
     return;
   }
 
   //Warning. The part could be already deleted
   //kDebug(1000) << QString("Part %1 removed").arg(part->name()) << endl;
   int nb = d->m_parts.count();
-  bool ok = d->m_parts.remove( part );
+  bool ok = d->m_parts.removeAll( part );
   Q_ASSERT( ok );
   Q_ASSERT( (int)d->m_parts.count() == nb-1 );
   part->setManager(0);
@@ -391,11 +391,11 @@ void PartManager::replacePart( Part * oldPart, Part * newPart, bool setActive )
   // This methods does exactly removePart + addPart but without calling setActivePart(0) in between
   if ( !d->m_parts.contains( oldPart ) )
   {
-    kFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(oldPart->name()) << endl;
+    kFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(oldPart->objectName()) << endl;
     return;
   }
 
-  d->m_parts.remove( oldPart );
+  d->m_parts.removeAll( oldPart );
   oldPart->setManager(0);
 
   emit partRemoved( oldPart );
@@ -407,7 +407,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
 {
   if ( part && !d->m_parts.contains( part ) )
   {
-      kWarning( 1000 ) << "PartManager::setActivePart : trying to activate a non-registered part! " << part->name() << endl;
+      kWarning( 1000 ) << "PartManager::setActivePart : trying to activate a non-registered part! " << part->objectName() << endl;
       return; // don't allow someone call setActivePart with a part we don't know about
   }
 
@@ -573,7 +573,7 @@ void PartManager::removeManagedTopLevelWidget( const QWidget *topLevel )
   if ( !topLevel->isTopLevel() )
     return;
 
-  d->m_managedTopLevelWidgets.remove( topLevel );
+  d->m_managedTopLevelWidgets.removeAll( topLevel );
 }
 
 void PartManager::slotManagedTopLevelWidgetDestroyed()

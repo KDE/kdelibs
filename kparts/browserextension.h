@@ -706,8 +706,6 @@ private:
   BrowserExtensionPrivate *d;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( KParts::BrowserExtension::PopupFlags )
-
 /**
  * An extension class for container parts, i.e. parts that contain
  * other parts.
@@ -818,6 +816,8 @@ Q_SIGNALS:
 };
 
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( KParts::BrowserExtension::PopupFlags )
 
 #endif
 

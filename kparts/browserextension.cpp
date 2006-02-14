@@ -468,8 +468,8 @@ void BrowserExtension::pasteRequest()
 
     // Check if it's a URL
     QStringList filters = KURIFilter::self()->pluginNames();
-    filters.remove( "kuriikwsfilter" );
-    filters.remove( "localdomainurifilter" );
+    filters.removeAll( "kuriikwsfilter" );
+    filters.removeAll( "localdomainurifilter" );
     KURIFilterData filterData;
     filterData.setData( url );
     filterData.setCheckForExecutables( false );
@@ -536,7 +536,7 @@ void BrowserExtension::slotEnableAction( const char * name, bool enabled )
     ActionNumberMap::ConstIterator it = s_actionNumberMap->find( name );
     if ( it != s_actionNumberMap->end() )
     {
-        d->m_actionStatus.setBit( it.data(), enabled );
+        d->m_actionStatus.setBit( it.value(), enabled );
         //kDebug() << "BrowserExtension::slotEnableAction setting bit " << it.data() << " to " << enabled << endl;
     }
     else
@@ -555,7 +555,7 @@ void BrowserExtension::slotSetActionText( const char * name, const QString& text
     ActionNumberMap::ConstIterator it = s_actionNumberMap->find( name );
     if ( it != s_actionNumberMap->end() )
     {
-        d->m_actionText[ it.data() ] = text;
+        d->m_actionText[ it.value() ] = text;
     }
     else
         kWarning() << "BrowserExtension::slotSetActionText unknown action " << name << endl;

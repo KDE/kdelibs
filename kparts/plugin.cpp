@@ -103,14 +103,14 @@ QList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
   for (; pIt != pEnd; ++pIt )
   {
       QFileInfo fInfo( *pIt );
-      if ( fInfo.extension() == QLatin1String( "desktop" ) )
+      if ( fInfo.completeSuffix() == QLatin1String( "desktop" ) )
           continue;
 
       QMap<QString,QStringList>::Iterator mapIt = sortedPlugins.find( fInfo.fileName() );
       if ( mapIt == sortedPlugins.end() )
           mapIt = sortedPlugins.insert( fInfo.fileName(), QStringList() );
 
-      mapIt.data().append( *pIt );
+      mapIt.value().append( *pIt );
   }
 
   QMap<QString,QStringList>::ConstIterator mapIt = sortedPlugins.begin();
@@ -119,7 +119,7 @@ QList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
   {
       PluginInfo info;
       QString doc;
-      info.m_absXMLFileName = KXMLGUIClient::findMostRecentXMLFile( mapIt.data(), doc );
+      info.m_absXMLFileName = KXMLGUIClient::findMostRecentXMLFile( mapIt.value(), doc );
       if ( info.m_absXMLFileName.isEmpty() )
           continue;
 

@@ -82,8 +82,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::createGUI( Part * part )
 {
-  kDebug(1000) << "MainWindow::createGUI, part=" << part << " " << ( part ? part->className() : "" )
-                << " " << ( part ? part->name() : "" )
+  kDebug(1000) << "MainWindow::createGUI, part=" << part << " "
+                << ( part ? part->metaObject()->className() : "" )
+                << " " << ( part ? part->objectName() : "" )
                 << endl;
 
   KXMLGUIFactory *factory = guiFactory();
@@ -94,8 +95,9 @@ void MainWindow::createGUI( Part * part )
 
   if ( d->m_activePart )
   {
-    kDebug(1000) << "deactivating GUI for " << d->m_activePart << " " << d->m_activePart->className()
-                  << " " << d->m_activePart->name() << endl;
+    kDebug(1000) << "deactivating GUI for " << d->m_activePart << " "
+                  << d->m_activePart->metaObject()->className()
+                  << " " << d->m_activePart->objectName() << endl;
 
     GUIActivateEvent ev( false );
     QApplication::sendEvent( d->m_activePart, &ev );
@@ -139,7 +141,7 @@ void MainWindow::createGUI( Part * part )
 
 void MainWindow::slotSetStatusBarText( const QString & text )
 {
-  statusBar()->message( text );
+  statusBar()->showMessage( text );
 }
 
 void MainWindow::createShellGUI( bool create )

@@ -163,7 +163,7 @@ Part::~Part()
 
   if ( m_widget )
   {
-    kDebug(1000) << "deleting widget " << m_widget << " " << m_widget->name() << endl;
+    kDebug(1000) << "deleting widget " << m_widget << " " << m_widget->objectName() << endl;
     delete (QWidget*) m_widget;
   }
 
@@ -173,7 +173,11 @@ Part::~Part()
 void Part::embed( QWidget * parentWidget )
 {
   if ( widget() )
-    widget()->reparent( parentWidget, 0, QPoint( 0, 0 ), true );
+  {
+    widget()->setParent( parentWidget, 0 );
+    widget()->setGeometry( 0, 0, widget()->width(), widget()->height() );
+    widget()->show();
+  }
 }
 
 QWidget *Part::widget()
@@ -271,7 +275,7 @@ QWidget *Part::hostContainer( const QString &containerName )
 
 void Part::slotWidgetDestroyed()
 {
-  kDebug(1000) << "KPart::slotWidgetDestroyed(), deleting part " << name() << endl;
+  kDebug(1000) << "KPart::slotWidgetDestroyed(), deleting part " << objectName() << endl;
   m_widget = 0;
   delete this;
 }
@@ -361,7 +365,7 @@ bool ReadOnlyPart::openURL( const KUrl &url )
     // Use same extension as remote file. This is important for mimetype-determination (e.g. koffice)
     QString fileName = url.fileName();
     QFileInfo fileInfo(fileName);
-    QString ext = fileInfo.extension();
+    QString ext = fileInfo.completeSuffix();
     QString extension;
     if ( !ext.isEmpty() && url.query().isNull() ) // not if the URL has a query, e.g. cgi.pl?something
         extension = "."+ext; // keep the '.'

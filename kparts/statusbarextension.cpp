@@ -50,7 +50,10 @@ class KParts::StatusBarItem {
     {
       if ( !m_visible )
       {
-        sb->addWidget( m_widget, m_stretch, m_permanent );
+        if ( m_permanent )
+            sb->addPermanentWidget( m_widget, m_stretch );
+        else
+            sb->addWidget( m_widget, m_stretch );
         m_visible = true;
         m_widget->show();
       }
@@ -165,7 +168,7 @@ void StatusBarExtension::removeStatusBarItem( QWidget * widget )
     {
       if ( sb )
         (*it).ensureItemHidden( sb );
-      m_statusBarItems.remove( it );
+      m_statusBarItems.erase( it );
       break;
     }
   if ( it == m_statusBarItems.end() )
