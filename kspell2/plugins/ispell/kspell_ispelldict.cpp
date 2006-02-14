@@ -31,7 +31,7 @@ ISpellDict::ISpellDict( const QString& lang )
 {
     m_checker = new ISpellChecker();
 
-    if ( !m_checker->requestDictionary( lang.latin1() ) ) {
+    if ( !m_checker->requestDictionary( lang.toLatin1() ) ) {
         kError()<<"Language \""<< lang << "\" doesn't exist for Ispell"<<endl;
     }
 }

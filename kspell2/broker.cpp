@@ -99,7 +99,7 @@ Broker::~Broker()
     KPluginInfo::List::iterator it = d->plugins.begin();
     while ( it != d->plugins.end() ) {
         KPluginInfo *pluginInfo = *it;
-        it = d->plugins.remove( it );
+        it = d->plugins.erase( it );
         delete pluginInfo;
     }
 

@@ -60,7 +60,7 @@ void ConfigWidget::init( Broker *broker )
 
     QStringList langs = d->broker->languages();
     //QStringList clients = d->broker->clients();
-    d->ui->m_langCombo->insertStringList( langs );
+    d->ui->m_langCombo->insertItems(d->ui->m_langCombo->count(), langs );
     setCorrectLanguage( langs );
     //d->ui->m_clientCombo->insertStringList( clients );
     d->ui->m_skipUpperCB->setChecked( !d->broker->settings()->checkUppercase() );
@@ -111,7 +111,7 @@ void ConfigWidget::setCorrectLanguage( const QStringList& langs)
 
 void ConfigWidget::setBackgroundCheckingButtonShown( bool b )
 {
-    d->ui->m_bgSpellCB->setShown( b );
+    d->ui->m_bgSpellCB->setVisible( b );
 }
 
 bool ConfigWidget::backgroundCheckingButtonShown() const

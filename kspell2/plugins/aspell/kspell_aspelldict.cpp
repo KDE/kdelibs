@@ -30,7 +30,7 @@ ASpellDict::ASpellDict( const QString& lang )
     : Dictionary( lang )
 {
     m_config = new_aspell_config();
-    aspell_config_replace( m_config, "lang", lang.latin1() );
+    aspell_config_replace( m_config, "lang", lang.toLatin1() );
     /* All communication with Aspell is done in UTF-8 */
     /* For reference, please look at BR#87250         */
     aspell_config_replace( m_config, "encoding", "utf-8" );

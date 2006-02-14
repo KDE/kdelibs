@@ -336,7 +336,7 @@ s_allDics()
 			for (size_t i = 0; i < size_ispell_map; i++)
 			{
 				const IspellMap * mapping = (const IspellMap *)(&(ispell_map[i]));
-				if (!strcmp (info.fileName().latin1(), mapping->dict))
+				if (!strcmp (info.fileName().toLatin1(), mapping->dict))
 				{
 					ispell_dict_map.insert( mapping->lang, *it );
 				}
@@ -455,12 +455,12 @@ ISpellChecker::setDictionaryEncoding( const QString& hashname, const char * enco
 			for(int n1 = 1; n1 <= 15; n1++)
 				{
 					QString teststring = QString("latin%1").arg(n1);
-					prefstringchar = findfiletype(teststring.latin1(), 1,
+					prefstringchar = findfiletype(teststring.toLatin1(), 1,
 								      deftflag < 0 ? &deftflag : static_cast<int *>(NULL));
 					if (prefstringchar >= 0)
 						{
 							//FIXME: latin1 might be wrong
-							m_translate_in = QTextCodec::codecForName( teststring.latin1() );
+							m_translate_in = QTextCodec::codecForName( teststring.toLatin1() );
 							break;
 						}
 				}

@@ -117,11 +117,11 @@ void Dialog::initGui()
     d->ui = new KSpell2UI( this );
     d->ui->m_suggestions->setSorting( NONSORTINGCOLUMN );
     d->ui->m_language->clear();
-    d->ui->m_language->insertStringList( d->checker->broker()->languages() );
-    for ( int i = 0; !d->ui->m_language->text( i ).isNull(); ++i ) {
-        QString ct = d->ui->m_language->text( i );
+    d->ui->m_language->insertItems( d->ui->m_language->count(), d->checker->broker()->languages() );
+    for ( int i = 0; !d->ui->m_language->itemText( i ).isNull(); ++i ) {
+        QString ct = d->ui->m_language->itemText( i );
         if ( ct == d->checker->broker()->settings()->defaultLanguage() ) {
-            d->ui->m_language->setCurrentItem( i );
+            d->ui->m_language->setCurrentIndex( i );
             break;
         }
     }
