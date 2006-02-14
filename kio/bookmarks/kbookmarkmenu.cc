@@ -542,9 +542,7 @@ void KBookmarkMenu::addNewFolder()
      return;
 
   QString title = i18n( "&New Bookmark Folder..." );
-  int p;
-  while ( ( p = title.indexOf( '&',0,Qt::CaseSensitive ) ) >= 0 )
-    title.remove( p, 1 );
+  title.remove( QChar( '&' ) );
 
   KAction * paNewFolder = new KAction( title,
                                        "folder_new", //"folder",

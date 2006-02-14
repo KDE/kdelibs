@@ -271,10 +271,7 @@ static QByteArray dcopServerFile(const QByteArray &hostname, bool old)
         disp.truncate(i);
 
     if (!old)
-    {
-        while( (i = disp.indexOf(KPATH_SEPARATOR)) >= 0)
-            disp[i] = '_';
-    }
+        disp.replace(KPATH_SEPARATOR, '_');
 
     fName += "/.DCOP4server_";
     if (hostname.isEmpty())
