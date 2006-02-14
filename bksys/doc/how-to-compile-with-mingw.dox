@@ -75,7 +75,7 @@ make
 copy libagg.a c:\Mingw\lib
 mkdir c:\Mingw\include\agg2
 xcopy /S ..\include\* c:\Mingw\include\agg2
-
+\endcode
 
 - some not listed packages may be available on http://gnuwin32.sourceforge.net/packages.html
 
