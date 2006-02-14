@@ -1,6 +1,7 @@
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
+
 # support for Dart: http://public.kitware.com/dashboard.php?name=kde
 enable_testing()
 include(CTest)
@@ -62,7 +63,9 @@ add_subdirectory( libltdl )
 add_subdirectory( kdefx )
 add_subdirectory( kdecore )
 add_subdirectory( kdeui )
-add_subdirectory( kdesu )
+IF (NOT WIN32)
+	add_subdirectory( kdesu )
+ENDIF(NOT WIN32)
 add_subdirectory( kjs )
 add_subdirectory( kjsembed )
 add_subdirectory( kwallet )
