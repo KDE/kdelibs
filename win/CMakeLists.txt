@@ -54,6 +54,7 @@ set(win_LIB_SRCS
    src/fsync.c
    src/getenv.c
    src/grp.c
+   src/inet.c
    src/kde_file_win.c
    src/mmap.c
    src/net.c

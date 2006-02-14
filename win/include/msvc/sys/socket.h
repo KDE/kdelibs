@@ -28,6 +28,13 @@
 #include <Ws2tcpip.h>
 #include "fixwinh.h"
 
+// work around for broken configure process
+// when we include winsock2.h and Ws2tcpip.h 
+// then these functions are available
+#define HAVE_GETHOSTNAME 1 
+#define HAVE_GETNAMEINFO 1 
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif

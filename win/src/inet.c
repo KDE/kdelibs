@@ -1,4 +1,5 @@
 /* This file is part of the KDE project
+   Copyright (C) 2006 Peter Kümmel
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,29 +17,19 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDEWIN_ARPA_INET_H
-#define KDEWIN_ARPA_INET_H
+#include <winposix_export.h>
 
-// include everywhere
-#include <sys/types.h>
-
-#include <netinet/in.h>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-typedef unsigned int in_addr_t;
+#include <sys/socket.h>
 
 KDEWIN32_EXPORT
-const char *inet_ntop(int af, const void * src, char * dst, socklen_t size);
+const char *inet_ntop(int af, const void * src, char * dst, socklen_t size)
+{
+	//TODO
+	return 0;
+}
 
-KDEWIN32_EXPORT int inet_pton(int af, const char * src, void * dst);
- 
- 
-#ifdef __cplusplus
-};
-#endif
-
-#endif // KDEWIN_ARPA_INET_H
+KDEWIN32_EXPORT int inet_pton(int af, const char * src, void * dst)
+{
+	//TODO
+	return -1;
+}

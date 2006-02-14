@@ -19,7 +19,11 @@
 #ifndef _ARPA_INET_H
 #define _ARPA_INET_H
 
+// include everywhere
+#include <sys/types.h>
+
 #include <netinet/in.h>
+
 
 #ifdef __cplusplus
 extern "C"
@@ -27,6 +31,12 @@ extern "C"
 #endif
 
 typedef unsigned int in_addr_t;
+
+KDEWIN32_EXPORT
+const char *inet_ntop(int af, const void * src, char * dst, socklen_t size);
+
+KDEWIN32_EXPORT int inet_pton(int af, const char * src, void * dst);
+
 
 #ifdef __cplusplus
 };
