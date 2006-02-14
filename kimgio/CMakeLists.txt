@@ -5,8 +5,9 @@ project(kimgio)
 macro_optional_find_package(Jasper)
 macro_optional_find_package(TIFF)
 macro_optional_find_package(OpenEXR)
-include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${OPENEXR_INCLUDE_DIR} )
 
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 
 
 if(JASPER_FOUND)
@@ -109,7 +110,7 @@ install_targets(${KDE4_PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xview )
 if(OPENEXR_FOUND)
 	set(kimg_exr_LIB_SRCS exr.cpp)
 	kde4_add_plugin(kimg_exr ${kimg_exr_LIB_SRCS})
-	target_link_libraries(kimg_exr ${QT_AND_KDECORE_LIBS} )
+	target_link_libraries(kimg_exr ${QT_AND_KDECORE_LIBS} ${OPENEXR_LIBRARIES} )
 
 	kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )
 	install_targets(${KDE4_PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )	
