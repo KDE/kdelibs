@@ -685,7 +685,7 @@ void KFontChooser::addFont( QStringList &list, const char *xfont )
   if ( ( pos = font.indexOf( '-' ) ) > 0 ) {
     font.truncate( pos );
 
-    if ( font.indexOf( QLatin1String("open look"), 0, Qt::CaseInsensitive ) >= 0 )
+    if ( font.contains( QLatin1String("open look"), Qt::CaseInsensitive ) )
       return;
 
     QStringList::Iterator it = list.begin();

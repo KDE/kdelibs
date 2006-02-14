@@ -1050,7 +1050,7 @@ static int tokenize( QStringList& tokens, const QString& str,
 
     for( int index = 0; index < len; index++)
     {
-	if ( delim.indexOf( str[ index ] ) >= 0 )
+	if ( delim.contains( str[ index ] ) )
 	{
 	    tokens.append( token );
 	    token = "";
