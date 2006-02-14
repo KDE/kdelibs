@@ -212,7 +212,7 @@ inline void KMimeTypeResolver<IconItem, Parent>::slotProcessMimeIcons()
     }
 
     m_parent->determineIcon(item);
-    m_lstPendingMimeIconItems.remove(item);
+    m_lstPendingMimeIconItems.removeAll(item);
     m_helper->start( nextDelay );
 }
 
@@ -224,7 +224,7 @@ inline void KMimeTypeResolver<IconItem, Parent>::slotViewportAdjusted()
     if (item)
     {
         m_parent->determineIcon( item );
-        m_lstPendingMimeIconItems.remove(item);
+        m_lstPendingMimeIconItems.removeAll(item);
         m_helper->start( 0 );
     }
 }

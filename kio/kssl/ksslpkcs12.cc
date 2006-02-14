@@ -77,7 +77,7 @@ KSSLPKCS12* KSSLPKCS12::fromString(const QString &base64, const QString &passwor
 KTempFile ktf;
 
     if (base64.isEmpty()) return NULL;
-    QByteArray qba, qbb = Q3CString(base64.latin1()).copy();
+    QByteArray qba, qbb = Q3CString(base64.toLatin1()).copy();
     KCodecs::base64Decode(qbb, qba);
     ktf.file()->write(qba);
     ktf.close();
@@ -161,7 +161,7 @@ X509 *x = NULL;
    _caStack = NULL;
    _cert = NULL;
 
-  int rc = kossl->PKCS12_parse(_pkcs, pass.latin1(), &_pkey, &x, &_caStack);
+  int rc = kossl->PKCS12_parse(_pkcs, pass.toLatin1(), &_pkey, &x, &_caStack);
 
   if (rc == 1) {
      // kDebug(7029) << "PKCS12_parse success" << endl;
@@ -224,7 +224,7 @@ QFile out(filename);
    FILE *fp = fdopen(fd, "w");
 
    if (!fp) {
-      unlink(filename.latin1());
+      unlink(filename.toLatin1());
       return false;
    }
 

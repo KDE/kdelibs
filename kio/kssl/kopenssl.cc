@@ -361,8 +361,8 @@ KConfig *cfg;
          alib += *shit;
 	 QString tmpStr(alib.latin1());
 	 tmpStr.replace(QRegExp("\\(.*\\)"), "");
-	 if (!access(tmpStr.latin1(), R_OK))
-            _cryptoLib = ll->globalLibrary(alib.latin1());
+	 if (!access(tmpStr.toLatin1(), R_OK))
+            _cryptoLib = ll->globalLibrary(alib.toLatin1());
          if (_cryptoLib) break;
       }
       if (_cryptoLib) break;
@@ -511,10 +511,10 @@ KConfig *cfg;
          if (!alib.isEmpty() && !alib.endsWith("/"))
             alib += "/";
          alib += *shit;
-	 QString tmpStr(alib.latin1());
+	 QString tmpStr(alib.toLatin1());
 	 tmpStr.replace(QRegExp("\\(.*\\)"), "");
-	 if (!access(tmpStr.latin1(), R_OK))
-         	_sslLib = ll->globalLibrary(alib.latin1());
+	 if (!access(tmpStr.toLatin1(), R_OK))
+         	_sslLib = ll->globalLibrary(alib.toLatin1());
          if (_sslLib) break;
       }
       if (_sslLib) break;

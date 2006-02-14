@@ -65,7 +65,7 @@ KSSLPKCS7* KSSLPKCS7::fromString(const QString &base64) {
 KTempFile ktf;
 
     if (base64.isEmpty()) return NULL;
-    QByteArray qba, qbb = Q3CString(base64.latin1()).copy();
+    QByteArray qba, qbb = Q3CString(base64.toLatin1()).copy();
     KCodecs::base64Decode(qbb, qba);
     ktf.file()->write(qba);
     ktf.close();
@@ -153,7 +153,7 @@ QFile out(filename);
    FILE *fp = fdopen(fd, "w");
 
    if (!fp) {
-      unlink(filename.latin1());
+      unlink(filename.toLatin1());
       return false;
    }
 
