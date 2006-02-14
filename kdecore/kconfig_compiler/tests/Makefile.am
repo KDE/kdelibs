@@ -51,9 +51,9 @@ test_dpointer_SOURCES = test_dpointer_main.cpp test_dpointer.cpp
 
 test_signal_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 test_signal_SOURCES = test_signal_main.cpp test_signal.cpp
-test_signal.o: test_signal.moc
-test_signal.moc: test_signal.h
-	$(MOC) test_signal.h -o test_signal.moc
+#test_signal.o: test_signal.moc
+#test_signal.moc: test_signal.h
+	#$(MOC) test_signal.h -o test_signal.moc
 
 kconfigcompiler_test_SOURCES = kconfigcompiler_test.cpp
 kconfigcompiler_test_LDADD = $(LIB_KDECORE) -lQtTest_debug
