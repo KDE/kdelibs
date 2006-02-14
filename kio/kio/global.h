@@ -28,6 +28,8 @@
 
 #include <sys/stat.h> // S_ISDIR
 
+template class KDE_EXPORT QMap<QString, QString>;
+
 class KUrl;
 
 class QTime;
