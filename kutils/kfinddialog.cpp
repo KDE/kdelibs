@@ -91,7 +91,7 @@ QWidget *KFindDialog::findExtension()
     if (!m_findExtension)
     {
       m_findExtension = new QWidget(m_findGrp);
-      m_findLayout->addMultiCellWidget(m_findExtension, 3, 3, 0, 1);
+      m_findLayout->addWidget(m_findExtension, 3, 3, 0, 1);
     }
 
     return m_findExtension;
@@ -130,7 +130,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_regExpItem->setEnabled(false);
 
     m_findLayout->addWidget(m_findLabel, 0, 0);
-    m_findLayout->addMultiCellWidget(m_find, 1, 1, 0, 1);
+    m_findLayout->addWidget(m_find, 1, 1, 0, 1);
     m_findLayout->addWidget(m_regExp, 2, 0);
     m_findLayout->addWidget(m_regExpItem, 2, 1);
     topLayout->addWidget(m_findGrp);
@@ -150,7 +150,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_backRefItem->setEnabled(false);
 
     m_replaceLayout->addWidget(m_replaceLabel, 0, 0);
-    m_replaceLayout->addMultiCellWidget(m_replace, 1, 1, 0, 1);
+    m_replaceLayout->addWidget(m_replace, 1, 1, 0, 1);
     m_replaceLayout->addWidget(m_backRef, 2, 0);
     m_replaceLayout->addWidget(m_backRefItem, 2, 1);
     topLayout->addWidget(m_replaceGrp);
@@ -577,7 +577,7 @@ void KFindDialog::slotOk()
     }
     m_find->addToHistory(pattern());
     emit okClicked();
-    if ( windowFlags() & Qt::WShowModal )
+    if ( windowModality() != Qt::NonModal )
         accept();
 }
 // kate: space-indent on; indent-width 4; replace-tabs on;

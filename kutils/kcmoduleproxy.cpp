@@ -172,7 +172,9 @@ KCModule * KCModuleProxy::realModule() const
 	if( !d->isInitialized )
 	{
   		d->dcopName = moduleInfo().handle().prepend("KCModuleProxy-").toUtf8();
-		d->topLayout = new QVBoxLayout( that, 0, 0 );
+		d->topLayout = new QVBoxLayout( that );
+		d->topLayout->setMargin( 0 );
+		d->topLayout->setSpacing( 0 );
 
 		d->isInitialized = true;
 	}
@@ -193,7 +195,7 @@ KCModule * KCModuleProxy::realModule() const
 		d->dcopObject = new KCModuleProxyIfaceImpl( d->dcopName, that );
 
 		d->kcm = KCModuleLoader::loadModule( moduleInfo(), KCModuleLoader::Inline, d->withFallback,
-			that, name(), d->args );
+			that, objectName().toLatin1(), d->args );
 
 		connect( d->kcm, SIGNAL( changed( bool ) ),
 				SLOT(moduleChanged(bool)) );
@@ -210,7 +212,8 @@ KCModule * KCModuleProxy::realModule() const
 				!KUser().isSuperUser() ) /* Not necessary if we're root */
 		{
 
-			d->rootInfo = new QLabel( that, "rootInfo" );
+			d->rootInfo = new QLabel( that );
+			d->rootInfo->setObjectName( "rootInfo" );
 			d->topLayout->insertWidget( 0, d->rootInfo );
 
 			d->rootInfo->setFrameShape(QFrame::Box);
@@ -321,7 +324,7 @@ void KCModuleProxy::runAsRoot()
 	d->embedFrame->setFrameStyle( QFrame::Box | QFrame::Raised );
 
 	QPalette pal( Qt::red );
-	pal.setColor( QPalette::Background, colorGroup().background() );
+	pal.setColor( QPalette::Background, palette().color( QPalette::Background ) );
 	d->embedFrame->setPalette( pal );
 	d->embedFrame->setLineWidth( 2 );
 	d->embedFrame->setMidLineWidth( 2 );

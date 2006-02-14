@@ -20,15 +20,15 @@
 #include "ksettings/componentsdialog.h"
 #include <klocale.h>
 #include <qlayout.h>
-#include <klistview.h>
 #include <qlabel.h>
-#include <q3header.h>
 #include <kplugininfo.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kseparator.h>
+
 #include <QList>
+#include <QTreeWidget>
 
 namespace KSettings
 {
@@ -36,12 +36,12 @@ namespace KSettings
 class ComponentsDialog::ComponentsDialogPrivate
 {
     public:
-        KListView * listview;
+        QTreeWidget * listview;
         QFrame * infowidget;
         QLabel * iconwidget;
         QLabel * commentwidget;
         QLabel * descriptionwidget;
-        QMap<Q3CheckListItem*, KPluginInfo*> plugininfomap;
+        QMap<QTreeWidgetItem*, KPluginInfo*> plugininfomap;
         QList<KPluginInfo*> plugininfolist;
 };
 
@@ -51,35 +51,37 @@ ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
 {
     QWidget * page = new QWidget( this );
     setMainWidget( page );
-    ( new QHBoxLayout( page, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
-    d->listview = new KListView( page );
+    QHBoxLayout *hbox = new QHBoxLayout( page );
+    hbox->setMargin( 0 );
+    hbox->setSpacing( KDialog::spacingHint() );
+
+    d->listview = new QTreeWidget( page );
     d->listview->setMinimumSize( 200, 200 );
     d->infowidget = new QFrame( page );
     d->infowidget->setMinimumSize( 200, 200 );
-    ( new QVBoxLayout( d->infowidget, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
+
+    QVBoxLayout *vbox = new QVBoxLayout( d->infowidget );
+    vbox->setMargin( 0 );
+    vbox->setSpacing( KDialog::spacingHint() );
+
     d->iconwidget = new QLabel( d->infowidget );
-    ( void )new KSeparator( d->infowidget );
+    vbox->addWidget( d->iconwidget );
+    vbox->addWidget( new KSeparator( d->infowidget ) );
     d->commentwidget = new QLabel( d->infowidget );
-    d->commentwidget->setAlignment( Qt::TextWordWrap );
+    d->commentwidget->setWordWrap( true );
+    vbox->addWidget( d->commentwidget );
     d->descriptionwidget = new QLabel( d->infowidget );
-    d->descriptionwidget->setAlignment( Qt::TextWordWrap );
+    d->descriptionwidget->setWordWrap( true );
+    vbox->addWidget( d->descriptionwidget );
 
-    d->listview->addColumn( QString() );
-    d->listview->header()->hide();
-    d->listview->setRootIsDecorated( true );
-    d->listview->setSorting( -1 );
     d->listview->setAcceptDrops( false );
-    d->listview->setSelectionModeExt( KListView::Single );
-    d->listview->setAllColumnsShowFocus( true );
 
-    connect( d->listview, SIGNAL( pressed( Q3ListViewItem * ) ), this,
-            SLOT( executed( Q3ListViewItem * ) ) );
-    connect( d->listview, SIGNAL( spacePressed( Q3ListViewItem * ) ), this,
-            SLOT( executed( Q3ListViewItem * ) ) );
-    connect( d->listview, SIGNAL( returnPressed( Q3ListViewItem * ) ), this,
-            SLOT( executed( Q3ListViewItem * ) ) );
-    connect( d->listview, SIGNAL( selectionChanged( Q3ListViewItem * ) ), this,
-            SLOT( executed( Q3ListViewItem * ) ) );
+    connect( d->listview, SIGNAL( itemPressed( QTreeWidgetItem *, int ) ), this,
+            SLOT( executed( QTreeWidgetItem *, int ) ) );
+    connect( d->listview, SIGNAL( itemActivated( QTreeWidgetItem *, int ) ), this,
+            SLOT( executed( QTreeWidgetItem *, int ) ) );
+    connect( d->listview, SIGNAL( itemSelectionChanged( QTreeWidgetItem *, int ) ), this,
+            SLOT( executed( QTreeWidgetItem *, int ) ) );
 }
 
 ComponentsDialog::~ComponentsDialog()
@@ -97,7 +99,7 @@ void ComponentsDialog::setPluginInfos( const QMap<QString, KPluginInfo*> &
     for( QMap<QString, KPluginInfo*>::ConstIterator it = plugininfos.begin();
             it != plugininfos.end(); ++it )
     {
-        d->plugininfolist.append( it.data() );
+        d->plugininfolist.append( it.value() );
     }
 }
 
@@ -117,31 +119,27 @@ void ComponentsDialog::show()
             it != d->plugininfolist.end(); ++it )
     {
         ( *it )->load();
-        Q3CheckListItem * item = new Q3CheckListItem( d->listview, ( *it )->name(),
-                Q3CheckListItem::CheckBox );
+        QTreeWidgetItem * item = new QTreeWidgetItem( d->listview, QStringList( ( *it )->name() ) );
         if( ! ( *it )->icon().isEmpty() )
-            item->setPixmap( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
-        item->setOn( ( *it )->isPluginEnabled() );
+            item->setIcon( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
+        item->setCheckState( 0, ( *it )->isPluginEnabled() ? Qt::Checked : Qt::Unchecked );
         d->plugininfomap[ item ] = ( *it );
     }
     KDialogBase::show();
 }
 
-void ComponentsDialog::executed( Q3ListViewItem * item )
+void ComponentsDialog::executed( QTreeWidgetItem * item, int )
 {
     kDebug( 704 ) << k_funcinfo << endl;
     if( item == 0 )
         return;
-    if( item->rtti() != 1 ) // check for QCheckListItem
-        return;
 
-    Q3CheckListItem * citem = static_cast<Q3CheckListItem *>( item );
-    bool checked = citem->isOn();
+    bool checked = ( item->checkState(0) == Qt::Checked );
 
     kDebug( 704 ) << "it's a " << ( checked ? "checked" : "unchecked" )
         << " QCheckListItem" << endl;
 
-    KPluginInfo * info = d->plugininfomap[ citem ];
+    KPluginInfo * info = d->plugininfomap[ item ];
     info->setPluginEnabled( checked );
     //checkDependencies( info );
     // show info about the component on the right

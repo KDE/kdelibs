@@ -26,7 +26,7 @@
 #include <QList>
 
 class KConfigGroup;
-class Q3ListViewItem;
+class QTreeWidgetItem;
 class KPluginInfo;
 class KCModuleInfo;
 
@@ -123,7 +123,7 @@ class KPluginSelectionWidget : public QWidget
          *
          * @internal
          */
-        void executed( Q3ListViewItem * );
+        void executed( QTreeWidgetItem *, int );
 
         /**
          * Called whenever the visible config page should change (plugin
@@ -159,13 +159,6 @@ class KPluginSelectionWidget : public QWidget
          * accordingly.
          */
         void tabWidgetChanged( QWidget * );
-
-    protected:
-        /**
-         Used for tooltip handling.
-         @internal
-        */
-        virtual bool eventFilter ( QObject * watched, QEvent * event );
 
     private:
         /**

@@ -72,7 +72,7 @@ class KCModuleContainer::KCModuleContainerPrivate
 #endif
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
-	: KCModule( KGlobal::instance(), parent ),d(new KCModuleContainerPrivate( QStringList::split( ",", QString(mods).remove( " " )) ))
+	: KCModule( KGlobal::instance(), parent ),d(new KCModuleContainerPrivate( QString(mods).remove( " " ).split( "," ) ))
 {
 	init();
 }
@@ -85,9 +85,12 @@ KCModuleContainer::KCModuleContainer( QWidget* parent, const QStringList& mods )
 
 void KCModuleContainer::init()
 {
-	d->topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint(), "topLayout" );
-	d->tabWidget = new QTabWidget(this, "tabWidget");
-	d->tabWidget->setMargin(KDialog::marginHint());
+	d->topLayout = new QVBoxLayout( this );
+  d->topLayout->setMargin( 0 );
+  d->topLayout->setSpacing( KDialog::spacingHint() );
+  d->topLayout->setObjectName( "topLayout" );
+	d->tabWidget = new QTabWidget(this);
+  d->tabWidget->setObjectName( "tabWidget");
 	connect( d->tabWidget, SIGNAL( currentChanged( QWidget* ) ), SLOT( tabSwitched( QWidget* ) ));
 	d->topLayout->addWidget( d->tabWidget );
 
@@ -109,7 +112,10 @@ void KCModuleContainer::finalize()
 	{
 		if(!d->btnLayout) /* It could already be added */
 		{
-			d->btnLayout = new QHBoxLayout(this, 0, 0, "btnLayout");
+			d->btnLayout = new QHBoxLayout(this);
+      d->btnLayout->setMargin(0);
+      d->btnLayout->setSpacing(0);
+      d->btnLayout->setObjectName("btnLayout");
 			d->btnRootMode = new KPushButton(KStdGuiItem::adminMode(), this);
                         d->btnRootMode->setObjectName("btnRootMode");
 					
@@ -146,7 +152,7 @@ void KCModuleContainer::addModule( const QString& module )
 			/* QT eats ampersands for dinner. But not this time. */
 			proxy->moduleInfo().moduleName().replace( "&", "&&" ));
 
-	d->tabWidget->setTabToolTip( proxy, proxy->moduleInfo().comment() );
+	d->tabWidget->setTabToolTip( d->tabWidget->indexOf( proxy ), proxy->moduleInfo().comment() );
 
 	connect( proxy, SIGNAL(changed(KCModuleProxy *)), SLOT(moduleChanged(KCModuleProxy *)));
 
@@ -189,8 +195,8 @@ void KCModuleContainer::tabSwitched( QWidget * module )
 
 void KCModuleContainer::runAsRoot()
 {
-	if ( d->tabWidget->currentPage() )
-		( (KCModuleProxy *) d->tabWidget->currentPage() )->runAsRoot();
+	if ( d->tabWidget->currentWidget() )
+		( (KCModuleProxy *) d->tabWidget->currentWidget() )->runAsRoot();
 	d->btnRootMode->setEnabled( false );
 }
 

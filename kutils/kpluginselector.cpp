@@ -30,10 +30,10 @@
 #include <qobject.h>
 #include <QEvent>
 #include <QHelpEvent>
+#include <QTreeWidget>
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <klistview.h>
 #include <ksimpleconfig.h>
 #include <kdialog.h>
 #include <kglobal.h>
@@ -61,18 +61,29 @@
     QCheckListViewItem that holds a pointer to the KPluginInfo object.
     Used in the tooltip code to access additional fields
 */
-class KPluginInfoLVI : public Q3CheckListItem
+class KPluginInfoLVI : public QTreeWidgetItem
 {
-public:
-    KPluginInfoLVI( KPluginInfo *pluginInfo, KListView *parent )
-    : Q3CheckListItem( parent, pluginInfo->name(), Q3CheckListItem::CheckBox ), m_pluginInfo( pluginInfo )
-    {
-    }
+    public:
+        KPluginInfoLVI( KPluginInfo *pluginInfo, QTreeWidget *parent )
+            : QTreeWidgetItem( parent, QStringList( pluginInfo->name() ) ),
+              m_pluginInfo( pluginInfo )
+        {
+            QString toolTip = i18n( "<qt><table>"
+                "<tr><td><b>Description:</b></td><td>%1</td></tr>"
+                "<tr><td><b>Author:</b></td><td>%2</td></tr>"
+                "<tr><td><b>Version:</b></td><td>%3</td></tr>"
+                "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>" )
+                .arg( m_pluginInfo->comment(),
+                      m_pluginInfo->author(),
+                      m_pluginInfo->version(),
+                      m_pluginInfo->license() );
+            setToolTip(0, toolTip);
+        }
 
-    KPluginInfo * pluginInfo() { return m_pluginInfo; }
+        KPluginInfo * pluginInfo() { return m_pluginInfo; }
 
-private:
-    KPluginInfo *m_pluginInfo;
+    private:
+        KPluginInfo *m_pluginInfo;
 };
 
 struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
@@ -96,9 +107,9 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
         delete config;
     }
 
-    QMap<Q3CheckListItem*, KPluginInfo*> pluginInfoMap;
+    QMap<QTreeWidgetItem*, KPluginInfo*> pluginInfoMap;
 
-    KListView     * listview;
+    QTreeWidget     * listview;
     QStackedWidget * widgetstack;
     KPluginSelector * kps;
     KConfigGroup * config;
@@ -114,30 +125,6 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
     bool currentchecked;
     int changed;
 };
-
-bool KPluginSelectionWidget::eventFilter( QObject *obj, QEvent *ev )
-{
-    if ( obj == d->listview->viewport() && ev->type() == QEvent::ToolTip)
-    {
-        QHelpEvent *he = static_cast<QHelpEvent *>(ev);
-        KPluginInfoLVI *item = dynamic_cast<KPluginInfoLVI *>( d->listview->itemAt( he->pos() ) );
-        if ( !item )
-            return true;
-
-        QString toolTip = i18n( "<qt><table>"
-            "<tr><td><b>Description:</b></td><td>%1</td></tr>"
-            "<tr><td><b>Author:</b></td><td>%2</td></tr>"
-            "<tr><td><b>Version:</b></td><td>%3</td></tr>"
-            "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>" ).arg( item->pluginInfo()->comment(),
-            item->pluginInfo()->author(), item->pluginInfo()->version(), item->pluginInfo()->license() );
-
-        //kDebug( 702 ) << k_funcinfo << "Adding tooltip: itemRect: " << itemRect << ", tooltip:  " << toolTip << endl;
-        QToolTip::showText( he->globalPos(), toolTip, d->listview->viewport() );
-        return true;
-    }
-
-    return QWidget::eventFilter( obj, ev );
-}
 
 
 KPluginSelectionWidget::KPluginSelectionWidget(
@@ -159,25 +146,19 @@ void KPluginSelectionWidget::init( const QList<KPluginInfo*> & plugininfos,
         const QString & category )
 {
     // setup Widgets
-    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
-    KListView * listview = new KListView( this );
-    listview->viewport()->installEventFilter( this ); //Listen for tooltip requests
+//    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
+    QTreeWidget * listview = new QTreeWidget( this );
     d->listview = listview;
 
-    connect( listview, SIGNAL( pressed( Q3ListViewItem * ) ), this,
-            SLOT( executed( Q3ListViewItem * ) ) );
-    connect( listview, SIGNAL( spacePressed( Q3ListViewItem * ) ), this,
-            SLOT( executed( Q3ListViewItem * ) ) );
-    connect( listview, SIGNAL( returnPressed( Q3ListViewItem * ) ), this,
-            SLOT( executed( Q3ListViewItem * ) ) );
-    connect( listview, SIGNAL( selectionChanged( Q3ListViewItem * ) ), this,
-            SLOT( executed( Q3ListViewItem * ) ) );
+    connect( listview, SIGNAL( itemPressed( QTreeWidgetItem *, int ) ), this,
+            SLOT( executed( QTreeWidgetItem *, int ) ) );
+    connect( listview, SIGNAL( itemActivated( QTreeWidgetItem *, int ) ), this,
+            SLOT( executed( QTreeWidgetItem *, int ) ) );
+    connect( listview, SIGNAL( itemSelectionChanged( QTreeWidgetItem *, int ) ), this,
+            SLOT( executed( QTreeWidgetItem *, int ) ) );
     listview->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Preferred );
     listview->setAcceptDrops( false );
-    listview->setFullWidth( true );
-    listview->setSelectionModeExt( KListView::Single );
-    listview->setAllColumnsShowFocus( true );
-    listview->addColumn( i18n( "Name" ) );
+    listview->setHeaderLabels( QStringList( i18n( "Name" ) ) );
     for( QList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
             it != plugininfos.end(); ++it )
     {
@@ -185,10 +166,13 @@ void KPluginSelectionWidget::init( const QList<KPluginInfo*> & plugininfos,
         if( !( *it )->isHidden() &&
                 ( category.isNull() || ( *it )->category() == category ) )
         {
-            Q3CheckListItem * item = new KPluginInfoLVI( *it, listview );
+            QTreeWidgetItem * item = new KPluginInfoLVI( *it, listview );
             if( ! ( *it )->icon().isEmpty() )
-                item->setPixmap( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
-            item->setOn( ( *it )->isPluginEnabled() );
+                item->setIcon( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
+            if ( ( *it )->isPluginEnabled() )
+                item->setCheckState( 0, Qt::Checked );
+            else
+                item->setCheckState( 0, Qt::Unchecked );
             d->pluginInfoMap.insert( item, *it );
         }
     }
@@ -197,8 +181,10 @@ void KPluginSelectionWidget::init( const QList<KPluginInfo*> & plugininfos,
     d->widgetstack = d->kps->widgetStack();
     load();
     // select and highlight the first item in the plugin list
-    if( listview->firstChild() )
-        listview->setSelected( listview->firstChild(), true );
+    if( listview->model()->rowCount() >= 1 ) {
+        const QModelIndex index = listview->model()->index( 0, 0 );
+        listview->selectionModel()->setCurrentIndex( index, QItemSelectionModel::Select );
+    }
 }
 
 KPluginSelectionWidget::~KPluginSelectionWidget()
@@ -208,10 +194,13 @@ KPluginSelectionWidget::~KPluginSelectionWidget()
 
 bool KPluginSelectionWidget::pluginIsLoaded( const QString & pluginName ) const
 {
-    for( QMap<Q3CheckListItem*, KPluginInfo*>::ConstIterator it =
-            d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
-        if( it.data()->pluginName() == pluginName )
-            return it.data()->isPluginEnabled();
+    QMapIterator<QTreeWidgetItem*, KPluginInfo*> it( d->pluginInfoMap );
+    while ( it.hasNext() ) {
+        it.next();
+        if( it.value()->pluginName() == pluginName )
+            return it.value()->isPluginEnabled();
+    }
+
     return false;
 }
 
@@ -346,24 +335,15 @@ void KPluginSelectionWidget::tabWidgetChanged( QWidget * widget )
         d->visible = false;
 }
 
-void KPluginSelectionWidget::executed( Q3ListViewItem * item )
+void KPluginSelectionWidget::executed( QTreeWidgetItem * item, int )
 {
     kDebug( 702 ) << k_funcinfo << endl;
     if( item == 0 )
         return;
 
-    // Why not a dynamic_cast? - Martijn
-    // because this is what the Qt API suggests; and since gcc 3.x I don't
-    // trust dynamic_cast anymore - mkretz
-    if( item->rtti() != 1 ) //check for a QCheckListItem
-        return;
+    bool checked = ( item->checkState( 0 ) == Qt::Checked );
 
-    Q3CheckListItem * citem = static_cast<Q3CheckListItem *>( item );
-    bool checked = citem->isOn();
-    //kDebug( 702 ) << "it's a " << ( checked ? "checked" : "unchecked" )
-    //    << " QCheckListItem" << endl;
-
-    KPluginInfo * info = d->pluginInfoMap[ citem ];
+    KPluginInfo * info = d->pluginInfoMap[ item ];
     Q_ASSERT( !info->isHidden() );
 
     if ( info->isPluginEnabled() != checked )
@@ -399,12 +379,13 @@ void KPluginSelectionWidget::load()
 {
     //kDebug( 702 ) << k_funcinfo << endl;
 
-    for( QMap<Q3CheckListItem*, KPluginInfo*>::Iterator it =
-            d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
-    {
-        KPluginInfo * info = it.data();
+    QMapIterator<QTreeWidgetItem*, KPluginInfo*> it( d->pluginInfoMap );
+    while ( it.hasNext() ) {
+        it.next();
+
+        KPluginInfo * info = it.value();
         info->load( d->config );
-        it.key()->setOn( info->isPluginEnabled() );
+        it.key()->setCheckState( 0, info->isPluginEnabled() ? Qt::Checked : Qt::Unchecked );
         if( d->visible && info == d->currentplugininfo )
             d->currentchecked = info->isPluginEnabled();
     }
@@ -422,11 +403,12 @@ void KPluginSelectionWidget::save()
 {
     kDebug( 702 ) << k_funcinfo << endl;
 
-    for( QMap<Q3CheckListItem*, KPluginInfo*>::Iterator it =
-            d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
-    {
-        KPluginInfo * info = it.data();
-        bool checked = it.key()->isOn();
+    QMapIterator<QTreeWidgetItem*, KPluginInfo*> it( d->pluginInfoMap );
+    while ( it.hasNext() ) {
+        it.next();
+
+        KPluginInfo * info = it.value();
+        bool checked = ( it.key()->checkState( 0 ) == Qt::Checked );
         info->setPluginEnabled( checked );
         info->save( d->config );
         d->plugincheckedchanged[ info ] = false;
@@ -442,7 +424,7 @@ void KPluginSelectionWidget::save()
                 names.append( QString() );
             for( QStringList::ConstIterator nameit = names.begin();
                     nameit != names.end(); ++nameit )
-                if( updatedModules.find( *nameit ) == updatedModules.end() )
+                if( !updatedModules.contains( *nameit ) )
                     updatedModules.append( *nameit );
         }
     for( QStringList::ConstIterator it = updatedModules.begin(); it != updatedModules.end(); ++it )
@@ -461,19 +443,22 @@ void KPluginSelectionWidget::checkDependencies( const KPluginInfo * info )
         return;
 
     for( QStringList::ConstIterator it = info->dependencies().begin();
-            it != info->dependencies().end(); ++it )
-        for( QMap<Q3CheckListItem*,
-                KPluginInfo*>::Iterator infoIt = d->pluginInfoMap.begin();
-                infoIt != d->pluginInfoMap.end(); ++infoIt )
-            if( infoIt.data()->pluginName() == *it )
-            {
-                if( !infoIt.key()->isOn() )
+            it != info->dependencies().end(); ++it ) {
+
+        QMapIterator<QTreeWidgetItem*, KPluginInfo*> infoIt( d->pluginInfoMap );
+        while ( infoIt.hasNext() ) {
+            infoIt.next();
+
+            if( infoIt.value()->pluginName() == *it ) {
+                if( infoIt.key()->checkState(0) == Qt::Unchecked )
                 {
-                    infoIt.key()->setOn( true );
-                    checkDependencies( infoIt.data() );
+                    infoIt.key()->setCheckState( 0, Qt::Checked );
+                    checkDependencies( infoIt.value() );
                 }
                 continue;
             }
+        }
+    }
 }
 
 class KPluginSelector::KPluginSelectorPrivate
@@ -498,13 +483,16 @@ KPluginSelector::KPluginSelector( QWidget * parent )
     : QWidget( parent )
     , d( new KPluginSelectorPrivate )
 {
-    QBoxLayout * hbox = new QHBoxLayout( this, 0, KDialog::spacingHint() );
-    hbox->setAutoAdd( true );
+    QBoxLayout * hbox = new QHBoxLayout( this );
+    hbox->setMargin( 0 );
+    hbox->setSpacing( KDialog::spacingHint() );
 
     QSplitter* splitter = new QSplitter( Qt::Horizontal, this );
-    d->frame = new QFrame( splitter, "KPluginSelector left frame" );
+    d->frame = new QFrame( splitter );
+    d->frame->setObjectName( "KPluginSelector left frame" );
     d->frame->setFrameStyle( QFrame::NoFrame );
-    ( new QVBoxLayout( d->frame, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
+    hbox->addWidget( splitter );
+//    ( new QVBoxLayout( d->frame, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
 
     // widgetstack
     d->widgetstack = new QStackedWidget( splitter/*, "KPluginSelector Config Pages"*/ );
@@ -513,7 +501,7 @@ KPluginSelector::KPluginSelector( QWidget * parent )
 
     QLabel * label = new QLabel( i18n( "(This plugin is not configurable)" ),
             d->widgetstack );
-    ( new QVBoxLayout( label, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
+//    ( new QVBoxLayout( label, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     label->setAlignment( Qt::AlignCenter );
     label->setMinimumSize( 200, 200 );
 
@@ -540,7 +528,7 @@ void KPluginSelector::checkNeedForTabWidget()
             kDebug( 702 ) << "create TabWidget" << endl;
             d->tabwidget = new KTabWidget( d->frame  );
             d->tabwidget->setObjectName( "KPluginSelector TabWidget" );
-            w->reparent( d->tabwidget, QPoint( 0, 0 ) );
+            w->setParent( d->tabwidget );
             d->tabwidget->addTab( w, w->catName() );
             connect( d->tabwidget, SIGNAL( currentChanged( QWidget * ) ), w,
                     SLOT( tabWidgetChanged( QWidget * ) ) );
@@ -685,12 +673,11 @@ void KPluginSelector::defaults()
 
     // if we get here the visible Widget must be a tabwidget holding more than
     // one KCM
-    QObjectList kcms = pluginconfig->queryList( "KCModuleProxy",
-            0, false, false );
-    foreach ( QObject * obj,  kcms )
-    {
-        static_cast<KCModule*>( obj )->defaults();
-    }
+    QList<KCModuleProxy*> kcms = pluginconfig->findChildren<KCModuleProxy*>();
+    QListIterator<KCModuleProxy*> it( kcms );
+    while ( it.hasNext() )
+        it.next()->defaults();
+
     // FIXME: update changed state
 }
 

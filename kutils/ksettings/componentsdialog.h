@@ -27,7 +27,7 @@
 
 class QString;
 class KPluginInfo;
-class Q3ListViewItem;
+class QTreeWidgetItem;
 
 namespace KSettings
 {
@@ -75,7 +75,7 @@ class KUTILS_EXPORT ComponentsDialog : public KDialogBase
         void slotApply();
 
     private Q_SLOTS:
-        void executed( Q3ListViewItem * );
+        void executed( QTreeWidgetItem *, int );
 
     private:
         void savePluginInfos();

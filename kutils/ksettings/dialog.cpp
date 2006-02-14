@@ -480,8 +480,7 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 			pcit != parentComponents.end(); ++pcit )
 	{
 		// if the parentComponent is not registered ignore it
-		if( d->registeredComponents.find( *pcit ) ==
-				d->registeredComponents.end() )
+		if( !d->registeredComponents.contains( *pcit ) )
 			continue;
 
 		// we check if the parent component is a plugin

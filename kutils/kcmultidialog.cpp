@@ -147,7 +147,7 @@ void KCMultiDialog::apply()
             const QStringList names = moduleParentComponents.value( m );
             kDebug(710) << k_funcinfo << names << " saved and added to the list" << endl;
             for( QStringList::ConstIterator it = names.begin(); it != names.end(); ++it )
-                if( updatedModules.find( *it ) == updatedModules.end() )
+                if( !updatedModules.contains( *it ) )
                     updatedModules.append( *it );
         }
     }
@@ -245,6 +245,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
     if( !KCModuleLoader::testModule( moduleinfo ))
             return;
 
+    QHBoxLayout *hbox = 0;
     QFrame* page = 0;
     if (!moduleinfo.service()->noDisplay())
         switch( dialogface )
@@ -262,7 +263,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
                 break;
             case Plain:
                 page = plainPage();
-                ( new QHBoxLayout( page ) )->setAutoAdd( true );
+                hbox = new QHBoxLayout( page );
                 break;
             default:
                 kError( 710 ) << "unsupported dialog face for KCMultiDialog"
@@ -283,7 +284,8 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
         kDebug( 710 ) << "Use KCModule from the list of orphans for " <<
             moduleinfo.moduleName() << ": " << module << endl;
 
-        module->reparent( page, 0, QPoint( 0, 0 ), true );
+        module->setParent( page );
+        hbox->addWidget( module );
 
         if( module->changed() )
             clientChanged( true );
@@ -294,6 +296,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
     else
     {
         module = new KCModuleProxy( moduleinfo, withfallback, page );
+        hbox->addWidget( module );
         const QStringList parentComponents = moduleinfo.service()->property(
             "X-KDE-ParentComponents" ).toStringList();
         moduleParentComponents.insert( module, parentComponents );
@@ -331,7 +334,7 @@ void KCMultiDialog::removeAllModules()
         if( page )
         {
             // I hate this
-            kcm->reparent( 0, QPoint( 0, 0 ), false );
+            kcm->setParent( 0 );
             delete page;
         }
         m_orphanModules[ ( *it ).service ] = kcm;
@@ -352,7 +355,7 @@ void KCMultiDialog::slotCurrentPageChanged(QWidget *page)
 {
     kDebug(710) << k_funcinfo << endl;
 
-    QObject * obj = page->child( 0, "KCModuleProxy" );
+    QObject * obj = page->findChild<KCModuleProxy*>( 0 );
     if( ! obj )
         return;
 

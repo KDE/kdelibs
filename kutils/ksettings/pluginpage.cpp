@@ -43,7 +43,7 @@ class PluginPage::PluginPagePrivate
     : KCModule( parent, name, args )
     , d( new PluginPagePrivate )
 {
-    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
+//    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
     connect( d->selwid, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
 }
@@ -52,7 +52,7 @@ class PluginPage::PluginPagePrivate
     : KCModule( instance, parent, args )
     , d( new PluginPagePrivate )
 {
-    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
+//    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
     connect( d->selwid, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
     connect( d->selwid, SIGNAL( configCommitted( const QByteArray & ) ),
