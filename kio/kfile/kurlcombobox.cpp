@@ -213,7 +213,7 @@ void KUrlComboBox::setURL( const KUrl& url )
     QString urlToInsert = url.url(-1);
     while ( mit != itemMapper.end() ) {
         if ( urlToInsert == mit.value()->url.url(-1) ) {
-            setCurrentItem( mit.key() );
+            setCurrentIndex( mit.key() );
 
             if ( myMode == Directories )
                 updateItem( mit.value(), mit.key(), opendirIcon );
@@ -257,7 +257,7 @@ void KUrlComboBox::setURL( const KUrl& url )
     itemMapper.insert( id, item );
     itemList.append( item );
 
-    setCurrentItem( id );
+    setCurrentIndex( id );
     urlAdded = true;
     blockSignals( false );
 }
@@ -303,7 +303,7 @@ void KUrlComboBox::setMaxItems( int max )
         if ( count() > 0 ) { // restore the previous currentItem
             if ( oldCurrent >= count() )
                 oldCurrent = count() -1;
-            setCurrentItem( oldCurrent );
+            setCurrentIndex( oldCurrent );
         }
     }
 }

@@ -206,7 +206,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
                 id = map.getValue("OU");
             d->_chain->insertItem(QString::number(++cnt)+" - "+id);
         }
-        d->_chain->setCurrentItem(0);
+        d->_chain->setCurrentIndex(0);
     } else d->_chain->setEnabled(false);
 
     layout->addWidget(new QLabel(i18n("Peer certificate:"), this), 2, 0);

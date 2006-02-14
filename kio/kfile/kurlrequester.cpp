@@ -102,7 +102,7 @@ public:
             else
             {
                combo->insertItem( text );
-               combo->setCurrentItem( combo->count()-1 );
+               combo->setCurrentIndex( combo->count()-1 );
             }
         }
 	else
