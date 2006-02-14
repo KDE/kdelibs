@@ -66,13 +66,13 @@ public:
    * @param _fullpath path of the desktop file, set to "" if calling from
    *                  a inherited constructor.
    */
-  KServiceType( const QString & _fullpath );
+  explicit KServiceType( const QString & _fullpath );
 
   /**
    * Construct a service type and take all informations from a deskop file.
    * @param config the configuration file
    */
-  KServiceType( KDesktopFile *config);
+  explicit KServiceType( KDesktopFile *config);
 
   /**
    * @internal construct a service from a stream.
