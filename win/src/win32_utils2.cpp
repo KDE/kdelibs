@@ -40,7 +40,7 @@ QString getWin32RegistryValue(HKEY key, const QString& subKey, const QString& it
 	DWORD dwType=REG_SZ;
 	DWORD dwSize;
 
-	if (ERROR_SUCCESS!=RegOpenKeyEx(key, WIN32_CAST_CHAR subKey.utf16(), NULL, KEY_READ, &hKey))
+	if (ERROR_SUCCESS!=RegOpenKeyEx(key, WIN32_CAST_CHAR subKey.utf16(), 0, KEY_READ, &hKey))
 		FAILURE;
 
 	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, WIN32_CAST_CHAR item.utf16(), NULL, NULL, NULL, &dwSize))

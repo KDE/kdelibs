@@ -21,13 +21,23 @@
 #ifndef WINPOSIX_EXPORT_H
 #define WINPOSIX_EXPORT_H
 
-#ifndef WINPOSIX_EXPORT
-# if defined(MAKE_WINPOSIX_LIB) || defined(MAKE_KDEWIN32_LIB)
-#  define WINPOSIX_EXPORT __declspec(dllexport)
+#ifdef __GNUC__
+# ifdef _HAVE_GCC_VISIBILITY
+#  define WINPOSIX_EXPORT __attribute__ ((visibility("default")))
+#  define WINPOSIX_IMPORT
 # else
-#  define WINPOSIX_EXPORT __declspec(dllimport)
+#  define WINPOSIX_EXPORT
+#  define WINPOSIX_IMPORT
 # endif
-#  define WINPOSIX_IMPORT __declspec(dllimport)
+#else
+# ifndef WINPOSIX_EXPORT
+#  if defined(MAKE_WINPOSIX_LIB) || defined(MAKE_KDEWIN32_LIB)
+#   define WINPOSIX_EXPORT __declspec(dllexport)
+#  else
+#   define WINPOSIX_EXPORT __declspec(dllimport)
+#  endif
+#   define WINPOSIX_IMPORT __declspec(dllimport)
+# endif
 #endif
 
 /* for compatibility */

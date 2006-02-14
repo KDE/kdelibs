@@ -146,7 +146,7 @@ typedef unsigned int size_t;
 
 KDEWIN32_EXPORT int kde_gethostname(char *__name, size_t __len)
 {
-  size_t len = __len;
+  DWORD len = __len;
   if (0==GetComputerNameA(__name, &len))
     return -1;
   return 0;

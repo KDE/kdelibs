@@ -42,9 +42,9 @@ typedef unsigned int size_t;
 typedef size_t ssize_t;
 #endif
 
-
-#ifndef socklen_t
-#define socklen_t int
+#ifndef _SOCKLEN_T_DEFINED
+#define _SOCKLEN_T_DEFINED
+typedef int socklen_t;
 #endif 
 
 #ifndef _PID_T_

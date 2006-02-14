@@ -25,6 +25,7 @@
 
 //#define IPV6STRICT      // this maybe breaks a lot of things... but we also maybe need it !?
 #include <winsock2.h>
+#include <Ws2tcpip.h>
 #include "fixwinh.h"
 
 #ifdef __cplusplus
@@ -40,10 +41,6 @@ struct msghdr
 	void	*	msg_accrights;	/* Per protocol magic (eg BSD file descriptor passing) */
 	int		msg_accrightslen;	/* Length of rights list */
 };
-
-#ifndef socklen_t
-#define socklen_t int
-#endif
 
 /* Socket types. */
 #define SOCK_STREAM	1		/* stream (connection) socket	*/
@@ -129,18 +126,6 @@ struct msghdr
 #define IP_DEFAULT_MULTICAST_TTL        1
 #define IP_DEFAULT_MULTICAST_LOOP       1
 #define IP_MAX_MEMBERSHIPS              20
-
-/* IP options for use with WinSock */
-
-#define IP_OPTIONS          1
-#define IP_MULTICAST_IF     2
-#define IP_MULTICAST_TTL    3
-#define IP_MULTICAST_LOOP   4
-#define IP_ADD_MEMBERSHIP   5
-#define IP_DROP_MEMBERSHIP  6
-#define IP_TTL              7
-#define IP_TOS              8
-#define IP_DONTFRAGMENT     9
 
 /* IPX options */
 #define IPX_TYPE	1
