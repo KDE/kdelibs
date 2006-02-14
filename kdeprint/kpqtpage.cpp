@@ -155,7 +155,9 @@ void KPQtPage::init()
           m_nuppix->setWhatsThis(whatsThisPagesPerSheetOtPageLabel);
 
 	// layout creation
-	QGridLayout	*lay0 = new QGridLayout(this, 3, 2, 0, 10);
+	QGridLayout	*lay0 = new QGridLayout(this);
+  lay0->setMargin(0);
+  lay0->setSpacing(10);
 	lay0->setRowStretch(1,1);
 	lay0->setRowStretch(2,1);
 	lay0->addWidget(m_pagesizelabel,0,0);
@@ -163,20 +165,26 @@ void KPQtPage::init()
 	lay0->addWidget(m_orientbox,1,0);
 	lay0->addWidget(m_colorbox,1,1);
 	lay0->addWidget(m_nupbox,2,0);
-	QGridLayout	*lay1 = new QGridLayout(m_orientbox->layout(), 2, 2, 10);
+	QGridLayout	*lay1 = new QGridLayout(0);
+  m_orientbox->layout()->addItem(lay1);
+  lay1->setSpacing(10);
 	lay1->addWidget(m_portrait,0,0);
 	lay1->addWidget(m_landscape,1,0);
-	lay1->addMultiCellWidget(m_orientpix,0,1,1,1);
-	QGridLayout	*lay2 = new QGridLayout(m_colorbox->layout(), 2, 2, 10);
+	lay1->addWidget(m_orientpix,0,1,1,1);
+	QGridLayout	*lay2 = new QGridLayout(0);
+  m_colorbox->layout()->addItem(lay2);
+  lay2->setSpacing(10);
 	lay2->addWidget(m_color,0,0);
 	lay2->addWidget(m_grayscale,1,0);
-	lay2->addMultiCellWidget(m_colorpix,0,1,1,1);
-	QGridLayout	*lay3 = new QGridLayout(m_nupbox->layout(), 4, 2, 5);
+	lay2->addWidget(m_colorpix,0,1,1,1);
+	QGridLayout	*lay3 = new QGridLayout(0);
+  m_nupbox->layout()->addItem(lay3);
+  lay3->setSpacing(5);
 	lay3->addWidget(m_nup1,0,0);
 	lay3->addWidget(m_nup2,1,0);
 	lay3->addWidget(m_nup4,2,0);
 	lay3->addWidget(m_nupother,3,0);
-	lay3->addMultiCellWidget(m_nuppix,0,3,1,1);
+	lay3->addWidget(m_nuppix,0,3,1,1);
 
 	// initialization
 	m_portrait->setChecked(true);
@@ -200,7 +208,7 @@ void KPQtPage::init()
 	if (!driver())
 	{
 		for (int i=0; i<KPrinter::NPageSize-1; i++)
-			m_pagesize->insertItem(i18n(page_sizes[i].text));
+			m_pagesize->addItem(i18n(page_sizes[i].text));
 		// default page size to locale settings
 		m_pagesize->setCurrentIndex(findIndex((KPrinter::PageSize)(KGlobal::locale()->pageSize())));
 	}
@@ -209,7 +217,7 @@ void KPQtPage::init()
 		DrListOption	*lopt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
                 foreach (DrBase* choice, lopt->choices())
 		{
-			m_pagesize->insertItem(choice->get("text"));
+			m_pagesize->addItem(choice->get("text"));
 			if (choice == lopt->currentChoice())
 				m_pagesize->setCurrentIndex(m_pagesize->count()-1);
 		}
@@ -266,7 +274,7 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 	else if (!opts["kde-pagesize"].isEmpty())
 		m_pagesize->setCurrentIndex(findIndex(opts["kde-pagesize"].toInt()));
 	ID = NUP_1;
-	if (opts["_kde-filters"].find("psnup") != -1)
+	if (opts["_kde-filters"].indexOf("psnup") != -1)
 	{
 		if (opts.contains("_kde-psnup-nup")) {
 			ID = opts["_kde-psnup-nup"].toInt();
@@ -321,9 +329,9 @@ void KPQtPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 	else if (ID != NUP_OTHER)
 	{
 		int	nup(ID == NUP_2 ? 2 : 4);
-		if (s.find("psnup") == -1)
+		if (s.indexOf("psnup") == -1)
 		{
-			QStringList	fl = QStringList::split(',', s, false);
+			QStringList	fl = s.split(',', QString::SkipEmptyParts);
 			KXmlCommandManager::self()->insertCommand(fl, "psnup");
 			s = fl.join(",");
 		}

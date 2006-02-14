@@ -21,23 +21,21 @@
 #ifndef DRIVERITEM_H
 #define DRIVERITEM_H
 
-#include <q3listview.h>
+#include <QTreeWidget>
 
 class DrBase;
 
-class DriverItem : public Q3ListViewItem
+class DriverItem : public QTreeWidgetItem
 {
 public:
-	DriverItem(Q3ListView *parent, DrBase *item);
-	DriverItem(Q3ListViewItem *parent, Q3ListViewItem *after, DrBase *item);
+	DriverItem(QTreeWidget *parent, DrBase *item);
+	DriverItem(QTreeWidgetItem *parent, QTreeWidgetItem *after, DrBase *item);
 
 	void updateText();
 	void updateTextRecursive();
 	DrBase* drItem() const 	{ return m_item; }
 	bool hasConflict()	{ return m_conflict; }
 	bool updateConflict();
-
-	void paintCell(QPainter*, const QColorGroup&, int, int, int);
 
 private:
 	DrBase	*m_item;

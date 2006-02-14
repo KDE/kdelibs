@@ -28,10 +28,9 @@ class QLineEdit;
 class QSlider;
 class QLabel;
 class KListBox;
-class Q3ListBoxItem;
 class Q3VButtonGroup;
 class QStackedWidget;
-class Q3ListViewItem;
+class QTreeWidgetItem;
 class DrBase;
 class DriverItem;
 
@@ -124,7 +123,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 	void slotValueChanged(const QString&);
-	void slotItemSelected(Q3ListViewItem*);
+	void slotItemSelected(QTreeWidgetItem*);
 
 private:
 	QStackedWidget	*m_stack;

@@ -113,7 +113,7 @@ DrMain::~DrMain()
 		QFile::remove(get("temporary"));
 }
 
-DriverItem* DrMain::createTreeView(Q3ListView *parent)
+DriverItem* DrMain::createTreeView(QTreeWidget *parent)
 {
 	DriverItem	*root = new DriverItem(parent, this);
 	createTree(root);

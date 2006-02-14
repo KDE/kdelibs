@@ -22,18 +22,14 @@
 #include "driveritem.h"
 #include "driver.h"
 
-#include <q3listview.h>
-#include <q3header.h>
-#include <qlayout.h>
+#include <QLayout>
+
 #include <klocale.h>
 
 DrListView::DrListView( QWidget *parent )
-    : KListView(parent)
+    : QTreeWidget(parent)
 {
-        addColumn(QString());
-	header()->hide();
 	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
-	setSorting(-1);
 }
 
 //****************************************************************************************************
@@ -103,7 +99,8 @@ DriverView::DriverView( QWidget *parent )
 	main_->addWidget(m_view,1);
 	main_->addWidget(m_optview,0);
 
-	connect(m_view,SIGNAL(selectionChanged(Q3ListViewItem*)),m_optview,SLOT(slotItemSelected(Q3ListViewItem*)));
+	connect(m_view,SIGNAL(itemSelectionChanged()), this, SLOT( slotItemSelectionChanged() ) );
+  connect(this,SIGNAL(itemSelected(QTreeWidgetItem*)), m_optview,SLOT(slotItemSelected(QTreeWidgetItem*)));
 	connect(m_optview,SIGNAL(changed()),SLOT(slotChanged()));
 }
 
@@ -127,8 +124,13 @@ void DriverView::slotChanged()
 	if (m_driver)
 	{
 		m_conflict = m_driver->checkConstraints();
-		((DriverItem*)m_view->firstChild())->updateConflict();
+		((DriverItem*)m_view->topLevelItem(0))->updateConflict();
 	}
+}
+
+void DriverView::slotItemSelectionChanged()
+{
+  emit itemSelected( m_view->selectedItems().first() );
 }
 
 void DriverView::setOptions(const QMap<QString,QString>& opts)
@@ -136,7 +138,7 @@ void DriverView::setOptions(const QMap<QString,QString>& opts)
 	if (m_driver)
 	{
 		m_driver->setOptions(opts);
-		static_cast<DriverItem*>( m_view->firstChild() )->updateTextRecursive();
+		static_cast<DriverItem*>( m_view->topLevelItem(0) )->updateTextRecursive();
 		slotChanged();
 		m_optview->slotItemSelected(m_view->currentItem());
 	}

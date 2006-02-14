@@ -41,9 +41,9 @@ bool KPipeProcess::open(const QString& cmd, QIODevice::OpenModeFlag mode)
 		return false;
 
 	// create the pipe
-	m_pipe = popen(cmd.latin1(),(mode == QIODevice::WriteOnly ? "w" : "r"));
+	m_pipe = popen(cmd.toLatin1(),(mode == QIODevice::WriteOnly ? "w" : "r"));
 	if (m_pipe)
-		if (!QFile::open(mode,m_pipe))
+		if (!QFile::open(m_pipe, mode))
 			close();
 	return (m_pipe != NULL);
 }

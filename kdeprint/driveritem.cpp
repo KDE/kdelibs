@@ -24,19 +24,17 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 
-DriverItem::DriverItem(Q3ListView *parent, DrBase *item)
-: Q3ListViewItem(parent), m_item(item), m_conflict(false)
+DriverItem::DriverItem(QTreeWidget *parent, DrBase *item)
+: QTreeWidgetItem(parent), m_item(item), m_conflict(false)
 {
-	setOpen(depth() < 3);
-	setPixmap(0,SmallIcon("fileprint"));
+	setIcon(0,SmallIcon("fileprint"));
 	updateText();
 }
 
-DriverItem::DriverItem(Q3ListViewItem *parent, Q3ListViewItem *after, DrBase *item)
-: Q3ListViewItem(parent, after), m_item(item), m_conflict(false)
+DriverItem::DriverItem(QTreeWidgetItem *parent, QTreeWidgetItem *after, DrBase *item)
+: QTreeWidgetItem(parent, after), m_item(item), m_conflict(false)
 {
-	setOpen(depth() < 3);
-	if (item) setPixmap(0,SmallIcon((item->isOption() ? "document" : "folder")));
+	if (item) setIcon(0,SmallIcon((item->isOption() ? "document" : "folder")));
 	updateText();
 }
 
@@ -52,65 +50,19 @@ void DriverItem::updateText()
 			// remove all children: something has changed (otherwise this
 			// function would not be called), so it make sense to remove
 			// those children in all cases.
-			while (firstChild())
-				delete firstChild();
+			while (child(0))
+				delete child(0);
 			DrBase	*ch = static_cast<DrListOption*>(m_item)->currentChoice();
 			if (ch && ch->type() == DrBase::ChoiceGroup)
 			{
 				// add new children
 				static_cast<DrChoiceGroup*>(ch)->createItem(this);
-				setOpen(true);
 			}
 		}
 		setText(0,s);
 	}
 	else
 		setText(0,"ERROR");
-	widthChanged();
-}
-
-void DriverItem::paintCell(QPainter *p, const QColorGroup& cg, int, int width, int)
-{
-	// background
-	p->fillRect(0, 0, width, height(), cg.base());
-
-	// highlight rectangle
-	if (isSelected())
-		p->fillRect(0, 0, /*2+p->fontMetrics().width(text(0))+(pixmap(0) ? pixmap(0)->width()+2 : 0)*/ width, height(), (m_conflict ? Qt::red : cg.highlight()));
-
-	// draw pixmap
-	int	w(0);
-	if (pixmap(0) && !pixmap(0)->isNull())
-	{
-		int	h((height()-pixmap(0)->height())/2);
-		p->drawPixmap(w,h,*pixmap(0));
-		w += (pixmap(0)->width()+2);
-	}
-
-	// draw Text
-	if (!m_item || !m_item->isOption() || isSelected())
-	{
-		p->setPen((isSelected() ? cg.highlightedText() : (m_conflict ? Qt::red : cg.text())));
-		p->drawText(w,0,width-w,height(),Qt::AlignLeft|Qt::AlignVCenter,text(0));
-	}
-	else
-	{
-		int	w1(0);
-		QString	s(m_item->get("text") + ": <");
-		w1 = p->fontMetrics().width(s);
-		p->setPen(cg.text());
-		p->drawText(w,0,w1,height(),Qt::AlignLeft|Qt::AlignVCenter,s);
-		w += w1;
-		p->setPen((m_conflict ? Qt::red : Qt::darkGreen));
-		s = m_item->prettyText();
-		w1 = p->fontMetrics().width(s);
-		p->drawText(w,0,w1,height(),Qt::AlignLeft|Qt::AlignVCenter,s);
-		w += w1;
-		p->setPen(cg.text());
-		s = QLatin1String(">");
-		w1 = p->fontMetrics().width(s);
-		p->drawText(w,0,w1,height(),Qt::AlignLeft|Qt::AlignVCenter,s);
-	}
 }
 
 bool DriverItem::updateConflict()
@@ -120,20 +72,17 @@ bool DriverItem::updateConflict()
 	{
 		if (!m_item->isOption())
 		{
-			DriverItem	*item = (DriverItem*)firstChild();
-			while (item)
-			{
+      for ( int i = 0; i < childCount(); ++i ) {
+			  DriverItem	*item = (DriverItem*)child(i);
 				if (item->updateConflict())
 					m_conflict = true;
-				item = (DriverItem*)item->nextSibling();
-			}
+      }
 		}
 		else
 		{
 			m_conflict = (m_item->conflict());
 		}
 	}
-	repaint();
 	return m_conflict;
 }
 
@@ -142,10 +91,8 @@ void DriverItem::updateTextRecursive()
 	if ( m_item->isOption() )
 		updateText();
 
-	DriverItem *item = static_cast<DriverItem*>( firstChild() );
-	while ( item )
-	{
-		item->updateTextRecursive();
-		item = static_cast<DriverItem*>( item->nextSibling() );
-	}
+  for ( int i = 0; i < childCount(); ++i ) {
+    DriverItem	*item = (DriverItem*)child(i);
+    item->updateTextRecursive();
+  }
 }

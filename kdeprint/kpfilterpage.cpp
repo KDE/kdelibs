@@ -172,9 +172,13 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	m_info->setFrameStyle( QFrame::Panel|QFrame::Sunken );
 	m_info->setMinimumSize( QSize( 240, 100 ) );
 
-	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 0, KDialog::spacingHint());
-	l1->setColStretch(0, 1);
-	QVBoxLayout	*l2 = new QVBoxLayout(0, 0, 1);
+	QGridLayout	*l1 = new QGridLayout(this);
+  l1->setMargin(0);
+  l1->setSpacing(KDialog::spacingHint());
+	l1->setColumnStretch(0, 1);
+	QVBoxLayout	*l2 = new QVBoxLayout(0);
+  l2->setMargin(0);
+  l2->setSpacing(1);
 	l1->addWidget(m_view, 0, 0);
 	l1->addLayout(l2, 0, 1);
 	l2->addWidget(m_add);
@@ -185,7 +189,7 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	l2->addSpacing(5);
 	l2->addWidget(m_configure);
 	l2->addStretch(1);
-	l1->addMultiCellWidget(m_info, 1, 1, 0, 1);
+	l1->addWidget(m_info, 1, 1, 0, 1);
 	slotItemSelected(0);
 
 	resize(100,50);
@@ -288,12 +292,12 @@ void KPFilterPage::slotItemSelected(Q3ListViewItem *item)
 
 void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 {
-	QStringList	filters = QStringList::split(',',opts["_kde-filters"],false);
+	QStringList	filters = opts["_kde-filters"].split(',',QString::SkipEmptyParts);
 	// remove unneeded filters
 	Q3DictIterator<KXmlCommand>	dit(m_activefilters);
 	for (;dit.current();)
 	{
-		if (filters.find(dit.currentKey()) == filters.end())
+		if (!filters.contains(dit.currentKey()))
 			m_activefilters.remove(dit.currentKey());
 		else
 		{
@@ -408,7 +412,7 @@ void KPFilterPage::updateInfo()
 		if ( !f->comment().isEmpty() )
 			txt.append( "<br>" ).append( f->comment() );
 	}
-	m_info->setText(txt);
+	m_info->setHtml(txt);
 }
 
 #include "kpfilterpage.moc"

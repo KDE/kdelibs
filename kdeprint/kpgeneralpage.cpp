@@ -55,16 +55,16 @@ static void initCombo(QComboBox *cb, DrListOption *opt)
 	{
 		cb->addItem(choice->get("text"));
 		if (choice == opt->currentChoice())
-			cb->setCurrentItem(cb->count()-1);
+			cb->setCurrentIndex(cb->count()-1);
 	}
 }
 
 static void setComboItem(QComboBox *cb, const QString& txt)
 {
 	for (int i=0;i<cb->count();i++)
-		if (cb->text(i) == txt)
+		if (cb->itemText(i) == txt)
 		{
-			cb->setCurrentItem(i);
+			cb->setCurrentIndex(i);
 			return;
 		}
 }
@@ -323,10 +323,16 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
 	m_endbannerlabel->setBuddy(m_endbanner);
 
 	// layout creation
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
-          this->setWhatsThis(whatsThisPrintPropertiesGeneralPage);
-	QGridLayout	*lay1 = new QGridLayout(0, 3, 2, 0, KDialog::spacingHint());
-	QGridLayout	*lay2 = new QGridLayout(0, 2, 2, 0, KDialog::spacingHint());
+	QVBoxLayout	*lay0 = new QVBoxLayout(this);
+  lay0->setMargin(0);
+  lay0->setSpacing(KDialog::spacingHint());
+  this->setWhatsThis(whatsThisPrintPropertiesGeneralPage);
+	QGridLayout	*lay1 = new QGridLayout(0);
+  lay1->setMargin(0);
+  lay1->setSpacing(KDialog::spacingHint());
+	QGridLayout	*lay2 = new QGridLayout(0);
+  lay2->setMargin(0);
+  lay2->setSpacing(KDialog::spacingHint());
 	lay0->addStretch(1);
 	lay0->addLayout(lay1);
 	lay0->addStretch(1);
@@ -342,35 +348,39 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
 	lay2->addWidget(m_bannerbox, 1, 0);
 	lay2->addWidget(m_duplexbox, 0, 1);
 	lay2->addWidget(m_nupbox, 1, 1);
-	lay2->setColStretch(0, 1);
-	lay2->setColStretch(1, 1);
-	QGridLayout	*lay3 = new QGridLayout(m_orientbox->layout(), 4, 2,
-		KDialog::spacingHint());
+	lay2->setColumnStretch(0, 1);
+	lay2->setColumnStretch(1, 1);
+	QGridLayout	*lay3 = new QGridLayout(0);
+	lay3->setSpacing(KDialog::spacingHint());
+  m_orientbox->layout()->addItem(lay3);
 	lay3->addWidget(m_portrait, 0, 0);
 	lay3->addWidget(m_landscape, 1, 0);
 	lay3->addWidget(m_revland, 2, 0);
 	lay3->addWidget(m_revport, 3, 0);
-	lay3->addMultiCellWidget(m_orientpix, 0, 3, 1, 1);
-	QGridLayout	*lay4 = new QGridLayout(m_duplexbox->layout(), 3, 2,
-		KDialog::spacingHint());
+	lay3->addWidget(m_orientpix, 0, 3, 1, 1);
+	QGridLayout	*lay4 = new QGridLayout(0);
+  lay4->setSpacing(KDialog::spacingHint());
+  m_duplexbox->layout()->addItem(lay4);
 	lay4->addWidget(m_dupnone, 0, 0);
 	lay4->addWidget(m_duplong, 1, 0);
 	lay4->addWidget(m_dupshort, 2, 0);
-	lay4->addMultiCellWidget(m_duplexpix, 0, 2, 1, 1);
+	lay4->addWidget(m_duplexpix, 0, 2, 1, 1);
 	lay4->setRowStretch( 0, 1 );
-	QGridLayout	*lay5 = new QGridLayout(m_nupbox->layout(), 3, 2,
-		KDialog::spacingHint());
+	QGridLayout	*lay5 = new QGridLayout(0);
+  lay5->setSpacing(KDialog::spacingHint());
+  m_nupbox->layout()->addItem(lay5);
 	lay5->addWidget(m_nup1, 0, 0);
 	lay5->addWidget(m_nup2, 1, 0);
 	lay5->addWidget(m_nup4, 2, 0);
-	lay5->addMultiCellWidget(m_nuppix, 0, 2, 1, 1);
-	QGridLayout	*lay6 = new QGridLayout(m_bannerbox->layout(), 2, 2,
-		KDialog::spacingHint());
+	lay5->addWidget(m_nuppix, 0, 2, 1, 1);
+	QGridLayout	*lay6 = new QGridLayout(0);
+  lay6->setSpacing(KDialog::spacingHint());
+  m_bannerbox->layout()->addItem(lay6);
 	lay6->addWidget(m_startbannerlabel, 0, 0);
 	lay6->addWidget(m_endbannerlabel, 1, 0);
 	lay6->addWidget(m_startbanner, 0, 1);
 	lay6->addWidget(m_endbanner, 1, 1);
-	lay6->setColStretch(1, 1);
+	lay6->setColumnStretch(1, 1);
 
 	// connections (+ misc)
 	connect(m_orientbox,SIGNAL(clicked(int)),SLOT(slotOrientationChanged(int)));
@@ -440,7 +450,7 @@ void KPGeneralPage::initialize()
 		QString	psname = pageSizeToPageName((KPrinter::PageSize)(KGlobal::locale()->pageSize()));
 		int index = findOption(default_size, DEFAULT_SIZE, psname);
 		if (index >= 0)
-			m_pagesize->setCurrentItem(index);
+			m_pagesize->setCurrentIndex(index);
 		// MediaType
 		for (int i=1;i<DEFAULT_TYPE;i+=2)
 			m_papertype->addItem(i18n(default_type[i]));
@@ -453,7 +463,7 @@ void KPGeneralPage::initialize()
 	}
 
 	// Banners
-	QStringList	values = QStringList::split(',',printer()->option("kde-banners-supported"),false);
+	QStringList	values = printer()->option("kde-banners-supported").split(',',QString::SkipEmptyParts);
 	if (values.count() > 0)
 	{
 		for (QStringList::ConstIterator it = values.begin(); it != values.end(); ++it)
@@ -461,7 +471,7 @@ void KPGeneralPage::initialize()
 			m_startbanner->addItem(*it);
 			m_endbanner->addItem(*it);
 		}
-		values = QStringList::split(',',printer()->option("kde-banners"),false);
+		values = printer()->option("kde-banners").split(',',QString::SkipEmptyParts);
 		while (values.count() < 2) values.append("none");
 		setComboItem(m_startbanner, values[0]);
 		setComboItem(m_endbanner, values[1]);
@@ -480,7 +490,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 	if (driver())
 	{
 		value = opts["media"];
-		QStringList	l = QStringList::split(',',value,false);
+		QStringList	l = value.split(',',QString::SkipEmptyParts);
 		for(QStringList::ConstIterator it = l.begin(); it != l.end(); ++it)
 		{
 			value = *it;
@@ -545,17 +555,17 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 		if (!value.isEmpty())
 		{
 			int	index(-1);
-			QStringList	l = QStringList::split(',',value,false);
+			QStringList	l = value.split(',',QString::SkipEmptyParts);
 			for(QStringList::ConstIterator it = l.begin(); it != l.end(); ++it)
 			{
 				value = *it;
 
 				if ((index=findOption(default_size,DEFAULT_SIZE,value)) >= 0)
-					m_pagesize->setCurrentItem(index);
+					m_pagesize->setCurrentIndex(index);
 				else if ((index=findOption(default_type,DEFAULT_TYPE,value)) >= 0)
-					m_papertype->setCurrentItem(index);
+					m_papertype->setCurrentIndex(index);
 				else if ((index=findOption(default_source,DEFAULT_SOURCE,value)) >= 0)
-					m_inputslot->setCurrentItem(index);
+					m_inputslot->setCurrentIndex(index);
 				else
 					kWarning() << "media option '" << value << "' not handled." << endl;
 			}
@@ -574,7 +584,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 	value = opts["job-sheets"];
 	if (!value.isEmpty())
 	{
-		QStringList	l = QStringList::split(',',value,false);
+		QStringList	l = value.split(',',QString::SkipEmptyParts);
 		if (l.count() > 0) setComboItem(m_startbanner,l[0]);
 		if (l.count() > 1) setComboItem(m_endbanner,l[1]);
 	}
@@ -597,7 +607,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 	if (!value.isEmpty())
 	{
 		bool	ok;
-		int	ID = QMIN(value.toInt(&ok)-1,2);
+		int	ID = qMin(value.toInt(&ok)-1,2);
 		if (ok)
 		{
 			m_nupbox->setButton(ID);
@@ -620,17 +630,17 @@ void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		DrListOption	*opt;
 		if ((opt=(DrListOption*)driver()->findOption("PageSize")) != NULL)
 		{
-			DrBase	*ch = opt->choices().at(m_pagesize->currentItem());
+			DrBase	*ch = opt->choices().at(m_pagesize->currentIndex());
 			if (incldef || ch->name() != opt->get("default")) opts["PageSize"] = ch->name();
 		}
 		if ((opt=(DrListOption*)driver()->findOption("MediaType")) != NULL)
 		{
-			DrBase	*ch = opt->choices().at(m_papertype->currentItem());
+			DrBase	*ch = opt->choices().at(m_papertype->currentIndex());
 			if (incldef || ch->name() != opt->get("default")) opts["MediaType"] = ch->name();
 		}
 		if ((opt=(DrListOption*)driver()->findOption("InputSlot")) != NULL)
 		{
-			DrBase	*ch = opt->choices().at(m_inputslot->currentItem());
+			DrBase	*ch = opt->choices().at(m_inputslot->currentIndex());
 			if (incldef || ch->name() != opt->get("default")) opts["InputSlot"] = ch->name();
 		}
 
@@ -648,7 +658,7 @@ void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 	}
 	else
 	{
-		value = QString("%1,%2,%3").arg(default_size[m_pagesize->currentItem()*2]).arg(default_type[m_papertype->currentItem()*2]).arg(default_source[m_inputslot->currentItem()*2]);
+		value = QString("%1,%2,%3").arg(default_size[m_pagesize->currentIndex()*2]).arg(default_type[m_papertype->currentIndex()*2]).arg(default_source[m_inputslot->currentIndex()*2]);
 		opts["media"] = value;
 
 		if (m_duplexbox->isEnabled())
@@ -679,7 +689,7 @@ void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 
 	if (m_bannerbox->isEnabled())
 	{
-		QStringList	l = QStringList::split(',',printer()->option("kde-banners"),false);
+		QStringList	l = printer()->option("kde-banners").split(',',QString::SkipEmptyParts);
 		if (incldef || (l.count() == 2 && (l[0] != m_startbanner->currentText() || l[1] != m_endbanner->currentText()))
 		    || (l.count() == 0 && (m_startbanner->currentText() != "none" || m_endbanner->currentText() != "none")))
 		{

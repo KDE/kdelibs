@@ -35,7 +35,7 @@
 #include <kdelibs_export.h>
 
 class DriverItem;
-class Q3ListView;
+class QTreeWidget;
 
 /***********************
  * Forward definitions *
@@ -156,7 +156,7 @@ public:
 	DrMain();
 	~DrMain();
 
-	DriverItem* createTreeView(Q3ListView *parent);
+	DriverItem* createTreeView(QTreeWidget *parent);
 	void addConstraint(DrConstraint *c)		{ m_constraints.append(c); }
 	int checkConstraints();
 	DrPageSize* findPageSize(const QString& name)	{ return m_pagesizes.value(name); }

@@ -21,16 +21,16 @@
 #ifndef DRIVERVIEW_H
 #define DRIVERVIEW_H
 
-#include <qwidget.h>
-#include <klistview.h>
-#include <qmap.h>
+#include <QMap>
+#include <QTreeWidget>
+#include <QWidget>
 
 #include <kdelibs_export.h>
 
 class DrOptionView;
 class DrMain;
 
-class KDEPRINT_EXPORT DrListView : public KListView
+class KDEPRINT_EXPORT DrListView : public QTreeWidget
 {
 public:
 	DrListView(QWidget *parent = 0);
@@ -49,8 +49,12 @@ public:
 	void setAllowFixed(bool on);
 	bool hasConflict() const 	{ return (m_conflict != 0); }
 
+signals:
+  void itemSelected( QTreeWidgetItem* );
+
 protected Q_SLOTS:
 	void slotChanged();
+	void slotItemSelectionChanged();
 
 private:
 	DrListView	*m_view;

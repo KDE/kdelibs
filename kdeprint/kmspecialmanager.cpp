@@ -178,7 +178,7 @@ void KMSpecialManager::refresh()
 			{
 				it.current()->setDiscarded(false);
 				it.current()->setType(KMPrinter::Special);
-				if (KdeprintChecker::check(QStringList::split(',',it.current()->option("kde-special-require"),false)))
+				if (KdeprintChecker::check(it.current()->option("kde-special-require").split(',',QString::SkipEmptyParts)))
 					it.current()->addType(KMPrinter::Invalid);
 			}
 	}

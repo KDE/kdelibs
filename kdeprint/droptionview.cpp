@@ -331,7 +331,7 @@ DrOptionView::DrOptionView(QWidget *parent, const char *name)
 	m_allowfixed = true;
 }
 
-void DrOptionView::slotItemSelected(Q3ListViewItem *i)
+void DrOptionView::slotItemSelected(QTreeWidgetItem *i)
 {
 	m_item = (DriverItem*)i;
 	if (m_item && !m_item->drItem()->isOption())
