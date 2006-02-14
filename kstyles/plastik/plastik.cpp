@@ -2454,8 +2454,8 @@ void PlastikStyle::renderPanel(QPainter *p,
                               const bool sunken) const
 {
     int x, x2, y, y2, w, h;
-    r.rect(&x,&y,&w,&h);
-    r.coords(&x, &y, &x2, &y2);
+    r.getRect(&x,&y,&w,&h);
+    r.getCoords(&x, &y, &x2, &y2);
 
 //     if (kickerMode &&
 //             p->device() && p->device()->devType() == QInternal::Widget &&

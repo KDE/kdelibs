@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 		image.width   = input.width();
 		image.height = input.height();
 		image.id         = fullID;
-		image.data     = reinterpret_cast<unsigned char*>(strdup(s.latin1()));
+		image.data     = reinterpret_cast<unsigned char*>(strdup(s.toLatin1()));
 
 
 		bool reallySolid = true;
@@ -377,7 +377,7 @@ int main(int argc, char** argv)
 	{
 		QString name = "keramik_"+i.key();
 		name.replace("-","_");
-		ts<<"\t"<<name<<" = "<<i.data()<<",\n";
+		ts<<"\t"<<name<<" = "<<i.value()<<",\n";
 	}
 	ts<<"\tkeramik_last\n";
 	ts<<"};\n";

@@ -154,18 +154,18 @@ void PlastikStyleConfig::save()
 {
 	QSettings s;
 // 	s.writeEntry("/plastikstyle/Settings/scrollBarLines", scrollBarLines->isChecked());
-	s.writeEntry("/plastikstyle/Settings/animateProgressBar", animateProgressBar->isChecked());
-	s.writeEntry("/plastikstyle/Settings/drawToolBarSeparator", drawToolBarSeparator->isChecked());
-	s.writeEntry("/plastikstyle/Settings/drawToolBarItemSeparator", drawToolBarItemSeparator->isChecked());
+	s.setValue("/plastikstyle/Settings/animateProgressBar", animateProgressBar->isChecked());
+	s.setValue("/plastikstyle/Settings/drawToolBarSeparator", drawToolBarSeparator->isChecked());
+	s.setValue("/plastikstyle/Settings/drawToolBarItemSeparator", drawToolBarItemSeparator->isChecked());
 // 	s.writeEntry("/plastikstyle/Settings/drawFocusRect", drawFocusRect->isChecked());
-	s.writeEntry("/plastikstyle/Settings/drawTriangularExpander", drawTriangularExpander->isChecked());
-	s.writeEntry("/plastikstyle/Settings/inputFocusHighlight", inputFocusHighlight->isChecked());
-	s.writeEntry("/plastikstyle/Settings/customOverHighlightColor", customOverHighlightColor->isChecked());
-	s.writeEntry("/plastikstyle/Settings/overHighlightColor", QColor(overHighlightColor->color()).name());
-	s.writeEntry("/plastikstyle/Settings/customFocusHighlightColor", customFocusHighlightColor->isChecked());
-	s.writeEntry("/plastikstyle/Settings/focusHighlightColor", QColor(focusHighlightColor->color()).name());
-	s.writeEntry("/plastikstyle/Settings/customCheckMarkColor", customCheckMarkColor->isChecked());
-	s.writeEntry("/plastikstyle/Settings/checkMarkColor", QColor(checkMarkColor->color()).name());
+	s.setValue("/plastikstyle/Settings/drawTriangularExpander", drawTriangularExpander->isChecked());
+	s.setValue("/plastikstyle/Settings/inputFocusHighlight", inputFocusHighlight->isChecked());
+	s.setValue("/plastikstyle/Settings/customOverHighlightColor", customOverHighlightColor->isChecked());
+	s.setValue("/plastikstyle/Settings/overHighlightColor", QColor(overHighlightColor->color()).name());
+	s.setValue("/plastikstyle/Settings/customFocusHighlightColor", customFocusHighlightColor->isChecked());
+	s.setValue("/plastikstyle/Settings/focusHighlightColor", QColor(focusHighlightColor->color()).name());
+	s.setValue("/plastikstyle/Settings/customCheckMarkColor", customCheckMarkColor->isChecked());
+	s.setValue("/plastikstyle/Settings/checkMarkColor", QColor(checkMarkColor->color()).name());
 }
 
 void PlastikStyleConfig::defaults()
