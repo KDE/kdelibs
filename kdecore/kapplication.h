@@ -752,6 +752,9 @@ private:
   KApplication(const KApplication&);
   KApplication& operator=(const KApplication&);
 protected:
+  /** Virtual hook, used to add new "virtual" functions while maintaining
+      binary compatibility. Unused in this class.
+  */
   virtual void virtual_hook( int id, void* data );
 private:
   //### KDE4: This is to catch invalid implicit conversions, may want to reconsider
@@ -825,6 +828,9 @@ public:
   virtual bool commitData( QSessionManager& sm );
 
 protected:
+  /** Virtual hook, used to add new "virtual" functions while maintaining
+      binary compatibility. Unused in this class.
+  */
   virtual void virtual_hook( int id, void* data );
 private:
   class Private;

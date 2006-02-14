@@ -252,6 +252,9 @@ private:
   bool bFileImmutable  : 1; // Current file is immutable.
   bool bForceGlobal    : 1; // Apply everything to kdeglobals.
 protected:
+  /** Virtual hook, used to add new "virtual" functions while maintaining
+      binary compatibility. Unused in this class.
+  */
   virtual void virtual_hook( int id, void* data );
 private:
   class Private;

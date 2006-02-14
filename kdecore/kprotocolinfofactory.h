@@ -83,6 +83,9 @@ protected:
 
   QMap<QString,KProtocolInfo::Ptr> m_cache;
 protected:
+  /** Virtual hook, used to add new "virtual" functions while maintaining
+      binary compatibility. Unused in this class.
+  */
   virtual void virtual_hook( int id, void* data );
 private:
   class KProtocolInfoFactoryPrivate* d;

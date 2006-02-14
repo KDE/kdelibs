@@ -1471,6 +1471,9 @@ protected:
   mutable bool bExpand;     // whether dollar expansion is used
 
 protected:
+  /** Virtual hook, used to add new "virtual" functions while maintaining
+      binary compatibility. Unused in this class.
+  */
   virtual void virtual_hook( int id, void* data );
 private:
   class Private;
@@ -1740,6 +1743,9 @@ private:
 
    KConfigBase *mMaster;
 protected:
+   /** Virtual hook, used to add new "virtual" functions while maintaining
+       binary compatibility. Unused in this class.
+   */
    virtual void virtual_hook( int id, void* data );
 private:
    Q_DISABLE_COPY(KConfigGroup)

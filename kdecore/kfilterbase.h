@@ -108,6 +108,9 @@ protected:
     QIODevice * m_dev;
     bool m_bAutoDel;
 protected:
+    /** Virtual hook, used to add new "virtual" functions while maintaining
+	binary compatibility. Unused in this class.
+    */
     virtual void virtual_hook( int id, void* data );
 private:
     class KFilterBasePrivate;

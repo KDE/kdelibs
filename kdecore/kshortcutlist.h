@@ -244,6 +244,9 @@ class KDECORE_EXPORT KAccelShortcutList : public KShortcutList
 	bool m_bGlobal;
 
  protected:
+	/** Virtual hook, used to add new "virtual" functions while maintaining
+	    binary compatibility. Unused in this class.
+	*/
 	virtual void virtual_hook( int id, void* data );
  private:
 	class KAccelShortcutListPrivate* d;
@@ -284,6 +287,9 @@ class KDECORE_EXPORT ShortcutList : public KShortcutList
 	virtual bool save() const;
 
  protected:
+	/** Virtual hook, used to add new "virtual" functions while maintaining
+	    binary compatibility. Unused in this class.
+	*/
 	virtual void virtual_hook( int id, void* data );
  private:
 	class ShortcutListPrivate* d;

@@ -152,6 +152,9 @@ class KDECORE_EXPORT KSelectionOwner
         static Atom xa_targets;
         static Atom xa_timestamp;
     protected:
+	/** Virtual hook, used to add new "virtual" functions while maintaining
+	    binary compatibility. Unused in this class.
+	*/
         virtual void virtual_hook( int id, void* data );
     private:
         KSelectionOwnerPrivate* const d;
@@ -221,6 +224,9 @@ class KDECORE_EXPORT KSelectionWatcher
         Window selection_owner;
         static Atom manager_atom;
     protected:
+	/** Virtual hook, used to add new "virtual" functions while maintaining
+	    binary compatibility. Unused in this class.
+	*/
         virtual void virtual_hook( int id, void* data );
     private:
         KSelectionWatcherPrivate* const d;

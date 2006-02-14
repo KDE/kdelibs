@@ -165,6 +165,9 @@ protected:
   int mFileMode;
 
 protected:
+  /** Virtual hook, used to add new "virtual" functions while maintaining
+      binary compatibility. Unused in this class.
+  */
   virtual void virtual_hook( int id, void* data );
 protected:
   class Private;
@@ -275,6 +278,9 @@ protected:
   void writeEntries(FILE *pStream, const KEntryMap &aTempMap);
 
 protected:
+  /** Virtual hook, used to add new "virtual" functions while maintaining
+      binary compatibility. Unused in this class.
+  */
   virtual void virtual_hook( int id, void* data );
 private:
   class Private;

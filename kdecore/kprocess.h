@@ -843,6 +843,9 @@ protected:
   friend class KProcessController;
 
 protected:
+  /** Virtual hook, used to add new "virtual" functions while maintaining
+      binary compatibility. Unused in this class.
+  */
   virtual void virtual_hook( int id, void* data );
 private:
   KProcessPrivate* const d;
@@ -888,6 +891,9 @@ private:
   QByteArray shell;
 
 protected:
+  /** Virtual hook, used to add new "virtual" functions while maintaining
+      binary compatibility. Unused in this class.
+  */
   virtual void virtual_hook( int id, void* data );
 private:
   KShellProcessPrivate* d;
