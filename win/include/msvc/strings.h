@@ -29,7 +29,7 @@
 inline void bzero(void *s, size_t n)
 {
 	memset(s,0,n);
-};
+}
 
 
 #endif KDEWIN_STRINGS_H
