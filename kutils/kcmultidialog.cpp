@@ -285,7 +285,8 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
             moduleinfo.moduleName() << ": " << module << endl;
 
         module->setParent( page );
-        hbox->addWidget( module );
+        if ( hbox )
+            hbox->addWidget( module );
 
         if( module->changed() )
             clientChanged( true );
@@ -296,7 +297,8 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
     else
     {
         module = new KCModuleProxy( moduleinfo, withfallback, page );
-        hbox->addWidget( module );
+        if ( hbox )
+            hbox->addWidget( module );
         const QStringList parentComponents = moduleinfo.service()->property(
             "X-KDE-ParentComponents" ).toStringList();
         moduleParentComponents.insert( module, parentComponents );
