@@ -604,6 +604,10 @@ char *kdeprint_ppdtext;
 #if defined(__MINGW32__) || defined(_MSC_VER)
 // isatty
 #include <io.h>
+#ifndef YY_NO_UNISTD_H
+// include wingdi.h before definition of 'value'
+#include <unistd.h>
+#endif
 #endif 
 #define YYSTYPE QStringList
 #include "ppdparser.cpp.h"
