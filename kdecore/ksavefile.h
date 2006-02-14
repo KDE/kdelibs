@@ -155,8 +155,9 @@ public:
      * Static method to create a backup file before saving.
      * You can use this method even if you don't use KSaveFile.
      * The backup file names will be of the form:
-     *     <name>.<number><extension>
-     * @example file.1~
+     *     \<name\>.\<number\>\<extension\>
+     * for instance
+     *     \verbatim chat.3.log\endverbatim
      *
      * The new backup file will be have the backup number 1.
      * Each existing backup file will have its number incremented by 1.
@@ -183,8 +184,9 @@ public:
      * Static method to create a backup file before saving.
      * You can use this method even if you don't use KSaveFile.
      * The backup file names will be of the form:
-     *     <name>,v
-     * @example file,v
+     *     \<name\>,v
+     * for instance
+     *     \verbatim photo.jpg,v\endverbatim
      *
      * The new backup file will be in RCS format.
      * Each existing backup file will be commited as a new revision.
