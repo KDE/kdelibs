@@ -267,7 +267,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   layout->addWidget( mRDNCombo, 1, 1 );
   mRDNCombo->addItem( i18n( "commonName" ) );
   mRDNCombo->addItem( i18n( "UID" ) );
-  mRDNCombo->setCurrentItem( rdnprefix );
+  mRDNCombo->setCurrentIndex( rdnprefix );
 
   QMap<QString, QString>::ConstIterator it;
   int i, j = 0;
@@ -301,7 +301,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
 	  ++it2;
     }
     if ( !it2 ) {
-      mMapCombo->setCurrentItem( i );
+      mMapCombo->setCurrentIndex( i );
       break;
     }
   }

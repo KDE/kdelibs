@@ -557,7 +557,7 @@ void LdapConfigWidget::setMech( const QString &mech )
       i++;
     }
     if ( i == mMech->count() ) mMech->addItem( mech );
-    mMech->setCurrentItem( i );
+    mMech->setCurrentIndex( i );
   }
 }
 

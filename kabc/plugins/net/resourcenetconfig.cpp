@@ -78,7 +78,7 @@ void ResourceNetConfig::loadSettings( KRES::Resource *res )
     return;
   }
 
-  mFormatBox->setCurrentItem( mFormatTypes.indexOf( resource->format() ) );
+  mFormatBox->setCurrentIndex( mFormatTypes.indexOf( resource->format() ) );
 
   mUrlEdit->setURL( resource->url().url() );
 }

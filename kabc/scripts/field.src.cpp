@@ -331,7 +331,7 @@ Field::List Field::restoreFields( const QString &identifier )
 
 Field::List Field::restoreFields( KConfigBase *cfg, const QString &identifier )
 {
-  const QList<int> fieldIds = cfg->readIntListEntry( identifier );
+  const QList<int> fieldIds = cfg->readEntry( identifier,QList<int>() );
 
   Field::List fields;
 
@@ -340,9 +340,9 @@ Field::List Field::restoreFields( KConfigBase *cfg, const QString &identifier )
   for ( it = fieldIds.begin(); it != fieldIds.end(); ++it ) {
     FieldImpl *f = 0;
     if ( (*it) == FieldImpl::CustomField ) {
-      QStringList customEntry = cfg->readListEntry( "KABC_CustomEntry_" +
+      QStringList customEntry = cfg->readEntry( "KABC_CustomEntry_" +
                                                  identifier + "_" +
-                                                 QString::number( custom++ ) );
+                                                 QString::number( custom++ ),QStringList() );
       f = new FieldImpl( *it, CustomCategory, customEntry[ 0 ],
                          customEntry[ 1 ], customEntry[ 2 ] );
     } else {
