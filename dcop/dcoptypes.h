@@ -73,6 +73,7 @@ class QVariant; inline const char* dcopTypeName( const QVariant& ) { return "QVa
 
 // And some KDE types
 class KUrl; inline const char* dcopTypeName( const KUrl& ) { return "KUrl"; }
+class DCOPCString; inline const char* dcopTypeName( const DCOPCString& ) { return "QCString"; }
 
 // generic template fallback for unknown types
 template <class T> inline const char* dcopTypeName( const T& ) { return "<unknown>"; }

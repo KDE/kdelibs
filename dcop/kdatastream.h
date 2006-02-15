@@ -48,8 +48,7 @@ private:
 
 typedef QList<DCOPCString> DCOPCStringList; //Marshalls appropriately..
 
-inline const char* dcopTypeName( const DCOPCStringList& ) { return "QCStringList"; }
-inline const char* dcopTypeName( const DCOPCString&     ) { return "QCString";     }
+//inline const char* dcopTypeName( const DCOPCStringList& ) { return "QCStringList"; }
 
 /**
  Compatibility with Qt/KDE3: unfortunately, the size varies between platforms.
