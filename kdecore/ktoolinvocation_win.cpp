@@ -95,7 +95,7 @@ startServiceInternal(DCOPClient *dcopClient, const QByteArray &function,
               const QString& _name, const QStringList &URLs,
               QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
-	qWarning("%s %s %s %s\n",__FUNCTION__,function.data(),_name.latin1(),URLs.join(" ").latin1());
+	qWarning("%s %s %s %s\n",__FUNCTION__,function.data(),_name.toLatin1(),URLs.join(" ").toLatin1());
 /*
    struct serviceResult
    {
@@ -294,9 +294,8 @@ void KToolInvocation::invokeHelp( const QString& anchor,
 
 void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& startup_id )
 {
-	QByteArray s = url.latin1();
-	const unsigned short *l = (const unsigned short *)s.data();
-	ShellExecuteA(0, "open", s.data(), 0, 0, SW_NORMAL);
+   QString sOpen( "open" );
+   ShellExecuteW(0, ( LPCWSTR )sOpen.utf16(), ( LPCWSTR )url.utf16(), 0, 0, SW_NORMAL);
 }
 
 void KToolInvocation::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
@@ -351,8 +350,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 	for (QStringList::ConstIterator it = attachURLs.constBegin(); it != attachURLs.constEnd(); ++it)
 		url.addQueryItem("attach", KUrl::encode_string(*it));
 
-	QByteArray s = url.url().latin1();
-	const unsigned short *l = (const unsigned short *)s.data();
-	ShellExecuteA(0, "open", s.data(), 0, 0, SW_NORMAL);
+   QString sOpen( "open" );
+   ShellExecuteW(0, ( LPCWSTR )sOpen.utf16(), ( LPCWSTR )url.url().utf16(), 0, 0, SW_NORMAL);
 }
 #endif
