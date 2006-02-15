@@ -1758,13 +1758,8 @@ extern "C" KDE_EXPORT int kdemain( int argc, char* argv[] )
     if (isRunning(DCOPClient::dcopServerFile()))
        return 0;
 #ifndef Q_OS_WIN32
-    if (QByteArray(getenv("DCOPAUTHORITY")).isEmpty() &&
-        isRunning(DCOPClient::dcopServerFileOld()))
+    if (QByteArray(getenv("DCOPAUTHORITY")).isEmpty())
     {
-       // Make symlink for compatibility
-       QByteArray oldFile = DCOPClient::dcopServerFileOld();
-       QByteArray newFile = DCOPClient::dcopServerFile();
-       symlink(oldFile.data(), newFile.data());
        return 0;
     }
 

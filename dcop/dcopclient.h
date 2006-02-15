@@ -690,13 +690,6 @@ class DCOP_EXPORT DCOPClient : public QObject
   static QByteArray dcopServerFile(const QByteArray &hostname=0);
 
   /**
-   * @deprecated
-   * For backwards compatibility with KDE 2.x
-   * // KDE4 remove
-   */
-  static QByteArray dcopServerFileOld(const QByteArray &hostname=0) KDE_DEPRECATED;
-
-  /**
    * Return the path of iceauth or an empty string if not found.
    */
   static QByteArray iceauthPath();

@@ -169,7 +169,6 @@ void KHostName::changeX()
 
 void KHostName::changeDcop()
 {
-   DCOPCString origFNameOld = DCOPClient::dcopServerFileOld(oldName);
    DCOPCString fname = DCOPClient::dcopServerFile(oldName);
    DCOPCString origFName = fname;
    FILE *dcopFile = fopen(fname.data(), "r");

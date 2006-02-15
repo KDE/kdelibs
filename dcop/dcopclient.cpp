@@ -304,13 +304,6 @@ QByteArray DCOPClient::dcopServerFile(const QByteArray &hostname)
 }
 
 
-// static
-QByteArray DCOPClient::dcopServerFileOld(const QByteArray &hostname)
-{
-    return ::dcopServerFile(hostname, true);
-}
-
-
 const char* DCOPClientPrivate::serverAddr = 0;
 
 static void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QByteArray& dataReceived, bool canPost  );
