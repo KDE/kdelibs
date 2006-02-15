@@ -28,7 +28,7 @@
 
 /**
  * @short Standard "About Application" dialog box.
- * 
+ *
  * This class provides the standard "About Application" dialog box
  * that is used by KHelpMenu. It uses the information of the global
  * KAboutData that is specified at the start of your program in

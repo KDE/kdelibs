@@ -12,7 +12,7 @@ knuminput.cpp klineedit.cpp klistview.cpp kprogressbar.cpp
 kprogressdialog.cpp kcolordialog.cpp kselector.cpp kdatepicker.cpp
 kdatetable.cpp kfontrequester.cpp kfontdialog.cpp ktabctl.cpp
 kstatusbar.cpp kmainwindow.cpp
-keditlistbox.cpp kscrollview.cpp
+keditlistbox.cpp
 kseparator.cpp krestrictedline.cpp
 kcolorbutton.cpp ksystemtray.cpp
 kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp
@@ -67,7 +67,7 @@ kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h
 kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h 
 kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h 
 karrowbutton.h kguiitem.h kstdguiitem.h kstringvalidator.h kwindowinfo.h ktextedit.h 
-kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kscrollview.h kspell.h ksconfig.h 
+kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kspell.h ksconfig.h 
 kspelldlg.h ktabbar.h ktabwidget.h ksplashscreen.h 
 kconfigdialog.h kactionselector.h klanguagebutton.h klistviewsearchline.h 
 kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h 
