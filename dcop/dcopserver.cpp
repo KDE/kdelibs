@@ -1055,14 +1055,6 @@ DCOPServer::DCOPServer(bool _suicide)
 	    }
 	    fprintf(f, "\n%i\n", getpid());
 	    fclose(f);
-#ifndef Q_OS_WIN32
-	    if (QByteArray(getenv("DCOPAUTHORITY")).isEmpty())
-	    {
-                // Create a link named like the old-style (KDE 2.x) naming
-                QByteArray compatName = DCOPClient::dcopServerFileOld();
-                ::symlink(fName,compatName);
-            }
-#endif // Q_OS_WIN32
 	}
 
 #if 0
