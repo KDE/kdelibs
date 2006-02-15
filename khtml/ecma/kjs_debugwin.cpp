@@ -1088,6 +1088,7 @@ QString KJSDebugWin::contextStr(const Context &ctx)
 
   return str;
 #endif
+  return "";
 }
 
 bool KJSDebugWin::setBreakpoint(int sourceId, int lineno)
