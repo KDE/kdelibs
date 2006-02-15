@@ -28,6 +28,11 @@ set(keramik_PART_SRCS
 # this actually shouldn't be required, maybe current cmake cvs handles it correctly, Alex
 #set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
 
+if (WIN32)
+   set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
+   add_definitions(-DKDEFX_EXPORT=KDE_EXPORT)
+endif (WIN32)
+
 kde4_automoc(${keramik_PART_SRCS})
 
 kde4_add_plugin(keramik ${keramik_PART_SRCS})
