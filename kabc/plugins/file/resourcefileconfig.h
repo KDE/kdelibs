@@ -28,7 +28,7 @@
 
 namespace KABC {
 
-class KABC_EXPORT ResourceFileConfig : public KRES::ConfigWidget
+class KABC_FILE_EXPORT ResourceFileConfig : public KRES::ConfigWidget
 {
   Q_OBJECT
 

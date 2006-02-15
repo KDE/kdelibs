@@ -45,7 +45,7 @@ class Lock;
 /**
   This resource allows access to a local file.
 */
-class KABC_EXPORT ResourceFile : public Resource
+class KABC_FILE_EXPORT ResourceFile : public Resource
 {
   Q_OBJECT
 
