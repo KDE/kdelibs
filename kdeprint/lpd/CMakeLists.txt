@@ -30,11 +30,15 @@ set(make_driver_db_lpd_SRCS
 make_driver_db_lpd.c
 )
 
+if (UNIX)
+   set(KDEFAKES_LIB kdefakes)
+endif (UNIX)
+
 kde4_automoc(${make_driver_db_lpd_SRCS})
 
 kde4_add_executable(make_driver_db_lpd ${make_driver_db_lpd_SRCS})
 
-target_link_libraries(make_driver_db_lpd  ${QT_AND_KDECORE_LIBS} kdefakes )
+target_link_libraries(make_driver_db_lpd  ${QT_AND_KDECORE_LIBS} ${KDEFAKES_LIB} )
 
 install_targets(/bin make_driver_db_lpd )
 
