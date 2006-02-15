@@ -106,7 +106,7 @@ ConfigPage::ConfigPage( QWidget *parent )
     mCurrentManager( 0 ),
     mCurrentConfig( 0 )
 {
-  setCaption( i18n( "Resource Configuration" ) );
+  setWindowTitle( i18n( "Resource Configuration" ) );
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
 
@@ -185,7 +185,7 @@ void ConfigPage::load()
   KTrader::OfferList::ConstIterator end = plugins.end();
   for ( ; it != end; ++it ) {
     const QString family = (*it)->property( "X-KDE-ResourceFamily" ).toString();
-    if ( compatFamilyNames.find( family ) == compatFamilyNames.end() )
+    if ( compatFamilyNames.indexOf( family ) == -1 )
         compatFamilyNames.append( family );
   }
 
@@ -213,7 +213,7 @@ void ConfigPage::load()
   mCurrentManager = 0;
 
   mFamilyCombo->clear();
-  mFamilyCombo->insertStringList( familyDisplayNames );
+  mFamilyCombo->insertItems( 0, familyDisplayNames );
 
   int currentFamily = mConfig->readEntry( "CurrentFamily", 0 );
   mFamilyCombo->setCurrentItem( currentFamily );
