@@ -67,14 +67,23 @@ class KDEUI_EXPORT KAboutContainer : public QFrame
 		    bool showframe = false, bool showBold = false );
     void addImage( const QString &fileName, Qt::Alignment alignment=Qt::AlignLeft );
 
+    /** Reimplemented from QWidget */
     virtual QSize sizeHint( void ) const;
+    /** Reimplemented from QWidget */
     virtual QSize minimumSizeHint( void ) const;
 
   protected:
+    /** Reimplemented from QWidget */
     virtual void childEvent( QChildEvent *e );
 
   Q_SIGNALS:
+    /** Emitted when the user clicks on a (highlighted) URL in the
+	aboutbox. The @p url is passed in the signal. */
     void urlClick( const QString &url );
+    /** Emitted when the user clicks on a mailto: link in the aboutbox.
+	The mail address is passed as @p address; the parameter @p name
+	might be the name of the person being mailed (so that you can
+	build a complete address of the form name \<address\>. */
     void mailClick( const QString &name, const QString &address );
 
 
