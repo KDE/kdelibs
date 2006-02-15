@@ -28,7 +28,9 @@
 
 #include <sys/stat.h> // S_ISDIR
 
+#ifdef Q_OS_WIN
 template class KDE_EXPORT QMap<QString, QString>;
+#endif
 
 class KUrl;
 
