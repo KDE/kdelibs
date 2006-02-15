@@ -710,7 +710,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 
     // store objectName, className, Width and Height  for later restoring
     // (Only useful for session management)
-    config->writeEntry(QLatin1String("ObjectName"), name());
+    config->writeEntry(QLatin1String("ObjectName"), objectName());
     config->writeEntry(QLatin1String("ClassName"), className());
 
     saveMainWindowSettings(config); // Menubar, statusbar and Toolbar settings.

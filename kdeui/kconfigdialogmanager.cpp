@@ -197,11 +197,11 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
     QWidget *childWidget = (QWidget *)object;
 
-    const char *widgetName = childWidget->name(0);
+    QString widgetName = childWidget->objectName();
     bool bParseChildren = true;
     bool bSaveInsideGroupBox = d->insideGroupBox;
 
-    if (widgetName && (strncmp(widgetName, "kcfg_", 5) == 0))
+    if (widgetName.startsWith("kcfg_"))
     {
       // This is one of our widgets!
       QString configId = widgetName+5;
@@ -256,8 +256,8 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       QWidget *buddy = label->buddy();
       if (!buddy)
         continue;
-      const char *buddyName = buddy->name(0);
-      if (buddyName && (strncmp(buddyName, "kcfg_", 5) == 0))
+      QString buddyName = buddy->objectName();
+      if (buddyName.startsWith("kcfg_"))
       {
         // This is one of our widgets!
         QString configId = buddyName+5;
@@ -265,7 +265,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       }
     }
 #ifndef NDEBUG
-    else if (widgetName && d->trackChanges)
+    else if (!widgetName.isEmpty() && d->trackChanges)
     {
       QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->className());
       if (changedIt != s_changedMap->end())

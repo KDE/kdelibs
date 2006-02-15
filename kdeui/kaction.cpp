@@ -150,15 +150,14 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 
 KAction::~KAction()
 {
-    kDebug(129) << "KAction::~KAction( this = \"" << name() << "\" )" << endl; // -- ellis
+    kDebug(129) << "KAction::~KAction( this = \"" << objectName() << "\" )" << endl; // -- ellis
 
     // If actionCollection hasn't already been destructed,
     if ( m_parentCollection ) {
         m_parentCollection->take( this );
 
-        const char * const namePtr = name();
         foreach(KAccel *a, d->m_kaccelList)
-            a->remove(namePtr);
+            a->remove(objectName());
 
     }
 
@@ -364,17 +363,17 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
 
   bool b = true;
 
-  if ( !kaccel->actions().actionPtr( name() ) ) {
+  if ( !kaccel->actions().actionPtr( objectName() ) ) {
     if(!d->m_cut.isNull() ) {
-      kDebug(129) << "Inserting " << name() << ", " << d->text() << ", " << d->plainText() << endl;
-      b = kaccel->insert( name(), d->plainText(), QString(),
+      kDebug(129) << "Inserting " << objectName() << ", " << d->text() << ", " << d->plainText() << endl;
+      b = kaccel->insert( objectName(), d->plainText(), QString(),
           d->m_cut,
           this, SLOT(slotActivated()),
           isShortcutConfigurable(), isEnabled() );
     }
   }
   else
-    b = kaccel->setShortcut( name(), d->m_cut );
+    b = kaccel->setShortcut( objectName(), d->m_cut );
 
   return b;
 }
@@ -382,14 +381,14 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
 void KAction::insertKAccel( KAccel* kaccel )
 {
   //kDebug(129) << "KAction::insertKAccel( " << kaccel << " ): this = " << this << endl;
-  if ( !kaccel->actions().actionPtr( name() ) ) {
+  if ( !kaccel->actions().actionPtr( objectName() ) ) {
     if( updateKAccelShortcut( kaccel ) ) {
       d->m_kaccelList.append( kaccel );
       connect( kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
     }
   }
   else
-    kWarning(129) << "KAction::insertKAccel( kaccel = " << kaccel << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
+    kWarning(129) << "KAction::insertKAccel( kaccel = " << kaccel << " ): KAccel object already contains an action name \"" << objectName() << "\"" << endl; // -- ellis
 }
 
 void KAction::removeKAccel( KAccel* kaccel )
@@ -397,7 +396,7 @@ void KAction::removeKAccel( KAccel* kaccel )
   //kDebug(129) << "KAction::removeKAccel( " << i << " ): this = " << this << endl;
   foreach(KAccel *a, d->m_kaccelList) {
     if( a == kaccel ) {
-      kaccel->remove( name() );
+      kaccel->remove( objectName() );
       d->m_kaccelList.remove( a );
       disconnect( kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
       break;
@@ -439,7 +438,7 @@ void KAction::updateShortcut( QMenu* menu, int id )
     // This is a fall-hack in case the KAction is missing a proper parent collection.
     //  It should be removed eventually. --ellis
     menu->setAccel( d->m_cut.keyCodeQt(), id );
-    kDebug(129) << "KAction::updateShortcut(): name = \"" << name() << "\", cut = " << d->m_cut.toStringInternal() << "; No KAccel, probably missing a parent collection." << endl;
+    kDebug(129) << "KAction::updateShortcut(): name = \"" << objectName() << "\", cut = " << d->m_cut.toStringInternal() << "; No KAccel, probably missing a parent collection." << endl;
   }
 }
 

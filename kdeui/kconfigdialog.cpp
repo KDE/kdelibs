@@ -80,7 +80,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
 
 KConfigDialog::~KConfigDialog()
 {
-  openDialogs.remove(name());
+  openDialogs.remove(objectName());
   delete d;
 }
 
@@ -211,7 +211,7 @@ void KConfigDialog::settingsChangedSlot()
 {
   // Update the buttons
   updateButtons();
-  emit settingsChanged(name());
+  emit settingsChanged(objectName());
 }
 
 void KConfigDialog::showEvent(QShowEvent *e)
