@@ -219,9 +219,6 @@ void KHostName::changeDcop()
 
       fclose(dcopFile);
 
-      DCOPCString compatLink = DCOPClient::dcopServerFileOld(newName);
-      ::symlink(fname.data(), compatLink.data()); // Compatibility link
-
       // Update .ICEauthority
       QString cmd = "iceauth list "+KProcess::quote("netid="+oldNetId);
       FILE *iceFile = popen(QFile::encodeName(cmd), "r");
@@ -273,8 +270,6 @@ void KHostName::changeDcop()
    {
       QString cmd = "iceauth remove "+KProcess::quote("netid="+oldNetId);
       system(QFile::encodeName(cmd));
-      unlink(origFName.data());
-      origFName = DCOPClient::dcopServerFileOld(oldName); // Compatibility link
       unlink(origFName.data());
    }
 }
