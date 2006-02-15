@@ -22,6 +22,7 @@
 #ifndef _KJS_BINDING_H_
 #define _KJS_BINDING_H_
 
+#include <kdelibs_export.h>
 #include <kjs/interpreter.h>
 #include <kxmlcore/HashMap.h>
 
@@ -308,7 +309,7 @@ namespace KJS {
   ValueImp* getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
 
   // convenience function
-  inline JSCell* String(const QString& s) { return jsString(s.local8Bit().constData()); }
+  inline JSCell* String(const QString& s) { return jsString(s.toLocal8Bit().constData()); }
 
 } // namespace
 
