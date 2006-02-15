@@ -61,7 +61,7 @@ void SizeWidget::setSizeString( const QString& sz )
 QString SizeWidget::sizeString() const
 {
 	QString result = QString::number( m_size->value() );
-	switch ( m_unit->currentItem() )
+	switch ( m_unit->currentIndex() )
 	{
 		case 0: result.append( "k" ); break;
 		case 1: result.append( "m" ); break;
@@ -74,7 +74,7 @@ QString SizeWidget::sizeString() const
 void SizeWidget::setValue( int value )
 {
 	m_size->setValue( value );
-	m_unit->setCurrentItem( 1 );
+	m_unit->setCurrentIndex( 1 );
 }
 
 int SizeWidget::value() const

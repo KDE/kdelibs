@@ -181,7 +181,7 @@ bool KMWSocketUtil::scanNetwork(QProgressBar *bar)
 		if (bar)
 		{
 			bar->setValue(i);
-			qApp->flushX();
+			qApp->flush();
 		}
 	}
 	return true;

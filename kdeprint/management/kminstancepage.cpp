@@ -136,7 +136,7 @@ void KMInstancePage::slotNew()
 			                     i18n("(Default)"),&ok,this);
 	if (ok)
 	{
-		if (name.find(QRegExp("[/\\s]")) != -1)
+		if (name.indexOf(QRegExp("[/\\s]")) != -1)
 			KMessageBox::error(this, i18n("Instance name must not contain any spaces or slashes."));
 		else
 		{
@@ -181,7 +181,7 @@ void KMInstancePage::slotCopy()
 				                     i18n("(Default)"),&ok,this);
 		if (ok)
 		{
-			if (name.find(QRegExp("[/\\s]")) != -1)
+			if (name.indexOf(QRegExp("[/\\s]")) != -1)
 				KMessageBox::error(this, i18n("Instance name must not contain any spaces or slashes."));
 			else
 			{

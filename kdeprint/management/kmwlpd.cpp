@@ -56,7 +56,7 @@ bool KMWLpd::isValid(QString& msg)
 	}
 
 	// check LPD queue
-	if (!checkLpdQueue(text(0).latin1(),text(1).latin1()))
+	if (!checkLpdQueue(text(0).toLatin1(),text(1).toLatin1()))
 	{
 		if (KMessageBox::warningContinueCancel(this, i18n("Cannot find queue %1 on server %2; do you want to continue anyway?").arg(text(1)).arg(text(0))) == KMessageBox::Cancel)
 			return false;

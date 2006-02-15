@@ -140,6 +140,6 @@ void KMWBanners::updatePrinter(KMPrinter *p)
 {
 	if (m_start->count() > 0)
 	{
-		p->setOption("kde-banners",m_bans[m_start->currentItem()]+","+m_bans[m_end->currentItem()]);
+		p->setOption("kde-banners",m_bans[m_start->currentIndex()]+","+m_bans[m_end->currentIndex()]);
 	}
 }

@@ -122,7 +122,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 
 void KXmlCommandSelector::loadCommands()
 {
-	QString	thisCmd = (m_cmd->currentItem() != -1 ? m_cmdlist[m_cmd->currentItem()] : QString());
+	QString	thisCmd = (m_cmd->currentIndex() != -1 ? m_cmdlist[m_cmd->currentIndex()] : QString());
 
 	m_cmd->clear();
 	m_cmdlist.clear();
@@ -140,8 +140,8 @@ void KXmlCommandSelector::loadCommands()
 	int	index = m_cmdlist.findIndex(thisCmd);
 	if (index != -1)
 		m_cmd->setCurrentItem(index);
-	if (m_cmd->currentItem() != -1 && m_cmd->isEnabled())
-		slotCommandSelected(m_cmd->currentItem());
+	if (m_cmd->currentIndex() != -1 && m_cmd->isEnabled())
+		slotCommandSelected(m_cmd->currentIndex());
 }
 
 QString KXmlCommandSelector::command() const
@@ -150,7 +150,7 @@ QString KXmlCommandSelector::command() const
 	if (m_line && !m_usefilter->isChecked())
 		cmd = m_line->text();
 	else
-		cmd = m_cmdlist[m_cmd->currentItem()];
+		cmd = m_cmdlist[m_cmd->currentIndex()];
 	return cmd;
 }
 
@@ -164,8 +164,8 @@ void KXmlCommandSelector::setCommand(const QString& cmd)
 		m_line->setText((index == -1 ? cmd : QString()));
 	if (index != -1)
 		m_cmd->setCurrentItem(index);
-	if (m_cmd->currentItem() != -1 && m_cmd->isEnabled())
-		slotCommandSelected(m_cmd->currentItem());
+	if (m_cmd->currentIndex() != -1 && m_cmd->isEnabled())
+		slotCommandSelected(m_cmd->currentIndex());
 }
 
 void KXmlCommandSelector::slotAddCommand()
@@ -202,7 +202,7 @@ void KXmlCommandSelector::slotAddCommand()
 
 void KXmlCommandSelector::slotEditCommand()
 {
-	QString	xmlId = m_cmdlist[m_cmd->currentItem()];
+	QString	xmlId = m_cmdlist[m_cmd->currentIndex()];
 	KXmlCommand	*xmlCmd = KXmlCommandManager::self()->loadCommand(xmlId);
 	if (xmlCmd)
 	{
@@ -212,9 +212,9 @@ void KXmlCommandSelector::slotEditCommand()
 			xmlCmd->driver();
 			KXmlCommandManager::self()->saveCommand(xmlCmd);
 		}
-		m_cmd->changeItem(xmlCmd->description(), m_cmd->currentItem());
+		m_cmd->changeItem(xmlCmd->description(), m_cmd->currentIndex());
 		delete xmlCmd;
-		slotCommandSelected(m_cmd->currentItem());
+		slotCommandSelected(m_cmd->currentIndex());
 	}
 	else
 		KMessageBox::error(this, i18n("Internal error. The XML driver for the command %1 could not be found.").arg(xmlId));
@@ -263,7 +263,7 @@ void KXmlCommandSelector::slotCommandSelected(int ID)
 void KXmlCommandSelector::slotXmlCommandToggled( bool on )
 {
 	if ( on )
-		slotCommandSelected( m_cmd->currentItem() );
+		slotCommandSelected( m_cmd->currentIndex() );
 	else
 	{
 		emit commandValid( true );

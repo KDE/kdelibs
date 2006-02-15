@@ -113,7 +113,7 @@ void KMConfigFonts::loadConfig(KConfig *)
 void KMConfigFonts::saveConfig(KConfig *)
 {
 	QSettings	settings;
-	settings.writeEntry("/qt/embedFonts", m_embedfonts->isChecked());
+	settings.setValue("/qt/embedFonts", m_embedfonts->isChecked());
 	QStringList	l;
 	Q3ListViewItem	*item = m_fontpath->firstChild();
 	while (item)

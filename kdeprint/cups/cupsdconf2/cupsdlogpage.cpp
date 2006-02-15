@@ -95,7 +95,7 @@ bool CupsdLogPage::saveConfig(CupsdConf *conf, QString&)
 	conf->errorlog_ = errorlog_->url();
 	conf->pagelog_ = pagelog_->url();
 	conf->maxlogsize_ = maxlogsize_->sizeString();
-	conf->loglevel_ = loglevel_->currentItem();
+	conf->loglevel_ = loglevel_->currentIndex();
 
 	return true;
 }

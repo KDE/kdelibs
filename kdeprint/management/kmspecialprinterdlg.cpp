@@ -183,8 +183,8 @@ void KMSpecialPrinterDlg::setPrinter(KMPrinter *printer)
 	{
 		m_command->setCommand(printer->option("kde-special-command"));
 		m_usefile->setChecked(printer->option("kde-special-file") == "1");
-		int	index = m_mimelist.findIndex(printer->option("kde-special-mimetype"));
-		m_mimetype->setCurrentItem(index == -1 ? 0 : index);
+		int	index = m_mimelist.indexOf(printer->option("kde-special-mimetype"));
+		m_mimetype->setCurrentIndex(index == -1 ? 0 : index);
 		m_extension->setText(printer->option("kde-special-extension"));
 		m_name->setText(printer->name());
 		m_description->setText(printer->description());

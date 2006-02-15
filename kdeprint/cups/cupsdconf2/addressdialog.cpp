@@ -53,7 +53,7 @@ AddressDialog::AddressDialog(QWidget *parent, const char *name)
 QString AddressDialog::addressString()
 {
 	QString s;
-	if (type_->currentItem() == 0)
+	if (type_->currentIndex() == 0)
 		s.append("Allow ");
 	else
 		s.append("Deny ");
@@ -79,7 +79,7 @@ QString AddressDialog::editAddress(const QString& addr, QWidget *parent)
 	int p = addr.find(' ');
 	if (p != -1)
 	{
-		dlg.type_->setCurrentItem(addr.left(p).toLower() == "deny" ? 1 : 0);
+		dlg.type_->setCurrentIndex(addr.left(p).toLower() == "deny" ? 1 : 0);
 		dlg.address_->setText(addr.mid(p+1));
 	}
 	if (dlg.exec())

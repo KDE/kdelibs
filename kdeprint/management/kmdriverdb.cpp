@@ -210,7 +210,7 @@ void KMDriverDB::loadDbFile()
 			line = t.readLine().trimmed();
 			if (line.isEmpty())
 				continue;
-			int	p = line.find('=');
+			int	p = line.indexOf('=');
 			if (p == -1)
 				continue;
 			words.clear();

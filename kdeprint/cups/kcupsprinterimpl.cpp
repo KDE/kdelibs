@@ -150,8 +150,8 @@ static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd)
 				 * Strip the prefix to build valid a CUPS option.      */
 				key = key.mid(9);
 			optstr.append(" ").append(key);
-			if (!it.data().isEmpty())
-				optstr.append("=").append(it.data());
+			if (!it.value().isEmpty())
+				optstr.append("=").append(it.value());
 		}
 	}
 	if (!optstr.isEmpty())

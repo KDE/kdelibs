@@ -113,12 +113,12 @@ QString BrowseDialog::editAddress(const QString& s, QWidget *parent, CupsdConf *
 	QStringList	l = QStringList::split(QRegExp("\\s"), s, false);
 	if (l.count() > 1)
 	{
-		if (l[0] == "Send") dlg.type_->setCurrentItem(0);
-		else if (l[0] == "Allow") dlg.type_->setCurrentItem(1);
-		else if (l[0] == "Deny") dlg.type_->setCurrentItem(2);
-		else if (l[0] == "Relay") dlg.type_->setCurrentItem(3);
-		else if (l[0] == "Poll") dlg.type_->setCurrentItem(4);
-		dlg.slotTypeChanged(dlg.type_->currentItem());
+		if (l[0] == "Send") dlg.type_->setCurrentIndex(0);
+		else if (l[0] == "Allow") dlg.type_->setCurrentIndex(1);
+		else if (l[0] == "Deny") dlg.type_->setCurrentIndex(2);
+		else if (l[0] == "Relay") dlg.type_->setCurrentIndex(3);
+		else if (l[0] == "Poll") dlg.type_->setCurrentIndex(4);
+		dlg.slotTypeChanged(dlg.type_->currentIndex());
 		int	index(1);
 		if (dlg.from_->isEnabled())
 			dlg.from_->setText(l[index++]);

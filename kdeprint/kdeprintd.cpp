@@ -200,9 +200,9 @@ void KDEPrintd::statusMessage(const QString& msg, int pid, const QString& appNam
 	{
 		w = new StatusWindow(pid);
 		if (appName.isEmpty())
-			w->setCaption(i18n("Printing Status - %1").arg("(pid="+QString::number(pid)+")"));
+			w->setWindowTitle(i18n("Printing Status - %1").arg("(pid="+QString::number(pid)+")"));
 		else
-			w->setCaption(i18n("Printing Status - %1").arg(appName));
+			w->setWindowTitle(i18n("Printing Status - %1").arg(appName));
 		connect(w, SIGNAL(destroyed()), SLOT(slotClosed()));
 		w->show();
 		m_windows.insert(pid, w);

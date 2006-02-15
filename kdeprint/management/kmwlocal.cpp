@@ -78,7 +78,7 @@ bool KMWLocal::isValid(QString& msg)
 		msg = i18n("The URI is empty","Empty URI.");
 		return false;
 	}
-	else if (m_uris.findIndex(m_localuri->text()) == -1)
+	else if (m_uris.indexOf(m_localuri->text()) == -1)
 	{
 		if (KMessageBox::warningContinueCancel(this, i18n("The local URI doesn't correspond to a detected port. Continue?")) == KMessageBox::Cancel)
 		{
@@ -173,7 +173,7 @@ void KMWLocal::initialize()
 		++it;
 
 		QString	uri = *it;
-		int p = uri.find( ':' );
+		int p = uri.indexOf( ':' );
 		QString	desc = *(++it), prot = ( p != -1 ? uri.left( p ) : QString() );
 		QString	printer = *(++it);
 		int	index(-1);

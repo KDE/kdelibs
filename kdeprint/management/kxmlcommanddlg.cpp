@@ -948,11 +948,11 @@ void KXmlCommandDlg::setCommand(KXmlCommand *xmlCmd)
 		item->setRenameEnabled(0, true);
 	}
 
-	int	index = m_mimelist.findIndex(xmlCmd->mimeType());
+	int	index = m_mimelist.indexOf(xmlCmd->mimeType());
 	if (index != -1)
-		m_mimetype->setCurrentItem(index);
+		m_mimetype->setCurrentIndex(index);
 	else
-		m_mimetype->setCurrentItem(0);
+		m_mimetype->setCurrentIndex(0);
 
 	list = xmlCmd->inputMimeTypes();
 	m_selectedmime->clear();

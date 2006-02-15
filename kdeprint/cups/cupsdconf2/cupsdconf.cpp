@@ -837,7 +837,7 @@ QString CupsResource::textToPath(const QString& text)
 		path = "/printers/";
 		path.append(text.right(text.length()-i18n("Printer").length()-1));
 	}
-	else if (text.find(i18n("Class")) == 0)
+	else if (text.indexOf(i18n("Class")) == 0)
 	{
 		path = "/classes/";
 		path.append(text.right(text.length()-i18n("Class").length()-1));

@@ -298,7 +298,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 	int 	myPort = port_;
 	if (myHost.isEmpty()) myHost = CupsInfos::self()->host();
 	if (myPort <= 0) myPort = CupsInfos::self()->port();
-	http_t	*HTTP = httpConnect(myHost.latin1(),myPort);
+	http_t	*HTTP = httpConnect(myHost.toLatin1(),myPort);
 
 	connect_ = (HTTP != NULL);
 
@@ -491,7 +491,7 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 	{
 		if (it.key().startsWith("kde-") || it.key().startsWith("app-"))
 			continue;
-		QString	value = it.data().trimmed(), lovalue;
+		QString	value = it.value().trimmed(), lovalue;
 		value.replace(re, "");
 		lovalue = value.toLower();
 
