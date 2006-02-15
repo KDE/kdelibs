@@ -41,9 +41,10 @@ void NotifyByTaskbar::notify( int id, KNotifyConfig * config )
 	kDebug() << k_funcinfo << endl;
 	
 	int win = config->winId;
+#ifndef Q_OS_WIN
 	if( win != 0 )
 		KWin::demandAttention( win );
-	
+#endif	
 	finish( id );
 }
 
