@@ -105,7 +105,7 @@ void ConfigWidget::setCorrectLanguage( const QStringList& langs)
     for ( QStringList::const_iterator itr = langs.begin();
           itr != langs.end(); ++itr, ++idx ) {
         if ( *itr == d->broker->settings()->defaultLanguage() )
-            d->ui->m_langCombo->setCurrentItem( idx );
+            d->ui->m_langCombo->setCurrentIndex( idx );
     }
 }
 
@@ -116,7 +116,7 @@ void ConfigWidget::setBackgroundCheckingButtonShown( bool b )
 
 bool ConfigWidget::backgroundCheckingButtonShown() const
 {
-    return d->ui->m_bgSpellCB->isShown();
+    return !d->ui->m_bgSpellCB->isHidden();
 }
 
 void ConfigWidget::slotDefault()

@@ -100,7 +100,9 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     connect( d->rehighlightRequest, SIGNAL( timeout() ),
 	     this, SLOT( slotRehighlight() ));
     d->completeRehighlightRequired = true;
-    d->rehighlightRequest->start( 0, true );
+    d->rehighlightRequest->setInterval(0);
+    d->rehighlightRequest->setSingleShot(true);
+    d->rehighlightRequest->start();
 }
 
 Highlighter::~Highlighter()
@@ -119,7 +121,6 @@ void Highlighter::slotRehighlight()
     } else {
 	//rehighlight the current para only (undo/redo safe)
         QTextCursor cursor = d->edit->textCursor();
-        int index = cursor.position();
         cursor.insertText( "" );
     }
     //if (d->checksDone == d->checksRequested)
@@ -190,7 +191,8 @@ void Highlighter::slotAutoDetection()
 		emit activeChanged( i18n( "Too many misspelled words. "
 					  "As-you-type spell checking disabled." ) );
 	d->completeRehighlightRequired = true;
-	d->rehighlightRequest->start( 100, true );
+	d->rehighlightRequest->setInterval(100);
+        d->rehighlightRequest->setSingleShot(true);
         kDebug()<<" Highlighter::slotAutoDetection :"<<d->active<<endl;
     }
 
@@ -320,7 +322,7 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
 	     k->key() == Qt::Key_PageDown ||
 	     k->key() == Qt::Key_Home ||
 	     k->key() == Qt::Key_End ||
-	     (( k->state() & Qt::ControlModifier ) &&
+	     (( Qt::ButtonState(k->modifiers()) & Qt::ControlModifier ) &&
 	      ((k->key() == Qt::Key_A) ||
 	       (k->key() == Qt::Key_B) ||
 	       (k->key() == Qt::Key_E) ||
@@ -329,7 +331,9 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
 	    if ( intraWordEditing() ) {
 		setIntraWordEditing( false );
 		d->completeRehighlightRequired = true;
-		d->rehighlightRequest->start( 500, true );
+		d->rehighlightRequest->setInterval(500);
+                d->rehighlightRequest->setSingleShot(true);
+                d->rehighlightRequest->start();
 	    }
 #if 0
 	    if (d->checksDone != d->checksRequested) {
@@ -355,7 +359,9 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
 	if ( intraWordEditing() ) {
 	    setIntraWordEditing( false );
 	    d->completeRehighlightRequired = true;
-	    d->rehighlightRequest->start( 0, true );
+	    d->rehighlightRequest->setInterval(0);
+            d->rehighlightRequest->setSingleShot(true);
+            d->rehighlightRequest->start();
 	}
     }
     return false;
