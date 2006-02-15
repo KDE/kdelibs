@@ -10,6 +10,10 @@ set(kcm_spellchecking_PART_SRCS
    ${kspell2base_STAT_SRCS}
 )
 
+if (WIN32)
+   add_definitions(-DKSPELL2_EXPORT=)
+endif (WIN32)
+
 kde4_automoc(${kcm_spellchecking_PART_SRCS})
 
 kde4_add_plugin(kcm_spellchecking ${kcm_spellchecking_PART_SRCS})
