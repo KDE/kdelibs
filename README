@@ -10,7 +10,7 @@ In this file:
 
 About kdelibs
 -------------
-This is version 3.4.0 of the KDE libraries.
+This is version 4.0 of the KDE libraries.
 
 This package includes libraries that are central to the development and 
 execution of a KDE program, as well as internationalization files for these 
@@ -28,10 +28,6 @@ Here is an alphabetical list:
 
 * interfaces
     kparts interface for text editors, mediaplayer and scripting.
-
-* kab
-    OBSOLETE, see kabc: Used to be the address book library, but now only
-    used to convert kab-Addressbooks into kabc format.
 
 * kabc
     The address book library.

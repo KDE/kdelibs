@@ -1,0 +1,16 @@
+To (try to) compile kdelibs with CMake, you will need:
+
+kdelibs trunk
+CMake version 2.3.3 or later 
+	See: http://lists.kde.org/?l=kde-core-devel&m=113961367432246&w=2
+
+
+
+WHERE TO GET CMAKE
+==================
+
+Sources are at:
+
+http://www.cmake.org/files/v2.3/cmake-2.3.3-20060210.tar.gz
+
+unpack, run configure, run your make (make, gmake).
