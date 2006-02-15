@@ -219,7 +219,7 @@ kde4_add_dcop_skels(kdecore_LIB_SRCS ${kdecore_DCOP_SKEL_SRCS})
 
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
-target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${ZLIB_LIBRARIES} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${CARBON_LIBRARY})
+target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${ZLIB_LIBRARY} ${CARBON_LIBRARY})
 
 if (WIN32)
     add_definitions(-DKIO_EXPORT=)
