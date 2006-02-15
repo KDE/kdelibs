@@ -1064,9 +1064,9 @@ void KJSDebugWin::updateContextList()
 
 QString KJSDebugWin::contextStr(const Context &ctx)
 {
-    abort();
-#if 0
+  abort();
   QString str = "";
+#if 0
   SourceFragment *sourceFragment = m_sourceFragments[ctx.sourceId()];
   QString url = sourceFragment->sourceFile->url;
   int fileLineno = sourceFragment->baseLine+ctx.curStmtFirstLine()-1;
@@ -1085,10 +1085,8 @@ QString KJSDebugWin::contextStr(const Context &ctx)
       str = QString("Anonymous function at %1:%2").arg(url).arg(fileLineno);
     break;
   }
-
-  return str;
 #endif
-  return "";
+  return str;
 }
 
 bool KJSDebugWin::setBreakpoint(int sourceId, int lineno)
