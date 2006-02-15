@@ -38,7 +38,7 @@ class Lock;
 /**
   @internal
 */
-class KABC_EXPORT ResourceDir : public Resource
+class KABC_DIR_EXPORT ResourceDir : public Resource
 {
   Q_OBJECT
 
