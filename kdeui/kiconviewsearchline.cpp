@@ -230,7 +230,7 @@ void KIconViewSearchLine::showItem( Q3IconViewItem *item )
       return;
     }
   d->iconView->insertItem( item );
-  d->hiddenItems.remove( item );
+  d->hiddenItems.removeAll( item );
 }
 
 /******************************************************************************
