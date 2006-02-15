@@ -2,14 +2,14 @@
 <!-- See also developer.kde.org/documentation/other/compiling.html -->
 <!-- and www/anoncvs.html -->
 <body bgcolor="#FFFFFF">
-<h1>THIS DOCUMENT DESCRIBES HOW YOU CAN COMPILE KDE WHEN USING CVS</h1>
+<h1>THIS DOCUMENT DESCRIBES HOW YOU CAN COMPILE KDE WHEN USING SVN</h1>
 
 <p>(If you use source tarballs, you can skip "make -f Makefile.cvs" and
 should use "make distclean" instead of "make cvs-clean")
 
 <p><h3>What you need</h3>
 
-<p>Make sure you get the following stuff from CVS:
+<p>Make sure you get the following stuff from SVN:
 
 <p><ul><li>qt-copy (currently a snapshot of qt-4.x)
 <li>arts
@@ -57,7 +57,7 @@ ldconfig -m $QTDIR/lib</pre>
 <!-- <p>See http://www.kde.org/kde2-and-kde3.html for tips about setting up
 KDE 3.0 next to KDE 2.x.-->
 
-<p><h3>Preparing CVS modules</h3>
+<p><h3>Preparing SVN modules</h3>
 <p>NOTE: Is this still so?
 
 <p>All KDE modules require an "admin" sub-directory. You can create it by
@@ -143,7 +143,7 @@ again with "unsermake -f Makefile.cvs". <b>WARNING: Make sure you don't have any
 files lying around in your source tree any more, they will be deleted!</b>
 
 <h4>New directories</h4>:
-<p>When a new directory gets added to CVS it usually only contains a
+<p>When a new directory gets added to SVN it usually only contains a
 Makefile.am but not a Makefile. If you try to compile such a directory
 you will get an error like:
 
@@ -174,10 +174,10 @@ directory. (E.g. /home/username/KDE/kdelibs)
 Do a "make cvs-clean" and start from scratch, usually this solves the problem.
 
 <p>If you encounter missing include files, especially if the files start with
-a 'q', you probably have not setup your QTDIR correct or have the wrong 
-version of Qt.
+a 'q', you probably have not setup your QTDIR or LD_LIBRARY_PATH correct or
+have the wrong version of Qt,
 
-<p>If you encounter compile errors after updating from CVS, check whether you 
+<p>If you encounter compile errors after updating from SVN, check whether you 
 need to update kdelibs as well. If the problems persists, wait a few hours,
 usually compile errors are fixed shortly after they have been introduced.
 

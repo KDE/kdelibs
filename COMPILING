@@ -138,11 +138,13 @@ well as "Makefile" files. So it can be that after some struggle to get QTDIR/
 KDEDIR setup correctly your setup is actually correct, but old -incorrect-
 settings are still lying around.
 
-The best thing to do in such a case is to use the svn-clean script available in
-kdesdk/scripts . This removes all files which aren't stored in SVN. You can
-then start all over again with "unsermake -f Makefile.cvs". WARNING: Make sure
-you don't have any important files lying around in your source tree any more,
-they will be deleted!
+First, double check LD_LIBRARY_PATH points first to $QTDIR/lib
+
+If its correct, the best thing to do in such a case is to use the svn-clean 
+script available in kdesdk/scripts . This removes all files which aren't stored
+in SVN. You can then start all over again with "unsermake -f Makefile.cvs". WARNING:
+Make sure you don't have any important files lying around in your source tree any
+more, they will be deleted!
 
 New directories
 

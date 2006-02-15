@@ -145,11 +145,14 @@ headings and other identifying marks.
 Common Mistakes
 ---------------
 If configure claims Qt cannot be found, look at http://www.trolltech.com
-to get a copy of Qt, version 3.3.0 or newer. If you have peeked there
+to get a copy of Qt, version 4.1 or newer. If you have peeked there
 already, grab the SVN module qt-copy from anonsvn.kde.org, or a snapshot
 thereof.  Alternatively the svn module qt-copy from svn.kde.org can also be
 used.
 
+If you know you have the latest Qt 4, another reason it may not be able to 'find'
+QT is because it's finding an older version of QT 4.  Make sure that
+QTDIR is set, and LD_LIBRARY_PATH is set to $QTDIR/lib
 
 Debugging
 ---------
