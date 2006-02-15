@@ -22,6 +22,7 @@
 #define KWALLET_TYPES_H
 
 #include <qmap.h>
+#include <dcoptypes.h>
 
 class QString;
 class QByteArray;
