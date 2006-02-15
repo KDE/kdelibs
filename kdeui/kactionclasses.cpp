@@ -233,10 +233,6 @@ void KToggleAction::updateChecked( int id )
 
 void KToggleAction::slotActivated()
 {
-  // don't toggle when already checked and part of exclusive group
-  if ( isChecked() && !exclusiveGroup().isEmpty() )
-    return;
-
   setChecked( !isChecked() );
   KAction::slotActivated();
   emit toggled( isChecked() );
