@@ -715,6 +715,11 @@ int main(int argc, char *argv[])
   check("Broken stuff #5 path", broken.path(), "");
   broken = "file";
   check("Broken stuff #6 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
+  broken = "/";
+  check("Broken stuff #7 valid", broken.isValid()?"VALID":"MALFORMED", "VALID");
+  check("Broken stuff #7 path", broken.path(), "/" );
+  check("Broken stuff #7 url", broken.url(), "file:///" );
+  check("Broken stuff #7 file", broken.protocol(), "file" );
 
   broken = "LABEL=USB_STICK"; // 71430, can we use KURL for this?
   check("Broken stuff #6 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
