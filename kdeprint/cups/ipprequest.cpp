@@ -518,7 +518,7 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 		{
 			ipp_attribute_t	*attr2 = attr->next;
 			attr->next = attr2->next;
-			_ipp_free_attr(attr2);
+			//_ipp_free_attr(attr2);
 			break;
 		}
 		attr = attr->next;

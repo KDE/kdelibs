@@ -58,7 +58,7 @@ PluginComboBox::PluginComboBox(QWidget *parent)
 	{
 		m_combo->insertItem((*it).comment);
 		if ((*it).name == currentPlugin)
-			m_combo->setCurrentItem(m_combo->count()-1);
+			m_combo->setCurrentIndex(m_combo->count()-1);
 		m_pluginlist.append((*it).name);
 	}
 
@@ -81,7 +81,7 @@ void PluginComboBox::reload()
 	QString	syst = KMFactory::self()->printSystem();
 	int	index(-1);
 	if ((index=m_pluginlist.findIndex(syst)) != -1)
-		m_combo->setCurrentItem(index);
+		m_combo->setCurrentIndex(index);
 	configChanged();
 }
 

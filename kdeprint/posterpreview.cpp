@@ -268,7 +268,7 @@ void PosterPreview::setSelectedPages( const QString& s )
 	for ( QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it )
 	{
 		int p;
-		if ( ( p = ( *it ).find( '-' ) ) == -1 )
+		if ( ( p = ( *it ).indexOf( '-' ) ) == -1 )
 			m_selectedpages.append( ( *it ).toInt() );
 		else
 		{

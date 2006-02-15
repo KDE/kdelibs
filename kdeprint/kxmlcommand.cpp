@@ -466,7 +466,7 @@ void KXmlCommand::saveXml()
 QDomElement KXmlCommand::createIO(QDomDocument& doc, int n, const QString& tag)
 {
 	QDomElement	elem = doc.createElement(tag);
-	if (d->m_command.find("%"+tag) != -1)
+	if (d->m_command.indexOf("%"+tag) != -1)
 	{
 		for (int i=0; i<2; i++)
 		{
@@ -752,7 +752,7 @@ QStringList KXmlCommandManager::autoConvert(const QString& mimesrc, const QStrin
 				// mime types. Just discard it. If the subchain contains also the current
 				// considered filter, then discard it: it denotes of a cycle in filter
 				// chain.
-				if (subchain.count() > 0 && subchain.findIndex((*it)->name()) == -1)
+				if (subchain.count() > 0 && subchain.indexOf((*it)->name()) == -1)
 				{
 					subchain.prepend((*it)->name());
 					if (subchain.count() < score || score == 0)
@@ -791,12 +791,12 @@ bool KXmlCommandManager::checkCommand(const QString& xmlId, int inputCheck, int 
 	QString	cmd = (xmlCmd ? xmlCmd->command() : xmlId);
 	if (status && !cmd.isEmpty() && (inputCheck > None || outputCheck > None))
 	{
-		if (inputCheck > None && (cmd.find("%in") == -1 || inputCheck == Advanced) && cmd.find("%filterinput") == -1)
+		if (inputCheck > None && (cmd.indexOf("%in") == -1 || inputCheck == Advanced) && cmd.find("%filterinput") == -1)
 		{
 			status = false;
 			errmsg = i18n("The command does not contain the required tag %1.").arg(inputCheck == Advanced ? "%filterinput" : "{%in,%filterinput}");
 		}
-		if (status && outputCheck > None && (cmd.find("%out") == -1 || outputCheck == Advanced) && cmd.find("filteroutput") == -1)
+		if (status && outputCheck > None && (cmd.indexOf("%out") == -1 || outputCheck == Advanced) && cmd.indexOf("filteroutput") == -1)
 		{
 			status = false;
 			errmsg = i18n("The command does not contain the required tag %1.").arg(outputCheck == Advanced ? "%filteroutput" : "{%out,%filteroutput}");

@@ -381,10 +381,10 @@ bool PPDLoader::putFooProcessedData( const QVariant& var )
 	QMap<QString,QVariant>::ConstIterator it = var.toMap().find( "args_byname" );
 	if ( it != var.toMap().end() )
 	{
-		QVariant opts = it.data();
+		QVariant opts = it.value();
 		for ( it = opts.toMap().begin(); it != opts.toMap().end(); ++it )
 		{
-			QMap<QString,QVariant> opt = it.data().toMap();
+			QMap<QString,QVariant> opt = it.value().toMap();
 			QString type = opt[ "type" ].toString();
 			if ( type == "float" || type == "int" )
 			{

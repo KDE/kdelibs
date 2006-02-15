@@ -88,8 +88,8 @@ void KPrintAction::slotAboutToShow()
 			{
 				if (d->type == All && !first && it.current()->isSpecial())
 				{
-					if (popupMenu()->count() > 0)
-						popupMenu()->insertSeparator();
+					if (popupMenu()->actions().count() > 0)
+						popupMenu()->addSeparator();
 					first = true;
 				}
 				popupMenu()->insertItem(SmallIconSet(it.current()->pixmap()), it.current()->name(), ID++);

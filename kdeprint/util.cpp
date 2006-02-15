@@ -73,7 +73,7 @@ KUrl smbToUrl(const QString& s)
 		// assumes URL starts with "smb://"
 		QString	username = s.mid(6, p-6);
 		url = KUrl("smb://" + KUrl::encode_string(s.mid(p+1)));
-		int	q = username.find(':');
+		int	q = username.indexOf(':');
 		if (q == -1)
 			url.setUser(username);
 		else
@@ -173,14 +173,14 @@ bool splitSmbURI( const QString& uri, QString& work, QString& server, QString& p
 QString shadowPassword( const QString& uri )
 {
 	QString result = uri;
-	int p = result.find( ':' );
+	int p = result.indexOf( ':' );
 	if ( p != -1 )
 	{
 		while ( result[ ++p ] == '/' );
-		int p1 = result.find( '@', p );
+		int p1 = result.indexOf( '@', p );
 		if ( p1 != -1 )
 		{
-			int p2 = result.find( ':', p );
+			int p2 = result.indexOf( ':', p );
 			if ( p2 != -1 && p2 < p1 )
 			{
 				result.replace( p2, p1-p2, "" );

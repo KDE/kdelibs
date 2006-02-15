@@ -944,7 +944,7 @@ bool KPrinter::abort()
 { return d->m_printer->abort(); }
 
 bool KPrinter::aborted() const
-{ return d->m_printer->aborted(); }
+{ return (d->m_printer->printerState()==QPrinter::Aborted); }
 
 void KPrinter::setMargins(QSize m)
 {

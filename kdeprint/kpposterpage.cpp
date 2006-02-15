@@ -304,8 +304,8 @@ void KPPosterPage::getOptions( QMap<QString,QString>& opts, bool )
 			o.append( "poster" );
 		opts[ "_kde-filters" ] = o.join( "," );
 		opts[ "_kde-poster-media" ] = m_mediasize->text();
-		opts[ "_kde-poster-size" ] = pageSizeToPageName( ( KPrinter::PageSize )page_sizes[ m_postersize->currentItem() ].ID );
-		opts[ "kde-printsize" ] = QString::number( page_sizes[ m_printsize->currentItem() ].ID );
+		opts[ "_kde-poster-size" ] = pageSizeToPageName( ( KPrinter::PageSize )page_sizes[ m_postersize->currentIndex() ].ID );
+		opts[ "kde-printsize" ] = QString::number( page_sizes[ m_printsize->currentIndex() ].ID );
 		opts[ "_kde-poster-cut" ] = QString::number( m_cutmargin->value() );
 		opts[ "_kde-poster-select" ] = m_selection->text().trimmed();
 	}
@@ -320,7 +320,7 @@ void KPPosterPage::slotPosterSizeChanged( int value )
 {
 	int ID = page_sizes[ m_postersize->currentItem() ].ID;
 	m_preview->setPosterSize( ID );
-	if ( m_lockbtn->isOn() )
+	if ( m_lockbtn->isChecked() )
 		m_printsize->setCurrentItem( value );
 }
 
@@ -333,7 +333,7 @@ void KPPosterPage::slotLockToggled( bool on )
 {
 	m_lockbtn->setPixmap( SmallIcon( on ? "encrypted" : "decrypted" ) );
 	if ( on )
-		m_printsize->setCurrentItem( m_postersize->currentItem() );
+		m_printsize->setCurrentIndex( m_postersize->currentItem() );
 }
 
 #include "kpposterpage.moc"
