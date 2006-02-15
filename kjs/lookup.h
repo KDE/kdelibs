@@ -294,9 +294,18 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
  * If the prototype has a "parent prototype", e.g. DOMElementProto falls back on DOMNodeProto,
  * then the last line will use IMPLEMENT_PROTOTYPE_WITH_PARENT, with DOMNodeProto as last argument.
  */
+ 
+// Work around a bug in GCC 4.1 
+// and in msvc
+#if !__GNUC__ 
+#define KJS_GCC_ROOT_NS_HACK :: 
+#else 
+#define KJS_GCC_ROOT_NS_HACK 
+#endif 
+ 	
 #define KJS_DEFINE_PROTOTYPE(ClassProto) \
   class ClassProto : public KJS::JSObject { \
-    friend KJS::JSObject *cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName); \
+    friend KJS::JSObject *KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName); \
   public: \
     static KJS::JSObject *self(KJS::ExecState *exec); \
     virtual const KJS::ClassInfo *classInfo() const { return &info; } \
@@ -315,7 +324,7 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     Identifier* ClassProto::s_name = 0; \
     JSObject *ClassProto::self(ExecState *exec) \
     { \
-      return cacheGlobalObject<ClassProto>(exec, *name()); \
+      return KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(exec, *name()); \
     } \
     bool ClassProto::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
     { \
@@ -332,7 +341,7 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     Identifier* ClassProto::s_name = 0; \
     JSObject *ClassProto::self(ExecState *exec) \
     { \
-      return cacheGlobalObject<ClassProto>(exec, *name()); \
+      return  KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(exec, *name()); \
     } \
     bool ClassProto::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
     { \
