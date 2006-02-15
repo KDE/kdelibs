@@ -112,7 +112,10 @@ void Highlighter::slotRehighlight()
 {
     kDebug(0) << "Highlighter::slotRehighlight()" << endl;
     if (d->completeRehighlightRequired) {
-	rehighlight();
+#ifdef __GNUC__
+#warning "Use qt-copy for rehighlight"
+    rehighlight();
+#endif
     } else {
 	//rehighlight the current para only (undo/redo safe)
         QTextCursor cursor = d->edit->textCursor();
@@ -198,8 +201,11 @@ void Highlighter::setActive( bool active )
     if ( active == d->active )
         return;
     d->active = active;
+#ifdef __GNUC__
 #warning "Use qt-copy for rehighlight"
     rehighlight();
+#endif
+    
 
     if ( d->active )
         emit activeChanged( i18n("As-you-type spell checking enabled.") );

@@ -27,7 +27,7 @@
 namespace KSpell2
 {
     class Broker;
-    class KDE_EXPORT ConfigWidget : public QWidget
+    class KSPELL2_EXPORT ConfigWidget : public QWidget
     {
         Q_OBJECT
     public:

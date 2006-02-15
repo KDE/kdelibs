@@ -30,7 +30,7 @@ namespace KSpell2
 {
     class Filter;
     class BackgroundChecker;
-    class KDE_EXPORT Dialog : public KDialogBase
+    class KSPELL2_EXPORT Dialog : public KDialogBase
     {
         Q_OBJECT
     public:

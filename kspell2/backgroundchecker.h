@@ -46,7 +46,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short class used for spell checking in the background
      */
-    class KDE_EXPORT BackgroundChecker : public QObject
+    class KSPELL2_EXPORT BackgroundChecker : public QObject
     {
         Q_OBJECT
     public:

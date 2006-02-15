@@ -31,7 +31,7 @@ class QTextEdit;
 
 namespace KSpell2
 {
-    class KDE_EXPORT Highlighter : public QSyntaxHighlighter
+    class KSPELL2_EXPORT Highlighter : public QSyntaxHighlighter
     {
 	Q_OBJECT
     public:

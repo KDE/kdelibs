@@ -32,7 +32,7 @@ namespace KSpell2
 {
     class Broker;
 
-    class KDE_EXPORT Settings
+    class KSPELL2_EXPORT Settings
     {
     public:
         ~Settings();

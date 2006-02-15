@@ -38,7 +38,7 @@ namespace KSpell2
 {
     class Dictionary;
 
-    class KDE_EXPORT Client : public QObject
+    class KSPELL2_EXPORT Client : public QObject
     {
         Q_OBJECT
     public:

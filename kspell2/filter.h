@@ -62,7 +62,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short used to split text into words
      */
-    class KDE_EXPORT Filter
+    class KSPELL2_EXPORT Filter
     {
     public:
         static Filter *defaultFilter();

@@ -22,6 +22,7 @@
 #ifndef KSPELL_BROKER_H
 #define KSPELL_BROKER_H
 
+#include <kdelibs_export.h>
 #include <ksharedptr.h>
 
 #include <qobject.h>
@@ -43,7 +44,7 @@ namespace KSpell2
      * KSpell2 class, you can think of it as the kernel or manager
      * of the KSpell2 architecture.
      */
-    class KDE_EXPORT Broker : public QObject,
+    class KSPELL2_EXPORT Broker : public QObject,
                    public KShared
     {
         Q_OBJECT
