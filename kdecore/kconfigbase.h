@@ -212,7 +212,7 @@ public:
    * @since 4.0
    */
   template <typename T>
-  T readEntry( const char* pKey, const T& aDefault) const;
+  inline T readEntry( const char* pKey, const T& aDefault) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -323,7 +323,7 @@ public:
    * @since 4.0
    */
   template <typename T>
-  QList<T> readEntry( const char* pKey, const QList<T>& aDefault ) const;
+  inline QList<T> readEntry( const char* pKey, const QList<T>& aDefault ) const;
 
   /**
    * Reads a list from the config object.
@@ -1484,7 +1484,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS( KConfigBase::WriteConfigFlags )
 
 #define KCONFIG_DECLARE_ENUM_QOBJECT(Class, Enum)                         \
 template <>                                                               \
-Class::Enum KConfigBase::readEntry(const char* pKey, const Class::Enum& value) const\
+inline Class::Enum KConfigBase::readEntry(const char* pKey, const Class::Enum& value) const\
 {                                                                         \
 const QMetaObject* Mobj = &Class::staticMetaObject;                       \
 const QMetaEnum Menum = Mobj->enumerator(Mobj->indexOfEnumerator(#Enum)); \
@@ -1519,7 +1519,7 @@ else writeEntry(pKey, Menum.valueToKey(value), flags);                    \
 #define kcbError kWarning
 
 template <typename T>
-QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) const
+inline QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) const
 {
   QVariant::Type wanted = QVariant(T()).type();
 #if KCONFIG_QVARIANT_CHECK
