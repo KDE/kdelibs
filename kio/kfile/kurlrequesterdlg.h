@@ -35,7 +35,7 @@ class KFileDialog;
  * @short Simple dialog to enter a filename/url.
  * @author Wilco Greven <greven@kde.org>
  */
-class KIO_EXPORT KUrlRequesterDlg : public KDialogBase
+class KIO_EXPORT KUrlRequesterDlg : public KDialog
 {
     Q_OBJECT
 
@@ -51,8 +51,7 @@ public:
      * @param modal  Specifies whether the dialog should be opened as modal
      *               or not.
      */
-    KUrlRequesterDlg( const QString& url, QWidget *parent,
-                      const char *name, bool modal = true );
+    KUrlRequesterDlg( const QString& url, QWidget *parent);
 
     /**
      * Constructs a KUrlRequesterDlg.
@@ -67,7 +66,7 @@ public:
      *                  or not.
      */
     KUrlRequesterDlg( const QString& url, const QString& text,
-                      QWidget *parent, const char *name, bool modal=true );
+                      QWidget *parent);
     /**
      * Destructs the dialog.
      */

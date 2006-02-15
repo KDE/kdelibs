@@ -20,7 +20,7 @@
 #ifndef KDIRSELECTDIALOG_H
 #define KDIRSELECTDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kurl.h>
 
 class QMenu;
@@ -32,12 +32,15 @@ class KFileTreeViewItem;
 class KToggleAction;
 class Q3ListViewItem;
 
+
+class KListView;
+
 /**
  * A pretty dialog for a KDirSelect control for selecting directories.
  * @author Michael Jarrett <michaelj@corel.com>
  * @see KFileDialog
  */
-class KIO_EXPORT KDirSelectDialog : public KDialogBase
+class KIO_EXPORT KDirSelectDialog : public KDialog
 {
     Q_OBJECT
 
@@ -48,13 +51,10 @@ public:
      * @param startDir the directory, initially shown
      * @param localOnly unused. You can only select paths below the startDir
      * @param parent the parent for the dialog, usually 0L
-     * @param name the QObject::name
-     * @param modal if the dialog is modal or not
      */
     KDirSelectDialog(const QString& startDir = QString(),
                      bool localOnly = false,
-                     QWidget *parent = 0L,
-                     const char *name = 0, bool modal = false);
+                     QWidget *parent = 0L);
 
     /**
      */

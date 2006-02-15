@@ -27,7 +27,7 @@
 
 #include <qstring.h>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kfile.h>
 #include <kurl.h>
 #include <kmimetype.h>
@@ -74,7 +74,7 @@ struct KFileDialogPrivate;
  *
  * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KFileDialog : public KDialogBase
+class KIO_EXPORT KFileDialog : public KDialog
 {
     Q_OBJECT
 
@@ -92,33 +92,6 @@ public:
      * @see operationMode
      */
     enum OperationMode { Other = 0, Opening, Saving };
-
-    /**
-      * Constructs a file dialog.
-      *
-      * @param startDir This can either be
-      *         @li The URL of the directory to start in.
-      *         @li QString() to start in the current working
-      *		    directory, or the last directory where a file has been
-      *		    selected.
-      *         @li ':&lt;keyword&gt;' to start in the directory last used
-      *             by a filedialog in the same application that specified
-      *             the same keyword.
-      *         @li '::&lt;keyword&gt;' to start in the directory last used
-      *             by a filedialog in any application that specified the
-      *             same keyword.
-      *
-      * @param filter A shell glob or a mime-type-filter that specifies
-      *               which files to display.
-      * @param parent The parent widget of this dialog
-      * @param name The name of this object
-      * @param modal Whether to create a modal dialog or not
-      * See setFilter() for details on how to use this argument.
-      *
-      */
-    KFileDialog(const QString& startDir, const QString& filter,
-		QWidget *parent, const char *name,
-		bool modal);
 
     /**
       * Constructs a file dialog.
@@ -152,13 +125,10 @@ public:
       *               When creating this widget, you don't need to specify a parent,
       *               since the widget's parent will be set automatically by KFileDialog.
       * @param parent The parent widget of this dialog
-      * @param name The name of this object
-      * @param modal Whether to create a modal dialog or not
-      * @since 3.1
+      * @since 4.0
       */
     KFileDialog(const QString& startDir, const QString& filter,
-		QWidget *parent, const char *name,
-		bool modal, QWidget* widget);
+		QWidget *parent, QWidget* widget=0);
 
 
     /**
@@ -758,7 +728,7 @@ Q_SIGNALS:
     /**
       * Emitted when the user selects a file. It is only emitted in single-
       * selection mode. The best way to get notified about selected file(s)
-      * is to connect to the okClicked() signal inherited from KDialogBase
+      * is to connect to the okClicked() signal inherited from KDialog
       * and call selectedFile(), selectedFiles(),
       * selectedURL() or selectedURLs().
       */
@@ -825,13 +795,15 @@ protected:
 
     /**
      * Reads configuration and applies it (size, recent directories, ...)
+     * Recommended usage together with KConfigGroup
      */
-    virtual void readConfig( KConfig *, const QString& group = QString() );
+    virtual void readConfig( KConfigGroup * configGroup);
 
     /**
      * Saves the current configuration
+     * Recommended usage together with KConfigGroup
      */
-    virtual void writeConfig( KConfig *, const QString& group = QString() );
+    virtual void writeConfig( KConfigGroup *configGroup);
 
     /**
      * Reads the recent used files and inserts them into the location combobox

@@ -343,9 +343,8 @@ KFileDialog * KUrlRequester::fileDialog() const
 {
     if ( !myFileDialog ) {
         QWidget *p = parentWidget();
-        myFileDialog = new KFileDialog( QString(), d->fileDialogFilter, p,
-                                        "file dialog", true );
-
+        myFileDialog = new KFileDialog( QString(), d->fileDialogFilter, p);
+	myFileDialog->setModal(true);
         myFileDialog->setMode( d->fileDialogMode );
         myFileDialog->setWindowTitle( windowTitle() );
     }

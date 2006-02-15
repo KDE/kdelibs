@@ -81,7 +81,8 @@ namespace KIO {
  *   connect(op, SIGNAL(finishedLoading()),
  *           SLOT(slotLoadingFinished()));
  *
- *   op->readConfig( KGlobal::config(), "Your KDiroperator ConfigGroup" );
+ *   KConfigGroup grp(KGlobal::config(),"Your KDiroperator ConfigGroup" );
+ *   op->readConfig( &grp);
  *   op->setView(KFile::Default);
  * \endcode
  *
@@ -401,12 +402,15 @@ class KIO_EXPORT KDirOperator : public QWidget
      * Note that KDirOperator does NOT take ownership of that object (typically
      * it's KGlobal::config() anyway.
      *
+     * You must not delete the KConfig or KConfigGroup object (and master config object) before
+     * either deleting the KDirOperator or  calling setViewConfig(0); or something like that
+     *
      * @see viewConfig
      * @see viewConfigGroup
      * @since 3.1
      */
 	// ### KDE4: make virtual
-    void setViewConfig( KConfig *config, const QString& group );
+    void setViewConfig( KConfigGroup *configGroup);
 
     /**
      * Returns the KConfig object used for saving and restoring view's
@@ -435,19 +439,23 @@ class KIO_EXPORT KDirOperator : public QWidget
      * \endcode
      * to apply it.
      *
+     * recommended usage is with KConfigGroup
+     *
      * @see setView
      * @see setViewConfig
      * @see writeConfig
      */
-    virtual void readConfig( KConfig *, const QString& group = QString() );
+    virtual void readConfig( KConfigGroup *configGroup);
 
     /**
      * Saves the current settings like sorting, simple or detailed view.
      *
+     * recommended usage is with KConfigGroup
+     *
      * @see readConfig
      * @see setViewConfig
      */
-    virtual void writeConfig( KConfig *, const QString& group = QString() );
+    virtual void writeConfig( KConfigGroup *configGroup);
 
 
     /**

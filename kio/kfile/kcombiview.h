@@ -92,8 +92,8 @@ public:
 
     virtual void setSorting( QDir::SortSpec sort );
 
-    virtual void readConfig( KConfig *, const QString& group = QString() );
-    virtual void writeConfig( KConfig *, const QString& group = QString());
+    virtual void readConfig( KConfigGroup *);
+    virtual void writeConfig( KConfigGroup *);
 
     void ensureItemVisible( const KFileItem * );
 

@@ -236,7 +236,7 @@ class KDECORE_EXPORT KAboutData
                 const char *programName,
 		const char *version,
 		const char *shortDescription = 0,
-		int licenseType = License_Unknown,
+		enum LicenseKey licenseType = License_Unknown,
 		const char *copyrightStatement = 0,
 		const char *text = 0,
 		const char *homePageAddress = 0,

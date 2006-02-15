@@ -625,7 +625,7 @@ private:
  * List of KFileItems
  * This class adds a few helper methods to QList<KFileItem *>
  */
-class KFileItemList : public QList<KFileItem *>
+class KIO_EXPORT KFileItemList : public QList<KFileItem *>
 {
 public:
   /// Find a KFileItem by name and return it.

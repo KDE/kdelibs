@@ -33,6 +33,7 @@
 #include <kmessagebox.h>
 #include <kconfig.h>
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kurl.h>
 #include <kurlbar.h>
 #include <kdiroperator.h>
@@ -44,7 +45,10 @@
 
 int main(int argc, char **argv)
 {
+    KCmdLineArgs::init(argc, argv, "kfstest","kfstest","test app","0");
     KApplication a;
+    a.setQuitOnLastWindowClosed(false);
+
     QString name1;
     QStringList names;
 
@@ -56,8 +60,9 @@ int main(int argc, char **argv)
         startDir = QLatin1String( argv[2]);
 
     if (argv1 == QLatin1String("diroperator")) {
-	KDirOperator *op = new KDirOperator(startDir, 0, "operator");
-	op->setViewConfig( KGlobal::config(), "TestGroup" );
+	KDirOperator *op = new KDirOperator(startDir, 0);
+	KConfigGroup grp(KGlobal::config(), "TestGroup" );
+	op->setViewConfig(&grp);
 	op->setView(KFile::Simple);
 	op->show();
 	a.setMainWidget(op);
@@ -93,8 +98,7 @@ int main(int argc, char **argv)
 	name1 = KFileDialog::getExistingDirectory();
 
     else if (argv1 == QLatin1String("heap")) {
-	KFileDialog *dlg = new KFileDialog( startDir, QString(), 0L,
-					    "file dialog", true );
+	KFileDialog *dlg = new KFileDialog( startDir, QString(), 0L);
 	dlg->setMode( KFile::File);
     dlg->setOperationMode( KFileDialog::Saving );
     QStringList filter;
@@ -141,8 +145,7 @@ int main(int argc, char **argv)
     else {
 	KFileDialog dlg(startDir,
 			QString::fromLatin1("*|All Files\n"
-					    "*.lo *.o *.la|All libtool Files"),
-			0, 0, true);
+					    "*.lo *.o *.la|All libtool Files"),0);
 //    dlg.setFilter( "*.kdevelop" );
 	dlg.setMode( (KFile::Mode) (KFile::Files |
                                     KFile::Directory |

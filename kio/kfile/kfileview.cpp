@@ -365,11 +365,11 @@ KActionCollection * KFileView::actionCollection() const
     return d->actions;
 }
 
-void KFileView::readConfig( KConfig *, const QString&  )
+void KFileView::readConfig( KConfigGroup *)
 {
 }
 
-void KFileView::writeConfig( KConfig *, const QString& )
+void KFileView::writeConfig( KConfigGroup *)
 {
 }
 

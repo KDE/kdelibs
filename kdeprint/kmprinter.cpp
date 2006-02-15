@@ -179,9 +179,7 @@ bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
 			// build-up file dialog
 			KFileDialog *dialog = new KFileDialog (fName,
 								QString(),
-								parent,
-								"filedialog",
-								true);
+								parent);
 			dialog->setOperationMode (KFileDialog::Saving);
 
 			QString	mimetype = option("kde-special-mimetype");

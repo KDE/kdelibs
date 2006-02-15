@@ -523,13 +523,13 @@ void KFileTreeView::slotAnimation()
          continue;
       }
 
-      uint & iconNumber = it.data().iconNumber;
-      QString icon = QString::fromLatin1( it.data().iconBaseName ).append( QString::number( iconNumber ) );
+      uint & iconNumber = it.value().iconNumber;
+      QString icon = QString::fromLatin1( it.value().iconBaseName ).append( QString::number( iconNumber ) );
       // kDebug(250) << "Loading icon " << icon << endl;
       item->setPixmap( 0, DesktopIcon( icon,KIcon::SizeSmall,KIcon::ActiveState )); // KFileTreeViewFactory::instance() ) );
 
       iconNumber++;
-      if ( iconNumber > it.data().iconCount )
+      if ( iconNumber > it.value().iconCount )
 	 iconNumber = 1;
 
       ++it;
@@ -570,7 +570,7 @@ void KFileTreeView::stopAnimation( KFileTreeViewItem * item )
       }
       else
       {
-	 item->setPixmap( 0, it.data().originalPixmap );
+	 item->setPixmap( 0, it.value().originalPixmap );
       }
       m_mapCurrentOpeningFolders.remove( item );
    }

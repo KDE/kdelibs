@@ -186,15 +186,15 @@ KFileIconView::~KFileIconView()
     delete d;
 }
 
-void KFileIconView::readConfig( KConfig *kc, const QString& group )
+void KFileIconView::readConfig( KConfigGroup *configGroup)
 {
-    QString gr = group.isEmpty() ? QString("KFileIconView") : group;
-    KConfigGroup cg( kc, gr );
-    QString small = QLatin1String("SmallColumns");
-    d->previewIconSize = cg.readEntry( "Preview Size", DEFAULT_PREVIEW_SIZE );
-    d->previews->setChecked( cg.readEntry( "ShowPreviews", DEFAULT_SHOW_PREVIEWS ) );
+    //QString gr = group.isEmpty() ? QString("KFileIconView") : group;
+    //KConfigGroup cg( kc, gr );
+    QString small = QLatin1String("KFileIconView_SmallColumns");
+    d->previewIconSize = configGroup->readEntry( "KFileIconView_Preview Size", DEFAULT_PREVIEW_SIZE );
+    d->previews->setChecked( configGroup->readEntry( "KFileIconView_ShowPreviews", DEFAULT_SHOW_PREVIEWS ) );
 
-    if ( cg.readEntry("ViewMode", DEFAULT_VIEW_MODE ) == small ) {
+    if ( configGroup->readEntry("KFileIconView_ViewMode", DEFAULT_VIEW_MODE ) == small ) {
 	d->smallColumns->setChecked( true );
 	slotSmallColumns();
     }
@@ -207,30 +207,30 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
         showPreviews();
 }
 
-void KFileIconView::writeConfig( KConfig *kc, const QString& group )
+void KFileIconView::writeConfig( KConfigGroup *configGroup)
 {
-    QString gr = group.isEmpty() ? QString("KFileIconView") : group;
-    KConfigGroup cg( kc, gr );
+    //QString gr = group.isEmpty() ? QString("KFileIconView") : group;
+    //KConfigGroup cg( kc, gr );
 
     QString viewMode =  d->smallColumns->isChecked() ?
         QLatin1String("SmallColumns") :
         QLatin1String("LargeRows");
-    if(!cg.hasDefault( "ViewMode" ) && viewMode == DEFAULT_VIEW_MODE )
-        cg.revertToDefault( "ViewMode" );
+    if(!configGroup->hasDefault( "KFileIconView_ViewMode" ) && viewMode == DEFAULT_VIEW_MODE )
+        configGroup->revertToDefault( "KFileIconView_ViewMode" );
     else
-        cg.writeEntry( "ViewMode", viewMode );
+        configGroup->writeEntry( "KFileIconView_ViewMode", viewMode );
 
     int previewsIconSize = d->previewIconSize;
-    if(!cg.hasDefault( "Preview Size" ) && previewsIconSize == DEFAULT_PREVIEW_SIZE )
-        cg.revertToDefault( "Preview Size" );
+    if(!configGroup->hasDefault( "KFileIconView_Preview Size" ) && previewsIconSize == DEFAULT_PREVIEW_SIZE )
+        configGroup->revertToDefault( "KFileIconView_Preview Size" );
     else
-        cg.writeEntry( "Preview Size", previewsIconSize );
+        configGroup->writeEntry( "KFileIconView_Preview Size", previewsIconSize );
 
     bool showPreviews = d->previews->isChecked();
-    if(!cg.hasDefault( "ShowPreviews" ) && showPreviews == DEFAULT_SHOW_PREVIEWS )
-        cg.revertToDefault( "ShowPreviews" );
+    if(!configGroup->hasDefault( "KFileIconView_ShowPreviews" ) && showPreviews == DEFAULT_SHOW_PREVIEWS )
+        configGroup->revertToDefault( "KFileIconView_ShowPreviews" );
     else
-        cg.writeEntry( "ShowPreviews", showPreviews );
+        configGroup->writeEntry( "KFileIconView_ShowPreviews", showPreviews );
 }
 
 void KFileIconView::removeToolTip()
@@ -250,9 +250,9 @@ void KFileIconView::showToolTip( Q3IconViewItem *item )
     int w = maxItemWidth() - ( itemTextPos() == Bottom ? 0 :
 			       item->pixmapRect().width() ) - 4;
     if ( fontMetrics().width( item->text() ) >= w ) {
-	toolTip = new QLabel( QString::fromLatin1(" %1 ").arg(item->text()), 0,
-			      "myToolTip",
+	toolTip = new QLabel(0,
 			      Qt::WStyle_StaysOnTop | Qt::WStyle_Customize | Qt::WStyle_NoBorder | Qt::WStyle_Tool | Qt::WX11BypassWM );
+	toolTip->setText(QString::fromLatin1(" %1 ").arg(item->text()));
 	toolTip->setFrameStyle( QFrame::Plain | QFrame::Box );
 	toolTip->setLineWidth( 1 );
 	toolTip->setAlignment( Qt::AlignLeft | Qt::AlignTop );
@@ -268,7 +268,7 @@ void KFileIconView::showToolTip( Q3IconViewItem *item )
 	}
         // ### where is the font in Qt 4
         // toolTip->setFont( QToolTip::font() );
-	toolTip->setPalette( QToolTip::palette(), true );
+	toolTip->setPalette( QToolTip::palette());
 	toolTip->show();
     }
 }

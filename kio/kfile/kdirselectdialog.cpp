@@ -86,17 +86,21 @@ static KUrl rootUrl(const KUrl &url)
 }
 
 KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
-                                   QWidget *parent, const char *name,
-                                   bool modal)
-    : KDialogBase( parent, name, modal, i18n("Select Folder"),
-                   Ok|Cancel|User1, Ok, false,
+                                   QWidget *parent)
+    : KDialog( parent, i18n("Select Folder"),
+                   Ok|Cancel|User1,0,
                    KGuiItem( i18n("New Folder..."), "folder_new" ) ),
       m_localOnly( localOnly ),d(new KDirSelectDialogPrivate)
 {
+    enableButtonSeparator(false);
+    setDefaultButton(Ok);
     d->branch = 0L;
 
-    QFrame *page = makeMainWidget();
-    QHBoxLayout *hlay = new QHBoxLayout( page, 0, spacingHint() );
+    QFrame *page = new QFrame(this);
+    setMainWidget(page);
+    QHBoxLayout *hlay = new QHBoxLayout( page);
+    hlay->setMargin(0);
+    hlay->setSpacing(spacingHint());
     m_mainLayout = new QVBoxLayout();
     d->actions=new KActionCollection(this);
     d->speedBar = new KFileSpeedBar( page, "speedbar" );
@@ -125,7 +129,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     m_contextMenu = new QMenu( this );
     KAction* newFolder = new KAction( i18n("New Folder..."), "folder_new", 0, this, SLOT( slotMkdir() ), d->actions,0);
     newFolder->plug(m_contextMenu);
-    m_contextMenu->insertSeparator();
+    m_contextMenu->addSeparator();
     m_showHiddenFolders = new KToggleAction ( i18n( "Show Hidden Folders" ), 0, this,
                                         SLOT( slotShowHiddenFoldersToggled() ), d->actions);
     m_showHiddenFolders->plug(m_contextMenu);
@@ -163,6 +167,8 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
              SLOT( slotURLActivated( const QString& )));
 
     setCurrentURL( d->startURL );
+    
+    connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
 }
 
 
@@ -314,7 +320,7 @@ void KDirSelectDialog::accept()
     d->urlCombo->addToHistory( item->url().prettyURL() );
     KFileDialog::setStartDir( url() );
 
-    KDialogBase::accept();
+    KDialog::accept();
     saveConfig( KGlobal::config(), "DirSelect Dialog" );
 }
 
@@ -464,8 +470,7 @@ KUrl KDirSelectDialog::selectDirectory( const QString& startDir,
                                         QWidget *parent,
                                         const QString& caption)
 {
-    KDirSelectDialog myDialog( startDir, localOnly, parent,
-                               "kdirselect dialog", true );
+    KDirSelectDialog myDialog( startDir, localOnly, parent);
 
     if ( !caption.isNull() )
         myDialog.setCaption( caption );
@@ -477,6 +482,6 @@ KUrl KDirSelectDialog::selectDirectory( const QString& startDir,
 }
 
 void KDirSelectDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 #include "kdirselectdialog.moc"

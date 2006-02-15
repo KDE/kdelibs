@@ -73,8 +73,8 @@ public:
         onlyDoubleClickSelectsFiles = false;
         progressDelayTimer = 0L;
         dirHighlighting = false;
-        config = 0L;
         dropOptions = 0;
+	configGroup=0;
     }
 
     ~KDirOperatorPrivate() {
@@ -88,8 +88,7 @@ public:
     KActionSeparator *viewActionSeparator;
     int dropOptions;
 
-    KConfig *config;
-    QString configGroup;
+    KConfigGroup *configGroup;
 };
 
 KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent)
@@ -149,8 +148,8 @@ KDirOperator::~KDirOperator()
     resetCursor();
     if ( m_fileView )
     {
-        if ( d->config )
-            m_fileView->writeConfig( d->config, d->configGroup );
+        if ( d->configGroup )
+            m_fileView->writeConfig(d->configGroup );
 
         delete m_fileView;
         m_fileView = 0L;
@@ -979,10 +978,10 @@ void KDirOperator::connectView(KFileView *view)
 
     if (m_fileView)
     {
-        if ( d->config ) // save and restore the views' configuration
+        if ( d->configGroup ) // save and restore the views' configuration
         {
-            m_fileView->writeConfig( d->config, d->configGroup );
-            view->readConfig( d->config, d->configGroup );
+            m_fileView->writeConfig( d->configGroup);
+            view->readConfig( d->configGroup);
         }
 
         // transfer the state from old view to new view
@@ -1014,8 +1013,8 @@ void KDirOperator::connectView(KFileView *view)
 
     else
     {
-        if ( d->config )
-            view->readConfig( d->config, d->configGroup );
+        if ( d->configGroup )
+            view->readConfig( d->configGroup );
     }
 
     m_fileView = view;
@@ -1410,38 +1409,34 @@ void KDirOperator::updateViewActions()
     detailedAction->setChecked( KFile::isDetailView( fv ));
 }
 
-void KDirOperator::readConfig( KConfig *kc, const QString& group )
+void KDirOperator::readConfig( KConfigGroup *configGroup)
 {
-    if ( !kc )
+    if ( !configGroup )
         return;
-    QString oldGroup = kc->group();
-    if ( !group.isEmpty() )
-        kc->setGroup( group );
-
     defaultView = 0;
     int sorting = 0;
 
-    QString viewStyle = kc->readEntry( "View Style", "Simple" );
+    QString viewStyle = configGroup->readEntry( "View Style", "Simple" );
     if ( viewStyle == QLatin1String("Detail") )
         defaultView |= KFile::Detail;
     else
         defaultView |= KFile::Simple;
-    if ( kc->readEntry( QLatin1String("Separate Directories"),
+    if ( configGroup->readEntry( QLatin1String("Separate Directories"),
                         DefaultMixDirsAndFiles ) )
         defaultView |= KFile::SeparateDirs;
-    if ( kc->readEntry(QLatin1String("Show Preview"), false) )
+    if ( configGroup->readEntry(QLatin1String("Show Preview"), false) )
         defaultView |= KFile::PreviewContents;
 
-    if ( kc->readEntry( QLatin1String("Sort case insensitively"),
+    if ( configGroup->readEntry( QLatin1String("Sort case insensitively"),
                         DefaultCaseInsensitive ) )
         sorting |= QDir::IgnoreCase;
-    if ( kc->readEntry( QLatin1String("Sort directories first"),
+    if ( configGroup->readEntry( QLatin1String("Sort directories first"),
                         DefaultDirsFirst ) )
         sorting |= QDir::DirsFirst;
 
 
     QString name = QLatin1String("Name");
-    QString sortBy = kc->readEntry( QLatin1String("Sort by"), name );
+    QString sortBy = configGroup->readEntry( QLatin1String("Sort by"), name );
     if ( sortBy == name )
         sorting |= QDir::Name;
     else if ( sortBy == QLatin1String("Size") )
@@ -1453,40 +1448,34 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
     setSorting( mySorting );
 
 
-    if ( kc->readEntry( QLatin1String("Show hidden files"),
+    if ( configGroup->readEntry( QLatin1String("Show hidden files"),
                         DefaultShowHidden ) ) {
          showHiddenAction->setChecked( true );
          dir->setShowingDotFiles( true );
     }
-    if ( kc->readEntry( QLatin1String("Sort reversed"),
+    if ( configGroup->readEntry( QLatin1String("Sort reversed"),
                         DefaultSortReversed ) )
         reverseAction->setChecked( true );
 
-    kc->setGroup( oldGroup );
 }
 
-void KDirOperator::writeConfig( KConfig *kc, const QString& group )
+void KDirOperator::writeConfig( KConfigGroup *configGroup)
 {
-    if ( !kc )
+    if ( !configGroup )
         return;
-
-    const QString oldGroup = kc->group();
-
-    if ( !group.isEmpty() )
-        kc->setGroup( group );
 
     QString sortBy = QLatin1String("Name");
     if ( KFile::isSortBySize( mySorting ) )
         sortBy = QLatin1String("Size");
     else if ( KFile::isSortByDate( mySorting ) )
         sortBy = QLatin1String("Date");
-    kc->writeEntry( QLatin1String("Sort by"), sortBy );
+    configGroup->writeEntry( QLatin1String("Sort by"), sortBy );
 
-    kc->writeEntry( QLatin1String("Sort reversed"),
+    configGroup->writeEntry( QLatin1String("Sort reversed"),
                     reverseAction->isChecked() );
-    kc->writeEntry( QLatin1String("Sort case insensitively"),
+    configGroup->writeEntry( QLatin1String("Sort case insensitively"),
                     caseInsensitiveAction->isChecked() );
-    kc->writeEntry( QLatin1String("Sort directories first"),
+    configGroup->writeEntry( QLatin1String("Sort directories first"),
                     dirsFirstAction->isChecked() );
 
     // don't save the separate dirs or preview when an application specific
@@ -1500,17 +1489,17 @@ void KDirOperator::writeConfig( KConfig *kc, const QString& group )
 
     if ( !appSpecificPreview ) {
         if ( separateDirsAction->isEnabled() )
-            kc->writeEntry( QLatin1String("Separate Directories"),
+            configGroup->writeEntry( QLatin1String("Separate Directories"),
                             separateDirsAction->isChecked() );
 
         KToggleAction *previewAction = static_cast<KToggleAction*>(myActionCollection->action("preview"));
         if ( previewAction->isEnabled() ) {
             bool hasPreview = previewAction->isChecked();
-            kc->writeEntry( QLatin1String("Show Preview"), hasPreview );
+            configGroup->writeEntry( QLatin1String("Show Preview"), hasPreview );
         }
     }
 
-    kc->writeEntry( QLatin1String("Show hidden files"),
+    configGroup->writeEntry( QLatin1String("Show hidden files"),
                     showHiddenAction->isChecked() );
 
     KFile::FileView fv = static_cast<KFile::FileView>( m_viewKind );
@@ -1519,9 +1508,8 @@ void KDirOperator::writeConfig( KConfig *kc, const QString& group )
         style = QLatin1String("Detail");
     else if ( KFile::isSimpleView( fv ) )
         style = QLatin1String("Simple");
-    kc->writeEntry( QLatin1String("View Style"), style );
+    configGroup->writeEntry( QLatin1String("View Style"), style );
 
-    kc->setGroup( oldGroup );
 }
 
 
@@ -1557,7 +1545,7 @@ void KDirOperator::slotShowProgress()
 {
     progress->raise();
     progress->show();
-    QApplication::flushX();
+    QApplication::flush();
 }
 
 void KDirOperator::slotProgress( int percent )
@@ -1565,7 +1553,7 @@ void KDirOperator::slotProgress( int percent )
     progress->setValue( percent );
     // we have to redraw this as fast as possible
     if ( progress->isVisible() )
-	QApplication::flushX();
+	QApplication::flush();
 }
 
 
@@ -1689,20 +1677,9 @@ void KDirOperator::slotRefreshItems( const KFileItemList& items )
         m_fileView->updateView( *kit );
 }
 
-void KDirOperator::setViewConfig( KConfig *config, const QString& group )
+void KDirOperator::setViewConfig( KConfigGroup *configGroup)
 {
-    d->config = config;
-    d->configGroup = group;
-}
-
-KConfig * KDirOperator::viewConfig()
-{
-    return d->config;
-}
-
-QString KDirOperator::viewConfigGroup() const
-{
-    return d->configGroup;
+    d->configGroup = configGroup;
 }
 
 void KDirOperator::virtual_hook( int, void* )

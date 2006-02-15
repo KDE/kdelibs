@@ -86,10 +86,13 @@ public:
 };
 
 KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
-  : KDialogBase(parent, "custommenueditor", true, i18n("Menu Editor"), Ok|Cancel, Ok, true),
+  : KDialog(parent, i18n("Menu Editor"), Ok|Cancel),
     m_listView(0),d(new KCustomMenuEditorPrivate)
 {
-   KHBox *page = makeHBoxMainWidget();
+   setDefaultButton(Ok);
+   enableButtonSeparator(true);
+   KHBox *page = new KHBox(this);
+   setMainWidget(page);
    m_listView = new KListView(page);
    m_listView->addColumn(i18n("Menu"));
    m_listView->setFullWidth(true);

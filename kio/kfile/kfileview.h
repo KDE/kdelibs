@@ -346,8 +346,8 @@ public:
 
     KFileViewSignaler * signaler() const { return sig; }
 
-    virtual void readConfig( KConfig *, const QString& group = QString() );
-    virtual void writeConfig( KConfig *, const QString& group = QString());
+    virtual void readConfig( KConfigGroup *);
+    virtual void writeConfig( KConfigGroup *);
 
     /**
      * Various options for drag and drop support. 

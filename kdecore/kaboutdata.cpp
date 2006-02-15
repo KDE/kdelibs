@@ -175,7 +175,7 @@ public:
 #define mVersion d->_version
     const char *_shortDescription;
 #define mShortDescription d->_shortDescription
-    int _licenseKey;
+    enum KAboutData::LicenseKey  _licenseKey;
 #define mLicenseKey d->_licenseKey
     const char *_copyrightStatement;
 #define mCopyrightStatement d->_copyrightStatement
@@ -206,7 +206,7 @@ KAboutData::KAboutData( const char* _appName,
                         const char* _programName,
                         const char* _version,
                         const char* _shortDescription,
-			int licenseType,
+			enum LicenseKey licenseType,
 			const char* _copyrightStatement,
 			const char* text,
 			const char* homePageAddress,

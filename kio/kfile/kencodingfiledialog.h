@@ -76,17 +76,14 @@ public:
       * @param type This can either be
       *		@li Opening (open dialog, the default setting)
       *		@li Saving
-      * @param parent The parent widget of this dialog
-      * @param name The name of this object
-      * @param modal Whether to create a modal dialog or not
-      *
-      * @since 3.2
+      * @param parent The parent widget of this dialog      *
+      * @since 4.0
       */
     KEncodingFileDialog (const QString& startDir = QString(),
                     const QString& encoding = QString(),
 		    const QString& filter = QString(),
 		    const QString& caption = QString(), KFileDialog::OperationMode type = KFileDialog::Opening,
-                    QWidget *parent= 0, const char *name="", bool modal = true);
+                    QWidget *parent= 0);
     /**
      * Destructs the file dialog.
      */

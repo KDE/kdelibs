@@ -761,6 +761,17 @@ a listDir result.</li>
    and subjobs.isEmpty() with !hasSubjobs()</li>
 </ul>
 
+<h4>KFileDialog,KDirselectDialog,KUrlRequesterDlg,KCustomMenuEditor,KUrlBarItemDialog</h4>
+<ul>
+	<li> are KDialogBases no more, now they are a KDialogs </li>
+	<li> no more name and modal parameters in the constructors</li>
+</ul>
+
+<h4>KFileDialog, KFileView, KDirOperator</h4>
+<ul>
+	<li> instead of KConfig* + QString group everywhere KConfigGroup is used now </li>
+</ul>
+
 <H4>KFileMetaInfo</H4>
 <ul>
     <li>KFileMetaInfo::KiloBytes has been renamed KFileMetaInfo::KibiBytes (1 KiB = 1024 B)</li>

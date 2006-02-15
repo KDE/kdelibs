@@ -19,7 +19,7 @@
 #ifndef _KCUSTOMMENUEDITOR_H_
 #define _KCUSTOMMENUEDITOR_H_
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class KListView;
 class KConfigBase;
@@ -30,7 +30,7 @@ class KConfigBase;
   * @author Waldo Bastian (bastian@kde.org)
   * @since 3.1
   */
-class KIO_EXPORT KCustomMenuEditor : public KDialogBase
+class KIO_EXPORT KCustomMenuEditor : public KDialog
 {
     Q_OBJECT
 public:

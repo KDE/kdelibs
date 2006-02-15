@@ -304,18 +304,18 @@ KFileView *KCombiView::focusView( KFileView *preferred ) const
     return (preferred && w == preferred->widget()) ? preferred : other;
 }
 
-void KCombiView::readConfig( KConfig *config, const QString& group )
+void KCombiView::readConfig( KConfigGroup *config)
 {
-    left->readConfig( config, group );
+    left->readConfig( config);
     if ( right )
-        right->readConfig( config, group );
+        right->readConfig( config);
 }
 
-void KCombiView::writeConfig( KConfig *config, const QString& group )
+void KCombiView::writeConfig( KConfigGroup *config)
 {
-    left->writeConfig( config, group );
+    left->writeConfig( config);
     if ( right )
-        right->writeConfig( config, group );
+        right->writeConfig( config);
 }
 
 KActionCollection * KCombiView::actionCollection() const

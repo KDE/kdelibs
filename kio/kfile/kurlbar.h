@@ -23,7 +23,7 @@
 #include <QFrame>
 #include <qtooltip.h>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kicontheme.h>
 #include <klistbox.h>
 #include <kurl.h>
@@ -565,7 +565,7 @@ class KUrlRequester;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KUrlBarItemDialog : public KDialogBase
+class KIO_EXPORT KUrlBarItemDialog : public KDialog
 {
     Q_OBJECT
 
@@ -603,7 +603,7 @@ public:
                        const QString& description, QString icon,
                        bool appLocal = true,
                        int iconSize = KIcon::SizeMedium,
-                       QWidget *parent = 0, const char *name = 0 );
+                       QWidget *parent = 0);
     /**
      * Destroys the dialog.
      */

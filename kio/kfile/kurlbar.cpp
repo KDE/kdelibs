@@ -914,10 +914,13 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
                                       const QString& description,
                                       QString icon, bool appLocal,
                                       int iconSize,
-                                      QWidget *parent, const char *name )
-    : KDialogBase( parent, name, true,
-                   i18n("Edit Quick Access Entry"), Ok | Cancel, Ok, true )
+                                      QWidget *parent)
+    : KDialog( parent,
+                   i18n("Edit Quick Access Entry"), Ok | Cancel)
 {
+    setModal(true);
+    setDefaultButton(Ok);
+    enableButtonSeparator(true);
     KVBox *box = new KVBox( this );
     QString text = i18n("<qt><b>Please provide a description, URL and icon for this Quick Access entry.</b></br></qt>");
     QLabel *label = new QLabel( text, box );

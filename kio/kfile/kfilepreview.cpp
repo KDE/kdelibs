@@ -265,14 +265,14 @@ KActionCollection * KFilePreview::actionCollection() const
     }
 }
 
-void KFilePreview::readConfig( KConfig *config, const QString& group )
+void KFilePreview::readConfig( KConfigGroup *configGroup)
 {
-    left->readConfig( config, group );
+    left->readConfig( configGroup);
 }
 
-void KFilePreview::writeConfig( KConfig *config, const QString& group )
+void KFilePreview::writeConfig( KConfigGroup *configGroup)
 {
-    left->writeConfig( config, group );
+    left->writeConfig( configGroup);
 }
 
 void KFilePreview::virtual_hook( int id, void* data )
