@@ -436,8 +436,8 @@ void KFindDialog::showPatterns()
     {
         typedef struct
         {
-            char *description;
-            char *regExp;
+            const char *description;
+            const char *regExp;
             int cursorAdjustment;
         } term;
         static const term items[] =
