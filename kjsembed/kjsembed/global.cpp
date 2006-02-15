@@ -20,24 +20,25 @@
 
 # include "global.h"
 
-#ifdef QT_ONLY
+#if QT_ONLY
 # include <QObject>
 # include <cstdio>
-# ifdef _WIN32
-#  include <windows.h>
-#  include <fcntl.h>
-#  include <io.h>
-#  include <iostream.h>
-#  include <QFile>
-#  include <QTextStream>
-# endif
+#endif
+
+#if defined(_WIN32) || defined(_WIN64)
+# include <windows.h>
+# include <fcntl.h>
+# include <io.h>
+# include <ios>
+# include <QFile>
+# include <QTextStream>
 #endif
 
 static QTextStream *kjsembed_err = 0L;
 static QTextStream *kjsembed_in = 0L;
 static QTextStream *kjsembed_out = 0L;
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(_WIN64)
 char *itoa(int num, char *str, int /*radix*/)
 {
    int k;
@@ -66,7 +67,7 @@ char *itoa(int num, char *str, int /*radix*/)
 
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 static QFile win32_stdin;
 static QFile win32_stdout;
 static QFile win32_stderr;
@@ -94,7 +95,7 @@ void RedirectIOToConsole() {
    hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
    win32_stderr.open(IO_WriteOnly,hConHandle);
 
-   ios::sync_with_stdio();
+   std::ios::sync_with_stdio();
 
 }
 

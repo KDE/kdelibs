@@ -40,8 +40,10 @@
 /**
 * Implement QString-KJS::UString conversion methods. These methods are declared
 * by KJS, but libkjs doesn't actually contain their implementations.
+* because we link against khtml , those functions are already implemented there.
 *
 */
+#if !defined(_WIN32) && !defined(_WIN64)
 namespace KJS {
 
     UString::UString( const QString &d )
@@ -63,6 +65,7 @@ namespace KJS {
     }
 
 }
+#endif
 
 namespace KJSEmbed {
 
