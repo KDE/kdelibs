@@ -327,7 +327,7 @@ kde4_automoc(${khtmlimagepart_PART_SRCS})
 
 kde4_add_plugin(khtmlimagepart ${khtmlimagepart_PART_SRCS})
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/kde4/ khtmlimagepart  )
+kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/ khtmlimagepart  )
 
 target_link_libraries(khtmlimagepart  ${QT_AND_KDECORE_LIBS} khtml)
 
