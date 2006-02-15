@@ -263,6 +263,55 @@
 # endif
 #endif
 
+#ifndef KSPELL2_EXPORT
+# ifdef MAKE_KSPELL2_LIB
+#  define KSPELL2_EXPORT KDE_EXPORT
+# else
+#  define KSPELL2_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#ifndef KABC_DIR_EXPORT
+# ifdef MAKE_KABC_DIR_LIB
+#  define KABC_DIR_EXPORT KDE_EXPORT
+# else
+#  define KABC_DIR_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#ifndef KABC_FILE_EXPORT
+# ifdef MAKE_KABC_FILE_LIB
+#  define KABC_FILE_EXPORT KDE_EXPORT
+# else
+#  define KABC_FILE_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#ifndef KABC_NET_EXPORT
+# ifdef MAKE_KABC_NET_LIB
+#  define KABC_NET_EXPORT KDE_EXPORT
+# else
+#  define KABC_NET_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#ifndef KABC_LDAPKIO_EXPORT
+# ifdef MAKE_KABC_LDAPKIO_LIB
+#  define KABC_LDAPKIO_EXPORT KDE_EXPORT
+# else
+#  define KABC_LDAPKIO_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#ifndef KIMPROXY_EXPORT
+# ifdef MAKE_KIMPROXY_LIB
+#  define KIMPROXY_EXPORT KDE_EXPORT
+# else
+#  define KIMPROXY_EXPORT KDE_IMPORT
+# endif
+#endif
+
+
 #ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
 #endif
