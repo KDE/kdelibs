@@ -2,6 +2,9 @@ kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/khtml ${CMAKE_SOURCE_DIR}/kio/httpfilter ${CMAKE_SOURCE_DIR}/kutils ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+if(ZLIB_FOUND)
+   include_directories(${ZLIB_INCLUDE_DIR})
+endif(ZLIB_FOUND)
 
 ########### next target ###############
 
