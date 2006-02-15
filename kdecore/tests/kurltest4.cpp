@@ -1134,6 +1134,12 @@ void KUrlTest::testBrokenStuff()
   broken = "file";
   QVERIFY( broken.isValid() ); // KDE3: was invalid; now it's path="file"
 
+  broken = "/";
+  QVERIFY( broken.isValid() );
+  QCOMPARE( broken.path(), QString("/") );
+  QCOMPARE( broken.url(), QString("/") ); // KDE3: was resolved to "file:///". QUrl supports urls without a protocol.
+  QCOMPARE( broken.protocol(), QString("") ); // KDE3: was "file"
+
   broken = "LABEL=USB_STICK"; // 71430, can we use KUrl for this?
   QVERIFY( broken.isValid() ); // KDE3 difference: QUrl likes this one too
   QVERIFY( !broken.isEmpty() );
