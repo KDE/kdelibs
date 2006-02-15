@@ -3067,12 +3067,10 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     return;
   f.close();
 
-  KSimpleConfig config( path );
-  config.setDollarExpansion( false );
-  config.setDesktopGroup();
-  QString nameStr = config.readEntry( "Name" );
-  QString genNameStr = config.readEntry( "GenericName" );
-  QString commentStr = config.readEntry( "Comment" );
+  KDesktopFile  config( path );
+  QString nameStr = config.readName();
+  QString genNameStr = config.readGenericName();
+  QString commentStr = config.readComment();
   QString commandStr = config.readPathEntry( "Exec" );
   if (commandStr.startsWith(QLatin1String("ksystraycmd ")))
   {
@@ -3912,16 +3910,16 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
     return;
   f.close();
 
-  KSimpleConfig config( path );
+  KDesktopFile config( path );
   config.setDesktopGroup();
-  QString commentStr = config.readEntry( "Comment" );
-  QString genNameStr = config.readEntry( "GenericName" );
+  QString commentStr = config.readComment();
+  QString genNameStr = config.readGenericName();
 
   QStringList selectedTypes = config.readEntry( "ServiceTypes", QStringList() );
   // For compatibility with KDE 1.x
   selectedTypes += config.readEntry( "MimeType", QStringList(), ';' );
 
-  QString nameStr = config.readEntry( "Name" );
+  QString nameStr = config.readName();
   if ( nameStr.isEmpty() || d->m_kdesktopMode ) {
     // We'll use the file name if no name is specified
     // because we _need_ a Name for a valid file.
