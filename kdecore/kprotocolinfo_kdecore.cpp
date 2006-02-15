@@ -234,7 +234,7 @@ KProtocolInfo::save( QDataStream& _str)
    i_showPreviews = d->showPreviews ? 1 : 0;
 #if 0
    i_uriMode = d->uriMode;
-#eise
+#else
    i_uriMode = 0;
 #endif
 
