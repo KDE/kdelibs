@@ -326,6 +326,10 @@ private:
     friend class KWinModulePrivate;
 };
 
+#else  //Q_OS_UNIX
+class KDECORE_EXPORT KWinModule : public QObject
+{
+};
 #endif //Q_OS_UNIX
 
 #endif

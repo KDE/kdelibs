@@ -6,7 +6,11 @@ find_package(JPEG REQUIRED)
 find_package(GIF  REQUIRED)
 find_package(PNG  REQUIRED)
 
+if(MSVC)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -EHsc")
+else(MSVC)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
+endif(MSVC)
 
 # khtml/dom/Makefile.am: khtmldom
 
