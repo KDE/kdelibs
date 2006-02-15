@@ -302,8 +302,8 @@ class KDECORE_EXPORT KAboutData
      *
      * For example:
      * \code
-     * setTranslator(I18N_NOOP2("NAME OF TRANSLATORS","Your names")
-     * ,I18N_NOOP2("EMAIL OF TRANSLATORS","Your emails"));
+     * setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\\nYour names")
+     * ,I18N_NOOP("_: EMAIL OF TRANSLATORS\\nYour emails"));
      * \endcode
      *
      * The translator can then translate this dummy text with his name
