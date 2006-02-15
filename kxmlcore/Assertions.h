@@ -105,7 +105,13 @@ void KXCLog(const char *file, int line, const char *function, KXCLogChannel *cha
 #if ASSERT_DISABLED
 
 #define ASSERT(assertion) ((void)0)
+
+#ifndef _MSC_VER
 #define ASSERT_WITH_MESSAGE(assertion, ...) ((void)0)
+#else
+#define ASSERT_WITH_MESSAGE(assertion) ((void)0)
+#endif
+
 #define ASSERT_NOT_REACHED() ((void)0)
 
 #else
@@ -116,12 +122,23 @@ void KXCLog(const char *file, int line, const char *function, KXCLogChannel *cha
         CRASH(); \
     } \
 while (0)
+
+#ifndef _MSC_VER
 #define ASSERT_WITH_MESSAGE(assertion, ...) do \
     if (!(assertion)) { \
         KXCReportAssertionFailureWithMessage(__FILE__, __LINE__, KXMLCORE_PRETTY_FUNCTION, #assertion, __VA_ARGS__); \
         CRASH(); \
     } \
 while (0)
+#else
+#define ASSERT_WITH_MESSAGE(assertion) do \
+    if (!(assertion)) { \
+        KXCReportAssertionFailureWithMessage(__FILE__, __LINE__, KXMLCORE_PRETTY_FUNCTION, #assertion, __VA_ARGS__); \
+        CRASH(); \
+    } \
+while (0)
+#endif
+
 #define ASSERT_NOT_REACHED() do { \
     KXCReportAssertionFailure(__FILE__, __LINE__, KXMLCORE_PRETTY_FUNCTION, 0); \
     CRASH(); \
