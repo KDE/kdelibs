@@ -41,7 +41,8 @@ if (WIN32)
       ${CMAKE_SOURCE_DIR}/libltdl/ltdl_win.c
       kapplication_win.cpp 
       kglobalaccel_win.cpp
-      ktoolinvocation_win.cpp )
+      ktoolinvocation_win.cpp 
+      netsupp_win32.cpp )
 endif (WIN32)
 
 
