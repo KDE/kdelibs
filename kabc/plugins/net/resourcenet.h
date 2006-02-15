@@ -41,7 +41,7 @@ class Format;
 /**
   @internal
 */
-class KABC_EXPORT ResourceNet : public Resource
+class KABC_NET_EXPORT ResourceNet : public Resource
 {
   Q_OBJECT
 
