@@ -12,7 +12,7 @@
             <height>367</height>
         </rect>
     </property>
-    <property name="caption">
+    <property name="windowTitle">
         <string>Certificate Creation Wizard</string>
     </property>
     <widget class="QLabel">
