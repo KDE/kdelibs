@@ -72,7 +72,7 @@
 
 #endif
 
-// is this the right place for the macros? why not before the endif?
+/* is this the right place for the macros? why not before the endif? */
 #define KDEM2M_EXPORT KDE_EXPORT
 #define KWALLETCLIENT_EXPORT KDE_EXPORT
 #define KWALLETBACKEND_EXPORT KDE_EXPORT
