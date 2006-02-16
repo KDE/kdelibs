@@ -17,5 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-/* empty for now, to avoid #ifdefs */
+#ifndef KDEWIN_NETDB_H
+#define KDEWIN_NETDB_H
 
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include "fixwinh.h"
+
+#endif 

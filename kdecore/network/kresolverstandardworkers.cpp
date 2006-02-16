@@ -495,10 +495,11 @@ namespace
 		results.setError(KResolver::Memory);
 		break;
 
+#ifdef EAI_SYSTEM // not available on windows
 	      case EAI_SYSTEM:
 		results.setError(KResolver::SystemError, errno);
 		break;
-
+#endif
 	      default:
 		results.setError(KResolver::UnknownError, errno);
 		break;

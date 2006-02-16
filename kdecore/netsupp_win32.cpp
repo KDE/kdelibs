@@ -21,6 +21,18 @@
  **/
 
 
+/////////////////////////////////////////
+//      This file is obsolete!
+//
+int i[-1]; 
+//
+// All functions are now in kdewin32
+// or already defined in winsock2.h/ws2tcpip.h
+/////////////////////////////////////////
+
+
+
+
 #include "netsupp.h"
 
 KDECORE_EXPORT void kde_freeaddrinfo(struct kde_addrinfo *ai)
