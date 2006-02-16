@@ -12,6 +12,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 # search packages used by KDE
 find_package(KDE4 REQUIRED)
 find_package(Perl REQUIRED)
+find_package(ZLIB REQUIRED)
 
 if (APPLE)
    find_package(Carbon REQUIRED)
@@ -22,7 +23,6 @@ include (MacroAddFileDependencies)
 
 # macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
-macro_optional_find_package(ZLIB)
 macro_optional_find_package(BZip2)
 macro_optional_find_package(PNG)
 macro_optional_find_package(OpenEXR)
