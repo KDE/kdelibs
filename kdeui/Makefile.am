@@ -44,7 +44,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 	ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h \
 	kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h \
 	kcombobox.h kiconview.h klistview.h klistbox.h kbugreport.h kpassworddialog.h \
-	kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kpixmapio.h kwordwrap.h \
+	kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h \
 	kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h \
 	kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h \
 	kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h \
@@ -61,7 +61,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 # the files on the first line need to occur first when compiling
 # with --enable-final since they use X defines that get undefined
 # in ksharedpixmap.cpp
-libkdeui_la_SOURCES = ksharedpixmap.cpp kpixmapio.cpp kmenu.cpp ktoolbar.cpp \
+libkdeui_la_SOURCES = ksharedpixmap.cpp kmenu.cpp ktoolbar.cpp \
 	kaction.cpp kstdaction.cpp kactioncollection.cpp kactionclasses.cpp kurllabel.cpp \
 	kmenubar.cpp kinputdialog.cpp knuminput.cpp klineedit.cpp klistview.cpp \
 	kprogressbar.cpp kprogressdialog.cpp kcolordialog.cpp kselector.cpp kdatepicker.cpp kdatetable.cpp \
@@ -103,7 +103,7 @@ libkdeui_la_NMCHECKWEAK = $(srcdir)/libkdeui_weak.nmcheck $(top_srcdir)/kdecore/
 rcdir = $(kde_confdir)/ui
 rc_DATA = ui_standards.rc
 
-EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png dcolorreset.xpm kpartgui.dtd dcolorarrow.xbm colors Mainpage.dox
+EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker dcolorreset.xpm kpartgui.dtd dcolorarrow.xbm colors Mainpage.dox
 
 .PHONY: kdepackages
 

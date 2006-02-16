@@ -16,7 +16,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/interfaces ${
 
 set(kdeui_LIB_SRCS
 ksharedpixmap.cpp
-kpixmapio.cpp
 kmenu.cpp
 ktoolbar.cpp
 kaction.cpp
@@ -163,7 +162,7 @@ install_targets(${KDE4_LIB_INSTALL_DIR} kdeui )
 
 install_files( ${KDE4_DATA_DIR}/kdeui/pics FILES aboutkde.png ktip-bulb.png ktip-background.png )
 install_files( ${KDE4_CONFIG_DIR}/ui FILES ui_standards.rc )
-install_files( /include FILES kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h    kdatepicker.h kdatetable.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h   kstatusbar.h kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h knuminput.h     kseparator.h klineedit.h krestrictedline.h kcolorbutton.h ksystemtray.h    kbuttonbox.h keditcl.h kled.h keditlistbox.h kkeydialog.h kkeybutton.h    kurllabel.h kruler.h kcursor.h kinputdialog.h kactivelabel.h kcharselect.h    kcolormimedata.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdialog.h    kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h   ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h     kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h   kcombobox.h kiconview.h klistview.h klistbox.h kbugreport.h kpassworddialog.h    kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kpixmapio.h kwordwrap.h     kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h    kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h   kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h    karrowbutton.h kguiitem.h kstdguiitem.h kstringvalidator.h kwindowinfo.h ktextedit.h   kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kspell.h ksconfig.h     kspelldlg.h ktabbar.h ktabwidget.h ksplashscreen.h    kconfigdialog.h kactionselector.h klanguagebutton.h klistviewsearchline.h     kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h   ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h     kconfigdialogmanager.h knotification.h )
+install_files( /include FILES kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h    kdatepicker.h kdatetable.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h   kstatusbar.h kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h knuminput.h     kseparator.h klineedit.h krestrictedline.h kcolorbutton.h ksystemtray.h    kbuttonbox.h keditcl.h kled.h keditlistbox.h kkeydialog.h kkeybutton.h    kurllabel.h kruler.h kcursor.h kinputdialog.h kactivelabel.h kcharselect.h    kcolormimedata.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdialog.h    kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h   ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h     kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h   kcombobox.h kiconview.h klistview.h klistbox.h kbugreport.h kpassworddialog.h    kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h     kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h    kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h   kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h    karrowbutton.h kguiitem.h kstdguiitem.h kstringvalidator.h kwindowinfo.h ktextedit.h   kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kspell.h ksconfig.h     kspelldlg.h ktabbar.h ktabwidget.h ksplashscreen.h    kconfigdialog.h kactionselector.h klanguagebutton.h klistviewsearchline.h     kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h   ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h     kconfigdialogmanager.h knotification.h )
 
 kde4_create_doxygen_docs( INTERNAL_DOCS REFERENCES kdecore kdefx dcop kio kutils  )
 
@@ -221,7 +220,7 @@ kde4_footer()
 #	ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h \
 #	kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h \
 #	kcombobox.h kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
-#	kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kpixmapio.h kwordwrap.h \
+#	kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h \
 #	kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h \
 #	kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h \
 #	kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h \
@@ -238,7 +237,7 @@ kde4_footer()
 ## the files on the first line need to occur first when compiling
 ## with --enable-final since they use X defines that get undefined
 ## in ksharedpixmap.cpp
-#libkdeui_la_SOURCES = ksharedpixmap.cpp kpixmapio.cpp kmenu.cpp ktoolbar.cpp \
+#libkdeui_la_SOURCES = ksharedpixmap.cpp kmenu.cpp ktoolbar.cpp \
 #	kaction.cpp kstdaction.cpp kactioncollection.cpp kactionclasses.cpp kurllabel.cpp \
 #	kmenubar.cpp kinputdialog.cpp knuminput.cpp klineedit.cpp klistview.cpp \
 #	kprogress.cpp kcolordialog.cpp kselect.cpp kdatepicker.cpp kdatetbl.cpp \
@@ -280,7 +279,7 @@ kde4_footer()
 #rcdir = $(kde_confdir)/ui
 #rc_DATA = ui_standards.rc
 #
-#EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png dcolorreset.xpm kpartgui.dtd dcolorarrow.xbm colors Mainpage.dox
+#EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker dcolorreset.xpm kpartgui.dtd dcolorarrow.xbm colors Mainpage.dox
 #
 #.PHONY: kdepackages
 #

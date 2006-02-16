@@ -23,7 +23,6 @@
 
 #include <kapplication.h>
 #include <kimageeffect.h>
-#include <kpixmapio.h>
 #include <kwin.h>
 #include <kdebug.h>
 #include <netwm.h>
@@ -316,10 +315,9 @@ void KRootPixmap::updateBackground( KSharedPixmap *spm )
 
     if (m_Fade > 1e-6)
     {
-	KPixmapIO io;
-	QImage img = io.convertToImage(pm);
+	QImage img = pm.toImage();
 	img = KImageEffect::fade(img, m_Fade, m_FadeColor);
-	pm = io.convertToPixmap(img);
+	pm = QPixmap::fromImage(img);
     }
 
     if ( !m_bCustomPaint ) {
