@@ -200,7 +200,9 @@ setproctitle(const char *fmt, ...)
 #  if SPT_TYPE == SPT_SCO
 	off_t seek_off;
 	static int kmem = -1;
+#ifdef __GNUC__	
 #warning (rikkus) kmempid is declared as int, should be long
+#endif	
 	static int kmempid = -1;
 	struct user u;
 #  endif
