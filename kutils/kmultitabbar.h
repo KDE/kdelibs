@@ -25,7 +25,6 @@
 #ifndef _KMultitabbar_h_
 #define _KMultitabbar_h_
 
-#include <q3scrollview.h>
 #include <qlayout.h>
 #include <qstring.h>
 #include <qlist.h>

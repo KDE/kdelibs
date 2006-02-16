@@ -47,13 +47,13 @@ public:
 };
 
 
-KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarMode bm):Q3ScrollView(parent)
+KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarMode bm):QScrollArea(parent)
 {
 	m_expandedTabSize=-1;
 	m_showActiveTabTexts=false;
 	m_barMode=bm;
-	setHScrollBarMode(AlwaysOff);
-	setVScrollBarMode(AlwaysOff);
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	if (bm==KMultiTabBar::Vertical)
 	{
 		box=new QWidget(viewport());
@@ -72,7 +72,6 @@ KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMulti
 	}
 	mainLayout->setMargin(0);
 	mainLayout->setSpacing(0);
-	addChild(box);
 	setFrameStyle(NoFrame);
 	viewport()->setBackgroundRole(QPalette::Background);
 }
@@ -109,7 +108,6 @@ void KMultiTabBarInternal::setStyle(enum KMultiTabBar::KMultiTabBarStyle style)
 			box->setFixedHeight(24);
 			setFixedHeight(24);
 		}
-		addChild(box);
 	        for (int i=0;i<m_tabs.count();i++)
         	        mainLayout->addWidget(m_tabs.at(i));
 //		mainLayout->setAutoAdd(true);
@@ -118,9 +116,13 @@ void KMultiTabBarInternal::setStyle(enum KMultiTabBar::KMultiTabBarStyle style)
 	viewport()->update();
 }
 
+#ifdef __GNUC__
+#warning "This needs porting"
+#endif
+/*
 void KMultiTabBarInternal::drawContents ( QPainter * paint, int clipx, int clipy, int clipw, int cliph )
 {
-	Q3ScrollView::drawContents (paint , clipx, clipy, clipw, cliph );
+	QScrollArea::drawContents (paint , clipx, clipy, clipw, cliph );
 
 	if (m_position==KMultiTabBar::Right)
 	{
@@ -156,7 +158,7 @@ void KMultiTabBarInternal::drawContents ( QPainter * paint, int clipx, int clipy
 
 
 }
-
+*/
 void KMultiTabBarInternal::contentsMousePressEvent(QMouseEvent *ev)
 {
 	ev->ignore();
@@ -188,7 +190,7 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 /*	kDebug()<<"KMultiTabBarInternal::resizeEvent"<<endl;
 	kDebug()<<"KMultiTabBarInternal::resizeEvent - box geometry"<<box->geometry()<<endl;
 	kDebug()<<"KMultiTabBarInternal::resizeEvent - geometry"<<geometry()<<endl;*/
-	if (ev) Q3ScrollView::resizeEvent(ev);
+	if (ev) QScrollArea::resizeEvent(ev);
 
 	if ( (m_style==KMultiTabBar::KDEV3) ||
 		(m_style==KMultiTabBar::KDEV3ICON) ){
@@ -475,10 +477,6 @@ QSize KMultiTabBarButton::sizeHint() const
     if ( menu() != 0 )
         w += style()->pixelMetric(QStyle::PM_MenuButtonIndicator, 0L, this);
 
-    if ( !icon().isNull() ) {
-        w += style()->pixelMetric( QStyle::PM_SmallIconSize );
-        h += style()->pixelMetric( QStyle::PM_SmallIconSize );
-    } else {
         QString s( text() );
         bool empty = s.isEmpty();
         if ( empty )
@@ -489,7 +487,6 @@ QSize KMultiTabBarButton::sizeHint() const
             w += sz.width();
         if(!empty || !h)
             h = qMax(h, sz.height());
-    }
 
 
     QStyleOptionToolButton opt;
@@ -516,6 +513,7 @@ KMultiTabBarTab::KMultiTabBarTab(const QPixmap& pic, const QString& text,
 	setIcon(pic);
 	m_expandedSize=24;
 	setCheckable(true);
+	parent->layout()->addWidget(this);
 }
 
 KMultiTabBarTab::~KMultiTabBarTab() {
@@ -568,7 +566,7 @@ void KMultiTabBarTab::slotClicked()
 
 void KMultiTabBarTab::setState(bool b)
 {
-	setDown(b);
+	setChecked(b);
 	updateState();
 }
 
@@ -576,7 +574,7 @@ void KMultiTabBarTab::updateState()
 {
 
 	if (m_style!=KMultiTabBar::KONQSBC) {
-		if ((m_style==KMultiTabBar::KDEV3) || (m_style==KMultiTabBar::KDEV3ICON) || (isDown())) {
+		if ((m_style==KMultiTabBar::KDEV3) || (m_style==KMultiTabBar::KDEV3ICON) || (isChecked())) {
 			QPushButton::setText(m_text);
 		} else {
 			kDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString***************"<<endl;
@@ -585,17 +583,17 @@ void KMultiTabBarTab::updateState()
 
 		if ((m_position==KMultiTabBar::Right || m_position==KMultiTabBar::Left)) {
 			setFixedWidth(24);
-			if ((m_style==KMultiTabBar::KDEV3)  || (m_style==KMultiTabBar::KDEV3ICON) || (isDown())) {
+			if ((m_style==KMultiTabBar::KDEV3)  || (m_style==KMultiTabBar::KDEV3ICON) || (isChecked())) {
 				setFixedHeight(KMultiTabBarButton::sizeHint().width());
 			} else setFixedHeight(36);
 		} else {
 			setFixedHeight(24);
-			if ((m_style==KMultiTabBar::KDEV3)  || (m_style==KMultiTabBar::KDEV3ICON) || (isDown())) {
+			if ((m_style==KMultiTabBar::KDEV3)  || (m_style==KMultiTabBar::KDEV3ICON) || (isChecked())) {
 				setFixedWidth(KMultiTabBarButton::sizeHint().width());
 			} else setFixedWidth(36);
 		}
 	} else {
-                if ((!isDown()) || (!m_showActiveTabText))
+                if ((!isChecked()) || (!m_showActiveTabText))
                 {
 	                setFixedWidth(24);
 	                setFixedHeight(24);
@@ -645,7 +643,7 @@ void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 	QSize sh;
 	const int width = 36; // rotated
 	const int height = 24;
-	if ((m_style==KMultiTabBar::KDEV3) || (m_style==KMultiTabBar::KDEV3ICON) || (isDown())) {
+	if ((m_style==KMultiTabBar::KDEV3) || (m_style==KMultiTabBar::KDEV3ICON) || (isChecked())) {
 		 if ((m_position==KMultiTabBar::Left) || (m_position==KMultiTabBar::Right))
 			sh=QSize(this->height(),this->width());//KMultiTabBarButton::sizeHint();
 			else sh=QSize(this->width(),this->height());
@@ -662,7 +660,7 @@ void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 
 	st|=QStyle::State_Enabled;
 
-	if (isDown()) st|=QStyle::State_On;
+	if (isChecked()) st|=QStyle::State_On;
 
 	QStyleOptionButton options;
 	options.init(this);
@@ -698,7 +696,7 @@ void KMultiTabBarTab::drawButtonClassic(QPainter *paint)
         	pixmap = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ), QIcon::Normal );
 	paint->fillRect(0, 0, 24, 24, palette().color( QPalette::Background ) );
 
-	if (!isDown())
+	if (!isChecked())
 	{
 
 		if (m_position==KMultiTabBar::Right)
@@ -850,12 +848,12 @@ KMultiTabBar::KMultiTabBar(KMultiTabBarMode bm, QWidget *parent)
 	if (bm==Vertical)
 	{
 		m_l=new QVBoxLayout(this);
-		setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding /*, true*/);
+		setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding/*, true*/);
 	}
 	else
 	{
 		m_l=new QHBoxLayout(this);
-		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed /*, true*/);
+		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed/*, true*/);
 	}
 	m_l->setMargin(0);
 //	m_l->setAutoAdd(false);
@@ -969,7 +967,7 @@ bool KMultiTabBar::isTabRaised(int id) const
 	KMultiTabBarTab *ttab=tab(id);
 	if (ttab)
 	{
-		return ttab->isDown();
+		return ttab->isChecked();
 	}
 
 	return false;

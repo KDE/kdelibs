@@ -24,10 +24,10 @@
 
 #ifndef K_MULTI_TAB_BAR_P_H
 #define K_MULTI_TAB_BAR_P_H
-#include <q3scrollview.h>
+#include <qscrollarea.h>
 #include <kmultitabbar.h>
 
-class KMultiTabBarInternal: public Q3ScrollView
+class KMultiTabBarInternal: public QScrollArea
 {
         Q_OBJECT
 public:
@@ -53,7 +53,7 @@ private:
         KMultiTabBar::KMultiTabBarMode m_barMode;
 protected:
         virtual bool eventFilter(QObject *,QEvent*);
-        virtual void drawContents ( QPainter *, int, int, int, int);
+//        virtual void drawContents ( QPainter *, int, int, int, int);
 
         /**
          * [contentsM|m]ousePressEvent are reimplemented from QScrollView
