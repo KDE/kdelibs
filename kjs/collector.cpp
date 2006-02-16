@@ -306,10 +306,16 @@ void Collector::markCurrentThreadConservatively()
     void *stackBase = pthread_get_stackaddr_np(thread);
 #elif defined(_WIN32) || defined(_WIN64)
     NT_TIB *pTib;
+#ifdef __GNUC__
+		__asm__("movl  %%fs:0x18,%0"
+						: "=r" (pTib)
+		);
+#else
     __asm {
         MOV EAX, FS:[18h]
         MOV pTib, EAX
     }
+#endif
     void *stackBase = (void *)pTib->StackBase;
 #else
     static void *stackBase = 0;
