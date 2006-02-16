@@ -319,18 +319,21 @@ KUrl::~KUrl()
 KUrl::KUrl( const QString &url )
     // : QUrl( url )  can't do that
 {
+    Q_ASSERT( !url.startsWith('/') ); // Use KUrl::fromPathOrURL()
     setEncodedUrl( url.toUtf8(), QUrl::TolerantMode );
 }
 
 KUrl::KUrl( const char * url )
     // : QUrl( QLatin1String(url) )
 {
+    Q_ASSERT( !(url && *url == '/') ); // Use KUrl::fromPathOrURL()
     setEncodedUrl( url, QUrl::TolerantMode );
 }
 
 KUrl::KUrl( const QByteArray& url )
     // : QUrl( QLatin1String(url) )
 {
+    Q_ASSERT( !url.startsWith('/') ); // Use KUrl::fromPathOrURL()
     setEncodedUrl( url, QUrl::TolerantMode );
 }
 

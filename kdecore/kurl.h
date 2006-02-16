@@ -54,13 +54,9 @@ class KUrlPrivate;
  *
  * The constructor KUrl(const QString&) expects a string properly escaped,
  * or at least non-ambiguous.
- * For instance a local file or directory "/bar/#foo#" would have the URL
- * file:///bar/%23foo%23.
- * If you have the absolute path and need the URL-escaping you should create
- * KUrl via the default-constructor and then call setPath(const QString&).
+ * If you have the absolute path you should use KUrl::fromPath(const QString&).
  * \code
- *     KUrl kurl;
- *     kurl.setPath("/bar/#foo#");
+ *     KUrl kurl = KUrl::fromPath("/bar/#foo#");
  *     QString url = kurl.url();    // -> "file:///bar/%23foo%23"
  * \endcode
  *
@@ -207,33 +203,27 @@ public:
 
   /**
    * Usual constructor, to construct from a string.
-   * @param url A URL, not a filename. If the URL does not have a protocol
-   *             part, "file:" is assumed.
-   *             It is dangerous to feed unix filenames into this function,
-   *             this will work most of the time but not always.
-   *             For example "/home/Torben%20Weis" will be considered a URL
-   *             pointing to the file "/home/Torben Weis" instead of to the
-   *             file "/home/Torben%20Weis".
-   *             This means that if you have a usual UNIX like path you
-   *             should not use this constructor.
-   *             Instead create an empty url and set the path by using
-   * setPath().
+   * @param url A encoded URL.
+   *             If you have an absolute path you should use
+   *             KUrl::fromPath().
    */
   KUrl( const QString& url );
   /**
    * Constructor taking a char * @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
-   * @param url A encoded URL. If the URL does not have a protocol part,
-   *            "file:" is assumed.
+   * @param url A encoded URL.
+   *             If you have an absolute path you should use
+   *             KUrl::fromPath().
    */
   explicit KUrl( const char * url );
   /**
    * Constructor taking a QByteArray @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
-   * @param url A encoded URL. If the URL does not have a protocol part,
-   *            "file:" is assumed.
+   * @param url A encoded URL.
+   *             If you have an absolute path you should use
+   *             KUrl::fromPath().
    */
   explicit KUrl( const QByteArray& url );
 
