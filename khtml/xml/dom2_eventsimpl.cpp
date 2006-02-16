@@ -798,11 +798,8 @@ void KeyboardEventImpl::initKeyboardEvent(const DOMString &typeArg,
 }
 
 KeyboardEventImpl::KeyboardEventImpl(QKeyEvent* key, DOM::AbstractViewImpl* view) :
-    KeyEventBaseImpl(KEYDOWN_EVENT, true, true, view, key)
+    KeyEventBaseImpl(key->type() == QEvent::KeyRelease ? KEYUP_EVENT : KEYDOWN_EVENT, true, true, view, key)
 {
-    if (key->type() == QEvent::KeyRelease)
-        m_id = KEYUP_EVENT;
-
     //Try to put something reasonable in location...
     //we don't know direction, so guess left
     m_keyLocation = DOM_KEY_LOCATION_STANDARD;
