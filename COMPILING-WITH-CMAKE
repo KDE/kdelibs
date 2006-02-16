@@ -13,4 +13,4 @@ Sources are at:
 
 http://www.cmake.org/files/v2.3/cmake-2.3.3-20060210.tar.gz
 
-unpack, run configure, run your make (make, gmake).
+unpack, run "cmake ." , run your make (make, gmake).
