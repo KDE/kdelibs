@@ -33,7 +33,7 @@ class Part;
 /**
  * Base class for all KParts events.
  */
-class KPARTS_EXPORT Event : public QCustomEvent
+class KPARTS_EXPORT Event : public QEvent
 {
 public:
   Event( const char *eventName );
@@ -42,6 +42,9 @@ public:
 
   static bool test( const QEvent *event );
   static bool test( const QEvent *event, const char *name );
+
+private:
+  const char* m_eventName;
 };
 
 /**

@@ -25,16 +25,13 @@ using namespace KParts;
 #define KPARTS_EVENT_MAGIC 42
 
 Event::Event( const char *eventName )
- : QCustomEvent( (QEvent::Type)(QEvent::User + KPARTS_EVENT_MAGIC), (void *)eventName )
+ : QEvent( (QEvent::Type)(QEvent::User + KPARTS_EVENT_MAGIC) ), m_eventName(eventName)
 {
 }
 
 const char *Event::eventName() const
 {
-  if ( !test( this ) )
-    return 0L;
-  
-  return (const char *)data();
+  return m_eventName;
 } 
 
 bool Event::test( const QEvent *event )
@@ -50,7 +47,7 @@ bool Event::test( const QEvent *event, const char *name )
   if ( !test( event ) )
     return false;
   
-  return ( strcmp( name, (const char *)((QCustomEvent *)event)->data() ) == 0 );
+  return ( strcmp( name, ((Event*)event)->eventName() ) == 0 );
 } 
 
 const char *GUIActivateEvent::s_strGUIActivateEvent = "KParts/GUIActivate";

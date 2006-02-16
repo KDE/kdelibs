@@ -188,12 +188,14 @@ QList<KParts::Plugin *> Plugin::pluginObjects( QObject *parent )
   if (!parent )
     return objects;
 
-  const QObjectList plugins = parent->queryList( "KParts::Plugin", 0, false, false );
+  const QObjectList plugins = parent->children();
 
   QObjectList::ConstIterator it = plugins.begin();
   for ( ; it != plugins.end() ; ++it )
   {
-    objects.append( static_cast<Plugin *>( *it ) );
+    Plugin * plugin = qobject_cast<Plugin *>( *it );
+    if ( plugin )
+        objects.append( plugin );
   }
 
   return objects;
@@ -201,12 +203,13 @@ QList<KParts::Plugin *> Plugin::pluginObjects( QObject *parent )
 
 bool Plugin::hasPlugin( QObject* parent, const QString& library )
 {
-  const QObjectList plugins = parent->queryList( "KParts::Plugin", 0, false, false );
+  const QObjectList plugins = parent->children();
 
   QObjectList::ConstIterator it = plugins.begin();
   for ( ; it != plugins.end() ; ++it )
   {
-      if ( static_cast<Plugin *>( *it )->d->m_library == library )
+      Plugin * plugin = qobject_cast<Plugin *>( *it );
+      if ( plugin && plugin->d->m_library == library )
       {
           return true;
       }
@@ -273,13 +276,13 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
         }
 
         // search through already present plugins
-        const QObjectList pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
+        const QObjectList pluginList = parent->children();
 
         bool pluginFound = false;
         for ( QObjectList::ConstIterator it = pluginList.begin(); it != pluginList.end() ; ++it )
         {
-            Plugin * plugin = static_cast<Plugin *>( *it );
-            if( plugin->d->m_library == library )
+            Plugin * plugin = qobject_cast<Plugin *>( *it );
+            if( plugin && plugin->d->m_library == library )
             {
                 // delete and unload disabled plugins
                 if( !pluginEnabled )

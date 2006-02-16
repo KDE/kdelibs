@@ -470,7 +470,7 @@ void BrowserRun::slotCopyToTempFileResult(KIO::Job *job)
     }
     m_bFault = true; // see above
     m_bFinished = true;
-    m_timer.start( 0, true );
+    m_timer.start( 0 );
 }
 
 bool BrowserRun::isTextExecutable( const QString &serviceType )
