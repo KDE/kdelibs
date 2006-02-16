@@ -221,6 +221,8 @@ public:
             return m_variableItemInfo;
         }
 
+        /** @internal */
+        ~GroupInfo();
     private:
         /** @internal */
         GroupInfo( const QString& name, const QString& translatedName);
