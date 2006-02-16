@@ -170,7 +170,7 @@ by QX11Info::display()</li>
 <H4>KConfigBase</H4>
 <ul>
 <li>all read*Entry methods deprecated, use <b>template &lt;typename T&gt; readEntry(key, const T&amp;)</b>. 
-This uses QVariant in the background so only types that QVariant can convert to QString work. The use of QVariant allows some ambiguous conversions, so it might be necessary to use <em>explicit</em> construction to dis-ambiguate the type wanted, i.e.
+This uses QVariant in the background so only types that QVariant can convert to QString work. The use of QVariant allows some ambiguous conversions, so it might be necessary to use <em>explicit</em> construction to disambiguate the type wanted, i.e.
  <ul>
 		 <li>bool var = readEntry(key, <b>false</b>);</li>
 		 <li>int var = readEntry(key, <b>int(SomeEnumValue)</b>);</li>
@@ -192,7 +192,7 @@ writeEntry("someKey", int(timeVal)); // ok
 <li>all read*ListEntry methods deprecated, renamed to readEntry. Most types use the template version.<br/>
 <b>template &lt;typename T&gt; readEntry(key, const QList&lt;T&gt;&amp;)</b><br/>If you just write readEntry(key, list) it should work for any type that QVariant can convert to QString.
 </li>
-<li>writeEntry, deleteGroup, and deleteEntry doesn't take anymore severals boolean options (persistent,global,localized), but one QFlags</li>
+<li>writeEntry, deleteGroup, and deleteEntry do not take several boolean options (persistent,global,localized) anymore, but instead one QFlags</li>
 </ul>
 <H4>KLibFactory</H4>
 
@@ -280,7 +280,7 @@ Desktop Entry Spec</a>
 <H4>KSaveFile</H4>
 <ul>
 <li>KSaveFile has been modified from its KDE 3.x behavior to allow for new backup methods:</li>
-<li>KSaveFile::backupFile() will use the backup behvior specified in KConfig.</li>
+<li>KSaveFile::backupFile() will use the backup behavior specified in KConfig.</li>
 <li>KSaveFile::simpleBackupFile() will emulate the KDE 3.x behavior</li>
 <li>KSaveFile::numberedBackupFile() will create a numbered set of backup files (default: 10)</li>
 <li>KSaveFile::rcsBackupFile() will use rcs to maintain the backup file</li>
@@ -390,7 +390,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <H4>KConfigGroupSaver</H4>
 <p>
 The class KConfigGroupSaver has been deprecated, instead use KConfigGroup. The
-difference is a KConfigGroupSaver object direcly affects the config object it
+difference is a KConfigGroupSaver object directly affects the config object it
 is acting on, while a KConfigGroup object only ensures the entries read or
 written through it are in the correct group.</p>
 Instead of:
@@ -426,16 +426,16 @@ cg.readXXX("entry name");
 
 <H4>KCharSelectTable</H4>
 <ul>
-<li>there is no separation between focused and selected item anymore, only between selected and activated</li>
-<li>focusItemChanged is no emitted with the currently selected/focused character, not with the most recent activated one</li>
-<li>signal highlighted(...) has been removed</li>
-<li> protected memgers gotoleft/right/up/down are gone, if you really need to simulate them, use the qitemselectionmodel</li>
+<li>There is no separation between focused and selected item anymore, only between selected and activated.</li>
+<li>Signal focusItemChanged is not emitted with the currently selected/focused character, not with the most recent activated one.</li>
+<li>Signal highlighted(...) has been removed.</li>
+<li>Protected members gotoleft/right/up/down are gone. If you really need to simulate them, use the qitemselectionmodel</li>
 </ul>
 
 <H4>KColorDrag</H4>
 <ul>
 <li>has been moved as K3ColorDrag to kde3support</li>
-<li>use QMimeData  direcly instead or KColorMimeData, which resambles most of KColorDrag</li>
+<li>use QMimeData  direcly instead or KColorMimeData, which closest resembles KColorDrag</li>
 </ul>
 
 <H4>KAction</H4>
@@ -479,7 +479,7 @@ cg.readXXX("entry name");
 
 <H4>KDialogBase</H4>
 <ul>
-<li>Most of usefull features have been moved to KDialog, KDialog is now probably enough for your need. Use KDialogBase only if you use the KJanusWidget</li>
+<li>Most of useful features have been moved to KDialog, KDialog is now probably enough for your need. Use KDialogBase only if you use the KJanusWidget</li>
 <li>setButtonOKText, setButtonApplyText , setButtonCancelText  -&gt; setButtonGuiItem</li>
 <li>getBackgroundTile -&gt; backgroundTile</li>
 <li>getContentsRect -&gt; gone</li>
