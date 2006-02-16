@@ -78,7 +78,6 @@ timezone.cpp
 vcardformat.cpp
 ldifconverter.cpp
 addresslineedit.cpp
-ldapclient.cpp
 addresseelist.cpp
 vcardtool.cpp
 addresseehelper.cpp
@@ -130,7 +129,7 @@ message(STATUS "skipped kab2kabc, two moc files with the same name")
 install_files( /share/autostart FILES kab2kabc.desktop )
 install_files( ${KDE4_DATA_DIR}/kabc FILES countrytransl.map )
 install_files( ${KDE4_SERVICES_DIR}/kresources FILES kabc_manager.desktop )
-install_files( /include/kabc FILES address.h addressbook.h addressee.h addresseedialog.h    distributionlist.h distributionlistdialog.h distributionlisteditor.h    errorhandler.h field.h format.h formatfactory.h format.h geo.h key.h    phonenumber.h picture.h plugin.h resource.h    secrecy.h sound.h stdaddressbook.h timezone.h    vcardformat.h vcardconverter.h ldifconverter.h    addresslineedit.h ldapclient.h addresseelist.h lock.h locknull.h ldif.h    ldapurl.h ldapconfigwidget.h sortmode.h )
+install_files( /include/kabc FILES address.h addressbook.h addressee.h addresseedialog.h    distributionlist.h distributionlistdialog.h distributionlisteditor.h    errorhandler.h field.h format.h formatfactory.h format.h geo.h key.h    phonenumber.h picture.h plugin.h resource.h    secrecy.h sound.h stdaddressbook.h timezone.h    vcardformat.h vcardconverter.h ldifconverter.h    addresslineedit.h addresseelist.h lock.h locknull.h ldif.h    ldapurl.h ldapconfigwidget.h sortmode.h )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdeui EXCLUDE scripts  )
 
@@ -173,7 +172,7 @@ kde4_footer()
 #  secrecy.cpp sound.cpp stdaddressbook.cpp \
 #  vcardconverter.cpp timezone.cpp \
 #  vcardformat.cpp ldifconverter.cpp addresslineedit.cpp \
-#  ldapclient.cpp addresseelist.cpp vcardtool.cpp addresseehelper.cpp \
+#  addresseelist.cpp vcardtool.cpp addresseehelper.cpp \
 #  addresseehelper.skel lock.cpp locknull.cpp ldif.cpp ldapurl.cpp ldapconfigwidget.cpp \
 #  sortmode.cpp
 #
@@ -185,7 +184,7 @@ kde4_footer()
 #  phonenumber.h picture.h plugin.h resource.h \
 #  secrecy.h sound.h stdaddressbook.h timezone.h \
 #  vcardformat.h vcardconverter.h ldifconverter.h \
-#  addresslineedit.h ldapclient.h addresseelist.h lock.h locknull.h ldif.h \
+#  addresslineedit.h addresseelist.h lock.h locknull.h ldif.h \
 #  ldapurl.h ldapconfigwidget.h sortmode.h
 #
 #METASOURCES = AUTO
