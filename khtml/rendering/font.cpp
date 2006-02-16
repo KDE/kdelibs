@@ -54,7 +54,7 @@ using namespace khtml;
  * @return the width in pixels. May be 0 if @p wordStart and @p wordEnd were
  *	equal.
  */
-inline int closeWordAndGetWidth(const QFontMetrics &fm, const QChar *str, int pos,
+static inline int closeWordAndGetWidth(const QFontMetrics &fm, const QChar *str, int pos,
 	int wordStart, int wordEnd)
 {
     if (wordEnd <= wordStart) return 0;
@@ -63,7 +63,7 @@ inline int closeWordAndGetWidth(const QFontMetrics &fm, const QChar *str, int po
     return fm.width(s.string());
 }
 
-inline void drawDirectedText(QPainter *p, Qt::LayoutDirection d,
+static inline void drawDirectedText(QPainter *p, Qt::LayoutDirection d,
     int x, int y, const QString &str)
 {
     Qt::LayoutDirection saveDir = p->layoutDirection();
@@ -87,7 +87,7 @@ inline void drawDirectedText(QPainter *p, Qt::LayoutDirection d,
  *	will be set to wordEnd after function
  * @param wordEnd relative index pointing one position after the word ended
  */
-inline void closeAndDrawWord(QPainter *p, Qt::LayoutDirection d,
+static inline void closeAndDrawWord(QPainter *p, Qt::LayoutDirection d,
 	int &x, int y, const short widths[], const QChar *str, int pos,
 	int &wordStart, int wordEnd)
 {
@@ -356,7 +356,7 @@ int Font::width( QChar *chs, int slen, int pos ) const
 }
 
 /** Querying QFontDB whether something is scalable is expensive, so we cache. */
-struct Font::ScalKey 
+struct ScalKey 
 {
     QString family;
     int     weight;
@@ -375,11 +375,16 @@ struct Font::ScalKey
     }
 };
 
-uint qHash (const Font::ScalKey& key) {
+struct ScalInfo {
+    bool scaleable;
+    QList<int> sizes;
+};
+
+uint qHash (const ScalKey& key) {
     return qHash(key.family) ^ qHash(key.weight) ^ qHash(key.italic);
 }
 
-QCache<Font::ScalKey, Font::ScalInfo>* Font::scalCache; 
+static QCache<ScalKey, ScalInfo>* scalCache;
 
 bool Font::isFontScalable(QFontDatabase& db, const QFont& font) 
 {

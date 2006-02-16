@@ -66,8 +66,6 @@ class Font
     friend class CSSStyleSelector;
 
 public:
-    struct ScalKey;
-
     Font() : fontDef(), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 ) {}
     Font( const FontDef &fd )
         :  fontDef( fd ), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 )
@@ -167,13 +165,7 @@ private:
     short letterSpacing;
     short wordSpacing;
 
-    struct ScalInfo {
-        bool scaleable;
-        QList<int> sizes;
-    };
-
-    static QCache<ScalKey, ScalInfo>* scalCache;
-    static bool isFontScalable(QFontDatabase& db, const QFont& font);
+        static bool isFontScalable(QFontDatabase& db, const QFont& font);
 };
 
 } // namespace
