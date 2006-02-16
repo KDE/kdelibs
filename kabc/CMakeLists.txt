@@ -54,49 +54,45 @@ add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/field.cpp
 ########### next target ###############
 
 set(kabc_LIB_SRCS
-address.cpp
-addressbook.cpp
-addressee.cpp
-addresseedialog.cpp
-distributionlist.cpp
-distributionlistdialog.cpp
-distributionlisteditor.cpp
-errorhandler.cpp
-field.cpp
-formatfactory.cpp
-geo.cpp
-key.cpp
-phonenumber.cpp
-picture.cpp
-plugin.cpp
-resource.cpp
-secrecy.cpp
-sound.cpp
-stdaddressbook.cpp
-vcardconverter.cpp
-timezone.cpp
-vcardformat.cpp
-ldifconverter.cpp
-addresslineedit.cpp
-addresseelist.cpp
-vcardtool.cpp
-addresseehelper.cpp
-lock.cpp
-locknull.cpp
-ldif.cpp
-ldapurl.cpp
-ldapconfigwidget.cpp
-sortmode.cpp
-${vcards_STAT_SRCS}
+   address.cpp
+   addressbook.cpp
+   addressee.cpp
+   addresseedialog.cpp
+   distributionlist.cpp
+   distributionlistdialog.cpp
+   distributionlisteditor.cpp
+   errorhandler.cpp
+   field.cpp
+   formatfactory.cpp
+   geo.cpp
+   key.cpp
+   phonenumber.cpp
+   picture.cpp
+   plugin.cpp
+   resource.cpp
+   secrecy.cpp
+   sound.cpp
+   stdaddressbook.cpp
+   vcardconverter.cpp
+   timezone.cpp
+   vcardformat.cpp
+   ldifconverter.cpp
+   addresslineedit.cpp
+   addresseelist.cpp
+   vcardtool.cpp
+   addresseehelper.cpp
+   lock.cpp
+   locknull.cpp
+   ldif.cpp
+   ldapurl.cpp
+   ldapconfigwidget.cpp
+   sortmode.cpp
+   ${vcards_STAT_SRCS}
 )
 
 kde4_automoc(${kabc_LIB_SRCS})
 
-set( kabc_DCOP_SKEL_SRCS
-addresseehelper.h
-)
-
-kde4_add_dcop_skels(kabc_LIB_SRCS ${kabc_DCOP_SKEL_SRCS})
+kde4_add_dcop_skels(kabc_LIB_SRCS addresseehelper.h)
 
 kde4_add_library(kabc SHARED ${kabc_LIB_SRCS})
 
@@ -108,7 +104,7 @@ install_targets(${KDE4_LIB_INSTALL_DIR} kabc )
 
 ########### next target ###############
 
-message(STATUS "skipped kab2kabc, two moc files with the same name")
+message(STATUS "skipped kab2kabc, two moc files (addressbook) with the same name")
 
 #set(kab2kabc_SRCS
 #kab2kabc.cpp

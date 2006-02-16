@@ -58,6 +58,7 @@ if (UNIX)
    include_directories(/usr/local/include)
 endif (UNIX)
 
+add_subdirectory( cmake )
 add_subdirectory( dcop )
 add_subdirectory( libltdl )
 add_subdirectory( kdefx )

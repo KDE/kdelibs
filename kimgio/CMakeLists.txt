@@ -7,14 +7,14 @@ macro_optional_find_package(TIFF)
 macro_optional_find_package(OpenEXR)
 include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
 
 if(JASPER_FOUND)
 
 	set(kimg_jp2_LIB_SRCS jp2.cpp)
 	kde4_add_plugin(kimg_jp2 ${kimg_jp2_LIB_SRCS})
-	target_link_libraries(kimg_jp2  ${QT_AND_KDECORE_LIBS} ${JASPER_LIBRARIES})
+	target_link_libraries(kimg_jp2  ${QT_AND_KDECORE_LIBS} ${JASPER_LIBRARIES} )
 	
 	kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
 	install_targets(${KDE4_PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )

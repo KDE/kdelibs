@@ -6,11 +6,7 @@ find_package(JPEG REQUIRED)
 find_package(GIF  REQUIRED)
 find_package(PNG  REQUIRED)
 
-if(MSVC)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -EHsc")
-else(MSVC)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
-endif(MSVC)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
 # khtml/dom/Makefile.am: khtmldom
 
@@ -42,6 +38,8 @@ set(khtmldom_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/dom/dom2_events.cpp
   ${CMAKE_SOURCE_DIR}/khtml/dom/dom2_views.cpp
 )
+
+#set_source_files_properties(${khtmldom_STAT_SRCS} PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
 
 # khtml/misc/Makefile.am: khtmlmisc
 
