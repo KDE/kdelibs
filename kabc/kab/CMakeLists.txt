@@ -1,32 +1,16 @@
 kde4_header()
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+#include_directories( ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
+set(kab2kabc_SRCS kab2kabc.cpp kabapi.cc kabaddressbook.cc qconfigDB.cc)
 
-########### next target ###############
+kde4_automoc(${kab2kabc_SRCS})
 
+kde4_add_executable(kab2kabc ${kab2kabc_SRCS})
 
-########### install files ###############
+target_link_libraries(kab2kabc ${QT_AND_KDECORE_LIBS} kabc)
 
+install_targets(/bin kab2kabc)
 
 kde4_footer()
 
-
-
-#original Makefile.am contents follow:
-
-#INCLUDES= $(all_includes)
-#
-#noinst_LTLIBRARIES = libkab.la
-#KABVERSION=	4.0.0
-#KABPATCH=	0
-#
-#libkab_la_SOURCES	= \
-#	kabapi.cc \
-#	addressbook.cc \
-#	qconfigDB.cc 
-#
-#libkab_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined
-#libkab_la_LIBADD = ../../kdeui/libkdeui.la
-#
-#libkab_la_METASOURCES = AUTO

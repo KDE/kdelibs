@@ -16,7 +16,7 @@
 #ifndef KABAPI_H
 #define KABAPI_H
 
-#include "addressbook.h"
+#include "kabaddressbook.h"
 #include <kdialogbase.h>
 
 class QPushButton;

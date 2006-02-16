@@ -13,7 +13,7 @@
          from Troll Tech, Norway. $
 */
 
-#include "addressbook.h"
+#include "kabaddressbook.h"
 #include "qconfigDB.h"
 
 #include <qfileinfo.h>
@@ -2037,4 +2037,4 @@ AddressBook::ErrorCode AddressBook::categories(CategoriesMap& cat)
   return NoError;
 }
 
-#include "addressbook.moc"
+#include "kabaddressbook.moc"

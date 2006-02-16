@@ -1,16 +1,13 @@
-INCLUDES= $(all_includes)
+INCLUDES= $(all_includes) -I$(srcdir)/.. -I..
 KDE_CXXFLAGS = -UQT3_SUPPORT
 
-noinst_LTLIBRARIES = libkab.la
-KABVERSION=	4.0.0
-KABPATCH=	0
+bin_PROGRAMS = kab2kabc
 
-libkab_la_SOURCES	= \
+kab2kabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+kab2kabc_LDADD = ../libkabc.la
+kab2kabc_SOURCES = kab2kabc.cpp \
 	kabapi.cc \
-	addressbook.cc \
+	kabaddressbook.cc \
 	qconfigDB.cc 
 
-libkab_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined
-libkab_la_LIBADD = ../../kdeui/libkdeui.la
-
-libkab_la_METASOURCES = AUTO
+METASOURCES = AUTO

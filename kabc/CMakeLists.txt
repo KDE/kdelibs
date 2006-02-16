@@ -2,14 +2,13 @@ kde4_header()
 
 project(kabc)
 
-include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_BINARY_DIR}/kabc  ${CMAKE_SOURCE_DIR}/kabc/kab ${CMAKE_CURRENT_SOURCE_DIR}/vcardparser  ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-# kabc/kab/Makefile.am: kab
-
-set(kab_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kabc/kab/kabapi.cc
-  ${CMAKE_SOURCE_DIR}/kabc/kab/addressbook.cc
-  ${CMAKE_SOURCE_DIR}/kabc/kab/qconfigDB.cc
+include_directories(
+ ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}
+ ${CMAKE_CURRENT_SOURCE_DIR}
+ ${CMAKE_CURRENT_BINARY_DIR}
+ ${CMAKE_CURRENT_SOURCE_DIR}/kab
+ ${CMAKE_CURRENT_BINARY_DIR}/kab
+ ${CMAKE_CURRENT_SOURCE_DIR}/vcardparser
 )
 
 # kabc/vcardparser/Makefile.am: vcards
@@ -100,25 +99,6 @@ target_link_libraries(kabc  ${QT_AND_KDECORE_LIBS} kio kresources )
 
 set_target_properties(kabc PROPERTIES VERSION 1.2.0 SOVERSION 1 )
 install_targets(${KDE4_LIB_INSTALL_DIR} kabc )
-
-
-########### next target ###############
-
-message(STATUS "skipped kab2kabc, two moc files (addressbook) with the same name")
-
-#set(kab2kabc_SRCS
-#kab2kabc.cpp
-#${kab_STAT_SRCS}
-#)
-
-#kde4_automoc(${kab2kabc_SRCS})
-
-#kde4_add_executable(kab2kabc ${kab2kabc_SRCS})
-
-#target_link_libraries(kab2kabc  ${QT_AND_KDECORE_LIBS} kab kabc)
-
-#install_targets(/bin kab2kabc )
-
 
 ########### install files ###############
 
