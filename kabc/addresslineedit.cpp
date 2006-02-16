@@ -40,7 +40,6 @@
 
 #include <kabc/distributionlist.h>
 #include <kabc/stdaddressbook.h>
-#include "ldapclient.h"
 
 
 //=============================================================================
@@ -54,17 +53,8 @@ using namespace KABC;
 
 KCompletion * AddressLineEdit::s_completion = 0L;
 bool AddressLineEdit::s_addressesDirty = false;
-QTimer* AddressLineEdit::s_LDAPTimer = 0L;
-LdapSearch* AddressLineEdit::s_LDAPSearch = 0L;
-QString* AddressLineEdit::s_LDAPText = 0L;
-AddressLineEdit* AddressLineEdit::s_LDAPLineEdit = 0L;
-KConfig *AddressLineEdit::s_config = 0L;
 
 static KStaticDeleter<KCompletion> completionDeleter;
-static KStaticDeleter<QTimer> ldapTimerDeleter;
-static KStaticDeleter<LdapSearch> ldapSearchDeleter;
-static KStaticDeleter<QString> ldapTextDeleter;
-static KStaticDeleter<KConfig> configDeleter;
 
 AddressLineEdit::AddressLineEdit(QWidget* parent,
 		bool useCompletion)
@@ -94,17 +84,6 @@ void AddressLineEdit::init()
       s_completion->setIgnoreCase( true );
   }
 
-  if ( m_useCompletion ) {
-      if ( !s_LDAPTimer ) {
-        ldapTimerDeleter.setObject( s_LDAPTimer, new QTimer );
-        ldapSearchDeleter.setObject( s_LDAPSearch, new LdapSearch );
-        ldapTextDeleter.setObject( s_LDAPText, new QString );
-      }
-      connect( s_LDAPTimer, SIGNAL( timeout()), SLOT( slotStartLDAPLookup()));
-      connect( s_LDAPSearch, SIGNAL( searchData( const QStringList& )),
-        SLOT( slotLDAPSearchData( const QStringList& )));
-  }
-
   if ( m_useCompletion && !m_completionInitialized )
   {
       setCompletionObject( s_completion, false ); // we handle it ourself
@@ -131,14 +110,6 @@ AddressLineEdit::~AddressLineEdit()
 }
 
 //-----------------------------------------------------------------------------
-
-KConfig* AddressLineEdit::config()
-{
-  if ( !s_config )
-    configDeleter.setObject( s_config, new KConfig( "kabldaprc", false, false ) ); // Open read-write, no kdeglobals
-
-  return s_config;
-}
 
 void AddressLineEdit::setFont( const QFont& font )
 {
@@ -170,19 +141,6 @@ void AddressLineEdit::keyPressEvent(QKeyEvent *e)
 
     if ( !accept )
         KLineEdit::keyPressEvent( e );
-
-    if ( e->isAccepted())
-    {
-        if ( m_useCompletion && s_LDAPTimer != NULL )
-        {
-            if ( *s_LDAPText != text())
-                stopLDAPLookup();
-            *s_LDAPText = text();
-            s_LDAPLineEdit = this;
-            s_LDAPTimer->setSingleShot( true );
-            s_LDAPTimer->start( 500 );
-        }
-    }
 }
 
 void AddressLineEdit::mouseReleaseEvent( QMouseEvent * e )
@@ -441,62 +399,6 @@ void AddressLineEdit::addAddress( const QString& adr )
         int pos2 = adr.indexOf( pos, '>' );
         if ( pos2 >= 0 )
             s_completion->addItem( adr.mid( pos, pos2 - pos ));
-    }
-}
-
-void AddressLineEdit::slotStartLDAPLookup()
-{
-    if ( !s_LDAPSearch->isAvailable() || s_LDAPLineEdit != this )
-        return;
-    startLoadingLDAPEntries();
-}
-
-void AddressLineEdit::stopLDAPLookup()
-{
-    s_LDAPSearch->cancelSearch();
-    s_LDAPLineEdit = NULL;
-}
-
-void AddressLineEdit::startLoadingLDAPEntries()
-{
-    QString s( *s_LDAPText );
-    // TODO cache last?
-    QString prevAddr;
-    int n = s.lastIndexOf(',');
-    if (n>= 0)
-    {
-        prevAddr = s.left(n+1) + ' ';
-        s = s.mid(n+1,255).trimmed();
-    }
-    if ( s.length() == 0 )
-        return;
-
-    loadAddresses(); // TODO reuse these?
-    s_LDAPSearch->startSearch( s );
-}
-
-void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
-{
-    if ( s_LDAPLineEdit != this )
-        return;
-    for ( QStringList::ConstIterator it = adrs.begin(); it != adrs.end(); ++it ) {
-        QString name(*it);
-        int pos = name.indexOf( " <" );
-        int pos_comma = name.indexOf( ',' );
-        // put name in quotes, if we have a comma in the name
-        if (pos>0 && pos_comma>0 && pos_comma<pos) {
-          name.insert(pos, '\"');
-          name.prepend(QLatin1Char('\"'));
-        }
-        addAddress( name );
-    }
-
-    if ( hasFocus() || completionBox()->hasFocus())
-    {
-        if ( completionMode() != KGlobalSettings::CompletionNone )
-        {
-            doCompletion( false );
-        }
     }
 }
 

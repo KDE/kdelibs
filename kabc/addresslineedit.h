@@ -32,10 +32,8 @@ class KConfig;
 
 namespace KABC {
 
-class LdapSearch;
-
 /**
- * A lineedit with LDAP and kabc completion
+ * A lineedit with kabc completion
  *
  * This lineedit is supposed to be used wherever the user types email addresses
  * and might want a completion. You can simply use it as a replacement for
@@ -87,13 +85,9 @@ protected:
 private Q_SLOTS:
   void slotCompletion() { doCompletion(false); }
   void slotPopupCompletion( const QString& );
-  void slotStartLDAPLookup();
-  void slotLDAPSearchData( const QStringList& );
 
 private:
   void init();
-  void startLoadingLDAPEntries();
-  void stopLDAPLookup();
   QStringList addresses();
   QStringList removeMailDupes( const QStringList& adrs );
 
@@ -105,11 +99,6 @@ private:
 
   static bool s_addressesDirty;
   static KCompletion *s_completion;
-  static QTimer *s_LDAPTimer;
-  static LdapSearch *s_LDAPSearch;
-  static QString *s_LDAPText;
-  static AddressLineEdit *s_LDAPLineEdit;
-  static KConfig *s_config;
 
 private:
   class AddressLineEditPrivate* d;
