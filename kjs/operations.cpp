@@ -90,7 +90,7 @@ bool isPosInf(double d)
 bool isNegInf(double d)
 {
 #if defined(_WIN32) || defined(_WIN64)
-  return _FPCLASS_PINF == _fpclass(d);
+  return _FPCLASS_NINF == _fpclass(d);
 #elif defined(HAVE_FUNC_ISINF)
   return (isinf(d) == -1);
 #elif HAVE_FUNC_FINITE
