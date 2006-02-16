@@ -32,8 +32,11 @@
 Q3PtrDict<MessageWindow> MessageWindow::m_windows;
 
 MessageWindow::MessageWindow( const QString& txt, int delay, QWidget *parent )
-	: QWidget( parent, Qt::WStyle_Customize|Qt::WStyle_NoBorder|Qt::WShowModal|Qt::WType_Dialog|Qt::WDestructiveClose )
+	: QWidget( parent, Qt::Dialog )
 {
+  setAttribute(Qt::WA_DeleteOnClose);
+  setWindowModality(Qt::ApplicationModal);
+
 	KHBox *box = new KHBox( this );
 	box->setFrameStyle( QFrame::Panel|QFrame::Raised );
 	box->setLineWidth( 1 );
@@ -43,7 +46,9 @@ MessageWindow::MessageWindow( const QString& txt, int delay, QWidget *parent )
 	pix->setPixmap( DesktopIcon( "kdeprint_printer" ) );
 	m_text = new QLabel( txt, box );
 
-	QHBoxLayout *l0 = new QHBoxLayout( this, 0, 0 );
+	QHBoxLayout *l0 = new QHBoxLayout( this );
+  l0->setMargin( 0 );
+  l0->setSpacing( 0 );
 	l0->addWidget( box );
 
 	m_windows.insert( parent, this );

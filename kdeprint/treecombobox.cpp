@@ -24,8 +24,10 @@
 #include <qtreeview.h>
 
 TreeComboBox::TreeComboBox(QWidget *parent, const char *name)
-	: QComboBox(parent, name)
+	: QComboBox(parent)
 {
+  setObjectName( name );
+
 	QTreeView   *view = new QTreeView(this);
 	view->header()->hide();
 	view->setRootIsDecorated(false);
@@ -38,7 +40,7 @@ void TreeComboBox::insertItem(const QIcon& icon, const QString& text, bool oneBl
 	if (oneBlock)
 		path = QStringList(text);
 	else
-		path = QStringList::split('/', text, false);
+		path = text.split('/', QString::SkipEmptyParts);
 	int	depth = path.count()-1;
 
 	if (depth == 0)

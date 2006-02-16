@@ -25,9 +25,8 @@
 #include <q3dict.h>
 #include <qstringlist.h>
 
-class KListView;
+class QTreeWidget;
 class KXmlCommand;
-class Q3ListViewItem;
 class QToolButton;
 class KTextBrowser;
 
@@ -48,7 +47,7 @@ protected Q_SLOTS:
 	void slotUpClicked();
 	void slotDownClicked();
 	void slotConfigureClicked();
-	void slotItemSelected(Q3ListViewItem*);
+	void slotItemSelected();
 
 protected:
 	KXmlCommand* currentFilter();
@@ -57,7 +56,7 @@ protected:
 	QStringList activeList();
     void updateButton();
 private:
-	KListView		*m_view;
+	QTreeWidget		*m_view;
 	QStringList		m_filters;	// <idname,description> pairs
 	Q3Dict<KXmlCommand>	m_activefilters;
 	QToolButton		*m_add, *m_remove, *m_up, *m_down, *m_configure;

@@ -28,7 +28,7 @@
 PrinterFilter::PrinterFilter(QObject *parent)
 : QObject(parent)
 {
-	m_locationRe.setWildcard(true);
+	m_locationRe.setPatternSyntax(QRegExp::Wildcard);
 	update();
 }
 
@@ -62,7 +62,7 @@ bool PrinterFilter::filter(KMPrinter *prt)
 	if (m_enabled)
 	{
 		if ((!m_locationRe.isEmpty() && m_locationRe.exactMatch(prt->location())) ||
-		    m_printers.find(prt->printerName()) != m_printers.end())
+		    m_printers.contains(prt->printerName()))
 			return true;
 		else
 			return false;

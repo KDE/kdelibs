@@ -39,15 +39,18 @@ PluginComboBox::PluginComboBox(QWidget *parent)
 						" UNIX Printing System</em>."
                                                 " </qt>" );
 
-	m_combo = new QComboBox(this, "PluginCombo");
+	m_combo = new QComboBox(this);
+  m_combo->setObjectName("PluginCombo");
         m_combo->setWhatsThis(whatsThisCurrentPrintsystem);
 	QLabel	*m_label = new QLabel(i18n("Print s&ystem currently used:"), this);
         m_label->setWhatsThis(whatsThisCurrentPrintsystem);
 	m_label->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 	m_label->setBuddy(m_combo);
 	m_plugininfo = new QLabel("Plugin information", this);
-	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 5);
-	l0->setColStretch(0, 1);
+	QGridLayout	*l0 = new QGridLayout(this);
+  l0->setMargin(0);
+  l0->setSpacing(5);
+	l0->setColumnStretch(0, 1);
 	l0->addWidget(m_label, 0, 0);
 	l0->addWidget(m_combo, 0, 1);
 	l0->addWidget(m_plugininfo, 1, 1);
@@ -56,7 +59,7 @@ PluginComboBox::PluginComboBox(QWidget *parent)
 	QString			currentPlugin = KMFactory::self()->printSystem();
 	for (QList<KMFactory::PluginInfo>::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
-		m_combo->insertItem((*it).comment);
+		m_combo->addItem((*it).comment);
 		if ((*it).name == currentPlugin)
 			m_combo->setCurrentIndex(m_combo->count()-1);
 		m_pluginlist.append((*it).name);
@@ -80,7 +83,7 @@ void PluginComboBox::reload()
 {
 	QString	syst = KMFactory::self()->printSystem();
 	int	index(-1);
-	if ((index=m_pluginlist.findIndex(syst)) != -1)
+	if ((index=m_pluginlist.indexOf(syst)) != -1)
 		m_combo->setCurrentIndex(index);
 	configChanged();
 }

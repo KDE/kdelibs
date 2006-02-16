@@ -22,9 +22,8 @@
 #include "kxmlcommand.h"
 
 #include <qtoolbutton.h>
-#include <q3header.h>
 #include <qlayout.h>
-#include <klistview.h>
+#include <QTreeWidget>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
@@ -124,14 +123,11 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	m_activefilters.setAutoDelete(true);
 	m_valid = true;
 
-	m_view = new KListView(this);
-	  m_view->setWhatsThis(whatsThisFilterchainListView);
-	m_view->addColumn("");
+	m_view = new QTreeWidget(this);
+	m_view->setWhatsThis(whatsThisFilterchainListView);
 	m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	m_view->setLineWidth(1);
-	m_view->setSorting(-1);
-	m_view->header()->hide();
-	connect(m_view,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotItemSelected(Q3ListViewItem*)));
+	connect(m_view,SIGNAL(itemSelectionChanged()),SLOT(slotItemSelected()));
 
 	m_add = new QToolButton(this);
 	  m_add->setWhatsThis(whatsThisAddFilterButton);
@@ -163,7 +159,7 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	connect(m_up,SIGNAL(clicked()),SLOT(slotUpClicked()));
 	connect(m_down,SIGNAL(clicked()),SLOT(slotDownClicked()));
 	connect(m_configure,SIGNAL(clicked()),SLOT(slotConfigureClicked()));
-	connect(m_view,SIGNAL(doubleClicked(Q3ListViewItem*)),SLOT(slotConfigureClicked()));
+	connect(m_view,SIGNAL(itemActivated(QTreeWidgetItem*, int)),SLOT(slotConfigureClicked()));
 
 	m_info = new KActiveLabel(this);
 	m_info->setWhatsThis(whatsThisFilterInfoPane);
@@ -190,7 +186,7 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	l2->addWidget(m_configure);
 	l2->addStretch(1);
 	l1->addWidget(m_info, 1, 1, 0, 1);
-	slotItemSelected(0);
+	slotItemSelected();
 
 	resize(100,50);
 }
@@ -220,58 +216,66 @@ void KPFilterPage::slotAddClicked()
 		if (!cmd) return; // Error
 		QStringList	filters = activeList();
 		int		pos = KXmlCommandManager::self()->insertCommand(filters, cmd->name());
-		Q3ListViewItem	*prev(0);
-		if (pos > 0)
-		{
-			prev = m_view->firstChild();
-			for (int i=1;prev && i<pos;i++)
-				prev = prev->nextSibling();
-		}
 		m_activefilters.insert(cmd->name(), cmd);
-		Q3ListViewItem	*item = new Q3ListViewItem(m_view, prev, cmd->description(), cmd->name());
-		item->setPixmap(0, SmallIcon("filter"));
+    QStringList data;
+    data << cmd->description() << cmd->name();
+		QTreeWidgetItem	*item = new QTreeWidgetItem(data);
+		item->setIcon(0, SmallIcon("filter"));
+    m_view->insertTopLevelItem(pos, item);
 		checkFilterChain();
 	}
 }
 
 void KPFilterPage::slotRemoveClicked()
 {
-	if (m_view->selectedItem())
+	if (!m_view->selectedItems().isEmpty())
 	{
-		QString	idname = m_view->selectedItem()->text(1);
-		delete m_view->selectedItem();
+		QString	idname = m_view->selectedItems().first()->text(1);
+		delete m_view->selectedItems().first();
 		m_activefilters.remove(idname);
 		checkFilterChain();
 		if (m_view->currentItem())
-			m_view->setSelected(m_view->currentItem(), true);
-		slotItemSelected(m_view->currentItem());
+			m_view->setItemSelected(m_view->currentItem(), true);
+		slotItemSelected();
 	}
 }
 
 void KPFilterPage::slotUpClicked()
 {
-	Q3ListViewItem	*item = m_view->selectedItem();
-	if (item && item->itemAbove())
-	{
-		Q3ListViewItem	*clone = new Q3ListViewItem(m_view,item->itemAbove()->itemAbove(),item->text(0),item->text(1));
-		clone->setPixmap(0, SmallIcon("filter"));
-		delete item;
-		m_view->setSelected(clone, true);
-		checkFilterChain();
-	}
+  if (!m_view->selectedItems().isEmpty())
+  {
+    QTreeWidgetItem *item = m_view->selectedItems().first();
+    int index = m_view->indexOfTopLevelItem(item);
+    if ( index > 0) {
+      QStringList data;
+      data << item->text(0) << item->text(1);
+      QTreeWidgetItem	*clone = new QTreeWidgetItem(data);
+      clone->setIcon(0, SmallIcon("filter"));
+      m_view->insertTopLevelItem(index, clone);
+      delete item;
+      m_view->setItemSelected(clone, true);
+      checkFilterChain();
+    }
+  }
 }
 
 void KPFilterPage::slotDownClicked()
 {
-	Q3ListViewItem	*item = m_view->selectedItem();
-	if (item && item->itemBelow())
-	{
-		Q3ListViewItem	*clone = new Q3ListViewItem(m_view,item->itemBelow(),item->text(0),item->text(1));
-		clone->setPixmap(0, SmallIcon("filter"));
-		delete item;
-		m_view->setSelected(clone, true);
-		checkFilterChain();
-	}
+  if (!m_view->selectedItems().isEmpty())
+  {
+    QTreeWidgetItem *item = m_view->selectedItems().first();
+    int index = m_view->indexOfTopLevelItem(item);
+    if ( index < (m_view->topLevelItemCount() - 1)) {
+      QStringList data;
+      data << item->text(0) << item->text(1);
+      QTreeWidgetItem	*clone = new QTreeWidgetItem(data);
+      clone->setIcon(0, SmallIcon("filter"));
+      m_view->insertTopLevelItem(index+1, clone);
+      delete item;
+      m_view->setItemSelected(clone, true);
+      checkFilterChain();
+    }
+  }
 }
 
 void KPFilterPage::slotConfigureClicked()
@@ -281,12 +285,17 @@ void KPFilterPage::slotConfigureClicked()
 		KMessageBox::error(this,i18n("Internal error: unable to load filter."));
 }
 
-void KPFilterPage::slotItemSelected(Q3ListViewItem *item)
+void KPFilterPage::slotItemSelected()
 {
-	m_remove->setEnabled((item != 0));
-	m_up->setEnabled((item != 0 && item->itemAbove() != 0));
-	m_down->setEnabled((item != 0 && item->itemBelow() != 0));
-	m_configure->setEnabled((item != 0));
+  bool selected = !m_view->selectedItems().isEmpty();
+  int index = -1;
+  if (selected)
+    index = m_view->indexOfTopLevelItem(m_view->selectedItems().first());
+
+	m_remove->setEnabled(selected);
+	m_up->setEnabled((selected && (index > 0)));
+	m_down->setEnabled((selected && (index < m_view->topLevelItemCount() - 1)));
+	m_configure->setEnabled(selected);
 	updateInfo();
 }
 
@@ -307,7 +316,6 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 	}
 	// add needed filters
 	m_view->clear();
-	Q3ListViewItem	*item(0);
 	for (QStringList::ConstIterator sit=filters.begin(); sit!=filters.end(); ++sit)
 	{
 		KXmlCommand	*f(0);
@@ -320,8 +328,11 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 				f->setOptions(opts);
 			}
 		}
-		if (f)
-			item = new Q3ListViewItem(m_view,item,f->description(),f->name());
+		if (f) {
+      QStringList data;
+      data << f->description() << f->name();
+			new QTreeWidgetItem(m_view,data);
+    }
 	}
 	checkFilterChain();
 }
@@ -344,40 +355,36 @@ void KPFilterPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 QStringList KPFilterPage::activeList()
 {
 	QStringList	list;
-	Q3ListViewItem	*item = m_view->firstChild();
-	while (item)
-	{
-		list.append(item->text(1));
-		item = item->nextSibling();
-	}
+  for (int i = 0; i < m_view->topLevelItemCount(); ++i )
+		list.append(m_view->topLevelItem(i)->text(1));
 	return list;
 }
 
 KXmlCommand* KPFilterPage::currentFilter()
 {
 	KXmlCommand	*filter(0);
-	if (m_view->selectedItem())
-		filter = m_activefilters.find(m_view->selectedItem()->text(1));
+	if (!m_view->selectedItems().isEmpty())
+		filter = m_activefilters.find(m_view->selectedItems().first()->text(1));
 	return filter;
 }
 
 void KPFilterPage::checkFilterChain()
 {
-	Q3ListViewItem	*item = m_view->firstChild();
 	bool		ok(true);
 	m_valid = true;
-	while (item)
+  for (int i = 0; i < m_view->topLevelItemCount(); ++i )
 	{
-		item->setPixmap(0, (ok ? SmallIcon("filter") : SmallIcon("filterstop")));
+    QTreeWidgetItem *item = m_view->topLevelItem(i);
+		item->setIcon(0, (ok ? SmallIcon("filter") : SmallIcon("filterstop")));
 		KXmlCommand	*f1 = m_activefilters.find(item->text(1));
-		if (f1 && item->nextSibling())
+		if (f1 && i < (m_view->topLevelItemCount() - 1))
 		{
-			KXmlCommand	*f2 = m_activefilters.find(item->nextSibling()->text(1));
+			KXmlCommand	*f2 = m_activefilters.find(m_view->topLevelItem(i+1)->text(1));
 			if (f2)
 			{
 				if (!f2->acceptMimeType(f1->mimeType()))
 				{
-					item->setPixmap(0, SmallIcon("filterstop"));
+					item->setIcon(0, SmallIcon("filterstop"));
 					ok = false;
 					m_valid = false;
 				}
@@ -385,7 +392,6 @@ void KPFilterPage::checkFilterChain()
 					ok = true;
 			}
 		}
-		item = item->nextSibling();
 	}
 }
 

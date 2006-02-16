@@ -42,7 +42,7 @@ void urlToSmb(const KUrl& url, QString& work, QString& server, QString& printer)
 	if (url.protocol() != "smb")
 		return;
 	QString	h = url.host();
-	QStringList	l = QStringList::split('/', url.path(), false);
+	QStringList	l = url.path().split('/', QString::SkipEmptyParts);
 	if (l.count() > 1)
 	{
 		work = h;
@@ -61,7 +61,7 @@ KUrl smbToUrl(const QString& s)
 {
 	// allow to handle non-encoded chars in login/password
 	KUrl	url;
-	int	p = s.find('@');
+	int	p = s.indexOf('@');
 	if (p == -1)
 	{
 		// assumes url starts with "smb://". Use encoding in
@@ -131,14 +131,14 @@ bool splitSmbURI( const QString& uri, QString& work, QString& server, QString& p
 		return false;
 	p = 6;
 
-	int p1 = uri.find( '/', p );
+	int p1 = uri.indexOf( '/', p );
 	if ( p1 != -1 )
 	{
-		int p2 = uri.find( '@', p );
+		int p2 = uri.indexOf( '@', p );
 		if ( p2 != -1 && p2 < p1 )
 		{
 			// Got a user
-			int p3 = uri.find( ':', p );
+			int p3 = uri.indexOf( ':', p );
 			if ( p3 != -1 && p3 < p2 )
 			{
 				// Got a password
@@ -150,7 +150,7 @@ bool splitSmbURI( const QString& uri, QString& work, QString& server, QString& p
 		}
 		else
 			p2 = p-1;
-		QStringList l = QStringList::split( '/', uri.mid( p2+1 ), false );
+		QStringList l = uri.mid( p2+1 ).split( '/', QString::SkipEmptyParts );
 		switch ( l.count() )
 		{
 			case 3:

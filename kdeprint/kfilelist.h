@@ -24,9 +24,9 @@
 #include <q3ptrlist.h>
 #include <kurl.h>
 
-class KListView;
+class QTreeWidget;
+class QTreeWidgetItem;
 class QToolButton;
-class Q3ListViewItem;
 
 class KFileList : public QWidget
 {
@@ -51,10 +51,10 @@ protected:
 	void dragEnterEvent(QDragEnterEvent*);
 	void dropEvent(QDropEvent*);
 	void addFiles(const KUrl::List&);
-	void selection(Q3PtrList<Q3ListViewItem>&);
+	void selection(QList<QTreeWidgetItem*>&);
 
 private:
-	KListView	*m_files;
+	QTreeWidget	*m_files;
 	QToolButton	*m_add, *m_remove, *m_open, *m_up, *m_down;
 	bool		m_block;
 };

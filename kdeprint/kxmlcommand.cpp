@@ -164,7 +164,7 @@ void KXmlCommand::setMimeType(const QString& s)
 bool KXmlCommand::acceptMimeType(const QString& s)
 {
 	check();
-	return (d->m_inputMime.find(s) != d->m_inputMime.end());
+	return (d->m_inputMime.contains(s));
 }
 
 QStringList KXmlCommand::inputMimeTypes()
@@ -386,7 +386,7 @@ QString KXmlCommand::buildCommand(const QMap<QString,QString>& opts, bool pipein
 			{
 				QString	format = dopt->get("format");
 				QString value = dopt->valueText();
-				if ( format.find( quotedRe ) != -1 )
+				if ( format.indexOf( quotedRe ) != -1 )
 				{
 					if ( ( value.endsWith( '\'' ) && value.startsWith( '\'' ) )  ||
 					     ( value.endsWith( '\"' ) && value.startsWith( '\"' ) ) )
@@ -628,11 +628,11 @@ QStringList KXmlCommandManager::commandList()
 
 		for (QStringList::ConstIterator it=dirs.begin(); it!=dirs.end(); ++it)
 		{
-			QStringList	list = QDir(*it).entryList("*.desktop", QDir::Files, QDir::Unsorted);
+			QStringList	list = QDir(*it).entryList(QStringList( "*.desktop" ), QDir::Files, QDir::Unsorted);
 			for (QStringList::ConstIterator it2=list.begin(); it2!=list.end(); ++it2)
 			{
 				QString	cmdName = (*it2).left((*it2).length()-8);
-				if (d->m_cmdlist.find(cmdName) == d->m_cmdlist.end())
+				if (!d->m_cmdlist.contains(cmdName))
 					d->m_cmdlist.append(cmdName);
 			}
 		}
@@ -791,7 +791,7 @@ bool KXmlCommandManager::checkCommand(const QString& xmlId, int inputCheck, int 
 	QString	cmd = (xmlCmd ? xmlCmd->command() : xmlId);
 	if (status && !cmd.isEmpty() && (inputCheck > None || outputCheck > None))
 	{
-		if (inputCheck > None && (cmd.indexOf("%in") == -1 || inputCheck == Advanced) && cmd.find("%filterinput") == -1)
+		if (inputCheck > None && (cmd.indexOf("%in") == -1 || inputCheck == Advanced) && cmd.indexOf("%filterinput") == -1)
 		{
 			status = false;
 			errmsg = i18n("The command does not contain the required tag %1.").arg(inputCheck == Advanced ? "%filterinput" : "{%in,%filterinput}");

@@ -208,16 +208,16 @@ void MarginPreview::mouseMoveEvent(QMouseEvent *e)
 		switch (state_)
 		{
 			case TMoving:
-				newpos = QMIN(QMAX(e->pos().y(), box_.top()), (symetric_ ? (box_.top()+box_.bottom())/2 : margbox_.bottom()+1));
+				newpos = qMin(qMax(e->pos().y(), box_.top()), (symetric_ ? (box_.top()+box_.bottom())/2 : margbox_.bottom()+1));
 				break;
 			case BMoving:
-				newpos = QMIN(QMAX(e->pos().y(), (symetric_? (box_.top()+box_.bottom()+1)/2 : margbox_.top()-1)), box_.bottom());
+				newpos = qMin(qMax(e->pos().y(), (symetric_? (box_.top()+box_.bottom()+1)/2 : margbox_.top()-1)), box_.bottom());
 				break;
 			case LMoving:
-				newpos = QMIN(QMAX(e->pos().x(), box_.left()), (symetric_ ? (box_.left()+box_.right())/2 : margbox_.right()+1));
+				newpos = qMin(qMax(e->pos().x(), box_.left()), (symetric_ ? (box_.left()+box_.right())/2 : margbox_.right()+1));
 				break;
 			case RMoving:
-				newpos = QMIN(QMAX(e->pos().x(), (symetric_ ? (box_.left()+box_.right()+1)/2 : margbox_.left()-1)), box_.right());
+				newpos = qMin(qMax(e->pos().x(), (symetric_ ? (box_.left()+box_.right()+1)/2 : margbox_.left()-1)), box_.right());
 				break;
 		}
 		if (newpos != oldpos_)

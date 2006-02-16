@@ -32,16 +32,18 @@
 #include <stdio.h>
 
 PosterPreview::PosterPreview( QWidget *parent, const char *name )
-	: QFrame( parent, name )
+	: QFrame( parent )
 {
+  setObjectName( name );
 	m_postersize = m_mediasize = "A4";
 	m_cutmargin = 5;
 	init();
 }
 
 PosterPreview::PosterPreview( const QString& postersize, const QString& mediasize, QWidget *parent, const char *name )
-	: QFrame( parent, name )
+	: QFrame( parent )
 {
+  setObjectName( name );
 	m_postersize = postersize;
 	m_mediasize = mediasize;
 	m_cutmargin = 5;
@@ -63,7 +65,6 @@ void PosterPreview::init()
 	m_dirty = false;
 	setDirty();
 	setMouseTracking( true );
-	setBackgroundMode( Qt::NoBackground );
 }
 
 void PosterPreview::parseBuffer()
@@ -71,7 +72,7 @@ void PosterPreview::parseBuffer()
 	int rotate;
 	float pw, ph, mw, mh;
 	float x1, x2, y1, y2;
-	sscanf( m_buffer.ascii(), "%d %d %d %g %g %g %g %g %g %g %g", &m_rows, &m_cols, &rotate, &pw, &ph, &mw, &mh, &x1, &y1, &x2, &y2 );
+	sscanf( m_buffer.toAscii().data(), "%d %d %d %g %g %g %g %g %g %g %g", &m_rows, &m_cols, &rotate, &pw, &ph, &mw, &mh, &x1, &y1, &x2, &y2 );
 	m_pw = ( int )( rotate ? ph : pw );
 	m_ph = ( int )( rotate ? pw : ph );
 	m_mw = ( int )( rotate ? mh : mw );
@@ -107,7 +108,7 @@ void PosterPreview::drawContents( QPainter *painter )
 	QPixmap pix( width(), height() );
 	QPainter *p = new QPainter( &pix );
 
-	p->fillRect( 0, 0, width(), height(), colorGroup().background() );
+	p->fillRect( 0, 0, width(), height(), palette().color( QPalette::Background ) );
 
 	if ( isEnabled() )
 	{
@@ -119,20 +120,20 @@ void PosterPreview::drawContents( QPainter *painter )
 			Q3SimpleRichText richtext( ( m_buffer.isEmpty() ? txt : m_buffer.prepend( "<pre>" ).append( "</pre>" ) ), p->font() );
 			richtext.adjustSize();
 			int x = ( width()-richtext.widthUsed() )/2, y = ( height()-richtext.height() )/2;
-			x = QMAX( x, 0 );
-			y = QMAX( y, 0 );
+			x = qMax( x, 0 );
+			y = qMax( y, 0 );
 			richtext.draw( p, x, y, QRect( x, y, richtext.widthUsed(), richtext.height() ), colorGroup() );
 			m_boundingrect = QRect();
 		}
 		else
 		{
 			int totalx = m_cols*m_pw, totaly = m_rows*m_ph;
-			float scale = QMIN( float( width()-1 )/totalx, float( height()-1 )/totaly );
+			float scale = qMin( float( width()-1 )/totalx, float( height()-1 )/totaly );
 			p->translate( 0, height()-1 );
 			p->scale( scale, -scale );
 			int x = ( int )( width()/scale-totalx )/2, y = ( int )( height()/scale-totaly )/2;
 			p->translate( x, y );
-			m_boundingrect = p->xForm( QRect( 0, 0, totalx, totaly ) );
+			m_boundingrect = p->matrix().mapRect( QRect( 0, 0, totalx, totaly ) );
 
 			x = y = 0;
 			int px = m_posterbb.x(), py = m_posterbb.y(), pw = m_posterbb.width(), ph = m_posterbb.height();
@@ -140,11 +141,11 @@ void PosterPreview::drawContents( QPainter *painter )
 			{
 				for ( int j=0; j<m_cols; j++, x+=m_pw )
 				{
-					bool selected = ( m_selectedpages.find( i*m_cols+j+1 ) != m_selectedpages.end() );
+					bool selected = ( m_selectedpages.contains( i*m_cols+j+1 ) );
 					p->fillRect( x+1, y+1, m_pw-2, m_ph-2, ( selected ? KGlobalSettings::highlightColor() : Qt::white ) );
 					p->drawRect( x, y, m_pw, m_ph );
 					if ( pw > 0 && ph > 0 )
-						p->fillRect( x+m_mw+px, y+m_mh+py, QMIN( pw, m_pw-2*m_mw-px ), QMIN( ph, m_ph-2*m_mh-py ),
+						p->fillRect( x+m_mw+px, y+m_mh+py, qMin( pw, m_pw-2*m_mw-px ), qMin( ph, m_ph-2*m_mh-py ),
 								( selected ? KGlobalSettings::highlightColor().dark( 160 ) : Qt::lightGray ) );
 					p->setPen( Qt::DotLine );
 					p->drawRect( x+m_mw, y+m_mh, m_pw-2*m_mw, m_ph-2*m_mh );
@@ -188,10 +189,10 @@ void PosterPreview::mousePressEvent( QMouseEvent *e )
 			r = m_rows - ( e->pos().y()-m_boundingrect.y() )/( m_boundingrect.height()/m_rows );
 			int pagenum = ( r-1 )*m_cols+c;
 
-			if ( m_selectedpages.find( pagenum ) == m_selectedpages.end() ||
-					!( e->state() & Qt::ShiftModifier ) )
+			if ( !m_selectedpages.contains( pagenum ) ||
+					!( e->modifiers() & Qt::ShiftModifier ) )
 			{
-				if ( !( e->state() & Qt::ShiftModifier ) )
+				if ( !( e->modifiers() & Qt::ShiftModifier ) )
 					m_selectedpages.clear();
 				m_selectedpages.append( pagenum );
 				update();
@@ -263,7 +264,7 @@ void PosterPreview::setCutMargin( int value )
 
 void PosterPreview::setSelectedPages( const QString& s )
 {
-	QStringList l = QStringList::split( ",", s, false );
+	QStringList l = s.split( ",", QString::SkipEmptyParts );
 	m_selectedpages.clear();
 	for ( QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it )
 	{

@@ -22,14 +22,13 @@
 #include <qtoolbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <q3header.h>
 #include <QDragEnterEvent>
+#include <QTreeWidget>
 
 #include <kio/netaccess.h>
 #include <kfiledialog.h>
 #include <klocale.h>
 #include <kiconloader.h>
-#include <klistview.h>
 #include <krun.h>
 #include <kmimetype.h>
 
@@ -95,17 +94,12 @@ KFileList::KFileList(QWidget *parent)
 
 	m_block = false;
 
-	m_files = new KListView(this);
-	m_files->addColumn(i18n("Name"));
-	m_files->addColumn(i18n("Type"));
-	m_files->addColumn(i18n("Path"));
-	m_files->setAllColumnsShowFocus(true);
-	m_files->setSorting(-1);
+	m_files = new QTreeWidget(this);
+  QStringList headerLabels;
+  headerLabels << i18n("Name") << i18n("Type") << i18n("Path");
 	m_files->setAcceptDrops(false);
-	m_files->setSelectionMode(Q3ListView::Extended);
-	m_files->header()->setStretchEnabled(true, 2);
 	m_files->setWhatsThis(whatsThisFileSelectionListview);
-	connect(m_files, SIGNAL(selectionChanged()), SLOT(slotSelectionChanged()));
+	connect(m_files, SIGNAL(itemSelectionChanged()), SLOT(slotSelectionChanged()));
 
 	m_add = new QToolButton(this);
 	m_add->setIcon(SmallIconSet("fileopen"));
@@ -147,10 +141,14 @@ KFileList::KFileList(QWidget *parent)
 		"Drag file(s) here or use the button to open a file dialog. "
 		"Leave empty for <b>&lt;STDIN&gt;</b>."));
 
-	QHBoxLayout	*l0 = new QHBoxLayout(this, 0, KDialog::spacingHint());
-	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 1);
+	QHBoxLayout	*l0 = new QHBoxLayout(this);
+  l0->setMargin(0);
+  l0->setSpacing(KDialog::spacingHint());
+	QVBoxLayout	*l1 = new QVBoxLayout(0);
 	l0->addWidget(m_files);
 	l0->addLayout(l1);
+  l1->setMargin(0);
+  l1->setSpacing(1);
 	l1->addWidget(m_add);
 	l1->addWidget(m_remove);
 	l1->addWidget(m_open);
@@ -166,7 +164,10 @@ KFileList::~KFileList()
 
 void KFileList::dragEnterEvent(QDragEnterEvent *e)
 {
-    e->accept( KUrl::List::canDecode( e->mimeData() ) );
+    if ( KUrl::List::canDecode( e->mimeData() ) )
+      e->accept();
+    else
+      e->ignore();
 }
 
 void KFileList::dropEvent(QDropEvent *e)
@@ -182,11 +183,6 @@ void KFileList::addFiles(const KUrl::List& files)
 {
 	if (files.count() > 0)
 	{
-		// search last item in current list, to add new ones at the end
-		Q3ListViewItem	*item = m_files->firstChild();
-		while (item && item->nextSibling())
-			item = item->nextSibling();
-
 		// for each file, download it (if necessary) and add it
 		QString	downloaded;
 		for (KUrl::List::ConstIterator it=files.begin(); it!=files.end(); ++it)
@@ -195,8 +191,11 @@ void KFileList::addFiles(const KUrl::List& files)
 				KUrl	url;
 				url.setPath(downloaded);
 				KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
-				item = new Q3ListViewItem(m_files, item, url.fileName(), mime->comment(), downloaded);
-				item->setPixmap(0, mime->pixmap(url, KIcon::Small));
+        QStringList data;
+        data << url.fileName() << mime->comment() << downloaded;
+				QTreeWidgetItem *item = new QTreeWidgetItem(data);
+				item->setIcon(0, mime->pixmap(url, KIcon::Small));
+        m_files->insertTopLevelItem(m_files->topLevelItemCount(), item);
 			}
 
 		slotSelectionChanged();
@@ -215,14 +214,16 @@ void KFileList::addFiles(const KUrl::List& files)
 void KFileList::setFileList(const QStringList& files)
 {
 	m_files->clear();
-	Q3ListViewItem *item = 0;
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 	{
 		KUrl	url;
 		url.setPath(*it);
 		KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
-		item = new Q3ListViewItem(m_files, item, url.fileName(), mime->comment(), *it);
-		item->setPixmap(0, mime->pixmap(url, KIcon::Small));
+    QStringList data;
+    data << url.fileName() << mime->comment() << *it;
+		QTreeWidgetItem *item = new QTreeWidgetItem(data);
+		item->setIcon(0, mime->pixmap(url, KIcon::Small));
+    m_files->insertTopLevelItem(m_files->topLevelItemCount(), item);
 	}
 	slotSelectionChanged();
 }
@@ -230,12 +231,8 @@ void KFileList::setFileList(const QStringList& files)
 QStringList KFileList::fileList() const
 {
 	QStringList	l;
-	Q3ListViewItem	*item = m_files->firstChild();
-	while (item)
-	{
-		l << item->text(2);
-		item = item->nextSibling();
-	}
+  for (int i = 0; i < m_files->topLevelItemCount(); ++i)
+		l << m_files->topLevelItem(i)->text(2);
 	return l;
 }
 
@@ -248,10 +245,10 @@ void KFileList::slotAddFile()
 
 void KFileList::slotRemoveFile()
 {
-	Q3PtrList<Q3ListViewItem>	l;
+	QList<QTreeWidgetItem*>	l;
 	selection(l);
-	l.setAutoDelete(true);
 	m_block = true;
+  qDeleteAll(l);
 	l.clear();
 	m_block = false;
 	slotSelectionChanged();
@@ -259,7 +256,7 @@ void KFileList::slotRemoveFile()
 
 void KFileList::slotOpenFile()
 {
-	Q3ListViewItem	*item = m_files->currentItem();
+	QTreeWidgetItem	*item = m_files->currentItem();
 	if (item)
 	{
 		KUrl url( item->text( 2 ) );
@@ -272,16 +269,9 @@ QSize KFileList::sizeHint() const
 	return QSize(100, 100);
 }
 
-void KFileList::selection(Q3PtrList<Q3ListViewItem>& l)
+void KFileList::selection(QList<QTreeWidgetItem*>& l)
 {
-	l.setAutoDelete(false);
-	Q3ListViewItem	*item = m_files->firstChild();
-	while (item)
-	{
-		if (item->isSelected())
-			l.append(item);
-		item = item->nextSibling();
-	}
+  l = m_files->selectedItems();
 }
 
 void KFileList::slotSelectionChanged()
@@ -289,41 +279,49 @@ void KFileList::slotSelectionChanged()
 	if (m_block)
 		return;
 
-	Q3PtrList<Q3ListViewItem>	l;
+	QList<QTreeWidgetItem*>	l;
 	selection(l);
 	m_remove->setEnabled(l.count() > 0);
 	m_open->setEnabled(l.count() == 1);
-	m_up->setEnabled(l.count() == 1 && l.first()->itemAbove());
-	m_down->setEnabled(l.count() == 1 && l.first()->itemBelow());
+	m_up->setEnabled(l.count() == 1 && m_files->indexOfTopLevelItem(l.first()) > 0);
+	m_down->setEnabled(l.count() == 1 && m_files->indexOfTopLevelItem(l.first()) < m_files->topLevelItemCount() - 1);
 }
 
 void KFileList::slotUp()
 {
-	Q3PtrList<Q3ListViewItem>	l;
+	QList<QTreeWidgetItem*>	l;
 	selection(l);
-	if (l.count() == 1 && l.first()->itemAbove())
+  int index = m_files->indexOfTopLevelItem(l.first());
+	if (l.count() == 1 && index > 0)
 	{
-		Q3ListViewItem	*item(l.first()), *clone;
-		clone = new Q3ListViewItem(m_files, item->itemAbove()->itemAbove(), item->text(0), item->text(1), item->text(2));
-		clone->setPixmap(0, *(item->pixmap(0)));
+		QTreeWidgetItem	*item(l.first()), *clone;
+    QStringList data;
+    data << item->text(0) << item->text(1) << item->text(2);
+		clone = new QTreeWidgetItem(data);
+		clone->setIcon(0, item->icon(0));
 		delete item;
+    m_files->insertTopLevelItem(index, clone);
 		m_files->setCurrentItem(clone);
-		m_files->setSelected(clone, true);
+		m_files->setItemSelected(clone, true);
 	}
 }
 
 void KFileList::slotDown()
 {
-	Q3PtrList<Q3ListViewItem>	l;
+	QList<QTreeWidgetItem*>	l;
 	selection(l);
-	if (l.count() == 1 && l.first()->itemBelow())
+  int index = m_files->indexOfTopLevelItem(l.first());
+	if (l.count() == 1 && index < m_files->topLevelItemCount() - 1)
 	{
-		Q3ListViewItem	*item(l.first()), *clone;
-		clone = new Q3ListViewItem(m_files, item->itemBelow(), item->text(0), item->text(1), item->text(2));
-		clone->setPixmap(0, *(item->pixmap(0)));
+		QTreeWidgetItem	*item(l.first()), *clone;
+    QStringList data;
+    data << item->text(0) << item->text(1) << item->text(2);
+		clone = new QTreeWidgetItem(data);
+		clone->setIcon(0, item->icon(0));
 		delete item;
+    m_files->insertTopLevelItem(index+1, clone);
 		m_files->setCurrentItem(clone);
-		m_files->setSelected(clone, true);
+		m_files->setItemSelected(clone, true);
 	}
 }
 

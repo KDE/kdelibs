@@ -160,14 +160,14 @@ MarginWidget::MarginWidget(QWidget *parent, bool allowMetricUnit)
 	m_right->setLabel(i18n("&Right:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_units = new QComboBox(this);
 	  m_units->setWhatsThis(whatsThisMeasurementUnitMarginWidget);
-	m_units->insertItem(i18n("Pixels (1/72nd in)"));
+	m_units->addItem(i18n("Pixels (1/72nd in)"));
 	if ( allowMetricUnit )
 	{
-		m_units->insertItem(i18n("Inches (in)"));
-		m_units->insertItem(i18n("Centimeters (cm)"));
-		m_units->insertItem( i18n( "Millimeters (mm)" ) );
+		m_units->addItem(i18n("Inches (in)"));
+		m_units->addItem(i18n("Centimeters (cm)"));
+		m_units->addItem( i18n( "Millimeters (mm)" ) );
 	}
-	m_units->setCurrentItem(0);
+	m_units->setCurrentIndex(0);
 	connect(m_units, SIGNAL(activated(int)), m_top, SLOT(setMode(int)));
 	connect(m_units, SIGNAL(activated(int)), m_bottom, SLOT(setMode(int)));
 	connect(m_units, SIGNAL(activated(int)), m_left, SLOT(setMode(int)));
@@ -193,15 +193,16 @@ MarginWidget::MarginWidget(QWidget *parent, bool allowMetricUnit)
 	m_right->setEnabled(false);
 	//m_units->setEnabled(false);
 
-	QGridLayout	*l3 = new QGridLayout(this, 7, 2, 0, 10);
+	QGridLayout	*l3 = new QGridLayout(this);
+  l3->setMargin(0);
+  l3->setSpacing(10);
 	l3->addWidget(m_custom, 0, 0);
 	l3->addWidget(m_top, 1, 0);
 	l3->addWidget(m_bottom, 2, 0);
 	l3->addWidget(m_left, 3, 0);
 	l3->addWidget(m_right, 4, 0);
-	l3->addRowSpacing(5, 10);
 	l3->addWidget(m_units, 6, 0);
-	l3->addMultiCellWidget(m_preview, 0, 6, 1, 1);
+	l3->addWidget(m_preview, 0, 6, 1, 1);
 
 	if ( allowMetricUnit )
 	{
@@ -210,7 +211,7 @@ MarginWidget::MarginWidget(QWidget *parent, bool allowMetricUnit)
 		m_bottom->setMode(mode);
 		m_left->setMode(mode);
 		m_right->setMode(mode);
-		m_units->setCurrentItem(mode);
+		m_units->setCurrentIndex(mode);
 	}
 }
 

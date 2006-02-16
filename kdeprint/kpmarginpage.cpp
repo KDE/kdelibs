@@ -48,7 +48,9 @@ KPMarginPage::KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent)
 	//if (m_printer)
 	//	m_margin->setResolution(m_printer->resolution());
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this);
+  l0->setMargin(0);
+  l0->setSpacing(10);
 	l0->addWidget(box);
 	l0->addStretch(1);
 }
@@ -89,10 +91,10 @@ void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 			{
 				w = dps->pageWidth();
 				h = dps->pageHeight();
-				mt = QMAX( mt, dps->topMargin() );
-				ml = QMAX( ml, dps->leftMargin() );
-				mb = QMAX( mb, dps->bottomMargin() );
-				mr = QMAX( mr, dps->rightMargin() );
+				mt = qMax( mt, dps->topMargin() );
+				ml = qMax( ml, dps->leftMargin() );
+				mb = qMax( mb, dps->bottomMargin() );
+				mr = qMax( mr, dps->rightMargin() );
 			}
 		}
 	}

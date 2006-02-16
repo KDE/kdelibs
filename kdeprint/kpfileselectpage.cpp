@@ -34,7 +34,9 @@ KPFileSelectPage::KPFileSelectPage(QWidget *parent)
 
 	m_files = new KFileList(this);
 
-	QHBoxLayout	*l0 = new QHBoxLayout(this, 0, 10);
+	QHBoxLayout	*l0 = new QHBoxLayout(this);
+  l0->setMargin(0);
+  l0->setSpacing(10);
 	l0->addWidget(m_files);
 
 	resize(100, 100);
@@ -56,7 +58,7 @@ void KPFileSelectPage::setOptions(const QMap<QString,QString>& opts)
 	// do it only once as files will only be selected there
 	if (m_first)
 	{
-		QStringList	l = QStringList::split("@@", opts["kde-filelist"], false);
+		QStringList	l = opts["kde-filelist"].split("@@", QString::SkipEmptyParts);
 		m_files->setFileList(l);
 
 		m_first = false;
