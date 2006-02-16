@@ -1522,14 +1522,10 @@ KFileMimeTypeInfo::GroupInfo::GroupInfo( const QString& name,
 
 KFileMimeTypeInfo::GroupInfo::~GroupInfo()
 {
-	qDeleteAll(m_itemDict);
-	m_itemDict.clear();
-}
-
-KFileMimeTypeInfo::GroupInfo::~GroupInfo()
-{
+    qDeleteAll(m_itemDict);
+    m_itemDict.clear();
     delete m_variableItemInfo;
-} 
+}
 
 const KFileMimeTypeInfo::ItemInfo * KFileMimeTypeInfo::GroupInfo::itemInfo( const QString& key ) const
 {

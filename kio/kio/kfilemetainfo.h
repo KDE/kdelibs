@@ -142,7 +142,6 @@ public:
     friend class KFilePlugin;
     friend class KFileMimeTypeInfo;
     public:
-		~GroupInfo();
         /**
          * Use this method to get a list of keys in the specified group that
          * the plugin knows about. No variable keys.
