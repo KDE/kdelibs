@@ -1541,6 +1541,11 @@ KFileMimeTypeInfo::GroupInfo::GroupInfo( const QString& name,
     m_itemDict.setAutoDelete( true );
 }
 
+KFileMimeTypeInfo::GroupInfo::~GroupInfo()
+{
+    delete m_variableItemInfo;
+} 
+
 const KFileMimeTypeInfo::ItemInfo * KFileMimeTypeInfo::GroupInfo::itemInfo( const QString& key ) const
 {
     ItemInfo* item = m_itemDict.find( key );
