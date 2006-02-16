@@ -73,11 +73,20 @@ public:
     KAboutPerson( const char *name=0, const char *task=0,
                   const char *emailAddress=0, const char *webAddress=0 );
 
+    /**
+     * Copy constructor.  Performs a deep copy.
+     * @param other object to copy
+     */
     KAboutPerson(const KAboutPerson& other);
 
     ~KAboutPerson();
+
+    /**
+     * Assignment operator.  Performs a deep copy.
+     * @param other object to copy
+     */
     KAboutPerson& operator=(const KAboutPerson& other);
-    
+
 
     /**
      * The person's name
@@ -137,9 +146,18 @@ public:
     KAboutTranslator(const QString & name=QString(),
                      const QString & emailAddress=QString());
 
+    /**
+     * Copy constructor.  Performs a deep copy.
+     * @param other object to copy
+     */
     KAboutTranslator(const KAboutTranslator& other);
 
     ~KAboutTranslator();
+
+    /**
+     * Assignment operator.  Performs a deep copy.
+     * @param other object to copy
+     */
     KAboutTranslator& operator=(const KAboutTranslator& other);
 
     /**
@@ -243,7 +261,16 @@ class KDECORE_EXPORT KAboutData
 		const char *bugsEmailAddress = "submit@bugs.kde.org"
 		);
 
+    /**
+     * Copy constructor.  Performs a deep copy.
+     * @param other object to copy
+     */
      KAboutData(const KAboutData& other);
+
+    /**
+     * Assignment operator.  Performs a deep copy.
+     * @param other object to copy
+     */
      KAboutData& operator=(const KAboutData& other);
 
      ~KAboutData();
