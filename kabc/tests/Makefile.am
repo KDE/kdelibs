@@ -7,15 +7,12 @@ LDADD = ../libkabc.la -lQtTest_debug
 
 METASOURCES = AUTO
 
-check_PROGRAMS = testlock testldapclient geotest
+check_PROGRAMS = testlock geotest
 
 geotest_SOURCES = geotest.cpp
 
 testlock_LDFLAGS = $(all_libraries)
 testlock_SOURCES = testlock.cpp
-
-testldapclient_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testldapclient_SOURCES = testldapclient.cpp
 
 EXTRA_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
   testaddressee testaddresseelist testaddressfmt kabcargl testaddresslineedit \
