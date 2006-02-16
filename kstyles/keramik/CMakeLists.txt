@@ -11,7 +11,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES
 file(GLOB keramikPics "${CMAKE_CURRENT_SOURCE_DIR}/pics/*.png")
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h
-  COMMAND ${EXECUTABLE_OUTPUT_PATH}/genembed ARGS ${keramikPics} > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
+  COMMAND ${KDE4_LD_LIBRARY_PATH} ${EXECUTABLE_OUTPUT_PATH}/genembed ARGS ${keramikPics} > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
   DEPENDS genembed ${keramikPics}
 )
 
