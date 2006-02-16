@@ -8,7 +8,7 @@ What you need
 Make sure you get the following stuff from SVN:
 
   * qt-copy (currently a snapshot of qt-4.x)
-  * arts
+  * arts (not necessary for kde4.0 (for the moment))
   * kdelibs
   * kdebase (strongly recommended but not strictly necessary)
   * any other package you are interested in (as of 07Jun2005, only kdegraphics,
