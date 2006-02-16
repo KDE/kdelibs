@@ -37,17 +37,19 @@ BrowseDialog::BrowseDialog(QWidget *parent, const char *name)
 	type_ = new QComboBox(dummy);
 	from_ = new QLineEdit(dummy);
 	to_ = new QLineEdit(dummy);
-	type_->insertItem(i18n("Send"));
-	type_->insertItem(i18n("Allow"));
-	type_->insertItem(i18n("Deny"));
-	type_->insertItem(i18n("Relay"));
-	type_->insertItem(i18n("Poll"));
+	type_->addItem(i18n("Send"));
+	type_->addItem(i18n("Allow"));
+	type_->addItem(i18n("Deny"));
+	type_->addItem(i18n("Relay"));
+	type_->addItem(i18n("Poll"));
 
 	QLabel	*l1 = new QLabel(i18n("Type:"), dummy);
 	QLabel	*l2 = new QLabel(i18n("From:"), dummy);
 	QLabel	*l3 = new QLabel(i18n("To:"), dummy);
 
-	QGridLayout	*m1 = new QGridLayout(dummy, 3, 2, 0, 5);
+	QGridLayout	*m1 = new QGridLayout(dummy);
+  m1->setMargin(0);
+  m1->setSpacing(5);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 1, 0, Qt::AlignRight);
 	m1->addWidget(l3, 2, 0, Qt::AlignRight);
@@ -56,7 +58,7 @@ BrowseDialog::BrowseDialog(QWidget *parent, const char *name)
 	m1->addWidget(to_, 2, 1);
 
 	connect(type_, SIGNAL(activated(int)), SLOT(slotTypeChanged(int)));
-	slotTypeChanged(type_->currentItem());
+	slotTypeChanged(type_->currentIndex());
 
 	setCaption(i18n("Browse Address"));
 	resize(250, 100);
@@ -65,7 +67,7 @@ BrowseDialog::BrowseDialog(QWidget *parent, const char *name)
 QString BrowseDialog::addressString()
 {
 	QString s;
-	switch (type_->currentItem())
+	switch (type_->currentIndex())
 	{
 		case 0:
 			s.append("Send");
@@ -110,7 +112,7 @@ QString BrowseDialog::editAddress(const QString& s, QWidget *parent, CupsdConf *
 {
 	BrowseDialog	dlg(parent);
 	dlg.setInfos(conf);
-	QStringList	l = QStringList::split(QRegExp("\\s"), s, false);
+	QStringList	l = s.split(QRegExp("\\s"), QString::SkipEmptyParts);
 	if (l.count() > 1)
 	{
 		if (l[0] == "Send") dlg.type_->setCurrentIndex(0);

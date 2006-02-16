@@ -32,8 +32,12 @@ CupsdSplash::CupsdSplash(QWidget *parent)
 	setPageLabel(i18n("Welcome"));
 	setPixmap("go");
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 10, 10);
-	QHBoxLayout	*sub_ = new QHBoxLayout(0, 0, 10);
+	QVBoxLayout	*main_ = new QVBoxLayout(this );
+  main_->setMargin(10);
+  main_->setSpacing(10);
+  QHBoxLayout	*sub_ = new QHBoxLayout(0);
+  sub_->setMargin(0);
+  sub_->setSpacing(10);
 	main_->addLayout(sub_);
 
 	QLabel	*cupslogo_ = new QLabel(this);

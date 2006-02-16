@@ -50,9 +50,11 @@ CupsdDirPage::CupsdDirPage(QWidget *parent)
 	QLabel *l6 = new QLabel(i18n("Server files:"), this);
 	QLabel *l7 = new QLabel(i18n("Temporary files:"), this);
 
-	QGridLayout	*m1 = new QGridLayout(this, 8, 2, 10, 7);
+	QGridLayout	*m1 = new QGridLayout(this);
+  m1->setMargin(10);
+  m1->setSpacing(7);
 	m1->setRowStretch(7, 1);
-	m1->setColStretch(1, 1);
+	m1->setColumnStretch(1, 1);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 1, 0, Qt::AlignRight);
 	m1->addWidget(l3, 2, 0, Qt::AlignRight|Qt::AlignTop);

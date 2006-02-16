@@ -45,25 +45,25 @@ LocationDialog::LocationDialog(QWidget *parent, const char *name)
 	order_ = new QComboBox(dummy);
 	addresses_ = new EditList(dummy);
 
-	authtype_->insertItem(i18n("None"));
-	authtype_->insertItem(i18n("Basic"));
-	authtype_->insertItem(i18n("Digest"));
+	authtype_->addItem(i18n("None"));
+	authtype_->addItem(i18n("Basic"));
+	authtype_->addItem(i18n("Digest"));
 
-	authclass_->insertItem(i18n("None"));
-	authclass_->insertItem(i18n("User"));
-	authclass_->insertItem(i18n("System"));
-	authclass_->insertItem(i18n("Group"));
+	authclass_->addItem(i18n("None"));
+	authclass_->addItem(i18n("User"));
+	authclass_->addItem(i18n("System"));
+	authclass_->addItem(i18n("Group"));
 
-	encryption_->insertItem(i18n("Always"));
-	encryption_->insertItem(i18n("Never"));
-	encryption_->insertItem(i18n("Required"));
-	encryption_->insertItem(i18n("If Requested"));
+	encryption_->addItem(i18n("Always"));
+	encryption_->addItem(i18n("Never"));
+	encryption_->addItem(i18n("Required"));
+	encryption_->addItem(i18n("If Requested"));
 
-	satisfy_->insertItem(i18n("All"));
-	satisfy_->insertItem(i18n("Any"));
+	satisfy_->addItem(i18n("All"));
+	satisfy_->addItem(i18n("Any"));
 
-	order_->insertItem(i18n("Allow, Deny"));
-	order_->insertItem(i18n("Deny, Allow"));
+	order_->addItem(i18n("Allow, Deny"));
+	order_->addItem(i18n("Deny, Allow"));
 
 	connect(authclass_, SIGNAL(activated(int)), SLOT(slotClassChanged(int)));
 	connect(authtype_, SIGNAL(activated(int)), SLOT(slotTypeChanged(int)));
@@ -77,8 +77,10 @@ LocationDialog::LocationDialog(QWidget *parent, const char *name)
 	QLabel	*l7 = new QLabel(i18n("ACL order:"), dummy);
 	QLabel	*l8 = new QLabel(i18n("ACL addresses:"),dummy);
 
-	QGridLayout	*m1 = new QGridLayout(dummy, 8, 2, 0, 5);
-	m1->setColStretch(1, 1);
+	QGridLayout	*m1 = new QGridLayout(dummy);
+  m1->setMargin(0);
+  m1->setSpacing(5);
+	m1->setColumnStretch(1, 1);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 1, 0, Qt::AlignRight);
 	m1->addWidget(l3, 2, 0, Qt::AlignRight);
@@ -101,7 +103,7 @@ LocationDialog::LocationDialog(QWidget *parent, const char *name)
 
 	slotTypeChanged(AUTHTYPE_NONE);
 	slotClassChanged(AUTHCLASS_ANONYMOUS);
-	encryption_->setCurrentItem(ENCRYPT_IFREQUESTED);
+	encryption_->setCurrentIndex(ENCRYPT_IFREQUESTED);
 
 	connect(addresses_, SIGNAL(add()), SLOT(slotAdd()));
 	connect(addresses_, SIGNAL(edit(int)), SLOT(slotEdit(int)));
@@ -114,7 +116,7 @@ void LocationDialog::setInfos(CupsdConf *conf)
 
 	Q3PtrListIterator<CupsResource>	it(conf->resources_);
 	for (; it.current(); ++it)
-		resource_->insertItem(SmallIcon(it.current()->typeToIconName(it.current()->type_)), it.current()->text_);
+		resource_->addItem(SmallIcon(it.current()->typeToIconName(it.current()->type_)), it.current()->text_);
 
 	encryption_->setWhatsThis(conf_->comments_.toolTip("encryption"));
 	order_->setWhatsThis(conf_->comments_.toolTip("order"));
@@ -127,27 +129,27 @@ void LocationDialog::setInfos(CupsdConf *conf)
 
 void LocationDialog::fillLocation(CupsLocation *loc)
 {
-	loc->resource_ = conf_->resources_.at(resource_->currentItem());
+	loc->resource_ = conf_->resources_.at(resource_->currentIndex());
 	loc->resourcename_ = loc->resource_->path_;
-	loc->authtype_ = authtype_->currentItem();
-	loc->authclass_ = (loc->authtype_ == AUTHTYPE_NONE ? AUTHCLASS_ANONYMOUS : authclass_->currentItem());
+	loc->authtype_ = authtype_->currentIndex();
+	loc->authclass_ = (loc->authtype_ == AUTHTYPE_NONE ? AUTHCLASS_ANONYMOUS : authclass_->currentIndex());
 	loc->authname_ = (loc->authclass_ == AUTHCLASS_USER || loc->authclass_ == AUTHCLASS_GROUP ? authname_->text() : QString());
-	loc->encryption_ = encryption_->currentItem();
-	loc->satisfy_ = satisfy_->currentItem();
-	loc->order_ = order_->currentItem();
+	loc->encryption_ = encryption_->currentIndex();
+	loc->satisfy_ = satisfy_->currentIndex();
+	loc->order_ = order_->currentIndex();
 	loc->addresses_ = addresses_->items();
 }
 
 void LocationDialog::setLocation(CupsLocation *loc)
 {
 	int	index = conf_->resources_.findRef(loc->resource_);
-	resource_->setCurrentItem(index);
-	authtype_->setCurrentItem(loc->authtype_);
-	authclass_->setCurrentItem(loc->authclass_);
+	resource_->setCurrentIndex(index);
+	authtype_->setCurrentIndex(loc->authtype_);
+	authclass_->setCurrentIndex(loc->authclass_);
 	authname_->setText(loc->authname_);
-	encryption_->setCurrentItem(loc->encryption_);
-	satisfy_->setCurrentItem(loc->satisfy_);
-	order_->setCurrentItem(loc->order_);
+	encryption_->setCurrentIndex(loc->encryption_);
+	satisfy_->setCurrentIndex(loc->satisfy_);
+	order_->setCurrentIndex(loc->order_);
 	addresses_->insertItems(loc->addresses_);
 
 	slotTypeChanged(loc->authtype_);
@@ -158,7 +160,7 @@ void LocationDialog::slotTypeChanged(int index)
 {
 	authclass_->setEnabled(index != AUTHTYPE_NONE);
 	if (index != AUTHTYPE_NONE)
-		slotClassChanged(authclass_->currentItem());
+		slotClassChanged(authclass_->currentIndex());
 	else
 		authname_->setEnabled(false);
 }

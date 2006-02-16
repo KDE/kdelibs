@@ -28,26 +28,30 @@
 SizeWidget::SizeWidget( QWidget *parent )
 	: QWidget( parent )
 {
-	m_size = new QSpinBox( 0, 9999, 1, this );
+	m_size = new QSpinBox( this );
+  m_size->setRange( 0, 9999 );
+  m_size->setSingleStep( 1 );
 	m_unit = new QComboBox( this );
 
-	m_unit->insertItem( i18n( "KB" ) );
-	m_unit->insertItem( i18n( "MB" ) );
-	m_unit->insertItem( i18n( "GB" ) );
-	m_unit->insertItem( i18n( "Tiles" ) );
-	m_unit->setCurrentItem( 1 );
+	m_unit->addItem( i18n( "KB" ) );
+	m_unit->addItem( i18n( "MB" ) );
+	m_unit->addItem( i18n( "GB" ) );
+	m_unit->addItem( i18n( "Tiles" ) );
+	m_unit->setCurrentIndex( 1 );
 	m_size->setSpecialValueText( i18n( "Unlimited" ) );
 
-	QHBoxLayout *l0 = new QHBoxLayout( this, 0, 5 );
+	QHBoxLayout *l0 = new QHBoxLayout( this );
+  l0->setMargin( 0 );
+  l0->setSpacing( 5 );
 	l0->addWidget( m_size, 1 );
 	l0->addWidget( m_unit, 0 );
 }
 
 void SizeWidget::setSizeString( const QString& sz )
 {
-	int p = sz.find( QRegExp( "\\D" ) );
+	int p = sz.indexOf( QRegExp( "\\D" ) );
 	m_size->setValue( sz.left( p ).toInt() );
-	switch( sz[ p ].latin1() )
+	switch( sz[ p ].toLatin1() )
 	{
 		case 'k': p = 0; break;
 		default:
@@ -55,7 +59,7 @@ void SizeWidget::setSizeString( const QString& sz )
 		case 'g': p = 2; break;
 		case 't': p = 3; break;
 	}
-	m_unit->setCurrentItem( p );
+	m_unit->setCurrentIndex( p );
 }
 
 QString SizeWidget::sizeString() const

@@ -69,11 +69,15 @@ CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent)
 	QLabel *l5 = new QLabel(i18n("Browse order:"), this);
 	QLabel *l6 = new QLabel(i18n("Browse options:"), this);
 
-	QGridLayout	*m1 = new QGridLayout(this, 8, 2, 10, 7);
+	QGridLayout	*m1 = new QGridLayout(this);
+  m1->setMargin(10);
+  m1->setSpacing(7);
 	m1->setRowStretch(7, 1);
-	m1->setColStretch(1, 1);
-	QHBoxLayout	*m2 = new QHBoxLayout(0, 0, 10);
-	m1->addMultiCellLayout(m2, 0, 0, 0, 1);
+	m1->setColumnStretch(1, 1);
+	QHBoxLayout	*m2 = new QHBoxLayout(0);
+	m1->addLayout(m2, 0, 0, 0, 1);
+  m2->setMargin(0);
+  m2->setSpacing(10);
 	m2->addWidget(browsing_);
 	m2->addWidget(cups_);
 	m2->addWidget(slp_);
@@ -89,8 +93,10 @@ CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent)
 	m1->addWidget(browsetimeout_, 3, 1);
 	m1->addWidget(browseaddresses_, 4, 1);
 	m1->addWidget(browseorder_, 5, 1);
-	QGridLayout	*m3 = new QGridLayout(0, 2, 2, 0, 5);
+	QGridLayout	*m3 = new QGridLayout(0);
 	m1->addLayout(m3, 6, 1);
+  m2->setMargin(0);
+  m2->setSpacing(5);
 	m3->addWidget(useimplicitclasses_, 0, 0);
 	m3->addWidget(useanyclasses_, 0, 1);
 	m3->addWidget(hideimplicitmembers_, 1, 0);
@@ -126,13 +132,13 @@ bool CupsdBrowsingPage::loadConfig(CupsdConf *conf, QString&)
 {
 	conf_ = conf;
 	browsing_->setChecked(conf_->browsing_);
-	cups_->setChecked(conf_->browseprotocols_.findIndex("CUPS") != -1);
-	slp_->setChecked(conf_->browseprotocols_.findIndex("SLP") != -1);
+	cups_->setChecked(conf_->browseprotocols_.contains("CUPS"));
+	slp_->setChecked(conf_->browseprotocols_.contains("SLP"));
 	browseport_->setValue(conf_->browseport_);
 	browseinterval_->setValue(conf_->browseinterval_);
 	browsetimeout_->setValue(conf_->browsetimeout_);
 	browseaddresses_->insertItems(conf_->browseaddresses_);
-	browseorder_->setCurrentItem(conf_->browseorder_);
+	browseorder_->setCurrentIndex(conf_->browseorder_);
 	useimplicitclasses_->setChecked(conf_->useimplicitclasses_);
 	useanyclasses_->setChecked(conf_->useanyclasses_);
 	hideimplicitmembers_->setChecked(conf_->hideimplicitmembers_);
@@ -152,7 +158,7 @@ bool CupsdBrowsingPage::saveConfig(CupsdConf *conf, QString&)
 	conf->browseinterval_ = browseinterval_->value();
 	conf->browsetimeout_ = browsetimeout_->value();
 	conf->browseaddresses_ = browseaddresses_->items();
-	conf->browseorder_ = browseorder_->currentItem();
+	conf->browseorder_ = browseorder_->currentIndex();
 	conf->useimplicitclasses_ = useimplicitclasses_->isChecked();
 	conf->useanyclasses_ = useanyclasses_->isChecked();
 	conf->hideimplicitmembers_ = hideimplicitmembers_->isChecked();

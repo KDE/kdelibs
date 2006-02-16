@@ -30,10 +30,12 @@ QDirLineEdit::QDirLineEdit(bool file, QWidget *parent)
 {
 	edit_ = new QLineEdit(this);
 	button_ = new KPushButton(this);
-	button_->setPixmap(SmallIcon("fileopen"));
+	button_->setIcon(SmallIcon("fileopen"));
 	connect(button_,SIGNAL(clicked()),SLOT(buttonClicked()));
 
-	QHBoxLayout	*main_ = new QHBoxLayout(this, 0, 3);
+	QHBoxLayout	*main_ = new QHBoxLayout(this);
+  main_->setMargin(0);
+  main_->setSpacing(3);
 	main_->addWidget(edit_);
 	main_->addWidget(button_);
 

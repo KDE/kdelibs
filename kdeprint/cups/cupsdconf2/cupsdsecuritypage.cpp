@@ -51,9 +51,11 @@ CupsdSecurityPage::CupsdSecurityPage(QWidget *parent)
 	QLabel *l4 = new QLabel(i18n("Encryption key:"), this);
 	QLabel *l5 = new QLabel(i18n("Locations:"), this);
 
-	QGridLayout	*m1 = new QGridLayout(this, 6, 2, 10, 7);
+	QGridLayout	*m1 = new QGridLayout(this);
+  m1->setMargin(10);
+  m1->setSpacing(7);
 	m1->setRowStretch(5, 1);
-	m1->setColStretch(1, 1);
+	m1->setColumnStretch(1, 1);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 1, 0, Qt::AlignRight);
 	m1->addWidget(l3, 2, 0, Qt::AlignRight);

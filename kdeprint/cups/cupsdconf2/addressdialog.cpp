@@ -33,14 +33,16 @@ AddressDialog::AddressDialog(QWidget *parent, const char *name)
 	type_ = new QComboBox(w);
 	address_ = new QLineEdit(w);
 
-	type_->insertItem(i18n("Allow"));
-	type_->insertItem(i18n("Deny"));
+	type_->addItem(i18n("Allow"));
+	type_->addItem(i18n("Deny"));
 
 	QLabel	*l1 = new QLabel(i18n("Type:"), w);
 	QLabel	*l2 = new QLabel(i18n("Address:"), w);
 
-	QGridLayout	*m1 = new QGridLayout(w, 2, 2, 0, 5);
-	m1->setColStretch(1, 1);
+	QGridLayout	*m1 = new QGridLayout(w);
+  m1->setMargin(0);
+  m1->setSpacing(5);
+	m1->setColumnStretch(1, 1);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 1, 0, Qt::AlignRight);
 	m1->addWidget(type_, 0, 1);
@@ -76,7 +78,7 @@ QString AddressDialog::newAddress(QWidget *parent)
 QString AddressDialog::editAddress(const QString& addr, QWidget *parent)
 {
 	AddressDialog	dlg(parent);
-	int p = addr.find(' ');
+	int p = addr.indexOf(' ');
 	if (p != -1)
 	{
 		dlg.type_->setCurrentIndex(addr.left(p).toLower() == "deny" ? 1 : 0);

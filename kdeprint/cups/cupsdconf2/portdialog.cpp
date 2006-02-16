@@ -35,19 +35,25 @@ PortDialog::PortDialog(QWidget *parent, const char *name)
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
 	address_ = new QLineEdit(dummy);
-	port_ = new QSpinBox(0, 9999, 1, dummy);
+	port_ = new QSpinBox(dummy);
+  port_->setRange( 0, 9999 );
+  port_->setSingleStep( 1 );
 	port_->setValue(631);
 	usessl_ = new QCheckBox(i18n("Use SSL encryption"), dummy);
 
 	QLabel	*l1 = new QLabel(i18n("Address:"), dummy);
 	QLabel	*l2 = new QLabel(i18n("Port:"), dummy);
 
-	QVBoxLayout	*m1 = new QVBoxLayout(dummy, 0, 10);
-	QGridLayout	*m2 = new QGridLayout(0, 3, 2, 0, 5);
+	QVBoxLayout	*m1 = new QVBoxLayout(dummy);
+  m1->setMargin(0);
+  m1->setSpacing(10);
+	QGridLayout	*m2 = new QGridLayout(0);
 	m1->addLayout(m2);
+  m2->setMargin(0);
+  m2->setSpacing(5);
 	m2->addWidget(l1, 0, 0, Qt::AlignRight);
 	m2->addWidget(l2, 1, 0, Qt::AlignRight);
-	m2->addMultiCellWidget(usessl_, 2, 2, 0, 1);
+	m2->addWidget(usessl_, 2, 2, 0, 1);
 	m2->addWidget(address_, 0, 1);
 	m2->addWidget(port_, 1, 1);
 
@@ -92,12 +98,12 @@ QString PortDialog::editListen(const QString& s, QWidget *parent, CupsdConf *con
 {
 	PortDialog	dlg(parent);
 	dlg.setInfos(conf);
-	int	p = s.find(' ');
+	int	p = s.indexOf(' ');
 	if (p != -1)
 	{
 		dlg.usessl_->setChecked(s.left(p).startsWith("SSL"));
 		QString	addr = s.mid(p+1).trimmed();
-		int p1 = addr.find(':');
+		int p1 = addr.indexOf(':');
 		if (p1 == -1)
 		{
 			dlg.address_->setText(addr);

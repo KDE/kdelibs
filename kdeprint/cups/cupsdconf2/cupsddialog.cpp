@@ -97,12 +97,12 @@ const char* getPassword(const char*)
 
 	if (KIO::PasswordDialog::getNameAndPassword(user, pass, NULL) == QDialog::Accepted)
 	{
-		cupsSetUser(user.latin1());
+		cupsSetUser(user.toLatin1());
 		pass_string = pass;
 		if (pass_string.isEmpty())
 			return "";
 		else
-			return pass_string.latin1();
+			return pass_string.toLatin1();
 	}
 	else
 		return NULL;
@@ -143,7 +143,7 @@ void CupsdDialog::addConfPage(CupsdPage *page)
 	                                                          );
 
 	KVBox	*box = addVBoxPage(page->pageLabel(), page->header(), icon);
-	page->reparent(box, QPoint(0,0));
+	page->setParent(box);
 	pagelist_.append(page);
 }
 
@@ -342,9 +342,9 @@ int CupsdDialog::serverOwner()
 			while (!t.atEnd())
 			{
 				str = t.readLine();
-				if (str.find("Uid:",0,false) == 0)
+				if (str.indexOf("Uid:",0,Qt::CaseInsensitive) == 0)
 				{
-					QStringList	list = QStringList::split('\t', str, false);
+					QStringList	list = str.split('\t', QString::SkipEmptyParts);
 					if (list.count() >= 2)
 					{
 						bool	ok;

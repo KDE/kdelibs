@@ -31,7 +31,7 @@
 int findComboItem(QComboBox *cb, const QString& str)
 {
 	for (int i=0; i<cb->count(); i++)
-		if (cb->text(i) == str)
+		if (cb->itemText(i) == str)
 			return i;
 	return (-1);
 }
@@ -88,14 +88,16 @@ CupsdServerPage::CupsdServerPage(QWidget *parent)
 	QLabel *l7 = new QLabel(i18n("Printcap format:"), this);
 
 	connect(classification_, SIGNAL(activated(int)), SLOT(classChanged(int)));
-	classification_->setCurrentItem(0);
-	charset_->setCurrentItem(0);
-	printcapformat_->setCurrentItem(0);
+	classification_->setCurrentIndex(0);
+	charset_->setCurrentIndex(0);
+	printcapformat_->setCurrentIndex(0);
 	classChanged(0);
 
-	QGridLayout	*m1 = new QGridLayout(this, 9, 2, 10, 7);
+	QGridLayout	*m1 = new QGridLayout(this);
+  m1->setMargin(10);
+  m1->setSpacing(7);
 	m1->setRowStretch(8, 1);
-	m1->setColStretch(1, 1);
+	m1->setColumnStretch(1, 1);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 1, 0, Qt::AlignRight);
 	m1->addWidget(l3, 2, 0, Qt::AlignRight);
@@ -109,13 +111,17 @@ CupsdServerPage::CupsdServerPage(QWidget *parent)
 	m1->addWidget(language_, 5, 1);
 	m1->addWidget(printcap_, 6, 1);
 	m1->addWidget(printcapformat_, 7, 1);
-	QHBoxLayout	*m2 = new QHBoxLayout(0, 0, 5);
+	QHBoxLayout	*m2 = new QHBoxLayout(0);
+  m2->setMargin(0);
+  m2->setSpacing(5);
 	m1->addLayout(m2, 2, 1);
 	m2->addWidget(classification_);
 	m2->addWidget(otherclassname_);
 	QWidget	*w = new QWidget(this);
 	w->setFixedWidth(20);
-	QHBoxLayout	*m3 = new QHBoxLayout(0, 0, 0);
+	QHBoxLayout	*m3 = new QHBoxLayout(0);
+  m3->setMargin(0);
+  m3->setSpacing(0);
 	m1->addLayout(m3, 3, 1);
 	m3->addWidget(w);
 	m3->addWidget(classoverride_);
@@ -126,7 +132,7 @@ bool CupsdServerPage::loadConfig(CupsdConf *conf, QString&)
 	conf_ = conf;
 	servername_->setText(conf_->servername_);
 	serveradmin_->setText(conf_->serveradmin_);
-	classification_->setCurrentItem(conf_->classification_);
+	classification_->setCurrentIndex(conf_->classification_);
 	classChanged(conf_->classification_);
 	if (conf->classification_ != CLASS_NONE)
 		classoverride_->setChecked(conf_->classoverride_);
@@ -134,10 +140,10 @@ bool CupsdServerPage::loadConfig(CupsdConf *conf, QString&)
 		otherclassname_->setText(conf_->otherclassname_);
 	int index = findComboItem(charset_, conf_->charset_.toUpper());
 	if (index != -1)
-		charset_->setCurrentItem(index);
+		charset_->setCurrentIndex(index);
 	language_->setText(conf_->language_);
 	printcap_->setText(conf_->printcap_);
-	printcapformat_->setCurrentItem(conf_->printcapformat_);
+	printcapformat_->setCurrentIndex(conf_->printcapformat_);
 
 	return true;
 }
@@ -146,7 +152,7 @@ bool CupsdServerPage::saveConfig(CupsdConf *conf, QString&)
 {
 	conf->servername_ = servername_->text();
 	conf->serveradmin_ = serveradmin_->text();
-	conf->classification_ = classification_->currentItem();
+	conf->classification_ = classification_->currentIndex();
 	if (conf->classification_ != CLASS_NONE)
 		conf->classoverride_ = classoverride_->isChecked();
 	if (conf->classification_ == CLASS_OTHER)
@@ -154,7 +160,7 @@ bool CupsdServerPage::saveConfig(CupsdConf *conf, QString&)
 	conf->charset_ = charset_->currentText();
 	conf->language_ = language_->text();
 	conf->printcap_ = printcap_->text();
-	conf->printcapformat_ = printcapformat_->currentItem();
+	conf->printcapformat_ = printcapformat_->currentIndex();
 
 	return true;
 }

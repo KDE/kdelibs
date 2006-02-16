@@ -35,9 +35,11 @@ EditList::EditList(QWidget *parent)
 	delbtn_ = new KPushButton(KGuiItem(i18n("Delete"), "editdelete"), this);
 	defbtn_ = new KPushButton(KGuiItem(i18n("Default List"), "history"), this);
 
-	QGridLayout *m1 = new QGridLayout(this, 4, 2, 0, 0);
-	m1->setColStretch(0, 1);
-	m1->addMultiCellWidget(list_, 0, 3, 0, 1);
+	QGridLayout *m1 = new QGridLayout(this);
+  m1->setMargin(0);
+  m1->setSpacing(0);
+	m1->setColumnStretch(0, 1);
+	m1->addWidget(list_, 0, 3, 0, 1);
 	m1->addWidget(addbtn_, 0, 1);
 	m1->addWidget(editbtn_, 1, 1);
 	m1->addWidget(delbtn_, 2, 1);

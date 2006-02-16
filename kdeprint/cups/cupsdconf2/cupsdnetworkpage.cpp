@@ -59,9 +59,9 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent)
 	clienttimeout_->setSpecialValueText(i18n("Unlimited"));
 	clienttimeout_->setSuffix(i18n(" sec"));
 
-	hostnamelookup_->insertItem(i18n("Off"));
-	hostnamelookup_->insertItem(i18n("On"));
-	hostnamelookup_->insertItem(i18n("Double"));
+	hostnamelookup_->addItem(i18n("Off"));
+	hostnamelookup_->addItem(i18n("On"));
+	hostnamelookup_->addItem(i18n("Double"));
 
 	QLabel *l1 = new QLabel(i18n("Hostname lookups:"), this);
 	QLabel *l2 = new QLabel(i18n("Keep-alive timeout:"), this);
@@ -70,9 +70,11 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent)
 	QLabel *l5 = new QLabel(i18n("Client timeout:"), this);
 	QLabel *l6 = new QLabel(i18n("Listen to:"), this);
 
-	QGridLayout	*m1 = new QGridLayout(this, 8, 2, 10, 7);
+	QGridLayout	*m1 = new QGridLayout(this);
+  m1->setMargin(7);
+  m1->setSpacing(10);
 	m1->setRowStretch(7, 1);
-	m1->setColStretch(1, 1);
+	m1->setColumnStretch(1, 1);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 2, 0, Qt::AlignRight);
 	m1->addWidget(l3, 3, 0, Qt::AlignRight);
@@ -97,7 +99,7 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent)
 bool CupsdNetworkPage::loadConfig(CupsdConf *conf, QString&)
 {
 	conf_ = conf;
-	hostnamelookup_->setCurrentItem(conf_->hostnamelookup_);
+	hostnamelookup_->setCurrentIndex(conf_->hostnamelookup_);
 	keepalive_->setChecked(conf_->keepalive_);
 	keepalivetimeout_->setValue(conf_->keepalivetimeout_);
 	maxclients_->setValue(conf_->maxclients_);
@@ -110,7 +112,7 @@ bool CupsdNetworkPage::loadConfig(CupsdConf *conf, QString&)
 
 bool CupsdNetworkPage::saveConfig(CupsdConf *conf, QString&)
 {
-	conf->hostnamelookup_ = hostnamelookup_->currentItem();
+	conf->hostnamelookup_ = hostnamelookup_->currentIndex();
 	conf->keepalive_ = keepalive_->isChecked();
 	conf->keepalivetimeout_ = keepalivetimeout_->value();
 	conf->maxclients_ = maxclients_->value();

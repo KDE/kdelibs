@@ -42,11 +42,11 @@ QString findDir(const QStringList& list)
 
 void splitSizeSpec(const QString& s, int& sz, int& suff)
 {
-	int	p = s.find(QRegExp("\\D"));
+	int	p = s.indexOf(QRegExp("\\D"));
 	sz = s.mid(0, p).toInt();
 	if (p != -1)
 	{
-		switch (s[p].latin1())
+		switch (s[p].toLatin1())
 		{
 			case 'k': suff = UNIT_KB; break;
 			default:
@@ -484,7 +484,7 @@ bool CupsdConf::parseOption(const QString& line)
 	int p(-1);
 	QString keyword, value, l(line.simplified());
 
-	if ((p=l.find(' ')) != -1)
+	if ((p=l.indexOf(' ')) != -1)
 	{
 		keyword = l.left(p).toLower();
 		value = l.mid(p+1);
@@ -507,8 +507,8 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "browseprotocols")
 	{
 		browseprotocols_.clear();
-		QStringList prots = QStringList::split(QRegExp("\\s"), value, false);
-		if (prots.find("all") != prots.end())
+		QStringList prots = value.split(QRegExp("\\s"), QString::SkipEmptyParts);
+		if (prots.contains("all"))
 			browseprotocols_ << "CUPS" << "SLP";
 		else
 			for (QStringList::ConstIterator it=prots.begin(); it!=prots.end(); ++it)
@@ -540,7 +540,7 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "documentroot") documentdir_ = value;
 	else if (keyword == "errorlog") errorlog_ = value;
 	else if (keyword == "filterlimit") filterlimit_ = value.toInt();
-	else if (keyword == "fontpath") fontpath_ += QStringList::split(':', value, false);
+	else if (keyword == "fontpath") fontpath_ += value.split(':', QString::SkipEmptyParts);
 	else if (keyword == "group") group_ = value;
 	else if (keyword == "hideimplicitmembers") hideimplicitmembers_ = (value.toLower() != "no");
 	else if (keyword == "hostnamelookups")
@@ -718,7 +718,7 @@ CupsLocation::CupsLocation(const CupsLocation& loc)
 bool CupsLocation::parseResource(const QString& line)
 {
 	QString	str = line.simplified();
-	int	p1 = line.find(' '), p2 = line.find('>');
+	int	p1 = line.indexOf(' '), p2 = line.indexOf('>');
 	if (p1 != -1 && p2 != -1)
 	{
 		resourcename_ = str.mid(p1+1,p2-p1-1);
@@ -732,7 +732,7 @@ bool CupsLocation::parseOption(const QString& line)
 	int p(-1);
 	QString keyword, value, l(line.simplified());
 
-	if ((p=l.find(' ')) != -1)
+	if ((p=l.indexOf(' ')) != -1)
 	{
 		keyword = l.left(p).toLower();
 		value = l.mid(p+1);
@@ -760,7 +760,7 @@ bool CupsLocation::parseOption(const QString& line)
 	else if (keyword == "authgroupname") authname_ = value;
 	else if (keyword == "require")
 	{
-		int p = value.find(' ');
+		int p = value.indexOf(' ');
 		if (p != -1)
 		{
 			authname_ = value.mid(p+1);
@@ -810,8 +810,8 @@ int CupsResource::typeFromText(const QString& text)
 {
 	if (text == i18n("Base", "Root") || text == i18n("All printers") || text == i18n("All classes") || text == i18n("Print jobs")) return RESOURCE_GLOBAL;
 	else if (text == i18n("Administration")) return RESOURCE_ADMIN;
-	else if (text.find(i18n("Class")) == 0) return RESOURCE_CLASS;
-	else if (text.find(i18n("Printer")) == 0) return RESOURCE_PRINTER;
+	else if (text.indexOf(i18n("Class")) == 0) return RESOURCE_CLASS;
+	else if (text.indexOf(i18n("Printer")) == 0) return RESOURCE_PRINTER;
 	else return RESOURCE_PRINTER;
 }
 
@@ -832,7 +832,7 @@ QString CupsResource::textToPath(const QString& text)
 	else if (text == i18n("All classes")) path = "/classes";
 	else if (text == i18n("Print jobs")) path = "/jobs";
 	else if (text == i18n("Base", "Root")) path = "/";
-	else if (text.find(i18n("Printer")) == 0)
+	else if (text.indexOf(i18n("Printer")) == 0)
 	{
 		path = "/printers/";
 		path.append(text.right(text.length()-i18n("Printer").length()-1));
@@ -853,13 +853,13 @@ QString CupsResource::pathToText(const QString& path)
 	else if (path == "/classes") text = i18n("All classes");
 	else if (path == "/") text = i18n("Root");
 	else if (path == "/jobs") text = i18n("Print jobs");
-	else if (path.find("/printers/") == 0)
+	else if (path.indexOf("/printers/") == 0)
 	{
 		text = i18n("Printer");
 		text.append(" ");
 		text.append(path.right(path.length()-10));
 	}
-	else if (path.find("/classes/") == 0)
+	else if (path.indexOf("/classes/") == 0)
 	{
 		text = i18n("Class");
 		text.append(" ");
