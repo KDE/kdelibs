@@ -20,29 +20,13 @@ target_link_libraries(testlock  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY}
 
 ########### next target ###############
 
-set(testldapclient_SRCS
-testldapclient.cpp
-)
-
-kde4_automoc(${testldapclient_SRCS})
-
-kde4_add_executable(testldapclient ${testldapclient_SRCS})
-
-target_link_libraries(testldapclient  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
-
-
-########### next target ###############
-
-set(geotest_SRCS
-geotest.cpp
-)
+set(geotest_SRCS geotest.cpp)
 
 kde4_automoc(${geotest_SRCS})
 
 kde4_add_executable(geotest ${geotest_SRCS})
 
 target_link_libraries(geotest  ${QT_AND_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
-
 
 ########### next target ###############
 
@@ -218,15 +202,12 @@ kde4_footer()
 #
 #METASOURCES = AUTO
 #
-#check_PROGRAMS = testlock testldapclient geotest
+#check_PROGRAMS = testlock geotest
 #
 #geotest_SOURCES = geotest.cpp
 #
 #testlock_LDFLAGS = $(all_libraries)
 #testlock_SOURCES = testlock.cpp
-#
-#testldapclient_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-#testldapclient_SOURCES = testldapclient.cpp
 #
 #EXTRA_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
 #  testaddressee testaddresseelist testaddressfmt kabcargl testaddresslineedit
