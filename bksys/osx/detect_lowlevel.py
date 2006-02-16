@@ -3,7 +3,7 @@
 def detect(env,dest):
 	import os, re
 
-	content += """
+	content = """
 #define HAVE_BOOL 1
 #define HAVE_CUPS 1
 #define HAVE_CUPS_NO_PWD_CACHE 1
