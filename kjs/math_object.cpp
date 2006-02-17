@@ -35,7 +35,7 @@
 
 #include "math_object.lut.h"
 
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__GNUC__)
 
 #include <float.h>
 static int signbit(double d)
