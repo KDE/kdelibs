@@ -160,8 +160,8 @@ qint64 KSocketBuffer::feedBuffer(const char *data, qint64 len)
   if (m_size != -1 && (m_size - m_length) < len)
     len = m_size - m_length;
 
-  QByteArray a(len);
-  a.duplicate(data, len);
+  QByteArray a('\0', len);
+  a = data;
   m_list.append(a);
 
   m_length += len;
@@ -248,7 +248,7 @@ qint64 KSocketBuffer::sendTo(KActiveSocketBase* dev, qint64 len)
       Q_ULONG bufsize = 1460;
       if (len != -1 && len < bufsize)
 	bufsize = len;
-      QByteArray buf(bufsize);
+      QByteArray buf('\0', bufsize);
       qint64 count = 0;
 
       while (it.hasNext() && count + (it.peekNext().size() - offset) <= bufsize)
@@ -311,7 +311,7 @@ qint64 KSocketBuffer::receiveFrom(KActiveSocketBase* dev, qint64 len)
   // here, len contains just as many bytes as we're supposed to read
 
   // now do the reading
-  QByteArray a(len);
+  QByteArray a('\0', len);
   len = dev->read(a.data(), len);
 
   if (len == -1)

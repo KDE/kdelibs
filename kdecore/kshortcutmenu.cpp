@@ -52,7 +52,7 @@ void KShortcutMenu::updateShortcuts()
 {
 	setTitle( m_seq.toString() + ",..." );
 	
-	for( uint iItem = 0; iItem < count(); iItem++ ) {
+	for( uint iItem = 0; iItem < actions().count(); iItem++ ) {
 		int iAction = idAt( iItem );
 		if( iAction >= 0 ) {
 			KAccelAction* pAction = m_pActions->actionPtr( iAction );
@@ -113,7 +113,7 @@ int KShortcutMenu::searchForKey( KKey key )
 	int iItemFound = -1; // -1 indicates no match
 	uint iKey = m_seq.count();
 	
-	for( uint iItem = 0; iItem < count(); iItem++ ) {
+	for( uint iItem = 0; iItem < actions().count(); iItem++ ) {
 		if( m_seqs.contains( iItem ) ) {
 			KKey keyItem = m_seqs[iItem].key( iKey );
 			//kDebug(125) << "iItem = " << iItem << " key = " << key.toStringInternal() << " keyItem = " << keyItem.toStringInternal() << endl;
@@ -136,7 +136,7 @@ void KShortcutMenu::keepItemsMatching( KKey key )
 	uint iKey = m_seq.count();
 	m_seq.setKey( iKey, key );
 	
-	for( uint iItem = 0; iItem < count(); iItem++ ) {
+	for( uint iItem = 0; iItem < actions().count(); iItem++ ) {
 		if( m_seqs.contains( iItem ) ) {
 			KKey keyItem = m_seqs[iItem].key( iKey );
 			if( key != keyItem ) {

@@ -107,6 +107,7 @@ bool KStreamSocket::bind(const QString& node, const QString& service)
 bool KStreamSocket::connect(const QString& node, const QString& service,
 			    OpenMode mode)
 {
+  Q_UNUSED(mode);
   if (state() == Connected)
     return true;		// already connected
 

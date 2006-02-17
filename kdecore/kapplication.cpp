@@ -498,6 +498,7 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
                            bool GUIenabled ) :
   QApplication( display ), KInstance(rAppName), d (new Private)
 {
+    Q_UNUSED(GUIenabled);
     read_app_startup_id();
     setApplicationName(rAppName);
     installSigpipeHandler();

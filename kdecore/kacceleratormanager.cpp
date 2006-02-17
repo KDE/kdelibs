@@ -236,7 +236,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
         if ( dynamic_cast<Q3GroupBox*>( it->m_widget ) )
              continue;
 
-        kDebug(125) << "write " << cnt << " " << it->m_widget->className() << " " <<contents[cnt].accelerated() << endl;
+        kDebug(125) << "write " << cnt << " " << it->m_widget->metaObject()->className() << " " <<contents[cnt].accelerated() << endl;
 
         int tprop = it->m_widget->metaObject()->indexOfProperty("text");
         if (tprop != -1)  {
@@ -252,7 +252,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     // calculate the accelerators for the children
     foreach(Item *it, *item->m_children)
     {
-        kDebug(125) << "children " << it->m_widget->className() << endl;
+        kDebug(125) << "children " << it->m_widget->metaObject()->className() << endl;
         if (it->m_widget && it->m_widget->isVisibleTo( item->m_widget ) )
             calculateAccelerators(it, used);
     }
@@ -405,7 +405,7 @@ void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
     QMenuItem *mitem;
     QString s;
 
-    for (uint i=0; i<mbar->count(); ++i)
+    for (uint i=0; i<mbar->actions().count(); ++i)
     {
         mitem = mbar->findItem(mbar->idAt(i));
         if (!mitem)
@@ -471,18 +471,18 @@ void KAcceleratorManager::last_manage(QString &added,  QString &changed, QString
 KAccelString::KAccelString(const QString &input, int initialWeight)
   : m_pureText(input), m_weight()
 {
-    m_orig_accel = m_pureText.find("(!)&");
+    m_orig_accel = m_pureText.indexOf("(!)&");
     if (m_orig_accel != -1)
 	m_pureText.remove(m_orig_accel, 4);
 
-    m_orig_accel = m_pureText.find("(&&)");
+    m_orig_accel = m_pureText.indexOf("(&&)");
     if (m_orig_accel != -1)
         m_pureText.replace(m_orig_accel, 4, "&");
 
     m_origText = m_pureText;
 
     if (m_pureText.contains('\t'))
-        m_pureText = m_pureText.left(m_pureText.find('\t'));
+        m_pureText = m_pureText.left(m_pureText.indexOf('\t'));
 
     m_orig_accel = m_accel = stripAccelerator(m_pureText);
 
@@ -593,7 +593,7 @@ int KAccelString::stripAccelerator(QString &text)
 
   while (p >= 0)
   {
-    p = text.find('&', p)+1;
+    p = text.indexOf('&', p)+1;
 
     if (p <= 0 || p >= (int)text.length())
       return -1;
@@ -621,7 +621,7 @@ int KAccelString::maxWeight(int &index, const QString &used)
   index = -1;
 
   for (int pos=0; pos<m_pureText.length(); ++pos)
-    if (used.find(m_pureText[pos], 0, false) == -1 && m_pureText[pos].toLatin1() != 0)
+    if (used.indexOf(m_pureText[pos], 0, Qt::CaseInsensitive) == -1 && m_pureText[pos].toLatin1() != 0)
       if (m_weight[pos] > max)
       {
         max = m_weight[pos];
@@ -742,11 +742,11 @@ void KPopupAccelManager::aboutToShow()
  // item has been added or removed, so we can not do much more than
   // to compare the items each time the menu is shown :-(
 
-  if (m_count != (int)m_popup->count())
+  if (m_count != (int)m_popup->actions().count())
   {
     findMenuEntries(m_entries);
     calculateAccelerators();
-    m_count = m_popup->count();
+    m_count = m_popup->actions().count();
   }
   else
   {
@@ -780,7 +780,7 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
   list.clear();
 
   // read out the menu entries
-  for (uint i=0; i<m_popup->count(); i++)
+  for (uint i=0; i<m_popup->actions().count(); i++)
   {
     mitem = m_popup->findItem(m_popup->idAt(i));
     if (mitem->isSeparator())
@@ -807,7 +807,7 @@ void KPopupAccelManager::setMenuEntries(const KAccelStringList &list)
   QMenuItem *mitem;
 
   uint cnt = 0;
-  for (uint i=0; i<m_popup->count(); i++)
+  for (uint i=0; i<m_popup->actions().count(); i++)
   {
     mitem = m_popup->findItem(m_popup->idAt(i));
     if (mitem->isSeparator())
