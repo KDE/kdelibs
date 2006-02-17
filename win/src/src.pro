@@ -19,6 +19,7 @@ fcntl.c \
 dummy.cpp \
 fsync.c \
 getenv.c \
+inet.c \
 grp.c \
 kde_file_win.c \
 mmap.c \
