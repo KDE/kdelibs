@@ -877,22 +877,22 @@ public:
    * If you want to write a path, please use writePathEntry().
    *
    * @param pKey         The key to write.
-   * @param pValue       The value to write.
+   * @param value       The value to write.
    * @param pFlags       The flags to use when writing this entry.
    */
-  void writeEntry( const char *pKey, const QString& pValue,
+  void writeEntry( const char *pKey, const QString& value,
                    WriteConfigFlags pFlags = Normal );
 
   /**
    * writeEntry() Overridden to accept a property.
    *
    * @param pKey The key to write
-   * @param rValue The property to write
+   * @param value The property to write
    * @param pFlags       The flags to use when writing this entry.
    *
    * @see  writeEntry()
    */
-  void writeEntry( const char *pKey, const QVariant& rValue,
+  void writeEntry( const char *pKey, const QVariant& value,
                    WriteConfigFlags pFlags = Normal );
 
   /**
@@ -900,7 +900,7 @@ public:
    * @since 4.0
    */
   template <typename T>
-  void writeEntry( const char* pKey, const T& rValue,
+  void writeEntry( const char* pKey, const T& value,
                    WriteConfigFlags pFlags = Normal );
 
   /**
@@ -908,16 +908,16 @@ public:
    * @since 4.0
    */
   template <typename T>
-  void writeEntry( const QString& pKey, const T& rValue,
+  void writeEntry( const QString& pKey, const T& value,
                    WriteConfigFlags pFlags = Normal )
-    { writeEntry( pKey.toUtf8().constData(), rValue, pFlags ); }
+    { writeEntry( pKey.toUtf8().constData(), value, pFlags ); }
 
 #ifdef KDE3_SUPPORT
   /**
    * writeEntry() overridden to accept a list of strings.
    *
    * @param pKey The key to write
-   * @param rValue The list to write
+   * @param value The list to write
    * @param sep  The list separator (default is ",").
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
    *                    will not be set and thus the entry will not be
@@ -930,15 +930,15 @@ public:
    *
    * @see  writeEntry()
    */
-  KDE_DEPRECATED void writeEntry( const QString& pKey, const Q3StrList &rValue,
+  KDE_DEPRECATED void writeEntry( const QString& pKey, const Q3StrList &value,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false )
-    { writeEntry(pKey.toUtf8().constData(), rValue, sep, bPersistent, bGlobal, bNLS); }
+    { writeEntry(pKey.toUtf8().constData(), value, sep, bPersistent, bGlobal, bNLS); }
 
   /**
    * writeEntry() overridden to accept a list of strings.
    *
    * @param pKey The key to write
-   * @param rValue The list to write
+   * @param value The list to write
    * @param sep  The list separator (default is ",").
    * @param bPersistent If @p bPersistent is false, the entry's dirty flag
    *                    will not be set and thus the entry will not be
@@ -951,7 +951,7 @@ public:
    *
    * @see  writeEntry()
    */
-  void writeEntry( const char *pKey, const Q3StrList &rValue,
+  void writeEntry( const char *pKey, const Q3StrList &value,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false )
 		   KDE_DEPRECATED;
 #endif
@@ -960,28 +960,28 @@ public:
    * writeEntry() overridden to accept a list of strings.
    *
    * @param pKey The key to write
-   * @param rValue The list to write
+   * @param value The list to write
    * @param sep  The list separator (default is ",").
    * @param pFlags       The flags to use when writing this entry.
    *
    * @see  writeEntry()
    */
-  void writeEntry( const QString& pKey, const QStringList &rValue,
+  void writeEntry( const QString& pKey, const QStringList &value,
 		   char sep = ',',
                    WriteConfigFlags pFlags = Normal )
-    { writeEntry( pKey.toUtf8().constData(), rValue, sep, pFlags ); }
+    { writeEntry( pKey.toUtf8().constData(), value, sep, pFlags ); }
 
   /**
    * writeEntry() overridden to accept a list of strings.
    *
    * @param pKey The key to write
-   * @param rValue The list to write
+   * @param value The list to write
    * @param sep  The list separator (default is ",").
    * @param pFlags       The flags to use when writing this entry.
    *
    * @see  writeEntry()
    */
-  void writeEntry( const char *pKey, const QStringList &rValue,
+  void writeEntry( const char *pKey, const QStringList &value,
 		   char sep = ',',
                    WriteConfigFlags pFlags = Normal );
 
@@ -989,23 +989,23 @@ public:
    * writeEntry() overridden to accept a list.
    *
    * @param pKey The key to write
-   * @param rValue The list to write.
+   * @param value The list to write.
    * @param pFlags       The flags to use when writing this entry.
    *
    * @see  writeEntry()
    * @since 4.0
    */
   template <typename T>
-  void writeEntry( const char* pKey, const QList<T>& rValue,
+  void writeEntry( const char* pKey, const QList<T>& value,
                    WriteConfigFlags pFlags = Normal );
 
   /**
    * writeEntry() overridden to accept a list.
    * @copydoc writeEntry(const char*, const QList<T>&, WriteConfigFlags)
    */
-  void writeEntry( const char* pKey, const QVariantList& rValue,
+  void writeEntry( const char* pKey, const QVariantList& value,
                    WriteConfigFlags pFlags = Normal )
-    { writeEntry( pKey, QVariant(rValue), pFlags ); }
+    { writeEntry( pKey, QVariant(value), pFlags ); }
 
   /**
    * Write a (key/value) pair.
@@ -1014,12 +1014,12 @@ public:
    * config object or when calling sync().
    *
    *  @param pKey               The key to write.
-   *  @param pValue     The value to write; assumed to be in latin1 encoding.
+   *  @param value     The value to write; assumed to be in latin1 encoding.
    *  @param pFlags       The flags to use when writing this entry.
    */
-  void writeEntry( const char *pKey, const char *pValue,
+  void writeEntry( const char *pKey, const char *value,
                    WriteConfigFlags pFlags = Normal )
-    { writeEntry(pKey, QString::fromLatin1(pValue), pFlags); }
+    { writeEntry(pKey, QString::fromLatin1(value), pFlags); }
 
   /**
    * Write a (key/value) pair.
@@ -1028,15 +1028,15 @@ public:
    * config object or when calling sync().
    *
    *  @param pKey               The key to write.
-   *  @param pValue     The value to write; assumed to be in latin1 encoding.
+   *  @param value     The value to write; assumed to be in latin1 encoding.
    *                    If it contains the null character between 0 and size()-1,
    *                    the string will be truncated at the null character.
    *
    * @param pFlags       The flags to use when writing this entry.
    */
-  void writeEntry( const char *pKey, const QByteArray& pValue,
+  void writeEntry( const char *pKey, const QByteArray& value,
                    WriteConfigFlags pFlags = Normal )
-    { writeEntry(pKey, QString::fromLatin1(pValue, pValue.size()), pFlags); }
+    { writeEntry(pKey, QString::fromLatin1(value, value.size()), pFlags); }
 
   /**
    * Writes a file path.
@@ -1074,7 +1074,7 @@ public:
    * $HOME. The paths should be read back with readPathListEntry()
    *
    * @param pKey The key to write
-   * @param rValue The list to write
+   * @param value The list to write
    * @param sep  The list separator (default is ",").
    * @param pFlags       The flags to use when writing this entry.
    *
@@ -1082,7 +1082,7 @@ public:
    * @see  readPathListEntry()
    * @since 3.1.3
    */
-  void writePathEntry( const QString& pKey, const QStringList &rValue,
+  void writePathEntry( const QString& pKey, const QStringList &value,
                        char sep = ',', WriteConfigFlags pFlags = Normal );
 
   /**
@@ -1093,7 +1093,7 @@ public:
    * $HOME. The paths should be read back with readPathListEntry()
    *
    * @param pKey The key to write
-   * @param rValue The list to write
+   * @param value The list to write
    * @param sep  The list separator (default is ",").
    * @param pFlags       The flags to use when writing this entry.
    *
@@ -1101,7 +1101,7 @@ public:
    * @see  readPathListEntry()
    * @since 3.1.3
    */
-  void writePathEntry( const char *pKey, const QStringList &rValue,
+  void writePathEntry( const char *pKey, const QStringList &value,
 		   char sep = ',', WriteConfigFlags pFlags = Normal );
 
   /**
@@ -1564,7 +1564,7 @@ inline T KConfigBase::readEntry( const char* pKey, const T& aDefault) const
 }
 
 template <typename T>
-void KConfigBase::writeEntry( const char* pKey, const QList<T>& rValue,
+void KConfigBase::writeEntry( const char* pKey, const QList<T>& value,
                               WriteConfigFlags pFlags )
 {
 #if KCONFIG_QVARIANT_CHECK
@@ -1578,20 +1578,20 @@ void KConfigBase::writeEntry( const char* pKey, const QList<T>& rValue,
 #endif
 
   QVariantList vList;
-  foreach(T aValue, rValue)
+  foreach(T aValue, value)
     vList.append(aValue);
 
   writeEntry( pKey, QVariant(vList), pFlags );
 }
 
 template <typename T>
-inline void KConfigBase::writeEntry( const char* pKey, const T& rValue,
+inline void KConfigBase::writeEntry( const char* pKey, const T& value,
                               WriteConfigFlags pFlags )
 {
 #if KCONFIG_QVARIANT_CHECK
   ConversionCheck::to_QVariant<T>();
 #endif
-  writeEntry( pKey, QVariant(rValue), pFlags );
+  writeEntry( pKey, QVariant(value), pFlags );
 }
 
 #ifdef KDE3_SUPPORT
