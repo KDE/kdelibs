@@ -128,7 +128,7 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
         // stylesheet choice
         break;
     case ATTR_MEDIA:
-        m_media = attr->value().string().lower();
+        m_media = attr->value().string().toLower();
         process();
         break;
     case ATTR_DISABLED: {
@@ -146,8 +146,8 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
                 m_alternate = false;
             } else if (!m_alternate) {
                 // disabling: recheck alternate status
-                QString rel =  getAttribute(ATTR_REL).string().lower();
-                QString type = getAttribute(ATTR_TYPE).string().lower();
+                QString rel =  getAttribute(ATTR_REL).string().toLower();
+                QString type = getAttribute(ATTR_TYPE).string().toLower();
                 m_alternate = (type.contains("text/css") || rel.contains("stylesheet")) && rel.contains("alternate");
             }
             if (isLoading())
@@ -172,8 +172,8 @@ void HTMLLinkElementImpl::process()
     if (!inDocument())
         return;
 
-    QString type = getAttribute(ATTR_TYPE).string().lower();
-    QString rel = getAttribute(ATTR_REL).string().lower();
+    QString type = getAttribute(ATTR_TYPE).string().toLower();
+    QString rel = getAttribute(ATTR_REL).string().toLower();
 
     KHTMLPart* part = getDocument()->view() ? getDocument()->view()->part() : 0;
 
@@ -527,7 +527,7 @@ void HTMLStyleElementImpl::parseAttribute(AttributeImpl *attr)
         m_type = attr->value().lower();
         break;
     case ATTR_MEDIA:
-        m_media = attr->value().string().lower();
+        m_media = attr->value().string().toLower();
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);

@@ -56,7 +56,7 @@ HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentPtr *doc)
 }
 
 void HTMLObjectBaseElementImpl::setServiceType(const QString & val) {
-    serviceType = val.lower();
+    serviceType = val.toLower();
     int pos = serviceType.find( ";" );
     if ( pos!=-1 )
         serviceType.truncate( pos );
@@ -159,9 +159,9 @@ void HTMLObjectBaseElementImpl::attach() {
 
     if (serviceType.isEmpty() && url.startsWith("data:")) {
         // Extract the MIME type from the data URL.
-        int index = url.find(';');
+        int index = url.indexOf(';');
         if (index == -1)
-            index = url.find(',');
+            index = url.indexOf(',');
         if (index != -1) {
             int len = index - 5;
             if (len > 0)

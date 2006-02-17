@@ -467,7 +467,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
             // We have to check a list of public IDs to see what we
             // should do.
             QString lowerPubID = publicID.toLower();
-            const char* pubIDStr = lowerPubID.latin1();
+            const char* pubIDStr = qPrintable(lowerPubID);
 
             // Look up the entry in our gperf-generated table.
             const PubIDInfo* doctypeEntry = findDoctypeEntry(pubIDStr, publicID.length());

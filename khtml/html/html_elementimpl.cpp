@@ -380,7 +380,7 @@ void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
     // used as a normalization point to normalize to values between 0
     // and 255.
 
-    if ( color.lower() != "transparent" ) {
+    if ( color.toLower() != "transparent" ) {
 	if ( color[0] == '#' )
 	    color.remove( 0,  1 );
 	int basicLength = (color.length() + 2) / 3;
