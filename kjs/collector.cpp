@@ -307,9 +307,9 @@ void Collector::markCurrentThreadConservatively()
 #elif defined(_WIN32) || defined(_WIN64)
     NT_TIB *pTib;
 #ifdef __GNUC__
-		__asm__("movl  %%fs:0x18,%0"
-						: "=r" (pTib)
-		);
+    __asm__("movl  %%fs:0x18,%0"
+            : "=r" (pTib)
+    );
 #else
     __asm {
         MOV EAX, FS:[18h]
