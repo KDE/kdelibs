@@ -148,11 +148,11 @@ public:
       virtual ~KEditListBox();
 
       /**
-       * Return a pointer to the embedded QListBox.
+       * Return a pointer to the embedded QListView.
        */
       QListView* listView() const     { return m_listView; }
       /**
-       * Return a pointer to the embedded QLineEdit.
+       * Return a pointer to the embedded KLineEdit.
        */
       KLineEdit* lineEdit() const     { return m_lineEdit; }
       /**
