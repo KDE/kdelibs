@@ -26,7 +26,7 @@
 // str(n)casecmp is sometimes defined in string.h and sometimes strings.h ...
 #include <string.h>
 
-inline void bzero(void *s, size_t n)
+void bzero(void *s, size_t n)
 {
 	memset(s,0,n);
 }
