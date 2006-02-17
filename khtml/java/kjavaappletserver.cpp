@@ -586,9 +586,9 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             if (it != d->jsstack.end()) {
                 kDebug(6100) << "slotJavaRequest: " << ticket << endl;
                 args.pop_front();
-                it.data()->args.operator=(args); // just in case ..
-                it.data()->ready = true;
-                it.data()->exit = true;
+                it.value()->args.operator=(args); // just in case ..
+                it.value()->ready = true;
+                it.value()->exit = true;
             } else
                 kDebug(6100) << "Error: Missed return member data" << endl;
             return;
@@ -719,7 +719,7 @@ void KJavaAppletServer::endWaitForReturnData() {
     JSStack::iterator it = d->jsstack.begin();
     JSStack::iterator itEnd = d->jsstack.end();
     for (; it != itEnd; ++it)
-        it.data()->exit = true;
+        it.value()->exit = true;
 }
 
 void KJavaAppletServer::timerEvent(QTimerEvent *) {

@@ -106,7 +106,7 @@ void KJavaServerMaintainer::releaseContext (QObject * w, const QString & doc) {
     if (it != m_contextmap.end () && --(*it).second <= 0) {
         kDebug(6100) << "KJavaServerMaintainer::releaseContext" << endl;
         (*it).first->deleteLater ();
-        m_contextmap.remove (it);
+        m_contextmap.erase (it);
     }
 }
 
@@ -148,7 +148,7 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
     for (int count = 2; it != itEnd; ++it) {
         tit = new Q3TableItem (table, Q3TableItem::Always, it.key ());
         table->setItem (++count, 0, tit);
-        tit = new Q3TableItem(table, Q3TableItem::Always, it.data ());
+        tit = new Q3TableItem(table, Q3TableItem::Always, it.value ());
         table->setItem (count, 1, tit);
     }
     setMainWidget (table);
@@ -232,7 +232,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     QStringList::const_iterator it = args.begin();
     const QStringList::const_iterator itEnd = args.end();
     for ( ; it != itEnd; ++it) {
-        const int equalPos = (*it).find("=");
+        const int equalPos = (*it).indexOf("=");
         if (equalPos > 0) {
             const QString name = (*it).left (equalPos).toUpper ();
             QString value = (*it).right ((*it).length () - equalPos - 1);
@@ -488,7 +488,7 @@ void KJavaAppletViewerBrowserExtension::saveState (QDataStream & stream) {
     const QMap<QString,QString>::const_iterator itEnd = applet->getParams().end();
     for ( ; it != itEnd; ++it) {
         stream << it.key ();
-        stream << it.data ();
+        stream << it.value ();
     }
 }
 
