@@ -10,7 +10,7 @@ AM_CPPFLAGS= $(all_includes)
 METASOURCES = spellchecking.moc
 
 messages:
-	$(XGETTEXT) $(kcm_spellchecking_la_SOURCES) -o $(podir)/kcmspellchecking.pot
+	$(XGETTEXT) *.cpp -o $(podir)/kcmspellchecking.pot
 
 xdg_apps_DATA = spellchecking.desktop
 
