@@ -177,7 +177,7 @@ KBookmarkManager::KBookmarkManager( )
 KBookmarkManager::~KBookmarkManager()
 {
     if ( s_pSelf )
-        s_pSelf->remove( this );
+        s_pSelf->removeAll( this );
 }
 
 void KBookmarkManager::setUpdate( bool update )
@@ -427,7 +427,7 @@ KBookmark KBookmarkManager::findByAddress( const QString & address, bool toleran
     //kDebug(7043) << "KBookmarkManager::findByAddress " << address << endl;
     KBookmark result = root();
     // The address is something like /5/10/2+
-    QStringList addresses = QStringList::split(QRegExp("[/+]"),address);
+    QStringList addresses = address.split(QRegExp("[/+]"),QString::SkipEmptyParts);
     // kWarning() << addresses.join(",") << endl;
     for ( QStringList::Iterator it = addresses.begin() ; it != addresses.end() ; )
     {

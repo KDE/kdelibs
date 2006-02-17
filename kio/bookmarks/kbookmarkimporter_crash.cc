@@ -155,7 +155,7 @@ void KCrashBookmarkImporterImpl::parse()
         views = parseCrashLog_noemit( *it, m_shouldDelete );
         QString signature;
         for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit )
-            signature += "|"+vit.data();
+            signature += "|"+vit.value();
         if (signatureSet.contains(signature))
         {
             // Duplicate... throw away and skip
@@ -169,7 +169,7 @@ void KCrashBookmarkImporterImpl::parse()
         if ( outerFolder )
             emit newFolder( QString("Konqueror Window %1").arg(count++), false, "" );
         for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit )
-            emit newBookmark( vit.data(), vit.data(), QString("") );
+            emit newBookmark( vit.value(), vit.value(), QString("") );
         if ( outerFolder )
             emit endFolder();
     }
