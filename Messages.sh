@@ -13,6 +13,7 @@ for dir in $mfs $msh; do
 done
 fgrep -v "/tests" dirs > dirs.new && mv dirs.new dirs
 dirs=`sort -u dirs`
+echo "DIRS " $dirs
 find $dirs -maxdepth 1 -name "*.cpp" -print > files
 find $dirs -maxdepth 1 -name "*.cc" -print >> files
 find $dirs -maxdepth 1 -name "*.h" -print >> files
