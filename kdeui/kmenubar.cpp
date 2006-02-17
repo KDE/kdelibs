@@ -220,7 +220,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
       updateMenuBarSize();
       if ( parentWidget() )
-          reparent( parentWidget(), QPoint(0,0), !isHidden());
+          setParent( parentWidget() );
   }
 }
 
@@ -314,7 +314,9 @@ void KMenuBar::updateFallbackSize()
     }
     if( d->selection_timer.isActive())
 	return;
-    d->selection_timer.start( 100, true );
+    d->selection_timer.setInterval(100);
+    d->selection_timer.setSingleShot(true);
+    d->selection_timer.start();
 }
 
 void KMenuBar::selectionTimeout()

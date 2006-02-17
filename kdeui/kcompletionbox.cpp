@@ -121,15 +121,15 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
                     case Qt::Key_Backtab:
-                        if ( d->tabHandling && (ev->state() == Qt::NoButton ||
-                             (ev->state() & Qt::ShiftModifier)) ) {
+                        if ( d->tabHandling && (ev->modifiers() == Qt::NoButton ||
+                             (ev->modifiers() & Qt::ShiftModifier)) ) {
                             up();
                             ev->accept();
                             return true;
                         }
                         break;
                     case Qt::Key_Tab:
-                        if ( d->tabHandling && (ev->state() == Qt::NoButton) ) {
+                        if ( d->tabHandling && (ev->modifiers() == Qt::NoButton) ) {
                             down(); // Only on TAB!!
                             ev->accept();
                             return true;
@@ -164,21 +164,21 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         return true;
                     case Qt::Key_Enter:
                     case Qt::Key_Return:
-                        if ( ev->state() & Qt::ShiftModifier ) {
+                        if ( ev->modifiers() & Qt::ShiftModifier ) {
                             hide();
                             ev->accept();  // Consume the Enter event
                             return true;
                         }
                         break;
                     case Qt::Key_End:
-                        if ( ev->state() & Qt::ControlModifier )
+                        if ( ev->modifiers() & Qt::ControlModifier )
                         {
                             end();
                             ev->accept();
                             return true;
                         }
                     case Qt::Key_Home:
-                        if ( ev->state() & Qt::ControlModifier )
+                        if ( ev->modifiers() & Qt::ControlModifier )
                         {
                             home();
                             ev->accept();
@@ -205,8 +205,8 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                       break;
                     case Qt::Key_Tab:
                     case Qt::Key_Backtab:
-                        if ( ev->state() == Qt::NoButton ||
-                            (ev->state() & Qt::ShiftModifier))
+                        if ( ev->modifiers() == Qt::NoButton ||
+                            (ev->modifiers() & Qt::ShiftModifier))
                         {
                             ev->accept();
                             return true;
@@ -214,7 +214,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         break;
                     case Qt::Key_Home:
                     case Qt::Key_End:
-                        if ( ev->state() & Qt::ControlModifier )
+                        if ( ev->modifiers() & Qt::ControlModifier )
                         {
                             ev->accept();
                             return true;

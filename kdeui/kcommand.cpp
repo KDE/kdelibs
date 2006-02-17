@@ -296,7 +296,7 @@ void KCommandHistory::slotUndoAboutToShow()
     // TODO make number of items configurable ?
     const int end = qMax( d->m_current - 9, 0 );
     for ( int i = d->m_current; i >= end; --i ) {
-        m_undoPopup->insertItem( i18n("Undo: %1").arg(m_commands[i]->name()) );
+        m_undoPopup->addAction( i18n("Undo: %1").arg(m_commands[i]->name()) );
     }
 }
 
@@ -314,7 +314,7 @@ void KCommandHistory::slotRedoAboutToShow()
     // TODO make number of items configurable ?
     const int end = qMin( d->m_current + 10, m_commands.count() - 1 );
     for ( int i = d->m_current + 1; i < end; ++i ) {
-        m_redoPopup->insertItem( i18n("Redo: %1").arg(m_commands[i]->name()) );
+        m_redoPopup->addAction( i18n("Redo: %1").arg(m_commands[i]->name()) );
     }
 }
 

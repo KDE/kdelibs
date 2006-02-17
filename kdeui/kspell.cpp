@@ -391,7 +391,7 @@ bool KSpell::addPersonal( const QString & word )
   QString qs = word.simplified();
 
   //we'll let ispell do the work here b/c we can
-  if ( qs.find(' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
+  if ( qs.indexOf(' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
     return false;
 
   qs.prepend( "*" );
@@ -410,7 +410,7 @@ bool KSpell::ignore( const QString & word )
   QString qs = word.simplified();
 
   //we'll let ispell do the work here b/c we can
-  if ( qs.find (' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
+  if ( qs.indexOf (' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
     return false;
 
   qs.prepend( "@" );
@@ -481,8 +481,10 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog )
   d->checking = true;
   QString qs = buffer.simplified();
 
-  if ( qs.find (' ') != -1 || qs.isEmpty() ) {   // make sure it's a _word_
-    d->checkNextTimer->start( 0, true );
+  if ( qs.indexOf (' ') != -1 || qs.isEmpty() ) {   // make sure it's a _word_
+    d->checkNextTimer->setInterval(0);
+    d->checkNextTimer->setSingleShot(true);
+    d->checkNextTimer->start();
     return false;
   }
   ///set the dialog signal handler
@@ -523,8 +525,10 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
   d->checking = true;
   QString qs = buffer.simplified();
 
-  if ( qs.find (' ') != -1 || qs.isEmpty() ) {   // make sure it's a _word_
-    d->checkNextTimer->start( 0, true );
+  if ( qs.indexOf (' ') != -1 || qs.isEmpty() ) {   // make sure it's a _word_
+    d->checkNextTimer->setInterval(0);
+    d->checkNextTimer->setSingleShot(true);
+    d->checkNextTimer->start();
     return false;
   }
 
@@ -571,13 +575,15 @@ void KSpell::checkWord2( KProcIO* )
   QString blank_line;
   while (proc->readln( blank_line, true ) != -1); // eat the blank line
   NOOUTPUT(checkWord2);
-  
+ 
   bool mistake = ( parseOneResponse(line, word, sugg) == MISTAKE );
   if ( mistake && usedialog )
   {
     cwword = word;
     dialog( word, sugg, SLOT(checkWord3()) );
-    d->checkNextTimer->start( 0, true );
+    d->checkNextTimer->setInterval(0);
+    d->checkNextTimer->setSingleShot(true);
+    d->checkNextTimer->start();
     return;
   }
   else if( mistake )
@@ -588,7 +594,9 @@ void KSpell::checkWord2( KProcIO* )
   //emits a "corrected" signal _even_ if no change was made
   //so that the calling program knows when the check is complete
   emit corrected( word, word, 0L );
-  d->checkNextTimer->start( 0, true );
+  d->checkNextTimer->setInterval(0);
+  d->checkNextTimer->setSingleShot(true);
+  d->checkNextTimer->start();
 }
 
 void KSpell::checkNext()
@@ -697,7 +705,7 @@ int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList 
     int i,j;
 
 
-    word = buffer.mid( 2, buffer.find( ' ', 3 ) -2 );
+    word = buffer.mid( 2, buffer.indexOf( ' ', 3 ) -2 );
     //check() needs this
     orig=word;
 
@@ -715,14 +723,14 @@ int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList 
     //We don't take advantage of ispell's ignore function because
     //we can't interrupt ispell's output (when checking a large
     //buffer) to add a word to _it's_ ignore-list.
-    if ( ignorelist.findIndex( word.toLower() ) != -1 )
+    if ( ignorelist.indexOf( word.toLower() ) != -1 )
       return IGNORE;
 
     //// Position in line ///
     QString qs2;
 
-    if ( buffer.find( ':' ) != -1 )
-      qs2 = buffer.left( buffer.find(':') );
+    if ( buffer.indexOf( ':' ) != -1 )
+      qs2 = buffer.left( buffer.indexOf(':') );
     else
       qs2 = buffer;
 
@@ -743,14 +751,14 @@ int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList 
     /////// Suggestions //////
     if ( buffer[0] != '#' )
     {
-      QString qs = buffer.mid( buffer.find(':')+2, buffer.length() );
+      QString qs = buffer.mid( buffer.indexOf(':')+2, buffer.length() );
       qs += ',';
       sugg.clear();
       i = j = 0;
 
       while( i < qs.length() )
       {
-        QString temp = qs.mid( i, (j=qs.find (',',i)) - i );
+        QString temp = qs.mid( i, (j=qs.indexOf(',',i)) - i );
         sugg.append( funnyWord(temp) );
 
         i=j+2;
@@ -1014,7 +1022,7 @@ bool KSpell::check( const QString &_buffer, bool _usedialog )
   emitProgress();
 
   // send first buffer line
-  int i = origbuffer.find( '\n', 0 ) + 1;
+  int i = origbuffer.indexOf( '\n', 0 ) + 1;
   qs = origbuffer.mid( 0, i );
   cleanFputs( qs, false );
 
@@ -1128,7 +1136,7 @@ void KSpell::check2( KProcIO * )
     //kDebug(750) << "[EOL](" << tempe << ")[" << temp << "]" << endl;
 
     lastpos = (lastlastline=lastline) + offset; //do we really want this?
-    i = origbuffer.find('\n', lastline) + 1;
+    i = origbuffer.indexOf('\n', lastline) + 1;
     qs = origbuffer.mid( lastline, i-lastline );
     cleanFputs( qs, false );
     lastline = i;

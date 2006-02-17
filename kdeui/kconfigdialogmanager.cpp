@@ -213,7 +213,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
         setupWidget(childWidget, item);
 
         if ( d->trackChanges ) {
-	  QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->className());
+	  QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->metaObject()->className());
 
           if (changedIt == s_changedMap->end())
           {
@@ -226,7 +226,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
           if (changedIt == s_changedMap->end())
           {
-            kWarning(178) << "Don't know how to monitor widget '" << childWidget->className() << "' for changes!" << endl;
+            kWarning(178) << "Don't know how to monitor widget '" << childWidget->metaObject()->className() << "' for changes!" << endl;
           }
           else
           {
@@ -234,7 +234,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
                   this, SIGNAL(widgetModified()));
 
             QComboBox *cb = dynamic_cast<QComboBox *>(childWidget);
-            if (cb && cb->editable())
+            if (cb && cb->isEditable())
               connect(cb, SIGNAL(textChanged(const QString &)),
                     this, SIGNAL(widgetModified()));
 	  }
@@ -267,12 +267,12 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 #ifndef NDEBUG
     else if (!widgetName.isEmpty() && d->trackChanges)
     {
-      QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->className());
+      QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->metaObject()->className());
       if (changedIt != s_changedMap->end())
       {
         if ((!d->insideGroupBox || !qobject_cast<QRadioButton*>(childWidget)) &&
             !qobject_cast<QGroupBox*>(childWidget))
-          kDebug(178) << "Widget '" << widgetName << "' (" << childWidget->className() << ") remains unmanaged." << endl;
+          kDebug(178) << "Widget '" << widgetName << "' (" << childWidget->metaObject()->className() << ") remains unmanaged." << endl;
       }
     }
 #endif
@@ -397,10 +397,13 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
   }
 
   QComboBox *cb = dynamic_cast<QComboBox *>(w);
-  if (cb && cb->editable())
+  if (cb && cb->isEditable())
   {
-    cb->setCurrentText(v.toString());
-    return;
+    int i = cb->findText(v.toString());
+    if (i != -1)
+      cb->setCurrentIndex(i);
+    else
+      cb->setEditText(v.toString());
   }
 
   QByteArray userproperty = getUserProperty( w );
@@ -418,7 +421,7 @@ QVariant KConfigDialogManager::property(QWidget *w)
     return QVariant(bg->selectedId());
 
   QComboBox *cb = dynamic_cast<QComboBox *>(w);
-  if (cb && cb->editable())
+  if (cb && cb->isEditable())
       return QVariant(cb->currentText());
 
   QByteArray userproperty = getUserProperty( w );

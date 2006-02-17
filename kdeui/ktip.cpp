@@ -222,7 +222,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent)
 
     if (isTipDialog)
     {
-        QHBoxLayout *pl = new QHBoxLayout(0);
+        QHBoxLayout *pl = new QHBoxLayout();
         pl->setMargin( 0 );
         pl->setSpacing( 0 );
 
@@ -314,8 +314,9 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent)
     KSeparator* sep = new KSeparator( Qt::Horizontal, this);
     vbox->addWidget(sep);
 
-    QHBoxLayout *hbox2 = new QHBoxLayout(0);
+    QHBoxLayout *hbox2 = new QHBoxLayout();
     hbox->setMargin(4);
+    hbox->setSpacing(0);
 
     vbox->addLayout(hbox2);
 

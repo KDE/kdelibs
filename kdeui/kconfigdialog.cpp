@@ -124,13 +124,13 @@ void KConfigDialog::addPageInternal(QWidget *page,
       KVBox *frame = addVBoxPage(itemName, header, SmallIcon(pixmapName, 32));
       frame->setSpacing( 0 );
       frame->setMargin( 0 );
-      page->reparent(((QWidget*)frame), 0, QPoint());
+      page->setParent(((QWidget*)frame));
     }
     break;
 
     case Swallow:
     {
-      page->reparent(this, 0, QPoint());
+      page->setParent(this);
       setMainWidget(page);
     }
     break;
@@ -138,8 +138,10 @@ void KConfigDialog::addPageInternal(QWidget *page,
     case Plain:
     {
       QFrame *main = plainPage();
-      QVBoxLayout *topLayout = new QVBoxLayout( main, 0, 0 );
-      page->reparent(((QWidget*)main), 0, QPoint());
+      QVBoxLayout *topLayout = new QVBoxLayout(main);
+      topLayout->setMargin(0);
+      topLayout->setSpacing(0);
+      page->setParent(((QWidget*)main));
       topLayout->addWidget( page );
     }
     break;
