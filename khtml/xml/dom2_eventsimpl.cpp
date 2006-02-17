@@ -747,7 +747,7 @@ DOMString KeyboardEventImpl::keyIdentifier() const
 
 bool KeyboardEventImpl::getModifierState (const DOMString& keyIdentifierArg) const
 {
-    unsigned mask = keyModifiersToCode()->toRight(keyIdentifierArg.string().latin1());
+    unsigned mask = keyModifiersToCode()->toRight(keyIdentifierArg.string().toLatin1());
     return m_modifier & mask;
 }
 
@@ -779,16 +779,16 @@ void KeyboardEventImpl::initKeyboardEvent(const DOMString &typeArg,
     }
 
     if (!keyVal) //One of special keys, likely.
-        virtKeyVal = keyIdentifiersToVirtKeys()->toRight(keyIdentifierArg.string().latin1());
+        virtKeyVal = keyIdentifiersToVirtKeys()->toRight(keyIdentifierArg.string().toLatin1());
 
     //Process modifier list.
     QStringList mods =
         QStringList::split(' ',
-            modifiersList.string().stripWhiteSpace().simplifyWhiteSpace());
+            modifiersList.string().trimmed().simplified());
 
     unsigned modifiers = 0;
     for (QStringList::iterator i = mods.begin(); i != mods.end(); ++i)
-        if (unsigned mask = keyModifiersToCode()->toRight((*i).latin1()))
+        if (unsigned mask = keyModifiersToCode()->toRight((*i).toLatin1()))
             modifiers |= mask;
 
     initKeyBaseEvent(typeArg, canBubbleArg, cancelableArg, viewArg,
@@ -824,7 +824,7 @@ int KeyboardEventImpl::keyCode() const
     if (m_virtKeyVal != DOM_VK_UNDEFINED)
         return m_virtKeyVal;
     else
-        return QChar((unsigned short)m_keyVal).upper().unicode();
+        return QChar((unsigned short)m_keyVal).toUpper().unicode();
 }
 
 int KeyboardEventImpl::charCode() const

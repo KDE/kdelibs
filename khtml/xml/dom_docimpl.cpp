@@ -2552,7 +2552,7 @@ DOMString DocumentImpl::domain() const
 void DocumentImpl::setDomain(const DOMString &newDomain)
 {
     if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
-        m_domain = URL().host().lower(); // Initially set to the host
+        m_domain = URL().host().toLower(); // Initially set to the host
 
     if ( m_domain.isEmpty() /*&& part() && part()->openedByJS()*/ )
         m_domain = newDomain.lower();

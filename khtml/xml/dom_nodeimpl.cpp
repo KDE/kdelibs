@@ -1991,7 +1991,7 @@ void RegisteredListenerList::removeEventListener(int id, EventListener *listener
     QList<RegisteredEventListener>::iterator it;
     for (it = listeners->begin(); it != listeners->end(); ++it)
         if (*it == rl) {
-            listeners->remove(it);
+            listeners->erase(it);
             return;
         }
 }
