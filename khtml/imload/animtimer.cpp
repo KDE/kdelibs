@@ -62,8 +62,8 @@ void AnimTimer::tick()
     for (QMap<AnimProvider*, int>::iterator iter = pending.begin(); 
          iter != pending.end(); ++iter)
     {
-        iter.data() -= change;
-        if (iter.data() <= 0)
+        iter.value() -= change;
+        if (iter.value() <= 0)
             toHandle.append(iter.key());
     }
         
