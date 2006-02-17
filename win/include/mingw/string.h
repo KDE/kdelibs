@@ -24,7 +24,7 @@
 #define strcasecmp stricmp
 
 #include <sys/types.h>
-#include_next <string.h>
+#include <../include/string.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -20,7 +20,7 @@
 #ifndef KDE_SYS_TYPES_H_
 #define KDE_SYS_TYPES_H_
 
-#include_next <sys/types.h>
+#include <../include/sys/types.h>
 
 typedef unsigned int uid_t;
 typedef unsigned int gid_t;

@@ -67,6 +67,6 @@ KDEWIN32_EXPORT int kill(pid_t pid, int sig);
 }
 #endif
 
-#include_next <signal.h>
+#include <../include/signal.h>
 
 #endif // KDE_SIGNAL_H

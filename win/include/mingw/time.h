@@ -20,7 +20,7 @@
 #define KDE_TIME_H
 
 #include <sys/types.h>
-#include_next <time.h>
+#include <../include/time.h>
 
 #define timezone _timezone
 

@@ -12,7 +12,7 @@
 #define KDE_STAT_H_
 
 #include <sys/types.h>
-#include_next <sys/stat.h>
+#include <../include/sys/stat.h>
 
 #ifdef __cplusplus
 extern "C" {

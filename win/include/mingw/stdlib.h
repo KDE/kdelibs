@@ -25,7 +25,7 @@
 #define KDE_STDLIB_H
 
 #include <sys/types.h>
-#include_next <stdlib.h>
+#include <../include/stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {

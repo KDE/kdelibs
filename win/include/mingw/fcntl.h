@@ -21,7 +21,7 @@
 #define _FCNTL_H
 
 #include <sys/types.h>
-#include_next <fcntl.h>
+#include <../include/fcntl.h>
 
 #ifdef __cplusplus
 extern "C" {

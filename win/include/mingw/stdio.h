@@ -27,6 +27,6 @@
 
 // stdio.h includes sys/types.h in an extern "C" context, which fails for c++ definitions 
 #include <sys/types.h>
-#include_next <stdio.h>
+#include <../include/stdio.h>
 
 #endif /* KDE_STDIO_H_ */

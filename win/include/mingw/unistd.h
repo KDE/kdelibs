@@ -21,7 +21,7 @@
 #define _KDEWIN_UNISTD_H
 
 #include <sys/types.h>
-#include_next <unistd.h>
+#include <../include/unistd.h>
 
 #include <winsock2.h>
 

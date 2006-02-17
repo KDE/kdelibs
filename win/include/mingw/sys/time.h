@@ -21,7 +21,7 @@
 #define KDE_SYS_TIME_H_
 
 #include <sys/types.h>
-#include_next <sys/time.h>
+#include <../include/sys/time.h>
 
 #ifdef __cplusplus
 extern "C" {
