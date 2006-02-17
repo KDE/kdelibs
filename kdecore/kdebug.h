@@ -54,15 +54,28 @@ class kndbgstream;
  * messages are printed.
  */
 
-typedef kdbgstream & (*KDBGFUNC)(kdbgstream &); // manipulator function
-typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
+typedef kdbgstream & (*KDBGFUNC)(kdbgstream &);    ///< manipulator function
+typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); ///< manipulator function
 
+/**
+ * An indicator of where you are in a source file, to be used in
+ * warnings (perhaps debug messages too).
+ *
+ * Extra pretty with GNU C, same as k_lineinfo without.
+ */
 #ifdef __GNUC__
 #define k_funcinfo "[" << __PRETTY_FUNCTION__ << "] "
 #else
 #define k_funcinfo "[" << __FILE__ << ":" << __LINE__ << "] "
 #endif
 
+/**
+ * An indicator of where you are in a source file, to be used in
+ * warnings (perhaps debug messages too). Gives an accurate
+ * idea of where the message comes from. Not suitable for
+ * user-visible messages.
+ *
+ */
 #define k_lineinfo "[" << __FILE__ << ":" << __LINE__ << "] "
 
 /**
