@@ -194,9 +194,9 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
        kDebug() << "Got Boundary from kio-http '" << tmp << "'" << endl;
        if ( !tmp.isEmpty() ) {
            if (tmp.startsWith(QLatin1String("--")))
-               m_boundary = tmp.latin1();
+               m_boundary = tmp.toLatin1();
            else
-               m_boundary = QByteArray("--")+tmp.latin1();
+               m_boundary = QByteArray("--")+tmp.toLatin1();
            m_boundaryLength = m_boundary.length();
        }
     }
@@ -248,7 +248,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                 {
                     Q_ASSERT( m_nextMimeType.isNull() );
                     m_nextMimeType = QString::fromLatin1( line.data() + 14 ).trimmed();
-                    int semicolon = m_nextMimeType.find( ';' );
+                    int semicolon = m_nextMimeType.indexOf( ';' );
                     if ( semicolon != -1 )
                         m_nextMimeType = m_nextMimeType.left( semicolon );
                     kDebug() << "m_nextMimeType=" << m_nextMimeType << endl;
