@@ -238,6 +238,11 @@ public:
     { return static_cast<DOM::HTMLInputElementImpl*>(RenderObject::element()); }
     void highLightWord( unsigned int length, unsigned int pos );
 
+    long selectionStart();
+    long selectionEnd();
+    void setSelectionStart(long pos);
+    void setSelectionEnd(long pos);
+    void setSelectionRange(long start, long end);
 public slots:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
@@ -476,6 +481,7 @@ public:
     long selectionEnd();
     void setSelectionStart(long pos);
     void setSelectionEnd(long pos);
+    void setSelectionRange(long start, long end);
 protected slots:
     void slotTextChanged();
 

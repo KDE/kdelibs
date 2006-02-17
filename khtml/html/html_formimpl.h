@@ -311,6 +311,12 @@ public:
 
     void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
 
+    //Mozilla extensions.
+    long selectionStart();
+    long selectionEnd();
+    void setSelectionStart(long pos);
+    void setSelectionEnd  (long pos);
+    void setSelectionRange(long start, long end);
 protected:
     void parseType(const DOMString& t);
 
@@ -560,6 +566,7 @@ public:
     long selectionEnd();
     void setSelectionStart(long pos);
     void setSelectionEnd  (long pos);
+    void setSelectionRange(long start, long end);
     long textLength();
 protected:
     int m_rows;

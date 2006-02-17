@@ -640,6 +640,52 @@ public:
      * "Button", "Checkbox", "Radio", "Reset", or "Submit".
      */
     void click (  );
+
+
+    /**
+     * Returns the character offset of beginning of selection, or if none,
+     * the cursor position.
+     * This operation is only supported if the type of this element is text;
+     * otherwise -1 is returned.
+     * NOTE: this method is not part of the DOM, but a Mozilla extension
+     * @since 3.5.2
+     */
+    long selectionStart();
+
+     /**
+      * Move the beginning of the selection to the given offset in text
+      * This call has no effect if the type of this input element isn't text
+      * NOTE: this method is not part of the DOM, but a Mozilla extension
+      * @since 3.5.2
+      */
+    void setSelectionStart(long offset);
+
+    /**
+     * Returns the character offset of end of selection, or if none,
+     * the cursor position.
+     * This operation is only supported if the type of this element is text;
+     * otherwise -1 is returned.
+     * NOTE: this method is not part of the DOM, but a Mozilla extension
+     * @since 3.5.2
+     */
+     long selectionEnd();
+
+     /**
+      * Move the end of the selection (and the cursor) to the given offset in text
+      * This call has no effect if the type of this input element isn't text
+      * NOTE: this method is not part of the DOM, but a Mozilla extension
+      * @since 3.5.2
+      */
+    void setSelectionEnd(long offset);
+
+     /**
+      * Makes the position span from start to end, and positions the cursor after the selection.
+      * This call has no effect if the type of this input element isn't text or if it is not rendered.
+      * NOTE: this method is not part of the DOM, but a Mozilla extension
+      * @since 3.5.2
+      */
+    void setSelectionRange(long start, long end);
+
 };
 
 // --------------------------------------------------------------------------
@@ -1186,6 +1232,12 @@ public:
       */
     void setSelectionEnd(long offset);
 
+     /**
+      * Selects the text from start to end, and positions the cursor after the selection.
+      * NOTE: this method is not part of the DOM, but a Mozilla extension
+      * @since 3.5.2
+      */
+    void setSelectionRange(long start, long end);
 
      /**
       * Returns the length of the text.

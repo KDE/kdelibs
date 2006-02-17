@@ -66,6 +66,7 @@
 
 #include <assert.h>
 
+
 using namespace DOM;
 using namespace khtml;
 
@@ -1279,6 +1280,12 @@ void HTMLInputElementImpl::parseType(const DOMString& t)
             setAttribute(ATTR_TYPE, type());
         } else {
             m_type = newType;
+
+            // force reattach if need be.
+            if (attached()) {
+                detach();
+                attach();
+            }
         }
     }
     m_haveType = true;
@@ -1365,8 +1372,11 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         parseType(attr->value());
         break;
     case ATTR_VALUE:
-        if (m_value.isNull()) // We only need to setChanged if the form is looking
-            setChanged();     // at the default value right now.
+        if (m_value.isNull()) {// We only need to setChanged if the form is looking
+            setChanged();      // at the default value right now.
+            if (m_type == TEXT && m_render)
+                m_render->updateFromElement();
+        }
         break;
     case ATTR_CHECKED:
         // WebCore has m_defaultChecked and m_useDefaultChecked code here....
@@ -1678,6 +1688,8 @@ void HTMLInputElementImpl::setValue(DOMString val)
     if (m_type == FILE) return;
 
     m_value = (val.isNull() ? DOMString("") : val);
+    if (m_type == TEXT && m_render)
+        m_render->updateFromElement();
     setChanged();
 }
 
@@ -1777,6 +1789,36 @@ void HTMLInputElementImpl::activate()
 bool HTMLInputElementImpl::isEditable()
 {
     return ((m_type == TEXT) || (m_type == PASSWORD) || (m_type == ISINDEX) || (m_type == FILE));
+}
+
+long HTMLInputElementImpl::selectionStart()
+{
+    if (m_type != TEXT || !m_render) return -1;
+    return static_cast<RenderLineEdit*>(m_render)->selectionStart();
+}
+
+long HTMLInputElementImpl::selectionEnd()
+{
+    if (m_type != TEXT || !m_render) return -1;
+    return static_cast<RenderLineEdit*>(m_render)->selectionEnd();
+}
+
+void HTMLInputElementImpl::setSelectionStart(long pos)
+{
+    if (m_type != TEXT || !m_render) return;
+    static_cast<RenderLineEdit*>(m_render)->setSelectionStart(pos);
+}
+
+void HTMLInputElementImpl::setSelectionEnd  (long pos)
+{
+    if (m_type != TEXT || !m_render) return;
+    static_cast<RenderLineEdit*>(m_render)->setSelectionEnd(pos);
+}
+
+void HTMLInputElementImpl::setSelectionRange(long start, long end)
+{
+    if (m_type != TEXT || !m_render) return;
+    static_cast<RenderLineEdit*>(m_render)->setSelectionRange(start, end);
 }
 
 // -------------------------------------------------------------------------
@@ -1996,7 +2038,7 @@ void HTMLSelectElementImpl::remove( long index )
     //anyway if the item was selected, since we may want to set 
     //a different one
     bool fastRemoveLast = false;
-    if ((listIndex == items.size() - 1) && !m_recalcListItems && 
+    if ((listIndex == (signed)items.size() - 1) && !m_recalcListItems && 
         (m_multiple || !static_cast<HTMLOptionElementImpl*>(items[listIndex])->selected()))
             fastRemoveLast = true;
 
@@ -2168,6 +2210,7 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_SIZE:
         m_size = kMax( attr->val()->toInt(), 1 );
+        setChanged();
         break;
     case ATTR_WIDTH:
         m_minwidth = kMax( attr->val()->toInt(), 0 );
@@ -2818,6 +2861,14 @@ void HTMLTextAreaElementImpl::setSelectionEnd(long pos)
     if (m_render) {
         RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
         renderArea->setSelectionEnd( pos );
+    }
+}
+
+void HTMLTextAreaElementImpl::setSelectionRange(long start, long end)
+{
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        renderArea->setSelectionRange( start, end );
     }
 }
 

@@ -762,10 +762,13 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   type		KJS::HTMLElement::InputType		DontDelete
   useMap	KJS::HTMLElement::InputUseMap		DontDelete
   value		KJS::HTMLElement::InputValue		DontDelete
+  selectionStart KJS::HTMLElement::InputSelectionStart  DontDelete
+  selectionEnd   KJS::HTMLElement::InputSelectionEnd    DontDelete
   blur		KJS::HTMLElement::InputBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::InputFocus		DontDelete|Function 0
   select	KJS::HTMLElement::InputSelect		DontDelete|Function 0
   click		KJS::HTMLElement::InputClick		DontDelete|Function 0
+  setSelectionRange KJS::HTMLElement::InputSetSelectionRange DontDelete|Function 2
 @end
 @begin HTMLTextAreaElementTable 13
   defaultValue	KJS::HTMLElement::TextAreaDefaultValue	DontDelete
@@ -785,6 +788,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   blur		KJS::HTMLElement::TextAreaBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::TextAreaFocus		DontDelete|Function 0
   select	KJS::HTMLElement::TextAreaSelect	DontDelete|Function 0
+  setSelectionRange KJS::HTMLElement::TextAreaSetSelectionRange DontDelete|Function 2
 @end
 @begin HTMLButtonElementTable 9
   form		KJS::HTMLElement::ButtonForm		DontDelete|ReadOnly
@@ -1355,6 +1359,20 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case InputType:            return String(input.type());
     case InputUseMap:          return String(input.useMap());
     case InputValue:           return String(input.value());
+    case InputSelectionStart:  {
+        long val = input.selectionStart();
+        if (val != -1)
+          return Number(val);
+        else
+          return Undefined();
+      }
+    case InputSelectionEnd:  {
+        long val = input.selectionEnd();
+        if (val != -1)
+          return Number(val);
+        else
+          return Undefined();
+      }
     }
   }
   break;
@@ -2189,6 +2207,10 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
         input.click();
         return Undefined();
       }
+      else if (id == KJS::HTMLElement::InputSetSelectionRange) {
+        input.setSelectionRange(args[0].toNumber(exec), args[1].toNumber(exec));
+        return Undefined();
+      }
     }
     break;
     case ID_BUTTON: {
@@ -2217,6 +2239,11 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
         textarea.select();
         return Undefined();
       }
+      else if (id == KJS::HTMLElement::TextAreaSetSelectionRange) {
+        textarea.setSelectionRange(args[0].toNumber(exec), args[1].toNumber(exec));
+        return Undefined();
+      }
+
     }
     break;
     case ID_A: {
@@ -2578,6 +2605,8 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case InputType:            { input.setType(str); return; }
       case InputUseMap:          { input.setUseMap(str); return; }
       case InputValue:           { input.setValue(str); return; }
+      case InputSelectionStart:  { input.setSelectionStart(value.toInteger(exec)); return; }
+      case InputSelectionEnd:    { input.setSelectionEnd  (value.toInteger(exec)); return; }
       }
     }
     break;

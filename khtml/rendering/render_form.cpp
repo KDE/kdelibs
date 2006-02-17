@@ -541,9 +541,9 @@ void RenderLineEdit::updateFromElement()
     if ( ml < 0 || ml > 1024 )
         ml = 1024;
 
-     if ( widget()->maxLength() != ml )  {
-         widget()->setMaxLength( ml );
-     }
+    if ( widget()->maxLength() != ml )  {
+        widget()->setMaxLength( ml );
+    }
 
     if (element()->value().string() != widget()->text()) {
         widget()->blockSignals(true);
@@ -570,6 +570,53 @@ void RenderLineEdit::slotTextChanged(const QString &string)
 void RenderLineEdit::select()
 {
     static_cast<LineEditWidget*>(m_widget)->selectAll();
+}
+
+long RenderLineEdit::selectionStart()
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    if (w->hasSelectedText())
+        return w->selectionStart();
+    else
+        return w->cursorPosition();
+}
+
+
+long RenderLineEdit::selectionEnd()
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    if (w->hasSelectedText())
+        return w->selectionStart() + w->selectedText().length();
+    else
+        return w->cursorPosition();
+}
+
+void RenderLineEdit::setSelectionStart(long pos)
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    //See whether we have a non-empty selection now.
+    long end = selectionEnd();
+    if (end > pos)
+        w->setSelection(pos, end - pos);
+    w->setCursorPosition(pos);
+}
+
+void RenderLineEdit::setSelectionEnd(long pos)
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    //See whether we have a non-empty selection now.
+    long start = selectionStart();
+    if (start < pos)
+        w->setSelection(start, pos - start);
+
+    w->setCursorPosition(pos);
+}
+
+void RenderLineEdit::setSelectionRange(long start, long end)
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    w->setCursorPosition(end);
+    w->setSelection(start, end - start);
 }
 
 // ---------------------------------------------------------------------------
@@ -1833,7 +1880,13 @@ void RenderTextArea::setSelectionEnd(long offset) {
     w->setSelection(fromPara, fromIndex, toPara, toIndex);
 }
 
-
+void RenderTextArea::setSelectionRange(long start, long end) {
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int fromPara, fromIndex, toPara, toIndex;
+    computeParagraphAndIndex(start, &fromPara, &fromIndex);
+    computeParagraphAndIndex(end,   &toPara,   &toIndex);
+    w->setSelection(fromPara, fromIndex, toPara, toIndex);
+}
 // ---------------------------------------------------------------------------
 
 #include "render_form.moc"
