@@ -46,6 +46,14 @@ class KCalendarSystem;
  * I18N_NOOP marks a string to be translated without translating it.
  * Do not use this unless you know you need it.
  * http://developer.kde.org/documentation/other/developer-faq.html#q2.11.2
+ * 
+ * Example usage where say_something() returns either "hello" or "goodbye":
+ * \code
+ *   (void) I18N_NOOP("hello");
+ *   (void) I18N_NOOP("goodbye");
+ *   ...
+ *   mystring = i18n( say_something() );
+ * \endcode
  */
 #define I18N_NOOP(x) x
 #endif
@@ -55,6 +63,14 @@ class KCalendarSystem;
  * \relates KLocale
  *  If the string is too ambiguous to be translated well to a non-english
  *  language, use this instead of I18N_NOOP to separate lookup string and english.
+ * 
+ * Example usage where say_something() returns either "hello" or "goodbye":
+ * \code
+ *   (void) I18N_NOOP2("greeting", "hello");
+ *   (void) I18N_NOOP2("greeting", "goodbye");
+ *   ...
+ *   mystring = i18n("greeting", say_something());
+ * \endcode
  * \warning You need to call i18n( comment, stringVar ) later on, not just i18n( stringVar ).
  * \since 3.3
  */
