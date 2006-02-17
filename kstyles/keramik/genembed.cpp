@@ -222,7 +222,7 @@ int main(int argc, char** argv)
 		int pixCount = 0;
 		int pixSolid = 0;
 
-		cout<<"static const unsigned char "<<s.latin1()<<"[]={\n";
+		cout<<"static const unsigned char "<<qPrintable(s)<<"[]={\n";
 
 		Q_UINT32* read  = reinterpret_cast< Q_UINT32* >(input.bits() );
 		int size = input.width()*input.height();
@@ -307,7 +307,7 @@ int main(int argc, char** argv)
 			read++;
 		}
 
-		cerr<<s.latin1()<<":"<<pixSolid<<"/"<<pixCount<<"("<<reallySolid<<")\n";
+		cerr<<qPrintable(s)<<":"<<pixSolid<<"/"<<pixCount<<"("<<reallySolid<<")\n";
 
 		cout<<!reallySolid<<"\n";
 

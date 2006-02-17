@@ -1604,7 +1604,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         p->drawLineSegments(a, 0, 3);
         p->drawPoint(a[6]);
 
-        p->setWorldMatrix( oldMatrix );
+        p->setMatrix( oldMatrix );
 
         return;
     }
