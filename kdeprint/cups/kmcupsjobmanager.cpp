@@ -349,12 +349,12 @@ bool KMCupsJobManager::changePriority(const Q3PtrList<KMJob>& jobs, bool up)
 
 static QString processRange(const QString& range)
 {
-	QStringList	l = QStringList::split(',', range, false);
+	QStringList	l = range.split(',', QString::SkipEmptyParts);
 	QString	s;
 	for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
 	{
 		s.append(*it);
-		if ((*it).find('-') == -1)
+		if ((*it).indexOf('-') == -1)
 			s.append("-").append(*it);
 		s.append(",");
 	}

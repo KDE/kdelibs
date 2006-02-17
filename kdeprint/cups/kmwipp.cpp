@@ -61,7 +61,7 @@ bool KMWIpp::isValid(QString& msg)
 	}
 
 	// check server
-	http_t	*HTTP = httpConnect(text(0).latin1(),p);
+	http_t	*HTTP = httpConnect(qPrintable(text(0)),p);
 	if (HTTP)
 	{
 		httpClose(HTTP);

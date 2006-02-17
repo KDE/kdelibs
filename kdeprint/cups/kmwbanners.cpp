@@ -131,8 +131,8 @@ void KMWBanners::initPrinter(KMPrinter *p)
 		QStringList	l = QStringList::split(',',p->option("kde-banners"),false);
 		while (l.count() < 2)
 			l.append("none");
-		m_start->setCurrentItem(m_bans.findIndex(l[0]));
-		m_end->setCurrentItem(m_bans.findIndex(l[1]));
+		m_start->setCurrentIndex(m_bans.indexOf(l[0]));
+		m_end->setCurrentIndex(m_bans.indexOf(l[1]));
 	}
 }
 

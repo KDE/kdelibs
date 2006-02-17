@@ -59,7 +59,7 @@ void KMPropBanners::setPrinter(KMPrinter *p)
 {
 	if (p && p->isPrinter())
 	{
-		QStringList	l = QStringList::split(',',p->option("kde-banners"),false);
+		QStringList	l = p->option("kde-banners").split(',',QString::SkipEmptyParts);
 		while ( l.count() < 2 )
 			l.append( "none" );
 		m_startbanner->setText(i18n(mapBanner(l[0]).toUtf8()));

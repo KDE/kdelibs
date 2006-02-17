@@ -72,7 +72,7 @@ CupsInfos::~CupsInfos()
 void CupsInfos::setHost(const QString& s)
 {
 	host_ = s;
-	cupsSetServer(s.latin1());
+	cupsSetServer(qPrintable(s));
 }
 
 void CupsInfos::setPort(int p)
@@ -84,7 +84,7 @@ void CupsInfos::setPort(int p)
 void CupsInfos::setLogin(const QString& s)
 {
 	login_ = s;
-	cupsSetUser(s.latin1());
+	cupsSetUser(qPrintable(s));
 }
 
 void CupsInfos::setPassword(const QString& s)
@@ -105,7 +105,7 @@ const char* CupsInfos::getPasswordCB()
 		return NULL;
 	setLogin( pwd.first );
 	setPassword( pwd.second );
-	return pwd.second.latin1();
+	return qPrintable(pwd.second);
 }
 
 void CupsInfos::load()
@@ -127,8 +127,8 @@ void CupsInfos::load()
 	reallogin_ = cupsUser();
 
 	// synchronize with CUPS
-	cupsSetServer(host_.latin1());
-	cupsSetUser(login_.latin1());
+	cupsSetServer(qPrintable(host_));
+	cupsSetUser(qPrintable(login_));
 	ippSetPort(port_);
 }
 

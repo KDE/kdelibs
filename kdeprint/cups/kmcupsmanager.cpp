@@ -156,7 +156,7 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 		}
 		if (!p->option("kde-banners").isEmpty())
 		{
-			QStringList	bans = QStringList::split(',',p->option("kde-banners"),false);
+			QStringList	bans = p->option("kde-banners").split(',',QString::SkipEmptyParts);
 			while (bans.count() < 2)
 				bans.append("none");
 			req.addName(IPP_TAG_PRINTER,"job-sheets-default",bans);
@@ -614,10 +614,10 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 			if (line.startsWith("*% COMDATA #"))
 			{
 				int	p(-1), q(-1);
-				if ((p=line.find("'name'")) != -1)
+				if ((p=line.indexOf("'name'")) != -1)
 				{
-					p = line.find('\'',p+6)+1;
-					q = line.find('\'',p);
+					p = line.indexOf('\'',p+6)+1;
+					q = line.indexOf('\'',p);
 					keyword = line.mid(p,q-p);
 					opt = driver->findOption(keyword);
 					if (opt && (opt->type() == DrBase::Integer || opt->type() == DrBase::Float))
@@ -633,11 +633,11 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 					else
 						isnumeric = false;
 				}*/
-				else if ((p=line.find("'default'")) != -1 && !keyword.isEmpty() && opt && isnumeric)
+				else if ((p=line.indexOf("'default'")) != -1 && !keyword.isEmpty() && opt && isnumeric)
 				{
 					QString	prefix = line.left(p+9);
 					tout << prefix << " => '" << opt->valueText() << '\'';
-					if (line.find(',',p) != -1)
+					if (line.indexOf(',',p) != -1)
 						tout << ',';
 					tout << endl;
 					continue;
@@ -646,7 +646,7 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 			}
 			else if (line.startsWith("*Default"))
 			{
-				int	p = line.find(':',8);
+				int	p = line.indexOf(':',8);
 				keyword = line.mid(8,p-8);
 				DrBase *bopt = 0;
 				if ( keyword == "PageRegion" || keyword == "ImageableArea" || keyword == "PaperDimension" )
