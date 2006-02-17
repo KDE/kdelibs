@@ -96,7 +96,7 @@ KSystemTray::KSystemTray( QWidget* parent )
     {
         d->on_all_desktops = false;
     }
-    setCaption( KGlobal::instance()->aboutData()->programName());
+    setWindowTitle( KGlobal::instance()->aboutData()->programName());
 }
 
 KSystemTray::~KSystemTray()

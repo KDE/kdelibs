@@ -331,7 +331,7 @@ KMainWindow::~KMainWindow()
     delete mb;
     delete d->m_interface;
     delete d;
-    sMemberList.remove( this );
+    sMemberList.removeAll( this );
 }
 
 KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
