@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 ### TODO: would it not be easier to use -j for xgettext from a copy of qt-messages.pot ?
+pwd # DEBUG
 cd kabc/scripts && perl ./makeaddressee
 find . -type d | fgrep -v '.svn' | sed -e 's,$,/,' > dirs
 mfs=`find . -name Makefile.am | xargs egrep -l '^messages:'`
