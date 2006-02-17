@@ -99,7 +99,7 @@ bool ContactPresenceListCurrent::update( AppPresenceCurrent ap )
 	
 	if ( existing != itEnd )
 	{
-		remove( existing );
+		erase( existing );
 		append( ap );
 	}
 	return bestChanged;
@@ -238,7 +238,7 @@ bool KIMProxy::initialize()
 				//for each offer
 				for ( offer = offers.begin(); offer != offers.end(); ++offer )
 				{
-					DCOPCString dcopService = (*offer)->property("X-DCOP-ServiceName").toString().latin1();
+					DCOPCString dcopService = (*offer)->property("X-DCOP-ServiceName").toString().toLatin1();
 					if ( !dcopService.isEmpty() )
 					{
 						//kDebug( 790 ) << " is it: " << dcopService << "?" << endl;
@@ -281,7 +281,7 @@ void KIMProxy::registeredToDCOP( const QByteArray& appId )
 	for ( it = offers.begin(); it != offers.end(); ++it )
 	{
 		DCOPCString dcopObjectId = "KIMIface";
-		DCOPCString dcopService = (*it)->property("X-DCOP-ServiceName").toString().latin1();
+		DCOPCString dcopService = (*it)->property("X-DCOP-ServiceName").toString().toLatin1();
 		if ( appId.startsWith( dcopService ) )
 		{
 			// if it's not already known, insert it
@@ -310,14 +310,14 @@ void KIMProxy::unregisteredFromDCOP( const QByteArray& appId )
 		const PresenceStringMap::Iterator end = d->presence_map.end();
 		for ( ; it != end; ++it )
 		{
-			ContactPresenceListCurrent list = it.data();
+			ContactPresenceListCurrent list = it.value();
 			ContactPresenceListCurrent::iterator cpIt = list.begin();
 			while( cpIt != list.end() )
 			{
 				ContactPresenceListCurrent::iterator gone = cpIt++;
 				if ( (*gone).appId == appId )
 				{
-					list.remove( gone );
+					list.erase( gone );
 				}
 			}
 		}
@@ -419,7 +419,7 @@ QStringList KIMProxy::onlineContacts()
 	PresenceStringMap::iterator it = d->presence_map.begin();
 	const PresenceStringMap::iterator end= d->presence_map.end();
 	for ( ; it != end; ++it )
-		if ( it.data().best().presence > 2 /*Better than Connecting, ie Away or Online*/ )
+		if ( it.value().best().presence > 2 /*Better than Connecting, ie Away or Online*/ )
 			value.append( it.key() );
 		
 	return value;
