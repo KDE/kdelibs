@@ -91,11 +91,12 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         if (!url.isEmpty()) { //### why do we not hide or something when setting this?
             CachedImage* newImage = getDocument()->docLoader()->requestImage(khtml::parseURL(url));
             if (newImage && newImage != m_image) {
+                CachedImage* oldImage = m_image;
                 loadEventSent = false;
-                if (m_image)
-                    m_image->deref(this);
                 m_image = newImage;
                 m_image->ref(this);
+                if (oldImage)
+                    oldImage->deref(this);
             }
         }
     }
