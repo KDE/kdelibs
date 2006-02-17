@@ -68,13 +68,13 @@ void KMIconViewItem::calcRect(const QString&)
 	if (m_mode == Qt::DockBottom)
 	{
 		ir.setHeight(pr.height() + tr.height() + 15);
-		ir.setWidth(QMAX(pr.width(), tr.width()) + 10);
+		ir.setWidth(qMax(pr.width(), tr.width()) + 10);
 		pr = QRect((ir.width()-pr.width())/2, 5, pr.width(), pr.height());
 		tr = QRect((ir.width()-tr.width())/2, 10+pr.height(), tr.width(), tr.height());
 	}
 	else
 	{
-		ir.setHeight(QMAX(pr.height(), tr.height()) + 4);
+		ir.setHeight(qMax(pr.height(), tr.height()) + 4);
 		ir.setWidth(pr.width() + tr.width() + 6);
 		pr = QRect(2, (ir.height()-pr.height())/2, pr.width(), pr.height());
 		tr = QRect(4+pr.width(), (ir.height()-tr.height())/2, tr.width(), tr.height());

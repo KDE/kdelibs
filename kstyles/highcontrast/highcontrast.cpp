@@ -998,7 +998,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 			r.rect( &x, &y, &w, &h );
 
 			if ( checkable )
-				checkcol = QMAX( checkcol, 20 );
+				checkcol = qMax( checkcol, 20 );
 
 			// Are we a menu item separator?
 			if ( mi->isSeparator() ) {
@@ -1355,7 +1355,7 @@ void HighContrastStyle::drawComplexControl (ComplexControl control,
 
 					// paint stuff in the magical area
 					Q3ListView* v = item->listView();
-					int lh = QMAX( p->fontMetrics().height() + 2 * v->itemMargin(),
+					int lh = qMax( p->fontMetrics().height() + 2 * v->itemMargin(),
 								   QApplication::globalStrut().height() );
 					if ( lh % 2 > 0 )
 						lh++;
@@ -1369,7 +1369,7 @@ void HighContrastStyle::drawComplexControl (ComplexControl control,
 						if ( (child->isExpandable() || child->childCount()) &&
 							 (child->height() > 0) )
 						{
-							int h = QMIN(lh, 24) - 4*basicLineWidth;
+							int h = qMin(lh, 24) - 4*basicLineWidth;
 							if (h < 10) 
 								h = 10;
 							else 
@@ -1738,17 +1738,17 @@ QSize HighContrastStyle::sizeFromContents( ContentsType contents,
 			}
 			else {
 				if ( mi->pixmap() )
-					h = QMAX( h, mi->pixmap()->height() + 2*itemFrame );
+					h = qMax( h, mi->pixmap()->height() + 2*itemFrame );
 				else {
 					// Ensure that the minimum height for text-only menu items
 					// is the same as the icon size used by KDE.
-					h = QMAX( h, 16 + 2*itemFrame );
-					h = QMAX( h, popup->fontMetrics().height()
+					h = qMax( h, 16 + 2*itemFrame );
+					h = qMax( h, popup->fontMetrics().height()
 							+ 2*itemVMargin + 2*itemFrame );
 				}
 
 				if ( mi->iconSet() && ! mi->iconSet()->isNull() )
-					h = QMAX( h, mi->iconSet()->pixmap(
+					h = qMax( h, mi->iconSet()->pixmap(
 								QIcon::Small, QIcon::Normal).height() +
 								2 * itemFrame );
 			}

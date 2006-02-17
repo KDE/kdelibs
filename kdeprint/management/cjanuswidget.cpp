@@ -66,7 +66,7 @@ int CJanusWidget::CListBoxItem::height(const Q3ListBox *lb) const
 
 int CJanusWidget::CListBoxItem::width(const Q3ListBox *lb) const
 {
-	int	w = QMAX(lb->fontMetrics().width(text()),m_pix.width());
+	int	w = qMax(lb->fontMetrics().width(text()),m_pix.width());
 	return (w + 10);
 }
 
@@ -115,7 +115,7 @@ void CJanusWidget::CListBox::computeWidth()
 	int	w(40);
 	while (item)
 	{
-		w = QMAX(w,item->width(this));
+		w = qMax(w,item->width(this));
 		item = item->next();
 	}
 	if (verticalScrollBar()->isVisible())

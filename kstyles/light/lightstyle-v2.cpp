@@ -808,7 +808,7 @@ void LightStyleV2::drawControl( ControlElement control,
 	    if ( !mi )
 		break;
 
-	    maxpmw = QMAX(maxpmw, 16);
+	    maxpmw = qMax(maxpmw, 16);
 
 	    QRect cr, ir, tr, sr;
 	    // check column
@@ -1538,11 +1538,11 @@ QSize LightStyleV2::sizeFromContents( ContentsType contents,
 		if (h < 16)
 		    h = 16;
 		if (mi->pixmap())
-		    h = QMAX(h, mi->pixmap()->height());
+		    h = qMax(h, mi->pixmap()->height());
 		else if (! mi->text().isNull())
-		    h = QMAX(h, popupmenu->fontMetrics().height() + 2);
+		    h = qMax(h, popupmenu->fontMetrics().height() + 2);
 		if (mi->iconSet() != 0)
-		    h = QMAX(h, mi->iconSet()->pixmap(QIcon::Small,
+		    h = qMax(h, mi->iconSet()->pixmap(QIcon::Small,
 						      QIcon::Normal).height());
 		h += 2;
 	    }
@@ -1550,7 +1550,7 @@ QSize LightStyleV2::sizeFromContents( ContentsType contents,
 	    // check | 4 pixels | item | 8 pixels | accel | 4 pixels | check
 
 	    // check is at least 16x16
-	    maxpmw = QMAX(maxpmw, 16);
+	    maxpmw = qMax(maxpmw, 16);
 	    w += (maxpmw * 2) + 8;
 
 	    if (! mi->text().isNull() && mi->text().find('\t') >= 0)

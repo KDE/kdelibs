@@ -2171,7 +2171,7 @@ void PlastikStyle::renderCheckBox(QPainter *p, const QRect &rect, const QPalette
 {
     QColor contentColor = enabled?pal.base().color():pal.background().color();
 
-    int s = QMIN(rect.width(), rect.height());
+    int s = qMin(rect.width(), rect.height());
     QRect r = centerRect(rect, s, s);
 
     uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;

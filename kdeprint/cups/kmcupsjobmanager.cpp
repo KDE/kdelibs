@@ -324,8 +324,8 @@ bool KMCupsJobManager::changePriority(const Q3PtrList<KMJob>& jobs, bool up)
 	for (; it.current() && result; ++it)
 	{
 		int	value = it.current()->attribute(0).toInt();
-		if (up) value = QMIN(value+10, 100);
-		else value = QMAX(value-10, 1);
+		if (up) value = qMin(value+10, 100);
+		else value = qMax(value-10, 1);
 
 		IppRequest	req;
 		/*

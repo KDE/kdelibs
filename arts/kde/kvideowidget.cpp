@@ -321,14 +321,14 @@ void KVideoWidget::resizeEvent( QResizeEvent *event )
 
     if (width() > minimumWidth() || height() > minimumHeight())
     {
-	if (width() == QMAX( (videoWidth / 2), minimumWidth() ) &&
-	         height() == QMAX( (videoHeight / 2), minimumHeight() ))
+	if (width() == qMax( (videoWidth / 2), minimumWidth() ) &&
+	         height() == qMax( (videoHeight / 2), minimumHeight() ))
 	    ((KToggleAction *)action( "half_size" ))->setChecked( true );
-	else if (width() == QMAX( videoWidth, minimumWidth() ) &&
-		 height() == QMAX( videoHeight, minimumHeight() ))
+	else if (width() == qMax( videoWidth, minimumWidth() ) &&
+		 height() == qMax( videoHeight, minimumHeight() ))
 	    ((KToggleAction *)action( "normal_size" ))->setChecked( true );
-	else if (width() == QMAX( (2 * videoWidth), minimumWidth() ) &&
-		 height() == QMAX( (2 * videoHeight), minimumHeight() ))
+	else if (width() == qMax( (2 * videoWidth), minimumWidth() ) &&
+		 height() == qMax( (2 * videoHeight), minimumHeight() ))
 	    ((KToggleAction *)action( "double_size" ))->setChecked( true );
 	else
 	{

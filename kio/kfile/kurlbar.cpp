@@ -197,7 +197,7 @@ void KUrlBarItem::paint( QPainter *p )
         // ### mostly cut & paste of QListBoxPixmap::paint() until Qt 3.1
         // (where it will properly use pixmap() instead of the internal pixmap)
         const QPixmap *pm = pixmap();
-        int yPos = QMAX( 0, (height(box) - pm->height())/2 );
+        int yPos = qMax( 0, (height(box) - pm->height())/2 );
 
         p->drawPixmap( margin, yPos, *pm );
         if ( !text().isEmpty() ) {
@@ -231,7 +231,7 @@ void KUrlBarItem::paint( QPainter *p )
 
         if ( !pm->isNull() ) {
             int x = (w - pm->width()) / 2;
-            x = QMAX( x, margin );
+            x = qMax( x, margin );
             p->drawPixmap( x, y, *pm );
         }
 
@@ -242,7 +242,7 @@ void KUrlBarItem::paint( QPainter *p )
             int stringWidth = box->width() - (margin * 2);
             QString visibleText = KStringHandler::rPixelSqueeze( text(), fm, stringWidth );
             int x = (w - fm.width( visibleText )) / 2;
-            x = QMAX( x, margin );
+            x = qMax( x, margin );
 
             if ( isCurrent() || isSelected() ) {
                 p->setPen( box->colorGroup().highlight().dark(115) );
@@ -267,14 +267,14 @@ QSize KUrlBarItem::sizeHint() const
         hmin = Q3ListBoxPixmap::height( lb ) + KDialog::spacingHint() * 2;
     }
     else {
-        wmin = QMAX(lb->fontMetrics().width(text()), pixmap()->width()) + KDialog::spacingHint() * 2;
+        wmin = qMax(lb->fontMetrics().width(text()), pixmap()->width()) + KDialog::spacingHint() * 2;
         hmin = lb->fontMetrics().lineSpacing() + pixmap()->height() + KDialog::spacingHint() * 2;
     }
 
     if ( lb->isVertical() )
-        wmin = QMIN( wmin, lb->viewport()->sizeHint().width() );
+        wmin = qMin( wmin, lb->viewport()->sizeHint().width() );
     else
-        hmin = QMIN( hmin, lb->viewport()->sizeHint().height() );
+        hmin = qMin( hmin, lb->viewport()->sizeHint().height() );
 
     return QSize( wmin, hmin );
 }
@@ -282,7 +282,7 @@ QSize KUrlBarItem::sizeHint() const
 int KUrlBarItem::width( const Q3ListBox *lb ) const
 {
     if ( static_cast<const KUrlBarListBox *>( lb )->isVertical() )
-        return QMAX( sizeHint().width(), lb->viewport()->width() );
+        return qMax( sizeHint().width(), lb->viewport()->width() );
     else
         return sizeHint().width();
 }
@@ -292,7 +292,7 @@ int KUrlBarItem::height( const Q3ListBox *lb ) const
     if ( static_cast<const KUrlBarListBox *>( lb )->isVertical() )
         return sizeHint().height();
     else
-        return QMAX( sizeHint().height(), lb->viewport()->height() );
+        return qMax( sizeHint().height(), lb->viewport()->height() );
 }
 
 bool KUrlBarItem::isPersistent() const
@@ -474,12 +474,12 @@ QSize KUrlBar::sizeHint() const
         QSize sh = item->sizeHint();
 
         if ( vertical ) {
-            w = QMAX( w, sh.width() );
+            w = qMax( w, sh.width() );
             h += sh.height();
         }
         else {
             w += sh.width();
-            h = QMAX( h, sh.height() );
+            h = qMax( h, sh.height() );
         }
     }
 

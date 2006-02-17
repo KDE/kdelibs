@@ -63,7 +63,7 @@ void KMTimer::release(bool do_emit)
 
 void KMTimer::releaseTimer(bool do_emit)
 {
-	m_count = QMAX(0, m_count-1);
+	m_count = qMax(0, m_count-1);
 	if (m_count == 0)
 	{
 		if (do_emit)

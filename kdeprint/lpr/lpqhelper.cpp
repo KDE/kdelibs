@@ -63,7 +63,7 @@ KMJob* LpqHelper::parseLineLPRng(const QString& line)
 	KMJob	*job = new KMJob;
 	job->setState((rank[0].isDigit() ? KMJob::Queued : (rank == "hold" ? KMJob::Held : KMJob::Printing)));
 	int	p = line.find('@', 7), q = line.find(' ', 7);
-	job->setOwner(line.mid(7, QMIN(p,q)-7));
+	job->setOwner(line.mid(7, qMin(p,q)-7));
 	while (line[q].isSpace())
 		q++;
 	q++;

@@ -205,7 +205,7 @@ QWidget* KFileMetaInfoWidget::makeIntWidget()
 
     // make sure that an uint cannot be set to a value < 0
     if (m_item.type() == QVariant::UInt)
-        sb->setMinimum(QMAX(sb->minimum(), 0));
+        sb->setMinimum(qMax(sb->minimum(), 0));
 
     connect(sb, SIGNAL(valueChanged(int)), this, SLOT(slotChanged(int)));
     return sb;

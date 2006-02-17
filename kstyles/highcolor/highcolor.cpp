@@ -1297,7 +1297,7 @@ void HighColorStyle::drawControl( ControlElement element,
 			r.rect( &x, &y, &w, &h );
 
 			if ( checkable )
-				checkcol = QMAX( checkcol, 20 );
+				checkcol = qMax( checkcol, 20 );
 
 			// Are we a menu item separator?
 			if ( mi->isSeparator() ) {
@@ -1881,17 +1881,17 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 			}
 			else {
 				if ( mi->pixmap() )
-					h = QMAX( h, mi->pixmap()->height() + 2*itemFrame );
+					h = qMax( h, mi->pixmap()->height() + 2*itemFrame );
 				else {
 					// Ensure that the minimum height for text-only menu items
 					// is the same as the icon size used by KDE.
-					h = QMAX( h, 16 + 2*itemFrame );
-					h = QMAX( h, popup->fontMetrics().height()
+					h = qMax( h, 16 + 2*itemFrame );
+					h = qMax( h, popup->fontMetrics().height()
 							+ 2*itemVMargin + 2*itemFrame );
 				}
 					
 				if ( mi->iconSet() )
-					h = QMAX( h, mi->iconSet()->pixmap(
+					h = qMax( h, mi->iconSet()->pixmap(
 								QIcon::Small, QIcon::Normal).height() +
 								2 * itemFrame );
 			}
