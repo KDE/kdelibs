@@ -216,7 +216,7 @@ void ConfigPage::load()
   mFamilyCombo->insertItems( 0, familyDisplayNames );
 
   int currentFamily = mConfig->readEntry( "CurrentFamily", 0 );
-  mFamilyCombo->setCurrentItem( currentFamily );
+  mFamilyCombo->setCurrentIndex( currentFamily );
   slotFamilyChanged( currentFamily );
   emit changed( false );
 }
