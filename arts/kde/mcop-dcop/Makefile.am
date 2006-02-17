@@ -16,5 +16,5 @@ kdelnkdir = $(kde_servicesdir)
 kdelnk_DATA = kmcop.desktop
 
 messages:
-	$(XGETTEXT) kmcop.cpp -o $(podir)/kmcop.pot
+	$(XGETTEXT) rc.cpp kmcop.cpp -o $(podir)/kmcop.pot
 
