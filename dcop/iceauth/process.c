@@ -37,6 +37,7 @@ in this Software without prior written authorization from The Open Group.
 #include <sys/stat.h>
 #include <unistd.h>
 #include <signal.h>
+#include <strings.h>
 
 #define SECURERPC "SUN-DES-1"
 #define K5AUTH "KERBEROS-V5-1"

@@ -4,5 +4,10 @@ include_directories( ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE ${KDEWIN32_INCLUDES} )
 
 add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DANSICPP -DSOCKCONN -DTCPCONN)
 
-add_executable(iceauth iceauth.c process.c ${kICE_STAT_SRCS} )
-target_link_libraries(iceauth ${KDEWIN32_LIBRARIES} )
+set(ICEAUTH_EXEC_SRC 
+   iceauth.c 
+   process.c 
+)
+
+kde4_add_executable(iceauth  ${ICEAUTH_EXEC_SRC} )
+target_link_libraries(iceauth ${KDEWIN32_LIBRARIES} DCOP )
