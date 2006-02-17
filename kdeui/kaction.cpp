@@ -1024,7 +1024,7 @@ void KAction::slotPopupActivated()
     }
   }
 
-  kWarning(129)<<"Don't connect KAction::slotPopupActivated() to anything, expect into QMenus which are in containers. Use slotActivated instead."<<endl;
+  kWarning(129)<<"Don't connect KAction::slotPopupActivated() to anything, except into QMenus which are in containers. Use slotActivated instead."<<endl;
 #ifdef QT3_SUPPORT
   emit activated( KAction::PopupMenuActivation, Qt::NoButton );
 #endif
