@@ -132,6 +132,7 @@ void KCharSelectTable::setTableNum( int _tableNum )
 
 //==================================================================
 void KCharSelectTable::slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous ) {
+	Q_UNUSED(previous);
 	if (!m_model) return;
 	focusItem = m_model->data(current,KCharSelectItemModel::CharacterRole).toChar();
 	emit focusItemChanged( focusItem );

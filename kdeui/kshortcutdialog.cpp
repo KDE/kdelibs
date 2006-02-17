@@ -78,12 +78,12 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
         m_stack->setSpacing(0);
         m_stack->setMargin(0);
         setMainWidget(m_stack);
-        
+
         m_simple = new KShortcutDialogSimple(m_stack);
 
         m_adv = new KShortcutDialogAdvanced(m_stack);
         m_adv->hide();
-        
+
 	m_bQtShortcut = bQtShortcut;
 
 	m_bGrab = false;
@@ -93,9 +93,9 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
 	m_bRecording = false;
 	m_mod = 0;
 
-	m_simple->m_btnClearShortcut->setPixmap( SmallIcon( "locationbar_erase" ) );
-	m_adv->m_btnClearPrimary->setPixmap( SmallIcon( "locationbar_erase" ) );
-	m_adv->m_btnClearAlternate->setPixmap( SmallIcon( "locationbar_erase" ) );
+	m_simple->m_btnClearShortcut->setIcon( SmallIcon( "locationbar_erase" ) );
+	m_adv->m_btnClearPrimary->setIcon( SmallIcon( "locationbar_erase" ) );
+	m_adv->m_btnClearAlternate->setIcon( SmallIcon( "locationbar_erase" ) );
 	connect(m_simple->m_btnClearShortcut, SIGNAL(clicked()),
 	        this, SLOT(slotClearShortcut()));
 	connect(m_adv->m_btnClearPrimary, SIGNAL(clicked()),

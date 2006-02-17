@@ -158,8 +158,8 @@ class KDEUI_EXPORT KSelector : public QAbstractSlider
 {
   Q_OBJECT
   Q_PROPERTY( int value READ value WRITE setValue )
-  Q_PROPERTY( int minValue READ minValue WRITE setMinValue )
-  Q_PROPERTY( int maxValue READ maxValue WRITE setMaxValue )
+  Q_PROPERTY( int minValue READ minimum WRITE setMinimum )
+  Q_PROPERTY( int maxValue READ maximum WRITE setMaximum )
 public:
 
   /**

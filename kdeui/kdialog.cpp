@@ -938,7 +938,7 @@ void KDialog::setDetailsWidget(QWidget *detailsWidget)
   delete d->detailsWidget;
   d->detailsWidget = detailsWidget;
   if (d->detailsWidget->parentWidget() != this)
-     d->detailsWidget->reparent(this, QPoint(0,0));
+     d->detailsWidget->setParent(this);
   d->detailsWidget->hide();
     setupLayout();
   if (!d->bSettingDetails)

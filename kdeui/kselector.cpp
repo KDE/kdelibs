@@ -281,11 +281,11 @@ void KSelector::moveArrow( const QPoint &pos )
   int val;
 
   if ( orientation() == Qt::Vertical )
-    val = ( maxValue() - minValue() ) * (height()-pos.y()-3)
-        / (height()-10) + minValue();
+    val = ( maximum() - minimum() ) * (height()-pos.y()-3)
+        / (height()-10) + minimum();
   else
-    val = ( maxValue() - minValue() ) * (width()-pos.x()-3)
-        / (width()-10) + minValue();
+    val = ( maximum() - minimum() ) * (width()-pos.x()-3)
+        / (width()-10) + minimum();
 
   setValue( val );
 }

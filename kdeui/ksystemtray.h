@@ -107,8 +107,13 @@ public:
      * Changes the tray's text description (which can be seen e.g. in the systray
      * configuration dialog). The default value is KAboutData::programName().
      */
-    virtual void setCaption( const QString& title );
-    
+    virtual void setWindowTitle( const QString& title );
+
+    /**
+      * @deprecated use setWindowTitle
+      */
+    inline KDE_DEPRECATED void setCaption( const QString& title ) { setWindowTitle(title); };
+
     /**
      * Loads an icon @p icon using the icon loader class of the given instance @p instance.
      * The icon is applied the panel effect as it should only be used to be shown in the

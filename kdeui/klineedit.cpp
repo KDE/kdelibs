@@ -530,9 +530,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     {
         KeyBindingMap keys = getKeyBindings();
         KGlobalSettings::Completion mode = completionMode();
-        bool noModifier = (e->state() == Qt::NoButton ||
-                           e->state() == Qt::ShiftModifier ||
-                           e->state() == Qt::KeypadModifier);
+        bool noModifier = (e->modifiers() == Qt::NoButton ||
+                           e->modifiers() == Qt::ShiftModifier ||
+                           e->modifiers() == Qt::KeypadModifier);
 
         if ( (mode == KGlobalSettings::CompletionAuto ||
               mode == KGlobalSettings::CompletionPopupAuto ||
@@ -540,7 +540,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         {
             if ( !d->userSelection && hasSelectedText() &&
                  ( e->key() == Qt::Key_Right || e->key() == Qt::Key_Left ) &&
-                 e->state()==Qt::NoButton )
+                 e->modifiers()==Qt::NoButton )
             {
                 QString old_txt = text();
                 d->disableRestoreSelection = true;
@@ -1012,8 +1012,8 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
                 bool trap = d->completionBox && d->completionBox->isVisible();
 
                 bool stopEvent = trap || (d->grabReturnKeyEvents &&
-                                          (e->state() == Qt::NoButton ||
-                                           e->state() == Qt::KeypadModifier));
+                                          (e->modifiers() == Qt::NoButton ||
+                                           e->modifiers() == Qt::KeypadModifier));
 
                 // Qt will emit returnPressed() itself if we return false
                 if ( stopEvent )
@@ -1165,7 +1165,7 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     if (d->completionBox && d->completionBox->isVisible ())
     {
         int key = e->key();
-        Qt::ButtonState state = e->state();
+        Qt::ButtonState state = e->modifiers();
         if ((key == Qt::Key_Backtab || key == Qt::Key_Tab) &&
             (state == Qt::NoButton || (state & Qt::ShiftModifier)))
         {
@@ -1226,7 +1226,7 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
 
         if ( d->autoSuggest && autoSuggest )
         {
-            int index = items.first().find( txt );
+            int index = items.first().indexOf( txt );
             QString newText = items.first().mid( index );
             setUserSelection(false);
             setCompletedText(newText,true);

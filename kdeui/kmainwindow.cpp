@@ -231,7 +231,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
         s.setNum( ++unusedNumber );
         s = objname + s;
     }
-    setName( s );
+    setObjectName( s );
 
     sMemberList.append( this );
 
@@ -711,7 +711,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     // store objectName, className, Width and Height  for later restoring
     // (Only useful for session management)
     config->writeEntry(QLatin1String("ObjectName"), objectName());
-    config->writeEntry(QLatin1String("ClassName"), className());
+    config->writeEntry(QLatin1String("ClassName"), metaObject()->className());
 
     saveMainWindowSettings(config); // Menubar, statusbar and Toolbar settings.
 
@@ -996,7 +996,9 @@ void KMainWindow::setSettingsDirty()
            d->settingsTimer = new QTimer( this );
            connect( d->settingsTimer, SIGNAL( timeout() ), SLOT( saveAutoSaveSettings() ) );
         }
-        d->settingsTimer->start( 500, true );
+        d->settingsTimer->setInterval(500);
+        d->settingsTimer->setSingleShot(true);
+        d->settingsTimer->start();
     }
 }
 
@@ -1165,7 +1167,7 @@ void KMainWindow::paintEvent( QPaintEvent * pe )
 #endif
 void KMainWindow::setIcon( const QPixmap& p )
 {
-    Q3MainWindow::setIcon( p );
+    Q3MainWindow::setWindowIcon( p );
 #ifdef Q_WS_X11
     // Qt3 doesn't support _NET_WM_ICON, but KApplication::setTopWidget(), which
     // is used by KMainWindow, sets it

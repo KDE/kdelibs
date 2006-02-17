@@ -689,7 +689,7 @@ int KJanusWidget::activePageIndex() const
     return d->mPageToInt[stackItem];
   }
   else if( mFace == Tabbed ) {
-    QWidget *widget = mTabControl->currentPage();
+    QWidget *widget = mTabControl->currentWidget();
     return ( !widget ? -1 : d->mPageToInt[widget] );
   }
   else {
@@ -1145,7 +1145,7 @@ void KJanusWidget::removePage( QWidget *page )
   }
   else // Tabbed
   {
-    mTabControl->removePage(page);
+    mTabControl->removeTab(mTabControl->indexOf(page));
     d->mPageToInt.remove(page);
     d->mIntToPage.remove(index);
   }

@@ -304,7 +304,7 @@ KActionCollection* KSystemTray::actionCollection()
 {
     return d->actionCollection;
 }
-    
+
 QPixmap KSystemTray::loadIcon( const QString &icon, KInstance *instance )
 {
     KConfigGroup cg(instance->config(), "System Tray");
@@ -320,9 +320,9 @@ void KSystemTray::setPixmap( const QPixmap& p )
 #endif
 }
 
-void KSystemTray::setCaption( const QString& s )
+void KSystemTray::setWindowTitle( const QString& s )
 {
-    QLabel::setCaption( s );
+    QLabel::setWindowTitle( s );
 }
 
 void KSystemTray::virtual_hook( int, void* )
