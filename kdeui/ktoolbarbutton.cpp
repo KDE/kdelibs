@@ -602,7 +602,7 @@ void KToolBarButton::setRadio (bool f)
 void KToolBarButton::on(bool flag)
 {
   if(isToggleButton())
-    setOn(flag);
+    setChecked(flag);
   else
   {
     setDown(flag);
@@ -613,7 +613,7 @@ void KToolBarButton::on(bool flag)
 
 void KToolBarButton::toggle()
 {
-  setOn(!isOn());
+  setChecked(!isChecked());
   repaint();
 }
 

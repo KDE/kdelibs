@@ -1054,7 +1054,7 @@ void KAction::slotDestroyed()
     if ( o == a )
     {
       disconnect( a, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
-      d->m_kaccelList.remove(a);
+      d->m_kaccelList.removeAll(a);
       return;
     }
   }

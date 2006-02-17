@@ -415,7 +415,7 @@ void KListViewSearchLine::listViewDeleted(QObject *o)
         return;
     }
     
-    d->listViews.remove(lv);
+    d->listViews.removeAll(lv);
     setEnabled(d->listViews.isEmpty());
 }
 
