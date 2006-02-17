@@ -5,10 +5,9 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kdeprint/icons FILES  )
-install_files( ${KDE4_DATA_DIR}/kdeprint/pics FILES kdeprint_collate.png  		kdeprint_collate_reverse.png  		kdeprint_color.png  		kdeprint_duplex_none.png  		kdeprint_duplex_long.png  		kdeprint_duplex_short.png  		kdeprint_grayscale.png  		kdeprint_landscape.png  		kdeprint_nup1.png  		kdeprint_nup2.png  		kdeprint_nup4.png  		kdeprint_portrait.png  		kdeprint_revlandscape.png  		kdeprint_revportrait.png  		kdeprint_uncollate.png  		kdeprint_uncollate_reverse.png  		kdeprint_nupother.png  		kdeprint_prettyprint.png )
+install_files( ${KDE4_DATA_DIR}/kdeprint/pics FILES kdeprint_collate.png kdeprint_collate_reverse.png kdeprint_color.png  kdeprint_duplex_none.png  kdeprint_duplex_long.png  kdeprint_duplex_short.png  kdeprint_grayscale.png  kdeprint_landscape.png  kdeprint_nup1.png  kdeprint_nup2.png  kdeprint_nup4.png  kdeprint_portrait.png  kdeprint_revlandscape.png  kdeprint_revportrait.png  kdeprint_uncollate.png  kdeprint_uncollate_reverse.png  kdeprint_nupother.png kdeprint_prettyprint.png )
 
-kde4_install_icons( crystalsvg /share/apps/kdeprint/ )
+kde4_install_icons( ${KDE4_DATA_DIR}/kdeprint/icons crystalsvg )
 kde4_footer()
 
 

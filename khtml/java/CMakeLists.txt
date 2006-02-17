@@ -39,7 +39,7 @@ macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
 # kjava.policy 
 install_files( ${KDE4_DATA_DIR}/kjava/ FILES kjava.jar kjava.policy pluginsinfo )
 install_files( ${KDE4_SERVICES_DIR} FILES kjavaappletviewer.desktop )
-kde4_install_icons( crystalsvg /share/apps/kjava/ )
+kde4_install_icons( ${KDE4_DATA_DIR}/kjava/icons crystalsvg )
 
 kde4_footer()
 
