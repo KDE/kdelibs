@@ -115,7 +115,7 @@ KActionCollection *KXMLGUIClient::actionCollection() const
 KAction *KXMLGUIClient::action( const QDomElement &element ) const
 {
   static const QString &attrName = KGlobal::staticQString( "name" );
-  return actionCollection()->action( element.attribute( attrName ).latin1() );
+  return actionCollection()->action( qPrintable(element.attribute( attrName )) );
 }
 
 KInstance *KXMLGUIClient::instance() const
@@ -729,7 +729,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
       case ST_AFTER_OPEN:
       {
         //Jump to gui..
-        int guipos = xml.find("gui", pos, false /*case-insensitive*/);
+        int guipos = xml.indexOf("gui", pos, Qt::CaseInsensitive/*case-insensitive*/);
         if (guipos == -1)
           return QString(); //Reject
 
@@ -742,7 +742,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
         break;
       case ST_EXPECT_VERSION:
       {
-        int verpos =  xml.find("version=\"", pos, false /*case-insensitive*/);
+        int verpos =  xml.indexOf("version=\"", pos, Qt::CaseInsensitive /*case-insensitive*/);
         if (verpos == -1)
           return QString(); //Reject
 
@@ -857,7 +857,7 @@ void KXMLGUIClient::storeActionProperties( QDomDocument &doc, const ActionProper
     QMap<QString, QString>::ConstIterator attrIt = attributes.begin();
     QMap<QString, QString>::ConstIterator attrEnd = attributes.end();
     for (; attrIt != attrEnd; ++attrIt )
-      action.setAttribute( attrIt.key(), attrIt.data() );
+      action.setAttribute( attrIt.key(), attrIt.value() );
   }
 }
 
@@ -869,7 +869,7 @@ void KXMLGUIClient::addStateActionEnabled(const QString& state,
   stateChange.actionsToEnable.append( action );
   //kDebug() << "KXMLGUIClient::addStateActionEnabled( " << state << ", " << action << ")" << endl;
 
-  m_actionsStateMap.replace( state, stateChange );
+  m_actionsStateMap.insert( state, stateChange );
 }
 
 
@@ -881,7 +881,7 @@ void KXMLGUIClient::addStateActionDisabled(const QString& state,
   stateChange.actionsToDisable.append( action );
   //kDebug() << "KXMLGUIClient::addStateActionDisabled( " << state << ", " << action << ")" << endl;
 
-  m_actionsStateMap.replace( state, stateChange );
+  m_actionsStateMap.insert( state, stateChange );
 }
 
 
@@ -903,7 +903,7 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
   for ( QStringList::Iterator it = stateChange.actionsToEnable.begin();
         it != stateChange.actionsToEnable.end(); ++it ) {
 
-    KAction *action = actionCollection()->action((*it).latin1());
+    KAction *action = actionCollection()->action(qPrintable((*it)));
     if (action) action->setEnabled(setTrue);
   }
 
@@ -912,7 +912,7 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
   for ( QStringList::Iterator it = stateChange.actionsToDisable.begin();
         it != stateChange.actionsToDisable.end(); ++it ) {
 
-    KAction *action = actionCollection()->action((*it).latin1());
+    KAction *action = actionCollection()->action(qPrintable((*it)));
     if (action) action->setEnabled(setFalse);
   }
 
