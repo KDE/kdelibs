@@ -510,7 +510,7 @@ void KDialog::setCaption( const QString &_caption )
 
 void KDialog::setPlainCaption( const QString &caption )
 {
-  QDialog::setCaption( caption );
+  QDialog::setWindowTitle( caption );
 
 #ifdef Q_WS_X11
   NETWinInfo info( QX11Info::display(), winId(), QX11Info::appRootWindow(), 0 );
@@ -599,7 +599,7 @@ bool KDialog::avoidArea( QWidget *w, const QRect& area, int screen )
 
   QRect scr = screenRect( w, screen );
   QRect avoid( area ); // let's add some margin
-  avoid.moveBy( -5, -5 );
+  avoid.translate( -5, -5 );
   avoid.rRight() += 10;
   avoid.rBottom() += 10;
 
@@ -1140,7 +1140,7 @@ void KDialog::hideEvent( QHideEvent *ev )
 void KDialog::closeEvent( QCloseEvent *e )
 {
     QPushButton *pb = actionButton( d->mEscapeButton );
-    if( pb && isShown() ) {
+    if( pb && !isHidden() ) {
 	pb->animateClick();
     } else {
 	QDialog::closeEvent( e );
