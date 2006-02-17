@@ -21,7 +21,7 @@
 #include "kprotocolinfofactory.h"
 #include "kprotocolmanager.h"
 
-#ifdef Q_CC_MSVC
+#ifdef Q_OS_WIN
 #include "../../kdecore/kprotocolinfo_kdecore.cpp"
 #endif
 
