@@ -239,10 +239,10 @@ void KTabBar::dragMoveEvent( QDragMoveEvent *e )
           mDragSwitchTab = tab;
           mActivateDragSwitchTabTimer->start( QApplication::doubleClickInterval()*2);
         }
-        e->accept( accept );
+        e->setAccepted( accept );
         return;
     }
-    e->accept( false );
+    e->setAccepted( false );
     QTabBar::dragMoveEvent( e );
 }
 

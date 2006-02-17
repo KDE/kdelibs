@@ -99,7 +99,9 @@ KFontChooser::KFontChooser(QWidget *parent,
     i18n( "Here you can choose the font to be used." );
   setWhatsThis(mainWhatsThisText );
 
-  QVBoxLayout *topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
+  QVBoxLayout *topLayout = new QVBoxLayout( this );
+  topLayout->setMargin( 0 );
+  topLayout->setSpacing( KDialog::spacingHint() );
   int checkBoxGap = KDialog::spacingHint() / 2;
 
   QWidget *page;
@@ -109,15 +111,19 @@ KFontChooser::KFontChooser(QWidget *parent,
   {
     page = new QGroupBox( i18n("Requested Font"), this );
     topLayout->addWidget(page);
-    gridLayout = new QGridLayout( page, 5, 3, KDialog::marginHint(), KDialog::spacingHint() );
-    gridLayout->addRowSpacing( 0, fontMetrics().lineSpacing() );
+    gridLayout = new QGridLayout( page );
+    gridLayout->setMargin( KDialog::marginHint() );
+    gridLayout->setSpacing( KDialog::spacingHint() );
+    gridLayout->addItem( new QSpacerItem(0,fontMetrics().lineSpacing()), 0, 0 );
     row = 1;
   }
   else
   {
     page = new QWidget( this );
     topLayout->addWidget(page);
-    gridLayout = new QGridLayout( page, 4, 3, 0, KDialog::spacingHint() );
+    gridLayout = new QGridLayout( page );
+    gridLayout->setMargin( 0 );
+    gridLayout->setSpacing( KDialog::spacingHint() );
   }
 
   //
@@ -138,7 +144,8 @@ KFontChooser::KFontChooser(QWidget *parent,
     familyLabel = 0;
   } else {
     familyCheckbox = 0;
-    familyLabel = new QLabel( i18n("Font:"), page, "familyLabel" );
+    familyLabel = new QLabel( i18n("Font:"), page );
+    familyLabel->setObjectName( "familyLabel" );
     familyLayout->addWidget(familyLabel, 1, Qt::AlignLeft);
   }
   gridLayout->addLayout(familyLayout, row, 0 );
@@ -157,7 +164,8 @@ KFontChooser::KFontChooser(QWidget *parent,
     styleLabel = 0;
   } else {
     styleCheckbox = 0;
-    styleLabel = new QLabel( i18n("Font style:"), page, "styleLabel");
+    styleLabel = new QLabel( i18n("Font style:"), page );
+    styleLabel->setObjectName( "styleLabel" );
     styleLayout->addWidget(styleLabel, 1, Qt::AlignLeft);
   }
   styleLayout->addSpacing( checkBoxGap );
@@ -177,7 +185,8 @@ KFontChooser::KFontChooser(QWidget *parent,
     sizeLabel = 0;
   } else {
     sizeCheckbox = 0;
-    sizeLabel = new QLabel( i18n("Size:"), page, "sizeLabel");
+    sizeLabel = new QLabel( i18n("Size:"), page );
+    sizeLabel->setObjectName( "sizeLabel" );
     sizeLayout->addWidget(sizeLabel, 1, Qt::AlignLeft);
   }
   sizeLayout->addSpacing( checkBoxGap );
@@ -248,24 +257,28 @@ KFontChooser::KFontChooser(QWidget *parent,
            "to be calculated dynamically and adjusted to changing "
            "environment (e.g. widget dimensions, paper size)." );
     sizeIsRelativeCheckBox = new QCheckBox( sizeIsRelativeCBText,
-                                            page,
-                                           "sizeIsRelativeCheckBox" );
+                                            page );
+    sizeIsRelativeCheckBox->setObjectName( "sizeIsRelativeCheckBox" );
     sizeIsRelativeCheckBox->setTristate( diff );
-    QGridLayout *sizeLayout2 = new QGridLayout( 3,2, KDialog::spacingHint()/2, "sizeLayout2" );
+    QGridLayout *sizeLayout2 = new QGridLayout();
+    sizeLayout2->setSpacing( KDialog::spacingHint()/2 );
+    sizeLayout2->setObjectName( "sizeLayout2" );
     gridLayout->addLayout(sizeLayout2, row, 2);
-    sizeLayout2->setColStretch( 1, 1 ); // to prevent text from eating the right border
-    sizeLayout2->addMultiCellWidget( sizeOfFont, 0, 0, 0, 1);
-    sizeLayout2->addMultiCellWidget(sizeListBox, 1,1, 0,1);
+    sizeLayout2->setColumnStretch( 1, 1 ); // to prevent text from eating the right border
+    sizeLayout2->addWidget( sizeOfFont, 0, 0, 1, 2);
+    sizeLayout2->addWidget(sizeListBox, 1,0, 1,2);
     sizeLayout2->addWidget(sizeIsRelativeCheckBox, 2, 0, Qt::AlignLeft);
     sizeIsRelativeCheckBox->setWhatsThis(sizeIsRelativeCBWhatsThisText );
     sizeIsRelativeCheckBox->setToolTip( sizeIsRelativeCBToolTipText );
   }
   else {
     sizeIsRelativeCheckBox = 0L;
-    QGridLayout *sizeLayout2 = new QGridLayout( 2,1, KDialog::spacingHint()/2, "sizeLayout2" );
+    QGridLayout *sizeLayout2 = new QGridLayout();
+    sizeLayout2->setSpacing( KDialog::spacingHint()/2 );
+    sizeLayout2->setObjectName( "sizeLayout2" );
     gridLayout->addLayout(sizeLayout2, row, 2);
     sizeLayout2->addWidget( sizeOfFont, 0, 0);
-    sizeLayout2->addMultiCellWidget(sizeListBox, 1,1, 0,0);
+    sizeLayout2->addWidget(sizeListBox, 1,0);
   }
   QString fontSizeWhatsThisText =
     i18n("Here you can choose the font size to be used." );
@@ -289,13 +302,14 @@ KFontChooser::KFontChooser(QWidget *parent,
   row ++;
 
   row ++;
-  sampleEdit = new QLineEdit( page, "sampleEdit");
+  sampleEdit = new QLineEdit( page );
+  sampleEdit->setObjectName( "sampleEdit");
   QFont tmpFont( KGlobalSettings::generalFont().family(), 64, QFont::Black );
   sampleEdit->setFont(tmpFont);
   sampleEdit->setText(i18n("The Quick Brown Fox Jumps Over The Lazy Dog"));
   sampleEdit->setMinimumHeight( sampleEdit->fontMetrics().lineSpacing() );
   sampleEdit->setAlignment(Qt::AlignCenter);
-  gridLayout->addMultiCellWidget(sampleEdit, 4, 4, 0, 2);
+  gridLayout->addWidget(sampleEdit, 4, 0, 1, 3);
   QString sampleEditWhatsThisText =
     i18n("This sample text illustrates the current settings. "
          "You may edit it to test special characters." );
@@ -308,19 +322,23 @@ KFontChooser::KFontChooser(QWidget *parent,
   {
     page = new QGroupBox( i18n("Actual Font"), this );
     topLayout->addWidget(page);
-    vbox = new QVBoxLayout( page, KDialog::spacingHint() );
+    vbox = new QVBoxLayout( page );
+    vbox->setSpacing( KDialog::spacingHint() );
     vbox->addSpacing( fontMetrics().lineSpacing() );
   }
   else
   {
     page = new QWidget( this );
     topLayout->addWidget(page);
-    vbox = new QVBoxLayout( page, 0, KDialog::spacingHint() );
+    vbox = new QVBoxLayout( page );
+    vbox->setMargin( 0 );
+    vbox->setSpacing( KDialog::spacingHint() );
     QLabel *label = new QLabel( i18n("Actual Font"), page );
     vbox->addWidget( label );
   }
 
-  xlfdEdit = new QLineEdit( page, "xlfdEdit" );
+  xlfdEdit = new QLineEdit( page );
+  xlfdEdit->setObjectName( "xlfdEdit" );
   vbox->addWidget( xlfdEdit );
 
   // lets initialize the display if possible

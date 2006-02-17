@@ -377,14 +377,14 @@ void KColorCells::paintCell( QPainter *painter, int row, int col )
 	if (shade)
         {
 		qDrawShadePanel( painter, 1, 1, cellWidth()-2,
-		    cellHeight()-2, colorGroup(), true, 1, &brush );
+		    cellHeight()-2, palette(), true, 1, &brush );
 		w = 2;
         }
         QColor color = colors[ row * numCols() + col ];
         if (!color.isValid())
 	{
 		if (!shade) return;
-		color = backgroundColor();
+		color = palette().color(backgroundRole());
 	}
 
 	painter->setPen( color );
@@ -573,12 +573,12 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
   combo->addItems( paletteList );
   layout->addWidget(combo);
 
-  sv = new Q3ScrollView( this );
+  sv = new QScrollArea( this );
   QSize cellSize = QSize( mMinWidth, 120);
-  sv->setHScrollBarMode( Q3ScrollView::AlwaysOff);
-  sv->setVScrollBarMode( Q3ScrollView::AlwaysOn);
-  QSize minSize = QSize(sv->verticalScrollBar()->width(), 0);
-  minSize += QSize(sv->frameWidth(), 0);
+  sv->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+  sv->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+  QSize minSize = QSize(sv->verticalScrollBar()->sizeHint().width(), 0);
+  minSize += QSize(sv->frameWidth()*2, 0);
   minSize += QSize(cellSize);
   sv->setFixedSize(minSize);
   layout->addWidget(sv);
@@ -761,7 +761,7 @@ KPaletteTable::setPalette( const QString &_paletteName )
      bool found = false;
      for(int i = 0; i < combo->count(); i++)
      {
-        if (combo->text(i) == paletteName)
+        if (combo->itemText(i) == paletteName)
         {
            combo->setCurrentIndex(i);
            found = true;
@@ -828,9 +828,9 @@ KPaletteTable::setPalette( const QString &_paletteName )
 	       SLOT( slotColorCellSelected( int ) ) );
       connect( cells, SIGNAL( colorDoubleClicked( int ) ),
 	       SLOT( slotColorCellDoubleClicked( int ) ) );
-      sv->addChild( cells );
+      sv->setWidget( cells );
       cells->show();
-      sv->updateScrollBars();
+      //sv->updateScrollBars();
     }
   }
 }
@@ -977,9 +977,11 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   QWidget *page = new QWidget( this );
   setMainWidget( page );
 
-  QGridLayout *tl_layout = new QGridLayout( page, 3, 3, 0, spacingHint() );
+  QGridLayout *tl_layout = new QGridLayout( page );
+  tl_layout->setMargin( 0 );
+  tl_layout->setSpacing( spacingHint() );
   d->tl_layout = tl_layout;
-  tl_layout->addColSpacing( 1, spacingHint() * 2 );
+  tl_layout->addItem( new QSpacerItem(spacingHint()*2, 0), 0, 1 );
 
   //
   // the more complicated part: the left side
@@ -998,7 +1000,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   // a little space between
   l_left->addSpacing(10);
 
-  QGridLayout *l_lbot = new QGridLayout(3, 6);
+  QGridLayout *l_lbot = new QGridLayout();
   l_left->addLayout(l_lbot);
 
   //
@@ -1138,9 +1140,10 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   //
   // and now the entry fields and the patch (=colored box)
   //
-  QGridLayout *l_grid = new QGridLayout( d->l_right, 2, 3);
+  QGridLayout *l_grid = new QGridLayout();
+  d->l_right->addLayout( l_grid );
 
-  l_grid->setColStretch(2, 1);
+  l_grid->setColumnStretch(2, 1);
 
   label = new QLabel( page );
   label->setText(i18n("Name:"));
@@ -1165,7 +1168,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
 
   d->patch = new KColorPatch( page );
   d->patch->setFixedSize(48, 48);
-  l_grid->addMultiCellWidget(d->patch, 0, 1, 0, 0, Qt::AlignHCenter | Qt::AlignVCenter);
+  l_grid->addWidget(d->patch, 0, 0, 2, 1, Qt::AlignHCenter | Qt::AlignVCenter);
   connect( d->patch, SIGNAL( colorChanged( const QColor&)),
 	   SLOT( setColor( const QColor&)));
 

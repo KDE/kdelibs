@@ -33,6 +33,7 @@
 #include <kdialogbase.h>
 #include <qpixmap.h>
 #include <q3gridview.h>
+#include <qscrollarea.h>
 
 #include "kselector.h"
 
@@ -223,7 +224,7 @@ protected:
   QString i18n_namedColors;
   QComboBox *combo;
   KColorCells *cells;
-  Q3ScrollView *sv;
+  QScrollArea *sv;
   KListBox *mNamedColorList;
   KPalette *mPalette;
   int mMinWidth;

@@ -183,7 +183,7 @@ void KPushButton::mouseMoveEvent( QMouseEvent *e )
         return;
     }
 
-    if ( (e->state() & Qt::LeftButton) &&
+    if ( (e->buttons() & Qt::LeftButton) &&
          (e->pos() - startPos).manhattanLength() >
          KGlobalSettings::dndEventDelay() )
     {

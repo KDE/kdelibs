@@ -83,7 +83,7 @@ void KColorButton::setColor( const QColor &c )
 {
   if ( col != c ) {
     col = c;
-    repaint( false );
+    repaint();
     emit changed( col );
   }
 }
@@ -125,13 +125,13 @@ void KColorButton::paintEvent( QPaintEvent* )
   int x, y, w, h;
   labelRect.getRect(&x, &y, &w, &h);
 
-  if (isOn() || isDown()) {
+  if (isChecked() || isDown()) {
     x += style()->pixelMetric( QStyle::PM_ButtonShiftHorizontal );
     y += style()->pixelMetric( QStyle::PM_ButtonShiftVertical   );
   }
 
-  QColor fillCol = isEnabled() ? col : backgroundColor();
-  qDrawShadePanel( &painter, x, y, w, h, colorGroup(), true, 1, NULL);
+  QColor fillCol = isEnabled() ? col : palette().color(backgroundRole());
+  qDrawShadePanel( &painter, x, y, w, h, palette(), true, 1, NULL);
   if ( fillCol.isValid() )
     painter.fillRect( x+1, y+1, w-2, h-2, fillCol );
 
@@ -155,7 +155,7 @@ QSize KColorButton::sizeHint() const
 
 void KColorButton::dragEnterEvent( QDragEnterEvent *event)
 {
-  event->accept( KColorMimeData::canDecode( event->mimeData()) && isEnabled());
+  event->setAccepted( KColorMimeData::canDecode( event->mimeData()) && isEnabled());
 }
 
 void KColorButton::dropEvent( QDropEvent *event)
@@ -191,7 +191,7 @@ void KColorButton::mousePressEvent( QMouseEvent *e)
 
 void KColorButton::mouseMoveEvent( QMouseEvent *e)
 {
-  if( (e->state() & Qt::LeftButton) &&
+  if( (e->buttons() & Qt::LeftButton) &&
     (e->pos()-mPos).manhattanLength() > KGlobalSettings::dndEventDelay() )
   {
     KColorMimeData::createDrag(color(),this)->start();
