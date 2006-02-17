@@ -621,7 +621,7 @@ int KAccelString::maxWeight(int &index, const QString &used)
   index = -1;
 
   for (int pos=0; pos<m_pureText.length(); ++pos)
-    if (used.find(m_pureText[pos], 0, false) == -1 && m_pureText[pos].latin1() != 0)
+    if (used.find(m_pureText[pos], 0, false) == -1 && m_pureText[pos].toLatin1() != 0)
       if (m_weight[pos] > max)
       {
         max = m_weight[pos];

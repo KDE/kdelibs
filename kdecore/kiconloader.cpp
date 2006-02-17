@@ -1189,7 +1189,7 @@ QIcon KIconLoader::loadIconSet( const QString& name, KIcon::Group g, int s,
 #ifdef DELAYED_LOADING_PORTED
     if (g < -1 || g > 6) {
         kDebug() << "KIconLoader::loadIconSet " << name << " " << (int)g << " " << s << endl;
-        qDebug("%s", kBacktrace().latin1());
+        qDebug("%s", qPrintable(kBacktrace());
         abort();
     }
 
