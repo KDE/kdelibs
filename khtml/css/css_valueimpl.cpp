@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2004 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -51,6 +51,17 @@ extern DOM::DOMString getPropertyName(unsigned short id);
 using khtml::FontDef;
 
 using namespace DOM;
+
+// Quotes the string if it needs quoting.
+static DOMString quoteStringIfNeeded(const DOMString &string)
+{
+    // FIXME: Also need to transform control characters into \ sequences.
+    QString s = string.string();
+    s.replace('\\', "\\\\");
+    s.replace('\'', "\\'");
+    return '\'' + s + '\'';
+}
+
 
 CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
     : StyleBaseImpl(parent)
@@ -701,7 +712,7 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	    // ###
 	    break;
 	case CSSPrimitiveValue::CSS_STRING:
-	    // ###
+	    text = quoteStringIfNeeded(m_value.string);
 	    break;
 	case CSSPrimitiveValue::CSS_URI:
             text  = "url(";

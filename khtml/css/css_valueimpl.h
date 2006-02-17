@@ -54,7 +54,7 @@ public:
 
     CSSStyleDeclarationImpl& operator=( const CSSStyleDeclarationImpl&);
 
-    unsigned long length() const;
+    virtual unsigned long length() const;
     CSSRuleImpl *parentRule() const;
     virtual DOM::DOMString removeProperty( int propertyID, bool NonCSSHints = false );
     virtual bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false, bool nonCSSHint = false);
