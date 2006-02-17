@@ -129,7 +129,7 @@ void KMWRlpr::initialize()
 {
 	m_view->clear();
 	QFile	f(QDir::homePath()+"/.rlprrc");
-	if (!f.exists()) f.setName("/etc/rlprrc");
+	if (!f.exists()) f.setFileName("/etc/rlprrc");
 	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
@@ -140,12 +140,12 @@ void KMWRlpr::initialize()
 			line = t.readLine().trimmed();
 			if (line.isEmpty())
 				continue;
-			if ((p=line.find(':')) != -1)
+			if ((p=line.indexOf(':')) != -1)
 			{
 				host = line.left(p).trimmed();
 				Q3ListViewItem	*hitem = new Q3ListViewItem(m_view,host);
 				hitem->setPixmap(0,SmallIcon("kdeprint_computer"));
-				QStringList	prs = QStringList::split(' ',line.right(line.length()-p-1),false);
+				QStringList	prs = line.right(line.length()-p-1).split(' ',QString::SkipEmptyParts);
 				for (QStringList::ConstIterator it=prs.begin(); it!=prs.end(); ++it)
 				{
 					Q3ListViewItem	*pitem = new Q3ListViewItem(hitem,*it);
@@ -157,7 +157,7 @@ void KMWRlpr::initialize()
 	}
 
 	// parse printcap file for local printers
-	f.setName("/etc/printcap");
+	f.setFileName("/etc/printcap");
 	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
@@ -180,7 +180,7 @@ void KMWRlpr::initialize()
 			}
 			if (buffer.isEmpty())
 				continue;
-			int	p = buffer.find(':');
+			int	p = buffer.indexOf(':');
 			if (p != -1)
 			{
 				QString	name = buffer.left(p);

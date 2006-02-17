@@ -100,7 +100,7 @@ void KMRlprManager::loadPrintersConf(const QString& filename)
 			line = t.readLine().trimmed();
 			if (line.isEmpty() || line[0] == '#')
 				continue;
-			QStringList	w = QStringList::split('\t',line,true);
+			QStringList	w = line.split('\t', QString::KeepEmptyParts);
 			if (w.count() < 3)
 				continue;
 
