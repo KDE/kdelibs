@@ -56,7 +56,7 @@ messages:
 	echo ./kdecore/kde-config.cpp.in >> files ;\
 	$(EXTRACTRC) `find $$dirs -maxdepth 1 \( -name "*.rc" -o -name "*.ui" \) ` ./dnssd/kcm_kdnssd.kcfg > rc.cpp; \
 	: > kde.pot ;\
-	$(XGETTEXT) -ktranslate -x qt-messages.pot `cat files` && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot
+	$(XGETTEXT) -ktranslate -x qt-messages.pot rc.cpp `cat files` && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot
 	$(XGETTEXT) common_texts.cpp -o kde.pot
 	rm -f dirs
 
