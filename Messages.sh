@@ -1,4 +1,8 @@
 #! /usr/bin/env bash
+
+exit 1
+### FIXME: why $EXTRACTRC does not get any file? Why are qt-messages.pot and common_texts.cpp unknown
+
 ### TODO: would it not be easier to use -j for xgettext from a copy of qt-messages.pot ?
 cd kabc/scripts && perl ./makeaddressee
 find . -type d | fgrep -v '.svn' | sed -e 's,$,/,' > dirs
