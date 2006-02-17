@@ -10,7 +10,8 @@ kioexec_LDADD   = $(LIB_KIO)
 noinst_HEADERS = main.h
 METASOURCES = AUTO
 
+### TODO: this is already in kio.pot
 messages:
-	$(XGETTEXT) $(kioexec_SOURCES) -o $(podir)/kioexec.pot
+	$(XGETTEXT) rc.cpp main.cpp -o $(podir)/kioexec.pot
 
 include $(top_srcdir)/admin/Doxyfile.am
