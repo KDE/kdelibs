@@ -24,5 +24,5 @@ kdedata_DATA = kde.notifyrc
 
 
 messages:
-	$(XGETTEXT) knotify.cpp -o $(podir)/knotify.pot
+	$(XGETTEXT) rc.cpp knotify.cpp -o $(podir)/knotify.pot
 
