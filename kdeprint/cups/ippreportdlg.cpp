@@ -61,7 +61,7 @@ void IppReportDlg::slotUser1()
 			QString	s = caption() + ": " + QString::number(page);
 			QRect	br = painter.fontMetrics().boundingRect(s);
 			painter.drawText(r.right()-br.width()-5, r.top()-br.height()-4, br.width()+5, br.height()+4, Qt::AlignRight|Qt::AlignTop, s);
-			r.moveBy(0, r.height()-10);
+			r.translate(0, r.height()-10);
 			painter.translate(0, -(r.height()-10));
 			if (r.top() < hh)
 			{
