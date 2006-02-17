@@ -618,7 +618,7 @@ void KCertPart::displayPKCS12() {
 			KSSLX509Map map(c->getSubject());
 			_p12_chain->insertItem(QString::number(++cnt)+" - "+map.getValue("CN"));
 		}
-		_p12_chain->setCurrentItem(0);
+		_p12_chain->setCurrentIndex(0);
 	} else {
 		_p12_chain->clear();
 		_p12_chain->setEnabled(false);
