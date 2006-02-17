@@ -313,7 +313,7 @@ void KFileTreeBranch::slotCanceled( const KUrl& url )
 {
     // ### anything else to do?
     // remove the url from the childrento-recurse-list
-    m_openChildrenURLs.remove( url);
+    m_openChildrenURLs.removeAll( url);
 
     // stop animations etc.
     KFileTreeViewItem *item = findTVIByURL(url);
@@ -452,7 +452,7 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
             /* Since we have listed the children to recurse, we can remove the entry
              * in the list of the URLs to see the children.
              */
-            m_openChildrenURLs.remove(url);
+            m_openChildrenURLs.removeAll(url);
         }
 
         if( nextChild ) /* This implies that idx > -1 */

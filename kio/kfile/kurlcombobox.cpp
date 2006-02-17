@@ -151,7 +151,7 @@ void KUrlComboBox::setURLs( QStringList urls, OverLoadResolving remove )
     // kill duplicates
     while ( it != urls.end() ) {
         while ( urls.count( *it ) > 1 ) {
-            it = urls.remove( it );
+            it = urls.erase( it );
             continue;
         }
         ++it;
@@ -314,8 +314,8 @@ void KUrlComboBox::removeURL( const KUrl& url, bool checkDefaultURLs )
     QMap<int,const KUrlComboItem*>::ConstIterator mit = itemMapper.begin();
     while ( mit != itemMapper.end() ) {
         if ( url.url(-1) == mit.value()->url.url(-1) ) {
-            if ( !itemList.remove( mit.value() ) && checkDefaultURLs )
-                defaultList.remove( mit.value() );
+            if ( !itemList.removeAll( mit.value() ) && checkDefaultURLs )
+                defaultList.removeAll( mit.value() );
         }
         ++mit;
     }
@@ -346,7 +346,7 @@ void KUrlComboBox::updateItem( const KUrlComboItem *item,
 {
     // QComboBox::changeItem() doesn't honor the pixmap when
     // using an editable combobox, so we just remove and insert
-    if ( editable() ) {
+    if ( isEditable() ) {
 	removeItem( index );
 	insertItem( index,
                     icon,

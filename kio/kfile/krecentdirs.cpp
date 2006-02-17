@@ -89,7 +89,7 @@ void KRecentDirs::add(const QString &fileClass, const QString &directory)
    QStringList result;
    KConfig *config = recentdirs_readList(key, result, false);
    // make sure the dir is first in history
-   result.remove(directory);
+   result.removeAll(directory);
    result.prepend(directory);
    while(result.count() > MAX_DIR_HISTORY)
       result.removeLast();
