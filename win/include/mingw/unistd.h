@@ -112,6 +112,8 @@ KDEWIN32_EXPORT void sleep(unsigned int sec);
 
 KDEWIN32_EXPORT int setreuid(uid_t ruid, uid_t euid);
 
+KDEWIN32_EXPORT int initgroups(const char *name, int basegid);
+
 // from kdecore/fakes.c
 
 KDEWIN32_EXPORT int seteuid(uid_t euid);
