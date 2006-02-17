@@ -76,7 +76,7 @@ public:
 	/**
 	Synchronous version of resolveAsync(). Note that resolved(bool) is emitted 
 	before this function returns, 
-	@return TRUE is successful
+	@return true is successful
 	 */
 	bool resolve();
 	
@@ -87,7 +87,7 @@ public:
 	
 Q_SIGNALS:
 	/**
-	Emitted when resolving is complete. Parameter is set to TRUE if it was successful.
+	Emitted when resolving is complete. Parameter is set to true if it was successful.
 	If operating in asynchronous mode this signal can be emitted several times (when 
 	service change)
 	 */

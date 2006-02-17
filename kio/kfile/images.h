@@ -232,16 +232,16 @@ static struct EmbedImage {
     bool alpha;
     const char *name;
 } embed_image_vec[] = {
-    { 16, 16, 32, (const unsigned char*)group_grey_data, 0, 0, TRUE, "group-grey" },
-    { 16, 16, 32, (const unsigned char*)group_data, 0, 0, TRUE, "group" },
-    { 16, 16, 32, (const unsigned char*)mask_data, 0, 0, TRUE, "mask" },
-    { 16, 16, 32, (const unsigned char*)others_grey_data, 0, 0, TRUE, "others-grey" },
-    { 16, 16, 32, (const unsigned char*)others_data, 0, 0, TRUE, "others" },
-    { 16, 16, 32, (const unsigned char*)user_green_data, 0, 0, TRUE, "user-green" },
-    { 16, 16, 32, (const unsigned char*)user_grey_data, 0, 0, TRUE, "user-grey" },
-    { 16, 16, 32, (const unsigned char*)user_data, 0, 0, TRUE, "user" },
-    { 16, 16, 32, (const unsigned char*)yes_data, 0, 0, TRUE, "yes" },
-    { 16, 16, 32, (const unsigned char*)yespartial_data, 0, 0, TRUE, "yespartial" },
+    { 16, 16, 32, (const unsigned char*)group_grey_data, 0, 0, true, "group-grey" },
+    { 16, 16, 32, (const unsigned char*)group_data, 0, 0, true, "group" },
+    { 16, 16, 32, (const unsigned char*)mask_data, 0, 0, true, "mask" },
+    { 16, 16, 32, (const unsigned char*)others_grey_data, 0, 0, true, "others-grey" },
+    { 16, 16, 32, (const unsigned char*)others_data, 0, 0, true, "others" },
+    { 16, 16, 32, (const unsigned char*)user_green_data, 0, 0, true, "user-green" },
+    { 16, 16, 32, (const unsigned char*)user_grey_data, 0, 0, true, "user-grey" },
+    { 16, 16, 32, (const unsigned char*)user_data, 0, 0, true, "user" },
+    { 16, 16, 32, (const unsigned char*)yes_data, 0, 0, true, "yes" },
+    { 16, 16, 32, (const unsigned char*)yespartial_data, 0, 0, true, "yespartial" },
     { 0, 0, 0, 0, 0, 0, 0, 0 }
 };
 
@@ -260,7 +260,7 @@ static const QPixmap& qembed_findImage( const QString& name )
 			    embed_image_vec[i].numColors,
 			    QImage::BigEndian );
 		if ( embed_image_vec[i].alpha )
-		    img->setAlphaBuffer( TRUE );
+		    img->setAlphaBuffer( true );
                 pixmap = new QPixmap( *img );
                 delete img;
 		dict.insert( name, pixmap );

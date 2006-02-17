@@ -594,7 +594,7 @@ UIServer::UIServer()
   // setup toolbar
   toolBar()->insertButton("editdelete", TOOL_CANCEL,
                           SIGNAL(clicked()), this,
-                          SLOT(slotCancelCurrent()), FALSE, i18n("Cancel"));
+                          SLOT(slotCancelCurrent()), false, i18n("Cancel"));
   toolBar()->insertButton("configure", TOOL_CONFIGURE,
                           SIGNAL(clicked()), this,
                           SLOT(slotConfigure()), true, i18n("Settings..."));
@@ -1134,11 +1134,11 @@ void UIServer::slotSelection() {
 
   for ( ; it.current(); ++it ) {
     if ( it.current()->isSelected() ) {
-      toolBar()->setItemEnabled( TOOL_CANCEL, TRUE);
+      toolBar()->setItemEnabled( TOOL_CANCEL, true );
       return;
     }
   }
-  toolBar()->setItemEnabled( TOOL_CANCEL, FALSE);
+  toolBar()->setItemEnabled( TOOL_CANCEL, false );
 }
 
 int UIServer::messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )

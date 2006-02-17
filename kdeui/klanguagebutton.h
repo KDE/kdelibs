@@ -143,7 +143,7 @@ public:
    */
   QString current() const;
   /**
-   * Returns TRUE if the combobox contains id.
+   * Returns true if the combobox contains id.
    */
   bool contains( const QString & id ) const;
   /**

@@ -141,7 +141,7 @@ void SmbView::init()
 		while (!smb_stream.atEnd ())
 		{
 			QString smb_line = smb_stream.readLine ();
-			if (smb_line.contains (wins_keyword, FALSE) > 0)
+			if (smb_line.contains (wins_keyword, false) > 0)
 			{
 				QString key = smb_line.section('=', 0, 0);
 				key = key.stripWhiteSpace();

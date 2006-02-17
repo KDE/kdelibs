@@ -57,12 +57,12 @@ public:
 	virtual void startQuery();
 
 	/**
-	Returns TRUE if query is already running
+	Returns true if query is already running
 	 */
 	bool isRunning() const;
 
 	/**
-	Returns TRUE if all currently announced services has
+	Returns true if all currently announced services has
 	been reported. It does not mean that no more services can
 	be found later and it is not related to isRunning()
 	 */

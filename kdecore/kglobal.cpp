@@ -222,7 +222,7 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID impLoad )
 	}
 	if (reason == DLL_PROCESS_DETACH)
         kglobal_freeAll();
-    return TRUE;
+    return true;
 }
 #else
 __attribute__((destructor))
