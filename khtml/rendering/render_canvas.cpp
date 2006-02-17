@@ -182,8 +182,8 @@ void RenderCanvas::layout()
     int docH = docHeight();
 
     if (!m_pagedMode) {
-        bool vss = m_view->verticalScrollBar()->isShown();
-        bool hss = m_view->horizontalScrollBar()->isShown();
+        bool vss = !m_view->verticalScrollBar()->isHidden();
+        bool hss = !m_view->horizontalScrollBar()->isHidden();
         QSize s = m_view->viewportSize(docW, docH);
 
         // content size, with scrollbar hysteresis

@@ -179,7 +179,7 @@ static inline QString toLatin( int number, int base ) {
         number /= 26;
     }
     QString str;
-    str.setLength(letters.size());
+    str.resize(letters.size());
     int i=0;
     while(!letters.isEmpty()) {
         str[i++] = letters.front();
@@ -206,7 +206,7 @@ static inline QString toAlphabetic( int number, int base, const QChar alphabet[]
         number /= base;
     }
     QString str;
-    str.setLength(letters.size());
+    str.resize(letters.size());
     int i=0;
     while(!letters.isEmpty()) {
         str[i++] = letters.front();
