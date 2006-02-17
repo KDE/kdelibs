@@ -49,7 +49,7 @@ messages:
 	mfs=`find . -name Makefile.am | xargs egrep -l '^messages:'` ;\
 	msh=`find . -name Messages.sh`; \
 	for dir in $$mfs $$msh; do \
-	  if test "$$dir" != "./Makefile.am"; then \
+	  if test "$$dir" != "./Makefile.am" -a "$$dir" != "./Messages.sh"; then \
 	    dir=`dirname $$dir` ;\
 	    egrep -v "^$$dir" dirs > dirs.new && mv dirs.new dirs ;\
 	  fi ;\
