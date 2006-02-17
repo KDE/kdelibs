@@ -1,14 +1,17 @@
 #! /usr/bin/env python
 
+# only for windows 
+
 Import('env')
+
 
 obj = env.genobj('program',env)
 obj.vnum     = '1.0.0'
 obj.target   = 'iceauth'
-obj.source   = "iceauth.c process.c"
-obj.includes = "../../dcop/KDE-ICE ../../dcop ../../kdecore"
-obj.libpaths = "../../dcop .."
-obj.libs     = "DCOP kdewin32"
+obj.source   = 'iceauth.c process.c'
+obj.includes = '. .. ../KDE-ICE'
+obj.libpaths = '../KDE-ICE'
+obj.libs     = 'kICE kdewin32'
 obj.instdir  = env['KDEBIN']
 
 obj.execute()

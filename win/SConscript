@@ -2,11 +2,50 @@
 
 Import('env')
 
-env.subdirs('iceauth')
-
 install_headers = """
 include/kdelibs_export_win.h
 """
+
+kdewin32_sources = """
+ src/bootstrap.cpp
+ src/dummy.cpp
+ src/fcntl.c
+ src/fsync.c
+ src/getenv.c
+ src/grp.c
+ src/inet.c
+ src/kde_file_win.c
+ src/mmap.c
+ src/net.c
+ src/pwd.c
+ src/readdir.c
+ src/realpath.c
+ src/resource.c
+ src/signal.c
+ src/stdlib.c
+ src/string.c
+ src/syslog.c
+ src/time.c
+ src/uname.c
+ src/unistd.c
+ src/win32_utils.c
+ src/win32_utils2.cpp
+"""
+
+
+# libkdewin23 - library for windows support
+obj = env.qt4obj('shlib',env)
+#obj.vnum     = '6.0.2'
+obj.target   = 'kdewin32'
+obj.source   = kdewin32_sources
+obj.uselib   = 'QT QTCORE QT3SUPPORT'
+obj.ccflags  = '-DUNICODE -DWIN32_LEAN_AND_MEAN'
+if env['CC'] == 'gcc': 
+	obj.includes = 'include include/mingw'
+else:
+	obj.includes = 'include include/msvc'
+obj.execute()
+
 
 env.bksys_insttype( 'KDEINCLUDE', '', install_headers )
 

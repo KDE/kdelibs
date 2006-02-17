@@ -5,12 +5,12 @@ Import('env')
 
 # TODO tests directory is incomplete (ita)
 
-env.subdirs('dcopidl2cpp dcopidlng client tests')
+subdirs = 'dcopidl2cpp dcopidlng client tests'
 
 if env['WINDOWS']:
-	ice_ccflags = ' -DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DTCPCONN -DANSICPP ' 
-else:
-	ice_ccflags = '-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DUNIXCONN -DANSICPP'
+	subdirs = 'KDE-ICE iceauth ' + subdirs
+
+env.subdirs(subdirs)
 
 ice_sources="""
 KDE-ICE/accept.c
@@ -39,12 +39,17 @@ KDE-ICE/watch.c
 obj = env.qt4obj('shlib',env)
 obj.vnum     = '6.0.2'
 obj.target   = 'DCOP'
-obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp' + ice_sources
+obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp'
 obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.includes = 'KDE-ICE'
-obj.ccflags += ice_ccflags
 if env['WINDOWS']:
+	obj.ccflags   = '-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DTCPCONN -DANSICPP ' 
 	obj.ccflags  += ' -DKICE_EXPORT=DCOP_EXPORT -DKDECORE_EXPORT= '
+	obj.libs      = 'kICE'
+	obj.libpaths  = 'KDE-ICE'
+else:
+	obj.ccflags  = '-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DUNIXCONN -DANSICPP'
+ 	obj.source  += ice_sources
 obj.execute()
 
 # dcopserver program
@@ -55,9 +60,11 @@ obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.libpaths = '.'
 obj.libs     = 'DCOP'
 
-#if env['WINDOWS']:
-#	obj.ccflags  += ' -Dkdemain=main'
- 		
+if env['WINDOWS']:
+	obj.ccflags  += ' -Dkdemain=main'
+	obj.libs     += ' kICE'
+	obj.libpaths += ' KDE-ICE'
+		
 obj.execute()
 
 # generate dcop-path.h, depends on PREFIX (rebuild if the variable PREFIX changes)

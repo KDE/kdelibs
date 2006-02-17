@@ -18,9 +18,9 @@
 */
 
 #include <winposix_export.h>
+#include <grp.h>
 #include <windows.h>
 
-#include <grp.h>
 
 /* these functions always fail. for win32 */
 

@@ -30,6 +30,9 @@ set(kICE_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/globals.c
 )
 
+if (WIN32)
+add_subdirectory( iceauth )
+endif (WIN32)
 add_subdirectory( dcopidlng )
 add_subdirectory( dcopidl2cpp )
 add_subdirectory( client )

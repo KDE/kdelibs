@@ -45,8 +45,6 @@ endif(MINGW)
 
 add_definitions(-DUNICODE -DWIN32_LEAN_AND_MEAN )
 
-add_subdirectory(iceauth)
-
 set(win_LIB_SRCS
    src/bootstrap.cpp
    src/dummy.cpp
