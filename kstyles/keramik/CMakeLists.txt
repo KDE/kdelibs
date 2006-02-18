@@ -39,8 +39,8 @@ kde4_add_plugin(keramik ${keramik_PART_SRCS})
 
 target_link_libraries(keramik  ${QT_AND_KDECORE_LIBS} kdefx )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/plugins/styles keramik )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR}/plugins/styles/ keramik )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/styles keramik )
+install_targets(${PLUGIN_INSTALL_DIR}/plugins/styles/ keramik )
 
 
 ########### next target ###############

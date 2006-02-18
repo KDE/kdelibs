@@ -23,7 +23,7 @@ kde4_add_library(knotifyconfig SHARED ${knotifyconfig_LIB_SRCS})
 target_link_libraries(knotifyconfig  ${QT_AND_KDECORE_LIBS} kdeui kio)
 
 set_target_properties(knotifyconfig PROPERTIES VERSION 1.0.1 SOVERSION 1 )
-install_targets(${KDE4_LIB_INSTALL_DIR} knotifyconfig )
+install_targets(${LIB_INSTALL_DIR} knotifyconfig )
 
 
 ########### install files ###############

@@ -17,13 +17,13 @@ kde4_add_plugin(kded_test ${kded_test_PART_SRCS})
 
 target_link_libraries(kded_test  ${QT_AND_KDECORE_LIBS} )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kded_test )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kded_test )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_test )
+install_targets(${PLUGIN_INSTALL_DIR} kded_test )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR}/kded FILES test.desktop )
+install_files( ${SERVICES_INSTALL_DIR}/kded FILES test.desktop )
 
 kde4_footer()
 

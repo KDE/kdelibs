@@ -19,7 +19,7 @@ kde4_add_kdeinit_executable( kio_http_cache_cleaner ${kio_http_cache_cleaner_KDE
 
 target_link_libraries(kdeinit_kio_http_cache_cleaner  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kio_http_cache_cleaner )
+install_targets(${LIB_INSTALL_DIR} kdeinit_kio_http_cache_cleaner )
 
 target_link_libraries( kio_http_cache_cleaner kdeinit_kio_http_cache_cleaner )
 install_targets(/bin kio_http_cache_cleaner )
@@ -40,13 +40,13 @@ kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
 
 target_link_libraries(kio_http  ${QT_AND_KDECORE_LIBS} kio kntlm )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kio_http )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR}  kio_http )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_http )
+install_targets(${PLUGIN_INSTALL_DIR}  kio_http )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR} FILES http_cache_cleaner.desktop http.protocol https.protocol                webdav.protocol webdavs.protocol )
+install_files( ${SERVICES_INSTALL_DIR} FILES http_cache_cleaner.desktop http.protocol https.protocol                webdav.protocol webdavs.protocol )
 
 kde4_create_doxygen_docs(  )
 

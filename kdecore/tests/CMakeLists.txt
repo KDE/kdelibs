@@ -578,8 +578,8 @@ kde4_add_plugin(klibloadertestmodule WITH_PREFIX ${klibloadertestmodule_PART_SRC
 
 target_link_libraries(klibloadertestmodule  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} klibloadertestmodule )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} klibloadertestmodule )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
+install_targets(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
 
 endif(KDE4_BUILD_TESTS)
 

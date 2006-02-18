@@ -5,7 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### install files ###############
 
-install_files( ${KDE4_MIME_DIR}/message FILES rfc822.desktop news.desktop )
+install_files( ${MIME_INSTALL_DIR}/message FILES rfc822.desktop news.desktop )
 
 kde4_footer()
 

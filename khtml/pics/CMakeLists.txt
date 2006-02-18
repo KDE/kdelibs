@@ -7,7 +7,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 
 #define exclude file from local/global
-kde4_install_icons( ${KDE4_DATA_DIR}/khtml/icons crystalsvg )
+kde4_install_icons( ${DATA_INSTALL_DIR}/khtml/icons crystalsvg )
 
 kde4_footer()
 

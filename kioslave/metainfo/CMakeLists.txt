@@ -16,13 +16,13 @@ kde4_add_plugin(kio_metainfo ${kio_metainfo_PART_SRCS})
 
 target_link_libraries(kio_metainfo  ${QT_AND_KDECORE_LIBS} kio )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kio_metainfo )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kio_metainfo )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_metainfo )
+install_targets(${PLUGIN_INSTALL_DIR} kio_metainfo )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR} FILES metainfo.protocol )
+install_files( ${SERVICES_INSTALL_DIR} FILES metainfo.protocol )
 
 kde4_footer()
 

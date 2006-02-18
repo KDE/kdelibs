@@ -128,7 +128,7 @@ kde4_add_kdeinit_executable( klauncher ${klauncher_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_klauncher  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_klauncher )
+install_targets(${LIB_INSTALL_DIR} kdeinit_klauncher )
 
 target_link_libraries( klauncher kdeinit_klauncher )
 install_targets(/bin klauncher )

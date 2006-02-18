@@ -5,7 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/LICENSES FILES BSD GPL_V2 LGPL_V2 QPL_V1.0 ARTISTIC )
+install_files( ${DATA_INSTALL_DIR}/LICENSES FILES BSD GPL_V2 LGPL_V2 QPL_V1.0 ARTISTIC )
 
 kde4_footer()
 

@@ -5,7 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### install files ###############
 
-install_files( ${KDE4_MIME_DIR}/model FILES vrml.desktop )
+install_files( ${MIME_INSTALL_DIR}/model FILES vrml.desktop )
 
 kde4_footer()
 

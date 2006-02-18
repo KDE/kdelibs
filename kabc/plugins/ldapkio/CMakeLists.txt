@@ -17,8 +17,8 @@ kde4_add_library(kabc_ldapkio SHARED ${kabc_ldapkio_LIB_SRCS})
 
 target_link_libraries(kabc_ldapkio  ${QT_AND_KDECORE_LIBS} kabc kio )
 
-kde4_install_libtool_file(${KDE4_LIB_INSTALL_DIR} kabc_ldapkio )
-install_targets(${KDE4_LIB_INSTALL_DIR} kabc_ldapkio )
+kde4_install_libtool_file(${LIB_INSTALL_DIR} kabc_ldapkio )
+install_targets(${LIB_INSTALL_DIR} kabc_ldapkio )
 
 
 ########### next target ###############
@@ -31,13 +31,13 @@ kde4_add_plugin(kabc_ldapkio ${kabc_ldapkio_PART_SRCS})
 
 target_link_libraries(kabc_ldapkio  ${QT_AND_KDECORE_LIBS} )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kabc_ldapkio )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kabc_ldapkio )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_ldapkio )
+install_targets(${PLUGIN_INSTALL_DIR} kabc_ldapkio )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR}/kresources/kabc FILES ldapkio.desktop )
+install_files( ${SERVICES_INSTALL_DIR}/kresources/kabc FILES ldapkio.desktop )
 install_files( /include/kabc FILES resourceldapkio.h )
 
 kde4_footer()

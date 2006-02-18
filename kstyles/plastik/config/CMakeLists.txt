@@ -13,8 +13,8 @@ kde4_add_plugin(kstyle_plastik_config ${kstyle_plastik_config_PART_SRCS})
 
 target_link_libraries(kstyle_plastik_config  ${QT_AND_KDECORE_LIBS} kdeui )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kstyle_plastik_config )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kstyle_plastik_config )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kstyle_plastik_config )
+install_targets(${PLUGIN_INSTALL_DIR} kstyle_plastik_config )
 
 
 ########### install files ###############

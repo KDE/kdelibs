@@ -16,12 +16,12 @@ kde4_add_library(webstyle SHARED ${webstyle_LIB_SRCS})
 target_link_libraries(webstyle  ${QT_AND_KDECORE_LIBS} kdeui )
 
 set_target_properties(webstyle PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(${KDE4_LIB_INSTALL_DIR} webstyle )
+install_targets(${LIB_INSTALL_DIR} webstyle )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kstyle/themes FILES web.themerc )
+install_files( ${DATA_INSTALL_DIR}/kstyle/themes FILES web.themerc )
 
 kde4_footer()
 

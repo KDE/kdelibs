@@ -15,7 +15,7 @@ kde4_add_kdeinit_executable( kconf_update ${kconf_update_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kconf_update  ${QT_AND_KDECORE_LIBS} )
 
-install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kconf_update )
+install_targets(${LIB_INSTALL_DIR} kdeinit_kconf_update )
 
 target_link_libraries( kconf_update kdeinit_kconf_update )
 install_targets(/bin kconf_update )

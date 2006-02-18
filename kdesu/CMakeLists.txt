@@ -24,7 +24,7 @@ kde4_add_library(kdesu SHARED ${kdesu_LIB_SRCS})
 target_link_libraries(kdesu  ${QT_AND_KDECORE_LIBS} )
 
 set_target_properties(kdesu PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(${KDE4_LIB_INSTALL_DIR} kdesu )
+install_targets(${LIB_INSTALL_DIR} kdesu )
 
 
 ########### next target ###############

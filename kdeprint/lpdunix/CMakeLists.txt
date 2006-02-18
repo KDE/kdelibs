@@ -18,13 +18,13 @@ kde4_add_plugin(kdeprint_lpdunix ${kdeprint_lpdunix_PART_SRCS})
 
 target_link_libraries(kdeprint_lpdunix  ${QT_AND_KDECORE_LIBS} kdeprint_management )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_lpdunix )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_lpdunix )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_lpdunix )
+install_targets(${PLUGIN_INSTALL_DIR} kdeprint_lpdunix )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kdeprint/plugins FILES lpdunix.print )
+install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES lpdunix.print )
 
 kde4_footer()
 

@@ -32,7 +32,7 @@ kde4_add_library(kresources SHARED ${kresources_LIB_SRCS})
 target_link_libraries(kresources  ${QT_AND_KDECORE_LIBS} kdeui kio )
 
 set_target_properties(kresources PROPERTIES VERSION 1.2.0 SOVERSION 1 )
-install_targets(${KDE4_LIB_INSTALL_DIR} kresources )
+install_targets(${LIB_INSTALL_DIR} kresources )
 
 
 ########### next target ###############
@@ -45,8 +45,8 @@ kde4_add_plugin(kcm_kresources ${kcm_kresources_PART_SRCS})
 
 target_link_libraries(kcm_kresources  ${QT_AND_KDECORE_LIBS} kresources )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kcm_kresources )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kcm_kresources )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kcm_kresources )
+install_targets(${PLUGIN_INSTALL_DIR} kcm_kresources )
 
 ########### next target ###############
 
@@ -65,7 +65,7 @@ endif(KDE4_BUILD_TESTS)
 ########### install files ###############
 
 install_files( ${XDG_APPS_DIR} FILES kresources.desktop )
-install_files( ${KDE4_SERVICETYPES_DIR} FILES kresources_plugin.desktop kresources_manager.desktop )
+install_files( ${SERVICETYPES_INSTALL_DIR} FILES kresources_plugin.desktop kresources_manager.desktop )
 install_files( /include/kresources FILES resource.h    configwidget.h    factory.h    manageriface.h    managerimpl.h    manager.h    selectdialog.h    configdialog.h    configpage.h )
 
 kde4_create_doxygen_docs(  )

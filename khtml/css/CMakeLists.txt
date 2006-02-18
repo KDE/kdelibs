@@ -8,7 +8,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio ${CMAKE_
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/khtml/css FILES html4.css quirks.css )
+install_files( ${DATA_INSTALL_DIR}/khtml/css FILES html4.css quirks.css )
 
 kde4_footer()
 

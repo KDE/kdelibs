@@ -91,7 +91,7 @@ if(PCRE_FOUND)
 endif(PCRE_FOUND)
 
 set_target_properties(kjs PROPERTIES VERSION 1.2.0 SOVERSION 1 )
-install_targets(${KDE4_LIB_INSTALL_DIR} kjs )
+install_targets(${LIB_INSTALL_DIR} kjs )
 
 
 if(KDE4_BUILD_TESTS)

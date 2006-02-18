@@ -22,14 +22,14 @@ kde4_add_kdeinit_executable( kmcop ${kmcop_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kmcop  ${QT_AND_KDECORE_LIBS} artskde )
 
-install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kmcop )
+install_targets(${LIB_INSTALL_DIR} kdeinit_kmcop )
 
 target_link_libraries( kmcop kdeinit_kmcop )
 install_targets(/bin kmcop )
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR} FILES kmcop.desktop )
+install_files( ${SERVICES_INSTALL_DIR} FILES kmcop.desktop )
 
 kde4_footer()
 

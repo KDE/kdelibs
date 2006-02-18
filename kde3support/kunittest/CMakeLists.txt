@@ -17,7 +17,7 @@ kde4_add_library(kunittest SHARED ${kunittest_LIB_SRCS})
 target_link_libraries(kunittest  ${QT_AND_KDECORE_LIBS} )
 
 set_target_properties(kunittest PROPERTIES VERSION 0.0.0 SOVERSION 0 )
-install_targets(${KDE4_LIB_INSTALL_DIR} kunittest )
+install_targets(${LIB_INSTALL_DIR} kunittest )
 
 
 ########### next target ###############

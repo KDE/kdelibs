@@ -16,8 +16,8 @@ kde4_automoc(${kabc_file_LIB_SRCS})
 kde4_add_library(kabc_file SHARED ${kabc_file_LIB_SRCS})
 target_link_libraries(kabc_file  ${QT_AND_KDECORE_LIBS} kabc)
 
-kde4_install_libtool_file(${KDE4_LIB_INSTALL_DIR} kabc_file )
-install_targets(${KDE4_LIB_INSTALL_DIR} kabc_file )
+kde4_install_libtool_file(${LIB_INSTALL_DIR} kabc_file )
+install_targets(${LIB_INSTALL_DIR} kabc_file )
 
 
 ########### next target ###############
@@ -30,13 +30,13 @@ kde4_add_plugin(kabc_file ${kabc_file_PART_SRCS})
 
 target_link_libraries(kabc_file  ${QT_AND_KDECORE_LIBS} )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kabc_file )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kabc_file )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_file )
+install_targets(${PLUGIN_INSTALL_DIR} kabc_file )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR}/kresources/kabc FILES file.desktop )
+install_files( ${SERVICES_INSTALL_DIR}/kresources/kabc FILES file.desktop )
 install_files( /include/kabc FILES resourcefile.h )
 
 kde4_footer()

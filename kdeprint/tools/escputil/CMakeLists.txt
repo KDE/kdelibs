@@ -13,13 +13,13 @@ kde4_add_plugin(kdeprint_tool_escputil ${kdeprint_tool_escputil_PART_SRCS})
 
 target_link_libraries(kdeprint_tool_escputil  ${QT_AND_KDECORE_LIBS} kdeui )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}  kdeprint_tool_escputil )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_tool_escputil )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}  kdeprint_tool_escputil )
+install_targets(${PLUGIN_INSTALL_DIR} kdeprint_tool_escputil )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kdeprint/tools FILES escputil.desktop )
+install_files( ${DATA_INSTALL_DIR}/kdeprint/tools FILES escputil.desktop )
 
 kde4_footer()
 

@@ -16,13 +16,13 @@ kde4_add_plugin(kspell_hspell ${kspell_hspell_PART_SRCS})
 
 target_link_libraries(kspell_hspell  ${QT_AND_KDECORE_LIBS} kspell2 ${HSPELL_LIBRARIES} )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kspell_hspell )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kspell_hspell )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kspell_hspell )
+install_targets(${PLUGIN_INSTALL_DIR} kspell_hspell )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR} FILES kspell_hspell.desktop )
+install_files( ${SERVICES_INSTALL_DIR} FILES kspell_hspell.desktop )
 
 kde4_footer()
 

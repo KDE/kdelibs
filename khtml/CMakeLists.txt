@@ -289,7 +289,7 @@ kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
 set_target_properties(khtml PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(${KDE4_LIB_INSTALL_DIR} khtml )
+install_targets(${LIB_INSTALL_DIR} khtml )
 
 
 ########### next target ###############
@@ -309,8 +309,8 @@ kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 
 target_link_libraries(khtmlpart  ${QT_AND_KDECORE_LIBS} khtml )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/ khtmlpart )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} khtmlpart )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/ khtmlpart )
+install_targets(${PLUGIN_INSTALL_DIR} khtmlpart )
 
 
 ########### next target ###############
@@ -329,11 +329,11 @@ kde4_automoc(${khtmlimagepart_PART_SRCS})
 
 kde4_add_plugin(khtmlimagepart ${khtmlimagepart_PART_SRCS})
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/ khtmlimagepart  )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/ khtmlimagepart  )
 
 target_link_libraries(khtmlimagepart  ${QT_AND_KDECORE_LIBS} khtml)
 
-install_targets(${KDE4_LIB_INSTALL_DIR}/kde4 khtmlimagepart )
+install_targets(${LIB_INSTALL_DIR}/kde4 khtmlimagepart )
 
 
 if(KDE4_BUILD_TESTS)
@@ -382,8 +382,8 @@ endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR} FILES khtml.desktop khtmlimage.desktop )
-install_files( ${KDE4_DATA_DIR}/khtml FILES khtml.rc khtml_browser.rc khtml_popupmenu.rc )
+install_files( ${SERVICES_INSTALL_DIR} FILES khtml.desktop khtmlimage.desktop )
+install_files( ${DATA_INSTALL_DIR}/khtml FILES khtml.rc khtml_browser.rc khtml_popupmenu.rc )
 install_files( /include FILES khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdeui kio kdefx kparts EXCLUDE test*.* html rendering xml misc pics test  )

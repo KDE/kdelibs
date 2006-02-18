@@ -48,12 +48,12 @@ kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
 target_link_libraries(kutils  ${QT_AND_KDECORE_LIBS} kdeui kio)
 
 set_target_properties(kutils PROPERTIES VERSION 1.2.0 SOVERSION 1 )
-install_targets(${KDE4_LIB_INSTALL_DIR} kutils )
+install_targets(${LIB_INSTALL_DIR} kutils )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICETYPES_DIR} FILES kplugininfo.desktop )
+install_files( ${SERVICETYPES_INSTALL_DIR} FILES kplugininfo.desktop )
 install_files( /include FILES kfind.h kfinddialog.h kreplace.h kreplacedialog.h                    kcmoduleinfo.h kcmoduleloader.h kcmultidialog.h                    kmultitabbar.h kplugininfo.h kcmoduleproxy.h                    kpluginselector.h kcmodulecontainer.h )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdeui kio  )

@@ -5,7 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### install files ###############
 
-install_files( ${KDE4_MIME_DIR}/multipart FILES mixed.desktop x-mixed-replace.desktop )
+install_files( ${MIME_INSTALL_DIR}/multipart FILES mixed.desktop x-mixed-replace.desktop )
 
 kde4_footer()
 

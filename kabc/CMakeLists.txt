@@ -98,13 +98,13 @@ kde4_add_library(kabc SHARED ${kabc_LIB_SRCS})
 target_link_libraries(kabc  ${QT_AND_KDECORE_LIBS} kio kresources )
 
 set_target_properties(kabc PROPERTIES VERSION 1.2.0 SOVERSION 1 )
-install_targets(${KDE4_LIB_INSTALL_DIR} kabc )
+install_targets(${LIB_INSTALL_DIR} kabc )
 
 ########### install files ###############
 
 install_files( /share/autostart FILES kab2kabc.desktop )
-install_files( ${KDE4_DATA_DIR}/kabc FILES countrytransl.map )
-install_files( ${KDE4_SERVICES_DIR}/kresources FILES kabc_manager.desktop )
+install_files( ${DATA_INSTALL_DIR}/kabc FILES countrytransl.map )
+install_files( ${SERVICES_INSTALL_DIR}/kresources FILES kabc_manager.desktop )
 install_files( /include/kabc FILES address.h addressbook.h addressee.h addresseedialog.h    distributionlist.h distributionlistdialog.h distributionlisteditor.h    errorhandler.h field.h format.h formatfactory.h format.h geo.h key.h    phonenumber.h picture.h plugin.h resource.h    secrecy.h sound.h stdaddressbook.h timezone.h    vcardformat.h vcardconverter.h ldifconverter.h    addresslineedit.h addresseelist.h lock.h locknull.h ldif.h    ldapurl.h ldapconfigwidget.h sortmode.h )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdeui EXCLUDE scripts  )

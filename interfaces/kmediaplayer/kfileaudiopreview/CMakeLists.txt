@@ -15,8 +15,8 @@ kde4_add_plugin(kfileaudiopreview ${kfileaudiopreview_PART_SRCS})
 
 target_link_libraries(kfileaudiopreview  ${QT_AND_KDECORE_LIBS} kmediaplayer artskde kio )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kfileaudiopreview )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kfileaudiopreview )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kfileaudiopreview )
+install_targets(${PLUGIN_INSTALL_DIR} kfileaudiopreview )
 
 
 ########### install files ###############

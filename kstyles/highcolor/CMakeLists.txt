@@ -15,8 +15,8 @@ kde4_add_plugin(highcolor ${highcolor_PART_SRCS})
 
 target_link_libraries(highcolor  ${QT_AND_KDECORE_LIBS} kdefx )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} highcolor )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} highcolor )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} highcolor )
+install_targets(${PLUGIN_INSTALL_DIR} highcolor )
 
 
 ########### install files ###############

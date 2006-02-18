@@ -101,8 +101,8 @@ target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARIES} )
 
 set_target_properties(DCOP PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 
-kde4_install_libtool_file(${KDE4_LIB_INSTALL_DIR} DCOP)
-install_targets(${KDE4_LIB_INSTALL_DIR} DCOP )
+kde4_install_libtool_file(${LIB_INSTALL_DIR} DCOP)
+install_targets(${LIB_INSTALL_DIR} DCOP )
 
 
 ########### next target ###############
@@ -115,7 +115,7 @@ kde4_add_kdeinit_executable( dcopserver ${dcopserver_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP ${KDEWIN32_LIBRARIES})
 
-install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_dcopserver )
+install_targets(${LIB_INSTALL_DIR} kdeinit_dcopserver )
 
 target_link_libraries( dcopserver kdeinit_dcopserver )
 install_targets(/bin dcopserver )

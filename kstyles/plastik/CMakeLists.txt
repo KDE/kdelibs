@@ -17,13 +17,13 @@ kde4_add_plugin(plastik ${plastik_PART_SRCS})
 
 target_link_libraries(plastik  ${QT_AND_KDECORE_LIBS} kdefx )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}/plugins/styles plastik)
-install_targets(${KDE4_PLUGIN_INSTALL_DIR}/plugins/styles/ plastik )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/styles plastik)
+install_targets(${PLUGIN_INSTALL_DIR}/plugins/styles/ plastik )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kstyle/themes FILES plastik.themerc )
+install_files( ${DATA_INSTALL_DIR}/kstyle/themes FILES plastik.themerc )
 
 kde4_footer()
 

@@ -9,16 +9,13 @@ if(HAVE_SSL)
    include_directories(${OPENSSL_INCLUDE_DIR})
 endif(HAVE_SSL)
 
-if(ZLIB_FOUND)
-   include_directories(${ZLIB_INCLUDE_DIR})
-endif(ZLIB_FOUND)
-
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
-${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
-${CMAKE_SOURCE_DIR}/kwallet/client
-${CMAKE_SOURCE_DIR}/kdecore/network
-${CMAKE_BINARY_DIR}/kio/kssl
-${CMAKE_BINARY_DIR}/kio
+   ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
+   ${CMAKE_SOURCE_DIR}/kwallet/client
+   ${CMAKE_SOURCE_DIR}/kdecore/network
+   ${CMAKE_BINARY_DIR}/kio/kssl
+   ${CMAKE_BINARY_DIR}/kio
+   ${ZLIB_INCLUDE_DIR}
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
@@ -261,16 +258,16 @@ endif(FAM_FOUND)
 set_target_properties(kio PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 ########### install files ###############
 
-install_targets(${KDE4_LIB_INSTALL_DIR} kio )
+install_targets(${LIB_INSTALL_DIR} kio )
 
-install_files(${KDE4_KCONF_UPDATE_DIR} FILES useragent.pl proxytype.pl )
+install_files(${KCONF_UPDATE_INSTALL_DIR} FILES useragent.pl proxytype.pl )
 
-install_files( ${KDE4_MIME_DIR} FILES magic )
-install_files( ${KDE4_SERVICETYPES_DIR} FILES application.desktop kurifilterplugin.desktop kscan.desktop kdatatool.desktop kfileplugin.desktop kcmodule.desktop )
-install_files( ${KDE4_SERVICES_DIR} FILES data.protocol )
-install_files( ${KDE4_SERVICES_DIR}/kded FILES kpasswdserver.desktop )
-install_files( ${KDE4_SERVICETYPES_DIR} FILES renamedlgplugin.desktop )
-install_files( ${KDE4_DATA_DIR}/kconf_update FILES kioslave.upd )
+install_files( ${MIME_INSTALL_DIR} FILES magic )
+install_files( ${SERVICETYPES_INSTALL_DIR} FILES application.desktop kurifilterplugin.desktop kscan.desktop kdatatool.desktop kfileplugin.desktop kcmodule.desktop )
+install_files( ${SERVICES_INSTALL_DIR} FILES data.protocol )
+install_files( ${SERVICES_INSTALL_DIR}/kded FILES kpasswdserver.desktop )
+install_files( ${SERVICETYPES_INSTALL_DIR} FILES renamedlgplugin.desktop )
+install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kioslave.upd )
 
 kde4_create_doxygen_docs( REFERENCES kdecore kdefx kjs dcop kdeui kio/kio kio/kfile EXCLUDE kssl/kssl  )
 

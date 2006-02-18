@@ -29,15 +29,15 @@ kde4_add_kdeinit_executable( knotify ${knotify_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_knotify  ${QT_AND_KDECORE_LIBS} kdeui )
 
-install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_knotify )
+install_targets(${LIB_INSTALL_DIR} kdeinit_knotify )
 
 target_link_libraries( knotify kdeinit_knotify )
 install_targets(/bin knotify )
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kde FILES kde.notifyrc )
-install_files( ${KDE4_SERVICES_DIR} FILES knotify.desktop )
+install_files( ${DATA_INSTALL_DIR}/kde FILES kde.notifyrc )
+install_files( ${SERVICES_INSTALL_DIR} FILES knotify.desktop )
 
 kde4_footer()
 

@@ -11,7 +11,7 @@ else(WIN32)
    install_programs(/bin FILES dcopidl)
 endif(WIN32)
 
-install_files( ${KDE4_DATA_DIR}/dcopidl FILES Ast.pm Iter.pm kalyptusCxxToDcopIDL.pm kdocAstUtil.pm kdocParseDoc.pm kdocUtil.pm kalyptus )
+install_files( ${DATA_INSTALL_DIR}/dcopidl FILES Ast.pm Iter.pm kalyptusCxxToDcopIDL.pm kdocAstUtil.pm kdocParseDoc.pm kdocUtil.pm kalyptus )
 
 kde4_footer()
 

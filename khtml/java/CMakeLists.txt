@@ -28,8 +28,8 @@ kde4_add_plugin(kjavaappletviewer ${kjavaappletviewer_PART_SRCS})
 
 target_link_libraries(kjavaappletviewer  ${QT_AND_KDECORE_LIBS} kparts )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kjavaappletviewer )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kjavaappletviewer )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kjavaappletviewer )
+install_targets(${PLUGIN_INSTALL_DIR} kjavaappletviewer )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kjava.policy.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
 macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
@@ -37,9 +37,9 @@ macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
 ########### install files ###############
 
 # kjava.policy 
-install_files( ${KDE4_DATA_DIR}/kjava/ FILES kjava.jar kjava.policy pluginsinfo )
-install_files( ${KDE4_SERVICES_DIR} FILES kjavaappletviewer.desktop )
-kde4_install_icons( ${KDE4_DATA_DIR}/kjava/icons crystalsvg )
+install_files( ${DATA_INSTALL_DIR}/kjava/ FILES kjava.jar kjava.policy pluginsinfo )
+install_files( ${SERVICES_INSTALL_DIR} FILES kjavaappletviewer.desktop )
+kde4_install_icons( ${DATA_INSTALL_DIR}/kjava/icons crystalsvg )
 
 kde4_footer()
 

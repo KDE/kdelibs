@@ -5,7 +5,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/dcop ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICETYPES_DIR} FILES dcoptexttospeech.desktop )
+install_files( ${SERVICETYPES_INSTALL_DIR} FILES dcoptexttospeech.desktop )
 install_files( /include FILES kspeech.h kspeechsink.h )
 
 kde4_create_doxygen_docs( REFERENCES kdecore dcop kio kdeui kparts  )

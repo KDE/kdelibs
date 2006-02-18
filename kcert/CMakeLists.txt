@@ -16,14 +16,14 @@ kde4_add_plugin(kcertpart WITH_PREFIX ${kcertpart_PART_SRCS})
 
 target_link_libraries(kcertpart  ${QT_AND_KDECORE_LIBS} kparts )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kcertpart )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kcertpart )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kcertpart )
+install_targets(${PLUGIN_INSTALL_DIR} kcertpart )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR} FILES kcertpart.desktop )
-install_files( ${KDE4_DATA_DIR}/kcertpart FILES kcertpart.rc )
+install_files( ${SERVICES_INSTALL_DIR} FILES kcertpart.desktop )
+install_files( ${DATA_INSTALL_DIR}/kcertpart FILES kcertpart.rc )
 
 kde4_footer()
 

@@ -29,7 +29,7 @@ kde4_add_library(artskde SHARED ${artskde_LIB_SRCS})
 target_link_libraries(artskde  ${QT_AND_KDECORE_LIBS} kio qtmcop soundserver_idl )
 
 set_target_properties(artskde PROPERTIES VERSION 1.2.0 SOVERSION 1 )
-install_targets(${KDE4_LIB_INSTALL_DIR} artskde )
+install_targets(${LIB_INSTALL_DIR} artskde )
 
 
 ########### next target ###############

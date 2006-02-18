@@ -2,7 +2,8 @@ kde4_header()
 
 project(kdecore)
 
-include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} 
+   ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${ZLIB_INCLUDE_DIR})
 
 
 # kdecore_OPTIONAL_SRCS is used to collect source files
@@ -27,13 +28,6 @@ if(BZIP2_FOUND)
   include_directories(${BZIP2_INCLUDE_DIR})
   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} kbzip2filter.cpp )
 endif(BZIP2_FOUND)
-
-
-# compile zlib support if available
-if(ZLIB_FOUND)
-   include_directories(${ZLIB_INCLUDE_DIR})
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} kgzipfilter.cpp )
-endif(ZLIB_FOUND)
 
 
 if (WIN32)
@@ -75,7 +69,7 @@ if (NOT WIN32)
 
    kde4_add_library(kdefakes SHARED fakes.c)
    set_target_properties(kdefakes PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-   install_targets(${KDE4_LIB_INSTALL_DIR} kdefakes )
+   install_targets(${LIB_INSTALL_DIR} kdefakes )
 
    #no ttyname on windows
    kde4_add_executable(kgrantpty kgrantpty.c)
@@ -183,6 +177,7 @@ set(kdecore_LIB_SRCS
    kfilterbase.cpp
    kfilterdev.cpp
    kdedmodule.cpp
+   kgzipfilter.cpp
    network/kresolver.cpp
    network/kresolvermanager.cpp
    network/kresolverworkerbase.cpp
@@ -242,33 +237,33 @@ if(HAVE_LIBDL)
 endif(HAVE_LIBDL)
 
 set_target_properties(kdecore PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(${KDE4_LIB_INSTALL_DIR} kdecore )
+install_targets(${LIB_INSTALL_DIR} kdecore )
 
 
 ########### next target ###############
 
-set(prefix ${KDE4_DIR})
-set(datadir ${KDE4_DIR}${KDE4_DATA_DIR})
-set(exec_prefix ${KDE4_DIR}/bin)
-set(libdir ${KDE4_DIR}/lib)
-set(includedir ${KDE4_DIR}/include)
-set(kde_appsdir ${KDE4_DIR}${KDE4_APPS_DIR} )
-set(kde_bindir ${KDE4_DIR}/bin )
-set(kde_confdir ${KDE4_DIR}${KDE4_CONFIG_DIR})
-set(kde_datadir ${KDE4_DIR}${KDE4_CONFIG_DIR})
-set(kde_htmldir ${KDE4_DIR}${KDE4_HTML_DIR})
-set(kde_icondir ${KDE4_DIR}${ICON_INSTALL_DIR})
-set(kde_kcfgdir ${KDE4_DIR}${KDE4_KCFG_DIR})
-set(kde_locale  ${KDE4_DIR}${KDE4_LOCALE_DIR})
-set(kde_moduledir ${KDE4_DIR}/lib/kde3)
-set(kde_mimedir ${KDE4_DIR}${KDE4_MIME_DIR})
-set(kde_servicesdir ${KDE4_DIR}${KDE4_SERVICES_DIR})
-set(kde_servicetypesdir ${KDE4_DIR}${KDE4_SERVICETYPES_DIR})
-set(kde_sounddir ${KDE4_DIR}${KDE4_SOUND_DIR})
-set(kde_templatesdir ${KDE4_DIR}${KDE4_TEMPLATES_DIR})
-set(kde_wallpaperdir ${KDE4_DIR}${KDE4_WALLPAPER_DIR})
-set(xdg_appsdir  ${KDE4_DIR}${XDG_APPS_DIR})
-set(xdg_directorydir ${KDE4_DIR}${XDG_DIRECTORY_DIR})
+set(prefix              ${CMAKE_INSTALL_PREFIX})
+set(datadir             ${CMAKE_INSTALL_PREFIX}${DATA_INSTALL_DIR})
+set(exec_prefix         ${CMAKE_INSTALL_PREFIX}/bin)
+set(libdir              ${CMAKE_INSTALL_PREFIX}${LIB_INSTALL_DIR})
+set(includedir          ${CMAKE_INSTALL_PREFIX}/include)
+set(kde_appsdir         ${CMAKE_INSTALL_PREFIX}${APPLNK_INSTALL_DIR} )
+set(kde_bindir          ${CMAKE_INSTALL_PREFIX}/bin )
+set(kde_confdir         ${CMAKE_INSTALL_PREFIX}${CONFIG_INSTALL_DIR})
+set(kde_datadir         ${CMAKE_INSTALL_PREFIX}${CONFIG_INSTALL_DIR})
+set(kde_htmldir         ${CMAKE_INSTALL_PREFIX}${HTML_INSTALL_DIR})
+set(kde_icondir         ${CMAKE_INSTALL_PREFIX}${ICON_INSTALL_DIR})
+set(kde_kcfgdir         ${CMAKE_INSTALL_PREFIX}${KCFG_INSTALL_DIR})
+set(kde_locale          ${CMAKE_INSTALL_PREFIX}${LOCALE_INSTALL_DIR})
+set(kde_moduledir       ${CMAKE_INSTALL_PREFIX}${PLUGIN_INSTALL_DIR})
+set(kde_mimedir         ${CMAKE_INSTALL_PREFIX}${MIME_INSTALL_DIR})
+set(kde_servicesdir     ${CMAKE_INSTALL_PREFIX}${SERVICES_INSTALL_DIR})
+set(kde_servicetypesdir ${CMAKE_INSTALL_PREFIX}${SERVICETYPES_INSTALL_DIR})
+set(kde_sounddir        ${CMAKE_INSTALL_PREFIX}${SOUND_INSTALL_DIR})
+set(kde_templatesdir    ${CMAKE_INSTALL_PREFIX}${TEMPLATES_INSTALL_DIR})
+set(kde_wallpaperdir    ${CMAKE_INSTALL_PREFIX}${WALLPAPER_INSTALL_DIR})
+set(xdg_appsdir         ${CMAKE_INSTALL_PREFIX}${XDG_APPS_DIR})
+set(xdg_directorydir    ${CMAKE_INSTALL_PREFIX}${XDG_DIRECTORY_DIR})
 
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kde-config.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp @ONLY)
@@ -284,10 +279,10 @@ install_targets(/bin kde-config)
 
 
 ########### install files ###############
-install_files( ${KDE4_LOCALE_DIR} FILES all_languages )
-install_files( ${KDE4_DATA_DIR}/knotify FILES eventsrc )
-install_files( ${KDE4_CONFIG_DIR} FILES kdebug.areas kdebugrc language.codes )
-install_files( ${KDE4_CONFIG_DIR}/colors FILES 40.colors Web.colors Royal.colors Rainbow.colors )
+install_files( ${LOCALE_INSTALL_DIR} FILES all_languages )
+install_files( ${DATA_INSTALL_DIR}/knotify FILES eventsrc )
+install_files( ${CONFIG_INSTALL_DIR} FILES kdebug.areas kdebugrc language.codes )
+install_files( ${CONFIG_INSTALL_DIR}/colors FILES 40.colors Web.colors Royal.colors Rainbow.colors )
 install_files( /include FILES kconfig.h kconfigskeleton.h   kconfigdata.h ksimpleconfig.h    kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h   kcmdlineargs.h kconfigbackend.h kapplication.h kauthorized.h ktoolinvocation.h   kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h   kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h   kwinmodule.h kwin.h kshortcut.h kkeynative.h kaccel.h    kglobalaccel.h kstdaccel.h kshortcutlist.h kcatalog.h    kcompletion.h kstringhandler.h   kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h    kallocator.h kvmallocator.h kcrash.h krfcdate.h    kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h   krandomsequence.h knotifyclient.h kiconeffect.h    kaudioplayer.h kdcoppropertyproxy.h netwm.h kacceleratormanager.h    netwm_def.h kpixmapprovider.h kstaticdeleter.h     kprocio.h kasyncio.h krandom.h   kbufferedio.h kmimesourcefactory.h kcodecs.h ksocks.h    ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h   kgenericfactory.h kgenericfactory.tcc     ktypelist.h ksortablevaluelist.h kclipboard.h   kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h    kmanagerselection.h kmountpoint.h kuser.h klockfile.h    kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h   kde_file.h ktimezones.h ktzfiletimezone.h kmath.h     kfilterbase.h kfilterdev.h kdatetime.h qtest_kde.h conversion_check.h   kdedmodule.h )
 
 kde4_create_doxygen_docs( REFERENCES dcop kdeui kparts kio EXCLUDE malloc kde_file.h  )

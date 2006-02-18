@@ -21,11 +21,9 @@ if(CUPS_FOUND)
    add_subdirectory(cups)
 endif(CUPS_FOUND)
 
-if(ZLIB_FOUND)
-   include_directories(${ZLIB_INCLUDE_DIR})
-endif(ZLIB_FOUND)
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kded ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories(${ZLIB_INCLUDE_DIR})
 
 
 ########### next target ###############
@@ -42,8 +40,8 @@ kde4_add_plugin(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
 
 target_link_libraries(kded_kdeprintd  ${QT_AND_KDECORE_LIBS} kio )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kded_kdeprintd )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kded_kdeprintd )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_kdeprintd )
+install_targets(${PLUGIN_INSTALL_DIR} kded_kdeprintd )
 
 
 ########### next target ###############
@@ -113,16 +111,16 @@ kde4_add_library(kdeprint SHARED ${kdeprint_LIB_SRCS})
 target_link_libraries(kdeprint  ${QT_AND_KDECORE_LIBS} kparts )
 
 set_target_properties(kdeprint PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(${KDE4_LIB_INSTALL_DIR} kdeprint )
+install_targets(${LIB_INSTALL_DIR} kdeprint )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kdeprint FILES testprint.ps specials.desktop )
-install_files( ${KDE4_CONFIG_DIR} FILES kdeprintrc )
-install_files( ${KDE4_SERVICES_DIR}/kded FILES kdeprintd.desktop )
-install_files( ${KDE4_CONFIG_DIR}/ui FILES kprintpreviewui.rc )
-install_files( ${KDE4_DATA_DIR}/kconf_update FILES kdeprintrc.upd )
+install_files( ${DATA_INSTALL_DIR}/kdeprint FILES testprint.ps specials.desktop )
+install_files( ${CONFIG_INSTALL_DIR} FILES kdeprintrc )
+install_files( ${SERVICES_INSTALL_DIR}/kded FILES kdeprintd.desktop )
+install_files( ${CONFIG_INSTALL_DIR}/ui FILES kprintpreviewui.rc )
+install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kdeprintrc.upd )
 install_files( /include FILES kprinter.h kprintaction.h )
 install_files( /include/kdeprint FILES kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h driver.h kmjobmanager.h kmjob.h )
 

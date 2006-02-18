@@ -30,8 +30,8 @@ if (HAVE_RESOLV_LIBRARY)
    target_link_libraries(kded_proxyscout resolv)
 endif (HAVE_RESOLV_LIBRARY)
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kded_proxyscout )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kded_proxyscout )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_proxyscout )
+install_targets(${PLUGIN_INSTALL_DIR} kded_proxyscout )
 
 
 ########### next target ###############
@@ -49,8 +49,8 @@ install_targets(/bin kpac_dhcp_helper )
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/proxyscout FILES eventsrc )
-install_files( ${KDE4_SERVICES_DIR}/kded FILES proxyscout.desktop )
+install_files( ${DATA_INSTALL_DIR}/proxyscout FILES eventsrc )
+install_files( ${SERVICES_INSTALL_DIR}/kded FILES proxyscout.desktop )
 
 kde4_footer()
 

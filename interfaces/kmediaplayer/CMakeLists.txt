@@ -24,12 +24,12 @@ kde4_add_library(kmediaplayer SHARED ${kmediaplayer_LIB_SRCS})
 target_link_libraries(kmediaplayer  ${QT_AND_KDECORE_LIBS} kparts )
 
 set_target_properties(kmediaplayer PROPERTIES VERSION 0.0.0 SOVERSION 0 )
-install_targets(${KDE4_LIB_INSTALL_DIR} kmediaplayer )
+install_targets(${LIB_INSTALL_DIR} kmediaplayer )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICETYPES_DIR} FILES kmediaplayerengine.desktop kmediaplayer.desktop )
+install_files( ${SERVICETYPES_INSTALL_DIR} FILES kmediaplayerengine.desktop kmediaplayer.desktop )
 install_files( /include/kmediaplayer FILES player.h playerdcopobject.h view.h )
 
 kde4_footer()

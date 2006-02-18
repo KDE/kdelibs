@@ -15,7 +15,7 @@ kde4_add_kdeinit_executable( kded ${kded_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kded  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kded )
+install_targets(${LIB_INSTALL_DIR} kdeinit_kded )
 
 target_link_libraries( kded kdeinit_kded )
 install_targets(/bin kded )
@@ -39,7 +39,7 @@ kde4_add_kdeinit_executable( kbuildsycoca ${kbuildsycoca_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kbuildsycoca  ${QT_AND_KDECORE_LIBS} kio )
 
-install_targets(${KDE4_LIB_INSTALL_DIR} kdeinit_kbuildsycoca )
+install_targets(${LIB_INSTALL_DIR} kdeinit_kbuildsycoca )
 
 target_link_libraries( kbuildsycoca kdeinit_kbuildsycoca )
 install_targets(/bin kbuildsycoca )
@@ -72,9 +72,9 @@ install_targets(/bin kde-menu )
 
 ########### install files ###############
 
-install_files( ${KDE4_SYSCONF_DIR}/xdg/menus FILES applications.menu )
-install_files( ${KDE4_SERVICETYPES_DIR} FILES kdedmodule.desktop )
-install_files( ${KDE4_DATA_DIR}/kconf_update FILES kded.upd )
+install_files( ${SYSCONF_INSTALL_DIR}/xdg/menus FILES applications.menu )
+install_files( ${SERVICETYPES_INSTALL_DIR} FILES kdedmodule.desktop )
+install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kded.upd )
 
 kde4_create_doxygen_docs(  )
 

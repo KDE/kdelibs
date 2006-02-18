@@ -13,13 +13,13 @@ kde4_add_plugin(kabcformat_binary ${kabcformat_binary_PART_SRCS})
 
 target_link_libraries(kabcformat_binary  ${QT_AND_KDECORE_LIBS} kabc )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kabcformat_binary )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kabcformat_binary )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabcformat_binary )
+install_targets(${PLUGIN_INSTALL_DIR} kabcformat_binary )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kabc/formats FILES binary.desktop )
+install_files( ${DATA_INSTALL_DIR}/kabc/formats FILES binary.desktop )
 
 kde4_footer()
 

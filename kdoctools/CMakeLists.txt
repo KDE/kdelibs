@@ -25,8 +25,8 @@ kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
 target_link_libraries(kio_help  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR}  kio_help )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kio_help )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}  kio_help )
+install_targets(${PLUGIN_INSTALL_DIR} kio_help )
 
 
 ########### next target ###############
@@ -39,8 +39,8 @@ kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 
 target_link_libraries(kio_ghelp  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kio_ghelp )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kio_ghelp )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_ghelp )
+install_targets(${PLUGIN_INSTALL_DIR} kio_ghelp )
 
 
 ########### next target ###############
@@ -74,12 +74,12 @@ target_link_libraries(genshortcutents  ${QT_AND_KDECORE_LIBS} )
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR} FILES help.protocol ghelp.protocol )
-install_files( ${KDE4_DATA_DIR}/kconf_update FILES kio_help.upd )
+install_files( ${SERVICES_INSTALL_DIR} FILES help.protocol ghelp.protocol )
+install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kio_help.upd )
 
 install_files( /bin FILES checkXML )
 
-install_files(${KDE4_KCONF_UPDATE_DIR} FILES move_kio_help_cache.sh )
+install_files(${KCONF_UPDATE_INSTALL_DIR} FILES move_kio_help_cache.sh )
 
 kde4_create_doxygen_docs(  )
 

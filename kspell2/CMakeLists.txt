@@ -35,7 +35,7 @@ add_subdirectory( kcmspellchecking )
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICETYPES_DIR} FILES kspellclient.desktop )
+install_files( ${SERVICETYPES_INSTALL_DIR} FILES kspellclient.desktop )
 install_files( /include/kspell2 FILES settings.h filter.h   dictionary.h broker.h   backgroundchecker.h defaultdictionary.h  )
 
 kde4_create_doxygen_docs(  )

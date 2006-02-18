@@ -17,13 +17,13 @@ kde4_add_plugin(kio_ftp ${kio_ftp_PART_SRCS})
 
 target_link_libraries(kio_ftp  ${QT_AND_KDECORE_LIBS} kio )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kio_ftp )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kio_ftp )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_ftp )
+install_targets(${PLUGIN_INSTALL_DIR} kio_ftp )
 
 
 ########### install files ###############
 
-install_files( ${KDE4_SERVICES_DIR} FILES ftp.protocol )
+install_files( ${SERVICES_INSTALL_DIR} FILES ftp.protocol )
 
 kde4_footer()
 

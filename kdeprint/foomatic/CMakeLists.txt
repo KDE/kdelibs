@@ -17,8 +17,8 @@ kde4_add_plugin(kdeprint_foomatic ${kdeprint_foomatic_PART_SRCS})
 
 target_link_libraries(kdeprint_foomatic  ${QT_AND_KDECORE_LIBS} kdeprint_management )
 
-kde4_install_libtool_file(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_foomatic )
-install_targets(${KDE4_PLUGIN_INSTALL_DIR} kdeprint_foomatic )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_foomatic )
+install_targets(${PLUGIN_INSTALL_DIR} kdeprint_foomatic )
 
 
 ########### next target ###############
@@ -38,7 +38,7 @@ install_targets(/bin make_driver_db_foomatic )
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kdeprint/plugins FILES foomatic.print )
+install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES foomatic.print )
 
 kde4_footer()
 
