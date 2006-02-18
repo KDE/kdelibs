@@ -21,7 +21,7 @@
 
 #include <qobject.h>
 
-class KTimezonesTest : public QObject
+class KTimeZonesTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:

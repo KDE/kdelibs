@@ -32,24 +32,24 @@
 #include "kdelibs_export.h"
 #include <ktimezones.h>
 
-class KTzfileTimezoneSource;
-class KTzfileTimezonePrivate;
-class KTzfileTimezoneDataPrivate;
-class KTzfileTimezoneSourcePrivate;
+class KTzfileTimeZoneSource;
+class KTzfileTimeZonePrivate;
+class KTzfileTimeZoneDataPrivate;
+class KTzfileTimeZoneSourcePrivate;
 
 /**
- * The KTzfileTimezone class represents a time zone defined in tzfile(5) format.
+ * The KTzfileTimeZone class represents a time zone defined in tzfile(5) format.
  *
- * It works in partnership with the KTzfileTimezoneSource class which reads and parses the
+ * It works in partnership with the KTzfileTimeZoneSource class which reads and parses the
  * time zone definition files.
  *
  * @short Represents a time zone defined in tzfile(5) format
- * @see KTzfileTimezoneSource, KTzfileTimezoneData
+ * @see KTzfileTimeZoneSource, KTzfileTimeZoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @since 4.0
  */
-class KDECORE_EXPORT KTzfileTimezone : public KTimezone
+class KDECORE_EXPORT KTzfileTimeZone : public KTimeZone
 {
 public:
     /** Time adjustment details */
@@ -70,11 +70,11 @@ public:
      * @param longitude   in degrees (between -180 and +180), UNKNOWN if not known
      * @param comment     description of the time zone, if any
      */
-    KTzfileTimezone(KTzfileTimezoneSource *source, const QString &name,
+    KTzfileTimeZone(KTzfileTimeZoneSource *source, const QString &name,
         const QString &countryCode = QString(), float latitude = UNKNOWN, float longitude = UNKNOWN,
         const QString &comment = QString());
 
-    ~KTzfileTimezone();
+    ~KTzfileTimeZone();
 
     /**
      * Returns the offset of this time zone to UTC at the given local date/time.
@@ -145,7 +145,7 @@ public:
     bool transitionTime(const QDateTime &utcDateTime, Adjustment &adjustment);
 
 private:
-    KTzfileTimezonePrivate *d;
+    KTzfileTimeZonePrivate *d;
 };
 
 
@@ -156,12 +156,12 @@ private:
  * The format is documented in the tzfile(5) manpage.
  *
  * @short Reads and parses tzfile(5) time zone definition files
- * @see KTzfileTimezone, KTzfileTimezoneData
+ * @see KTzfileTimeZone, KTzfileTimeZoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @since 4.0
  */
-class KDECORE_EXPORT KTzfileTimezoneSource : public KTimezoneSource
+class KDECORE_EXPORT KTzfileTimeZoneSource : public KTimeZoneSource
 {
 public:
     /**
@@ -169,8 +169,8 @@ public:
      *
      * @param location the local directory containing the time zone definition files
      */
-    KTzfileTimezoneSource(const QString &location);
-    virtual ~KTzfileTimezoneSource();
+    KTzfileTimeZoneSource(const QString &location);
+    virtual ~KTzfileTimeZoneSource();
 
     /**
      * Returns the local directory containing the time zone definition files.
@@ -183,36 +183,36 @@ public:
      * Parses a tzfile file to extract detailed information for one time zone.
      *
      * @param zone the time zone for which data is to be extracted
-     * @return a KTzfileTimezoneData instance containing the parsed data.
-     *         The caller is responsible for deleting the KTimezoneData instance.
+     * @return a KTzfileTimeZoneData instance containing the parsed data.
+     *         The caller is responsible for deleting the KTimeZoneData instance.
      *         Null is returned on error.
      */
-    virtual KTimezoneData *parse(const KTimezone *zone) const;
+    virtual KTimeZoneData *parse(const KTimeZone *zone) const;
 
 private:
-    KTzfileTimezoneSourcePrivate *d;
+    KTzfileTimeZoneSourcePrivate *d;
 };
 
 
 /**
- * The parsed data returned by KTzfileTimezoneSource.
+ * The parsed data returned by KTzfileTimeZoneSource.
  *
  * @short Parsed data from tzfile(5) time zone definition files
- * @see KTzfileTimezoneSource, KTzfileTimezone
+ * @see KTzfileTimeZoneSource, KTzfileTimeZone
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @since 4.0
  */
-class KTzfileTimezoneData : public KTimezoneData
+class KTzfileTimeZoneData : public KTimeZoneData
 {
-    friend class KTzfileTimezoneSource;
+    friend class KTzfileTimeZoneSource;
 
 public:
-    KTzfileTimezoneData();
-    KTzfileTimezoneData(const KTzfileTimezoneData &);
-    virtual ~KTzfileTimezoneData();
+    KTzfileTimeZoneData();
+    KTzfileTimeZoneData(const KTzfileTimeZoneData &);
+    virtual ~KTzfileTimeZoneData();
 
-    KTzfileTimezoneData &operator=(const KTzfileTimezoneData &);
+    KTzfileTimeZoneData &operator=(const KTzfileTimeZoneData &);
 
     /**
      * Creates a new copy of this object.
@@ -220,9 +220,9 @@ public:
      * Derived classes must reimplement this method to return a copy of the
      * calling instance 
      *
-     * @return copy of this instance. This is a KTzfileTimezoneData pointer.
+     * @return copy of this instance. This is a KTzfileTimeZoneData pointer.
      */
-    virtual KTimezoneData *clone();
+    virtual KTimeZoneData *clone();
 
     /** Details of a change in the rules for computing local time. */
     struct TransitionTime
@@ -325,7 +325,7 @@ protected:
     bool *m_isUTC;
 
 private:
-    KTzfileTimezoneDataPrivate *d;
+    KTzfileTimeZoneDataPrivate *d;
 };
 
 #endif

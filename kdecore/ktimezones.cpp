@@ -91,49 +91,49 @@ static int gmtoff(time_t t)
 
 /******************************************************************************/
 
-class KTimezonesPrivate
+class KTimeZonesPrivate
 {
 public:
-    KTimezonesPrivate() : zones(new KTimezones::ZoneMap())  {}
-    ~KTimezonesPrivate()
+    KTimeZonesPrivate() : zones(new KTimeZones::ZoneMap())  {}
+    ~KTimeZonesPrivate()
     {
         // Autodelete behavior.
-        for (KTimezones::ZoneMap::ConstIterator it = zones->begin(), end = zones->end();  it != end;  ++it)
+        for (KTimeZones::ZoneMap::ConstIterator it = zones->begin(), end = zones->end();  it != end;  ++it)
         {
-            if (nonconstZones.contains(const_cast<KTimezone*>(it.value())))   // only delete zones actually owned
+            if (nonconstZones.contains(const_cast<KTimeZone*>(it.value())))   // only delete zones actually owned
                 delete it.value();
         }
         delete zones;
     }
-    static KTimezone *utc();
+    static KTimeZone *utc();
 
-    KTimezones::ZoneMap *zones;
-    QSet<KTimezone*> nonconstZones;   // member zones owned by KTimezones
+    KTimeZones::ZoneMap *zones;
+    QSet<KTimeZone*> nonconstZones;   // member zones owned by KTimeZones
 };
 
-KTimezone *KTimezonesPrivate::utc()
+KTimeZone *KTimeZonesPrivate::utc()
 {
-    static KTimezone utcZone;
+    static KTimeZone utcZone;
     return &utcZone;
 }
 
 
-KTimezones::KTimezones()
-  : d(new KTimezonesPrivate)
+KTimeZones::KTimeZones()
+  : d(new KTimeZonesPrivate)
 {
 }
 
-KTimezones::~KTimezones()
+KTimeZones::~KTimeZones()
 {
     delete d;
 }
 
-const KTimezones::ZoneMap KTimezones::zones() const
+const KTimeZones::ZoneMap KTimeZones::zones() const
 {
     return *d->zones;
 }
 
-bool KTimezones::add(KTimezone *zone)
+bool KTimeZones::add(KTimeZone *zone)
 {
     if (d->zones->find(zone->name()) != d->zones->end())
         return false;    // name already exists
@@ -142,7 +142,7 @@ bool KTimezones::add(KTimezone *zone)
     return true;
 }
 
-bool KTimezones::addConst(const KTimezone *zone)
+bool KTimeZones::addConst(const KTimeZone *zone)
 {
     if (d->zones->find(zone->name()) != d->zones->end())
         return false;    // name already exists
@@ -150,7 +150,7 @@ bool KTimezones::addConst(const KTimezone *zone)
     return true;
 }
 
-const KTimezone *KTimezones::detach(const KTimezone *zone)
+const KTimeZone *KTimeZones::detach(const KTimeZone *zone)
 {
     if (zone)
     {
@@ -159,7 +159,7 @@ const KTimezone *KTimezones::detach(const KTimezone *zone)
             if (it.value() == zone)
             {
                 d->zones->erase(it);
-                d->nonconstZones.remove(const_cast<KTimezone*>(zone));
+                d->nonconstZones.remove(const_cast<KTimeZone*>(zone));
                 return (zone == utc()) ? 0 : zone;
             }
         }
@@ -167,23 +167,23 @@ const KTimezone *KTimezones::detach(const KTimezone *zone)
     return 0;
 }
 
-const KTimezone *KTimezones::detach(const QString &name)
+const KTimeZone *KTimeZones::detach(const QString &name)
 {
     if (!name.isEmpty())
     {
         ZoneMap::Iterator it = d->zones->find(name);
         if (it != d->zones->end())
         {
-            const KTimezone *zone = it.value();
+            const KTimeZone *zone = it.value();
             d->zones->erase(it);
-            d->nonconstZones.remove(const_cast<KTimezone*>(zone));
+            d->nonconstZones.remove(const_cast<KTimeZone*>(zone));
             return (zone == utc()) ? 0 : zone;
         }
     }
     return 0;
 }
 
-const KTimezone *KTimezones::zone(const QString &name) const
+const KTimeZone *KTimeZones::zone(const QString &name) const
 {
     if (!name.isEmpty())
     {
@@ -194,40 +194,40 @@ const KTimezone *KTimezones::zone(const QString &name) const
     return 0;    // error
 }
 
-const KTimezone *KTimezones::utc()
+const KTimeZone *KTimeZones::utc()
 {
-    return KTimezonesPrivate::utc();
+    return KTimeZonesPrivate::utc();
 }
 
 
 /******************************************************************************/
 
-class KTimezonePrivate
+class KTimeZonePrivate
 {
 public:
-    KTimezonePrivate(KTimezoneSource *src, const QString& nam,
+    KTimeZonePrivate(KTimeZoneSource *src, const QString& nam,
                      const QString &country, float lat, float lon, const QString &cmnt);
-    KTimezonePrivate(const KTimezonePrivate &);
-    ~KTimezonePrivate()  { delete data; }
-    KTimezonePrivate &operator=(const KTimezonePrivate &);
-    static KTimezoneSource *utcSource();
+    KTimeZonePrivate(const KTimeZonePrivate &);
+    ~KTimeZonePrivate()  { delete data; }
+    KTimeZonePrivate &operator=(const KTimeZonePrivate &);
+    static KTimeZoneSource *utcSource();
 
-    KTimezoneSource *source;
+    KTimeZoneSource *source;
     QString name;
     QString countryCode;
     QString comment;
     float   latitude;
     float   longitude;
-    KTimezoneData *data;
+    KTimeZoneData *data;
 
 private:
-    static KTimezoneSource *mUtcSource;
+    static KTimeZoneSource *mUtcSource;
 };
 
-KTimezoneSource *KTimezonePrivate::mUtcSource;
+KTimeZoneSource *KTimeZonePrivate::mUtcSource;
 
 
-KTimezonePrivate::KTimezonePrivate(KTimezoneSource *src, const QString& nam,
+KTimeZonePrivate::KTimeZonePrivate(KTimeZoneSource *src, const QString& nam,
                  const QString &country, float lat, float lon, const QString &cmnt)
   : source(src),
     name(nam),
@@ -239,12 +239,12 @@ KTimezonePrivate::KTimezonePrivate(KTimezoneSource *src, const QString& nam,
 {
     // Detect duff values.
     if (::fabsf(latitude) > 90)
-        latitude = KTimezone::UNKNOWN;
+        latitude = KTimeZone::UNKNOWN;
     if (::fabsf(longitude) > 180)
-        longitude = KTimezone::UNKNOWN;
+        longitude = KTimeZone::UNKNOWN;
 }
 
-KTimezonePrivate::KTimezonePrivate(const KTimezonePrivate &rhs)
+KTimeZonePrivate::KTimeZonePrivate(const KTimeZonePrivate &rhs)
     : source(rhs.source),
       name(rhs.name),
       countryCode(rhs.countryCode),
@@ -258,7 +258,7 @@ KTimezonePrivate::KTimezonePrivate(const KTimezonePrivate &rhs)
         data = 0;
 }
 
-KTimezonePrivate &KTimezonePrivate::operator=(const KTimezonePrivate &rhs)
+KTimeZonePrivate &KTimeZonePrivate::operator=(const KTimeZonePrivate &rhs)
 {
     source      = rhs.source;
     name        = rhs.name;
@@ -274,113 +274,113 @@ KTimezonePrivate &KTimezonePrivate::operator=(const KTimezonePrivate &rhs)
     return *this;
 }
 
-KTimezoneSource *KTimezonePrivate::utcSource()
+KTimeZoneSource *KTimeZonePrivate::utcSource()
 {
     if (!mUtcSource)
-        mUtcSource = new KTimezoneSource;
+        mUtcSource = new KTimeZoneSource;
     return mUtcSource;
 }
 
 
-const float KTimezone::UNKNOWN = 1000.0;
+const float KTimeZone::UNKNOWN = 1000.0;
 
-KTimezone::KTimezone(const QString &name)
-  : d(new KTimezonePrivate(KTimezonePrivate::utcSource(), name, QString(), UNKNOWN, UNKNOWN, QString()))
+KTimeZone::KTimeZone(const QString &name)
+  : d(new KTimeZonePrivate(KTimeZonePrivate::utcSource(), name, QString(), UNKNOWN, UNKNOWN, QString()))
 {
 }
 
-KTimezone::KTimezone(
-    KTimezoneSource *source, const QString &name,
+KTimeZone::KTimeZone(
+    KTimeZoneSource *source, const QString &name,
     const QString &countryCode, float latitude, float longitude,
     const QString &comment)
-  : d(new KTimezonePrivate(source, name, countryCode, latitude, longitude, comment))
+  : d(new KTimeZonePrivate(source, name, countryCode, latitude, longitude, comment))
 {
 }
 
-KTimezone::KTimezone(const KTimezone &rhs)
-  : d(new KTimezonePrivate(*rhs.d))
+KTimeZone::KTimeZone(const KTimeZone &rhs)
+  : d(new KTimeZonePrivate(*rhs.d))
 {
 }
 
-KTimezone::~KTimezone()
+KTimeZone::~KTimeZone()
 {
     delete d;
 }
 
-KTimezone &KTimezone::operator=(const KTimezone &rhs)
+KTimeZone &KTimeZone::operator=(const KTimeZone &rhs)
 {
     d->operator=(*rhs.d);
     return *this;
 }
 
-QString KTimezone::countryCode() const
+QString KTimeZone::countryCode() const
 {
     return d->countryCode;
 }
 
-float KTimezone::latitude() const
+float KTimeZone::latitude() const
 {
     return d->latitude;
 }
 
-float KTimezone::longitude() const
+float KTimeZone::longitude() const
 {
     return d->longitude;
 }
 
-QString KTimezone::comment() const
+QString KTimeZone::comment() const
 {
     return d->comment;
 }
 
-QString KTimezone::name() const
+QString KTimeZone::name() const
 {
     return d->name;
 }
 
-QList<QByteArray> KTimezone::abbreviations() const
+QList<QByteArray> KTimeZone::abbreviations() const
 {
     if (!data(true))
         return QList<QByteArray>();
     return d->data->abbreviations();
 }
 
-QByteArray KTimezone::abbreviation(const QDateTime &utcDateTime) const
+QByteArray KTimeZone::abbreviation(const QDateTime &utcDateTime) const
 {
     if (utcDateTime.timeSpec() != Qt::UTC  ||  !data(true))
         return QByteArray();
     return d->data->abbreviation(utcDateTime);
 }
 
-QList<int> KTimezone::UTCOffsets() const
+QList<int> KTimeZone::UTCOffsets() const
 {
     if (!data(true))
         return QList<int>();
     return d->data->UTCOffsets();
 }
 
-const KTimezoneData *KTimezone::data(bool create) const
+const KTimeZoneData *KTimeZone::data(bool create) const
 {
     if (create && !d->data)
         d->data = d->source->parse(this);
     return d->data;
 }
 
-void KTimezone::setData(KTimezoneData *data)
+void KTimeZone::setData(KTimeZoneData *data)
 {
     if (d->data)
         delete d->data;
     d->data = data;
 }
 
-bool KTimezone::parse() const
+bool KTimeZone::parse() const
 {
     delete d->data;
     d->data = d->source->parse(this);
     return d->data;
 }
 
-QDateTime KTimezone::toUTC(const QDateTime &zoneDateTime) const
+QDateTime KTimeZone::toUTC(const QDateTime &zoneDateTime) const
 {
     if (!zoneDateTime.isValid()  ||  zoneDateTime.timeSpec() != Qt::LocalTime)
         return QDateTime();
@@ -390,7 +390,7 @@ QDateTime KTimezone::toUTC(const QDateTime &zoneDateTime) const
     return dt.addSecs(-secs);
 }
 
-QDateTime KTimezone::toZoneTime(const QDateTime &utcDateTime) const
+QDateTime KTimeZone::toZoneTime(const QDateTime &utcDateTime) const
 {
     if (utcDateTime.timeSpec() != Qt::UTC)
         return QDateTime();
@@ -400,7 +400,7 @@ QDateTime KTimezone::toZoneTime(const QDateTime &utcDateTime) const
     return dt;
 }
 
-QDateTime KTimezone::convert(const KTimezone *newZone, const QDateTime &zoneDateTime) const
+QDateTime KTimeZone::convert(const KTimeZone *newZone, const QDateTime &zoneDateTime) const
 {
     if (newZone == this)
     {
@@ -411,28 +411,28 @@ QDateTime KTimezone::convert(const KTimezone *newZone, const QDateTime &zoneDate
     return newZone->toZoneTime(toUTC(zoneDateTime));
 }
 
-int KTimezone::offsetAtZoneTime(const QDateTime &, int *secondOffset) const
+int KTimeZone::offsetAtZoneTime(const QDateTime &, int *secondOffset) const
 {
     if (secondOffset)
         *secondOffset = 0;
     return 0;
 }
 
-int KTimezone::offsetAtUTC(const QDateTime &utcDateTime) const
+int KTimeZone::offsetAtUTC(const QDateTime &utcDateTime) const
 {
     if (!utcDateTime.isValid()  ||  utcDateTime.timeSpec() != Qt::UTC)    // check for invalid time
         return 0;
     return 0;
 }
 
-int KTimezone::offset(time_t t) const
+int KTimeZone::offset(time_t t) const
 {
     if (t == (time_t)-1)    // check for invalid time
         return 0;
     return 0;
 }
 
-int KTimezone::currentOffset(Qt::TimeSpec basis) const
+int KTimeZone::currentOffset(Qt::TimeSpec basis) const
 {
     // Get current offset of this time zone to UTC
     time_t now = time(0);
@@ -453,21 +453,21 @@ int KTimezone::currentOffset(Qt::TimeSpec basis) const
     return 0;
 }
 
-bool KTimezone::isDstAtUTC(const QDateTime &utcDateTime) const
+bool KTimeZone::isDstAtUTC(const QDateTime &utcDateTime) const
 {
     if (!utcDateTime.isValid()  ||  utcDateTime.timeSpec() != Qt::UTC)    // check for invalid time
         return false;
     return false;
 }
 
-bool KTimezone::isDst(time_t t) const
+bool KTimeZone::isDst(time_t t) const
 {
     if (t == (time_t)-1)    // check for invalid time
         return false;
     return false;
 }
 
-QDateTime KTimezone::fromTime_t(time_t t)
+QDateTime KTimeZone::fromTime_t(time_t t)
 {
     if (t < 0)
       return QDateTime();
@@ -477,7 +477,7 @@ QDateTime KTimezone::fromTime_t(time_t t)
     return utc;
 }
 
-time_t KTimezone::toTime_t(const QDateTime &utcDateTime)
+time_t KTimeZone::toTime_t(const QDateTime &utcDateTime)
 {
     if (utcDateTime.timeSpec() != Qt::UTC)
         return (time_t)-1;
@@ -493,38 +493,38 @@ time_t KTimezone::toTime_t(const QDateTime &utcDateTime)
 
 /******************************************************************************/
 
-KTimezoneData *KTimezoneSource::parse(const KTimezone *) const
+KTimeZoneData *KTimeZoneSource::parse(const KTimeZone *) const
 {
-    return new KTimezoneData;
+    return new KTimeZoneData;
 }
 
 
 /******************************************************************************/
 
-KTimezoneData::KTimezoneData()
+KTimeZoneData::KTimeZoneData()
 { }
 
-KTimezoneData::~KTimezoneData()
+KTimeZoneData::~KTimeZoneData()
 { }
 
-KTimezoneData *KTimezoneData::clone()
+KTimeZoneData *KTimeZoneData::clone()
 {
-    return new KTimezoneData;
+    return new KTimeZoneData;
 }
 
-QList<QByteArray> KTimezoneData::abbreviations() const
+QList<QByteArray> KTimeZoneData::abbreviations() const
 {
     QList<QByteArray> abbrs;
     abbrs.append("UTC");
     return abbrs;
 }
 
-QByteArray KTimezoneData::abbreviation(const QDateTime &) const
+QByteArray KTimeZoneData::abbreviation(const QDateTime &) const
 {
     return "UTC";
 }
 
-QList<int> KTimezoneData::UTCOffsets() const
+QList<int> KTimeZoneData::UTCOffsets() const
 {
     QList<int> offsets;
     offsets.append(0);
@@ -534,56 +534,56 @@ QList<int> KTimezoneData::UTCOffsets() const
 
 /******************************************************************************/
 
-class KSystemTimezonesPrivate : public KTimezones
+class KSystemTimeZonesPrivate : public KTimeZones
 {
 public:
-    static KSystemTimezonesPrivate *instance();
-    const KTimezone *local();
+    static KSystemTimeZonesPrivate *instance();
+    const KTimeZone *local();
     static QString zoneinfoDir()   { instance();  return m_zoneinfoDir; }
 
 private:
-    KSystemTimezonesPrivate() {}
+    KSystemTimeZonesPrivate() {}
     void readZoneTab();
     static QString calcChecksum(const QString &zoneName, qlonglong size);
     static float convertCoordinate(const QString &coordinate);
 
-    static KSystemTimezonesPrivate *m_instance;
-    static KSystemTimezoneSource *m_source;
+    static KSystemTimeZonesPrivate *m_instance;
+    static KSystemTimeZoneSource *m_source;
     static QString m_zoneinfoDir;
     typedef QMap<QString, QString> MD5Map;    // zone name, checksum
     static MD5Map  m_md5Sums;
 };
 
-KSystemTimezonesPrivate         *KSystemTimezonesPrivate::m_instance = 0;
-KSystemTimezoneSource           *KSystemTimezonesPrivate::m_source = 0;
-QString                          KSystemTimezonesPrivate::m_zoneinfoDir;
-KSystemTimezonesPrivate::MD5Map  KSystemTimezonesPrivate::m_md5Sums;
+KSystemTimeZonesPrivate         *KSystemTimeZonesPrivate::m_instance = 0;
+KSystemTimeZoneSource           *KSystemTimeZonesPrivate::m_source = 0;
+QString                          KSystemTimeZonesPrivate::m_zoneinfoDir;
+KSystemTimeZonesPrivate::MD5Map  KSystemTimeZonesPrivate::m_md5Sums;
 
 
-const KTimezone *KSystemTimezones::local()
+const KTimeZone *KSystemTimeZones::local()
 {
-    return KSystemTimezonesPrivate::instance()->local();
+    return KSystemTimeZonesPrivate::instance()->local();
 }
 
-QString KSystemTimezones::zoneinfoDir()
+QString KSystemTimeZones::zoneinfoDir()
 {
-    return KSystemTimezonesPrivate::zoneinfoDir();
+    return KSystemTimeZonesPrivate::zoneinfoDir();
 }
 
-KTimezones *KSystemTimezones::timezones()
+KTimeZones *KSystemTimeZones::timezones()
 {
-    return KSystemTimezonesPrivate::instance();
+    return KSystemTimeZonesPrivate::instance();
 }
 
 /*
  * Initialisation can be very calculation intensive, so ensure that only one
  * instance is ever constructed by making the constructor private.
  */
-KSystemTimezonesPrivate *KSystemTimezonesPrivate::instance()
+KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
 {
     if (!m_instance)
     {
-        m_instance = new KSystemTimezonesPrivate;
+        m_instance = new KSystemTimeZonesPrivate;
         // Go read the database.
         //
         // On Windows, HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Time Zones
@@ -597,9 +597,9 @@ KSystemTimezonesPrivate *KSystemTimezonesPrivate::instance()
 
 /*
  * Find the location of the zoneinfo files and store in m_zoneinfoDir.
- * Parse zone.tab and for each time zone, create a KSystemTimezone instance.
+ * Parse zone.tab and for each time zone, create a KSystemTimeZone instance.
  */
-void KSystemTimezonesPrivate::readZoneTab()
+void KSystemTimeZonesPrivate::readZoneTab()
 {
     // Find and open zone.tab - it's all easy except knowing where to look. Try the LSB location first.
     QFile f;
@@ -649,7 +649,7 @@ void KSystemTimezonesPrivate::readZoneTab()
         QRegExp lineSeparator("[ \t]");
         QRegExp ordinateSeparator("[+-]");
         if (!m_source)
-            m_source = new KSystemTimezoneSource;
+            m_source = new KSystemTimeZoneSource;
         while (!str.atEnd())
         {
             QString line = str.readLine();
@@ -677,16 +677,16 @@ void KSystemTimezonesPrivate::readZoneTab()
             // Add entry to list.
             if (tokens[0] == "??")
                 tokens[0] = "";
-            KTimezone *tzone = new KSystemTimezone(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
+            KTimeZone *tzone = new KSystemTimeZone(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
             add(tzone);
         }
     }
     f.close();
 }
 
-const KTimezone *KSystemTimezonesPrivate::local()
+const KTimeZone *KSystemTimeZonesPrivate::local()
 {
-    const KTimezone *local = 0;
+    const KTimeZone *local = 0;
 
     instance();    // initialise data
 
@@ -781,7 +781,7 @@ const KTimezone *KSystemTimezonesPrivate::local()
             const ZoneMap zmap = zones();
             for (ZoneMap::ConstIterator zit = zmap.begin(), zend = zmap.end();  zit != zend;  ++zit)
             {
-                const KTimezone *zone = zit.value();
+                const KTimeZone *zone = zit.value();
                 QString zonename = zone->name();
                 if (!m_md5Sums.contains(zonename))
                 {
@@ -885,11 +885,11 @@ const KTimezone *KSystemTimezonesPrivate::local()
         QByteArray tzname0(tzname[0]);   // store copies, because zone->parse() will change them
         QByteArray tzname1(tzname[1]);
         int bestOffset = INT_MAX;
-        KSystemTimezoneSource::startParseBlock();
+        KSystemTimeZoneSource::startParseBlock();
         const ZoneMap zmap = zones();
         for (ZoneMap::ConstIterator it = zmap.begin(), end = zmap.end();  it != end;  ++it)
         {
-            const KSystemTimezone *zone = static_cast<const KSystemTimezone*>(it.value());
+            const KSystemTimeZone *zone = static_cast<const KSystemTimeZone*>(it.value());
             int candidateOffset = qAbs(zone->currentOffset(Qt::LocalTime));
             if (candidateOffset < bestOffset
             &&  zone->parse())
@@ -905,18 +905,18 @@ const KTimezone *KSystemTimezonesPrivate::local()
                 }
             }
         }
-        KSystemTimezoneSource::endParseBlock();
+        KSystemTimeZoneSource::endParseBlock();
     }
     if (local)
         return local;
 
     // SOLUTION 7: FAILSAFE.
-    return KTimezones::utc();
+    return KTimeZones::utc();
 }
 
 // Calculate the MD5 checksum for the given zone file, provided that its size matches.
 // The calculated checksum is cached.
-QString KSystemTimezonesPrivate::calcChecksum(const QString &zoneName, qlonglong size)
+QString KSystemTimeZonesPrivate::calcChecksum(const QString &zoneName, qlonglong size)
 {
     QString path = m_zoneinfoDir + '/' + zoneName;
     QFileInfo fi(path);
@@ -942,7 +942,7 @@ QString KSystemTimezonesPrivate::calcChecksum(const QString &zoneName, qlonglong
 /**
  * Convert sHHMM or sHHMMSS to a floating point number of degrees.
  */
-float KSystemTimezonesPrivate::convertCoordinate(const QString &coordinate)
+float KSystemTimeZonesPrivate::convertCoordinate(const QString &coordinate)
 {
     int value = coordinate.toInt();
     int degrees = 0;
@@ -970,24 +970,24 @@ float KSystemTimezonesPrivate::convertCoordinate(const QString &coordinate)
 
 /******************************************************************************/
 
-KSystemTimezone::KSystemTimezone(KSystemTimezoneSource *source, const QString &name,
+KSystemTimeZone::KSystemTimeZone(KSystemTimeZoneSource *source, const QString &name,
         const QString &countryCode, float latitude, float longitude, const QString &comment)
-  : KTimezone(source, name, countryCode, latitude, longitude, comment)
+  : KTimeZone(source, name, countryCode, latitude, longitude, comment)
 //    , d(0)
 {
 }
 
-KSystemTimezone::~KSystemTimezone()
+KSystemTimeZone::~KSystemTimeZone()
 {
 //    delete d;
 }
 
-int KSystemTimezone::offsetAtUTC(const QDateTime &utcDateTime) const
+int KSystemTimeZone::offsetAtUTC(const QDateTime &utcDateTime) const
 {
     return offset(toTime_t(utcDateTime));
 }
 
-int KSystemTimezone::offset(time_t t) const
+int KSystemTimeZone::offset(time_t t) const
 {
     if (t == (time_t)-1)
         return 0;
@@ -1017,7 +1017,7 @@ int KSystemTimezone::offset(time_t t) const
     return secs;
 }
 
-int KSystemTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const
+int KSystemTimeZone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const
 {
     if (!zoneDateTime.isValid()  ||  zoneDateTime.timeSpec() != Qt::LocalTime)
         return 0;
@@ -1086,12 +1086,12 @@ int KSystemTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *second
     return offset1;
 }
 
-bool KSystemTimezone::isDstAtUTC(const QDateTime &utcDateTime) const
+bool KSystemTimeZone::isDstAtUTC(const QDateTime &utcDateTime) const
 {
     return isDst(toTime_t(utcDateTime));
 }
 
-bool KSystemTimezone::isDst(time_t t) const
+bool KSystemTimeZone::isDst(time_t t) const
 {
     if (t != (time_t)-1)
     {
@@ -1111,7 +1111,7 @@ bool KSystemTimezone::isDst(time_t t) const
 
 /******************************************************************************/
 
-class KSystemTimezoneDataPrivate
+class KSystemTimeZoneDataPrivate
 {
 public:
     QByteArray TZ;
@@ -1119,8 +1119,8 @@ public:
 };
 
 
-// N.B. KSystemTimezoneSourcePrivate is also used by KSystemTimezoneData
-class KSystemTimezoneSourcePrivate
+// N.B. KSystemTimeZoneSourcePrivate is also used by KSystemTimeZoneData
+class KSystemTimeZoneSourcePrivate
 {
 public:
     static void setTZ(const QByteArray &zoneName);
@@ -1131,60 +1131,60 @@ public:
     static bool       multiParse;    // true if performing multiple parse() calls
 };
 
-char      *KSystemTimezoneSourcePrivate::savedTZ;
-QByteArray KSystemTimezoneSourcePrivate::originalTZ;
-bool       KSystemTimezoneSourcePrivate::TZIsSaved = false;
-bool       KSystemTimezoneSourcePrivate::multiParse = false;
+char      *KSystemTimeZoneSourcePrivate::savedTZ;
+QByteArray KSystemTimeZoneSourcePrivate::originalTZ;
+bool       KSystemTimeZoneSourcePrivate::TZIsSaved = false;
+bool       KSystemTimeZoneSourcePrivate::multiParse = false;
 
 
-KSystemTimezoneSource::KSystemTimezoneSource()
-//  : d(new KSystemTimezoneSourcePrivate)
+KSystemTimeZoneSource::KSystemTimeZoneSource()
+//  : d(new KSystemTimeZoneSourcePrivate)
 {
 }
 
-KSystemTimezoneSource::~KSystemTimezoneSource()
+KSystemTimeZoneSource::~KSystemTimeZoneSource()
 {
 //    delete d;
 }
 
-KTimezoneData* KSystemTimezoneSource::parse(const KTimezone *zone) const
+KTimeZoneData* KSystemTimeZoneSource::parse(const KTimeZone *zone) const
 {
     QByteArray tz = zone->name().toUtf8();
-    KSystemTimezoneSourcePrivate::setTZ(tz);   // make this time zone the current local time zone
+    KSystemTimeZoneSourcePrivate::setTZ(tz);   // make this time zone the current local time zone
 
     tzset();    // initialise the tzname array
-    KSystemTimezoneData* data = new KSystemTimezoneData;
+    KSystemTimeZoneData* data = new KSystemTimeZoneData;
     data->d->TZ = tz;
     data->d->abbreviations.append(tzname[0]);
     data->d->abbreviations.append(tzname[1]);
 
-    KSystemTimezoneSourcePrivate::restoreTZ();   // restore the original local time zone if necessary
+    KSystemTimeZoneSourcePrivate::restoreTZ();   // restore the original local time zone if necessary
     return data;
 }
 
-void KSystemTimezoneSource::startParseBlock()
+void KSystemTimeZoneSource::startParseBlock()
 {
-    KSystemTimezoneSourcePrivate::originalTZ = ::getenv("TZ");   // save the original local time zone
-    KSystemTimezoneSourcePrivate::multiParse = true;
+    KSystemTimeZoneSourcePrivate::originalTZ = ::getenv("TZ");   // save the original local time zone
+    KSystemTimeZoneSourcePrivate::multiParse = true;
 }
 
-void KSystemTimezoneSource::endParseBlock()
+void KSystemTimeZoneSource::endParseBlock()
 {
-    if (KSystemTimezoneSourcePrivate::multiParse)
+    if (KSystemTimeZoneSourcePrivate::multiParse)
     {
         // Restore the original local time zone
-        if (KSystemTimezoneSourcePrivate::originalTZ.isEmpty())
+        if (KSystemTimeZoneSourcePrivate::originalTZ.isEmpty())
             ::unsetenv("TZ");
         else
-            ::setenv("TZ", KSystemTimezoneSourcePrivate::originalTZ, 1);
+            ::setenv("TZ", KSystemTimeZoneSourcePrivate::originalTZ, 1);
         ::tzset();
-        KSystemTimezoneSourcePrivate::multiParse = false;
+        KSystemTimeZoneSourcePrivate::multiParse = false;
     }
 }
 
 // Set the TZ environment variable to the specified time zone,
 // saving its current setting first if necessary.
-void KSystemTimezoneSourcePrivate::setTZ(const QByteArray &zoneName)
+void KSystemTimeZoneSourcePrivate::setTZ(const QByteArray &zoneName)
 {
     QByteArray tz = zoneName;
     tz.prepend(":");
@@ -1203,7 +1203,7 @@ void KSystemTimezoneSourcePrivate::setTZ(const QByteArray &zoneName)
 }
 
 // Restore the TZ environment variable if it was saved by setTz()
-void KSystemTimezoneSourcePrivate::restoreTZ()
+void KSystemTimeZoneSourcePrivate::restoreTZ()
 {
     if (TZIsSaved)
     {
@@ -1219,40 +1219,40 @@ void KSystemTimezoneSourcePrivate::restoreTZ()
 
 /******************************************************************************/
 
-KSystemTimezoneData::KSystemTimezoneData()
-  : d(new KSystemTimezoneDataPrivate)
+KSystemTimeZoneData::KSystemTimeZoneData()
+  : d(new KSystemTimeZoneDataPrivate)
 { }
 
-KSystemTimezoneData::KSystemTimezoneData(const KSystemTimezoneData &rhs)
-  : KTimezoneData(),
-    d(new KSystemTimezoneDataPrivate)
+KSystemTimeZoneData::KSystemTimeZoneData(const KSystemTimeZoneData &rhs)
+  : KTimeZoneData(),
+    d(new KSystemTimeZoneDataPrivate)
 {
     operator=(rhs);
 }
 
-KSystemTimezoneData::~KSystemTimezoneData()
+KSystemTimeZoneData::~KSystemTimeZoneData()
 {
     delete d;
 }
 
-KSystemTimezoneData &KSystemTimezoneData::operator=(const KSystemTimezoneData &rhs)
+KSystemTimeZoneData &KSystemTimeZoneData::operator=(const KSystemTimeZoneData &rhs)
 {
     d->TZ = rhs.d->TZ;
     d->abbreviations = rhs.d->abbreviations;
     return *this;
 }
 
-KTimezoneData *KSystemTimezoneData::clone()
+KTimeZoneData *KSystemTimeZoneData::clone()
 {
-    return new KSystemTimezoneData(*this);
+    return new KSystemTimeZoneData(*this);
 }
 
-QList<QByteArray> KSystemTimezoneData::abbreviations() const
+QList<QByteArray> KSystemTimeZoneData::abbreviations() const
 {
     return d->abbreviations;
 }
 
-QByteArray KSystemTimezoneData::abbreviation(const QDateTime &utcDateTime) const
+QByteArray KSystemTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
 {
     QByteArray abbr;
     if (utcDateTime.timeSpec() != Qt::UTC)
@@ -1261,7 +1261,7 @@ QByteArray KSystemTimezoneData::abbreviation(const QDateTime &utcDateTime) const
     time_t t = static_cast<time_t>(ut);
     if (ut != (uint)-1  &&  t >= 0)
     {
-        KSystemTimezoneSourcePrivate::setTZ(d->TZ);   // make this time zone the current local time zone
+        KSystemTimeZoneSourcePrivate::setTZ(d->TZ);   // make this time zone the current local time zone
 
         /* Use tm.tm_zone if available because it returns the abbreviation
          * in use at the time specified. Otherwise, use tzname[] which
@@ -1284,12 +1284,12 @@ QByteArray KSystemTimezoneData::abbreviation(const QDateTime &utcDateTime) const
             abbr = tzname[(tmtime->tm_isdst > 0) ? 1 : 0];
 #endif
 #endif
-        KSystemTimezoneSourcePrivate::restoreTZ();   // restore the original local time zone if necessary
+        KSystemTimeZoneSourcePrivate::restoreTZ();   // restore the original local time zone if necessary
     }
     return abbr;
 }
 
-QList<int> KSystemTimezoneData::UTCOffsets() const
+QList<int> KSystemTimeZoneData::UTCOffsets() const
 {
     return QList<int>();
 }

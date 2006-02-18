@@ -28,32 +28,32 @@
 
 /******************************************************************************/
 
-KTzfileTimezone::KTzfileTimezone(KTzfileTimezoneSource *source, const QString &name,
+KTzfileTimeZone::KTzfileTimeZone(KTzfileTimeZoneSource *source, const QString &name,
         const QString &countryCode, float latitude, float longitude,
         const QString &comment)
-  : KTimezone(source, name, countryCode, latitude, longitude, comment)
+  : KTimeZone(source, name, countryCode, latitude, longitude, comment)
 //    , d(0)
 {
 }
 
-KTzfileTimezone::~KTzfileTimezone()
+KTzfileTimeZone::~KTzfileTimeZone()
 {
 //    delete d;
 }
 
-int KTzfileTimezone::offsetAtUTC(const QDateTime &utcDateTime) const
+int KTzfileTimeZone::offsetAtUTC(const QDateTime &utcDateTime) const
 {
     return offset(toTime_t(utcDateTime));
 }
 
-int KTzfileTimezone::offset(time_t t) const
+int KTzfileTimeZone::offset(time_t t) const
 {
     if (t != (time_t)-1)
     {
-        const KTzfileTimezoneData *tdata = static_cast<const KTzfileTimezoneData*>(data(true));
+        const KTzfileTimeZoneData *tdata = static_cast<const KTzfileTimeZoneData*>(data(true));
         if (tdata)
         {
-            const KTzfileTimezoneData::LocalTimeType *ltt = tdata->getLocalTime(t);
+            const KTzfileTimeZoneData::LocalTimeType *ltt = tdata->getLocalTime(t);
             if (ltt)
                 return ltt->gmtoff;
         }
@@ -61,12 +61,12 @@ int KTzfileTimezone::offset(time_t t) const
     return 0;
 }
 
-int KTzfileTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const
+int KTzfileTimeZone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const
 {
     int offset = 0;
     if (zoneDateTime.isValid()  &&  zoneDateTime.timeSpec() == Qt::LocalTime)
     {
-        const KTzfileTimezoneData *tdata = static_cast<const KTzfileTimezoneData*>(data(true));
+        const KTzfileTimeZoneData *tdata = static_cast<const KTzfileTimeZoneData*>(data(true));
         if (tdata)
         {
             // Get the specified date/time as an offset from epoch (in zone time)
@@ -79,11 +79,11 @@ int KTzfileTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *second
                 quint32 count = tdata->nTransitionTimes();
                 for (quint32 i = 0;  i < count;  ++i)
                 {
-                    const KTzfileTimezoneData::TransitionTime *tt = tdata->transitionTime(i);
+                    const KTzfileTimeZoneData::TransitionTime *tt = tdata->transitionTime(i);
                     if (!tt)
                         break;    // how the hell did we reach the end??
                     qint32 t = tt->time;
-                    const KTzfileTimezoneData::LocalTimeType *ltt = tdata->localTimeType(tt->localTimeIndex);
+                    const KTzfileTimeZoneData::LocalTimeType *ltt = tdata->localTimeType(tt->localTimeIndex);
                     if (!ltt)
                         continue;   // something funny is going on here ...
                     int newOffset = ltt->gmtoff;
@@ -109,19 +109,19 @@ int KTzfileTimezone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *second
     return offset;
 }
 
-bool KTzfileTimezone::isDstAtUTC(const QDateTime &utcDateTime) const
+bool KTzfileTimeZone::isDstAtUTC(const QDateTime &utcDateTime) const
 {
     return isDst(toTime_t(utcDateTime));
 }
 
-bool KTzfileTimezone::isDst(time_t t) const
+bool KTzfileTimeZone::isDst(time_t t) const
 {
     if (t != (time_t)-1)
     {
-        const KTzfileTimezoneData *tdata = static_cast<const KTzfileTimezoneData*>(data(true));
+        const KTzfileTimeZoneData *tdata = static_cast<const KTzfileTimeZoneData*>(data(true));
         if (tdata)
         {
-            const KTzfileTimezoneData::LocalTimeType *ltt = tdata->getLocalTime(t);
+            const KTzfileTimeZoneData::LocalTimeType *ltt = tdata->getLocalTime(t);
             if (ltt)
                     return ltt->isdst;
         }
@@ -129,7 +129,7 @@ bool KTzfileTimezone::isDst(time_t t) const
     return false;
 }
 
-bool KTzfileTimezone::transitionTime(const QDateTime &utcDateTime, KTzfileTimezone::Adjustment &adjustment)
+bool KTzfileTimeZone::transitionTime(const QDateTime &utcDateTime, KTzfileTimeZone::Adjustment &adjustment)
 {
     if (utcDateTime.timeSpec() != Qt::UTC)
         return false;
@@ -137,10 +137,10 @@ bool KTzfileTimezone::transitionTime(const QDateTime &utcDateTime, KTzfileTimezo
     time_t t = static_cast<time_t>(ut);
     if (ut != (uint)-1  &&  t >= 0)
     {
-        const KTzfileTimezoneData *tdata = static_cast<const KTzfileTimezoneData*>(data(true));
+        const KTzfileTimeZoneData *tdata = static_cast<const KTzfileTimeZoneData*>(data(true));
         if (tdata)
         {
-            const KTzfileTimezoneData::LocalTimeType *ltt = tdata->getLocalTime(t);
+            const KTzfileTimeZoneData::LocalTimeType *ltt = tdata->getLocalTime(t);
             if (ltt)
             {
                 adjustment.utcOffset = ltt->gmtoff;
@@ -156,14 +156,14 @@ bool KTzfileTimezone::transitionTime(const QDateTime &utcDateTime, KTzfileTimezo
 
 /******************************************************************************/
 
-class KTzfileTimezoneDataPrivate
+class KTzfileTimeZoneDataPrivate
 {
 public:
     QList<int> utcOffsets;
 };
 
 
-KTzfileTimezoneData::KTzfileTimezoneData()
+KTzfileTimeZoneData::KTzfileTimeZoneData()
   : m_nTransitionTimes(0),
     m_nLocalTimeTypes(0),
     m_nLeapSecondAdjusts(0),
@@ -174,23 +174,23 @@ KTzfileTimezoneData::KTzfileTimezoneData()
     m_leapSecondAdjusts(0),
     m_isStandard(0),
     m_isUTC(0),
-    d(new KTzfileTimezoneDataPrivate)
+    d(new KTzfileTimeZoneDataPrivate)
 { }
 
-KTzfileTimezoneData::KTzfileTimezoneData(const KTzfileTimezoneData &rhs)
-  : KTimezoneData(),
+KTzfileTimeZoneData::KTzfileTimeZoneData(const KTzfileTimeZoneData &rhs)
+  : KTimeZoneData(),
     m_transitionTimes(0),
     m_localTimeTypes(0),
     m_leapSecondAdjusts(0),
     m_isStandard(0),
     m_isUTC(0),
-    d(new KTzfileTimezoneDataPrivate)
+    d(new KTzfileTimeZoneDataPrivate)
 {
     operator=(rhs);
     d->utcOffsets = rhs.d->utcOffsets;
 }
 
-KTzfileTimezoneData::~KTzfileTimezoneData()
+KTzfileTimeZoneData::~KTzfileTimeZoneData()
 {
     delete[] m_transitionTimes;
     delete[] m_localTimeTypes;
@@ -200,14 +200,14 @@ KTzfileTimezoneData::~KTzfileTimezoneData()
     delete d;
 }
 
-KTzfileTimezoneData &KTzfileTimezoneData::operator=(const KTzfileTimezoneData &rhs)
+KTzfileTimeZoneData &KTzfileTimeZoneData::operator=(const KTzfileTimeZoneData &rhs)
 {
     delete[] m_transitionTimes;
     delete[] m_localTimeTypes;
     delete[] m_leapSecondAdjusts;
     delete[] m_isStandard;
     delete[] m_isUTC;
-    KTimezoneData::operator=(rhs);
+    KTimeZoneData::operator=(rhs);
     m_nTransitionTimes   = rhs.m_nTransitionTimes;
     m_nLocalTimeTypes    = rhs.m_nLocalTimeTypes;
     m_nLeapSecondAdjusts = rhs.m_nLeapSecondAdjusts;
@@ -253,52 +253,52 @@ KTzfileTimezoneData &KTzfileTimezoneData::operator=(const KTzfileTimezoneData &r
     return *this;
 }
 
-KTimezoneData *KTzfileTimezoneData::clone()
+KTimeZoneData *KTzfileTimeZoneData::clone()
 {
-    return new KTzfileTimezoneData(*this);
+    return new KTzfileTimeZoneData(*this);
 }
 
-const KTzfileTimezoneData::TransitionTime *KTzfileTimezoneData::transitionTime(int index) const
+const KTzfileTimeZoneData::TransitionTime *KTzfileTimeZoneData::transitionTime(int index) const
 {
     if (index < 0  ||  static_cast<unsigned>(index) > m_nTransitionTimes)
         return 0;
     return m_transitionTimes + index;
 }
 
-const KTzfileTimezoneData::LocalTimeType *KTzfileTimezoneData::localTimeType(int index) const
+const KTzfileTimeZoneData::LocalTimeType *KTzfileTimeZoneData::localTimeType(int index) const
 {
     if (index < 0  ||  static_cast<unsigned>(index) > m_nLocalTimeTypes)
         return 0;
     return m_localTimeTypes + index;
 }
 
-const KTzfileTimezoneData::LeapSecondAdjust *KTzfileTimezoneData::leapSecondAdjustment(int index) const
+const KTzfileTimeZoneData::LeapSecondAdjust *KTzfileTimeZoneData::leapSecondAdjustment(int index) const
 {
     if (index < 0  ||  static_cast<unsigned>(index) > m_nLeapSecondAdjusts)
         return 0;
     return m_leapSecondAdjusts + index;
 }
 
-bool KTzfileTimezoneData::isStandard(int index) const
+bool KTzfileTimeZoneData::isStandard(int index) const
 {
     if (index < 0  ||  static_cast<unsigned>(index) > m_nIsStandard)
         return true;
     return m_isStandard[index];
 }
 
-bool KTzfileTimezoneData::isUTC(int index) const
+bool KTzfileTimeZoneData::isUTC(int index) const
 {
     if (index < 0  ||  static_cast<unsigned>(index) > m_nIsUTC)
         return true;
     return m_isUTC[index];
 }
 
-QList<QByteArray> KTzfileTimezoneData::abbreviations() const
+QList<QByteArray> KTzfileTimeZoneData::abbreviations() const
 {
     return m_abbreviations;
 }
 
-QByteArray KTzfileTimezoneData::abbreviation(const QDateTime &utcDateTime) const
+QByteArray KTzfileTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
 {
     if (utcDateTime.timeSpec() != Qt::UTC)
         return QByteArray();
@@ -313,12 +313,12 @@ QByteArray KTzfileTimezoneData::abbreviation(const QDateTime &utcDateTime) const
     return QByteArray();
 }
 
-QList<int> KTzfileTimezoneData::UTCOffsets() const
+QList<int> KTzfileTimeZoneData::UTCOffsets() const
 {
     return d->utcOffsets;
 }
 
-QByteArray KTzfileTimezoneData::abbreviation(int index) const
+QByteArray KTzfileTimeZoneData::abbreviation(int index) const
 {
     quint8 i = static_cast<quint8>(index);
     if (index >= 0  &&  static_cast<int>(i) == index  &&  i < m_abbreviations.count())
@@ -326,7 +326,7 @@ QByteArray KTzfileTimezoneData::abbreviation(int index) const
     return QByteArray();
 }
 
-const KTzfileTimezoneData::TransitionTime *KTzfileTimezoneData::getTransitionTime(time_t t) const
+const KTzfileTimeZoneData::TransitionTime *KTzfileTimeZoneData::getTransitionTime(time_t t) const
 {
     quint32 i;
     for (i = 0;  i < m_nTransitionTimes;  ++i)
@@ -337,7 +337,7 @@ const KTzfileTimezoneData::TransitionTime *KTzfileTimezoneData::getTransitionTim
     return (i > 0) ? m_transitionTimes + i - 1 : 0;
 }
 
-const KTzfileTimezoneData::LocalTimeType *KTzfileTimezoneData::getLocalTime(time_t t) const
+const KTzfileTimeZoneData::LocalTimeType *KTzfileTimeZoneData::getLocalTime(time_t t) const
 {
     const TransitionTime *tt = getTransitionTime(t);
     if (tt)
@@ -349,7 +349,7 @@ const KTzfileTimezoneData::LocalTimeType *KTzfileTimezoneData::getLocalTime(time
     return 0;
 }
 
-quint32 KTzfileTimezoneData::getLeapSeconds(time_t t) const
+quint32 KTzfileTimeZoneData::getLeapSeconds(time_t t) const
 {
     quint32 i;
     for (i = 0;  i < m_nLeapSecondAdjusts;  ++i)
@@ -363,28 +363,28 @@ quint32 KTzfileTimezoneData::getLeapSeconds(time_t t) const
 
 /******************************************************************************/
 
-class KTzfileTimezoneSourcePrivate
+class KTzfileTimeZoneSourcePrivate
 {
 public:
-    KTzfileTimezoneSourcePrivate(const QString &loc)
+    KTzfileTimeZoneSourcePrivate(const QString &loc)
       : location(loc) {}
-    ~KTzfileTimezoneSourcePrivate() {}
+    ~KTzfileTimeZoneSourcePrivate() {}
 
     QString location;
 };
 
 
-KTzfileTimezoneSource::KTzfileTimezoneSource(const QString &location)
-  : d(new KTzfileTimezoneSourcePrivate(location))
+KTzfileTimeZoneSource::KTzfileTimeZoneSource(const QString &location)
+  : d(new KTzfileTimeZoneSourcePrivate(location))
 {
 }
 
-KTzfileTimezoneSource::~KTzfileTimezoneSource()
+KTzfileTimeZoneSource::~KTzfileTimeZoneSource()
 {
     delete d;
 }
 
-KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
+KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
 {
     quint32 abbrCharCount;     // the number of characters of time zone abbreviation strings
     quint32 ttisgmtcnt;
@@ -411,7 +411,7 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     for (i = 0; i < 4; i++)
         str >> ttisgmtcnt;
 
-    KTzfileTimezoneData* data = new KTzfileTimezoneData;
+    KTzfileTimeZoneData* data = new KTzfileTimeZoneData;
 
     // Read the sizes of arrays held in the file
     str >> data->m_nIsUTC
@@ -424,8 +424,8 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     //    data->n_transitionTimes << ", " << data->n_localTimeTypes << ", " << abbrCharCount << endl;
 
     // Read the transition times, at which the rules for computing local time change
-    data->m_transitionTimes = new KTzfileTimezoneData::TransitionTime[data->m_nTransitionTimes];
-    KTzfileTimezoneData::TransitionTime *tt = data->m_transitionTimes;
+    data->m_transitionTimes = new KTzfileTimeZoneData::TransitionTime[data->m_nTransitionTimes];
+    KTzfileTimeZoneData::TransitionTime *tt = data->m_transitionTimes;
     for (i = 0;  i < data->m_nTransitionTimes;  ++tt, ++i)
     {
         str >> tt->time;
@@ -438,8 +438,8 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     }
 
     // Read the local time types
-    data->m_localTimeTypes = new KTzfileTimezoneData::LocalTimeType[data->m_nLocalTimeTypes];
-    KTzfileTimezoneData::LocalTimeType *ltt = data->m_localTimeTypes;
+    data->m_localTimeTypes = new KTzfileTimeZoneData::LocalTimeType[data->m_nLocalTimeTypes];
+    KTzfileTimeZoneData::LocalTimeType *ltt = data->m_localTimeTypes;
     for (i = 0;  i < data->m_nLocalTimeTypes;  ++ltt, ++i)
     {
         str >> ltt->gmtoff;
@@ -486,8 +486,8 @@ KTimezoneData* KTzfileTimezoneSource::parse(const KTimezone *zone) const
     }
 
     // Read the leap second adjustments
-    data->m_leapSecondAdjusts = new KTzfileTimezoneData::LeapSecondAdjust[data->m_nLeapSecondAdjusts];
-    KTzfileTimezoneData::LeapSecondAdjust* lsa = data->m_leapSecondAdjusts;
+    data->m_leapSecondAdjusts = new KTzfileTimeZoneData::LeapSecondAdjust[data->m_nLeapSecondAdjusts];
+    KTzfileTimeZoneData::LeapSecondAdjust* lsa = data->m_leapSecondAdjusts;
     for (i = 0;  i < data->m_nLeapSecondAdjusts;  ++lsa, ++i)
     {
         str >> lsa->time >> lsa->leapSeconds;

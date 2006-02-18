@@ -133,7 +133,7 @@ class KDateTimePrivate;
  * chosen as the basis for KDateTime. For those who need an extended date
  * range, other classes exist.
  *
- * @see KTimezone, KSystemTimezones, QDateTime, QDate, QTime
+ * @see KTimeZone, KSystemTimeZones, QDateTime, QDate, QTime
  * @see <a href="http://www.w3.org/TR/timezone/">W3C: Working with Time Zones</a>
  * @author David Jarvie \<software@astrojar.org.uk\>.
  * @since 4.0
@@ -153,20 +153,20 @@ class KDECORE_EXPORT KDateTime
         OffsetFromUTC, /**< a local time which has a fixed offset from UTC. */
         TimeZone,   /**< a time in a specified time zone. If the time zone is
                      *   the current system time zone (i.e. that returned by
-                     *   KSystemTimezones::local()), LocalZone may be used
+                     *   KSystemTimeZones::local()), LocalZone may be used
                      *   instead.
                      */
         LocalZone,  /**< a time in the current system time zone.
                      *   When used to initialise a KDateTime instance, this is
                      *   simply a shorthand for calling the setting method with
-                     *   a time zone parameter KSystemTimezones::local(). Note
+                     *   a time zone parameter KSystemTimeZones::local(). Note
                      *   that if the system is changed to a different time zone
                      *   afterwards, the KDateTime instance will still use the
                      *   original system time zone rather than adopting the new
                      *   zone.
                      *   When returned by a method, it indicates that the time
                      *   zone stored in the instance is that currently returned
-                     *   by KSystemTimezones::local().
+                     *   by KSystemTimeZones::local().
                      */
         ClockTime   /**< a clock time which ignores time zones and simply uses
                      *   whatever the local system clock says the time is. You
@@ -271,7 +271,7 @@ class KDECORE_EXPORT KDateTime
      * @param date date in the time zone @p tz
      * @param tz   time zone
      */
-    KDateTime(const QDate &date, const KTimezone *tz);
+    KDateTime(const QDate &date, const KTimeZone *tz);
 
     /**
      * Constructs a date/time with associated time zone.
@@ -280,7 +280,7 @@ class KDECORE_EXPORT KDateTime
      * @param time time in the time zone @p tz
      * @param tz   time zone
      */
-    KDateTime(const QDate &date, const QTime &time, const KTimezone *tz);
+    KDateTime(const QDate &date, const QTime &time, const KTimeZone *tz);
 
     /**
      * Constructs a date/time with associated time zone.
@@ -290,7 +290,7 @@ class KDECORE_EXPORT KDateTime
      * @param dt date and time
      * @param tz time zone
      */
-    KDateTime(const QDateTime &dt, const KTimezone *tz);
+    KDateTime(const QDateTime &dt, const KTimeZone *tz);
 
     /**
      * Constructs a date-only value expressed as specified by @p spec. The time
@@ -444,7 +444,7 @@ class KDECORE_EXPORT KDateTime
      *         local clock time
      * @see isUTC(), isLocal()
      */
-    const KTimezone *timeZone() const;
+    const KTimeZone *timeZone() const;
 
     /**
      * Returns the time specification of the date/time, i.e. whether it is
@@ -475,7 +475,7 @@ class KDECORE_EXPORT KDateTime
     /**
      * Returns whether the date/time is a UTC time.
      * It is considered to be a UTC time if it either has a UTC time
-     * specification (TimeSpec == UTC) or has the time zone KTimezones::utc().
+     * specification (TimeSpec == UTC) or has the time zone KTimeZones::utc().
      *
      * @return @c true if UTC
      * @see isLocal(), isOffsetFromUTC(), timeZone()
@@ -521,7 +521,7 @@ class KDECORE_EXPORT KDateTime
      * with the date unchanged.
      *
      * @return converted time
-     * @see toOffsetFromUTC(), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimezone::convert()
+     * @see toOffsetFromUTC(), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimeZone::convert()
      */
     KDateTime toUTC() const;
 
@@ -538,7 +538,7 @@ class KDECORE_EXPORT KDateTime
      * start of the day.
      *
      * @return converted time
-     * @see toUTC(), toOffsetFromUTC(int), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimezone::convert()
+     * @see toUTC(), toOffsetFromUTC(int), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimeZone::convert()
      */
     KDateTime toOffsetFromUTC() const;
 
@@ -552,7 +552,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @param utcOffset number of seconds to add to UTC to get the local time.
      * @return converted time
-     * @see toUTC(), toOffsetFromUTC(), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimezone::convert()
+     * @see toUTC(), toOffsetFromUTC(), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimeZone::convert()
      */
     KDateTime toOffsetFromUTC(int utcOffset) const;
 
@@ -562,7 +562,7 @@ class KDECORE_EXPORT KDateTime
      * is returned, with the date unchanged.
      *
      * @return converted time
-     * @see toUTC(), toOffsetFromUTC(), toZone(), toTimeSpec(), KTimezone::convert()
+     * @see toUTC(), toOffsetFromUTC(), toZone(), toTimeSpec(), KTimeZone::convert()
      */
     KDateTime toLocalZone() const;
 
@@ -587,9 +587,9 @@ class KDECORE_EXPORT KDateTime
      *
      * @param zone time zone to convert to
      * @return converted time
-     * @see toUTC(), toOffsetFromUTC(), toLocal(), toTimeSpec(), KTimezone::convert()
+     * @see toUTC(), toOffsetFromUTC(), toLocal(), toTimeSpec(), KTimeZone::convert()
      */
-    KDateTime toZone(const KTimezone *zone) const;
+    KDateTime toZone(const KTimeZone *zone) const;
 
     /**
      * Returns the time converted to the same time specification as @p other.
@@ -599,7 +599,7 @@ class KDECORE_EXPORT KDateTime
      * with the date unchanged.
      *
      * @return converted time
-     * @see toLocal(), toUTC(), toOffsetFromUTC(), toZone(), compareTimeSpec(), KTimezone::convert()
+     * @see toLocal(), toUTC(), toOffsetFromUTC(), toZone(), compareTimeSpec(), KTimeZone::convert()
      */
     KDateTime toTimeSpec(const KDateTime &other) const;
 
@@ -671,7 +671,7 @@ class KDECORE_EXPORT KDateTime
      *             time. Note that @c TimeZone cannot be used here.
      * @param utcOffset number of seconds to add to UTC to get the local
      *                  time. Ignored if @p spec is not @c OffsetFromUTC.
-     * @see timeSpec(), timeZone(), setTimeSpec(const KTimezone*)
+     * @see timeSpec(), timeZone(), setTimeSpec(const KTimeZone*)
      */
     void setTimeSpec(TimeSpec spec, int utcOffset = 0);
 
@@ -688,7 +688,7 @@ class KDECORE_EXPORT KDateTime
      * @param tz new time zone
      * @see timeZone(), setTimeSpec()
      */
-    void setTimeSpec(const KTimezone *tz);
+    void setTimeSpec(const KTimeZone *tz);
 
     /**
      * Changes the time specification of the instance to be the same as that
@@ -1113,7 +1113,7 @@ class KDECORE_EXPORT KDateTime
      * @see setFromStringDefault(), toString(), isTooEarly(), isTooLate()
      */
     static KDateTime fromString(const QString &string, const QString &format,
-                                const KTimezones *zones = 0, bool offsetIfAmbiguous = true);
+                                const KTimeZones *zones = 0, bool offsetIfAmbiguous = true);
 
     /**
      * Sets the default time specification for use by fromString() when no time
@@ -1122,14 +1122,14 @@ class KDECORE_EXPORT KDateTime
      *
      * By default, fromString() returns a local clock time (type @c ClockTime)
      * when no definite zone or UTC offset is found. You can use this method
-     * or setFromStringDefault(const KTimezone*) to make it return the local
+     * or setFromStringDefault(const KTimeZone*) to make it return the local
      * time zone, UTC, or whatever you wish.
      *
      * @param spec the new default time specification. Note that @c TimeZone
      *             cannot be used here.
      * @param utcOffset number of seconds to add to UTC to get the local
      *                  time. Ignored if @p spec is not @c OffsetFromUTC.
-     * @see setFromStringDefault(const KTimezone*), fromString()
+     * @see setFromStringDefault(const KTimeZone*), fromString()
      */
     static void setFromStringDefault(TimeSpec spec, int utcOffset = 0);
 
@@ -1146,7 +1146,7 @@ class KDECORE_EXPORT KDateTime
      * @param tz the new default time zone
      * @see setFromStringDefault(TimeSpec), fromString()
      */
-    static void setFromStringDefault(const KTimezone *tz);
+    static void setFromStringDefault(const KTimeZone *tz);
 
     /**
      * Returns whether the date/time is invalid because an otherwise valid date

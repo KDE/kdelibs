@@ -38,7 +38,7 @@ void KDateTimeTest::constructors()
     QTime t(3,45,14);
     QDateTime dtLocal(d, t, Qt::LocalTime);
     QDateTime dtUTC(d, t, Qt::UTC);
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
 
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
     ::setenv("TZ", ":Europe/London", 1);
@@ -67,7 +67,7 @@ void KDateTimeTest::constructors()
     QVERIFY(!datetimeL.isOffsetFromUTC());
     QVERIFY(!datetimeL.isClockTime());
     QCOMPARE(datetimeL.UTCOffset(), -8*3600);
-    QCOMPARE(datetimeL.timeZone(), KSystemTimezones::local());
+    QCOMPARE(datetimeL.timeZone(), KSystemTimeZones::local());
     QCOMPARE(datetimeL.dateTime(), dtLocal);
 
     KDateTime datetimeU(dtUTC);
@@ -80,7 +80,7 @@ void KDateTimeTest::constructors()
     QVERIFY(!datetimeU.isOffsetFromUTC());
     QVERIFY(!datetimeU.isClockTime());
     QCOMPARE(datetimeU.UTCOffset(), 0);
-    QCOMPARE(datetimeU.timeZone(), KTimezones::utc());
+    QCOMPARE(datetimeU.timeZone(), KTimeZones::utc());
     QCOMPARE(datetimeU.dateTime(), dtUTC);
 
 
@@ -165,7 +165,7 @@ void KDateTimeTest::constructors()
     QVERIFY(!date_UTC.isLocalZone());
     QVERIFY(!date_UTC.isClockTime());
     QCOMPARE(date_UTC.UTCOffset(), 0);
-    QCOMPARE(date_UTC.timeZone(), KTimezones::utc());
+    QCOMPARE(date_UTC.timeZone(), KTimeZones::utc());
     QCOMPARE(date_UTC.dateTime(), QDateTime(d, QTime(0,0,0), Qt::UTC));
 
     KDateTime dateTime_UTC(d, t, KDateTime::UTC, 2*3600);
@@ -178,7 +178,7 @@ void KDateTimeTest::constructors()
     QVERIFY(!dateTime_UTC.isLocalZone());
     QVERIFY(!dateTime_UTC.isClockTime());
     QCOMPARE(dateTime_UTC.UTCOffset(), 0);
-    QCOMPARE(dateTime_UTC.timeZone(), KTimezones::utc());
+    QCOMPARE(dateTime_UTC.timeZone(), KTimeZones::utc());
     QCOMPARE(dateTime_UTC.dateTime(), QDateTime(d, t, Qt::UTC));
 
     KDateTime datetime_UTC(dtLocal, KDateTime::UTC, 2*3600);
@@ -191,7 +191,7 @@ void KDateTimeTest::constructors()
     QVERIFY(!datetime_UTC.isLocalZone());
     QVERIFY(!datetime_UTC.isClockTime());
     QCOMPARE(datetime_UTC.UTCOffset(), 0);
-    QCOMPARE(datetime_UTC.timeZone(), KTimezones::utc());
+    QCOMPARE(datetime_UTC.timeZone(), KTimeZones::utc());
     QCOMPARE(datetime_UTC.dateTime(), dtLocal.toUTC());
 
     KDateTime datetime_UTC2(dtUTC, KDateTime::UTC, 2*3600);
@@ -204,7 +204,7 @@ void KDateTimeTest::constructors()
     QVERIFY(!datetime_UTC2.isLocalZone());
     QVERIFY(!datetime_UTC2.isClockTime());
     QCOMPARE(datetime_UTC2.UTCOffset(), 0);
-    QCOMPARE(datetime_UTC2.timeZone(), KTimezones::utc());
+    QCOMPARE(datetime_UTC2.timeZone(), KTimeZones::utc());
     QCOMPARE(datetime_UTC2.dateTime(), dtUTC);
     QCOMPARE(datetime_UTC2.date(), dtUTC.date());
     QCOMPARE(datetime_UTC2.time(), dtUTC.time());
@@ -307,7 +307,7 @@ void KDateTimeTest::constructors()
     QVERIFY(date_LocalZone.isLocalZone());
     QVERIFY(!date_LocalZone.isClockTime());
     QCOMPARE(date_LocalZone.UTCOffset(), -8*3600);
-    QCOMPARE(date_LocalZone.timeZone(), KSystemTimezones::local());
+    QCOMPARE(date_LocalZone.timeZone(), KSystemTimeZones::local());
     QCOMPARE(date_LocalZone.dateTime(), QDateTime(d, QTime(0,0,0), Qt::LocalTime));
 
     KDateTime dateTime_LocalZone(d, t, KDateTime::LocalZone, 2*3600);
@@ -320,7 +320,7 @@ void KDateTimeTest::constructors()
     QVERIFY(dateTime_LocalZone.isLocalZone());
     QVERIFY(!dateTime_LocalZone.isClockTime());
     QCOMPARE(dateTime_LocalZone.UTCOffset(), -8*3600);
-    QCOMPARE(dateTime_LocalZone.timeZone(), KSystemTimezones::local());
+    QCOMPARE(dateTime_LocalZone.timeZone(), KSystemTimeZones::local());
     QCOMPARE(dateTime_LocalZone.dateTime(), QDateTime(d, t, Qt::LocalTime));
 
     KDateTime datetime_LocalZone(dtLocal, KDateTime::LocalZone, 2*3600);
@@ -333,7 +333,7 @@ void KDateTimeTest::constructors()
     QVERIFY(datetime_LocalZone.isLocalZone());
     QVERIFY(!datetime_LocalZone.isClockTime());
     QCOMPARE(datetime_LocalZone.UTCOffset(), -8*3600);
-    QCOMPARE(datetime_LocalZone.timeZone(), KSystemTimezones::local());
+    QCOMPARE(datetime_LocalZone.timeZone(), KSystemTimeZones::local());
     QCOMPARE(datetime_LocalZone.dateTime(), dtLocal);
     QCOMPARE(datetime_LocalZone.date(), dtLocal.date());
     QCOMPARE(datetime_LocalZone.time(), dtLocal.time());
@@ -348,7 +348,7 @@ void KDateTimeTest::constructors()
     QVERIFY(datetime_LocalZone2.isLocalZone());
     QVERIFY(!datetime_LocalZone2.isClockTime());
     QCOMPARE(datetime_LocalZone2.UTCOffset(), -8*3600);
-    QCOMPARE(datetime_LocalZone2.timeZone(), KSystemTimezones::local());
+    QCOMPARE(datetime_LocalZone2.timeZone(), KSystemTimeZones::local());
     QCOMPARE(datetime_LocalZone2.dateTime(), dtUTC.toLocalTime());
 
     // ... copy constructor
@@ -458,7 +458,7 @@ void KDateTimeTest::constructors()
 
 void KDateTimeTest::toUTC()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -539,7 +539,7 @@ void KDateTimeTest::toUTC()
 
 void KDateTimeTest::toOffsetFromUTC()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -714,7 +714,7 @@ void KDateTimeTest::toOffsetFromUTC()
 
 void KDateTimeTest::toLocalZone()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -795,7 +795,7 @@ void KDateTimeTest::toLocalZone()
 
 void KDateTimeTest::toClockTime()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -876,8 +876,8 @@ void KDateTimeTest::toClockTime()
 
 void KDateTimeTest::toZone()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
-    const KTimezone *losAngeles = KSystemTimezones::zone("America/Los_Angeles");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
+    const KTimeZone *losAngeles = KSystemTimeZones::zone("America/Los_Angeles");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -958,8 +958,8 @@ void KDateTimeTest::toZone()
 
 void KDateTimeTest::toTimeSpec()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
-    const KTimezone *cairo  = KSystemTimezones::zone("Africa/Cairo");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
+    const KTimeZone *cairo  = KSystemTimeZones::zone("Africa/Cairo");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -1192,7 +1192,7 @@ void KDateTimeTest::toTimeSpec()
 
 void KDateTimeTest::set()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -1341,7 +1341,7 @@ void KDateTimeTest::set()
     QCOMPARE(zone.UTCOffset(), 0);
     QCOMPARE(zone.toUTC().dateTime(), QDateTime(QDate(2003,6,10), QTime(12,6,7), Qt::UTC));
 
-    // setTimeSpec(KTimezone*)
+    // setTimeSpec(KTimeZone*)
     zone.setTimeSpec(london);
     QCOMPARE(zone.timeZone(), london);
     QCOMPARE(zone.UTCOffset(), 3600);
@@ -1381,8 +1381,8 @@ void KDateTimeTest::set()
 
 void KDateTimeTest::compare()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
-    const KTimezone *cairo  = KSystemTimezones::zone("Africa/Cairo");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
+    const KTimeZone *cairo  = KSystemTimeZones::zone("Africa/Cairo");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -1453,8 +1453,8 @@ void KDateTimeTest::compare()
 
 void KDateTimeTest::addSubtract()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
-    const KTimezone *losAngeles = KSystemTimezones::zone("America/Los_Angeles");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
+    const KTimeZone *losAngeles = KSystemTimeZones::zone("America/Los_Angeles");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -1660,8 +1660,8 @@ void KDateTimeTest::addSubtract()
 
 void KDateTimeTest::addMSecs()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
-    const KTimezone *losAngeles = KSystemTimezones::zone("America/Los_Angeles");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
+    const KTimeZone *losAngeles = KSystemTimeZones::zone("America/Los_Angeles");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -1765,8 +1765,8 @@ void KDateTimeTest::addMSecs()
 
 void KDateTimeTest::addSubtractDate()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
-    const KTimezone *losAngeles = KSystemTimezones::zone("America/Los_Angeles");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
+    const KTimeZone *losAngeles = KSystemTimeZones::zone("America/Los_Angeles");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -2166,7 +2166,7 @@ void KDateTimeTest::addSubtractDate()
 
 void KDateTimeTest::strings_iso8601()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
     bool decpt = KGlobal::locale()->decimalSymbol() == QLatin1String(".");   // whether this locale uses '.' as decimal symbol
 
     // Ensure that local time is different from UTC and different from 'london'
@@ -2311,7 +2311,7 @@ void KDateTimeTest::strings_iso8601()
 
 void KDateTimeTest::strings_rfc2822()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -2518,7 +2518,7 @@ void KDateTimeTest::strings_rfc2822()
 
 void KDateTimeTest::strings_qttextdate()
 {
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
 
     // Ensure that local time is different from UTC and different from 'london'
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
@@ -2627,11 +2627,11 @@ void KDateTimeTest::strings_qttextdate()
 void KDateTimeTest::strings_format()
 {
     KCalendarSystem* calendar = new KCalendarSystemGregorian(KGlobal::locale());
-    const KTimezone *london = KSystemTimezones::zone("Europe/London");
-    const KTimezone *paris  = KSystemTimezones::zone("Europe/Paris");
-    const KTimezone *berlin = KSystemTimezones::zone("Europe/Berlin");
-    const KTimezone *cairo  = KSystemTimezones::zone("Africa/Cairo");
-    KTimezones zones;
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
+    const KTimeZone *paris  = KSystemTimeZones::zone("Europe/Paris");
+    const KTimeZone *berlin = KSystemTimeZones::zone("Europe/Berlin");
+    const KTimeZone *cairo  = KSystemTimeZones::zone("Africa/Cairo");
+    KTimeZones zones;
     zones.addConst(london);
     zones.addConst(paris);
     zones.addConst(berlin);
@@ -2668,7 +2668,7 @@ void KDateTimeTest::strings_format()
                                    .arg(calendar->monthName(12,2000,false)).arg(calendar->monthName(12,2000,true))
                                    .arg(calendar->weekDayName(7,false)).arg(calendar->weekDayName(7,true)));
 
-    // fromString() without KTimezones parameter
+    // fromString() without KTimeZones parameter
     dt = KDateTime::fromString(QLatin1String("2005/9/05/20:2,03"), QLatin1String("%Y/%:m/%e/%S:%k,%M"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(2,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeSpec(), KDateTime::ClockTime);
@@ -2708,7 +2708,7 @@ void KDateTimeTest::strings_format()
     dtclock = KDateTime::fromString(QLatin1String("mONdAYPM2005absEpt/052/20:00,03+1000"), QLatin1String("%:A%:p%Yab%Bt/%e2/%S:%I,%M %:u"));
     QVERIFY(!dtclock.isValid());    // hours out of range for am/pm
 
-    // fromString() with KTimezones parameter
+    // fromString() with KTimeZones parameter
     dt = KDateTime::fromString(QLatin1String("mon 2005/9/05/20:2,03"), QLatin1String("%:a %Y/%:m/%e/%S:%k,%M"), &zones);
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(2,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeSpec(), KDateTime::ClockTime);
