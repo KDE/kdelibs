@@ -7,6 +7,7 @@ Patterns=*.crw;*.CRW;*.cr2,*.CR2;*.nef;*.NEF;*.mrw;*.MRW;
 Comment=RAW Camera File
 Comment[br]=Restr kamera kriz
 Comment[ca]=Fitxer de càmera RAW
+Comment[cs]=RAW soubor z fotoaparátu
 Comment[da]=Ubehandlet kamerafil
 Comment[de]=RAW-Kameradatei
 Comment[el]=RAW αρχείο κάμερας
