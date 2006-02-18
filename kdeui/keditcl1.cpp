@@ -508,11 +508,21 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
     slotCursorPositionChanged();
   }
   else if ( KStdAccel::backwardWord().contains( key ) ) {
-    moveCursor(MoveWordBackward, false );
+    CursorAction action = MoveWordBackward;
+    int para, index;
+    getCursorPosition( &para, & index );
+    if (text(para).isRightToLeft())
+       action = MoveWordForward;
+    moveCursor(action, false );
     slotCursorPositionChanged();
   }
   else if ( KStdAccel::forwardWord().contains( key ) ) {
-    moveCursor( MoveWordForward, false );
+    CursorAction action = MoveWordForward;
+    int para, index;
+    getCursorPosition( &para, & index );
+    if (text(para).isRightToLeft())
+      action = MoveWordBackward;
+    moveCursor( action, false );
     slotCursorPositionChanged();
   }
   else if ( KStdAccel::next().contains( key ) ) {
