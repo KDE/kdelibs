@@ -143,12 +143,13 @@ PtyProcess::~PtyProcess()
     delete d;
 }
 
-/** Set additinal environment variables. */
+/** Set additional environment variables. */
 void PtyProcess::setEnvironment( const QList<QByteArray> &env )
 {
     d->env = env;
 }
 
+/** Returns the additional environment variables set by setEnvironment() */
 QList<QByteArray> PtyProcess::environment() const
 {
     return d->env;

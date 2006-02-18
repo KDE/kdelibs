@@ -124,42 +124,54 @@ public /* static */:
     ** nicer Qt based ways to do what you want.
     */
 
-    /*
+    /**
     ** Wait @p ms miliseconds (ie. 1/10th of a second is 100ms),
     ** using @p fd as a filedescriptor to wait on. Returns
     ** select(2)'s result, which is -1 on error, 0 on timeout,
     ** or positive if there is data on one of the selected fd's.
     **
-    ** @p ms must be in the range 0..999 (ie. the maximum wait
+    ** @p ms must be in the range 0..999 (i.e. the maximum wait
     ** duration is 999ms, almost one second).
     */
     static int waitMS(int fd,int ms);
 
 
-    /*
+    /**
     ** Basic check for the existence of @p pid.
     ** Returns true iff @p pid is an extant process,
     ** (one you could kill - see man kill(2) for signal 0).
     */
     static bool checkPid(pid_t pid);
 
-    /*
+
+    /** Error return values for checkPidExited() */
+    enum checkPidStatus { Error=-1,  /**< No child */
+	NotExited=-2,                /**< Child hasn't exited */
+        Killed=-3                    /**< Child terminated by signal */
+    } ;
+
+    /**
     ** Check process exit status for process @p pid.
-    ** On error (no child, no exit), return -1.
     ** If child @p pid has exited, return its exit status,
     ** (which may be zero).
+    ** On error (no child, no exit), return -1.
     ** If child @p has not exited, return -2.
     */
-    enum checkPidStatus { Error=-1, NotExited=-2, Killed=-3 } ;
     static int checkPidExited(pid_t pid);
 
 
 protected:
     QList<QByteArray> environment() const;
 
-    bool m_bErase, m_bTerminal;
-    int m_Pid, m_Fd;
-    QByteArray m_Command, m_Exit;
+    bool m_bErase,   /**< @see setErase() */ 
+	m_bTerminal; /**< Indicates running in a terminal, causes additional
+                          newlines to be printed after output. Set to @c false
+                          in constructor. @see setTerminal()  */
+    int m_Pid, /**< PID of child process */
+        m_Fd;  /**< FD of PTY for child process */
+    QByteArray m_Command,  /**< Unused */
+        m_Exit;            /**< String to scan for in output that indicates
+                                child has exited. */
 
 private:
     int init();
@@ -169,6 +181,7 @@ private:
     QByteArray m_Inbuf, m_TTY;
 
 protected:
+    /** Standard hack to add virtual methods in a BC way. Unused. */
     virtual void virtual_hook( int id, void* data );
 private:
     class PtyProcessPrivate;
