@@ -408,7 +408,13 @@ color: #418ADE;
 
 hr { display: none; }
 #content h2 { margin-left: 0px; }
-table.mdTable { background-color: #f8f8f8; border: .2em solid #d7d7d7; }
+
+table.mdTable {
+background-color: #f8f8f8;
+border: .2em solid #d7d7d7;
+width: 80%;
+}
+
 td.mdRow { padding: 8px 20px; }
 td.md { font-weight: bold; }
 td.mdname1 { font-weight: bold; color: #602020; }
