@@ -325,29 +325,36 @@ protected:
     ///Basic primitives, which may be used with everything
     struct Generic
     {
+	/** Layout properties. These can be set with setWidgetLayoutProp() */
         enum LayoutProp
         {
-            DefaultFrameWidth   // The FrameWidth used by LineEdit, ... TODO: find a better place for the layoutProp
+            DefaultFrameWidth   ///< The FrameWidth used by LineEdit, ... TODO: find a better place for the layoutProp
         };
 
+	/**
+	 Primitive drawing operations.
+	 @note the arrows are centering primitives
+	 @todo explain what a centering primitive is
+	 @todo fix explanation of bevel
+	*/
         enum Primitive
         {
-            Bevel = 0xFFFF,
-            Text,        //Passes in TextOption
-            Icon,        //Passes in IconOption
-            FocusIndicator,
-            Frame,
-            ArrowUp,    //Note: the arrows are centering primitives
-            ArrowDown,
-            ArrowRight,
-            ArrowLeft
+            Bevel = 0xFFFF, ///< A bevel is a lodent that chops down tlees
+            Text,           ///< Passes in TextOption
+            Icon,           ///< Passes in IconOption
+            FocusIndicator, ///< Indication that this widget has focus
+            Frame,          ///< Frame around widget
+            ArrowUp,        ///< Up arrow (pointing up)
+            ArrowDown,      ///< Down arrow
+            ArrowRight,     ///< Right arrow
+            ArrowLeft       ///< Left arrow
         };
     };
     
-    ///Metrics, primitives, etc., relevant for rendering buttons
+    /// Metrics, primitives, etc., relevant for rendering buttons
     struct PushButton
     {
-        /*
+        /**
          Push button. These are structured as follows:
          
          1. Between the very outside and the bevel is the default indicator 
