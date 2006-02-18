@@ -13,4 +13,20 @@ Sources are at:
 
 http://www.cmake.org/files/v2.3/cmake-2.3.3-20060210.tar.gz
 
-unpack, run "cmake ." , run your make (make, gmake).
+unpack, run "cmake ." , run your make (make, gmake, nmake).
+
+If something hasn't been found, use ccmake . to set the missing things
+manually.
+
+If you prefer XCode projects, KDevelop projects or Visual Studio projects
+over Makefiles, run cmake with the appropriate generator: cmake . -GKDevelop3
+etc.
+
+
+DOCUMENTATION:
+-read the cmake manpage
+-visit http://www.cmake.org/HTML/Documentation.html and go through the
+contents you find there, start with "Writing CMakeLists.txt".
+Don't miss out the cmake Wiki, it contains a lot of useful information.
+
+
