@@ -1256,7 +1256,9 @@ class KDECORE_EXPORT KDateTime
     bool operator>(const KDateTime &other) const { return other < *this; }
     bool operator>=(const KDateTime &other) const { return !(*this < other); }
 
+    /** Write @p dateTime to the datastream @p out, binary format. */
     friend QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
+    /** Read a KDateTime object into @p dateTime from @p in, binary format. */
     friend QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
 
   private:
