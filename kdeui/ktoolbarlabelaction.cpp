@@ -38,7 +38,7 @@ KToolBarLabelAction::KToolBarLabelAction(const QString &text,
 					 const char *slot,
 					 KActionCollection *parent,
 					 const char *name)
-  : KWidgetAction(new QLabel(text, 0, "kde toolbar widget"), text, cut,
+  : KWidgetAction(new QLabel(text), text, cut,
 		  receiver, slot, parent, name), 
     d(new KToolBarLabelActionPrivate)
 {
@@ -52,11 +52,12 @@ KToolBarLabelAction::KToolBarLabelAction(QWidget* buddy,
 					 const char *slot,
  					 KActionCollection *parent, 
 					 const char *name)
-  : KWidgetAction(new QLabel(buddy, text, 0, "kde toolbar widget"), text, 
+  : KWidgetAction(new QLabel(text), text, 
 		  cut, receiver, slot, parent, name),
     d(new KToolBarLabelActionPrivate)
 {
   init();
+  setBuddy(buddy);
 }
 
 KToolBarLabelAction::KToolBarLabelAction(QLabel* label, 
@@ -83,7 +84,7 @@ void KToolBarLabelAction::init()
   d->m_label = static_cast<QLabel*>(widget());
   /* these lines were copied from Konqueror's KonqDraggableLabel class in
      konq_misc.cc */
-  d->m_label->setBackgroundMode(Qt::PaletteButton);
+  d->m_label->setBackgroundRole(QPalette::Button);
   d->m_label->setAlignment((QApplication::isRightToLeft()
 			 ? Qt::AlignRight : Qt::AlignLeft) |
  			Qt::AlignVCenter | Qt::TextShowMnemonic );

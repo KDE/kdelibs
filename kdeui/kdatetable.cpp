@@ -391,7 +391,7 @@ KDateTable::keyPressEvent( QKeyEvent *e )
       // Don't beep for modifiers
       break;
     default:
-      if (!e->state()) { // hm
+      if (!e->modifiers()) { // hm
     KNotification::beep();
 }
     }
@@ -768,7 +768,7 @@ KDateInternalMonthPicker::contentsMousePressEvent(QMouseEvent *e)
 void
 KDateInternalMonthPicker::contentsMouseMoveEvent(QMouseEvent *e)
 {
-  if (e->state() & Qt::LeftButton)
+  if (e->modifiers() & Qt::LeftButton)
     {
       int row, col;
       QPoint mouseCoord;

@@ -360,8 +360,8 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
             // L0621: The following tests are copied from QWidget::event().
             bool res = false;
             bool tabForward = true;
-            if ( !(k->state() & Qt::ControlModifier || k->state() & Qt::AltModifier) ) {
-                if ( k->key() == Qt::Key_Backtab || (k->key() == Qt::Key_Tab && (k->state() & Qt::ShiftModifier)) ) {
+            if ( !(k->modifiers() & Qt::ControlModifier || k->modifiers() & Qt::AltModifier) ) {
+                if ( k->key() == Qt::Key_Backtab || (k->key() == Qt::Key_Tab && (k->modifiers() & Qt::ShiftModifier)) ) {
                     res = w->focusNextPrevChild( tabForward = false );
                 } else if ( k->key() == Qt::Key_Tab ) {
                     res = w->focusNextPrevChild( tabForward = true );

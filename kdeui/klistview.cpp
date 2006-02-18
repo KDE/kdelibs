@@ -331,10 +331,10 @@ bool KListViewLineEdit::event (QEvent *pe)
 
 	    if ((k->key() == Qt::Key_Backtab || k->key() == Qt::Key_Tab) &&
 			p->tabOrderedRenaming() && p->itemsRenameable() &&
-			!(k->state() & Qt::ControlModifier || k->state() & Qt::AltModifier))
+			!(k->modifiers() & Qt::ControlModifier || k->modifiers() & Qt::AltModifier))
 		{
 			selectNextCell(item, col,
-				(k->key() == Qt::Key_Tab && !(k->state() & Qt::ShiftModifier)));
+				(k->key() == Qt::Key_Tab && !(k->modifiers() & Qt::ShiftModifier)));
 			return true;
 	    }
 	}
@@ -750,7 +750,7 @@ bool KListView::event( QEvent *e )
 
 void KListView::contentsMousePressEvent( QMouseEvent *e )
 {
-  if( (selectionModeExt() == Extended) && (e->state() & Qt::ShiftModifier) && !(e->state() & Qt::ControlModifier) )
+  if( (selectionModeExt() == Extended) && (e->modifiers() & Qt::ShiftModifier) && !(e->modifiers() & Qt::ControlModifier) )
   {
     bool block = signalsBlocked();
     blockSignals( true );
@@ -1480,7 +1480,7 @@ bool KListView::automaticSelection() const
 void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
 {
    //don't care whether it's on the keypad or not
-    int e_state=(e->state() & ~Qt::KeypadModifier);
+    int e_state=(e->modifiers() & ~Qt::KeypadModifier);
 
     int oldSelectionDirection(d->selectionDirection);
 

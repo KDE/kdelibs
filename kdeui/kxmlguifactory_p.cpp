@@ -230,7 +230,7 @@ void ContainerNode::plugActionList( BuildState &state, const MergingIndexList::I
 
     QString k( mergingIdx.mergingName );
 
-    if ( k.find( tagActionList ) == -1 )
+    if ( k.indexOf( tagActionList ) == -1 )
         return;
 
     k = k.mid( tagActionList.length() );
@@ -271,7 +271,7 @@ void ContainerNode::unplugActionList( BuildState &state, const MergingIndexList:
 
     QString k = mergingIdx.mergingName;
 
-    if ( k.find( tagActionList ) == -1 )
+    if ( k.indexOf( tagActionList ) == -1 )
         return;
 
     k = k.mid( tagActionList.length() );
@@ -290,11 +290,11 @@ void ContainerNode::unplugActionList( BuildState &state, const MergingIndexList:
     if ( lIt == client->actionLists.end() )
         return;
 
-    lIt.data().unplug( container );
+    lIt.value().unplug( container );
 
-    adjustMergingIndices( -int(lIt.data().count()), mergingIdxIt );
+    adjustMergingIndices( -int(lIt.value().count()), mergingIdxIt );
 
-    client->actionLists.remove( lIt );
+    client->actionLists.erase( lIt );
 }
 
 void ContainerNode::adjustMergingIndices( int offset,
@@ -441,7 +441,7 @@ void ContainerNode::unplugClient( ContainerClient *client )
     ActionListMap::ConstIterator alEnd = client->actionLists.constEnd();
     for (; alIt != alEnd; ++alIt )
     {
-        alIt.data().unplug( container );
+        alIt.value().unplug( container );
 
         // construct the merging index key (i.e. like named merging) , find the
         // corresponding merging index and adjust all indices
@@ -452,11 +452,11 @@ void ContainerNode::unplugClient( ContainerClient *client )
         if ( mIt == mergingIndices.end() )
             continue;
 
-        adjustMergingIndices( -int(alIt.data().count()), mIt );
+        adjustMergingIndices( -int(alIt.value().count()), mIt );
 
         // remove the actionlists' merging index
         // ### still needed? we clean up below anyway?
-        mergingIndices.remove( mIt );
+        mergingIndices.erase( mIt );
     }
 }
 
@@ -569,9 +569,9 @@ void BuildHelper::processElement( const QDomElement &e )
 
     bool isActionTag = ( tag == tagAction );
 
-    if ( isActionTag || customTags.findIndex( tag ) != -1 )
+    if ( isActionTag || customTags.indexOf( tag ) != -1 )
         processActionOrCustomElement( e, isActionTag );
-    else if ( containerTags.findIndex( tag ) != -1 )
+    else if ( containerTags.indexOf( tag ) != -1 )
         processContainerElement( e, tag, currName );
     else if ( tag == tagMerge || tag == tagDefineGroup || tag == tagActionList )
         processMergeElement( tag, currName, e );

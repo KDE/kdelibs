@@ -111,7 +111,7 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
       {
         text = aboutData->customAuthorRichText();
       }
-      activeLabel->setText( text );
+      activeLabel->setHtml( text );
       authorPage->addWidget( activeLabel );
     }
 

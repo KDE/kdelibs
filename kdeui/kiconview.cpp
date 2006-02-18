@@ -290,7 +290,7 @@ void KIconView::leaveEvent( QEvent *e )
 
 void KIconView::contentsMousePressEvent( QMouseEvent *e )
 {
-  if( (selectionMode() == Extended) && (e->state() & Qt::ShiftModifier) && !(e->state() & Qt::ControlModifier) ) {
+  if( (selectionMode() == Extended) && (e->modifiers() & Qt::ShiftModifier) && !(e->modifiers() & Qt::ControlModifier) ) {
     bool block = signalsBlocked();
     blockSignals( true );
 
@@ -388,7 +388,7 @@ void KIconView::cancelPendingHeldSignal()
 void KIconView::wheelEvent( QWheelEvent *e )
 {
     if (horizontalScrollBar() && (arrangement() == Q3IconView::TopToBottom)) {
-        QWheelEvent ce(e->pos(), e->delta(), e->state(), Qt::Horizontal);
+        QWheelEvent ce(e->pos(), e->delta(), e->modifiers(), Qt::Horizontal);
         QApplication::sendEvent( horizontalScrollBar(), &ce);
 	if (ce.isAccepted()) {
             e->accept();

@@ -441,7 +441,7 @@ QSize KDialog::minimumSizeHint() const
 //
 void KDialog::keyPressEvent(QKeyEvent *e)
 {
-  if( e->state() == 0 )
+  if( e->modifiers() == 0 )
   {
     if( e->key() == Qt::Key_F1 )
     {
@@ -465,7 +465,7 @@ void KDialog::keyPressEvent(QKeyEvent *e)
 
     }
   }
-  else if( e->key() == Qt::Key_F1 && e->state() == Qt::ShiftModifier )
+  else if( e->key() == Qt::Key_F1 && e->modifiers() == Qt::ShiftModifier )
   {
     QWhatsThis::enterWhatsThisMode();
     e->accept();
@@ -473,7 +473,7 @@ void KDialog::keyPressEvent(QKeyEvent *e)
   }
 
   // accept the dialog when Ctrl-Return is pressed
-  else if ( e->state() == Qt::ControlModifier &&
+  else if ( e->modifiers() == Qt::ControlModifier &&
             (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) )
   {
     QPushButton *pb = actionButton( Ok );

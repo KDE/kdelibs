@@ -118,7 +118,7 @@ KLedTest::timeout()
   // -----
   for(count=0; count<NoOfLeds; ++count)
     {
-      if(leds[count]->state()==KLed::Off)
+      if(leds[count]->modifiers()==KLed::Off)
 	{
 	  leds[count]->setState(KLed::On);
 	} else {

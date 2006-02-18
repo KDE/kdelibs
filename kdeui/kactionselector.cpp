@@ -342,7 +342,7 @@ void KActionSelector::polish()
 void KActionSelector::keyPressEvent( QKeyEvent *e )
 {
   if ( ! d->keyboardEnabled ) return;
-  if ( (e->state() & Qt::ControlModifier) )
+  if ( (e->modifiers() & Qt::ControlModifier) )
   {
     switch ( e->key() )
     {
@@ -369,7 +369,7 @@ bool KActionSelector::eventFilter( QObject *o, QEvent *e )
 {
   if ( d->keyboardEnabled && e->type() == QEvent::KeyPress )
   {
-    if  ( (((QKeyEvent*)e)->state() & Qt::ControlModifier) )
+    if  ( (((QKeyEvent*)e)->modifiers() & Qt::ControlModifier) )
     {
       switch ( ((QKeyEvent*)e)->key() )
       {

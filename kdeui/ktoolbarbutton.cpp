@@ -491,7 +491,7 @@ void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
 
   if ( hitButton( e->pos() ) ) {
 #ifdef QT3_SUPPORT
-    Qt::ButtonState state = Qt::ButtonState(e->button() | (e->state() & Qt::KeyboardModifierMask));
+    Qt::ButtonState state = Qt::ButtonState(e->button() | (e->modifiers() & Qt::KeyboardModifierMask));
     emit buttonClicked( d->m_id, state );
 #endif
     emit buttonClicked( d->m_id, e->button(), e->modifiers() );

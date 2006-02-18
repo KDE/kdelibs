@@ -229,7 +229,7 @@ void KListBox::leaveEvent( QEvent *e )
 
 void KListBox::contentsMousePressEvent( QMouseEvent *e )
 {
-  if( (selectionMode() == Extended) && (e->state() & Qt::ShiftModifier) && !(e->state() & Qt::ControlModifier) ) {
+  if( (selectionMode() == Extended) && (e->modifiers() & Qt::ShiftModifier) && !(e->modifiers() & Qt::ControlModifier) ) {
     bool block = signalsBlocked();
     blockSignals( true );
 

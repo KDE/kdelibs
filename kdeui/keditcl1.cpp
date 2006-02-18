@@ -372,7 +372,7 @@ void KEdit::computePosition()
 void KEdit::keyPressEvent ( QKeyEvent *e)
 {
   // ignore Ctrl-Return so that KDialog can catch them
-  if ( e->key() == Qt::Key_Return && e->state() == Qt::ControlModifier ) {
+  if ( e->key() == Qt::Key_Return && e->modifiers() == Qt::ControlModifier ) {
       e->ignore();
       return;
   }

@@ -188,7 +188,7 @@ void KPasswordEdit::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Backspace:
     case Qt::Key_Delete:
     case 0x7f: // Delete
-	if (e->state() & (Qt::ControlModifier | Qt::AltModifier))
+	if (e->modifiers() & (Qt::ControlModifier | Qt::AltModifier))
 	    e->ignore();
 	else if (m_Length) {
 	    m_Password[--m_Length] = '\000';
@@ -226,7 +226,7 @@ bool KPasswordEdit::event(QEvent *e) {
         QKeyEvent* const k = (QKeyEvent*) e;
         switch (k->key()) {
             case Qt::Key_U:
-                if (k->state() & Qt::ControlModifier) {
+                if (k->modifiers() & Qt::ControlModifier) {
                     m_Length = 0;
                     m_Password[m_Length] = '\000';
                     showPass();

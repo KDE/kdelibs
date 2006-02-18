@@ -358,7 +358,7 @@ bool KAction::setShortcut( const KShortcut& cut )
 bool KAction::updateKAccelShortcut( KAccel* kaccel )
 {
   // Check if action is permitted
-  if (!KAuthorized::authorizeKAction(name()))
+  if (!KAuthorized::authorizeKAction(qPrintable(objectName())))
     return false;
 
   bool b = true;
@@ -397,7 +397,7 @@ void KAction::removeKAccel( KAccel* kaccel )
   foreach(KAccel *a, d->m_kaccelList) {
     if( a == kaccel ) {
       kaccel->remove( objectName() );
-      d->m_kaccelList.remove( a );
+      d->m_kaccelList.removeAll( a );
       disconnect( kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
       break;
     }
@@ -425,7 +425,7 @@ void KAction::updateShortcut( QMenu* menu, int id )
   //  show the string representation of its shortcut.
   if ( d->m_kaccel || d->m_kaccelList.count() ) {
     QString s = menu->text( id );
-    int i = s.find( '\t' );
+    int i = s.indexOf( '\t' );
     if ( i >= 0 )
       s.replace( i+1, s.length()-i, d->m_cut.seq(0).toString() );
     else
@@ -533,7 +533,7 @@ int KAction::plug( QWidget *w, int index )
 #endif
 
   // Check if action is permitted
-  if (!KAuthorized::authorizeKAction(name()))
+  if (!KAuthorized::authorizeKAction(qPrintable(objectName())))
     return -1;
 
   plugShortcut();
@@ -610,7 +610,7 @@ int KAction::plug( QWidget *w, int index )
     }
 
     KToolBarButton* ktb = bar->getButton(id_);
-    ktb->setName( QByteArray("toolbutton_")+name() );
+    ktb->setObjectName( QByteArray("toolbutton_")+objectName() );
 
     if ( !d->whatsThis().isEmpty() )
         bar->getButton(id_)->setWhatsThis(whatsThisWithIcon() );
@@ -673,10 +673,10 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
 
   // We can only plug this action into the given KAccel object
   //  if it does not already contain an action with the same name.
-  if ( !kacc->actions().actionPtr(name()) )
+  if ( !kacc->actions().actionPtr(objectName()) )
   {
     d->m_kaccel = kacc;
-    d->m_kaccel->insert(name(), d->plainText(), QString(),
+    d->m_kaccel->insert(objectName(), d->plainText(), QString(),
         KShortcut(d->m_cut),
         this, SLOT(slotActivated()),
         configurable, isEnabled());
@@ -684,7 +684,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
     //connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
   }
   else
-    kWarning(129) << "KAction::plugAccel( kacc = " << kacc << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
+    kWarning(129) << "KAction::plugAccel( kacc = " << kacc << " ): KAccel object already contains an action name \"" << objectName() << "\"" << endl; // -- ellis
 }
 
 void KAction::unplugAccel()
@@ -692,7 +692,7 @@ void KAction::unplugAccel()
   //kDebug(129) << "KAction::unplugAccel() " << this << " " << name() << endl;
   if ( d->m_kaccel )
   {
-    d->m_kaccel->remove(name());
+    d->m_kaccel->remove(objectName());
     d->m_kaccel = 0;
   }
 }
@@ -702,7 +702,7 @@ void KAction::plugMainWindowAccel( QWidget *w )
   // Note: topLevelWidget() stops too early, we can't use it.
   QWidget * tl = w;
   QWidget * n;
-  while ( !tl->isDialog() && ( n = tl->parentWidget() ) ) // lookup parent and store
+  while ( !tl->windowType() == Qt::Dialog && ( n = tl->parentWidget() ) ) // lookup parent and store
     tl = n;
 
   KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
@@ -718,11 +718,8 @@ void KAction::setEnabled(bool enable)
   if ( enable == d->isEnabled() )
     return;
 
-
-  const char * const namePtr = name();
-
   foreach(KAccel *a, d->m_kaccelList)
-    a->setEnabled( namePtr, enable );
+    a->setEnabled( objectName(), enable );
 
   d->setEnabled( enable );
 
@@ -752,11 +749,8 @@ void KAction::setShortcutConfigurable( bool b )
 
 void KAction::setText( const QString& text )
 {
-
-  const char * const namePtr = name();
-
   foreach(KAccel *a, d->m_kaccelList) {
-    KAccelAction* const pAction = a->actions().actionPtr(namePtr);
+    KAccelAction* const pAction = a->actions().actionPtr(objectName());
     if (pAction)
       pAction->setLabel( text );
   }
@@ -1045,7 +1039,7 @@ void KAction::slotButtonClicked( int, Qt::MouseButtons buttons, Qt::KeyboardModi
 
 void KAction::slotDestroyed()
 {
-  kDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << name() << "\", sender = " << sender() << endl;
+  kDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << objectName() << "\", sender = " << sender() << endl;
   const QObject* const o = sender();
 
 
@@ -1101,7 +1095,7 @@ void KAction::removeContainer( int index )
 void KAction::slotKeycodeChanged()
 {
   kDebug(129) << "KAction::slotKeycodeChanged()" << endl; // -- ellis
-  KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
+  KAccelAction* pAction = d->m_kaccel->actions().actionPtr(objectName());
   if( pAction )
     setShortcut(pAction->shortcut());
 }

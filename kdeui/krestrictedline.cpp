@@ -40,7 +40,7 @@ void KRestrictedLine::keyPressEvent( QKeyEvent *e )
 {
   // let QLineEdit process "special" keys and return/enter
   // so that we still can use the default key binding
-  if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return || e->key() == Qt::Key_Delete || e->ascii() < 32)
+  if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return || e->key() == Qt::Key_Delete || e->text().length() < 32)
     {
       QLineEdit::keyPressEvent(e);
       return;
@@ -48,7 +48,7 @@ void KRestrictedLine::keyPressEvent( QKeyEvent *e )
 
   // do we have a list of valid chars &&
   // is the pressed key in the list of valid chars?
-  if (!qsValidChars.isEmpty() && !qsValidChars.contains(e->ascii()))
+  if (!qsValidChars.isEmpty() && !qsValidChars.contains(e->text()))
     {
       // invalid char, emit signal and return
       emit (invalidChar(e->key()));

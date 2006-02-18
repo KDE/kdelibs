@@ -339,17 +339,17 @@ QValidator::State KDoubleValidator::validate( QString & input, int & p ) const {
             t = l->thousandsSeparator();
     // first, delete p's and t's:
     if ( !p.isEmpty() )
-      for ( int idx = s.find( p ) ; idx >= 0 ; idx = s.find( p, idx ) )
+      for ( int idx = s.indexOf( p ) ; idx >= 0 ; idx = s.indexOf( p, idx ) )
 	s.remove( idx, p.length() );
 
 
     if ( !t.isEmpty() )
-      for ( int idx = s.find( t ) ; idx >= 0 ; idx = s.find( t, idx ) )
+      for ( int idx = s.indexOf( t ) ; idx >= 0 ; idx = s.indexOf( t, idx ) )
 	s.remove( idx, t.length() );
 
     // then, replace the d's and n's
-    if ( ( !n.isEmpty() && n.find('.') != -1 ) ||
-	 ( !d.isEmpty() && d.find('-') != -1 ) ) {
+    if ( ( !n.isEmpty() && n.indexOf('.') != -1 ) ||
+	 ( !d.isEmpty() && d.indexOf('-') != -1 ) ) {
       // make sure we don't replace something twice:
       kWarning() << "KDoubleValidator: decimal symbol contains '-' or "
 		     "negative sign contains '.' -> improve algorithm" << endl;
@@ -357,11 +357,11 @@ QValidator::State KDoubleValidator::validate( QString & input, int & p ) const {
     }
 
     if ( !d.isEmpty() && d != "." )
-      for ( int idx = s.find( d ) ; idx >= 0 ; idx = s.find( d, idx + 1 ) )
+      for ( int idx = s.indexOf( d ) ; idx >= 0 ; idx = s.indexOf( d, idx + 1 ) )
 	s.replace( idx, d.length(), '.');
 
     if ( !n.isEmpty() && n != "-" )
-      for ( int idx = s.find( n ) ; idx >= 0 ; idx = s.find( n, idx + 1 ) )
+      for ( int idx = s.indexOf( n ) ; idx >= 0 ; idx = s.indexOf( n, idx + 1 ) )
 	s.replace( idx, n.length(), '-' );
   }
 

@@ -72,8 +72,8 @@ KSystemTray::KSystemTray( QWidget* parent )
 #ifdef Q_WS_X11
     KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): QX11Info::appRootWindow() );
 #endif
-    setBackgroundMode(Qt::X11ParentRelative);
-    setBackgroundOrigin(WindowOrigin);
+    setBackgroundRole(QPalette::NoRole);
+    setForegroundRole(QPalette::NoRole);
     hasQuit = 0;
     menu = new KMenu( this );
     menu->addTitle( qApp->windowIcon(), kapp->caption() );

@@ -61,7 +61,7 @@ void KToolBarRadioGroup::removeButton (int id)
 
 void KToolBarRadioGroup::slotToggled(int id)
 {
-  if (buttons->contains(id) && buttons->value(id)->isOn())
+  if (buttons->contains(id) && buttons->value(id)->isChecked())
   {
     QHashIterator<int, KToolBarButton*> it = *buttons;
     while (it.hasNext())

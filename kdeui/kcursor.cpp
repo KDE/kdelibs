@@ -274,7 +274,7 @@ void KCursorPrivateAutoHideEventFilter::hideCursor()
 
     QWidget* w = actualWidget();
 
-    m_isOwnCursor = w->ownCursor();
+    m_isOwnCursor = w->testAttribute(Qt::WA_SetCursor);
     if ( m_isOwnCursor )
         m_oldCursor = w->cursor();
 
@@ -340,7 +340,10 @@ bool KCursorPrivateAutoHideEventFilter::eventFilter( QObject *o, QEvent *e )
     case QEvent::Wheel:
         unhideCursor();
         if ( m_widget->hasFocus() )
-            m_autoHideTimer.start( KCursorPrivate::self()->hideCursorDelay, true );
+        {
+            m_autoHideTimer.setSingleShot( true );
+            m_autoHideTimer.start( KCursorPrivate::self()->hideCursorDelay );
+        }
         break;
     default:
         break;

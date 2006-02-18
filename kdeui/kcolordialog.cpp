@@ -354,8 +354,8 @@ KColorCells::KColorCells( QWidget *parent, int rows, int cols )
 
 	setHScrollBarMode( AlwaysOff );
 	setVScrollBarMode( AlwaysOff );
-	viewport()->setBackgroundMode( Qt::PaletteBackground );
-	setBackgroundMode( Qt::PaletteBackground );
+	viewport()->setBackgroundRole( QPalette::Background );
+	setBackgroundRole( QPalette::Background );
 }
 
 KColorCells::~KColorCells()
