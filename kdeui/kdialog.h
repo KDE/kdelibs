@@ -210,8 +210,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      *        here. The class will take care of that.
      * @param buttonMask Specifies which buttons will be visible. If zero
      *        (0) no button box will be made.
-     * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
-     *        IconList.
      * @param flags  the Widget flags passed to the QDialog constructor
      * @param user1 User button1 text item.
      * @param user2 User button2 text item.
@@ -276,7 +274,7 @@ class KDEUI_EXPORT KDialog : public QDialog
 	 * @param buttonMask Specifies what buttons will be made.
 	 * @param user1 User button1 item.
 	 * @param user2 User button2 item.
-	 * @param user2 User button3 item.
+	 * @param user3 User button3 item.
 	*/
 	void setButtonMask( ButtonCodes buttonMask ,
 						const KGuiItem &user1 = KGuiItem(),

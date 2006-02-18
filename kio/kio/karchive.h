@@ -44,7 +44,7 @@ class KIO_EXPORT KArchive
 protected:
     /**
      * Base constructor (protected since this is a pure virtual class).
-     * @param filename is a local path (e.g. "/tmp/myfile.ext"),
+     * @param fileName is a local path (e.g. "/tmp/myfile.ext"),
      * from which the archive will be read from, or into which the archive
      * will be written, depending on the mode given to open().
      */

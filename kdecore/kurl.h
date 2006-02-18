@@ -257,7 +257,7 @@ public:
 
   /**
    * Sets the protocol for the URL (i.e., file, http, etc.)
-   * @param _txt the new protocol of the URL (without colon)
+   * @param proto the new protocol of the URL (without colon)
    */
   void setProtocol( const QString& proto ) { setScheme( proto ); }
 
@@ -271,7 +271,7 @@ public:
    * Sets the user name (login, user id, ...) included in the URL.
    *
    * Special characters in the user name will appear encoded in the URL.
-   * @param _txt the name of the user or QString() to remove the user
+   * @param user the name of the user or QString() to remove the user
    */
   void setUser( const QString& user ) { setUserName( user ); }
 
@@ -293,7 +293,7 @@ public:
    * Special characters in the password will appear encoded in the URL.
    * Note that a password can only appear in a URL string if you also set
    * a user.
-   * @param _txt the password to set or QString() to remove the password
+   * @param pass the password to set or QString() to remove the password
    * @see setUser
    * @see hasUser
    **/
@@ -393,7 +393,7 @@ public:
   QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false ) const;
 
   /**
-   * @param _txt This is considered to be encoded. This has a good reason:
+   * @param query This is considered to be encoded. This has a good reason:
    * The query may contain the 0 character.
    *
    * The query should start with a '?'. If it doesn't '?' is prepended.

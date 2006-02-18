@@ -47,9 +47,6 @@ public:
      *               to start in the current working directory, or the last
      *               directory where a file has been selected.
      * @param parent The parent object of this widget.
-     * @param name The name of this widget.
-     * @param modal  Specifies whether the dialog should be opened as modal
-     *               or not.
      */
     KUrlRequesterDlg( const QString& url, QWidget *parent);
 
@@ -61,9 +58,6 @@ public:
      *               directory where a file has been selected.
      * @param text   Text of the label
      * @param parent The parent object of this widget.
-     * @param name The name of this widget.
-     * @param modal  Specifies whether the dialog should be opened as modal
-     *                  or not.
      */
     KUrlRequesterDlg( const QString& url, const QString& text,
                       QWidget *parent);
