@@ -9,11 +9,14 @@ X-KDE-Library=crypto
 X-KDE-ParentApp=kcontrol
 
 Name=Crypto
+Name[fr]=Cryptographie
 Name[x-test]=xxCryptoxx
 Comment=Configure SSL, manage certificates, and other cryptography settings
+Comment[fr]=Configuration de SSL, de la cryptographie et gestion des certificats
 Comment[x-test]=xxConfigure SSL, manage certificates, and other cryptography settingsxx
 
 Keywords=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers,TLS,secure,security
+Keywords[fr]=cryptographie,cryptage,encryptage,chiffrage,ssl,https,certificats,tls,sécurité
 Keywords[x-test]=xxCrypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers,TLS,secure,securityxx
 
 Categories=Qt;KDE;X-KDE-settings-security;
