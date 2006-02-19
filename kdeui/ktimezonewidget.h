@@ -24,8 +24,8 @@
 
 #include <kdelibs_export.h>
 
-class KTimezone;
-class KTimezones;
+class KTimeZone;
+class KTimeZones;
 class KTimezoneWidgetPrivate;
 
 /**
@@ -69,7 +69,7 @@ public:
      * @param db The timezone database to use. If 0, the system timezone
      *           database is used.
      */
-    KTimezoneWidget(QWidget *parent = 0, KTimezones *db = 0);
+    KTimezoneWidget(QWidget *parent = 0, KTimeZones *db = 0);
 
     /**
      * Destroys the timezone selection widget.
@@ -102,7 +102,7 @@ public:
      *
      * @return formatted timezone name.
      */
-    static QString displayName(const KTimezone *zone);
+    static QString displayName(const KTimeZone *zone);
 
 private:
     KTimezoneWidgetPrivate *d;

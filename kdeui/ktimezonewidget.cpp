@@ -33,21 +33,21 @@
 #define COLUMN_COMMENT 2
 #define COLUMN_ZONE 3
 
-KTimezoneWidget::KTimezoneWidget(QWidget *parent, KTimezones *db) :
+KTimezoneWidget::KTimezoneWidget(QWidget *parent, KTimeZones *db) :
     QTreeWidget(parent),
     d(0)
 {
     // If the user did not provide a timezone database, we'll use the system default.
     bool userDb = (db != 0);
     if (!userDb)
-        db = new KTimezones();
+        db = new KTimeZones();
 
     setHeaderLabels(QStringList() << i18n("Area") << i18n("Region") << i18n("Comment"));
 
-    const KTimezones::ZoneMap zones = db->zones();
-    for (KTimezones::ZoneMap::ConstIterator it = zones.begin(); it != zones.end(); ++it)
+    const KTimeZones::ZoneMap zones = db->zones();
+    for (KTimeZones::ZoneMap::ConstIterator it = zones.begin(); it != zones.end(); ++it)
     {
-        const KTimezone *zone = it.value();
+        const KTimeZone *zone = it.value();
         QString tzName = zone->name();
         QString comment = zone->comment();
         if (!comment.isEmpty())
@@ -82,7 +82,7 @@ KTimezoneWidget::~KTimezoneWidget()
     // delete d;
 }
 
-QString KTimezoneWidget::displayName(const KTimezone *zone)
+QString KTimezoneWidget::displayName(const KTimeZone *zone)
 {
     return i18n(zone->name().toUtf8()).replace("_", " ");
 }
