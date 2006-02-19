@@ -5,4 +5,5 @@ MimeType=application/x-deb
 Icon=deb
 Patterns=*.deb;*.DEB;
 Comment=Debian Package
+Comment[fr]=Paquetage Debian
 Comment[x-test]=xxDebian Packagexx

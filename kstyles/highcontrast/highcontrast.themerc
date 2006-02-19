@@ -1,8 +1,10 @@
 [Misc]
 Name=HighContrast
+Name[fr]=Contraste fort
 Name[x-test]=xxHighContrastxx
 ConfigPage=kstyle_highcontrast_config
 Comment=A style that works well with high contrast color schemes
+Comment[fr]=Un style se combinant bien avec les modèles de couleurs à fort contraste
 Comment[x-test]=xxA style that works well with high contrast color schemesxx
 [KDE]
 WidgetStyle=HighContrast

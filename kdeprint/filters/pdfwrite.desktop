@@ -3,6 +3,7 @@ Name=pdfwrite
 Name[x-test]=xxpdfwritexx
 Require=exec:/gs
 Comment=PDF Writer (needs Ghostscript)
+Comment[fr]=Impression PDF (nécessite GhostScript)
 Comment[x-test]=xxPDF Writer (needs Ghostscript)xx
 MimeTypeIn=application/postscript
 MimeTypeOut=application/pdf

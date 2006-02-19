@@ -5,4 +5,5 @@ MimeType=image/x-dds
 Icon=image
 Patterns=*.dds;*.DDS;
 Comment=DirectDraw Surface
+Comment[fr]=Surface DirectDraw
 Comment[x-test]=xxDirectDraw Surfacexx

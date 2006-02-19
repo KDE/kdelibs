@@ -4,4 +4,5 @@ Type=MimeType
 MimeType=application/pgp-signature
 Icon=encrypted
 Comment=Detached OpenPGP Signature
+Comment[fr]=Signature OpenPGP détachée
 Comment[x-test]=xxDetached OpenPGP Signaturexx

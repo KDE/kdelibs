@@ -3,4 +3,5 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=DCOP/InstantMessenger
 Comment=Instant Messenger with a DCOP interface
+Comment[fr]=Messagerie instantanée munie d'une interface DCOP
 Comment[x-test]=xxInstant Messenger with a DCOP interfacexx

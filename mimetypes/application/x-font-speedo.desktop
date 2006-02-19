@@ -5,4 +5,5 @@ MimeType=application/x-font-speedo
 Icon=font
 Patterns=*.spd;*.SPD
 Comment=Speedo Font
+Comment[fr]=Police de caractères Speedo
 Comment[x-test]=xxSpeedo Fontxx

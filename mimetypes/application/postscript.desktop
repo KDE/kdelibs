@@ -6,6 +6,7 @@ Icon=postscript
 Patterns=*.ps;*.PS;
 X-KDE-PatternsAccuracy=95
 Comment=PostScript Document
+Comment[fr]=Document PostScript
 Comment[x-test]=xxPostScript Documentxx
 X-KDE-AutoEmbed=true
 

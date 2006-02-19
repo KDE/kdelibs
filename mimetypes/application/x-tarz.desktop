@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-tarz
 Comment=Compressed Tar Archive
+Comment[fr]=Archive Tar compactée
 Comment[x-test]=xxCompressed Tar Archivexx
 Icon=tgz
 Type=MimeType

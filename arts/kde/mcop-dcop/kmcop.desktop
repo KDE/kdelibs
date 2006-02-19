@@ -5,6 +5,7 @@ Name=KMCOP
 Name[x-test]=xxKMCOPxx
 Exec=kmcop
 Comment=KDE MCOP-DCOP Bridge
+Comment[fr]=Passerelle MCOP-DCOP pour KDE
 Comment[x-test]=xxKDE MCOP-DCOP Bridgexx
 Icon=kmcop
 ServiceTypes=KMCOP

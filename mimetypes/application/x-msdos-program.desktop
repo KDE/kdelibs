@@ -1,5 +1,6 @@
 [Desktop Entry]
 Comment=Windows Executable
+Comment[fr]=Exécutable Windows
 Comment[x-test]=xxWindows Executablexx
 Icon=exec
 Type=MimeType

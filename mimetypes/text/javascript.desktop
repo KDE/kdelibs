@@ -3,5 +3,6 @@ Type=MimeType
 MimeType=text/javascript
 Icon=javascript
 Comment=JavaScript File
+Comment[fr]=Fichier JavaScript
 Comment[x-test]=xxJavaScript Filexx
 X-KDE-IsAlso=application/x-javascript

@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KCModule
 Name=KDE Control Module
+Name[fr]=Module de configuration de KDE
 Name[x-test]=xxKDE Control Modulexx
 
 [PropertyDef::X-KDE-FactoryName]

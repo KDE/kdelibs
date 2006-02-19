@@ -5,4 +5,5 @@ MimeType=video/x-mng
 Icon=image
 Patterns=*.mng;*.MNG;
 Comment=MNG Image
+Comment[fr]=Image MNG
 Comment[x-test]=xxMNG Imagexx

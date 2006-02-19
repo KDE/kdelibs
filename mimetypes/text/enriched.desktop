@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=text/enriched
 Comment=Lightly Enriched Text Document
+Comment[fr]=Document en texte légèrement enrichi
 Comment[x-test]=xxLightly Enriched Text Documentxx
 Icon=txt
 Type=MimeType

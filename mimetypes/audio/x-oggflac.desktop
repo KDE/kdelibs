@@ -5,4 +5,5 @@ MimeType=audio/x-oggflac
 Icon=sound
 X-KDE-IsAlso=application/ogg
 Comment=Ogg FLAC Audio
+Comment[fr]=Son Ogg Flac
 Comment[x-test]=xxOgg FLAC Audioxx

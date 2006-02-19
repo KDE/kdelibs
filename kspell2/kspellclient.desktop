@@ -4,4 +4,5 @@ Type=ServiceType
 X-KDE-ServiceType=KSpell/Client
 X-KDE-Derived=KPluginInfo
 Comment=KSpell Client
+Comment[fr]=Client KSpell
 Comment[x-test]=xxKSpell Clientxx

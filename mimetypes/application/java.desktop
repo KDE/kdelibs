@@ -4,5 +4,6 @@ Type=MimeType
 MimeType=application/java
 Icon=source_java
 Comment=Java Class
+Comment[fr]=Classe Java
 Comment[x-test]=xxJava Classxx
 X-KDE-IsAlso=application/x-java

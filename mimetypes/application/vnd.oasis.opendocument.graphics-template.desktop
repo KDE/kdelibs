@@ -5,6 +5,7 @@ MimeType=application/vnd.oasis.opendocument.graphics-template
 Patterns=*.otg;*.OTG
 Icon=drawing
 Comment=OASIS OpenDocument Graphics Template
+Comment[fr]=Modèle de graphiques OASIS OpenDocument
 Comment[x-test]=xxOASIS OpenDocument Graphics Templatexx
 [Property::X-KDE-NativeExtension]
 Type=QString

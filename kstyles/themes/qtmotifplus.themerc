@@ -2,6 +2,7 @@
 Name=Motif Plus
 Name[x-test]=xxMotif Plusxx
 Comment=Built-in enhanced Motif style
+Comment[fr]=Style Motif amélioré d'origine
 Comment[x-test]=xxBuilt-in enhanced Motif stylexx
 [KDE]
 WidgetStyle=MotifPlus

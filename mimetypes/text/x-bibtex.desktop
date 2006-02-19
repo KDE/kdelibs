@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Bibliographic Data (Bibtex)
+Comment[fr]=Données bibliographiques (BibTeX)
 Comment[x-test]=xxBibliographic Data (Bibtex)xx
 Icon=tex
 MimeType=text/x-bibtex

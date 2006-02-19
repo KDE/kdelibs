@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Troff Document with Manpage Macros
+Comment[fr]=Document Troff avec macros de page de manuel
 Comment[x-test]=xxTroff Document with Manpage Macrosxx
 Icon=man
 Type=MimeType

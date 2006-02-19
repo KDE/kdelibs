@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=File List (for the Kate File List Loader Plugin)
+Comment[fr]=Liste de fichiers (pour le chargeur de listes de fichiers de Kate)
 Comment[x-test]=xxFile List (for the Kate File List Loader Plugin)xx
 Icon=unknown
 Type=MimeType

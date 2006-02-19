@@ -5,4 +5,5 @@ MimeType=audio/vorbis
 Icon=sound
 X-KDE-IsAlso=audio/x-vorbis
 Comment=Ogg Vorbis Audio
+Comment[fr]=Son Ogg Vorbis
 Comment[x-test]=xxOgg Vorbis Audioxx

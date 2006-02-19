@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=AWK Script
+Comment[fr]=Script AWK
 Comment[x-test]=xxAWK Scriptxx
 Icon=shellscript
 Type=MimeType

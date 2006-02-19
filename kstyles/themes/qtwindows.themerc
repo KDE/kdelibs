@@ -2,6 +2,7 @@
 Name=MS Windows 9x
 Name[x-test]=xxMS Windows 9xxx
 Comment=Built-in unthemed Windows 9x style
+Comment[fr]=Style Windows 9x d'origine sans thème
 Comment[x-test]=xxBuilt-in unthemed Windows 9x stylexx
 [KDE]
 WidgetStyle=Windows

@@ -1,25 +1,32 @@
 [!Global!]
 IconName=proxy
 Comment=Automatic Proxy Configuration
+Comment[fr]=Configuration automatique du proxy
 Comment[x-test]=xxAutomatic Proxy Configurationxx
 
 [script-error]
 Name=Invalid proxy script
+Name[fr]=Script de proxy non valable
 Name[x-test]=xxInvalid proxy scriptxx
 Comment=The downloaded proxy configuration script is invalid
+Comment[fr]=Le script téléchargé de configuration du proxy n'est pas valable
 Comment[x-test]=xxThe downloaded proxy configuration script is invalidxx
 default_presentation=16
 
 [download-error]
 Name=Script download error
+Name[fr]=Erreur de téléchargement du script
 Name[x-test]=xxScript download errorxx
 Comment=The proxy configuration script could not be downloaded
+Comment[fr]=Le script de configuration du proxy n'a pas pu être téléchargé
 Comment[x-test]=xxThe proxy configuration script could not be downloadedxx
 default_presentation=16
 
 [evaluation-error]
 Name=Script evaluation error
+Name[fr]=Erreur d'évaluation du script
 Name[x-test]=xxScript evaluation errorxx
 Comment=There was an error executing the proxy configuration script
+Comment[fr]=Une erreur s'est produite lors de l'exécution du script de configuration du proxy
 Comment[x-test]=xxThere was an error executing the proxy configuration scriptxx
 default_presentation=0

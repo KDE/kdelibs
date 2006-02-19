@@ -5,4 +5,5 @@ MimeType=application/x-msaccess
 Icon=database
 Patterns=*.mdb;*.MDB;*.mda;*.MDA;*.mde;*.MDE;
 Comment=Microsoft Access Database
+Comment[fr]=Base de données Microsoft Access
 Comment[x-test]=xxMicrosoft Access Databasexx

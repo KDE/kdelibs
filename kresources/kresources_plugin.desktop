@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KResources/Plugin
 Comment=KResource Framework Plugin
+Comment[fr]=Module externe du cadre de KResource
 Comment[x-test]=xxKResource Framework Pluginxx
 
 [PropertyDef::X-KDE-ResourceFamily]

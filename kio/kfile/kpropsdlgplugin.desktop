@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KPropsDlg/Plugin
 Comment=Plugin for the Properties Dialog
+Comment[fr]=Module externe pour la boîte de dialogue des propriétés
 Comment[x-test]=xxPlugin for the Properties Dialogxx
 
 [PropertyDef::X-KDE-Protocol]

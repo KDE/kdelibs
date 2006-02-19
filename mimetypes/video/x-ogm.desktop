@@ -6,4 +6,5 @@ Icon=video
 Patterns=*.ogm;*.OGM;
 X-KDE-IsAlso=application/ogg
 Comment=Ogg/Ogm Video
+Comment[fr]=Vidéo Ogg / Ogm
 Comment[x-test]=xxOgg/Ogm Videoxx

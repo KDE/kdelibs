@@ -5,4 +5,5 @@ MimeType=image/x-xpm
 Icon=image
 Patterns=*.xpm;*.XPM;
 Comment=X PixMap Image
+Comment[fr]=Image XPixmap
 Comment[x-test]=xxX PixMap Imagexx

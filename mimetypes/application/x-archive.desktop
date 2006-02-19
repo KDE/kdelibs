@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-archive
 Comment=Ar Archive
+Comment[fr]=Archive AR
 Comment[x-test]=xxAr Archivexx
 Icon=tgz
 Type=MimeType

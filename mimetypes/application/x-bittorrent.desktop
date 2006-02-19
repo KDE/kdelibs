@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=BitTorrent Download
+Comment[fr]=Téléchargement BitTorrent
 Comment[x-test]=xxBitTorrent Downloadxx
 Hidden=false
 MimeType=application/x-bittorrent

@@ -4,6 +4,7 @@ Type=MimeType
 Icon=multimedia
 MimeType=model/vrml
 Comment=VRML Model
+Comment[fr]=Modèle VRML
 Comment[x-test]=xxVRML Modelxx
 Patterns=*.wrl;*.wrl.gz
 

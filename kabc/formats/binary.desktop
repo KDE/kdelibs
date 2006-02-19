@@ -1,6 +1,7 @@
 [Misc]
 Encoding=UTF-8
 Name=Binary
+Name[fr]=Binaire
 Name[x-test]=xxBinaryxx
 
 [Plugin]

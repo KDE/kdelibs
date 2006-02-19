@@ -1,5 +1,6 @@
 [Misc]
 Name=MegaGradient highcolor style
+Name[fr]=Style MégaGradient très coloré
 Name[x-test]=xxMegaGradient highcolor stylexx
 [KDE]
 widgetStyle=mega.la

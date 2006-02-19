@@ -5,4 +5,5 @@ MimeType=video/quicktime
 Icon=video
 Patterns=*.qt;*.mov;*.moov;*.qtvr;*.QT;*.MOV;*.MOOV;*.MooV;*.QTVR;
 Comment=Quicktime Video
+Comment[fr]=Vidéo QuickTime
 Comment[x-test]=xxQuicktime Videoxx

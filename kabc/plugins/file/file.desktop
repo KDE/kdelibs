@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=File
+Name[fr]=Fichier
 Name[x-test]=xxFilexx
 X-KDE-Library=kabc_file
 Type=Service

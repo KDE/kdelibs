@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=DocBook Document
+Comment[fr]=Document DocBook
 Comment[x-test]=xxDocBook Documentxx
 Icon=wordprocessing
 Type=MimeType

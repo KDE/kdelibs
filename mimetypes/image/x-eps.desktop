@@ -5,4 +5,5 @@ MimeType=image/x-eps
 Icon=image
 Patterns=*.eps;*.EPS;*.epsi;*.EPSI;*.epsf;*.EPSF;
 Comment=Encapsulated PostScript Image
+Comment[fr]=Image PostScript encapsulé
 Comment[x-test]=xxEncapsulated PostScript Imagexx

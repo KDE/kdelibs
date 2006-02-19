@@ -11,12 +11,15 @@ X-KDE-FactoryName=kresources
 X-KDE-HasReadOnlyMode=false
 
 Name=KDE Resources
+Name[fr]=Ressources de KDE
 Name[x-test]=xxKDE Resourcesxx
 
 Comment=Configure KDE Resources
+Comment[fr]=Configure les ressources de KDE
 Comment[x-test]=xxConfigure KDE Resourcesxx
 
 Keywords=resources,konnector resource,contact resource,calendar resource,notes resource,imap
+Keywords[fr]=resources,konnector,contact,calendrier,notes,imap,agenda,rendez-vous
 Keywords[x-test]=xxresources,konnector resource,contact resource,calendar resource,notes resource,imapxx
 
 Categories=Qt;KDE;X-KDE-settings-components;

@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=application/vnd.ms-excel
 Icon=spreadsheet
 Comment=Microsoft Excel Spreadsheet
+Comment[fr]=Feuille de calcul Microsoft Excel
 Comment[x-test]=xxMicrosoft Excel Spreadsheetxx
 [Property::X-KDE-NativeExtension]
 Type=QString

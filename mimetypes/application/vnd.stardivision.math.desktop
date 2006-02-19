@@ -5,6 +5,7 @@ MimeType=application/vnd.stardivision.math
 Patterns=*.sdf;*.SDF;
 Icon=kformula_kfo
 Comment=StarOffice Math Document
+Comment[fr]=Document StarOffice Math
 Comment[x-test]=xxStarOffice Math Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString

@@ -3,6 +3,7 @@ Type=MimeType
 Encoding=UTF-8
 MimeType=application/fits
 Comment=FITS Data
+Comment[fr]=Données FITS
 Comment[x-test]=xxFITS Dataxx
 Icon=binary
 # Note: application/fits is for any kind of FITS, so also for non-images

@@ -5,6 +5,7 @@ MimeType=application/vnd.stardivision.writer
 Patterns=*.sdw;*.SDW;
 Icon=wordprocessing
 Comment=StarOffice Writer Document
+Comment[fr]=Document StarOffice Writer
 Comment[x-test]=xxStarOffice Writer Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString

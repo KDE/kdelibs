@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Spreadsheet
+Comment[fr]=Feuille de calcul OpenOffice.org
 Comment[x-test]=xxOpenOffice.org Spreadsheetxx
 Icon=spreadsheet
 Type=MimeType

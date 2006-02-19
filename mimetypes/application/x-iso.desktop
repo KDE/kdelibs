@@ -4,4 +4,5 @@ Patterns=*.iso;*.ISO
 MimeType=application/x-iso
 Icon=cdtrack
 Comment=ISO9660 Image File
+Comment[fr]=Fichier image ISO9660
 Comment[x-test]=xxISO9660 Image Filexx

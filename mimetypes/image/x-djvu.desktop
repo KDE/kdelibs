@@ -5,4 +5,5 @@ MimeType=image/x-djvu
 Icon=djvu
 Patterns=*.djvu;*.DJVU;*.djv;*.DJV;
 Comment=DjVu Document
+Comment[fr]=Document DjVu
 Comment[x-test]=xxDjVu Documentxx

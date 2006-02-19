@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=application/mbox
 Patterns=
 Comment=MBOX Mail Folder
+Comment[fr]=Dossier de boîte aux lettres MBox
 
 [Property::X-KDE-text]
 Type=bool

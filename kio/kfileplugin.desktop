@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KFilePlugin
 Name=KFile Meta Data Plugin
+Name[fr]=Module externe de métadonnées KFile
 Name[x-test]=xxKFile Meta Data Pluginxx
 
 [PropertyDef::PreferredItems]

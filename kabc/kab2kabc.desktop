@@ -2,11 +2,13 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=kab2kabc
+Name[fr]=KAB2KABC
 Name[x-test]=xxkab2kabcxx
 Exec=kab2kabc --disable-autostart --quiet
 Icon=misc
 Type=Application
 Comment=libkab to libkabc conversion tool.
+Comment[fr]=Outil de conversion de libkab vers libkabc.
 Comment[x-test]=xxlibkab to libkabc conversion tool.xx
 Terminal=false
 NoDisplay=true

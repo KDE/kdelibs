@@ -2,6 +2,7 @@
 Name=CDE
 Name[x-test]=xxCDExx
 Comment=Built-in unthemed CDE style
+Comment[fr]=Style CDE d'origine sans thème
 Comment[x-test]=xxBuilt-in unthemed CDE stylexx
 [KDE]
 WidgetStyle=CDE

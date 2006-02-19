@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=C++ Source File
+Comment[fr]=Fichier source C++
 Comment[x-test]=xxC++ Source Filexx
 Icon=source_cpp
 Type=MimeType

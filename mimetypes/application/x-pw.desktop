@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-pw
 Comment=Pathetic Writer Document
+Comment[fr]=Document Pathetic Writer
 Comment[x-test]=xxPathetic Writer Documentxx
 Icon=wordprocessing
 Type=MimeType

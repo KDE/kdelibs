@@ -5,4 +5,5 @@ MimeType=application/x-gnumeric
 Icon=spreadsheet
 Patterns=*.gnumeric;*.GNUMERIC;
 Comment=GNUmeric Spreadsheet
+Comment[fr]=Feuille de calcul GNUmeric
 Comment[x-test]=xxGNUmeric Spreadsheetxx

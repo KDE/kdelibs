@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=text/rdf
 Comment=Resource Description Framework File
+Comment[fr]=Fichier de cadre de description de ressources
 Comment[x-test]=xxResource Description Framework Filexx
 Icon=news
 Type=MimeType

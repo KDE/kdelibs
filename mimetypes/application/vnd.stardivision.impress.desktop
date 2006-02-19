@@ -5,6 +5,7 @@ MimeType=application/vnd.stardivision.impress
 Patterns=*.sdd;*.SDD;
 Icon=presentation
 Comment=StarOffice Impress Presentation
+Comment[fr]=Présentation StarOffice Impress
 Comment[x-test]=xxStarOffice Impress Presentationxx
 [Property::X-KDE-NativeExtension]
 Type=QString

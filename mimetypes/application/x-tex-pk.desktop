@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Packed Font
+Comment[fr]=Police de caractères compactée
 Comment[x-test]=xxPacked Fontxx
 Icon=pk
 Type=MimeType

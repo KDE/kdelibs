@@ -6,4 +6,5 @@ Icon=video
 Patterns=*.asf;*.ASF;*.asx;*.ASX
 X-KDE-IsAlso=application/vnd.ms-asf
 Comment=ASF Media
+Comment[fr]=Support ASF
 Comment[x-test]=xxASF Mediaxx

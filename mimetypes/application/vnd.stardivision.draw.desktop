@@ -5,6 +5,7 @@ MimeType=application/vnd.stardivision.draw
 Patterns=*.sda;*.SDA;
 Icon=image
 Comment=StarOffice Drawing
+Comment[fr]=Dessin StarOffice
 Comment[x-test]=xxStarOffice Drawingxx
 [Property::X-KDE-NativeExtension]
 Type=QString

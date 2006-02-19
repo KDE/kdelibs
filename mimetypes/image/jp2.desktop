@@ -5,4 +5,5 @@ MimeType=image/jp2
 Icon=image
 Patterns=*.jp2;*.JP2
 Comment=JPEG 2000 Image
+Comment[fr]=Image JPEG 2000
 Comment[x-test]=xxJPEG 2000 Imagexx

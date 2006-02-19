@@ -5,4 +5,5 @@ MimeType=application/x-magicpoint
 Icon=presentation
 Patterns=*.mgp;*.MGP;
 Comment=MagicPoint Presentation
+Comment[fr]=Présentation Magicpoint
 Comment[x-test]=xxMagicPoint Presentationxx

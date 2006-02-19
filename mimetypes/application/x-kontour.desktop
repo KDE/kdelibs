@@ -3,6 +3,7 @@
 Encoding=UTF-8
 MimeType=application/x-kontour
 Comment=Kontour Document
+Comment[fr]=Document Kontour
 Comment[x-test]=xxKontour Documentxx
 Icon=vectorgfx
 Type=MimeType

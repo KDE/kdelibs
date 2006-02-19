@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=LDAP Addressbook
+Comment[fr]=Carnet d'adresses LDAP
 Comment[x-test]=xxLDAP Addressbookxx
 Icon=vcard
 Type=MimeType

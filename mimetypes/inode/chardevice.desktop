@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Character Device
+Comment[fr]=Périphérique caractère
 Comment[x-test]=xxCharacter Devicexx
 Icon=chardevice
 Type=MimeType

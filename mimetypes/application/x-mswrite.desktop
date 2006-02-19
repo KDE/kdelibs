@@ -5,6 +5,7 @@ Type=MimeType
 MimeType=application/x-mswrite
 Patterns=
 Comment=Microsoft Write Document
+Comment[fr]=Document Microsoft Write
 Comment[x-test]=xxMicrosoft Write Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString

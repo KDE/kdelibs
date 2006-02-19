@@ -5,6 +5,7 @@ MimeType=application/x-pkcs12
 Icon=certificate
 Patterns=*.p12;*.P12;*.pfx
 Comment=PKCS#12 Certificate Bundle
+Comment[fr]=Ensemble de certificats PKCS#12
 Comment[x-test]=xxPKCS#12 Certificate Bundlexx
 X-KDE-AutoEmbed=true
 

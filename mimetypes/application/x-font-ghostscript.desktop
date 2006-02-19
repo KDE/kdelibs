@@ -5,4 +5,5 @@ MimeType=application/x-font-ghostscript
 Icon=font
 Patterns=*.gsf;*.GSF
 Comment=Ghostscript Font
+Comment[fr]=Police de caractères Ghostscript
 Comment[x-test]=xxGhostscript Fontxx

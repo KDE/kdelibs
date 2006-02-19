@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=application/x-zip-compressed
 Icon=tgz
 Comment=Zip Archive
+Comment[fr]=Archive Zip
 Comment[x-test]=xxZip Archivexx
 X-KDE-IsAlso=application/x-zip
 

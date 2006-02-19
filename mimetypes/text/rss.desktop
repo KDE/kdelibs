@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=text/rss
 Comment=RDF Site Summary
+Comment[fr]=Résumé de site RDF
 Comment[x-test]=xxRDF Site Summaryxx
 Icon=news
 Type=MimeType

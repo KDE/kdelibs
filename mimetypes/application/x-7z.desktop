@@ -5,4 +5,5 @@ MimeType=application/x-7z
 Icon=tgz
 Patterns=*.7z;*.7Z;
 Comment=7-Zip Archive
+Comment[fr]=Archive 7-Zip
 Comment[x-test]=xx7-Zip Archivexx

@@ -4,4 +4,5 @@ Type=MimeType
 MimeType=uri/mms
 Icon=video
 Comment=mms: URIs
+Comment[fr]=URIs mms:
 Comment[x-test]=xxmms: URIsxx

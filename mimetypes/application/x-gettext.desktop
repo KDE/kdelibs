@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=GNU Gettext Message Catalog
+Comment[fr]=Catalogue de messages GNU Gettext
 Comment[x-test]=xxGNU Gettext Message Catalogxx
 Icon=gettext
 Type=MimeType

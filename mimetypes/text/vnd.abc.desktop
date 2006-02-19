@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=ABC Music File
+Comment[fr]=Fichier musique ABC
 Comment[x-test]=xxABC Music Filexx
 Icon=sound
 Type=MimeType

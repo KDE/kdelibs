@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=PCM Audio
+Comment[fr]=Son PCM
 Comment[x-test]=xxPCM Audioxx
 MimeType=audio/x-adpcm
 Icon=sound

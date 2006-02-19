@@ -5,4 +5,5 @@ MimeType=application/illustrator
 Icon=pdf
 Patterns=*.ai;*.AI;
 Comment=Adobe Illustrator Document
+Comment[fr]=Document Adobe Illustrator
 Comment[x-test]=xxAdobe Illustrator Documentxx

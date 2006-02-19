@@ -1,6 +1,7 @@
 [KDE Print Entry]
 PrintSystem=rlpr
 Comment=RLPR Environment (Remote LPD servers)
+Comment[fr]=Environnement RLPR (serveurs LPD distants)
 Comment[x-test]=xxRLPR Environment (Remote LPD servers)xx
 DetectUris=exec:/rlpr
 DetectPrecedence=0

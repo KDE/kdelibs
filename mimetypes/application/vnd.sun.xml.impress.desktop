@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Presentation
+Comment[fr]=Présentation OpenOffice.org
 Comment[x-test]=xxOpenOffice.org Presentationxx
 MimeType=application/vnd.sun.xml.impress
 Type=MimeType

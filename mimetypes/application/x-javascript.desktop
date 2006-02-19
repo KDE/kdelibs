@@ -4,5 +4,6 @@ MimeType=application/x-javascript
 Icon=javascript
 Patterns=*.js;
 Comment=JavaScript File
+Comment[fr]=Fichier JavaScript
 Comment[x-test]=xxJavaScript Filexx
 X-KDE-IsAlso=application/x-executable-script

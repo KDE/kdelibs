@@ -5,4 +5,5 @@ MimeType=audio/ac3
 Icon=sound
 Patterns=*.ac3;*.AC3;
 Comment=Dolby AC3 Sound
+Comment[fr]=Son Dolby AC3
 Comment[x-test]=xxDolby AC3 Soundxx

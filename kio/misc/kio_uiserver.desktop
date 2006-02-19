@@ -5,6 +5,7 @@ Name=kio_uiserver
 Name[x-test]=xxkio_uiserverxx
 Exec=kio_uiserver
 Comment=KDE's Progress Info UI server
+Comment[fr]=Serveur graphique d'infos de progression de KDE
 Comment[x-test]=xxKDE's Progress Info UI serverxx
 ServiceTypes=
 # It is a server

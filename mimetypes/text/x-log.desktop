@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=text/x-log
 Comment=Application Log File
+Comment[fr]=Fichier journal d'application
 Comment[x-test]=xxApplication Log Filexx
 Type=MimeType
 Patterns=*.log;

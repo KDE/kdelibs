@@ -6,6 +6,7 @@ Icon=sound
 Patterns=*.ra;*.ram;*.RA;*.RAM;
 X-KDE-IsAlso=audio/x-pn-realaudio
 Comment=RealAudio File
+Comment[fr]=Fichier ReadAudio
 Comment[x-test]=xxRealAudio Filexx
 [Property::X-KDE-NativeExtension]
 Type=QString

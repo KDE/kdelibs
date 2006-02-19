@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=EPSON InkJet
+Name[fr]=Imprimante jet d'encre Epson
 Name[x-test]=xxEPSON InkJetxx
 Type=Service
 

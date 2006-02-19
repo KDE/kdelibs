@@ -1,8 +1,10 @@
 [KDE Print Filter Entry]
 Name=psbook1
+Name[fr]=psbook 1
 Name[x-test]=xxpsbook1xx
 Require=exec:/psbook,exec:/psnup,exec:/psselect
 Comment=Pamphlet Printing - Even Pages (step 1)
+Comment[fr]=Impression au format livret - Pages paires (étape 1)
 Comment[x-test]=xxPamphlet Printing - Even Pages (step 1)xx
 MimeTypeIn=application/postscript
 MimeTypeOut=application/postscript

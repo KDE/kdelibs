@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Python Program
+Comment[fr]=Programme Python
 Comment[x-test]=xxPython Programxx
 Type=MimeType
 MimeType=application/x-python

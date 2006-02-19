@@ -4,4 +4,5 @@ Type=MimeType
 MimeType=uri/rtspu
 Icon=video
 Comment=rtspu: URIs
+Comment[fr]=URIs rtspu:
 Comment[x-test]=xxrtspu: URIsxx

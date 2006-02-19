@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=application/vnd.ms-word
 Icon=wordprocessing
 Comment=Microsoft Word Document
+Comment[fr]=Document Microsoft Word
 Comment[x-test]=xxMicrosoft Word Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString

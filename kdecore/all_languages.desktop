@@ -3,6 +3,7 @@ Name=Afar
 Name[x-test]=xxAfarxx
 [ab]
 Name=Abkhazian
+Name[fr]=Abkhaze
 Name[x-test]=xxAbkhazianxx
 [ae]
 Name=Avestan
@@ -12,129 +13,163 @@ Name=Afrikaans
 Name[x-test]=xxAfrikaansxx
 [am]
 Name=Amharic
+Name[fr]=Amharique
 Name[x-test]=xxAmharicxx
 [ar]
 Name=Arabic
+Name[fr]=Arabe
 Name[x-test]=xxArabicxx
 [as]
 Name=Assamese
+Name[fr]=Assamais
 Name[x-test]=xxAssamesexx
 [ay]
 Name=Aymara
 Name[x-test]=xxAymaraxx
 [az]
 Name=Azerbaijani
+Name[fr]=Azerbaïdjanais
 Name[x-test]=xxAzerbaijanixx
 [ba]
 Name=Bashkir
+Name[fr]=Bachkir
 Name[x-test]=xxBashkirxx
 [be]
 Name=Belarusian
+Name[fr]=Bélarus
 Name[x-test]=xxBelarusianxx
 [bg]
 Name=Bulgarian
+Name[fr]=Bulgare
 Name[x-test]=xxBulgarianxx
 [bh]
 Name=Bihari
 Name[x-test]=xxBiharixx
 [bi]
 Name=Bislama
+Name[fr]=Bichlamar
 Name[x-test]=xxBislamaxx
 [bn]
 Name=Bengali
 Name[x-test]=xxBengalixx
 [bo]
 Name=Tibetan
+Name[fr]=Tibétain
 Name[x-test]=xxTibetanxx
 [br]
 Name=Breton
 Name[x-test]=xxBretonxx
 [bs]
 Name=Bosnian
+Name[fr]=Bosniaque
 Name[x-test]=xxBosnianxx
 [ca]
 Name=Catalan
 Name[x-test]=xxCatalanxx
 [ce]
 Name=Chechen
+Name[fr]=Tchétchène
 Name[x-test]=xxChechenxx
 [ch]
 Name=Chamorro
 Name[x-test]=xxChamorroxx
 [co]
 Name=Corsican
+Name[fr]=Corse
 Name[x-test]=xxCorsicanxx
 [cs]
 Name=Czech
+Name[fr]=Tchèque
 Name[x-test]=xxCzechxx
 [cu]
 Name=Church Slavic
+Name[fr]=Slavon d'égise
 Name[x-test]=xxChurch Slavicxx
 [cv]
 Name=Chuvash
+Name[fr]=Tchouvache
 Name[x-test]=xxChuvashxx
 [cy]
 Name=Welsh
+Name[fr]=Gallois
 Name[x-test]=xxWelshxx
 [da]
 Name=Danish
+Name[fr]=Danois
 Name[x-test]=xxDanishxx
 [de]
 Name=German
+Name[fr]=Allemand
 Name[x-test]=xxGermanxx
 [dz]
 Name=Dzongkha
 Name[x-test]=xxDzongkhaxx
 [el]
 Name=Greek
+Name[fr]=Grec
 Name[x-test]=xxGreekxx
 [en]
 Name=English
+Name[fr]=Anglais
 Name[x-test]=xxEnglishxx
 [en_GB]
 Name=British English
+Name[fr]=Anglais britannique
 Name[x-test]=xxBritish Englishxx
 [en_US]
 Name=American English
+Name[fr]=Anglais américain
 Name[x-test]=xxAmerican Englishxx
 [eo]
 Name=Esperanto
+Name[fr]=Espéranto
 Name[x-test]=xxEsperantoxx
 [es]
 Name=Spanish
+Name[fr]=Espagnol
 Name[x-test]=xxSpanishxx
 [et]
 Name=Estonian
+Name[fr]=Estonien
 Name[x-test]=xxEstonianxx
 [eu]
 Name=Basque
 Name[x-test]=xxBasquexx
 [fa]
 Name=Farsi (Persian)
+Name[fr]=Persan
 Name[x-test]=xxFarsi (Persian)xx
 [fi]
 Name=Finnish
+Name[fr]=Finnois
 Name[x-test]=xxFinnishxx
 [fj]
 Name=Fijian
+Name[fr]=Fidjien
 Name[x-test]=xxFijianxx
 [fo]
 Name=Faroese
+Name[fr]=Féroïen
 Name[x-test]=xxFaroesexx
 [fr]
 Name=French
+Name[fr]=Français
 Name[x-test]=xxFrenchxx
 [fy]
 Name=Frisian
+Name[fr]=Frison
 Name[x-test]=xxFrisianxx
 [ga]
 Name=Irish Gaelic
+Name[fr]=Gaélique irlandais
 Name[x-test]=xxIrish Gaelicxx
 [gd]
 Name=Gaelic
+Name[fr]=Gaélique
 Name[x-test]=xxGaelicxx
 [gl]
 Name=Galician
+Name[fr]=Gaélicien
 Name[x-test]=xxGalicianxx
 [gn]
 Name=Guarani
@@ -144,30 +179,38 @@ Name=Gujarati
 Name[x-test]=xxGujaratixx
 [gv]
 Name=Manx
+Name[fr]=Mannois
 Name[x-test]=xxManxxx
 [ha]
 Name=Hausa
+Name[fr]=Haoussa
 Name[x-test]=xxHausaxx
 [he]
 Name=Hebrew
+Name[fr]=Hébreu
 Name[x-test]=xxHebrewxx
 [hi]
 Name=Hindi
 Name[x-test]=xxHindixx
 [ho]
 Name=Hiri Motu
+Name[fr]=Hiri motu
 Name[x-test]=xxHiri Motuxx
 [hr]
 Name=Croatian
+Name[fr]=Croate
 Name[x-test]=xxCroatianxx
 [hsb]
 Name=Upper Sorbian
+Name[fr]=Haut Sorabe
 Name[x-test]=xxUpper Sorbianxx
 [hu]
 Name=Hungarian
+Name[fr]=Hongrois
 Name[x-test]=xxHungarianxx
 [hy]
 Name=Armenian
+Name[fr]=Arménien
 Name[x-test]=xxArmenianxx
 [hz]
 Name=Herero
@@ -177,6 +220,7 @@ Name=Interlingua
 Name[x-test]=xxInterlinguaxx
 [id]
 Name=Indonesian
+Name[fr]=Indonésien
 Name[x-test]=xxIndonesianxx
 [ie]
 Name=Interlingue
@@ -189,21 +233,26 @@ Name=Ido
 Name[x-test]=xxIdoxx
 [is]
 Name=Icelandic
+Name[fr]=Islandais
 Name[x-test]=xxIcelandicxx
 [it]
 Name=Italian
+Name[fr]=Italien
 Name[x-test]=xxItalianxx
 [iu]
 Name=Inuktitut
 Name[x-test]=xxInuktitutxx
 [ja]
 Name=Japanese
+Name[fr]=Japonais
 Name[x-test]=xxJapanesexx
 [jv]
 Name=Javanese
+Name[fr]=Javanais
 Name[x-test]=xxJavanesexx
 [ka]
 Name=Georgian
+Name[fr]=Géorgien
 Name[x-test]=xxGeorgianxx
 [ki]
 Name=Kikuyu
@@ -222,30 +271,36 @@ Name=Kannada
 Name[x-test]=xxKannadaxx
 [ko]
 Name=Korean
+Name[fr]=Coréen
 Name[x-test]=xxKoreanxx
 [ks]
 Name=Kashmiri
 Name[x-test]=xxKashmirixx
 [ku]
 Name=Kurdish
+Name[fr]=Kurde
 Name[x-test]=xxKurdishxx
 [kv]
 Name=Komi
 Name[x-test]=xxKomixx
 [kw]
 Name=Cornish
+Name[fr]=Cornique
 Name[x-test]=xxCornishxx
 [ky]
 Name=Kirghiz
+Name[fr]=Kirghize
 Name[x-test]=xxKirghizxx
 [la]
 Name=Latin
 Name[x-test]=xxLatinxx
 [lb]
 Name=Luxembourgish
+Name[fr]=Luxembourgeois
 Name[x-test]=xxLuxembourgishxx
 [li]
 Name=Limburgan
+Name[fr]=Limbourgeois
 Name[x-test]=xxLimburganxx
 [ln]
 Name=Lingala
@@ -255,75 +310,96 @@ Name=Lao
 Name[x-test]=xxLaoxx
 [lt]
 Name=Lithuanian
+Name[fr]=Lituanien
 Name[x-test]=xxLithuanianxx
 [lv]
 Name=Latvian
+Name[fr]=Letton
 Name[x-test]=xxLatvianxx
 [mg]
 Name=Malagasy
+Name[fr]=Malgache
 Name[x-test]=xxMalagasyxx
 [mh]
 Name=Marshallese
+Name[fr]=Marshall
 Name[x-test]=xxMarshallesexx
 [mi]
 Name=Maori
 Name[x-test]=xxMaorixx
 [mk]
 Name=Macedonian
+Name[fr]=Macédonien
 Name[x-test]=xxMacedonianxx
 [ml]
 Name=Malayalam
 Name[x-test]=xxMalayalamxx
 [mn]
 Name=Mongolian
+Name[fr]=Mongol
 Name[x-test]=xxMongolianxx
 [mo]
 Name=Moldavian
+Name[fr]=Moldave
 Name[x-test]=xxMoldavianxx
 [mr]
 Name=Marathi
+Name[fr]=Marathe
 Name[x-test]=xxMarathixx
 [ms]
 Name=Malay
+Name[fr]=Malais
 Name[x-test]=xxMalayxx
 [mt]
 Name=Maltese
+Name[fr]=Maltais
 Name[x-test]=xxMaltesexx
 [my]
 Name=Burmese
+Name[fr]=Birman
 Name[x-test]=xxBurmesexx
 [na]
 Name=Nauru
+Name[fr]=Nauruan
 Name[x-test]=xxNauruxx
 [nb]
 Name=Norwegian Bokmål
+Name[fr]=Norvégien Bokmaal
 Name[x-test]=xxNorwegian Bokmålxx
 [nd]
 Name=Ndebele, North
+Name[fr]=Ndébélé du Nord
 Name[x-test]=xxNdebele, Northxx
 [nds]
 Name=Low Saxon
+Name[fr]=Bas saxon (ou francique, ou plattdeutsch)
 Name[x-test]=xxLow Saxonxx
 [ne]
 Name=Nepali
+Name[fr]=Népalais
 Name[x-test]=xxNepalixx
 [ng]
 Name=Ndonga
 Name[x-test]=xxNdongaxx
 [nl]
 Name=Dutch
+Name[fr]=Hollandais
 Name[x-test]=xxDutchxx
 [nn]
 Name=Norwegian Nynorsk
+Name[fr]=Norvégien Nynorsk
 Name[x-test]=xxNorwegian Nynorskxx
 [nr]
 Name=Ndebele, South
+Name[fr]=Ndébélé du Sud
 Name[x-test]=xxNdebele, Southxx
 [nso]
 Name=Northern Sotho
+Name[fr]=Sotho du Nord
 Name[x-test]=xxNorthern Sothoxx
 [nv]
 Name=Navajo
+Name[fr]=Navaho
 Name[x-test]=xxNavajoxx
 [ny]
 Name=Chichewa
@@ -339,24 +415,29 @@ Name=Oriya
 Name[x-test]=xxOriyaxx
 [os]
 Name=Ossetian
+Name[fr]=Ossète
 Name[x-test]=xxOssetianxx
 [pa]
 Name=Panjabi
+Name[fr]=Pendjabi
 Name[x-test]=xxPanjabixx
 [pi]
 Name=Pali
 Name[x-test]=xxPalixx
 [pl]
 Name=Polish
+Name[fr]=Polonais
 Name[x-test]=xxPolishxx
 [ps]
 Name=Pushto
 Name[x-test]=xxPushtoxx
 [pt]
 Name=Portuguese
+Name[fr]=Portugais
 Name[x-test]=xxPortuguesexx
 [pt_BR]
 Name=Brazilian Portuguese
+Name[fr]=Portugais Brésilien
 Name[x-test]=xxBrazilian Portuguesexx
 [qu]
 Name=Quechua
@@ -366,11 +447,14 @@ Name=Rundi
 Name[x-test]=xxRundixx
 [ro]
 Name=Romanian
+Name[fr]=Roumain
 Name[x-test]=xxRomanianxx
 [rom]
 Name=Romany
+Name[fr]=Rromani
 [ru]
 Name=Russian
+Name[fr]=Russe
 Name[x-test]=xxRussianxx
 [rw]
 Name=Kinyarwanda
@@ -380,24 +464,29 @@ Name=Sanskrit
 Name[x-test]=xxSanskritxx
 [sc]
 Name=Sardinian
+Name[fr]=Sarde
 Name[x-test]=xxSardinianxx
 [sd]
 Name=Sindhi
 Name[x-test]=xxSindhixx
 [se]
 Name=Northern Sami
+Name[fr]=Sami du Nord
 Name[x-test]=xxNorthern Samixx
 [sg]
 Name=Sango
 Name[x-test]=xxSangoxx
 [si]
 Name=Sinhalese
+Name[fr]=Singhalais
 Name[x-test]=xxSinhalesexx
 [sk]
 Name=Slovak
+Name[fr]=Slovaque
 Name[x-test]=xxSlovakxx
 [sl]
 Name=Slovenian
+Name[fr]=Slovène
 Name[x-test]=xxSlovenianxx
 [sm]
 Name=Samoan
@@ -410,44 +499,56 @@ Name=Somali
 Name[x-test]=xxSomalixx
 [sq]
 Name=Albanian
+Name[fr]=Albanais
 Name[x-test]=xxAlbanianxx
 [sr]
 Name=Serbian
+Name[fr]=Serbe
 Name[x-test]=xxSerbianxx
 [sr@Latn]
 Name=Serbian Latin
+Name[fr]=Serbe Latin
 [ss]
 Name=Swati
 Name[x-test]=xxSwatixx
 [st]
 Name=Sotho, Southern
+Name[fr]=Sotho du Sud
 Name[x-test]=xxSotho, Southernxx
 [su]
 Name=Sundanese
+Name[fr]=Soudanais
 Name[x-test]=xxSundanesexx
 [sv]
 Name=Swedish
+Name[fr]=Suédois
 Name[x-test]=xxSwedishxx
 [sw]
 Name=Swahili
 Name[x-test]=xxSwahilixx
 [ta]
 Name=Tamil
+Name[fr]=Tamoul
 Name[x-test]=xxTamilxx
 [te]
 Name=Telugu
+Name[fr]=Télougou
 Name[x-test]=xxTeluguxx
 [tg]
 Name=Tajik
+Name[fr]=Tadjik
 Name[x-test]=xxTajikxx
 [th]
 Name=Thai
+Name[fr]=Thaïlandais
 Name[x-test]=xxThaixx
 [ti]
 Name=Tigrinya
+Name[fr]=Tigrigna
 Name[x-test]=xxTigrinyaxx
 [tk]
 Name=Turkmen
+Name[fr]=Turkmène
 Name[x-test]=xxTurkmenxx
 [tn]
 Name=Tswana
@@ -457,6 +558,7 @@ Name=Tonga
 Name[x-test]=xxTongaxx
 [tr]
 Name=Turkish
+Name[fr]=Turc
 Name[x-test]=xxTurkishxx
 [ts]
 Name=Tsonga
@@ -469,12 +571,14 @@ Name=Twi
 Name[x-test]=xxTwixx
 [ty]
 Name=Tahitian
+Name[fr]=Tahitien
 Name[x-test]=xxTahitianxx
 [ug]
 Name=Uighur
 Name[x-test]=xxUighurxx
 [uk]
 Name=Ukrainian
+Name[fr]=Ukrainien
 Name[x-test]=xxUkrainianxx
 [ur]
 Name=Urdu
@@ -487,12 +591,14 @@ Name=Venda
 Name[x-test]=xxVendaxx
 [vi]
 Name=Vietnamese
+Name[fr]=Vietnamien
 Name[x-test]=xxVietnamesexx
 [vo]
 Name=Volapük
 Name[x-test]=xxVolapükxx
 [wa]
 Name=Walloon
+Name[fr]=Wallon
 Name[x-test]=xxWalloonxx
 [wo]
 Name=Wolof
@@ -511,15 +617,20 @@ Name=Zhuang
 Name[x-test]=xxZhuangxx
 [zh]
 Name=Chinese
+Name[fr]=Chinois
 Name[x-test]=xxChinesexx
 [zh_CN]
 Name=Chinese Simplified
+Name[fr]=Chinois simplifié
 Name[x-test]=xxChinese Simplifiedxx
 [zh_HK]
 Name=Chinese (Hong Kong)
+Name[fr]=Chinois (Hong Kong)
 [zh_TW]
 Name=Chinese Traditional
+Name[fr]=Chinois traditionnel
 Name[x-test]=xxChinese Traditionalxx
 [zu]
 Name=Zulu
+Name[fr]=Zoulou
 Name[x-test]=xxZuluxx

@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Desktop Config File
+Comment[fr]=Fichier de configuration du bureau
 Comment[x-test]=xxDesktop Config Filexx
 Icon=exec
 Type=MimeType

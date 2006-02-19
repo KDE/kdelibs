@@ -3,10 +3,13 @@ Number=5
 
 [Printer 0]
 Name=Print to File (PostScript)
+Name[fr]=Imprimer dans un fichier (PostScript)
 Name[x-test]=xxPrint to File (PostScript)xx
 Description=Write PostScript file
+Description[fr]=Imprimer dans un fichier PostScript
 Description[x-test]=xxWrite PostScript filexx
 Comment=Local file
+Comment[fr]=Fichier local
 Comment[x-test]=xxLocal filexx
 Icon=filesave
 Command=
@@ -16,10 +19,13 @@ Mimetype=application/postscript
 
 [Printer 1]
 Name=Print to File (PDF)
+Name[fr]=Imprimer dans un fichier (PDF)
 Name[x-test]=xxPrint to File (PDF)xx
 Description=Write PDF/Acrobat file
+Description[fr]=Imprime dans un fichier PDF / Acrobat
 Description[x-test]=xxWrite PDF/Acrobat filexx
 Comment=Local file
+Comment[fr]=Fichier local
 Comment[x-test]=xxLocal filexx
 Icon=acroread
 Command=ps2pdf
@@ -30,10 +36,13 @@ Require=exec:/ps2pdf
 
 [Printer 2]
 Name=Send to Fax
+Name[fr]=Envoyer au fax
 Name[x-test]=xxSend to Faxxx
 Description=Send to external fax system
+Description[fr]=Envoyer à un système de fax externe
 Description[x-test]=xxSend to external fax systemxx
 Comment=External
+Comment[fr]=Externe
 Comment[x-test]=xxExternalxx
 Icon=kdeprintfax
 Command=kdeprintfax %in
@@ -44,14 +53,17 @@ Require=exec:/kdeprintfax
 [Printer 3]
 Command=ps2pdf -sPAPERSIZE=%psl %in %out && kmailservice 'mailto:?attachment=file:%out' && sleep 15 && rm -f %out
 Comment=Attachment for KMail Composer
+Comment[fr]=Pièce jointe du logiciel de messagerie électronique KMail
 Comment[x-test]=xxAttachment for KMail Composerxx
 Description=Creates PDF/Acrobat file as attachment for KMail
+Description[fr]=Crée un fichier PDF en tant que pièce jointe pour KMail
 Description[x-test]=xxCreates PDF/Acrobat file as attachment for KMailxx
 Extension=pdf
 Mimetype=application/pdf
 File=1
 Icon=kmail
 Name=Mail PDF File
+Name[fr]=Pièce jointe PDF
 Name[x-test]=xxMail PDF Filexx
 Require=exec:/ps2pdf,exec:/kmail
 
@@ -60,10 +72,12 @@ Command=ksendfax %in
 Comment=KSendFax
 Comment[x-test]=xxKSendFaxxx
 Description=Use ksendfax to fax the current document
+Description[fr]=Utiliser KSendfax pour faxer le document actuel
 Description[x-test]=xxUse ksendfax to fax the current documentxx
 Extension=
 File=0
 Icon=kdeprintfax
 Name=Advanced Faxing Tool (ksendfax)
+Name[fr]=Outil de fax avancé (KSendfax)
 Name[x-test]=xxAdvanced Faxing Tool (ksendfax)xx
 Require=exec:/ksendfax

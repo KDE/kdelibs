@@ -5,4 +5,5 @@ MimeType=image/x-portable-greymap
 Icon=image
 Patterns=*.pgm;*.PGM;*.pgmraw;*.PGMRAW
 Comment=Portable Graymap Image
+Comment[fr]=Image Graymap portable
 Comment[x-test]=xxPortable Graymap Imagexx

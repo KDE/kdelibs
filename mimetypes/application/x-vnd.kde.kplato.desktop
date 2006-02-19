@@ -3,6 +3,7 @@
 Encoding=UTF-8
 MimeType=application/x-vnd.kde.kplato
 Comment=KPlato Project Management Document
+Comment[fr]=Document de gestion de projet KPlato
 Comment[x-test]=xxKPlato Project Management Documentxx
 Type=MimeType
 Patterns=*.kplato;*.kplatot;

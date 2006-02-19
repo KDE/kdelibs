@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=application/sieve
 Patterns=*.sieve;*.siv
 Comment=SIEVE Mail Filter Script
+Comment[fr]=Script de filtre de courrier SIEVE
 Comment[x-test]=xxSIEVE Mail Filter Scriptxx
 
 [Property::X-KDE-text]

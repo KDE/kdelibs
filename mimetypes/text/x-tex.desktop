@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=TeX File
+Comment[fr]=Fichier TeX
 Comment[x-test]=xxTeX Filexx
 Icon=tex
 Type=MimeType

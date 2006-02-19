@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=text/rtf
 Comment=RTF Document
+Comment[fr]=Document RTF
 Comment[x-test]=xxRTF Documentxx
 Icon=wordprocessing
 Type=MimeType

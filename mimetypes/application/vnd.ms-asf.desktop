@@ -4,4 +4,5 @@ Type=MimeType
 MimeType=application/vnd.ms-asf
 Icon=video
 Comment=ASF Media
+Comment[fr]=Support ASF
 Comment[x-test]=xxASF Mediaxx

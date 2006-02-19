@@ -2,8 +2,10 @@
 Encoding=UTF-8
 Type=Service
 Name=KDE Tray Proxy Module
+Name[fr]=Module proxy des miniatures de KDE
 Name[x-test]=xxKDE Tray Proxy Modulexx
 Comment=Proxy enabling KDE systray applications to work without KWin
+Comment[fr]=Proxy autorisant le fonctionnement des miniatures sans KWin
 Comment[x-test]=xxProxy enabling KDE systray applications to work without KWinxx
 ServiceTypes=KDEDModule
 X-KDE-ModuleType=Library

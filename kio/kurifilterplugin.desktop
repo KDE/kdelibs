@@ -3,4 +3,5 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KURIFilter/Plugin
 Name=Enhanced Browsing Plugin
+Name[fr]=Module externe de navigation avancée
 Name[x-test]=xxEnhanced Browsing Pluginxx

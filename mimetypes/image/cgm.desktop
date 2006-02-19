@@ -5,4 +5,5 @@ MimeType=image/cgm
 Icon=image
 Patterns=*.cgm;*.CGM;
 Comment=Computer Graphics Metafile
+Comment[fr]=Métafichier graphique
 Comment[x-test]=xxComputer Graphics Metafilexx

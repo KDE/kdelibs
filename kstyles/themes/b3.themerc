@@ -1,7 +1,9 @@
 [Misc]
 Name=B3/KDE
+Name[fr]=B3 / KDE
 Name[x-test]=xxB3/KDExx
 Comment=B3/Modification of B2
+Comment[fr]=B3 / Modification de B2
 Comment[x-test]=xxB3/Modification of B2xx
 [KDE]
 WidgetStyle=B3

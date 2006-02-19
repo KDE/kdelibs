@@ -1,7 +1,9 @@
 [Misc]
 Name=Web style
+Name[fr]=Style web
 Name[x-test]=xxWeb stylexx
 Comment=Web widget style
+Comment[fr]=Style web
 Comment[x-test]=xxWeb widget stylexx
 [KDE]
 widgetStyle=webstyle.la

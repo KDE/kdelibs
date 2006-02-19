@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Shell Script
+Comment[fr]=Script shell
 Comment[x-test]=xxShell Scriptxx
 Icon=shellscript
 Type=MimeType

@@ -5,4 +5,5 @@ MimeType=application/x-font-bdf
 Icon=font_bitmap
 Patterns=*.bdf;*.bdf.Z;*.bdf.gz;*.BDF;*.BDF.Z;*.BDF.gz
 Comment=BDF Bitmap Font
+Comment[fr]=Police de caractères bitmap BDF
 Comment[x-test]=xxBDF Bitmap Fontxx

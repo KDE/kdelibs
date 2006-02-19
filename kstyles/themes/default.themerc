@@ -1,7 +1,9 @@
 [Misc]
 Name=KDE Classic
+Name[fr]=KDE Classique
 Name[x-test]=xxKDE Classicxx
 Comment=Classic KDE style
+Comment[fr]=Style classique de KDE
 Comment[x-test]=xxClassic KDE stylexx
 Highcolor=hcstyle.la
 InactiveShading=true

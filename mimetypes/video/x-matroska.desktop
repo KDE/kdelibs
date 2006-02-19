@@ -5,4 +5,5 @@ MimeType=video/x-matroska
 Icon=video
 Patterns=*.mkv;*.MKV;
 Comment=Matroska Video
+Comment[fr]=Vidéo Matroska
 Comment[x-test]=xxMatroska Videoxx

@@ -5,4 +5,5 @@ MimeType=image/x-photo-cd
 Icon=image
 Patterns=*.pcd;*.PCD;
 Comment=PhotoCD Image
+Comment[fr]=Image PhotoCD
 Comment[x-test]=xxPhotoCD Imagexx

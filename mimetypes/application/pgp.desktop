@@ -4,4 +4,5 @@ Type=MimeType
 MimeType=application/pgp
 Icon=encrypted
 Comment=PGP Encrypted or Signed Message
+Comment[fr]=Message signé ou crypté par PGP
 Comment[x-test]=xxPGP Encrypted or Signed Messagexx

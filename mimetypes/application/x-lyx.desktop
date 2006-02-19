@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=LyX Document
+Comment[fr]=Document LyX
 Comment[x-test]=xxLyX Documentxx
 MimeType=application/x-lyx
 Patterns=*.lyx

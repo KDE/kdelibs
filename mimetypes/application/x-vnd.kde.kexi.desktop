@@ -6,6 +6,7 @@ Icon=kexi_kexi
 Patterns=*.kexi;
 X-KDE-AutoEmbed=false
 Comment=Kexi Project File
+Comment[fr]=Fichier de projet Kexi
 Comment[x-test]=xxKexi Project Filexx
 [Property::X-KDE-NativeExtension]
 Type=QString

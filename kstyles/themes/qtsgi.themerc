@@ -2,6 +2,7 @@
 Name=SGI
 Name[x-test]=xxSGIxx
 Comment=Built-in SGI style
+Comment[fr]=Style SGI d'origine
 Comment[x-test]=xxBuilt-in SGI stylexx
 [KDE]
 WidgetStyle=SGI

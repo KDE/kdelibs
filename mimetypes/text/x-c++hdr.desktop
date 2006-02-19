@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=C++ Header File
+Comment[fr]=Fichier d'en-tête C++
 Comment[x-test]=xxC++ Header Filexx
 Icon=source_h
 Type=MimeType

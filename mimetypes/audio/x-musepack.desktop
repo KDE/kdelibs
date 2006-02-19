@@ -5,4 +5,5 @@ MimeType=audio/x-musepack
 Icon=sound
 Patterns=*.mpc;*.MPC;*.mp+;*.MP+
 Comment=Musepack Audio
+Comment[fr]=Son Musepack
 Comment[x-test]=xxMusepack Audioxx

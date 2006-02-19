@@ -5,6 +5,7 @@ MimeType=application/vnd.oasis.opendocument.spreadsheet
 Patterns=*.ods;*.ODS
 Icon=spreadsheet
 Comment=OASIS OpenDocument SpreadSheet
+Comment[fr]=Feuille de calcul OASIS OpenDocument
 Comment[x-test]=xxOASIS OpenDocument SpreadSheetxx
 [Property::X-KDE-NativeExtension]
 Type=QString

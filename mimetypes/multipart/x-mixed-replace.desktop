@@ -4,5 +4,6 @@ Type=MimeType
 MimeType=multipart/x-mixed-replace
 Patterns=
 Comment=Stream of Data (Server Push)
+Comment[fr]=Flux de données (serveur push)
 Comment[x-test]=xxStream of Data (Server Push)xx
 X-KDE-AutoEmbed=true

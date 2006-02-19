@@ -5,4 +5,5 @@ MimeType=application/wordperfect
 Icon=wordprocessing
 Patterns=*.wpd;*.WPD;
 Comment=WordPerfect Document
+Comment[fr]=Document WordPerfect
 Comment[x-test]=xxWordPerfect Documentxx

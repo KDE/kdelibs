@@ -5,4 +5,5 @@ MimeType=application/x-applixgraphics
 Icon=image
 Patterns=*.ag
 Comment=Applix Graphics Document
+Comment[fr]=Document Applix Graphics
 Comment[x-test]=xxApplix Graphics Documentxx

@@ -5,4 +5,5 @@ MimeType=application/x-arj
 Icon=tgz
 Patterns=*.arj;*.ARJ;
 Comment=ARJ Archive
+Comment[fr]=Archive ARJ
 Comment[x-test]=xxARJ Archivexx

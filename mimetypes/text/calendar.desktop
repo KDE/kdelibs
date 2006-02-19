@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=iCalendar File
+Comment[fr]=Agenda iCalendar
 Comment[x-test]=xxiCalendar Filexx
 Icon=vcalendar
 Type=MimeType

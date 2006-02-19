@@ -3,6 +3,7 @@ Name=enscript
 Name[x-test]=xxenscriptxx
 Require=exec:/enscript
 Comment=Enscript Text Filter
+Comment[fr]=Filtre de texte Enscript
 Comment[x-test]=xxEnscript Text Filterxx
 MimeTypeIn=text/html,text/plain,text/sgml,text/x-c++hdr,text/x-c++src,text/x-chdr,text/x-csrc,text/x-java,text/x-makefile,text/x-pascal,text/x-python,text/x-tcl,text/x-tex,text/xml,text/x-fortran,application/x-perl,appication/x-perl-module,application/x-python,text/docbook,text/x-log,text/x-diff,application/x-ruby
 MimeTypeOut=application/postscript

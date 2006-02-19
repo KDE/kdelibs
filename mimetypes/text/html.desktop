@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=HTML Document
+Comment[fr]=Document HTML
 Comment[x-test]=xxHTML Documentxx
 Icon=html
 Type=MimeType

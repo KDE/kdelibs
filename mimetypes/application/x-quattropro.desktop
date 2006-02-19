@@ -5,4 +5,5 @@ MimeType=application/x-quattropro
 Icon=spreadsheet
 Patterns=*.wb1;*.WB1;*.wb2;*.WB2;*.wb3;*.WB3;
 Comment=Quattro Pro Document
+Comment[fr]=Document Quattro Pro
 Comment[x-test]=xxQuattro Pro Documentxx

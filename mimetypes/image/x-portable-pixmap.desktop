@@ -5,4 +5,5 @@ MimeType=image/x-portable-pixmap
 Icon=image
 Patterns=*.ppm;*.PPM;*.pnm;*.PNM;*.ppmraw;*.PPMRAW
 Comment=Portable Pixmap Image
+Comment[fr]=Image Pixmap portable
 Comment[x-test]=xxPortable Pixmap Imagexx

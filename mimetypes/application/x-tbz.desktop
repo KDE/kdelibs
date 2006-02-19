@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Bzip2-ed Tar Archive
+Comment[fr]=Archive Tar compactée par Bzip2
 Comment[x-test]=xxBzip2-ed Tar Archivexx
 MimeType=application/x-tbz
 Icon=tgz

@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-siag
 Comment=Siag Spreadsheet
+Comment[fr]=Feuille de calcul Siag
 Comment[x-test]=xxSiag Spreadsheetxx
 Icon=spreadsheet
 Type=MimeType

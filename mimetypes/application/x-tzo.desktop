@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-tzo
 Comment=Lzopped Tar Archive
+Comment[fr]=Archive Tar compactée par Lzop
 Comment[x-test]=xxLzopped Tar Archivexx
 Icon=tgz
 Type=MimeType

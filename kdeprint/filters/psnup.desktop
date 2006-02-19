@@ -3,6 +3,7 @@ Name=psnup
 Name[x-test]=xxpsnupxx
 Require=exec:/psnup
 Comment=Multiple Pages per Sheet Filter
+Comment[fr]=Plusieurs pages par feuille
 Comment[x-test]=xxMultiple Pages per Sheet Filterxx
 MimeTypeIn=application/postscript
 MimeTypeOut=application/postscript

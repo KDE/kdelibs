@@ -5,6 +5,7 @@ MimeType=application/pgp-keys
 Icon=certificate
 Patterns=*.pgp;*.gpg;*.asc
 Comment=OpenPGP Key Bundle
+Comment[fr]=Ensemble de clés OpenPGP
 Comment[x-test]=xxOpenPGP Key Bundlexx
 X-KDE-AutoEmbed=true
 

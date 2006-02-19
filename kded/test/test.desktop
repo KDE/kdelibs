@@ -10,6 +10,8 @@ X-KDE-Kded-autoload=false
 X-KDE-Kded-load-on-demand=true
 
 Name=KDED Test Module
+Name[fr]=Module de test KDED
 Name[x-test]=xxKDED Test Modulexx
 Comment=A Test Module for KDED
+Comment[fr]=Un module de test pour KDED
 Comment[x-test]=xxA Test Module for KDEDxx

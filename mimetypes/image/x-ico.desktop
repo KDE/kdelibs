@@ -5,4 +5,5 @@ MimeType=image/x-ico
 Icon=image
 Patterns=*.ico;*.ICO;
 Comment=Windows Icon
+Comment[fr]=Icône Windows
 Comment[x-test]=xxWindows Iconxx

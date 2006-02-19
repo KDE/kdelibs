@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=PostScript Font Metrics
+Comment[fr]=Police de caractères PostScript Métriques
 Comment[x-test]=xxPostScript Font Metricsxx
 Icon=font_type1
 Type=MimeType

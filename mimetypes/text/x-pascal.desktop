@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Pascal Source File
+Comment[fr]=Fichier source Pascal
 Comment[x-test]=xxPascal Source Filexx
 Icon=source_p
 Type=MimeType

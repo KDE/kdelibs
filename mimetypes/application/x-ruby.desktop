@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Ruby Program
+Comment[fr]=Programme Ruby
 Comment[x-test]=xxRuby Programxx
 # A source_rb icon is missing...
 Icon=source

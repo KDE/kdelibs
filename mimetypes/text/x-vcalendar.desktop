@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=vCalendar Interchange File
+Comment[fr]=Fichier d'échange vCalendar
 Comment[x-test]=xxvCalendar Interchange Filexx
 Icon=vcalendar
 Type=MimeType

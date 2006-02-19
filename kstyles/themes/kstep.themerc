@@ -2,6 +2,7 @@
 Name=KDE Step
 Name[x-test]=xxKDE Stepxx
 Comment=Unthemed Next-like style
+Comment[fr]=Style sans thème similaire à NeXT
 Comment[x-test]=xxUnthemed Next-like stylexx
 [KDE]
 widgetStyle=kstepstyle.la

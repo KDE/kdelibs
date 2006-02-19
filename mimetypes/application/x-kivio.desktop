@@ -6,6 +6,7 @@ Icon=kivio_flw
 Patterns=*.flw;
 X-KDE-AutoEmbed=false
 Comment=Kivio Document
+Comment[fr]=Document Kivio
 Comment[x-test]=xxKivio Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString

@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Script (possibly executable)
+Comment[fr]=Script (peut-être exécutable)
 Comment[x-test]=xxScript (possibly executable)xx
 Icon=exec
 Type=MimeType

@@ -1,4 +1,5 @@
 [KDE Print Entry]
 PrintSystem=ext
 Comment=Print Through an External Program (generic)
+Comment[fr]=Imprimer via un programme externe (générique)
 Comment[x-test]=xxPrint Through an External Program (generic)xx

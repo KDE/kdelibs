@@ -5,4 +5,5 @@ MimeType=audio/aac
 Icon=sound
 Patterns=*.aac;*.AAC;
 Comment=AAC Sound
+Comment[fr]=Son AAC
 Comment[x-test]=xxAAC Soundxx

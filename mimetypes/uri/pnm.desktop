@@ -4,4 +4,5 @@ Type=MimeType
 MimeType=uri/pnm
 Icon=video
 Comment=pnm: URIs
+Comment[fr]=URIs pnm:
 Comment[x-test]=xxpnm: URIsxx

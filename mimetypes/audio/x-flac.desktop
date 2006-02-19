@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=FLAC Audio
+Comment[fr]=Son FLAC
 Comment[x-test]=xxFLAC Audioxx
 MimeType=audio/x-flac
 Icon=sound

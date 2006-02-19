@@ -5,4 +5,5 @@ MimeType=audio/x-mod
 Icon=sound
 Patterns=*.mod;*.MOD;*.s3m;*.S3M;*.stm;*.STM;*.ult;*.ULT;*.UNI;*.uni;*.xm;*.XM;*.m15;*.M15;*.mtm;*.MTM;*.669;*.it;*.IT;
 Comment=Amiga Soundtracker Audio
+Comment[fr]=Son Soundtracker Amiga
 Comment[x-test]=xxAmiga Soundtracker Audioxx

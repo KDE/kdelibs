@@ -5,6 +5,7 @@ MimeType=application/x-xliff
 Icon=gettext
 Patterns=*.xlf;*.XLF;
 Comment=XLIFF Translation File
+Comment[fr]=Fichier de traduction XLIFF
 Comment[x-test]=xxXLIFF Translation Filexx
 [Property::X-KDE-NativeExtension]
 Type=QString

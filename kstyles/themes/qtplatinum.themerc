@@ -2,6 +2,7 @@
 Name=Platinum
 Name[x-test]=xxPlatinumxx
 Comment=Built-in unthemed Platinum style
+Comment[fr]=Style Platinum d'origine sans thème
 Comment[x-test]=xxBuilt-in unthemed Platinum stylexx
 [KDE]
 WidgetStyle=Platinum

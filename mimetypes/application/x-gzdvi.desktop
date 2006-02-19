@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Gzip Compressed DVI File
+Comment[fr]=Fichier DVI compacté avec Gzip
 Comment[x-test]=xxGzip Compressed DVI Filexx
 Hidden=false
 Icon=tgz

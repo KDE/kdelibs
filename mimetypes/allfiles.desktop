@@ -3,4 +3,5 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=all/allfiles
 Comment=All Files
+Comment[fr]=Tous les fichiers
 Comment[x-test]=xxAll Filesxx

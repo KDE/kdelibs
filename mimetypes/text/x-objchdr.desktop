@@ -2,6 +2,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Objective-C Header File
+Comment[fr]=Fichier en-tête Objective-C
 Comment[x-test]=xxObjective-C Header Filexx
 Icon=source_h
 Type=MimeType

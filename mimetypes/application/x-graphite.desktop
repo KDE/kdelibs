@@ -6,6 +6,7 @@ icon=document
 Patterns=*.gra;*.GRA;
 X-KDE-AutoEmbed=false
 Comment=Graphite Scientific Graph
+Comment[fr]=Graphite - Courbes scientifiques
 Comment[x-test]=xxGraphite Scientific Graphxx
 [Property::X-KDE-NativeExtension]
 Type=QString

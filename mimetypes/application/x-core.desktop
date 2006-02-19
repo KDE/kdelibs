@@ -5,4 +5,5 @@ Icon=core
 Patterns=core;
 MimeType=application/x-core
 Comment=Program Crash Data
+Comment[fr]=Données d'arrêt anormal de programme
 Comment[x-test]=xxProgram Crash Dataxx

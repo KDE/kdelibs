@@ -4,6 +4,7 @@ Type=Service
 Name=Proxy Scout
 Name[x-test]=xxProxy Scoutxx
 Comment=Automatic proxy configuration
+Comment[fr]=Configuration automatique du proxy
 Comment[x-test]=xxAutomatic proxy configurationxx
 ServiceTypes=KDEDModule
 X-KDE-ModuleType=Library

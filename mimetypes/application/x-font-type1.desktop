@@ -5,4 +5,5 @@ MimeType=application/x-font-type1
 Icon=font_type1
 Patterns=*.pfa;*.PFA;*.pfb;*.PFB
 Comment=PostScript Type1 Font
+Comment[fr]=Police de caractères PostScript Type 1
 Comment[x-test]=xxPostScript Type1 Fontxx

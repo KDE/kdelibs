@@ -5,4 +5,5 @@ MimeType=video/x-msvideo
 Icon=video
 Patterns=*.avi;*.AVI;
 Comment=Microsoft AVI Video
+Comment[fr]=Vidéo Microsoft AVI
 Comment[x-test]=xxMicrosoft AVI Videoxx

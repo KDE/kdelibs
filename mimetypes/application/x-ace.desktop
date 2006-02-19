@@ -5,4 +5,5 @@ MimeType=application/x-ace
 Icon=tgz
 Patterns=*.ace;*.ACE;
 Comment=ACE Archive
+Comment[fr]=Archive ACE
 Comment[x-test]=xxACE Archivexx

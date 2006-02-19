@@ -5,6 +5,7 @@ MimeType=application/x-mimearchive
 Icon=message
 Patterns=*.mhtml;*.MHTML;*.mht;*.MHT;*.eml;*.EML
 Comment=Mime Encapsulated Web Archive
+Comment[fr]=Archive Web encapsulé MIME
 Comment[x-test]=xxMime Encapsulated Web Archivexx
 
 [Property::X-KDE-LocalProtocol]

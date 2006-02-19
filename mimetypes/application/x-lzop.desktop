@@ -5,4 +5,5 @@ MimeType=application/x-lzop
 Icon=tgz
 Patterns=*.lzo
 Comment=Lzopped File
+Comment[fr]=Fichier compacté par Lzop
 Comment[x-test]=xxLzopped Filexx

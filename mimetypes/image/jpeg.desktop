@@ -5,4 +5,5 @@ MimeType=image/jpeg
 Icon=image
 Patterns=*.jpg;*.JPG;*.jpeg;*.JPEG;
 Comment=JPEG Image
+Comment[fr]=Image JPEG
 Comment[x-test]=xxJPEG Imagexx

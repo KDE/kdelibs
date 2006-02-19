@@ -4,4 +4,5 @@ MimeType=application/vnd.palm
 Icon=wordprocessing
 Patterns=*.pdb;*.PDB;*.prc;*.PRC;
 Comment=Palm Document
+Comment[fr]=Document Palm
 Comment[x-test]=xxPalm Documentxx

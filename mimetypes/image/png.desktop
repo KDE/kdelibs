@@ -5,4 +5,5 @@ MimeType=image/png
 Icon=image
 Patterns=*.png;*.PNG;
 Comment=PNG Image
+Comment[fr]=Image PNG
 Comment[x-test]=xxPNG Imagexx

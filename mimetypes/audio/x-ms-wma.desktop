@@ -5,4 +5,5 @@ MimeType=audio/x-ms-wma
 Icon=sound
 Patterns=*.wma;*.WMA
 Comment=Windows Media Audio
+Comment[fr]=Son Windows Media
 Comment[x-test]=xxWindows Media Audioxx

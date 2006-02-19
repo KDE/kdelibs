@@ -5,4 +5,5 @@ MimeType=image/x-rgb
 Icon=image
 Patterns=*.rgb;*.RGB;*.rgba;*.RGBA;*.bw;*.BW;*.sgi;*.SGI
 Comment=SGI Image (RGB)
+Comment[fr]=Image SGI (RVB)
 Comment[x-test]=xxSGI Image (RGB)xx

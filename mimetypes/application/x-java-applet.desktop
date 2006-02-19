@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=Java Applet
+Comment[fr]=Applet Java
 Comment[x-test]=xxJava Appletxx
 MimeType=application/x-java-applet
 Icon=java_jar

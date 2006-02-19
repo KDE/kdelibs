@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=text/plain
 Comment=Plain Text Document
+Comment[fr]=Texte simple
 Comment[x-test]=xxPlain Text Documentxx
 Icon=txt
 Type=MimeType

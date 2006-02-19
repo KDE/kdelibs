@@ -5,4 +5,5 @@ MimeType=application/x-hancomword
 Icon=wordprocessing
 Patterns=*.hwp;*.HWP;
 Comment=HancomWord Document
+Comment[fr]=Document HancomWord
 Comment[x-test]=xxHancomWord Documentxx

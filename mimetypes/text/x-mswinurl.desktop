@@ -5,4 +5,5 @@ MimeType=text/x-mswinurl
 Patterns=*.url;*.URL;
 Icon=html
 Comment=Internet Shortcut
+Comment[fr]=Raccourci Internet
 Comment[x-test]=xxInternet Shortcutxx

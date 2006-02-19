@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=LaTeX Document
+Comment[fr]=Document LaTeX
 Comment[x-test]=xxLaTeX Documentxx
 Icon=tex
 MimeType=text/x-latex

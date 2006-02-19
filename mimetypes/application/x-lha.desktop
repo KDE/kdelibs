@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-lha
 Comment=Lha Archive
+Comment[fr]=Archive LHA
 Comment[x-test]=xxLha Archivexx
 Icon=tgz
 Type=MimeType

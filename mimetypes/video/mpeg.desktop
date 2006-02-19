@@ -5,4 +5,5 @@ MimeType=video/mpeg
 Icon=video
 Patterns=*.mpeg;*.mpg;*.MPEG;*.MPG;
 Comment=MPEG Video
+Comment[fr]=Vidéo MPEG
 Comment[x-test]=xxMPEG Videoxx

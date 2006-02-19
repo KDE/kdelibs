@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=CD Audio
+Comment[fr]=CD audio
 Comment[x-test]=xxCD Audioxx
 MimeType=application/x-cda
 Icon=cdtrack

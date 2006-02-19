@@ -5,4 +5,5 @@ MimeType=application/pkcs7-mime
 Icon=encrypted
 Patterns=*.p7m;*.P7M;*.p7c;*.P7C
 Comment=PKCS#7 (S/MIME) Formatted Data
+Comment[fr]=Données formatées PKCS#7 (S/MIME)
 Comment[x-test]=xxPKCS#7 (S/MIME) Formatted Dataxx

@@ -5,4 +5,5 @@ MimeType=application/pgp-encrypted
 Icon=encrypted
 Patterns=*.pgp;*.gpg;*.asc;
 Comment=PGP/MIME Encrypted Message Header
+Comment[fr]=En-tête de message crypté PGP / MIME
 Comment[x-test]=xxPGP/MIME Encrypted Message Headerxx

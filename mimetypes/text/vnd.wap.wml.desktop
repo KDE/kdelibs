@@ -5,6 +5,7 @@ Type=MimeType
 MimeType=text/vnd.wap.wml
 Patterns=*.wml;*.WML;
 Comment=WML Document
+Comment[fr]=Document WML
 Comment[x-test]=xxWML Documentxx
 
 [Property::X-KDE-text]

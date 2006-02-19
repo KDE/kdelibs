@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-ica
 Comment=Citrix ICA Client Configuration
+Comment[fr]=Configuration automatique du client Citrix ICA
 Comment[x-test]=xxCitrix ICA Client Configurationxx
 Icon=wordprocessing
 Type=MimeType

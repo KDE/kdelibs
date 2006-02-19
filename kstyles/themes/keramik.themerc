@@ -3,6 +3,7 @@ Name=Keramik
 Name[x-test]=xxKeramikxx
 ConfigPage=kstyle_keramik_config
 Comment=A style using alphablending
+Comment[fr]=Un style utilisant l'alpha-blending
 Comment[x-test]=xxA style using alphablendingxx
 
 [KDE]

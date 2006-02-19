@@ -2,6 +2,7 @@
 Name=BeOS
 Name[x-test]=xxBeOSxx
 Comment=Unthemed BeOS-like style
+Comment[fr]=Style sans thème similaire à BeOS
 Comment[x-test]=xxUnthemed BeOS-like stylexx
 [KDE]
 widgetStyle=beosstyle.la

@@ -5,4 +5,5 @@ MimeType=audio/x-wav
 Icon=sound
 Patterns=*.wav;*.WAV;
 Comment=WAV Audio
+Comment[fr]=Son WAV
 Comment[x-test]=xxWAV Audioxx

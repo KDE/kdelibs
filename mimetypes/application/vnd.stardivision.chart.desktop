@@ -5,6 +5,7 @@ MimeType=application/vnd.stardivision.chart
 Patterns=*.sds;*.SDS;
 Icon=kchart_chrt
 Comment=StarOffice Chart
+Comment[fr]=Diagramme StarOffice
 Comment[x-test]=xxStarOffice Chartxx
 [Property::X-KDE-NativeExtension]
 Type=QString

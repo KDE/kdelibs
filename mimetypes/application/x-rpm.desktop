@@ -5,4 +5,5 @@ MimeType=application/x-rpm
 Icon=rpm
 Patterns=*.rpm;
 Comment=RPM Package File
+Comment[fr]=Paquetage RPM
 Comment[x-test]=xxRPM Package Filexx

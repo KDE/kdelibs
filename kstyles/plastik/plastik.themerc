@@ -3,6 +3,7 @@ Name=Plastik
 Name[x-test]=xxPlastikxx
 ConfigPage=kstyle_plastik_config
 Comment=A simple and clean style
+Comment[fr]=Un style simple et propre
 Comment[x-test]=xxA simple and clean stylexx
 [KDE]
 WidgetStyle=Plastik

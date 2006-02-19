@@ -10,6 +10,8 @@ X-KDE-Kded-autoload=false
 X-KDE-Kded-load-on-demand=true
 
 Name=KDE Print Daemon
+Name[fr]=Démon d'impression de KDE
 Name[x-test]=xxKDE Print Daemonxx
 Comment=Print daemon for KDE
+Comment[fr]=Un démon d'impression pour KDE
 Comment[x-test]=xxPrint daemon for KDExx

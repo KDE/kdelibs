@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=TeX Device Independent File
+Comment[fr]=Document DVI de TeX
 Comment[x-test]=xxTeX Device Independent Filexx
 Icon=dvi
 Type=MimeType

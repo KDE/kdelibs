@@ -7,4 +7,5 @@ Type=MimeType
 MimeType=application/x-ogg
 Icon=multimedia
 Comment=Ogg Multimedia
+Comment[fr]=Multimédia Ogg
 Comment[x-test]=xxOgg Multimediaxx

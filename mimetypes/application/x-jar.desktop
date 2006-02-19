@@ -5,5 +5,6 @@ MimeType=application/x-jar
 Icon=source_java
 Patterns=*.jar;
 Comment=Java Archive
+Comment[fr]=Archive Java
 Comment[x-test]=xxJava Archivexx
 X-KDE-AutoEmbed=true

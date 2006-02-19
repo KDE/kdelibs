@@ -5,6 +5,7 @@ MimeType=application/vnd.stardivision.calc
 Patterns=*.sdc;*.SDC;
 Icon=spreadsheet
 Comment=StarOffice Calc Spreadsheet
+Comment[fr]=Feuille de calcul StarOffice Calc
 Comment[x-test]=xxStarOffice Calc Spreadsheetxx
 [Property::X-KDE-NativeExtension]
 Type=QString

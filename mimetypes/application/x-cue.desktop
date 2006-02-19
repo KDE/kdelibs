@@ -4,4 +4,5 @@ Patterns=*.cue;*.CUE
 MimeType=application/x-cue
 Icon=cdimage
 Comment=CDRWIN Cue-Sheet
+Comment[fr]=feuille CDRWIN
 Comment[x-test]=xxCDRWIN Cue-Sheetxx

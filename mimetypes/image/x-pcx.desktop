@@ -5,4 +5,5 @@ MimeType=image/x-pcx
 Icon=image
 Patterns=*.pcx;*.PCX;
 Comment=PCX Image
+Comment[fr]=Image PCX
 Comment[x-test]=xxPCX Imagexx

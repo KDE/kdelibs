@@ -5,4 +5,5 @@ MimeType=audio/x-matroska
 Icon=sound
 Patterns=*.mka;*.MKA;
 Comment=Matroska Audio
+Comment[fr]=Son Matroska
 Comment[x-test]=xxMatroska Audioxx

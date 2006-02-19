@@ -5,4 +5,5 @@ MimeType=image/x-jng
 Icon=image
 Patterns=*.jng;*.JNG;
 Comment=JNG Image
+Comment[fr]=Image JNG
 Comment[x-test]=xxJNG Imagexx

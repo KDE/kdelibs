@@ -5,4 +5,5 @@ MimeType=application/x-font-pcf
 Icon=font_bitmap
 Patterns=*.pcf;*.pcf.Z;*.pcf.gz;*.PCF;*.PCF.Z;*.PCF.gz
 Comment=PCF Bitmap Font
+Comment[fr]=Police de caractères bitmap PCF
 Comment[x-test]=xxPCF Bitmap Fontxx

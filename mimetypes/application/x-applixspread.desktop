@@ -5,4 +5,5 @@ MimeType=application/x-applixspread
 Icon=spreadsheet
 Patterns=*.as
 Comment=Applix Spreadsheets Document
+Comment[fr]=Document Applix Spreadsheets
 Comment[x-test]=xxApplix Spreadsheets Documentxx

@@ -230,6 +230,7 @@ ScrollBarExtent=20
 Name=RISC OS
 Name[x-test]=xxRISC OSxx
 Comment=RISC OS-like theme
+Comment[fr]=Thème similaire à RISC OS
 Comment[x-test]=xxRISC OS-like themexx
 SButtonPosition=Opposite
 FrameWidth=1

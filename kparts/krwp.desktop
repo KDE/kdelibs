@@ -4,4 +4,5 @@ Type=ServiceType
 X-KDE-ServiceType=KParts/ReadWritePart
 X-KDE-Derived=KParts/ReadOnlyPart
 Comment=KDE Component
+Comment[fr]=Composant de KDE
 Comment[x-test]=xxKDE Componentxx

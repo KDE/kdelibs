@@ -2,8 +2,10 @@
 Encoding=UTF-8
 Type=Service
 Name=KDED Cookie Jar Module
+Name[fr]=Module Jar de cookie KDED 
 Name[x-test]=xxKDED Cookie Jar Modulexx
 Comment=Keeps track of all cookies in the system
+Comment[fr]=Conserve une trace de tous les cookies dans le système
 Comment[x-test]=xxKeeps track of all cookies in the systemxx
 ServiceTypes=KDEDModule
 Exec=kcookiejar

@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=TGIF Document
+Comment[fr]=Document TGif
 Comment[x-test]=xxTGIF Documentxx
 MimeType=application/x-tgif
 Type=MimeType

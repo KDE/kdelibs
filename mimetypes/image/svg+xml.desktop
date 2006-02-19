@@ -6,6 +6,7 @@ MimeType=image/svg+xml
 X-KDE-IsAlso=text/xml
 Patterns=*.svg;*.SVG;*.svgz;*.SVGZ;
 Comment=Scalable Vector Graphics
+Comment[fr]=Graphisme vectoriel modulable (SVG)
 Comment[x-test]=xxScalable Vector Graphicsxx
 
 [Property::X-KDE-text]

@@ -5,4 +5,5 @@ MimeType=video/x-theora
 Icon=video
 X-KDE-IsAlso=application/ogg
 Comment=Theora Video
+Comment[fr]=Vidéo Theora
 Comment[x-test]=xxTheora Videoxx

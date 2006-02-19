@@ -6,6 +6,7 @@ Icon=krita_kra
 Patterns=*.kra;
 X-KDE-AutoEmbed=false
 Comment=Krita Document
+Comment[fr]=Document Krita
 Comment[x-test]=xxKrita Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString

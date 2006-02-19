@@ -5,4 +5,5 @@ MimeType=application/x-arc
 Icon=tgz
 Patterns=*.arc;*.ARC;
 Comment=ARC Archive
+Comment[fr]=Archive ARC
 Comment[x-test]=xxARC Archivexx

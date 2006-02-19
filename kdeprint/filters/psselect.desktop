@@ -3,6 +3,7 @@ Name=psselect
 Name[x-test]=xxpsselectxx
 Require=exec:/psselect
 Comment=Page Selection/Ordering Filter
+Comment[fr]=Sélection de pages / Filtre de tri
 Comment[x-test]=xxPage Selection/Ordering Filterxx
 MimeTypeIn=application/postscript
 MimeTypeOut=application/postscript

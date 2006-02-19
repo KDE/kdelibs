@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=application/x-abiword
 Comment=AbiWord Document
+Comment[fr]=Document AbiWord
 Comment[x-test]=xxAbiWord Documentxx
 Icon=wordprocessing
 Patterns=*.abw;*.ABW;*.abw.gz;*.zabw;*.abw.bz2;*.bzabw;*.awt

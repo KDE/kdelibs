@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Block Device
+Comment[fr]=Périphérique bloc
 Comment[x-test]=xxBlock Devicexx
 Icon=blockdevice
 Type=MimeType

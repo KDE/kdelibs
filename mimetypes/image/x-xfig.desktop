@@ -5,4 +5,5 @@ Type=MimeType
 MimeType=image/x-xfig
 Patterns=*.fig;*.FIG;
 Comment=XFig File
+Comment[fr]=Dessin XFig
 Comment[x-test]=xxXFig Filexx

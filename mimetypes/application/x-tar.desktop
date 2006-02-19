@@ -5,6 +5,7 @@ MimeType=application/x-tar
 Icon=tgz
 Patterns=*.tar;
 Comment=Tar Archive
+Comment[fr]=Archive Tar
 Comment[x-test]=xxTar Archivexx
 
 [Property::X-KDE-LocalProtocol]

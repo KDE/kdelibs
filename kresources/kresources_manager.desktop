@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KResources/Manager
 Comment=KResource Manager
+Comment[fr]=Gestionnaire de KResource
 Comment[x-test]=xxKResource Managerxx
 
 [PropertyDef::X-KDE-ResourceFamily]

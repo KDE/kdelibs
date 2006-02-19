@@ -6,4 +6,5 @@ Icon=sound
 Patterns=*.mp2;*.MP2;
 X-KDE-IsAlso=audio/mpeg
 Comment=MPEG Layer 2 Audio
+Comment[fr]=Son MPEG niveau 2
 Comment[x-test]=xxMPEG Layer 2 Audioxx

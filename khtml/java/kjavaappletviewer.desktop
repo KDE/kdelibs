@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Embedded Java Applet Viewer
+Name[fr]=Afficheur d'applets Java intégré
 Name[x-test]=xxEmbedded Java Applet Viewerxx
 X-KDE-Library=kjavaappletviewer
 Icon=java

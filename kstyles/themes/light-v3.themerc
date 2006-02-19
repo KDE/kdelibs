@@ -1,7 +1,9 @@
 [Misc]
 Name=Light Style, 3rd revision
+Name[fr]=Style lumière, 3ème version
 Name[x-test]=xxLight Style, 3rd revisionxx
 Comment=Third revision of the simple and elegant 'Light' widget style.
+Comment[fr]=Troisième version du style graphique « Lumière », simple et élégant.
 Comment[x-test]=xxThird revision of the simple and elegant 'Light' widget style.xx
 [KDE]
 WidgetStyle=Light, 3rd revision

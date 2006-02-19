@@ -3,6 +3,7 @@ Name=ps2pdf
 Name[x-test]=xxps2pdfxx
 Require=exec:/gs
 Comment=PostScript to PDF Converter
+Comment[fr]=Convertisseur PostScript vers PDF
 Comment[x-test]=xxPostScript to PDF Converterxx
 MimeTypeIn=application/postscript
 MimeTypeOut=application/pdf

@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=audio/x-scpls
 Comment=MP3 ShoutCast Playlist
+Comment[fr]=Liste de lecture Mpeg3 ShoutCast
 Comment[x-test]=xxMP3 ShoutCast Playlistxx
 Patterns=*.pls;*.PLS;
 Icon=sound

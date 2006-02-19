@@ -1,6 +1,7 @@
 [KDE Print Entry]
 PrintSystem=lpr
 Comment=LPR/LPRng Print System
+Comment[fr]=Système d'impression LPR / LPRng
 Comment[x-test]=xxLPR/LPRng Print Systemxx
 DetectUris=service:/printer
 DetectPrecedence=0

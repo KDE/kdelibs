@@ -6,4 +6,5 @@ MimeType=video/avi
 Icon=video
 X-KDE-IsAlso=video/x-msvideo
 Comment=Microsoft AVI Video
+Comment[fr]=Vidéo Microsoft AVI
 Comment[x-test]=xxMicrosoft AVI Videoxx

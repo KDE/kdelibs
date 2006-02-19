@@ -5,4 +5,5 @@ MimeType=application/smil
 Icon=multimedia
 Patterns=*.smil;*.smi;
 Comment=Synchronized Multimedia Integration Language
+Comment[fr]=Langage d'intégration multimédia synchronisée
 Comment[x-test]=xxSynchronized Multimedia Integration Languagexx

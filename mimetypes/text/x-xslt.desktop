@@ -1,5 +1,6 @@
 [Desktop Entry]
 Comment=XSLT Stylesheet File
+Comment[fr]=Feuille de style XSLT
 Comment[x-test]=xxXSLT Stylesheet Filexx
 Icon=html
 MimeType=text/x-xslt

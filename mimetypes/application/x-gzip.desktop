@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-gzip
 Comment=Gzip File
+Comment[fr]=Fichier compacté par Gzip
 Comment[x-test]=xxGzip Filexx
 Icon=tgz
 Type=MimeType

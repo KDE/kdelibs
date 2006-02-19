@@ -2,8 +2,10 @@
 Encoding=UTF-8
 Type=Service
 Name=KDED Password Module
+Name[fr]=Module de mot de passe KDED
 Name[x-test]=xxKDED Password Modulexx
 Comment=Password caching support
+Comment[fr]=Gestion du cache des mots de passe
 Comment[x-test]=xxPassword caching supportxx
 ServiceTypes=KDEDModule
 X-KDE-ModuleType=Library

@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KPluginInfo
 Name=KDE Plugin Information
+Name[fr]=Information sur le module KDE
 Name[x-test]=xxKDE Plugin Informationxx
 
 [PropertyDef::X-KDE-PluginInfo-Author]

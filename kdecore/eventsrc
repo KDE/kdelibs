@@ -2,47 +2,60 @@
 # go = The K-icon from kicker
 IconName=go
 Comment=KDE System Notifications
+Comment[fr]=Notifications du système KDE
 Comment[x-test]=xxKDE System Notificationsxx
 
 [Trash: emptied]
 Name=Trash: emptied
+Name[fr]=Corbeille : vidée
 Name[x-test]=xxTrash: emptiedxx
 Comment=The trash has been emptied
+Comment[fr]=La corbeille a été vidée
 Comment[x-test]=xxThe trash has been emptiedxx
 default_presentation=1
 
 [Textcompletion: rotation]
 Name=Textcompletion: rotation
+Name[fr]=Autocomplètement de texte : rotation
 Name[x-test]=xxTextcompletion: rotationxx
 Comment=The end of the list of matches has been reached
+Comment[fr]=La fin de la liste des correspondances a été atteinte
 Comment[x-test]=xxThe end of the list of matches has been reachedxx
 default_presentation=1
 
 [Textcompletion: no match]
 Name=Textcompletion: no match
+Name[fr]=Autocomplètement de texte : aucune correspondance
 Name[x-test]=xxTextcompletion: no matchxx
 Comment=No matching completion was found
+Comment[fr]=Aucune possibilité d'auto-complètement trouvée
 Comment[x-test]=xxNo matching completion was foundxx
 default_presentation=1
 
 [Textcompletion: partial match]
 Name=Textcompletion: partial match
+Name[fr]=Autocomplètement de texte : correspondance partielle
 Name[x-test]=xxTextcompletion: partial matchxx
 Comment=There is more than one possible match
+Comment[fr]=Au moins deux correspondances ont été trouvées
 Comment[x-test]=xxThere is more than one possible matchxx
 default_presentation=1
 
 [cannotopenfile]
 Name=Cannot Open File
+Name[fr]=Impossible d'ouvrir un fichier
 Name[x-test]=xxCannot Open Filexx
 Comment=The selected file cannot be opened for reading or writing
+Comment[fr]=Le fichier sélectionné ne peut être ouvert ni en lecture ni en écriture
 Comment[x-test]=xxThe selected file cannot be opened for reading or writingxx
 default_presentation=0
 
 [fatalerror]
 Name=Fatal Error
+Name[fr]=Problème critique
 Name[x-test]=xxFatal Errorxx
 Comment=There was a serious error causing the program to exit
+Comment[fr]=Un problème grave a provoqué l'arrêt du programme
 Comment[x-test]=xxThere was a serious error causing the program to exitxx
 default_presentation=2
 level=4
@@ -51,6 +64,7 @@ level=4
 Name=Notification
 Name[x-test]=xxNotificationxx
 Comment=Something special happened in the program
+Comment[fr]=Quelque chose de spécial s'est passé dans le programme
 Comment[x-test]=xxSomething special happened in the programxx
 default_presentation=1
 default_sound=KDE_Beep.ogg
@@ -58,8 +72,10 @@ level=1
 
 [warning]
 Name=Warning
+Name[fr]=Avertissement
 Name[x-test]=xxWarningxx
 Comment=There was an error in the program which may cause problems
+Comment[fr]=Une erreur est survenu dans le programme, pouvant causer des dysfonctionnements.
 Comment[x-test]=xxThere was an error in the program which may cause problemsxx
 default_presentation=2
 level=2
@@ -68,37 +84,46 @@ level=2
 Name=Catastrophe
 Name[x-test]=xxCatastrophexx
 Comment=A very serious error occurred, at least causing the program to exit
+Comment[fr]=Une erreur très grave s'est produite, provoquant au moins l'arrêt du programme
 Comment[x-test]=xxA very serious error occurred, at least causing the program to exitxx
 default_presentation=2
 level=8
 [startkde]
 Name=Login
+Name[fr]=Début de session
 Name[x-test]=xxLoginxx
 Comment=KDE is starting up
+Comment[fr]=KDE est en cours de démarrage
 Comment[x-test]=xxKDE is starting upxx
 default_presentation=1
 default_sound=KDE_Startup_1.ogg
 
 [exitkde]
 Name=Logout
+Name[fr]=Fin de session
 Name[x-test]=xxLogoutxx
 Comment=KDE is exiting
+Comment[fr]=KDE est en cours d'arrêt
 Comment[x-test]=xxKDE is exitingxx
 default_presentation=1
 default_sound=KDE_Logout_3.ogg
 
 [printerror]
 Name=Print error
+Name[fr]=Problème d'impression
 Name[x-test]=xxPrint errorxx
 Comment=A print error has occurred
+Comment[fr]=Un problème d'impression est survenu
 Comment[x-test]=xxA print error has occurredxx
 default_presentation=2
 level=8
 
 [messageInformation]
 Name=Information message
+Name[fr]=Message d'information
 Name[x-test]=xxInformation messagexx
 Comment=An information message is being shown
+Comment[fr]=Un message d'information est affiché actuellement
 Comment[x-test]=xxAn information message is being shownxx
 default_sound=KDE_Chimes_2.ogg
 default_presentation=65
@@ -106,8 +131,10 @@ nopresentation=18
 
 [messageWarning]
 Name=Warning message
+Name[fr]=Message d'avertissement
 Name[x-test]=xxWarning messagexx
 Comment=A warning message is being shown
+Comment[fr]=Un message d'avertissement est affiché actuellement
 Comment[x-test]=xxA warning message is being shownxx
 default_sound=KDE_Error_1.ogg
 default_presentation=65
@@ -116,8 +143,10 @@ level=2
 
 [messageCritical]
 Name=Critical message
+Name[fr]=Message critique
 Name[x-test]=xxCritical messagexx
 Comment=A critical message is being shown
+Comment[fr]=Un message critique est affiché actuellement
 Comment[x-test]=xxA critical message is being shownxx
 default_sound=KDE_Glass_Break.ogg
 default_presentation=65
@@ -128,6 +157,7 @@ level=4
 Name=Question
 Name[x-test]=xxQuestionxx
 Comment=A question is being asked
+Comment[fr]=Une question est posée actuellement
 Comment[x-test]=xxA question is being askedxx
 default_sound=KDE_Vox_Ahem.ogg
 default_presentation=65

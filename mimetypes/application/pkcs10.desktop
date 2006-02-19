@@ -5,6 +5,7 @@ MimeType=application/pkcs10
 Icon=certificate
 Patterns=*.p10;*.P10
 Comment=S/MIME Certification Request
+Comment[fr]=Requête de certification S/MIME
 Comment[x-test]=xxS/MIME Certification Requestxx
 [Property::X-KDE-NativeExtension]
 Type=QString

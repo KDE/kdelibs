@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Pipe
+Comment[fr]=Tube de communication
 Comment[x-test]=xxPipexx
 Icon=pipe
 Type=MimeType

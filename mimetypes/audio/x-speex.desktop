@@ -5,4 +5,5 @@ MimeType=audio/x-speex
 Icon=sound
 Patterns=*.spx;*.SPX;
 Comment=Speex Audio
+Comment[fr]=Son Speex
 Comment[x-test]=xxSpeex Audioxx

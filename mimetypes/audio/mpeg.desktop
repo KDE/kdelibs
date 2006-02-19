@@ -7,4 +7,5 @@ Type=MimeType
 MimeType=audio/mpeg
 Icon=sound
 Comment=MPEG Audio
+Comment[fr]=Son MPEG
 Comment[x-test]=xxMPEG Audioxx

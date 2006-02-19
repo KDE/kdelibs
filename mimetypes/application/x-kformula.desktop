@@ -5,6 +5,7 @@ MimeType=application/x-kformula
 Icon=kformula_kfo
 Patterns=*.kfo;
 Comment=KFormula Document
+Comment[fr]=Document KFormula
 Comment[x-test]=xxKFormula Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString

@@ -3,6 +3,7 @@ Name=psresize
 Name[x-test]=xxpsresizexx
 Require=exec:/psresize
 Comment=Scale Print Content to Fit on Another Paper Size
+Comment[fr]=Ajuste le contenu imprimé pour l'adapter à un autre format de papier
 Comment[x-test]=xxScale Print Content to Fit on Another Paper Sizexx
 MimeTypeIn=application/postscript
 MimeTypeOut=application/postscript

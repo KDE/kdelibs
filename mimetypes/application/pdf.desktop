@@ -6,6 +6,7 @@ Icon=pdf
 Patterns=*.pdf;*.PDF;
 X-KDE-PatternsAccuracy=90
 Comment=PDF Document
+Comment[fr]=Document PDF
 Comment[x-test]=xxPDF Documentxx
 X-KDE-AutoEmbed=true
 [Property::X-KDE-NativeExtension]

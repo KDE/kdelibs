@@ -5,4 +5,5 @@ MimeType=application/x-cpio
 Icon=tgz
 Patterns=*.cpio;
 Comment=CPIO Archive
+Comment[fr]=Archive CPIO
 Comment[x-test]=xxCPIO Archivexx

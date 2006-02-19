@@ -5,4 +5,5 @@ MimeType=audio/prs.sid
 Icon=sound
 Patterns=*.sid;*.SID;*.psid;*.PSID
 Comment=C64 SID Music
+Comment[fr]=Musique C64 SID
 Comment[x-test]=xxC64 SID Musicxx

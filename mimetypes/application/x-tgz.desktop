@@ -5,6 +5,7 @@ MimeType=application/x-tgz
 Icon=tgz
 Patterns=*.tar.gz;*.tgz;
 Comment=Gzipped Tar Archive
+Comment[fr]=Archive Tar compactée par Gzip
 Comment[x-test]=xxGzipped Tar Archivexx
 
 [Property::X-KDE-LocalProtocol]

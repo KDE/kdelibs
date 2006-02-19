@@ -2,5 +2,6 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=Java Web Start application
+Comment[fr]=Application Java Web Start
 Comment[x-test]=xxJava Web Start applicationxx
 MimeType=application/x-java-jnlp-file

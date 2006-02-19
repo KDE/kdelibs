@@ -1,8 +1,10 @@
 [KDE Print Filter Entry]
 Name=imagetops
+Name[fr]=Imagetops
 Name[x-test]=xximagetopsxx
 Require=exec:/imagetops
 Comment=Generic Image to PS Filter
+Comment[fr]=Filtre d'image générique vers PS
 Comment[x-test]=xxGeneric Image to PS Filterxx
 MimeTypeIn=image/jpeg,image/png,image/x-png,image/bmp,image/x-bmp,image/gif,image/tiff
 MimeTypeOut=application/postscript

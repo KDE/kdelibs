@@ -1,6 +1,7 @@
 [KDE Print Entry]
 PrintSystem=cups
 Comment=CUPS (Common UNIX Print System)
+Comment[fr]=CUPS (Common Unix Print System)
 Comment[x-test]=xxCUPS (Common UNIX Print System)xx
 DetectUris=service:/ipp,config:/cups/cupsd.conf
 DetectPrecedence=10

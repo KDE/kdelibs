@@ -6,4 +6,5 @@ Icon=spreadsheet
 Patterns=*.xls;*.XLS;*.xlc;*.XLC;*.xll;*.XLL;*.xlm;*.XLM;*.xlw;*.XLW;
 X-KDE-IsAlso=application/vnd.ms-excel
 Comment=Microsoft Excel Spreadsheet
+Comment[fr]=Feuille de calcul Microsoft Excel
 Comment[x-test]=xxMicrosoft Excel Spreadsheetxx

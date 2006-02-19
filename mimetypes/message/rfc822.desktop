@@ -5,6 +5,7 @@ MimeType=message/rfc822
 Icon=message
 Patterns=
 Comment=Email Message
+Comment[fr]=Message électronique
 Comment[x-test]=xxEmail Messagexx
 
 [Property::X-KDE-text]

@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Comment=Embeddable HTML viewing component
+Comment[fr]=Composant d'affichage HTML intégrable
 Comment[x-test]=xxEmbeddable HTML viewing componentxx
 MimeType=text/html;text/xml;application/xhtml+xml;
 Icon=konqueror

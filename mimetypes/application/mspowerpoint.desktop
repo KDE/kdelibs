@@ -5,4 +5,5 @@ MimeType=application/mspowerpoint
 Icon=presentation
 Patterns=*.ppz;*.PPZ;*.ppt;*.PPT;*.pps;*.PPS;
 Comment=Microsoft PowerPoint Presentation
+Comment[fr]=Présentation Microsoft PowerPoint
 Comment[x-test]=xxMicrosoft PowerPoint Presentationxx

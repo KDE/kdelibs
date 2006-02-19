@@ -6,6 +6,7 @@ MimeType=text/x-csv
 Patterns=*.csv;*.CSV;
 X-KDE-IsAlso=text/plain
 Comment=Text File with Comma Separated Values
+Comment[fr]=Fichier texte avec des valeurs séparées par une virgule
 Comment[x-test]=xxText File with Comma Separated Valuesxx
 
 [Property::X-KDE-text]

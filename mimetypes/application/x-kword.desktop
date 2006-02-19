@@ -6,6 +6,7 @@ Icon=kword_kwd
 Patterns=*.kwd;*.kwt;
 X-KDE-AutoEmbed=false
 Comment=KWord Document
+Comment[fr]=Document KWord
 Comment[x-test]=xxKWord Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString

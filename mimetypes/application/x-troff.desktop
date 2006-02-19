@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Troff Document
+Comment[fr]=Document Troff
 Comment[x-test]=xxTroff Documentxx
 Icon=man
 Type=MimeType

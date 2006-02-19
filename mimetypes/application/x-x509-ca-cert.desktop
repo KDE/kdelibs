@@ -5,6 +5,7 @@ MimeType=application/x-x509-ca-cert
 Icon=certificate
 Patterns=*.der;*.cer;*.crt;*.cert;*.pem;
 Comment=DER, PEM, or Netscape Encoded X.509 Certificate
+Comment[fr]=Certificat X.509 encodé avec Netscape, DER ou PEM
 Comment[x-test]=xxDER, PEM, or Netscape Encoded X.509 Certificatexx
 X-KDE-AutoEmbed=true
 

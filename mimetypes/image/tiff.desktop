@@ -5,4 +5,5 @@ MimeType=image/tiff
 Icon=image
 Patterns=*.tiff;*.TIFF;*.tif;*.TIF;
 Comment=TIFF Image
+Comment[fr]=Image TIFF
 Comment[x-test]=xxTIFF Imagexx

@@ -5,6 +5,7 @@ MimeType=application/x-vnd.kde.kugar.mixed
 Icon=kugar_kud
 Patterns=*.kug
 Comment=Kugar Archive File
+Comment[fr]=Archive Kugar
 Comment[x-test]=xxKugar Archive Filexx
 [Property::X-KDE-NativeExtension]
 Type=QString

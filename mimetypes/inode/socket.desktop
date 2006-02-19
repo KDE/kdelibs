@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Socket
+Comment[fr]=Socket (canal de communication)
 Comment[x-test]=xxSocketxx
 Icon=socket
 Type=MimeType

@@ -5,4 +5,5 @@ MimeType=application/x-kcsrc
 Icon=colorscm
 Patterns=*.kcsrc;*.KCSRC
 Comment=KDE Color Theme
+Comment[fr]=Thème de couleurs pour KDE
 Comment[x-test]=xxKDE Color Themexx

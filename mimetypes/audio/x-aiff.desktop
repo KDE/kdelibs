@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=AIFF/Amiga Audio
+Comment[fr]=Son AIFF / Amiga
 Comment[x-test]=xxAIFF/Amiga Audioxx
 MimeType=audio/x-aiff
 Icon=sound

@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=application/vnd.ms-powerpoint
 Icon=presentation
 Comment=Microsoft PowerPoint Presentation
+Comment[fr]=Présentation Microsoft PowerPoint
 Comment[x-test]=xxMicrosoft PowerPoint Presentationxx
 
 [Property::X-KDE-NativeExtension]

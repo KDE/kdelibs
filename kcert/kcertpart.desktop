@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Comment=Embeddable Personal Certificate Manager
+Comment[fr]=Gestionnaire de certificats personnels intégrable
 Comment[x-test]=xxEmbeddable Personal Certificate Managerxx
 MimeType=application/x-pkcs12;application/x-x509-ca-cert;application/binary-certificate;
 Icon=lock

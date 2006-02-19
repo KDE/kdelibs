@@ -5,6 +5,7 @@ Icon=news
 MimeType=message/news
 Patterns=
 Comment=Usenet News Message
+Comment[fr]=Message de forum de discussion
 Comment[x-test]=xxUsenet News Messagexx
 
 [Property::X-KDE-text]

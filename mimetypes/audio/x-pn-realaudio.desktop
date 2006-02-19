@@ -4,4 +4,5 @@ Type=MimeType
 MimeType=audio/x-pn-realaudio
 Icon=sound
 Comment=RealAudio File
+Comment[fr]=Fichier ReadAudio
 Comment[x-test]=xxRealAudio Filexx

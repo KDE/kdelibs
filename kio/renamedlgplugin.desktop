@@ -3,4 +3,5 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=RenameDlg/Plugin
 Comment=Plugin for the Rename Dialog
+Comment[fr]=Module externe pour la boîte de dialogue de renommage
 Comment[x-test]=xxPlugin for the Rename Dialogxx

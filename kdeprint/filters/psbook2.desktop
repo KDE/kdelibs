@@ -1,8 +1,10 @@
 [KDE Print Filter Entry]
 Name=psbook2
+Name[fr]=psbook 2
 Name[x-test]=xxpsbook2xx
 Require=exec:/psbook,exec:/psnup,exec:/psselect
 Comment=Pamphlet Printing - Odd Pages (step 2)
+Comment[fr]=Impression au format livret - Pages impaires (étape 2)
 Comment[x-test]=xxPamphlet Printing - Odd Pages (step 2)xx
 MimeTypeIn=application/postscript
 MimeTypeOut=application/postscript
