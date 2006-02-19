@@ -22,6 +22,11 @@
 
 #include <kdehw/ifaces/block.h>
 
+namespace KIO
+{
+    class Job;
+}
+
 namespace KDEHW
 {
 namespace Ifaces
@@ -42,7 +47,11 @@ namespace Ifaces
         virtual QString fsType() const = 0;
         virtual QString label() const = 0;
         // TODO add UUID and size
-	// TODO Allow to mount/unmount
+
+        virtual KIO::Job *mount( bool showProgressInfo = false ) = 0;
+        virtual KIO::Job *unmount( bool showProgressInfo = false ) = 0;
+        virtual KIO::Job *eject( bool showProgressInfo = false ) = 0;
+
     protected:
     //signals:
         virtual void mountStateChanged( bool newState ) = 0;
