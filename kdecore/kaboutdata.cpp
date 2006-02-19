@@ -368,6 +368,10 @@ KAboutData::programName() const
    return QString();
 }
 
+/// @internal
+/// Gracefully handle cases where the program name is not
+/// translated (yet) and return the untranslated name then.
+/// Needed for KCrash in particular.
 const char*
 KAboutData::internalProgramName() const
 {
@@ -377,9 +381,10 @@ KAboutData::internalProgramName() const
       return mProgramName;
 }
 
-// KCrash should call as few things as possible and should avoid e.g. malloc()
-// because it may deadlock. Since i18n() needs it, when KLocale is available
-// the i18n() call will be done here in advance.
+/// @internal
+/// KCrash should call as few things as possible and should avoid e.g. malloc()
+/// because it may deadlock. Since i18n() needs it, when KLocale is available
+/// the i18n() call will be done here in advance.
 void
 KAboutData::translateInternalProgramName() const
 {
@@ -410,6 +415,9 @@ KAboutData::version() const
    return QLatin1String(mVersion);
 }
 
+/// @internal
+/// Return the untranslated and uninterpreted (to UTF8) string
+/// for the version information. Used in particular for KCrash.
 const char*
 KAboutData::internalVersion() const
 {
@@ -436,6 +444,9 @@ KAboutData::bugAddress() const
    return QLatin1String(mBugEmailAddress);
 }
 
+/// @internal
+/// Return the untranslated and uninterpreted (to UTF8) string
+/// for the bug mail address. Used in particular for KCrash.
 const char*
 KAboutData::internalBugAddress() const
 {
