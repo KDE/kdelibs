@@ -2638,12 +2638,18 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_ROWS:
-        m_rows = attr->val() ? attr->val()->toInt() : 3;
+        m_rows = 0;
+        if (attr->val())
+            m_rows = DOMString(attr->val()).string().toInt();
+        if (!m_rows) m_rows = 2;
         if (renderer())
             renderer()->setNeedsLayoutAndMinMaxRecalc();
         break;
     case ATTR_COLS:
-        m_cols = attr->val() ? attr->val()->toInt() : 60;
+        m_cols = 0;
+        if (attr->val())
+            m_cols = DOMString(attr->val()).string().toInt();
+        if (!m_cols) m_cols = 20;
         if (renderer())
             renderer()->setNeedsLayoutAndMinMaxRecalc();
         break;
