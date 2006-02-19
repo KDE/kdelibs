@@ -5,7 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 add_subdirectory( caroot )
 ########### install files ###############
 
-install_files( ${KDE4_CONFIG_DIR} FILES ksslcalist )
+install_files( ${CONFIG_INSTALL_DIR} FILES ksslcalist )
 
 kde4_footer()
 

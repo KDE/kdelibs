@@ -242,6 +242,8 @@ install_targets(${LIB_INSTALL_DIR} kdecore )
 
 ########### next target ###############
 
+# set the variables used in kde-config.cpp.in
+
 set(prefix              ${CMAKE_INSTALL_PREFIX})
 set(datadir             ${CMAKE_INSTALL_PREFIX}${DATA_INSTALL_DIR})
 set(exec_prefix         ${CMAKE_INSTALL_PREFIX}/bin)

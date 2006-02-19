@@ -5,7 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### install files ###############
 
-install_files( ${KDE4_DATA_DIR}/kssl FILES ca-bundle.crt )
+install_files( ${DATA_INSTALL_DIR}/kssl FILES ca-bundle.crt )
 
 kde4_footer()
 
