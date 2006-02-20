@@ -812,6 +812,7 @@ int KResolver::servicePort(const char *servname, const char *protoname)
 	break;
     }
   while (se == 0L);
+# endif
 #endif
 
   // Do common processing
@@ -925,7 +926,6 @@ QList<QByteArray> KResolver::serviceName(int port, const char *protoname)
 	break;
     }
   while (se == 0L);
-# endif
 # endif
 #endif
 
