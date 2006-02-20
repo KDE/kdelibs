@@ -21,7 +21,7 @@
 #define KMPRINTERVIEW_H
 
 #include <QStackedWidget>
-#include <q3ptrlist.h>
+#include <QList>
 
 class KMIconView;
 class KMListView;
@@ -37,7 +37,7 @@ public:
 	KMPrinterView(QWidget *parent = 0, const char *name = 0);
 	~KMPrinterView();
 
-	void setPrinterList(Q3PtrList<KMPrinter> *list);
+	void setPrinterList(QList<KMPrinter*> *list);
 	void setPrinter( KMPrinter* );
 	void setViewType(ViewType t);
 	ViewType viewType() const 	{ return m_type; }

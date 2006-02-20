@@ -92,13 +92,14 @@ void KMConfigFilter::loadConfig(KConfig *conf)
 {
 	conf->setGroup("Filter");
 	QStringList	m_plist = conf->readEntry("Printers", QStringList());
-	Q3PtrListIterator<KMPrinter>	it(*(KMManager::self()->printerListComplete(false)));
-	for (; it.current(); ++it)
+	QListIterator<KMPrinter*>	it(*(KMManager::self()->printerListComplete(false)));
+	while (it.hasNext())
 	{
-		if (!it.current()->isSpecial() && !it.current()->isVirtual())
+    KMPrinter *printer(it.next());
+		if (!printer->isSpecial() && !printer->isVirtual())
 		{
-			KListBox	*lb = (m_plist.find(it.current()->printerName()) == m_plist.end() ? m_list1 : m_list2);
-			lb->insertItem(SmallIcon(it.current()->pixmap()), it.current()->printerName());
+			KListBox	*lb = (m_plist.find(printer->printerName()) == m_plist.end() ? m_list1 : m_list2);
+			lb->insertItem(SmallIcon(printer->pixmap()), printer->printerName());
 		}
 	}
 	m_list1->sort();

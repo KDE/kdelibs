@@ -36,17 +36,17 @@ public:
 
 	int actions();
 	QList<KAction*> createPluginActions(KActionCollection*);
-	void validatePluginActions(KActionCollection*, const Q3PtrList<KMJob>&);
-	bool doPluginAction(int, const Q3PtrList<KMJob>&);
+	void validatePluginActions(KActionCollection*, const QList<KMJob*>&);
+	bool doPluginAction(int, const QList<KMJob*>&);
 
 protected:
 	bool jobIppReport(KMJob*);
-	bool changePriority(const Q3PtrList<KMJob>&, bool);
+	bool changePriority(const QList<KMJob*>&, bool);
 	bool editJobAttributes(KMJob*);
 
 protected:
 	bool listJobs(const QString&, JobType, int = 0);
-	bool sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString());
+	bool sendCommandSystemJob(const QList<KMJob*>& jobs, int action, const QString& arg = QString());
 	void parseListAnswer(IppRequest& req, KMPrinter *pr);
 };
 

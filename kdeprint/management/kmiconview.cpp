@@ -126,7 +126,6 @@ KMIconView::KMIconView(QWidget *parent, const char *name)
 	setItemsMovable(false);
 	setResizeMode(Q3IconView::Adjust);
 
-	m_items.setAutoDelete(false);
 	setViewMode(KMIconView::Big);
 
 	connect(this,SIGNAL(contextMenuRequested(Q3IconViewItem*,const QPoint&)),SLOT(slotRightButtonClicked(Q3IconViewItem*,const QPoint&)));
@@ -135,54 +134,58 @@ KMIconView::KMIconView(QWidget *parent, const char *name)
 
 KMIconView::~KMIconView()
 {
+  qDeleteAll(m_items);
 }
 
 KMIconViewItem* KMIconView::findItem(KMPrinter *p)
 {
 	if (p)
 	{
-		Q3PtrListIterator<KMIconViewItem>	it(m_items);
-		for (;it.current();++it)
-			if (it.current()->text() == p->name()
-			    && it.current()->isClass() == p->isClass())
-				return it.current();
+		QListIterator<KMIconViewItem*>	it(m_items);
+		while (it.hasNext()) {
+      KMIconViewItem *item(it.next());
+			if (item->text() == p->name()
+			    && item->isClass() == p->isClass())
+				return item;
+    }
 	}
 	return 0;
 }
 
-void KMIconView::setPrinterList(Q3PtrList<KMPrinter> *list)
+void KMIconView::setPrinterList(QList<KMPrinter*> *list)
 {
 	bool	changed(false);
 
-	Q3PtrListIterator<KMIconViewItem>	it(m_items);
-	for (;it.current();++it)
-		it.current()->setDiscarded(true);
+	QListIterator<KMIconViewItem*>	it(m_items);
+	while (it.hasNext())
+		it.next()->setDiscarded(true);
 
 	if (list)
 	{
-		Q3PtrListIterator<KMPrinter>	it(*list);
+		QListIterator<KMPrinter*>	it(*list);
 		KMIconViewItem			*item(0);
-		for (;it.current();++it)
+		while (it.hasNext())
 		{
+      KMPrinter *printer(it.next());
                         // only keep real printers (no instances)
-                        if (!it.current()->instanceName().isEmpty())
+                        if (!printer->instanceName().isEmpty())
                                 continue;
-			item = findItem(it.current());
+			item = findItem(printer);
 			if (!item)
 			{
-				item = new KMIconViewItem(this,it.current());
+				item = new KMIconViewItem(this,printer);
 				m_items.append(item);
 				changed = true;
 			}
 			else
-				item->updatePrinter(it.current(), itemTextPos());
+				item->updatePrinter(printer, itemTextPos());
 		}
 	}
 
-	for (uint i=0; i<m_items.count(); i++)
+	for (int i=0; i<m_items.count(); i++)
 		if (m_items.at(i)->isDiscarded())
 		{
-			delete m_items.take(i);
+			delete m_items.takeAt(i);
 			i--;
 			changed = true;
 		}
@@ -197,9 +200,9 @@ void KMIconView::setViewMode(ViewMode m)
 	bool	big = (m == KMIconView::Big);
 	int	mode = (big ? Qt::DockBottom : Qt::DockRight);
 
-	Q3PtrListIterator<KMIconViewItem>	it(m_items);
-	for (;it.current();++it)
-		it.current()->updatePrinter(0, mode);
+	QListIterator<KMIconViewItem*>	it(m_items);
+	while (it.hasNext())
+		it.next()->updatePrinter(0, mode);
 
 	setArrangement((big ? Q3IconView::LeftToRight : Q3IconView::TopToBottom));
 	setItemTextPos((Q3IconView::ItemTextPos)mode);
@@ -220,13 +223,15 @@ void KMIconView::slotSelectionChanged()
 
 void KMIconView::setPrinter(const QString& prname)
 {
-	Q3PtrListIterator<KMIconViewItem>	it(m_items);
-	for (; it.current(); ++it)
-		if (it.current()->text() == prname)
+	QListIterator<KMIconViewItem*>	it(m_items);
+	while (it.hasNext()) {
+    KMIconViewItem *item(it.next());
+		if (item->text() == prname)
 		{
-			setSelected(it.current(), true);
+			setSelected(item, true);
 			break;
 		}
+  }
 }
 
 void KMIconView::setPrinter(KMPrinter *p)

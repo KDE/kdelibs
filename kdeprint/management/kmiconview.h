@@ -21,7 +21,7 @@
 #define KMICONVIEW_H
 
 #include <kiconview.h>
-#include <q3ptrlist.h>
+#include <QList>
 
 #include "kmobject.h"
 
@@ -54,7 +54,7 @@ public:
 	KMIconView(QWidget *parent = 0, const char *name = 0);
 	~KMIconView();
 
-	void setPrinterList(Q3PtrList<KMPrinter> *list);
+	void setPrinterList(QList<KMPrinter*> *list);
 	void setPrinter(const QString&);
 	void setPrinter(KMPrinter*);
 	void setViewMode(ViewMode);
@@ -71,7 +71,7 @@ private:
 	KMIconViewItem* findItem(KMPrinter *p);
 
 private:
-	Q3PtrList<KMIconViewItem>	m_items;
+	QList<KMIconViewItem*>	m_items;
 	ViewMode		m_mode;
 };
 

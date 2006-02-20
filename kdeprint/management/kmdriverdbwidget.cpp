@@ -59,9 +59,15 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent)
 	l2->setBuddy(m_model);
 
 	// build layout
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
-	QGridLayout	*sub1_ = new QGridLayout(0, 2, 3, 0, 0);
-	QHBoxLayout	*sub2_ = new QHBoxLayout(0, 0, 10);
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
+  main_->setMargin(0);
+  main_->setSpacing(10);
+	QGridLayout	*sub1_ = new QGridLayout(0);
+  sub1_->setMargin(0);
+  sub1_->setSpacing(0);
+	QHBoxLayout	*sub2_ = new QHBoxLayout(0);
+  sub2_->setMargin(0);
+  sub2_->setSpacing(10);
 	main_->addLayout(sub1_);
 	main_->addLayout(sub2_);
 	main_->addWidget(m_raw);
@@ -69,7 +75,6 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent)
 	sub1_->addWidget(l2,0,2);
 	sub1_->addWidget(m_manu,1,0);
 	sub1_->addWidget(m_model,1,2);
-	sub1_->addColSpacing(1,20);
 	sub2_->addWidget(m_postscript,1);
 	sub2_->addWidget(m_other,0);
 

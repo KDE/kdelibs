@@ -53,7 +53,7 @@
 #include "ipprequest.h"
 #include "cupsinfos.h"
 
-#include <q3listview.h>
+#include <QTreeWidget>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kaction.h>
@@ -225,16 +225,15 @@ int KMCupsUiManager::pluginPageCap()
 	return (KMUiManager::CopyAll & ~KMUiManager::Current);
 }
 
-void KMCupsUiManager::setupPrintDialogPages(Q3PtrList<KPrintDialogPage>* pages)
+void KMCupsUiManager::setupPrintDialogPages(QList<KPrintDialogPage*>* pages)
 {
 	pages->append(new KPSchedulePage());
 	pages->append(new KPTagsPage());
 }
 
-void KMCupsUiManager::setupJobViewer(Q3ListView *lv)
+void KMCupsUiManager::setupJobViewer(QTreeWidget *view)
 {
-	lv->addColumn(i18n("Priority"));
-	lv->setColumnAlignment(lv->columns()-1, Qt::AlignRight|Qt::AlignVCenter);
-	lv->addColumn(i18n("Billing Information"));
-	lv->setColumnAlignment(lv->columns()-1, Qt::AlignRight|Qt::AlignVCenter);
+  QStringList headerLabels;
+  headerLabels << i18n("Priority") << i18n("Billing Information");
+  view->setHeaderLabels(headerLabels);
 }

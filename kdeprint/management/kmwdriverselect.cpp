@@ -73,10 +73,11 @@ void KMWDriverSelect::initPrinter(KMPrinter *p)
 	{
 		KMDBEntryListIterator	it(*m_entries);
 		int	recomm(0);
-		for (;it.current();++it)
+		while (it.hasNext())
 		{
-			QString	s(it.current()->description);
-			if (it.current()->recommended)
+      KMDBEntry *entry(it.next());
+			QString	s(entry->description);
+			if (entry->recommended)
 			{
 				recomm = m_list->count();
 				s.append(i18n(" [recommended]"));

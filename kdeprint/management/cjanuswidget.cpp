@@ -149,10 +149,14 @@ CJanusWidget::CJanusWidget(QWidget *parent)
         m_empty->setObjectName( "Empty" );
 	m_stack->insertWidget(0,m_empty);
 
-	QHBoxLayout	*main_ = new QHBoxLayout(this, 0, 10);
-	QVBoxLayout	*sub_ = new QVBoxLayout(0, 0, 5);
+	QHBoxLayout	*main_ = new QHBoxLayout(this);
+  main_->setMargin(0);
+  main_->setSpacing(10);
+	QVBoxLayout	*sub_ = new QVBoxLayout(0);
 	main_->addWidget(m_iconlist,0);
 	main_->addLayout(sub_,1);
+  sub_->setMargin(0);
+  sub_->setSpacing(5);
 	sub_->addWidget(m_header,0);
 	sub_->addWidget(sep,0);
 	sub_->addWidget(m_stack,1);

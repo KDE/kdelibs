@@ -20,18 +20,18 @@
 #ifndef JOBITEM_H
 #define JOBITEM_H
 
-#include <q3listview.h>
+#include <QTreeWidgetItem>
 #include "kmobject.h"
 
 class KMJob;
 
-class JobItem : public Q3ListViewItem, public KMObject
+class JobItem : public QTreeWidgetItem, public KMObject
 {
 public:
-	JobItem(Q3ListView *parent, KMJob *job = 0);
+	JobItem(QTreeWidget *parent, KMJob *job = 0);
 	~JobItem();
 	void init(KMJob *job);
-	int compare(Q3ListViewItem*, int, bool) const;
+	virtual bool operator <(const QTreeWidgetItem &other) const;
 
 	int jobID() const;
 	QString jobUri() const;

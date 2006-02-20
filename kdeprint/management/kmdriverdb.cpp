@@ -50,7 +50,7 @@ KMDriverDB::KMDriverDB(QObject *parent)
         m_creator->setObjectName( "db-creator" );
 	connect(m_creator,SIGNAL(dbCreated()),SLOT(slotDbCreated()));
 
-	m_entries.setAutoDelete(true);
+  m_entries.setAutoDelete(true);
 	m_pnpentries.setAutoDelete(true);
 }
 
@@ -69,7 +69,7 @@ void KMDriverDB::init(QWidget *parent)
 {
 	QFileInfo	dbfi(dbFile());
 	QString		dirname = KMFactory::self()->manager()->driverDirectory();
-	QStringList	dbDirs = QStringList::split(':', dirname, false);
+	QStringList	dbDirs = dirname.split(':', QString::SkipEmptyParts);
 	bool	createflag(false);
 
 	for (QStringList::ConstIterator it=dbDirs.begin(); it!=dbDirs.end() && !createflag; ++it)
@@ -79,7 +79,7 @@ void KMDriverDB::init(QWidget *parent)
 	if (createflag)
 	{
 		// starts DB creation and wait for creator signal
-		if (!m_creator->createDriverDB(dirname,dbfi.absFilePath(),parent))
+		if (!m_creator->createDriverDB(dirname,dbfi.absoluteFilePath(),parent))
 			KMessageBox::error(parent, KMFactory::self()->manager()->errorMsg().prepend("<qt>").append("</qt>"));
 	}
 	else if (m_entries.count() == 0)
@@ -152,7 +152,6 @@ void KMDriverDB::insertEntry(KMDBEntry *entry)
 	if (!list)
 	{
 		list = new KMDBEntryList;
-		list->setAutoDelete(true);
 		models->insert(entry->model,list);
 	}
 	list->append(entry);
@@ -171,7 +170,6 @@ void KMDriverDB::insertEntry(KMDBEntry *entry)
 		if (!list)
 		{
 			list = new KMDBEntryList;
-			list->setAutoDelete(true);
 			models->insert(entry->model,list);
 		}
 		list->append(entry);

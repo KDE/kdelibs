@@ -52,18 +52,27 @@ KMWClass::KMWClass(QWidget *parent)
 	QLabel	*l1 = new QLabel(i18n("Available printers:"), this);
 	QLabel	*l2 = new QLabel(i18n("Class printers:"), this);
 
-        QHBoxLayout	*lay1 = new QHBoxLayout(this, 0, 15);
-        QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 20);
-        QVBoxLayout	*lay3 = new QVBoxLayout(0, 0, 0), *lay4 = new QVBoxLayout(0, 0, 0);
+        QHBoxLayout	*lay1 = new QHBoxLayout(this);
+        lay1->setMargin(0);
+        lay1->setSpacing(15);
+        QVBoxLayout	*lay2 = new QVBoxLayout(0);
+        QVBoxLayout	*lay3 = new QVBoxLayout(0);
+        QVBoxLayout *lay4 = new QVBoxLayout(0);
         lay1->addLayout(lay3, 1);
         lay1->addLayout(lay2, 0);
 	lay1->addLayout(lay4, 1);
+        lay3->setMargin(0);
+        lay3->setSpacing(0);
         lay3->addWidget(l1, 0);
         lay3->addWidget(m_list1, 1);
+        lay2->setMargin(0);
+        lay2->setSpacing(20);
         lay2->addStretch(1);
         lay2->addWidget(add, 0);
         lay2->addWidget(remove, 0);
         lay2->addStretch(1);
+        lay4->setMargin(0);
+        lay4->setSpacing(0);
         lay4->addWidget(l2, 0);
         lay4->addWidget(m_list2, 1);
 }
@@ -88,14 +97,17 @@ void KMWClass::initPrinter(KMPrinter *p)
 	KMManager	*mgr = KMFactory::self()->manager();
 
 	// first load available printers
-	Q3PtrList<KMPrinter>	*list = mgr->printerList(false);
+	QList<KMPrinter*>	*list = mgr->printerList(false);
 	m_list1->clear();
 	if (list)
 	{
-		Q3PtrListIterator<KMPrinter>	it(*list);
-		for (;it.current();++it)
-			if (it.current()->instanceName().isEmpty() && !it.current()->isClass(true) && !it.current()->isSpecial() && !members.contains(it.current()->name()))
-				m_list1->insertItem(SmallIcon(it.current()->pixmap()), it.current()->name());
+		QListIterator<KMPrinter*>	it(*list);
+		while (it.hasNext()) {
+      KMPrinter *printer(it.next());
+			if (printer->instanceName().isEmpty() && !printer->isClass(true) &&
+          !printer->isSpecial() && !members.contains(printer->name()))
+				m_list1->insertItem(SmallIcon(printer->pixmap()), printer->name());
+    }
 		m_list1->sort();
 	}
 

@@ -56,7 +56,7 @@ void KMWDriver::initPrinter(KMPrinter *p)
 				KMDBEntryList *l = KMDriverDB::self()->findPnpEntry( manu, model );
 				if ( l && l->count() > 0 )
 				{
-					m_widget->setDriver( l->getFirst()->manufacturer, l->getFirst()->model );
+					m_widget->setDriver( l->first()->manufacturer, l->first()->model );
 					return;
 				}
 			}
@@ -94,8 +94,8 @@ void KMWDriver::updatePrinter(KMPrinter *p)
 				KMDBEntryList	*drvs = m_widget->drivers();
 				if (drvs->count() == 1)
 				{
-					p->setDbEntry(drvs->getFirst());
-					p->setDriverInfo(drvs->getFirst()->description);
+					p->setDbEntry(drvs->first());
+					p->setDriverInfo(drvs->first()->description);
 				}
 				else
 					setNextPage(KMWizard::DriverSelect);

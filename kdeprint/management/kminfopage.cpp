@@ -56,14 +56,17 @@ KMInfoPage::KMInfoPage(QWidget *parent)
 	QLabel	*m_modellabel = new QLabel(i18n("Model:"), this);
 	m_modellabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 
-	QGridLayout	*lay0 = new QGridLayout(this, 11, 2, 0, 5);
-	QHBoxLayout	*lay1 = new QHBoxLayout(0, 0, 10);
-	lay0->addRowSpacing(7,20);
+	QGridLayout	*lay0 = new QGridLayout(this);
+  lay0->setMargin(0);
+  lay0->setSpacing(5);
+	QHBoxLayout	*lay1 = new QHBoxLayout(0);
+  lay1->setMargin(0);
+  lay1->setSpacing(10);
 	lay0->setRowStretch(7,0);
 	lay0->setRowStretch(10,1);
-	lay0->setColStretch(1,1);
-	lay0->addMultiCellLayout(lay1, 0, 0, 0, 1);
-	lay0->addMultiCellWidget(sep, 1, 1, 0, 1);
+	lay0->setColumnStretch(1,1);
+	lay0->addLayout(lay1, 0, 0, 0, 1);
+	lay0->addWidget(sep, 1, 1, 0, 1);
 	lay0->addWidget(m_typelabel, 2, 0);
 	lay0->addWidget(m_statelabel, 3, 0);
 	lay0->addWidget(m_loclabel, 4, 0);

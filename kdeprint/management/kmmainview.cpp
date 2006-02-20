@@ -99,11 +99,14 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	m_menubar->setMovingEnabled( false );
 
 	// layout
-	QVBoxLayout	*m_layout = new QVBoxLayout(this, 0, 0);
+	QVBoxLayout	*m_layout = new QVBoxLayout(this);
+  m_layout->setMargin(0);
+  m_layout->setSpacing(0);
 	m_layout->addWidget(m_toolbar);
 	m_layout->addWidget( m_menubar );
-	m_boxlayout = new QBoxLayout(QBoxLayout::TopToBottom, 0, 0);
+	m_boxlayout = new QBoxLayout(QBoxLayout::TopToBottom, 0);
 	m_layout->addLayout(m_boxlayout);
+  m_boxlayout->setSpacing(0);
 	m_boxlayout->addWidget(m_printerview);
 	m_boxlayout->addWidget(m_printerpages);
 	m_layout->addSpacing(5);
@@ -176,7 +179,7 @@ void KMMainView::initActions()
 	KIconSelectAction	*vact = new KIconSelectAction(i18n("&View"),0,m_actions,"view_change");
 	QStringList	iconlst;
 	iconlst << "view_icon" << "view_detailed" << "view_tree";
-	vact->setItems(QStringList::split(',',i18n("&Icons,&List,&Tree"),false), iconlst);
+	vact->setItems(i18n("&Icons,&List,&Tree").split(',', QString::SkipEmptyParts), iconlst);
 	vact->setCurrentItem(0);
 	connect(vact,SIGNAL(activated(int)),SLOT(slotChangeView(int)));
 
@@ -203,7 +206,7 @@ void KMMainView::initActions()
 	KIconSelectAction	*dact = new KIconSelectAction(i18n("&Orientation"),0,m_actions,"orientation_change");
 	iconlst.clear();
 	iconlst << "view_top_bottom" << "view_left_right";
-	dact->setItems(QStringList::split(',',i18n("&Vertical,&Horizontal"),false), iconlst);
+	dact->setItems(i18n("&Vertical,&Horizontal").split(',', QString::SkipEmptyParts), iconlst);
 	dact->setCurrentItem(0);
 	connect(dact,SIGNAL(activated(int)),SLOT(slotChangeDirection(int)));
 
@@ -246,11 +249,11 @@ void KMMainView::initActions()
 	m_toolbar->insertLineSeparator();
 	m_actions->action("printer_state_change")->plug(m_toolbar);
 	m_actions->action("printer_spool_change")->plug(m_toolbar);
-	m_toolbar->insertSeparator();
+	m_toolbar->addSeparator();
 	m_actions->action("printer_hard_default")->plug(m_toolbar);
 	m_actions->action("printer_soft_default")->plug(m_toolbar);
 	m_actions->action("printer_remove")->plug(m_toolbar);
-	m_toolbar->insertSeparator();
+	m_toolbar->addSeparator();
 	m_actions->action("printer_configure")->plug(m_toolbar);
 	m_actions->action("printer_test")->plug(m_toolbar);
 	m_actions->action("printer_tool")->plug(m_toolbar);
@@ -277,15 +280,15 @@ void KMMainView::initActions()
 	menu = new QMenu( this );
 	m_actions->action("printer_state_change")->plug( menu );
 	m_actions->action("printer_spool_change")->plug( menu );
-	menu->insertSeparator();
+	menu->addSeparator();
 	m_actions->action("printer_hard_default")->plug( menu );
 	m_actions->action("printer_soft_default")->plug( menu );
 	m_actions->action("printer_remove")->plug( menu );
-	menu->insertSeparator();
+	menu->addSeparator();
 	m_actions->action("printer_configure")->plug( menu );
 	m_actions->action("printer_test")->plug( menu );
 	m_actions->action("printer_tool")->plug( menu );
-	menu->insertSeparator();
+	menu->addSeparator();
 	//m_menubar->insertItem( i18n( "Printer" ), menu );
 	m_menubar->insertButton( "printer1", 1, true, i18n( "Printer" ) );
 	m_menubar->getButton( 1 )->setPopup( menu, true );
@@ -307,7 +310,7 @@ void KMMainView::initActions()
 	m_actions->action("orientation_change")->plug( menu );
 	m_actions->action( "view_toolbar" )->plug ( menu );
 	m_actions->action( "view_menubar" )->plug ( menu );
-	menu->insertSeparator();
+	menu->addSeparator();
 	m_actions->action("view_pfilter")->plug( menu );
 	//m_menubar->insertItem( i18n( "View" ), menu );
 	m_menubar->insertButton( "view_remove", 4, true, i18n( "View" ) );
@@ -331,7 +334,7 @@ void KMMainView::slotRefresh()
 void KMMainView::slotTimer()
 {
 	kDebug() << "KMMainView::slotTimer" << endl;
-	Q3PtrList<KMPrinter>	*printerlist = m_manager->printerList();
+	QList<KMPrinter*>	*printerlist = m_manager->printerList();
 	bool ok = m_manager->errorMsg().isEmpty();
 	m_printerview->setPrinterList(printerlist);
 	if ( m_first )
@@ -345,23 +348,23 @@ void KMMainView::slotTimer()
 			 *    - hard default printer
 			 *    - first printer
 			 */
-			Q3PtrListIterator<KMPrinter> it( *printerlist );
+			QListIterator<KMPrinter*> it( *printerlist );
 			KMPrinter *p1 = 0, *p2 = 0, *p3 = 0;
-			while ( it.current() )
+			while ( it.hasNext() )
 			{
-				if ( !it.current()->isVirtual() )
+        KMPrinter *printer(it.next());
+				if ( !printer->isVirtual() )
 				{
-					if ( it.current()->ownSoftDefault() )
+					if ( printer->ownSoftDefault() )
 					{
-						p1 = it.current();
+						p1 = printer;
 						break;
 					}
-					else if ( it.current()->isHardDefault() )
-						p2 = it.current();
+					else if ( printer->isHardDefault() )
+						p2 = printer;
 					else if ( !p3 )
-						p3 = it.current();
+						p3 = printer;
 				}
-				++it;
 			}
 			if ( p1 || p2 || p3 )
 				m_printerview->setPrinter( p1 ? p1 : ( p2 ? p2 : p3 ) );
@@ -436,20 +439,20 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 			if (printer->isLocal())
 				m_actions->action((printer->state() == KMPrinter::Stopped ? "printer_start" : "printer_stop"))->plug(m_pop);
 			m_actions->action((printer->acceptJobs() ? "printer_disable" : "printer_enable"))->plug(m_pop);
-			m_pop->insertSeparator();
+			m_pop->addSeparator();
 		}
 		if (!printer->isSoftDefault()) m_actions->action("printer_soft_default")->plug(m_pop);
 		if (printer->isLocal() && !printer->isImplicit())
 		{
 			if (!printer->isHardDefault()) m_actions->action("printer_hard_default")->plug(m_pop);
 			m_actions->action("printer_remove")->plug(m_pop);
-			m_pop->insertSeparator();
+			m_pop->addSeparator();
 			if (!printer->isClass(true))
 			{
 				m_actions->action("printer_configure")->plug(m_pop);
 				m_actions->action("printer_test")->plug(m_pop);
 				m_actions->action("printer_tool")->plug(m_pop);
-				m_pop->insertSeparator();
+				m_pop->addSeparator();
 			}
 		}
 		else
@@ -459,7 +462,7 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 				m_actions->action("printer_configure")->plug(m_pop);
 				m_actions->action("printer_test")->plug(m_pop);
 			}
-			m_pop->insertSeparator();
+			m_pop->addSeparator();
 		}
 		if (!printer->isSpecial())
 		{
@@ -467,27 +470,27 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 			for (QList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 				(*it)->plug(m_pop);
 			if (pactions.count() > 0)
-				m_pop->insertSeparator();
+				m_pop->addSeparator();
 		}
 	}
 	else
 	{
 		m_actions->action("printer_add")->plug(m_pop);
 		m_actions->action("printer_add_special")->plug(m_pop);
-		m_pop->insertSeparator();
+		m_pop->addSeparator();
 		m_actions->action("server_restart")->plug(m_pop);
 		m_actions->action("server_configure")->plug(m_pop);
-		m_pop->insertSeparator();
+		m_pop->addSeparator();
 		m_actions->action("manager_configure")->plug(m_pop);
 		m_actions->action("view_refresh")->plug(m_pop);
-		m_pop->insertSeparator();
+		m_pop->addSeparator();
 	}
 	m_actions->action("view_printerinfos")->plug(m_pop);
 	m_actions->action("view_change")->plug(m_pop);
 	m_actions->action("orientation_change")->plug(m_pop);
 	m_actions->action("view_toolbar")->plug(m_pop);
 	m_actions->action("view_menubar")->plug(m_pop);
-	m_pop->insertSeparator();
+	m_pop->addSeparator();
 	m_actions->action("view_pfilter")->plug(m_pop);
 
 	// pop the menu
@@ -496,7 +499,7 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 
 void KMMainView::slotChangePrinterState()
 {
-	QString	opname = sender()->name();
+	QString	opname = sender()->objectName();
 	if (m_current && opname.startsWith("printer_"))
 	{
 		opname = opname.mid(8);
@@ -796,7 +799,7 @@ void KMMainView::loadPluginActions()
 	QList<KAction*>	pactions = m_actions->actions("plugin");
 	int	index = m_pactionsindex;
 	//QPopupMenu *menu = m_menubar->findItem( m_menubar->idAt( 1 ) )->popup();
-	QMenu *menu = m_menubar->getButton( 1 )->popup();
+	QMenu *menu = m_menubar->getButton( 1 )->menu();
 	for (QList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 	{
 		(*it)->plug(m_toolbar, index++);
@@ -892,7 +895,7 @@ void KMMainView::reset( const QString& msg, bool useDelay, bool holdTimer )
 
 void KMMainView::slotHelp()
 {
-	QString s = sender()->name();
+	QString s = sender()->objectName();
 	if ( s == "invoke_help" )
 		KToolInvocation::invokeHelp( QString(), "kdeprint" );
 	else if ( s == "invoke_web" )

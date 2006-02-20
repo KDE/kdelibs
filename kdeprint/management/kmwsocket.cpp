@@ -126,16 +126,17 @@ void KMWSocket::slotScanStarted()
 
 void KMWSocket::slotScanFinished()
 {
-	const Q3PtrList<NetworkScanner::SocketInfo>	*list = m_scanner->printerList();
-	Q3PtrListIterator<NetworkScanner::SocketInfo>	it(*list);
-	for (;it.current();++it)
+	const QList<NetworkScanner::SocketInfo*>	*list = m_scanner->printerList();
+	QListIterator<NetworkScanner::SocketInfo*>	it(*list);
+	while (it.hasNext())
 	{
 		QString	name;
-		if (it.current()->Name.isEmpty())
-			name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(it.current()->IP);
+    NetworkScanner::SocketInfo *info(it.next());
+		if (info->Name.isEmpty())
+			name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(info->IP);
 		else
-			name = it.current()->Name;
-		Q3ListViewItem	*item = new Q3ListViewItem(m_list,name,it.current()->IP,QString::number(it.current()->Port));
+			name = info->Name;
+		Q3ListViewItem	*item = new Q3ListViewItem(m_list,name,info->IP,QString::number(info->Port));
 		item->setPixmap(0,SmallIcon("kdeprint_printer"));
 	}
 }

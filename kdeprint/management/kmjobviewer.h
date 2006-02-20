@@ -27,18 +27,18 @@
 #include <kmainwindow.h>
 #include "kmprinterpage.h"
 #include "kpreloadobject.h"
-#include <Q3PtrList>
+#include <QList>
 
 class KMJobManager;
 class KMJob;
-class KListView;
 class JobItem;
 class QMenu;
-class Q3ListViewItem;
 class KMPrinter;
 class QTimer;
 class QLineEdit;
 class QCheckBox;
+class QTreeWidget;
+class QTreeWidgetItem;
 
 /**
  * @internal
@@ -75,7 +75,7 @@ protected Q_SLOTS:
 	void slotResume();
 	void slotRemove();
 	void slotRestart();
-	void slotRightClicked(Q3ListViewItem*,const QPoint&,int);
+	void slotRightClicked(QTreeWidgetItem*,const QPoint&,int);
 	void slotMove(int prID);
 	void slotPrinterSelected(int);
 	void slotShowCompleted(bool);
@@ -86,14 +86,14 @@ protected Q_SLOTS:
 	void slotUserOnly(bool);
 	void slotUserChanged();
 	void slotConfigure();
-	void slotDropped( QDropEvent*, Q3ListViewItem* );
+	void slotDropped( QDropEvent*, QTreeWidgetItem* );
 
 protected:
 	void init();
 	void updateJobs();
 	void initActions();
 	JobItem* findItem(const QString& uri);
-	void jobSelection(Q3PtrList<KMJob>& l);
+	void jobSelection(QList<KMJob*>& l);
 	void send(int cmd, const QString& name, const QString& arg = QString());
 	void loadPrinters();
 	void loadPluginActions();
@@ -109,11 +109,11 @@ protected:
 	void updateStatusBar();
 
 private:
-	KListView		*m_view;
-	Q3PtrList<KMJob>		m_jobs;
-	Q3PtrList<JobItem>		m_items;
+	QTreeWidget		*m_view;
+	QList<KMJob*>		m_jobs;
+	QList<JobItem*>		m_items;
 	QMenu		*m_pop;
-	Q3PtrList<KMPrinter>	m_printers;
+	QList<KMPrinter*>	m_printers;
 	QString	m_prname;
 	int	m_type;
 	QString	m_username;

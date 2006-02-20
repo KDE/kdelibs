@@ -109,8 +109,6 @@ void KMListViewItem::paintCell(QPainter *p, const QColorGroup& cg, int c, int w,
 KMListView::KMListView(QWidget *parent, const char *name)
 : Q3ListView(parent,name)
 {
-	m_items.setAutoDelete(false);
-
 	addColumn("");
 	header()->hide();
 	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
@@ -151,76 +149,80 @@ KMListViewItem* KMListView::findItem(KMPrinter *p)
 {
 	if (p)
 	{
-		Q3PtrListIterator<KMListViewItem>	it(m_items);
+		QListIterator<KMListViewItem*>	it(m_items);
 		bool	isVirtual(p->isVirtual()), isClass(p->isClass());
-		for (;it.current();++it)
+		while (it.hasNext()) {
+      KMListViewItem *item(it.next());
 			if (isVirtual)
 			{
-				if (it.current()->depth() == 3 && it.current()->text(0) == p->instanceName()
-						&& it.current()->parent()->text(0) == p->printerName())
-					return it.current();
+				if (item->depth() == 3 && item->text(0) == p->instanceName()
+						&& item->parent()->text(0) == p->printerName())
+					return item;
 			}
 			else
 			{
-				if (it.current()->isClass() == isClass && it.current()->text(0) == p->name())
-					return it.current();
+				if (item->isClass() == isClass && item->text(0) == p->name())
+					return item;
 			}
+    }
 	}
 	return 0;
 }
 
 KMListViewItem* KMListView::findItem(const QString& prname)
 {
-	Q3PtrListIterator<KMListViewItem>	it(m_items);
-	for (; it.current(); ++it)
-		if (it.current()->depth() == 2 && it.current()->text(0) == prname)
-			return it.current();
+	QListIterator<KMListViewItem*>	it(m_items);
+	while (it.hasNext()) {
+    KMListViewItem *item(it.next());
+		if (item->depth() == 2 && item->text(0) == prname)
+			return item;
+  }
 	return 0;
 }
 
-void KMListView::setPrinterList(Q3PtrList<KMPrinter> *list)
+void KMListView::setPrinterList(QList<KMPrinter*> *list)
 {
 	bool 	changed(false);
 
-	Q3PtrListIterator<KMListViewItem>	it(m_items);
-	for (;it.current();++it)
-		it.current()->setDiscarded(true);
+	QListIterator<KMListViewItem*>	it(m_items);
+	while (it.hasNext())
+		it.next()->setDiscarded(true);
 
 	if (list)
 	{
-		Q3PtrListIterator<KMPrinter>	it(*list);
+		QListIterator<KMPrinter*>	it(*list);
 		KMListViewItem			*item (0);
-		for (;it.current();++it)
+		while (it.hasNext())
 		{
-			item = findItem(it.current());
+      KMPrinter *printer(it.next());
+			item = findItem(printer);
 			if (!item)
 			{
-				if (it.current()->isVirtual())
+				if (printer->isVirtual())
 				{
-					KMListViewItem	*pItem = findItem(it.current()->printerName());
+					KMListViewItem	*pItem = findItem(printer->printerName());
 					if (!pItem)
 						continue;
-					item = new KMListViewItem(pItem, it.current());
+					item = new KMListViewItem(pItem, printer);
 					pItem->setOpen(true);
 				}
 				else
-					item = new KMListViewItem((it.current()->isSpecial() ? m_specials : (it.current()->isClass(false) ? m_classes : m_printers)),it.current());
+					item = new KMListViewItem((printer->isSpecial() ? m_specials : (printer->isClass(false) ? m_classes : m_printers)),printer);
 				m_items.append(item);
 				changed = true;
 			}
 			else
-				item->updatePrinter(it.current());
+				item->updatePrinter(printer);
 		}
 	}
 
-	Q3PtrList<KMListViewItem>	deleteList;
-	deleteList.setAutoDelete(true);
-	for (uint i=0; i<m_items.count(); i++)
+	QList<KMListViewItem*>	deleteList;
+	for (int i=0; i<m_items.count(); i++)
 		if (m_items.at(i)->isDiscarded())
 		{
 			// instance items are put in front of the list
 			// so that they are destroyed first
-			KMListViewItem	*item = m_items.take(i);
+			KMListViewItem	*item = m_items.takeAt(i);
 			if (item->depth() == 2)
 				deleteList.append(item);
 			else
@@ -228,7 +230,8 @@ void KMListView::setPrinterList(Q3PtrList<KMPrinter> *list)
 			i--;
 			changed = true;
 		}
-	deleteList.clear();
+	qDeleteAll(deleteList);
+  deleteList.clear();
 
 	if (changed) sort();
 	emit selectionChanged();
@@ -242,13 +245,15 @@ void KMListView::slotSelectionChanged()
 
 void KMListView::setPrinter(const QString& prname)
 {
-	Q3PtrListIterator<KMListViewItem>	it(m_items);
-	for (;it.current();++it)
-		if (it.current()->text(0) == prname)
+	QListIterator<KMListViewItem*>	it(m_items);
+	while (it.hasNext()) {
+    KMListViewItem *item(it.next());
+		if (item->text(0) == prname)
 		{
-			setSelected(it.current(),true);
+			setSelected(item,true);
 			break;
 		}
+  }
 }
 
 void KMListView::setPrinter(KMPrinter *p)

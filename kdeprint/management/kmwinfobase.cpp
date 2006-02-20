@@ -26,18 +26,16 @@
 KMWInfoBase::KMWInfoBase(int n, QWidget *parent)
     : KMWizardPage(parent)
 {
-	m_labels.setAutoDelete(false);
-	m_edits.setAutoDelete(false);
-
 	m_nlines = n;
-	QGridLayout	*lay1 = new QGridLayout(this, m_nlines+3, 2, 0, 10);
-	lay1->addRowSpacing(1,10);
+	QGridLayout	*lay1 = new QGridLayout(this);
+  lay1->setMargin(0);
+  lay1->setSpacing(10);
 	lay1->setRowStretch(m_nlines+2,1);
-	lay1->setColStretch(1,1);
+	lay1->setColumnStretch(1,1);
 
 	m_info = new QLabel(this);
 	m_info->setTextFormat(Qt::RichText);
-	lay1->addMultiCellWidget(m_info,0,0,0,1);
+	lay1->addWidget(m_info,0,0,0,1);
 
 	for (int i=0;i<m_nlines;i++)
 	{

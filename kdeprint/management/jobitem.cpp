@@ -24,8 +24,8 @@
 
 #include <qpixmap.h>
 
-JobItem::JobItem(Q3ListView *parent, KMJob *job)
-: Q3ListViewItem(parent)
+JobItem::JobItem(QTreeWidget *parent, KMJob *job)
+: QTreeWidgetItem(parent)
 {
 	m_job = new KMJob;
 	init(job);
@@ -40,7 +40,7 @@ void JobItem::init(KMJob *job)
 {
 	m_job->copy(job ? *job : KMJob());
 
-	setPixmap(0,SmallIcon(m_job->pixmap()));
+	setIcon(0,SmallIcon(m_job->pixmap()));
 	setText(0,QString::number(m_job->id()));
 	//setText(6,m_job->printer());
 	setText(2,m_job->name());
@@ -54,23 +54,14 @@ void JobItem::init(KMJob *job)
 	// additional attributes
 	for (int i=0; i<m_job->attributeCount(); i++)
 		setText(6+i, m_job->attribute(i));
-
-	widthChanged();
 }
 
-int JobItem::compare(Q3ListViewItem *item, int col, bool asc) const
+bool JobItem::operator<(const QTreeWidgetItem &other) const
 {
-	switch (col)
-	{
-		case 0:
-		case 4:
-		case 5:
-			{
-				int	i1(this->text(col).toInt()), i2(item->text(col).toInt());
-				return (i1 < i2 ? -1 : (i1 > i2 ? 1 : 0));
-				break;
-			}
-		default:
-			return Q3ListViewItem::compare(item, col, asc);
-	}
+  int column = 0;
+
+  if (treeWidget())
+    column = treeWidget()->sortColumn();
+
+  return (text(column).toInt() < other.text(column).toInt());
 }

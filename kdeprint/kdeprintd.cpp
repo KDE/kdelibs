@@ -103,12 +103,12 @@ void StatusWindow::setMessage(const QString& msg)
 KDEPrintd::KDEPrintd(const QByteArray& obj)
 : KDEDModule(obj)
 {
-	m_processpool.setAutoDelete(true);
-	m_requestsPending.setAutoDelete( true );
 }
 
 KDEPrintd::~KDEPrintd()
 {
+  qDeleteAll(m_processpool);
+  qDeleteAll(m_requestsPending);
 	m_windows.clear();
 }
 
@@ -153,13 +153,13 @@ int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 
 void KDEPrintd::slotPrintTerminated( KPrintProcess *proc )
 {
-	m_processpool.removeRef( proc );
+	m_processpool.removeAll( proc );
 }
 
 void KDEPrintd::slotPrintError( KPrintProcess *proc, const QString& msg )
 {
 	KNotifyClient::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1").arg(msg));
-	m_processpool.removeRef( proc );
+	m_processpool.removeAll( proc );
 }
 
 QString KDEPrintd::openPassDlg(const QString& user)

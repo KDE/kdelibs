@@ -43,7 +43,6 @@ KMUiManager::KMUiManager(QObject *parent)
 : QObject(parent)
 {
 	m_printdialogflags = KMUiManager::PrintDialogAll;
-	m_printdialogpages.setAutoDelete(false);
 }
 
 KMUiManager::~KMUiManager()
@@ -214,11 +213,11 @@ int KMUiManager::pluginPageCap()
 	return 0;
 }
 
-void KMUiManager::setupPrintDialogPages(Q3PtrList<KPrintDialogPage>*)
+void KMUiManager::setupPrintDialogPages(QList<KPrintDialogPage*>*)
 {
 }
 
-void KMUiManager::setupJobViewer(Q3ListView*)
+void KMUiManager::setupJobViewer(QTreeWidget*)
 {
 }
 

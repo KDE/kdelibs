@@ -20,8 +20,8 @@
 #ifndef KMUIMANAGER_H
 #define KMUIMANAGER_H
 
-#include <qobject.h>
-#include <q3ptrlist.h>
+#include <QList>
+#include <QObject>
 
 #include "kprinter.h"
 
@@ -31,7 +31,7 @@ class KPrintDialogPage;
 class KPrintDialog;
 class KPrinterPropertyDialog;
 class KMConfigDialog;
-class Q3ListView;
+class QTreeWidget;
 
 class KDEPRINT_EXPORT KMUiManager : public QObject
 {
@@ -72,7 +72,7 @@ public:
 	int copyFlags(KPrinter *pr = 0, bool usePlugin = true);
 	int dialogFlags();
 	void setupPrintDialog(KPrintDialog*);
-	virtual void setupPrintDialogPages(Q3PtrList<KPrintDialogPage>*);
+	virtual void setupPrintDialogPages(QList<KPrintDialogPage*>*);
 
 	// printer property dialog
 	void setupPropertyDialog(KPrinterPropertyDialog*);
@@ -84,11 +84,11 @@ public:
 	int pageCap();
 
 	// job management
-	virtual void setupJobViewer(Q3ListView*);
+	virtual void setupJobViewer(QTreeWidget*);
 
 protected:
 	int			m_printdialogflags;
-	Q3PtrList<KPrintDialogPage>	m_printdialogpages;
+	QList<KPrintDialogPage*>	m_printdialogpages;
 };
 
 #endif

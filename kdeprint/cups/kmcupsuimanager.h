@@ -33,8 +33,8 @@ public:
 	void setupPrinterPropertyDialog(KPrinterPropertyDialog*);
 	void setupConfigDialog(KMConfigDialog*);
 	int pluginPageCap();
-	void setupPrintDialogPages(Q3PtrList<KPrintDialogPage>*);
-	void setupJobViewer(Q3ListView*);
+	void setupPrintDialogPages(QList<KPrintDialogPage*>*);
+	void setupJobViewer(QTreeWidget*);
 };
 
 #endif

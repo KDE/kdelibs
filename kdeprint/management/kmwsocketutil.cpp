@@ -63,7 +63,8 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 
 	mask_ = new QLineEdit(dummy);
 	mask_->setAlignment(Qt::AlignRight);
-	port_ = new QComboBox(true,dummy);
+	port_ = new QComboBox(dummy);
+	port_->setEditable(true);
         if ( port_->lineEdit() )
             port_->lineEdit()->setValidator( val );
 	tout_ = new QLineEdit(dummy);
@@ -81,14 +82,18 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	port_->setEditText(QString::number(util->port_));
 	tout_->setText(QString::number(util->timeout_));
 
-	QGridLayout	*main_ = new QGridLayout(dummy, 3, 2, 0, 10);
-	QHBoxLayout	*lay1 = new QHBoxLayout(0, 0, 5);
+	QGridLayout	*main_ = new QGridLayout(dummy);
+  main_->setMargin(0);
+  main_->setSpacing(10);
+	QHBoxLayout	*lay1 = new QHBoxLayout(0);
 	main_->addWidget(masklabel, 0, 0);
 	main_->addWidget(portlabel, 1, 0);
 	main_->addWidget(toutlabel, 2, 0);
 	main_->addLayout(lay1, 0, 1);
 	main_->addWidget(port_, 1, 1);
 	main_->addWidget(tout_, 2, 1);
+  lay1->setMargin(0);
+  lay1->setSpacing(5);
 	lay1->addWidget(mask_,1);
 	lay1->addWidget(mm,0);
 
@@ -136,10 +141,14 @@ void SocketConfig::slotOk()
 
 KMWSocketUtil::KMWSocketUtil()
 {
-	printerlist_.setAutoDelete(true);
 	root_ = localRootIP();
 	port_ = 9100;
 	timeout_ = 50;
+}
+
+KMWSocketUtil::~KMWSocketUtil()
+{
+	qDeleteAll(printerlist_);
 }
 
 bool KMWSocketUtil::checkPrinter(const QString& IPstr, int port, QString* hostname)
@@ -161,7 +170,7 @@ bool KMWSocketUtil::checkPrinter(const QString& IPstr, int port, QString* hostna
 
 bool KMWSocketUtil::scanNetwork(QProgressBar *bar)
 {
-	printerlist_.setAutoDelete(true);
+	qDeleteAll(printerlist_);
 	printerlist_.clear();
 	int	n(256);
 	if (bar)

@@ -102,13 +102,14 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 	bool	ok = (p != 0);
 	if (ok)
 	{
-		Q3PtrList<KMPrinter>	list;
+		QList<KMPrinter*>	list;
 		KMFactory::self()->virtualManager()->virtualList(list,p->name());
-		Q3PtrListIterator<KMPrinter>	it(list);
-		for (;it.current();++it)
+		QListIterator<KMPrinter*>	it(list);
+		while (it.hasNext())
 		{
-			QStringList	pair = QStringList::split('/',it.current()->name(),false);
-			m_view->insertItem(SmallIcon((it.current()->isSoftDefault() ? "exec" : "fileprint")),(pair.count() > 1 ? pair[1] : i18n("(Default)")));
+      KMPrinter *printer(it.next());
+			QStringList	pair = printer->name().split('/', QString::SkipEmptyParts);
+			m_view->insertItem(SmallIcon((printer->isSoftDefault() ? "exec" : "fileprint")),(pair.count() > 1 ? pair[1] : i18n("(Default)")));
 		}
 		m_view->sort();
 	}

@@ -24,8 +24,8 @@
 #warning internal header, do not use except if you are a KDEPrint developer
 #endif
 
-#include <qobject.h>
-#include <q3ptrlist.h>
+#include <QList>
+#include <QObject>
 #include <q3dict.h>
 
 
@@ -72,15 +72,15 @@ public:
 	KMJob* findJob(const QString& uri);
 	//bool sendCommand(int ID, int action, const QString& arg = QString());
 	bool sendCommand(const QString& uri, int action, const QString& arg = QString());
-	bool sendCommand(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString());
-	const Q3PtrList<KMJob>& jobList(bool reload = true);
+	bool sendCommand(const QList<KMJob*>& jobs, int action, const QString& arg = QString());
+	const QList<KMJob*>& jobList(bool reload = true);
 	void addJob(KMJob*);
 	KMThreadJob* threadJob();
 
 	virtual int actions();
 	virtual QList<KAction*> createPluginActions(KActionCollection*);
-	virtual void validatePluginActions(KActionCollection*, const Q3PtrList<KMJob>&);
-	virtual bool doPluginAction(int, const Q3PtrList<KMJob>&);
+	virtual void validatePluginActions(KActionCollection*, const QList<KMJob*>&);
+	virtual bool doPluginAction(int, const QList<KMJob*>&);
 
 protected:
 	void discardAllJobs();
@@ -88,11 +88,11 @@ protected:
 
 protected:
 	virtual bool listJobs(const QString& prname, JobType type, int limit = 0);
-	virtual bool sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString());
-	bool sendCommandThreadJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString());
+	virtual bool sendCommandSystemJob(const QList<KMJob*>& jobs, int action, const QString& arg = QString());
+	bool sendCommandThreadJob(const QList<KMJob*>& jobs, int action, const QString& arg = QString());
 
 protected:
-	Q3PtrList<KMJob>	m_jobs;
+	QList<KMJob*>	m_jobs;
 	Q3Dict<JobFilter>	m_filter;
 	KMThreadJob	*m_threadjob;
 };

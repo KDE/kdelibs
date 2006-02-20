@@ -23,7 +23,6 @@
 #include "kmmanager.h"
 
 #include <q3dict.h>
-#include <q3ptrlist.h>
 #include <qdatetime.h>
 #include <kurl.h>
 

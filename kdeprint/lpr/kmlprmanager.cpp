@@ -112,13 +112,15 @@ void KMLprManager::listPrinters()
 	}
 	else
 	{
-		Q3PtrListIterator<KMPrinter>	it(m_printers);
-		for (; it.current(); ++it)
-			if (!it.current()->isSpecial())
+		QListIterator<KMPrinter*>	it(m_printers);
+		while (it.hasNext()) {
+      KMPrinter *printer(it.next());
+			if (!printer->isSpecial())
 			{
-				it.current()->setDiscarded(false);
-				checkPrinterState(it.current());
+				printer->setDiscarded(false);
+				checkPrinterState(printer);
 			}
+    }
 	}
 }
 

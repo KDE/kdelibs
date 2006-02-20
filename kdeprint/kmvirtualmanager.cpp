@@ -147,7 +147,7 @@ void KMVirtualManager::remove(KMPrinter *p, const QString& name)
                 printer->setEdited(false);
         }
         else
-	        m_manager->m_printers.removeRef(printer);
+	        m_manager->m_printers.removeAll(printer);
 	triggerSave();
 }
 
@@ -198,13 +198,15 @@ void KMVirtualManager::refresh()
         else
         { // parse printers looking for instances -> undiscarded them, real printers
           // are undiscarded by the manager itself. Also update printer status.
-                Q3PtrListIterator<KMPrinter>        it(m_manager->m_printers);
-                for (;it.current();++it)
-                        if (!it.current()->instanceName().isEmpty())
-			{
-				checkPrinter(it.current());
-				if (it.current()->isValid()) it.current()->setDiscarded(false);
-			}
+                QListIterator<KMPrinter*> it(m_manager->m_printers);
+                while (it.hasNext()) {
+                  KMPrinter *printer(it.next());
+                        if (!printer->instanceName().isEmpty()) {
+                                checkPrinter(printer);
+                                if (printer->isValid())
+                                  printer->setDiscarded(false);
+                        }
+                }
         }
 }
 
@@ -229,19 +231,20 @@ QString KMVirtualManager::defaultPrinterName()
         return m_defaultprinter;
 }
 
-void KMVirtualManager::virtualList(Q3PtrList<KMPrinter>& list, const QString& prname)
+void KMVirtualManager::virtualList(QList<KMPrinter*>& list, const QString& prname)
 {
 	// load printers if necessary
 	refresh();
 
 	// then look for instances
-	list.setAutoDelete(false);
 	list.clear();
 	kDebug(500) << "KMVirtualManager::virtualList() prname=" << prname << endl;
-	Q3PtrListIterator<KMPrinter>	it(m_manager->m_printers);
-	for (;it.current();++it)
-		if (it.current()->printerName() == prname)
-			list.append(it.current());
+	QListIterator<KMPrinter*>	it(m_manager->m_printers);
+	while (it.hasNext()) {
+    KMPrinter *printer(it.next());
+		if (printer->printerName() == prname)
+			list.append(printer);
+  }
 }
 
 void KMVirtualManager::loadFile(const QString& filename)
@@ -315,19 +318,20 @@ void KMVirtualManager::saveFile(const QString& filename)
 	if (f.open(QIODevice::WriteOnly))
 	{
 		QTextStream	t(&f);
-		Q3PtrListIterator<KMPrinter>	it(m_manager->m_printers);
-		for (;it.current();++it)
+		QListIterator<KMPrinter*>	it(m_manager->m_printers);
+		while (it.hasNext())
 		{
-			if (it.current()->isSpecial())
+      KMPrinter *printer(it.next());
+			if (printer->isSpecial())
 			{
-				t << ( it.current()->isSoftDefault() ? "DefaultSpecial " : "Special " );
-				t << KUrl::encode_string_no_slash( it.current()->printerName() );
-				if ( !it.current()->instanceName().isEmpty() )
-					t << "/" << KUrl::encode_string_no_slash( it.current()->instanceName() );
+				t << ( printer->isSoftDefault() ? "DefaultSpecial " : "Special " );
+				t << KUrl::encode_string_no_slash( printer->printerName() );
+				if ( !printer->instanceName().isEmpty() )
+					t << "/" << KUrl::encode_string_no_slash( printer->instanceName() );
 			}
 			else
-				t << (it.current()->isSoftDefault() ? "Default " : "Dest ") << it.current()->name();
-			QMap<QString,QString>	opts = it.current()->defaultOptions();
+				t << (printer->isSoftDefault() ? "Default " : "Dest ") << printer->name();
+			QMap<QString,QString>	opts = printer->defaultOptions();
 			for (QMap<QString,QString>::ConstIterator oit=opts.begin(); oit!=opts.end(); ++oit)
 			{
 				t << ' ' << oit.key();

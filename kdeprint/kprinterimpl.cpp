@@ -181,14 +181,15 @@ bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
 void KPrinterImpl::broadcastOption(const QString& key, const QString& value)
 {
 	// force printer listing if not done yet (or reload needed)
-	Q3PtrList<KMPrinter>	*printers = KMFactory::self()->manager()->printerListComplete(false);
+	QList<KMPrinter*>	*printers = KMFactory::self()->manager()->printerListComplete(false);
 	if (printers)
 	{
-		Q3PtrListIterator<KMPrinter>	it(*printers);
-		for (;it.current();++it)
+		QListIterator<KMPrinter*>	it(*printers);
+		while (it.hasNext())
 		{
-			initEditPrinter(it.current());
-			it.current()->setEditedOption(key,value);
+      KMPrinter *printer(it.next());
+			initEditPrinter(printer);
+			printer->setEditedOption(key,value);
 		}
 	}
 }

@@ -76,24 +76,25 @@ void KPrintAction::slotAboutToShow()
 {
 	popupMenu()->clear();
 	d->printers.clear();
-	Q3PtrList<KMPrinter>	*prts = KMManager::self()->printerList();
+	QList<KMPrinter*>	*prts = KMManager::self()->printerList();
 	if (prts && !prts->isEmpty())
 	{
-		Q3PtrListIterator<KMPrinter>	it(*prts);
+		QListIterator<KMPrinter*>	it(*prts);
 		bool	first(false);
 		int	ID(0);
-		for (; it.current(); ++it)
+		while (it.hasNext())
 		{
-			if (d->type == All || (d->type == Specials && it.current()->isSpecial()) || (d->type == Regular && !it.current()->isSpecial()))
+      KMPrinter *printer(it.next());
+			if (d->type == All || (d->type == Specials && printer->isSpecial()) || (d->type == Regular && !printer->isSpecial()))
 			{
-				if (d->type == All && !first && it.current()->isSpecial())
+				if (d->type == All && !first && printer->isSpecial())
 				{
 					if (popupMenu()->actions().count() > 0)
 						popupMenu()->addSeparator();
 					first = true;
 				}
-				popupMenu()->insertItem(SmallIconSet(it.current()->pixmap()), it.current()->name(), ID++);
-				d->printers.append(it.current()->name());
+				popupMenu()->insertItem(SmallIconSet(printer->pixmap()), printer->name(), ID++);
+				d->printers.append(printer->name());
 			}
 		}
 	}

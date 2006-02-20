@@ -53,7 +53,7 @@ KMPrinterView::~KMPrinterView()
 {
 }
 
-void KMPrinterView::setPrinterList(Q3PtrList<KMPrinter> *list)
+void KMPrinterView::setPrinterList(QList<KMPrinter*> *list)
 {
 	if (m_type != KMPrinterView::Tree || list == 0)
 		m_iconview->setPrinterList(list);

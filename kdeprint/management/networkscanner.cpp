@@ -49,7 +49,7 @@ public:
 	int currentaddress;
 	int timeout;
 	bool scanning;
-	Q3PtrList<NetworkScanner::SocketInfo> printers;
+	QList<NetworkScanner::SocketInfo*> printers;
 
 	QProgressBar *bar;
 	KPushButton *scan, *settings;
@@ -63,8 +63,13 @@ public:
 		currentaddress = 1;
 		timeout = 50;
 		scanning = false;
-		printers.setAutoDelete( true );
 	}
+
+  ~NetworkScannerPrivate()
+  {
+    qDeleteAll(printers);
+  }
+
 	QString localPrefix();
 	QString scanString();
 };
@@ -110,10 +115,12 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent )
 	QLabel *label = new QLabel( i18n( "Network scan:" ), this );
 	d->subnetlab = new QLabel( i18n( "Subnet: %1" ).arg( d->scanString() ), this );
 
-	QGridLayout *l0 = new QGridLayout( this, 4, 2, 0, 10 );
-	l0->addMultiCellWidget( label, 0, 0, 0, 1 );
-	l0->addMultiCellWidget( d->bar, 1, 1, 0, 1 );
-	l0->addMultiCellWidget( d->subnetlab, 2, 2, 0, 1 );
+	QGridLayout *l0 = new QGridLayout( this );
+  l0->setMargin( 0 );
+  l0->setSpacing( 10 );
+	l0->addWidget( label, 0, 0, 0, 1 );
+	l0->addWidget( d->bar, 1, 1, 0, 1 );
+	l0->addWidget( d->subnetlab, 2, 2, 0, 1 );
 	l0->addWidget( d->settings, 3, 0 );
 	l0->addWidget( d->scan, 3, 1 );
 
@@ -189,7 +196,8 @@ void NetworkScanner::slotNext()
 	d->timer->stop();
 	d->socket->connect( d->prefixaddress + "." + QString::number( d->currentaddress ), QString::number(d->port) );
 	kDebug() << "Address: " << d->socket->peerAddress().toString() << endl;
-	d->timer->start( d->timeout, true );
+  d->timer->setSingleShot(true);
+	d->timer->start( d->timeout );
 }
 
 void NetworkScanner::next()
@@ -244,7 +252,7 @@ void NetworkScanner::slotConnectionFailed( int )
 	next();
 }
 
-const Q3PtrList<NetworkScanner::SocketInfo>* NetworkScanner::printerList()
+const QList<NetworkScanner::SocketInfo*>* NetworkScanner::printerList()
 {
 	return &( d->printers );
 }
@@ -284,11 +292,12 @@ void NetworkScanner::setPort( int p )
 bool NetworkScanner::checkPrinter( const QString& host, int port )
 {
 	// try first to find it in the SocketInfo list
-	Q3PtrListIterator<NetworkScanner::SocketInfo> it( d->printers );
-	for ( ; it.current(); ++it )
+	QListIterator<NetworkScanner::SocketInfo*> it( d->printers );
+	while ( it.hasNext() )
 	{
-		if ( port == it.current()->Port && ( host == it.current()->IP ||
-					host == it.current()->Name ) )
+    NetworkScanner::SocketInfo *info(it.next());
+		if ( port == info->Port && ( host == info->IP ||
+					host == info->Name ) )
 			return true;
 	}
 
@@ -315,7 +324,8 @@ NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *
 
 	mask_ = new QLineEdit(dummy);
 	mask_->setAlignment(Qt::AlignRight);
-	port_ = new QComboBox(true,dummy);
+	port_ = new QComboBox(dummy);
+  port_->setEditable(true);
         if ( port_->lineEdit() )
             port_->lineEdit()->setValidator( val );
 	tout_ = new QLineEdit(dummy);
@@ -326,21 +336,25 @@ NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *
 	toutlabel->setBuddy(tout_);
 
 	mask_->setText(scanner_->subnet());
-	port_->insertItem("631");
-	port_->insertItem("9100");
-	port_->insertItem("9101");
-	port_->insertItem("9102");
+	port_->addItem("631");
+	port_->addItem("9100");
+	port_->addItem("9101");
+	port_->addItem("9102");
 	port_->setEditText(QString::number(scanner_->port()));
 	tout_->setText(QString::number(scanner_->timeout()));
 
-	QGridLayout	*main_ = new QGridLayout(dummy, 3, 2, 0, 10);
-	QHBoxLayout	*lay1 = new QHBoxLayout(0, 0, 5);
+	QGridLayout	*main_ = new QGridLayout(dummy);
+  main_->setMargin(0);
+  main_->setSpacing(10);
+	QHBoxLayout	*lay1 = new QHBoxLayout(0);
 	main_->addWidget(masklabel, 0, 0);
 	main_->addWidget(portlabel, 1, 0);
 	main_->addWidget(toutlabel, 2, 0);
 	main_->addLayout(lay1, 0, 1);
 	main_->addWidget(port_, 1, 1);
 	main_->addWidget(tout_, 2, 1);
+  lay1->setMargin(0);
+  lay1->setSpacing(5);
 	lay1->addWidget(mask_,1);
 	lay1->addWidget(mm,0);
 

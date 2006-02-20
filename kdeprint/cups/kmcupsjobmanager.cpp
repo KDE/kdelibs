@@ -50,19 +50,19 @@ int KMCupsJobManager::actions()
 	return KMJob::All;
 }
 
-bool KMCupsJobManager::sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& argstr)
+bool KMCupsJobManager::sendCommandSystemJob(const QList<KMJob*>& jobs, int action, const QString& argstr)
 {
 	IppRequest	req;
 	QString		uri;
 	bool		value(true);
 
-	Q3PtrListIterator<KMJob>	it(jobs);
-	for (;it.current() && value;++it)
+	QListIterator<KMJob*>	it(jobs);
+	while (it.hasNext() && value)
 	{
 		// hypothesis: job operation are always done on local jobs. The only operation
 		// allowed on remote jobs is listing (done elsewhere).
 
-		req.addURI(IPP_TAG_OPERATION,"job-uri",it.current()->uri());
+		req.addURI(IPP_TAG_OPERATION,"job-uri",it.next()->uri());
 		req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->login());
 		/*
 		QString	jobHost;
@@ -238,20 +238,20 @@ void KMCupsJobManager::parseListAnswer(IppRequest& req, KMPrinter *pr)
 	delete job;
 }
 
-bool KMCupsJobManager::doPluginAction(int ID, const Q3PtrList<KMJob>& jobs)
+bool KMCupsJobManager::doPluginAction(int ID, const QList<KMJob*>& jobs)
 {
 	switch (ID)
 	{
 		case 0:
 			if (jobs.count() == 1)
-				return jobIppReport(jobs.getFirst());
+				return jobIppReport(jobs.first());
 			break;
 		case 1:
 			return changePriority(jobs, true);
 		case 2:
 			return changePriority(jobs, false);
 		case 3:
-			return editJobAttributes(jobs.getFirst());
+			return editJobAttributes(jobs.first());
 	}
 	return false;
 }
@@ -295,14 +295,15 @@ QList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *coll)
 	return list;
 }
 
-void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const Q3PtrList<KMJob>& joblist)
+void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const QList<KMJob*>& joblist)
 {
-	Q3PtrListIterator<KMJob>	it(joblist);
+	QListIterator<KMJob*>	it(joblist);
 	bool	flag(true);
-	for (; it.current(); ++it)
+	while (it.hasNext())
 	{
-		flag = (flag && it.current()->type() == KMJob::System
-		        && (it.current()->state() == KMJob::Queued || it.current()->state() == KMJob::Held)
+    KMJob *job(it.next());
+		flag = (flag && job->type() == KMJob::System
+		        && (job->state() == KMJob::Queued || job->state() == KMJob::Held)
 			/*&& !it.current()->isRemote()*/);
 	}
 	flag = (flag && joblist.count() > 0);
@@ -317,13 +318,14 @@ void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const Q3Pt
 		a->setEnabled( flag && ( joblist.count() == 1 ) );
 }
 
-bool KMCupsJobManager::changePriority(const Q3PtrList<KMJob>& jobs, bool up)
+bool KMCupsJobManager::changePriority(const QList<KMJob*>& jobs, bool up)
 {
-	Q3PtrListIterator<KMJob>	it(jobs);
+	QListIterator<KMJob*>	it(jobs);
 	bool	result(true);
-	for (; it.current() && result; ++it)
+	while (it.hasNext() && result)
 	{
-		int	value = it.current()->attribute(0).toInt();
+    KMJob *job(it.next());
+		int	value = job->attribute(0).toInt();
 		if (up) value = qMin(value+10, 100);
 		else value = qMax(value-10, 1);
 
@@ -337,7 +339,7 @@ bool KMCupsJobManager::changePriority(const Q3PtrList<KMJob>& jobs, bool up)
 		}
 		*/
 		req.setOperation(IPP_SET_JOB_ATTRIBUTES);
-		req.addURI(IPP_TAG_OPERATION, "job-uri", it.current()->uri());
+		req.addURI(IPP_TAG_OPERATION, "job-uri", job->uri());
 		req.addName(IPP_TAG_OPERATION, "requesting-user-name", CupsInfos::self()->login());
 		req.addInteger(IPP_TAG_JOB, "job-priority", value);
 

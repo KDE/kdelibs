@@ -70,20 +70,21 @@ bool KMSpecialManager::savePrinters()
 
 	// then add printers
 	n = 0;
-	Q3PtrListIterator<KMPrinter>	it(m_mgr->m_printers);
-	for (;it.current();++it)
+	QListIterator<KMPrinter*>	it(m_mgr->m_printers);
+	while (it.hasNext())
 	{
-		if (!it.current()->isSpecial() || it.current()->isVirtual()) continue;
+    KMPrinter *printer(it.next());
+		if (!printer->isSpecial() || printer->isVirtual()) continue;
 		conf.setGroup(QString::fromLatin1("Printer %1").arg(n));
-		conf.writeEntry("Name",it.current()->name());
-		conf.writeEntry("Description",it.current()->description());
-		conf.writeEntry("Comment",it.current()->location());
-		conf.writePathEntry("Command",it.current()->option("kde-special-command"));
-		conf.writePathEntry("File",it.current()->option("kde-special-file"));
-		conf.writeEntry("Icon",it.current()->pixmap());
-		conf.writeEntry("Extension",it.current()->option("kde-special-extension"));
-		conf.writeEntry("Mimetype",it.current()->option("kde-special-mimetype"));
-		conf.writeEntry("Require",it.current()->option("kde-special-require"));
+		conf.writeEntry("Name",printer->name());
+		conf.writeEntry("Description",printer->description());
+		conf.writeEntry("Comment",printer->location());
+		conf.writePathEntry("Command",printer->option("kde-special-command"));
+		conf.writePathEntry("File",printer->option("kde-special-file"));
+		conf.writeEntry("Icon",printer->pixmap());
+		conf.writeEntry("Extension",printer->option("kde-special-extension"));
+		conf.writeEntry("Mimetype",printer->option("kde-special-mimetype"));
+		conf.writeEntry("Require",printer->option("kde-special-require"));
 		n++;
 	}
 	conf.setGroup("General");
@@ -172,15 +173,17 @@ void KMSpecialManager::refresh()
 		loadPrinters();
 	else
 	{
-		Q3PtrListIterator<KMPrinter>	it(m_mgr->m_printers);
-		for (;it.current();++it)
-			if (it.current()->isSpecial())
+		QListIterator<KMPrinter*>	it(m_mgr->m_printers);
+		while (it.hasNext()) {
+      KMPrinter *printer(it.next());
+			if (printer->isSpecial())
 			{
-				it.current()->setDiscarded(false);
-				it.current()->setType(KMPrinter::Special);
-				if (KdeprintChecker::check(it.current()->option("kde-special-require").split(',',QString::SkipEmptyParts)))
-					it.current()->addType(KMPrinter::Invalid);
+				printer->setDiscarded(false);
+				printer->setType(KMPrinter::Special);
+				if (KdeprintChecker::check(printer->option("kde-special-require").split(',',QString::SkipEmptyParts)))
+					printer->addType(KMPrinter::Invalid);
 			}
+    }
 	}
 }
 

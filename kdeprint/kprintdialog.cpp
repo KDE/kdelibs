@@ -84,7 +84,7 @@ public:
 	QCheckBox	*m_persistent;
 	bool	m_reduced;
 
-	Q3PtrList<KPrintDialogPage>	m_pages;
+	QList<KPrintDialogPage*>	m_pages;
 	KPrinter		*m_printer;
 	bool b_optionsEnabled;
 	bool b_propertiesEnabled;
@@ -259,7 +259,6 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" to the last printer used in the application\"</em> is disabled.)"
 					        " </qt>" );
 
-	d->m_pages.setAutoDelete(false);
 	d->m_printer = 0;
 	setCaption(i18n("Print"));
 
@@ -487,7 +486,7 @@ void KPrintDialog::setFlags(int f)
 	d->m_wizard->setEnabled((mgr->hasManagement() && (mgr->printerOperationMask() & KMManager::PrinterCreation)));
 }
 
-void KPrintDialog::setDialogPages(Q3PtrList<KPrintDialogPage> *pages)
+void KPrintDialog::setDialogPages(QList<KPrintDialogPage*> *pages)
 {
 	if (!pages) return;
 	if (pages->count() + d->m_pages.count() == 1)
@@ -495,7 +494,7 @@ void KPrintDialog::setDialogPages(Q3PtrList<KPrintDialogPage> *pages)
 		// only one page, reparent the page to d->m_dummy and remove any
 		// QTabWidget child if any.
 		if (pages->count() > 0)
-			d->m_pages.append(pages->take(0));
+			d->m_pages.append(pages->takeAt(0));
 		d->m_pages.first()->setParent(d->m_dummy);
 		d->m_pages.first()->show();
 		delete d->m_dummy->findChild<QTabWidget*>("TabWidget");
@@ -510,14 +509,16 @@ void KPrintDialog::setDialogPages(Q3PtrList<KPrintDialogPage> *pages)
 			// already existing pages.
 			tabs = new QTabWidget(d->m_dummy);
 			tabs->setObjectName("TabWidget");
-			for (d->m_pages.first(); d->m_pages.current(); d->m_pages.next())
+      QListIterator<KPrintDialogPage*> it(d->m_pages);
+			while (it.hasNext())
 			{
-				tabs->addTab(d->m_pages.current(), d->m_pages.current()->title());
+        KPrintDialogPage *page(it.next());
+				tabs->addTab(page, page->title());
 			}
 		}
 		while (pages->count() > 0)
 		{
-			KPrintDialogPage	*page = pages->take(0);
+			KPrintDialogPage	*page = pages->takeAt(0);
 			d->m_pages.append(page);
 			tabs->addTab(page, page->title());
 		}
@@ -557,7 +558,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 	d->m_printer = printer;
 
 	// first retrieve printer list and update combo box (get default or last used printer also)
-	Q3PtrList<KMPrinter>	*plist = KMFactory::self()->manager()->printerList();
+	QList<KMPrinter*>	*plist = KMFactory::self()->manager()->printerList();
 	if (!KMManager::self()->errorMsg().isEmpty())
 	{
 		KMessageBox::error(parentWidget(),
@@ -570,28 +571,29 @@ void KPrintDialog::initialize(KPrinter *printer)
 	{
 		QString	oldP = d->m_printers->currentText();
 		d->m_printers->clear();
-		Q3PtrListIterator<KMPrinter>	it(*plist);
+		QListIterator<KMPrinter*>	it(*plist);
 		int 	defsoft(-1), defhard(-1), defsearch(-1);
 		bool	sep(false);
-		for (;it.current();++it)
+		while (it.hasNext())
 		{
+      KMPrinter *printerIt(it.next());
 			// skip invalid printers
-			if ( !it.current()->isValid() )
+			if ( !printerIt->isValid() )
 				continue;
 
-			if (!sep && it.current()->isSpecial())
+			if (!sep && printerIt->isSpecial())
 			{
 				sep = true;
 				d->m_printers->insertItem(QPixmap(), QLatin1String("--------"));
 			}
-			d->m_printers->insertItem(SmallIcon(it.current()->pixmap(),0,(it.current()->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay)),it.current()->name(),false/*sep*/);
-			if (it.current()->isSoftDefault())
+			d->m_printers->insertItem(SmallIcon(printerIt->pixmap(),0,(printerIt->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay)),printerIt->name(),false/*sep*/);
+			if (printerIt->isSoftDefault())
 				defsoft = d->m_printers->count()-1;
-			if (it.current()->isHardDefault())
+			if (printerIt->isHardDefault())
 				defhard = d->m_printers->count()-1;
-			if (!oldP.isEmpty() && oldP == it.current()->name())
+			if (!oldP.isEmpty() && oldP == printerIt->name())
 				defsearch = d->m_printers->count()-1;
-			else if (defsearch == -1 && it.current()->name() == printer->searchName())
+			else if (defsearch == -1 && printerIt->name() == printer->searchName())
 				defsearch = d->m_printers->count()-1;
 		}
 		int	defindex = (defsearch != -1 ? defsearch : (defsoft != -1 ? defsoft : qMax(defhard,0)));
@@ -613,9 +615,9 @@ void KPrintDialog::initialize(KPrinter *printer)
 		d->m_preview->setChecked(true);
 	d->m_preview->setEnabled(!d->m_printer->previewOnly());
 	d->m_cmd->setText(d->m_printer->option("kde-printcommand"));
-	Q3PtrListIterator<KPrintDialogPage>	it(d->m_pages);
-	for (;it.current();++it)
-		it.current()->setOptions(d->m_printer->options());
+	QListIterator<KPrintDialogPage*>	it(d->m_pages);
+	while ( it.hasNext() )
+		it.next()->setOptions(d->m_printer->options());
 }
 
 void KPrintDialog::slotPrinterSelected(int index)
@@ -673,18 +675,20 @@ void KPrintDialog::done(int result)
 
 		// get options from global pages
 		QString	msg;
-		Q3PtrListIterator<KPrintDialogPage>	it(d->m_pages);
-		for (;it.current();++it)
-			if (it.current()->isEnabled())
+		QListIterator<KPrintDialogPage*>	it(d->m_pages);
+		while (it.hasNext()) {
+      KPrintDialogPage *page(it.next());
+			if (page->isEnabled())
 			{
-				if (it.current()->isValid(msg))
-					it.current()->getOptions(opts);
+				if (page->isValid(msg))
+					page->getOptions(opts);
 				else
 				{
 					KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"));
 					return;
 				}
 			}
+    }
 
 		// add options from the dialog itself
 		// TODO: ADD PRINTER CHECK MECHANISM !!!
@@ -803,9 +807,12 @@ void KPrintDialog::enableSpecial(bool on)
 	if (copypage)
 		copypage->initialize(!on);
 	// disable/enable all other pages (if needed)
-	for (d->m_pages.first(); d->m_pages.current(); d->m_pages.next())
-		if (d->m_pages.current()->onlyRealPrinters())
-			d->m_pages.current()->setEnabled(!on);
+  QListIterator<KPrintDialogPage*> it(d->m_pages);
+	while (it.hasNext()) {
+    KPrintDialogPage *page(it.next());
+		if (page->onlyRealPrinters())
+			page->setEnabled(!on);
+  }
 }
 
 void KPrintDialog::setOutputFileExtension(const QString& ext)
@@ -840,14 +847,13 @@ void KPrintDialog::reload()
 	for (uint i=0; i<d->m_pages.count(); i++)
 		if (d->m_pages.at(i)->onlyRealPrinters())
 		{
-			KPrintDialogPage	*page = d->m_pages.take(i--);
+			KPrintDialogPage	*page = d->m_pages.takeAt(i--);
 			if (tabs)
 				tabs->removeTab(tabs->indexOf(page));
 			delete page;
 		}
 	// reload printer dependent pages from plugin
-	Q3PtrList<KPrintDialogPage>	pages;
-	pages.setAutoDelete(false);
+	QList<KPrintDialogPage*>	pages;
 	KMFactory::self()->uiManager()->setupPrintDialogPages(&pages);
 	// add those pages to the dialog
 	setDialogPages(&pages);

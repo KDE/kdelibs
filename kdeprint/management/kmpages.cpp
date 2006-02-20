@@ -28,8 +28,9 @@
 #include <kdialog.h>
 
 KMPages::KMPages(QWidget *parent, const char *name)
-: QTabWidget(parent,name)
+: QTabWidget(parent)
 {
+  setObjectName(name);
 	initialize();
 }
 
@@ -46,8 +47,6 @@ void KMPages::setPrinter(KMPrinter *p)
 
 void KMPages::initialize()
 {
-	setMargin(KDialog::marginHint());
-
 	// Info page
 	KMInfoPage	*infopage = new KMInfoPage(this );
         infopage->setObjectName("InfoPage");

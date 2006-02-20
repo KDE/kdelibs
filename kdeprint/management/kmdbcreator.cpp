@@ -21,8 +21,8 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 
-#include <q3cstring.h>
-#include <q3progressdialog.h>
+#include <QByteArray>
+#include <qprogressdialog.h>
 #include <qfileinfo.h>
 #include <qdir.h>
 #include <klocale.h>
@@ -68,7 +68,7 @@ bool KMDBCreator::checkDriverDB(const QString& dirname, const QDateTime& d)
 	// then loop into subdirs
 	QStringList	slist = dir.entryList(QDir::Dirs,QDir::Time);
 	for (QStringList::ConstIterator it=slist.begin(); it!=slist.end(); ++it)
-		if ((*it) != "." && (*it) != ".." && !checkDriverDB(dir.absFilePath(*it),d))
+		if ((*it) != "." && (*it) != ".." && !checkDriverDB(dir.absoluteFilePath(*it),d))
 			return false;
 
 	// everything is OK
@@ -110,13 +110,14 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	{
 		if (!m_dlg)
 		{
-			m_dlg = new Q3ProgressDialog(parent->topLevelWidget(),"progress-dialog",true);
+			m_dlg = new QProgressDialog(parent->topLevelWidget());
+      m_dlg->setObjectName("progress-dialog");
 			m_dlg->setLabelText(i18n("Please wait while KDE rebuilds a driver database."));
-			m_dlg->setCaption(i18n("Driver Database"));
+			m_dlg->setWindowTitle(i18n("Driver Database"));
 			connect(m_dlg,SIGNAL(canceled()),SLOT(slotCancelled()));
 		}
 		m_dlg->setMinimumDuration(0);	// always show the dialog
-		m_dlg->setProgress(0);		// to force showing
+		m_dlg->setValue(0);		// to force showing
 	}
 	else
 		// be sure to emit this signal otherwise the DB widget won't never be notified
@@ -128,13 +129,13 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 void KMDBCreator::slotReceivedStdout(KProcess*, char *buf, int len)
 {
 	// save buffer
-	QString	str( Q3CString(buf, len) );
+	QString	str( QByteArray(buf, len) );
 
 	// get the number, cut the string at the first '\n' otherwise
 	// the toInt() will return 0. If that occurs for the first number,
 	// then the number of steps will be also 0.
 	bool	ok;
-	int	p = str.find('\n');
+	int	p = str.indexOf('\n');
 	int	n = str.mid(0, p).toInt(&ok);
 
 	// process the number received
@@ -142,12 +143,12 @@ void KMDBCreator::slotReceivedStdout(KProcess*, char *buf, int len)
 	{
 		if (m_firstflag)
 		{
-			m_dlg->setTotalSteps(n);
+			m_dlg->setRange(0, n);
 			m_firstflag = false;
 		}
 		else
 		{
-			m_dlg->setProgress(n);
+			m_dlg->setValue(n);
 		}
 	}
 }

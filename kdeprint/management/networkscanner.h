@@ -20,9 +20,10 @@
 #ifndef NETWORKSCANNER_H
 #define NETWORKSCANNER_H
 
-#include <qwidget.h>
 #include <kdialogbase.h>
-#include <q3ptrlist.h>
+
+#include <QList>
+#include <QWidget>
 
 namespace KNetwork { class KResolverEntry; }
 
@@ -42,7 +43,7 @@ public:
 		int Port;
 	};
 
-	const Q3PtrList<NetworkScanner::SocketInfo>* printerList();
+	const QList<NetworkScanner::SocketInfo*>* printerList();
 
 	int timeout() const;
 	void setTimeout( int to );

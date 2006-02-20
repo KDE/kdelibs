@@ -21,7 +21,7 @@
 #define KDEPRINTD_H
 
 #include <kdedmodule.h>
-#include <q3ptrlist.h>
+#include <QList>
 #include <qstringlist.h>
 #include <q3ptrdict.h>
 #include <qpointer.h>
@@ -58,9 +58,9 @@ protected:
 
 private:
 	class Request;
-	Q3PtrList<KPrintProcess>	m_processpool;
+	QList<KPrintProcess*>	m_processpool;
 	QMultiHash<int,StatusWindow*>	m_windows;
-	Q3PtrList<Request>       m_requestsPending;
+	QList<Request*>       m_requestsPending;
 };
 
 #endif

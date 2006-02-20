@@ -26,7 +26,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3ptrlist.h>
+#include <QList>
 #include <kurl.h>
 #include <qmap.h>
 #include <kdeprint/kmobject.h>
@@ -225,12 +225,14 @@ protected:
 	int m_printercap;
 };
 
-class KMPrinterList : public Q3PtrList<KMPrinter>
+class KMPrinterList : public QList<KMPrinter*>
 {
 public:
-	KMPrinterList() : Q3PtrList<KMPrinter>() {}
+	KMPrinterList() : QList<KMPrinter*>() {}
+  /* TODO: needs porting
 	virtual int compareItems(Q3PtrCollection::Item i1, Q3PtrCollection::Item i2)
 	{ return KMPrinter::compare((KMPrinter*)i1, (KMPrinter*)i2); }
+  */
 };
 
 #endif

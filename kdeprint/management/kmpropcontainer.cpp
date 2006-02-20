@@ -35,10 +35,14 @@ KMPropContainer::KMPropContainer(QWidget *parent)
 	m_button = new KPushButton(KGuiItem(i18n("Change..."), "edit"), this);
 	m_widget = 0;
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
-	QHBoxLayout	*btn_ = new QHBoxLayout(0, 0, 0);
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
+  main_->setMargin(0);
+  main_->setSpacing(10);
+	QHBoxLayout	*btn_ = new QHBoxLayout(0);
 	main_->addWidget(sep,0);
 	main_->addLayout(btn_,0);
+  btn_->setMargin(0);
+  btn_->setSpacing(0);
 	btn_->addStretch(1);
 	btn_->addWidget(m_button);
 }
@@ -52,7 +56,7 @@ void KMPropContainer::setWidget(KMPropWidget *w)
 	if (!m_widget)
 	{
 		m_widget = w;
-		m_widget->reparent(this,QPoint(0,0));
+		m_widget->setParent(this);
 		connect(m_button,SIGNAL(clicked()),m_widget,SLOT(slotChange()));
 		connect(m_widget,SIGNAL(enable(bool)),SIGNAL(enable(bool)));
 		connect(m_widget,SIGNAL(enableChange(bool)),SLOT(slotEnableChange(bool)));

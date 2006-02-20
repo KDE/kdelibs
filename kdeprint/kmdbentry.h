@@ -20,8 +20,8 @@
 #ifndef KMDBENTRY_H
 #define KMDBENTRY_H
 
-#include <qstring.h>
-#include <q3ptrlist.h>
+#include <QList>
+#include <QString>
 
 #include <kdelibs_export.h>
 
@@ -47,7 +47,7 @@ class KDEPRINT_EXPORT KMDBEntry
 	bool validate(bool checkIt = true);
 };
 
-typedef Q3PtrList<KMDBEntry>		KMDBEntryList;
-typedef Q3PtrListIterator<KMDBEntry>	KMDBEntryListIterator;
+typedef QList<KMDBEntry*>		KMDBEntryList;
+typedef QListIterator<KMDBEntry*>	KMDBEntryListIterator;
 
 #endif
