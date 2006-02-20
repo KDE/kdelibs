@@ -119,7 +119,6 @@ CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
 	setShowIconsInTreeList(true);
 	setRootIsDecorated(false);
 
-	pagelist_.setAutoDelete(false);
 	filename_ = "";
 	conf_ = 0;
 	constructDialog();
@@ -160,10 +159,9 @@ void CupsdDialog::constructDialog()
 	addConfPage(new CupsdBrowsingPage(0));
 
 	conf_ = new CupsdConf();
-	for (pagelist_.first();pagelist_.current();pagelist_.next())
-        {
-                pagelist_.current()->setInfos(conf_);
-        }
+  QListIterator<CupsdPage*> it(pagelist_);
+  while (it.hasNext())
+    it.next()->setInfos(conf_);
 }
 
 bool CupsdDialog::setConfigFile(const QString& filename)
@@ -186,8 +184,10 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 	}
 	bool	ok(true);
 	QString	msg;
-	for (pagelist_.first();pagelist_.current() && ok;pagelist_.next())
-		ok = pagelist_.current()->loadConfig(conf_, msg);
+  QListIterator<CupsdPage*> it(pagelist_);
+  while (it.hasNext() && ok)
+    ok = it.next()->loadConfig(conf_, msg);
+
 	if (!ok)
 	{
 		KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("CUPS Configuration Error"));
@@ -296,8 +296,9 @@ void CupsdDialog::slotOk()
 		bool	ok(true);
 		QString	msg;
 		CupsdConf	newconf_;
-		for (pagelist_.first();pagelist_.current() && ok;pagelist_.next())
-			ok = pagelist_.current()->saveConfig(&newconf_, msg);
+    QListIterator<CupsdPage*> it(pagelist_);
+    while (it.hasNext() && ok)
+      ok = it.next()->saveConfig(&newconf_, msg);
 		// copy unknown options
 		newconf_.unknown_ = conf_->unknown_;
 		if (!ok)

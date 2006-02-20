@@ -114,9 +114,11 @@ void LocationDialog::setInfos(CupsdConf *conf)
 {
 	conf_ = conf;
 
-	Q3PtrListIterator<CupsResource>	it(conf->resources_);
-	for (; it.current(); ++it)
-		resource_->addItem(SmallIcon(it.current()->typeToIconName(it.current()->type_)), it.current()->text_);
+	QListIterator<CupsResource*>	it(conf->resources_);
+	while (it.hasNext()) {
+    CupsResource *resource(it.next());
+		resource_->addItem(SmallIcon(resource->typeToIconName(resource->type_)), resource->text_);
+  }
 
 	encryption_->setWhatsThis(conf_->comments_.toolTip("encryption"));
 	order_->setWhatsThis(conf_->comments_.toolTip("order"));
@@ -142,7 +144,7 @@ void LocationDialog::fillLocation(CupsLocation *loc)
 
 void LocationDialog::setLocation(CupsLocation *loc)
 {
-	int	index = conf_->resources_.findRef(loc->resource_);
+	int	index = conf_->resources_.indexOf(loc->resource_);
 	resource_->setCurrentIndex(index);
 	authtype_->setCurrentIndex(loc->authtype_);
 	authclass_->setCurrentIndex(loc->authclass_);

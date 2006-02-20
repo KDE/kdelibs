@@ -21,7 +21,7 @@
 #define KMPAGES_H
 
 #include <qtabwidget.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 
 class KMPrinter;
 class KMPrinterPage;

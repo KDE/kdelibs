@@ -20,8 +20,8 @@
 #ifndef LPQHELPER_H
 #define LPQHELPER_H
 
+#include <qlist.h>
 #include <qobject.h>
-#include <q3ptrlist.h>
 
 class KMJob;
 

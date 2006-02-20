@@ -253,15 +253,18 @@ DrMain* PrinttoolEntry::createDriver()
 			lopt->setName("RESOLUTION");
 			lopt->set("text",i18n("Resolution"));
 			gr->addOption(lopt);
-			Q3PtrListIterator<Resolution>	it(m_resolutions);
-			for (int i=0;it.current();++it,i++)
+			QListIterator<Resolution*>	it(m_resolutions);
+      int i = 0;
+			while (it.hasNext)
 			{
+        ++i;
+        Resolution *resolution(it.next());
 				ch = new DrBase;
-				ch->setName(QString::fromLatin1("%1x%2").arg(it.current()->xdpi).arg(it.current()->ydpi));
+				ch->setName(QString::fromLatin1("%1x%2").arg(resolution->xdpi).arg(resolution->ydpi));
 				if (it.current()->comment.isEmpty())
-					ch->set("text",QString::fromLatin1("%1x%2 DPI").arg(it.current()->xdpi).arg(it.current()->ydpi));
+					ch->set("text",QString::fromLatin1("%1x%2 DPI").arg(resolution->xdpi).arg(resolution->ydpi));
 				else
-					ch->set("text",QString::fromLatin1("%2x%3 DPI (%1)").arg(it.current()->comment).arg(it.current()->xdpi).arg(it.current()->ydpi));
+					ch->set("text",QString::fromLatin1("%2x%3 DPI (%1)").arg(resolution->comment).arg(resolution->xdpi).arg(resolution->ydpi));
 				lopt->addChoice(ch);
 			}
 			QString	defval = lopt->choices()->first()->name();
@@ -276,18 +279,21 @@ DrMain* PrinttoolEntry::createDriver()
 			lopt->setName("COLOR");
 			lopt->set("text",i18n("Color depth"));
 			gr->addOption(lopt);
-			Q3PtrListIterator<BitsPerPixel>	it(m_depths);
-			for (int i=0;it.current();++it,i++)
+			QListIterator<BitsPerPixel*>	it(m_depths);
+      int i = 0;
+			while (it.hasNext())
 			{
+        ++i;
+        BitsPerPixel *bitsPerPixel(it.next());
 				ch = new DrBase;
 				if (m_gsdriver != "uniprint")
-					ch->setName(QString::fromLatin1("-dBitsPerPixel=%1").arg(it.current()->bpp));
+					ch->setName(QString::fromLatin1("-dBitsPerPixel=%1").arg(bitsPerPixel->bpp));
 				else
-					ch->setName(it.current()->bpp);
-				if (it.current()->comment.isEmpty())
-					ch->set("text",it.current()->bpp);
+					ch->setName(bitsPerPixel->bpp);
+				if (bitsPerPixel->comment.isEmpty())
+					ch->set("text",bitsPerPixel->bpp);
 				else
-					ch->set("text",QString::fromLatin1("%1 - %2").arg(it.current()->bpp).arg(it.current()->comment));
+					ch->set("text",QString::fromLatin1("%1 - %2").arg(bitsPerPixel->bpp).arg(bitsPerPixel->comment));
 				lopt->addChoice(ch);
 			}
 			QString	defval = lopt->choices()->first()->name();

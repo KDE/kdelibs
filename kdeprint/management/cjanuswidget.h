@@ -22,7 +22,7 @@
 
 #include <qwidget.h>
 #include <qpixmap.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 
 class QStackedWidget;
 class QLabel;

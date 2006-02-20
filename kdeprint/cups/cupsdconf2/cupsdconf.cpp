@@ -162,9 +162,12 @@ bool CupsdConf::loadFromFile(const QString& filename)
 				if (!location->parseResource(line) || !parseLocation(location, t))
 					value = false;
 				// search corresponding resource
-				for (resources_.first();resources_.current();resources_.next())
-					if (resources_.current()->path_ == location->resourcename_)
-						location->resource_ = resources_.current();
+        QListIterator<CupsResource*> it(resources_);
+				while (it.hasNext()) {
+          CupsResource *resource(it.next());
+					if (resource->path_ == location->resourcename_)
+						location->resource_ = resource;
+        }
 			}
 			else value = parseOption(line);
 		}
@@ -236,9 +239,10 @@ bool CupsdConf::saveToFile(const QString& filename)
 		t << "ServerKey " << encryptkey_ << endl;
 
 		t << endl << comments_["locations"] << endl;
-		for (locations_.first(); locations_.current(); locations_.next())
+    QListIterator<CupsLocation*> it(locations_);
+		while (it.hasNext())
 		{
-			CupsLocation *loc = locations_.current();
+			CupsLocation *loc = (it.next());
 			t << "<Location " << loc->resourcename_ << ">" << endl;
 			if (loc->authtype_ != AUTHTYPE_NONE)
 			{

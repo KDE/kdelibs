@@ -24,7 +24,6 @@
 #include "kmjob.h"
 #include "lprsettings.h"
 
-#include <q3ptrlist.h>
 #include <klocale.h>
 
 KMLprJobManager::KMLprJobManager(QObject *parent, const char *name, const QStringList & /*args*/)

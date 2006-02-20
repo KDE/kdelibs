@@ -22,7 +22,6 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3ptrlist.h>
 #include <qtextstream.h>
 #include <qpair.h>
 #include <QList>
@@ -80,8 +79,8 @@ struct CupsdConf
 	QString systemgroup_;
 	QString encryptcert_;
 	QString encryptkey_;
-	Q3PtrList<CupsLocation> locations_;
-	Q3PtrList<CupsResource> resources_;
+	QList<CupsLocation*> locations_;
+	QList<CupsResource*> resources_;
 
 	// Network
 	int hostnamelookup_;

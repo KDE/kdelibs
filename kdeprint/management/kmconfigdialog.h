@@ -21,7 +21,7 @@
 #define KMCONFIGDIALOG_H
 
 #include <kdialogbase.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 
 #include "kmconfigpage.h"
 

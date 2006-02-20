@@ -37,7 +37,6 @@ CupsdSecurityPage::CupsdSecurityPage(QWidget *parent)
 	setPageLabel(i18n("Security"));
 	setHeader(i18n("Security Settings"));
 	setPixmap("password");
-	locs_.setAutoDelete(true);
 
 	remoteroot_ = new QLineEdit(this);
 	systemgroup_ = new QLineEdit(this);
@@ -73,6 +72,11 @@ CupsdSecurityPage::CupsdSecurityPage(QWidget *parent)
 	connect(locations_, SIGNAL(deleted(int)), SLOT(slotDeleted(int)));
 }
 
+CupsdSecurityPage::~CupsdSecurityPage()
+{
+  qDeleteAll(locs_);
+}
+
 bool CupsdSecurityPage::loadConfig(CupsdConf *conf, QString&)
 {
 	conf_ = conf;
@@ -81,14 +85,15 @@ bool CupsdSecurityPage::loadConfig(CupsdConf *conf, QString&)
 	encryptcert_->setURL(conf_->encryptcert_);
 	encryptkey_->setURL(conf_->encryptkey_);
 	locs_.clear();
-	Q3PtrListIterator<CupsLocation>	it(conf_->locations_);
-	for (;it.current();++it)
+	QListIterator<CupsLocation*>	it(conf_->locations_);
+	while (it.hasNext())
 	{
-		locs_.append(new CupsLocation(*(it.current())));
-		if (it.current()->resource_)
-			locations_->insertItem(SmallIcon(CupsResource::typeToIconName(it.current()->resource_->type_)), it.current()->resource_->text_);
+    CupsLocation *location(it.next());
+		locs_.append(new CupsLocation(*location));
+		if (location->resource_)
+			locations_->insertItem(SmallIcon(CupsResource::typeToIconName(location->resource_->type_)), location->resource_->text_);
 		else
-			locations_->insertItem(it.current()->resourcename_);
+			locations_->insertItem(location->resourcename_);
 	}
 
 	return true;
@@ -101,9 +106,9 @@ bool CupsdSecurityPage::saveConfig(CupsdConf *conf, QString&)
 	conf->encryptcert_ = encryptcert_->url();
 	conf->encryptkey_ = encryptkey_->url();
 	conf->locations_.clear();
-	Q3PtrListIterator<CupsLocation>	it(locs_);
-	for (;it.current();++it)
-		conf->locations_.append(new CupsLocation(*(it.current())));
+	QListIterator<CupsLocation*>	it(locs_);
+	while (it.hasNext())
+		conf->locations_.append(new CupsLocation(*(it.next())));
 
 	return true;
 }
@@ -123,13 +128,16 @@ void CupsdSecurityPage::slotAdd()
 	if (LocationDialog::newLocation(loc, this, conf_))
 	{
 		int index(-1);
-		for (locs_.first(); locs_.current(); locs_.next())
-			if (locs_.current()->resource_ == loc->resource_)
+    QListIterator<CupsLocation*> it(locs_);
+		while (it.hasNext()) {
+      CupsLocation *location(it.next());
+			if (location->resource_ == loc->resource_)
 			{
 				if (KMessageBox::warningContinueCancel(this, i18n("This location is already defined. Do you want to replace the existing one?"),QString(),i18n("Replace")) == KMessageBox::Continue)
 				{
-					index = locs_.at();
-					locs_.remove();
+					index = locs_.indexOf(location);
+					locs_.removeAll(location);
+					delete location;
 					break;
 				}
 				else
@@ -138,6 +146,7 @@ void CupsdSecurityPage::slotAdd()
 					return;
 				}
 			}
+    }
 
 		if (index == -1)
 			index = locs_.count();
@@ -163,7 +172,7 @@ void CupsdSecurityPage::slotDefaultList()
 void CupsdSecurityPage::slotDeleted(int index)
 {
 	if (index >= 0 && index < (int)(locs_.count()))
-		locs_.remove(index);
+		delete locs_.takeAt(index);
 }
 
 #include "cupsdsecuritypage.moc"

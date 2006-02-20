@@ -21,7 +21,6 @@
 #define KFILELIST_H
 
 #include <qwidget.h>
-#include <q3ptrlist.h>
 #include <kurl.h>
 
 class QTreeWidget;

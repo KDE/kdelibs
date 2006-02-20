@@ -24,7 +24,7 @@
 #include "kmprinterpage.h"
 #include <kdeprint/kpreloadobject.h>
 #include <kdelibs_export.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 
 class KMPropWidget;
 class KMPrinter;
