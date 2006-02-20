@@ -204,7 +204,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
     if (widgetName.startsWith("kcfg_"))
     {
       // This is one of our widgets!
-      QString configId = widgetName+5;
+      QString configId = widgetName.mid(5);
       KConfigSkeletonItem *item = m_conf->findItem(configId);
       if (item)
       {
@@ -260,7 +260,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       if (buddyName.startsWith("kcfg_"))
       {
         // This is one of our widgets!
-        QString configId = buddyName+5;
+        QString configId = buddyName.mid(5);
         d->buddyWidget.insert(configId, childWidget);
       }
     }
