@@ -74,8 +74,8 @@ public:
    void gotScriptArguments(const QString &_arguments);
    void resetOptions();
 
-   void copyGroup(KConfigBase *cfg1, const QString &grp1, 
-                  KConfigBase *cfg2, const QString &grp2);
+   void copyGroup(KConfigBase *cfg1, const QString &group1, 
+                  KConfigBase *cfg2, const QString &group2);
 
 protected:
    KConfig *config;
@@ -704,12 +704,12 @@ void KonfUpdate::gotOptions(const QString &_options)
    }
 }
 
-void KonfUpdate::copyGroup(KConfigBase *cfg1, const QString &grp1, 
-                           KConfigBase *cfg2, const QString &grp2)
+void KonfUpdate::copyGroup(KConfigBase *cfg1, const QString &group1, 
+                           KConfigBase *cfg2, const QString &group2)
 {
-   cfg1->setGroup(grp1);
-   cfg2->setGroup(grp2);
-   QMap<QString, QString> list = cfg1->entryMap(grp1);
+   cfg1->setGroup(group1);
+   cfg2->setGroup(group2);
+   QMap<QString, QString> list = cfg1->entryMap(group1);
    for(QMap<QString, QString>::Iterator it = list.begin();
        it != list.end(); ++it)
    {
