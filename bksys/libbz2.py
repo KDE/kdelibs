@@ -28,6 +28,7 @@ def generate(env):
 		pkgs.generate(env)
 
 		have_lib = 0
+                need_prefix = 0
 # bzip2 has no pkgconfig support
 #		if env['HAVE_PKGCONFIG'] == 0:
 		if 1:
@@ -41,15 +42,17 @@ def generate(env):
 					conf.env['INCLUDES_BZ2'] = [ 'bzlib.h' ]
 					conf.env['LIB_BZ2']      = [ 'bzip2' ]
 					have_lib = 1
+                        if have_lib == 1:
+                                if conf.CheckLib(conf.env['LIB_BZ2'], symbol = 'BZ2_bzCompressInit'):
+                                        need_prefix = 1
 			env = conf.Finish()
 		else:
 			have_lib = env.pkgConfig_findPackage('BZ2', 'bz2', '1.0')
 
-		#todo: check for NEED_BZ2_PREFIX on runtime
-		if env['WINDOWS']:
-			env.write_lib_header( 'libbz2', have_lib, False, '', '#define HAVE_BZIP2_SUPPORT 1\n#define NEED_BZ2_PREFIX 1\n' )
-		else:
-			env.write_lib_header( 'libbz2', have_lib, False, '', '#define HAVE_BZIP2_SUPPORT 1\n' )
+                bz2_defines = '#define HAVE_BZIP2_SUPPORT 1\n'
+                if need_prefix == 1:
+                        bz2_defines += '#define NEED_BZ2_PREFIX 1\n'
+		env.write_lib_header( 'libbz2', have_lib, False, '', bz2_defines )
 
 		opts.Save(optionFile, env)
 
