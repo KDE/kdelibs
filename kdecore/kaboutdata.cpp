@@ -153,8 +153,8 @@ class KAboutData::Private
 {
 public:
     Private()
-        : translatorName(I18N_NOOP2("NAME OF TRANSLATORS","Your names"))
-        , translatorEmail(I18N_NOOP2("EMAIL OF TRANSLATORS","Your emails"))
+        : translatorName(I18N_NOOP("NAME OF TRANSLATORS\004Your names"))
+        , translatorEmail(I18N_NOOP("EMAIL OF TRANSLATORS\004Your emails"))
         , productName(0)
         , programLogo(0)
         , customAuthorTextEnabled(false)
