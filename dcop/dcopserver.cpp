@@ -1750,11 +1750,6 @@ extern "C" KDE_EXPORT int kdemain( int argc, char* argv[] )
     if (isRunning(DCOPClient::dcopServerFile()))
        return 0;
 #ifndef Q_OS_WIN32
-    if (QByteArray(getenv("DCOPAUTHORITY")).isEmpty())
-    {
-       return 0;
-    }
-
     struct rlimit limits;
 
     int retcode = getrlimit(RLIMIT_NOFILE, &limits);
