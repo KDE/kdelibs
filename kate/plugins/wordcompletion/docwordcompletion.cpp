@@ -317,7 +317,10 @@ void DocWordCompletionPluginView::complete( bool fw )
 
         // if this is a constructed word at cursor pos, retry.
         if ( pos + wrd.length() == ccol )
+        {
+          d->col = pos + inc;
           continue;
+        }
 
         // we got good a match! replace text and return.
         if ( d->lilen )
@@ -332,30 +335,7 @@ void DocWordCompletionPluginView::complete( bool fw )
 
       // equal to last one, continue
       else
-      {
-        d->col = pos; // for next try
-        if ( fw )
-          d->col += m.length();
-        else // FIXME figure out if all of that is really nessecary
-        {
-          if ( pos == 0 )
-          {
-            if ( d->line > 0 )
-            {
-              d->line += inc;
-              ln = ei->textLine( d->line );
-              d->col = ln.length();
-            }
-            else
-            {
-              KNotifyClient::beep();
-              return;
-            }
-          }
-          else
-            d->col--;
-        }
-      }
+        d->col = pos + inc; // for next try
     }
 
     else  // no match
