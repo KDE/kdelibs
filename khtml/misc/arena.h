@@ -39,6 +39,22 @@
 #ifndef ARENA_H
 #define ARENA_H
 
+
+#if defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
+
+#include <valgrind/memcheck.h>
+#define VALGRIND_SUPPORT
+
+#else
+
+#define VALGRIND_CREATE_MEMPOOL(base, redZone, zeroed)
+#define VALGRIND_DESTROY_MEMPOOL(base)
+#define VALGRIND_MEMPOOL_ALLOC(base, addr, size)
+#define VALGRIND_MEMPOOL_FREE(base, addr)
+
+#endif
+
+
 #define ARENA_ALIGN_MASK 3
 
 typedef unsigned long uword;
@@ -79,21 +95,12 @@ void ArenaFinish(void);
         uword _q = _p + _nb; \
         if (_q > _a->limit) \
             _p = (uword)ArenaAllocate(pool, _nb); \
-        else \
+        else { \
+            VALGRIND_MEMPOOL_ALLOC(_a->base, p, nb); \
             _a->avail = _q; \
+        } \
         p = (void *)_p;
 
-#define ARENA_GROW(p, pool, size, incr) \
-        Arena *_a = (pool)->current; \
-        unsigned int _incr = ARENA_ALIGN(pool, incr); \
-        uword _p = _a->avail; \
-        uword _q = _p + _incr; \
-        if (_p == (uword)(p) + ARENA_ALIGN(pool, size) && \
-            _q <= _a->limit) { \
-            _a->avail = _q; \
-        } else { \
-            p = ArenaGrow(pool, p, size, incr); \
-        }
 
 #define ARENA_MARK(pool) ((void *) (pool)->current->avail)
 #define UPTRDIFF(p,q) ((uword)(p) - (uword)(q))
@@ -110,22 +117,6 @@ void ArenaFinish(void);
 #define CLEAR_ARENA(a)
 #endif
 
-#define ARENA_RELEASE(pool, mark) \
-         char *_m = (char *)(mark); \
-         Arena *_a = (pool)->current; \
-         if (UPTRDIFF(_m, _a->base) <= UPTRDIFF(_a->avail, _a->base)) { \
-             _a->avail = (uword)ARENA_ALIGN(pool, _m); \
-             CLEAR_UNUSED(_a); \
-         } else { \
-             ArenaRelease(pool, _m); \
-         }
-
-#define ARENA_DESTROY(pool, a, pnext) \
-         if ((pool)->current == (a)) (pool)->current = &(pool)->first; \
-         *(pnext) = (a)->next; \
-         CLEAR_ARENA(a); \
-         free(a); \
-         (a) = 0;
 
 } // namespace
 

@@ -829,10 +829,13 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   type		KJS::HTMLElement::InputType		DontDelete
   useMap	KJS::HTMLElement::InputUseMap		DontDelete
   value		KJS::HTMLElement::InputValue		DontDelete
+  selectionStart KJS::HTMLElement::InputSelectionStart  DontDelete
+  selectionEnd   KJS::HTMLElement::InputSelectionEnd    DontDelete
   blur		KJS::HTMLElement::InputBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::InputFocus		DontDelete|Function 0
   select	KJS::HTMLElement::InputSelect		DontDelete|Function 0
   click		KJS::HTMLElement::InputClick		DontDelete|Function 0
+  setSelectionRange KJS::HTMLElement::InputSetSelectionRange DontDelete|Function 2
 @end
 @begin HTMLTextAreaElementTable 13
   defaultValue	KJS::HTMLElement::TextAreaDefaultValue	DontDelete
@@ -846,9 +849,13 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   tabIndex	KJS::HTMLElement::TextAreaTabIndex	DontDelete
   type		KJS::HTMLElement::TextAreaType		DontDelete|ReadOnly
   value		KJS::HTMLElement::TextAreaValue		DontDelete
+  selectionStart KJS::HTMLElement::TextAreaSelectionStart DontDelete
+  selectionEnd   KJS::HTMLElement::TextAreaSelectionEnd   DontDelete
+  textLength     KJS::HTMLElement::TextAreaTextLength     DontDelete|ReadOnly
   blur		KJS::HTMLElement::TextAreaBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::TextAreaFocus		DontDelete|Function 0
   select	KJS::HTMLElement::TextAreaSelect	DontDelete|Function 0
+  setSelectionRange KJS::HTMLElement::TextAreaSetSelectionRange DontDelete|Function 2
 @end
 @begin HTMLButtonElementTable 9
   form		KJS::HTMLElement::ButtonForm		DontDelete|ReadOnly
@@ -1712,6 +1719,20 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case InputName:            return String(input.name()); // NOT getString (IE gives empty string)
     case InputType:            return String(input.type());
     case InputValue:           return String(input.value());
+    case InputSelectionStart:  {
+        long val = input.selectionStart();
+        if (val != -1)
+          return Number(val);
+        else
+          return Undefined();
+      }
+    case InputSelectionEnd:  {
+        long val = input.selectionEnd();
+        if (val != -1)
+          return Number(val);
+        else
+          return Undefined();
+      }
     }
   }
   break;
@@ -1723,6 +1744,9 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case TextAreaName:            return String(textarea.name());
     case TextAreaType:            return String(textarea.type());
     case TextAreaValue:           return String(textarea.value());
+    case TextAreaSelectionStart:  return Number(textarea.selectionStart());
+    case TextAreaSelectionEnd:    return Number(textarea.selectionEnd());
+    case TextAreaTextLength:      return Number(textarea.textLength());
     }
   }
   break;
@@ -1876,10 +1900,10 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
       case FrameContentDocument: return checkNodeSecurity(exec,frameElement.contentDocument()) ?
 				      getDOMNode(exec, frameElement.contentDocument()) : Undefined();
-      case FrameContentWindow:   {
-        KHTMLView *view = frameElement.contentDocument()->view();
-        if (view && view->part())
-            return Window::retrieveWindow(view->part());
+    case FrameContentWindow:   {
+        KHTMLPart* part = frameElement.contentPart();
+        if (part)
+            return Window::retrieveWindow(part);
         else
             return Undefined();
       }
@@ -1892,13 +1916,9 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case IFrameContentDocument: return checkNodeSecurity(exec,iFrame.contentDocument()) ?
 				       getDOMNode(exec, iFrame.contentDocument()) : Undefined();
     case IFrameContentWindow:       {
-        DOM::DocumentImpl* contentDoc = iFrame.contentDocument();
-        if (!contentDoc)
-            return Undefined();
-
-        KHTMLView *view = contentDoc->view();
-        if (view && view->part())
-            return Window::retrieveWindow(view->part());
+        KHTMLPart* part = iFrame.contentPart();
+        if (part)
+            return Window::retrieveWindow(part);
         else
             return Undefined();
     }
@@ -2134,6 +2154,10 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
         input.click();
         return Undefined();
       }
+      else if (id == KJS::HTMLElement::InputSetSelectionRange) {
+        input.setSelectionRange(args[0]->toNumber(exec), args[1]->toNumber(exec));
+        return Undefined();
+      }
     }
     break;
     case ID_BUTTON: {
@@ -2162,6 +2186,11 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
         textarea.select();
         return Undefined();
       }
+      else if (id == KJS::HTMLElement::TextAreaSetSelectionRange) {
+        textarea.setSelectionRange(args[0]->toNumber(exec), args[1]->toNumber(exec));
+        return Undefined();
+      }
+
     }
     break;
     case ID_A: {
@@ -2464,6 +2493,8 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
       case InputName:            { input.setName(str); return; }
       case InputType:            { input.setType(str); return; }
       case InputValue:           { input.setValue(str); return; }
+      case InputSelectionStart:  { input.setSelectionStart(value->toInteger(exec)); return; }
+      case InputSelectionEnd:    { input.setSelectionEnd  (value->toInteger(exec)); return; }
       }
     }
     break;
@@ -2473,6 +2504,8 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
       case TextAreaDefaultValue:    { textarea.setDefaultValue(str); return; }
       case TextAreaName:            { textarea.setName(str); return; }
       case TextAreaValue:           { textarea.setValue(str); return; }
+      case TextAreaSelectionStart:  { textarea.setSelectionStart(value->toInteger(exec)); return; }
+      case TextAreaSelectionEnd:    { textarea.setSelectionEnd  (value->toInteger(exec)); return; }
       }
     }
     break;

@@ -468,6 +468,19 @@ void HTMLBodyElementImpl::setVLink( const DOMString &value )
     setAttribute(ATTR_VLINK, value);
 }
 
+KHTMLPart*   HTMLFrameElementImpl::contentPart() const
+{
+    if ( !m_render ) return 0;
+
+    RenderPart* render = static_cast<RenderPart*>( m_render );
+
+    if(render->widget() && ::qobject_cast<KHTMLView*>( render->widget()) )
+        return static_cast<KHTMLView*>( render->widget() )->part();
+
+    return 0;
+}
+
+
 // -------------------------------------------------------------------------
 
 HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentPtr *doc)

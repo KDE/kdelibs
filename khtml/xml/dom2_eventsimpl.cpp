@@ -262,8 +262,6 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
         return "click";
     case KHTML_DRAGDROP_EVENT:
         return "khtml_dragdrop";
-    case KHTML_ERROR_EVENT:
-        return "khtml_error";
     case KHTML_MOVE_EVENT:
         return "khtml_move";
     case KHTML_READYSTATECHANGE_EVENT:
@@ -531,6 +529,7 @@ private:
 /* Mapping between special Qt keycodes and virtual DOM codes */
 IDTranslator<unsigned, unsigned, unsigned>::Info virtKeyToQtKeyTable[] =
 {
+    {KeyEventBaseImpl::DOM_VK_BACK_SPACE, Qt::Key_Backspace},
     {KeyEventBaseImpl::DOM_VK_ENTER, Qt::Key_Enter},
     {KeyEventBaseImpl::DOM_VK_ENTER, Qt::Key_Return},
     {KeyEventBaseImpl::DOM_VK_NUM_LOCK,  Qt::Key_NumLock},
@@ -635,12 +634,10 @@ void KeyEventBaseImpl::buildQKeyEvent() const
     delete m_keyEvent;
 
     assert(m_synthetic);
-    //IMPORTANT: we ignore Ctrl, Alt, and Meta modifers on purpose.
-    //this is to prevent a website from synthesizing something like Ctrl-V
-    //and stealing contents of the user's clipboard.
-    Qt::KeyboardModifiers modifiers;
-    if (m_modifier & Qt::ShiftModifier)
-        modifiers |= Qt::ShiftModifier;
+    //IMPORTANT: we ignore modifers on purpose.
+    //this is to prevent a website from synthesizing something
+    //like Ctrl-V or Shift-Insert and stealing contents of the user's clipboard.
+    Qt::KeyboardModifiers modifiers = 0;
 
     if (m_modifier & Qt::KeypadModifier)
         modifiers |= Qt::KeypadModifier;
@@ -796,11 +793,8 @@ void KeyboardEventImpl::initKeyboardEvent(const DOMString &typeArg,
 }
 
 KeyboardEventImpl::KeyboardEventImpl(QKeyEvent* key, DOM::AbstractViewImpl* view) :
-    KeyEventBaseImpl(KEYDOWN_EVENT, true, true, view, key)
+    KeyEventBaseImpl(key->type() == QEvent::KeyRelease ? KEYUP_EVENT : KEYDOWN_EVENT, true, true, view, key)
 {
-    if (key->type() == QEvent::KeyRelease)
-        m_id = KEYUP_EVENT;
-
     if (key->modifiers() & Qt::KeypadModifier)
         m_keyLocation = KeyboardEvent::DOM_KEY_LOCATION_NUMPAD;
     else {

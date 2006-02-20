@@ -64,7 +64,7 @@ public class KJASSecurityManager extends SecurityManager
             super.checkPermission(perm);
         } catch (SecurityException se) {
             // Don't annoy users with these
-            if (perm instanceof java.lang.RuntimePermission ||
+            if (/*perm instanceof java.lang.RuntimePermission || */
                     perm instanceof java.awt.AWTPermission)
                 throw se;
 

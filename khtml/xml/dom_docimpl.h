@@ -31,6 +31,7 @@
 #include "xml/dom2_traversalimpl.h"
 #include "misc/shared.h"
 #include "misc/loader.h"
+#include "misc/seed.h"
 
 #include <qstringlist.h>
 #include <q3ptrlist.h>
@@ -296,7 +297,7 @@ public:
     virtual void attach();
     virtual void detach();
 
-    khtml::RenderArena* renderArena() { return m_renderArena; }
+    khtml::RenderArena* renderArena() { return m_renderArena.get(); }
 
     // to get visually ordered hebrew and arabic pages right
     void setVisuallyOrdered();
@@ -585,6 +586,27 @@ protected:
         unsigned short count;
         Q3IntDict<DOM::DOMStringImpl> names;
         Q3Dict<void> ids;
+
+        void expandIfNeeded() {
+            if (ids.size() <= ids.count() && ids.size() != khtml_MaxSeed)
+                ids.resize( khtml::nextSeed(ids.count()) );
+            if (names.size() <= names.count() && names.size() != khtml_MaxSeed)
+                names.resize( khtml::nextSeed(names.count()) );
+        }
+
+        void addAlias(DOMStringImpl* _prefix, DOMStringImpl* _name, bool cs, NodeImpl::Id id) {
+            if(_prefix && _prefix->l) {
+                QConstString n(_name->s, _name->l);
+                QConstString px( _prefix->s, _prefix->l );
+                QString name = cs ? n.string() : n.string().toUpper();
+                QString qn("aliases: " + (cs ? px.string() : px.string().toUpper()) + ":" + name);
+                if (!ids.find( qn )) {
+                    ids.insert( qn, (void*)id );
+                }
+            }
+            expandIfNeeded();
+        }
+
     };
 
     IdNameMapping *m_attrMap;
@@ -634,7 +656,7 @@ protected:
     //Cache for getElementById
     mutable ElementMappingCache m_getElementByIdCache;
 
-    khtml::RenderArena* m_renderArena;
+    SharedPtr<khtml::RenderArena> m_renderArena;
 private:
     mutable DOMString m_domain;
 };

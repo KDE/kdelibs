@@ -876,8 +876,9 @@ ValueImp* DOMKeyboardEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp* 
                             args[4]->toString(exec).domString(), // keyIdentifierArg
                             args[5]->toInteger(exec),         // keyLocationArg
                             args[6]->toString(exec).domString()); //modifiersList
-
-      return Undefined();
+      break;
+    case DOMKeyboardEvent::GetModifierState:
+      return Boolean(keyEvent->getModifierState(args[0]->toString(exec).domString()));
   }
   return Undefined();
 }

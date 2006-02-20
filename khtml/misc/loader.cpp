@@ -432,8 +432,8 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 #warning "Needs some additional performance work"
 #endif
 
-    static QRgb bgTransparant = qRgba( 0, 0, 0, 0xFF );
-    if ( (bgColor != bgTransparant) && (bgColor != newc.rgb()) ) {
+    static QRgb bgTransparent = qRgba( 0, 0, 0, 0xFF );
+    if ( (bgColor != bgTransparent) && (bgColor != newc.rgba()) ) {
         delete bg; bg = 0;
     }
 
@@ -473,93 +473,12 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if (haveBgColor)
         bgColor = color.rgb();
     else
-        bgColor = bgTransparant;
+        bgColor = bgTransparent;
 
     bg = new QPixmap(r);
     return *bg;
-
-#if 0
-    bool isvalid = newc.isValid();
-    QSize s(pixmap_size());
-
-    if ( w*h < 8192 )
-    {
-        if ( r.width() < BGMINWIDTH )
-            w = ((BGMINWIDTH  / s.width())+1) * s.width();
-        if ( r.height() < BGMINHEIGHT )
-            h = ((BGMINHEIGHT / s.height())+1) * s.height();
-    }
-
-#ifdef Q_WS_X11
-    if ( r.hasAlphaChannel() &&
-         ((w != r.width()) || (h != r.height())) )
-    {
-        bg = new QPixmap(w, h);
-        //Tile horizontally on the first stripe
-        for (int x = 0; x < w; x += r.width())
-            copyBlt(bg, x, 0, &r, 0, 0, r.width(), r.height());
-
-        //Copy first stripe down
-        for (int y = r.height(); y < h; y += r.height())
-            copyBlt(bg, 0, y, bg, 0, 0, w, r.height());
-
-        return *bg;
-    }
-#endif
-
-    if (
-#ifdef Q_WS_X11
-        !r.hasAlphaChannel() &&
-#endif
-        ( (w != r.width()) || (h != r.height()) || (isvalid && !r.mask().isNull())) )
-    {
-        QPixmap pix = r;
-        if ( w != r.width() || (isvalid && !pix.mask().isNull()))
-        {
-            bg = new QPixmap(w, r.height());
-            QPainter p(bg);
-            if(isvalid) p.fillRect(0, 0, w, r.height(), newc);
-            p.drawTiledPixmap(0, 0, w, r.height(), pix);
-            p.end();
-
-            if(!isvalid && !pix.mask().isNull())
-            {
-                // unfortunately our anti-transparency trick doesn't work here
-                // we need to create a mask.
-                QBitmap newmask(w, r.height());
-                QPainter pm(&newmask);
-                pm.drawTiledPixmap(0, 0, w, r.height(), pix.mask());
-                bg->setMask(newmask);
-                bgColor = bgTransparant;
-            }
-            else
-                bgColor= newc.rgb();
-            pix = *bg;
-        }
-        if ( h != r.height() )
-        {
-            delete bg;
-            bg = new QPixmap(w, h);
-            QPainter p(bg);
-            if(isvalid) p.fillRect(0, 0, w, h, newc);
-            p.drawTiledPixmap(0, 0, w, h, pix);
-            if(!isvalid && !pix.mask().isNull())
-            {
-                // unfortunately our anti-transparency trick doesn't work here
-                // we need to create a mask.
-                QBitmap newmask(w, h);
-                QPainter pm(&newmask);
-                pm.drawTiledPixmap(0, 0, w, h, pix.mask());
-                bg->setMask(newmask);
-                bgColor = bgTransparant;
-            }
-            else
-                bgColor= newc.rgb();
-        }
-        return *bg;
-    }
-#endif
 }
+
 QPixmap CachedImage::pixmap( ) const
 {
     if (m_hadError)

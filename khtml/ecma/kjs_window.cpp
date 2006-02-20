@@ -116,6 +116,7 @@ namespace KJS {
     ValueImp *indexGetter(ExecState *, unsigned index);
   private:
     static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+    static ValueImp *nameFallBackGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
 
@@ -833,7 +834,7 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
     case Ondragdrop:
       return getListener(exec,DOM::EventImpl::KHTML_DRAGDROP_EVENT);
     case Onerror:
-      return getListener(exec,DOM::EventImpl::KHTML_ERROR_EVENT);
+      return getListener(exec,DOM::EventImpl::ERROR_EVENT);
     case Onfocus:
       return getListener(exec,DOM::EventImpl::FOCUS_EVENT);
     case Onkeydown:
@@ -947,7 +948,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, ValueImp *valu
       return;
     case Onerror:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_ERROR_EVENT,value);
+        setListener(exec,DOM::EventImpl::ERROR_EVENT,value);
       return;
     case Onfocus:
       if (isSafeScript(exec))
@@ -2176,7 +2177,28 @@ ValueImp *FrameArray::nameGetter(ExecState *exec, JSObject*, const Identifier& p
   KParts::ReadOnlyPart *frame = thisObj->part->findFrame(propertyName.qstring());
   if (frame)
     return Window::retrieve(frame);
+  return Undefined();
+}
 
+ValueImp *FrameArray::nameFallBackGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+{
+  FrameArray *thisObj = static_cast<FrameArray *>(slot.slotBase());
+  DOM::DocumentImpl* doc  = static_cast<DOM::DocumentImpl*>(thisObj->part->document().handle());
+  DOM::HTMLCollectionImpl docuAll(doc, DOM::HTMLCollectionImpl::DOC_ALL);
+  DOM::NodeImpl*     node = docuAll.namedItem(propertyName.domString());
+  if (node) {
+    if (node->id() == ID_FRAME || node->id() == ID_IFRAME) {
+      //Return the Window object.
+      KHTMLPart* part = static_cast<DOM::HTMLFrameElementImpl*>(node)->contentPart();
+      if (part)
+        return Window::retrieveWindow(part);
+      else
+        return Undefined();
+    } else {
+      //Just a regular node..
+      return getDOMNode(exec, node);
+    }
+  }
   return Undefined();
 }
 
@@ -2203,6 +2225,16 @@ bool FrameArray::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
 
   if (getIndexSlot(this, part->frames().count(), propertyName, slot))
     return true;
+
+  // Fun IE quirk: name lookup in there is actually done by document.all 
+  // hence, it can find non-frame things (and even let them hide frame ones!)
+  // We don't quite do that, but do this as a fallback.
+  DOM::DocumentImpl* doc  = static_cast<DOM::DocumentImpl*>(part->document().handle());
+  DOM::HTMLCollectionImpl docuAll(doc, DOM::HTMLCollectionImpl::DOC_ALL);
+  if (docuAll.namedItem(propertyName.domString())) {
+    slot.setCustom(this, nameFallBackGetter);
+    return true;
+  }
 
   return ObjectImp::getOwnPropertySlot(exec, propertyName, slot);
 }

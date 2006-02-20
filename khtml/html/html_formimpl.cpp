@@ -67,6 +67,7 @@
 
 #include <assert.h>
 
+
 using namespace DOM;
 using namespace khtml;
 
@@ -1294,6 +1295,12 @@ void HTMLInputElementImpl::parseType(const DOMString& t)
             setAttribute(ATTR_TYPE, type());
         } else {
             m_type = newType;
+
+            // force reattach if need be.
+            if (attached()) {
+                detach();
+                attach();
+            }
         }
     }
     m_haveType = true;
@@ -1380,8 +1387,11 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         parseType(attr->value());
         break;
     case ATTR_VALUE:
-        if (m_value.isNull()) // We only need to setChanged if the form is looking
-            setChanged();     // at the default value right now.
+        if (m_value.isNull()) {// We only need to setChanged if the form is looking
+            setChanged();      // at the default value right now.
+            if (m_type == TEXT && m_render)
+                m_render->updateFromElement();
+        }
         break;
     case ATTR_CHECKED:
         // WebCore has m_defaultChecked and m_useDefaultChecked code here....
@@ -1693,6 +1703,8 @@ void HTMLInputElementImpl::setValue(DOMString val)
     if (m_type == FILE) return;
 
     m_value = (val.isNull() ? DOMString("") : val);
+    if (m_type == TEXT && m_render)
+        m_render->updateFromElement();
     setChanged();
 }
 
@@ -1792,6 +1804,36 @@ void HTMLInputElementImpl::activate()
 bool HTMLInputElementImpl::isEditable()
 {
     return ((m_type == TEXT) || (m_type == PASSWORD) || (m_type == ISINDEX) || (m_type == FILE));
+}
+
+long HTMLInputElementImpl::selectionStart()
+{
+    if (m_type != TEXT || !m_render) return -1;
+    return static_cast<RenderLineEdit*>(m_render)->selectionStart();
+}
+
+long HTMLInputElementImpl::selectionEnd()
+{
+    if (m_type != TEXT || !m_render) return -1;
+    return static_cast<RenderLineEdit*>(m_render)->selectionEnd();
+}
+
+void HTMLInputElementImpl::setSelectionStart(long pos)
+{
+    if (m_type != TEXT || !m_render) return;
+    static_cast<RenderLineEdit*>(m_render)->setSelectionStart(pos);
+}
+
+void HTMLInputElementImpl::setSelectionEnd  (long pos)
+{
+    if (m_type != TEXT || !m_render) return;
+    static_cast<RenderLineEdit*>(m_render)->setSelectionEnd(pos);
+}
+
+void HTMLInputElementImpl::setSelectionRange(long start, long end)
+{
+    if (m_type != TEXT || !m_render) return;
+    static_cast<RenderLineEdit*>(m_render)->setSelectionRange(start, end);
 }
 
 // -------------------------------------------------------------------------
@@ -2188,6 +2230,7 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_SIZE:
         m_size = qMax( attr->val()->toInt(), 1 );
+        setChanged();
         break;
     case ATTR_WIDTH:
         m_minwidth = qMax( attr->val()->toInt(), 0 );
@@ -2575,7 +2618,8 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormEleme
     m_rows = 2;
     m_cols = 20;
     m_wrap = ta_Virtual;
-    m_dirtyvalue = true;
+    m_changed     = false;
+    m_dirtyvalue  = true;
     m_initialized = false;
     m_unsubmittedFormChange = false;
 }
@@ -2619,12 +2663,18 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_ROWS:
-        m_rows = attr->val() ? attr->val()->toInt() : 3;
+        m_rows = 0;
+        if (attr->val())
+            m_rows = DOMString(attr->val()).string().toInt();
+        if (!m_rows) m_rows = 2;
         if (renderer())
             renderer()->setNeedsLayoutAndMinMaxRecalc();
         break;
     case ATTR_COLS:
-        m_cols = attr->val() ? attr->val()->toInt() : 60;
+        m_cols = 0;
+        if (attr->val())
+            m_cols = DOMString(attr->val()).string().toInt();
+        if (!m_cols) m_cols = 20;
         if (renderer())
             renderer()->setNeedsLayoutAndMinMaxRecalc();
         break;
@@ -2674,12 +2724,47 @@ void HTMLTextAreaElementImpl::attach()
     _style->deref();
 }
 
+
+static QString expandLF(const QString& s)
+{
+    // LF -> CRLF
+    unsigned crs = s.count( '\n' );
+    if (crs == 0)
+	return s;
+    unsigned len = s.length();
+
+    QString r;
+    r.reserve(len + crs + 1);
+    unsigned pos2 = 0;
+    for(unsigned pos = 0; pos < len; pos++)
+    {
+       QChar c = s.at(pos);
+       switch(c.unicode())
+       {
+         case '\n':
+           r[pos2++] = '\r';
+           r[pos2++] = '\n';
+           break;
+
+         case '\r':
+           break;
+
+         default:
+           r[pos2++]= c;
+           break;
+       }
+    }
+    r.squeeze();
+    return r;
+}
+
+
 bool HTMLTextAreaElementImpl::encoding(const QTextCodec* codec, encodingList& encoding, bool)
 {
     if (name().isEmpty()) return false;
 
     encoding += fixUpfromUnicode(codec, name().string());
-    encoding += fixUpfromUnicode(codec, value().string());
+    encoding += fixUpfromUnicode(codec, expandLF(value().string()));
 
     return true;
 }
@@ -2689,14 +2774,14 @@ void HTMLTextAreaElementImpl::reset()
     setValue(defaultValue());
 }
 
+
 DOMString HTMLTextAreaElementImpl::value()
 {
     if ( m_dirtyvalue) {
         if ( m_render && m_initialized ) {
             RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
             m_value = renderArea->text();
-            m_dirtyvalue = false; // before onChange (#100963)
-            onChange();
+            m_dirtyvalue = false;
         } else {
             m_value = defaultValue().string();
             m_initialized = true;
@@ -2718,7 +2803,6 @@ void HTMLTextAreaElementImpl::setValue(DOMString _value)
     m_initialized = true;
     setChanged(true);
 }
-
 
 DOMString HTMLTextAreaElementImpl::defaultValue()
 {
@@ -2772,6 +2856,56 @@ void HTMLTextAreaElementImpl::focus()
 bool HTMLTextAreaElementImpl::isEditable()
 {
     return true;
+}
+
+//Mozilla extensions.
+long HTMLTextAreaElementImpl::selectionStart()
+{
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        return renderArea->selectionStart();
+    }
+
+    return 0;
+}
+
+long HTMLTextAreaElementImpl::selectionEnd()
+{
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        return renderArea->selectionEnd();
+    }
+
+    return 0;
+}
+
+void HTMLTextAreaElementImpl::setSelectionStart(long pos)
+{
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        renderArea->setSelectionStart( pos );
+    }
+}
+
+void HTMLTextAreaElementImpl::setSelectionEnd(long pos)
+{
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        renderArea->setSelectionEnd( pos );
+    }
+}
+
+void HTMLTextAreaElementImpl::setSelectionRange(long start, long end)
+{
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        renderArea->setSelectionRange( start, end );
+    }
+}
+
+long HTMLTextAreaElementImpl::textLength()
+{
+    return value().length();
 }
 
 // -------------------------------------------------------------------------

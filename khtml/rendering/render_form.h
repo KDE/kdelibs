@@ -237,6 +237,11 @@ public:
     { return static_cast<DOM::HTMLInputElementImpl*>(RenderObject::element()); }
     void highLightWord( unsigned int length, unsigned int pos );
 
+    long selectionStart();
+    long selectionEnd();
+    void setSelectionStart(long pos);
+    void setSelectionEnd(long pos);
+    void setSelectionRange(long start, long end);
 public Q_SLOTS:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
@@ -472,6 +477,11 @@ public:
 
     void select();
 
+    long selectionStart();
+    long selectionEnd();
+    void setSelectionStart(long pos);
+    void setSelectionEnd(long pos);
+    void setSelectionRange(long start, long end);
 protected Q_SLOTS:
     void slotTextChanged();
 
@@ -482,6 +492,18 @@ protected:
     virtual bool canHaveBorder() const { return true; }
 
     bool scrollbarsStyled;
+private:
+    //Convert para, index -> offset
+    long computeCharOffset(int para, int index);
+
+    //Convert offset -> para, index
+    void computeParagraphAndIndex(long index, int* para, int* index);
+
+    //Helper for doing the conversion..
+    enum Mode { ParaLength,     //Returns the length of the entire paragraph
+           ParaPortionLength,   //Return length of paragraph portion set by threshold
+           ParaPortionOffset }; //Return offset that matches the length threshold.
+    int queryParagraphInfo(int para, Mode m, int param = -1);
 };
 
 // -------------------------------------------------------------------------

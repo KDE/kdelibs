@@ -570,6 +570,38 @@ void HTMLInputElement::click(  )
 	((HTMLInputElementImpl *)impl)->click(  );
 }
 
+long HTMLInputElement::selectionStart()
+{
+    if (impl)
+	return ((HTMLInputElementImpl *)impl)->selectionStart(  );
+    return -1;
+}
+
+long HTMLInputElement::selectionEnd()
+{
+    if (impl)
+	return ((HTMLInputElementImpl *)impl)->selectionEnd(  );
+    return -1;
+}
+
+void HTMLInputElement::setSelectionStart(long pos)
+{
+    if (impl)
+	((HTMLInputElementImpl *)impl)->setSelectionStart( pos );
+}
+
+void HTMLInputElement::setSelectionEnd(long pos)
+{
+    if (impl)
+	((HTMLInputElementImpl *)impl)->setSelectionEnd( pos );
+}
+
+void HTMLInputElement::setSelectionRange(long start, long end)
+{
+    if (impl)
+	((HTMLInputElementImpl *)impl)->setSelectionRange( start, end );
+}
+
 // --------------------------------------------------------------------------
 
 HTMLLabelElement::HTMLLabelElement() : HTMLElement()
@@ -1065,6 +1097,45 @@ void HTMLTextAreaElement::select(  )
 {
     if(impl)
 	((HTMLTextAreaElementImpl *)impl)->select(  );
+}
+
+long HTMLTextAreaElement::selectionStart()
+{
+    if (impl)
+	return ((HTMLTextAreaElementImpl *)impl)->selectionStart(  );
+    return 0;
+}
+
+long HTMLTextAreaElement::selectionEnd()
+{
+    if (impl)
+	return ((HTMLTextAreaElementImpl *)impl)->selectionEnd(  );
+    return 0;
+}
+
+long HTMLTextAreaElement::textLength()
+{
+    if (impl)
+	return ((HTMLTextAreaElementImpl *)impl)->textLength(  );
+    return 0;
+}
+
+void HTMLTextAreaElement::setSelectionStart(long pos)
+{
+    if (impl)
+	((HTMLTextAreaElementImpl *)impl)->setSelectionStart( pos );
+}
+
+void HTMLTextAreaElement::setSelectionEnd(long pos)
+{
+    if (impl)
+	((HTMLTextAreaElementImpl *)impl)->setSelectionEnd( pos );
+}
+
+void HTMLTextAreaElement::setSelectionRange(long start, long end)
+{
+    if (impl)
+	((HTMLTextAreaElementImpl *)impl)->setSelectionRange( start, end );
 }
 
 // --------------------------------------------------------------------------

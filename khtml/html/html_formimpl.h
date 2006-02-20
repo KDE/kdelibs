@@ -316,6 +316,12 @@ public:
 
     void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
 
+    //Mozilla extensions.
+    long selectionStart();
+    long selectionEnd();
+    void setSelectionStart(long pos);
+    void setSelectionEnd  (long pos);
+    void setSelectionRange(long start, long end);
 protected:
     void parseType(const DOMString& t);
 
@@ -563,12 +569,20 @@ public:
     virtual bool isEditable();
     void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
 
+    //Mozilla extensions.
+    long selectionStart();
+    long selectionEnd();
+    void setSelectionStart(long pos);
+    void setSelectionEnd  (long pos);
+    void setSelectionRange(long start, long end);
+    long textLength();
 protected:
     int m_rows;
     int m_cols;
     WrapMethod m_wrap;
     QString m_value;
-    bool m_dirtyvalue: 1;
+    bool m_changed: 1;    //States whether the contents has been editted
+    bool m_dirtyvalue: 1; //States whether m_value is out-of-date compared to the renderer or default
     bool m_unsubmittedFormChange: 1;
     bool m_initialized: 1;
 };

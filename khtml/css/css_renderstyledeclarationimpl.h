@@ -25,13 +25,15 @@
 #include "dom/dom_string.h"
 #include "rendering/render_style.h"
 
-class RenderObject;
 
 namespace DOM {
     class NodeImpl;
 }
 
 namespace khtml {
+
+class RenderObject;
+
 
 // Used by DOM::Counter::listStyle()
 DOM::DOMString stringForListStyleType(khtml::EListStyleType type);
@@ -48,6 +50,7 @@ public:
     DOM::CSSValueImpl *getPropertyCSSValue( int propertyID ) const;
     DOM::DOMString getPropertyValue( int propertyID ) const;
     bool getPropertyPriority( int propertyID ) const;
+    unsigned long length() const;
 
     DOM::DOMString removeProperty( int propertyID, bool NonCSSHints = false );
     bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false,

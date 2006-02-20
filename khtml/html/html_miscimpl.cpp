@@ -198,6 +198,9 @@ bool HTMLCollectionImpl::checkForNameMatch(NodeImpl *node, const DOMString &name
         case ID_OBJECT:
         case ID_SELECT:
         case ID_TEXTAREA:
+        case ID_FRAME:
+        case ID_IFRAME:
+        case ID_FRAMESET:
             checkName = true;
             break;
         default:

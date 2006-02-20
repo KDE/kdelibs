@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000 Dirk Mueller (mueller@kde.org)
+ *           (C) 2006 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -569,9 +570,9 @@ void RenderLineEdit::updateFromElement()
     if ( ml < 0 || ml > 1024 )
         ml = 1024;
 
-     if ( widget()->maxLength() != ml )  {
-         widget()->setMaxLength( ml );
-     }
+    if ( widget()->maxLength() != ml )  {
+        widget()->setMaxLength( ml );
+    }
 
     if (element()->value().string() != widget()->text()) {
         widget()->blockSignals(true);
@@ -598,6 +599,53 @@ void RenderLineEdit::slotTextChanged(const QString &string)
 void RenderLineEdit::select()
 {
     static_cast<LineEditWidget*>(m_widget)->selectAll();
+}
+
+long RenderLineEdit::selectionStart()
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    if (w->hasSelectedText())
+        return w->selectionStart();
+    else
+        return w->cursorPosition();
+}
+
+
+long RenderLineEdit::selectionEnd()
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    if (w->hasSelectedText())
+        return w->selectionStart() + w->selectedText().length();
+    else
+        return w->cursorPosition();
+}
+
+void RenderLineEdit::setSelectionStart(long pos)
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    //See whether we have a non-empty selection now.
+    long end = selectionEnd();
+    if (end > pos)
+        w->setSelection(pos, end - pos);
+    w->setCursorPosition(pos);
+}
+
+void RenderLineEdit::setSelectionEnd(long pos)
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    //See whether we have a non-empty selection now.
+    long start = selectionStart();
+    if (start < pos)
+        w->setSelection(start, pos - start);
+
+    w->setCursorPosition(pos);
+}
+
+void RenderLineEdit::setSelectionRange(long start, long end)
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    w->setCursorPosition(end);
+    w->setSelection(start, end - start);
 }
 
 // ---------------------------------------------------------------------------
@@ -1614,6 +1662,10 @@ void RenderTextArea::handleFocusOut()
     if ( w && element()->m_dirtyvalue ) {
         element()->m_value = text();
         element()->m_dirtyvalue = false;
+    }
+
+    if ( w && element()->m_changed ) {
+        element()->m_changed = false;
         element()->onChange();
     }
 }
@@ -1673,7 +1725,7 @@ void RenderTextArea::updateFromElement()
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     w->setReadOnly(element()->readOnly());
     QString elementText = element()->value().string();
-    if ( elementText != w->text() )
+    if ( elementText != text() )
     {
         w->blockSignals(true);
         int line, col;
@@ -1697,39 +1749,6 @@ void RenderTextArea::close( )
     RenderFormElement::close();
 }
 
-static QString expandLF(const QString& s)
-{
-    // LF -> CRLF
-    unsigned crs = s.count( '\n' );
-    if (crs == 0)
-	return s;
-    unsigned len = s.length();
-
-    QString r;
-    r.reserve(len + crs + 1);
-    unsigned pos2 = 0;
-    for(unsigned pos = 0; pos < len; pos++)
-    {
-       QChar c = s.at(pos);
-       switch(c.unicode())
-       {
-         case '\n':
-           r[pos2++] = '\r';
-           r[pos2++] = '\n';
-           break;
-
-         case '\r':
-           break;
-
-         default:
-           r[pos2++]= c;
-           break;
-       }
-    }
-    r.squeeze();
-    return r;
-}
-
 QString RenderTextArea::text()
 {
     QString txt;
@@ -1738,10 +1757,11 @@ QString RenderTextArea::text()
     if(element()->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical) {
         // yeah, QTextEdit has no accessor for getting the visually wrapped text
         for (int p=0; p < w->paragraphs(); ++p) {
-            int pl = w->paragraphLength(p);
             int ll = 0;
             int lindex = w->lineOfChar(p, 0);
             QString paragraphText = w->text(p);
+            int pl = w->paragraphLength(p);
+            paragraphText = paragraphText.left(pl); //Snip invented space.
             for (int l = 0; l < pl; ++l) {
                 if (lindex != w->lineOfChar(p, l)) {
                     paragraphText.insert(l+ll++, QLatin1String("\n"));
@@ -1756,9 +1776,94 @@ QString RenderTextArea::text()
     else
         txt = w->text();
 
-    return expandLF(txt);
+    return txt;
 }
 
+int RenderTextArea::queryParagraphInfo(int para, Mode m, int param) {
+    /* We have to be a bit careful here, as we need to match up the positions
+    to what our value returns here*/
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int        length = 0;
+
+    bool physWrap     = element()->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical;
+
+    QString paragraphText = w->text(para);
+    int pl                = w->paragraphLength(para);
+    int physicalPL        = pl;
+    if (m == ParaPortionLength)
+        pl = param;
+
+    if (physWrap) {
+        //Go through all the chars of paragraph, and count line changes, chars, etc.
+        int lindex = w->lineOfChar(para, 0);
+        for (int c = 0; c < pl; ++c) {
+            ++length;
+            // Is there a change after this char?
+            if (c+1 < physicalPL && lindex != w->lineOfChar(para, c+1)) {
+                lindex =  w->lineOfChar(para, c+1);
+                ++length;
+            }
+            if (m == ParaPortionOffset && length > param)
+                return c;
+        }
+    } else {
+        //Make sure to count the LF, CR as appropriate. ### this is stupid now, simplify
+        for (int c = 0; c < pl; ++c) {
+            ++length;
+            if (m == ParaPortionOffset && length > param)
+                return c;
+        }
+    }
+    if (m == ParaPortionOffset)
+        return pl;
+    if (m == ParaPortionLength)
+        return length;
+    return length + 1;
+}
+
+long RenderTextArea::computeCharOffset(int para, int index) {
+    if (para < 0)
+        return 0;
+
+    long pos = 0;
+    for (int cp = 0; cp < para; ++cp)
+        pos += queryParagraphInfo(cp, ParaLength);
+
+    if (index >= 0)
+        pos += queryParagraphInfo(para, ParaPortionLength, index);
+    return pos;
+}
+
+void RenderTextArea::computeParagraphAndIndex(long offset, int* para, int* index) {
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+
+    if (!w->paragraphs()) {
+        *para  = -1;
+        *index = -1;
+        return;
+    }
+    
+    //Find the paragraph that contains us..
+    int containingPar = 0;
+    long endPos       = 0;
+    long startPos     = 0;
+    for (int p = 0; p < w->paragraphs(); ++p) {
+        int len = queryParagraphInfo(p, ParaLength);
+        endPos += len;
+        if (endPos > offset) {
+            containingPar = p;
+            break;
+        }
+        startPos += len;
+    }
+
+    *para = containingPar;
+
+    //Now, scan within the paragraph to find the position..
+    long localOffset = offset - startPos;
+
+    *index = queryParagraphInfo(containingPar, ParaPortionOffset, localOffset);
+}
 
 void RenderTextArea::highLightWord( unsigned int length, unsigned int pos )
 {
@@ -1771,6 +1876,7 @@ void RenderTextArea::highLightWord( unsigned int length, unsigned int pos )
 void RenderTextArea::slotTextChanged()
 {
     element()->m_dirtyvalue = true;
+    element()->m_changed    = true;
     if (element()->m_value != text())
         element()->m_unsubmittedFormChange = true;
 }
@@ -1780,6 +1886,55 @@ void RenderTextArea::select()
     static_cast<TextAreaWidget *>(m_widget)->selectAll();
 }
 
+long RenderTextArea::selectionStart()
+{
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int para, index, dummy1, dummy2;
+    w->getSelection(&para, &index, &dummy1, &dummy2);
+    if (para == -1 || index == -1)
+        w->getCursorPosition(&para, &index);
+
+    return computeCharOffset(para, index);
+}
+
+long RenderTextArea::selectionEnd()
+{
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int para, index, dummy1, dummy2;
+    w->getSelection(&dummy1, &dummy2, &para, &index);
+    if (para == -1 || index == -1)
+        w->getCursorPosition(&para, &index);
+
+    return computeCharOffset(para, index);
+}
+
+void RenderTextArea::setSelectionStart(long offset) {
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int fromPara, fromIndex, toPara, toIndex;
+    w->getSelection(&fromPara, &fromIndex, &toPara, &toIndex);
+    computeParagraphAndIndex(offset, &fromPara, &fromIndex);
+    if (toPara == -1 || toIndex == -1) {
+        toPara  = fromPara;
+        toIndex = fromIndex;
+    }
+    w->setSelection(fromPara, fromIndex, toPara, toIndex);
+}
+
+void RenderTextArea::setSelectionEnd(long offset) {
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int fromPara, fromIndex, toPara, toIndex;
+    w->getSelection(&fromPara, &fromIndex, &toPara, &toIndex);
+    computeParagraphAndIndex(offset, &toPara, &toIndex);
+    w->setSelection(fromPara, fromIndex, toPara, toIndex);
+}
+
+void RenderTextArea::setSelectionRange(long start, long end) {
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    int fromPara, fromIndex, toPara, toIndex;
+    computeParagraphAndIndex(start, &fromPara, &fromIndex);
+    computeParagraphAndIndex(end,   &toPara,   &toIndex);
+    w->setSelection(fromPara, fromIndex, toPara, toIndex);
+}
 // ---------------------------------------------------------------------------
 
 #include "render_form.moc"
