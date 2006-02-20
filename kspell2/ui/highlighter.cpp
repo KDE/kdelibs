@@ -114,7 +114,7 @@ void Highlighter::slotRehighlight()
 {
     kDebug(0) << "Highlighter::slotRehighlight()" << endl;
     if (d->completeRehighlightRequired) {
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(WIN32)
 #warning "Use qt-copy for rehighlight"
     rehighlight();
 #endif
@@ -203,7 +203,7 @@ void Highlighter::setActive( bool active )
     if ( active == d->active )
         return;
     d->active = active;
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(WIN32)
 #warning "Use qt-copy for rehighlight"
     rehighlight();
 #endif
