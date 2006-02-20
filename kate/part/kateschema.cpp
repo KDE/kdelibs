@@ -814,7 +814,9 @@ void KateSchemaConfigHighlightTab::apply ()
 {
   for ( QIntDictIterator< QIntDict<KateHlItemDataList> > it( m_hlDict ); it.current(); ++it )
     for ( QIntDictIterator< KateHlItemDataList > it2( *it.current() ); it2.current(); ++it2 )
-       KateHlManager::self()->getHl( it2.currentKey() )->setKateHlItemDataList (it.currentKey(), *(it2.current()));
+    {
+      KateHlManager::self()->getHl( it2.currentKey() )->setKateHlItemDataList (it.currentKey(), *(it2.current()));
+    }
 }
 
 //END KateSchemaConfigHighlightTab
@@ -1207,12 +1209,14 @@ void KateStyleListItem::updateStyle()
     if ( is->weight() != st->weight())
       st->setWeight( is->weight() );
   }
+  else st->clearAttribute( KateAttribute::Weight );
 
   if ( is->itemSet(KateAttribute::Italic) )
   {
     if ( is->italic() != st->italic())
       st->setItalic( is->italic() );
   }
+  else st->clearAttribute( KateAttribute::Italic );
 
   if ( is->itemSet(KateAttribute::StrikeOut) )
   {
@@ -1220,42 +1224,49 @@ void KateStyleListItem::updateStyle()
 
       st->setStrikeOut( is->strikeOut() );
   }
+  else st->clearAttribute( KateAttribute::StrikeOut );
 
   if ( is->itemSet(KateAttribute::Underline) )
   {
     if ( is->underline() != st->underline())
       st->setUnderline( is->underline() );
   }
+  else st->clearAttribute( KateAttribute::Underline );
 
   if ( is->itemSet(KateAttribute::Outline) )
   {
     if ( is->outline() != st->outline())
       st->setOutline( is->outline() );
   }
+  else st->clearAttribute( KateAttribute::Outline );
 
   if ( is->itemSet(KateAttribute::TextColor) )
   {
     if ( is->textColor() != st->textColor())
       st->setTextColor( is->textColor() );
   }
+  else st->clearAttribute( KateAttribute::TextColor );
 
   if ( is->itemSet(KateAttribute::SelectedTextColor) )
   {
     if ( is->selectedTextColor() != st->selectedTextColor())
       st->setSelectedTextColor( is->selectedTextColor() );
   }
+  else st->clearAttribute( KateAttribute::SelectedTextColor);
 
   if ( is->itemSet(KateAttribute::BGColor) )
   {
     if ( is->bgColor() != st->bgColor())
       st->setBGColor( is->bgColor() );
   }
+  else st->clearAttribute( KateAttribute::BGColor );
 
   if ( is->itemSet(KateAttribute::SelectedBGColor) )
   {
     if ( is->selectedBGColor() != st->selectedBGColor())
       st->setSelectedBGColor( is->selectedBGColor() );
   }
+  else st->clearAttribute( KateAttribute::SelectedBGColor );
 }
 
 /* only true for a hl mode item using it's default style */
@@ -1345,6 +1356,7 @@ void KateStyleListItem::toggleDefStyle()
   else {
     delete is;
     is = new KateAttribute( *ds );
+    updateStyle();
     repaint();
   }
 }
