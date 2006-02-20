@@ -38,6 +38,8 @@ extern "C" {
 #define	S_ISGID		0002000	/* set group id on execution */
 #define	S_ISVTX		0001000	/* save swapped text even after use */
 
+#define	S_IFSOCK	_S_IFSOCK
+
 KDEWIN32_EXPORT int fchmod(int __fd, mode_t __mode);
 
 #ifdef __cplusplus
