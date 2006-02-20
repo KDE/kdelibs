@@ -114,10 +114,12 @@ void Highlighter::slotRehighlight()
 {
     kDebug(0) << "Highlighter::slotRehighlight()" << endl;
     if (d->completeRehighlightRequired) {
-#if defined(__GNUC__) && !defined(WIN32)
+#ifdef __GNUC__
 #warning "Use qt-copy for rehighlight"
-    rehighlight();
 #endif
+	// Qt 4.2 function, see patch: http://websvn.kde.org/trunk/qt-copy/patches/0112-ksyntaxhighlighter-rehighlight-document.diff
+    rehighlight(); 
+
     } else {
 	//rehighlight the current para only (undo/redo safe)
         QTextCursor cursor = d->edit->textCursor();
@@ -203,10 +205,11 @@ void Highlighter::setActive( bool active )
     if ( active == d->active )
         return;
     d->active = active;
-#if defined(__GNUC__) && !defined(WIN32)
+#ifdef __GNUC__
 #warning "Use qt-copy for rehighlight"
-    rehighlight();
 #endif
+    // Qt 4.2 function, see patch: http://websvn.kde.org/trunk/qt-copy/patches/0112-ksyntaxhighlighter-rehighlight-document.diff
+    rehighlight();
     
 
     if ( d->active )
