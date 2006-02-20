@@ -46,7 +46,7 @@ kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp
 kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp
 kwhatsthismanager.cpp kiconviewsearchline.cpp
 ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp kconfigdialogmanager.cpp
-kpixmapio.cpp krootpixmap.cpp knotification.cpp knotificationmanager.cpp
+krootpixmap.cpp knotification.cpp knotificationmanager.cpp
 knotificationmanager.skel
 """
 
@@ -62,7 +62,7 @@ kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h
 ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h 
 kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h 
 kcombobox.h kiconview.h klistview.h klistbox.h kbugreport.h kpassworddialog.h 
-kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kpixmapio.h kwordwrap.h 
+kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h 
 kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h 
 kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h 
 kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h 
