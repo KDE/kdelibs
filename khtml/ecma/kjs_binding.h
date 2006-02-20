@@ -68,7 +68,7 @@ namespace KJS {
     DOMObject() : ObjectImp() {}
     DOMObject(ObjectImp *proto) : ObjectImp(proto) {}
   public:
-    bool shouldMark() const { return _prop.isEmpty(); }
+    bool shouldMark() const { return !_prop.isEmpty(); }
     virtual UString toString(ExecState *exec) const;
   };
 
