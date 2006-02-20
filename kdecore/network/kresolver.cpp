@@ -66,6 +66,10 @@
 QMutex getXXbyYYmutex;
 #endif
 
+#ifdef __OpenBSD__
+#define USE_OPENBSD 1
+#endif
+
 using namespace KNetwork;
 using namespace KNetwork::Internal;
 
@@ -604,17 +608,28 @@ QList<QByteArray> KResolver::protocolName(int protonum)
   pe = getprotobynumber(protonum);
 
 #else
+# ifdef USE_OPENBSD // OpenBSD uses an HP/IBM/DEC API
+  struct protoent protobuf;
+  struct protoent_data pdata;
+  ::memset(&pdata, 0, sizeof pdata);
+
+  if (getprotobynumber_r(protonum, &protobuf, &pdata) == 0)
+    pe = &protobuf;
+  else
+    pe = 0;
+
+# else
   size_t buflen = 1024;
   struct protoent protobuf;
   char *buf;
   do
     {
       buf = new char[buflen];
-# ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobynumber_r which returns struct *protoent or NULL
+#  ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobynumber_r which returns struct *protoent or NULL
       if ((pe = getprotobynumber_r(protonum, &protobuf, buf, buflen)) && (errno == ERANGE))
-# else
+#  else
       if (getprotobynumber_r(protonum, &protobuf, buf, buflen, &pe) == ERANGE)
-# endif
+#  endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -623,6 +638,7 @@ QList<QByteArray> KResolver::protocolName(int protonum)
 	break;
     }
   while (pe == 0L);
+# endif
 #endif
 
   // Do common processing
@@ -635,7 +651,9 @@ QList<QByteArray> KResolver::protocolName(int protonum)
     }
 
 #ifdef HAVE_GETPROTOBYNAME_R
+# ifndef USE_OPENBSD
   delete [] buf;
+# endif
 #endif
 
   return lst;
@@ -650,17 +668,27 @@ QList<QByteArray> KResolver::protocolName(const char *protoname)
   pe = getprotobyname(protoname);
 
 #else
+# ifdef USE_OPENBSD // OpenBSD uses an HP/IBM/DEC API
+  struct protoent protobuf;
+  struct protoent_data pdata;
+  ::memset(&pdata, 0, sizeof pdata);
+
+  if (getprotobyname_r(protoname, &protobuf, &pdata) == 0)
+    pe = &protobuf;
+  else
+    pe = 0;
+# else
   size_t buflen = 1024;
   struct protoent protobuf;
   char *buf;
   do
     {
       buf = new char[buflen];
-# ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobyname_r which returns struct *protoent or NULL
+#  ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobyname_r which returns struct *protoent or NULL
       if ((pe = getprotobyname_r(protoname, &protobuf, buf, buflen)) && (errno == ERANGE))
-# else
+#  else
       if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) == ERANGE)
-# endif
+#  endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -669,6 +697,7 @@ QList<QByteArray> KResolver::protocolName(const char *protoname)
 	break;
     }
   while (pe == 0L);
+# endif
 #endif
 
   // Do common processing
@@ -681,7 +710,9 @@ QList<QByteArray> KResolver::protocolName(const char *protoname)
     }
 
 #ifdef HAVE_GETPROTOBYNAME_R
+# ifndef USE_OPENBSD
   delete [] buf;
+# endif
 #endif
 
   return lst;
@@ -696,17 +727,28 @@ int KResolver::protocolNumber(const char *protoname)
   pe = getprotobyname(protoname);
 
 #else
+# ifdef USE_OPENBSD // OpenBSD uses an HP/IBM/DEC API
+  struct protoent protobuf;
+  struct protoent_data pdata;
+  ::memset(&pdata, 0, sizeof pdata);
+
+  if (getprotobyname_r(protoname, &protobuf, &pdata) == 0)
+    pe = &protobuf;
+  else
+    pe = 0;
+
+# else
   size_t buflen = 1024;
   struct protoent protobuf;
   char *buf;
   do
     {
       buf = new char[buflen];
-# ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobyname_r which returns struct *protoent or NULL
+#  ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobyname_r which returns struct *protoent or NULL
       if ((pe = getprotobyname_r(protoname, &protobuf, buf, buflen)) && (errno == ERANGE))
-# else
+#  else
       if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) == ERANGE)
-# endif
+#  endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -715,6 +757,7 @@ int KResolver::protocolNumber(const char *protoname)
 	break;
     }
   while (pe == 0L);
+# endif
 #endif
 
   // Do common processing
@@ -723,7 +766,9 @@ int KResolver::protocolNumber(const char *protoname)
     protonum = pe->p_proto;
 
 #ifdef HAVE_GETPROTOBYNAME_R
+# ifndef USE_OPENBSD
   delete [] buf;
+# endif
 #endif
 
   return protonum;
@@ -738,17 +783,27 @@ int KResolver::servicePort(const char *servname, const char *protoname)
   se = getservbyname(servname, protoname);
 
 #else
+# ifdef USE_OPENBSD // OpenBSD uses an HP/IBM/DEC API
+  struct servent servbuf;
+  struct servent_data sdata;
+  ::memset(&sdata, 0, sizeof sdata);
+  if (getservbyname_r(servname, protoname, &servbuf, &sdata) == 0)
+    se = &servbuf;
+  else
+    se = 0;
+
+# else
   size_t buflen = 1024;
   struct servent servbuf;
   char *buf;
   do
     {
       buf = new char[buflen];
-# ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyname_r which returns struct *servent or NULL
+#  ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyname_r which returns struct *servent or NULL
       if ((se = getservbyname_r(servname, protoname, &servbuf, buf, buflen)) && (errno == ERANGE))
-# else
+#  else
       if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) == ERANGE)
-# endif
+#  endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -765,7 +820,9 @@ int KResolver::servicePort(const char *servname, const char *protoname)
     servport = ntohs(se->s_port);
 
 #ifdef HAVE_GETSERVBYNAME_R
+# ifndef USE_OPENBSD
   delete [] buf;
+# endif
 #endif
 
   return servport;
@@ -780,17 +837,27 @@ QList<QByteArray> KResolver::serviceName(const char* servname, const char *proto
   se = getservbyname(servname, protoname);
 
 #else
+# ifdef USE_OPENBSD // OpenBSD uses an HP/IBM/DEC API
+  struct servent servbuf;
+  struct servent_data sdata;
+  ::memset(&sdata, 0, sizeof sdata);
+  if (getservbyname_r(servname, protoname, &servbuf, &sdata) == 0)
+    se = &servbuf;
+  else
+    se = 0;
+
+# else
   size_t buflen = 1024;
   struct servent servbuf;
   char *buf;
   do
     {
       buf = new char[buflen];
-# ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyname_r which returns struct *servent or NULL
+#  ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyname_r which returns struct *servent or NULL
       if ((se = getservbyname_r(servname, protoname, &servbuf, buf, buflen)) && (errno == ERANGE))
-# else
+#  else
       if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) == ERANGE)
-# endif
+#  endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -799,6 +866,7 @@ QList<QByteArray> KResolver::serviceName(const char* servname, const char *proto
 	break;
     }
   while (se == 0L);
+# endif
 #endif
 
   // Do common processing
@@ -811,7 +879,9 @@ QList<QByteArray> KResolver::serviceName(const char* servname, const char *proto
     }
 
 #ifdef HAVE_GETSERVBYNAME_R
+# ifndef USE_OPENBSD
   delete [] buf;
+# endif
 #endif
 
   return lst;
@@ -826,17 +896,27 @@ QList<QByteArray> KResolver::serviceName(int port, const char *protoname)
   se = getservbyport(port, protoname);
 
 #else
+# ifdef USE_OPENBSD // OpenBSD uses an HP/IBM/DEC API
+  struct servent servbuf;
+  struct servent_data sdata;
+  ::memset(&sdata, 0, sizeof sdata);
+  if (getservbyport_r(port, protoname, &servbuf, &sdata) == 0)
+    se = &servbuf;
+  else
+    se = 0;
+
+# else
   size_t buflen = 1024;
   struct servent servbuf;
   char *buf;
   do
     {
       buf = new char[buflen];
-# ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyport_r which returns struct *servent or NULL
+#  ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyport_r which returns struct *servent or NULL
       if ((se = getservbyport_r(port, protoname, &servbuf, buf, buflen)) && (errno == ERANGE))
-# else
+#  else
       if (getservbyport_r(port, protoname, &servbuf, buf, buflen, &se) == ERANGE)
-# endif
+#  endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -845,6 +925,8 @@ QList<QByteArray> KResolver::serviceName(int port, const char *protoname)
 	break;
     }
   while (se == 0L);
+# endif
+# endif
 #endif
 
   // Do common processing
@@ -857,7 +939,9 @@ QList<QByteArray> KResolver::serviceName(int port, const char *protoname)
     }
 
 #ifdef HAVE_GETSERVBYPORT_R
+# ifndef USE_OPENBSD
   delete [] buf;
+# endif
 #endif
 
   return lst;
