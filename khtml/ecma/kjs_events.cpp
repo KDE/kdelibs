@@ -844,7 +844,7 @@ DOMKeyboardEvent::~DOMKeyboardEvent()
 bool DOMKeyboardEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
   return getStaticValueSlot<DOMKeyboardEvent, DOMKeyEventBase>(exec,&DOMKeyboardEventTable,this,propertyName,slot);
 }
@@ -900,7 +900,7 @@ KeyboardEventConstructor::KeyboardEventConstructor(ExecState* exec)
 bool KeyboardEventConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
   return getStaticValueSlot<KeyboardEventConstructor, DOMObject>(exec,&KeyboardEventConstructorTable,this,propertyName,slot);
 }
