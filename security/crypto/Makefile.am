@@ -11,7 +11,6 @@ METASOURCES = AUTO
 noinst_HEADERS = crypto.h certexport.h kdatetimedlg.h
 
 messages: rc.cpp
-	: > rc.cpp
-	$(XGETTEXT) $(kcm_crypto_la_SOURCES) -o $(podir)/kcmcrypto.pot
+	$(XGETTEXT) *.cpp -o $(podir)/kcmcrypto.pot
 
 xdg_apps_DATA = crypto.desktop
