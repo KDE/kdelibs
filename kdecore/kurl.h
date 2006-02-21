@@ -387,7 +387,7 @@ public:
    *                  the '/' would really alter the URL, while "ftp://host/path" and
    *                  "ftp://host/path/" mean the same directory.
    * @param _no_empty_path If set to true then an empty path is substituted by "/".
-   * @return The concatenation if the encoded path , '?' and the encoded query.
+   * @return The concatenation of the encoded path , '?' and the encoded query.
    *
    */
   QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false ) const;

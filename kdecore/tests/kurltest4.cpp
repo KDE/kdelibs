@@ -152,7 +152,7 @@ void KUrlTest::testIsLocalFile()
   KUrl local_file_3;
   local_file_3.setHost(getenv("HOSTNAME"));
   local_file_3.setPath("/my/file");
-  qDebug("URL=%s\n", local_file_3.url().latin1());
+  qDebug("URL=%s\n", qPrintable( local_file_3.url() ));
   QVERIFY( local_file_3.isLocalFile() );
 
   KUrl local_file_4("file:///my/file");
@@ -436,10 +436,25 @@ void KUrlTest::testPathAndQuery()
   KUrl tobi1( "http://host.net/path?myfirstquery#andsomeReference" );
   tobi1.setEncodedPathAndQuery("another/path/?another&query");
   QCOMPARE( tobi1.query(), QString("?another&query") );
-  QCOMPARE( tobi1.path(), QString("another/path/") );
+  QCOMPARE( tobi1.path(), QString("another/path/") ); // with trailing slash
+  QCOMPARE( tobi1.encodedPathAndQuery(), QString( "another/path/?another&query" ) );
   tobi1.setEncodedPathAndQuery("another/path?another&query");
   QCOMPARE( tobi1.query(), QString("?another&query") );
-  QCOMPARE( tobi1.path(), QString("another/path") );
+  QCOMPARE( tobi1.path(), QString("another/path") ); // without trailing slash
+  QCOMPARE( tobi1.encodedPathAndQuery(), QString( "another/path?another&query" ) );
+
+  tobi1 = "http://host.net/path/#no-query";
+  QCOMPARE( tobi1.encodedPathAndQuery(), QString( "/path/" ) );
+
+  KUrl kde( "http://www.kde.org" );
+  QCOMPARE( kde.encodedPathAndQuery(), QString( "" ) );
+  QCOMPARE( kde.encodedPathAndQuery(0, true/*no empty path*/), QString( "/" ) );
+
+  KUrl theKow( "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25" );
+  QCOMPARE( theKow.encodedPathAndQuery(), QString( "/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25" ) );
+
+  KUrl uloc( "file:///home/dfaure/konqtests/Mat%C3%A9riel" );
+  QCOMPARE( uloc.encodedPathAndQuery(), QString( "/home/dfaure/konqtests/Mat%C3%A9riel" ) );
 
   KUrl url1( "ftp://user%40host.com@ftp.host.com/var/www/" );
   QCOMPARE( url1.user(), QString("user@host.com" ) );
@@ -485,26 +500,22 @@ void KUrlTest::testSetFileName() // and addPath
 
   QUrl qurl2 = QUrl::fromEncoded( "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)", QUrl::TolerantMode );
   QCOMPARE( qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)") );
-  QCOMPARE( qurl2.fileName(), QString::fromLatin1( "Print To File (PDF%2FAcrobat)" ) );
   QCOMPARE( qurl2.toEncoded(), QByteArray("print:/specials/Print%20To%20File%20(PDF%252FAcrobat)") );
 
   // even more tricky
   u2 = "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)";
-  qDebug("* URL is %s",u2.url().ascii());
   QCOMPARE( u2.path(), QString("/specials/Print To File (PDF%2FAcrobat)") );
   QCOMPARE( u2.fileName(), QString("Print To File (PDF%2FAcrobat)") );
   u2.setFileName( "" );
   QCOMPARE( u2.url(), QString("print:/specials/") );
 
   u2 = "file:/specials/Print";
-  qDebug("* URL is %s",u2.url().ascii());
   QCOMPARE( u2.path(), QString("/specials/Print") );
   QCOMPARE( u2.fileName(), QString("Print") );
   u2.setFileName( "" );
   QCOMPARE( u2.url(), QString("file:///specials/") );
 
   const char * u3 = "ftp://host/dir1/dir2/myfile.txt";
-  qDebug("* URL is %s",u3);
   QVERIFY( !KUrl(u3).hasSubURL() );
 
   KUrl::List lst = KUrl::split( KUrl(u3) );
@@ -528,7 +539,6 @@ void KUrlTest::testDirectory()
   QCOMPARE( udir.directory(true,false), QString("/home/dfaure") );
 
   KUrl u2( QByteArray("file:///home/dfaure/") );
-  qDebug("* URL is %s",u2.url().ascii());
   // not ignoring trailing slash
   QCOMPARE( u2.directory(false,false), QString("/home/dfaure/") );
   QCOMPARE( u2.directory(true,false), QString("/home/dfaure") );
@@ -556,7 +566,6 @@ void KUrlTest::testDirectory()
   u2.cd("/opt/kde/bin/");
   QCOMPARE( u2.url(), QString("file:///opt/kde/bin/") );
   u2 = "ftp://ftp.kde.org/";
-  qDebug("* URL is %s",u2.url().ascii());
   u2.cd("pub");
   QCOMPARE( u2.url(), QString("ftp://ftp.kde.org/pub") );
   u2 = u2.upURL();
@@ -1043,7 +1052,6 @@ void KUrlTest::testComparisons()
   QVERIFY( !urlcmp("file",ucmp1,false,true) ); // (malformed, not empty)
 
   KUrl ftpUrl ( "ftp://ftp.de.kde.org" );
-  qDebug("* URL is %s",ftpUrl.url().latin1());
   QCOMPARE( ftpUrl.path(), QString());
   ftpUrl = "ftp://ftp.de.kde.org/";
   QVERIFY( ftpUrl.isParentOf( KUrl("ftp://ftp.de.kde.org/host/subdir/") ) );
@@ -1134,11 +1142,14 @@ void KUrlTest::testBrokenStuff()
   broken = "file";
   QVERIFY( broken.isValid() ); // KDE3: was invalid; now it's path="file"
 
+#if 0
+  // KUrl has a Q_ASSERT on this now, so we can't test it.
   broken = "/";
   QVERIFY( broken.isValid() );
   QCOMPARE( broken.path(), QString("/") );
   QCOMPARE( broken.url(), QString("/") ); // KDE3: was resolved to "file:///". QUrl supports urls without a protocol.
   QCOMPARE( broken.protocol(), QString("") ); // KDE3: was "file"
+#endif
 
   broken = "LABEL=USB_STICK"; // 71430, can we use KUrl for this?
   QVERIFY( broken.isValid() ); // KDE3 difference: QUrl likes this one too
@@ -1320,9 +1331,9 @@ void KUrlTest::testOtherEncodings()
   kDebug() << k_funcinfo << endl;
   QTextCodec::setCodecForLocale( KGlobal::charsets()->codecForName( "koi8-r" ) );
   KUrl baseURL( "file:/home/coolo" );
-  KUrl russian = baseURL.directory(false, true) + QString::fromUtf8( "фгн7" );
+  KUrl russian = KUrl::fromPath( baseURL.directory(false, true) + QString::fromUtf8( "фгн7" ) );
   //QCOMPARE( russian.url(), QString("file:///home/%C6%C7%CE7" ) ); // KDE3: was not using utf8
-  QCOMPARE( russian.url(), QString("/home/%D1%84%D0%B3%D0%BD7") ); // QUrl uses utf8
+  QCOMPARE( russian.url(), QString("file:///home/%D1%84%D0%B3%D0%BD7") ); // QUrl uses utf8
 
   KUrl utf8_1("audiocd:/By%20Name/15%20Geantra%C3%AE.wav");
   QCOMPARE( utf8_1.fileName(), QString::fromUtf8("15 Geantraî.wav") );

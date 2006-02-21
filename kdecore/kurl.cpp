@@ -594,18 +594,20 @@ QString KUrl::encodedPathAndQuery( int _trailing, bool _no_empty_path ) const
 #if 0
      if (m_iUriMode == Mailto)
      {
-        tmp = encode( tmp, 2 );
+       tmp = encode( tmp, 2 ); // encode neither @ nor /
      }
      else
      {
-        tmp = encode( tmp, 1 );
+       tmp = encode( tmp, 1 ); // encode @ but not /
      }
 #endif
-     tmp = QLatin1String( QUrl::toPercentEncoding( tmp ) );
+     // The list of chars to exclude comes from QUrlPrivate::toEncoded
+     tmp = QLatin1String( QUrl::toPercentEncoding( tmp, "!$&'()*+,;=:@/" ) );
   }
 
-  if (!fragment().isNull())
-      tmp += '?' + fragment();
+  // Qt-4.2 TODO: if (hasQuery())
+  if (!query().isEmpty())
+      tmp += query(); // includes the '?'
   return tmp;
 }
 
