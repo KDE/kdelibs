@@ -60,6 +60,7 @@ or <a href="http://doc.trolltech.com/4.1/porting4.html">this page online</a>.</p
 <LI><A HREF="#kcontrol">KDE Control Center</A></LI>
 <LI><A HREF="#kicker">Panel Applets and Extensions</A></LI>
 <li><a href="#kscreensaver">KScreensaver</a></li>
+<li><a href="#i18n">I18N</a></li>
 </UL>
 
 <H3><A NAME="gettingstarted">Getting started</A></H3>
@@ -355,6 +356,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <li> setCharset() -&gt; gone</li>
 <li>removeCatalogue was renamed to removeCatalog</li>
 </ul>
+<p>See also <a href="#i18n">the I18N section below</a>.</p>
 
 <H4>KCmdLineArgs</H4>
 <ul>
@@ -407,6 +409,13 @@ KConfigGroup cg(config, "group name");
 	...
 cg.readXXX("entry name");
 </pre>
+
+<h4>KAboutData</h4>
+<ul>
+<li>KAboutData::setTranslator needs different parameters now.
+(Please see the corresponding Doxygen comment for the current state.)</li>
+</ul>
+<p>See also <a href="#i18n">the I18N section below</a>.</p>
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
@@ -954,7 +963,7 @@ kde-core-devel if you need those after all.
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
-
+<!-- ### TODO: should this not be a KDE3SUPPORT <h3> section? -->
 <ul>
 <li>KDockWidgets -&gt; kde3support K3DockWidget</li>
 <li>KParts::DockWindow -&gt; kde3support KParts::DockWindow3</li>
@@ -968,10 +977,47 @@ kde-core-devel if you need those after all.
 
 <H3><A NAME="kscreensaver">KScreensaver</A></H3>
 
-<H3>libkscreensaver</H3>
+<h4>libkscreensaver</h4>
 <ul>
 <li>Moved to kdebase/workspace/kscreensaver</li>
 </ul>
+
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+
+<h3><a name="i18n">I18N</a></h3>
+
+<h4>Messages.sh files</h4>
+<p>Instead of the "messages" target of the Makefile.am files,
+KDE4 uses now Bash scripts with Messages.sh file names.
+The Perl script branches/work/kde4-l10n/scripts/conversion/Makefile2Messages.pl
+can be used as an half-automatical conversion. (Please verify the result!)</p>
+
+<h4>rc.cpp file</h4>
+<p>The rc.cpp is now <em>always</em> generated. It is mandatory to have it as
+parameter of the $XGETTEXT if you are using the class KAboutData and if
+you are not explicitely etting KAboutData::setTranslator.</p>
+
+<h4>Gettext 0.15-pre</h4>
+<p>Scripty uses xgettext 0.15-pre (the development version) for extracting
+messages out of code. This is a huge step from the former xgettext 0.10.35-kde
+used in KDE3.</p>
+<p>Important changes:</p>
+<ul>
+<li>If you define your own keywords (-k parameter of xgettext), you probably
+need to adapt them, as xgettext does not automatically know about the
+1, 2 or 3 parameter version.</li>
+<li>You cannot have two similar messages, one being a normal message and
+the other the singular form of a plural-form messages. For Gettext, this is
+the same message and therefore this creates problems. (Note: there is not
+any similar problems when you use contexts.)</li>
+<li>As in Gettext 0.15-pre, contexts are supposed to be short, please consider
+using a special comment instead of a context to give long hints to translators.
+The special comment starts with //i18n ot /*i18n and must be <em>before</em>
+the message code. (Note: this is not new to KDE4, but very seldomly used in 
+KDE3.)</li>
+</ul>
+
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 </BODY>
 </HTML>
