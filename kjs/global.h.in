@@ -34,15 +34,25 @@
 #define KJS_PACKED
 #endif
 
+#if defined(_MSC_VER)
+#pragma warning(disable: 4355)
+#endif
+
 #undef __KDE_HAVE_GCC_VISIBILITY
 
 #ifndef KJS_EXPORT
 # ifdef __KDE_HAVE_GCC_VISIBILITY
-# define KJS_EXPORT __attribute__ ((visibility("default")))
+#  define KJS_EXPORT __attribute__ ((visibility("default")))
+# elif defined(_MSC_VER)
+#  ifdef MAKE_KJS_LIB
+#   define KJS_EXPORT __declspec(dllexport)
+#  else
+#   define KJS_EXPORT __declspec(dllimport)
+#  endif
 # else
-# define KJS_EXPORT
+#  define KJS_EXPORT
 # endif
-#endif 
+#endif
 
 #ifndef NDEBUG // protection against problems if committing with KJS_VERBOSE on
 
