@@ -167,6 +167,7 @@ check_include_files( X11/extensions/Xrender.h HAVE_XRENDER)
 # check is to be added to get the proper set of headers.
 check_symbol_exists(stpcpy          "string.h"                 HAVE_STPCPY)
 check_symbol_exists(strcasecmp      "strings.h"                HAVE_STRCASECMP)
+check_symbol_exists(strncasecmp     "strings.h"                HAVE_STRNCASECMP)
 check_symbol_exists(strchr          "string.h"                 HAVE_STRCHR)
 check_symbol_exists(strcmp          "string.h"                 HAVE_STRCMP)
 check_symbol_exists(strrchr         "string.h"                 HAVE_STRRCHR)
