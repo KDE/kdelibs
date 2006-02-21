@@ -234,19 +234,19 @@ bool Part::event( QEvent *ev )
 {
   if ( PartActivateEvent::test( ev ) )
   {
-    partActivateEvent( (PartActivateEvent *)ev );
+    partActivateEvent( static_cast<PartActivateEvent *>(ev) );
     return true;
   }
 
   if ( PartSelectEvent::test( ev ) )
   {
-    partSelectEvent( (PartSelectEvent *)ev );
+    partSelectEvent( static_cast<PartSelectEvent *>(ev) );
     return true;
   }
 
   if ( GUIActivateEvent::test( ev ) )
   {
-    guiActivateEvent( (GUIActivateEvent *)ev );
+    guiActivateEvent( static_cast<GUIActivateEvent *>(ev) );
     return true;
   }
 
