@@ -497,7 +497,7 @@ private:
     long computeCharOffset(int para, int index);
 
     //Convert offset -> para, index
-    void computeParagraphAndIndex(long index, int* para, int* index);
+    void computeParagraphAndIndex(long offset, int* para, int* index);
 
     //Helper for doing the conversion..
     enum Mode { ParaLength,     //Returns the length of the entire paragraph
