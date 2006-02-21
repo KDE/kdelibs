@@ -283,13 +283,17 @@ KUniqueApplication::start()
 
      QByteArray data, reply;
      QDataStream ds(&data, QIODevice::WriteOnly);
-	 ds.setVersion( QDataStream::Qt_3_1 );
+     ds.setVersion( QDataStream::Qt_3_1 );
 
      KCmdLineArgs::saveAppArgs(ds);
      ds << new_asn_id;
 
      dc->setPriorityCall(true);
      DCOPCString replyType;
+     // Need a QApplication to make dcop calls (due to QTimer usage)
+     int fake_argc = 0;
+     QApplication app( fake_argc, 0 );
+     dc->moveToThread( app.thread() );
      if (!dc->call( DCOPCString( appName ), DCOPCString( KCmdLineArgs::about->appName() ), "newInstance()", data, replyType, reply))
      {
         kError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl;
