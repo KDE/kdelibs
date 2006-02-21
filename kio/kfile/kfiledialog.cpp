@@ -260,7 +260,7 @@ void KFileDialog::clearFilter()
 
 QString KFileDialog::currentMimeFilter() const
 {
-    int i = filterWidget->currentItem();
+    int i = filterWidget->currentIndex();
     if (filterWidget->showsAllTypes())
         i--;
 
@@ -351,7 +351,7 @@ void KFileDialog::slotOk()
     bool dirOnly = ops->dirOnlyMode();
 
     // we can use our kfileitems, no need to parse anything
-    if ( items && !locationEdit->lineEdit()->edited() &&
+    if ( items && !locationEdit->lineEdit()->isModified() &&
          !(items->isEmpty() && !dirOnly) ) {
 
         d->urlList.clear();
@@ -570,8 +570,8 @@ void KFileDialog::slotStatResult(KIO::Job* job)
         else // in File[s] mode, directory means error -> cd into it
         {
             if ( count == 0 ) {
-                locationEdit->clearEdit();
-                locationEdit->lineEdit()->setEdited( false );
+                locationEdit->clearEditText();
+                locationEdit->lineEdit()->setModified( false );
                 setURL( sJob->url() );
             }
         }
@@ -598,7 +598,7 @@ void KFileDialog::accept()
        KRecentDirs::add(d->fileClass, ops->url().url());
 
     // clear the topmost item, we insert it as full path later on as item 1
-    locationEdit->changeItem( QString(), 0 );
+    locationEdit->setItemText( 0, QString() );
 
     KUrl::List list = selectedURLs();
     QList<KUrl>::const_iterator it = list.begin();
@@ -611,12 +611,12 @@ void KFileDialog::accept()
 
         // remove dupes
         for ( int i = 1; i < locationEdit->count(); i++ ) {
-            if ( locationEdit->text( i ) == file ) {
+            if ( locationEdit->itemText( i ) == file ) {
                 locationEdit->removeItem( i-- );
                 break;
             }
         }
-        locationEdit->insertItem( file, 1 );
+        locationEdit->insertItem( 1,file);
     }
 
     KConfig *config = KGlobal::config();
@@ -691,10 +691,10 @@ void KFileDialog::multiSelectionChanged()
     if ( locationEdit->hasFocus() ) // don't disturb
         return;
 
-    locationEdit->lineEdit()->setEdited( false );
+    locationEdit->lineEdit()->setModified( false );
     const KFileItemList *list = ops->selectedItems();
     if ( !list ) {
-        locationEdit->clearEdit();
+        locationEdit->clearEditText();
         return;
     }
 
@@ -717,7 +717,7 @@ void KFileDialog::setLocationText( const QString& text )
     // the KDirOperator's view-selection in there
     disconnect( locationEdit, SIGNAL( textChanged( const QString& ) ),
                 this, SLOT( slotLocationChanged( const QString& ) ) );
-    locationEdit->setCurrentItem( 0 );
+    locationEdit->setCurrentIndex( 0 );
     connect( locationEdit, SIGNAL( textChanged( const QString& ) ),
              SLOT( slotLocationChanged( const QString& )) );
     locationEdit->setEditText( text );
@@ -1015,11 +1015,14 @@ void KFileDialog::initGUI()
 {
     delete d->boxLayout; // deletes all sub layouts
 
-    d->boxLayout = new QVBoxLayout( d->mainWidget, 0, KDialog::spacingHint());
+    d->boxLayout = new QVBoxLayout( d->mainWidget);
+    d->boxLayout->setSpacing(KDialog::spacingHint());
     d->boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
 
-    d->urlBarLayout = new QHBoxLayout( d->boxLayout ); // needed for the urlBar that may appear
-    QVBoxLayout *vbox = new QVBoxLayout( d->urlBarLayout );
+    d->urlBarLayout = new QHBoxLayout();
+    d->boxLayout->addItem(d->urlBarLayout ); // needed for the urlBar that may appear
+    QVBoxLayout *vbox = new QVBoxLayout();
+    d->urlBarLayout->addItem(vbox);
 
     vbox->addWidget(ops, 4);
     vbox->addSpacing(3);
@@ -1057,7 +1060,7 @@ void KFileDialog::initGUI()
         // ...add it to the dialog, below the filter list box.
 
         // Change the parent so that this widget is a child of the main widget
-        d->customWidget->reparent( d->mainWidget, QPoint() );
+        d->customWidget->setParent( d->mainWidget);
 
         vbox->addWidget( d->customWidget );
         vbox->addSpacing(3);
@@ -1116,7 +1119,7 @@ void KFileDialog::urlEntered(const KUrl& url)
     }
 
     locationEdit->blockSignals( true );
-    locationEdit->setCurrentItem( 0 );
+    locationEdit->setCurrentIndex( 0 );
     if ( d->keepLocation )
         locationEdit->setEditText( filename );
 
@@ -1137,7 +1140,7 @@ void KFileDialog::locationActivated( const QString& url )
     // after the user presses Enter.  Without this, _both_ setSelection and
     // slotOk would "u.addPath( url )" ...so instead we leave it up to just
     // slotOk....
-    if (!locationEdit->lineEdit()->edited())
+    if (!locationEdit->lineEdit()->isModified())
         setSelection( url );
 }
 
@@ -1206,7 +1209,7 @@ void KFileDialog::setSelection(const QString& url)
             // would start, the user would pick something from the
             // history and then hit Ok only to get the autocompleted
             // selection. OOOPS.
-            locationEdit->lineEdit()->setEdited( true );
+            locationEdit->lineEdit()->setModified( true );
         }
 
         d->url = ops->url();
@@ -1395,7 +1398,7 @@ KUrl::List& KFileDialog::parseSelectedURLs() const
     if ( d->filenames.contains( '/' )) { // assume _one_ absolute filename
         static const QString &prot = KGlobal::staticQString(":/");
         KUrl u;
-        if ( d->filenames.find( prot ) != -1 )
+        if ( d->filenames.indexOf( prot ) != -1 )
             u = d->filenames;
         else
             u.setPath( d->filenames );
@@ -1689,8 +1692,8 @@ void KFileDialog::readRecentFiles( KConfig *kc )
                                               DefaultRecentURLsNumber ) );
     locationEdit->setURLs( kc->readPathListEntry( RecentFiles ),
                            KUrlComboBox::RemoveBottom );
-    locationEdit->insertItem( QString(), 0 ); // dummy item without pixmap
-    locationEdit->setCurrentItem( 0 );
+    locationEdit->insertItem(0, QString()); // dummy item without pixmap
+    locationEdit->setCurrentIndex( 0 );
 
     kc->setGroup( oldGroup );
 }
@@ -1797,7 +1800,7 @@ static QString getExtensionFromPatternList (const QStringList &patternList)
         // *.JP?
         if ((*it).startsWith ("*.") &&
             (*it).length () > 2 &&
-            (*it).find ('*', 2) < 0 && (*it).find ('?', 2) < 0)
+            (*it).indexOf ('*', 2) < 0 && (*it).indexOf ('?', 2) < 0)
         {
             ret = (*it).mid (1);
             break;
@@ -1849,7 +1852,7 @@ void KFileDialog::updateAutoSelectExtension (void)
         if (!filter.isEmpty ())
         {
             // e.g. "*.cpp"
-            if (filter.find ('/') < 0)
+            if (filter.indexOf ('/') < 0)
             {
                 d->extension = getExtensionFromPatternList (filter.split(" ",QString::SkipEmptyParts)/*QStringList::split (" ", filter)*/).toLower ();
                 kDebug (kfile_area) << "\tsetFilter-style: pattern ext=\'"
@@ -2008,8 +2011,8 @@ void KFileDialog::updateLocationEditExtension (const QString &lastExtension)
         const QString newText = urlStr.left (fileNameOffset) + fileName + d->extension;
         if ( newText != locationEdit->currentText() )
         {
-            locationEdit->setCurrentText (urlStr.left (fileNameOffset) + fileName + d->extension);
-            locationEdit->lineEdit()->setEdited (true);
+            locationEdit->setItemText (locationEdit->currentIndex(),urlStr.left (fileNameOffset) + fileName + d->extension);
+            locationEdit->lineEdit()->setModified (true);
         }
     }
 }
@@ -2026,7 +2029,7 @@ void KFileDialog::updateFilter ()
         KMimeType::Ptr mime = KMimeType::findByPath(urlStr, 0, true);
         if (mime && mime->name() != KMimeType::defaultMimeType()) {
             if (filterWidget->currentFilter() != mime->name() &&
-                filterWidget->filters().findIndex(mime->name()) != -1)
+                filterWidget->filters().indexOf(mime->name()) != -1)
                 filterWidget->setCurrentFilter(mime->name());
         }
     }
@@ -2270,7 +2273,7 @@ void KFileDialog::setNonExtSelection()
     QString pattern, filename = locationEdit->currentText().trimmed();
     KServiceTypeFactory::self()->findFromPattern( filename, &pattern );
 
-    if ( !pattern.isEmpty() && pattern.at( 0 ) == '*' && pattern.find( '*' , 1 ) == -1 )
+    if ( !pattern.isEmpty() && pattern.at( 0 ) == '*' && pattern.indexOf( '*' , 1 ) == -1 )
        locationEdit->lineEdit()->setSelection( 0, filename.length() - pattern.trimmed().length()+1 );
     else
     {

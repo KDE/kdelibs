@@ -860,7 +860,7 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view )
         KCombiView *combi = 0L;
         if (separateDirs)
         {
-            combi = new KCombiView( parent, "combi view" );
+            combi = new KCombiView( parent );
             combi->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
         }
 
@@ -1681,6 +1681,13 @@ void KDirOperator::setViewConfig( KConfigGroup *configGroup)
 {
     d->configGroup = configGroup;
 }
+
+KConfigGroup *KDirOperator::viewConfigGroup() const
+{
+    return d->configGroup;
+}
+
+
 
 void KDirOperator::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

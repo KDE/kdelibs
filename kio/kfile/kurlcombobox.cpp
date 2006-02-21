@@ -66,7 +66,7 @@ void KUrlComboBox::init( Mode mode )
     myMode    = mode;
     urlAdded  = false;
     myMaximum = 10; // default
-    setInsertionPolicy( NoInsertion );
+    setInsertPolicy( NoInsertion );
     setTrapReturnKey( true );
     setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
 
@@ -83,7 +83,7 @@ QStringList KUrlComboBox::urls() const
     QStringList list;
     QString url;
     for ( int i = defaultList.count(); i < count(); i++ ) {
-        url = text( i );
+        url = itemText( i );
         if ( !url.isEmpty() ) {
             //if ( url.at(0) == '/' )
             //    list.append( url.prepend( fileProt ) );
@@ -288,7 +288,7 @@ void KUrlComboBox::setMaxItems( int max )
     myMaximum = max;
 
     if ( count() > myMaximum ) {
-        int oldCurrent = currentItem();
+        int oldCurrent = currentIndex();
 
         setDefaults();
 

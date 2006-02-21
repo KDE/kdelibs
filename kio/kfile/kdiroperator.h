@@ -412,23 +412,12 @@ class KIO_EXPORT KDirOperator : public QWidget
 	// ### KDE4: make virtual
     void setViewConfig( KConfigGroup *configGroup);
 
-    /**
-     * Returns the KConfig object used for saving and restoring view's
+    /*
+     * @returns the group set by setViewConfig
      * configuration.
-     * @returns the KConfig object used for saving and restoring view's
-     * configuration.
-     * @since 3.1
+     * @since 4.0
      */
-    KConfig *viewConfig();
-
-    /**
-     * Returns the group name used for saving and restoring view's
-     * configuration.
-     * @returns the group name used for saving and restoring view's
-     * configuration.
-     * @since 3.1
-     */
-    QString viewConfigGroup() const;
+    KConfigGroup *viewConfigGroup() const;
 
     /**
      * Reads the default settings for a view, i.e. the default KFile::FileView.
@@ -439,8 +428,6 @@ class KIO_EXPORT KDirOperator : public QWidget
      * \endcode
      * to apply it.
      *
-     * recommended usage is with KConfigGroup
-     *
      * @see setView
      * @see setViewConfig
      * @see writeConfig
@@ -449,8 +436,6 @@ class KIO_EXPORT KDirOperator : public QWidget
 
     /**
      * Saves the current settings like sorting, simple or detailed view.
-     *
-     * recommended usage is with KConfigGroup
      *
      * @see readConfig
      * @see setViewConfig

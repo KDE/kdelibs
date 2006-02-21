@@ -37,8 +37,8 @@
 
 
 
-KCombiView::KCombiView( QWidget *parent, const char *name)
-  : QSplitter( parent, name),
+KCombiView::KCombiView( QWidget *parent)
+  : QSplitter( parent),
     KFileView(),
     right(0),
     m_lastViewForNextItem(0),

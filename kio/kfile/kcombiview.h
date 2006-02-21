@@ -56,7 +56,7 @@ class KIO_EXPORT KCombiView : public QSplitter,
     Q_OBJECT
 
 public:
-    KCombiView( QWidget *parent, const char *name);
+    KCombiView( QWidget *parent);
     virtual ~KCombiView();
 
     virtual QWidget *widget() { return this; }
