@@ -230,27 +230,27 @@ bool Part::isSelectable() const
   return d->m_bSelectable;
 }
 
-void Part::customEvent( QEvent *event )
+bool Part::event( QEvent *ev )
 {
-  if ( PartActivateEvent::test( event ) )
+  if ( PartActivateEvent::test( ev ) )
   {
-    partActivateEvent( (PartActivateEvent *)event );
-    return;
+    partActivateEvent( (PartActivateEvent *)ev );
+    return true;
   }
 
-  if ( PartSelectEvent::test( event ) )
+  if ( PartSelectEvent::test( ev ) )
   {
-    partSelectEvent( (PartSelectEvent *)event );
-    return;
+    partSelectEvent( (PartSelectEvent *)ev );
+    return true;
   }
 
-  if ( GUIActivateEvent::test( event ) )
+  if ( GUIActivateEvent::test( ev ) )
   {
-    guiActivateEvent( (GUIActivateEvent *)event );
-    return;
+    guiActivateEvent( (GUIActivateEvent *)ev );
+    return true;
   }
 
-  QObject::customEvent( event );
+  return QObject::event( ev );
 }
 
 void Part::partActivateEvent( PartActivateEvent * )
