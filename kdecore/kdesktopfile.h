@@ -24,7 +24,7 @@
 /**
  * %KDE Desktop File Management.
  * This class implements %KDE's support for the freedesktop.org
- * <em>Desktop Entry Spec<em>.
+ * <em>Desktop Entry Spec</em>.
  *
  * @author Pietro Iglio <iglio@kde.org>
  * @see  KConfigBase  KConfig
