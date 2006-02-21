@@ -795,6 +795,7 @@ int main(int argc, char *argv[])
   check("UTF8",uloc.url(0, 106),"file:///home/dfaure/konqtests/Mat%C3%A9riel");
   uloc = KURL("file:///home/dfaure/konqtests/Mat%C3%A9riel", 106);
   check("UTF8 path", uloc.path(), "/home/dfaure/konqtests/Matériel");
+  check("encodedPathAndQuery", uloc.encodedPathAndQuery(), "/home/dfaure/konqtests/Mat%E9riel");
 
   // fromPathOrURL tests
   uloc = KURL::fromPathOrURL( "/home/dfaure/konqtests/Mat%E9riel" );
@@ -856,6 +857,7 @@ int main(int argc, char *argv[])
   check("queryItem (invalid item)", theKow.queryItem("InterstellarCounselor"), QString::null);
   check("queryItem (empty item)", theKow.queryItem("empty"), "");
   check("queryItem (item with encoded chars)", theKow.queryItem("test"), "+ :%");
+  check("encodedPathAndQuery", theKow.encodedPathAndQuery(), "/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25");
 
   // checks for queryItems(), which returns a QMap<QString,QString>:
   KURL queryUrl( "mailto:Marc%20Mutz%20%3cmutz@kde.org%3E?"
