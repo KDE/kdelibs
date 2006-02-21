@@ -841,14 +841,17 @@ int main(int argc, char *argv[])
 
   tobi1 = "http://host.net/path/#no-query";
   check("no query", tobi1.query(),"");
+  check("encodedPathAndQuery", tobi1.encodedPathAndQuery(), "/path/");
 
   tobi1 = "http://host.net/path?myfirstquery#andsomeReference";
   tobi1.setEncodedPathAndQuery("another/path/?another&query");
   check("setEncodedPathAndQuery test#1", tobi1.query(), "?another&query");
-  check("setEncodedPathAndQuery test#2", tobi1.path(), "another/path/");
+  check("setEncodedPathAndQuery test#2", tobi1.path(), "another/path/"); // with trailing slash
+  check("encodedPathAndQuery", tobi1.encodedPathAndQuery(), "another/path/?another&query");
   tobi1.setEncodedPathAndQuery("another/path?another&query");
   check("setEncodedPathAndQuery test#1", tobi1.query(), "?another&query");
-  check("setEncodedPathAndQuery test#2", tobi1.path(), "another/path");
+  check("setEncodedPathAndQuery test#2", tobi1.path(), "another/path"); // without trailing slash
+  check("encodedPathAndQuery", tobi1.encodedPathAndQuery(), "another/path?another&query");
 
   KURL theKow = "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25";
   check("queryItem (first item)", theKow.queryItem("q"), "frerich");
