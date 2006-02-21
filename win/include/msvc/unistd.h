@@ -66,6 +66,13 @@ extern "C" {
 #define	S_ISLNK(m)	(((m)&_IFMT) == _IFLNK)
 #define	S_ISSOCK(m)	(((m)&_IFMT) == _IFSOCK)
 
+#ifndef STDOUT_FILENO
+#define STDOUT_FILENO 1
+#endif
+
+#ifndef STDERR_FILENO
+#define STDERR_FILENO 2
+#endif
 
 KDEWIN32_EXPORT int chown(const char *__path, uid_t __owner, gid_t __group);
 
