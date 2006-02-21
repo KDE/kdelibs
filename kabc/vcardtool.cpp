@@ -661,7 +661,11 @@ VCardLine VCardTool::createPicture( const QString &identifier, const Picture &pi
       QByteArray input;
       QBuffer buffer( input );
       buffer.open( IO_WriteOnly );
-      pic.data().save( &buffer, "JPEG" );
+
+      QImageIO iio( &buffer, "JPEG" );
+      iio.setImage( pic.data() );
+      iio.setQuality( 100 );
+      iio.write();
 
       line.setValue( input );
       line.addParameter( "encoding", "b" );
