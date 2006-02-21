@@ -98,15 +98,15 @@ target_link_libraries(kcomboboxtest  ${QT_AND_KDECORE_LIBS} kdeui)
 
 ########### next target ###############
 
-set(kcompletiontest_SRCS
+set(kcompletiontest_kdeui_SRCS
 kcompletiontest.cpp
 )
 
-kde4_automoc(${kcompletiontest_SRCS})
+kde4_automoc(${kcompletiontest_kdeui_SRCS})
 
-kde4_add_executable(kcompletiontest ${kcompletiontest_SRCS})
+kde4_add_executable(kcompletiontest_kdeui ${kcompletiontest_kdeui_SRCS})
 
-target_link_libraries(kcompletiontest  ${QT_AND_KDECORE_LIBS} kdeui)
+target_link_libraries(kcompletiontest_kdeui  ${QT_AND_KDECORE_LIBS} kdeui)
 
 
 ########### next target ###############
