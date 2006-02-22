@@ -123,14 +123,28 @@ void KAnimWidget::hideEvent(QHideEvent* e)
 
 void KAnimWidget::enterEvent( QEvent *e )
 {
-  setFrameStyle( Panel | Raised );
+  if ( frameStyle() != NoFrame )
+  {
+    setFrameStyle( Panel | Raised );
+
+    // for the pathological case where the frame was set to NoFrame,
+    // then back again! if only setFrameStyle was virtual in Qt4 *sob*
+    setCursor( Qt::ArrowCursor );
+  }
+  else
+  {
+    setCursor( Qt::PointingHandCursor );
+  }
 
   QFrame::enterEvent( e );
 }
 
 void KAnimWidget::leaveEvent( QEvent *e )
 {
-  setFrameStyle( StyledPanel | Sunken );
+  if ( frameStyle() != NoFrame )
+  {
+    setFrameStyle( StyledPanel | Sunken );
+  }
 
   QFrame::leaveEvent( e );
 }
