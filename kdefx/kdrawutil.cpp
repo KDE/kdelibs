@@ -101,7 +101,7 @@ KDEFX_EXPORT void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGrou
                       bool sunken)
 {
     int x, y, x2, y2;
-    r.coords(&x, &y, &x2, &y2);
+    r.getCoords(&x, &y, &x2, &y2);
     if(r.width() > 16 && r.height() > 16){
         QPen oldPen = p->pen();
         QPolygon hPntArray, lPntArray;

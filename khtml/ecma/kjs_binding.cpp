@@ -64,7 +64,7 @@ ScriptInterpreter::~ScriptInterpreter()
   kDebug(6070) << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_frame << endl;
 #endif
   assert( interpreterList && interpreterList->contains( this ) );
-  interpreterList->remove( this );
+  interpreterList->removeAll( this );
   if ( interpreterList->isEmpty() ) {
     delete interpreterList;
     interpreterList = 0;
@@ -277,7 +277,7 @@ ValueImp *getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & 
       int i = value.toInt(&ok);
       if (ok)
         return Boolean(i);
-      return Boolean(!strcasecmp(value.latin1(), "true"));
+      return Boolean(!strcasecmp(value.toLatin1(), "true"));
     }
     case KParts::LiveConnectExtension::TypeObject:
     case KParts::LiveConnectExtension::TypeFunction:

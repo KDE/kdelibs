@@ -155,7 +155,7 @@ void IppRequest::init()
 	}
 	request_ = ippNew();
 	//kDebug(500) << "kdeprint: IPP request, lang=" << KGlobal::locale()->language() << endl;
-        QByteArray langstr = KGlobal::locale()->language().latin1();
+        QByteArray langstr = qPrintable(KGlobal::locale()->language());
 	cups_lang_t*	lang = cupsLangGet(langstr.data());
 	// default charset to UTF-8 (ugly hack)
 	lang->encoding = CUPS_UTF8;
@@ -167,14 +167,14 @@ void IppRequest::init()
 void IppRequest::addString_p(int group, int type, const QString& name, const QString& value)
 {
 	if (!name.isEmpty())
-		ippAddString(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),NULL,(value.isEmpty() ? "" : value.toLocal8Bit().data()));
+		ippAddString(request_,(ipp_tag_t)group,(ipp_tag_t)type,qPrintable(name),NULL,(value.isEmpty() ? "" : value.toLocal8Bit().data()));
 }
 
 void IppRequest::addStringList_p(int group, int type, const QString& name, const QStringList& values)
 {
 	if (!name.isEmpty())
 	{
-		ipp_attribute_t	*attr = ippAddStrings(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),(int)(values.count()),NULL,NULL);
+		ipp_attribute_t	*attr = ippAddStrings(request_,(ipp_tag_t)group,(ipp_tag_t)type,qPrintable(name),(int)(values.count()),NULL,NULL);
 		int	i(0);
 		for (QStringList::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
 			attr->values[i].string.text = strdup((*it).toLocal8Bit());
@@ -183,14 +183,14 @@ void IppRequest::addStringList_p(int group, int type, const QString& name, const
 
 void IppRequest::addInteger_p(int group, int type, const QString& name, int value)
 {
-	if (!name.isEmpty()) ippAddInteger(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),value);
+	if (!name.isEmpty()) ippAddInteger(request_,(ipp_tag_t)group,(ipp_tag_t)type,qPrintable(name),value);
 }
 
 void IppRequest::addIntegerList_p(int group, int type, const QString& name, const QList<int>& values)
 {
 	if (!name.isEmpty())
 	{
-		ipp_attribute_t	*attr = ippAddIntegers(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),(int)(values.count()),NULL);
+		ipp_attribute_t	*attr = ippAddIntegers(request_,(ipp_tag_t)group,(ipp_tag_t)type,qPrintable(name),(int)(values.count()),NULL);
 		int	i(0);
 		for (QList<int>::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
 			attr->values[i].integer = *it;
@@ -199,14 +199,14 @@ void IppRequest::addIntegerList_p(int group, int type, const QString& name, cons
 
 void IppRequest::addBoolean(int group, const QString& name, bool value)
 {
-	if (!name.isEmpty()) ippAddBoolean(request_,(ipp_tag_t)group,name.latin1(),(char)value);
+	if (!name.isEmpty()) ippAddBoolean(request_,(ipp_tag_t)group,qPrintable(name),(char)value);
 }
 
 void IppRequest::addBoolean(int group, const QString& name, const QList<bool>& values)
 {
 	if (!name.isEmpty())
 	{
-		ipp_attribute_t	*attr = ippAddBooleans(request_,(ipp_tag_t)group,name.latin1(),(int)(values.count()),NULL);
+		ipp_attribute_t	*attr = ippAddBooleans(request_,(ipp_tag_t)group,qPrintable(name),(int)(values.count()),NULL);
 		int	i(0);
 		for (QList<bool>::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
 			attr->values[i].boolean = (char)(*it);
@@ -245,7 +245,7 @@ QString IppRequest::statusMessage()
 bool IppRequest::integerValue_p(const QString& name, int& value, int type)
 {
 	if (!request_ || name.isEmpty()) return false;
-	ipp_attribute_t	*attr = ippFindAttribute(request_, name.latin1(), (ipp_tag_t)type);
+	ipp_attribute_t	*attr = ippFindAttribute(request_, qPrintable(name), (ipp_tag_t)type);
 	if (attr)
 	{
 		value = attr->values[0].integer;
@@ -257,7 +257,7 @@ bool IppRequest::integerValue_p(const QString& name, int& value, int type)
 bool IppRequest::stringValue_p(const QString& name, QString& value, int type)
 {
 	if (!request_ || name.isEmpty()) return false;
-	ipp_attribute_t	*attr = ippFindAttribute(request_, name.latin1(), (ipp_tag_t)type);
+	ipp_attribute_t	*attr = ippFindAttribute(request_, qPrintable(name), (ipp_tag_t)type);
 	if (attr)
 	{
 		value = QString::fromLocal8Bit(attr->values[0].string.text);
@@ -269,7 +269,7 @@ bool IppRequest::stringValue_p(const QString& name, QString& value, int type)
 bool IppRequest::stringListValue_p(const QString& name, QStringList& values, int type)
 {
 	if (!request_ || name.isEmpty()) return false;
-	ipp_attribute_t	*attr = ippFindAttribute(request_, name.latin1(), (ipp_tag_t)type);
+	ipp_attribute_t	*attr = ippFindAttribute(request_, qPrintable(name), (ipp_tag_t)type);
 	values.clear();
 	if (attr)
 	{
@@ -283,7 +283,7 @@ bool IppRequest::stringListValue_p(const QString& name, QStringList& values, int
 bool IppRequest::boolean(const QString& name, bool& value)
 {
 	if (!request_ || name.isEmpty()) return false;
-	ipp_attribute_t	*attr = ippFindAttribute(request_, name.latin1(), IPP_TAG_BOOLEAN);
+	ipp_attribute_t	*attr = ippFindAttribute(request_, qPrintable(name), IPP_TAG_BOOLEAN);
 	if (attr)
 	{
 		value = (bool)attr->values[0].boolean;
@@ -318,7 +318,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 		dumpRequest(request_, false, "Request to "+myHost+":"+QString::number(myPort));
 	}
 
-	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : res.latin1()), (filename.isEmpty() ? NULL : filename.latin1()));
+	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : qPrintable(res)), (filename.isEmpty() ? NULL : qPrintable(filename)));
 #ifdef HAVE_CUPS_NO_PWD_CACHE
 	cups_authstring = HTTP->authstring;
 #endif

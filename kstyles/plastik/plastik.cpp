@@ -2392,7 +2392,7 @@ void PlastikStyle::renderGradient(QPainter *painter,
     int r_w = result->rect().width();
     int r_h = result->rect().height();
     int r_x, r_y, r_x2, r_y2;
-    result->rect().coords(&r_x, &r_y, &r_x2, &r_y2);
+    result->rect().getCoords(&r_x, &r_y, &r_x2, &r_y2);
 
     int rDiff, gDiff, bDiff;
     int rc, gc, bc;
@@ -2784,7 +2784,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //     int h = r.height();
 // 
 //     int x2, y2;
-//     r.coords(&x, &y, &x2, &y2);
+//     r.getCoords(&x, &y, &x2, &y2);
 
 // 
 //     // CHECKBOXES
