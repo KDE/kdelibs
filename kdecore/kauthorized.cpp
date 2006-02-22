@@ -304,6 +304,10 @@ static void initUrlActionRestrictions()
   d->urlActionRestrictions.append(
 	URLActionRule("redirect", Any, Any, Any, "=", Any, Any, true));
 
+  d->urlActionRestrictions.append(
+	URLActionRule("redirect", "about", Any, Any, Any, Any, Any, true));
+
+
   KConfigGroup cg( KGlobal::config(), "KDE URL Restrictions" );
   int count = cg.readEntry("rule_count", 0);
   QString keyFormat = QString("rule_%1");
