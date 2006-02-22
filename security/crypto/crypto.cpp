@@ -906,10 +906,10 @@ void KCryptoConfig::load()
     defCertBG->setButton(defCertBG->id(defDont));
 
   QString whichCert = config->readEntry("DefaultCert");
-  defCertBox->setCurrentItem(0);
+  defCertBox->setCurrentIndex(0);
   for (int i = 0; i < defCertBox->count(); i++) {
      if (defCertBox->text(i) == whichCert) {
-       defCertBox->setCurrentItem(i);
+       defCertBox->setCurrentIndex(i);
        break;
      }
   }
@@ -2068,12 +2068,12 @@ if (x) {
   ___lehack = true;
   authHost->setText(x->configName());
   ___lehack = false;
-  hostCertBox->setCurrentItem(0);
+  hostCertBox->setCurrentIndex(0);
 
   QString theCert = x->getCertName();
   for (int i = 0; i < hostCertBox->count(); i++) {
     if (hostCertBox->text(i) == theCert) {
-       hostCertBox->setCurrentItem(i);
+       hostCertBox->setCurrentIndex(i);
        break;
     }
   }
@@ -2263,11 +2263,11 @@ bool noneDef, noneHost;
 
 // try to restore it
 
-  defCertBox->setCurrentItem(0);
+  defCertBox->setCurrentIndex(0);
   if (!noneDef) {
     for (int i = 0; i < defCertBox->count(); i++) {
       if (defCertBox->text(i) == oldDef) {
-         defCertBox->setCurrentItem(i);
+         defCertBox->setCurrentIndex(i);
          break;
       }
     }
@@ -2275,11 +2275,11 @@ bool noneDef, noneHost;
 
   if (!noneDef && defCertBox->currentItem() == 0) configChanged();
 
-  hostCertBox->setCurrentItem(0);
+  hostCertBox->setCurrentIndex(0);
   if (!noneHost) {
     for (int i = 0; i < hostCertBox->count(); i++) {
       if (hostCertBox->text(i) == oldHost) {
-         hostCertBox->setCurrentItem(i);
+         hostCertBox->setCurrentIndex(i);
          break;
       }
     }
