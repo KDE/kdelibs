@@ -29,6 +29,7 @@
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kspell.h>
+#include <ksconfig.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 
@@ -102,11 +103,24 @@ void KateSpell::spellcheck( const KateTextCursor &from, const KateTextCursor &to
   KSpell::SpellerType type = KSpell::Text;
   if ( mt == "text/x-tex" || mt == "text/x-latex" )
     type = KSpell::TeX;
-  else if ( mt == "text/html" || mt == "text/xml" )
+  else if ( mt == "text/html" || mt == "text/xml" || mt == "text/docbook" || mt == "application/x-php")
     type = KSpell::HTML;
 
+  KSpellConfig *ksc = new KSpellConfig;
+  QStringList ksEncodings;
+  ksEncodings << "US-ASCII" << "ISO 8859-1" << "ISO 8859-2" << "ISO 8859-3"
+      << "ISO 8859-4" << "ISO 8859-5" << "ISO 8859-7" << "ISO 8859-8"
+      << "ISO 8859-9" << "ISO 8859-13" << "ISO 8859-15" << "UTF-8"
+      << "KOI8-R" << "KOI8-U" << "CP1251" << "CP1255";
+
+  int enc = ksEncodings.findIndex( m_view->doc()->encoding() );
+  if ( enc > -1 )
+    ksc->setEncoding( enc );
+
+  kdDebug(13020)<<"KateSpell::spellCheck(): using encoding: "<<enc<<" ("<<ksEncodings[enc]<<") and KSpell::Type "<<type<<" (for '"<<mt<<"')"<<endl;
+
   m_kspell = new KSpell( m_view, i18n("Spellcheck"),
-                         this, SLOT(ready(KSpell *)), 0, true, true, type );
+                         this, SLOT(ready(KSpell *)), ksc, true, true, type );
 
   connect( m_kspell, SIGNAL(death()),
            this, SLOT(spellCleanDone()) );
