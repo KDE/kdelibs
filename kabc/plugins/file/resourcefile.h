@@ -28,8 +28,8 @@
 
 #include <kabc/resource.h>
 
+class QFile;
 class QTimer;
-
 class KTempFile;
 
 namespace KIO {
@@ -82,7 +82,7 @@ class KABC_EXPORT ResourceFile : public Resource
       Closes the file again.
      */
     virtual void doClose();
-  
+
     /**
       Requests a save ticket, that is used by save()
      */
@@ -148,17 +148,25 @@ class KABC_EXPORT ResourceFile : public Resource
     void unlock( const QString &fileName );
 
   private:
+    bool clearAndLoad( QFile *file );
+    void saveToFile( QFile *file );
+    void abortAsyncLoading();
+    void abortAsyncSaving();
+    bool createLocalTempFile();
+    void deleteLocalTempFile();
+    void deleteStaleTempFile();
+    bool hasTempFile() const { return mTempFile != 0; }
+
     QString mFileName;
     QString mFormatName;
 
     FormatPlugin *mFormat;
 
     Lock *mLock;
-    
+
     KDirWatch mDirWatch;
 
-    QString mTempFile;
-    KTempFile *mLocalTempFile;
+    KTempFile *mTempFile;
 
     bool mAsynchronous;
 
