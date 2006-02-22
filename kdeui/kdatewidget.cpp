@@ -130,7 +130,7 @@ void KDateWidget::slotDateChanged( )
   y = qMin(qMax(y, calendar->minValidYear()), calendar->maxValidYear());
 
   calendar->setYMD(date, y, 1, 1);
-  m = d->m_month->currentItem()+1;
+  m = d->m_month->currentIndex()+1;
   m = qMin(qMax(m,1), calendar->monthsInYear(date));
 
   calendar->setYMD(date, y, m, 1);

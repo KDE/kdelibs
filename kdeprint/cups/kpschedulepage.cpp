@@ -195,7 +195,7 @@ KPSchedulePage::~KPSchedulePage()
 
 bool KPSchedulePage::isValid(QString& msg)
 {
-	if (m_time->currentItem() == 8 && !m_tedit->time().isValid())
+	if (m_time->currentIndex() == 8 && !m_tedit->time().isValid())
 	{
 		msg = i18n("The time specified is not valid.");
 		return false;
@@ -245,10 +245,10 @@ void KPSchedulePage::setOptions(const QMap<QString,QString>& opts)
 
 void KPSchedulePage::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
-	if (incldef || m_time->currentItem() != 0)
+	if (incldef || m_time->currentIndex() != 0)
 	{
 		QString	t;
-		switch (m_time->currentItem())
+		switch (m_time->currentIndex())
 		{
 			case 0: t = "no-hold"; break;
 			case 1: t = "indefinite"; break;
@@ -274,8 +274,8 @@ void KPSchedulePage::getOptions(QMap<QString,QString>& opts, bool incldef)
 
 void KPSchedulePage::slotTimeChanged()
 {
-	m_tedit->setEnabled(m_time->currentItem() == 8);
-	if (m_time->currentItem() == 8)
+	m_tedit->setEnabled(m_time->currentIndex() == 8);
+	if (m_time->currentIndex() == 8)
 		m_tedit->setFocus();
 }
 

@@ -52,10 +52,10 @@ void KMConfigLpr::loadConfig(KConfig*)
 
 void KMConfigLpr::saveConfig(KConfig *conf)
 {
-	LprSettings::self()->setMode((LprSettings::Mode)(m_mode->currentItem()));
+	LprSettings::self()->setMode((LprSettings::Mode)(m_mode->currentIndex()));
 
 	QString	modestr;
-	switch (m_mode->currentItem())
+	switch (m_mode->currentIndex())
 	{
 		default:
 		case 0: modestr = "LPR"; break;

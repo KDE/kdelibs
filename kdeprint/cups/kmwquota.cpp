@@ -162,7 +162,7 @@ void KMWQuota::updatePrinter(KMPrinter *p)
 		pa = 0;
 		qu = 0;
 	}
-	qu *= time_periods[m_timeunit->currentItem()];
+	qu *= time_periods[m_timeunit->currentIndex()];
 
 	p->setOption("job-quota-period", QString::number(qu));
 	p->setOption("job-k-limit", QString::number(si));

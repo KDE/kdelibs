@@ -89,8 +89,8 @@ void KMWUsers::updatePrinter(KMPrinter *p)
 	if (m_users->count() > 0)
 		str = m_users->items().join(",");
 	else
-		str = (m_type->currentItem() == 0 ? "all" : "none");
-	QString	optname = (m_type->currentItem() == 0 ? "requesting-user-name-allowed" : "requesting-user-name-denied");
+		str = (m_type->currentIndex() == 0 ? "all" : "none");
+	QString	optname = (m_type->currentIndex() == 0 ? "requesting-user-name-allowed" : "requesting-user-name-denied");
 	p->setOption(optname, str);
 }
 #include "kmwusers.moc"

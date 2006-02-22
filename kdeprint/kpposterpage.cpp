@@ -201,7 +201,7 @@ KPPosterPage::KPPosterPage( QWidget *parent )
 		m_printsize->insertItem( page_sizes[ i ].text );
 	}
 	m_postersize->setCurrentItem( findIndex( KPrinter::A3 ) );
-	slotPosterSizeChanged( m_postersize->currentItem() );
+	slotPosterSizeChanged( m_postersize->currentIndex() );
 
 	connect( m_postercheck, SIGNAL( toggled( bool ) ), dummy, SLOT( setEnabled( bool ) ) );
 	dummy->setEnabled( false );
@@ -272,10 +272,10 @@ void KPPosterPage::setOptions( const QMap<QString,QString>& opts )
 		{
 			m_postersize->setCurrentItem( findIndex( pageNameToPageSize( ps ) ) );
 			m_lockbtn->setOn( !prtsize.isEmpty() &&
-					page_sizes[ m_postersize->currentItem() ].ID == prtsize.toInt() );
+					page_sizes[ m_postersize->currentIndex() ].ID == prtsize.toInt() );
 			if ( !m_lockbtn->isOn() )
 				m_printsize->setCurrentItem( findIndex( prtsize.toInt() ) );
-			slotPosterSizeChanged( m_postersize->currentItem() );
+			slotPosterSizeChanged( m_postersize->currentIndex() );
 		}
 		if ( !opts[ "_kde-poster-cut" ].isEmpty() )
 			m_cutmargin->setValue( opts[ "_kde-poster-cut" ].toInt() );
@@ -318,7 +318,7 @@ bool KPPosterPage::isValid()
 
 void KPPosterPage::slotPosterSizeChanged( int value )
 {
-	int ID = page_sizes[ m_postersize->currentItem() ].ID;
+	int ID = page_sizes[ m_postersize->currentIndex() ].ID;
 	m_preview->setPosterSize( ID );
 	if ( m_lockbtn->isChecked() )
 		m_printsize->setCurrentItem( value );
@@ -333,7 +333,7 @@ void KPPosterPage::slotLockToggled( bool on )
 {
 	m_lockbtn->setPixmap( SmallIcon( on ? "encrypted" : "decrypted" ) );
 	if ( on )
-		m_printsize->setCurrentIndex( m_postersize->currentItem() );
+		m_printsize->setCurrentIndex( m_postersize->currentIndex() );
 }
 
 #include "kpposterpage.moc"

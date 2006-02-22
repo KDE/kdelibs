@@ -440,7 +440,7 @@ void KPImagePage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		opts["scaling"] = "0";
 		opts["natural-scaling"] = "1";
 	}
-	switch (m_sizetype->currentItem())
+	switch (m_sizetype->currentIndex())
 	{
 		case 0: break;
 		case 1: name = "ppi"; break;

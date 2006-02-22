@@ -463,7 +463,7 @@ void KHistoryCombo::addToHistory( const QString& item )
         while ( i < itemCount ) {
             if ( text( i ) == item ) {
                 if ( !wasCurrent )
-                  wasCurrent = ( i == currentItem() );
+                  wasCurrent = ( i == currentIndex() );
                 removeItem( i );
                 --itemCount;
             } else {

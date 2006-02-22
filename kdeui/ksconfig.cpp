@@ -947,7 +947,7 @@ KSpellConfig::sDictionary(bool on)
   if (on)
   {
     dictcombo->setEnabled (true);
-    setDictionary (langfnames[dictcombo->currentItem()] );
+    setDictionary (langfnames[dictcombo->currentIndex()] );
     setDictFromList (true);
   }
   else
