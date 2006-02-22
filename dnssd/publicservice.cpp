@@ -137,7 +137,7 @@ void PublicService::publishAsync()
 	TXTRecordCreate(&txt,0,0);
 	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
 	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) {
-		QByteArray value = it.data().toUtf8();
+		QByteArray value = it.value().toUtf8();
 		if (TXTRecordSetValue(&txt,it.key().toUtf8(),value.length(),value)!=kDNSServiceErr_NoError) {
 			TXTRecordDeallocate(&txt);
 			emit published(false);
@@ -184,7 +184,7 @@ const KUrl PublicService::toInvitation(const QString& host)
 	QString query;
 	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
 	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it)
-		url.addQueryItem(it.key(),it.data());;
+		url.addQueryItem(it.key(),it.value());;
 	return url;
 }
 

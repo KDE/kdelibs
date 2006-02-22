@@ -131,7 +131,7 @@ void KPTagsPage::setOptions(const QMap<QString,QString>& opts)
 		if (it.key().startsWith("KDEPrint-"))
 		{
 			m_tags->itemAt( 0, r)->setText(it.key().mid(9));
-			QString	data = it.data();
+			QString	data = it.value();
 			m_tags->itemAt(1, r )-> setText(data.replace(re, ""));
 			r++;
 		}

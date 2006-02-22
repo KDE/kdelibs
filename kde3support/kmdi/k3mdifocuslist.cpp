@@ -48,7 +48,7 @@ void K3MdiFocusList::restore()
 {
 	for ( QMap<QWidget*, Qt::FocusPolicy>::const_iterator it = m_list.constBegin();it != m_list.constEnd();++it )
 	{
-		it.key() ->setFocusPolicy( it.data() );
+		it.key() ->setFocusPolicy( it.value() );
 	}
 	m_list.clear();
 }

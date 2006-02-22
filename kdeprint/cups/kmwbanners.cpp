@@ -80,7 +80,7 @@ QString mapBanner( const QString& ban )
 	if ( it == map.end() )
 		return ban;
 	else
-		return it.data();
+		return it.value();
 }
 
 //**************************************************************************************************************

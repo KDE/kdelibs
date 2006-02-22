@@ -331,7 +331,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it )
       {
           QString name = it.key();
-          QString url = it.data();
+          QString url = it.value();
 
           if (url.startsWith("!"))
               continue;
@@ -616,7 +616,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         PolicyMap::Iterator it;
         for( it = d->javaDomainPolicy.begin(); it != d->javaDomainPolicy.end(); ++it )
         {
-          QByteArray javaPolicy = adviceToStr( it.data() );
+          QByteArray javaPolicy = adviceToStr( it.value() );
           QByteArray javaScriptPolicy = adviceToStr( KJavaScriptDunno );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
         }
@@ -630,7 +630,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         for( it = d->javaScriptDomainPolicy.begin(); it != d->javaScriptDomainPolicy.end(); ++it )
         {
           QByteArray javaPolicy = adviceToStr( KJavaScriptDunno );
-          QByteArray javaScriptPolicy = adviceToStr( it.data() );
+          QByteArray javaScriptPolicy = adviceToStr( it.value() );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
         }
         config->writeEntry( "ECMADomainSettings", domainConfig );
