@@ -908,7 +908,7 @@ void KCryptoConfig::load()
   QString whichCert = config->readEntry("DefaultCert");
   defCertBox->setCurrentIndex(0);
   for (int i = 0; i < defCertBox->count(); i++) {
-     if (defCertBox->text(i) == whichCert) {
+     if (defCertBox->itemText(i) == whichCert) {
        defCertBox->setCurrentIndex(i);
        break;
      }
@@ -2072,7 +2072,7 @@ if (x) {
 
   QString theCert = x->getCertName();
   for (int i = 0; i < hostCertBox->count(); i++) {
-    if (hostCertBox->text(i) == theCert) {
+    if (hostCertBox->itemText(i) == theCert) {
        hostCertBox->setCurrentIndex(i);
        break;
     }
@@ -2266,7 +2266,7 @@ bool noneDef, noneHost;
   defCertBox->setCurrentIndex(0);
   if (!noneDef) {
     for (int i = 0; i < defCertBox->count(); i++) {
-      if (defCertBox->text(i) == oldDef) {
+      if (defCertBox->itemText(i) == oldDef) {
          defCertBox->setCurrentIndex(i);
          break;
       }
@@ -2278,7 +2278,7 @@ bool noneDef, noneHost;
   hostCertBox->setCurrentIndex(0);
   if (!noneHost) {
     for (int i = 0; i < hostCertBox->count(); i++) {
-      if (hostCertBox->text(i) == oldHost) {
+      if (hostCertBox->itemText(i) == oldHost) {
          hostCertBox->setCurrentIndex(i);
          break;
       }
@@ -2294,7 +2294,7 @@ bool noneDef, noneHost;
              x = static_cast<HostAuthItem *>(x->nextSibling())) {
      QString newValue = QString();
      for (int i = 1; i < hostCertBox->count(); i++) {
-        if (hostCertBox->text(i) == x->getCertName()) {
+        if (hostCertBox->itemText(i) == x->getCertName()) {
            newValue = x->getCertName();
            break;
         }
