@@ -89,14 +89,14 @@ using command line tar, which is available from http://sourceforge.net/project/s
 \code
 cd kdelibs
 tar xjvf bksys\scons-mini.tar.bz2
-bksys\initvars.bat
+bksys\setenv.bat
 \endcode
 
 using winzip(tm) or similar unpacking tool 
 \code
 cd kdelibs
 start bksys\scons-mini.tar.bz2
-bksys\initvars.bat
+bksys\setenv.bat
 \endcode
 Please note that is important to unpack the archive in the kdelibs dir. 
 
