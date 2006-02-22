@@ -39,7 +39,7 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
     KConfigGroupSaver cs( config, ConfigGroup );
     autoMode = config->readBoolEntry( "Automatic Preview", true );
 
-    QVBoxLayout *vb = new QVBpxLayout( this, 0, KDialog::spacingHint() );
+    QVBoxLayout *vb = new QVBoxLayout( this, 0, KDialog::spacingHint() );
 
     imageLabel = new QLabel( this );
     imageLabel->setFrameStyle( QFrame::NoFrame );
