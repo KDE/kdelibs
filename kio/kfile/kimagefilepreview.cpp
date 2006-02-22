@@ -106,6 +106,9 @@ void KImageFilePreview::showPreview( const KURL &url, bool force )
             int h = imageLabel->contentsRect().height() - 4;
 
             m_job =  createJob( url, w, h );
+            if ( force ) // explicitly requested previews shall always be generated!
+                m_job->setIgnoreMaximumSize( true );
+            
             connect( m_job, SIGNAL( result( KIO::Job * )),
                      this, SLOT( slotResult( KIO::Job * )));
             connect( m_job, SIGNAL( gotPreview( const KFileItem*,
