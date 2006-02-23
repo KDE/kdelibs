@@ -119,12 +119,12 @@ AutoStart::loadAutoStartList()
 
        if (config.hasKey("OnlyShowIn"))
        {
-          if (!config.readListEntry("OnlyShowIn", ';').contains("KDE"))
+          if (!config.readEntry("OnlyShowIn",QStringList(), ';').contains("KDE"))
               continue;
        }
        if (config.hasKey("NotShowIn"))
        {
-           if (config.readListEntry("NotShowIn", ';').contains("KDE"))
+           if (config.readEntry("NotShowIn", QStringList(),';').contains("KDE"))
                continue;
        }
        
