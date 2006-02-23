@@ -333,7 +333,7 @@ void XMLHttpRequest::send(const QString& _body)
     // FIXME: determine post encoding correctly by looking in headers
     // for charset.
     QByteArray buf;
-    buf.duplicate(_body.utf8().data(), _body.length());
+    buf.duplicate(_body.toUtf8().data(), _body.length());
 
     job = KIO::http_post( url, buf, false );
     if(contentType.isNull())

@@ -1499,7 +1499,7 @@ void K3DockWidget::setDockTabName( K3DockTabGroup* tab )
   listOfCaption.remove( listOfCaption.length()-1, 1 );
   listOfName.remove( listOfName.length()-1, 1 );
 
-  tab->parentWidget()->setName( listOfName.utf8() );
+  tab->parentWidget()->setName( listOfName.toUtf8() );
   tab->parentWidget()->setCaption( listOfCaption );
 
   tab->parentWidget()->repaint( false ); // K3DockWidget->repaint

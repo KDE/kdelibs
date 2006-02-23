@@ -227,7 +227,7 @@ QByteArray K3URLDrag::encodedData( const char* mime ) const
         for (Q3StrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).prettyURL());
 
-        QByteArray s = uris.join( "\n" ).utf8();
+        QByteArray s = uris.join( "\n" ).toUtf8();
         if( uris.count() > 1 )
             s.append( "\n" );
         a.resize( s.length());
