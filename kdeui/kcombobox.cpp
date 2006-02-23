@@ -211,12 +211,13 @@ void KComboBox::insertURL( const QPixmap& pixmap, const KUrl& url, int index )
 
 void KComboBox::changeURL( const KUrl& url, int index )
 {
-    QComboBox::changeItem( url.prettyURL(), index );
+    QComboBox::setItemText( index, url.prettyURL() );
 }
 
 void KComboBox::changeURL( const QPixmap& pixmap, const KUrl& url, int index )
 {
-    QComboBox::changeItem( pixmap, url.prettyURL(), index );
+	QComboBox::setItemIcon( index, QIcon( pixmap ) );
+	QComboBox::setItemText( index, url.prettyURL() );
 }
 
 void KComboBox::setCompletedItems( const QStringList& items, bool autosubject )
@@ -247,7 +248,7 @@ void KComboBox::wheelEvent( QWheelEvent *ev )
 
 void KComboBox::setLineEdit( QLineEdit *edit )
 {
-    if ( !editable() && edit &&
+    if ( !isEditable() && edit &&
          !qstrcmp( edit->className(), "QLineEdit" ) )
     {
         // uic generates code that creates a read-only KComboBox and then
@@ -417,7 +418,7 @@ void KHistoryCombo::setHistoryItems( const QStringList &items,
         comp->setOrder( KCompletion::Weighted );
     }
 
-    clearEdit();
+    clearEditText();
 }
 
 QStringList KHistoryCombo::historyItems() const

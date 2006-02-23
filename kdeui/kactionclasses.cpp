@@ -543,7 +543,7 @@ void KSelectAction::changeItem( int id, int index, const QString& text)
      if ( qobject_cast<QComboBox*>( r ) )
      {
         QComboBox *b = static_cast<QComboBox*>( r );
-        b->changeItem(text, index );
+        b->setItemText( index, text );
      }
   }
 }

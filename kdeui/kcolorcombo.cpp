@@ -186,7 +186,7 @@ void KColorCombo::slotActivated( int index )
 			painter.drawText( 2, QFontMetrics(painter.font()).ascent()+2, i18n("Custom...") );
 			painter.end();
 
-			changeItem( pixmap, 0 );
+			setItemIcon( 0, QIcon(pixmap) );
 			pixmap.detach();
 		}
 

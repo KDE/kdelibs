@@ -495,7 +495,7 @@ void KSpellConfig::getAvailDictsIspell () {
       hname=i18n("default spelling dictionary"
                  ,"Default - %1 [%2]").arg(hname).arg(fname);
 
-      dictcombo->changeItem (hname,0);
+      dictcombo->setItemText (0,hname);
     }
     else
     {
@@ -578,7 +578,7 @@ void KSpellConfig::getAvailDictsAspell () {
         hname=i18n("default spelling dictionary"
                    ,"Default - %1").arg(hname);
 
-        dictcombo->changeItem (hname,0);
+        dictcombo->setItemText (0,hname);
       }
       else
       {
@@ -645,7 +645,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
           hname=i18n("default spelling dictionary"
                      ,"Default - %1 [%2]").arg(hname).arg(fname);
 
-          box->changeItem (hname,0);
+          box->setItemText (0,hname);
         }
         else
         {
@@ -734,7 +734,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
             hname=i18n("default spelling dictionary"
                        ,"Default - %1").arg(hname);
 
-            box->changeItem (hname,0);
+            box->setItemText (0,hname);
           }
           else
           {

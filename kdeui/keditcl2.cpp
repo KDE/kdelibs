@@ -897,8 +897,8 @@ void KEdReplace::textSearchChanged ( const QString &text )
 void KEdReplace::slotCancel( void )
 { 
 	emit done();
-	d->searchCombo->clearEdit();
-	d->replaceCombo->clearEdit();
+	d->searchCombo->clearEditText();
+	d->replaceCombo->clearEditText();
 }
 
 

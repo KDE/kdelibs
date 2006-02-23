@@ -592,7 +592,7 @@ void KToolBar::changeComboItem  (int id, const QString& text, int index)
 {
     KComboBox * comboBox = getCombo( id );
     if (comboBox)
-        comboBox->changeItem( text, index );
+        comboBox->setItemText( index, text );
 }
 
 
