@@ -675,8 +675,8 @@ public:
    * Reads a boolean entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
-   * and interpret it as a boolean value. Currently "on" and "true" are
-   * accepted as true, everything else if false.
+   * and interpret it as a boolean value. Currently "on", "yes", "1" and
+   * "true" are accepted as true, everything else if false.
    *
    * @param pKey The key to search for
    * @param bDefault A default value returned if the key was not found.
@@ -690,8 +690,8 @@ public:
    * Reads a boolean entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
-   * and interpret it as a boolean value. Currently "on" and "true" are
-   * accepted as true, everything else if false.
+   * and interpret it as a boolean value. Currently "on", "yes", "1" and
+   * "true" are accepted as true, everything else if false.
    *
    * @param pKey The key to search for
    * @param bDefault A default value returned if the key was not found.
