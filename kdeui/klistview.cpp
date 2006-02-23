@@ -2323,17 +2323,18 @@ bool KListViewItem::isAlternate()
 void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int alignment)
 {
   QColorGroup _cg = cg;
-  const QPixmap *pm = listView()->viewport()->backgroundPixmap();
+  QListView* lv = listView();
+  const QPixmap *pm = lv->viewport()->backgroundPixmap();
 
   if (pm && !pm->isNull())
   {
     _cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(column), *pm));
     QPoint o = p->brushOrigin();
-    p->setBrushOrigin( o.x()-listView()->contentsX(), o.y()-listView()->contentsY() );
+    p->setBrushOrigin( o.x()-lv->contentsX(), o.y()-lv->contentsY() );
   }
   else
   {
-    _cg.setColor((listView()->viewport()->backgroundMode() == Qt::FixedColor) ?
+    _cg.setColor((lv->viewport()->backgroundMode() == Qt::FixedColor) ?
                  QColorGroup::Background : QColorGroup::Base,
                  backgroundColor(column));
   }
