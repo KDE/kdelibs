@@ -786,11 +786,11 @@ void KSelectAction::slotActivated( const QString &text )
     }
   }
 
-  int i = items().findIndex( text );
+  int i = items().indexOf( text );
   if ( i > -1 )
       setCurrentItem( i );
   else
-      setCurrentItem( comboItems().findIndex( text ) );
+      setCurrentItem( comboItems().indexOf( text ) );
   // Delay this. Especially useful when the slot connected to activated() will re-create
   // the menu, e.g. in the recent files action. This prevents a crash.
   QTimer::singleShot( 0, this, SLOT( slotActivated() ) );
@@ -1087,9 +1087,9 @@ void KRecentFilesAction::setMaxItems( int maxItems )
     {
         // remove last item
         QString lastItem = lst.last();
-        d->m_shortNames.erase( lastItem );
-        d->m_urls.erase( lastItem );
-        lst.remove( lastItem );
+        d->m_shortNames.remove( lastItem );
+        d->m_urls.remove( lastItem );
+        lst.removeLast();
     }
 
     // set new list if changed
@@ -1112,9 +1112,9 @@ void KRecentFilesAction::addURL( const KUrl& url, const QString& name )
       const QString title = (*it);
       if ( title.endsWith( file + "]" ) )
       {
-        lst.remove( it );
-        d->m_urls.erase( title );
-        d->m_shortNames.erase( title );
+        lst.erase( it );
+        d->m_urls.remove( title );
+        d->m_shortNames.remove( title );
         break;
       }
     }
@@ -1123,9 +1123,9 @@ void KRecentFilesAction::addURL( const KUrl& url, const QString& name )
     {
         // remove last item
         const QString lastItem = lst.last();
-        d->m_shortNames.erase( lastItem );
-        d->m_urls.erase( lastItem );
-        lst.remove( lastItem );
+        d->m_shortNames.remove( lastItem );
+        d->m_urls.remove( lastItem );
+        lst.removeLast();
     }
 
     // add file to list
@@ -1147,9 +1147,9 @@ void KRecentFilesAction::removeURL( const KUrl& url )
     {
       if ( (*it).endsWith( file + "]" ))
       {
-        d->m_shortNames.erase( (*it) );
-        d->m_urls.erase( (*it) );
-        lst.remove( it );
+        d->m_shortNames.remove( (*it) );
+        d->m_urls.remove( (*it) );
+        lst.erase( it );
         setItems( lst );
         break;
       }
@@ -1594,7 +1594,7 @@ void KFontSizeAction::init()
 void KFontSizeAction::setFontSize( int size )
 {
     if ( size == fontSize() ) {
-        setCurrentItem( items().findIndex( QString::number( size ) ) );
+        setCurrentItem( items().indexOf( QString::number( size ) ) );
         return;
     }
 
@@ -1603,7 +1603,7 @@ void KFontSizeAction::setFontSize( int size )
         return;
     }
 
-    int index = items().findIndex( QString::number( size ) );
+    int index = items().indexOf( QString::number( size ) );
     if ( index == -1 ) {
         // Insert at the correct position in the list (to keep sorting)
         QList<int> lst;
@@ -1622,7 +1622,7 @@ void KFontSizeAction::setFontSize( int size )
         }
         KSelectAction::setItems( strLst );
         // Find new current item
-        index = lst.findIndex( size );
+        index = lst.indexOf( size );
         setCurrentItem( index );
     }
     else

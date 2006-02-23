@@ -413,7 +413,7 @@ KSpellConfig::fillInDialog ()
   int whichelement=-1;
 
   if ( dictFromList() )
-    whichelement = langfnames.findIndex(dictionary());
+    whichelement = langfnames.indexOf(dictionary());
 
   dictcombo->setMinimumWidth (dictcombo->sizeHint().width());
 
@@ -569,7 +569,7 @@ void KSpellConfig::getAvailDictsAspell () {
       { // This one is the KDE default language
         // so place it first in the lists (overwrite "Default")
 
-        langfnames.remove ( langfnames.begin() );
+        langfnames.erase ( langfnames.begin() );
         langfnames.prepend ( fname );
 
         hname=i18n("default spelling dictionary"
@@ -636,7 +636,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
         { // This one is the KDE default language
           // so place it first in the lists (overwrite "Default")
 
-          langfnames.remove ( langfnames.begin() );
+          langfnames.erase ( langfnames.begin() );
           langfnames.prepend ( fname );
 
           hname=i18n("default spelling dictionary"
@@ -725,7 +725,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
           { // This one is the KDE default language
             // so place it first in the lists (overwrite "Default")
 
-            langfnames.remove ( langfnames.begin() );
+            langfnames.erase ( langfnames.begin() );
             langfnames.prepend ( fname );
 
             hname=i18n("default spelling dictionary"
@@ -741,7 +741,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
         }
       }
     }
-    int whichelement = langfnames.findIndex(qsdict);
+    int whichelement = langfnames.indexOf(qsdict);
     if ( whichelement >= 0 ) {
       box->setCurrentIndex( whichelement );
     }
@@ -805,7 +805,7 @@ KSpellConfig::setDictionary (const QString s)
     int whichelement=-1;
     if (dictFromList())
     {
-      whichelement = langfnames.findIndex(s);
+      whichelement = langfnames.indexOf(s);
 
       if(whichelement >= 0)
       {

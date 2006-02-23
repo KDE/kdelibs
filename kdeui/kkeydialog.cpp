@@ -223,7 +223,7 @@ static KStaticDeleter< QList< KKeyChooser* > > allChoosersDeleter;
 
 KKeyChooser::~KKeyChooser()
 {
-        allChoosers->remove( this );
+	allChoosers->removeAll( this );
 	// Delete allocated KShortcutLists
 	for( int i = 0; i < d->rgpListsAllocated.count(); i++ )
 		delete d->rgpListsAllocated[i];

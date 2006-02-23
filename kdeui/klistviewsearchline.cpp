@@ -144,10 +144,10 @@ void KListViewSearchLine::addListView(KListView *lv)
 void KListViewSearchLine::removeListView(KListView *lv)
 {
     if (lv) {
-        QList<KListView *>::Iterator it = d->listViews.find(lv);
+        int idx = d->listViews.indexOf(lv);
         
-        if ( it != d->listViews.end() ) {
-            d->listViews.remove( it );
+        if ( idx != -1 ) {
+            d->listViews.removeAt( idx );
             checkColumns();
 
             disconnectListView(lv);
@@ -306,7 +306,7 @@ void KListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
 		    columnText = i18n("Column number %1","Column No. %1").arg(visiblePosition);
 	        }
                 subMenu->insertItem(columnText, visibleColumns);
-	        if(d->searchColumns.isEmpty() || d->searchColumns.find(i) != d->searchColumns.end())
+	        if(d->searchColumns.isEmpty() || d->searchColumns.indexOf(i) != -1)
 		    subMenu->setItemChecked(visibleColumns, true);
                 else
                     allColumnsAreSearchColumns = false;
@@ -428,8 +428,8 @@ void KListViewSearchLine::searchColumnsMenuActivated(int id)
             d->searchColumns.clear();
     }
     else {
-        if(d->searchColumns.find(id) != d->searchColumns.end())
-            d->searchColumns.remove(id);
+        if(d->searchColumns.indexOf(id) != -1)
+            d->searchColumns.removeAll(id);
         else {
             if(d->searchColumns.isEmpty()) {
                 for(int i = 0; i < d->listViews.first()->columns(); i++) {

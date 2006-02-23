@@ -181,7 +181,7 @@ KEdit::cleanWhiteSpace()
          newText += line;
          addSpace = true;
       }
-      it = lines.remove(it);
+      it = lines.erase(it);
    }
    if (addSpace)
    {

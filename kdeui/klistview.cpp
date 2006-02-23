@@ -1384,7 +1384,7 @@ void KListView::setRenameable (int col, bool renameable)
 {
   if (col>=header()->count()) return;
 
-  d->renameable.remove(col);
+  d->renameable.removeAll(col);
   if (renameable)
     d->renameable+=col;
 }

@@ -2181,7 +2181,7 @@ void KToolBar::removeWidgetInternal( QWidget * w )
     if ( it == widget2id.end() )
         return;
     id2widget.remove( *it );
-    widget2id.remove( it );
+    widget2id.erase( it );
 }
 
 void KToolBar::virtual_hook( int, void* )
