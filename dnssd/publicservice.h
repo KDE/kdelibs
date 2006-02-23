@@ -23,7 +23,7 @@
 
 #include <qobject.h>
 #include <dnssd/servicebase.h>
-#include <QCustomEvent>
+#include <QEvent>
 
 class KUrl;
 namespace DNSSD
@@ -140,7 +140,7 @@ private:
 	PublicServicePrivate* const d;
 
 protected:
-	virtual void customEvent(QCustomEvent* event);
+	virtual void customEvent(QEvent* event);
 	virtual void virtual_hook(int, void*);
 };
 

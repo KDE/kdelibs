@@ -91,7 +91,7 @@ Q_SIGNALS:
 
 protected:
 	virtual void virtual_hook(int, void*);
-	virtual void customEvent(QCustomEvent* event);
+	virtual void customEvent(QEvent* event);
 private:
 	QueryPrivate* const d;
 private Q_SLOTS:

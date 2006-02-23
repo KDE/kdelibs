@@ -103,7 +103,7 @@ void DomainBrowser::gotNewDomain(DNSSD::RemoteService::Ptr srv)
 void DomainBrowser::gotRemoveDomain(DNSSD::RemoteService::Ptr srv)
 {
 	QString domain = srv->serviceName()+"."+srv->domain();
-	d->m_domains.remove(domain);
+	d->m_domains.removeAll(domain);
 	emit domainRemoved(domain);
 	d->resolvers.remove(domain);
 }

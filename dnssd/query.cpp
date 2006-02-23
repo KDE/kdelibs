@@ -49,6 +49,7 @@ public:
 Query::Query(const QString& type, const QString& domain)
 	:d(new QueryPrivate(type,domain))
 {
+        d->timeout.setSingleShot(true);
 	connect(&d->timeout,SIGNAL(timeout()),this,SLOT(timeout()));
 }
 
@@ -84,13 +85,13 @@ void Query::startQuery()
 		   == kDNSServiceErr_NoError) d->setRef(ref);
 #endif
 	if (!d->isRunning()) emit finished();
-		else d->timeout.start(domainIsLocal(d->m_domain) ? TIMEOUT_LAN : TIMEOUT_WAN,true);
+		else d->timeout.start(domainIsLocal(d->m_domain) ? TIMEOUT_LAN : TIMEOUT_WAN);
 }
 void Query::virtual_hook(int, void*)
 {
 }
 
-void Query::customEvent(QCustomEvent* event)
+void Query::customEvent(QEvent* event)
 {
 	if (event->type()==QEvent::User+SD_ERROR) {
 		d->stop();

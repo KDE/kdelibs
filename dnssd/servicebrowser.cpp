@@ -122,7 +122,7 @@ void ServiceBrowser::serviceResolved(bool success)
 		  	d->m_services+=(*it);
 			emit serviceAdded(RemoteService::Ptr(svr));
 		}
-		d->m_duringResolve.remove(it);
+		d->m_duringResolve.erase(it);
 		queryFinished();
 	}
 }
@@ -157,7 +157,7 @@ void ServiceBrowser::gotRemoveService(RemoteService::Ptr svr)
 	QList<RemoteService::Ptr>::Iterator it = findDuplicate(svr);
 	if (it!=(d->m_services.end())) {
 		emit serviceRemoved(*it);
-		d->m_services.remove(it);
+		d->m_services.erase(it);
 	}
 }
 
@@ -170,7 +170,7 @@ void ServiceBrowser::removeDomain(const QString& domain)
 		// use section to skip possible trailing dot
 		if ((*it)->domain().section('.',0) == domain.section('.',0)) {
 			emit serviceRemoved(*it);
-			it = d->m_services.remove(it);
+			it = d->m_services.erase(it);
 		} else ++it;
 }
 

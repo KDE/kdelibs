@@ -112,7 +112,7 @@ bool RemoteService::isResolved() const
 	return d->m_resolved;
 }
 
-void RemoteService::customEvent(QCustomEvent* event)
+void RemoteService::customEvent(QEvent* event)
 {
 	if (event->type() == QEvent::User+SD_ERROR) {
 		d->stop();

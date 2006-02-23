@@ -23,7 +23,7 @@
 
 #include <qobject.h>
 #include <dnssd/servicebase.h>
-#include <QCustomEvent>
+#include <QEvent>
 
 class QDataStream;
 class KUrl;
@@ -95,7 +95,7 @@ Q_SIGNALS:
 
 protected:
 	virtual void virtual_hook(int id, void *data);
-	virtual void customEvent(QCustomEvent* event);
+	virtual void customEvent(QEvent* event);
 private:
 	void resolveError();
 	void resolved(const char *host, unsigned short port, unsigned short txtlen,

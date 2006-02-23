@@ -188,7 +188,7 @@ const KUrl PublicService::toInvitation(const QString& host)
 	return url;
 }
 
-void PublicService::customEvent(QCustomEvent* event)
+void PublicService::customEvent(QEvent* event)
 {
 	if (event->type()==QEvent::User+SD_ERROR) {
 		stop();
