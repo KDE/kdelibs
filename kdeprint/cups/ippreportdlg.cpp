@@ -44,7 +44,7 @@ void IppReportDlg::slotUser1()
 {
 	KPrinter	printer;
 	printer.setFullPage(true);
-	printer.setDocName(caption());
+	printer.setDocName(windowTitle());
 	if (printer.setup(this))
 	{
 		QPainter	painter(&printer);
@@ -58,7 +58,7 @@ void IppReportDlg::slotUser1()
 		while (1)
 		{
 			rich.draw(&painter, margin, margin, r, colorGroup());
-			QString	s = caption() + ": " + QString::number(page);
+			QString	s = windowTitle() + ": " + QString::number(page);
 			QRect	br = painter.fontMetrics().boundingRect(s);
 			painter.drawText(r.right()-br.width()-5, r.top()-br.height()-4, br.width()+5, br.height()+4, Qt::AlignRight|Qt::AlignTop, s);
 			r.translate(0, r.height()-10);

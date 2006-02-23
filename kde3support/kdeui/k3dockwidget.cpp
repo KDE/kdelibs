@@ -516,7 +516,7 @@ K3DockWidget::K3DockWidget( K3DockManager* dockManager, const char* name, const 
     setCaption( strCaption);
 
   if( strTabPageLabel == " ")
-    setTabPageLabel( caption());
+    setTabPageLabel( windowTitle());
   else
     setTabPageLabel( strTabPageLabel);
 
@@ -761,7 +761,7 @@ void K3DockWidget::setHeader( K3DockWidgetAbstractHeader* h )
     header = h;
     layout->addWidget( header );
   }
-//  kDebug(282)<<caption()<<": K3DockWidget::setHeader"<<endl;
+//  kDebug(282)<<windowTitle()<<": K3DockWidget::setHeader"<<endl;
   setEnableDocking(eDocking);
 }
 
@@ -1493,7 +1493,7 @@ void K3DockWidget::setDockTabName( K3DockTabGroup* tab )
   QString listOfCaption;
   for ( int i = 0; i < tab->count(); ++i ) {
     QWidget *w = tab->page( i );
-    listOfCaption.append( w->caption() ).append(",");
+    listOfCaption.append( w->windowTitle() ).append(",");
     listOfName.append( w->name() ).append(",");
   }
   listOfCaption.remove( listOfCaption.length()-1, 1 );
@@ -2916,13 +2916,13 @@ void K3DockManager::slotMenuPopup()
     ++it;
     if ( obj->mayBeHide() )
     {
-      menu->insertItem( i18n("Hide %1").arg(obj->caption()));
+      menu->insertItem( i18n("Hide %1").arg(obj->windowTitle()));
       menuData->append( new MenuDockData( obj, true ) );
     }
 
     if ( obj->mayBeShow() )
     {
-      menu->insertItem( i18n("Show %1").arg(obj->caption()));
+      menu->insertItem( i18n("Show %1").arg(obj->windowTitle()));
       menuData->append( new MenuDockData( obj, false ) );
     }
   }

@@ -256,12 +256,12 @@ void K3MDIGUIClient::addToolView( K3MdiToolViewAccessor* mtva )
 	// 	if ( cfg->hasKey( aname ) )
 	KShortcut sc( cfg->readEntry( aname, QString() ) );
 	cfg->setGroup( _grp );
-	KAction *a = new ToggleToolViewAction( i18n( "Show %1" ).arg( mtva->wrappedWidget() ->caption() ),
+	KAction *a = new ToggleToolViewAction( i18n( "Show %1" ).arg( mtva->wrappedWidget() ->windowTitle() ),
 	                                       /*QString()*/sc, dynamic_cast<K3DockWidget*>( mtva->wrapperWidget() ),
 	                                       m_mdiMainFrm, actionCollection(), aname.latin1() );
 #if KDE_IS_VERSION(3,2,90)
 
-	( ( ToggleToolViewAction* ) a ) ->setCheckedState( i18n( "Hide %1" ).arg( mtva->wrappedWidget() ->caption() ) );
+	( ( ToggleToolViewAction* ) a ) ->setCheckedState( i18n( "Hide %1" ).arg( mtva->wrappedWidget() ->windowTitle() ) );
 #endif
 
 	connect( a, SIGNAL( destroyed( QObject* ) ), this, SLOT( actionDeleted( QObject* ) ) );

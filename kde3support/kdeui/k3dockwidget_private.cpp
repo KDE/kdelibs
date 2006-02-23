@@ -587,7 +587,7 @@ void K3DockSplitter::updateName()
 
   QString new_name = QString( child0->name() ) + "," + child1->name();
   parentWidget()->setName( new_name.latin1() );
-  parentWidget()->setCaption( child0->caption() + "," + child1->caption() );
+  parentWidget()->setCaption( child0->windowTitle() + "," + child1->windowTitle() );
   parentWidget()->repaint( false );
 
   ((K3DockWidget*)parentWidget())->firstName = child0->name();

@@ -579,7 +579,7 @@ K3MdiToolViewAccessor *K3MdiMainFrm::addToolWindow( QWidget* pWnd, K3DockWidget:
 {
 	QWidget* tvta = pWnd;
 	K3DockWidget* pDW = dockManager->getDockWidgetFromName( pWnd->name() );
-	QString newTabCaption = !tabCaption.isEmpty() ? pWnd->caption() : tabCaption;
+	QString newTabCaption = !tabCaption.isEmpty() ? pWnd->windowTitle() : tabCaption;
 	if ( pDW )
 	{
 		// probably readDockConfig already created the widgetContainer, use that
@@ -688,7 +688,7 @@ void K3MdiMainFrm::detachWindow( K3MdiChildView *pWnd, bool bShow )
 					QPixmap pixm( *( lpC->icon() ) );
 					pWnd->setIcon( pixm );
 				}
-				QString capt( lpC->caption() );
+				QString capt( lpC->windowTitle() );
 				if ( !bShow )
 					lpC->hide();
 				lpC->unsetClient( m_undockPositioningOffset );
@@ -954,7 +954,7 @@ K3MdiChildView* K3MdiMainFrm::findWindow( const QString& caption )
 	Q3PtrListIterator<K3MdiChildView> it( *m_pDocumentViews );
 	for ( ; ( *it ); ++it )
 	{
-		if ( ( *it )->caption() == caption )
+		if ( ( *it )->windowTitle() == caption )
 			return ( *it );
 	}
 	return 0L;
@@ -1799,11 +1799,11 @@ void K3MdiMainFrm::setToolviewStyle( int flag )
 				break;
 			case K3Mdi::TextOnly:
 				dockWidget->setPixmap(); //FIXME: Does not hide the icon in the IDEAl mode.
-				dockWidget->setTabPageLabel( it.data()->wrappedWidget()->caption() );
+				dockWidget->setTabPageLabel( it.data()->wrappedWidget()->windowTitle() );
 				break;
 			case K3Mdi::TextAndIcon:
 				dockWidget->setPixmap( *( it.data()->wrappedWidget()->icon() ) );
-				dockWidget->setTabPageLabel( it.data()->wrappedWidget()->caption() );
+				dockWidget->setTabPageLabel( it.data()->wrappedWidget()->windowTitle() );
 			default:
 				break;
 			}
@@ -2672,13 +2672,13 @@ void K3MdiMainFrm::fillWindowMenu()
 		if ( pView->isMinimized() )
 		{
 			item += "(";
-			item += pView->caption();
+			item += pView->windowTitle();
 			item += ")";
 		}
 		else
 		{
 			item += " ";
-			item += pView->caption();
+			item += pView->windowTitle();
 		}
 
 		// insert the window entry sorted by access time

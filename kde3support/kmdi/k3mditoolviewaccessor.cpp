@@ -45,7 +45,7 @@ K3MdiToolViewAccessor::K3MdiToolViewAccessor( K3MdiMainFrm *parent, QWidget *wid
 		QString finalTabCaption;
 		if ( tabCaption.isEmpty() )
 		{
-			finalTabCaption = widgetToWrap->caption();
+			finalTabCaption = widgetToWrap->windowTitle();
 			if ( finalTabCaption.isEmpty() && !widgetToWrap->icon() )
 			{
 				finalTabCaption = widgetToWrap->name();
@@ -58,7 +58,7 @@ K3MdiToolViewAccessor::K3MdiToolViewAccessor( K3MdiMainFrm *parent, QWidget *wid
 		d->widgetContainer = parent->createDockWidget( widgetToWrap->name(),
 		                     ( widgetToWrap->icon() ? ( *( widgetToWrap->icon() ) ) : QPixmap() ),
 		                     0L,   // parent
-		                     widgetToWrap->caption(),
+		                     widgetToWrap->windowTitle(),
 		                     finalTabCaption );
 		d->widgetContainer->setWidget( widgetToWrap );
 		if ( !tabToolTip.isEmpty() )
@@ -118,7 +118,7 @@ void K3MdiToolViewAccessor::setWidgetToWrap( QWidget *widgetToWrap, const QStrin
 	QString finalTabCaption;
 	if ( tabCaption.isEmpty() )
 	{
-		finalTabCaption = widgetToWrap->caption();
+		finalTabCaption = widgetToWrap->windowTitle();
 		if ( finalTabCaption.isEmpty() && !widgetToWrap->icon() )
 		{
 			finalTabCaption = widgetToWrap->name();
@@ -134,7 +134,7 @@ void K3MdiToolViewAccessor::setWidgetToWrap( QWidget *widgetToWrap, const QStrin
 		tmp = mdiMainFrm->createDockWidget( widgetToWrap->name(),
 		                                    widgetToWrap->icon() ? ( *( widgetToWrap->icon() ) ) : QPixmap(),
 		                                    0L,   // parent
-		                                    widgetToWrap->caption(),
+		                                    widgetToWrap->windowTitle(),
 		                                    finalTabCaption );
 		d->widgetContainer = tmp;
 		if ( !tabToolTip.isEmpty() )
@@ -144,7 +144,7 @@ void K3MdiToolViewAccessor::setWidgetToWrap( QWidget *widgetToWrap, const QStrin
 	}
 	else
 	{
-		tmp->setCaption( widgetToWrap->caption() );
+		tmp->setCaption( widgetToWrap->windowTitle() );
 		tmp->setTabPageLabel( finalTabCaption );
 		tmp->setPixmap( widgetToWrap->icon() ? ( *( widgetToWrap->icon() ) ) : QPixmap() );
 		tmp->setName( widgetToWrap->name() );
