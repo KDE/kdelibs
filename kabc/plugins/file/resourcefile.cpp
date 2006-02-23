@@ -238,7 +238,7 @@ bool ResourceFile::asyncLoad()
   }
 
   if (d->mIsSaving) {
-    kdWarning(5700) << "Aborted asyncSave() because we're still asyncSave()ing!" << endl;
+    kWarning(5700) << "Aborted asyncSave() because we're still asyncSave()ing!" << endl;
     return false;
   }
 
@@ -269,7 +269,7 @@ bool ResourceFile::asyncLoad()
 
 void ResourceFile::abortAsyncLoading()
 {
-  kdDebug(5700) << "ResourceFile::abortAsyncLoading()" << endl;
+  kDebug(5700) << "ResourceFile::abortAsyncLoading()" << endl;
 
   if ( d->mLoadJob ) {
     d->mLoadJob->kill(); // result not emitted
@@ -282,7 +282,7 @@ void ResourceFile::abortAsyncLoading()
 
 void ResourceFile::abortAsyncSaving()
 {
-  kdDebug(5700) << "ResourceFile::abortAsyncSaving()" << endl;
+  kDebug(5700) << "ResourceFile::abortAsyncSaving()" << endl;
 
   if ( d->mSaveJob ) {
     d->mSaveJob->kill(); // result not emitted
@@ -329,14 +329,14 @@ bool ResourceFile::save( Ticket * )
 
 bool ResourceFile::asyncSave( Ticket * )
 {
-  kdDebug(5700) << "ResourceFile::asyncSave()" << endl;
+  kDebug(5700) << "ResourceFile::asyncSave()" << endl;
 
   if (d->mIsSaving) {
     abortAsyncSaving();
   }
 
   if (d->mIsLoading) {
-    kdWarning(5700) << "Aborted asyncSave() because we're still asyncLoad()ing!" << endl;
+    kWarning(5700) << "Aborted asyncSave() because we're still asyncLoad()ing!" << endl;
     return false;
   }
 
@@ -377,7 +377,7 @@ bool ResourceFile::createLocalTempFile()
 void ResourceFile::deleteStaleTempFile()
 {
   if ( hasTempFile() ) {
-    kdDebug(5700) << "stale temp file detected " << mTempFile->name() << endl;
+    kDebug(5700) << "stale temp file detected " << mTempFile->name() << endl;
     deleteLocalTempFile();
   }
 }
@@ -426,7 +426,7 @@ QString ResourceFile::format() const
 
 void ResourceFile::fileChanged()
 {
-    kdDebug(5700) << "ResourceFile::fileChanged(): " << mFileName << endl;
+    kDebug(5700) << "ResourceFile::fileChanged(): " << mFileName << endl;
 
   if ( !addressBook() )
     return;
@@ -452,7 +452,7 @@ void ResourceFile::removeAddressee( const Addressee &addr )
 
 void ResourceFile::downloadFinished( KIO::Job* )
 {
-  kdDebug(5700) << "ResourceFile::downloadFinished()" << endl;
+  kDebug(5700) << "ResourceFile::downloadFinished()" << endl;
 
   d->mIsLoading = false;
 
@@ -477,7 +477,7 @@ void ResourceFile::downloadFinished( KIO::Job* )
 
 void ResourceFile::uploadFinished( KIO::Job *job )
 {
-  kdDebug(5700) << "ResourceFile::uploadFinished()" << endl;
+  kDebug(5700) << "ResourceFile::uploadFinished()" << endl;
 
   d->mIsSaving = false;
 
