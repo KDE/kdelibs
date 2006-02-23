@@ -17,6 +17,8 @@ obj.target = 'kded_kdetrayproxy'
 obj.source = kded_kdetrayproxy_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE KDED '
+obj.libpaths = '../../dcop'
+obj.libs     = 'DCOP'
 obj.execute()
 
 env.bksys_insttype('KDESERV', 'kded', 'kdetrayproxy.desktop')
