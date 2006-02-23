@@ -103,7 +103,7 @@ void KDateWidget::setDate( const QDate &date )
 
   d->m_day->setMaxValue(calendar->daysInMonth(date));
   d->m_day->setValue(calendar->day(date));
-  d->m_month->setCurrentItem(calendar->month(date)-1);
+  d->m_month->setCurrentIndex(calendar->month(date)-1);
   d->m_year->setValue(calendar->year(date));
 
   d->m_day->blockSignals(false);

@@ -872,7 +872,7 @@ void KEditToolbarWidget::loadToolbarCombo(const QString& defaultToolbar)
   if (defaultToolbarId == -1)
       defaultToolbarId = 0;
   // we want to the specified item selected and its actions loaded
-  m_toolbarCombo->setCurrentItem(defaultToolbarId);
+  m_toolbarCombo->setCurrentIndex(defaultToolbarId);
   slotToolbarSelected(m_toolbarCombo->currentText());
 }
 

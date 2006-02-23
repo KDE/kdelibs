@@ -584,7 +584,7 @@ void KToolBar::setCurrentComboItem (int id, int index)
 {
     KComboBox * comboBox = getCombo( id );
     if (comboBox)
-        comboBox->setCurrentItem( index );
+        comboBox->setCurrentIndex( index );
 }
 
 

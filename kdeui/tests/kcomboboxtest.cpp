@@ -155,7 +155,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
 
   QPixmap pix = SmallIcon("www");
   m_konqc->insertItem( pix, "http://www.kde.org" );
-  m_konqc->setCurrentItem( m_konqc->count()-1 );
+  m_konqc->setCurrentIndex( m_konqc->count()-1 );
 
   m_timer = new QTimer (this);
   connect (m_timer, SIGNAL (timeout()), SLOT (slotTimeout()));

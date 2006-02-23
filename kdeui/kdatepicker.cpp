@@ -246,7 +246,7 @@ KDatePicker::dateChangedSlot(QDate date)
     // calculate the item num in the week combo box; normalize selected day so as if 1.1. is the first day of the week
     QDate firstDay;
     calendar->setYMD(firstDay, calendar->year(date), 1, 1);
-    d->selectWeek->setCurrentItem((calendar->dayOfYear(date) + calendar->dayOfWeek(firstDay) - 2) / 7/*calendar->daysInWeek()*/);
+    d->selectWeek->setCurrentIndex((calendar->dayOfYear(date) + calendar->dayOfWeek(firstDay) - 2) / 7/*calendar->daysInWeek()*/);
     selectYear->setText(calendar->yearString(date, false));
 
     emit(dateChanged(date));

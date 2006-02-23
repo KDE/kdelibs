@@ -591,7 +591,7 @@ void KSelectAction::updateCurrentItem( int id )
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( qobject_cast<QComboBox*>( r ) ) {
       QComboBox *b = static_cast<QComboBox*>( r );
-      b->setCurrentItem( d->m_current );
+      b->setCurrentIndex( d->m_current );
     }
   }
 }

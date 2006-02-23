@@ -253,7 +253,7 @@ void KColorCombo::addColors()
 		pixmap.detach();
 
 		if ( standardPalette[i] == internalcolor )
-			setCurrentItem( i + 1 );
+			setCurrentIndex( i + 1 );
 	}
 }
 

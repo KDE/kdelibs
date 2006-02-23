@@ -324,7 +324,7 @@ void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
         else
             sel = count() - 1;
     }
-    setCurrentItem(sel);
+    setCurrentIndex(sel);
 }
 
 void KComboBox::lineEditDeleted()
@@ -479,7 +479,7 @@ void KHistoryCombo::addToHistory( const QString& item )
         insertItem( item, 0 );
 
     if ( wasCurrent )
-        setCurrentItem( 0 );
+        setCurrentIndex( 0 );
 
     const bool useComp = useCompletion();
 
