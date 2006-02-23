@@ -238,7 +238,7 @@ K3DockWidgetHeader::K3DockWidgetHeader( K3DockWidget* parent, const char* name )
 
   stayButton = new K3DockButton_Private( this, "DockStayButton" );
   stayButton->setToolTip( i18n("Freeze the window geometry", "Freeze") );
-  stayButton->setToggleButton( true );
+  stayButton->setCheckable( true );
   stayButton->setIcon( QIcon(not_close_xpm) );
 //  stayButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( stayButton, SIGNAL(clicked()), this, SLOT(slotStayClicked()));

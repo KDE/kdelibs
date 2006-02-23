@@ -619,7 +619,7 @@ void KToolBarButton::toggle()
 
 void KToolBarButton::setToggle(bool flag)
 {
-  setToggleButton(flag);
+  setCheckable(flag);
   if (flag)
     connect(this, SIGNAL(toggled(bool)), this, SLOT(slotToggled()));
   else

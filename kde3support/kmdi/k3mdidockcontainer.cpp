@@ -218,7 +218,7 @@ void K3MdiDockContainer::insertWidget ( K3DockWidget *dwdg, QPixmap pixmap, cons
 
 			btn->setToolTip(i18n( "Switch between overlap and side by side mode", "Overlap" ) );
 
-			btn->setToggleButton( true );
+			btn->setCheckable( true );
 			btn->setPixmap( const_cast< const char** >( k3mdi_not_close_xpm ) );
 			hdr->addButton( btn );
 			m_overlapButtons.insert( w, btn );

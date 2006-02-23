@@ -189,7 +189,7 @@ KPPosterPage::KPPosterPage( QWidget *parent )
 	QLabel *selectionlab = new QLabel( i18n( "&Tile pages (to be printed):" ), dummy );
           selectionlab->setWhatsThis(whatsThisTileOrderSelectionPosterPage);
 	selectionlab->setBuddy( m_selection );
-	m_lockbtn->setToggleButton( true );
+	m_lockbtn->setCheckable( true );
 	m_lockbtn->setPixmap( SmallIcon( "encrypted" ) );
 	m_lockbtn->setOn( true );
 	m_lockbtn->setFixedSize( m_lockbtn->sizeHint() );

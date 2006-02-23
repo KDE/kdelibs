@@ -124,7 +124,7 @@ void KDatePicker::init( const QDate &dt )
   selectMonth ->setAutoRaise(true);
   d->navigationLayout->addWidget(selectMonth);
   selectYear = new QToolButton(this);
-  selectYear->setToggleButton(true);
+  selectYear->setCheckable(true);
   selectYear->setAutoRaise(true);
   d->navigationLayout->addWidget(selectYear);
   d->navigationLayout->addSpacing(KDialog::spacingHint());

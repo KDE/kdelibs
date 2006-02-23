@@ -60,7 +60,7 @@ K3MdiTaskBarButton::K3MdiTaskBarButton( K3MdiTaskBar *pTaskBar, K3MdiChildView *
 		: QPushButton( pTaskBar ),
 		m_actualText( "" )
 {
-	setToggleButton( true );
+	setCheckable( true );
 	m_pWindow = win_ptr;
 	this->setToolTip( win_ptr->caption() );
 	setFocusPolicy( Qt::NoFocus );
@@ -177,7 +177,7 @@ K3MdiTaskBarButton * K3MdiTaskBar::addWinButton( K3MdiChildView *win_ptr )
 	QObject::connect( b, SIGNAL( rightMouseButtonClicked( K3MdiChildView* ) ), m_pFrm, SLOT( taskbarButtonRightClicked( K3MdiChildView* ) ) );
 	QObject::connect( b, SIGNAL( buttonTextChanged( int ) ), this, SLOT( layoutTaskBar( int ) ) );
 	m_pButtonList->append( b );
-	b->setToggleButton( true );
+	b->setCheckable( true );
 	b->setText( win_ptr->tabCaption() );
 
 	layoutTaskBar();
