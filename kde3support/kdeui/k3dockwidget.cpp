@@ -2669,7 +2669,7 @@ void K3DockManager::readConfig( KConfig* c, QString group )
 
   c->setGroup( group );
   QStringList nameList;
-  c->readListEntry( "NameList", nameList );
+  c->readEntry( "NameList", nameList );
   QString ver = c->readEntry( "Version", "0.0.1" );
   if ( nameList.isEmpty() || ver != DOCK_CONFIG_VERSION ){
     activate();
@@ -2703,7 +2703,7 @@ void K3DockManager::readConfig( KConfig* c, QString group )
     obj = 0L;
 
     if ( type == "NULL_DOCK" || c->readEntry( oname + ":parent", QString() ) == "___null___" ){
-      QRect r = c->readRectEntry( oname + ":geometry" );
+      QRect r = c->readEntry( oname + ":geometry",QRect() );
       obj = getDockWidgetFromName( oname );
       obj->applyToWidget( 0L );
       obj->setGeometry(r);
@@ -2754,7 +2754,7 @@ void K3DockManager::readConfig( KConfig* c, QString group )
 
     if ( type == "TAB_GROUP" ){
       K3DockWidget* tabDockGroup = 0L;
-      QStringList list = c->readListEntry( oname+":tabNames" );
+      QStringList list = c->readEntry( oname+":tabNames",QStringList() );
       QStringList::const_iterator listit = list.begin();
       K3DockWidget* d1 = getDockWidgetFromName( *listit++ );
       K3DockWidget* d2 = getDockWidgetFromName( *listit++ );
