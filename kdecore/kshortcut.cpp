@@ -366,7 +366,12 @@ void KShortcut::clear()
 
 bool KShortcut::init( int keyQt )
 {
-	return init( QKeySequence( keyQt ) );
+	if ( keyQt )
+		return init( QKeySequence( keyQt ) );
+	else {
+		clear();
+		return true;
+	}
 }
 
 bool KShortcut::init( const QKeySequence& keySeq )

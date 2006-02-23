@@ -70,6 +70,10 @@ void KStdAccelTest::testKShortcut()
     QVERIFY( null.isNull() );
     QVERIFY( null.count() == 0 );
 
+    KShortcut zero( 0 );
+    QVERIFY( zero.isNull() );
+    QVERIFY( zero.count() == 0 );
+
     KShortcut quit( "CTRL+X,CTRL+C;Z,Z" ); // quit in emacs vs. quit in vi :)
     QCOMPARE( (int)quit.count(), 2 );
     QVERIFY( !quit.isNull() );
