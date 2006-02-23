@@ -73,7 +73,7 @@ namespace KUnitTest
             {
                 // strip the .la extension
                 module.truncate(module.length()-3);
-                KLibFactory *factory = KLibLoader::self()->factory(module.local8Bit());
+                KLibFactory *factory = KLibLoader::self()->factory(module.toLocal8Bit());
                 if ( factory )
                     factory->create();
                 else {

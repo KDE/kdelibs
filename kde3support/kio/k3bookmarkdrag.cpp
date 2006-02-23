@@ -99,7 +99,7 @@ QByteArray K3BookmarkDrag::encodedData( const char* mime ) const
             for ( ; uit != uEnd ; ++uit )
                 uris.append( (*uit).prettyURL() );
 
-            Q3CString s = uris.join( "\n" ).local8Bit();
+            Q3CString s = uris.join( "\n" ).toLocal8Bit();
             a.resize( s.length() + 1 ); // trailing zero
             memcpy( a.data(), s.data(), s.length() + 1 );
         }

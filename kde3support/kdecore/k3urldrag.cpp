@@ -203,7 +203,7 @@ QByteArray K3URLDrag::encodedData( const char* mime ) const
         for (Q3StrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).prettyURL());
 
-        QByteArray s = uris.join( "\n" ).local8Bit();
+        QByteArray s = uris.join( "\n" ).toLocal8Bit();
         if( uris.count() > 1 ) // terminate last line, unless it's the only line
             s.append( "\n" );
         a.resize( s.length());
