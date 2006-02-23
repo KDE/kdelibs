@@ -515,7 +515,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 	        QRect r2 = w->geometry();
 		blit.subtract( r2 );
 		r2 = r2.intersect( r );
-		r2.moveBy(-w->x(), -w->y());
+		r2.translate(-w->x(), -w->y());
 		cr.append(r2);
 		cw.append(w);
 	    }
@@ -543,7 +543,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         QRect dr;
         for (int i = 0; i < cnt; ++i ) {
             dr = br[i];
-	    dr.moveBy( tx, ty );
+	    dr.translate( tx, ty );
 	    dr = p->xForm( dr );
 	    bitBlt(pm, br[i].topLeft(), p->device(), dr);
         }
@@ -574,7 +574,7 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     allowWidgetPaintEvents = true;
 
     QRect rr = pI.r;
-    rr.moveBy(-tx, -ty);
+    rr.translate(-tx, -ty);
     const QRect r = widget->rect().intersect( rr );
     copyWidget(r, p, widget, tx, ty);
 

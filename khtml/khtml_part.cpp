@@ -3350,7 +3350,7 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
   // make the finddialog move away from the selected area
   if ( d->m_findDialog && !highlightedRect.isNull() )
   {
-    highlightedRect.moveBy( -d->m_view->contentsX(), -d->m_view->contentsY() );
+    highlightedRect.translate( -d->m_view->contentsX(), -d->m_view->contentsY() );
     //kDebug(6050) << "avoiding " << highlightedRect << endl;
     KDialog::avoidArea( d->m_findDialog, highlightedRect );
   }

@@ -1795,7 +1795,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
     if ( !ir.isEmpty() )
     {                 // rectangle to be repainted
        if ( ir.x() < 0 )
-          ir.moveBy( -ir.x(), 0 );
+          ir.translate( -ir.x(), 0 );
        viewport()->repaint( ir, false );
     }
     /*if (repaintItem1)

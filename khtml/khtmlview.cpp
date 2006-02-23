@@ -413,7 +413,7 @@ static bool findImageMapRect(HTMLImageElementImpl *img, const QPoint &scrollOfs,
             QRegion reg = area->cachedRegion();
             if (!s.isEmpty() && !reg.isEmpty()) {
                 r = reg.boundingRect();
-                r.moveBy(ax, ay);
+                r.translate(ax, ay);
                 return true;
             }
         }
