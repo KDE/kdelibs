@@ -169,7 +169,7 @@ bool ResourceNet::asyncLoad()
   }
 
   if (d->mIsSaving) {
-    kdWarning(5700) << "Aborted asyncLoad() because we're still asyncSave()ing!" << endl;
+    kWarning(5700) << "Aborted asyncLoad() because we're still asyncSave()ing!" << endl;
     return false;
   }
 
@@ -197,7 +197,7 @@ bool ResourceNet::asyncLoad()
 
 void ResourceNet::abortAsyncLoading()
 {
-  kdDebug(5700) << "ResourceNet::abortAsyncLoading()" << endl;
+  kDebug(5700) << "ResourceNet::abortAsyncLoading()" << endl;
 
   if ( d->mLoadJob ) {
     d->mLoadJob->kill(); // result not emitted
@@ -210,7 +210,7 @@ void ResourceNet::abortAsyncLoading()
 
 void ResourceNet::abortAsyncSaving()
 {
-  kdDebug(5700) << "ResourceNet::abortAsyncSaving()" << endl;
+  kDebug(5700) << "ResourceNet::abortAsyncSaving()" << endl;
 
   if ( d->mSaveJob ) {
     d->mSaveJob->kill(); // result not emitted
@@ -223,7 +223,7 @@ void ResourceNet::abortAsyncSaving()
 
 bool ResourceNet::save( Ticket* )
 {
-  kdDebug(5700) << "ResourceNet::save()" << endl;
+  kDebug(5700) << "ResourceNet::save()" << endl;
 
   if (d->mIsSaving) {
     abortAsyncSaving();
@@ -252,14 +252,14 @@ bool ResourceNet::save( Ticket* )
 
 bool ResourceNet::asyncSave( Ticket* )
 {
-  kdDebug(5700) << "ResourceNet::asyncSave()" << endl;
+  kDebug(5700) << "ResourceNet::asyncSave()" << endl;
 
   if (d->mIsSaving) {
     abortAsyncSaving();
   }
 
   if (d->mIsLoading) {
-    kdWarning(5700) << "Aborted asyncSave() because we're still asyncLoad()ing!" << endl;
+    kWarning(5700) << "Aborted asyncSave() because we're still asyncLoad()ing!" << endl;
     return false;
   }
 
@@ -298,7 +298,7 @@ bool ResourceNet::createLocalTempFile()
 void ResourceNet::deleteStaleTempFile()
 {
   if ( hasTempFile() ) {
-    kdDebug(5700) << "stale temp file detected " << mTempFile->name() << endl;
+    kDebug(5700) << "stale temp file detected " << mTempFile->name() << endl;
     deleteLocalTempFile();
   }
 }
@@ -341,7 +341,7 @@ QString ResourceNet::format() const
 
 void ResourceNet::downloadFinished( KIO::Job* )
 {
-  kdDebug(5700) << "ResourceNet::downloadFinished()" << endl;
+  kDebug(5700) << "ResourceNet::downloadFinished()" << endl;
 
   d->mIsLoading = false;
 
@@ -366,7 +366,7 @@ void ResourceNet::downloadFinished( KIO::Job* )
 
 void ResourceNet::uploadFinished( KIO::Job *job )
 {
-  kdDebug(5700) << "ResourceFile::uploadFinished()" << endl;
+  kDebug(5700) << "ResourceFile::uploadFinished()" << endl;
 
   d->mIsSaving = false;
 
