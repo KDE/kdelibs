@@ -394,7 +394,7 @@ void KListViewLineEdit::paintEvent( QPaintEvent *e )
 {
     KLineEdit::paintEvent( e );
 
-    if ( !frame() ) {
+    if ( !hasFrame() ) {
         QPainter p( this );
         p.setClipRegion( e->region() );
         p.drawRect( rect() );
@@ -435,6 +435,7 @@ KListView::KListView( QWidget *parent )
     kapp->addKipcEventMask( KIPC::SettingsChanged );
   }
 
+  d->autoSelect.setSingleShot( true );
   connect(&d->autoSelect, SIGNAL( timeout() ),
                   this, SLOT( slotAutoSelect() ) );
   connect(&d->dragExpand, SIGNAL( timeout() ),
@@ -515,7 +516,7 @@ void KListView::slotOnItem( Q3ListViewItem *item )
 {
   QPoint vp = viewport()->mapFromGlobal( QCursor::pos() );
   if ( item && isExecuteArea( vp.x() ) && (d->autoSelectDelay > -1) && d->bUseSingle ) {
-    d->autoSelect.start( d->autoSelectDelay, true );
+    d->autoSelect.start( d->autoSelectDelay );
     d->pCurrentItem = item;
   }
 }
@@ -610,7 +611,7 @@ void KListView::slotAutoSelect()
                 clearSelection();
 
       bool select = !d->pCurrentItem->isSelected();
-      bool update = viewport()->isUpdatesEnabled();
+      bool update = viewport()->updatesEnabled();
       viewport()->setUpdatesEnabled( false );
 
       bool down = previousItem->itemPos() < d->pCurrentItem->itemPos();
@@ -1035,7 +1036,7 @@ void KListView::cleanDropVisualizer()
   {
     QRect rect=d->mOldDropVisualizer;
     d->mOldDropVisualizer = QRect();
-    viewport()->repaint(rect, true);
+    viewport()->repaint(rect);
   }
 }
 
@@ -1362,7 +1363,7 @@ void KListView::cleanItemHighlighter ()
   {
     QRect rect=d->mOldDropHighlighter;
     d->mOldDropHighlighter = QRect();
-    viewport()->repaint(rect, true);
+    viewport()->repaint(rect);
   }
 }
 
@@ -1796,7 +1797,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
     {                 // rectangle to be repainted
        if ( ir.x() < 0 )
           ir.translate( -ir.x(), 0 );
-       viewport()->repaint( ir, false );
+       viewport()->repaint( ir );
     }
     /*if (repaintItem1)
        repaintItem1->repaint();
@@ -2243,7 +2244,7 @@ QColor KListViewItem::backgroundColor(int column)
     else
     {
       int h,s,v;
-      color.hsv(&h, &s, &v);
+      color.getHsv(&h, &s, &v);
       if ( v > 175 )
         color = color.dark(104);
       else
@@ -2331,19 +2332,18 @@ bool KListViewItem::isAlternate()
 void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int alignment)
 {
   QColorGroup _cg = cg;
-  const QPixmap *pm = listView()->viewport()->backgroundPixmap();
+  Q3ListView* lv = listView();
+  const QPixmap *pm = lv->viewport()->backgroundPixmap();
 
   if (pm && !pm->isNull())
   {
     _cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(column), *pm));
     QPoint o = p->brushOrigin();
-    p->setBrushOrigin( o.x()-listView()->contentsX(), o.y()-listView()->contentsY() );
+    p->setBrushOrigin( o.x()-lv->contentsX(), o.y()-lv->contentsY() );
   }
   else
   {
-    _cg.setColor((listView()->viewport()->backgroundMode() == Qt::FixedColor) ?
-                 QColorGroup::Background : QColorGroup::Base,
-                 backgroundColor(column));
+    _cg.setColor( lv->backgroundRole(), backgroundColor(column) );
   }
   Q3ListViewItem::paintCell(p, _cg, column, width, alignment);
 }
