@@ -56,7 +56,7 @@ class ResourceFile::ResourceFilePrivate
 };
 
 ResourceFile::ResourceFile( const KConfig *config )
-  : Resource( config ), mFormat( 0 ), mLocalTempFile( 0 ),
+  : Resource( config ), mFormat( 0 ), mTempFile( 0 ),
     mAsynchronous( false ), d( new ResourceFilePrivate )
 {
   QString fileName, formatName;
@@ -74,7 +74,7 @@ ResourceFile::ResourceFile( const KConfig *config )
 
 ResourceFile::ResourceFile( const QString &fileName,
                             const QString &formatName )
-  : Resource( 0 ), mFormat( 0 ), mLocalTempFile( 0 ),
+  : Resource( 0 ), mFormat( 0 ), mTempFile( 0 ),
     mAsynchronous( false ), d( new ResourceFilePrivate )
 {
   init( fileName, formatName );
@@ -117,8 +117,8 @@ ResourceFile::~ResourceFile()
   d = 0;
   delete mFormat;
   mFormat = 0;
-  delete mLocalTempFile;
-  mLocalTempFile = 0;
+
+  deleteLocalTempFile();
 }
 
 void ResourceFile::writeConfig( KConfig *config )
@@ -205,6 +205,10 @@ bool ResourceFile::load()
 {
   kDebug(5700) << "ResourceFile::load(): '" << mFileName << "'" << endl;
 
+  if ( d->mIsLoading ) {
+    abortAsyncLoading();
+  }
+
   mAsynchronous = false;
 
   QFile file( mFileName );
@@ -213,24 +217,45 @@ bool ResourceFile::load()
     return false;
   }
 
-  return mFormat->loadAll( addressBook(), this, &file );
+  if ( !clearAndLoad( &file ) ) {
+      addressBook()->error( i18n( "Problems during parsing file '%1'." ).arg( mFileName ) );
+    return false;
+  }
+
+  return true;
+}
+
+bool ResourceFile::clearAndLoad( QFile *file )
+{
+  clear();
+  return mFormat->loadAll( addressBook(), this, file );
 }
 
 bool ResourceFile::asyncLoad()
 {
-  mAsynchronous = true;
-
-  if ( mLocalTempFile ) {
-    kDebug(5700) << "stale temp file detected " << mLocalTempFile->name() << endl;
-    delete mLocalTempFile;
+  if ( d->mIsLoading ) {
+    abortAsyncLoading();
   }
 
-  mLocalTempFile = new KTempFile();
-  mLocalTempFile->setAutoDelete( true );
-  mTempFile = mLocalTempFile->name();
+  if (d->mIsSaving) {
+    kdWarning(5700) << "Aborted asyncSave() because we're still asyncSave()ing!" << endl;
+    return false;
+  }
+
+  mAsynchronous = true;
+
+  bool ok = createLocalTempFile();
+  if ( ok )
+    ok = mTempFile->close(); // we only need the filename
+
+  if ( !ok ) {
+    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile->name() ) );
+    deleteLocalTempFile();
+    return false;
+  }
 
   KUrl dest, src;
-  dest.setPath( mTempFile );
+  dest.setPath( mTempFile->name() );
   src.setPath( mFileName );
 
   KIO::Scheduler::checkSlaveOnHold( true );
@@ -242,9 +267,39 @@ bool ResourceFile::asyncLoad()
   return true;
 }
 
+void ResourceFile::abortAsyncLoading()
+{
+  kdDebug(5700) << "ResourceFile::abortAsyncLoading()" << endl;
+
+  if ( d->mLoadJob ) {
+    d->mLoadJob->kill(); // result not emitted
+    d->mLoadJob = 0;
+  }
+
+  deleteLocalTempFile();
+  d->mIsLoading = false;
+}
+
+void ResourceFile::abortAsyncSaving()
+{
+  kdDebug(5700) << "ResourceFile::abortAsyncSaving()" << endl;
+
+  if ( d->mSaveJob ) {
+    d->mSaveJob->kill(); // result not emitted
+    d->mSaveJob = 0;
+  }
+
+  deleteLocalTempFile();
+  d->mIsSaving = false;
+}
+
 bool ResourceFile::save( Ticket * )
 {
   kDebug(5700) << "ResourceFile::save()" << endl;
+
+  if (d->mIsSaving) {
+    abortAsyncSaving();
+  }
 
   // create backup file
   QString extension = "_" + QString::number( QDate::currentDate().dayOfWeek() );
@@ -252,16 +307,21 @@ bool ResourceFile::save( Ticket * )
                                 extension );
 
   mDirWatch.stopScan();
+
   KSaveFile saveFile( mFileName );
   bool ok = false;
+  
   if ( saveFile.status() == 0 && saveFile.file() )
   {
     mFormat->saveAll( addressBook(), this, saveFile.file() );
     ok = saveFile.close();
   }
 
-  if ( !ok )
+  if ( !ok ) {
+    saveFile.abort();
     addressBook()->error( i18n( "Unable to save file '%1'." ).arg( mFileName ) );
+  }
+
   mDirWatch.startScan();
 
   return ok;
@@ -269,28 +329,68 @@ bool ResourceFile::save( Ticket * )
 
 bool ResourceFile::asyncSave( Ticket * )
 {
-  QFile file( mTempFile );
+  kdDebug(5700) << "ResourceFile::asyncSave()" << endl;
 
-  if ( !file.open( QIODevice::WriteOnly ) ) {
-    emit savingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
+  if (d->mIsSaving) {
+    abortAsyncSaving();
+  }
+
+  if (d->mIsLoading) {
+    kdWarning(5700) << "Aborted asyncSave() because we're still asyncLoad()ing!" << endl;
     return false;
   }
 
-  mDirWatch.stopScan();
-  mFormat->saveAll( addressBook(), this, &file );
-  file.close();
+  bool ok = createLocalTempFile();
+  if ( ok ) {
+    saveToFile( mTempFile->file() );
+    ok = mTempFile->close();
+  }
+
+  if ( !ok ) {
+    emit savingError( this, i18n( "Unable to save file '%1'." ).arg( mTempFile->name() ) );
+    deleteLocalTempFile();
+    return false;
+  }
 
   KUrl src, dest;
-  src.setPath( mTempFile );
+  src.setPath( mTempFile->name() );
   dest.setPath( mFileName );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  d->mSaveJob = KIO::file_copy( src, dest, -1, true, false, false );
   d->mIsSaving = true;
+  mDirWatch.stopScan(); // restarted in uploadFinished()
+  d->mSaveJob = KIO::file_copy( src, dest, -1, true, false, false );
   connect( d->mSaveJob, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( uploadFinished( KIO::Job* ) ) );
 
   return true;
+}
+
+bool ResourceFile::createLocalTempFile()
+{
+  deleteStaleTempFile();
+  mTempFile = new KTempFile();
+  mTempFile->setAutoDelete( true );
+  return mTempFile->status() == 0;
+}
+
+void ResourceFile::deleteStaleTempFile()
+{
+  if ( hasTempFile() ) {
+    kdDebug(5700) << "stale temp file detected " << mTempFile->name() << endl;
+    deleteLocalTempFile();
+  }
+}
+
+void ResourceFile::deleteLocalTempFile()
+{
+  delete mTempFile;
+  mTempFile = 0;
+}
+
+void ResourceFile::saveToFile( QFile *file )
+{
+  mFormat->saveAll( addressBook(), this, file );
 }
 
 void ResourceFile::setFileName( const QString &fileName )
@@ -326,10 +426,12 @@ QString ResourceFile::format() const
 
 void ResourceFile::fileChanged()
 {
+    kdDebug(5700) << "ResourceFile::fileChanged(): " << mFileName << endl;
+
   if ( !addressBook() )
     return;
 
-  clear();
+//  clear(); // moved to clearAndLoad()
   if ( mAsynchronous )
     asyncLoad();
   else {
@@ -350,31 +452,41 @@ void ResourceFile::removeAddressee( const Addressee &addr )
 
 void ResourceFile::downloadFinished( KIO::Job* )
 {
+  kdDebug(5700) << "ResourceFile::downloadFinished()" << endl;
+
   d->mIsLoading = false;
 
-  if ( !mLocalTempFile )
+  if ( !hasTempFile() || mTempFile->status() != 0 ) {
     emit loadingError( this, i18n( "Download failed in some way!" ) );
-
-  QFile file( mTempFile );
-  if ( !file.open( QIODevice::ReadOnly ) ) {
-    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
     return;
   }
 
-  if ( !mFormat->loadAll( addressBook(), this, &file ) )
-    emit loadingError( this, i18n( "Problems during parsing file '%1'." ).arg( mTempFile ) );
-  else
-    emit loadingFinished( this );
+  QFile file( mTempFile->name() );
+  if ( file.open( QIODevice::IO_ReadOnly ) ) {
+    if ( clearAndLoad( &file ) )
+      emit loadingFinished( this );
+    else
+      emit loadingError( this, i18n( "Problems during parsing file '%1'." ).arg( mTempFile->name() ) );
+  }
+  else {
+    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile->name() ) );
+  }
+
+  deleteLocalTempFile();
 }
 
 void ResourceFile::uploadFinished( KIO::Job *job )
 {
+  kdDebug(5700) << "ResourceFile::uploadFinished()" << endl;
+
   d->mIsSaving = false;
 
   if ( job->error() )
     emit savingError( this, job->errorString() );
   else
     emit savingFinished( this );
+
+  deleteLocalTempFile();
   mDirWatch.startScan();
 }
 

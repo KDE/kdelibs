@@ -27,6 +27,7 @@
 
 #include <kabc/resource.h>
 
+class QFile;
 class QTimer;
 class KTempFile;
 
@@ -54,7 +55,7 @@ class KABC_NET_EXPORT ResourceNet : public Resource
 
     virtual bool doOpen();
     virtual void doClose();
-  
+
     virtual Ticket *requestSaveTicket();
     virtual void releaseSaveTicket( Ticket* );
 
@@ -91,13 +92,20 @@ class KABC_NET_EXPORT ResourceNet : public Resource
     void uploadFinished( KIO::Job* );
 
   private:
+    bool clearAndLoad( QFile *file );
+    void saveToFile( QFile *file );
+    bool hasTempFile() const { return mTempFile != 0; }
+    void abortAsyncLoading();
+    void abortAsyncSaving();
+    bool createLocalTempFile();
+    void deleteLocalTempFile();
+    void deleteStaleTempFile();
+
     Format *mFormat;
     QString mFormatName;
 
     KUrl mUrl;
-    QString mTempFile;
-    KTempFile *mLocalTempFile;
-    bool mUseLocalTempFile;
+    KTempFile *mTempFile;
 
     class ResourceNetPrivate;
     ResourceNetPrivate *d;

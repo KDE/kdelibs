@@ -24,6 +24,7 @@
 #include <kio/netaccess.h>
 #include <kio/scheduler.h>
 #include <klocale.h>
+#include <ksavefile.h>
 #include <ktempfile.h>
 #include <kurlrequester.h>
 
@@ -48,7 +49,7 @@ class ResourceNet::ResourceNetPrivate
 
 ResourceNet::ResourceNet( const KConfig *config )
   : Resource( config ), mFormat( 0 ),
-    mLocalTempFile( 0 ), mUseLocalTempFile( false ),
+    mTempFile( 0 ),
     d( new ResourceNetPrivate )
 {
   if ( config ) {
@@ -60,7 +61,7 @@ ResourceNet::ResourceNet( const KConfig *config )
 
 ResourceNet::ResourceNet( const KUrl &url, const QString &format )
   : Resource( 0 ), mFormat( 0 ),
-    mLocalTempFile( 0 ), mUseLocalTempFile( false ),
+    mTempFile( 0 ),
     d( new ResourceNetPrivate )
 {
   init( url, format );
@@ -98,8 +99,7 @@ ResourceNet::~ResourceNet()
   delete mFormat;
   mFormat = 0;
 
-  delete mLocalTempFile;
-  mLocalTempFile = 0;
+  deleteLocalTempFile();
 }
 
 void ResourceNet::writeConfig( KConfig *config )
@@ -114,15 +114,11 @@ Ticket *ResourceNet::requestSaveTicket()
 {
   kDebug(5700) << "ResourceNet::requestSaveTicket()" << endl;
 
-  if ( mTempFile.isEmpty() )
-    return 0;
-
   return createTicket( this );
 }
 
 void ResourceNet::releaseSaveTicket( Ticket *ticket )
 {
-  KIO::NetAccess::removeTempFile( mTempFile );
   delete ticket;
 }
 
@@ -137,41 +133,58 @@ void ResourceNet::doClose()
 
 bool ResourceNet::load()
 {
-  if ( !KIO::NetAccess::exists( mUrl, true, 0 ) ) {
-    mLocalTempFile = new KTempFile();
-    mLocalTempFile->setAutoDelete( true );
-    mUseLocalTempFile = true;
-    mTempFile = mLocalTempFile->name();
-  }
+  QString tempFile;
 
-  if ( !KIO::NetAccess::download( mUrl, mTempFile, 0 ) ) {
-    addressBook()->error( i18n( "Unable to download file '%1'." ).arg( mUrl.url() ) );
+  if ( !KIO::NetAccess::download( mUrl, tempFile, 0 ) ) {
+    addressBook()->error( i18n( "Unable to download file '%1'." ).arg( mUrl.prettyURL() ) );
     return false;
   }
 
-  QFile file( mTempFile );
-  if ( !file.open( QIODevice::ReadOnly ) ) {
-    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mUrl.url() ) );
+  QFile file( tempFile );
+  if ( !file.open( QIODevice::IO_ReadOnly ) ) {
+    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( tempFile ) );
+    KIO::NetAccess::removeTempFile( tempFile );
     return false;
   }
 
-  return mFormat->loadAll( addressBook(), this, &file );
+  bool result = clearAndLoad( &file );
+  if ( !result )
+      addressBook()->error( i18n( "Problems during parsing file '%1'." ).arg( tempFile ) );
+
+  KIO::NetAccess::removeTempFile( tempFile );
+
+  return result;
+}
+
+bool ResourceNet::clearAndLoad( QFile *file )
+{
+  clear();
+  return mFormat->loadAll( addressBook(), this, file );
 }
 
 bool ResourceNet::asyncLoad()
 {
-  if ( mLocalTempFile ) {
-    kDebug(5700) << "stale temp file detected " << mLocalTempFile->name() << endl;
-    mLocalTempFile->setAutoDelete( true );
-    delete mLocalTempFile;
+  if ( d->mIsLoading ) {
+    abortAsyncLoading();
   }
 
-  mLocalTempFile = new KTempFile();
-  mUseLocalTempFile = true;
-  mTempFile = mLocalTempFile->name();
+  if (d->mIsSaving) {
+    kdWarning(5700) << "Aborted asyncLoad() because we're still asyncSave()ing!" << endl;
+    return false;
+  }
+
+  bool ok = createLocalTempFile();
+  if ( ok )
+    ok = mTempFile->close();
+
+  if ( !ok ) {
+    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile->name() ) );
+    deleteLocalTempFile();
+    return false;
+  }
 
   KUrl dest;
-  dest.setPath( mTempFile );
+  dest.setPath( mTempFile->name() );
 
   KIO::Scheduler::checkSlaveOnHold( true );
   d->mLoadJob = KIO::file_copy( mUrl, dest, -1, true, false, false );
@@ -182,43 +195,123 @@ bool ResourceNet::asyncLoad()
   return true;
 }
 
+void ResourceNet::abortAsyncLoading()
+{
+  kdDebug(5700) << "ResourceNet::abortAsyncLoading()" << endl;
+
+  if ( d->mLoadJob ) {
+    d->mLoadJob->kill(); // result not emitted
+    d->mLoadJob = 0;
+  }
+
+  deleteLocalTempFile();
+  d->mIsLoading = false;
+}
+
+void ResourceNet::abortAsyncSaving()
+{
+  kdDebug(5700) << "ResourceNet::abortAsyncSaving()" << endl;
+
+  if ( d->mSaveJob ) {
+    d->mSaveJob->kill(); // result not emitted
+    d->mSaveJob = 0;
+  }
+
+  deleteLocalTempFile();
+  d->mIsSaving = false;
+}
+
 bool ResourceNet::save( Ticket* )
 {
-  QFile file( mTempFile );
+  kdDebug(5700) << "ResourceNet::save()" << endl;
 
-  if ( !file.open( QIODevice::WriteOnly ) ) {
-    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mUrl.url() ) );
+  if (d->mIsSaving) {
+    abortAsyncSaving();
+  }
+
+  KTempFile tempFile;
+  tempFile.setAutoDelete( true );
+  bool ok = false;
+
+  if ( tempFile.status() == 0 && tempFile.file() ) {
+    saveToFile( tempFile.file() );
+    ok = tempFile.close();
+  }
+
+  if ( !ok ) {
+    addressBook()->error( i18n( "Unable to save file '%1'." ).arg( tempFile.name() ) );
     return false;
   }
 
-  mFormat->saveAll( addressBook(), this, &file );
-  file.close();
+  ok = KIO::NetAccess::upload( tempFile.name(), mUrl, 0 );
+  if ( !ok )
+    addressBook()->error( i18n( "Unable to upload to '%1'." ).arg( mUrl.prettyURL() ) );
 
-  return KIO::NetAccess::upload( mTempFile, mUrl, 0 );
+  return ok;
 }
 
 bool ResourceNet::asyncSave( Ticket* )
 {
-  QFile file( mTempFile );
+  kdDebug(5700) << "ResourceNet::asyncSave()" << endl;
 
-  if ( !file.open( QIODevice::WriteOnly ) ) {
-    emit savingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
+  if (d->mIsSaving) {
+    abortAsyncSaving();
+  }
+
+  if (d->mIsLoading) {
+    kdWarning(5700) << "Aborted asyncSave() because we're still asyncLoad()ing!" << endl;
     return false;
   }
 
-  mFormat->saveAll( addressBook(), this, &file );
-  file.close();
+  bool ok = createLocalTempFile();
+  if ( ok ) {
+    saveToFile( mTempFile->file() );
+    ok = mTempFile->close();
+  }
+
+  if ( !ok ) {
+    emit savingError( this, i18n( "Unable to save file '%1'." ).arg( mTempFile->name() ) );
+    deleteLocalTempFile();
+    return false;
+  }
 
   KUrl src;
-  src.setPath( mTempFile );
+  src.setPath( mTempFile->name() );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  d->mSaveJob = KIO::file_copy( src, mUrl, -1, true, false, false );
   d->mIsSaving = true;
+  d->mSaveJob = KIO::file_copy( src, mUrl, -1, true, false, false );
   connect( d->mSaveJob, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( uploadFinished( KIO::Job* ) ) );
 
   return true;
+}
+
+bool ResourceNet::createLocalTempFile()
+{
+  deleteStaleTempFile();
+  mTempFile = new KTempFile();
+  mTempFile->setAutoDelete( true );
+  return mTempFile->status() == 0;
+}
+
+void ResourceNet::deleteStaleTempFile()
+{
+  if ( hasTempFile() ) {
+    kdDebug(5700) << "stale temp file detected " << mTempFile->name() << endl;
+    deleteLocalTempFile();
+  }
+}
+
+void ResourceNet::deleteLocalTempFile()
+{
+  delete mTempFile;
+  mTempFile = 0;
+}
+
+void ResourceNet::saveToFile( QFile *file )
+{
+  mFormat->saveAll( addressBook(), this, file );
 }
 
 void ResourceNet::setUrl( const KUrl &url )
@@ -248,31 +341,41 @@ QString ResourceNet::format() const
 
 void ResourceNet::downloadFinished( KIO::Job* )
 {
+  kdDebug(5700) << "ResourceNet::downloadFinished()" << endl;
+
   d->mIsLoading = false;
 
-  if ( !mLocalTempFile )
+  if ( !hasTempFile() || mTempFile->status() != 0 ) {
     emit loadingError( this, i18n( "Download failed in some way!" ) );
-
-  QFile file( mTempFile );
-  if ( !file.open( QIODevice::ReadOnly ) ) {
-    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
     return;
   }
 
-  if ( !mFormat->loadAll( addressBook(), this, &file ) )
-    emit loadingError( this, i18n( "Problems during parsing file '%1'." ).arg( mTempFile ) );
-  else
-    emit loadingFinished( this );
+  QFile file( mTempFile->name() );
+  if ( file.open( QIODevice::IO_ReadOnly ) ) {
+    if ( clearAndLoad( &file ) )
+      emit loadingFinished( this );
+    else
+      emit loadingError( this, i18n( "Problems during parsing file '%1'." ).arg( mTempFile->name() ) );
+  }
+  else {
+    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile->name() ) );
+  }
+
+  deleteLocalTempFile();
 }
 
 void ResourceNet::uploadFinished( KIO::Job *job )
 {
+  kdDebug(5700) << "ResourceFile::uploadFinished()" << endl;
+
   d->mIsSaving = false;
 
   if ( job->error() )
     emit savingError( this, job->errorString() );
   else
     emit savingFinished( this );
+
+  deleteLocalTempFile();
 }
 
 #include "resourcenet.moc"
