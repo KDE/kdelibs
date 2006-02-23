@@ -63,9 +63,10 @@ KComboBox::KComboBox( QWidget *parent )
 }
 
 KComboBox::KComboBox( bool rw, QWidget *parent )
-    : QComboBox( rw, parent ), d(new KComboBoxPrivate)
+    : QComboBox( parent ), d(new KComboBoxPrivate)
 {
     init();
+	setEditable( rw );
 
     if ( rw )
     {
@@ -99,7 +100,7 @@ bool KComboBox::contains( const QString& _text ) const
     const int itemCount = count();
     for (int i = 0; i < itemCount; ++i )
     {
-        if ( text(i) == _text )
+        if ( itemText(i) == _text )
             return true;
     }
     return false;
@@ -309,7 +310,7 @@ void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
     const int itemCount = count();
     for (int i = 0; i < itemCount; ++i)
     {
-        if (text(i) == item)
+        if (itemText(i) == item)
         {
             sel = i;
             break;
@@ -424,7 +425,7 @@ QStringList KHistoryCombo::historyItems() const
     QStringList list;
     const int itemCount = count();
     for ( int i = 0; i < itemCount; ++i )
-        list.append( text( i ) );
+        list.append( itemText( i ) );
 
     return list;
 }
@@ -451,7 +452,7 @@ void KHistoryCombo::addContextMenuItems( QMenu* menu )
 
 void KHistoryCombo::addToHistory( const QString& item )
 {
-    if ( item.isEmpty() || (count() > 0 && item == text(0) )) {
+    if ( item.isEmpty() || (count() > 0 && item == itemText(0) )) {
         return;
     }
 
@@ -461,7 +462,7 @@ void KHistoryCombo::addToHistory( const QString& item )
         int i = 0;
         int itemCount = count();
         while ( i < itemCount ) {
-            if ( text( i ) == item ) {
+            if ( itemText( i ) == item ) {
                 if ( !wasCurrent )
                   wasCurrent = ( i == currentIndex() );
                 removeItem( i );
@@ -491,7 +492,7 @@ void KHistoryCombo::addToHistory( const QString& item )
         // remove the last item, as long as we are longer than maxCount()
         // remove the removed item from the completionObject if it isn't
         // anymore available at all in the combobox.
-        const QString rmItem = text( rmIndex );
+        const QString rmItem = itemText( rmIndex );
         removeItem( rmIndex );
         if ( useComp && !contains( rmItem ) )
             completionObject()->removeItem( rmItem );
@@ -511,7 +512,7 @@ bool KHistoryCombo::removeFromHistory( const QString& item )
     int i = 0;
     int itemCount = count();
     while ( i < itemCount ) {
-        if ( item == text( i ) ) {
+        if ( item == itemText( i ) ) {
             removed = true;
             removeItem( i );
             --itemCount;
@@ -540,8 +541,8 @@ void KHistoryCombo::rotateUp()
     const QString currText = currentText();
 
     while ( myIterateIndex < last &&
-            (currText == text( myIterateIndex ) ||
-             text( myIterateIndex ).isEmpty()) )
+            (currText == itemText( myIterateIndex ) ||
+             itemText( myIterateIndex ).isEmpty()) )
         ++myIterateIndex;
 
     if ( myIterateIndex >= count() ) {
@@ -549,13 +550,13 @@ void KHistoryCombo::rotateUp()
         myIterateIndex = -1;
 
         // if the typed text is the same as the first item, skip the first
-        if ( count() > 0 && myText == text(0) )
+        if ( count() > 0 && myText == itemText(0) )
             myIterateIndex = 0;
 
         setEditText( myText );
     }
     else
-        setEditText( text( myIterateIndex ));
+        setEditText( itemText( myIterateIndex ));
 }
 
 void KHistoryCombo::rotateDown()
@@ -569,8 +570,8 @@ void KHistoryCombo::rotateDown()
     const QString currText = currentText();
     // skip duplicates/empty items
     while ( myIterateIndex >= 0 &&
-            (currText == text( myIterateIndex ) ||
-             text( myIterateIndex ).isEmpty()) )
+            (currText == itemText( myIterateIndex ) ||
+             itemText( myIterateIndex ).isEmpty()) )
         --myIterateIndex;
 
 
@@ -578,7 +579,7 @@ void KHistoryCombo::rotateDown()
         if ( myRotated && myIterateIndex == -2 ) {
             myRotated = false;
             myIterateIndex = count() - 1;
-            setEditText( text(myIterateIndex) );
+            setEditText( itemText(myIterateIndex) );
         }
         else { // bottom of history
             if ( myIterateIndex == -2 ) {
@@ -593,7 +594,7 @@ void KHistoryCombo::rotateDown()
         }
     }
     else
-        setEditText( text( myIterateIndex ));
+        setEditText( itemText( myIterateIndex ));
 
 }
 

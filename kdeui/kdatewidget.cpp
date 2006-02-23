@@ -70,7 +70,7 @@ void KDateWidget::init(const QDate& date)
   QHBoxLayout *layout = new QHBoxLayout(this, 0, KDialog::spacingHint());
   layout->setAutoAdd(true);
   d->m_day = new KDateWidgetSpinBox(1, 1, this);
-  d->m_month = new QComboBox(false, this);
+  d->m_month = new QComboBox(this);
   const KCalendarSystem* calendar = KGlobal::locale()->calendar();
   for (int i = 1; ; ++i)
   {

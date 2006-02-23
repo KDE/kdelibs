@@ -115,7 +115,8 @@ KSpellConfig::KSpellConfig( QWidget *parent,
   connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
   glay->addMultiCellWidget( cb2, 2, 2, 0, 2 );
 
-  dictcombo = new QComboBox( this, "DictFromList" );
+  dictcombo = new QComboBox( this );
+  dictcombo->setObjectName( "DictFromList" );
   dictcombo->setInsertPolicy( QComboBox::NoInsert );
   connect( dictcombo, SIGNAL (activated(int)),
 	   this, SLOT (sSetDictionary(int)) );
@@ -124,7 +125,8 @@ KSpellConfig::KSpellConfig( QWidget *parent,
   dictlist = new QLabel( dictcombo, i18n("&Dictionary:"), this );
   glay->addWidget( dictlist, 3 ,0 );
 
-  encodingcombo = new QComboBox( this, "Encoding" );
+  encodingcombo = new QComboBox( this );
+  encodingcombo->setObjectName( "Encoding" );
   encodingcombo->addItem( "US-ASCII" );
   encodingcombo->addItem( "ISO 8859-1" );
   encodingcombo->addItem( "ISO 8859-2" );
@@ -150,7 +152,8 @@ KSpellConfig::KSpellConfig( QWidget *parent,
   glay->addWidget( tmpQLabel, 4, 0 );
 
 
-  clientcombo = new QComboBox( this, "Client" );
+  clientcombo = new QComboBox( this );
+  clientcombo->setObjectName( "Client" );
   clientcombo->addItem( i18n("International Ispell") );
   clientcombo->addItem( i18n("Aspell") );
   clientcombo->addItem( i18n("Hspell") );

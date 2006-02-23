@@ -367,8 +367,8 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     KComboBox *combo = new KComboBox ( writable, this );
 
     insertWidgetInternal( combo, index, id );
-    combo->insertStringList (list);
-    combo->setInsertPolicy(policy);
+    combo->insertItems( 0, list );
+    combo->setInsertPolicy( policy );
     combo->setEnabled( enabled );
     if ( size > 0 )
         combo->setMinimumWidth( size );
@@ -568,7 +568,7 @@ void KToolBar::insertComboList (int id, const QStringList &list, int index)
 {
     KComboBox * comboBox = getCombo( id );
     if (comboBox)
-        comboBox->insertStringList( list, index );
+        comboBox->insertItems( index, list );
 }
 
 
@@ -607,7 +607,7 @@ void KToolBar::clearCombo (int id)
 QString KToolBar::getComboItem (int id, int index) const
 {
     KComboBox * comboBox = const_cast<KToolBar*>( this )->getCombo( id );
-    return comboBox ? comboBox->text( index ) : QString();
+    return comboBox ? comboBox->itemText( index ) : QString();
 }
 
 

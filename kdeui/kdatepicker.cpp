@@ -146,7 +146,7 @@ void KDatePicker::init( const QDate &dt )
 
   fontsize++; // Make a little bigger
 
-  d->selectWeek = new QComboBox(false, this);  // read only week selection
+  d->selectWeek = new QComboBox(this);  // read only week selection
   d->todayButton = new QToolButton(this);
   d->todayButton->setIcon(SmallIconSet("today"));
 
