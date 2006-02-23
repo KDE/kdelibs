@@ -17,20 +17,20 @@ int main( int argc, char **argv )
 	view->addColumn("Column 2");
 	view->addColumn("Column 3");
 
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );
+	new KListViewItem( view, "Item 1");
+	new KListViewItem( view, "Item 1");
+	new KListViewItem( view, "Item 1");
+	new KListViewItem( view, "Item 1");
+	new KListViewItem( view, "Item 1");
+	new KListViewItem( view, "Item 1");
+	new KListViewItem( view, "Item 1");
+	new KListViewItem( view, "Item 1");
+	new KListViewItem( view, "Item 1");
+	new KListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );
 
 	view->restoreLayout( KGlobal::config(), "ListView" );
 
-	new QListViewItem( view, "Item 3" );
+	new KListViewItem( view, "Item 3" );
 
 	dialog.exec();
 	view->saveLayout( KGlobal::config(), "ListView" );
