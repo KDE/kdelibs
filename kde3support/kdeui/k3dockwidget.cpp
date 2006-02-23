@@ -225,7 +225,7 @@ K3DockWidgetHeader::K3DockWidgetHeader( K3DockWidget* parent, const char* name )
   d = new K3DockWidgetHeaderPrivate( this );
 
   layout = new QHBoxLayout( this );
-  layout->setResizeMode( QLayout::Minimum );
+  layout->setSizeConstraint( QLayout::Minimum );
 
   drag = new K3DockWidgetHeaderDrag( this, parent );
 
@@ -322,7 +322,7 @@ void K3DockWidgetHeader::setDragPanel( K3DockWidgetHeaderDrag* nd )
 
   delete layout;
   layout = new QHBoxLayout( this );
-  layout->setResizeMode( QLayout::Minimum );
+  layout->setSizeConstraint( QLayout::Minimum );
 
   delete drag;
   drag = nd;
@@ -364,7 +364,7 @@ void K3DockWidgetHeader::addButton(K3DockButton_Private* btn) {
 
 	delete layout;
 	layout = new QHBoxLayout( this );
-	layout->setResizeMode( QLayout::Minimum );
+	layout->setSizeConstraint( QLayout::Minimum );
 
 	layout->addWidget( drag );
  	layout->addWidget( dockbackButton );
@@ -498,7 +498,7 @@ K3DockWidget::K3DockWidget( K3DockManager* dockManager, const char* name, const 
   d->_parent = parent;
 
   layout = new QVBoxLayout( this );
-  layout->setResizeMode( QLayout::Minimum );
+  layout->setSizeConstraint( QLayout::Minimum );
 
   manager = dockManager;
   manager->childDock->append( this );
@@ -754,7 +754,7 @@ void K3DockWidget::setHeader( K3DockWidgetAbstractHeader* h )
     delete layout;
     header = h;
     layout = new QVBoxLayout( this );
-    layout->setResizeMode( QLayout::Minimum );
+    layout->setSizeConstraint( QLayout::Minimum );
     layout->addWidget( header );
      setWidget( widget );
   } else {
@@ -1465,7 +1465,7 @@ void K3DockWidget::setWidget( QWidget* mw )
   delete layout;
 
   layout = new QVBoxLayout( this );
-  layout->setResizeMode( QLayout::Minimum );
+  layout->setSizeConstraint( QLayout::Minimum );
 
   K3DockContainer* dc = dynamic_cast<K3DockContainer*>(widget);
   if (dc)

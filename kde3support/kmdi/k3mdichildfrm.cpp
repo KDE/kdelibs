@@ -537,7 +537,7 @@ void K3MdiChildFrm::setState( MdiWindowState state, bool /*bAnimate*/ )
 			m_pClient->setMaximumSize( m_oldClientMaxSize.width(), m_oldClientMaxSize.height() );
 			if ( m_pClient->layout() != 0L )
 			{
-				m_pClient->layout() ->setResizeMode( m_oldLayoutResizeMode );
+				m_pClient->layout() ->setSizeConstraint( m_oldLayoutResizeMode );
 			}
 			m_pMinimize->setPixmap( *m_pMinButtonPixmap );
 			m_pMaximize->setPixmap( *m_pMaxButtonPixmap );
@@ -561,7 +561,7 @@ void K3MdiChildFrm::setState( MdiWindowState state, bool /*bAnimate*/ )
 				m_pClient->setMaximumSize( m_oldClientMaxSize.width(), m_oldClientMaxSize.height() );
 				if ( m_pClient->layout() != 0L )
 				{
-					m_pClient->layout() ->setResizeMode( m_oldLayoutResizeMode );
+					m_pClient->layout() ->setSizeConstraint( m_oldLayoutResizeMode );
 				}
 				setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
 				// reset to maximize-captionbar
@@ -619,7 +619,7 @@ void K3MdiChildFrm::setState( MdiWindowState state, bool /*bAnimate*/ )
 			m_pClient->setMaximumSize( 0, 0 );
 			if ( m_pClient->layout() != 0L )
 			{
-				m_pClient->layout() ->setResizeMode( QLayout::FreeResize );
+				m_pClient->layout() ->setSizeConstraint( QLayout::FreeResize );
 			}
 			switchToMinimizeLayout();
 			m_pManager->childMinimized( this, true );
@@ -639,7 +639,7 @@ void K3MdiChildFrm::setState( MdiWindowState state, bool /*bAnimate*/ )
 			m_pClient->setMaximumSize( 0, 0 );
 			if ( m_pClient->layout() != 0L )
 			{
-				m_pClient->layout() ->setResizeMode( QLayout::FreeResize );
+				m_pClient->layout() ->setSizeConstraint( QLayout::FreeResize );
 			}
 			switchToMinimizeLayout();
 			m_pManager->childMinimized( this, false );
