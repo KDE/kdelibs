@@ -538,7 +538,7 @@ void KToolBar::setButton (int id, bool flag)
 bool KToolBar::isButtonOn (int id) const
 {
     KToolBarButton * button = const_cast<KToolBar*>( this )->getButton( id );
-    return button ? button->isOn() : false;
+    return button ? button->isChecked() : false;
 }
 
 

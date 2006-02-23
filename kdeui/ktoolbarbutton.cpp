@@ -403,7 +403,7 @@ void KToolBarButton::enterEvent(QEvent *)
     if (isEnabled())
     {
       d->m_isActive = true;
-      if (!isToggleButton())
+      if (!isCheckable())
         d->m_isRaised = true;
     }
     else
@@ -446,7 +446,7 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
     if (d->m_isRadio &&
 	(ev->type() == QEvent::MouseButtonPress ||
          ev->type() == QEvent::MouseButtonRelease ||
-         ev->type() == QEvent::MouseButtonDblClick) && isOn())
+         ev->type() == QEvent::MouseButtonDblClick) && isChecked())
       return true;
 
     // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
@@ -509,7 +509,7 @@ void KToolBarButton::paintEvent( QPaintEvent*/*e*/ )
     active |= QStyle::SC_ToolButton;
   }
   if (isEnabled()) 	flags |= QStyle::State_Enabled;
-  if (isOn()) 		flags |= QStyle::State_On;
+  if (isChecked()) 	flags |= QStyle::State_On;
   if (isEnabled() && hasMouse())	flags |= QStyle::State_Raised;
   if (hasFocus())	flags |= QStyle::State_HasFocus;
 
@@ -601,7 +601,7 @@ void KToolBarButton::setRadio (bool f)
 
 void KToolBarButton::on(bool flag)
 {
-  if(isToggleButton())
+  if(isCheckable())
     setChecked(flag);
   else
   {
