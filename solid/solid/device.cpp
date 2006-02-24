@@ -20,82 +20,68 @@
 #include "device.h"
 #include "devicemanager.h"
 
+#include <kdehw/ifaces/device.h>
+
+#include <kdehw/processor.h>
+#include <kdehw/ifaces/processor.h>
+#include <kdehw/block.h>
+#include <kdehw/ifaces/block.h>
+#include <kdehw/storage.h>
+#include <kdehw/ifaces/storage.h>
+#include <kdehw/cdrom.h>
+#include <kdehw/ifaces/cdrom.h>
+#include <kdehw/volume.h>
+#include <kdehw/ifaces/volume.h>
+#include <kdehw/opticaldisc.h>
+#include <kdehw/ifaces/opticaldisc.h>
+
 namespace KDEHW
 {
     class Device::Private
     {
     public:
-        Private() : data( 0 ) { }
+        Private( Device *device ) : q( device ), data( 0 ) { }
 
+        void unregisterData();
+        void registerData( Ifaces::Device *newData );
+
+        Device *q;
         Ifaces::Device *data;
+        QMap<Capability::Type,Capability*> ifaces;
     };
 }
 
 KDEHW::Device::Device()
-    : Ifaces::Device(), d( new Private() )
+    : QObject(), d( new Private( this ) )
 {
 }
 
 KDEHW::Device::Device( const Device &device )
-    : Ifaces::Device(), d( new Private() )
+    : QObject(), d( new Private( this ) )
 {
-    *d = *(device.d );
-
-    if ( d->data )
-    {
-        connect( d->data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
-                 this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
-        connect( d->data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
-                 this, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
-        connect( d->data, SIGNAL( destroyed( QObject * ) ),
-                 this, SLOT( slotDestroyed( QObject * ) ) );
-    }
+    d->registerData( device.d->data );
 }
 
 KDEHW::Device::Device( Ifaces::Device *data )
-    : Ifaces::Device(), d( new Private() )
+    : QObject(), d( new Private( this ) )
 {
-    d->data = data;
-
-    if ( d->data )
-    {
-        connect( d->data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
-                 this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
-        connect( d->data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
-                 this, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
-        connect( d->data, SIGNAL( destroyed( QObject * ) ),
-                 this, SLOT( slotDestroyed( QObject * ) ) );
-    }
+    d->registerData( data );
 }
 
 KDEHW::Device::~Device()
 {
+    foreach( Capability *iface, d->ifaces.values() )
+    {
+        delete iface;
+    }
+
     delete d;
 }
 
 KDEHW::Device &KDEHW::Device::operator=( const KDEHW::Device &device )
 {
-    if ( d->data )
-    {
-        disconnect( d->data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
-                    this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
-        disconnect( d->data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
-                    this, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
-        disconnect( d->data, SIGNAL( destroyed( QObject * ) ),
-                    this, SLOT( slotDestroyed( QObject * ) ) );
-    }
-
-    d->data = device.d->data;
-
-    if ( d->data )
-    {
-        connect( d->data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
-                 this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
-        connect( d->data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
-                 this, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
-        connect( d->data, SIGNAL( destroyed( QObject * ) ),
-                 this, SLOT( slotDestroyed( QObject * ) ) );
-    }
+    d->unregisterData();
+    d->registerData( device.d->data );
 
     return *this;
 }
@@ -227,11 +213,67 @@ bool KDEHW::Device::queryCapability( const Capability::Type &capability ) const
     }
 }
 
-KDEHW::Ifaces::Capability *KDEHW::Device::asCapability( const Capability::Type &capability )
+template<typename IfaceType, typename CapType>
+inline CapType* capability_cast( KDEHW::Ifaces::Capability *cap_iface )
+{
+    IfaceType *iface = dynamic_cast<IfaceType*>( cap_iface );
+
+    if ( iface )
+    {
+        return new CapType( iface );
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+KDEHW::Capability *KDEHW::Device::asCapability( const Capability::Type &capability )
 {
     if ( d->data!=0 )
     {
-        return d->data->asCapability( capability );
+        if ( d->ifaces.contains( capability ) )
+        {
+            return d->ifaces.value( capability );
+        }
+
+        Ifaces::Capability *cap_iface = d->data->asCapability( capability );
+
+        Capability *iface = 0;
+
+        if ( cap_iface!=0 )
+        {
+            switch ( capability )
+            {
+            case Capability::Processor:
+                iface = capability_cast<Ifaces::Processor, Processor>( cap_iface );
+                break;
+            case Capability::Block:
+                iface = capability_cast<Ifaces::Block, Block>( cap_iface );
+                break;
+            case Capability::Storage:
+                iface = capability_cast<Ifaces::Storage, Storage>( cap_iface );
+                break;
+            case Capability::Cdrom:
+                iface = capability_cast<Ifaces::Cdrom, Cdrom>( cap_iface );
+                break;
+            case Capability::Volume:
+                iface = capability_cast<Ifaces::Volume, Volume>( cap_iface );
+                break;
+            case Capability::OpticalDisc:
+                iface = capability_cast<Ifaces::OpticalDisc, OpticalDisc>( cap_iface );
+                break;
+            case Capability::Unknown:
+                break;
+            }
+        }
+
+        if ( iface!=0 )
+        {
+            d->ifaces[capability] = iface;
+        }
+
+        return iface;
     }
     else
     {
@@ -302,6 +344,42 @@ void KDEHW::Device::slotDestroyed( QObject *object )
     if ( object == d->data )
     {
         d->data = 0;
+        d->unregisterData();
+    }
+}
+
+void KDEHW::Device::Private::registerData( KDEHW::Ifaces::Device *newData )
+{
+    data = newData;
+
+    if ( data )
+    {
+        connect( data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
+                 q, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
+        connect( data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
+                 q, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
+        connect( data, SIGNAL( destroyed( QObject * ) ),
+                 q, SLOT( slotDestroyed( QObject * ) ) );
+    }
+}
+
+void KDEHW::Device::Private::unregisterData()
+{
+    if ( data )
+    {
+        disconnect( data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
+                    q, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
+        disconnect( data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
+                    q, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
+        disconnect( data, SIGNAL( destroyed( QObject * ) ),
+                    q, SLOT( slotDestroyed( QObject * ) ) );
+    }
+
+    data = 0;
+
+    foreach( Capability *iface, ifaces.values() )
+    {
+        delete iface;
     }
 }
 

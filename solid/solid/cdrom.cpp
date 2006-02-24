@@ -17,35 +17,51 @@
 
 */
 
-#ifndef KDEHW_IFACES_STORAGE_H
-#define KDEHW_IFACES_STORAGE_H
+#include "cdrom.h"
 
-#include <kdehw/ifaces/block.h>
-#include <kdehw/ifaces/enums.h>
+#include <kdehw/ifaces/cdrom.h>
 
 namespace KDEHW
 {
-namespace Ifaces
-{
-    class Storage : virtual public Block, public Enums::Storage
+    class Cdrom::Private
     {
     public:
-        virtual ~Storage();
+        Private() : iface( 0 ) {}
 
-        static Type type() { return Capability::Storage; }
-
-        virtual Bus bus() const = 0;
-        virtual DriveType driveType() const = 0;
-
-        virtual bool isRemovable() const = 0;
-        virtual bool isEjectRequired() const = 0;
-        virtual bool isHotpluggable() const = 0;
-        virtual bool isMediaCheckEnabled() const = 0;
-
-        virtual QString vendor() const = 0;
-        virtual QString product() const = 0;
+        Ifaces::Cdrom *iface;
     };
 }
+
+KDEHW::Cdrom::Cdrom( Ifaces::Cdrom *iface, QObject *parent )
+    : Storage( iface, parent ), d( new Private() )
+{
+    d->iface = iface;
 }
 
-#endif
+KDEHW::Cdrom::~Cdrom()
+{
+    delete d->iface;
+    delete d;
+}
+
+KDEHW::Cdrom::MediumTypes KDEHW::Cdrom::supportedMedia() const
+{
+    return d->iface->supportedMedia();
+}
+
+int KDEHW::Cdrom::readSpeed() const
+{
+    return d->iface->readSpeed();
+}
+
+int KDEHW::Cdrom::writeSpeed() const
+{
+    return d->iface->writeSpeed();
+}
+
+QList<int> KDEHW::Cdrom::writeSpeeds() const
+{
+    return d->iface->writeSpeeds();
+}
+
+#include "cdrom.moc"

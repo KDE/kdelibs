@@ -25,8 +25,6 @@
 
 #include <kstaticdeleter.h>
 
-#include <kdehw/ifaces/capability.h>
-
 namespace KDEHW
 {
     namespace Ifaces
@@ -35,7 +33,6 @@ namespace KDEHW
     }
     class Device;
     typedef QList<Device> DeviceList;
-    using Ifaces::Capability;
 
     /**
      * This class allow to query the underlying system to obtain information

@@ -17,35 +17,35 @@
 
 */
 
-#ifndef KDEHW_IFACES_STORAGE_H
-#define KDEHW_IFACES_STORAGE_H
+#ifndef KDEHW_BLOCK_H
+#define KDEHW_BLOCK_H
 
-#include <kdehw/ifaces/block.h>
-#include <kdehw/ifaces/enums.h>
+#include <kdehw/capability.h>
 
 namespace KDEHW
 {
-namespace Ifaces
-{
-    class Storage : virtual public Block, public Enums::Storage
+    namespace Ifaces
     {
+        class Block;
+    }
+
+    class Block : public Capability
+    {
+        Q_OBJECT
     public:
-        virtual ~Storage();
+        Block( Ifaces::Block *iface, QObject *parent = 0 );
+        virtual ~Block();
 
-        static Type type() { return Capability::Storage; }
+        static Type type() { return Capability::Block; }
 
-        virtual Bus bus() const = 0;
-        virtual DriveType driveType() const = 0;
+        int major() const;
+        int minor() const;
+        QString device() const;
 
-        virtual bool isRemovable() const = 0;
-        virtual bool isEjectRequired() const = 0;
-        virtual bool isHotpluggable() const = 0;
-        virtual bool isMediaCheckEnabled() const = 0;
-
-        virtual QString vendor() const = 0;
-        virtual QString product() const = 0;
+    private:
+        class Private;
+        Private *d;
     };
-}
 }
 
 #endif

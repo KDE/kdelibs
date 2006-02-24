@@ -23,25 +23,20 @@
 #include <QObject>
 #include <QFlags>
 
+#include <kdehw/ifaces/enums.h>
+
 namespace KDEHW
 {
 namespace Ifaces
 {
-    class Capability
+    class Capability : public Enums::Capability
     {
     public:
         virtual ~Capability();
 
 	virtual const QObject *qobject() const = 0;
 	virtual QObject *qobject() = 0;
-
-        enum Type { Unknown = 0, Processor = 1, Block = 2,
-                    Storage = 4, Cdrom = 8,
-                    Volume = 16, OpticalDisc = 32 };
-        Q_DECLARE_FLAGS( Types, Type );
     };
-
-    Q_DECLARE_OPERATORS_FOR_FLAGS( Capability::Types )
 }
 }
 

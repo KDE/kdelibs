@@ -17,10 +17,10 @@
 
 */
 
-#ifndef KDEHW_IFACES_VOLUME_H
-#define KDEHW_IFACES_VOLUME_H
+#ifndef KDEHW_VOLUME_H
+#define KDEHW_VOLUME_H
 
-#include <kdehw/ifaces/block.h>
+#include <kdehw/block.h>
 #include <kdehw/ifaces/enums.h>
 
 namespace KIO
@@ -30,32 +30,42 @@ namespace KIO
 
 namespace KDEHW
 {
-namespace Ifaces
-{
-    class Volume : virtual public Block, public Enums::Volume
+    namespace Ifaces
     {
+        class Volume;
+    }
+
+    class Volume : public Block, public Ifaces::Enums::Volume
+    {
+        Q_OBJECT
     public:
+        Volume( Ifaces::Volume *iface, QObject *parent = 0 );
         virtual ~Volume();
 
         static Type type() { return Capability::Volume; }
 
-        virtual bool isIgnored() const = 0;
-        virtual bool isMounted() const = 0;
-        virtual QString mountPoint() const = 0;
-        virtual UsageType usage() const = 0;
-        virtual QString fsType() const = 0;
-        virtual QString label() const = 0;
+        bool isIgnored() const;
+        bool isMounted() const;
+        QString mountPoint() const;
+        UsageType usage() const;
+        QString fsType() const;
+        QString label() const;
         // TODO add UUID and size
 
-        virtual KIO::Job *mount( bool showProgressInfo = false ) = 0;
-        virtual KIO::Job *unmount( bool showProgressInfo = false ) = 0;
-        virtual KIO::Job *eject( bool showProgressInfo = false ) = 0;
+        KIO::Job *mount( bool showProgressInfo = false );
+        KIO::Job *unmount( bool showProgressInfo = false );
+        KIO::Job *eject( bool showProgressInfo = false );
 
-    protected:
-    //signals:
-        virtual void mountStateChanged( bool newState ) = 0;
+    signals:
+        void mountStateChanged( bool newState );
+
+    private slots:
+        void slotMountStateChanged( bool newState );
+
+    private:
+        class Private;
+        Private *d;
     };
-}
 }
 
 #endif

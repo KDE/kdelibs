@@ -20,31 +20,26 @@
 #ifndef KDEHW_IFACES_CDROM_H
 #define KDEHW_IFACES_CDROM_H
 
-#include <QFlags>
 #include <QList>
 #include <kdehw/ifaces/storage.h>
+#include <kdehw/ifaces/enums.h>
 
 namespace KDEHW
 {
 namespace Ifaces
 {
-    class Cdrom : virtual public Storage
+    class Cdrom : virtual public Storage, public Enums::Cdrom
     {
     public:
         virtual ~Cdrom();
 
         static Type type() { return Capability::Cdrom; }
 
-        enum MediumType { Cdr, Cdrw, Dvd, Dvdr, Dvdrw, Dvdram, Dvdplusr, Dvdplusrw, Dvdplusdl };
-        Q_DECLARE_FLAGS( MediumTypes, MediumType );
-
         virtual MediumTypes supportedMedia() const = 0;
         virtual int readSpeed() const = 0;
         virtual int writeSpeed() const = 0;
         virtual QList<int> writeSpeeds() const = 0;
     };
-
-    Q_DECLARE_OPERATORS_FOR_FLAGS( Cdrom::MediumTypes )
 }
 }
 

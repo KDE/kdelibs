@@ -17,35 +17,37 @@
 
 */
 
-#ifndef KDEHW_IFACES_STORAGE_H
-#define KDEHW_IFACES_STORAGE_H
+#ifndef KDEHW_CDROM_H
+#define KDEHW_CDROM_H
 
-#include <kdehw/ifaces/block.h>
-#include <kdehw/ifaces/enums.h>
+#include <QList>
+#include <kdehw/storage.h>
 
 namespace KDEHW
 {
-namespace Ifaces
-{
-    class Storage : virtual public Block, public Enums::Storage
+    namespace Ifaces
     {
+        class Cdrom;
+    }
+
+    class Cdrom : public Storage, public Ifaces::Enums::Cdrom
+    {
+        Q_OBJECT
     public:
-        virtual ~Storage();
+        Cdrom( Ifaces::Cdrom *iface, QObject *parent = 0 );
+        virtual ~Cdrom();
 
-        static Type type() { return Capability::Storage; }
+        static Type type() { return Capability::Cdrom; }
 
-        virtual Bus bus() const = 0;
-        virtual DriveType driveType() const = 0;
+        MediumTypes supportedMedia() const;
+        int readSpeed() const;
+        int writeSpeed() const;
+        QList<int> writeSpeeds() const;
 
-        virtual bool isRemovable() const = 0;
-        virtual bool isEjectRequired() const = 0;
-        virtual bool isHotpluggable() const = 0;
-        virtual bool isMediaCheckEnabled() const = 0;
-
-        virtual QString vendor() const = 0;
-        virtual QString product() const = 0;
+    private:
+        class Private;
+        Private *d;
     };
-}
 }
 
 #endif

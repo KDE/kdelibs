@@ -20,17 +20,21 @@
 #ifndef KDEHW_DEVICE_H
 #define KDEHW_DEVICE_H
 
+#include <QObject>
 #include <QVariant>
 #include <QString>
 #include <QMap>
 #include <QList>
 
-#include <kdehw/ifaces/device.h>
-#include <kdehw/ifaces/capability.h>
+#include <kdehw/capability.h>
+#include <kdehw/ifaces/enums.h>
 
 namespace KDEHW
 {
-    using Ifaces::Capability;
+    namespace Ifaces
+    {
+        class Device;
+    }
     class DeviceManager;
 
     /**
@@ -50,7 +54,7 @@ namespace KDEHW
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class Device : public Ifaces::Device
+    class Device : public QObject, public Ifaces::Enums::Device
     {
         Q_OBJECT
     public:
@@ -213,7 +217,7 @@ namespace KDEHW
          * @param capability the capability type
          * @returns a pointer to the capability interface if it exists, 0 otherwise
          */
-        virtual Ifaces::Capability *asCapability( const Capability::Type &capability );
+        virtual Capability *asCapability( const Capability::Type &capability );
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding
@@ -224,7 +228,7 @@ namespace KDEHW
         template <class Cap> Cap *as()
         {
             Capability::Type type = Cap::type();
-            Ifaces::Capability *iface = asCapability( type );
+            Capability *iface = asCapability( type );
             return dynamic_cast<Cap*>( iface );
         }
 
@@ -267,6 +271,26 @@ namespace KDEHW
          * @return the lock reason if the device is locked, QString() otherwise
          */
         virtual QString lockReason() const;
+
+    signals:
+        /**
+         * This signal is emitted when a property is changed in the device.
+         *
+         * @param key the changed property name
+         * @param change the kind of change done on the device
+         * property (added/removed/modified), it's one of the type
+         * KDEHW::PropertyChange
+         */
+        void propertyChanged( const QMap<QString,int> &changes );
+
+        /**
+         * This signal is emitted when an event occured in the device.
+         * For example when a button is pressed.
+         *
+         * @param condition the condition name
+         * @param reason a message explaining why the condition has been raised
+         */
+        void conditionRaised( const QString &condition, const QString &reason );
 
     private slots:
         void slotPropertyChanged( const QMap<QString,int> &changes );

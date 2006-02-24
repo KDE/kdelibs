@@ -17,35 +17,38 @@
 
 */
 
-#ifndef KDEHW_IFACES_STORAGE_H
-#define KDEHW_IFACES_STORAGE_H
+#ifndef KDEHW_OPTICALDISC_H
+#define KDEHW_OPTICALDISC_H
 
-#include <kdehw/ifaces/block.h>
-#include <kdehw/ifaces/enums.h>
+#include <kdehw/volume.h>
 
 namespace KDEHW
 {
-namespace Ifaces
-{
-    class Storage : virtual public Block, public Enums::Storage
+    namespace Ifaces
     {
+        class OpticalDisc;
+    }
+
+    class OpticalDisc : public Volume, public Ifaces::Enums::OpticalDisc
+    {
+        Q_OBJECT
     public:
-        virtual ~Storage();
+        OpticalDisc( Ifaces::OpticalDisc *iface, QObject *parent = 0 );
+        virtual ~OpticalDisc();
 
-        static Type type() { return Capability::Storage; }
+        static Type type() { return Capability::OpticalDisc; }
 
-        virtual Bus bus() const = 0;
-        virtual DriveType driveType() const = 0;
+        ContentTypes availableContent() const;
+        DiscType discType() const;
+        bool isAppendable() const;
+        bool isBlank() const;
+        bool isRewritable() const;
+        long capacity() const;
 
-        virtual bool isRemovable() const = 0;
-        virtual bool isEjectRequired() const = 0;
-        virtual bool isHotpluggable() const = 0;
-        virtual bool isMediaCheckEnabled() const = 0;
-
-        virtual QString vendor() const = 0;
-        virtual QString product() const = 0;
+    private:
+        class Private;
+        Private *d;
     };
-}
 }
 
 #endif

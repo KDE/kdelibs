@@ -20,26 +20,18 @@
 #ifndef KDEHW_IFACES_OPTICALDISC_H
 #define KDEHW_IFACES_OPTICALDISC_H
 
-#include <QFlags>
 #include <kdehw/ifaces/volume.h>
 
 namespace KDEHW
 {
 namespace Ifaces
 {
-    class OpticalDisc : virtual public Volume
+    class OpticalDisc : virtual public Volume, public Enums::OpticalDisc
     {
     public:
         virtual ~OpticalDisc();
 
         static Type type() { return Capability::OpticalDisc; }
-
-        enum ContentType { Audio, Data, VideoCd, SuperVideoCd, VideoDvd };
-        Q_DECLARE_FLAGS( ContentTypes, ContentType )
-
-        enum DiscType { CdRom, CdRecordable, CdRewritable, DvdRom, DvdRam,
-                        DvdRecordable, DvdRewritable,
-                        DvdPlusRecordable, DvdPlusRewritable, Unknown };
 
         virtual ContentTypes availableContent() const = 0;
         virtual DiscType discType() const = 0;
@@ -48,8 +40,6 @@ namespace Ifaces
         virtual bool isRewritable() const = 0;
         virtual long capacity() const = 0;
     };
-
-    Q_DECLARE_OPERATORS_FOR_FLAGS( OpticalDisc::ContentTypes )
 }
 }
 

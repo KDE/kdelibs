@@ -17,35 +17,46 @@
 
 */
 
-#ifndef KDEHW_IFACES_STORAGE_H
-#define KDEHW_IFACES_STORAGE_H
+#include "processor.h"
 
-#include <kdehw/ifaces/block.h>
-#include <kdehw/ifaces/enums.h>
+#include <kdehw/ifaces/processor.h>
 
 namespace KDEHW
 {
-namespace Ifaces
-{
-    class Storage : virtual public Block, public Enums::Storage
+    class Processor::Private
     {
     public:
-        virtual ~Storage();
+        Private() : iface( 0 ) {}
 
-        static Type type() { return Capability::Storage; }
-
-        virtual Bus bus() const = 0;
-        virtual DriveType driveType() const = 0;
-
-        virtual bool isRemovable() const = 0;
-        virtual bool isEjectRequired() const = 0;
-        virtual bool isHotpluggable() const = 0;
-        virtual bool isMediaCheckEnabled() const = 0;
-
-        virtual QString vendor() const = 0;
-        virtual QString product() const = 0;
+        Ifaces::Processor *iface;
     };
 }
+
+KDEHW::Processor::Processor( Ifaces::Processor *iface, QObject *parent )
+    : Capability( parent ), d( new Private() )
+{
+    d->iface = iface;
 }
 
-#endif
+KDEHW::Processor::~Processor()
+{
+    delete d->iface;
+    delete d;
+}
+
+int KDEHW::Processor::number() const
+{
+    return d->iface->number();
+}
+
+long KDEHW::Processor::maxSpeed() const
+{
+    return d->iface->maxSpeed();
+}
+
+bool KDEHW::Processor::canThrottle() const
+{
+    return d->iface->canThrottle();
+}
+
+#include "processor.moc"

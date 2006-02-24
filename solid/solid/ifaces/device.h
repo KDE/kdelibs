@@ -26,6 +26,7 @@
 #include <QMap>
 
 #include <kdehw/ifaces/capability.h>
+#include <kdehw/ifaces/enums.h>
 
 namespace KDEHW
 {
@@ -40,19 +41,11 @@ namespace Ifaces
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class Device : public QObject
+    class Device : public QObject, public Enums::Device
     {
         Q_OBJECT
-        Q_ENUMS( PropertyChange )
 
     public:
-        /**
-         * PropertyModified : A property value has changed in the device
-         * PropertyAdded : A new property has been added to the device
-         * PropertyRemoved : A property has been removed from the device
-         */
-        enum PropertyChange { PropertyModified, PropertyAdded, PropertyRemoved };
-
         /**
          * Constructs a Device
          */

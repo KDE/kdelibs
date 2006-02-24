@@ -26,6 +26,7 @@
 
 #include <kdehw/devicemanager.h>
 #include <kdehw/device.h>
+#include <kdehw/processor.h>
 #include "fakemanager.h"
 #include "fakedevice.h"
 
@@ -318,16 +319,16 @@ void KdeHwTest::testDeviceSignals()
 void KdeHwTest::testDeviceCapabilities()
 {
     FakeDevice *fake = fakeManager->newDevice( "/fake/acpi_CPU0" );
-    fake->addCapability( KDEHW::Ifaces::Capability::Processor );
-    QVERIFY( fake->asCapability( KDEHW::Ifaces::Capability::Processor ) != 0 );
+    fake->addCapability( KDEHW::Capability::Processor );
+    QVERIFY( fake->asCapability( KDEHW::Capability::Processor ) != 0 );
 
     KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
     KDEHW::Device cpu = manager.findDevice( "/fake/acpi_CPU0" );
 
-    KDEHW::Ifaces::Capability *iface = cpu.asCapability( KDEHW::Ifaces::Capability::Processor );
-    KDEHW::Ifaces::Processor *processor = cpu.as<KDEHW::Ifaces::Processor>();
+    KDEHW::Capability *iface = cpu.asCapability( KDEHW::Capability::Processor );
+    KDEHW::Processor *processor = cpu.as<KDEHW::Processor>();
 
-    QVERIFY( cpu.queryCapability( KDEHW::Ifaces::Capability::Processor ) );
+    QVERIFY( cpu.queryCapability( KDEHW::Capability::Processor ) );
     QVERIFY( iface!=0 );
     QCOMPARE( iface, processor );
 }
