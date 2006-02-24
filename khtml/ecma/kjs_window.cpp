@@ -2416,7 +2416,7 @@ void Location::put(ExecState *exec, const Identifier &p, ValueImp *v, int attr)
   Window::retrieveWindow(m_frame->m_part)->goURL(exec, url.url(), false /* don't lock history*/ );
 }
 
-ValueImp *Location::toPrimitive(ExecState *exec, Type) const
+ValueImp *Location::toPrimitive(ExecState *exec, JSType) const
 {
   if (m_frame) {
     Window* window = Window::retrieveWindow( m_frame->m_part );

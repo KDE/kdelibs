@@ -45,7 +45,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
 
-    virtual ValueImp* toPrimitive(ExecState *exec, Type preferred = UndefinedType) const;
+    virtual ValueImp* toPrimitive(ExecState *exec, JSType preferred = UndefinedType) const;
     virtual UString toString(ExecState *exec) const;
     void setListener(ExecState *exec, int eventId, ValueImp* func) const;
     ValueImp* getListener(int eventId) const;

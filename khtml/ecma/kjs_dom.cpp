@@ -448,7 +448,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, ValueImp* value, int 
   }
 }
 
-ValueImp* DOMNode::toPrimitive(ExecState *exec, Type /*preferred*/) const
+ValueImp* DOMNode::toPrimitive(ExecState *exec, JSType /*preferred*/) const
 {
   if (m_impl.isNull())
     return Null();

@@ -26,7 +26,10 @@ kxmlcoreinclude_HEADERS = HashMap.h \
 			SharedPtr.h \
 			HashSet.h \
 			HashFunctions.h \
-			HashTable.h 
+			HashTable.h  \
+			Noncopyable.h \
+			OwnArrayPtr.h \
+			OwnPtr.h
 
 libkxmlcore_la_LDFLAGS = -version-info 3:0:2 -no-undefined $(USER_LDFLAGS) $(all_libraries)
 

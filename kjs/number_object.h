@@ -56,10 +56,8 @@ namespace KJS {
    */
   class NumberProtoFunc : public InternalFunctionImp {
   public:
-    NumberProtoFunc(ExecState *exec, FunctionPrototype *funcProto,
-                       int i, int len, const Identifier& name);
+    NumberProtoFunc(ExecState*, FunctionPrototype*, int i, int len, const Identifier&);
 
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
     enum { ToString, ToLocaleString, ValueOf, ToFixed, ToExponential, ToPrecision };
@@ -81,7 +79,6 @@ namespace KJS {
     virtual bool implementsConstruct() const;
     virtual JSObject *construct(ExecState *exec, const List &args);
 
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
     bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);

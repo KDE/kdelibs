@@ -1,6 +1,6 @@
+// -*- mode: c++; c-basic-offset: 4 -*-
 /*
- *  This file is part of the KDE libraries
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2006 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -19,19 +19,24 @@
  *
  */
 
-#include "config.h"
-#include "scope_chain.h"
+#ifndef KXMLCORE_NONCOPYABLE
+#define KXMLCORE_NONCOPYABLE
 
-namespace KJS {
+// We don't want argument-dependent lookup to pull in everything from the KXMLCore
+// namespace when you use Noncopyable, so put it in its own namespace.
 
-void ScopeChain::push(const ScopeChain &c)
-{
-    ScopeChainNode **tail = &_node;
-    for (ScopeChainNode *n = c._node; n; n = n->next) {
-        ScopeChainNode *newNode = new ScopeChainNode(*tail, n->object);
-        *tail = newNode;
-        tail = &newNode->next;
-    }
-}
+namespace KXMLCoreNoncopyable {
 
-} // namespace KJS
+    class Noncopyable {
+        Noncopyable(const Noncopyable&);
+        Noncopyable& operator=(const Noncopyable&);
+    protected:
+        Noncopyable() { }
+        ~Noncopyable() { }
+    };
+
+} // namespace KXMLCoreNoncopyable
+
+using KXMLCoreNoncopyable::Noncopyable;
+
+#endif // KXMLCORE_NONCOPYABLE

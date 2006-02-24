@@ -42,7 +42,7 @@ KJS::UString ObjectBinding::className() const
     return KJS::UString( typeName() );
 }
 
-KJS::Type ObjectBinding::type() const
+KJS::JSType ObjectBinding::type() const
 {
     return KJS::ObjectType;
 }

@@ -202,15 +202,6 @@ namespace KJS {
     static QHash<int, const BoundPropInfo*>* boundPropInfo();
   };
 
-
-  class HTMLElementFunction : public DOMFunction {
-  public:
-    HTMLElementFunction(ExecState *exec, int i, int len);
-    virtual ValueImp* callAsFunction(ExecState *exec, ObjectImp* thisObj, const List& args);
-  private:
-    int id;
-  };
-
   class HTMLCollection : public DOMObject {
   public:
     HTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c);

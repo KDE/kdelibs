@@ -56,10 +56,8 @@ namespace KJS {
    */
   class BooleanProtoFunc : public InternalFunctionImp {
   public:
-    BooleanProtoFunc(ExecState *exec,
-                        FunctionPrototype *funcProto, int i, int len, const Identifier& ident);
+    BooleanProtoFunc(ExecState*, FunctionPrototype*, int i, int len, const Identifier&);
 
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
     enum { ToString, ValueOf };
@@ -81,7 +79,6 @@ namespace KJS {
     virtual bool implementsConstruct() const;
     virtual JSObject *construct(ExecState *exec, const List &args);
 
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
   };
 

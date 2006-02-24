@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2006 Apple Computer, Inc
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -19,19 +19,25 @@
  *
  */
 
-#include "config.h"
-#include "scope_chain.h"
+#ifndef KJS_JSTYPE_H
+#define KJS_JSTYPE_H
 
 namespace KJS {
-
-void ScopeChain::push(const ScopeChain &c)
-{
-    ScopeChainNode **tail = &_node;
-    for (ScopeChainNode *n = c._node; n; n = n->next) {
-        ScopeChainNode *newNode = new ScopeChainNode(*tail, n->object);
-        *tail = newNode;
-        tail = &newNode->next;
-    }
-}
+    
+/**
+ * Primitive types
+ */
+enum JSType {
+    UnspecifiedType   = 0,
+    NumberType        = 1,
+    BooleanType       = 2,
+    UndefinedType     = 3,
+    NullType          = 4,
+    StringType        = 5,
+    ObjectType        = 6,
+    GetterSetterType  = 7
+};
 
 } // namespace KJS
+
+#endif

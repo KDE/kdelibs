@@ -135,7 +135,7 @@ namespace KJSEmbed
 
             KJS::UString toString( KJS::ExecState *exec ) const;
             KJS::UString className() const;
-            KJS::Type type() const;
+            KJS::JSType type() const;
 
             Ownership ownership() const;
             void setOwnership( Ownership owner );

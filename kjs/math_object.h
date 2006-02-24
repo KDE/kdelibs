@@ -42,8 +42,7 @@ namespace KJS {
 
   class MathFuncImp : public InternalFunctionImp {
   public:
-    MathFuncImp(ExecState *exec, int i, int l);
-    virtual bool implementsCall() const;
+    MathFuncImp(ExecState *exec, int i, int l, const Identifier&);
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
   private:
     int id;

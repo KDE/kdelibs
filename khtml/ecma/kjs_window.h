@@ -262,7 +262,7 @@ namespace KJS {
     ValueImp* getValueProperty(ExecState *exec, int token) const;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
-    virtual ValueImp* toPrimitive(ExecState *exec, Type preferred) const;
+    virtual ValueImp* toPrimitive(ExecState *exec, JSType preferred) const;
     virtual UString toString(ExecState *exec) const;
     enum { Hash, Href, Hostname, Host, Pathname, Port, Protocol, Search, EqualEqual,
            Assign, Replace, Reload, ToString };

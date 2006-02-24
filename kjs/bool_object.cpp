@@ -28,7 +28,6 @@
 #include "operations.h"
 #include "bool_object.h"
 #include "error_object.h"
-#include "nodes.h"
 
 #include <assert.h>
 
@@ -47,32 +46,24 @@ BooleanInstance::BooleanInstance(JSObject *proto)
 
 // ECMA 15.6.4
 
-BooleanPrototype::BooleanPrototype(ExecState *exec,
-                                         ObjectPrototype *objectProto,
-                                         FunctionPrototype *funcProto)
+BooleanPrototype::BooleanPrototype(ExecState* exec, ObjectPrototype* objectProto, FunctionPrototype* funcProto)
   : BooleanInstance(objectProto)
 {
   // The constructor will be added later by InterpreterImp::InterpreterImp()
 
-  putDirect(toStringPropertyName, new BooleanProtoFunc(exec,funcProto,BooleanProtoFunc::ToString,0,toStringPropertyName), DontEnum);
-  putDirect(valueOfPropertyName,  new BooleanProtoFunc(exec,funcProto,BooleanProtoFunc::ValueOf,0,valueOfPropertyName),  DontEnum);
+  putDirectFunction(new BooleanProtoFunc(exec, funcProto, BooleanProtoFunc::ToString, 0, toStringPropertyName), DontEnum);
+  putDirectFunction(new BooleanProtoFunc(exec, funcProto, BooleanProtoFunc::ValueOf, 0, valueOfPropertyName),  DontEnum);
   setInternalValue(jsBoolean(false));
 }
 
 
 // ------------------------------ BooleanProtoFunc --------------------------
 
-BooleanProtoFunc::BooleanProtoFunc(ExecState *exec,
-                                         FunctionPrototype *funcProto, int i, int len, const Identifier& name)
-  : InternalFunctionImp(funcProto, name), id(i)
+BooleanProtoFunc::BooleanProtoFunc(ExecState*, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
+  : InternalFunctionImp(funcProto, name)
+  , id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
-}
-
-
-bool BooleanProtoFunc::implementsCall() const
-{
-  return true;
 }
 
 
@@ -126,11 +117,6 @@ JSObject *BooleanObjectImp::construct(ExecState *exec, const List &args)
   obj->setInternalValue(jsBoolean(b));
 
   return obj;
-}
-
-bool BooleanObjectImp::implementsCall() const
-{
-  return true;
 }
 
 // ECMA 15.6.1

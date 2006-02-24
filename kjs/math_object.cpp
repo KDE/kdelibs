@@ -31,7 +31,6 @@
 #include "interpreter.h"
 #include "operations.h"
 #include "math_object.h"
-#include "nodes.h"
 
 #include "math_object.lut.h"
 
@@ -154,17 +153,11 @@ JSValue *MathObjectImp::getValueProperty(ExecState *, int token) const
 
 static bool randomSeeded = false;
 
-MathFuncImp::MathFuncImp(ExecState *exec, int i, int l)
-  : InternalFunctionImp(
-    static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype())
-    ), id(i)
+MathFuncImp::MathFuncImp(ExecState* exec, int i, int l, const Identifier& name)
+  : InternalFunctionImp(static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()), name)
+  , id(i)
 {
   putDirect(lengthPropertyName, l, DontDelete|ReadOnly|DontEnum);
-}
-
-bool MathFuncImp::implementsCall() const
-{
-  return true;
 }
 
 JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)

@@ -32,6 +32,11 @@ namespace KJS {
     public:
         DateInstance(JSObject *proto);
 
+        bool getTime(tm &t, int &gmtoffset) const;
+        bool getUTCTime(tm &t) const;
+        bool getTime(double &ms, int &gmtoffset) const;
+        bool getUTCTime(double &ms) const;
+
         virtual const ClassInfo *classInfo() const { return &info; }
         static const ClassInfo info;
     };
@@ -61,7 +66,6 @@ namespace KJS {
 
         virtual bool implementsConstruct() const;
         virtual JSObject *construct(ExecState *, const List &args);
-        virtual bool implementsCall() const;
         virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
 
         Completion execute(const List &);

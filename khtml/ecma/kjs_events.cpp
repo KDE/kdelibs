@@ -188,7 +188,6 @@ void JSLazyEventListener::parseCode() const
         listener = 0;// Error creating function
       } else {
         DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.get());
-	// what happened to this?
         declFunc->setFunctionName(Identifier(UString(name)));
 
         if (originalNode)
@@ -348,7 +347,7 @@ ValueImp *DOMEvent::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-ValueImp *DOMEvent::defaultValue(ExecState *exec, KJS::Type hint) const
+ValueImp *DOMEvent::defaultValue(ExecState *exec, KJS::JSType hint) const
 {
   if (m_impl->id() == EventImpl::ERROR_EVENT && !m_impl->message().isNull()) {
     return String(m_impl->message());

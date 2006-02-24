@@ -257,7 +257,7 @@ public:
 
   virtual bool implementsCall() const;
   virtual bool toBoolean(ExecState *) const;
-  virtual ValueImp *toPrimitive(ExecState *exec, Type) const;
+  virtual ValueImp *toPrimitive(ExecState *exec, JSType) const;
   virtual UString toString(ExecState *) const;
 
 private:
@@ -362,7 +362,7 @@ bool EmbedLiveConnect::toBoolean(ExecState *) const {
 }
 
 KDE_NO_EXPORT
-ValueImp *EmbedLiveConnect::toPrimitive(ExecState *exec, Type) const {
+ValueImp *EmbedLiveConnect::toPrimitive(ExecState *exec, JSType) const {
   return String(toString(exec));
 }
 

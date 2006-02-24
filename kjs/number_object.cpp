@@ -27,7 +27,6 @@
 #include "operations.h"
 #include "number_object.h"
 #include "error_object.h"
-#include "nodes.h"
 #include "dtoa.h"
 
 #include <kxmlcore/Vector.h>
@@ -36,6 +35,7 @@
 
 #include <assert.h>
 #include <math.h>
+
 using namespace KJS;
 
 
@@ -60,34 +60,22 @@ NumberPrototype::NumberPrototype(ExecState *exec,
 
   // The constructor will be added later, after NumberObjectImp has been constructed
 
-  putDirect(toStringPropertyName,       new NumberProtoFunc(
-            exec,funcProto,NumberProtoFunc::ToString,1,toStringPropertyName), DontEnum);
-  putDirect(toLocaleStringPropertyName, new NumberProtoFunc(
-            exec,funcProto,NumberProtoFunc::ToLocaleString,0,toLocaleStringPropertyName), DontEnum);
-  putDirect(valueOfPropertyName,        new NumberProtoFunc(
-            exec,funcProto,NumberProtoFunc::ValueOf,0,valueOfPropertyName), DontEnum);
-  putDirect(toFixedPropertyName,        new NumberProtoFunc(
-            exec,funcProto,NumberProtoFunc::ToFixed,1,toFixedPropertyName), DontEnum);
-  putDirect(toExponentialPropertyName,  new NumberProtoFunc(
-            exec,funcProto,NumberProtoFunc::ToExponential,1,toExponentialPropertyName), DontEnum);
-  putDirect(toPrecisionPropertyName,    new NumberProtoFunc(
-            exec,funcProto,NumberProtoFunc::ToPrecision,1,toPrecisionPropertyName), DontEnum);
+  putDirectFunction(new NumberProtoFunc(exec, funcProto, NumberProtoFunc::ToString,       1, toStringPropertyName), DontEnum);
+  putDirectFunction(new NumberProtoFunc(exec, funcProto, NumberProtoFunc::ToLocaleString, 0, toLocaleStringPropertyName), DontEnum);
+  putDirectFunction(new NumberProtoFunc(exec, funcProto, NumberProtoFunc::ValueOf,        0, valueOfPropertyName), DontEnum);
+  putDirectFunction(new NumberProtoFunc(exec, funcProto, NumberProtoFunc::ToFixed,        1, toFixedPropertyName), DontEnum);
+  putDirectFunction(new NumberProtoFunc(exec, funcProto, NumberProtoFunc::ToExponential,  1, toExponentialPropertyName), DontEnum);
+  putDirectFunction(new NumberProtoFunc(exec, funcProto, NumberProtoFunc::ToPrecision,    1, toPrecisionPropertyName), DontEnum);
 }
 
 
 // ------------------------------ NumberProtoFunc ---------------------------
 
-NumberProtoFunc::NumberProtoFunc(ExecState *exec,
-                                       FunctionPrototype *funcProto, int i, int len, const Identifier& name)
-  : InternalFunctionImp(funcProto, name), id(i)
+NumberProtoFunc::NumberProtoFunc(ExecState*, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
+   : InternalFunctionImp(funcProto, name)
+   , id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
-}
-
-
-bool NumberProtoFunc::implementsCall() const
-{
-  return true;
 }
 
 static UString integer_part_noexp(double d)
@@ -124,7 +112,7 @@ static UString char_sequence(char c, int count)
 {
     Vector<char, 2048> buf(count + 1, c);
     buf[count] = '\0';
-    
+
     return UString(buf);
 }
 
@@ -257,7 +245,7 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
               x = fx;
           else
               x = cx;
-
+          
           decimalAdjust = static_cast<int>(logx);
       }
       
@@ -396,11 +384,11 @@ const ClassInfo NumberObjectImp::info = {"Function", &InternalFunctionImp::info,
 
 /* Source for number_object.lut.h
 @begin numberTable 5
-  NaN			NumberObjectImp::NaNValue	DontEnum|DontDelete|ReadOnly
-  NEGATIVE_INFINITY	NumberObjectImp::NegInfinity	DontEnum|DontDelete|ReadOnly
-  POSITIVE_INFINITY	NumberObjectImp::PosInfinity	DontEnum|DontDelete|ReadOnly
-  MAX_VALUE		NumberObjectImp::MaxValue	DontEnum|DontDelete|ReadOnly
-  MIN_VALUE		NumberObjectImp::MinValue	DontEnum|DontDelete|ReadOnly
+  NaN                   NumberObjectImp::NaNValue       DontEnum|DontDelete|ReadOnly
+  NEGATIVE_INFINITY     NumberObjectImp::NegInfinity    DontEnum|DontDelete|ReadOnly
+  POSITIVE_INFINITY     NumberObjectImp::PosInfinity    DontEnum|DontDelete|ReadOnly
+  MAX_VALUE             NumberObjectImp::MaxValue       DontEnum|DontDelete|ReadOnly
+  MIN_VALUE             NumberObjectImp::MinValue       DontEnum|DontDelete|ReadOnly
 @end
 */
 NumberObjectImp::NumberObjectImp(ExecState *exec,
@@ -459,11 +447,6 @@ JSObject *NumberObjectImp::construct(ExecState *exec, const List &args)
   obj->setInternalValue(jsNumber(n));
 
   return obj;
-}
-
-bool NumberObjectImp::implementsCall() const
-{
-  return true;
 }
 
 // ECMA 15.7.2

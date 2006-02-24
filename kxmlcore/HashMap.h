@@ -2,7 +2,8 @@
 /*
  * This file is part of the KDE libraries
  *
- * Copyright (C) 2005 Apple Computer, Inc.
+ * Copyright (C) 2005, 2006 Apple Computer, Inc.
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -78,7 +79,9 @@ class HashMap {
  public:
     typedef typename ImplType::iterator iterator;
     typedef typename ImplType::const_iterator const_iterator;
+
     HashMap() {}
+
     int size() const;
     int capacity() const;
     bool isEmpty() const;

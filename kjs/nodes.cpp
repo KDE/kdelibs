@@ -64,7 +64,7 @@ using namespace KJS;
     exec->clearException(); \
     return Completion(Throw, ex); \
   } \
-  if (Collector::outOfMemory()) \
+  if (Collector::isOutOfMemory()) \
     return Completion(Throw, Error::create(exec, GeneralError, "Out of memory"));
 
 #define KJS_CHECKEXCEPTIONVALUE \
@@ -72,7 +72,7 @@ using namespace KJS;
     setExceptionDetailsIfNeeded(exec); \
     return jsUndefined(); \
   } \
-  if (Collector::outOfMemory()) \
+  if (Collector::isOutOfMemory()) \
     return jsUndefined(); // will be picked up by KJS_CHECKEXCEPTION
 
 #define KJS_CHECKEXCEPTIONLIST \
@@ -80,13 +80,27 @@ using namespace KJS;
     setExceptionDetailsIfNeeded(exec); \
     return List(); \
   } \
-  if (Collector::outOfMemory()) \
+  if (Collector::isOutOfMemory()) \
     return List(); // will be picked up by KJS_CHECKEXCEPTION
 
 // ------------------------------ Node -----------------------------------------
 
+
+#ifndef NDEBUG
+struct NodeCounter { 
+    static int count; 
+    ~NodeCounter() { if (count != 0) fprintf(stderr, "LEAK: %d KJS::Node\n", count); }
+};
+int NodeCounter::count = 0;
+static NodeCounter nodeImplCounter;
+#endif NDEBUG
+
+
 Node::Node()
 {
+#ifndef NDEBUG
+    ++NodeCounter::count;
+#endif
   line = Lexer::curr()->lineNo();
   sourceURL = Lexer::curr()->sourceURL();
   m_refcount = 0;
@@ -95,6 +109,9 @@ Node::Node()
 
 Node::~Node()
 {
+#ifndef NDEBUG
+    --NodeCounter::count;
+#endif
 }
 
 static void substitute(UString &string, const UString &substring)
@@ -318,6 +335,11 @@ JSValue *ElementNode::evaluate(ExecState *exec)
   return array;
 }
 
+void ElementNode::breakCycle() 
+{ 
+    next = 0;
+}
+
 // ------------------------------ ArrayNode ------------------------------------
 
 // ECMA 11.1.4
@@ -383,6 +405,11 @@ JSValue *PropertyListNode::evaluate(ExecState *exec)
   }
 
   return obj;
+}
+
+void PropertyListNode::breakCycle() 
+{ 
+    next = 0;
 }
 
 // ------------------------------ PropertyNode -----------------------------
@@ -458,21 +485,17 @@ List ArgumentListNode::evaluateList(ExecState *exec)
   return l;
 }
 
+void ArgumentListNode::breakCycle() 
+{ 
+    next = 0;
+}
+
 // ------------------------------ ArgumentsNode --------------------------------
 
 JSValue *ArgumentsNode::evaluate(ExecState *)
 {
   assert(0);
   return 0; // dummy, see evaluateList()
-}
-
-// ECMA 11.2.4
-List ArgumentsNode::evaluateList(ExecState *exec)
-{
-  if (!list)
-    return List();
-
-  return list->evaluateList(exec);
 }
 
 // ------------------------------ NewExprNode ----------------------------------
@@ -848,10 +871,16 @@ static JSValue *typeStringForValue(JSValue *v)
     case StringType:
         return jsString("string");
     default:
-        if (v->isObject() && static_cast<JSObject*>(v)->implementsCall())
-            return jsString("function");
-        else
-            return jsString("object");
+        if (v->isObject()) {
+            // Return "undefined" for objects that should be treated
+            // as null when doing comparisons.
+            if (static_cast<JSObject*>(v)->masqueradeAsUndefined())
+                return jsString("undefined");            
+            else if (static_cast<JSObject*>(v)->implementsCall())
+                return jsString("function");
+        }
+        
+        return jsString("object");
     }
 }
 
@@ -1214,12 +1243,7 @@ JSValue *ConditionalNode::evaluate(ExecState *exec)
 
 // ECMA 11.13
 
-#if __GNUC__
-// gcc refuses to inline this without the always_inline, but inlining it does help
-static inline JSValue *valueForReadModifyAssignment(ExecState * exec, JSValue *v1, JSValue *v2, Operator oper) __attribute__((always_inline));
-#endif
-
-static inline JSValue *valueForReadModifyAssignment(ExecState * exec, JSValue *v1, JSValue *v2, Operator oper)
+static ALWAYS_INLINE JSValue *valueForReadModifyAssignment(ExecState * exec, JSValue *v1, JSValue *v2, Operator oper)
 {
   JSValue *v;
   int i1;
@@ -1417,7 +1441,8 @@ JSValue *CommaNode::evaluate(ExecState *exec)
 StatListNode::StatListNode(StatementNode *s)
   : statement(s), next(this)
 {
-  setLoc(s->firstLine(), s->lastLine(), s->sourceId());
+    Parser::noteNodeCycle(this);
+    setLoc(s->firstLine(), s->lastLine(), s->sourceId());
 }
  
 StatListNode::StatListNode(StatListNode *l, StatementNode *s)
@@ -1455,6 +1480,11 @@ void StatListNode::processVarDecls(ExecState *exec)
 {
   for (StatListNode *n = this; n; n = n->next.get())
     n->statement->processVarDecls(exec);
+}
+
+void StatListNode::breakCycle() 
+{ 
+    next = 0;
 }
 
 // ------------------------------ AssignExprNode -------------------------------
@@ -1539,6 +1569,11 @@ void VarDeclListNode::processVarDecls(ExecState *exec)
     n->var->processVarDecls(exec);
 }
 
+void VarDeclListNode::breakCycle() 
+{ 
+    next = 0;
+}
+
 // ------------------------------ VarStatementNode -----------------------------
 
 // ECMA 12.2
@@ -1563,6 +1598,7 @@ BlockNode::BlockNode(SourceElementsNode *s)
 {
   if (s) {
     source = s->next;
+    Parser::removeNodeCycle(source.get());
     s->next = 0;
     setLoc(s->firstLine(), s->lastLine(), s->sourceId());
   } else {
@@ -1836,9 +1872,10 @@ Completion ForInNode::execute(ExecState *exec)
         JSObject *o;
         do { 
             o = *iter;
-            if (o->getPropertySlot(exec, ident, slot))
+            if (o->getPropertySlot(exec, ident, slot)) {
                 o->put(exec, ident, str);
-            
+                break;
+            }
             ++iter;
         } while (iter != end);
         
@@ -1892,6 +1929,8 @@ Completion ForInNode::execute(ExecState *exec)
 
 void ForInNode::processVarDecls(ExecState *exec)
 {
+  if (varDecl)
+    varDecl->processVarDecls(exec);
   statement->processVarDecls(exec);
 }
 
@@ -2013,6 +2052,11 @@ void ClauseListNode::processVarDecls(ExecState *exec)
       n->clause->processVarDecls(exec);
 }
 
+void ClauseListNode::breakCycle() 
+{ 
+    next = 0;
+}
+
 // ------------------------------ CaseBlockNode --------------------------------
 
 CaseBlockNode::CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d,
@@ -2020,6 +2064,7 @@ CaseBlockNode::CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d,
 {
   if (l1) {
     list1 = l1->next;
+    Parser::removeNodeCycle(list1.get());
     l1->next = 0;
   } else {
     list1 = 0;
@@ -2029,6 +2074,7 @@ CaseBlockNode::CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d,
 
   if (l2) {
     list2 = l2->next;
+    Parser::removeNodeCycle(list2.get());
     l2->next = 0;
   } else {
     list2 = 0;
@@ -2215,6 +2261,11 @@ JSValue *ParameterNode::evaluate(ExecState *)
   return jsUndefined();
 }
 
+void ParameterNode::breakCycle() 
+{ 
+    next = 0;
+}
+
 // ------------------------------ FunctionBodyNode -----------------------------
 
 FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
@@ -2310,7 +2361,8 @@ int SourceElementsNode::count = 0;
 SourceElementsNode::SourceElementsNode(StatementNode *s1)
   : node(s1), next(this)
 {
-  setLoc(s1->firstLine(), s1->lastLine(), s1->sourceId());
+    Parser::noteNodeCycle(this);
+    setLoc(s1->firstLine(), s1->lastLine(), s1->sourceId());
 }
 
 SourceElementsNode::SourceElementsNode(SourceElementsNode *s1, StatementNode *s2)
@@ -2354,6 +2406,11 @@ void SourceElementsNode::processVarDecls(ExecState *exec)
 {
   for (SourceElementsNode *n = this; n; n = n->next.get())
     n->node->processVarDecls(exec);
+}
+
+void SourceElementsNode::breakCycle() 
+{ 
+    next = 0;
 }
 
 ProgramNode::ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s)

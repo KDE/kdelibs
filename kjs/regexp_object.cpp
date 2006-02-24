@@ -35,7 +35,6 @@
 #include "regexp.h"
 #include "error_object.h"
 #include "lookup.h"
-#include "nodes.h"
 
 using namespace KJS;
 
@@ -55,24 +54,18 @@ RegExpPrototype::RegExpPrototype(ExecState *exec,
   // The constructor will be added later in RegExpObject's constructor (?)
 
   static const Identifier execPropertyName("exec");
-  putDirect(execPropertyName,     new RegExpProtoFunc(exec,funcProto,RegExpProtoFunc::Exec,0,execPropertyName), DontEnum);
   static const Identifier testPropertyName("test");
-  putDirect(testPropertyName,     new RegExpProtoFunc(exec,funcProto,RegExpProtoFunc::Test,0,testPropertyName), DontEnum);
-  putDirect(toStringPropertyName, new RegExpProtoFunc(exec,funcProto,RegExpProtoFunc::ToString,0,toStringPropertyName), DontEnum);
+  putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::Exec, 0, execPropertyName), DontEnum);
+  putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::Test, 0, testPropertyName), DontEnum);
+  putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::ToString, 0, toStringPropertyName), DontEnum);
 }
 
 // ------------------------------ RegExpProtoFunc ---------------------------
 
-RegExpProtoFunc::RegExpProtoFunc(ExecState *exec,
-                                       FunctionPrototype *funcProto, int i, int len, const Identifier& name)
-  : InternalFunctionImp(funcProto, name), id(i)
+RegExpProtoFunc::RegExpProtoFunc(ExecState*, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
+   : InternalFunctionImp(funcProto, name), id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
-}
-
-bool RegExpProtoFunc::implementsCall() const
-{
-  return true;
 }
 
 JSValue *RegExpProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
@@ -195,18 +188,13 @@ RegExpObjectImp::RegExpObjectImp(ExecState *exec,
                                  FunctionPrototype *funcProto,
                                  RegExpPrototype *regProto)
 
-  : InternalFunctionImp(funcProto), multiline(false), lastInput(""), lastOvector(0), lastNumSubPatterns(0)
+  : InternalFunctionImp(funcProto), multiline(false), lastInput(""), lastNumSubPatterns(0)
 {
   // ECMA 15.10.5.1 RegExp.prototype
   putDirect(prototypePropertyName, regProto, DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
   putDirect(lengthPropertyName, jsNumber(2), ReadOnly|DontDelete|DontEnum);
-}
-
-RegExpObjectImp::~RegExpObjectImp()
-{
-  delete [] lastOvector;
 }
 
 /* 
@@ -226,11 +214,10 @@ UString RegExpObjectImp::performMatch(RegExp* r, const UString& s, int startOffs
     *ovector = tmpOvector;
   
   if (!match.isNull()) {
-    assert(tmpOvector);
+    ASSERT(tmpOvector);
     
     lastInput = s;
-    delete [] lastOvector;
-    lastOvector = tmpOvector;
+    lastOvector.set(tmpOvector);
     lastNumSubPatterns = r->subPatterns();
   }
   
@@ -283,7 +270,7 @@ JSValue *RegExpObjectImp::getLastParen() const
 {
   int i = lastNumSubPatterns;
   if (i > 0) {
-    assert(lastOvector);
+    ASSERT(lastOvector);
     UString substring = lastInput.substr(lastOvector[2*i], lastOvector[2*i+1] - lastOvector[2*i]);
     return jsString(substring);
   }
@@ -351,7 +338,7 @@ JSValue *RegExpObjectImp::getValueProperty(ExecState *exec, int token) const
     case RightContext:
       return getRightContext();
     default:
-      assert(0);
+      ASSERT(0);
   }
 
   return jsString("");
@@ -372,7 +359,7 @@ void RegExpObjectImp::putValueProperty(ExecState *exec, int token, JSValue *valu
       multiline = value->toBoolean(exec);
       break;
     default:
-      assert(0);
+      ASSERT(0);
   }
 }
   
@@ -426,14 +413,10 @@ JSObject *RegExpObjectImp::construct(ExecState *exec, const List &args)
   return dat;
 }
 
-bool RegExpObjectImp::implementsCall() const
-{
-  return true;
-}
-
 // ECMA 15.10.3
 JSValue *RegExpObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
   // The RegExp argument case is handled by construct()
+
   return construct(exec, args);
 }

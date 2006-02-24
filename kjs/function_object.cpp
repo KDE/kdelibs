@@ -40,21 +40,16 @@ using namespace KJS;
 
 FunctionPrototype::FunctionPrototype(ExecState *exec)
 {
-  putDirect(lengthPropertyName,   jsNumber(0),                                                       DontDelete|ReadOnly|DontEnum);
-  putDirect(toStringPropertyName, new FunctionProtoFunc(exec, this, FunctionProtoFunc::ToString, 0, toStringPropertyName), DontEnum);
+  putDirect(lengthPropertyName, jsNumber(0), DontDelete|ReadOnly|DontEnum);
+  putDirectFunction(new FunctionProtoFunc(exec, this, FunctionProtoFunc::ToString, 0, toStringPropertyName), DontEnum);
   static const Identifier applyPropertyName("apply");
-  putDirect(applyPropertyName,    new FunctionProtoFunc(exec, this, FunctionProtoFunc::Apply,    2, applyPropertyName), DontEnum);
+  putDirectFunction(new FunctionProtoFunc(exec, this, FunctionProtoFunc::Apply, 2, applyPropertyName), DontEnum);
   static const Identifier callPropertyName("call");
-  putDirect(callPropertyName,     new FunctionProtoFunc(exec, this, FunctionProtoFunc::Call,     1, callPropertyName), DontEnum);
+  putDirectFunction(new FunctionProtoFunc(exec, this, FunctionProtoFunc::Call, 1, callPropertyName), DontEnum);
 }
 
 FunctionPrototype::~FunctionPrototype()
 {
-}
-
-bool FunctionPrototype::implementsCall() const
-{
-  return true;
 }
 
 // ECMA 15.3.4
@@ -65,17 +60,11 @@ JSValue *FunctionPrototype::callAsFunction(ExecState * /*exec*/, JSObject * /*th
 
 // ------------------------------ FunctionProtoFunc -------------------------
 
-FunctionProtoFunc::FunctionProtoFunc(ExecState *exec,
-                                         FunctionPrototype *funcProto, int i, int len, const Identifier& name)
-  : InternalFunctionImp(funcProto, name), id(i)
+FunctionProtoFunc::FunctionProtoFunc(ExecState*, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
+  : InternalFunctionImp(funcProto, name)
+  , id(i)
 {
   putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
-}
-
-
-bool FunctionProtoFunc::implementsCall() const
-{
-  return true;
 }
 
 JSValue *FunctionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
@@ -90,17 +79,15 @@ JSValue *FunctionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, c
 #endif
       return throwError(exec, TypeError);
     }
-
     if (thisObj->inherits(&DeclaredFunctionImp::info)) {
-       DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>(thisObj);
-       return jsString("function " + fi->functionName().ustring() + "(" +
-         fi->parameterString() + ") " + fi->body->toString());
-    } else if (thisObj->inherits(&InternalFunctionImp::info) &&
-        !static_cast<InternalFunctionImp*>(thisObj)->functionName().isNull()) {
-      result = jsString("\nfunction " + static_cast<InternalFunctionImp*>(thisObj)->functionName().ustring() + "() {\n"
-                      "    [native code]\n}\n");
-    }
-    else {
+        DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>(thisObj);
+        return jsString("function " + fi->functionName().ustring() + "(" +
+                        fi->parameterString() + ") " + fi->body->toString());
+     } else if (thisObj->inherits(&InternalFunctionImp::info) &&
+                !static_cast<InternalFunctionImp*>(thisObj)->functionName().isNull()) {
+       result = jsString("\nfunction " + static_cast<InternalFunctionImp*>(thisObj)->functionName().ustring() + "() {\n"
+                       "    [native code]\n}\n");
+    } else {
       result = jsString("[function]");
     }
     break;
@@ -221,7 +208,7 @@ JSObject *FunctionObjectImp::construct(ExecState *exec, const List &args, const 
   FunctionBodyNode *bodyNode = progNode.get();
 
   FunctionImp *fimp = new DeclaredFunctionImp(exec, Identifier::null(), bodyNode, scopeChain);
-
+  
   // parse parameter list. throw syntax error on illegal identifiers
   int len = p.size();
   const UChar *c = p.data();
@@ -229,30 +216,30 @@ JSObject *FunctionObjectImp::construct(ExecState *exec, const List &args, const 
   UString param;
   while (i < len) {
       while (*c == ' ' && i < len)
-	  c++, i++;
+          c++, i++;
       if (Lexer::isIdentStart(c->uc)) {  // else error
-	  param = UString(c, 1);
-	  c++, i++;
+          param = UString(c, 1);
+          c++, i++;
           while (i < len && (Lexer::isIdentPart(c->uc))) {
-	      param += UString(c, 1);
-	      c++, i++;
-	  }
-	  while (i < len && *c == ' ')
-	      c++, i++;
-	  if (i == len) {
-	      fimp->addParameter(Identifier(param));
-	      params++;
-	      break;
-	  } else if (*c == ',') {
-	      fimp->addParameter(Identifier(param));
-	      params++;
-	      c++, i++;
-	      continue;
-	  } // else error
+              param += UString(c, 1);
+              c++, i++;
+          }
+          while (i < len && *c == ' ')
+              c++, i++;
+          if (i == len) {
+              fimp->addParameter(Identifier(param));
+              params++;
+              break;
+          } else if (*c == ',') {
+              fimp->addParameter(Identifier(param));
+              params++;
+              c++, i++;
+              continue;
+          } // else error
       }
       return throwError(exec, SyntaxError, "Syntax error in parameter list");
   }
-
+  
   List consArgs;
 
   JSObject *objCons = exec->lexicalInterpreter()->builtinObject();
@@ -268,15 +255,8 @@ JSObject *FunctionObjectImp::construct(ExecState *exec, const List &args)
   return FunctionObjectImp::construct(exec, args, UString(), 0);
 }
 
-
-bool FunctionObjectImp::implementsCall() const
-{
-  return true;
-}
-
 // ECMA 15.3.1 The Function Constructor Called as a Function
 JSValue *FunctionObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
   return construct(exec,args);
 }
-

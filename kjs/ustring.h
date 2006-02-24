@@ -372,7 +372,6 @@ namespace KJS {
      * Assignment operator.
      */
     UString &operator=(const char *c);
-    UString &operator=(const UString &);
     /**
      * Appends the specified string.
      */
@@ -522,6 +521,16 @@ namespace KJS {
 KJS_EXPORT inline UString::UString()
   : m_rep(&Rep::null)
 {
+}
+
+// Rule from ECMA 15.2 about what an array index is.
+// Must exactly match string form of an unsigned integer, and be less than 2^32 - 1.
+inline unsigned UString::toArrayIndex(bool *ok) const
+{
+    unsigned i = toStrictUInt32(ok);
+    if (ok && i >= 0xFFFFFFFFU)
+        *ok = false;
+    return i;
 }
 
 } // namespace

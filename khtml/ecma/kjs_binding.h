@@ -73,17 +73,6 @@ namespace KJS {
   };
 
   /**
-   * Base class for all functions in this binding
-   */
-  class DOMFunction : public InternalFunctionImp {
-  protected:
-    DOMFunction() : InternalFunctionImp() {}
-  public:
-    virtual bool implementsCall() const { return true; }
-    virtual bool toBoolean(ExecState *) const { return true; }
-  };
-
-  /**
    * We inherit from Interpreter, to save a pointer to the HTML part
    * that the interpreter runs for.
    * The interpreter also stores the DOM object - >KJS::DOMObject cache.

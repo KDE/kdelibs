@@ -33,7 +33,6 @@
 
 #if __APPLE__
 
-#include <CoreFoundation/CoreFoundation.h>
 #include <pthread.h>
 #include <mach/mach_port.h>
 #include <mach/task.h>
@@ -413,7 +412,7 @@ void Collector::protect(JSValue *k)
     assert(k);
     assert(JSLock::lockCount() > 0);
 
-    if (SimpleNumber::is(k))
+    if (JSImmediate::isImmediate(k))
       return;
 
     protectedValues().add(k->downcast());
@@ -424,7 +423,7 @@ void Collector::unprotect(JSValue *k)
     assert(k);
     assert(JSLock::lockCount() > 0);
 
-    if (SimpleNumber::is(k))
+    if (JSImmediate::isImmediate(k))
       return;
 
     protectedValues().remove(k->downcast());
@@ -454,7 +453,6 @@ bool Collector::collect()
       scr = scr->next;
     } while (scr != InterpreterImp::s_hook);
   }
-  ConstantValues::mark();
 
   // MARK: first mark all referenced objects recursively starting out from the set of root objects
 
@@ -602,19 +600,12 @@ size_t Collector::numInterpreters()
   return count;
 }
 
-size_t Collector::numGCNotAllowedObjects()
-{
-  return 0;
-}
-
-size_t Collector::numReferencedObjects()
+size_t Collector::numProtectedObjects()
 {
   return protectedValues().size();
 }
 
-#if APPLE_CHANGES
-
-static const char *className(JSCell *val)
+static const char *typeName(JSCell *val)
 {
   const char *name = "???";
   switch (val->type()) {
@@ -647,23 +638,16 @@ static const char *className(JSCell *val)
   return name;
 }
 
-const void *Collector::rootObjectClasses()
+HashCountedSet<const char*>* Collector::rootObjectTypeCounts()
 {
-  // FIXME: this should be a HashSet (or maybe even CountedHashSet)
-  CFMutableSetRef classes = CFSetCreateMutable(NULL, 0, &kCFTypeSetCallBacks);
-
-  ProtectCounts& pv = protectedValues();
-  ProtectCounts::iterator end = pv.end();
-  for (ProtectCounts::iterator it = pv.begin(); it != end; ++it) {
-    JSCell *val = it->first;
-    CFStringRef name = CFStringCreateWithCString(NULL, className(val), kCFStringEncodingASCII);
-    CFSetAddValue(classes, name);
-    CFRelease(name);
-  }
-
-  return classes;
+   HashCountedSet<const char*>* counts = new HashCountedSet<const char*>;
+ 
+   ProtectCounts& pv = protectedValues();
+   ProtectCounts::iterator end = pv.end();
+   for (ProtectCounts::iterator it = pv.begin(); it != end; ++it)
+        counts->add(typeName(it->first));
+ 
+   return counts;
 }
-
-#endif // APPLE_CHANGES
 
 } // namespace KJS

@@ -25,6 +25,7 @@
 #define _KJSCOLLECTOR_H_
 
 #include "value.h"
+#include <kxmlcore/HashCountedSet.h>
 
 #define KJS_MEM_LIMIT 500000
 
@@ -54,7 +55,7 @@ namespace KJS {
      */
     static bool collect();
     static size_t size();
-    static bool outOfMemory() { return memoryFull; }
+    static bool isOutOfMemory() { return memoryFull; }
 
 #ifdef KJS_DEBUG_MEM
     /**
@@ -67,11 +68,8 @@ namespace KJS {
     static void unprotect(JSValue *);
 
     static size_t numInterpreters();
-    static size_t numGCNotAllowedObjects();
-    static size_t numReferencedObjects();
-#ifdef APPLE_CHANGES
-    static const void *rootObjectClasses(); // actually returns CFSetRef
-#endif
+    static size_t numProtectedObjects();
+    static HashCountedSet<const char*>* rootObjectTypeCounts();
 
     class Thread;
     static void registerThread();

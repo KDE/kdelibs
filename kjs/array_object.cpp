@@ -32,7 +32,6 @@
 #include "reference_list.h"
 #include "types.h"
 #include "value.h"
-#include "nodes.h"
 #include <kxmlcore/HashSet.h>
 
 #include "array_object.lut.h"
@@ -434,17 +433,12 @@ bool ArrayPrototype::getOwnPropertySlot(ExecState *exec, const Identifier& prope
 
 // ------------------------------ ArrayProtoFunc ----------------------------
 
-ArrayProtoFunc::ArrayProtoFunc(ExecState *exec, int i, int len)
-  : InternalFunctionImp(
-    static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype())
-    ), id(i)
+ArrayProtoFunc::ArrayProtoFunc(ExecState *exec, int i, int len, const Identifier& name)
+  : InternalFunctionImp(static_cast<FunctionPrototype*>
+                        (exec->lexicalInterpreter()->builtinFunctionPrototype()), name)
+  , id(i)
 {
   put(exec,lengthPropertyName,jsNumber(len),DontDelete|ReadOnly|DontEnum);
-}
-
-bool ArrayProtoFunc::implementsCall() const
-{
-  return true;
 }
 
 static JSValue *getProperty(ExecState *exec, JSObject *obj, unsigned index)
@@ -474,7 +468,6 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
     static HashSet<JSObject*> visitedElems;
     if (visitedElems.contains(thisObj))
       return jsString("");
-
     UString separator = ",";
     UString str = "";
 
@@ -508,6 +501,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
           if (conversionFunction->isObject() && static_cast<JSObject *>(conversionFunction)->implementsCall()) {
             str += static_cast<JSObject *>(conversionFunction)->call(exec, o, List())->toString(exec);
           } else {
+            visitedElems.remove(thisObj);
             return throwError(exec, RangeError, "Can't convert " + o->className() + " object to string");
           }
         } else {
@@ -804,9 +798,9 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
     JSObject *applyThis = args[1]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[1]->toObject(exec);
     JSObject *resultArray;
     
-    if (id == Filter)
+    if (id == Filter) 
       resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty()));
-    else {
+    else {
       List args;
       args.append(jsNumber(length));
       resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, args));
@@ -831,7 +825,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
       
       if (id == Map)
         resultArray->put(exec, k, result);
-      else if (result->toBoolean(exec))
+      else if (result->toBoolean(exec)) 
         resultArray->put(exec, filterIndex++, v);
     }
     
@@ -862,7 +856,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
         
       if (!thisObj->getPropertySlot(exec, k, slot))
         continue;
-
+      
       List eachArguments;
       
       eachArguments.append(slot.getValue(exec, thisObj, k));
@@ -950,11 +944,6 @@ JSObject *ArrayObjectImp::construct(ExecState *exec, const List &args)
 
   // otherwise the array is constructed with the arguments in it
   return new ArrayInstance(exec->lexicalInterpreter()->builtinArrayPrototype(), args);
-}
-
-bool ArrayObjectImp::implementsCall() const
-{
-  return true;
 }
 
 // ECMA 15.6.1

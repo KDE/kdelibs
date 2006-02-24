@@ -39,7 +39,6 @@ namespace KJS {
     FunctionPrototype(ExecState *exec);
     virtual ~FunctionPrototype();
 
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
   };
 
@@ -51,10 +50,8 @@ namespace KJS {
    */
   class FunctionProtoFunc : public InternalFunctionImp {
   public:
-    FunctionProtoFunc(ExecState *exec,
-                        FunctionPrototype *funcProto, int i, int len, const Identifier& name);
+    FunctionProtoFunc(ExecState*, FunctionPrototype*, int i, int len, const Identifier&);
 
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
     enum { ToString, Apply, Call };
@@ -75,7 +72,6 @@ namespace KJS {
     virtual bool implementsConstruct() const;
     virtual JSObject *construct(ExecState *exec, const List &args, const UString &sourceURL, int lineNumber);
     virtual JSObject *construct(ExecState *exec, const List &args);
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
   };
 

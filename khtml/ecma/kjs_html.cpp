@@ -1179,6 +1179,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   getContext      KJS::HTMLElement::GetContext                  DontDelete|Function 1
 @end
 */
+KJS_IMPLEMENT_PROTOFUNC(HTMLElementFunction)
 
 static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElementImpl* element)
 {
@@ -2029,13 +2030,6 @@ void KJS::HTMLElement::pushEventHandlerScope(ExecState *exec, ScopeChain &scope)
 
   // The element is on top, searched first.
   scope.push(static_cast<ObjectImp *>(getDOMNode(exec, &element)));
-}
-
-HTMLElementFunction::HTMLElementFunction(ExecState *exec, int i, int len)
-  : DOMFunction(), id(i)
-{
-  //Value protect(this);
-  put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
 ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)

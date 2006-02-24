@@ -45,7 +45,6 @@ public:
     * Executes the callback for this method.
     */
     KJS::JSValue *callAsFunction( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args );
-    bool implementsCall() const { return true; }
     bool implementsConstruct() const { return false; }
 
     /**
@@ -81,15 +80,19 @@ public:
     void addStaticMethods( KJS::ExecState *exec, const Method *methods );
 
 
-    bool implementsCall() const { return true; }
     bool implementsConstruct() const { return true; }
     /**
     * Calls the callback that will in turn create a new instance of this object with
     * the arguments passed in with args.
     */
     KJS::JSObject *construct( KJS::ExecState *exec, const KJS::List &args );
+
+    KJS::JSValue *callAsFunction( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args ) {
+        return construct(exec, args);
+    }
+
     void setDefaultValue( KJS::JSValue *value );
-    KJS::JSValue *defaultValue( KJS::ExecState *exec, KJS::Type hint ) const;
+    KJS::JSValue *defaultValue( KJS::ExecState *exec, KJS::JSType hint ) const;
 
     /**
     * Add the constructor to an object.  This is usually the global scope.

@@ -2,7 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2003, 2006 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -21,11 +21,12 @@
  *
  */
 
-#ifndef _KJS_FUNCTION_H_
-#define _KJS_FUNCTION_H_
+#ifndef KJS_FUNCTION_H
+#define KJS_FUNCTION_H
 
 #include "internal.h"
 #include "array_instance.h"
+#include <kxmlcore/OwnPtr.h>
 
 namespace KJS {
 
@@ -45,7 +46,6 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
 
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
     void addParameter(const Identifier &n);
@@ -58,7 +58,8 @@ namespace KJS {
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
-    Parameter *param;
+  protected:
+    OwnPtr<Parameter> param;
 
   private:
     static JSValue *argumentsGetter(ExecState *, JSObject *, const Identifier &, const PropertySlot&);
@@ -144,8 +145,7 @@ namespace KJS {
 
   class GlobalFuncImp : public InternalFunctionImp {
   public:
-    GlobalFuncImp(ExecState *exec, FunctionPrototype *funcProto, int i, int len, const Identifier& name);
-    virtual bool implementsCall() const;
+    GlobalFuncImp(ExecState*, FunctionPrototype*, int i, int len, const Identifier&);
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
     virtual CodeType codeType() const;
     enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape,

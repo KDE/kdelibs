@@ -58,7 +58,7 @@ void StaticConstructor::setDefaultValue( KJS::JSValue *value )
     m_default = value;
 }
 
-KJS::JSValue *StaticConstructor::defaultValue( KJS::ExecState * exec, KJS::Type hint ) const
+KJS::JSValue *StaticConstructor::defaultValue( KJS::ExecState * exec, KJS::JSType hint ) const
 {
     Q_UNUSED(exec);
     Q_UNUSED(hint);

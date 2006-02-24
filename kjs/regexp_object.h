@@ -25,6 +25,7 @@
 #include "internal.h"
 #include "function_object.h"
 #include "regexp.h"
+#include <kxmlcore/OwnArrayPtr.h>
 
 namespace KJS {
   class ExecState;
@@ -39,10 +40,8 @@ namespace KJS {
 
   class RegExpProtoFunc : public InternalFunctionImp {
   public:
-    RegExpProtoFunc(ExecState *exec,
-                       FunctionPrototype *funcProto, int i, int len, const Identifier& name);
+    RegExpProtoFunc(ExecState*, FunctionPrototype*, int i, int len, const Identifier&);
 
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
     enum { Exec, Test, ToString };
@@ -71,10 +70,8 @@ namespace KJS {
     RegExpObjectImp(ExecState *exec,
                     FunctionPrototype *funcProto,
                     RegExpPrototype *regProto);
-    virtual ~RegExpObjectImp();
     virtual bool implementsConstruct() const;
     virtual JSObject *construct(ExecState *exec, const List &args);
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
     virtual void put(ExecState *, const Identifier &, JSValue *, int attr = None);
@@ -95,7 +92,7 @@ namespace KJS {
     // Global search cache / settings
     bool multiline;
     UString lastInput;
-    int *lastOvector;
+    OwnArrayPtr<int> lastOvector;
     unsigned lastNumSubPatterns;
     
     static const ClassInfo info;

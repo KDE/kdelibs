@@ -27,7 +27,6 @@
 #include "interpreter.h"
 #include "operations.h"
 #include "error_object.h"
-#include "nodes.h"
 //#include "debugger.h"
 
 using namespace KJS;
@@ -54,20 +53,15 @@ ErrorPrototype::ErrorPrototype(ExecState *exec,
 
   put(exec, namePropertyName,     jsString("Error"), DontEnum);
   put(exec, messagePropertyName,  jsString("Unknown error"), DontEnum);
-  putDirect(toStringPropertyName, new ErrorProtoFunc(exec,funcProto,toStringPropertyName), DontEnum);
+  putDirectFunction(new ErrorProtoFunc(exec, funcProto, toStringPropertyName), DontEnum);
 }
 
 // ------------------------------ ErrorProtoFunc ----------------------------
 
-ErrorProtoFunc::ErrorProtoFunc(ExecState *exec, FunctionPrototype *funcProto, const Identifier& name)
+ErrorProtoFunc::ErrorProtoFunc(ExecState*, FunctionPrototype* funcProto, const Identifier& name)
   : InternalFunctionImp(funcProto, name)
 {
   putDirect(lengthPropertyName, jsNumber(0), DontDelete|ReadOnly|DontEnum);
-}
-
-bool ErrorProtoFunc::implementsCall() const
-{
-  return true;
 }
 
 JSValue *ErrorProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &/*args*/)
@@ -118,11 +112,6 @@ JSObject *ErrorObjectImp::construct(ExecState *exec, const List &args)
   return obj;
 }
 
-bool ErrorObjectImp::implementsCall() const
-{
-  return true;
-}
-
 // ECMA 15.9.2
 JSValue *ErrorObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
@@ -165,11 +154,6 @@ JSObject *NativeErrorImp::construct(ExecState *exec, const List &args)
   if (!args[0]->isUndefined())
     imp->putDirect(messagePropertyName, jsString(args[0]->toString(exec)));
   return obj;
-}
-
-bool NativeErrorImp::implementsCall() const
-{
-  return true;
 }
 
 JSValue *NativeErrorImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)

@@ -23,7 +23,6 @@
 #define _OBJECT_OBJECT_H_
 
 #include "internal.h"
-#include "function.h"
 
 namespace KJS {
 
@@ -48,9 +47,8 @@ namespace KJS {
    */
   class ObjectProtoFunc : public InternalFunctionImp {
   public:
-    ObjectProtoFunc(ExecState *exec, FunctionPrototype *funcProto, int i, int len, const Identifier& name);
+    ObjectProtoFunc(ExecState* exec, FunctionPrototype* funcProto, int i, int len, const Identifier&);
 
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *, JSObject *, const List &args);
 
     enum { ToString, ToLocaleString, ValueOf, HasOwnProperty, IsPrototypeOf, PropertyIsEnumerable,
@@ -73,7 +71,6 @@ namespace KJS {
 
     virtual bool implementsConstruct() const;
     virtual JSObject *construct(ExecState *, const List &args);
-    virtual bool implementsCall() const;
     virtual JSValue *callAsFunction(ExecState *, JSObject *, const List &args);
   };
 

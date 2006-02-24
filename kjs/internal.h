@@ -25,12 +25,15 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H
 
-#include "ustring.h"
+#include "JSType.h"
+#include "interpreter.h"
 #include "object.h"
 #include "protect.h"
-#include "types.h"
-#include "interpreter.h"
 #include "scope_chain.h"
+#include "types.h"
+#include "ustring.h"
+
+#include <kxmlcore/Noncopyable.h>
 #include <kxmlcore/RefPtr.h>
 
 #ifndef I18N_NOOP
@@ -50,53 +53,14 @@ namespace KJS {
   //                            Primitive impls
   // ---------------------------------------------------------------------------
 
-  class UndefinedImp : public JSCell {
-  public:
-    Type type() const { return UndefinedType; }
-
-    JSValue *toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    bool toBoolean(ExecState *exec) const;
-    double toNumber(ExecState *exec) const;
-    UString toString(ExecState *exec) const;
-    JSObject *toObject(ExecState *exec) const;
-  };
-
-  class NullImp : public JSCell {
-  public:
-    Type type() const { return NullType; }
-
-    JSValue *toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    bool toBoolean(ExecState *exec) const;
-    double toNumber(ExecState *exec) const;
-    UString toString(ExecState *exec) const;
-    JSObject *toObject(ExecState *exec) const;
-  };
-
-  class BooleanImp : public JSCell {
-  public:
-    BooleanImp(bool v = false) : val(v) { }
-    bool value() const { return val; }
-
-    Type type() const { return BooleanType; }
-
-    JSValue *toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    bool toBoolean(ExecState *exec) const;
-    double toNumber(ExecState *exec) const;
-    UString toString(ExecState *exec) const;
-    JSObject *toObject(ExecState *exec) const;
-
-  private:
-    bool val;
-  };
-  
   class StringImp : public JSCell {
   public:
     StringImp(const UString& v) : val(v) { }
     UString value() const { return val; }
 
-    Type type() const { return StringType; }
+    JSType type() const { return StringType; }
 
-    JSValue *toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
+    JSValue *toPrimitive(ExecState *exec, JSType preferred = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
     double toNumber(ExecState *exec) const;
     UString toString(ExecState *exec) const;
@@ -109,13 +73,13 @@ namespace KJS {
   class NumberImp : public JSCell {
     friend class ConstantValues;
     friend class InterpreterImp;
-    friend JSValue *jsNumber(double);
+    friend JSValue *jsNumberCell(double);
   public:
     double value() const { return val; }
 
-    Type type() const { return NumberType; }
+    JSType type() const { return NumberType; }
 
-    JSValue *toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
+    JSValue *toPrimitive(ExecState *exec, JSType preferred = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
     double toNumber(ExecState *exec) const;
     UString toString(ExecState *exec) const;
@@ -133,9 +97,9 @@ namespace KJS {
   /**
    * @short The "label set" in Ecma-262 spec
    */
-  class LabelStack {
+  class LabelStack : Noncopyable {
   public:
-    LabelStack(): tos(0L), iterationDepth(0), switchDepth(0) {}
+    LabelStack(): tos(0), iterationDepth(0), switchDepth(0) {}
     ~LabelStack();
 
     /**
@@ -161,9 +125,6 @@ namespace KJS {
     bool inSwitch() const { return (switchDepth > 0); }
     
   private:
-    LabelStack(const LabelStack &other);
-    LabelStack &operator=(const LabelStack &other);
-
     struct StackElem {
       Identifier id;
       StackElem *prev;
@@ -180,9 +141,9 @@ namespace KJS {
   // ---------------------------------------------------------------------------
 
   enum CodeType { GlobalCode,
-		  EvalCode,
-		  FunctionCode,
-		  AnonymousCode };
+                  EvalCode,
+                  FunctionCode,
+                  AnonymousCode };
 
   /**
    * @internal
@@ -199,6 +160,8 @@ namespace KJS {
     static void accept(ProgramNode *prog);
 
     static void saveNewNode(Node *node);
+    static void noteNodeCycle(Node *node);
+    static void removeNodeCycle(Node *node);
 
     static int sid;
   };
@@ -382,22 +345,24 @@ namespace KJS {
     bool isAborted;
   };
 
-
-
   class KJS_EXPORT InternalFunctionImp : public JSObject {
   public:
     InternalFunctionImp();
-    InternalFunctionImp(FunctionPrototype *funcProto);
-    InternalFunctionImp(FunctionPrototype *funcProto, const Identifier& _ident);
-    bool implementsHasInstance() const;
-    bool hasInstance(ExecState *exec, JSValue *value);
+    InternalFunctionImp(FunctionPrototype*);
+    InternalFunctionImp(FunctionPrototype*, const Identifier&);
 
-    virtual const ClassInfo *classInfo() const { return &info; }
+    virtual bool implementsCall() const;
+    virtual JSValue* callAsFunction(ExecState*, JSObject* thisObjec, const List& args) = 0;
+    virtual bool implementsHasInstance() const;
+    virtual bool hasInstance(ExecState*, JSValue*);
+
+    virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    Identifier functionName() const { return ident; }
-    void setFunctionName(const Identifier& _ident) { ident = _ident; }
-  protected:
-    Identifier ident;
+    const Identifier& functionName() const { return m_name; }
+    void setFunctionName(const Identifier& name) { m_name = name; }
+
+  private:
+    Identifier m_name;
   };
 
   // helper function for toInteger, toInt32, toUInt32 and toUInt16

@@ -23,6 +23,7 @@
 #ifndef KJS_PROPERTY_SLOT_H
 #define KJS_PROPERTY_SLOT_H
 
+#include <assert.h>
 #include "identifier.h"
 #include "value.h"
 

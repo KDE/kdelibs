@@ -107,7 +107,7 @@ namespace KJS {
     ValueImp* getValueProperty(ExecState *, int token) const;
     virtual void put(ExecState *exec, const Identifier &propertyName,
 			ValueImp* value, int attr = None);
-    virtual ValueImp* defaultValue(ExecState *exec, KJS::Type hint) const;
+    virtual ValueImp* defaultValue(ExecState *exec, KJS::JSType hint) const;
     void putValueProperty(ExecState *exec, int token, ValueImp* value, int);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

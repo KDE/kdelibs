@@ -37,7 +37,9 @@
 #define KJS_MAX_STACK 1000
 #endif
 
+#include "JSType.h"
 #include "interpreter.h"
+#include "kxmlcore/AlwaysInline.h"
 #include "property_map.h"
 #include "property_slot.h"
 #include "scope_chain.h"
@@ -47,6 +49,8 @@ namespace KJS {
   struct HashTable;
   struct HashEntry;
   struct ListImp;
+  
+  class InternalFunctionImp;
 
   // ECMA 262-3 8.6.1
   // Property attributes
@@ -85,11 +89,11 @@ namespace KJS {
   // for a property.
   class GetterSetterImp : public JSCell {
   public:
-    Type type() const { return GetterSetterType; }
+    JSType type() const { return GetterSetterType; }
 
     GetterSetterImp() : getter(0), setter(0) { }
 
-    virtual JSValue *toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
+    virtual JSValue *toPrimitive(ExecState *exec, JSType preferred = UnspecifiedType) const;
     virtual bool toBoolean(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
     virtual UString toString(ExecState *exec) const;
@@ -123,7 +127,7 @@ namespace KJS {
     JSObject();
 
     virtual void mark();
-    virtual Type type() const;
+    virtual JSType type() const;
 
     /**
      * A pointer to a ClassInfo struct for this class. This provides a basic
@@ -327,7 +331,7 @@ namespace KJS {
      * Implementation of the [[DefaultValue]] internal property (implemented by
      * all Objects)
      */
-    virtual JSValue *defaultValue(ExecState *exec, Type hint) const;
+    virtual JSValue *defaultValue(ExecState *exec, JSType hint) const;
 
     /**
      * Whether or not the object implements the construct() method. If this
@@ -487,7 +491,7 @@ namespace KJS {
      */
     void setInternalValue(JSValue *v);
 
-    JSValue *toPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const;
+    JSValue *toPrimitive(ExecState *exec, JSType preferredType = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
     double toNumber(ExecState *exec) const;
     UString toString(ExecState *exec) const;
@@ -495,8 +499,8 @@ namespace KJS {
 
     bool getPropertyAttributes(const Identifier& propertyName, int& attributes) const;
 
-    // Returns whether the object should be treated as null when doing equality comparisons
-    virtual bool isEqualToNull(ExecState *) const { return false; }
+    // Returns whether the object should be treated as undefined when doing equality comparisons
+    virtual bool masqueradeAsUndefined() const { return false; }
     
     // This get function only looks at the property map.
     // This is used e.g. by lookupOrCreateFunction (to cache a function, we don't want
@@ -507,6 +511,9 @@ namespace KJS {
         { return _prop.getLocation(propertyName); }
     void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0);
     void putDirect(const Identifier &propertyName, int value, int attr = 0);
+
+    // convenience to add a function property under the function's own built-in name
+    void putDirectFunction(InternalFunctionImp*, int attr = 0);
 
     void fillGetterPropertySlot(PropertySlot& slot, JSValue **location);
 
@@ -535,7 +542,7 @@ namespace KJS {
   };
 
   /**
-   * Types of Native Errors available. For custom errors, GeneralError
+   * types of Native Errors available. For custom errors, GeneralError
    * should be used.
    */
   enum ErrorType { GeneralError   = 0,
@@ -555,7 +562,7 @@ namespace KJS {
      * Factory method for error objects.
      *
      * @param exec The current execution state
-     * @param errtype Type of error.
+     * @param errtype type of error.
      * @param message Optional error message.
      * @param lineNumber Optional line number.
      * @param sourceId Optional source id.
@@ -624,7 +631,7 @@ inline bool JSCell::isObject(const ClassInfo *info) const
 // this method is here to be after the inline declaration of JSCell::isObject
 inline bool JSValue::isObject(const ClassInfo *c) const
 {
-    return !SimpleNumber::is(this) && downcast()->isObject(c);
+    return !JSImmediate::isImmediate(this) && downcast()->isObject(c);
 }
 
 // It may seem crazy to inline a function this large but it makes a big difference
@@ -675,6 +682,24 @@ inline void ScopeChain::mark()
         if (!o->marked())
             o->mark();
     }
+}
+
+inline void ScopeChain::release()
+{
+    // This function is only called by deref(),
+    // Deref ensures these conditions are true.
+    assert(_node && _node->refCount == 0);
+    ScopeChainNode *n = _node;
+    do {
+        ScopeChainNode *next = n->next;
+        delete n;
+        n = next;
+    } while (n && --n->refCount == 0);
+}
+
+inline JSValue* JSObject::toPrimitive(ExecState* exec, JSType preferredType) const
+{
+    return defaultValue(exec, preferredType);
 }
 
 } // namespace
