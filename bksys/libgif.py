@@ -28,7 +28,12 @@ def generate(env):
 		pkgs.generate(env)
 
 		have_lib = 0
-		if env['HAVE_PKGCONFIG'] == 0:
+		if env['HAVE_PKGCONFIG'] != 0:
+			have_lib = env.pkgConfig_findPackage('GIF', 'libgif', '4.0')
+			if not have_lib:
+				have_lib = env.pkgConfig_findPackage('GIF', 'libungif', '4.0')
+
+                if not have_lib:
 			conf = env.Configure()
 			if conf.CheckHeader('gif_lib.h'):
 				if conf.CheckLib('gif'):
@@ -48,10 +53,6 @@ def generate(env):
 					conf.env['LIB_GIF']      = [ 'libungif' ]
 					have_lib = 1
 			env = conf.Finish()
-		else:
-			have_lib = env.pkgConfig_findPackage('GIF', 'libgif', '4.0')
-			if not have_lib:
-				have_lib = env.pkgConfig_findPackage('GIF', 'libungif', '4.0')
 
 		env.write_lib_header( 'libgif', have_lib, False )
 
