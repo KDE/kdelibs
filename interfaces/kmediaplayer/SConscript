@@ -19,7 +19,9 @@ obj.target = 'kmediaplayer'
 obj.source = kmediaplayer_sources
 obj.includes = includes
 obj.vnum = '0.0.0'
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KPARTS '
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDECORE KPARTS KDEUI'
+obj.libpaths = '../../dcop ../../kparts'
+obj.libs     = 'DCOP kparts'
 obj.execute()
 
 env.bksys_insttype('KDEINCLUDE', 'kmediaplayer', kmediaplayerinclude_headers )
