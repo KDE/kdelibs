@@ -604,15 +604,15 @@ void KPasswordDialog::enableOkBtn()
       int pwlength = (int) (pass.length() / lengthFactor);
       if (pwlength > 5) pwlength = 5;
 
-      const QRegExp numRxp("[0-9]", Qt::CaseSensitive, RegExp);
+      const QRegExp numRxp("[0-9]", Qt::CaseSensitive, QRegExp::RegExp);
       int numeric = (int) (pass.count(numRxp) / lengthFactor);
       if (numeric > 3) numeric = 3;
 
-      const QRegExp symbRxp("\\W", Qt::CaseInsensitive, RegExp);
+      const QRegExp symbRxp("\\W", Qt::CaseInsensitive, QRegExp::RegExp);
       int numsymbols = (int) (pass.count(symbRxp) / lengthFactor);
       if (numsymbols > 3) numsymbols = 3;
 
-      const QRegExp upperRxp("[A-Z]", Qt::CaseSensitive, RegExp);
+      const QRegExp upperRxp("[A-Z]", Qt::CaseSensitive, QRegExp::RegExp);
       int upper = (int) (pass.count(upperRxp) / lengthFactor);
       if (upper > 3) upper = 3;
 
