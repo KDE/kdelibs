@@ -63,7 +63,7 @@ Needs other stuff before it can be applied:
 # html
 ===========================================================================
 
-- dtd.cpp: changes regareding ID_TEXT, ID_FORM, A and FONT left out
+- dtd.cpp: changes regarding ID_TEXT, ID_FORM, A and FONT left out
 
 - html_formimpl.cpp/.h: many changes skipped. will need to integrate the
   "activate first submit" button part. 
@@ -99,7 +99,7 @@ done so far:
 
 - renamed print methods to paint
 
-- RendeLayer code is used. Needs to be updated to apples latest version.
+- RenderLayer code is used. Needs to be updated to apples latest version.
 
 - Handling of block within inlines via continuations is done.
 
@@ -136,7 +136,7 @@ changes that need to be merged:
 
 - dom2_eventsimpl.cpp: computeLayerPos, requires mering of rendering/
 
-- dom2_rangeimpl.cpp: crateContextualFragmet.. merging needed
+- dom2_rangeimpl.cpp: createContextualFragment.. merging needed
 
 - dom_docimpl.cpp: 
     renderArena support.. merging needed. 
