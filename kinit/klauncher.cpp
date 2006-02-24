@@ -64,9 +64,6 @@
 using namespace KIO;
 using namespace KNetwork;
 
-template class Q3PtrList<KLaunchRequest>;
-template class Q3PtrList<IdleSlave>;
-
 IdleSlave::IdleSlave(KStreamSocket *socket)
 {
    mConn.init(socket);
@@ -173,8 +170,6 @@ KLauncher::KLauncher(int _kdeinitSocket)
 #endif
    mAutoTimer.setSingleShot(true);
    connect(&mAutoTimer, SIGNAL(timeout()), this, SLOT(slotAutoStart()));
-   requestList.setAutoDelete(true);
-   mSlaveWaitRequest.setAutoDelete(true);
    dcopClient()->setNotifications( true );
    connect(dcopClient(), SIGNAL( applicationRegistered( const QByteArray &)),
            this, SLOT( slotAppRegistered( const QByteArray &)));
@@ -411,8 +406,7 @@ KLauncher::process(const DCOPCString &fun, const QByteArray &data,
       KGlobal::config()->reparseConfiguration();
       kDebug(7016) << "KLauncher::process : reparseConfiguration" << endl;
       KProtocolManager::reparseConfiguration();
-      IdleSlave *slave;
-      for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+      foreach (IdleSlave *slave, mSlaveList)
           slave->reparseConfiguration();
       replyType = "void";
       return true;
@@ -626,8 +620,7 @@ KLauncher::slotKDEInitData(int)
 void
 KLauncher::processDied(pid_t pid, long /* exitStatus */)
 {
-   KLaunchRequest *request = requestList.first();
-   for(; request; request = requestList.next())
+   foreach (KLaunchRequest *request, requestList)
    {
       if (request->pid == pid)
       {
@@ -650,11 +643,8 @@ KLauncher::slotAppRegistered(const QByteArray &appId)
    const char *cAppId = appId.data();
    if (!cAppId) return;
 
-   KLaunchRequest *request = requestList.first();
-   KLaunchRequest *nextRequest;
-   for(; request; request = nextRequest)
+   foreach (KLaunchRequest *request, requestList)
    {
-      nextRequest = requestList.next();
       if (request->status != KLaunchRequest::Launching)
          continue;
 
@@ -785,7 +775,8 @@ KLauncher::requestDone(KLaunchRequest *request)
       dcopClient()->endTransaction( request->transaction,
                                     replyType, replyData);
    }
-   requestList.removeRef( request );
+   requestList.removeAll( request );
+   delete request;
 }
 
 void
@@ -1191,7 +1182,7 @@ void
 KLauncher::slotDequeue()
 {
    do {
-      KLaunchRequest *request = requestQueue.take(0);
+      KLaunchRequest *request = requestQueue.takeFirst();
       // process request
       request->status = KLaunchRequest::Launching;
       requestStart(request);
@@ -1225,14 +1216,14 @@ pid_t
 KLauncher::requestHoldSlave(const KUrl &url, const QString &app_socket)
 {
     IdleSlave *slave;
-    for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+    foreach (slave, mSlaveList)
     {
        if (slave->onHold(url))
           break;
     }
     if (slave)
     {
-       mSlaveList.removeRef(slave);
+       mSlaveList.removeAll(slave);
        slave->connect(app_socket);
        return slave->pid();
     }
@@ -1247,14 +1238,14 @@ KLauncher::requestSlave(const QString &protocol,
                         QString &error)
 {
     IdleSlave *slave;
-    for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+    foreach (slave, mSlaveList)
     {
        if (slave->match(protocol, host, true))
           break;
     }
     if (!slave)
     {
-       for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+       foreach (slave, mSlaveList)
        {
           if (slave->match(protocol, host, false))
              break;
@@ -1262,7 +1253,7 @@ KLauncher::requestSlave(const QString &protocol,
     }
     if (!slave)
     {
-       for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+       foreach (slave, mSlaveList)
        {
           if (slave->match(protocol, QString(), false))
              break;
@@ -1270,7 +1261,7 @@ KLauncher::requestSlave(const QString &protocol,
     }
     if (slave)
     {
-       mSlaveList.removeRef(slave);
+       mSlaveList.removeAll(slave);
        slave->connect(app_socket);
        return slave->pid();
     }
@@ -1341,7 +1332,7 @@ void
 KLauncher::waitForSlave(pid_t pid)
 {
     IdleSlave *slave;
-    for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+    foreach (slave, mSlaveList)
     {
         if (slave->pid() == pid)
            return; // Already here.
@@ -1372,21 +1363,18 @@ KLauncher::acceptSlave()
 void
 KLauncher::slotSlaveStatus(IdleSlave *slave)
 {
-    SlaveWaitRequest *waitRequest = mSlaveWaitRequest.first();
-    while(waitRequest)
+    QMutableListIterator<SlaveWaitRequest *> it(mSlaveWaitRequest);
+    while(it.hasNext())
     {
+       SlaveWaitRequest *waitRequest = it.next(); 
        if (waitRequest->pid == slave->pid())
        {
           QByteArray replyData;
           DCOPCString replyType;
           replyType = "void";
           dcopClient()->endTransaction( waitRequest->transaction, replyType, replyData);
-          mSlaveWaitRequest.removeRef(waitRequest);
-          waitRequest = mSlaveWaitRequest.current();
-       }
-       else
-       {
-          waitRequest = mSlaveWaitRequest.next();
+          it.remove();
+          delete waitRequest;
        }
     }
 }
@@ -1395,7 +1383,7 @@ void
 KLauncher::slotSlaveGone()
 {
     IdleSlave *slave = (IdleSlave *) sender();
-    mSlaveList.removeRef(slave);
+    mSlaveList.removeAll(slave);
     if ((mSlaveList.count() == 0) && (mTimer.isActive()))
     {
        mTimer.stop();
@@ -1407,8 +1395,7 @@ KLauncher::idleTimeout()
 {
     bool keepOneFileSlave=true;
     time_t now = time(0);
-    IdleSlave *slave;
-    for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+    foreach (IdleSlave *slave, mSlaveList)
     {
         if ((slave->protocol()=="file") && (keepOneFileSlave))
            keepOneFileSlave=false;

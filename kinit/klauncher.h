@@ -26,7 +26,7 @@
 #include <qstring.h>
 #include <qsocketnotifier.h>
 #include <qtimer.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 
 #include <dcopclient.h>
 
@@ -176,16 +176,16 @@ public Q_SLOTS:
    void idleTimeout();
 
 protected:
-   Q3PtrList<KLaunchRequest> requestList; // Requests being handled
-   Q3PtrList<KLaunchRequest> requestQueue; // Requests waiting to being handled
+   QList<KLaunchRequest*> requestList; // Requests being handled
+   QList<KLaunchRequest*> requestQueue; // Requests waiting to being handled
    serviceResult DCOPresult;
    KLaunchRequest *lastRequest;
-   Q3PtrList<SlaveWaitRequest> mSlaveWaitRequest;
+   QList<SlaveWaitRequest*> mSlaveWaitRequest;
    QString mPoolSocketName;
    int kdeinitSocket;
    QSocketNotifier *kdeinitNotifier;
    KNetwork::KServerSocket mPoolSocket;
-   Q3PtrList<IdleSlave> mSlaveList;
+   QList<IdleSlave*> mSlaveList;
    QTimer mTimer;
    QTimer mAutoTimer;
    bool bProcessingQueue;

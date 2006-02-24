@@ -22,7 +22,8 @@
 
 #include <qstringlist.h>
 
-class AutoStartList;
+class AutoStartItem;
+typedef QList<AutoStartItem *> AutoStartList;
 
 class AutoStart
 {
