@@ -1032,8 +1032,8 @@ int KKeyChooserItem::compare( Q3ListViewItem* item, int iCol, bool bAscending ) 
 		QString psName2 = pItem->m_pList->name(pItem->m_iAction);
 		QRegExp rxNumber1( " (\\d+)$" );
 		QRegExp rxNumber2( " (\\d+)$" );
-		int iNumber1 = rxNumber1.search( psName1 );
-		int iNumber2 = rxNumber2.search( psName2 );
+		int iNumber1 = rxNumber1.indexIn( psName1 );
+		int iNumber2 = rxNumber2.indexIn( psName2 );
 
 		// Check if the last word is one or more digits
 		if( iNumber1 >= 0 && iNumber1 == iNumber2 && psName1.startsWith( psName2.left( iNumber1+1 ) ) ) {

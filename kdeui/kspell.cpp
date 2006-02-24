@@ -137,13 +137,13 @@ static bool determineASpellV6()
     // Close textstream before we close fs
     {
       QTextStream ts(fs, QIODevice::ReadOnly);
-      result = ts.read().trimmed();
+      result = ts.readAll().trimmed();
     }
     pclose(fs);
   }
 
   QRegExp rx("Aspell (\\d.\\d)");
-  if (rx.search(result) != -1)
+  if (rx.indexIn(result) != -1)
   {
      float version = rx.cap(1).toFloat();
      return (version >= 0.6);
@@ -925,7 +925,7 @@ void KSpell::checkListReplaceCurrent()
   s.replace(posinline+offset,orig.length(),replacement());
   offset += replacement().length()-orig.length();
   wordlist->insert (wlIt, s);
-  wlIt = wordlist->remove (wlIt);
+  wlIt = wordlist->erase (wlIt);
   // wlIt now points to the word after the repalced one
 
 }
