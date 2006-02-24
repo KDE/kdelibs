@@ -1215,7 +1215,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
 pid_t
 KLauncher::requestHoldSlave(const KUrl &url, const QString &app_socket)
 {
-    IdleSlave *slave;
+    IdleSlave *slave = 0;
     foreach (slave, mSlaveList)
     {
        if (slave->onHold(url))
@@ -1237,7 +1237,7 @@ KLauncher::requestSlave(const QString &protocol,
                         const QString &app_socket,
                         QString &error)
 {
-    IdleSlave *slave;
+    IdleSlave *slave = 0;
     foreach (slave, mSlaveList)
     {
        if (slave->match(protocol, host, true))
@@ -1331,8 +1331,7 @@ KLauncher::requestSlave(const QString &protocol,
 void
 KLauncher::waitForSlave(pid_t pid)
 {
-    IdleSlave *slave;
-    foreach (slave, mSlaveList)
+    foreach (IdleSlave *slave, mSlaveList)
     {
         if (slave->pid() == pid)
            return; // Already here.
