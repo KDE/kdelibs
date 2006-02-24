@@ -17,6 +17,7 @@ obj.target = 'kio_ftp'
 obj.source = kio_ftp_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI KDE4 KIO KDECORE '
+obj.libpaths = ' ../../dcop '
 if env['WINDOWS']:
 	obj.libpaths += ' ../../win '
 	obj.libs     = ' kdewin32 '

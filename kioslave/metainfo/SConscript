@@ -17,6 +17,7 @@ obj.target = 'kio_metainfo'
 obj.source = kio_metainfo_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO KDECORE '
+obj.libpaths = ' ../../dcop '
 if env['WINDOWS']:
 	obj.libpaths += ' ../../win '
 	obj.libs     = ' kdewin32 '

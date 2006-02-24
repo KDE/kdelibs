@@ -32,6 +32,7 @@ obj.includes = includes
 obj.libpaths = '##/kio/httpfilter ##/kio/misc/kntlm '
 obj.libs = 'httpfilter kntlm '
 obj.uselib = 'QT QTCORE QTGUI KDE4 KIO '
+obj.libpaths = ' ../../dcop '
 if env['WINDOWS']:
 	obj.libpaths += ' ../../win '
 	obj.libs     = ' kdewin32 '

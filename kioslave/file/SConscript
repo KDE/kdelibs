@@ -21,6 +21,7 @@ obj.target = 'kio_file'
 obj.source = kio_file_sources
 obj.includes = includes
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KIO KDECORE '
+obj.libpaths = ' ../../dcop '
 obj.execute()
 
 env.bksys_insttype('KDESERV', '', 'file.protocol')

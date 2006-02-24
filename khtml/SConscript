@@ -90,6 +90,7 @@ html/html_objectimpl.cpp
 html/html_tableimpl.cpp
 html/htmlparser.cpp
 html/htmltokenizer.cpp
+html/html_canvasimpl.cpp
 """
 
 render_sources = """
