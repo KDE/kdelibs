@@ -570,6 +570,18 @@ add_test(kdecore-kdatetimetest ${EXECUTABLE_OUTPUT_PATH}/kdatetimetest)
 
 ########### next target ###############
 
+set(ksavefiletest_SRCS ksavefiletest.cpp )
+
+kde4_automoc(${ksavefiletest_SRCS})
+
+kde4_add_executable(ksavefiletest ${ksavefiletest_SRCS})
+
+target_link_libraries(ksavefiletest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-ksavefiletest ${EXECUTABLE_OUTPUT_PATH}/ksavefiletest)
+
+########### next target ###############
+
 set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
 
 kde4_automoc(${klibloadertestmodule_PART_SRCS})

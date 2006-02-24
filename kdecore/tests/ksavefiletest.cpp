@@ -32,17 +32,20 @@
 #include <ktempfile.h>
 #include <ksavefile.h>
 
+#include <qtest_kde.h>
+#include <ksavefiletest.h>
+
+
+QTEST_KDEMAIN( KSaveFileTest, NoGUI )
+
+
 void test( const char *msg, bool result )
 {
     fprintf( stderr, "Testing %s .... %s\n", msg, result ? "OK" : "FAILED" );
 }
 
-int main(int argc, char *argv[])
+void KSaveFileTest::test_numberedBackupFile()
 {
-    KApplication::disableAutoDcopRegistration();
-    KCmdLineArgs::init( argc, argv, "ksavefiletest", 0, 0, 0, 0 );
-    KApplication app( false );
-
     KTempFile f( "fred", QString(), 0600 );
 
     test( "backup file", KSaveFile::backupFile( f.name() ) );
@@ -67,9 +70,15 @@ int main(int argc, char *argv[])
     test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
     test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
     //test( "numbered backup", KSaveFile::numberedBackupFile( f.name(),5 ) );
-    
+}
+
+void KSaveFileTest::test_rcsBackupFile()
+{
+    KTempFile f( "fred", QString(), 0600 );
+
     test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
     test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
+
     QFile fl( f.name() );
     if ( fl.open( QFile::WriteOnly | QFile::Truncate ) ) {
         QTextStream out( &fl );
@@ -86,3 +95,31 @@ int main(int argc, char *argv[])
     }
 }
 
+
+void KSaveFileTest::test_dataStream()
+{
+#ifdef Q_WS_WIN
+
+    QString path=QDir::homePath();
+    
+    path = path + QLatin1String("/test_KSaveFileTest_dataStream.tmp");
+
+    printf("KSaveFileTest::test_dataStream(): path='%s'\n", qPrintable(path));
+
+    KSaveFile* database = new KSaveFile(path);
+
+    
+    // msvc linked against QtCore4.lib (release version) crashes in
+    //     QFile * KTempFile::file() 
+    //     { ...
+    //     mFile->open(mStream, QIODevice::ReadWrite); 
+    //
+    //     mFile is QFile*
+    QDataStream* m_str = database->dataStream();
+
+    delete database;
+#endif
+}
+
+
+#include "ksavefiletest.moc"
