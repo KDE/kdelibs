@@ -44,7 +44,7 @@ public:
 
 
 KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
-  : QWidget(0, 0), nodialog(true)
+  : QWidget(0), nodialog(true)
   , kc(0)
   , cb0(0)
   , cb1(0)
@@ -101,28 +101,33 @@ KSpellConfig::KSpellConfig( QWidget *parent,
     setClient( _ksc->client() );
   }
 
-  QGridLayout *glay = new QGridLayout( this, 7, 3, 0, KDialog::spacingHint() );
-  cb0 = new QCheckBox( i18n("Do SpellChecking"), this, "DoSpellChecking" );
+  QGridLayout *glay = new QGridLayout( this );
+  glay->setSpacing( KDialog::spacingHint() );
+  cb0 = new QCheckBox( i18n("Do SpellChecking"), this );
+  cb0->setObjectName( "DoSpellChecking" );
   connect( cb0, SIGNAL(toggled(bool)), SLOT(sDoSpell()) );
   cb1 = new QCheckBox( i18n("Create &root/affix combinations"
-                            " not in dictionary"), this, "NoRootAffix" );
+                            " not in dictionary"), this );
+  cb1->setObjectName( "NoRootAffix" );
   connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
-  glay->addMultiCellWidget( cb0, 0, 0, 0, 2 );
-  glay->addMultiCellWidget( cb1, 1, 1, 0, 2 );
+  glay->addWidget( cb0, 0, 0, 1, 3 );
+  glay->addWidget( cb1, 1, 0, 1, 3 );
 
   cb2 = new QCheckBox( i18n("Consider run-together &words"
-			    " as spelling errors"), this, "RunTogether" );
+			    " as spelling errors"), this );
+  cb2->setObjectName( "RunTogether" );
   connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
-  glay->addMultiCellWidget( cb2, 2, 2, 0, 2 );
+  glay->addWidget( cb2, 2, 0, 1, 3 );
 
   dictcombo = new QComboBox( this );
   dictcombo->setObjectName( "DictFromList" );
   dictcombo->setInsertPolicy( QComboBox::NoInsert );
   connect( dictcombo, SIGNAL (activated(int)),
 	   this, SLOT (sSetDictionary(int)) );
-  glay->addMultiCellWidget( dictcombo, 3, 3, 1, 2 );
+  glay->addWidget( dictcombo, 3, 1, 1, 2 );
 
-  dictlist = new QLabel( dictcombo, i18n("&Dictionary:"), this );
+  dictlist = new QLabel( i18n("&Dictionary:"), this );
+  dictlist->setBuddy( dictcombo );
   glay->addWidget( dictlist, 3 ,0 );
 
   encodingcombo = new QComboBox( this );
@@ -146,9 +151,10 @@ KSpellConfig::KSpellConfig( QWidget *parent,
 
   connect( encodingcombo, SIGNAL(activated(int)), this,
 	   SLOT(sChangeEncoding(int)) );
-  glay->addMultiCellWidget( encodingcombo, 4, 4, 1, 2 );
+  glay->addWidget( encodingcombo, 4, 1, 1, 2 );
 
-  QLabel *tmpQLabel = new QLabel( encodingcombo, i18n("&Encoding:"), this);
+  QLabel *tmpQLabel = new QLabel( i18n("&Encoding:"), this);
+  tmpQLabel->setBuddy( encodingcombo );
   glay->addWidget( tmpQLabel, 4, 0 );
 
 
@@ -160,9 +166,10 @@ KSpellConfig::KSpellConfig( QWidget *parent,
   clientcombo->addItem( i18n("Zemberek") );
   connect( clientcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeClient(int)) );
-  glay->addMultiCellWidget( clientcombo, 5, 5, 1, 2 );
+  glay->addWidget( clientcombo, 5, 1, 1, 2 );
 
-  tmpQLabel = new QLabel( clientcombo, i18n("&Client:"), this );
+  tmpQLabel = new QLabel( i18n("&Client:"), this );
+  tmpQLabel->setBuddy( clientcombo );
   glay->addWidget( tmpQLabel, 5, 0 );
 
   if( addHelpButton )
@@ -799,7 +806,7 @@ KSpellConfig::setDictionary (const QString s)
   qsdict=s; //.copy();
 
   if (qsdict.length()>5)
-    if ((signed)qsdict.find(".hash")==(signed)qsdict.length()-5)
+    if ((signed)qsdict.indexOf(".hash")==(signed)qsdict.length()-5)
       qsdict.remove (qsdict.length()-5,5);
 
 
