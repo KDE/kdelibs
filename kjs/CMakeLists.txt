@@ -74,6 +74,7 @@ scope_chain.cpp
 dtoa.cpp
 fpconst.cpp
 JSLock.cpp
+JSImmediate.cpp
 )
 
 kde4_automoc(${kjs_LIB_SRCS})
@@ -123,7 +124,7 @@ target_link_libraries(testkjs  ${QT_AND_KDECORE_LIBS} kjs )
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
-install_files( /include/kjs FILES value.h types.h object.h interpreter.h operations.h             ustring.h lookup.h global.h identifier.h property_map.h           property_slot.h reference.h reference_list.h completion.h            scope_chain.h list.h simple_number.h function.h JSLock.h)
+install_files( /include/kjs FILES value.h types.h object.h interpreter.h operations.h             ustring.h lookup.h global.h identifier.h property_map.h           property_slot.h reference.h reference_list.h completion.h            scope_chain.h list.h function.h JSLock.h JSImmediate.h JSType.h )
 
 
 kde4_create_doxygen_docs( REFERENCES kdecore  )
