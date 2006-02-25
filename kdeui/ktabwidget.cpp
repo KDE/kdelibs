@@ -254,6 +254,12 @@ void KTabWidget::updateTab( int index )
         QTabWidget::setTabText(index, title );
 }
 
+void KTabWidget::dragEnterEvent( QDragEnterEvent *e )
+{
+    e->setAccepted( true );
+    QTabWidget::dragEnterEvent( e );
+}
+
 void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
 {
     if ( isEmptyTabbarSpace( e->pos() ) ) {

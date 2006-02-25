@@ -288,6 +288,7 @@ Q_SIGNALS:
 protected:
     virtual void mouseDoubleClickEvent( QMouseEvent *e );
     virtual void mousePressEvent( QMouseEvent * );
+    virtual void dragEnterEvent( QDragEnterEvent * );
     virtual void dragMoveEvent( QDragMoveEvent * );
     virtual void dropEvent( QDropEvent * );
     int tabBarWidthForMaxChars( int maxLength );

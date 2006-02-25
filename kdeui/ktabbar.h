@@ -81,6 +81,7 @@ protected:
     virtual void wheelEvent( QWheelEvent *e );
 #endif
 
+    virtual void dragEnterEvent( QDragEnterEvent *e );
     virtual void dragMoveEvent( QDragMoveEvent *e );
     virtual void dropEvent( QDropEvent *e );
 

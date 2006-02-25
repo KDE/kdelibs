@@ -227,6 +227,12 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *e )
     QTabBar::mouseReleaseEvent( e );
 }
 
+void KTabBar::dragEnterEvent( QDragEnterEvent *e )
+{
+    e->setAccepted( true );
+    QTabBar::dragEnterEvent( e );
+}
+
 void KTabBar::dragMoveEvent( QDragMoveEvent *e )
 {
     int tab = selectTab( e->pos() );
