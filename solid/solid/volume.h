@@ -50,7 +50,8 @@ namespace KDEHW
         UsageType usage() const;
         QString fsType() const;
         QString label() const;
-        // TODO add UUID and size
+        QString uuid() const;
+        long size() const;
 
         KIO::Job *mount( bool showProgressInfo = false );
         KIO::Job *unmount( bool showProgressInfo = false );

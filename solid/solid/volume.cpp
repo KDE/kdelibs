@@ -77,6 +77,16 @@ QString KDEHW::Volume::label() const
     return d->iface->label();
 }
 
+QString KDEHW::Volume::uuid() const
+{
+    return d->iface->uuid();
+}
+
+long KDEHW::Volume::size() const
+{
+    return d->iface->size();
+}
+
 KIO::Job *KDEHW::Volume::mount( bool showProgressInfo )
 {
     return d->iface->mount( showProgressInfo );

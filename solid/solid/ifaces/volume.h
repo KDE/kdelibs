@@ -45,7 +45,8 @@ namespace Ifaces
         virtual UsageType usage() const = 0;
         virtual QString fsType() const = 0;
         virtual QString label() const = 0;
-        // TODO add UUID and size
+        virtual QString uuid() const = 0;
+        virtual long size() const = 0;
 
         virtual KIO::Job *mount( bool showProgressInfo = false ) = 0;
         virtual KIO::Job *unmount( bool showProgressInfo = false ) = 0;
