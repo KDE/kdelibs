@@ -322,7 +322,7 @@ void KAccelPrivate::slotKeyPressed( int id )
 		//  then activated it without popping up the menu.
 		// This is needed for when there are multiple actions
 		//  with the same shortcut where all but one is disabled.
-		if( pMenu->count() == 1 && pMenu->accel(0).isEmpty() ) {
+		if( pMenu->actions().count() == 1 && pMenu->accel(0).isEmpty() ) {
 			int iAction = pMenu->idAt(0);
 			slotMenuActivated( iAction );
 		} else {
@@ -398,7 +398,7 @@ void KAccelPrivate::emitActivatedSignal( KAccelAction* pAction )
 	if( pAction ) {
 		QPointer<KAccelPrivate> me = this;
 		QRegExp reg( "([ ]*KAccelAction.*)" );
-		if( reg.search( pAction->methodSlotPtr()) >= 0 ) {
+		if( reg.indexIn( pAction->methodSlotPtr()) >= 0 ) {
 			connect( this, SIGNAL(menuItemActivated(KAccelAction*)),
 				pAction->objSlotPtr(), pAction->methodSlotPtr() );
 			emit menuItemActivated( pAction );
