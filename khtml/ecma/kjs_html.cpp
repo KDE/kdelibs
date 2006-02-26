@@ -640,6 +640,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 # IE extension
   children	KJS::HTMLElement::ElementChildren  DontDelete|ReadOnly
   all           KJS::HTMLElement::ElementAll       DontDelete|ReadOnly
+  scrollIntoView KJS::HTMLElement::ElementScrollIntoView DontDelete|Function 0
 @end
 @begin HTMLHtmlElementTable 1
   version	KJS::HTMLElement::HtmlVersion	DontDelete
@@ -2327,6 +2328,13 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
       }
       break;
     }
+  }
+
+  if (id == HTMLElement::ElementScrollIntoView) {
+    // ### implement
+    kdWarning() << "non-standard HTMLElement::scrollIntoView() not implemented"
+		<< endl;
+    return Undefined();
   }
 
   return Undefined();

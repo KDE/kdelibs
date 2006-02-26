@@ -153,7 +153,8 @@ namespace KJS {
            MarqueeStart, MarqueeStop,
            LayerTop, LayerLeft, LayerVisibility, LayerBgColor, LayerClip, LayerDocument, LayerLayers,
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
-           ElementClassName, ElementInnerText, ElementDocument, ElementChildren, ElementAll };
+           ElementClassName, ElementInnerText, ElementDocument,
+	   ElementChildren, ElementAll, ElementScrollIntoView };
 
     DOM::HTMLElement toElement() const { return static_cast<DOM::HTMLElement>(node); }
   };
