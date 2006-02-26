@@ -1,9 +1,23 @@
 kde4_header()
 
-if(KDE4_BUILD_TESTS)
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdecore ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
+########### next target ###############
+
+set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
+
+kde4_automoc(${klibloadertestmodule_PART_SRCS})
+
+kde4_add_plugin(klibloadertestmodule WITH_PREFIX ${klibloadertestmodule_PART_SRCS})
+
+target_link_libraries(klibloadertestmodule  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
+install_targets(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
+
+
+if(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -579,19 +593,6 @@ kde4_add_executable(ksavefiletest ${ksavefiletest_SRCS})
 target_link_libraries(ksavefiletest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-ksavefiletest ${EXECUTABLE_OUTPUT_PATH}/ksavefiletest)
-
-########### next target ###############
-
-set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
-
-kde4_automoc(${klibloadertestmodule_PART_SRCS})
-
-kde4_add_plugin(klibloadertestmodule WITH_PREFIX ${klibloadertestmodule_PART_SRCS})
-
-target_link_libraries(klibloadertestmodule  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
-install_targets(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
 
 endif(KDE4_BUILD_TESTS)
 
