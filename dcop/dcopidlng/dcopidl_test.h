@@ -66,7 +66,7 @@ k_dcop:
      * a function comment
      * @see blah di blah also
      **/
-    int getPageOfObj( int obj );
+    int & getPageOfObj( int obj );
     void setCell( const int& point = 3 );
     QValueList<DCOPRef> getWindows();
     const QStringList remotes(); // returns const type, but shouldn't use const var for it in stub

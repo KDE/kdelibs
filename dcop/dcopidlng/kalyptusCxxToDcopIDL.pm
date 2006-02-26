@@ -186,9 +186,10 @@ sub generateMethod($$)
     $qual .= " qual=\"const\"" if $flags =~ "c";
 
     $returnType = "void" unless $returnType;
+    $returnType =~ s/^\s*const\s*//;
+    $returnType =~ s/\s*&\s*//;
     $returnType =~ s/</&lt;/g;
     $returnType =~ s/>/&gt;/g;
-    $returnType =~ s/^\s*const\s*//;
     $returnType = $canonicalType{$returnType} if ( exists $canonicalType{$returnType} );
 
     my $methodCode = "";
