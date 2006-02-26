@@ -158,7 +158,8 @@ namespace KJS {
            GetContext,
            LayerTop, LayerLeft, LayerVisibility, LayerBgColor, LayerClip, LayerDocument, LayerLayers,
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
-           ElementClassName, ElementInnerText, ElementDocument, ElementChildren, ElementAll };
+           ElementClassName, ElementInnerText, ElementDocument,
+	   ElementChildren, ElementAll, ElementScrollIntoView };
 
     DOM::HTMLElementImpl* impl() const { return static_cast<DOM::HTMLElementImpl*>(m_impl.get()); }
     ValueImp* indexGetter(ExecState *exec, unsigned index);
