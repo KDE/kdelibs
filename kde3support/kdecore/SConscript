@@ -7,7 +7,7 @@ Import('env')
 #"""
 
 include_headers = """
-k3keysequence.h k3shortcut.h k3shortcutmenu.h k3urldrag.h
+k3keysequence.h k3shortcut.h k3shortcutmenu.h k3urldrag.h k3sqlpropertymap.h
 """
 
 #includes = '#/kdecore '
