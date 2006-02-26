@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Steffen Hansen (hansen@kde.org)
+   Copyright (C) 2005 Joseph Wenninger (jowenn@kde.org)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,62 +18,52 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qpainter.h>
 #include "kcolormimedata.h"
+#include <QPainter>
 #include <QMimeData>
 #include <QDrag>
 
 void
-KColorMimeData::populateMimeData( QMimeData *mimeData, const QColor &color)
+KColorMimeData::populateMimeData(QMimeData *mimeData, const QColor &color)
 {
-	mimeData->setColorData(color);
-	mimeData->setText(color.name());
-/*
-     Q3ColorDrag tmp(color, 0, 0);
-     setEncodedData(tmp.encodedData(color_mime_string));
-
-     QPixmap colorpix( 25, 20);
-     colorpix.fill( color);
-     QPainter p( &colorpix );
-     p.setPen( Qt::black );
-     p.drawRect(0,0,25,20);
-     p.end();
-     setPixmap(colorpix, QPoint(-5,-7));*/
+    mimeData->setColorData(color);
+    mimeData->setText(color.name());
 }
 
 bool
 KColorMimeData::canDecode(const QMimeData *mimeData)
 {
-     if (mimeData->hasColor()) return true;
-     if (mimeData->hasText())
-     {
-     	QString colorName=mimeData->text();
+    if (mimeData->hasColor())
+        return true;
+    if (mimeData->hasText())
+    {
+        const QString colorName=mimeData->text();
         if ((colorName.length() >= 4) && (colorName[0] == '#'))
-	  return true;
-	
-     }
-     return false;
+            return true;
+    }
+    return false;
 }
 
 QColor
 KColorMimeData::fromMimeData(const QMimeData *mimeData)
 {
-     if (mimeData->hasColor()) return mimeData->colorData().value<QColor>();
-     if (canDecode(mimeData))
-       return QColor(mimeData->text());
-     return QColor();     
+    if (mimeData->hasColor())
+        return mimeData->colorData().value<QColor>();
+    if (canDecode(mimeData))
+        return QColor(mimeData->text());
+    return QColor();
 }
 
 
 QDrag*
-KColorMimeData::createDrag( const QColor &color,QWidget *dragsource)
+KColorMimeData::createDrag(const QColor &color, QWidget *dragsource)
 {
     QDrag *drag=new QDrag(dragsource);
     QMimeData *mime=new QMimeData;
     populateMimeData(mime,color);
     drag->setMimeData(mime);
-    QPixmap colorpix( 25, 20);
-    colorpix.fill( color);
+    QPixmap colorpix( 25, 20 );
+    colorpix.fill( color );
     QPainter p( &colorpix );
     p.setPen( Qt::black );
     p.drawRect(0,0,25,20);
