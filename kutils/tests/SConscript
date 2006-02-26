@@ -6,8 +6,8 @@ obj.vnum     = '6.0.2'
 obj.target   = 'kfindtest'
 obj.source   = 'kfindtest.cpp'
 obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT QTEST KDE4 KDECORE KDEUI KIO '
-obj.libpaths = '../../dcop ../../kutils '
-obj.libs     = 'DCOP kutils'
+obj.libpaths = '../../dcop ../../kutils ../../kdefx '
+obj.libs     = 'DCOP kutils kdefx'
 obj.execute()
 
 obj = env.kdeobj('program', env)

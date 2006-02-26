@@ -24,7 +24,7 @@ obj.source = kspell2_noinst_sources
 obj.includes = includes
 obj.libs = 'kdecore kdeui kdefx DCOP '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
-obj.libpaths = "../../kdecore ../../kio ../../kdeui ../../dcop "
+obj.libpaths = "../../kdecore ../../kio ../../kdeui ../../dcop ../../kdefx "
 obj.execute()
 
 env.Depends('libkspell2.so.1.0.0', 'libkspell2_noinst.a')
@@ -34,7 +34,7 @@ obj.target = 'kspell2'
 obj.vnum = '1.0.0'
 obj.source = kspell2_sources
 obj.includes = includes
-obj.libpaths = '.. ../../kdecore ../../kio ../../kdeui ../../dcop ../../kparts ../../kutils '
+obj.libpaths = '.. ../../kdecore ../../kio ../../kdeui ../../dcop ../../kparts ../../kutils ../../kdefx '
 obj.libs = 'kdecore kdeui kio kdefx DCOP kutils libkspell2_noinst.a kspell2base '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 '
 obj.execute()

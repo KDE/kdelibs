@@ -9,8 +9,8 @@ spellchecking.cpp
 obj = env.kdeobj('module')
 obj.target = 'kcm_spellchecking'
 obj.source = kcm_spellchecking_sources
-obj.libpaths = '.. '
-obj.libs = 'kspell2base '
+obj.libpaths = '.. ../../dcop'
+obj.libs = 'kspell2base DCOP'
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDEUI KDECORE '
 obj.execute()
 

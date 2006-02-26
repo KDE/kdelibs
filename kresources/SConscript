@@ -40,6 +40,8 @@ obj.source = kcm_kresources_sources
 obj.includes = includes
 obj.libpaths = '.'
 obj.libs = 'kresources'
+obj.libpaths = ' ../dcop '
+obj.libs = ' DCOP '
 obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4 KDEUI KDECORE '
 obj.ccflags += ' -DMAKE_KCM_KRESOURCES_LIB '
 obj.execute()
