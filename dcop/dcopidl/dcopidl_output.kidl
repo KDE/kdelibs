@@ -57,6 +57,10 @@
         <TYPE>QValueList&lt;DCOPRef&gt;</TYPE>
         <NAME>getWindows</NAME>
      </FUNC>
+    <FUNC>
+        <TYPE>QStringList</TYPE>
+        <NAME>remotes</NAME>
+     </FUNC>
     <SIGNAL>
         <TYPE>void</TYPE>
         <NAME>blah_signal</NAME>

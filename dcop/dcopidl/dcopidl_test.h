@@ -50,6 +50,7 @@ public:
     SomeForwardFooPrivate *d;
     static const int AUDIO_CD = 1;
     static const int AUDIO_CD = 1 << 6;
+    static const int m_number0[ 20 ];
     enum { Enum1, Enum2 };
     enum NamedEnum { Enum3, Enum4 };
 k_dcop:
@@ -68,6 +69,7 @@ k_dcop:
     int getPageOfObj( int obj );
     void setCell( const int& point = 3 );
     QValueList<DCOPRef> getWindows();
+    const QStringList remotes(); // returns const type, but shouldn't use const var for it in stub
 
 k_dcop_signals:
     void blah_signal();
