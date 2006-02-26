@@ -59,6 +59,9 @@ RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
 	    new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Test,     0, testPropertyName), DontEnum);
   putDirect(toStringPropertyName,
 	    new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::ToString, 0, toStringPropertyName), DontEnum);
+  static const Identifier compilePropertyName("compile");
+  putDirect(compilePropertyName,
+            new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Compile,  1, compilePropertyName), DontEnum);
 }
 
 // ------------------------------ RegExpProtoFuncImp ---------------------------
@@ -152,7 +155,15 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       str += "m";
     }
     return String(str);
+  case Compile: {
+      RegExp* newEngine = RegExpObjectImp::makeEngine(exec, args[0].toString(exec), args[1]);
+      if (!newEngine)
+        return exec->exception();
+      reimp->setRegExp(newEngine);
+      return Value(reimp);
+    }
   }
+  
 
   return Undefined();
 }
@@ -169,6 +180,23 @@ RegExpImp::RegExpImp(RegExpPrototypeImp *regexpProto)
 RegExpImp::~RegExpImp()
 {
   delete reg;
+}
+
+void RegExpImp::setRegExp(RegExp *r)
+{
+  delete reg;
+  reg = r;
+
+  Object protect(this);//Protect self from GC (we are allocating a StringImp, and may be new)
+  putDirect("global", (r->flags() & RegExp::Global) ? BooleanImp::staticTrue : BooleanImp::staticFalse, 
+            DontDelete | ReadOnly | DontEnum);
+  putDirect("ignoreCase", (r->flags() & RegExp::IgnoreCase) ? BooleanImp::staticTrue : BooleanImp::staticFalse, 
+            DontDelete | ReadOnly | DontEnum);
+  putDirect("multiline", (r->flags() & RegExp::Multiline) ? BooleanImp::staticTrue : BooleanImp::staticFalse, 
+            DontDelete | ReadOnly | DontEnum);
+
+  putDirect("source", new StringImp(r->pattern()), DontDelete | ReadOnly | DontEnum);
+  putDirect("lastIndex", NumberImp::zero(), DontDelete | DontEnum);
 }
 
 // ------------------------------ RegExpObjectImp ------------------------------
@@ -243,6 +271,49 @@ bool RegExpObjectImp::implementsConstruct() const
   return true;
 }
 
+RegExp* RegExpObjectImp::makeEngine(ExecState *exec, const UString &p, const Value &flagsInput)
+{
+  UString flags = flagsInput.type() == UndefinedType ? UString("") : flagsInput.toString(exec);
+
+  // Check for validity of flags
+  for (int pos = 0; pos < flags.size(); ++pos) {
+    switch (flags[pos].unicode()) {
+    case 'g':
+    case 'i':
+    case 'm':
+      break;
+    default: {
+        Object err = Error::create(exec, SyntaxError,
+                    "Invalid regular expression flags");
+        exec->setException(err);
+        return 0;
+      }
+    }
+  }
+
+  bool global = (flags.find("g") >= 0);
+  bool ignoreCase = (flags.find("i") >= 0);
+  bool multiline = (flags.find("m") >= 0);
+
+  int reflags = RegExp::None;
+  if (global)
+      reflags |= RegExp::Global;
+  if (ignoreCase)
+      reflags |= RegExp::IgnoreCase;
+  if (multiline)
+      reflags |= RegExp::Multiline;
+
+  RegExp *re = new RegExp(p, reflags);
+  if (!re->isValid()) {
+    Object err = Error::create(exec, SyntaxError,
+                               "Invalid regular expression");
+    exec->setException(err);
+    delete re;
+    return 0;
+  }
+  return re;
+}
+
 // ECMA 15.10.4
 Object RegExpObjectImp::construct(ExecState *exec, const List &args)
 {
@@ -264,38 +335,14 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
       p = a0.toString(exec);
     }
   }
-  UString flags = args[1].type() == UndefinedType ? UString("") : args[1].toString(exec);
+
+  RegExp* re = makeEngine(exec, p, args[1]);
+  if (!re)
+    return exec->exception().toObject(exec);
 
   RegExpPrototypeImp *proto = static_cast<RegExpPrototypeImp*>(exec->lexicalInterpreter()->builtinRegExpPrototype().imp());
   RegExpImp *dat = new RegExpImp(proto);
   Object obj(dat); // protect from GC
-
-  bool global = (flags.find("g") >= 0);
-  bool ignoreCase = (flags.find("i") >= 0);
-  bool multiline = (flags.find("m") >= 0);
-  // TODO: throw a syntax error on invalid flags
-
-  dat->putDirect("global", global ? BooleanImp::staticTrue : BooleanImp::staticFalse, DontDelete | ReadOnly | DontEnum);
-  dat->putDirect("ignoreCase", ignoreCase ? BooleanImp::staticTrue : BooleanImp::staticFalse, DontDelete | ReadOnly | DontEnum);
-  dat->putDirect("multiline", multiline ? BooleanImp::staticTrue : BooleanImp::staticFalse, DontDelete | ReadOnly | DontEnum);
-
-  dat->putDirect("source", new StringImp(p), DontDelete | ReadOnly | DontEnum);
-  dat->putDirect("lastIndex", NumberImp::zero(), DontDelete | DontEnum);
-
-  int reflags = RegExp::None;
-  if (global)
-      reflags |= RegExp::Global;
-  if (ignoreCase)
-      reflags |= RegExp::IgnoreCase;
-  if (multiline)
-      reflags |= RegExp::Multiline;
-  RegExp *re = new RegExp(p, reflags);
-  if (!re->isValid()) {
-    Object err = Error::create(exec, SyntaxError,
-                               "Invalid regular expression");
-    exec->setException(err);
-    return err;
-  }
   dat->setRegExp(re);
 
   return obj;

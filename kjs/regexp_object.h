@@ -45,7 +45,7 @@ namespace KJS {
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 
-    enum { Exec, Test, ToString };
+    enum { Exec, Test, ToString, Compile };
   private:
     int id;
   };
@@ -54,7 +54,7 @@ namespace KJS {
   public:
     RegExpImp(RegExpPrototypeImp *regexpProto);
     ~RegExpImp();
-    void setRegExp(RegExp *r) { reg = r; }
+    void setRegExp(RegExp *r);
     RegExp* regExp() { return reg; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
@@ -78,6 +78,13 @@ namespace KJS {
     int ** registerRegexp( const RegExp* re, const UString& s );
     void setSubPatterns(int num) { lastNrSubPatterns = num; }
     Object arrayOfMatches(ExecState *exec, const UString &result) const;
+
+    /*
+     Attempts to create a new regular expression engine for the string p
+     and the flags stored in flagsInput. If this succeeds, it returns the 
+     engine. If not, it returns 0, and raises an exception in exec
+    */
+    static RegExp* makeEngine(ExecState *exec, const UString &p, const Value &flagsInput);
   private:
     UString lastString;
     int *lastOvector;
