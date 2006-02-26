@@ -595,6 +595,9 @@ Use KSystemTray instead.</li>
 <H4>KStatusBar</H4>
 <ul>
 <li>The unused BarStatus enum was removed.</li>
+<li>The 'permanent' bool has been removed in favor of more explicit naming.
+  insertItem(text,id,true) -&gt; insertPermanentItem(text,id),
+  insertFixedItem(text,id,true) -&gt; insertPermanentFixedItem(text,id)</li>
 </ul>
 
 <H4>KEditListBox</H4>
