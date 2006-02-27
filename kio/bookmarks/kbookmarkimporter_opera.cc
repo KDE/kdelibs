@@ -47,7 +47,7 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
    int lineno = 0;
    QString url, name, type;
    static const int g_lineLimit = 16*1024;
-   QByteArray line(g_lineLimit);
+   QByteArray line(g_lineLimit,0);
 
    while ( file.readLine(line.data(), g_lineLimit) >=0 ) {
       lineno++;
@@ -163,7 +163,7 @@ void KOperaBookmarkExporterImpl::write(KBookmarkGroup parent) {
        return;
     }
     QTextStream fstream(&file);
-    fstream.setEncoding(QTextCodec::codecForName("UTF-8"));
+    fstream.setCodec(QTextCodec::codecForName("UTF-8"));
     fstream << content;
 }
 

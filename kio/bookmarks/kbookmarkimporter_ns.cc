@@ -43,7 +43,7 @@ void KNSBookmarkImporterImpl::parse()
     if(f.open(QIODevice::ReadOnly)) {
 
         static const int g_lineLimit = 16*1024;
-        QByteArray s(g_lineLimit);
+        QByteArray s(g_lineLimit,0);
         // skip header
         while(f.readLine(s.data(), g_lineLimit) >= 0 && !s.contains("<DL>"));
 
@@ -56,12 +56,12 @@ void KNSBookmarkImporterImpl::parse()
             QByteArray t = s.trimmed();
             if(t.left(12).toUpper() == "<DT><A HREF=" ||
                t.left(16).toUpper() == "<DT><H3><A HREF=") {
-              int firstQuotes = t.find('"')+1;
-              int secondQuotes = t.find('"', firstQuotes);
+              int firstQuotes = t.indexOf('"')+1;
+              int secondQuotes = t.indexOf('"', firstQuotes);
               if (firstQuotes != -1 && secondQuotes != -1)
               {
                 QByteArray link = t.mid(firstQuotes, secondQuotes-firstQuotes);
-                int endTag = t.find('>', secondQuotes+1);
+                int endTag = t.indexOf('>', secondQuotes+1);
                 QByteArray name = t.mid(endTag+1);
                 name = name.left(name.lastIndexOf('<'));
                 if ( name.endsWith("</A>" ) )
@@ -75,7 +75,7 @@ void KNSBookmarkImporterImpl::parse()
               }
             }
             else if(t.left(7).toUpper() == "<DT><H3") {
-                int endTag = t.find('>', 7);
+                int endTag = t.indexOf('>', 7);
                 QByteArray name = t.mid(endTag+1);
                 name = name.left(name.lastIndexOf('<'));
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );

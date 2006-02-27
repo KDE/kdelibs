@@ -39,7 +39,7 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( const QString &filename, co
 
     if(f.open(QIODevice::ReadOnly)) {
 
-        QByteArray s(g_lineLimit);
+        QByteArray s(g_lineLimit,0);
 
         while(f.readLine(s.data(), g_lineLimit)>=0) {
             if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than g_lineLimit. Skipping.

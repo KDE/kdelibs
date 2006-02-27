@@ -735,9 +735,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   {
     QString path;
     if ( !m_bFromTemplate ) {
-      isTrash = ( properties->kurl().protocol().indexOf( "trash", 0, Qt::CaseInsensitive)==0 );
-      if ( properties->kurl().protocol().indexOf("device", 0, Qt::CaseInsensitive)==0)
-            isDevice = true;
+      isTrash = ( properties->kurl().protocol().toLower() == "trash" );
+      isDevice = ( properties->kurl().protocol().toLower() == "device" );
       // Extract the full name, but without file: for local files
       if ( isLocal )
         path = properties->kurl().path();
@@ -1507,7 +1506,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QString path = properties->kurl().path(-1);
   QString fname = properties->kurl().fileName();
   bool isLocal = properties->kurl().isLocalFile();
-  bool isTrash = ( properties->kurl().protocol().indexOf("trash", 0, Qt::CaseInsensitive)==0 );
+  bool isTrash = ( properties->kurl().protocol().toLower() == "trash" );
   bool IamRoot = (geteuid() == 0);
 
   KFileItem * item = properties->item();

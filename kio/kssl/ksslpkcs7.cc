@@ -132,10 +132,7 @@ int len;
    char *buf = new char[len];
    p = (unsigned char *)buf;
    kossl->i2d_PKCS7(_pkcs, &p);
-   QByteArray qba;
-   qba.setRawData(buf, len);
-   base64 = KCodecs::base64Encode(qba);
-   qba.resetRawData(buf, len);
+   base64 = KCodecs::base64Encode(QByteArray::fromRawData(buf,len));
    delete[] buf;
 #endif
 return base64;

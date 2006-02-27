@@ -967,7 +967,7 @@ char *p = cert;
 	d->kossl->i2d_X509(getCert(), (unsigned char **)&p);
 
 	// encode it into a QString
-	qba.duplicate(cert, certlen);
+	qba = QByteArray(cert, certlen);
 	delete[] cert;
 #endif
 return qba;
@@ -995,7 +995,7 @@ const char *footer = "-----END CERTIFICATE-----\n";
 
 	thecert.append(footer);
 
-	qba.duplicate(thecert.toLocal8Bit(), thecert.length());
+	qba = thecert.toLocal8Bit();
 return qba;
 }
 
@@ -1024,7 +1024,7 @@ KTempFile ktf;
 	qf.open(QIODevice::ReadOnly);
 	char *buf = new char[qf.size()];
 	qf.read(buf, qf.size());
-	qba.duplicate(buf, qf.size());
+	qba = QByteArray(buf, qf.size());
 	qf.close();
 	delete[] buf;
 

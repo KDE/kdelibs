@@ -44,7 +44,6 @@ KSSLSession::~KSSLSession() {
 QString KSSLSession::toString() const {
 QString rc;
 #ifdef KSSL_HAVE_SSL
-QByteArray qba;
 SSL_SESSION *session = static_cast<SSL_SESSION*>(_session);
 unsigned int slen = KOpenSSLProxy::self()->i2d_SSL_SESSION(session, 0L);
 // These should technically be unsigned char * but it doesn't matter
@@ -58,9 +57,8 @@ char *p = csess;
 	}
 
 	// encode it into a QString
-	qba.duplicate(csess, slen);
+	rc = KCodecs::base64Encode(QByteArray(csess,slen));
 	delete[] csess;
-	rc = KCodecs::base64Encode(qba);
 #endif
 return rc;
 }
