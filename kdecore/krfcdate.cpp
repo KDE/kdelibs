@@ -96,6 +96,9 @@ static const struct {
 time_t
 KRFCDate::parseDate(const QString &_date)
 {
+     if (_date.isEmpty())
+         return 0;
+
      // This parse a date in the form:
      //     Wednesday, 09-Nov-99 23:12:40 GMT
      // or
@@ -339,6 +342,9 @@ KRFCDate::parseDate(const QString &_date)
 time_t
 KRFCDate::parseDateISO8601( const QString& input_ )
 {
+  if (input_.isEmpty())
+    return 0;
+
   // These dates look like this:
   // YYYY-MM-DDTHH:MM:SS
   // But they may also have 0, 1 or 2 suffixes.
@@ -379,7 +385,9 @@ KRFCDate::parseDateISO8601( const QString& input_ )
   QString timeString = input.mid(tPos + 1).trimmed();
 
   QStringList l = dateString.split( '-');
-
+  if (l.size() < 3)
+    return 0;
+  
   year   = l[0].toUInt();
   month  = l[1].toUInt();
   mday   = l[2].toUInt();
@@ -421,7 +429,9 @@ KRFCDate::parseDateISO8601( const QString& input_ )
   // Now parse the time part.
 
   l = timeString.split( ':');
-
+  if (l.size() < 3)
+    return 0;
+      
   hour   = l[0].toUInt();
   min    = l[1].toUInt();
   sec    = l[2].toUInt();

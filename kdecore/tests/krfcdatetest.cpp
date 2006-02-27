@@ -8,6 +8,8 @@ QTEST_KDEMAIN(KRFCDateTest, NoGUI)
 
 void KRFCDateTest::test()
 {
+  // valid RFC dates
+
   // From http://www.w3.org/TR/NOTE-datetime
   time_t ref = KRFCDate::parseDateISO8601("1994-11-05T13:15:30Z");
 
@@ -19,11 +21,30 @@ void KRFCDateTest::test()
   QCOMPARE(KRFCDate::parseDate("Wed, 05-Nov-1994 13:15:30 GMT"),      ref);
   QCOMPARE(KRFCDate::parseDate("Wed, 05-November-1994 13:15:30 GMT"), ref);
 
+  // invalid dates
+
+  ref = 0;
+
+  // pass RFC date to ISO parser
+  QCOMPARE(KRFCDate::parseDateISO8601("Thu, 01 Jan 2004 19:48:21 GMT"), ref); 
+  // pass ISO date to RFC parser
+  QCOMPARE(KRFCDate::parseDate("1994-01-01T12:00:00"), ref);
+
+  // empty/null strings
+  QCOMPARE(KRFCDate::parseDateISO8601(QString()), ref);
+  QCOMPARE(KRFCDate::parseDateISO8601(""), ref);
+  QCOMPARE(KRFCDate::parseDate(QString()), ref);
+  QCOMPARE(KRFCDate::parseDate(""), ref);
+
+
+  // valid ISO dates
+  
   ref = KRFCDate::parseDateISO8601("1994-01-01T12:00:00");
 
   QCOMPARE(KRFCDate::parseDateISO8601("1994"),       ref);
   QCOMPARE(KRFCDate::parseDateISO8601("1994-01"),    ref);
   QCOMPARE(KRFCDate::parseDateISO8601("1994-01-01"), ref);
+
 }
 
 void KRFCDateTest::testRFC2822()
