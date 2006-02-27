@@ -267,8 +267,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 				       "certificate.<p> "
 				       "Hint: If the image shows a closed lock, the page has been transmitted over a "
 				       "secure connection.") );
-  d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
-  d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
+  d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), ALT + CTRL + SHIFT + Key_A, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
+  d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), ALT + CTRL + SHIFT + Key_D, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
   d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), 0, this, SLOT( slotStopAnimations() ), actionCollection(), "stopAnimations" );
 
   d->m_paSetEncoding = new KActionMenu( i18n( "Set &Encoding" ), "charset", actionCollection(), "setEncoding" );
@@ -2804,7 +2804,7 @@ bool KHTMLPart::initFindNode( bool selection, bool reverse, bool fromCursor )
 // Old method (its API limits the available features - remove in KDE-4)
 bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp )
 {
-    if ( !initFindNode( false, !forward, false ) )
+    if ( !initFindNode( false, !forward, d->m_findNode ) )
       return false;
     while(1)
     {
