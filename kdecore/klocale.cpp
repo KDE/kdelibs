@@ -935,7 +935,7 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
 // a hidden kconfig option and getting the code from #57240 into the same
 // method, so that all KDE apps use the same unit, instead of letting each app decide.
 
-QString KLocale::formatByteSize( double size_in_bytes )
+QString KLocale::formatByteSize( double size )
 {
     // Per IEC 60027-2
 
@@ -946,6 +946,7 @@ QString KLocale::formatByteSize( double size_in_bytes )
     //Kibi-byte             KiB             2^10    1,024 bytes
 
     QString s;
+    double fsize = size;
     // Gibi-byte
     if ( size >= 1073741824 )
     {

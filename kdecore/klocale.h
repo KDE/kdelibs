@@ -466,7 +466,8 @@ public:
   QString formatLong(long num) const;
 
   /**
-   * Converts @p size from bytes to the string representation using the IEC 60027-2 standard
+   * Converts @p size from bytes to the string representation using the
+   * IEC 60027-2 standard
    *
    * Example:
    * formatByteSize(1024) returns "1.0 KiB"
@@ -474,7 +475,7 @@ public:
    * @param  size  size in bytes
    * @return converted size as a string - e.g. 123.4 KiB , 12.0 MiB
    */
-  QString KLocale::formatByteSize( double size_in_bytes )
+  QString KLocale::formatByteSize( double size );
 
   
   /**
