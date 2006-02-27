@@ -675,6 +675,7 @@ QString kBacktrace(int levels)
 
 void kClearDebugConfig()
 {
+    if (!kDebug_data) return;
     delete kDebug_data->config;
     kDebug_data->config = 0;
 }
