@@ -1263,6 +1263,15 @@ namespace KIO {
         void setSourceSize64(KIO::filesize_t size);
 
         /**
+         * Sets the modification time of the file
+         *
+         * Note that this is ignored if a direct copy (SlaveBase::copy) can be done,
+         * in which case the mtime of the source is applied to the destination (if the protocol
+         * supports the concept).
+         */
+        void setModificationTime( time_t mtime );
+
+        /**
          * @deprecated
          */
         void setSourceSize( off_t size ) KDE_DEPRECATED;

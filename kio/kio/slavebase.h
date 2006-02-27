@@ -299,9 +299,16 @@ public:
 
     /**
      * @obsolete kept for binary compatibility
-     * Queries for config/meta-data send by the application to the slave.
+     * Queries for config/meta-data sent by the application to the slave.
      */
     QString metaData(const QString &key);
+
+    /**
+     * @internal for ForwardingSlaveBase
+     * Contains all metadata (but no config) sent by the application to the slave.
+     * @since 3.5.2
+     */
+    MetaData allMetaData() const { return mIncomingMetaData; }
 
     /**
      * Returns a configuration object to query config/meta-data information
@@ -374,15 +381,21 @@ public:
     virtual void get( const KURL& url );
 
     /**
-     * put, aka write.
-     * @param url where to write the file (decoded)
+     * put, i.e. write data into a file.
+     *
+     * @param url where to write the file
      * @param permissions may be -1. In this case no special permission mode is set.
      * @param overwrite if true, any existing file will be overwritten.
      * If the file indeed already exists, the slave should NOT apply the
      * permissions change to it.
-     * @param resume
+     * @param resume currently unused, please ignore.
+     *   The support for resuming using .part files is done by calling canResume().
+     *
+     * IMPORTANT: Use the "modified" metadata in order to set the modification time of the file.
+     *
+     * @see canResume()
      */
-    virtual void put( const KURL& url, int permissions, bool overwrite, bool resume );
+    virtual void put( const KURL& url, int permissions, bool overwrite, bool /*resume*/ );
 
     /**
      * Finds all details for one file or directory.

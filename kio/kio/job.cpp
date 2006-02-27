@@ -1515,6 +1515,7 @@ class FileCopyJob::FileCopyJobPrivate
 {
 public:
     KIO::filesize_t m_sourceSize;
+    time_t m_modificationTime;
     SimpleJob *m_delJob;
 };
 
@@ -1544,6 +1545,7 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     d = new FileCopyJobPrivate;
     d->m_delJob = 0;
     d->m_sourceSize = (KIO::filesize_t) -1;
+    d->m_modificationTime = static_cast<time_t>( -1 );
     QTimer::singleShot(0, this, SLOT(slotStart()));
 }
 
@@ -1621,6 +1623,11 @@ void FileCopyJob::setSourceSize64( KIO::filesize_t size )
        m_totalSize = size;
 }
 
+void FileCopyJob::setModificationTime( time_t mtime )
+{
+    d->m_modificationTime = mtime;
+}
+
 void FileCopyJob::startCopyJob()
 {
     startCopyJob(m_src);
@@ -1694,6 +1701,10 @@ void FileCopyJob::startDataPump()
     m_resumeAnswerSent = false;
     m_getJob = 0L; // for now
     m_putJob = put( m_dest, m_permissions, m_overwrite, m_resume, false /* no GUI */);
+    if ( d->m_modificationTime != static_cast<time_t>( -1 ) ) {
+        QDateTime dt; dt.setTime_t( d->m_modificationTime );
+        m_putJob->addMetaData( "modified", dt.toString( Qt::ISODate ) );
+    }
     //kdDebug(7007) << "FileCopyJob: m_putJob = " << m_putJob << " m_dest=" << m_dest << endl;
 
     // The first thing the put job will tell us is whether we can
@@ -2227,6 +2238,9 @@ void CopyJob::slotStart()
     addSubjob(job);
 }
 
+// For unit test purposes
+KIO_EXPORT bool kio_resolve_local_urls = true;
+
 void CopyJob::slotResultStating( Job *job )
 {
     //kdDebug(7007) << "CopyJob::slotResultStating" << endl;
@@ -2293,7 +2307,7 @@ void CopyJob::slotResultStating( Job *job )
         if ( m_dest == d->m_globalDest )
             d->m_globalDestinationState = destinationState;
 
-        if ( !sLocalPath.isEmpty() ) {
+        if ( !sLocalPath.isEmpty() && kio_resolve_local_urls ) {
             m_dest = KURL();
             m_dest.setPath(sLocalPath);
         }
@@ -2501,7 +2515,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 }
             }
             //kdDebug(7007) << "displayName=" << displayName << " url=" << url << endl;
-            if (!localPath.isEmpty()) {
+            if (!localPath.isEmpty() && kio_resolve_local_urls) {
                 url = KURL();
                 url.setPath(localPath);
             }
@@ -3417,6 +3431,7 @@ void CopyJob::copyNextFile()
             KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
             copyJob->setParentJob( this ); // in case of rename dialog
             copyJob->setSourceSize64( (*it).size );
+            copyJob->setModificationTime( (*it).mtime );
             newjob = copyJob;
             //kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource << " to " << (*it).uDest << endl;
             m_currentSrcURL=(*it).uSource;

@@ -34,8 +34,8 @@ public:
     void runAll();
     void cleanup();
 
+    // Local tests (kio_file only)
     void get();
-    void twoGets();
     void copyFileToSamePartition();
     void copyDirectoryToSamePartition();
     void copyDirectoryToExistingDirectory();
@@ -50,6 +50,9 @@ public:
     void moveFileNoPermissions();
     void moveDirectoryNoPermissions();
 
+    // Remote tests
+    void copyFileToSystem();
+
 private slots:
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& lst );
     void slotGetResult( KIO::Job* );
@@ -57,11 +60,14 @@ private slots:
 private:
     QString homeTmpDir() const;
     QString otherTmpDir() const;
+    QString realSystemPath() const;
+    KURL systemTmpDir() const;
     enum { AlreadyExists = 1 };
     void copyLocalFile( const QString& src, const QString& dest );
     void copyLocalDirectory( const QString& src, const QString& dest, int flags = 0 );
     void moveLocalFile( const QString& src, const QString& dest );
     void moveLocalDirectory( const QString& src, const QString& dest );
+    void copyFileToSystem( bool resolve_local_urls );
 
     int m_result;
     QByteArray m_data;
