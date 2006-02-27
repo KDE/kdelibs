@@ -394,7 +394,7 @@ void K3DockWidgetHeader::removeButton(K3DockButton_Private* btn) {
 
 void K3DockWidgetHeader::slotStayClicked()
 {
-  setDragEnabled(!stayButton->isOn());
+  setDragEnabled(!stayButton->isChecked());
 }
 
 bool K3DockWidgetHeader::dragEnabled() const
@@ -425,7 +425,7 @@ void K3DockWidgetHeader::setDragEnabled(bool b)
 #ifndef NO_KDE2
 void K3DockWidgetHeader::saveConfig( KConfig* c )
 {
-  c->writeEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), QVariant(stayButton->isOn()) );
+  c->writeEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), QVariant(stayButton->isChecked()) );
 }
 
 void K3DockWidgetHeader::loadConfig( KConfig* c )

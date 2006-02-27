@@ -646,7 +646,7 @@ void K3DockButton_Private::drawButton( QPainter* p )
     p->drawLine( width() -1, 0, width() - 1, height() - 1 );
     p->drawLine( width() - 1, height() - 1, 0, height() - 1 );
   }
-  if ( isOn() || isDown() ){
+  if ( isChecked() || isDown() ){
     p->setPen( colorGroup().dark() );
     p->drawLine(0 , height() - 1, 0, 0);
     p->drawLine(0, 0, width() -1 , 0);

@@ -338,7 +338,7 @@ void K3MdiDockContainer::changeOverlapMode()
 	if ( !btn )
 		return ;
 
-	if ( !btn->isOn() )
+	if ( !btn->isChecked() )
 	{
 		kDebug( 760 ) << k_funcinfo << "Activating overlap mode" << endl;
 		if ( !m_horizontal )
@@ -773,7 +773,7 @@ void K3MdiDockContainer::collapseOverlapped()
 		QList<KMultiTabBarTab *>::ConstIterator it = tl.begin();
 		for ( ; it != tl.end(); ++it )
 		{
-			if ( (*it)->isOn() )
+			if ( (*it)->isChecked() )
 			{
 				kDebug( 760 ) << k_funcinfo << "lowering tab with id " << ( *it )->id() << endl;
 				(*it)->setState( false );

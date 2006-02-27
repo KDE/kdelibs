@@ -273,7 +273,7 @@ void KPPosterPage::setOptions( const QMap<QString,QString>& opts )
 			m_postersize->setCurrentItem( findIndex( pageNameToPageSize( ps ) ) );
 			m_lockbtn->setChecked( !prtsize.isEmpty() &&
 					page_sizes[ m_postersize->currentIndex() ].ID == prtsize.toInt() );
-			if ( !m_lockbtn->isOn() )
+			if ( !m_lockbtn->isChecked() )
 				m_printsize->setCurrentItem( findIndex( prtsize.toInt() ) );
 			slotPosterSizeChanged( m_postersize->currentIndex() );
 		}
