@@ -417,7 +417,7 @@ void K3DockWidgetHeader::showUndockButton(bool show)
 
 void K3DockWidgetHeader::setDragEnabled(bool b)
 {
-  stayButton->setOn(!b);
+  stayButton->setChecked(!b);
   closeButton->setEnabled(b);
   drag->setEnabled(b);
 }

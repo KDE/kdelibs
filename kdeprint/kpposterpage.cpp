@@ -191,7 +191,7 @@ KPPosterPage::KPPosterPage( QWidget *parent )
 	selectionlab->setBuddy( m_selection );
 	m_lockbtn->setCheckable( true );
 	m_lockbtn->setPixmap( SmallIcon( "encrypted" ) );
-	m_lockbtn->setOn( true );
+	m_lockbtn->setChecked( true );
 	m_lockbtn->setFixedSize( m_lockbtn->sizeHint() );
 	m_lockbtn->setToolTip( i18n( "Link/unlink poster and print size" ) );
 
@@ -271,7 +271,7 @@ void KPPosterPage::setOptions( const QMap<QString,QString>& opts )
 		if ( !ps.isEmpty() )
 		{
 			m_postersize->setCurrentItem( findIndex( pageNameToPageSize( ps ) ) );
-			m_lockbtn->setOn( !prtsize.isEmpty() &&
+			m_lockbtn->setChecked( !prtsize.isEmpty() &&
 					page_sizes[ m_postersize->currentIndex() ].ID == prtsize.toInt() );
 			if ( !m_lockbtn->isOn() )
 				m_printsize->setCurrentItem( findIndex( prtsize.toInt() ) );

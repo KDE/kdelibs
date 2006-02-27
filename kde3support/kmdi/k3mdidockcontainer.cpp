@@ -222,7 +222,7 @@ void K3MdiDockContainer::insertWidget ( K3DockWidget *dwdg, QPixmap pixmap, cons
 			btn->setPixmap( const_cast< const char** >( k3mdi_not_close_xpm ) );
 			hdr->addButton( btn );
 			m_overlapButtons.insert( w, btn );
-			btn->setOn( !isOverlapMode() );
+			btn->setChecked( !isOverlapMode() );
 
 			connect( btn, SIGNAL( clicked() ), this, SLOT( changeOverlapMode() ) );
 		}
@@ -355,7 +355,7 @@ void K3MdiDockContainer::changeOverlapMode()
 
 	QMap<K3DockWidget*, K3DockButton_Private*>::iterator it;
 	for ( it = m_overlapButtons.begin(); it != m_overlapButtons.end(); ++it )
-		it.data()->setOn( !isOverlapMode() );
+		it.data()->setChecked( !isOverlapMode() );
 }
 
 void K3MdiDockContainer::hideIfNeeded()
@@ -603,7 +603,7 @@ void K3MdiDockContainer::load( QDomElement& dockEl )
 
 	for ( QMap<K3DockWidget*, K3DockButton_Private*>::iterator it = m_overlapButtons.begin();
 	        it != m_overlapButtons.end();++it )
-		it.data() ->setOn( !isOverlapMode() );
+		it.data() ->setChecked( !isOverlapMode() );
 
 	if ( !raise.isEmpty() )
 	{
@@ -726,7 +726,7 @@ void K3MdiDockContainer::load( KConfig* cfg, const QString& group_or_prefix )
 
 	for ( QMap<K3DockWidget*, K3DockButton_Private*>::iterator it = m_overlapButtons.begin();
 	        it != m_overlapButtons.end();++it )
-		it.data() ->setOn( !isOverlapMode() );
+		it.data() ->setChecked( !isOverlapMode() );
 
 	if ( !raise.isEmpty() )
 	{
