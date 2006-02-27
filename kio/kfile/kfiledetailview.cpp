@@ -342,7 +342,7 @@ void KFileDetailView::removeItem( const KFileItem *i )
         return;
 
     KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
-    m_resolver->m_lstPendingMimeIconItems.remove( item );
+    m_resolver->m_lstPendingMimeIconItems.removeAll( item );
     delete item;
 
     KFileView::removeItem( i );

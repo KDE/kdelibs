@@ -473,7 +473,7 @@ void KFileIconView::removeItem( const KFileItem *i )
         d->job->removeItem( i );
 
     KFileIconViewItem *item = viewItem( i );
-    m_resolver->m_lstPendingMimeIconItems.remove( item );
+    m_resolver->m_lstPendingMimeIconItems.removeAll( item );
     delete item;
 
     KFileView::removeItem( i );

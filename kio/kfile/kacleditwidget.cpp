@@ -625,7 +625,7 @@ QStringList KACLListView::allowedUsers( bool defaults, KACLListViewItem *allowed
         ++it;
         if ( !item->type == NamedUser || item->isDefault != defaults ) continue;
         if ( allowedItem && item == allowedItem && allowedItem->isDefault == defaults ) continue;
-        allowedUsers.remove( item->qualifier );
+        allowedUsers.removeAll( item->qualifier );
     }
     return allowedUsers;
 }
@@ -639,7 +639,7 @@ QStringList KACLListView::allowedGroups( bool defaults, KACLListViewItem *allowe
         ++it;
         if ( !item->type == NamedGroup || item->isDefault != defaults ) continue;
         if ( allowedItem && item == allowedItem && allowedItem->isDefault == defaults ) continue;
-        allowedGroups.remove( item->qualifier );
+        allowedGroups.removeAll( item->qualifier );
     }
     return allowedGroups;
 }

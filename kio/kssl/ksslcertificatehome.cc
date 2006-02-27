@@ -33,8 +33,8 @@ QStringList list = cfg.groupList();
 QString defaultstr("<default>");
 QString blankstr("");
 
-list.remove(defaultstr);
-list.remove(blankstr);
+list.removeAll(defaultstr);
+list.removeAll(blankstr);
 
 return list;
 }
