@@ -10,13 +10,13 @@ class TestWidget : public QWidget
 {
 
 public:
-  TestWidget(QWidget* parent, const char* name)
-    : QWidget(parent, name)
+  TestWidget(QWidget* parent)
+    : QWidget(parent)
   {
     kDebug().form("mytest %s", "hello") << endl;
     QString test = "%20C this is a string";
     kDebug(150) << test << endl;
-    QByteArray cstr = test.latin1();
+    QByteArray cstr = test.toLatin1();
     kDebug(150) << test << endl;
     QChar ch = 'a';
     kDebug() << "QChar a: " << ch << endl;
@@ -67,7 +67,8 @@ public:
     v = QPen( Qt::red );
     kDebug() << "Variant: " << v << endl;
 
-    QByteArray data( 6 );
+    QByteArray data;
+    data.resize( 6 );
     data[0] = 42;
     data[1] = 'H';
     data[2] = 'e';
@@ -88,10 +89,9 @@ public:
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
-  TestWidget widget(0, "NoNameWidget");
+  TestWidget widget(0);
   widget.setGeometry(45, 54, 120, 80);
   widget.show();
-  app.setMainWidget(&widget);
   app.exec();
   return 0;
 }
