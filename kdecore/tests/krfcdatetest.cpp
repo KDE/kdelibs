@@ -59,6 +59,23 @@ int main(int argc, char *argv[])
   a = KRFCDate::parseDateISO8601("1994-01-01");
   check( "1994-01-01", a, b );
 
+  b = 0;
+
+  // pass RFC date to ISO parser
+  a = KRFCDate::parseDateISO8601("Thu, 01 Jan 2004 19:48:21 GMT");
+  check("pass RFC date \"Thu, 01 Jan 2004 19:48:21 GMT\" to parseDateISO8601", a, b);
+
+  // pass ISO date to RFC parser
+  a = KRFCDate::parseDate("1994-01-01T12:00:00");
+  check("pass ISO date \"1994-01-01T12:00:00\" to parseDate()",  a, b);
+
+  // empty/null strings
+
+  check("parseDateISO8601(QString())", KRFCDate::parseDateISO8601(QString()), b);
+  check("parseDateISO8601(\"\")", KRFCDate::parseDateISO8601(""), b);
+  check("parseDate(QString())", KRFCDate::parseDate(QString()), b);
+  check("parseDate(\"\")", KRFCDate::parseDate(""), b);
+  
   printf("\nTest OK !\n");
 }
 
