@@ -31,6 +31,7 @@ public slots:
 	void slotCategories(QStringList categories);
 	void slotComments(QStringList comments);
 	void slotHistory(QStringList entries);
+	void slotChanges(QStringList entries);
 	void slotRemoval(bool success);
 	void slotSubscription(bool success);
 	void slotComment(bool success);
@@ -39,11 +40,14 @@ public slots:
 	void slotFault();
 
 private:
+	bool authenticate();
+
 	enum Items
 	{
 		install,
 		deinstall,
 		comments,
+		changes,
 		subscribe,
 		info,
 
@@ -67,7 +71,10 @@ private:
 
 	KNS::Dxs *m_dxs;
 	KPopupMenu *m_p, *m_history, *m_contact;
-        KNS::Entry *m_entry;
+	KNS::Entry *m_entry;
+
+	QString m_username;
+	QString m_password;
 };
 
 #endif

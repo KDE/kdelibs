@@ -21,6 +21,7 @@ public:
 	void call_info();
 	void call_categories();
 	void call_comments(int id);
+	void call_changes(int id);
 	void call_history(int id);
 	void call_removal(int id);
 	void call_subscription(int id, bool subscribe);
@@ -31,6 +32,7 @@ signals:
 	void signalInfo(QString provider, QString server, QString version);
 	void signalCategories(QStringList categories);
 	void signalComments(QStringList comments);
+	void signalChanges(QStringList comments);
 	void signalHistory(QStringList entries);
 	void signalRemoval(bool success);
 	void signalSubscription(bool success);

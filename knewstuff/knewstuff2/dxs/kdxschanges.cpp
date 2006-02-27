@@ -1,4 +1,4 @@
-#include "kdxscomments.h"
+#include "kdxschanges.h"
 
 #include <khtml_part.h>
 #include <khtmlview.h>
@@ -7,8 +7,8 @@
 #include <qlayout.h>
 #include <qapplication.h>
 
-KDXSComments::KDXSComments(QWidget *parent)
-: KDialogBase(parent, "comments", true, i18n("User comments"),
+KDXSChanges::KDXSChanges(QWidget *parent)
+: KDialogBase(parent, "changes", true, i18n("Changelog"),
 	KDialogBase::Ok, KDialogBase::Ok, true)
 {
 	QVBoxLayout *vbox;
@@ -31,37 +31,30 @@ KDXSComments::KDXSComments(QWidget *parent)
 	vbox->add(m_part->view());
 }
 
-void KDXSComments::addComment(QString username, QString comment)
+void KDXSChanges::addChangelog(QString version, QString log)
 {
-	// FIXME: get email address??
-	QString email = "spillner@kde.org";
-
-	m_part->write("<a href='" + email + "'>" + username + "</a>");
 	m_part->write("<table class='itemBox'>");
 	m_part->write("<tr>");
 	m_part->write("<td class='contentsColumn'>");
 	m_part->write("<table class='contentsHeader' cellspacing='2' cellpadding='0'><tr>");
-	m_part->write("<td>Comment!</td>");
+	m_part->write("<td>" + i18n("Version %1").arg(version) + "</td>");
 	m_part->write("</tr></table>");
 	m_part->write("<div class='contentsBody'>");
-	m_part->write(comment);
-	m_part->write("</div>");
-	m_part->write("<div class='contentsFooter'>");
-	m_part->write("<em>" + username + "</em>");
+	m_part->write(log);
 	m_part->write("</div>");
 	m_part->write("</td>");
 	m_part->write("</tr>");
 	m_part->write("</table>");
 }
 
-void KDXSComments::finish()
+void KDXSChanges::finish()
 {
 	m_part->write("</body>");
 	m_part->write("</html>");
 	m_part->end();
 }
 
-void KDXSComments::prepare()
+void KDXSChanges::prepare()
 {
 	QString style;
 
@@ -79,17 +72,4 @@ void KDXSComments::prepare()
 	m_part->setUserStyleSheet(style);
 }
 
-/*
-void urlSelected(const QString & link, int, int, const QString &, KParts::URLArgs)
-{
-KURL url(link);
-QString urlProtocol = url.protocol();
-QString urlPath = url.path();
-if(urlProtocol == "mailto")
-{
-kapp->invokeMailer( url );
-}
-}
-*/
-
-#include "kdxscomments.moc"
+#include "kdxschanges.moc"

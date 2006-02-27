@@ -52,6 +52,17 @@ void Dxs::call_comments(int id)
 	m_soap->call(comments, m_endpoint);
 }
 
+void Dxs::call_changes(int id)
+{
+	QDomDocument doc;
+	QDomElement changes = doc.createElement("ns:GHNSChanges");
+	QDomElement eid = doc.createElement("id");
+	QDomText t = doc.createTextNode(QString::number(id));
+	eid.appendChild(t);
+	changes.appendChild(eid);
+	m_soap->call(changes, m_endpoint);
+}
+
 void Dxs::call_history(int id)
 {
 	QDomDocument doc;
@@ -164,6 +175,26 @@ void Dxs::slotResult(QDomNode node)
 		}
 
 		emit signalComments(comments);
+	}
+	else if(m_soap->localname(node) == "GHNSChangesResponse")
+	{
+		QStringList changes;
+
+		QDomNode array = node.firstChild();
+		QDomNodeList changelist = array.toElement().elementsByTagName("entry");
+		for(unsigned int i = 0; i < changelist.count(); i++)
+		{
+			QDomNode node = changelist.item(i);
+
+			QString version = m_soap->xpath(node, "/version");
+			QString changelog = m_soap->xpath(node, "/changelog");
+			kdDebug() << "CHANGELOG: " << version << " " << changelog << endl;
+
+			changes << changelog;
+		}
+
+		// FIXME: pass (version, changelog) pairs - Python I miss you :-)
+		emit signalChanges(changes);
 	}
 	else if(m_soap->localname(node) == "GHNSHistoryResponse")
 	{

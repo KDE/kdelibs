@@ -7,6 +7,7 @@
 #include "kdxsrating.h"
 #include "kdxscomment.h"
 #include "kdxscomments.h"
+#include "kdxschanges.h"
 
 #include <qlayout.h>
 #include <qdom.h>
@@ -22,6 +23,8 @@
 #include <kapplication.h>
 #include <klocale.h>
 #include <kprocess.h>
+
+#include <kio/passdlg.h>
 
 KDXSButton::KDXSButton(QWidget *parent)
 : QToolButton(parent)
@@ -39,6 +42,8 @@ KDXSButton::KDXSButton(QWidget *parent)
 		i18n("Subscribe"), subscribe);
 	m_p->insertItem(il->loadIcon("leftjust", KIcon::Small),
 		i18n("Comments"), comments);
+	m_p->insertItem(il->loadIcon("leftjust", KIcon::Small),
+		i18n("Changelog"), changes);
 
 	m_history = new KPopupMenu(this);
 
@@ -90,6 +95,9 @@ KDXSButton::KDXSButton(QWidget *parent)
 	connect(m_dxs,
 		SIGNAL(signalComments(QStringList)),
 		SLOT(slotComments(QStringList)));
+	connect(m_dxs,
+		SIGNAL(signalChanges(QStringList)),
+		SLOT(slotChanges(QStringList)));
 	connect(m_dxs,
 		SIGNAL(signalHistory(QStringList)),
 		SLOT(slotHistory(QStringList)));
@@ -170,6 +178,21 @@ void KDXSButton::slotComments(QStringList comments)
 	commentsdlg.finish();
 
 	commentsdlg.exec();
+}
+
+void KDXSButton::slotChanges(QStringList changes)
+{
+	KDXSChanges changesdlg(this);
+
+	for(QStringList::Iterator it = changes.begin(); it != changes.end(); it++)
+	{
+		kdDebug() << "Changelog: " << (*it) << endl;
+		changesdlg.addChangelog("v???", (*it));
+	}
+
+	changesdlg.finish();
+
+	changesdlg.exec();
 }
 
 void KDXSButton::slotHistory(QStringList entries)
@@ -266,6 +289,8 @@ void KDXSButton::slotFault()
 
 void KDXSButton::slotActivated(int id)
 {
+	int ret;
+
 	if(id == info)
 	{
 		m_dxs->call_info();
@@ -273,6 +298,10 @@ void KDXSButton::slotActivated(int id)
 	if(id == comments)
 	{
 		m_dxs->call_comments(0);
+	}
+	if(id == changes)
+	{
+		m_dxs->call_changes(2);
 	}
 	if(id == contactbymail)
 	{
@@ -290,16 +319,20 @@ void KDXSButton::slotActivated(int id)
 	}
 	if(id == collabtranslation)
 	{
+		if(!authenticate())
+			return;
 		Form1 *f = new Form1();
 		f->show();
 	}
 	if(id == collabremoval)
 	{
-		m_dxs->call_removal(0);
+		if(authenticate())
+			m_dxs->call_removal(0);
 	}
 	if(id == subscribe)
 	{
-		m_dxs->call_subscription(0, true);
+		if(authenticate())
+			m_dxs->call_subscription(0, true);
 	}
 	if((id == deinstall) || (id == install))
 	{
@@ -308,22 +341,32 @@ void KDXSButton::slotActivated(int id)
 	}
 	if(id == collabcomment)
 	{
+		if(!authenticate())
+			return;
 		KDXSComment comment(this);
-		comment.exec();
-		QString s = comment.comment();
-		if(!s.isEmpty())
+		ret = comment.exec();
+		if(ret == QDialog::Accepted)
 		{
-			m_dxs->call_comment(0, s);
+			QString s = comment.comment();
+			if(!s.isEmpty())
+			{
+				m_dxs->call_comment(0, s);
+			}
 		}
 	}
 	if(id == collabrating)
 	{
+		if(!authenticate())
+			return;
 		KDXSRating rating(this);
-		rating.exec();
-		int r = rating.rating();
-		if(r >= 0)
+		ret = rating.exec();
+		if(ret == QDialog::Accepted)
 		{
-			m_dxs->call_rating(0, r);
+			int r = rating.rating();
+			if(r >= 0)
+			{
+				m_dxs->call_rating(0, r);
+			}
 		}
 	}
 }
@@ -347,6 +390,24 @@ void KDXSButton::slotHighlighted(int id)
 void KDXSButton::slotClicked()
 {
 	slotActivated(install);
+}
+
+bool KDXSButton::authenticate()
+{
+	if((m_username) && (m_password)) return true;
+
+	KIO::PasswordDialog dlg(i18n("This operation needs authentication"),
+		QString::null);
+	int ret = dlg.exec();
+	if(ret == QDialog::Accepted)
+	{
+		m_username = dlg.username();
+		m_password = dlg.password();
+
+		return true;
+	}
+
+	return false;
 }
 
 #include "kdxsbutton.moc"
