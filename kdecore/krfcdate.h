@@ -29,9 +29,11 @@ class QByteArray;
 /**
  * The KRFCDate class contains functions related to the parsing of dates.
  *
+ * WARNING: this class is made obsolete by KDateTime
+ *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT KRFCDate
+class KDECORE_EXPORT_DEPRECATED KRFCDate
 {
 public:
    /**
