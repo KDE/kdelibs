@@ -42,7 +42,7 @@ public:
     virtual void discard()
     {
         //Set the pixmap to be null
-        pixmap.resize(0,0);
+        pixmap = QPixmap();
     }
 
     PixmapTile()
