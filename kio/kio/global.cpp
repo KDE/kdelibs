@@ -52,53 +52,12 @@
 
 KIO_EXPORT QString KIO::convertSize( KIO::filesize_t size )
 {
-    // Per IEC 60027-2
-
-    // Binary prefixes
-    //Tebi-byte             TiB             2^40    1,099,511,627,776 bytes
-    //Gibi-byte             GiB             2^30    1,073,741,824 bytes
-    //Mebi-byte             MiB             2^20    1,048,576 bytes
-    //Kibi-byte             KiB             2^10    1,024 bytes
-
-    double fsize = size;
-    QString s;
-    // Gibi-byte
-    if ( size >= 1073741824 )
-    {
-        fsize /= 1073741824.0;
-        if ( fsize > 1024 ) // Tebi-byte
-            s = i18n( "%1 TiB" ).arg( KGlobal::locale()->formatNumber(fsize / 1024.0, 1));
-        else
-            s = i18n( "%1 GiB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
-    }
-    // Mebi-byte
-    else if ( size >= 1048576 )
-    {
-        fsize /= 1048576.0;
-        s = i18n( "%1 MiB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
-    }
-    // Kibi-byte
-    else if ( size >= 1024 )
-    {
-        fsize /= 1024.0;
-        s = i18n( "%1 KiB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
-    }
-    // Just byte
-    else if ( size > 0 )
-    {
-        s = i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
-    }
-    // Nothing
-    else
-    {
-        s = i18n( "0 B" );
-    }
-    return s;
+    return KGlobal::locale()->formatByteSize(size);
 }
 
 KIO_EXPORT QString KIO::convertSizeFromKiB( KIO::filesize_t kibSize )
 {
-    return convertSize(kibSize * 1024);
+    return KGlobal::locale()->formatByteSize(kibSize * 1024);
 }
 
 KIO_EXPORT QString KIO::number( KIO::filesize_t size )

@@ -931,6 +931,54 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   return mantString +  expString;
 }
 
+// If someone wants the SI-standard prefixes kB/MB/GB/TB, I would recommend
+// a hidden kconfig option and getting the code from #57240 into the same
+// method, so that all KDE apps use the same unit, instead of letting each app decide.
+
+QString KLocale::formatByteSize( double size_in_bytes )
+{
+    // Per IEC 60027-2
+
+    // Binary prefixes
+    //Tebi-byte             TiB             2^40    1,099,511,627,776 bytes
+    //Gibi-byte             GiB             2^30    1,073,741,824 bytes
+    //Mebi-byte             MiB             2^20    1,048,576 bytes
+    //Kibi-byte             KiB             2^10    1,024 bytes
+
+    QString s;
+    // Gibi-byte
+    if ( size >= 1073741824 )
+    {
+        fsize /= 1073741824.0;
+        if ( fsize > 1024 ) // Tebi-byte
+            s = i18n( "%1 TiB" ).arg( formatNumber(fsize / 1024.0, 1));
+        else
+            s = i18n( "%1 GiB" ).arg( formatNumber(fsize, 1));
+    }
+    // Mebi-byte
+    else if ( size >= 1048576 )
+    {
+        fsize /= 1048576.0;
+        s = i18n( "%1 MiB" ).arg( formatNumber(fsize, 1));
+    }
+    // Kibi-byte
+    else if ( size >= 1024 )
+    {
+        fsize /= 1024.0;
+        s = i18n( "%1 KiB" ).arg( formatNumber(fsize, 1));
+    }
+    // Just byte
+    else if ( size > 0 )
+    {
+        s = i18n( "%1 B" ).arg( formatNumber(fsize, 0));
+    }
+    // Nothing
+    else
+    {
+        s = i18n( "0 B" );
+    }
+    return s;
+}
 QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 {
   const QString rst = shortFormat?dateFormatShort():dateFormat();
