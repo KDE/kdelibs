@@ -422,7 +422,7 @@ void XMLHttpRequest::abort()
 
 void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value)
 {
-  QString name = _name.lower().stripWhiteSpace();
+  QString name = _name.lower().trimmed();
 
   // Content-type needs to be set seperately from the other headers
   if(name == "content-type") {
@@ -443,7 +443,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
   // TODO: Do something about "put" which kio_http sort of supports and
   // the webDAV headers such as PROPFIND etc...
   if (name == "get"  || name == "post") {
-    KUrl reqURL (doc->URL(), value.stripWhiteSpace());
+    KUrl reqURL (doc->URL(), value.trimmed());
     open(name, reqURL, async);
     return;
   }
@@ -456,7 +456,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
   if (bannedHeaders.contains(name))
     return;   // Denied
 
-  requestHeaders[name] = value.stripWhiteSpace();
+  requestHeaders[name] = value.trimmed();
 }
 
 ValueImp *XMLHttpRequest::getAllResponseHeaders() const
@@ -631,7 +631,7 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
       QString type = responseHeaders.mid(pos, (index-pos));
       index = type.find (';');
       if (index > -1)
-        encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", false)).stripWhiteSpace();
+        encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", false)).trimmed();
     }
 
     decoder = new Decoder;

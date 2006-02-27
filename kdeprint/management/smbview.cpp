@@ -144,7 +144,7 @@ void SmbView::init()
 			if (smb_line.contains (wins_keyword, false) > 0)
 			{
 				QString key = smb_line.section('=', 0, 0);
-				key = key.stripWhiteSpace();
+				key = key.trimmed();
 				if (key.lower() != wins_keyword)
 				{
 					continue;
@@ -152,7 +152,7 @@ void SmbView::init()
 				m_wins_server = smb_line.section ('=', 1, 1);
 				// take only the first declared WINS server
 				m_wins_server = m_wins_server.section(',', 0, 0);
-				m_wins_server = m_wins_server.stripWhiteSpace ();
+				m_wins_server = m_wins_server.trimmed ();
 				m_wins_server = m_wins_server.section(' ', 0, 0);
 				// strip any server tag (see man smb.conf(5))
 				if (!m_wins_server.section(':', 1, 1).isNull())
