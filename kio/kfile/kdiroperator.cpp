@@ -794,7 +794,7 @@ bool KDirOperator::checkPreviewInternal() const
 {
     QStringList supported = KIO::PreviewJob::supportedMimeTypes();
     // no preview support for directories?
-    if ( dirOnlyMode() && supported.findIndex( "inode/directory" ) == -1 )
+    if ( dirOnlyMode() && supported.indexOf( "inode/directory" ) == -1 )
         return false;
 
     QStringList mimeTypes = dir->mimeFilters();

@@ -1789,7 +1789,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   {
     grpCombo = new QComboBox(gb, "combogrouplist");
     grpCombo->insertStringList(groupList);
-    grpCombo->setCurrentItem(groupList.findIndex(strGroup));
+    grpCombo->setCurrentItem(groupList.indexOf(strGroup));
     gl->addWidget(grpCombo, 2, 1);
     connect( grpCombo, SIGNAL( activated( int ) ),
              this, SIGNAL( changed() ) );
@@ -2875,7 +2875,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   device->setEditText( deviceStr );
   if ( !deviceStr.isEmpty() ) {
     // Set default options for this device (first matching entry)
-    int index = m_devicelist.findIndex(deviceStr);
+    int index = m_devicelist.indexOf(deviceStr);
     if (index != -1)
     {
       //kDebug(250) << "found it " << index << endl;
@@ -2950,7 +2950,7 @@ void KDevicePropsPlugin::slotActivated( int index )
 void KDevicePropsPlugin::slotDeviceChanged()
 {
   // Update mountpoint so that it matches the typed device
-  int index = m_devicelist.findIndex( device->currentText() );
+  int index = m_devicelist.indexOf( device->currentText() );
   if ( index != -1 )
     mountpoint->setText( d->mountpointlist[index] );
   else
