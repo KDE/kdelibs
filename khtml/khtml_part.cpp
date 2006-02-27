@@ -5809,9 +5809,9 @@ QStringList KHTMLPart::frameNames() const
   return res;
 }
 
-Q3PtrList<KParts::ReadOnlyPart> KHTMLPart::frames() const
+QList<KParts::ReadOnlyPart*> KHTMLPart::frames() const
 {
-  Q3PtrList<KParts::ReadOnlyPart> res;
+  QList<KParts::ReadOnlyPart*> res;
 
   ConstFrameIt it = d->m_frames.begin();
   const ConstFrameIt end = d->m_frames.end();

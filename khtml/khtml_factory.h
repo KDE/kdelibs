@@ -22,7 +22,7 @@
 
 #include <kparts/factory.h>
 #include <kparts/historyprovider.h>
-#include <q3ptrlist.h>
+#include <QLinkedList>
 #include <kurl.h>
 
 class KInstance;
@@ -50,7 +50,7 @@ public:
   static void registerPart( KHTMLPart *part );
   static void deregisterPart( KHTMLPart *part );
 
-  static Q3PtrList<KHTMLPart> *partList() { return s_parts; }
+  static QLinkedList<KHTMLPart*> *partList() { return s_parts; }
 
   static KInstance *instance();
 
@@ -70,7 +70,7 @@ private:
   static KInstance *s_instance;
   static KAboutData *s_about;
   static KHTMLSettings *s_settings;
-  static Q3PtrList<KHTMLPart> *s_parts;
+  static QLinkedList<KHTMLPart*> *s_parts;
 };
 
 #endif

@@ -862,7 +862,7 @@ DocLoader::DocLoader(KHTMLPart* part, DocumentImpl* doc)
 DocLoader::~DocLoader()
 {
     Cache::loader()->cancelRequests( this );
-    Cache::docloader->remove( this );
+    Cache::docloader->removeAll( this );
 }
 
 void DocLoader::setCacheCreationDate(time_t _creationDate)
@@ -1009,9 +1009,13 @@ void DocLoader::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimation
 
 Loader::Loader() : QObject()
 {
-    m_requestsPending.setAutoDelete( true );
     m_requestsLoading.setAutoDelete( true );
     connect(&m_timer, SIGNAL(timeout()), this, SLOT( servePendingRequests() ) );
+}
+
+Loader::~Loader()
+{
+    qDeleteAll(m_requestsPending);
 }
 
 void Loader::load(DocLoader* dl, CachedObject *object, bool incremental)
@@ -1029,7 +1033,7 @@ void Loader::servePendingRequests()
     while ( (m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT) )
     {
         // get the first pending request
-        Request *req = m_requestsPending.take(0);
+        Request *req = m_requestsPending.takeFirst();
 
 #ifdef LOADER_DEBUG
   kDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
@@ -1149,9 +1153,8 @@ int Loader::numRequests( DocLoader* dl ) const
 {
     int res = 0;
 
-    Q3PtrListIterator<Request> pIt( m_requestsPending );
-    for (; pIt.current(); ++pIt )
-        if ( pIt.current()->m_docLoader == dl )
+    foreach( Request* req, m_requestsPending )
+        if ( req->m_docLoader == dl )
             res++;
 
     Q3PtrDictIterator<Request> lIt( m_requestsLoading );
@@ -1164,16 +1167,16 @@ int Loader::numRequests( DocLoader* dl ) const
 
 void Loader::cancelRequests( DocLoader* dl )
 {
-    Q3PtrListIterator<Request> pIt( m_requestsPending );
-    while ( pIt.current() ) {
-        if ( pIt.current()->m_docLoader == dl )
+    QMutableLinkedListIterator<Request*> pIt( m_requestsPending );
+    while ( pIt.hasNext() ) {
+        Request* cur = pIt.next();
+        if ( cur->m_docLoader == dl )
         {
-            CDEBUG << "canceling pending request for " << pIt.current()->object->url().string() << endl;
-            Cache::removeCacheEntry( pIt.current()->object );
-            m_requestsPending.remove( pIt );
+            CDEBUG << "canceling pending request for " << cur->object->url().string() << endl;
+            Cache::removeCacheEntry( cur->object );
+            pIt.remove();
+            delete cur;
         }
-        else
-            ++pIt;
     }
 
     //kDebug( 6060 ) << "got " << m_requestsLoading.count() << "loading requests" << endl;
@@ -1214,8 +1217,8 @@ KIO::Job *Loader::jobForRequest( const DOM::DOMString &url ) const
 
 
 Q3Dict<CachedObject> *Cache::cache;
-Q3PtrList<DocLoader>* Cache::docloader;
-Q3PtrList<CachedObject> *Cache::freeList;
+QLinkedList<DocLoader*>    *Cache::docloader;
+QLinkedList<CachedObject*> *Cache::freeList;
 Loader *Cache::m_loader;
 
 int Cache::maxSize = DEFCACHESIZE;
@@ -1231,7 +1234,7 @@ void Cache::init()
         cache = new Q3Dict<CachedObject>(401, true);
 
     if ( !docloader )
-        docloader = new Q3PtrList<DocLoader>;
+        docloader = new QLinkedList<DocLoader*>;
 
     if ( !nullPixmap )
         nullPixmap = new QPixmap;
@@ -1247,10 +1250,8 @@ void Cache::init()
     if ( !m_loader )
         m_loader = new Loader();
 
-    if ( !freeList ) {
-        freeList = new Q3PtrList<CachedObject>;
-        freeList->setAutoDelete(true);
-    }
+    if ( !freeList )
+        freeList = new QLinkedList<CachedObject*>;
 }
 
 void Cache::clear()
@@ -1265,8 +1266,8 @@ void Cache::clear()
 #ifndef NDEBUG
     for (Q3DictIterator<CachedObject> it(*cache); it.current(); ++it)
         assert(it.current()->canDelete());
-    for (Q3PtrListIterator<CachedObject> it(*freeList); it.current(); ++it)
-        assert(it.current()->canDelete());
+    foreach (CachedObject* co, *freeList)
+        assert(co->canDelete());
 #endif
 
     delete cache; cache = 0;
@@ -1275,6 +1276,7 @@ void Cache::clear()
     delete blockedPixmap; blockedPixmap = 0;
     delete m_loader;  m_loader = 0;
     delete docloader; docloader = 0;
+    qDeleteAll(*freeList);
     delete freeList; freeList = 0;
 }
 
@@ -1353,11 +1355,14 @@ void Cache::flush(bool force)
 #endif
     }
 
-    for ( CachedObject* p = freeList->first(); p; p = freeList->next() ) {
-        if ( p->canDelete() )
-            freeList->remove();
+    QMutableLinkedListIterator<CachedObject*> it(*freeList);
+    while ( it.hasNext() ) {
+        CachedObject* p = it.next();
+        if ( p->canDelete() ) {
+            it.remove();
+            delete p;
+        }
     }
-
 }
 
 void Cache::setSize( int bytes )
@@ -1423,7 +1428,7 @@ void Cache::removeCacheEntry( CachedObject *object )
     cache->remove( key );
     removeFromLRUList( object );
 
-    for (const DocLoader* dl=docloader->first(); dl; dl=docloader->next() )
+    foreach( DocLoader* dl, *docloader )
         dl->removeCachedObject( object );
 
     if ( !object->free() ) {

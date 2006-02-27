@@ -98,7 +98,7 @@ public:
 
   virtual QStringList frameNames() const;
 
-  virtual const Q3PtrList<KParts::ReadOnlyPart> frames() const;
+  virtual const QList<KParts::ReadOnlyPart*> frames() const;
 
   virtual bool openURLInFrame( const KUrl &url, const KParts::URLArgs &urlArgs );
 

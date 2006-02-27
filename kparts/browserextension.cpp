@@ -655,9 +655,9 @@ QStringList BrowserHostExtension::frameNames() const
   return QStringList();
 }
 
-const Q3PtrList<KParts::ReadOnlyPart> BrowserHostExtension::frames() const
+const QList<KParts::ReadOnlyPart*> BrowserHostExtension::frames() const
 {
-  return Q3PtrList<KParts::ReadOnlyPart>();
+  return QList<KParts::ReadOnlyPart*>();
 }
 
 bool BrowserHostExtension::openURLInFrame( const KUrl &, const KParts::URLArgs & )

@@ -731,7 +731,7 @@ public:
    *
    * Note that this method does not query the child objects recursively.
    */
-  virtual const Q3PtrList<KParts::ReadOnlyPart> frames() const;
+  virtual const QList<KParts::ReadOnlyPart*> frames() const;
 
   /**
    * Returns the part that contains @p frame and that may be accessed

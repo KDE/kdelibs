@@ -889,7 +889,7 @@ public:
    */
   QStringList frameNames() const;
 
-  Q3PtrList<KParts::ReadOnlyPart> frames() const;
+  QList<KParts::ReadOnlyPart*> frames() const;
 
   /**
    * Finds a frame by name. Returns 0L if frame can't be found.

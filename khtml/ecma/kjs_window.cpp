@@ -595,7 +595,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
 KParts::ReadOnlyPart* Window::frameByIndex(unsigned i)
 {
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
-  Q3PtrList<KParts::ReadOnlyPart> frames = part->frames();
+  QList<KParts::ReadOnlyPart*> frames = part->frames();
   unsigned int len = frames.count();
   if (i < len) {
     KParts::ReadOnlyPart* frame = frames.at(i);

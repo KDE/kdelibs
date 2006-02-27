@@ -2231,16 +2231,16 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
     }
     if( use_fallbacks )
         return;
-    Q3PtrList<KParts::ReadOnlyPart> frames = m_part->frames();
-    for( Q3PtrListIterator<KParts::ReadOnlyPart> it( frames );
-         it != NULL;
-         ++it ) {
-        if( !(*it)->inherits( "KHTMLPart" ))
+    
+    QList<KParts::ReadOnlyPart*> frames = m_part->frames();
+    foreach( KParts::ReadOnlyPart* cur, frames ) {
+        if( !qobject_cast<KHTMLPart*>(cur) )
             continue;
-        KHTMLPart* part = static_cast< KHTMLPart* >( *it );
+        KHTMLPart* part = static_cast< KHTMLPart* >( cur );
         if( part->view() && part->view() != caller )
             part->view()->displayAccessKeys( this, origview, taken, use_fallbacks );
     }
+    
     // pass up to the parent
     if (m_part->parentPart() && m_part->parentPart()->view()
         && m_part->parentPart()->view() != caller)
@@ -2285,13 +2285,11 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
         return false;
     ElementImpl* node = doc->findAccessKeyElement( c );
     if( !node ) {
-        Q3PtrList<KParts::ReadOnlyPart> frames = m_part->frames();
-        for( Q3PtrListIterator<KParts::ReadOnlyPart> it( frames );
-             it != NULL;
-             ++it ) {
-            if( !(*it)->inherits( "KHTMLPart" ))
+        QList<KParts::ReadOnlyPart*> frames = m_part->frames();
+        foreach( KParts::ReadOnlyPart* cur, frames ) {
+            if( !qobject_cast<KHTMLPart*>(cur) )
                 continue;
-            KHTMLPart* part = static_cast< KHTMLPart* >( *it );
+            KHTMLPart* part = static_cast< KHTMLPart* >( cur );
             if( part->view() && part->view() != caller
                 && part->view()->focusNodeWithAccessKey( c, this ))
                 return true;
@@ -3461,7 +3459,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         d->dirtyLayout = false;
 
         QRect visibleRect(contentsX(), contentsY(), visibleWidth(), visibleHeight());
-        Q3PtrList<RenderWidget> toRemove;
+        QList<RenderWidget*> toRemove;
         for (Q3PtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
             int xp = 0, yp = 0;
             w = it.current();
@@ -3470,7 +3468,8 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
                 !visibleRect.intersects(QRect(xp, yp, w->width(), w->height())))
                 toRemove.append(rw);
         }
-        for (RenderWidget* r = toRemove.first(); r; r = toRemove.next())
+        
+        foreach (RenderWidget* r, toRemove)
             if ( (w = d->visibleWidgets.take(r) ) )
                 addChild(w, 0, -500000);
     }

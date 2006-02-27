@@ -38,7 +38,6 @@
 #endif
 
 #include <stdlib.h>
-#include <q3ptrlist.h>
 #include <qobject.h>
 #include <q3ptrdict.h>
 #include <q3dict.h>
@@ -47,6 +46,8 @@
 #include <qstringlist.h>
 #include <qtextcodec.h>
 #include <qtimer.h>
+
+#include <QLinkedList>
 
 #include <kurl.h>
 #include <kio/global.h>
@@ -409,6 +410,7 @@ namespace khtml
 
     public:
 	Loader();
+	~Loader();
 
 	void load(DocLoader* dl, CachedObject *object, bool incremental = true);
 
@@ -429,7 +431,7 @@ namespace khtml
 	void servePendingRequests();
 
     protected:
-	Q3PtrList<Request> m_requestsPending;
+	QLinkedList<Request*> m_requestsPending;
 	Q3PtrDict<Request> m_requestsLoading;
 #ifdef HAVE_LIBJPEG
         // TODO KJPEGFormatType m_jpegloader;
@@ -504,8 +506,8 @@ namespace khtml
         friend class CachedObject;
 
 	static Q3Dict<CachedObject> *cache;
-        static Q3PtrList<DocLoader>* docloader;
-        static Q3PtrList<CachedObject> *freeList;
+        static QLinkedList<DocLoader*>* docloader;
+        static QLinkedList<CachedObject*> *freeList;
         static void insertInLRUList(CachedObject*);
         static void removeFromLRUList(CachedObject*);
 

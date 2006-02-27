@@ -29,6 +29,8 @@
 #include "misc/loader.h"
 #include "misc/arena.h"
 
+#include <QLinkedList>
+
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <klocale.h>
@@ -36,8 +38,6 @@
 #include <assert.h>
 
 #include <kdebug.h>
-
-template class Q3PtrList<KHTMLPart>;
 
 extern "C" KDE_EXPORT void *init_libkhtml()
 {
@@ -61,7 +61,7 @@ unsigned long int KHTMLFactory::s_refcnt = 0;
 KInstance *KHTMLFactory::s_instance = 0;
 KAboutData *KHTMLFactory::s_about = 0;
 KHTMLSettings *KHTMLFactory::s_settings = 0;
-Q3PtrList<KHTMLPart> *KHTMLFactory::s_parts = 0;
+QLinkedList<KHTMLPart*> *KHTMLFactory::s_parts = 0;
 QString *KHTMLSettings::avFamilies = 0;
 
 KHTMLFactory::KHTMLFactory( bool clone )
@@ -144,9 +144,9 @@ void KHTMLFactory::deref()
 void KHTMLFactory::registerPart( KHTMLPart *part )
 {
     if ( !s_parts )
-        s_parts = new Q3PtrList<KHTMLPart>;
+        s_parts = new QLinkedList<KHTMLPart*>;
 
-    if ( !s_parts->containsRef( part ) )
+    if ( !s_parts->contains( part ) )
     {
         s_parts->append( part );
         ref();
@@ -157,7 +157,7 @@ void KHTMLFactory::deregisterPart( KHTMLPart *part )
 {
     assert( s_parts );
 
-    if ( s_parts->removeRef( part ) )
+    if ( s_parts->removeAll( part ) )
     {
         if ( s_parts->isEmpty() )
         {
