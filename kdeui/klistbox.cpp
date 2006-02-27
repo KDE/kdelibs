@@ -133,7 +133,7 @@ void KListBox::slotAutoSelect()
 	clearSelection(); 
 
       bool select = !m_pCurrentItem->isSelected();
-      bool update = viewport()->isUpdatesEnabled();
+      bool update = viewport()->updatesEnabled();
       viewport()->setUpdatesEnabled( false );
 
       bool down = index( previousItem ) < index( m_pCurrentItem );

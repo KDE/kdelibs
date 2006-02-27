@@ -183,7 +183,7 @@ void KIconView::slotAutoSelect()
 	clearSelection();
 
       bool select = !m_pCurrentItem->isSelected();
-      bool update = viewport()->isUpdatesEnabled();
+      bool update = viewport()->updatesEnabled();
       viewport()->setUpdatesEnabled( false );
 
       //Calculate the smallest rectangle that contains the current Item
