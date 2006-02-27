@@ -37,6 +37,7 @@ private Q_SLOTS:
     void get();
     void copyFileToSamePartition();
     void copyDirectoryToSamePartition();
+    void copyDirectoryToExistingDirectory();
     void copyFileToOtherPartition();
     void copyDirectoryToOtherPartition();
     void listRecursive();
@@ -61,8 +62,9 @@ private:
     void enterLoop();
     QString homeTmpDir() const;
     QString otherTmpDir() const;
+    enum { AlreadyExists = 1 };
     void copyLocalFile( const QString& src, const QString& dest );
-    void copyLocalDirectory( const QString& src, const QString& dest );
+    void copyLocalDirectory( const QString& src, const QString& dest, int flags = 0 );
     void moveLocalFile( const QString& src, const QString& dest );
     void moveLocalDirectory( const QString& src, const QString& dest );
 

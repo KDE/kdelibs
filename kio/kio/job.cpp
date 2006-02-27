@@ -70,6 +70,10 @@ extern "C" {
 #include <ktempfile.h>
 #include <dcopclient.h>
 
+#ifdef Q_OS_UNIX
+#include <utime.h>
+#endif
+
 using namespace KIO;
 
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
@@ -2132,6 +2136,9 @@ public:
     bool m_defaultPermissions;
     // Whether URLs changed (and need to be emitted by the next slotReport call)
     bool m_bURLDirty;
+    // Used after copying all the files into the dirs, to set mtime (TODO: and permissions?)
+    // after the copy is done
+    QLinkedList<CopyInfo> m_directoriesCopied;
 };
 
 CopyJob::CopyJob( const KUrl::List& src, const KUrl& dest, CopyMode mode, bool asMethod, bool showProgressInfo )
@@ -2166,6 +2173,7 @@ CopyJob::CopyJob( const KUrl::List& src, const KUrl& dest, CopyMode mode, bool a
        STATE_COPYING_FILES (copyNextFile, iterating over 'files')
             if conflict: STATE_CONFLICT_COPYING_FILES
        STATE_DELETING_DIRS (deleteNextDir) (if moving)
+       STATE_SETTING_DIR_ATTRIBUTES (setNextDirAttribute, iterating over d->m_directoriesCopied)
        done.
     */
 }
@@ -2745,15 +2753,16 @@ void CopyJob::slotResultCreatingDirs( Job * job )
     }
     else // no error : remove from list, to move on to next dir
     {
-       //this is required for the undo feature
+        //this is required for the undo feature
         emit copyingDone( this, (*it).uSource, (*it).uDest, true, false );
+        d->m_directoriesCopied.append( *it );
         dirs.erase( it );
     }
 
     m_processedDirs++;
     //emit processedDirs( this, m_processedDirs );
     removeSubjob( job );
-    assert ( !hasSubjobs() ); // We should have only one job at a time ...
+    assert( !hasSubjobs() ); // We should have only one job at a time ...
     createNextDir();
 }
 
@@ -3257,10 +3266,10 @@ void CopyJob::copyNextFile()
             newjob = newJob;
             //kDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << (*it).uDest << endl;
             //emit linking( this, (*it).linkDest, (*it).uDest );
-            m_currentSrcURL=(*it).linkDest;
+            m_currentSrcURL = KUrl::fromPathOrURL( (*it).linkDest );
             m_currentDestURL=(*it).uDest;
             d->m_bURLDirty = true;
-            //Observer::self()->slotCopying( this, (*it).linkDest, (*it).uDest ); // should be slotLinking perhaps
+            //Observer::self()->slotCopying( this, m_currentSrcURL, (*it).uDest ); // should be slotLinking perhaps
             m_bCurrentOperationIsLink = true;
             // NOTE: if we are moving stuff, the deletion of the source will be done in slotResultCopyingFiles
         } else if (m_mode == Move) // Moving a file
@@ -3321,6 +3330,40 @@ void CopyJob::deleteNextDir()
     }
     else
     {
+        // This step is done, move on
+        setNextDirAttribute();
+    }
+}
+
+void CopyJob::setNextDirAttribute()
+{
+    if ( !d->m_directoriesCopied.isEmpty() )
+    {
+        state = STATE_SETTING_DIR_ATTRIBUTES;
+#ifdef Q_OS_UNIX
+        // TODO KDE4: this should use a SlaveBase method, but we have none yet in KDE3.
+        QLinkedList<CopyInfo>::Iterator it = d->m_directoriesCopied.begin();
+        for ( ; it != d->m_directoriesCopied.end() ; ++it ) {
+            const KUrl& url = (*it).uDest;
+            if ( url.isLocalFile() && (*it).mtime != (time_t)-1 ) {
+                const QByteArray path = QFile::encodeName( url.path() );
+                KDE_struct_stat statbuf;
+                if (KDE_lstat(path, &statbuf) == 0) {
+                    struct utimbuf utbuf;
+                    utbuf.actime = statbuf.st_atime; // access time, unchanged
+                    utbuf.modtime = (*it).mtime; // modification time
+                    utime( path, &utbuf );
+                }
+
+            }
+        }
+#endif
+        d->m_directoriesCopied.clear();
+    }
+
+    // No "else" here, since the above is a simple sync loop
+
+    {
         // Finished - tell the world
         if ( !m_bOnlyRenames )
         {
@@ -3347,14 +3390,14 @@ void CopyJob::deleteNextDir()
 
 void CopyJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
 {
-  //kDebug(7007) << "CopyJob::slotProcessedSize " << (unsigned long)data_size << endl;
+  //kDebug(7007) << "CopyJob::slotProcessedSize " << data_size << endl;
   m_fileProcessedSize = data_size;
   setProcessedSize(m_processedSize + m_fileProcessedSize);
 
   if ( m_processedSize + m_fileProcessedSize > m_totalSize )
   {
     m_totalSize = m_processedSize + m_fileProcessedSize;
-    //kDebug(7007) << "Adjusting m_totalSize to " << (unsigned long) m_totalSize << endl;
+    //kDebug(7007) << "Adjusting m_totalSize to " << m_totalSize << endl;
     emit totalSize( this, m_totalSize ); // safety
   }
   //kDebug(7007) << "emit processedSize " << (unsigned long) (m_processedSize + m_fileProcessedSize) << endl;
@@ -3364,13 +3407,14 @@ void CopyJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
 
 void CopyJob::slotTotalSize( KIO::Job*, KIO::filesize_t size )
 {
+  //kDebug(7007) << "slotTotalSize: " << size << endl;
   // Special case for copying a single file
   // This is because some protocols don't implement stat properly
   // (e.g. HTTP), and don't give us a size in some cases (redirection)
   // so we'd rather rely on the size given for the transfer
   if ( m_bSingleFileCopy && size > m_totalSize)
   {
-    //kDebug(7007) << "Single file -> updating totalsize to " << (long)size << endl;
+    //kDebug(7007) << "slotTotalSize: updating totalsize to " << size << endl;
     m_totalSize = size;
     emit totalSize( this, size );
   }
@@ -3388,6 +3432,21 @@ void CopyJob::slotResultDeletingDirs( Job * job )
     assert ( !hasSubjobs() );
     deleteNextDir();
 }
+
+#if 0 // TODO KDE4
+void CopyJob::slotResultSettingDirAttributes( Job * job )
+{
+    if (job->error())
+    {
+        // Couldn't set directory attributes. Ignore the error, it can happen
+        // with inferior file systems like VFAT.
+        // Let's not display warnings for each dir like "cp -a" does.
+    }
+    subjobs.remove( job );
+    assert ( subjobs.isEmpty() );
+    setNextDirAttribute();
+}
+#endif
 
 void CopyJob::slotResultRenaming( Job* job )
 {
@@ -3618,6 +3677,10 @@ void CopyJob::slotResult( Job *job )
         case STATE_DELETING_DIRS:
             slotResultDeletingDirs( job );
             break;
+        case STATE_SETTING_DIR_ATTRIBUTES: // TODO KDE4
+            assert( 0 );
+            //slotResultSettingDirAttributes( job );
+            break;
         default:
             assert( 0 );
     }
@@ -3652,11 +3715,13 @@ CopyJob *KIO::copyAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 
 CopyJob *KIO::copy( const KUrl::List& src, const KUrl& dest, bool showProgressInfo )
 {
+    //kdDebug(7007) << src << " " << dest << endl;
     return new CopyJob( src, dest, CopyJob::Copy, false, showProgressInfo );
 }
 
 CopyJob *KIO::move(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 {
+    //kDebug(7007) << src << " " << dest << endl;
     KUrl::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Move, false, showProgressInfo );
@@ -3664,6 +3729,7 @@ CopyJob *KIO::move(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 
 CopyJob *KIO::moveAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 {
+    //kDebug(7007) << src << " " << dest << endl;
     KUrl::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Move, true, showProgressInfo );
@@ -3671,6 +3737,7 @@ CopyJob *KIO::moveAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 
 CopyJob *KIO::move( const KUrl::List& src, const KUrl& dest, bool showProgressInfo )
 {
+    //kdDebug(7007) << src << " " << dest << endl;
     return new CopyJob( src, dest, CopyJob::Move, false, showProgressInfo );
 }
 
@@ -3871,6 +3938,7 @@ void DeleteJob::deleteNextFile()
             // Normal deletion
             // If local file, try do it directly
             if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).path()) ) == 0 ) {
+                //kdDebug(7007) << "DeleteJob deleted " << (*it).path() << endl;
                 job = 0;
                 m_processedFiles++;
                 if ( m_processedFiles % 300 == 0 || m_totalFilesDirs < 300) { // update progress info every 300 files

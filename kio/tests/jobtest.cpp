@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2004, 2005 David Faure <faure@kde.org>
+   Copyright (C) 2004-2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -28,6 +28,7 @@
 #include <kde_file.h>
 #include <kio/netaccess.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <kcmdlineargs.h>
 
 #include <qfileinfo.h>
@@ -42,7 +43,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <time.h>
-#include <klocale.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <utime.h>
 
 QTEST_KDEMAIN( JobTest, GUI )
 
@@ -79,8 +82,8 @@ void JobTest::initTestCase()
 
 void JobTest::cleanupTestCase()
 {
-    KIO::NetAccess::del( homeTmpDir(), 0 );
-    KIO::NetAccess::del( otherTmpDir(), 0 );
+    KIO::NetAccess::del( KUrl::fromPath( homeTmpDir() ), 0 );
+    KIO::NetAccess::del( KUrl::fromPath( otherTmpDir() ), 0 );
 }
 
 static void createTestFile( const QString& path )
@@ -88,7 +91,7 @@ static void createTestFile( const QString& path )
     QFile f( path );
     if ( !f.open( QIODevice::WriteOnly ) )
         kFatal() << "Can't create " << path << endl;
-    f.writeBlock( "Hello world", 11 );
+    f.write( QByteArray( "Hello world" ) );
     f.close();
 }
 
@@ -118,6 +121,18 @@ static void createTestDirectory( const QString& path )
     createTestFile( path + "/testfile" );
     createTestSymlink( path + "/testlink" );
     QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
+
+#ifdef Q_OS_UNIX
+    // Put timestamp in the past so that we can check that the
+    // copy actually preserves it.
+    struct timeval tp;
+    gettimeofday( &tp, 0 );
+    struct utimbuf utbuf;
+    utbuf.actime = tp.tv_sec - 30; // 30 seconds ago
+    utbuf.modtime = tp.tv_sec - 60; // 60 second ago
+    utime( QFile::encodeName( path ), &utbuf );
+    qDebug( "Time changed for %s", qPrintable( path ) );
+#endif
 }
 
 void JobTest::enterLoop()
@@ -166,22 +181,40 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
     QVERIFY( QFile::exists( dest ) );
     QVERIFY( QFile::exists( src ) ); // still there
 
+    {
+        // check that the timestamp is the same (#24443)
+        QFileInfo srcInfo( src );
+        QFileInfo destInfo( dest );
+        QCOMPARE( srcInfo.lastModified(), destInfo.lastModified() );
+    }
+
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
     ok = KIO::NetAccess::dircopy( u, d, 0 );
     QVERIFY( ok );
     QVERIFY( QFile::exists( dest ) );
     QVERIFY( QFile::exists( src ) ); // still there
+    {
+        // check that the timestamp is the same (#24443)
+        QFileInfo srcInfo( src );
+        QFileInfo destInfo( dest );
+        QCOMPARE( srcInfo.lastModified(), destInfo.lastModified() );
+    }
 }
 
-void JobTest::copyLocalDirectory( const QString& src, const QString& dest )
+void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int flags )
 {
     QVERIFY( QFileInfo( src ).isDir() );
     QVERIFY( QFileInfo( src + "/testfile" ).isFile() );
     KUrl u;
     u.setPath( src );
+    QString dest( _dest );
     KUrl d;
     d.setPath( dest );
+    if ( flags & AlreadyExists )
+        QVERIFY( QFile::exists( dest ) );
+    else
+        QVERIFY( !QFile::exists( dest ) );
 
     bool ok = KIO::NetAccess::dircopy( u, d, 0 );
     QVERIFY( ok );
@@ -189,6 +222,18 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& dest )
     QVERIFY( QFileInfo( dest ).isDir() );
     QVERIFY( QFileInfo( dest + "/testfile" ).isFile() );
     QVERIFY( QFile::exists( src ) ); // still there
+
+    if ( flags & AlreadyExists ) {
+        dest += "/" + u.fileName();
+        //kDebug() << "Expecting dest=" << dest << endl;
+    }
+
+    {
+        // check that the timestamp is the same (#24443)
+        QFileInfo srcInfo( src );
+        QFileInfo destInfo( dest );
+        QCOMPARE( srcInfo.lastModified(), destInfo.lastModified() );
+    }
 }
 
 void JobTest::copyFileToSamePartition()
@@ -209,6 +254,17 @@ void JobTest::copyDirectoryToSamePartition()
     copyLocalDirectory( src, dest );
 }
 
+void JobTest::copyDirectoryToExistingDirectory()
+{
+    kDebug() << k_funcinfo << endl;
+    // just the same as copyDirectoryToSamePartition, but it means that
+    // this time dest exists.
+    const QString src = homeTmpDir() + "dirFromHome";
+    const QString dest = homeTmpDir() + "dirFromHome_copied";
+    createTestDirectory( src );
+    copyLocalDirectory( src, dest, AlreadyExists );
+}
+
 void JobTest::copyFileToOtherPartition()
 {
     kDebug() << k_funcinfo << endl;
@@ -222,8 +278,11 @@ void JobTest::copyDirectoryToOtherPartition()
 {
     kDebug() << k_funcinfo << endl;
     const QString src = homeTmpDir() + "dirFromHome";
-    const QString dest = homeTmpDir() + "dirFromHome_copied";
+    const QString dest = otherTmpDir() + "dirFromHome_copied";
     // src is already created by copyDirectoryToSamePartition()
+    // so this is just in case someone calls this method only
+    if ( !QFile::exists( src ) )
+        createTestDirectory( src );
     copyLocalDirectory( src, dest );
 }
 
@@ -399,7 +458,7 @@ void JobTest::listRecursive()
     const QString src = homeTmpDir();
     // Add a symlink to a dir, to make sure we don't recurse into those
     bool symlinkOk = symlink( "dirFromHome", QFile::encodeName( src + "/dirFromHome_link" ) ) == 0;
-    Q_ASSERT( symlinkOk );
+    QVERIFY( symlinkOk );
 
     KUrl u;
     u.setPath( src );
