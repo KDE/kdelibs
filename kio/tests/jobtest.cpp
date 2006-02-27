@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2004 David Faure <faure@kde.org>
+   Copyright (C) 2004-2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -38,6 +38,10 @@
 #include <assert.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <time.h>
+#include <utime.h>
 
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 
@@ -100,6 +104,7 @@ void JobTest::runAll()
     get();
     copyFileToSamePartition();
     copyDirectoryToSamePartition();
+    copyDirectoryToExistingDirectory();
     copyFileToOtherPartition();
     copyDirectoryToOtherPartition();
     listRecursive();
@@ -146,6 +151,18 @@ static void createTestDirectory( const QString& path )
         kdFatal() << "couldn't create " << path << endl;
     createTestFile( path + "/testfile" );
     createTestSymlink( path + "/testlink" );
+
+#ifdef Q_OS_UNIX
+    // Put timestamp in the past so that we can check that the
+    // copy actually preserves it.
+    struct timeval tp;
+    gettimeofday( &tp, 0 );
+    struct utimbuf utbuf;
+    utbuf.actime = tp.tv_sec - 30; // 30 seconds ago
+    utbuf.modtime = tp.tv_sec - 60; // 60 second ago
+    utime( QFile::encodeName( path ), &utbuf );
+    qDebug( "Time changed for %s", path.latin1() );
+#endif
 }
 
 void JobTest::get()
@@ -186,29 +203,59 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
     assert( QFile::exists( dest ) );
     assert( QFile::exists( src ) ); // still there
 
+    {
+        // check that the timestamp is the same (#24443)
+        QFileInfo srcInfo( src );
+        QFileInfo destInfo( dest );
+        assert( srcInfo.lastModified() == destInfo.lastModified() );
+    }
+
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
     ok = KIO::NetAccess::dircopy( u, d, 0 );
     assert( ok );
     assert( QFile::exists( dest ) );
     assert( QFile::exists( src ) ); // still there
+    {
+        // check that the timestamp is the same (#24443)
+        QFileInfo srcInfo( src );
+        QFileInfo destInfo( dest );
+        assert( srcInfo.lastModified() == destInfo.lastModified() );
+    }
 }
 
-void JobTest::copyLocalDirectory( const QString& src, const QString& dest )
+void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int flags )
 {
     assert( QFileInfo( src ).isDir() );
     assert( QFileInfo( src + "/testfile" ).isFile() );
     KURL u;
     u.setPath( src );
+    QString dest( _dest );
     KURL d;
     d.setPath( dest );
+    if ( flags & AlreadyExists )
+        assert( QFile::exists( dest ) );
+    else
+        assert( !QFile::exists( dest ) );
 
     bool ok = KIO::NetAccess::dircopy( u, d, 0 );
     assert( ok );
+
+    if ( flags & AlreadyExists ) {
+        dest += "/" + u.fileName();
+        //kdDebug() << "Expecting dest=" << dest << endl;
+    }
+
     assert( QFile::exists( dest ) );
     assert( QFileInfo( dest ).isDir() );
     assert( QFileInfo( dest + "/testfile" ).isFile() );
     assert( QFile::exists( src ) ); // still there
+    {
+        // check that the timestamp is the same (#24443)
+        QFileInfo srcInfo( src );
+        QFileInfo destInfo( dest );
+        assert( srcInfo.lastModified() == destInfo.lastModified() );
+    }
 }
 
 void JobTest::copyFileToSamePartition()
@@ -229,6 +276,17 @@ void JobTest::copyDirectoryToSamePartition()
     copyLocalDirectory( src, dest );
 }
 
+void JobTest::copyDirectoryToExistingDirectory()
+{
+    kdDebug() << k_funcinfo << endl;
+    // just the same as copyDirectoryToSamePartition, but it means that
+    // this time dest exists.
+    const QString src = homeTmpDir() + "dirFromHome";
+    const QString dest = homeTmpDir() + "dirFromHome_copied";
+    createTestDirectory( src );
+    copyLocalDirectory( src, dest, AlreadyExists );
+}
+
 void JobTest::copyFileToOtherPartition()
 {
     kdDebug() << k_funcinfo << endl;
@@ -242,8 +300,11 @@ void JobTest::copyDirectoryToOtherPartition()
 {
     kdDebug() << k_funcinfo << endl;
     const QString src = homeTmpDir() + "dirFromHome";
-    const QString dest = homeTmpDir() + "dirFromHome_copied";
+    const QString dest = otherTmpDir() + "dirFromHome_copied";
     // src is already created by copyDirectoryToSamePartition()
+    // so this is just in case someone calls this method only
+    if ( !QFile::exists( src ) )
+        createTestDirectory( src );
     copyLocalDirectory( src, dest );
 }
 

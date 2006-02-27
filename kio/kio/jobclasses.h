@@ -1654,6 +1654,8 @@ namespace KIO {
         void deleteNextDir();
         void skip( const KURL & sourceURL );
         void slotResultRenaming( KIO::Job * job );
+        //void slotResultSettingDirAttributes( KIO::Job * job );
+        void setNextDirAttribute();
     private:
         void startRenameJob(const KURL &slave_url);
         bool shouldOverwrite( const QString& path ) const;
@@ -1682,7 +1684,7 @@ namespace KIO {
         DestinationState destinationState;
         enum { STATE_STATING, STATE_RENAMING, STATE_LISTING, STATE_CREATING_DIRS,
                STATE_CONFLICT_CREATING_DIRS, STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES,
-               STATE_DELETING_DIRS } state;
+               STATE_DELETING_DIRS, STATE_SETTING_DIR_ATTRIBUTES } state;
         KIO::filesize_t m_totalSize;
         KIO::filesize_t m_processedSize;
         KIO::filesize_t m_fileProcessedSize;
