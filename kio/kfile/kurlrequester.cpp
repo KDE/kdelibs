@@ -95,7 +95,7 @@ public:
     void setText( const QString& text ) {
 	if ( combo )
 	{
-	    if (combo->editable())
+	    if (combo->isEditable())
 	    {
                combo->setEditText( text );
             }
