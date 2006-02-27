@@ -163,7 +163,7 @@ void KOperaBookmarkExporterImpl::write(KBookmarkGroup parent) {
        return;
     }
     QTextStream fstream(&file);
-    fstream.setEncoding(QTextStream::UnicodeUTF8);
+    fstream.setEncoding(QTextCodec::codecForName("UTF-8"));
     fstream << content;
 }
 

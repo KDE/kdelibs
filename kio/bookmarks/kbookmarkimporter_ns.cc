@@ -184,7 +184,7 @@ void KNSBookmarkExporterImpl::write(KBookmarkGroup parent) {
    }
 
    QTextStream fstream(&file);
-   fstream.setEncoding(m_utf8 ? QTextStream::UnicodeUTF8 : QTextStream::Locale);
+   fstream.setCodec(m_utf8 ? QTextCodec::codecForName("UTF-8") : QTextCodec::codecForLocale());
 
    QString charset
       = m_utf8 ? "UTF-8" : QString::fromLatin1(QTextCodec::codecForLocale()->name()).toUpper();

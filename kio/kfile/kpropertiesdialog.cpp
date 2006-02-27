@@ -735,8 +735,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   {
     QString path;
     if ( !m_bFromTemplate ) {
-      isTrash = ( properties->kurl().protocol().find( "trash", 0, false)==0 );
-      if ( properties->kurl().protocol().find("device", 0, false)==0)
+      isTrash = ( properties->kurl().protocol().indexOf( "trash", 0, Qt::CaseInsensitive)==0 );
+      if ( properties->kurl().protocol().indexOf("device", 0, Qt::CaseInsensitive)==0)
             isDevice = true;
       // Extract the full name, but without file: for local files
       if ( isLocal )
@@ -888,7 +888,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     // Enhanced rename: Don't highlight the file extension.
     QString pattern;
     KServiceTypeFactory::self()->findFromPattern( filename, &pattern );
-    if (!pattern.isEmpty() && pattern.at(0)=='*' && pattern.find('*',1)==-1)
+    if (!pattern.isEmpty() && pattern.at(0)=='*' && pattern.indexOf('*',1)==-1)
       d->m_lined->setSelection(0, filename.length()-pattern.trimmed().length()+1);
     else
     {
@@ -1507,7 +1507,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QString path = properties->kurl().path(-1);
   QString fname = properties->kurl().fileName();
   bool isLocal = properties->kurl().isLocalFile();
-  bool isTrash = ( properties->kurl().protocol().find("trash", 0, false)==0 );
+  bool isTrash = ( properties->kurl().protocol().indexOf("trash", 0, Qt::CaseInsensitive)==0 );
   bool IamRoot = (geteuid() == 0);
 
   KFileItem * item = properties->item();
@@ -3185,7 +3185,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
         QString mimetype = (*it)->name();
         if (mimetype == KMimeType::defaultMimeType())
            continue;
-        int index = mimetype.find("/");
+        int index = mimetype.indexOf("/");
         QString maj = mimetype.left(index);
         QString min = mimetype.mid(index+1);
 

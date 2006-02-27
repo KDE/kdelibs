@@ -110,13 +110,13 @@ int KSSL::seedWithEGD() {
 int rc = 0;
 #ifdef KSSL_HAVE_SSL
 	if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
-		rc = d->kossl->RAND_egd(m_cfg->getEGDPath().latin1());
+		rc = d->kossl->RAND_egd(m_cfg->getEGDPath().toLatin1().constData());
 		if (rc < 0) 
 			kDebug(7029) << "KSSL: Error seeding PRNG with the EGD." << endl;
 		else kDebug(7029) << "KSSL: PRNG was seeded with " << rc 
 				   << " bytes from the EGD." << endl;
 	} else if (m_cfg->useEFile() && !m_cfg->getEGDPath().isEmpty()) {
-		rc = d->kossl->RAND_load_file(m_cfg->getEGDPath().latin1(), -1);
+		rc = d->kossl->RAND_load_file(m_cfg->getEGDPath().toLatin1().constData(), -1);
 		if (rc < 0) 
 			kDebug(7029) << "KSSL: Error seeding PRNG with the entropy file." << endl;
 		else kDebug(7029) << "KSSL: PRNG was seeded with " << rc 
@@ -149,7 +149,7 @@ bool KSSL::TLSInit() {
 	QString clist = m_cfg->getCipherList();
 	//kDebug(7029) << "Cipher list: " << clist << endl;
 	if (!clist.isEmpty())
-		d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
+		d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.toAscii().constData()));
 
 	m_bInit = true;
 return true;
@@ -183,7 +183,7 @@ bool KSSL::initialize() {
 	QString clist = m_cfg->getCipherList();
 	kDebug(7029) << "Cipher list: " << clist << endl;
 	if (!clist.isEmpty())
-		d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
+		d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.toAscii().constData()));
 
 	m_bInit = true;
 return true;
@@ -231,7 +231,7 @@ void KSSL::close() {
 
 	d->kossl->SSL_CTX_free(d->m_ctx);
 	if (m_cfg->useEFile() && !m_cfg->getEGDPath().isEmpty()) {
-		d->kossl->RAND_write_file(m_cfg->getEGDPath().latin1());
+		d->kossl->RAND_write_file(m_cfg->getEGDPath().toLatin1().constData());
 	}
 
 	m_bInit = false;

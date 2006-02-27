@@ -637,8 +637,8 @@ void KOpenWithDlg::slotOK()
         {
             QString exec = serv->exec();
             fullExec = exec;
-            exec.replace("%u", "", false);
-            exec.replace("%f", "", false);
+            exec.replace("%u", "", Qt::CaseInsensitive);
+            exec.replace("%f", "", Qt::CaseInsensitive);
             exec.replace("-caption %c", "");
             exec.replace("-caption \"%c\"", "");
             exec.replace("%i", "");

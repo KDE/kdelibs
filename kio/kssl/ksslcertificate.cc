@@ -650,7 +650,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 	for (QStringList::Iterator j = qsl.begin(); j != qsl.end(); ++j) {
 		struct stat sb;
 		QString _j = (*j) + "ca-bundle.crt";
-		if (-1 == stat(_j.ascii(), &sb)) {
+		if (-1 == stat(_j.toAscii().constData(), &sb)) {
 			continue;
 		}
 
@@ -669,7 +669,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 			continue;
 		}
 
-		if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
+		if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.toAscii().constData(), X509_FILETYPE_PEM)) {
 			// error accessing directory and loading pems
 			kDebug(7029) << "KSSL couldn't read CA root: " 
 					<< _j << endl;

@@ -359,7 +359,8 @@ KConfig *cfg;
          if (!alib.isEmpty() && !alib.endsWith("/"))
             alib += "/";
          alib += *shit;
-	 QString tmpStr(alib.latin1());
+	 // someone knows why this is needed?
+	 QString tmpStr(alib.toLatin1().constData());
 	 tmpStr.replace(QRegExp("\\(.*\\)"), "");
 	 if (!access(tmpStr.toLatin1(), R_OK))
             _cryptoLib = ll->globalLibrary(alib.toLatin1());

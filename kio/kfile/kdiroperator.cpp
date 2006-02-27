@@ -812,7 +812,7 @@ bool KDirOperator::checkPreviewInternal() const
             for ( ; it != supported.end(); ++it ) {
                 r.setPattern( *it );
 
-                QStringList result = mimeTypes.grep( r );
+                QStringList result = mimeTypes.filter( r );
                 if ( !result.isEmpty() ) { // matches! -> we want previews
                     return true;
                 }
