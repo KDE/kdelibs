@@ -438,6 +438,9 @@ public:
      */
     virtual void chmod( const KUrl& url, int permissions );
 
+    // KDE4 TODO: add a setTime (utime?) to set the mtime on dirs at the end of a copy,
+    // or to set the mtime on a file at any moment (unused)
+
     /**
      * Copy @p src into @p dest.
      * If the slave returns an error ERR_UNSUPPORTED_ACTION, the job will
@@ -670,51 +673,6 @@ public:
      * is different from the information returned by openPassDlg.
      */
     bool cacheAuthentication( const AuthInfo& info );
-
-    /**
-     * @obsolete as of 3.1.
-     * TODO: Remove before KDE 4.0
-     */
-    bool pingCacheDaemon() const;
-
-    /**
-     * @obsolete as of 3.1. Use openPassDlg instead.
-     * TODO: Remove before KDE 4.0
-     * Creates a basic key to be used to cache the password.
-     * @param url   the url from which the key is supposed to be generated
-     */
-    QString createAuthCacheKey( const KUrl& url );
-
-    /**
-     * @obsolete as of 3.1. Use openPassDlg instead.
-     * TODO: Remove before KDE 4.0
-     *
-     * Cache authentication information is now stored automatically
-     * by openPassDlg.
-     */
-    void sendAuthenticationKey( const QByteArray& gKey, const QByteArray& key, bool keep );
-
-    /**
-     * @obsolete as of 3.1. Use openPassDlg instead.
-     * TODO: Remove before KDE 4.0
-     *
-     * Cached authentication information is now session based and
-     * removed automatically when a given session ends, i.e. the
-     * application is closed.
-     */
-    void delCachedAuthentication( const QString& key );
-
-    /**
-     * @obsolete as of 3.1. Use openPassDlg instead.
-     * TODO: Remove before KDE 4.0
-     */
-    void setMultipleAuthCaching( bool ) {}
-
-    /**
-     * @obsolete as of 3.1. Use openPassDlg instead.
-     * TODO: Remove before KDE 4.0
-     */
-    bool multipleAuthCaching() const { return false; }
 
     /**
      * Used by the slave to check if it can connect

@@ -691,20 +691,6 @@ void SlaveBase::listEntries( const UDSEntryList& list )
     d->sentListEntries+=(uint)list.count();
 }
 
-void SlaveBase::sendAuthenticationKey( const QByteArray& key,
-                                       const QByteArray& group,
-                                       bool keepPass )
-{
-    KIO_DATA << key << group << keepPass;
-    m_pConnection->send( MSG_AUTH_KEY, data );
-}
-
-void SlaveBase::delCachedAuthentication( const QString& key )
-{
-    KIO_DATA << key.toUtf8() ;
-    m_pConnection->send( MSG_DEL_AUTH_KEY, data );
-}
-
 void SlaveBase::sigsegv_handler(int sig)
 {
 #ifdef Q_OS_UNIX
@@ -1100,47 +1086,6 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         // Just ignore it, it may come from some future version of KDE.
         break;
     }
-}
-
-QString SlaveBase::createAuthCacheKey( const KUrl& url )
-{
-    if( !url.isValid() )
-        return QString();
-
-    // Generate the basic key sequence.
-    QString key = url.protocol();
-    key += '-';
-    key += url.host();
-    int port = url.port();
-    if( port )
-    {
-      key += ':';
-      key += QString::number(port);
-    }
-
-    return key;
-}
-
-bool SlaveBase::pingCacheDaemon() const
-{
-#ifdef Q_OS_UNIX
-    // TODO: Ping kded / kpasswdserver
-    KDEsuClient client;
-    int success = client.ping();
-    if( success == -1 )
-    {
-        success = client.startServer();
-        if( success == -1 )
-        {
-            kDebug(7019) << "Cannot start a new deamon!!" << endl;
-            return false;
-        }
-        kDebug(7019) << "Sucessfully started new cache deamon!!" << endl;
-    }
-    return true;
-#else
-    return false;
-#endif
 }
 
 bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
