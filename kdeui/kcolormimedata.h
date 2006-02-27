@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Steffen Hansen (hansen@kde.org)
    Copyright (C) 2005 Joseph Wenninger (jowenn@kde.org)
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
@@ -48,10 +48,10 @@ public:
     static bool canDecode(const QMimeData *mimeData);
 
     /**
-     * Decodes the MIME data @p mimeData and puts the resulting color into @p col.
+     * Decodes the MIME data @p mimeData and returns the resulting color.
      * First tries application/x-color and if that fails a text/plain entry, which
-     * represents a color in the format #hexnumbers. If this fails to an invalid QColor objects
-     * is returned @see QColor::isValid()
+     * represents a color in the format #hexnumbers. If this fails too,
+     * an invalid QColor object is returned, use QColor::isValid() to test it.
      */
     static QColor fromMimeData(const QMimeData *mimeData);
 
