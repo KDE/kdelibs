@@ -3,7 +3,9 @@
 /* for the following defines tests have to be written: */
 
 #define HAVE_BOOL 1
-#define HAVE_CUPS 1
+
+#cmakedefine HAVE_CUPS 1
+
 #define HAVE_MITSHM 1
 #define HAVE_PRELOADED_SYMBOLS 1    /* Define if libtool can extract symbol lists from object files. */
 #define HAVE_SGI_STL 1
@@ -40,7 +42,7 @@
 /**********  asound stuff, FindASound.cmake has to be written ****/
 
 /* Define to 1 if you have the <alsa/asoundlib.h> header file. */
-#define HAVE_ALSA_ASOUNDLIB_H 1
+#cmakedefine HAVE_ALSA_ASOUNDLIB_H 1
 
 /* Define if you have libasound.so.1 (required for ALSA 0.5.x support) */
 /* #undef HAVE_LIBASOUND */
@@ -52,7 +54,7 @@
 #define HAVE_SND_PCM_RESUME 1
 
 /* Define to 1 if you have the <sys/asoundlib.h> header file. */
-#define HAVE_SYS_ASOUNDLIB_H 1
+#cmakedefine HAVE_SYS_ASOUNDLIB_H 1
 
 /**** end of asound stuff ****/
 

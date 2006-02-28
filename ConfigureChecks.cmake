@@ -33,6 +33,12 @@ else(PNG_FOUND)
    set(HAVE_LIBPNG 0)
 endif(PNG_FOUND)
 
+if(CUPS_FOUND)
+   set(HAVE_CUPS 1)
+else(CUPS_FOUND)
+   set(HAVE_CUPS 0)
+endif(CUPS_FOUND)
+
 if(OPENEXR_FOUND)
    set(HAVE_EXR 1)
 else(OPENEXR_FOUND)
@@ -156,6 +162,9 @@ check_include_files(values.h      HAVE_VALUES_H)
 check_include_files(errno.h       HAVE_ERRNO_H)
 check_include_files(sys/time.h    HAVE_SYS_TIME_H)
 check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)
+
+check_include_files(sys/asoundlib.h HAVE_SYS_ASOUNDLIB_H)
+check_include_files(alsa/asoundlib.h HAVE_ALSA_ASOUNDLIB_H)
 
 
 check_include_files( X11/extensions/shape.h HAVE_X11_EXTENSIONS_SHAPE_H)
