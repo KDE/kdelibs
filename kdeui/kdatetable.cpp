@@ -219,8 +219,8 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       if ( daynum == calendar->weekDayOfPray() ||
          ( daynum == 6 && calendar->calendarName() == "gregorian" ) )
           normalday=false;
-
-			QBrush brushInvertTitle(QColorGroup(palette()).base());
+         QColorGroup colorGroup(palette());
+			QBrush brushInvertTitle(colorGroup.base());
 			QColor titleColor(isEnabled()?( KGlobalSettings::activeTitleColor() ):( KGlobalSettings::inactiveTitleColor() ) );
 			QColor textColor(isEnabled()?( KGlobalSettings::activeTextColor() ):( KGlobalSettings::inactiveTextColor() ) );
       if (!normalday)

@@ -243,9 +243,9 @@ public:
      * Constructs a KUrlBar. Set @p useGlobalItems to true if you want to
      * allow global/local item separation.
      */
-    KDE_DEPRECATED
+    
     KUrlBar( bool useGlobalItems,
-             QWidget *parent, const char *name, Qt::WFlags f = 0 );
+             QWidget *parent, const char *name, Qt::WFlags f = 0 ) KDE_DEPRECATED;
     /**
      * Destroys the KUrlBar.
      */
