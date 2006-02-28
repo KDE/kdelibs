@@ -141,41 +141,8 @@ void RenderLayer::updateLayerPosition()
         RenderLayer* positionedParent = enclosingPositionedAncestor();
 
         // For positioned layers, we subtract out the enclosing positioned layer's scroll offset.
-        positionedParent->subtractScrollOffset(x, y);
-        
-        if (positionedParent->renderer()->isRelPositioned() &&
-            positionedParent->renderer()->isInlineFlow()) {
-            // When we have an enclosing relpositioned inline, we need to add in the offset of the first line
-            // box from the rest of the content, but only in the cases where we know we're positioned
-            // relative to the inline itself.
-            RenderFlow* flow = static_cast<RenderFlow*>(positionedParent->renderer());
-            int sx = 0, sy = 0;
-            if (flow->firstLineBox()) {
-                if (flow->style()->direction() == LTR)
-                    sx = flow->firstLineBox()->xPos();
-                else
-                    sx = flow->lastLineBox()->xPos();
-                sy = flow->firstLineBox()->yPos();
-            } else {
-                sx = flow->staticX(); // ###
-                sy = flow->staticY();
-            }
-            bool isInlineType = m_object->style()->isOriginalDisplayInlineType();
-            
-            if (!m_object->hasStaticX())
-                x += sx;
-            
-            // This is not terribly intuitive, but we have to match other browsers.  Despite being a block display type inside
-            // an inline, we still keep our x locked to the left of the relative positioned inline.  Arguably the correct
-            // behavior would be to go flush left to the block that contains the inline, but that isn't what other browsers
-            // do.
-            if (m_object->hasStaticX() && !isInlineType)
-                // Avoid adding in the left border/padding of the containing block twice.  Subtract it out.
-                x += sx - (m_object->containingBlock()->borderLeft() + m_object->containingBlock()->paddingLeft());
-            
-            if (!m_object->hasStaticY())
-                y += sy;
-        }
+        positionedParent->subtractScrollOffset(x, y);        
+        positionedParent->checkInlineRelOffset(m_object, x, y);        
     }
     else if (parent())
         parent()->subtractScrollOffset(x, y);
@@ -450,6 +417,44 @@ void RenderLayer::subtractScrollOffset(int& x, int& y)
 {
     x -= scrollXOffset();
     y -= scrollYOffset();
+}
+
+void RenderLayer::checkInlineRelOffset(const RenderObject* o, int& x, int& y)
+{
+    if(o->style()->position() != ABSOLUTE || !renderer()->isRelPositioned() || !renderer()->isInlineFlow())
+        return;
+
+    // Our renderer is an enclosing relpositioned inline, we need to add in the offset of the first line
+    // box from the rest of the content, but only in the cases where we know our descendant is positioned
+    // relative to the inline itself.
+    assert( o->container() == m_object );
+
+    RenderFlow* flow = static_cast<RenderFlow*>(m_object);
+    int sx = 0, sy = 0;
+    if (flow->firstLineBox()) {
+        if (flow->style()->direction() == LTR)
+            sx = flow->firstLineBox()->xPos();
+        else
+            sx = flow->lastLineBox()->xPos();
+        sy = flow->firstLineBox()->yPos();
+    } else {
+        sx = flow->staticX(); // ###
+        sy = flow->staticY();
+    }
+    bool isInlineType = o->style()->isOriginalDisplayInlineType();
+            
+    if (!o->hasStaticX())
+        x += sx;
+            
+    // Despite the positioned child being a block display type inside an inline, we still keep
+    // its x locked to our left.  Arguably the correct behavior would be to go flush left to 
+    // the block that contains us, but that isn't what other browsers do.
+    if (o->hasStaticX() && !isInlineType)
+        // Avoid adding in the left border/padding of the containing block twice.  Subtract it out.
+        x += sx - (o->containingBlock()->borderLeft() + o->containingBlock()->paddingLeft());
+            
+    if (!o->hasStaticY())
+        y += sy;
 }
 
 void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repaint)

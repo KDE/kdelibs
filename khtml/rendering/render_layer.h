@@ -185,6 +185,7 @@ public:
     // Scrolling methods for layers that can scroll their overflow.
     void scrollOffset(int& x, int& y);
     void subtractScrollOffset(int& x, int& y);
+    void checkInlineRelOffset(const RenderObject* o, int& x, int& y);
     short scrollXOffset() { return m_scrollX; }
     int scrollYOffset() { return m_scrollY; }
     void scrollToOffset(int x, int y, bool updateScrollbars = true, bool repaint = true);

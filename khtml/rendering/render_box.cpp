@@ -642,8 +642,12 @@ bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
     RenderObject *o = container();
     if( o && o->absolutePosition(xPos, yPos, f))
     {
-        if ( o->style()->hidesOverflow() && o->layer() )
-            o->layer()->subtractScrollOffset( xPos, yPos );
+        if ( o->layer() ) {
+            if (o->style()->hidesOverflow())
+                o->layer()->subtractScrollOffset( xPos, yPos );
+            if (isPositioned())
+                o->layer()->checkInlineRelOffset(this, xPos, yPos);
+        }            
 
         if(!isInline() || isReplaced())
             xPos += m_x, yPos += m_y;
@@ -705,19 +709,24 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool immediate, boo
     x += m_x;
     y += m_y;
 
-    // Apply the relative position offset when invalidating a
-    // rectangle.  The layer is translated, but the render box isn't,
-    // so we need to do this to get the right dirty rect.
-    if (isRelPositioned())
+    // Apply the relative position offset when invalidating a rectangle.  The layer
+    // is translated, but the render box isn't, so we need to do this to get the
+    // right dirty rect.  Since this is called from RenderObject::setStyle, the relative position
+    // flag on the RenderObject has been cleared, so use the one on the style().
+    if (style()->position() == RELATIVE && m_layer)
         relativePositionOffset(x,y);
 
-    if (style()->position()==FIXED) f=true;
+    if (style()->position() == FIXED) f=true;
 
     // kdDebug( 6040 ) << "RenderBox(" <<this << ", " << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
     if( o ) {
-        if (o->style()->hidesOverflow() && o->layer())
-            o->layer()->subtractScrollOffset(x,y); // For overflow:auto/scroll/hidden.
+         if (o->layer()) {
+             if (o->style()->hidesOverflow())
+                 o->layer()->subtractScrollOffset(x,y); // For overflow:auto/scroll/hidden.
+             if (style()->position() == ABSOLUTE)
+                 o->layer()->checkInlineRelOffset(this,x,y);
+        }
         o->repaintRectangle(x, y, w, h, immediate, f);
     }
 }
