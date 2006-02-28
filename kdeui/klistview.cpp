@@ -2333,18 +2333,7 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
 {
   QColorGroup _cg = cg;
   Q3ListView* lv = listView();
-  const QPixmap *pm = lv->viewport()->backgroundPixmap();
-
-  if (pm && !pm->isNull())
-  {
-    _cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(column), *pm));
-    QPoint o = p->brushOrigin();
-    p->setBrushOrigin( o.x()-lv->contentsX(), o.y()-lv->contentsY() );
-  }
-  else
-  {
-    _cg.setColor( lv->backgroundRole(), backgroundColor(column) );
-  }
+  _cg.setColor( lv->backgroundRole(), backgroundColor(column) );
   Q3ListViewItem::paintCell(p, _cg, column, width, alignment);
 }
 

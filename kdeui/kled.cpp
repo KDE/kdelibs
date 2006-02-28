@@ -214,7 +214,7 @@ KLed::paintFlat() // paint a ROUND FLAT led lamp
     width *= scale;
 
     tmpMap = new QPixmap(width + 6, width + 6);
-    tmpMap->fill(paletteBackgroundColor());
+    tmpMap->fill(palette().color(backgroundRole()));
 
     // start painting widget
     //
@@ -272,7 +272,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     width *= scale;
 
     tmpMap = new QPixmap(width + 6, width + 6);
-    tmpMap->fill(paletteBackgroundColor());
+    tmpMap->fill(palette().color(backgroundRole()));
     paint.begin(tmpMap);
 
     // Set the color of the LED according to given parameters
@@ -368,7 +368,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     width *= scale;
 
     tmpMap = new QPixmap(width, width);
-    tmpMap->fill(paletteBackgroundColor());
+    tmpMap->fill(palette().color(backgroundRole()));
     paint.begin(tmpMap);
 
     // Set the color of the LED according to given parameters

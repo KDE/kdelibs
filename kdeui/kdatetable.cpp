@@ -304,8 +304,8 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 	   }
            pen=colorGroup().highlightedText();
         } else {
-          painter->setBrush(paletteBackgroundColor());
-          painter->setPen(paletteBackgroundColor());
+          painter->setBrush(palette().color(backgroundRole()));
+          painter->setPen(palette().color(backgroundRole()));
 //          painter->setBrush(colorGroup().base());
 //          painter->setPen(colorGroup().base());
         }
