@@ -61,7 +61,7 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 	KUrl uri;
 	if (!val.isEmpty() && val != "/dev/null")
 	{
-		int	p = val.find('@');
+		int	p = val.indexOf('@');
 		if (p != -1)
 		{
 			prt->setLocation(i18n("Remote queue (%1) on %2").arg(val.left(p)).arg(val.mid(p+1)));
@@ -69,7 +69,7 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 			uri.setHost(val.mid(p+1));
 			uri.setPath("/" + val.left(p));
 		}
-		else if ((p = val.find('%')) != -1)
+		else if ((p = val.indexOf('%')) != -1)
 		{
 			prt->setLocation(i18n("Network printer (%1)").arg("socket"));
 			uri.setProtocol("socket");

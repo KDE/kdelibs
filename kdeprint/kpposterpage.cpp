@@ -263,7 +263,7 @@ void KPPosterPage::setOptions( const QMap<QString,QString>& opts )
 		m_mediasize->setText( ps );
 	m_preview->setMediaSize( ps );
 
-	if ( opts[ "_kde-filters" ].find( "poster" ) != -1 )
+	if ( opts[ "_kde-filters" ].indexOf( "poster" ) != -1 )
 	{
 		m_postercheck->setChecked( true );
 		ps = opts[ "_kde-poster-size" ];
@@ -290,7 +290,7 @@ void KPPosterPage::getOptions( QMap<QString,QString>& opts, bool )
 	QStringList o = QStringList::split( ",", opts[ "_kde-filters" ], false );
 	if ( !m_postercheck->isChecked() )
 	{
-		o.remove( "poster" );
+		o.removeAll( "poster" );
 		opts[ "_kde-filters" ] = o.join( "," );
 		opts.remove( "_kde-poster-media" );
 		opts.remove( "_kde-poster-size" );

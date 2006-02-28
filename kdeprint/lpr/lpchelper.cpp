@@ -82,26 +82,26 @@ void LpcHelper::parseStatusLPR(QTextStream &t)
 		line = t.readLine();
 		if (line.isEmpty())
 			continue;
-		else if (!line[0].isSpace() && (p = line.find(':')) != -1)
+		else if (!line[0].isSpace() && (p = line.indexOf(':')) != -1)
 		{
 			printer = line.left(p);
 			m_state[printer] = KMPrinter::Idle;
 		}
-		else if (line.find("printing is disabled") != -1)
+		else if (line.indexOf("printing is disabled") != -1)
 		{
 			if (!printer.isEmpty())
 				m_state[printer] = KMPrinter::PrinterState((KMPrinter::Stopped) | (m_state[printer] & ~KMPrinter::StateMask));
 		}
-		else if (line.find("queuing is disabled") != -1)
+		else if (line.indexOf("queuing is disabled") != -1)
 		{
 			if (!printer.isEmpty())
 				m_state[printer] = KMPrinter::PrinterState((KMPrinter::Rejecting) | (m_state[printer] & KMPrinter::StateMask));
 		}
-		else if (line.find("entries") != -1)
+		else if (line.indexOf("entries") != -1)
 		{
 			if (!printer.isEmpty() &&
 			    (m_state[printer] & KMPrinter::StateMask) != KMPrinter::Stopped &&
-			    line.find("no entries") == -1)
+			    line.indexOf("no entries") == -1)
 				m_state[printer] = KMPrinter::PrinterState((m_state[printer] & ~KMPrinter::StateMask) | KMPrinter::Processing);
 		}
 	}
@@ -121,7 +121,7 @@ void LpcHelper::parseStatusLPRng(QTextStream& t)
 		l = QStringList::split(QRegExp("\\s"), t.readLine(), false);
 		if (l.count() < 4)
 			continue;
-		p = l[0].find('@');
+		p = l[0].indexOf('@');
 		if (p == 0)
 			printer = l[0];
 		else
@@ -206,11 +206,11 @@ static QString lprngAnswer(const QString& result, const QString& printer)
 {
 	int	p, q;
 
-	p = result.find("\n" + printer);
+	p = result.indexOf("\n" + printer);
 	if (p != -1)
 	{
-		q = result.find(':', p)+2;
-		p = result.find('\n', q);
+		q = result.indexOf(':', p)+2;
+		p = result.indexOf('\n', q);
 		QString	answer = result.mid(q, p-q).trimmed();
 		return answer;
 	}
@@ -274,9 +274,9 @@ bool LpcHelper::removeJob(KMJob *job, QString& msg)
 		return false;
 	}
 	QString	result = execute(m_lprmpath + " -P " + KProcess::quote(job->printer()) + " " + QString::number(job->id()));
-	if (result.find("dequeued") != -1)
+	if (result.indexOf("dequeued") != -1)
 		return true;
-	else if (result.find("Permission denied") != -1 || result.find("no permissions") != -1)
+	else if (result.indexOf("Permission denied") != -1 || result.indexOf("no permissions") != -1)
 		msg = i18n("Permission denied.");
 	else
 		msg = i18n("Execution of lprm failed: %1").arg(result);

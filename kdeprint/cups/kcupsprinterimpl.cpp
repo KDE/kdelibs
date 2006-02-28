@@ -37,9 +37,9 @@ QSize rangeToSize(const QString& s)
 	int	p(-1);
 	int	from, to;
 
-	if ((p=range.find(',')) != -1)
+	if ((p=range.indexOf(',')) != -1)
 		range.truncate(p);
-	if ((p=range.find('-')) != -1)
+	if ((p=range.indexOf('-')) != -1)
 	{
 		from = range.left(p).toInt();
 		to = range.right(range.length()-p-1).toInt();

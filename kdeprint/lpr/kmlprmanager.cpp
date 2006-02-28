@@ -233,7 +233,7 @@ DrMain* KMLprManager::loadPrinterDriver(KMPrinter *prt, bool config)
 
 DrMain* KMLprManager::loadFileDriver(const QString& filename)
 {
-	int	p = filename.find('/');
+	int	p = filename.indexOf('/');
 	QString	handler_str = (p != -1 ? filename.left(p) : QLatin1String("default"));
 	LprHandler	*handler = m_handlers.find(handler_str);
 	if (handler)

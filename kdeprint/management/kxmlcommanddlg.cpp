@@ -730,9 +730,9 @@ void KXmlCommandAdvancedDlg::slotMoveDown()
 
 void KXmlCommandAdvancedDlg::slotCommandChanged(const QString& cmd)
 {
-	m_inputfile->parentWidget()->setEnabled(cmd.find("%filterinput") != -1);
-	m_outputfile->parentWidget()->setEnabled(cmd.find("%filteroutput") != -1);
-	m_view->setEnabled(cmd.find("%filterargs") != -1);
+	m_inputfile->parentWidget()->setEnabled(cmd.indexOf("%filterinput") != -1);
+	m_outputfile->parentWidget()->setEnabled(cmd.indexOf("%filteroutput") != -1);
+	m_view->setEnabled(cmd.indexOf("%filterargs") != -1);
 	m_name->parentWidget()->setEnabled(m_view->isEnabled());
 	slotSelectionChanged((m_view->isEnabled() ? m_view->currentItem() : 0));
 	m_view->setOpen(m_view->firstChild(), m_view->isEnabled());

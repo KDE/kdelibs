@@ -47,7 +47,7 @@ KMJob* LpqHelper::parseLineLpr(const QString& line)
 	job->setOwner(line.mid(7, 11).trimmed());
 	job->setId(line.mid(18, 5).toInt());
 	job->setName(line.mid(23, 38).trimmed());
-	int	p = line.find(' ', 61);
+	int	p = line.indexOf(' ', 61);
 	if (p != -1)
 	{
 		job->setSize(line.mid(61, p-61).toInt() / 1000);
@@ -62,14 +62,14 @@ KMJob* LpqHelper::parseLineLPRng(const QString& line)
 		return NULL;
 	KMJob	*job = new KMJob;
 	job->setState((rank[0].isDigit() ? KMJob::Queued : (rank == "hold" ? KMJob::Held : KMJob::Printing)));
-	int	p = line.find('@', 7), q = line.find(' ', 7);
+	int	p = line.indexOf('@', 7), q = line.indexOf(' ', 7);
 	job->setOwner(line.mid(7, qMin(p,q)-7));
 	while (line[q].isSpace())
 		q++;
 	q++;
 	while (line[q].isSpace())
 		q++;
-	p = line.find(' ', q);
+	p = line.indexOf(' ', q);
 	job->setId(line.mid(q, p-q).toInt());
 	while (line[p].isSpace())
 		p++;

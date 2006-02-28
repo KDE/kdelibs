@@ -40,7 +40,7 @@ LPRngToolHandler::LPRngToolHandler(KMManager *mgr)
 bool LPRngToolHandler::validate(PrintcapEntry *entry)
 {
 	if (entry->comment.startsWith("##LPRNGTOOL##") &&
-	    entry->comment.find("UNKNOWN") == -1)
+	    entry->comment.indexOf("UNKNOWN") == -1)
 		return true;
 	return false;
 }
@@ -82,14 +82,14 @@ bool LPRngToolHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, boo
 		if (!(str=entry->field("ifhp")).isEmpty())
 		{
 			QString	model;
-			int	p = str.find("model");
+			int	p = str.indexOf("model");
 			if (p != -1)
 			{
-				p = str.find('=', p);
+				p = str.indexOf('=', p);
 				if (p != -1)
 				{
 					p++;
-					int	q = str.find(',', p);
+					int	q = str.indexOf(',', p);
 					if (q == -1)
 						model = str.mid(p);
 					else
@@ -142,7 +142,7 @@ void LPRngToolHandler::loadAuthFile(const QString& filename, QString& user, QStr
 			line = t.readLine().trimmed();
 			if (line.isEmpty())
 				continue;
-			int	p = line.find('=');
+			int	p = line.indexOf('=');
 			if (p != -1)
 			{
 				QString	key = line.left(p);
@@ -182,7 +182,7 @@ DrMain* LPRngToolHandler::loadDriver(KMPrinter *prt, PrintcapEntry *entry, bool 
 
 DrMain* LPRngToolHandler::loadDbDriver(const QString& s)
 {
-	int	p = s.find('/');
+	int	p = s.indexOf('/');
 	DrMain*	driver = loadToolDriver(locate("data", "kdeprint/lprngtooldriver1"));
 	if (driver)
 		driver->set("driverID", s.mid(p+1));
@@ -209,13 +209,13 @@ QList< QPair<QString,QStringList> > LPRngToolHandler::loadChoiceDict(const QStri
 				key.clear();
 				if (line.count('|') == 2 || line.endsWith("BOOLEAN"))
 				{
-					int	p = line.find('|', 7);
+					int	p = line.indexOf('|', 7);
 					key = line.mid(7, p-7);
 				}
 			}
 			else if (line.startsWith("CHOICE"))
 			{
-				int	p = line.find('|', 7);
+				int	p = line.indexOf('|', 7);
 				l << line.mid(7, p-7);
 			}
 		}

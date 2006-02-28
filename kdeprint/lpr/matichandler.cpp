@@ -85,7 +85,7 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 	{
 		prt->setLocation(i18n("Local printer on %1").arg(val));
 		KUrl	url(val);
-		if (val.find("usb") != -1)
+		if (val.indexOf("usb") != -1)
 			url.setProtocol("usb");
 		else
 			url.setProtocol("parallel");
@@ -167,7 +167,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 				else
 				{
 					QString	host = (args[i].length() == 2 ? args[i+1] : args[i].right(args[i].length()-2));
-					int	p = host.find("\\@");
+					int	p = host.indexOf("\\@");
 					if (p != -1)
 					{
 						url = "lpd://" + host.right(host.length()-p-2) + "/" + host.left(p);
@@ -309,13 +309,13 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 			line = tin.readLine();
 			if (line.trimmed().startsWith("$postpipe"))
 				continue;
-			else if ((p = line.find("'name'")) != -1)
+			else if ((p = line.indexOf("'name'")) != -1)
 			{
-				p = line.find('\'', p+6)+1;
-				q = line.find('\'', p);
+				p = line.indexOf('\'', p+6)+1;
+				q = line.indexOf('\'', p);
 				optname = line.mid(p, q-p);
 			}
-			else if ((p = line.find("'default'")) != -1)
+			else if ((p = line.indexOf("'default'")) != -1)
 			{
 				DrBase	*opt = driver->findOption(optname);
 				if (opt)
@@ -329,16 +329,16 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		inFile.close();
 		tmpFile.close();
 
-		QString	cmd = "mv " + KProcess::quote(tmpFile.name()) + " " + KProcess::quote(outFile);
+		QString	cmd = "mv " + KProcess::quote(tmpFile.fileName()) + " " + KProcess::quote(outFile);
 		int	status = ::system(QFile::encodeName(cmd).data());
-		QFile::remove(tmpFile.name());
+		QFile::remove(tmpFile.fileName());
 		result = (status != -1 && WEXITSTATUS(status) == 0);
 	}
 
 	if (!result)
 		manager()->setErrorMsg(i18n("You probably don't have the required permissions "
 		                            "to perform that operation."));
-	QFile::remove(tmpFile.name());
+	QFile::remove(tmpFile.fileName());
 	if (!result || entry->field("ppdfile").isEmpty())
 		return result;
 	else
@@ -372,7 +372,7 @@ bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
 			line = tin.readLine();
 			if (line.startsWith("*% COMDATA #"))
 			{
-				if (line.find("'default'") != -1)
+				if (line.indexOf("'default'") != -1)
 				{
 					DrBase	*opt = (optname.isEmpty() ? NULL : driver->findOption(optname));
 					if (opt)
@@ -380,10 +380,10 @@ bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
 						line.replace(foo2, "'"+opt->valueText()+"',");
 					}
 				}
-				else if (foo.search(line) != -1)
+				else if (foo.indexIn(line) != -1)
 					optname = foo.cap(1);
 			}
-			else if (re.search(line) != -1)
+			else if (re.indexIn(line) != -1)
 			{
 				DrBase	*opt = driver->findOption(re.cap(1));
 				if (opt)

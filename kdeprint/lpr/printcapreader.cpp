@@ -101,7 +101,7 @@ PrintcapEntry* PrintcapReader::nextEntry()
     // now parse the entry
     kDebug() << "COMMENT: " << comment << endl;
     kDebug() << "LINE: " << buf << endl;
-    int p = buf.find(':');
+    int p = buf.indexOf(':');
     if (p == -1)
         name = buf;
     else
@@ -132,14 +132,14 @@ PrintcapEntry* PrintcapReader::nextEntry()
             for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
             {
                 Field f;
-                int p = (*it).find('=');
+                int p = (*it).indexOf('=');
                 if (p == -1)
                 {
-                    p = (*it).find('#');
+                    p = (*it).indexOf('#');
                     if (p == -1)
                     {
                         f.type = Field::Boolean;
-			p = (*it).find('@');
+			p = (*it).indexOf('@');
 			if (p == -1)
 			{
 				f.name = (*it);

@@ -141,11 +141,11 @@ void SmbView::init()
 		while (!smb_stream.atEnd ())
 		{
 			QString smb_line = smb_stream.readLine ();
-			if (smb_line.contains (wins_keyword, false) > 0)
+			if (smb_line.contains (wins_keyword, Qt::CaseInsensitive) > 0)
 			{
 				QString key = smb_line.section('=', 0, 0);
 				key = key.trimmed();
-				if (key.lower() != wins_keyword)
+				if (key.toLower() != wins_keyword)
 				{
 					continue;
 				}
@@ -207,7 +207,7 @@ void SmbView::processGroups()
 	clear();
 	for (QStringList::ConstIterator it=grps.begin(); it!=grps.end(); ++it)
 	{
-		int	p = (*it).find("<1d>");
+		int	p = (*it).indexOf("<1d>");
 		if (p == -1)
 			continue;
 		Q3ListViewItem	*item = new Q3ListViewItem(this,(*it).left(p).trimmed());

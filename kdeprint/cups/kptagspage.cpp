@@ -113,7 +113,7 @@ bool KPTagsPage::isValid(QString& msg)
 		QString	tag(m_tags->itemAt( 0, r)->text());
 		if (tag.isEmpty())
 			continue;
-		else if (tag.find(re) != -1)
+		else if (tag.indexOf(re) != -1)
 		{
 			msg = i18n("The tag name must not contain any spaces, tabs or quotes: <b>%1</b>.").arg(tag);
 			return false;

@@ -148,7 +148,7 @@ QMap<QString,QString> ApsHandler::loadVarFile(const QString& filename)
 		while (!t.atEnd())
 		{
 			line = t.readLine().trimmed();
-			if (line.isEmpty() || line[0] == '#' || (p = line.find('=')) == -1)
+			if (line.isEmpty() || line[0] == '#' || (p = line.indexOf('=')) == -1)
 				continue;
 			QString	variable = line.left(p).trimmed();
 			QString	value = line.mid(p+1).trimmed();
@@ -187,7 +187,7 @@ DrMain* ApsHandler::loadDriver(KMPrinter *prt, PrintcapEntry *entry, bool config
 
 DrMain* ApsHandler::loadDbDriver(const QString& s)
 {
-	int	p = s.find('/');
+	int	p = s.indexOf('/');
 	DrMain	*driver = loadApsDriver(true);
 	if (driver)
 		driver->set("gsdriver", s.mid(p+1));
@@ -229,7 +229,7 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 		QFile	f;
 		if (prot == "smb")
 		{
-			f.setName(path + "/smbclient.conf");
+			f.setFileName(path + "/smbclient.conf");
 			if (f.open(QIODevice::WriteOnly))
 			{
 				QTextStream	t(&f);
@@ -261,13 +261,13 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 			}
 			else
 			{
-				manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(f.name()));
+				manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(f.fileName()));
 				return NULL;
 			}
 		}
 		else
 		{
-			f.setName(path + "/netware.conf");
+			f.setFileName(path + "/netware.conf");
 			if (f.open(QIODevice::WriteOnly))
 			{
 				QString work, server, printer, user, passwd;
@@ -292,12 +292,12 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 			}
 			else
 			{
-				manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(f.name()));
+				manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(f.fileName()));
 				return NULL;
 			}
 		}
 		// change file permissions
-		::chmod(QFile::encodeName(f.name()).data(), S_IRUSR|S_IWUSR);
+		::chmod(QFile::encodeName(f.fileName()).data(), S_IRUSR|S_IWUSR);
 	}
 	PrintcapEntry	*entry = LprHandler::createEntry(prt);
 	if (!entry)
@@ -362,7 +362,7 @@ bool ApsHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain 
 	}
 	else
 	{
-		manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(f.name()));
+		manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(f.fileName()));
 		return false;
 	}
 }
