@@ -138,9 +138,6 @@ install-data-local:
 	$(INSTALL_DATA) $(srcdir)/all_languages.desktop $(DESTDIR)$(kde_locale)/all_languages
 	$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/knotify
 	$(INSTALL_DATA) $(srcdir)/eventsrc $(DESTDIR)$(kde_datadir)/knotify/eventsrc
-	rm -f "$(DESTDIR)$(kde_confdir)/colors/40 Colors"
-	rm -f $(DESTDIR)$(kde_confdir)/colors/Web
-	rm -f $(DESTDIR)$(kde_confdir)/colors/Royal
 
 # If you add a color palette file here, please change kdelibs/kdeui/kcolordialog.cpp too to allow to translate the name
 colors_DATA = 40.colors Web.colors Royal.colors Rainbow.colors
