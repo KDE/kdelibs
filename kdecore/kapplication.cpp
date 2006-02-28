@@ -2468,6 +2468,11 @@ void KApplication::invokeMailer(const QString &_to, const QString &_cc, const QS
    keyMap.insert('B', body);
    keyMap.insert('u', url.url());
 
+   QString attachlist = attachURLs.join(",");
+   attachlist.prepend('\'');
+   attachlist.append('\'');
+   keyMap.insert('A', attachlist);
+
    for (QStringList::Iterator it = cmdTokens.begin(); it != cmdTokens.end(); )
    {
      if (*it == "%A")
