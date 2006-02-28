@@ -1391,7 +1391,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
         // See if this child has made our overflow need to grow.
         int rightChildPos = child->xPos() + kMax(child->effectiveWidth(), (int)child->width());
-        if (child->isRelPositioned()) {
+        if (child->isRelPositioned() && (hasOverflowClip() || !isTableCell())) {
             // CSS 2.1-9.4.3 - allow access to relatively positioned content
             // ### left overflow support
             int xoff = 0, yoff = 0;
