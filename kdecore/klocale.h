@@ -475,7 +475,7 @@ public:
    * @param  size  size in bytes
    * @return converted size as a string - e.g. 123.4 KiB , 12.0 MiB
    */
-  QString KLocale::formatByteSize( double size );
+  QString formatByteSize( double size );
 
   
   /**
