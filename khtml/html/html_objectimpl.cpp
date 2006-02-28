@@ -25,6 +25,7 @@
 #include "khtml_part.h"
 #include "dom/dom_string.h"
 #include "misc/htmlhashes.h"
+#include "imload/imagemanager.h"
 #include "khtmlview.h"
 #include <qstring.h>
 #include <qvariant.h>
@@ -171,12 +172,12 @@ void HTMLObjectBaseElementImpl::attach() {
         }
     }
 	
-    QList<QByteArray> supportedtypes = QImageReader::supportedImageFormats();
+    QStringList supportedtypes = khtmlImLoad::ImageManager::loaderDatabase()->supportedMimeTypes();
+
     QStringList serviceparts = serviceType.split("/");
-    QString imageformat = serviceparts.takeLast();
 
     bool imagelike = serviceType.startsWith("image/") &&
-                   supportedtypes.contains(imageformat.toAscii());
+                   supportedtypes.contains(serviceType);
 
     if (m_renderAlternative && !imagelike) {
         // render alternative content

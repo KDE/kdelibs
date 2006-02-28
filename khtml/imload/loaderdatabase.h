@@ -26,6 +26,7 @@
 #define LOADER_DATABASE_H
 
 #include "imageloaderprovider.h"
+#include <QStringList>
 #include <QVector>
 
 namespace khtmlImLoad {
@@ -40,6 +41,14 @@ public:
     unsigned int numLoaders()
     {
         return efficientProviders.size() + foreignProviders.size();
+    }
+
+    QStringList supportedMimeTypes() {
+        //### FIXME/TODO: this should be dynamic
+        QStringList ret;
+        ret << QLatin1String("image/jpg") << QLatin1String("image/jpeg")
+            << QLatin1String("image/png") << QLatin1String("image/gif");
+        return ret;
     }
     
     void registerLoaderProvider(ImageLoaderProvider* provider)
