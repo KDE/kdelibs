@@ -340,11 +340,11 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
   {
     if ( orientation() == Qt::Vertical )
     {
-       repaint(pos.x(), pos.y()-5, 6, 11, true);
+       repaint(pos.x(), pos.y()-5, 6, 11);
     }
     else
     {
-       repaint(pos.x()-5, pos.y(), 11, 6, true);
+       repaint(pos.x()-5, pos.y(), 11, 6);
     }
   }
 }
