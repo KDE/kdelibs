@@ -59,7 +59,7 @@ namespace KUnitTest
         // Add the folder to the "module" resource such that the KLibLoader can
         // find the modules in this folder.
         KGlobal::dirs()->addResourceDir("module", folder);
-        kDebug() << "Looking in folder: " << dir.absPath() << endl;
+        kDebug() << "Looking in folder: " << dir.absolutePath() << endl;
 
         // Get a list of all modules.
         QStringList modules = dir.entryList();
@@ -67,9 +67,9 @@ namespace KUnitTest
         for ( int i = 0; i < modules.count(); ++i )
         {
             QString module = modules[i];
-            kDebug() << "Module: " << dir.absPath() + "/" + module << endl;
+            kDebug() << "Module: " << dir.absolutePath() + "/" + module << endl;
 
-            if ( reQuery.search(module) != -1 )
+            if ( reQuery.indexIn(module) != -1 )
             {
                 // strip the .la extension
                 module.truncate(module.length()-3);

@@ -710,7 +710,8 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   d = new KEdFindPrivate( page );
 
   QString text = i18n("Find:");
-  QLabel *label = new QLabel( text, page , "find" );
+  QLabel *label = new QLabel( text, page );
+  label->setObjectName( QLatin1String( "find" ) );
   topLayout->addWidget( label );
 
   d->combo->setMinimumWidth(fontMetrics().maxWidth()*20);
@@ -727,9 +728,11 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   KHBox* row1 = new KHBox( group );
 
   text = i18n("Case &sensitive");
-  sensitive = new QCheckBox( text, row1, "case");
+  sensitive = new QCheckBox( text, row1 );
+  sensitive->setObjectName( QLatin1String( "case" ) );
   text = i18n("Find &backwards");
-  direction = new QCheckBox( text, row1, "direction" );
+  direction = new QCheckBox( text, row1 );
+  direction->setObjectName( QLatin1String( "direction" ) );
 
 
   enableButton( KDialogBase::User1, !d->combo->currentText().isEmpty() );
@@ -842,7 +845,8 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   d = new KEdReplacePrivate( page );
 
   QString text = i18n("Find:");
-  QLabel *label = new QLabel( text, page, "find" );
+  QLabel *label = new QLabel( text, page );
+  label->setObjectName( QLatin1String( "find" ) );
   topLayout->addWidget( label );
 
   d->searchCombo->setMinimumWidth(fontMetrics().maxWidth()*20);
@@ -850,7 +854,8 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   topLayout->addWidget(d->searchCombo);
 
   text = i18n("Replace with:");
-  label = new QLabel( text, page, "replace" );
+  label = new QLabel( text, page );
+  label->setObjectName( QLatin1String( "replace" ) );
   topLayout->addWidget( label );
 
   d->replaceCombo->setMinimumWidth(fontMetrics().maxWidth()*20);
@@ -866,9 +871,11 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   gbox->addRowSpacing( 0, fontMetrics().lineSpacing() );
 
   text = i18n("Case &sensitive");
-  sensitive = new QCheckBox( text, group, "case");
+  sensitive = new QCheckBox( text, group );
+  sensitive->setObjectName( QLatin1String( "case") );
   text = i18n("Find &backwards");
-  direction = new QCheckBox( text, group, "direction" );
+  direction = new QCheckBox( text, group );
+  direction->setObjectName( QLatin1String( "direction" ) );
   gbox->addWidget( sensitive, 1, 0 );
   gbox->addWidget( direction, 1, 1 );
   gbox->setRowStretch( 2, 10 );

@@ -1275,9 +1275,9 @@ QSize KToolBar::sizeHint() const
        Q_FOREACH( QWidget *w , ncThis->widgets )
        {
           QSize sh = w->sizeHint();
-          if ( w->sizePolicy().horData() == QSizePolicy::Ignored )
+          if ( w->sizePolicy().horizontalPolicy() == QSizePolicy::Ignored )
              sh.setWidth( 1 );
-          if ( w->sizePolicy().verData() == QSizePolicy::Ignored )
+          if ( w->sizePolicy().verticalPolicy() == QSizePolicy::Ignored )
              sh.setHeight( 1 );
           sh = sh.boundedTo( w->maximumSize() )
                  .expandedTo( w->minimumSize() ).expandedTo( QSize(1, 1) );
@@ -1297,9 +1297,9 @@ QSize KToolBar::sizeHint() const
 	   Q_FOREACH( QWidget *w , ncThis->widgets )
        {
           QSize sh = w->sizeHint();
-          if ( w->sizePolicy().horData() == QSizePolicy::Ignored )
+          if ( w->sizePolicy().horizontalPolicy() == QSizePolicy::Ignored )
              sh.setWidth( 1 );
-          if ( w->sizePolicy().verData() == QSizePolicy::Ignored )
+          if ( w->sizePolicy().verticalPolicy() == QSizePolicy::Ignored )
              sh.setHeight( 1 );
           sh = sh.boundedTo( w->maximumSize() )
                  .expandedTo( w->minimumSize() ).expandedTo( QSize(1, 1) );

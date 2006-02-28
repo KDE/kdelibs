@@ -235,7 +235,7 @@ void KLanguageButton::clear()
 
   m_popup->clear();
 
-  d->button->setPopup( m_popup );
+  d->button->setMenu( m_popup );
 
   connect( m_popup, SIGNAL( triggered( QAction* ) ),
            SLOT( slotTriggered( QAction* ) ) );

@@ -144,7 +144,7 @@ void EditEntryDialog::slotItemSelected(Q3ListViewItem *item)
 
 void EditEntryDialog::fillEntry(PrintcapEntry *entry)
 {
-	entry->aliases = QStringList::split('|', m_aliases->text(), false);
+	entry->aliases = m_aliases->text().split('|', QString::SkipEmptyParts);
 	entry->fields = m_fields;
 }
 

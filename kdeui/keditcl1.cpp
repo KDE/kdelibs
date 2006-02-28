@@ -147,7 +147,7 @@ KEdit::cleanWhiteSpace()
       selectAll();
    QString oldText = markedText();
    QString newText;
-   QStringList lines = QStringList::split('\n', oldText, true);
+   QStringList lines = oldText.split('\n', QString::KeepEmptyParts);
    bool addSpace = false;
    bool firstLine = true;
    QChar lastChar = oldText[oldText.length()-1];
@@ -348,7 +348,7 @@ void KEdit::computePosition()
 
 
   while(find >=0 && find <= coltemp- 1 ){
-    find = linetext.find('\t', find+start_of_line, true )-start_of_line;
+    find = linetext.indexOf('\t', find+start_of_line, Qt::CaseSensitive )-start_of_line;
     if( find >=0 && find <= coltemp - 1 ){
       found_one = true;
       pos = pos + find - mem;

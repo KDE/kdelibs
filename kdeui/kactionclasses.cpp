@@ -730,7 +730,7 @@ QStringList KSelectAction::comboItems() const
     for( ; it != d->m_list.end(); ++it )
     {
       QString item = *it;
-      int i = item.find( '&' );
+      int i = item.indexOf( '&' );
       if ( i > -1 )
         item = item.remove( i, 1 );
       lst.append( item );
@@ -1450,7 +1450,7 @@ void KFontAction::setFont( const QString &family )
           return;
        }
     }
-    i = lowerName.find(" [");
+    i = lowerName.indexOf(" [");
     if (i>-1)
     {
        lowerName = lowerName.left(i);
