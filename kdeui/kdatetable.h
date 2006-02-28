@@ -211,9 +211,6 @@ public:
    */
   int exec(int x, int y);
 
-private:
-
-  virtual bool close(bool alsoDelete) { return QFrame::close(alsoDelete); }
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
