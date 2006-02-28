@@ -242,8 +242,12 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
     if (KStringListValidator* val = qobject_cast<KStringListValidator*>(m_validator))
     {
         KComboBox* b = new KComboBox(true, this);
-        b->insertStringList(val->stringList());
-        b->setCurrentText(m_item.value().toString());
+        b->addItems(val->stringList());
+        int i = b->findText(m_item.value().toString());
+        if (i != -1)
+            b->setCurrentIndex(i);
+        else
+            b->setEditText(m_item.value().toString());
         connect(b, SIGNAL(activated(const QString &)), this, SLOT(slotComboChanged(const QString &)));
         b->setValidator(val);
         reparentValidator(b, val);

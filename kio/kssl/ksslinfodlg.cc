@@ -193,7 +193,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
 
     if (cert->chain().isValid() && cert->chain().depth() > 1) {
         d->_chain->setEnabled(true);
-        d->_chain->insertItem(i18n("0 - Site Certificate"));
+        d->_chain->addItem(i18n("0 - Site Certificate"));
         int cnt = 0;
         Q3PtrList<KSSLCertificate> cl = cert->chain().getChain();
         for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
@@ -204,7 +204,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
                 id = map.getValue("O");
             if (id.length() == 0)
                 id = map.getValue("OU");
-            d->_chain->insertItem(QString::number(++cnt)+" - "+id);
+            d->_chain->addItem(QString::number(++cnt)+" - "+id);
         }
         d->_chain->setCurrentIndex(0);
     } else d->_chain->setEnabled(false);

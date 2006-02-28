@@ -1786,9 +1786,10 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   }
   else if ((groupList.count() > 1) && isMyFile && isLocal)
   {
-    grpCombo = new QComboBox(gb, "combogrouplist");
-    grpCombo->insertStringList(groupList);
-    grpCombo->setCurrentItem(groupList.indexOf(strGroup));
+    grpCombo = new QComboBox(gb);
+	grpCombo->setObjectName(QLatin1String("combogrouplist"));
+    grpCombo->addItems(groupList);
+    grpCombo->setCurrentIndex(groupList.indexOf(strGroup));
     gl->addWidget(grpCombo, 2, 1);
     connect( grpCombo, SIGNAL( activated( int ) ),
              this, SIGNAL( changed() ) );
@@ -2006,7 +2007,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
       if ( aPartialPermissions & fperm[row][col] )
       {
         cb->setTristate();
-        cb->setNoChange();
+        cb->setCheckState(Qt::PartiallyChecked);
       }
       else if (d->cbRecursive && d->cbRecursive->isChecked())
 	cb->setTristate();
@@ -2071,16 +2072,16 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   mode_t orPermissions = 0;
   for (int row = 0; row < 3; ++row)
     for (int col = 0; col < 4; ++col) {
-      switch (cba[row][col]->state())
+      switch (cba[row][col]->checkState())
       {
-      case QCheckBox::On:
-	orPermissions |= fperm[row][col];
+      case Qt::Checked:
+        orPermissions |= fperm[row][col];
 	//fall through
-      case QCheckBox::Off:
-	andPermissions &= ~fperm[row][col];
-	break;
+      case Qt::Unchecked:
+        andPermissions &= ~fperm[row][col];
+        break;
       default: // NoChange
-	break;
+        break;
       }
     }
 
@@ -2134,8 +2135,8 @@ void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsT
 						  mode_t permissions, mode_t partial) {
   combo->clear();
   if (d->pmode == PermissionsOnlyLinks) {
-    combo->insertItem(i18n("Link"));
-    combo->setCurrentItem(0);
+    combo->addItem(i18n("Link"));
+    combo->setCurrentIndex(0);
     return;
   }
 
@@ -2147,14 +2148,14 @@ void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsT
   Q_ASSERT(standardPermissions[textIndex] != (mode_t)-1); // must not happen, would be irreglar
 
   for (int i = 0; permissionsTexts[(int)d->pmode][i]; i++)
-    combo->insertItem(i18n(permissionsTexts[(int)d->pmode][i]));
+    combo->addItem(i18n(permissionsTexts[(int)d->pmode][i]));
 
   if (partial & tMask & ~UniExec) {
-    combo->insertItem(i18n("Varying (No Change)"));
-    combo->setCurrentItem(3);
+    combo->addItem(i18n("Varying (No Change)"));
+    combo->setCurrentIndex(3);
   }
   else
-    combo->setCurrentItem(textIndex);
+    combo->setCurrentIndex(textIndex);
 }
 
 // permissions are irregular if they cant be displayed in a combo box.
@@ -2253,7 +2254,7 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
 				      properties->items().count()) : "");
     if (d->partialPermissions & UniExec) {
       d->extraCheckbox->setTristate();
-      d->extraCheckbox->setNoChange();
+      d->extraCheckbox->setCheckState(Qt::PartiallyChecked);
     }
     else {
       d->extraCheckbox->setTristate(false);
@@ -2274,7 +2275,7 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
 				      properties->items().count()) : "");
     if (d->partialPermissions & S_ISVTX) {
       d->extraCheckbox->setTristate();
-      d->extraCheckbox->setNoChange();
+      d->extraCheckbox->setCheckState(Qt::PartiallyChecked);
     }
     else {
       d->extraCheckbox->setTristate(false);
@@ -2289,7 +2290,7 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     break;
     if (d->partialPermissions & S_ISVTX) {
       d->extraCheckbox->setTristate();
-      d->extraCheckbox->setNoChange();
+      d->extraCheckbox->setCheckState(Qt::PartiallyChecked);
     }
     else {
       d->extraCheckbox->setTristate(false);
@@ -2311,16 +2312,16 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
   if (d->isIrregular)
     return;
 
-  mode_t m = standardPermissions[d->ownerPermCombo->currentItem()];
+  mode_t m = standardPermissions[d->ownerPermCombo->currentIndex()];
   if (m != (mode_t) -1) {
     orFilePermissions |= m & UniOwner;
     if ((m & UniOwner) &&
 	((d->pmode == PermissionsMixed) ||
-	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QCheckBox::NoChange))))
+	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->checkState() == Qt::PartiallyChecked))))
       andFilePermissions &= ~(S_IRUSR | S_IWUSR);
     else {
       andFilePermissions &= ~(S_IRUSR | S_IWUSR | S_IXUSR);
-      if ((m & S_IRUSR) && (d->extraCheckbox->state() == QCheckBox::On))
+      if ((m & S_IRUSR) && (d->extraCheckbox->checkState() == Qt::Checked))
 	orFilePermissions |= S_IXUSR;
     }
 
@@ -2330,16 +2331,16 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
     andDirPermissions &= ~(S_IRUSR | S_IWUSR | S_IXUSR);
   }
 
-  m = standardPermissions[d->groupPermCombo->currentItem()];
+  m = standardPermissions[d->groupPermCombo->currentIndex()];
   if (m != (mode_t) -1) {
     orFilePermissions |= m & UniGroup;
     if ((m & UniGroup) &&
 	((d->pmode == PermissionsMixed) ||
-	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QCheckBox::NoChange))))
+	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->checkState() == Qt::PartiallyChecked))))
       andFilePermissions &= ~(S_IRGRP | S_IWGRP);
     else {
       andFilePermissions &= ~(S_IRGRP | S_IWGRP | S_IXGRP);
-      if ((m & S_IRGRP) && (d->extraCheckbox->state() == QCheckBox::On))
+      if ((m & S_IRGRP) && (d->extraCheckbox->checkState() == Qt::Checked))
 	orFilePermissions |= S_IXGRP;
     }
 
@@ -2349,16 +2350,16 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
     andDirPermissions &= ~(S_IRGRP | S_IWGRP | S_IXGRP);
   }
 
-  m = standardPermissions[d->othersPermCombo->currentItem()];
+  m = standardPermissions[d->othersPermCombo->currentIndex()];
   if (m != (mode_t) -1) {
     orFilePermissions |= m & UniOthers;
     if ((m & UniOthers) &&
 	((d->pmode == PermissionsMixed) ||
-	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->state() == QCheckBox::NoChange))))
+	 ((d->pmode == PermissionsOnlyFiles) && (d->extraCheckbox->checkState() == Qt::PartiallyChecked))))
       andFilePermissions &= ~(S_IROTH | S_IWOTH);
     else {
       andFilePermissions &= ~(S_IROTH | S_IWOTH | S_IXOTH);
-      if ((m & S_IROTH) && (d->extraCheckbox->state() == QCheckBox::On))
+      if ((m & S_IROTH) && (d->extraCheckbox->checkState() == Qt::Checked))
 	orFilePermissions |= S_IXOTH;
     }
 
@@ -2369,9 +2370,9 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
   }
 
   if (((d->pmode == PermissionsMixed) || (d->pmode == PermissionsOnlyDirs)) &&
-      (d->extraCheckbox->state() != QCheckBox::NoChange)) {
+      (d->extraCheckbox->checkState() != Qt::PartiallyChecked)) {
     andDirPermissions &= ~S_ISVTX;
-    if (d->extraCheckbox->state() == QCheckBox::On)
+    if (d->extraCheckbox->checkState() == Qt::Checked)
       orDirPermissions |= S_ISVTX;
   }
 }
@@ -2646,7 +2647,8 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
   commentEdit->setFixedHeight( fontHeight );
   mainlayout->addWidget(commentEdit, 1);
 
-  cbAutoEmbed = new QCheckBox( i18n("Left click previews"), d->m_frame, "cbAutoEmbed" );
+  cbAutoEmbed = new QCheckBox( i18n("Left click previews"), d->m_frame );
+  cbAutoEmbed->setObjectName( QLatin1String( "cbAutoEmbed" ) );
   mainlayout->addWidget(cbAutoEmbed, 1);
 
   mainlayout->addStretch (10);
@@ -2674,7 +2676,7 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
   if ( config.hasKey( "X-KDE-AutoEmbed" ) )
       cbAutoEmbed->setChecked( config.readEntry( "X-KDE-AutoEmbed", false ) );
   else
-      cbAutoEmbed->setNoChange();
+      cbAutoEmbed->setCheckState(Qt::PartiallyChecked);
 
   connect( patternEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
@@ -2732,7 +2734,7 @@ void KBindingPropsPlugin::applyChanges()
   config.writeEntry( "Comment",
 		     commentEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
   config.writeEntry( "MimeType", mimeEdit->text() );
-  if ( cbAutoEmbed->state() == QCheckBox::NoChange )
+  if ( cbAutoEmbed->checkState() == Qt::PartiallyChecked )
       config.deleteEntry( "X-KDE-AutoEmbed" );
   else
       config.writeEntry( "X-KDE-AutoEmbed", cbAutoEmbed->isChecked() );
@@ -2798,13 +2800,16 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
                       i18n("Device:") ); // new style (combobox)
   layout->addWidget(label, 0, 0);
 
-  device = new QComboBox( true, d->m_frame, "ComboBox_device" );
-  device->insertStringList( devices );
+  device = new QComboBox( d->m_frame );
+  device->setObjectName( QLatin1String( "ComboBox_device" ) );
+  device->setEditable( true );
+  device->addItems( devices );
   layout->addWidget(device, 0, 1);
   connect( device, SIGNAL( activated( int ) ),
            this, SLOT( slotActivated( int ) ) );
 
-  readonly = new QCheckBox( d->m_frame, "CheckBox_readonly" );
+  readonly = new QCheckBox( d->m_frame );
+  readonly->setObjectName( QLatin1String( "CheckBox_readonly" ) );
   readonly->setText(  i18n("Read only") );
   layout->addWidget(readonly, 1, 1);
 
@@ -3403,13 +3408,13 @@ void KDesktopPropsPlugin::slotAdvanced()
   w.systrayCheck->setChecked(m_systrayBool);
 
   if (m_dcopServiceType == "unique")
-    w.dcopCombo->setCurrentItem(2);
+    w.dcopCombo->setCurrentIndex(2);
   else if (m_dcopServiceType == "multi")
-    w.dcopCombo->setCurrentItem(1);
+    w.dcopCombo->setCurrentIndex(1);
   else if (m_dcopServiceType == "wait")
-    w.dcopCombo->setCurrentItem(3);
+    w.dcopCombo->setCurrentIndex(3);
   else
-    w.dcopCombo->setCurrentItem(0);
+    w.dcopCombo->setCurrentIndex(0);
 
   // Provide username completion up to 1000 users.
   KCompletion *kcom = new KCompletion;
@@ -3462,7 +3467,7 @@ void KDesktopPropsPlugin::slotAdvanced()
       m_terminalOptionStr.append(" --noclose");
     }
 
-    switch(w.dcopCombo->currentItem())
+    switch(w.dcopCombo->currentIndex())
     {
       case 1:  m_dcopServiceType = "multi"; break;
       case 2:  m_dcopServiceType = "unique"; break;

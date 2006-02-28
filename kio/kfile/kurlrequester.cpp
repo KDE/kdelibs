@@ -101,7 +101,7 @@ public:
             }
             else
             {
-               combo->insertItem( text );
+               combo->addItem( text );
                combo->setCurrentIndex( combo->count()-1 );
             }
         }
