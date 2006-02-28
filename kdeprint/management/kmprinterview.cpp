@@ -85,8 +85,10 @@ void KMPrinterView::setViewType(ViewType t)
 			break;
 	}
 	QString	oldcurrent = m_current;
-	if ( m_listset )
-		setPrinterList(KMManager::self()->printerList(false));
+	if ( m_listset ) {
+		QList<KMPrinter*> lst = KMManager::self()->printerList(false);
+		setPrinterList( &lst );
+	}
 	if (m_type == KMPrinterView::Tree)
 	{
 		setCurrentWidget(m_listview);

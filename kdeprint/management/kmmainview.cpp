@@ -334,9 +334,9 @@ void KMMainView::slotRefresh()
 void KMMainView::slotTimer()
 {
 	kDebug() << "KMMainView::slotTimer" << endl;
-	QList<KMPrinter*>	*printerlist = m_manager->printerList();
+	QList<KMPrinter*> printerlist = m_manager->printerList();
 	bool ok = m_manager->errorMsg().isEmpty();
-	m_printerview->setPrinterList(printerlist);
+	m_printerview->setPrinterList(&printerlist);
 	if ( m_first )
 	{
 		if ( !ok )
@@ -348,7 +348,7 @@ void KMMainView::slotTimer()
 			 *    - hard default printer
 			 *    - first printer
 			 */
-			QListIterator<KMPrinter*> it( *printerlist );
+			QListIterator<KMPrinter*> it( printerlist );
 			KMPrinter *p1 = 0, *p2 = 0, *p3 = 0;
 			while ( it.hasNext() )
 			{

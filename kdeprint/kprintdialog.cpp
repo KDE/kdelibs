@@ -558,7 +558,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 	d->m_printer = printer;
 
 	// first retrieve printer list and update combo box (get default or last used printer also)
-	QList<KMPrinter*>	*plist = KMFactory::self()->manager()->printerList();
+	QList<KMPrinter*>	plist = KMFactory::self()->manager()->printerList();
 	if (!KMManager::self()->errorMsg().isEmpty())
 	{
 		KMessageBox::error(parentWidget(),
@@ -567,16 +567,16 @@ void KPrintDialog::initialize(KPrinter *printer)
 			+"</nobr><br><br>"+KMManager::self()->errorMsg()+"</qt>");
 	}
 
-	if (plist)
+	if (!plist.isEmpty())
 	{
 		QString	oldP = d->m_printers->currentText();
 		d->m_printers->clear();
-		QListIterator<KMPrinter*>	it(*plist);
+		QListIterator<KMPrinter*>	it(plist);
 		int 	defsoft(-1), defhard(-1), defsearch(-1);
 		bool	sep(false);
 		while (it.hasNext())
 		{
-      KMPrinter *printerIt(it.next());
+			KMPrinter *printerIt(it.next());
 			// skip invalid printers
 			if ( !printerIt->isValid() )
 				continue;

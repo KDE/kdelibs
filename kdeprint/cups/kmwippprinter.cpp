@@ -130,11 +130,11 @@ void KMWIppPrinter::slotScanStarted()
 void KMWIppPrinter::slotScanFinished()
 {
 	m_ippreport->setEnabled(false);
-	const QList<NetworkScanner::SocketInfo*>	*list = m_scanner->printerList();
-	QListIterator<NetworkScanner::SocketInfo*>	it(*list);
+	const QList<NetworkScanner::SocketInfo*>	list = m_scanner->printerList();
+	QListIterator<NetworkScanner::SocketInfo*>	it(list);
 	while (it.hasNext())
 	{
-    NetworkScanner::SocketInfo *info(it.next());
+		NetworkScanner::SocketInfo *info(it.next());
 		QString	name;
 		if (info->Name.isEmpty())
 			name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(info->IP);

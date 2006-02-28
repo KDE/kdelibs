@@ -252,9 +252,9 @@ void NetworkScanner::slotConnectionFailed( int )
 	next();
 }
 
-const QList<NetworkScanner::SocketInfo*>* NetworkScanner::printerList()
+QList<NetworkScanner::SocketInfo*> NetworkScanner::printerList() const
 {
-	return &( d->printers );
+	return d->printers;
 }
 
 int NetworkScanner::timeout() const

@@ -194,7 +194,7 @@ void KMListView::setPrinterList(QList<KMPrinter*> *list)
 		KMListViewItem			*item (0);
 		while (it.hasNext())
 		{
-      KMPrinter *printer(it.next());
+			KMPrinter *printer(it.next());
 			item = findItem(printer);
 			if (!item)
 			{

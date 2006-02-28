@@ -63,7 +63,7 @@ public:
 
 	bool checkPrinter(const QString& host, int port, QString* hostname = 0);
 
-	const QList<SocketInfo*>* printerList() { return &printerlist_; }
+	const QList<SocketInfo*> printerList() { return printerlist_; }
 	bool scanNetwork(QProgressBar *bar = 0);
 	void configureScan(QWidget *parent = 0);
 	void setDefaultPort(int p) { port_ = p; }

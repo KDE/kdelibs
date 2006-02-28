@@ -126,8 +126,8 @@ void KMWSocket::slotScanStarted()
 
 void KMWSocket::slotScanFinished()
 {
-	const QList<NetworkScanner::SocketInfo*>	*list = m_scanner->printerList();
-	QListIterator<NetworkScanner::SocketInfo*>	it(*list);
+	const QList<NetworkScanner::SocketInfo*>	list = m_scanner->printerList();
+	QListIterator<NetworkScanner::SocketInfo*>	it(list);
 	while (it.hasNext())
 	{
 		QString	name;

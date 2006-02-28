@@ -227,7 +227,7 @@ KMPrinter* KMManager::defaultPrinter()
 	return prt;
 }
 
-QList<KMPrinter*>* KMManager::printerList(bool reload)
+QList<KMPrinter*> KMManager::printerList(bool reload)
 {
 	setErrorMsg(QString());
 	//kDebug(500) << "Getting printer list: " << reload << endl;
@@ -280,13 +280,13 @@ QList<KMPrinter*>* KMManager::printerList(bool reload)
 		}
 	}
 
-	return &m_fprinters;
+	return m_fprinters;
 }
 
-QList<KMPrinter*>* KMManager::printerListComplete(bool reload)
+QList<KMPrinter*> KMManager::printerListComplete(bool reload)
 {
 	printerList(reload);
-	return &m_printers;
+	return m_printers;
 }
 
 void KMManager::listPrinters()

@@ -166,10 +166,10 @@ void KMIconView::setPrinterList(QList<KMPrinter*> *list)
 		KMIconViewItem			*item(0);
 		while (it.hasNext())
 		{
-      KMPrinter *printer(it.next());
-                        // only keep real printers (no instances)
-                        if (!printer->instanceName().isEmpty())
-                                continue;
+			KMPrinter *printer(it.next());
+			// only keep real printers (no instances)
+			if (!printer->instanceName().isEmpty())
+				continue;
 			item = findItem(printer);
 			if (!item)
 			{

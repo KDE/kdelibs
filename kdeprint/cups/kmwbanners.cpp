@@ -29,25 +29,22 @@
 #include <qmap.h>
 #include <klocale.h>
 
-QStringList defaultBanners()
+static QStringList defaultBanners()
 {
 	QStringList	bans;
-	QList<KMPrinter*>	*list = KMFactory::self()->manager()->printerList(false);
-	if (list && list->count() > 0)
-	{
-		QListIterator<KMPrinter*>	it(*list);
-    KMPrinter *printer = 0;
-		while (it.hasNext()) {
-      printer = it.next();
-      if (printer->isPrinter())
-          break;
-    }
+	QList<KMPrinter*>	list = KMFactory::self()->manager()->printerList(false);
+	QListIterator<KMPrinter*>	it(list);
+	KMPrinter *printer = 0;
+	while (it.hasNext()) {
+	    printer = it.next();
+	    if (printer->isPrinter())
+	        break;
+	}
 
-		if (printer && KMFactory::self()->manager()->completePrinter(printer))
-		{
-			QString	s = list->first()->option("kde-banners-supported");
-			bans = s.split(',',QString::SkipEmptyParts);
-		}
+	if (printer && KMFactory::self()->manager()->completePrinter(printer))
+	{
+		QString	s = list.first()->option("kde-banners-supported");
+		bans = s.split(',',QString::SkipEmptyParts);
 	}
 	if (bans.count() == 0)
 		bans.append("none");

@@ -76,15 +76,15 @@ void KPrintAction::slotAboutToShow()
 {
 	popupMenu()->clear();
 	d->printers.clear();
-	QList<KMPrinter*>	*prts = KMManager::self()->printerList();
-	if (prts && !prts->isEmpty())
+	QList<KMPrinter*>	prts = KMManager::self()->printerList();
+	if (!prts.isEmpty())
 	{
-		QListIterator<KMPrinter*>	it(*prts);
+		QListIterator<KMPrinter*>	it(prts);
 		bool	first(false);
 		int	ID(0);
 		while (it.hasNext())
 		{
-      KMPrinter *printer(it.next());
+			KMPrinter *printer(it.next());
 			if (d->type == All || (d->type == Specials && printer->isSpecial()) || (d->type == Regular && !printer->isSpecial()))
 			{
 				if (d->type == All && !first && printer->isSpecial())

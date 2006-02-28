@@ -106,8 +106,8 @@ public:
 
 	// printer listing functions
 	KMPrinter* findPrinter(const QString& name);
-	QList<KMPrinter*>* printerList(bool reload = true);
-	QList<KMPrinter*>* printerListComplete(bool reload = true);
+	QList<KMPrinter*> printerList(bool reload = true);
+	QList<KMPrinter*> printerListComplete(bool reload = true);
 	KMPrinter* defaultPrinter();
 	void enableFilter(bool on);
 	bool isFilterEnabled() const;

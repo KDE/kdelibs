@@ -97,19 +97,16 @@ void KMWClass::initPrinter(KMPrinter *p)
 	KMManager	*mgr = KMFactory::self()->manager();
 
 	// first load available printers
-	QList<KMPrinter*>	*list = mgr->printerList(false);
+	QList<KMPrinter*> list = mgr->printerList(false);
 	m_list1->clear();
-	if (list)
-	{
-		QListIterator<KMPrinter*>	it(*list);
-		while (it.hasNext()) {
-      KMPrinter *printer(it.next());
-			if (printer->instanceName().isEmpty() && !printer->isClass(true) &&
-          !printer->isSpecial() && !members.contains(printer->name()))
-				m_list1->insertItem(SmallIcon(printer->pixmap()), printer->name());
-    }
-		m_list1->sort();
+	QListIterator<KMPrinter*>	it(list);
+	while (it.hasNext()) {
+		KMPrinter *printer(it.next());
+		if (printer->instanceName().isEmpty() && !printer->isClass(true) &&
+			!printer->isSpecial() && !members.contains(printer->name()))
+			m_list1->insertItem(SmallIcon(printer->pixmap()), printer->name());
 	}
+	m_list1->sort();
 
 	// set class printers
 	m_list2->clear();

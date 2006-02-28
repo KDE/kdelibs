@@ -43,7 +43,7 @@ public:
 		int Port;
 	};
 
-	const QList<NetworkScanner::SocketInfo*>* printerList();
+	QList<NetworkScanner::SocketInfo*> printerList() const;
 
 	int timeout() const;
 	void setTimeout( int to );

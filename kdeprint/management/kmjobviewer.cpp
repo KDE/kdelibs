@@ -528,7 +528,7 @@ void KMJobViewer::loadPrinters()
 	m_printers.clear();
 
 	// retrieve printer list without reloading it (faster)
-	QListIterator<KMPrinter*>	it(*(KMFactory::self()->manager()->printerList(false)));
+	QListIterator<KMPrinter*>	it(KMFactory::self()->manager()->printerList(false));
 	while (it.hasNext())
 	{
 		KMPrinter *printer(it.next());
