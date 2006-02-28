@@ -183,7 +183,7 @@ DrMain* LprHandler::loadToolDriver(const QString& filename)
 		driver->set("text", "Tool Driver");
 		while (!t.atEnd())
 		{
-			l = QStringList::split('|', t.readLine().trimmed(), false);
+			l = t.readLine().trimmed().split('|', QString::SkipEmptyParts);
 			if (l.count() == 0)
 				continue;
 			if (l[0] == "GROUP")
@@ -256,7 +256,7 @@ QString LprHandler::driverDirInternal()
 
 QString LprHandler::locateDir(const QString& dirname, const QString& paths)
 {
-	QStringList	pathlist = QStringList::split(':', paths, false);
+	QStringList	pathlist = paths.split(':', QString::SkipEmptyParts);
 	for (QStringList::ConstIterator it=pathlist.begin(); it!=pathlist.end(); ++it)
 	{
 		QString	testpath = *it + "/" + dirname;

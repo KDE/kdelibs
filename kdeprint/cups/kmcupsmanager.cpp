@@ -165,9 +165,9 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 		req.addInteger(IPP_TAG_PRINTER,"job-k-limit",p->option("job-k-limit").toInt());
 		req.addInteger(IPP_TAG_PRINTER,"job-page-limit",p->option("job-page-limit").toInt());
 		if (!p->option("requesting-user-name-denied").isEmpty())
-			req.addName(IPP_TAG_PRINTER,"requesting-user-name-denied",QStringList::split(",",p->option("requesting-user-name-denied"),false));
+			req.addName(IPP_TAG_PRINTER,"requesting-user-name-denied",p->option("requesting-user-name-denied").split(",",QString::SkipEmptyParts));
 		else if (!p->option("requesting-user-name-allowed").isEmpty())
-			req.addName(IPP_TAG_PRINTER,"requesting-user-name-allowed",QStringList::split(",",p->option("requesting-user-name-allowed"),false));
+			req.addName(IPP_TAG_PRINTER,"requesting-user-name-allowed",p->option("requesting-user-name-allowed").split(",",QString::SkipEmptyParts));
 		else
 			req.addName(IPP_TAG_PRINTER,"requesting-user-name-allowed",QLatin1String("all"));
 	}
@@ -532,7 +532,7 @@ DrMain* KMCupsManager::loadFileDriver(const QString& filename)
 
 DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 {
-	QStringList	comps = QStringList::split('/', drname, false);
+	QStringList	comps = drname.split('/', QString::SkipEmptyParts);
 	QString	tmpFile = locateLocal("tmp", "foomatic_" + KRandom::randomString(8));
 	QString	PATH = QLatin1String(getenv("PATH"));
 	PATH += QLatin1String(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");

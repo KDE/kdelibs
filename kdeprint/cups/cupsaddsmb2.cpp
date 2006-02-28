@@ -230,7 +230,7 @@ void CupsAddSmb::checkActionStatus()
 			m_status = (m_buffer.count() == 0);
 			break;
 		case MkDir:
-			m_status = (m_buffer.count() == 1 || m_buffer[1].find("ERRfilexists") != -1);
+			m_status = (m_buffer.count() == 1 || m_buffer[1].indexOf("ERRfilexists") != -1);
 			break;
 		case AddDriver:
 		case AddPrinter:
@@ -264,7 +264,7 @@ void CupsAddSmb::doNextAction()
 			m_state = MkDir;
 			//m_text->setText(i18n("Creating directory %1").arg(m_actions[m_actionindex]));
 			m_textinfo->setText(i18n("Creating folder %1").arg(m_actions[m_actionindex]));
-			s.append(" ").append(m_actions[m_actionindex].latin1());
+			s.append(" ").append(m_actions[m_actionindex].toLatin1());
 			m_actionindex++;
 		}
 		else if (s == "put")
@@ -272,7 +272,7 @@ void CupsAddSmb::doNextAction()
 			m_state = Copy;
 			//m_text->setText(i18n("Uploading %1").arg(m_actions[m_actionindex+1]));
 			m_textinfo->setText(i18n("Uploading %1").arg(m_actions[m_actionindex+1]));
-			s.append(" ").append(QFile::encodeName(m_actions[m_actionindex]).data()).append(" ").append(m_actions[m_actionindex+1].latin1());
+			s.append(" ").append(QFile::encodeName(m_actions[m_actionindex]).data()).append(" ").append(m_actions[m_actionindex+1].toLatin1());
 			m_actionindex += 2;
 		}
 		else if (s == "adddriver")
@@ -280,7 +280,7 @@ void CupsAddSmb::doNextAction()
 			m_state = AddDriver;
 			//m_text->setText(i18n("Installing driver for %1").arg(m_actions[m_actionindex]));
 			m_textinfo->setText(i18n("Installing driver for %1").arg(m_actions[m_actionindex]));
-			s.append(" \"").append(m_actions[m_actionindex].latin1()).append("\" \"").append(m_actions[m_actionindex+1].latin1()).append("\"");
+			s.append(" \"").append(m_actions[m_actionindex].toLatin1()).append("\" \"").append(m_actions[m_actionindex+1].toLatin1()).append("\"");
 			m_actionindex += 2;
 		}
 		else if (s == "addprinter" || s == "setdriver")

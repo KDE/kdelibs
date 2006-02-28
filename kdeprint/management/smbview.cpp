@@ -203,7 +203,7 @@ void SmbView::setOpen(Q3ListViewItem *item, bool on)
 
 void SmbView::processGroups()
 {
-	QStringList	grps = QStringList::split('\n',m_buffer,false);
+	QStringList	grps = m_buffer.split('\n',QString::SkipEmptyParts);
 	clear();
 	for (QStringList::ConstIterator it=grps.begin(); it!=grps.end(); ++it)
 	{
@@ -218,7 +218,7 @@ void SmbView::processGroups()
 
 void SmbView::processServers()
 {
-	QStringList	lines = QStringList::split('\n',m_buffer,true);
+	QStringList	lines = m_buffer.split('\n',QString::SkipEmptyParts);
 	QString		line;
 	int 		index(0);
 	for (;index < lines.count();index++)
@@ -230,7 +230,7 @@ void SmbView::processServers()
 		line = lines[index++].trimmed();
 		if (line.isEmpty())
 			break;
-		QStringList	words = QStringList::split(' ',line,false);
+		QStringList	words = line.split(' ',QString::SkipEmptyParts);
 		Q3ListViewItem	*item = new Q3ListViewItem(m_current,words[0]);
 		item->setExpandable(true);
 		item->setPixmap(0,SmallIcon("kdeprint_computer"));
@@ -239,7 +239,7 @@ void SmbView::processServers()
 
 void SmbView::processShares()
 {
-	QStringList	lines = QStringList::split('\n',m_buffer,true);
+	QStringList	lines = m_buffer.split('\n',QString::SkipEmptyParts);
 	QString		line;
 	int 		index(0);
 	for (;index < lines.count();index++)

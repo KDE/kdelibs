@@ -78,7 +78,7 @@ static QList<float> splitNumberString( const QString& _s )
 	int p1 = 1, p2 = 0;
 	while ( true )
 	{
-		p2 = s.find( ' ', p1 );
+		p2 = s.indexOf( ' ', p1 );
 		if ( p2 != -1 )
 		{
 			l.append( s.mid( p1, p2-p1 ).toFloat() );
@@ -220,7 +220,7 @@ bool PPDLoader::endUi( const QString& name )
 			else
 				grp = m_groups.top();
 			grp->addOption( m_option );
-			if ( grp->get( "text" ).contains( "install", false ) )
+			if ( grp->get( "text" ).contains( "install", Qt::CaseInsensitive ) )
 				m_option->set( "fixed", "1" );
 		}
 		m_option = 0;

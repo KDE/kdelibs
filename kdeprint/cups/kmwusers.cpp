@@ -65,14 +65,14 @@ void KMWUsers::initPrinter(KMPrinter *p)
 	int		i(1);
 	if (!p->option("requesting-user-name-denied").isEmpty())
 	{
-		l = QStringList::split(",", p->option("requesting-user-name-denied"), false);
+		l = p->option("requesting-user-name-denied").split(",", QString::SkipEmptyParts);
 		if (l.count() == 1 && l[0] == "none")
 			l.clear();
 	}
 	else if (!p->option("requesting-user-name-allowed").isEmpty())
 	{
 		i = 0;
-		l = QStringList::split(",", p->option("requesting-user-name-allowed"), false);
+		l = p->option("requesting-user-name-allowed").split(",", QString::SkipEmptyParts);
 		if (l.count() && l[0] == "all")
 			l.clear();
 	}

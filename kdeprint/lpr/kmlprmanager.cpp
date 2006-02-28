@@ -364,7 +364,7 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	entry->addField("mx", Field::Integer, "0");
 	entry->addField("sd", Field::String, sd);
 	if (!prt->option("kde-aliases").isEmpty())
-		entry->aliases += QStringList::split("|", prt->option("kde-aliases"), false);
+		entry->aliases += prt->option("kde-aliases").split("|", QString::SkipEmptyParts);
 
 	// insert the new entry and save printcap file
 	m_entries.insert(prt->printerName(), entry);

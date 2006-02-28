@@ -121,7 +121,7 @@ int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 	connect(proc,SIGNAL(printTerminated(KPrintProcess*)),SLOT(slotPrintTerminated(KPrintProcess*)));
 	connect(proc,SIGNAL(printError(KPrintProcess*,const QString&)),SLOT(slotPrintError(KPrintProcess*,const QString&)));
 	proc->setCommand( command );
-	if ( re.search( command ) != -1 )
+	if ( re.indexIn( command ) != -1 )
 	{
 		KUrl url( re.cap( 1 ) );
 		if ( !url.isLocalFile() )

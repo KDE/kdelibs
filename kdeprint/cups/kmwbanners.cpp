@@ -123,7 +123,7 @@ void KMWBanners::initPrinter(KMPrinter *p)
 	{
 		if (m_start->count() == 0)
 		{
-			m_bans = QStringList::split(',',p->option("kde-banners-supported"),false);
+			m_bans = p->option("kde-banners-supported").split(',',QString::SkipEmptyParts);
 			if (m_bans.count() == 0)
 				m_bans = defaultBanners();
 			if (m_bans.find("none") == m_bans.end())
@@ -134,7 +134,7 @@ void KMWBanners::initPrinter(KMPrinter *p)
 				m_end->insertItem( i18n( mapBanner(*it).toUtf8() ) );
 			}
 		}
-		QStringList	l = QStringList::split(',',p->option("kde-banners"),false);
+		QStringList	l = p->option("kde-banners").split(',',QString::SkipEmptyParts);
 		while (l.count() < 2)
 			l.append("none");
 		m_start->setCurrentIndex(m_bans.indexOf(l[0]));

@@ -114,7 +114,7 @@ PrintcapEntry* PrintcapReader::nextEntry()
     if (!name.isEmpty())
     {
         PrintcapEntry   *entry = new PrintcapEntry;
-        QStringList l = QStringList::split('|', name, false);
+        QStringList l = name.split('|', QString::SkipEmptyParts);
         entry->name = l[0];
         entry->comment = comment;
         // kDebug() << "Printer: " << entry->name << endl;
@@ -128,7 +128,7 @@ PrintcapEntry* PrintcapReader::nextEntry()
         {
             // kDebug() << "Fields:" << endl;
             // kDebug() << "(" << fields << ")" << endl;
-            l = QStringList::split(':', fields, false);
+            l = fields.split(':', QString::SkipEmptyParts);
             for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
             {
                 Field f;

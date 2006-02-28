@@ -287,7 +287,7 @@ void KPPosterPage::setOptions( const QMap<QString,QString>& opts )
 
 void KPPosterPage::getOptions( QMap<QString,QString>& opts, bool )
 {
-	QStringList o = QStringList::split( ",", opts[ "_kde-filters" ], false );
+	QStringList o = opts[ "_kde-filters" ].split( ",", QString::SkipEmptyParts );
 	if ( !m_postercheck->isChecked() )
 	{
 		o.removeAll( "poster" );

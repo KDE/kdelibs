@@ -53,14 +53,14 @@ void KMPropUsers::setPrinter(KMPrinter *p)
 		if (!p->option("requesting-user-name-denied").isEmpty())
 		{
 			txt = txt.arg(i18n("Denied users"));
-			users = QStringList::split(",", p->option("requesting-user-name-denied"), false);
+			users = p->option("requesting-user-name-denied").split(",", QString::SkipEmptyParts);
 			if (users.count() == 1 && users[0] == "none")
 				users.clear();
 		}
 		else if (!p->option("requesting-user-name-allowed").isEmpty())
 		{
 			txt = txt.arg(i18n("Allowed users"));
-			users = QStringList::split(",", p->option("requesting-user-name-allowed"), false);
+			users = p->option("requesting-user-name-allowed").split(",", QString::SkipEmptyParts);
 			if (users.count() == 1 && users[0] == "all")
 				users.clear();
 		}

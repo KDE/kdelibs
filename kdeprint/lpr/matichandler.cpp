@@ -127,7 +127,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 {
 	QString	url;
 	int	p = s.lastIndexOf('|');
-	QStringList	args = QStringList::split(" ", s.right(s.length()-p-1));
+	QStringList	args = s.right(s.length()-p-1).split(" ", QString::SkipEmptyParts);
 
 	if (args.count() != 0)
 	{
@@ -143,7 +143,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 		// smb printer
 		else if (args[0].endsWith("/smbclient"))
 		{
-			QStringList	host_components = QStringList::split(QRegExp("/|\\\\\""), args[1], false);
+			QStringList	host_components = args[1].split(QRegExp("/|\\\\\""), QString::SkipEmptyParts);
 			QString	workgrp, user, pass;
 			for (int i=2; i<args.count(); i++)
 			{
@@ -239,7 +239,7 @@ DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry, bool)
 
 DrMain* MaticHandler::loadDbDriver(const QString& path)
 {
-	QStringList	comps = QStringList::split('/', path, false);
+	QStringList	comps = path.split('/', QString::SkipEmptyParts);
 	if (comps.count() < 3 || comps[0] != "foomatic")
 	{
 		manager()->setErrorMsg(i18n("Internal error."));

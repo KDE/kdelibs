@@ -110,7 +110,7 @@ QMap<QString,QString> readEntry(KTextBuffer& t)
 
 	if (!line.isEmpty())
 	{
-		QStringList	l = QStringList::split(':',line,false);
+		QStringList	l = line.split(':',QString::SkipEmptyParts);
 		if (l.count() > 0)
 		{
 			int 	p(-1);
@@ -203,7 +203,7 @@ void KMLpdUnixManager::parseEtcPrintcap()
 					if (p != -1)
 					{
 						QChar	c = entry["all"][p];
-						QStringList	prs = QStringList::split(c,entry["all"],false);
+						QStringList	prs = entry["all"].split(c,QString::SkipEmptyParts);
 						for (QStringList::ConstIterator it=prs.begin(); it!=prs.end(); ++it)
 						{
 							KMPrinter	*printer = ::createPrinter(*it);
@@ -267,7 +267,7 @@ void KMLpdUnixManager::parseEtcPrintersConf()
 				KMPrinter	*printer = ::createPrinter(entry);
 				if (entry.contains("bsdaddr"))
 				{
-					QStringList	l = QStringList::split(',',entry["bsdaddr"],false);
+					QStringList	l = entry["bsdaddr"].split(',',QString::SkipEmptyParts);
 					printer->setDescription(i18n("Remote printer queue on %1").arg(l[0]));
 				}
 				else
@@ -302,7 +302,7 @@ void KMLpdUnixManager::parseEtcLpPrinters()
 				if (line.isEmpty()) continue;
 				if (line.startsWith("Remote:"))
 				{
-					QStringList	l = QStringList::split(':',line,false);
+					QStringList	l = line.split(':',QString::SkipEmptyParts);
 					if (l.count() > 1) remote = l[1];
 				}
 			}
@@ -357,7 +357,7 @@ void KMLpdUnixManager::parseSpoolInterface()
 				line = t.readLine().trimmed();
 				if (line.startsWith("HOSTNAME"))
 				{
-					QStringList	l = QStringList::split('=',line,false);
+					QStringList	l = line.split('=',QString::SkipEmptyParts);
 					if (l.count() > 1) remote = l[1];
 				}
 			}
