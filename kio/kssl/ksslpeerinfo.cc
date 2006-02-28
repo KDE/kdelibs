@@ -70,7 +70,7 @@ void KSSLPeerInfo::setPeerHost(const QString &realHost) {
 bool KSSLPeerInfo::certMatchesAddress() {
 #ifdef KSSL_HAVE_SSL
 	KSSLX509Map certinfo(m_cert.getSubject());
-	QStringList cns = QStringList::split(QRegExp("[ \n\r]"), certinfo.getValue("CN"));
+	QStringList cns = certinfo.getValue("CN").split(QRegExp("[ \n\r]"), QString::SkipEmptyParts);
 	cns += m_cert.subjAltNames();
 
 	for (QStringList::Iterator cn = cns.begin(); cn != cns.end(); ++cn) {
@@ -92,7 +92,7 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 		      << d->peerHost << "]" << endl;
 
 	// Check for invalid characters
-	if (QRegExp("[^a-zA-Z0-9\\.\\*\\-]").search(cn) >= 0) {
+	if (QRegExp("[^a-zA-Z0-9\\.\\*\\-]").indexIn(cn) >= 0) {
 		kDebug(7029) << "CN contains invalid characters!  Failing." << endl;
 		return false;
 	}
@@ -118,10 +118,10 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 	if (cn.contains('*')) {
 		// First make sure that there are at least two valid parts
 		// after the wildcard (*).
-		QStringList parts = QStringList::split('.', cn, false);
+		QStringList parts = cn.split('.', QString::SkipEmptyParts);
 
 		while (parts.count() > 2)
-			parts.remove(parts.begin());
+			parts.removeFirst();
 
 		if (parts.count() != 2) {
 			return false;  // we don't allow *.root - that's bad
@@ -134,9 +134,9 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 		// RFC2818 says that *.example.com should match against
 		// foo.example.com but not bar.foo.example.com
 		// (ie. they must have the same number of parts)
-		if (QRegExp(cn, false, true).exactMatch(d->peerHost) &&
-		    QStringList::split('.', cn, false).count() ==
-		    QStringList::split('.', d->peerHost, false).count())
+		if (QRegExp(cn, Qt::CaseInsensitive, QRegExp::Wildcard).exactMatch(d->peerHost) &&
+		    cn.split('.', QString::SkipEmptyParts).count() ==
+		    d->peerHost.split('.', QString::SkipEmptyParts).count())
 			return true;
 
 		// *.example.com must match example.com also.  Sigh..
