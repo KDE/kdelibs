@@ -188,6 +188,8 @@ public:
         case CT_PushButton:
             return QSize(size.width(), size.height() - 1); 
         case CT_LineEdit:
+	    if (widget && widget->parentWidget() && !qstricmp(widget->parentWidget()->className(), "KUrlRequester"))
+		return QSize(size.width() + 1, size.height());
             return QSize(size.width() + 2, size.height() + 2);
         case CT_ComboBox:
         {
