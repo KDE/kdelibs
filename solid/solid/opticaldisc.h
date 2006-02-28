@@ -43,7 +43,7 @@ namespace KDEHW
         bool isAppendable() const;
         bool isBlank() const;
         bool isRewritable() const;
-        long capacity() const;
+        qulonglong capacity() const;
 
     private:
         class Private;

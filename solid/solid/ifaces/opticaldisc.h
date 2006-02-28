@@ -38,7 +38,7 @@ namespace Ifaces
         virtual bool isAppendable() const = 0;
         virtual bool isBlank() const = 0;
         virtual bool isRewritable() const = 0;
-        virtual long capacity() const = 0;
+        virtual qulonglong capacity() const = 0;
     };
 }
 }

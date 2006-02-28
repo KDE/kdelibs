@@ -82,7 +82,7 @@ QString KDEHW::Volume::uuid() const
     return d->iface->uuid();
 }
 
-long KDEHW::Volume::size() const
+qulonglong KDEHW::Volume::size() const
 {
     return d->iface->size();
 }

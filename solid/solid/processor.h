@@ -39,7 +39,7 @@ namespace KDEHW
         static Type type() { return Capability::Processor; }
 
         int number() const;
-        long maxSpeed() const;
+        qulonglong maxSpeed() const;
         bool canThrottle() const;
 
     private:

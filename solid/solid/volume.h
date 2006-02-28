@@ -51,7 +51,7 @@ namespace KDEHW
         QString fsType() const;
         QString label() const;
         QString uuid() const;
-        long size() const;
+        qulonglong size() const;
 
         KIO::Job *mount( bool showProgressInfo = false );
         KIO::Job *unmount( bool showProgressInfo = false );

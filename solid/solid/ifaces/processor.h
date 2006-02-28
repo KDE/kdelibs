@@ -34,7 +34,7 @@ namespace Ifaces
         static Type type() { return Capability::Processor; }
 
         virtual int number() const = 0;
-        virtual long maxSpeed() const = 0;
+        virtual qulonglong maxSpeed() const = 0;
         virtual bool canThrottle() const = 0;
     };
 }

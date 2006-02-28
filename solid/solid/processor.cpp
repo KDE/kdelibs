@@ -49,7 +49,7 @@ int KDEHW::Processor::number() const
     return d->iface->number();
 }
 
-long KDEHW::Processor::maxSpeed() const
+qulonglong KDEHW::Processor::maxSpeed() const
 {
     return d->iface->maxSpeed();
 }

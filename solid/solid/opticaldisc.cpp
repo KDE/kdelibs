@@ -69,7 +69,7 @@ bool KDEHW::OpticalDisc::isRewritable() const
     return d->iface->isRewritable();
 }
 
-long KDEHW::OpticalDisc::capacity() const
+qulonglong KDEHW::OpticalDisc::capacity() const
 {
     return d->iface->capacity();
 }

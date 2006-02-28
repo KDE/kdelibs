@@ -31,7 +31,7 @@ public:
     virtual ~FakeProcessor() {}
 
     virtual int number() const { return 1; }
-    virtual long maxSpeed() const { return 3200; }
+    virtual qulonglong maxSpeed() const { return 3200; }
     virtual bool canThrottle() const { return true; }
 };
 
