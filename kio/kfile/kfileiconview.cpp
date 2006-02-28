@@ -627,14 +627,14 @@ bool KFileIconView::canPreview( const KFileItem *item ) const
 {
     QStringList::Iterator it = d->previewMimeTypes.begin();
     QRegExp r;
-    r.setWildcard( true );
+    r.setPatternSyntax( QRegExp::Wildcard );
 
     for ( ; it != d->previewMimeTypes.end(); ++it ) {
         QString type = *it;
         // the "mimetype" can be "image/*"
         if ( type.at( type.length() - 1 ) == '*' ) {
             r.setPattern( type );
-            if ( r.search( item->mimetype() ) != -1 )
+            if ( r.indexIn( item->mimetype() ) != -1 )
                 return true;
         }
         else

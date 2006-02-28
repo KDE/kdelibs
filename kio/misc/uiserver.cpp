@@ -1158,7 +1158,7 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, 
    if (x) {
       // Set the chain back onto the certificate
       QStringList cl =
-                      QStringList::split(QString("\n"), meta["ssl_peer_chain"]);
+                      meta["ssl_peer_chain"].split(QString("\n"), QString::SkipEmptyParts);
       Q3PtrList<KSSLCertificate> ncl;
 
       ncl.setAutoDelete(true);

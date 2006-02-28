@@ -104,7 +104,7 @@ namespace
         static int findString( const UString& s, const char* const* values )
         {
             int index = 0;
-            UString lower = s.qstring().lower();
+            UString lower = s.qstring().toLower();
             for ( const char* const* p = values; *p; ++p, ++index )
                 if ( lower == *p ) return index;
             return -1;
@@ -131,7 +131,7 @@ namespace
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 1 ) return Undefined();
-            return Boolean( args[ 0 ]->toString( exec ).qstring().find( "." ) == -1 );
+            return Boolean( args[ 0 ]->toString( exec ).qstring().indexOf( "." ) == -1 );
         }
     };
 

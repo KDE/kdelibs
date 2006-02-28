@@ -403,7 +403,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
     bool exists = false;
     KUrl url( currUrl );
 
-    QStringList dirs = QStringList::split( QDir::separator(), directory );
+    QStringList dirs = directory.split( QDir::separator(), QString::SkipEmptyParts );
     QStringList::ConstIterator it = dirs.begin();
 
     for ( ; it != dirs.end(); ++it )
@@ -798,13 +798,13 @@ bool KDirOperator::checkPreviewInternal() const
         return false;
 
     QStringList mimeTypes = dir->mimeFilters();
-    QStringList nameFilter = QStringList::split( " ", dir->nameFilter() );
+    QStringList nameFilter = dir->nameFilter().split( " ", QString::SkipEmptyParts );
 
     if ( mimeTypes.isEmpty() && nameFilter.isEmpty() && !supported.isEmpty() )
         return true;
     else {
         QRegExp r;
-        r.setWildcard( true ); // the "mimetype" can be "image/*"
+        r.setPatternSyntax( QRegExp::Wildcard ); // the "mimetype" can be "image/*"
 
         if ( !mimeTypes.isEmpty() ) {
             QStringList::Iterator it = supported.begin();
@@ -839,7 +839,7 @@ bool KDirOperator::checkPreviewInternal() const
                 QStringList::Iterator it2 = supported.begin();
                 for ( ; it2 != supported.end(); ++it2 ) {
                     r.setPattern( *it2 );
-                    if ( r.search( mime ) != -1 ) {
+                    if ( r.indexIn( mime ) != -1 ) {
                         return true;
                     }
                 }

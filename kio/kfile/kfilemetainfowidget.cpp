@@ -79,15 +79,18 @@ void KFileMetaInfoWidget::init(KFileMetaInfoItem item, Mode mode)
         switch (m_value.type())
         {
             case QVariant::Image :
-                m_widget = new QLabel(this, "info image");
+                m_widget = new QLabel(this);
+                m_widget->setObjectName(QLatin1String("info image"));
                 static_cast<QLabel*>(m_widget)->setPixmap(QPixmap(m_value.value<QImage>()));
                 break;
             case QVariant::Pixmap :
-                m_widget = new QLabel(this, "info pixmap");
+                m_widget = new QLabel(this);
+                m_widget->setObjectName(QLatin1String("info pixmap"));
                 static_cast<QLabel*>(m_widget)->setPixmap(m_value.value<QPixmap>());
                 break;
             default:
-                m_widget = new QLabel(item.string(true), this, "info label");
+                m_widget = new QLabel(item.string(true), this);
+                m_widget->setObjectName(QLatin1String("info label"));
         }
 
     (new QHBoxLayout(this))->addWidget(m_widget);
@@ -106,7 +109,8 @@ QWidget* KFileMetaInfoWidget::makeWidget()
     {
         case QVariant::Invalid:     // no type
             // just make a label
-            w = new QLabel(i18n("<Error>"), this, "label");
+            w = new QLabel(i18n("<Error>"), this);
+            w->setObjectName(QLatin1String("label"));
             break;
 
         case QVariant::Int:         // an int
@@ -181,7 +185,8 @@ QWidget* KFileMetaInfoWidget::makeWidget()
 
 QWidget* KFileMetaInfoWidget::makeBoolWidget()
 {
-    QCheckBox* cb = new QCheckBox(this, "metainfo bool widget");
+    QCheckBox* cb = new QCheckBox(this);
+    cb->setObjectName(QLatin1String("metainfo bool widget"));
     cb->setChecked(m_item.value().toBool());
     connect(cb, SIGNAL(toggled(bool)), this, SLOT(slotChanged(bool)));
     return cb;
@@ -189,7 +194,8 @@ QWidget* KFileMetaInfoWidget::makeBoolWidget()
 
 QWidget* KFileMetaInfoWidget::makeIntWidget()
 {
-    QSpinBox* sb = new QSpinBox(this, "metainfo integer widget");
+    QSpinBox* sb = new QSpinBox(this);
+    sb->setObjectName(QLatin1String("metainfo integer widget"));
     sb->setValue(m_item.value().toInt());
 
     if (m_validator)

@@ -67,7 +67,7 @@ public:
       // make sure they are not larger than 16x16
       if (normal.width() > 16 || normal.height() > 16) {
           QImage tmp = normal.toImage();
-          tmp = tmp.smoothScale(16, 16);
+          tmp = tmp.scaled(16, 16, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
           normal.convertFromImage(tmp);
       }
       setText(0, serviceName);

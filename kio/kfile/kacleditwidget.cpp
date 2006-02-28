@@ -79,11 +79,14 @@ KACLEditWidget::KACLEditWidget( QWidget *parent )
             this, SLOT( slotUpdateButtons() ) );
     KVBox *vbox = new KVBox( hbox );
     vbox->setSpacing(  KDialog::spacingHint() );
-    m_AddBtn = new QPushButton( i18n( "Add Entry..." ), vbox, "add_entry_button" );
+    m_AddBtn = new QPushButton( i18n( "Add Entry..." ), vbox );
+    m_AddBtn->setObjectName( QLatin1String( "add_entry_button" ) );
     connect( m_AddBtn, SIGNAL( clicked() ), m_listView, SLOT( slotAddEntry() ) );
-    m_EditBtn = new QPushButton( i18n( "Edit Entry..." ), vbox, "edit_entry_button" );
+    m_EditBtn = new QPushButton( i18n( "Edit Entry..." ), vbox );
+    m_EditBtn->setObjectName( QLatin1String( "edit_entry_button" ) );
     connect( m_EditBtn, SIGNAL( clicked() ), m_listView, SLOT( slotEditEntry() ) );
-    m_DelBtn = new QPushButton( i18n( "Delete Entry" ), vbox, "delete_entry_button" );
+    m_DelBtn = new QPushButton( i18n( "Delete Entry" ), vbox );
+    m_DelBtn->setObjectName( QLatin1String( "delete_entry_button" ) );
     connect( m_DelBtn, SIGNAL( clicked() ), m_listView, SLOT( slotRemoveEntry() ) );
     QWidget *spacer = new QWidget( vbox );
     spacer->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Expanding );
@@ -404,7 +407,8 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     m_buttonGroup = new QButtonGroup( page );
 
     if ( allowDefaults ) {
-        m_defaultCB = new QCheckBox( i18n("Default for new files in this folder"), page, "defaultCB" );
+        m_defaultCB = new QCheckBox( i18n("Default for new files in this folder"), page );
+        m_defaultCB->setObjectName( QLatin1String( "defaultCB" ) );
         mainLayout->addWidget( m_defaultCB );
         connect( m_defaultCB, SIGNAL( toggled( bool ) ),
                  this, SLOT( slotUpdateAllowedUsersAndGroups() ) );
@@ -412,27 +416,33 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
                  this, SLOT( slotUpdateAllowedTypes() ) );
     }
 
-    QRadioButton *ownerType = new QRadioButton( i18n("Owner"), gb, "ownerType" );
+    QRadioButton *ownerType = new QRadioButton( i18n("Owner"), gb );
+    ownerType->setObjectName( QLatin1String( "ownerType" ) );
     gbLayout->addWidget( ownerType );
     m_buttonGroup->addButton( ownerType );
     m_buttonIds.insert( ownerType, KACLListView::User );
-    QRadioButton *owningGroupType = new QRadioButton( i18n("Owning Group"), gb, "owningGroupType" );
+    QRadioButton *owningGroupType = new QRadioButton( i18n("Owning Group"), gb );
+    owningGroupType->setObjectName( QLatin1String( "owningGroupType" ) );
     gbLayout->addWidget( owningGroupType );
     m_buttonGroup->addButton( owningGroupType );
     m_buttonIds.insert( owningGroupType, KACLListView::Group );
-    QRadioButton *othersType = new QRadioButton( i18n("Others"), gb, "othersType" );
+    QRadioButton *othersType = new QRadioButton( i18n("Others"), gb );
+    othersType->setObjectName( QLatin1String( "othersType" ) );
     gbLayout->addWidget( othersType );
     m_buttonGroup->addButton( othersType );
     m_buttonIds.insert( othersType, KACLListView::Others );
-    QRadioButton *maskType = new QRadioButton( i18n("Mask"), gb, "maskType" );
+    QRadioButton *maskType = new QRadioButton( i18n("Mask"), gb );
+    maskType->setObjectName( QLatin1String( "maskType" ) );
     gbLayout->addWidget( maskType );
     m_buttonGroup->addButton( maskType );
     m_buttonIds.insert( maskType, KACLListView::Mask );
-    QRadioButton *namedUserType = new QRadioButton( i18n("Named User"), gb, "namesUserType" );
+    QRadioButton *namedUserType = new QRadioButton( i18n("Named User"), gb );
+    namedUserType->setObjectName( QLatin1String( "namesUserType" ) );
     gbLayout->addWidget( namedUserType );
     m_buttonGroup->addButton( namedUserType );
     m_buttonIds.insert( namedUserType, KACLListView::NamedUser );
-    QRadioButton *namedGroupType = new QRadioButton( i18n("Named Group"), gb, "namedGroupType" );
+    QRadioButton *namedGroupType = new QRadioButton( i18n("Named Group"), gb );
+    namedGroupType->setObjectName( QLatin1String( "namedGroupType" ) );
     gbLayout->addWidget( namedGroupType );
     m_buttonGroup->addButton( namedGroupType );
     m_buttonIds.insert( namedGroupType, KACLListView::NamedGroup );
@@ -452,11 +462,13 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     m_widgetStack->insertWidget( KACLListView::NamedGroup,groupsBox );
 
     QLabel *usersLabel = new QLabel( i18n( "User: " ), usersBox );
-    m_usersCombo = new QComboBox( false, usersBox, "users" );
+    m_usersCombo = new QComboBox( false, usersBox );
+    m_usersCombo->setObjectName( QLatin1String( "users" ) );
     usersLabel->setBuddy( m_usersCombo );
 
     QLabel *groupsLabel = new QLabel( i18n( "Group: " ), groupsBox );
-    m_groupsCombo = new QComboBox( false, groupsBox, "groups" );
+    m_groupsCombo = new QComboBox( false, groupsBox );
+    m_groupsCombo->setObjectName( QLatin1String( "groups" ) );
     groupsLabel->setBuddy( m_groupsCombo );
 
     if ( m_item ) {
