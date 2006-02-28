@@ -122,7 +122,7 @@ void PosterPreview::drawContents( QPainter *painter )
 			int x = ( width()-richtext.widthUsed() )/2, y = ( height()-richtext.height() )/2;
 			x = qMax( x, 0 );
 			y = qMax( y, 0 );
-			richtext.draw( p, x, y, QRect( x, y, richtext.widthUsed(), richtext.height() ), colorGroup() );
+			richtext.draw( p, x, y, QRect( x, y, richtext.widthUsed(), richtext.height() ), QColorGroup(palette()) );
 			m_boundingrect = QRect();
 		}
 		else

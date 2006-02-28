@@ -229,7 +229,7 @@ KLed::paintFlat() // paint a ROUND FLAT led lamp
     brush.setColor( color );
 
     pen.setWidth( scale );
-    color = colorGroup().dark();
+    color = QColorGroup(palette()).dark();
     pen.setColor( color );			// Set the pen accordingly
 
     paint.setPen( pen );			// Select pen for drawing
@@ -325,7 +325,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     // avoid that the border can be erased by the bright spot of the LED
 
     pen.setWidth( 2 * scale + 1 );
-    color = colorGroup().dark();
+    color = QColorGroup(palette()).dark();
     pen.setColor( color );			// Set the pen accordingly
     paint.setPen( pen );			// Select pen for drawing
     brush.setStyle( Qt::NoBrush );		// Switch off the brush
@@ -424,11 +424,11 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     brush.setStyle( Qt::NoBrush );              // Switch off the brush
     paint.setBrush( brush );                        // This avoids filling of the ellipse
 
-    // Set the initial color value to colorGroup().light() (bright) and start
+    // Set the initial color value to QColorGroup(palette()).light() (bright) and start
     // drawing the shadow border at 45° (45*16 = 720).
 
     int angle = -720;
-    color = colorGroup().light();
+    color = QColorGroup(palette()).light();
 
     for ( int arc = 120; arc < 2880; arc += 240 ) {
       pen.setColor( color );

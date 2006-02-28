@@ -69,7 +69,7 @@ void KArrowButton::paintEvent(QPaintEvent*)
 	opt.lineWidth    = 2;
 	opt.midLineWidth = 0;
 	
-        p.fillRect( rect(), colorGroup().brush( QColorGroup::Background ) );
+        p.fillRect( rect(), QColorGroup(palette()).brush( QColorGroup::Background ) );
         
 	style()->drawPrimitive( QStyle::PE_Frame, &opt, &p, this);
 

@@ -635,19 +635,19 @@ K3DockButton_Private::~K3DockButton_Private()
 
 void K3DockButton_Private::drawButton( QPainter* p )
 {
-  p->fillRect( 0,0, width(), height(), QBrush(colorGroup().brush(QColorGroup::Background)) );
+  p->fillRect( 0,0, width(), height(), QBrush(QColorGroup(palette()).brush(QColorGroup::Background)) );
   p->drawPixmap( (width() - pixmap()->width()) / 2, (height() - pixmap()->height()) / 2, *pixmap() );
   if ( moveMouse && !isDown() ){
     p->setPen( Qt::white );
     p->drawLine( 0, height() - 1, 0, 0 );
     p->drawLine( 0, 0, width() -1 , 0 );
 
-    p->setPen( colorGroup().dark() );
+    p->setPen( QColorGroup(palette()).dark() );
     p->drawLine( width() -1, 0, width() - 1, height() - 1 );
     p->drawLine( width() - 1, height() - 1, 0, height() - 1 );
   }
   if ( isChecked() || isDown() ){
-    p->setPen( colorGroup().dark() );
+    p->setPen( QColorGroup(palette()).dark() );
     p->drawLine(0 , height() - 1, 0, 0);
     p->drawLine(0, 0, width() -1 , 0);
 

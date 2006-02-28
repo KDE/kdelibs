@@ -59,7 +59,7 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent)
 	l1->setBuddy(m_uri);
 
 	m_info = new Q3TextView(this);
-	m_info->setPaper(colorGroup().background());
+	m_info->setPaper(QColorGroup(palette()).background());
 	m_info->setMinimumHeight(100);
 	m_info->setText(i18n("<p>Either enter the printer URI directly, or use the network scanning facility.</p>"));
 	m_ippreport = new KPushButton(KGuiItem(i18n("&IPP Report"), "kdeprint_report"), this);

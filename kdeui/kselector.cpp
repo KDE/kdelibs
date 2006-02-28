@@ -102,7 +102,7 @@ void KXYSelector::paintEvent( QPaintEvent *ev )
   painter.begin( this );
 
   QBrush brush;
-  qDrawShadePanel( &painter, 0, 0, width(), height(), colorGroup(),
+  qDrawShadePanel( &painter, 0, 0, width(), height(), QColorGroup(palette()),
       true, 2, &brush );
 
   drawContents( &painter );
@@ -238,10 +238,10 @@ void KSelector::paintEvent( QPaintEvent * )
   {
     if ( orientation() == Qt::Vertical )
       qDrawShadePanel( &painter, 0, 3, width()-5, height()-6,
-        colorGroup(), true, 2, &brush );
+        QColorGroup(palette()), true, 2, &brush );
     else
       qDrawShadePanel( &painter, 3, 0, width()-6, height()-5,
-        colorGroup(), true, 2, &brush );
+        QColorGroup(palette()), true, 2, &brush );
   }
 
   QPoint pos = calcArrowPos( value() );
@@ -320,7 +320,7 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
     QPolygon array(3);
 
     painter->setPen( QPen() );
-    painter->setBrush( QBrush( colorGroup().buttonText() ) );
+    painter->setBrush( QBrush( QColorGroup(palette()).buttonText() ) );
     if ( orientation() == Qt::Vertical )
     {
       array.setPoint( 0, pos.x()+0, pos.y()+0 );

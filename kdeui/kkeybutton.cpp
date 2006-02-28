@@ -150,11 +150,11 @@ void KKeyButton::paintEvent( QPaintEvent* )
   painter.setClipping( false );
   if( width() > 12 && height() > 8 )
     qDrawShadePanel( &painter, 6, 4, width() - 12, height() - 8,
-                     colorGroup(), true, 1, 0L );
+                     QColorGroup(palette()), true, 1, 0L );
   if ( m_bEditing )
   {
-    painter.setPen( colorGroup().base() );
-    painter.setBrush( colorGroup().base() );
+    painter.setPen( QColorGroup(palette()).base() );
+    painter.setBrush( QColorGroup(palette()).base() );
   }
   else
   {
@@ -164,7 +164,7 @@ void KKeyButton::paintEvent( QPaintEvent* )
   if( width() > 14 && height() > 10 )
     painter.drawRect( 7, 5, width() - 14, height() - 10 );
 
-  painter.setPen( colorGroup().text() );
+  painter.setPen( QColorGroup(palette()).text() );
 
   style()->drawItemText( &painter, rect(), Qt::AlignCenter | Qt::TextShowMnemonic,
                          palette(), isEnabled(), text() );

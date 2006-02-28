@@ -75,7 +75,7 @@ KCharSelectTable::KCharSelectTable( QWidget *parent, const QString &_font,
 {
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
-    setBackgroundColor( colorGroup().base() );
+    setBackgroundColor( QColorGroup(palette()).base() );
     verticalHeader()->setVisible(false);
     verticalHeader()->setResizeMode(QHeaderView::Custom);
     horizontalHeader()->setVisible(false);

@@ -29,7 +29,7 @@ KMPropUsers::KMPropUsers(QWidget *parent)
     : KMPropWidget(parent)
 {
 	m_text = new Q3TextView(this);
-	m_text->setPaper(colorGroup().background());
+	m_text->setPaper(QColorGroup(palette()).background());
 	m_text->setFrameStyle(QFrame::NoFrame);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 10, 0);

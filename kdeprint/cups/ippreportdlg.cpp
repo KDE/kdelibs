@@ -57,7 +57,7 @@ void IppReportDlg::slotUser1()
 		int	hh = rich.height(), page(1);
 		while (1)
 		{
-			rich.draw(&painter, margin, margin, r, colorGroup());
+			rich.draw(&painter, margin, margin, r, QColorGroup(palette()));
 			QString	s = windowTitle() + ": " + QString::number(page);
 			QRect	br = painter.fontMetrics().boundingRect(s);
 			painter.drawText(r.right()-br.width()-5, r.top()-br.height()-4, br.width()+5, br.height()+4, Qt::AlignRight|Qt::AlignTop, s);

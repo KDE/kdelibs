@@ -220,7 +220,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
          ( daynum == 6 && calendar->calendarName() == "gregorian" ) )
           normalday=false;
 
-			QBrush brushInvertTitle(colorGroup().base());
+			QBrush brushInvertTitle(QColorGroup(palette()).base());
 			QColor titleColor(isEnabled()?( KGlobalSettings::activeTitleColor() ):( KGlobalSettings::inactiveTitleColor() ) );
 			QColor textColor(isEnabled()?( KGlobalSettings::activeTextColor() ):( KGlobalSettings::inactiveTextColor() ) );
       if (!normalday)
@@ -237,7 +237,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
         }
       painter->drawText(0, 0, w, h-1, Qt::AlignCenter,
                         calendar->weekDayName(daynum, true), -1, &rect);
-      painter->setPen(colorGroup().text());
+      painter->setPen(QColorGroup(palette()).text());
       painter->drawLine(0, h-1, w-1, h-1);
       // ----- draw the weekday:
     } else {
@@ -253,7 +253,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           // ° painting a day of the previous month or
           // ° painting a day of the following month
           // TODO: don't hardcode gray here! Use a color with less contrast to the background than normal text.
-          painter->setPen( colorGroup().mid() );
+          painter->setPen( QColorGroup(palette()).mid() );
 //          painter->setPen(gray);
         } else { // paint a day of the current month
           if ( d->useCustomColors )
@@ -278,9 +278,9 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
               }
               painter->setPen( mode->fgColor );
             } else
-              painter->setPen(colorGroup().text());
+              painter->setPen(QColorGroup(palette()).text());
           } else //if ( firstWeekDay < 4 ) // <- this doesn' make sense at all!
-          painter->setPen(colorGroup().text());
+          painter->setPen(QColorGroup(palette()).text());
         }
 
       pen=painter->pen();
@@ -294,25 +294,25 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
            // draw the currently selected date
 	   if (isEnabled())
 	   {
-           painter->setPen(colorGroup().highlight());
-           painter->setBrush(colorGroup().highlight());
+           painter->setPen(QColorGroup(palette()).highlight());
+           painter->setBrush(QColorGroup(palette()).highlight());
 	   }
 	   else
 	   {
-	   painter->setPen(colorGroup().text());
-           painter->setBrush(colorGroup().text());
+	   painter->setPen(QColorGroup(palette()).text());
+           painter->setBrush(QColorGroup(palette()).text());
 	   }
-           pen=colorGroup().highlightedText();
+           pen=QColorGroup(palette()).highlightedText();
         } else {
           painter->setBrush(palette().color(backgroundRole()));
           painter->setPen(palette().color(backgroundRole()));
-//          painter->setBrush(colorGroup().base());
-//          painter->setPen(colorGroup().base());
+//          painter->setBrush(QColorGroup(palette()).base());
+//          painter->setPen(QColorGroup(palette()).base());
         }
 
       if ( pCellDate == QDate::currentDate() )
       {
-         painter->setPen(colorGroup().text());
+         painter->setPen(QColorGroup(palette()).text());
       }
 
       if ( paintRect ) painter->drawRect(0, 0, w, h);
