@@ -56,7 +56,6 @@ using namespace DOM;
 using namespace khtml;
 using namespace khtmlImLoad;
 
-
 // -------------------------------------------------------------------------
 
 RenderImage::RenderImage(NodeImpl *_element)
@@ -120,7 +119,12 @@ void RenderImage::updatePixmap( const QRect& r, CachedImage *o)
             const QFontMetrics &fm = style()->fontMetrics();
             QRect br = fm.boundingRect (  0, 0, 1024, 256, Qt::AlignLeft|Qt::TextWordWrap, alt.string() );
             if ( br.width() > iw )
-                iw = br.width();
+                //iw = br.width();
+#ifdef __GNUC__
+  #warning "KDE4: hack for testregression, remove (use above instead) when main branch"
+#endif
+              iw = br.width() + qMax(-fm.minLeftBearing(), 0) + qMax(-fm.minRightBearing(), 0);
+
             if ( br.height() > ih )
                 ih = br.height();
         }
@@ -280,6 +284,14 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
                 int ay = _ty + topBorder + topPad + 2;
                 const QFontMetrics &fm = style()->fontMetrics();
 
+//BEGIN HACK
+#ifdef __GNUC__
+  #warning "KDE4: hack for testregression, remove when main branch"
+#endif
+                ax     += qMax(-fm.minLeftBearing(), 0);
+                cWidth -= qMax(-fm.minLeftBearing(), 0);
+
+//END HACK
                 if (cWidth>5 && cHeight>=fm.height())
                     paintInfo.p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::TextWordWrap, text );
             }
