@@ -194,6 +194,7 @@ public:
         case CT_ComboBox:
         {
             const QStyleOptionComboBox* cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(option);
+			Q_UNUSED(cbOpt); // is 'cbOpt' needed at all here?
             return QSize(qMax(43, size.width() + 6), size.height());
         }
         default:
@@ -323,7 +324,8 @@ void PartMonitor::partCompleted()
     RenderWidget::flushWidgetResizes();
     m_timeout_timer->stop();
     connect(m_timeout_timer, SIGNAL(timeout()),this, SLOT( timeout() ) );
-    m_timeout_timer->start( /*visual ? 100 :*/ 2, true );
+	m_timeout_timer->setSingleShot(true);
+	m_timeout_timer->start(visual ? 100 : 2);
     disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }
 
@@ -365,7 +367,7 @@ ValueImp* RegTestFunction::callAsFunction(ExecState *exec, ObjectImp* /*thisObj*
     switch (id) {
 	case Print: {
 	    UString str = args[0]->toString(exec);
-            if ( str.qstring().toLower().find( "failed!" ) >= 0 )
+            if ( str.qstring().toLower().indexOf( "failed!" ) >= 0 )
                 m_regTest->saw_failure = true;
             QString res = str.qstring().replace('\007', "");
             m_regTest->m_currentOutput += res + "\n";
@@ -508,7 +510,7 @@ ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj
             QFile file(RegressionTest::curr->m_currentBase+"/"+filename);
 	    if (!file.open(QIODevice::ReadOnly)) {
 		exec->setException(Error::create(exec, GeneralError,
-						 QString("Error reading " + filename).latin1()));
+						 qPrintable(QString("Error reading " + filename))));
 	    }
 	    else {
 		QByteArray fileData;
@@ -516,8 +518,8 @@ ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj
 		char buf[1024];
 		int bytesread;
 		while (!file.atEnd()) {
-		    bytesread = file.readBlock(buf,1024);
-		    stream.writeRawBytes(buf,bytesread);
+		    bytesread = file.read(buf,1024);
+		    stream.writeRawData(buf,bytesread);
 		}
 		file.close();
 		QString contents(fileData);
@@ -599,7 +601,7 @@ int main(int argc, char *argv[])
 
     QString kh("/var/tmp/%1_non_existant");
     kh = kh.arg( pw->pw_name );
-    setenv( "KDEHOME", kh.latin1(), 1 );
+    setenv( "KDEHOME", kh.toLatin1(), 1 );
     setenv( "LC_ALL", "C", 1 );
     setenv( "LANG", "C", 1 );
 
@@ -792,7 +794,7 @@ int main(int argc, char *argv[])
             link = QString( "<hr>%1 failures. (%2 expected failures)" )
                    .arg(regressionTest->m_failures_work )
                    .arg( regressionTest->m_failures_fail );
-            list.writeBlock( link.latin1(), link.length() );
+            list.write( link.toLatin1(), link.length() );
             list.close();
 	}
     }
@@ -847,12 +849,12 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir, const QS
     QString s;
     f.open( QIODevice::WriteOnly | QIODevice::Truncate );
     s = "<html><body>Follow the white rabbit";
-    f.writeBlock( s.latin1(), s.length() );
+    f.write( s.toLatin1(), s.length() );
     f.close();
-    f.setName( m_outputDir + "/index.html" );
+    f.setFileName( m_outputDir + "/index.html" );
     f.open( QIODevice::WriteOnly | QIODevice::Truncate );
     s = "<html><frameset cols=150,*><frame src=links.html><frame name=content src=empty.html>";
-    f.writeBlock( s.latin1(), s.length() );
+    f.write( s.toLatin1(), s.length() );
     f.close();
 
     m_paintBuffer = 0;
@@ -871,7 +873,7 @@ static QStringList readListFile( const QString &filename )
     if (ignoreInfo.exists()) {
         QFile ignoreFile(ignoreFilename);
         if (!ignoreFile.open(QIODevice::ReadOnly)) {
-            fprintf(stderr,"Can't open %s\n",ignoreFilename.latin1());
+            fprintf(stderr,"Can't open %s\n",qPrintable(ignoreFilename));
             exit(1);
         }
         QTextStream ignoreStream(&ignoreFile);
@@ -893,7 +895,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
     m_currentOutput.clear();
 
     if (!QFile(m_baseDir + "/tests/"+relPath).exists()) {
-	fprintf(stderr,"%s: No such file or directory\n",relPath.latin1());
+	fprintf(stderr,"%s: No such file or directory\n",qPrintable(relPath));
 	return false;
     }
 
@@ -901,12 +903,12 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
     QFileInfo info(fullPath);
 
     if (!info.exists() && mustExist) {
-	fprintf(stderr,"%s: No such file or directory\n",relPath.latin1());
+	fprintf(stderr,"%s: No such file or directory\n",qPrintable(relPath));
 	return false;
     }
 
     if (!info.isReadable() && mustExist) {
-	fprintf(stderr,"%s: Access denied\n",relPath.latin1());
+	fprintf(stderr,"%s: Access denied\n",qPrintable(relPath));
 	return false;
     }
 
@@ -959,11 +961,11 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
                 testJSFile(relPath);
 	}
 	else if (mustExist) {
-	    fprintf(stderr,"%s: Not a valid test file (must be .htm(l) or .js)\n",relPath.latin1());
+	    fprintf(stderr,"%s: Not a valid test file (must be .htm(l) or .js)\n",qPrintable(relPath));
 	    return false;
 	}
     } else if (mustExist) {
-        fprintf(stderr,"%s: Not a regular file\n",relPath.latin1());
+        fprintf(stderr,"%s: Not a regular file\n",qPrintable(relPath));
         return false;
     }
 
@@ -1121,7 +1123,7 @@ QImage RegressionTest::renderToImage()
             delete tp;
 
             // now fill the chunk into our image
-            QImage chunk = m_paintBuffer->convertToImage();
+            QImage chunk = m_paintBuffer->toImage();
             assert( chunk.depth() == 32 );
             for ( int y = 0; y < 128 && py + y < eh; ++y )
                 memcpy( img.scanLine( py+y ) + px*4, chunk.scanLine( y ), qMin( 512, ew-px )*4 );
@@ -1185,7 +1187,7 @@ void RegressionTest::createLink( const QString& test, int failures )
     if ( failures & PaintFailure )
         link += "P";
     link += "]<br>\n";
-    list.writeBlock( link.latin1(), link.length() );
+    list.write( link.toLatin1(), link.length() );
     list.close();
 }
 
@@ -1209,7 +1211,7 @@ void RegressionTest::doJavascriptReport( const QString &test )
     text.replace( '\n', "<br>\n" );
     cl += text;
     cl += "</tt></body></html>";
-    compare.writeBlock( cl.latin1(), cl.length() );
+    compare.write( cl.toLatin1(), cl.length() );
     compare.close();
 }
 
@@ -1230,14 +1232,14 @@ static QString makeRelativePath(const QString &base, const QString &path)
     int pos = 0;
     do {
         pos++;
-        int newpos = absBase.find('/', pos);
+        int newpos = absBase.indexOf('/', pos);
         if (newpos == -1) newpos = absBase.length();
-        QConstString cmpPathComp(absPath.unicode() + pos, newpos - pos);
-        QConstString cmpBaseComp(absBase.unicode() + pos, newpos - pos);
+        QString cmpPathComp(absPath.unicode() + pos, newpos - pos);
+        QString cmpBaseComp(absBase.unicode() + pos, newpos - pos);
 //         kDebug() << "cmpPathComp: \"" << cmpPathComp.string() << "\"" << endl;
 //         kDebug() << "cmpBaseComp: \"" << cmpBaseComp.string() << "\"" << endl;
 //         kDebug() << "pos: " << pos << " newpos: " << newpos << endl;
-        if (cmpPathComp.string() != cmpBaseComp.string()) { pos--; break; }
+        if (cmpPathComp != cmpBaseComp) { pos--; break; }
         pos = newpos;
     } while (pos < (int)absBase.length() && pos < (int)absPath.length());
     int basepos = pos < (int)absBase.length() ? pos + 1 : pos;
@@ -1247,16 +1249,16 @@ static QString makeRelativePath(const QString &base, const QString &path)
 
     QString rel;
     {
-        QConstString relBase(absBase.unicode() + basepos, absBase.length() - basepos);
-        QConstString relPath(absPath.unicode() + pathpos, absPath.length() - pathpos);
+        QString relBase(absBase.unicode() + basepos, absBase.length() - basepos);
+        QString relPath(absPath.unicode() + pathpos, absPath.length() - pathpos);
         // generate as many .. as there are path elements in relBase
-        if (relBase.string().length() > 0) {
-            for (int i = relBase.string().count('/'); i > 0; --i)
+        if (relBase.length() > 0) {
+            for (int i = relBase.count('/'); i > 0; --i)
                 rel += "../";
             rel += "..";
-            if (relPath.string().length() > 0) rel += "/";
+            if (relPath.length() > 0) rel += "/";
         }
-        rel += relPath.string();
+        rel += relPath;
     }
     return rel;
 }
@@ -1291,7 +1293,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
     if ( failures & RenderFailure ) {
         renderDiff += "<pre>";
         FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-render %3/%2-render" )
-                            .arg ( test, test, relOutputDir ).latin1(), "r" );
+                            .arg ( test, test, relOutputDir ).toLatin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
         for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
             QString line = is->readLine();
@@ -1307,7 +1309,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
     if ( failures & DomFailure ) {
         domDiff += "<pre>";
         FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-dom %3/%2-dom" )
-                            .arg ( test, test, relOutputDir ).latin1(), "r" );
+                            .arg ( test, test, relOutputDir ).toLatin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
         for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
             QString line = is->readLine();
@@ -1400,7 +1402,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
     cl += "<div id='dom' class='diff'>" + domDiff + "</div>";
 
     cl += "</body></html>";
-    compare.writeBlock( cl.latin1(), cl.length() );
+    compare.write( cl.toLatin1(), cl.length() );
     compare.close();
 }
 
@@ -1479,7 +1481,7 @@ void RegressionTest::testStaticFile(const QString & filename)
         if ( m_known_failures & PaintFailure )
             m_known_failures = AllFailure;
         renderToImage().save(m_baseDir + "/baseline/" + filename + "-dump.png","PNG", 60);
-        printf("Generated %s\n", QString( m_baseDir + "/baseline/" + filename + "-dump.png" ).latin1() );
+        printf("Generated %s\n", qPrintable(QString( m_baseDir + "/baseline/" + filename + "-dump.png" )) );
         reportResult( true, "PAINT" );
     } else {
         int failures = NoFailure;
@@ -1514,13 +1516,13 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
     QFile sourceFile(fullSourceName);
 
     if (!sourceFile.open(QIODevice::ReadOnly)) {
-        fprintf(stderr,"Error reading file %s\n",fullSourceName.latin1());
+        fprintf(stderr,"Error reading file %s\n",qPrintable(fullSourceName));
         exit(1);
     }
 
     QTextStream stream ( &sourceFile );
-    stream.setEncoding( QTextStream::UnicodeUTF8 );
-    QString code = stream.read();
+	stream.setCodec( "UTF-8" );
+    QString code = stream.readAll();
     sourceFile.close();
 
     saw_failure = false;
@@ -1537,7 +1539,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
                 ObjectImp* obj = c.value()->toObject(exec);
                 if (obj)
                     line = obj->get(exec, "line")->toUInt32(exec);
-                printf( "ERROR: %s (%s) at line:%d\n",filename.latin1(), errmsg.latin1(), line);
+                printf( "ERROR: %s (%s) at line:%d\n",qPrintable(filename), qPrintable(errmsg), line);
                 doFailureReport( m_currentCategory + "/" + m_currentTest, JSFailure );
                 m_errors++;
             } else {
@@ -1576,7 +1578,7 @@ void RegressionTest::testJSFile(const QString & filename )
     global->put(exec, "debug", new RegTestFunction(exec,this,RegTestFunction::Print,1) );
     global->put(exec, "print", new RegTestFunction(exec,this,RegTestFunction::Print,1) );
 
-    QStringList dirs = QStringList::split( '/', filename );
+    QStringList dirs = filename.split( '/' );
     // NOTE: the basename is of little interest here, but the last basedir change
     // isn't taken in account
     QString basedir =  m_baseDir + "/tests/";
@@ -1646,9 +1648,9 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
     QFile file(absFilename);
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream ( &file );
-        stream.setEncoding( QTextStream::UnicodeUTF8 );
+		stream.setCodec( "UTF-8" );
 
-        QString fileData = stream.read();
+        QString fileData = stream.readAll();
 
         result = ( fileData == data ) ? Success : Failure;
         if ( !m_genOutput && result == Success ) {
@@ -1661,15 +1663,15 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
     createMissingDirs( outputFilename );
     QFile file2(outputFilename);
     if (!file2.open(QIODevice::WriteOnly)) {
-        fprintf(stderr,"Error writing to file %s\n",outputFilename.latin1());
+        fprintf(stderr,"Error writing to file %s\n",qPrintable(outputFilename));
         exit(1);
     }
 
     QTextStream stream2(&file2);
-    stream2.setEncoding( QTextStream::UnicodeUTF8 );
+	stream2.setCodec( "UTF-8" );
     stream2 << data;
     if ( m_genOutput )
-        printf("Generated %s\n", outputFilename.latin1());
+        printf("Generated %s\n", qPrintable(outputFilename));
 
     return result;
 }
@@ -1716,14 +1718,14 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
 void RegressionTest::printDescription(const QString& description)
 {
     if (!m_currentCategory.isEmpty())
-	printf("%s/", m_currentCategory.latin1());
+	printf("%s/", qPrintable(m_currentCategory));
 
-    printf("%s", m_currentTest.latin1());
+    printf("%s", qPrintable(m_currentTest));
 
     if (!description.isEmpty()) {
         QString desc = description;
         desc.replace( '\n', ' ' );
-	printf(" [%s]", desc.latin1());
+	printf(" [%s]", qPrintable(desc));
     }
 
     printf("\n");
@@ -1749,10 +1751,10 @@ void RegressionTest::createMissingDirs(const QString & filename)
 	pathComponents.prepend(parentPath);
 	parentDir = QFileInfo(parentPath);
     }
-    for (uint pathno = 1; pathno < pathComponents.count(); pathno++) {
+    for (int pathno = 1; pathno < pathComponents.count(); pathno++) {
 	if (!QFileInfo(pathComponents[pathno]).exists() &&
 	    !QDir(pathComponents[pathno-1]).mkdir(pathComponents[pathno])) {
-	    fprintf(stderr,"Error creating directory %s\n",pathComponents[pathno].latin1());
+	    fprintf(stderr,"Error creating directory %s\n",qPrintable(pathComponents[pathno]));
 	    exit(1);
 	}
     }

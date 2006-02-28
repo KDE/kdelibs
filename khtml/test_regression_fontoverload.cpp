@@ -430,20 +430,20 @@ static QFontEngine* loadFont(const QFontDef& request)
     QFontEngine *fe = 0;
 
     XFontStruct *xfs;
-    xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
+	xfs = XLoadQueryFont( QX11Info::display(), xlfd.toLatin1() );
     if (!xfs) // as long as you don't do screenshots, it's maybe fine
-	qFatal("we need some fonts. So make sure you have %s installed.", xlfd.latin1());
+	qFatal("we need some fonts. So make sure you have %s installed.", qPrintable(xlfd));
 
     unsigned long value;
     if ( !XGetFontProperty( xfs, XA_FONT, &value ) )
         return 0;
 
-    char *n = XGetAtomName( QPaintDevice::x11AppDisplay(), value );
+	char *n = XGetAtomName( QX11Info::display(), value );
     xlfd = n;
     if ( n )
         XFree( n );
 
-    fe = new QFakeFontEngine( xfs, xlfd.latin1(),request.pixelSize );
+    fe = new QFakeFontEngine( xfs, xlfd.toLatin1(),request.pixelSize );
     return fe;
 }
 
@@ -451,8 +451,8 @@ static QFontEngine* loadFont(const QFontDef& request)
 /* Note: you may want the other path with earlier Qt4.1 snapshots */
 
 KDE_EXPORT
-QFontEngine *QFontDatabase::loadXlfd(int screen, int script, 
-            const QFontDef &request, int force_encoding_id)
+QFontEngine *QFontDatabase::loadXlfd(int /* screen */, int /* script */, 
+            const QFontDef &request, int /* force_encoding_id */)
 {
     return loadFont(request);
 }
@@ -607,5 +607,5 @@ bool KSSLSettings::warnOnLeave() const       { return false; }
 
 #include <kparts/plugin.h>
 
-KParts::Plugin* KParts::Plugin::loadPlugin( QObject * parent, const char* libname ) { return 0; }
+KParts::Plugin* KParts::Plugin::loadPlugin( QObject * /* parent */, const char* /* libname */) { return 0; }
 
