@@ -8,7 +8,9 @@
 #define HAVE_PRELOADED_SYMBOLS 1    /* Define if libtool can extract symbol lists from object files. */
 #define HAVE_SGI_STL 1
 #undef HAVE_DNOTIFY 
-#undef HAVE_DNSSD
+
+#cmakedefine HAVE_DNSSD 1
+
 #undef HAVE_INOTIFY
 #undef HAVE_LUA
 #undef HAVE_NON_POSIX_ACL_EXTENSIONS
