@@ -737,19 +737,22 @@ void RenderBlock::adjustPositionedBlock(RenderObject* child, const MarginInfo& m
     }
 
     if (child->isBox() && child->hasStaticY()) {
-        int marginOffset = 0;
+        int y = m_height;
         if (!marginInfo.canCollapseWithTop()) {
+            child->calcVerticalMargins();
+            int marginTop = child->marginTop(); 
             int collapsedTopPos = marginInfo.posMargin();
             int collapsedTopNeg = marginInfo.negMargin();
-            bool posMargin = child->marginTop() >= 0;
-            if (posMargin && child->marginTop() > collapsedTopPos)
-                collapsedTopPos = child->marginTop();
-            else if (!posMargin && child->marginTop() > collapsedTopNeg)
-                collapsedTopNeg = child->marginTop();
-            marginOffset += (collapsedTopPos - collapsedTopNeg) - child->marginTop();
+            if (marginTop > 0) {
+                if (marginTop > collapsedTopPos)
+                    collapsedTopPos = marginTop;
+            } else {
+                if (-marginTop > collapsedTopNeg)
+                    collapsedTopNeg = -marginTop;
+            }
+            y += (collapsedTopPos - collapsedTopNeg) - marginTop;
         }
-
-        static_cast<RenderBox*>(child)->setStaticY(m_height + marginOffset);
+        static_cast<RenderBox*>(child)->setStaticY(y);
     }
 }
 
@@ -1031,7 +1034,7 @@ void RenderBlock::collapseMargins(RenderObject* child, MarginInfo& marginInfo, i
             // So go ahead and mark the item as dirty.
             child->setChildNeedsLayout(true);
 
-        if (!child->flowAroundFloats() || child->hasFloats())
+        if (!child->flowAroundFloats() && child->hasFloats())
             child->markAllDescendantsWithFloatsForLayout();
 
         // Our guess was wrong. Make the child lay itself out again.
@@ -1304,9 +1307,9 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         int oldTopNegMargin = m_maxTopNegMargin;
 
         // make sure we relayout children if we need it.
-        if (relayoutChildren ||
+        if (!isPositioned() && (relayoutChildren ||
             (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())) ||
-            (child->isRenderBlock() && child->style()->height().isPercent()))
+            (child->isRenderBlock() && child->style()->height().isPercent())))
             child->setChildNeedsLayout(true);
 
         // Handle the four types of special elements first.  These include positioned content, floating content, compacts and
@@ -1520,7 +1523,7 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
                 r->repaintDuringLayout();
                 r->setMarkedForRepaint(false);
             }
-            if ( relayoutChildren || (r->hasStaticY() && r->parent() != this && r->parent()->isBlockFlow()) )
+            if ( relayoutChildren || ((r->hasStaticY()||r->hasStaticX()) && r->parent() != this && r->parent()->isBlockFlow()) )
                 r->setChildNeedsLayout(true);
             r->layoutIfNeeded();
             if (adjOverflow && r->style()->position() == ABSOLUTE) {

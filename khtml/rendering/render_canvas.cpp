@@ -216,9 +216,6 @@ void RenderCanvas::layout()
         setHeight( m_viewportHeight = s.height() );
     }
 
-    // ### we could maybe do the call below better and only pass true if the docsize changed.
-    layoutPositionedObjects( true );
-
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
 #endif
