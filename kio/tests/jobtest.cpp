@@ -27,6 +27,7 @@
 #include <kio/netaccess.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
+#include <kprotocolinfo.h>
 
 #include <qfileinfo.h>
 #include <qeventloop.h>
@@ -109,7 +110,7 @@ void JobTest::setup()
         kdFatal() << "Couldn't create " << otherTmpDir() << endl;
     ok = dir.mkdir( realSystemPath() );
     if ( !ok )
-        kdFatal() << "Couldn't create " << otherTmpDir() << endl;
+        kdFatal() << "Couldn't create " << realSystemPath() << endl;
 }
 
 void JobTest::runAll()
@@ -531,8 +532,8 @@ void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
 
 void JobTest::copyFileToSystem()
 {
-    if ( !isKnownProtocol( "system" ) ) {
-        kDebug() << k_funcinfo << "no kio_system, skipping test" << endl;
+    if ( !KProtocolInfo::isKnownProtocol( QString::fromLatin1( "system" ) ) ) {
+        kdDebug() << k_funcinfo << "no kio_system, skipping test" << endl;
         return;
     }
 
