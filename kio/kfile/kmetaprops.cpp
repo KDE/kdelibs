@@ -180,7 +180,8 @@ void KFileMetaPropsPlugin::createLayout()
                 iit!=editItems.end(); ++iit)
         {
             QLabel* l = new QLabel((*iit).translatedKey() + ":", groupBox);
-            l->setAlignment( Qt::AlignAuto | Qt::AlignTop | Qt::ExpandTabs );
+			// FIXME: imho Qt::TextExpandTabs is ignored - how to set this?
+            l->setAlignment( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs );
             QValidator* val = mtinfo->createValidator(*git, (*iit).key());
             if (!val) kDebug(7033) << "didn't get a validator for " << *git << "/" << (*iit).key() << endl;
             w = new KFileMetaInfoWidget(*iit, val, groupBox);
@@ -193,7 +194,7 @@ void KFileMetaPropsPlugin::createLayout()
                 iit!=readItems.end(); ++iit)
         {
             QLabel* l = new QLabel((*iit).translatedKey() + ":", groupBox);
-            l->setAlignment( Qt::AlignAuto | Qt::AlignTop | Qt::ExpandTabs );
+            l->setAlignment( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs );
             (new KFileMetaInfoWidget(*iit, KFileMetaInfoWidget::ReadOnly, 0L, groupBox));
         }
     }

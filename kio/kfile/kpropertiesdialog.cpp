@@ -1750,7 +1750,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     QString name = QString::fromLatin1(ge->gr_name);
     if (name.isEmpty())
       name.setNum(ge->gr_gid);
-    if (groupList.find(name) == groupList.end())
+    if (groupList.indexOf(name) == -1)
       groupList += name;
   }
 
@@ -2505,7 +2505,8 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
   QVBoxLayout *layout = new QVBoxLayout(d->m_frame, 0, KDialog::spacingHint());
 
   QLabel *l;
-  l = new QLabel( d->m_frame, "Label_1" );
+  l = new QLabel( d->m_frame );
+  l->setObjectName( QLatin1String( "Label_1" ) );
   l->setText( i18n("URL:") );
   layout->addWidget(l);
 
@@ -2613,7 +2614,8 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
   QBoxLayout *mainlayout = new QVBoxLayout(d->m_frame, 0, KDialog::spacingHint());
   QLabel* tmpQLabel;
 
-  tmpQLabel = new QLabel( d->m_frame, "Label_1" );
+  tmpQLabel = new QLabel( d->m_frame );
+  tmpQLabel->setObjectName( QLatin1String( "Label_1" ) );
   tmpQLabel->setText(  i18n("Pattern ( example: *.html;*.htm )") );
   tmpQLabel->setMinimumSize(tmpQLabel->sizeHint());
   mainlayout->addWidget(tmpQLabel, 1);
@@ -2625,7 +2627,8 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
   patternEdit->setFixedHeight( fontHeight );
   mainlayout->addWidget(patternEdit, 1);
 
-  tmpQLabel = new QLabel( d->m_frame, "Label_2" );
+  tmpQLabel = new QLabel( d->m_frame );
+  tmpQLabel->setObjectName( QLatin1String( "Label_2" ) );
   tmpQLabel->setText(  i18n("Mime Type") );
   tmpQLabel->setMinimumSize(tmpQLabel->sizeHint());
   mainlayout->addWidget(tmpQLabel, 1);
@@ -2636,7 +2639,8 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
   mimeEdit->setFixedHeight( fontHeight );
   mainlayout->addWidget(mimeEdit, 1);
 
-  tmpQLabel = new QLabel( d->m_frame, "Label_3" );
+  tmpQLabel = new QLabel( d->m_frame );
+  tmpQLabel->setObjectName( QLatin1String( "Label_3" ) );
   tmpQLabel->setText(  i18n("Comment") );
   tmpQLabel->setMinimumSize(tmpQLabel->sizeHint());
   mainlayout->addWidget(tmpQLabel, 1);
@@ -2826,7 +2830,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
                       i18n("Mount point:")); // new style (combobox)
   layout->addWidget(label, 3, 0);
 
-  mountpoint = new QLabel( d->m_frame, "LineEdit_mountpoint" );
+  mountpoint = new QLabel( d->m_frame );
+  mountpoint->setObjectName( QLatin1String( "LineEdit_mountpoint" ) );
 
   layout->addWidget(mountpoint, 3, 1);
 

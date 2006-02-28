@@ -785,19 +785,26 @@ void KBookmarkMenu::slotNSLoad()
 
 KBookmarkEditFields::KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, FieldsSet fieldsSet)
 {
+  QLabel *tmpLabel;
   bool isF = (fieldsSet != FolderFieldsSet);
 
   QGridLayout *grid = new QGridLayout( vbox, 2, isF ? 2 : 1 );
 
   m_title = new KLineEdit( main );
+  tmpLabel = new QLabel( main );
+  tmpLabel->setText( i18n( "Name:" ) );
+  tmpLabel->setBuddy( m_title );
   grid->addWidget( m_title, 0, 1 );
-  grid->addWidget( new QLabel( m_title, i18n( "Name:" ), main ), 0, 0 );
+  grid->addWidget( tmpLabel, 0, 0 );
   m_title->setFocus();
   if (isF)
   {
     m_url = new KLineEdit( main );
+    tmpLabel = new QLabel( main );
+    tmpLabel->setText( i18n( "Location:" ) );
+    tmpLabel->setBuddy( m_url );
     grid->addWidget( m_url, 1, 1 );
-    grid->addWidget( new QLabel( m_url, i18n( "Location:" ), main ), 1, 0 );
+    grid->addWidget( tmpLabel, 1, 0 );
   }
   else
   {
