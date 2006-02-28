@@ -210,7 +210,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
         if( !d->plugin ){
             // No plugin found, build default dialog
-            QGridLayout * gridLayout = new QGridLayout( 0 );
+            QGridLayout * gridLayout = new QGridLayout();
             gridLayout->setMargin( KDialog::marginHint() );
             gridLayout->setSpacing( KDialog::spacingHint() );
             pLayout->addLayout(gridLayout);

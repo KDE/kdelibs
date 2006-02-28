@@ -789,7 +789,7 @@ void KEditToolbarWidget::setupLayout()
   connect(m_downAction, SIGNAL(clicked()), SLOT(slotDownButton()));
 
   d->m_helpArea = new QLabel(this);
-  d->m_helpArea->setAlignment( Qt::TextWordWrap );
+  d->m_helpArea->setWordWrap( true );
 
   // now start with our layouts
   QVBoxLayout *top_layout = new QVBoxLayout(this, 0, KDialog::spacingHint());

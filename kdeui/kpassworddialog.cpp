@@ -421,7 +421,8 @@ void KPasswordDialog::init()
         m_pGrid->setRowStretch(12, 12);
 
         d->m_MatchLabel = new QLabel(m_pMain);
-        d->m_MatchLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextWordWrap);
+        d->m_MatchLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+        d->m_MatchLabel->setWordWrap(true);
         m_pGrid->addMultiCellWidget(d->m_MatchLabel, 13, 13, 0, 2);
         d->m_MatchLabel->setText(i18n("Passwords do not match"));
 
@@ -471,7 +472,8 @@ void KPasswordDialog::addLine(const QString &key, const QString &value)
     m_pGrid->addWidget(lbl, m_Row+2, 0, Qt::AlignLeft);
 
     lbl = new QLabel(value, m_pMain);
-    lbl->setAlignment(Qt::AlignTop|Qt::TextWordWrap);
+    lbl->setAlignment(Qt::AlignTop);
+    lbl->setWordWrap(true);
     lbl->setFixedSize(275, lbl->heightForWidth(275));
     m_pGrid->addWidget(lbl, m_Row+2, 2, Qt::AlignLeft);
     ++m_Row;

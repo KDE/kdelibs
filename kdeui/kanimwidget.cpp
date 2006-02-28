@@ -212,7 +212,7 @@ void KAnimWidget::updateIcons()
   d->transparent = img.hasAlphaBuffer();
   if (d->pixmap.width() != d->size)
   {
-     img = img.smoothScale(d->size, d->size*d->frames);
+     img = img.scaled(d->size, d->size*d->frames, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
   }
   d->pixmap = img;
 
