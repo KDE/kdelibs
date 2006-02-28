@@ -203,6 +203,8 @@ RenderListMarker::~RenderListMarker()
 {
     if(m_listImage)
         m_listImage->deref(this);
+    if (m_listItem)
+        m_listItem->resetListMarker();
 }
 
 void RenderListMarker::setStyle(RenderStyle *s)

@@ -69,6 +69,7 @@ public:
 protected:
 
     void updateMarkerLocation();
+    void resetListMarker() { m_marker = 0; }
 
     RenderListMarker *m_marker;
     CounterNode *m_counter;
