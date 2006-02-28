@@ -691,7 +691,7 @@ specifier:
 class:
     '.' IDENT {
 	$$ = new CSSSelector();
-	$$->match = CSSSelector::List;
+	$$->match = CSSSelector::Class;
 	$$->attr = ATTR_CLASS;
 	$$->value = domString($2);
     }

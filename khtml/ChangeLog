@@ -1,4 +1,14 @@
 2006-02-28  Germain Garand  <germain@ebooksfrance.org>
+         
+        Common-case style selection optimisation inspired from WebCore.
+
+        * css/css_base.cpp/.h: add 'Class' to possible matching modes
+        * css/cssstyleselector.cpp: treat 'Class' extra, not anymore as an ordinary List.
+        * css/parser.cpp/y: use 'Class' matching mode 
+        * html/html_elementimpl.cpp: when parsing ATTR_CLASS, set a boolean to remember if it is or not a class list.
+        * xml/dom_elementimpl.{cpp,h}: add m_hasClassList boolean + setter/getter
+
+2006-02-28  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_object.cpp (dirtyFormattingContext): be more efficient with inlineflow objects.
         * rendering/render_block.cpp (layoutBlockChildren): be more efficient with regard to positioned objects relayout. 

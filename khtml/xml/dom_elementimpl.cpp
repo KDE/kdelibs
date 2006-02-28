@@ -308,6 +308,7 @@ ElementImpl::ElementImpl(DocumentPtr *doc)
     m_restyleLate = false;
     m_restyleSelfLate = false;
     m_restyleChildrenLate = false;
+    m_hasClassList = false;
 }
 
 ElementImpl::~ElementImpl()

@@ -1068,25 +1068,35 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         case CSSSelector::Set:
             break;
+        case CSSSelector::Class:
+            if (!e->hasClassList()) {
+                if( (strictParsing && strcmp(sel->value, value) ) ||
+                    (!strictParsing && strcasecmp(sel->value, value)))
+                    return false;
+               return true;
+            }
+            // no break    
         case CSSSelector::List:
         {
-            const QChar* s = value.unicode();
-            int l = value.length();
-            while( l && !s->isSpace() )
-              l--,s++;
-	    if (!l) {
-		// There is no list, just a single item.  We can avoid
-		// allocing QStrings and just treat this as an exact
-		// match check.
-		if( (strictParsing && strcmp(sel->value, value) ) ||
-		    (!strictParsing && strcasecmp(sel->value, value)))
-		    return false;
-		break;
-	    }
+            if (sel->match != CSSSelector::Class) {
+                const QChar* s = value.unicode();
+                int l = value.length();
+                while( l && !s->isSpace() )
+                    l--,s++;
+                if (!l) {
+		    // There is no list, just a single item.  We can avoid
+		    // allocing QStrings and just treat this as an exact
+		    // match check.
+		    if( (strictParsing && strcmp(sel->value, value) ) ||
+		        (!strictParsing && strcasecmp(sel->value, value)))
+		        return false;
+		    break;
+	        }
+            }
 
             // The selector's value can't contain a space, or it's totally bogus.
-            l = sel->value.find(' ');
-            if (l != -1)
+            // ### check if this can still happen
+            if (sel->value.find(' ') != -1)
                 return false;
 
             QString str = value.string();

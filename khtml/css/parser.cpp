@@ -2072,7 +2072,7 @@ yyreduce:
 
     {
 	yyval.selector = new CSSSelector();
-	yyval.selector->match = CSSSelector::List;
+	yyval.selector->match = CSSSelector::Class;
 	yyval.selector->attr = ATTR_CLASS;
 	yyval.selector->value = domString(yyvsp[0].string);
     ;}

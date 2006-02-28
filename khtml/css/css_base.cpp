@@ -144,6 +144,7 @@ unsigned int CSSSelector::specificity() const
     case Exact:
     case Set:
     case List:
+    case Class:
     case Hyphen:
     case PseudoClass:
     case PseudoElement:
@@ -317,7 +318,7 @@ DOMString CSSSelector::selectorText() const
         str = "#";
         str += cs->value;
     }
-    else if ( tag == anyLocalName && cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
+    else if ( tag == anyLocalName && cs->match == CSSSelector::Class )
     {
         str = ".";
         str += cs->value;
@@ -343,7 +344,7 @@ DOMString CSSSelector::selectorText() const
             str += "#";
             str += cs->value;
         }
-        else if ( cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
+        else if ( cs->match == CSSSelector::Class )
         {
             str += ".";
             str += cs->value;

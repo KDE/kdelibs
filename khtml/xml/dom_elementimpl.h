@@ -141,7 +141,7 @@ class ElementImpl : public NodeBaseImpl
 public:
     ElementImpl(DocumentPtr *doc);
     ~ElementImpl();
-
+    
     DOMString getAttribute( NodeImpl::Id id, bool nsAware = 0, const DOMString& qName = DOMString() ) const;
     void setAttribute( NodeImpl::Id id, const DOMString &value, const DOMString &qName,
                        int &exceptioncode );
@@ -224,16 +224,21 @@ public:
      */
     DOMString openTagStartToString(bool expandurls = false) const;
     
-    bool restyleLate() { return m_restyleLate; };
+    bool restyleLate() const { return m_restyleLate; };
     void setRestyleLate(bool b=true) { m_restyleLate = b; };
     void setRestyleSelfLate() { m_restyleSelfLate = true; };
     void setRestyleChildrenLate() { m_restyleChildrenLate = true; };
+
+    // for style selection performance: whether the element matches several CSS Classes
+    bool hasClassList() const { return m_hasClassList; }
+    void setHasClassList(bool b) { m_hasClassList = b; }
 
     void updateId(DOMStringImpl* oldId, DOMStringImpl* newId);
     //Called when mapping from id to this node in document should be removed
     virtual void removeId(const QString& id);
     //Called when mapping from id to this node in document should be added
     virtual void addId   (const QString& id);
+
 protected:
     void createAttributeMap() const;
     void createDecl();
@@ -253,6 +258,7 @@ protected: // member variables
     bool m_restyleLate;
     bool m_restyleSelfLate;
     bool m_restyleChildrenLate;
+    bool m_hasClassList;
 };
 
 
