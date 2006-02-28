@@ -438,12 +438,14 @@ int RenderObject::offsetTop() const
 
 RenderObject* RenderObject::offsetParent() const
 {
+    // can't really use containing blocks here (#113280)
     bool skipTables = isPositioned() || isRelPositioned();
     bool strict = !style()->htmlHacks();
     RenderObject* curr = parent();
-    while (curr && !curr->isPositioned() && !curr->isRelPositioned() && 
-                   !(strict && skipTables ? curr->isRoot() : curr->isBody())) {
-        if (!skipTables && (curr->isTableCell() || curr->isTable()))
+    while (curr && (!curr->element() || 
+                    (!curr->isPositioned() && !curr->isRelPositioned() && 
+                        !(strict && skipTables ? curr->isRoot() : curr->isBody())))) {
+        if (!skipTables && curr->element() && (curr->isTableCell() || curr->isTable()))
             break;
         curr = curr->parent();
     }
