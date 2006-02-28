@@ -575,42 +575,72 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             return;
         case KJAS_JAVASCRIPT_EVENT:
             cmd = QLatin1String( "JS_Event" );
-            kDebug(6100) << "Javascript request: "<< contextID
-                          << " code: " << args[0] << endl;
+
+            if(!args.empty()) {
+                 kDebug(6100) << "Javascript request: "<< contextID
+                              << " code: " << args[0] << endl;
+            } else {
+                kError(6100) << "Expected args not to be empty!" << endl;
+            }
+
             break;
         case KJAS_GET_MEMBER:
         case KJAS_PUT_MEMBER:
         case KJAS_CALL_MEMBER: {
-            const int ticket = args[0].toInt();
-            JSStack::iterator it = d->jsstack.find(ticket);
-            if (it != d->jsstack.end()) {
-                kDebug(6100) << "slotJavaRequest: " << ticket << endl;
-                args.pop_front();
-                it.value()->args.operator=(args); // just in case ..
-                it.value()->ready = true;
-                it.value()->exit = true;
-            } else
-                kDebug(6100) << "Error: Missed return member data" << endl;
+            if(!args.empty()) {
+                const int ticket = args[0].toInt();
+                JSStack::iterator it = d->jsstack.find(ticket);
+                if (it != d->jsstack.end()) {
+                    kDebug(6100) << "slotJavaRequest: " << ticket << endl;
+                    args.pop_front();
+                    it.value()->args.operator=(args); // just in case ..
+                    it.value()->ready = true;
+                    it.value()->exit = true;
+                } else
+                    kDebug(6100) << "Error: Missed return member data" << endl;
+            } else {
+                kError(6100) << "Expected args not to be empty!" << endl;
+            }
             return;
         }
         case KJAS_AUDIOCLIP_PLAY:
             cmd = QLatin1String( "audioclip_play" );
-            kDebug(6100) << "Audio Play: url=" << args[0] << endl;
+            if(!args.empty())
+                kDebug(6100) << "Audio Play: url=" << args[0] << endl;
+            else
+                kError(6100) << "Expected args not to be empty!" << endl;
+
             break;
         case KJAS_AUDIOCLIP_LOOP:
             cmd = QLatin1String( "audioclip_loop" );
-            kDebug(6100) << "Audio Loop: url=" << args[0] << endl;
+            if(!args.empty())
+                kDebug(6100) << "Audio Loop: url=" << args[0] << endl;
+            else
+                kError(6100) << "Expected args not to be empty!" << endl;
+
             break;
         case KJAS_AUDIOCLIP_STOP:
             cmd = QLatin1String( "audioclip_stop" );
-            kDebug(6100) << "Audio Stop: url=" << args[0] << endl;
+            if(!args.empty())
+                kDebug(6100) << "Audio Stop: url=" << args[0] << endl;
+            else
+                kError(6100) << "Expected args not to be empty!" << endl;
+
             break;
         case KJAS_APPLET_STATE:
-            kDebug(6100) << "Applet State Notification for Applet " << args[0] << ". New state=" << args[1] << endl;
+            if(args.size() > 1)
+                kDebug(6100) << "Applet State Notification for Applet " << args[0] << ". New state=" << args[1] << endl;
+            else
+                kError(6100) << "Expected args not to be empty!" << endl;
+
             cmd = QLatin1String( "AppletStateNotification" );
             break;
         case KJAS_APPLET_FAILED:
-            kDebug(6100) << "Applet " << args[0] << " Failed: " << args[1] << endl;
+            if(args.size() > 1)
+                kDebug(6100) << "Applet " << args[0] << " Failed: " << args[1] << endl;
+            else
+                kError(6100) << "Expected args not to be empty!" << endl;
+            
             cmd = QLatin1String( "AppletFailed" );
             break;
         case KJAS_SECURITY_CONFIRM: {
