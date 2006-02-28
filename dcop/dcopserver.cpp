@@ -770,14 +770,14 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
                        qWarning("DCOPServer::DCOPReplyDelayed for client who wasn't waiting on one!");
 	    }
 	    if ( target ) {
-//#ifdef DCOP_DEBUG
+#ifdef DCOP_DEBUG
 if (opcode == DCOPSend)
 {
 //   QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
    qWarning("Sending %lu bytes from %s to %s. DCOPSend", length, fromApp.data(), toApp.data());//, fun.data());
 }
-//#endif
+#endif
 		IceGetHeader( target->iceConn, majorOpcode, opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
 		pMsg->key = key;
@@ -796,14 +796,14 @@ if (opcode == DCOPSend)
 		    qWarning("%s failure: object '%s' has no function '%s'", toApp.data(), obj.data(), fun.data() );
 		}
 	    } else if ( toApp[toApp.length()-1] == '*') {
-//#ifdef DCOP_DEBUG
+#ifdef DCOP_DEBUG
 if (opcode == DCOPSend)
 {
    //QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
    qWarning("Sending %lu bytes from %s to %s. DCOPSend ", length, fromApp.data(), toApp.data());//, fun.data());
 }
-//#endif
+#endif
 		// handle a multicast.
 		int l = toApp.length()-1;
 		Q_FOREACH (DCOPConnection *client, appIds) {
@@ -837,14 +837,14 @@ if (opcode == DCOPSend)
 	    int datalen = ba.size();
 
 	    if ( target ) {
-//#ifdef DCOP_DEBUG
+#ifdef DCOP_DEBUG
 if (opcode == DCOPCall)
 {
    //QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
    qWarning("Sending %lu bytes from %s to %s. DCOPCall ", length, fromApp.data(), toApp.data());//, fun.data());
 }
-//#endif
+#endif
 		target->waitingForReply.append( iceConn );
                 conn->waitingOnReply.append( target->iceConn);
 
