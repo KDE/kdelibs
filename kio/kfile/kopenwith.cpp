@@ -323,9 +323,11 @@ public:
 };
 
 KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, QWidget* parent )
-             :QDialog( parent, "openwith", true ),d(new KOpenWithDlgPrivate)
+             :QDialog( parent ),d(new KOpenWithDlgPrivate)
 {
-    setWindowTitle( i18n( "Open With" ) );
+    setObjectName( QLatin1String( "openwith" ) );
+    setModal( true );
+	setWindowTitle( i18n( "Open With" ) );
     QString text;
     if( _urls.count() == 1 )
     {
@@ -342,8 +344,10 @@ KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, QWidget* parent )
 
 KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
-             :QDialog( parent, "openwith", true ),d(new KOpenWithDlgPrivate)
+             :QDialog( parent ),d(new KOpenWithDlgPrivate)
 {
+  setObjectName( QLatin1String( "openwith" ) );
+  setModal( true );
   QString caption = KStringHandler::csqueeze( _urls.first().prettyURL() );
   if (_urls.count() > 1)
       caption += QString::fromLatin1("...");
@@ -354,9 +358,11 @@ KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, const QString&_text,
 
 KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
                             QWidget *parent)
-             :QDialog( parent, "openwith", true ),d(new KOpenWithDlgPrivate)
+             :QDialog( parent ),d(new KOpenWithDlgPrivate)
 {
-    setWindowTitle(i18n("Choose Application for %1").arg(serviceType));
+  setObjectName( QLatin1String( "openwith" ) );
+  setModal( true );
+  setWindowTitle(i18n("Choose Application for %1").arg(serviceType));
   QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
                       "If the program is not listed, enter the name or click "
                       "the browse button.</qt>").arg(serviceType);
@@ -367,8 +373,10 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
 }
 
 KOpenWithDlg::KOpenWithDlg( QWidget *parent)
-             :QDialog( parent, "openwith", true ),d(new KOpenWithDlgPrivate)
+             :QDialog( parent ),d(new KOpenWithDlgPrivate)
 {
+  setObjectName( QLatin1String( "openwith" ) );
+  setModal( true );
   setWindowTitle(i18n("Choose Application"));
   QString text = i18n("<qt>Select a program. "
                       "If the program is not listed, enter the name or click "

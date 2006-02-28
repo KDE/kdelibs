@@ -119,7 +119,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
     QDir d( KCrashBookmarkImporterImpl().findDefaultLocation() );
     d.setSorting( QDir::Time );
     d.setFilter( QDir::Files );
-    d.setNameFilter( "konqueror-crash-*.log" );
+    d.setNameFilters( QStringList( "konqueror-crash-*.log" ) );
 
     QFileInfoList list = d.entryInfoList();
     QListIterator<QFileInfo> it( list );

@@ -317,8 +317,8 @@ public:
 };
 
 
-KUrlBar::KUrlBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WFlags f )
-    : QFrame( parent, name, f ),
+KUrlBar::KUrlBar( bool useGlobalItems, QWidget *parent, Qt::WFlags f )
+    : QFrame( parent, f ),
       m_activeItem( 0L ),
       m_useGlobal( useGlobalItems ),
       m_isModified( false ),
@@ -326,7 +326,28 @@ KUrlBar::KUrlBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WF
       m_listBox( 0L ),
       m_iconSize( KIcon::SizeMedium ),d(new KUrlBarPrivate())
 {
+    setListBox( 0L );
+    setSizePolicy( QSizePolicy( isVertical() ?
+                                QSizePolicy::Maximum :
+                                QSizePolicy::Preferred,
+                                isVertical() ?
+                                QSizePolicy::Preferred :
+                                QSizePolicy::Maximum ));
+    this->setWhatsThis(i18n("<qt>The <b>Quick Access</b> panel provides easy access to commonly used file locations.<p>"
+                               "Clicking on one of the shortcut entries will take you to that location.<p>"
+                               "By right clicking on an entry you can add, edit and remove shortcuts.</qt>"));
+}
 
+KUrlBar::KUrlBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WFlags f )
+    : QFrame( parent, f ),
+      m_activeItem( 0L ),
+      m_useGlobal( useGlobalItems ),
+      m_isModified( false ),
+      m_isImmutable( false ),
+      m_listBox( 0L ),
+      m_iconSize( KIcon::SizeMedium ),d(new KUrlBarPrivate())
+{
+    setObjectName( name );
     setListBox( 0L );
     setSizePolicy( QSizePolicy( isVertical() ?
                                 QSizePolicy::Maximum :
@@ -832,7 +853,7 @@ void KUrlBarListBox::populateMimeData( QMimeData* mimeData )
 
 void KUrlBarListBox::contentsDragEnterEvent( QDragEnterEvent *e )
 {
-    e->accept( KUrl::List::canDecode( e->mimeData() ) );
+    e->setAccepted( KUrl::List::canDecode( e->mimeData() ) );
 }
 
 void KUrlBarListBox::contentsDropEvent( QDropEvent *e )

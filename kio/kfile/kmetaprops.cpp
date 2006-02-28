@@ -46,7 +46,8 @@ public:
         : Q3ScrollView(parent, name)
     {
       setFrameStyle(QFrame::NoFrame);
-      m_frame = new QFrame(viewport(), "MetaPropsScrollView::m_frame");
+      m_frame = new QFrame(viewport());
+	  m_frame->setObjectName("MetaPropsScrollView::m_frame");
       m_frame->setFrameStyle(QFrame::NoFrame);
       addChild(m_frame, 0, 0);
     };
