@@ -335,7 +335,8 @@ void KPasswordDialog::init()
     }
 
     m_pHelpLbl = new QLabel(m_pMain);
-    m_pHelpLbl->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextWordWrap);
+    m_pHelpLbl->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+    m_pHelpLbl->setWordWrap(true);
     m_pGrid->addWidget(m_pHelpLbl, 0, 2, Qt::AlignLeft);
     m_pGrid->addRowSpacing(1, 10);
     m_pGrid->setRowStretch(1, 12);
