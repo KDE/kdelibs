@@ -1493,6 +1493,57 @@ inline static RenderTableRow *nextTableRow(RenderObject *row)
     return static_cast<RenderTableRow *>(row);
 }
 
+int RenderTableSection::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    int bottom = RenderContainer::lowestPosition(includeOverflowInterior, includeSelf);
+    if (!includeOverflowInterior && hasOverflowClip())
+        return bottom;
+
+    for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
+        for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
+            if (cell->isTableCell()) {
+                int bp = cell->yPos() + cell->lowestPosition(false);
+                bottom = kMax(bottom, bp);
+        }
+    }
+    
+    return bottom;
+}
+
+int RenderTableSection::rightmostPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    int right = RenderContainer::rightmostPosition(includeOverflowInterior, includeSelf);
+    if (!includeOverflowInterior && hasOverflowClip())
+        return right;
+
+    for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
+        for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
+            if (cell->isTableCell()) {
+                int rp = cell->xPos() + cell->rightmostPosition(false);
+                right = kMax(right, rp);
+        }
+    }
+    
+    return right;
+}
+
+int RenderTableSection::leftmostPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    int left = RenderContainer::leftmostPosition(includeOverflowInterior, includeSelf);
+    if (!includeOverflowInterior && hasOverflowClip())
+        return left;
+    
+    for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
+        for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
+            if (cell->isTableCell()) {
+                int lp = cell->xPos() + cell->leftmostPosition(false);
+                left = kMin(left, lp);
+        }
+    }
+    
+    return left;
+}
+
 void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 {
     unsigned int totalRows = grid.size();
