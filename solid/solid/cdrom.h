@@ -44,6 +44,12 @@ namespace KDEHW
         int writeSpeed() const;
         QList<int> writeSpeeds() const;
 
+    signals:
+        void ejectPressed();
+
+    private slots:
+        void slotEjectPressed();
+
     private:
         class Private;
         Private *d;

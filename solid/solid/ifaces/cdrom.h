@@ -39,6 +39,10 @@ namespace Ifaces
         virtual int readSpeed() const = 0;
         virtual int writeSpeed() const = 0;
         virtual QList<int> writeSpeeds() const = 0;
+
+    protected:
+    //signals:
+        virtual void ejectPressed() = 0;
     };
 }
 }

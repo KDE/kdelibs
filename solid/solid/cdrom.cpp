@@ -36,6 +36,9 @@ KDEHW::Cdrom::Cdrom( Ifaces::Cdrom *iface, QObject *parent )
     : Storage( iface, parent ), d( new Private() )
 {
     d->iface = iface;
+
+    connect( d->iface->qobject(), SIGNAL( ejectPressed() ),
+             this, SLOT( ejectPressed() ) );
 }
 
 KDEHW::Cdrom::~Cdrom()
@@ -62,6 +65,11 @@ int KDEHW::Cdrom::writeSpeed() const
 QList<int> KDEHW::Cdrom::writeSpeeds() const
 {
     return d->iface->writeSpeeds();
+}
+
+void KDEHW::Cdrom::slotEjectPressed()
+{
+    emit ejectPressed();
 }
 
 #include "cdrom.moc"
