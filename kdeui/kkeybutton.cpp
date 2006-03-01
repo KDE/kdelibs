@@ -134,7 +134,7 @@ void KKeyButton::paintEvent( QPaintEvent* )
 
   QRegion r1( a );
   painter.setClipRegion( r1 );
-  painter.setBrush( backgroundColor().light() );
+  painter.setBrush( palette().color( QPalette::Background ).light() );
   painter.drawRoundRect( 0, 0, width(), height(), 20, 20);
 
   a.setPoint( 0, width(), height() );
@@ -144,7 +144,7 @@ void KKeyButton::paintEvent( QPaintEvent* )
 
   QRegion r2( a );
   painter.setClipRegion( r2 );
-  painter.setBrush( backgroundColor().dark() );
+  painter.setBrush( palette().color( QPalette::Background ).dark() );
   painter.drawRoundRect( 0, 0, width(), height(), 20, 20 );
 
   painter.setClipping( false );
@@ -153,18 +153,18 @@ void KKeyButton::paintEvent( QPaintEvent* )
                      QColorGroup(palette()), true, 1, 0L );
   if ( m_bEditing )
   {
-    painter.setPen( QColorGroup(palette()).base() );
-    painter.setBrush( QColorGroup(palette()).base() );
+    painter.setPen( palette().color( QPalette::Base ) );
+    painter.setBrush( palette().color( QPalette::Base ) );
   }
   else
   {
-    painter.setPen( backgroundColor() );
-    painter.setBrush( backgroundColor() );
+    painter.setPen( palette().color( QPalette::Background ) );
+    painter.setBrush( palette().color( QPalette::Background ) );
   }
   if( width() > 14 && height() > 10 )
     painter.drawRect( 7, 5, width() - 14, height() - 10 );
 
-  painter.setPen( QColorGroup(palette()).text() );
+  painter.setPen( palette().color( QPalette::Text ) );
 
   style()->drawItemText( &painter, rect(), Qt::AlignCenter | Qt::TextShowMnemonic,
                          palette(), isEnabled(), text() );

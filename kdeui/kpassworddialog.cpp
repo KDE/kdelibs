@@ -320,8 +320,9 @@ void KPasswordDialog::init()
 
     m_pMain = new QWidget(this);
     setMainWidget(m_pMain);
-    m_pGrid = new QGridLayout(m_pMain, 10, 3, 0, 0);
-    m_pGrid->addColSpacing(1, 10);
+    m_pGrid = new QGridLayout(m_pMain);
+    m_pGrid->setMargin(0);
+    m_pGrid->setSpacing(0);
 
     // Row 1: pixmap + prompt
     QLabel *lbl;
@@ -338,11 +339,9 @@ void KPasswordDialog::init()
     m_pHelpLbl->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
     m_pHelpLbl->setWordWrap(true);
     m_pGrid->addWidget(m_pHelpLbl, 0, 2, Qt::AlignLeft);
-    m_pGrid->addRowSpacing(1, 10);
     m_pGrid->setRowStretch(1, 12);
 
     // Row 2+: space for 4 extra info lines
-    m_pGrid->addRowSpacing(6, 5);
     m_pGrid->setRowStretch(6, 12);
 
     // Row 3: Password editor #1
@@ -365,7 +364,6 @@ void KPasswordDialog::init()
     // Row 4: Password editor #2 or keep password checkbox
 
     if ((m_Type == Password) && m_Keep) {
-	m_pGrid->addRowSpacing(8, 10);
 	m_pGrid->setRowStretch(8, 12);
 	QCheckBox* const cb = new QCheckBox(i18n("&Keep password"), m_pMain);
 	cb->setFixedSize(cb->sizeHint());
@@ -376,7 +374,6 @@ void KPasswordDialog::init()
 	connect(cb, SIGNAL(toggled(bool)), SLOT(slotKeep(bool)));
 	m_pGrid->addWidget(cb, 9, 2, Qt::AlignLeft|Qt::AlignVCenter);
     } else if (m_Type == NewPassword) {
-	m_pGrid->addRowSpacing(8, 10);
 	lbl = new QLabel(m_pMain);
 	lbl->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
 	lbl->setText(i18n("&Verify:"));
@@ -393,12 +390,11 @@ void KPasswordDialog::init()
 	h_lay->addWidget(m_pEdit2);
 
         // Row 6: Password strength meter
-        m_pGrid->addRowSpacing(10, 10);
         m_pGrid->setRowStretch(10, 12);
 
         KHBox* const strengthBox = new KHBox(m_pMain);
         strengthBox->setSpacing(10);
-        m_pGrid->addMultiCellWidget(strengthBox, 11, 11, 0, 2);
+        m_pGrid->addWidget(strengthBox, 11, 11, 0, 2);
         QLabel* const passStrengthLabel = new QLabel(strengthBox);
         passStrengthLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
         passStrengthLabel->setText(i18n("Password strength meter:"));
@@ -417,13 +413,12 @@ void KPasswordDialog::init()
         d->m_strengthBar->setWhatsThis(strengthBarWhatsThis);
 
         // Row 6: Label saying whether the passwords match
-        m_pGrid->addRowSpacing(12, 10);
         m_pGrid->setRowStretch(12, 12);
 
         d->m_MatchLabel = new QLabel(m_pMain);
         d->m_MatchLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
         d->m_MatchLabel->setWordWrap(true);
-        m_pGrid->addMultiCellWidget(d->m_MatchLabel, 13, 13, 0, 2);
+        m_pGrid->addWidget(d->m_MatchLabel, 13, 13, 0, 2);
         d->m_MatchLabel->setText(i18n("Passwords do not match"));
 
 

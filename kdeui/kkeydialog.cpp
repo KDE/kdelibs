@@ -32,6 +32,7 @@
 #include <qpainter.h>
 #include <qradiobutton.h>
 #include <qregexp.h>
+#include <qstyle.h>
 #include <qtoolbutton.h>
 
 #include <kaccel.h>
@@ -305,16 +306,21 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   // Items are added to topLayout as they are created.
   //
 
-  QBoxLayout *topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
+  QBoxLayout *topLayout = new QVBoxLayout( this );
+  topLayout->setMargin( 0 );
+  topLayout->setSpacing( KDialog::spacingHint() );
 
   //
   // ADD SEARCHLINE
   //
-  QHBoxLayout* searchLayout = new QHBoxLayout(0, 0, KDialog::spacingHint());
+  QHBoxLayout* searchLayout = new QHBoxLayout();
+  searchLayout->setMargin( 0 );
+  searchLayout->setSpacing( KDialog::spacingHint());
   topLayout->addLayout(searchLayout, 10);
 
   QToolButton *clearSearch = new QToolButton(this);
-  clearSearch->setTextLabel(i18n("Clear Search"), true);
+  clearSearch->setText(i18n("Clear Search"));
+  clearSearch->setToolTip(i18n("Clear Search"));
   clearSearch->setIcon(SmallIconSet(QApplication::isRightToLeft() ? "clear_left" : "locationbar_erase"));
   searchLayout->addWidget(clearSearch);
   QLabel* slbl = new QLabel(i18n("&Search:"), this);
@@ -335,7 +341,8 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   //
   // fill up the split list box with the action/key pairs.
   //
-  QGridLayout *stackLayout = new QGridLayout(2, 2, 2);
+  QGridLayout *stackLayout = new QGridLayout();
+  stackLayout->setSpacing( 2 );
   topLayout->addLayout( stackLayout, 10 );
   stackLayout->setRowStretch( 1, 10 ); // Only list will stretch
 
@@ -346,7 +353,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   columns.append(0);
   listViewSearch->setSearchColumns(columns);
 
-  stackLayout->addMultiCellWidget( d->pList, 1, 1, 0, 1 );
+  stackLayout->addWidget( d->pList, 1, 1, 0, 1 );
 
   wtstr = i18n("Here you can see a list of key bindings, "
                        "i.e. associations between actions (e.g. 'Copy') "
@@ -379,8 +386,8 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   //
   // CHOOSE KEY GROUP LAYOUT MANAGER
   //
-  QGridLayout *grid = new QGridLayout( d->fCArea, 3, 4, KDialog::spacingHint() );
-  grid->addRowSpacing( 0, fontMetrics().lineSpacing() );
+  QGridLayout *grid = new QGridLayout( d->fCArea );
+  grid->setMargin( KDialog::marginHint() );
 
   d->kbGroup = new Q3ButtonGroup( d->fCArea );
   d->kbGroup->hide();
@@ -389,7 +396,6 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   m_prbNone = new QRadioButton( i18n("no key", "&None"), d->fCArea );
   d->kbGroup->insert( m_prbNone, NoKey );
   m_prbNone->setEnabled( false );
-  //grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
   grid->addWidget( m_prbNone, 1, 0 );
   m_prbNone->setWhatsThis(i18n("The selected action will not be associated with any key.") );
   connect( m_prbNone, SIGNAL(clicked()), SLOT(slotNoKey()) );
@@ -397,7 +403,6 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   m_prbDef = new QRadioButton( i18n("default key", "De&fault"), d->fCArea );
   d->kbGroup->insert( m_prbDef, DefaultKey );
   m_prbDef->setEnabled( false );
-  //grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
   grid->addWidget( m_prbDef, 1, 1 );
   m_prbDef->setWhatsThis(i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
   connect( m_prbDef, SIGNAL(clicked()), SLOT(slotDefaultKey()) );
@@ -405,7 +410,6 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   m_prbCustom = new QRadioButton( i18n("C&ustom"), d->fCArea );
   d->kbGroup->insert( m_prbCustom, CustomKey );
   m_prbCustom->setEnabled( false );
-  //grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
   grid->addWidget( m_prbCustom, 1, 2 );
   m_prbCustom->setWhatsThis(i18n("If this option is selected you can create a customized key binding for the"
     " selected action using the buttons below.") );
@@ -413,14 +417,14 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 
   //connect( d->kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
 
-  QBoxLayout *pushLayout = new QHBoxLayout( KDialog::spacingHint() );
+  QBoxLayout *pushLayout = new QHBoxLayout();
+  pushLayout->setSpacing( KDialog::spacingHint() );
   grid->addLayout( pushLayout, 1, 3 );
 
   d->pbtnShortcut = new KKeyButton( d->fCArea );
   d->pbtnShortcut->setObjectName( "key" );
   d->pbtnShortcut->setEnabled( false );
   connect( d->pbtnShortcut, SIGNAL(capturedShortcut(const KShortcut&)), SLOT(capturedShortcut(const KShortcut&)) );
-  grid->addRowSpacing( 1, d->pbtnShortcut->sizeHint().height() + 5 );
 
   wtstr = i18n("Use this button to choose a new shortcut key. Once you click it, "
   		"you can press the key-combination which you would like to be assigned "
@@ -439,7 +443,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   //d->lInfo->setAlignment( AlignCenter );
   //d->lInfo->setEnabled( false );
   //d->lInfo->hide();
-  grid->addMultiCellWidget( d->lInfo, 2, 2, 0, 3 );
+  grid->addWidget( d->lInfo, 2, 2, 0, 3 );
 
   //d->globalDict = new QDict<int> ( 100, false );
   //d->globalDict->setAutoDelete( true );
@@ -491,8 +495,10 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 			pGroupItem = pParentItem = pItem;
 		} else if( !sName.isEmpty() && sName != "unnamed"  && pList->isConfigurable(iAction) ) {
 			pItem = new KKeyChooserItem( pParentItem, pItem, pList, iAction );
-			if(pAList)
-				pItem->setPixmap(0,pAList->action(iAction)->iconSet().pixmap(QIcon::Small,QIcon::Normal));
+			if(pAList) {
+				int size = style()->pixelMetric(QStyle::PM_SmallIconSize);
+				pItem->setPixmap(0,pAList->action(iAction)->iconSet().pixmap(QSize(size,size),QIcon::Normal));
+			}
 		}
 	}
 	if( !pProgramItem->firstChild() )

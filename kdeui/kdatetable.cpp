@@ -50,8 +50,8 @@
 #include <qpen.h>
 #include <qpainter.h>
 #include <qdialog.h>
-#include <q3dict.h>
 #include <qevent.h>
+#include <qhash.h>
 #include <qapplication.h>
 #include <assert.h>
 
@@ -78,14 +78,15 @@ public:
      QColor bgColor;
      BackgroundMode bgMode;
    };
-   Q3Dict <DatePaintingMode> customPaintingModes;
+   QHash <QString,DatePaintingMode*> customPaintingModes;
 
 };
 
 
 KDateValidator::KDateValidator(QWidget* parent, const char* name)
-    : QValidator(parent, name)
+    : QValidator(parent)
 {
+  setObjectName( name );
 }
 
 QValidator::State
@@ -124,8 +125,10 @@ KDateTable::KDateTable(const QDate& date_, QWidget* parent)
   setNumCols(7); // 7 days a week
   setHScrollBarMode(AlwaysOff);
   setVScrollBarMode(AlwaysOff);
-  viewport()->setEraseColor(KGlobalSettings::baseColor());
-  
+  QPalette palette;
+  palette.setColor(viewport()->backgroundRole(), KGlobalSettings::baseColor());
+  viewport()->setPalette(palette);
+
   if(!date_.isValid())
   {
     kDebug() << "KDateTable ctor: WARNING: Given date is invalid, using current date." << endl;
@@ -146,7 +149,9 @@ KDateTable::KDateTable(QWidget *parent)
   setNumCols(7); // 7 days a week
   setHScrollBarMode(AlwaysOff);
   setVScrollBarMode(AlwaysOff);
-  viewport()->setEraseColor(KGlobalSettings::baseColor());
+  QPalette palette;
+  palette.setColor(viewport()->backgroundRole(), KGlobalSettings::baseColor());
+  viewport()->setPalette(palette);
   setDate(QDate::currentDate()); // this initializes firstday, numdays, numDaysPrevMonth
   initAccels();
 }
@@ -237,8 +242,8 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           painter->setPen(textColor);
         }
       painter->drawText(0, 0, w, h-1, Qt::AlignCenter,
-                        calendar->weekDayName(daynum, true), -1, &rect);
-      painter->setPen(palette().text());
+                        calendar->weekDayName(daynum, true), &rect);
+      painter->setPen(palette().color(QPalette::Text));
       painter->drawLine(0, h-1, w-1, h-1);
       // ----- draw the weekday:
     } else {
@@ -254,7 +259,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           // ° painting a day of the previous month or
           // ° painting a day of the following month
           // TODO: don't hardcode gray here! Use a color with less contrast to the background than normal text.
-          painter->setPen( palette().mid() );
+          painter->setPen( palette().color(QPalette::Mid) );
 //          painter->setPen(gray);
         } else { // paint a day of the current month
           if ( d->useCustomColors )
@@ -279,9 +284,9 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
               }
               painter->setPen( mode->fgColor );
             } else
-              painter->setPen(palette().text());
+              painter->setPen(palette().color(QPalette::Text));
           } else //if ( firstWeekDay < 4 ) // <- this doesn' make sense at all!
-          painter->setPen(palette().text());
+          painter->setPen(palette().color(QPalette::Text));
         }
 
       pen=painter->pen();
@@ -295,30 +300,30 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
            // draw the currently selected date
 	   if (isEnabled())
 	   {
-           painter->setPen(palette().highlight());
-           painter->setBrush(palette().highlight());
+           painter->setPen(palette().color(QPalette::Highlight));
+           painter->setBrush(palette().color(QPalette::Highlight));
 	   }
 	   else
 	   {
-	   painter->setPen(palette().text());
-           painter->setBrush(palette().text());
+	   painter->setPen(palette().color(QPalette::Text));
+           painter->setBrush(palette().color(QPalette::Text));
 	   }
-           pen=palette().highlightedText().color();
+           pen=palette().color(QPalette::HighlightedText);
         } else {
-          painter->setBrush(palette().color(backgroundRole()));
-          painter->setPen(palette().color(backgroundRole()));
+          painter->setBrush(palette().color(QPalette::Background));
+          painter->setPen(palette().color(QPalette::Background));
 //          painter->setBrush(palette().base());
 //          painter->setPen(palette().base());
         }
 
       if ( pCellDate == QDate::currentDate() )
       {
-         painter->setPen(palette().text());
+         painter->setPen(palette().color(QPalette::Text));
       }
 
       if ( paintRect ) painter->drawRect(0, 0, w, h);
       painter->setPen(pen);
-      painter->drawText(0, 0, w, h, Qt::AlignCenter, text, -1, &rect);
+      painter->drawText(0, 0, w, h, Qt::AlignCenter, text, &rect);
     }
   if(rect.width()>maxCell.width()) maxCell.setWidth(rect.width());
   if(rect.height()>maxCell.height()) maxCell.setHeight(rect.height());
@@ -583,7 +588,7 @@ void KDateTable::setCustomDatePainting(const QDate &date, const QColor &fgColor,
     mode->fgColor=fgColor;
     mode->bgColor=bgColor;
 
-    d->customPaintingModes.replace( date.toString(), mode );
+    d->customPaintingModes.insert( date.toString(), mode );
     d->useCustomColors=true;
     update();
 }
@@ -683,7 +688,9 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   setNumRows( (KGlobal::locale()->calendar()->monthsInYear(date) + 2) / 3);
   // enable to find drawing failures:
   // setTableFlags(Tbl_clipCellPainting);
-  viewport()->setEraseColor(KGlobalSettings::baseColor()); // for consistency with the datepicker
+  QPalette palette;
+  palette.setColor(viewport()->backgroundRole(), KGlobalSettings::baseColor());
+  viewport()->setPalette(palette);
   // ----- find the preferred size
   //       (this is slow, possibly, but unfortunately it is needed here):
   QFontMetrics metrics(font);
@@ -889,10 +896,11 @@ KDateInternalYearSelector::setYear(int year)
 }
 
 KPopupFrame::KPopupFrame(QWidget* parent, const char*  name)
-  : QFrame(parent, name, Qt::WType_Popup),
+  : QFrame(parent, Qt::WType_Popup),
     result(0), // rejected
     main(0)
 {
+  setObjectName( name );
   setFrameStyle(QFrame::Box|QFrame::Raised);
   setMidLineWidth(2);
 }
