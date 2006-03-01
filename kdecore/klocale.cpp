@@ -935,7 +935,7 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
 // a hidden kconfig option and getting the code from #57240 into the same
 // method, so that all KDE apps use the same unit, instead of letting each app decide.
 
-QString KLocale::formatByteSize( double size )
+QString KLocale::formatByteSize( double size ) const
 {
     // Per IEC 60027-2
 
@@ -946,32 +946,31 @@ QString KLocale::formatByteSize( double size )
     //Kibi-byte             KiB             2^10    1,024 bytes
 
     QString s;
-    double fsize = size;
     // Gibi-byte
-    if ( size >= 1073741824 )
+    if ( size >= 1073741824.0 )
     {
-        fsize /= 1073741824.0;
-        if ( fsize > 1024 ) // Tebi-byte
-            s = i18n( "%1 TiB" ).arg( formatNumber(fsize / 1024.0, 1));
+        size /= 1073741824.0;
+        if ( size > 1024 ) // Tebi-byte
+            s = i18n( "%1 TiB" ).arg( formatNumber(size / 1024.0, 1));
         else
-            s = i18n( "%1 GiB" ).arg( formatNumber(fsize, 1));
+            s = i18n( "%1 GiB" ).arg( formatNumber(size, 1));
     }
     // Mebi-byte
-    else if ( size >= 1048576 )
+    else if ( size >= 1048576.0 )
     {
-        fsize /= 1048576.0;
-        s = i18n( "%1 MiB" ).arg( formatNumber(fsize, 1));
+        size /= 1048576.0;
+        s = i18n( "%1 MiB" ).arg( formatNumber(size, 1));
     }
     // Kibi-byte
-    else if ( size >= 1024 )
+    else if ( size >= 1024.0 )
     {
-        fsize /= 1024.0;
-        s = i18n( "%1 KiB" ).arg( formatNumber(fsize, 1));
+        size /= 1024.0;
+        s = i18n( "%1 KiB" ).arg( formatNumber(size, 1));
     }
     // Just byte
     else if ( size > 0 )
     {
-        s = i18n( "%1 B" ).arg( formatNumber(fsize, 0));
+        s = i18n( "%1 B" ).arg( formatNumber(size, 0));
     }
     // Nothing
     else
@@ -980,6 +979,7 @@ QString KLocale::formatByteSize( double size )
     }
     return s;
 }
+
 QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 {
   const QString rst = shortFormat?dateFormatShort():dateFormat();
