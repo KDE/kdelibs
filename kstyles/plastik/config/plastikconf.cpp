@@ -95,7 +95,7 @@ PlastikStyleConfig::PlastikStyleConfig(QWidget* parent): QWidget(parent)
 // 	scrollBarLines->setChecked(origScrollBarLines);
 	origAnimProgressBar = s.readBoolEntry("/plastikstyle/Settings/animateProgressBar", false);
 	animateProgressBar->setChecked(origAnimProgressBar);
-	origDrawToolBarSeparator = s.readBoolEntry("/plastikstyle/Settings/drawToolBarSeparator", true);
+	origDrawToolBarSeparator = s.readBoolEntry("/plastikstyle/Settings/drawToolBarSeparator", false);
 	drawToolBarSeparator->setChecked(origDrawToolBarSeparator);
 	origDrawToolBarItemSeparator = s.readBoolEntry("/plastikstyle/Settings/drawToolBarItemSeparator", true);
 	drawToolBarItemSeparator->setChecked(origDrawToolBarItemSeparator);
@@ -172,7 +172,7 @@ void PlastikStyleConfig::defaults()
 {
 // 	scrollBarLines->setChecked(false);
 	animateProgressBar->setChecked(false);
-	drawToolBarSeparator->setChecked(true);
+	drawToolBarSeparator->setChecked(false);
 	drawToolBarItemSeparator->setChecked(true);
 // 	drawFocusRect->setChecked(true);
 	drawTriangularExpander->setChecked(false);

@@ -170,7 +170,7 @@ PlastikStyle::PlastikStyle() : KStyle( AllowMenuTransparency, ThreeButtonScrollB
     settings.beginGroup("/plastikstyle/Settings");
     _scrollBarLines = settings.readBoolEntry("/scrollBarLines", false);
     _animateProgressBar = settings.readBoolEntry("/animateProgressBar", false);
-    _drawToolBarSeparator = settings.readBoolEntry("/drawToolBarSeparator", true);
+    _drawToolBarSeparator = settings.readBoolEntry("/drawToolBarSeparator", false);
     _drawToolBarItemSeparator = settings.readBoolEntry("/drawToolBarItemSeparator", true);
     _drawFocusRect = settings.readBoolEntry("/drawFocusRect", true);
     _drawTriangularExpander = settings.readBoolEntry("/drawTriangularExpander", false);
