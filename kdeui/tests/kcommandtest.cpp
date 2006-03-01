@@ -79,6 +79,7 @@ void KCommandTest::testCommandHistoryAdd()
         ch.updateActions();
         QVERIFY( !undo->isEnabled() );
         QVERIFY( !redo->isEnabled() );
+        QCOMPARE( ch.presentCommand(), (KCommand * )0 );
 
         KTestCommand* c1 = new KTestCommand( "1" );
         ch.addCommand( c1 ); // executes the action
@@ -90,16 +91,19 @@ void KCommandTest::testCommandHistoryAdd()
         QVERIFY( undo->isEnabled() );
         QVERIFY( !redo->isEnabled() );
         QCOMPARE( m_documentRestored, 0 );
+        QCOMPARE( ch.presentCommand(), c1 );
         ch.undo();
         QCOMPARE( m_documentRestored, 1 );
         QCOMPARE( KTestCommand::unexecutedCommands.join( "," ), QString( "1" ) );
         QVERIFY( !undo->isEnabled() );
         QCOMPARE( undo->text(), i18n( "&Undo" ) );
         QVERIFY( redo->isEnabled() );
+        QCOMPARE( ch.presentCommand(), (KCommand * )0 );
         ch.redo();
         QCOMPARE( KTestCommand::executedCommands.join( "," ), QString( "1,1" ) );
         QVERIFY( undo->isEnabled() );
         QVERIFY( !redo->isEnabled() );
+        QCOMPARE( ch.presentCommand(), c1 );
         KTestCommand::clearLists();
 
         KTestCommand* c2 = new KTestCommand( "2" );
@@ -133,9 +137,11 @@ void KCommandTest::testCommandHistoryAdd()
         ch.addCommand( c3 );
         // c2 got deleted
         QCOMPARE( KTestCommand::deletedCommands.join( "," ), QString( "2" ) );
+        QCOMPARE( ch.presentCommand(), c3 );
         ch.undo();
         QVERIFY( undo->isEnabled() );
         QVERIFY( redo->isEnabled() );
+        QCOMPARE( ch.presentCommand(), c1 );
         ch.undo();
         QCOMPARE( m_documentRestored, 3 );
         QVERIFY( !undo->isEnabled() );

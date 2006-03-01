@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2000 Werner Trobin <trobin@kde.org>
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000,2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -221,6 +221,12 @@ public:
      * want to come back to a readwrite mode.
      */
     void updateActions();
+
+    /**
+     * @return the present command, i.e. the one that undo() would unexecute.
+     * This can be used to e.g. show selection.
+     */
+    KCommand * presentCommand() const;
 
 public Q_SLOTS:
     /**

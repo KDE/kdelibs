@@ -181,6 +181,13 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
     }
 }
 
+KCommand * KCommandHistory::presentCommand() const
+{
+    if ( d->m_current >= 0 )
+        return m_commands[ d->m_current ];
+    return 0;
+}
+
 void KCommandHistory::undo() {
     Q_ASSERT( d->m_current >= 0 );
 
