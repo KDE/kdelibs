@@ -108,11 +108,13 @@ static bool operator!=( const KDE_struct_stat& st_buf1,
 static bool testLinkCountSupport(const QByteArray &fileName)
 {
    KDE_struct_stat st_buf;
+   int result = -1;
    // Check if hardlinks raise the link count at all?
-   ::link( fileName, fileName+".test" );
-   int result = KDE_lstat( fileName, &st_buf );
-   ::unlink( fileName+".test" );
-   return ((result == 0) && (st_buf.st_nlink == 2));
+   if(!::link( fileName, fileName+".test" )) {
+     result = KDE_lstat( fileName, &st_buf );
+     ::unlink( fileName+".test" );
+   }
+   return (result < 0 || ((result == 0) && (st_buf.st_nlink == 2)));
 }
 
 static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &st_buf, bool &linkCountSupport)
