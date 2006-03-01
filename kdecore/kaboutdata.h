@@ -487,11 +487,13 @@ class KDECORE_EXPORT KAboutData
 
     /**
      * @internal
+     * Provided for use by KCrash
      */
     const char* internalProgramName() const;
 
     /**
      * @internal
+     * Provided for use by KCrash
      */
     void translateInternalProgramName() const;
 
@@ -511,6 +513,7 @@ class KDECORE_EXPORT KAboutData
 
     /**
      * @internal
+     * Provided for use by KCrash
      */
     const char* internalVersion() const;
 
@@ -536,6 +539,7 @@ class KDECORE_EXPORT KAboutData
     
     /**
      * @internal
+     * Provided for use by KCrash
      */
     const char* internalBugAddress() const;
 
