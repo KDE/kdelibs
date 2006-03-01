@@ -103,7 +103,7 @@ static QString testLogFile( const char *_filename );
 #ifdef USE_POSIX_ACL
 static QString aclAsString(  acl_t p_acl );
 static bool isExtendedACL(  acl_t p_acl );
-static void appendACLAtoms( const QCString & path, UDSEntry& entry, 
+static void appendACLAtoms( const QCString & path, UDSEntry& entry,
                             mode_t type, bool withACL );
 #endif
 
@@ -149,7 +149,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
     if ( !ACLString.isEmpty() ) {
         acl_t acl = 0;
         if ( ACLString == "ACL_DELETE" ) {
-            // user told us to delete the extended ACL, so let's write only 
+            // user told us to delete the extended ACL, so let's write only
             // the minimal (UNIX permission bits) part
             acl = acl_from_mode( perm );
         }
@@ -183,7 +183,7 @@ void FileProtocol::chmod( const KURL& url, int permissions )
 {
     QCString _path( QFile::encodeName(url.path()) );
     /* FIXME: Should be atomic */
-    if ( ::chmod( _path.data(), permissions ) == -1 || 
+    if ( ::chmod( _path.data(), permissions ) == -1 ||
         ( setACL( _path.data(), permissions, false ) == -1 ) ||
         /* if not a directory, cannot set default ACLs */
         ( setACL( _path.data(), permissions, true ) == -1 && errno != ENOTDIR ) ) {
@@ -555,6 +555,23 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         }
     }
 
+    // set modification time
+    const QString mtimeStr = metaData( "modified" );
+    if ( !mtimeStr.isEmpty() ) {
+        QDateTime dt = QDateTime::fromString( mtimeStr, Qt::ISODate );
+        if ( dt.isValid() ) {
+            KDE_struct_stat dest_statbuf;
+            if (KDE_stat( _dest_orig.data(), &dest_statbuf ) == 0) {
+                struct utimbuf utbuf;
+                utbuf.actime = dest_statbuf.st_atime; // access time, unchanged
+                utbuf.modtime = dt.toTime_t(); // modification time
+                kdDebug() << k_funcinfo << "setting modtime to " << utbuf.modtime << endl;
+                utime( _dest_orig.data(), &utbuf );
+            }
+        }
+
+    }
+
     // We have done our job => finish
     finished();
 }
@@ -917,7 +934,7 @@ void FileProtocol::del( const KURL& url, bool isfile)
 }
 
 
-QString FileProtocol::getUserName( uid_t uid ) 
+QString FileProtocol::getUserName( uid_t uid )
 {
     QString *temp;
     temp = usercache.find( uid );
@@ -934,7 +951,7 @@ QString FileProtocol::getUserName( uid_t uid )
         return *temp;
 }
 
-QString FileProtocol::getGroupName( gid_t gid ) 
+QString FileProtocol::getGroupName( gid_t gid )
 {
     QString *temp;
     temp = groupcache.find( gid );
@@ -953,7 +970,7 @@ QString FileProtocol::getGroupName( gid_t gid )
 
 
 
-bool FileProtocol::createUDSEntry( const QString & filename, const QCString & path, UDSEntry & entry, 
+bool FileProtocol::createUDSEntry( const QString & filename, const QCString & path, UDSEntry & entry,
                                    short int details, bool withACL )
 {
     assert(entry.count() == 0); // by contract :-)
@@ -1024,7 +1041,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
     atom.m_uds = KIO::UDS_SIZE;
     atom.m_long = buff.st_size;
     entry.append( atom );
-    
+
 #ifdef USE_POSIX_ACL
     /* Append an atom indicating whether the file has extended acl information
      * and if withACL is specified also one with the acl itself. If it's a directory
@@ -1209,8 +1226,8 @@ void FileProtocol::listDir( const KURL& url)
     QStrListIterator it(entryNames);
     for (; it.current(); ++it) {
         entry.clear();
-        if ( createUDSEntry( QFile::decodeName(*it), 
-                             *it /* we can use the filename as relative path*/, 
+        if ( createUDSEntry( QFile::decodeName(*it),
+                             *it /* we can use the filename as relative path*/,
                              entry, 2, true ) )
           listEntry( entry, false);
         //else
@@ -1718,9 +1735,9 @@ static void appendACLAtoms( const QCString & path, UDSEntry& entry, mode_t type,
     UDSAtom atom;
     bool isDir = S_ISDIR( type );
     // do we have an acl for the file, and/or a default acl for the dir, if it is one?
-    if ( ( acl = acl_get_file( path.data(), ACL_TYPE_ACCESS ) ) ) { 
+    if ( ( acl = acl_get_file( path.data(), ACL_TYPE_ACCESS ) ) ) {
         if ( !isExtendedACL( acl ) ) {
-            acl_free( acl ); 
+            acl_free( acl );
             acl = 0;
         }
     }
