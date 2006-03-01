@@ -518,7 +518,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     //now parse out the arguments
     while( index < qb_size )
     {
-        int sep_pos = qb.indexOf( "0", index );
+        int sep_pos = qb.indexOf( (char) 0, index );
         if (sep_pos < 0) {
             kError(6100) << "Missing separation byte" << endl;
             sep_pos = qb_size;
