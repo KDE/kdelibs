@@ -266,11 +266,11 @@ class KDEUI_EXPORT KKeyDialog : public KDialog
 
 public:
 	/**
-	 * Constructs a KKeyDialog called @p name as a child of @p parent.
+	 * Constructs a KKeyDialog as a child of @p parent.
 	 * Set @p bAllowLetterShortcuts to false if unmodified alphanumeric
 	 * keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
-	KKeyDialog( bool bAllowLetterShortcuts = true, QWidget* parent = 0, const char* name = 0 );
+	KKeyDialog( bool bAllowLetterShortcuts = true, QWidget* parent = 0 );
 
 	/**
 	 * Destructor. Deletes all resources used by a KKeyDialog object.
@@ -353,7 +353,7 @@ public:
 	static int configure( KGlobalAccel* keys, bool bAllowLetterShortcuts, QWidget* parent = 0, bool bSaveSettings = true ); // BCI: merge with bAllowLetterShortcuts = true
 
 private:
-	KKeyDialog( KKeyChooser::ActionType, bool bAllowLetterShortcuts = true, QWidget* parent = 0, const char* name = 0 );
+	KKeyDialog( KKeyChooser::ActionType, bool bAllowLetterShortcuts = true, QWidget* parent = 0 );
 
  protected:
 	virtual void virtual_hook( int id, void* data );

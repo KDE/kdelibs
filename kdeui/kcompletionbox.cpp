@@ -44,8 +44,8 @@ public:
     bool emitSelected;
 };
 
-KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
- :KListBox( parent, name, Qt::WType_Popup ), d(new KCompletionBoxPrivate)
+KCompletionBox::KCompletionBox( QWidget *parent )
+ :KListBox( parent, 0, Qt::WType_Popup ), d(new KCompletionBoxPrivate)
 {
 
     d->m_parent        = parent;

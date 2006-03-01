@@ -57,8 +57,8 @@ static const char * item_xpm[] = {
 
 KApplication *app;
 
-TopLevel::TopLevel(QWidget *parent, const char *name)
-    : QWidget(parent, name)
+TopLevel::TopLevel(QWidget *parent)
+    : QWidget(parent)
 {
     setCaption("Item container test application");
 
@@ -216,7 +216,7 @@ int main( int argc, char ** argv )
     KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
     app = new KApplication;
 
-    TopLevel *toplevel = new TopLevel(0, "itemcontainertest");
+    TopLevel *toplevel = new TopLevel(0);
 
     toplevel->show();
     toplevel->resize( 600, 300 );

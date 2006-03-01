@@ -87,7 +87,7 @@ public:
   /**
    * The constructor.
    */
-  KDateInternalMonthPicker(const QDate& date, QWidget* parent, const char* name=0);
+  KDateInternalMonthPicker(const QDate& date, QWidget* parent);
   /**
    * The destructor.
    */
@@ -184,7 +184,7 @@ public:
   /**
    * The contructor. Creates a dialog without buttons.
    */
-  KPopupFrame(QWidget* parent=0, const char*  name=0);
+  KPopupFrame(QWidget* parent=0);
   /**
    * Set the main widget. You cannot set the main widget from the constructor,
    * since it must be a child of the frame itselfes.
@@ -226,7 +226,7 @@ Q_SIGNALS:
 class KDEUI_EXPORT KDateValidator : public QValidator
 {
 public:
-    KDateValidator(QWidget* parent=0, const char* name=0);
+    KDateValidator(QWidget* parent=0);
     virtual State validate(QString&, int&) const;
     virtual void fixup ( QString & input ) const;
     State date(const QString&, QDate&) const;

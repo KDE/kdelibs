@@ -1,11 +1,3 @@
-/****************************************************************************
-** Form interface generated from reading ui file './kcompletiontest.ui'
-**
-** Created: Wed Nov 15 20:12:56 2000
-**      by:  The User Interface Compiler (uic)
-**
-** WARNING! All changes made in this file will be lost!
-****************************************************************************/
 #ifndef FORM1_H
 #define FORM1_H
 
@@ -30,7 +22,7 @@ class Form1 : public QWidget
     Q_OBJECT
 
 public:
-    Form1( QWidget* parent = 0, const char* name = 0 );
+    Form1( QWidget* parent = 0 );
     ~Form1();
 
     Q3GroupBox* GroupBox1;

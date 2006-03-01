@@ -83,10 +83,9 @@ public:
 };
 
 
-KDateValidator::KDateValidator(QWidget* parent, const char* name)
+KDateValidator::KDateValidator(QWidget* parent)
     : QValidator(parent)
 {
-  setObjectName( name );
 }
 
 QValidator::State
@@ -668,8 +667,8 @@ KDateInternalMonthPicker::~KDateInternalMonthPicker() {
 }
 
 KDateInternalMonthPicker::KDateInternalMonthPicker
-(const QDate & date, QWidget* parent, const char* name)
-  : Q3GridView(parent, name),
+(const QDate & date, QWidget* parent)
+  : Q3GridView(parent),
     result(0) // invalid
 {
   QRect rect;
@@ -895,12 +894,11 @@ KDateInternalYearSelector::setYear(int year)
   setText(temp);
 }
 
-KPopupFrame::KPopupFrame(QWidget* parent, const char*  name)
+KPopupFrame::KPopupFrame(QWidget* parent)
   : QFrame(parent, Qt::WType_Popup),
     result(0), // rejected
     main(0)
 {
-  setObjectName( name );
   setFrameStyle(QFrame::Box|QFrame::Raised);
   setMidLineWidth(2);
 }

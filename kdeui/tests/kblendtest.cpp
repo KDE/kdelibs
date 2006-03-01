@@ -11,8 +11,8 @@
 
 int cols = 3, rows = 3; // how many
 
-KBlendWidget::KBlendWidget(QWidget *parent, const char *name)
-  :QWidget(parent, name)
+KBlendWidget::KBlendWidget(QWidget *parent)
+  :QWidget(parent)
 {
 
     bgnd = qRgb(255, 255, 255);

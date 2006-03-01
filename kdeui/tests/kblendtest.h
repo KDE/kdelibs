@@ -13,7 +13,7 @@
 class KBlendWidget : public QWidget
 {
 public:
-    KBlendWidget(QWidget *parent=0, const char *name=0);
+    KBlendWidget(QWidget *parent=0);
 protected:
     void paintEvent(QPaintEvent *ev);
 private:

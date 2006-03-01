@@ -14,7 +14,7 @@ class TopLevel : public QWidget
     Q_OBJECT
 public:
 
-    TopLevel( QWidget *parent=0, const char *name=0 );
+    TopLevel( QWidget *parent=0 );
 
     enum ViewID { IconView, ListView, ListBox };
     enum ModeID { NoSelection, Single, Multi, Extended };

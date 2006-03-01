@@ -39,8 +39,8 @@
 
 static int itemId = 0;
 
-testWindow::testWindow (QWidget *parent, const char *name)
-    : KMainWindow (parent,name)
+testWindow::testWindow (QWidget *parent)
+    : KMainWindow (parent)
 {
     ena=false;
     setCaption("test window");

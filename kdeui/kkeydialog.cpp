@@ -1081,10 +1081,9 @@ QString KKeyChooserWhatsThis::text( const QPoint& p ) {
 /* (by using KDialogBase there is almost no code left ;)                */
 /*                                                                      */
 /************************************************************************/
-KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts, QWidget *parent, const char* name )
+KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts, QWidget *parent )
 : KDialog( parent, i18n("Configure Shortcuts"), Default|Ok|Cancel )
 {
-	setObjectName(name);
 	setModal(true);
 	m_pKeyChooser = new KKeyChooser( this, type, bAllowLetterShortcuts );
 	setMainWidget( m_pKeyChooser );
@@ -1094,10 +1093,9 @@ KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts
 	resize( group.readEntry( "Dialog Size", size() ) );
 }
 
-KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char* name )
+KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent )
 : KDialog( parent, i18n("Configure Shortcuts"), Default|Ok|Cancel )
 {
-	setObjectName(name);
 	setModal(true);
 
 	m_pKeyChooser = new KKeyChooser( this, KKeyChooser::Application, bAllowLetterShortcuts );

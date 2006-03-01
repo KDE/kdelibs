@@ -1,12 +1,4 @@
 #include <klocale.h>
-/****************************************************************************
-** Form implementation generated from reading ui file './kcompletiontest.ui'
-**
-** Created: Wed Nov 15 20:15:10 2000
-**      by:  The User Interface Compiler (uic)
-**
-** WARNING! All changes made in this file will be lost!
-****************************************************************************/
 #include "kcompletiontest.h"
 
 #include <q3groupbox.h>
@@ -27,13 +19,12 @@
 #include <kcombobox.h>
 /*
  *  Constructs a Form1 which is a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'
+ *  widget flags set to 'f'
  */
-Form1::Form1( QWidget* parent,  const char* name )
-    : QWidget( parent, name, Qt::WDestructiveClose )
+Form1::Form1( QWidget* parent )
+    : QWidget( parent, Qt::WDestructiveClose )
 {
-    if ( !name )
-	setName( "Form1" );
+    setName( "Form1" );
     resize( 559, 465 );
     setCaption(  "Form1" );
     Form1Layout = new QVBoxLayout( this );
