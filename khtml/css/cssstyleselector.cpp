@@ -991,7 +991,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	    if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
 		return;
 	    }
-	    if(!checkOneSelector(sel, elem)) return;
+	    if(!checkOneSelector(sel, elem, true)) return;
 	    //kdDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
 	    break;
 	}
@@ -1023,7 +1023,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     return;
 }
 
-bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
+bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isSubSelector)
 {
     if(!e)
         return false;
@@ -1373,7 +1373,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoHover: {
 	    // If we're in quirks mode, then hover should never match anchors with no
 	    // href and *:hover should not match anything. This is important for sites like wsj.com.
-	    if (strictParsing || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
+	    if (strictParsing || isSubSelector || sel->relation == CSSSelector::SubSelector || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
 		if (element == e)
 		    style->setAffectedByHoverRules(true);
 		if (e->renderer()) {
@@ -1393,7 +1393,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoActive:
 	    // If we're in quirks mode, then :active should never match anchors with no
 	    // href.
-	    if (strictParsing || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
+	    if (strictParsing || isSubSelector || sel->relation == CSSSelector::SubSelector || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
 		if (element == e)
 		    style->setAffectedByActiveRules(true);
 		else if (e->renderer())
