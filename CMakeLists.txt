@@ -11,7 +11,7 @@ include(CTest)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # search packages used by KDE
-find_package(KDE4 REQUIRED)
+find_package(KDE4Internal REQUIRED)
 find_package(Perl REQUIRED)
 find_package(ZLIB REQUIRED)
 
@@ -54,20 +54,15 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kdemacros.h.cmake ${CMAKE_CURRENT_BIN
 macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/config.h ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 
-if (UNIX)
-   link_directories(/usr/local/lib)
-   include_directories(/usr/local/include)
-endif (UNIX)
-
 add_subdirectory( cmake )
 add_subdirectory( dcop )
 add_subdirectory( libltdl )
 add_subdirectory( kdefx )
 add_subdirectory( kdecore )
 add_subdirectory( kdeui )
-IF (NOT WIN32)
-	add_subdirectory( kdesu )
-ENDIF(NOT WIN32)
+if (UNIX)
+   add_subdirectory( kdesu )
+endif (UNIX)
 add_subdirectory( kjs )
 add_subdirectory( kjsembed )
 add_subdirectory( kwallet )
