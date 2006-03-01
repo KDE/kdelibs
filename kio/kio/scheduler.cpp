@@ -31,9 +31,8 @@
 #include <kstaticdeleter.h>
 #include <kdesu/client.h>
 
-#include <q3dict.h>
+#include <qhash.h>
 #include <dcopclient.h>
-#include <q3ptrdict.h>
 #include <qwidget.h>
 
 
@@ -43,7 +42,7 @@
 
 using namespace KIO;
 
-template class Q3Dict<KIO::Scheduler::ProtocolInfo>;
+template class QHash<QString, KIO::Scheduler::ProtocolInfo*>;
 
 Scheduler *Scheduler::instance = 0;
 
@@ -77,10 +76,10 @@ public:
     bool checkOnHold;
 };
 
-class KIO::Scheduler::ExtraJobData: public Q3PtrDict<KIO::Scheduler::JobData>
+class KIO::Scheduler::ExtraJobData: public QHash<KIO::SimpleJob*, KIO::Scheduler::JobData>
 {
 public:
-    ExtraJobData() { setAutoDelete(true); }
+    ExtraJobData() {}
     ~ExtraJobData() {}
 };
 
@@ -98,7 +97,7 @@ public:
     QString protocol;
 };
 
-class KIO::Scheduler::ProtocolInfoDict : public Q3Dict<KIO::Scheduler::ProtocolInfo>
+class KIO::Scheduler::ProtocolInfoDict : public QHash<QString, KIO::Scheduler::ProtocolInfo*>
 {
   public:
     ProtocolInfoDict() { }
@@ -109,7 +108,7 @@ class KIO::Scheduler::ProtocolInfoDict : public Q3Dict<KIO::Scheduler::ProtocolI
 KIO::Scheduler::ProtocolInfo *
 KIO::Scheduler::ProtocolInfoDict::get(const QString &protocol)
 {
-    ProtocolInfo *info = find(protocol);
+    ProtocolInfo *info = value(protocol, 0);
     if (!info)
     {
         info = new ProtocolInfo;
@@ -150,7 +149,7 @@ Scheduler::Scheduler()
 
 Scheduler::~Scheduler()
 {
-    protInfoDict->setAutoDelete(true);
+    qDeleteAll( *protInfoDict );
     delete protInfoDict; protInfoDict = 0;
     delete idleSlaves; idleSlaves = 0;
     delete coIdleSlaves; coIdleSlaves = 0;
@@ -202,15 +201,15 @@ DCOPCStringList Scheduler::functions()
 }
 
 void Scheduler::_doJob(SimpleJob *job) {
-    JobData *jobData = new JobData;
-    jobData->protocol = KProtocolManager::slaveProtocol(job->url(), jobData->proxy);
+    JobData jobData;
+    jobData.protocol = KProtocolManager::slaveProtocol(job->url(), jobData.proxy);
 //    kDebug(7006) << "Scheduler::_doJob protocol=" << jobData->protocol << endl;
     if (job->command() == CMD_GET)
     {
-       jobData->checkOnHold = checkOnHold;
+       jobData.checkOnHold = checkOnHold;
        checkOnHold = false;
     }
-    extraJobData->replace(job, jobData);
+    extraJobData->insert(job, jobData);
     newJobs.append(job);
     slaveTimer.start(0);
 #ifndef NDEBUG
@@ -221,13 +220,9 @@ void Scheduler::_doJob(SimpleJob *job) {
 
 void Scheduler::_scheduleJob(SimpleJob *job) {
     newJobs.removeAll(job);
-    JobData *jobData = extraJobData->find(job);
-    if (!jobData)
-{
-    kFatal(7006) << "BUG! _ScheduleJob(): No extraJobData for job!" << endl;
-    return;
-}
-    QString protocol = jobData->protocol;
+    JobData jobData = extraJobData->value(job);
+
+    QString protocol = jobData.protocol;
 //    kDebug(7006) << "Scheduler::_scheduleJob protocol=" << protocol << endl;
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
     protInfo->joblist.append(job);
@@ -241,12 +236,9 @@ void Scheduler::_cancelJob(SimpleJob *job) {
     if ( !slave  )
     {
         // was not yet running (don't call this on a finished job!)
-        JobData *jobData = extraJobData->find(job);
-        if (!jobData)
-           return; // I said: "Don't call this on a finished job!"
-
+        JobData jobData = extraJobData->value(job);
         newJobs.removeAll(job);
-        ProtocolInfo *protInfo = protInfoDict->get(jobData->protocol);
+        ProtocolInfo *protInfo = protInfoDict->get(jobData.protocol);
         protInfo->joblist.removeAll(job);
 
         // Search all slaves to see if job is in the queue of a coSlave
@@ -275,11 +267,11 @@ void Scheduler::startStep()
     {
        (void) startJobDirect();
     }
-    Q3DictIterator<KIO::Scheduler::ProtocolInfo> it(*protInfoDict);
-    while(it.current())
-    {
-       if (startJobScheduled(it.current())) return;
-       ++it;
+
+    QHashIterator<QString, KIO::Scheduler::ProtocolInfo*> it(*protInfoDict);
+    while(it.hasNext()) {
+       it.next();
+       if (startJobScheduled(it.value())) return;
     }
 }
 
@@ -405,8 +397,8 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
 //       kDebug(7006) << "scheduler: job started " << job << endl;
 
 
-    JobData *jobData = extraJobData->find(job);
-    setupSlave(slave, job->url(), jobData->protocol, jobData->proxy, newSlave);
+    JobData jobData = extraJobData->value(job);
+    setupSlave(slave, job->url(), jobData.protocol, jobData.proxy, newSlave);
     job->start(slave);
 
     slaveTimer.start(0);
@@ -417,14 +409,9 @@ bool Scheduler::startJobDirect()
 {
     debug_info();
     SimpleJob *job = newJobs.takeFirst();
-    JobData *jobData = extraJobData->find(job);
-    if (!jobData)
-    {
-        kFatal(7006) << "BUG! startjobDirect(): No extraJobData for job!"
-                      << endl;
-        return false;
-    }
-    QString protocol = jobData->protocol;
+    JobData jobData = extraJobData->value(job);
+
+    QString protocol = jobData.protocol;
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
 
     bool newSlave = false;
@@ -445,7 +432,7 @@ bool Scheduler::startJobDirect()
     idleSlaves->removeAll(slave);
 //       kDebug(7006) << "scheduler: job started " << job << endl;
 
-    setupSlave(slave, job->url(), protocol, jobData->proxy, newSlave);
+    setupSlave(slave, job->url(), protocol, jobData.proxy, newSlave);
     job->start(slave);
     return true;
 }
@@ -480,15 +467,11 @@ static Slave *searchIdleList(SlaveList *idleSlaves, const KUrl &url, const QStri
 Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
 {
     Slave *slave = 0;
-    JobData *jobData = extraJobData->find(job);
-    if (!jobData)
+    JobData jobData = extraJobData->value(job);
+
+    if (jobData.checkOnHold)
     {
-        kFatal(7006) << "BUG! findIdleSlave(): No extraJobData for job!" << endl;
-        return 0;
-    }
-    if (jobData->checkOnHold)
-    {
-       slave = Slave::holdSlave(jobData->protocol, job->url());
+       slave = Slave::holdSlave(jobData.protocol, job->url());
        if (slave)
           return slave;
     }
@@ -528,7 +511,7 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
           return slave;
     }
 
-    return searchIdleList(idleSlaves, job->url(), jobData->protocol, exact);
+    return searchIdleList(idleSlaves, job->url(), jobData.protocol, exact);
 }
 
 Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KUrl &url)
@@ -564,14 +547,9 @@ void Scheduler::slotSlaveStatus(pid_t, const QByteArray&, const QString &, bool)
 
 void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
 {
-    JobData *jobData = extraJobData->take(job);
-    if (!jobData)
-    {
-        kFatal(7006) << "BUG! _jobFinished(): No extraJobData for job!" << endl;
-        return;
-    }
-    ProtocolInfo *protInfo = protInfoDict->get(jobData->protocol);
-    delete jobData;
+    JobData jobData = extraJobData->take(job);
+
+    ProtocolInfo *protInfo = protInfoDict->get(jobData.protocol);
     slave->disconnect(job);
     protInfo->activeSlaves.removeAll(slave);
     if (slave->isAlive())

@@ -21,7 +21,6 @@
 #include <assert.h>
 
 #include <q3shared.h>
-#include <q3dict.h>
 #include <qdatetime.h>
 
 #include <ktrader.h>
@@ -996,9 +995,9 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
 #if 0
     kDebug(7033) << "currently loaded plugins:\n";
 
-    Q3DictIterator<CachedPluginInfo> it( m_plugins );
-    for( ; it.current(); ++it ) {
-        CachedPluginInfo* cache = it.current();
+    QHashIterator<QString,CachedPluginInfo*> it( m_plugins );
+    while(it.hasNext()) {
+        CachedPluginInfo* cache = it.next();
         kDebug(7033)
             << it.currentKey() // mimetype or protocol
             << " : " << (cache->plugin ? cache->plugin->className() : "(no plugin)") << endl; // plugin

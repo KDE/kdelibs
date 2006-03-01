@@ -20,7 +20,7 @@
 
 #include <assert.h>
 
-#include <q3dict.h>
+#include <qhash.h>
 
 #include <kconfig.h>
 #include <kstaticdeleter.h>
@@ -36,7 +36,7 @@ namespace KIO {
 class SlaveConfigProtocol
 {
 public:
-  SlaveConfigProtocol() { host.setAutoDelete(true); }
+  SlaveConfigProtocol() {}
   ~SlaveConfigProtocol()
   {
      delete configFile;
@@ -44,7 +44,7 @@ public:
 
 public:
   MetaData global;
-  Q3Dict<MetaData> host;
+  QHash<QString, MetaData> host;
   KConfig *configFile;
 };
 
@@ -62,7 +62,7 @@ class SlaveConfigPrivate
      void readConfigProtocolHost(const QString &_protocol, SlaveConfigProtocol *scp, const QString &host);
   public:
      MetaData global;
-     Q3Dict<SlaveConfigProtocol> protocol;
+     QHash<QString, SlaveConfigProtocol*> protocol;
 };
 
 void SlaveConfigPrivate::readGlobalConfig()
@@ -77,7 +77,7 @@ void SlaveConfigPrivate::readGlobalConfig()
 
 SlaveConfigProtocol* SlaveConfigPrivate::readProtocolConfig(const QString &_protocol)
 {
-   SlaveConfigProtocol *scp = protocol.find(_protocol);
+   SlaveConfigProtocol *scp = protocol.value(_protocol,0);
    if (!scp)
    {
       QString filename = KProtocolInfo::config(_protocol);
@@ -92,7 +92,7 @@ SlaveConfigProtocol* SlaveConfigPrivate::readProtocolConfig(const QString &_prot
 
 SlaveConfigProtocol* SlaveConfigPrivate::findProtocolConfig(const QString &_protocol)
 {
-   SlaveConfigProtocol *scp = protocol.find(_protocol);
+   SlaveConfigProtocol *scp = protocol.value(_protocol,0);
    if (!scp)
       scp = readProtocolConfig(_protocol);
    return scp;
@@ -100,8 +100,8 @@ SlaveConfigProtocol* SlaveConfigPrivate::findProtocolConfig(const QString &_prot
 
 void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProtocol *scp, const QString &host)
 {
-   MetaData *metaData = new MetaData;
-   scp->host.replace(host, metaData);
+   MetaData metaData;
+   scp->host.insert(host, metaData);
 
    // Read stuff
    // Break host into domains
@@ -110,8 +110,10 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProt
    if (!domain.contains('.'))
    {
       // Host without domain.
-      if (scp->configFile->hasGroup("<local>"))
-         readConfig(scp->configFile, "<local>", metaData);
+      if (scp->configFile->hasGroup("<local>")) {
+         readConfig(scp->configFile, "<local>", &metaData);
+         scp->host.insert(host, metaData);
+      }
    }
 
    int pos = 0;
@@ -124,8 +126,10 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProt
       else
         domain = host.mid(pos+1);
 
-      if (scp->configFile->hasGroup(domain))
-         readConfig(scp->configFile, domain.toLower(), metaData);
+      if (scp->configFile->hasGroup(domain)) {
+         readConfig(scp->configFile, domain.toLower(), &metaData);
+         scp->host.insert(host, metaData);
+      }
    }
    while (pos > 0);
 }
@@ -144,12 +148,12 @@ SlaveConfig *SlaveConfig::self()
 SlaveConfig::SlaveConfig()
 	:d(new SlaveConfigPrivate)
 {
-  d->protocol.setAutoDelete(true);
   d->readGlobalConfig();
 }
 
 SlaveConfig::~SlaveConfig()
 {
+   qDeleteAll(d->protocol);
    delete d;
    _self = 0;
 }
@@ -176,14 +180,12 @@ void SlaveConfig::setConfigData(const QString &protocol, const QString &host, co
       }
       else
       {
-         MetaData *hostConfig = scp->host.find(host);
-         if (!hostConfig)
-         {
+         if (!scp->host.contains(host))
             d->readConfigProtocolHost(protocol, scp, host);
-            hostConfig = scp->host.find(host);
-            assert(hostConfig);
-         }
-         *hostConfig += config;
+
+         MetaData hostConfig = scp->host.value(host);
+         hostConfig += config;
+         scp->host.insert(host, hostConfig);
       }
    }
 }
@@ -195,15 +197,15 @@ MetaData SlaveConfig::configData(const QString &protocol, const QString &host)
    config += scp->global;
    if (host.isEmpty())
       return config;
-   MetaData *hostConfig = scp->host.find(host);
-   if (!hostConfig)
+
+   if (!scp->host.contains(host))
    {
       d->readConfigProtocolHost(protocol, scp, host);
       emit configNeeded(protocol, host);
-      hostConfig = scp->host.find(host);
-      assert(hostConfig);
    }
-   config += *hostConfig;
+   MetaData hostConfig = scp->host.value(host);
+   config += hostConfig;
+
    return config;
 }
 
@@ -214,6 +216,7 @@ QString SlaveConfig::configData(const QString &protocol, const QString &host, co
 
 void SlaveConfig::reset()
 {
+   qDeleteAll(d->protocol);
    d->protocol.clear();
    d->readGlobalConfig();
 }
