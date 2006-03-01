@@ -77,7 +77,9 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
 	: KDialog(parent, QString(), 0, Qt::WDestructiveClose), d(new KSSLInfoDlgPrivate) {
 	setObjectName(name);
 	setModal(modal);
-        QVBoxLayout *topLayout = new QVBoxLayout(this, KDialog::marginHint(), KDialog::spacingHint());
+        QVBoxLayout *topLayout = new QVBoxLayout(this);
+        topLayout->setMargin(KDialog::marginHint());
+        topLayout->setSpacing(KDialog::spacingHint());
         d->m_secCon = secureConnection;
         d->m_layout = new QGridLayout(topLayout, 3, 3, KDialog::spacingHint());
         d->m_layout->setColStretch(1, 1);
@@ -261,7 +263,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
 void KSSLInfoDlg::setCertState(const QString &errorNrs)
 {
     d->_cert_ksvl.clear();
-    QStringList errors = QStringList::split(':', errorNrs);
+    QStringList errors = errorNrs.split(':', QString::SkipEmptyParts);
     for(QStringList::ConstIterator it = errors.begin();
             it != errors.end(); ++it)
     {
