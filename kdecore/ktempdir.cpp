@@ -31,6 +31,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <dirent.h>
 
 #ifdef HAVE_TEST
 #include <test.h>
@@ -53,6 +54,7 @@
 #include "kstandarddirs.h"
 #include "kprocess.h"
 #include <kdebug.h>
+#include "kde_file.h"
 
 KTempDir::KTempDir(QString directoryPrefix, int mode)
 {
@@ -136,12 +138,78 @@ void
 KTempDir::unlink()
 {
    if (!bExisting) return;
-   QString rmstr("/bin/rm -rf ");
-   rmstr += KProcess::quote(mTmpName);
-   ::system( QFile::encodeName(rmstr) );
-
+   if (KTempDir::removeDir(mTmpName))
+      mError=0;
+   else
+      mError=errno;
    bExisting=false;
-   mError=0;
+}
+
+// Auxiliary recursive function for removeDirs
+static bool
+rmtree(const QCString& name)
+{
+    kdDebug() << "Checking directory for remove " << name << endl;
+    KDE_struct_stat st;
+    if ( KDE_lstat( name.data(), &st ) == -1 ) // Do not dereference symlink!
+        return false;
+    if ( S_ISDIR( st.st_mode ) )
+    {
+        // This is a directory, so process it
+        kdDebug() << "File " << name << " is DIRECTORY!" << endl;
+        KDE_struct_dirent* ep;
+        DIR* dp = ::opendir( name.data() );
+        if ( !dp )
+            return false;
+        while ( ( ep = KDE_readdir( dp ) ) )
+        {
+            kdDebug() << "CHECKING " << name << "/" << ep->d_name << endl;
+            if ( !qstrcmp( ep->d_name, "." ) || !qstrcmp( ep->d_name, ".." ) )
+                continue;
+            QCString newName( name );
+            newName += "/"; // Careful: do not add '/' instead or you get problems with Qt3.
+            newName += ep->d_name;
+            /*
+             * Be defensive and close the directory.
+             *
+             * Potential problems:
+             * - opendir/readdir/closedir is not re-entrant
+             * - unlink and rmdir invalidates a opendir/readdir/closedir
+             * - limited number of file descriptors for opendir/readdir/closedir
+             */
+            if ( ::closedir( dp ) )
+                return false;
+            // Recurse!
+            kdDebug() << "RECURSE: " << newName << endl;
+            if ( ! rmtree( newName ) )
+                return false;
+            // We have to re-open the directory before continuing
+            dp = ::opendir( name.data() );
+            if ( !dp )
+                return false;
+        }
+        if ( ::closedir( dp ) )
+            return false;
+        kdDebug() << "RMDIR dir " << name << endl;
+        return ! ::rmdir( name );
+    }
+    else
+    {
+         // This is a non-directory file, so remove it
+         kdDebug() << "UNLINKING file " << name << endl;
+         return ! ::unlink( name );
+    }
+}
+
+bool
+KTempDir::removeDir(const QString& path)
+{
+    kdDebug() << k_funcinfo << " " << path << endl;
+    if ( !QFile::exists( path ) )
+        return true; // The goal is that there is no directory
+
+    const QCString cstr( QFile::encodeName( path ) );
+    return rmtree( cstr );
 }
 
 
