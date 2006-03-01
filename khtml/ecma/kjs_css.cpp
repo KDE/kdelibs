@@ -550,8 +550,14 @@ Value DOMCSSStyleSheetProtoFunc::tryCall(ExecState *exec, Object &thisObj, const
       return Undefined();
     // IE extensions
     case DOMCSSStyleSheet::AddRule: {
+      //Unpassed/-1 means append. Since insertRule is picky (throws exceptions)
+      //we adjust it to the desired length
+      unsigned long index  = args[2].toInteger(exec);
+      unsigned long length = styleSheet.cssRules().length();
+      if (args[2].type() == UndefinedType) index = length;
+      if (index > length)                  index = length;
       DOM::DOMString str = args[0].toString(exec).string() + " { " + args[1].toString(exec).string() + " } ";
-      return Number(styleSheet.insertRule(str,(long unsigned int)args[2].toInteger(exec)));
+      return Number(styleSheet.insertRule(str,index));
     }
     case DOMCSSStyleSheet::RemoveRule: {
       int index = args.size() > 0 ? args[0].toInteger(exec) : 0 /*first one*/;
