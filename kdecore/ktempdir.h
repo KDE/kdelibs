@@ -122,6 +122,30 @@ public:
     */
    bool exists() const;
 
+   /**
+    * @brief Remove a directory and all its contents
+    *
+    * Remove recursively a directory, even if it is not empty
+    * or contains other directories.
+    *
+    * However the function works too when the @p path given
+    * is a non-directory file. In that case it simply remove that file.
+    *
+    * The function stops on the first error.
+    *
+    * @note This function is more meant for removing a directory
+    * not created by the user. For user-created directories,
+    * using KIO::NetAccess::del is recommended instead,
+    * especially as it has user feedback for long operations.
+    *
+    * @param path Path of the directory to delete
+    * @return true if successful, otherwise false 
+    * (Use errno for more details about the error.)
+    * @since 3.5.2
+    * @todo decide how and where this function should be defined in KDE4
+    */
+    static bool removeDir( const QString& path );
+
 protected:
 
    /**
