@@ -24,8 +24,6 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
-#include <q3ptrlist.h>
-
 class AutoStartItem
 {
 public:
@@ -44,9 +42,9 @@ AutoStart::AutoStart()
 
 AutoStart::~AutoStart()
 {
-        qDeleteAll(*m_startList);
-        m_startList->clear();
-	delete m_startList;
+  qDeleteAll(*m_startList);
+  m_startList->clear();
+  delete m_startList;
 }
 
 void

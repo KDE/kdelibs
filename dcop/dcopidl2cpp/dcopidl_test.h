@@ -21,7 +21,7 @@ k_dcop:
    void unNamedArgsTest( QString, QString );
 
    void constTest( QString, QString ) const;
-   QStringList writeTypeTest( const QString &, Q3PtrList<int> );
+   QStringList writeTypeTest( const QString &, QList<int*> );
 
    void voidReturnType( QString filename, QString url, QString text, QString address, QString icon );
    QString nonVoidReturnType( QString filename, QString text, QString address );

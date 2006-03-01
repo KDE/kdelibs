@@ -17,14 +17,14 @@
 */
 
 #include <qstring.h>
-#include <q3dict.h>
+#include <qhash.h>
 
 class A { int foo; };
 class B { int bar; };
 class C : public A, public B { int foobar; };
 
-Q3Dict<A> dictA;
-Q3Dict<B> dictB;
+QHash<QString,A*> dictA;
+QHash<QString,B*> dictB;
 
 int main(int , char *[])
 {

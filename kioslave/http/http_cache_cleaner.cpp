@@ -29,8 +29,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qdir.h>
 #include <qstring.h>
-#include <q3cstring.h>
-#include <q3ptrlist.h>
 
 #include <kinstance.h>
 #include <klocale.h>
@@ -64,6 +62,11 @@ struct FileInfo {
    QString name;
    int size; // Size in Kb.
    int age;
+
+   bool operator<( const struct FileInfo &info )
+   {
+     return ( age < info.age );
+   }
 };
 
 template class QList<FileInfo*>;
@@ -72,8 +75,6 @@ class FileInfoList : public QList<FileInfo*>
 {
 public:
    FileInfoList() : QList<FileInfo*>() { }
-   int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2)
-      { return ((FileInfo *)item1)->age - ((FileInfo *)item2)->age; }
 };
 
 // !START OF SYNC!

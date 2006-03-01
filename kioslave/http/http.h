@@ -37,7 +37,6 @@
 #include <kurl.h>
 #include "kio/tcpslavebase.h"
 #include "kio/http.h"
-#include <q3cstring.h>
 
 class DCOPClient;
 class QDomElement;
