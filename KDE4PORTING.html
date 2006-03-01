@@ -48,6 +48,7 @@ or <a href="http://doc.trolltech.com/4.1/porting4.html">this page online</a>.</p
 
 <UL>
 <LI><A HREF="#gettingstarted">Getting Started</A></LI>
+<LI><A HREF="#globalchanges">Global Changes</A></LI>
 <LI><A HREF="#kab">Changes in kab</A></LI>
 <LI><A HREF="#kdecore">Changes in kdecore</A></LI>
 <LI><A HREF="#kdeui">Changes in kdeui</A></LI>
@@ -67,8 +68,14 @@ or <a href="http://doc.trolltech.com/4.1/porting4.html">this page online</a>.</p
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
-<H3><A NAME="kab">Changes in kab</A></H3>
 
+<H3><A NAME="globalchanges">Global Changes</A></H3>
+The "const char *name" arguments in the constructors of QObject derived classes 
+have been removed (not of all classes yet). Use setObjectName() instead if the object name is really necessary.
+<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+
+
+<H3><A NAME="kab">Changes in kab</A></H3>
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
