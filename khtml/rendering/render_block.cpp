@@ -224,20 +224,27 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
 
     // If the requested beforeChild is not one of our children, then this is most likely because
     // there is an anonymous block box within this object that contains the beforeChild. So
-    // just insert the child into the anonymous block box instead of here.
+    // just insert the child into the anonymous block box instead of here. This may also be 
+    // needed in cases of things like anonymous tables.
     if (beforeChild && beforeChild->parent() != this) {
 
         KHTMLAssert(beforeChild->parent());
-        KHTMLAssert(beforeChild->parent()->isAnonymousBlock());
-
-        if (newChild->isInline()) {
-            beforeChild->parent()->addChild(newChild,beforeChild);
-            return;
-        }
-        else if (beforeChild->parent()->firstChild() != beforeChild)
-            return beforeChild->parent()->addChild(newChild, beforeChild);
-        else
+        
+        // In the special case where we are prepending a block-level element before
+        // something contained inside an anonymous block, we can just prepend it before
+        // the anonymous block.
+        if (!newChild->isInline() && beforeChild->parent()->isAnonymousBlock() &&
+            beforeChild->parent()->parent() == this && 
+            beforeChild->parent()->firstChild() == beforeChild)
             return addChildToFlow(newChild, beforeChild->parent());
+
+        // Otherwise find our kid inside which the beforeChild is, and delegate to it.
+        // This may be many levels deep due to anonymous tables, table sections, etc.
+        RenderObject* responsible = beforeChild->parent();
+        while (responsible->parent() != this)
+            responsible = responsible->parent();
+
+        return responsible->addChild(newChild,beforeChild);
     }
 
     // prevent elements that haven't received a layout yet from getting painted by pushing
@@ -286,7 +293,15 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
             RenderBlock* newBox = createAnonymousBlock();
             RenderBox::addChild(newBox,beforeChild);
             newBox->addChild(newChild);
-            newBox->setPos(newBox->xPos(), -500000);
+
+            //the above may actually destroy newBox in case an anonymous
+            //table got created, and made the anonymous block redundant.
+            //so look up what to hide indirectly.
+            RenderObject* toHide = newChild;
+            while (toHide->parent() != this)
+                toHide = toHide->parent();
+
+            toHide->setPos(toHide->xPos(), -500000);
             return;
         }
         else {

@@ -738,7 +738,7 @@ void NodeImpl::checkAddChild(NodeImpl *newChild, int &exceptioncode)
         // newChild is a DocumentFragment... check all its children instead of newChild itself
         NodeImpl *child;
         for (child = newChild->firstChild(); child; child = child->nextSibling()) {
-            if (!childAllowed(child)) {
+            if (!childTypeAllowed(child->nodeType())) {
                 exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
                 return;
             }
@@ -746,7 +746,7 @@ void NodeImpl::checkAddChild(NodeImpl *newChild, int &exceptioncode)
     }
     else {
         // newChild is not a DocumentFragment... check if it's allowed directly
-        if(!childAllowed(newChild)) {
+        if(!childTypeAllowed(newChild->nodeType())) {
             exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
             return;
         }
@@ -1311,7 +1311,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     // do not add applyChanges here! This function is only used during parsing
 
     // short check for consistency with DTD
-    if(!isXMLElementNode() && !newChild->isXMLElementNode() && !childAllowed(newChild))
+    if(getDocument()->isHTMLDocument() && !childAllowed(newChild))
     {
         //kdDebug( 6020 ) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id() << endl;
         return 0;
