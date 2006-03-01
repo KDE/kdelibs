@@ -20,7 +20,7 @@
 
 #include <QMap>
 #include <QImage>
-#include <Q3Dict>
+#include <QHash>
 #include <QMatrix>
 #include <QDomElement>
 
@@ -193,11 +193,10 @@ public:
                     return;
 
                 // Saved 'old' attributes
-                Q3Dict<QString> refAttrs;
-                refAttrs.setAutoDelete(true);
+                QHash<QString, QString> refAttrs;
 
                 for(unsigned int i = 0; i < newElement.attributes().length(); ++i)
-                    refAttrs.insert(newElement.attributes().item(i).nodeName(), new QString(newElement.attributes().item(i).nodeValue()));
+                    refAttrs.insert(newElement.attributes().item(i).nodeName(), QString(newElement.attributes().item(i).nodeValue()));
 
                 // Copy attributes
                 QDomNamedNodeMap attr = element.attributes();
@@ -225,9 +224,11 @@ public:
                 applyGradient(aggData, rb, fill, element.attribute("xlink:href").mid(1));
 
                 // Restore attributes
-                Q3DictIterator<QString> itr(refAttrs);
-                for(; itr.current(); ++itr)
-                    newElement.setAttribute(itr.currentKey(), *(itr.current()));
+                QHashIterator<QString, QString> itr(refAttrs);
+                while(itr.hasNext()) {
+                    itr.next();
+                    newElement.setAttribute(itr.key(), itr.value());
+                }
             }
         }
     }
