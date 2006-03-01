@@ -268,7 +268,7 @@ void KIconDialog::init()
     top->addWidget(bgroup);
     connect(bgroup, SIGNAL(clicked(int)), SLOT(slotButtonClicked(int)));
     QGridLayout *grid = new QGridLayout(bgroup->layout(), 3, 2);
-    grid->addRowSpacing(0, 15);
+    grid->addItem(new QSpacerItem(0, 15), 0, 0);
     mpRb1 = new QRadioButton(i18n("S&ystem icons:"), bgroup);
     grid->addWidget(mpRb1, 1, 0);
     mpCombo = new QComboBox(bgroup);

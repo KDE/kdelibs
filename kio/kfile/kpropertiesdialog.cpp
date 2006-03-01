@@ -723,11 +723,11 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   QVBoxLayout *vbl = new QVBoxLayout( d->m_frame, 0,
                                       KDialog::spacingHint(), "vbl");
-  QGridLayout *grid = new QGridLayout(0, 3); // unknown rows
-  grid->setColStretch(0, 0);
-  grid->setColStretch(1, 0);
-  grid->setColStretch(2, 1);
-  grid->addColSpacing(1, KDialog::spacingHint());
+  QGridLayout *grid = new QGridLayout(); // unknown rows
+  grid->setColumnStretch(0, 0);
+  grid->setColumnStretch(1, 0);
+  grid->setColumnStretch(2, 1);
+  grid->addItem(new QSpacerItem(KDialog::spacingHint(),0), 0, 1);
   vbl->addLayout(grid);
   int curRow = 0;
 
@@ -903,7 +903,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   grid->addWidget(nameArea, curRow++, 2);
 
   KSeparator* sep = new KSeparator( Qt::Horizontal, d->m_frame);
-  grid->addMultiCellWidget(sep, curRow, curRow, 0, 2);
+  grid->addWidget(sep, curRow, 0, 1, 3);
   ++curRow;
 
   QLabel *l;
@@ -1043,7 +1043,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   if ( isLocal && hasDirs )  // only for directories
   {
     sep = new KSeparator( Qt::Horizontal, d->m_frame);
-    grid->addMultiCellWidget(sep, curRow, curRow, 0, 2);
+    grid->addWidget(sep, curRow, 0, 1, 3);
     ++curRow;
 
     QString mountPoint = KIO::findPathMountPoint( properties->item()->url().path() );
@@ -1604,7 +1604,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   box->addWidget (gb);
 
   gl = new QGridLayout (gb->layout(), 7, 2);
-  gl->setColStretch(1, 1);
+  gl->setColumnStretch(1, 1);
 
   l = d->explanationLabel = new QLabel( "", gb );
   if (isLink)
@@ -1613,7 +1613,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 				      properties->items().count()));
   else if (!d->canChangePermissions)
     d->explanationLabel->setText(i18n("Only the owner can change permissions."));
-  gl->addMultiCellWidget(l, 0, 0, 0, 1);
+  gl->addWidget(l, 0, 0, 1, 2);
 
   lbl = new QLabel( i18n("O&wner:"), gb);
   gl->addWidget(lbl, 1, 0);
@@ -1656,10 +1656,10 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 			   "execute them."));
 
     QLayoutItem *spacer = new QSpacerItem(0, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    gl->addMultiCell(spacer, 5, 5, 0, 1);
+    gl->addItem(spacer, 5, 0, 1, 3);
 
     pbAdvancedPerm = new QPushButton(i18n("A&dvanced Permissions"), gb);
-    gl->addMultiCellWidget(pbAdvancedPerm, 6, 6, 0, 1, Qt::AlignRight);
+    gl->addWidget(pbAdvancedPerm, 6, 0, 1, 2, Qt::AlignRight);
     connect(pbAdvancedPerm, SIGNAL( clicked() ), this, SLOT( slotShowAdvancedPermissions() ));
   }
   else
@@ -1673,7 +1673,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   box->addWidget (gb);
 
   gl = new QGridLayout (gb->layout(), 4, 3);
-  gl->addRowSpacing(0, 10);
+  gl->addItem(new QSpacerItem(0, 10), 0, 0);
 
   /*** Set Owner ***/
   l = new QLabel( i18n("User:"), gb );
@@ -1800,7 +1800,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     gl->addWidget(l, 2, 1);
   }
 
-  gl->setColStretch(2, 10);
+  gl->setColumnStretch(2, 10);
 
   // "Apply recursive" checkbox
   if ( hasDir && !isLink && !isTrash  )
@@ -1858,7 +1858,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gb->layout()->setMargin(KDialog::marginHint());
 
   gl = new QGridLayout (gb->layout(), 6, 6);
-  gl->addRowSpacing(0, 10);
+  gl->addItem(new QSpacerItem(0, 10), 0, 0);
 
   QVector<QWidget*> theNotSpecials;
 
@@ -1911,7 +1911,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gl->addWidget (l, 1, 3);
 
   l = new QLabel( i18n("Special"), gb );
-  gl->addMultiCellWidget(l, 1, 1, 4, 5);
+  gl->addWidget(l, 1, 4, 1, 2);
   QString specialWhatsThis;
   if (isDir)
     specialWhatsThis = i18n("Special flag. Valid for the whole folder, the exact "
@@ -2040,7 +2040,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
       }
     }
   }
-  gl->setColStretch(6, 10);
+  gl->setColumnStretch(6, 10);
 
 #ifdef USE_POSIX_ACL
   KACLEditWidget *extendedACLs = 0;
@@ -2793,9 +2793,11 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
      }
   }
 
-  QGridLayout *layout = new QGridLayout( d->m_frame, 0, 2, 0,
-                                        KDialog::spacingHint());
-  layout->setColStretch(1, 1);
+  QGridLayout *layout = new QGridLayout( d->m_frame );
+
+  layout->setMargin(0);
+  layout->setSpacing(KDialog::spacingHint());
+  layout->setColumnStretch(1, 1);
 
   QLabel* label;
   label = new QLabel( d->m_frame );
@@ -2844,7 +2846,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
 
   d->m_freeSpaceBar = new QProgressBar( d->m_frame );
   d->m_freeSpaceBar->setObjectName( "freeSpaceBar" );
-  layout->addMultiCellWidget(d->m_freeSpaceBar, 5, 5, 0, 1);
+  layout->addWidget(d->m_freeSpaceBar, 5, 0, 1, 2);
 
   // we show it in the slot when we know the values
   d->m_freeSpaceText->hide();
@@ -2852,7 +2854,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   d->m_freeSpaceBar->hide();
 
   KSeparator* sep = new KSeparator( Qt::Horizontal, d->m_frame);
-  layout->addMultiCellWidget(sep, 6, 6, 0, 1);
+  layout->addWidget(sep, 6, 0, 1, 2);
 
   unmounted = new KIconButton( d->m_frame );
   int bsize = 66 + 2 * unmounted->style()->pixelMetric(QStyle::PM_ButtonMargin);
@@ -3571,7 +3573,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   QGridLayout *grid = new QGridLayout(tmpQGroupBox->layout(), 2, 2);
   grid->setSpacing( KDialog::spacingHint() );
-  grid->setColStretch(1, 1);
+  grid->setColumnStretch(1, 1);
 
   l = new QLabel( i18n( "&Execute on click:" ), tmpQGroupBox );
   grid->addWidget(l, 0, 0);
@@ -3598,11 +3600,11 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   grid = new QGridLayout(tmpQGroupBox->layout(), 3, 2);
   grid->setSpacing( KDialog::spacingHint() );
-  grid->setColStretch(1, 1);
+  grid->setColumnStretch(1, 1);
 
   terminalCheck = new QCheckBox( tmpQGroupBox );
   terminalCheck->setText( i18n("&Run in terminal") );
-  grid->addMultiCellWidget(terminalCheck, 0, 0, 0, 1);
+  grid->addWidget(terminalCheck, 0, 0, 1, 2);
 
   // check to see if we use konsole if not do not add the nocloseonexit
   // because we don't know how to do this on other terminal applications
@@ -3617,7 +3619,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
     posOptions = 2;
     d->nocloseonexitCheck = new QCheckBox( tmpQGroupBox );
     d->nocloseonexitCheck->setText( i18n("Do not &close when command exits") );
-    grid->addMultiCellWidget(d->nocloseonexitCheck, 1, 1, 0, 1);
+    grid->addWidget(d->nocloseonexitCheck, 1, 0, 1, 2);
   }
 
   terminalLabel = new QLabel( i18n( "&Terminal options:" ), tmpQGroupBox );
@@ -3637,11 +3639,11 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   grid = new QGridLayout(tmpQGroupBox->layout(), 2, 2);
   grid->setSpacing(KDialog::spacingHint());
-  grid->setColStretch(1, 1);
+  grid->setColumnStretch(1, 1);
 
   suidCheck = new QCheckBox(tmpQGroupBox);
   suidCheck->setText(i18n("Ru&n as a different user"));
-  grid->addMultiCellWidget(suidCheck, 0, 0, 0, 1);
+  grid->addWidget(suidCheck, 0, 0, 1, 2);
 
   suidLabel = new QLabel(i18n( "&Username:" ), tmpQGroupBox);
   grid->addWidget(suidLabel, 1, 0);
@@ -3862,8 +3864,8 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
 
   QLabel *l;
 
-  QGridLayout *grid = new QGridLayout(2, 2);
-  grid->setColStretch(1, 1);
+  QGridLayout *grid = new QGridLayout();
+  grid->setColumnStretch(1, 1);
   toplayout->addLayout(grid);
 
   if ( d->m_kdesktopMode )
@@ -3895,23 +3897,23 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   l = new QLabel(i18n("File types:"), d->m_frame);
   toplayout->addWidget(l, 0, Qt::AlignLeft);
 
-  grid = new QGridLayout(4, 3);
-  grid->setColStretch(0, 1);
-  grid->setColStretch(2, 1);
+  grid = new QGridLayout();
+  grid->setColumnStretch(0, 1);
+  grid->setColumnStretch(2, 1);
   grid->setRowStretch( 0, 1 );
   grid->setRowStretch( 3, 1 );
   toplayout->addLayout(grid, 2);
 
   extensionsList = new Q3ListBox( d->m_frame );
   extensionsList->setSelectionMode( Q3ListBox::Extended );
-  grid->addMultiCellWidget(extensionsList, 0, 3, 0, 0);
+  grid->addWidget(extensionsList, 0, 0, 4, 1);
 
   grid->addWidget(addExtensionButton, 1, 1);
   grid->addWidget(delExtensionButton, 2, 1);
 
   availableExtensionsList = new Q3ListBox( d->m_frame );
   availableExtensionsList->setSelectionMode( Q3ListBox::Extended );
-  grid->addMultiCellWidget(availableExtensionsList, 0, 3, 2, 2);
+  grid->addWidget(availableExtensionsList, 0, 2, 4, 1);
 
   QString path = properties->kurl().path() ;
   QFile f( path );

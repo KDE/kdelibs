@@ -81,9 +81,10 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
         topLayout->setMargin(KDialog::marginHint());
         topLayout->setSpacing(KDialog::spacingHint());
         d->m_secCon = secureConnection;
-        d->m_layout = new QGridLayout(topLayout, 3, 3, KDialog::spacingHint());
-        d->m_layout->setColStretch(1, 1);
-        d->m_layout->setColStretch(2, 1);
+        d->m_layout = new QGridLayout(topLayout, 3, 3);
+        d->m_layout->setSpacing(KDialog::spacingHint());
+        d->m_layout->setColumnStretch(1, 1);
+        d->m_layout->setColumnStretch(2, 1);
 
         d->pixmap = new QLabel(this);
         d->m_layout->addWidget(d->pixmap, 0, 0);
@@ -103,7 +104,7 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
             d->pixmap->setPixmap(BarIcon("decrypted"));
             d->info->setText(i18n("SSL support is not available in this build of KDE."));
         }
-        d->m_layout->addRowSpacing( 0, 50 ); // give minimum height to look better
+        d->m_layout->addItem(new QSpacerItem(0, 50), 0, 0); // give minimum height to look better
 
         QHBoxLayout *buttonLayout = new QHBoxLayout(topLayout, KDialog::spacingHint());
         buttonLayout->addStretch( 1 );
@@ -184,11 +185,12 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
 
     d->_cert = cert;
 
-    QGridLayout *layout = new QGridLayout(4, 2, KDialog::spacingHint());
+    QGridLayout *layout = new QGridLayout();
 
+    layout->setSpacing(KDialog::spacingHint());
     layout->addWidget(new QLabel(i18n("Chain:"), this), 0, 0);
     d->_chain = new KComboBox(this);
-    layout->addMultiCellWidget(d->_chain, 1, 1, 0, 1);
+    layout->addWidget(d->_chain, 1, 0, 1, 2);
     connect(d->_chain, SIGNAL(activated(int)), this, SLOT(slotChain(int)));
 
     d->_chain->clear();
@@ -215,10 +217,11 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     layout->addWidget(d->_subject = static_cast<KSSLCertBox*>(buildCertInfo(cert->getSubject())), 3, 0);
     layout->addWidget(new QLabel(i18n("Issuer:"), this), 2, 1);
     layout->addWidget(d->_issuer = static_cast<KSSLCertBox*>(buildCertInfo(cert->getIssuer())), 3, 1);
-    d->m_layout->addMultiCell(layout, 1, 1, 0, 2);
+    d->m_layout->addLayout(layout, 1, 0, 1, 3);
 
-    layout = new QGridLayout(11, 2, KDialog::spacingHint());
-    layout->setColStretch(1, 1);
+    layout = new QGridLayout();
+    layout->setSpacing(KDialog::spacingHint());
+    layout->setColumnStretch(1, 1);
     QLabel *ipl = new QLabel(i18n("IP address:"), this);
     layout->addWidget(ipl, 0, 0);
     if (ip.isEmpty()) {
@@ -255,7 +258,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     layout->addWidget(new QLabel(sslversion, this), 9, 1);
     layout->addWidget(new QLabel(i18n("Cipher strength:"), this), 10, 0);
     layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher").arg(usedbits).arg(bits), this), 10, 1);
-    d->m_layout->addMultiCell(layout, 2, 2, 0, 2);
+    d->m_layout->addLayout(layout, 2, 0, 1, 3);
 
     displayCert(cert);
 }
@@ -398,7 +401,9 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
     QString tmp;
     viewport()->setBackgroundMode(Qt::PaletteButton);
     _frame = new QFrame(this);
-    QGridLayout *grid = new QGridLayout(_frame, 1, 2, KDialog::marginHint(), KDialog::spacingHint());
+    QGridLayout *grid = new QGridLayout(_frame);
+    grid->setMargin(KDialog::marginHint());
+    grid->setSpacing(KDialog::spacingHint());
     grid->setAutoAdd(true);
     QLabel *label = 0L;
     if (!(tmp = cert.getValue("O")).isEmpty()) {

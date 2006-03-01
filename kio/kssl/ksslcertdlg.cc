@@ -45,27 +45,29 @@ private:
 
 KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
  : KDialog(parent ), d(new KSSLCertDlgPrivate) {
-   QGridLayout *grid = new QGridLayout(this, 8, 6, KDialog::marginHint(),
-                                                   KDialog::spacingHint() );
+   QGridLayout *grid = new QGridLayout(this);
+   grid->setMargin(KDialog::marginHint());
+   grid->setSpacing(KDialog::spacingHint());
+
    setObjectName(name);
    setModal(modal);
 
    _send = new QRadioButton(i18n("Send certificate..."), this);
-   grid->addMultiCellWidget(_send, 0, 0, 0, 2);
+   grid->addWidget(_send, 0, 0, 1, 3);
    connect(_send, SIGNAL(clicked()), SLOT(slotSend()));
 
    _dont = new QRadioButton(i18n("Do not send a certificate"), this);
-   grid->addMultiCellWidget(_dont, 1, 1, 0, 2);
+   grid->addWidget(_dont, 1, 0, 1, 3);
    connect(_dont, SIGNAL(clicked()), SLOT(slotDont()));
 
    _certs = new Q3ListView(this);
-   grid->addMultiCellWidget(_certs, 0, 4, 3, 5);
+   grid->addWidget(_certs, 0, 3, 5, 3);
    _certs->addColumn(i18n("Certificate"));
 
    _save = new QCheckBox(i18n("Save selection for this host."), this);
-   grid->addMultiCellWidget(_save, 5, 5, 0, 3);
+   grid->addWidget(_save, 5, 0, 1, 4);
 
-   grid->addMultiCellWidget(new KSeparator(Qt::Horizontal, this), 6, 6, 0, 5);
+   grid->addWidget(new KSeparator(Qt::Horizontal, this), 6, 0, 1, 6);
 
    _ok = new KPushButton(KStdGuiItem::cont(), this);
    grid->addWidget(_ok, 7, 5);

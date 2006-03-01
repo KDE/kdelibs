@@ -1027,8 +1027,9 @@ void KFileDialog::initGUI()
     vbox->addWidget(ops, 4);
     vbox->addSpacing(3);
 
-    QGridLayout* lafBox= new QGridLayout(2, 3, KDialog::spacingHint());
+    QGridLayout* lafBox= new QGridLayout();
 
+    lafBox->setSpacing(KDialog::spacingHint());
     lafBox->addWidget(d->locationLabel, 0, 0, Qt::AlignVCenter);
     lafBox->addWidget(locationEdit, 0, 1, Qt::AlignVCenter);
     lafBox->addWidget(d->okButton, 0, 2, Qt::AlignVCenter);
@@ -1037,7 +1038,7 @@ void KFileDialog::initGUI()
     lafBox->addWidget(filterWidget, 1, 1, Qt::AlignVCenter);
     lafBox->addWidget(d->cancelButton, 1, 2, Qt::AlignVCenter);
 
-    lafBox->setColStretch(1, 4);
+    lafBox->setColumnStretch(1, 4);
 
     vbox->addLayout(lafBox, 0);
     vbox->addSpacing(3);
