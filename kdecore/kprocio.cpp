@@ -252,7 +252,7 @@ int KProcIO::readln (QString &line, bool autoAck, bool *partial)
 
   if (len>=0)
   {
-     line = codec->toUnicode(recvbuffer.mid(rbi,len), len);
+     line = codec->toUnicode(recvbuffer.mid(rbi,len));
      rbi += len+1;
      if (partial)
         *partial = false;
