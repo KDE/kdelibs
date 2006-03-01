@@ -809,7 +809,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     if ((d->iceConn = IceOpenConnection(const_cast<char*>(d->serverAddr),
                                         static_cast<IcePointer>(this), False, d->majorOpcode,
                                         sizeof(errBuf), errBuf)) == 0L) {
-        qDebug("DCOPClient::attachInternal. Attach failed %s", errBuf ? errBuf : "");
+        qDebug("DCOPClient::attachInternal. Attach failed %s", errBuf);
         d->iceConn = 0;
         if (bClearServerAddr) {
            delete [] d->serverAddr;
