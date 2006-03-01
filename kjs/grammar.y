@@ -184,6 +184,7 @@ PrimaryExpr:
   | '(' Expr ')'                   { $$ = new GroupNode($2); }
   | '{' '}'                        { $$ = new ObjectLiteralNode(); }
   | '{' PropertyNameAndValueList '}'   { $$ = new ObjectLiteralNode($2); }
+  | '{' PropertyNameAndValueList ',' '}'   { $$ = new ObjectLiteralNode($2); }
 ;
 
 ArrayLiteral:
