@@ -1,3 +1,12 @@
+2006-03-01  Germain Garand  <germain@ebooksfrance.org>
+
+        Improve selectorText
+
+        * css/css_base.cpp (extractPseudoType): don't reset 'value' after parsing the pseudo-style, we need it for selectorText.
+          (selectorText): - correctly handle CSS3 pseudo selectors,
+                          - merge some improvements from WebCore (Mitz Pettel sub-selector patch + fix ::Set handling)
+        * css/css_ruleimpl.cpp (selectorText): handle of multiple, comma-separated selectors
+
 2006-02-28  Germain Garand  <germain@ebooksfrance.org>
          
         Common-case style selection optimisation inspired from WebCore.

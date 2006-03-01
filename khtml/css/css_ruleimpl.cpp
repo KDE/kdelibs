@@ -325,11 +325,14 @@ CSSStyleRuleImpl::~CSSStyleRuleImpl()
 
 DOM::DOMString CSSStyleRuleImpl::selectorText() const
 {
-    if ( m_selector && m_selector->first() ) {
-        // ### m_selector will be a single selector hopefully. so ->first() will disappear
-        CSSSelector* cs = m_selector->first();
-        //cs->print(); // debug
-        return cs->selectorText();
+    if (m_selector) {
+        DOMString str;
+        for (CSSSelector *s = m_selector->first(); s; s = m_selector->next()) {
+            if (s != m_selector->getFirst())
+                str += ", ";
+            str += s->selectorText();
+        }
+        return str;
     }
     return DOMString();
 }
