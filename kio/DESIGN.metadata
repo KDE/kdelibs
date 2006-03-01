@@ -13,7 +13,7 @@ Key             Value(s)        Description
 
 referrer        string          The URL from which the request originates. (read by http)
 
-modified        string          The modification date of the document (set by http)
+modified        string          The modification date of the document (set by http and by kio before put)
 
 accept          string          List of mimetypes to accept separated by a ", ". (read by http)
 

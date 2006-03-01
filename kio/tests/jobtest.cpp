@@ -46,6 +46,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <utime.h>
+#include <kprotocolinfo.h>
 
 QTEST_KDEMAIN( JobTest, GUI )
 
@@ -60,6 +61,16 @@ QString JobTest::otherTmpDir() const
 {
     // This one needs to be on another partition
     return "/tmp/jobtest/";
+}
+
+KUrl JobTest::systemTmpDir() const
+{
+    return KUrl( "system:/home/.kde/jobtest-system/" );
+}
+
+QString JobTest::realSystemPath() const
+{
+    return QDir::homePath() + "/.kde/jobtest-system/";
 }
 
 void JobTest::initTestCase()
@@ -78,12 +89,37 @@ void JobTest::initTestCase()
         if ( !ok )
             kFatal() << "Couldn't create " << otherTmpDir() << endl;
     }
+    if ( KProtocolInfo::isKnownProtocol( "system" ) ) {
+        if ( !QFile::exists( realSystemPath() ) ) {
+            bool ok = dir.mkdir( realSystemPath() );
+            if ( !ok )
+                kFatal() << "Couldn't create " << realSystemPath() << endl;
+        }
+    }
 }
 
 void JobTest::cleanupTestCase()
 {
     KIO::NetAccess::del( KUrl::fromPath( homeTmpDir() ), 0 );
     KIO::NetAccess::del( KUrl::fromPath( otherTmpDir() ), 0 );
+    if ( KProtocolInfo::isKnownProtocol( "system" ) ) {
+        KIO::NetAccess::del( systemTmpDir(), 0 );
+    }
+}
+
+static void setTimeStamp( const QString& path )
+{
+#ifdef Q_OS_UNIX
+    // Put timestamp in the past so that we can check that the
+    // copy actually preserves it.
+    struct timeval tp;
+    gettimeofday( &tp, 0 );
+    struct utimbuf utbuf;
+    utbuf.actime = tp.tv_sec - 30; // 30 seconds ago
+    utbuf.modtime = tp.tv_sec - 60; // 60 second ago
+    utime( QFile::encodeName( path ), &utbuf );
+    qDebug( "Time changed for %s", qPrintable( path ) );
+#endif
 }
 
 static void createTestFile( const QString& path )
@@ -93,6 +129,7 @@ static void createTestFile( const QString& path )
         kFatal() << "Can't create " << path << endl;
     f.write( QByteArray( "Hello world" ) );
     f.close();
+    setTimeStamp( path );
 }
 
 static void createTestSymlink( const QString& path )
@@ -121,18 +158,7 @@ static void createTestDirectory( const QString& path )
     createTestFile( path + "/testfile" );
     createTestSymlink( path + "/testlink" );
     QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
-
-#ifdef Q_OS_UNIX
-    // Put timestamp in the past so that we can check that the
-    // copy actually preserves it.
-    struct timeval tp;
-    gettimeofday( &tp, 0 );
-    struct utimbuf utbuf;
-    utbuf.actime = tp.tv_sec - 30; // 30 seconds ago
-    utbuf.modtime = tp.tv_sec - 60; // 60 second ago
-    utime( QFile::encodeName( path ), &utbuf );
-    qDebug( "Time changed for %s", qPrintable( path ) );
-#endif
+    setTimeStamp( path );
 }
 
 void JobTest::enterLoop()
@@ -183,6 +209,8 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
 
     {
         // check that the timestamp is the same (#24443)
+        // Note: this only works because of copy() in kio_file.
+        // The datapump solution ignores mtime, the app has to call FileCopyJob::setModificationTime()
         QFileInfo srcInfo( src );
         QFileInfo destInfo( dest );
         QCOMPARE( srcInfo.lastModified(), destInfo.lastModified() );
@@ -428,12 +456,13 @@ void JobTest::moveFileNoPermissions()
 void JobTest::moveDirectoryNoPermissions()
 {
     kDebug() << k_funcinfo << endl;
-#if 0
-    QString src = "/etc/cups";
+#if 1
+    QString src = "/etc/rc.d";
     if ( !QFile::exists( src ) )
         src= "/etc";
-#endif
+#else
     QString src = "/etc";
+#endif
     const QString dest = homeTmpDir() + "mdnp";
     QVERIFY( QFile::exists( src ) );
     QVERIFY( QFileInfo( src ).isDir() );
@@ -818,6 +847,71 @@ void JobTest::calculateRemainingSeconds()
     QCOMPARE( seconds, static_cast<unsigned int>( 50 ) );
     text = KIO::convertSeconds( seconds );
     QCOMPARE( text, i18n( "00:00:50" ) );
+}
+
+void JobTest::copyFileToSystem()
+{
+    if ( !KProtocolInfo::isKnownProtocol( "system" ) ) {
+        kDebug() << k_funcinfo << "no kio_system, skipping test" << endl;
+        return;
+    }
+
+    // First test with support for UDS_LOCAL_PATH
+    copyFileToSystem( true );
+
+    QString dest = realSystemPath() + "fileFromHome_copied";
+    QFile::remove( dest );
+
+    // Then disable support for UDS_LOCAL_PATH, i.e. test what would
+    // happen for ftp, smb, http etc.
+    copyFileToSystem( false );
+}
+
+void JobTest::copyFileToSystem( bool resolve_local_urls )
+{
+    kDebug() << k_funcinfo << resolve_local_urls << endl;
+    extern KIO_EXPORT bool kio_resolve_local_urls;
+    kio_resolve_local_urls = resolve_local_urls;
+
+    const QString src = homeTmpDir() + "fileFromHome";
+    createTestFile( src );
+    KUrl u;
+    u.setPath( src );
+    KUrl d = systemTmpDir();
+    d.addPath( "fileFromHome_copied" );
+
+    kDebug() << "copying " << u << " to " << d << endl;
+
+    // copy the file with file_copy
+    bool ok = KIO::NetAccess::file_copy( u, d );
+    QVERIFY( ok );
+
+    QString dest = realSystemPath() + "fileFromHome_copied";
+
+    QVERIFY( QFile::exists( dest ) );
+    QVERIFY( QFile::exists( src ) ); // still there
+
+    {
+        // do NOT check that the timestamp is the same.
+        // It can't work with file_copy when it uses the datapump,
+        // unless we use setModificationTime in the app code.
+    }
+
+    // cleanup and retry with KIO::copy()
+    QFile::remove( dest );
+    ok = KIO::NetAccess::dircopy( u, d, 0 );
+    QVERIFY( ok );
+    QVERIFY( QFile::exists( dest ) );
+    QVERIFY( QFile::exists( src ) ); // still there
+    {
+        // check that the timestamp is the same (#79937)
+        QFileInfo srcInfo( src );
+        QFileInfo destInfo( dest );
+        QCOMPARE( srcInfo.lastModified(), destInfo.lastModified() );
+    }
+
+    // restore normal behavior
+    kio_resolve_local_urls = true;
 }
 
 #include "jobtest.moc"

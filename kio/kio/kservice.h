@@ -83,6 +83,7 @@ public:
 
   virtual ~KService();
 
+  // KDE4 TODO: enum Type { Application, Service }
   /**
    * Returns the type of the service.
    * @return the type of the service ("Application" or "Service")

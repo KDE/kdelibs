@@ -294,6 +294,13 @@ public:
 
 
     /**
+     * @internal for ForwardingSlaveBase
+     * Contains all metadata (but no config) sent by the application to the slave.
+     * @since 3.5.2
+     */
+    MetaData allMetaData() const { return mIncomingMetaData; }
+
+    /**
      * Returns a configuration object to query config/meta-data information
      * from.
      *
@@ -364,15 +371,21 @@ public:
     virtual void get( const KUrl& url );
 
     /**
-     * put, aka write.
-     * @param url where to write the file (decoded)
+     * put, i.e. write data into a file.
+     *
+     * @param url where to write the file
      * @param permissions may be -1. In this case no special permission mode is set.
      * @param overwrite if true, any existing file will be overwritten.
      * If the file indeed already exists, the slave should NOT apply the
      * permissions change to it.
-     * @param resume
+     * @param resume currently unused, please ignore.
+     *   The support for resuming using .part files is done by calling canResume().
+     *
+     * IMPORTANT: Use the "modified" metadata in order to set the modification time of the file.
+     *
+     * @see canResume()
      */
-    virtual void put( const KUrl& url, int permissions, bool overwrite, bool resume ); // KDE4 TODO: add long mtime (for #79937)
+    virtual void put( const KUrl& url, int permissions, bool overwrite, bool /*resume*/ );
 
     /**
      * Finds all details for one file or directory.
@@ -450,6 +463,7 @@ public:
      * @param permissions may be -1. In this case no special permission mode is set.
      * @param overwrite if true, any existing file will be overwritten
      *
+     * Don't forget to set the modification time of @p dest to be the modification time of @p src.
      */
     virtual void copy( const KUrl &src, const KUrl &dest, int permissions, bool overwrite );
 
@@ -461,8 +475,16 @@ public:
      */
     virtual void del( const KUrl &url, bool isfile);
 
-    // TODO KDE4: add setLinkDest() or something, to modify symlink targets.
-    // Will be used for kio_file but also kio_remote (#97129)
+    // TODO KDE4: use setLinkDest for kio_file but also kio_remote (#97129)
+    // For kio_file it's the same as del+symlink, but for kio_remote it allows
+    // to keep the icon etc.
+
+    /**
+     * Change the destination of a symlink
+     * @param url the url of the symlink to modify
+     * @param linkDest the new destination (target) of the symlink
+     */
+    virtual void setLinkDest( const KUrl& url, const QString& target );
 
     /**
      * Used for any command that is specific to this slave (protocol)

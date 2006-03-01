@@ -616,7 +616,7 @@ namespace KIO {
          * @internal
          * Called on a slave's warning.
          */
-        virtual void slotWarning( const QString & ); 
+        virtual void slotWarning( const QString & );
 
         /**
          * Called on a slave's info message.
@@ -1283,6 +1283,14 @@ namespace KIO {
          */
         void setSourceSize(KIO::filesize_t size);
 
+        /**
+         * Sets the modification time of the file
+         *
+         * Note that this is ignored if a direct copy (SlaveBase::copy) can be done,
+         * in which case the mtime of the source is applied to the destination (if the protocol
+         * supports the concept).
+         */
+        void setModificationTime( time_t mtime );
 
 	/**
 	 * Returns the source URL.

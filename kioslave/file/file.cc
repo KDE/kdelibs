@@ -61,7 +61,7 @@
 #include <string.h>
 #endif
 
-
+#include <qdatetime.h>
 #include <qregexp.h>
 
 #include <kdebug.h>
@@ -549,6 +549,22 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
             if ( KIO::testFileSystemFlag( _dest_orig, KIO::SupportsChmod ) )
                  warning( i18n( "Could not change permissions for\n%1" ).arg( dest_orig ) );
         }
+    }
+
+    // set modification time
+    const QString mtimeStr = metaData( "modified" );
+    if ( !mtimeStr.isEmpty() ) {
+        QDateTime dt = QDateTime::fromString( mtimeStr, Qt::ISODate );
+        if ( dt.isValid() ) {
+            KDE_struct_stat dest_statbuf;
+            if (KDE_stat( _dest_orig.data(), &dest_statbuf ) == 0) {
+                struct utimbuf utbuf;
+                utbuf.actime = dest_statbuf.st_atime; // access time, unchanged
+                utbuf.modtime = dt.toTime_t(); // modification time
+                utime( _dest_orig.data(), &utbuf );
+            }
+        }
+
     }
 
     // We have done our job => finish

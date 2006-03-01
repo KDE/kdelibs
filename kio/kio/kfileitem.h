@@ -38,7 +38,7 @@
  * (UDSEntry isn't very friendly to use).
  * It includes many file attributes such as mimetype, icon, text, mode, link...
  */
-class KIO_EXPORT KFileItem
+class KIO_EXPORT KFileItem /// KDE4 TODO: make them refcounted, e.g. using QSharedMimeData.
 {
 public:
   enum { Unknown = (mode_t) - 1 };

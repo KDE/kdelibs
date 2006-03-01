@@ -294,6 +294,15 @@ void ForwardingSlaveBase::connectJob(KIO::Job *job)
     // display it itself
     job->setInteractive(false);
 
+    // Forward metadata (e.g. modification time for put())
+    job->setMetaData( allMetaData() );
+#if 0 // debug code
+    kDebug() << k_funcinfo << "transferring metadata:" << endl;
+    const MetaData md = allMetaData();
+    for ( MetaData::const_iterator it = md.begin(); it != md.end(); ++it )
+        kDebug() << it.key() << " = " << it.data() << endl;
+#endif
+
     connect( job, SIGNAL( result(KIO::Job *) ),
              this, SLOT( slotResult(KIO::Job *) ) );
     connect( job, SIGNAL( warning(KIO::Job *, const QString &) ),

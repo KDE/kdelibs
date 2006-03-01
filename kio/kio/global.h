@@ -164,7 +164,8 @@ namespace KIO
     CMD_MESSAGEBOXANSWER = 'S', // 83
     CMD_RESUMEANSWER = 'T', // 84
     CMD_CONFIG = 'U', // 85
-    CMD_MULTI_GET = 'V' // 86
+    CMD_MULTI_GET = 'V', // 86
+    CMD_SETLINKDEST = 'W' // 87
     // Add new ones here once a release is done, to avoid breaking binary compatibility.
     // Note that protocol-specific commands shouldn't be added here, but should use special.
   };

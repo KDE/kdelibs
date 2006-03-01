@@ -756,6 +756,8 @@ void SlaveBase::copy(KUrl const &, KUrl const &, int, bool)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_COPY)); }
 void SlaveBase::del(KUrl const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_DEL)); }
+void SlaveBase::setLinkDest(const KUrl &, const QString&)
+{ error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SETLINKDEST)); }
 void SlaveBase::mkdir(KUrl const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_MKDIR)); }
 void SlaveBase::chmod(KUrl const &, int)
