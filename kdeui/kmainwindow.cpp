@@ -1145,7 +1145,7 @@ KToolBar *KMainWindow::toolBar( const char * name )
     KToolBar *tb = (KToolBar*)child( name, "KToolBar" );
     if ( tb )
         return tb;
-    bool honor_mode = (name == "mainToolBar");
+    bool honor_mode = (!strcmp(name, "mainToolBar"));
 
     if ( builderClient() )
         return new KToolBar(this, name, honor_mode); // XMLGUI constructor
