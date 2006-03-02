@@ -187,8 +187,12 @@ long	dead;
     {
 	if (creat_fd == -1)
 	{
-	    creat_fd = creat (creat_name, 0666);
-
+#ifdef _WIN32
+	creat_fd = creat (creat_name, S_IREAD | S_IWRITE);
+#else
+	creat_fd = creat (creat_name, 0666);
+#endif
+        
 	    if (creat_fd == -1)
 	    {
 		if (errno != EACCES)

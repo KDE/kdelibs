@@ -1074,8 +1074,10 @@ DCOPServer::DCOPServer(bool _suicide)
 	connect( con, SIGNAL( activated(int) ), this, SLOT( newClient(int) ) );
     }
     char c = 0;
+#ifndef Q_CC_MSVC
     write(ready[1], &c, 1); // dcopserver is started
     close(ready[1]);
+#endif
 
     m_timer =  new QTimer(this);
     connect( m_timer, SIGNAL(timeout()), this, SLOT(slotTerminate()) );
