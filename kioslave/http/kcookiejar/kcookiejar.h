@@ -26,7 +26,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3dict.h>
+#include <qhash.h>
 #include <q3ptrlist.h>
 
 #include <time.h>
@@ -350,8 +350,8 @@ protected:
 protected:
     QStringList m_domainList;
     KCookieAdvice m_globalAdvice;
-    Q3Dict<KHttpCookieList> m_cookieDomains;
-    Q3Dict<int> m_twoLevelTLD;
+    QHash<QString, KHttpCookieList*> m_cookieDomains;
+    QHash<QString, int> m_twoLevelTLD;
 
     bool m_configChanged;
     bool m_cookiesChanged;

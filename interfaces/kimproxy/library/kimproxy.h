@@ -24,7 +24,7 @@
 #ifndef KIMPROXY_H
 #define KIMPROXY_H
 
-#include <q3dict.h>
+#include <qhash.h>
 #include <qmap.h>
 #include <q3ptrdict.h>
 #include <qstringlist.h>
@@ -45,7 +45,7 @@ class ContactPresenceListCurrent;
 
 /** FIXME: remove for KDE4, binary compability again. */
 typedef QMap<DCOPCString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
-typedef Q3Dict<AppPresence> PresenceMap;			// uid->AppPresence; contains a AppPresences for all users
+typedef QHash<QString, AppPresence*> PresenceMap;			// uid->AppPresence; contains a AppPresences for all users
 /** FIXME: remove presenceMap and call this presenceMap in KDE4.  This hack is for binary compatibility */
 typedef QMap<QString, ContactPresenceListCurrent> PresenceStringMap;
 
@@ -288,7 +288,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 	private:
 		// client stubs used to get presence
 		// appId (from DCOP) -> KIMIface_stub
-		Q3Dict<KIMIface_stub> m_im_client_stubs;
+		QHash<QString, KIMIface_stub*> m_im_client_stubs;
 		// map containing numeric presence and the originating application ID for each KABC uid we know of
 		// KABC Uid -> (appId, numeric presence )(AppPresence)
 		PresenceMap m_presence_map;

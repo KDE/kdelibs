@@ -38,7 +38,7 @@
 #include <qcombobox.h>
 #include <qdial.h>
 #include <qdialog.h>
-#include <q3dict.h>
+#include <qhash.h>
 #include <qfile.h>
 #include <q3filedialog.h>
 #include <qfileinfo.h>
@@ -138,7 +138,7 @@ static int eventbox_ptr       = 8;
 // will cache them, to save the overhead of loading the image from disk each
 // time it's needed
 static const int imageCacheSize = 61;
-static Q3Dict<QImage> *imageCache = 0;
+static QHash<QString, QImage*> *imageCache = 0;
 
 
 class KLegacy {
@@ -917,7 +917,7 @@ QPixmap *GtkObject::draw(KLegacyImageData *imagedata, int width, int height) {
     QPixmap *main = 0, *overlay = 0;
 
     if (! imagedata->file.isNull()) {
-	QImage *image = imageCache->find(imagedata->file);
+	QImage *image = imageCache->value(imagedata->file);
 	bool found = true;
 
 	if (! image) {
@@ -938,7 +938,7 @@ QPixmap *GtkObject::draw(KLegacyImageData *imagedata, int width, int height) {
     }
 
     if (! imagedata->overlayFile.isNull()) {
-	QImage *image = imageCache->find(imagedata->overlayFile);
+	QImage *image = imageCache->value(imagedata->overlayFile);
 	bool found = true;
 
 	if (! image) {
@@ -1024,7 +1024,7 @@ QPixmap *GtkObject::draw(KLegacyImageData *imagedata, int width, int height) {
 
 class KLegacyStylePrivate : public KLegacy {
 private:
-    Q3Dict<KLegacyStyleData> styleDict;
+    QHash<QString, KLegacyStyleData*> styleDict;
     QStringList pixmapPath;
     QTextStream filestream;
 
@@ -1065,13 +1065,10 @@ KLegacyStylePrivate::KLegacyStylePrivate()
     QPixmapCache::setCacheLimit(8192);
 
     if (! imageCache) {
-	imageCache = new Q3Dict<QImage>(imageCacheSize);
+	imageCache = new QHash<QString, QImage*>();
+  imageCache->reserve(imageCacheSize);
 	CHECK_PTR(imageCache);
-
-	imageCache->setAutoDelete(true);
     }
-
-    styleDict.setAutoDelete(true);
 
     gtktree = initialize(gtkDict);
     CHECK_PTR(gtktree);
@@ -1119,9 +1116,12 @@ KLegacyStylePrivate::KLegacyStylePrivate()
 
 KLegacyStylePrivate::~KLegacyStylePrivate() {
     if (imageCache) {
-	delete imageCache;
+  qDeleteAll(*imageCache);
+  delete imageCache;
 	imageCache = 0;
     }
+
+    qDeleteAll(styleDict);
 
     if (gtktree) {
 	delete gtktree;
@@ -1156,7 +1156,7 @@ bool KLegacyStylePrivate::parseClass() {
 	return false;
     }
 
-    KLegacyStyleData *styledata = styleDict.find(stylename);
+    KLegacyStyleData *styledata = styleDict.value(stylename);
 
     if (! styledata) {
 	qWarning("no such style '%s' for class '%s' (%p)", stylename.latin1(),
@@ -1543,7 +1543,7 @@ bool KLegacyStylePrivate::parseStyle() {
 
 	newstylename = newstylename.mid(1, newstylename.length() - 2);
 
-	KLegacyStyleData *styledata = styleDict.find(stylename);
+	KLegacyStyleData *styledata = styleDict.value(stylename);
 
 	if (! styledata) return false;
 
@@ -2303,7 +2303,7 @@ QSize KLegacyStyle::indicatorSize(void) const {
     else
 	return KStyle::indicatorSize();
 
-    QImage *image = imageCache->find(filename);
+    QImage *image = imageCache->value(filename);
     if (! image) {
         image = new QImage(filename);
 
@@ -2391,7 +2391,7 @@ QSize KLegacyStyle::exclusiveIndicatorSize(void) const {
 	return KStyle::indicatorSize();
     }
 
-    QImage *image = imageCache->find(filename);
+    QImage *image = imageCache->value(filename);
     if (! image) {
         image = new QImage(filename);
 
