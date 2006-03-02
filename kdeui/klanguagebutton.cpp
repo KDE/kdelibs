@@ -117,7 +117,9 @@ void KLanguageButton::init()
 
   d->staticText = false;
 
-  QHBoxLayout *layout = new QHBoxLayout(this, 0, 0);
+  QHBoxLayout *layout = new QHBoxLayout(this);
+  layout->setMargin(0);
+  layout->setSpacing(0);
   layout->setAutoAdd(true);
 #ifdef __GNUC__
 #warning check if the name is used by some code using KLanguageButton

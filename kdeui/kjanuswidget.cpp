@@ -119,7 +119,9 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       mTreeListResizeMode = KeepSize;
 
       d->mListFrame = new QWidget( d->mSplitter );
-      QVBoxLayout *dummy = new QVBoxLayout( d->mListFrame, 0, 0 );
+      QVBoxLayout *dummy = new QVBoxLayout( d->mListFrame );
+      dummy->setMargin( 0 );
+      dummy->setSpacing( 0 );
       dummy->setAutoAdd( true );
       mTreeList = new QTreeWidget( d->mListFrame );
       mTreeList->setColumnCount(1);
@@ -133,7 +135,9 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       //
       QFrame *p = new QFrame( d->mSplitter );
 
-      QHBoxLayout *hbox = new QHBoxLayout( p, 0, 0 );
+      QHBoxLayout *hbox = new QHBoxLayout( p );
+      hbox->setMargin( 0 );
+      hbox->setSpacing( 0 );
       hbox->addSpacing( KDialog::marginHint() );
 
       page = new QFrame( p );
@@ -164,7 +168,9 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
     // pagestack using all available space at bottom.
     //
 
-    QVBoxLayout *vbox = new QVBoxLayout( page, 0, KDialog::spacingHint() );
+    QVBoxLayout *vbox = new QVBoxLayout( page );
+    vbox->setMargin( 0 );
+    vbox->setSpacing( KDialog::spacingHint() );
 
     mTitleLabel = new QLabel( QLatin1String("Empty Page"), page );
     mTitleLabel->setObjectName( QLatin1String( "KJanusWidgetTitleLabel" ) );

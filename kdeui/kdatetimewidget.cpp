@@ -40,7 +40,9 @@ void KDateTimeWidget::init()
 {
   d = new KDateTimeWidgetPrivate;
 
-  QHBoxLayout *layout = new QHBoxLayout(this, 0, KDialog::spacingHint());
+  QHBoxLayout *layout = new QHBoxLayout(this);
+  layout->setMargin(0);
+  layout->setSpacing(KDialog::spacingHint());
   layout->setAutoAdd(true);
 
   d->dateWidget = new KDateWidget(this);

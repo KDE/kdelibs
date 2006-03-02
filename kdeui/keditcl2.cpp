@@ -705,7 +705,9 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   setDefaultButton(User1);
   QWidget *page = new QWidget( this );
   setMainWidget(page);
-  QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
+  QVBoxLayout *topLayout = new QVBoxLayout( page );
+  topLayout->setMargin( 0 );
+  topLayout->setSpacing( spacingHint() );
 
   d = new KEdFindPrivate( page );
 
@@ -840,7 +842,9 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   enableButtonSeparator(false);
   QWidget *page = new QWidget(this);
   setMainWidget(page);
-  QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
+  QVBoxLayout *topLayout = new QVBoxLayout( page );
+  topLayout->setMargin( 0 );
+  topLayout->setSpacing( spacingHint() );
 
   d = new KEdReplacePrivate( page );
 
@@ -990,7 +994,9 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
 
   QWidget *page = new QWidget( this );
   setMainWidget(page);
-  QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
+  QVBoxLayout *topLayout = new QVBoxLayout( page );
+  topLayout->setMargin( 0 );
+  topLayout->setSpacing( spacingHint() );
 
   lineNum = new KIntNumInput( 1,page);
   lineNum->setRange(1, 1000000, 1, false);

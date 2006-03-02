@@ -792,14 +792,21 @@ void KEditToolbarWidget::setupLayout()
   d->m_helpArea->setWordWrap( true );
 
   // now start with our layouts
-  QVBoxLayout *top_layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
+  QVBoxLayout *top_layout = new QVBoxLayout(this);
+  top_layout->setMargin(0);
+  top_layout->setSpacing(KDialog::spacingHint());
 
-  QVBoxLayout *name_layout = new QVBoxLayout(KDialog::spacingHint());
-  QHBoxLayout *list_layout = new QHBoxLayout(KDialog::spacingHint());
+  QVBoxLayout *name_layout = new QVBoxLayout();
+  name_layout->setSpacing(KDialog::spacingHint());
+  QHBoxLayout *list_layout = new QHBoxLayout();
+  list_layout->setSpacing(KDialog::spacingHint());
 
-  QVBoxLayout *inactive_layout = new QVBoxLayout(KDialog::spacingHint());
-  QVBoxLayout *active_layout = new QVBoxLayout(KDialog::spacingHint());
-  QHBoxLayout *changeIcon_layout = new QHBoxLayout(KDialog::spacingHint());
+  QVBoxLayout *inactive_layout = new QVBoxLayout();
+  inactive_layout->setSpacing(KDialog::spacingHint());
+  QVBoxLayout *active_layout = new QVBoxLayout();
+  active_layout->setSpacing(KDialog::spacingHint());
+  QHBoxLayout *changeIcon_layout = new QHBoxLayout();
+  changeIcon_layout->setSpacing(KDialog::spacingHint());
 
   QGridLayout *button_layout = new QGridLayout(5, 3, 0);
 

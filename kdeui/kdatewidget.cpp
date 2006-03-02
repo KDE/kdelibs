@@ -69,7 +69,9 @@ KDateWidget::KDateWidget( const QDate &date, QWidget *parent )
 void KDateWidget::init(const QDate& date)
 {
   d = new KDateWidgetPrivate;
-  QHBoxLayout *layout = new QHBoxLayout(this, 0, KDialog::spacingHint());
+  QHBoxLayout *layout = new QHBoxLayout(this);
+  layout->setMargin(0);
+  layout->setSpacing(KDialog::spacingHint());
   layout->setAutoAdd(true);
   d->m_day = new KDateWidgetSpinBox(1, 1, this);
   d->m_month = new QComboBox(this);
