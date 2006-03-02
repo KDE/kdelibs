@@ -39,53 +39,6 @@
  *  especially the second one.
  */
 
-class KClipboardSynchronizer::MimeSource : public QMimeSource
-{
-public:
-    MimeSource( const QMimeSource * src )
-        : QMimeSource()
-    {
-        if ( src )
-        {
-            const char *format;
-            int i = 0;
-            while ( (format = src->format( i++ )) )
-            {
-                m_data.append( src->encodedData( format ) );
-                m_formats.append( format );
-            }
-        }
-    }
-
-    ~MimeSource() {}
-
-    virtual const char *format( int i ) const {
-        if ( i < (int) m_formats.count() )
-            return m_formats.at( i );
-        else
-            return 0L;
-    }
-
-    virtual bool provides( const char *mimeType ) const {
-        return ( m_formats.contains( mimeType ));
-    }
-
-    virtual QByteArray encodedData( const char *format ) const
-    {
-        int index = m_formats.indexOf( format );
-        if ( index > -1 )
-            return m_data.at( index );
-
-        return QByteArray();
-    }
-
-private:
-    // This might be better as a QHash<QByteArray, QByteArray>
-    mutable QList<QByteArray> m_formats;
-    mutable QList<QByteArray> m_data;
-};
-
-
 KClipboardSynchronizer * KClipboardSynchronizer::s_self = 0L;
 bool KClipboardSynchronizer::s_sync = false;
 bool KClipboardSynchronizer::s_reverse_sync = false;
@@ -140,7 +93,7 @@ void KClipboardSynchronizer::slotSelectionChanged()
     if ( s_blocked || !clip->ownsSelection() )
         return;
 
-    setClipboard( new MimeSource( clip->data( QClipboard::Selection) ),
+    setClipboard( clip->mimeData( QClipboard::Selection ),
                   QClipboard::Clipboard );
 }
 
@@ -152,11 +105,11 @@ void KClipboardSynchronizer::slotClipboardChanged()
     if ( s_blocked || !clip->ownsClipboard() )
         return;
 
-    setClipboard( new MimeSource( clip->data( QClipboard::Clipboard ) ),
+    setClipboard( clip->mimeData( QClipboard::Clipboard ),
                   QClipboard::Selection );
 }
 
-void KClipboardSynchronizer::setClipboard( QMimeSource *data, QClipboard::Mode mode )
+void KClipboardSynchronizer::setClipboard( const QMimeData *data, QClipboard::Mode mode )
 {
 //     qDebug("---> setting clipboard: %p", data);
 
@@ -164,13 +117,14 @@ void KClipboardSynchronizer::setClipboard( QMimeSource *data, QClipboard::Mode m
 
     s_blocked = true;
 
+    QMimeData* clipData = const_cast<QMimeData*>( data );
     if ( mode == QClipboard::Clipboard )
     {
-        clip->setData( data, QClipboard::Clipboard );
+        clip->setMimeData( clipData, QClipboard::Clipboard );
     }
     else if ( mode == QClipboard::Selection )
     {
-        clip->setData( data, QClipboard::Selection );
+        clip->setMimeData( clipData, QClipboard::Selection );
     }
 
     s_blocked = false;

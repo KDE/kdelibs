@@ -23,7 +23,7 @@
 #include <qclipboard.h>
 #include <kdelibs_export.h>
 
-class QMimeSource;
+class QMimeData;
 
 /**
  * This class is only for internal use.
@@ -101,14 +101,12 @@ private:
     KClipboardSynchronizer( QObject *parent = 0 );
     void setupSignals();
 
-    static void setClipboard( QMimeSource* data, QClipboard::Mode mode );
+    static void setClipboard( const QMimeData* data, QClipboard::Mode mode );
 
     static KClipboardSynchronizer *s_self;
     static bool s_sync;
     static bool s_reverse_sync;
     static bool s_blocked;
-
-    class MimeSource;
 
 private:
     // needed by klipper
