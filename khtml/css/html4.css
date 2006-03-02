@@ -173,6 +173,7 @@ TABLE {
 	text-align: -khtml-auto;
 	border-spacing: 2px;
         -khtml-flow-mode: -khtml-around-floats;
+        box-sizing: border-box;
 }
 
 TABLE[align="center"] {

@@ -303,6 +303,8 @@ void RenderTable::layout()
     m_height += bpTop;
 
     int oldHeight = m_height;
+    if (isPositioned())
+        m_height += calculatedHeight + bpBottom;
     calcHeight();
     int newHeight = m_height;
     m_height = oldHeight;
@@ -310,7 +312,7 @@ void RenderTable::layout()
     Length h = style()->height();
     int th = -(bpTop + bpBottom); // Tables size as though CSS height includes border/padding.
     if (isPositioned())
-        th = newHeight; // FIXME: Leave this alone for now but investigate later.
+        th += newHeight;
     else if (h.isFixed())
         th += h.value();
     else if (h.isPercent())

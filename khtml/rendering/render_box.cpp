@@ -1033,7 +1033,7 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
     }
     if (result != -1) {
         result = height.width(result);
-        if (cb->isTableCell() && !isTable() && style()->boxSizing() != BORDER_BOX) {
+        if (cb->isTableCell() && style()->boxSizing() != BORDER_BOX) {
             result -= (borderTop() + paddingTop() + borderBottom() + paddingBottom());
             result = kMax(0, result);
         }
@@ -1467,8 +1467,12 @@ void RenderBox::calcAbsoluteVerticalValues(HeightType heightType, RenderObject* 
     else if (!height.isVariable())
     {
         h = height.width(ch);
-        if (ourHeight - pab > h)
-            ourHeight = h + pab;
+        if (ourHeight - pab > h) {
+            if (!isTable())
+                ourHeight = h + pab;
+            else
+                h = ourHeight - pab;
+        }
     }
     else if (isReplaced())
         h = intrinsicHeight();
