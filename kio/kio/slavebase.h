@@ -482,7 +482,7 @@ public:
     /**
      * Change the destination of a symlink
      * @param url the url of the symlink to modify
-     * @param linkDest the new destination (target) of the symlink
+     * @param target the new destination (target) of the symlink
      */
     virtual void setLinkDest( const KUrl& url, const QString& target );
 
