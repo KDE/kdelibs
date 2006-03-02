@@ -101,10 +101,14 @@ endif(DNSSD_FOUND)
 
 ########### install files ###############
 
+export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake)
+
 install_files( /include FILES kde.pot )
 install_files( /include FILES kdelibs_export.h kdemacros.h )
+install_files( /share/apps/cmake/modules FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake )
 
 kde4_create_doxygen_docs(  )
+
 
 
 #original Makefile.am contents follow:
