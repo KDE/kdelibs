@@ -859,7 +859,7 @@ void KEditToolbarWidget::loadToolbarCombo(const QString& defaultToolbar)
     {
       QString name = d->toolbarName( *xit, *it );
       m_toolbarCombo->setEnabled( true );
-      m_toolbarCombo->insertItem( name );
+      m_toolbarCombo->addItem( name );
       if (defaultToolbarId == -1 && (name == defaultToolbar || defaultToolbar == (*it).attribute( attrName )))
           defaultToolbarId = count;
       count++;

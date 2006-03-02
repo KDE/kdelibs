@@ -79,7 +79,7 @@ void KDateWidget::init(const QDate& date)
     const QString str = calendar->monthName(i, calendar->year(date));
     if (str.isEmpty())
         break;
-    d->m_month->insertItem(str);
+    d->m_month->addItem(str);
   }
 
   d->m_year = new KDateWidgetSpinBox(calendar->minValidYear(),
