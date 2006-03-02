@@ -1201,8 +1201,7 @@ void RenderBox::calcAbsoluteHorizontal()
         r = style()->right().width(cw);
 
     int static_distance=0;
-    if ((parent()->style()->direction()==LTR && (l==AUTO && r==AUTO ))
-            || style()->left().isStatic())
+    if (parent()->style()->direction()==LTR && (l==AUTO && r==AUTO ))
     {
         // calc hypothetical location in the normal flow
         // used for 1) left=static-position
@@ -1212,23 +1211,22 @@ void RenderBox::calcAbsoluteHorizontal()
         // all positioned elements are blocks, so that
         // would be at the left edge
 
+        RenderObject* po = parent();
         static_distance = m_staticX - cb->borderLeft(); // Should already have been set through layout of the parent().
-        for (RenderObject* po = parent(); po && po != cb; po = po->parent())
+        for (; po && po != cb; po = po->parent())
             static_distance += po->xPos();
 
-        if (l==AUTO || style()->left().isStatic())
-            l = static_distance;
+        l = static_distance;
     }
 
-    else if ((parent()->style()->direction()==RTL && (l==AUTO && r==AUTO ))
-            || style()->right().isStatic())
+    else if (parent()->style()->direction()==RTL && (l==AUTO && r==AUTO ))
     {
-        static_distance = m_staticX - cb->borderLeft(); // Should already have been set through layout of the parent().
-        for (RenderObject* po = parent(); po && po != cb; po = po->parent())
-            static_distance += po->xPos();
+        RenderObject* po = parent();
+        static_distance = m_staticX + cw + cb->borderRight() - po->width(); // Should already have been set through layout of the parent().
+        for (; po && po != cb; po = po->parent())
+            static_distance -= po->xPos();
 
-        if (r==AUTO || style()->right().isStatic())
-            r = static_distance;
+        r = static_distance;
     }
 
     int w = m_width, ml, mr, x;
@@ -1476,7 +1474,7 @@ void RenderBox::calcAbsoluteVerticalValues(HeightType heightType, RenderObject* 
         h = intrinsicHeight();
 
     int static_top=0;
-    if ((t==AUTO && b==AUTO ) || style()->top().isStatic())
+    if (t==AUTO && b==AUTO)
     {
         // calc hypothetical location in the normal flow
         // used for 1) top=static-position
@@ -1487,7 +1485,7 @@ void RenderBox::calcAbsoluteVerticalValues(HeightType heightType, RenderObject* 
         for (; po && po != cb; po = po->parent())
             static_top += po->yPos();
 
-        if (h==AUTO || style()->top().isStatic())
+        if (h==AUTO)
             t = static_top;
     }
 
