@@ -301,7 +301,7 @@ void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& s
 	// If the slot to be called accepts an integer index
 	//  and an index is present at the end of the action's name,
 	//  then send the slot the given index #.
-	if( rexPassIndex.search( pAction->methodSlotPtr() ) >= 0 && rexIndex.indexIn( pAction->name() ) >= 0 ) {
+	if( rexPassIndex.indexIn( pAction->methodSlotPtr() ) >= 0 && rexIndex.indexIn( pAction->name() ) >= 0 ) {
 		int n = rexIndex.cap(1).toInt();
 		kDebug(125) << "Calling " << pAction->methodSlotPtr() << " int = " << n << endl;
                 int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( QMetaObject::normalizedSignature( pAction->methodSlotPtr() ).data() + 1 );
