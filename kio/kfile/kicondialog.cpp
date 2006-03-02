@@ -167,11 +167,11 @@ void KIconCanvas::slotLoadFiles()
 	    if (img.width() > img.height())
 	    {
 		int height = (int) ((60.0 / img.width()) * img.height());
-		img = img.smoothScale(60, height);
+		img = img.scaled(60, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	    } else
 	    {
 		int width = (int) ((60.0 / img.height()) * img.width());
-		img = img.smoothScale(width, 60);
+		img = img.scaled(width, 60, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	    }
 	}
 	QPixmap pm;
@@ -282,7 +282,9 @@ void KIconDialog::init()
     //
     // ADD SEARCHLINE
     //
-    QHBoxLayout *searchLayout = new QHBoxLayout(0, 0, KDialog::spacingHint());
+    QHBoxLayout *searchLayout = new QHBoxLayout();
+    searchLayout->setMargin(0);
+    searchLayout->setSpacing(KDialog::spacingHint());
     top->addLayout(searchLayout);
 
     QToolButton *clearSearch = new QToolButton(main);
@@ -606,15 +608,14 @@ class KIconButton::KIconButtonPrivate
  * KIconButton: A "choose icon" pushbutton.
  */
 
-KIconButton::KIconButton(QWidget *parent, const char *name)
-    : QPushButton(parent, name),d(new KIconButtonPrivate)
+KIconButton::KIconButton(QWidget *parent)
+    : QPushButton(parent),d(new KIconButtonPrivate)
 {
     init( KGlobal::iconLoader() );
 }
 
-KIconButton::KIconButton(KIconLoader *loader,
-	QWidget *parent, const char *name)
-    : QPushButton(parent, name),d(new KIconButtonPrivate)
+KIconButton::KIconButton(KIconLoader *loader, QWidget *parent)
+    : QPushButton(parent),d(new KIconButtonPrivate)
 {
     init( loader );
 }

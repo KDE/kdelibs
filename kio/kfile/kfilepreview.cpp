@@ -28,8 +28,8 @@
 
 #include "config-kfile.h"
 
-KFilePreview::KFilePreview(KFileView *view, QWidget *parent, const char *name)
-    : QSplitter(parent, name), KFileView()
+KFilePreview::KFilePreview(KFileView *view, QWidget *parent)
+    : QSplitter(parent), KFileView()
 {
     if ( view )
         init( view );
@@ -38,8 +38,8 @@ KFilePreview::KFilePreview(KFileView *view, QWidget *parent, const char *name)
 }
 
 
-KFilePreview::KFilePreview(QWidget *parent, const char *name) :
-                           QSplitter(parent, name), KFileView()
+KFilePreview::KFilePreview(QWidget *parent)
+    : QSplitter(parent), KFileView()
 {
     init( new KFileIconView((QSplitter*)this, "left") );
 }

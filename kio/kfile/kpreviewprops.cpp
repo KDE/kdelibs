@@ -48,7 +48,9 @@ void KPreviewPropsPlugin::createLayout()
     QFrame* topframe = properties->addPage(i18n("P&review"));
     topframe->setFrameStyle(QFrame::NoFrame);
 
-    QVBoxLayout* tmp = new QVBoxLayout(topframe, 0, 0);
+    QVBoxLayout* tmp = new QVBoxLayout(topframe);
+    tmp->setMargin(0);
+    tmp->setSpacing(0);
 
     preview = new KFileMetaPreview(topframe);
 

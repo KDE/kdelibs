@@ -721,8 +721,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   d->m_frame = properties->addPage (i18n("&General"));
 
-  QVBoxLayout *vbl = new QVBoxLayout( d->m_frame, 0,
-                                      KDialog::spacingHint(), "vbl");
+  QVBoxLayout *vbl = new QVBoxLayout( d->m_frame );
+  vbl->setMargin( 0 );
+  vbl->setSpacing( KDialog::spacingHint() );
+  vbl->setObjectName( QLatin1String( "vbl" ) );
   QGridLayout *grid = new QGridLayout(); // unknown rows
   grid->setColumnStretch(0, 0);
   grid->setColumnStretch(1, 0);
@@ -973,7 +975,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   }
   else // Directory
   {
-    QHBoxLayout * sizelay = new QHBoxLayout(KDialog::spacingHint());
+    QHBoxLayout * sizelay = new QHBoxLayout();
+    sizelay->setSpacing(KDialog::spacingHint());
     grid->addLayout( sizelay, curRow++, 2 );
 
     // buttons
@@ -1589,7 +1592,9 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   d->m_frame = properties->addPage(i18n("&Permissions"));
 
-  QBoxLayout *box = new QVBoxLayout( d->m_frame, 0, KDialog::spacingHint() );
+  QBoxLayout *box = new QVBoxLayout( d->m_frame );
+  box->setMargin( 0 );
+  box->setSpacing( KDialog::spacingHint() );
 
   QWidget *l;
   QLabel *lbl;
@@ -2502,7 +2507,9 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props ),d(new KUrlPropsPluginPrivate)
 {
   d->m_frame = properties->addPage(i18n("U&RL"));
-  QVBoxLayout *layout = new QVBoxLayout(d->m_frame, 0, KDialog::spacingHint());
+  QVBoxLayout *layout = new QVBoxLayout(d->m_frame);
+  layout->setMargin(0);
+  layout->setSpacing(KDialog::spacingHint());
 
   QLabel *l;
   l = new QLabel( d->m_frame );
@@ -2611,7 +2618,9 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
   commentEdit = new KLineEdit( d->m_frame);
   mimeEdit = new KLineEdit( d->m_frame);
 
-  QBoxLayout *mainlayout = new QVBoxLayout(d->m_frame, 0, KDialog::spacingHint());
+  QBoxLayout *mainlayout = new QVBoxLayout(d->m_frame);
+  mainlayout->setMargin(0);
+  mainlayout->setSpacing(KDialog::spacingHint());
   QLabel* tmpQLabel;
 
   tmpQLabel = new QLabel( d->m_frame );
@@ -3043,7 +3052,9 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
   QFrame *frame = properties->addPage(i18n("&Application"));
-  QVBoxLayout *mainlayout = new QVBoxLayout( frame, 0, KDialog::spacingHint() );
+  QVBoxLayout *mainlayout = new QVBoxLayout( frame );
+  mainlayout->setMargin( 0 );
+  mainlayout->setSpacing( KDialog::spacingHint() );
 
   w = new KPropertiesDesktopBase(frame);
   mainlayout->addWidget(w);
@@ -3530,8 +3541,9 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props ),d(new KExecPropsPluginPrivate)
 {
   d->m_frame = properties->addPage(i18n("E&xecute"));
-  QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame, 0,
-      KDialog::spacingHint());
+  QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame );
+  mainlayout->setMargin( 0 );
+  mainlayout->setSpacing( KDialog::spacingHint() );
 
   // Now the widgets in the top layout
 
@@ -3540,7 +3552,8 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   mainlayout->addWidget(l);
 
   QHBoxLayout * hlayout;
-  hlayout = new QHBoxLayout(KDialog::spacingHint());
+  hlayout = new QHBoxLayout();
+  hlayout->setSpacing(KDialog::spacingHint());
   mainlayout->addLayout(hlayout);
 
   execEdit = new KLineEdit( d->m_frame );
@@ -3842,7 +3855,9 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props ),d(new KApplicationPropsPluginPrivate)
 {
   d->m_frame = properties->addPage(i18n("&Application"));
-  QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, 0, KDialog::spacingHint());
+  QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame );
+  toplayout->setMargin( 0 );
+  toplayout->setSpacing( KDialog::spacingHint() );
 
   QIcon iconSet;
   QPixmap pixMap;

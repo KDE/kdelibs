@@ -183,7 +183,7 @@ void KDirOperator::insertViewDependentActions()
    if( !m_fileView )
       return;
 
-   if ( (viewActionMenu->popupMenu()->count() == 0) || 			// Not yet initialized or...
+   if ( (viewActionMenu->popupMenu()->actions().count() == 0) || 			// Not yet initialized or...
         (viewActionCollection != m_fileView->actionCollection()) )	// ...changed since.
    {
       if (viewActionCollection)
@@ -877,7 +877,8 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view )
 
         if (preview)
         {
-            KFilePreview* pView = new KFilePreview( combi ? combi : v, parent, "preview" );
+            KFilePreview* pView = new KFilePreview( combi ? combi : v, parent );
+            pView->setObjectName( QLatin1String( "preview" ) );
             pView->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
             new_view = pView;
         }
@@ -1593,7 +1594,7 @@ void KDirOperator::clearHistory()
 
 void KDirOperator::slotViewActionAdded( KAction *action )
 {
-    if ( viewActionMenu->popupMenu()->count() == 5 ) // need to add a separator
+    if ( viewActionMenu->popupMenu()->actions().count() == 5 ) // need to add a separator
 	viewActionMenu->insert( d->viewActionSeparator );
 
     viewActionMenu->insert( action );
@@ -1603,7 +1604,7 @@ void KDirOperator::slotViewActionRemoved( KAction *action )
 {
     viewActionMenu->remove( action );
 
-    if ( viewActionMenu->popupMenu()->count() == 6 ) // remove the separator
+    if ( viewActionMenu->popupMenu()->actions().count() == 6 ) // remove the separator
 	viewActionMenu->remove( d->viewActionSeparator );
 }
 

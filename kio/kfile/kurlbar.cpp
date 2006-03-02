@@ -974,7 +974,8 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
     whatsThisText = i18n("<qt>This is the icon that will appear in the Quick Access panel.<p>"
                          "Click on the button to select a different icon.</qt>");
     label = new QLabel( i18n("Choose an &icon:"), grid );
-    m_iconButton = new KIconButton( grid, "icon button" );
+    m_iconButton = new KIconButton( grid );
+    m_iconButton->setObjectName( QLatin1String( "icon button" ) );
     m_iconButton->setIconSize( iconSize );
     if ( icon.isEmpty() )
         icon = KMimeType::iconNameForURL( url );

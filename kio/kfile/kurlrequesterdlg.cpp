@@ -61,8 +61,9 @@ void KUrlRequesterDlg::initDialog(const QString &text,const QString &urlName)
   enableButtonSeparator(true);
    QFrame *plainPage=new QFrame(this);
    setMainWidget(plainPage);
-   QVBoxLayout * topLayout = new QVBoxLayout( plainPage, 0,
-            spacingHint() );
+   QVBoxLayout * topLayout = new QVBoxLayout( plainPage );
+   topLayout->setMargin( 0 );
+   topLayout->setSpacing( spacingHint() );
 
     QLabel * label = new QLabel( text , plainPage );
     topLayout->addWidget( label );

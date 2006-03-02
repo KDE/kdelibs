@@ -182,7 +182,7 @@ static QPixmap appIcon(const QString &iconName)
     if (normal.width() > 20 || normal.height() > 20)
     {
        QImage tmp = normal.toImage();
-       tmp = tmp.smoothScale(20, 20);
+       tmp = tmp.scaled(20, 20, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
        normal.convertFromImage(tmp);
     }
     return normal;
@@ -405,8 +405,9 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   m_pService = 0L;
   d->curService = 0L;
 
-  QBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
-          KDialog::spacingHint() );
+  QBoxLayout *topLayout = new QVBoxLayout( this );
+  topLayout->setMargin( KDialog::marginHint() );
+  topLayout->setSpacing( KDialog::spacingHint() );
   label = new QLabel( _text, this );
   topLayout->addWidget(label);
 
@@ -485,7 +486,9 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   topLayout->addWidget(terminal);
 
-  QBoxLayout* nocloseonexitLayout = new QHBoxLayout( 0, 0, KDialog::spacingHint() );
+  QBoxLayout* nocloseonexitLayout = new QHBoxLayout();
+  nocloseonexitLayout->setMargin( 0 );
+  nocloseonexitLayout->setSpacing( KDialog::spacingHint() );
   QSpacerItem* spacer = new QSpacerItem( 20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum );
   nocloseonexitLayout->addItem( spacer );
 

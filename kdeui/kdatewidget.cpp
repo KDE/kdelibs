@@ -34,8 +34,10 @@ class KDateWidgetSpinBox : public QSpinBox
 {
 public:
   KDateWidgetSpinBox(int min, int max, QWidget *parent)
-    : QSpinBox(min, max, 1, parent)
+    : QSpinBox(parent)
   {
+     setRange(qMin(min, max), qMax(min, max));
+     setSingleStep(1);
      lineEdit()->setAlignment(Qt::AlignRight);
   }
 };
@@ -101,7 +103,7 @@ void KDateWidget::setDate( const QDate &date )
   d->m_month->blockSignals(true);
   d->m_year->blockSignals(true);
 
-  d->m_day->setMaxValue(calendar->daysInMonth(date));
+  d->m_day->setMaximum(calendar->daysInMonth(date));
   d->m_day->setValue(calendar->day(date));
   d->m_month->setCurrentIndex(calendar->month(date)-1);
   d->m_year->setValue(calendar->year(date));

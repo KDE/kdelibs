@@ -144,7 +144,7 @@ KFileList::KFileList(QWidget *parent)
 	QHBoxLayout	*l0 = new QHBoxLayout(this);
   l0->setMargin(0);
   l0->setSpacing(KDialog::spacingHint());
-	QVBoxLayout	*l1 = new QVBoxLayout(0);
+	QVBoxLayout	*l1 = new QVBoxLayout();
 	l0->addWidget(m_files);
 	l0->addLayout(l1);
   l1->setMargin(0);

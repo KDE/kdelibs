@@ -41,8 +41,8 @@ class KIO_EXPORT KFilePreview : public QSplitter, public KFileView
     Q_OBJECT
 
 public:
-    KFilePreview(QWidget *parent, const char *name);
-    KFilePreview(KFileView *view, QWidget *parent, const char *name);
+    KFilePreview(QWidget *parent);
+    KFilePreview(KFileView *view, QWidget *parent);
     virtual ~KFilePreview();
 
     virtual QWidget *widget() { return this; }

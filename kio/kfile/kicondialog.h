@@ -261,12 +261,12 @@ public:
     /**
      * Constructs a KIconButton using the global iconloader.
      */
-    KIconButton(QWidget *parent=0L, const char *name=0L);
+    KIconButton(QWidget *parent=0L);
 
     /**
      * Constructs a KIconButton using a specific KIconLoader.
      */
-    KIconButton(KIconLoader *loader, QWidget *parent, const char *name=0L);
+    KIconButton(KIconLoader *loader, QWidget *parent);
     /**
      * Destructs the button.
      */
