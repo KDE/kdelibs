@@ -21,6 +21,7 @@
 <!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" ><!-- kcc -->
 <!ENTITY kcontrolcenter "<application>&kde;-Kontrollzentrum</application>">
 <!ENTITY kde "K-Arbeitsumgebung" ><!-- kde -->
+<!ENTITY khelpcenter "<application>KDE-Hilfezentrum</application>" ><!-- for kdpf -->
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>K-Symbol von &kde;</title></objectinfo>
