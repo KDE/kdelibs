@@ -24,7 +24,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qvariant.h>
-#include <q3dict.h>
+#include <qhash.h>
 
 #include <kdelibs_export.h>
 
@@ -62,7 +62,7 @@ public:
 private:
 	QStack<DrGroup*> m_groups;
 	DrBase*               m_option;
-	Q3Dict<PS_private>     m_ps;
+	QHash<QString,PS_private>     m_ps;
 	QStringList           m_fonts;
 	QString               m_errormsg;
 

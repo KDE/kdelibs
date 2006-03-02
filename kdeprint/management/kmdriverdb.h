@@ -21,7 +21,7 @@
 #define KMDRIVERDB_H
 
 #include <qobject.h>
-#include <q3dict.h>
+#include <qhash.h>
 #include <qstring.h>
 
 #include "kmdbentry.h"
@@ -40,8 +40,8 @@ public:
 	void init(QWidget *parent = 0);
 	KMDBEntryList* findEntry(const QString& manu, const QString& model);
 	KMDBEntryList* findPnpEntry(const QString& manu, const QString& model);
-	Q3Dict<KMDBEntryList>* findModels(const QString& manu);
-	const Q3Dict< Q3Dict<KMDBEntryList> >& manufacturers() const	{ return m_entries; }
+	QHash<QString, KMDBEntryList*>* findModels(const QString& manu);
+	const QHash<QString, QHash<QString, KMDBEntryList*>* >& manufacturers() const	{ return m_entries; }
 
 protected:
 	void loadDbFile();
@@ -56,9 +56,11 @@ Q_SIGNALS:
 	void error(const QString&);
 
 private:
+  void clear();
+
 	KMDBCreator			*m_creator;
-	Q3Dict< Q3Dict<KMDBEntryList> >	m_entries;
-	Q3Dict< Q3Dict<KMDBEntryList> >	m_pnpentries;
+	QHash<QString, QHash<QString, KMDBEntryList*>* >	m_entries;
+	QHash<QString, QHash<QString, KMDBEntryList*>* >	m_pnpentries;
 
 	static KMDriverDB	*m_self;
 };

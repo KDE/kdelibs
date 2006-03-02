@@ -22,7 +22,7 @@
 
 #include "kmmanager.h"
 
-#include <q3dict.h>
+#include <qhash.h>
 #include <qdatetime.h>
 #include <kurl.h>
 
@@ -36,6 +36,7 @@ class KMLprManager : public KMManager
 	Q_OBJECT
 public:
 	KMLprManager(QObject *parent, const char *name, const QStringList & /*args*/);
+	~KMLprManager();
 
 	bool completePrinter(KMPrinter*);
 	bool completePrinterShort(KMPrinter*);
@@ -70,9 +71,9 @@ protected:
 	bool savePrintcapFile();
 
 private:
-	Q3Dict<LprHandler>	m_handlers;
+	QHash<QString, LprHandler*>	m_handlers;
 	QList<LprHandler*>    m_handlerlist;
-	Q3Dict<PrintcapEntry>	m_entries;
+	QHash<QString, PrintcapEntry*>	m_entries;
 	QDateTime		m_updtime;
 	LpcHelper		*m_lpchelper;
 	KMPrinter		*m_currentprinter;

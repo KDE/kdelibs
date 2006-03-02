@@ -22,7 +22,7 @@
 
 #include "kprintdialogpage.h"
 
-#include <q3dict.h>
+#include <qhash.h>
 #include <qstringlist.h>
 
 class QTreeWidget;
@@ -58,7 +58,7 @@ protected:
 private:
 	QTreeWidget		*m_view;
 	QStringList		m_filters;	// <idname,description> pairs
-	Q3Dict<KXmlCommand>	m_activefilters;
+	QHash<QString, KXmlCommand*>	m_activefilters;
 	QToolButton		*m_add, *m_remove, *m_up, *m_down, *m_configure;
 	bool			m_valid;
 	KTextBrowser		*m_info;

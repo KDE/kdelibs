@@ -120,7 +120,6 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 						" </qt>" );
 
 	setTitle(i18n("Filters"));
-	m_activefilters.setAutoDelete(true);
 	m_valid = true;
 
 	m_view = new QTreeWidget(this);
@@ -172,7 +171,7 @@ KPFilterPage::KPFilterPage(QWidget *parent)
   l1->setMargin(0);
   l1->setSpacing(KDialog::spacingHint());
 	l1->setColumnStretch(0, 1);
-	QVBoxLayout	*l2 = new QVBoxLayout(0);
+	QVBoxLayout	*l2 = new QVBoxLayout();
   l2->setMargin(0);
   l2->setSpacing(1);
 	l1->addWidget(m_view, 0, 0);
@@ -193,6 +192,7 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 
 KPFilterPage::~KPFilterPage()
 {
+  qDeleteAll(m_activefilters);
 }
 
 void KPFilterPage::updateButton()
@@ -216,6 +216,7 @@ void KPFilterPage::slotAddClicked()
 		if (!cmd) return; // Error
 		QStringList	filters = activeList();
 		int		pos = KXmlCommandManager::self()->insertCommand(filters, cmd->name());
+		delete m_activefilters.take(cmd->name());
 		m_activefilters.insert(cmd->name(), cmd);
     QStringList data;
     data << cmd->description() << cmd->name();
@@ -232,7 +233,7 @@ void KPFilterPage::slotRemoveClicked()
 	{
 		QString	idname = m_view->selectedItems().first()->text(1);
 		delete m_view->selectedItems().first();
-		m_activefilters.remove(idname);
+		delete m_activefilters.take(idname);
 		checkFilterChain();
 		if (m_view->currentItem())
 			m_view->setItemSelected(m_view->currentItem(), true);
@@ -303,15 +304,15 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 {
 	QStringList	filters = opts["_kde-filters"].split(',',QString::SkipEmptyParts);
 	// remove unneeded filters
-	Q3DictIterator<KXmlCommand>	dit(m_activefilters);
-	for (;dit.current();)
+	QHashIterator<QString, KXmlCommand*>	dit(m_activefilters);
+	while (dit.hasNext())
 	{
-		if (!filters.contains(dit.currentKey()))
-			m_activefilters.remove(dit.currentKey());
+		dit.next();
+		if (!filters.contains(dit.key()))
+			delete m_activefilters.take(dit.key());
 		else
 		{
-			dit.current()->setOptions(opts);
-			++dit;
+			dit.value()->setOptions(opts);
 		}
 	}
 	// add needed filters
@@ -319,7 +320,7 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 	for (QStringList::ConstIterator sit=filters.begin(); sit!=filters.end(); ++sit)
 	{
 		KXmlCommand	*f(0);
-		if ((f=m_activefilters.find(*sit)) == 0)
+		if ((f=m_activefilters.value(*sit, 0)) == 0)
 		{
 			f = KXmlCommandManager::self()->loadCommand(*sit);
 			if (f)
@@ -342,7 +343,7 @@ void KPFilterPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 	QStringList	filters = activeList();
 	for (QStringList::ConstIterator it=filters.begin(); it!=filters.end(); ++it)
 	{
-		KXmlCommand	*f = m_activefilters.find(*it);
+		KXmlCommand	*f = m_activefilters.value(*it, 0);
 		if (f)
 			f->getOptions(opts, incldef);
 	}
@@ -364,7 +365,7 @@ KXmlCommand* KPFilterPage::currentFilter()
 {
 	KXmlCommand	*filter(0);
 	if (!m_view->selectedItems().isEmpty())
-		filter = m_activefilters.find(m_view->selectedItems().first()->text(1));
+		filter = m_activefilters.value(m_view->selectedItems().first()->text(1), 0);
 	return filter;
 }
 
@@ -376,10 +377,10 @@ void KPFilterPage::checkFilterChain()
 	{
     QTreeWidgetItem *item = m_view->topLevelItem(i);
 		item->setIcon(0, (ok ? SmallIcon("filter") : SmallIcon("filterstop")));
-		KXmlCommand	*f1 = m_activefilters.find(item->text(1));
+		KXmlCommand	*f1 = m_activefilters.value(item->text(1), 0);
 		if (f1 && i < (m_view->topLevelItemCount() - 1))
 		{
-			KXmlCommand	*f2 = m_activefilters.find(m_view->topLevelItem(i+1)->text(1));
+			KXmlCommand	*f2 = m_activefilters.value(m_view->topLevelItem(i+1)->text(1), 0);
 			if (f2)
 			{
 				if (!f2->acceptMimeType(f1->mimeType()))

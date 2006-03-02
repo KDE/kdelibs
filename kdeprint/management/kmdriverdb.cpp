@@ -50,12 +50,29 @@ KMDriverDB::KMDriverDB(QObject *parent)
         m_creator->setObjectName( "db-creator" );
 	connect(m_creator,SIGNAL(dbCreated()),SLOT(slotDbCreated()));
 
-  m_entries.setAutoDelete(true);
-	m_pnpentries.setAutoDelete(true);
 }
 
 KMDriverDB::~KMDriverDB()
 {
+  clear();
+}
+
+void KMDriverDB::clear()
+{
+  QHashIterator<QString, QHash<QString, KMDBEntryList*>* > it( m_entries );
+  while ( it.hasNext() ) {
+    it.next();
+    qDeleteAll(*it.value());
+  }
+
+  it = m_pnpentries;
+  while ( it.hasNext() ) {
+    it.next();
+    qDeleteAll(*it.value());
+  }
+
+  qDeleteAll(m_entries);
+  qDeleteAll(m_pnpentries);
 }
 
 QString KMDriverDB::dbFile()
@@ -111,23 +128,23 @@ void KMDriverDB::slotDbCreated()
 
 KMDBEntryList* KMDriverDB::findEntry(const QString& manu, const QString& model)
 {
-	Q3Dict<KMDBEntryList>	*models = m_entries.find(manu);
+	QHash<QString, KMDBEntryList*>	*models = m_entries.value(manu, 0);
 	if (models)
-		return models->find(model);
+		return models->value(model, 0);
 	return 0;
 }
 
 KMDBEntryList* KMDriverDB::findPnpEntry(const QString& manu, const QString& model)
 {
-	Q3Dict<KMDBEntryList>	*models = m_pnpentries.find(manu);
+	QHash<QString, KMDBEntryList*>	*models = m_pnpentries.value(manu, 0);
 	if (models)
-		return models->find(model);
+		return models->value(model, 0);
 	return 0;
 }
 
-Q3Dict<KMDBEntryList>* KMDriverDB::findModels(const QString& manu)
+QHash<QString, KMDBEntryList*>* KMDriverDB::findModels(const QString& manu)
 {
-	return m_entries.find(manu);
+	return m_entries.value(manu, 0);
 }
 
 void KMDriverDB::insertEntry(KMDBEntry *entry)
@@ -141,14 +158,14 @@ void KMDriverDB::insertEntry(KMDBEntry *entry)
 	}
 
 	// insert it in normal entries
-	Q3Dict<KMDBEntryList>	*models = m_entries.find(entry->manufacturer);
+	QHash<QString, KMDBEntryList*>	*models = m_entries.value(entry->manufacturer, 0);
 	if (!models)
 	{
-		models = new Q3Dict<KMDBEntryList>(17,false);
-		models->setAutoDelete(true);
+		models = new QHash<QString, KMDBEntryList*>();
+		models->reserve(17);
 		m_entries.insert(entry->manufacturer,models);
 	}
-	KMDBEntryList	*list = models->find(entry->model);
+	KMDBEntryList	*list = models->value(entry->model, 0);
 	if (!list)
 	{
 		list = new KMDBEntryList;
@@ -159,14 +176,14 @@ void KMDriverDB::insertEntry(KMDBEntry *entry)
 	if (!entry->pnpmanufacturer.isEmpty() && !entry->pnpmodel.isEmpty())
 	{
 		// insert it in PNP entries
-		models = m_pnpentries.find(entry->manufacturer);
+		models = m_pnpentries.value(entry->manufacturer, 0);
 		if (!models)
 		{
-			models = new Q3Dict<KMDBEntryList>(17,false);
-			models->setAutoDelete(true);
+			models = new QHash<QString, KMDBEntryList*>();
+			models->reserve(17);
 			m_pnpentries.insert(entry->manufacturer,models);
 		}
-		list = models->find(entry->model);
+		list = models->value(entry->model, 0);
 		if (!list)
 		{
 			list = new KMDBEntryList;
@@ -192,8 +209,7 @@ void KMDriverDB::insertEntry(KMDBEntry *entry)
 void KMDriverDB::loadDbFile()
 {
 	// first clear everything
-	m_entries.clear();
-	m_pnpentries.clear();
+  clear();
 
 	QFile	f(dbFile());
 	if (f.exists() && f.open(QIODevice::ReadOnly))

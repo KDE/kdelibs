@@ -33,12 +33,12 @@ KMJobManager::KMJobManager(QObject *parent)
 {
 	m_threadjob = new KMThreadJob(this );
         m_threadjob->setObjectName( "ThreadJob" );
-  m_filter.setAutoDelete(true);
 }
 
 KMJobManager::~KMJobManager()
 {
   qDeleteAll(m_jobs);
+  qDeleteAll(m_filter);
 }
 
 KMJobManager* KMJobManager::self()
@@ -174,12 +174,13 @@ const QList<KMJob*>& KMJobManager::jobList(bool reload)
 	if (reload || m_jobs.count() == 0)
 	{
 		discardAllJobs();
-		Q3DictIterator<JobFilter>	it(m_filter);
+		QHashIterator<QString, JobFilter*>	it(m_filter);
 		int	joblimit = limit();
 		bool threadjobs_updated = false;
-		for (; it.current(); ++it)
+		while (it.hasNext())
 		{
-			if ( it.current()->m_isspecial )
+			it.next();
+			if ( it.value()->m_isspecial )
 			{
 				if ( !threadjobs_updated )
 				{
@@ -189,10 +190,10 @@ const QList<KMJob*>& KMJobManager::jobList(bool reload)
 			}
 			else
 			{
-				if (it.current()->m_type[ActiveJobs] > 0)
-					listJobs(it.currentKey(), ActiveJobs, joblimit);
-				if (it.current()->m_type[CompletedJobs] > 0)
-					listJobs(it.currentKey(), CompletedJobs, joblimit);
+				if (it.value()->m_type[ActiveJobs] > 0)
+					listJobs(it.key(), ActiveJobs, joblimit);
+				if (it.value()->m_type[CompletedJobs] > 0)
+					listJobs(it.key(), CompletedJobs, joblimit);
 			}
 		}
 		m_threadjob->updateManager(this);
@@ -217,7 +218,7 @@ void KMJobManager::validatePluginActions(KActionCollection*, const QList<KMJob*>
 
 void KMJobManager::addPrinter(const QString& pr, KMJobManager::JobType type, bool isSpecial)
 {
-	struct JobFilter	*jf = m_filter.find(pr);
+	struct JobFilter	*jf = m_filter.value(pr, 0);
 	if (!jf)
 	{
 		jf = new JobFilter;
@@ -229,12 +230,12 @@ void KMJobManager::addPrinter(const QString& pr, KMJobManager::JobType type, boo
 
 void KMJobManager::removePrinter(const QString& pr, KMJobManager::JobType type)
 {
-	struct JobFilter	*jf = m_filter.find(pr);
+	struct JobFilter	*jf = m_filter.value(pr, 0);
 	if (jf)
 	{
 		jf->m_type[type] = qMax(0, jf->m_type[type]-1);
 		if (!jf->m_type[0] && !jf->m_type[1])
-			m_filter.remove(pr);
+			delete m_filter.take(pr);
 	}
 }
 

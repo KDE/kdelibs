@@ -21,7 +21,7 @@
 #define KMLPDMANAGER_H
 
 #include "kmmanager.h"
-#include <q3dict.h>
+#include <QHash>
 
 class PrintcapEntry;
 class PrinttoolEntry;
@@ -68,8 +68,8 @@ protected:
 	bool enablePrinter(KMPrinter*, bool);
 
 private:
-	Q3Dict<PrintcapEntry>	m_entries;
-	Q3Dict<PrinttoolEntry>	m_ptentries;
+	QHash<QString, PrintcapEntry*>	m_entries;
+	QHash<QString, PrinttoolEntry*>	m_ptentries;
 	GsChecker		*m_gschecker;
 };
 

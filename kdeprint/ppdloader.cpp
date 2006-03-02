@@ -51,7 +51,7 @@ static QString processLocaleString( const QString& s )
 				else if ( cc.isDigit() )
 					_hc = cc.digitValue();
 				else
-					_hc = cc.toLower().latin1() - 'a' + 10;
+					_hc = cc.toLower().toLatin1() - 'a' + 10;
 				if ( flag )
 				{
 					hc |= _hc;
@@ -110,7 +110,6 @@ struct PS_private
 PPDLoader::PPDLoader()
 {
 	m_option = 0;
-	m_ps.setAutoDelete( true );
 }
 
 PPDLoader::~PPDLoader()
@@ -416,7 +415,7 @@ bool PPDLoader::putFooProcessedData( const QVariant& var )
 				}
 				else
 				{
-					qWarning( "Option %s not found in original PPD file", o->name().latin1() );
+					qWarning( "Option %s not found in original PPD file", qPrintable( o->name() ) );
 					delete o;
 				}
 			}
@@ -429,15 +428,16 @@ bool PPDLoader::putPaperDimension( const QString& name, const QString& s )
 {
 	QList<float> l = splitNumberString( s );
 
-	PS_private *ps = m_ps.find( name );
-	if ( !ps )
+	if ( !m_ps.contains( name ) )
 	{
-		ps = new PS_private;
-		ps->name = name;
+		PS_private ps;
+		ps.name = name;
 		m_ps.insert( name, ps );
 	}
-	ps->size.width = l[ 0 ];
-	ps->size.height = l[ 1 ];
+	PS_private ps = m_ps.value( name );
+	ps.size.width = l[ 0 ];
+	ps.size.height = l[ 1 ];
+	m_ps.insert( name, ps );
 
 	return true;
 }
@@ -446,17 +446,18 @@ bool PPDLoader::putImageableArea( const QString& name, const QString& s )
 {
 	QList<float> l = splitNumberString( s );
 
-	PS_private *ps = m_ps.find( name );
-	if ( !ps )
+	if ( !m_ps.contains( name ) )
 	{
-		ps = new PS_private;
-		ps->name = name;
+		PS_private ps;
+		ps.name = name;
 		m_ps.insert( name, ps );
 	}
-	ps->area.left = l[ 0 ];
-	ps->area.bottom = l[ 1 ];
-	ps->area.right = l[ 2 ];
-	ps->area.top = l[ 3 ];
+	PS_private ps = m_ps.value( name );
+	ps.area.left = l[ 0 ];
+	ps.area.bottom = l[ 1 ];
+	ps.area.right = l[ 2 ];
+	ps.area.top = l[ 3 ];
+	m_ps.insert( name, ps );
 
 	return true;
 }
@@ -502,18 +503,19 @@ DrGroup* PPDLoader::findOrCreateGroupForOption( const QString& optname )
 
 void PPDLoader::processPageSizes( DrMain *driver )
 {
-	Q3DictIterator<PS_private> it( m_ps );
-	for ( ; it.current(); ++it )
+	QHashIterator<QString, PS_private> it( m_ps );
+	while ( it.hasNext() )
 	{
+		it.next();
 		//qDebug( "ADDING PAGESIZE: %16s, Size = ( %.2f, %.2f ),  Area = ( %.2f, %.2f, %.2f, %.2f )", it.current()->name.latin1(),
 		//		it.current()->size.width, it.current()->size.height,
 		//		it.current()->area.left, it.current()->area.bottom,
 		//		it.current()->area.right, it.current()->area.top );
-		driver->addPageSize( new DrPageSize( it.current()->name,
-					( int )it.current()->size.width, ( int )it.current()->size.height,
-					( int )it.current()->area.left, ( int )it.current()->area.bottom,
-					( int )ceil( it.current()->size.width - it.current()->area.right ),
-					( int )ceil( it.current()->size.height - it.current()->area.top ) ) );
+		driver->addPageSize( new DrPageSize( it.value().name,
+					( int )it.value().size.width, ( int )it.value().size.height,
+					( int )it.value().area.left, ( int )it.value().area.bottom,
+					( int )ceil( it.value().size.width - it.value().area.right ),
+					( int )ceil( it.value().size.height - it.value().area.top ) ) );
 	}
 	m_ps.clear();
 }

@@ -24,9 +24,9 @@
 #warning internal header, do not use except if you are a KDEPrint developer
 #endif
 
+#include <QHash>
 #include <QList>
 #include <QObject>
-#include <q3dict.h>
 
 
 #include <kdelibs_export.h>
@@ -64,7 +64,7 @@ public:
 	void addPrinter(const QString& pr, JobType type = ActiveJobs, bool isSpecial = false);
 	void removePrinter(const QString& pr, JobType type = ActiveJobs);
 	void clearFilter();
-	Q3Dict<JobFilter>* filter();
+	QHash<QString, JobFilter*>* filter();
 	int limit();
 	void setLimit(int val);
 
@@ -93,11 +93,11 @@ protected:
 
 protected:
 	QList<KMJob*>	m_jobs;
-	Q3Dict<JobFilter>	m_filter;
+	QHash<QString, JobFilter*>	m_filter;
 	KMThreadJob	*m_threadjob;
 };
 
-inline Q3Dict<KMJobManager::JobFilter>* KMJobManager::filter()
+inline QHash<QString, KMJobManager::JobFilter*>* KMJobManager::filter()
 { return &m_filter; }
 
 inline void KMJobManager::clearFilter()

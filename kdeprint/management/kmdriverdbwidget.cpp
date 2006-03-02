@@ -31,7 +31,6 @@
 #include <kmessagebox.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <q3strlist.h>
 
 #include <klocale.h>
 #include <kcursor.h>
@@ -62,10 +61,10 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent)
 	QVBoxLayout	*main_ = new QVBoxLayout(this);
   main_->setMargin(0);
   main_->setSpacing(10);
-	QGridLayout	*sub1_ = new QGridLayout(0);
+	QGridLayout	*sub1_ = new QGridLayout();
   sub1_->setMargin(0);
   sub1_->setSpacing(0);
-	QHBoxLayout	*sub2_ = new QHBoxLayout(0);
+	QHBoxLayout	*sub2_ = new QHBoxLayout();
   sub2_->setMargin(0);
   sub2_->setSpacing(10);
 	main_->addLayout(sub1_);
@@ -172,9 +171,11 @@ void KMDriverDbWidget::slotDbLoaded(bool reloaded)
 	{ // do something only if DB reloaded
 		m_manu->clear();
 		m_model->clear();
-		Q3DictIterator< Q3Dict<KMDBEntryList> >	it(KMDriverDB::self()->manufacturers());
-		for (;it.current();++it)
-			m_manu->insertItem(it.currentKey());
+		QHashIterator<QString, QHash<QString, KMDBEntryList*>* >	it(KMDriverDB::self()->manufacturers());
+		while (it.hasNext()) {
+      it.next();
+			m_manu->insertItem(it.key());
+    }
 		m_manu->sort();
 		m_manu->setCurrentItem(0);
 	}
@@ -191,13 +192,15 @@ void KMDriverDbWidget::slotError(const QString& msg)
 void KMDriverDbWidget::slotManufacturerSelected(const QString& name)
 {
 	m_model->clear();
-	Q3Dict<KMDBEntryList>	*models = KMDriverDB::self()->findModels(name);
+	QHash<QString, KMDBEntryList*>	*models = KMDriverDB::self()->findModels(name);
 	if (models)
 	{
 		QStringList	ilist;
-		Q3DictIterator<KMDBEntryList>	it(*models);
-		for (;it.current();++it)
-			ilist.append(QString( it.currentKey().toLatin1() ).toUpper());
+		QHashIterator<QString, KMDBEntryList*>	it(*models);
+		while (it.hasNext()) {
+      it.next();
+			ilist.append(QString( it.key().toLatin1() ).toUpper());
+    }
 		ilist.sort();
 		m_model->insertStringList(ilist);
 		m_model->setCurrentItem(0);

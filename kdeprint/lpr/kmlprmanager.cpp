@@ -44,9 +44,6 @@
 KMLprManager::KMLprManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMManager(parent)
 {
-	m_handlers.setAutoDelete(true);
-	m_entries.setAutoDelete(true);
-
 	m_lpchelper = new LpcHelper(this);
 	m_currentprinter = 0;
 
@@ -63,6 +60,12 @@ KMLprManager::KMLprManager(QObject *parent, const char *name, const QStringList 
 	initHandlers();
 }
 
+KMLprManager::~KMLprManager()
+{
+	qDeleteAll(m_handlers);
+	qDeleteAll(m_entries);
+}
+
 void KMLprManager::listPrinters()
 {
 	QFileInfo	fi(LprSettings::self()->printcapFile());
@@ -74,6 +77,7 @@ void KMLprManager::listPrinters()
 	if (!m_updtime.isValid() || m_updtime < fi.lastModified())
 	{
 		// cleanup previous entries
+		qDeleteAll(m_entries);
 		m_entries.clear();
 		// notify handlers
 		QListIterator<LprHandler*>	hit(m_handlerlist);
@@ -132,7 +136,9 @@ void KMLprManager::insertHandler(LprHandler *handler)
 
 void KMLprManager::initHandlers()
 {
+	qDeleteAll(m_handlers);
 	m_handlers.clear();
+	qDeleteAll(m_handlerlist);
 	m_handlerlist.clear();
 
 	insertHandler(new MaticHandler(this));
@@ -163,7 +169,7 @@ LprHandler* KMLprManager::findHandler(KMPrinter *prt)
 {
 	QString	handlerstr(prt->option("kde-lpr-handler"));
 	LprHandler	*handler(0);
-	if (handlerstr.isEmpty() || (handler = m_handlers.find(handlerstr)) == NULL)
+	if (handlerstr.isEmpty() || (handler = m_handlers.value(handlerstr, 0)) == NULL)
 	{
 		return NULL;
 	}
@@ -172,7 +178,7 @@ LprHandler* KMLprManager::findHandler(KMPrinter *prt)
 
 PrintcapEntry* KMLprManager::findEntry(KMPrinter *prt)
 {
-	PrintcapEntry	*entry = m_entries.find(prt->printerName());
+	PrintcapEntry	*entry = m_entries.value(prt->printerName(), 0);
 	if (!entry)
 	{
 		return NULL;
@@ -235,7 +241,7 @@ DrMain* KMLprManager::loadFileDriver(const QString& filename)
 {
 	int	p = filename.indexOf('/');
 	QString	handler_str = (p != -1 ? filename.left(p) : QLatin1String("default"));
-	LprHandler	*handler = m_handlers.find(handler_str);
+	LprHandler	*handler = m_handlers.value(handler_str, 0);
 	if (handler)
 	{
 		DrMain	*driver = handler->loadDbDriver(filename);
@@ -296,10 +302,11 @@ bool KMLprManager::savePrintcapFile()
 	if (f.open(QIODevice::WriteOnly))
 	{
 		QTextStream	t(&f);
-		Q3DictIterator<PrintcapEntry>	it(m_entries);
-		for (; it.current(); ++it)
+		QHashIterator<QString, PrintcapEntry*>	it(m_entries);
+		while (it.hasNext())
 		{
-			it.current()->writeEntry(t);
+			it.next();
+			it.value()->writeEntry(t);
 		}
 		return true;
 	}
@@ -314,7 +321,7 @@ bool KMLprManager::savePrintcapFile()
 bool KMLprManager::createPrinter(KMPrinter *prt)
 {
 	// remove existing printcap entry
-	PrintcapEntry	*oldEntry = m_entries.find(prt->printerName());
+	PrintcapEntry	*oldEntry = m_entries.value(prt->printerName(), 0);
 
 	// look for the handler and re-create entry
 	LprHandler	*handler(0);
@@ -323,11 +330,11 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	// or we use the handler of the existing printer
 	// (modifying something else, handler stays the same)
 	if (prt->driver())
-		handler = m_handlers.find(prt->driver()->get("handler"));
+		handler = m_handlers.value(prt->driver()->get("handler"), 0);
 	else if (oldEntry)
 		handler = findHandler(prt);
 	else
-		handler = m_handlers.find("default");
+		handler = m_handlers.value("default", 0);
 	if (!handler)
 	{
 		setErrorMsg(i18n("Internal error: no handler defined."));
@@ -358,7 +365,7 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	if (!entry)
 		return false;	// error should be set in the handler
 	// old entry can be removed now
-	m_entries.remove(prt->printerName());
+	delete m_entries.take(prt->printerName());
 	entry->name = prt->printerName();
 	entry->addField("sh", Field::Boolean);
 	entry->addField("mx", Field::Integer, "0");
