@@ -62,7 +62,9 @@ KMWDriverTest::KMWDriverTest(QWidget *parent)
 			 "the <b>Test</b> button to test your configuration. Use the <b>Back</b> "
 			 "button to change the driver (your current configuration will be discarded).</p>"));
 
-	QVBoxLayout	*lay1 = new QVBoxLayout(this, 0, 15);
+	QVBoxLayout	*lay1 = new QVBoxLayout(this);
+	lay1->setMargin(0);
+	lay1->setSpacing(15);
 	QGridLayout	*lay2 = new QGridLayout(0, 3, 3, 0, 0);
 	QHBoxLayout	*lay3 = new QHBoxLayout(0, 0, 10);
 	lay1->addWidget(l0,0);

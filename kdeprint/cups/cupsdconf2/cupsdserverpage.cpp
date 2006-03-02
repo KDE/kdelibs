@@ -111,7 +111,7 @@ CupsdServerPage::CupsdServerPage(QWidget *parent)
 	m1->addWidget(language_, 5, 1);
 	m1->addWidget(printcap_, 6, 1);
 	m1->addWidget(printcapformat_, 7, 1);
-	QHBoxLayout	*m2 = new QHBoxLayout(0);
+	QHBoxLayout	*m2 = new QHBoxLayout();
   m2->setMargin(0);
   m2->setSpacing(5);
 	m1->addLayout(m2, 2, 1);
@@ -119,7 +119,7 @@ CupsdServerPage::CupsdServerPage(QWidget *parent)
 	m2->addWidget(otherclassname_);
 	QWidget	*w = new QWidget(this);
 	w->setFixedWidth(20);
-	QHBoxLayout	*m3 = new QHBoxLayout(0);
+	QHBoxLayout	*m3 = new QHBoxLayout();
   m3->setMargin(0);
   m3->setSpacing(0);
 	m1->addLayout(m3, 3, 1);

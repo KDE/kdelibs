@@ -123,7 +123,9 @@ KPHpgl2Page::KPHpgl2Page(QWidget *parent)
 	m_penwidth->setRange(0, 10000, 100, true);
 	  m_penwidth->setWhatsThis(whatsThisPenwidthHpgl2Page);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this);
+	l0->setMargin(0);
+	l0->setSpacing(10);
 	l0->addWidget(box);
 	l0->addStretch(1);
 

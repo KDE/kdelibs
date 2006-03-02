@@ -66,7 +66,9 @@ KMWSocket::KMWSocket(QWidget *parent)
 	connect( m_scanner, SIGNAL( scanFinished() ), parent, SLOT( enableWizard() ) );
 
 	// layout
-	QHBoxLayout	*lay3 = new QHBoxLayout(this, 0, 10);
+	QHBoxLayout	*lay3 = new QHBoxLayout(this);
+	lay3->setMargin(0);
+	lay3->setSpacing(10);
 	QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 0);
 
 	lay3->addWidget(m_list,1);

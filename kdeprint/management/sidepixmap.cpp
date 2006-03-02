@@ -22,8 +22,8 @@
 #include <qpainter.h>
 #include <kstandarddirs.h>
 
-SidePixmap::SidePixmap(QWidget *parent, const char *name)
-: QFrame(parent, name)
+SidePixmap::SidePixmap(QWidget *parent)
+: QFrame(parent)
 {
 	setLineWidth(1);
 	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);

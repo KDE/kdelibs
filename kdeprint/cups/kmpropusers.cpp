@@ -32,7 +32,9 @@ KMPropUsers::KMPropUsers(QWidget *parent)
 	m_text->setPaper(QColorGroup(palette()).background());
 	m_text->setFrameStyle(QFrame::NoFrame);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 10, 0);
+	QVBoxLayout	*l0 = new QVBoxLayout(this);
+	l0->setMargin(10);
+	l0->setSpacing(0);
 	l0->addWidget(m_text, 1);
 
 	m_title = i18n("Users");

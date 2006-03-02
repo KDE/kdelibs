@@ -41,7 +41,9 @@ KMConfigJobs::KMConfigJobs(QWidget *parent)
 	m_limit->setSpecialValueText(i18n("Unlimited"));
 	m_limit->setLabel(i18n("Maximum number of jobs shown:"));
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	QVBoxLayout	*l0 = new QVBoxLayout(this);
+	l0->setMargin(0);
+	l0->setSpacing(KDialog::spacingHint());
 	l0->addWidget(box, 0);
 	l0->addStretch(1);
 	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), KDialog::spacingHint());

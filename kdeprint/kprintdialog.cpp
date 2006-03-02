@@ -356,7 +356,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l1->addWidget(d->m_dummy,1);
 	l1->addWidget(d->m_plugin,0);
 	l1->addWidget(d->m_persistent);
-	QHBoxLayout	*l2 = new QHBoxLayout(0);
+	QHBoxLayout	*l2 = new QHBoxLayout();
 	l2->setMargin(0);
 	l2->setSpacing(10);
 	l1->addLayout(l2);
@@ -366,12 +366,13 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l2->addStretch(1);
 	l2->addWidget(d->m_ok,0);
 	l2->addWidget(m_cancel,0);
-	QGridLayout	*l3 = new QGridLayout(0);
+	QGridLayout	*l3 = new QGridLayout();
 	m_pbox->layout()->addItem(l3);
 	l3->setMargin(7);
+	l3->setSpacing(0);
 	l3->setColumnStretch(1,1);
 	l3->setRowStretch(0,1);
-	QGridLayout	*l4 = new QGridLayout(0);
+	QGridLayout	*l4 = new QGridLayout();
 	l4->setMargin(0);
 	l4->setSpacing(5);
 	l3->addLayout(l4,0,0,0,1);
@@ -380,7 +381,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l4->addWidget(m_typelabel,2,0);
 	l4->addWidget(m_locationlabel,3,0);
 	l4->addWidget(m_commentlabel,4,0);
-	QHBoxLayout	*ll4 = new QHBoxLayout(0);
+	QHBoxLayout	*ll4 = new QHBoxLayout();
 	ll4->setMargin(0);
 	ll4->setSpacing(3);
 	l4->addLayout(ll4,0,1);
@@ -393,7 +394,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l4->addWidget(d->m_location,3,1);
 	l4->addWidget(d->m_comment,4,1);
 	l4->setColumnStretch(1,1);
-	QVBoxLayout	*l5 = new QVBoxLayout(0);
+	QVBoxLayout	*l5 = new QVBoxLayout();
 	l5->setMargin(0);
 	l5->setSpacing(10);
 	l3->addLayout(l5,0,2);

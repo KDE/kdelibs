@@ -36,7 +36,9 @@ KMConfigCups::KMConfigCups(QWidget *parent)
 
 	m_widget = new KMCupsConfigWidget(this);
 
-	QVBoxLayout *lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	QVBoxLayout *lay0 = new QVBoxLayout(this);
+	lay0->setMargin(0);
+	lay0->setSpacing(KDialog::spacingHint());
 	lay0->addWidget(m_widget);
 	lay0->addStretch(1);
 }

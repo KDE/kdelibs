@@ -74,7 +74,7 @@ CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent)
   m1->setSpacing(7);
 	m1->setRowStretch(7, 1);
 	m1->setColumnStretch(1, 1);
-	QHBoxLayout	*m2 = new QHBoxLayout(0);
+	QHBoxLayout	*m2 = new QHBoxLayout();
 	m1->addLayout(m2, 0, 0, 0, 1);
   m2->setMargin(0);
   m2->setSpacing(10);

@@ -35,7 +35,9 @@ KMWDriver::KMWDriver(QWidget *parent)
 
 	m_widget = new KMDriverDbWidget(this);
 
-	QVBoxLayout	*lay1 = new QVBoxLayout(this, 0, 0);
+	QVBoxLayout	*lay1 = new QVBoxLayout(this);
+	lay1->setMargin(0);
+	lay1->setSpacing(0);
 	lay1->addWidget(m_widget);
 }
 

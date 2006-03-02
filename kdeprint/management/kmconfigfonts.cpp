@@ -76,7 +76,9 @@ KMConfigFonts::KMConfigFonts(QWidget *parent)
 	l1->addLayout(l3);
 	l3->addStretch(1);
 	l3->addWidget(m_add);
-	QVBoxLayout	*l4 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	QVBoxLayout	*l4 = new QVBoxLayout(this);
+	l4->setMargin(0);
+	l4->setSpacing(KDialog::spacingHint());
 	l4->addWidget(box);
 	l4->addWidget(box2);
 

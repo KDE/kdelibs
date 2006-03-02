@@ -46,7 +46,9 @@ KMWDriverSelect::KMWDriverSelect(QWidget *parent)
 	m_drivercomment = new KPushButton(i18n("Driver Information"), this);
 	connect(m_drivercomment, SIGNAL(clicked()), SLOT(slotDriverComment()));
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
+	main_->setMargin(0);
+	main_->setSpacing(10);
 	main_->addWidget(l1,0);
 	main_->addWidget(m_list,1);
 	QHBoxLayout	*lay0 = new QHBoxLayout(0, 0, 0);

@@ -62,7 +62,9 @@ KMWLocal::KMWLocal(QWidget *parent)
 		m_parents[i]->setPixmap(0, SmallIcon("input_devices_settings"));
 	QLabel	*l2 = new QLabel(i18n("<p>Select a valid detected port, or enter directly the corresponding URI in the bottom edit field.</p>"), this);
 
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*lay0 = new QVBoxLayout(this);
+	lay0->setMargin(0);
+	lay0->setSpacing(10);
 	QHBoxLayout	*lay1 = new QHBoxLayout(0, 0, 10);
 	lay0->addWidget(l2, 0);
 	lay0->addWidget(m_ports, 1);

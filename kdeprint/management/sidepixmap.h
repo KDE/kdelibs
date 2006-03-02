@@ -28,7 +28,7 @@
 class KDEPRINT_MANAGEMENT_EXPORT SidePixmap : public QFrame
 {
 public:
-	SidePixmap(QWidget *parent = 0, const char *name = 0);
+	SidePixmap(QWidget *parent = 0);
 	QSize sizeHint() const;
 	bool isValid();
 

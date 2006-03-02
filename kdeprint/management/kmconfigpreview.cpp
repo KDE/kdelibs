@@ -47,7 +47,9 @@ KMConfigPreview::KMConfigPreview(QWidget *parent)
 					  "external PostScript viewer"));
 	lab->setTextFormat(Qt::RichText);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	QVBoxLayout	*l0 = new QVBoxLayout(this);
+	l0->setMargin(0);
+	l0->setSpacing(KDialog::spacingHint());
 	l0->addWidget(box);
 	l0->addStretch(1);
 	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), KDialog::spacingHint());

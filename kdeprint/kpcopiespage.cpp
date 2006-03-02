@@ -222,12 +222,13 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 	l1->setColumnStretch(1,1);
 	l1->addWidget(m_pagebox,0,0);
 	l1->addWidget(m_copybox,0,1);
-	QVBoxLayout	*l3 = new QVBoxLayout(0);
+	QVBoxLayout	*l3 = new QVBoxLayout();
 	l3->setMargin(5);
+	l3->setSpacing(0);
 	m_pagebox->layout()->addItem(l3);
 	l3->addWidget(m_all);
 	l3->addWidget(m_current);
-	QHBoxLayout	*l4 = new QHBoxLayout(0);
+	QHBoxLayout	*l4 = new QHBoxLayout();
 	l4->setMargin(0);
 	l4->setSpacing(5);
 	l3->addLayout(l4);
@@ -235,7 +236,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 	l4->addWidget(m_rangeedit,1);
 	//l3->addWidget(m_rangeexpl);
 	l3->addWidget(sepline);
-	QHBoxLayout	*l2 = new QHBoxLayout(0);
+	QHBoxLayout	*l2 = new QHBoxLayout();
 	l2->setMargin(0);
 	l2->setSpacing(5);
 	l3->addLayout(l2);

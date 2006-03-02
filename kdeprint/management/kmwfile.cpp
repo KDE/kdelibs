@@ -43,7 +43,9 @@ KMWFile::KMWFile(QWidget *parent)
 			 "the browse button for graphical selection.</p>"));
 	QLabel	*l2 = new QLabel(i18n("Print to file:"), this);
 
-	QVBoxLayout	*lay1 = new QVBoxLayout(this, 0, 30);
+	QVBoxLayout	*lay1 = new QVBoxLayout(this);
+	lay1->setMargin(0);
+	lay1->setSpacing(30);
 	QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 5);
 	lay1->addWidget(l1);
 	lay1->addLayout(lay2);

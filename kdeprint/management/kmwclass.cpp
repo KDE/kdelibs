@@ -55,9 +55,9 @@ KMWClass::KMWClass(QWidget *parent)
         QHBoxLayout	*lay1 = new QHBoxLayout(this);
         lay1->setMargin(0);
         lay1->setSpacing(15);
-        QVBoxLayout	*lay2 = new QVBoxLayout(0);
-        QVBoxLayout	*lay3 = new QVBoxLayout(0);
-        QVBoxLayout *lay4 = new QVBoxLayout(0);
+        QVBoxLayout	*lay2 = new QVBoxLayout();
+        QVBoxLayout	*lay3 = new QVBoxLayout();
+        QVBoxLayout *lay4 = new QVBoxLayout();
         lay1->addLayout(lay3, 1);
         lay1->addLayout(lay2, 0);
 	lay1->addLayout(lay4, 1);

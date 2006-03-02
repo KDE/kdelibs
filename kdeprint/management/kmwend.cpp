@@ -35,7 +35,9 @@ KMWEnd::KMWEnd(QWidget *parent)
 
 	m_view = new Q3TextView(this);
 
-	QVBoxLayout	*lay = new QVBoxLayout(this, 0, 0);
+	QVBoxLayout	*lay = new QVBoxLayout(this);
+	lay->setMargin(0);
+	lay->setSpacing(0);
 	lay->addWidget(m_view,1);
 }
 

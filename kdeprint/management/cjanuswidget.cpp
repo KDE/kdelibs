@@ -152,7 +152,7 @@ CJanusWidget::CJanusWidget(QWidget *parent)
 	QHBoxLayout	*main_ = new QHBoxLayout(this);
   main_->setMargin(0);
   main_->setSpacing(10);
-	QVBoxLayout	*sub_ = new QVBoxLayout(0);
+	QVBoxLayout	*sub_ = new QVBoxLayout();
 	main_->addWidget(m_iconlist,0);
 	main_->addLayout(sub_,1);
   sub_->setMargin(0);

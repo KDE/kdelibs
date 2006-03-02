@@ -59,7 +59,7 @@ KMInfoPage::KMInfoPage(QWidget *parent)
 	QGridLayout	*lay0 = new QGridLayout(this);
   lay0->setMargin(0);
   lay0->setSpacing(5);
-	QHBoxLayout	*lay1 = new QHBoxLayout(0);
+	QHBoxLayout	*lay1 = new QHBoxLayout();
   lay1->setMargin(0);
   lay1->setSpacing(10);
 	lay0->setRowStretch(7,0);

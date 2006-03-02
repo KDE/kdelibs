@@ -35,7 +35,7 @@ CupsdSplash::CupsdSplash(QWidget *parent)
 	QVBoxLayout	*main_ = new QVBoxLayout(this );
   main_->setMargin(10);
   main_->setSpacing(10);
-  QHBoxLayout	*sub_ = new QHBoxLayout(0);
+  QHBoxLayout	*sub_ = new QHBoxLayout();
   sub_->setMargin(0);
   sub_->setSpacing(10);
 	main_->addLayout(sub_);

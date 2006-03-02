@@ -38,7 +38,7 @@ KMPropContainer::KMPropContainer(QWidget *parent)
 	QVBoxLayout	*main_ = new QVBoxLayout(this);
   main_->setMargin(0);
   main_->setSpacing(10);
-	QHBoxLayout	*btn_ = new QHBoxLayout(0);
+	QHBoxLayout	*btn_ = new QHBoxLayout();
 	main_->addWidget(sep,0);
 	main_->addLayout(btn_,0);
   btn_->setMargin(0);

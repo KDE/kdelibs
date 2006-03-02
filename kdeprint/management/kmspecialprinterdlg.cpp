@@ -120,7 +120,9 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	m_extension->setWhatsThis(extensionWhatsThis);
 
 	// layout creation
-	QVBoxLayout	*l0 = new QVBoxLayout(dummy, 0, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(dummy);
+	l0->setMargin(0);
+	l0->setSpacing(10);
 	QGridLayout	*l1 = new QGridLayout(0, 3, 3, 0, 5);
 	l0->addLayout(l1);
 	l1->setColStretch(2,1);

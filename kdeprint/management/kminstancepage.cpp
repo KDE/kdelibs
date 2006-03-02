@@ -45,7 +45,9 @@ KMInstancePage::KMInstancePage(QWidget *parent)
 
 	initActions();
 
-	QHBoxLayout	*main_ = new QHBoxLayout(this, 0, 0);
+	QHBoxLayout	*main_ = new QHBoxLayout(this);
+	main_->setMargin(0);
+	main_->setSpacing(0);
 	main_->addWidget(m_view);
 	QVBoxLayout	*sub_ = new QVBoxLayout(0, 0, 0);
 	main_->addLayout(sub_);
@@ -72,7 +74,7 @@ KMInstancePage::~KMInstancePage()
 
 void KMInstancePage::addButton(const QString& txt, const QString& pixmap, const char *receiver)
 {
-	QPushButton	*btn = new QPushButton(this, 0L);
+	QPushButton	*btn = new QPushButton(this);
 	btn->setText(txt);
 	btn->setIcon(BarIconSet(pixmap));
 	btn->setFlat(true);

@@ -173,7 +173,9 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_comment->setTextFormat( Qt::PlainText );
 	QLabel *m_commentlab = new QLabel( i18n( "Comment:" ), this );
 
-	QVBoxLayout	*l2 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	QVBoxLayout	*l2 = new QVBoxLayout(this);
+	l2->setMargin(0);
+	l2->setSpacing(KDialog::spacingHint());
 	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, KDialog::spacingHint());
 	QVBoxLayout	*l7 = new QVBoxLayout(0, 0, 0);
 	l2->addLayout(l3, 0);
@@ -214,7 +216,9 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	l1->addMultiCellWidget(gb, 7, 7, 0, 1);
 	l1->setRowStretch(8, 1);
 
-	QHBoxLayout	*l4 = new QHBoxLayout(w2, 0, KDialog::spacingHint());
+	QHBoxLayout	*l4 = new QHBoxLayout(w2);
+	l4->setMargin(0);
+	l4->setSpacing(KDialog::spacingHint());
 	l4->addWidget(m_values);
 	QVBoxLayout	*l6 = new QVBoxLayout(0, 0, 0);
 	l4->addLayout(l6);
@@ -872,7 +876,9 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 
 	KSeparator	*sep1 = new KSeparator(dummy);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(topmain, 0, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(topmain);
+	l0->setMargin(0);
+	l0->setSpacing(10);
 	QGridLayout	*l5 = new QGridLayout(0, 2, 2, 0, 5);
 	l0->addLayout(l5);
 	l5->addWidget(m_idnamelab, 0, 0);
@@ -885,7 +891,9 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	l3->addWidget(m_edit);
 	l3->addStretch(1);
 
-	QVBoxLayout	*l7 = new QVBoxLayout(dummy, 0, 10);
+	QVBoxLayout	*l7 = new QVBoxLayout(dummy);
+	l7->setMargin(0);
+	l7->setSpacing(10);
 	QHBoxLayout	*l6 = new QHBoxLayout(0, 0, 5);
 	l7->addWidget(sep1);
 	l7->addLayout(l6);

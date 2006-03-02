@@ -43,6 +43,8 @@ KMWInfoPage::KMWInfoPage(QWidget *parent)
 		"<p align=right><a href=\"http://printing.kde.org\"><i>"
 		"The KDE printing team</i></a>.</p>"));
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 0);
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
+	main_->setMargin(0);
+	main_->setSpacing(0);
 	main_->addWidget(m_label);
 }

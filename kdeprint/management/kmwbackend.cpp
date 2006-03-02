@@ -36,11 +36,11 @@
 class KRadioButton : public QRadioButton
 {
 public:
-	KRadioButton(const QString& txt, QWidget *parent = 0, const char *name = 0);
+	KRadioButton(const QString& txt, QWidget *parent = 0);
 };
 
-KRadioButton::KRadioButton(const QString& txt, QWidget *parent, const char *name)
-: QRadioButton(txt,parent,name)
+KRadioButton::KRadioButton(const QString& txt, QWidget *parent)
+: QRadioButton(txt,parent)
 {
 	setCursor(KCursor::handCursor());
 }
@@ -56,7 +56,9 @@ KMWBackend::KMWBackend(QWidget *parent)
 	m_buttons = new Q3ButtonGroup(this);
 	m_buttons->hide();
 
-	m_layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	m_layout = new QVBoxLayout(this);
+	m_layout->setMargin(0);
+	m_layout->setSpacing(KDialog::spacingHint());
 	m_layout->addStretch(1);
 	m_count = 0;
 }

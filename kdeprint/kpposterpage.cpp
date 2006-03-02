@@ -221,7 +221,9 @@ KPPosterPage::KPPosterPage( QWidget *parent )
 		printlab->hide();
 	}
 
-	QVBoxLayout *l0 = new QVBoxLayout( this, 0, 10 );
+	QVBoxLayout *l0 = new QVBoxLayout( this );
+	l0->setMargin( 0 );
+	l0->setSpacing( 10 );
 	l0->addWidget( m_postercheck );
 	l0->addWidget( dummy, 1 );
 	QGridLayout *l1 = new QGridLayout( dummy, 8, 3, 0, 5 );

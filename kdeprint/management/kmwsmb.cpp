@@ -49,7 +49,9 @@ KMWSmb::KMWSmb(QWidget *parent)
 	m_server = new QLineEdit(this);
 	m_printer = new QLineEdit(this);
 
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*lay0 = new QVBoxLayout(this);
+	lay0->setMargin(0);
+	lay0->setSpacing(10);
 	QGridLayout	*lay1 = new QGridLayout(0, 3, 2, 0, 10);
 	QHBoxLayout	*lay3 = new QHBoxLayout(0, 0, 10);
 	lay0->addLayout(lay1,0);

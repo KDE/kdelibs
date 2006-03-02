@@ -87,7 +87,9 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	}
 
 	// layout
-	QVBoxLayout *main0_ = new QVBoxLayout(this, 10, 10);
+	QVBoxLayout *main0_ = new QVBoxLayout(this);
+	main0_->setMargin(10);
+	main0_->setSpacing(10);
 	QVBoxLayout	*main_ = new QVBoxLayout(0, 0, 0);
 	QHBoxLayout *main1_ = new QHBoxLayout(0, 0, 10);
 	QHBoxLayout	*btn_ = new QHBoxLayout(0, 0, 10);

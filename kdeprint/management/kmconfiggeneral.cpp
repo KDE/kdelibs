@@ -55,7 +55,8 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 				      "and the job viewer."));
 
 	Q3GroupBox	*m_testpagebox = new Q3GroupBox(0, Qt::Vertical, i18n("Test Page"), this);
-	m_defaulttestpage = new QCheckBox(i18n("&Specify personal test page"), m_testpagebox, "TestPageCheck");
+	m_defaulttestpage = new QCheckBox(i18n("&Specify personal test page"), m_testpagebox);
+	m_defaulttestpage->setObjectName(QLatin1String("TestPageCheck"));
 	m_testpage = new KUrlRequester(m_testpagebox);
 	m_preview = new KPushButton(KGuiItem(i18n("Preview..."), "filefind"), m_testpagebox);
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),m_testpage,SLOT(setEnabled(bool)));
@@ -71,7 +72,9 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_uselast = new QCheckBox(i18n("De&faults to the last printer used in the application"), m_statusbox);
 
 	//layout
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	QVBoxLayout	*lay0 = new QVBoxLayout(this);
+	lay0->setMargin(0);
+	lay0->setSpacing(KDialog::spacingHint());
 	lay0->addWidget(m_timerbox);
 	lay0->addWidget(m_testpagebox);
 	lay0->addWidget(m_statusbox);

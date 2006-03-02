@@ -61,7 +61,9 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
 	lab->setTextFormat(Qt::RichText);
 	QLabel	*lab1 = new QLabel(i18n("Location filter:"), box);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	QVBoxLayout	*l0 = new QVBoxLayout(this);
+	l0->setMargin(0);
+	l0->setSpacing(KDialog::spacingHint());
 	l0->addWidget(box, 1);
 	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), KDialog::spacingHint());
 	l1->addWidget(lab);

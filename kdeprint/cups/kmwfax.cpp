@@ -41,7 +41,9 @@ KMWFax::KMWFax(QWidget *parent)
 	lab->setText(i18n("<p>Select the device which your serial Fax/Modem is connected to.</p>"));
 	m_list = new KListBox(this);
 
-	QVBoxLayout	*l1 = new QVBoxLayout(this,0,10);
+	QVBoxLayout	*l1 = new QVBoxLayout(this);
+	l1->setMargin(0);
+	l1->setSpacing(10);
 	l1->addWidget(lab,0);
 	l1->addWidget(m_list,1);
 

@@ -78,7 +78,9 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent)
 	connect(m_ippreport, SIGNAL(clicked()), SLOT(slotIppReport()));
 
 	// layout
-	QHBoxLayout	*lay3 = new QHBoxLayout(this, 0, 10);
+	QHBoxLayout	*lay3 = new QHBoxLayout(this);
+	lay3->setMargin(0);
+	lay3->setSpacing(10);
 	QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 0);
 	QHBoxLayout	*lay4 = new QHBoxLayout(0, 0, 0);
 

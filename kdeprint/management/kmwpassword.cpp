@@ -67,7 +67,9 @@ KMWPassword::KMWPassword(QWidget *parent)
 	connect(btn3,SIGNAL(toggled(bool)),m_password,SLOT(setEnabled(bool)));
 
 	// layout
-	QVBoxLayout *main_ = new QVBoxLayout( this, 0, 0 );
+	QVBoxLayout *main_ = new QVBoxLayout( this );
+	main_->setMargin( 0 );
+	main_->setSpacing( 0 );
 	main_->addWidget( infotext_ );
 	main_->addSpacing( 10 );
 	main_->addWidget( m_btngroup );

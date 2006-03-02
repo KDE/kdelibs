@@ -32,7 +32,9 @@ KMPropMembers::KMPropMembers(QWidget *parent)
 	m_members->setPaper(QColorGroup(palette()).background());
 	m_members->setFrameStyle(QFrame::NoFrame);
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 10, 0);
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
+	main_->setMargin(10);
+	main_->setSpacing(0);
 	main_->addWidget(m_members);
 
 	m_pixmap = "kdeprint_printer_class";

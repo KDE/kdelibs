@@ -67,10 +67,10 @@ OptionNumericView::OptionNumericView(QWidget *parent)
 	QVBoxLayout	*main_ = new QVBoxLayout(this);
   main_->setMargin(0);
   main_->setSpacing(10);
-	QHBoxLayout	*sub_ = new QHBoxLayout(0);
+	QHBoxLayout	*sub_ = new QHBoxLayout();
   sub_->setMargin(0);
   sub_->setSpacing(10);
-	QHBoxLayout	*sub2_ = new QHBoxLayout(0);
+	QHBoxLayout	*sub2_ = new QHBoxLayout();
   sub2_->setMargin(0);
   sub2_->setSpacing(5);
 	main_->addStretch(1);
@@ -321,8 +321,9 @@ DrOptionView::DrOptionView(QWidget *parent, const char *name)
 	setColumnLayout(0, Qt::Vertical );
 	layout()->setSpacing( KDialog::spacingHint() );
 	layout()->setMargin( KDialog::marginHint() );
-	QVBoxLayout	*main_ = new QVBoxLayout(0);
+	QVBoxLayout	*main_ = new QVBoxLayout();
 	main_->setMargin(KDialog::marginHint());
+	main_->setSpacing(0);
 	main_->addWidget(m_stack);
 	layout()->addItem(main_);
 

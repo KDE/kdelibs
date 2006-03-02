@@ -46,7 +46,9 @@ KMWUsers::KMWUsers(QWidget *parent)
 
 	lab2->setBuddy(m_type);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this);
+	l0->setMargin(0);
+	l0->setSpacing(10);
 	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 10);
 	l0->addWidget(lab1, 0);
 	l0->addLayout(l1, 0);

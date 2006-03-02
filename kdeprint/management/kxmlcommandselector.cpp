@@ -64,7 +64,9 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 	m_usefilter = 0;
 	QPushButton	*m_browse = 0;
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this);
+	l0->setMargin(0);
+	l0->setSpacing(10);
 
 	if (canBeNull)
 	{

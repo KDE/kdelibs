@@ -84,7 +84,9 @@ KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent)
 	m_passwordlabel->setBuddy(m_password);
 
 	// layout creation
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, 10);
+	QVBoxLayout	*lay0 = new QVBoxLayout(this);
+	lay0->setMargin(0);
+	lay0->setSpacing(10);
 	lay0->addWidget(m_hostbox,1);
 	lay0->addWidget(m_loginbox,1);
 	QGridLayout	*lay2 = new QGridLayout(m_hostbox->layout(), 2, 2, 10);

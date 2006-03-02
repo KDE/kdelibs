@@ -42,7 +42,9 @@ KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
 	m_stddir = new QCheckBox(i18n("Standard installation (/)"), m_dirbox);
 	m_stddir->setCursor(KCursor::handCursor());
 
-	QVBoxLayout *lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
+	QVBoxLayout *lay0 = new QVBoxLayout(this);
+	lay0->setMargin(0);
+	lay0->setSpacing(KDialog::spacingHint());
 	lay0->addWidget(m_dirbox);
 	lay0->addStretch(1);
 	QVBoxLayout *lay1 = new QVBoxLayout(m_dirbox->layout(), 10);

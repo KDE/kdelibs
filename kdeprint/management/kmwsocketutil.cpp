@@ -85,7 +85,7 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	QGridLayout	*main_ = new QGridLayout(dummy);
   main_->setMargin(0);
   main_->setSpacing(10);
-	QHBoxLayout	*lay1 = new QHBoxLayout(0);
+	QHBoxLayout	*lay1 = new QHBoxLayout();
 	main_->addWidget(masklabel, 0, 0);
 	main_->addWidget(portlabel, 1, 0);
 	main_->addWidget(toutlabel, 2, 0);
