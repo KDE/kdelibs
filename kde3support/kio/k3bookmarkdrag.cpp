@@ -38,7 +38,7 @@ K3BookmarkDrag * K3BookmarkDrag::newDrag( const Q3ValueList<KBookmark> & bookmar
     // Get each URL encoded in utf8 - and since we get it in escaped
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
-        uris.append( K3URLDrag::urlToString(*uit).latin1() );
+        uris.append( K3URLDrag::urlToString(*uit).toLatin1() );
 
     return new K3BookmarkDrag( bookmarks, uris, dragSource, name );
 }
@@ -154,7 +154,7 @@ Q3ValueList<KBookmark> K3BookmarkDrag::decode( const QMimeSource * e )
         if(Q3TextDrag::decode( e, s ))
         {
             
-            QStringList listDragURLs = QStringList::split(QChar('\n'), s);
+            QStringList listDragURLs = s.split(QChar('\n'), QString::SkipEmptyParts);
             QStringList::ConstIterator it = listDragURLs.begin();
             QStringList::ConstIterator end = listDragURLs.end();
             for( ; it!=end; ++it)

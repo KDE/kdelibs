@@ -65,7 +65,7 @@ QByteArray K3ColorDrag::encodedData ( const char * m ) const
      {
         QColor color;
         Q3ColorDrag::decode(const_cast<K3ColorDrag *>(this), color);
-        QByteArray result = color.name().latin1();
+        QByteArray result = color.name().toLatin1();
         result.resize(result.length());
         return result;
      }

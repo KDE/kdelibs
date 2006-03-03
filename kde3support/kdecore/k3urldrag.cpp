@@ -136,7 +136,7 @@ bool K3URLDrag::decode( const QMimeSource *e, KUrl::List &uris, QMap<QString,QSt
         if ( ba.size() )
         {
             QString s = ba.data();
-            QStringList l = QStringList::split( "$@@$", s );
+            QStringList l = s.split( "$@@$", QString::SkipEmptyParts );
             QStringList::ConstIterator it = l.begin();
             bool readingKey = true; // true, then false, then true, etc.
             QString key;
@@ -209,19 +209,19 @@ QByteArray K3URLDrag::encodedData( const char* mime ) const
         a.resize( s.length());
         memcpy( a.data(), s.data(), s.length()); // no trailing zero in clipboard text
     }
-    else if ( mimetype.lower() == "text/plain;charset=iso-8859-1")
+    else if ( mimetype.toLower() == "text/plain;charset=iso-8859-1")
     {
         QStringList uris;
         for (Q3StrListIterator it(m_urls); *it; ++it)
            uris.append(stringToUrl(*it).url(0)); // was using ",4" - the mib for latin1
 
-        QByteArray s = uris.join( "\n" ).latin1();
+        QByteArray s = uris.join( "\n" ).toLatin1();
         if( uris.count() > 1 )
             s.append( "\n" );
         a.resize( s.length());
         memcpy( a.data(), s.data(), s.length());
     }
-    else if ( mimetype.lower() == "text/plain;charset=utf-8")
+    else if ( mimetype.toLower() == "text/plain;charset=utf-8")
     {
         QStringList uris;
         for (Q3StrListIterator it(m_urls); *it; ++it)

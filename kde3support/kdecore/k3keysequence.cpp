@@ -92,7 +92,7 @@ bool K3KeySequence::init( const QString& s )
 {
 	m_bTriggerOnRelease = false;
 	//kDebug(125) << "K3KeySequence::init( " << s << " )" << endl;
-	QStringList rgs = QStringList::split( ',', s );
+	QStringList rgs = s.split( ',', QString::SkipEmptyParts );
 	if( s == "none" || rgs.size() == 0 ) {
 		clear();
 		return true;

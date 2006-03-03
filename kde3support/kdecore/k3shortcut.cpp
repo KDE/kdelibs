@@ -91,7 +91,7 @@ bool K3Shortcut::init( const K3Shortcut& cut )
 bool K3Shortcut::init( const QString& s )
 {
 	bool bRet = true;
-	QStringList rgs = QStringList::split( ';', s );
+	QStringList rgs = s.split( ';', QString::SkipEmptyParts );
 
 	if( s == "none" || rgs.size() == 0 )
 		clear();
