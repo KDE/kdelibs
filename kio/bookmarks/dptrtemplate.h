@@ -22,7 +22,7 @@
 #ifndef __dptrtemplate_h__
 #define __dptrtemplate_h__
 
-#include <q3ptrdict.h>
+#include <qhash.h>
 
 template<class Instance, class PrivateData>
 class dPtrTemplate {
@@ -31,27 +31,30 @@ public:
     {
         if ( !d_ptr ) {
             cleanup_d_ptr();
-            d_ptr = new Q3PtrDict<PrivateData>;
+            d_ptr = new QHash<const Instance*, PrivateData*>();
             qAddPostRoutine( cleanup_d_ptr );
         }
-        PrivateData* ret = d_ptr->find( (void*) instance );
-        if ( ! ret ) {
+        PrivateData* ret = d_ptr->value( instance );
+        if ( !ret ) {
             ret = new PrivateData;
-            d_ptr->replace( (void*) instance, ret );
+            d_ptr->insert( instance, ret );
         }
         return ret;
     }
     static void delete_d( const Instance* instance )
     {
-        if ( d_ptr )
-            d_ptr->remove( (void*) instance );
+		if ( d_ptr )
+            delete d_ptr->take( instance );
     }
 private:
     static void cleanup_d_ptr()
     {
-        delete d_ptr;
+        QHashIterator<const Instance*, PrivateData*> it(*d_ptr);
+		while( it.hasNext() )
+			delete it.value();
+		delete d_ptr;
     }
-    static Q3PtrDict<PrivateData>* d_ptr;
+    static QHash<const Instance*, PrivateData*>* d_ptr;
 };
 
 #endif

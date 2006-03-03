@@ -21,7 +21,7 @@
 #ifndef __KPREVIEWWIDGETBASE_H__
 #define __KPREVIEWWIDGETBASE_H__
 
-#include <q3ptrdict.h>
+#include <qhash.h>
 #include <qwidget.h>
 
 #include <kdelibs_export.h>
@@ -83,9 +83,9 @@ protected:
 private:
     class KPreviewWidgetBasePrivate;
     KPreviewWidgetBasePrivate * d() const {
-        return s_private->find( const_cast<KPreviewWidgetBase*>( this ) );
+        return s_private->value( const_cast<KPreviewWidgetBase*>( this ) );
     }
-    static Q3PtrDict<KPreviewWidgetBasePrivate> * s_private;
+    static QHash<KPreviewWidgetBase*, KPreviewWidgetBase::KPreviewWidgetBasePrivate*> * s_private;
 };
 
 #endif

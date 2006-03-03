@@ -137,8 +137,6 @@ class KIO_EXPORT KDirOperator : public QWidget
      * Stops loading immediately. You don't need to call this, usually.
      */
     void close();
-    /// Reimplemented to avoid "hidden virtual" warnings
-    virtual bool close( bool alsoDelete ) { return QWidget::close( alsoDelete ); }
 
     /**
      * Sets a filter like "*.cpp *.h *.o". Only files matching that filter

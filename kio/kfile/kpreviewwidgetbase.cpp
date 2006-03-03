@@ -15,20 +15,20 @@ public:
     QStringList supportedMimeTypes;
 };
 
-Q3PtrDict<KPreviewWidgetBase::KPreviewWidgetBasePrivate> * KPreviewWidgetBase::s_private;
+QHash<KPreviewWidgetBase*, KPreviewWidgetBase::KPreviewWidgetBasePrivate*> * KPreviewWidgetBase::s_private;
 
 KPreviewWidgetBase::KPreviewWidgetBase( QWidget *parent )
     : QWidget( parent )
 {
     if ( !s_private )
-        s_private = new Q3PtrDict<KPreviewWidgetBasePrivate>();
+        s_private = new QHash<KPreviewWidgetBase*, KPreviewWidgetBasePrivate*>();
 
     s_private->insert( this, new KPreviewWidgetBasePrivate() );
 }
 
 KPreviewWidgetBase::~KPreviewWidgetBase()
 {
-    s_private->remove( this );
+    delete s_private->take( this );
     if ( s_private->isEmpty() )
     {
         delete s_private;

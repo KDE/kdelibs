@@ -3220,7 +3220,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
         }
         else
         {
-           majorGroup = mit.data();
+           majorGroup = mit.value();
         }
 
         Q3ListViewItem *item = new Q3ListViewItem(majorGroup, min, (*it)->comment());
@@ -3229,8 +3229,8 @@ void KDesktopPropsPlugin::slotAddFiletype()
      QMap<QString,Q3ListViewItem*>::iterator mit = majorMap.find( "all" );
      if ( mit != majorMap.end())
      {
-        mw->listView->setCurrentItem(mit.data());
-        mw->listView->ensureItemVisible(mit.data());
+        mw->listView->setCurrentItem(mit.value());
+        mw->listView->ensureItemVisible(mit.value());
      }
   }
 

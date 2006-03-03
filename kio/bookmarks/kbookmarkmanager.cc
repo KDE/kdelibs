@@ -47,7 +47,7 @@ public:
     QString m_editorCaption;
     bool m_browserEditor;
 };
-template<> Q3PtrDict<KBookmarkManagerPrivate>* dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate>::d_ptr = 0;
+template<> QHash<const KBookmarkManager*, KBookmarkManagerPrivate*>* dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate>::d_ptr = 0;
 
 KBookmarkManagerPrivate* KBookmarkManager::dptr() const {
     return KBookmarkManagerPrivate::d( this );

@@ -168,12 +168,13 @@ QString KBookmarkMenu::s_highlightedImportLocation;
 
 void KBookmarkMenu::slotActionHighlighted( KAction* action )
 {
-  if (action->isA("KBookmarkActionMenu") || action->isA("KBookmarkAction"))
+  if ((action->metaObject()->className() == "KBookmarkActionMenu") ||
+      (action->metaObject()->className() == "KBookmarkAction"))
   {
     s_highlightedAddress = action->property("address").toString();
     //kDebug() << "KBookmarkMenu::slotActionHighlighted" << s_highlightedAddress << endl;
   }
-  else if (action->isA("KImportedBookmarksActionMenu"))
+  else if (action->metaObject()->className() == "KImportedBookmarksActionMenu")
   {
     s_highlightedImportType = action->property("type").toString();
     s_highlightedImportLocation = action->property("location").toString();
@@ -193,7 +194,7 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
 // TODO use d pointer instead - or add a pointer for the RMB instance.
 
 class KBookmarkMenuRMBAssoc : public dPtrTemplate<KBookmarkMenu, RMB> { };
-template<> Q3PtrDict<RMB>* dPtrTemplate<KBookmarkMenu, RMB>::d_ptr = 0;
+template<> QHash<const KBookmarkMenu*, RMB*>* dPtrTemplate<KBookmarkMenu, RMB>::d_ptr = 0;
 
 static RMB* rmbSelf(KBookmarkMenu *m) { return KBookmarkMenuRMBAssoc::d(m); }
 
