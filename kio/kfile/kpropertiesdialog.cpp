@@ -388,7 +388,7 @@ void KPropertiesDialog::slotOk()
   d->m_aborted = false;
 
   KFilePropsPlugin * filePropsPlugin = 0L;
-  if ( m_pageList.first()->isA("KFilePropsPlugin") )
+  if ( m_pageList.first()->metaObject()->className() == QLatin1String( "KFilePropsPlugin" ) )
     filePropsPlugin = static_cast<KFilePropsPlugin *>(m_pageList.first());
 
   // If any page is dirty, then set the main one (KFilePropsPlugin) as
@@ -408,12 +408,12 @@ void KPropertiesDialog::slotOk()
   for ( page = m_pageList.first(); page != 0L && !d->m_aborted; page = m_pageList.next() )
     if ( page->isDirty() )
     {
-      kDebug( 250 ) << "applying changes for " << page->className() << endl;
+      kDebug( 250 ) << "applying changes for " << page->metaObject()->className() << endl;
       page->applyChanges();
       // applyChanges may change d->m_aborted.
     }
     else
-      kDebug( 250 ) << "skipping page " << page->className() << endl;
+      kDebug( 250 ) << "skipping page " << page->metaObject()->className() << endl;
 
   if ( !d->m_aborted && filePropsPlugin )
     filePropsPlugin->postApplyChanges();
@@ -542,15 +542,17 @@ void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
   assert(!m_singleUrl.isEmpty());
   // If we have an Desktop page, set it dirty, so that a full file is saved locally
   // Same for a URL page (because of the Name= hack)
-  for ( Q3PtrListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it )
-   if ( it.current()->isA("KExecPropsPlugin") || // KDE4 remove me
-        it.current()->isA("KUrlPropsPlugin") ||
-        it.current()->isA("KDesktopPropsPlugin"))
+  for ( Q3PtrListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it ) {
+   QString cname = it.current()->metaObject()->className();
+   if ( (cname == "KExecPropsPlugin") || // KDE4 remove me
+        (cname == "KUrlPropsPlugin") ||
+        (cname == "KDesktopPropsPlugin") )
    {
      //kDebug(250) << "Setting page dirty" << endl;
      it.current()->setDirty();
      break;
    }
+  }
 }
 
 void KPropertiesDialog::rename( const QString& _name )
@@ -684,7 +686,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 {
   d->bMultiple = (properties->items().count() > 1);
   d->bIconChanged = false;
-  d->bKDesktopMode = (QByteArray(qApp->name()) == "kdesktop"); // nasty heh?
+  d->bKDesktopMode = (qApp->objectName() == "kdesktop");
   d->bDesktopFile = KDesktopPropsPlugin::supports(properties->items());
   kDebug(250) << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple << endl;
 
@@ -1382,7 +1384,8 @@ void KFilePropsPlugin::applyIconChanges()
 {
   // handle icon changes - only local files for now
   // TODO: Use KTempFile and KIO::file_copy with overwrite = true
-  if (iconArea->isA("KIconButton") && properties->kurl().isLocalFile()) {
+  if (iconArea->metaObject()->className() == QLatin1String("KIconButton") &&
+      properties->kurl().isLocalFile()) {
     KIconButton *iconButton = (KIconButton *) iconArea;
     QString path;
 
@@ -3059,7 +3062,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   w = new KPropertiesDesktopBase(frame);
   mainlayout->addWidget(w);
 
-  bool bKDesktopMode = (QByteArray(qApp->name()) == "kdesktop"); // nasty heh?
+  bool bKDesktopMode = (qApp->objectName() == "kdesktop");
 
   if (bKDesktopMode)
   {
@@ -3841,7 +3844,7 @@ class KApplicationPropsPlugin::KApplicationPropsPluginPrivate
 public:
   KApplicationPropsPluginPrivate()
   {
-      m_kdesktopMode = QByteArray(qApp->name()) == "kdesktop"; // nasty heh?
+      m_kdesktopMode = (qApp->objectName() == "kdesktop");
   }
   ~KApplicationPropsPluginPrivate()
   {
