@@ -605,9 +605,14 @@ QString KUrl::encodedPathAndQuery( int _trailing, bool _no_empty_path ) const
      tmp = QLatin1String( QUrl::toPercentEncoding( tmp, "!$&'()*+,;=:@/" ) );
   }
 
-  // Qt-4.2 TODO: if (hasQuery())
+#if defined( QT_KDE_QT_COPY ) || QT_VERSION >= 0x040200
+  if (hasQuery())
+#else
   if (!query().isEmpty())
+#endif
+  {
       tmp += query(); // includes the '?'
+  }
   return tmp;
 }
 
@@ -841,6 +846,7 @@ KUrl KUrl::fromMimeDataByteArray( const QByteArray& str )
 KUrl::List KUrl::split( const KUrl& _url )
 {
   QString ref;
+  bool hasRef;
   KUrl::List lst;
   KUrl url = _url;
 
@@ -856,15 +862,23 @@ KUrl::List KUrl::split( const KUrl& _url )
      else
      {
         ref = url.fragment();
+#if defined( QT_KDE_QT_COPY ) || QT_VERSION >= 0x040200
+        hasRef = url.hasFragment();
+#else
+        hasRef = !ref.isEmpty();
+#endif
         break;
      }
   }
 
-  // Set HTML ref in all URLs.
-  KUrl::List::Iterator it;
-  for( it = lst.begin() ; it != lst.end(); ++it )
+  if ( hasRef )
   {
-     (*it).setFragment( ref );
+    // Set HTML ref in all URLs.
+    KUrl::List::Iterator it;
+    for( it = lst.begin() ; it != lst.end(); ++it )
+    {
+      (*it).setFragment( ref );
+    }
   }
 
   return lst;
@@ -1178,30 +1192,29 @@ void KUrl::setDirectory( const QString &dir)
 
 void KUrl::setQuery( const QString &_txt )
 {
-   if (!_txt.isEmpty() && _txt[0] == '?')
-      _setQuery( _txt.length() > 1 ? _txt.mid(1) : "" /*empty, not null*/ );
-   else
-      _setQuery( _txt );
+  if (!_txt.isEmpty() && _txt[0] == '?')
+    _setQuery( _txt.length() > 1 ? _txt.mid(1) : "" /*empty, not null*/ );
+  else
+    _setQuery( _txt );
 }
 
 void KUrl::_setQuery( const QString& query )
 {
-    setEncodedQuery( query.isNull() ? QByteArray() : query.toLatin1() ); // ### TODO encoding ok?
+  setEncodedQuery( query.isNull() ? QByteArray() : query.toLatin1() ); // ### TODO encoding ok?
 }
 
 QString KUrl::query() const
 {
-    // For now we'll ignore the case of "a query but it's empty", waiting for Qt-4.2
-    const bool hasQuery = !encodedQuery().isEmpty();
-#if QT_VERSION >= 0x040200
-#ifdef __GNUC__
-#warning Qt-4.2, use QUrl::hasQuery()
+#if defined( QT_KDE_QT_COPY ) || QT_VERSION >= 0x040200
+  if (!hasQuery())
+#else
+  // For now we'll ignore the case of "a query but it's empty", waiting for Qt-4.2
+  if (query().isEmpty())
 #endif
-#endif
-
-    if ( !hasQuery )
-        return QString();
-    return QString( QChar( '?' ) ) + QString::fromAscii( encodedQuery() );
+  {
+    return QString();
+  }
+  return QString( QChar( '?' ) ) + QString::fromAscii( encodedQuery() );
 }
 
 bool urlcmp( const QString& _url1, const QString& _url2 )
@@ -1474,13 +1487,18 @@ void KUrl::populateMimeData( QMimeData* mimeData,
 
 bool KUrl::hasRef() const
 {
-#if QT_VERSION < 0x040200
-    // For now we'll ignore the case of "a fragment but it's empty", waiting for Qt-4.2
-    return !fragment().isEmpty();
+#if defined( QT_KDE_QT_COPY ) || QT_VERSION >= 0x040200
+  return hasFragment();
 #else
-#ifdef __GNUC__
-#warning Qt-4.2, return QUrl::hasFragment()
+  // For now we'll ignore the case of "a fragment but it's empty", waiting for Qt-4.2
+  return !fragment().isEmpty();
 #endif
-    return !fragment().isNull();
-#endif
+}
+
+void KUrl::setRef( const QString& fragment )
+{
+  if ( fragment.isNull() )
+    setFragment( fragment ); // pass null, not empty
+  else
+    setFragment( QUrl::fromPercentEncoding( fragment.toLatin1() ) );
 }

@@ -418,9 +418,10 @@ public:
 
   /**
    * Sets the reference part (everything after '#').
+   * If you have an encoded fragment already (as a QByteArray), you can call setFragment directly.
    * @param fragment the encoded reference (or QString() to remove it).
    */
-  void setRef( const QString& fragment ) { setFragment( QUrl::fromPercentEncoding( fragment.toLatin1() ) ); }
+  void setRef( const QString& fragment );
 
   /**
    * Checks whether the URL has a reference part.
