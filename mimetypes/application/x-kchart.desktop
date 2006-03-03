@@ -5,8 +5,6 @@ MimeType=application/x-kchart
 Icon=kchart_chrt
 Patterns=*.chrt;
 Comment=KChart 1.x Document
-Comment[fr]=Document KChart
-Comment[x-test]=xxKChart Documentxx
 X-KDE-AutoEmbed=false
 [Property::X-KDE-NativeExtension]
 Type=QString
