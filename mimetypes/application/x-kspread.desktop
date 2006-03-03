@@ -5,7 +5,7 @@ MimeType=application/x-kspread
 Icon=kspread_ksp
 Patterns=*.ksp;
 X-KDE-AutoEmbed=false
-Comment=KSpread Document
+Comment=KSpread 1.x Document
 Comment[fr]=Document KSpread
 Comment[x-test]=xxKSpread Documentxx
 [Property::X-KDE-NativeExtension]

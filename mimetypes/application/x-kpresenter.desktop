@@ -5,7 +5,7 @@ MimeType=application/x-kpresenter
 Icon=kpresenter_kpr
 Patterns=*.kpr;*.kpt;
 X-KDE-AutoEmbed=false
-Comment=KPresenter Document
+Comment=KPresenter 1.x Document
 Comment[fr]=Document KPresenter
 Comment[x-test]=xxKPresenter Documentxx
 [Property::X-KDE-NativeExtension]
