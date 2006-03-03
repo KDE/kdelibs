@@ -732,6 +732,8 @@ public:
     virtual long maxOffset() const { return 0; }
 
     virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *);
+    
+    QRegion visibleFlowRegion(int x, int y) const;
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
@@ -739,7 +741,7 @@ protected:
     virtual QRect viewRect() const;
     void remove();
     void invalidateVerticalPositions();
-
+    void updateWidgetMasks();
 
     virtual void removeLeftoverAnonymousBoxes();
 

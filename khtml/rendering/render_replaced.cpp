@@ -23,6 +23,7 @@
  *
  */
 #include "render_replaced.h"
+#include "render_layer.h"
 #include "render_canvas.h"
 #include "render_line.h"
 
@@ -235,9 +236,14 @@ void RenderWidget::layout( )
 {
     KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
-    if ( m_widget )
+    if ( m_widget ) {
         resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                       m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
+        if (strcmp(widget()->name(), "__khtml") && !isPositioned()) {
+            enclosingLayer()->setHasOverlaidWidgets();
+            canvas()->setNeedsWidgetMasks();
+        }
+    }
 
     setNeedsLayout(false);
 }

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 2006 Germain Garand <germain@ebooksfrance.org>
  *
  * Portions are Copyright (C) 1998 Netscape Communications Corporation.
  *
@@ -96,6 +97,7 @@ m_posZOrderList( 0 ),
 m_negZOrderList( 0 ),
 m_zOrderListsDirty( true ),
 m_markedForRepaint( false ),
+m_hasOverlaidWidgets( false ),
 m_marquee( 0 )
 {
 }
@@ -114,6 +116,7 @@ RenderLayer::~RenderLayer()
 
 void RenderLayer::updateLayerPosition()
 {
+
     // The canvas is sized to the docWidth/Height over in RenderCanvas::layout, so we
     // don't need to ever update our layer position here.
     if (renderer()->isCanvas())
@@ -148,6 +151,35 @@ void RenderLayer::updateLayerPosition()
         parent()->subtractScrollOffset(x, y);
 
     setPos(x,y);
+}
+
+QRegion RenderLayer::paintedRegion() {
+    updateZOrderLists();
+    QRegion r;
+    if (m_negZOrderList) {
+        uint count = m_negZOrderList->count();
+        for (uint i = 0; i < count; i++) {
+            RenderLayer* child = m_negZOrderList->at(i);
+            r += child->paintedRegion();
+        }
+    }
+
+    if ( renderer()->style()->visibility() == VISIBLE ) {
+        if( (renderer()->style()->backgroundImage() || renderer()->style()->backgroundColor().isValid() || renderer()->style()->hasBorder()) ) {
+            r += QRect(xPos(), yPos(), width(), height());
+        } else {
+            r += renderer()->visibleFlowRegion(xPos(), yPos());
+        }
+    }
+    
+    if (m_posZOrderList) {
+        uint count = m_posZOrderList->count();
+        for (uint i = 0; i < count; i++) {
+            RenderLayer* child = m_posZOrderList->at(i);
+             r += child->paintedRegion();
+        }
+    }
+    return r;
 }
 
 void RenderLayer::repaint( bool markForRepaint )
@@ -202,12 +234,33 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
     
     for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
         child->updateLayerPositions(rootLayer, doFullRepaint, checkForRepaint);
-        
+
     // With all our children positioned, now update our marquee if we need to.
     if (m_marquee)
         m_marquee->updateMarqueePosition();
 }
 
+void RenderLayer::updateWidgetMasks() 
+{
+    if (hasOverlaidWidgets() && !renderer()->canvas()->pagedMode()) {
+        updateZOrderLists();
+        uint count = m_posZOrderList ? m_posZOrderList->count() : 0;
+        if (count) {
+            QScrollView* sv = m_object->element()->getDocument()->view();
+            m_region = QRect(0,0,sv->contentsWidth(),sv->contentsHeight());
+
+            for (uint i = 0; i < count; i++) {
+                RenderLayer* child = m_posZOrderList->at(i);
+                m_region -= child->paintedRegion();
+            }    
+            renderer()->updateWidgetMasks();
+        } else {
+            m_region = QRegion();
+        }
+    }    
+    for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
+        child->updateWidgetMasks();
+}
 
 short RenderLayer::width() const
 {

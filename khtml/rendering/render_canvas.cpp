@@ -72,6 +72,8 @@ RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
     m_selectionEnd = 0;
     m_selectionStartPos = -1;
     m_selectionEndPos = -1;
+    
+    m_needsWidgetMasks = false;
 
     // Create a new root layer for our layer hierarchy.
     m_layer = new (node->getDocument()->renderArena()) RenderLayer(this);
@@ -224,6 +226,9 @@ void RenderCanvas::layout()
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
     layer()->updateLayerPositions( layer(), needsFullRepaint(), true );
+
+    if (!m_pagedMode && m_needsWidgetMasks)
+        layer()->updateWidgetMasks();
 
     scheduleDeferredRepaints();
     setNeedsLayout(false);

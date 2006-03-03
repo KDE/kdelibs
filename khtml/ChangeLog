@@ -1,3 +1,22 @@
+2006-03-03  Germain Garand  <germain@ebooksfrance.org>
+
+        get iframes, objects and some other overlaid widgets to obey their stacking context (#31121)
+
+        * khtmlview.cpp: mask widgets more precisely (i.e. allow layers to paint over overlaid widgets, 
+        when they ought to).
+
+        * rendering/render_canvas.{cpp,h}: update widget masks after pos child layout/positioning;
+        set a boolean m_needsWidgetMasks to optimise for common case (where we have no such widgets).
+
+        * rendering/render_layer.{cpp,h} (updateWidgetMasks/paintedRegion):  build a rough mask for the positive Z order
+        childs. We'll apply that mask later to widgets that are under our aegis.
+
+        * rendering/render_object.{cpp,h} (visibleFlowRegion): helper for calculation of broad region we want to mask in flows.
+        (updateWidgetMasks): walk our children looking for widgets suitable to masking. Apply our enclosingLayer's mask, 
+        transformis transformandi.
+
+        * rendering/render_replaced.cpp: overlaid widgets must advertise their existence to the enclosing layer.
+
 2006-03-01  Germain Garand  <germain@ebooksfrance.org>
 
         Improve selectorText

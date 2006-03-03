@@ -126,6 +126,9 @@ public:
 
     void setMaximalOutlineSize(int o) { m_maximalOutlineSize = o; }
     int maximalOutlineSize() const { return m_maximalOutlineSize; }
+    
+    void setNeedsWidgetMasks( bool b=true) { m_needsWidgetMasks = b; }
+    bool needsWidgetMasks() const { return m_needsWidgetMasks; }
 
 protected:
 
@@ -155,6 +158,8 @@ protected:
     bool m_staticMode;
     // Canvas is paged
     bool m_pagedMode;
+    // Canvas contains overlaid widgets
+    bool m_needsWidgetMasks;
 
     short m_pageNr;
 

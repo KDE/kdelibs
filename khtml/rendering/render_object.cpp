@@ -5,6 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2002-2004 Apple Computer, Inc.
+ *           (C) 2006 Germain Garand <germain@ebooksfrance.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1276,9 +1277,13 @@ void RenderObject::setStyle(RenderStyle *style)
             }
             setNeedsLayoutAndMinMaxRecalc();
         } else if (!isText() && d == RenderStyle::Visible) {
-            if (layer() && !isInlineFlow())
+            if (layer() && !isInlineFlow()) {
                 layer()->repaint();
-            else
+                if (canvas() && canvas()->needsWidgetMasks()) { 
+                    for (RenderLayer *p=layer()->parent();p;p=p->parent())
+                        if (p->hasOverlaidWidgets()) p->updateWidgetMasks();
+                }
+            } else
                 repaint();
         }
     }
@@ -2140,6 +2145,44 @@ void RenderObject::insertCounter(const QString& counter, CounterNode* val)
     counters->insert(counter, val);
 }
 
+void RenderObject::updateWidgetMasks() {
+    for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling()) {
+        if ( curr->isWidget() && static_cast<RenderWidget*>(curr)->widget() && 
+             strcmp(  static_cast<RenderWidget*>(curr)->widget()->name(), "__khtml") ) {
+            QWidget* w = static_cast<RenderWidget*>(curr)->widget();
+            QRegion r = curr->enclosingLayer()->getMask();
+            if (!r.isNull()) {
+                int x,y;
+                curr->absolutePosition(x,y);
+                r = r.intersect(QRect(x,y,curr->width(),curr->height()));
+                r.translate(-x,-y);
+                w->setMask(r);
+            } else {
+                w->clearMask();
+            }
+            w->update();
+        }
+        else if (!curr->layer())
+            curr->updateWidgetMasks();
+    }
+}
+
+QRegion RenderObject::visibleFlowRegion(int x, int y) const
+{
+    QRegion r;
+    for (RenderObject* ro=firstChild();ro;ro=ro->nextSibling()) {
+        if( !ro->isPositioned() && !ro->isInlineFlow() && ro->style()->visibility() == VISIBLE) {
+            const RenderStyle *s = ro->style();
+            if (ro->isRelPositioned())
+                static_cast<const RenderBox*>(ro)->relativePositionOffset(x,y);
+            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || s->hidesOverflow() )
+                r += QRect(x + ro->xPos(),y + ro->yPos(), ro->effectiveWidth(), ro->effectiveHeight());
+            else
+                r += ro->visibleFlowRegion(x+ro->xPos(),y+ro->yPos());
+        }
+    }
+    return r;
+}
 
 #undef RED_LUMINOSITY
 #undef GREEN_LUMINOSITY

@@ -149,7 +149,7 @@ public:
     };
 
     KHTMLViewPrivate()
-        : underMouse( 0 ), underMouseNonShared( 0 )
+        : underMouse( 0 ), underMouseNonShared( 0 ), visibleWidgets( 107 )
     {
 #ifndef KHTML_NO_CARET
 	m_caretViewContext = 0;
@@ -655,7 +655,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     QPoint pt = contentsToViewport(QPoint(ex, ey));
     QRegion cr = QRect(pt.x(), pt.y(), ew, eh);
 
-    //kdDebug(6000) << "clip rect: " << QRect(pt.x(), pt.y(), ew, eh) << endl;
+    // kdDebug(6000) << "clip rect: " << QRect(pt.x(), pt.y(), ew, eh) << endl;
     for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
@@ -663,7 +663,16 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             int x, y;
             rw->absolutePosition(x, y);
             contentsToViewport(x, y, x, y);
-            cr -= QRect(x, y, rw->width(), rw->height());
+            QRegion mask = rw->enclosingLayer()->getMask();
+            if (!mask.isNull()) {
+                QPoint o(0,0);
+                o = contentsToViewport(o);
+                mask.translate(o.x(),o.y());
+                mask = mask.intersect( QRect(x,y,rw->width(),rw->height()) );
+                cr -= mask;
+            } else {
+                cr -= QRect(x, y, rw->width(), rw->height());
+            }
         }
     }
 

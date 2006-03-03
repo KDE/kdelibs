@@ -217,6 +217,12 @@ public:
     QPtrVector<RenderLayer>* posZOrderList() const { return m_posZOrderList; }
     QPtrVector<RenderLayer>* negZOrderList() const { return m_negZOrderList; }
 
+    void setHasOverlaidWidgets(bool b=true) { m_hasOverlaidWidgets = b; }
+    bool hasOverlaidWidgets() const { return m_hasOverlaidWidgets; }
+    QRegion getMask() const { return m_region; }
+    QRegion paintedRegion();
+    void updateWidgetMasks();
+
     // Gets the nearest enclosing positioned ancestor layer (also includes
     // the <html> layer and the root layer).
     RenderLayer* enclosingPositionedAncestor() const;
@@ -312,7 +318,11 @@ protected:
     bool m_zOrderListsDirty;
     
     bool m_markedForRepaint;
+
     QRect m_visibleRect;
+
+    bool m_hasOverlaidWidgets; 
+    QRegion m_region; // used by overlaid (non z-order aware) widgets
 
     Marquee* m_marquee; // Used by layers with overflow:marquee
 };
