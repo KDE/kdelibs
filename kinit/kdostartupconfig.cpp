@@ -131,7 +131,7 @@ int main()
             }
         startupconfigfiles << line << endl;
         // use even currently non-existing paths in $KDEDIRS
-        QStringList dirs = QStringList::split( KPATH_SEPARATOR, KGlobal::dirs()->kfsstnd_prefixes());
+        QStringList dirs = KGlobal::dirs()->kfsstnd_prefixes().split( KPATH_SEPARATOR, QString::SkipEmptyParts);
         for( QStringList::ConstIterator it = dirs.begin();
              it != dirs.end();
              ++it )
