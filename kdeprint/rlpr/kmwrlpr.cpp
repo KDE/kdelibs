@@ -65,7 +65,9 @@ KMWRlpr::KMWRlpr(QWidget *parent)
 	m_queuelabel->setBuddy(m_queue);
 	connect(m_view,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotPrinterSelected(Q3ListViewItem*)));
 
-	QHBoxLayout	*lay0 = new QHBoxLayout(this, 0, 10);
+	QHBoxLayout	*lay0 = new QHBoxLayout(this);
+	lay0->setMargin(0);
+	lay0->setSpacing(10);
 	QVBoxLayout	*lay1 = new QVBoxLayout(0, 0, 5);
 	lay0->addWidget(m_view,1);
 	lay0->addLayout(lay1,1);

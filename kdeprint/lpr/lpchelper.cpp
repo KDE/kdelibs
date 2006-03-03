@@ -118,7 +118,7 @@ void LpcHelper::parseStatusLPRng(QTextStream& t)
 			break;
 	while (!t.atEnd())
 	{
-		l = QStringList::split(QRegExp("\\s"), t.readLine(), false);
+		l = t.readLine().split(QRegExp("\\s"), QString::SkipEmptyParts);
 		if (l.count() < 4)
 			continue;
 		p = l[0].indexOf('@');

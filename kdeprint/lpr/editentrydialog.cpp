@@ -49,13 +49,17 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 	m_stack = new QStackedWidget(w);
 	m_boolean = new QCheckBox(i18n("Enabled"), m_stack);
 	m_string = new QLineEdit(m_stack);
-	m_number = new QSpinBox(0, 9999, 1, m_stack);
+	m_number = new QSpinBox(m_stack);
+	m_number->setRange(0, 9999);
+	m_number->setSingleStep(1);
 	m_stack->insertWidget(0,m_string);
 	m_stack->insertWidget(2,m_boolean);
 	m_stack->insertWidget(1,m_number);
 	m_name = new QLineEdit(w);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(w, 0, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(w);
+	l0->setMargin(0);
+	l0->setSpacing(10);
 	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 10);
 	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 5);
 	l0->addLayout(l1);

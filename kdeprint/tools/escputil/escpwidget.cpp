@@ -71,15 +71,20 @@ EscpWidget::EscpWidget(QWidget *parent)
 	connect(&m_proc, SIGNAL(receivedStdout(KProcess*,char*,int)), SLOT(slotReceivedStdout(KProcess*,char*,int)));
 	connect(&m_proc, SIGNAL(receivedStderr(KProcess*,char*,int)), SLOT(slotReceivedStderr(KProcess*,char*,int)));
 
-	QPushButton	*cleanbtn = new QPushButton(this, "-c");
+	QPushButton	*cleanbtn = new QPushButton(this);
+	cleanbtn->setObjectName(QLatin1String("-c"));
 	cleanbtn->setPixmap(DesktopIcon("exec"));
-	QPushButton	*nozzlebtn = new QPushButton(this, "-n");
+	QPushButton	*nozzlebtn = new QPushButton(this);
+	nozzlebtn->setObjectName(QLatin1String("-n"));
 	nozzlebtn->setPixmap(DesktopIcon("exec"));
-	QPushButton	*alignbtn = new QPushButton(this, "-a");
+	QPushButton	*alignbtn = new QPushButton(this);
+	alignbtn->setObjectName(QLatin1String("-a"));
 	alignbtn->setPixmap(DesktopIcon("exec"));
-	QPushButton	*inkbtn = new QPushButton(this, "-i");
+	QPushButton	*inkbtn = new QPushButton(this);
+	inkbtn->setObjectName(QLatin1String("-i"));
 	inkbtn->setPixmap(DesktopIcon("kdeprint_inklevel"));
-	QPushButton	*identbtn = new QPushButton(this, "-d");
+	QPushButton	*identbtn = new QPushButton(this);
+	identbtn->setObjectName(QLatin1String("-d"));
 	identbtn->setPixmap(DesktopIcon("exec"));
 
 	QFont	f(font());

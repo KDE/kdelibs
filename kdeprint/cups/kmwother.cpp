@@ -55,7 +55,9 @@ KMWOther::KMWOther(QWidget *parent)
 	m_uriview->setSorting( -1 );
 	connect( m_uriview, SIGNAL( pressed( Q3ListViewItem* ) ), SLOT( slotPressed( Q3ListViewItem* ) ) );
 
-	QVBoxLayout	*lay1 = new QVBoxLayout(this, 0, 15);
+	QVBoxLayout	*lay1 = new QVBoxLayout(this);
+	lay1->setMargin(0);
+	lay1->setSpacing(15);
 	QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 5);
 	lay1->addWidget(l1);
 	lay1->addLayout(lay2);

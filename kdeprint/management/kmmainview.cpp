@@ -104,7 +104,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
   m_layout->setSpacing(0);
 	m_layout->addWidget(m_toolbar);
 	m_layout->addWidget( m_menubar );
-	m_boxlayout = new QBoxLayout(QBoxLayout::TopToBottom, 0);
+	m_boxlayout = new QBoxLayout(QBoxLayout::TopToBottom);
 	m_layout->addLayout(m_boxlayout);
   m_boxlayout->setSpacing(0);
 	m_boxlayout->addWidget(m_printerview);

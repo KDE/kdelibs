@@ -40,7 +40,9 @@ KMConfigLpr::KMConfigLpr(QWidget *parent)
 	m_mode->insertItem("LPR (BSD compatible)");
 	m_mode->insertItem("LPRng");
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this);
+	l0->setMargin(5);
+	l0->setSpacing(10);
 	l0->addWidget(m_modebox);
 	l0->addStretch(1);
 }

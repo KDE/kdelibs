@@ -50,7 +50,7 @@ bool LPRngToolHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, boo
 	QString	str, lp;
 
 	// look for type in comment
-	QStringList	l = QStringList::split(' ', entry->comment, false);
+	QStringList	l = entry->comment.split(' ', QString::SkipEmptyParts);
 	lp = entry->field("lp");
 	if (l.count() < 1)
 		return false;
@@ -226,7 +226,7 @@ QList< QPair<QString,QStringList> > LPRngToolHandler::loadChoiceDict(const QStri
 QMap<QString,QString> LPRngToolHandler::parseZOptions(const QString& optstr)
 {
 	QMap<QString,QString>	opts;
-	QStringList	l = QStringList::split(',', optstr, false);
+	QStringList	l = optstr.split(',', QString::SkipEmptyParts);
 	if (l.count() == 0)
 		return opts;
 	

@@ -87,7 +87,9 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
 	//m_tags->setReadOnly(ro);
 	m_tags->setWhatsThis(whatsThisAdditionalTagsTable);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 5);
+	QVBoxLayout	*l0 = new QVBoxLayout(this);
+	l0->setMargin(0);
+	l0->setSpacing(5);
 	l0->addWidget(m_tags);
 
 	if (ro)

@@ -99,7 +99,9 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_passwdlab->setWhatsThis(txt );
 	m_passwded->setWhatsThis(txt );
 
-	QHBoxLayout	*l0 = new QHBoxLayout(this, 10, 10);
+	QHBoxLayout	*l0 = new QHBoxLayout(this);
+	l0->setMargin(10);
+	l0->setSpacing(10);
 	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 10);
 	l0->addWidget(m_side);
 	l0->addLayout(l1);
