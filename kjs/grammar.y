@@ -35,7 +35,9 @@
 
 /* default values for bison */
 #define YYDEBUG 0
-#define YYMAXDEPTH 0
+#ifdef YYMAXDEPTH
+#undef YYMAXDEPTH
+#endif
 #define YYERROR_VERBOSE
 #define DBG(l, s, e) { l->setLoc(s.first_line, e.last_line, Parser::source); } // location
 
