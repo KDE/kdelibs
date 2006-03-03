@@ -239,20 +239,23 @@ K3DockWidgetHeader::K3DockWidgetHeader( K3DockWidget* parent, const char* name )
   stayButton = new K3DockButton_Private( this, "DockStayButton" );
   stayButton->setToolTip( i18n("Freeze the window geometry", "Freeze") );
   stayButton->setCheckable( true );
-  stayButton->setIcon( QIcon(not_close_xpm) );
+  // We have to use QPixmap to load the XPM from a const char*
+  stayButton->setIcon( QIcon( QPixmap( not_close_xpm) ) );
 //  stayButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( stayButton, SIGNAL(clicked()), this, SLOT(slotStayClicked()));
 
   dockbackButton = new K3DockButton_Private( this, "DockbackButton" );
   dockbackButton->setToolTip( i18n("Dock this window", "Dock") );
-  dockbackButton->setIcon( QIcon(dockback_xpm));
+  // We have to use QPixmap to load the XPM from a const char*
+  dockbackButton->setIcon( QIcon( QPixmap( dockback_xpm ) ) );
 //  dockbackButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( dockbackButton, SIGNAL(clicked()), parent, SIGNAL(headerDockbackButtonClicked()));
   connect( dockbackButton, SIGNAL(clicked()), parent, SLOT(dockBack()));
 
   d->toDesktopButton = new K3DockButton_Private( this, "ToDesktopButton" );
   d->toDesktopButton->setToolTip( i18n("Detach") );
-  d->toDesktopButton->setIcon( QIcon(todesktop_xpm));
+  // We have to use QPixmap to load the XPM from a const char*
+  d->toDesktopButton->setIcon( QIcon( QPixmap( todesktop_xpm ) ) );
 //  d->toDesktopButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( d->toDesktopButton, SIGNAL(clicked()), parent, SLOT(toDesktop()));
   stayButton->hide();
