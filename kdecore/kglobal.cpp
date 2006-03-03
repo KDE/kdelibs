@@ -224,10 +224,11 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID impLoad )
         kglobal_freeAll();
     return true;
 }
+# define ATTRIBUTE_DESTRUCTOR
 #else
-__attribute__((destructor))
+# define ATTRIBUTE_DESTRUCTOR __attribute__((destructor))
 #endif
-static void kglobal_freeAll()
+static ATTRIBUTE_DESTRUCTOR void kglobal_freeAll()
 {
     delete KGlobal::_locale;
     KGlobal::_locale = 0;
