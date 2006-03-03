@@ -846,7 +846,9 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
   m_main = new QWidget( this );
   setMainWidget( m_main );
 
-  QBoxLayout *vbox = new QVBoxLayout( m_main, 0, spacingHint() );
+  QBoxLayout *vbox = new QVBoxLayout( m_main );
+  vbox->setMargin( 0 );
+  vbox->setSpacing( spacingHint() );
   KBookmarkEditFields::FieldsSet fs =
     folder ? KBookmarkEditFields::FolderFieldsSet
            : KBookmarkEditFields::BookmarkFieldsSet;

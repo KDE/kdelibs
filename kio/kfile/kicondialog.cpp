@@ -85,8 +85,8 @@ public:
  * KIconCanvas: Iconview for the iconloader dialog.
  */
 
-KIconCanvas::KIconCanvas(QWidget *parent, const char *name)
-    : KIconView(parent, name),d(new KIconCanvasPrivate)
+KIconCanvas::KIconCanvas(QWidget *parent)
+    : KIconView(parent),d(new KIconCanvasPrivate)
 {
     mpLoader = KGlobal::iconLoader();
     mpTimer = new QTimer(this);
@@ -234,16 +234,15 @@ class KIconDialog::KIconDialogPrivate
  * specified icons can be chosen.
  */
 
-KIconDialog::KIconDialog(QWidget *parent, const char *name)
-    : KDialogBase(parent, name, true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
+KIconDialog::KIconDialog(QWidget *parent)
+    : KDialogBase(parent, "icondialog", true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
 {
     mpLoader = KGlobal::iconLoader();
     init();
 }
 
-KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent,
-	const char *name)
-    : KDialogBase(parent, name, true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
+KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent)
+    : KDialogBase(parent, "icondialog", true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
 {
     mpLoader = loader;
     init();
@@ -499,7 +498,8 @@ QString KIconDialog::getIcon(KIcon::Group group, KIcon::Context context,
                              bool strictIconSize, int iconSize, bool user,
                              QWidget *parent, const QString &caption)
 {
-    KIconDialog dlg(parent, "icon dialog");
+    KIconDialog dlg(parent);
+    dlg.setObjectName(QLatin1String("icon dialog"));
     dlg.setup( group, context, strictIconSize, iconSize, user );
     if (!caption.isNull())
         dlg.setCaption(caption);

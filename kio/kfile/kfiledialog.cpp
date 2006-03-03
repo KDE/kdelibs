@@ -998,7 +998,8 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
 void KFileDialog::initSpeedbar()
 {
-    d->urlBar = new KFileSpeedBar( d->mainWidget, "url bar" );
+    d->urlBar = new KFileSpeedBar( d->mainWidget );
+    d->urlBar->setObjectName( QLatin1String( "url bar" ) );
     connect( d->urlBar, SIGNAL( activated( const KUrl& )),
              SLOT( enterURL( const KUrl& )) );
 

@@ -27,7 +27,7 @@ class KIO_EXPORT KFileSpeedBar : public KUrlBar
 {
     Q_OBJECT
 public:
-    KFileSpeedBar( QWidget *parent = 0, const char *name = 0 );
+    KFileSpeedBar( QWidget *parent = 0 );
     ~KFileSpeedBar();
 
     virtual void save( KConfig *config );

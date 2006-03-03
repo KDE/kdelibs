@@ -29,8 +29,8 @@
 #include <kstandarddirs.h>
 #include <kurl.h>
 
-KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
-    : KUrlBar( true, parent, name )
+KFileSpeedBar::KFileSpeedBar( QWidget *parent )
+    : KUrlBar( true, parent )
 {
     KConfigGroup cg( KGlobal::config(), ConfigGroup );
     m_initializeSpeedbar = cg.readEntry( "Set speedbar defaults", true );

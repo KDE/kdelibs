@@ -123,7 +123,8 @@ ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
 :KDialogBase(KDialogBase::Plain,i18n("Configure Network Operation Window"),KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel,
              KDialogBase::Ok, parent, "configprog", false)
 {
-   QVBoxLayout *layout=new QVBoxLayout(plainPage(),spacingHint());
+   QVBoxLayout *layout=new QVBoxLayout(plainPage());
+   layout->setSpacing(spacingHint());
    m_showSystemTrayCb=new QCheckBox(i18n("Show system tray icon"), plainPage());
    m_keepOpenCb=new QCheckBox(i18n("Keep network operation window always open"), plainPage());
    m_headerCb=new QCheckBox(i18n("Show column headers"), plainPage());

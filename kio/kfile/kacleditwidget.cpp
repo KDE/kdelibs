@@ -400,9 +400,13 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
 {
     QWidget *page = new QWidget(  this );
     setMainWidget( page );
-    QVBoxLayout *mainLayout = new QVBoxLayout( page, 0, spacingHint() );
+    QVBoxLayout *mainLayout = new QVBoxLayout( page );
+    mainLayout->setMargin( 0 );
+    mainLayout->setSpacing( spacingHint() );
     QGroupBox *gb = new QGroupBox( i18n("Entry Type"), page );
-    QVBoxLayout *gbLayout = new QVBoxLayout( gb, 0, spacingHint() );
+    QVBoxLayout *gbLayout = new QVBoxLayout( gb );
+    gbLayout->setMargin( 0 );
+    gbLayout->setSpacing( spacingHint() );
 
     m_buttonGroup = new QButtonGroup( page );
 

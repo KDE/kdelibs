@@ -103,7 +103,8 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     hlay->setSpacing(spacingHint());
     m_mainLayout = new QVBoxLayout();
     d->actions=new KActionCollection(this);
-    d->speedBar = new KFileSpeedBar( page, "speedbar" );
+    d->speedBar = new KFileSpeedBar( page );
+    d->speedBar->setObjectName( QLatin1String( "speedbar" ) );
     connect( d->speedBar, SIGNAL( activated( const KUrl& )),
              SLOT( setCurrentURL( const KUrl& )) );
     hlay->addWidget( d->speedBar, 0 );

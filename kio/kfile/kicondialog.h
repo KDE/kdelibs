@@ -37,7 +37,7 @@ class KIO_EXPORT KIconCanvas: public KIconView
     Q_OBJECT
 
 public:
-    KIconCanvas(QWidget *parent=0L, const char *name=0L);
+    KIconCanvas(QWidget *parent=0L);
     ~KIconCanvas();
 
     /**
@@ -95,12 +95,11 @@ public:
     /**
      * Constructs an icon selection dialog using the global iconloader.
      */
-    KIconDialog(QWidget *parent=0L, const char *name=0L);
+    KIconDialog(QWidget *parent=0L);
     /**
      * Constructs an icon selection dialog using a specific iconloader.
      */
-    KIconDialog(KIconLoader *loader, QWidget *parent=0,
-	    const char *name=0);
+    KIconDialog(KIconLoader *loader, QWidget *parent=0);
     /**
      * Destructs the dialog.
      */
