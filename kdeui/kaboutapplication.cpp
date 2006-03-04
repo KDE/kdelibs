@@ -58,6 +58,8 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
     //
     // Recovery
     //
+
+    //i18n "??" is displayed as (pseudo-)version when no data is known about the application
     setProduct( kapp ? kapp->caption() : QString::null, i18n("??"), QString::null, QString::null );
     KAboutContainer *appPage = addContainerPage( i18n("&About"));
 
