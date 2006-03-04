@@ -22,11 +22,7 @@
 
 #include <klineedit.h>
 
-#include <QContextMenuEvent>
-//Added by qt3to4:
-#include <QList>
-
-#include <kvbox.h>
+#include <khbox.h>
 
 class KListView;
 class Q3ListViewItem;
@@ -38,8 +34,6 @@ class QToolButton;
  *
  * No changes to the application other than instantiating this class with
  * appropriate KListViews should be needed.
- *
- * @since 3.3
  */
 
 class KDEUI_EXPORT KListViewSearchLine : public KLineEdit
@@ -63,8 +57,6 @@ public:
      *
      * If \a listViews is empty then the widget will be disabled until listviews
      * are set with setListView(), setListViews() or added with addListView().
-     *
-     * @since 4.0
      */
     KListViewSearchLine(QWidget *parent,
                         const QList<KListView *> &listViews);
@@ -111,7 +103,6 @@ public:
      * the search.
      *
      * @see setListViews(), addListView(), listView()
-     * @since 4.0
      */
     const QList<KListView *> &listViews() const;
 
@@ -121,7 +112,6 @@ public Q_SLOTS:
      * If \a lv is null then the widget will be disabled.
      *
      * @see listView(), setListViews(), removeListView()
-     * @since 4.0
      */
     void addListView(KListView *lv);
 
@@ -131,7 +121,6 @@ public Q_SLOTS:
      * line.
      *
      * @see listVew(), setListViews(), addListView()
-     * @since 4.0
      */
     void removeListView(KListView *lv);
 
@@ -186,7 +175,6 @@ public Q_SLOTS:
      * be disabled.
      *
      * @see listViews(), addListView(), setListView()
-     * @since 4.0
      */
     void setListViews(const QList<KListView *> &lv);
 
@@ -214,14 +202,10 @@ public Q_SLOTS:
     /**
      * Connects signals of this listview to the appropriate slots of the search
      * line.
-     *
-     * @since 4.0
      */
     virtual void connectListView(KListView *);
     /**
      * Disconnects signals of a listviews from the search line.
-     *
-     * @since 4.0
      */
     virtual void disconnectListView(KListView *);
 
@@ -238,7 +222,6 @@ public Q_SLOTS:
      * Otherwise it returns true.
      *
      * @see setSearchColumns()
-     * @since 4.0
      */
     virtual bool canChooseColumnsCheck();
 
@@ -275,10 +258,9 @@ private:
      * doesn't make sense, it forces filtering over all columns.
      *
      * @see canChooseColumnsCheck()
-     * @since 4.0
      */
     void checkColumns();
-    
+
     /**
      * This is used in case parent items of matching items shouldn't be
      * visible.  It hides all items that don't match the search string.
@@ -305,8 +287,6 @@ private:
 /**
  * Creates a widget featuring a KListViewSearchLine, a label with the text
  * "Search" and a button to clear the search.
- *
- * @since 3.4
  */
 class KDEUI_EXPORT KListViewSearchLineWidget : public KHBox
 {

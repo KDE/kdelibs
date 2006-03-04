@@ -18,7 +18,7 @@
 #ifndef KANIMWIDGET_H
 #define KANIMWIDGET_H
 
-#include <qframe.h>
+#include <QFrame>
 
 #include <kdelibs_export.h>
 
@@ -88,13 +88,11 @@ public:
 
   /**
   * Returns the current size.
-  * @since 3.4
   */
   int size() const;
 
   /**
   * Returns the current icons
-  * since 3.4
   */
   QString icons() const;
 

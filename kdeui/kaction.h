@@ -25,8 +25,8 @@
 #ifndef KACTION_H
 #define KACTION_H
 
-#include <qicon.h> // remove if iconSet() is removed
-#include <qobject.h>
+#include <QIcon> // remove when iconSet() is removed
+#include <QObject>
 
 #include <kicontheme.h>
 #include <kshortcut.h>
@@ -339,7 +339,6 @@ public:
 
     /**
      * returns whether the action is plugged into any container widget or not.
-     * @since 3.1
      */
     virtual bool isPlugged() const;
 
@@ -364,7 +363,6 @@ public:
     int itemId( int index ) const;
     QWidget* representative( int index ) const;
     int containerCount() const;
-    /// @since 3.1
     uint kaccelCount() const;
 
     virtual bool hasIcon() const;
@@ -437,9 +435,6 @@ public:
 
     void unplugAll();
 
-    /**
-    * @since 3.4
-    */
     enum ActivationReason { UnknownActivation, EmulatedActivation, AccelActivation, PopupMenuActivation, ToolBarActivation };
 
 public Q_SLOTS:
@@ -497,7 +492,6 @@ public Q_SLOTS:
 
     /**
      * Calls setEnabled( !disable ).
-     * @since 3.5
      */
     void setDisabled(bool disable) { return setEnabled(!disable); }
 
@@ -516,9 +510,7 @@ protected Q_SLOTS:
     virtual void slotDestroyed();
     virtual void slotKeycodeChanged();
     virtual void slotActivated();
-    /// @since 3.4
     virtual void slotPopupActivated();
-    /// @since 3.4
     virtual void slotButtonClicked( int, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
 
 protected:
@@ -546,7 +538,6 @@ protected:
     QString whatsThisWithIcon() const;
     /**
      * Return the underlying KGuiItem
-     * @since 3.3
      */
     const KGuiItem& guiItem() const;
 
@@ -566,8 +557,6 @@ Q_SIGNALS:
      * Applications which care about reason and mouse/keyboard state can either ignore the activated()
      * signal for a given action and react to this one instead, or store the
      * reason and mouse/keyboard state until the activated() signal is emitted.
-     *
-     * @since 3.4
      */
     void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
 

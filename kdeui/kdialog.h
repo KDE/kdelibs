@@ -20,8 +20,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#ifndef _KDIALOG_H_
-#define _KDIALOG_H_
+#ifndef KDIALOG_H
+#define KDIALOG_H
 
 class QLayoutItem;
 
@@ -34,6 +34,7 @@ class KDialogBase;
 
 #include <QDialog>
 #include <Qt>
+
 #include <kdelibs_export.h>
 #include <kconfigbase.h>
 #include <kguiitem.h>
@@ -258,7 +259,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      * By default, this is the Ok button if it is present
      *
      * @param id The button code.
-     * @since KDE 4.0
      */
     void setDefaultButton( ButtonCode id );
 
@@ -335,8 +335,6 @@ class KDEUI_EXPORT KDialog : public QDialog
 	 *
 	 * @param id The button identifier.
 	 * @param item The KGuiItem for the button.
-	 *
-	 * @since 3.3
 	 */
 	void setButtonGuiItem( ButtonCode id, const KGuiItem &item );
 
@@ -406,7 +404,6 @@ class KDEUI_EXPORT KDialog : public QDialog
 	* @note the group must be set before calling
 	*
     * @param config The object to read from. That may be a KConfigGroup
-    * @since 3.2
     */
    void restoreDialogSize( KConfigBase* config ) ;
 
@@ -471,7 +468,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      * currently contains the mouse pointer.
      * @p screen will be ignored if a merged display (like Xinerama) is not
      * in use, or merged display placement is not enabled in kdeglobals.
-     * @since 3.1
      */
     static void centerOnScreen( QWidget *widget, int screen = -1 );
 
@@ -482,7 +478,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      * For @p screen, see centerOnScreen
      * @return true on success (widget doesn't cover area anymore, or never did),
      * false on failure (not enough space found)
-     * @since 3.2
      */
     static bool avoidArea( QWidget *widget, const QRect& area, int screen = -1 );
 

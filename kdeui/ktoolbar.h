@@ -24,16 +24,14 @@
 #ifndef KTOOLBAR_H
 #define KTOOLBAR_H
 
-#include <q3frame.h>
 #include <QList>
-#include <q3toolbar.h>
-#include <qcombobox.h>
-#include <qmap.h>
-#include <qpointer.h>
+#include <QComboBox>
+#include <QMap>
+#include <QPointer>
+#include <Q3ToolBar>
 
 #include <kglobal.h>
 
-class Q3MainWindow;
 class QMenu;
 class QDomDocument;
 class QDomElement;
@@ -59,7 +57,7 @@ class KDEUI_EXPORT KToolBarSeparator : public Q3Frame
 {
     Q_OBJECT
 public:
-    KToolBarSeparator( Qt::Orientation, bool l, Q3ToolBar *parent, const char* name=0 );
+    KToolBarSeparator( Qt::Orientation, bool l, Q3ToolBar *parent );
 
     QSize sizeHint() const;
     Qt::Orientation orientation() const { return orient; }
@@ -693,13 +691,11 @@ public:
     /**
    * Returns the index of the item @p id.
    * @return the index of the item @p id.
-   * @since 3.2
    */
     int itemIndex (int id); // ### KDE4: make this const!
 
     /**
    * Returns the id of the item at the given index.
-   * @since 3.2
    */
     int idAt(int index); // ### KDE4: make this const!
 
@@ -998,7 +994,6 @@ Q_SIGNALS:
      * and before ~KToolbar finishes (so it's still time to remove
      * widgets from the toolbar).
      * Used by KWidgetAction.
-     * @since 3.2
      */
     void toolbarDestroyed();
 

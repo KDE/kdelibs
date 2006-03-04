@@ -18,9 +18,8 @@
 #ifndef KDELIBS_KSCONFIG_H
 #define KDELIBS_KSCONFIG_H
 
-#include <qwidget.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QWidget>
+#include <QStringList>
 
 #include <kdelibs_export.h>
 
@@ -126,8 +125,6 @@ class KDEUI_EXPORT_DEPRECATED KSpellConfig : public QWidget
      *
      * @param box Will be filled with the translated dictionary names.
      * @param dictionaries Will be filled with the internal dictionary names.
-     *
-     * @since 3.2
      *
      */
     void fillDicts( QComboBox* box, QStringList* dictionaries = 0 );

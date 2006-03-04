@@ -33,8 +33,6 @@ class QValidator;
 
 class KIntSpinBox;
 
-/* ------------------------------------------------------------------------ */
-
 /**
  * You need to inherit from this class if you want to implement K*NumInput
  * for a different variable type
@@ -86,7 +84,6 @@ public:
 
     /**
      * @return if the num input has a slider.
-     * @since 3.1
      */
     bool showSlider() const { return m_slider; }
 
@@ -238,13 +235,11 @@ public:
 
     /**
      * @return the curent value in units of the referencePoint.
-     * @since 3.1
      */
     double relativeValue() const;
 
     /**
      * @return the current reference point
-     * @since 3.1
      */
     int referencePoint() const;
 
@@ -315,13 +310,11 @@ public Q_SLOTS:
 
     /**
      * Sets the value in units of the referencePoint
-     * @since 3.1
      */
     void setRelativeValue(double);
 
     /**
      * Sets the reference point for relativeValue.
-     * @since 3.1
      */
     void setReferencePoint(int);
 
@@ -361,7 +354,6 @@ Q_SIGNALS:
     /**
      * Emitted whenever valueChanged is. Contains the change
      * relative to the referencePoint.
-     * @since 3.1
      */
     void relativeValueChanged(double);
 
@@ -447,7 +439,6 @@ public:
      * @param step   step size to use for up/down arrow clicks
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
-     * @since 3.1
      */
     KDoubleNumInput(double lower, double upper, double value, QWidget *parent=0,double step=0.01,
 		    int precision=2);
@@ -476,7 +467,6 @@ public:
      * @param step   step size to use for up/down arrow clicks
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
-     * @since 3.1
      */
     KDoubleNumInput(KNumInput* below,
 		    double lower, double upper, double value, QWidget *parent=0,double step=0.02,
@@ -542,13 +532,11 @@ public:
 
     /**
      * @return the reference point for relativeValue calculation
-     * @since 3.1
      */
     double referencePoint() const;
 
     /**
      * @return the current value in units of referencePoint.
-     * @since 3.1
      */
     double relativeValue() const;
 
@@ -571,7 +559,6 @@ public Q_SLOTS:
 
     /**
      * Sets the value in units of referencePoint.
-     * @since 3.1
      */
     void setRelativeValue(double);
 
@@ -579,7 +566,6 @@ public Q_SLOTS:
      * Sets the reference Point to @p ref. It @p ref == 0, emitting of
      * relativeValueChanged is blocked and relativeValue
      * just returns 0.
-     * @since 3.1
      */
     void setReferencePoint(double ref);
 
@@ -611,7 +597,6 @@ Q_SIGNALS:
      * convenience. It essentially behaves like the above function.
      *
      * Contains the value in units of referencePoint.
-     * @since 3.1
      */
     void relativeValueChanged(double);
 
@@ -629,7 +614,7 @@ protected:
     friend class KDoubleLine;
 private:
     void init(double value, double lower, double upper,
-	      double step, int precision);
+    double step, int precision);
     double mapSliderToSpin(int) const;
     void updateLegacyMembers();
     // ### no longer used, remove when BIC allowed:
@@ -779,7 +764,6 @@ private:
    \endcode
 
    @author Marc Mutz <mutz@kde.org>
-   @since 3.1
 **/
 
 class KDEUI_EXPORT KDoubleSpinBox : public QSpinBox {

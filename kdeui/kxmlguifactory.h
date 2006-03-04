@@ -189,7 +189,6 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    *      keys ('A', '1', etc.) are not permissible shortcuts.
    * @param bSaveSettings if true, the settings will also be saved back to
    *      the *uirc file which they were intially read from.
-   * @since 3.3
    */
   int configureShortcuts(bool bAllowLetterShortcuts = true, bool bSaveSettings = true);
 

@@ -20,7 +20,7 @@
 #ifndef KSPLASHSCREEN_H
 #define KSPLASHSCREEN_H
 
-#include <qsplashscreen.h>
+#include <QSplashScreen>
 
 #include <kdelibs_export.h>
 
@@ -36,7 +36,6 @@ class QPixmap;
  *  for QSplashScreen.
  *
  *  @author Chris Howells (howells@kde.org)
- *  @since 3.2
  */
 class KDEUI_EXPORT KSplashScreen : public QSplashScreen
 {

@@ -21,11 +21,11 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef _K_FONT_DIALOG_H_
-#define _K_FONT_DIALOG_H_
+#ifndef K_FONT_DIALOG_H
+#define K_FONT_DIALOG_H
 
-#include <qlineedit.h>
-#include <QCheckBox>
+#include <QLineEdit>
+
 #include <kdialogbase.h>
 
 class QComboBox;
@@ -204,7 +204,6 @@ public:
    * Shows or hides the sample text box.
    *
    * @param visible Set it to true to show the box, to false to hide it.
-   * @since 3.5
    */
   void setSampleBoxVisible( bool visible )
   {

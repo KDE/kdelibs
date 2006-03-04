@@ -53,14 +53,12 @@ public:
     /**
      * Constructs a password input widget using echoMode as "echo mode".
      * Note that echoMode is a QLineEdit::EchoMode.
-     * @since 3.0
      */
     KPasswordEdit(EchoMode echoMode, QWidget *parent);
 
     /**
      * Constructs a password input widget using echoMode as "echo mode".
      * Note that echoMode is a KPasswordEdit::EchoModes.
-     * @since 3.2
      */
     KPasswordEdit(EchoModes echoMode, QWidget *parent);
 
@@ -89,13 +87,11 @@ public:
      * The length is capped to lie between 0 and 199 inclusive.
      *
      * @param newLength: The new maximum password length
-     * @since 3.4
      */
     void setMaxPasswordLength(int newLength);
 
     /**
      * Returns the current maximum password length.
-     * @since 3.4
      */
     int maxPasswordLength() const;
 
@@ -190,8 +186,6 @@ public:
      *        which allows the user to keep his password input for later.
      * @param extraBttn: allows to show additional buttons, KDialog.
      * @param parent Passed to lower level constructor.
-     *
-     * @since 3.0
      */
     KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn, QWidget *parent=0);
 
@@ -208,9 +202,8 @@ public:
      * @param iconName the name of the icon to be shown in the dialog. If empty,
      * a default icon is used
      * @param parent Passed to lower level constructor.
-     * @since 3.3
      */
-	KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn, const QString& iconName,
+    KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn, const QString& iconName,
                     QWidget *parent = 0);
 
     /**
@@ -235,13 +228,11 @@ public:
 
     /**
      * Allow empty passwords? - Default: false
-     * @since 3.4
      */
     void setAllowEmptyPasswords(bool allowed);
 
     /**
      * Allow empty passwords?
-     * @since 3.4
      */
     bool allowEmptyPasswords() const;
 
@@ -251,13 +242,11 @@ public:
      *          Otherwise, 0.
      *
      * @param minLength: The new minimum password length
-     * @since 3.4
      */
     void setMinimumPasswordLength(int minLength);
 
     /**
      * Minimum acceptable password length.
-     * @since 3.4
      */
     int minimumPasswordLength() const;
 
@@ -266,13 +255,11 @@ public:
      * Default: No limit, i.e. -1
      *
      * @param maxLength: The new maximum password length.
-     * @since 3.4
      */
     void setMaximumPasswordLength(int maxLength);
 
     /**
      * Maximum acceptable password length.
-     * @since 3.4
      */
     int maximumPasswordLength() const;
 
@@ -282,13 +269,11 @@ public:
      * Default: 8 - the standard UNIX password length
      *
      * @param reasonableLength: The new reasonable password length.
-     * @since 3.4
      */
     void setReasonablePasswordLength(int reasonableLength);
 
     /**
      * Password length that is expected to be reasonably safe.
-     * @since 3.4
      */
     int reasonablePasswordLength() const;
 
@@ -300,13 +285,11 @@ public:
      *
      * Default: 1 - warn if the password has no discernable strength whatsoever
      * @param warningLevel: The level below which a warning should be given.
-     * @since 3.4
      */
     void setPasswordStrengthWarningLevel(int warningLevel);
 
     /**
      * Password strength level below which a warning is given
-     * @since 3.4
      */
     int passwordStrengthWarningLevel() const;
 
@@ -319,7 +302,6 @@ public:
     /**
      * Clears the password input field. You might want to use this after the
      * user failed to enter the correct password.
-     * @since 3.3
      */
     void clearPassword();
 

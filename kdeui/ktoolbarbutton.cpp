@@ -21,23 +21,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-#include <string.h>
-
 #include "ktoolbarbutton.h"
 #include "ktoolbar.h"
 
-#include <qevent.h>
-#include <qstyle.h>
-#include <qimage.h>
-#include <qtimer.h>
-#include <qdrawutil.h>
-#include <qbitmap.h>
-#include <qmenu.h>
-#include <qcursor.h>
-#include <qpainter.h>
-#include <qlayout.h>
-#include <qapplication.h>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QApplication>
 
 #include <kdebug.h>
 #include <kinstance.h>
@@ -114,7 +103,8 @@ KToolBarButton::KToolBarButton( const QString& _icon, int _id,
   d = new KToolBarButtonPrivate;
 
   d->m_id     = _id;
-  QToolButton::setTextLabel(_txt);
+  QToolButton::setText(_txt);
+  QToolButton::setToolTip(_txt);
   d->m_instance = _instance;
 
   d->m_parent = dynamic_cast<KToolBar*>(_parent);
@@ -148,7 +138,8 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   d = new KToolBarButtonPrivate;
 
   d->m_id       = _id;
-  QToolButton::setTextLabel(txt);
+  QToolButton::setText(txt);
+  QToolButton::setToolTip(txt);
 
   d->m_parent = dynamic_cast<KToolBar*>(_parent);
   if (d->m_parent) {
@@ -183,7 +174,7 @@ void KToolBarButton::initStyleOption(QStyleOptionToolButton* opt) const
   opt->font      = KGlobalSettings::toolBarFont();
   opt->icon      = icon();
   opt->iconSize  = QSize(d->m_iconSize, d->m_iconSize);
-  opt->text      = textLabel();
+  opt->text      = text();
   if (d->m_iconText == KToolBar::IconTextBottom) {
     opt->toolButtonStyle = Qt::ToolButtonTextUnderIcon;
   } else if (d->m_iconText == KToolBar::IconOnly)
@@ -237,13 +228,13 @@ void KToolBarButton::modeChange()
     QFontMetrics fm(tmp_font);
 
     text_height = fm.lineSpacing();
-    text_width  = fm.width(textLabel());
+    text_width  = fm.width(text());
 
     // none of the other modes want tooltips
   }
   else
   {
-    setToolTip(textLabel());
+    setToolTip(text());
   }
 
   switch (d->m_iconText)
@@ -290,7 +281,9 @@ void KToolBarButton::setTextLabel( const QString& text, bool tipToo)
   if (txt.endsWith(QLatin1String("...")))
     txt.truncate(txt.length() - 3);
 
-  QToolButton::setTextLabel(txt, tipToo);
+  QToolButton::setText(txt);
+  if (tipToo)
+    QToolButton::setToolTip(txt);
   update();
 }
 
@@ -314,73 +307,15 @@ void KToolBarButton::setIcon( const QString &icon )
         d->m_iconName, KIcon::Toolbar, d->m_iconSize ));
 }
 
-
-// remove?
-void KToolBarButton::setPixmap( const QPixmap &pixmap )
+void KToolBarButton::setMenu(QMenu *p, bool)
 {
-  if( pixmap.isNull()) // called by QToolButton
-  {
-    QToolButton::setPixmap( pixmap );
-    return;
-  }
-  QIcon set = iconSet();
-  set.setPixmap( pixmap, QIcon::Automatic, QIcon::Active );
-  QToolButton::setIcon( set );
-}
-
-void KToolBarButton::setDefaultPixmap( const QPixmap &pixmap )
-{
-  QIcon set = iconSet();
-  set.setPixmap( pixmap, QIcon::Automatic, QIcon::Normal );
-  QToolButton::setIcon( set );
-}
-
-void KToolBarButton::setDisabledPixmap( const QPixmap &pixmap )
-{
-  QIcon set = iconSet();
-  set.setPixmap( pixmap, QIcon::Automatic, QIcon::Disabled );
-  QToolButton::setIcon( set );
-}
-
-void KToolBarButton::setDefaultIcon( const QString& icon )
-{
-  QIcon set = iconSet();
-  QPixmap pm;
-  if (d->m_parent && !(d->m_parent->objectName() == QLatin1String("mainToolBar")))
-    pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::MainToolbar,
-        d->m_iconSize );
-  else
-    pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::Toolbar,
-        d->m_iconSize );
-  set.setPixmap( pm, QIcon::Automatic, QIcon::Normal );
-  QToolButton::setIcon( set );
-}
-
-void KToolBarButton::setDisabledIcon( const QString& icon )
-{
-  QIcon set = iconSet();
-  QPixmap pm;
-  if (d->m_parent && !(d->m_parent->objectName()==QLatin1String("mainToolBar")))
-    pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::MainToolbar,
-        d->m_iconSize );
-  else
-    pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::Toolbar,
-        d->m_iconSize );
-  set.setPixmap( pm, QIcon::Automatic, QIcon::Disabled );
-  QToolButton::setIcon( set );
-}
-
-
-void KToolBarButton::setPopup(QMenu *p, bool)
-{
-  QToolButton::setPopup(p);
+  QToolButton::setMenu(p);
   QToolButton::setPopupMode(QToolButton::InstantPopup);
 }
 
-
 void KToolBarButton::setDelayedPopup (QMenu *p, bool)
 {
-  QToolButton::setPopup(p);
+  QToolButton::setMenu(p);
   QToolButton::setPopupMode(QToolButton::DelayedPopup);
 }
 
@@ -390,7 +325,7 @@ void KToolBarButton::leaveEvent(QEvent *)
   {
     d->m_isRaised = false;
     d->m_isActive = false;
-    repaint(false);
+    repaint();
   }
 
   emit highlighted(d->m_id, false);
@@ -412,7 +347,7 @@ void KToolBarButton::enterEvent(QEvent *)
       d->m_isActive = false;
     }
 
-    repaint(false);
+    repaint();
   }
   emit highlighted(d->m_id, true);
 }
@@ -424,7 +359,7 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
 
     // Popup the menu when the left mousebutton is pressed and the mouse
     // is moved by a small distance.
-    if (QToolButton::popup())
+    if (QToolButton::menu())
     {
       if (ev->type() == QEvent::MouseButtonPress)
       {
@@ -510,7 +445,7 @@ void KToolBarButton::paintEvent( QPaintEvent*/*e*/ )
   }
   if (isEnabled()) 	flags |= QStyle::State_Enabled;
   if (isChecked()) 	flags |= QStyle::State_On;
-  if (isEnabled() && hasMouse())	flags |= QStyle::State_Raised;
+  if (isEnabled() && testAttribute(Qt::WA_UnderMouse))	flags |= QStyle::State_Raised;
   if (hasFocus())	flags |= QStyle::State_HasFocus;
 
   // Draw a styled toolbutton
@@ -521,7 +456,7 @@ void KToolBarButton::paintEvent( QPaintEvent*/*e*/ )
 
   style()->drawComplexControl(QStyle::CC_ToolButton, &opt, &painter, this);
 
-  if (QToolButton::popup())
+  if (QToolButton::menu())
   {
     QStyle::State arrowFlags = QStyle::State_None;
 
@@ -545,7 +480,7 @@ void KToolBarButton::changeEvent(QEvent* e)
       if(!d->m_isSeparator)
       {
         modeChange();
-        repaint(false); // no need to delete it first therefore only false
+        repaint(); // no need to delete it first therefore only false
       }
       break;
     case QEvent::FontChange:
@@ -590,7 +525,7 @@ void KToolBarButton::setNoStyle(bool no_style)
 
     modeChange();
     d->m_iconText = KToolBar::IconTextRight;
-    repaint(false);
+    repaint();
 }
 
 void KToolBarButton::setRadio (bool f)

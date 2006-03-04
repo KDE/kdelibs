@@ -16,16 +16,16 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KMENU_H
-#define _KMENU_H
+#ifndef KMENU_H
+#define KMENU_H
 
 #include <QMenu>
 #include <QPointer>
 #include <QAction>
+
 #include <kpixmapeffect.h>
 #include <kpixmap.h>
 #include <kdelibs_export.h>
-
 
 /**
  * @short A menu with keyboard searching
@@ -85,20 +85,19 @@ public:
      * WARNING: though pre-existing keyboard shortcuts will not interfere with the
      * operation of this feature, they may be confusing to the user as the existing
      * shortcuts will not work.
-     * @since 3.1
      */
     void setKeyboardShortcutsEnabled(bool enable);
 
     /**
      * Enables execution of the menu item once it is uniquely specified.
      * Defaults to off.
-     * @since 3.1
      */
     void setKeyboardShortcutsExecute(bool enable);
 
     /**
      * Returns the context menu associated with this menu
-     * The data property of all actions inserted into the context menu is modified all the time to point to the action and menu it has been shown for
+     * The data property of all actions inserted into the context menu is modified
+     * all the time to point to the action and menu it has been shown for
      */
     QMenu* contextMenu();
 
@@ -109,31 +108,26 @@ public:
 
     /**
      * Hides the context menu if shown
-     * @since 3.2
      */
     void hideContextMenu();
 
     /**
      * Returns the KMenu associated with the current context menu
-     * @since 3.2
      */
     static KMenu* contextMenuFocus();
 
     /**
      * returns the QAction associated with the current context menu
-     * @since 3.2
      */
     static QAction* contextMenuFocusAction();
 
     /**
      * Return the state of the mouse buttons when the last menuitem was activated.
-     * @since 4.0
      */
     Qt::MouseButtons mouseButtons() const;
 
     /**
      * Return the state of the keyboard modifiers when the last menuitem was activated.
-     * @since 4.0
      */
     Qt::KeyboardModifiers keyboardModifiers() const;
 
@@ -143,14 +137,12 @@ Q_SIGNALS:
      * @param menu The menu that the context menu is about to be shown for
      * @param menuAction The action that the context menu is currently on
      * @param ctxMenu The context menu itself
-     * @since 3.2
      */
     void aboutToShowContextMenu(KMenu* menu, QAction* menuAction, QMenu* ctxMenu);
 
 protected:
     virtual void closeEvent(QCloseEvent *);
     virtual void keyPressEvent(QKeyEvent* e);
-    /// @since 3.4
     virtual void mouseReleaseEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual bool focusNextPrevChild( bool next );
@@ -160,9 +152,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 protected Q_SLOTS:
-    /// @since 3.1
     QString underlineText(const QString& text, uint length);
-    /// @since 3.1
     void resetKeyboardVars(bool noMatches = false);
     void actionHovered(QAction* action);
     void showCtxMenu(const QPoint &pos);

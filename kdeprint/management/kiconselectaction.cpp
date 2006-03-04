@@ -19,7 +19,8 @@
 
 #include "kiconselectaction.h"
 
-#include <q3popupmenu.h>
+#include <QMenu>
+
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <ktoolbar.h>
@@ -90,7 +91,7 @@ int KIconSelectAction::plug(QWidget* widget, int index)
 
 		createPopupMenu();
 		bar->insertButton(iconName, id, true, plainText(), index);
-		bar->getButton(id)->setPopup(d->m_menu, true);
+		bar->getButton(id)->setMenu(d->m_menu, true);
 		bar->setItemEnabled(id, isEnabled());
 		addContainer(bar, id);
 		connect(bar, SIGNAL(destroyed()), SLOT(slotDestroyed()));

@@ -41,7 +41,6 @@ class KListBox;
  * Five static convenience functions are provided: getText(), getInteger().
  * getDouble(), getItem() and getItemList().
  *
- * @since 3.2
  * @author Nadeem Hasan <nhasan@kde.org>
  */
 class KDEUI_EXPORT KInputDialog : public KDialog
@@ -133,7 +132,6 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @param parent    Parent of the dialog widget
      *
      * @return String user entered if Ok was pressed, else a null string
-     * @since 3.3
      */
     static QString getMultiLineText( const QString &caption,
         const QString &label, const QString &value=QString(),

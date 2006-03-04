@@ -30,8 +30,10 @@
 #ifndef KLINEEDIT_H
 #define KLINEEDIT_H
 
-#include <qlineedit.h>
+#include <QLineEdit>
+
 #include <kcompletion.h>
+
 class QAction;
 class QMenu;
 class KCompletionBox;
@@ -280,15 +282,12 @@ public:
      * you want the original text, use @ref originalText.
      *
      * @see QLineEdit
-     * @since 3.2
      */
     void setEnableSqueezedText( bool enable );
 
     /**
      * Returns true if text squeezing is enabled.
      * This is only valid when the widget is in read-only mode.
-     *
-     * @since 3.2
      */
     bool isSqueezedTextEnabled() const;
 
@@ -298,7 +297,6 @@ public:
      * returns the same thing as QLineEdit::text().
      *
      * @see QLineEdit
-     * @since 3.2
      */
     QString originalText() const;
 
@@ -308,7 +306,6 @@ public:
      * This will do nothing if a completion-box already exists.
      *
      * @param box The KCompletionBox to set
-     * @since 3.4
     */
     void setCompletionBox( KCompletionBox *box );
 
@@ -329,7 +326,6 @@ Q_SIGNALS:
 
     /**
      * Emitted whenever the completion box is activated.
-     * @since 3.1
      */
     void completionBoxActivated (const QString &);
 
@@ -432,7 +428,6 @@ public Q_SLOTS:
     /**
      * Squeezes @p text into the line edit.
      * This can only be used with read-only line-edits.
-     * @since 3.1
      */
     void setSqueezedText( const QString &text);
 
@@ -526,7 +521,6 @@ protected:
 
     /**
      * Whether in current state text should be auto-suggested
-     * @since 3.4
     */
     bool autoSuggest() const;
 

@@ -17,7 +17,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-
 #include "klistviewsearchline.h"
 
 #include <klistview.h>
@@ -27,14 +26,13 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <qapplication.h>
-#include <qtimer.h>
-#include <qmenu.h>
-#include <qlabel.h>
-#include <q3header.h>
-//Added by qt3to4:
+#include <QApplication>
+#include <QTimer>
+#include <QMenu>
+#include <QLabel>
 #include <QContextMenuEvent>
 #include <QList>
+#include <Q3Header>
 
 #define KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID 2004
 

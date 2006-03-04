@@ -19,9 +19,9 @@
 #ifndef kstdguiitem_h
 #define kstdguiitem_h
 
-#include <kdelibs_export.h>
+#include <QPair>
 
-#include <qpair.h>
+#include <kdelibs_export.h>
 
 class KGuiItem;
 
@@ -51,14 +51,7 @@ public:
         Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
         Apply, Clear, Help, Defaults, Close, Back, Forward, Print,
         Continue, Open, Quit, AdminMode, Reset, Delete, Insert,
-	Configure,    ///< @since 3.4
-        Find,         ///< @since 3.4
-	Stop,         ///< @since 3.4
-	Add,          ///< @since 3.4
-	Remove,       ///< @since 3.4
-	Test,         ///< @since 3.4
-	Properties,   ///< @since 3.4
-	Overwrite     ///< @since 3.5
+        Configure, Find, Stop, Add, Remove, Test, Properties, Overwrite
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -77,14 +70,8 @@ public:
     static KGuiItem defaults();
     static KGuiItem close();
     static KGuiItem print();
-    /**
-     * @since 3.4
-     */
     static KGuiItem properties();
     static KGuiItem reset();
-    /**
-     * @since 3.5
-     */
     static KGuiItem overwrite();
     /**
      * Returns a KGuiItem suiting for cases where code or functionality
@@ -101,7 +88,6 @@ public:
     /**
      * Returns a "delete" item. The short name is due to "delete" being a
      * reserved word in the C++ language.
-     * @since 3.3
      */
     static KGuiItem del();
 
@@ -133,7 +119,6 @@ public:
 
     /**
      * Returns a "configure" item.
-     * @since 3.4
      */
     static KGuiItem configure();
 
@@ -149,31 +134,26 @@ public:
 
     /**
     * Returns a "find" item.
-    * @since 3.4
     */
     static KGuiItem find();
 
     /**
     * Returns a "stop" item.
-    * @since 3.4
     */
     static KGuiItem stop();
 
     /**
     * Returns a "add" item.
-    * @since 3.4
     */
     static KGuiItem add();
 
     /**
     * Returns a "remove" item.
-    * @since 3.4
     */
     static KGuiItem remove();
 
     /**
     * Returns a "test" item.
-    * @since 3.4
     */
     static KGuiItem test();
 

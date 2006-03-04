@@ -26,9 +26,8 @@
 #ifndef kactionclasses_h
 #define kactionclasses_h
 
-#include <qkeysequence.h>
-#include <qwidget.h>
-#include <qpointer.h>
+#include <QWidget>
+#include <QPointer>
 
 #include <kguiitem.h>
 #include <kshortcut.h>
@@ -189,7 +188,6 @@ public:
      *
      * If hasIcon(), the icon is kept for the 'checked state', unless
      * @p checkedItem defines an icon explicitely. Same thing for tooltip and whatsthis.
-     * @since 3.3
      */
     void setCheckedState( const KGuiItem& checkedItem );
 
@@ -464,7 +462,6 @@ public:
      * Sets the maximum items that are visible at once if the action
      * is a combobox, that is the number of items in the combobox's viewport
      * Only works before the action is plugged
-     * @since 3.5
      */
     void setMaxComboViewCount( int n );
 
@@ -475,20 +472,18 @@ public:
 
     /**
      * @deprecated See setMenuAccelsEnabled .
-     * @since 3.1
      */
     void setRemoveAmpersandsInCombo( bool b ) KDE_DEPRECATED;
-    /// @since 3.1
+
     bool removeAmpersandsInCombo() const;
 
     /**
      * Sets whether any occurrence of the ampersand character ( &amp; ) in items
      * should be interpreted as keyboard accelerator for items displayed in a
      * menu or not.
-     * @since 3.1
      */
     void setMenuAccelsEnabled( bool b );
-    /// @since 3.1
+
     bool menuAccelsEnabled() const;
 
     virtual bool isShortcutConfigurable() const { return false; }
@@ -532,7 +527,6 @@ protected:
      * Depending on the menuAccelsEnabled property this method will return the
      * actions items in a way for inclusion in a combobox with the ampersand
      * character removed from all items or not.
-     * @since 3.1
      */
     QStringList comboItems() const;
 
@@ -831,7 +825,6 @@ public Q_SLOTS:
    *
    *  @param url The URL of the file
    *  @param name The user visible pretty name that appears before the URL
-   *  @since 3.5
    */
   void addURL( const KUrl& url, const QString& name = QString() );
 
@@ -1177,7 +1170,6 @@ private:
  * toolbar is shown or hidden, connect to the toggled(bool)
  * signal. It will be emitted after the toolbar's
  * visibility has changed, whenever it changes.
- * @since 3.1
  */
 class KDEUI_EXPORT KToggleToolBarAction : public KToggleAction
 {
@@ -1223,7 +1215,7 @@ private:
  * use the relevant QWidget function (showFullScreen etc.), do not
  * call directly the slot connected to the toggled() signal. The slot
  * still needs to explicitly set the window state though.
- * @since 3.2
+
  */
 class KDEUI_EXPORT KToggleFullScreenAction : public KToggleAction
 {
@@ -1336,8 +1328,6 @@ private:
  * with the clipboard history if klipper is running.
  * If klipper is not running, the menu has only one
  * item: the current clipboard content.
- *
- * @since 3.2
  */
 class KDEUI_EXPORT KPasteTextAction: public KAction
 {

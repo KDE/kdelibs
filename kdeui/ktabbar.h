@@ -21,17 +21,13 @@
 #ifndef KTABBAR_H
 #define KTABBAR_H
 
-#include <qtabbar.h>
-#include <qmap.h>
+#include <QTabBar>
 
 #include <kdelibs_export.h>
 
 class QTimer;
 class QPushButton;
 
-/**
- * @since 3.2
- */
 class KDEUI_EXPORT KTabBar: public QTabBar
 {
     Q_OBJECT

@@ -28,12 +28,11 @@
 
 #include <assert.h>
 
-#include <qcursor.h>
-#include <qclipboard.h>
-#include <qfontdatabase.h>
-#include <qobject.h>
-#include <qtimer.h>
-#include <qfile.h>
+#include <QClipboard>
+#include <QFontDatabase>
+#include <QTimer>
+#include <QFile>
+#include <QMimeData>
 
 #include <dcopclient.h>
 #include <dcopref.h>
@@ -53,7 +52,6 @@
 #include <kurl.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
-#include <QMimeData>
 
 class KToggleAction::KToggleActionPrivate
 {
@@ -1808,7 +1806,7 @@ int KActionMenu::plug( QWidget* widget, int index )
     if (delayed()) {
         bar->setDelayedPopup( id_, popupMenu(), stickyMenu() );
     } else {
-        bar->getButton(id_)->setPopup(popupMenu(), stickyMenu() );
+        bar->getButton(id_)->setMenu(popupMenu(), stickyMenu() );
     }
 
     if ( m_parentCollection )
@@ -1932,7 +1930,7 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
     if (delayed()) {
         bar->setDelayedPopup( id_, popupMenu(), stickyMenu() );
     } else {
-        bar->getButton(id_)->setPopup(popupMenu(), stickyMenu());
+        bar->getButton(id_)->setMenu(popupMenu(), stickyMenu());
     }
 
     if ( !whatsThis().isEmpty() )

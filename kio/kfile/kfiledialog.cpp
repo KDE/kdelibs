@@ -28,15 +28,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <qcheckbox.h>
-#include <qcombobox.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qpixmap.h>
-#include <qtextcodec.h>
-#include <qtimer.h>
-#include <q3filedialog.h>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -1339,8 +1333,8 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
                                           const QString& caption)
 {
 #ifdef Q_WS_WIN
-    return Q3FileDialog::getExistingDirectory(startDir, parent, "getExistingDirectory",
-                                             caption, true, true);
+    return QFileDialog::getExistingDirectory(parent, caption,
+                                             startDir, ShowDirsOnly);
 #else
     KUrl url = KDirSelectDialog::selectDirectory(startDir, true, parent,
                                                  caption);
@@ -2183,7 +2177,7 @@ void KFileDialog::toggleBookmarks(bool show)
         toolbar->insertButton(QLatin1String("bookmark"),
                               (int)HOTLIST_BUTTON, true,
                               i18n("Bookmarks"), 5);
-        toolbar->getButton(HOTLIST_BUTTON)->setPopup(d->bookmarkHandler->menu(),
+        toolbar->getButton(HOTLIST_BUTTON)->setMenu(d->bookmarkHandler->menu(),
                                                      true);
         toolbar->getButton(HOTLIST_BUTTON)->setWhatsThis(                        i18n("<qt>This button allows you to bookmark specific locations. "
                                 "Click on this button to open the bookmark menu where you may add, "

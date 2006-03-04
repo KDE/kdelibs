@@ -20,9 +20,9 @@
 #ifndef KLISTVIEW_H
 #define KLISTVIEW_H
 
-#include <q3listview.h>
+#include <Q3ListView>
+#include <Q3PtrList>
 
-#include <q3ptrlist.h>
 #include <kdelibs_export.h>
 
 class Q3DragObject;
@@ -158,8 +158,6 @@ public:
    * visibility. Set to false to only return items that are isVisible().
    *
    * @return a list of all selected listview items
-   *
-   * @since 3.4
    */
   QList<Q3ListViewItem *> selectedItems(bool includeHiddenItems = true ) const;
 
@@ -188,8 +186,6 @@ public:
   /**
    * @return the lineedit used for inline renaming.
    * Use that to setup a KCompletion or QValidator for the lineedit
-   *
-   * @since 3.2
    */
   KLineEdit* renameLineEdit() const;
 
@@ -380,16 +376,12 @@ public:
   /**
    * Set to true if the currently sorted column should be drawn shaded. Defaults to true
    * @param shadeSortColumn True if sort column should be shaded.
-   *
-   * @since 3.4
    */
   void setShadeSortColumn(bool shadeSortColumn);
 
   /**
    * See if the sort column should be drawn shaded
    * @return true if the sort column should be shaded
-   *
-   * @since 3.4
    */
   bool shadeSortColumn(void) const;
 Q_SIGNALS:
@@ -632,13 +624,11 @@ public Q_SLOTS:
 
   /**
    * Enable/disable tabbing between editable cells
-   * @since 3.1
    */
   void setTabOrderedRenaming(bool b);
 
   /**
    * Returns whether tab ordered renaming is enabled
-   * @since 3.1
    */
   bool tabOrderedRenaming() const;
 
@@ -875,14 +865,12 @@ protected:
    * AutoSelection. Please don't call this unless you have good reasons to
    * override the system wide setting for AutoSelection.
    * @see resetAutoSelection()
-   * @since 3.2
    */
   void disableAutoSelection();
 
   /**
    * Reset AutoSelection to the system wide setting.
    * @see disableAutoSelection()
-   * @since 3.2
    */
   void resetAutoSelection();
 
@@ -1050,7 +1038,6 @@ public:
    * ### could be merged with above (column = -1) to be source compatible
    * ### but will only work if sort-shading is not used or the listView has
    * ### only 1 column
-   * @since 3.4
    */
   QColor backgroundColor(int column);
 

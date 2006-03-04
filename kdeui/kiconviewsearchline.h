@@ -32,8 +32,6 @@ class Q3IconViewItem;
  *
  * No changes to the application other than instantiating this class with an
  * appropriate QIconView should be needed.
- *
- * @since 3.3
  */
 class KDEUI_EXPORT KIconViewSearchLine : public KLineEdit
 {

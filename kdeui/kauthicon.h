@@ -15,13 +15,11 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef _KAUTHICON_H
-#define _KAUTHICON_H
+#ifndef KAUTHICON_H
+#define KAUTHICON_H
 
-#include <qfileinfo.h>
-#include <qpixmap.h>
-#include <qstring.h>
-#include <qwidget.h>
+#include <QFileInfo>
+#include <QPixmap>
 
 #include <kdelibs_export.h>
 
@@ -153,7 +151,6 @@ public:
 
   /**
   * return the filename of the currently watched file.
-  * @since 3.4
   */
   QString fileName() const { return fi.fileName(); }
 

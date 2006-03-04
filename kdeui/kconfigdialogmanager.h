@@ -23,6 +23,7 @@
 
 #include <QObject>
 #include <QHash>
+
 #include "kdelibs_export.h"
 
 class KConfigSkeleton;
@@ -68,8 +69,6 @@ class QWidget;
  * KConfigDialogManager::changedMap()->insert("KColorButton", SIGNAL(changed(const QColor &)));
  * \endcode
  *
-
- * @since 3.2
  * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
  * @author Waldo Bastian <bastian@kde.org>
  */

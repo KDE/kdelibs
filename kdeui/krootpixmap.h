@@ -10,10 +10,6 @@
 #ifndef KROOTPIXMAP_H
 #define KROOTPIXMAP_H
 
-#include <qobject.h>
-#include <qcolor.h>
-#include <qwindowdefs.h>
-#include <qrect.h>
 #include <kdelibs_export.h>
 #include <kwinmodule.h>
 
@@ -94,12 +90,12 @@ public:
     bool customPainting() const { return m_bCustomPaint; }
 
 
-    /** @since 3.2
+    /**
      * @return the fade color.
      */
     const QColor &color() const { return m_FadeColor; }
 
-    /** @since 3.2
+    /**
      * @return the color opacity.
      */
     double opacity() const { return m_Fade; }

@@ -150,13 +150,13 @@ namespace KStdAction
 
 		// Help Menu
 		Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE,
-		TipofDay, ///< @since 3.1
+		TipofDay,
 
 		// Another settings menu item
 		ConfigureNotifications,
-		FullScreen, ///< @since 3.2
-		Clear, ///< @since 3.2
-        PasteText ///< @since 3.2
+		FullScreen,
+		Clear,
+        PasteText
 	};
 
 	/**
@@ -192,7 +192,6 @@ namespace KStdAction
        /**
          * Returns a list of all standard names. Used by KAccelManager
          * to give those heigher weight.
-	 * @since 3.1
         */
         KDEUI_EXPORT QStringList stdNames();
 
@@ -344,14 +343,12 @@ namespace KStdAction
 	* Paste the contents of clipboard at the current mouse or cursor
 	* position. Provide a button on the toolbar with the clipboard history
 	* menu if Klipper is running.
-	* @since 3.2
 	*/
 	KDEUI_EXPORT KAction *pasteText(const QObject *recvr, const char *slot,
 		KActionCollection* parent, const char *name = 0 );
 
 	/**
 	* Clear the content of the focus widget
-	* @since 3.2
 	*/
 	KDEUI_EXPORT KAction *clear(const QObject *recvr, const char *slot,
 		KActionCollection* parent, const char *name = 0 );
@@ -540,7 +537,6 @@ namespace KStdAction
 
 	/**
 	* Switch to/from full screen mode
-	* @since 3.2
 	*/
 	KDEUI_EXPORT KToggleFullScreenAction *fullScreen(const QObject *recvr, const char *slot,
 					KActionCollection* parent, QWidget* window, const char *name = 0 );
@@ -576,7 +572,6 @@ namespace KStdAction
 
 	/**
 	* The Configure Notifications dialog.
-	* @since 3.1
 	*/
 	KDEUI_EXPORT KAction *configureNotifications(const QObject *recvr,
 					const char *slot,
@@ -603,7 +598,6 @@ namespace KStdAction
 
 	/**
 	* Display "Tip of the Day"
-	* @since 3.1
 	*/
 	KDEUI_EXPORT KAction *tipOfDay(const QObject *recvr, const char *slot,
 				KActionCollection* parent, const char *name = 0 );

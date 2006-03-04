@@ -21,8 +21,8 @@
  *  Boston, MA 02110-1301, USA.
  *
  */
-#ifndef _KDIALOG_BASE_H_
-#define _KDIALOG_BASE_H_
+#ifndef KDIALOG_BASE_H
+#define KDIALOG_BASE_H
 
 #include <kdialog.h>
 #include <kjanuswidget.h>
@@ -253,7 +253,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param user1 User button1 text item.
      * @param user2 User button2 text item.
      * @param user3 User button3 text item.
-     * @since: 3.2
      */
 
     KDialogBase( KDialogBase::DialogType dialogFace, Qt::WFlags f,
@@ -674,7 +673,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * (that is, if no KGuiItem is given) KStdGuiItem::ok() is used.
      *
      * @param item KGuiItem.
-     * @since 3.2
      * @deprecated  use setButtonGuiItem
      */
     void setButtonOK( const KGuiItem &item = KStdGuiItem::ok() ) KDE_DEPRECATED;
@@ -687,7 +685,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * (that is, if no KGuiItem is given) KStdGuiItem::apply() is used.
      *
      * @param item KGuiItem.
-     * @since 3.2
      * @deprecated  use setButtonGuiItem
      */
     void setButtonApply( const KGuiItem &item = KStdGuiItem::apply() ) KDE_DEPRECATED;
@@ -700,7 +697,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * (that is, if no KGuiItem is given) KStdGuiItem::cancel() is used.
      *
      * @param item KGuiItem.
-     * @since 3.2
      * @deprecated  use setButtonGuiItem
      */
     void setButtonCancel( const KGuiItem &item = KStdGuiItem::cancel() ) KDE_DEPRECATED;
@@ -754,7 +750,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * entries cannot be closed again, though.
      *
      * @param persist If true the tree always stays unfolded.
-     * @since 3.2
      */
     void unfoldTreeList( bool persist = false );
 
@@ -775,8 +770,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param recv     The object that is to receive the signal when the button
      *                 is clicked.
      * @param slot     The slot to connect to the clicked signal of the button.
-     *
-     * @since 3.2
      */
     void addButtonBelowList( const QString & text, QObject * recv, const char * slot );
 
@@ -788,8 +781,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param recv     The object that is to receive the signal when the button
      *                 is clicked.
      * @param slot     The slot to connect to the clicked signal of the button.
-     *
-     * @since 3.2
      */
     void addButtonBelowList( const KGuiItem & guiitem, QObject * recv, const char * slot );
 
@@ -879,7 +870,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     * @param config The KConfig object to read from
     * @param groupName Name of the group to read from. The old group
     *                  of KGlobal::config is preserved.
-    * @since 3.2
     * @deprecated use restoreDialogSize
     */
    QSize configDialogSize( KConfig& config, const QString& groupName ) const KDE_DEPRECATED;
@@ -904,7 +894,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     * configDialogSize to read the size.
     * @param global Set to true if the entry should go to the global config.
     *        Default is false.
-    * @since 3.2
     * @deprecated use restoreDialogSize( KConfigBase )
     */
    void saveDialogSize( KConfig& config, const QString& groupName,
@@ -921,7 +910,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * slots like closeClicked() and hidden().
      * You should not use the dialog any more after
      * calling this function.
-     * @since 3.1
      */
     void delayedDestruct();
 
@@ -949,8 +937,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     /**
      * The current page being shown has changed. This signal is only emitted for the TreeList
      * and IconList faces.
-     *
-     * \since 4.0
      */
     void currentPageChanged(QWidget *page);
 

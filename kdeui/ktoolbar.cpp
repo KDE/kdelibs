@@ -148,9 +148,8 @@ public:
   QList<QWidget *> idleButtons;
 };
 
-KToolBarSeparator::KToolBarSeparator(Qt::Orientation o , bool l, Q3ToolBar *parent,
-                                     const char* name )
-    :Q3Frame( parent, name ), line( l )
+KToolBarSeparator::KToolBarSeparator(Qt::Orientation o , bool l, Q3ToolBar *parent)
+    :Q3Frame( parent ), line( l )
 {
     connect( parent, SIGNAL(orientationChanged(Qt::Orientation)),
              this, SLOT(setOrientation(Qt::Orientation)) );
@@ -402,14 +401,16 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
 
 int KToolBar::insertSeparator(int index, int id)
 {
-    QWidget *w = new KToolBarSeparator( orientation(), false, this, "tool bar separator" );
+    QWidget *w = new KToolBarSeparator( orientation(), false, this );
+    setObjectName( "tool bar separator" );
     insertWidgetInternal( w, index, id );
     return index;
 }
 
 int KToolBar::insertLineSeparator(int index, int id)
 {
-    QWidget *w = new KToolBarSeparator( orientation(), true, this, "tool bar separator" );
+    QWidget *w = new KToolBarSeparator( orientation(), true, this );
+    setObjectName( "tool bar separator" );
     insertWidgetInternal( w, index, id );
     return index;
 }

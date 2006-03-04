@@ -18,8 +18,9 @@
 #ifndef KSYSTEMTRAY_H
 #define KSYSTEMTRAY_H
 
+#include <QLabel>
+
 #include <kglobal.h>
-#include <qlabel.h>
 
 class KActionCollection;
 class KMenu;
@@ -94,7 +95,6 @@ public:
     /**
        Easy access to the actions in the context menu
        Currently includes KStdAction::Quit and minimizeRestore
-       @since 3.1
     */
     KActionCollection* actionCollection();
 
@@ -119,8 +119,6 @@ public:
      * The icon is applied the panel effect as it should only be used to be shown in the
      * system tray.
      * It's commonly used in the form : systray->setPixmap( systray->loadIcon( "mysystray" ) );
-     *
-     * @since 3.2
      */
     static QPixmap loadIcon( const QString &icon, KInstance *instance=KGlobal::instance() );
 
@@ -128,7 +126,6 @@ Q_SIGNALS:
     /**
      * Emitted when quit is selected in the menu. If you want to perform any other
      * action than to close the main application window please connect to this signal.
-     * @since 3.1
      */
     void quitSelected();
 
@@ -139,17 +136,14 @@ public Q_SLOTS:
      * shows it or activates it depending on the window state). The default implementation
      * of mousePressEvent() calls toggleActive() when the tray icon is left-clicked, use
      * it when reimplementing mousePressEvent().
-     * @since 3.3
      */
     void toggleActive();
     /**
      * Activates the window associated with this system tray icon, regardless of its current state.
-     * @since 3.3
      */
     void setActive();
     /**
      * Hides the window associated with this system tray icon, regardless of its current state.
-     * @since 3.3
      */
     void setInactive();
 
@@ -171,8 +165,6 @@ protected:
      */
     void mouseReleaseEvent( QMouseEvent * );
 
-
-
     /**
        Makes it easy to adjust some menu items right before the
        context menu becomes visible.
@@ -193,8 +185,6 @@ private:
     void activateOrHide();
     void minimizeRestore( bool restore );
     KMenu* menu;
-    // minimizeRestoreId is no longer needed. remove in KDE 4.0
-    int minimizeRestoreId;
     uint hasQuit :1;
 protected:
     virtual void virtual_hook( int id, void* data );

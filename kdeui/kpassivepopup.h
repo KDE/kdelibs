@@ -11,10 +11,10 @@
 #ifndef KPASSIVEPOPUP_H
 #define KPASSIVEPOPUP_H
 
-#include <qframe.h>
+#include <QFrame>
 
-#include <kdelibs_export.h>
 #include <kvbox.h>
+#include <kdelibs_export.h>
 
 class QBoxLayout;
 class QTimer;
@@ -61,7 +61,6 @@ class KVBox;
  *    pop->show();
  * \endcode
  *
- * @since 3.1
  * @author Richard Moore, rich@kde.org
  * @author Sascha Cunz, sascha.cunz@tiscali.de
  */
@@ -74,7 +73,6 @@ class KDEUI_EXPORT KPassivePopup : public QFrame
 public:
     /**
      * Styles that a KPassivePopup can have.
-     * @since 3.5
      */
     enum PopupStyle
     {
@@ -95,13 +93,11 @@ public:
 
     /**
      * Creates a popup for the specified widget.
-     * @since 3.5
      */
     KPassivePopup( int popupStyle, QWidget *parent=0, Qt::WFlags f=0 );
 
     /**
      * Creates a popup for the specified window.
-     * @since 3.5
      */
     KPassivePopup( int popupStyle, WId parent, Qt::WFlags f=0 );
 
@@ -175,7 +171,6 @@ public:
     /**
      * Sets the anchor of this balloon. The balloon tries automatically to adjust
      * itself somehow around the point.
-     * @since 3.5
      */
     void setAnchor( const QPoint& anchor );
 
@@ -275,7 +270,6 @@ public Q_SLOTS:
 
     /**
      * Shows the popup in the given point
-     * @since 3.5
      */
     void show(const QPoint &p);
 
@@ -324,7 +318,6 @@ protected:
 
     /**
      * Updates the transparency mask. Unused if PopupStyle == Boxed
-     * @since 3.5
      */
     void updateMask();
 

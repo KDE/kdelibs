@@ -21,9 +21,10 @@
 #ifndef KSTATUSBAR_H
 #define KSTATUSBAR_H
 
-#include <qstatusbar.h>
+#include <QStatusBar>
 #include <QHash>
-#include <qlabel.h>
+#include <QLabel>
+
 #include <kdelibs_export.h>
 
 class KStatusBar;
@@ -157,8 +158,6 @@ public:
   void removeItem( int id );
 
   /**
-   *  @since 3.2
-   *
    *  Returns true if an item with @p id exists already in KStatusBar,
    *  otherwise returns false.
    *

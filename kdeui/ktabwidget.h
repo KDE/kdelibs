@@ -21,8 +21,7 @@
 #ifndef KTABWIDGET_H
 #define KTABWIDGET_H
 
-#include <qtabwidget.h>
-#include <qstringlist.h>
+#include <QTabWidget>
 
 #include <kdelibs_export.h>
 
@@ -39,8 +38,6 @@ class QTab;
  * It is recommended to use KTabWidget instead of QTabWidget unless you have a good reason not to.
  *
  * See also the QTabWidget documentation.
- *
- * @since 3.2
  */
 class KDEUI_EXPORT KTabWidget : public QTabWidget
 {
@@ -61,13 +58,11 @@ public:
     /*!
      * Set the tab of the given widget to \a color.
      * This is simply a convenience method for QTabBar::setTabTextColor.
-     * @since 4.0
      */
     void setTabTextColor( int index, const QColor& color );
     /*!
      * Returns the tab color for the given widget.
      * This is simply a convenience method for QTabBar::tabTextColor.
-     * @since 4.0
      */
     QColor tabTextColor( int index ) const;
 
@@ -92,27 +87,23 @@ public:
     /*!
       Returns true if closing the current tab activates the previous
       actice tab instead of the one to the right.
-      @since 3.3
     */
     bool tabCloseActivatePrevious() const;
 
     /*!
       Returns true if calling setTitle() will resize tabs
       to the width of the tab bar.
-      @since 3.4
     */
     bool automaticResizeTabs() const;
 
     /*!
       If \a hide is true, the tabbar is hidden along with any corner
       widgets.
-      @since 3.4
     */
     void setTabBarHidden( bool hide );
 
     /*!
       Returns true if the tabbar is hidden.
-      @since 3.4
     */
     bool isTabBarHidden() const;
 
@@ -175,7 +166,6 @@ public Q_SLOTS:
     /*!
       Removes the widget, reimplemented for
       internal reasons (keeping labels in sync).
-      @since 4.0
     */
     virtual void removeTab(int index);
 
@@ -206,7 +196,6 @@ public Q_SLOTS:
     /*!
       If \a previous is true, closing the current tab activates the
       previous active tab instead of the one to the right.
-      @since 3.3
     */
     void setTabCloseActivatePrevious( bool previous );
 
@@ -215,7 +204,6 @@ public Q_SLOTS:
 
       Does not work reliable with "QTabWidget* foo=new KTabWidget()" and if
       you change tabs via the tabbar or by accessing tabs directly.
-      @since 3.4
     */
     void setAutomaticResizeTabs( bool enable );
 
@@ -260,7 +248,6 @@ Q_SIGNALS:
 
     /*!
       A double left mouse button click was performed over empty space besides tabbar.
-      @since 3.3
     */
     void mouseDoubleClick();
 

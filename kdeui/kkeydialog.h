@@ -85,7 +85,6 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 	 * Insert an action collection, i.e. add all its actions to the ones
 	 * already associated with the KKeyChooser object.
 	 * @param title subtree title of this collection of shortcut.
-	 * @since 3.1
 	 */
     bool insert( KActionCollection *, const QString &title = QString());
 
@@ -115,8 +114,6 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
          * @param warnUser if true, the user will be warned about a conflict and given a chance
          *        to reassign the shortcut
          * @param parent parent widget for the warning dialog
-         *
-         * @since 3.2
          */
         static bool checkGlobalShortcutsConflict( const KShortcut& cut, bool warnUser, QWidget* parent );
 
@@ -130,8 +127,6 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
          * @param warnUser if true, the user will be warned about a conflict and given a chance
          *        to reassign the shortcut
          * @param parent parent widget for the warning dialog
-         *
-         * @since 3.2
          */
         static bool checkStandardShortcutsConflict( const KShortcut& cut, bool warnUser, QWidget* parent );
 
@@ -162,7 +157,6 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 	bool insert( KAccel* );
 	bool insert( KGlobalAccel* );
 	bool insert( KShortcutList* );
-	/// @since 3.1
 	void buildListView( uint iList, const QString &title = QString() );
 
 	void readGlobalKeys();
@@ -287,7 +281,6 @@ public:
          * @param title the title associated with the collection (if null, the
          * KAboutData::progName() of the collection's instance is used)
          * @return true :)
-	 * @since 3.1
 	 */
         bool insert(KActionCollection *, const QString &title = QString());
 

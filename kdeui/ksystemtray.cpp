@@ -38,8 +38,7 @@
 #include <kiconloader.h>
 #include <kconfig.h>
 
-#include <qapplication.h>
-#include <qevent.h>
+#include <QMouseEvent>
 
 class KSystemTrayPrivate
 {

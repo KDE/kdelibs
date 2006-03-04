@@ -54,7 +54,6 @@ class KTimezoneWidgetPrivate;
  * \endcode
  *
  * @author S.R.Haque <srhaque@iee.org>
- * @since 3.5
  */
 class KDEUI_EXPORT KTimezoneWidget :
     public QTreeWidget

@@ -22,10 +22,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KFILEDIALOG_H__
-#define __KFILEDIALOG_H__
-
-#include <qstring.h>
+#ifndef KFILEDIALOG_H
+#define KFILEDIALOG_H
 
 #include <kdialog.h>
 #include <kfile.h>
@@ -125,7 +123,6 @@ public:
       *               When creating this widget, you don't need to specify a parent,
       *               since the widget's parent will be set automatically by KFileDialog.
       * @param parent The parent widget of this dialog
-      * @since 4.0
       */
     KFileDialog(const QString& startDir, const QString& filter,
 		QWidget *parent, QWidget* widget=0);
@@ -358,8 +355,6 @@ public:
      * parent widget. This can be the case if the parent widget is
      * a widget in another process or if the parent widget is a
      * non-Qt widget. For example, in a GTK program.
-     *
-     * @since 3.4
     */
    static QString getOpenFileNameWId(const QString& startDir,
                                      const QString& filter,
@@ -497,7 +492,6 @@ public:
     /**
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
-     * @since 3.4
      */
     static QString getSaveFileNameWId(const QString& dir, const QString& filter,
                                      WId parent_id,
@@ -578,7 +572,6 @@ public:
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
-     * @since 3.1
      */
     static KUrl getExistingURL(const QString & startDir = QString(),
                                   QWidget * parent = 0,
@@ -688,7 +681,6 @@ public:
      * to not use the speed-bar.
      * @see KUrlBar
      * @see KUrlBar::insertDynamicItem
-     * @since 3.2
      */
     KUrlBar *speedBar();
 
@@ -714,7 +706,6 @@ public:
      *        will contain the string to be used later for KRecentDir::dir()
      * @return The URL that should be listed by default (e.g. by KFileDialog or
      *         KDirSelectDialog).
-     * @since 3.1
      */
     static KUrl getStartURL( const QString& startDir, QString& recentDirClass );
 
@@ -777,7 +768,6 @@ protected:
 
     /**
       * Perform basic initialization tasks. Called by constructors.
-      * @since 3.1
       */
     void init(const QString& startDir, const QString& filter, QWidget* widget);
 
@@ -825,7 +815,6 @@ protected:
 
     /**
      * Returns the absolute version of the URL specified in locationEdit.
-     * @since 3.2
      */
     KUrl getCompleteURL(const QString&);
 
@@ -833,7 +822,6 @@ protected:
      * Returns the filename extension associated with the currentFilter().
      * QString() is returned if an extension is not available or if
      * operationMode() != Saving.
-     * @since 3.2
      */
     QString currentFilterExtension();
 
@@ -843,7 +831,6 @@ protected:
      * == Saving and enabled if an extension _will_ be associated with the
      * currentFilter(), _after_ this call).  You should call this after
      * filterWidget->setCurrentItem().
-     * @since 3.2
      */
     void updateAutoSelectExtension();
 
@@ -860,16 +847,8 @@ protected Q_SLOTS:
     void fileSelected(const KFileItem *i);
     void slotStatResult(KIO::Job* job);
     void slotLoadingFinished();
-
     void fileCompletion( const QString& );
-    /**
-     * @since 3.1
-     */
     void toggleSpeedbar( bool );
-
-    /**
-     * @since 3.4
-     */
     void toggleBookmarks(bool show);
 
     virtual void slotOk();

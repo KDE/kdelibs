@@ -20,12 +20,10 @@
 #ifndef KDATETBL_H
 #define KDATETBL_H
 
-
-#include <qvalidator.h>
-#include <q3gridview.h>
-#include <qlineedit.h>
-#include <qdatetime.h>
-#include <qcolor.h>
+#include <QValidator>
+#include <QLineEdit>
+#include <QDateTime>
+#include <Q3GridView>
 
 #include <kdelibs_export.h>
 
@@ -253,13 +251,11 @@ class KDEUI_EXPORT KDateTable : public Q3GridView
 public:
     /**
      * The constructor.
-     * @since 4.0
      */
     explicit KDateTable(QWidget* parent = 0);
 
     /**
      * The constructor.
-     * @since 4.0
      */
     explicit KDateTable(const QDate&, QWidget* parent = 0);
 
@@ -287,7 +283,6 @@ public:
 
     /**
      * @returns the selected date.
-     * @since 4.0
      */
     const QDate& date() const;
 
@@ -296,8 +291,6 @@ public:
      *
      * When it's enabled, this object emits a aboutToShowContextMenu signal
      * where you can fill in the menu items.
-     *
-     * @since 3.2
      */
     void setPopupMenuEnabled( bool enable );
 
@@ -311,15 +304,11 @@ public:
     /**
      * Makes a given date be painted with a given foregroundColor, and background
      * (a rectangle, or a circle/ellipse) in a given color.
-     *
-     * @since 3.2
      */
     void setCustomDatePainting( const QDate &date, const QColor &fgColor, BackgroundMode bgMode=NoBgMode, const QColor &bgColor=QColor());
 
     /**
      * Unsets the custom painting of a date so that the date is painted as usual.
-     *
-     * @since 3.2
      */
     void unsetCustomDatePainting( const QDate &date );
 
@@ -398,8 +387,6 @@ Q_SIGNALS:
      * A popup menu for a given date is about to be shown (as when the user
      * right clicks on that date and the popup menu is enabled). Connect
      * the slot where you fill the menu to this signal.
-     *
-     * @since 3.2
      */
     void aboutToShowContextMenu( KMenu * menu, const QDate &date);
 

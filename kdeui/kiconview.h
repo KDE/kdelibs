@@ -18,8 +18,7 @@
 #ifndef KICONVIEW_H
 #define KICONVIEW_H
 
-#include <qcursor.h>
-#include <q3iconview.h>
+#include <Q3IconView>
 
 #include <kdelibs_export.h>
 
@@ -85,7 +84,6 @@ public:
    /**
     * Set the maximum number of lines that will be used to display icon text.
     * Setting this value will enable word-wrap, too.
-    * @since 3.3
     *
     * @param n Number of lines
     */
@@ -93,7 +91,6 @@ public:
 
    /**
     * @return The height of icon text in lines
-    * @since 3.3
     */
   int iconTextHeight() const;
 
@@ -252,7 +249,6 @@ public:
     * This may be useful if you want to change the pixmap later without breaking
     * the layout. A possible use of this function is to replace a fileItem icon
     * by a larger pixmap (preview).
-    * @since 3.3
     *
     * @param size The size to use
     */
@@ -260,7 +256,6 @@ public:
 
    /**
     * @return The size set by setPixmapSize() or QSize( 0, 0 )
-    * @since 3.3
     */
     QSize pixmapSize() const;
 

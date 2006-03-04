@@ -20,7 +20,7 @@
 #ifndef KCOLORBUTTON_H
 #define KCOLORBUTTON_H
 
-#include <qpushbutton.h>
+#include <QPushButton>
 
 #include <kdelibs_export.h>
 
@@ -51,10 +51,9 @@ public:
      * Creates a color button with an initial color @p c.
      */
     KColorButton( const QColor &c, QWidget *parent );
-    
+
     /**
      * Creates a color button with an initial color @p c and default color @p defaultColor.
-     * @since 3.1
      */
     KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent );
 
@@ -74,13 +73,11 @@ public:
     /**
      * Returns the default color or an invalid color
      * if no default color is set.
-     * @since 3.4
      */
     QColor defaultColor() const;
 
     /**
      * Sets the default color to @p c.
-     * @since 3.4
      */
     void setDefaultColor( const QColor &c );
 

@@ -19,7 +19,7 @@
 #ifndef karrowbutton_h
 #define karrowbutton_h
 
-#include <qpushbutton.h>
+#include <QPushButton>
 
 #include <kdelibs_export.h>
 
@@ -64,7 +64,6 @@ class KDEUI_EXPORT KArrowButton : public QPushButton
 
 		/**
 		* Returns the arrow type
-		* @since 3.4
 		*/
 		Qt::ArrowType arrowType() const;
 

@@ -19,8 +19,10 @@
 */
 #ifndef KDATEPICKER_H
 #define KDATEPICKER_H
-#include <qdatetime.h>
-#include <qframe.h>
+
+#include <QDateTime>
+#include <QFrame>
+
 #include <kdelibs_export.h>
 
 class QLineEdit;
@@ -99,7 +101,6 @@ public:
   /**
    * @returns the KDateTable widget child of this KDatePicker
    * widget.
-   * @since 3.2
    */
   KDateTable *dateTable() const { return table; };
 
@@ -120,14 +121,12 @@ public:
    * method being called. This is mostly useful for toplevel datepickers
    * without a window manager decoration.
    * @see hasCloseButton
-   * @since 3.1
    */
   void setCloseButton( bool enable );
 
   /**
    * @returns true if a KDatePicker shows a close-button.
    * @see setCloseButton
-   * @since 3.1
    */
   bool hasCloseButton() const;
 
@@ -165,25 +164,10 @@ protected Q_SLOTS:
   void monthBackwardClicked();
   void yearForwardClicked();
   void yearBackwardClicked();
-  /**
-   * @since 3.1
-   */
   void selectMonthClicked();
-  /**
-   * @since 3.1
-   */
   void selectYearClicked();
-  /**
-   * @since 3.1
-   */
   void lineEnterPressed();
-  /**
-   * @since 3.2
-   */
   void todayButtonClicked();
-  /**
-   * @since 3.2
-   */
   void weekSelected(int);
 
 Q_SIGNALS:

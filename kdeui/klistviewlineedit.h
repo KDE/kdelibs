@@ -46,8 +46,6 @@ protected:
 	virtual void keyPressEvent(QKeyEvent *e);
 	virtual void paintEvent(QPaintEvent *e);
 	virtual bool event (QEvent *pe);
-
-	/// @since 3.1
 	void selectNextCell (Q3ListViewItem *pi, int column, bool forward);
 	void terminate(bool commit);
 	Q3ListViewItem *item;

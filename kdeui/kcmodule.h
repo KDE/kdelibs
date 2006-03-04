@@ -23,8 +23,7 @@
 #ifndef KCMODULE_H
 #define KCMODULE_H
 
-#include <qwidget.h>
-#include <QList>
+#include <QWidget>
 
 #include <kdelibs_export.h>
 
@@ -180,7 +179,6 @@ public:
 
   /**
    * This sets the KAboutData returned by aboutData()
-   * @since 3.3
    */
    void setAboutData( KAboutData* about );
 
@@ -224,7 +222,6 @@ public:
 
   /**
    * @return a list of @ref KConfigDialogManager's in use, if any.
-   * @since 3.4
    */
   const QList<KConfigDialogManager*>& configs() const;
 
@@ -234,7 +231,6 @@ protected:
    *
    * This function is useful if you need to handle multiple configuration files.
    *
-   * @since 3.3
    * @return a pointer to the KConfigDialogManager in use
    * @param config the KConfigSkeleton to use
    * @param widget the widget to watch
@@ -243,8 +239,6 @@ protected:
 
   /**
    * Sets the quick help.
-   *
-   * @since 3.3
    */
   void setQuickHelp( const QString& help );
 
@@ -273,14 +267,12 @@ protected Q_SLOTS:
 
   /**
    * Calling this slot is equivalent to emitting changed(true).
-   * @since 3.3
    */
   void changed();
 
   /**
    * A managed widget was changed, the widget settings and the current
    * settings are compared and a corresponding changed() signal is emitted
-   * @since 3.4
    */
    void widgetChanged();
 
@@ -323,14 +315,12 @@ protected:
 
   /**
    * Returns the changed state of automatically managed widgets in this dialog
-   * @since 3.5
    */
   bool managedWidgetChangeState() const;
 
   /**
    * Call this method when your manually managed widgets change state between
    * changed and not changed
-   * @since 3.5
    */
   void unmanagedWidgetChangeState(bool);
 

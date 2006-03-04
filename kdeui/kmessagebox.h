@@ -73,12 +73,8 @@ public:
    Notify = 1,        ///< Emit a KNotify event
    AllowLink = 2,     ///< The message may contain links.
    Dangerous = 4,     ///< The action to be confirmed by the dialog is a potentially destructive one
-   PlainCaption = 8,  /**< Do not use KApplication::makeStdCaption()
-   		           @since 3.4
-		       */
-   NoExec = 16        /**< Do not call exec() in createKMessageBox()
-			   @since 3.4
-		       */
+   PlainCaption = 8,  ///< Do not use KApplication::makeStdCaption()
+   NoExec = 16        ///< Do not call exec() in createKMessageBox()
  };
 
  Q_DECLARE_FLAGS(Options,Option)
@@ -123,7 +119,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
  static int questionYesNoWId(WId parent_id,
                           const QString &text,
@@ -175,7 +170,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
   static int questionYesNoCancelWId(WId parent_id,
                           const QString &text,
@@ -231,7 +225,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
  static int questionYesNoListWId(WId parent_id,
                           const QString &text,
@@ -283,7 +276,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
  static int warningYesNoWId(WId parent_id,
                          const QString &text,
@@ -339,7 +331,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
  static int warningYesNoListWId(WId parent_id,
                             const QString &text,
@@ -389,7 +380,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
  static int warningContinueCancelWId(WId parent_id,
                          const QString &text,
@@ -442,7 +432,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
  static int warningContinueCancelListWId(WId parent_id,
                          const QString &text,
@@ -499,7 +488,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
   static int warningYesNoCancelWId(WId parent_id,
                                 const QString &text,
@@ -547,8 +535,6 @@ public:
   * The default button is "Yes". Pressing "Esc" selects "Cancel"
   *
   * NOTE: The cancel button will always have the i18n'ed text '&Cancel'.
-  *
-  * @since 3.2
   */
   static int warningYesNoCancelList(QWidget *parent,
                                 const QString &text,
@@ -562,7 +548,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
   static int warningYesNoCancelListWId(WId parent_id,
                                 const QString &text,
@@ -604,8 +589,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  *
-  * @since 3.2
   */
   static void errorWId(WId parent_id,
                     const QString &text,
@@ -636,8 +619,6 @@ public:
   * The default button is "&OK". Pressing "Esc" selects the OK-button.
   *
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
-  *
-  * @since 3.4
   */
 
   static void errorList(QWidget *parent,
@@ -649,7 +630,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.4
   */
 
   static void errorListWId(WId parent_id,
@@ -693,7 +673,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
   static void detailedErrorWId(WId parent_id,
                     const QString &text,
@@ -719,7 +698,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
   static void queuedDetailedErrorWId( WId parent_id,
                     const QString &text,
@@ -756,7 +734,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
   static void sorryWId(WId parent_id,
                     const QString &text,
@@ -800,7 +777,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
   static void detailedSorryWId(WId parent_id,
                     const QString &text,
@@ -843,7 +819,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
   static void informationWId(WId parent_id,
                           const QString &text,
@@ -878,7 +853,6 @@ public:
   * The default button is "&OK". Pressing "Esc" selects the OK-button.
   *
   *  NOTE: The OK button will always have the i18n'ed text '&OK'.
-  * @since 3.1
   */
 
   static void informationList(QWidget *parent,
@@ -891,7 +865,6 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
-  * @since 3.2
   */
   static void informationListWId(WId parent_id,
 			      const QString &text,
@@ -911,7 +884,6 @@ public:
    * previously been turned off.
    * @see saveDontShowAgainYesNo()
    * @see saveDontShowAgainContinue()
-   * @since 3.2
    */
   static void enableMessage(const QString &dontShowAgainName);
 
@@ -998,7 +970,6 @@ public:
     /**
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
-     * @since 3.2
      */
     static int messageBoxWId( WId parent_id, DialogType type, const QString &text,
                     const QString &caption = QString(),
@@ -1027,7 +998,6 @@ public:
     /**
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
-     * @since 3.2
      */
     static void queuedMessageBoxWId( WId parent_id,
                     DialogType type, const QString &text,
@@ -1047,7 +1017,6 @@ public:
     /**
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
-     * @since 3.2
      */
     static void queuedMessageBoxWId( WId parent_id,
                     DialogType type, const QString &text,
@@ -1060,7 +1029,6 @@ public:
      * @param result is set to the result (Yes or No) that was chosen the last
      * time the message box was shown. Only meaningful, if the message box
      * should not be shown.
-     * @since 3.2
      */
     static bool shouldBeShownYesNo(const QString &dontShowAgainName,
                                    ButtonCode &result);
@@ -1069,7 +1037,6 @@ public:
      * shown.
      * @param dontShowAgainName the name that identify the message box. If
      * empty, true is always returned.
-     * @since 3.2
      */
     static bool shouldBeShownContinue(const QString &dontShowAgainName);
 
@@ -1079,7 +1046,6 @@ public:
      * empty, this method does nothing.
      * @param result the value (Yes or No) that should be used as the result
      * for the message box.
-     * @since 3.2
      */
     static void saveDontShowAgainYesNo(const QString &dontShowAgainName,
                                        ButtonCode result);
@@ -1089,15 +1055,13 @@ public:
      * again.
      * @param dontShowAgainName the name that identify the message box. If
      * empty, this method does nothing.
-     * @since 3.2
      */
     static void saveDontShowAgainContinue(const QString &dontShowAgainName);
 
     /**
      * Use @p cfg for all settings related to the dontShowAgainName feature.
      * If @p cfg is 0 (default) KGlobal::config() will be used.
-     * @since 3.2
-     */    
+     */
     static void setDontShowAskAgainConfig(KConfig* cfg);
 
     /**
@@ -1113,7 +1077,6 @@ public:
      *                true then the checkbox will be checked by default.
      * @param options  see Options
      * @param details Detailed message string.
-     * @since 3.3
      * @return A KDialog button code, not a KMessageBox button code,
      *         based on the buttonmask given to the constructor of the
      *         @p dialog (ie. will return KDialog::Yes [256] instead of 
@@ -1144,7 +1107,6 @@ public:
      * @param details Detailed message string.
      * @param notifyType The type of notification to send when this message
      *                is presentend.
-     * @since 3.3
      * @return A KDialog button code, not a KMessageBox button code,
      *         based on the buttonmask given to the constructor of the
      *         @p dialog (ie. will return KDialog::Yes [256] instead of 

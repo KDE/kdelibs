@@ -17,10 +17,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KKEYBUTTON_H_
-#define _KKEYBUTTON_H_
+#ifndef KKEYBUTTON_H
+#define KKEYBUTTON_H
 
-#include <qpushbutton.h>
+#include <QPushButton>
+
 #include <kshortcut.h>
 
 /**
@@ -53,7 +54,6 @@ class KDEUI_EXPORT KKeyButton: public QPushButton
 
 	/** @deprecated Use setShortcut( cut, false ) instead */
 	void setShortcut( const KShortcut& cut ) KDE_DEPRECATED;
-	/// @since 3.1
 	void setShortcut( const KShortcut& cut, bool bQtShortcut );
 	const KShortcut& shortcut() const
 		{ return m_cut; }

@@ -22,7 +22,7 @@
 #ifndef KNUMVALIDATOR_H
 #define KNUMVALIDATOR_H
 
-#include <qvalidator.h>
+#include <QValidator>
 
 #include <kdelibs_export.h>
 
@@ -173,7 +173,6 @@ class KDEUI_EXPORT KFloatValidator : public QValidator {
 
    @author Marc Mutz <mutz@kde.org>
    @see KIntValidator
-   @since 3.1
 **/
 
 class KDEUI_EXPORT KDoubleValidator : public QDoubleValidator {

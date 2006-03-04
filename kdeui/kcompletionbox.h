@@ -23,9 +23,9 @@
 #ifndef KCOMPLETIONBOX_H
 #define KCOMPLETIONBOX_H
 
-class QEvent;
-#include <qstringlist.h>
 #include <klistbox.h>
+
+class QEvent;
 
 /**
  * @short A helper widget for "completion-widgets" (KLineEdit, KComboBox))
@@ -65,8 +65,6 @@ public:
 
     /**
      * @returns true if selecting an item results in the emition of the selected() signal.
-     *
-     * @since 3.4.1
      */
     bool activateOnSelect() const;
 
@@ -144,7 +142,6 @@ public Q_SLOTS:
      * item is selected. By default the selected() signal is emitted.
      *
      * @param state false if the signal should not be emitted.
-     * @since 3.4.1
      */
     void setActivateOnSelect(bool state);
 

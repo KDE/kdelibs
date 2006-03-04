@@ -19,15 +19,15 @@
 
 #ifndef KPIXMAPREGIONSELECTORWIDGET_H
 #define KPIXMAPREGIONSELECTORWIDGET_H
-#include <qpixmap.h>
-#include <qrect.h>
-#include <qlabel.h>
-#include <kimageeffect.h>
+
+#include <QPixmap>
+#include <QLabel>
 #include <QRubberBand>
 
-class KMenu;
-
 #include <kdelibs_export.h>
+#include <kimageeffect.h>
+
+class KMenu;
 
 /**
  * KPixmapRegionSelectorWidget is a widget that shows a picture and provides the
@@ -39,7 +39,6 @@ class KMenu;
  * to either file should be made to the other.
  *
  * @author Antonio Larrosa <larrosa@kde.org>
- * @since 3.4
  */
 class KDEUI_EXPORT KPixmapRegionSelectorWidget : public QWidget
 {

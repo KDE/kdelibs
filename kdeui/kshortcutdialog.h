@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KSHORTCUTDIALOG_H_
-#define _KSHORTCUTDIALOG_H_
+#ifndef KSHORTCUTDIALOG_H
+#define KSHORTCUTDIALOG_H
 
 #include "kdialogbase.h"
 #include "kshortcut.h"
@@ -36,7 +36,6 @@ class KShortcutDialogAdvanced;
  *
  * @internal
  * @see KKeyDialog
- * @since 3.4
  */
 class KDEUI_EXPORT KShortcutDialog : public KDialog
 {

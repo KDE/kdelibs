@@ -20,13 +20,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KTOOLBARBUTTON_H
-#define _KTOOLBARBUTTON_H
+#ifndef KTOOLBARBUTTON_H
+#define KTOOLBARBUTTON_H
 
-#include <qpixmap.h>
-#include <qtoolbutton.h>
-#include <qstring.h>
-#include <QHash>
+#include <QToolButton>
 
 #include <kglobal.h>
 
@@ -88,38 +85,6 @@ public:
    */
   ~KToolBarButton();
 
-#ifndef KDE_NO_COMPAT
-  /**
-   * @deprecated
-   * Set the pixmap directly for this button.  This pixmap should be
-   * the active one... the dimmed and disabled pixmaps are constructed
-   * based on this one.  However, don't use this function unless you
-   * are positive that you don't want to use setIcon.
-   *
-   * @param pixmap The active pixmap
-   */
-  // this one is from QButton, so #ifdef-ing it out doesn't break BC
-  virtual void setPixmap(const QPixmap &pixmap) KDE_DEPRECATED;
-
-  /**
-   * @deprecated
-   * Force the button to use this pixmap as the default one rather
-   * then generating it using effects.
-   *
-   * @param pixmap The pixmap to use as the default (normal) one
-   */
-  void setDefaultPixmap(const QPixmap& pixmap) KDE_DEPRECATED;
-
-  /**
-   * @deprecated
-   * Force the button to use this pixmap when disabled one rather then
-   * generating it using effects.
-   *
-   * @param pixmap The pixmap to use when disabled
-   */
-  void setDisabledPixmap(const QPixmap& pixmap) KDE_DEPRECATED;
-#endif
-
   /**
    * Set the text for this button.  The text will be either used as a
    * tooltip (IconOnly) or will be along side the icon
@@ -136,47 +101,11 @@ public:
    */
   virtual void setIcon(const QString &icon);
 
-  /// @since 3.1
   virtual void setIcon( const QPixmap &pixmap )
   { QToolButton::setIcon( pixmap ); }
 
-  // @since 4.0
   virtual void setIcon( const QIcon &icon)
   { QToolButton::setIcon(icon); }
-
-
-#ifndef KDE_NO_COMPAT
-  /**
-   * @deprecated
-   * Set the active icon for this button.  The pixmap itself is loaded
-   * internally based on the icon size...  .. the disabled and default
-   * pixmaps, however will only be constructed if generate is
-   * true.  This function is preferred over setPixmap
-   *
-   * @param icon     The name of the active icon
-   * @param generate If true, then the other icons are automagically
-   *                 generated from this one
-   */
-  KDE_DEPRECATED void setIcon(const QString &icon, bool generate ) { Q_UNUSED(generate); setIcon( icon ); }
-
-  /**
-   * @deprecated
-   * Force the button to use this icon as the default one rather
-   * then generating it using effects.
-   *
-   * @param icon The icon to use as the default (normal) one
-   */
-  void setDefaultIcon(const QString& icon) KDE_DEPRECATED;
-
-  /**
-   * @deprecated
-   * Force the button to use this icon when disabled one rather then
-   * generating it using effects.
-   *
-   * @param icon The icon to use when disabled
-   */
-  void setDisabledIcon(const QString& icon) KDE_DEPRECATED;
-#endif
 
   /**
    * Turn this button on or off
@@ -201,7 +130,6 @@ public:
 
   /**
    * Returns the button's id.
-   * @since 3.2
    */
   int id() const;
 
@@ -213,7 +141,7 @@ public:
    * @param p The new popup menu
    * @param unused Has no effect - ignore it.
    */
-  void setPopup (QMenu *p, bool unused = false);
+  void setMenu (QMenu *p, bool unused = false);
 
   /**
    * Gives this button a delayed popup menu.
@@ -252,13 +180,11 @@ Q_SIGNALS:
    * Emitted when the toolbar button is clicked (with any mouse button)
    * @param buttons makes it possible to find out which button was pressed
    * @param modifiers makes it possible to find out whether any keyboard modifiers were held.
-   * @since 4.0
    */
   void buttonClicked(int, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
 
 //#ifdef QT3_SUPPORT
   /// Obsolete, use buttonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers)
-  /// @since 3.4
   QT_MOC_COMPAT void buttonClicked(int, Qt::ButtonState state);
 //#endif
   void doubleClicked(int);
@@ -282,20 +208,15 @@ protected:
   void enterEvent(QEvent *e);
   void paintEvent(QPaintEvent* pe);
   bool eventFilter (QObject *o, QEvent *e);
-  /// @since 3.4
   void mousePressEvent( QMouseEvent * );
-  /// @since 3.4
   void mouseReleaseEvent( QMouseEvent * );
 
   QSize sizeHint() const;
   QSize minimumSizeHint() const;
   QSize minimumSize() const;
 
-  /// @since 3.1
   bool isRaised() const;
-  /// @since 3.1
   bool isActive() const;
-  /// @since 3.1
   int iconTextMode() const;
 
   ///Sets up option for this button

@@ -16,10 +16,9 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef _KEDITTOOLBAR_H
-#define _KEDITTOOLBAR_H
+#ifndef KEDITTOOLBAR_H
+#define KEDITTOOLBAR_H
 
-#include <qwidget.h>
 #include <kxmlguiclient.h>
 #include <kdialogbase.h>
 
@@ -153,7 +152,6 @@ public:
    *               be parsed.
    * @param parent The parent of the dialog.
    * @param name An internal name.
-   * @since 3.2
    */
   KEditToolbar(const QString& defaultToolbar, KActionCollection *collection,
                const QString& xmlfile = QString(), bool global = true,
@@ -189,7 +187,6 @@ public:
    * @param defaultToolbar The toolbar with this name will appear for editing.
    * @param factory Your application's factory object
    * @param parent The usual parent for the dialog.
-   * @since 3.2
    */
   KEditToolbar(const QString& defaultToolbar, KXMLGUIFactory* factory,
                QWidget* parent = 0);
@@ -200,7 +197,6 @@ public:
   /** Sets the default toolbar, which will be auto-selected when the constructor without the
   *    defaultToolbar argument is used.
   *   @param  toolbarName  the name of the toolbar
-  *   @since 3.3
   */
   static void setDefaultToolbar(const char *toolbarName);
 
@@ -308,7 +304,6 @@ public:
    * @param global If true, then the global resource file will also
    *               be parsed
    * @param parent This widget's parent
-   * @since 3.2
    */
   KEditToolbarWidget(const QString& defaultToolbar,
                      KActionCollection *collection,
@@ -345,7 +340,6 @@ public:
    * @param defaultToolbar The toolbar with this name will appear for editing.
    * @param factory Your application's factory object
    * @param parent This widget's parent
-   * @since 3.2
    */
   KEditToolbarWidget(const QString& defaultToolbar,
                      KXMLGUIFactory* factory,
@@ -375,7 +369,6 @@ public:
 
   /**
    * Remove and readd all KMXLGUIClients to update the GUI
-   * @since 3.5
    */
   void rebuildKXMLGUIClients();
 

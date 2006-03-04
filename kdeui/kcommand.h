@@ -21,9 +21,10 @@
 #ifndef kcommand_h
 #define kcommand_h
 
-#include <qlist.h>
-#include <qstring.h>
-#include <qobject.h>
+#include <QList>
+#include <QString>
+#include <QObject>
+
 #include <kdelibs_export.h>
 
 class KAction;
@@ -261,7 +262,6 @@ Q_SIGNALS:
      * (whether by addCommand, undo or redo).
      * You can use this to update the GUI, for instance.
      * @param command was executed
-     * @since 3.5
      */
     void commandExecuted(KCommand *command);
 

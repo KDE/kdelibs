@@ -276,7 +276,7 @@ void KMMainView::initActions()
 	m_actions->action( "printer_add_special" )->plug( menu );
 	//m_menubar->insertItem( i18n( "Add" ), menu );
 	m_menubar->insertButton( "wizard", 0, true, i18n( "Add" ) );
-	m_menubar->getButton( 0 )->setPopup( menu, true );
+	m_menubar->getButton( 0 )->setMenu( menu, true );
 	menu = new QMenu( this );
 	m_actions->action("printer_state_change")->plug( menu );
 	m_actions->action("printer_spool_change")->plug( menu );
@@ -291,19 +291,19 @@ void KMMainView::initActions()
 	menu->addSeparator();
 	//m_menubar->insertItem( i18n( "Printer" ), menu );
 	m_menubar->insertButton( "printer1", 1, true, i18n( "Printer" ) );
-	m_menubar->getButton( 1 )->setPopup( menu, true );
+	m_menubar->getButton( 1 )->setMenu( menu, true );
 	menu = new QMenu( this );
 	m_actions->action("server_restart")->plug( menu );
 	m_actions->action("server_configure")->plug( menu );
 	//m_menubar->insertItem( i18n( "Server" ), menu );
 	m_menubar->insertButton( "misc", 2, true, i18n( "Print Server" ) );
-	m_menubar->getButton( 2 )->setPopup( menu, true );
+	m_menubar->getButton( 2 )->setMenu( menu, true );
 	menu = new QMenu( this );
 	m_actions->action("manager_configure")->plug( menu );
 	m_actions->action("view_refresh")->plug( menu );
 	//m_menubar->insertItem( i18n( "Manager" ), menu );
 	m_menubar->insertButton( "kdeprint_configmgr", 3, true, i18n( "Print Manager" ) );
-	m_menubar->getButton( 3 )->setPopup( menu, true );
+	m_menubar->getButton( 3 )->setMenu( menu, true );
 	menu = new QMenu( this );
 	m_actions->action("view_printerinfos")->plug( menu );
 	m_actions->action("view_change")->plug( menu );
@@ -314,13 +314,13 @@ void KMMainView::initActions()
 	m_actions->action("view_pfilter")->plug( menu );
 	//m_menubar->insertItem( i18n( "View" ), menu );
 	m_menubar->insertButton( "view_remove", 4, true, i18n( "View" ) );
-	m_menubar->getButton( 4 )->setPopup( menu, true );
+	m_menubar->getButton( 4 )->setMenu( menu, true );
 	//m_menubar->setMinimumHeight( m_menubar->heightForWidth( 1000 ) );
 	menu = new QMenu( this );
 	m_actions->action( "invoke_help" )->plug( menu );
 	m_actions->action( "invoke_web" )->plug( menu );
 	m_menubar->insertButton( "help", 5, true, i18n( "Documentation" ) );
-	m_menubar->getButton( 5 )->setPopup( menu, true );
+	m_menubar->getButton( 5 )->setMenu( menu, true );
 
 	loadPluginActions();
 	slotPrinterSelected(QString());

@@ -21,11 +21,11 @@
 #ifndef KCONFIGDIALOG_H
 #define KCONFIGDIALOG_H
 
+#include <kdialogbase.h>
+
 class KConfig;
 class KConfigSkeleton;
 class KConfigDialogManager;
-#include <kdialogbase.h>
-#include <qhash.h>
 
 /**
  * \short Standard %KDE configuration dialog class
@@ -67,7 +67,6 @@ class KConfigDialogManager;
  *
  * @see KConfigSkeleton
  * @author Waldo Bastian <bastian@kde.org>
- * @since 3.2
  */
 class KDEUI_EXPORT KConfigDialog : public KDialogBase {
 Q_OBJECT

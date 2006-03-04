@@ -16,12 +16,12 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef _KXMLGUICLIENT_H
-#define _KXMLGUICLIENT_H
+#ifndef KXMLGUICLIENT_H
+#define KXMLGUICLIENT_H
 
-#include <qdom.h>
-#include <qmap.h>
-#include <qstringlist.h>
+#include <QDomElement>
+#include <QMap>
+#include <QStringList>
 
 #include <kdelibs_export.h>
 
@@ -255,11 +255,8 @@ public:
 
   StateChange getActionsToChangeForState(const QString& state);
 
-  /// @since 3.1
   void beginXMLPlug( QWidget * );
-  /// @since 3.1
   void endXMLPlug();
-  /// @since 3.1
   void prepareXMLUnplug( QWidget * );
 
 protected:

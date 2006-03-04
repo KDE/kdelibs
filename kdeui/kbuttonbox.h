@@ -22,7 +22,8 @@
 
 #include <kdelibs_export.h>
 
-#include <qwidget.h>
+#include <QWidget>
+
 class QPushButton;
 class KGuiItem;
 
@@ -106,8 +107,6 @@ public:
     * button will be set to the minimum width needed for the given text).
     *
     * @return A pointer to the new button.
-    *
-    * @since 3.3
     */
   QPushButton *addButton(const KGuiItem& guiitem, bool noexpand = false);
 
@@ -123,8 +122,6 @@ public:
     * button will be set to the minimum width needed for the given text).
     *
     * @return A pointer to the new button.
-    *
-    * @since 3.3
     */
   QPushButton *addButton(const KGuiItem& guiitem, QObject * receiver, const char * slot, bool noexpand = false);
 

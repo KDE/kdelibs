@@ -27,13 +27,12 @@
  */
 
 
-#ifndef _KABOUTDIALOG_H_
-#define _KABOUTDIALOG_H_
+#ifndef KABOUTDIALOG_H
+#define KABOUTDIALOG_H
 
-#include <QList>
 #include <QFrame>
+
 #include <kdialogbase.h>
-#include <qstring.h>
 
 class QLabel;
 class QVBoxLayout;
@@ -400,8 +399,6 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
 
   /**
    * Overloaded version of setProgramLogo(const QPixmap& pixmap).
-   *
-   * @since 3.4
    */
   void setProgramLogo( const QString &fileName );
 
@@ -413,8 +410,6 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
    * appletproxy logo with your own pixmap.
    *
    * @param pixmap The logo pixmap.
-   *
-   * @since 3.4
    */
   void setProgramLogo( const QPixmap &pixmap );
 

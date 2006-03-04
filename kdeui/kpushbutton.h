@@ -20,8 +20,8 @@
 #ifndef KPUSHBUTTON_H
 #define KPUSHBUTTON_H
 
-#include <qpoint.h>
-#include <qpushbutton.h>
+#include <QPushButton>
+
 #include <kguiitem.h>
 #include <kstdguiitem.h>
 
@@ -86,13 +86,11 @@ public:
 
     /**
     * Sets the standard KGuiItem for this button.
-    * @since 3.4
     */
     void setGuiItem( KStdGuiItem::StdItem item );
 
     /**
      * Reads the standard KGuiItem for this button.
-     * @since 3.4
      */
     KStdGuiItem::StdItem guiItem() const;
 

@@ -30,8 +30,8 @@
 
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
-#include <q3mainwindow.h>
-#include <qmetaobject.h>
+
+#include <Q3MainWindow>
 
 class KMenu;
 class KXMLGUIFactory;
@@ -49,7 +49,6 @@ class KToolBarMenuAction;
 class DCOPObject;
 
 #define KDE_DEFAULT_WINDOWFLAGS Qt::WType_TopLevel | Qt::WDestructiveClose
-
 
 /**
  * @short %KDE top level main window
@@ -78,7 +77,7 @@ class DCOPObject;
  *
  * Fixed aspect ratios (heightForWidth()) and fixed width widgets are
  * not supported.
-*
+ *
  * KMainWindow will set icon, mini icon and caption, which it gets
  * from KApplication. It provides full session management, and
  * will save its position, geometry and positions of toolbars and
@@ -159,8 +158,6 @@ public:
 
     /**
      * Overloaded constructor which allows passing some KMainWindow::CreationFlags.
-     *
-     * @since 3.2
      */
     KMainWindow( int cflags, QWidget* parent = 0, const char *name = 0, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
 
@@ -362,7 +359,6 @@ public:
 
     /**
      * Returns true, if there is a menubar
-     * @since 3.1
      */
      bool hasMenuBar();
 
@@ -389,7 +385,6 @@ public:
 
     /**
      * List of members of KMainWindow class.
-     * @since 3.4
      */
     static const QList<KMainWindow*>& memberList();
 
@@ -461,7 +456,6 @@ public:
     /**
      * @return the current autosave setting, i.e. true if setAutoSaveSettings() was called,
      * false by default or if resetAutoSaveSettings() was called.
-     * @since 3.1
      */
     bool autoSaveSettings() const;
 
@@ -470,7 +464,6 @@ public:
      * Only meaningful if setAutoSaveSettings() was called.
      * This can be useful for forcing a save or an apply, e.g. before and after
      * using KEditToolbar.
-     * @since 3.1
      */
     QString autoSaveGroup() const;
 
@@ -511,10 +504,8 @@ public:
      *
      * Note that you should enable this feature before calling createGUI() ( or similar ) .
      * You enable/disable it anytime if you pass false to the conserveMemory argument of createGUI.
-     * @since 3.1
      */
     void setStandardToolBarMenuEnabled( bool enable );
-    /// @since 3.1
     bool isStandardToolBarMenuEnabled() const;
 
 
@@ -536,7 +527,6 @@ public:
      *         kmainwindow, SLOT(setSettingsDirty()));
      * Otherwise the status (hidden/show) of the statusbar might not be saved
      * by KMainWindow.
-     * @since 3.2
      */
     void createStandardStatusBarAction();
 
@@ -591,7 +581,6 @@ public:
      *
      * @see StandardWindowOptions
      *
-     * @since 3.3
      */
     void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString() );
 
@@ -605,25 +594,20 @@ public:
      * Typically this function replaces createGUI().
      *
      * @see StandardWindowOptions
-     *
-     * @since 3.5
      */
     void setupGUI( QSize defaultSize, int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString() );
 
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu
-     * @since 3.1
      */
     KAction *toolBarMenuAction();
 
     /**
      * @internal for KToolBar
-     * @since 3.3.1
      */
     void setupToolbarMenuActions();
 
     // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
-    /// @since 3.1
     virtual void finalizeGUI( KXMLGUIClient *client );
 
     /**
@@ -659,8 +643,6 @@ public Q_SLOTS:
      * KStdAction::configureToolbars( guiFactory(), SLOT( configureToolbars() ),
      *                                actionCollection() );
      * \endcode
-     *
-     * @since 3.3
      */
    int configureToolbars(); // TODO KDE4: make virtual and reimplement in KParts::MainWindow
 
@@ -718,7 +700,6 @@ public Q_SLOTS:
      * Apply a state change
      *
      * Enable and disable actions as defined in the XML rc file
-     * @since 3.1
      */
     virtual void slotStateChanged(const QString &newstate);
 
@@ -728,7 +709,6 @@ public Q_SLOTS:
      * Enable and disable actions as defined in the XML rc file,
      * can "reverse" the state (disable the actions which should be
      * enabled, and vice-versa) if specified.
-     * @since 3.1
      */
     void slotStateChanged(const QString &newstate,
                           KXMLGUIClient::ReverseStateChange); // KDE 4.0: remove this
@@ -953,8 +933,6 @@ protected Q_SLOTS:
     * @see setAutoSaveSettings
     * @see setSettingsDirty
     *
-    * @since 3.2
-    *
     * Example:
     * \code
     *
@@ -1004,9 +982,6 @@ private:
  *  macro provided in earlier versions of KDE. The old RESTORE macro
  *  is still provided for backwards compatibility. See
  *  KMainWindow documentation for more.
- *
- * \since KDE 3.2
- *
  **/
 template <typename T>
 inline void kRestoreMainWindows() {

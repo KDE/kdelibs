@@ -18,8 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#ifndef _KJANUS_WIDGET_H_
-#define _KJANUS_WIDGET_H_
+#ifndef KJANUS_WIDGET_H
+#define KJANUS_WIDGET_H
 
 #include <QWidget>
 #include <QMap>
@@ -448,7 +448,6 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * entries cannot be closed again, though.
      *
      * @param persist If true the tree always stays unfolded.
-     * @since 3.2
      */
     virtual void unfoldTreeList( bool persist = false );
 
@@ -469,8 +468,6 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @param recv     The object that is to receive the signal when the button
      *                 is clicked.
      * @param slot     The slot to connect to the clicked signal of the button.
-     *
-     * @since 3.2
      */
     virtual void addButtonBelowList( const QString & text, QObject * recv,
                     const char * slot );
@@ -483,8 +480,6 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @param recv     The object that is to receive the signal when the button
      *                 is clicked.
      * @param slot     The slot to connect to the clicked signal of the button.
-     *
-     * @since 3.2
      */
     virtual void addButtonBelowList( const KGuiItem & guiitem, QObject *
                     recv, const char * slot );
@@ -513,7 +508,6 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * Returns the title string associated with a page index in TreeList or IconList mode.
      * @param index The index of the page or null if there is no such page.
      * @see pageIndex()
-     * @since 3.2
      */
     virtual QString pageTitle(int index) const;
     /**
@@ -521,7 +515,6 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * no such page.
      * @param index The index of the page.
      * @see pageIndex()
-     * @since 3.2
      */
     virtual QWidget *pageWidget(int index) const;
 
@@ -529,7 +522,6 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
     /**
      * This signal is emitted whenever the current page has changed.
      * @param page the new page.
-     * @since 4.0
      */
     void currentPageChanged(QWidget *page);
 

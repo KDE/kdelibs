@@ -54,8 +54,6 @@ class KDEUI_EXPORT KEditListBox : public QGroupBox
 public:
     /**
      * Custom editor class
-     *
-     * @since 3.1
      **/
     class CustomEditor
     {
@@ -138,7 +136,6 @@ public:
        * the representation widget.
        *
        * @see KUrlRequester::customEditor()
-       * @since 3.1
        */
       KEditListBox( const QString& title,
                     const CustomEditor &customEditor,
@@ -208,8 +205,6 @@ public:
 
       /**
        * Clears the listbox and sets the contents to @p items
-       *
-       * @since 3.4
        */
       void setItems(const QStringList& items);
 
@@ -229,14 +224,12 @@ public:
       /**
        * This signal is emitted when the user adds a new string to the list,
        * the parameter is the added string.
-       * @since 3.2
        */
       void added( const QString & text );
 
       /**
        * This signal is emitted when the user removes a string from the list,
        * the parameter is the removed string.
-       * @since 3.2
        */
       void removed( const QString & text );
 
