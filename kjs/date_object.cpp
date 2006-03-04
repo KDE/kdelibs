@@ -50,6 +50,7 @@
 
 #include "error_object.h"
 #include "operations.h"
+#include "nodes.h"
 
 #if __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
@@ -239,7 +240,7 @@ static UString formatTime(const tm &t, bool utc)
 {
     char buffer[100];
     if (utc) {
-#if !WIN32
+#if !defined(_WIN32) && !defined(_WIN64)
         ASSERT(t.tm_gmtoff == 0);
 #endif
         snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", t.tm_hour, t.tm_min, t.tm_sec);

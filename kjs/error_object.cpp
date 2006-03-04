@@ -24,6 +24,7 @@
 #include "value.h"
 #include "object.h"
 #include "types.h"
+#include "nodes.h"
 #include "interpreter.h"
 #include "operations.h"
 #include "error_object.h"

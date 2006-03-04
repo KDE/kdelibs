@@ -43,7 +43,7 @@
 
 namespace KJS {
 
-class ClassInfo;
+struct ClassInfo;
 class ExecState;
 class JSCell;
 class JSObject;

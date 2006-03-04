@@ -70,8 +70,10 @@ namespace KJS {
  
 #endif
 
-#if WIN32
+#if defined(_WIN32) || defined(_WIN64)
+#ifndef copysign
 #define copysign _copysign
+#endif
 #endif
 
 // ------------------------------ StringImp ------------------------------------

@@ -62,7 +62,7 @@ void *JSCell::operator new(size_t size)
     return Collector::allocate(size);
 }
 
-bool JSCell::getUInt32(unsigned&) const
+bool JSCell::getUInt32(uint32_t&) const
 {
     return false;
 }
