@@ -141,7 +141,7 @@ bool ResourceNet::load()
   }
 
   QFile file( tempFile );
-  if ( !file.open( QIODevice::IO_ReadOnly ) ) {
+  if ( !file.open( QIODevice::ReadOnly ) ) {
     addressBook()->error( i18n( "Unable to open file '%1'." ).arg( tempFile ) );
     KIO::NetAccess::removeTempFile( tempFile );
     return false;
@@ -351,7 +351,7 @@ void ResourceNet::downloadFinished( KIO::Job* )
   }
 
   QFile file( mTempFile->name() );
-  if ( file.open( QIODevice::IO_ReadOnly ) ) {
+  if ( file.open( QIODevice::ReadOnly ) ) {
     if ( clearAndLoad( &file ) )
       emit loadingFinished( this );
     else

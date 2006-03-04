@@ -462,7 +462,7 @@ void ResourceFile::downloadFinished( KIO::Job* )
   }
 
   QFile file( mTempFile->name() );
-  if ( file.open( QIODevice::IO_ReadOnly ) ) {
+  if ( file.open( QIODevice::ReadOnly ) ) {
     if ( clearAndLoad( &file ) )
       emit loadingFinished( this );
     else
