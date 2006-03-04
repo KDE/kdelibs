@@ -306,6 +306,7 @@ KFontChooser::KFontChooser(QWidget *parent,
   sampleEdit->setObjectName( "sampleEdit");
   QFont tmpFont( KGlobalSettings::generalFont().family(), 64, QFont::Black );
   sampleEdit->setFont(tmpFont);
+  //i18n: This is a classical test phrase. (It contains all letters from A to Z.)
   sampleEdit->setText(i18n("The Quick Brown Fox Jumps Over The Lazy Dog"));
   sampleEdit->setMinimumHeight( sampleEdit->fontMetrics().lineSpacing() );
   sampleEdit->setAlignment(Qt::AlignCenter);
