@@ -241,7 +241,7 @@ that we would like to make for the next binary incompatible release.
 
 - Dump KPixmapIO class. QPixmap with qt-copy patches #0005 and #0007 can perform just as well,
   KPixmapIO can't dither, and it generally doesn't make much sense to have this class.
-  (Lubos)
+  (Lubos) - Done (gyurco)
 
 - KListView: merge setDropHighlighter and setDropVisualizer, add a setDnDMode to choose between
   "dnd to move items" (e.g. keditbookmarks) and "dnd onto items" (e.g. kmail). Unless Qt4 does it all :)
