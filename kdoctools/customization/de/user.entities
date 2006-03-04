@@ -11,17 +11,17 @@
 <!ENTITY cdrom	'<hardware>CD-ROM-Laufwerk</hardware>'>
 <!ENTITY Ctrl   "<keycap>Strg</keycap>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
-<!ENTITY eg		'<abbrev>z.&nbsp;B</abbrev>'> 
+<!ENTITY eg	'<abbrev>z.&nbsp;B.</abbrev>'> 
 <!ENTITY Enter	"<keycap>Eingabe</keycap>">
 <!ENTITY Esc    "<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>usw.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY ie     "<abbrev>d.&nbsp;h.</abbrev>">
 <!ENTITY infocenter	"<application>Infozentrum</application>">
-<!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" ><!-- kcc -->
+<!ENTITY kcc "<application>&kde;-Kontrollzentrum</application>" ><!-- kcc -->
 <!ENTITY kcontrolcenter "<application>&kde;-Kontrollzentrum</application>">
 <!ENTITY kde "K-Arbeitsumgebung" ><!-- kde -->
-<!ENTITY khelpcenter "<application>KDE-Hilfezentrum</application>" ><!-- for kdpf -->
+<!ENTITY khelpcenter-de "<application>&kde;-Hilfezentrum</application>" >
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>K-Symbol von &kde;</title></objectinfo>
