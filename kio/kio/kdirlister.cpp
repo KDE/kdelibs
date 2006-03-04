@@ -1033,6 +1033,12 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
   KUrl oldUrl = job->url();  // here we really need the old url!
   KUrl newUrl = url;
 
+  if ( oldUrl == newUrl ) 
+  {
+    kDebug(7004) << k_funcinfo << "New redirection url same as old, giving up." << endl;
+    killJob(job);
+    return;
+  }
   // strip trailing slashes
   oldUrl.adjustPath(-1);
   newUrl.adjustPath(-1);
