@@ -41,7 +41,7 @@ class KDEUI_EXPORT KEdGotoLine : public KDialog
     Q_OBJECT
 
 public:
-    KEdGotoLine( QWidget *parent=0, const char *name=0, bool modal=true );
+    KEdGotoLine( QWidget *parent=0, bool modal=true );
     int getLineNumber();
 
 public Q_SLOTS:
@@ -62,17 +62,17 @@ class KDEUI_EXPORT KEdFind : public KDialog
 {
     Q_OBJECT
     Q_PROPERTY( QString text READ getText WRITE setText )
-    Q_PROPERTY( bool caseSensitivity READ case_sensitive WRITE setCaseSensitive )
+    Q_PROPERTY( Qt::CaseSensitivity caseSensitivity READ case_sensitive WRITE setCaseSensitive )
     Q_PROPERTY( bool direction READ get_direction WRITE setDirection )
 public:
 
-    KEdFind( QWidget *parent = 0, const char *name=0, bool modal=true);
+    KEdFind( QWidget *parent = 0, bool modal=true);
     ~KEdFind();
 
     QString getText() const;
     void setText(const QString &string);
-    void setCaseSensitive( bool b );
-    bool case_sensitive() const;
+    void setCaseSensitive( Qt::CaseSensitivity b );
+    Qt::CaseSensitivity case_sensitive() const;
     void setDirection( bool b );
     bool get_direction() const;
 
@@ -111,7 +111,7 @@ class KDEUI_EXPORT KEdReplace : public KDialog
 
 public:
 
-    KEdReplace ( QWidget *parent = 0, const char *name=0, bool modal=true );
+    KEdReplace ( QWidget *parent = 0, bool modal=true );
     ~KEdReplace();
 
     QString 	getText();
@@ -130,7 +130,7 @@ public:
      */
     KHistoryCombo *replaceCombo() const;
 
-    bool 	case_sensitive();
+    Qt::CaseSensitivity case_sensitive();
     bool 	get_direction();
 
 private Q_SLOTS:
@@ -172,7 +172,7 @@ public:
     /**
      * The usual constructor.
      **/
-    KEdit (QWidget *_parent=NULL, const char *name=NULL);
+    KEdit (QWidget *_parent=0);
 
     ~KEdit();
 
@@ -349,10 +349,10 @@ private Q_SLOTS:
 
 protected:
     void computePosition();
-    int 	doSearch(const QString &s_pattern, bool case_sensitive,
+    int 	doSearch(const QString &s_pattern, Qt::CaseSensitivity case_sensitive,
 			 bool regex, bool forward,int line, int col);
 
-    int 	doReplace(const QString &s_pattern, bool case_sensitive,
+    int 	doReplace(const QString &s_pattern, Qt::CaseSensitivity case_sensitive,
 			  bool regex, bool forward,int line, int col,bool replace);
 
       /**

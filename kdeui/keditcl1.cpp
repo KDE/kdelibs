@@ -43,8 +43,8 @@ public:
 };
 
 
-KEdit::KEdit(QWidget *_parent, const char *name)
-   : Q3MultiLineEdit(_parent, name),d(new KEditPrivate)
+KEdit::KEdit(QWidget *_parent)
+   : Q3MultiLineEdit(_parent),d(new KEditPrivate)
 {
     d->overwriteEnabled = false;
     d->posDirty = true;

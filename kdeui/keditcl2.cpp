@@ -57,7 +57,8 @@ void KEdit::search(){
 
   if( !srchdialog )
   {
-    srchdialog = new KEdFind( this, "searchdialog", false);
+    srchdialog = new KEdFind( this, false);
+    srchdialog->setObjectName(QLatin1String("searchdialog"));
     connect(srchdialog,SIGNAL(search()),this,SLOT(search_slot()));
     connect(srchdialog,SIGNAL(done()),this,SLOT(searchdone_slot()));
   }
@@ -144,7 +145,7 @@ void KEdit::searchdone_slot(){
   last_search = NONE;
 }
 
-int KEdit::doSearch(const QString& s_pattern, bool case_sensitive,
+int KEdit::doSearch(const QString& s_pattern, Qt::CaseSensitivity case_sensitive,
 		    bool wildcard, bool forward, int line, int col){
 
   (void) wildcard; // reserved for possible extension to regex
@@ -161,7 +162,7 @@ int KEdit::doSearch(const QString& s_pattern, bool case_sensitive,
 
       string = textLine(i);
 
-      pos = string.find(s_pattern, i == line ? col : 0, case_sensitive);
+      pos = string.indexOf(s_pattern, i == line ? col : 0, case_sensitive);
 
       if( pos != -1){
 
@@ -190,7 +191,7 @@ int KEdit::doSearch(const QString& s_pattern, bool case_sensitive,
       string = textLine(i);
       int line_length = string.length();
 
-      pos = string.findRev(s_pattern, line == i ? col : line_length , case_sensitive);
+      pos = string.lastIndexOf(s_pattern, line == i ? col : line_length , case_sensitive);
 
       if (pos != -1){
 
@@ -252,7 +253,8 @@ void KEdit::replace()
 
   if( !replace_dialog )
   {
-    replace_dialog = new KEdReplace( this, "replace_dialog", false );
+    replace_dialog = new KEdReplace( this, false );
+    replace_dialog->setObjectName(QLatin1String("replace_dialog"));
     connect(replace_dialog,SIGNAL(find()),this,SLOT(replace_search_slot()));
     connect(replace_dialog,SIGNAL(replace()),this,SLOT(replace_slot()));
     connect(replace_dialog,SIGNAL(replaceAll()),this,SLOT(replace_all_slot()));
@@ -500,7 +502,7 @@ void KEdit::replacedone_slot(){
 
 
 
-int KEdit::doReplace(const QString &s_pattern, bool case_sensitive,
+int KEdit::doReplace(const QString &s_pattern, Qt::CaseSensitivity case_sensitive,
 	   bool wildcard, bool forward, int line, int col, bool replace_all){
 
 
@@ -526,10 +528,10 @@ int KEdit::doReplace(const QString &s_pattern, bool case_sensitive,
       string = textLine(line_counter);
 
       if (replace_all){
-	pos = string.find(s_pattern, replace_all_col, case_sensitive);
+	pos = string.indexOf(s_pattern, replace_all_col, case_sensitive);
       }
       else{
-	pos = string.find(s_pattern, line_counter == line ? col : 0, case_sensitive);
+	pos = string.indexOf(s_pattern, line_counter == line ? col : 0, case_sensitive);
       }
 
       if (pos == -1 ){
@@ -552,7 +554,7 @@ int KEdit::doReplace(const QString &s_pattern, bool case_sensitive,
 	    replace_all_col = pos + replacement.length();
 	    replace_all_line = line_counter;
 
-            pos = stringnew.find(s_pattern, replace_all_col, case_sensitive);
+            pos = stringnew.indexOf(s_pattern, replace_all_col, case_sensitive);
           }
           while( pos != -1); 
 
@@ -593,13 +595,13 @@ int KEdit::doReplace(const QString &s_pattern, bool case_sensitive,
         if (replace_all_col < 0)
           pos = -1;
         else
-          pos = string.findRev(s_pattern, replace_all_col , case_sensitive);
+          pos = string.lastIndexOf(s_pattern, replace_all_col , case_sensitive);
       }
       else{
         if ((line == line_counter) && (col < 0))
           pos = -1;
         else
-          pos = string.findRev(s_pattern,
+          pos = string.lastIndexOf(s_pattern,
 			   line == line_counter ? col : line_length , case_sensitive);
       }
 
@@ -694,12 +696,11 @@ public:
 };
 
 
-KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
+KEdFind::KEdFind( QWidget *parent, bool modal )
   :KDialog( parent, i18n("Find"), modal ? User1|Cancel : User1|Close, 0 , KGuiItem( i18n("&Find"), "find") )
 {
 // is this really needed at all ?
 //  setWFlags( Qt::WType_TopLevel );
-  setObjectName(name);
   setModal(modal);
   enableButtonSeparator(false);
   setDefaultButton(User1);
@@ -778,14 +779,14 @@ void KEdFind::setText(const QString &string)
   d->combo->lineEdit()->selectAll();
 }
 
-void KEdFind::setCaseSensitive( bool b )
+void KEdFind::setCaseSensitive( Qt::CaseSensitivity b )
 {
-  sensitive->setChecked( b );
+  sensitive->setChecked( b == Qt::CaseSensitive );
 }
 
-bool KEdFind::case_sensitive() const
+Qt::CaseSensitivity KEdFind::case_sensitive() const
 {
-  return sensitive->isChecked();
+  return sensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
 }
 
 void KEdFind::setDirection( bool b )
@@ -828,14 +829,13 @@ public:
     KHistoryCombo *searchCombo, *replaceCombo;
 };
 
-KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
+KEdReplace::KEdReplace( QWidget *parent, bool modal )
   :KDialog( parent, i18n("Replace"),
 		modal ? User3|User2|User1|Cancel : User3|User2|User1|Close, 0 ,
 		i18n("Replace &All"), i18n("&Replace"), KGuiItem( i18n("&Find"), "find") )
 {
 // is this really needed at all ?
 //  setWFlags( Qt::WType_TopLevel );
-  setObjectName(name);
   setModal(modal);
   setDefaultButton(User3);
   setButtonBoxOrientation( Qt::Vertical );
@@ -962,9 +962,9 @@ void KEdReplace::setText(QString string)
 }
 
 
-bool KEdReplace::case_sensitive()
+Qt::CaseSensitivity KEdReplace::case_sensitive()
 {
-  return sensitive->isChecked();
+  return sensitive->isChecked() ? Qt::CaseSensitive: Qt::CaseInsensitive;
 }
 
 
@@ -984,10 +984,9 @@ KHistoryCombo * KEdReplace::replaceCombo() const
 }
 
 
-KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
+KEdGotoLine::KEdGotoLine( QWidget *parent, bool modal )
   :KDialog( parent, i18n("Go to Line"), modal ? Ok|Cancel : Ok|Close )
 {
-  setObjectName(name);
   setModal(modal);
   setDefaultButton(User3);
   enableButtonSeparator(false);
