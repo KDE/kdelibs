@@ -1266,7 +1266,7 @@ QSize KToolBar::sizeHint() const
     QSize minSize(0,0);
     KToolBar *ncThis = const_cast<KToolBar *>(this);
 
-    ncThis->polish();
+    ncThis->ensurePolished();
 
     int margin = static_cast<QWidget*>(ncThis)->layout()->margin() + frameWidth();
     switch( barPos() )
@@ -1660,7 +1660,7 @@ void KToolBar::slotRepaint()
     resizeEvent(&ev);
     QApplication::sendPostedEvents( this, QEvent::LayoutHint );
     setUpdatesEnabled( true );
-    repaint( true );
+    repaint();
 }
 
 void KToolBar::toolBarPosChanged( Q3ToolBar *tb )

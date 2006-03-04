@@ -185,16 +185,20 @@ void KActionSelector::setButtonTooltip( const QString &tip, MoveButton button )
   switch ( button )
   {
     case ButtonAdd:
-    d->btnAdd->setTextLabel( tip );
+    d->btnAdd->setText( tip );
+    d->btnAdd->setToolTip( tip );
     break;
     case ButtonRemove:
-    d->btnRemove->setTextLabel( tip );
+    d->btnRemove->setText( tip );
+    d->btnRemove->setToolTip( tip );
     break;
     case ButtonUp:
-    d->btnUp->setTextLabel( tip );
+    d->btnUp->setText( tip );
+ 	d->btnUp->setToolTip( tip );
     break;
     case ButtonDown:
-    d->btnDown->setTextLabel( tip );
+    d->btnDown->setText( tip );
+	d->btnDown->setToolTip( tip );
     break;
     default:
     kDebug(13001)<<"KActionSelector::setButtonToolTip: DAINBREAD!"<<endl;

@@ -40,14 +40,14 @@ class KListViewSearchLine::KListViewSearchLinePrivate
 {
 public:
     KListViewSearchLinePrivate() :
-        caseSensitive(false),
+        caseSensitive(Qt::CaseInsensitive),
         activeSearch(false),
         keepParentsVisible(true),
         canChooseColumns(true),
         queuedSearches(0) {}
 
     QList<KListView *> listViews;
-    bool caseSensitive;
+    Qt::CaseSensitivity caseSensitive;
     bool activeSearch;
     bool keepParentsVisible;
     bool canChooseColumns;
@@ -93,7 +93,7 @@ KListViewSearchLine::~KListViewSearchLine()
 
 bool KListViewSearchLine::caseSensitive() const
 {
-    return d->caseSensitive;
+    return (d->caseSensitive ==Qt::CaseSensitive);
 }
 
 QList<int> KListViewSearchLine::searchColumns() const
@@ -206,7 +206,7 @@ void KListViewSearchLine::updateSearch(KListView *listView)
 
 void KListViewSearchLine::setCaseSensitive(bool cs)
 {
-    d->caseSensitive = cs;
+	d->caseSensitive = cs?Qt::CaseSensitive:Qt::CaseInsensitive;
 }
 
 void KListViewSearchLine::setKeepParentsVisible(bool v)
@@ -258,14 +258,14 @@ bool KListViewSearchLine::itemMatches(const Q3ListViewItem *item, const QString 
         QList<int>::ConstIterator it = d->searchColumns.begin();
         for(; it != d->searchColumns.end(); ++it) {
             if(*it < item->listView()->columns() &&
-               item->text(*it).find(s, 0, d->caseSensitive) >= 0)
+               item->text(*it).indexOf(s, 0, d->caseSensitive) >= 0)
                 return true;
         }
     }
     else {
         for(int i = 0; i < item->listView()->columns(); i++) {
             if(item->listView()->columnWidth(i) > 0 &&
-               item->text(i).find(s, 0, d->caseSensitive) >= 0)
+               item->text(i).indexOf(s, 0, d->caseSensitive) >= 0)
             {
                 return true;
             }

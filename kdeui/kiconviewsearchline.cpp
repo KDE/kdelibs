@@ -188,7 +188,8 @@ bool KIconViewSearchLine::itemMatches( const Q3IconViewItem *item,
   if ( item == NULL )
     return false;
 
-  return ( item->text().find( s, 0, caseSensitive() ) >= 0 );
+  return ( item->text().indexOf( s, 0,
+	       caseSensitive()?Qt::CaseSensitive:Qt::CaseInsensitive ) >= 0 );
 }
 
 void KIconViewSearchLine::init( Q3IconView *iconView )

@@ -194,7 +194,6 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
     d = new KJanusWidgetPrivate;
 
     mTabControl = new QTabWidget( this );
-    mTabControl->setMargin (KDialog::marginHint());
     topLayout->addWidget( mTabControl, 10 );
   }
   else if( mFace == Swallow )
@@ -665,7 +664,7 @@ bool KJanusWidget::showPage( QWidget *w )
   }
   else if( mFace == Tabbed )
   {
-    mTabControl->showPage(w);
+    mTabControl->setCurrentIndex(mTabControl->indexOf(w));
     mActivePageWidget = w;
   }
   else

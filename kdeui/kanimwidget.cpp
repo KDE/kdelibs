@@ -176,7 +176,7 @@ void KAnimWidget::slotTimerUpdate()
   // We have to clear the widget when repainting a transparent image
   // By doing it like this we get a bit of flicker though. A better
   // way might be to merge it with the background in drawContents.
-  repaint(d->transparent);
+  repaint();
 }
 
 void KAnimWidget::drawContents( QPainter *p )
