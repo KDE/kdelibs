@@ -1603,13 +1603,13 @@ unsigned long NodeListImpl::length() const
 {
     m_cache->updateNodeListInfo(m_refNode->getDocument());
     if (!m_cache->hasLength) {
-        m_cache->length    = recursiveLength( m_refNode );
+        m_cache->length    = calcLength( m_refNode );
         m_cache->hasLength = true;
     }
     return m_cache->length;
 }
 
-unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
+unsigned long NodeListImpl::calcLength(NodeImpl *start) const
 {
     unsigned long len = 0;
     for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
@@ -1617,7 +1617,7 @@ unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
         if (nodeMatches(n, recurse))
                 len++;
         if (recurse)
-            len+= recursiveLength(n);
+            len+= NodeListImpl::calcLength(n);
         }
 
     return len;

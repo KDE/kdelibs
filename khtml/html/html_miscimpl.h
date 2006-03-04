@@ -59,7 +59,6 @@ public:
         DOC_ANCHORS,      // all A elements with a value for name
         // from HTMLTable, HTMLTableSection, HTMLTableRow
         TABLE_ROWS,    // all rows in this table
-        TABLE_BODY_ROWS, //all rows in the body and extra/illegal headers. Used to implement the above.
         TABLE_TBODIES, // all TBODY elements in this table
         TSECTION_ROWS, // all rows elements in this table section
         TR_CELLS,      // all CELLS in this row
@@ -93,6 +92,8 @@ public:
         return type;
     }
 protected:
+    virtual unsigned long calcLength(NodeImpl *start) const;
+    
     // The collection list the following elements
     int type:8;
 
@@ -115,11 +116,12 @@ public:
     ~HTMLFormCollectionImpl() { }
 
     virtual NodeImpl *item ( unsigned long index ) const;
-    virtual unsigned long length() const;
 
     virtual NodeImpl *namedItem ( const DOMString &name ) const;
     // In case of multiple items named the same way
     virtual NodeImpl *nextNamedItem( const DOMString &name ) const;
+protected:
+    virtual unsigned long calcLength( NodeImpl *start ) const;
 
 private:
     mutable unsigned currentNamePos;

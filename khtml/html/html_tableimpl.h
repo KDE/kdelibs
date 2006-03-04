@@ -6,6 +6,7 @@
  *           (C) 1998 Waldo Bastian (bastian@kde.org)
  *           (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2006 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,6 +27,7 @@
 #ifndef HTML_TABLEIMPL_H
 #define HTML_TABLEIMPL_H
 
+#include "misc/htmltags.h"
 #include "html/html_elementimpl.h"
 
 namespace DOM {
@@ -45,6 +47,62 @@ class HTMLTableCaptionElement;
 class HTMLElement;
 class HTMLCollection;
 
+// -------------------------------------------------------------------------
+
+/*
+This class helps memorize pointers to child objects that may be
+yanked around via the DOM. It always picks the first pointer of the
+given type.
+
+The pointer it stores can have 3 meanings:
+0      -- no child
+parent -- no idea about the state
+other  -- pointer to the child
+*/
+template<typename ChildType, int ChildId> class ChildHolder
+{
+public:
+    ChildHolder():ptr(0) {}
+
+    ChildType* get(const ElementImpl* parent) const {
+        if (ptr == parent) {
+            //Do lookup.
+            ptr = 0;
+            for (NodeImpl* child = parent->firstChild(); child; child = child->nextSibling())
+                if (child->id() == ChildId) {
+                    ptr = static_cast<ElementImpl*>(child);
+                    break;
+                }
+        }
+        return static_cast<ChildType*>(ptr);
+    }
+
+    void childAdded(ElementImpl* parent, NodeImpl* child) {
+        if (ptr)
+            ptr = parent; //No clue now..
+        else
+            ptr = child;
+    }
+
+    void childAppended(NodeImpl* child) {
+        if (!ptr)
+            ptr = child;
+    }
+
+    void childRemoved(ElementImpl* parent, NodeImpl* child) {
+        if (child == ptr)
+            ptr = parent; //We removed what was pointing - no clue now..
+        //else things are unchanged.
+    }
+
+    void operator =(ChildType* child) {
+        ptr = child;
+    }
+private:
+    mutable NodeImpl* ptr;
+};
+
+// -------------------------------------------------------------------------
 class HTMLTableElementImpl : public HTMLElementImpl
 {
 public:
@@ -73,13 +131,13 @@ public:
 
     virtual Id id() const;
 
-    HTMLTableCaptionElementImpl *caption() const { return tCaption; }
+    HTMLTableCaptionElementImpl *caption() const { return tCaption.get(this); }
     NodeImpl *setCaption( HTMLTableCaptionElementImpl * );
 
-    HTMLTableSectionElementImpl *tHead() const { return head; }
+    HTMLTableSectionElementImpl *tHead() const { return head.get(this); }
     NodeImpl *setTHead( HTMLTableSectionElementImpl * );
 
-    HTMLTableSectionElementImpl *tFoot() const { return foot; }
+    HTMLTableSectionElementImpl *tFoot() const { return foot.get(this); }
     NodeImpl *setTFoot( HTMLTableSectionElementImpl * );
 
     NodeImpl *setTBody( HTMLTableSectionElementImpl * );
@@ -95,18 +153,42 @@ public:
 
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
-    virtual NodeImpl *appendChild( NodeImpl *newChild, int &exceptioncode );
+    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
+    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
+    virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
+    virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
+    
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
     virtual void close();
 
+    /* Tries to find the section containing row number outIndex.
+       Returns whether it succeeded or not. negative outIndex values
+       are interpreted as being infinite.
+
+       On success, outSection, outIndex points to section, and index in that
+       section.
+
+       On failure, outSection points to the last section of the table, and
+       index is the offset the row would have if there was an additional section.
+    */
+    bool findRowSection(long inIndex,
+                        HTMLTableSectionElementImpl*& outSection,
+                        long&                         outIndex) const;
 protected:
+    //Actual implementations of keeping things in place.
+    void handleChildAdd   ( NodeImpl *newChild );
+    void handleChildAppend( NodeImpl *newChild );
+    void handleChildRemove( NodeImpl *oldChild );
+
     void updateFrame();
 
-    HTMLTableSectionElementImpl *head;
-    HTMLTableSectionElementImpl *foot;
-    HTMLTableSectionElementImpl *firstBody;
-    HTMLTableCaptionElementImpl *tCaption;
+    ChildHolder<HTMLTableSectionElementImpl, ID_THEAD> head;
+    ChildHolder<HTMLTableSectionElementImpl, ID_TFOOT> foot;
+    ChildHolder<HTMLTableSectionElementImpl, ID_TBODY> firstBody;
+    ChildHolder<HTMLTableCaptionElementImpl, ID_CAPTION> tCaption;
+
+    HTMLTableSectionElementImpl *tFirstBody() const { return firstBody.get(this); }
 
     Frame frame : 4;
     Rules rules : 4;

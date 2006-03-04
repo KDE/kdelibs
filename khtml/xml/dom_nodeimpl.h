@@ -590,8 +590,9 @@ public:
     // Other methods (not part of DOM)
 
 protected:
+    virtual unsigned long calcLength(NodeImpl *start) const;
     // helper functions for searching all ElementImpls in a tree
-    unsigned long recursiveLength(NodeImpl *start) const;
+
     NodeImpl *recursiveItem    ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
     NodeImpl *recursiveItemBack( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
 
