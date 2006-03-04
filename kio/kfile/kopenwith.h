@@ -86,7 +86,6 @@ public:
      * Note that this dialog doesn't apply to URLs.
      *
      * @param parent parent widget
-     * @since 3.1
      */
     KOpenWithDlg( QWidget *parent = 0L );
 
@@ -120,7 +119,6 @@ public:
      * the user has chosen to remember the file association.
      *
      * The default is false: no .desktop files are created.
-     * @since 3.2
      */
     void setSaveNewApplications(bool b);
 

@@ -114,7 +114,6 @@ public:
     /**
     * Returns the current mode
     * @see KFileDialog::mode()
-    * @since 3.3
     */
     uint mode() const;
 
@@ -128,7 +127,6 @@ public:
     /**
     * Returns the current filter for the file dialog.
     * @see KFileDialog::filter()
-    * @since 3.3
     */
     QString filter() const;
 
@@ -185,7 +183,6 @@ public:
      * [...]
      * KEditListBox *editListBox = new KEditListBox( i18n("Some Title"), req->customEditor(), someWidget );
      * \endcode
-     * @since 3.1
      */
     KEditListBox::CustomEditor customEditor();
 
@@ -193,14 +190,12 @@ public Q_SLOTS:
     /**
      * Sets the url in the lineedit to @p url. Depending on the state of
      * showLocalProtocol(), file:/ on local files will be shown or not.
-     * @since 3.1
      * // TODO KDE4: Use KUrl instead
      */
     void setURL( const QString& url );
 
     /**
      * Sets the url in the lineedit to @p url.
-     * @since 3.4
      * // TODO KDE4: rename to setURL
      */
     void setKUrl( const KUrl& url );
@@ -215,7 +210,6 @@ Q_SIGNALS:
     /**
      * Emitted when the text in the lineedit changes.
      * The parameter contains the contents of the lineedit.
-     * @since 3.1
      */
     void textChanged( const QString& );
 

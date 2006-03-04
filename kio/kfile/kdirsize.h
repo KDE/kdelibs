@@ -44,7 +44,6 @@ public:
   /**
    * @return the total number of files (counting symlinks to files, sockets
    * and character devices as files) in this directory and all sub-directories
-   * @since 3.3
    */
   KIO::filesize_t totalFiles() const { return m_totalFiles; }
 
@@ -52,7 +51,6 @@ public:
    * @return the total number of sub-directories found (not including the
    * directory the search started from and treating symlinks to directories
    * as directories)
-   * @since 3.3
    */
   KIO::filesize_t totalSubdirs() const { return m_totalSubdirs; }
 

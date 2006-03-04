@@ -47,7 +47,6 @@ public:
     /**
      * Sets the current filter. Filter must match one of the filter items
      * passed before to this widget.
-     * @since 3.4
      */
     void setCurrentFilter( const QString& filter );
 

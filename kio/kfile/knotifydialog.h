@@ -45,8 +45,6 @@ namespace KNotify
  * \code
  * (void) KNotifyDialog::configure( someParentWidget );
  * \endcode
- *
- * @since 3.1
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KIO_EXPORT_DEPRECATED KNotifyDialog : public KDialogBase

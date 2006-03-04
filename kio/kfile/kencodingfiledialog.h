@@ -77,7 +77,6 @@ public:
       *		@li Opening (open dialog, the default setting)
       *		@li Saving
       * @param parent The parent widget of this dialog      *
-      * @since 4.0
       */
     KEncodingFileDialog (const QString& startDir = QString(),
                     const QString& encoding = QString(),

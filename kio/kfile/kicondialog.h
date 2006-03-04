@@ -118,7 +118,6 @@ public:
     bool strictIconSize() const;
     /**
      * sets a custom icon directory
-     * @since 3.1
      */
     void setCustomLocation( const QString& location );
 
@@ -157,8 +156,6 @@ public:
      * getIcon(), as well as two additional parameters to lock
      * the choice between system and user dirs and to lock the custom user
      * dir itself.
-     *
-     * @since 3.3
      */
 
     void setup( KIcon::Group group, KIcon::Context context,
@@ -293,9 +290,6 @@ public:
      */
     void setIcon(const QString& icon);
 
-    /**
-     * @since 4.0
-     */
     void setIcon(const QIcon& icon)
     {QPushButton::setIcon(icon);}
 

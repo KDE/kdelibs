@@ -354,7 +354,6 @@ public:
      * These values can be or'd together.
      * @li @p AutoOpenDirs Automatically open directory after hovering above it 
      * for a short while while dragging.
-     * @since 3.2
      */
     enum DropOptions {
 	AutoOpenDirs  = 1
@@ -362,14 +361,12 @@ public:
     /**
      * Specify DND options. See DropOptions for details.
      * All options are disabled by default.
-     * @since 3.2
      */
     virtual void setDropOptions(int options);
     
     /**
      * Returns the DND options in effect.
      * See DropOptions for details.
-     * @since 3.2
      */
     int dropOptions();
     

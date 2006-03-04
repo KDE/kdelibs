@@ -27,7 +27,6 @@ class KFileMetaPreview;
 /*!
  * PreviewProps plugin
  * This plugin displays a preview of the given file
- * @since 3.5
  */
 class KIO_EXPORT KPreviewPropsPlugin : public KPropsDlgPlugin
 {

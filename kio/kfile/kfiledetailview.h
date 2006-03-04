@@ -44,9 +44,6 @@ public:
         setText( 0, text );
     }
 
-    /**
-     * @since 3.1
-     */
     KFileListViewItem( Q3ListView *parent, KFileItem *fi )
         : KListViewItem( parent ), inf( fi ) {
         init();
@@ -83,9 +80,6 @@ public:
                       QSize( r.width(), r.height() ) );
     }
 
-    /**
-     * @since 3.1
-     */
     void init();
 
 private:
@@ -156,14 +150,12 @@ Q_SIGNALS:
      * The user dropped something.
      * @p fileItem points to the item dropped on or can be 0 if the
      * user dropped on empty space.
-     * @since 3.2
      */
     void dropped(QDropEvent *event, KFileItem *fileItem);
     /**
      * The user dropped the URLs @p urls.
      * @p url points to the item dropped on or can be empty if the
      * user dropped on empty space.
-     * @since 3.2
      */
     void dropped(QDropEvent *event, const KUrl::List &urls, const KUrl &url);
 

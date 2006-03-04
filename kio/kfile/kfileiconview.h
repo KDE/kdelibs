@@ -42,9 +42,6 @@ public:
 		       const QPixmap &pixmap,
 		       KFileItem *fi )
 	: KIconViewItem( parent, text, pixmap ), inf( fi ) {}
-    /**
-     * @since 3.1
-     */
     KFileIconViewItem( Q3IconView *parent, KFileItem *fi )
 	: KIconViewItem( parent ), inf( fi ) {}
 
@@ -124,8 +121,6 @@ public:
      * Disables the "Maximum file size" configuration option for previews
      *
      * Set this before calling showPreviews()
-     *
-     * @since 3.4
      **/
     void setIgnoreMaximumSize(bool ignoreSize=true);
 
@@ -167,7 +162,6 @@ public Q_SLOTS:
 
     /**
      * Reimplemented for performance reasons.
-     * @since 3.1
      */
     virtual void arrangeItemsInGrid( bool updated = true );
 
@@ -215,14 +209,12 @@ Q_SIGNALS:
      * The user dropped something.
      * @p fileItem points to the item dropped on or can be 0 if the
      * user dropped on empty space.
-     * @since 3.2
      */
     void dropped(QDropEvent *event, KFileItem *fileItem);
     /**
      * The user dropped the URLs @p urls.
      * @p url points to the item dropped on or can be empty if the
      * user dropped on empty space.
-     * @since 3.2
      */
     void dropped(QDropEvent *event, const KUrl::List &urls, const KUrl &url);
 

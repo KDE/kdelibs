@@ -199,7 +199,6 @@ public:
    * dialog is displayed (@p parent and @p modal are ignored in this case).
    *
    * @return true on succesfull dialog displaying (can be false on win32).
-   * @since 3.4
    */
   static bool showDialog(KFileItem* item, QWidget* parent = 0,
                          const char* name = 0, bool modal = false);
@@ -211,7 +210,6 @@ public:
    * dialog is displayed (@p parent and @p modal are ignored in this case).
    *
    * @return true on succesfull dialog displaying (can be false on win32).
-   * @since 3.4
    */
   static bool showDialog(const KUrl& _url, QWidget* parent = 0,
                          const char* name = 0, bool modal = false);
@@ -224,7 +222,6 @@ public:
    * (@p parent and @p modal are ignored in this case).
    *
    * @return true on succesfull dialog displaying (can be false on win32).
-   * @since 3.4
    */
   static bool showDialog(const KFileItemList& _items, QWidget* parent = 0,
                          const char* name = 0, bool modal = false);
@@ -321,7 +318,6 @@ public:
    * setFileSharingPage(), or does nothing if no page
    * was set yet.
    * \see setFileSharingPage
-   * @since 3.1
    */
   void showFileSharingPage();
 
@@ -331,7 +327,6 @@ public:
    *
    * @param page the page to set
    * \see showFileSharingPage
-   * @since 3.3
    */
   void setFileSharingPage(QWidget* page);
 
@@ -339,7 +334,6 @@ public:
     * Call this to make the filename lineedit readonly, to prevent the user
     * from renaming the file.
     * \param ro true if the lineedit should be read only
-    * @since 3.2
     */
   void setFileNameReadOnly( bool ro );
 

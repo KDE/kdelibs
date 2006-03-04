@@ -101,7 +101,6 @@ class KIO_EXPORT KDirOperator : public QWidget
  public:
     /**
      * The various action types. These values can be or'd together
-     * @since 3.1
      */
     enum ActionTypes { SortActions = 1,
                        ViewActions = 2,
@@ -405,7 +404,6 @@ class KIO_EXPORT KDirOperator : public QWidget
      *
      * @see viewConfig
      * @see viewConfigGroup
-     * @since 3.1
      */
 	// ### KDE4: make virtual
     void setViewConfig( KConfigGroup *configGroup);
@@ -413,7 +411,6 @@ class KIO_EXPORT KDirOperator : public QWidget
     /*
      * @returns the group set by setViewConfig
      * configuration.
-     * @since 4.0
      */
     KConfigGroup *viewConfigGroup() const;
 
@@ -489,7 +486,6 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @param parent the parent widget used for the confirmation dialog
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the DeleteJob to show a progress dialog
-     * @since 3.1
      */
 	// ### KDE4: make virtual
     KIO::DeleteJob * del( const KFileItemList& items, QWidget *parent,
@@ -546,7 +542,6 @@ class KIO_EXPORT KDirOperator : public QWidget
     /**
      * Sets the options for dropping files.
      * @see KFileView::DropOptions
-     * @since 3.2
      */
      // ### KDE4: make virtual
     void setDropOptions(int options);
@@ -558,7 +553,6 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @param parent the parent widget used for the confirmation dialog
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the CopyJob to show a progress dialog
-     * @since 3.4
      */
      // ### KDE4: make virtual
     KIO::CopyJob * trash( const KFileItemList& items, QWidget *parent,
@@ -609,7 +603,6 @@ protected:
     /**
      * Sets up the context-menu with all the necessary actions. Called from the
      * constructor, you usually don't need to call this.
-     * @since 3.1
      */
     void setupMenu();
 
@@ -696,7 +689,6 @@ public Q_SLOTS:
 
     /**
      * Trashes the currently selected files/directories.
-     * @since 3.4
      */
     virtual void trashSelected(KAction::ActivationReason, Qt::MouseButtons, Qt::KeyboardModifiers);
 
@@ -809,7 +801,6 @@ Q_SIGNALS:
      * @param item the item on which the drop occurred or 0.
      * @param event the drop event itself.
      * @param urls the urls that where dropped.
-     * @since 3.2
      */
     void dropped(const KFileItem *item, QDropEvent*event, const KUrl::List&urls);
 private:

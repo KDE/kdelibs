@@ -54,7 +54,6 @@ public:
      * setToolTip().
      * @p persistent specifies whether this item is a persistent item or a
      * dynamic item, that is not saved with KUrlBar::writeConfig().
-     * @since 3.2
      */
     KUrlBarItem( KUrlBar *parent, const KUrl& url, bool persistent,
                  const QString& description = QString(),
@@ -108,7 +107,6 @@ public:
 
     /**
      * returns the preferred size of this item
-     * @since 3.1
      */
     QSize sizeHint() const;
 
@@ -170,7 +168,6 @@ public:
     /**
      * returns whether this item is persistent (via KUrlBar::writeConfig()
      * and KUrlBar::readConfig()) or not.
-     * @since 3.2
      */
     bool isPersistent() const;
 
@@ -274,7 +271,6 @@ public:
      * @p description the description of the item (shown in the view)
      * @p icon an icon -- if empty, the default icon for the url will be used
      * @p group the icon-group for using icon-effects
-     * @since 3.2
      */
     virtual KUrlBarItem * insertDynamicItem( const KUrl& url,
                                              const QString& description,
