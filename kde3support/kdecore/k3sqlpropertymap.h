@@ -44,12 +44,6 @@ static inline KDE_DEPRECATED void kInstallKDEPropertyMap()
   static bool installed = false;
   if (installed) return;
   installed = true;
-  /**
-   * If you are adding a widget that was missing please
-   * make sure to also add it to KConfigDialogManager's retrieveSettings()
-   * function.
-   * Thanks.
-   */
   // QSqlPropertyMap takes ownership of the new default map.
   Q3SqlPropertyMap *kdeMap = new Q3SqlPropertyMap;
   kdeMap->insert( "KColorButton", "color" );
