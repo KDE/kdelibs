@@ -79,8 +79,6 @@ namespace KIO
    * @param  processedSize  processed size in bytes
    * @param  speed          speed in bytes per second
    * @return calculated remaining time in seconds
-   *
-   * @since 3.4
    */
   KIO_EXPORT unsigned int calculateRemainingSeconds( KIO::filesize_t totalSize,
                                                      KIO::filesize_t processedSize, KIO::filesize_t speed );
@@ -90,8 +88,6 @@ namespace KIO
    *
    * @param  seconds number of seconds to convert
    * @return string representation in a locale depending format
-   *
-   * @since 3.4
    */
   KIO_EXPORT QString convertSeconds( unsigned int seconds );
 
@@ -297,7 +293,6 @@ namespace KIO
    * @param protocol name of the protocol
    * @param cmd given command
    * @see enum Command
-   * @since 3.2
    */
   KIO_EXPORT QString unsupportedActionErrorString(const QString &protocol, int cmd);
 
@@ -312,7 +307,6 @@ namespace KIO
       CC_Cache,     ///< Use cached entry if available
       CC_Verify,    ///< Validate cached entry with remote site if expired
       CC_Refresh,   ///< Always validate cached entry with remote site
-                    ///< @since 3.1
       CC_Reload     ///< Always fetch from remote site.
   };
 
@@ -450,29 +444,23 @@ namespace KIO
     /// But when 'running' the file, the mimetype is re-determined
     UDS_GUESSED_MIME_TYPE = 17 | UDS_STRING,
     /// XML properties, e.g. for WebDAV
-    /// @since 3.1
     UDS_XML_PROPERTIES = 18 | UDS_STRING,
 
     /// Indicates that the entry has extended ACL entries
-    /// @since 3.5
     UDS_EXTENDED_ACL = 19 | UDS_NUMBER,
     /// The access control list serialized into a single string.
-    /// @since 3.5
     UDS_ACL_STRING = 20 | UDS_STRING,
     /// The default access control list serialized into a single string.
     /// Only available for directories.
-    /// @since 3.5
     UDS_DEFAULT_ACL_STRING = 21 | UDS_STRING,
 
     /// Extra data (used only if you specified Columns/ColumnsTypes)
     /// KDE 4.0 change: you cannot repeat this entry anymore, use UDS_EXTRA + i
     /// until UDS_EXTRA_END.
-    /// @since 3.2
     UDS_EXTRA = 100 | UDS_STRING,
     /// Extra data (used only if you specified Columns/ColumnsTypes)
     /// KDE 4.0 change: you cannot repeat this entry anymore, use UDS_EXTRA + i
     /// until UDS_EXTRA_END.
-    /// @since 3.2
     UDS_EXTRA_END = 140 | UDS_STRING
   };
 

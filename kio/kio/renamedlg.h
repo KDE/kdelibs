@@ -43,7 +43,6 @@ enum RenameDlg_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERW
 /**
  * A dialog for the options to rename two files.
  * @short A dialog for renaming files.
- * @since 3.1
  */
 class KIO_EXPORT RenameDlg : public QDialog
 {
@@ -87,7 +86,6 @@ public:
    * this function returns a suggested name for a file that doesn't exist
    * in that directory. The existence is only checked for local urls though.
    * The suggested file name is of the form foo_1 foo_2 etc.
-   * @since 3.4
    */
   static QString suggestName(const KUrl& baseURL, const QString& oldName);
 

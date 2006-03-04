@@ -209,7 +209,6 @@ public:
    * as well, of course.)
    * 
    * @return the list of all listed URLs
-   * @since 3.4
    */
   const KUrl::List& directories() const;
 
@@ -302,7 +301,6 @@ public:
    * @param mimeList a list of mime-types.
    * @see clearMimeFilter
    * @see matchesMimeFilter
-   * @since 3.1
    * @internal
    */
   void setMimeExcludeFilter(const QStringList &mimeList );
@@ -342,14 +340,12 @@ public:
    * Pass the main window this object is associated with
    * this is used for caching authentication data
    * @param window the window to associate with, 0 to disassociate
-   * @since 3.1
    */
   void setMainWindow( QWidget *window );
 
   /**
    * Returns the main window associated with this object.
    * @return the associated main window, or 0 if there is none
-   * @since 3.1
    */
   QWidget *mainWindow();
 
@@ -378,7 +374,6 @@ public:
    *              items, filtering them. If this is too slow for you, use the
    *              newItems() signal, sending out filtered items in chunks.
    * @return the items listed for the current url().
-   * @since 3.1
    */
   KFileItemList items( WhichItems which = FilteredItems ) const;
 
@@ -400,7 +395,6 @@ public:
    *              filtering them. If this is too slow for you, use the
    * newItems() signal, sending out filtered items in chunks.
    * @return the items listed for @p dir.
-   * @since 3.1
    */
   KFileItemList itemsForDir( const KUrl& dir,
                              WhichItems which = FilteredItems ) const;

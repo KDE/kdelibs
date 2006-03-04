@@ -255,22 +255,17 @@ public:
      * an executable does not start that application. This is
      * useful in the location bar of a browser. The default
      * value is true.
-     *
-     * @since 3.2
      */
     void setCheckForExecutables (bool check);
 
     /**
      * @return true if the filters should attempt to check whether the
      * supplied uri is an executable. False otherwise.
-     *
-     * @since 3.2
      */
     bool checkForExecutables() const { return m_bCheckForExecutables; }
 
     /**
      * @return the string as typed by the user, before any URL processing is done
-     * @since 3.2
      */
     QString typedString() const;
 
@@ -611,7 +606,6 @@ public:
      * Return a list of the names of all loaded plugins.
      *
      * @return a QStringList of plugin names
-     * @since 3.1
      */
     QStringList pluginNames() const;
 

@@ -124,7 +124,6 @@ public:
 
   /**
    * Call when the operation finished.
-   * @since 3.1
    */
   void finished();
 

@@ -265,7 +265,6 @@ public:
      * @param dontAskAgainName A checkbox is added with which further confirmation can be turned off.
      *        The string is used to lookup and store the setting in kioslaverc.
      * @return a button code, as defined in KMessageBox, or 0 on communication error.
-     * @since 3.3
      */
     int messageBox( const QString &text, MessageBoxType type,
                     const QString &caption = QString(),
@@ -282,13 +281,11 @@ public:
     /**
      * Queries for the existence of a certain config/meta-data entry
      * send by the application to the slave.
-     * @since 3.2
      */
     bool hasMetaData(const QString &key) const;
 
     /**
      * Queries for config/meta-data send by the application to the slave.
-     * @since 3.2
      */
     QString metaData(const QString &key) const;
 
@@ -296,7 +293,6 @@ public:
     /**
      * @internal for ForwardingSlaveBase
      * Contains all metadata (but no config) sent by the application to the slave.
-     * @since 3.5.2
      */
     MetaData allMetaData() const { return mIncomingMetaData; }
 
@@ -312,8 +308,6 @@ public:
     /**
      * Returns an object that can translate remote filenames into proper
      * Unicode forms. This encoding can be set by the user.
-     *
-     * @since 3.3
      */
     KRemoteEncoding* remoteEncoding();
 
@@ -552,7 +546,6 @@ public:
      *
      * Only one timeout at a time is supported, setting a timeout
      * cancels any pending timeout.
-     * @since 3.1
      */
     void setTimeoutSpecialCommand(int timeout, const QByteArray &data=QByteArray());
 
@@ -655,7 +648,6 @@ public:
      * @param info  See AuthInfo.
      * @param errorMsg Error message to show
      * @return      @p true if user clicks on "OK", @p false otherwsie.
-     * @since 3.1
      */
     bool openPassDlg( KIO::AuthInfo& info, const QString &errorMsg = QString() );
 
@@ -733,7 +725,6 @@ public:
 
     /**
      * Return the dcop client used by this slave.
-     * @since 3.1
      */
     DCOPClient *dcopClient();
 
@@ -762,13 +753,11 @@ public:
      Check it regularly in lengthy functions (e.g. in get();) and return
      as fast as possible from this function if wasKilled() returns true.
      This will ensure that your slave destructor will be called correctly.
-     @since 3.1
      */
     bool wasKilled() const;
 
     /** Internally used.
      * @internal
-     * @since 3.1
      */
     void setKillFlag();
 

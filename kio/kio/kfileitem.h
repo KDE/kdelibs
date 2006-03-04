@@ -142,21 +142,18 @@ public:
   /**
    * Tells if the file has extended access level information ( Posix ACL )
    * @return true if the file has extend ACL information or false if it hasn't
-   * @since 3.5
   */
   bool hasExtendedACL() const;
 
   /**
    * Returns the access control list for the file.
    * @return the access control list as a KACL
-   * @since 3.5
    */
   KACL ACL() const;
 
   /**
    * Returns the default access control list for the directory.
    * @return the default access control list as a KACL
-   * @since 3.5
    */
   KACL defaultACL() const;
 
@@ -210,7 +207,6 @@ public:
    * (remote files), we may return true even though it can't be written to.
    * @return true if the file or directory can be written to - more precisely,
    *         false if we know for sure it can't
-   * @since 3.4
    */
   bool isWritable() const;
 
@@ -230,7 +226,6 @@ public:
    * Returns the local path if isLocalFile() == true or the KIO item has
    * a UDS_LOCAL_PATH atom.
    * @return the item local path, or QString() if not known
-   * @since 3.4
    */
   QString localPath() const;
 
@@ -500,7 +495,6 @@ public:
    *        URL should be determined immediately or on demand
    * @param urlIsDirectory specifies if the url is just the directory of the
    *        fileitem and the filename from the UDSEntry should be used.
-   * @since 3.4.1
    */
   void setUDSEntry( const KIO::UDSEntry& entry, const KUrl& url,
                     bool determineMimeTypeOnDemand = false,
@@ -529,7 +523,6 @@ protected:
   /**
    * Extracts the data from the UDSEntry member and updates the KFileItem
    * accordingly.
-   * @since 3.4.1
    */
   void readUDSEntry( bool _urlIsDirectory );
 

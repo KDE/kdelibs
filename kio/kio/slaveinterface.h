@@ -197,9 +197,6 @@ protected:
     void messageBox( int type, const QString &text, const QString &caption,
                      const QString &buttonYes, const QString &buttonNo );
 
-   /**
-    * @since 3.3
-    */
     void messageBox( int type, const QString &text, const QString &caption,
                      const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName );
 

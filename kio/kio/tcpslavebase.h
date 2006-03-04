@@ -131,7 +131,6 @@ protected:
      *
      * @return if so, true is returned.
      *         if not, true isn't returned.
-     * @since 3.2
      */
     bool usingSSL() const { return m_bIsSSL; }
 
@@ -140,7 +139,6 @@ protected:
      *
      * @return if so, true is returned.
      *         if not, true isn't returned.
-     * @since 3.2
      */
     bool usingTLS() const;
 

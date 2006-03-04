@@ -76,11 +76,11 @@ public:
         MultiLine   = 32, /**< This attribute says that a string item is likely
                                to be more than one line long, so for editing, a
                                widget capable for multline text should be used
-                               @since 3.1 */
+                               */
         SqueezeText = 64  /**< If the text for this item is very long, it
                                should be squeezed to the size of the widget
                                where it's displayed
-                               @since 3.1 */
+                               */
     };
 
     /**
@@ -118,12 +118,12 @@ public:
         Inches          = 5,  ///< Sizes
         Centimeters     = 6,  ///< Sizes
         Bytes           = 7,  ///< Some data/file size in bytes
-        FramesPerSecond = 8,  ///< A frame rate @since 3.1
-        DotsPerInch     = 9,  ///< Resolution in DPI @since 3.1
-        BitsPerPixel    = 10, ///< A bit depth @since 3.1
-        Hertz           = 11, ///< Sample rates and similar @since 3.1
-        KibiBytes       = 12, ///< Some data/file size in kibibytes (1024 bytes) @since 3.1
-        Millimeters     = 13  ///< Sizes @since 3.3
+        FramesPerSecond = 8,  ///< A frame rate
+        DotsPerInch     = 9,  ///< Resolution in DPI
+        BitsPerPixel    = 10, ///< A bit depth
+        Hertz           = 11, ///< Sample rates and similar
+        KibiBytes       = 12, ///< Some data/file size in kibibytes (1024 bytes)
+        Millimeters     = 13  ///< Sizes
     };
 
 
@@ -308,7 +308,6 @@ public:
          * @param mangle if true, the string will already contain prefix and
          *               suffix
          * @return the converted string, or QString() if not possible
-         * @since 3.1
          */
         QString string( const QVariant& value, bool mangle = true ) const;
 
@@ -639,7 +638,6 @@ public:
      * Returns the unit for this item. See KFileMimeTypeInfo::Unit.
      *
      * @return the unit
-     * @since 3.2
      **/
     uint unit() const;
 
@@ -717,8 +715,6 @@ public:
 
     /**
      * Default constructor. This creates an "invalid" item
-     *
-     * @since 3.1
      */
      KFileMetaInfoGroup();
 
@@ -747,8 +743,6 @@ public:
      *
      * @return true if an item was added or removed from the group, otherwise
      * false.
-     *
-     * @since 3.1
      */
     bool isModified() const;
 
@@ -879,8 +873,6 @@ public:
      * The translated name of this group.
      *
      * @return the translated name of this group
-     *
-     * @since 3.2
      */
     QString translatedName() const;
 
@@ -1655,7 +1647,6 @@ public:
     QStringList preferredKeys( const QString& mimeType ) const;
     QStringList preferredGroups( const QString& mimeType ) const;
 
-    /// @since 3.1
     QStringList supportedMimeTypes() const;
 
 protected: // ## should be private, right?

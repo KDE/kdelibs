@@ -104,7 +104,6 @@ public:
   /**
    * Create a parser and initialize it with the KDE-global data:
    * the "magic" config file as well as the snippets from share/config/magic.
-   * @since 3.1
    */
   KMimeMagic();
 

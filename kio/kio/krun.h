@@ -146,7 +146,6 @@ public:
    * be run by KRun. This is enabled by default.
    * @param b whether to run executable files or not.
    * @see isExecutable()
-   * @since 3.2
    */
   void setRunExecutables(bool b);
 
@@ -155,7 +154,6 @@ public:
    * This is enabled by default.
    * This should only be disabled in webbrowser applications.
    * @param b whether to enable the external browser or not.
-   * @since 3.4
    */
   void setEnableExternalBrowser(bool b);
 
@@ -277,14 +275,12 @@ public:
    * @param execLine the full command line
    * @param removePath if true, remove a (relative or absolute) path. E.g. /usr/bin/ls becomes ls.
    * @return the name of the binary to run
-   * @since 3.1
    */
   static QString binaryName( const QString & execLine, bool removePath );
 
   /**
    * Returns whether @p serviceType refers to an executable program instead
    * of a data file.
-   * @since 3.2
    */
   static bool isExecutable( const QString& serviceType );
 
@@ -299,13 +295,11 @@ public:
    * X-KDE-IsAlso=application/x-executable-script
    * @endcode
    * to the mimetype's desktop file.
-   * @since 3.3
    */
    static bool isExecutableFile( const KUrl& url, const QString &mimetype );
 
    /**
     * @internal
-    * @since 3.4
     */
     static bool checkStartupNotify( const QString& binName, const KService* service, bool* silent_arg, QByteArray* wmclass_arg );
 

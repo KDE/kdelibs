@@ -184,7 +184,6 @@ public:
    * Returns the menu ID of the service desktop entry.
    * The menu ID is used to add or remove the entry to a menu.
    * @return the menu ID
-   * @since 3.2
    */
   QString menuId() const;
 
@@ -193,7 +192,6 @@ public:
    * It will be based on the menu-id when available and otherwise falls
    * back to desktopEntryPath()
    * @return the storage ID
-   * @since 3.2
    */
   QString storageId() const;
 
@@ -245,7 +243,6 @@ public:
    * (e.g. "Mail Client").
    * @return the generic name,
    *         or QString() if not set
-   * @since 3.2
    */
   QString untranslatedGenericName() const;
 
@@ -258,7 +255,6 @@ public:
   /**
    * Returns a list of VFolder categories.
    * @return the list of VFolder categories
-   * @since 3.1
    */
   QStringList categories() const;
 
@@ -327,7 +323,6 @@ public:
    * Name of the application this service belongs to.
    * (Useful for e.g. plugins)
    * @return the parent application, or QString() if not set
-   * @since 3.1
    */
   QString parentApp() const;
 
@@ -352,7 +347,6 @@ public:
    * @param t the assumed type of the property
    * @return the property, or invalid if not found
    * @see KServiceType
-   * @since 3.2
    */
   QVariant property( const QString& _name, QVariant::Type t ) const;
 
@@ -373,7 +367,6 @@ public:
    * Returns a path that can be used for saving changes to this
    * service
    * @return path that can be used for saving changes to this service
-   * @since 3.2
    */
   QString locateLocal() const;
 
@@ -448,7 +441,6 @@ public:
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
    * @em Very @em important: Don't store the result in a KService* !
-   * @since 3.2
    */
   static Ptr serviceByMenuId( const QString& _menuId );
 
@@ -460,7 +452,6 @@ public:
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
    * @em Very @em important: Don't store the result in a KService* !
-   * @since 3.2
    */
   static Ptr serviceByStorageId( const QString& _storageId );
 
@@ -496,7 +487,6 @@ public:
    *        in such a way that the new menu id does not conflict with any
    *        of the reservedMenuIds
    * @return The path to use for the new KService.
-   * @since 3.2
    */
   static QString newServicePath(bool showInMenu, const QString &suggestedName,
                                 QString *menuId = 0,
@@ -506,7 +496,6 @@ public:
   /**
    * Rebuild KSycoca and show a progress dialog while doing so.
    * @param parent Parent widget for the progress dialog
-   * @since 3.2
    */
   static void rebuildKSycoca(QWidget *parent);
 

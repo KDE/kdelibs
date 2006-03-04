@@ -87,8 +87,6 @@ namespace KIO {
    * use pasteClipboard for that case, you never have to worry about this parameter.
    *
    * @see pasteClipboard()
-   *
-   * @since 3.5
    */
   KIO_EXPORT CopyJob* pasteMimeSource( const QMimeData* data, const KUrl& destURL,
                                        const QString& dialogText, QWidget* widget,
@@ -100,8 +98,6 @@ namespace KIO {
    * pasting files, urls, and clipboard data, using pasteClipboard().
    * @return a string suitable for KAction::setText, or an empty string if pasting
    * isn't possible right now.
-   *
-   * @since 3.5
    */
   KIO_EXPORT QString pasteActionText();
 }

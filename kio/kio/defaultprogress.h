@@ -49,7 +49,6 @@ public:
    * Creates a new default progress dialog.
    * @param parent the parent of the dialog (or 0 for top-level)
    * @param name the name of the dialog, can be 0
-   * @since 3.1
    */
   DefaultProgress( QWidget* parent, const char* name = 0 );
   ~DefaultProgress();
@@ -86,7 +85,6 @@ public Q_SLOTS:
    * Called when the job is transferring.
    * @param job the KIO::Job
    * @param url the url to transfer
-   * @since 3.1
    */
   void slotTransferring( KIO::Job* job, const KUrl& url );
   virtual void slotCreatingDir( KIO::Job* job, const KUrl& dir );
@@ -94,7 +92,6 @@ public Q_SLOTS:
    * Called when the job is requesting a stat.
    * @param job the KIO::Job
    * @param dir the dir to stat
-   * @since 3.1
    */
   virtual void slotStating( KIO::Job* job, const KUrl& dir );
   /**
@@ -114,16 +111,13 @@ public Q_SLOTS:
 
   /**
    * Called when the job is cleaned.
-   * @since 3.1
    */
   void slotClean();
 
 protected:
-  /// @since 3.1
   void init();
   void showTotals();
   void setDestVisible( bool visible );
-  /// @since 3.1
   void checkDestination( const KUrl& dest);
 
   KLineEdit* sourceEdit;

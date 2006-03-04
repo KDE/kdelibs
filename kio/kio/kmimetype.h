@@ -376,7 +376,6 @@ public:
   /**
    * Returns whether a file has an internal format that is human readable,
    * or that would be human readable after decompression.
-   * @since 3.2
    */
   static Format findFormatByFileContent( const QString &fileName );
 
@@ -405,7 +404,6 @@ public:
    * Always application/octet-stream.
    * This can be used to check the result of mimeType(name).
    * @return the "application/octet-stream" mimetype pointer.
-   * @since 3.2
    */
   static KMimeType::Ptr defaultMimeTypePtr();
 
@@ -423,7 +421,6 @@ public:
    * the base type. The opposite is true though.
    *
    * @return the parent mime type, or QString() if not set
-   * @since 3.2
    */
   QString parentMimeType() const;
 
@@ -431,7 +428,6 @@ public:
    * Do not use name()=="somename" anymore, to check for a given mimetype.
    * For mimetype inheritance to work, use is("somename") instead.
    * Warning, do not use inherits(), that's the servicetype inheritance concept!
-   * @since 3.2
    */
   bool is( const QString& mimeTypeName ) const;
 
@@ -571,7 +567,6 @@ public:
   /**
    * Overload of userDefinedServices for speed purposes: it takes a KConfig* so that
    * the caller can check things in the file without having it parsed twice.
-   * @since 3.4
    */
   static QList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles );
 
@@ -579,7 +574,6 @@ public:
    * Overload of userDefinedServices but also allows you to pass a list of urls for this file.
    * This allows for the menu to be changed depending on the exact files via
    * the X-KDE-GetActionMenu extension.
-   * @since 3.5
    */
   static QList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles,  const KUrl::List & file_list);
 

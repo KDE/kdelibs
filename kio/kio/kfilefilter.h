@@ -101,7 +101,6 @@ public:
      *                    the character @p separator
      * @param caseSensitive Qt::CaseSensitive or Qt::CaseInsensitive
      * @param separator the separator in the @p nameFilter
-     * @since 3.1
      */
     virtual void setNameFilters( const QString& nameFilters, Qt::CaseSensitivity caseSensitive = Qt::CaseSensitive,
                                  const QChar& separator = ' ' );

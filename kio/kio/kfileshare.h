@@ -46,7 +46,6 @@ protected Q_SLOTS: // this is why this class needs to be in the .h
 /**
  * Common functionality for the file sharing
  * (communication with the backend)
- * @since 3.1
  */
 class KIO_EXPORT KFileShare
 {

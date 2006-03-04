@@ -130,7 +130,6 @@ public:
   /**
    * Checks whether this service type is or inherits from @p servTypeName.
    * @return true if this servicetype is or inherits from @p servTypeName
-   * @since 3.1
    */
   bool inherits( const QString& servTypeName ) const;
 

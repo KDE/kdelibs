@@ -45,7 +45,6 @@ public:
                                 const QString &host );
     virtual void reset();
 
-    /// @since 3.1
     struct AuthData;
 
 private:

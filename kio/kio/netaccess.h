@@ -179,7 +179,6 @@ public:
     /**
      * Full-fledged equivalent of KIO::file_move.
      * Moves or renames *one file*.
-     * @since 3.2
      */
     static bool file_move( const KUrl& src, const KUrl& target, int permissions=-1,
                            bool overwrite=false, bool resume=false, QWidget* window = 0L );
@@ -214,14 +213,12 @@ public:
     /**
      * Full-fledged equivalent of KIO::move.
      * Moves or renames one file or directory.
-     * @since 3.2
      */
     static bool move( const KUrl& src, const KUrl& target, QWidget* window = 0L );
 
     /**
      * Full-fledged equivalent of KIO::move.
      * Moves or renames a list of files or directories.
-     * @since 3.2
      */
     static bool move( const KUrl::List& src, const KUrl& target, QWidget* window = 0L );
 
@@ -239,7 +236,6 @@ public:
      *               again be prompted for passwords as needed.
      * @return true if the URL exists and we can do the operation specified by
      *              @p source, false otherwise
-     * @since 3.2
      */
     static bool exists(const KUrl& url, bool source, QWidget* window);
 
@@ -276,7 +272,6 @@ public:
      *               again be prompted for passwords as needed.
      * @return a local URL corresponding to the same ressource than the
      *         original URL, or the original URL if no local URL can be mapped
-     * @since 3.5
      */
     static KUrl mostLocalURL(const KUrl& url, QWidget* window);
 
@@ -364,8 +359,6 @@ public:
      *                 meta data from the job.
      *
      * @return true on success, false on failure.
-     *
-     * @since 3.4
      */
     static bool synchronousRun( Job* job, QWidget* window, QByteArray* data=0,
                                 KUrl* finalURL=0, QMap<QString,QString>* metaData=0 );
@@ -405,7 +398,6 @@ public:
     /**
      * Returns the error code for the last job, in case it failed.
      * @return the last error code
-     * @since 3.3
      */
     static int lastError() { return lastErrorCode; }
 

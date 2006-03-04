@@ -26,7 +26,6 @@
  * from a given point to another (e.g. to give access to a single
  * file inside an archive).
  * @author David Faure <faure@kde.org>
- * @since 3.1
  */
 class KIO_EXPORT KLimitedIODevice : public QIODevice
 {

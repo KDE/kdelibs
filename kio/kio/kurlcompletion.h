@@ -161,7 +161,6 @@ public:
 
 	/**
 	 * @internal I'll let ossi add a real one to KShell :)
-	 * @since 3.2
 	*/
 	static QString replacedPath( const QString& text,
                                      bool replaceHome, bool replaceEnv = true );

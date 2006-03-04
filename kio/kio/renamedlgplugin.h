@@ -29,7 +29,6 @@
 /**
  * This is the base class for all RenameDlg plugins.
  * @short Base class for RenameDlg plugins.
- * @since 3.1
  */
 class KIO_EXPORT RenameDlgPlugin : public QWidget
 {

@@ -51,7 +51,6 @@ namespace KIO {
      * @see KIO::davPropFind()
      * @see KIO::davPropPatch()
      * @see KIO::davSearch()
-     * @since 3.1
      */
     class KIO_EXPORT DavJob : public TransferJob {
     Q_OBJECT

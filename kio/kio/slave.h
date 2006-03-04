@@ -51,7 +51,6 @@ namespace KIO {
 	 * Use this constructor if you derive your own class from Slave
 	 * @p derived must be true in any case
 	 * @internal
-	 * @since 3.2
 	 */
 	Slave(bool derived, KNetwork::KServerSocket *unixdomain, const QString &protocol,
 		const QString &socketname);	// TODO(BIC): Remove in KDE 4
@@ -164,14 +163,12 @@ namespace KIO {
 	/**
 	 * Tells wether the kioslave is suspended.
 	 * @return true if the kioslave is suspended.
-	 * @since 3.2
 	 */
         bool suspended();	// TODO(BIC): make virtual
 	/**
 	 * Sends the given command to the kioslave.
 	 * @param cmd command id
 	 * @param arr byte array containing data
-	 * @since 3.2
 	 */
         void send(int cmd, const QByteArray &arr = QByteArray());// TODO(BIC): make virtual
 	// == end communication with connected kioslave ==

@@ -39,7 +39,6 @@ class KRemoteEncodingPrivate;
  *
  * @short A class for handling remote filenames
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
- * @since 3.3
  */
 class KIO_EXPORT KRemoteEncoding
 {

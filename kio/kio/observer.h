@@ -123,7 +123,6 @@ public:
    * @param buttonNo the text of the "No button
    * @param dontAskAgainName A checkbox is added with which further confirmation can be turned off.
    *        The string is used to lookup and store the setting in kioslaverc.
-   * @since 3.3
    */
   static int messageBox( int progressId, int type, const QString &text, const QString &caption,
                          const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName );
@@ -193,7 +192,6 @@ public Q_SLOTS:
   void slotCopying( KIO::Job*, const KUrl& src, const KUrl& dest );
   void slotMoving( KIO::Job*, const KUrl& src, const KUrl& dest );
   void slotDeleting( KIO::Job*, const KUrl& url );
-  /// @since 3.1
   void slotTransferring( KIO::Job*, const KUrl& url );
   void slotCreatingDir( KIO::Job*, const KUrl& dir );
   // currently unused

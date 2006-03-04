@@ -243,7 +243,6 @@ namespace KIO {
      * @param reload true to reload the file, false if it can be taken from the cache
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
-     * @since 3.3
      */
     KIO_EXPORT StoredTransferJob *storedGet( const KUrl& url, bool reload=false, bool showProgressInfo = true );
 
@@ -259,7 +258,6 @@ namespace KIO {
      *               that the data will be appended to @p dest if @p dest exists.
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
-     * @since 3.3
      */
     KIO_EXPORT StoredTransferJob *storedPut( const QByteArray& arr, const KUrl& url, int permissions,
                                   bool overwrite, bool resume, bool showProgressInfo = true );
@@ -486,7 +484,6 @@ namespace KIO {
      * @param src file to delete
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
-     * @since 3.4
      */
     KIO_EXPORT CopyJob *trash( const KUrl& src, bool showProgressInfo = true );
 
@@ -497,7 +494,6 @@ namespace KIO {
      * @param src the files to delete
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
-     * @since 3.4
      */
     KIO_EXPORT CopyJob *trash( const KUrl::List& src, bool showProgressInfo = true );
 

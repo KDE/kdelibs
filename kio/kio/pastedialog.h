@@ -30,7 +30,6 @@ namespace KIO {
 /**
  * @internal
  * Internal class used by paste.h. DO NOT USE.
- * @since 3.5
  */
 class PasteDialog : public KDialog
 {

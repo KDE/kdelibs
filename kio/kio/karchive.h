@@ -153,7 +153,6 @@ public:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime time of last status change
-     * @since 3.2
      */
     virtual bool writeDir( const QString& name, const QString& user, const QString& group,
                            mode_t perm = 040755, time_t atime = UnknownTime,
@@ -171,7 +170,6 @@ public:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime time of last status change
-     * @since 3.2
      */
     virtual bool writeSymLink(const QString &name, const QString &target,
                               const QString &user, const QString &group,
@@ -196,7 +194,6 @@ public:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime time of last status change
-     * @since 3.2
      */
     virtual bool writeFile( const QString& name, const QString& user, const QString& group,
                             const char* data, qint64 size,
@@ -221,7 +218,6 @@ public:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime time of last status change
-     * @since 3.2
      */
     virtual bool prepareWriting( const QString& name, const QString& user,
                                  const QString& group, qint64 size,
@@ -276,7 +272,6 @@ protected:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime time of last status change
-     * @since 4.0
      * @see writeDir
      */
     virtual bool doWriteDir( const QString& name, const QString& user, const QString& group,
@@ -294,7 +289,6 @@ protected:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime time of last status change
-     * @since 4.0
      * @see writeSymLink
      */
     virtual bool doWriteSymLink(const QString &name, const QString &target,
@@ -314,7 +308,6 @@ protected:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime time of last status change
-     * @since 4.0
      * @see prepareWriting
      */
     virtual bool doPrepareWriting( const QString& name, const QString& user,
@@ -535,7 +528,6 @@ public:
     /**
      * Extracts the file to the directory @p dest
      * @param dest the directory to extract to
-     * @since 3.1
      */
     void copyTo(const QString& dest) const;
 
@@ -606,7 +598,6 @@ public:
      * @p dest.
      * @param dest the directory to extract to
      * @param recursive if set to true, subdirectories are extracted as well
-     * @since 3.1
      */
      void copyTo(const QString& dest, bool recursive = true) const;
 

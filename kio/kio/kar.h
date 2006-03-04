@@ -25,7 +25,6 @@
  * is not supported.
  * @short A class for reading ar archives.
  * @author Laurence Anderson <l.d.anderson@warwick.ac.uk>
- * @since 3.1
  */
 class KIO_EXPORT KAr : public KArchive
 {

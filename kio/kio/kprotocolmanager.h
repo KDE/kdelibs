@@ -312,7 +312,6 @@ public:
   /**
    * Returns true if proxy connections should be persistent.
    * @return true if proxy connections should be persistent
-   * @since 3.1
    */
   static bool persistentProxyConnection();
 

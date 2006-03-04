@@ -221,7 +221,6 @@ class KIO_EXPORT KDirWatch : public QObject
    /**
     * Returns the preferred internal method to
     * watch for changes.
-    * @since 3.2
     */
    Method internalMethod();
 
@@ -242,7 +241,6 @@ class KIO_EXPORT KDirWatch : public QObject
     * Returns true if there is an instance of KDirWatch.
     * @return true if there is an instance of KDirWatch.
     * @see KDirWatch::self()
-    * @since 3.1
     */
    static bool exists();
 

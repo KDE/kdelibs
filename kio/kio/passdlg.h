@@ -112,7 +112,6 @@ public:
     /**
      * Presets the password.
      * @param password the password to set
-     * @since 3.1
      */
     void setPassword( const QString& password );
 
@@ -121,7 +120,6 @@ public:
      * The passwords can be empty if you simply want to offer usernames to choose from.
      * This is incompatible with setUserReadOnly(true).
      * @param knownLogins map of known logins: the keys are usernames, the values are passwords.
-     * @since 3.4
      */
     void setKnownLogins( const QMap<QString, QString>& knownLogins );
 

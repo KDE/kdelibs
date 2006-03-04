@@ -70,8 +70,6 @@ namespace KIO {
         /**
          * If @p ignoreSize is true, then the preview is always 
          * generated regardless of the settings
-         *
-         * @since KDE 3.4
          **/
         void setIgnoreMaximumSize(bool ignoreSize = true);
 

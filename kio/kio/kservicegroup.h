@@ -75,7 +75,6 @@ public:
   /**
    * Construct a dummy servicegroup indexed with @p name.
    * @param name the name of the service group
-   * @since 3.1
    */
   KServiceGroup( const QString & name );
 
@@ -143,41 +142,35 @@ public:
    * Returns true if the NoDisplay flag was set, i.e. if this
    * group should be hidden from menus, while still being in ksycoca.
    * @return true to hide this service group, false to display it
-   * @since 3.1
    */
   bool noDisplay() const;
 
   /**
    * Return true if we want to display empty menu entry
    * @return true to show this service group as menu entry is empty, false to hide it
-   * @since 3.4
    */
   bool showEmptyMenu() const;
   void setShowEmptyMenu( bool b);
 
   /**
    * @return true to show an inline header into menu
-   * @since 3.5
    */
   bool showInlineHeader() const;
   void setShowInlineHeader(bool _b);
 
   /**
    * @return true to show an inline alias item into menu
-   * @since 3.5
    */
   bool inlineAlias() const;
   void setInlineAlias(bool _b);
   /**
    * @return true if we allow to inline menu.
-   * @since 3.5
    */
   bool allowInline() const;
   void setAllowInline(bool _b);
 
   /**
    * @return inline limite value
-   * @since 3.5
    */
   int inlineValue() const;
   void setInlineValue(int _val);
@@ -188,7 +181,6 @@ public:
    * be supressed when showing this group.
    * E.g. The group "Games/Arcade" might want to suppress the generic name
    * "Arcade Game" since it's redundant in this particular context.
-   * @since 3.2
    */
   QStringList suppressGenericNames() const;
 
@@ -223,7 +215,6 @@ public:
    * @param allowSeparators true to allow separator items to be included
    * @param sortByGenericName true to sort GenericName+Name instead of Name+GenericName
    * @return the list of entries
-   * @since 3.2
    */
   List entries(bool sorted, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName=false);
   virtual List entries(bool sorted, bool excludeNoDisplay);
@@ -251,7 +242,6 @@ public:
   /**
    * Returns a path to the .directory file describing this service group.
    * The path is either absolute or relative to the "apps" resource.
-   * @since 3.2
    */
   QString directoryEntryPath() const;
 
@@ -280,13 +270,11 @@ public:
    * to @p parent (siblings).
    * @param parent the name of the service's parent
    * @return the services group
-   * @since 3.1
    */
   static Ptr childGroup(const QString &parent);
 
   /**
    * This function parse attributes into menu
-   * @since 3.5
    */
     void parseAttribute( const QString &item ,  bool &showEmptyMenu, bool &showInline, bool &showInlineHeader, bool & showInlineAlias ,int &inlineValue );
 
@@ -321,7 +309,6 @@ public:
 public:
   /**
    * Construct a service separator
-   * @since 3.2
    */
   KServiceSeparator();
 

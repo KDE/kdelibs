@@ -194,7 +194,6 @@ namespace KIO {
          *
          * @param enable enable or disable automatic warning handling
          * @see isAutoWarningHandlingEnabled()
-         * @since 3.5
          */
         void setAutoWarningHandlingEnabled( bool enable );
 
@@ -203,7 +202,6 @@ namespace KIO {
          * See also setAutoWarningHandlingEnabled .
          * @return true if automatic warning handling is enabled
          * @see setAutoWarningHandlingEnabled()
-         * @since 3.5
          */
         bool isAutoWarningHandlingEnabled() const;
 
@@ -212,7 +210,6 @@ namespace KIO {
          *
          * The default is true.
          * @param enable enable or disable message display
-         * @since 3.4.1
          */
         void setInteractive(bool enable);
 
@@ -221,7 +218,6 @@ namespace KIO {
          * See also setInteractive .
          * @return true if message display is enabled
          * @see setInteractive()
-         * @since 3.4.1
          */
         bool isInteractive() const;
         /**
@@ -246,7 +242,6 @@ namespace KIO {
 	 * You can set the parent job only once. By default a job does not
 	 * have a parent job.
 	 * @param parentJob the new parent job
-         * @since 3.1
          */
         void setParentJob( Job* parentJob );
 
@@ -254,7 +249,6 @@ namespace KIO {
 	 * Returns the parent job, if there is one.
 	 * @return the parent job, or 0 if there is none
          * @see setParentJob
-         * @since 3.1
          */
         Job* parentJob() const;
 
@@ -318,7 +312,6 @@ namespace KIO {
         /**
          * Returns the processed size for this job.
          * @see processedSize
-         * @since 3.2
          */
         KIO::filesize_t getProcessedSize();
 
@@ -352,7 +345,6 @@ namespace KIO {
          * Emitted to display a warning about this job, as sent by the slave.
          * @param job the job that emitted this signal
          * @param msg the info message
-         * @since 3.5
          */
         void warning( KIO::Job *job, const QString & msg );
         // KDE4: Separate rich-text string from plain-text string, for different widgets.
@@ -455,7 +447,6 @@ namespace KIO {
 
         /**
          * @return true if we still have subjobs running
-         * @since 4.0
          */
         bool hasSubjobs() const { return !m_subjobs.isEmpty(); }
 
@@ -490,7 +481,6 @@ namespace KIO {
 
         /**
          * Set the processed size, does not emit processedSize
-         * @since 3.2
          */
         void setProcessedSize(KIO::filesize_t size);
 
@@ -755,7 +745,6 @@ namespace KIO {
 	 * @param job the job that is redirected
 	 * @param fromUrl the original URL
 	 * @param toUrl the new URL
-	 * @since 3.1
          */
         void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
@@ -780,7 +769,6 @@ namespace KIO {
     /**
      * A KIO job that creates a directory
      * @see KIO::mkdir()
-     * @since 3.3
      */
     class KIO_EXPORT MkdirJob : public SimpleJob {
 
@@ -940,7 +928,6 @@ namespace KIO {
          * When async data is enabled, data should be provided to the job by
          * calling sendAsyncData() instead of returning data in the
          * dataReq() signal.
-         * @since 3.2
          */
         void setAsyncDataEnabled(bool enabled);
 
@@ -948,7 +935,6 @@ namespace KIO {
          * Provide data to the job when async data is enabled.
          * Should be called exactly once after receiving a dataReq signal
          * Sending an empty block indicates end of data.
-         * @since 3.2
          */
         void sendAsyncData(const QByteArray &data);
 
@@ -957,7 +943,6 @@ namespace KIO {
          * instead of the amount of data that that has been received.
          * @see slotProcessedSize
          * @see slotSpeed
-         * @since 3.2
          */
         void setReportDataSent(bool enabled);
 
@@ -965,7 +950,6 @@ namespace KIO {
          *  Returns whether the job reports the amount of data that has been
          *  sent (true), or whether the job reports the amount of data that
          * has been received (false)
-         * @since 3.2
          */
         bool reportDataSent();
 
@@ -1009,7 +993,6 @@ namespace KIO {
 	 * @param job the job that emitted this signal
 	 * @param fromUrl the original URL
 	 * @param toUrl the new URL
-	 * @since 3.1
          */
         void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
@@ -1074,8 +1057,6 @@ namespace KIO {
      * You should only use StoredTransferJob to upload data if you cannot
      * provide the in chunks while it's being uploaded, since storing
      * everything in a QByteArray can potentially require a lot of memory.
-     *
-     * @since 3.3
      */
     class KIO_EXPORT StoredTransferJob : public KIO::TransferJob {
         Q_OBJECT
@@ -1279,7 +1260,6 @@ namespace KIO {
          * If you know the size of the source file, call this method
          * to inform this job. It will be displayed in the "resume" dialog.
 	 * @param size the size of the source file
-	 * @since 3.2
          */
         void setSourceSize(KIO::filesize_t size);
 
@@ -1410,13 +1390,11 @@ namespace KIO {
          * Returns the ListJob's redirection URL. This will be invalid if there
          * was no redirection.
          * @return the redirection url
-         * @since 3.4.1
          */
         const KUrl& redirectionURL() const { return m_redirectionURL; }
 
         /**
          * Do not apply any KIOSK restrictions to this job.
-         * @since 3.2
          */
         void setUnrestricted(bool unrestricted);
 
@@ -1447,7 +1425,6 @@ namespace KIO {
 	 * @param job the job that emitted this signal
 	 * @param fromUrl the original URL
 	 * @param toUrl the new URL
-	 * @since 3.1
          */
         void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
@@ -1546,7 +1523,6 @@ namespace KIO {
          * For that case, call setDefaultPermissions(true)
          *
          * TODO KDE4: consider adding this as bool to copy/copyAs?
-         * @since 3.2.3
          */
         void setDefaultPermissions( bool b );
 
@@ -1559,7 +1535,6 @@ namespace KIO {
          * call setInteractive( false ).
          *
          * KDE4: remove, already in Job
-         * @since 3.4
          */
         void setInteractive( bool b );
 

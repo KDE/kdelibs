@@ -40,7 +40,6 @@ class KZipFileEntry;
  *   http://www.pkware.com/products/enterprise/white_papers/appnote.html
  * @short A class for reading/writing zip archives.
  * @author Holger Schroeder <holger-kde@holgis.net>
- * @since 3.1
  */
 class KIO_EXPORT KZip : public KArchive
 {

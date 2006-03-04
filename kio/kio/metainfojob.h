@@ -30,7 +30,6 @@ namespace KIO {
      * MetaInfoJob is a KIO Job to retrieve meta information from files.
      * 
      * @short KIO Job to retrieve meta information from files.
-     * @since 3.1
      */
     class KIO_EXPORT MetaInfoJob : public KIO::Job
     {

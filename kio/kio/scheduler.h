@@ -238,7 +238,6 @@ namespace KIO {
          * Do not call this, it is called automatically from
          * void KIO::Job::setWindow(QWidget*).
 	 * @param wid the window to register
-	 * @since 3.1
          */
         static void registerWindow(QWidget *wid)
         { self()->_registerWindow(wid); }
@@ -306,7 +305,6 @@ namespace KIO {
         void slotSlaveConnected();
         void slotSlaveError(int error, const QString &errorMsg);
         void slotScheduleCoSlave();
-      /// @since 3.1
         void slotUnregisterWindow(QObject *);
 
     private:

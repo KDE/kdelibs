@@ -167,8 +167,6 @@ public:
    *
    * The type name comes from QVariant::typeName()
    * Currently supported types: "QString", "QDateTime" (ISO-8601 format)
-   *
-   * @since 3.2
    */
   struct ExtraField {
 
@@ -188,8 +186,6 @@ public:
    * This corresponds to the "ExtraNames=" and "ExtraTypes=" fields in the protocol description file.
    * Those two lists should be separated with ',' in the protocol description file.
    * See ExtraField for details about names and types
-   *
-   * @since 3.2
    */
   static ExtraFieldList extraFields( const KUrl& url );
 
@@ -375,7 +371,6 @@ public:
    *
    * @param url the url to check
    * @return true if the protocol can rename/move files from the local file system
-   * @since 3.4
    */
   static bool canRenameFromFile( const KUrl &url );
 
@@ -390,7 +385,6 @@ public:
    *
    * @param url the url to check
    * @return true if the protocol can rename files to the local file system
-   * @since 3.4
    */
   static bool canRenameToFile( const KUrl &url );
 
@@ -404,7 +398,6 @@ public:
    *
    * @param url the url to check
    * @return true if the protocol can delete non-empty directories by itself.
-   * @since 3.4
    */
   static bool canDeleteRecursive( const KUrl &url );
 
@@ -424,7 +417,6 @@ public:
    *
    * @param url the url to check
    * @return how to generate the filename in the destination directory when copying/moving
-   * @since 3.4
    */
   static FileNameUsedForCopying fileNameUsedForCopying( const KUrl &url );
 
@@ -495,7 +487,6 @@ public:
    *
    * @param protocol the protocol to check
    * @return the docpath of the protocol, or null if unknown
-   * @since 3.2
    */
   static QString docPath( const QString& protocol );
 
@@ -513,7 +504,6 @@ public:
    *
    * @param protocol the protocol to check
    * @return the class of the protocol, or null if unknown
-   * @since 3.2
    */
   static QString protocolClass( const QString& protocol );
 
@@ -526,7 +516,6 @@ public:
    *
    * @param protocol the protocol to check
    * @return true if previews should be shown by default, false otherwise
-   * @since 3.2
    */
   static bool showFilePreview( const QString& protocol );
 
@@ -542,8 +531,6 @@ public:
    *
    * @param protocol the protocol to check
    * @return the suggested parsing mode, or KUrl::Auto if unspecified
-   *
-   * @since 3.2
    */
   //static KUrl::URIMode uriParseMode( const QString& protocol ); - gone in Qt-4.x
 
@@ -562,8 +549,6 @@ public:
    *
    * @param protocol the protocol to check
    * @return the list of capabilities.
-   *
-   * @since 3.3
    */
   static QStringList capabilities( const QString& protocol );
 
@@ -575,8 +560,6 @@ public:
    * support is commonly handled by the http protocol.
    *
    * This corresponds to the "ProxiedBy=" in the protocol description file.
-   *
-   * @since 3.3
    */
   static QString proxiedBy( const QString& protocol );
 
