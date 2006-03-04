@@ -1131,7 +1131,8 @@ K3DockWidget* K3DockWidget::manualDock( K3DockWidget* target, DockPosition dockP
  // HERE SOMETING CREATING CONTAINERS SHOULD BE ADDED !!!!!
   if ( dockPos == K3DockWidget::DockCenter )
   {
-    K3DockTabGroup* tab = new K3DockTabGroup( newDock, "_dock_tab");
+    K3DockTabGroup* tab = new K3DockTabGroup( newDock );
+    tab->setObjectName( QLatin1String( "_dock_tab" ) );
     QObject::connect(tab, SIGNAL(currentChanged(QWidget*)), d, SLOT(slotFocusEmbeddedWidget(QWidget*)));
     newDock->setWidget( tab );
 

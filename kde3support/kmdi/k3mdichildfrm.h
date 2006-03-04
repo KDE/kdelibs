@@ -54,7 +54,7 @@ class KDE3SUPPORT_EXPORT K3MdiWin32IconButton : public QLabel
 {
 	Q_OBJECT
 public:
-	K3MdiWin32IconButton( QWidget* parent, const char* name = 0 );
+	K3MdiWin32IconButton( QWidget* parent );
 	virtual void mousePressEvent( QMouseEvent* );
 
 Q_SIGNALS:

@@ -67,8 +67,9 @@
 //============== K3MdiChildFrmCaption =============//
 
 K3MdiChildFrmCaption::K3MdiChildFrmCaption( K3MdiChildFrm *parent )
-		: QWidget( parent, "k3mdi_childfrmcaption" )
+		: QWidget( parent )
 {
+	setObjectName( QLatin1String( "k3mdi_childfrmcaption" ) );
 	m_szCaption = i18n( "Unnamed" );
 	m_bActive = false;
 	m_pParent = parent;

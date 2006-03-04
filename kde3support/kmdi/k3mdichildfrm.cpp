@@ -86,8 +86,8 @@
 #include "kde2laptop_undockbutton.xpm"
 
 
-K3MdiWin32IconButton::K3MdiWin32IconButton( QWidget* parent, const char* name )
-		: QLabel( parent, name )
+K3MdiWin32IconButton::K3MdiWin32IconButton( QWidget* parent )
+		: QLabel( parent )
 {}
 
 //============ mousePressEvent ============//
@@ -100,7 +100,7 @@ void K3MdiWin32IconButton::mousePressEvent( QMouseEvent* )
 //============ K3MdiChildFrm ============//
 
 K3MdiChildFrm::K3MdiChildFrm( K3MdiChildArea *parent )
-	: QFrame( parent, "k3mdi_childfrm" )
+	: QFrame( parent )
 	, m_pClient( 0L )
 	, m_pManager( 0L )
 	, m_pCaption( 0L )
@@ -128,17 +128,24 @@ K3MdiChildFrm::K3MdiChildFrm( K3MdiChildArea *parent )
 	, m_oldClientMaxSize()
 	, m_oldLayoutResizeMode( QLayout::Minimum )
 {
+	setObjectName( QLatin1String( "k3mdi_childfrm" ) );
 	m_pCaption = new K3MdiChildFrmCaption( this );
 
 	m_pManager = parent;
 
-	m_pWinIcon = new K3MdiWin32IconButton( m_pCaption, "k3mdi_iconbutton_icon" );
-	m_pUnixIcon = new QToolButton( m_pCaption, "k3mdi_toolbutton_icon" );
-	m_pMinimize = new QToolButton( m_pCaption, "k3mdi_toolbutton_min" );
-	m_pMaximize = new QToolButton( m_pCaption, "k3mdi_toolbutton_max" );
-	m_pClose = new QToolButton( m_pCaption, "k3mdi_toolbutton_close" );
-	m_pUndock = new QToolButton( m_pCaption, "k3mdi_toolbutton_undock" );
-
+	m_pWinIcon = new K3MdiWin32IconButton( m_pCaption );
+	m_pWinIcon->setObjectName( QLatin1String( "k3mdi_iconbutton_icon" ) );
+	m_pUnixIcon = new QToolButton( m_pCaption );
+	m_pUnixIcon->setObjectName( QLatin1String( "k3mdi_toolbutton_icon" ) );
+	m_pMinimize = new QToolButton( m_pCaption );
+	m_pMinimize->setObjectName( QLatin1String( "k3mdi_toolbutton_min" ) );
+	m_pMaximize = new QToolButton( m_pCaption );
+	m_pMaximize->setObjectName( QLatin1String( "k3mdi_toolbutton_max" ) );
+	m_pClose = new QToolButton( m_pCaption );
+	m_pClose->setObjectName( QLatin1String( "k3mdi_toolbutton_close" ) );
+	m_pUndock = new QToolButton( m_pCaption );
+	m_pUndock->setObjectName( QLatin1String( "k3mdi_toolbutton_undock" ) );
+	
 	QObject::connect( m_pMinimize, SIGNAL( clicked() ), this, SLOT( minimizePressed() ) );
 	QObject::connect( m_pMaximize, SIGNAL( clicked() ), this, SLOT( maximizePressed() ) );
 	QObject::connect( m_pClose, SIGNAL( clicked() ), this, SLOT( closePressed() ) );
@@ -706,7 +713,7 @@ void K3MdiChildFrm::setIcon( const QPixmap& pxm )
 	if ( p.width() != 18 || p.height() != 18 )
 	{
 		QImage img = p.convertToImage();
-		p = img.smoothScale( 18, 18, Qt::KeepAspectRatio );
+		p = img.scaled( 18, 18, Qt::KeepAspectRatio, Qt::SmoothTransformation );
 	}
 	const bool do_resize = m_pIconButtonPixmap->size() != p.size();
 	*m_pIconButtonPixmap = p;

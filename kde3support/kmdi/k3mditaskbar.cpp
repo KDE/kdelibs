@@ -182,7 +182,8 @@ K3MdiTaskBarButton * K3MdiTaskBar::addWinButton( K3MdiChildView *win_ptr )
 
 	layoutTaskBar();
 
-	m_pStretchSpace = new QLabel( this, "empty" );
+	m_pStretchSpace = new QLabel( this );
+	m_pStretchSpace->setObjectName( QLatin1String( "empty" ) );
 	m_pStretchSpace->setText( "" );
 	setStretchableWidget( m_pStretchSpace );
 	m_pStretchSpace->show();
