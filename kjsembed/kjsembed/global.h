@@ -22,7 +22,7 @@
 #ifndef KJSEMBED_GLOBAL_H
 #define KJSEMBED_GLOBAL_H
 
-#ifdef WIN32
+#if defined(_WIN32) || defined(_WIN64)
 # ifdef KJSEMBED_DLL
 #  ifdef KJSEMBED_MAKE_DLL
 #     define KJSEMBED_EXPORT __declspec(dllexport)
@@ -36,12 +36,12 @@
 # define KJSEMBED_EXPORT
 #endif // WIN32
 
-#ifdef WIN32
+#if !defined(_WIN32) && !defined(_WIN64)
 #include <stdlib.h>
 KJSEMBED_EXPORT void RedirectIOToConsole();
 #endif
 
-#ifndef WIN32
+#if !defined(_WIN32) && !defined(_WIN64)
 #include <ctype.h>
 #include <stdlib.h>
 char *itoa(int num, char *str, int radix = 10);
