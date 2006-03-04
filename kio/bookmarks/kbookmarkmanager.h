@@ -74,9 +74,6 @@ protected:
      */
     KBookmarkManager( const QString & bookmarksFile, bool bImportDesktopFiles = true );
 
-    /**
-     * @since 3.2
-     */
     KBookmarkManager();
 
 public:
@@ -112,7 +109,6 @@ public:
      * Update access time stamps for a given url.
      * @param url the viewed url
      * @param emitSignal iff true emit KBookmarkNotifier signal
-     * @since 3.2
      * @return true if any metadata was modified (bookmarks file is not saved automatically)
      */
     bool updateAccessMetadata( const QString &url, bool emitSignal = true );
@@ -124,7 +120,6 @@ public:
      * @param url the viewed url
      * @param faviconurl the favicion url
      * @emitSignal iff true emit KBookmarkNotifier signal
-     * @since 3.3
      */
     void updateFavicon( const QString &url, const QString &faviconurl, bool emitSignal = true );
 
@@ -189,7 +184,6 @@ public:
      * @param caption the --caption string, for instance "Konsole"
      * @param browser iff false display no browser specific
      *            menu items in keditbookmarks :: --nobrowser
-     * @since 3.2
      */
     void setEditorOptions( const QString& caption, bool browser );
 
@@ -217,7 +211,6 @@ public:
 
     /**
      * Returns a pointer to the users main bookmark collection.
-     * @since 3.2
      */
     static KBookmarkManager* userBookmarksManager();
 
@@ -233,9 +226,6 @@ public:
      */
     KBookmarkNotifier& notifier() { return m_notifier; }
 
-    /**
-     * @since 3.2
-     */
     KBookmarkGroup addBookmarkDialog( const QString & _url, const QString & _title,
                                       const QString & _parentBookmarkAddress = QString() );
 
@@ -345,9 +335,6 @@ protected:
   virtual void virtual_hook( int id, void* data );
 };
 
-/**
- * @since 3.2
- */
 class KIO_EXPORT KExtendedBookmarkOwner : public QObject, virtual public KBookmarkOwner
 {
     Q_OBJECT

@@ -25,9 +25,6 @@
 #include <qobject.h>
 #include <kbookmark.h>
 
-/**
- * @since 3.2
- */
 class KIO_EXPORT KBookmarkDomBuilder : public QObject {
    Q_OBJECT
 public:

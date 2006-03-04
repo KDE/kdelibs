@@ -55,7 +55,6 @@ protected:
 
 /**
  * A class for importing Opera bookmarks
- * @since 3.2
  */
 class KIO_EXPORT KOperaBookmarkImporterImpl : public KBookmarkImporterBase
 {
@@ -67,9 +66,6 @@ private:
     class KOperaBookmarkImporterImplPrivate *d;
 };
 
-/**
- * @since 3.2
- */
 class KIO_EXPORT KOperaBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:

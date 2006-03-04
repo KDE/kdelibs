@@ -61,7 +61,6 @@ protected:
 /**
  * A class for importing NS bookmarks
  * utf8 defaults to off
- * @since 3.2
  */
 class KIO_EXPORT KNSBookmarkImporterImpl : public KBookmarkImporterBase
 {
@@ -78,7 +77,6 @@ private:
 /**
  * A class for importing Mozilla bookmarks
  * utf8 defaults to on
- * @since 3.2
  */
 class KIO_EXPORT KMozillaBookmarkImporterImpl : public KNSBookmarkImporterImpl
 {
@@ -109,9 +107,6 @@ protected:
     KBookmarkManager* m_pManager;
 };
 
-/**
- * @since 3.2
- */
 class KIO_EXPORT KNSBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:

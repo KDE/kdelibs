@@ -52,7 +52,6 @@ protected:
 
 /**
  * A class for importing all crash sessions as bookmarks
- * @since 3.2
  */
 class KIO_EXPORT KCrashBookmarkImporterImpl : public KBookmarkImporterBase
 {

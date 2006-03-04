@@ -58,7 +58,6 @@ public:
 
 	/**
 	 *  Change the user's warnOnEnter() setting
-	 *  @since 3.3
 	 *  @param x true if the user is to be warned
 	 *  @see warnOnEnter
 	 */
@@ -86,7 +85,6 @@ public:
 
 	/**
 	 *  Change the user's warnOnLeave() setting
-	 *  @since 3.3
 	 *  @param x true if the user is to be warned
 	 *  @see warnOnLeave
 	 */

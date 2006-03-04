@@ -31,7 +31,6 @@
  * A class for importing NS bookmarks
  * KEditBookmarks uses it to insert bookmarks into its DOM tree,
  * and KActionMenu uses it to create actions directly.
- * @since 3.2
  */
 class KIO_EXPORT KBookmarkImporterBase : public QObject
 {

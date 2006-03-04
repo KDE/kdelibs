@@ -59,7 +59,6 @@ protected:
 
 /**
  * A class for importing IE bookmarks
- * @since 3.2
  */
 class KIO_EXPORT KIEBookmarkImporterImpl : public KBookmarkImporterBase
 {
@@ -71,9 +70,6 @@ private:
     class KIEBookmarkImporterImplPrivate *d;
 };
 
-/*
- * @since 3.2
- */
 class KIO_EXPORT KIEBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:

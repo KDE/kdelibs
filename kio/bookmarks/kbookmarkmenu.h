@@ -121,7 +121,6 @@ public:
   /**
    * Structure used for storing information about
    * the dynamic menu setting
-   * @since 3.2
    */
   // TODO - transform into class
   struct DynMenuInfo {
@@ -134,7 +133,6 @@ public:
 
   /**
    * @return dynmenu info block for the given dynmenu name
-   * @since 3.2
    */
   static DynMenuInfo showDynamicBookmarks( const QString &id );
 
@@ -144,21 +142,16 @@ public:
    * on first call of this function.
    * @param id the unique identification for the dynamic menu
    * @param info a DynMenuInfo struct containing the to be added/modified data
-   * @since 3.2
    */
   static void setDynamicBookmarks( const QString &id, const DynMenuInfo &info );
 
   /**
    * @return list of dynamic menu ids
-   * @since 3.2
    */
   static QStringList dynamicBookmarksList();
 
 Q_SIGNALS:
   void aboutToShowContextMenu( const KBookmark &, QMenu * );
-  /**
-   * @since 3.4
-   */
   void openBookmark( const QString& url, Qt::ButtonState state );
 
 public Q_SLOTS: // public for bookmark bar

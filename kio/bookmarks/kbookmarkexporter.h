@@ -26,9 +26,6 @@
 #include <qtextstream.h>
 #include <kbookmark.h>
 
-/**
- * @since 3.2
- */
 class KIO_EXPORT KBookmarkExporterBase
 {
 public:

@@ -52,20 +52,16 @@ public:
          * Adds this list of bookmark into the given QMimeData.
          *
          * @param mimeData the QMimeData instance used to drag or copy this bookmark
-         *
-         * @since 4.0
          */
         void populateMimeData( QMimeData* mimeData ) const;
 
         /**
          * Return true if @p mimeData contains bookmarks
-         * @since 4.0
          */
         static bool canDecode( const QMimeData *mimeData );
 
         /**
          * Return the list of mimeTypes that can be decoded by fromMimeData
-         * @since 4.0
          */
         static QStringList mimeDataTypes();
 
@@ -76,7 +72,6 @@ public:
          * @return the list of bookmarks
          * @note those bookmarks are valid QDomElements, but their parent QDomDocument
          * is already deleted, do not use ownerDocument()
-         * @since 4.0
          */
         static KBookmark::List fromMimeData( const QMimeData *mimeData );
     };
@@ -107,7 +102,6 @@ public:
      * @return true if bookmark is contained by a QDomDocument,
      * if not it is most likely that it has become separated and
      * is thus invalid and/or has been deleted from the bookmarks.
-     * @since 3.2
      */
     bool hasParent() const;
 
@@ -165,7 +159,6 @@ public:
     /**
      * Updates the bookmarks access metadata
      * Call when a user accesses the bookmark
-     * @since 3.2
      */
     void updateAccessMetadata();
 
@@ -203,7 +196,6 @@ public:
     /**
      * @return the common parent of both addresses which
      * has the greatest depth
-     * @since 3.5
      */
      static QString commonParent(QString A, QString B);
 
@@ -212,7 +204,6 @@ public:
      * @param key Name of the metadata item
      * @return Value of the metadata item. QString() is returned in case
      * the specified key does not exist.
-     * @since 3.4
      */
     QString metaDataItem( const QString &key ) const;
 
@@ -222,7 +213,6 @@ public:
      * @param key Name of the metadata item to change
      * @param value Value to use for the specified metadata item
      * @param mode Whether to overwrite the item's value if it exists already or not.
-     * @since 3.4
      */
     void setMetaDataItem( const QString &key, const QString &value, MetaDataOverwriteMode mode = OverwriteMetaData );
 
@@ -232,8 +222,6 @@ public:
      * WARNING: do not call this method multiple times, use KBookmark::List::populateMimeData instead.
      *
      * @param mimeData the QMimeData instance used to drag or copy this bookmark
-     *
-     * @since 4.0
      */
     void populateMimeData( QMimeData* mimeData ) const;
 
@@ -318,7 +306,6 @@ public:
      * @param mgr the manager of the bookmark
      * @param bm the bookmark to add
      * @param emitSignal if true emit KBookmarkNotifier signal
-     * @since 3.4
      */
     KBookmark addBookmark( KBookmarkManager* mgr, const KBookmark &bm, bool emitSignal = true );
 
@@ -358,7 +345,6 @@ public:
 
     /**
      * @return the list of urls of bookmarks at top level of the group
-     * @since 3.2
      */
     QList<KUrl> groupUrlList() const;
 
@@ -373,9 +359,6 @@ private:
     // has to be implemented as an attribute of the QDomElement.
 };
 
-/**
- * @since 3.2
- */
 class KIO_EXPORT KBookmarkGroupTraverser {
 protected:
     virtual ~KBookmarkGroupTraverser() {}

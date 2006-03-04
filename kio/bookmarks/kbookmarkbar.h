@@ -63,29 +63,14 @@ public:
 
     virtual ~KBookmarkBar();
 
-    /**
-     * @since 3.2
-     */
     bool isReadOnly() const;
 
-    /**
-     * @since 3.2
-     */
     void setReadOnly(bool);
 
-    /**
-     * @since 3.2
-     */
     QString parentAddress();
 
 Q_SIGNALS:
-    /**
-     * @since 3.2
-     */
     void aboutToShowContextMenu( const KBookmark &, QMenu * );
-    /**
-     * @since 3.4
-     */
     void openBookmark( const QString& url, Qt::ButtonState state );
 
 public Q_SLOTS:
@@ -94,20 +79,12 @@ public Q_SLOTS:
     void slotBookmarksChanged( const QString & );
     void slotBookmarkSelected();
 
-    /**
-     * @since 3.4
-     */
     void slotBookmarkSelected( KAction::ActivationReason reason, Qt::ButtonState state );
 
-    /// @since 3.2
     void slotRMBActionRemove( int );
-    /// @since 3.2
     void slotRMBActionInsert( int );
-    /// @since 3.2
     void slotRMBActionCopyLocation( int );
-    /// @since 3.2
     void slotRMBActionEditAt( int );
-    /// @since 3.2
     void slotRMBActionProperties( int );
 
 protected:
