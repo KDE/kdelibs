@@ -199,7 +199,6 @@ public:
 	 * @note realModule() will return null when the module is running in root mode.
 	 *
 	 * @return true if the module is running with root privileges
-	 * @since 3.4
 	 */
 	bool rootMode() const;
 
@@ -222,8 +221,6 @@ public:
 	/**
 	 * Returns the DCOP the module's DCOPClient
 	 * and DCOPObject has(they are identical).
-	 *
-	 * @since 3.4
 	 */
 	QByteArray dcopName() const;
 
@@ -232,8 +229,6 @@ public Q_SLOTS:
 	/**
 	 * Calling this will cause the module to be run in
 	 * "administrator mode".
-	 *
-	 * @since 3.4
 	 */
 	void runAsRoot();
 
@@ -247,8 +242,6 @@ public Q_SLOTS:
 	 * Calling this, results in deleting the contained
 	 * module, and unregistering from DCOP. A similar result is achieved
 	 * by deleting the KCModuleProxy itself.
-	 *
-	 * @since 3.4
 	 */
 	void deleteClient();
 
@@ -262,24 +255,18 @@ Q_SIGNALS:
 	/**
 	 * This is emitted in the same situations as in the one above. Practical
 	 * when several KCModuleProxys are loaded.
-	 *
-	 * @since 3.4
 	 */
 	void changed( KCModuleProxy* mod );
 
 	/**
 	 * When a module running with root privileges and exits, returns to normal mode, the
 	 * childClosed() signal is emitted.
-	 *
-	 * @since 3.4
 	 */
 	void childClosed();
 
 	/*
 	 * This signal is relayed from the encapsulated module, and
 	 * is equivalent to the module's own quickHelpChanged() signal.
-	 *
-	 * @since 3.4
 	 */
 	void quickHelpChanged();
 
@@ -295,14 +282,12 @@ protected:
 	 * Internal intialization function, called by the constructors.
 	 *
 	 * @internal
-	 * @since 3.4
 	 */
 	void init( const KCModuleInfo& info );
 
 
 	/**
 	 * Emits the quickHelpChanged signal.
-	 * @since 3.4
 	 */
 	void emitQuickHelpChanged();
 
@@ -313,15 +298,12 @@ private Q_SLOTS:
 	* DCOP interface.
 	*
 	* @param function the function signature of the function to call.
-	* @since 3.4
 	*/
 	void callRootModule( const QByteArray& function );
 
 	/**
 	 * This is called when the module exits from root mode. It zeroes
 	 * pointers, deletes the embed window, and so forth.
-	 *
-	 * @since 3.4
 	 */
 	void rootExited();
 
@@ -339,8 +321,6 @@ private Q_SLOTS:
 	 * Gets called by DCOP when an application closes.
 	 * Is used to (try to) reload a KCM which previously
 	 * was loaded.
-	 *
-	 * @since 3.4
 	 */
 	void applicationRemoved( const QByteArray& app );
 

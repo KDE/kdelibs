@@ -549,7 +549,6 @@ public:
      * design mode is active.
      *
      * @return whether this element is editable.
-     * @since 3.2
      * @see setContentEditable
      */
     bool contentEditable() const;
@@ -568,7 +567,6 @@ public:
      * @param enabled @p true to make this element editable, @p false
      * otherwise.
      * @see DOM::Document::designMode
-     * @since 3.2
      */
     void setContentEditable(bool enabled);
 

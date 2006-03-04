@@ -123,12 +123,10 @@ protected:
      * because of the way ctors of virtual base classes work.
      * Otherwise dcopidl2cpp would have to call ctors of all, even
      * indirect, bases.
-     * @since 3.1
      * @internal
      */
     enum never_use_t { never_use };
     /**
-     * @since 3.1
      * @internal
      */
     DCOPStub( never_use_t ) { abort(); }

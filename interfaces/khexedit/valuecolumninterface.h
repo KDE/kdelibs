@@ -26,7 +26,6 @@ namespace KHE
  *
  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
  * @see createBytesEditWidget(), valueColumnInterface()
- * @since 3.2
  */
 
 class ValueColumnInterface
@@ -155,7 +154,6 @@ class ValueColumnInterface
 /** tries to get the valuecolumn interface of t 
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
-  * @since 3.2
 */
 template<class T>
 ValueColumnInterface *valueColumnInterface( T *t )

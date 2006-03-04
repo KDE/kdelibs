@@ -54,7 +54,6 @@ class KConfigGroup;
  * to the KPluginSelector.
  *
  * @author Matthias Kretz <kretz@kde.org>
- * @since 3.2
  */
 class KUTILS_EXPORT KPluginSelector : public QWidget
 {

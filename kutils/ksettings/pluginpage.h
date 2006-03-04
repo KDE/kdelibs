@@ -66,7 +66,6 @@ namespace KSettings
    \endverbatim
  *
  * @author Matthias Kretz <kretz@kde.org>
- * @since 3.2
  */
 class KUTILS_EXPORT PluginPage : public KCModule
 {

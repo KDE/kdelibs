@@ -163,13 +163,11 @@ struct KPARTS_EXPORT URLArgs
 
   /**
    * Set whether the URL specifies to be opened in a new window
-   * @since 3.4
    */
   void setForcesNewWindow( bool forcesNewWindow );
 
   /**
    * Whether the URL specifies to be opened in a new window
-   * @since 3.4
    */
   bool forcesNewWindow() const;
 
@@ -341,9 +339,9 @@ public:
   enum PopupFlag { DefaultPopupItems=0x0000, ShowNavigationItems=0x0001,
          ShowUp=0x0002, ShowReload=0x0004, ShowBookmark=0x0008,
          ShowCreateDirectory=0x0010, ShowTextSelectionItems=0x0020,
-         NoDeletion=0x0040, ///< @since 3.4
-         IsLink=0x0080,           ///< @since 4.0
-         ShowURLOperations=0x0100 ///< @since 4.0
+         NoDeletion=0x0040,
+         IsLink=0x0080,
+         ShowURLOperations=0x0100
   };
   Q_DECLARE_FLAGS( PopupFlags, PopupFlag )
 
@@ -427,7 +425,6 @@ public:
    * When the setActionText signal is emitted, the browserextension
    * stores the text of the action internally, so that it's possible
    * to query later for the text of the action, using this method.
-   * @since 3.5
    */
   QString actionText( const char * name ) const;
 
@@ -476,7 +473,6 @@ public:
 
   /**
    * Asks the hosting browser to perform a paste (using openURLRequestDelayed)
-   * @since 3.2
    */
   void pasteRequest();
 
@@ -496,7 +492,6 @@ public:  // yes, those signals are public; don't tell moc :)
    * This can be used to change "Paste" into "Paste Image" for instance.
    *
    * See class documentation for the list of standard actions.
-   * @since 3.5
    */
   void setActionText( const char * name, const QString& text );
 
@@ -672,14 +667,12 @@ public:  // yes, those signals are public; don't tell moc :)
 
   /**
    * Ask the hosting application to focus @p part.
-   * @since 3.4
    */
   void requestFocus(KParts::ReadOnlyPart *part);
 
   /**
    * Tell the host (browser) about security state of current page
    * enum PageSecurity { NotCrypted, Encrypted, Mixed };
-   * @since 3.4
    */
   void setPageSecurity( int );
 
@@ -736,7 +729,6 @@ public:
   /**
    * Returns the part that contains @p frame and that may be accessed
    * by @p callingPart
-   * @since 3.3
    */
   BrowserHostExtension *findFrameParent(KParts::ReadOnlyPart *callingPart, const QString &frame);
 

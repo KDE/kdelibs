@@ -36,7 +36,6 @@ namespace Arts { class StereoEffectStack; }
  * @brief A KDE wrapper around Synth_AMAN_RECORD/AudioToByteStream/ByteSoundReceiver
  *
  * @author Matthias Kretz <kretz@kde.org>
- * @since 3.2
 */
 class KDE_ARTS_EXPORT KAudioRecordStream : public QObject
 {
@@ -104,7 +103,6 @@ class KDE_ARTS_EXPORT KAudioRecordStream : public QObject
 
 		/**
 		 * @return Wether it is running (recording) or not.
-		 * @since 3.2
 		 */
 		bool running() const;
 
@@ -146,7 +144,6 @@ class KDE_ARTS_EXPORT KAudioRecordStream : public QObject
 
 		/**
 		 * Wether this RecordStream is recording or not.
-		 * @since 3.2
 		 */
 		void running( bool );
 

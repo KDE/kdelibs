@@ -73,7 +73,6 @@ public:
    * But in some cases this might not be wanted, e.g. if using the K3URLDrag in a KMultipleDrag
    * and another component of the multiple-drag provides better plain text data.
    * In such a case, setExportAsText( false ) should be called.
-   * @since 3.4
    */
   void setExportAsText( bool exp );
 
@@ -122,13 +121,11 @@ public:
 
   /**
    * Converts a URL to a string representation suitable for dragging.
-   * @since 3.2
    */
   static QString urlToString(const KUrl &url);
 
   /**
    * Converts a string used for dragging to a URL.
-   * @since 3.2
    */
   static KUrl stringToUrl(const QByteArray &s);
 

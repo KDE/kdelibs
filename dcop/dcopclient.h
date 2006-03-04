@@ -152,7 +152,6 @@ class DCOP_EXPORT DCOPClient : public QObject
    * Returns whether the DCOP - Qt bridge is enabled.
    * By default the DCOP - Qt bridge is enabled.
    * @return true if Qt objects are accessible over DCOP
-   * @since 3.0.2
    */
   bool qtBridgeEnabled() const; 
   /**
@@ -160,7 +159,6 @@ class DCOP_EXPORT DCOPClient : public QObject
    * via DCOP.
    * By default the DCOP - Qt bridge is enabled.
    * @param b true to make Qt objects accessible over DCOP
-   * @since 3.0.2
    */
   void setQtBridgeEnabled(bool b);
 
@@ -235,7 +233,6 @@ class DCOP_EXPORT DCOPClient : public QObject
    * Returns whether DCOP events are being processed.
    * @see suspend()
    * @see resume().
-   * @since 3.1
    */
   bool isSuspended() const;
 
@@ -291,8 +288,6 @@ class DCOP_EXPORT DCOPClient : public QObject
    * @param timeout timeout for the call in miliseconds, or -1 for no timeout
    * @return true if successful, false otherwise
    *
-   * @since 3.2
-   *
    * @see send()
    */
   bool call(const DCOPCString &remApp, const DCOPCString &remObj,
@@ -325,8 +320,6 @@ class DCOP_EXPORT DCOPClient : public QObject
    *
    * @see send()
    * @see callback()
-   *
-   * @since 3.2
    */
   int callAsync(const DCOPCString &remApp, const DCOPCString &remObj,
                 const DCOPCString &remFun, const QByteArray &data,
@@ -363,8 +356,6 @@ class DCOP_EXPORT DCOPClient : public QObject
    * @param timeout timeout for the call in miliseconds, or -1 for no timeout
    * @return true is returned when an object was found for which @p remFun
    *         returned true. If no such object is the function returns false.
-   *
-   * @since 3.2
    *
    * @see send()
    */
@@ -748,7 +739,6 @@ Q_SIGNALS:
    * This signal is automatically connected to the call back
    * slot specified in the async call.
    * @see callAsync()
-   * @since 3.2
    * @internal
    */
   void callBack(int, const DCOPCString&, const QByteArray &);

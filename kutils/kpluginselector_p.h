@@ -38,7 +38,6 @@ class KCModuleInfo;
  * @see KPluginSelector
  *
  * @author Matthias Kretz <kretz@kde.org>
- * @since 3.2
  */
 class KPluginSelectionWidget : public QWidget
 {

@@ -63,8 +63,6 @@ KDE_EXPORT KAction* standardAction(const QString& what,
  * @author Cornelius Schumacher (schumacher@kde.org)
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
- *
- * @since 3.3
  */
 class KDE_EXPORT KNewStuff
 {

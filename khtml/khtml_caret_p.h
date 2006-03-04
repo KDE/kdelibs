@@ -108,7 +108,6 @@ class LinearDocument;
  * allocated can be traversed as seen fit.
  *
  * @author Leo Savernik
- * @since 3.3
  * @internal
  */
 template<class T> class MassDeleter : public QVector<T *> {
@@ -132,7 +131,6 @@ class CaretBoxLine;
  * exist for a certain context, it contains the relevant information directly.
  *
  * This class will be constructed whenever a caret position has to be described.
- * @since 3.3
  * @author Leo Savernik
  * @internal
  */
@@ -230,7 +228,6 @@ typedef MassDeleter<CaretBox> CaretBoxDeleter;
  *
  * @author Leo Savernik
  * @internal
- * @since 3.3
  */
 class CaretBoxIterator {
 protected:
@@ -491,7 +488,6 @@ inline CaretBox *CaretBoxIterator::data() const { return cbl->caret_boxes[index]
  *
  * The line iterator becomes invalid when the associated LinearDocument object
  * is destroyed.
- * @since 3.2
  * @internal
  * @author Leo Savernik
  */
@@ -628,7 +624,6 @@ protected:
  * elements).
  *
  * @author Leo Savernik
- * @since 3.2
  * @internal
  */
 class LinearDocument {
@@ -750,7 +745,6 @@ protected:
  *
  * @author Leo Savernik
  * @internal
- * @since 3.3
  */
 class EditableCaretBoxIterator : public CaretBoxIterator {
   KHTMLPart *m_part;
@@ -814,7 +808,6 @@ protected:
  *
  * The line iterator becomes invalid when the associated LinearDocument object
  * is destroyed.
- * @since 3.2
  * @internal
  * @author Leo Savernik
  */
@@ -878,7 +871,6 @@ protected:
  * representation of all rows they contain.
  * @author Leo Savernik
  * @internal
- * @since 3.2
  */
 class TableRowIterator {
 protected:
@@ -940,7 +932,6 @@ protected:
  *
  * @author Leo Savernik
  * @internal
- * @since 3.2
  */
 class ErgonomicEditableLineIterator : public EditableLineIterator {
 protected:

@@ -414,7 +414,6 @@ public:
   /**
    * This convenience method returns the browserExtension for this part,
    * or 0 if there isn't any.
-   * @since 4.0
    */
   BrowserExtension* browserExtension() const;
 
@@ -602,8 +601,6 @@ public:
    *
    * @return true if closeURL() can be called without the user losing
    * important data, false if the user chooses to cancel.
-   *
-   * @since 3.2
    */
   virtual bool queryClose();
 
@@ -627,8 +624,6 @@ public:
    * again when closing the url.
    *
    * Equivalent to promptToSave ? closeURL() : ReadOnlyPart::closeURL()
-   *
-   * @since 3.2
    */
   virtual bool closeURL( bool promptToSave );
 
@@ -646,8 +641,6 @@ public:
 
 Q_SIGNALS:
    /**
-    * @since 3.2, remove in KDE 4, when queryClose is made virtual
-    *
     * set handled to true, if you don't want the default handling
     * set abortClosing to true, if you handled the request,
     * but for any reason don't  want to allow closing the document

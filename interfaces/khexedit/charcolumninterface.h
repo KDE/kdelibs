@@ -28,7 +28,6 @@ namespace KHE
  *
  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
  * @see createBytesEditWidget(), charColumnInterface()
- * @since 3.2
  */
 class CharColumnInterface
 {
@@ -90,7 +89,6 @@ class CharColumnInterface
 /** tries to get the charcolumn interface of t
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
-  * @since 3.2
   */
 template<class T>
 CharColumnInterface *charColumnInterface( T *t )

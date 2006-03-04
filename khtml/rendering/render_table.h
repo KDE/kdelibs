@@ -485,7 +485,6 @@ protected:
  * takes into regard.
  * @author Leo Savernik
  * @internal
- * @since 3.2
  */
 class TableSectionIterator {
 public:

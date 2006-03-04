@@ -42,7 +42,6 @@ namespace KABC {
    * @param str         The vcard string.
    * @param addrList    The addresseelist.
    * @param dt          The date & time value of the last modification (e.g. file modification time).
-   * @since 3.2
    */
   KABC_EXPORT bool LDIFToAddressee( const QString &str, AddresseeList &addrList, QDateTime dt = QDateTime::currentDateTime() );
 
@@ -51,7 +50,6 @@ namespace KABC {
    *
    * @param addrList    The addresseelist.
    * @param str         The LDIF string.
-   * @since 3.2
    */
   KABC_EXPORT bool addresseeToLDIF( const AddresseeList &addrList, QString &str );
 
@@ -60,7 +58,6 @@ namespace KABC {
    *
    * @param addr    The addressee.
    * @param str     The LDIF string.
-   * @since 3.2
    */
   KABC_EXPORT bool addresseeToLDIF( const Addressee &addr, QString &str );
 

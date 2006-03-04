@@ -646,7 +646,6 @@ public Q_SLOTS:
 	/**
 	 * Sets the appearance of the toolview tabs.
 	 * @param flags See K3Mdi::ToolviewStyle.
-	 * @since 3.3
 	 */
 	void setToolviewStyle( int flags );
 	/**

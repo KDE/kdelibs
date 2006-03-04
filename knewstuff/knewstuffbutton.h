@@ -31,8 +31,6 @@ class DownloadDialog;
  * KHotNewStuff push button that makes using KHNS in an application
  * more convenient by encapsulating most of the details involved in
  * using KHotNewStuff in the button itself.
- *
- * @since 3.4
  */
 class Button : public KPushButton
 {

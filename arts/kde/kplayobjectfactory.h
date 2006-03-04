@@ -43,8 +43,6 @@ public:
 	 * Convenience constructor to pass a KArtsServer instead of an
 	 * Arts::SoundServerV2. This equivalent to calling
 	 * KPlayObjectFactory( server.server() ).
-	 *
-	 * @since 3.2
 	 */
 	KPlayObjectFactory(KArtsServer* server);
 
@@ -88,8 +86,6 @@ public:
 	 * Convenience constructor to pass a KArtsServer instead of an
 	 * Arts::SoundServerV2. This equivalent to calling
 	 * KDE::PlayObjectFactory( server.server() ).
-	 *
-	 * @since 3.2
 	 */
 	PlayObjectFactory( KArtsServer* server );
 	~PlayObjectFactory();

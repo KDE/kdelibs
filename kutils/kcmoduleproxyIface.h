@@ -28,7 +28,6 @@
  * A module (which is loaded via KCModuleProxy) does always have 
  * this DCOP interface, whether it's in root mode or not.
  *
- * @since 3.4
  * @internal
  * @author Frans Englich <frans.englich@telia.com>
  */
@@ -98,7 +97,6 @@ k_dcop_signals:
  * Currently is only the changed signal routed, but it's possible to proxy
  * the rest of the KCModuleProxy API, if it turns out necessary.
  *
- * @since 3.4
  * @internal
  * @author Frans Englich <frans.englich@telia.com>
  */

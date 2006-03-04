@@ -47,7 +47,6 @@ class KCModuleProxy;
  * finalize() which performs some necessary final steps.
  *
  * @author Frans Englich <frans.englich@telia.com>
- * @since 3.4
  */
 class KUTILS_EXPORT KCModuleContainer : public KCModule
 {

@@ -38,7 +38,6 @@ class KLibLoader;
  * 
  * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
  * @author Frans Englich <frans.englich@telia.com>
- * @since 3.2
  * @internal
 **/
 class KUTILS_EXPORT KCModuleLoader
@@ -76,7 +75,6 @@ class KUTILS_EXPORT KCModuleLoader
      * with the module may appear and a zero pointer is a returned
      *
      * @return a pointer to the loaded @ref KCModule
-     * @since 3.4
      */
     static KCModule *loadModule(const KCModuleInfo &module, ErrorReporting
         report, bool withFallback=true, QWidget * parent = 0,
@@ -89,7 +87,6 @@ class KUTILS_EXPORT KCModuleLoader
      * with the module may appear and a zero pointer is a returned
      *
      * @return a pointer to the loaded @ref KCModule
-     * @since 3.4
      */
     static KCModule *loadModule(const QString &module, ErrorReporting
         report, QWidget *parent = 0, const char *name = 0,
@@ -137,7 +134,6 @@ class KUTILS_EXPORT KCModuleLoader
      *
      * @param module the module to check
      * @returns true if the module should be loaded
-     * @since 3.4
      */
     static bool testModule( const QString& module );
 
@@ -146,7 +142,6 @@ class KUTILS_EXPORT KCModuleLoader
      *
      * @param module the module to check
      * @returns true if the module should be loaded
-     * @since 3.4
      */
     static bool testModule( const KCModuleInfo& module );
 
@@ -157,7 +152,6 @@ class KUTILS_EXPORT KCModuleLoader
      * @param text the main message
      * @param details any additional details
      *
-     * @since 3.4
      * @internal
      */
     static KCModule* reportError( ErrorReporting report, const QString & text,

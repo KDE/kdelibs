@@ -120,7 +120,6 @@ class KABC_EXPORT VCardConverter
   * Converts a QDateTime to a date string as it is used in VCard and LDIF files.
   * The return value is in the form "yyyyMMddThhmmssZ" (e.g. "20031201T120000Z")
   * @param dateTime date and time to be converted 
-  * @since 3.2
   */
 KABC_EXPORT QString dateToVCardString( const QDateTime &dateTime );
 
@@ -128,7 +127,6 @@ KABC_EXPORT QString dateToVCardString( const QDateTime &dateTime );
   * Converts a QDate to a short date string as it is used in VCard and LDIF files.
   * The return value is in the form "yyyyMMdd" (e.g. "20031201")
   * @param date date to be converted 
-  * @since 3.2
   */
 KABC_EXPORT QString dateToVCardString( const QDate &date );
 
@@ -137,7 +135,6 @@ KABC_EXPORT QString dateToVCardString( const QDate &date );
   * If the date string does not contain a time value, it will be returned as 00:00:00.
   * (e.g. "20031201T120000" will return a QDateTime for 2003-12-01 at 12:00)
   * @param dateString string representing the date and time.
-  * @since 3.2
   */
 KABC_EXPORT QDateTime VCardStringToDate( const QString &dateString );
 

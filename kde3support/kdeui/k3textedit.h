@@ -38,7 +38,6 @@ class KSpell;
  *
  * @see Q3TextEdit
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
- * @since 3.1
  */
 class KDE3SUPPORT_EXPORT K3TextEdit : public Q3TextEdit
 {
@@ -77,15 +76,13 @@ public:
      * Turns spell checking for this text edit on or off.
      *
      * @see checkSpellingEnabled()
-     * @since 3.2
      */
     void setCheckSpellingEnabled( bool check );
 
     /**
      * Returns true if spell checking is enabled for this text edit.
      *
-     @ see setCheckSpellingEnabled()
-     * @since 3.2
+     * @see setCheckSpellingEnabled()
      */
     bool checkSpellingEnabled() const;
 
@@ -97,7 +94,6 @@ public Q_SLOTS:
      * Create a modal dialog to check the spelling.  This slot will not return
      * until spell checking has been completed.
      *
-     * @since 3.2
      */
     void checkSpelling();
 

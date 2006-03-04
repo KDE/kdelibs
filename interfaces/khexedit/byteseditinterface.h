@@ -26,8 +26,6 @@
 /**
  * @short KHE (short for KHexEdit) is KDE's namespace for all things related
  * to the viewing/editing of bytes.
- *
- * @since 3.2
  */
 namespace KHE
 {
@@ -71,7 +69,6 @@ namespace KHE
  *
  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
  * @see createBytesEditWidget(), bytesEditInterface()
- * @since 3.2
  */
 class BytesEditInterface
 {
@@ -151,7 +148,6 @@ class BytesEditInterface
 /** tries to get the bytesedit interface of t
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
-  * @since 3.2
 */
 template<class T>
 inline BytesEditInterface *bytesEditInterface( T *t )
@@ -216,7 +212,6 @@ inline BytesEditInterface *bytesEditInterface( T *t )
   * @return a pointer to the widget, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
   * @see BytesEditInterface, ValueColumnInterface, CharColumnInterface, ZoomInterface, ClipboardInterface
-  * @since 3.2
   */
 inline QWidget *createBytesEditWidget( QWidget *Parent = 0, const char *Name = 0 )
 {

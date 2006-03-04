@@ -77,14 +77,12 @@ public:
      * WARNING: though pre-existing keyboard shortcuts will not interfere with the
      * operation of this feature, they may be confusing to the user as the existing
      * shortcuts will not work.
-     * @since 3.1
      */
     void setKeyboardShortcutsEnabled(bool enable);
 
     /**
      * Enables execution of the menu item once it is uniquely specified.
      * Defaults to off.
-     * @since 3.1
      */
     void setKeyboardShortcutsExecute(bool enable);
 
@@ -100,19 +98,16 @@ public:
 
     /**
      * Hides the context menu if shown
-     * @since 3.2
      */
     void hideContextMenu();
 
     /**
      * Returns the K3PopupMenu associated with the current context menu
-     * @since 3.2
      */
     static K3PopupMenu* contextMenuFocus();
 
     /**
      * returns the QAction associated with the current context menu
-     * @since 3.2
      */
     static QAction* contextMenuFocusAction();
 
@@ -120,20 +115,17 @@ public:
     /**
      * Return the state of the mouse button and keyboard modifiers
      * when the last menuitem was activated.
-     * @since 3.4
      */
     Qt::ButtonState state() const;
 #endif
 
     /**
      * Return the state of the mouse buttons when the last menuitem was activated.
-     * @since 4.0
      */
     Qt::MouseButtons mouseButtons() const;
 
     /**
      * Return the state of the keyboard modifiers when the last menuitem was activated.
-     * @since 4.0
      */
     Qt::KeyboardModifiers keyboardModifiers() const;
 
@@ -183,13 +175,11 @@ public:
 
     /**
      * returns the ID of the menuitem associated with the current context menu
-     * @since 3.2
      */
     static int contextMenuFocusItem() KDE_DEPRECATED;
 
     /**
      * Reimplemented for internal purposes
-     * @since 3.4
      */
     virtual void activateItemAt(int index) KDE_DEPRECATED;
     // END compat methods
@@ -211,7 +201,6 @@ Q_SIGNALS:
      * @param menu The menu that the context menu is about to be shown for
      * @param menuAction The action that the context menu is currently on
      * @param ctxMenu The context menu itself
-     * @since 3.2
      */
     void aboutToShowContextMenu(K3PopupMenu* menu, QAction* menuAction, QMenu* ctxMenu);
     /// compat
@@ -220,7 +209,6 @@ Q_SIGNALS:
 protected:
     virtual void closeEvent(QCloseEvent *);
     virtual void keyPressEvent(QKeyEvent* e);
-    /// @since 3.4
     virtual void mouseReleaseEvent(QMouseEvent* e);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual bool focusNextPrevChild( bool next );
@@ -230,9 +218,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 protected Q_SLOTS:
-    /// @since 3.1
     QString underlineText(const QString& text, uint length);
-    /// @since 3.1
     void resetKeyboardVars(bool noMatches = false);
     void actionHovered(QAction* action);
     void showCtxMenu(const QPoint &pos);

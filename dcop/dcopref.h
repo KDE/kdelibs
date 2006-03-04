@@ -38,7 +38,6 @@ class DCOPClient;
  * @see DCOPRef
  * @see DCOPRef::call()
  * @see DCOPArg
- * @since 3.1
  */
 class DCOP_EXPORT DCOPReply
 {
@@ -117,7 +116,6 @@ private:
  * @see DCOPRef::call()
  * @see DCOPRef
  * @see DCOPReply
- * @since 3.1
  */
 class DCOP_EXPORT DCOPArg  {
 public:
@@ -335,7 +333,6 @@ public:
     /**
      * Object ID of the referenced object.
      * @return the id of the referenced object. Can be null or empty if not set.
-     * @since 3.1
      */
     DCOPCString obj() const;
 
@@ -384,7 +381,6 @@ public:
      * Returns the dcop client the reference operates on. If no client
      * has been set, this is the DCOPClient::mainClient().
      * @return the DCOPClient of this object
-     * @since 3.1
      */
     DCOPClient* dcopClient() const;
 
@@ -392,7 +388,6 @@ public:
      * Sets a specific dcop client for this reference. Otherwise
      * DCOPClient::mainClient() is used.
      * @param client the new DCOPClient of this object
-     * @since 3.1
      */
     void setDCOPClient( DCOPClient *client );
 
@@ -416,7 +411,6 @@ public:
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.1
      */
     DCOPReply call( const DCOPCString& fun ) {
 	QByteArray data;
@@ -434,7 +428,6 @@ public:
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
-     * @since 3.2
      */
     DCOPReply callExt( const DCOPCString& fun, EventLoopFlag useEventLoop=NoEventLoop,
 		    int timeout=-1 ) {
@@ -455,7 +448,6 @@ public:
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1>
     DCOPReply call( const DCOPCString& fun, const T1& t1 ) {
@@ -482,7 +474,6 @@ public:
      *            the arguments
      * @param t1 the first argument of the function. This can be a
      *           supported base type or a DCOPArg object.
-     * @since 3.2
      */
     template <class T1>
     DCOPReply callExt( const DCOPCString& fun,
@@ -513,7 +504,6 @@ public:
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1, class T2>
     DCOPReply call( const DCOPCString& fun,
@@ -545,7 +535,6 @@ public:
      *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
      *           supported base type or a DCOPArg object.
-     * @since 3.2
      */
     template <class T1, class T2>
     DCOPReply callExt( const DCOPCString& fun,
@@ -580,7 +569,6 @@ public:
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1, class T2, class T3>
     DCOPReply call( const DCOPCString& fun,
@@ -616,7 +604,6 @@ public:
      * @param t3 the third argument of the function. This can be a
      *           supported base type or a DCOPArg object.
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
-     * @since 3.2
      */
     template <class T1, class T2, class T3>
     DCOPReply callExt( const DCOPCString& fun,
@@ -655,7 +642,6 @@ public:
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1,class T2,class T3,class T4>
     DCOPReply call( const DCOPCString& fun,
@@ -695,7 +681,6 @@ public:
      *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
      *           supported base type or a DCOPArg object.
-     * @since 3.2
      */
     template <class T1,class T2,class T3,class T4>
     DCOPReply callExt( const DCOPCString& fun,
@@ -738,7 +723,6 @@ public:
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5>
     DCOPReply call( const DCOPCString& fun,
@@ -782,7 +766,6 @@ public:
      *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
      *           supported base type or a DCOPArg object.
-     * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5>
     DCOPReply callExt( const DCOPCString& fun,
@@ -829,7 +812,6 @@ public:
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
     DCOPReply call( const DCOPCString& fun,
@@ -877,7 +859,6 @@ public:
      *           supported base type or a DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a
      *           supported base type or a DCOPArg object.
-     * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
     DCOPReply callExt( const DCOPCString& fun,
@@ -927,7 +908,6 @@ public:
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
     DCOPReply call( const DCOPCString& fun,
@@ -979,7 +959,6 @@ public:
      *           supported base type or a DCOPArg object.
      * @param t7 the seventh argument of the function. This can be a
      *           supported base type or a DCOPArg object.
-     * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
     DCOPReply callExt( const DCOPCString& fun,
@@ -1034,7 +1013,6 @@ public:
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
     DCOPReply call( const DCOPCString& fun,
@@ -1090,7 +1068,6 @@ public:
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
-     * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
     DCOPReply callExt( const DCOPCString& fun,
@@ -1131,7 +1108,6 @@ public:
      * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
-     * @since 3.1
      */
     bool send( const DCOPCString& fun ) {
 	QByteArray data;
@@ -1152,7 +1128,6 @@ public:
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1>
     bool send( const DCOPCString& fun, const T1& t1 ) {
@@ -1181,7 +1156,6 @@ public:
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1, class T2>
     bool send( const DCOPCString& fun,
@@ -1215,7 +1189,6 @@ public:
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1, class T2, class T3>
     bool send( const DCOPCString& fun,
@@ -1253,7 +1226,6 @@ public:
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1,class T2,class T3,class T4>
     bool send( const DCOPCString& fun,
@@ -1295,7 +1267,6 @@ public:
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5>
     bool send( const DCOPCString& fun,
@@ -1341,7 +1312,6 @@ public:
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
     bool send( const DCOPCString& fun,
@@ -1391,7 +1361,6 @@ public:
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
     bool send( const DCOPCString& fun,
@@ -1445,7 +1414,6 @@ public:
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
-     * @since 3.1
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
     bool send( const DCOPCString& fun,

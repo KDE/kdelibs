@@ -31,8 +31,6 @@
  *
  * @version 1.0 Draft 10
  *
- * @since KDE 3.4
- *
  * This class defines the DCOP interface for applications desiring to speak text.
  * Applications may speak text by sending DCOP messages to application "kttsd" object "KSpeech".
  *
@@ -163,8 +161,6 @@
    @verbatim
      dcop kttsd KSpeech sayText <text> <talker>
    @endverbatim
- *
- * @since KDE 3.5
  *
  * To stop speaking and rewind to the beginning of the text.
  *
@@ -669,7 +665,7 @@ class KSpeech : virtual public DCOPObject {
             mtJsml = 1,                  /**< Java %Speech Markup Language */
             mtSsml = 2,                  /**< %Speech Synthesis Markup Language */
             mtSable = 3,                 /**< Sable 2.0 */
-            mtHtml = 4                   /**< HTML @since 3.5 */
+            mtHtml = 4                   /**< HTML */
         };
 
     k_dcop:
@@ -816,8 +812,6 @@ class KSpeech : virtual public DCOPObject {
         * If there are no other speakable jobs preceeding this one, it begins speaking.
         *
         * @see getTextCount
-        *
-        * @since KDE 3.5
         */
         virtual uint sayText(const QString &text, const QString &talker) = 0;
 

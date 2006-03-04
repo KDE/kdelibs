@@ -91,8 +91,6 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
       the application configuration.
 
       @param providerList the URL of the provider list
-
-      @since 3.4
     */
     void setProviderList(const QString& providerList);
 

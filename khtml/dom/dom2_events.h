@@ -601,7 +601,6 @@ public:
 
 
 /**
- * @since 4.0
  * Introduced in DOM Level 3
  *
  * DOM::KeyboardEvent

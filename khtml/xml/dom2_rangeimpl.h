@@ -76,8 +76,6 @@ public:
      *
      *  @param exceptioncode This will be set if m_detached is true.
      *  @return A string with html tags for this range.
-     *
-     *  @since 3.4
      */
     DOMString toHTML ( int &exceptioncode );
 

@@ -61,7 +61,6 @@ public:
    * This extends QFocusEvent::Reason with the non-focus-event reasons for partmanager to activate a part.
    * To test for "any focusin reason", use < ReasonLeftClick
    * NoReason usually means: explicit activation with @ref setActivePart.
-   * @since 3.3
    */
   enum Reason { ReasonLeftClick = 100, ReasonMidClick, ReasonRightClick, NoReason };
 
@@ -226,7 +225,6 @@ public:
   /**
    * @return the reason for the last activePartChanged signal emitted.
    * @see Reason
-   * @since 3.3
    */
   int reason() const;
 

@@ -277,13 +277,11 @@ public:
    * @return the DCOPClient responsible for making the call. 
    * This information is only guaranteed to be correct when 
    * entering your DCOP function.
-   * @since 3.1
    */
   DCOPClient *callingDcopClient();
 
   /**
    * Sets DCOPClient returned by callingDcopClient()
-   * @since 3.1
    * @internal
    */
   void setCallingDcopClient(DCOPClient *);

@@ -35,7 +35,6 @@ class KAudioPlayStreamPrivate;
  * @brief A wrapper around ByteSoundProducer/ByteStreamToAudio/Synth_AMAN_PLAY.
  *
  * @author Arnold Krille <arnold@arnoldarts.de>
- * @since 3.2
 */
 
 class KDE_ARTS_EXPORT KAudioPlayStream : public QObject {

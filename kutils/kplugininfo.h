@@ -36,7 +36,6 @@ class KConfigGroup;
  * user to decide whether he wants to use this plugin or not.
  *
  * @author Matthias Kretz <kretz@kde.org>
- * @since 3.2
  */
 class KUTILS_EXPORT KPluginInfo
 {

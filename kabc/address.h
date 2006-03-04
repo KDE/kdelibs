@@ -292,7 +292,6 @@ class KABC_EXPORT Address
       This might be replaced by a KLocale method in the future.
       @param ISOname two digit ISO code
       @return        localized name of the country
-      @since 3.2
     */
     static QString ISOtoCountry( const QString &ISOname );
 

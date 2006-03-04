@@ -151,7 +151,6 @@ public:
      *
      * @param supports true if the application supports backwards find
      * This is assumed to be the case by default.
-     * @since 3.4
      */
     void setSupportsBackwardsFind( bool supports );
 
@@ -161,7 +160,6 @@ public:
      *
      * @param supports true if the application supports case sensitive find
      * This is assumed to be the case by default.
-     * @since 3.4
      */
     void setSupportsCaseSensitiveFind( bool supports );
 
@@ -171,7 +169,6 @@ public:
      *
      * @param supports true if the application supports whole words only find
      * This is assumed to be the case by default.
-     * @since 3.4
      */
     void setSupportsWholeWordsFind( bool supports );
 
@@ -181,7 +178,6 @@ public:
      *
      * @param supports true if the application supports regular expression find
      * This is assumed to be the case by default.
-     * @since 3.4
      */
     void setSupportsRegularExpressionFind( bool supports );
 

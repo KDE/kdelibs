@@ -165,8 +165,6 @@ public:
      * for the 'find in selection' feature. A value of -1 (the default value)
      * means "process all the data", i.e. either 0 or data.length()-1 depending
      * on FindBackwards.
-     *
-     * @since 3.3
      */
     void setData( int id, const QString& data, int startPos = -1 );
 
@@ -295,7 +293,6 @@ public:
      * Same as the matchingIndex parameter passed to highlight.
      * You usually don't need to use this, except maybe when updating the current data,
      * so you need to call setData( newData, index() ).
-     * @since 3.2
      */
     int index() const;
 
@@ -328,8 +325,6 @@ Q_SIGNALS:
      * through setData(), but can also be of an earlier set data block.
      *
      * @see setData()
-     *
-     * @since 3.3
      */
     void highlight(int id, int matchingIndex, int matchedLength);
 

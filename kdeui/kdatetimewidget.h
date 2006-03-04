@@ -35,7 +35,6 @@ class QDateTime;
  * \image html kdatetimewidget.png "KDE Date Time Widget"
  *
  * @author Hans Petter Bieker <bieker@kde.org>
- * @since 3.2
  */
 class KDEUI_EXPORT KDateTimeWidget : public QWidget
 {

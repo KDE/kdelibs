@@ -268,17 +268,13 @@ public:
 
   /**
    * Get the drag panel of this header.
-   *
-   * @since 3.4
    */
    K3DockWidgetHeaderDrag *dragPanel();
 
   bool dragEnabled() const;
   void setDragEnabled(bool b);
-  /// @since 3.1
   void showUndockButton(bool show);
 
-  /// @since 3.2
   void forceCloseButtonHidden(bool enable=true);
 #ifndef NO_KDE2
   /**
@@ -296,14 +292,14 @@ public:
   virtual void loadConfig( KConfig* c);
 #endif
 
-   /*@since 3.2
+   /**
     * add an arbitrary button to the dockwidget header
     * NOT PART OF THE PUBLIC API (you don't have access the class defintion anyways, without special
     * header file copying. (don't do it))
     */
     void addButton(K3DockButton_Private*);
 
-   /*@since 3.2
+   /**
     * remove an arbtrary button from the dockwidget header
     * NOT PART OF THE PUBLIC API (you don't have access the class defintion anyways, without special
     * header file copying. (don't do it))
@@ -464,7 +460,7 @@ public:
     DockBottom = 0x0008,
     DockCenter = 0x0010,
     DockDesktop= 0x0020,
-    DockToSpecialSites=0x0040, ///< @since 3.1
+    DockToSpecialSites=0x0040,
     DockCorner = DockTop | DockLeft | DockRight | DockBottom,
     DockFullSite = DockCorner | DockCenter,
     DockFullDocking = DockFullSite | DockDesktop
@@ -546,7 +542,7 @@ public:
    */
   void setHeader( K3DockWidgetAbstractHeader* ah);
 
-  /**@since 3.2
+  /**
    * get the pointer to the header widget
    */
   K3DockWidgetAbstractHeader *getHeader();
@@ -630,7 +626,6 @@ public:
    */
   K3DockTabGroup* parentDockTabGroup() const;
 
-  /// @since 3.1
   QWidget *parentDockContainer() const;
 
 #ifndef NO_KDE2
@@ -648,7 +643,6 @@ public:
 
   /**
    * Returns the widget this dockwidget is set transient to, otherwise 0
-   * @since 3.2
    */
    QWidget *transientTo();
 
@@ -656,7 +650,6 @@ public:
    * Lookup the nearest dockwidget docked left/right/top/bottom to this one or return 0
    *
    * @param pos is the position the wanted widget is docked to this one
-   * @since 3.1
    */
   K3DockWidget *findNearestDockWidget(DockPosition pos);
 
@@ -664,20 +657,16 @@ public:
    * Allows changing the pixmap which is used for the caption or dock tabs
    *
    * @param pixmap is the pixmap to set
-   * @since 3.2
    */
    void setPixmap(const QPixmap& pixmap=QPixmap());
 
   /**
    * Returns the dockwidget's associated caption/dock tab pixmap
-   *
-   * @since 3.2
    */
    const QPixmap& pixmap() const;
 
   /**
    * @return the current dock position.
-   * @since 3.3
    */
   K3DockWidget::DockPosition currentDockPosition() const;
 
@@ -686,22 +675,17 @@ public Q_SLOTS:
    * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps
    * KDE 3.1.x oder 3.2
    * width is in pixel. It only affects a widget, which is placed directly into a horizontal K3DockSplitter
-   * @since 3.1
    **/
   void setForcedFixedWidth(int);
   /**
    * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps
    * KDE 3.1.x oder 3.2
    * height is in pixel. It only affects a widget, which is placed directly into a vertical K3DockSplitter
-   * @since 3.1
    **/
   void setForcedFixedHeight(int);
-  /// @since 3.1
   void restoreFromForcedFixedSize();
 
-  /// @since 3.1
   int forcedFixedWidth();
-  /// @since 3.1
   int forcedFixedHeight();
 
   /**
@@ -724,7 +708,6 @@ public Q_SLOTS:
 
   /**
    * Docks the widget to the desktop (as a toplevel widget)
-   * @since 3.1
    */
   void toDesktop( );
 
@@ -740,17 +723,13 @@ protected:
    */
   void updateHeader();
 
-  /// @since 3.1
   void setLatestK3DockContainer(QWidget *);
-  /// @since 3.1
   QWidget *latestK3DockContainer();
 
-  /// @since 3.2
   void setFormerBrotherDockWidget(K3DockWidget *);
 
 Q_SIGNALS:
   /**
-   *@since 3.2
    *is emitted after the setWidget method has finished
    */
    void widgetSet(QWidget*);
@@ -969,7 +948,6 @@ public:
   void readConfig ( KConfig* c = 0L, QString group = QString() );
 #endif
 
-  /// @since 3.1
   void setMainDockWidget2(K3DockWidget *);
 
   /**
@@ -1062,9 +1040,6 @@ public:
    */
   bool splitterHighResolution() const;
 
-  /**
-   * @since 3.2
-   */
   void setSpecialLeftDockContainer(K3DockWidget* container);
   void setSpecialTopDockContainer(K3DockWidget* container);
   void setSpecialRightDockContainer(K3DockWidget* container);

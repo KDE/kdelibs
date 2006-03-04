@@ -766,7 +766,6 @@ public:
      *
      * @param sheet style sheet
      * @exception DOMException
-     * @since 3.4
      */
     void addStyleSheet(const StyleSheet &sheet);
     
@@ -781,7 +780,6 @@ public:
      * @exception DOMException
      * NOT_FOUND_ERR \c sheet is not contained in the list of style sheets or
      * it has not been added by \c addStyleSheet
-     * @since 3.4
      */
     void removeStyleSheet(const StyleSheet &sheet);
     
@@ -908,7 +906,6 @@ public:
      * entering "design mode".
      *
      * @return whether this document is in design mode.
-     * @since 3.2
      */
     bool designMode() const;
 
@@ -917,7 +914,6 @@ public:
      *
      * @param enable @p true to enable design mode, @p false to disable.
      * @see designMode
-     * @since 3.2
      */
     void setDesignMode(bool enable);
 

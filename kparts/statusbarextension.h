@@ -47,8 +47,6 @@ namespace KParts
    *
    * IMPORTANT: do NOT add any items immediately after constructing the extension.
    * Give the application time to set the statusbar in the extension if necessary.
-   *
-   * @since 3.2
    */
   class KPARTS_EXPORT StatusBarExtension : public QObject
   {

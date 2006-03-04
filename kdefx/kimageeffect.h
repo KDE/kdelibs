@@ -294,7 +294,6 @@ public:
      * @param lower the "lower" image
      * @param lowerRect Rectangle for the part of the lower image where the
      *                  blending will occur.
-     * @since 3.2
      */
     static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect);
@@ -311,7 +310,6 @@ public:
      *                  blending will occur.
      * @param opacity Opacity (between 0.0 and 1.0) which determines how much
      *             the source image will be blended into the destination image.
-     * @since 3.2
      */
     static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect, float opacity);
@@ -319,7 +317,6 @@ public:
     /**
      * Disposition of a source image on top of a destination image.
      * @see KImageEffect::computeDestinationRect, KImageEffect::blendOnLower
-     * @since 3.2
      */
     enum Disposition { NoImage = 0, //!< Don't overlay
 		       Centered,    //!< Center top image on botton image
@@ -343,7 +340,6 @@ public:
      *               adjust to the requested disposition.
      *
      * @return the computed rectangle. Its size may exceed @e lowerSize.
-     * @since 3.2
      */
     static QRect computeDestinationRect(const QSize &lowerSize,
                                       Disposition disposition, QImage &upper);
@@ -352,7 +348,6 @@ public:
      * Blend an image on top of another using a given disposition and a given
      * opacity. The alpha channel of the upper image is used in the expected
      * way. Beware the upper image may be modified.
-     * @since 3.2
      */
     static void blendOnLower(QImage &upper, QImage &lower,
                              Disposition disposition, float opacity);

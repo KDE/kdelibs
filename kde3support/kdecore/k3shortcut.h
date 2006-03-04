@@ -289,7 +289,6 @@ class KDE3SUPPORT_EXPORT K3Shortcut
 	/**
 	 * Removes the given key sequence from this shortcut
 	 * @param keySeq the key sequence to remove
-	 * @since 3.3
 	*/
 	void remove( const K3KeySequence& keySeq );
 
@@ -299,7 +298,6 @@ class KDE3SUPPORT_EXPORT K3Shortcut
 	 * @return true if successful, false otherwise
 	 * @see setSeq()
 	 * @see MAX_SEQUENCES
-	 * @since 3.2
 	*/
 	bool append( const KKey& spec );
 
@@ -308,7 +306,6 @@ class KDE3SUPPORT_EXPORT K3Shortcut
 	 * @param cut the shortcut to append
 	 * @return true if successful, false otherwise
 	 * @see MAX_SEQUENCES
-	 * @since 3.2
 	*/
 	bool append( const K3Shortcut& cut );
 

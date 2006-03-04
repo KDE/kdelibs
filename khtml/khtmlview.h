@@ -214,7 +214,6 @@ private Q_SLOTS:
 
     /**
     * @internal
-    * @since 3.4
     * used for autoscrolling with MMB
     */
     void slotMouseScrollTimer();
@@ -443,7 +442,6 @@ private:
      * Sets the caret display policy when the view is not focused.
      * @param policy new display policy as
      *		defined by KHTMLPart::CaretDisplayPolicy
-     * @since 3.2
      */
     void setCaretDisplayPolicyNonFocused(int policy);
 

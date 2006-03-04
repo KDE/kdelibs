@@ -78,8 +78,6 @@ class QStringList;
  *
  * \endcode
  *
- * @since 3.2
- *
  * @author Dominique Devriese <devriese@kde.org>
  */
 class TerminalInterface

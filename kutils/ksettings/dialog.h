@@ -67,7 +67,6 @@ namespace KSettings
  * For more information see \ref KSettings.
  *
  * @author Matthias Kretz <kretz@kde.org>
- * @since 3.2
  */
 class KUTILS_EXPORT Dialog : public QObject
 {

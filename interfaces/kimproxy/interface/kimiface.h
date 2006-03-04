@@ -37,7 +37,6 @@
  * ServiceTypes=DCOP/InstantMessenger
  * and the class implementing KIMIface must pass "KIMIface" to the DCOPObject constructor.
  *
- * @since 3.3
  * @author Will Stephenson <lists@stevello.free-online.co.uk>
  */
 class KIMIface : virtual public DCOPObject

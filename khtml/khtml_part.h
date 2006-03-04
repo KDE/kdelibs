@@ -284,7 +284,6 @@ public:
 
   /**
    * Returns the content of the source document.
-   * @since 3.4
    */
    QString documentSource() const;
 
@@ -457,13 +456,11 @@ public:
   bool onlyLocalReferences() const;
 
   /** Returns whether caret mode is on/off.
-   * @since 3.2
    */
   bool isCaretMode() const;
 
   /**
    * Returns @p true if the document is editable, @p false otherwise.
-   * @since 3.2
    */
   bool isEditable() const;
 
@@ -478,7 +475,6 @@ public:
    * @param extendSelection If @p true, a selection will be spanned from the
    *	last caret position to the given one. Otherwise, any existing selection
    *	will be deselected.
-   * @since 3.2
    */
   void setCaretPosition(DOM::Node node, long offset, bool extendSelection = false);
 
@@ -487,7 +483,6 @@ public:
    * @param Visible caret is displayed
    * @param Invisible caret is not displayed
    * @param Blink caret toggles between visible and invisible
-   * @since 3.2
    */
   enum CaretDisplayPolicy {
 	CaretVisible, CaretInvisible, CaretBlink
@@ -495,7 +490,6 @@ public:
 
   /**
    * Returns the current caret policy when the view is not focused.
-   * @since 3.2
    */
   CaretDisplayPolicy caretDisplayPolicyNonFocused() const;
 
@@ -507,7 +501,6 @@ public:
    *
    * The default policy is CaretInvisible.
    * @param policy new display policy
-   * @since 3.2
    */
   void setCaretDisplayPolicyNonFocused(CaretDisplayPolicy policy);
 
@@ -672,13 +665,11 @@ public:
    * Go to the next anchor
    *
    * This is useful to navigate from outside the navigator
-   * @since 3.2
    */
   bool nextAnchor();
 
   /**
    * Go to previous anchor
-   * @since 3.2
    */
   bool prevAnchor();
 
@@ -694,7 +685,6 @@ public:
 
   /**
    * Extra Find options that can be used when calling the extended findText().
-   * @since 3.3
    */
   enum FindOptions
   {
@@ -706,7 +696,6 @@ public:
   /**
    * Starts a new search by popping up a dialog asking the user what he wants to
    * search for.
-   * @since 3.3
    */
   void findText();
 
@@ -716,7 +705,6 @@ public:
    * @param options Find options.
    * @param parent Parent used for centering popups like "string not found".
    * @param findDialog Optionally, you can supply your own dialog.
-   * @since 3.3
    */
   void findText( const QString &str, long options, QWidget *parent = 0,
                  KFindDialog *findDialog = 0 );
@@ -737,7 +725,6 @@ public:
    * Finds the next occurence of a string set by @ref findText()
    * @param reverse if true, revert seach direction (only if no find dialog is used)
    * @return true if a new match was found.
-   * @since 3.5
    */
   bool findTextNext( bool reverse = false );
 
@@ -768,8 +755,6 @@ public:
    * and to contain the \<html> and \<body> tags.
    *
    * FIXME probably should make virtual for 4.0 ?
-   *
-   * @since 3.4
    */
   QString selectedTextAsHTML() const;
 
@@ -787,7 +772,6 @@ public:
    * @param startOffset returns offset within starting node
    * @param endNode returns node selection ends in
    * @param endOffset returns offset within end node.
-   * @since 3.2
    */
   void selection(DOM::Node &startNode, long &startOffset,
   		DOM::Node &endNode, long &endOffset) const;
@@ -865,7 +849,6 @@ public:
    * The returned node is always the node that is physically under the mouse
    * pointer (irrespective of logically overlying elements like, e. g.,
    * \<area> on image maps).
-   * @since 3.3
    */
   DOM::Node nonSharedNodeUnderMouse() const;
 
@@ -902,7 +885,6 @@ public:
    * Returns 0L if no suitable frame can't be found.
    * Returns parent part if a suitable frame was found and
    * frame info in @p *childFrame
-   * @since 3.3
    */
   KHTMLPart *findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f, khtml::ChildFrame **childFrame=0 );
 
@@ -993,7 +975,6 @@ public:
   /**
    * Determine if signal should be emitted before, instead or never when a
    * submitForm() happens.
-   * @since 3.2
    * ### KDE4 remove me
    */
   void setFormNotification(FormNotification fn);
@@ -1002,7 +983,6 @@ public:
    * Determine if signal should be emitted before, instead or never when a
    * submitForm() happens.
    * ### KDE4 remove me
-   * @since 3.2
    */
   FormNotification formNotification() const;
 
@@ -1011,7 +991,6 @@ public:
    * part is a frame or an iframe.
    *
    * @return the actual original url.
-   * @since 3.2
    */
   KUrl toplevelURL();
 
@@ -1019,26 +998,22 @@ public:
    * Checks whether the page contains unsubmitted form changes.
    *
    * @return true if form changes exist
-   * @since 3.3
    */
   bool isModified() const;
 
   /**
    * Shows or hides the suppressed popup indicator
    * @deprecated
-   * @since 3.4
    */
   void setSuppressedPopupIndicator( bool enable );
 
   /**
    * Shows or hides the suppressed popup indicator
-   * @since 3.5
    */
   void setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart );
 
   /**
    * @internal
-   * @since 3.5
    */
   bool inProgress() const;
 
@@ -1080,7 +1055,6 @@ Q_SIGNALS:
    *	has been deactivated.
    * @param offset offset within the node. If the node is null, the offset
    *	is meaningless.
-   * @since 3.2
    */
   void caretPositionChanged(const DOM::Node &node, long offset);
 
@@ -1088,7 +1062,6 @@ Q_SIGNALS:
   /**
    * If form notification is on, this will be emitted either for a form
    * submit or before the form submit according to the setting.
-   * @since 3.2
    * ### KDE4 remove me
    */
   void formSubmitNotification(const char *action, const QString& url,
@@ -1221,7 +1194,6 @@ public Q_SLOTS:
    * default.
    *
    * @param enable @p true to enable, @p false to disable caret mode.
-   * @since 3.2
    */
   void setCaretMode(bool enable);
 
@@ -1234,7 +1206,6 @@ public Q_SLOTS:
    *
    * @param enable @p true to set document editable, @p false to set it
    *	read-only.
-   * @since 3.2 (pending, do not use)
    */
   void setEditable(bool enable);
 
@@ -1252,14 +1223,12 @@ public Q_SLOTS:
    * @li the document's currently focused element is editable
    *
    * @param show @p true to make visible, @p false to hide.
-   * @since 3.2
    */
   void setCaretVisible(bool show);
 
   // ### KDE4 FIXME:
   //          Remove this and make the one below protected+virtual slot.
   //          Warning: this is effectively "internal".  Be careful.
-  // @since 3.2
   void submitFormProxy( const char *action, const QString &url,
                         const QByteArray &formData,
                         const QString &target,

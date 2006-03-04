@@ -33,7 +33,6 @@ class QString;
  * in artscontrol.
  *
  * @author Matthias Kretz <kretz@kde.org>
- * @since 3.2
  */
 class KDE_ARTS_EXPORT KAudioManagerPlay
 {

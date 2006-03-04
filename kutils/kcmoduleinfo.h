@@ -42,7 +42,6 @@ class QStringList;
  * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
  * @author Matthias Elter <elter@kde.org>
  * @author Daniel Molkentin <molkentin@kde.org>
- * @since 3.2
  *
  */
 class KUTILS_EXPORT KCModuleInfo
@@ -79,7 +78,6 @@ public:
   /**
    * Same as above but creates an empty KCModuleInfo.
    * You should not normally call this.
-   * @since 3.4
    */
   KCModuleInfo();
 
@@ -120,7 +118,6 @@ public:
    * Returns the module's factory name, if it's set. If not, the library
    * name is returned.
    * @returns the module's factory name
-   * @since 3.4
    */
   QString factoryName() const;
 
@@ -181,7 +178,6 @@ public:
   /**
    * @returns true if the module should be conditionally
    * loaded.
-   * @since 3.4
    */
   bool needsTest() const;
 
@@ -236,7 +232,6 @@ protected:
   /**
    * Sets if the module should be tested for loading.
    * @param val the value to set
-   * @since 3.4
    */
   void setNeedsTest( bool val );
 

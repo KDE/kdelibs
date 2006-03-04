@@ -33,8 +33,6 @@ Signing and verification is done by the gpg application, so the user must
 have it installed, otherwise this class does not give any extra security compared
 to the standard KNewStuff class.
 
-@since 3.4
-
 @author Andras Mantia <amantia@kde.org>
 */
 class KDE_EXPORT KNewStuffSecure : public  QObject, public KNewStuff

@@ -102,7 +102,6 @@ public:
   /**
    * Test if this sound file has been set.
    * Just does:  !isIntern() && url.isEmpty()
-   * @since 3.4
    */
   bool isEmpty() const;
   

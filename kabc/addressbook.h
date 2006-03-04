@@ -487,8 +487,6 @@ class KABC_EXPORT AddressBook : public QObject
     /**
       Returns true when the loading of the addressbook has finished,
       otherwise false.
-
-      @since 3.5
      */
     bool loadingHasFinished() const;
 

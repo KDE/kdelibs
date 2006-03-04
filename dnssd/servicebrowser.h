@@ -85,7 +85,6 @@ public:
 	for default domains.
 	@param flags One or more values from #Flags
 	
-	@since 3.5
 	@todo KDE4: set default values for domains and flags
 	 */
 	ServiceBrowser(const QStringList& types,DomainBrowser* domains,int flags);
@@ -106,7 +105,6 @@ public:
 	@param domain Domain name. You can add more domains later using addDomain and remove them
 	with removeDomain
 	@param flags One or more values from #Flags. AutoDelete flag has no effect 
-	@since 3.5
 	 */
 	ServiceBrowser(const QString& type,const QString& domain, int flags);
 	

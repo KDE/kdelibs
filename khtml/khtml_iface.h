@@ -180,13 +180,11 @@ k_dcop:
      * Go to next Anchor.
      *
      * This is useful to navigate from outside of the navigator.
-     * @since 3.2
      */
     bool nextAnchor();
 
     /**
      * Go to previous Anchor.
-     * @since 3.2
      */
     bool prevAnchor();
 

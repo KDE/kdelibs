@@ -37,7 +37,6 @@ class KCModuleInfo;
  *        KControl Modules.
  *
  * @author Matthias Elter <elter@kde.org>, Daniel Molkentin <molkentin@kde.org>
- * @since 3.2
  */
 class KUTILS_EXPORT KCMultiDialog : public KDialogBase
 {
@@ -230,16 +229,12 @@ private Q_SLOTS:
      * Called when entering root mode, and disables
      * the Admin Mode button such that the user doesn't do it
      * twice.
-     *
-     * @since 3.4
      */
     void disableRModeButton();
 
     /**
      * Called when the current module exits from root
      * mode. Enables the Administrator Mode button, again.
-     *
-     * @since 3.4
      */
     void rootExit();
 
@@ -248,8 +243,6 @@ private Q_SLOTS:
      * Called when the dialog is hidden. It unregisters the modules,
      * such that they don't hinder the same modules to be opened in
      * another application.
-     *
-     * @since 3.4
      */
     void dialogClosed();
 

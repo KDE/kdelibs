@@ -66,7 +66,6 @@ typedef QMap<QString, ContactPresenceListCurrent> PresenceStringMap;
  *
  * To use, just get an instance using @ref instance.
  *
- * @since 3.3
  * @author Will Stephenson <lists@stevello.free-online.co.uk>
  */
 class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
