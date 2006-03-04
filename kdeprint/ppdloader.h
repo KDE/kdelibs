@@ -60,6 +60,18 @@ public:
 	static DrMain* loadDriver( const QString& filename, QString* msg = NULL );
 
 private:
+	struct PS_private
+	{
+		QString name;
+		struct
+		{
+			float width, height;
+		} size;
+		struct
+		{
+			float left, bottom, right, top;
+		} area;
+	};
 	QStack<DrGroup*> m_groups;
 	DrBase*               m_option;
 	QHash<QString,PS_private>     m_ps;

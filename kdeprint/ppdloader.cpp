@@ -94,19 +94,6 @@ static QList<float> splitNumberString( const QString& _s )
 	return l;
 }
 
-struct PS_private
-{
-	QString name;
-	struct
-	{
-		float width, height;
-	} size;
-	struct
-	{
-		float left, bottom, right, top;
-	} area;
-};
-
 PPDLoader::PPDLoader()
 {
 	m_option = 0;
