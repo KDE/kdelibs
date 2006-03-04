@@ -86,9 +86,11 @@
 #include "kde2laptop_undockbutton.xpm"
 
 
-K3MdiWin32IconButton::K3MdiWin32IconButton( QWidget* parent )
+K3MdiWin32IconButton::K3MdiWin32IconButton( QWidget* parent, const char* name )
 		: QLabel( parent )
-{}
+{
+	setObjectName( name );
+}
 
 //============ mousePressEvent ============//
 

@@ -366,8 +366,8 @@ public:
   /**
    * Constructs this. It just calls the method of the base class.
    */
-  K3DockTabGroup( QWidget *parent = 0 )
-  :QTabWidget( parent ){}
+  K3DockTabGroup( QWidget *parent = 0, const char *name = 0 )
+  :QTabWidget( parent, name ){}
 
   /**
    * Destructs a K3DockTabGroup.
