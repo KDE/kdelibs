@@ -41,7 +41,6 @@ template <class T> class QList;
  * so copying objects is very cheap and you can safely pass objects by value.
  *
  * @author Tim Jansen <tim@tjansen.de>
- * @since 3.2
  */
 class KDECORE_EXPORT KUser {
 
@@ -241,7 +240,6 @@ struct group;
  * so copying objects is very cheap and you can safely pass objects by value.
  *
  * @author Jan Schaefer <j_schaef@informatik.uni-kl.de>
- * @since 3.3
  */
 class KDECORE_EXPORT KUserGroup {
 

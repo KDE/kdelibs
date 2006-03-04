@@ -47,7 +47,6 @@ class KTzfileTimeZoneSourcePrivate;
  * @see KTzfileTimeZoneSource, KTzfileTimeZoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
  */
 class KDECORE_EXPORT KTzfileTimeZone : public KTimeZone
 {
@@ -159,7 +158,6 @@ private:
  * @see KTzfileTimeZone, KTzfileTimeZoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
  */
 class KDECORE_EXPORT KTzfileTimeZoneSource : public KTimeZoneSource
 {
@@ -201,7 +199,6 @@ private:
  * @see KTzfileTimeZoneSource, KTzfileTimeZone
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
  */
 class KTzfileTimeZoneData : public KTimeZoneData
 {

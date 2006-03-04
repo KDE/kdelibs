@@ -142,9 +142,9 @@ namespace KNotifyClient
 		Messagebox = 2,
 		Logfile = 4,
 		Stderr = 8,
-		PassivePopup = 16, ///< @since 3.1
-		Execute = 32,      ///< @since 3.1
-		Taskbar = 64       ///< @since 3.2
+		PassivePopup = 16,
+		Execute = 32,
+		Taskbar = 64
 	};
 
 	/**
@@ -224,7 +224,6 @@ namespace KNotifyClient
 	 * @param text The text to put in a dialog box.  This won't be shown if
 	 *             the user connected the event to sound, only. Can be QString().
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
-	 * @since 3.1.1
 	 */
 	KDECORE_EXPORT_DEPRECATED int event( WId winId, const QString& message,
                               const QString& text = QString() );
@@ -238,7 +237,6 @@ namespace KNotifyClient
 	 * @param text The text to put in a dialog box.  This won't be shown if
 	 *             the user connected the event to sound, only. Can be QString().
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
-	 * @since 3.1.1
 	 */
 	KDECORE_EXPORT_DEPRECATED int event( WId winId, StandardEvent event,
                               const QString& text = QString() );
@@ -255,7 +253,6 @@ namespace KNotifyClient
 	 * @param sound The sound file to play if selected with @p present
 	 * @param file The log file to append the message to if selected with @p present
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
-	 * @since 3.1.1
 	 */
 	KDECORE_EXPORT_DEPRECATED int userEvent(WId winId, const QString &text=QString(), int present=Default, int level=Default,
 	                      const QString &sound=QString(), const QString &file=QString());

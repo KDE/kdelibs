@@ -91,7 +91,6 @@ public:
      * so if the symbol might or might not exist, better use hasSymbol() before symbol().
      * @param name the name of the symbol to check
      * @return true if the symbol exists
-     * @since 3.1
      */
     bool hasSymbol( const char* name ) const;
 
@@ -213,7 +212,6 @@ public:
      *             to the component (see KLibFactory)
      * @return A pointer to the newly created object or a null pointer if the
      *         factory was unable to create an object of the given type.
-     * @since 4.0
      */
     template<typename T>
     T *create( QObject *pParent = 0,

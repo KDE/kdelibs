@@ -485,7 +485,6 @@ private:
 
 /**
  * @short An adapted C++ implementation of the MD4 Message-Digest algorithm.
- * @since 3.4
  *
  * The class usage is the same as KMD5.
  */

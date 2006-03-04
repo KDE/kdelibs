@@ -29,7 +29,6 @@ class QString;
  * The KLockFile class provides NFS safe lockfiles.
  *
  * @author Waldo Bastian <bastian@kde.org>
- * @since 3.3
  */
 class KDECORE_EXPORT KLockFile : public KShared
 {

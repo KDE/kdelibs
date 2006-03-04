@@ -63,19 +63,19 @@ namespace KStdAccel
     RotateUp, RotateDown,
 
     // Tabular navigation
-    TabNext,           ///< @since 3.2
-    TabPrev,           ///< @since 3.2
+    TabNext,
+    TabPrev,
 
     // Full screen mode
-    FullScreen,        ///< @since 3.2
+    FullScreen,
 
     // Text Navigation
-    BackwardWord,      ///< @since 3.3
-    ForwardWord,       ///< @since 3.3
-    BeginningOfLine,   ///< @since 3.3
-    EndOfLine,         ///< @since 3.3
+    BackwardWord,
+    ForwardWord,
+    BeginningOfLine,
+    EndOfLine,
 
-    PasteSelection     ///< @since 3.4
+    PasteSelection
 
   };
 
@@ -194,7 +194,6 @@ namespace KStdAccel
   /**
    * Paste the selection at mouse/cursor position. Default: Ctrl-Shift-Insert
    * @return the shortcut of the standard accelerator
-   * @since 3.4
    */
   KDECORE_EXPORT const KShortcut& pasteSelection();
 
@@ -273,14 +272,12 @@ namespace KStdAccel
   /**
    * Goto beginning of current line. Default: Home
    * @return the shortcut of the standard accelerator
-   * @since 3.3
    */
   KDECORE_EXPORT const KShortcut& beginningOfLine();
 
   /**
    * Goto end of current line. Default: End
    * @return the shortcut of the standard accelerator
-   * @since 3.3
    */
   KDECORE_EXPORT const KShortcut& endOfLine();
 
@@ -311,21 +308,18 @@ namespace KStdAccel
   /**
    * Next Tab. Default: Ctrl-<
    * @return the shortcut of the standard accelerator
-   * @since 3.2
    */
   KDECORE_EXPORT const KShortcut& tabNext();
 
   /**
    * Previous Tab. Default: Ctrl->
    * @return the shortcut of the standard accelerator
-   * @since 3.2
    */
   KDECORE_EXPORT const KShortcut& tabPrev();
 
   /**
    * Full Screen Mode. Default: Ctrl+Shift+F
    * @return the shortcut of the standard accelerator
-   * @since 3.2
    */
   KDECORE_EXPORT const KShortcut& fullScreen();
 
@@ -413,14 +407,12 @@ namespace KStdAccel
   /**
    * BackwardWord. Default: Ctrl+Left
    * @return the shortcut of the standard accelerator
-   * @since 3.3
    */
   KDECORE_EXPORT const KShortcut& backwardWord();
 
   /**
    * ForwardWord. Default: Ctrl+Right
    * @return the shortcut of the standard accelerator
-   * @since 3.3
    */
   KDECORE_EXPORT const KShortcut& forwardWord();
 

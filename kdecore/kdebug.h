@@ -207,7 +207,6 @@ class KDECORE_EXPORT kdbgstream {
      * Prints the given value.
      * @param ch the char to print
      * @return this stream
-     * @since 3.3
      */
     kdbgstream &operator<<(QChar ch);
     /**
@@ -339,7 +338,6 @@ class KDECORE_EXPORT kdbgstream {
      * Prints the given value.
      * @param pen the pen to print
      * @return this stream
-     * @since 3.2
      */
     kdbgstream& operator << ( const QPen& pen );
 
@@ -354,7 +352,6 @@ class KDECORE_EXPORT kdbgstream {
      * Prints the given value.
      * @param variant the variant to print
      * @return this stream
-     * @since 3.3
      */
     kdbgstream& operator << ( const QVariant& variant );
 
@@ -364,7 +361,6 @@ class KDECORE_EXPORT kdbgstream {
      * or as a ascii string otherwise.
      * @param data the byte array to print
      * @return this stream
-     * @since 3.3
      */
     kdbgstream& operator << ( const QByteArray& data );
 
@@ -372,7 +368,6 @@ class KDECORE_EXPORT kdbgstream {
      * Prints the given value
      * @param list the list to print
      * @return this stream
-     * @since 3.3
      */
     template <class T>
     kdbgstream& operator << ( const QList<T> &list );
@@ -470,7 +465,6 @@ inline KDECORE_EXPORT_DEPRECATED kdbgstream kdDebug(bool cond, int area = 0) { r
  * Returns a backtrace.
  * @param levels the number of levels of the backtrace
  * @return a backtrace
- * @since 3.1
  */
 KDECORE_EXPORT QString kBacktrace(int levels=-1);
 inline KDECORE_EXPORT_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }

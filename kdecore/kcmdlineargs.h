@@ -249,8 +249,6 @@ public:
    * @param _description A short description of what your application is about.
    * @param _version A version.
    * @param stdargs KDE/Qt or no default parameters
-   *
-   * @since 3.2
    */
    static void init(int _argc, char **_argv, const char *_appname,
                     const char* programName, const char *_description,
@@ -539,7 +537,6 @@ public:
 
   /**
    * Add standard option --tempfile
-   * @since 3.4
    */
   static void addTempFileOption();
 
@@ -547,7 +544,6 @@ public:
   // but this approach doesn't scale well, we can't have 50 standard options here...
   /**
    * @return true if --tempfile was set
-   * @since 3.4
    */
   static bool isTempFileSet();
 

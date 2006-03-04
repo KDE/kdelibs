@@ -145,7 +145,6 @@ public:
      * @param backupDir optional directory where to save the backup file in.
      * If empty (the default), the backup will be in the same directory as @p filename.
      * @param backupExtension the extension to append to @p filename, "~" by default.
-     * @since 3.2
      */
    static bool simpleBackupFile( const QString& filename,
                                  const QString& backupDir = QString(),

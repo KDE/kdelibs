@@ -872,7 +872,6 @@ class KDECORE_EXPORT KShortcut
 	/**
 	 * Removes the given key sequence from this shortcut
 	 * @param keySeq the key sequence to remove
-	 * @since 3.3
 	*/
 	void remove( const KKeySequence& keySeq );
 

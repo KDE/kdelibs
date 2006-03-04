@@ -37,7 +37,6 @@ class KCalendarSystemHebrewPrivate;
  * @see KLocale,KCalendarSystem,KCalendarSystemFactory
  *
  * @author Hans Petter Bieker <bieker@kde.org>
- * @since 3.2
  */
 class KDECORE_EXPORT KCalendarSystemHebrew : public KCalendarSystem
 {

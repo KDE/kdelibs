@@ -37,7 +37,6 @@ class KCalendarSystemHijriPrivate;
  * @see KLocale,KCalendarSystem,KCalendarSystemFactory
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @since 3.2
  */
 class KDECORE_EXPORT KCalendarSystemHijri : public KCalendarSystem
 {

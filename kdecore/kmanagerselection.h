@@ -41,7 +41,6 @@ class KSelectionOwnerPrivate;
  claim() attemps to claim ownership of the selection, release() gives up
  the selection ownership. Signal lostOwnership() is emitted when the selection
  is claimed by another owner.
- @since 3.2
  @short ICCCM manager selection owner
 */
 class KDECORE_EXPORT KSelectionOwner
@@ -167,7 +166,6 @@ class KSelectionWatcherPrivate;
  section 2.8. It emits signal newOwner() when a new owner claim the selection,
  and emits lostOwner() when the selection ownership is given up. To find
  out current owner of the selection, owner() can be used.
- @since 3.2
  @short ICCCM manager selection watching
 */
 class KDECORE_EXPORT KSelectionWatcher

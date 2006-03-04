@@ -196,7 +196,6 @@ public:
     
     /**
      * Returns the state of showing the desktop.
-     * @since 3.5
      */
     bool showingDesktop() const;
 
@@ -311,7 +310,6 @@ Q_SIGNALS:
     
     /**
      * The state of showing the desktop has changed.
-     * @since 3.5
      */
     void showingDesktopChanged( bool showing );
 

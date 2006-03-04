@@ -258,7 +258,6 @@ class KSystemTimeZoneDataPrivate;
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @author S.R.Haque <srhaque@iee.org>.
- * @since 3.5
  */
 class KDECORE_EXPORT KTimeZones
 {
@@ -375,7 +374,6 @@ private:
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @author S.R.Haque <srhaque@iee.org>.
- * @since 3.5
  */
 class KDECORE_EXPORT KTimeZone
 {
@@ -709,7 +707,6 @@ private:
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @author S.R.Haque <srhaque@iee.org>.
- * @since 3.5
  */
 class KDECORE_EXPORT KTimeZoneSource
 {
@@ -742,7 +739,6 @@ public:
  * @see KTimeZone, KTimeZoneSource
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
  */
 class KDE_EXPORT KTimeZoneData
 {
@@ -820,7 +816,6 @@ private:
  * @see KTimeZones, KSystemTimeZone, KSystemTimeZoneSource
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
  */
 class KDECORE_EXPORT KSystemTimeZones
 {
@@ -890,7 +885,6 @@ private:
  * @see KSystemTimeZones, KSystemTimeZoneSource, KSystemTimeZoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
  */
 class KDECORE_EXPORT KSystemTimeZone : public KTimeZone
 {
@@ -993,7 +987,6 @@ private:
  * @see KSystemTimeZones, KSystemTimeZone, KSystemTimeZoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
  */
 class KDECORE_EXPORT KSystemTimeZoneSource : public KTimeZoneSource
 {
@@ -1044,7 +1037,6 @@ private:
  * @see KSystemTimeZoneSource, KSystemTimeZone
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
- * @since 4.0
  */
 class KSystemTimeZoneData : public KTimeZoneData
 {

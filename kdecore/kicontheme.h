@@ -235,7 +235,6 @@ public:
     /**
      * Returns the name of this theme's share overlay.
      * @return the name of the share overlay
-     * @since 3.1
      */
     QString shareOverlay () const;
 
@@ -260,7 +259,6 @@ public:
     /**
      * The icon theme should be hidden to the user?
      * @return true if the icon theme is hidden
-     * @since 3.1
      */
     bool isHidden() const;
 
@@ -334,7 +332,6 @@ public:
     /**
      * Returns the default icon theme.
      * @return the name of the default theme name
-     * @since 3.1
      */
     static QString defaultThemeName();
 

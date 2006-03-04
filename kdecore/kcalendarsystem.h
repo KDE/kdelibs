@@ -39,7 +39,6 @@ class QString;
  * Derived classes must be created through KCalendarFactory class
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @since 3.2
  */
 class KDECORE_EXPORT KCalendarSystem
 {

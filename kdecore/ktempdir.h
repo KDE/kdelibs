@@ -43,8 +43,6 @@ class QDir;
  * KTempFile does not create any missing directories, but locateLocal() does.
  *
  * @see KStandardDirs
- *
- * @since 3.2
  * @author Joseph Wenninger <jowenn@kde.org>
  */
 class KDECORE_EXPORT KTempDir
@@ -141,7 +139,6 @@ public:
     * @param path Path of the directory to delete
     * @return true if successful, otherwise false 
     * (Use errno for more details about the error.)
-    * @since 3.5.2
     * @todo decide how and where this function should be defined in KDE4
     */
     static bool removeDir( const QString& path );

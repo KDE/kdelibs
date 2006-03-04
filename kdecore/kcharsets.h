@@ -104,7 +104,6 @@ public:
      * using fromEntity.
      * @param text the string containing the entities
      * @return the clean string
-     * @since 3.1
      */
     static QString resolveEntities( const QString &text );
 

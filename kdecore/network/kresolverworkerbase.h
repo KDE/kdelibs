@@ -66,7 +66,6 @@ public:
    * Similar to QMutexLocker.
    * 
    * @author Luís Pedro Coelho
-   * @since 3.4
    */
   class ResolverLocker
   {
@@ -254,7 +253,6 @@ protected:
    * @returns true if the resolver subsystem changed, false otherwise.
    *          If this function returns true, it might be necessary to
    *          restart the resolution altogether.
-   * @since 3.4
    */
   bool checkResolver();
 
@@ -266,16 +264,12 @@ protected:
    *
    * If any pending res_init's are required, they will be performed before 
    * this function returns.
-   *
-   * @since 3.4
    */
   void acquireResolver();
 
   /**
    * This function is the counterpart for @ref acquireResolver: the worker
    * thread indicates that it's done with the resolver.
-   *
-   * @since 3.4
    */
   void releaseResolver();
 

@@ -305,13 +305,9 @@ public:
 	   @deprecated Use Toolbar instead
 	**/
 	Tool     = Toolbar, // This will go away soon, COMPAT (How soon? :)
-	/**
-	   @since 3.2
-	**/
 	Utility  = 8,
 	/**
 	   indicates that this window is a splash screen window.
-	   @since 3.2
 	**/
 	Splash   = 9
     };
@@ -319,7 +315,6 @@ public:
     /**
         Values for WindowType when they should be OR'ed together, e.g.
         for the properties argument of the NETRootInfo constructor.
-        @since 3.2
     **/
     enum WindowTypeMask {
 	NormalMask   = 1<<0,   ///< @see Normal
@@ -386,7 +381,6 @@ public:
 	/**
 	   indicates that a window should on top of most windows (but below fullscreen
 	   windows).
-	   @since 3.2
 	**/
 	KeepAbove    = 1<<6,
 	/**
@@ -400,18 +394,15 @@ public:
 	/**
 	   indicates that a window should not be visible on the screen (e.g. when minimised).
 	   Only the window manager is allowed to change it.
-	   @since 3.2
 	**/
 	Hidden       = 1<<8,
 	/**
 	   indicates that a window should fill the entire screen and have no window
 	   decorations.
-	   @since 3.2
 	**/
 	FullScreen   = 1<<9,
 	/**
 	   indicates that a window should be below most windows (but above any desktop windows).
-	   @since 3.2
 	**/
 	KeepBelow    = 1<<10,
 	/**
@@ -419,7 +410,7 @@ public:
 	   this. E.g. taskbar should mark such window specially to bring user's attention to
 	   this window. Only the window manager is allowed to change it.
 	**/
-        DemandsAttention = 1<<11  ///< @since 3.2
+        DemandsAttention = 1<<11
     };
 
     /**
@@ -451,17 +442,8 @@ public:
 	BottomLeft   = 6,
 	Left         = 7,
 	Move         = 8,  // movement only
-    /**
-       @since 3.2
-    **/
 	KeyboardSize = 9,  // size via keyboard
-    /**
-       @since 3.2
-    **/
 	KeyboardMove = 10, // move via keyboard
-    /**
-      @since 3.5.1
-    **/
 	MoveResizeCancel = 11 // to ask the WM to stop moving a window
     };
 
@@ -491,7 +473,6 @@ public:
 
     /**
       Actions that can be done with a window (_NET_WM_ALLOWED_ACTIONS).
-      @since 3.2
     **/
     enum Action {
         ActionMove           = 1<<0,
@@ -585,7 +566,7 @@ public:
 	WMPing                = 1<<25,
 	WMKDESystemTrayWinFor = 1<<26, // NOT STANDARD
 	XAWMState             = 1<<27, // NOT STANDARD
-        WMFrameExtents        = 1<<28, ///< @since 3.5
+        WMFrameExtents        = 1<<28,
 	WMKDEFrameStrut       = WMFrameExtents, // NOT STANDARD
 
 	// Need to be reordered
@@ -612,9 +593,6 @@ public:
         @li WM2WindowClass  WM_CLASS
         @li WM2WindowRole   WM_WINDOW_ROLE
         @li WM2ClientMachine WM_CLIENT_MACHINE
-        
-        @since 3.2
-
     **/
     enum Property2 {
         WM2UserTime            = 1<<0,
@@ -627,22 +605,20 @@ public:
         WM2ExtendedStrut       = 1<<7,
         WM2TakeActivity        = 1<<8,
         WM2KDETemporaryRules   = 1<<9,  // NOT STANDARD
-        WM2WindowClass         = 1<<10, ///< @since 3.3
-        WM2WindowRole          = 1<<11, ///< @since 3.3
-        WM2ClientMachine       = 1<<12, ///< @since 3.3
-        WM2ShowingDesktop      = 1<<13  ///< @since 3.5
+        WM2WindowClass         = 1<<10,
+        WM2WindowRole          = 1<<11,
+        WM2ClientMachine       = 1<<12,
+        WM2ShowingDesktop      = 1<<13
     };
 
     /**
        Sentinel value to indicate that the client wishes to be visible on
        all desktops.
-       @since 3.2
      **/ 
     enum { OnAllDesktops = -1 };
     
     /**
        Source of the request.
-       @since 3.2
     **/
     // must match the values for data.l[0] field in _NET_ACTIVE_WINDOW message
     enum RequestSource {

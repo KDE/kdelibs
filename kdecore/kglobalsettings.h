@@ -108,7 +108,6 @@ class KDECORE_EXPORT KGlobalSettings
      * This enum describes the return type for insertTearOffHandle() whether to insert
      * a handle or not. Applications who independently want to use handles in their popup menus
      * should test for Application level before calling the appropriate function in KMenu.
-     * @since 3,1
      **/
     enum TearOffHandle {
       Disable = 0, ///< disable tear-off handles
@@ -119,7 +118,6 @@ class KDECORE_EXPORT KGlobalSettings
     /**
      * Returns whether tear-off handles are inserted in KMenus.
      * @return whether tear-off handles are inserted in KMenus.
-     * @since 3.1
      **/
     static TearOffHandle insertTearOffHandle();
 
@@ -281,14 +279,12 @@ class KDECORE_EXPORT KGlobalSettings
     /**
      * Returns the button background color
      * @return the button background color
-     * @since 3.4
      */
     static QColor buttonBackground();
 
     /**
      * Returns the button text color
      * @return the button text color
-     * @since 3.4
      */
     static QColor buttonTextColor();
 
@@ -355,7 +351,6 @@ class KDECORE_EXPORT KGlobalSettings
       * Returns if the sorted column in a KListView shall be drawn with a
       * shaded background color.
       * @return true if the sorted column shall be shaded
-      * @since 3.4
       */
     static bool shadeSortColumn();
 
@@ -399,7 +394,6 @@ class KDECORE_EXPORT KGlobalSettings
      * Returns a font of approx. 48 pt. capable of showing @p text.
      * @param text the text to test
      * @return the font that is capable to show the text with 48 pt
-     * @since 3.1
      */
     static QFont largeFont(const QString &text = QString());
 
@@ -422,7 +416,6 @@ class KDECORE_EXPORT KGlobalSettings
      * with Ctrl-wheelscroll.
      * @return true if the user wishes to zoom with the mouse wheel,
      *         false for scrolling
-     * @since 3.1
      */
     static bool wheelMouseZooms();
 
@@ -434,7 +427,6 @@ class KDECORE_EXPORT KGlobalSettings
      *
      * @return the geometry to use for the desktop.  Note that it might not
      *         start at (0,0).
-     * @since 3.2
      */
     static QRect splashScreenDesktopGeometry();
 
@@ -452,7 +444,6 @@ class KDECORE_EXPORT KGlobalSettings
      *
      * @return the geometry to use for the desktop.  Note that it might not
      *         start at (0,0).
-     * @since 3.2
      */
     static QRect desktopGeometry(const QPoint& point);
 
@@ -467,7 +458,6 @@ class KDECORE_EXPORT KGlobalSettings
      *
      * @return the geometry to use for the desktop.  Note that it might not
      *         start at (0,0).
-     * @since 3.2
      */
     static QRect desktopGeometry(QWidget* w);
 
@@ -476,8 +466,6 @@ class KDECORE_EXPORT KGlobalSettings
      * push buttons.
      *
      * @return Returns true if user wants to show icons.
-     *
-     * @since 3.2
      */
     static bool showIconsOnPushButtons();
 
@@ -486,8 +474,6 @@ class KDECORE_EXPORT KGlobalSettings
      * for the selected url
      *
      * @return Returns true if user wants to show previews.
-     *
-     * @since 3.2
      */
     static bool showFilePreview(const KUrl &);
 
@@ -496,8 +482,6 @@ class KDECORE_EXPORT KGlobalSettings
      * intended for QSplitter::setOpaqueResize()
      * 
      * @return Returns true if user wants to use opaque resizing.
-     *
-     * @since 3.2
      */
     static bool opaqueResize();
 
@@ -506,7 +490,6 @@ class KDECORE_EXPORT KGlobalSettings
      * 
      * @return Returns the number of the scheme to use.
      * @see KDialogBase::setButtonStyle
-     * @since 3.3
      */
     static int buttonLayout();
 

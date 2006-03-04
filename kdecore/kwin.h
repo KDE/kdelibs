@@ -87,7 +87,6 @@ public:
      * @param win the id of the window to make active
      * @param time X server timestamp of the user activity that
      *    caused this request
-     * @since 3.2
      */
     static void activateWindow( WId win, long time = 0 );
 
@@ -102,8 +101,6 @@ public:
      * @param win the id of the window to make active
      * @param time X server timestamp of the user activity that
      *    caused this request
-     *
-     * @since 3.2
     */
     static void forceActiveWindow( WId win, long time = 0 );
     /**
@@ -120,8 +117,6 @@ public:
      * See also explanation in description of activateWindow().
      *
      * Note that it's usually better to use KNotifyClient.
-     *
-     * @since 3.2
      */
     static void demandAttention( WId win, bool set = true );
 
@@ -132,8 +127,6 @@ public:
      * user action, it won't be activated after being shown.
      * The most common case is the special value 0 which means
      * not to activate the window after being shown.
-     *
-     * @since 3.2
      */
     static void setUserTime( WId win, long time );
 
@@ -153,8 +146,6 @@ public:
      *
      * This function should be used before a dialog is shown for a window
      * that belongs to another application.
-     *
-     * @since 3.4
      */
     static void setMainWindow( QWidget* subwindow, WId mainwindow );
 
@@ -181,7 +172,6 @@ public:
      *    make this function faster when not all data is needed.
      * @param properties2 additional properties (see NET::Property2 enum)
      * @return the window information
-     * @since 3.2
      */
     static WindowInfo windowInfo( WId win, unsigned long properties = 0, unsigned long properties2 = 0 );
 
@@ -190,14 +180,12 @@ public:
      * for this window.
      *
      * @param window the id of the window
-     * @since 3.2
      */
     static WId transientFor( WId window );
 
     /**
      * Returns the leader window for the group the given window is in, if any.
      * @param window the id of the window
-     * @since 3.2
      */
     static WId groupLeader( WId window );
 
@@ -245,7 +233,6 @@ public:
      * @param scale if true the icon will be scaled to the desired size. Otherwise the
      *        icon will not be modified.
      * @param flags OR-ed flags from the IconSource enum
-     * @since 3.2
      */
     static QPixmap icon( WId win, int width, int height, bool scale, int flags );
 
@@ -303,7 +290,6 @@ public:
      *
      * @param win the id of the window
      * @param percent the opacity value in percent (will be justified to [ 0: transparent - 100: opaque ])
-     * @since 3.4
      */
     static void setOpacity( WId win, uint percent );
 
@@ -315,7 +301,6 @@ public:
      *
      * @param win the id of the window
      * @param percent the opacity value in percent (0 leads to a completely unshadowed window)
-     * @since 3.4
      */
     static void setShadowSize( WId win, uint percent );
 
@@ -418,7 +403,6 @@ public:
      * tools that represent direct user actions. Applications should not
      * use it, they should keep using QWidget::raise() or XRaiseWindow()
      * if necessary.
-     * @since 3.2
      */
     static void raiseWindow( WId win );
 
@@ -427,7 +411,6 @@ public:
      * tools that represent direct user actions. Applications should not
      * use it, they should keep using QWidget::lower() or XLowerWindow()
      * if necessary.
-     * @since 3.2
      */
     static void lowerWindow( WId win );
 
@@ -440,14 +423,12 @@ public:
 
     /**
      * Returns true if the WM announces which actions it allows for windows.
-     * @since 3.2
      */
     static bool allowedActionsSupported();
 
     /**
      * Function that reads and returns the contents of the given text
      * property (WM_NAME, WM_ICON_NAME,...).
-     * @since 3.2
      */
     static QString readNameProperty( WId window, unsigned long atom );
 
@@ -456,7 +437,6 @@ public:
 
 /**
  * Information about a window.
- * @since 3.2
  */
 class KDECORE_EXPORT KWin::WindowInfo
 {
@@ -486,7 +466,6 @@ public:
     /**
      * Returns true if the window has the given state flag set (see the NET::State enum for details).
      * Requires NET::WMState passed to KWin::windowInfo().
-     * @since 3.2.1
      */
     bool hasState( unsigned long s ) const { return ( state() & s ) == s; }
     /**
@@ -616,7 +595,6 @@ public:
      * Returns the class component of the window class for the window
      * (i.e. WM_CLASS property).
      * Requires NET::WM2WindowClass passed to KWin::windowInfo().
-     * @since 3.3
      */
     QByteArray windowClassClass() const;
 
@@ -624,21 +602,18 @@ public:
      * Returns the name component of the window class for the window
      * (i.e. WM_CLASS property).
      * Requires NET::WM2WindowClass passed to KWin::windowInfo().
-     * @since 3.3
      */
     QByteArray windowClassName() const;
 
     /**
      * Returns the window role for the window (i.e. WM_WINDOW_ROLE property).
      * Requires NET::WM2WindowRole passed to KWin::windowInfo().
-     * @since 3.3
      */
     QByteArray windowRole() const;
 
     /**
      * Returns the client machine for the window (i.e. WM_CLIENT_MACHINE property).
      * Requires NET::WMClientMachine passed to KWin::windowInfo().
-     * @since 3.3
      */
     QByteArray clientMachine() const;
 

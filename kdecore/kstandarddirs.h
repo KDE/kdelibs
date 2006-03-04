@@ -237,7 +237,6 @@ public:
 	 * @param relPath A relative path in the resource.
 	 *
 	 * @return True if the resource is restricted.
-	 * @since 3.1
 	 */
 	bool isRestrictedResource( const char *type,
 			      const QString& relPath=QString() ) const;
@@ -590,7 +589,6 @@ public:
 	 * and returns the canonicalized absolute pathname.
 	 * The resulting path will have no symbolic link, '/./'
 	 * or '/../' components.
-	 * @since 3.1
 	 */
 	static QString realPath(const QString &dirname);
 
@@ -600,7 +598,6 @@ public:
 	 * and returns the canonicalized absolute pathname.
 	 * The resulting path will have no symbolic link, '/./'
 	 * or '/../' components.
-	 * @since 3.4
 	 */
 	static QString realFilePath(const QString &filename);
 

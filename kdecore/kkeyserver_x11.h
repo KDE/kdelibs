@@ -35,7 +35,6 @@ namespace KKeyServer
 {
 	/**
 	 * Supplement enum KKey::ModFlag
-	 * @since 3.1
 	 */
 	enum ExtraModFlag { MODE_SWITCH = 0x2000 };
 
@@ -331,7 +330,6 @@ namespace KKeyServer
 	 * Returns the X11 Mode_switch modifier mask/flag.
 	 * @return the X11 Mode_switch modifier mask/flag.
 	 * @see accelModMaskX()
-	 * @since 3.5
 	 */
 	KDECORE_EXPORT uint modXModeSwitch();
 
@@ -463,7 +461,6 @@ namespace KKeyServer
 	 * Converts the modifier given as user-readable string
          * to KKey::ModFlag modifier, or 0.
          * @internal
-         * @since 3.5
 	 */
 	KDECORE_EXPORT uint stringUserToMod( const QString& mod );
 

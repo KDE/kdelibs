@@ -932,7 +932,6 @@ public:
    * Returns this machine's local hostname.
    *
    * @return this machine's local hostname
-   * @since 3.5
    */
   static QString localHostName();
 

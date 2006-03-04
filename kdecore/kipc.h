@@ -55,8 +55,8 @@ public:
      */
     enum Message { PaletteChanged=0, FontChanged, StyleChanged,
                    BackgroundChanged, SettingsChanged, IconChanged, ToolbarStyleChanged,
-                   ClipboardConfigChanged, /// @since 3.1
-                   BlockShortcuts, /// @since 3.5
+                   ClipboardConfigChanged,
+                   BlockShortcuts,
                    UserMessage=32 };
 
     /**

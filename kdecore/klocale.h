@@ -448,7 +448,6 @@ public:
    * @param precision Number of fractional digits used. (default 2)
    *
    * @return The number as a localized string
-   * @since 3.5
    */
   QString formatNumber(const QString &numStr, bool round=true, int precision=2) const;
 
@@ -461,7 +460,6 @@ public:
    * @param num The number to convert
    *
    * @return The number as a localized string
-   * @since 3.2
    */
   QString formatLong(long num) const;
 
@@ -483,7 +481,6 @@ public:
    * read-only (no setter function)
    *
    * @return If nouns are declined
-   * @since 3.1
    */
    bool nounDeclension() const;
 
@@ -503,7 +500,6 @@ public:
    * name is preferred ("of January" rather than "January")
    *
    * @return If possessive form should be used
-   * @since 3.1
   */
   bool dateMonthNamePossessive() const;
 
@@ -533,7 +529,6 @@ public:
    * Use this to determine which day is the first day of the week.
    *
    * @return an integer (Monday=1..Sunday=7)
-   * @since 3.1
    */
   int weekStartDay() const;
 
@@ -541,7 +536,6 @@ public:
    * Returns a pointer to the calendar system object.
    *
    * @return the current calendar system instance
-   * @since 3.2
    */
   const KCalendarSystem * calendar() const;
 
@@ -550,7 +544,6 @@ public:
    * used by the system.
    *
    * @return the name of the calendar system
-   * @since 3.2
    */
   QString calendarType() const;
 
@@ -560,7 +553,6 @@ public:
    * system specified is not found, gregorian will be used.
    *
    * @param calendarType the name of the calendar type
-   * @since 3.2
    */
   void setCalendar(const QString & calendarType);
 
@@ -637,7 +629,6 @@ public:
    *           If @p ok is 0, it will be ignored
    *
    * @return The string converted to a QDate
-   * @since 3.2
    */
   QDate readDate(const QString &str, ReadDateFlags flags, bool *ok = 0) const;
 
@@ -674,7 +665,6 @@ public:
    *           If @p ok is 0, it will be ignored
    *
    * @return The string converted to a QTime
-   * @since 3.2
    */
   QTime readTime(const QString &str, ReadTimeFlags flags, bool *ok = 0) const;
 
@@ -809,7 +799,6 @@ public:
    * Changes the form of month name used in dates.
    *
    * @param possessive True if possessive forms should be used
-   * @since 3.1
    */
   void setDateMonthNamePossessive(bool possessive);
   /**
@@ -838,7 +827,6 @@ public:
    * Changes how KLocale defines the first day in week.
    *
    * @param day first day of the week (Monday=1..Sunday=7) as integer
-   * @since 3.1
    */
   void setWeekStartDay(int day);
   /**
@@ -1008,7 +996,6 @@ public:
    * Translates a message as a QTranslator is supposed to.
    * The parameters are similar to i18n(), but the result
    * value has other semantics (it can be QString())
-   * @since 3.1
    **/
   QString translateQt(const char *context,
 		      const char *sourceText,
@@ -1017,7 +1004,6 @@ public:
   /**
    * Returns list of all known ISO 639-1 codes.
    * @return a list of all language codes
-   * @since 3.1
    */
   QStringList allLanguagesTwoAlpha() const;
 
@@ -1025,14 +1011,12 @@ public:
    * Convert a ISO 639-1 code to a human readable form.
    * @param code the language ISO 639-1 code
    * @return the human readable form
-   * @since 3.1
    */
   QString twoAlphaToLanguageName(const QString &code) const;
 
   /**
    * Returns list of all known country codes.
    * @return a list of all country codes
-   * @since 3.1
    */
   QStringList allCountriesTwoAlpha() const;
 
@@ -1040,7 +1024,6 @@ public:
    * Convert a country code to a human readable form.
    * @param code the country code
    * @return the human readable form of the country name
-   * @since 3.1
    */
   QString twoAlphaToCountryName(const QString &code) const;
 

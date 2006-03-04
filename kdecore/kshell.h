@@ -30,8 +30,6 @@ class QString;
  * \namespace KShell
  * Provides some basic POSIX shell and bash functionality.
  * @see KStringHandler
- *
- * @since 3.2
  */
 namespace KShell {
 

@@ -140,7 +140,6 @@ public:
    * not been updated yet.
    * @param id the update to check
    * @param updateFile the file containing the update
-   * @since 3.1
    */
   void checkUpdate(const QString &id, const QString &updateFile);
 
@@ -153,7 +152,6 @@ public:
    *
    * @param file the new config object will save itself to.
    * @param config optional config object to reuse
-   * @since 3.2
    */
   KConfig* copyTo(const QString &file, KConfig *config=0) const;
 
@@ -167,7 +165,6 @@ public:
    * global config file, the normal config file MUST be locked AS WELL and the
    * normal config file MUST be locked BEFORE the global config file!
    * Otherwise there is a risk of deadlock.
-   * @since 3.3
    */
   KLockFile::Ptr lockFile( bool bGlobal=false );
 

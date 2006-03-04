@@ -28,7 +28,6 @@
  * It provides a system independent interface to fstab.
  *
  * @author Waldo Bastian <bastian@kde.org>
- * @since 3.2
  */
 class KDECORE_EXPORT KMountPoint : public KShared
 {
@@ -84,7 +83,6 @@ public:
    /**
     * When using supermount, the device name is in the options field
     * as dev=/my/device
-    * @since 3.4
     */
    static QString devNameFromOptions(const QStringList &options);
 

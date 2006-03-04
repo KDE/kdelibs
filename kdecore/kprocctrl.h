@@ -75,21 +75,18 @@ public:
    * @param timeout the timeout in seconds. -1 means no timeout.
    * @return true if a process exited, false
    *         if no process exited within @p timeout seconds.
-   * @since 3.1
    */
   bool waitForProcessExit(int timeout);
 
   /**
    * Call this function to defer processing of the data that became available
    * on notifierFd().
-   * @since 3.2
    */
   void unscheduleCheck();
 
   /**
    * This function @em must be called at some point after calling
    * unscheduleCheck().
-   * @since 3.2
    */
   void rescheduleCheck();
 
@@ -98,7 +95,6 @@ public:
    * about process exits. select() or poll() on it if you create a custom
    * event loop that needs to act upon SIGCHLD.
    * @return the file descriptor of the reading end of the notification pipe
-   * @since 3.2
    */
   int notifierFd() const;
 

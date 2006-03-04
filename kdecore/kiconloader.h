@@ -136,7 +136,6 @@ public:
      * been found.
      * @return the icon set. Can be null when not found, depending on
      *          @p canReturnNull.
-     * @since 3.1
      */
     QIcon loadIconSet(const QString& name, KIcon::Group group, int size = 0,
                          bool canReturnNull = false);
@@ -224,7 +223,6 @@ public:
      * given directory.
      * @param iconsDir the directory to search in
      * @return A QStringList containing the icon paths
-     * @since 3.1
      */
     QStringList queryIconsByDir( const QString& iconsDir ) const;
 
@@ -275,14 +273,12 @@ public:
     /**
      * Adds all the default themes from other desktops at the end of
      * the list of icon themes.
-     * @since 3.1
      */
     void addExtraDesktopThemes();
 
     /**
      * Returns if the default icon themes of other desktops have been added
      * to the list of icon themes where icons are searched.
-     * @since 3.1
      */
     bool extraDesktopThemesAdded() const;
 
@@ -303,7 +299,6 @@ public:
      * @param enable true to enable delayed icon loading, false to disable
      * @see isDelayedIconSetLoadingEnabled()
      * @see QIconFactory
-     * @since 3.1
      */
     void enableDelayedIconSetLoading( bool enable );
 
@@ -312,7 +307,6 @@ public:
      * @return whether icons for QIconSets will be loaded on demand.
      * @see enableDelayedIconSetLoading()
      * @see QIconFactory
-     * @since 3.1
      */
     bool isDelayedIconSetLoadingEnabled() const;
 
@@ -352,14 +346,12 @@ public:
     /**
      * @internal
      * return the path for the unknown icon in that size
-     * @since 3.1
      */
     QString unknownIconPath( int size ) const;
 
     /**
      * Checks if name ends in one of the supported icon formats (i.e. .png)
      * and returns the name without the extension if it does.
-     * @since 3.1
      */
     QString removeIconExtension(const QString &name) const;
 

@@ -192,7 +192,6 @@ public:
      * @param maxlen is the maximum length in ems the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
-     * @since 3.2
      */
     static QString lEmSqueeze( const QString & name,
                                const QFontMetrics& fontMetrics,
@@ -205,7 +204,6 @@ public:
      * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
-     * @since 3.2
      */
     static QString lPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
@@ -227,7 +225,6 @@ public:
      * @param maxlen is the maximum length in ems the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
-     * @since 3.2
      */
     static QString cEmSqueeze( const QString & name,
                                const QFontMetrics& fontMetrics,
@@ -240,7 +237,6 @@ public:
      * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
-     * @since 3.2
      */
     static QString cPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
@@ -262,7 +258,6 @@ public:
      * @param maxlen is the maximum length in ems the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
-     * @since 3.2
      */
     static QString rEmSqueeze( const QString & name,
                                const QFontMetrics& fontMetrics,
@@ -275,7 +270,6 @@ public:
      * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
-     * @since 3.2
      */
     static QString rPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
@@ -358,7 +352,6 @@ public:
      * will display the URL correctly.
      * @param text the string which may contain URLs
      * @return the resulting text
-     * @since 3.1
      */
     static QString tagURLs( const QString& text );
 
@@ -373,7 +366,6 @@ public:
 
       @param str string to be obscured
       @return obscured string
-      @since 3.2
     */
     static QString obscure( const QString &str );
 
@@ -383,7 +375,6 @@ public:
 
       @param str the string to check
       @return true if UTF8. If false, the string is probably in Local8Bit.
-      @since 3.2
      */
     static bool isUtf8( const char *str );
 
@@ -393,7 +384,6 @@ public:
 
       @param str the input string
       @return the (hopefully correctly guessed) QString representation of @p str
-      @since 3.2
      */
     static QString from8Bit( const char *str );
 

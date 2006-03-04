@@ -76,7 +76,6 @@ public:
    * @param configUnique If true, the uniqueness of the application will
    *                 depend on the value of the "MultipleInstances"
    *                 key in the "KDE" group of the application config file.
-   * @since KDE 3.3
    */
   KUniqueApplication( Display *display,
 		      Qt::HANDLE visual=0,
@@ -171,8 +170,6 @@ public:
   /**
    * Returns whether newInstance() is being called while session
    * restoration is in progress.
-   *
-   * @since KDE 3.3
    */
   bool restoringSession();
 

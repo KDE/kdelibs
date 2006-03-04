@@ -173,7 +173,6 @@ public:
 
   /**
    * Constructor
-   * @since 3.2
    */
   KProcess( QObject* parent=0L );
 
@@ -297,7 +296,6 @@ public:
    * with a GUI.
    * @param timeout timeout in seconds. -1 means wait indefinitely.
    * @return true if the process exited, false if the timeout hit.
-   * @since 3.2
    */
   bool wait(int timeout = -1);
 
@@ -314,8 +312,6 @@ public:
    *
    * @return true if the process has already finished and has not exited
    * "voluntarily", ie: it has been killed by a signal.
-   *
-   * @since 3.2
    */
   bool signalled() const;
 
@@ -325,8 +321,6 @@ public:
    * @return true if signalled() returns true and the process
    * dumped core. Note that on systems that don't define the
    * WCOREDUMP macro, the return value is always false.
-   *
-   * @since 3.2
    */
   bool coreDumped() const;
 
@@ -343,8 +337,6 @@ public:
    *
    * @return the signal number that caused the process to exit.
    * Note that this value is not valid if signalled() returns false.
-   *
-   * @since 3.2
    */
   int exitSignal() const;
 
@@ -476,7 +468,6 @@ public:
    *              0 to use /bin/sh. Use getenv("SHELL") to use the user's
    *              default shell, but note that doing so is usually a bad idea
    *              for shell compatibility reasons.
-   * @since 3.1
    */
   void setUseShell(bool useShell, const char *shell = 0);
 
@@ -487,7 +478,6 @@ public:
    * It also prevents expansion of wild cards and environment variables.
    * @param arg the argument to quote
    * @return the quoted argument
-   * @since 3.1
    */
   static QString quote(const QString &arg);
 
@@ -510,7 +500,6 @@ public:
    *  allowed to specify Stdout and Stderr at the same time both here and to
    * start (there is only one pty, so they cannot be distinguished).
    * @param addUtmp true if a utmp entry should be created for the pty
-   * @since 3.2
    */
   void setUsePty(Communication comm, bool addUtmp);
 
@@ -520,7 +509,6 @@ public:
    * standard I/O stream to a pty. The pty is open only while the process
    * is running.
    * @return a pointer to the pty object
-   * @since 3.2
    */
   KPty *pty() const;
 #endif
@@ -535,7 +523,6 @@ public:
    * Sets the scheduling priority of the process.
    * @param prio the new priority in the range -20 (high) to 19 (low).
    * @return false on error; see setpriority(2) for possible reasons.
-   * @since 3.2
    */
   bool setPriority(int prio);
 

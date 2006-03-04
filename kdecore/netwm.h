@@ -60,7 +60,6 @@ class KDECORE_EXPORT NETRootInfo : public NET {
 public:
     /**
         Indexes for the properties array.
-        @since 3.2
     **/
     // update also NETRootInfoPrivate::properties[] size when extending this
     enum { PROTOCOLS, WINDOW_TYPES, STATES, PROTOCOLS2, ACTIONS,
@@ -96,8 +95,6 @@ public:
        this argument is omitted, the default screen will be used.
 
        @param doActivate true to activate the window
-
-       @since 3.2
     **/
     NETRootInfo(Display *display, Window supportWindow, const char *wmName,
 		const unsigned long properties[], int properties_size,
@@ -123,8 +120,6 @@ public:
        omitted, the default screen will be used.
 
        @param doActivate true to activate the window
-
-       @since 3.2
     **/
     NETRootInfo(Display *display, const unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
@@ -189,28 +184,23 @@ public:
        Returns true if the given property is supported by the window
        manager. Note that for Client mode, NET::Supported needs
        to be passed in the properties argument for this to work.
-       @since 3.2
     **/
     bool isSupported( NET::Property property ) const;
     /**
        @overload
-       @since 3.2
     **/
     bool isSupported( NET::Property2 property ) const;
     /**
        @overload
-       @since 3.2
     **/
     bool isSupported( NET::WindowType type ) const;
     /**
        @overload
-       @since 3.2
     **/
     bool isSupported( NET::State state ) const;
 
     /**
        @overload
-       @since 3.2
     **/
     bool isSupported( NET::Action action ) const;
 
@@ -222,16 +212,12 @@ public:
        by the Window Manager. The elements of the array are the same
        as they would be passed to the Window Manager mode constructor,
        the size is the maximum array size the constructor accepts.
-
-       @since 3.2
     **/
     const unsigned long* supportedProperties() const;
 
     /**
        Returns the properties argument passed to the constructor.
        The size is the maximum array size the constructor accepts.
-
-       @since 3.2
     **/
     // KDE4 better name?
     const unsigned long* passedProperties() const;
@@ -461,8 +447,6 @@ public:
        @param timestamp X server timestamp of the user action that
           caused the request
        @param active_window active window of the requesting application, if any
-
-       @since 3.2
     **/
     void setActiveWindow(Window window, NET::RequestSource src,
         Time timestamp, Window active_window);
@@ -495,12 +479,10 @@ public:
 
     /**
      * Sets the _NET_SHOWING_DESKTOP status (whether desktop is being shown).
-     * @since 3.5
      */
     void setShowingDesktop( bool showing );
     /**
      * Returns the status of _NET_SHOWING_DESKTOP.
-     * @since 3.5
      */
     bool showingDesktop() const;
 
@@ -549,19 +531,15 @@ public:
        @param y Requested Y position for the window
        @param width Requested width for the window
        @param height Requested height for the window
-
-       @since 3.2
     **/
     void moveResizeWindowRequest(Window window, int flags, int x, int y, int width, int height );
 
     /**
        Sends the _NET_RESTACK_WINDOW request.
-       @since 3.3
     **/
     void restackRequest(Window window, RequestSource source, Window above, int detail, Time timestamp);
     /**
        @obsolete
-       @since 3.2
     **/
     void restackRequest(Window window, Window above, int detail);
 
@@ -577,7 +555,6 @@ public:
        @param event the event
        @param properties properties that changed
        @param properties_size size of the passed properties array
-       @since 3.2
 
     **/
     void event( XEvent* event, unsigned long* properties, int properties_size );
@@ -729,7 +706,6 @@ private:
  This class is an extension of the NETRootInfo class, and exists solely
  for binary compatibility reasons (adds new virtual methods). Simply
  use it instead of NETRootInfo and override also the added virtual methods.
- @since 3.2
 */
 class KDECORE_EXPORT NETRootInfo2
     : public NETRootInfo
@@ -738,9 +714,6 @@ public:
     NETRootInfo2(Display *display, Window supportWindow, const char *wmName,
 		unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
-    /**
-     * @since 3.5
-     */
     NETRootInfo2(Display *display, const unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
     /**
@@ -801,7 +774,6 @@ protected:
  This class is an extension of the NETRootInfo class, and exists solely
  for binary compatibility reasons (adds new virtual methods). Simply
  use it instead of NETRootInfo and override also the added virtual methods.
- @since 3.3
 */
 class KDECORE_EXPORT NETRootInfo3
     : public NETRootInfo2
@@ -810,9 +782,6 @@ public:
     NETRootInfo3(Display *display, Window supportWindow, const char *wmName,
 		unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
-    /**
-     * @since 3.5
-     */
     NETRootInfo3(Display *display, const unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
     /**
@@ -853,7 +822,6 @@ protected:
  This class is an extension of the NETRootInfo class, and exists solely
  for binary compatibility reasons (adds new virtual methods). Simply
  use it instead of NETRootInfo and override also the added virtual methods.
- @since 3.5
 */
 class KDECORE_EXPORT NETRootInfo4
     : public NETRootInfo3
@@ -896,7 +864,6 @@ class KDECORE_EXPORT NETWinInfo : public NET {
 public:
     /**
         Indexes for the properties array.
-        @since 3.2
     **/
     // update also NETWinInfoPrivate::properties[] size when extending this
     enum { PROTOCOLS, PROTOCOLS2,
@@ -922,8 +889,6 @@ public:
 
        @param role Select the application role.  If this argument is omitted,
        the role will default to Client.
-
-       @since 3.2
     **/
     NETWinInfo(Display *display, Window window, Window rootWindow,
                const unsigned long properties[], int properties_size,
@@ -962,7 +927,6 @@ public:
        itself is not known to this implementation. Presence of a window type
        as specified by the NETWM spec is considered as the window supporting
        this specification.
-       @since 3.2
        @return true if the window has support for the NETWM spec
     **/
     bool hasNETSupport() const;
@@ -970,8 +934,6 @@ public:
     /**
        Returns the properties argument passed to the constructor.
        The size is the maximum array size the constructor accepts.
-
-       @since 3.2
     **/
     // KDE4 better name?
     const unsigned long* passedProperties() const;
@@ -1017,7 +979,6 @@ public:
        or NET::Unknown if none of the window types is supported.
 
        @return the type of the window
-       @since 3.2
     **/
     WindowType windowType( unsigned long supported_types ) const;
 
@@ -1213,7 +1174,6 @@ public:
        Set the frame decoration strut, i.e. the width of the decoration borders.
 
        @param strut the new strut
-       @since 3.5
     **/
     void setFrameExtents(NETStrut strut);
 
@@ -1244,76 +1204,64 @@ public:
      * is shown with user timestamp older than the time of the last
      * user action, it won't be activated after being shown, with the special
      * value 0 meaning not to activate the window after being shown.
-     * @since 3.2
      */
     void setUserTime( Time time );
 
     /**
      * Returns the time of last user action on the window, or -1 if not set.
-     * @since 3.2
      */
     Time userTime() const;
 
     /**
      * Sets the startup notification id @p id on the window.
-     * @since 3.2
      */
     void setStartupId( const char* startup_id );
 
     /**
      * Returns the startup notification id of the window.
-     * @since 3.2
      */
     const char* startupId() const;
 
     /**
      * Sets actions that the window manager allows for the window.
-     * @since 3.2
      */
     void setAllowedActions( unsigned long actions );
 
     /**
      * Returns actions that the window manager allows for the window.
-     * @since 3.2
      */
     unsigned long allowedActions() const;
 
     /**
      * Returns the WM_TRANSIENT_FOR property for the window, i.e. the mainwindow
      * for this window.
-     * @since 3.2
      */
     Window transientFor() const;
 
     /**
      * Returns the leader window for the group the window is in, if any.
-     * @since 3.2
      */
     Window groupLeader() const;
 
     /**
      * Returns the class component of the window class for the window
      * (i.e. WM_CLASS property).
-     * @since 3.3
      */
     const char* windowClassClass() const;
 
     /**
      * Returns the name component of the window class for the window
      * (i.e. WM_CLASS property).
-     * @since 3.3
      */
     const char* windowClassName() const;
 
     /**
      * Returns the window role for the window (i.e. WM_WINDOW_ROLE property).
-     * @since 3.3
      */
     const char* windowRole() const;
 
     /**
      * Returns the client machine for the window (i.e. WM_CLIENT_MACHINE property).
-     * @since 3.3
      */
     const char* clientMachine() const;
 
@@ -1339,8 +1287,6 @@ public:
        @param event the event
        @param properties properties that changed
        @param properties_size size of the passed properties array
-       @since 3.2
-
     **/
     void event( XEvent* event, unsigned long* properties, int properties_size );
 

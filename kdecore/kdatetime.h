@@ -136,7 +136,6 @@ class KDateTimePrivate;
  * @see KTimeZone, KSystemTimeZones, QDateTime, QDate, QTime
  * @see <a href="http://www.w3.org/TR/timezone/">W3C: Working with Time Zones</a>
  * @author David Jarvie \<software@astrojar.org.uk\>.
- * @since 4.0
  */
 class KDECORE_EXPORT KDateTime
 {

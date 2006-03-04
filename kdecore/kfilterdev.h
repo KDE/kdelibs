@@ -64,7 +64,6 @@ public:
      * Call this let this device skip the gzip headers when reading/writing.
      * This way KFilterDev (with gzip filter) can be used as a direct wrapper
      * around zlib - this is used by KZip.
-     * @since 3.1
      */
     void setSkipHeaders();
 
@@ -163,7 +162,6 @@ public:
      * @param autoDeleteInDevice if true, @p inDevice will be deleted automatically
      * @return a QIODevice that filters the original stream. Must be deleted after
      *         using
-     * @since 3.1
      */
     static QIODevice * device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice );
 

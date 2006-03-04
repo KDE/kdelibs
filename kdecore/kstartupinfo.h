@@ -69,7 +69,6 @@ class KDECORE_EXPORT KStartupInfo
          * several toplevel windows after its startup, you can disable
          * the automatic handling, and call appStarted() manually after
          * all toplevel windows have been shown.
-         * @since 3.2
          */
         static void disableAutoAppStartedSending( bool disable = true );
 
@@ -85,7 +84,6 @@ class KDECORE_EXPORT KStartupInfo
         /**
          * Sends explicit notification that the startup notification
          * with id startup_id should end.
-         * @since 3.2
          */
         static void appStarted( const QByteArray& startup_id );
 
@@ -96,7 +94,6 @@ class KDECORE_EXPORT KStartupInfo
          * The window can be either an already existing and visible window,
          * or a new one, before being shown. Note that this function is usually
          * needed only when a window is reused.
-         * @since 3.2
          */
         static void setNewStartupId( QWidget* window, const QByteArray& startup_id );
 
@@ -107,14 +104,12 @@ class KDECORE_EXPORT KStartupInfo
          * To temporarily suspend and resume the notification, use this function.
          * Note that this is cumulative, i.e. after suspending twice, you have to
          * resume twice.
-         * @since 3.2
          */
         static void silenceStartup( bool silence );
 
         /**
          * Creates and returns new startup id. The id includes properly setup
          * user timestamp.
-         * @since 3.3
          */
         static QByteArray createNewStartupId();
 	/**
@@ -415,7 +410,6 @@ class KDECORE_EXPORT KStartupInfoId
         /**
          * Return the user timestamp for the startup notification, or 0 if no timestamp
          * is set.
-         * @since 3.3
          */
         unsigned long timestamp() const;
 	/**
@@ -486,21 +480,18 @@ class KDECORE_EXPORT KStartupInfoData
 	 * Sets the description for the notification (e.g. 'Launching Control Center').
          * I.e. name() describes what is being started, while description() is
          * the actual action performed by the starting.
-         * @since 3.2
 	 */
         void setDescription( const QString& descr );
 	/**
 	 * Returns the description of the startup notification. If it's not available,
          * it returns name().
 	 * @return the description of the startup notification
-         * @since 3.2
 	 */
         const QString& findDescription() const;
 	/**
 	 * Returns the name of the startup notification, or empty if not available.
 	 * @return the name of the startup notificaiton, or an empty string
 	 *         if not set.
-         * @since 3.2
 	 */
         const QString& description() const;
 	/**
@@ -590,14 +581,12 @@ class KDECORE_EXPORT KStartupInfoData
 	/**
 	 * Sets whether the visual feedback for this startup notification
 	 * should be silenced (temporarily suspended).
-	 * @since 3.1.1
 	 */
 	void setSilent( TriState state );
 
 	/**
 	 * Return the silence status for the startup notification.
 	 * @return KStartupInfoData::Yes if visual feedback is silenced
-	 * @since 3.1.1
 	 */
 	TriState silent() const;
 

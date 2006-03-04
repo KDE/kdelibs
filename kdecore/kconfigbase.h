@@ -199,7 +199,6 @@ public:
    * if the read value cannot be converted to the QVariant::Type.
    * @return The value for the key or the default value if the key was not
    *         found.
-   * @since 4.0
    */
   QVariant readEntry( const char *pKey, const QVariant &aDefault) const;
 
@@ -209,7 +208,6 @@ public:
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
    * @return The value for this key, or @p aDefault.
-   * @since 4.0
    */
   template <typename T>
   inline T readEntry( const char* pKey, const T& aDefault) const;
@@ -304,7 +302,6 @@ public:
    * @param aDefault The default value to use if the key does not exist.
    * @param sep The list separator (default is ",").
    * @return The list. Contains @p aDefault if the Key does not exist.
-   * @since 3.3
    * @deprecated use readEntry(const char*, const QStringList&, char) const instead.
    */
   KDE_DEPRECATED QStringList readListEntry( const char* pKey,
@@ -320,7 +317,6 @@ public:
    * @param pKey The key to search for.
    * @param aDefault The default value to use if the key does not exist.
    * @return The list.
-   * @since 4.0
    */
   template <typename T>
   inline QList<T> readEntry( const char* pKey, const QList<T>& aDefault ) const;
@@ -343,7 +339,6 @@ public:
    * @param aDefault The default value to use if the key does not exist.
    * @param sep The list separator.
    * @return The list. Contains @p aDefault if @p pKey does not exist.
-   * @since 4.0
    */
   QStringList readEntry(const char* pKey, const QStringList& aDefault,
                         char sep=',') const;
@@ -414,7 +409,6 @@ public:
    * @param pKey The key to search for.
    * @param sep  The list separator (default is ",").
    * @return The list. Empty if the entry does not exist.
-   * @since 3.1.3
    */
   QStringList readPathListEntry( const QString& pKey, char sep = ',' ) const;
 
@@ -428,7 +422,6 @@ public:
    * @param pKey The key to search for.
    * @param sep  The list separator (default is ",").
    * @return The list. Empty if the entry does not exist.
-   * @since 3.1.3
    */
   QStringList readPathListEntry( const char *pKey, char sep = ',' ) const;
 
@@ -897,7 +890,6 @@ public:
 
   /**
    * @copydoc writeEntry( const char*, const QString&, WriteConfigFlags )
-   * @since 4.0
    */
   template <typename T>
   void writeEntry( const char* pKey, const T& value,
@@ -905,7 +897,6 @@ public:
 
   /**
    * @copydoc writeEntry( const char*, const QString&, WriteConfigFlags )
-   * @since 4.0
    */
   template <typename T>
   void writeEntry( const QString& pKey, const T& value,
@@ -993,7 +984,6 @@ public:
    * @param pFlags       The flags to use when writing this entry.
    *
    * @see  writeEntry()
-   * @since 4.0
    */
   template <typename T>
   void writeEntry( const char* pKey, const QList<T>& value,
@@ -1080,7 +1070,6 @@ public:
    *
    * @see  writePathEntry()
    * @see  readPathListEntry()
-   * @since 3.1.3
    */
   void writePathEntry( const QString& pKey, const QStringList &value,
                        char sep = ',', WriteConfigFlags pFlags = Normal );
@@ -1099,7 +1088,6 @@ public:
    *
    * @see  writePathEntry()
    * @see  readPathListEntry()
-   * @since 3.1.3
    */
   void writePathEntry( const char *pKey, const QStringList &value,
 		   char sep = ',', WriteConfigFlags pFlags = Normal );
@@ -1289,7 +1277,6 @@ public:
    * Check whether the config files are writable.
    * @param warnUser Warn the user if the configuration files are not writable.
    * @return Indicates that all of the configuration files used are writable.
-   * @since 3.2
    */
   bool checkConfigFilesWritable(bool warnUser);
 
@@ -1297,14 +1284,12 @@ public:
    * When set, all readEntry and readXXXEntry calls return the system
    * wide (default) values instead of the user's preference.
    * This is off by default.
-   * @since 3.2
    */
   void setReadDefaults(bool b);
 
   /**
    * @returns true if all readEntry and readXXXEntry calls return the system
    * wide (default) values instead of the user's preference.
-   * @since 3.2
    */
   bool readDefaults() const;
 
@@ -1317,7 +1302,6 @@ public:
    * file should be opened explicitly in a separate config object.
    *
    * @param key The key of the entry to revert.
-   * @since 3.2
    */
   void revertToDefault(const QString &key);
 
@@ -1345,7 +1329,6 @@ public:
    * the computed default, the application will keep using the computed default
    * and will follow changes the computed default makes over time.
    * @param key The key of the entry to check.
-   * @since 3.2
    */
   bool hasDefault(const QString &key) const;
 
@@ -1709,7 +1692,6 @@ public:
    * Checks whether it is possible to change this group.
    * @return whether changes may be made to this group in this configuration
    * file.
-   * @since 3.4
    */
   bool groupIsImmutable() const;
 

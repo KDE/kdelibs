@@ -73,14 +73,12 @@ public:
    * See README.kiosk for more information.
    * @param path the file to check
    * @return true if the user is authorized to run the file
-   * @since 3.1
    */
   static bool isAuthorizedDesktopFile(const QString& path);
 
   /**
    * Returns the location where changes for the .desktop file @p path
    * should be written to.
-   * @since 3.2
    */
   static QString locateLocal(const QString &path);
 
@@ -201,7 +199,6 @@ public:
 	 * X-DocPath should be used and DocPath is depreciated and will
 	 * one day be not supported.
    * @return The value of the "X-DocPath=" Or "DocPath=" entry.
-   * @since 3.1
    */
   QString readDocPath() const;
 
@@ -219,7 +216,6 @@ public:
    * destructed or when sync() is called upon it.
    *
    * @param file the new KDesktopFile object it will save itself to.
-   * @since 3.2
    */
   KDesktopFile* copyTo(const QString &file) const;
 

@@ -140,14 +140,12 @@ public:
    * Check whether the config files are writable.
    * @param warnUser Warn the user if the configuration files are not writable.
    * @return Indicates that all of the configuration files used are writable.
-   * @since 3.2
    */
   bool checkConfigFilesWritable(bool warnUser);
 
   /**
    * Returns a lock file object for the configuration file
    * @param bGlobal If true, returns a lock file object for kdeglobals
-   * @since 3.3
    */
   KLockFile::Ptr lockFile( bool bGlobal = false );
 

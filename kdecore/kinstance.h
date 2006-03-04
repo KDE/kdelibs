@@ -128,7 +128,6 @@ protected:
     /**
      * Set name of default config file.
      * @param name the name of the default config file
-     * @since 3.1
      */
     void setConfigName(const QString &name);
     /** Standard trick to add virtuals later. @internal */

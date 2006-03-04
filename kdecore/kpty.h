@@ -34,8 +34,6 @@ struct KPtyPrivate;
  * Provides a high level representation of a pseudo tty pair, including
  * utmp support.
  * ...
- *
- * @since 3.2
  **/
 class KDECORE_EXPORT KPty {
 
@@ -111,8 +109,6 @@ public:
    * Set the pty in utf8 mode on systems that support it.
    * 
    * See the man page of "stty iutf8" for more info.
-   *
-   * @since 3.4
    */
   void setUtf8Mode(bool useUtf8);
 

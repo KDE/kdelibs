@@ -44,34 +44,29 @@ namespace KDE
      * installed KDE version, not the number of the KDE version that was
      * installed when the program was compiled.
      * @return the version number, encoded in a single uint
-     * @since 3.2
      */
     KDECORE_EXPORT unsigned int version();
     /**
      * Returns the major number of KDE's version, e.g.
      * 3 for KDE 3.1.2. 
      * @return the major version number
-     * @since 3.1
      */
     KDECORE_EXPORT unsigned int versionMajor();
     /**
      * Returns the minor number of KDE's version, e.g.
      * 1 for KDE 3.1.2. 
      * @return the minor version number
-     * @since 3.1
      */
     KDECORE_EXPORT unsigned int versionMinor();
     /**
      * Returns the release of KDE's version, e.g.
      * 2 for KDE 3.1.2. 
      * @return the release number
-     * @since 3.1
      */
     KDECORE_EXPORT unsigned int versionRelease();
     /**
      * Returns the KDE version as string, e.g. "3.1.2".
      * @return the KDE version. You can keep the string forever
-     * @since 3.1
      */
     KDECORE_EXPORT const char *versionString();
 }

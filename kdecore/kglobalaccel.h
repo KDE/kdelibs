@@ -96,7 +96,6 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	 * Removes the accelerator action identified by the name.
 	 * Remember to also call updateConnections().
 	 * @param sAction the name of the action to remove
-	 * @since 3.1
 	 */
 	bool remove( const QString& sAction );
 
@@ -140,14 +139,12 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 
         /**
          * Enables or disables action @p sAction.
-         * @since 3.4
          */
 	bool setActionEnabled( const QString& sAction, bool bEnable );
 	/**
 	 * Return the label (i18n'ized short description) associated with the action named by @p sAction.
 	 * @param sAction the name of the action
 	 * @return the label
-	 * @since 3.3
 	 */
 	QString label( const QString& sAction ) const;
 
@@ -182,7 +179,6 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	 * @param pConfig the configuration file to read from, or 0 for the application
 	 *                 configuration file
 	 * @return true if successful, false otherwise
-	 * @since 3.1
 	 */
 	bool writeSettings( KConfigBase* pConfig = 0 ) const;
 	// BCI: merge these two writeSettings methods in KDE 4.0

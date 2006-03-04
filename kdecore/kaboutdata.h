@@ -391,7 +391,6 @@ class KDECORE_EXPORT KAboutData
      *
      * @param image logo image.
      * @see programLogo()
-     * @since 3.4
     */
     void setProgramLogo(const QImage& image);
 
@@ -501,7 +500,6 @@ class KDECORE_EXPORT KAboutData
      * Returns the program logo image.
      * @return the program logo data or null image if there is
      * no custom application logo defined.
-     * @since 3.4
      */
     QImage programLogo() const;
 

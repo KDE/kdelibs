@@ -177,9 +177,6 @@ public:
         : KGenericFactoryBase<Product>( instanceName )
     {}
 
-    /**
-     * @since 3.3
-	*/
     KGenericFactory( const KAboutData *data )
         : KGenericFactoryBase<Product>( data )
     {}
@@ -272,9 +269,6 @@ public:
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( instanceName )
     {}
 
-    /**
-     * @since 3.3
-	*/
     KGenericFactory( const KAboutData *data )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( data )
     {}
@@ -368,9 +362,6 @@ public:
     KGenericFactory( const char *instanceName  = 0 )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( instanceName )
     {}
-	/**
-	* @since 3.3
-	*/
     KGenericFactory( const KAboutData *data )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( data )
     {}

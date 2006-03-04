@@ -571,7 +571,6 @@ public:
  * \endcode 
  *
  * @author Holger Freyther based on the Loki library. See copyright statement at the top
- * @since 3.3
  * @ingroup ktypelist
  */
 template<

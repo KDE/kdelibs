@@ -33,7 +33,6 @@ class QString;
  * accelerators for any widget.
  *
  * @author Matthias Hölzer-Klüpfel <mhk@kde.org>
- * @since 3.1
 */
 
 class KDECORE_EXPORT KAcceleratorManager
@@ -69,7 +68,6 @@ public:
 
     /**
      * Use this method for a widget (and it's children) you want no accels to be set on.
-     * @since 3.4
      */
     static void setNoAccel( QWidget *widget );
 };

@@ -33,7 +33,6 @@ template <typename KT, typename VT> class QHash;
  * Abstract base class for the worker classes behind the KMacroExpander namespace
  * and the KCharMacroExpander and KWordMacroExpander classes.
  *
- * @since 3.1.3
  * @author Oswald Buddenhagen <ossi@kde.org>
  */
 class KDECORE_EXPORT KMacroExpanderBase {
@@ -187,7 +186,6 @@ private:
  *
  * Alternatively MyClass could inherit from KWordMacroExpander directly.
  *
- * @since 3.3
  * @author Oswald Buddenhagen <ossi@kde.org>
  */
 class KDECORE_EXPORT KWordMacroExpander : public KMacroExpanderBase {
@@ -220,7 +218,6 @@ protected:
  *
  * See KWordMacroExpander for a sample application.
  *
- * @since 3.3
  * @author Oswald Buddenhagen <ossi@kde.org>
  */
 class KDECORE_EXPORT KCharMacroExpander : public KMacroExpanderBase {
@@ -249,7 +246,6 @@ protected:
 /**
  * A group of functions providing macro expansion (substitution) in strings,
  * optionally with quoting appropriate for shell execution.
- * @since 3.1.3
  */
 namespace KMacroExpander {
     /**

@@ -160,8 +160,6 @@ public:
        * set a correct HTTP referrer (some websites require it for downloading e.g. an image)
        * @param flags set NoTextExport to prevent setting plain/text data into @p mimeData
        * In such a case, setExportAsText( false ) should be called.
-       *
-       * @since 4.0
        */
       void populateMimeData( QMimeData* mimeData,
                              const KUrl::MetaDataMap& metaData = MetaDataMap(),
@@ -169,13 +167,11 @@ public:
 
       /**
        * Return true if @p mimeData contains URI data
-       * @since 4.0
        */
       static bool canDecode( const QMimeData *mimeData );
 
       /**
         * Return the list of mimeTypes that can be decoded by fromMimeData
-        * @since 4.0
         */
       static QStringList mimeDataTypes();
 
@@ -186,7 +182,6 @@ public:
        * @param mimeData the mime data to extract from; cannot be 0
        * @param metaData optional pointer to a map holding the metadata
        * @return the list of urls
-       * @since 4.0
        */
       static KUrl::List fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMap* metaData = 0 );
 
@@ -511,8 +506,6 @@ public:
    * defined:
    *
    * @param CaseInsensitiveKeys normalize query keys to lowercase.
-   *
-   * @since 3.1
    **/
   enum QueryItemsOptions { CaseInsensitiveKeys = 1 };
 
@@ -527,8 +520,6 @@ public:
    *
    * @return the map of query items or the empty map if the url has no
    * query items.
-   *
-   * @since 3.1
    */
   QMap< QString, QString > queryItems( int options = 0 ) const;
   // #### TODO port the above queryItems to look more like QUrl's
@@ -662,7 +653,6 @@ public:
    * to display and even let the user edit URLs.
    *
    * @return the new KUrl
-   * @since 3.4
    */
   QString pathOrURL() const;
 
@@ -670,7 +660,6 @@ public:
    * Returns the URL as a string, using the standard conventions for mime data
    * (drag-n-drop or copy-n-paste).
    * Internally used by KUrl::List::fromMimeData, which is probably what you want to use instead.
-   * @since 4.0
    */
   QString toMimeDataString() const;
 
@@ -717,7 +706,6 @@ public:
    * @return true if both urls are the same
    * @see operator==. This function should be used if you want to
    * ignore trailing '/' characters.
-   * @since 3.1
    */
   bool equals( const KUrl &u, bool ignore_trailing = false ) const; // TODO KDE4: use QUrl::FormattingOptions to add support for ignore_ref too
 
@@ -785,7 +773,6 @@ public:
    * Otherwise some characters (e.g. the '#') won't be encoded properly.
    * @param text the string representation of the URL to convert
    * @return the new KUrl
-   * @since 4.0
    */
   static KUrl fromPath( const QString& text ) { KUrl u; u.setPath( text ); return u; }
 
@@ -800,7 +787,6 @@ public:
    * Otherwise some characters (e.g. the '#') won't be encoded properly.
    * @param text the string representation of the URL to convert
    * @return the new KUrl
-   * @since 3.1
    */
   static KUrl fromPathOrURL( const QString& text );
 
@@ -808,7 +794,6 @@ public:
    * Creates a KUrl from a string, using the standard conventions for mime data
    * (drag-n-drop or copy-n-paste).
    * Internally used by KUrl::List::fromMimeData, which is probably what you want to use instead.
-   * @since 4.0
    */
   static KUrl fromMimeDataByteArray( const QByteArray& str );
 
@@ -827,8 +812,6 @@ public:
    * set a correct HTTP referrer (some websites require it for downloading e.g. an image)
    * @param flags set NoTextExport to prevent setting plain/text data into @p mimeData
    * In such a case, setExportAsText( false ) should be called.
-   *
-   * @since 4.0
    */
   void populateMimeData( QMimeData* mimeData,
                          const MetaDataMap& metaData = MetaDataMap(),
