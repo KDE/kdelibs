@@ -26,8 +26,12 @@
 /* regular header from msvc includes */
 #include <../include/string.h>
 
+#ifndef strncasecmp
 #define strncasecmp strnicmp
+#endif
+#ifndef strcasecmp
 #define strcasecmp stricmp
+#endif
 
 #ifdef __cplusplus
 extern "C" {

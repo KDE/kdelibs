@@ -32,10 +32,14 @@ extern "C"
 
 typedef unsigned int in_addr_t;
 
-KDEWIN32_EXPORT
-const char *inet_ntop(int af, const void * src, char * dst, socklen_t size);
-
+KDEWIN32_EXPORT const char *inet_ntop(int af, const void * src, char * dst, size_t size);
 KDEWIN32_EXPORT int inet_pton(int af, const char * src, void * dst);
+KDEWIN32_EXPORT int inet_aton(const char *src, struct in_addr *addr);
+
+// FIXME - move to sys/errno.h
+#ifndef EAFNOSUPPORT
+#define EAFNOSUPPORT 106
+#endif
 
 
 #ifdef __cplusplus
