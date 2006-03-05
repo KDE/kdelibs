@@ -388,7 +388,7 @@ void KPropertiesDialog::slotOk()
   d->m_aborted = false;
 
   KFilePropsPlugin * filePropsPlugin = 0L;
-  if ( m_pageList.first()->metaObject()->className() == QLatin1String( "KFilePropsPlugin" ) )
+  if ( qobject_cast<KFilePropsPlugin*>(m_pageList.first()) )
     filePropsPlugin = static_cast<KFilePropsPlugin *>(m_pageList.first());
 
   // If any page is dirty, then set the main one (KFilePropsPlugin) as
@@ -543,10 +543,9 @@ void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
   // If we have an Desktop page, set it dirty, so that a full file is saved locally
   // Same for a URL page (because of the Name= hack)
   for ( Q3PtrListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it ) {
-   QString cname = it.current()->metaObject()->className();
-   if ( (cname == "KExecPropsPlugin") || // KDE4 remove me
-        (cname == "KUrlPropsPlugin") ||
-        (cname == "KDesktopPropsPlugin") )
+   if ( qobject_cast<KExecPropsPlugin*>(it.current()) || // KDE4 remove me
+        qobject_cast<KUrlPropsPlugin*>(it.current()) ||
+        qobject_cast<KDesktopPropsPlugin*>(it.current()) )
    {
      //kDebug(250) << "Setting page dirty" << endl;
      it.current()->setDirty();
@@ -1384,8 +1383,7 @@ void KFilePropsPlugin::applyIconChanges()
 {
   // handle icon changes - only local files for now
   // TODO: Use KTempFile and KIO::file_copy with overwrite = true
-  if (iconArea->metaObject()->className() == QLatin1String("KIconButton") &&
-      properties->kurl().isLocalFile()) {
+  if (qobject_cast<KIconButton*>(iconArea) && properties->kurl().isLocalFile()) {
     KIconButton *iconButton = (KIconButton *) iconArea;
     QString path;
 

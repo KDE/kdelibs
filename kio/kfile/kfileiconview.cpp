@@ -776,8 +776,10 @@ void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
 
     //qDebug("** key for: %s: %s", i->text().latin1(), item->key().latin1());
 
-    if ( d->previews->isChecked() )
-        d->previewTimer.start( 10, true );
+    if ( d->previews->isChecked() ) {
+        d->previewTimer.setSingleShot( true );
+        d->previewTimer.start( 10 );
+    }
 }
 
 void KFileIconView::arrangeItemsInGrid( bool update )

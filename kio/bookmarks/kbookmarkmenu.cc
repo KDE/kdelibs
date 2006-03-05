@@ -168,13 +168,13 @@ QString KBookmarkMenu::s_highlightedImportLocation;
 
 void KBookmarkMenu::slotActionHighlighted( KAction* action )
 {
-  if ((action->metaObject()->className() == QLatin1String("KBookmarkActionMenu")) ||
-      (action->metaObject()->className() == QLatin1String("KBookmarkAction")))
+  if (qobject_cast<KBookmarkActionMenu*>(action) ||
+      qobject_cast<KBookmarkAction*>(action))
   {
     s_highlightedAddress = action->property("address").toString();
     //kDebug() << "KBookmarkMenu::slotActionHighlighted" << s_highlightedAddress << endl;
   }
-  else if (action->metaObject()->className() == QLatin1String("KImportedBookmarksActionMenu"))
+  else if (qobject_cast<KImportedBookmarksActionMenu*>(action))
   {
     s_highlightedImportType = action->property("type").toString();
     s_highlightedImportLocation = action->property("location").toString();

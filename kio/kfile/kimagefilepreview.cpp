@@ -133,7 +133,8 @@ void KImageFilePreview::toggleAuto( bool a )
 
 void KImageFilePreview::resizeEvent( QResizeEvent * )
 {
-    timer->start( 100, true ); // forces a new preview
+    timer->setSingleShot( true );
+    timer->start( 100 ); // forces a new preview
 }
 
 QSize KImageFilePreview::sizeHint() const

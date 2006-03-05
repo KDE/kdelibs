@@ -109,7 +109,8 @@ void KIconCanvas::loadFiles(const QStringList& files)
     clear();
     mFiles = files;
     emit startLoading(mFiles.count());
-    mpTimer->start(10, true); // #86680
+    mpTimer->setSingleShot(true);
+    mpTimer->start(10); // #86680
     d->m_bLoading = false;
 }
 

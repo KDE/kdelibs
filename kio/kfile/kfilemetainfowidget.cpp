@@ -170,11 +170,13 @@ QWidget* KFileMetaInfoWidget::makeWidget()
     }
 
     kDebug(7033) << "*** item " << m_item.key()
-                  << "is a " << m_item.value().typeName() << endl;
+                 << "is a " << m_item.value().typeName() << endl;
     if (m_validator)
-        kDebug(7033) << " and validator is a " << m_validator->className() << endl;
+        kDebug(7033) << " and validator is a "
+                     << m_validator->metaObject()->className() << endl;
 
-    kDebug(7033) << "*** created a " << w->className() << " for it\n";
+    kDebug(7033) << "*** created a " << w->metaObject()->className()
+                 << " for it\n";
 
     return w;
 }
@@ -298,7 +300,7 @@ void KFileMetaInfoWidget::reparentValidator( QWidget *widget,
                                              QValidator *validator )
 {
     if ( !validator->parent() )
-        widget->insertChild( validator );
+        validator->setParent( widget );
 }
 
 // ****************************************************************

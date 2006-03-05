@@ -127,7 +127,8 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent)
     progress->adjustSize();
     progress->move(2, height() - progress->height() -2);
 
-    d->progressDelayTimer = new QTimer( this, "progress delay timer" );
+    d->progressDelayTimer = new QTimer( this );
+    d->progressDelayTimer->setObjectName( QLatin1String( "progress delay timer" ) );
     connect( d->progressDelayTimer, SIGNAL( timeout() ),
 	     SLOT( slotShowProgress() ));
 
@@ -1539,7 +1540,8 @@ void KDirOperator::slotStarted()
 {
     progress->setValue( 0 );
     // delay showing the progressbar for one second
-    d->progressDelayTimer->start( 1000, true );
+    d->progressDelayTimer->setSingleShot( true );
+    d->progressDelayTimer->start( 1000 );
 }
 
 void KDirOperator::slotShowProgress()
