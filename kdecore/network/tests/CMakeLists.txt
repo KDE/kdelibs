@@ -6,7 +6,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 
 ########### next target ###############
-
+if (UNIX)
 set(netif_SRCS
 netif.cpp
 )
@@ -16,7 +16,7 @@ kde4_automoc(${netif_SRCS})
 kde4_add_executable(netif ${netif_SRCS})
 
 target_link_libraries(netif  ${QT_AND_KDECORE_LIBS} )
-
+endif (UNIX)
 
 ########### next target ###############
 
