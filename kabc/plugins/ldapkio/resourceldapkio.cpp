@@ -586,7 +586,7 @@ void ResourceLDAPKIO::data( KIO::Job *, const QByteArray &data )
     d->mLdif.endLDIF();
   }
 
-  LDIF::ParseVal ret;
+  LDIF::ParseValue ret;
   QString name;
   QByteArray value;
   do {
@@ -597,7 +597,7 @@ void ResourceLDAPKIO::data( KIO::Job *, const QByteArray &data )
         break;
       case LDIF::Item:
         name = d->mLdif.attr().toLower();
-        value = d->mLdif.val();
+        value = d->mLdif.value();
         if ( name == mAttributes[ "commonName" ].toLower() ) {
           if ( !d->mAddr.formattedName().isEmpty() ) {
             QString fn = d->mAddr.formattedName();

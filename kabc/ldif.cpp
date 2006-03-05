@@ -158,15 +158,15 @@ bool LDIF::splitControl( const QByteArray &line, QString &oid, bool &critical,
   return url;
 }
 
-LDIF::ParseVal LDIF::processLine() 
+LDIF::ParseValue LDIF::processLine() 
 {
 
   if ( mIsComment ) return None;
 
-  ParseVal retval = None;
-  if ( mLastParseVal == EndEntry ) mEntryType = Entry_None;
+  ParseValue retval = None;
+  if ( mLastParseValue == EndEntry ) mEntryType = Entry_None;
 
-  mUrl = splitLine( line, mAttr, mVal );
+  mUrl = splitLine( line, mAttr, mValue );
 
   QString attrLower = mAttr.toLower();
 
@@ -175,15 +175,15 @@ LDIF::ParseVal LDIF::processLine()
       if ( attrLower == "version" ) {
         if ( !mDn.isEmpty() ) retval = Err;
       } else if ( attrLower == "dn" ) {
-        kDebug(5700) << "ldapentry dn: " << QString::fromUtf8( mVal, mVal.size() ) << endl;
-        mDn = QString::fromUtf8( mVal, mVal.size() );
+        kDebug(5700) << "ldapentry dn: " << QString::fromUtf8( mValue, mValue.size() ) << endl;
+        mDn = QString::fromUtf8( mValue, mValue.size() );
         mModType = Mod_None;
         retval = NewEntry;
       } else if ( attrLower == "changetype" ) {
         if ( mDn.isEmpty() )
           retval = Err;
         else {
-          QString tmpval = QString::fromUtf8( mVal, mVal.size() );
+          QString tmpval = QString::fromUtf8( mValue, mValue.size() );
           kDebug(5700) << "changetype: " << tmpval << endl;
           if ( tmpval == "add" ) mEntryType = Entry_Add;
           else if ( tmpval == "delete" ) mEntryType = Entry_Del;
@@ -197,21 +197,21 @@ LDIF::ParseVal LDIF::processLine()
           else retval = Err;
         }
       } else if ( attrLower == "control" ) {
-        mUrl = splitControl( mVal, mOid, mCritical, mVal );
+        mUrl = splitControl( mValue, mOid, mCritical, mValue );
         retval = Control;
-      } else if ( !mAttr.isEmpty() && mVal.size() > 0 ) {
+      } else if ( !mAttr.isEmpty() && mValue.size() > 0 ) {
         mEntryType = Entry_Add;
         retval = Item;
       }
       break;
     case Entry_Add:
-      if ( mAttr.isEmpty() && mVal.size() == 0 )
+      if ( mAttr.isEmpty() && mValue.size() == 0 )
         retval = EndEntry;
       else
         retval = Item;
       break;
     case Entry_Del:
-      if ( mAttr.isEmpty() && mVal.size() == 0 )
+      if ( mAttr.isEmpty() && mValue.size() == 0 )
         retval = EndEntry;
       else
         retval = Err;
@@ -219,28 +219,28 @@ LDIF::ParseVal LDIF::processLine()
     case Entry_Mod:
       if ( mModType == Mod_None ) {
         kDebug(5700) << "kio_ldap: new modtype " << mAttr << endl;
-        if ( mAttr.isEmpty() && mVal.size() == 0 ) {
+        if ( mAttr.isEmpty() && mValue.size() == 0 ) {
           retval = EndEntry;
         } else if ( attrLower == "add" ) {
           mModType = Mod_Add;
         } else if ( attrLower == "replace" ) {
           mModType = Mod_Replace;
-          mAttr = QString::fromUtf8( mVal, mVal.size() );
-          mVal.resize( 0 );
+          mAttr = QString::fromUtf8( mValue, mValue.size() );
+          mValue.resize( 0 );
           retval = Item;
         } else if ( attrLower == "delete" ) {
           mModType = Mod_Del;
-          mAttr = QString::fromUtf8( mVal, mVal.size() );
-          mVal.resize( 0 );
+          mAttr = QString::fromUtf8( mValue, mValue.size() );
+          mValue.resize( 0 );
           retval = Item;
         } else {
           retval = Err;
         }
       } else {
         if ( mAttr.isEmpty() ) {
-          if ( QString::fromUtf8( mVal, mVal.size() ) == "-" ) {
+          if ( QString::fromUtf8( mValue, mValue.size() ) == "-" ) {
             mModType = Mod_None;
-          } else if ( mVal.size() == 0 ) {
+          } else if ( mValue.size() == 0 ) {
             retval = EndEntry;
           } else
             retval = Err;
@@ -249,16 +249,16 @@ LDIF::ParseVal LDIF::processLine()
       }
       break;
     case Entry_Modrdn:
-      if ( mAttr.isEmpty() && mVal.size() == 0 )
+      if ( mAttr.isEmpty() && mValue.size() == 0 )
         retval = EndEntry;
       else if ( attrLower == "newrdn" )
-        mNewRdn = QString::fromUtf8( mVal, mVal.size() );
+        mNewRdn = QString::fromUtf8( mValue, mValue.size() );
       else if ( attrLower == "newsuperior" )
-        mNewSuperior = QString::fromUtf8( mVal, mVal.size() );
+        mNewSuperior = QString::fromUtf8( mValue, mValue.size() );
       else if ( attrLower == "deleteoldrdn" ) {
-        if ( mVal.size() > 0 && mVal[0] == '0' )
+        if ( mValue.size() > 0 && mValue[0] == '0' )
           mDelOldRdn = false;
-        else if ( mVal.size() > 0 && mVal[0] == '1' )
+        else if ( mValue.size() > 0 && mValue[0] == '1' )
           mDelOldRdn = true;
         else
           retval = Err;
@@ -269,9 +269,9 @@ LDIF::ParseVal LDIF::processLine()
   return retval;
 }
 
-LDIF::ParseVal LDIF::nextItem()
+LDIF::ParseValue LDIF::nextItem()
 {
-  ParseVal retval = None;
+  ParseValue retval = None;
   char c=0;
 
   while ( retval == None ) {
@@ -286,12 +286,12 @@ LDIF::ParseVal LDIF::nextItem()
       if ( mIsNewLine ) {
         mIsNewLine = false;
         retval = processLine();
-        mLastParseVal = retval;
+        mLastParseValue = retval;
         line.resize( 0 );
         mIsComment = ( c == '#' );
       }
       if ( c == '\n' || c == '\r' ) {
-        mLineNo++;
+        mLineNumber++;
         mIsNewLine = true;
         continue;
       }
@@ -314,7 +314,7 @@ void LDIF::endLDIF()
 
 void LDIF::startParsing()
 {
-  mPos = mLineNo = 0;
+  mPos = mLineNumber = 0;
   mDelOldRdn = false;
   mEntryType = Entry_None;
   mModType = Mod_None;
@@ -322,5 +322,5 @@ void LDIF::startParsing()
   line = "";
   mIsNewLine = false;
   mIsComment = false;
-  mLastParseVal = None;
+  mLastParseValue = None;
 }

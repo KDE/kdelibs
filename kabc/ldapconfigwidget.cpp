@@ -290,7 +290,7 @@ void LdapConfigWidget::initWidget()
 
 void LdapConfigWidget::loadData( KIO::Job*, const QByteArray& d )
 {
-  LDIF::ParseVal ret;
+  LDIF::ParseValue ret;
 
   if ( d.size() ) {
     mLdif.setLDIF( d );
@@ -301,7 +301,7 @@ void LdapConfigWidget::loadData( KIO::Job*, const QByteArray& d )
     ret = mLdif.nextItem();
     if ( ret == LDIF::Item && mLdif.attr().toLower() == mAttr ) {
       mProg->setValue( mProg->value() + 1 );
-      mQResult.push_back( QString::fromUtf8( mLdif.val(), mLdif.val().size() ) );
+      mQResult.push_back( QString::fromUtf8( mLdif.value(), mLdif.value().size() ) );
     }
   } while ( ret != LDIF::MoreData );
 }

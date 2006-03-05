@@ -40,7 +40,7 @@ namespace KABC {
   {
   public:
 
-    typedef enum ParseVal{ None, NewEntry, EndEntry, Item, Control, Err, MoreData };
+    typedef enum ParseValue{ None, NewEntry, EndEntry, Item, Control, Err, MoreData };
     typedef enum EntryType{ Entry_None, Entry_Add, Entry_Del, Entry_Mod, Entry_Modrdn };
     typedef enum ModType{ Mod_None, Mod_Add, Mod_Replace, Mod_Del };
     LDIF();
@@ -84,7 +84,7 @@ namespace KABC {
     /**
      * Process one LDIF line
      */
-    ParseVal processLine();
+    ParseValue processLine();
     /**
      * Process the LDIF until a complete item can be returned
      * @returns NewEntry if a new DN encountered, 
@@ -96,7 +96,7 @@ namespace KABC {
      * MoreData, then call endLDIF(), so the parser can safely flush 
      * the current entry.
      */
-    ParseVal nextItem();
+    ParseValue nextItem();
     /**
      * Sets a chunk of LDIF. Call before startParsing(), or if nextItem() returned
      * MoreData.
@@ -138,7 +138,7 @@ namespace KABC {
     /**
      * Returns the attribute value.
      */
-    const QByteArray& val() const { return mVal; }
+    const QByteArray& value() const { return mValue; }
     /**
      * Returns if val() is an url
      */
@@ -146,7 +146,7 @@ namespace KABC {
     /**
      * Returns the criticality level when modType() returned Control.
      */
-    bool critical() const { return mCritical; }
+    bool isCritical() const { return mCritical; }
     /**
      * Returns the OID when modType() returned Control.
      */
@@ -154,17 +154,17 @@ namespace KABC {
     /**
      * Returns the line number which the parser processes.
      */
-    uint lineNo() const { return mLineNo; }
+    uint lineNumber() const { return mLineNumber; }
   private:
     int mModType;
     bool mDelOldRdn, mUrl;
     QString mDn,mAttr,mNewRdn,mNewSuperior, mOid;
-    QByteArray mLdif, mVal;
+    QByteArray mLdif, mValue;
     EntryType mEntryType;
     
     bool mIsNewLine, mIsComment,mCritical;
-    ParseVal mLastParseVal;
-    uint mPos,mLineNo;  
+    ParseValue mLastParseValue;
+    uint mPos,mLineNumber;
     QByteArray line;
         
     class LDIFPrivate;
