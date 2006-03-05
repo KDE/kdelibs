@@ -985,7 +985,7 @@ void KDialog::setDetails(bool showDetails)
 
 void KDialog::slotButtonClicked(int button)
 {
-	emit buttonClicked( Ok );
+	emit buttonClicked( static_cast<KDialog::ButtonCode>(button) );
 	switch(button)
 	{
 		case Ok:
