@@ -624,7 +624,7 @@ void KSelectAction::updateItems( int id )
       QStringList lst = comboItems();
       QStringList::ConstIterator it = lst.begin();
       for( ; it != lst.end(); ++it )
-        cb->insertItem( *it );
+        cb->addItem( *it );
       // qt caches and never recalculates the sizeHint()
       // qcombobox.cpp recommends calling setFont to invalidate the sizeHint
       // setFont sets own_font = True, so we're a bit mean and calll

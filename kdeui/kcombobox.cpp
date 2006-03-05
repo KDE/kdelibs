@@ -199,24 +199,34 @@ void KComboBox::setEditURL( const KUrl& url )
     QComboBox::setEditText( url.prettyURL() );
 }
 
-void KComboBox::insertURL( const KUrl& url, int index )
+void KComboBox::addURL( const KUrl& url )
 {
-    QComboBox::insertItem( url.prettyURL(), index );
+    QComboBox::addItem( url.prettyURL() );
 }
 
-void KComboBox::insertURL( const QPixmap& pixmap, const KUrl& url, int index )
+void KComboBox::addURL( const QIcon& icon, const KUrl& url )
 {
-    QComboBox::insertItem( pixmap, url.prettyURL(), index );
+    QComboBox::addItem( icon, url.prettyURL() );
 }
 
-void KComboBox::changeURL( const KUrl& url, int index )
+void KComboBox::insertURL( int index, const KUrl& url )
+{
+    QComboBox::insertItem( index, url.prettyURL() );
+}
+
+void KComboBox::insertURL( int index, const QIcon& icon, const KUrl& url )
+{
+    QComboBox::insertItem( index, icon, url.prettyURL() );
+}
+
+void KComboBox::changeURL( int index, const KUrl& url )
 {
     QComboBox::setItemText( index, url.prettyURL() );
 }
 
-void KComboBox::changeURL( const QPixmap& pixmap, const KUrl& url, int index )
+void KComboBox::changeURL( int index, const QIcon& icon, const KUrl& url )
 {
-	QComboBox::setItemIcon( index, QIcon( pixmap ) );
+	QComboBox::setItemIcon( index, icon );
 	QComboBox::setItemText( index, url.prettyURL() );
 }
 
@@ -320,11 +330,13 @@ void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
 
     if (sel == -1 && insert)
     {
-        insertItem(item, index);
-        if (index >= 0)
-            sel = index;
-        else
-            sel = count() - 1;
+		if (index >= 0) {
+            insertItem(index, item);
+			sel = index;
+		} else {
+            addItem(item);
+			sel = count() - 1;
+		}
     }
     setCurrentIndex(sel);
 }
@@ -476,9 +488,9 @@ void KHistoryCombo::addToHistory( const QString& item )
 
     // now add the item
     if ( myPixProvider )
-        insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall), item, 0);
+        addItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall), item);
     else
-        insertItem( item, 0 );
+        addItem( item );
 
     if ( wasCurrent )
         setCurrentIndex( 0 );
@@ -667,10 +679,10 @@ void KHistoryCombo::insertItems( const QStringList& items )
         const QString item = *it;
         if ( !item.isEmpty() ) { // only insert non-empty items
             if ( myPixProvider )
-                insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall),
+                addItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall),
                             item );
             else
-                insertItem( item );
+                addItem( item );
         }
         ++it;
     }

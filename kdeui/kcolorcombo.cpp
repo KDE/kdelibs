@@ -239,7 +239,7 @@ void KColorCombo::addColors()
 	painter.drawText( 2, QFontMetrics(painter.font()).ascent()+2, i18n("Custom...") );
 	painter.end();
 
-	insertItem( pixmap );
+	addItem( QIcon(pixmap), QString() );
 	pixmap.detach();
 
 	for ( i = 0; i < STANDARD_PAL_SIZE; i++ )
@@ -249,7 +249,7 @@ void KColorCombo::addColors()
 		painter.fillRect( rect, brush );
 		painter.end();
 
-		insertItem( pixmap );
+		addItem( QIcon(pixmap), QString() );
 		pixmap.detach();
 
 		if ( standardPalette[i] == internalcolor )

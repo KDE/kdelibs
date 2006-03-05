@@ -171,41 +171,67 @@ public:
     */
     virtual ~KComboBox();
 
-    /**
+	/**
+     * Deprecated to reflect Qt api changes
+	 * @deprecated
+	 */
+	KDE_DEPRECATED void insertURL( const KUrl& url, int index = -1 )
+		{ insertURL( index < 0 ? count() : index, url ); }
+	KDE_DEPRECATED void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 )
+		{ insertURL( index < 0 ? count() : index, QIcon(pixmap), url ); }
+	KDE_DEPRECATED void changeURL( const KUrl& url, int index )
+		{ changeURL( index, url ); }
+    KDE_DEPRECATED void changeURL( const QPixmap& pixmap, const KUrl& url, int index )
+		{ changeURL( index, QIcon(pixmap), url ); }
+
+	/**
      * Sets @p url into the edit field of the combobox. It uses
      * KUrl::prettyURL() so that the url is properly decoded for
      * displaying.
      */
     void setEditURL( const KUrl& url );
-
-    /**
-     * Inserts @p url at position @p index into the combobox. The item will
-     * be appended if @p index is negative. KUrl::prettyURL() is used
-     * so that the url is properly decoded for displaying.
-     */
-    void insertURL( const KUrl& url, int index = -1 );
-
-    /**
-     * Inserts @p url with the pixmap &p pixmap at position @p index into
-     * the combobox. The item will be appended if @p index is negative.
+   
+	/**
+     * Appends @p url to the combobox.
      * KUrl::prettyURL() is used so that the url is properly decoded
      * for displaying.
      */
-    void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 );
+    void addURL( const KUrl& url );
+
+	/**
+     * Appends @p url with the icon &p icon to the combobox.
+     * KUrl::prettyURL() is used so that the url is properly decoded
+     * for displaying.
+     */
+    void addURL( const QIcon& icon,  const KUrl& url );
+
+	/**
+     * Inserts @p url at position @p index into the combobox.
+     * KUrl::prettyURL() is used so that the url is properly decoded
+     * for displaying.
+     */
+	void insertURL( int index, const KUrl& url );
+
+    /**
+     * Inserts @p url with the pixmap &p pixmap at position @p index into
+     * the combobox. KUrl::prettyURL() is used so that the url is
+     * properly decoded for displaying.
+     */
+    void insertURL( int index, const QIcon& icon, const KUrl& url );
 
     /**
      * Replaces the item at position @p index with @p url.
      * KUrl::prettyURL() is used so that the url is properly decoded
      * for displaying.
      */
-    void changeURL( const KUrl& url, int index );
+    void changeURL( int index, const KUrl& url );
 
     /**
-     * Replaces the item at position @p index with @p url and pixmap @p pixmap.
+     * Replaces the item at position @p index with @p url and icon @p icon.
      * KUrl::prettyURL() is used so that the url is properly decoded
      * for displaying.
      */
-    void changeURL( const QPixmap& pixmap, const KUrl& url, int index );
+    void changeURL( int index , const QIcon& icon, const KUrl& url);
 
     /**
     * Returns the current cursor position.
