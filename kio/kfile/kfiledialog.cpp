@@ -31,6 +31,9 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QLayout>
+#ifdef Q_WS_WIN
+#include <QFileDialog>
+#endif
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -1334,7 +1337,7 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
 {
 #ifdef Q_WS_WIN
     return QFileDialog::getExistingDirectory(parent, caption,
-                                             startDir, ShowDirsOnly);
+                                             startDir, QFileDialog::ShowDirsOnly);
 #else
     KUrl url = KDirSelectDialog::selectDirectory(startDir, true, parent,
                                                  caption);
