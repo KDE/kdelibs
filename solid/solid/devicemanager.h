@@ -24,6 +24,7 @@
 #include <QList>
 
 #include <kstaticdeleter.h>
+#include <kdehw/predicate.h>
 
 namespace KDEHW
 {
@@ -106,6 +107,26 @@ namespace KDEHW
          * invalid device otherwise
          */
         Device findDevice( const QString &udi );
+
+        /**
+         * Retrieves a list of devices of the system given a set of constraints.
+         * FIXME: Currently document this
+         *
+         * @param parentUdi
+         * @param capability
+         * @param predicate
+         * @return the list of devices corresponding to the given constraints
+         */
+        DeviceList findDevicesFromQuery( const QString &parentUdi,
+                                         const Capability::Type &capability = Capability::Unknown,
+                                         const Predicate &predicate = Predicate() );
+
+        /**
+         * Convenience function see above.
+         */
+        DeviceList findDevicesFromQuery( const QString &parentUdi,
+                                         const Capability::Type &capability,
+                                         const QString &predicate );
 
         /**
          * Retrieves a reference to the loaded backend.

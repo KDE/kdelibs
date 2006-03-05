@@ -29,12 +29,12 @@ KDEHW::Ifaces::AbstractCapability::~AbstractCapability()
 {
 }
 
-const QObject * KDEHW::Ifaces::AbstractCapability::qobject() const
+const QObject *KDEHW::Ifaces::AbstractCapability::qobject() const
 {
     return this;
 }
 
-QObject * KDEHW::Ifaces::AbstractCapability::qobject()
+QObject *KDEHW::Ifaces::AbstractCapability::qobject()
 {
     return this;
 }

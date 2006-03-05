@@ -43,6 +43,30 @@ bool FakeManager::deviceExists( const QString &udi )
     return m_devices.contains( udi );
 }
 
+QStringList FakeManager::devicesFromQuery( const QString &parentUdi,
+                                           KDEHW::Ifaces::Capability::Type capability )
+{
+    QStringList matches;
+
+    foreach ( QString udi, m_devices.keys() )
+    {
+        FakeDevice *dev = m_devices[udi];
+
+        bool matches_parent = parentUdi.isEmpty()
+                           || ( dev->parentUdi()==parentUdi );
+
+        bool matches_capability = capability==KDEHW::Ifaces::Capability::Unknown
+                               || dev->queryCapability( capability );
+
+        if ( matches_parent && matches_capability )
+        {
+            matches.append( udi );
+        }
+    }
+
+    return matches;
+}
+
 KDEHW::Ifaces::Device *FakeManager::createDevice( const QString &udi )
 {
     if ( m_devices.contains( udi ) )
@@ -53,41 +77,6 @@ KDEHW::Ifaces::Device *FakeManager::createDevice( const QString &udi )
     {
         return 0;
     }
-}
-
-QStringList FakeManager::findDeviceStringMatch( const QString &key, const QString &value )
-{
-    QStringList matches;
-
-    foreach ( QString udi, m_devices.keys() )
-    {
-        FakeDevice *dev = m_devices[udi];
-
-        if ( dev->propertyExists( key )
-          && dev->property( key ) == value )
-        {
-            matches.append( udi );
-        }
-    }
-
-    return matches;
-}
-
-QStringList FakeManager::findDeviceByCapability( const KDEHW::Ifaces::Capability::Type &capability )
-{
-    QStringList matches;
-
-    foreach ( QString udi, m_devices.keys() )
-    {
-        FakeDevice *dev = m_devices[udi];
-
-        if ( dev->queryCapability( capability ) )
-        {
-            matches.append( udi );
-        }
-    }
-
-    return matches;
 }
 
 FakeDevice *FakeManager::newDevice( const QString &udi )

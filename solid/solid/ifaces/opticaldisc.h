@@ -28,6 +28,14 @@ namespace Ifaces
 {
     class OpticalDisc : virtual public Volume, public Enums::OpticalDisc
     {
+//         Q_PROPERTY( ContentTypes availableContent READ availableContent )
+//         Q_PROPERTY( DisctType discType READ discType )
+//         Q_PROPERTY( bool appendable READ isAppendable )
+//         Q_PROPERTY( bool blank READ isBlank )
+//         Q_PROPERTY( bool rewritable READ isRewritable )
+//         Q_PROPERTY( qulonglong capacity READ capacity )
+//         Q_ENUMS( ContentType DiscType )
+
     public:
         virtual ~OpticalDisc();
 

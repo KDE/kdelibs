@@ -17,31 +17,21 @@
 
 */
 
-#ifndef KDEHW_IFACES_PROCESSOR_H
-#define KDEHW_IFACES_PROCESSOR_H
+#ifndef PREDICATEPARSE_H
+#define PREDICATEPARSE_H
 
-#include <kdehw/ifaces/capability.h>
+void PredicateParse_setResult( void *result );
+void PredicateParse_errorDetected();
 
-namespace KDEHW
-{
-namespace Ifaces
-{
-    class Processor : virtual public Capability
-    {
-//         Q_PROPERTY( int number READ number )
-//         Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )
-//         Q_PROPERTY( bool canThrottle READ canThrottle )
-
-    public:
-        virtual ~Processor();
-
-        static Type type() { return Capability::Processor; }
-
-        virtual int number() const = 0;
-        virtual qulonglong maxSpeed() const = 0;
-        virtual bool canThrottle() const = 0;
-    };
-}
-}
+void *PredicateParse_newAtom( char *capability, char *property, void *value );
+void *PredicateParse_newAnd( void *pred1, void *pred2 );
+void *PredicateParse_newOr( void *pred1, void *pred2 );
+void *PredicateParse_newStringValue( char *val );
+void *PredicateParse_newBoolValue( int val );
+void *PredicateParse_newNumValue( int val );
+void *PredicateParse_newDoubleValue( double val );
+void *PredicateParse_newEmptyStringListValue();
+void *PredicateParse_newStringListValue( char *name );
+void *PredicateParse_appendStringListValue( char *name, void *list );
 
 #endif

@@ -26,13 +26,21 @@
 class FakeProcessor : public KDEHW::Ifaces::AbstractCapability,
                       virtual public KDEHW::Ifaces::Processor
 {
-public:
-    FakeProcessor() : KDEHW::Ifaces::AbstractCapability() {}
-    virtual ~FakeProcessor() {}
+    Q_OBJECT
+    Q_PROPERTY( int number READ number )
+    Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )
+    Q_PROPERTY( bool canThrottle READ canThrottle )
 
-    virtual int number() const { return 1; }
-    virtual qulonglong maxSpeed() const { return 3200; }
-    virtual bool canThrottle() const { return true; }
+public:
+    FakeProcessor();
+    virtual ~FakeProcessor();
+
+    virtual QObject *qobject() { return this; }
+    virtual const QObject *qobject() const { return this; }
+
+    virtual int number() const;
+    virtual qulonglong maxSpeed() const;
+    virtual bool canThrottle() const;
 };
 
 #endif

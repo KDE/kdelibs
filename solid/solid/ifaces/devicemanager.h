@@ -74,7 +74,18 @@ namespace Ifaces
          */
         virtual bool deviceExists( const QString &udi ) = 0;
 
-
+        /**
+         * Retrieves the Universal Device Identifier (UDI) of all the devices
+         * matching the given constraints (parent and capability)
+         *
+         * @param parentUdi UDI of the parent of the devices we're searching for, or QString()
+         * if there's no constraint on the parent
+         * @param capability Capability of the devices we're searching for, or Capability::Unknown
+         * if there's no constraint on the capabilities
+         * @returns the UDIs of all the devices having the given parent and capability
+         */
+        virtual QStringList devicesFromQuery( const QString &parentUdi,
+                                               Capability::Type capability = Capability::Unknown ) = 0;
 
         /**
          * Instantiates a new Device object from this backend given its UDI.
@@ -83,20 +94,6 @@ namespace Ifaces
          * @returns a new Device object if there's a device having the given UDI, 0 otherwise
          */
         virtual Device *createDevice( const QString &udi ) = 0;
-
-
-
-        /**
-         * FIXME: Do we really want this here?
-         */
-        virtual QStringList findDeviceStringMatch( const QString &key, const QString &value ) = 0;
-
-        /**
-         * FIXME: Do we really want this here?
-         */
-        virtual QStringList findDeviceByCapability( const Capability::Type &capability ) = 0;
-
-
 
     signals:
         /**

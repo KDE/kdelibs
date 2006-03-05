@@ -209,6 +209,36 @@ KDEHW::Device KDEHW::DeviceManager::findDevice( const QString &udi )
     }
 }
 
+KDEHW::DeviceList KDEHW::DeviceManager::findDevicesFromQuery( const QString &parentUdi,
+                                                              const Capability::Type &capability,
+                                                              const QString &predicate )
+{
+    return findDevicesFromQuery( parentUdi, capability, Predicate::fromString( predicate ) );
+}
+
+KDEHW::DeviceList KDEHW::DeviceManager::findDevicesFromQuery( const QString &parentUdi,
+                                                              const Capability::Type &capability,
+                                                              const Predicate &predicate )
+{
+    DeviceList list;
+
+    if ( d->backend == 0 ) return list;
+
+    QStringList udis = d->backend->devicesFromQuery( parentUdi, capability );
+
+    foreach( QString udi, udis )
+    {
+        Ifaces::Device *device = d->findRegisteredDevice( udi );
+
+        if ( device!=0 && predicate.matches( device ) )
+        {
+            list.append( Device( device ) );
+        }
+    }
+
+    return list;
+}
+
 const KDEHW::Ifaces::DeviceManager *KDEHW::DeviceManager::backend() const
 {
     return d->backend;

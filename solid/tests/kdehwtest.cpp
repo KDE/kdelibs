@@ -27,6 +27,8 @@
 #include <kdehw/devicemanager.h>
 #include <kdehw/device.h>
 #include <kdehw/processor.h>
+#include <kdehw/predicate.h>
+#include "fakeprocessor.h"
 #include "fakemanager.h"
 #include "fakedevice.h"
 
@@ -319,6 +321,7 @@ void KdeHwTest::testDeviceSignals()
 void KdeHwTest::testDeviceCapabilities()
 {
     FakeDevice *fake = fakeManager->newDevice( "/fake/acpi_CPU0" );
+    fake->setParent( "/fake/computer" );
     fake->addCapability( KDEHW::Capability::Processor );
     QVERIFY( fake->asCapability( KDEHW::Capability::Processor ) != 0 );
 
@@ -331,6 +334,82 @@ void KdeHwTest::testDeviceCapabilities()
     QVERIFY( cpu.queryCapability( KDEHW::Capability::Processor ) );
     QVERIFY( iface!=0 );
     QCOMPARE( iface, processor );
+}
+
+void KdeHwTest::testPredicate()
+{
+    FakeDevice *fake = fakeManager->findDevice( "/fake/acpi_CPU0" );
+
+    KDEHW::Predicate p1 = KDEHW::Predicate( KDEHW::Capability::Processor, "maxSpeed", 3200 )
+                        & KDEHW::Predicate( KDEHW::Capability::Processor, "canThrottle", true );
+    KDEHW::Predicate p2 = KDEHW::Predicate( KDEHW::Capability::Processor, "maxSpeed", 3200 )
+                        & KDEHW::Predicate( KDEHW::Capability::Processor, "canThrottle", false );
+    KDEHW::Predicate p3 = KDEHW::Predicate( KDEHW::Capability::Processor, "maxSpeed", 3201 )
+                        | KDEHW::Predicate( KDEHW::Capability::Processor, "canThrottle", true );
+    KDEHW::Predicate p4 = KDEHW::Predicate( KDEHW::Capability::Processor, "maxSpeed", 3201 )
+                        | KDEHW::Predicate( KDEHW::Capability::Processor, "canThrottle", false );
+    KDEHW::Predicate p5 = KDEHW::Predicate::fromString( "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]" );
+
+    QVERIFY( p1.matches( fake ) );
+    QVERIFY( !p2.matches( fake ) );
+    QVERIFY( p3.matches( fake ) );
+    QVERIFY( !p4.matches( fake ) );
+
+
+
+    QString str_pred = "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]";
+    // Since str_pred is canonicalized, fromString().toString() should be invariant
+    QCOMPARE( KDEHW::Predicate::fromString( str_pred ).toString(), str_pred );
+
+
+
+
+    QString parentUdi = "/fake/storage_SONA_CD22U";
+    KDEHW::Capability::Type capability = KDEHW::Capability::Unknown;
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 1 );
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).at( 0 ),
+              QString( "/fake/volume_label_SOLIDMAN_THE_MOVIE" ) );
+
+    capability = KDEHW::Capability::Processor;
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 0 );
+
+    parentUdi = "/fake/computer";
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 1 );
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).at( 0 ),
+              QString( "/fake/acpi_CPU0" ) );
+
+
+
+    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
+
+    parentUdi = QString();
+    capability = KDEHW::Capability::Unknown;
+    KDEHW::DeviceList list;
+
+
+    list = manager.findDevicesFromQuery( parentUdi, capability, p1 );
+    QCOMPARE( list.size(), 1 );
+    QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
+
+    list = manager.findDevicesFromQuery( parentUdi, capability, p2 );
+    QCOMPARE( list.size(), 0 );
+
+    list = manager.findDevicesFromQuery( parentUdi, capability, p3 );
+    QCOMPARE( list.size(), 1 );
+    QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
+
+    list = manager.findDevicesFromQuery( parentUdi, capability, p4 );
+    QCOMPARE( list.size(), 0 );
+
+    list = manager.findDevicesFromQuery( parentUdi, capability,
+                                         "[Processor.canThrottle==true AND Processor.number==1]" );
+    QCOMPARE( list.size(), 1 );
+    QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
+
+    list = manager.findDevicesFromQuery( parentUdi, capability,
+                                         "blup" );
+    QCOMPARE( list.size(), 0 );
+
 }
 
 void KdeHwTest::slotPropertyChanged( const QMap<QString,int> &changes )

@@ -22,8 +22,7 @@
 
 FakeDevice::FakeDevice(const QString &udi, FakeManager *manager)
     : Device(), m_manager( manager ), m_udi( udi ),
-      m_brokenDevice( false ), m_locked( false ),
-      m_processor( new FakeProcessor() )
+      m_brokenDevice( false ), m_locked( false )
 {
 
 }
@@ -137,7 +136,7 @@ KDEHW::Ifaces::Capability *FakeDevice::asCapability( const KDEHW::Ifaces::Capabi
     if ( ( capability == KDEHW::Ifaces::Capability::Processor )
       && queryCapability( capability ) )
     {
-        return m_processor;
+        return new FakeProcessor();
     }
 
     return 0;

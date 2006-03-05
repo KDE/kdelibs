@@ -37,10 +37,10 @@ public:
     virtual QStringList allDevices();
     virtual bool deviceExists( const QString &udi );
 
-    virtual KDEHW::Ifaces::Device *createDevice( const QString &udi );
+    virtual QStringList devicesFromQuery( const QString &parentUdi,
+                                          KDEHW::Ifaces::Capability::Type capability );
 
-    virtual QStringList findDeviceStringMatch( const QString &key, const QString &value );
-    virtual QStringList findDeviceByCapability( const KDEHW::Ifaces::Capability::Type &capability );
+    virtual KDEHW::Ifaces::Device *createDevice( const QString &udi );
 
 
     FakeDevice *newDevice( const QString &udi );

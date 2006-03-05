@@ -34,8 +34,8 @@ namespace Ifaces
     public:
         virtual ~Capability();
 
-	virtual const QObject *qobject() const = 0;
 	virtual QObject *qobject() = 0;
+        virtual const QObject *qobject() const = 0;
     };
 }
 }

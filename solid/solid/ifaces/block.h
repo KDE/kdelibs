@@ -28,6 +28,10 @@ namespace Ifaces
 {
     class Block : virtual public Capability
     {
+//         Q_PROPERTY( int major READ major )
+//         Q_PROPERTY( int minor READ minor )
+//         Q_PROPERTY( QString device READ device )
+
     public:
         virtual ~Block();
 

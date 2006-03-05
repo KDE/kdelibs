@@ -17,31 +17,30 @@
 
 */
 
-#ifndef KDEHW_IFACES_PROCESSOR_H
-#define KDEHW_IFACES_PROCESSOR_H
+#include "fakeprocessor.h"
 
-#include <kdehw/ifaces/capability.h>
-
-namespace KDEHW
+FakeProcessor::FakeProcessor()
+    : KDEHW::Ifaces::AbstractCapability()
 {
-namespace Ifaces
-{
-    class Processor : virtual public Capability
-    {
-//         Q_PROPERTY( int number READ number )
-//         Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )
-//         Q_PROPERTY( bool canThrottle READ canThrottle )
-
-    public:
-        virtual ~Processor();
-
-        static Type type() { return Capability::Processor; }
-
-        virtual int number() const = 0;
-        virtual qulonglong maxSpeed() const = 0;
-        virtual bool canThrottle() const = 0;
-    };
-}
 }
 
-#endif
+FakeProcessor::~FakeProcessor()
+{
+}
+
+int FakeProcessor::number() const
+{
+    return 1;
+}
+
+qulonglong FakeProcessor::maxSpeed() const
+{
+    return 3200;
+}
+
+bool FakeProcessor::canThrottle() const
+{
+    return true;
+}
+
+#include "fakeprocessor.moc"

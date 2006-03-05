@@ -8,7 +8,7 @@ AM_LDFLAGS = $(all_libraries)
 LDFLAGS = $(KDE_RPATH) $(all_libraries)
 LDADD = $(LIB_KDECORE) -lQtTest_debug ../kdehw/libkdehw.la ../kdehw/ifaces/libkdehwifaces.la
 
-kdehwtest_SOURCES = kdehwtest.cpp fakedevice.cpp fakemanager.cpp
+kdehwtest_SOURCES = kdehwtest.cpp fakedevice.cpp fakemanager.cpp fakeprocessor.cpp
 
 METASOURCES = AUTO
 

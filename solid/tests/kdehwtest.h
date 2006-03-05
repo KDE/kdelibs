@@ -37,6 +37,7 @@ private slots:
     void testManagerSignals();
     void testDeviceSignals();
     void testDeviceCapabilities();
+    void testPredicate();
 
     void slotPropertyChanged( const QMap<QString,int> &changes );
 private:
