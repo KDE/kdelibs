@@ -74,7 +74,7 @@ public:
                     break;
                 }
         }
-        return static_cast<ChildType*>(ptr);
+        return reinterpret_cast<ChildType*>(ptr); //Really static_cast..
     }
 
     void childAdded(ElementImpl* parent, NodeImpl* child) {
