@@ -31,9 +31,8 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QLayout>
-#ifdef Q_WS_WIN
 #include <QFileDialog>
-#endif
+
 
 #include <kaccel.h>
 #include <kaction.h>
