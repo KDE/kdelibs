@@ -59,8 +59,6 @@ RenderTable::RenderTable(DOM::NodeImpl* node)
     tableLayout = 0;
     m_currentBorder = 0;
 
-    rules = None;
-    frame = Void;
     has_col_elems = false;
     hspacing = vspacing = 0;
     padding = 0;
@@ -1200,7 +1198,7 @@ void RenderTableSection::calcRowHeight()
 	int totalCols = row->size();
 	int totalRows = grid.size();
 	bool pagedMode = canvas()->pagedMode();
-	
+
 	grid[r].needFlex = false;
 
 	for ( int c = 0; c < totalCols; c++ ) {
@@ -1228,7 +1226,7 @@ void RenderTableSection::calcRowHeight()
             ch = cell->style()->height().width(0);
             if ( cell->height() > ch)
                 ch = cell->height();
-            
+
             if (!cell->style()->height().isVariable())
                 grid[r].needFlex = true;
 
@@ -1458,7 +1456,7 @@ int RenderTableSection::layoutRows( int toAdd )
 
 bool RenderTableSection::flexCellChildren(RenderObject* p) const
 {
-    if (!p) 
+    if (!p)
         return false;
     RenderObject* o = p->firstChild();
     bool didFlex = false;
@@ -1510,7 +1508,7 @@ int RenderTableSection::lowestPosition(bool includeOverflowInterior, bool includ
                 bottom = kMax(bottom, bp);
         }
     }
-    
+
     return bottom;
 }
 
@@ -1527,7 +1525,7 @@ int RenderTableSection::rightmostPosition(bool includeOverflowInterior, bool inc
                 right = kMax(right, rp);
         }
     }
-    
+
     return right;
 }
 
@@ -1536,7 +1534,7 @@ int RenderTableSection::leftmostPosition(bool includeOverflowInterior, bool incl
     int left = RenderContainer::leftmostPosition(includeOverflowInterior, includeSelf);
     if (!includeOverflowInterior && hasOverflowClip())
         return left;
-    
+
     for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
         for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
             if (cell->isTableCell()) {
@@ -1544,7 +1542,7 @@ int RenderTableSection::leftmostPosition(bool includeOverflowInterior, bool incl
                 left = kMin(left, lp);
         }
     }
-    
+
     return left;
 }
 
