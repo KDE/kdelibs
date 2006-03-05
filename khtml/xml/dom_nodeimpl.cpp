@@ -59,7 +59,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_render(0),
       m_tabIndex( 0 ),
       m_hasId( false ),
-      m_hasStyle( false ),
       m_attached(false),
       m_closed(false),
       m_changed( false ),
@@ -69,7 +68,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_specified( false ),
       m_focused( false ),
       m_active( false ),
-      m_styleElement( false ),
       m_implicit( false ),
       m_rendererNeedsClose( false ),
       m_htmlCompat( false )

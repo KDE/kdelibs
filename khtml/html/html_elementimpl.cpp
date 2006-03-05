@@ -190,7 +190,6 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         getDocument()->incDOMTreeVersion();
         break;
     case ATTR_STYLE:
-        setHasStyle();
         if (m_styleDecls)
 	    m_styleDecls->removeCSSHints();
 	else
