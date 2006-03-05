@@ -53,11 +53,11 @@ namespace KJS {
 	* returns a UString of the identifier
 	*/
         const UString &ustring() const { return _ustring; }
-        DOM::DOMString domString() const;
+        KJS_EXTERNAL_EXPORT DOM::DOMString domString() const;
         /**
 	* returns a QString of the identifier
 	*/
-	QString qstring() const;
+        KJS_EXTERNAL_EXPORT QString qstring() const;
 
 	/**
 	* returns a UChar pointer to the string of the identifier with a size defined by @ref size().

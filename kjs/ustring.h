@@ -24,7 +24,7 @@
 #ifndef _KJS_USTRING_H_
 #define _KJS_USTRING_H_
 
-#include "global.h"
+#include "kjs/global.h"
 
 #include <kxmlcore/FastMalloc.h>
 #include <kxmlcore/RefPtr.h>
@@ -278,15 +278,15 @@ namespace KJS {
      * Note: feel free to contact me if you want to see a dummy header for
      * your favorite FooString class here !
      */
-    UString(const QString&);
+    KJS_EXTERNAL_EXPORT UString(const QString&);
     /**
      * Convenience declaration only ! See UString(const QString&).
      */
-    UString(const DOM::DOMString&);
+    KJS_EXTERNAL_EXPORT UString(const DOM::DOMString&);
     /**
      * Convenience declaration only ! See UString(const QString&).
      */
-    UString(const DOM::AtomicString&);
+    KJS_EXTERNAL_EXPORT UString(const DOM::AtomicString&);
 
     /**
      * Concatenation constructor. Makes operator+ more efficient.
@@ -358,15 +358,15 @@ namespace KJS {
     /**
      * @see UString(const QString&).
      */
-    DOM::DOMString domString() const;
+    KJS_EXTERNAL_EXPORT DOM::DOMString domString() const;
     /**
      * @see UString(const QString&).
      */
-    QString qstring() const;
+    KJS_EXTERNAL_EXPORT QString qstring() const;
     /**
      * @see UString(const QString&).
      */
-    QConstString qconststring() const;
+    KJS_EXTERNAL_EXPORT QConstString qconststring() const;
 
     /**
      * Assignment operator.
