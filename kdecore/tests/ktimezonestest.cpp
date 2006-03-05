@@ -119,7 +119,11 @@ void KTimeZonesTest::currentOffset()
     // Find the current offset of a time zone
     time_t now = time(0);
     tm *tnow = localtime(&now);
+#ifndef _WIN32
     int offset = tnow->tm_gmtoff;
+#else
+    int offset = 0;
+#endif
     const KTimeZone *local = KSystemTimeZones::local();
     QVERIFY((bool)local);
     QCOMPARE(local->currentOffset(Qt::UTC), offset);
