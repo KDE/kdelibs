@@ -85,7 +85,11 @@ KDEWIN32_EXPORT void * mmap(void *start, size_t length, int prot , int flags, in
         g_regionsize = getregionsize ();
     /* Assert preconditions */
     assert ((unsigned) start % g_regionsize == 0);
-    assert (length % g_pagesize == 0);
+
+		// VirtualAlloc deals with unaligned length, the following assert isn't required
+		// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/memory/base/virtualalloc.asp
+    //assert (length % g_pagesize == 0);
+
     /* Allocate this */
     start = VirtualAlloc (start, length,
 					    MEM_RESERVE | MEM_COMMIT | MEM_TOP_DOWN, PAGE_READWRITE);
@@ -126,7 +130,9 @@ KDEWIN32_EXPORT int munmap(void *start, size_t length)
         g_regionsize = getregionsize ();
     /* Assert preconditions */
     assert ((unsigned) start % g_regionsize == 0);
-    assert (length % g_pagesize == 0);
+		// VirtualAlloc deals with unaligned length, the following assert isn't required
+		// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/memory/base/virtualalloc.asp
+    //assert (length % g_pagesize == 0);
     /* Free this */
     if (! VirtualFree (start, 0, 
                        MEM_RELEASE))
