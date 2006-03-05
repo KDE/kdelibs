@@ -1868,7 +1868,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 ////////////////////// ScheduledAction ////////////////////////
 
 // KDE 4: Make those parameters const ... &
-ScheduledAction::ScheduledAction(Object _func, List _args, QTime _nextTime, int _interval, bool _singleShot,
+ScheduledAction::ScheduledAction(Object _func, List _args, QDate _nextDate, QTime _nextTime, int _interval, bool _singleShot,
 				  int _timerId)
 {
   //kdDebug(6070) << "ScheduledAction::ScheduledAction(isFunction) " << this << endl;
@@ -1876,6 +1876,7 @@ ScheduledAction::ScheduledAction(Object _func, List _args, QTime _nextTime, int 
   args = _args;
   isFunction = true;
   singleShot = _singleShot;
+  nextDate = _nextDate;
   nextTime = _nextTime;
   interval = _interval;
   executing = false;
@@ -1883,7 +1884,7 @@ ScheduledAction::ScheduledAction(Object _func, List _args, QTime _nextTime, int 
 }
 
 // KDE 4: Make it const QString &
-ScheduledAction::ScheduledAction(QString _code, QTime _nextTime, int _interval, bool _singleShot, int _timerId)
+ScheduledAction::ScheduledAction(QString _code, QDate _nextDate, QTime _nextTime, int _interval, bool _singleShot, int _timerId)
 {
   //kdDebug(6070) << "ScheduledAction::ScheduledAction(!isFunction) " << this << endl;
   //func = 0;
@@ -1892,6 +1893,7 @@ ScheduledAction::ScheduledAction(QString _code, QTime _nextTime, int _interval, 
   code = _code;
   isFunction = false;
   singleShot = _singleShot;
+  nextDate = _nextDate;
   nextTime = _nextTime;
   interval = _interval;
   executing = false;
@@ -1983,8 +1985,13 @@ int WindowQObject::installTimeout(const Identifier &handler, int t, bool singleS
 {
   int id = ++lastTimerId;
   if (t < 10) t = 10;
-  QTime nextTime = QTime::currentTime().addMSecs(-pausedTime).addMSecs(t);
-  ScheduledAction *action = new ScheduledAction(handler.qstring(),nextTime,t,singleShot,id);
+  QDate nextDate = QDate::currentDate();
+  QTime currentTime = QTime::currentTime();
+  QTime nextTime = currentTime.addMSecs(-pausedTime).addMSecs(t);
+  if (nextTime < currentTime)
+    nextDate = nextDate.addDays(1);
+  
+  ScheduledAction *action = new ScheduledAction(handler.qstring(),nextDate,nextTime,t,singleShot,id);
   scheduledActions.append(action);
   setNextTimer();
   return id;
@@ -1997,8 +2004,12 @@ int WindowQObject::installTimeout(const Value &func, List args, int t, bool sing
     return 0;
   int id = ++lastTimerId;
   if (t < 10) t = 10;
-  QTime nextTime = QTime::currentTime().addMSecs(-pausedTime).addMSecs(t);
-  ScheduledAction *action = new ScheduledAction(objFunc,args,nextTime,t,singleShot,id);
+  QDate nextDate = QDate::currentDate();
+  QTime currentTime = QTime::currentTime();
+  QTime nextTime = currentTime.addMSecs(-pausedTime).addMSecs(t);
+  if (nextTime < currentTime)
+    nextDate = nextDate.addDays(1);
+  ScheduledAction *action = new ScheduledAction(objFunc,args,nextDate,nextTime,t,singleShot,id);
   scheduledActions.append(action);
   setNextTimer();
   return id;
@@ -2040,16 +2051,26 @@ void WindowQObject::timerEvent(QTimerEvent *)
   currentlyDispatching = true;
 
   QTime currentActual = QTime::currentTime();
+  QDate currentAdjustedDate = QDate::currentDate();
   QTime currentAdjusted = currentActual.addMSecs(-pausedTime);
+  if (currentAdjusted > currentActual)
+  {
+    currentAdjustedDate = currentAdjustedDate.addDays(-1);
+  }
+
+  QDateTime adjusted(currentAdjustedDate, currentAdjusted);
 
   // Work out which actions are to be executed. We take a separate copy of
   // this list since the main one may be modified during action execution
   QPtrList<ScheduledAction> toExecute;
   QPtrListIterator<ScheduledAction> it(scheduledActions);
   for (; it.current(); ++it)
-    if (currentAdjusted >= it.current()->nextTime)
+  {
+    QDateTime cur(it.current()->nextDate, it.current()->nextTime);
+    if (adjusted >= adjusted)
       toExecute.append(it.current());
-
+  }
+  
   // ### verify that the window can't be closed (and action deleted) during execution
   it = QPtrListIterator<ScheduledAction>(toExecute);
   for (; it.current(); ++it) {
@@ -2077,12 +2098,25 @@ void WindowQObject::timerEvent(QTimerEvent *)
       action->nextTime = action->nextTime.addMSecs(action->interval);
   }
 
-  pausedTime += currentActual.msecsTo(QTime::currentTime());
+  int p = currentActual.msecsTo(QTime::currentTime());
+  if (p < 0) p = -p;
+  pausedTime += p;
 
   currentlyDispatching = false;
 
   // Work out when next event is to occur
   setNextTimer();
+}
+
+static bool operator >(const ScheduledAction &l, const ScheduledAction &r)
+{
+  if (l.nextDate > r.nextDate)
+    return true;
+	
+  if (l.nextDate < r.nextDate)
+    return false;
+
+  return l.nextTime > r.nextTime;
 }
 
 void WindowQObject::setNextTimer()
@@ -2094,16 +2128,20 @@ void WindowQObject::setNextTimer()
     return;
 
   QPtrListIterator<ScheduledAction> it(scheduledActions);
-  QTime nextTime = it.current()->nextTime;
+  ScheduledAction *nextAction = it.current();
   for (++it; it.current(); ++it)
-    if (nextTime > it.current()->nextTime)
-      nextTime = it.current()->nextTime;
+    if (*nextAction > *it.current())
+      nextAction = it.current();
 
-  QTime nextTimeActual = nextTime.addMSecs(pausedTime);
-  int nextInterval = QTime::currentTime().msecsTo(nextTimeActual);
-  if (nextInterval < 0)
-    nextInterval = 0;
-  startTimer(nextInterval);
+  // Why doesn't QDateTime deal with milliseconds?
+  QDateTime now = QDateTime::currentDateTime();
+  int s = now.secsTo(QDateTime(nextAction->nextDate, nextAction->nextTime));
+  int ms = nextAction->nextTime.msec() - now.time().msec();
+  ms += s*1000 + pausedTime;
+  
+  if (ms < 0)
+    ms = 0;
+  startTimer(ms);
 }
 
 void WindowQObject::timeoutClose()

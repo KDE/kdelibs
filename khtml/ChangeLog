@@ -1,3 +1,6 @@
+2006-03-05  Charles Samuels <charles@kde.org>
+        * javascript timeouts that cross a midnight boundary shall not occur early
+
 2006-03-03  Germain Garand  <germain@ebooksfrance.org>
 
         get iframes, objects and some other overlaid widgets to obey their stacking context (#31121)

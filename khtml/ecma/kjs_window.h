@@ -194,8 +194,8 @@ namespace KJS {
    */
   class ScheduledAction {
   public:
-    ScheduledAction(Object _func, List _args, QTime _nextTime, int _interval, bool _singleShot, int _timerId);
-    ScheduledAction(QString _code, QTime _nextTime, int _interval, bool _singleShot, int _timerId);
+    ScheduledAction(Object _func, List _args, QDate _nextDate, QTime _nextTime, int _interval, bool _singleShot, int _timerId);
+    ScheduledAction(QString _code, QDate _nextDate, QTime _nextTime, int _interval, bool _singleShot, int _timerId);
     ~ScheduledAction();
     bool execute(Window *window);
     void mark();
@@ -206,6 +206,7 @@ namespace KJS {
     bool isFunction;
     bool singleShot;
 
+    QDate nextDate;
     QTime nextTime;
     int interval;
     bool executing;
