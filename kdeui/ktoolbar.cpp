@@ -319,7 +319,7 @@ int KToolBar::insertButton(const QString& icon, int id, QMenu *popup,
     KToolBarButton *button = new KToolBarButton( icon, id, this, text );
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
-    button->setPopup( popup );
+    button->setMenu( popup );
     doConnections( button );
     return index;
 }
@@ -331,7 +331,7 @@ int KToolBar::insertButton(const QPixmap& pixmap, int id, QMenu *popup,
     KToolBarButton *button = new KToolBarButton( pixmap, id, this, text );
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
-    button->setPopup( popup );
+    button->setMenu( popup );
     doConnections( button );
     return index;
 }
@@ -389,7 +389,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
 {
     KComboBox *combo = new KComboBox ( writable, this );
     insertWidgetInternal( combo, index, id );
-    combo->insertItem(text);
+    combo->addItem(text);
     combo->setInsertPolicy(policy);
     combo->setEnabled( enabled );
     if ( size > 0 )
@@ -477,7 +477,7 @@ void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 {
     KToolBarButton * button = getButton( id );
     if ( button )
-        button->setPixmap( _pixmap );
+        button->setIcon( _pixmap );
 }
 
 
@@ -562,7 +562,7 @@ void KToolBar::insertComboItem (int id, const QString& text, int index)
 {
     KComboBox * comboBox = getCombo( id );
     if (comboBox)
-        comboBox->insertItem( text, index );
+        comboBox->insertItem( index, text );
 }
 
 void KToolBar::insertComboList (int id, const QStringList &list, int index)
@@ -686,7 +686,8 @@ void KToolBar::removeItem(int id)
     Id2WidgetMap::Iterator it = id2widget.find( id );
     if ( it == id2widget.end() )
     {
-        kDebug(220) << name() << " KToolBar::removeItem item " << id << " not found" << endl;
+        kDebug(220) << objectName().toLatin1().constData() << " KToolBar::removeItem item "
+                    << id << " not found" << endl;
         return;
     }
     QWidget * w = (*it);
@@ -702,7 +703,8 @@ void KToolBar::removeItemDelayed(int id)
     Id2WidgetMap::Iterator it = id2widget.find( id );
     if ( it == id2widget.end() )
     {
-        kDebug(220) << name() << " KToolBar::removeItem item " << id << " not found" << endl;
+        kDebug(220) << objectName().toLatin1().constData() << " KToolBar::removeItem item "
+                    << id << " not found" << endl;
         return;
     }
     QWidget * w = (*it);
@@ -712,7 +714,8 @@ void KToolBar::removeItemDelayed(int id)
 
     w->blockSignals(true);
     d->idleButtons.append(w);
-    layoutTimer->start( 50, true );
+    layoutTimer->setSingleShot( true );
+	layoutTimer->start( 50 );
 }
 
 
@@ -869,7 +872,7 @@ int KToolBar::iconSize() const
 
 int KToolBar::iconSizeDefault() const
 {
-	if (!::qstrcmp(QObject::name(), "mainToolBar"))
+	if (isMainToolBar())
 		return KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
 
 	return KGlobal::iconLoader()->currentSize(KIcon::Toolbar);
@@ -921,7 +924,7 @@ void KToolBar::saveState()
     // first, try to save to the xml file
     if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() ) {
         //kDebug(220) << name() << " saveState: saving to " << d->m_xmlguiClient->xmlFile() << endl;
-        QString barname(objectName().isEmpty() ? "mainToolBar" : name());
+        QString barname(objectName().isEmpty() ? "mainToolBar" : objectName());
         // try to find our toolbar
         d->modified = false;
         // go down one level to get to the right tags
@@ -985,10 +988,10 @@ void KToolBar::saveState()
 QString KToolBar::settingsGroup() const
 {
     QString configGroup;
-    if (objectName().isEmpty() || !::qstrcmp(name(), "mainToolBar"))
+    if (objectName().isEmpty() || isMainToolBar())
         configGroup = "Toolbar style";
     else
-        configGroup = QString(name()) + " Toolbar style";
+        configGroup = QString(objectName()) + " Toolbar style";
     if ( mainWindow() )
     {
         configGroup.prepend(" ");
@@ -1148,9 +1151,8 @@ void KToolBar::rebuildLayout()
     QBoxLayout *l = boxLayout();
 
     // clear the old layout
-    QLayoutIterator it = l->iterator();
-    while ( it.current() )
-        it.deleteCurrent();
+    while ( l->count() )
+        delete l->takeAt( l->count() - 1 );
 
 	Q_FOREACH( QWidget *w , widgets ) {
         if ( w == rightAligned )
@@ -1209,14 +1211,14 @@ void KToolBar::childEvent( QChildEvent *e )
         }
         if ( isVisibleTo( 0 ) )
         {
-            layoutTimer->start( 50, true );
+            layoutTimer->setSingleShot( true );
+			layoutTimer->start( 50 );
             QBoxLayout *l = boxLayout();
 
             // clear the old layout so that we don't get unnecassery layout
             // changes till we have rebuild the thing
-            QLayoutIterator it = l->iterator();
-            while ( it.current() )
-               it.deleteCurrent();
+            while ( l->count() )
+                delete l->takeAt( l->count() - 1 );
         }
     }
     Q3ToolBar::childEvent( e );
@@ -1360,7 +1362,8 @@ void KToolBar::resizeEvent( QResizeEvent *e )
       if (layoutTimer->isActive())
       {
          // Wait with repainting till layout is complete.
-         d->repaintTimer.start( 100, true );
+         d->repaintTimer.setSingleShot( true );
+         d->repaintTimer.start( 100 );
       }
       else
       {
@@ -1374,7 +1377,7 @@ void KToolBar::slotIconChanged(int group)
 {
     if ((group != KIcon::Toolbar) && (group != KIcon::MainToolbar))
         return;
-    if ((group == KIcon::MainToolbar) != !::qstrcmp(name(), "mainToolBar"))
+    if ((group == KIcon::MainToolbar) != isMainToolBar())
         return;
 
     doModeChange();
@@ -1635,8 +1638,10 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool 
 
 bool KToolBar::event( QEvent *e )
 {
-    if ( (e->type() == QEvent::LayoutHint) && updatesEnabled() )
-       d->repaintTimer.start( 100, true );
+    if ( (e->type() == QEvent::LayoutHint) && updatesEnabled() ) {
+       d->repaintTimer.setSingleShot( true );
+       d->repaintTimer.start( 100 );
+    }
 
     if (e->type() == QEvent::ChildInserted )
     {
@@ -1999,7 +2004,7 @@ KMenu *KToolBar::contextMenu()
   QList<int> avSizes;
   if (theme)
   {
-      if (!::qstrcmp(QObject::name(), "mainToolBar"))
+      if (isMainToolBar())
           avSizes = theme->querySizes( KIcon::MainToolbar);
       else
           avSizes = theme->querySizes( KIcon::Toolbar);
@@ -2080,7 +2085,7 @@ void KToolBar::slotContextAboutToShow()
     configureAction = kmw->actionCollection()->action(actionName);
   if ( configureAction )
     configureAction->plug(context);
-  KEditToolbar::setDefaultToolbar(QObject::name());
+  KEditToolbar::setDefaultToolbar(QObject::objectName().toLatin1().constData());
 
   // Uncheck everything
   foreach(QAction* action, context->actions()) {

@@ -546,7 +546,7 @@ int KEdit::doReplace(const QString &s_pattern, Qt::CaseSensitivity case_sensitiv
 
 	if(replace_all){ // automatic
 
-          stringnew = string.copy();
+          stringnew = string;
           do 
           {  
 	    stringnew.replace(pos,length,replacement);
@@ -623,7 +623,7 @@ int KEdit::doReplace(const QString &s_pattern, Qt::CaseSensitivity case_sensitiv
 
 	if(replace_all){ // automatic
 
-	  stringnew = string.copy();
+	  stringnew = string;
 	  stringnew.replace(pos,length,replacement);
 
 	  removeLine(line_counter);

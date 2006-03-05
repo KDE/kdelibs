@@ -330,13 +330,13 @@ void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
 
     if (sel == -1 && insert)
     {
-		if (index >= 0) {
+        if (index >= 0) {
             insertItem(index, item);
-			sel = index;
-		} else {
+            sel = index;
+        } else {
             addItem(item);
-			sel = count() - 1;
-		}
+            sel = count() - 1;
+        }
     }
     setCurrentIndex(sel);
 }

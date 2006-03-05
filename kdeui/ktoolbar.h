@@ -1057,6 +1057,7 @@ private:
     int dockWindowIndex();
     KMenu *contextMenu();
     void doModeChange();
+	bool isMainToolBar() const { return (objectName() == QLatin1String("mainToolBar")); } ;
 
     QMap<QWidget*, int > widget2id;
     typedef QMap<int, QWidget* > Id2WidgetMap;
