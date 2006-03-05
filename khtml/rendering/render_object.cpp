@@ -1660,7 +1660,8 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
                 (_y >= ty) && (_y < ty + height()) && (_x >= tx) && (_x < tx + width())) || isRoot() || isBody();
     bool inOverflowRect = inside;
     if ( !inOverflowRect ) {
-        QRect overflowRect( tx, ty, overflowWidth(), overflowHeight() );
+        int no = negativeOverflowWidth();
+        QRect overflowRect( tx-no, ty, overflowWidth()+no, overflowHeight() );
         inOverflowRect = overflowRect.contains( _x, _y );
     }
 
@@ -2176,9 +2177,9 @@ QRegion RenderObject::visibleFlowRegion(int x, int y) const
             if (ro->isRelPositioned())
                 static_cast<const RenderBox*>(ro)->relativePositionOffset(x,y);
             if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || s->hidesOverflow() )
-                r += QRect(x + ro->xPos(),y + ro->yPos(), ro->effectiveWidth(), ro->effectiveHeight());
+                r += QRect(x + ro->effectiveXPos(),y + ro->yPos(), ro->effectiveWidth(), ro->effectiveHeight());
             else
-                r += ro->visibleFlowRegion(x+ro->xPos(),y+ro->yPos());
+                r += ro->visibleFlowRegion(x+ro->effectiveXPos(),y+ro->yPos());
         }
     }
     return r;

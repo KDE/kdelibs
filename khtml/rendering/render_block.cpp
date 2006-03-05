@@ -7,6 +7,7 @@
  *           (C) 2003 Apple Computer, Inc.
  *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2006 Charles Samuels (charles@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -99,6 +100,7 @@ RenderBlock::RenderBlock(DOM::NodeImpl* node)
     m_topMarginQuirk = m_bottomMarginQuirk = false;
     m_overflowHeight = 0;
     m_overflowWidth = 0;
+    m_negativeOverflowWidth = 0;
 }
 
 RenderBlock::~RenderBlock()
@@ -456,7 +458,6 @@ void RenderBlock::makePageBreakAvoidBlocks()
     }
 }
 
-
 void RenderBlock::removeChild(RenderObject *oldChild)
 {
     // If this child is a block, and if our previous and next siblings are
@@ -587,6 +588,16 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     calcWidth();
     m_overflowWidth = m_width;
+    m_negativeOverflowWidth = 0;
+    if (style()->direction() == LTR )
+    {
+        int cw=0;
+        if (style()->textIndent().isPercent())
+            cw = containingBlock()->contentWidth();
+        m_negativeOverflowWidth = -style()->textIndent().minWidth(cw);
+        if (m_negativeOverflowWidth < 0)
+            m_negativeOverflowWidth = 0;
+    }
 
     if ( oldWidth != m_width )
         relayoutChildren = true;
@@ -1406,7 +1417,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             overflowDelta += child->overflowHeight();
 
         // See if this child has made our overflow need to grow.
-        int rightChildPos = child->xPos() + kMax(child->effectiveWidth(), (int)child->width());
+        int rightChildPos = child->effectiveXPos() + kMax(child->effectiveWidth(), (int)child->width());
         if (child->isRelPositioned() && (hasOverflowClip() || !isTableCell())) {
             // CSS 2.1-9.4.3 - allow access to relatively positioned content
             // ### left overflow support
@@ -1420,6 +1431,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
         m_overflowHeight = kMax(m_height + overflowDelta, m_overflowHeight);
         m_overflowWidth = kMax(rightChildPos, m_overflowWidth);
+        
+        m_negativeOverflowWidth = kMax(m_negativeOverflowWidth, child->negativeOverflowWidth());
 
         // Insert our compact into the block margin if we have one.
         insertCompactIfNeeded(child, compactInfo);
@@ -1543,7 +1556,7 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
                 r->setChildNeedsLayout(true);
             r->layoutIfNeeded();
             if (adjOverflow && r->style()->position() == ABSOLUTE) {
-                if (r->xPos() + r->effectiveWidth() > m_overflowWidth)
+                if (r->effectiveXPos() + r->effectiveWidth() > m_overflowWidth)
                     m_overflowWidth = r->xPos() + r->effectiveWidth();
                 if (r->yPos() + r->effectiveHeight() > m_overflowHeight)
                     m_overflowHeight = r->yPos() + r->effectiveHeight();
@@ -2167,6 +2180,11 @@ int RenderBlock::leftmostAbsolutePosition() const
         left = kMin(left, lp);
     }
     return left;
+}
+
+bool RenderBlock::absolutePosition(int &xPos, int &yPos, bool f)
+{
+    return RenderFlow::absolutePosition(xPos, yPos, f);
 }
 
 int

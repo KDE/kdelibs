@@ -692,15 +692,15 @@ void RenderBox::repaint(bool immediate)
     int ow = style() ? style()->outlineWidth() /* style()->outlineSize() */ : 0;
     if( isInline() && !isReplaced() )
     {
-	RenderObject* p = parent();
-	Q_ASSERT(p);
-	while( p->isInline() && !p->isReplaced() )
-	    p = p->parent();
-        p->repaintRectangle( -ow, -ow, p->effectiveWidth()+ow*2, p->effectiveHeight()+ow*2, immediate);
+        RenderObject* p = parent();
+        Q_ASSERT(p);
+        while( p->isInline() && !p->isReplaced() )
+            p = p->parent();
+        p->repaintRectangle( -ow - negativeOverflowWidth(), -ow, p->effectiveWidth()+ow*2, p->effectiveHeight()+ow*2, immediate);
     }
     else
     {
-        repaintRectangle( -ow, -ow, effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
+        repaintRectangle( -ow - negativeOverflowWidth(), -ow, effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
     }
 }
 

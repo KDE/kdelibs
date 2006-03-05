@@ -773,6 +773,8 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
     int rightPos = lineBox->placeBoxesHorizontally(x);
     if (rightPos > m_overflowWidth)
         m_overflowWidth = rightPos; // FIXME: Work for rtl overflow also.
+    if (x < 0)
+        m_negativeOverflowWidth = kMax(m_negativeOverflowWidth, -x);
 }
 
 void RenderBlock::computeVerticalPositionsForLine(InlineFlowBox* lineBox)

@@ -1,4 +1,9 @@
-2006-03-05  Charles Samuels <charles@kde.org>
+2006-03-05  Charles Samuels  <charles@kde.org>
+	* link not accessable with negative text-indent (#96275)
+	* Wrong :hover effect with negative text-indent (#90510)
+	* text not selectable if it has a negative text-indent
+	
+2006-03-05  Charles Samuels  <charles@kde.org>
         * javascript timeouts that cross a midnight boundary shall not occur early
 
 2006-03-03  Germain Garand  <germain@ebooksfrance.org>

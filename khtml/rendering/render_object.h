@@ -537,6 +537,11 @@ public:
     virtual int xPos() const { return 0; }
     virtual int yPos() const { return 0; }
 
+    /** the position of the object from where it begins drawing, including
+     * its negative overflow
+     */
+    int effectiveXPos() const { return xPos() - negativeOverflowWidth(); }
+
     /** Leftmost coordinate of this inline element relative to containing
      * block. Always zero for non-inline elements.
      */
@@ -559,6 +564,8 @@ public:
     // of borderTop() + paddingTop() + 100px.
     virtual int overflowHeight() const { return height(); }
     virtual int overflowWidth() const { return width(); }
+    // how much goes over the left hand side
+    virtual int negativeOverflowWidth() const { return 0; }
 
     /**
      * Returns the height that is effectively considered when contemplating the
@@ -569,7 +576,7 @@ public:
      * Returns the width that is effectively considered when contemplating the
      * object as a whole -- usually the overflow width, or the width if clipped.
      */
-    int effectiveWidth() const { return hasOverflowClip() ? width() : overflowWidth(); }
+    int effectiveWidth() const { return hasOverflowClip() ? width() : overflowWidth() + negativeOverflowWidth(); }
 
     // IE extensions, heavily used in ECMA
     virtual short offsetWidth() const { return width(); }

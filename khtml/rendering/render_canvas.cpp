@@ -251,10 +251,9 @@ bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
         xPos = 0;
         yPos = m_pageTop;
     }
-    else
-    if ( f && m_view) {
-	xPos = m_view->contentsX();
-	yPos = m_view->contentsY();
+    else if ( f && m_view) {
+        xPos = m_view->contentsX();
+        yPos = m_view->contentsY();
     }
     else {
         xPos = yPos = 0;
@@ -374,10 +373,10 @@ static QRect enclosingPositionedRect (RenderObject *n)
     if (enclosingParent) {
         int ox, oy;
         enclosingParent->absolutePosition(ox, oy);
-        rect.setX(ox);
+        rect.setX(ox - enclosingParent->negativeOverflowWidth());
         rect.setY(oy);
-        rect.setWidth (enclosingParent->effectiveWidth());
-        rect.setHeight (enclosingParent->effectiveHeight());
+        rect.setWidth(enclosingParent->effectiveWidth());
+        rect.setHeight(enclosingParent->effectiveHeight());
     }
     return rect;
 }
