@@ -872,7 +872,7 @@ KEdReplace::KEdReplace( QWidget *parent, bool modal )
   topLayout->addWidget( group );
 
   QGridLayout *gbox = new QGridLayout( group, 3, 2, spacingHint() );
-  gbox->addRowSpacing( 0, fontMetrics().lineSpacing() );
+  gbox->addItem(new QSpacerItem(0,fontMetrics().lineSpacing()), 0, 0);
 
   text = i18n("Case &sensitive");
   sensitive = new QCheckBox( text, group );

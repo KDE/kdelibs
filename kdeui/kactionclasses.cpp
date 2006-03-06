@@ -1964,7 +1964,7 @@ KToggleToolBarAction::KToggleToolBarAction( const char* toolBarName,
 KToggleToolBarAction::KToggleToolBarAction( KToolBar *toolBar, const QString &text,
                                             KActionCollection *parent, const char *name )
   : KToggleAction( text, KShortcut(), parent, name )
-  , m_toolBarName( 0 ), m_toolBar( toolBar )
+  , m_toolBarName( 0, '\0' ), m_toolBar( toolBar )
 {
 }
 

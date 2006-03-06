@@ -145,7 +145,8 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
     }
     else
     {
-      QHBoxLayout *hbox = new QHBoxLayout( topLayout );
+      QHBoxLayout *hbox = new QHBoxLayout();
+	  topLayout->addLayout( hbox );
       d->mListFrame = new QWidget( this );
       hbox->addWidget( d->mListFrame );
 
@@ -563,8 +564,8 @@ bool KJanusWidget::setSwallowedWidget( QWidget *widget )
   //
   if( !widget )
   {
-    gbox->addRowSpacing(0,100);
-    gbox->addColSpacing(0,100);
+    gbox->addItem(new QSpacerItem(0,100), 0, 0);
+    gbox->addItem(new QSpacerItem(100,0), 0, 0);
     mSwallowPage->setMinimumSize(100,100);
   }
   else
@@ -721,7 +722,7 @@ int KJanusWidget::pageIndex( QWidget *widget ) const
     // and addGridPage() but not with addPage() which returns a child of
     // the toplevel page. addPage() returns a QFrame so I check for that.
     //
-    if( widget->isA("QFrame") )
+    if( qobject_cast<QFrame*>(widget) )
     {
       return d->mPageToInt[widget->parentWidget()];
     }
@@ -1091,7 +1092,7 @@ const QPixmap &IconListItem::defaultPixmap()
     p.drawRect ( 0, 0, pix->width(), pix->height() );
     p.end();
 
-    QBitmap mask( pix->width(), pix->height(), true );
+    QBitmap mask( pix->width(), pix->height() );
     mask.fill( Qt::black );
     p.begin( &mask );
     p.setPen( Qt::white );

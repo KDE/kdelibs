@@ -179,7 +179,7 @@ KNotification *KNotification::event( const QString& eventid , const QString& tex
 	
 	notify->d->appname=appname;
 
-	if(! flags & NoTimeout)
+	if(!(flags & NoTimeout))
 	{
 		QTimer::singleShot(6*1000, notify, SLOT(close()));
 	}

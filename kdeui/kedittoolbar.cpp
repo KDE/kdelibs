@@ -808,13 +808,14 @@ void KEditToolbarWidget::setupLayout()
   QHBoxLayout *changeIcon_layout = new QHBoxLayout();
   changeIcon_layout->setSpacing(KDialog::spacingHint());
 
-  QGridLayout *button_layout = new QGridLayout(5, 3, 0);
+  QGridLayout *button_layout = new QGridLayout();
 
   name_layout->addWidget(d->m_comboLabel);
   name_layout->addWidget(m_toolbarCombo);
 //  name_layout->addWidget(new_toolbar);
 //  name_layout->addWidget(del_toolbar);
 
+  button_layout->setSpacing( 0 );
   button_layout->setRowStretch( 0, 10 );
   button_layout->addWidget(m_upAction, 1, 1);
   button_layout->addWidget(m_removeAction, 2, 0);

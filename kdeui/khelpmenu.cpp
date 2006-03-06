@@ -311,7 +311,7 @@ void KHelpMenu::menuDestroyed()
 void KHelpMenu::contextHelpActivated()
 {
   QWhatsThis::enterWhatsThisMode();
-  QWidget* w = QApplication::widgetAt( QCursor::pos(), true );
+  QWidget* w = QApplication::widgetAt( QCursor::pos() );
 #ifdef Q_WS_X11
   while ( w && !w->isTopLevel() && !qobject_cast<QX11EmbedWidget*>(w)  )
       w = w->parentWidget();
