@@ -29,7 +29,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kgradienttest khashtest kdesattest\
 	kledtest klineedittest \
 	kmessageboxtest knuminputtest \
-	kpalettetest \
+	kpalettetest kpassivepopuptest \
 	kpopuptest kprogressbartest kprogressdialogtest krulertest kseparatortest \
 	kstatusbartest ktabctltest \
 	kunbalancedgrdtest kwindowtest \
@@ -74,6 +74,7 @@ klineeditdlgtest_SOURCES = klineeditdlgtest.cpp
 kmessageboxtest_SOURCES = kmessageboxtest.cpp
 knuminputtest_SOURCES = knuminputtest.cpp
 kpalettetest_SOURCES = kpalettetest.cpp
+kpassivepopuptest_SOURCES = kpassivepopuptest.cpp
 kpopuptest_SOURCES = kpopuptest.cpp
 kprogressbartest_SOURCES = kprogressbartest.cpp
 kprogressdialogtest_SOURCES = kprogressdialogtest.cpp

@@ -1,5 +1,5 @@
 /*
- *   copyright            : (C) 2001-2002 by Richard Moore
+ *   copyright            : (C) 2001-2006 by Richard Moore
  *   copyright            : (C) 2004-2005 by Sascha Cunz
  *   License              : This file is released under the terms of the LGPL, version 2.
  *   email                : rich@kde.org
@@ -36,62 +36,79 @@
 #include "kpassivepopup.h"
 #include "kpassivepopup.moc"
 
-class KPassivePopup::Private
-{
-public:
-  int popupStyle;
-  QPolygon surround;
-  QPoint                    anchor;
-  QPoint                    fixedPosition;
-};
-
 static const int DEFAULT_POPUP_TYPE = KPassivePopup::Boxed;
 static const int DEFAULT_POPUP_TIME = 6*1000;
 static const Qt::WindowFlags POPUP_FLAGS = Qt::Tool | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint;
 
+class KPassivePopup::Private
+{
+public:
+    Private()
+	: msgView(0),
+	  topLayout(0),
+	  hideDelay( DEFAULT_POPUP_TIME ),
+	  hideTimer(0),
+	  autoDelete( false )
+    {
+
+    }
+
+    int popupStyle;
+    QPolygon surround;
+    QPoint                    anchor;
+    QPoint                    fixedPosition;
+    
+    WId window;
+    QWidget *msgView;
+    QBoxLayout *topLayout;
+    int hideDelay;
+    QTimer *hideTimer;
+
+    QLabel *ttlIcon;
+    QLabel *ttl;
+    QLabel *msg;
+
+    bool autoDelete;
+};
+
 KPassivePopup::KPassivePopup( QWidget *parent, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
-      window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
-      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
-      m_autoDelete( false ),d(new Private)
+      d(new Private())
 {
-    init( DEFAULT_POPUP_TYPE );
+    init( DEFAULT_POPUP_TYPE, parent ? parent->winId() : 0L );
 }
 
 KPassivePopup::KPassivePopup( WId win )
     : QFrame( 0 ),
-      window( win ), msgView( 0 ), topLayout( 0 ),
-      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
-      m_autoDelete( false ),d(new Private)
+      d(new Private())
 {
-    init( DEFAULT_POPUP_TYPE );
+    init( DEFAULT_POPUP_TYPE, win );
 }
 
 KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
-      window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
-      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
-      m_autoDelete( false ),d(new Private)
+      d(new Private())
 {
-    init( popupStyle );
+    init( popupStyle, parent ? parent->winId() : 0L );
 }
 
 KPassivePopup::KPassivePopup( int popupStyle, WId win, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
-      window( win ), msgView( 0 ), topLayout( 0 ),
-      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this ) ),
-      m_autoDelete( false ),d(new Private)
+      d(new Private())
 {
-    init( popupStyle );
+    init( popupStyle, win );
 }
 
-void KPassivePopup::init( int popupStyle )
+void KPassivePopup::init( int popupStyle, WId window )
 {
+    d->popupStyle = popupStyle;
+    d->window = window;
+    d->hideTimer = new QTimer( this );
+
     setWindowFlags( POPUP_FLAGS );
     setFrameStyle( QFrame::Box| QFrame::Plain );
     setLineWidth( 2 );
 
-    d->popupStyle = popupStyle;
     if( popupStyle == Boxed )
     {
         setFrameStyle( QFrame::Box| QFrame::Plain );
@@ -102,7 +119,7 @@ void KPassivePopup::init( int popupStyle )
         setPalette(QToolTip::palette());
         //XXX dead ? setAutoMask(true);
     }
-    connect( hideTimer, SIGNAL( timeout() ), SLOT( hide() ) );
+    connect( d->hideTimer, SIGNAL( timeout() ), SLOT( hide() ) );
     connect( this, SIGNAL( clicked() ), SLOT( hide() ) );
 }
 
@@ -113,15 +130,15 @@ KPassivePopup::~KPassivePopup()
 
 void KPassivePopup::setView( QWidget *child )
 {
-    delete msgView;
-    msgView = child;
+    delete d->msgView;
+    d->msgView = child;
 
-    delete topLayout;
-    topLayout = new QVBoxLayout( this );
-    topLayout->setMargin( d->popupStyle == Balloon ? 22 : KDialog::marginHint() );
-    topLayout->setSpacing( KDialog::spacingHint() );
-    topLayout->addWidget( msgView );
-    topLayout->activate();
+    delete d->topLayout;
+    d->topLayout = new QVBoxLayout( this );
+    d->topLayout->setMargin( d->popupStyle == Balloon ? 22 : KDialog::marginHint() );
+    d->topLayout->setSpacing( KDialog::spacingHint() );
+    d->topLayout->addWidget( d->msgView );
+    d->topLayout->activate();
 }
 
 void KPassivePopup::setView( const QString &caption, const QString &text,
@@ -130,6 +147,7 @@ void KPassivePopup::setView( const QString &caption, const QString &text,
     // kDebug() << "KPassivePopup::setView " << caption << ", " << text << endl;
     setView( standardView( caption, text, icon, this ) );
 }
+
 
 KVBox * KPassivePopup::standardView( const QString& caption,
                                      const QString& text,
@@ -144,24 +162,24 @@ KVBox * KPassivePopup::standardView( const QString& caption,
 	hb = new KHBox( vb );
 	hb->setMargin( 0 );
 	hb->setSpacing( KDialog::spacingHint() );
-	ttlIcon = new QLabel( hb );
-	ttlIcon->setPixmap( icon );
-        ttlIcon->setAlignment( Qt::AlignLeft );
+	d->ttlIcon = new QLabel( hb );
+	d->ttlIcon->setPixmap( icon );
+        d->ttlIcon->setAlignment( Qt::AlignLeft );
     }
 
     if ( !caption.isEmpty() ) {
-	ttl = new QLabel( caption, hb ? hb : vb );
-	QFont fnt = ttl->font();
+	d->ttl = new QLabel( caption, hb ? hb : vb );
+	QFont fnt = d->ttl->font();
 	fnt.setBold( true );
-	ttl->setFont( fnt );
-	ttl->setAlignment( Qt::AlignHCenter );
+	d->ttl->setFont( fnt );
+	d->ttl->setAlignment( Qt::AlignHCenter );
         if ( hb )
-            hb->setStretchFactor( ttl, 10 ); // enforce centering
+            hb->setStretchFactor( d->ttl, 10 ); // enforce centering
     }
 
     if ( !text.isEmpty() ) {
-        msg = new QLabel( text, vb );
-        msg->setAlignment( Qt::AlignLeft );
+        d->msg = new QLabel( text, vb );
+        d->msg->setAlignment( Qt::AlignLeft );
     }
 
     return vb;
@@ -172,22 +190,37 @@ void KPassivePopup::setView( const QString &caption, const QString &text )
     setView( caption, text, QPixmap() );
 }
 
+QWidget *KPassivePopup::view() const
+{
+    return d->msgView;
+}
+
+int KPassivePopup::timeout() const
+{
+    return d->hideDelay;
+}
+
 void KPassivePopup::setTimeout( int delay )
 {
-    hideDelay = delay;
-    if( hideTimer->isActive() )
+    d->hideDelay = delay;
+    if( d->hideTimer->isActive() )
     {
         if( delay ) {
-            hideTimer->start( delay );
+            d->hideTimer->start( delay );
         } else {
-            hideTimer->stop();
+            d->hideTimer->stop();
         }
     }
 }
 
+bool KPassivePopup::autoDelete() const
+{
+    return d->autoDelete;
+}
+
 void KPassivePopup::setAutoDelete( bool autoDelete )
 {
-    m_autoDelete = autoDelete;
+    d->autoDelete = autoDelete;
 }
 
 void KPassivePopup::mouseReleaseEvent( QMouseEvent *e )
@@ -215,13 +248,13 @@ void KPassivePopup::show()
     }
     QFrame::show();
 
-    int delay = hideDelay;
+    int delay = d->hideDelay;
     if ( delay < 0 ) {
         delay = DEFAULT_POPUP_TIME;
     }
 
     if ( delay > 0 ) {
-        hideTimer->start( delay );
+        d->hideTimer->start( delay );
     }
 }
 
@@ -233,8 +266,8 @@ void KPassivePopup::show(const QPoint &p)
 
 void KPassivePopup::hideEvent( QHideEvent * )
 {
-    hideTimer->stop();
-    if ( m_autoDelete )
+    d->hideTimer->stop();
+    if ( d->autoDelete )
         deleteLater();
 }
 
@@ -263,12 +296,12 @@ void KPassivePopup::positionSelf()
     QRect target;
 
 #ifdef Q_WS_X11
-    if ( !window ) {
+    if ( !d->window ) {
         target = defaultArea();
     }
 
     else {
-        NETWinInfo ni( QX11Info::display(), window, QX11Info::appRootWindow(),
+        NETWinInfo ni( QX11Info::display(), d->window, QX11Info::appRootWindow(),
                        NET::WMIconGeometry | NET::WMKDESystemTrayWinFor );
 
         // Figure out where to put the popup. Note that we must handle
@@ -473,7 +506,7 @@ KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, c
     KPassivePopup *pop = new KPassivePopup( popupStyle, parent );
     pop->setAutoDelete( true );
     pop->setView( caption, text, icon );
-    pop->hideDelay = timeout;
+    pop->d->hideDelay = timeout;
     pop->show();
 
     return pop;
@@ -496,7 +529,7 @@ KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, c
     KPassivePopup *pop = new KPassivePopup( popupStyle, parent );
     pop->setAutoDelete( true );
     pop->setView( caption, text, icon );
-    pop->hideDelay = timeout;
+    pop->d->hideDelay = timeout;
     pop->show();
 
     return pop;

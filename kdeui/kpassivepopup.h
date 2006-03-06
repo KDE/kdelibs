@@ -1,7 +1,7 @@
 // -*- c++ -*-
 
 /*
- *   Copyright            : (C) 2001-2002 by Richard Moore
+ *   Copyright            : (C) 2001-2006 by Richard Moore
  *   Copyright            : (C) 2004-2005 by Sascha Cunz
  *   License              : This file is released under the terms of the LGPL, version 2.
  *   Email                : rich@kde.org
@@ -15,11 +15,6 @@
 
 #include <kvbox.h>
 #include <kdelibs_export.h>
-
-class QBoxLayout;
-class QTimer;
-class QLabel;
-class KVBox;
 
 /**
  * @short A dialog-like popup that displays messages without interupting the user.
@@ -147,12 +142,12 @@ public:
     /**
      * Returns the main view.
      */
-    QWidget *view() const { return msgView; }
+    QWidget *view() const;
 
     /**
      * Returns the delay before the popup is removed automatically.
      */
-    int timeout() const { return hideDelay; }
+    int timeout() const;
 
     /**
      * Enables / disables auto-deletion of this widget when the timeout
@@ -166,7 +161,7 @@ public:
      * @returns true if the widget auto-deletes itself when the timeout occurs.
      * @see setAutoDelete
      */
-    bool autoDelete() const { return m_autoDelete; }
+    bool autoDelete() const;
 
     /**
      * Sets the anchor of this balloon. The balloon tries automatically to adjust
@@ -328,19 +323,7 @@ protected:
     virtual void paintEvent( QPaintEvent* pe );
 
 private:
-    void init( int popupStyle );
-
-    WId window;
-    QWidget *msgView;
-    QBoxLayout *topLayout;
-    int hideDelay;
-    QTimer *hideTimer;
-
-    QLabel *ttlIcon;
-    QLabel *ttl;
-    QLabel *msg;
-
-    bool m_autoDelete;
+    void init( int popupStyle, WId window );
 
     /* @internal */
     class Private;
