@@ -192,6 +192,19 @@ public:
    * @param _service the service to run
    * @param _urls the list of URLs, can be empty (app launched
    *        without argument)
+   * @param window The top-level widget of the app that invoked this object.
+   * @param tempFiles if true and _urls are local files, they will be deleted
+   *        when the application exits.
+   * @return the process id, or 0 on error
+   * @since 3.5.2
+   */
+  static pid_t run( const KService& _service, const KURL::List& _urls, QWidget* window, bool tempFiles = false );
+  /**
+   * Open a list of URLs with a certain service (application).
+   *
+   * @param _service the service to run
+   * @param _urls the list of URLs, can be empty (app launched
+   *        without argument)
    * @param tempFiles if true and _urls are local files, they will be deleted
    *        when the application exits.
    * @return the process id, or 0 on error

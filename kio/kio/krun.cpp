@@ -693,11 +693,16 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
 
 pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFiles )
 {
+    return run( _service, _urls, 0, tempFiles );
+}
+
+pid_t KRun::run( const KService& _service, const KURL::List& _urls, QWidget* window, bool tempFiles )
+{
   if (!_service.desktopEntryPath().isEmpty() &&
       !KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
   {
      kdWarning() << "No authorization to execute " << _service.desktopEntryPath() << endl;
-     KMessageBox::sorry(0, i18n("You are not authorized to execute this service."));
+     KMessageBox::sorry(window, i18n("You are not authorized to execute this service."));
      return 0;
   }
 
@@ -735,7 +740,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFil
   if (i != 0)
   {
      kdDebug(7010) << error << endl;
-     KMessageBox::sorry( 0L, error );
+     KMessageBox::sorry( window, error );
      return 0;
   }
 
