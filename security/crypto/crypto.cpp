@@ -1079,7 +1079,7 @@ void KCryptoConfig::save()
   else
     config->writeEntry("AuthMethod", "none");
 
-  if (defCertBox->currentItem() == 0)
+  if (defCertBox->currentIndex() == 0)
      config->writeEntry("DefaultCert", QString());
   else config->writeEntry("DefaultCert", defCertBox->currentText());
 
@@ -2123,7 +2123,7 @@ void KCryptoConfig::slotAuthCombo() {
 HostAuthItem *x = static_cast<HostAuthItem *>(hostAuthList->selectedItem());
 
   if (x) {
-    if (hostCertBox->currentItem() == 0)
+    if (hostCertBox->currentIndex() == 0)
       x->setCertName(QString());
     else x->setCertName(hostCertBox->currentText());
     configChanged();
@@ -2245,8 +2245,8 @@ bool noneDef, noneHost;
 // get the old setting
   oldDef = defCertBox->currentText();
   oldHost = hostCertBox->currentText();
-  noneDef = (0 == defCertBox->currentItem());
-  noneHost = (0 == hostCertBox->currentItem());
+  noneDef = (0 == defCertBox->currentIndex());
+  noneHost = (0 == hostCertBox->currentIndex());
 
 // repopulate
   defCertBox->clear();
@@ -2273,7 +2273,7 @@ bool noneDef, noneHost;
     }
   }
 
-  if (!noneDef && defCertBox->currentItem() == 0) configChanged();
+  if (!noneDef && defCertBox->currentIndex() == 0) configChanged();
 
   hostCertBox->setCurrentIndex(0);
   if (!noneHost) {
@@ -2285,7 +2285,7 @@ bool noneDef, noneHost;
     }
   }
 
-  if (!noneHost && hostCertBox->currentItem() == 0) configChanged();
+  if (!noneHost && hostCertBox->currentIndex() == 0) configChanged();
 
   // Update the host entries too
   for (HostAuthItem *x =
