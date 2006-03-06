@@ -636,7 +636,12 @@ K3DockButton_Private::~K3DockButton_Private()
 void K3DockButton_Private::drawButton( QPainter* p )
 {
   p->fillRect( 0,0, width(), height(), QBrush(QColorGroup(palette()).brush(QColorGroup::Background)) );
+#if 1
+  // ### TODO: is the centering done automatically or do we need some codelike for KDE3 (see below the #else part)
+  icon().paint( p, rect() );
+#else
   p->drawPixmap( (width() - pixmap()->width()) / 2, (height() - pixmap()->height()) / 2, *pixmap() );
+#endif
   if ( moveMouse && !isDown() ){
     p->setPen( Qt::white );
     p->drawLine( 0, height() - 1, 0, 0 );
@@ -671,8 +676,7 @@ void K3DockButton_Private::leaveEvent( QEvent * )
 void K3DockButton_Private::paintEvent( QPaintEvent * )
 {
   QPainter painter( this );
-  //KDE4 enable this if you want to use the custom drawing function, though pixmap() returning null, it will crash :)
-//  drawButton( &painter );
+  drawButton( &painter );
 }
 
 /*************************************************************************/
