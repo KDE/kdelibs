@@ -373,7 +373,10 @@ static QRect enclosingPositionedRect (RenderObject *n)
     if (enclosingParent) {
         int ox, oy;
         enclosingParent->absolutePosition(ox, oy);
-        rect.setX(ox - enclosingParent->negativeOverflowWidth());
+        int off = 0;
+        if (!enclosingParent->hasOverflowClip())
+            off = enclosingParent->negativeOverflowWidth();
+        rect.setX(ox - off);
         rect.setY(oy);
         rect.setWidth(enclosingParent->effectiveWidth());
         rect.setHeight(enclosingParent->effectiveHeight());

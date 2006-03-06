@@ -540,7 +540,7 @@ public:
     /** the position of the object from where it begins drawing, including
      * its negative overflow
      */
-    int effectiveXPos() const { return xPos() - negativeOverflowWidth(); }
+    int effectiveXPos() const { return xPos() - (hasOverflowClip() ? 0 : negativeOverflowWidth()); }
 
     /** Leftmost coordinate of this inline element relative to containing
      * block. Always zero for non-inline elements.
@@ -564,7 +564,7 @@ public:
     // of borderTop() + paddingTop() + 100px.
     virtual int overflowHeight() const { return height(); }
     virtual int overflowWidth() const { return width(); }
-    // how much goes over the left hand side
+    // how much goes over the left hand side (0 or a positive number)
     virtual int negativeOverflowWidth() const { return 0; }
 
     /**
