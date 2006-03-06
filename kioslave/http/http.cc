@@ -646,6 +646,11 @@ void HTTPProtocol::listDir( const KURL& url )
   if ( !checkRequestURL( url ) )
     return;
 
+  if (!url.protocol().startsWith("webdav")) {
+    error(ERR_UNSUPPORTED_ACTION, url.prettyURL());
+    return;
+  }
+
   davStatList( url, false );
 }
 
