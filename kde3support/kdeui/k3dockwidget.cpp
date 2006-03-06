@@ -32,6 +32,7 @@
 #include <qstyle.h>
 #include <QMouseEvent>
 #include <QObject>
+#include <QStylePainter>
 
 #ifndef NO_KDE2
 #include <kconfig.h>
@@ -200,13 +201,12 @@ K3DockWidgetHeaderDrag::K3DockWidgetHeaderDrag( K3DockWidgetAbstractHeader* pare
 
 void K3DockWidgetHeaderDrag::paintEvent( QPaintEvent* )
 {
-  QPainter paint;
+  QStylePainter paint;
 
   paint.begin( this );
   QStyleOption qso;
-  qso.init(this);
-  qso.rect = QRect( 0, 0, width(), height() );
-  style()->drawPrimitive( QStyle::PE_Q3DockWindowSeparator, &qso, &paint, this );
+  qso.initFrom( this );
+  paint.drawPrimitive( QStyle::PE_IndicatorToolBarHandle, qso );
 
   paint.end();
 }
@@ -229,39 +229,43 @@ K3DockWidgetHeader::K3DockWidgetHeader( K3DockWidget* parent, const char* name )
 
   drag = new K3DockWidgetHeaderDrag( this, parent );
 
+  // Auxillary pixmap (to create the dock buttons)
+  QPixmap auxPix;
+
   closeButton = new K3DockButton_Private( this, "DockCloseButton" );
   closeButton->setToolTip(  i18n("Close") );
-  closeButton->setIcon( QIcon( style()->standardPixmap(QStyle::SP_TitleBarCloseButton) ) );
-//  closeButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+  auxPix = style()->standardPixmap( QStyle::SP_DockWidgetCloseButton );
+  closeButton->setIcon( QIcon( auxPix ) );
+  closeButton->setFixedSize( auxPix.size() );
   connect( closeButton, SIGNAL(clicked()), parent, SIGNAL(headerCloseButtonClicked()));
   connect( closeButton, SIGNAL(clicked()), parent, SLOT(undock()));
 
   stayButton = new K3DockButton_Private( this, "DockStayButton" );
   stayButton->setToolTip( i18n("Freeze the window geometry", "Freeze") );
   stayButton->setCheckable( true );
-  // We have to use QPixmap to load the XPM from a const char*
-  stayButton->setIcon( QIcon( QPixmap( not_close_xpm) ) );
-//  stayButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+  auxPix = QPixmap( not_close_xpm );
+  stayButton->setIcon( QIcon( auxPix ) );
+  stayButton->setFixedSize( auxPix.size() );
   connect( stayButton, SIGNAL(clicked()), this, SLOT(slotStayClicked()));
 
   dockbackButton = new K3DockButton_Private( this, "DockbackButton" );
   dockbackButton->setToolTip( i18n("Dock this window", "Dock") );
-  // We have to use QPixmap to load the XPM from a const char*
-  dockbackButton->setIcon( QIcon( QPixmap( dockback_xpm ) ) );
-//  dockbackButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+  auxPix = QPixmap( dockback_xpm );
+  dockbackButton->setIcon( QIcon( auxPix ) );
+  dockbackButton->setFixedSize( auxPix.size() );
   connect( dockbackButton, SIGNAL(clicked()), parent, SIGNAL(headerDockbackButtonClicked()));
   connect( dockbackButton, SIGNAL(clicked()), parent, SLOT(dockBack()));
 
   d->toDesktopButton = new K3DockButton_Private( this, "ToDesktopButton" );
   d->toDesktopButton->setToolTip( i18n("Detach") );
-  // We have to use QPixmap to load the XPM from a const char*
-  d->toDesktopButton->setIcon( QIcon( QPixmap( todesktop_xpm ) ) );
-//  d->toDesktopButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+  auxPix = QPixmap( todesktop_xpm );
+  d->toDesktopButton->setIcon( QIcon( auxPix ) );
+  d->toDesktopButton->setFixedSize( auxPix.size() );
   connect( d->toDesktopButton, SIGNAL(clicked()), parent, SLOT(toDesktop()));
   stayButton->hide();
 
   d->dummy = new QWidget( this );
-//  d->dummy->setFixedSize( 1,closeButton->pixmap()->height() );
+  d->dummy->setFixedSize( 1, closeButton->height() );
 
 
   layout->addWidget( drag );
@@ -272,7 +276,11 @@ K3DockWidgetHeader::K3DockWidgetHeader( K3DockWidget* parent, const char* name )
   layout->addWidget( closeButton );
   layout->activate();
   d->dummy->hide();
+#if 1
+  drag->setFixedHeight( closeButton->height() );
+#else
   drag->setFixedHeight( layout->minimumSize().height() );
+#endif
 }
 
 void K3DockWidgetHeader::setTopLevel( bool isTopLevel )
@@ -360,7 +368,7 @@ void K3DockWidgetHeader::addButton(K3DockButton_Private* btn) {
 	if (btn->parentWidget()!=this) {
 		btn->reparent(this,QPoint(0,0));
 	}
-	btn->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+	btn->setFixedSize( closeButton->size() );
 	if (!d->btns.containsRef(btn)) d->btns.append(btn);
 
 	btn->show();
