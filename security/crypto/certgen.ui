@@ -324,10 +324,10 @@
                 <height>21</height>
             </rect>
         </property>
-        <property name="maxValue">
+        <property name="maximum">
             <number>365</number>
         </property>
-        <property name="minValue">
+        <property name="minimum">
             <number>1</number>
         </property>
         <property name="value">
