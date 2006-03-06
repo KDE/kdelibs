@@ -58,7 +58,6 @@ KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMulti
 	{
 		box=new QWidget(viewport());
 		mainLayout=new QVBoxLayout(box);
-//		mainLayout->setAutoAdd(true);
 		box->setFixedWidth(24);
 		setFixedWidth(24);
 	}
@@ -66,10 +65,10 @@ KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMulti
 	{
 		box=new QWidget(viewport());
 		mainLayout=new QHBoxLayout(box);
-//		mainLayout->setAutoAdd(true);
 		box->setFixedHeight(24);
 		setFixedHeight(24);
 	}
+//	mainLayout->setAutoAdd(true);
 	mainLayout->setMargin(0);
 	mainLayout->setSpacing(0);
 	setFrameStyle(NoFrame);
@@ -111,7 +110,6 @@ void KMultiTabBarInternal::setStyle(enum KMultiTabBar::KMultiTabBarStyle style)
 	        for (int i=0;i<m_tabs.count();i++)
         	        mainLayout->addWidget(m_tabs.at(i));
 //		mainLayout->setAutoAdd(true);
-
 	}
 	viewport()->update();
 }
@@ -513,7 +511,8 @@ KMultiTabBarTab::KMultiTabBarTab(const QPixmap& pic, const QString& text,
 	setIcon(pic);
 	m_expandedSize=24;
 	setCheckable(true);
-	parent->layout()->addWidget(this);
+	if(parent->layout())
+		parent->layout()->addWidget(this);
 }
 
 KMultiTabBarTab::~KMultiTabBarTab() {
