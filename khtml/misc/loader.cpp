@@ -253,7 +253,7 @@ void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
     QTextCodec* c = codecForBuffer( m_charset, buffer.buffer() );
     QString data = c->toUnicode( buffer.buffer().data(), m_size );
     // workaround Qt bugs
-    m_sheet = data[0] == QChar::byteOrderMark ? DOMString(data.mid( 1 ) ) : DOMString(data);
+    m_sheet = static_cast<QChar>(data[0]) == QChar::byteOrderMark ? DOMString(data.mid( 1 ) ) : DOMString(data);
     m_loading = false;
 
     checkNotify();
@@ -322,7 +322,7 @@ void CachedScript::data( QBuffer &buffer, bool eof )
 
     QTextCodec* c = codecForBuffer( m_charset, buffer.buffer() );
     QString data = c->toUnicode( buffer.buffer().data(), m_size );
-    m_script = data[0] == QChar::byteOrderMark ? DOMString(data.mid( 1 ) ) : DOMString(data);
+    m_script = static_cast<QChar>(data[0]) == QChar::byteOrderMark ? DOMString(data.mid( 1 ) ) : DOMString(data);
     m_loading = false;
     checkNotify();
 }

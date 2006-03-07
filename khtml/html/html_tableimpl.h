@@ -65,7 +65,7 @@ public:
     ChildHolder():ptr(0) {}
 
     ChildType* get(const ElementImpl* parent) const {
-        if (ptr == parent) {
+        if (static_cast<const NodeImpl *>(ptr) == parent) {
             //Do lookup.
             ptr = 0;
             for (NodeImpl* child = parent->firstChild(); child; child = child->nextSibling())
