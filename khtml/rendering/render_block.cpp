@@ -1554,8 +1554,10 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
                 r->setMarkedForRepaint(false);
             }
             if ( relayoutChildren || r->style()->position() == FIXED ||
-                   ((r->hasStaticY()||r->hasStaticX()) && r->parent() != this && r->parent()->isBlockFlow()) )
+                   ((r->hasStaticY()||r->hasStaticX()) && r->parent() != this && r->parent()->isBlockFlow()) ) {
                 r->setChildNeedsLayout(true);
+                r->dirtyFormattingContext(false);
+            }
             r->layoutIfNeeded();
             if (adjOverflow && r->style()->position() == ABSOLUTE) {
                 if (r->effectiveXPos() + r->effectiveWidth() > m_overflowWidth)

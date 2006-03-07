@@ -339,7 +339,7 @@ protected:
     // on an already loaded document
     int m_autoCloseTimer;
 
-#define CBUFLEN 20
+#define CBUFLEN 1024
     char cBuffer[CBUFLEN+2];
     unsigned int cBufferPos;
 

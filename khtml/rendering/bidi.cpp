@@ -649,7 +649,7 @@ InlineFlowBox* RenderBlock::createLineBoxes(RenderObject* obj)
     return box;
 }
 
-InlineFlowBox* RenderBlock::constructLine(const BidiIterator &start, const BidiIterator &end)
+InlineFlowBox* RenderBlock::constructLine(const BidiIterator &/*start*/, const BidiIterator &end)
 {
     if (!sFirstBidiRun)
         return 0; // We had no runs. Don't make a root inline box at all. The line is empty.
@@ -857,7 +857,6 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
 #endif
         }
         if (doPageBreak) {
-            int oldYPos = lineBox->yPos();
             int pTop = pageTopAfter(lineBox->yPos());
 
             m_height = pTop;

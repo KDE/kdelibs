@@ -1682,8 +1682,6 @@ void RenderTableSection::addSpaceAt(int pos, int dy)
     for ( int r = 0; r < totalRows; r++ ) {
         if (rowPos[r] >= pos) {
             rowPos[r] += dy;
-            Row *row = grid[r].row;
-            int totalCols = row->size();
             int rindx;
             for ( int c = 0; c < nEffCols; c++ )
             {

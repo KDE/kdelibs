@@ -591,7 +591,7 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
     // and return pos, which is the position of the char in the run.
 
     // FIXME: make this use binary search? Dirk says it won't work :-( (LS)
-
+    (void)checkFirstLetter;
 #if 0
     if (checkFirstLetter && forcedMinOffset()) {
 //        kdDebug(6040) << "checkFirstLetter: forcedMinOffset: " << forcedMinOffset() << endl;
@@ -641,7 +641,7 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
     return s;
 }
 
-bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction /*hitTestAction*/, bool inBox)
+bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction /*hitTestAction*/, bool /*inBox*/)
 {
     assert(parent());
 
