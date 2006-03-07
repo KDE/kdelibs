@@ -83,7 +83,7 @@ FakeDevice *FakeManager::newDevice( const QString &udi )
 {
     if ( m_devices.contains( udi ) )
     {
-        kdDebug() << "Trying to create a new device, but it already exists" << endl;
+        kDebug() << "Trying to create a new device, but it already exists" << endl;
         return 0;
     }
     else

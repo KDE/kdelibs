@@ -100,17 +100,17 @@ KDEHW::DeviceManager::DeviceManager()
             if( backend != 0 )
             {
                 d->registerBackend( backend );
-                kdDebug() << "Using backend: " << ptr->name() << endl;
+                kDebug() << "Using backend: " << ptr->name() << endl;
             }
             else
             {
-                kdDebug() << "Error loading '" << ptr->name() << "', factory's create method returned 0" << endl;
+                kDebug() << "Error loading '" << ptr->name() << "', factory's create method returned 0" << endl;
                 error_msg.append( i18n("Factory's create method failed") );
             }
         }
         else
         {
-            kdDebug() << "Error loading '" << ptr->name() << "', factory creation failed" << endl;
+            kDebug() << "Error loading '" << ptr->name() << "', factory creation failed" << endl;
             error_msg.append( i18n("Factory creation failed") );
         }
     }
