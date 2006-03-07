@@ -7,6 +7,7 @@ add_subdirectory( tests )
 include_directories( ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
+if(NOT WIN32)
 ########### next target ###############
 
 set(kdeinit_SRCS kinit.cpp setproctitle.cpp )
@@ -55,6 +56,18 @@ install_targets(/bin kdeinit_shutdown )
 
 ########### next target ###############
 
+set(kwrapper_SRCS kwrapper.c )
+
+kde4_add_executable(kwrapper ${kwrapper_SRCS})
+
+target_link_libraries(kwrapper  ${QT_AND_KDECORE_LIBS} )
+
+install_targets(/bin kwrapper )
+
+
+endif(NOT WIN32)
+########### next target ###############
+
 set(lnusertemp_SRCS lnusertemp.c )
 
 kde4_add_executable(lnusertemp ${lnusertemp_SRCS})
@@ -66,18 +79,14 @@ install_targets(/bin lnusertemp )
 
 ########### next target ###############
 
-set(kwrapper_SRCS kwrapper.c )
-
-kde4_add_executable(kwrapper ${kwrapper_SRCS})
-
-target_link_libraries(kwrapper  ${QT_AND_KDECORE_LIBS} )
-
-install_targets(/bin kwrapper )
-
-
-########### next target ###############
-
-set(kioslave_SRCS kioslave.cpp )
+if(WIN32)
+set(kioslave_SRCS kioslave.cpp
+                  ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
+                  ${CMAKE_SOURCE_DIR}/libltdl/ltdl_win.c)
+else(WIN32)
+set(kioslave_SRCS kioslave.cpp
+                  ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c)
+endif(WIN32)
 
 kde4_automoc(${kioslave_SRCS})
 
@@ -96,7 +105,11 @@ kde4_automoc(${kstartupconfig_SRCS})
 
 kde4_add_executable(kstartupconfig ${kstartupconfig_SRCS})
 
-target_link_libraries(kstartupconfig  ${QT_AND_KDECORE_LIBS} kdefakes )
+if(WIN32)
+target_link_libraries(kstartupconfig  ${QT_AND_KDECORE_LIBS})
+else(WIN32)
+target_link_libraries(kstartupconfig  ${QT_AND_KDECORE_LIBS} kdefakes)
+endif(WIN32)
 
 install_targets(/bin kstartupconfig )
 
