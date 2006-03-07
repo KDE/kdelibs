@@ -31,15 +31,15 @@ private Q_SLOTS:
     void zone();
     void zoneinfoDir();
     void currentOffset();
-    void offsetAtUTC();
+    void offsetAtUtc();
     void offsetAtZoneTime();
     void abbreviation();
-    void toUTC();
+    void toUtc();
     void toZoneTime();
     void convert();
     void tzfile();
     void tzfileOffsetAtZoneTime();
-    void tzfileUTCOffsets();
+    void tzfileUtcOffsets();
 };
 
 #endif

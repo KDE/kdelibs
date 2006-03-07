@@ -66,9 +66,9 @@ void KTimeZonesTest::utc()
     QVERIFY((bool)utc);
     if (utc)
       QCOMPARE(utc->name(), QString("UTC"));
-    QCOMPARE(utc->offsetAtUTC(QDateTime(QDate(2005,1,1), QTime(), Qt::LocalTime)), 0);
-    QCOMPARE(utc->offsetAtUTC(QDateTime(QDate(2005,1,1), QTime(), Qt::UTC)), 0);
-    QCOMPARE(utc->offsetAtUTC(QDateTime(QDate(2005,7,1), QTime(), Qt::UTC)), 0);
+    QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,1,1), QTime(), Qt::LocalTime)), 0);
+    QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,1,1), QTime(), Qt::UTC)), 0);
+    QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,7,1), QTime(), Qt::UTC)), 0);
 }
 
 /////////////////////////
@@ -129,17 +129,17 @@ void KTimeZonesTest::currentOffset()
     QCOMPARE(local->currentOffset(Qt::UTC), offset);
 }
 
-void KTimeZonesTest::offsetAtUTC()
+void KTimeZonesTest::offsetAtUtc()
 {
     // Find some offsets for Europe/London.
     const KTimeZone *losAngeles = KSystemTimeZones::zone("America/Los_Angeles");
     const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
     QDateTime winter(QDate(2005,1,1), QTime(0,0,0), Qt::UTC);
     QDateTime summer(QDate(2005,6,1), QTime(0,0,0), Qt::UTC);
-    QCOMPARE(london->offsetAtUTC(winter), 0);
-    QCOMPARE(london->offsetAtUTC(summer), 3600);;
-    QCOMPARE(losAngeles->offsetAtUTC(winter), -28800);
-    QCOMPARE(losAngeles->offsetAtUTC(summer), -25200);;
+    QCOMPARE(london->offsetAtUtc(winter), 0);
+    QCOMPARE(london->offsetAtUtc(summer), 3600);;
+    QCOMPARE(losAngeles->offsetAtUtc(winter), -28800);
+    QCOMPARE(losAngeles->offsetAtUtc(summer), -25200);;
 }
 
 void KTimeZonesTest::offsetAtZoneTime()
@@ -180,7 +180,7 @@ void KTimeZonesTest::abbreviation()
     QCOMPARE(losAngeles->abbreviation(summer), QByteArray("PDT"));
 }
 
-void KTimeZonesTest::toUTC()
+void KTimeZonesTest::toUtc()
 {
     // Convert to UTC.
     const KTimeZone *losAngeles = KSystemTimeZones::zone("America/Los_Angeles");
@@ -191,10 +191,10 @@ void KTimeZonesTest::toUTC()
     winterLocal.setTimeSpec(Qt::LocalTime);
     QDateTime summerLocal = summer;
     summerLocal.setTimeSpec(Qt::LocalTime);
-    QCOMPARE(london->toUTC(winterLocal), winter);
-    QCOMPARE(london->toUTC(summerLocal), summer.addSecs(-3600));;
-    QCOMPARE(losAngeles->toUTC(winterLocal), winter.addSecs(8*3600));
-    QCOMPARE(losAngeles->toUTC(summerLocal), summer.addSecs(7*3600));
+    QCOMPARE(london->toUtc(winterLocal), winter);
+    QCOMPARE(london->toUtc(summerLocal), summer.addSecs(-3600));;
+    QCOMPARE(losAngeles->toUtc(winterLocal), winter.addSecs(8*3600));
+    QCOMPARE(losAngeles->toUtc(summerLocal), summer.addSecs(7*3600));
 }
 
 void KTimeZonesTest::toZoneTime()
@@ -248,7 +248,7 @@ void KTimeZonesTest::tzfile()
     KTimeZone *tzcairo = new KTzfileTimeZone(&tzsource, "Africa/Cairo");
     delete tzcairo;
     tzcairo = new KTzfileTimeZone(&tzsource, "Africa/Cairo");
-    QCOMPARE(tzcairo->offsetAtUTC(winter), 7200);
+    QCOMPARE(tzcairo->offsetAtUtc(winter), 7200);
     delete tzcairo;
 }
 
@@ -278,11 +278,11 @@ void KTimeZonesTest::tzfileOffsetAtZoneTime()
     delete london;
 }
 
-void KTimeZonesTest::tzfileUTCOffsets()
+void KTimeZonesTest::tzfileUtcOffsets()
 {
     KTzfileTimeZoneSource tzsource(KSystemTimeZones::zoneinfoDir());
     KTimeZone *london = new KTzfileTimeZone(&tzsource, "Europe/London");
-    QList<int> offsets = london->UTCOffsets();
+    QList<int> offsets = london->UtcOffsets();
     QCOMPARE(offsets.count(), 3);
     QCOMPARE(offsets[0], 0);    // GMT
     QCOMPARE(offsets[1], 3600); // BST

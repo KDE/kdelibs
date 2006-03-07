@@ -185,9 +185,9 @@ class KSystemTimeZoneDataPrivate;
  *
  *         // Virtual methods which need to be reimplemented
  *         int offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset = 0) const;
- *         int offsetAtUTC(const QDateTime &utcDateTime) const;
+ *         int offsetAtUtc(const QDateTime &utcDateTime) const;
  *         int offset(time_t t) const;
- *         int isDstAtUTC(const QDateTime &utcDateTime) const;
+ *         int isDstAtUtc(const QDateTime &utcDateTime) const;
  *         bool isDst(time_t t) const;
  *
  *         // Anything else which you need
@@ -210,11 +210,11 @@ class KSystemTimeZoneDataPrivate;
  * };
  * \endcode
  *
- * Here is a guide to implementing the offset() and offsetAtUTC() methods, in
+ * Here is a guide to implementing the offset() and offsetAtUtc() methods, in
  * the case where the source data does not use time_t for its time measurement:
  *
  * \code
- * int NewTimeZone::offsetAtUTC(const QDateTime &utcDateTime) const
+ * int NewTimeZone::offsetAtUtc(const QDateTime &utcDateTime) const
  * {
  *     // Access this time zone's data. If we haven't already read it,
  *     // force a read from source now.
@@ -227,12 +227,12 @@ class KSystemTimeZoneDataPrivate;
  *
  * int NewTimeZone::offset(time_t t) const
  * {
- *     return offsetAtUTC(fromTime_t(t));
+ *     return offsetAtUtc(fromTime_t(t));
  * }
  * \endcode
  *
  * The other NewTimeZone methods would work in an analogous way to
- * NewTimeZone::offsetAtUTC() and NewTimeZone::offset().
+ * NewTimeZone::offsetAtUtc() and NewTimeZone::offset().
  */
 
 /**
@@ -457,7 +457,7 @@ public:
      *
      * @return sorted list of UTC offsets, or empty list if not readily available.
      */
-    QList<int> UTCOffsets() const;
+    QList<int> UtcOffsets() const;
 
     /**
      * Converts a date/time, which is interpreted as being local time in this
@@ -482,7 +482,7 @@ public:
      *                     @p zoneDateTime.timeSpec() is not Qt::LocalTime.
      * @return UTC date/time, or invalid date/time if error
      */
-    QDateTime toUTC(const QDateTime &zoneDateTime) const;
+    QDateTime toUtc(const QDateTime &zoneDateTime) const;
 
     /**
      * Converts a UTC date/time into local time in this time zone.
@@ -547,7 +547,7 @@ public:
      *                    An error occurs if @p utcDateTime.timeSpec() is not Qt::UTC.
      * @return offset in seconds, or 0 if error
      */
-    virtual int offsetAtUTC(const QDateTime &utcDateTime) const;
+    virtual int offsetAtUtc(const QDateTime &utcDateTime) const;
 
     /**
      * Returns the offset of this time zone to UTC at a specified UTC time.
@@ -556,15 +556,15 @@ public:
      * local time in this time zone.
      *
      * Note that time_t has a more limited range than QDateTime, so consider using
-     * offsetAtUTC() instead.
+     * offsetAtUtc() instead.
      *
      * The base class implementation always returns 0. Derived classes should always
-     * reimplement both this method and offsetAtUTC(). If the derived class can work
+     * reimplement both this method and offsetAtUtc(). If the derived class can work
      * in terms of QDateTime rather than time_t, it should implement its offset
-     * calculations in offsetAtUTC() and reimplement this
+     * calculations in offsetAtUtc() and reimplement this
      * method simply as
      * \code
-     *     offsetAtUTC(fromTime_t(t));
+     *     offsetAtUtc(fromTime_t(t));
      * \endcode
      *
      * @param t the UTC time at which the offset is to be calculated, measured in seconds
@@ -589,21 +589,21 @@ public:
      *                    @p utcDateTime.timeSpec() is not Qt::UTC.
      * @return @c true if daylight savings time is in operation, @c false otherwise
      */
-    virtual bool isDstAtUTC(const QDateTime &utcDateTime) const;
+    virtual bool isDstAtUtc(const QDateTime &utcDateTime) const;
 
     /**
      * Returns whether daylight savings time is in operation at a specified UTC time.
      *
      * Note that time_t has a more limited range than QDateTime, so consider using
-     * isDstAtUTC() instead.
+     * isDstAtUtc() instead.
      *
      * The base class implementation always returns false. Derived classes should always
-     * reimplement both this method and isDstAtUTC(). If the derived class can work
+     * reimplement both this method and isDstAtUtc(). If the derived class can work
      * in terms of QDateTime rather than time_t, it should implement its offset
-     * calculations in isDstAtUTC() and reimplement this
+     * calculations in isDstAtUtc() and reimplement this
      * method simply as
      * \code
-     *     isDstAtUTC(fromTime_t(t));
+     *     isDstAtUtc(fromTime_t(t));
      * \endcode
      *
      * @param t the UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
@@ -782,7 +782,7 @@ public:
      * @return sorted list of UTC offsets, or empty list if not readily available.
      *         In this base class, it consists of the single value 0.
      */
-    virtual QList<int> UTCOffsets() const;
+    virtual QList<int> UtcOffsets() const;
 
 private:
     KTimeZoneDataPrivate *d;
@@ -938,7 +938,7 @@ public:
      *                    An error occurs if @p utcDateTime.timeSpec() is not Qt::UTC.
      * @return offset in seconds, or 0 if error
      */
-    virtual int offsetAtUTC(const QDateTime &utcDateTime) const;
+    virtual int offsetAtUtc(const QDateTime &utcDateTime) const;
 
     /**
      * Returns the offset of this time zone to UTC at a specified UTC time.
@@ -962,7 +962,7 @@ public:
      *                    @p utcDateTime.timeSpec() is not Qt::UTC.
      * @return @c true if daylight savings time is in operation, @c false otherwise
      */
-    virtual bool isDstAtUTC(const QDateTime &utcDateTime) const;
+    virtual bool isDstAtUtc(const QDateTime &utcDateTime) const;
 
     /**
      * Returns whether daylight savings time is in operation at a specified UTC time.
@@ -1076,7 +1076,7 @@ public:
      *
      * @return empty list
      */
-    virtual QList<int> UTCOffsets() const;
+    virtual QList<int> UtcOffsets() const;
 
 private:
     KSystemTimeZoneDataPrivate *d;

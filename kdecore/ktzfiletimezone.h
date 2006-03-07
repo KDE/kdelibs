@@ -101,7 +101,7 @@ public:
      *                    An error occurs if @p utcDateTime.timeSpec() is not Qt::UTC.
      * @return offset in seconds, or 0 if error
      */
-    virtual int offsetAtUTC(const QDateTime &utcDateTime) const;
+    virtual int offsetAtUtc(const QDateTime &utcDateTime) const;
 
     /**
      * Returns the offset of this time zone to UTC at a specified UTC time.
@@ -122,7 +122,7 @@ public:
      *                    @p utcDateTime.timeSpec() is not Qt::UTC.
      * @return @c true if daylight savings time is in operation, @c false otherwise
      */
-    virtual bool isDstAtUTC(const QDateTime &utcDateTime) const;
+    virtual bool isDstAtUtc(const QDateTime &utcDateTime) const;
 
     /**
      * Returns whether daylight savings time is in operation at a specified UTC time.
@@ -249,14 +249,14 @@ public:
     quint32 nLeapSecondAdjustments() const   { return m_nLeapSecondAdjusts; }
     /** The number of standard/wall indicators in the array m_isStandard */
     quint32 nIsStandard() const   { return m_nIsStandard; }
-    /** The number of UTC/local indicators in the array m_isUTC */
-    quint32 nIsUTC() const   { return m_nIsUTC; }
+    /** The number of UTC/local indicators in the array m_isUtc */
+    quint32 nIsUtc() const   { return m_nIsUtc; }
 
     const TransitionTime *transitionTime(int index) const;
     const LocalTimeType *localTimeType(int index) const;
     const LeapSecondAdjust *leapSecondAdjustment(int index) const;
     bool isStandard(int index) const;
-    bool isUTC(int index) const;
+    bool isUtc(int index) const;
 
     /**
      * Returns the m_transitionTimes details for a given UTC time.
@@ -306,20 +306,20 @@ public:
      *
      * @return the sorted list of UTC offsets
      */
-    virtual QList<int> UTCOffsets() const;
+    virtual QList<int> UtcOffsets() const;
 
 protected:
     quint32 m_nTransitionTimes;
     quint32 m_nLocalTimeTypes;
     quint32 m_nLeapSecondAdjusts;
     quint32 m_nIsStandard;
-    quint32 m_nIsUTC;
+    quint32 m_nIsUtc;
     TransitionTime *m_transitionTimes;
     LocalTimeType  *m_localTimeTypes;
     QList<QByteArray> m_abbreviations;
     LeapSecondAdjust *m_leapSecondAdjusts;
     bool *m_isStandard;
-    bool *m_isUTC;
+    bool *m_isUtc;
 
 private:
     KTzfileTimeZoneDataPrivate *d;

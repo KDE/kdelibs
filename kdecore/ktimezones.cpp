@@ -352,11 +352,11 @@ QByteArray KTimeZone::abbreviation(const QDateTime &utcDateTime) const
     return d->data->abbreviation(utcDateTime);
 }
 
-QList<int> KTimeZone::UTCOffsets() const
+QList<int> KTimeZone::UtcOffsets() const
 {
     if (!data(true))
         return QList<int>();
-    return d->data->UTCOffsets();
+    return d->data->UtcOffsets();
 }
 
 const KTimeZoneData *KTimeZone::data(bool create) const
@@ -380,7 +380,7 @@ bool KTimeZone::parse() const
     return d->data;
 }
 
-QDateTime KTimeZone::toUTC(const QDateTime &zoneDateTime) const
+QDateTime KTimeZone::toUtc(const QDateTime &zoneDateTime) const
 {
     if (!zoneDateTime.isValid()  ||  zoneDateTime.timeSpec() != Qt::LocalTime)
         return QDateTime();
@@ -394,7 +394,7 @@ QDateTime KTimeZone::toZoneTime(const QDateTime &utcDateTime) const
 {
     if (utcDateTime.timeSpec() != Qt::UTC)
         return QDateTime();
-    int secs = offsetAtUTC(utcDateTime);
+    int secs = offsetAtUtc(utcDateTime);
     QDateTime dt = utcDateTime.addSecs(secs);
     dt.setTimeSpec(Qt::LocalTime);
     return dt;
@@ -408,7 +408,7 @@ QDateTime KTimeZone::convert(const KTimeZone *newZone, const QDateTime &zoneDate
             return QDateTime();
         return zoneDateTime;
     }
-    return newZone->toZoneTime(toUTC(zoneDateTime));
+    return newZone->toZoneTime(toUtc(zoneDateTime));
 }
 
 int KTimeZone::offsetAtZoneTime(const QDateTime &, int *secondOffset) const
@@ -418,7 +418,7 @@ int KTimeZone::offsetAtZoneTime(const QDateTime &, int *secondOffset) const
     return 0;
 }
 
-int KTimeZone::offsetAtUTC(const QDateTime &utcDateTime) const
+int KTimeZone::offsetAtUtc(const QDateTime &utcDateTime) const
 {
     if (!utcDateTime.isValid()  ||  utcDateTime.timeSpec() != Qt::UTC)    // check for invalid time
         return 0;
@@ -453,7 +453,7 @@ int KTimeZone::currentOffset(Qt::TimeSpec basis) const
     return 0;
 }
 
-bool KTimeZone::isDstAtUTC(const QDateTime &utcDateTime) const
+bool KTimeZone::isDstAtUtc(const QDateTime &utcDateTime) const
 {
     if (!utcDateTime.isValid()  ||  utcDateTime.timeSpec() != Qt::UTC)    // check for invalid time
         return false;
@@ -524,7 +524,7 @@ QByteArray KTimeZoneData::abbreviation(const QDateTime &) const
     return "UTC";
 }
 
-QList<int> KTimeZoneData::UTCOffsets() const
+QList<int> KTimeZoneData::UtcOffsets() const
 {
     QList<int> offsets;
     offsets.append(0);
@@ -982,7 +982,7 @@ KSystemTimeZone::~KSystemTimeZone()
 //    delete d;
 }
 
-int KSystemTimeZone::offsetAtUTC(const QDateTime &utcDateTime) const
+int KSystemTimeZone::offsetAtUtc(const QDateTime &utcDateTime) const
 {
     return offset(toTime_t(utcDateTime));
 }
@@ -1086,7 +1086,7 @@ int KSystemTimeZone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *second
     return offset1;
 }
 
-bool KSystemTimeZone::isDstAtUTC(const QDateTime &utcDateTime) const
+bool KSystemTimeZone::isDstAtUtc(const QDateTime &utcDateTime) const
 {
     return isDst(toTime_t(utcDateTime));
 }
@@ -1289,7 +1289,7 @@ QByteArray KSystemTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
     return abbr;
 }
 
-QList<int> KSystemTimeZoneData::UTCOffsets() const
+QList<int> KSystemTimeZoneData::UtcOffsets() const
 {
     return QList<int>();
 }

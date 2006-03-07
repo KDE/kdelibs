@@ -229,7 +229,7 @@ QDateTime KDateTimePrivate::toUTC(const KTimeZone *local) const
             tz = local;
             // fall through to TimeZone
         case stTimeZone:
-            utc = tz->toUTC(mDt);
+            utc = tz->toUtc(mDt);
             utcCached = true;
 #ifdef KDATETIME_TEST
             kDebug() << "toUTC(): calculated -> " << utc << endl,
@@ -351,7 +351,7 @@ KDateTime::KDateTime(const QDateTime &dt, TimeSpec spec, int utcOffset)
         case UTC:
             d->spec = stUTC;
             if (dt.timeSpec() == Qt::LocalTime)
-                d->setDt(KSystemTimeZones::local()->toUTC(dt));
+                d->setDt(KSystemTimeZones::local()->toUtc(dt));
             else
                 d->setDt(dt);
             break;
@@ -650,7 +650,7 @@ void KDateTime::setDateTime(const QDateTime &dt)
     if (dt.timeSpec() == Qt::LocalTime)
     {
         if (d->spec == stUTC)
-            d->setDt(KSystemTimeZones::local()->toUTC(dt));
+            d->setDt(KSystemTimeZones::local()->toUtc(dt));
         else
             d->setDt(dt);
     }
@@ -1848,9 +1848,9 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                 const KTimeZones::ZoneMap z = zones->zones();
                 for (KTimeZones::ZoneMap::ConstIterator it = z.begin();  it != z.end();  ++it)
                 {
-                    QList<int> offsets = it.value()->UTCOffsets();
+                    QList<int> offsets = it.value()->UtcOffsets();
                     if ((offsets.isEmpty() || offsets.contains(utcOffset))
-                    &&  it.value()->offsetAtUTC(dtUTC) == utcOffset)
+                    &&  it.value()->offsetAtUtc(dtUTC) == utcOffset)
                     {
                         // Found a time zone which uses this offset at the specified time
                         if (zone  ||  !utcOffset)
