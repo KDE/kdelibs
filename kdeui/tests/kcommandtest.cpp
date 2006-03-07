@@ -37,6 +37,14 @@ QStringList KTestCommand::executedCommands;
 QStringList KTestCommand::unexecutedCommands;
 QStringList KTestCommand::deletedCommands;
 
+static QString commandListToString( const QList<KCommand *>& commands )
+{
+    QStringList lst;
+    foreach( KCommand* cmd, commands )
+        lst.append( cmd->name() );
+    return lst.join(",");
+}
+
 void KCommandTest::testMacroCommand()
 {
     {
@@ -68,64 +76,95 @@ void KCommandTest::testCommandHistoryAdd()
         connect( &ch, SIGNAL( commandExecuted( KCommand* ) ), this, SLOT( slotCommandExecuted( KCommand* ) ) );
         connect( &ch, SIGNAL( documentRestored() ), this, SLOT( slotDocumentRestored() ) );
 
+        // Checking the empty state
         KAction* undo = actionCollection.action( "edit_undo" );
         QVERIFY( undo );
         QVERIFY( !undo->isEnabled() );
+        QVERIFY( !ch.isUndoAvailable() );
+        QVERIFY( ch.undoCommands().isEmpty() );
         QCOMPARE( undo->text(), i18n( "&Undo" ) );
         KAction* redo = actionCollection.action( "edit_redo" );
         QVERIFY( redo );
         QVERIFY( !redo->isEnabled() );
+        QVERIFY( !ch.isRedoAvailable() );
+        QVERIFY( ch.redoCommands().isEmpty() );
         QCOMPARE( redo->text(), i18n( "&Redo" ) );
         ch.updateActions();
         QVERIFY( !undo->isEnabled() );
+        QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( !redo->isEnabled() );
+        QVERIFY( !ch.isRedoAvailable() );
         QCOMPARE( ch.presentCommand(), (KCommand * )0 );
 
         KTestCommand* c1 = new KTestCommand( "1" );
         ch.addCommand( c1 ); // executes the action
         QCOMPARE( KTestCommand::executedCommands.join( "," ), QString( "1" ) );
         QVERIFY( undo->isEnabled() );
+        QVERIFY( ch.isUndoAvailable() );
         QCOMPARE( undo->text(), i18n( "&Undo: %1" ).arg(1) );
         QVERIFY( !redo->isEnabled() );
+        QVERIFY( !ch.isRedoAvailable() );
         ch.updateActions();
         QVERIFY( undo->isEnabled() );
+        QVERIFY( ch.isUndoAvailable() );
         QVERIFY( !redo->isEnabled() );
+        QVERIFY( !ch.isRedoAvailable() );
         QCOMPARE( m_documentRestored, 0 );
         QCOMPARE( ch.presentCommand(), c1 );
         ch.undo();
         QCOMPARE( m_documentRestored, 1 );
         QCOMPARE( KTestCommand::unexecutedCommands.join( "," ), QString( "1" ) );
         QVERIFY( !undo->isEnabled() );
+        QVERIFY( !ch.isUndoAvailable() );
         QCOMPARE( undo->text(), i18n( "&Undo" ) );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
         QCOMPARE( ch.presentCommand(), (KCommand * )0 );
         ch.redo();
         QCOMPARE( KTestCommand::executedCommands.join( "," ), QString( "1,1" ) );
         QVERIFY( undo->isEnabled() );
+        QVERIFY( ch.isUndoAvailable() );
         QVERIFY( !redo->isEnabled() );
+        QVERIFY( !ch.isRedoAvailable() );
         QCOMPARE( ch.presentCommand(), c1 );
         KTestCommand::clearLists();
 
         KTestCommand* c2 = new KTestCommand( "2" );
         ch.addCommand( c2 );
         QVERIFY( undo->isEnabled() );
+        QVERIFY( ch.isUndoAvailable() );
         QCOMPARE( undo->text(), i18n( "&Undo: %1" ).arg(2) );
+        QCOMPARE( commandListToString( ch.undoCommands() ), QString( "2,1" ) );
+        QCOMPARE( commandListToString( ch.undoCommands(1) ), QString( "2" ) );
         QVERIFY( !redo->isEnabled() );
+        QVERIFY( !ch.isRedoAvailable() );
         ch.undo();
         QVERIFY( undo->isEnabled() );
+        QVERIFY( ch.isUndoAvailable() );
+        QCOMPARE( commandListToString( ch.undoCommands() ), QString( "1" ) );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
+        QCOMPARE( commandListToString( ch.redoCommands() ), QString( "2" ) );
         QCOMPARE( redo->text(), i18n( "&Redo: %1" ).arg(2) );
         ch.updateActions();
         QVERIFY( undo->isEnabled() );
+        QVERIFY( ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
         QCOMPARE( KTestCommand::unexecutedCommands.join( "," ), QString( "2" ) );
         ch.undo();
         QCOMPARE( m_documentRestored, 2 );
         QVERIFY( !undo->isEnabled() );
+        QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
+        QCOMPARE( commandListToString( ch.redoCommands() ), QString( "1,2" ) );
+        QCOMPARE( commandListToString( ch.redoCommands(1) ), QString( "1" ) );
         ch.updateActions();
         QVERIFY( !undo->isEnabled() );
+        QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
         QCOMPARE( redo->text(), i18n( "&Redo: %1" ).arg(1) );
         QCOMPARE( KTestCommand::unexecutedCommands.join( "," ), QString( "2,1" ) );
         ch.redo();
@@ -140,16 +179,21 @@ void KCommandTest::testCommandHistoryAdd()
         QCOMPARE( ch.presentCommand(), c3 );
         ch.undo();
         QVERIFY( undo->isEnabled() );
+        QVERIFY( ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
         QCOMPARE( ch.presentCommand(), c1 );
         ch.undo();
         QCOMPARE( m_documentRestored, 3 );
         QVERIFY( !undo->isEnabled() );
+        QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
 
         ch.redo();
         ch.redo();
         QVERIFY( !redo->isEnabled() );
+        QVERIFY( !ch.isRedoAvailable() );
         QCOMPARE( redo->text(), i18n( "&Redo" ) );
     }
     QCOMPARE( m_commandsExecuted, 12 ); // every add, undo and redo
@@ -214,32 +258,43 @@ void KCommandTest::testUndoLimit()
         KAction* undo = actionCollection.action( "edit_undo" );
         QVERIFY( undo );
         QVERIFY( !undo->isEnabled() );
+        QVERIFY( !ch.isUndoAvailable() );
         KAction* redo = actionCollection.action( "edit_redo" );
         QVERIFY( redo );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
         QCOMPARE( redo->text(), i18n( "&Redo: %1" ).arg( 2 ) );
         ch.redo();
         QVERIFY( undo->isEnabled() );
+        QVERIFY( ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
         QCOMPARE( redo->text(), i18n( "&Redo: %1" ).arg( 3 ) );
         ch.redo();
 
         ch.setUndoLimit( 1 );
         QVERIFY( undo->isEnabled() );
+        QVERIFY( ch.isUndoAvailable() );
         ch.undo();
         QVERIFY( !undo->isEnabled() );
+        QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
         QCOMPARE( redo->text(), i18n( "&Redo: %1" ).arg( 3 ) );
 
         redo->setEnabled( false ); // imagine the app goes into readonly mode
         ch.updateActions(); // then back to readwrite, so it calls this
         QVERIFY( !undo->isEnabled() );
+        QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
+        QVERIFY( ch.isRedoAvailable() );
 
         // test clear
         ch.clear();
         QVERIFY( !undo->isEnabled() );
+        QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( !redo->isEnabled() );
+        QVERIFY( !ch.isRedoAvailable() );
         QCOMPARE( undo->text(), i18n( "&Undo" ) );
         QCOMPARE( redo->text(), i18n( "&Redo" ) );
         QCOMPARE( KTestCommand::deletedCommands.join( "," ), QString( "1,2,3" ) );

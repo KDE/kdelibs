@@ -229,6 +229,38 @@ public:
      */
     KCommand * presentCommand() const;
 
+    /**
+     * @return true if undo is available,
+     * i.e. there is at least one command that can be undone right now
+     */
+    bool isUndoAvailable() const;
+
+    /**
+     * @return true if redo is available
+     * i.e. there is at least one command that can be redone right now
+     */
+    bool isRedoAvailable() const;
+
+    /**
+     * @return the list of next @p maxCommands actions that will be undone by undo()
+     * The returned list is empty if !isUndoAvailable().
+     * Otherwise the list starts with the next command to undo,
+     * i.e. the order of the commands in the list is the reverse of the
+     * chronological order of the commands.
+     * @param maxCommands maximum number of commands requested. 0 means no maximum,
+     * all stored undo commands (within undoLimit()) are returned.
+     */
+    QList<KCommand *> undoCommands( int maxCommands = 0 ) const;
+
+    /**
+     * @return the list of next @p maxCommands actions that will be redone by redo()
+     * The returned list is empty if !isRedoAvailable().
+     * Otherwise the list starts with the next command to redo.
+     * @param maxCommands maximum number of commands requested. 0 means no maximum,
+     * all stored redo commands (within redoLimit()) are returned.
+     */
+    QList<KCommand *> redoCommands( int maxCommands = 0 ) const;
+
 public Q_SLOTS:
     /**
      * Undoes the last action.

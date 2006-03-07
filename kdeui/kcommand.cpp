@@ -103,6 +103,8 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
         // TODO instead of a menu this should show a listbox like koffice's KoCommandHistory does,
         // so that it's clearer that N actions will be undone together, not just action number N.
 
+        // TODO also move this out of KCommandHistory, to make it core-only.
+
         KToolBarPopupAction * undo = new KToolBarPopupAction( i18n("&Undo"), "undo",
                                           KStdAccel::shortcut(KStdAccel::Undo), this, SLOT( undo() ),
                                           actionCollection, KStdAction::stdName( KStdAction::Undo ) );
@@ -237,7 +239,7 @@ void KCommandHistory::redo() {
     if ( d->m_current == d->m_savedAt )
         emit documentRestored();
 
-    if ( d->m_current + 1 < m_commands.count() ) {
+    if ( isRedoAvailable() ) {
         if ( m_redo ) {
             command = m_commands[ d->m_current + 1 ];
             m_redo->setEnabled(true);
@@ -335,9 +337,42 @@ void KCommandHistory::slotRedoActivated( int pos )
 void KCommandHistory::updateActions()
 {
     if ( m_undo )
-        m_undo->setEnabled( d->m_current >= 0 );
+        m_undo->setEnabled( isUndoAvailable() );
     if ( m_redo )
-        m_redo->setEnabled( d->m_current < m_commands.count() - 1 );
+        m_redo->setEnabled( isRedoAvailable() );
+}
+
+bool KCommandHistory::isUndoAvailable() const
+{
+    return d->m_current >= 0;
+}
+
+bool KCommandHistory::isRedoAvailable() const
+{
+    return d->m_current < m_commands.count() - 1;
+}
+
+QList<KCommand *> KCommandHistory::undoCommands( int maxCommands ) const
+{
+    QList<KCommand *> lst;
+    for ( int i = d->m_current; i >= 0; --i ) {
+        lst.append( m_commands[i] );
+        if ( maxCommands > 0 && lst.count() == maxCommands )
+            break;
+    }
+    return lst;
+}
+
+QList<KCommand *> KCommandHistory::redoCommands( int maxCommands ) const
+{
+    QList<KCommand *> lst;
+    for ( int i = d->m_current + 1; i < m_commands.count(); ++i )
+    {
+        lst.append( m_commands[i] );
+        if ( maxCommands > 0 && lst.count() == maxCommands )
+            break;
+    }
+    return lst;
 }
 
 void KCommand::virtual_hook( int, void* )
