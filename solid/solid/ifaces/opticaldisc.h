@@ -39,8 +39,6 @@ namespace Ifaces
     public:
         virtual ~OpticalDisc();
 
-        static Type type() { return Capability::OpticalDisc; }
-
         virtual ContentTypes availableContent() const = 0;
         virtual DiscType discType() const = 0;
         virtual bool isAppendable() const = 0;

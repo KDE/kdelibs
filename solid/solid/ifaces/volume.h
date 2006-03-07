@@ -47,8 +47,6 @@ namespace Ifaces
     public:
         virtual ~Volume();
 
-        static Type type() { return Capability::Volume; }
-
         virtual bool isIgnored() const = 0;
         virtual bool isMounted() const = 0;
         virtual QString mountPoint() const = 0;

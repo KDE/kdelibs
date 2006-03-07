@@ -35,8 +35,6 @@ namespace Ifaces
     public:
         virtual ~Block();
 
-        static Type type() { return Capability::Block; }
-
         virtual int major() const = 0;
         virtual int minor() const = 0;
         virtual QString device() const = 0;

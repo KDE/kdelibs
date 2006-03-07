@@ -39,8 +39,6 @@ namespace Ifaces
     public:
         virtual ~Cdrom();
 
-        static Type type() { return Capability::Cdrom; }
-
         virtual MediumTypes supportedMedia() const = 0;
         virtual int readSpeed() const = 0;
         virtual int writeSpeed() const = 0;

@@ -42,8 +42,6 @@ namespace Ifaces
     public:
         virtual ~Storage();
 
-        static Type type() { return Capability::Storage; }
-
         virtual Bus bus() const = 0;
         virtual DriveType driveType() const = 0;
 
