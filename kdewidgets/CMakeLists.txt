@@ -24,10 +24,15 @@ install_targets(/bin makekdewidgets )
 ########### next target ###############
 
 
-GET_TARGET_PROPERTY(MakeKDEWidgetsLoc makekdewidgets LOCATION)
+if (KDE4_NEED_WRAPPER_SCRIPTS)
+   set(MAKEKDEWIDGETS_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genembed.sh)
+else (KDE4_NEED_WRAPPER_SCRIPTS)
+   GET_TARGET_PROPERTY(MAKEKDEWIDGETS_EXECUTABLE makekdewidgets LOCATION)
+endif (KDE4_NEED_WRAPPER_SCRIPTS)
+
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
-  COMMAND "${MakeKDEWidgetsLoc}"
+  COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}"
   ARGS -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets
   DEPENDS kde.widgets makekdewidgets)
 
