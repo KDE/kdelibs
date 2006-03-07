@@ -596,10 +596,10 @@ protected:
 
         void addAlias(DOMStringImpl* _prefix, DOMStringImpl* _name, bool cs, NodeImpl::Id id) {
             if(_prefix && _prefix->l) {
-                QConstString n(_name->s, _name->l);
-                QConstString px( _prefix->s, _prefix->l );
-                QString name = cs ? n.string() : n.string().toUpper();
-                QString qn("aliases: " + (cs ? px.string() : px.string().toUpper()) + ":" + name);
+                QString n(_name->s, _name->l);
+                QString px( _prefix->s, _prefix->l );
+                QString name = cs ? n : n.toUpper();
+                QString qn("aliases: " + (cs ? px : px.toUpper()) + ":" + name);
                 if (!ids.find( qn )) {
                     ids.insert( qn, (void*)id );
                 }
