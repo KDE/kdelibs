@@ -78,9 +78,9 @@ public:
 
     bool operator!() const { return m_ptr == 0; }
 
-    inline friend bool operator==(const SharedPtr &a, const SharedPtr &b) { return a.m_ptr == b.m_ptr; }
-    inline friend bool operator==(const SharedPtr &a, const T *b) { return a.m_ptr == b; }
-    inline friend bool operator==(const T *a, const SharedPtr &b) { return a == b.m_ptr; }
+    template <class C> friend bool operator==(const SharedPtr<C> &a, const SharedPtr<C> &b);
+    template <class C> friend bool operator==(const SharedPtr<C> &a, const C *b);
+    template <class C> friend bool operator==(const C *a, const SharedPtr<C> &b);
 
     SharedPtr &operator=(const SharedPtr &);
 
@@ -97,6 +97,10 @@ template <class T> SharedPtr<T> &SharedPtr<T>::operator=(const SharedPtr<T> &o)
     m_ptr = o.m_ptr;
     return *this;
 }
+
+template <class T> inline bool operator==(const SharedPtr<T> &a, const SharedPtr<T> &b) { return a.m_ptr == b.m_ptr; }
+template <class T> inline bool operator==(const SharedPtr<T> &a, const T *b) { return a.m_ptr == b; }
+template <class T> inline bool operator==(const T *a, const SharedPtr<T> &b) { return a == b.m_ptr; }
 
 template <class T> inline bool operator!=(const SharedPtr<T> &a, const SharedPtr<T> &b) { return !(a==b); }
 template <class T> inline bool operator!=(const SharedPtr<T> &a, const T *b) { return !(a == b); }
