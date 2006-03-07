@@ -78,6 +78,8 @@ using namespace khtml;
 static void *baseOfRenderObjectBeingDeleted;
 #endif
 
+//#define MASK_DEBUG
+
 void* RenderObject::operator new(size_t sz, RenderArena* renderArena) throw()
 {
     return renderArena->allocate(sz);
@@ -386,6 +388,14 @@ RenderLayer* RenderObject::enclosingLayer() const
     return 0;
 }
 
+RenderLayer* RenderObject::enclosingStackingContext() const
+{
+    RenderLayer* l = enclosingLayer();
+    while (l && !l->isStackingContext())
+        l = l->parent();
+    return l;
+}
+
 int RenderObject::offsetLeft() const
 {
     if ( isPositioned() )
@@ -565,8 +575,12 @@ RenderBlock *RenderObject::containingBlock() const
     }
     else if(m_style->position() == ABSOLUTE) {
         while (o &&
-               ( o->style()->position() == STATIC || ( o->isInline() && !o->isReplaced() ) ) && !o->isCanvas())
+               ( o->style()->position() == STATIC || ( o->isInline() && !o->isReplaced() ) ) && !o->isCanvas()) {
+               // for relpos inlines, return the nearest block - it will host the positioned objects list
+               if (o->isInline() && !o->isReplaced() && o->style()->position() == RELATIVE)
+                   return o->containingBlock();
             o = o->parent();
+        }
     } else {
         while(o && ( ( o->isInline() && !o->isReplaced() ) || o->isTableRow() || o->isTableSection() ||
                        o->isTableCol() || o->isFrameSet() ) )
@@ -1280,8 +1294,11 @@ void RenderObject::setStyle(RenderStyle *style)
             if (layer() && !isInlineFlow()) {
                 layer()->repaint();
                 if (canvas() && canvas()->needsWidgetMasks()) { 
-                    for (RenderLayer *p=layer()->parent();p;p=p->parent())
-                        if (p->hasOverlaidWidgets()) p->updateWidgetMasks();
+                    RenderLayer *p, *d;
+                    for (p=layer()->parent();p;p=p->parent())
+                        if (p->hasOverlaidWidgets()) d=p;
+                    if (d) // deepest
+                        d->updateWidgetMasks( canvas()->layer() );
                 }
             } else
                 repaint();
@@ -2149,13 +2166,22 @@ void RenderObject::insertCounter(const QString& counter, CounterNode* val)
 void RenderObject::updateWidgetMasks() {
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling()) {
         if ( curr->isWidget() && static_cast<RenderWidget*>(curr)->widget() && 
-             strcmp(  static_cast<RenderWidget*>(curr)->widget()->name(), "__khtml") ) {
+             !static_cast<RenderWidget*>(curr)->isKHTMLWidget() ) {
             QWidget* w = static_cast<RenderWidget*>(curr)->widget();
-            QRegion r = curr->enclosingLayer()->getMask();
-            if (!r.isNull()) {
-                int x,y;
-                curr->absolutePosition(x,y);
-                r = r.intersect(QRect(x,y,curr->width(),curr->height()));
+            RenderLayer* l = curr->enclosingStackingContext();
+            QRegion r = l ? l->getMask() : QRegion();
+            int x,y;
+            if (!r.isNull() && curr->absolutePosition(x,y)) {
+                x+= curr->borderLeft()+curr->paddingLeft();
+                y+= curr->borderBottom()+curr->paddingBottom();
+                r = r.intersect(QRect(x,y,w->width(),w->height()));
+#ifdef MASK_DEBUG
+                QMemArray<QRect> ar = r.rects();
+                kdDebug(6040) << "|| Setting widget mask for " << curr->information() << endl;
+                for (int i = 0; i < ar.size() ; ++i) {
+                    kdDebug(6040) << "		" <<  ar[i] << endl;
+                }
+#endif
                 r.translate(-x,-y);
                 w->setMask(r);
             } else {
@@ -2163,8 +2189,9 @@ void RenderObject::updateWidgetMasks() {
             }
             w->update();
         }
-        else if (!curr->layer())
+        else if (!curr->layer() || !curr->layer()->isStackingContext())
             curr->updateWidgetMasks();
+  
     }
 }
 
@@ -2172,11 +2199,11 @@ QRegion RenderObject::visibleFlowRegion(int x, int y) const
 {
     QRegion r;
     for (RenderObject* ro=firstChild();ro;ro=ro->nextSibling()) {
-        if( !ro->isPositioned() && !ro->isInlineFlow() && ro->style()->visibility() == VISIBLE) {
+        if( !ro->layer() && !ro->isInlineFlow() && ro->style()->visibility() == VISIBLE) {
             const RenderStyle *s = ro->style();
             if (ro->isRelPositioned())
                 static_cast<const RenderBox*>(ro)->relativePositionOffset(x,y);
-            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || s->hidesOverflow() )
+            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() )
                 r += QRect(x + ro->effectiveXPos(),y + ro->yPos(), ro->effectiveWidth(), ro->effectiveHeight());
             else
                 r += ro->visibleFlowRegion(x+ro->effectiveXPos(),y+ro->yPos());

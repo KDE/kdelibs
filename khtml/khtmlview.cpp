@@ -241,7 +241,6 @@ public:
         complete = false;
         firstRelayout = true;
         needsFullRepaint = true;
-        dirtyLayout = false;
         layoutSchedulingEnabled = true;
         painting = false;
         updateRegion = QRegion();
@@ -368,7 +367,6 @@ public:
     bool needsFullRepaint			:1;
     bool painting				:1;
     bool possibleTripleClick			:1;
-    bool dirtyLayout				:1;
     bool m_dialogsAllowed			:1;
     QRegion updateRegion;
     KHTMLToolTip *tooltip;
@@ -659,20 +657,20 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
-        if (strcmp(w->name(), "__khtml")) {
-            int x, y;
-            rw->absolutePosition(x, y);
-            contentsToViewport(x, y, x, y);
-            QRegion mask = rw->enclosingLayer()->getMask();
-            if (!mask.isNull()) {
-                QPoint o(0,0);
-                o = contentsToViewport(o);
-                mask.translate(o.x(),o.y());
-                mask = mask.intersect( QRect(x,y,rw->width(),rw->height()) );
-                cr -= mask;
-            } else {
-                cr -= QRect(x, y, rw->width(), rw->height());
-            }
+        QRect g = w->geometry();
+        if ( (g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
+             (g.right() <= pt.x()) || (g.left() > pt.x()+ew) )
+            continue;
+        RenderLayer* rl = rw->enclosingStackingContext();
+        QRegion mask = rl ? rl->getMask() : QRegion();
+        if (!mask.isNull()) {
+            QPoint o(0,0);
+            o = contentsToViewport(o);
+            mask.translate(o.x(),o.y());
+            mask = mask.intersect( QRect(g.x(),g.y(),g.width(),g.height()) );
+            cr -= mask;
+        } else {
+            cr -= QRect(g.x(), g.y(), g.width(), g.height());
         }
     }
 
@@ -3388,7 +3386,6 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         return;
     }
     else if ( e->timerId() == d->layoutTimerId ) {
-        d->dirtyLayout = true;
         layout();
         if (d->firstRelayout) {
             d->firstRelayout = false;
@@ -3452,24 +3449,6 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     if ( !updateRegion.isNull() )
         repaintContents( updateRegion );
 
-    if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
-        QWidget* w;
-        d->dirtyLayout = false;
-
-        QRect visibleRect(contentsX(), contentsY(), visibleWidth(), visibleHeight());
-        QPtrList<RenderWidget> toRemove;
-        for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
-            int xp = 0, yp = 0;
-            w = it.current();
-            RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
-            if (!rw->absolutePosition(xp, yp) ||
-                !visibleRect.intersects(QRect(xp, yp, w->width(), w->height())))
-                toRemove.append(rw);
-        }
-        for (RenderWidget* r = toRemove.first(); r; r = toRemove.next())
-            if ( (w = d->visibleWidgets.take(r) ) )
-                addChild(w, 0, -500000);
-    }
     emit repaintAccessKeys();
     if (d->emitCompletedAfterRepaint) {
         bool full = d->emitCompletedAfterRepaint == KHTMLViewPrivate::CSFull;

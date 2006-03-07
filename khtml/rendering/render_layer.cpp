@@ -153,22 +153,25 @@ void RenderLayer::updateLayerPosition()
     setPos(x,y);
 }
 
-QRegion RenderLayer::paintedRegion() {
+QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer) {
     updateZOrderLists();
     QRegion r;
     if (m_negZOrderList) {
         uint count = m_negZOrderList->count();
         for (uint i = 0; i < count; i++) {
             RenderLayer* child = m_negZOrderList->at(i);
-            r += child->paintedRegion();
+            r += child->paintedRegion(rootLayer);
         }
     }
-
-    if ( renderer()->style()->visibility() == VISIBLE ) {
-        if( (renderer()->style()->backgroundImage() || renderer()->style()->backgroundColor().isValid() || renderer()->style()->hasBorder()) ) {
-            r += QRect(xPos(), yPos(), width(), height());
+    const RenderStyle *s= renderer()->style();
+    if ( s->visibility() == VISIBLE ) {
+        if( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || s->hidesOverflow() ) {
+            r += m_visibleRect;
         } else {
-            r += renderer()->visibleFlowRegion(xPos(), yPos());
+            int x =0; int y = 0;
+            convertToLayerCoords(rootLayer,x,y);
+            r += renderer()->visibleFlowRegion(x, y);
+            r &= m_visibleRect;
         }
     }
     
@@ -176,7 +179,7 @@ QRegion RenderLayer::paintedRegion() {
         uint count = m_posZOrderList->count();
         for (uint i = 0; i < count; i++) {
             RenderLayer* child = m_posZOrderList->at(i);
-             r += child->paintedRegion();
+             r += child->paintedRegion(rootLayer);
         }
     }
     return r;
@@ -201,7 +204,7 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
 {
     if (doFullRepaint) {
         m_object->repaint();
-        checkForRepaint = doFullRepaint = false;
+        checkForRepaint = doFullRepaint = hasOverlaidWidgets();
     }
     
     updateLayerPosition(); // For relpositioned layers or non-positioned layers,
@@ -226,8 +229,10 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
         QRect layerBounds, damageRect, fgrect;
         calculateRects(rootLayer, renderer()->viewRect(), layerBounds, damageRect, fgrect);
         QRect vr = damageRect.intersect( layerBounds );
-        if (vr != m_visibleRect && vr.isValid())
+        if (vr != m_visibleRect && vr.isValid()) {
             renderer()->canvas()->repaintViewRectangle( vr.x(), vr.y(), vr.width(), vr.height() );
+            m_visibleRect = vr;
+        }
     }
     m_markedForRepaint = false;   
 #endif
@@ -240,26 +245,28 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
         m_marquee->updateMarqueePosition();
 }
 
-void RenderLayer::updateWidgetMasks() 
+void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer) 
 {
-    if (hasOverlaidWidgets() && !renderer()->canvas()->pagedMode()) {
+    if (hasOverlaidWidgets() && isStackingContext() && !renderer()->canvas()->pagedMode()) {
         updateZOrderLists();
         uint count = m_posZOrderList ? m_posZOrderList->count() : 0;
+        bool needUpdate = (count || !m_region.isNull());
         if (count) {
             QScrollView* sv = m_object->element()->getDocument()->view();
             m_region = QRect(0,0,sv->contentsWidth(),sv->contentsHeight());
 
             for (uint i = 0; i < count; i++) {
                 RenderLayer* child = m_posZOrderList->at(i);
-                m_region -= child->paintedRegion();
-            }    
-            renderer()->updateWidgetMasks();
+                m_region -= child->paintedRegion(rootLayer);
+            }
         } else {
             m_region = QRegion();
         }
+        if (needUpdate)
+            renderer()->updateWidgetMasks();
     }    
     for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
-        child->updateWidgetMasks();
+        child->updateWidgetMasks(rootLayer);
 }
 
 short RenderLayer::width() const

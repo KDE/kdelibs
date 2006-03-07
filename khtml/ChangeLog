@@ -1,3 +1,28 @@
+2006-03-07  Germain Garand  <germain@ebooksfrance.org>
+
+        Scope: relayout/repaint/widget masks fixes. Refine stacking context exploration. Optimise.
+
+        * khtmlview.cpp (reset/timerEvent): remove obsolete code checking validity of visible widgets list.
+        (drawContents): use widget geometry rather than the RenderWidget's rect (fixes widget borders not being updated)
+        Check if widget is in the dirty rect before doing any work.
+
+        * rendering/render_block.cpp (layoutBlockChildren): I meant !child->isPositioned() here, not isPositioned(). No need to
+        dirty positioned children as this is handled by the containing block chain through layoutPositionedObjects 
+        (layoutPositionedObjects): always relayout fixed objects.
+
+        * rendering/render_canvas.cpp (layout): check canvas dimensions and call layoutBlock directly with relayoutChildren boolean.
+        
+        * rendering/render_layer.{h,cpp} (paintedRegion): constrain our shape to the visibleRect. Use convertToLayerCoords to get a correct 
+        visibleFlowRegion (updateWidgetMasks): don't forget to update the mask if it reverts to none at all. 
+
+        * rendering/render_object.{h,cpp} (containingBlock): for relpos inlines, return the nearest block (skipping to next containingBlock gives 
+        stalled layout flags problems - #121653). (updateWidgetMasks): mask the content box, not the border box.
+        (enclosingStackingContext) new. Returns the layer defining current stacking context.
+
+        * rendering/render_replaced.{h,cpp} (isKHTMLWidget): new flag for KHTML-proxied widgets.
+        (detach/resizeWidget/setQWidget/layout/updateFromElement/slotWidgetDestructed/setStyle/paint): use the flag insead of strcmp's
+        Only allow !khtml widgets to register in the view (only those need masking).
+
 2006-03-05  Charles Samuels  <charles@kde.org>
 	* link not accessable with negative text-indent (#96275)
 	* Wrong :hover effect with negative text-indent (#90510)

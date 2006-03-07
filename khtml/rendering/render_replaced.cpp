@@ -102,6 +102,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_arena.reset(renderArena());
     m_resizePending = false;
     m_discardResizes = false;
+    m_isKHTMLWidget = false;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -116,7 +117,8 @@ void RenderWidget::detach()
 
     if ( m_widget ) {
         if ( m_view ) {
-            m_view->setWidgetVisible(this, false);
+            if (!isKHTMLWidget())
+                m_view->setWidgetVisible(this, false);
             m_view->removeChild( m_widget );
         }
 
@@ -155,7 +157,7 @@ void  RenderWidget::resizeWidget( int w, int h )
     w = kMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
-        m_resizePending = !strcmp(m_widget->name(), "__khtml");
+        m_resizePending = isKHTMLWidget();
         ref();
         element()->ref();
         QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
@@ -210,7 +212,7 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( !strcmp(m_widget->name(), "__khtml") && !::qt_cast<QFrame*>(m_widget))
+            if ( (m_isKHTMLWidget = !strcmp(m_widget->name(), "__khtml")) && !::qt_cast<QFrame*>(m_widget))
                 m_widget->setBackgroundMode( QWidget::NoBackground );
 
             if (m_widget->focusPolicy() > QWidget::StrongFocus)
@@ -225,7 +227,8 @@ void RenderWidget::setQWidget(QWidget *widget)
             else
                 setPos(xPos(), -500000);
         }
-        m_view->setWidgetVisible(this, false);
+        if (!isKHTMLWidget())
+            m_view->setWidgetVisible(this, false);
         m_view->addChild( m_widget, 0, -500000);
         if ( m_widget ) m_widget->hide();
         m_resizePending = false;
@@ -239,9 +242,12 @@ void RenderWidget::layout( )
     if ( m_widget ) {
         resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                       m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
-        if (strcmp(widget()->name(), "__khtml") && !isPositioned()) {
-            enclosingLayer()->setHasOverlaidWidgets();
-            canvas()->setNeedsWidgetMasks();
+        if (!isKHTMLWidget() && !isPositioned()) {
+            RenderLayer* rl = enclosingStackingContext();
+            if (rl) {
+                rl->setHasOverlaidWidgets();
+                canvas()->setNeedsWidgetMasks();
+            }
         }
     }
 
@@ -263,7 +269,7 @@ void RenderWidget::updateFromElement()
             int lowlightVal = 100 + (2*contrast_+4)*10;
 
             if (backgroundColor.isValid()) {
-                if (strcmp(widget()->name(), "__khtml"))
+                if (!isKHTMLWidget())
                     widget()->setEraseColor(backgroundColor );
                 for ( int i = 0; i < QPalette::NColorGroups; ++i ) {
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Background, backgroundColor );
@@ -331,7 +337,7 @@ void RenderWidget::updateFromElement()
 
 void RenderWidget::slotWidgetDestructed()
 {
-    if (m_view)
+    if (m_view && !isKHTMLWidget())
        m_view->setWidgetVisible(this, false);
     m_widget = 0;
 }
@@ -343,7 +349,7 @@ void RenderWidget::setStyle(RenderStyle *_style)
     {
         m_widget->setFont(style()->font());
         if (style()->visibility() != VISIBLE) {
-            if (m_view)
+            if (m_view && !isKHTMLWidget())
                 m_view->setWidgetVisible(this, false);
             m_widget->hide();
         }
@@ -384,7 +390,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     int xPos = _tx+borderLeft()+paddingLeft();
     int yPos = _ty+borderTop()+paddingTop();
 
-    bool khtmlw = !strcmp(m_widget->name(), "__khtml");
+    bool khtmlw = isKHTMLWidget();
     int childw = m_widget->width();
     int childh = m_widget->height();
     if ( (childw == 2000 || childh == 3072) && m_widget->inherits( "KHTMLView" ) ) {
@@ -418,7 +424,8 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         xPos = xNew;
         yPos = yNew;
     }
-    m_view->setWidgetVisible(this, true);
+    if (!khtmlw)
+        m_view->setWidgetVisible(this, true);
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
     if (khtmlw)

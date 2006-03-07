@@ -220,8 +220,8 @@ public:
     void setHasOverlaidWidgets(bool b=true) { m_hasOverlaidWidgets = b; }
     bool hasOverlaidWidgets() const { return m_hasOverlaidWidgets; }
     QRegion getMask() const { return m_region; }
-    QRegion paintedRegion();
-    void updateWidgetMasks();
+    QRegion paintedRegion(RenderLayer* rootLayer);
+    void updateWidgetMasks(RenderLayer* rootLayer);
 
     // Gets the nearest enclosing positioned ancestor layer (also includes
     // the <html> layer and the root layer).

@@ -115,6 +115,7 @@ public:
 
 public slots:
     void slotWidgetDestructed();
+    bool isKHTMLWidget() const { return m_isKHTMLWidget; }
 
 protected:
     virtual bool canHaveBorder() const { return false; }
@@ -138,6 +139,7 @@ protected:
 
     bool m_resizePending;
     bool m_discardResizes;
+    bool m_isKHTMLWidget;
 
 public:
     class EventPropagator : public QWidget {

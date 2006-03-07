@@ -1334,9 +1334,9 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         int oldTopNegMargin = m_maxTopNegMargin;
 
         // make sure we relayout children if we need it.
-        if (!isPositioned() && (relayoutChildren ||
-            (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())) ||
-            (child->isRenderBlock() && child->style()->height().isPercent())))
+        if (!child->isPositioned() && (relayoutChildren ||
+             (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())) ||
+             (child->isRenderBlock() && child->style()->height().isPercent())))
             child->setChildNeedsLayout(true);
 
         // Handle the four types of special elements first.  These include positioned content, floating content, compacts and
@@ -1453,6 +1453,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
 void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pageBreakInfo, MarginInfo &marginInfo)
 {
+    (void)marginInfo;
     int childTop = child->yPos();
     int childBottom = child->yPos()+child->height();
 #ifdef PAGE_DEBUG
@@ -1552,7 +1553,8 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
                 r->repaintDuringLayout();
                 r->setMarkedForRepaint(false);
             }
-            if ( relayoutChildren || ((r->hasStaticY()||r->hasStaticX()) && r->parent() != this && r->parent()->isBlockFlow()) )
+            if ( relayoutChildren || r->style()->position() == FIXED ||
+                   ((r->hasStaticY()||r->hasStaticX()) && r->parent() != this && r->parent()->isBlockFlow()) )
                 r->setChildNeedsLayout(true);
             r->layoutIfNeeded();
             if (adjOverflow && r->style()->position() == ABSOLUTE) {
@@ -1617,8 +1619,6 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
     // 2. paint contents
     int scrolledX = _tx;
     int scrolledY = _ty;
-    int _y = pI.r.y();
-    int _h = pI.r.height();
     if (style()->hidesOverflow() && m_layer)
         m_layer->subtractScrollOffset(scrolledX, scrolledY);
 

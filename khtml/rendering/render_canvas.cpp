@@ -167,6 +167,8 @@ void RenderCanvas::layout()
     kdDebug() << "RenderCanvas::layout time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
+    int oldWidth = m_width;
+    int oldHeight = m_height;
 
     if (m_pagedMode || !m_view) {
         m_width = m_rootWidth;
@@ -178,7 +180,9 @@ void RenderCanvas::layout()
         m_viewportHeight = m_height = m_view->visibleHeight();
     }
 
-    RenderBlock::layout();
+    bool relayoutChildren = (oldWidth != m_width) || (oldHeight != m_height);
+
+    RenderBlock::layoutBlock( relayoutChildren );
 
     int docW = docWidth();
     int docH = docHeight();
@@ -226,9 +230,9 @@ void RenderCanvas::layout()
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
     layer()->updateLayerPositions( layer(), needsFullRepaint(), true );
-
+    
     if (!m_pagedMode && m_needsWidgetMasks)
-        layer()->updateWidgetMasks();
+        layer()->updateWidgetMasks(layer());
 
     scheduleDeferredRepaints();
     setNeedsLayout(false);
