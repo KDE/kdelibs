@@ -302,6 +302,10 @@ bool ResourceFile::save( Ticket * )
   if (d->mIsSaving) {
     abortAsyncSaving();
   }
+  if ( d->mIsLoading ) {
+    kdWarning(5700) << "Aborted save() because we're still asyncLoad()ing!" << endl;
+    return false;
+  }
 
   // create backup file
   QString extension = "_" + QString::number( QDate::currentDate().dayOfWeek() );
