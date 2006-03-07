@@ -43,7 +43,6 @@ KDEHW::Volume::Volume( Ifaces::Volume *iface, QObject *parent )
 
 KDEHW::Volume::~Volume()
 {
-    delete d->iface;
     delete d;
 }
 

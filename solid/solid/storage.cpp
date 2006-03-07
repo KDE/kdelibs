@@ -40,7 +40,6 @@ KDEHW::Storage::Storage( Ifaces::Storage *iface, QObject *parent )
 
 KDEHW::Storage::~Storage()
 {
-    delete d->iface;
     delete d;
 }
 

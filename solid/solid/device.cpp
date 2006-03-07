@@ -381,6 +381,8 @@ void KDEHW::Device::Private::unregisterData()
     {
         delete iface;
     }
+
+    ifaces.clear();
 }
 
 #include "device.moc"

@@ -40,7 +40,6 @@ KDEHW::Processor::Processor( Ifaces::Processor *iface, QObject *parent )
 
 KDEHW::Processor::~Processor()
 {
-    delete d->iface;
     delete d;
 }
 

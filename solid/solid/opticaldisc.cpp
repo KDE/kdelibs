@@ -40,7 +40,6 @@ KDEHW::OpticalDisc::OpticalDisc( Ifaces::OpticalDisc *iface, QObject *parent )
 
 KDEHW::OpticalDisc::~OpticalDisc()
 {
-    delete d->iface;
     delete d;
 }
 

@@ -41,7 +41,6 @@ KDEHW::Block::Block( Ifaces::Block *iface, QObject *parent )
 
 KDEHW::Block::~Block()
 {
-    delete d->iface;
     delete d;
 }
 

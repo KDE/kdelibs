@@ -43,7 +43,6 @@ KDEHW::Cdrom::Cdrom( Ifaces::Cdrom *iface, QObject *parent )
 
 KDEHW::Cdrom::~Cdrom()
 {
-    delete d->iface;
     delete d;
 }
 
