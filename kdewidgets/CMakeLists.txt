@@ -24,9 +24,11 @@ install_targets(/bin makekdewidgets )
 ########### next target ###############
 
 
+GET_TARGET_PROPERTY(MakeKDEWidgetsLoc makekdewidgets LOCATION)
+
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
-  COMMAND ${CMAKE_BINARY_DIR}/bin/makekdewidgets
-  ARGS -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets 
+  COMMAND "${MakeKDEWidgetsLoc}"
+  ARGS -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets
   DEPENDS kde.widgets makekdewidgets)
 
 set(kdewidgets_PART_SRCS
