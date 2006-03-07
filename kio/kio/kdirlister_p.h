@@ -133,7 +133,8 @@ public:
   KDirListerCache( int maxCount = 10 );
   ~KDirListerCache();
 
-  void listDir( KDirLister *lister, const KURL &_url, bool _keep, bool _reload );
+  bool listDir( KDirLister *lister, const KURL& _url, bool _keep, bool _reload );
+  bool validURL( const KDirLister *lister, const KURL& _url ) const;
 
   // stop all running jobs for lister
   void stop( KDirLister *lister );
