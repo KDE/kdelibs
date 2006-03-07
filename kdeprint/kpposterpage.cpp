@@ -190,17 +190,17 @@ KPPosterPage::KPPosterPage( QWidget *parent )
           selectionlab->setWhatsThis(whatsThisTileOrderSelectionPosterPage);
 	selectionlab->setBuddy( m_selection );
 	m_lockbtn->setCheckable( true );
-	m_lockbtn->setPixmap( SmallIcon( "encrypted" ) );
+	m_lockbtn->setIcon( QIcon( SmallIcon( "encrypted" ) ) );
 	m_lockbtn->setChecked( true );
 	m_lockbtn->setFixedSize( m_lockbtn->sizeHint() );
 	m_lockbtn->setToolTip( i18n( "Link/unlink poster and print size" ) );
 
 	for ( int i=0; i<KPrinter::NPageSize-1; i++ )
 	{
-		m_postersize->insertItem( page_sizes[ i ].text );
-		m_printsize->insertItem( page_sizes[ i ].text );
+		m_postersize->addItem( page_sizes[ i ].text );
+		m_printsize->addItem( page_sizes[ i ].text );
 	}
-	m_postersize->setCurrentItem( findIndex( KPrinter::A3 ) );
+	m_postersize->setCurrentIndex( findIndex( KPrinter::A3 ) );
 	slotPosterSizeChanged( m_postersize->currentIndex() );
 
 	connect( m_postercheck, SIGNAL( toggled( bool ) ), dummy, SLOT( setEnabled( bool ) ) );
@@ -226,24 +226,26 @@ KPPosterPage::KPPosterPage( QWidget *parent )
 	l0->setSpacing( 10 );
 	l0->addWidget( m_postercheck );
 	l0->addWidget( dummy, 1 );
-	QGridLayout *l1 = new QGridLayout( dummy, 8, 3, 0, 5 );
+	QGridLayout *l1 = new QGridLayout( dummy );
+	l1->setSpacing( 5 );
 	l1->addWidget( posterlab, 0, 0 );
 	l1->addWidget( m_postersize, 0, 1 );
 	l1->addWidget( printlab, 1, 0 );
 	l1->addWidget( m_printsize, 1, 1 );
 	l1->addWidget( medialab, 2, 0 );
 	l1->addWidget( m_mediasize, 2, 1 );
-	l1->addMultiCellWidget( m_preview, 4, 4, 0, 2 );
-	l1->addMultiCellWidget( m_cutmargin, 6, 6, 0, 2 );
-	l1->addMultiCellWidget( m_lockbtn, 0, 1, 2, 2 );
-	QHBoxLayout *l2 = new QHBoxLayout( 0, 0, 5 );
-	l1->addMultiCellLayout( l2, 7, 7, 0, 2 );
+	l1->addWidget( m_preview, 4, 0, 1, 3 );
+	l1->addWidget( m_cutmargin, 6, 0, 1, 3 );
+	l1->addWidget( m_lockbtn, 0, 2, 2, 1 );
+	QHBoxLayout *l2 = new QHBoxLayout();
+	l2->setSpacing( 5 );
+	l1->addLayout( l2, 7, 0, 1, 3 );
 	l2->addWidget( selectionlab );
 	l2->addWidget( m_selection );
-	l1->setColStretch( 1, 1 );
+	l1->setColumnStretch( 1, 1 );
 	l1->setRowStretch( 4, 1 );
-	l1->addRowSpacing( 3, 10 );
-	l1->addRowSpacing( 5, 10 );
+	l1->addItem( new QSpacerItem( 0, 10 ), 3, 0 );
+	l1->addItem( new QSpacerItem( 0, 10 ), 5, 0 );
 }
 
 KPPosterPage::~KPPosterPage()
@@ -272,11 +274,11 @@ void KPPosterPage::setOptions( const QMap<QString,QString>& opts )
 		QString prtsize = opts[ "kde-printsize" ];
 		if ( !ps.isEmpty() )
 		{
-			m_postersize->setCurrentItem( findIndex( pageNameToPageSize( ps ) ) );
+			m_postersize->setCurrentIndex( findIndex( pageNameToPageSize( ps ) ) );
 			m_lockbtn->setChecked( !prtsize.isEmpty() &&
 					page_sizes[ m_postersize->currentIndex() ].ID == prtsize.toInt() );
 			if ( !m_lockbtn->isChecked() )
-				m_printsize->setCurrentItem( findIndex( prtsize.toInt() ) );
+				m_printsize->setCurrentIndex( findIndex( prtsize.toInt() ) );
 			slotPosterSizeChanged( m_postersize->currentIndex() );
 		}
 		if ( !opts[ "_kde-poster-cut" ].isEmpty() )
@@ -323,7 +325,7 @@ void KPPosterPage::slotPosterSizeChanged( int value )
 	int ID = page_sizes[ m_postersize->currentIndex() ].ID;
 	m_preview->setPosterSize( ID );
 	if ( m_lockbtn->isChecked() )
-		m_printsize->setCurrentItem( value );
+		m_printsize->setCurrentIndex( value );
 }
 
 void KPPosterPage::slotMarginChanged( int value )
@@ -333,7 +335,7 @@ void KPPosterPage::slotMarginChanged( int value )
 
 void KPPosterPage::slotLockToggled( bool on )
 {
-	m_lockbtn->setPixmap( SmallIcon( on ? "encrypted" : "decrypted" ) );
+	m_lockbtn->setIcon( QIcon( SmallIcon( on ? "encrypted" : "decrypted" ) ) );
 	if ( on )
 		m_printsize->setCurrentIndex( m_postersize->currentIndex() );
 }

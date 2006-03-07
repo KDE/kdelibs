@@ -89,9 +89,9 @@ void KPrinterPropertyDialog::setOptions(const QMap<QString,QString>& opts)
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 		m_options[it.key()] = it.value();
 	// update all existing pages
-	QListIterator<KPrintDialogPage*> it(m_pages);
-	while (it.hasNext())
-		it.next()->setOptions(m_options);
+	QListIterator<KPrintDialogPage*> it2(m_pages);
+	while (it2.hasNext())
+		it2.next()->setOptions(m_options);
 }
 
 void KPrinterPropertyDialog::getOptions(QMap<QString,QString>& opts, bool incldef)
