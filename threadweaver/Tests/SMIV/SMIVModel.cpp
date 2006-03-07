@@ -32,7 +32,7 @@ SMIVModel::~SMIVModel()
 
 void SMIVModel::insert ( const SMIVItem* item )
 {
-    beginInsertRows( QModelIndex(),  m_data.count(), 1 );
+    beginInsertRows( QModelIndex(),  m_data.count(), m_data.count() + 1 );
     m_data.append ( item );
     endInsertRows();
 }
