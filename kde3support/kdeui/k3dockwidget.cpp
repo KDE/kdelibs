@@ -1476,6 +1476,12 @@ void K3DockWidget::setWidget( QWidget* mw )
   widget = mw;
   delete layout;
 
+  /*
+   * Qt 4.1 does not fill the background if not asked so explicitely.
+   * However code from Qt3/KDE3 could except that the background is filled.
+   */
+  widget->setAutoFillBackground( true );
+
   layout = new QVBoxLayout( this );
   layout->setSizeConstraint( QLayout::Minimum );
 

@@ -21,7 +21,6 @@ DockTest::DockTest( QWidget* parent )
   QWidget *l = new QWidget( m_blueDock );
   l->setBackgroundColor( Qt::blue );
   l->setMinimumSize( 100,100 );
-  l->setAutoFillBackground( true ); // New for Qt 4.1
   m_blueDock->setWidget( l );
 
   setMainDockWidget( m_blueDock );
@@ -36,7 +35,6 @@ DockTest::DockTest( QWidget* parent )
   l = new QWidget( m_redDock );
   l->setBackgroundColor( Qt::red );
   l->setMinimumSize( 100,100 );
-  l->setAutoFillBackground( true ); // New for Qt 4.1
   m_redDock->setWidget( l );
   m_redDock->manualDock( m_blueDock, K3DockWidget::DockLeft, 3000 );
 
@@ -50,7 +48,6 @@ DockTest::DockTest( QWidget* parent )
   l = new QWidget( m_yellowDock );
   l->setBackgroundColor( Qt::yellow );
   l->setMinimumSize( 100,100 );
-  l->setAutoFillBackground( true ); // New for Qt 4.1
   m_yellowDock->setWidget( l );
   m_yellowDock->manualDock( m_blueDock, K3DockWidget::DockTop, 5000 );
 }
