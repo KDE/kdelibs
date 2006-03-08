@@ -356,6 +356,16 @@ write_all(int fd, const char *buf, size_t len)
    return 0;
 }
 
+static bool
+same_inode(const KDE_struct_stat &src, const KDE_struct_stat &dest)
+{
+   if (src.st_ino == dest.st_ino &&
+       src.st_dev == dest.st_dev)
+     return true;
+
+   return false;
+}
+
 void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resume )
 {
     QString dest_orig = url.path();
@@ -611,6 +621,12 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
            return;
         }
 
+	if ( same_inode( buff_dest, buff_src) ) 
+	{
+	    error( KIO::ERR_IDENTICAL_FILES, dest.path() );
+	    return;
+	}
+
         if (!_overwrite)
         {
            error( KIO::ERR_FILE_ALREADY_EXIST, dest.path() );
@@ -817,6 +833,12 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
            error( KIO::ERR_DIR_ALREADY_EXIST, dest.path() );
            return;
         }
+
+	if ( same_inode( buff_dest, buff_src) ) 
+	{
+	    error( KIO::ERR_IDENTICAL_FILES, dest.path() );
+	    return;
+	}
 
         if (!_overwrite)
         {
