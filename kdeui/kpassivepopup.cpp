@@ -44,7 +44,8 @@ class KPassivePopup::Private
 {
 public:
     Private()
-	: msgView(0),
+	: popupStyle( DEFAULT_POPUP_TYPE ),
+	  msgView(0),
 	  topLayout(0),
 	  hideDelay( DEFAULT_POPUP_TIME ),
 	  hideTimer(0),
@@ -75,33 +76,34 @@ KPassivePopup::KPassivePopup( QWidget *parent, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       d(new Private())
 {
-    init( DEFAULT_POPUP_TYPE, parent ? parent->winId() : 0L );
+    init( parent ? parent->winId() : 0L );
 }
 
 KPassivePopup::KPassivePopup( WId win )
     : QFrame( 0 ),
       d(new Private())
 {
-    init( DEFAULT_POPUP_TYPE, win );
+    init( win );
 }
 
 KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       d(new Private())
 {
-    init( popupStyle, parent ? parent->winId() : 0L );
+    init( parent ? parent->winId() : 0L );
+    setPopupStyle( popupStyle );
 }
 
 KPassivePopup::KPassivePopup( int popupStyle, WId win, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       d(new Private())
 {
-    init( popupStyle, win );
+    init( win );
+    setPopupStyle( popupStyle );
 }
 
-void KPassivePopup::init( int popupStyle, WId window )
+void KPassivePopup::init( WId window )
 {
-    d->popupStyle = popupStyle;
     d->window = window;
     d->hideTimer = new QTimer( this );
 
@@ -109,12 +111,12 @@ void KPassivePopup::init( int popupStyle, WId window )
     setFrameStyle( QFrame::Box| QFrame::Plain );
     setLineWidth( 2 );
 
-    if( popupStyle == Boxed )
+    if( d->popupStyle == Boxed )
     {
         setFrameStyle( QFrame::Box| QFrame::Plain );
         setLineWidth( 2 );
     }
-    else if( popupStyle == Balloon )
+    else if( d->popupStyle == Balloon )
     {
         setPalette(QToolTip::palette());
         //XXX dead ? setAutoMask(true);
@@ -126,6 +128,24 @@ void KPassivePopup::init( int popupStyle, WId window )
 KPassivePopup::~KPassivePopup()
 {
     delete d;
+}
+
+void KPassivePopup::setPopupStyle( int popupstyle )
+{
+    if ( d->popupStyle == popupstyle )
+	return;
+
+    d->popupStyle = popupstyle;
+    if( d->popupStyle == Boxed )
+    {
+        setFrameStyle( QFrame::Box| QFrame::Plain );
+        setLineWidth( 2 );
+    }
+    else if( d->popupStyle == Balloon )
+    {
+        setPalette(QToolTip::palette());
+        //XXX dead ? setAutoMask(true);
+    }
 }
 
 void KPassivePopup::setView( QWidget *child )
@@ -378,6 +398,11 @@ void KPassivePopup::moveNear( const QRect &target )
         move( x, y );
 }
 
+QPoint KPassivePopup::anchor() const
+{
+    return d->anchor;
+}
+
 void KPassivePopup::setAnchor(const QPoint &anchor)
 {
     d->anchor = anchor;
@@ -503,7 +528,8 @@ KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, c
 				       const QPixmap &icon,
 				       QWidget *parent, int timeout )
 {
-    KPassivePopup *pop = new KPassivePopup( popupStyle, parent );
+    KPassivePopup *pop = new KPassivePopup( parent );
+    pop->setPopupStyle( popupStyle );
     pop->setAutoDelete( true );
     pop->setView( caption, text, icon );
     pop->d->hideDelay = timeout;
@@ -526,7 +552,8 @@ KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, c
 KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
 				       const QPixmap &icon, WId parent, int timeout )
 {
-    KPassivePopup *pop = new KPassivePopup( popupStyle, parent );
+    KPassivePopup *pop = new KPassivePopup( parent );
+    pop->setPopupStyle( popupStyle );
     pop->setAutoDelete( true );
     pop->setView( caption, text, icon );
     pop->d->hideDelay = timeout;

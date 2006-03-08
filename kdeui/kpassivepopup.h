@@ -64,6 +64,7 @@ class KDEUI_EXPORT KPassivePopup : public QFrame
     Q_OBJECT
     Q_PROPERTY (bool autoDelete READ autoDelete WRITE setAutoDelete )
     Q_PROPERTY (int timeout READ timeout WRITE setTimeout )
+    Q_PROPERTY (QRect defaultArea READ defaultArea )
 
 public:
     /**
@@ -88,13 +89,15 @@ public:
 
     /**
      * Creates a popup for the specified widget.
+     * THIS WILL BE REMOVED, USE setPopupStyle().
      */
-    KPassivePopup( int popupStyle, QWidget *parent=0, Qt::WFlags f=0 );
+    KDE_DEPRECATED KPassivePopup( int popupStyle, QWidget *parent=0, Qt::WFlags f=0 );
 
     /**
      * Creates a popup for the specified window.
+     * THIS WILL BE REMOVED, USE setPopupStyle().
      */
-    KPassivePopup( int popupStyle, WId parent, Qt::WFlags f=0 );
+    KDE_DEPRECATED KPassivePopup( int popupStyle, WId parent, Qt::WFlags f=0 );
 
     /**
      * Cleans up.
@@ -162,6 +165,19 @@ public:
      * @see setAutoDelete
      */
     bool autoDelete() const;
+
+    /**
+     * If no relative window (eg taskbar button, system tray window) is
+     * available, use this rectangle (pass it to moveNear()).
+     * Basically KWinModule::workArea() with width and height set to 0
+     * so that moveNear uses the upper-left position.
+     * @return The QRect to be passed to moveNear() if no other is
+     * available.
+     */
+    QRect defaultArea() const;
+
+    QPoint anchor() const;
+
 
     /**
      * Sets the anchor of this balloon. The balloon tries automatically to adjust
@@ -258,6 +274,8 @@ public Q_SLOTS:
      */
     void setTimeout( int delay );
 
+    void setPopupStyle( int popupstyle );
+
     /**
      * Reimplemented to reposition the popup.
      */
@@ -302,16 +320,6 @@ protected:
     virtual void mouseReleaseEvent( QMouseEvent *e );
 
     /**
-     * If no relative window (eg taskbar button, system tray window) is
-     * available, use this rectangle (pass it to moveNear()).
-     * Basically KWinModule::workArea() with width and height set to 0
-     * so that moveNear uses the upper-left position.
-     * @return The QRect to be passed to moveNear() if no other is
-     * available.
-     */
-    QRect defaultArea() const;
-
-    /**
      * Updates the transparency mask. Unused if PopupStyle == Boxed
      */
     void updateMask();
@@ -323,7 +331,7 @@ protected:
     virtual void paintEvent( QPaintEvent* pe );
 
 private:
-    void init( int popupStyle, WId window );
+    void init( WId window );
 
     /* @internal */
     class Private;
