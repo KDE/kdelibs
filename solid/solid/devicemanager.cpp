@@ -229,8 +229,16 @@ KDEHW::DeviceList KDEHW::DeviceManager::findDevicesFromQuery( const QString &par
     foreach( QString udi, udis )
     {
         Ifaces::Device *device = d->findRegisteredDevice( udi );
+        bool matches = false;
+        if ( device )
+        {
+            if( !predicate.isValid() )
+               matches = true;
+            else
+               matches = predicate.matches( device );
+        }
 
-        if ( device!=0 && predicate.matches( device ) )
+        if ( matches )
         {
             list.append( Device( device ) );
         }
