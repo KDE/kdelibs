@@ -19,6 +19,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <sys/time.h>
 #include <sys/resource.h>
 
 #include <QApplication>
