@@ -55,6 +55,7 @@ class KToolBar;
 class KActionCollection;
 class KPopupMenu;
 class KMainWindow;
+class KXMLGUIClient;
 
 typedef QValueList<KAction *> KActionPtrList;
 
