@@ -991,6 +991,7 @@ void KConfigSkeleton::addItem( KConfigSkeletonItem *item, const QString &name )
   mItems.append( item );
   mItemDict.insert( item->name(), item );
   item->readDefault( mConfig );
+  item->readConfig( mConfig );
 }
 
 KConfigSkeleton::ItemString *KConfigSkeleton::addItemString( const QString &name, QString &reference,
