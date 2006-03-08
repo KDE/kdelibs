@@ -250,11 +250,12 @@ check_function_exists(__argz_stringify HAVE___ARGZ_STRINGIFY)
 check_library_exists(utempter addToUtmp "" HAVE_UTEMPTER)
 check_library_exists(crypt crypt "" HAVE_CRYPT)
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
-
+check_library_exists(resolv res_init "" HAVE_RESOLV_LIBRARY)
 check_library_exists(util  openpty "" HAVE_OPENPTY)
 if (HAVE_OPENPTY)
   set(UTIL_LIBRARY util)
 endif (HAVE_OPENPTY)
+
 
 # it seems this isn't used anywhere
 #find_library(ICE_LIB NAMES ICE PATHS /usr/X11/lib)

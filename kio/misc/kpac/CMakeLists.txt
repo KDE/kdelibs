@@ -24,8 +24,7 @@ kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 
 target_link_libraries(kded_proxyscout  ${QT_AND_KDECORE_LIBS} kio kjs )
 
-# this needs -l resolv e.g on Slackware, but not on FreeBSD
-check_library_exists(resolv res_query "" HAVE_RESOLV_LIBRARY)
+# this needs -lresolv e.g on Slackware, but not on FreeBSD
 if (HAVE_RESOLV_LIBRARY)
    target_link_libraries(kded_proxyscout resolv)
 endif (HAVE_RESOLV_LIBRARY)
