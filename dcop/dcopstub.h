@@ -127,6 +127,7 @@ protected:
      */
     enum never_use_t { never_use };
     /**
+     * Never use. @see never_use_t
      * @internal
      */
     DCOPStub( never_use_t ) { abort(); }
