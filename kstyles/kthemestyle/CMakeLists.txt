@@ -2,6 +2,8 @@ kde4_header()
 
 project(kstyle-kthemestyle)
 
+ADD_DEFINITIONS(-DQT_PLUGIN)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
