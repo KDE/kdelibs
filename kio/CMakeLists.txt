@@ -241,7 +241,7 @@ kde4_automoc(${kio_LIB_SRCS})
 
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
-target_link_libraries(kio  ${QT_AND_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} ${ACL_LIBS} )
+target_link_libraries(kio  ${QT_AND_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} )
 
 if (UNIX)
    target_link_libraries(kio kdesu)
@@ -253,7 +253,10 @@ if(FAM_FOUND)
    include_directories(${FAM_INCLUDE_DIRECTORY})
    target_link_libraries(kio ${FAM_LIBRARIES})
 endif(FAM_FOUND)
-   
+
+if(ACL_FOUND)
+   target_link_libraries(kio ${ACL_LIBS})
+endif(ACL_FOUND)
 
 set_target_properties(kio PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 ########### install files ###############
