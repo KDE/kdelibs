@@ -2243,8 +2243,8 @@ void K3DockManager::writeConfig(QDomElement &base)
     QStringList::Iterator nListIt=nList.begin();
     while ( nListIt!=nList.end() ) {
         K3DockWidget *obj = getDockWidgetFromName( *nListIt);
-        if ((obj->isGroup && (!obj->d->isContainer)) && (nameList.indexOf( obj->firstName.latin1() ) == -1
-                             || nameList.indexOf(obj->lastName.latin1()) == -1)) {
+        if ((obj->isGroup && (!obj->d->isContainer)) && (nameList.indexOf( obj->firstName) == -1
+                             || nameList.indexOf(obj->lastName) == -1)) {
             // Skip until children are saved (why?)
             ++nListIt;
 //            nList.next();
