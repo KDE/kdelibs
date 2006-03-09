@@ -87,6 +87,14 @@ else(DNSSD_FOUND)
 	set(HAVE_DNSSD 0)
 endif(DNSSD_FOUND)
 
+if(ACL_FOUND)
+	set(HAVE_LIBACL 1)
+	set(HAVE_POSIX_ACL 1)
+else(ACL_FOUND)
+	set(HAVE_LIBACL 0)
+	set(HAVE_POSIX_ACL 0)
+endif(ACL_FOUND)
+
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
 # If definitions like -D_GNU_SOURCE are needed for these checks they
 # should be added to _KDE4_PLATFORM_DEFINITIONS when it is originally

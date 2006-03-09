@@ -13,6 +13,10 @@
 
 #cmakedefine HAVE_DNSSD 1
 
+#cmakedefine HAVE_LIBACL 1
+/* Define if system has POSIX ACL support. */
+#cmakedefine HAVE_POSIX_ACL 1
+
 #undef HAVE_INOTIFY
 #undef HAVE_LUA
 #undef HAVE_NON_POSIX_ACL_EXTENSIONS
