@@ -209,9 +209,33 @@ if(NOT KDE4_USE_QT_EMB)
 endif(NOT KDE4_USE_QT_EMB )
 
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}")
-include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kwallet/client ${CMAKE_SOURCE_DIR}/kutils ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}) 
-include_directories(${CMAKE_BINARY_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/khtml/rendering ${CMAKE_SOURCE_DIR}/khtml/ecma ${CMAKE_BINARY_DIR}/khtml/ecma ${CMAKE_SOURCE_DIR}/kio/bookmarks)
-include_directories( ${CMAKE_SOURCE_DIR}/khtml/imload ${CMAKE_SOURCE_DIR}/khtml/imload/decoders ${CMAKE_CURRENT_SOURCE_DIR}/misc ${CMAKE_CURRENT_SOURCE_DIR}/dom ${CMAKE_CURRENT_SOURCE_DIR}/html )
+include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kwallet/client ${CMAKE_SOURCE_DIR}/kutils ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kio/bookmarks)
+
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}/misc
+  ${CMAKE_CURRENT_SOURCE_DIR}/dom
+  ${CMAKE_CURRENT_SOURCE_DIR}/xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/html
+  ${CMAKE_CURRENT_SOURCE_DIR}/rendering
+  ${CMAKE_CURRENT_SOURCE_DIR}/ecma
+  ${CMAKE_CURRENT_SOURCE_DIR}/imload
+  ${CMAKE_CURRENT_SOURCE_DIR}/imload/decoders
+  ${CMAKE_CURRENT_SOURCE_DIR}/java
+)
+include_directories(
+  ${CMAKE_CURRENT_BINARY_DIR}/misc
+  ${CMAKE_CURRENT_BINARY_DIR}/dom
+  ${CMAKE_CURRENT_BINARY_DIR}/xml
+  ${CMAKE_CURRENT_BINARY_DIR}/html
+  ${CMAKE_CURRENT_BINARY_DIR}/rendering
+  ${CMAKE_CURRENT_BINARY_DIR}/ecma
+  ${CMAKE_CURRENT_BINARY_DIR}/imload
+  ${CMAKE_CURRENT_BINARY_DIR}/imload/decoders
+  ${CMAKE_CURRENT_BINARY_DIR}/java
+)
+
+
 include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
 
 set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
