@@ -19,7 +19,7 @@
 #ifndef KXMLGUICLIENT_H
 #define KXMLGUICLIENT_H
 
-#include <QDomElement>
+#include <QtXml/qdom.h>
 #include <QMap>
 #include <QStringList>
 
