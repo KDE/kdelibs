@@ -179,10 +179,11 @@ QString KSSLSettings::getCipherList() {
   }
 
   // Remove any ADH ciphers as per RFC2246
+  // Also remove NULL ciphers and 168bit ciphers
   for (unsigned int i = 0; i < cipherSort.count(); i++) {
     CipherNode *j = 0L;
     while ((j = cipherSort.at(i)) != 0L) {
-      if (j->name.contains("ADH-")) {
+      if (j->name.contains("ADH-") || j->name.contains("NULL-") || j->name.contains("DES-CBC3-SHA") || j->name.contains("FZA")) {
         cipherSort.remove(j);
       } else {
         break;
