@@ -1388,6 +1388,15 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
         blockElem->removeChild(currNode, exceptionCode);
         newNode->appendChild(currNode, exceptionCode);
         currNode = nextNode;
+
+ // TODO - To be replaced.
+        // Re-register form elements with currently active form, step 1 will have removed them
+        if (form)
+        {
+            HTMLGenericFormElementImpl *e = static_cast<HTMLGenericFormElementImpl *>(currNode);
+            if (e)
+                form->registerFormElement(e);
+        }
     }
 
     // Step 4: Place |newNode| under |blockElem|.  |blockElem| is still out of the document, so no
