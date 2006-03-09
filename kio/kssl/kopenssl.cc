@@ -573,21 +573,31 @@ KConfig *cfg;
       if (_cryptoLib) {
          if (x) ((int (*)())x)();
          x = _cryptoLib->symbol("OpenSSL_add_all_algorithms");
+         if (!x)
+            x = _cryptoLib->symbol("OPENSSL_add_all_algorithms");
          if (x) {
            ((void (*)())x)();
          } else {
            x = _cryptoLib->symbol("OpenSSL_add_all_algorithms_conf");
+           if (!x)
+              x = _cryptoLib->symbol("OPENSSL_add_all_algorithms_conf");
            if (x) {
              ((void (*)())x)();
            } else {
              x = _cryptoLib->symbol("OpenSSL_add_all_algorithms_noconf");
+             if (!x)
+                x = _cryptoLib->symbol("OPENSSL_add_all_algorithms_noconf");
              if (x)
                ((void (*)())x)();
            }
          }
          x = _cryptoLib->symbol("OpenSSL_add_all_ciphers");
+         if (!x)
+            x = _cryptoLib->symbol("OPENSSL_add_all_ciphers");
          if (x) ((void (*)())x)();
          x = _cryptoLib->symbol("OpenSSL_add_all_digests");
+         if (!x)
+            x = _cryptoLib->symbol("OPENSSL_add_all_digests");
          if (x) ((void (*)())x)();
       }
    }
