@@ -1,7 +1,7 @@
 kde4_header()
 
 project(kio)
-
+ADD_DEFINITIONS(-D_LARGEFILE64_SOURCE)
 
 if(HAVE_SSL)
    set(KSSL_HAVE_SSL 1)
