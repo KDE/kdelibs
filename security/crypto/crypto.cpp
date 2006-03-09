@@ -2222,7 +2222,8 @@ SSL_METHOD *meth;
     if (!sc)
       break;
     // Leak of sc*?
-    if (QString(sc->name).contains("ADH-")) {
+    QString scn(sc->name);
+    if (scn.contains("ADH-") || scn.contains("NULL-") || scn.contains("FZA-") || scn.contains("DES-CBC3-SHA")) {
       continue;
     }
     k = SSL_CIPHER_get_bits(sc, &j);
