@@ -2,6 +2,8 @@ kde4_header()
 
 project(kdeprint)
 
+ADD_DEFINITIONS(-D_KDEPRINT_COMPILE)
+
 # you can find macro_optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
 # it is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
