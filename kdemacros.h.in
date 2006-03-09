@@ -147,7 +147,11 @@
  */
 
 #ifndef KDE_DEPRECATED
-# define KDE_DEPRECATED Q_DECL_DEPRECATED
+# ifndef Q_CC_MSVC
+#  define KDE_DEPRECATED Q_DECL_DEPRECATED
+# else
+#  define KDE_DEPRECATED
+# endif
 #endif
 
 /**

@@ -96,16 +96,16 @@
  * The KDE_DEPRECATED macro can be used to trigger compile-time warnings
  * with newer compilers when deprecated functions are used.
  *
- * For non-inline functions, the macro gets inserted at the very end of the
- * function declaration, right before the semicolon:
+ * For non-inline functions, the macro gets inserted at front of the
+ * function declaration, right before the return type:
  *
  * \code
- * DeprecatedConstructor() KDE_DEPRECATED;
- * void deprecatedFunctionA() KDE_DEPRECATED;
- * int deprecatedFunctionB() const KDE_DEPRECATED;
+ * KDE_DEPRECATED DeprecatedConstructor();
+ * KDE_DEPRECATED void deprecatedFunctionA();
+ * KDE_DEPRECATED int deprecatedFunctionB() const;
  * \endcode
  *
- * Functions which are implemented inline are handled differently: for them,
+ * For functions which are implemented inline,
  * the KDE_DEPRECATED macro is inserted at the front, right before the return
  * type, but after "static" or "virtual":
  *
@@ -127,8 +127,8 @@
  * \note
  * It does not make much sense to use the KDE_DEPRECATED keyword for a Qt signal;
  * this is because usually get called by the class which they belong to,
- * and one'd assume that a class author doesn't use deprecated methods of his
- * own class. The only exception to this are signals which are connected to
+ * and one would assume that a class author does not use deprecated methods of
+ * his own class. The only exception to this are signals which are connected to
  * other signals; they get invoked from moc-generated code. In any case,
  * printing a warning message in either case is not useful.
  * For slots, it can make sense (since slots can be invoked directly) but be
@@ -140,12 +140,15 @@
  * use the k_dcop keyword (to indicate a DCOP interface declaration); this is
  * because the dcopidl program would choke on the unexpected declaration
  * syntax.
+ *
+ * \note
+ * KDE_DEPRECATED cannot be used at the end of the declaration anymore,
+ * unlike what is done for KDE3.
  */
 
 #ifndef KDE_DEPRECATED
-# if defined(__GNUC__) && (__GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2))
-  /* gcc >= 3.2 */
-#  define KDE_DEPRECATED __attribute__ ((deprecated))
+# ifndef Q_CC_MSVC
+#  define KDE_DEPRECATED Q_DECL_DEPRECATED
 # else
 #  define KDE_DEPRECATED
 # endif
