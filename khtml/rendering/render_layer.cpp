@@ -153,7 +153,8 @@ void RenderLayer::updateLayerPosition()
     setPos(x,y);
 }
 
-QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer) {
+QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer) 
+{
     updateZOrderLists();
     QRegion r;
     if (m_negZOrderList) {
@@ -164,14 +165,18 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer) {
         }
     }
     const RenderStyle *s= renderer()->style();
-    if ( s->visibility() == VISIBLE ) {
-        if( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || s->hidesOverflow() ) {
-            r += m_visibleRect;
+    if (s->visibility() == VISIBLE) {
+        int x = 0; int y = 0;
+        convertToLayerCoords(rootLayer,x,y);
+        QRect cr(x,y,width(),height());
+        if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || 
+             s->scrollsOverflow() || renderer()->isReplaced() ) {
+            r += cr;
         } else {
-            int x =0; int y = 0;
+            int x = 0; int y = 0;
             convertToLayerCoords(rootLayer,x,y);
+            QRect lr = renderer()->visibleFlowRegion(x, y).boundingRect();
             r += renderer()->visibleFlowRegion(x, y);
-            r &= m_visibleRect;
         }
     }
     
@@ -179,7 +184,7 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer) {
         uint count = m_posZOrderList->count();
         for (uint i = 0; i < count; i++) {
             RenderLayer* child = m_posZOrderList->at(i);
-             r += child->paintedRegion(rootLayer);
+            r += child->paintedRegion(rootLayer);
         }
     }
     return r;
@@ -204,7 +209,7 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
 {
     if (doFullRepaint) {
         m_object->repaint();
-        checkForRepaint = doFullRepaint = hasOverlaidWidgets();
+        checkForRepaint = doFullRepaint = false;
     }
     
     updateLayerPosition(); // For relpositioned layers or non-positioned layers,
@@ -247,7 +252,7 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
 
 void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer) 
 {
-    if (hasOverlaidWidgets() && isStackingContext() && !renderer()->canvas()->pagedMode()) {
+    if (hasOverlaidWidgets() && !renderer()->canvas()->pagedMode()) {
         updateZOrderLists();
         uint count = m_posZOrderList ? m_posZOrderList->count() : 0;
         bool needUpdate = (count || !m_region.isNull());
@@ -257,6 +262,8 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
 
             for (uint i = 0; i < count; i++) {
                 RenderLayer* child = m_posZOrderList->at(i);
+                if (child->zIndex() == 0 && child->renderer()->style()->position() == STATIC)
+                    continue; // we don't know the widget's exact stacking position within flow
                 m_region -= child->paintedRegion(rootLayer);
             }
         } else {

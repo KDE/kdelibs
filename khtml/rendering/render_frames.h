@@ -128,6 +128,7 @@ public:
     RenderFrame( DOM::HTMLFrameElementImpl *frame );
 
     virtual const char *renderName() const { return "RenderFrame"; }
+    virtual bool isFrame() const { return true; }
 
     DOM::HTMLFrameElementImpl *element() const
     { return static_cast<DOM::HTMLFrameElementImpl*>(RenderObject::element()); }

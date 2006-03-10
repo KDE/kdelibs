@@ -165,18 +165,9 @@ void RenderBox::setStyle(RenderStyle *_style)
         m_layer = 0;
     }
 
-    if (m_layer) {
-        // Make sure our z-index values are only applied if we're positioned or
-        // relpositioned.
-        if (!isPositioned() && !isRelPositioned()) {
-            // Set the auto z-index flag.
-            if (isRoot())
-                style()->setZIndex(0);
-            else
-                style()->setHasAutoZIndex();
-        }
+    if (m_layer)
         m_layer->styleChanged();
-    }
+
     // ### outlineSize() and outlineOffset() not merged yet
     if (style()->outlineWidth() > 0 && style()->outlineWidth() > maximalOutlineSize(PaintActionOutline))
         static_cast<RenderCanvas*>(document()->renderer())->setMaximalOutlineSize(style()->outlineWidth());

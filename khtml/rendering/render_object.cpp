@@ -1254,6 +1254,8 @@ void RenderObject::setStyle(RenderStyle *style)
     m_relPositioned = false;
     m_paintBackground = false;
 
+    // only honour z-index for non-static objects
+    // ### and objects with opacity
     if ( style->position() == STATIC ) {
         if ( isRoot() )
             style->setZIndex( 0 );
@@ -1294,7 +1296,7 @@ void RenderObject::setStyle(RenderStyle *style)
             if (layer() && !isInlineFlow()) {
                 layer()->repaint();
                 if (canvas() && canvas()->needsWidgetMasks()) { 
-                    RenderLayer *p, *d;
+                    RenderLayer *p, *d = 0;
                     for (p=layer()->parent();p;p=p->parent())
                         if (p->hasOverlaidWidgets()) d=p;
                     if (d) // deepest
@@ -2165,8 +2167,7 @@ void RenderObject::insertCounter(const QString& counter, CounterNode* val)
 
 void RenderObject::updateWidgetMasks() {
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling()) {
-        if ( curr->isWidget() && static_cast<RenderWidget*>(curr)->widget() && 
-             !static_cast<RenderWidget*>(curr)->isKHTMLWidget() ) {
+        if ( curr->isWidget() && static_cast<RenderWidget*>(curr)->needsMask() ) {
             QWidget* w = static_cast<RenderWidget*>(curr)->widget();
             RenderLayer* l = curr->enclosingStackingContext();
             QRegion r = l ? l->getMask() : QRegion();
@@ -2187,7 +2188,6 @@ void RenderObject::updateWidgetMasks() {
             } else {
                 w->clearMask();
             }
-            w->update();
         }
         else if (!curr->layer() || !curr->layer()->isStackingContext())
             curr->updateWidgetMasks();

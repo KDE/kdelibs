@@ -103,6 +103,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_resizePending = false;
     m_discardResizes = false;
     m_isKHTMLWidget = false;
+    m_needsMask = false;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -242,9 +243,18 @@ void RenderWidget::layout( )
     if ( m_widget ) {
         resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                       m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
-        if (!isKHTMLWidget() && !isPositioned()) {
+        if (!isKHTMLWidget() && !isFrame() && !m_needsMask) {
+            m_needsMask = true;
             RenderLayer* rl = enclosingStackingContext();
-            if (rl) {
+            RenderLayer* el = enclosingLayer();
+            while (rl && el && el != rl) {
+                if (el->renderer()->style()->position() != STATIC) {
+                    m_needsMask = false;
+                    break;
+                }
+                el = el->parent();
+            }                                                                                                                                      
+            if (m_needsMask) {
                 rl->setHasOverlaidWidgets();
                 canvas()->setNeedsWidgetMasks();
             }
