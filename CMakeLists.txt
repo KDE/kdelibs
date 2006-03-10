@@ -34,6 +34,7 @@ macro_optional_find_package(OpenSSL)
 macro_optional_find_package(DNSSD)
 macro_optional_find_package(PCRE)
 macro_optional_find_package(ACL)
+macro_optional_find_package(Akode)
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
 link_directories(${KDE4_LIB_DIR})

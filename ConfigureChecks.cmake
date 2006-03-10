@@ -95,6 +95,12 @@ else(ACL_FOUND)
 	set(HAVE_POSIX_ACL 0)
 endif(ACL_FOUND)
 
+if(AKODE_FOUND)
+	set(HAVE_AKODE 1)
+else(AKODE_FOUND)
+	set(HAVE_AKODE 0)
+endif(AKODE_FOUND)
+				
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
 # If definitions like -D_GNU_SOURCE are needed for these checks they
 # should be added to _KDE4_PLATFORM_DEFINITIONS when it is originally

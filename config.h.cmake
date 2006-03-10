@@ -135,6 +135,8 @@
 
 #cmakedefine   HAVE_FLOAT_H 1
 
+/* define if you have aKodelib installed */
+#cmakedefine HAVE_AKODE 1
 
 #cmakedefine HAVE_EXR 1
 #cmakedefine HAVE_FAM 1

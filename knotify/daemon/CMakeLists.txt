@@ -1,6 +1,9 @@
 kde4_header()
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+#if(AKODE_FOUND)
+#  include_directories( ${AKODE_INCLUDE_DIR} )
+#endif(AKODE_FOUND)
 
 
 ########### next target ###############
@@ -28,6 +31,9 @@ kde4_add_dcop_skels(knotify_KDEINIT_SRCS ${knotify_DCOP_SKEL_SRCS})
 kde4_add_kdeinit_executable( knotify ${knotify_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_knotify  ${QT_AND_KDECORE_LIBS} kdeui )
+if (AKODE_FOUND)
+  target_link_libraries(kdeinit_knotify  ${AKODE_LIBRARIES} )
+endif (AKODE_FOUND)
 
 install_targets(${LIB_INSTALL_DIR} kdeinit_knotify )
 
