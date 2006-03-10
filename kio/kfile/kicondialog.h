@@ -20,7 +20,7 @@
 
 #include <kicontheme.h>
 #include <kdialogbase.h>
-#include <kiconview.h>
+#include <k3iconview.h>
 
 class QComboBox;
 class QTimer;
@@ -32,7 +32,7 @@ class KIconLoader;
 /**
  * Icon canvas for KIconDialog.
  */
-class KIO_EXPORT KIconCanvas: public KIconView
+class KIO_EXPORT KIconCanvas: public K3IconView
 {
     Q_OBJECT
 

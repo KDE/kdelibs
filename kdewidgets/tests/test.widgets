@@ -139,8 +139,8 @@ IncludeFile=kicondialog.h
 ToolTip=Button for selecting an icon (KDE)
 Group=Buttons (KDE)
 
-[KIconView]
-IncludeFile=kiconview.h
+[K3IconView]
+IncludeFile=k3iconview.h
 ToolTip=Extended Icon View (KDE)
 WhatsThis=An improved version of the QIconView that allows certain KDE extensions
 Group=Views (KDE)

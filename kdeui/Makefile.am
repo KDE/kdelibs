@@ -43,7 +43,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 	kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h \
 	ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h \
 	kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h \
-	kcombobox.h kiconview.h k3listview.h klistbox.h kbugreport.h kpassworddialog.h \
+	kcombobox.h k3iconview.h k3listview.h klistbox.h kbugreport.h kpassworddialog.h \
 	kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h \
 	kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h \
 	kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h \
@@ -52,7 +52,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 	kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kspell.h ksconfig.h \
 	kspelldlg.h ktabbar.h ktabwidget.h ksplashscreen.h \
 	kconfigdialog.h kactionselector.h klanguagebutton.h k3listviewsearchline.h \
-	kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h \
+	kpixmapregionselectorwidget.h kpixmapregionselectordialog.h k3iconviewsearchline.h \
 	ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h \
 	kconfigdialogmanager.h knotification.h
 
@@ -72,7 +72,7 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kmenu.cpp ktoolbar.cpp \
 	kkeydialog.cpp kruler.cpp kcursor.cpp kcharselect.cpp kcolormimedata.cpp knumvalidator.cpp \
 	kdialog.cpp kdialogbase.cpp kjanuswidget.cpp kaboutdialog.cpp kauthicon.cpp \
 	kmessagebox.cpp kdualcolorbutton.cpp ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
-	ktextbrowser.cpp khelpmenu.cpp kcmenumngr.cpp kiconview.cpp klistbox.cpp kwordwrap.cpp \
+	ktextbrowser.cpp khelpmenu.cpp kcmenumngr.cpp k3iconview.cpp klistbox.cpp kwordwrap.cpp \
 	kbugreport.cpp kcombobox.cpp kpassworddialog.cpp kxmlguiclient.cpp kxmlguifactory.cpp \
 	kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp kanimwidget.cpp krootpixmap.cpp \
 	kaboutkde.cpp kaboutapplication.cpp kdcopactionproxy.cpp kcolorcombo.cpp \
@@ -84,7 +84,7 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kmenu.cpp ktoolbar.cpp \
 	kspell.cpp ktabbar.cpp ktabwidget.cpp ksplashscreen.cpp \
 	kspellui.ui kconfigdialog.cpp kactionselector.cpp klanguagebutton.cpp \
 	k3listviewsearchline.cpp kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
-	kwhatsthismanager.cpp kiconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
+	kwhatsthismanager.cpp k3iconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
 	kconfigdialogmanager.cpp knotification.cpp knotificationmanager.cpp knotificationmanager.skel
 
 noinst_HEADERS = k3listviewlineedit.h \

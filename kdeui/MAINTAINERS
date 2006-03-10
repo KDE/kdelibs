@@ -43,7 +43,7 @@ kfontcombo.cpp
 kfontdialog.cpp
 kguiitem.cpp		Holger Freyther <freyther@kde.org>, Martijn Klingens <klingens@kde.org>
 khelpmenu.cpp
-kiconview.cpp
+k3iconview.cpp
 kjanuswidget.cpp	Ravikiran Rajagopal <ravi@ee.eng.ohio-state.edu>
 kkeybutton.cpp		Ellis Whitehead <ellis@kde.org>
 kkeydialog.cpp		Ellis Whitehead <ellis@kde.org>

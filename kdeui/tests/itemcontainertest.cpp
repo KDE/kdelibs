@@ -1,5 +1,5 @@
 /*
-* Tests the item container widgets KIconView, K3ListView, KListBox
+* Tests the item container widgets K3IconView, K3ListView, KListBox
 *
 * Copyright (c) 2000 by Michael Reiher <michael.reiher@gmx.de>
 *
@@ -20,7 +20,7 @@
 #include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <kconfig.h>
-#include <kiconview.h>
+#include <k3iconview.h>
 #include <k3listview.h>
 #include <klistbox.h>
 
@@ -98,8 +98,8 @@ TopLevel::TopLevel(QWidget *parent)
     KGlobal::config()->reparseConfiguration();
 
     //Create IconView
-    Q3GroupBox* gbIconView = new Q3GroupBox( 1, Qt::Horizontal, "KIconView", this);
-    m_pIconView = new KIconView( gbIconView );
+    Q3GroupBox* gbIconView = new Q3GroupBox( 1, Qt::Horizontal, "K3IconView", this);
+    m_pIconView = new K3IconView( gbIconView );
     hBox->addWidget( gbIconView );
     hBox->addSpacing( 5 );
     connect( m_pIconView, SIGNAL( executed( Q3IconViewItem* ) ),
@@ -152,22 +152,22 @@ void TopLevel::slotSwitchMode( int id )
 
   switch( id ) {
   case TopLevel::NoSelection:
-    m_pIconView->setSelectionMode( KIconView::NoSelection );
+    m_pIconView->setSelectionMode( K3IconView::NoSelection );
     m_pListView->setSelectionMode( Q3ListView::NoSelection );
     m_pListBox->setSelectionMode( KListBox::NoSelection );
     break;
   case TopLevel::Single:
-    m_pIconView->setSelectionMode( KIconView::Single );
+    m_pIconView->setSelectionMode( K3IconView::Single );
     m_pListView->setSelectionMode( Q3ListView::Single );
     m_pListBox->setSelectionMode( KListBox::Single );
     break;
   case TopLevel::Multi:
-    m_pIconView->setSelectionMode( KIconView::Multi );
+    m_pIconView->setSelectionMode( K3IconView::Multi );
     m_pListView->setSelectionMode( Q3ListView::Multi );
     m_pListBox->setSelectionMode( KListBox::Multi );
     break;
   case TopLevel::Extended:
-    m_pIconView->setSelectionMode( KIconView::Extended );
+    m_pIconView->setSelectionMode( K3IconView::Extended );
     m_pListView->setSelectionMode( Q3ListView::Extended );
     m_pListBox->setSelectionMode( KListBox::Extended );
     break;
@@ -178,7 +178,7 @@ void TopLevel::slotSwitchMode( int id )
 
 void TopLevel::slotIconViewExec( Q3IconViewItem* item )
 {
-  m_plblWidget->setText("KIconView");
+  m_plblWidget->setText("K3IconView");
   m_plblSignal->setText("executed");
   if( item ) 
     m_plblItem->setText( item->text() );

@@ -57,8 +57,8 @@ kfontdialog.cpp \
 kfontrequester.cpp \
 kguiitem.cpp \
 khelpmenu.cpp \
-kiconview.cpp \
-kiconviewsearchline.cpp \
+k3iconview.cpp \
+k3iconviewsearchline.cpp \
 kjanuswidget.cpp \
 kkeybutton.cpp \
 kkeydialog.cpp \

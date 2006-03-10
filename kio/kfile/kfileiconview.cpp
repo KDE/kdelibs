@@ -113,7 +113,7 @@ public:
 };
 
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
-    : KIconView(parent, name), KFileView(),d(new KFileIconViewPrivate( this ))
+    : K3IconView(parent, name), KFileView(),d(new KFileIconViewPrivate( this ))
 {
 
     setViewName( i18n("Icon View") );
@@ -125,8 +125,8 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     setArrangement( TopToBottom );
     setAutoArrange( true );
     setItemsMovable( false );
-    setMode( KIconView::Select );
-    KIconView::setSorting( true );
+    setMode( K3IconView::Select );
+    K3IconView::setSorting( true );
     // as long as QIconView only shows tooltips when the cursor is over the
     // icon (and not the text), we have to create our own tooltips
     setShowToolTips( false );
@@ -286,12 +286,12 @@ void KFileIconView::slotActivateMenu( Q3IconViewItem* item, const QPoint& pos )
 void KFileIconView::hideEvent( QHideEvent *e )
 {
     removeToolTip();
-    KIconView::hideEvent( e );
+    K3IconView::hideEvent( e );
 }
 
 void KFileIconView::keyPressEvent( QKeyEvent *e )
 {
-    KIconView::keyPressEvent( e );
+    K3IconView::keyPressEvent( e );
 
     // ignore Ctrl-Return so that the dialog can catch it.
     if ( (e->state() & Qt::ControlModifier) &&
@@ -303,7 +303,7 @@ void KFileIconView::setSelected( const KFileItem *info, bool enable )
 {
     KFileIconViewItem *item = viewItem( info );
     if ( item )
-        KIconView::setSelected( item, enable, true );
+        K3IconView::setSelected( item, enable, true );
 }
 
 void KFileIconView::selectAll()
@@ -312,24 +312,24 @@ void KFileIconView::selectAll()
         KFileView::selectionMode() == KFile::Single)
 	return;
 
-    KIconView::selectAll( true );
+    K3IconView::selectAll( true );
 }
 
 void KFileIconView::clearSelection()
 {
-    KIconView::clearSelection();
+    K3IconView::clearSelection();
 }
 
 void KFileIconView::invertSelection()
 {
-    KIconView::invertSelection();
+    K3IconView::invertSelection();
 }
 
 void KFileIconView::clearView()
 {
     m_resolver->m_lstPendingMimeIconItems.clear();
 
-    KIconView::clear();
+    K3IconView::clear();
     stopPreview();
 }
 
@@ -376,7 +376,7 @@ void KFileIconView::setCurrentItem( const KFileItem *item )
 {
     KFileIconViewItem *it = viewItem( item );
     if ( it )
-        KIconView::setCurrentItem( it );
+        K3IconView::setCurrentItem( it );
 }
 
 KFileItem * KFileIconView::currentFileItem() const
@@ -510,7 +510,7 @@ void KFileIconView::ensureItemVisible( const KFileItem *i )
 {
     KFileIconViewItem *item = viewItem( i );
     if ( item )
-	KIconView::ensureItemVisible( item );
+	K3IconView::ensureItemVisible( item );
 }
 
 void KFileIconView::slotSelectionChanged()
@@ -695,7 +695,7 @@ void KFileIconView::setSorting( QDir::SortSpec spec )
         }
         viewItem( item )->setKey( key );
     }
-    KIconView::setSorting( true, !isReversed() );
+    K3IconView::setSorting( true, !isReversed() );
     sort( !isReversed() );
 }
 
@@ -723,8 +723,8 @@ void KFileIconView::listingCompleted()
         bool block = signalsBlocked();
         blockSignals( true );
         Q3IconViewItem *item = viewItem( firstFileItem() );
-        KIconView::setCurrentItem( item );
-        KIconView::setSelected( item, false );
+        K3IconView::setCurrentItem( item );
+        K3IconView::setSelected( item, false );
         blockSignals( block );
     }
 
@@ -741,7 +741,7 @@ bool KFileIconView::eventFilter( QObject *o, QEvent *e )
             removeToolTip();
     }
 
-    return KIconView::eventFilter( o, e );
+    return K3IconView::eventFilter( o, e );
 }
 
 /////////////////////////////////////////////////////////////////
@@ -787,7 +787,7 @@ void KFileIconView::arrangeItemsInGrid( bool update )
     if ( d->noArrangement )
         return;
 
-    KIconView::arrangeItemsInGrid( update );
+    K3IconView::arrangeItemsInGrid( update );
 }
 
 void KFileIconView::zoomIn()
@@ -801,7 +801,7 @@ void KFileIconView::zoomOut()
 }
 
 #ifdef __GNUC__
-#warning port KIconView to QListView, then adapt KFileIconView
+#warning port K3IconView to QListView, then adapt KFileIconView
 #endif
 
 // Qt4 porting: once we use QListWidget, this becomes a reimplementation of
@@ -937,7 +937,7 @@ void KFileIconView::contentsDropEvent( QDropEvent *e )
 }
 
 void KFileIconView::virtual_hook( int id, void* data )
-{ KIconView::virtual_hook( id, data );
+{ K3IconView::virtual_hook( id, data );
   KFileView::virtual_hook( id, data ); }
 
 #include "kfileiconview.moc"

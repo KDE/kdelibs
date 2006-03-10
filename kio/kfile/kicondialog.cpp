@@ -15,14 +15,14 @@
 
 #include <config.h>
 
-#include <kiconviewsearchline.h>
+#include <k3iconviewsearchline.h>
 
 #include <kapplication.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
-#include <kiconview.h>
+#include <k3iconview.h>
 #include <kfiledialog.h>
 #include <kimagefilepreview.h>
 
@@ -86,7 +86,7 @@ public:
  */
 
 KIconCanvas::KIconCanvas(QWidget *parent)
-    : KIconView(parent),d(new KIconCanvasPrivate)
+    : K3IconView(parent),d(new KIconCanvasPrivate)
 {
     mpLoader = KGlobal::iconLoader();
     mpTimer = new QTimer(this);
@@ -227,7 +227,7 @@ class KIconDialog::KIconDialogPrivate
     bool m_bStrictIconSize, m_bLockUser, m_bLockCustomDir;
     QString custom;
     QString customLocation;
-    KIconViewSearchLine *searchLine;
+    K3IconViewSearchLine *searchLine;
 };
 
 /*
@@ -296,7 +296,7 @@ void KIconDialog::init()
     QLabel *searchLabel = new QLabel(i18n("&Search:"), main);
     searchLayout->addWidget(searchLabel);
 
-    d->searchLine = new KIconViewSearchLine(main);
+    d->searchLine = new K3IconViewSearchLine(main);
     searchLayout->addWidget(d->searchLine);
     searchLabel->setBuddy(d->searchLine);
 
@@ -715,7 +715,7 @@ void KIconButton::newIconName(const QString& name)
 }
 
 void KIconCanvas::virtual_hook( int id, void* data )
-{ KIconView::virtual_hook( id, data ); }
+{ K3IconView::virtual_hook( id, data ); }
 
 void KIconDialog::virtual_hook( int id, void* data )
 { KDialogBase::virtual_hook( id, data ); }

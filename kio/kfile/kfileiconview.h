@@ -25,7 +25,7 @@ class KFileItem;
 class QWidget;
 class QLabel;
 
-#include <kiconview.h>
+#include <k3iconview.h>
 #include <kiconloader.h>
 #include <kfileview.h>
 #include <kmimetyperesolver.h>
@@ -35,15 +35,15 @@ class QLabel;
  * An item for the iconview, that has a reference to its corresponding
  * KFileItem.
  */
-class KIO_EXPORT KFileIconViewItem : public KIconViewItem
+class KIO_EXPORT KFileIconViewItem : public K3IconViewItem
 {
 public:
     KFileIconViewItem( Q3IconView *parent, const QString &text,
 		       const QPixmap &pixmap,
 		       KFileItem *fi )
-	: KIconViewItem( parent, text, pixmap ), inf( fi ) {}
+	: K3IconViewItem( parent, text, pixmap ), inf( fi ) {}
     KFileIconViewItem( Q3IconView *parent, KFileItem *fi )
-	: KIconViewItem( parent ), inf( fi ) {}
+	: K3IconViewItem( parent ), inf( fi ) {}
 
     virtual ~KFileIconViewItem();
 
@@ -75,7 +75,7 @@ namespace KIO {
  * @see KCombiView
  * @see KFileDetailView
  */
-class KIO_EXPORT KFileIconView : public KIconView, public KFileView
+class KIO_EXPORT KFileIconView : public K3IconView, public KFileView
 {
     Q_OBJECT
 
@@ -143,7 +143,7 @@ public:
     Q3ScrollView *scrollWidget() const { return (Q3ScrollView*) this; }
     void setAcceptDrops(bool b)
     {
-      KIconView::setAcceptDrops(b);
+      K3IconView::setAcceptDrops(b);
       viewport()->setAcceptDrops(b);
     }
 
@@ -225,9 +225,9 @@ private:
     int th;
     int myIconSize;
 
-    virtual void insertItem(Q3IconViewItem *a, Q3IconViewItem *b) { KIconView::insertItem(a, b); }
-    virtual void setSelectionMode(Q3IconView::SelectionMode m) { KIconView::setSelectionMode(m); }
-    virtual void setSelected(Q3IconViewItem *i, bool a, bool b) { KIconView::setSelected(i, a, b); }
+    virtual void insertItem(Q3IconViewItem *a, Q3IconViewItem *b) { K3IconView::insertItem(a, b); }
+    virtual void setSelectionMode(Q3IconView::SelectionMode m) { K3IconView::setSelectionMode(m); }
+    virtual void setSelected(Q3IconViewItem *i, bool a, bool b) { K3IconView::setSelected(i, a, b); }
 
     bool canPreview( const KFileItem * ) const;
     void stopPreview();

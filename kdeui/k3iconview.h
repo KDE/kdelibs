@@ -38,20 +38,20 @@
  * QIconView::selectionChanged() signal.
  *
  **/
-class KDEUI_EXPORT KIconView : public Q3IconView
+class KDEUI_EXPORT K3IconView : public Q3IconView
 {
-  friend class KIconViewItem;
+  friend class K3IconViewItem;
   Q_OBJECT
   Q_ENUMS( Mode )
   Q_PROPERTY( Mode mode READ mode WRITE setMode )
 
 public:
-  KIconView( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
+  K3IconView( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
 
-  ~KIconView();
+  ~K3IconView();
 
   /**
-   * KIconView has two different operating modes. Execute mode is depending
+   * K3IconView has two different operating modes. Execute mode is depending
    * on the configuration of single-click or double-click where the signal
    * executed() will be emitted upon click/double-click.
    * In Select mode, this signal will not be emitted.
@@ -177,7 +177,7 @@ protected:
   /**
    * This method allows to handle correctly cases where a subclass
    * needs the held() signal to not be triggered without calling
-   * a KIconView::contentsDrag*Event() method (which have side effects
+   * a K3IconView::contentsDrag*Event() method (which have side effects
    * because they forward to QIconView).
    */
   void cancelPendingHeldSignal();
@@ -188,11 +188,11 @@ private Q_SLOTS:
 
 private:
   /**
-   * @internal. For use by KIconViewItem.
+   * @internal. For use by K3IconViewItem.
    */
   QFontMetrics *itemFontMetrics() const;
   /**
-   * @internal. For use by KIconViewItem.
+   * @internal. For use by K3IconViewItem.
    */
   QPixmap selectedIconPixmap( QPixmap *pix, const QColor &col ) const;
 
@@ -207,40 +207,40 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KIconViewPrivate;
-  KIconViewPrivate *d;
+  class K3IconViewPrivate;
+  K3IconViewPrivate *d;
 };
 
 class KWordWrap;
 /**
  * @short A variant of QIconViewItem that wraps words better.
  *
- * KIconViewItem exists to improve the word-wrap functionality of QIconViewItem
- * Use KIconViewItem instead of QIconViewItem for any iconview item you might have :)
+ * K3IconViewItem exists to improve the word-wrap functionality of QIconViewItem
+ * Use K3IconViewItem instead of QIconViewItem for any iconview item you might have :)
  *
  * @author David Faure <faure@kde.org>
  */
-class KDEUI_EXPORT KIconViewItem : public Q3IconViewItem
+class KDEUI_EXPORT K3IconViewItem : public Q3IconViewItem
 {
 public:
     // Need to redefine all the constructors - I want Java !
-    KIconViewItem( Q3IconView *parent )
+    K3IconViewItem( Q3IconView *parent )
         : Q3IconViewItem( parent ) { init(); } // We need to call it because the parent ctor won't call our reimplementation :(((
-    KIconViewItem( Q3IconView *parent, Q3IconViewItem *after )
+    K3IconViewItem( Q3IconView *parent, Q3IconViewItem *after )
         : Q3IconViewItem( parent, after ) { init(); }
-    KIconViewItem( Q3IconView *parent, const QString &text )
+    K3IconViewItem( Q3IconView *parent, const QString &text )
         : Q3IconViewItem( parent, text ) { init(); }
-    KIconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text )
+    K3IconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text )
         : Q3IconViewItem( parent, after, text ) { init(); }
-    KIconViewItem( Q3IconView *parent, const QString &text, const QPixmap &icon )
+    K3IconViewItem( Q3IconView *parent, const QString &text, const QPixmap &icon )
         : Q3IconViewItem( parent, text, icon ) { init(); }
-    KIconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text, const QPixmap &icon )
+    K3IconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text, const QPixmap &icon )
         : Q3IconViewItem( parent, after, text, icon ) { init(); }
-    KIconViewItem( Q3IconView *parent, const QString &text, const QPicture &picture )
+    K3IconViewItem( Q3IconView *parent, const QString &text, const QPicture &picture )
         : Q3IconViewItem( parent, text, picture ) { init(); }
-    KIconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text, const QPicture &picture )
+    K3IconViewItem( Q3IconView *parent, Q3IconViewItem *after, const QString &text, const QPicture &picture )
         : Q3IconViewItem( parent, after, text, picture ) { init(); }
-    virtual ~KIconViewItem();
+    virtual ~K3IconViewItem();
 
    /**
     * Using this function, you can specify a custom size for the pixmap. The
@@ -269,8 +269,8 @@ protected:
 
 private:
     KWordWrap* m_wordWrap;
-    struct KIconViewItemPrivate;
-    KIconViewItemPrivate *d;
+    struct K3IconViewItemPrivate;
+    K3IconViewItemPrivate *d;
 };
 
 #endif

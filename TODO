@@ -311,10 +311,10 @@ that we would like to make for the next binary incompatible release.
   to page widget (as in setAppropriate()) but allow to pass QString names or IDs instead.
   (Jaroslaw Staniek)
 
-- KIconView/K3ListView equivalents based on Qt4 interview. As discussed on kde-core-devel,
+- K3IconView/K3ListView equivalents based on Qt4 interview. As discussed on kde-core-devel,
   this probably means a custom QItemDelegate instead, to handle single-click/double-click,
-  execute-mode/select-mode (cf KIconView), number of lines used for wrapping, "held" signal.
-  In short, rewriting kiconview features to be based on interview.
+  execute-mode/select-mode (cf K3IconView), number of lines used for wrapping, "held" signal.
+  In short, rewriting k3iconview features to be based on interview.
   For K3ListView we need to check if QTreeView supports both modes of drag-n-drop (dropping
   onto items, and dropping between items like in the bookmark editor).
   (David, Till etc.)

@@ -4,7 +4,7 @@ Import('env')
 
 kdewidget_pics = """
 klineedit.png ktextbrowser.png kpasswordedit.png kdatewidget.png
-kfontrequester.png kurlrequester.png kcombobox.png kiconview.png 
+kfontrequester.png kurlrequester.png kcombobox.png k3iconview.png 
 kintspinbox.png kled.png ksqueezedtextlabel.png kprogressbar.png
 kurllabel.png kruler.png kcmodule.png kdoublespinbox.png kdoublenuminput.png
 klistbox.png klistview.png kactivelabel.png kiconbutton.png

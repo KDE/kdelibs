@@ -20,7 +20,7 @@
 #ifndef KMICONVIEW_H
 #define KMICONVIEW_H
 
-#include <kiconview.h>
+#include <k3iconview.h>
 #include <QList>
 
 #include "kmobject.h"
@@ -45,7 +45,7 @@ private:
 	bool		m_isclass;
 };
 
-class KMIconView : public KIconView
+class KMIconView : public K3IconView
 {
 	Q_OBJECT
 public:

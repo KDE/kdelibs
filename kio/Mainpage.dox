@@ -41,7 +41,7 @@
  * The file dialog provides different views; there is a vertically scrolling
  * view based on @see K3ListView, showing things like filename, file size,
  * permissions etc. in separate columns. And there is a horizontally scrolling
- * view based on @see KIconView. Additionally, there are some compound views,
+ * view based on @see K3IconView. Additionally, there are some compound views,
  * like a view using the icon-view for files on the right side and another
  * view for directories on the left. A view, that shows a preview for the
  * currently selected file (using @see KIO::PreviewJob to generate previews)
@@ -97,7 +97,7 @@
  *   The base class for all views to be used with KDirOperator.
  *
  * @see KFileIconView:
- *   The KFileView based on KIconView.
+ *   The KFileView based on K3IconView.
  *
  * @see KFileDetailView:
  *   The KFileView based on K3ListView.

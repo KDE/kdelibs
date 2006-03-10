@@ -33,26 +33,26 @@ class Q3IconViewItem;
  * No changes to the application other than instantiating this class with an
  * appropriate QIconView should be needed.
  */
-class KDEUI_EXPORT KIconViewSearchLine : public KLineEdit
+class KDEUI_EXPORT K3IconViewSearchLine : public KLineEdit
 {
   Q_OBJECT
 
 public:
 
   /**
-   * Constructs a KIconViewSearchLine with \a iconView being the QIconView to
+   * Constructs a K3IconViewSearchLine with \a iconView being the QIconView to
    * be filtered.
    *
    * If \a iconView is null then the widget will be disabled until a iconview
    * is set with setIconView().
    */
-  KIconViewSearchLine( QWidget *parent = 0,
+  K3IconViewSearchLine( QWidget *parent = 0,
 		       Q3IconView *iconView = 0 );
 
   /**
-   * Destroys the KIconViewSearchLine.
+   * Destroys the K3IconViewSearchLine.
    */
-  virtual ~KIconViewSearchLine();
+  virtual ~K3IconViewSearchLine();
 
   /**
    * Returns true if the search is case sensitive.  This defaults to false.
@@ -162,8 +162,8 @@ private Q_SLOTS:
 
 
 private:
-  class KIconViewSearchLinePrivate;
-  KIconViewSearchLinePrivate *d;
+  class K3IconViewSearchLinePrivate;
+  K3IconViewSearchLinePrivate *d;
 };
 
 

@@ -119,9 +119,9 @@ void KMIconViewItem::updatePrinter(KMPrinter *p, int mode)
 }
 
 KMIconView::KMIconView(QWidget *parent, const char *name)
-: KIconView(parent,name)
+: K3IconView(parent,name)
 {
-	setMode(KIconView::Select);
+	setMode(K3IconView::Select);
 	setSelectionMode(Q3IconView::Single);
 	setItemsMovable(false);
 	setResizeMode(Q3IconView::Adjust);

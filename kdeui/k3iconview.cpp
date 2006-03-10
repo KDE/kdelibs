@@ -23,7 +23,7 @@
 #include <qpixmapcache.h>
 #include <qevent.h>
 
-#include "kiconview.h"
+#include "k3iconview.h"
 #include "kwordwrap.h"
 #include <kconfig.h>
 #include <kdebug.h>
@@ -36,17 +36,17 @@
 #include <kpixmap.h>
 #include <kpixmapeffect.h>
 
-class KIconView::KIconViewPrivate
+class K3IconView::K3IconViewPrivate
 {
 public:
-    KIconViewPrivate() {
-        mode = KIconView::Execute;
+    K3IconViewPrivate() {
+        mode = K3IconView::Execute;
         fm = 0L;
         doAutoSelect = true;
         textHeight = 0;
         dragHoldItem = 0L;
     }
-    KIconView::Mode mode;
+    K3IconView::Mode mode;
     bool doAutoSelect;
     QFontMetrics *fm;
     QPixmapCache maskCache;
@@ -56,10 +56,10 @@ public:
     QTimer doubleClickIgnoreTimer;
 };
 
-KIconView::KIconView( QWidget *parent, const char *name, Qt::WFlags f )
+K3IconView::K3IconView( QWidget *parent, const char *name, Qt::WFlags f )
     : Q3IconView( parent, name, f )
 {
-    d = new KIconViewPrivate;
+    d = new K3IconViewPrivate;
 
     connect( this, SIGNAL( onViewport() ),
              this, SLOT( slotOnViewport() ) );
@@ -80,24 +80,24 @@ KIconView::KIconView( QWidget *parent, const char *name, Qt::WFlags f )
     connect( &d->dragHoldTimer, SIGNAL(timeout()), this, SLOT(slotDragHoldTimeout()) );
 }
 
-KIconView::~KIconView()
+K3IconView::~K3IconView()
 {
     delete d->fm;
     delete d;
 }
 
 
-void KIconView::setMode( KIconView::Mode mode )
+void K3IconView::setMode( K3IconView::Mode mode )
 {
     d->mode = mode;
 }
 
-KIconView::Mode KIconView::mode() const
+K3IconView::Mode K3IconView::mode() const
 {
     return d->mode;
 }
 
-void KIconView::slotOnItem( Q3IconViewItem *item )
+void K3IconView::slotOnItem( Q3IconViewItem *item )
 {
     if ( item ) {
         if ( m_bUseSingle ) {
@@ -112,7 +112,7 @@ void KIconView::slotOnItem( Q3IconViewItem *item )
     }
 }
 
-void KIconView::slotOnViewport()
+void K3IconView::slotOnViewport()
 {
     if ( m_bUseSingle && m_bChangeCursorOverItem )
         viewport()->unsetCursor();
@@ -121,12 +121,12 @@ void KIconView::slotOnViewport()
     m_pCurrentItem = 0L;
 }
 
-void KIconView::slotSettingsChanged(int category)
+void K3IconView::slotSettingsChanged(int category)
 {
     if ( category != KApplication::SETTINGS_MOUSE )
       return;
     m_bUseSingle = KGlobalSettings::singleClick();
-    //kDebug() << "KIconView::slotSettingsChanged for mouse, usesingle=" << m_bUseSingle << endl;
+    //kDebug() << "K3IconView::slotSettingsChanged for mouse, usesingle=" << m_bUseSingle << endl;
 
     disconnect( this, SIGNAL( mouseButtonClicked( int, Q3IconViewItem *,
 						  const QPoint & ) ),
@@ -157,7 +157,7 @@ void KIconView::slotSettingsChanged(int category)
         viewport()->unsetCursor();
 }
 
-void KIconView::slotAutoSelect()
+void K3IconView::slotAutoSelect()
 {
   // check that the item still exists
   if( index( m_pCurrentItem ) == -1 || !d->doAutoSelect )
@@ -232,14 +232,14 @@ void KIconView::slotAutoSelect()
       setSelected( m_pCurrentItem, true );
   }
   else
-    kDebug() << "KIconView: That's not supposed to happen!!!!" << endl;
+    kDebug() << "K3IconView: That's not supposed to happen!!!!" << endl;
 }
 
-void KIconView::emitExecute( Q3IconViewItem *item, const QPoint &pos )
+void K3IconView::emitExecute( Q3IconViewItem *item, const QPoint &pos )
 {
   if ( d->mode != Execute )
   {
-    // kDebug() << "KIconView::emitExecute : not in execute mode !" << endl;
+    // kDebug() << "K3IconView::emitExecute : not in execute mode !" << endl;
     return;
   }
 
@@ -256,7 +256,7 @@ void KIconView::emitExecute( Q3IconViewItem *item, const QPoint &pos )
   }
 }
 
-void KIconView::updateDragHoldItem( QDropEvent *e )
+void K3IconView::updateDragHoldItem( QDropEvent *e )
 {
   Q3IconViewItem *item = findItem( e->pos() );
 
@@ -274,21 +274,21 @@ void KIconView::updateDragHoldItem( QDropEvent *e )
   }
 }
 
-void KIconView::focusOutEvent( QFocusEvent *fe )
+void K3IconView::focusOutEvent( QFocusEvent *fe )
 {
   m_pAutoSelect->stop();
 
   Q3IconView::focusOutEvent( fe );
 }
 
-void KIconView::leaveEvent( QEvent *e )
+void K3IconView::leaveEvent( QEvent *e )
 {
   m_pAutoSelect->stop();
 
   Q3IconView::leaveEvent( e );
 }
 
-void KIconView::contentsMousePressEvent( QMouseEvent *e )
+void K3IconView::contentsMousePressEvent( QMouseEvent *e )
 {
   if( (selectionMode() == Extended) && (e->modifiers() & Qt::ShiftModifier) && !(e->modifiers() & Qt::ControlModifier) ) {
     bool block = signalsBlocked();
@@ -303,7 +303,7 @@ void KIconView::contentsMousePressEvent( QMouseEvent *e )
   d->doAutoSelect = false;
 }
 
-void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
+void K3IconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 {
   Q3IconView::contentsMouseDoubleClickEvent( e );
 
@@ -318,9 +318,9 @@ void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
   d->doubleClickIgnoreTimer.start(0, true);
 }
 
-void KIconView::slotMouseButtonClicked( int btn, Q3IconViewItem *item, const QPoint &pos )
+void K3IconView::slotMouseButtonClicked( int btn, Q3IconViewItem *item, const QPoint &pos )
 {
-  //kDebug() << " KIconView::slotMouseButtonClicked() item=" << item << endl;
+  //kDebug() << " K3IconView::slotMouseButtonClicked() item=" << item << endl;
   if( d->doubleClickIgnoreTimer.isActive() )
     return; // Ignore double click
 
@@ -328,19 +328,19 @@ void KIconView::slotMouseButtonClicked( int btn, Q3IconViewItem *item, const QPo
     emitExecute( item, pos );
 }
 
-void KIconView::contentsMouseReleaseEvent( QMouseEvent *e )
+void K3IconView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
     d->doAutoSelect = true;
     Q3IconView::contentsMouseReleaseEvent( e );
 }
 
-void KIconView::contentsDragEnterEvent( QDragEnterEvent *e )
+void K3IconView::contentsDragEnterEvent( QDragEnterEvent *e )
 {
     updateDragHoldItem( e );
     Q3IconView::contentsDragEnterEvent( e );
 }
 
-void KIconView::contentsDragLeaveEvent( QDragLeaveEvent *e )
+void K3IconView::contentsDragLeaveEvent( QDragLeaveEvent *e )
 {
     d->dragHoldTimer.stop();
     d->dragHoldItem = 0L;
@@ -348,19 +348,19 @@ void KIconView::contentsDragLeaveEvent( QDragLeaveEvent *e )
 }
 
 
-void KIconView::contentsDragMoveEvent( QDragMoveEvent *e )
+void K3IconView::contentsDragMoveEvent( QDragMoveEvent *e )
 {
     updateDragHoldItem( e );
     Q3IconView::contentsDragMoveEvent( e );
 }
 
-void KIconView::contentsDropEvent( QDropEvent* e )
+void K3IconView::contentsDropEvent( QDropEvent* e )
 {
     d->dragHoldTimer.stop();
     Q3IconView::contentsDropEvent( e );
 }
 
-void KIconView::slotDragHoldTimeout()
+void K3IconView::slotDragHoldTimeout()
 {
     Q3IconViewItem *tmp = d->dragHoldItem;
     d->dragHoldItem = 0L;
@@ -368,7 +368,7 @@ void KIconView::slotDragHoldTimeout()
     emit held( tmp );
 }
 
-void KIconView::takeItem( Q3IconViewItem * item )
+void K3IconView::takeItem( Q3IconViewItem * item )
 {
     if ( item == d->dragHoldItem )
     {
@@ -379,13 +379,13 @@ void KIconView::takeItem( Q3IconViewItem * item )
     Q3IconView::takeItem( item );
 }
 
-void KIconView::cancelPendingHeldSignal()
+void K3IconView::cancelPendingHeldSignal()
 {
     d->dragHoldTimer.stop();
     d->dragHoldItem = 0L;
 }
 
-void KIconView::wheelEvent( QWheelEvent *e )
+void K3IconView::wheelEvent( QWheelEvent *e )
 {
     if (horizontalScrollBar() && (arrangement() == Q3IconView::TopToBottom)) {
         QWheelEvent ce(e->pos(), e->delta(), e->modifiers(), Qt::Horizontal);
@@ -398,14 +398,14 @@ void KIconView::wheelEvent( QWheelEvent *e )
     Q3IconView::wheelEvent(e);
 }
 
-void KIconView::setFont( const QFont &font )
+void K3IconView::setFont( const QFont &font )
 {
     delete d->fm;
     d->fm = 0L;
     Q3IconView::setFont( font );
 }
 
-QFontMetrics *KIconView::itemFontMetrics() const
+QFontMetrics *K3IconView::itemFontMetrics() const
 {
     if (!d->fm) {
         // QIconView creates one too, but we can't access it
@@ -414,7 +414,7 @@ QFontMetrics *KIconView::itemFontMetrics() const
     return d->fm;
 }
 
-QPixmap KIconView::selectedIconPixmap( QPixmap *pix, const QColor &col ) const
+QPixmap K3IconView::selectedIconPixmap( QPixmap *pix, const QColor &col ) const
 {
     QPixmap m;
     if ( d->maskCache.find( QString::number( pix->serialNumber() ), m ) )
@@ -424,12 +424,12 @@ QPixmap KIconView::selectedIconPixmap( QPixmap *pix, const QColor &col ) const
     return m;
 }
 
-int KIconView::iconTextHeight() const
+int K3IconView::iconTextHeight() const
 {
     return d->textHeight > 0 ? d->textHeight : ( wordWrapIconText() ? 99 : 1 );
 }
 
-void KIconView::setIconTextHeight( int n )
+void K3IconView::setIconTextHeight( int n )
 {
     int oldHeight = iconTextHeight();
     if ( n > 1 )
@@ -447,25 +447,25 @@ void KIconView::setIconTextHeight( int n )
 
 /////////////
 
-struct KIconViewItem::KIconViewItemPrivate
+struct K3IconViewItem::K3IconViewItemPrivate
 {
     QSize m_pixmapSize;
 };
 
-void KIconViewItem::init()
+void K3IconViewItem::init()
 {
     m_wordWrap = 0L;
     d = 0L;
     calcRect();
 }
 
-KIconViewItem::~KIconViewItem()
+K3IconViewItem::~K3IconViewItem()
 {
     delete m_wordWrap;
     delete d;
 }
 
-void KIconViewItem::calcRect( const QString& text_ )
+void K3IconViewItem::calcRect( const QString& text_ )
 {
     Q_ASSERT( iconView() );
     if ( !iconView() )
@@ -473,14 +473,14 @@ void KIconViewItem::calcRect( const QString& text_ )
     delete m_wordWrap;
     m_wordWrap = 0L;
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
-    if ( !qobject_cast<KIconView*>(iconView()) )
+    if ( !qobject_cast<K3IconView*>(iconView()) )
     {
-        kWarning() << "KIconViewItem used in a " << iconView()->metaObject()->className() << " !!" << endl;
+        kWarning() << "K3IconViewItem used in a " << iconView()->metaObject()->className() << " !!" << endl;
         return;
     }
 #endif
-    //kDebug() << "KIconViewItem::calcRect - " << text() << endl;
-    KIconView *view = static_cast<KIconView *>(iconView());
+    //kDebug() << "K3IconViewItem::calcRect - " << text() << endl;
+    K3IconView *view = static_cast<K3IconView *>(iconView());
     QRect itemIconRect = pixmapRect();
     QRect itemTextRect = textRect();
     QRect itemRect = rect();
@@ -530,7 +530,7 @@ void KIconViewItem::calcRect( const QString& text_ )
     t = text_.isEmpty() ? text() : text_;
 
     // Max text height
-    int nbLines = static_cast<KIconView*>( iconView() )->iconTextHeight();
+    int nbLines = static_cast<K3IconView*>( iconView() )->iconTextHeight();
     int height = nbLines > 0 ? fm->height() * nbLines : 0xFFFFFFFF;
 
     // Should not be higher than pixmap if text is alongside icons
@@ -624,16 +624,16 @@ void KIconViewItem::calcRect( const QString& text_ )
 
 }
 
-void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
+void K3IconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 {
     Q3IconView* view = iconView();
     Q_ASSERT( view );
     if ( !view )
         return;
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
-    if ( !qobject_cast<KIconView*>(view) )
+    if ( !qobject_cast<K3IconView*>(view) )
     {
-        kWarning() << "KIconViewItem used in a " << view->metaObject()->className() << " !!" << endl;
+        kWarning() << "K3IconViewItem used in a " << view->metaObject()->className() << " !!" << endl;
         return;
     }
 #endif
@@ -646,14 +646,14 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
     p->restore();
 }
 
-KWordWrap * KIconViewItem::wordWrap()
+KWordWrap * K3IconViewItem::wordWrap()
 {
     return m_wordWrap;
 }
 
-void KIconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
+void K3IconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
 {
-    KIconView *kview = static_cast<KIconView *>(iconView());
+    K3IconView *kview = static_cast<K3IconView *>(iconView());
 
 #ifndef QT_NO_PICTURE
     if ( picture() ) {
@@ -697,7 +697,7 @@ void KIconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
     }
 }
 
-void KIconViewItem::paintText( QPainter *p, const QColorGroup &cg )
+void K3IconViewItem::paintText( QPainter *p, const QColorGroup &cg )
 {
     int textX = textRect( false ).x() + 2;
     int textY = textRect( false ).y();
@@ -715,20 +715,20 @@ void KIconViewItem::paintText( QPainter *p, const QColorGroup &cg )
     m_wordWrap->drawText( p, textX, textY, align | KWordWrap::Truncate );
 }
 
-QSize KIconViewItem::pixmapSize() const
+QSize K3IconViewItem::pixmapSize() const
 {
     return d ? d->m_pixmapSize : QSize( 0, 0 );
 }
 
-void KIconViewItem::setPixmapSize( const QSize& size )
+void K3IconViewItem::setPixmapSize( const QSize& size )
 {
     if ( !d )
-        d = new KIconViewItemPrivate;
+        d = new K3IconViewItemPrivate;
 
     d->m_pixmapSize = size;
 }
 
-void KIconView::virtual_hook( int, void* )
+void K3IconView::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include "kiconview.moc"
+#include "k3iconview.moc"

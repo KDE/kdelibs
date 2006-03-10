@@ -3,7 +3,7 @@
 
 #include <qwidget.h>
 
-class KIconView;
+class K3IconView;
 class K3ListView;
 class KListBox;
 class Q3ButtonGroup;
@@ -31,7 +31,7 @@ public Q_SLOTS:
     void slotClicked( Q3IconViewItem* ) { qDebug("CLICK");}
     void slotDoubleClicked( Q3IconViewItem* ) { qDebug("DOUBLE CLICK");}
 protected:
-    KIconView* m_pIconView;
+    K3IconView* m_pIconView;
     K3ListView* m_pListView;
     KListBox* m_pListBox;
 

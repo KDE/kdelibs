@@ -68,7 +68,7 @@ ktoolbarbutton.cpp
 ktextbrowser.cpp
 khelpmenu.cpp
 kcmenumngr.cpp
-kiconview.cpp
+k3iconview.cpp
 klistbox.cpp
 kwordwrap.cpp
 kbugreport.cpp
@@ -118,7 +118,7 @@ k3listviewsearchline.cpp
 kpixmapregionselectorwidget.cpp
 kpixmapregionselectordialog.cpp
 kwhatsthismanager.cpp
-kiconviewsearchline.cpp
+k3iconviewsearchline.cpp
 ktoolbarlabelaction.cpp
 khbox.cpp
 kvbox.cpp
@@ -161,7 +161,7 @@ install_targets(${LIB_INSTALL_DIR} kdeui )
 
 install_files( ${DATA_INSTALL_DIR}/kdeui/pics FILES aboutkde.png ktip-bulb.png ktip-background.png )
 install_files( ${CONFIG_INSTALL_DIR}/ui FILES ui_standards.rc )
-install_files( /include FILES kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h    kdatepicker.h kdatetable.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h   kstatusbar.h kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h knuminput.h     kseparator.h klineedit.h krestrictedline.h kcolorbutton.h ksystemtray.h    kbuttonbox.h keditcl.h kled.h keditlistbox.h kkeydialog.h kkeybutton.h    kurllabel.h kruler.h kcursor.h kinputdialog.h kactivelabel.h kcharselect.h    kcolormimedata.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdialog.h    kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h   ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h     kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h   kcombobox.h kiconview.h k3listview.h klistbox.h kbugreport.h kpassworddialog.h    kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h     kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h    kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h   kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h    karrowbutton.h kguiitem.h kstdguiitem.h kstringvalidator.h ktextedit.h   kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kspell.h ksconfig.h     kspelldlg.h ktabbar.h ktabwidget.h ksplashscreen.h    kconfigdialog.h kactionselector.h klanguagebutton.h k3listviewsearchline.h     kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h   ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h     kconfigdialogmanager.h knotification.h )
+install_files( /include FILES kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h    kdatepicker.h kdatetable.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h   kstatusbar.h kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h knuminput.h     kseparator.h klineedit.h krestrictedline.h kcolorbutton.h ksystemtray.h    kbuttonbox.h keditcl.h kled.h keditlistbox.h kkeydialog.h kkeybutton.h    kurllabel.h kruler.h kcursor.h kinputdialog.h kactivelabel.h kcharselect.h    kcolormimedata.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdialog.h    kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h   ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h     kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h   kcombobox.h k3iconview.h k3listview.h klistbox.h kbugreport.h kpassworddialog.h    kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h     kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h    kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h   kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h    karrowbutton.h kguiitem.h kstdguiitem.h kstringvalidator.h ktextedit.h   kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kspell.h ksconfig.h     kspelldlg.h ktabbar.h ktabwidget.h ksplashscreen.h    kconfigdialog.h kactionselector.h klanguagebutton.h k3listviewsearchline.h     kpixmapregionselectorwidget.h kpixmapregionselectordialog.h k3iconviewsearchline.h   ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h     kconfigdialogmanager.h knotification.h )
 
 kde4_create_doxygen_docs( INTERNAL_DOCS REFERENCES kdecore kdefx dcop kio kutils  )
 
@@ -218,7 +218,7 @@ kde4_footer()
 #	kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h \
 #	ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h \
 #	kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h \
-#	kcombobox.h kiconview.h k3listview.h klistbox.h kbugreport.h kpassdlg.h \
+#	kcombobox.h k3iconview.h k3listview.h klistbox.h kbugreport.h kpassdlg.h \
 #	kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h \
 #	kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h \
 #	kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h \
@@ -227,7 +227,7 @@ kde4_footer()
 #	kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kscrollview.h kspell.h ksconfig.h \
 #	kspelldlg.h ksyntaxhighlighter.h ktabbar.h ktabwidget.h ksplashscreen.h \
 #	kconfigdialog.h kactionselector.h klanguagebutton.h k3listviewsearchline.h \
-#	kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h \
+#	kpixmapregionselectorwidget.h kpixmapregionselectordialog.h k3iconviewsearchline.h \
 #	ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h \
 #	kconfigdialogmanager.h knotification.h
 #
@@ -247,7 +247,7 @@ kde4_footer()
 #	kkeydialog.cpp kruler.cpp kcursor.cpp kcharselect.cpp kcolormimedata.cpp knumvalidator.cpp \
 #	kdialog.cpp kdialogbase.cpp kjanuswidget.cpp kaboutdialog.cpp kauthicon.cpp \
 #	kmessagebox.cpp kdualcolorbutton.cpp ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
-#	ktextbrowser.cpp khelpmenu.cpp kcmenumngr.cpp kiconview.cpp klistbox.cpp kwordwrap.cpp \
+#	ktextbrowser.cpp khelpmenu.cpp kcmenumngr.cpp k3iconview.cpp klistbox.cpp kwordwrap.cpp \
 #	kbugreport.cpp kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlguifactory.cpp \
 #	kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp kanimwidget.cpp krootpixmap.cpp \
 #	kaboutkde.cpp kaboutapplication.cpp kdcopactionproxy.cpp kcolorcombo.cpp \
@@ -259,7 +259,7 @@ kde4_footer()
 #	kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp ksplashscreen.cpp \
 #	kspellui.ui kconfigdialog.cpp kactionselector.cpp klanguagebutton.cpp \
 #	k3listviewsearchline.cpp kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
-#	kwhatsthismanager.cpp kiconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
+#	kwhatsthismanager.cpp k3iconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
 #	kconfigdialogmanager.cpp knotification.cpp knotificationmanager.cpp knotificationmanager.skel
 #
 #noinst_HEADERS = k3listviewlineedit.h \

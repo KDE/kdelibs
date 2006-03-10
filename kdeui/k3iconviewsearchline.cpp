@@ -23,7 +23,7 @@
  * would be reimplemented.
  */
 
-#include "kiconviewsearchline.h"
+#include "k3iconviewsearchline.h"
 
 #include <q3iconview.h>
 #include <klocale.h>
@@ -34,10 +34,10 @@
 
 typedef QList <Q3IconViewItem *> QIconViewItemList;
 
-class KIconViewSearchLine::KIconViewSearchLinePrivate
+class K3IconViewSearchLine::K3IconViewSearchLinePrivate
 {
 public:
-  KIconViewSearchLinePrivate() :
+  K3IconViewSearchLinePrivate() :
     iconView( 0 ),
     caseSensitive( DEFAULT_CASESENSITIVE ),
     activeSearch( false ),
@@ -54,7 +54,7 @@ public:
 /******************************************************************************
  * Public Methods                                                             *
  *****************************************************************************/
-KIconViewSearchLine::KIconViewSearchLine( QWidget *parent,
+K3IconViewSearchLine::K3IconViewSearchLine( QWidget *parent,
 					  Q3IconView *iconView ) :
   KLineEdit( parent )
 {
@@ -62,18 +62,18 @@ KIconViewSearchLine::KIconViewSearchLine( QWidget *parent,
   init( iconView );
 }
 
-KIconViewSearchLine::~KIconViewSearchLine()
+K3IconViewSearchLine::~K3IconViewSearchLine()
 {
   clear(); // empty hiddenItems, returning items back to iconView
   delete d;
 }
 
-bool KIconViewSearchLine::caseSensitive() const
+bool K3IconViewSearchLine::caseSensitive() const
 {
   return d->caseSensitive;
 }
 
-Q3IconView *KIconViewSearchLine::iconView() const
+Q3IconView *K3IconViewSearchLine::iconView() const
 {
   return d->iconView;
 }
@@ -81,7 +81,7 @@ Q3IconView *KIconViewSearchLine::iconView() const
 /******************************************************************************
  * Public Slots                                                               *
  *****************************************************************************/
-void KIconViewSearchLine::updateSearch( const QString &s )
+void K3IconViewSearchLine::updateSearch( const QString &s )
 {
   Q3IconView *iv = d->iconView;
   if( ! iv )
@@ -126,7 +126,7 @@ void KIconViewSearchLine::updateSearch( const QString &s )
       iv->ensureItemVisible( currentItem );
 }
 
-void KIconViewSearchLine::clear()
+void K3IconViewSearchLine::clear()
 {
   // Clear hidden list, give items back to QIconView, if it still exists
   Q3IconViewItem *item = NULL;
@@ -153,12 +153,12 @@ void KIconViewSearchLine::clear()
   KLineEdit::clear();
 }
 
-void KIconViewSearchLine::setCaseSensitive( bool cs )
+void K3IconViewSearchLine::setCaseSensitive( bool cs )
 {
   d->caseSensitive = cs;
 }
 
-void KIconViewSearchLine::setIconView( Q3IconView *iv )
+void K3IconViewSearchLine::setIconView( Q3IconView *iv )
 {
   if ( d->iconView != NULL )
     disconnect( d->iconView, SIGNAL( destroyed() ),
@@ -179,7 +179,7 @@ void KIconViewSearchLine::setIconView( Q3IconView *iv )
 /******************************************************************************
  * Protected Methods                                                          *
  *****************************************************************************/
-bool KIconViewSearchLine::itemMatches( const Q3IconViewItem *item,
+bool K3IconViewSearchLine::itemMatches( const Q3IconViewItem *item,
 				       const QString &s ) const
 {
   if ( s.isEmpty() )
@@ -192,10 +192,10 @@ bool KIconViewSearchLine::itemMatches( const Q3IconViewItem *item,
 	       caseSensitive()?Qt::CaseSensitive:Qt::CaseInsensitive ) >= 0 );
 }
 
-void KIconViewSearchLine::init( Q3IconView *iconView )
+void K3IconViewSearchLine::init( Q3IconView *iconView )
 {
   delete d;
-  d = new KIconViewSearchLinePrivate;
+  d = new K3IconViewSearchLinePrivate;
 
   d->iconView = iconView;
 
@@ -212,7 +212,7 @@ void KIconViewSearchLine::init( Q3IconView *iconView )
     setEnabled( false );
 }
 
-void KIconViewSearchLine::hideItem( Q3IconViewItem *item )
+void K3IconViewSearchLine::hideItem( Q3IconViewItem *item )
 {
   if ( ( item == NULL ) || ( d->iconView == NULL ) )
     return;
@@ -221,7 +221,7 @@ void KIconViewSearchLine::hideItem( Q3IconViewItem *item )
   d->iconView->takeItem( item );
 }
 
-void KIconViewSearchLine::showItem( Q3IconViewItem *item )
+void K3IconViewSearchLine::showItem( Q3IconViewItem *item )
 {
   if ( d->iconView == NULL )
     {
@@ -237,14 +237,14 @@ void KIconViewSearchLine::showItem( Q3IconViewItem *item )
 /******************************************************************************
  * Protected Slots                                                            *
  *****************************************************************************/
-void KIconViewSearchLine::queueSearch( const QString &s )
+void K3IconViewSearchLine::queueSearch( const QString &s )
 {
   d->queuedSearches++;
   d->search = s;
   QTimer::singleShot( 200, this, SLOT( activateSearch() ) );
 }
 
-void KIconViewSearchLine::activateSearch()
+void K3IconViewSearchLine::activateSearch()
 {
   d->queuedSearches--;
 
@@ -258,10 +258,10 @@ void KIconViewSearchLine::activateSearch()
 /******************************************************************************
  * Private Slots                                                              *
  *****************************************************************************/
-void KIconViewSearchLine::iconViewDeleted()
+void K3IconViewSearchLine::iconViewDeleted()
 {
   d->iconView = NULL;
   setEnabled( false );
 }
 
-#include "kiconviewsearchline.moc"
+#include "k3iconviewsearchline.moc"
