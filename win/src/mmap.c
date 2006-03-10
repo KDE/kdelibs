@@ -30,6 +30,17 @@
 #include <sys/mman.h>
 #include <sys/socket.h>
 
+
+#ifndef SECTION_MAP_EXECUTE_EXPLICIT
+//not defined in the February 2003 version of the Platform  SDK 
+#define SECTION_MAP_EXECUTE_EXPLICIT 0x0020
+#endif
+
+#ifndef FILE_MAP_EXECUTE
+//not defined in the February 2003 version of the Platform  SDK 
+#define FILE_MAP_EXECUTE SECTION_MAP_EXECUTE_EXPLICIT
+#endif
+
 #define MUNMAP_FAILURE  (-1)
 
 #define USE_MALLOC_LOCK 1
