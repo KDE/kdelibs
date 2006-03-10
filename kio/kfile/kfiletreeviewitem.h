@@ -21,7 +21,7 @@
 #define kfile_tree_view_item_h
 
 #include <q3ptrlist.h>
-#include <klistview.h>
+#include <k3listview.h>
 
 #include <kfileitem.h>
 #include <kio/global.h>
@@ -37,7 +37,7 @@ class KFileTreeItem;
 /**
  * An item for a KFileTreeView that knows about its own KFileItem.
  */
-class KIO_EXPORT KFileTreeViewItem : public KListViewItem
+class KIO_EXPORT KFileTreeViewItem : public K3ListViewItem
 {
 public:
    KFileTreeViewItem( KFileTreeViewItem*, KFileItem*, KFileTreeBranch * );

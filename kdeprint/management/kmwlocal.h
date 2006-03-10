@@ -25,7 +25,7 @@
 #include <qstringlist.h>
 
 class QLineEdit;
-class KListView;
+class K3ListView;
 class Q3ListViewItem;
 
 class KMWLocal : public KMWizardPage
@@ -47,7 +47,7 @@ protected:
 	Q3ListViewItem* lookForItem( const QString& );
 
 protected:
-	KListView	*m_ports;
+	K3ListView	*m_ports;
 	QLineEdit	*m_localuri;
 	QStringList	m_uris;
 	Q3ListViewItem	*m_parents[4];

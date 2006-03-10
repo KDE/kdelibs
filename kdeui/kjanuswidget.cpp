@@ -48,7 +48,7 @@
 #include <kglobalsettings.h>
 #include <kseparator.h>
 #include <kdebug.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <kpushbutton.h>
 #include <kguiitem.h>
 

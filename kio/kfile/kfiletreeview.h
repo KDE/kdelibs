@@ -26,7 +26,7 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 
-#include <klistview.h>
+#include <k3listview.h>
 #include <kdirnotify.h>
 #include <kio/job.h>
 #include <kfiletreeviewitem.h>
@@ -49,7 +49,7 @@ class QTimer;
  * 3. retrieve the root item with KFileTreeBranch::root() and set it open
  *    if desired. That starts the listing.
  */
-class KIO_EXPORT KFileTreeView : public KListView
+class KIO_EXPORT KFileTreeView : public K3ListView
 {
     Q_OBJECT
 public:

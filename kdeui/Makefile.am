@@ -43,7 +43,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 	kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h \
 	ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h \
 	kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h \
-	kcombobox.h kiconview.h klistview.h klistbox.h kbugreport.h kpassworddialog.h \
+	kcombobox.h kiconview.h k3listview.h klistbox.h kbugreport.h kpassworddialog.h \
 	kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h \
 	kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h \
 	kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h \
@@ -51,7 +51,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 	karrowbutton.h kguiitem.h kstdguiitem.h kstringvalidator.h ktextedit.h \
 	kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kspell.h ksconfig.h \
 	kspelldlg.h ktabbar.h ktabwidget.h ksplashscreen.h \
-	kconfigdialog.h kactionselector.h klanguagebutton.h klistviewsearchline.h \
+	kconfigdialog.h kactionselector.h klanguagebutton.h k3listviewsearchline.h \
 	kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h \
 	ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h \
 	kconfigdialogmanager.h knotification.h
@@ -63,7 +63,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 # in ksharedpixmap.cpp
 libkdeui_la_SOURCES = ksharedpixmap.cpp kmenu.cpp ktoolbar.cpp \
 	kaction.cpp kstdaction.cpp kactioncollection.cpp kactionclasses.cpp kurllabel.cpp \
-	kmenubar.cpp kinputdialog.cpp knuminput.cpp klineedit.cpp klistview.cpp \
+	kmenubar.cpp kinputdialog.cpp knuminput.cpp klineedit.cpp k3listview.cpp \
 	kprogressbar.cpp kprogressdialog.cpp kcolordialog.cpp kselector.cpp kdatepicker.cpp kdatetable.cpp \
 	kfontrequester.cpp kfontdialog.cpp ktabctl.cpp kstatusbar.cpp kmainwindow.cpp \
 	keditlistbox.cpp kseparator.cpp krestrictedline.cpp kcolorbutton.cpp \
@@ -83,11 +83,11 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kmenu.cpp ktoolbar.cpp \
 	ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp ksconfig.cpp kspelldlg.cpp \
 	kspell.cpp ktabbar.cpp ktabwidget.cpp ksplashscreen.cpp \
 	kspellui.ui kconfigdialog.cpp kactionselector.cpp klanguagebutton.cpp \
-	klistviewsearchline.cpp kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
+	k3listviewsearchline.cpp kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
 	kwhatsthismanager.cpp kiconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
 	kconfigdialogmanager.cpp knotification.cpp knotificationmanager.cpp knotificationmanager.skel
 
-noinst_HEADERS = klistviewlineedit.h \
+noinst_HEADERS = k3listviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
 		kdepackages.h kxmlguifactory_p.h \
 		kstdaction_p.h kwhatsthismanager_p.h knotificationmanager.h

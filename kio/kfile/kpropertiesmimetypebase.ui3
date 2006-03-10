@@ -30,7 +30,7 @@
                 <cstring>listView</cstring>
             </property>
         </widget>
-        <widget class="KListView">
+        <widget class="K3ListView">
             <column>
                 <property name="text">
                     <string>Mimetype</string>
@@ -64,7 +64,7 @@
     </vbox>
 </widget>
 <includes>
-    <include location="global" impldecl="in implementation">klistview.h</include>
+    <include location="global" impldecl="in implementation">k3listview.h</include>
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

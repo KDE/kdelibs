@@ -296,17 +296,17 @@ namespace KStdAction
 	/**
 	* Clear selected area.  Calls clear() on the widget with the current focus.
  	* Note that for some widgets, this may not provide the intended bahavior.  For
-	* example if you make use of the code above and a KListView has the focus, clear()
+	* example if you make use of the code above and a K3ListView has the focus, clear()
 	* will clear all of the items in the list.  If this is not the intened behavior
-	* and you want to make use of this slot, you can subclass KListView and reimplement
-	* this slot.  For example the following code would implement a KListView without this
+	* and you want to make use of this slot, you can subclass K3ListView and reimplement
+	* this slot.  For example the following code would implement a K3ListView without this
 	* behavior:
 	*
 	* \code
-	* class MyListView : public KListView {
+	* class MyListView : public K3ListView {
 	*   Q_OBJECT
 	* public:
-	*   MyListView( QWidget * parent = 0, const char * name = 0, WFlags f = 0 ) : KListView( parent, name, f ) {}
+	*   MyListView( QWidget * parent = 0, const char * name = 0, WFlags f = 0 ) : K3ListView( parent, name, f ) {}
 	*   virtual ~MyListView() {}
 	* public Q_SLOTS:
 	*   virtual void clear() {}

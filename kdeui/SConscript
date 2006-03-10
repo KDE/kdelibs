@@ -8,7 +8,7 @@ ksharedpixmap.cpp
 kmenu.cpp ktoolbar.cpp kaction.cpp kstdaction.cpp
 kactioncollection.cpp kactionclasses.cpp
 kurllabel.cpp kmenubar.cpp kinputdialog.cpp
-knuminput.cpp klineedit.cpp klistview.cpp kprogressbar.cpp
+knuminput.cpp klineedit.cpp k3listview.cpp kprogressbar.cpp
 kprogressdialog.cpp kcolordialog.cpp kselector.cpp kdatepicker.cpp
 kdatetable.cpp kfontrequester.cpp kfontdialog.cpp ktabctl.cpp
 kstatusbar.cpp kmainwindow.cpp
@@ -42,7 +42,7 @@ ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp
 ksconfig.cpp kspelldlg.cpp
 kspell.cpp ktabbar.cpp ktabwidget.cpp
 ksplashscreen.cpp kspellui.ui kconfigdialog.cpp
-kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp
+kactionselector.cpp klanguagebutton.cpp k3listviewsearchline.cpp
 kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp
 kwhatsthismanager.cpp kiconviewsearchline.cpp
 ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp kconfigdialogmanager.cpp
@@ -61,7 +61,7 @@ kcolormimedata.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdi
 kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h 
 ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h 
 kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h 
-kcombobox.h kiconview.h klistview.h klistbox.h kbugreport.h kpassworddialog.h 
+kcombobox.h kiconview.h k3listview.h klistbox.h kbugreport.h kpassworddialog.h 
 kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h 
 kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h kaboutapplication.h 
 kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h ksqueezedtextlabel.h 
@@ -69,14 +69,14 @@ kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h kdatewidget.h
 karrowbutton.h kguiitem.h kstdguiitem.h kstringvalidator.h ktextedit.h 
 kpassivepopup.h kdatetimewidget.h ktimezonewidget.h kspell.h ksconfig.h 
 kspelldlg.h ktabbar.h ktabwidget.h ksplashscreen.h 
-kconfigdialog.h kactionselector.h klanguagebutton.h klistviewsearchline.h 
+kconfigdialog.h kactionselector.h klanguagebutton.h k3listviewsearchline.h 
 kpixmapregionselectorwidget.h kpixmapregionselectordialog.h kiconviewsearchline.h 
 ktoolbarlabelaction.h kshortcutdialog.h khbox.h kvbox.h 
 kconfigdialogmanager.h knotification.h
 """
 
 # TODO: could this be replaced with install_headers ?  - no it's about non-installed headers
-for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h klistviewlineedit.h kwhatsthismanager_p.h kstdaction_p.h kcharselect_p.h".split():
+for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h k3listviewlineedit.h kwhatsthismanager_p.h kstdaction_p.h kcharselect_p.h".split():
        env.Moc(i)
 
 obj = env.kdeobj('shlib', env)

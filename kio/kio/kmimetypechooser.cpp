@@ -20,7 +20,7 @@
 
 #include <kconfig.h>
 #include <kiconloader.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <klocale.h>
 #include <kmimetype.h>
 #include <kprocess.h>
@@ -35,7 +35,7 @@
 class KMimeTypeChooserPrivate
 {
   public:
-    KListView *lvMimeTypes;
+    K3ListView *lvMimeTypes;
     QPushButton *btnEditMimeType;
 
     QString defaultgroup;
@@ -67,7 +67,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
     new QLabel( text, this );
   }
 
-  d->lvMimeTypes = new KListView( this );
+  d->lvMimeTypes = new K3ListView( this );
 
   d->lvMimeTypes->addColumn( i18n("Mime Type") );
 //   d->lvMimeTypes->setColumnWidthMode( 0, QListView::Manual );

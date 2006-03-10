@@ -19,18 +19,18 @@
 #define KLISTVIEWLINEEDIT_H
 
 #include <klineedit.h>
-#include <klistview.h>
+#include <k3listview.h>
 
 /**
- * the editor for a KListView.  please don't use this.
+ * the editor for a K3ListView.  please don't use this.
  * @internal
  **/
-class KDEUI_EXPORT KListViewLineEdit : public KLineEdit
+class KDEUI_EXPORT K3ListViewLineEdit : public KLineEdit
 {
 Q_OBJECT
 public:
-	KListViewLineEdit(KListView *parent);
-	~KListViewLineEdit();
+	K3ListViewLineEdit(K3ListView *parent);
+	~K3ListViewLineEdit();
 
 	Q3ListViewItem *currentItem() const;
 
@@ -50,7 +50,7 @@ protected:
 	void terminate(bool commit);
 	Q3ListViewItem *item;
 	int col;
-	KListView* const p;
+	K3ListView* const p;
 
 protected Q_SLOTS:
 	void slotSelectionChanged();

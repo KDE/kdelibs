@@ -21,7 +21,7 @@
 
 #include <kdialog.h>
 
-class KListView;
+class K3ListView;
 class KConfigBase;
 
  /*
@@ -57,7 +57,7 @@ public Q_SLOTS:
 
 protected:
     class Item;
-    KListView *m_listView;
+    K3ListView *m_listView;
 
     class KCustomMenuEditorPrivate;
     KCustomMenuEditorPrivate* const d;

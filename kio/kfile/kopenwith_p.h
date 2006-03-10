@@ -21,7 +21,7 @@
 #define __open_with_p_h__
 
 #include <kurl.h>
-#include <klistview.h>
+#include <k3listview.h>
 
 class KUrlRequester;
 
@@ -51,7 +51,7 @@ protected:
     void init(const QPixmap& pixmap, bool parse, bool dir, const QString &_path, const QString &exec);
 
 public:
-    KAppTreeListItem( KListView* parent, const QString & name, const QPixmap& pixmap,
+    KAppTreeListItem( K3ListView* parent, const QString & name, const QPixmap& pixmap,
                       bool parse, bool dir, const QString &p, const QString &c );
     KAppTreeListItem( Q3ListViewItem* parent, const QString & name, const QPixmap& pixmap,
                       bool parse, bool dir, const QString &p, const QString &c );
@@ -69,7 +69,7 @@ protected:
 /**
  * @internal
  */
-class KApplicationTree : public KListView
+class KApplicationTree : public K3ListView
 {
     Q_OBJECT
 public:

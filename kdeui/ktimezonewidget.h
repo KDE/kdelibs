@@ -49,7 +49,7 @@ class KTimezoneWidgetPrivate;
  * \code
  *
  *  m_timezones =  new KTimezoneWidget(this, "Timezones", vcalendarTimezones);
- *  m_timezones->setSelectionModeExt(KListView::Multi);
+ *  m_timezones->setSelectionModeExt(K3ListView::Multi);
  *  ...
  * \endcode
  *

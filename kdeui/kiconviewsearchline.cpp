@@ -19,7 +19,7 @@
 /**
  * \todo
  *     Maybe we should have a common interface for SearchLines, this file
- * is so close (it's actually based on) klistviewsearchline! Only few methods
+ * is so close (it's actually based on) k3listviewsearchline! Only few methods
  * would be reimplemented.
  */
 

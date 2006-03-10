@@ -52,7 +52,7 @@
 &lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
             </property>
         </widget>
-        <widget class="KListView" row="7" column="0" rowspan="1" colspan="7">
+        <widget class="K3ListView" row="7" column="0" rowspan="1" colspan="7">
             <column>
                 <property name="text">
                     <string>Mimetype</string>
@@ -310,7 +310,7 @@ Following the command, you can have several place holders which will be replaced
 <includes>
     <include location="global" impldecl="in implementation">klineedit.h</include>
     <include location="global" impldecl="in implementation">kurlrequester.h</include>
-    <include location="global" impldecl="in implementation">klistview.h</include>
+    <include location="global" impldecl="in implementation">k3listview.h</include>
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

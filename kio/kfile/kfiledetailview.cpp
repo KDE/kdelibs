@@ -55,7 +55,7 @@ public:
 };
 
 KFileDetailView::KFileDetailView(QWidget *parent)
-    : KListView(parent), KFileView(), d(new KFileDetailViewPrivate())
+    : K3ListView(parent), KFileView(), d(new KFileDetailViewPrivate())
 {
     // this is always the static section, not the index depending on column order
     m_sortingCol = COL_NAME;
@@ -148,7 +148,7 @@ void KFileDetailView::setSelected( const KFileItem *info, bool enable )
     KFileListViewItem *item = (KFileListViewItem*)info->extraData( this );
 
     if ( item )
-	KListView::setSelected( item, enable );
+	K3ListView::setSelected( item, enable );
 }
 
 void KFileDetailView::setCurrentItem( const KFileItem *item )
@@ -157,7 +157,7 @@ void KFileDetailView::setCurrentItem( const KFileItem *item )
         return;
     KFileListViewItem *it = (KFileListViewItem*) item->extraData( this );
     if ( it )
-        KListView::setCurrentItem( it );
+        K3ListView::setCurrentItem( it );
 }
 
 KFileItem * KFileDetailView::currentFileItem() const
@@ -171,7 +171,7 @@ KFileItem * KFileDetailView::currentFileItem() const
 
 void KFileDetailView::clearSelection()
 {
-    KListView::clearSelection();
+    K3ListView::clearSelection();
 }
 
 void KFileDetailView::selectAll()
@@ -180,12 +180,12 @@ void KFileDetailView::selectAll()
         KFileView::selectionMode() == KFile::Single)
 	return;
 
-    KListView::selectAll( true );
+    K3ListView::selectAll( true );
 }
 
 void KFileDetailView::invertSelection()
 {
-    KListView::invertSelection();
+    K3ListView::invertSelection();
 }
 
 void KFileDetailView::slotActivateMenu (Q3ListViewItem *item,const QPoint& pos )
@@ -201,7 +201,7 @@ void KFileDetailView::slotActivateMenu (Q3ListViewItem *item,const QPoint& pos )
 void KFileDetailView::clearView()
 {
     m_resolver->m_lstPendingMimeIconItems.clear();
-    KListView::clear();
+    K3ListView::clear();
 }
 
 void KFileDetailView::insertItem( KFileItem *i )
@@ -413,8 +413,8 @@ void KFileDetailView::slotSortingChanged( int col )
         i->setKey( key );
     }
 
-    KListView::setSorting( m_sortingCol, !reversed );
-    KListView::sort();
+    K3ListView::setSorting( m_sortingCol, !reversed );
+    K3ListView::sort();
 
     if ( !m_blockSortingSignal )
         sig->changeSorting( static_cast<QDir::SortSpec>( sortSpec ) );
@@ -457,7 +457,7 @@ void KFileDetailView::ensureItemVisible( const KFileItem *i )
     KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
 
     if ( item )
-        KListView::ensureItemVisible( item );
+        K3ListView::ensureItemVisible( item );
 }
 
 // we're in multiselection mode
@@ -502,7 +502,7 @@ KFileItem * KFileDetailView::prevItem( const KFileItem *fileItem ) const
 
 void KFileDetailView::keyPressEvent( QKeyEvent *e )
 {
-    KListView::keyPressEvent( e );
+    K3ListView::keyPressEvent( e );
 
     if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) {
         if ( e->state() & Qt::ControlModifier )
@@ -680,7 +680,7 @@ void KFileListViewItem::init()
 
 
 void KFileDetailView::virtual_hook( int id, void* data )
-{ KListView::virtual_hook( id, data );
+{ K3ListView::virtual_hook( id, data );
   KFileView::virtual_hook( id, data ); }
 
 #include "kfiledetailview.moc"

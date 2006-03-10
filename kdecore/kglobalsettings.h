@@ -329,8 +329,8 @@ class KDECORE_EXPORT KGlobalSettings
     static QColor highlightColor();
 
     /**
-     * Returns the alternate background color used by KListView with
-     * KListViewItem. Any other list that uses alternating background
+     * Returns the alternate background color used by K3ListView with
+     * K3ListViewItem. Any other list that uses alternating background
      * colors should use this too, to obey to the user's preferences. Returns
      * an invalid color if the user doesn't want alternating backgrounds.
      * @return the alternate background color
@@ -348,7 +348,7 @@ class KDECORE_EXPORT KGlobalSettings
     static QColor calculateAlternateBackgroundColor(const QColor& base);
 
     /**
-      * Returns if the sorted column in a KListView shall be drawn with a
+      * Returns if the sorted column in a K3ListView shall be drawn with a
       * shaded background color.
       * @return true if the sorted column shall be shaded
       */

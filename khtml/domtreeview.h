@@ -18,13 +18,13 @@
 #ifndef DOMTREEVIEW_H
 #define DOMTREEVIEW_H
 
-#include <klistview.h>
+#include <k3listview.h>
 #include <kdebug.h>
 #include <q3listview.h>
 #include <q3ptrdict.h>
 #include "dom/dom_core.h"
 
-class DOMTreeView : public KListView
+class DOMTreeView : public K3ListView
 {
     Q_OBJECT
     public: 

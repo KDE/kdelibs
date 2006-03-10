@@ -39,7 +39,7 @@
  * its building blocks and some other widgets, making use of the file dialog.
  *
  * The file dialog provides different views; there is a vertically scrolling
- * view based on @see KListView, showing things like filename, file size,
+ * view based on @see K3ListView, showing things like filename, file size,
  * permissions etc. in separate columns. And there is a horizontally scrolling
  * view based on @see KIconView. Additionally, there are some compound views,
  * like a view using the icon-view for files on the right side and another
@@ -55,7 +55,7 @@
  * to them is @see KDirOperator. It allows the user to switch between different
  * views.
  *
- * @see KFileTreeView is a KListView based widget that displays files and/or
+ * @see KFileTreeView is a K3ListView based widget that displays files and/or
  * directories as a tree. It does not implement the KFileView interface,
  * however, so it can't be used with KDirOperator.
  *
@@ -100,7 +100,7 @@
  *   The KFileView based on KIconView.
  *
  * @see KFileDetailView:
- *   The KFileView based on KListView.
+ *   The KFileView based on K3ListView.
  *
  * @see KFilePreview:
  *   The KFileView, combining a widget showing preview for a selected file

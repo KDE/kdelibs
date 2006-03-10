@@ -1,4 +1,4 @@
-#include <klistview.h>
+#include <k3listview.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdialogbase.h>
@@ -6,11 +6,11 @@
 
 int main( int argc, char **argv )
 {
-	KCmdLineArgs::init( argc, argv, "klistviewtest", "KListViewTest", "klistview test app", "1.0" );
+	KCmdLineArgs::init( argc, argv, "klistviewtest", "K3ListViewTest", "klistview test app", "1.0" );
 	KApplication app;
 	KDialogBase dialog;
-	KListView *view = new KListView( dialog.makeVBoxMainWidget() );
-	view->setSelectionModeExt( KListView::FileManager );
+	K3ListView *view = new K3ListView( dialog.makeVBoxMainWidget() );
+	view->setSelectionModeExt( K3ListView::FileManager );
 	view->setDragEnabled( true );
 	view->setItemsMovable( false );
 	view->setAcceptDrops( true );
@@ -18,20 +18,20 @@ int main( int argc, char **argv )
 	view->addColumn("Column 2");
 	view->addColumn("Column 3");
 
-	new KListViewItem( view, "Item 1");
-	new KListViewItem( view, "Item 1");
-	new KListViewItem( view, "Item 1");
-	new KListViewItem( view, "Item 1");
-	new KListViewItem( view, "Item 1");
-	new KListViewItem( view, "Item 1");
-	new KListViewItem( view, "Item 1");
-	new KListViewItem( view, "Item 1");
-	new KListViewItem( view, "Item 1");
-	new KListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );
+	new K3ListViewItem( view, "Item 1");
+	new K3ListViewItem( view, "Item 1");
+	new K3ListViewItem( view, "Item 1");
+	new K3ListViewItem( view, "Item 1");
+	new K3ListViewItem( view, "Item 1");
+	new K3ListViewItem( view, "Item 1");
+	new K3ListViewItem( view, "Item 1");
+	new K3ListViewItem( view, "Item 1");
+	new K3ListViewItem( view, "Item 1");
+	new K3ListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );
 
 	view->restoreLayout( KGlobal::config(), "ListView" );
 
-	new KListViewItem( view, "Item 3" );
+	new K3ListViewItem( view, "Item 3" );
 
 	dialog.exec();
 	view->saveLayout( KGlobal::config(), "ListView" );

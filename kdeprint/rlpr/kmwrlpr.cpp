@@ -28,7 +28,7 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <q3header.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <klocale.h>
 #include <kiconloader.h>
 
@@ -50,7 +50,7 @@ KMWRlpr::KMWRlpr(QWidget *parent)
 	m_title = i18n("Remote LPD Queue Settings");
 	m_nextpage = KMWizard::Name;
 
-	m_view = new KListView(this);
+	m_view = new K3ListView(this);
 	m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	m_view->setLineWidth(1);
 	m_view->addColumn(QLatin1String(""));

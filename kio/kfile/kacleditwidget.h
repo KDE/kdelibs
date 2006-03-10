@@ -26,7 +26,7 @@
 
 #if defined(USE_POSIX_ACL) || defined(Q_MOC_RUN)
 
-#include <klistview.h>
+#include <k3listview.h>
 #include <kacl.h>
 #include <kfileitem.h>
 

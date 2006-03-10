@@ -24,7 +24,7 @@
 
 #include <khbox.h>
 
-class KListView;
+class K3ListView;
 class Q3ListViewItem;
 class QToolButton;
 
@@ -33,39 +33,39 @@ class QToolButton;
  * listviews based on a simple text search.
  *
  * No changes to the application other than instantiating this class with
- * appropriate KListViews should be needed.
+ * appropriate K3ListViews should be needed.
  */
 
-class KDEUI_EXPORT KListViewSearchLine : public KLineEdit
+class KDEUI_EXPORT K3ListViewSearchLine : public KLineEdit
 {
     Q_OBJECT
 
 public:
 
     /**
-     * Constructs a KListViewSearchLine with \a listView being the KListView to
+     * Constructs a K3ListViewSearchLine with \a listView being the K3ListView to
      * be filtered.
      *
      * If \a listView is null then the widget will be disabled until listviews
      * are set with setListView(), setListViews() or added with addListView().
      */
-    KListViewSearchLine(QWidget *parent = 0, KListView *listView = 0);
+    K3ListViewSearchLine(QWidget *parent = 0, K3ListView *listView = 0);
 
     /**
-     * Constructs a KListViewSearchLine with \a listViews being the list of
-     * pointers to KListViews to be filtered.
+     * Constructs a K3ListViewSearchLine with \a listViews being the list of
+     * pointers to K3ListViews to be filtered.
      *
      * If \a listViews is empty then the widget will be disabled until listviews
      * are set with setListView(), setListViews() or added with addListView().
      */
-    KListViewSearchLine(QWidget *parent,
-                        const QList<KListView *> &listViews);
+    K3ListViewSearchLine(QWidget *parent,
+                        const QList<K3ListView *> &listViews);
 
 
     /**
-     * Destroys the KListViewSearchLine.
+     * Destroys the K3ListViewSearchLine.
      */
-    virtual ~KListViewSearchLine();
+    virtual ~K3ListViewSearchLine();
 
     /**
      * Returns true if the search is case sensitive.  This defaults to false.
@@ -96,7 +96,7 @@ public:
      *
      * @see setListView(), listViews()
      */
-    KListView *listView() const;
+    K3ListView *listView() const;
 
     /**
      * Returns the list of pointers to listviews that are currently filtered by
@@ -104,25 +104,25 @@ public:
      *
      * @see setListViews(), addListView(), listView()
      */
-    const QList<KListView *> &listViews() const;
+    const QList<K3ListView *> &listViews() const;
 
 public Q_SLOTS:
     /**
-     * Adds a KListView to the list of listviews filtered by this search line.
+     * Adds a K3ListView to the list of listviews filtered by this search line.
      * If \a lv is null then the widget will be disabled.
      *
      * @see listView(), setListViews(), removeListView()
      */
-    void addListView(KListView *lv);
+    void addListView(K3ListView *lv);
 
     /**
-     * Removes a KListView from the list of listviews filtered by this search
+     * Removes a K3ListView from the list of listviews filtered by this search
      * line. Does nothing if \a lv is 0 or is not filtered by the quick search
      * line.
      *
      * @see listVew(), setListViews(), addListView()
      */
-    void removeListView(KListView *lv);
+    void removeListView(K3ListView *lv);
 
     /**
      * Updates search to only make visible the items that match \a s.  If
@@ -161,22 +161,22 @@ public Q_SLOTS:
     void setSearchColumns(const QList<int> &columns);
 
     /**
-     * Sets the KListView that is filtered by this search line, replacing any
+     * Sets the K3ListView that is filtered by this search line, replacing any
      * previously filtered listviews.  If \a lv is null then the widget will be
      * disabled.
      *
      * @see listView(), setListViews()
      */
-    void setListView(KListView *lv);
+    void setListView(K3ListView *lv);
 
     /**
-     * Sets KListViews that are filtered by this search line, replacing any
+     * Sets K3ListViews that are filtered by this search line, replacing any
      * previously filtered listviews.  If \a lvs is empty then the widget will
      * be disabled.
      *
      * @see listViews(), addListView(), setListView()
      */
-    void setListViews(const QList<KListView *> &lv);
+    void setListViews(const QList<K3ListView *> &lv);
 
 
   protected:
@@ -197,17 +197,17 @@ public Q_SLOTS:
      * Updates search to only make visible appropriate items in \a listView.  If
      * \a listView is null then nothing is done.
      */
-    virtual void updateSearch(KListView *listView);
+    virtual void updateSearch(K3ListView *listView);
 
     /**
      * Connects signals of this listview to the appropriate slots of the search
      * line.
      */
-    virtual void connectListView(KListView *);
+    virtual void connectListView(K3ListView *);
     /**
      * Disconnects signals of a listviews from the search line.
      */
-    virtual void disconnectListView(KListView *);
+    virtual void disconnectListView(K3ListView *);
 
     /**
      * Checks columns in all listviews and decides whether choosing columns to
@@ -265,7 +265,7 @@ private:
      * This is used in case parent items of matching items shouldn't be
      * visible.  It hides all items that don't match the search string.
      */
-    void checkItemParentsNotVisible(KListView *listView);
+    void checkItemParentsNotVisible(K3ListView *listView);
 
     /**
      * This is used in case parent items of matching items should be visible.
@@ -280,40 +280,40 @@ private Q_SLOTS:
     void searchColumnsMenuActivated(int);
 
 private:
-    class KListViewSearchLinePrivate;
-    KListViewSearchLinePrivate *d;
+    class K3ListViewSearchLinePrivate;
+    K3ListViewSearchLinePrivate *d;
 };
 
 /**
- * Creates a widget featuring a KListViewSearchLine, a label with the text
+ * Creates a widget featuring a K3ListViewSearchLine, a label with the text
  * "Search" and a button to clear the search.
  */
-class KDEUI_EXPORT KListViewSearchLineWidget : public KHBox
+class KDEUI_EXPORT K3ListViewSearchLineWidget : public KHBox
 {
     Q_OBJECT
 
 public:
     /**
-     * Creates a KListViewSearchLineWidget for \a listView with \a parent as the
+     * Creates a K3ListViewSearchLineWidget for \a listView with \a parent as the
      * parent with and \a name.
      */
-    KListViewSearchLineWidget(KListView *listView = 0, QWidget *parent = 0);
+    K3ListViewSearchLineWidget(K3ListView *listView = 0, QWidget *parent = 0);
 
     /**
-     * Destroys the KListViewSearchLineWidget
+     * Destroys the K3ListViewSearchLineWidget
      */
-    ~KListViewSearchLineWidget();
+    ~K3ListViewSearchLineWidget();
 
     /**
      * Creates the search line.  This can be useful to reimplement in cases where
-     * a KListViewSearchLine subclass is used.
+     * a K3ListViewSearchLine subclass is used.
      */
-    virtual KListViewSearchLine *createSearchLine(KListView *listView);
+    virtual K3ListViewSearchLine *createSearchLine(K3ListView *listView);
 
     /**
      * Returns a pointer to the search line.
      */
-    KListViewSearchLine *searchLine() const;
+    K3ListViewSearchLine *searchLine() const;
 
 protected Q_SLOTS:
     /**
@@ -328,8 +328,8 @@ private Q_SLOTS:
     void positionInToolBar();
 
 private:
-    class KListViewSearchLineWidgetPrivate;
-    KListViewSearchLineWidgetPrivate *d;
+    class K3ListViewSearchLineWidgetPrivate;
+    K3ListViewSearchLineWidgetPrivate *d;
 };
 
 #endif

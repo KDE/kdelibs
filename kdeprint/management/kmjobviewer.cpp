@@ -30,7 +30,7 @@
 #include "kmconfigpage.h"
 #include "kprinter.h"
 
-#include <klistview.h>
+#include <k3listview.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
 #include <kmessagebox.h>

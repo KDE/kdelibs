@@ -24,7 +24,7 @@
 #include "kmcupsmanager.h"
 #include "networkscanner.h"
 
-#include <klistview.h>
+#include <k3listview.h>
 #include <q3header.h>
 #include <kpushbutton.h>
 #include <qlineedit.h>
@@ -46,7 +46,7 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent)
 	m_ID = KMWizard::Custom+1;
 	m_nextpage = KMWizard::Driver;
 
-	m_list = new KListView(this);
+	m_list = new K3ListView(this);
 	m_list->addColumn("");
 	m_list->header()->hide();
 	m_list->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);

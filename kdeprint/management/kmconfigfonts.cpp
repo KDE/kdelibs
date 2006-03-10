@@ -32,7 +32,7 @@
 #include <kiconloader.h>
 #include <kurlrequester.h>
 #include <kfile.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <kdialog.h>
 
 KMConfigFonts::KMConfigFonts(QWidget *parent)
@@ -46,7 +46,7 @@ KMConfigFonts::KMConfigFonts(QWidget *parent)
 	Q3GroupBox	*box2 = new Q3GroupBox(0, Qt::Vertical, i18n("Fonts Path"), this);
 
 	m_embedfonts = new QCheckBox(i18n("&Embed fonts in PostScript data when printing"), box);
-	m_fontpath = new KListView(box2);
+	m_fontpath = new K3ListView(box2);
 	m_fontpath->addColumn("");
 	m_fontpath->header()->setStretchEnabled(true, 0);
 	m_fontpath->header()->hide();

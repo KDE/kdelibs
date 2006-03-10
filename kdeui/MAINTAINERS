@@ -51,7 +51,7 @@ kled.cpp
 klineedit.cpp   	Dawit Alemayehu <adawit@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
 klineeditdlg.cpp
 klistbox.cpp
-klistview.cpp
+k3listview.cpp
 kmainwindow.cpp
 kmainwindowiface.cpp
 kmenubar.cpp

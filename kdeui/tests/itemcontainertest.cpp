@@ -1,5 +1,5 @@
 /*
-* Tests the item container widgets KIconView, KListView, KListBox
+* Tests the item container widgets KIconView, K3ListView, KListBox
 *
 * Copyright (c) 2000 by Michael Reiher <michael.reiher@gmx.de>
 *
@@ -21,7 +21,7 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kiconview.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <klistbox.h>
 
 #include "itemcontainertest.h"
@@ -89,7 +89,7 @@ TopLevel::TopLevel(QWidget *parent)
     m_plblItem = new QLabel( gbItem );
     vBox->addWidget( gbItem );
 
-    Q3ButtonGroup* bgListView = new Q3ButtonGroup( 1, Qt::Horizontal, "KListView", this);
+    Q3ButtonGroup* bgListView = new Q3ButtonGroup( 1, Qt::Horizontal, "K3ListView", this);
     QCheckBox* cbListView = new QCheckBox("Single Column", bgListView);
     vBox->addWidget( bgListView );
     connect( cbListView, SIGNAL( toggled( bool ) ),
@@ -106,8 +106,8 @@ TopLevel::TopLevel(QWidget *parent)
 	     this, SLOT( slotIconViewExec( Q3IconViewItem* ) ) );
 
     //Create ListView
-    Q3GroupBox* gbListView = new Q3GroupBox( 1, Qt::Horizontal, "KListView", this);
-    m_pListView = new KListView( gbListView );
+    Q3GroupBox* gbListView = new Q3GroupBox( 1, Qt::Horizontal, "K3ListView", this);
+    m_pListView = new K3ListView( gbListView );
     m_pListView->addColumn("Item");
     m_pListView->addColumn("Text");
     hBox->addWidget( gbListView );
@@ -188,7 +188,7 @@ void TopLevel::slotIconViewExec( Q3IconViewItem* item )
 
 void TopLevel::slotListViewExec( Q3ListViewItem* item )
 {
-  m_plblWidget->setText("KListView");
+  m_plblWidget->setText("K3ListView");
   m_plblSignal->setText("executed");
   if( item ) 
     m_plblItem->setText( item->text(0) );

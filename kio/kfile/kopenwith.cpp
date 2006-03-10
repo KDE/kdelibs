@@ -52,7 +52,7 @@
 #include <dcopclient.h>
 #include <kmimetype.h>
 #include <kservicegroup.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <ksycoca.h>
 #include <kstdguiitem.h>
 
@@ -75,7 +75,7 @@ void KConfigBase::writeEntry( const char *pKey,
 
 // ----------------------------------------------------------------------
 
-KAppTreeListItem::KAppTreeListItem( KListView* parent, const QString & name,
+KAppTreeListItem::KAppTreeListItem( K3ListView* parent, const QString & name,
                                     const QPixmap& pixmap, bool parse, bool dir, const QString &p, const QString &c )
     : Q3ListViewItem( parent, name )
 {
@@ -151,7 +151,7 @@ bool KAppTreeListItem::isDirectory()
 // ----------------------------------------------------------------------
 
 KApplicationTree::KApplicationTree( QWidget *parent )
-    : KListView( parent ), currentitem(0)
+    : K3ListView( parent ), currentitem(0)
 {
     addColumn( i18n("Known Applications") );
     setRootIsDecorated( true );
@@ -287,7 +287,7 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
 {
     setColumnWidth(0, width()-QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent)
                          -2*QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth));
-    KListView::resizeEvent(e);
+    K3ListView::resizeEvent(e);
 }
 
 // Prune empty directories from the tree

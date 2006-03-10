@@ -24,7 +24,7 @@
 #include <kapplication.h>
 #include <kmainwindow.h>
 #include <klineedit.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <kstandarddirs.h>
 #include <ktoolbarlabelaction.h>
 #include <ksqueezedtextlabel.h> 

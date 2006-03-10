@@ -25,7 +25,7 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <q3header.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <qlayout.h>
 #include <QStackedWidget>
 #include <klocale.h>
@@ -39,7 +39,7 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 
 	QLabel	*lab0 = new QLabel(i18n("Aliases:"), w);
 	m_aliases = new QLineEdit(w);
-	m_view = new KListView(w);
+	m_view = new K3ListView(w);
 	m_view->addColumn("");
 	m_view->header()->hide();
 	m_type = new QComboBox(w);

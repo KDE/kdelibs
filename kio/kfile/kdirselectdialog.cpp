@@ -159,8 +159,8 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
 
     connect( m_treeView, SIGNAL( currentChanged( Q3ListViewItem * )),
              SLOT( slotCurrentChanged() ));
-    connect( m_treeView, SIGNAL( contextMenu( KListView *, Q3ListViewItem *, const QPoint & )),
-             SLOT( slotContextMenu( KListView *, Q3ListViewItem *, const QPoint & )));
+    connect( m_treeView, SIGNAL( contextMenu( K3ListView *, Q3ListViewItem *, const QPoint & )),
+             SLOT( slotContextMenu( K3ListView *, Q3ListViewItem *, const QPoint & )));
 
     connect( d->urlCombo, SIGNAL( activated( const QString& )),
              SLOT( slotURLActivated( const QString& )));
@@ -403,7 +403,7 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
     }
 }
 
-void KDirSelectDialog::slotContextMenu( KListView *, Q3ListViewItem *, const QPoint& pos )
+void KDirSelectDialog::slotContextMenu( K3ListView *, Q3ListViewItem *, const QPoint& pos )
 {
     m_contextMenu->popup( pos );
 }

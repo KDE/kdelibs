@@ -139,7 +139,7 @@ KACLListViewItem::KACLListViewItem( Q3ListView* parent,
                                     KACLListView::EntryType _type,
                                     unsigned short _value, bool defaults,
                                     const QString& _qualifier )
- : KListViewItem( parent, parent->lastItem() ), // we want to append
+ : K3ListViewItem( parent, parent->lastItem() ), // we want to append
    type( _type ), value( _value ), isDefault( defaults ),
    qualifier( _qualifier ), isPartial( false )
 {
@@ -200,7 +200,7 @@ void KACLListViewItem::paintCell( QPainter* p, const QColorGroup &cg,
         mycg.setColor( QColorGroup::Text, QColor( 100, 100, 100 ) );
         p->setFont( font );
     }
-    KListViewItem::paintCell( p, mycg, column, width, alignment );
+    K3ListViewItem::paintCell( p, mycg, column, width, alignment );
 
     KACLListViewItem *below =0;
     if ( itemBelow() )
@@ -582,7 +582,7 @@ void EditACLEntryDialog::slotSelectionChanged( QAbstractButton *button )
 
 
 KACLListView::KACLListView( QWidget* parent )
- : KListView( parent ),
+ : K3ListView( parent ),
    m_hasMask( false ), m_allowDefaults( false )
 {
     // Add the columns
@@ -779,7 +779,7 @@ void KACLListView::contentsMousePressEvent( QMouseEvent * e )
     if ( !clickedItem ) return;
     // if the click is on an as yet unselected item, select it first
     if ( !clickedItem->isSelected() )
-        KListView::contentsMousePressEvent( e );
+        K3ListView::contentsMousePressEvent( e );
 
     if ( !currentItem() ) return;
     int column = header()->sectionAt( e->x() );
@@ -796,7 +796,7 @@ void KACLListView::contentsMousePressEvent( QMouseEvent * e )
             perm = ACL_EXECUTE;
             break;
         default:
-            return KListView::contentsMousePressEvent( e );
+            return K3ListView::contentsMousePressEvent( e );
     }
     KACLListViewItem* referenceItem = static_cast<KACLListViewItem*>( clickedItem );
     unsigned short referenceHadItSet = referenceItem->value & perm;

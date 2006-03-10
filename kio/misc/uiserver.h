@@ -29,7 +29,7 @@
 #include <kurl.h>
 #include <kmainwindow.h>
 #include <kdatastream.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <ksslcertdlg.h>
 #include <ktoolbar.h>
 
@@ -56,7 +56,7 @@ struct ListProgressColumnConfig
 * List view in the UIServer.
 * @internal
 */
-class KIO_EXPORT ListProgress : public KListView {
+class KIO_EXPORT ListProgress : public K3ListView {
 
   Q_OBJECT
 
@@ -376,7 +376,7 @@ protected Q_SLOTS:
 
   void slotJobCanceled( ProgressItem * );
   void slotApplyConfig();
-  void slotShowContextMenu(KListView*, Q3ListViewItem *item, const QPoint& pos);
+  void slotShowContextMenu(K3ListView*, Q3ListViewItem *item, const QPoint& pos);
 
 protected:
 

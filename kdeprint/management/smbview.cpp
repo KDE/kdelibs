@@ -39,7 +39,7 @@
 //*********************************************************************************************
 
 SmbView::SmbView(QWidget *parent)
-    : KListView(parent)
+    : K3ListView(parent)
 {
 	addColumn(i18n("Printer"));
 	addColumn(i18n("Comment"));

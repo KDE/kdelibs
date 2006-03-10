@@ -40,11 +40,11 @@
 #include "kfiletreeviewitem.h"
 
 KFileTreeView::KFileTreeView( QWidget *parent )
-    : KListView( parent ),
+    : K3ListView( parent ),
       m_wantOpenFolderPixmaps( true )
 {
     setDragEnabled(true);
-    setSelectionModeExt( KListView::Single );
+    setSelectionModeExt( K3ListView::Single );
 
     m_animationTimer = new QTimer( this );
     connect( m_animationTimer, SIGNAL( timeout() ),
@@ -235,8 +235,8 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
    // kDebug(250) << "canDecode: " << KUrl::List::canDecode(e->mimeData()) << endl;
    // kDebug(250) << "action: " << e->action() << endl;
 
-   /*  KListView::acceptDrag(e);  */
-   /* this is what KListView does:
+   /*  K3ListView::acceptDrag(e);  */
+   /* this is what K3ListView does:
     * acceptDrops() && itemsMovable() && (e->source()==viewport());
     * ask acceptDrops and itemsMovable, but not the third
     */
@@ -663,6 +663,6 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
 
 
 void KFileTreeView::virtual_hook( int id, void* data )
-{ KListView::virtual_hook( id, data ); }
+{ K3ListView::virtual_hook( id, data ); }
 
 #include "kfiletreeview.moc"

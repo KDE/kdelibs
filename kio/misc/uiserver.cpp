@@ -115,7 +115,7 @@ class ProgressConfigDialog:public KDialogBase
       QCheckBox *m_statusBarCb;
       QCheckBox *m_headerCb;
       QCheckBox *m_fixedWidthCb;
-      KListView *m_columns;
+      K3ListView *m_columns;
       Q3CheckListItem *(m_items[ListProgress::TB_MAX]);
 };
 
@@ -132,7 +132,7 @@ ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
    m_statusBarCb=new QCheckBox(i18n("Show statusbar"), plainPage());
    m_fixedWidthCb=new QCheckBox(i18n("Column widths are user adjustable"), plainPage());
    QLabel *label=new QLabel(i18n("Show information:"), plainPage());
-   m_columns=new KListView(plainPage());
+   m_columns=new K3ListView(plainPage());
 
    m_columns->addColumn("info");
    m_columns->setSorting(-1);
@@ -453,7 +453,7 @@ void ProgressItem::updateVisibility()
 
 //-----------------------------------------------------------------------------
 ListProgress::ListProgress (QWidget *parent)
-    : KListView (parent)
+    : K3ListView (parent)
 {
 
   // enable selection of more than one item
@@ -618,8 +618,8 @@ UIServer::UIServer()
            SLOT( slotSelection() ) );
   connect( listProgress, SIGNAL( executed( Q3ListViewItem* ) ),
            SLOT( slotToggleDefaultProgress( Q3ListViewItem* ) ) );
-  connect( listProgress, SIGNAL( contextMenu( KListView*, Q3ListViewItem *, const QPoint &)),
-           SLOT(slotShowContextMenu(KListView*, Q3ListViewItem *, const QPoint&)));
+  connect( listProgress, SIGNAL( contextMenu( K3ListView*, Q3ListViewItem *, const QPoint &)),
+           SLOT(slotShowContextMenu(K3ListView*, Q3ListViewItem *, const QPoint&)));
 
 
   // setup animation timer
@@ -670,7 +670,7 @@ void UIServer::applySettings()
      toolBar()->show();
 }
 
-void UIServer::slotShowContextMenu(KListView*, Q3ListViewItem* item, const QPoint& pos)
+void UIServer::slotShowContextMenu(K3ListView*, Q3ListViewItem* item, const QPoint& pos)
 {
    if (m_contextMenu==0)
    {

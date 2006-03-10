@@ -93,23 +93,23 @@ ToolTip=Extended List Box (KDE)
 WhatsThis=An improved version of the QListBox that follows KDE settings
 Group=Views (KDE)
 
-[KListView]
+[K3ListView]
 ToolTip=Extended List View (KDE)
-WhatsThis=An improved version of the QListView that allows certain KDE extensions
+WhatsThis=An improved version of the Q3ListView that allows certain KDE extensions
 Group=Views (KDE)
 
 [KLineEdit]
 ToolTip=Line Edit (KDE)
 Group=Input (KDE)
 
-[KListViewSearchLine]
+[K3ListViewSearchLine]
 ToolTip=ListView Search Line (KDE)
 Group=Input (KDE)
 ConstructorArgs=(parent, 0)
 
-[KListViewSearchLineWidget]
+[K3ListViewSearchLineWidget]
 ToolTip=ListView Search Line Widget (KDE)
-IncludeFile=klistviewsearchline.h
+IncludeFile=k3listviewsearchline.h
 Group=Input (KDE)
 ConstructorArgs=(0, parent)
 

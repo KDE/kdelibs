@@ -22,7 +22,7 @@
 
 #include "kmwizardpage.h"
 
-class KListView;
+class K3ListView;
 class Q3ListViewItem;
 class QLineEdit;
 class Q3TextView;
@@ -46,7 +46,7 @@ protected Q_SLOTS:
 	void slotIppReport();
 
 private:
-	KListView	*m_list;
+	K3ListView	*m_list;
 	NetworkScanner *m_scanner;
 	QLineEdit	*m_uri;
 	Q3TextView	*m_info;

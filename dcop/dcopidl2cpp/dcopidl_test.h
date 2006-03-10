@@ -1,4 +1,4 @@
-#include <klistview.h>
+#include <k3listview.h>
 #include "main.h"
 
 #ifndef TEST_H

@@ -30,7 +30,7 @@
 #include <QHash>
 
 #include <klocale.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 
@@ -49,7 +49,7 @@ KMWOther::KMWOther(QWidget *parent)
 					 "<li>lpd://server/queue</li>"
 					 "<li>parallel:/dev/lp0</li></ul>"));
 	QLabel	*l2 = new QLabel(i18n("URI:"), this);
-	m_uriview = new KListView( this );
+	m_uriview = new K3ListView( this );
 	m_uriview->addColumn( "" );
 	m_uriview->header()->hide();
 	m_uriview->setSorting( -1 );

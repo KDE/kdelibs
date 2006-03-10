@@ -25,7 +25,7 @@
 #include <qstringlist.h>
 #include <kdialogbase.h>
 
-class KListView;
+class K3ListView;
 class Q3ListViewItem;
 class QLineEdit;
 class QComboBox;
@@ -74,11 +74,11 @@ protected Q_SLOTS:
 	void slotChanged();
 
 private:
-	KListView	*m_view;
+	K3ListView	*m_view;
 	QLineEdit	*m_name, *m_desc, *m_format, *m_default, *m_command;
 	QComboBox	*m_type;
 	QWidget		*m_dummy;
-	KListView	*m_values;
+	K3ListView	*m_values;
 	QLineEdit	*m_edit1, *m_edit2;
 	QStackedWidget	*m_stack;
 	QToolButton	*m_apply, *m_addgrp, *m_addopt, *m_delopt, *m_up, *m_down;
@@ -117,7 +117,7 @@ private:
 	QComboBox	*m_mimetype;
 	KListBox	*m_availablemime, *m_selectedmime;
 	QToolButton	*m_addmime, *m_removemime;
-	KListView	*m_requirements;
+	K3ListView	*m_requirements;
 	QToolButton	*m_removereq, *m_addreq;
 
 	QStringList	m_mimelist;

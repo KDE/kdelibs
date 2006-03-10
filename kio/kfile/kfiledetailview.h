@@ -25,7 +25,7 @@ class KFileItem;
 class QWidget;
 class QKeyEvent;
 
-#include <klistview.h>
+#include <k3listview.h>
 #include <kmimetyperesolver.h>
 
 #include "kfileview.h"
@@ -34,25 +34,25 @@ class QKeyEvent;
  * An item for the listiew, that has a reference to its corresponding
  * KFileItem.
  */
-class KIO_EXPORT KFileListViewItem : public KListViewItem
+class KIO_EXPORT KFileListViewItem : public K3ListViewItem
 {
 public:
     KFileListViewItem( Q3ListView *parent, const QString &text,
 		       const QPixmap &icon, KFileItem *fi )
-	: KListViewItem( parent, text ), inf( fi ) {
+	: K3ListViewItem( parent, text ), inf( fi ) {
         setPixmap( 0, icon );
         setText( 0, text );
     }
 
     KFileListViewItem( Q3ListView *parent, KFileItem *fi )
-        : KListViewItem( parent ), inf( fi ) {
+        : K3ListViewItem( parent ), inf( fi ) {
         init();
     }
 
     KFileListViewItem( Q3ListView *parent, const QString &text,
 		       const QPixmap &icon, KFileItem *fi,
 		       Q3ListViewItem *after)
-	: KListViewItem( parent, after ), inf( fi ) {
+	: K3ListViewItem( parent, after ), inf( fi ) {
         setPixmap( 0, icon );
         setText( 0, text );
     }
@@ -100,7 +100,7 @@ private:
  * @see KCombiView
  * @see KFileIconView
  */
-class KIO_EXPORT KFileDetailView : public KListView, public KFileView
+class KIO_EXPORT KFileDetailView : public K3ListView, public KFileView
 {
     Q_OBJECT
 
@@ -184,9 +184,9 @@ private Q_SLOTS:
     void slotAutoOpen();
 
 private:
-    virtual void insertItem(Q3ListViewItem *i) { KListView::insertItem(i); }
-    virtual void setSorting(int i, bool b) { KListView::setSorting(i, b); }
-    virtual void setSelected(Q3ListViewItem *i, bool b) { KListView::setSelected(i, b); }
+    virtual void insertItem(Q3ListViewItem *i) { K3ListView::insertItem(i); }
+    virtual void setSorting(int i, bool b) { K3ListView::setSorting(i, b); }
+    virtual void setSelected(Q3ListViewItem *i, bool b) { K3ListView::setSelected(i, b); }
 
     inline KFileListViewItem * viewItem( const KFileItem *item ) const {
         if ( item )

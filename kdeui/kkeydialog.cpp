@@ -45,7 +45,7 @@
 #include <kglobal.h>
 #include <kglobalaccel.h>
 #include <kiconloader.h>
-#include <klistviewsearchline.h>
+#include <k3listviewsearchline.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kshortcut.h>
@@ -78,10 +78,10 @@ const int XKeyRelease = KeyRelease;
 // KKeyChooserItem
 //---------------------------------------------------------------------
 
-class KKeyChooserItem : public KListViewItem
+class KKeyChooserItem : public K3ListViewItem
 {
  public:
-	KKeyChooserItem( KListView* parent, Q3ListViewItem* after, KShortcutList* pList, uint iAction );
+	KKeyChooserItem( K3ListView* parent, Q3ListViewItem* after, KShortcutList* pList, uint iAction );
 	KKeyChooserItem( Q3ListViewItem* parent, Q3ListViewItem* after, KShortcutList* pList, uint iAction );
 
 	QString actionName() const;
@@ -130,7 +130,7 @@ class KKeyChooserPrivate
 	QList<KShortcutList*> rgpLists;
 	QList<KShortcutList*> rgpListsAllocated;
 
-	KListView *pList;
+	K3ListView *pList;
 	QLabel *lInfo;
 	KKeyButton *pbtnShortcut;
 	Q3GroupBox *fCArea;
@@ -325,7 +325,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   searchLayout->addWidget(clearSearch);
   QLabel* slbl = new QLabel(i18n("&Search:"), this);
   searchLayout->addWidget(slbl);
-  KListViewSearchLine* listViewSearch = new KListViewSearchLine(this);
+  K3ListViewSearchLine* listViewSearch = new K3ListViewSearchLine(this);
   searchLayout->addWidget(listViewSearch);
   slbl->setBuddy(listViewSearch);
   connect(clearSearch, SIGNAL(pressed()), listViewSearch, SLOT(clear()));
@@ -346,7 +346,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   topLayout->addLayout( stackLayout, 10 );
   stackLayout->setRowStretch( 1, 10 ); // Only list will stretch
 
-  d->pList = new KListView( this );
+  d->pList = new K3ListView( this );
   d->pList->setFocus();
   listViewSearch->setListView(d->pList); // Plug into search line
   QList<int> columns;
@@ -466,10 +466,10 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 
         if( m_type == Global || m_type == ApplicationGlobal )
 	    d->pList->setSorting( -1 );
-	KListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
+	K3ListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
 	QString str = (title.isEmpty() ? i18n("Shortcuts") : title);
-	pParentItem = pProgramItem = pItem = new KListViewItem( d->pList, str );
+	pParentItem = pProgramItem = pItem = new K3ListViewItem( d->pList, str );
 	pParentItem->setExpandable( true );
 	pParentItem->setOpen( true );
 	pParentItem->setSelectable( false );
@@ -478,7 +478,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 		QString sName = pList->name(iAction);
 		kDebug(125) << "Key: " << sName << endl;
 		if( sName.startsWith( "Program:" ) ) {
-			pItem = new KListViewItem( d->pList, pProgramItem, pList->label(iAction) );
+			pItem = new K3ListViewItem( d->pList, pProgramItem, pList->label(iAction) );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
@@ -486,7 +486,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 				delete pProgramItem;
 			pProgramItem = pParentItem = pItem;
 		} else if( sName.startsWith( "Group:" ) ) {
-			pItem = new KListViewItem( pProgramItem, pParentItem, pList->label(iAction) );
+			pItem = new K3ListViewItem( pProgramItem, pParentItem, pList->label(iAction) );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
@@ -972,8 +972,8 @@ bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAc
 }
 
 //---------------------------------------------------
-KKeyChooserItem::KKeyChooserItem( KListView* parent, Q3ListViewItem* after, KShortcutList* pList, uint iAction )
-:	KListViewItem( parent, after )
+KKeyChooserItem::KKeyChooserItem( K3ListView* parent, Q3ListViewItem* after, KShortcutList* pList, uint iAction )
+:	K3ListViewItem( parent, after )
 {
 	m_pList = pList;
 	m_iAction = iAction;
@@ -982,7 +982,7 @@ KKeyChooserItem::KKeyChooserItem( KListView* parent, Q3ListViewItem* after, KSho
 }
 
 KKeyChooserItem::KKeyChooserItem( Q3ListViewItem* parent, Q3ListViewItem* after, KShortcutList* pList, uint iAction )
-:	KListViewItem( parent, after )
+:	K3ListViewItem( parent, after )
 {
 	m_pList = pList;
 	m_iAction = iAction;

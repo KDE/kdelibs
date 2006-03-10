@@ -47,13 +47,13 @@ class KConfigGroup;
  * To see where you are dropping, setDropVisualizer(true).
  * And also you'll need acceptDrag(QDropEvent*)
  *
- * KListView is drag-enabled, too: to benefit from that you have to derive from it.
+ * K3ListView is drag-enabled, too: to benefit from that you have to derive from it.
  * Reimplement dragObject() and (possibly) startDrag(),
  * and setDragEnabled(true).
  */
-class KDEUI_EXPORT KListView : public Q3ListView
+class KDEUI_EXPORT K3ListView : public Q3ListView
 {
-  friend class KListViewItem;
+  friend class K3ListViewItem;
 
   Q_OBJECT
   Q_ENUMS( SelectionModeExt )
@@ -116,12 +116,12 @@ public:
    * The parameters @p parent and @p name are handled by
    * QListView, as usual.
    */
-  KListView ( QWidget *parent = 0 );
+  K3ListView ( QWidget *parent = 0 );
 
   /**
    * Destructor.
    */
-  virtual ~KListView();
+  virtual ~K3ListView();
 
  /**
    * Reimplemented for internal reasons.
@@ -315,7 +315,7 @@ public:
 
   /**
    * sets the alternate background background color.
-   * This only has an effect if the items are KListViewItems
+   * This only has an effect if the items are K3ListViewItems
    *
    * @param c the color to use for every other item. Set to an invalid
    *        color to disable alternate colors.
@@ -434,7 +434,7 @@ Q_SIGNALS:
    * @param after is the item after which the drop occurred (or 0L, if
    * the drop was above all items
    */
-  void dropped (KListView* list, QDropEvent* e, Q3ListViewItem* after);
+  void dropped (K3ListView* list, QDropEvent* e, Q3ListViewItem* after);
 
   /**
    * This signal gets emitted whenever something acceptable is
@@ -448,7 +448,7 @@ Q_SIGNALS:
    * @param after is the item after which the drop occurred (or 0L, if
    * the drop was above all items
    */
-  void dropped (KListView* list, QDropEvent* e, Q3ListViewItem* parent, Q3ListViewItem* after);
+  void dropped (K3ListView* list, QDropEvent* e, Q3ListViewItem* parent, Q3ListViewItem* after);
 
   /**
    * This signal gets emitted whenever something acceptable is
@@ -476,7 +476,7 @@ Q_SIGNALS:
    * a move is made, for example, to disable sorting
    *
    * This is sent only once per each groups of moves.  That is, for each
-   * drop that is a move this will be emitted once, before KListView calls
+   * drop that is a move this will be emitted once, before K3ListView calls
    * @see moveItem()
    */
   void aboutToMove();
@@ -520,13 +520,13 @@ Q_SIGNALS:
    * This signal is emitted when the shortcut key for popup-menus is pressed.
    *
    * Normally you should not use this, just connect a slot to signal
-   * contextMenu (KListView*, QListViewItem*, const QPoint&) to correctly
+   * contextMenu (K3ListView*, QListViewItem*, const QPoint&) to correctly
    * handle showing context menus regardless of settings.
    *
    * @param list is this listview.
    * @param item is the currentItem() at the time the key was pressed. May be 0L.
    */
-  void menuShortCutPressed (KListView* list, Q3ListViewItem* item);
+  void menuShortCutPressed (K3ListView* list, Q3ListViewItem* item);
 
   /**
    * This signal is emitted whenever a context-menu should be shown for item @p i.
@@ -536,7 +536,7 @@ Q_SIGNALS:
    * @param i is the item for which the menu should be shown. May be 0L.
    * @param p is the point at which the menu should be shown.
    */
-  void contextMenu (KListView* l, Q3ListViewItem* i, const QPoint& p);
+  void contextMenu (K3ListView* l, Q3ListViewItem* i, const QPoint& p);
 
   void itemAdded(Q3ListViewItem *item);
   void itemRemoved(Q3ListViewItem *item);
@@ -553,7 +553,7 @@ public Q_SLOTS:
    * Use this function to enable the feature on other columns.
    *
    * If you want more intelligent (dynamic) selection,
-   * you'll have to derive from KListView,
+   * you'll have to derive from K3ListView,
    * and override rename() and call only call it
    * if you want the item to be renamed.
    */
@@ -909,7 +909,7 @@ protected Q_SLOTS:
   /**
    * Emit the contextMenu signal. This slot is for key presses.
    */
-  void emitContextMenu (KListView*, Q3ListViewItem*);
+  void emitContextMenu (K3ListView*, Q3ListViewItem*);
 
   /**
    * Accessory slot for AutoSelect
@@ -969,8 +969,8 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KListViewPrivate;
-  KListViewPrivate* const d;
+  class K3ListViewPrivate;
+  K3ListViewPrivate* const d;
   bool isExecuteArea( int x, Q3ListViewItem* item );
 };
 
@@ -980,46 +980,46 @@ private:
  *
  * @short listview item with alternate background color support
  */
-class KDEUI_EXPORT KListViewItem : public Q3ListViewItem
+class KDEUI_EXPORT K3ListViewItem : public Q3ListViewItem
 {
-  friend class KListView;
+  friend class K3ListView;
 public:
   /**
    * constructors. The semantics remain as in QListViewItem.
    * Although they accept a QListViewItem as parent, please
-   * don't mix KListViewItem (or subclasses) with QListViewItem
+   * don't mix K3ListViewItem (or subclasses) with QListViewItem
    * (or subclasses).
    */
-  KListViewItem(Q3ListView *parent);
-  KListViewItem(Q3ListViewItem *parent);
-  KListViewItem(Q3ListView *parent, Q3ListViewItem *after);
-  KListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after);
+  K3ListViewItem(Q3ListView *parent);
+  K3ListViewItem(Q3ListViewItem *parent);
+  K3ListViewItem(Q3ListView *parent, Q3ListViewItem *after);
+  K3ListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after);
 
-  KListViewItem(Q3ListView *parent,
+  K3ListViewItem(Q3ListView *parent,
     QString, QString = QString(),
     QString = QString(), QString = QString(),
     QString = QString(), QString = QString(),
     QString = QString(), QString = QString());
 
-  KListViewItem(Q3ListViewItem *parent,
+  K3ListViewItem(Q3ListViewItem *parent,
     QString, QString = QString(),
     QString = QString(), QString = QString(),
     QString = QString(), QString = QString(),
     QString = QString(), QString = QString());
 
-  KListViewItem(Q3ListView *parent, Q3ListViewItem *after,
+  K3ListViewItem(Q3ListView *parent, Q3ListViewItem *after,
     QString, QString = QString(),
     QString = QString(), QString = QString(),
     QString = QString(), QString = QString(),
     QString = QString(), QString = QString());
 
-  KListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
+  K3ListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
     QString, QString = QString(),
     QString = QString(), QString = QString(),
     QString = QString(), QString = QString(),
     QString = QString(), QString = QString());
 
-  virtual ~KListViewItem();
+  virtual ~K3ListViewItem();
 
   virtual void insertItem(Q3ListViewItem *item);
   virtual void takeItem(Q3ListViewItem *item);

@@ -19,7 +19,7 @@
 #ifndef KNOTIFYDIALOG_H
 #define KNOTIFYDIALOG_H
 
-#include <klistview.h>
+#include <k3listview.h>
 #include <kdialogbase.h>
 #include <kinstance.h>
 #include <kglobal.h>
@@ -196,7 +196,7 @@ namespace KNotify
                        bool handleAllApps = false );
         ~KNotifyWidget();
 
-        KListView * eventsView() {
+        K3ListView * eventsView() {
             return m_listview;
         }
 

@@ -25,7 +25,7 @@
 #endif
 
 #if defined(USE_POSIX_ACL) || defined(Q_MOC_RUN)
-#include <klistview.h>
+#include <k3listview.h>
 #include <sys/acl.h>
 #include <kacl.h>
 #include <kfileitem.h>
@@ -46,7 +46,7 @@ class QAbstractButton;
 /**
 @author Sean Harmer
 */
-class KACLListView : public KListView
+class KACLListView : public K3ListView
 {
 Q_OBJECT
     friend class KACLListViewItem;
@@ -166,7 +166,7 @@ private:
 };
 
 
-class KACLListViewItem : public KListViewItem
+class KACLListViewItem : public K3ListViewItem
 {
 public:
     KACLListViewItem( Q3ListView* parent, KACLListView::EntryType type,

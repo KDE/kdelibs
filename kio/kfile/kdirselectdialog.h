@@ -33,7 +33,7 @@ class KToggleAction;
 class Q3ListViewItem;
 
 
-class KListView;
+class K3ListView;
 
 /**
  * A pretty dialog for a KDirSelect control for selecting directories.
@@ -107,7 +107,7 @@ private Q_SLOTS:
     void slotURLActivated( const QString& );
     void slotNextDirToList( KFileTreeViewItem *dirItem );
     void slotComboTextChanged( const QString& text );
-    void slotContextMenu( KListView *, Q3ListViewItem *, const QPoint & );
+    void slotContextMenu( K3ListView *, Q3ListViewItem *, const QPoint & );
     void slotShowHiddenFoldersToggled();
     void slotMkdir();
 

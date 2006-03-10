@@ -243,7 +243,7 @@ that we would like to make for the next binary incompatible release.
   KPixmapIO can't dither, and it generally doesn't make much sense to have this class.
   (Lubos) - Done (gyurco)
 
-- KListView: merge setDropHighlighter and setDropVisualizer, add a setDnDMode to choose between
+- K3ListView: merge setDropHighlighter and setDropVisualizer, add a setDnDMode to choose between
   "dnd to move items" (e.g. keditbookmarks) and "dnd onto items" (e.g. kmail). Unless Qt4 does it all :)
   (David)
 
@@ -311,11 +311,11 @@ that we would like to make for the next binary incompatible release.
   to page widget (as in setAppropriate()) but allow to pass QString names or IDs instead.
   (Jaroslaw Staniek)
 
-- KIconView/KListView equivalents based on Qt4 interview. As discussed on kde-core-devel,
+- KIconView/K3ListView equivalents based on Qt4 interview. As discussed on kde-core-devel,
   this probably means a custom QItemDelegate instead, to handle single-click/double-click,
   execute-mode/select-mode (cf KIconView), number of lines used for wrapping, "held" signal.
   In short, rewriting kiconview features to be based on interview.
-  For KListView we need to check if QTreeView supports both modes of drag-n-drop (dropping
+  For K3ListView we need to check if QTreeView supports both modes of drag-n-drop (dropping
   onto items, and dropping between items like in the bookmark editor).
   (David, Till etc.)
 

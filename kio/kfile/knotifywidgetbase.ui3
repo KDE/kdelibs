@@ -19,7 +19,7 @@
         <property name="margin">
             <number>0</number>
         </property>
-        <widget class="KListView">
+        <widget class="K3ListView">
             <column>
                 <property name="text">
                     <string></string>
@@ -458,7 +458,7 @@
 </tabstops>
 <includes>
     <include location="global" impldecl="in implementation">kdialog.h</include>
-    <include location="global" impldecl="in implementation">klistview.h</include>
+    <include location="global" impldecl="in implementation">k3listview.h</include>
     <include location="global" impldecl="in implementation">kurlrequester.h</include>
     <include location="global" impldecl="in implementation">klineedit.h</include>
     <include location="global" impldecl="in implementation">kpushbutton.h</include>

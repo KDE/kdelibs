@@ -36,15 +36,15 @@
 #include <kipc.h>
 #include <kdebug.h>
 
-#include "klistview.h"
-#include "klistviewlineedit.h"
+#include "k3listview.h"
+#include "k3listviewlineedit.h"
 
 #if 0
 
-class KListView::Tooltip : public QToolTip
+class K3ListView::Tooltip : public QToolTip
 {
 public:
-  Tooltip (KListView* parent, QToolTipGroup* group = 0L);
+  Tooltip (K3ListView* parent, QToolTipGroup* group = 0L);
   virtual ~Tooltip () {}
 
 protected:
@@ -54,31 +54,31 @@ protected:
   virtual void maybeTip (const QPoint&);
 
 private:
-  KListView* mParent;
+  K3ListView* mParent;
 };
 
-KListView::Tooltip::Tooltip (KListView* parent, QToolTipGroup* group)
+K3ListView::Tooltip::Tooltip (K3ListView* parent, QToolTipGroup* group)
   : QToolTip (parent, group),
         mParent (parent)
 {
 }
 
-void KListView::Tooltip::maybeTip (const QPoint&)
+void K3ListView::Tooltip::maybeTip (const QPoint&)
 {
   // FIXME
 }
 
 #endif
 
-class KListView::KListViewPrivate
+class K3ListView::K3ListViewPrivate
 {
 public:
-  KListViewPrivate (KListView* listview)
+  K3ListViewPrivate (K3ListView* listview)
     : pCurrentItem (0),
       autoSelectDelay(0),
       dragOverItem(0),
       dragDelay (KGlobalSettings::dndEventDelay()),
-      editor (new KListViewLineEdit (listview)),
+      editor (new K3ListViewLineEdit (listview)),
       cursorInExecuteArea(false),
       itemsMovable (true),
       selectedBySimpleMove(false),
@@ -112,7 +112,7 @@ public:
       connect(editor, SIGNAL(done(Q3ListViewItem*,int)), listview, SLOT(doneEditing(Q3ListViewItem*,int)));
   }
 
-  ~KListViewPrivate ()
+  ~K3ListViewPrivate ()
   {
     delete editor;
   }
@@ -129,7 +129,7 @@ public:
   QPoint startDragPos;
   int dragDelay;
 
-  KListViewLineEdit *editor;
+  K3ListViewLineEdit *editor;
   QList<int> renameable;
 
   bool cursorInExecuteArea:1;
@@ -177,7 +177,7 @@ public:
 };
 
 
-KListViewLineEdit::KListViewLineEdit(KListView *parent)
+K3ListViewLineEdit::K3ListViewLineEdit(K3ListView *parent)
         : KLineEdit(parent->viewport()), item(0), col(0), p(parent)
 {
         setFrame( false );
@@ -185,16 +185,16 @@ KListViewLineEdit::KListViewLineEdit(KListView *parent)
         connect( parent, SIGNAL( selectionChanged() ), SLOT( slotSelectionChanged() ));
 }
 
-KListViewLineEdit::~KListViewLineEdit()
+K3ListViewLineEdit::~K3ListViewLineEdit()
 {
 }
 
-Q3ListViewItem *KListViewLineEdit::currentItem() const
+Q3ListViewItem *K3ListViewLineEdit::currentItem() const
 {
 	return item;
 }
 
-void KListViewLineEdit::load(Q3ListViewItem *i, int c)
+void K3ListViewLineEdit::load(Q3ListViewItem *i, int c)
 {
         item=i;
         col=c;
@@ -234,7 +234,7 @@ void KListViewLineEdit::load(Q3ListViewItem *i, int c)
  *	tabOrderedRename functionality.
  */
 
-static int nextCol (KListView *pl, Q3ListViewItem *pi, int start, int dir)
+static int nextCol (K3ListView *pl, Q3ListViewItem *pi, int start, int dir)
 {
 	if (pi)
 	{
@@ -275,7 +275,7 @@ static Q3ListViewItem *lastQChild (Q3ListViewItem *pi)
 	return pi;
 }
 
-void KListViewLineEdit::selectNextCell (Q3ListViewItem *pitem, int column, bool forward)
+void K3ListViewLineEdit::selectNextCell (Q3ListViewItem *pitem, int column, bool forward)
 {
 	const int ncols = p->columns();
 	const int dir = forward ? +1 : -1;
@@ -323,7 +323,7 @@ void KListViewLineEdit::selectNextCell (Q3ListViewItem *pitem, int column, bool 
 #undef KeyPress
 #endif
 
-bool KListViewLineEdit::event (QEvent *pe)
+bool K3ListViewLineEdit::event (QEvent *pe)
 {
 	if (pe->type() == QEvent::KeyPress)
 	{
@@ -342,7 +342,7 @@ bool KListViewLineEdit::event (QEvent *pe)
 	return KLineEdit::event(pe);
 }
 
-void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
+void K3ListViewLineEdit::keyPressEvent(QKeyEvent *e)
 {
 	if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
 		terminate(true);
@@ -357,16 +357,16 @@ void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
 		KLineEdit::keyPressEvent(e);
 }
 
-void KListViewLineEdit::terminate()
+void K3ListViewLineEdit::terminate()
 {
     terminate(true);
 }
 
-void KListViewLineEdit::terminate(bool commit)
+void K3ListViewLineEdit::terminate(bool commit)
 {
     if ( item )
     {
-        //kDebug() << "KListViewLineEdit::terminate " << commit << endl;
+        //kDebug() << "K3ListViewLineEdit::terminate " << commit << endl;
         if (commit)
             item->setText(col, text());
         int c=col;
@@ -380,7 +380,7 @@ void KListViewLineEdit::terminate(bool commit)
     }
 }
 
-void KListViewLineEdit::focusOutEvent(QFocusEvent *ev)
+void K3ListViewLineEdit::focusOutEvent(QFocusEvent *ev)
 {
     QFocusEvent * focusEv = static_cast<QFocusEvent*>(ev);
     // Don't let a RMB close the editor
@@ -390,7 +390,7 @@ void KListViewLineEdit::focusOutEvent(QFocusEvent *ev)
         KLineEdit::focusOutEvent(ev);
 }
 
-void KListViewLineEdit::paintEvent( QPaintEvent *e )
+void K3ListViewLineEdit::paintEvent( QPaintEvent *e )
 {
     KLineEdit::paintEvent( e );
 
@@ -404,7 +404,7 @@ void KListViewLineEdit::paintEvent( QPaintEvent *e )
 // selection changed -> terminate. As our "item" can be already deleted,
 // we can't call terminate(false), because that would emit done() with
 // a dangling pointer to "item".
-void KListViewLineEdit::slotSelectionChanged()
+void K3ListViewLineEdit::slotSelectionChanged()
 {
     item = 0;
     col = 0;
@@ -412,9 +412,9 @@ void KListViewLineEdit::slotSelectionChanged()
 }
 
 
-KListView::KListView( QWidget *parent )
+K3ListView::K3ListView( QWidget *parent )
   : Q3ListView( parent ),
-        d (new KListViewPrivate (this))
+        d (new K3ListViewPrivate (this))
 {
   setDragAutoScroll(true);
 
@@ -453,17 +453,17 @@ KListView::KListView( QWidget *parent )
                            this, SLOT (emitContextMenu (Q3ListViewItem*, const QPoint&, int)));
         }
 
-  connect (this, SIGNAL (menuShortCutPressed (KListView*, Q3ListViewItem*)),
-                   this, SLOT (emitContextMenu (KListView*, Q3ListViewItem*)));
+  connect (this, SIGNAL (menuShortCutPressed (K3ListView*, Q3ListViewItem*)),
+                   this, SLOT (emitContextMenu (K3ListView*, Q3ListViewItem*)));
   d->alternateBackground = KGlobalSettings::alternateBackgroundColor();
 }
 
-KListView::~KListView()
+K3ListView::~K3ListView()
 {
   delete d;
 }
 
-bool KListView::isExecuteArea( const QPoint& point )
+bool K3ListView::isExecuteArea( const QPoint& point )
 {
   Q3ListViewItem* item = itemAt( point );
   if ( item ) {
@@ -473,12 +473,12 @@ bool KListView::isExecuteArea( const QPoint& point )
   return false;
 }
 
-bool KListView::isExecuteArea( int x )
+bool K3ListView::isExecuteArea( int x )
 {
   return isExecuteArea( x, 0 );
 }
 
-bool KListView::isExecuteArea( int x, Q3ListViewItem* item )
+bool K3ListView::isExecuteArea( int x, Q3ListViewItem* item )
 {
   if( allColumnsShowFocus() )
     return true;
@@ -512,7 +512,7 @@ bool KListView::isExecuteArea( int x, Q3ListViewItem* item )
   }
 }
 
-void KListView::slotOnItem( Q3ListViewItem *item )
+void K3ListView::slotOnItem( Q3ListViewItem *item )
 {
   QPoint vp = viewport()->mapFromGlobal( QCursor::pos() );
   if ( item && isExecuteArea( vp.x() ) && (d->autoSelectDelay > -1) && d->bUseSingle ) {
@@ -521,7 +521,7 @@ void KListView::slotOnItem( Q3ListViewItem *item )
   }
 }
 
-void KListView::slotOnViewport()
+void K3ListView::slotOnViewport()
 {
   if ( d->bChangeCursorOverItem )
     viewport()->unsetCursor();
@@ -530,7 +530,7 @@ void KListView::slotOnViewport()
   d->pCurrentItem = 0L;
 }
 
-void KListView::slotSettingsChanged(int category)
+void K3ListView::slotSettingsChanged(int category)
 {
   switch (category)
   {
@@ -579,7 +579,7 @@ void KListView::slotSettingsChanged(int category)
   }
 }
 
-void KListView::slotAutoSelect()
+void K3ListView::slotAutoSelect()
 {
   // check that the item still exists
   if( itemIndex( d->pCurrentItem ) == -1 )
@@ -652,10 +652,10 @@ void KListView::slotAutoSelect()
     }
   }
   else
-    kDebug() << "KListView::slotAutoSelect: That's not supposed to happen!!!!" << endl;
+    kDebug() << "K3ListView::slotAutoSelect: That's not supposed to happen!!!!" << endl;
 }
 
-void KListView::slotHeaderChanged()
+void K3ListView::slotHeaderChanged()
 {
 
   const int colCount = columns();
@@ -668,7 +668,7 @@ void KListView::slotHeaderChanged()
   }
 }
 
-void KListView::emitExecute( Q3ListViewItem *item, const QPoint &pos, int c )
+void K3ListView::emitExecute( Q3ListViewItem *item, const QPoint &pos, int c )
 {
     if( isExecuteArea( viewport()->mapFromGlobal(pos) ) ) {
 	d->validDrag=false;
@@ -696,9 +696,9 @@ void KListView::emitExecute( Q3ListViewItem *item, const QPoint &pos, int c )
     }
 }
 
-void KListView::focusInEvent( QFocusEvent *fe )
+void K3ListView::focusInEvent( QFocusEvent *fe )
 {
- //   kDebug()<<"KListView::focusInEvent()"<<endl;
+ //   kDebug()<<"K3ListView::focusInEvent()"<<endl;
   Q3ListView::focusInEvent( fe );
   if ((d->selectedBySimpleMove)
       && (d->selectionMode == FileManager)
@@ -712,7 +712,7 @@ void KListView::focusInEvent( QFocusEvent *fe )
   };
 }
 
-void KListView::focusOutEvent( QFocusEvent *fe )
+void K3ListView::focusOutEvent( QFocusEvent *fe )
 {
   cleanDropVisualizer();
   cleanItemHighlighter();
@@ -734,14 +734,14 @@ void KListView::focusOutEvent( QFocusEvent *fe )
   Q3ListView::focusOutEvent( fe );
 }
 
-void KListView::leaveEvent( QEvent *e )
+void K3ListView::leaveEvent( QEvent *e )
 {
   d->autoSelect.stop();
 
   Q3ListView::leaveEvent( e );
 }
 
-bool KListView::event( QEvent *e )
+bool K3ListView::event( QEvent *e )
 {
   if (e->type() == QEvent::ApplicationPaletteChange)
     d->alternateBackground=KGlobalSettings::alternateBackgroundColor();
@@ -749,7 +749,7 @@ bool KListView::event( QEvent *e )
   return Q3ListView::event(e);
 }
 
-void KListView::contentsMousePressEvent( QMouseEvent *e )
+void K3ListView::contentsMousePressEvent( QMouseEvent *e )
 {
   if( (selectionModeExt() == Extended) && (e->modifiers() & Qt::ShiftModifier) && !(e->modifiers() & Qt::ControlModifier) )
   {
@@ -796,7 +796,7 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
   Q3ListView::contentsMousePressEvent( e );
 }
 
-void KListView::contentsMouseMoveEvent( QMouseEvent *e )
+void K3ListView::contentsMouseMoveEvent( QMouseEvent *e )
 {
   if (!dragEnabled() || d->startDragPos.isNull() || !d->validDrag)
       Q3ListView::contentsMouseMoveEvent (e);
@@ -836,7 +836,7 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
     }
 }
 
-void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
+void K3ListView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
   if (e->button() == Qt::LeftButton)
   {
@@ -869,7 +869,7 @@ void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
   Q3ListView::contentsMouseReleaseEvent( e );
 }
 
-void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
+void K3ListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
 {
   // We don't want to call the parent method because it does setOpen,
   // whereas we don't do it in single click mode... (David)
@@ -891,13 +891,13 @@ void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
   }
 }
 
-void KListView::slotMouseButtonClicked( int btn, Q3ListViewItem *item, const QPoint &pos, int c )
+void K3ListView::slotMouseButtonClicked( int btn, Q3ListViewItem *item, const QPoint &pos, int c )
 {
   if( (btn == Qt::LeftButton) && item )
     emitExecute(item, pos, c);
 }
 
-void KListView::contentsDropEvent(QDropEvent* e)
+void K3ListView::contentsDropEvent(QDropEvent* e)
 {
   cleanDropVisualizer();
   cleanItemHighlighter();
@@ -923,7 +923,7 @@ void KListView::contentsDropEvent(QDropEvent* e)
   }
 }
 
-void KListView::movableDropEvent (Q3ListViewItem* parent, Q3ListViewItem* afterme)
+void K3ListView::movableDropEvent (Q3ListViewItem* parent, Q3ListViewItem* afterme)
 {
   Q3PtrList<Q3ListViewItem> items, afterFirsts, afterNows;
   Q3ListViewItem *current=currentItem();
@@ -973,7 +973,7 @@ void KListView::movableDropEvent (Q3ListViewItem* parent, Q3ListViewItem* afterm
     emit moved();
 }
 
-void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
+void K3ListView::contentsDragMoveEvent(QDragMoveEvent *event)
 {
   if (acceptDrag(event))
   {
@@ -1017,20 +1017,20 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
       event->ignore();
 }
 
-void KListView::slotDragExpand()
+void K3ListView::slotDragExpand()
 {
   if ( itemAt( d->dragOverPoint ) == d->dragOverItem )
     d->dragOverItem->setOpen( true );
 }
 
-void KListView::contentsDragLeaveEvent (QDragLeaveEvent*)
+void K3ListView::contentsDragLeaveEvent (QDragLeaveEvent*)
 {
   d->dragExpand.stop();
   cleanDropVisualizer();
   cleanItemHighlighter();
 }
 
-void KListView::cleanDropVisualizer()
+void K3ListView::cleanDropVisualizer()
 {
   if (d->mOldDropVisualizer.isValid())
   {
@@ -1040,12 +1040,12 @@ void KListView::cleanDropVisualizer()
   }
 }
 
-int KListView::depthToPixels( int depth )
+int K3ListView::depthToPixels( int depth )
 {
     return treeStepSize() * ( depth + (rootIsDecorated() ? 1 : 0) ) + itemMargin();
 }
 
-void KListView::findDrop(const QPoint &pos, Q3ListViewItem *&parent, Q3ListViewItem *&after)
+void K3ListView::findDrop(const QPoint &pos, Q3ListViewItem *&parent, Q3ListViewItem *&after)
 {
 	QPoint p (contentsToViewport(pos));
 
@@ -1114,7 +1114,7 @@ void KListView::findDrop(const QPoint &pos, Q3ListViewItem *&parent, Q3ListViewI
   parent = after ? after->parent() : 0L ;
 }
 
-Q3ListViewItem* KListView::lastChild () const
+Q3ListViewItem* K3ListView::lastChild () const
 {
   Q3ListViewItem* lastchild = firstChild();
 
@@ -1124,7 +1124,7 @@ Q3ListViewItem* KListView::lastChild () const
   return lastchild;
 }
 
-Q3ListViewItem *KListView::lastItem() const
+Q3ListViewItem *K3ListView::lastItem() const
 {
   Q3ListViewItem* last = lastChild();
 
@@ -1134,12 +1134,12 @@ Q3ListViewItem *KListView::lastItem() const
   return last;
 }
 
-KLineEdit *KListView::renameLineEdit() const
+KLineEdit *K3ListView::renameLineEdit() const
 {
   return d->editor;
 }
 
-void KListView::startDrag()
+void K3ListView::startDrag()
 {
   Q3DragObject *drag = dragObject();
 
@@ -1150,7 +1150,7 @@ void KListView::startDrag()
     emit moved();
 }
 
-Q3DragObject *KListView::dragObject()
+Q3DragObject *K3ListView::dragObject()
 {
   if (!currentItem())
         return 0;
@@ -1159,58 +1159,58 @@ Q3DragObject *KListView::dragObject()
   return new Q3StoredDrag("application/x-qlistviewitem", viewport());
 }
 
-void KListView::setItemsMovable(bool b)
+void K3ListView::setItemsMovable(bool b)
 {
   d->itemsMovable=b;
 }
 
-bool KListView::itemsMovable() const
+bool K3ListView::itemsMovable() const
 {
   return d->itemsMovable;
 }
 
-void KListView::setItemsRenameable(bool b)
+void K3ListView::setItemsRenameable(bool b)
 {
   d->itemsRenameable=b;
 }
 
-bool KListView::itemsRenameable() const
+bool K3ListView::itemsRenameable() const
 {
   return d->itemsRenameable;
 }
 
 
-void KListView::setDragEnabled(bool b)
+void K3ListView::setDragEnabled(bool b)
 {
   d->dragEnabled=b;
 }
 
-bool KListView::dragEnabled() const
+bool K3ListView::dragEnabled() const
 {
   return d->dragEnabled;
 }
 
-void KListView::setAutoOpen(bool b)
+void K3ListView::setAutoOpen(bool b)
 {
   d->autoOpen=b;
 }
 
-bool KListView::autoOpen() const
+bool K3ListView::autoOpen() const
 {
   return d->autoOpen;
 }
 
-bool KListView::dropVisualizer() const
+bool K3ListView::dropVisualizer() const
 {
   return d->dropVisualizer;
 }
 
-void KListView::setDropVisualizer(bool b)
+void K3ListView::setDropVisualizer(bool b)
 {
   d->dropVisualizer=b;
 }
 
-QList<Q3ListViewItem*> KListView::selectedItems(bool includeHiddenItems) const
+QList<Q3ListViewItem*> K3ListView::selectedItems(bool includeHiddenItems) const
 {
   QList<Q3ListViewItem *> list;
 
@@ -1234,7 +1234,7 @@ QList<Q3ListViewItem*> KListView::selectedItems(bool includeHiddenItems) const
         flags |= Q3ListViewItemIterator::Visible;
       }
 
-      Q3ListViewItemIterator it(const_cast<KListView *>(this), flags);
+      Q3ListViewItemIterator it(const_cast<K3ListView *>(this), flags);
 
       for(; it.current(); ++it)
           list.append(it.current());
@@ -1247,7 +1247,7 @@ QList<Q3ListViewItem*> KListView::selectedItems(bool includeHiddenItems) const
 }
 
 
-void KListView::moveItem(Q3ListViewItem *item, Q3ListViewItem *parent, Q3ListViewItem *after)
+void K3ListView::moveItem(Q3ListViewItem *item, Q3ListViewItem *parent, Q3ListViewItem *after)
 {
   // sanity check - don't move a item into its own child structure
   Q3ListViewItem *i = parent;
@@ -1277,18 +1277,18 @@ void KListView::moveItem(Q3ListViewItem *item, Q3ListViewItem *parent, Q3ListVie
         insertItem(item);
 }
 
-void KListView::contentsDragEnterEvent(QDragEnterEvent *event)
+void K3ListView::contentsDragEnterEvent(QDragEnterEvent *event)
 {
   if (acceptDrag (event))
     event->accept();
 }
 
-void KListView::setDropVisualizerWidth (int w)
+void K3ListView::setDropVisualizerWidth (int w)
 {
   d->mDropVisualizerWidth = w > 0 ? w : 1;
 }
 
-QRect KListView::drawDropVisualizer(QPainter *p, Q3ListViewItem *parent,
+QRect K3ListView::drawDropVisualizer(QPainter *p, Q3ListViewItem *parent,
                                     Q3ListViewItem *after)
 {
     QRect insertmarker;
@@ -1327,7 +1327,7 @@ QRect KListView::drawDropVisualizer(QPainter *p, Q3ListViewItem *parent,
         insertmarker.setBottom (insertmarker.bottom() + d->mDropVisualizerWidth/2);
     }
 
-    // This is not used anymore, at least by KListView itself (see viewportPaintEvent)
+    // This is not used anymore, at least by K3ListView itself (see viewportPaintEvent)
     // Remove for KDE 4.0.
     if (p)
         p->fillRect(insertmarker, Qt::Dense4Pattern);
@@ -1335,7 +1335,7 @@ QRect KListView::drawDropVisualizer(QPainter *p, Q3ListViewItem *parent,
     return insertmarker;
 }
 
-QRect KListView::drawItemHighlighter(QPainter *painter, Q3ListViewItem *item)
+QRect K3ListView::drawItemHighlighter(QPainter *painter, Q3ListViewItem *item)
 {
   QRect r;
 
@@ -1357,7 +1357,7 @@ QRect KListView::drawItemHighlighter(QPainter *painter, Q3ListViewItem *item)
   return r;
 }
 
-void KListView::cleanItemHighlighter ()
+void K3ListView::cleanItemHighlighter ()
 {
   if (d->mOldDropHighlighter.isValid())
   {
@@ -1367,7 +1367,7 @@ void KListView::cleanItemHighlighter ()
   }
 }
 
-void KListView::rename(Q3ListViewItem *item, int c)
+void K3ListView::rename(Q3ListViewItem *item, int c)
 {
   if (d->renameable.contains(c))
   {
@@ -1376,12 +1376,12 @@ void KListView::rename(Q3ListViewItem *item, int c)
   }
 }
 
-bool KListView::isRenameable (int col) const
+bool K3ListView::isRenameable (int col) const
 {
   return d->renameable.contains(col);
 }
 
-void KListView::setRenameable (int col, bool renameable)
+void K3ListView::setRenameable (int col, bool renameable)
 {
   if (col>=header()->count()) return;
 
@@ -1390,58 +1390,58 @@ void KListView::setRenameable (int col, bool renameable)
     d->renameable+=col;
 }
 
-void KListView::doneEditing(Q3ListViewItem *item, int row)
+void K3ListView::doneEditing(Q3ListViewItem *item, int row)
 {
   emit itemRenamed(item, item->text(row), row);
   emit itemRenamed(item);
 }
 
-bool KListView::acceptDrag(QDropEvent* e) const
+bool K3ListView::acceptDrag(QDropEvent* e) const
 {
   return acceptDrops() && itemsMovable() && (e->source()==viewport());
 }
 
-int KListView::tooltipColumn() const
+int K3ListView::tooltipColumn() const
 {
         return d->tooltipColumn;
 }
 
-void KListView::setTooltipColumn(int column)
+void K3ListView::setTooltipColumn(int column)
 {
         d->tooltipColumn=column;
 }
 
-void KListView::setDropHighlighter(bool b)
+void K3ListView::setDropHighlighter(bool b)
 {
         d->dropHighlighter=b;
 }
 
-bool KListView::dropHighlighter() const
+bool K3ListView::dropHighlighter() const
 {
         return d->dropHighlighter;
 }
 
-bool KListView::showTooltip(Q3ListViewItem *item, const QPoint &, int column) const
+bool K3ListView::showTooltip(Q3ListViewItem *item, const QPoint &, int column) const
 {
         return ((column==tooltipColumn()) && !tooltip(item, column).isEmpty());
 }
 
-QString KListView::tooltip(Q3ListViewItem *item, int column) const
+QString K3ListView::tooltip(Q3ListViewItem *item, int column) const
 {
         return item->text(column);
 }
 
-void KListView::setTabOrderedRenaming(bool b)
+void K3ListView::setTabOrderedRenaming(bool b)
 {
 	d->tabRename = b;
 }
 
-bool KListView::tabOrderedRenaming() const
+bool K3ListView::tabOrderedRenaming() const
 {
 	return d->tabRename;
 }
 
-void KListView::keyPressEvent (QKeyEvent* e)
+void K3ListView::keyPressEvent (QKeyEvent* e)
 {
   //don't we need a contextMenuModifier too ? (aleXXX)
   if (e->key() == d->contextMenuKey)
@@ -1456,7 +1456,7 @@ void KListView::keyPressEvent (QKeyEvent* e)
         fileManagerKeyPressEvent (e);
 }
 
-void KListView::activateAutomaticSelection()
+void K3ListView::activateAutomaticSelection()
 {
    d->selectedBySimpleMove=true;
    d->selectedUsingMouse=false;
@@ -1468,17 +1468,17 @@ void KListView::activateAutomaticSelection()
    };
 }
 
-void KListView::deactivateAutomaticSelection()
+void K3ListView::deactivateAutomaticSelection()
 {
    d->selectedBySimpleMove=false;
 }
 
-bool KListView::automaticSelection() const
+bool K3ListView::automaticSelection() const
 {
    return d->selectedBySimpleMove;
 }
 
-void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
+void K3ListView::fileManagerKeyPressEvent (QKeyEvent* e)
 {
    //don't care whether it's on the keypad or not
     int e_state=(e->modifiers() & ~Qt::KeypadModifier);
@@ -1808,7 +1808,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
        emit selectionChanged();
 }
 
-void KListView::setSelectionModeExt (SelectionModeExt mode)
+void K3ListView::setSelectionModeExt (SelectionModeExt mode)
 {
     d->selectionMode = mode;
 
@@ -1831,12 +1831,12 @@ void KListView::setSelectionModeExt (SelectionModeExt mode)
     }
 }
 
-KListView::SelectionModeExt KListView::selectionModeExt () const
+K3ListView::SelectionModeExt K3ListView::selectionModeExt () const
 {
   return d->selectionMode;
 }
 
-int KListView::itemIndex( const Q3ListViewItem *item ) const
+int K3ListView::itemIndex( const Q3ListViewItem *item ) const
 {
     if ( !item )
         return -1;
@@ -1855,7 +1855,7 @@ int KListView::itemIndex( const Q3ListViewItem *item ) const
     }
 }
 
-Q3ListViewItem* KListView::itemAtIndex(int index)
+Q3ListViewItem* K3ListView::itemAtIndex(int index)
 {
    if (index<0)
       return 0;
@@ -1871,7 +1871,7 @@ Q3ListViewItem* KListView::itemAtIndex(int index)
 }
 
 
-void KListView::emitContextMenu (KListView*, Q3ListViewItem* i)
+void K3ListView::emitContextMenu (K3ListView*, Q3ListViewItem* i)
 {
   QPoint p;
 
@@ -1883,24 +1883,24 @@ void KListView::emitContextMenu (KListView*, Q3ListViewItem* i)
   emit contextMenu (this, i, p);
 }
 
-void KListView::emitContextMenu (Q3ListViewItem* i, const QPoint& p, int)
+void K3ListView::emitContextMenu (Q3ListViewItem* i, const QPoint& p, int)
 {
   emit contextMenu (this, i, p);
 }
 
-void KListView::setAcceptDrops (bool val)
+void K3ListView::setAcceptDrops (bool val)
 {
   Q3ListView::setAcceptDrops (val);
   viewport()->setAcceptDrops (val);
 }
 
-int KListView::dropVisualizerWidth () const
+int K3ListView::dropVisualizerWidth () const
 {
         return d->mDropVisualizerWidth;
 }
 
 
-void KListView::viewportPaintEvent(QPaintEvent *e)
+void K3ListView::viewportPaintEvent(QPaintEvent *e)
 {
   d->paintAbove = 0;
   d->paintCurrent = 0;
@@ -1930,23 +1930,23 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
   d->painting = false;
 }
 
-void KListView::setFullWidth()
+void K3ListView::setFullWidth()
 {
   setFullWidth(true);
 }
 
-void KListView::setFullWidth(bool fullWidth)
+void K3ListView::setFullWidth(bool fullWidth)
 {
   d->fullWidth = fullWidth;
   header()->setStretchEnabled(fullWidth, columns()-1);
 }
 
-bool KListView::fullWidth() const
+bool K3ListView::fullWidth() const
 {
   return d->fullWidth;
 }
 
-int KListView::addColumn(const QString& label, int width)
+int K3ListView::addColumn(const QString& label, int width)
 {
   int result = Q3ListView::addColumn(label, width);
   if (d->fullWidth) {
@@ -1956,7 +1956,7 @@ int KListView::addColumn(const QString& label, int width)
   return result;
 }
 
-int KListView::addColumn(const QIcon& iconset, const QString& label, int width)
+int K3ListView::addColumn(const QIcon& iconset, const QString& label, int width)
 {
   int result = Q3ListView::addColumn(iconset, label, width);
   if (d->fullWidth) {
@@ -1966,47 +1966,47 @@ int KListView::addColumn(const QIcon& iconset, const QString& label, int width)
   return result;
 }
 
-void KListView::removeColumn(int index)
+void K3ListView::removeColumn(int index)
 {
   Q3ListView::removeColumn(index);
   if (d->fullWidth && index == columns()) header()->setStretchEnabled(true, columns()-1);
 }
 
-void KListView::viewportResizeEvent(QResizeEvent* e)
+void K3ListView::viewportResizeEvent(QResizeEvent* e)
 {
   Q3ListView::viewportResizeEvent(e);
 }
 
-const QColor &KListView::alternateBackground() const
+const QColor &K3ListView::alternateBackground() const
 {
   return d->alternateBackground;
 }
 
-void KListView::setAlternateBackground(const QColor &c)
+void K3ListView::setAlternateBackground(const QColor &c)
 {
   d->alternateBackground = c;
   repaint();
 }
 
-void KListView::setShadeSortColumn(bool shadeSortColumn)
+void K3ListView::setShadeSortColumn(bool shadeSortColumn)
 {
   d->shadeSortColumn = shadeSortColumn;
   repaint();
 }
 
-bool KListView::shadeSortColumn() const
+bool K3ListView::shadeSortColumn() const
 {
   return d->shadeSortColumn;
 }
 
 
-void KListView::saveLayout(KConfig *config, const QString &group) const
+void K3ListView::saveLayout(KConfig *config, const QString &group) const
 {
 	KConfigGroup cg(config, group);
 	saveLayout(cg);
 }
 
-void KListView::saveLayout(KConfigGroup &cg) const
+void K3ListView::saveLayout(KConfigGroup &cg) const
 {
   QStringList widths, order;
 
@@ -2023,13 +2023,13 @@ void KListView::saveLayout(KConfigGroup &cg) const
   cg.writeEntry("SortAscending", d->sortAscending);
 }
 
-void KListView::restoreLayout(KConfig *config, const QString &group)
+void K3ListView::restoreLayout(KConfig *config, const QString &group)
 {
 	KConfigGroup cg(config, group);
 	restoreLayout( cg );
 }
 
-void KListView::restoreLayout(KConfigGroup & cg)
+void K3ListView::restoreLayout(KConfigGroup & cg)
 {
   QStringList cols = cg.readEntry("ColumnWidths", QStringList());
   int i = 0;
@@ -2063,7 +2063,7 @@ void KListView::restoreLayout(KConfigGroup & cg)
     setSorting(cg.readEntry("SortColumn", 0), cg.readEntry("SortAscending", true));
 }
 
-void KListView::setSorting(int column, bool ascending)
+void K3ListView::setSorting(int column, bool ascending)
 {
   Q3ListViewItem *selected = 0;
 
@@ -2090,23 +2090,23 @@ void KListView::setSorting(int column, bool ascending)
 
   Q3ListViewItem* item = firstChild();
   while ( item ) {
-    KListViewItem *kItem = dynamic_cast<KListViewItem*>(item);
+    K3ListViewItem *kItem = dynamic_cast<K3ListViewItem*>(item);
     if (kItem) kItem->m_known = false;
     item = item->itemBelow();
   }
 }
 
-int KListView::columnSorted(void) const
+int K3ListView::columnSorted(void) const
 {
   return d->sortColumn;
 }
 
-bool KListView::ascendingSort(void) const
+bool K3ListView::ascendingSort(void) const
 {
   return d->sortAscending;
 }
 
-void KListView::takeItem(Q3ListViewItem *item)
+void K3ListView::takeItem(Q3ListViewItem *item)
 {
   if(item && item == d->editor->currentItem())
     d->editor->terminate();
@@ -2114,7 +2114,7 @@ void KListView::takeItem(Q3ListViewItem *item)
   Q3ListView::takeItem(item);
 }
 
-void KListView::disableAutoSelection()
+void K3ListView::disableAutoSelection()
 {
   if ( d->disableAutoSelection )
     return;
@@ -2124,7 +2124,7 @@ void KListView::disableAutoSelection()
   d->autoSelectDelay = -1;
 }
 
-void KListView::resetAutoSelection()
+void K3ListView::resetAutoSelection()
 {
   if ( !d->disableAutoSelection )
     return;
@@ -2133,36 +2133,36 @@ void KListView::resetAutoSelection()
   d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
 }
 
-void KListView::doubleClicked( Q3ListViewItem *item, const QPoint &pos, int c )
+void K3ListView::doubleClicked( Q3ListViewItem *item, const QPoint &pos, int c )
 {
   emit Q3ListView::doubleClicked( item, pos, c );
 }
 
-KListViewItem::KListViewItem(Q3ListView *parent)
+K3ListViewItem::K3ListViewItem(Q3ListView *parent)
   : Q3ListViewItem(parent)
 {
   init();
 }
 
-KListViewItem::KListViewItem(Q3ListViewItem *parent)
+K3ListViewItem::K3ListViewItem(Q3ListViewItem *parent)
   : Q3ListViewItem(parent)
 {
   init();
 }
 
-KListViewItem::KListViewItem(Q3ListView *parent, Q3ListViewItem *after)
+K3ListViewItem::K3ListViewItem(Q3ListView *parent, Q3ListViewItem *after)
   : Q3ListViewItem(parent, after)
 {
   init();
 }
 
-KListViewItem::KListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after)
+K3ListViewItem::K3ListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after)
   : Q3ListViewItem(parent, after)
 {
   init();
 }
 
-KListViewItem::KListViewItem(Q3ListView *parent,
+K3ListViewItem::K3ListViewItem(Q3ListView *parent,
     QString label1, QString label2, QString label3, QString label4,
     QString label5, QString label6, QString label7, QString label8)
   : Q3ListViewItem(parent, label1, label2, label3, label4, label5, label6, label7, label8)
@@ -2170,7 +2170,7 @@ KListViewItem::KListViewItem(Q3ListView *parent,
   init();
 }
 
-KListViewItem::KListViewItem(Q3ListViewItem *parent,
+K3ListViewItem::K3ListViewItem(Q3ListViewItem *parent,
     QString label1, QString label2, QString label3, QString label4,
     QString label5, QString label6, QString label7, QString label8)
   : Q3ListViewItem(parent, label1, label2, label3, label4, label5, label6, label7, label8)
@@ -2178,7 +2178,7 @@ KListViewItem::KListViewItem(Q3ListViewItem *parent,
   init();
 }
 
-KListViewItem::KListViewItem(Q3ListView *parent, Q3ListViewItem *after,
+K3ListViewItem::K3ListViewItem(Q3ListView *parent, Q3ListViewItem *after,
     QString label1, QString label2, QString label3, QString label4,
     QString label5, QString label6, QString label7, QString label8)
   : Q3ListViewItem(parent, after, label1, label2, label3, label4, label5, label6, label7, label8)
@@ -2186,7 +2186,7 @@ KListViewItem::KListViewItem(Q3ListView *parent, Q3ListViewItem *after,
   init();
 }
 
-KListViewItem::KListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
+K3ListViewItem::K3ListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
     QString label1, QString label2, QString label3, QString label4,
     QString label5, QString label6, QString label7, QString label8)
   : Q3ListViewItem(parent, after, label1, label2, label3, label4, label5, label6, label7, label8)
@@ -2194,44 +2194,44 @@ KListViewItem::KListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
   init();
 }
 
-KListViewItem::~KListViewItem()
+K3ListViewItem::~K3ListViewItem()
 {
   if(listView())
-    emit static_cast<KListView *>(listView())->itemRemoved(this);
+    emit static_cast<K3ListView *>(listView())->itemRemoved(this);
 }
 
-void KListViewItem::init()
+void K3ListViewItem::init()
 {
   m_odd = m_known = false;
-  KListView *lv = static_cast<KListView *>(listView());
+  K3ListView *lv = static_cast<K3ListView *>(listView());
   setDragEnabled( dragEnabled() || lv->dragEnabled() );
   emit lv->itemAdded(this);
 }
 
-void KListViewItem::insertItem(Q3ListViewItem *item)
+void K3ListViewItem::insertItem(Q3ListViewItem *item)
 {
   Q3ListViewItem::insertItem(item);
   if(listView())
-    emit static_cast<KListView *>(listView())->itemAdded(item);
+    emit static_cast<K3ListView *>(listView())->itemAdded(item);
 }
 
-void KListViewItem::takeItem(Q3ListViewItem *item)
+void K3ListViewItem::takeItem(Q3ListViewItem *item)
 {
   Q3ListViewItem::takeItem(item);
   if(listView())
-    emit static_cast<KListView *>(listView())->itemRemoved(item);
+    emit static_cast<K3ListView *>(listView())->itemRemoved(item);
 }
 
-const QColor &KListViewItem::backgroundColor()
+const QColor &K3ListViewItem::backgroundColor()
 {
   if (isAlternate())
-    return static_cast< KListView* >(listView())->alternateBackground();
+    return static_cast< K3ListView* >(listView())->alternateBackground();
   return QColorGroup(listView()->viewport()->palette()).base();
 }
 
-QColor KListViewItem::backgroundColor(int column)
+QColor K3ListViewItem::backgroundColor(int column)
 {
-  KListView* view = static_cast< KListView* >(listView());
+  K3ListView* view = static_cast< K3ListView* >(listView());
   QColor color = isAlternate() ?
                  view->alternateBackground() :
                  QColorGroup(view->viewport()->palette()).base();
@@ -2255,14 +2255,14 @@ QColor KListViewItem::backgroundColor(int column)
   return color;
 }
 
-bool KListViewItem::isAlternate()
+bool K3ListViewItem::isAlternate()
 {
-  KListView* const lv = static_cast<KListView *>(listView());
+  K3ListView* const lv = static_cast<K3ListView *>(listView());
   if (lv && lv->alternateBackground().isValid())
   {
-    KListViewItem *above;
+    K3ListViewItem *above;
 
-    KListView::KListViewPrivate* const lvD = lv->d;
+    K3ListView::K3ListViewPrivate* const lvD = lv->d;
 
     // Ok, there's some weirdness here that requires explanation as this is a
     // speed hack.  itemAbove() is a O(n) operation (though this isn't
@@ -2289,11 +2289,11 @@ bool KListViewItem::isAlternate()
         lvD->paintBelow = itemBelow();
       }
 
-      above = dynamic_cast<KListViewItem *>(lvD->paintAbove);
+      above = dynamic_cast<K3ListViewItem *>(lvD->paintAbove);
     }
     else
     {
-      above = dynamic_cast<KListViewItem *>(itemAbove());
+      above = dynamic_cast<K3ListViewItem *>(itemAbove());
     }
 
     m_known = above ? above->m_known : true;
@@ -2303,25 +2303,25 @@ bool KListViewItem::isAlternate()
     }
     else
     {
-       KListViewItem *item;
+       K3ListViewItem *item;
        bool previous = true;
        if (parent())
        {
-          item = dynamic_cast<KListViewItem *>(parent());
+          item = dynamic_cast<K3ListViewItem *>(parent());
           if (item)
              previous = item->m_odd;
-          item = dynamic_cast<KListViewItem *>(parent()->firstChild());
+          item = dynamic_cast<K3ListViewItem *>(parent()->firstChild());
        }
        else
        {
-          item = dynamic_cast<KListViewItem *>(lv->firstChild());
+          item = dynamic_cast<K3ListViewItem *>(lv->firstChild());
        }
 
        while(item)
        {
           item->m_odd = previous = !previous;
           item->m_known = true;
-          item = dynamic_cast<KListViewItem *>(item->nextSibling());
+          item = dynamic_cast<K3ListViewItem *>(item->nextSibling());
        }
     }
     return m_odd;
@@ -2329,7 +2329,7 @@ bool KListViewItem::isAlternate()
   return false;
 }
 
-void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int alignment)
+void K3ListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int alignment)
 {
   QColorGroup _cg = cg;
   Q3ListView* lv = listView();
@@ -2337,10 +2337,10 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
   Q3ListViewItem::paintCell(p, _cg, column, width, alignment);
 }
 
-void KListView::virtual_hook( int, void* )
+void K3ListView::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include "klistview.moc"
-#include "klistviewlineedit.moc"
+#include "k3listview.moc"
+#include "k3listviewlineedit.moc"
 
 // vim: noet

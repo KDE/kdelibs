@@ -20,12 +20,12 @@
 #ifndef SMBVIEW_H
 #define SMBVIEW_H
 
-#include <klistview.h>
+#include <k3listview.h>
 
 class KProcess;
 class KTempFile;
 
-class SmbView : public KListView
+class SmbView : public K3ListView
 {
 	Q_OBJECT
 public:

@@ -35,7 +35,7 @@ class IconListBox;
 
 class KGuiItem;
 class KHBox;
-class KListView;
+class K3ListView;
 class KSeparator;
 class KVBox;
 

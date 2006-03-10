@@ -28,7 +28,7 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <kinstance.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <kservice.h>
 #include <kstandarddirs.h>
 #include <kconfigbase.h>
@@ -93,7 +93,7 @@ KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
    enableButtonSeparator(true);
    KHBox *page = new KHBox(this);
    setMainWidget(page);
-   m_listView = new KListView(page);
+   m_listView = new K3ListView(page);
    m_listView->addColumn(i18n("Menu"));
    m_listView->setFullWidth(true);
    m_listView->setSorting(-1);

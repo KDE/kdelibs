@@ -36,7 +36,7 @@
 #include <qregexp.h>
 #include <qapplication.h>
 
-#include <klistview.h>
+#include <k3listview.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kdialogbase.h>
@@ -83,7 +83,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_xmlcmd = 0;
 
 	m_command = new QLineEdit(this);
-	m_view = new KListView(this);
+	m_view = new K3ListView(this);
 	m_view->addColumn("");
 	m_view->header()->hide();
 	m_view->setSorting(-1);
@@ -136,7 +136,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	QLabel	*m_editlab2 = new QLabel(i18n("Ma&ximum value:"), w1);
 	m_editlab1->setBuddy(m_edit1);
 	m_editlab2->setBuddy(m_edit2);
-	m_values = new KListView(w2);
+	m_values = new K3ListView(w2);
 	m_values->addColumn(i18n("Name"));
 	m_values->addColumn(i18n("Description"));
 	m_values->setAllColumnsShowFocus(true);
@@ -842,7 +842,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 
 	m_description = new QLineEdit(topmain);
 	m_idname = new QLabel(topmain);
-	m_requirements = new KListView(m_gb2);
+	m_requirements = new K3ListView(m_gb2);
 	m_requirements->addColumn("");
 	m_requirements->header()->hide();
 	m_addreq = new QToolButton(m_gb2);

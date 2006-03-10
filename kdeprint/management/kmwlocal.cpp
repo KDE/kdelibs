@@ -28,7 +28,7 @@
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <q3header.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <kmessagebox.h>
 #include <kiconloader.h>
 
@@ -41,7 +41,7 @@ KMWLocal::KMWLocal(QWidget *parent)
 	m_initialized = false;
 	m_block = false;
 
-	m_ports = new KListView(this);
+	m_ports = new K3ListView(this);
 	m_ports->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	m_ports->setLineWidth(1);
 	m_ports->header()->hide();

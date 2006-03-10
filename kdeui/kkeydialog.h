@@ -22,7 +22,7 @@
 #define KKEYDIALOG_H
 
 #include <kdialogbase.h>
-#include <klistview.h>
+#include <k3listview.h>
 
 class QCheckBox;
 class QLabel;

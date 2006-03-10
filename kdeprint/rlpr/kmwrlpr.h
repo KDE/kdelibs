@@ -22,7 +22,7 @@
 
 #include "kmwizardpage.h"
 
-class KListView;
+class K3ListView;
 class QLineEdit;
 class Q3ListViewItem;
 
@@ -43,7 +43,7 @@ protected:
 	void initialize();
 
 private:
-	KListView	*m_view;
+	K3ListView	*m_view;
 	QLineEdit	*m_host, *m_queue;
 };
 
