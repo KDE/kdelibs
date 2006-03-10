@@ -40,6 +40,10 @@
  *    px.load( "hi32-app-logtracker.png" );
  *    KPassivePopup::message( "Some title", "This is the main text", px, this );
  * \endcode
+ * This screenshot shows a popup with both a caption and a main text which is
+ * being displayed next to the toolbar icon of the window that triggered it:
+ * \image html kpassivepopup.png "A passive popup"
+ *
  * For more control over the popup, you can use the setView(QWidget *) method
  * to create a custom popup.
  * \code
@@ -178,11 +182,13 @@ public:
      */
     QRect defaultArea() const;
 
+    /**
+     * Returns the position to which this popup is anchored.
+     */
     QPoint anchor() const;
 
-
     /**
-     * Sets the anchor of this balloon. The balloon tries automatically to adjust
+     * Sets the anchor of this popup. The popup tries automatically to adjust
      * itself somehow around the point.
      */
     void setAnchor( const QPoint& anchor );
@@ -276,6 +282,10 @@ public Q_SLOTS:
      */
     void setTimeout( int delay );
 
+    /**
+     * Sets the visual appearance of the popup.
+     * @see PopupStyle
+     */
     void setPopupStyle( int popupstyle );
 
     /**
