@@ -67,8 +67,11 @@ void Debugger::attach(Interpreter *interp)
     rep->interps = new AttachedInterpreter(interp);
   else {
     AttachedInterpreter *ai = rep->interps;
-    while (ai->next)
+    while (ai->next) {
+      if (ai->interp == interp)
+          return; // already in list
       ai = ai->next;
+    }
     ai->next = new AttachedInterpreter(interp);
   }
 }
