@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
+   Copyright (c) 2006 Christian Ehrlicher <ch.ehrlicher@gmx.de>
 
    These sources are based on ftp://g.oswego.edu/pub/misc/malloc.c
    file by Doug Lea, released to the public domain.
@@ -23,128 +23,164 @@
 #include <winposix_export.h>
 #include <windows.h>
 
-#include <sys/mman.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <io.h>
+#include <sys/mman.h>
+#include <sys/socket.h>
 
-#define MORECORE_FAILURE    ((void*)(-1))
 #define MUNMAP_FAILURE  (-1)
 
 #define USE_MALLOC_LOCK 1
 
-/* Wait for spin lock */
-static int slwait (int *sl) {
-#ifdef KDEWIN32_9x
-	/* TODO */
-#else
-    while (InterlockedCompareExchange ((LONG volatile*) sl, (LONG) 1, (LONG) 0) != 0) 
-	    Sleep (0);
-#endif
-    return 0;
-}
+struct mmapInfos {
+    HANDLE hFile;   // the duplicated fd
+    HANDLE hMap;    // handle returned by CreateFileMapping
+    void* start;    // ptr returned by MapViewOfFile
+};
 
-/* Release spin lock */
-static int slrelease (int *sl) {
-    InterlockedExchange (sl, 0);
-    return 0;
-}
+CRITICAL_SECTION cs;
 
+static g_curMMapInfos = 0;
+static g_maxMMapInfos = -1;
+static struct mmapInfos *g_mmapInfos = NULL;
+#define NEW_MMAP_STRUCT_CNT 10
 
-
-long getpagesize (void);
-
-/* Spin lock for emulation code */
-static int g_sl;
-
-static long getregionsize (void)
+static int mapProtFlags(int flags, DWORD *dwAccess)
 {
-    static long g_regionsize = 0;
-    if (! g_regionsize) {
-        SYSTEM_INFO system_info;
-        GetSystemInfo (&system_info);
-        g_regionsize = system_info.dwAllocationGranularity;
+    if ( ( flags & PROT_READ ) == PROT_READ ) {
+        if ( ( flags & PROT_WRITE ) == PROT_WRITE ) {
+            *dwAccess = FILE_MAP_WRITE;
+            if ( ( flags & PROT_EXEC ) == PROT_EXEC ) {
+                return PAGE_EXECUTE_READWRITE;
+            }
+            return PAGE_READWRITE;
+        }
+        if ( ( flags & PROT_EXEC ) == PROT_EXEC ) {
+            *dwAccess = FILE_MAP_EXECUTE;
+            return PAGE_EXECUTE_READ;
+        }
+        *dwAccess = FILE_MAP_READ;
+        return PAGE_READONLY;
     }
-    return g_regionsize;
-}
-
-//static void *mmap (void *ptr, long size, long prot, long type, long handle, long arg) {
-KDEWIN32_EXPORT void * mmap(void *start, size_t length, int prot , int flags, int fd, off_t offset)
-{
-    static long g_pagesize;
-    static long g_regionsize;
-#ifdef TRACE
-    printf ("mmap %d\n", length);
-#endif
-#if defined (USE_MALLOC_LOCK)
-    /* Wait for spin lock */
-    slwait (&g_sl);
-#endif
-    /* First time initialization */
-    if (! g_pagesize) 
-        g_pagesize = getpagesize ();
-    if (! g_regionsize) 
-        g_regionsize = getregionsize ();
-    /* Assert preconditions */
-    assert ((unsigned) start % g_regionsize == 0);
-
-		// VirtualAlloc deals with unaligned length, the following assert isn't required
-		// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/memory/base/virtualalloc.asp
-    //assert (length % g_pagesize == 0);
-
-    /* Allocate this */
-    start = VirtualAlloc (start, length,
-					    MEM_RESERVE | MEM_COMMIT | MEM_TOP_DOWN, PAGE_READWRITE);
-    if (! start) {
-        start = (void *) MORECORE_FAILURE;
-        goto mmap_exit;
+    if ( ( flags & PROT_WRITE ) == PROT_WRITE ) {
+        *dwAccess = FILE_MAP_COPY;
+        return PAGE_WRITECOPY;
+    }   
+    if ( ( flags & PROT_EXEC ) == PROT_EXEC ) {
+        *dwAccess = FILE_MAP_EXECUTE;
+        return PAGE_EXECUTE_READ;
     }
-    /* Assert postconditions */
-    assert ((unsigned) start % g_regionsize == 0);
-#ifdef TRACE
-    printf ("Commit %p %d\n", start, length);
-#endif
-mmap_exit:
-#if defined (USE_MALLOC_LOCK)
-    /* Release spin lock */
-    slrelease (&g_sl);
-#endif
-    return start;
+    *dwAccess = 0;
+    return 0;   
 }
 
-//static long munmap (void *ptr, long size) {
-KDEWIN32_EXPORT int munmap(void *start, size_t length)
+void *mmap(void *start, size_t length, int prot , int flags, int fd, off_t offset)
 {
-    static long g_pagesize;
-    static long g_regionsize;
-    int rc = MUNMAP_FAILURE;
-#ifdef TRACE
-    printf ("munmap %p %d\n", start, length);
+    struct mmapInfos mmi;
+    DWORD dwAccess;
+    DWORD flProtect;
+    HANDLE hfd;
+
+    if ( g_maxMMapInfos == -1 ) {
+        g_maxMMapInfos = 0;
+        InitializeCriticalSection( &cs );
+    }
+
+    flProtect = mapProtFlags( flags, &dwAccess );
+	if ( flProtect == 0 ) {
+        _set_errno( EINVAL );
+		return MAP_FAILED;
+	}
+	// we don't support this atm
+	if ( prot == MAP_FIXED ) {
+		_set_errno( ENOTSUP );
+		return MAP_FAILED;
+	}
+
+	if ( fd == -1 ) {
+		_set_errno( EBADF );
+        return MAP_FAILED;
+	}
+
+	hfd = (HANDLE)_get_osfhandle( fd );
+	if ( hfd == INVALID_HANDLE_VALUE )
+		return MAP_FAILED;
+
+	if ( !DuplicateHandle( GetCurrentProcess(), hfd, GetCurrentProcess(),
+                           &mmi.hFile, 0, FALSE, DUPLICATE_SAME_ACCESS ) ) {
+#ifdef _DEBUG
+        DWORD dwLastErr = GetLastError();
 #endif
-#if defined (USE_MALLOC_LOCK)
-    /* Wait for spin lock */
-    slwait (&g_sl);
-#endif
-    /* First time initialization */
-    if (! g_pagesize) 
-        g_pagesize = getpagesize ();
-    if (! g_regionsize) 
-        g_regionsize = getregionsize ();
-    /* Assert preconditions */
-    assert ((unsigned) start % g_regionsize == 0);
-		// VirtualAlloc deals with unaligned length, the following assert isn't required
-		// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/memory/base/virtualalloc.asp
-    //assert (length % g_pagesize == 0);
-    /* Free this */
-    if (! VirtualFree (start, 0, 
-                       MEM_RELEASE))
-        goto munmap_exit;
-    rc = 0;
-#ifdef TRACE
-    printf ("Release %p %d\n", start, length);
-#endif
-munmap_exit:
-#if defined (USE_MALLOC_LOCK)
-    /* Release spin lock */
-    slrelease (&g_sl);
-#endif
-    return rc;
+        return MAP_FAILED;
+    }
+    mmi.hMap = CreateFileMapping( mmi.hFile, NULL, flProtect,
+                                  0, length, NULL );
+    if ( mmi.hMap == 0 ) {
+        _set_errno( EACCES );
+		return MAP_FAILED;
+    }
+
+    mmi.start = MapViewOfFile( mmi.hMap, dwAccess, 0, offset, 0 );
+	if ( mmi.start == 0 ) {
+		DWORD dwLastErr = GetLastError();
+		if ( dwLastErr == ERROR_MAPPED_ALIGNMENT )
+			_set_errno( EINVAL );
+		else
+			_set_errno( EACCES );
+		return MAP_FAILED;
+	}
+    EnterCriticalSection( &cs );
+    if ( g_mmapInfos == NULL ) {
+        g_maxMMapInfos = NEW_MMAP_STRUCT_CNT;
+        g_mmapInfos = ( struct mmapInfos* )calloc( g_maxMMapInfos,
+                      sizeof( struct mmapInfos ) );
+    }
+    if( g_curMMapInfos == g_maxMMapInfos) {
+        g_maxMMapInfos += NEW_MMAP_STRUCT_CNT;
+        g_mmapInfos = ( struct mmapInfos* )realloc( g_mmapInfos,
+                      g_maxMMapInfos * sizeof( struct mmapInfos ) );
+    }
+    memcpy( &g_mmapInfos[g_curMMapInfos], &mmi, sizeof( struct mmapInfos) );
+    g_curMMapInfos++;
+    
+    LeaveCriticalSection( &cs );
+    
+    return mmi.start;
+}
+
+int munmap(void *start, size_t length)
+{
+    CRITICAL_SECTION cs;
+    int i, j;
+
+    for( i = 0; i < g_curMMapInfos; i++ ) {
+        if( g_mmapInfos[i].start == start )
+            break;
+    }
+    if( i == g_curMMapInfos ) {
+        _set_errno( EINVAL );
+        return -1;
+    }
+
+    UnmapViewOfFile( g_mmapInfos[g_curMMapInfos].start );
+    CloseHandle( g_mmapInfos[g_curMMapInfos].hMap );
+    CloseHandle( g_mmapInfos[g_curMMapInfos].hFile );
+
+    EnterCriticalSection( &cs );
+    for( j = i + 1; j < g_curMMapInfos; j++ ) {
+        memcpy( &g_mmapInfos[ j - 1 ], &g_mmapInfos[ j ],
+                sizeof( struct mmapInfos ) );
+    }
+    g_curMMapInfos--;
+    
+    if( g_curMMapInfos == 0 ) {
+        free( g_mmapInfos );
+        g_mmapInfos = NULL;
+        g_maxMMapInfos = 0;
+    }
+    LeaveCriticalSection( &cs );
+    
+    return 0;
 }

@@ -20,23 +20,22 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _MMAP_H
-#define _MMAP_H
+#ifndef KDEWIN_SYS_MMAN_H
+#define KDEWIN_SYS_MMAN_H
 
-#include <winposix_export.h>
-
+// include everywhere
 #include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* These values don't really matter in windows mmap emulation */
 #define PROT_NONE 0
 #define PROT_READ 1
 #define PROT_WRITE 2
 #define PROT_EXEC 4
 
+/* These values don't really matter in windows mmap emulation */
 #define MAP_FILE 0
 #define MAP_SHARED 1
 #define MAP_PRIVATE 2
@@ -47,12 +46,12 @@ extern "C" {
 
 #define MAP_FAILED ((void *)-1)
 
-KDEWIN32_EXPORT void * mmap(void *start, size_t length, int prot , int flags, int fd, off_t offset);
-
+KDEWIN32_EXPORT void *mmap(void *start, size_t length, int prot , int flags, int fd, off_t offset);
 KDEWIN32_EXPORT int munmap(void *start, size_t length);
+
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif  // KDEWIN_SYS_MMAN_H
