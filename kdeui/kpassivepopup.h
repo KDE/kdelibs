@@ -49,10 +49,10 @@
  * \code
  *    KPassivePopup *pop = new KPassivePopup( parent );
  *
- *    QVBox *vb = new QVBox( pop );
+ *    KVBox *vb = new KVBox( pop );
  *    (void) new QLabel( vb, "<b>Isn't this great?</b>" );
  *
- *    QHBox *box = new QHBox( vb );
+ *    KHBox *box = new KHBox( vb );
  *    (void) new QPushButton( box, "Yes" );
  *    (void) new QPushButton( box, "No" );
  *
@@ -136,10 +136,10 @@ public:
      * @param caption The window caption (title) on the popup
      * @param text The text for the popup
      * @param icon The icon to use for the popup
-     * @param parent The parent widget used for the returned QVBox. If left 0L,
+     * @param parent The parent widget used for the returned KVBox. If left 0L,
      * then "this", i.e. the passive popup object will be used.
      *
-     * @return a QVBox containing the given arguments, looking like the
+     * @return a KVBox containing the given arguments, looking like the
      * standard passivepopups.
      * @see setView( QWidget * )
      * @see setView( const QString&, const QString& )
