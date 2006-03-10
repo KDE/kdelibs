@@ -173,9 +173,6 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
              s->scrollsOverflow() || renderer()->isReplaced() ) {
             r += cr;
         } else {
-            int x = 0; int y = 0;
-            convertToLayerCoords(rootLayer,x,y);
-            QRect lr = renderer()->visibleFlowRegion(x, y).boundingRect();
             r += renderer()->visibleFlowRegion(x, y);
         }
     }
