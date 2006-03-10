@@ -163,7 +163,6 @@ void *mmap(void *start, size_t length, int prot , int flags, int fd, off_t offse
 
 int munmap(void *start, size_t length)
 {
-    CRITICAL_SECTION cs;
     int i, j;
 
     for( i = 0; i < g_curMMapInfos; i++ ) {
