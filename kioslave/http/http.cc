@@ -3335,12 +3335,9 @@ try_again:
       if (!compact.isEmpty())
          setMetaData("PrivacyCompactPolicy", compact.join("\n"));
     }
-
-    // continue only if we know that we're HTTP/1.1
-    else if (httpRev == HTTP_11) {
-      // let them tell us if we should stay alive or not
-      if (strncasecmp(buf, "Connection:", 11) == 0)
-      {
+    // let them tell us if we should stay alive or not
+    else if (strncasecmp(buf, "Connection:", 11) == 0)
+    {
         if (strncasecmp(trimLead(buf + 11), "Close", 5) == 0)
           m_bKeepAlive = false;
         else if (strncasecmp(trimLead(buf + 11), "Keep-Alive", 10)==0)
@@ -3357,10 +3354,11 @@ try_again:
             canUpgrade = true;
           }
         }
-
-      }
+    }
+    // continue only if we know that we're HTTP/1.1
+    else if ( httpRev == HTTP_11) {
       // what kind of encoding do we have?  transfer?
-      else if (strncasecmp(buf, "Transfer-Encoding:", 18) == 0) {
+      if (strncasecmp(buf, "Transfer-Encoding:", 18) == 0) {
         // If multiple encodings have been applied to an entity, the
         // transfer-codings MUST be listed in the order in which they
         // were applied.
