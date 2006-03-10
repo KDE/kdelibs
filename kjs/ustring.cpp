@@ -287,7 +287,7 @@ UString::UString(const char *c)
   }
   UChar *d = new UChar[length];
   for (int i = 0; i < length; i++)
-    d[i].uc = c[i];
+    d[i].uc = (unsigned char)c[i];
   rep = Rep::create(d, length);
 }
 
@@ -527,7 +527,7 @@ UString &UString::operator=(const char *c)
     rep = Rep::create(d, l);
   }
   for (int i = 0; i < l; i++)
-    d[i].uc = c[i];
+    d[i].uc = (unsigned char)c[i];
 
   return *this;
 }
