@@ -175,6 +175,9 @@ protected:
     template<typename EventualSubtype, typename BaseType>
     struct KDEFX_EXPORT OptionBase: public BaseType
     {
+        /** Default value for this option. Uses the default constructor
+            of EventualSubtype to create the option. 
+        */
         static EventualSubtype* defaultOption()
         {
             static EventualSubtype* theDefault = 0; //### function static, not very nice,
@@ -224,8 +227,8 @@ protected:
     */
     struct KDEFX_EXPORT IconOption: public OptionBase<IconOption, Option>
     {
-        bool  active;
-        QIcon icon;
+        bool  active; ///< Is the icon active?
+        QIcon icon;   ///< Icon drawn by this option
 
         IconOption(): active(false)
         {}
@@ -514,8 +517,8 @@ protected:
     {
         enum LayoutProp
         {
-            FrameWidth, //The width of the frame, note that this does not affect the layout.
-            Margin,     //The margin of the menu
+            FrameWidth, ///< The width of the frame, note that this does not affect the layout.
+            Margin,     ///< The margin of the menu
             ScrollerHeight = Margin + MarginInc,
             TearOffHeight
         };
