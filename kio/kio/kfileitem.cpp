@@ -757,17 +757,7 @@ QString KFileItem::getToolTipText(int maxcount)
 
 void KFileItem::run()
 {
-  KUrl url = m_url;
-  // When clicking on a link to e.g. $HOME from the desktop, we want to open $HOME
-  // But when following a link on the FTP site, the target be an absolute path
-  // that doesn't work in the URL. So we resolve links only on the local filesystem.
-  if ( m_bLink && m_bIsLocalURL )
-    url = KUrl( m_url, linkDest() );
-
-  // It might be faster to pass skip that when we know the mimetype,
-  // and just call KRun::runURL. But then we need to use mostLocalURL()
-  // for application/x-desktop files, to be able to execute them.
-  (void) new KRun( url, (QWidget*)0, m_fileMode, m_bIsLocalURL );
+  (void) new KRun( m_url, (QWidget*)0, m_fileMode, m_bIsLocalURL );
 }
 
 bool KFileItem::cmp( const KFileItem & item )
