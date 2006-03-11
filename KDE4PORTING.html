@@ -70,8 +70,17 @@ or <a href="http://doc.trolltech.com/4.1/porting4.html">this page online</a>.</p
 
 
 <H3><A NAME="globalchanges">Global Changes</A></H3>
+<ul>
+<li>
 The "const char *name" arguments in the constructors of QObject derived classes 
 have been removed (not of all classes yet). Use setObjectName() instead if the object name is really necessary.
+</li>
+<li>The define KDE_DEPRECATED must be used now at the start of the declaration
+(but still after an eventual "static" or "virtual" keyword).
+Note that KDE_DEPRECATED still works at the end of the declaration with gcc,
+but that is not portable.</li>
+</ul>
+
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 
@@ -373,7 +382,8 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 
 <H4>KCharsets</H4>
 <ul>
-<li>KCharsets::codecForName cannot use glibc's i18n data anymore currently</li>
+<li>KCharsets::codecForName cannot use glibc's i18n data anymore.
+(Note: this feature was new in KDE 3.5 but never publically announced.)</li>
 <li><b>TODO</b>: see which member functions can be removed</li>
 <li><b>TODO</b>: simplification of the encoding list tables
    (simply name and description, no need of two tables and an lists of aliases.</li>
@@ -1011,7 +1021,7 @@ can be used as an half-automatical conversion. (Please verify the result!)</p>
 <h4>rc.cpp file</h4>
 <p>The rc.cpp is now <em>always</em> generated. It is mandatory to have it as
 parameter of the $XGETTEXT if you are using the class KAboutData and if
-you are not explicitely etting KAboutData::setTranslator.</p>
+you are not explicitely setting KAboutData::setTranslator.</p>
 
 <h4>Gettext 0.15-pre</h4>
 <p>Scripty uses xgettext 0.15-pre (the development version) for extracting
@@ -1028,7 +1038,7 @@ the same message and therefore this creates problems. (Note: there is not
 any similar problems when you use contexts.)</li>
 <li>As in Gettext 0.15-pre, contexts are supposed to be short, please consider
 using a special comment instead of a context to give long hints to translators.
-The special comment starts with //i18n ot /*i18n and must be <em>before</em>
+The special comment starts with //i18n: ot /*i18n: and must be <em>before</em>
 the message code. (Note: this is not new to KDE4, but very seldomly used in 
 KDE3.)</li>
 </ul>
