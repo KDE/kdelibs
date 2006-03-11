@@ -215,6 +215,15 @@
 # endif 
 #endif 
 
+#ifndef KJSEMBED_EXPORT
+# ifdef MAKE_KJSEMBED_LIB
+#  define KJSEMBED_EXPORT KDE_EXPORT
+# else
+#  define KJSEMBED_EXPORT KDE_IMPORT
+# endif 
+#endif 
+
+
 #ifndef KWALLETCLIENT_EXPORT
 # ifdef MAKE_KWALLETCLIENT_LIB
 #  define KWALLETCLIENT_EXPORT KDE_EXPORT
