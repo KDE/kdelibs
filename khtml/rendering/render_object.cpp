@@ -2175,7 +2175,7 @@ void RenderObject::updateWidgetMasks() {
             if (!r.isNull() && curr->absolutePosition(x,y)) {
                 x+= curr->borderLeft()+curr->paddingLeft();
                 y+= curr->borderBottom()+curr->paddingBottom();
-                r = r.intersect(QRect(x,y,w->width(),w->height()));
+                r = r.intersect(QRect(x,y,curr->width(),curr->height()));
 #ifdef MASK_DEBUG
                 QMemArray<QRect> ar = r.rects();
                 kdDebug(6040) << "|| Setting widget mask for " << curr->information() << endl;
