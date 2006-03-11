@@ -514,8 +514,10 @@ void XMLTokenizer::executeScripts()
             // we have a src attribute
             m_cachedScript = m_doc->document()->docLoader()->requestScript(scriptSrc, charset);
             ++(*m_scriptsIt);
-            m_cachedScript->ref(this); // will call executeScripts() again if already cached
-            return;
+            if (m_cachedScript) {
+                m_cachedScript->ref(this); // will call executeScripts() again if already cached
+                return;
+            }
         }
         else {
             // no src attribute - execute from contents of tag
