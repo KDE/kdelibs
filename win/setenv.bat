@@ -39,8 +39,8 @@ if not %QTDIR%=="" (
 if exist C:\Programme\Ultraedt set PATH=c:\Programme\Ultraedt;%PATH%
 
 :: runtime environment 
-::set KDEDIR=c:\Programme\KDE4
-::set KDEHOME=%KDEDIR%\home
-::set PATH=%KDEDIR%\bin;%KDEDIR%\lib;%PATH%
+set KDEDIR=c:\Programme\kdelibs
+set KDEHOME=%KDEDIR%\home
+set PATH=%KDEDIR%\bin;%KDEDIR%\lib;%PATH%
 
 
