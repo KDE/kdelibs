@@ -5,7 +5,7 @@ project(kjs)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/kxmlcore )
 
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND)
