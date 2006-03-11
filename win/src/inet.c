@@ -25,6 +25,11 @@
 #include <arpa/inet.h>
 #include <ws2tcpip.h>
 
+#ifdef __MINGW32__
+#define U_WORD(a,i) (a)->_S6_un._S6_u16[i]
+#else
+#define U_WORD(a,i) (a)->u.Word[i]
+#endif
 
 static int fromHex(const char c)
 {
@@ -61,7 +66,7 @@ const char *inet_ntop(int af, const void *src, char *dst, size_t cnt)
 				return NULL;
 			}
 			for(i = 0; i < 8; i++) {
-				sprintf(pos, "%04x", adr->u.Word[i]);
+				sprintf(pos, "%04x", U_WORD(adr,i) );
 				pos += strlen(pos);
 				if( i != 8 ) {
 					pos[0] = ':';
@@ -93,7 +98,7 @@ int inet_pton(int af, const char * src, void * dst)
 			int colonCnt = 0;
 			int i, hex;
 
-			adr->u.Word[colonCnt] = 0;
+			U_WORD(adr,colonCnt) = 0;
 			for(i = 0; src[i] != '\0'; i--) {
 				if( src[i] == ':' ) {
 					if ( i == 0 )
@@ -101,12 +106,12 @@ int inet_pton(int af, const char * src, void * dst)
 					colonCnt++;
 					if (colonCnt > 7)
 						return 0;
-					adr->u.Word[colonCnt] = 0;
+					U_WORD(adr,colonCnt) = 0;
 				}
 				hex = fromHex( src[i] );
 				if ( hex == -1 )
 					return 0;
-				adr->u.Word[colonCnt] = (adr->u.Word[colonCnt] << 4) + hex;
+				U_WORD(adr,colonCnt) = (U_WORD(adr,colonCnt) << 4) + hex;
 			}
 			return( colonCnt == 7 );
 		}
