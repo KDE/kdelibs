@@ -22,6 +22,7 @@
 #define DOMPARSER_H
 
 #include <qpointer.h>
+#include "kdelibs_export.h"
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
 #include <misc/shared.h>
@@ -30,7 +31,7 @@
 
 namespace KJS {
 
-  class DOMParserConstructorImp : public ObjectImp {
+  class KHTML_EXPORT DOMParserConstructorImp : public ObjectImp {
   public:
     DOMParserConstructorImp(ExecState *, DOM::DocumentImpl *d);
     virtual bool implementsConstruct() const;
@@ -39,7 +40,7 @@ private:
     SharedPtr<DOM::DocumentImpl> doc;
   };
 
-  class DOMParser : public DOMObject {
+  class KHTML_EXPORT DOMParser : public DOMObject {
   public:
     DOMParser(ExecState *, DOM::DocumentImpl *d);
     virtual bool toBoolean(ExecState *) const { return true; }

@@ -63,7 +63,7 @@ namespace KJS {
   /**
    * Base class for all objects in this binding. Doesn't manage exceptions any more
    */
-  class DOMObject : public ObjectImp {
+  class KHTML_EXPORT DOMObject : public ObjectImp {
   protected:
     DOMObject() : ObjectImp() {}
     DOMObject(ObjectImp *proto) : ObjectImp(proto) {}
@@ -301,5 +301,6 @@ namespace KJS {
   inline JSCell* String(const QString& s) { return jsString(s.toLocal8Bit().constData()); }
 
 } // namespace
+
 
 #endif
