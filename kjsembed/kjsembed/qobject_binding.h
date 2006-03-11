@@ -67,7 +67,7 @@ namespace KJSEmbed {
 KJS_BINDING( QObjectFactory )
 
 class EventProxy;
-class KDE_EXPORT QObjectBinding : public ObjectBinding
+class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
 {
     public:
         QObjectBinding( KJS::ExecState *exec, QObject *object );
@@ -93,7 +93,7 @@ class KDE_EXPORT QObjectBinding : public ObjectBinding
         QObjectCleanupHandler *m_cleanupHandler;
 };
 
-class KDE_EXPORT SlotBinding : public KJS::InternalFunctionImp
+class KJSEMBED_EXPORT SlotBinding : public KJS::InternalFunctionImp
 {
     public:
         SlotBinding(KJS::ExecState *exec, const QMetaMethod &memberName);

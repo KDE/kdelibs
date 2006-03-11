@@ -69,7 +69,7 @@ namespace KJSEmbed
     /**
     * QVariant bindinging implementation.
     */
-    class KDE_EXPORT ValueBinding : public KJS::JSObject
+    class KJSEMBED_EXPORT ValueBinding : public KJS::JSObject
     {
         public:
             /**
@@ -114,7 +114,7 @@ namespace KJSEmbed
     /**
     * Extracts a QVariant from a KJS::JSValue if the conversion fails a QVariant::Null is returned.
     */
-    QVariant KDE_EXPORT extractVariant( KJS::ExecState *exec, KJS::JSValue *value );
+    QVariant KJSEMBED_EXPORT extractVariant( KJS::ExecState *exec, KJS::JSValue *value );
 
     /**
     * Extracts a value based type from a ValueBinding object.  This method calls @ref extractVariant so if
@@ -122,7 +122,7 @@ namespace KJSEmbed
     * is not used with KJSEmbed::ObjectBinding objects because the cast will fail.
     */
     template< typename T>
-    T KDE_EXPORT extractValue( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
+    T KJSEMBED_EXPORT extractValue( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
     {
         if( !arg )
             return defaultValue;
@@ -149,7 +149,7 @@ namespace KJSEmbed
     * is returned.
     */
     template< typename T>
-    T KDE_EXPORT extractValue( KJS::ExecState *exec, const KJS::List &args, int idx, const T &defaultValue = T())
+    T KJSEMBED_EXPORT extractValue( KJS::ExecState *exec, const KJS::List &args, int idx, const T &defaultValue = T())
     {
         if( args.size() >= idx )
         {
@@ -202,7 +202,7 @@ namespace KJSEmbed
     * data as the value.  A normal array will give you a QMap with each key being the
     * index.
     */
-    QMap<QString, QVariant> KDE_EXPORT convertArrayToMap( KJS::ExecState *exec, KJS::JSValue *value );
+    QMap<QString, QVariant> KJSEMBED_EXPORT convertArrayToMap( KJS::ExecState *exec, KJS::JSValue *value );
 
     /**
     * Convert a KJS::JSValue into a QList.  If the list contains only strings, or objects that can be
@@ -210,17 +210,17 @@ namespace KJSEmbed
     * associative array or a javascript object the list will return empty.  Unless there happens to be
     * a property with a numeric index present, then all bets are off.
     */
-    QList<QVariant> KDE_EXPORT convertArrayToList( KJS::ExecState *exec, KJS::JSValue *value );
+    QList<QVariant> KJSEMBED_EXPORT convertArrayToList( KJS::ExecState *exec, KJS::JSValue *value );
 
     /**
     * Convert a KJS::JSValue inot a QStringList. @see convertArrayToList.
     */
-    QStringList KDE_EXPORT convertArrayToStringList( KJS::ExecState *exec, KJS::JSValue *value );
+    QStringList KJSEMBED_EXPORT convertArrayToStringList( KJS::ExecState *exec, KJS::JSValue *value );
 
     /**
     * Convert a KJS::JSValue into a QVariant object
     */
-    QVariant KDE_EXPORT convertToVariant( KJS::ExecState *exec, KJS::JSValue *value );
+    QVariant KJSEMBED_EXPORT convertToVariant( KJS::ExecState *exec, KJS::JSValue *value );
 
     /**
     * Convert a QVariant to a KJS::JSValue.  If the type is a known type the bindings will be added.
@@ -233,7 +233,7 @@ namespace KJSEmbed
     * The Bindings for the KJSEmbed::ValueBinding
     */
     struct Method;
-    class KDE_EXPORT ValueFactory
+    class KJSEMBED_EXPORT ValueFactory
     {
         public:
         static const Method ValueMethods[];

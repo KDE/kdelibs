@@ -23,7 +23,7 @@
 #define KJSEMBED_GLOBAL_H
 
 #if defined(_WIN32) || defined(_WIN64)
-# ifdef KJSEMBED_DLL
+#ifdef KJSEMBED_DLL
 #  ifdef KJSEMBED_MAKE_DLL
 #     define KJSEMBED_EXPORT __declspec(dllexport)
 #  else
@@ -32,8 +32,10 @@
 # else
 #  define KJSEMBED_EXPORT
 # endif // KJSEMBED_DLL
+#elif defined(MAKE_KSJEMBED_LIB)
+#  define KJSEMBED_EXPORT __declspec(dllexport)
 #else
-# define KJSEMBED_EXPORT
+#  define KJSEMBED_EXPORT __declspec(dllimport)
 #endif // WIN32
 
 #if !defined(_WIN32) && !defined(_WIN64)

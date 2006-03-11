@@ -34,7 +34,7 @@ namespace KJSEmbed
 /**
 * A binding method that is used in ValueBinding and ObjectBinding
 */
-class KDE_EXPORT StaticBinding : public KJS::InternalFunctionImp
+class KJSEMBED_EXPORT StaticBinding : public KJS::InternalFunctionImp
 {
 public:
     /**
@@ -63,7 +63,7 @@ protected:
 * A special method that will create other objects. If you want to have your binding to be able to create
 * instances of itself it must have at least one of these objects published at the global scope.
 */
-class KDE_EXPORT StaticConstructor : public KJS::InternalFunctionImp
+class KJSEMBED_EXPORT StaticConstructor : public KJS::InternalFunctionImp
 {
 public:
     /**

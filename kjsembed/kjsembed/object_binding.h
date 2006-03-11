@@ -71,14 +71,14 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 
 namespace KJSEmbed
 {
-    class KDE_EXPORT ObjectFactory
+    class KJSEMBED_EXPORT ObjectFactory
     {
         public:
             static const Method ObjectMethods[];
             static const Method *methods(){ return ObjectMethods;}
     };
 
-    class KDE_EXPORT ObjectBinding : public KJS::JSObject
+    class KJSEMBED_EXPORT ObjectBinding : public KJS::JSObject
     {
         public:
             enum Ownership { CPPOwned, QObjOwned, JSOwned  };

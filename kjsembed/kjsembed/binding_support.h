@@ -25,6 +25,7 @@
 #include <QDateTime>
 #include <QStringList>
 
+#include <kjsembed/kjsembed/global.h>
 #include <kjs/object.h>
 #include <kdemacros.h>
 
@@ -92,7 +93,7 @@ namespace KJSEmbed
     /**
     * Throw an error to the KJS interpreter.  The error message will be returned inside the KJS::Exception.
     */
-//    KJS::JSObject KDE_EXPORT throwError( KJS::ExecState *exec, const QString &error, KJS::ErrorType type = KJS::GeneralError );
+//    KJS::JSObject KJSEMBED_EXPORT throwError( KJS::ExecState *exec, const QString &error, KJS::ErrorType type = KJS::GeneralError );
 
     /**
     * This will extract a binding implementation from a KJS::JSValue
@@ -131,7 +132,7 @@ namespace KJSEmbed
     /**
     * Method structure
     */
-    struct KDE_EXPORT Method
+    struct KJSEMBED_EXPORT Method
     {
         /**
        * Method name as will appear in javascript
@@ -154,7 +155,7 @@ namespace KJSEmbed
     /**
     * Enumerator structure
     */
-    struct KDE_EXPORT Enumerator
+    struct KJSEMBED_EXPORT Enumerator
     {
         /**
        * Method name as will appear in javascript
@@ -174,7 +175,7 @@ namespace KJSEmbed
     */
     typedef KJS::JSObject *(*callConstructor)(KJS::ExecState*, const KJS::List&);
 
-    struct KDE_EXPORT Constructor
+    struct KJSEMBED_EXPORT Constructor
     {
         /**
        * The constructor name as it will appear in Javascript.  This will be the objects
@@ -211,12 +212,12 @@ namespace KJSEmbed
     * Extracts a QString from an argument list.  If the argument is not present, or is not convertable to a string
     * the defaultValue is returned.
     */
-    QString KDE_EXPORT extractQString( KJS::ExecState *exec, const KJS::List &args, int idx, const QString defaultValue = QString() );
+    QString KJSEMBED_EXPORT extractQString( KJS::ExecState *exec, const KJS::List &args, int idx, const QString defaultValue = QString() );
 
     /**
     * Extract a QString from a value.  If the value cannot convert to a string the defaultValue is returned.
     */
-    QString KDE_EXPORT extractQString( KJS::ExecState *exec, KJS::JSValue *value, const QString defaultValue = QString() );
+    QString KJSEMBED_EXPORT extractQString( KJS::ExecState *exec, KJS::JSValue *value, const QString defaultValue = QString() );
 
     /**
     * Create a new KJS::JSValue with the value of the QString
@@ -227,12 +228,12 @@ namespace KJSEmbed
     * Extracts a QByteArray from an argument list.  If the argument is not present, or is not convertable to a string
     * the defaultValue is returned.
     */
-    QByteArray KDE_EXPORT extractQByteArray( KJS::ExecState *exec, const KJS::List &args, int idx, const QByteArray &defaultValue = QByteArray() );
+    QByteArray KJSEMBED_EXPORT extractQByteArray( KJS::ExecState *exec, const KJS::List &args, int idx, const QByteArray &defaultValue = QByteArray() );
 
     /**
     * Extract a QString from a value.  If the value cannot convert to a string the defaultValue is returned.
     */
-    QByteArray KDE_EXPORT extractQByteArray( KJS::ExecState *exec, KJS::JSValue *value, const QByteArray &defaultValue = QByteArray() );
+    QByteArray KJSEMBED_EXPORT extractQByteArray( KJS::ExecState *exec, KJS::JSValue *value, const QByteArray &defaultValue = QByteArray() );
 
     /**
     * Create a new KJS::JSValue with the value of the QString
@@ -244,11 +245,11 @@ namespace KJSEmbed
     * Extracts an integer from an argument list.  If the argument is not present, or is not convertable to an integer
     * the defaultValue is returned.
     */
-    int KDE_EXPORT extractInt( KJS::ExecState *exec, const KJS::List &args, int idx, int defaultValue = 0 );
+    int KJSEMBED_EXPORT extractInt( KJS::ExecState *exec, const KJS::List &args, int idx, int defaultValue = 0 );
     /**
     * Extract an integer from a value.  If the value cannot convert to an integer the defaultValue is returned.
     */
-    int KDE_EXPORT extractInt( KJS::ExecState *exec, KJS::JSValue *value, int defaultValue = 0 );
+    int KJSEMBED_EXPORT extractInt( KJS::ExecState *exec, KJS::JSValue *value, int defaultValue = 0 );
     /**
     * Create a new KJS::JSValue with the value of the integer.
     */
@@ -258,11 +259,11 @@ namespace KJSEmbed
     * Extracts a double from an argument list.  If the argument is not present, or is not convertable to a double
     * the defaultValue is returned.
     */
-    double KDE_EXPORT extractDouble( KJS::ExecState *exec, const KJS::List &args, int idx, double defaultValue = 0 );
+    double KJSEMBED_EXPORT extractDouble( KJS::ExecState *exec, const KJS::List &args, int idx, double defaultValue = 0 );
     /**
     * Extract a double from a value.  If the value cannot convert to a double the defaultValue is returned.
     */
-    double KDE_EXPORT extractDouble( KJS::ExecState *exec, KJS::JSValue *value, double defaultValue = 0 );
+    double KJSEMBED_EXPORT extractDouble( KJS::ExecState *exec, KJS::JSValue *value, double defaultValue = 0 );
     /**
     * Create a new KJS::JSValue with the value of the double.
     */
@@ -272,11 +273,11 @@ namespace KJSEmbed
     * Extracts a float from an argument list.  If the argument is not present, or is not convertable to a float
     * the defaultValue is returned.
     */
-    float KDE_EXPORT extractFloat( KJS::ExecState *exec, const KJS::List &args, int idx, float defaultValue = 0 );
+    float KJSEMBED_EXPORT extractFloat( KJS::ExecState *exec, const KJS::List &args, int idx, float defaultValue = 0 );
     /**
     * Extract a float from a value.  If the value cannot convert to a float the defaultValue is returned.
     */
-    float KDE_EXPORT extractFloat( KJS::ExecState *exec, KJS::JSValue *value, float defaultValue = 0 );
+    float KJSEMBED_EXPORT extractFloat( KJS::ExecState *exec, KJS::JSValue *value, float defaultValue = 0 );
     /**
     * Create a new KJS::JSValue with the value of the float.
     */
@@ -286,7 +287,7 @@ namespace KJSEmbed
     * Extracts a bool from an argument list.  If the argument is not present, or is not convertable to a bool
     * the defaultValue is returned.
     */
-    bool KDE_EXPORT extractBool( KJS::ExecState *exec, const KJS::List &args, int idx, bool defaultValue = false );
+    bool KJSEMBED_EXPORT extractBool( KJS::ExecState *exec, const KJS::List &args, int idx, bool defaultValue = false );
     /**
     * Extract a bool from a value.  If the value cannot convert to a bool the defaultValue is returned.
     */
@@ -300,11 +301,11 @@ namespace KJSEmbed
     * Extracts a QDateTime from an argument list.  If the argument is not present, or is not convertable to a QDateTime
     * the defaultValue is returned.
     */
-    QDateTime KDE_EXPORT extractQDateTime( KJS::ExecState *exec, const KJS::List &args, int idx, const QDateTime &defaultValue = QDateTime() );
+    QDateTime KJSEMBED_EXPORT extractQDateTime( KJS::ExecState *exec, const KJS::List &args, int idx, const QDateTime &defaultValue = QDateTime() );
     /**
     * Extract a bool from a value.  If the value cannot convert to a QDateTime the defaultValue is returned.
     */
-    QDateTime KDE_EXPORT extractQDateTime( KJS::ExecState *exec, KJS::JSValue *value, const QDateTime &defaultValue = QDateTime() );
+    QDateTime KJSEMBED_EXPORT extractQDateTime( KJS::ExecState *exec, KJS::JSValue *value, const QDateTime &defaultValue = QDateTime() );
     /**
     * Create a new KJS::JSValue with the value of the QDateTime.
     */
@@ -314,11 +315,11 @@ namespace KJSEmbed
     * Extracts a QDate from an argument list.  If the argument is not present, or is not convertable to a QDate
     * the defaultValue is returned.
     */
-    QDate KDE_EXPORT extractQDate( KJS::ExecState *exec, const KJS::List &args, int idx, const QDate &defaultValue = QDate() );
+    QDate KJSEMBED_EXPORT extractQDate( KJS::ExecState *exec, const KJS::List &args, int idx, const QDate &defaultValue = QDate() );
     /**
     * Extract a QDate from a value.  If the value cannot convert to a QDate the defaultValue is returned.
     */
-    QDate KDE_EXPORT extractQDate( KJS::ExecState *exec, KJS::JSValue *value, const QDate &defaultValue = QDate() );
+    QDate KJSEMBED_EXPORT extractQDate( KJS::ExecState *exec, KJS::JSValue *value, const QDate &defaultValue = QDate() );
     /**
     * Create a new KJS::JSValue with the value of the QDate.
     */
@@ -328,11 +329,11 @@ namespace KJSEmbed
     * Extracts a QTime from an argument list.  If the argument is not present, or is not convertable to a QTime
     * the defaultValue is returned.
     */
-    QTime KDE_EXPORT extractQTime( KJS::ExecState *exec, const KJS::List &args, int idx, const QTime &defaultValue = QTime() );
+    QTime KJSEMBED_EXPORT extractQTime( KJS::ExecState *exec, const KJS::List &args, int idx, const QTime &defaultValue = QTime() );
     /**
     * Extract a QTime from a value.  If the value cannot convert to a QTime the defaultValue is returned.
     */
-    QTime KDE_EXPORT extractQTime( KJS::ExecState *exec, KJS::JSValue *value, const QTime &defaultValue = QTime() );
+    QTime KJSEMBED_EXPORT extractQTime( KJS::ExecState *exec, KJS::JSValue *value, const QTime &defaultValue = QTime() );
     /**
     * Create a new KJS::JSValue with the value of the QTime.
     */
@@ -342,11 +343,11 @@ namespace KJSEmbed
     * Extracts a QStringList from an argument list. If the argument is not present, or is not convertable to a QStringList
     * the defaultValue is returned.
     */
-    QStringList KDE_EXPORT extractQStringList( KJS::ExecState *exec, const KJS::List &args, int idx, const QStringList &defaultValue = QStringList() );
+    QStringList KJSEMBED_EXPORT extractQStringList( KJS::ExecState *exec, const KJS::List &args, int idx, const QStringList &defaultValue = QStringList() );
     /**
     * Extract a QStringList from a value.  If the value cannot convert to a QStringList the defaultValue is returned.
     */
-    QStringList KDE_EXPORT extractQStringList( KJS::ExecState *exec, KJS::JSValue *value, const QStringList &defaultValue = QStringList() );
+    QStringList KJSEMBED_EXPORT extractQStringList( KJS::ExecState *exec, KJS::JSValue *value, const QStringList &defaultValue = QStringList() );
     /**
     * Create a new KJS::JSValue with the value of the QStringList.
     */

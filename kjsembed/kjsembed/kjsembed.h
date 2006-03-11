@@ -23,6 +23,7 @@
 
 class QObject;
 
+#include <kjsembed/kjsembed/global.h>
 #include <kjs/object.h>
 #include <kdemacros.h>
 
@@ -34,7 +35,7 @@ namespace KJS {
 
 namespace KJSEmbed {
 
-class KDE_EXPORT Engine
+class KJSEMBED_EXPORT Engine
 {
 public:
     enum ExitStatus { Success = 0, Failure = 1 };
