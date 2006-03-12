@@ -30,7 +30,6 @@ public:
     static PrivateData* d( const Instance* instance )
     {
         if ( !d_ptr ) {
-            cleanup_d_ptr();
             d_ptr = new QHash<const Instance*, PrivateData*>();
             qAddPostRoutine( cleanup_d_ptr );
         }
@@ -49,9 +48,7 @@ public:
 private:
     static void cleanup_d_ptr()
     {
-        QHashIterator<const Instance*, PrivateData*> it(*d_ptr);
-		while( it.hasNext() )
-			delete it.value();
+        qDeleteAll( *d_ptr );
 		delete d_ptr;
     }
     static QHash<const Instance*, PrivateData*>* d_ptr;
