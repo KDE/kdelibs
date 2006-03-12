@@ -408,7 +408,7 @@ void KMenu::showCtxMenu(const QPoint &pos)
 
     d->highlightedAction = activeAction();
 
-    if (d->highlightedAction)
+    if (!d->highlightedAction)
     {
         KMenuSetActionData(this,0,0);
         return;
