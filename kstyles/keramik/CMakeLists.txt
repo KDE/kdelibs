@@ -10,7 +10,11 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES
 #	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\
 #	./genembed $$pics > pixmaps.keramik
 
-file(GLOB keramikPics "${CMAKE_CURRENT_SOURCE_DIR}/pics/*.png")
+FILE(GLOB keramikPics "${CMAKE_CURRENT_SOURCE_DIR}/pics/*.png")
+FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt "" )
+FOREACH(pics ${keramikPics})
+  FILE(APPEND  ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt "${pics}\n" )
+ENDFOREACH(pics ${keramikPics})
 
 if (KDE4_NEED_WRAPPER_SCRIPTS)
    set(GENEMBED_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genembed.sh)
@@ -19,7 +23,8 @@ else (KDE4_NEED_WRAPPER_SCRIPTS)
 endif (KDE4_NEED_WRAPPER_SCRIPTS)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h
-  COMMAND ${GENEMBED_EXECUTABLE} ARGS ${keramikPics} > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
+  COMMAND ${GENEMBED_EXECUTABLE}
+  ARGS --file ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
   DEPENDS genembed ${keramikPics}
 )
 

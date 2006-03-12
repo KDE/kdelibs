@@ -25,6 +25,8 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QCoreApplication>
 #include <QColor>
+#include <QDataStream>
+#include <QFile>
 #include <QFileInfo>
 #include <QImage>
 #include <QMap>
@@ -124,19 +126,33 @@ int main(int argc, char** argv)
 	QCoreApplication qapp(argc, argv);
 	QVector<KeramikEmbedImage> images;
 
+	QStringList imageList;
+	if (argc == 3 && (strcmp(argv[1], "--file")==0)) {
+		QFile f( argv[2] );
+		if (!f.open(QIODevice::ReadOnly))
+			return 0;	
+		QByteArray ba = f.readLine();
+		while (!ba.isEmpty()) {
+			imageList += ba.trimmed();
+			ba = f.readLine();
+		}
+		f.close();
+	} else {
+		for (int c = 1; c<argc; c++)
+			imageList += argv[c];
+	}
+
 	cout<<"#include <QHash>\n\n";
 	cout<<"#include \"keramikimage.h\"\n\n";
 
 	QMap<QString, int> assignID;
 	int nextID = 0;
 
-	for (int c = 1; c<argc; c++)
+	for(QStringList::iterator it = imageList.begin(); it != imageList.end(); it++)
 	{
+		QImage input((*it));
 
-		QImage input(argv[c]);
-
-
-		QFileInfo fi(argv[c]);
+		QFileInfo fi((*it));
 		QString s = fi.baseName();
 
 		KeramikEmbedImage image;
