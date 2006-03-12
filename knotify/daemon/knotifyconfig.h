@@ -38,7 +38,7 @@ class KNotifyConfig
 		
 		QString text;
 		QPixmap pix;
-		int winId;
+		WId winId;
 		QStringList actions;
 		QString appname;
 

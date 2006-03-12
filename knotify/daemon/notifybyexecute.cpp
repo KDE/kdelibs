@@ -52,7 +52,7 @@ void NotifyByExecute::notify( int id, KNotifyConfig * config )
 		subst.insert( 'e', config->eventid );
 		subst.insert( 'a', config->appname );
 		subst.insert( 's', config->text );
-		subst.insert( 'w', QString::number( config->winId ));
+		subst.insert( 'w', QString::number( (int)config->winId ));
 		subst.insert( 'i', QString::number( id ));
 		QString execLine = KMacroExpander::expandMacrosShellQuote( command, subst );
 		if ( execLine.isEmpty() )

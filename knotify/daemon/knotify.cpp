@@ -107,7 +107,7 @@ int KNotify::event( const QString & event, const QString & appname, const Contex
 	config.text=text;
 	config.actions=actions;
 	config.pix=pixmap;
-	config.winId=winId;
+	config.winId=(WId)winId;
 	
 	Event e;
 	e.id = m_counter;
