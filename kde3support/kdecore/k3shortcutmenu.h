@@ -53,6 +53,8 @@ class KDE3SUPPORT_EXPORT K3ShortcutMenu : public Q3PopupMenu
 	KAccelActions* m_pActions;
 	K3KeySequence m_seq;
 	IndexToK3KeySequence m_seqs;
+
+    Q_DISABLE_COPY( K3ShortcutMenu )
 };
 
 #endif // __K3ShortcutMenu_H

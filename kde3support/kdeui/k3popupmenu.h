@@ -228,6 +228,7 @@ protected Q_SLOTS:
 private:
     class K3PopupMenuPrivate;
     K3PopupMenuPrivate *d;
+    Q_DISABLE_COPY( K3PopupMenu )
 };
 
 #endif
