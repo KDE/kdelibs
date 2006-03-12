@@ -1393,7 +1393,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
         // Re-register form elements with currently active form, step 1 will have removed them
         if (form)
         {
-            HTMLGenericFormElementImpl *e = static_cast<HTMLGenericFormElementImpl *>(currNode);
+            HTMLGenericFormElementImpl *e = dynamic_cast<HTMLGenericFormElementImpl *>(currNode);
             if (e)
                 form->registerFormElement(e);
         }
