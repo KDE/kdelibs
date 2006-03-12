@@ -178,6 +178,7 @@ namespace KJS {
     virtual bool implementsCall() const { return true; }
     virtual bool toBoolean(ExecState *) const;
     virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
+    virtual ReferenceList propList(ExecState *exec, bool recursive);
     enum { Item, NamedItem, Tags };
     Value getNamedItems(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }

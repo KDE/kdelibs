@@ -589,8 +589,17 @@ bool DOMNodeList::hasProperty(ExecState *exec, const Identifier &p) const
 {
   if (p == lengthPropertyName)
     return true;
-  // ## missing: accept p if array index or item id...
-  return ObjectImp::hasProperty(exec, p);
+
+  if (ObjectImp::hasProperty(exec, p))
+    return true;
+
+  bool ok;
+  unsigned long pos = p.toULong(&ok);
+  if (ok && pos < list.length())
+    return true;
+
+  // ## missing: accept p if item id...
+  return false;
 }
 
 Value DOMNodeList::tryGet(ExecState *exec, const Identifier &p) const
@@ -631,6 +640,22 @@ Value DOMNodeList::tryGet(ExecState *exec, const Identifier &p) const
   }
 
   return result;
+}
+
+ReferenceList DOMNodeList::propList(ExecState *exec, bool recursive)
+{
+  ReferenceList properties = ObjectImp::propList(exec,recursive);
+
+  for (unsigned i = 0; i < list.length(); ++i) {
+    if (!ObjectImp::hasProperty(exec,Identifier::from(i))) {
+      properties.append(Reference(this, i));
+    }
+  }
+
+  if (!ObjectImp::hasProperty(exec, lengthPropertyName))
+    properties.append(Reference(this, lengthPropertyName));
+
+  return properties;
 }
 
 // Need to support both get and call, so that list[0] and list(0) work.

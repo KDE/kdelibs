@@ -81,6 +81,8 @@ namespace KJS {
     virtual Value call(ExecState *exec, Object &thisObj, const List&args);
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     virtual bool implementsCall() const { return true; }
+    virtual ReferenceList propList(ExecState *exec, bool recursive);
+
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState *) const { return true; }

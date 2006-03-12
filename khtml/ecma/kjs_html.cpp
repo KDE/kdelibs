@@ -3133,8 +3133,8 @@ bool KJS::HTMLCollection::toBoolean(ExecState *) const {
     return !hidden;
 }
 
-// We have to implement hasProperty since we don't use a hashtable for 'selectedIndex' and 'length'
-// ## this breaks "for (..in..)" though.
+// We have to implement hasProperty since we don't use a hashtable for 'selectedIndex' and 'length',
+// and for indices in "for (..in..)"
 bool KJS::HTMLCollection::hasProperty(ExecState *exec, const Identifier &p) const
 {
   if (p == lengthPropertyName)
@@ -3142,7 +3142,29 @@ bool KJS::HTMLCollection::hasProperty(ExecState *exec, const Identifier &p) cons
   if ( collection.handle()->getType() == HTMLCollectionImpl::SELECT_OPTIONS &&
        ( p == "selectedIndex" || p == "value" ) )
     return true;
+
+  bool ok;
+  unsigned long pos = p.toULong(&ok);
+  if (ok && pos < collection.length())
+    return true;
+
   return DOMObject::hasProperty(exec, p);
+}
+
+ReferenceList KJS::HTMLCollection::propList(ExecState *exec, bool recursive)
+{
+  ReferenceList properties = ObjectImp::propList(exec,recursive);
+
+  for (unsigned i = 0; i < collection.length(); ++i) {
+    if (!ObjectImp::hasProperty(exec,Identifier::from(i))) {
+      properties.append(Reference(this, i));
+    }
+  }
+
+  if (!ObjectImp::hasProperty(exec, lengthPropertyName))
+    properties.append(Reference(this, lengthPropertyName));
+
+  return properties;
 }
 
 Value KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propertyName) const
