@@ -212,7 +212,7 @@ int main(int argc, char **argv)
     QString type = args->getOption("path");
     if (!type.isEmpty())
     {
-        printResult(KGlobal::dirs()->resourceDirs(type.toLatin1()).join(QString(QDir::separator())));
+        printResult(KGlobal::dirs()->resourceDirs(type.toLatin1()).join(QString(KPATH_SEPARATOR)));
         return 0;
     }
 
