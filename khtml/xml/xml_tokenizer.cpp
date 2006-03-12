@@ -157,7 +157,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
             return false;
     }
 
-    if (newElement->id() == ID_SCRIPT)
+    if (newElement->id() == makeId(xhtmlNamespace, ID_SCRIPT))
         static_cast<HTMLScriptElementImpl *>(newElement)->setCreatedByParser(true);
 
     //this is tricky. in general the node doesn't have to attach to the one it's in. as far
@@ -491,7 +491,7 @@ void XMLTokenizer::addScripts(NodeImpl *n)
     // Recursively go through the entire document tree, looking for html <script> tags. For each of these
     // that is found, add it to the m_scripts list from which they will be executed
 
-    if (n->id() == ID_SCRIPT) {
+    if (n->id() == makeId(xhtmlNamespace, ID_SCRIPT)) {
         m_scripts.append(static_cast<HTMLScriptElementImpl*>(n));
     }
 
