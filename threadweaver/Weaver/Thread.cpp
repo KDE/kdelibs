@@ -177,3 +177,6 @@ namespace ThreadWeaver {
 }
 
 #include "Thread.moc"
+#ifdef USE_CMAKE
+#include "Thread_moc.cpp"
+#endif

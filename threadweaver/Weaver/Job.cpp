@@ -154,3 +154,6 @@ namespace ThreadWeaver {
 }
 
 #include "Job.moc"
+#ifdef USE_CMAKE
+#include "Job_moc.cpp"
+#endif
