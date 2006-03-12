@@ -192,7 +192,7 @@ public:
 	 * KGlobalSettings::inactiveTitleColor() and KGlobalSettings::inactiveTextColor() instead.
 	 */
 	static void getCaptionColors( const QPalette &pal, QColor &activeBG, QColor &activeFG,
-	                              QColor &inactiveBG, QColor &inactiveFG ) KDE_DEPRECATED;
+	                              QColor &inactiveBG, QColor &inactiveFG );
 
 public Q_SLOTS:
 	/**

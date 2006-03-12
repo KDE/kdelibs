@@ -63,7 +63,7 @@ public:
     /**
      * @deprecated This is equivalent with "new K3ColorDrag(color, dragsource)".
      */
-    static K3ColorDrag* makeDrag( const QColor&,QWidget *dragsource) KDE_DEPRECATED;
+    static K3ColorDrag* makeDrag( const QColor&,QWidget *dragsource);
 
 private:
      QColor m_color; // unused

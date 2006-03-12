@@ -133,62 +133,62 @@ public:
     /**
      * Inserts a title item with no icon.
      */
-    int insertTitle(const QString &text, int id=-1, int index=-1) KDE_DEPRECATED;
+    int insertTitle(const QString &text, int id=-1, int index=-1);
     /**
      * Inserts a title item with the given icon and title.
      */
     int insertTitle(const QPixmap &icon, const QString &text, int id=-1,
-                    int index=-1) KDE_DEPRECATED;
+                    int index=-1);
     /**
      * Changes the title of the item at the specified id. If a icon was
      * previously set it is cleared.
      */
-    void changeTitle(int id, const QString &text) KDE_DEPRECATED;
+    void changeTitle(int id, const QString &text);
     /**
      * Changes the title and icon of the title item at the specified id.
      */
-    void changeTitle(int id, const QPixmap &icon, const QString &text) KDE_DEPRECATED;
+    void changeTitle(int id, const QPixmap &icon, const QString &text);
     /**
      * Returns the title of the title item at the specified id. The default
      * id of -1 is for backwards compatibility only, you should always specify
      * the id.
      */
-    QString title(int id=-1) const KDE_DEPRECATED;
+    QString title(int id=-1) const;
     /**
      * Returns the icon of the title item at the specified id.
      */
-    QPixmap titlePixmap(int id) const KDE_DEPRECATED;
+    QPixmap titlePixmap(int id) const;
 
     /**
      * @deprecated
      * Obsolete method provided for backwards compatibility only. Use the
      * normal constructor and insertTitle instead.
      */
-    K3PopupMenu(const QString &title, QWidget *parent=0) KDE_DEPRECATED;
+    K3PopupMenu(const QString &title, QWidget *parent=0);
 
     /**
      * @deprecated
      * Obsolete method provided for backwards compatibility only. Use
      * insertTitle and changeTitle instead.
      */
-    void setTitle(const QString &title) KDE_DEPRECATED;
+    void setTitle(const QString &title);
 
     /**
      * returns the ID of the menuitem associated with the current context menu
      */
-    static int contextMenuFocusItem() KDE_DEPRECATED;
+    static int contextMenuFocusItem();
 
     /**
      * Reimplemented for internal purposes
      */
-    virtual void activateItemAt(int index) KDE_DEPRECATED;
+    virtual void activateItemAt(int index);
     // END compat methods
 
     /**
      * Helper for porting things. Returns ID of action, or -1 if passed null.
      * ### KDE4: remove once we've cleaned up stuff
      */
-    static int KDE_DEPRECATED actionId(QAction* action)
+    static int actionId(QAction* action)
     {
         if (!action)
             return -1;

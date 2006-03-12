@@ -79,14 +79,14 @@ public:
   /**
    * @deprecated Is equivalent with "new K3URLDrag(urls, dragSource, name)".
    */
-  static K3URLDrag * newDrag( const KUrl::List &urls, QWidget* dragSource = 0 ) KDE_DEPRECATED;
+  static K3URLDrag * newDrag( const KUrl::List &urls, QWidget* dragSource = 0 );
 
   /**
    * @deprecated Is equivalent with "new K3URLDrag(urls, metaData, dragSource, name)".
    */
   static K3URLDrag * newDrag( const KUrl::List &urls,
                              const QMap<QString, QString>& metaData,
-                             QWidget* dragSource = 0 ) KDE_DEPRECATED;
+                             QWidget* dragSource = 0 );
 
   /**
    * Meta-data to associate with those URLs.
@@ -148,7 +148,7 @@ protected:
    * @deprecated Use a K3URLDrag constructor with a KUrl::List
    */
   K3URLDrag( const Q3StrList & urls, const QMap<QString,QString>& metaData,
-            QWidget * dragSource ) KDE_DEPRECATED;
+            QWidget * dragSource );
 
 private:
   void init(const KUrl::List &urls);
