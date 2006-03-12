@@ -22,39 +22,29 @@
 #ifndef KJSEMBED_GLOBAL_H
 #define KJSEMBED_GLOBAL_H
 
-#if defined(_WIN32) || defined(_WIN64)
-#ifdef KJSEMBED_DLL
-#  ifdef KJSEMBED_MAKE_DLL
-#     define KJSEMBED_EXPORT __declspec(dllexport)
-#  else
-#     define KJSEMBED_EXPORT __declspec(dllimport)
-#  endif // KJSEMBED_MAKE_DLL
-# else
-#  define KJSEMBED_EXPORT
-# endif // KJSEMBED_DLL
-#elif defined(MAKE_KSJEMBED_LIB)
-#  define KJSEMBED_EXPORT __declspec(dllexport)
+#include <qglobal.h>	// we need some macros
+#if (defined(KJSEMBED_DLL) && defined(KJSEMBED_MAKE_DLL)) || defined(MAKE_KJSEMBED_LIB)
+# define KJSEMBED_EXPORT Q_DECL_EXPORT
 #else
-#  define KJSEMBED_EXPORT 
-#endif // WIN32
+# define KJSEMBED_EXPORT Q_DECL_IMPORT
+#endif
 
-#if !defined(_WIN32) && !defined(_WIN64)
+#if !defined(Q_OS_WIN)
 #include <stdlib.h>
 KJSEMBED_EXPORT void RedirectIOToConsole();
 #endif
 
-#if !defined(_WIN32) && !defined(_WIN64)
+#if !defined(Q_OS_WIN)
 #include <ctype.h>
 #include <stdlib.h>
 char *itoa(int num, char *str, int radix = 10);
 #endif
 
 #include <QTextStream>
-#include <kdemacros.h>
 namespace KJSEmbed {
-KDE_EXPORT QTextStream *conin();
-KDE_EXPORT QTextStream *conout();
-KDE_EXPORT QTextStream *conerr();
+KJSEMBED_EXPORT QTextStream *conin();
+KJSEMBED_EXPORT QTextStream *conout();
+KJSEMBED_EXPORT QTextStream *conerr();
 }
 
 #ifndef QT_ONLY
