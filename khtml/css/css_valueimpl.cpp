@@ -623,12 +623,7 @@ double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, Q3P
     case CSSPrimitiveValue::CSS_EXS:
 	{
         QFontMetrics fm = style->fontMetrics();
-#ifdef APPLE_CHANGES
         factor = fm.xHeight();
-#else
-        QRect b = fm.boundingRect('x');
-        factor = b.height();
-#endif
         break;
 	}
     case CSSPrimitiveValue::CSS_PX:
