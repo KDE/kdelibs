@@ -890,16 +890,17 @@ RegressionTest::~RegressionTest()
     delete m_paintBuffer;
 }
 
-bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure)
+bool RegressionTest::runTests(QString relPath, bool mustExist, QStringList failureFileList)
 {
     m_currentOutput.clear();
 
-    if (!QFile(m_baseDir + "/tests/"+relPath).exists()) {
+    QString fullPath = m_baseDir + "/tests/" + relPath;
+
+    if (!QFile(fullPath).exists()) {
 	fprintf(stderr,"%s: No such file or directory\n",qPrintable(relPath));
 	return false;
     }
 
-    QString fullPath = m_baseDir + "/tests/"+relPath;
     QFileInfo info(fullPath);
 
     if (!info.exists() && mustExist) {
@@ -913,8 +914,8 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
     }
 
     if (info.isDir()) {
-        QStringList ignoreFiles = readListFile(  m_baseDir + "/tests/"+relPath+"/ignore" );
-        QStringList failureFiles = readListFile(  m_baseDir + "/tests/"+relPath+"/KNOWN_FAILURES" );
+        QStringList ignoreFiles = readListFile( fullPath + "/ignore" );
+        QStringList failureFiles = readListFile( fullPath + "/KNOWN_FAILURES" );
 
 	// Run each test in this directory, recusively
 	QDir sourceDir(m_baseDir + "/tests/"+relPath);
@@ -924,16 +925,8 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 
 	    if (filename == "." || filename == ".." ||  ignoreFiles.contains(filename) )
                 continue;
-            int failure_type = NoFailure;
-            if ( failureFiles.contains( filename ) )
-                failure_type |= AllFailure;
-            if ( failureFiles.contains ( filename + "-render" ) )
-                failure_type |= RenderFailure;
-            if ( failureFiles.contains ( filename + "-dump.png" ) )
-                failure_type |= PaintFailure;
-            if ( failureFiles.contains ( filename + "-dom" ) )
-                failure_type |= DomFailure;
-            runTests(relFilename, false, failure_type );
+
+            runTests(relFilename, false, failureFiles);
 	}
     }
     else if (info.isFile()) {
@@ -947,6 +940,21 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 	m_currentBase = m_baseDir + "/tests/"+relativeDir;
 	m_currentCategory = relativeDir;
 	m_currentTest = filename;
+
+    if (failureFileList.isEmpty() && QFile(info.path() + "/KNOWN_FAILURES").exists()) {
+        failureFileList = readListFile( info.path() + "/KNOWN_FAILURES" );
+    }
+
+    int known_failure = NoFailure;
+    if ( failureFileList.contains( filename ) )
+        known_failure |= AllFailure;
+    if ( failureFileList.contains ( filename + "-render" ) )
+        known_failure |= RenderFailure;
+    if ( failureFileList.contains ( filename + "-dump.png" ) )
+        known_failure |= PaintFailure;
+    if ( failureFileList.contains ( filename + "-dom" ) )
+        known_failure |= DomFailure;
+
         m_known_failures = known_failure;
 	if ( filename.endsWith(".html") || filename.endsWith( ".htm" ) || filename.endsWith( ".xhtml" ) || filename.endsWith( ".xml" ) ) {
             if ( relPath.startsWith( "domts/" ) && !m_runJS )

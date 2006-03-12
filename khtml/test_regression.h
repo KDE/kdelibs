@@ -143,7 +143,7 @@ public:
     CheckResult checkOutput(const QString& againstFilename);
     CheckResult checkPaintdump( const QString& againstFilename);
     enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4, PaintFailure = 8, JSFailure = 16};
-    bool runTests(QString relPath = QString(), bool mustExist = false, int known_failure = NoFailure);
+    bool runTests(QString relPath = QString(), bool mustExist = false, QStringList failureFileList = QStringList());
     bool reportResult( bool passed, const QString & description = QString() );
     bool reportResult(CheckResult result, const QString & description = QString() );
     void createMissingDirs(const QString &path);
