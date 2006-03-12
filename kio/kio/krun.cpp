@@ -376,7 +376,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
 
   // Check if we need "tempexec" (kioexec in fact)
   appHasTempFileOption = tempFiles && _service.property("X-KDE-HasTempFileOption").toBool();
-  if( tempFiles && !appHasTempFileOption ) {
+  if( tempFiles && !appHasTempFileOption && _urls.size() ) {
     result << "kioexec" << "--tempfiles" << exec;
     result += _urls.toStringList();
     if (has_shell)
