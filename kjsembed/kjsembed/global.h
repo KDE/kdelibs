@@ -35,7 +35,7 @@
 #elif defined(MAKE_KSJEMBED_LIB)
 #  define KJSEMBED_EXPORT __declspec(dllexport)
 #else
-#  define KJSEMBED_EXPORT __declspec(dllimport)
+#  define KJSEMBED_EXPORT 
 #endif // WIN32
 
 #if !defined(_WIN32) && !defined(_WIN64)
