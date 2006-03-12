@@ -10,6 +10,7 @@
 #include <kaboutdata.h>
 #include <config.h>
 #include <kapplication.h>
+#include <QDir>
 
 static const char *description = I18N_NOOP("A little program to output installation paths");
 
@@ -107,8 +108,10 @@ void printResult(const QString &s)
 {
     if (s.isEmpty())
         printf("\n");
-    else
-        printf("%s\n", s.toLocal8Bit().data());
+	else {
+		QString path = QDir::convertSeparators( s );
+        printf("%s\n", path.toLocal8Bit().constData());
+	}
 }
 
 int main(int argc, char **argv)
@@ -209,7 +212,7 @@ int main(int argc, char **argv)
     QString type = args->getOption("path");
     if (!type.isEmpty())
     {
-        printResult(KGlobal::dirs()->resourceDirs(type.toLatin1()).join(":"));
+        printResult(KGlobal::dirs()->resourceDirs(type.toLatin1()).join(QString(QDir::separator())));
         return 0;
     }
 
