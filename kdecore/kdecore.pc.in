@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: kdecore
+Description: KDE Core Library
+Version: @VERSION@
+
+Requires: QtCore QtGui
+Libs: -L${libdir} -lkdecore
+Cflags: -I${includedir}

@@ -403,3 +403,7 @@ if test $ac_cv_struct_tm_gmtoff = yes; then
   AC_DEFINE(HAVE_TM_GMTOFF, 1, [Define if you have a tm_gmtoff member in struct tm])
 fi
 
+dnl don't remove
+dnl these are our pkg-config files
+dnl AC_OUTPUT(kdefx/kdefx.pc)
+dnl AC_OUTPUT(kdeui/kdeui.pc)

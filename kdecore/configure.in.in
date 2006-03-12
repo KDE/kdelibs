@@ -167,7 +167,10 @@ AC_TRY_LINK(dnl
 
 AC_CHECK_HEADERS(sys/mount.h)  
 
+dnl don't remove
+dnl AC_OUTPUT(kdecore/kdecore.pc)
 dnl AC_OUTPUT(kdecore/kde-config.cpp)
+
 
 ###############################################################################
 # BEGIN PKG-CONFIG AND AGG2 CHECK
