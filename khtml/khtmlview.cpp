@@ -658,10 +658,10 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
         QRect g = w->geometry();
-        if ( (g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
-             (g.right() <= pt.x()) || (g.left() > pt.x()+ew) )
+        if ( !rw->isFrame() && ((g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
+                                (g.right() <= pt.x()) || (g.left() > pt.x()+ew) ))
             continue;
-        RenderLayer* rl = rw->enclosingStackingContext();
+        RenderLayer* rl = rw->needsMask() ? rw->enclosingStackingContext() : 0;
         QRegion mask = rl ? rl->getMask() : QRegion();
         if (!mask.isNull()) {
             QPoint o(0,0);
@@ -670,7 +670,10 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             mask = mask.intersect( QRect(g.x(),g.y(),g.width(),g.height()) );
             cr -= mask;
         } else {
-            cr -= QRect(g.x(), g.y(), g.width(), g.height());
+            int x, y;
+            rw->absolutePosition(x,y);
+            contentsToViewport(x,y,x,y);
+            cr -= QRect(x,y,rw->width(),rw->height());
         }
     }
 
@@ -3509,7 +3512,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h, bool asap)
     d->updateRegion = d->updateRegion.unite(QRect(x,y,w,h));
 
     if (asap && !parsing)
-        unscheduleRelayout();
+        unscheduleRepaint();
 
     if ( !d->repaintTimerId )
         d->repaintTimerId = startTimer( time );
