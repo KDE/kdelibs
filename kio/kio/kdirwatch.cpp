@@ -878,7 +878,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 {
   Entry* e = entry(_path);
   if (!e) {
-    kdWarning(7001) << "KDirWatch::removeDir can't handle '" << _path << "'" << endl;
+    kdDebug(7001) << "KDirWatchPrivate::removeEntry can't handle '" << _path << "'" << endl;
     return;
   }
 
