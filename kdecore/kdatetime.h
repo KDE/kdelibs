@@ -1264,7 +1264,9 @@ class KDECORE_EXPORT KDateTime
     KDateTimePrivate* const d;
 };
 
+/** @copydoc  KDateTime::operator<< */
 QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
+/** @copydoc  KDateTime::operator>> */
 QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
 
 #endif
