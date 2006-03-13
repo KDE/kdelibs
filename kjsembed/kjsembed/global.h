@@ -26,7 +26,7 @@
 #if (defined(KJSEMBED_DLL) && defined(KJSEMBED_MAKE_DLL)) || defined(MAKE_KJSEMBED_LIB)
 # define KJSEMBED_EXPORT Q_DECL_EXPORT
 #else
-# define KJSEMBED_EXPORT Q_DECL_IMPORT
+# define KJSEMBED_EXPORT Q_DECL_EXPORT
 #endif
 
 #if !defined(Q_OS_WIN)
