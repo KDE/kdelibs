@@ -213,7 +213,16 @@ KDEHW::DeviceList KDEHW::DeviceManager::findDevicesFromQuery( const QString &par
                                                               const Capability::Type &capability,
                                                               const QString &predicate )
 {
-    return findDevicesFromQuery( parentUdi, capability, Predicate::fromString( predicate ) );
+    Predicate p = Predicate::fromString( predicate );
+    
+    if ( p.isValid() )
+    {
+        return findDevicesFromQuery( parentUdi, capability, p );
+    }
+    else
+    {
+        return DeviceList();
+    }
 }
 
 KDEHW::DeviceList KDEHW::DeviceManager::findDevicesFromQuery( const QString &parentUdi,

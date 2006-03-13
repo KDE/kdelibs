@@ -405,7 +405,13 @@ void KdeHwTest::testPredicate()
                                          "[Processor.canThrottle==true AND Processor.number==1]" );
     QCOMPARE( list.size(), 1 );
     QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
+    
+    capability = KDEHW::Capability::Processor;
+    list = manager.findDevicesFromQuery( parentUdi, capability );
+    QCOMPARE( list.size(), 1 );
+    QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
 
+    capability = KDEHW::Capability::Unknown;
     list = manager.findDevicesFromQuery( parentUdi, capability,
                                          "blup" );
     QCOMPARE( list.size(), 0 );
