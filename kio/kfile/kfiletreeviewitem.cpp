@@ -55,6 +55,8 @@ KFileTreeViewItem::~KFileTreeViewItem()
 {
     if ( m_kfileitem )
         m_kfileitem->removeExtraData( m_branch );
+    delete m_kfileitem;
+    m_kfileitem = 0L;			
 }
 
 bool KFileTreeViewItem::alreadyListed() const
