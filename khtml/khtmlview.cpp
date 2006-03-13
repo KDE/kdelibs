@@ -770,10 +770,14 @@ void KHTMLView::layout()
     if( m_part && m_part->xmlDocImpl() ) {
         DOM::DocumentImpl *document = m_part->xmlDocImpl();
 
-        khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>(document->renderer());
-        if ( !root ) return;
+        khtml::RenderCanvas* canvas = static_cast<khtml::RenderCanvas *>(document->renderer());
+        if ( !canvas ) return;
 
         d->layoutSchedulingEnabled=false;
+
+        // the reference object for the overflow property on canvas 
+        RenderObject * ref = 0;
+        RenderObject* root = document->documentElement() ? document->documentElement()->renderer() : 0;
 
         if (document->isHTMLDocument()) {
              NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
@@ -786,8 +790,25 @@ void KHTMLView::layout()
 //                      d->tooltip = 0;
 //                  }
              }
-             else if (!d->tooltip)
-                 d->tooltip = new KHTMLToolTip( this, d );
+             else {
+                 if (!d->tooltip)
+                     d->tooltip = new KHTMLToolTip( this, d );
+                 // only apply body's overflow to canvas if root as a visible overflow
+                 if (root) 
+                     ref = (!body || root->style()->hidesOverflow()) ? root : body->renderer();
+             }
+        } else {
+            ref = root;
+        }
+        
+        if (ref) {
+            if( ref->style()->overflow() == OHIDDEN ) {
+                if (d->vmode == Auto) QScrollView::setVScrollBarMode(AlwaysOff);
+                if (d->hmode == Auto) QScrollView::setHScrollBarMode(AlwaysOff);
+            } else {
+                if (QScrollView::vScrollBarMode() == AlwaysOff) QScrollView::setVScrollBarMode(d->vmode);
+                if (QScrollView::hScrollBarMode() == AlwaysOff) QScrollView::setHScrollBarMode(d->hmode);
+            }            
         }
         d->needsFullRepaint = d->firstRelayout;
         if (_height !=  visibleHeight() || _width != visibleWidth()) {;
@@ -797,7 +818,7 @@ void KHTMLView::layout()
         }
         //QTime qt;
         //qt.start();
-        root->layout();
+        canvas->layout();
 
         emit finishedLayout();
         if (d->firstRelayout) {
