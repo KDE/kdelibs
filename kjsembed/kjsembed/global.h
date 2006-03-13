@@ -31,7 +31,7 @@
 #  define KJSEMBED_EXPORT Q_DECL_IMPORT
 # endif
 #else
-# define KJSEMBED_EXPORT 
+# define KJSEMBED_EXPORT Q_DECL_EXPORT
 #endif
 
 #if !defined(Q_OS_WIN)
