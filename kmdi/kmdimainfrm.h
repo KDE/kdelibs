@@ -387,7 +387,7 @@ public:
 	 * If you don't want to know about the inner structure of the KMdi system, you can use
 	 * this iterator to handle with the MDI view list in a more abstract way.
 	 * The iterator hides what special data structure is used in KMdi.
-	 * The caller must deleted the iterator once he does not need it anymore.	
+	 * The caller must delete the iterator once he does not need it anymore.	
 	 */
 	// FIXME And what exactly are we supposed to fix? -mattr
 	KMdiIterator<KMdiChildView*>* createIterator()
