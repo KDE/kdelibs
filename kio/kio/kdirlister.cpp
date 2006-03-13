@@ -34,6 +34,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kstaticdeleter.h>
+#include <kprotocolinfo.h>
 
 #include "kdirlister_p.h"
 
@@ -85,7 +86,7 @@ KDirListerCache::~KDirListerCache()
 
 // setting _reload to true will emit the old files and
 // call updateDirectory
-void KDirListerCache::listDir( KDirLister* lister, const KUrl& _u,
+bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
                                bool _keep, bool _reload )
 {
   // like this we don't have to worry about trailing slashes any further
@@ -93,6 +94,9 @@ void KDirListerCache::listDir( KDirLister* lister, const KUrl& _u,
   _url.cleanPath(); // kill consecutive slashes
   _url.adjustPath(-1);
   QString urlStr = _url.url();
+
+  if ( !validURL( lister, _url ) )
+    return false;
 
 #ifdef DEBUG_CACHE
   printDebug();
@@ -271,6 +275,33 @@ void KDirListerCache::listDir( KDirLister* lister, const KUrl& _u,
   // automatic updating of directories
   if ( lister->d->autoUpdate )
     itemU->incAutoUpdate();
+
+  return true;
+}
+
+bool KDirListerCache::validURL( const KDirLister *lister, const KUrl& url ) const
+{
+  if ( !url.isValid() )
+  {
+    if ( lister->d->autoErrorHandling )
+    {
+      QString tmp = i18n("Malformed URL\n%1").arg( url.prettyURL() );
+      KMessageBox::error( lister->d->errorParent, tmp );
+    }
+    return false;
+  }
+
+  if ( !KProtocolInfo::supportsListing( url ) )
+  {
+    if ( lister->d->autoErrorHandling )
+    {
+      QString tmp = i18n("URL cannot be listed\n%1").arg( url.prettyURL() );
+      KMessageBox::error( lister->d->errorParent, tmp );
+    }
+    return false;
+  }
+
+  return true;
 }
 
 void KDirListerCache::stop( KDirLister *lister )
@@ -1033,15 +1064,15 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
   KUrl oldUrl = job->url();  // here we really need the old url!
   KUrl newUrl = url;
 
-  if ( oldUrl == newUrl ) 
-  {
-    kDebug(7004) << k_funcinfo << "New redirection url same as old, giving up." << endl;
-    killJob(job);
-    return;
-  }
   // strip trailing slashes
   oldUrl.adjustPath(-1);
   newUrl.adjustPath(-1);
+
+  if ( oldUrl == newUrl ) 
+  {
+    kDebug(7004) << k_funcinfo << "New redirection url same as old, giving up." << endl;
+    return;
+  }
 
   kDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << newUrl.prettyURL() << endl;
 
@@ -1816,9 +1847,6 @@ KDirLister::~KDirLister()
 
 bool KDirLister::openURL( const KUrl& _url, bool _keep, bool _reload )
 {
-  if ( !validURL( _url ) )
-    return false;
-
   kDebug(7003) << k_funcinfo << _url.prettyURL()
                 << " keep=" << _keep << " reload=" << _reload << endl;
 
@@ -1828,9 +1856,7 @@ bool KDirLister::openURL( const KUrl& _url, bool _keep, bool _reload )
 
   d->changes = NONE;
 
-  s_pCache->listDir( this, _url, _keep, _reload );
-
-  return true;
+  return s_pCache->listDir( this, _url, _keep, _reload );
 }
 
 void KDirLister::stop()
@@ -2166,24 +2192,6 @@ bool KDirLister::doMimeExcludeFilter( const QString& mime, const QStringList& fi
   for ( ; it != filters.end(); ++it )
     if ( (*it) == mime )
       return false;
-
-  return true;
-}
-
-
-bool KDirLister::validURL( const KUrl& _url ) const
-{
-  if ( !_url.isValid() )
-  {
-    if ( d->autoErrorHandling )
-    {
-      QString tmp = i18n("Malformed URL\n%1").arg( _url.prettyURL() );
-      KMessageBox::error( d->errorParent, tmp );
-    }
-    return false;
-  }
-
-  // TODO: verify that this is really a directory?
 
   return true;
 }

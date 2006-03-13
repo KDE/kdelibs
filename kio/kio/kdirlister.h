@@ -583,13 +583,6 @@ protected:
    */
   bool doMimeExcludeFilter( const QString& mimeExclude, const QStringList& filters ) const;
 
-  /**
-   * Checks if an url is malformed or not and displays an error message
-   * if it is and autoErrorHandling is set to true.
-   * @return true if url is valid, otherwise false.
-   */
-  virtual bool validURL( const KUrl& ) const;
-
   /** Reimplement to customize error handling */
   virtual void handleError( KIO::Job * );
 
