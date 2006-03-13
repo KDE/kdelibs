@@ -1848,7 +1848,7 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                 const KTimeZones::ZoneMap z = zones->zones();
                 for (KTimeZones::ZoneMap::ConstIterator it = z.begin();  it != z.end();  ++it)
                 {
-                    QList<int> offsets = it.value()->UtcOffsets();
+                    QList<int> offsets = it.value()->utcOffsets();
                     if ((offsets.isEmpty() || offsets.contains(utcOffset))
                     &&  it.value()->offsetAtUtc(dtUTC) == utcOffset)
                     {

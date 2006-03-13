@@ -352,11 +352,11 @@ QByteArray KTimeZone::abbreviation(const QDateTime &utcDateTime) const
     return d->data->abbreviation(utcDateTime);
 }
 
-QList<int> KTimeZone::UtcOffsets() const
+QList<int> KTimeZone::utcOffsets() const
 {
     if (!data(true))
         return QList<int>();
-    return d->data->UtcOffsets();
+    return d->data->utcOffsets();
 }
 
 const KTimeZoneData *KTimeZone::data(bool create) const
@@ -524,7 +524,7 @@ QByteArray KTimeZoneData::abbreviation(const QDateTime &) const
     return "UTC";
 }
 
-QList<int> KTimeZoneData::UtcOffsets() const
+QList<int> KTimeZoneData::utcOffsets() const
 {
     QList<int> offsets;
     offsets.append(0);
@@ -1289,7 +1289,7 @@ QByteArray KSystemTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
     return abbr;
 }
 
-QList<int> KSystemTimeZoneData::UtcOffsets() const
+QList<int> KSystemTimeZoneData::utcOffsets() const
 {
     return QList<int>();
 }

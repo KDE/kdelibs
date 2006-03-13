@@ -306,7 +306,7 @@ public:
      *
      * @return the sorted list of UTC offsets
      */
-    virtual QList<int> UtcOffsets() const;
+    virtual QList<int> utcOffsets() const;
 
 protected:
     quint32 m_nTransitionTimes;

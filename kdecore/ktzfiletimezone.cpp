@@ -313,7 +313,7 @@ QByteArray KTzfileTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
     return QByteArray();
 }
 
-QList<int> KTzfileTimeZoneData::UtcOffsets() const
+QList<int> KTzfileTimeZoneData::utcOffsets() const
 {
     return d->utcOffsets;
 }

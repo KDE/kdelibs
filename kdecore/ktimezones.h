@@ -457,7 +457,7 @@ public:
      *
      * @return sorted list of UTC offsets, or empty list if not readily available.
      */
-    QList<int> UtcOffsets() const;
+    QList<int> utcOffsets() const;
 
     /**
      * Converts a date/time, which is interpreted as being local time in this
@@ -782,7 +782,7 @@ public:
      * @return sorted list of UTC offsets, or empty list if not readily available.
      *         In this base class, it consists of the single value 0.
      */
-    virtual QList<int> UtcOffsets() const;
+    virtual QList<int> utcOffsets() const;
 
 private:
     KTimeZoneDataPrivate *d;
@@ -1076,7 +1076,7 @@ public:
      *
      * @return empty list
      */
-    virtual QList<int> UtcOffsets() const;
+    virtual QList<int> utcOffsets() const;
 
 private:
     KSystemTimeZoneDataPrivate *d;

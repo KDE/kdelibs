@@ -282,7 +282,7 @@ void KTimeZonesTest::tzfileUtcOffsets()
 {
     KTzfileTimeZoneSource tzsource(KSystemTimeZones::zoneinfoDir());
     KTimeZone *london = new KTzfileTimeZone(&tzsource, "Europe/London");
-    QList<int> offsets = london->UtcOffsets();
+    QList<int> offsets = london->utcOffsets();
     QCOMPARE(offsets.count(), 3);
     QCOMPARE(offsets[0], 0);    // GMT
     QCOMPARE(offsets[1], 3600); // BST
