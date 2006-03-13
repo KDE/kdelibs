@@ -22,7 +22,7 @@
 
 #include <kurl.h>
 #include <kpreviewwidgetbase.h>
-#include <phonon/state.h>
+#include <phonon/phononnamespace.h>
 
 class QCheckBox;
 class QPushButton;

@@ -108,7 +108,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent )
     frame->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
     d->videoWidget = new VideoWidget( frame );
     d->videoPath = new VideoPath( this );
-    d->videoPath->addOutput( d->videoWidget->videoOutput() );
+    d->videoPath->addOutput( d->videoWidget );
 
     d->controls = new MediaControls( box );
     d->controls->setEnabled( false );
