@@ -23,10 +23,15 @@
 #define KJSEMBED_GLOBAL_H
 
 #include <qglobal.h>	// we need some macros
-#if (defined(KJSEMBED_DLL) && defined(KJSEMBED_MAKE_DLL)) || defined(MAKE_KJSEMBED_LIB)
-# define KJSEMBED_EXPORT Q_DECL_EXPORT
+// unsermake seems not to like our macros - disable it for linux for now
+#if defined(Q_OS_WIN)
+# if (defined(KJSEMBED_DLL) && defined(KJSEMBED_MAKE_DLL)) || defined(MAKE_KJSEMBED_LIB)
+#  define KJSEMBED_EXPORT Q_DECL_EXPORT
+# else
+#  define KJSEMBED_EXPORT Q_DECL_IMPORT
+# endif
 #else
-# define KJSEMBED_EXPORT Q_DECL_EXPORT
+# define KJSEMBED_EXPORT 
 #endif
 
 #if !defined(Q_OS_WIN)
