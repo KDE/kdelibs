@@ -20,6 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QApplication>
+
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmessagebox.h>
