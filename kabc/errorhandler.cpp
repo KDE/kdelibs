@@ -42,5 +42,6 @@ GuiErrorHandler::GuiErrorHandler( QWidget *parent )
 
 void GuiErrorHandler::error( const QString &msg )
 {
-  KMessageBox::error( mParent, msg );
+  if (qApp)
+    KMessageBox::error( mParent, msg );
 }
