@@ -15,6 +15,9 @@
 
 #ifndef Q_WS_QWS //FIXME
 
+#include <QColor>
+#include <QRect>
+
 class QPixmap;
 class QWidget;
 class QTimer;
