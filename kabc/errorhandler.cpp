@@ -24,6 +24,8 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
+#include <qapplication.h>
+
 #include "errorhandler.h"
 
 using namespace KABC;
