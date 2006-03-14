@@ -55,10 +55,6 @@ KFileTreeViewItem::~KFileTreeViewItem()
 {
     if ( m_kfileitem )
         m_kfileitem->removeExtraData( m_branch );
-//FIXME: if we don't delete them, they are leaked. If we do, there will be a crash
-//in KDirListerCache::forgetDirs. Maybe it depends of local/remote items? -- amantia
-//     delete m_kfileitem;
-//     m_kfileitem = 0L;			
 }
 
 bool KFileTreeViewItem::alreadyListed() const
