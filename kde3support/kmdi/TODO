@@ -1,4 +1,0 @@
-- fix .xpm file stuff to be more KDE-conform
-- if QDockWindow becomes more protected and virtual than private, change from base class K3DockWidget to QDockWindow
-- add splitter mode for Kate-like MDI appearance
-- fix KDE style guide (allow MDI where it is sensefull)
