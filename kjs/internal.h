@@ -73,7 +73,7 @@ namespace KJS {
   class NumberImp : public JSCell {
     friend class ConstantValues;
     friend class InterpreterImp;
-    friend JSValue *jsNumberCell(double);
+    friend KJS_EXPORT JSValue *jsNumberCell(double);
   public:
     double value() const { return val; }
 

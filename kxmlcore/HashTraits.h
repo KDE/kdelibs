@@ -79,7 +79,7 @@ namespace KXMLCore {
         static const bool emptyValueIsZero = true;
     };
 
-    template<typename T, typename Traits> class DeletedValueAssigner;
+    template<typename T, typename Traits> struct DeletedValueAssigner;
 
     template<typename T, typename Traits> inline void assignDeleted(T& location)
     {

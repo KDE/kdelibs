@@ -79,7 +79,7 @@ KSharedConfig *Settings::sharedConfig() const
 void Settings::setDefaultLanguage( const QString& lang )
 {
     QStringList cs = d->broker->languages();
-    if ( cs.find( lang ) != cs.end() &&
+    if ( cs.indexOf( lang ) != -1 &&
          d->defaultLanguage != lang ) {
         d->defaultLanguage = lang;
         readIgnoreList();
