@@ -326,7 +326,7 @@ public:
 	 *
 	 * @see pageList()
 	 */
-	int fromPage() const KDE_DEPRECATED;
+	KDE_DEPRECATED int fromPage() const;
 	/**
 	 * Returns the last page to be printed.
          * @deprecated Applications

@@ -190,7 +190,7 @@ public:
    * @param _url URL for the file
    * @param _mode the mode of the file
    */
-  static QString iconForURL( const KUrl & _url, mode_t _mode = 0 ) KDE_DEPRECATED;
+  KDE_DEPRECATED static QString iconForURL( const KUrl & _url, mode_t _mode = 0 );
 
   /**
    * Return the "favicon" (see http://www.favicon.com) for the given @p url,
@@ -582,7 +582,7 @@ public:
    * @param service the service to execute
    * @deprecated, see the other executeService
    */
-  static void executeService( const QString& path, KDEDesktopMimeType::Service& service ) KDE_DEPRECATED;
+  KDE_DEPRECATED static void executeService( const QString& path, KDEDesktopMimeType::Service& service );
 
   /**
    * Execute @p service on the list of @p urls.

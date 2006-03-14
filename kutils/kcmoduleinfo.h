@@ -172,7 +172,7 @@ public:
    * @deprecated
    * @return the isHiddenByDefault attribute.
    */
-  bool isHiddenByDefault() const KDE_DEPRECATED;
+  KDE_DEPRECATED bool isHiddenByDefault() const;
 
 
   /**

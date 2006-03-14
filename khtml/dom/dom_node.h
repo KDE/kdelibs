@@ -866,12 +866,12 @@ public:
      * @internal returns the index of a node
      */
     unsigned long index() const;
-    QString toHTML() KDE_DEPRECATED;
+    KDE_DEPRECATED QString toHTML();
     void applyChanges();
     /**
      * @deprecated without substitution since 3.2
      */
-    void getCursor(int offset, int &_x, int &_y, int &height) KDE_DEPRECATED;
+    KDE_DEPRECATED void getCursor(int offset, int &_x, int &_y, int &height);
     /**
      * not part of the DOM.
      * @returns the exact coordinates and size of this element.

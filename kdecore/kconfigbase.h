@@ -270,7 +270,7 @@ public:
    * @param sep  The list separator (default ",")
    * @return The number of entries in the list.
    */
-  int readListEntry( const char *pKey, Q3StrList &list, char sep = ',' ) const KDE_DEPRECATED;
+  KDE_DEPRECATED int readListEntry( const char *pKey, Q3StrList &list, char sep = ',' ) const;
 #endif
 
   /**
@@ -648,7 +648,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QFont readFontEntry( const QString& pKey, const QFont* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QFont readFontEntry( const QString& pKey, const QFont* pDefault = 0L ) const;
 
   /**
    * Reads a QFont value.
@@ -662,7 +662,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QFont readFontEntry( const char *pKey, const QFont* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QFont readFontEntry( const char *pKey, const QFont* pDefault = 0L ) const;
 
   /**
    * Reads a boolean entry.
@@ -706,7 +706,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QRect readRectEntry( const QString& pKey, const QRect* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QRect readRectEntry( const QString& pKey, const QRect* pDefault = 0L ) const;
 
   /**
    * Reads a QRect entry.
@@ -720,7 +720,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QRect readRectEntry( const char *pKey, const QRect* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QRect readRectEntry( const char *pKey, const QRect* pDefault = 0L ) const;
 
   /**
    * Reads a QPoint entry.
@@ -734,7 +734,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QPoint readPointEntry( const QString& pKey, const QPoint* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QPoint readPointEntry( const QString& pKey, const QPoint* pDefault = 0L ) const;
 
   /**
    * Reads a QPoint entry.
@@ -748,7 +748,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QPoint readPointEntry( const char *pKey, const QPoint* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QPoint readPointEntry( const char *pKey, const QPoint* pDefault = 0L ) const;
 
   /**
    * Reads a QSize entry.
@@ -762,7 +762,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QSize readSizeEntry( const QString& pKey, const QSize* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QSize readSizeEntry( const QString& pKey, const QSize* pDefault = 0L ) const;
 
   /**
    * Reads a QSize entry.
@@ -776,7 +776,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QSize readSizeEntry( const char *pKey, const QSize* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QSize readSizeEntry( const char *pKey, const QSize* pDefault = 0L ) const;
 
 
   /**
@@ -822,7 +822,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QDateTime readDateTimeEntry( const QString& pKey, const QDateTime* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QDateTime readDateTimeEntry( const QString& pKey, const QDateTime* pDefault = 0L ) const;
 
   /**
    * Reads a QDateTime entry.
@@ -837,7 +837,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  QDateTime readDateTimeEntry( const char *pKey, const QDateTime* pDefault = 0L ) const KDE_DEPRECATED;
+  KDE_DEPRECATED QDateTime readDateTimeEntry( const char *pKey, const QDateTime* pDefault = 0L ) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -942,9 +942,8 @@ public:
    *
    * @see  writeEntry()
    */
-  void writeEntry( const char *pKey, const Q3StrList &value,
-		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false )
-		   KDE_DEPRECATED;
+  KDE_DEPRECATED void writeEntry( const char *pKey, const Q3StrList &value,
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 #endif
 
   /**

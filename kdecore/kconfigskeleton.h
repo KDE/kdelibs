@@ -490,7 +490,7 @@ public:
     qint64 mMin;
     qint64 mMax;
   };
-  typedef ItemLongLong ItemInt64 KDE_DEPRECATED;
+  KDE_DEPRECATED typedef ItemLongLong ItemInt64;
 
   /**
    * Class for handling enums.
@@ -568,7 +568,7 @@ public:
     quint64 mMin;
     quint64 mMax;
   };
-  typedef ItemULongLong ItemUInt64 KDE_DEPRECATED;
+  KDE_DEPRECATED typedef ItemULongLong ItemUInt64;
 
   /**
    * Class for handling a floating point preference item.

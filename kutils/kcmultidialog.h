@@ -97,10 +97,10 @@ public:
      *        program interface (example: other dialogs) is accessible while
      *        the dialog is open.
      */
-    KCMultiDialog( int dialogFace, const KGuiItem &user2,
+    KDE_DEPRECATED KCMultiDialog( int dialogFace, const KGuiItem &user2,
             const KGuiItem &user3=KGuiItem(), int buttonMask=User2,
             const QString &caption=i18n("Configure"), QWidget *parent=0,
-            const char *name=0, bool modal=false ) KDE_DEPRECATED;
+            const char *name=0, bool modal=false );
     // KDE4 remove the user3 argument, and instead initialize it to KStdGuiItem::adminMode.
 
     /**

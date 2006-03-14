@@ -185,7 +185,7 @@ namespace KNotifyClient
 	 *             the user connected the event to sound, only. Can be QString().
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
-	KDECORE_EXPORT_DEPRECATED int event(const QString &message, const QString &text=QString()) KDE_DEPRECATED;
+	KDECORE_EXPORT_DEPRECATED int event(const QString &message, const QString &text=QString());
 
 	/**
 	 * @deprecated
@@ -194,7 +194,7 @@ namespace KNotifyClient
 	 * @param text The text explaining the event you raise. Can be QString().
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
-	KDECORE_EXPORT_DEPRECATED int event( StandardEvent event, const QString& text=QString() ) KDE_DEPRECATED;
+	KDECORE_EXPORT_DEPRECATED int event( StandardEvent event, const QString& text=QString() );
 
 	/**
 	 * @deprecated
@@ -207,7 +207,7 @@ namespace KNotifyClient
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
 	KDECORE_EXPORT_DEPRECATED int userEvent(const QString &text=QString(), int present=Default, int level=Default,
-	                             const QString &sound=QString(), const QString &file=QString()) KDE_DEPRECATED;
+	                             const QString &sound=QString(), const QString &file=QString());
 	
 //#endif
 

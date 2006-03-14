@@ -697,7 +697,7 @@ public:
    * ignore trailing '/' characters.
    * @deprecated Use equals() instead.
    */
-  bool cmp( const KUrl &u, bool ignore_trailing = false ) const KDE_DEPRECATED;
+  KDE_DEPRECATED bool cmp( const KUrl &u, bool ignore_trailing = false ) const;
 
   /**
    * Compares this url with @p u.

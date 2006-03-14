@@ -100,19 +100,19 @@ public:
 	 *  Do not use this
 	 *  @deprecated
 	 */
-	bool warnOnSelfSigned() const KDE_DEPRECATED;
+	KDE_DEPRECATED bool warnOnSelfSigned() const;
 
 	/**
 	 *  Do not use this
 	 *  @deprecated
 	 */
-	bool warnOnRevoked() const KDE_DEPRECATED;
+	KDE_DEPRECATED bool warnOnRevoked() const;
 
 	/**
 	 *  Do not use this
 	 *  @deprecated
 	 */
-	bool warnOnExpired() const KDE_DEPRECATED;
+	KDE_DEPRECATED bool warnOnExpired() const;
 
 	/**
 	 *  Does the user want to use the Entropy Gathering Daemon?

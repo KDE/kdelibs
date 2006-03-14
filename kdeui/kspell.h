@@ -311,7 +311,7 @@ public:
    * Your application's GUI will still be updated, however.
    *
    */
-  static int modalCheck( QString& text ) KDE_DEPRECATED;
+  KDE_DEPRECATED static int modalCheck( QString& text );
 
   /**
    * Performs a synchronous spellcheck.

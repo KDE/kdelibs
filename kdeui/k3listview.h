@@ -280,7 +280,7 @@ public:
    * @deprecated
    * @see setFullWidth()
    */
-  void setFullWidth() KDE_DEPRECATED;
+  KDE_DEPRECATED void setFullWidth();
 
   /**
    * Let the last column fit exactly all the available width.
@@ -1030,7 +1030,7 @@ public:
   /**
    * returns the background color for this item
    */
-  const QColor &backgroundColor() KDE_DEPRECATED;  // #### should be removed in 4.0; use below instead
+  KDE_DEPRECATED const QColor &backgroundColor();  // #### should be removed in 4.0; use below instead
 
   /**
    * returns the background color for this item at given column

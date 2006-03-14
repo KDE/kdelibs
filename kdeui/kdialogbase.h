@@ -191,7 +191,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
 		 bool separator=false,
 		 const KGuiItem &user1=KGuiItem(),
 		 const KGuiItem &user2=KGuiItem(),
-		 const KGuiItem &user3=KGuiItem() ) KDE_DEPRECATED;
+		 KDE_DEPRECATED const KGuiItem &user3=KGuiItem() );
 
     /**
      * In KDE4 a WFlag paramater should be added after modal and next
@@ -296,14 +296,14 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param no Text to use for the second button (defaults to i18n("No"))
      * @param cancel Text to use for the third button (defaults to i18n("Cancel"))
      */
-    KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel,
+    KDE_DEPRECATED KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel,
 		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel,
 		 QWidget *parent=0, const char *name=0,
 		 bool modal=true, bool separator=false,
 		 const KGuiItem &yes = KStdGuiItem::yes(), // i18n("&Yes")
 		 const KGuiItem &no = KStdGuiItem::no(), // i18n("&No"),
 		 const KGuiItem &cancel = KStdGuiItem::cancel() // i18n("&Cancel")
-		 ) KDE_DEPRECATED ;
+		 );
 
     /**
      * Destructor.
@@ -578,7 +578,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param state If @p true, display the button(s).
 	 * @deprecated  use ShowButton
      */
-    void showButtonOK( bool state ) KDE_DEPRECATED;
+    KDE_DEPRECATED void showButtonOK( bool state );
 
     /**
      * Hide or display the Apply button.
@@ -589,7 +589,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param state true display the button(s).
 	 * @deprecated  use ShowButton
      */
-    void showButtonApply( bool state )  KDE_DEPRECATED;
+    KDE_DEPRECATED void showButtonApply( bool state );
 
     /**
      * Hide or display the Cancel button. The Cancel button must have
@@ -598,7 +598,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param state @p true display the button(s).
 	 * @deprecated  use ShowButton
      */
-    void showButtonCancel( bool state ) KDE_DEPRECATED;
+    KDE_DEPRECATED void showButtonCancel( bool state );
 
     /**
      * Sets the page with @p index to be displayed.
@@ -675,7 +675,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param item KGuiItem.
      * @deprecated  use setButtonGuiItem
      */
-    void setButtonOK( const KGuiItem &item = KStdGuiItem::ok() ) KDE_DEPRECATED;
+    KDE_DEPRECATED void setButtonOK( const KGuiItem &item = KStdGuiItem::ok() );
 
 
     /**
@@ -687,7 +687,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param item KGuiItem.
      * @deprecated  use setButtonGuiItem
      */
-    void setButtonApply( const KGuiItem &item = KStdGuiItem::apply() ) KDE_DEPRECATED;
+    KDE_DEPRECATED void setButtonApply( const KGuiItem &item = KStdGuiItem::apply() );
 
 
     /**
@@ -699,7 +699,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param item KGuiItem.
      * @deprecated  use setButtonGuiItem
      */
-    void setButtonCancel( const KGuiItem &item = KStdGuiItem::cancel() ) KDE_DEPRECATED;
+    KDE_DEPRECATED void setButtonCancel( const KGuiItem &item = KStdGuiItem::cancel() );
 
 
 
@@ -861,7 +861,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     *                  of KGlobal::config is preserved.
     * @deprecated use restoreDialogSize
     */
-   QSize configDialogSize( const QString& groupName ) const KDE_DEPRECATED;
+   KDE_DEPRECATED QSize configDialogSize( const QString& groupName ) const;
 
    /**
     * read the dialogs size from the configuration according to the screen size.
@@ -872,7 +872,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     *                  of KGlobal::config is preserved.
     * @deprecated use restoreDialogSize
     */
-   QSize configDialogSize( KConfig& config, const QString& groupName ) const KDE_DEPRECATED;
+   KDE_DEPRECATED QSize configDialogSize( KConfig& config, const QString& groupName ) const;
 
    /**
     * save the dialogs size dependant on the screen dimension either to the
@@ -884,7 +884,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     *        than to the applications config. Default is false.
     * @deprecated use restoreDialogSize( KConfigBase )
     */
-   void saveDialogSize( const QString& groupName, bool global=false ) KDE_DEPRECATED;
+   KDE_DEPRECATED void saveDialogSize( const QString& groupName, bool global=false );
 
    /**
     * save the dialogs size dependant on the screen dimension.
@@ -896,8 +896,8 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     *        Default is false.
     * @deprecated use restoreDialogSize( KConfigBase )
     */
-   void saveDialogSize( KConfig& config, const QString& groupName,
-			     bool global=false ) const KDE_DEPRECATED;
+   KDE_DEPRECATED void saveDialogSize( KConfig& config, const QString& groupName,
+			     bool global=false ) const;
 
 
 

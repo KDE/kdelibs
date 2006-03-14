@@ -96,13 +96,13 @@ public:
      * @return a large pixmap for the DataTool.
      * @deprecated, use iconName()
      */
-    QPixmap icon() const KDE_DEPRECATED;
+    KDE_DEPRECATED QPixmap icon() const;
     /**
      * Returns the mini icon of this data tool.
      * @return a mini pixmap for the DataTool.
      * @deprecated, use iconName()
      */
-    QPixmap miniIcon() const KDE_DEPRECATED;
+    KDE_DEPRECATED QPixmap miniIcon() const;
     /**
      * Returns the icon name for this DataTool.
      * @return the name of the icon for the DataTool

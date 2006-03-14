@@ -524,12 +524,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString size() const KDE_DEPRECATED;
+    KDE_DEPRECATED DOMString size() const;
 
     /**
      * @deprecated
      */
-    void setSize( const DOMString & ) KDE_DEPRECATED;
+    KDE_DEPRECATED void setSize( const DOMString & );
 
     /**
      * Size information. The precise meaning is specific to each type

@@ -470,7 +470,7 @@ class KABC_EXPORT AddressBook : public QObject
     /**
       @deprecated There is no need to call this function anymore.
      */
-    void cleanUp() KDE_DEPRECATED;
+    KDE_DEPRECATED void cleanUp();
 
     /**
       Used for debug output. This function prints out the list

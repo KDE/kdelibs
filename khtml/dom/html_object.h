@@ -167,12 +167,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString hspace() const KDE_DEPRECATED;
+    KDE_DEPRECATED DOMString hspace() const;
 
     /**
      * @deprecated
      */
-    void setHspace( const DOMString &value ) KDE_DEPRECATED;
+    KDE_DEPRECATED void setHspace( const DOMString &value );
 
     /**
      * The name of the applet. See the <a
@@ -220,12 +220,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString vspace() const KDE_DEPRECATED;
+    KDE_DEPRECATED DOMString vspace() const;
 
     /**
      * @deprecated
      */
-    void setVspace( const DOMString & ) KDE_DEPRECATED;
+    KDE_DEPRECATED void setVspace( const DOMString & );
 
     /**
      * Override width. See the <a
@@ -419,12 +419,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString hspace() const KDE_DEPRECATED;
+    KDE_DEPRECATED DOMString hspace() const;
 
     /**
      * @deprecated
      */
-    void setHspace( const DOMString & ) KDE_DEPRECATED;
+    KDE_DEPRECATED void setHspace( const DOMString & );
 
     /**
      * Form control or object name when submitted with a form. See the
@@ -512,12 +512,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString vspace() const KDE_DEPRECATED;
+    KDE_DEPRECATED DOMString vspace() const;
 
     /**
      * @deprecated
      */
-    void setVspace( const DOMString & ) KDE_DEPRECATED;
+    KDE_DEPRECATED void setVspace( const DOMString & );
 
     /**
      * Override width. See the <a

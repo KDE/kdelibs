@@ -105,7 +105,7 @@ class KUTILS_EXPORT KCModuleLoader
      * @deprecated Use a constructor with ErrorReporting set to Dialog to show a
      * message box like this function did.
      */
-    static void showLastLoaderError(QWidget *parent) KDE_DEPRECATED;
+    KDE_DEPRECATED static void showLastLoaderError(QWidget *parent);
 
 
     /**

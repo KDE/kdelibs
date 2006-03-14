@@ -94,7 +94,7 @@ public:
 	 *  @param chain the certificate chain
 	 *  @deprecated
 	 */
-	void setChain(QStringList chain) KDE_DEPRECATED;
+	KDE_DEPRECATED void setChain(QStringList chain);
 
 	/**
 	 *  Set the certificate chain as a list of base64 encoded X.509
