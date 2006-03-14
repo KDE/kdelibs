@@ -1817,7 +1817,6 @@ KWidgetAction::KWidgetAction( QWidget* widget,
   : KAction( text, cut, receiver, slot, parent, name )
   , m_widget( widget )
 {
-  connectChanged();
   setToolBarWidgetFactory(this);
 }
 
@@ -1840,10 +1839,14 @@ void KWidgetAction::destroyToolBarWidget(QWidget* widget)
   widget->setParent(0L);
 }
 
-void KWidgetAction::slotChanged( )
+bool KWidgetAction::event(QEvent* event)
 {
-  if (isEnabled() != m_widget->isEnabled())
-    m_widget->setEnabled(isEnabled());
+  if (event->type() == QEvent::ActionChanged) {
+    if (isEnabled() != m_widget->isEnabled())
+      m_widget->setEnabled(isEnabled());
+  }
+  
+  return KAction::event(event);
 }
 // END
 

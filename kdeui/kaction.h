@@ -492,21 +492,7 @@ signals:
 protected:
     virtual void virtual_hook( int id, void* data );
 
-    /**
-     * Connect the changed signal of this action to slotChanged().
-     */
-    void connectChanged();
-
 protected Q_SLOTS:
-    /**
-     * This function is for convenience of child classes. It is connected to
-     * the QAction's changed() signal, and allows the KAction to update itself
-     * in the event of one of the attributes being changed.
-     *
-     * To have this function called, make sure you call connectChanged().
-     */
-    virtual void slotChanged();
-
     /**
      * This function is connected to the QAction's triggered(bool) signal, and allows
      * KAction to emit the triggered signal with mouse and keyboard modifiers attached,

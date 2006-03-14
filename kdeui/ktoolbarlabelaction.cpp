@@ -30,6 +30,7 @@ public:
   {
   }
   QPointer<QAction> m_buddy;
+  QString oldText;
 };
 
 
@@ -43,6 +44,7 @@ KToolBarLabelAction::KToolBarLabelAction(const QString &text,
     d(new KToolBarLabelActionPrivate)
 {
   setToolBarWidgetFactory(this);
+  d->oldText = KToolBarLabelAction::text();
 }
 
 KToolBarLabelAction::KToolBarLabelAction(QAction* buddy,
@@ -58,6 +60,7 @@ KToolBarLabelAction::KToolBarLabelAction(QAction* buddy,
   d->m_buddy = buddy;
   setBuddy(buddy);
   setToolBarWidgetFactory(this);
+  d->oldText = KToolBarLabelAction::text();
 }
 
 KToolBarLabelAction::~KToolBarLabelAction()
@@ -89,9 +92,16 @@ QAction* KToolBarLabelAction::buddy() const
   return d->m_buddy;
 }
 
-void KToolBarLabelAction::slotChanged( )
+bool KToolBarLabelAction::event ( QEvent * event )
 {
-  emit textChanged(text());
+  if (event->type() == QEvent::ActionChanged) {
+    if (text() != d->oldText) {
+      emit textChanged( text() );
+      d->oldText = text();
+    }
+  }
+
+  return KAction::event(event);
 }
 
 QWidget * KToolBarLabelAction::createToolBarWidget(QToolBar* parent)

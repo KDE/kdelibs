@@ -104,7 +104,7 @@ Q_SIGNALS:
   void textChanged(const QString& newText);
 
 protected:
-  virtual void slotChanged();
+  virtual bool event(QEvent* event);
 
 private:
   class KToolBarLabelActionPrivate;

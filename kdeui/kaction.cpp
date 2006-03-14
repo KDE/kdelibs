@@ -188,11 +188,6 @@ void KAction::initPrivate( const KShortcut& cut,
     KAction::setShortcut( cut );
 }
 
-void KAction::connectChanged( )
-{
-    connect(this, SIGNAL(changed()), SLOT(slotChanged()));
-}
-
 const KShortcut& KAction::defaultShortcut() const
 {
   return d->m_defaultShortcut;
@@ -270,10 +265,6 @@ void KAction::slotTriggered()
 {
   emit activated();
   emit triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
-}
-
-void KAction::slotChanged( )
-{
 }
 
 int KAction::plug( QWidget * widget, int index )
