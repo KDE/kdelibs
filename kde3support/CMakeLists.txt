@@ -6,7 +6,6 @@ add_subdirectory( kdecore )
 add_subdirectory( kdeui ) 
 add_subdirectory( kio ) 
 add_subdirectory( kparts ) 
-add_subdirectory( kmdi )
 
 if(UNIX)
    add_subdirectory( kunittest ) 
@@ -14,7 +13,7 @@ if(UNIX)
 endif(UNIX)
 
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kparts ${CMAKE_CURRENT_SOURCE_DIR}/kmdi ${CMAKE_CURRENT_SOURCE_DIR}/kmdi/res)
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kparts )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdeui ${CMAKE_SOURCE_DIR}/kutils ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kio/bookmarks)
 
 add_definitions(-DKDE3_SUPPORT)
@@ -37,22 +36,6 @@ set(k3io_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kde3support/kio/k3bookmarkdrag.cpp
 )
 
-# kde3support/kmdi/Makefile.am: k3mdi
-
-set(k3mdi_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdichildarea.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdichildfrm.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdichildfrmcaption.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdichildview.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdimainfrm.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mditaskbar.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdidockcontainer.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mditoolviewaccessor.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdiguiclient.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdidocumentviewtabwidget.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kmdi/k3mdifocuslist.cpp
-)
-
 # kde3support/kparts/Makefile.am: k3parts
 
 set(k3parts_STAT_SRCS
@@ -73,7 +56,6 @@ set(kde3core_STAT_SRCS
 ########### next target ###############
 
 set(kde3support_LIB_SRCS
-${k3mdi_STAT_SRCS}
 ${k3parts_STAT_SRCS}
 ${kde3core_STAT_SRCS}
 ${kde3ui_STAT_SRCS}

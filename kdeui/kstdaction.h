@@ -281,18 +281,18 @@ namespace KStdAction
 	* Cut selected area and store it in the clipboard.  Calls cut() on the widget with the current focus.
 	*/
 	KDEUI_EXPORT KAction *cut(KActionCollection* parent);
-	
+
 	/**
 	* Copy selected area and store it in the clipboard.  Calls copy() on the widget with the current focus.
 	*/
 	KDEUI_EXPORT KAction *copy(KActionCollection* parent);
-	
+
 	/**
 	* Paste the contents of clipboard at the current mouse or cursor
 	* Calls paste() on the widget with the current focus.
 	*/
 	KDEUI_EXPORT KAction *paste(KActionCollection* parent);
- 
+
 	/**
 	* Clear selected area.  Calls clear() on the widget with the current focus.
  	* Note that for some widgets, this may not provide the intended bahavior.  For
@@ -319,7 +319,7 @@ namespace KStdAction
 	* Calls selectAll() on the widget with the current focus.
 	*/
 	KDEUI_EXPORT KAction *selectAll(KActionCollection* parent);
-	      
+
 	/**
 	* Cut selected area and store it in the clipboard.
 	*/

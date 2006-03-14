@@ -33,6 +33,7 @@
 #include <QMouseEvent>
 #include <QObject>
 #include <QStylePainter>
+#include <QStyleOption>
 
 #ifndef NO_KDE2
 #include <kconfig.h>

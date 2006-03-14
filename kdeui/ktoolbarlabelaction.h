@@ -46,8 +46,10 @@ class QLabel;
  *
  * @author Felix Berger <felixberger@beldesign.de>
  */
-class KDEUI_EXPORT KToolBarLabelAction : public KWidgetAction
+class KDEUI_EXPORT KToolBarLabelAction : public KAction, public QActionWidgetFactory
 {
+  Q_OBJECT
+
 public:
   /**
    * Constructs a toolbar label.
@@ -66,7 +68,7 @@ public:
   /**
    * Constructs a toolbar label setting a buddy for the label.
    *
-   * @param buddy The widget which is focused when the label's accelerator is
+   * @param buddy The action whose widget which is focused when the label's accelerator is
    * typed.
    * @param text The label's and the action's text.
    * @param cut The action's shortcut.
@@ -75,62 +77,38 @@ public:
    * @param parent This action's parent.
    * @param name An internal name for this action.
    */
-  KToolBarLabelAction(QWidget* buddy, const QString &text,
+  KToolBarLabelAction(QAction* buddy, const QString &text,
 		      const KShortcut &cut,
 		      const QObject *receiver, const char *slot,
 		      KActionCollection *parent, const char *name);
-  /**
-   * Constructs a toolbar label for a label.
-   *
-   * You can use this constructor if you want to display a class which is
-   * derived from QLabel in the toolbar. Note that ownership of the label is
-   * transferred to the action and the label is deleted when the action is
-   * deleted. So you shouldn't hold any pointers to the label.
-   *
-   * It's important that the label's name is set to "kde toolbar widget" in
-   * its constructor, otherwise it is not correctly rendered in some kde
-   * styles.
-   *
-   * @param label the label which is displayed in the toolbar.
-   * @param cut The action's shortcut.
-   * @param receiver The SLOT's parent.
-   * @param slot The SLOT to invoke to execute this action.
-   * @param parent This action's parent.
-   * @param name An internal name for this action.
-   */
-  KToolBarLabelAction(QLabel* label, const KShortcut &cut, 
-		      const QObject *receiver, const char *slot,
-		      KActionCollection* parent, const char *name);
 
   virtual ~KToolBarLabelAction();
-  /**
-   * Reimplemented to update both the action's text and the label's text.
-   */
-  virtual void setText(const QString& text);
+
   /**
    * Sets the label's buddy to buddy.
    *
    * See QLabel#setBuddy() for details.
    */
-  virtual void setBuddy(QWidget* buddy);
+  void setBuddy(QAction* buddy);
+
   /**
    * Returns the label's buddy or 0 if no buddy is currently set.
    *
    * See QLabel#buddy() and QLabel#setBuddy() for more information.
    */
-  QWidget* buddy() const;
-  /**
-   * Returns the label which is used internally.
-   */
-  QLabel* label() const;
+  QAction* buddy() const;
+
+  virtual QWidget* createToolBarWidget(QToolBar* parent);
+
+Q_SIGNALS:
+  void textChanged(const QString& newText);
 
 protected:
-  virtual void virtual_hook(int id, void* data);
+  virtual void slotChanged();
 
 private:
   class KToolBarLabelActionPrivate;
   KToolBarLabelActionPrivate *d;
-  void init();
 };
 
 

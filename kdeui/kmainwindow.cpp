@@ -6,6 +6,7 @@
      (C) 1997-2000 Matthias Ettrich (ettrich@kde.org)
      (C) 1999 Chris Schlaeger (cs@kde.org)
      (C) 2002 Joseph Wenninger (jowenn@kde.org)
+     (C) 2005-2006 Hamish Rodda (rodda@kde.org)
 
      This library is free software; you can redistribute it and/or
      modify it under the terms of the GNU Library General Public
@@ -40,7 +41,6 @@
 #include <qtimer.h>
 #include <qwidget.h>
 #include <qlist.h>
-#include <kaccel.h>
 #include <kaction.h>
 #include <kapplication.h>
 #include <kauthorized.h>
@@ -75,13 +75,11 @@ public:
     bool care_about_geometry:1;
     bool shuttingDown:1;
     QString autoSaveGroup;
-    KAccel * kaccel;
     KMainWindowInterface *m_interface;
     KDEPrivate::ToolBarHandler *toolBarHandler;
     QTimer* settingsTimer;
     KToggleAction *showStatusBarAction;
     QRect defaultWindowSize;
-    QList<QDockWidget*> hiddenDockWindows;
 };
 
 QList<KMainWindow*> KMainWindow::sMemberList;
@@ -172,13 +170,13 @@ public:
 static bool being_first = true;
 
 KMainWindow::KMainWindow( QWidget* parent, const char *name, Qt::WFlags f )
-    : Q3MainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
+    : QMainWindow( parent, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
     initKMainWindow(name, 0);
 }
 
 KMainWindow::KMainWindow( int cflags, QWidget* parent, const char *name, Qt::WFlags f )
-    : Q3MainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
+    : QMainWindow( parent, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
     initKMainWindow(name, cflags);
 }
@@ -186,10 +184,10 @@ KMainWindow::KMainWindow( int cflags, QWidget* parent, const char *name, Qt::WFl
 void KMainWindow::initKMainWindow(const char *name, int cflags)
 {
     KWhatsThisManager::init ();
-    setDockMenuEnabled( false );
+
     mHelpMenu = 0;
     kapp->setTopWidget( this );
-    actionCollection()->setWidget( this );
+    //actionCollection()->setWidget( this );
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
 
     if ( !ksm )
@@ -240,7 +238,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     d->settingsDirty = false;
     d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
-    d->kaccel = actionCollection()->kaccel();
+    //d->kaccel = actionCollection()->kaccel();
     d->toolBarHandler = 0;
     d->settingsTimer = 0;
     d->showStatusBarAction = NULL;
@@ -265,8 +263,9 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     else
         d->m_interface = new KMainWindowInterface(this);
 
-    if (!KAuthorized::authorize("movable_toolbars"))
-        setDockWindowsMovable(false);
+    // Get notified when settings change
+    connect( this, SIGNAL( iconSizeChanged(const QSize&) ), SLOT( setSettingsDirty() ) );
+    connect( this, SIGNAL( toolButtonStyleChanged(Qt::ToolButtonStyle) ), SLOT( setSettingsDirty() ) );
 }
 
 KAction *KMainWindow::toolBarMenuAction()
@@ -391,34 +390,6 @@ const QString KMainWindow::classNameOfToplevel( int number )
         return config->readEntry( "ClassName" );
 }
 
-void KMainWindow::show()
-{
-    Q3MainWindow::show();
-    QListIterator<QDockWidget*> it( d->hiddenDockWindows );
-    while ( it.hasNext() )
-        it.next()->show();
-
-    d->hiddenDockWindows.clear();
-}
-
-void KMainWindow::hide()
-{
-    if ( isVisible() ) {
-
-        d->hiddenDockWindows.clear();
-
-        QList<QDockWidget *> list = findChildren<QDockWidget *>();
-        foreach ( QDockWidget *dw, list ) {
-            if ( dw->isTopLevel() && dw->isVisible() ) {
-                d->hiddenDockWindows.append( dw );
-                dw->hide();
-            }
-		}
-    }
-
-    QWidget::hide();
-}
-
 bool KMainWindow::restore( int number, bool show )
 {
     if ( !canBeRestored( number ) )
@@ -514,7 +485,7 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     if ( mb )
         mb->clear();
 
-    qDeleteAll( toolBarList() ); // delete all toolbars
+    qDeleteAll( toolBars() ); // delete all toolbars
 
     // don't build a help menu unless the user ask for it
     if (d->showHelpMenu) {
@@ -600,7 +571,8 @@ void KMainWindow::setCaption( const QString &caption, bool modified )
 
 void KMainWindow::setPlainCaption( const QString &caption )
 {
-    Q3MainWindow::setWindowTitle( caption );
+	setWindowTitle(caption);
+
 #if defined Q_WS_X11
     NETWinInfo info( QX11Info::display(), winId(), QX11Info::appRootWindow(), 0 );
     info.setName( caption.toUtf8().data() );
@@ -622,24 +594,12 @@ void KMainWindow::slotStateChanged(const QString &newstate)
   stateChanged(newstate, KXMLGUIClient::StateNoReverse);
 }
 
-/*
- * Get rid of this for KDE 4.0
- */
 void KMainWindow::slotStateChanged(const QString &newstate,
-                                   KXMLGUIClient::ReverseStateChange reverse)
+                                   bool reverse)
 {
-  stateChanged(newstate, reverse);
+  stateChanged(newstate,
+               reverse ? KXMLGUIClient::StateReverse : KXMLGUIClient::StateNoReverse);
 }
-
-/*
- * Enable this for KDE 4.0
- */
-// void KMainWindow::slotStateChanged(const QString &newstate,
-//                                    bool reverse)
-// {
-//   stateChanged(newstate,
-//                reverse ? KXMLGUIClient::StateReverse : KXMLGUIClient::StateNoReverse);
-// }
 
 void KMainWindow::closeEvent ( QCloseEvent *e )
 {
@@ -754,8 +714,13 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
            config->writeEntry("MenuBar", mb->isHidden() ? "Disabled" : "Enabled");
     }
 
+    // Utilise the QMainWindow::saveState() functionality
+    QByteArray state = saveState();
+    config->writeEntry("State", state.toBase64());
+    // One day will need to save the version number, but for now, assume 0
+
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-	foreach ( KToolBar*toolbar, toolBarList() ) {
+	foreach (KToolBar* toolbar, findChildren<KToolBar*>()) {
         QString group;
         if (!configGroup.isEmpty())
         {
@@ -860,8 +825,17 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
            mb->show();
     }
 
+    // Utilise the QMainWindow::restoreState() functionality
+    if (cg.hasKey("State")) {
+        QByteArray state;
+        state = cg.readEntry("State", state);
+        state = QByteArray::fromBase64(state);
+        // One day will need to load the version number, but for now, assume 0
+        restoreState(state);
+    }
+
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-	foreach ( KToolBar*toolbar, toolBarList() ) {
+    foreach (KToolBar* toolbar, findChildren<KToolBar*>()) {
         QString group;
         if (!configGroup.isEmpty())
         {
@@ -888,9 +862,10 @@ void KMainWindow::finalizeGUI( bool force )
     // we call positionYourself again for each of them, but this time
     // the toolbariterator should give them in the proper order.
     // Both the XMLGUI and applySettings call this, hence "force" for the latter.
-	foreach ( KToolBar*toolbar, toolBarList() ) {
+    /* FIXME KAction port - not needed?
+    foreach (KToolBar* toolbar, findChildren<KToolBar*>()) {
         toolbar->positionYourself( force );
-    }
+    }*/
 
     d->settingsDirty = false;
 }
@@ -1017,11 +992,6 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
     d->autoSaveSettings = true;
     d->autoSaveGroup = groupName;
     d->autoSaveWindowSize = saveWindowSize;
-    // Get notified when the user moves a toolbar around
-    disconnect( this, SIGNAL( dockWindowPositionChanged( Q3DockWindow * ) ),
-                this, SLOT( setSettingsDirty() ) );
-    connect( this, SIGNAL( dockWindowPositionChanged( Q3DockWindow * ) ),
-             this, SLOT( setSettingsDirty() ) );
 
     // Now read the previously saved settings
     applyMainWindowSettings( KGlobal::config(), groupName );
@@ -1073,7 +1043,7 @@ KMenuBar *KMainWindow::menuBar()
         mb = new KMenuBar( this );
         // trigger a re-layout and trigger a call to the private
         // setMenuBar method.
-        Q3MainWindow::menuBar();
+        setMenuBar(mb);
     }
     return mb;
 }
@@ -1085,7 +1055,7 @@ KStatusBar *KMainWindow::statusBar()
         sb = new KStatusBar( this );
         // trigger a re-layout and trigger a call to the private
         // setStatusBar method.
-        Q3MainWindow::statusBar();
+        setStatusBar(sb);
     }
     return sb;
 }
@@ -1115,64 +1085,32 @@ KStatusBar *KMainWindow::internalStatusBar()
     return qFindChild<KStatusBar *>(this);
 }
 
-KToolBar *KMainWindow::toolBar( const char * name )
+KToolBar *KMainWindow::toolBar( const QString& name )
 {
-    if (!name)
-       name = "mainToolBar";
-    KToolBar *tb = (KToolBar*)child( name, "KToolBar" );
+    QString childName = name;
+    if (childName.isEmpty())
+       childName = "mainToolBar";
+
+    KToolBar *tb = findChild<KToolBar*>(childName);
     if ( tb )
         return tb;
-    bool honor_mode = (!strcmp(name, "mainToolBar"));
+    bool honor_mode = name != "mainToolBar";
 
+    KToolBar* toolbar;
     if ( builderClient() )
-        return new KToolBar(this, name, honor_mode); // XMLGUI constructor
+        toolbar = new KToolBar(this, honor_mode); // XMLGUI constructor
     else
-        return new KToolBar(this, Qt::DockTop, false, name, honor_mode ); // non-XMLGUI
+        toolbar = new KToolBar(this, false, honor_mode ); // non-XMLGUI
+
+    toolbar->setObjectName(childName);
+    addToolBar(toolbar);
+
+    return toolbar;
 }
 
-QList<KToolBar*> KMainWindow::toolBarList() const
+QList<KToolBar*> KMainWindow::toolBars() const
 {
-    // When using QMainWindow instead of Q3MainWindow, simply do:
-    // return qFindChildren<KToolBar *>(this);
-
-    QList<KToolBar *> toolbarList;
-    QList<Q3ToolBar*> lst;
-    for ( int i = (int)Qt::DockUnmanaged; i <= (int)Qt::DockMinimized; ++i ) {
-        lst = toolBars( (Qt::ToolBarDock)i );
-        foreach ( Q3ToolBar* tb, lst ) {
-            if ( qobject_cast<KToolBar *>(  tb ) )
-                toolbarList.append( (KToolBar*)tb );
-        }
-    }
-    return toolbarList;
-}
-
-KAccel * KMainWindow::accel()
-{
-    if ( !d->kaccel )
-        d->kaccel = new KAccel( this, "kmw-kaccel" );
-    return d->kaccel;
-}
-
-void KMainWindow::paintEvent( QPaintEvent * pe )
-{
-    Q3MainWindow::paintEvent(pe); //Upcall to handle SH_MainWindow_SpaceBelowMenuBar rendering
-}
-
-#if KDE_IS_VERSION( 3, 9, 0 )
-#ifdef __GNUC__
-#warning Remove, should be in Qt
-// TODO does qt4?
-#endif
-#endif
-void KMainWindow::setIcon( const QPixmap& p )
-{
-    Q3MainWindow::setWindowIcon( p );
-#ifdef Q_WS_X11
-    // Qt3 doesn't support _NET_WM_ICON, but KApplication::setTopWidget(), which
-    // is used by KMainWindow, sets it
-    KWin::setIcons( winId(), p, QPixmap());
-#endif
+    return findChildren<KToolBar*>();
 }
 
 const QList<KMainWindow*>& KMainWindow::memberList() { return sMemberList; }

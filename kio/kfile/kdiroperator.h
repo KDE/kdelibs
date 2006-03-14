@@ -689,8 +689,16 @@ public Q_SLOTS:
 
     /**
      * Trashes the currently selected files/directories.
+     *
+     * This function used to take activation reason and keyboard modifiers,
+     * in order to call deleteSelected() if the user wanted to delete.
+     * Instead, call deleteSelected().
+     *
+     * FIXME KAction Port: link deleteSelected() up correctly
+     *
+     * @since 3.4
      */
-    virtual void trashSelected(KAction::ActivationReason, Qt::MouseButtons, Qt::KeyboardModifiers);
+    virtual void trashSelected();
 
 protected Q_SLOTS:
     /**
@@ -861,16 +869,16 @@ private:
     KAction 	*mkdirAction;
 
     KActionMenu *sortActionMenu;
-    KRadioAction *byNameAction;
-    KRadioAction *byDateAction;
-    KRadioAction *bySizeAction;
+    KAction *byNameAction;
+    KAction *byDateAction;
+    KAction *bySizeAction;
     KToggleAction *reverseAction;
     KToggleAction *dirsFirstAction;
     KToggleAction *caseInsensitiveAction;
 
     KActionMenu *viewActionMenu;
-    KRadioAction *shortAction;
-    KRadioAction *detailedAction;
+    KAction *shortAction;
+    KAction *detailedAction;
     KToggleAction *showHiddenAction;
     KToggleAction *separateDirsAction;
 

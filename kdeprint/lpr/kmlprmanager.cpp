@@ -466,7 +466,7 @@ QString KMLprManager::printOptions(KPrinter *prt)
 void KMLprManager::createPluginActions(KActionCollection *coll)
 {
 	KAction	*act = new KAction(i18n("&Edit printcap Entry..."), "kdeprint_report", 0, this, SLOT(slotEditPrintcap()), coll, "plugin_editprintcap");
-	act->setGroup("plugin");
+	act->setActionGroup(pluginGroup());
 }
 
 void KMLprManager::validatePluginActions(KActionCollection *coll, KMPrinter *prt)

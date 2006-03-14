@@ -22,7 +22,6 @@
 #include <k3listview.h>
 #include <kiconloader.h>
 #include <ktoolbar.h>
-#include <ktoolbarbutton.h>
 #include <kdebug.h>
 #include <klocale.h>
 
@@ -33,6 +32,7 @@
 #include <QContextMenuEvent>
 #include <QList>
 #include <Q3Header>
+#include <QToolButton>
 
 #define KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID 2004
 
@@ -131,10 +131,10 @@ void K3ListViewSearchLine::addListView(K3ListView *lv)
 {
     if (lv) {
         connectListView(lv);
-        
+
         d->listViews.append(lv);
         setEnabled(!d->listViews.isEmpty());
-        
+
         checkColumns();
     }
 }
@@ -143,13 +143,13 @@ void K3ListViewSearchLine::removeListView(K3ListView *lv)
 {
     if (lv) {
         int idx = d->listViews.indexOf(lv);
-        
+
         if ( idx != -1 ) {
             d->listViews.removeAt( idx );
             checkColumns();
 
             disconnectListView(lv);
-            
+
             setEnabled(!d->listViews.isEmpty());
         }
     }
@@ -231,7 +231,7 @@ void K3ListViewSearchLine::setListViews(const QList<K3ListView *> &lv)
     for (QList<K3ListView *>::Iterator it = d->listViews.begin();
          it != d->listViews.end(); ++it)
              disconnectListView(*it);
-    
+
     d->listViews = lv;
 
     for (QList<K3ListView *>::Iterator it = d->listViews.begin();
@@ -285,10 +285,10 @@ void K3ListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
 
         popup->insertSeparator();
         popup->insertItem(i18n("Search Columns"), subMenu);
-    
+
         subMenu->insertItem(i18n("All Visible Columns"), KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID);
         subMenu->insertSeparator();
-    
+
         bool allColumnsAreSearchColumns = true;
 	// TODO Make the entry order match the actual column order
         Q3Header* const header = d->listViews.first()->header();
@@ -312,15 +312,15 @@ void K3ListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
 	    }
         }
         subMenu->setItemChecked(KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID, allColumnsAreSearchColumns);
-    
+
         // searchColumnsMenuActivated() relies on one possible "all" representation
         if(allColumnsAreSearchColumns && !d->searchColumns.isEmpty())
             d->searchColumns.clear();
     }
-    
+
     popup->exec( e->globalPos() );
 	delete popup;
-}    
+}
 
 void K3ListViewSearchLine::connectListView(K3ListView *lv)
 {
@@ -347,7 +347,7 @@ bool K3ListViewSearchLine::canChooseColumnsCheck()
         return false;
 
     const K3ListView *first = d->listViews.first();
-    
+
     const unsigned int numcols = first->columns();
     // the listviews have only one column,
     if (numcols < 2)
@@ -412,7 +412,7 @@ void K3ListViewSearchLine::listViewDeleted(QObject *o)
                 << endl;
         return;
     }
-    
+
     d->listViews.removeAll(lv);
     setEnabled(d->listViews.isEmpty());
 }
@@ -553,8 +553,6 @@ K3ListViewSearchLine *K3ListViewSearchLineWidget::createSearchLine(K3ListView *l
 
 void K3ListViewSearchLineWidget::createWidgets()
 {
-    positionInToolBar();
-
     if(!d->clearButton) {
         d->clearButton = new QToolButton(this);
         QIcon icon = SmallIconSet(QApplication::isRightToLeft() ? "clear_left" : "locationbar_erase");
@@ -578,36 +576,6 @@ void K3ListViewSearchLineWidget::createWidgets()
 K3ListViewSearchLine *K3ListViewSearchLineWidget::searchLine() const
 {
     return d->searchLine;
-}
-
-void K3ListViewSearchLineWidget::positionInToolBar()
-{
-    KToolBar *toolBar = dynamic_cast<KToolBar *>(parent());
-
-    if(toolBar) {
-
-        // Here we have The Big Ugly.  Figure out how many widgets are in the
-        // and do a hack-ish iteration over them to find this widget so that we
-        // can insert the clear button before it.
-
-        int widgetCount = toolBar->count();
-
-        for(int index = 0; index < widgetCount; index++) {
-            int id = toolBar->idAt(index);
-            if(toolBar->getWidget(id) == this) {
-                toolBar->setItemAutoSized(id);
-                if(!d->clearButton) {
-                    QString icon = QApplication::isRightToLeft() ? "clear_left" : "locationbar_erase";
-                    d->clearButton = new KToolBarButton(icon, 2005, toolBar);
-                }
-                toolBar->insertWidget(2005, d->clearButton->width(), d->clearButton, index);
-                break;
-            }
-        }
-    }
-
-    if(d->searchLine)
-        d->searchLine->show();
 }
 
 #include "k3listviewsearchline.moc"

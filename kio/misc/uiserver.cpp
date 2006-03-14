@@ -593,14 +593,13 @@ UIServer::UIServer()
   readSettings();
 
   // setup toolbar
-  toolBar()->insertButton("editdelete", TOOL_CANCEL,
-                          SIGNAL(clicked()), this,
-                          SLOT(slotCancelCurrent()), false, i18n("Cancel"));
-  toolBar()->insertButton("configure", TOOL_CONFIGURE,
-                          SIGNAL(clicked()), this,
-                          SLOT(slotConfigure()), true, i18n("Settings..."));
+  m_toolCancel = toolBar()->addAction(i18n("Cancel"));
+  connect(m_toolCancel, SIGNAL(triggered(bool)), SLOT(slotCancelCurrent()));
 
-  toolBar()->setBarPos( KToolBar::Left );
+  m_toolConfigure = toolBar()->addAction(i18n("Settings..."));
+  connect(m_toolConfigure, SIGNAL(triggered(bool)), SLOT(slotConfigure()));
+
+  addToolBar(Qt::LeftToolBarArea, toolBar());
 
   // setup statusbar
   statusBar()->insertItem( i18n(" Files: %1 ").arg( 0 ), ID_TOTAL_FILES);
@@ -1135,11 +1134,11 @@ void UIServer::slotSelection() {
 
   for ( ; it.current(); ++it ) {
     if ( it.current()->isSelected() ) {
-      toolBar()->setItemEnabled( TOOL_CANCEL, true );
+      m_toolCancel->setEnabled(true);
       return;
     }
   }
-  toolBar()->setItemEnabled( TOOL_CANCEL, false );
+  m_toolCancel->setEnabled(false);
 }
 
 int UIServer::messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )

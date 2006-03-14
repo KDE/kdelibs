@@ -7,6 +7,7 @@
               (C) 2001 Holger Freyther <freyther@kde.org>
               (C) 2002 Ellis Whitehead <ellis@kde.org>
               (C) 2002 Joseph Wenninger <jowenn@kde.org>
+              (C) 2005 Hamish Rodda <rodda@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,12 +28,7 @@
 
 #include <assert.h>
 
-#include <QList>
-#include <q3signal.h>
 #include <kauthorized.h>
-#include <kaccel.h>
-#include <kaccelbase.h>
-#include <kaccelprivate.h>
 #include <qapplication.h>
 #include <kdebug.h>
 #include <kguiitem.h>
@@ -40,7 +36,9 @@
 #include <kmenubar.h>
 #include <kmenu.h>
 #include <ktoolbar.h>
-#include <ktoolbarbutton.h>
+#include <kinstance.h>
+#include <kiconloader.h>
+#include <kauthorized.h>
 
 /**
 * How it works.
@@ -63,428 +61,141 @@
 * It is set by KXMLGUIFactory.
 */
 
-int KAction::getToolButtonID()
-{
-    static int toolbutton_no = -2;
-    return toolbutton_no--;
-}
-
 //---------------------------------------------------------------------
 // KAction::KActionPrivate
 //---------------------------------------------------------------------
 
-class KAction::KActionPrivate : public KGuiItem
+class KAction::KActionPrivate
 {
 public:
-  KActionPrivate() : KGuiItem()
+  KActionPrivate()
   {
-    m_kaccel = 0;
     m_configurable = true;
   }
 
-  KAccel *m_kaccel;
-  QList<KAccel*> m_kaccelList;
+  QString m_iconName;
 
-  QString m_groupText;
-  QString m_group;
-
-  KShortcut m_cut;
-  KShortcut m_cutDefault;
+  KShortcut m_shortcut;
+  KShortcut m_defaultShortcut;
 
   bool m_configurable;
-
-  struct Container
-  {
-    Container() { m_container = 0; m_representative = 0; m_id = 0; }
-    Container( const Container& s ) { m_container = s.m_container;
-                                      m_id = s.m_id; m_representative = s.m_representative; }
-    QWidget* m_container;
-    int m_id;
-    QWidget* m_representative;
-  };
-
-  QList<Container> m_containers;
 };
 
 //---------------------------------------------------------------------
 // KAction
 //---------------------------------------------------------------------
 
+KAction::KAction( KActionCollection * parent, const char* name )
+  : QAction(parent), d(new KActionPrivate)
+{
+  initPrivate(name);
+}
+
+KAction::KAction( const QString & text, KActionCollection * parent, const char* name )
+  : QAction(text, parent), d(new KActionPrivate)
+{
+  initPrivate(name);
+}
+
+KAction::KAction( const QIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+  : QAction(icon, text, parent), d(new KActionPrivate)
+{
+  initPrivate(name);
+}
+
+KAction::KAction( const QString & icon, const QString & text, KActionCollection * parent, const char* name )
+  : QAction(text, parent), d(new KActionPrivate)
+{
+  initPrivate(name);
+  setIconName( icon );
+}
+
 KAction::KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const char* name )
-: QObject( parent ), d(new KActionPrivate)
+: QAction( text, parent ), d(new KActionPrivate)
 {
-  initPrivate( text, cut, receiver, slot, name );
+  initPrivate( cut, receiver, slot, name );
 }
 
 KAction::KAction( const QString& text, const QString& sIconName, const KShortcut& cut,
   const QObject* receiver, const char* slot,
   KActionCollection* parent, const char* name )
-: QObject( parent ), d(new KActionPrivate)
+: QAction(text, parent), d(new KActionPrivate)
 {
-  initPrivate( text, cut, receiver, slot, name );
-  d->setIconName( sIconName );
+  initPrivate( cut, receiver, slot, name );
+  setIconName( sIconName );
 }
 
-KAction::KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
+KAction::KAction( const QString& text, const QIcon& icon, const KShortcut& cut,
   const QObject* receiver, const char* slot,
   KActionCollection* parent, const char* name )
-: QObject( parent), d(new KActionPrivate)
+: QAction(icon, text, parent), d(new KActionPrivate)
 {
-  initPrivate( text, cut, receiver, slot, name );
-  d->setIcon( pix );
+  initPrivate( cut, receiver, slot, name );
 }
 
 KAction::KAction( const KGuiItem& item, const KShortcut& cut,
   const QObject* receiver, const char* slot,
   KActionCollection* parent, const char* name )
-: QObject( parent ), d(new KActionPrivate)
+: QAction(item.text(), parent), d(new KActionPrivate)
 {
-  initPrivate( item.text(), cut, receiver, slot, name );
+  initPrivate( cut, receiver, slot, name );
   if( item.hasIcon() )
-    setIcon( item.iconName() );
+    setIconName( item.iconName() );
   setToolTip( item.toolTip() );
   setWhatsThis( item.whatsThis() );
 }
 
 KAction::~KAction()
 {
-    kDebug(129) << "KAction::~KAction( this = \"" << objectName() << "\" )" << endl; // -- ellis
-
-    // If actionCollection hasn't already been destructed,
-    if ( m_parentCollection ) {
-        m_parentCollection->take( this );
-
-        foreach(KAccel *a, d->m_kaccelList)
-            a->remove(objectName());
-
-    }
-
-    // Do not call unplugAll from here, as tempting as it sounds.
-    // KAction is designed around the idea that you need to plug
-    // _and_ to unplug it "manually". Unplugging leads to an important
-    // slowdown when e.g. closing the window, in which case we simply
-    // want to destroy everything asap, not to remove actions one by one
-    // from the GUI.
+    if (KActionCollection* ac = parentCollection())
+        ac->take( this );
 
     delete d;
 }
 
-void KAction::initPrivate( const QString& text, const KShortcut& cut,
+void KAction::initPrivate(const char* name)
+{
+    QAction::setObjectName( QLatin1String( name ) );
+
+    if (!KAuthorized::authorizeKAction(name)) {
+      // Disable this action
+      setEnabled(false);
+      setVisible(false);
+      blockSignals(true);
+    }
+
+    if (KActionCollection* ac = parentCollection())
+        ac->insert( this );
+
+    connect(this, SIGNAL(triggered(bool)), SLOT(slotTriggered()));
+}
+
+void KAction::initPrivate( const KShortcut& cut,
                   const QObject* receiver, const char* slot, const char* name )
 {
-    setObjectName( QLatin1String( name ) );
-    d->m_cutDefault = cut;
+    initPrivate(name);
 
-    m_parentCollection = dynamic_cast<KActionCollection *>( parent() );
-    kDebug(129) << "KAction::initPrivate(): this = " << this << " name = \"" << name << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
-    if ( m_parentCollection )
-        m_parentCollection->insert( this );
+    d->m_defaultShortcut = cut;
 
     if ( receiver && slot )
         connect( this, SIGNAL( activated() ), receiver, slot );
 
     if( !cut.isNull() && objectName().isEmpty() )
         kWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
-    d->setText( text );
-    initShortcut( cut );
+
+    KAction::setShortcut( cut );
 }
 
-bool KAction::isPlugged() const
+void KAction::connectChanged( )
 {
-  return (!d->m_containers.empty()) || d->m_kaccel;
+    connect(this, SIGNAL(changed()), SLOT(slotChanged()));
 }
 
-bool KAction::isPlugged( const QWidget *container ) const
+const KShortcut& KAction::defaultShortcut() const
 {
-  return findContainer( container ) > -1;
-}
-
-bool KAction::isPlugged( const QWidget *container, int id ) const
-{
-  int i = findContainer( container );
-  return ( i > -1 && itemId( i ) == id );
-}
-
-bool KAction::isPlugged( const QWidget *container, const QWidget *_representative ) const
-{
-  int i = findContainer( container );
-  return ( i > -1 && representative( i ) == _representative );
-}
-
-
-/*
-Three actionCollection conditions:
-  1) Scope is known on creation and KAccel object is created (e.g. KMainWindow)
-  2) Scope is unknown and no KAccel object is available (e.g. KXMLGUIClient)
-    a) addClient() will be called on object
-    b) we just want to add the actions to another KXMLGUIClient object
-
-The question is how to do we incorporate #2b into the XMLGUI framework?
-
-
-We have a KCommandHistory object with undo and redo actions in a passed actionCollection
-We have a KoDoc object which holds a KCommandHistory object and the actionCollection
-We have two KoView objects which both point to the same KoDoc object
-Undo and Redo should be available in both KoView objects, and
-  calling the undo->setEnabled() should affect both KoViews
-
-When addClient is called, it needs to be able to find the undo and redo actions
-When it calls plug() on them, they need to be inserted into the KAccel object of the appropriate KoView
-
-In this case, the actionCollection belongs to KoDoc and we need to let it know that its shortcuts
-have the same scope as the KoView actionCollection
-
-KXMLGUIClient::addSubActionCollection
-
-Document:
-  create document actions
-
-View
-  create view actions
-  add document actionCollection as sub-collection
-
-A parentCollection is created
-Scenario 1: parentCollection has a focus widget set (e.g. via KMainWindow)
-  A KAccel object is created in the parentCollection
-  A KAction is created with parent=parentCollection
-  The shortcut is inserted into this actionCollection
-  Scenario 1a: xml isn't used
-    done
-  Scenario 1b: KXMLGUIBuilder::addClient() called
-    setWidget is called -- ignore
-    shortcuts are set
-Scenario 2: parentCollection has no focus widget (e.g., KParts)
-  A KAction is created with parent=parentCollection
-  Scenario 2a: xml isn't used
-    no shortcuts
-  Scenario 2b: KXMLGUIBuilder::addClient() called
-    setWidget is called
-    shortcuts are inserted into current KAccel
-    shortcuts are set in all other KAccels, if the action is present in the other KAccels
-*/
-
-/*
-shortcut may be set:
-  - on construction
-  - on plug
-  - on reading XML
-  - on plugAccel (deprecated)
-
-On Construction: [via initShortcut()]
-  insert into KAccel of m_parentCollection,
-    if kaccel() && isAutoConnectShortcuts() exists
-
-On Plug: [via plug() -> plugShortcut()]
-  insert into KAccel of m_parentCollection, if exists and not already inserted into
-
-On Read XML: [via setShortcut()]
-  set in all current KAccels
-  insert into KAccel of m_parentCollection, if exists and not already inserted into
-*/
-
-KAccel* KAction::kaccelCurrent()
-{
-  if( m_parentCollection && m_parentCollection->builderKAccel() )
-    return m_parentCollection->builderKAccel();
-  else if( m_parentCollection && m_parentCollection->kaccel() )
-    return m_parentCollection->kaccel();
-  else
-    return 0L;
-}
-
-// Only to be called from initPrivate()
-bool KAction::initShortcut( const KShortcut& cut )
-{
-    d->m_cut = cut;
-
-    // Only insert action into KAccel if it has a valid name,
-    if( !objectName().isEmpty() &&
-        m_parentCollection &&
-        m_parentCollection->isAutoConnectShortcuts() &&
-        m_parentCollection->kaccel() )
-    {
-        insertKAccel( m_parentCollection->kaccel() );
-        return true;
-    }
-    return false;
- }
-
-// Only to be called from plug()
-void KAction::plugShortcut()
-{
-  KAccel* const kaccel = kaccelCurrent();
-
-  //kDebug(129) << "KAction::plugShortcut(): this = " << this << " kaccel() = " << (m_parentCollection ? m_parentCollection->kaccel() : 0) << endl;
-  if( kaccel && !objectName().isEmpty() ) {
-    // Check if already plugged into current KAccel object
-    if(d->m_kaccelList.contains(kaccel)) return;
-
-    insertKAccel( kaccel );
-  }
-}
-
-bool KAction::setShortcut( const KShortcut& cut )
-{
-  bool bChanged = (d->m_cut != cut);
-  d->m_cut = cut;
-
-  KAccel* const kaccel = kaccelCurrent();
-  bool bInsertRequired = true;
-  // Apply new shortcut to all existing KAccel objects
-
-  foreach(KAccel *a, d->m_kaccelList) {
-    // Check whether shortcut has already been plugged into
-    //  the current kaccel object.
-    if( a == kaccel )
-      bInsertRequired = false;
-    if( bChanged )
-      updateKAccelShortcut( a );
-  }
-
-  // Only insert action into KAccel if it has a valid name,
-  if( kaccel && bInsertRequired && !objectName().isEmpty() )
-    insertKAccel( kaccel );
-
-  if( bChanged ) {
-      int len = containerCount();
-      for( int i = 0; i < len; ++i )
-          updateShortcut( i );
-  }
-  return true;
-}
-
-bool KAction::updateKAccelShortcut( KAccel* kaccel )
-{
-  // Check if action is permitted
-  if (!KAuthorized::authorizeKAction(qPrintable(objectName())))
-    return false;
-
-  bool b = true;
-
-  if ( !kaccel->actions().actionPtr( objectName() ) ) {
-    if(!d->m_cut.isNull() ) {
-      kDebug(129) << "Inserting " << objectName() << ", " << d->text() << ", " << d->plainText() << endl;
-      b = kaccel->insert( objectName(), d->plainText(), QString(),
-          d->m_cut,
-          this, SLOT(slotActivated()),
-          isShortcutConfigurable(), isEnabled() );
-    }
-  }
-  else
-    b = kaccel->setShortcut( objectName(), d->m_cut );
-
-  return b;
-}
-
-void KAction::insertKAccel( KAccel* kaccel )
-{
-  //kDebug(129) << "KAction::insertKAccel( " << kaccel << " ): this = " << this << endl;
-  if ( !kaccel->actions().actionPtr( objectName() ) ) {
-    if( updateKAccelShortcut( kaccel ) ) {
-      d->m_kaccelList.append( kaccel );
-      connect( kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
-    }
-  }
-  else
-    kWarning(129) << "KAction::insertKAccel( kaccel = " << kaccel << " ): KAccel object already contains an action name \"" << objectName() << "\"" << endl; // -- ellis
-}
-
-void KAction::removeKAccel( KAccel* kaccel )
-{
-  //kDebug(129) << "KAction::removeKAccel( " << i << " ): this = " << this << endl;
-  foreach(KAccel *a, d->m_kaccelList) {
-    if( a == kaccel ) {
-      kaccel->remove( objectName() );
-      d->m_kaccelList.removeAll( a );
-      disconnect( kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
-      break;
-    }
-  }
-}
-
-
-void KAction::updateShortcut( int i )
-{
-  int id = itemId( i );
-
-  QWidget* w = container( i );
-  if ( qobject_cast<QMenu *>( w ) ) {
-    QMenu* menu = static_cast<QMenu*>(w);
-    updateShortcut( menu, id );
-  }
-  else if ( qobject_cast<QMenuBar *>( w ) )
-    static_cast<QMenuBar*>(w)->setAccel( d->m_cut.keyCodeQt(), id );
-}
-
-void KAction::updateShortcut( QMenu* menu, int id )
-{
-  //kDebug(129) << "KAction::updateShortcut(): this = " << this << " d->m_kaccelList.count() = " << d->m_kaccelList.count() << endl;
-  // If the action has a KAccel object,
-  //  show the string representation of its shortcut.
-  if ( d->m_kaccel || d->m_kaccelList.count() ) {
-    QString s = menu->text( id );
-    int i = s.indexOf( '\t' );
-    if ( i >= 0 )
-      s.replace( i+1, s.length()-i, d->m_cut.seq(0).toString() );
-    else
-      s += "\t" + d->m_cut.seq(0).toString();
-
-    menu->changeItem( id, s );
-  }
-  // Otherwise insert the shortcut itself into the popup menu.
-  else {
-    // This is a fall-hack in case the KAction is missing a proper parent collection.
-    //  It should be removed eventually. --ellis
-    menu->setAccel( d->m_cut.keyCodeQt(), id );
-    kDebug(129) << "KAction::updateShortcut(): name = \"" << objectName() << "\", cut = " << d->m_cut.toStringInternal() << "; No KAccel, probably missing a parent collection." << endl;
-  }
-}
-
-const KShortcut& KAction::shortcut() const
-{
-  return d->m_cut;
-}
-
-const KShortcut& KAction::shortcutDefault() const
-{
-  return d->m_cutDefault;
-}
-
-QString KAction::shortcutText() const
-{
-  return d->m_cut.toStringInternal();
-}
-
-void KAction::setShortcutText( const QString& s )
-{
-  setShortcut( KShortcut(s) );
-}
-
-
-void KAction::setGroup( const QString& grp )
-{
-  d->m_group = grp;
-
-  int len = containerCount();
-  for( int i = 0; i < len; ++i )
-    updateGroup( i );
-}
-
-void KAction::updateGroup( int )
-{
-  // DO SOMETHING
-}
-
-QString KAction::group() const
-{
-  return d->m_group;
-}
-
-bool KAction::isEnabled() const
-{
-  return d->isEnabled();
+  return d->m_defaultShortcut;
 }
 
 bool KAction::isShortcutConfigurable() const
@@ -492,632 +203,135 @@ bool KAction::isShortcutConfigurable() const
   return d->m_configurable;
 }
 
-void KAction::setToolTip( const QString& tt )
-{
-  d->setToolTip( tt );
-
-  int len = containerCount();
-  for( int i = 0; i < len; ++i )
-    updateToolTip( i );
-}
-
-void KAction::updateToolTip( int i )
-{
-  QWidget *w = container( i );
-
-  if ( qobject_cast<KToolBar *>( w ) )
-    static_cast<KToolBar*>(w)->getWidget( itemId( i ) )->setToolTip( d->toolTip() );
-}
-
-QString KAction::toolTip() const
-{
-  return d->toolTip();
-}
-
-int KAction::plug( QWidget *w, int index )
-{
-  //kDebug(129) << "KAction::plug( " << w << ", " << index << " )" << endl;
-  if (!w ) {
-  kWarning(129) << "KAction::plug called with 0 argument\n";
-  return -1;
-  }
-
-  // Ellis: print warning if there is a shortcut, but no KAccel available (often due to no widget available in the actioncollection)
-  // David: Well, it doesn't matter much, things still work (e.g. Undo in koffice) via QAccel.
-  // We should probably re-enable the warning for things that only KAccel can do, though - e.g. WIN key (mapped to Meta).
-#if 0 //ndef NDEBUG
-  KAccel* kaccel = kaccelCurrent();
-  if( !d->m_cut.isNull() && !kaccel ) {
-    kDebug(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
-  }
-#endif
-
-  // Check if action is permitted
-  if (!KAuthorized::authorizeKAction(qPrintable(objectName())))
-    return -1;
-
-  plugShortcut();
-
-  if ( qobject_cast<QMenu *>( w ) )
-  {
-    QMenu* menu = static_cast<QMenu*>( w );
-    int id;
-    // Don't insert shortcut into menu if it's already in a KAccel object.
-    int keyQt = (d->m_kaccelList.count() || d->m_kaccel) ? 0 : d->m_cut.keyCodeQt();
-
-    if ( d->hasIcon() )
-    {
-        KInstance *instance;
-        if ( m_parentCollection )
-          instance = m_parentCollection->instance();
-        else
-          instance = KGlobal::instance();
-        id = menu->insertItem( d->iconSet( KIcon::Small, 0, instance ), d->text(), this,//dsweet
-                                 SLOT( slotPopupActivated() ), keyQt,
-                                 -1, index );
-    }
-    else
-        id = menu->insertItem( d->text(), this,
-                               SLOT( slotPopupActivated() ),
-                               keyQt, -1, index );
-
-    // If the shortcut is already in a KAccel object, then
-    //  we need to set the menu item's shortcut text.
-    if ( d->m_kaccelList.count() || d->m_kaccel )
-        updateShortcut( menu, id );
-
-    // call setItemEnabled only if the item really should be disabled,
-    // because that method is slow and the item is per default enabled
-    if ( !d->isEnabled() )
-        menu->setItemEnabled( id, false );
-
-    if ( !d->whatsThis().isEmpty() )
-        menu->setWhatsThis( id, whatsThisWithIcon() );
-
-    addContainer( menu, id );
-    connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-
-    if ( m_parentCollection )
-      m_parentCollection->connectHighlight( menu, this );
-
-    return d->m_containers.count() - 1;
-  }
-  else if ( qobject_cast<KToolBar *>( w ) )
-  {
-    KToolBar *bar = static_cast<KToolBar *>( w );
-
-    int id_ = getToolButtonID();
-    KInstance *instance;
-    if ( m_parentCollection )
-      instance = m_parentCollection->instance();
-    else
-      instance = KGlobal::instance();
-
-    if ( icon().isEmpty() && !iconSet().pixmap().isNull() ) // old code using QIconSet directly
-    {
-        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( buttonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ), this,
-                           SLOT( slotButtonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ),
-                           d->isEnabled(), d->plainText(), index );
-    }
-    else
-    {
-        QString icon = d->iconName();
-        if ( icon.isEmpty() )
-            icon = "unknown";
-        bar->insertButton( icon, id_, SIGNAL( buttonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ), this,
-                           SLOT( slotButtonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ),
-                           d->isEnabled(), d->plainText(), index, instance );
-    }
-
-    KToolBarButton* ktb = bar->getButton(id_);
-    ktb->setObjectName( QByteArray("toolbutton_")+objectName() );
-
-    if ( !d->whatsThis().isEmpty() )
-        bar->getButton(id_)->setWhatsThis(whatsThisWithIcon() );
-
-    if ( !d->toolTip().isEmpty() )
-      bar->getButton(id_)->setToolTip( d->toolTip() );
-
-    addContainer( bar, id_ );
-
-    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-
-    if ( m_parentCollection )
-      m_parentCollection->connectHighlight( bar, this );
-
-    return containerCount() - 1;
-  }
-
-  return -1;
-}
-
-void KAction::unplug( QWidget *w )
-{
-  int i = findContainer( w );
-  if ( i == -1 )
-    return;
-  int id = itemId( i );
-
-  if ( qobject_cast<QMenu *>( w ) )
-  {
-    QMenu *menu = static_cast<QMenu *>( w );
-    menu->removeItem( id );
-  }
-  else if ( qobject_cast<KToolBar *>( w ) )
-  {
-    KToolBar *bar = static_cast<KToolBar *>( w );
-    bar->removeItemDelayed( id );
-  }
-  else if ( qobject_cast<QMenuBar *>( w ) )
-  {
-    QMenuBar *bar = static_cast<QMenuBar *>( w );
-    bar->removeItem( id );
-  }
-
-  removeContainer( i );
-  if ( m_parentCollection )
-    m_parentCollection->disconnectHighlight( w, this );
-}
-
-void KAction::plugAccel(KAccel *kacc, bool configurable)
-{
-  kWarning(129) << "KAction::plugAccel(): call to deprecated action." << endl;
-  kDebug(129) << kBacktrace() << endl;
-  //kDebug(129) << "KAction::plugAccel( kacc = " << kacc << " ): name \"" << name() << "\"" << endl;
-  if ( d->m_kaccel )
-    unplugAccel();
-
-  // If the parent collection's accel ptr isn't set yet
-  //if ( m_parentCollection && !m_parentCollection->accel() )
-  //  m_parentCollection->setAccel( kacc );
-
-  // We can only plug this action into the given KAccel object
-  //  if it does not already contain an action with the same name.
-  if ( !kacc->actions().actionPtr(objectName()) )
-  {
-    d->m_kaccel = kacc;
-    d->m_kaccel->insert(objectName(), d->plainText(), QString(),
-        KShortcut(d->m_cut),
-        this, SLOT(slotActivated()),
-        configurable, isEnabled());
-    connect(d->m_kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
-    //connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
-  }
-  else
-    kWarning(129) << "KAction::plugAccel( kacc = " << kacc << " ): KAccel object already contains an action name \"" << objectName() << "\"" << endl; // -- ellis
-}
-
-void KAction::unplugAccel()
-{
-  //kDebug(129) << "KAction::unplugAccel() " << this << " " << name() << endl;
-  if ( d->m_kaccel )
-  {
-    d->m_kaccel->remove(objectName());
-    d->m_kaccel = 0;
-  }
-}
-
-void KAction::plugMainWindowAccel( QWidget *w )
-{
-  // Note: topLevelWidget() stops too early, we can't use it.
-  QWidget * tl = w;
-  QWidget * n;
-  while ( (tl->windowType() != Qt::Dialog) && ( n = tl->parentWidget() ) ) // lookup parent and store
-    tl = n;
-
-  KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
-  if (mw)
-    plugAccel( mw->accel() );
-  else
-    kDebug(129) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
-}
-
-void KAction::setEnabled(bool enable)
-{
-  //kDebug(129) << "KAction::setEnabled( " << enable << " ): this = " << this << " d->m_kaccelList.count() = " << d->m_kaccelList.count() << endl;
-  if ( enable == d->isEnabled() )
-    return;
-
-  foreach(KAccel *a, d->m_kaccelList)
-    a->setEnabled( objectName(), enable );
-
-  d->setEnabled( enable );
-
-  int len = containerCount();
-  for( int i = 0; i < len; ++i )
-    updateEnabled( i );
-
-  emit enabled( d->isEnabled() );
-}
-
-void KAction::updateEnabled( int i )
-{
-    QWidget *w = container( i );
-
-    if ( qobject_cast<QMenu *>( w ) )
-      static_cast<QMenu*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
-    else if ( qobject_cast<QMenuBar *>( w ) )
-      static_cast<QMenuBar*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
-    else if ( qobject_cast<KToolBar *>( w ) )
-      static_cast<KToolBar*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
-}
-
 void KAction::setShortcutConfigurable( bool b )
 {
     d->m_configurable = b;
 }
 
-void KAction::setText( const QString& text )
-{
-  foreach(KAccel *a, d->m_kaccelList) {
-    KAccelAction* const pAction = a->actions().actionPtr(objectName());
-    if (pAction)
-      pAction->setLabel( text );
-  }
-
-  d->setText( text );
-
-  int len = containerCount();
-  for( int i = 0; i < len; ++i )
-    updateText( i );
-}
-
-void KAction::updateText( int i )
-{
-  QWidget *w = container( i );
-
-  if ( qobject_cast<QMenu *>( w ) ) {
-    int id = itemId( i );
-    static_cast<QMenu*>(w)->changeItem( id, d->text() );
-    if (!d->m_cut.isNull())
-      updateShortcut( static_cast<QMenu*>(w), id );
-  }
-  else if ( qobject_cast<QMenuBar *>( w ) )
-    static_cast<QMenuBar*>(w)->changeItem( itemId( i ), d->text() );
-  else if ( qobject_cast<KToolBar *>( w ) )
-  {
-    QWidget *button = static_cast<KToolBar *>(w)->getWidget( itemId( i ) );
-    if ( qobject_cast<KToolBarButton *>( button ) )
-      static_cast<KToolBarButton *>(button)->setText( d->plainText() );
-  }
-}
-
-QString KAction::text() const
-{
-  return d->text();
-}
-
-QString KAction::plainText() const
-{
-  return d->plainText( );
-}
-
-void KAction::setIcon( const QString &icon )
-{
-  d->setIconName( icon );
-
-  // now handle any toolbars
-  int len = containerCount();
-  for ( int i = 0; i < len; ++i )
-    updateIcon( i );
-}
-
-void KAction::updateIcon( int id )
-{
-  QWidget* w = container( id );
-
-  if ( qobject_cast<QMenu *>( w ) ) {
-    int itemId_ = itemId( id );
-    static_cast<QMenu*>(w)->changeItem( itemId_, d->iconSet( KIcon::Small ), d->text() );
-    if (!d->m_cut.isNull())
-      updateShortcut( static_cast<QMenu*>(w), itemId_ );
-  }
-  else if ( qobject_cast<QMenuBar *>( w ) )
-    static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet( KIcon::Small ), d->text() );
-  else if ( qobject_cast<KToolBar *>( w ) )
-    static_cast<KToolBar *>(w)->setButtonIcon( itemId( id ), d->iconName() );
-}
-
-QString KAction::icon() const
-{
-  return d->iconName( );
-}
-
-void KAction::setIcon( const QIcon &iconset )
-{
-  d->setIcon( iconset );
-
-  int len = containerCount();
-  for( int i = 0; i < len; ++i )
-    updateIconSet( i );
-}
-
-
-void KAction::updateIconSet( int id )
-{
-  QWidget *w = container( id );
-
-  if ( qobject_cast<QMenu *>( w ) )
-  {
-    int itemId_ = itemId( id );
-    static_cast<QMenu*>(w)->changeItem( itemId_, d->iconSet(), d->text() );
-    if (!d->m_cut.isNull())
-      updateShortcut( static_cast<QMenu*>(w), itemId_ );
-  }
-  else if ( qobject_cast<QMenuBar *>( w ) )
-    static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet(), d->text() );
-  else if ( qobject_cast<KToolBar *>( w ) )
-  {
-    if ( icon().isEmpty() && d->hasIcon() ) // only if there is no named icon ( scales better )
-      static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), d->iconSet() );
-    else
-      static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), d->iconSet( KIcon::Small ) );
-  }
-}
-
-QIcon KAction::iconSet( KIcon::Group group, int size ) const
-{
-    return d->iconSet( group, size );
-}
-
 bool KAction::hasIcon() const
 {
-  return d->hasIcon();
-}
-
-void KAction::setWhatsThis( const QString& text )
-{
-  d->setWhatsThis(  text );
-
-  int len = containerCount();
-  for( int i = 0; i < len; ++i )
-    updateWhatsThis( i );
-}
-
-void KAction::updateWhatsThis( int i )
-{
-  QMenu* pm = menu( i );
-  if ( pm )
-  {
-    pm->setWhatsThis( itemId( i ), d->whatsThis() );
-    return;
-  }
-
-  KToolBar *tb = toolBar( i );
-  if ( tb )
-  {
-    QWidget *w = tb->getButton( itemId( i ) );
-    w->setWhatsThis(QString());
-    w->setWhatsThis(d->whatsThis() );
-    return;
-  }
-}
-
-QString KAction::whatsThis() const
-{
-  return d->whatsThis();
-}
-
-QString KAction::whatsThisWithIcon() const
-{
-    QString text = whatsThis();
-    if (!d->iconName().isEmpty())
-      return QString::fromLatin1("<img source=\"small|%1\"> %2").arg(d->iconName() ).arg(text);
-    return text;
-}
-
-QWidget* KAction::container( int index ) const
-{
-  assert( index < containerCount() );
-  return d->m_containers.at(index).m_container;
-}
-
-KToolBar* KAction::toolBar( int index ) const
-{
-    return dynamic_cast<KToolBar *>( d->m_containers.at(index).m_container );
-}
-
-QMenu* KAction::menu( int index ) const
-{
-    return dynamic_cast<QMenu *>( d->m_containers.at(index).m_container );
-}
-
-QWidget* KAction::representative( int index ) const
-{
-  return d->m_containers.at(index).m_representative;
-}
-
-int KAction::itemId( int index ) const
-{
-  return d->m_containers.at(index).m_id;
-}
-
-int KAction::containerCount() const
-{
-  return d->m_containers.count();
-}
-
-uint KAction::kaccelCount() const
-{
-  return d->m_kaccelList.count();
-}
-
-void KAction::addContainer( QWidget* c, int id )
-{
-  KActionPrivate::Container p;
-  p.m_container = c;
-  p.m_id = id;
-  d->m_containers.append( p );
-}
-
-void KAction::addContainer( QWidget* c, QWidget* w )
-{
-  KActionPrivate::Container p;
-  p.m_container = c;
-  p.m_representative = w;
-  d->m_containers.append( p );
-}
-
-void KAction::activate()
-{
-#ifdef QT3_SUPPORT
-  emit activated( KAction::EmulatedActivation, Qt::NoButton );
-#endif
-  emit activated( KAction::EmulatedActivation, Qt::NoButton, Qt::NoModifier );
-  slotActivated();
-}
-
-void KAction::slotActivated()
-{
-  QObject *senderObj = sender();
-  if ( senderObj )
-  {
-    if ( qobject_cast<KAccelPrivate *>( senderObj ) ) {
-#ifdef QT3_SUPPORT
-      emit activated( KAction::AccelActivation, Qt::NoButton );
-#endif
-      emit activated( KAction::AccelActivation, Qt::NoButton, Qt::NoModifier );
-    }
-  }
-  emit activated();
-}
-
-// This catches signals emitted by KActions inserted into QMenu
-// We do crude things inside it, because we need to know which
-// QMenu emitted the signal. We need to be sure that it is
-// only called by QMenus, we plugged us in.
-void KAction::slotPopupActivated()
-{
-  if( qobject_cast<Q3Signal *>(sender()))
-  {
-    int id = dynamic_cast<const Q3Signal *>(sender())->value().toInt();
-    int pos = findContainer(id);
-    if(pos != -1)
-    {
-      QMenu* qpm = dynamic_cast<QMenu *>( container(pos) );
-      if(qpm)
-      {
-        KMenu* kpm = dynamic_cast<KMenu *>( qpm );
-        Qt::MouseButtons buttons;
-        Qt::KeyboardModifiers modifiers;
-        if ( kpm ) { // KMenu? Nice, it stores the state.
-            buttons = kpm->mouseButtons();
-            modifiers = kpm->keyboardModifiers();
-        } else { // just a QMenu? We'll ask for the state now then (small race condition?)
-            //kDebug(129) << "KAction::slotPopupActivated not a KMenu -> using QApplication methods" << endl;
-            buttons = QApplication::mouseButtons();
-            modifiers = QApplication::keyboardModifiers();
-        }
-        emit activated( KAction::PopupMenuActivation, buttons, modifiers );
-#ifdef QT3_SUPPORT
-        emit activated( KAction::PopupMenuActivation, Qt::ButtonState(int(buttons|modifiers)) );
-#endif
-        slotActivated();
-        return;
-      }
-    }
-  }
-
-  kWarning(129)<<"Don't connect KAction::slotPopupActivated() to anything, except into QMenus which are in containers. Use slotActivated instead."<<endl;
-#ifdef QT3_SUPPORT
-  emit activated( KAction::PopupMenuActivation, Qt::NoButton );
-#endif
-  emit activated( KAction::PopupMenuActivation, Qt::NoButton, Qt::NoModifier );
-  slotActivated();
-}
-
-void KAction::slotButtonClicked( int, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers )
-{
-  kDebug(129) << "slotButtonClicked() buttons=" << buttons << " modifiers=" << modifiers << endl;
-  emit activated( KAction::ToolBarActivation, buttons, modifiers );
-
-  // RightButton isn't really an activation
-  if ( ( buttons & Qt::LeftButton ) || ( buttons & Qt::MidButton ) )
-    slotActivated();
-}
-
-
-void KAction::slotDestroyed()
-{
-  kDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << objectName() << "\", sender = " << sender() << endl;
-  const QObject* const o = sender();
-
-
-  foreach(KAccel *a, d->m_kaccelList)
-  {
-    if ( o == a )
-    {
-      disconnect( a, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
-      d->m_kaccelList.removeAll(a);
-      return;
-    }
-  }
-
-  int i;
-  do
-  {
-    i = findContainer( static_cast<const QWidget*>( o ) );
-    if ( i != -1 )
-      removeContainer( i );
-  } while ( i != -1 );
-}
-
-int KAction::findContainer( const QWidget* widget ) const
-{
-  for(int pos = 0; pos < d->m_containers.size(); ++pos)
-  {
-    if ( d->m_containers.at(pos).m_representative == widget ||
-         d->m_containers.at(pos).m_container == widget )
-      return pos;
-  }
-
-  return -1;
-}
-
-int KAction::findContainer( const int id ) const
-{
-  for(int pos = 0; pos < d->m_containers.size(); ++pos)
-  {
-    if ( d->m_containers.at(pos).m_id == id )
-      return pos;
-  }
-
-  return -1;
-}
-
-void KAction::removeContainer( int index )
-{
-  if(index < d->m_containers.size())
-    d->m_containers.removeAt(index);
-}
-
-// FIXME: Remove this (ellis)
-void KAction::slotKeycodeChanged()
-{
-  kDebug(129) << "KAction::slotKeycodeChanged()" << endl; // -- ellis
-  KAccelAction* pAction = d->m_kaccel->actions().actionPtr(objectName());
-  if( pAction )
-    setShortcut(pAction->shortcut());
+  return !icon().isNull();
 }
 
 KActionCollection *KAction::parentCollection() const
 {
-    return m_parentCollection;
-}
-
-void KAction::unplugAll()
-{
-  while ( containerCount() != 0 )
-    unplug( container( 0 ) );
-}
-
-const KGuiItem& KAction::guiItem() const
-{
-    return *d;
+    return qobject_cast<KActionCollection*>(const_cast<QObject*>(parent()));
 }
 
 void KAction::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+void KAction::setIconName( const QString & icon, KIcon::Group group, int size, KInstance* instance )
+{
+  d->m_iconName = icon;
+  if (group == KIcon::NoGroup)
+    group = KIcon::Toolbar;
+  if (size == -1 && instance->iconLoader()->theme())
+    size = instance->iconLoader()->theme()->defaultSize((KIcon::Group)group);
+  else
+    size = KIcon::SizeSmall;
+  setIcon(instance->iconLoader()->loadIconSet(icon, (KIcon::Group)group, size));
+}
+
+const QString & KAction::iconName( ) const
+{
+  return d->m_iconName;
+}
+
+const KShortcut & KAction::shortcut( ) const
+{
+  return d->m_shortcut;
+}
+
+QString KAction::shortcutText() const
+{
+  return shortcut().toString();
+}
+
+void KAction::setShortcut( const KShortcut & shortcut )
+{
+  d->m_shortcut = shortcut;
+  QAction::setShortcut(shortcut.seq(0).qt());
+
+  if (shortcut.count() > 1) {
+    QList<QKeySequence> alternateShortcuts;
+    for (uint i = 1; i < shortcut.count(); ++i)
+      alternateShortcuts.append(shortcut.seq(i).qt());
+    setAlternateShortcuts(alternateShortcuts);
+  }
+}
+
+void KAction::setShortcutText(const QString& shortcutText)
+{
+  return setShortcut(KShortcut(shortcutText));
+}
+
+void KAction::slotTriggered()
+{
+  emit activated();
+  emit triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
+}
+
+void KAction::slotChanged( )
+{
+}
+
+int KAction::plug( QWidget * widget, int index )
+{
+  QAction* before = 0L;
+  if (index > 0 && index < widget->actions().count())
+    before = widget->actions().at(index - 1);
+  widget->insertAction(before, this);
+  return widget->actions().lastIndexOf(this);
+}
+
+void KAction::unplug( QWidget * w )
+{
+  w->removeAction(this);
+}
+
+bool KAction::isPlugged( ) const
+{
+  return associatedWidgets().count();
+}
+
+bool KAction::isPlugged( QWidget * widget ) const
+{
+  return associatedWidgets().contains(widget);
+}
+
+void KAction::unplugAll()
+{
+  QList<QWidget*> aw = associatedWidgets();
+
+  foreach (QWidget* widget, aw)
+    widget->removeAction(this);
+}
+
+int KAction::containerCount() const
+{
+  return associatedWidgets().count();
+}
+
+QWidget* KAction::container( int index ) const
+{
+  if (index >= 0 && index < associatedWidgets().count())
+    return associatedWidgets().value(index);
+
+  return 0L;
+}
+
+void KAction::setName ( const char * name )
+{
+  // Not allowed
+  Q_ASSERT(false);
+}
+
+void KAction::setObjectName(const QString&)
+{
+  // Not allowed
+  Q_ASSERT(false);
+}
 
 /* vim: et sw=2 ts=2
  */

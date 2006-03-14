@@ -29,6 +29,7 @@ class KXMLGUIBuilderPrivate;
 class QWidget;
 class KInstance;
 class KXMLGUIClient;
+class QAction;
 
 /**
  * Abstract interface for a "GUI builder", used by the GUIFactory
@@ -81,9 +82,9 @@ class KDEUI_EXPORT KXMLGUIBuilder
 
   virtual QStringList customTags() const;
 
-  virtual int createCustomElement( QWidget *parent, int index, const QDomElement &element );
+  virtual QAction* createCustomElement( QWidget *parent, int index, const QDomElement &element );
 
-  virtual void removeCustomElement( QWidget *parent, int id );
+  virtual void removeCustomElement( QWidget *parent, QAction* action );
 
   virtual void finalizeGUI( KXMLGUIClient *client );
 

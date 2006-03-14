@@ -36,6 +36,7 @@
 
 #include <qhash.h>
 #include <qmap.h>
+#include <Q3PtrList>
 
 #define DEFAULT_CONFIG_FILE   "kspellrc"
 

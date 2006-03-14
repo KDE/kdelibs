@@ -6,6 +6,7 @@
               (C) 2000 Michael Koch <koch@kde.org>
               (C) 2001 Holger Freyther <freyther@kde.org>
               (C) 2002 Ellis Whitehead <ellis@kde.org>
+              (C) 2005-2006 Hamish Rodda <rodda@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -25,20 +26,21 @@
 #ifndef KACTION_H
 #define KACTION_H
 
-#include <QIcon> // remove when iconSet() is removed
-#include <QObject>
+#include <QAction>
 
-#include <kicontheme.h>
+#include <kdelibs_export.h>
 #include <kshortcut.h>
+#include <kicontheme.h>
+#include <kglobal.h>
 
-class QMenu;
-class QIcon;
-class QString;
+#ifdef KDE3_SUPPORT
+#include <qicon.h> // remove if iconSet() is removed
+#endif
 
 class KAccel;
 class KActionCollection;
 class KGuiItem;
-class KToolBar;
+class KInstance;
 
 /**
  * @short Class to encapsulate user-driven action or event
@@ -185,20 +187,67 @@ class KToolBar;
  *
  * @see KStdAction
  */
-class KDEUI_EXPORT KAction : public QObject
+class KDEUI_EXPORT KAction : public QAction
 {
   friend class KActionCollection;
+
   Q_OBJECT
-  Q_PROPERTY( int containerCount READ containerCount )
-  Q_PROPERTY( QString plainText READ plainText )
-  Q_PROPERTY( QString text READ text WRITE setText )
+
+  // Needed for save/load of shortcut - as XMLGui sets properties from XML attributes
+  // FIXME KAction port : replace (this hides QAction::shortcut)
   Q_PROPERTY( QString shortcut READ shortcutText WRITE setShortcutText )
-  Q_PROPERTY( bool enabled READ isEnabled WRITE setEnabled )
-  Q_PROPERTY( QString group READ group WRITE setGroup )
-  Q_PROPERTY( QString whatsThis READ whatsThis WRITE setWhatsThis )
-  Q_PROPERTY( QString toolTip READ toolTip WRITE setToolTip )
-  Q_PROPERTY( QString icon READ icon WRITE setIcon )
+
 public:
+    /**
+     * Constructs an action in the specified KActionCollection.
+     *
+     * @param parent The action collection to contain this action.
+     * @param name The internal name for this action.
+     */
+    KAction(KActionCollection* parent, const char* name);
+
+    /**
+     * Constructs an action with text; a shortcut may be specified by
+     * the ampersand character (e.g. "&amp;Option" creates a shortcut with key \e O )
+     *
+     * This is the most common KAction used when you do not have a
+     * corresponding icon (note that it won't appear in the current version
+     * of the "Edit ToolBar" dialog, because an action needs an icon to be
+     * plugged in a toolbar...).
+     *
+     * @param text The text that will be displayed.
+     * @param parent The action collection to contain this action.
+     * @param name The internal name for this action.
+     */
+    KAction(const QString& text, KActionCollection* parent, const char* name);
+
+    /**
+     * Constructs an action with text and an icon; a shortcut may be specified by
+     * the ampersand character (e.g. "&amp;Option" creates a shortcut with key \e O )
+     *
+     * This is the other common KAction used.  Use it when you
+     * \e do have a corresponding icon.
+     *
+     * @param icon The icon to display.
+     * @param text The text that will be displayed.
+     * @param parent The action collection to contain this action.
+     * @param name The internal name for this action.
+     */
+    KAction(const QIcon& icon, const QString& text, KActionCollection* parent, const char* name);
+
+    /**
+     * \overload KAction(const QIcon&, const QString&, KActionCollection*, const char*)
+     *
+     * This constructor differs from the above in that the icon is specified as
+     * a icon name which can be loaded by KIconLoader.
+     *
+     * @param icon The name of the icon to load via KIconLoader.
+     * @param text The text that will be displayed.
+     * @param parent The action collection to contain this action.
+     * @param name The internal name for this action.
+     */
+    KAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
+
     /**
      * Constructs an action with text, potential keyboard
      * shortcut, and a SLOT to call when this action is invoked by
@@ -221,7 +270,7 @@ public:
      */
     KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name );
+             KActionCollection* parent, const char* name ) KDE_DEPRECATED;
 
     /**
      * Constructs an action with text, icon, potential keyboard
@@ -244,7 +293,7 @@ public:
      */
     KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name );
+             KActionCollection* parent, const char* name ) KDE_DEPRECATED;
 
     /**
      * Constructs an action with text, icon, potential keyboard
@@ -268,7 +317,7 @@ public:
      */
     KAction( const QString& text, const QString& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name );
+             KActionCollection* parent, const char* name ) KDE_DEPRECATED;
 
     /**
      * The same as the above constructor, but with a KGuiItem providing
@@ -283,12 +332,88 @@ public:
      */
     KAction( const KGuiItem& item, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name );
+             KActionCollection* parent, const char* name ) KDE_DEPRECATED;
 
     /**
      * Standard destructor
      */
     virtual ~KAction();
+
+    /**
+     * Returns the action collection that owns this object.
+     */
+    KActionCollection* parentCollection() const;
+
+    /**
+     * Get the kde shortcut for this action.
+     *
+     * This is preferred over QAction::shortcut(), as it allows for multiple shortcuts
+     * per action.
+     */
+    const KShortcut& shortcut() const;
+
+    /**
+     * Get the text version of the kde shortcut for this action.
+     *
+     * \sa shortcut()
+     */
+    QString shortcutText() const;
+
+    /**
+     * Set the shortcut for this action.
+     *
+     * This is preferred over QAction::setShortcut(), as it allows for multiple shortcuts
+     * per action.
+     */
+    void setShortcut(const KShortcut& shortcut);
+
+    /**
+     * \overload void setShortcut(const KShortcut& shortcut)
+     *
+     * Allows for a KShortcut to be created from text before assignment to this action's shortcut.
+     */
+    void setShortcutText(const QString& shortcutText);
+
+    /**
+     * Get the default shortcut for this action.
+     */
+    const KShortcut& defaultShortcut() const;
+
+    /**
+     * Set the default shortcut for this action.
+     */
+    void setDefaultShortcut(const KShortcut& shortcut);
+
+    /**
+     * Returns true if this action's shortcut is configurable.
+     */
+    bool isShortcutConfigurable() const;
+
+    /**
+     * Indicate whether the user may configure the action's shortcut.
+     *
+     * \param configurable set to \e true if this shortcut may be configured by the user, otherwise \e false.
+     */
+    void setShortcutConfigurable(bool configurable);
+
+    /**
+     * Convenience function to determine if this action has an associated icon.
+     */
+    bool hasIcon() const;
+
+    /**
+     * Get the name which was passed to KIconLoader to retrieve this icon
+     */
+    const QString& iconName() const;
+
+    /**
+     * Set the icon for this action.
+     *
+     * \param icon the KDE icon name to pass to KIconLoader.
+     * \param group the icon group
+     * \param instance the KInstance from which to retrieve the icon loader.
+     */
+    void setIconName(const QString& icon, KIcon::Group group = KIcon::NoGroup, int size = -1, KInstance* instance = KGlobal::instance());
 
     /**
      * "Plug" or insert this action into a given widget.
@@ -303,19 +428,7 @@ public:
      * @param index The position into which the action is plugged. If
      * this is negative, the action is inserted at the end.
      */
-    virtual int plug( QWidget *widget, int index = -1 );
-
-    /**
-     * @deprecated.  Shouldn't be used.  No substitute available.
-     *
-     * "Plug" or insert this action into a given KAccel.
-     *
-     * @param accel The KAccel collection which holds this accel
-     * @param configurable If the shortcut is configurable via
-     * the KAccel configuration dialog (this is somehow deprecated since
-     * there is now a KAction key configuration dialog).
-     */
-    virtual void plugAccel(KAccel *accel, bool configurable = true) KDE_DEPRECATED;
+    int plug( QWidget *widget, int index = -1 ) KDE_DEPRECATED;
 
     /**
      * "Unplug" or remove this action from a given widget.
@@ -329,257 +442,87 @@ public:
      *
      * @param w Remove the action from this GUI element.
      */
-    virtual void unplug( QWidget *w );
+    void unplug( QWidget *w ) KDE_DEPRECATED;
 
     /**
-     * @deprecated.  Complement method to plugAccel().
-     * Disconnect this action from the KAccel.
+     * "Unplug" or remove this action from all widgets.  You do not need
+     * to call this function if the action is being deleted, it will be
+     * taken care of automatically.
      */
-    virtual void unplugAccel() KDE_DEPRECATED;
+    void unplugAll();
 
     /**
      * returns whether the action is plugged into any container widget or not.
      */
-    virtual bool isPlugged() const;
+    bool isPlugged() const;
 
     /**
      * returns whether the action is plugged into the given container
      */
-    bool isPlugged( const QWidget *container ) const;
+    bool isPlugged( QWidget *container ) const;
 
     /**
-     * returns whether the action is plugged into the given container with the given, container specific, id (often
-     * menu or toolbar id ) .
+     * Returns how many widgets this action is added to.
      */
-    virtual bool isPlugged( const QWidget *container, int id ) const;
+    int containerCount() const KDE_DEPRECATED;
 
     /**
-     * returns whether the action is plugged into the given container with the given, container specific, representative
-     * container widget item.
+     * Returns a widget which this action is added to.
+     *
+     * \param index index to the widget requested.
      */
-    virtual bool isPlugged( const QWidget *container, const QWidget *_representative ) const;
-
     QWidget* container( int index ) const;
-    int itemId( int index ) const;
-    QWidget* representative( int index ) const;
-    int containerCount() const;
-    uint kaccelCount() const;
 
-    virtual bool hasIcon() const;
-
-    virtual QString plainText() const;
-
-    /**
-     * Get the text associated with this action.
-     */
-    virtual QString text() const;
-
-    /**
-     * Get the keyboard shortcut associated with this action.
-     */
-    virtual const KShortcut& shortcut() const;
-    /**
-     * Get the default shortcut for this action.
-     */
-    virtual const KShortcut& shortcutDefault() const;
-
-    // These two methods are for Q_PROPERTY
-    QString shortcutText() const;
-    void setShortcutText( const QString& );
-
-    /**
-     * Returns true if this action is enabled.
-     */
-    virtual bool isEnabled() const;
-
-    /**
-     * Returns true if this action's shortcut is configurable.
-     */
-    virtual bool isShortcutConfigurable() const;
-
-    virtual QString group() const;
-
-    /**
-     * Get the What's this text for the action.
-     */
-    virtual QString whatsThis() const;
-
-    /**
-     * Get the tooltip text for the action.
-     */
-    virtual QString toolTip() const;
-
-    /**
-     * Get the QIconSet from which the icons used to display this action will
-     * be chosen.
-     *
-     * In KDE4 set group default to KIcon::Small while removing the other
-     * iconSet() function.
-     */
-    virtual QIcon iconSet( KIcon::Group group, int size=0 ) const;
-    /**
-     * Remove in KDE4
-     */
-    QIcon iconSet() const { return iconSet( KIcon::Small ); }
-
-    virtual QString icon() const;
-
-    KActionCollection *parentCollection() const;
-
-    /**
-     * @internal
-     * Generate a toolbar button id. Made public for reimplementations.
-     */
-    static int getToolButtonID();
-
-
-    void unplugAll();
-
-    enum ActivationReason { UnknownActivation, EmulatedActivation, AccelActivation, PopupMenuActivation, ToolBarActivation };
-
-public Q_SLOTS:
-    /**
-     * Sets the text associated with this action. The text is used for menu
-     * and toolbar labels etc.
-     */
-    virtual void setText(const QString &text);
-
-    /**
-     * Sets the keyboard shortcut associated with this action.
-     */
-    virtual bool setShortcut( const KShortcut& );
-
-    virtual void setGroup( const QString& );
-
-    /**
-     * Sets the What's this text for the action. This text will be displayed when
-     * a widget that has been created by plugging this action into a container
-     * is clicked on in What's this mode.
-     *
-     * The What's this text can include QML markup as well as raw text.
-     */
-    virtual void setWhatsThis( const QString& text );
-
-    /**
-     * Sets the tooltip text for the action.
-     * This will be used as a tooltip for a toolbar button, as a
-     * statusbar help-text for a menu item, and it also appears
-     * in the toolbar editor, to describe the action.
-     *
-     * For the tooltip to show up on the statusbar you will need to connect
-     * a couple of the actionclass signals to the toolbar.
-     * The easiest way of doing this is in your main window class, when you create
-     * a statusbar.  See the KActionCollection class for more details.
-     *
-     * @see KActionCollection
-     *
-     */
-    virtual void setToolTip( const QString& );
-
-    /**
-     * Sets the QIconSet from which the icons used to display this action will
-     * be chosen.
-     */
-    virtual void setIcon( const QIcon &iconSet );
-
-    virtual void setIcon( const QString& icon );
-
-    /**
-     * Enables or disables this action. All uses of this action (eg. in menus
-     * or toolbars) will be updated to reflect the state of the action.
-     */
-    virtual void setEnabled(bool enable);
-
-    /**
-     * Calls setEnabled( !disable ).
-     */
-    void setDisabled(bool disable) { return setEnabled(!disable); }
-
-    /**
-     * Indicate whether the user may configure the action's shortcut.
-     */
-    virtual void setShortcutConfigurable( bool );
-
-    /**
-     * Emulate user's interaction programmatically, by activating the action.
-     * The implementation simply emits activated().
-     */
-    virtual void activate();
-
-protected Q_SLOTS:
-    virtual void slotDestroyed();
-    virtual void slotKeycodeChanged();
-    virtual void slotActivated();
-    virtual void slotPopupActivated();
-    virtual void slotButtonClicked( int, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
-
-protected:
-    KToolBar* toolBar( int index ) const;
-    QMenu* menu( int index ) const;
-    void removeContainer( int index );
-    int findContainer( const QWidget* widget ) const;
-    int findContainer( int id ) const;
-    void plugMainWindowAccel( QWidget *w );
-
-    void addContainer( QWidget* parent, int id );
-    void addContainer( QWidget* parent, QWidget* representative );
-
-    virtual void updateShortcut( int i );
-    virtual void updateShortcut( QMenu* menu, int id );
-    virtual void updateGroup( int id );
-    virtual void updateText(int i );
-    virtual void updateEnabled(int i);
-    virtual void updateIconSet(int i);
-    virtual void updateIcon( int i);
-    virtual void updateToolTip( int id );
-    virtual void updateWhatsThis( int i );
-
-    KActionCollection *m_parentCollection;
-    QString whatsThisWithIcon() const;
-    /**
-     * Return the underlying KGuiItem
-     */
-    const KGuiItem& guiItem() const;
-
-Q_SIGNALS:
+signals:
+//#ifdef KDE3_SUPPORT
     /**
      * Emitted when this action is activated
+     *
+     * \todo KDE4: make KDE3_SUPPORT
      */
     void activated();
-    /**
-     * This signal allows to know the reason why an action was activated:
-     * whether it was due to a toolbar button, popupmenu, keyboard accel, or programmatically.
-     * In the first two cases, it also allows to know which mouse button was
-     * used (Left or Middle), and whether keyboard modifiers were pressed (e.g. CTRL).
-     *
-     * Note that this signal is emitted before the normal activated() signal.
-     * Yes, BOTH signals are always emitted, so that connecting to activated() still works.
-     * Applications which care about reason and mouse/keyboard state can either ignore the activated()
-     * signal for a given action and react to this one instead, or store the
-     * reason and mouse/keyboard state until the activated() signal is emitted.
-     */
-    void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
-
-//#ifdef QT3_SUPPORT TODO
-    /// @deprecated, use the signal
-    /// void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
-    QT_MOC_COMPAT void activated( KAction::ActivationReason reason, Qt::ButtonState state );
 //#endif
-    void enabled( bool );
 
-private:
-    void initPrivate( const QString& text, const KShortcut& cut,
-                  const QObject* receiver, const char* slot, const char* name );
-    KAccel* kaccelCurrent();
-    bool initShortcut( const KShortcut& );
-    void plugShortcut();
-    bool updateKAccelShortcut( KAccel* kaccel );
-    void insertKAccel( KAccel* );
-    /** @internal To be used exclusively by KActionCollection::removeWidget(). */
-    void removeKAccel( KAccel* );
+    /**
+     * Emitted when the action is triggered. Also provides the state of the
+     * keyboard modifiers and mouse buttons at the time.
+     */
+    void triggered(Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
 
 protected:
     virtual void virtual_hook( int id, void* data );
+
+    /**
+     * Connect the changed signal of this action to slotChanged().
+     */
+    void connectChanged();
+
+protected Q_SLOTS:
+    /**
+     * This function is for convenience of child classes. It is connected to
+     * the QAction's changed() signal, and allows the KAction to update itself
+     * in the event of one of the attributes being changed.
+     *
+     * To have this function called, make sure you call connectChanged().
+     */
+    virtual void slotChanged();
+
+    /**
+     * This function is connected to the QAction's triggered(bool) signal, and allows
+     * KAction to emit the triggered signal with mouse and keyboard modifiers attached,
+     * as well as the activation reason, if one was given.
+     */
+    virtual void slotTriggered();
+
+private:
+    void initPrivate(const char* name);
+    // Compatability functions here only
+    void initPrivate( const KShortcut& cut, const QObject* receiver, const char* slot, const char* name );
+
+    // You're not supposed to change the action name throughout its life
+    void setName ( const char * name );
+    void setObjectName(const QString& name);
+
 private:
     class KActionPrivate;
     KActionPrivate* const d;

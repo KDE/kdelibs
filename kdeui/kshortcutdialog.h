@@ -23,7 +23,7 @@
 #include "kdialogbase.h"
 #include "kshortcut.h"
 
-class KVBox;
+class QStackedWidget;
 class KPushButton;
 class KShortcutDialogSimple;
 class KShortcutDialogAdvanced;
@@ -60,8 +60,8 @@ private:
 	uint m_mod;
 	KShortcutDialogSimple *m_simple;
 	KShortcutDialogAdvanced *m_adv;
-	KVBox *m_stack;
-	
+	QStackedWidget *m_stack;
+
 	void updateShortcutDisplay();
 	//void displayMods();
 	void keyPressed( KKey key );
@@ -79,7 +79,7 @@ private:
 	#endif
 
 protected Q_SLOTS:
-	void slotDetails();
+	void slotButtonClicked(KDialog::ButtonCode code);
 	void slotSelectPrimary();
 	void slotSelectAlternate();
 	void slotClearShortcut();

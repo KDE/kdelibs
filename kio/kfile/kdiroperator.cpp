@@ -196,15 +196,15 @@ void KDirOperator::insertViewDependentActions()
       }
 
       viewActionMenu->popupMenu()->clear();
-//      viewActionMenu->insert( shortAction );
-//      viewActionMenu->insert( detailedAction );
-//      viewActionMenu->insert( actionSeparator );
-      viewActionMenu->insert( myActionCollection->action( "short view" ) );
-      viewActionMenu->insert( myActionCollection->action( "detailed view" ) );
-      viewActionMenu->insert( actionSeparator );
-      viewActionMenu->insert( showHiddenAction );
-//      viewActionMenu->insert( myActionCollection->action( "single" ));
-      viewActionMenu->insert( separateDirsAction );
+//      viewActionMenu->addAction( shortAction );
+//      viewActionMenu->addAction( detailedAction );
+//      viewActionMenu->addAction( actionSeparator );
+      viewActionMenu->addAction( myActionCollection->action( "short view" ) );
+      viewActionMenu->addAction( myActionCollection->action( "detailed view" ) );
+      viewActionMenu->addAction( actionSeparator );
+      viewActionMenu->addAction( showHiddenAction );
+//      viewActionMenu->addAction( myActionCollection->action( "single" ));
+      viewActionMenu->addAction( separateDirsAction );
       // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
       // when you add/remove actions here!
 
@@ -214,23 +214,20 @@ void KDirOperator::insertViewDependentActions()
 
       if ( !viewActionCollection->isEmpty() )
       {
-         viewActionMenu->insert( d->viewActionSeparator );
+         viewActionMenu->addAction( d->viewActionSeparator );
 
          // first insert the normal actions, then the grouped ones
-         QStringList groups = viewActionCollection->groups();
-         groups.prepend( QString() ); // actions without group
-         QStringList::ConstIterator git = groups.begin();
-         KActionPtrList list;
-         KAction *sep = actionCollection()->action("separator");
-         for ( ; git != groups.end(); ++git )
-         {
-            if ( git != groups.begin() )
-               viewActionMenu->insert( sep );
+         QList<QActionGroup*> groups = viewActionCollection->actionGroups();
 
-            list = viewActionCollection->actions( *git );
-            KActionPtrList::ConstIterator it = list.begin();
-            for ( ; it != list.end(); ++it )
-               viewActionMenu->insert( *it );
+         foreach (KAction* action, viewActionCollection->actionsWithoutGroup())
+            viewActionMenu->addAction( action );
+
+         foreach (QActionGroup* group, groups)
+         {
+            viewActionMenu->addSeparator();
+
+            foreach (QAction* action, group->actions())
+               viewActionMenu->addAction( action );
          }
       }
 
@@ -246,7 +243,7 @@ void KDirOperator::activatedMenu( const KFileItem *, const QPoint& pos )
     setupMenu();
     updateSelectionDependentActions();
 
-    actionMenu->popup( pos );
+    actionMenu->menu()->exec( pos );
 }
 
 void KDirOperator::updateSelectionDependentActions()
@@ -361,6 +358,9 @@ void KDirOperator::slotSortReversed()
 
 void KDirOperator::slotToggleDirsFirst()
 {
+    if ( !m_fileView )
+      return;
+
     QDir::SortSpec sorting = m_fileView->sorting();
     if ( !KFile::isSortDirsFirst( sorting ) )
         m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::DirsFirst ));
@@ -371,6 +371,9 @@ void KDirOperator::slotToggleDirsFirst()
 
 void KDirOperator::slotToggleIgnoreCase()
 {
+    if ( !m_fileView )
+      return;
+
     QDir::SortSpec sorting = m_fileView->sorting();
     if ( !KFile::isSortCaseInsensitive( sorting ) )
         m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::IgnoreCase ));
@@ -536,15 +539,15 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
     return 0L;
 }
 
-void KDirOperator::trashSelected(KAction::ActivationReason reason, Qt::MouseButtons, Qt::KeyboardModifiers modifiers)
+void KDirOperator::trashSelected()
 {
     if ( !m_fileView )
         return;
 
-    if ( reason == KAction::PopupMenuActivation && ( modifiers & Qt::ShiftModifier ) ) {
+    /*if ( reason == KAction::PopupMenuActivation && ( modifiers & Qt::ShiftModifier ) ) {
         deleteSelected();
         return;
-    }
+    }*/
 
     const KFileItemList *list = m_fileView->selectedItems();
     if ( list )
@@ -1226,8 +1229,9 @@ void KDirOperator::slotCompletionMatch(const QString& match)
 
 void KDirOperator::setupActions()
 {
-    myActionCollection = new KActionCollection( topLevelWidget(), this );
+    myActionCollection = new KActionCollection( this );
     myActionCollection->setObjectName( "KDirOperator::myActionCollection" );
+    myActionCollection->setAssociatedWidget( topLevelWidget() );
     actionMenu = new KActionMenu( i18n("Menu"), myActionCollection, "popupMenu" );
     upAction = KStdAction::up( this, SLOT( cdUp() ), myActionCollection, "up" );
     upAction->setText( i18n("Parent Folder") );
@@ -1237,45 +1241,40 @@ void KDirOperator::setupActions()
     homeAction->setText(i18n("Home Folder"));
     reloadAction = KStdAction::redisplay( this, SLOT(rereadDir()), myActionCollection, "reload" );
     actionSeparator = new KActionSeparator( myActionCollection, "separator" );
-    d->viewActionSeparator = new KActionSeparator( myActionCollection,
-                                                   "viewActionSeparator" );
     mkdirAction = new KAction( i18n("New Folder..."), 0,
                                  this, SLOT( mkdir() ), myActionCollection, "mkdir" );
     KAction* trash = new KAction( i18n( "Move to Trash" ), "edittrash", Qt::Key_Delete, 0,0,myActionCollection, "trash" );
-    connect( trash, SIGNAL( activated( KAction::ActivationReason, Qt::MouseButtons, Qt::KeyboardModifiers ) ),
-	     this, SLOT( trashSelected( KAction::ActivationReason, Qt::MouseButtons, Qt::KeyboardModifiers ) ) );
+    connect( trash, SIGNAL( triggered(bool) ), SLOT( trashSelected() ) );
     new KAction( i18n( "Delete" ), "editdelete", Qt::SHIFT+Qt::Key_Delete, this,
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
-    mkdirAction->setIcon( QLatin1String("folder_new") );
+    mkdirAction->setIconName( QLatin1String("folder_new") );
     reloadAction->setText( i18n("Reload") );
     reloadAction->setShortcut( KStdAccel::shortcut( KStdAccel::Reload ));
 
 
     // the sort menu actions
     sortActionMenu = new KActionMenu( i18n("Sorting"), myActionCollection, "sorting menu");
-    byNameAction = new KRadioAction( i18n("By Name"), 0,
+    byNameAction = new KAction( i18n("By Name"), 0,
                                      this, SLOT( slotSortByName() ),
                                      myActionCollection, "by name" );
-    byDateAction = new KRadioAction( i18n("By Date"), 0,
+    byDateAction = new KAction( i18n("By Date"), 0,
                                      this, SLOT( slotSortByDate() ),
                                      myActionCollection, "by date" );
-    bySizeAction = new KRadioAction( i18n("By Size"), 0,
+    bySizeAction = new KAction( i18n("By Size"), 0,
                                      this, SLOT( slotSortBySize() ),
                                      myActionCollection, "by size" );
     reverseAction = new KToggleAction( i18n("Reverse"), 0,
                                        this, SLOT( slotSortReversed() ),
                                        myActionCollection, "reversed" );
 
-    QString sortGroup = QLatin1String("sort");
-    byNameAction->setExclusiveGroup( sortGroup );
-    byDateAction->setExclusiveGroup( sortGroup );
-    bySizeAction->setExclusiveGroup( sortGroup );
+    QActionGroup* sortGroup = new QActionGroup(this);
+    byNameAction->setActionGroup(sortGroup);
+    byDateAction->setActionGroup(sortGroup);
+    bySizeAction->setActionGroup(sortGroup);
 
 
-    dirsFirstAction = new KToggleAction( i18n("Folders First"), 0,
-                                         myActionCollection, "dirs first");
-    caseInsensitiveAction = new KToggleAction(i18n("Case Insensitive"), 0,
-                                              myActionCollection, "case insensitive" );
+    dirsFirstAction = new KToggleAction( i18n("Folders First"), myActionCollection, "dirs first");
+    caseInsensitiveAction = new KToggleAction(i18n("Case Insensitive"), myActionCollection, "case insensitive" );
 
     connect( dirsFirstAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleDirsFirst() ));
@@ -1289,10 +1288,9 @@ void KDirOperator::setupActions()
     connect( viewActionMenu->popupMenu(), SIGNAL( aboutToShow() ),
              SLOT( insertViewDependentActions() ));
 
-    shortAction = new KRadioAction( i18n("Short View"), "view_multicolumn",
-                                    KShortcut(), myActionCollection, "short view" );
-    detailedAction = new KRadioAction( i18n("Detailed View"), "view_detailed",
-                                       KShortcut(), myActionCollection, "detailed view" );
+    shortAction = new KAction( QLatin1String("view_multicolumn"), i18n("Short View"), myActionCollection, "short view");
+
+    detailedAction = new KAction( QLatin1String("view_detailed"), i18n("Detailed View"), myActionCollection, "detailed view");
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), KShortcut(),
                                           myActionCollection, "show hidden" );
@@ -1310,9 +1308,9 @@ void KDirOperator::setupActions()
              SLOT( togglePreview( bool )));
 
 
-    QString viewGroup = QLatin1String("view");
-    shortAction->setExclusiveGroup( viewGroup );
-    detailedAction->setExclusiveGroup( viewGroup );
+    QActionGroup* detailGroup = new QActionGroup(this);
+    shortAction->setActionGroup( detailGroup );
+    detailedAction->setActionGroup( detailGroup );
 
     connect( shortAction, SIGNAL( activated() ),
              SLOT( slotSimpleView() ));

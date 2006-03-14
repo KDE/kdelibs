@@ -86,57 +86,47 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 			if (id == Next ) iconName = "previous";
 		}
 
-		KShortcut cut = KStdAccel::shortcut(pInfo->idAccel);
 		switch( id ) {
 		 case OpenRecent:
-			pAction = new KRecentFilesAction( sLabel, pInfo->psIconName, cut,
-					recvr, slot,
-					parent, (name) ? name : pInfo->psName );
+			pAction = new KRecentFilesAction(pInfo->psIconName, sLabel, parent, name ? name : pInfo->psName);
 			break;
 		 case ShowMenubar:
 		 case ShowToolbar:
 		 case ShowStatusbar:
-		 {
-			KToggleAction *ret;
-			ret = new KToggleAction( sLabel, pInfo->psIconName, cut,
-					recvr, slot,
-					parent, (name) ? name : pInfo->psName );
-			ret->setChecked( true );
-			pAction = ret;
+			pAction = new KAction(pInfo->psIconName, sLabel, parent, name ? name : pInfo->psName);
+			pAction->setCheckable(true);
+			pAction->setChecked(true);
 			break;
-		 }
 		 case FullScreen:
-		 {
-			KToggleFullScreenAction *ret;
-			ret = new KToggleFullScreenAction( cut, recvr, slot,
-					parent, NULL, (name) ? name : pInfo->psName );
-			ret->setChecked( false );
-			pAction = ret;
+			pAction = new KToggleFullScreenAction(parent, name ? name : pInfo->psName);
+			pAction->setCheckable(true);
 			break;
-		 }
-         case PasteText:
-         {
-            KPasteTextAction *ret;
-            ret = new KPasteTextAction(sLabel, iconName, cut,
-					recvr, slot,
-					parent, (name) ? name : pInfo->psName );
-            pAction = ret;
-            break;
-         }
-		// Same as default, but with the app icon 
-                case AboutApp: {
-                        	pAction = new KAction( sLabel, qApp->windowIcon(), cut,
-					recvr, slot,
-					parent, (name) ? name : pInfo->psName );
-			            
-                                }
+		case PasteText:
+			pAction = new KPasteTextAction(iconName, sLabel, parent, name ? name : pInfo->psName);
+			break;
+		// Same as default, but with the app icon
+		case AboutApp:
+			pAction = new KAction(qApp->windowIcon(), sLabel, parent, name ? name : pInfo->psName);
+			break;
+
 		 default:
-			pAction = new KAction( sLabel, iconName, cut,
-					recvr, slot,
-					parent, (name) ? name : pInfo->psName );
+			pAction = new KAction(iconName, sLabel, parent, name ? name : pInfo->psName);
 			break;
 		}
 	}
+
+	KShortcut cut = KStdAccel::shortcut(pInfo->idAccel);
+	if (!cut.isNull())
+		pAction->setShortcut(cut);
+
+	if (recvr && slot)
+		if (id != OpenRecent)
+			QObject::connect(pAction, SIGNAL(triggered(bool)), recvr, slot);
+		else
+			// FIXME KAction port: probably a good idea to find a cleaner way to do this
+			// Open Recent is a special case - provide the selected URL
+			QObject::connect(pAction, SIGNAL(urlSelected(const KUrl&)), recvr, slot);
+
 	return pAction;
 }
 
@@ -245,12 +235,11 @@ KAction *buildAutomaticAction(KActionCollection* parent, StdAction id, const cha
     const KStdActionInfo* p = infoPtr( id );
     if (!p)
         return 0;
-    KShortcut cut = KStdAccel::shortcut(p->idAccel);
-    AutomaticAction *action = new AutomaticAction(p->psLabel, p->psIconName, cut, slot, parent, p->psName);
+    AutomaticAction *action = new AutomaticAction(p->psIconName, p->psLabel, KStdAccel::shortcut(p->idAccel), slot, parent, p->psName);
     action->setWhatsThis(p->psWhatsThis);
     return action;
 }
-        
+
 KAction *cut(KActionCollection* parent)
 {
     return buildAutomaticAction(parent, Cut, SLOT(cut()));
@@ -259,34 +248,39 @@ KAction *cut(KActionCollection* parent)
 KAction *copy(KActionCollection* parent)
 {
     return buildAutomaticAction(parent, Copy, SLOT(copy()));
-}     
+}
 
 KAction *paste(KActionCollection* parent)
 {
     return buildAutomaticAction(parent, Paste, SLOT(paste()));
-}     
+}
 
 KAction *clear(KActionCollection* parent)
 {
     return buildAutomaticAction(parent, Clear, SLOT(clear()));
-}     
+}
 
 KAction *selectAll(KActionCollection* parent)
 {
     return buildAutomaticAction(parent, SelectAll, SLOT(selectAll()));
-}     
+}
 
 KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *_name )
 {
-    KToggleAction *ret;
-    ret = new KToggleAction(i18n("Show &Menubar"), "showmenu", KStdAccel::shortcut(KStdAccel::ShowMenubar), recvr, slot,
-                            parent, _name ? _name : name(ShowMenubar));
+    KToggleAction *ret = new KToggleAction("showmenu", i18n("Show &Menubar"), parent, _name ? _name : name(ShowMenubar));
+
+    if (recvr && slot)
+            QObject::connect(ret, SIGNAL(triggered(bool)), recvr, slot);
+
+    ret->setShortcut(KStdAccel::shortcut(KStdAccel::ShowMenubar));
+
     ret->setWhatsThis( i18n( "Show Menubar<p>"
                              "Shows the menubar again after it has been hidden" ) );
     KGuiItem guiItem( i18n("Hide &Menubar"), 0 /*same icon*/, QString(),
                       i18n( "Hide Menubar<p>"
                             "Hide the menubar. You can usually get it back using the right mouse button inside the window itself." ) );
     ret->setCheckedState( guiItem );
+
     ret->setChecked(true);
     return ret;
 }
@@ -294,9 +288,11 @@ KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionColle
 KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
                                          KActionCollection* parent, const char *_name )
 {
-    KToggleAction *ret;
-    ret = new KToggleAction(i18n("Show St&atusbar"), 0, recvr, slot, parent,
-                            _name ? _name : name(ShowStatusbar));
+    KToggleAction *ret = new KToggleAction(i18n("Show St&atusbar"), parent, _name ? _name : name(ShowStatusbar));
+
+    if (recvr && slot)
+            QObject::connect(ret, SIGNAL(triggered(bool)), recvr, slot);
+
     ret->setWhatsThis( i18n( "Show Statusbar<p>"
                              "Shows the statusbar, which is the bar at the bottom of the window used for status information." ) );
     KGuiItem guiItem( i18n("Hide St&atusbar"), QString(), QString(),

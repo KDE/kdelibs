@@ -149,25 +149,18 @@ private:
   KHTMLPopupGUIClientPrivate* const d;
 };
 
-class KHTMLZoomFactorAction : public KAction
+class KHTMLZoomFactorAction : public KSelectAction
 {
     Q_OBJECT
 public:
-    KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text,
-            const QString &icon, const KShortcut& cut, const QObject *receiver,
-            const char *slot, KActionCollection *parent, const char *name );
+    KHTMLZoomFactorAction(KHTMLPart *part, bool direction, const QString& iconName, const QString& text, KActionCollection *parent, const char *name);
     virtual ~KHTMLZoomFactorAction();
 
-    virtual int plug( QWidget *w, int index );
-
-private Q_SLOTS:
-    void slotActivated( int );
 protected Q_SLOTS:
-    void slotActivated() { KAction::slotActivated(); }
+    void slotTriggered(QAction* action);
 private:
     void init(KHTMLPart *part, bool direction);
 private:
-    QMenu *m_popup;
     bool m_direction;
     KHTMLPart *m_part;
 };

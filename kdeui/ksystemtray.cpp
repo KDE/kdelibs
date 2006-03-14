@@ -29,9 +29,9 @@
 #include "kaboutdata.h"
 
 #ifdef Q_WS_X11
-#include <kwin.h> 
-#include <kwinmodule.h> 
-#include <qxembed.h> 
+#include <kwin.h>
+#include <kwinmodule.h>
+#include <qxembed.h>
 #include <QX11Info>
 #endif
 
@@ -64,7 +64,7 @@ KSystemTray::KSystemTray( QWidget* parent )
     #warning KDE4 porting: reinstate when the new QXEmbed is ready
     //QXEmbed::initialize();
 #endif
-    
+
     d = new KSystemTrayPrivate;
     d->actionCollection = new KActionCollection(this);
 
@@ -112,14 +112,14 @@ void KSystemTray::showEvent( QShowEvent * )
 
         if (action)
         {
-            action->plug(menu);
+            menu->addAction(action);
         }
 
         action = d->actionCollection->action(KStdAction::name(KStdAction::Quit));
 
         if (action)
         {
-            action->plug(menu);
+            menu->addAction(action);
         }
 
 	hasQuit = 1;

@@ -60,30 +60,27 @@ public:
 
         noArrangement = false;
 	ignoreMaximumSize = false;
-	smallColumns = new KRadioAction( i18n("Small Icons"), 0, parent,
+	smallColumns = new KAction( i18n("Small Icons"), 0, parent,
 					 SLOT( slotSmallColumns() ),
 					 parent->actionCollection(),
 					 "small columns" );
 
-	largeRows = new KRadioAction( i18n("Large Icons"), 0, parent,
+	largeRows = new KAction( i18n("Large Icons"), 0, parent,
 				      SLOT( slotLargeRows() ),
 				      parent->actionCollection(),
 				      "large rows" );
 
-	smallColumns->setExclusiveGroup(QLatin1String("IconView mode"));
-	largeRows->setExclusiveGroup(QLatin1String("IconView mode"));
+    QActionGroup* sizeGroup = new QActionGroup(parent);
+	smallColumns->setActionGroup(sizeGroup);
+	largeRows->setActionGroup(sizeGroup);
 
-        previews = new KToggleAction( i18n("Thumbnail Previews"), 0,
+        previews = new KToggleAction( i18n("Thumbnail Previews"),
                                       parent->actionCollection(),
                                       "show previews" );
         zoomIn = KStdAction::zoomIn( parent, SLOT( zoomIn() ),
                                      parent->actionCollection(), "zoomIn" );
         zoomOut = KStdAction::zoomOut( parent, SLOT( zoomOut() ),
                                      parent->actionCollection(), "zoomOut" );
-
-        previews->setGroup("previews");
-        zoomIn->setGroup("previews");
-        zoomOut->setGroup("previews");
 
         connect( previews, SIGNAL( toggled( bool )),
                  parent, SLOT( slotPreviewsToggled( bool )));
@@ -99,7 +96,7 @@ public:
             job->kill();
     }
 
-    KRadioAction *smallColumns, *largeRows;
+    KAction *smallColumns, *largeRows;
     KAction *zoomIn, *zoomOut;
     KToggleAction *previews;
     KIO::PreviewJob *job;

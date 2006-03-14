@@ -691,10 +691,10 @@ public:
     KActionCollection *actionCollection() const;
 
     /**
-     * @returns the index of the path combobox so when inserting widgets into
-     * the dialog (e.g. subclasses) they can do so without hardcoding in an index
+     * @returns the action before the path combobox so subclasses may insert widgets into
+     * the dialog
      */
-    int pathComboIndex();
+    QAction* pathComboIndex();
 
     /**
      * This method implements the logic to determine the user's default directory

@@ -18,14 +18,13 @@
 
 #include "ktoolbarhandler.h"
 
-#include <QMenu>
-
 #include <kaction.h>
 #include <kauthorized.h>
 #include <klocale.h>
 #include <kmainwindow.h>
 #include <ktoolbar.h>
 #include <kxmlguifactory.h>
+#include <kmenu.h>
 
 #include <assert.h>
 
@@ -88,7 +87,7 @@ namespace
             KActionMenu *menuAction = new KActionMenu( i18n( "Toolbars" ), m_actionCollection, "toolbars_submenu_action" );
 
             foreach (KAction* action, m_toolBarActions)
-                menuAction->insert( action );
+                menuAction->kMenu()->addAction( action );
 
             actions.append( menuAction );
             return actions;

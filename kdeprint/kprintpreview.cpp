@@ -93,7 +93,6 @@ public:
 	void plugAction(KAction *act)
 	{
 		act->plug(toolbar_);
-		act->plugAccel(accel_);
 	}
 
 	KParts::ReadOnlyPart	*gvpart_;
@@ -182,7 +181,7 @@ void KPrintPreview::initView(KLibFactory *factory)
 		QDomNodeList l = d->gvpart_->domDocument().elementsByTagName( "ToolBar" );
 		if ( l.length() > 0 )
 		{
-			d->toolbar_->insertLineSeparator();
+			d->toolbar_->addSeparator();
 			QDomNodeList acts = l.item( 0 ).toElement().elementsByTagName( "Action" );
 			for ( uint i=0; i<acts.length(); i++ )
 			{
@@ -208,9 +207,8 @@ void KPrintPreview::initView(KLibFactory *factory)
 			d->plugAction(act);
 			*/
 	}
-	d->toolbar_->setIconText(KToolBar::IconTextRight);
-	d->toolbar_->setBarPos(KToolBar::Top);
-	d->toolbar_->setMovingEnabled(false);
+	d->toolbar_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	d->toolbar_->setMovable(false);
 	//d->adjustSize();
 
 	// construct the layout

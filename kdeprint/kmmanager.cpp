@@ -26,6 +26,8 @@
 #include "printerfilter.h"
 #include "kprinter.h"
 
+#include <QActionGroup>
+
 #include <zlib.h>
 #include <qfile.h>
 #include <kstandarddirs.h>
@@ -53,6 +55,9 @@ KMManager::KMManager(QObject *parent)
 	// set default to true to not disturb code that
 	// hasn't been adapted yet. Otherwise, should be false
 	m_updatepossible = true;
+
+	m_pluginGroup = new QActionGroup(this);
+	m_pluginGroup->setExclusive(false);
 }
 
 KMManager::~KMManager()
@@ -560,6 +565,11 @@ void KMManager::setUpdatePossible( bool value )
 		m_virtualmgr->reset();
 	m_updatepossible = value;
 	emit updatePossible( m_updatepossible );
+}
+
+QActionGroup * KMManager::pluginGroup( ) const
+{
+	return m_pluginGroup;
 }
 
 #include "kmmanager.moc"

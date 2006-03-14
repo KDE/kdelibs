@@ -22,28 +22,18 @@
 
 #include <kaction.h>
 
-class KIconSelectActionPrivate;
-
 class KIconSelectAction : public KSelectAction
 {
 	Q_OBJECT
 public:
-	KIconSelectAction(const QString& text, int accel = 0, KActionCollection* parent = 0, const char* name = 0);
+	KIconSelectAction(const QString& text, KActionCollection* parent = 0, const char* name = 0);
 	virtual ~KIconSelectAction();
 
-	virtual int plug(QWidget* widget, int index = -1);
-
 public Q_SLOTS:
-	virtual void setItems(const QStringList& lst, const QStringList& iconlst);
-	virtual void setCurrentItem(int);
-
-protected:
-	void createPopupMenu();
-	void updateIcons();
-	virtual void updateCurrentItem(int id);
+	void setItems(const QStringList& lst, const QStringList& iconlst);
 
 private:
-	KIconSelectActionPrivate* const 	d;
+	class KIconSelectActionPrivate* const	d;
 };
 
 #endif

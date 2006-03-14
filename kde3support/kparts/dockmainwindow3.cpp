@@ -129,7 +129,6 @@ void DockMainWindow3::slotSetStatusBarText( const QString & text )
 
 void DockMainWindow3::createShellGUI( bool create )
 {
-    bool bAccelAutoUpdate = accel()->setAutoUpdate( false );
     assert( d->m_bShellGUIActivated != create );
     d->m_bShellGUIActivated = create;
     if ( create )
@@ -160,7 +159,6 @@ void DockMainWindow3::createShellGUI( bool create )
 
         guiFactory()->removeClient( this );
     }
-    accel()->setAutoUpdate( bAccelAutoUpdate );
 }
 
 #include "dockmainwindow3.moc"

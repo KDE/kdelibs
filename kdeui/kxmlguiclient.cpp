@@ -920,23 +920,26 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
 
 void KXMLGUIClient::beginXMLPlug( QWidget *w )
 {
+  /* FIXME KAction Port
   actionCollection()->beginXMLPlug( w );
   foreach (KXMLGUIClient* client, d->m_children)
-    client->actionCollection()->beginXMLPlug( w );
+    client->actionCollection()->beginXMLPlug( w );*/
 }
 
 void KXMLGUIClient::endXMLPlug()
 {
+  /* FIXME KAction Port
   actionCollection()->endXMLPlug();
   foreach (KXMLGUIClient* client, d->m_children)
-    client->actionCollection()->endXMLPlug();
+    client->actionCollection()->endXMLPlug();*/
 }
 
 void KXMLGUIClient::prepareXMLUnplug( QWidget * )
 {
+  /* FIXME KAction Port
   actionCollection()->prepareXMLUnplug();
   foreach (KXMLGUIClient* client, d->m_children)
-    client->actionCollection()->prepareXMLUnplug();
+    client->actionCollection()->prepareXMLUnplug();*/
 }
 
 void KXMLGUIClient::virtual_hook( int, void* )

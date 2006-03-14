@@ -152,7 +152,7 @@ public:
 
 Q_SIGNALS:
   void aboutToShowContextMenu( const KBookmark &, QMenu * );
-  void openBookmark( const QString& url, Qt::ButtonState state );
+  void openBookmark( const QString& url, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
 
 public Q_SLOTS: // public for bookmark bar
   void slotBookmarksChanged( const QString & );
@@ -169,10 +169,6 @@ protected Q_SLOTS:
   void slotRMBActionProperties( int );
 
   void slotBookmarkSelected();
-  /**
-   * @ since 3.4
-   */
-  void slotBookmarkSelected( KAction::ActivationReason reason, Qt::ButtonState state );
   void slotAddBookmarksList();
   void slotAddBookmark();
   void slotNewFolder();

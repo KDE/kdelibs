@@ -121,10 +121,11 @@ bool KDCOPActionProxy::process( const DCOPCString &obj, const DCOPCString &fun, 
 bool KDCOPActionProxy::processAction( const DCOPCString&, const DCOPCString &fun, const QByteArray &data,
                                       DCOPCString &replyType, QByteArray &replyData, KAction *action )
 {
+  // FIXME KAction port - misnamed
   if ( fun == "activate()" )
   {
     replyType = "void";
-    action->activate();
+    action->trigger();
     return true;
   }
 

@@ -209,7 +209,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     KToolBar *bar = static_cast<KToolBar*>(d->m_widget->child( name, "KToolBar" ));
     if( !bar )
     {
-       bar = new KToolBar( d->m_widget, name, honor, false );
+       bar = new KToolBar( d->m_widget, honor, false );
+       bar->setObjectName(name);
     }
 
     if ( qobject_cast<KMainWindow*>( d->m_widget ) )
@@ -288,14 +289,17 @@ QStringList KXMLGUIBuilder::customTags() const
   return res;
 }
 
-int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomElement &element )
+QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomElement &element )
 {
+  QAction* before = 0L;
+  if (index > 0 && index < parent->actions().count())
+    before = parent->actions()[index - 1];
+
   if ( element.tagName().toLower() == d->tagSeparator )
   {
-    if ( qobject_cast<QMenu*>( parent ) )
+    if ( QMenu *menu = qobject_cast<QMenu*>( parent ) )
     {
       // Don't insert multiple separators in a row
-      QMenu *menu = static_cast<QMenu *>(parent);
       int count = menu->count();
       if (count)
       {
@@ -315,15 +319,19 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
       // Don't insert a separator at the top of the menu
       if(count == 0)
         return 0;
-      else
-        return menu->insertSeparator( index );
-    }
-    else if ( qobject_cast<QMenuBar*>( parent ) )
-       return static_cast<QMenuBar *>(parent)->insertSeparator( index );
-    else if ( qobject_cast<KToolBar*>( parent ) )
-    {
-      KToolBar *bar = static_cast<KToolBar *>( parent );
 
+      return menu->insertSeparator( before );
+    }
+    else if ( QMenuBar* bar = qobject_cast<QMenuBar*>( parent ) )
+    {
+       QAction* separatorAction = new QAction(bar);
+       separatorAction->setSeparator(true);
+       bar->insertAction( before, separatorAction );
+       return separatorAction;
+    }
+    else if ( KToolBar *bar = qobject_cast<KToolBar*>( parent ) )
+    {
+      /* FIXME KAction port - any need to provide a replacement for lineSeparator/normal separator?
       bool isLineSep = true;
 
       QDomNamedNodeMap attributes = element.attributes();
@@ -340,24 +348,20 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
         }
       }
 
-      int id = KAction::getToolButtonID();
-
       if ( isLineSep )
-          bar->insertLineSeparator( index, id );
-      else
-          bar->insertSeparator( index, id );
+          return bar->insertSeparator( index ? bar->actions()[index - 1] : 0L );
+      else*/
 
-      return id;
+      return bar->insertSeparator( before );
     }
   }
   else if ( element.tagName().toLower() == d->tagTearOffHandle )
   {
-    if ( qobject_cast<QMenu*>( parent )  && KGlobalSettings::insertTearOffHandle())
-      return static_cast<QMenu *>(parent)->insertTearOffHandle( -1, index );
+    static_cast<QMenu *>(parent)->setTearOffEnabled(true);
   }
   else if ( element.tagName().toLower() == d->tagMenuTitle )
   {
-    if ( qobject_cast<KMenu*>( parent ) )
+    if ( KMenu* m = qobject_cast<KMenu*>( parent ) )
     {
       QString i18nText;
       QByteArray text = element.text().toUtf8();
@@ -379,29 +383,23 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
         pix = SmallIcon( icon, instance );
       }
 
-      KMenu *m = static_cast<KMenu *>(parent);
-      QAction *before = m->actions().value(index + 1);
-
       if ( !icon.isEmpty() ) {
-        m->addTitle( QIcon(pix), i18nText, before );
-        return m->idAt(index);
+        return m->addTitle( QIcon(pix), i18nText, before );
       } else {
-        m->addTitle( i18nText, before );
-        return m->idAt(index);
+        return m->addTitle( i18nText, before );
       }
     }
   }
-  return 0;
+
+  QAction* blank = new QAction(parent);
+  blank->setVisible(false);
+  parent->insertAction(before, blank);
+  return blank;
 }
 
-void KXMLGUIBuilder::removeCustomElement( QWidget *parent, int id )
+void KXMLGUIBuilder::removeCustomElement( QWidget *parent, QAction* action )
 {
-  if ( qobject_cast<QMenu*>( parent ) )
-    static_cast<QMenu *>(parent)->removeItem( id );
-  else if ( qobject_cast<QMenuBar*>( parent ) )
-    static_cast<QMenuBar *>(parent)->removeItem( id );
-  else if ( qobject_cast<KToolBar*>( parent ) )
-    static_cast<KToolBar *>(parent)->removeItemDelayed( id );
+  parent->removeAction(action);
 }
 
 KXMLGUIClient *KXMLGUIBuilder::builderClient() const

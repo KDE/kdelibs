@@ -32,14 +32,22 @@ using namespace KXMLGUI;
 
 void ActionList::plug( QWidget *container, int index ) const
 {
-    foreach (KAction* action, *this)
-        action->plug( container, index++ );
+    QAction* before = 0L;
+    if (index && index <= container->actions().count())
+        before = container->actions().at(index - 1);
+    else if (index)
+        kWarning() << k_funcinfo << "Index " << index << " is not within range (0 - " << container->actions().count() << endl;
+
+    foreach (KAction* action, *this) {
+        container->insertAction(before, action);
+        before = action;
+    }
 }
 
 void ActionList::unplug( QWidget *container ) const
 {
     foreach (KAction* action, *this)
-        action->unplug( container );
+        container->removeAction( action );
 }
 
 ContainerNode::ContainerNode( QWidget *_container, const QString &_tagName,
@@ -420,8 +428,8 @@ void ContainerNode::unplugClient( ContainerClient *client )
 
     // now quickly remove all custom elements (i.e. separators) and unplug all actions
 
-    QList<int>::ConstIterator custIt = client->customElements.begin();
-    QList<int>::ConstIterator custEnd = client->customElements.end();
+    QList<QAction*>::ConstIterator custIt = client->customElements.begin();
+    QList<QAction*>::ConstIterator custEnd = client->customElements.end();
     for (; custIt != custEnd; ++custIt )
         builder->removeCustomElement( container, *custIt );
 
@@ -613,7 +621,11 @@ bool BuildHelper::processActionElement( const QDomElement &e, int idx )
     if ( !action )
         return false;
 
-    action->plug( parentNode->container, idx );
+    QAction* before = 0L;
+    if (idx > 0 && idx < parentNode->container->actions().count())
+      before = parentNode->container->actions()[idx - 1];
+
+    parentNode->container->insertAction(before, action);
 
     // save a reference to the plugged action, in order to properly unplug it afterwards.
     containerClient->actions.append( action );
@@ -625,11 +637,11 @@ bool BuildHelper::processCustomElement( const QDomElement &e, int idx )
 {
     assert( parentNode->builder );
 
-    int id = parentNode->builder->createCustomElement( parentNode->container, idx, e );
-    if ( id == 0 )
+    QAction* action = parentNode->builder->createCustomElement( parentNode->container, idx, e );
+    if ( !action )
         return false;
 
-    containerClient->customElements.append( id );
+    containerClient->customElements.append( action );
     return true;
 }
 

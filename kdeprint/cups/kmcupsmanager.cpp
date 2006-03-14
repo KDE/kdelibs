@@ -488,16 +488,16 @@ void KMCupsManager::processRequest(IppRequest* req)
 
 DrMain* KMCupsManager::loadPrinterDriver(KMPrinter *p, bool)
 {
-	if (!p) 
+	if (!p)
 		return NULL;
 
-	if (p->isClass(true)) 
+	if (p->isClass(true))
 	{
 		KMPrinter *first_class_member = NULL;
 		/* find the first printer in the class */
  		first_class_member = findPrinter(p->members().first());
-	  
-		if (first_class_member == NULL) 
+
+		if (first_class_member == NULL)
 		{
 			/* we didn't find a printer in the class */
 			return NULL;
@@ -806,9 +806,9 @@ QStringList KMCupsManager::detectLocalPrinters()
 void KMCupsManager::createPluginActions(KActionCollection *coll)
 {
 	KAction	*act = new KAction(i18n("&Export Driver..."), "kdeprint_uploadsmb", 0, this, SLOT(exportDriver()), coll, "plugin_export_driver");
-	act->setGroup("plugin");
+	act->setActionGroup(pluginGroup());
 	act = new KAction(i18n("&Printer IPP Report"), "kdeprint_report", 0, this, SLOT(printerIppReport()), coll, "plugin_printer_ipp_report");
-	act->setGroup("plugin");
+	act->setActionGroup(pluginGroup());
 }
 
 void KMCupsManager::validatePluginActions(KActionCollection *coll, KMPrinter *pr)

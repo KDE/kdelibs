@@ -390,7 +390,7 @@ protected:
   QTimer* updateTimer;
   ListProgress* listProgress;
 
-  KToolBar::BarPosition toolbarPos;
+  Qt::ToolBarArea toolbarPos;
   QString properties;
 
   void applySettings();
@@ -415,6 +415,8 @@ private:
   ProgressConfigDialog *m_configDialog;
   QMenu* m_contextMenu;
   UIServerSystemTray *m_systemTray;
+
+  QAction *m_toolCancel, *m_toolConfigure;
 
   static int s_jobId;
   friend class no_bogus_warning_from_gcc;

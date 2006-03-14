@@ -63,11 +63,11 @@ const int KDialog::mMarginSize = 11;
 const int KDialog::mSpacingSize = 6;
 
 struct KDialog::Private {
-	Private() : bDetails(false), bSettingDetails(false), detailsWidget(0), 
+	Private() : bDetails(false), bSettingDetails(false), detailsWidget(0),
 		mTopLayout(0), mMainWidget(0), mUrlHelp(0), mActionSep(0),
-		 mButtonOrientation(Qt::Horizontal) , 
+		 mButtonOrientation(Qt::Horizontal) ,
 		buttonBox(0) , buttonMask(0) , buttonStyle(0)  { }
-	
+
 	void resizeButton( bool sameWidth, int margin, int spacing, int orientation );
 
     bool bDetails;
@@ -141,11 +141,11 @@ void KDialog::setButtonMask( ButtonCodes buttonMask ,
 		d->buttonList.clear();
 		delete d->buttonBox;
 	}
-	
+
 	if( buttonMask & Cancel ) { buttonMask &= ~Close; }
 	if( buttonMask & Apply ) { buttonMask &= ~Try; }
 	if( buttonMask & Details ) { buttonMask &= ~Default; }
-	
+
 	d->buttonMask = buttonMask;
 
 	if( buttonMask == 0 )
@@ -229,7 +229,7 @@ void KDialog::setButtonStyle( int style )
 
 	delete d->buttonBox->layout();
 	QBoxLayout *lay;
-	lay = new QBoxLayout( d->buttonBox, (d->mButtonOrientation == Qt::Horizontal) ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom , 
+	lay = new QBoxLayout( d->buttonBox, (d->mButtonOrientation == Qt::Horizontal) ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom ,
 						  0, spacingHint());
 
 	int numButton = 0;
@@ -764,7 +764,7 @@ void KDialog::Private::resizeButton( bool sameWidth, int margin,
 void KDialog::setupLayout()
 {
 	delete d->mTopLayout;
-	
+
 	d->mTopLayout = (d->mButtonOrientation == Qt::Horizontal) ?
 			(QBoxLayout*)new QVBoxLayout( this ) : (QBoxLayout*)new QHBoxLayout( this );
 
@@ -803,7 +803,7 @@ void KDialog::enableButtonSeparator( bool state )
 	{
 		if( !d->mActionSep )
 			return;
-		delete d->mActionSep; 
+		delete d->mActionSep;
 		d->mActionSep = 0;
 	}
 
@@ -1154,13 +1154,13 @@ void KDialog::restoreDialogSize( KConfigBase *cfg )
 	int w, h;
 	int scnum = QApplication::desktop()->screenNumber(parentWidget());
 	QRect desk = QApplication::desktop()->screenGeometry(scnum);
-	
+
 	w = sizeHint().width();
 	h = sizeHint().height();
-	
+
 	w = cfg->readEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
 	h = cfg->readEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
-	
+
 	resize(w,h);
 }
 

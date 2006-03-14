@@ -441,13 +441,9 @@ cups_local_auth(http_t *http)	/* I - Connection */
  /*
   * See if we are accessing localhost...
   */
-#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2
-    if (ntohl(*(int*)&http->_hostaddr.sin_addr) != 0x7f000001 &&
+
+  if (ntohl(*(int*)&http->_hostaddr.sin_addr) != 0x7f000001 &&
       strcasecmp(http->hostname, "localhost") != 0)
-#else
-    if (ntohl(*(int*)&http->hostaddr.sin_addr) != 0x7f000001 &&
-      strcasecmp(http->hostname, "localhost") != 0)
-#endif
     return (0);
 
  /*

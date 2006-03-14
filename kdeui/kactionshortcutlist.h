@@ -50,7 +50,7 @@ class KAccelShortcutListPrivate;
 class KDEUI_EXPORT KActionPtrShortcutList : public KShortcutList
 {
  public:
-	KActionPtrShortcutList( KActionPtrList& );
+	KActionPtrShortcutList( const QList<KAction*>& );
 	virtual ~KActionPtrShortcutList();
 
 	virtual uint count() const;
@@ -68,7 +68,7 @@ class KDEUI_EXPORT KActionPtrShortcutList : public KShortcutList
 	virtual bool save() const;
 
  protected:
-	KActionPtrList& m_actions;
+	const QList<KAction*>& m_actions;
 
  protected:
        virtual void virtual_hook( int id, void* data );

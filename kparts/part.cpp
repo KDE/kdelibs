@@ -48,8 +48,6 @@
 #include <assert.h>
 #include <kdebug.h>
 
-template class QList<KXMLGUIClient*>;
-
 using namespace KParts;
 
 namespace KParts
@@ -209,15 +207,6 @@ void Part::setWidget( QWidget *widget )
   m_widget = widget;
   connect( m_widget, SIGNAL( destroyed() ),
            this, SLOT( slotWidgetDestroyed() ) );
-
-  // Tell the actionCollection() which widget its
-  //  action shortcuts should be connected to.
-  actionCollection()->setWidget( widget );
-
-  // Since KParts objects are XML-based, shortcuts should
-  //  be connected to the widget when the XML settings
-  //  are processed, rather than on KAction construction.
-  actionCollection()->setAutoConnectShortcuts( false );
 }
 
 void Part::setSelectable( bool selectable )

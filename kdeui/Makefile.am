@@ -41,7 +41,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 	kurllabel.h kruler.h kcursor.h kinputdialog.h kactivelabel.h kcharselect.h \
 	kcolormimedata.h knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdialog.h \
 	kauthicon.h kmessagebox.h ksharedpixmap.h kdualcolorbutton.h \
-	ktoolbarbutton.h ktoolbarradiogroup.h ktextbrowser.h kaction.h kactioncollection.h \
+	ktextbrowser.h kaction.h kactioncollection.h \
 	kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h kactionshortcutlist.h kstdaction.h \
 	kcombobox.h k3iconview.h k3listview.h klistbox.h kbugreport.h kpassworddialog.h \
 	kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h kwordwrap.h \
@@ -71,7 +71,7 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kmenu.cpp ktoolbar.cpp \
 	kshortcutdialog_simple.ui3 kshortcutdialog_advanced.ui3 kshortcutdialog.cpp kkeybutton.cpp \
 	kkeydialog.cpp kruler.cpp kcursor.cpp kcharselect.cpp kcolormimedata.cpp knumvalidator.cpp \
 	kdialog.cpp kdialogbase.cpp kjanuswidget.cpp kaboutdialog.cpp kauthicon.cpp \
-	kmessagebox.cpp kdualcolorbutton.cpp ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
+	kmessagebox.cpp kdualcolorbutton.cpp \
 	ktextbrowser.cpp khelpmenu.cpp kcmenumngr.cpp k3iconview.cpp klistbox.cpp kwordwrap.cpp \
 	kbugreport.cpp kcombobox.cpp kpassworddialog.cpp kxmlguiclient.cpp kxmlguifactory.cpp \
 	kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp kanimwidget.cpp krootpixmap.cpp \

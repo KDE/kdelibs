@@ -350,8 +350,8 @@ public:
   KAction *m_paSaveFrame;
   KActionMenu *m_paSetEncoding;
   KSelectAction *m_paUseStylesheet;
-  KHTMLZoomFactorAction *m_paIncZoomFactor;
-  KHTMLZoomFactorAction *m_paDecZoomFactor;
+  KSelectAction *m_paIncZoomFactor;
+  KSelectAction *m_paDecZoomFactor;
   KAction *m_paLoadImages;
   KAction *m_paFind;
   KAction *m_paFindNext;

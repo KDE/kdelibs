@@ -7,6 +7,7 @@
      (C) 1997-2000 Matthias Ettrich (ettrich@kde.org)
      (C) 1999 Chris Schlaeger (cs@kde.org)
      (C) 2002 Joseph Wenninger (jowenn@kde.org)
+     (C) 2005-2006 Hamish Rodda (rodda@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -30,8 +31,8 @@
 
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
-
-#include <Q3MainWindow>
+#include <QMainWindow>
+#include <qmetaobject.h>
 
 class KMenu;
 class KXMLGUIFactory;
@@ -101,7 +102,7 @@ class DCOPObject;
 
  */
 
-class KDEUI_EXPORT KMainWindow : public Q3MainWindow, public KXMLGUIBuilder, virtual public KXMLGUIClient
+class KDEUI_EXPORT KMainWindow : public QMainWindow, public KXMLGUIBuilder, virtual public KXMLGUIClient
 {
     friend class KMWSessionManaged;
     Q_OBJECT
@@ -139,7 +140,7 @@ public:
      * KMainWindow *kmw = new KMainWindow (...);
      * \endcode
      **/
-    KMainWindow( QWidget* parent = 0, const char *name = 0, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
+    KMainWindow( QWidget* parent = 0, const char* name = 0, Qt::WindowFlags f = 0 );
 
     /**
      * Flags that can be passed in an argument to the constructor to
@@ -159,7 +160,7 @@ public:
     /**
      * Overloaded constructor which allows passing some KMainWindow::CreationFlags.
      */
-    KMainWindow( int cflags, QWidget* parent = 0, const char *name = 0, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
+    KMainWindow( int cflags, QWidget* parent = 0, const char* name = 0, Qt::WindowFlags f = 0 );
 
     /**
      * \brief Destructor.
@@ -295,20 +296,7 @@ public:
      * This is only useful if your application uses
      * different kinds of toplevel windows.
      */
-    // KDE 4 return QCString - QObject::className() returns const char*
     static const QString classNameOfToplevel( int number );
-
-    /**
-     * Reimplementation of QMainWindow::show()
-     */
-    // KDE4 remove this method if this has been fixed in Qt
-    virtual void show();
-
-    /**
-     * Reimplementation of QMainWindow::hide()
-     */
-    // KDE4 remove this method if this has been fixed in Qt
-    virtual void hide();
 
     /**
      * Restore the session specified by @p number.
@@ -398,20 +386,12 @@ public:
      *
      * @return A pointer to the toolbar
      **/
-    KToolBar *toolBar( const char *name=0 );
+    KToolBar *toolBar( const QString& name = QString::null );
 
     /**
      * @return A list of all toolbars for this window
      */
-    QList<KToolBar*> toolBarList() const;
-
-    /**
-     * @return A KAccel instance bound to this mainwindow. Used automatically
-     * by KAction to make keybindings work in all cases.
-     */
-    KAccel *accel();
-
-    void setFrameBorderWidth( int ) {}
+    QList<KToolBar*> toolBars() const;
 
     /**
      * Call this to enable "auto-save" of toolbar/menubar/statusbar settings
@@ -627,12 +607,6 @@ public:
      */
     void ignoreInitialGeometry();
 
-    /**
-     * @internal
-     */
-    // KDE4 remove
-    virtual void setIcon( const QPixmap & );
-
 public Q_SLOTS:
     /**
      * Show a standard configure toolbar dialog.
@@ -710,19 +684,8 @@ public Q_SLOTS:
      * can "reverse" the state (disable the actions which should be
      * enabled, and vice-versa) if specified.
      */
-    void slotStateChanged(const QString &newstate,
-                          KXMLGUIClient::ReverseStateChange); // KDE 4.0: remove this
-
-
-    /**
-     * Apply a state change
-     *
-     * Enable and disable actions as defined in the XML rc file,
-     * can "reverse" the state (disable the actions which should be
-     * enabled, and vice-versa) if specified.
-     */
-//     void slotStateChanged(const QString &newstate,
-//                           bool reverse); // KDE 4.0: enable this
+     void slotStateChanged(const QString &newstate,
+                           bool reverse);
 
     /**
      * Tell the main window that it should save its settings when being closed.
@@ -734,8 +697,7 @@ public Q_SLOTS:
     void setSettingsDirty();
 
 protected:
-    void paintEvent( QPaintEvent* e );
-    void resizeEvent( QResizeEvent* e);
+    virtual void resizeEvent( QResizeEvent* e);
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
      *

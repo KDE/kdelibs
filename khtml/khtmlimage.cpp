@@ -82,25 +82,9 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     m_ext->setObjectName( "be" );
 
     // Remove unnecessary actions.
-    KAction *encodingAction = actionCollection()->action( "setEncoding" );
-    if ( encodingAction )
-    {
-        encodingAction->unplugAll();
-        delete encodingAction;
-    }
-    KAction *viewSourceAction= actionCollection()->action( "viewDocumentSource" );
-    if ( viewSourceAction )
-    {
-        viewSourceAction->unplugAll();
-        delete viewSourceAction;
-    }
-
-    KAction *selectAllAction= actionCollection()->action( "selectAll" );
-    if ( selectAllAction )
-    {
-        selectAllAction->unplugAll();
-        delete selectAllAction;
-    }
+    delete actionCollection()->action( "setEncoding" );
+    delete actionCollection()->action( "viewDocumentSource" );
+    delete actionCollection()->action( "selectAll" );
 
     // forward important signals from the khtml part
 

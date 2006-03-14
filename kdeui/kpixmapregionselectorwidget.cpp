@@ -155,12 +155,12 @@ KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
    KAction *action = new KAction(i18n("&Rotate Clockwise"), "rotate_cw",
                                 0, this, SLOT(rotateClockwise()),
                                 actions, "rotateclockwise");
-   action->plug(popup);
+   popup->addAction(action);
 
    action = new KAction(i18n("Rotate &Counterclockwise"), "rotate_ccw",
                                 0, this, SLOT(rotateCounterclockwise()),
                                 actions, "rotatecounterclockwise");
-   action->plug(popup);
+   popup->addAction(action);
 
 /*
    I wonder if it would be appropiate to have here an "Open with..." option to

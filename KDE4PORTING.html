@@ -465,11 +465,92 @@ cg.readXXX("entry name");
 </ul>
 
 <H4>KAction</H4>
+<p>Making KAction a subclass of QAction brings KDE more into line with the Qt way of creating user interfaces, and (for the most part) removes code duplication.</p>
+<p>QAction in Qt4 is a true 1st class citizen - all QWidgets now have a list of associated actions, and QToolBar, QMenu etc. all use this list directly to show the graphical items (widgets, entries in the menu, etc).  This has replaced all usage of integers as "id"s.  There is also a new QEvent (QActionEvent), and the corresponding virtual protected function in QWidget, actionEvent().</p>
 <ul>
-<li>void activated( KAction::ActivationReason reason, Qt::ButtonState state ); -&gt; void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );</li>
-<li>void setStatusText(const QString &amp;text) was depricated during KDE3. Instead use void setToolTip(const QString &amp;test)</li>
-<li>Don't use setIconSet anymore, use setIcon instead, there is no compatibility class or function</li>
+<li>KAction is now a subclass of QAction.</li>
+<li>Don't use setIconSet() anymore, use setIconName() instead, there is no compatibility class or function</li>
+<li>New constructors more closely model QAction (old constructors deprecated)</li>
+<li>You should never rename the objectName() of a KAction - as KActionCollection holds a map, and it is not told of name changes (thus the setObjectName() functions are made private)</li>
+<li>"icon" property is now a QIcon, use iconName() / setIconName() for KDE named icons</li>
+<li>KShortcuts supported by shortcut/setShortcut (hides QAction's shortcut/setShortcut). Automatically sets alternateShortcuts() in QAction.</li>
+<li>plug(), unplug() deprecated - use QWidget::addAction() and QWidget::removeAction() instead (To provide custom widgets for toolbars, provide a QActionWidgetFactory to setToolBarWidgetFactory() (i use multiple inheritance on that action)</li>
+<li>containerCount(), container() deprecated - use associatedWidgets() instead</li>
+<li>activated(), activated(int) signals deprecated - use triggered() signal instead</li>
+<li>activate() is now trigger(), as in QAction</li>
+<li>there is a replacement for activation providing keyboard + mouse states, see triggered(Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers) [currently buggy]</li>
+<li>plugAccel(), unplugAccel(), kaccelCount() removed - they have no use now (accelerator management is inside Qt)</li>
+<li>itemId(), getToolButtonID() removed - actions no longer have ids, basically the QAction* is its replacement</li>
+<li>setGroup() / group() removed - use QActionGroup instead (setActionGroup() / actionGroup())</li>
+<li>ActivationReason has been removed (not supported by Qt). For a surrogate, you can connect to QMenu::triggered(QAction*), QToolBar::actionTriggered(QAction*), etc.</li>
+<li>setters are no longer slots; where they were used as such, an intermediary will be required</li>
 </ul>
+
+<H4>KActionCollection</H4>
+<ul>
+<li>constructor (QWidget* watch, ..) and setWidget() replaced by {set|add|remove}AssociatedWidget() - allows actions to respond to matching key presses on a widget level (basically a convenience method to have all actions in the collection added to the associated widget(s) and their shortcut scopes set to Qt::WidgetShortcut).</li>
+<li>*AutoConnectShortcuts removed - irrelevant</li>
+<li>*accel() removed - irrelevant (KAccel no longer handles keypresses)</li>
+<li>New functions setConfigGroup(), setConfigGlobal(), configGroup(), configIsGlobal() - the action collection now stores the group whether the config is global. referenced in readSettings() / writeSettings()</li>
+<li>readShortcutSettings() and writeShortcutSettings() renamed without the "Shortcut"</li>
+<li>{set}HighlightingEnabled(), {connect|disconnect}Highlight() removed - highlighting is always enabled now</li>
+<li>actionHighlighted(), actionStatusText(), clearStatusText() removed - use QAction::setStatusTip() as a replacement.  QStatusBars belonging to QMainWindow automatically get the statusTip() applied to them when they are moused over in a QMenu, via a QStatusTipEvent.</li>
+<li>groups() removed (now using QActionGroups) - see actionGroups() (and actionsWithoutGroup()) for replacement</li>
+<li>actions( const QString& group ) removed - use actionGroups() instead, and then QActionGroup::actions()</li>
+</ul>
+
+<H4>KToggleAction</H4>
+<ul>
+<li>setExclusiveGroup() / exclusiveGroup() removed, use setActionGroup() and 
+QActionGroup::setExclusive() for exclusivity (imitates the deleted 
+KRadioAction class)</li>
+<li>in comparison with KAction, only adds setCheckedState(), so if you don't 
+need that, just use KAction<li>
+</ul>
+
+<H4>KSelectAction</H4>
+<ul>
+<li>now allows for combo box or button with popup menu when inserted to a toolbar</li>
+<li>popupMenu() removed, use menu() instead</li>
+<li>{set|}removeAmpersandsInCombo() removed - was deprecated</li>
+</ul>
+
+<H4>KRecentFilesAction</H4>
+<ul>
+<li>clearURLList() removed, use clear() instead</li>
+<li>*URL* -> *Url* as per KDE naming policy</li>
+</ul>
+
+<H4>KWidgetAction</H4>
+<ul>
+<li>deprecated, instead assign a QActionWidgetFactory to a {K|Q}Action so the action can be plugged into mutiple toolbars.</li>
+</ul>
+
+<H4>KToolBarButton</H4>
+<ul>
+<li>Deleted - all done by QToolButton now</li>
+</ul>
+
+<H4>KToolBarRadioGroup</H4>
+<ul>
+<li>Deleted - all done by QToolButton now</li>
+</ul>
+
+<H4>KRadioAction</H4>
+<ul>
+<li>Deleted - use KAction (or KToggleAction if you need different text/icons for the selected state) instead, in combination with an exclusive QActionGroup</li>
+</ul>
+
+<H4>KListAction</H4>
+<ul>
+<li>Deleted - as per comments, did not add anything to KSelectAction</li>
+</ul>
+
+<H4>KToolBarSeparator</H4>
+<ul>
+<li>Deleted - use QAction::setSeparator()</li>
+</ul>
+
 
 <H4>KActionSelector</H4>
 <ul>
@@ -569,6 +650,8 @@ Use KSystemTray instead.</li>
  * Override sizeHint() in the central widget so that it returns the desired size.<br>
  * Call updateGeometry() in the central widget whenever the desired size changes. This ensures that the new sizeHint() is properly propagated to any parent layout.<br>
  * Now call adjustSize() in the mainwindow to resize the mainwindow such that the central widget will become the desired size.</li>
+<li>Ported to QMainWindow</li>
+<li>accel() removed - KAccel no longer needed</li>
 </ul>
 
 <H4>KAboutDialog</H4>
@@ -662,6 +745,14 @@ if needed (see the KURLDrag section)</li>
 
 <h4>KToolBar</h4>
 <ul>
+<li>Ported to QToolBar</li>
+<li>IconText, iconText(), setIconText() replaced by QToolBar::toolButtonStyle() et. al.</li>
+<li>BarPosition, barPos(), setBarPos() replaced by Qt::ToolBarArea settings in QMainWindow; Unmanaged, Floating, and Flat are no longer supported (use QDockWidget if you need floating toolbars)</li>
+<li>fullSize(), setFullSize() removed as not supported by Qt - best estimation is to add a QAction with a widget requesting maximum available width, and to insert a tool bar break after the toolbar using QMainWindow::insertToolBarBreak()</li>
+<li>iconSize(), setIconSize() now a QToolBar property, and a QSize instead of an int - convenience function setIconDimensions() takes an int instead</li>
+<li>insert*() and all associated item-manipulation methods removed - all done through actions now. Compatibility layer possible however so far I haven't found the functions to be used much in KDE programs (mostly it's taken care of by xmlgui instead)</li>
+<li>setFlat() only partially working - you can't remove a toolbar's handle, but you can make it unmovable</li>
+<li>layout-related methods removed (done by QToolBar's layout)</li>
 <li><tt>enum BarStatus</tt> and <tt>bool enable(BarStatus stat)</tt> have been
 removed</li>
 <li><tt>void enableMoving(bool flag)</tt> and <tt>void enableFloating (bool

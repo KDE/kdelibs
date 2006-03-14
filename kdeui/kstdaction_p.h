@@ -138,10 +138,13 @@ class AutomaticAction : public KAction {
 Q_OBJECT
 
 public:
-    AutomaticAction(const QString &text, const QString &pix, const KShortcut &cut, const char *slot, KActionCollection *parent, const char *name) : KAction (text, pix, cut, 0, slot, parent, name){
+    AutomaticAction(const QString &icon, const QString &text, const QKeySequence &cut, const char *slot, KActionCollection *parent, const char *name)
+      : KAction(icon, text, parent, name)
+    {
+      setShortcut(cut);
       connect(this, SIGNAL( activated() ), this, slot );
     }
-    
+
 public Q_SLOTS:
     inline void cut(){ invokeEditSlot("cut"); };
     inline void copy(){ invokeEditSlot("copy"); };

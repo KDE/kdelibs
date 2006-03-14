@@ -118,7 +118,7 @@ private:
 	KMPrinter	*m_current;
 	KToolBar	*m_toolbar;
 	PluginComboBox	*m_plugin;
-	int		m_pactionsindex;
+	QAction*		m_pactionsindex;
 	QStringList	m_toollist;
 	bool		m_first;
 	QBoxLayout	*m_boxlayout;

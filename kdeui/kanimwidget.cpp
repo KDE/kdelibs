@@ -197,7 +197,7 @@ void KAnimWidget::updateIcons()
      return;
 
   if (qobject_cast<KToolBar*>(parent()))
-    d->size = ((KToolBar*)parent())->iconSize();
+    d->size = ((KToolBar*)parent())->iconSize().width();
   if (!d->size)
      d->size = KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
 

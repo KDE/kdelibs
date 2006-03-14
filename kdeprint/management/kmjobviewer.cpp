@@ -88,7 +88,8 @@ KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
 	m_stickybox = 0;
 	m_standalone = ( parent == NULL );
 
-	setToolBarsMovable(false);
+    // FIXME KMainWindow port - need to set each toolbar to not movable
+	//setToolBarsMovable(false);
 	init();
 
 	if (m_standalone)
@@ -276,7 +277,7 @@ void KMJobViewer::initActions()
 	connect(uact, SIGNAL(toggled(bool)), m_userfield, SLOT(setEnabled(bool)));
 	m_userfield->setEnabled(false);
 	m_userfield->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-	KWidgetAction	*ufact = new KWidgetAction(m_userfield, i18n("User Name"), 0, 0, 0, actionCollection(), "view_username");
+	KWidgetAction *ufact = new KWidgetAction(m_userfield, i18n("User Name"), 0, 0, 0, actionCollection(), "view_username");
 
 	if (!m_pop)
 	{
@@ -303,6 +304,7 @@ void KMJobViewer::initActions()
 	if (!m_standalone)
 	{
 		KToolBar	*toolbar = toolBar();
+		toolbar->setMovable(false);
 		hact->plug(toolbar);
 		ract->plug(toolbar);
 		toolbar->addSeparator();
@@ -582,45 +584,42 @@ void KMJobViewer::slotClose()
 void KMJobViewer::loadPluginActions()
 {
 	int	mpopindex(7), toolbarindex(!m_standalone?7:8), menuindex(7);
-  QMenuItem *item = 0;
+    QAction* item = 0L;
 
 	if (m_standalone)
 	{
 		// standalone window, insert actions into main menubar
 		KAction	*act = actionCollection()->action("job_restart");
-		for (int i=0;i<act->containerCount();i++)
+        item = act;
+		foreach (QWidget* container, act->associatedWidgets())
 		{
-			if ((item = menuBar()->findItem(act->itemId(i))) && item->menu())
+			if (container == menuBar())
 			{
-				menuindex = mpopindex = item->menu()->indexOf(act->itemId(i))+1;
+				menuindex = mpopindex = container->actions().indexOf(act);
 				break;
 			}
 		}
 	}
 
 	QList<KAction*>	acts = m_manager->createPluginActions(actionCollection());
-	for (QList<KAction*>::Iterator it=acts.begin(); it!=acts.end(); ++it)
+	foreach (KAction* action, acts)
 	{
 		// connect the action to this
-		connect((*it), SIGNAL(activated(int)), SLOT(pluginActionActivated(int)));
+		connect(action, SIGNAL(activated(int)), SLOT(pluginActionActivated(int)));
 
 		// should add it to the toolbar and menubar
-		(*it)->plug(toolBar(), toolbarindex++);
+		action->plug(toolBar(), toolbarindex++);
 		if (m_pop)
-			(*it)->plug(m_pop, mpopindex++);
-		if (item->menu())
-			(*it)->plug(static_cast<QMenu*>(item->menu()), menuindex++);
+			action->plug(m_pop, mpopindex++);
+		if (item && item->menu())
+			action->plug(item->menu(), menuindex++);
 	}
 }
 
 void KMJobViewer::removePluginActions()
 {
-	QList<KAction*>	acts = actionCollection()->actions("plugin");
-	for (QList<KAction*>::Iterator it=acts.begin(); it!=acts.end(); ++it)
-	{
-		(*it)->unplugAll();
-		delete (*it);
-	}
+	QList<QAction*> actions = KMFactory::self()->manager()->pluginGroup()->actions();
+	qDeleteAll(actions);
 }
 
 /*

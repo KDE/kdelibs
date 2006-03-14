@@ -173,7 +173,7 @@
                         <cstring>m_btnClearPrimary</cstring>
                     </property>
                     <property name="text">
-                        <string>x</string>
+                        <string></string>
                     </property>
                     <property name="flat">
                         <bool>true</bool>
@@ -187,7 +187,7 @@
                         <cstring>m_btnClearAlternate</cstring>
                     </property>
                     <property name="text">
-                        <string>x</string>
+                        <string></string>
                     </property>
                     <property name="flat">
                         <bool>true</bool>

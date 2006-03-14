@@ -576,7 +576,7 @@ void KEditToolbarWidget::initKPart(KXMLGUIFactory* factory)
   QDomElement elem;
 
   setFactory( factory );
-  actionCollection()->setWidget( this );
+  actionCollection()->setAssociatedWidget( this );
 
   // add all of the client data
   bool first = true;
@@ -949,7 +949,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     // iterate through this client's actions
     // This used to iterate through _all_ actions, but we don't support
     // putting any action into any client...
-    for (unsigned int i = 0;  i < actionCollection->count(); i++)
+    for (int i = 0;  i < actionCollection->count(); i++)
     {
       KAction *action = actionCollection->action( i );
 
@@ -958,12 +958,9 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
       {
         // we have a match!
         ToolbarItem *act = new ToolbarItem(m_activeList, it.tagName(), action->objectName(), action->toolTip());
-        act->setText(1, action->plainText());
+        act->setText(1, action->text());
         if (action->hasIcon())
-          if (!action->icon().isEmpty())
-            act->setIcon(0, BarIcon(action->icon(), 16));
-          else // Has iconset
-            act->setIcon(0, action->iconSet(KIcon::Toolbar).pixmap());
+          act->setIcon(0, action->icon());
 
         active_list.insert(action->objectName(), true);
         break;
@@ -981,12 +978,9 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
       continue;
 
     ToolbarItem *act = new ToolbarItem(m_inactiveList, tagActionList, action->objectName(), action->toolTip());
-    act->setText(1, action->plainText());
+    act->setText(1, action->text());
     if (action->hasIcon())
-      if (!action->icon().isEmpty())
-        act->setIcon(0, BarIcon(action->icon(), 16));
-      else // Has iconset
-        act->setIcon(0, action->iconSet(KIcon::Toolbar).pixmap());
+      act->setIcon(0, action->icon());
   }
 
   m_inactiveList->sortItems(1, Qt::DescendingOrder);

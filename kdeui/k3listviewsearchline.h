@@ -324,9 +324,6 @@ protected Q_SLOTS:
      */
     virtual void createWidgets();
 
-private Q_SLOTS:
-    void positionInToolBar();
-
 private:
     class K3ListViewSearchLineWidgetPrivate;
     K3ListViewSearchLineWidgetPrivate *d;

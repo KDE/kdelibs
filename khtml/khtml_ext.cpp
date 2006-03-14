@@ -45,7 +45,6 @@
 #include <kfiledialog.h>
 #include <kio/job.h>
 #include <kprocess.h>
-#include <ktoolbarbutton.h>
 #include <ktoolbar.h>
 #include <ksavefile.h>
 #include <kstringhandler.h>
@@ -952,9 +951,12 @@ void KHTMLPartBrowserHostExtension::virtual_hook( int id, void *data )
 extern const int KDE_NO_EXPORT fastZoomSizes[];
 extern const int KDE_NO_EXPORT fastZoomSizeCount;
 
-KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const KShortcut &cut, const QObject *receiver, const char *slot, KActionCollection *parent, const char *name )
-    : KAction( text, icon, cut, receiver, slot, parent, name )
+KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &icon, const QString &text, KActionCollection *parent, const char *name )
+    : KSelectAction( icon, text, parent, name )
 {
+    setToolBarMode(MenuMode);
+    setToolButtonPopupMode(QToolButton::DelayedPopup);
+
     init(part, direction);
 }
 
@@ -963,9 +965,8 @@ void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
     m_direction = direction;
     m_part = part;
 
-    m_popup = new QMenu;
     // xgettext: no-c-format
-    m_popup->insertItem( i18n( "Default Font Size (100%)" ) );
+    addAction( i18n( "Default Font Size (100%)" ) );
 
     int m = m_direction ? 1 : -1;
     int ofs = fastZoomSizeCount / 2;       // take index of 100%
@@ -978,34 +979,19 @@ void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
         if ( num > 0 ) numStr.prepend( QLatin1Char('+') );
 
         // xgettext: no-c-format
-        m_popup->insertItem( i18n( "%1%" ).arg( fastZoomSizes[ofs + i] ) );
+        addAction( i18n( "%1%" ).arg( fastZoomSizes[ofs + i] ) );
     }
 
-    connect( m_popup, SIGNAL( activated( int ) ), this, SLOT( slotActivated( int ) ) );
+    connect( selectableActionGroup(), SIGNAL( triggered(QAction*) ), this, SLOT( slotTriggered(QAction*) ) );
 }
 
 KHTMLZoomFactorAction::~KHTMLZoomFactorAction()
 {
-    delete m_popup;
 }
 
-int KHTMLZoomFactorAction::plug( QWidget *w, int index )
+void KHTMLZoomFactorAction::slotTriggered(QAction* action)
 {
-    int containerId = KAction::plug( w, index );
-    if ( containerId == -1 || !w->inherits( "KToolBar" ) )
-        return containerId;
-
-    KToolBarButton *button = static_cast<KToolBar *>( w )->getButton( itemId( containerId ) );
-    if ( !button )
-        return containerId;
-
-    button->setDelayedPopup( m_popup );
-    return containerId;
-}
-
-void KHTMLZoomFactorAction::slotActivated( int id )
-{
-    int idx = m_popup->indexOf( id );
+    int idx = selectableActionGroup()->actions().indexOf(action);
 
     if (idx == 0)
         m_part->setZoomFactor(100);

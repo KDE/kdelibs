@@ -45,7 +45,6 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <ktoolbar.h>
-#include <ktoolbarbutton.h>
 #include <kdebug.h>
 #include <kmenu.h>
 #include <klibloader.h>
@@ -87,16 +86,17 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	m_printerpages = new KMPages(this, "PrinterPages");
 	m_pop = new QMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
-	m_toolbar->setMovingEnabled(false);
+	m_toolbar->setMovable(false);
 	m_plugin = new PluginComboBox(this );
         m_plugin->setObjectName( "Plugin");
 	/*
 	m_menubar = new KMenuBar( this );
 	static_cast<KMenuBar*>( m_menubar )->setTopLevelMenu( false );
 	*/
-	m_menubar = new KToolBar( this, "MenuBar", false, false );
-	m_menubar->setIconText( KToolBar::IconTextRight );
-	m_menubar->setMovingEnabled( false );
+	m_menubar = new KToolBar( this, false, false );
+    m_menubar->setObjectName("MenuBar");
+	m_menubar->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
+	m_menubar->setMovable( false );
 
 	// layout
 	QVBoxLayout	*m_layout = new QVBoxLayout(this);
@@ -176,7 +176,7 @@ void KMMainView::saveSettings()
 
 void KMMainView::initActions()
 {
-	KIconSelectAction	*vact = new KIconSelectAction(i18n("&View"),0,m_actions,"view_change");
+	KIconSelectAction	*vact = new KIconSelectAction(i18n("&View"),m_actions,"view_change");
 	QStringList	iconlst;
 	iconlst << "view_icon" << "view_detailed" << "view_tree";
 	vact->setItems(i18n("&Icons,&List,&Tree").split(',', QString::SkipEmptyParts), iconlst);
@@ -203,7 +203,7 @@ void KMMainView::initActions()
 	new KAction(i18n("Configure &Manager..."),"kdeprint_configmgr",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
 	new KAction(i18n("Initialize Manager/&View"),"reload",0,this,SLOT(slotInit()),m_actions,"view_refresh");
 
-	KIconSelectAction	*dact = new KIconSelectAction(i18n("&Orientation"),0,m_actions,"orientation_change");
+	KIconSelectAction	*dact = new KIconSelectAction(i18n("&Orientation"),m_actions,"orientation_change");
 	iconlst.clear();
 	iconlst << "view_top_bottom" << "view_left_right";
 	dact->setItems(i18n("&Vertical,&Horizontal").split(',', QString::SkipEmptyParts), iconlst);
@@ -213,13 +213,13 @@ void KMMainView::initActions()
 	new KAction(i18n("R&estart Server"),"kdeprint_restartsrv",0,this,SLOT(slotServerRestart()),m_actions,"server_restart");
 	new KAction(i18n("Configure &Server..."),"kdeprint_configsrv",0,this,SLOT(slotServerConfigure()),m_actions,"server_configure");
 
-	KToggleAction	*tact = new KToggleAction(i18n("Show &Toolbar"),0,m_actions,"view_toolbar");
+	KToggleAction	*tact = new KToggleAction(i18n("Show &Toolbar"),m_actions,"view_toolbar");
 	tact->setCheckedState(i18n("Hide &Toolbar"));
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
-	tact = new KToggleAction( i18n( "Show Me&nu Toolbar" ), 0, m_actions, "view_menubar" );
+	tact = new KToggleAction( i18n( "Show Me&nu Toolbar" ), m_actions, "view_menubar" );
 	tact->setCheckedState(i18n("Hide Me&nu Toolbar"));
 	connect( tact, SIGNAL( toggled( bool ) ), SLOT( slotToggleMenuBar( bool ) ) );
-	tact = new KToggleAction(i18n("Show Pr&inter Details"),"kdeprint_printer_infos", 0,m_actions,"view_printerinfos");
+	tact = new KToggleAction("kdeprint_printer_infos", i18n("Show Pr&inter Details"), m_actions,"view_printerinfos");
 	tact->setCheckedState(KGuiItem(i18n("Hide Pr&inter Details"),"kdeprint_printer_infos"));
 	tact->setChecked(true);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
@@ -246,7 +246,7 @@ void KMMainView::initActions()
 	// add actions to the toolbar
 	m_actions->action("printer_add")->plug(m_toolbar);
 	m_actions->action("printer_add_special")->plug(m_toolbar);
-	m_toolbar->insertLineSeparator();
+	m_toolbar->addSeparator();
 	m_actions->action("printer_state_change")->plug(m_toolbar);
 	m_actions->action("printer_spool_change")->plug(m_toolbar);
 	m_toolbar->addSeparator();
@@ -257,14 +257,14 @@ void KMMainView::initActions()
 	m_actions->action("printer_configure")->plug(m_toolbar);
 	m_actions->action("printer_test")->plug(m_toolbar);
 	m_actions->action("printer_tool")->plug(m_toolbar);
-	m_pactionsindex = m_toolbar->insertSeparator();
-	m_toolbar->insertLineSeparator();
+	m_pactionsindex = m_toolbar->addSeparator();
+	m_toolbar->addSeparator();
 	m_actions->action("server_restart")->plug(m_toolbar);
 	m_actions->action("server_configure")->plug(m_toolbar);
-	m_toolbar->insertLineSeparator();
+	m_toolbar->addSeparator();
 	m_actions->action("manager_configure")->plug(m_toolbar);
 	m_actions->action("view_refresh")->plug(m_toolbar);
-	m_toolbar->insertLineSeparator();
+	m_toolbar->addSeparator();
 	m_actions->action("view_printerinfos")->plug(m_toolbar);
 	m_actions->action("view_change")->plug(m_toolbar);
 	m_actions->action("orientation_change")->plug(m_toolbar);
@@ -275,8 +275,9 @@ void KMMainView::initActions()
 	m_actions->action( "printer_add" )->plug( menu );
 	m_actions->action( "printer_add_special" )->plug( menu );
 	//m_menubar->insertItem( i18n( "Add" ), menu );
-	m_menubar->insertButton( "wizard", 0, true, i18n( "Add" ) );
-	m_menubar->getButton( 0 )->setMenu( menu, true );
+	KActionMenu* actionMenu = new KActionMenu(i18n( "Add" ), m_actions, "wizard");
+	actionMenu->setMenu(menu);
+	m_menubar->addAction( actionMenu );
 	menu = new QMenu( this );
 	m_actions->action("printer_state_change")->plug( menu );
 	m_actions->action("printer_spool_change")->plug( menu );
@@ -290,20 +291,23 @@ void KMMainView::initActions()
 	m_actions->action("printer_tool")->plug( menu );
 	menu->addSeparator();
 	//m_menubar->insertItem( i18n( "Printer" ), menu );
-	m_menubar->insertButton( "printer1", 1, true, i18n( "Printer" ) );
-	m_menubar->getButton( 1 )->setMenu( menu, true );
+	actionMenu = new KActionMenu(i18n( "Printer" ), m_actions, "printer1");
+	actionMenu->setMenu(menu);
+	m_menubar->addAction(actionMenu);
 	menu = new QMenu( this );
 	m_actions->action("server_restart")->plug( menu );
 	m_actions->action("server_configure")->plug( menu );
 	//m_menubar->insertItem( i18n( "Server" ), menu );
-	m_menubar->insertButton( "misc", 2, true, i18n( "Print Server" ) );
-	m_menubar->getButton( 2 )->setMenu( menu, true );
+	actionMenu = new KActionMenu(i18n( "Print Server" ), m_actions, "misc");
+	actionMenu->setMenu(menu);
+	m_menubar->addAction(actionMenu);
 	menu = new QMenu( this );
 	m_actions->action("manager_configure")->plug( menu );
 	m_actions->action("view_refresh")->plug( menu );
 	//m_menubar->insertItem( i18n( "Manager" ), menu );
-	m_menubar->insertButton( "kdeprint_configmgr", 3, true, i18n( "Print Manager" ) );
-	m_menubar->getButton( 3 )->setMenu( menu, true );
+	actionMenu = new KActionMenu(i18n( "Print Manager" ), m_actions, "kdeprint_configmgr");
+	actionMenu->setMenu(menu);
+	m_menubar->addAction(actionMenu);
 	menu = new QMenu( this );
 	m_actions->action("view_printerinfos")->plug( menu );
 	m_actions->action("view_change")->plug( menu );
@@ -313,14 +317,16 @@ void KMMainView::initActions()
 	menu->addSeparator();
 	m_actions->action("view_pfilter")->plug( menu );
 	//m_menubar->insertItem( i18n( "View" ), menu );
-	m_menubar->insertButton( "view_remove", 4, true, i18n( "View" ) );
-	m_menubar->getButton( 4 )->setMenu( menu, true );
+	actionMenu = new KActionMenu(i18n( "View" ), m_actions, "view_remove");
+	actionMenu->setMenu(menu);
+	m_menubar->addAction(actionMenu);
 	//m_menubar->setMinimumHeight( m_menubar->heightForWidth( 1000 ) );
 	menu = new QMenu( this );
 	m_actions->action( "invoke_help" )->plug( menu );
 	m_actions->action( "invoke_web" )->plug( menu );
-	m_menubar->insertButton( "help", 5, true, i18n( "Documentation" ) );
-	m_menubar->getButton( 5 )->setMenu( menu, true );
+	actionMenu = new KActionMenu(i18n( "Documentation" ), m_actions, "help");
+	actionMenu->setMenu(menu);
+	m_menubar->addAction(actionMenu);
 
 	loadPluginActions();
 	slotPrinterSelected(QString());
@@ -466,9 +472,9 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 		}
 		if (!printer->isSpecial())
 		{
-			QList<KAction*>	pactions = m_actions->actions("plugin");
-			for (QList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
-				(*it)->plug(m_pop);
+			QList<KAction*>	pactions = m_actions->actionsInGroup(m_manager->pluginGroup());
+			foreach (KAction* action, pactions)
+				m_pop->addAction(action);
 			if (pactions.count() > 0)
 				m_pop->addSeparator();
 		}
@@ -796,25 +802,22 @@ bool KMMainView::printerInfosShown() const
 void KMMainView::loadPluginActions()
 {
 	KMFactory::self()->manager()->createPluginActions(m_actions);
-	QList<KAction*>	pactions = m_actions->actions("plugin");
-	int	index = m_pactionsindex;
+	QList<KAction*>	pactions = m_actions->actionsInGroup(KMFactory::self()->manager()->pluginGroup());
+	QAction*	before = m_pactionsindex;
 	//QPopupMenu *menu = m_menubar->findItem( m_menubar->idAt( 1 ) )->popup();
-	QMenu *menu = m_menubar->getButton( 1 )->menu();
-	for (QList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
+	QMenu *menu = static_cast<KActionMenu*>(m_menubar->actions().at( 1 ))->menu();
+	foreach (KAction* action, pactions)
 	{
-		(*it)->plug(m_toolbar, index++);
-		( *it )->plug( menu );
+		m_toolbar->insertAction(before, action);
+		menu->addAction(action);
+		before = action;
 	}
 }
 
 void KMMainView::removePluginActions()
 {
-	QList<KAction*>	pactions = m_actions->actions("plugin");
-	for (QList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
-	{
-		(*it)->unplugAll();
-		delete (*it);
-	}
+	QList<KAction*>	pactions = m_actions->actionsInGroup(KMFactory::self()->manager()->pluginGroup());
+	qDeleteAll(pactions);
 }
 
 void KMMainView::slotToolSelected(int ID)

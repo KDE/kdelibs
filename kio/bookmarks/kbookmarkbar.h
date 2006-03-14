@@ -71,15 +71,13 @@ public:
 
 Q_SIGNALS:
     void aboutToShowContextMenu( const KBookmark &, QMenu * );
-    void openBookmark( const QString& url, Qt::ButtonState state );
+    void openBookmark( const QString& url, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
 
 public Q_SLOTS:
     void clear();
 
     void slotBookmarksChanged( const QString & );
     void slotBookmarkSelected();
-
-    void slotBookmarkSelected( KAction::ActivationReason reason, Qt::ButtonState state );
 
     void slotRMBActionRemove( int );
     void slotRMBActionInsert( int );
@@ -93,12 +91,15 @@ protected:
 
 private:
     KBookmarkGroup getToolbar();
+    void removeTempSep(KBookmarkBarPrivate* p);
+    QString handleToolbarDragMoveEvent(KBookmarkBarPrivate *p, KToolBar *tb, const QPoint& pos, const QList<KAction *>& actions, bool &atFirst, KBookmarkManager *mgr);
 
     KBookmarkOwner *m_pOwner;
     QPointer<KToolBar> m_toolBar;
     KActionCollection *m_actionCollection;
     KBookmarkManager *m_pManager;
     QList<KBookmarkMenu *> m_lstSubMenus;
+    QAction* m_toolBarSeparator;
 
     KBookmarkBarPrivate * const d;
 };

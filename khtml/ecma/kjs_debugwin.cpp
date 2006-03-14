@@ -476,8 +476,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 //   m_stopAction->plug(toolBar()); ###
   m_breakAction->plug(toolBar());
 
-  toolBar()->insertWidget(1,300,m_sourceSel);
-  toolBar()->setItemAutoSized(1);
+  toolBar()->addWidget(m_sourceSel);
 
   updateContextList();
   setMinimumSize(300,200);

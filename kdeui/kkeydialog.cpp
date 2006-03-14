@@ -353,7 +353,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   columns.append(0);
   listViewSearch->setSearchColumns(columns);
 
-  stackLayout->addWidget( d->pList, 1, 1, 0, 1 );
+  stackLayout->addWidget( d->pList, 1, 1, 1, 1 );
 
   wtstr = i18n("Here you can see a list of key bindings, "
                        "i.e. associations between actions (e.g. 'Copy') "
@@ -443,7 +443,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   //d->lInfo->setAlignment( AlignCenter );
   //d->lInfo->setEnabled( false );
   //d->lInfo->hide();
-  grid->addWidget( d->lInfo, 2, 2, 0, 3 );
+  grid->addWidget( d->lInfo, 2, 2, 1, 3 );
 
   //d->globalDict = new QDict<int> ( 100, false );
   //d->globalDict->setAutoDelete( true );

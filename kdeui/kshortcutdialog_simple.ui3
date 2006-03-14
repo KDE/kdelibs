@@ -76,7 +76,7 @@
                 <cstring>m_btnClearShortcut</cstring>
             </property>
             <property name="text">
-                <string>x</string>
+                <string></string>
             </property>
             <property name="flat">
                 <bool>true</bool>

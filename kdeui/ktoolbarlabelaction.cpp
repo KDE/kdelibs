@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2004 Felix Berger <felixberger@beldesign.de>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License version 2 as published by the Free Software Foundation.
@@ -21,98 +21,99 @@
 #include <qlabel.h>
 #include <qapplication.h>
 
+#include "ktoolbar.h"
+
 class KToolBarLabelAction::KToolBarLabelActionPrivate
 {
 public:
   KToolBarLabelActionPrivate()
-    : m_label(0)
   {
   }
-  QLabel* m_label;
+  QPointer<QAction> m_buddy;
 };
 
 
 KToolBarLabelAction::KToolBarLabelAction(const QString &text,
 					 const KShortcut &cut,
-					 const QObject *receiver, 
+					 const QObject *receiver,
 					 const char *slot,
 					 KActionCollection *parent,
 					 const char *name)
-  : KWidgetAction(new QLabel(text), text, cut,
-		  receiver, slot, parent, name), 
+  : KAction(text, cut, receiver, slot, parent, name),
     d(new KToolBarLabelActionPrivate)
 {
-  init();
+  setToolBarWidgetFactory(this);
 }
 
-KToolBarLabelAction::KToolBarLabelAction(QWidget* buddy, 
+KToolBarLabelAction::KToolBarLabelAction(QAction* buddy,
 					 const QString &text,
 					 const KShortcut &cut,
-					 const QObject *receiver, 
-					 const char *slot,
- 					 KActionCollection *parent, 
-					 const char *name)
-  : KWidgetAction(new QLabel(text), text, 
-		  cut, receiver, slot, parent, name),
-    d(new KToolBarLabelActionPrivate)
-{
-  init();
-  setBuddy(buddy);
-}
-
-KToolBarLabelAction::KToolBarLabelAction(QLabel* label, 
-					 const KShortcut &cut, 
 					 const QObject *receiver,
 					 const char *slot,
-					 KActionCollection* parent, 
+ 					 KActionCollection *parent,
 					 const char *name)
-  : KWidgetAction(label, label->text(), cut, receiver, slot, parent, name),
+  : KAction(text, cut, receiver, slot, parent, name),
     d(new KToolBarLabelActionPrivate)
 {
-  Q_ASSERT(QLatin1String("kde toolbar widget") == label->objectName());
-  init();
+  d->m_buddy = buddy;
+  setBuddy(buddy);
+  setToolBarWidgetFactory(this);
 }
 
 KToolBarLabelAction::~KToolBarLabelAction()
 {
   delete d;
-  d = 0;
 }
 
-void KToolBarLabelAction::init()
+void KToolBarLabelAction::setBuddy(QAction* buddy)
 {
-  d->m_label = static_cast<QLabel*>(widget());
+  d->m_buddy = buddy;
+
+  QList<QLabel*> labels;
+  foreach (QWidget* widget, associatedWidgets())
+    if (QToolBar* toolBar = qobject_cast<QToolBar*>(widget))
+      if (QLabel* label = qobject_cast<QLabel*>(toolBar->widgetForAction(this)))
+        labels.append(label);
+
+  foreach (QWidget* widget, buddy->associatedWidgets())
+    if (QToolBar* toolBar = qobject_cast<QToolBar*>(widget)) {
+      QWidget* newBuddy = toolBar->widgetForAction(buddy);
+      foreach (QLabel* label, labels)
+        label->setBuddy(newBuddy);
+      return;
+    }
+}
+
+QAction* KToolBarLabelAction::buddy() const
+{
+  return d->m_buddy;
+}
+
+void KToolBarLabelAction::slotChanged( )
+{
+  emit textChanged(text());
+}
+
+QWidget * KToolBarLabelAction::createToolBarWidget(QToolBar* parent)
+{
+  QLabel* newLabel = new QLabel(parent);
   /* these lines were copied from Konqueror's KonqDraggableLabel class in
      konq_misc.cc */
-  d->m_label->setBackgroundRole(QPalette::Button);
-  d->m_label->setAlignment((QApplication::isRightToLeft()
-			 ? Qt::AlignRight : Qt::AlignLeft) |
- 			Qt::AlignVCenter | Qt::TextShowMnemonic );
-  d->m_label->adjustSize();
+  newLabel->setBackgroundMode(Qt::PaletteButton);
+  newLabel->setAlignment((QApplication::isRightToLeft()
+        ? Qt::AlignRight : Qt::AlignLeft) |
+       Qt::AlignVCenter | Qt::TextShowMnemonic );
+  newLabel->adjustSize();
+
+  if (d->m_buddy)
+    foreach (QWidget* widget, d->m_buddy->associatedWidgets())
+      if (QToolBar* toolBar = qobject_cast<QToolBar*>(widget)) {
+        QWidget* newBuddy = toolBar->widgetForAction(d->m_buddy);
+        newLabel->setBuddy(newBuddy);
+        break;
+      }
+
+  return newLabel;
 }
 
-void KToolBarLabelAction::setText(const QString& text)
-{
-  KWidgetAction::setText(text);
-  d->m_label->setText(text);
-}
-
-void KToolBarLabelAction::setBuddy(QWidget* buddy)
-{
-  d->m_label->setBuddy(buddy);
-}
-
-QWidget* KToolBarLabelAction::buddy() const
-{
-  return d->m_label->buddy();
-}
-
-QLabel* KToolBarLabelAction::label() const
-{
-  return d->m_label;
-}
-
-void KToolBarLabelAction::virtual_hook(int, void*)
-{
-
-}
+#include "ktoolbarlabelaction.moc"

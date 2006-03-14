@@ -29,7 +29,7 @@
 
 
 KMainWindowInterface::KMainWindowInterface(KMainWindow * mainWindow)
-	: DCOPObject( mainWindow->name()) 
+	: DCOPObject( mainWindow->name())
 {
 	m_MainWindow = mainWindow;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -62,7 +62,7 @@ bool KMainWindowInterface::activateAction( const DCOPCString& action)
 	KAction *tmp_Action = m_dcopActionProxy->action(action);
 	if (tmp_Action)
 	{
-		tmp_Action->activate();
+		tmp_Action->trigger();
 		return true;
 	}
 	else

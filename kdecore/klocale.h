@@ -120,6 +120,8 @@ KDECORE_EXPORT QString i18n(const char *singular, const char *plural, unsigned l
  * to the right i18n() function
 **/
 inline QString tr2i18n(const char* message, const char* =0) {
+  if (!message || !message[0])
+    return QString();
   return i18n(message);
 }
 

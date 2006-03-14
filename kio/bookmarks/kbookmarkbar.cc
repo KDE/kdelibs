@@ -29,7 +29,6 @@
 #include <kdebug.h>
 
 #include <ktoolbar.h>
-#include <ktoolbarbutton.h>
 
 #include <kconfig.h>
 #include <kmenu.h>
@@ -144,11 +143,7 @@ KBookmarkBar::~KBookmarkBar()
 void KBookmarkBar::clear()
 {
     m_toolBar->clear();
-    for ( QList<KAction *>::iterator actit = d->m_actions.begin(),
-                                    actend = d->m_actions.end() ; actit != actend ; ++actit ) {
-        (*actit)->unplugAll();
-        delete *actit;
-    }
+    qDeleteAll(d->m_actions);
     d->m_actions.clear();
     qDeleteAll( m_lstSubMenus );
     m_lstSubMenus.clear();
@@ -191,12 +186,12 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
         if (!bm.isGroup())
         {
             if ( bm.isSeparator() )
-                m_toolBar->insertLineSeparator();
+                m_toolBar->addSeparator();
             else
             {
                 KAction *action = new KBookmarkAction( text, bm.icon(), 0, m_actionCollection, 0 );
-                connect(action, SIGNAL( activated ( KAction::ActivationReason, Qt::ButtonState )),
-                        this, SLOT( slotBookmarkSelected( KAction::ActivationReason, Qt::ButtonState ) ));
+                connect(action, SIGNAL( triggered(bool) ),
+                        this, SLOT( slotBookmarkSelected() ));
 
                 action->setProperty( "url", bm.url().url() );
                 action->setProperty( "address", bm.address() );
@@ -226,8 +221,8 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
                                                     bm.address());
             connect(menu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QMenu * ) ),
                     this, SIGNAL( aboutToShowContextMenu(const KBookmark &, QMenu * ) ));
-            connect(menu, SIGNAL( openBookmark( const QString &, Qt::ButtonState) ),
-                    this, SIGNAL( openBookmark( const QString &, Qt::ButtonState) ));
+            connect(menu, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers) ),
+                    this, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers) ));
             menu->fillBookmarkMenu();
             action->plug(m_toolBar);
             m_lstSubMenus.append( menu );
@@ -247,42 +242,32 @@ bool KBookmarkBar::isReadOnly() const
     return d->m_readOnly;
 }
 
-void KBookmarkBar::slotBookmarkSelected( KAction::ActivationReason /*reason*/, Qt::ButtonState state )
+void KBookmarkBar::slotBookmarkSelected()
 {
     if (!m_pOwner) return; // this view doesn't handle bookmarks...
 
-    const KAction* action = dynamic_cast<const KAction *>(sender());
-    if(action)
+    if (const KAction* action = qobject_cast<const KAction*>(sender()))
     {
         const QString & url = sender()->property("url").toString();
         m_pOwner->openBookmarkURL(url);
-        emit openBookmark( url, state );
+        emit openBookmark( url, QApplication::mouseButtons(), QApplication::keyboardModifiers() );
     }
 }
 
-void KBookmarkBar::slotBookmarkSelected()
-{
-    slotBookmarkSelected(KAction::ToolBarActivation, Qt::NoButton);
-}
-
-static const int const_sepId = -9999; // FIXME this is ugly,
-                                      // surely there is another
-                                      // way of doing this...
-
-static void removeTempSep(KBookmarkBarPrivate* p)
+void KBookmarkBar::removeTempSep(KBookmarkBarPrivate* p)
 {
     if (p->m_sepToolBar) {
-        p->m_sepToolBar->removeItem(const_sepId);
+        p->m_sepToolBar->removeAction(m_toolBarSeparator);
         p->m_sepToolBar = 0; // needed?
     }
 }
 
 static KAction* findPluggedAction(const QList<KAction *>& actions, KToolBar *tb, int id)
 {
-    for ( QList<KAction *>::const_iterator it = actions.begin(), end = actions.end() ; it != end ; ++it ) {
+    /*for ( QList<KAction *>::const_iterator it = actions.begin(), end = actions.end() ; it != end ; ++it ) {
         if ((*it)->isPlugged(tb, id))
             return (*it);
-    }
+    }*/
     return 0;
 }
 
@@ -296,26 +281,32 @@ static KAction* findPluggedAction(const QList<KAction *>& actions, KToolBar *tb,
  * @param atFirst bool reference, when true the position before the
  *        returned action was dropped on
  */
-static QString handleToolbarDragMoveEvent(
+QString KBookmarkBar::handleToolbarDragMoveEvent(
     KBookmarkBarPrivate *p, KToolBar *tb, const QPoint& pos, const QList<KAction *>& actions,
-    bool &atFirst, KBookmarkManager *mgr
-) {
+    bool &atFirst, KBookmarkManager *mgr)
+{
     Q_UNUSED( mgr );
     Q_ASSERT( actions.isEmpty() || (tb == dynamic_cast<KToolBar*>(actions.first()->container(0))) );
     p->m_sepToolBar = tb;
-    p->m_sepToolBar->removeItemDelayed(const_sepId);
+    p->m_sepToolBar->removeAction(m_toolBarSeparator);
 
     int index;
-    KToolBarButton* b;
+    QWidget* b;
 
-    b = dynamic_cast<KToolBarButton*>(tb->childAt(pos));
-    KAction *a = 0;
+    for (int i = 0; i < tb->actions().count(); ++i)
+      if (QWidget* button = tb->widgetForAction(tb->actions()[i]))
+        if (b->geometry().contains(pos)) {
+          b = button;
+          index = i;
+          break;
+        }
+
+    QAction *a = 0;
     QString address;
     atFirst = false;
 
     if (b)
     {
-        index = tb->itemIndex(b->id());
         QRect r = b->geometry();
         if (pos.x() < ((r.left() + r.right())/2))
         {
@@ -325,7 +316,7 @@ static QString handleToolbarDragMoveEvent(
                 atFirst = true;
             else {
                 index--;
-                b = tb->getButton(tb->idAt(index));
+                a = tb->actions()[index];
             }
         }
     }
@@ -344,17 +335,16 @@ static QString handleToolbarDragMoveEvent(
     else // (!b)
     {
         index = actions.count() - 1;
-        b = tb->getButton(tb->idAt(index));
+        a = tb->actions()[index];
+        b = tb->widgetForAction(a);
         // if !b and not past last button, we didn't find button
         if (pos.x() <= b->geometry().left())
             goto skipact; // TODO - rename
     }
 
-    if ( !b )
+    if ( !a )
         return QString(); // TODO Make it works for that case
 
-    a = findPluggedAction(actions, tb, b->id());
-    Q_ASSERT(a);
     address = a->property("address").toString();
     p->m_sepIndex = index + (atFirst ? 0 : 1);
 
@@ -372,30 +362,35 @@ static QString handleToolbarDragMoveEvent(
 #endif
 
 skipact:
-    tb->insertLineSeparator(p->m_sepIndex, const_sepId);
+    QAction* before = 0L;
+    if (p->m_sepIndex > 0 && p->m_sepIndex < tb->actions().count())
+      before = tb->actions().at(p->m_sepIndex - 1);
+    m_toolBarSeparator = tb->insertSeparator(before);
     return address;
 }
 
 // TODO - document!!!!
-static KAction* handleToolbarMouseButton(const QPoint& pos, const QList<KAction *>& actions,
+static QAction* handleToolbarMouseButton(const QPoint& pos, const QList<KAction *>& actions,
                                          KBookmarkManager * /*mgr*/, QPoint & pt)
 {
-    KAction *act = actions.first();
-    if (!act) {
+    if (actions.isEmpty() || !actions.first()) {
         return 0;
     }
 
-    KToolBar *tb = dynamic_cast<KToolBar*>(act->container(0));
+    QAction *act = actions.first();
+
+    KToolBar *tb = qobject_cast<KToolBar*>(act->associatedWidgets().first());
     Q_ASSERT(tb);
 
-    KToolBarButton *b;
-    b = dynamic_cast<KToolBarButton*>(tb->childAt(pos));
-    if (!b)
-        return 0;
+    QAction* a = 0;
 
-    KAction *a = 0;
-    a = findPluggedAction(actions, tb, b->id());
-    Q_ASSERT(a);
+    foreach (QAction* action, tb->actions())
+      if (QWidget* button = tb->widgetForAction(action))
+        if (button->geometry().contains(pos)) {
+          a = action;
+          break;
+        }
+
     pt = tb->mapToGlobal(pos);
 
     return a;
@@ -447,7 +442,7 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
         QMouseEvent *mev = (QMouseEvent*)e;
 
         QPoint pt;
-        KAction *_a;
+        QAction *_a;
 
         // FIXME, see how this holds up on an empty toolbar
         _a = handleToolbarMouseButton( mev->pos(), d->m_actions, m_pManager, pt );

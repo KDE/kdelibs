@@ -37,6 +37,7 @@ class KMSpecialManager;
 class QWidget;
 class KActionCollection;
 class PrinterFilter;
+class QActionGroup;
 
 /**
  * @internal
@@ -135,6 +136,7 @@ public:
 	virtual QStringList detectLocalPrinters();
 
 	// additional actions (for print manager)
+	QActionGroup* pluginGroup() const;
 	virtual void createPluginActions(KActionCollection*);
 	virtual void validatePluginActions(KActionCollection*, KMPrinter*);
 
@@ -178,6 +180,7 @@ protected:
 	KMVirtualManager	*m_virtualmgr;
 	PrinterFilter	*m_printerfilter;
 	bool m_updatepossible;
+	QActionGroup	*m_pluginGroup;
 };
 
 #endif

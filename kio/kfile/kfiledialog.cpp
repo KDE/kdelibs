@@ -63,7 +63,6 @@
 #include <kstdguiitem.h>
 #include <kstaticdeleter.h>
 #include <ktoolbar.h>
-#include <ktoolbarbutton.h>
 #include <kurl.h>
 #include <kurlcombobox.h>
 #include <kurlcompletion.h>
@@ -88,8 +87,7 @@
 #include <fixx11h.h>
 #endif
 
-enum Buttons { HOTLIST_BUTTON,
-               PATH_COMBO, CONFIGURE_BUTTON };
+enum Buttons { PATH_COMBO, CONFIGURE_BUTTON };
 
 template class QList<KIO::StatJob*>;
 
@@ -152,8 +150,10 @@ struct KFileDialogPrivate
 
     KFileBookmarkHandler *bookmarkHandler;
 
-    // the ID of the path drop down so subclasses can place their custom widgets properly
-    int m_pathComboIndex;
+    // the QAction before of the path drop down so subclasses can place their custom widgets properly
+    QAction* m_pathComboIndex;
+
+    KActionMenu* bookmarkButton;
     KConfigGroup *viewConfigGroup;
 };
 
@@ -875,7 +875,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
              SLOT( toggleSpeedbar( bool )) );
 
     KToggleAction *showBookmarksAction =
-            new KToggleAction(i18n("Show Bookmarks"), 0, coll, "toggleBookmarks");
+            new KToggleAction(i18n("Show Bookmarks"), coll, "toggleBookmarks");
     showBookmarksAction->setCheckedState(i18n("Hide Bookmarks"));
     connect( showBookmarksAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleBookmarks( bool )) );
@@ -889,21 +889,21 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                             "<li>the Quick Access navigation panel</li>"
                             "<li>file previews</li>"
                             "<li>separating folders from files</li></ul></qt>"));
-    menu->insert( coll->action( "sorting menu" ));
-    menu->insert( coll->action( "separator" ));
+    menu->addAction( coll->action( "sorting menu" ));
+    menu->addSeparator();
     coll->action( "short view" )->setShortcut(Qt::Key_F6);
-    menu->insert( coll->action( "short view" ));
+    menu->addAction( coll->action( "short view" ));
     coll->action( "detailed view" )->setShortcut(Qt::Key_F7);
-    menu->insert( coll->action( "detailed view" ));
-    menu->insert( coll->action( "separator" ));
+    menu->addAction( coll->action( "detailed view" ));
+    menu->addSeparator();
     coll->action( "show hidden" )->setShortcut(Qt::Key_F8);
-    menu->insert( coll->action( "show hidden" ));
-    menu->insert( showSidebarAction );
-    menu->insert( showBookmarksAction );
+    menu->addAction( coll->action( "show hidden" ));
+    menu->addAction( showSidebarAction );
+    menu->addAction( showBookmarksAction );
     coll->action( "preview" )->setShortcut(Qt::Key_F11);
-    menu->insert( coll->action( "preview" ));
+    menu->addAction( coll->action( "preview" ));
     coll->action( "separate dirs" )->setShortcut(Qt::Key_F12);
-    menu->insert( coll->action( "separate dirs" ));
+    menu->addAction( coll->action( "separate dirs" ));
 
     menu->setDelayed( false );
     connect( menu->popupMenu(), SIGNAL( aboutToShow() ),
@@ -911,17 +911,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     menu->plug( toolbar );
 
     //Insert a separator.
-    KToolBarSeparator* spacerWidget = new KToolBarSeparator(Qt::Horizontal, false /*no line*/,
-                                                            toolbar);
-    d->m_pathComboIndex = toolbar->insertWidget(-1, -1, spacerWidget);
-    toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
+    d->m_pathComboIndex = toolbar->addSeparator();
 
+    toolbar->addWidget(d->pathCombo);
 
-    toolbar->setItemAutoSized (PATH_COMBO);
-    toolbar->setIconText(KToolBar::IconOnly);
-    toolbar->setBarPos(KToolBar::Top);
-    toolbar->setMovingEnabled(false);
-    toolbar->adjustSize();
+    // FIXME KAction port - add capability
+    //toolbar->setItemAutoSized (PATH_COMBO);
+    toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    toolbar->setMovable(false);
 
     KUrlCompletion *pathCompletionObj = new KUrlCompletion( KUrlCompletion::DirCompletion );
     d->pathCombo->setCompletionObject( pathCompletionObj );
@@ -2156,8 +2153,9 @@ void KFileDialog::toggleSpeedbar( bool show )
         if (d->urlBar)
             d->urlBar->hide();
 
-        if ( !ops->actionCollection()->action( "home" )->isPlugged( toolbar ) )
-            ops->actionCollection()->action( "home" )->plug( toolbar, 3 );
+        KAction* homeAction = ops->actionCollection()->action( "home" );
+        if ( !toolbar->actions().contains(homeAction) )
+            homeAction->plug( toolbar, 3 );
     }
 
     static_cast<KToggleAction *>(actionCollection()->action("toggleSpeedbar"))->setChecked( show );
@@ -2176,28 +2174,27 @@ void KFileDialog::toggleBookmarks(bool show)
         connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
                     SLOT( enterURL( const QString& )));
 
-        toolbar->insertButton(QLatin1String("bookmark"),
-                              (int)HOTLIST_BUTTON, true,
-                              i18n("Bookmarks"), 5);
-        toolbar->getButton(HOTLIST_BUTTON)->setMenu(d->bookmarkHandler->menu(),
-                                                     true);
-        toolbar->getButton(HOTLIST_BUTTON)->setWhatsThis(                        i18n("<qt>This button allows you to bookmark specific locations. "
+        d->bookmarkButton = new KActionMenu(i18n("Bookmarks"), actionCollection(), "bookmark");
+        d->bookmarkButton->setMenu(d->bookmarkHandler->menu());
+        d->bookmarkButton->setWhatsThis(i18n("<qt>This button allows you to bookmark specific locations. "
                                 "Click on this button to open the bookmark menu where you may add, "
                                 "edit or select a bookmark.<p>"
                                 "These bookmarks are specific to the file dialog, but otherwise operate "
                                 "like bookmarks elsewhere in KDE.</qt>"));
+        toolbar->addAction(d->bookmarkButton);
     }
     else if (d->bookmarkHandler)
     {
         delete d->bookmarkHandler;
         d->bookmarkHandler = 0;
-        toolbar->removeItem(HOTLIST_BUTTON);
+        delete d->bookmarkButton;
+        d->bookmarkButton = 0;
     }
 
     static_cast<KToggleAction *>(actionCollection()->action("toggleBookmarks"))->setChecked( show );
 }
 
-int KFileDialog::pathComboIndex()
+QAction* KFileDialog::pathComboIndex()
 {
     return d->m_pathComboIndex;
 }

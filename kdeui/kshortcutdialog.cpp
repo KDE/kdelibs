@@ -50,6 +50,7 @@
 #include <qlayout.h>
 #include <qradiobutton.h>
 #include <qtimer.h>
+#include <QStackedWidget>
 
 
 #include <kapplication.h>
@@ -61,7 +62,6 @@
 #include <klocale.h>
 #include <kstdguiitem.h>
 #include <kpushbutton.h>
-#include <kvbox.h>
 
 bool KShortcutDialog::s_showMore = false;
 
@@ -69,20 +69,21 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
 : KDialog( parent, i18n("Configure Shortcut"),
                KDialog::Details|KDialog::Ok|KDialog::Cancel )
 {
-  enableButtonSeparator( true );
-  setModal(true);
+	enableButtonSeparator( true );
+	setModal(true);
 
-        setButtonText(Details, i18n("Advanced"));
-        m_stack = new KVBox(this);
-        m_stack->setMinimumWidth(360);
-        m_stack->setSpacing(0);
-        m_stack->setMargin(0);
-        setMainWidget(m_stack);
+	setButtonText(Details, i18n("Advanced"));
+	m_stack = new QStackedWidget(this);
+	m_stack->setMinimumWidth(360);
+	setMainWidget(m_stack);
 
-        m_simple = new KShortcutDialogSimple(m_stack);
+	m_simple = new KShortcutDialogSimple(m_stack);
+	m_stack->addWidget(m_simple);
 
-        m_adv = new KShortcutDialogAdvanced(m_stack);
-        m_adv->hide();
+	m_adv = new KShortcutDialogAdvanced(m_stack);
+	m_stack->addWidget(m_adv);
+
+	m_stack->setCurrentWidget(m_simple);
 
 	m_bQtShortcut = bQtShortcut;
 
@@ -111,6 +112,8 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
 		this, SLOT(slotSelectPrimary()));
 	connect(m_adv->m_btnAlternate, SIGNAL(clicked()),
 		this, SLOT(slotSelectAlternate()));
+
+	connect(this, SIGNAL(buttonClicked(KDialog::ButtonCode)), SLOT(slotButtonClicked(KDialog::ButtonCode)));
 
 	KGuiItem ok = KStdGuiItem::ok();
 	ok.setText( i18n( "OK" ) );
@@ -172,7 +175,7 @@ void KShortcutDialog::updateShortcutDisplay()
 		m_adv->m_txtAlternate->setDefault( false );
 		this->setFocus();
 	}
-	
+
 	s[0].replace('&', QLatin1String("&&"));
 	s[1].replace('&', QLatin1String("&&"));
 
@@ -194,10 +197,12 @@ void KShortcutDialog::updateShortcutDisplay()
 	enableButton(Details, bLessOk);
 }
 
-void KShortcutDialog::slotDetails()
+void KShortcutDialog::slotButtonClicked(KDialog::ButtonCode code)
 {
-	s_showMore = (m_adv->isHidden());
-	updateDetails();
+	if (code == KDialog::Details) {
+		s_showMore = (m_stack->currentWidget() != m_adv);
+		updateDetails();
+	}
 }
 
 void KShortcutDialog::updateDetails()
@@ -210,16 +215,14 @@ void KShortcutDialog::updateDetails()
 
 	if (showAdvanced)
 	{
-		m_simple->hide();
-		m_adv->show();
+		m_stack->setCurrentWidget(m_adv);
 		m_adv->m_btnPrimary->setChecked( true );
 		slotSelectPrimary();
 	}
 	else
 	{
+		m_stack->setCurrentWidget(m_simple);
 		m_ptxtCurrent = m_simple->m_txtShortcut;
-		m_adv->hide();
-		m_simple->show();
 		m_simple->m_txtShortcut->setDefault( true );
 		m_simple->m_txtShortcut->setFocus();
 		m_adv->m_btnMultiKey->setChecked( false );
@@ -282,7 +285,7 @@ void KShortcutDialog::slotMultiKeyMode( bool bOn )
 }
 
 #ifdef Q_WS_X11
-/* we don't use the generic Qt code on X11 because it allows us 
+/* we don't use the generic Qt code on X11 because it allows us
  to grab the keyboard so that all keypresses are seen
  */
 bool KShortcutDialog::x11Event( XEvent *pEvent )
@@ -399,7 +402,7 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 {
 	kDebug() << e->text() << " " << (int)e->text()[0].toLatin1()<<  " " << (int)e->ascii() << endl;
 	//if key is a letter, it must be stored as lowercase
-	int keyQt = QChar( e->key() & 0xff ).isLetter() ? 
+	int keyQt = QChar( e->key() & 0xff ).isLetter() ?
 		(QChar( e->key() & 0xff ).toLower().toLatin1() | (e->key() & 0xffff00) )
 		: e->key();
 	int modQt = KKeyServer::qtButtonStateToMod( e->modifiers() );
@@ -408,7 +411,7 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 	uint keySym = keyNative.sym();
 
 	switch( keySym ) {
-		case Qt::Key_Shift: 
+		case Qt::Key_Shift:
 			m_mod |= KKey::SHIFT;
 			m_bRecording = true;
 			break;
@@ -470,7 +473,7 @@ bool KShortcutDialog::event ( QEvent * e )
 
 		bool change = true;
 		switch( keySym ) {
-		case Qt::Key_Shift: 
+		case Qt::Key_Shift:
 			if (m_mod & KKey::SHIFT)
 				m_mod ^= KKey::SHIFT;
 			break;
