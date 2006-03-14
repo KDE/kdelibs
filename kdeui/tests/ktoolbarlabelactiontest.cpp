@@ -43,10 +43,8 @@ public:
 
     KSqueezedTextLabel* accel = new KSqueezedTextLabel
       ("&Really long, long, long and boring text goes here", main);
-	accel->setObjectName("kde toolbar widget");
     new KSqueezedTextLabel
       ("Really long, long, long and boring text goes here", main);
-       //"kde toolbar widget");
 
 
     // first constructor
@@ -56,28 +54,24 @@ public:
 							  "label1");
     // second constructor
     KLineEdit* lineEdit = new KLineEdit(this);
-    new KWidgetAction(lineEdit, "Line Edit", 0, this, 0,
+    KWidgetAction* lineEditAction = new KWidgetAction(lineEdit, "Line Edit", 0, this, 0,
 		      actionCollection(), "lineEdit");
     KToolBarLabelAction* label2 = 
-      new KToolBarLabelAction(lineEdit, "L&abel 2", 0, 0, 0,
+      new KToolBarLabelAction(lineEditAction, "L&abel 2", 0, 0, 0,
 			      actionCollection(),
 			      "label2");
 
     // set buddy for label1
-    label1->setBuddy(lineEdit);
+    label1->setBuddy(lineEditAction);
     accel->setBuddy(lineEdit);
 
      // third constructor
-    QLabel* customLabel =  new KSqueezedTextLabel
-      ("&Really long, long, long and boring text goes here", this);
-	customLabel->setObjectName("kde toolbar widget");
-
-    KToolBarLabelAction* label3 = new KToolBarLabelAction(customLabel, 0, 0, 0,
+    KToolBarLabelAction* label3 = new KToolBarLabelAction("&Really long, long, long and boring text goes here", 0, 0, 0,
  							  actionCollection(),
 							  "label3");
   
     // set buddy for label3
-    label3->setBuddy(lineEdit);
+    label3->setBuddy(lineEditAction);
 
     // customLabel->setText("&test me again some time soon");
     

@@ -15,10 +15,11 @@
 #include <khelpmenu.h>
 #include <kcmdlineargs.h>
 #include <kmenubar.h>
-#include <ktoolbarradiogroup.h>
 #include <kiconloader.h>
 #include <kmenu.h>
+#include <kactionclasses.h>
 #include "kwindowtest.h"
+#include <klineedit.h>
 
 #include <kglobal.h>
 
@@ -37,8 +38,6 @@
  KMainWindow).
  */
 
-static int itemId = 0;
-
 testWindow::testWindow (QWidget *parent)
     : KMainWindow (parent)
 {
@@ -49,43 +48,48 @@ setAutoSaveSettings();
     /* First, we setup setup Menus */
     /******************************/
     menuBar = new KMenuBar (this);
+    setMenuBar(menuBar);
 
     // First popup... 
     fileMenu = new QMenu;
     // We insert this popup in menubar with caption "File".
     // Prefix "&" means that "F" will be underlined
-    menuBar->insertItem ("&File", fileMenu);
+    QAction* fileAction = menuBar->addMenu(fileMenu);
+    fileAction->setText("&File");
     // We insert item "Exit" with accelerator ALT-Q, and connect
     // it to application's exit-slot.
-    fileMenu->insertItem ("&Exit", KApplication::kApplication(),
+    fileMenu->addAction("&Exit", KApplication::kApplication(),
                           SLOT( quit() ), Qt::ALT + Qt::Key_Q );
 
     // Another popup...
     toolBarMenu = new QMenu;
-    menuBar->insertItem ("&Toolbars", toolBarMenu);
-    toolBarMenu->insertItem ("(Un)Hide tollbar 1", this, SLOT(slotHide1()));
-    toolBarMenu->insertItem ("(Un)Hide tollbar 2", this, SLOT(slotHide2()));
+    QAction* toolBarsAction = menuBar->addAction("&Toolbars");
+    toolBarsAction->setMenu(toolBarMenu);
+    toolBarMenu->addAction ("(Un)Hide tollbar 1", this, SLOT(slotHide1()));
+    toolBarMenu->addAction ("(Un)Hide tollbar 2", this, SLOT(slotHide2()));
 
     itemsMenu = new QMenu;
-    menuBar->insertItem ("&Items", itemsMenu);
+    QAction* itemsAction = menuBar->addAction ("&Items");
+    itemsAction->setMenu(itemsMenu);
 
     exitB = true;   // exit button is shown
     lineL = true;   // Lined is enabled
     greenF = false;  // Frame not inserted
     
-    itemsMenu->insertItem ("delete/insert exit button", this, SLOT(slotExit()));
-    itemsMenu->insertItem ("insert/delete green frame!", this, SLOT(slotFrame()));
-    itemsMenu->insertItem ("enable/disable Lined", this, SLOT(slotLined()));
-    itemsMenu->insertItem ("Toggle fileNew", this, SLOT(slotNew()));
-    itemsMenu->insertItem ("Clear comboBox", this, SLOT(slotClearCombo()));
-    itemsMenu->insertItem ("Insert List in Combo", this, SLOT(slotInsertListInCombo()));
-    itemsMenu->insertItem ("Make item 3 curent", this, SLOT(slotMakeItem3Current()));
-    //itemsMenu->insertItem ("Insert clock!", this, SLOT(slotInsertClock()));
-    itemsMenu->insertItem ("Important!", this, SLOT(slotImportant()));
+    itemsMenu->addAction ("delete/insert exit button", this, SLOT(slotExit()));
+    itemsMenu->addAction ("insert/delete green frame!", this, SLOT(slotFrame()));
+    itemsMenu->addAction ("enable/disable Lined", this, SLOT(slotLined()));
+    itemsMenu->addAction ("Toggle fileNew", this, SLOT(slotNew()));
+    itemsMenu->addAction ("Clear comboBox", this, SLOT(slotClearCombo()));
+    itemsMenu->addAction ("Insert List in Combo", this, SLOT(slotInsertListInCombo()));
+    itemsMenu->addAction ("Make item 3 curent", this, SLOT(slotMakeItem3Current()));
+    //itemsMenu->addAction ("Insert clock!", this, SLOT(slotInsertClock()));
+    itemsMenu->addAction ("Important!", this, SLOT(slotImportant()));
 
-    menuBar->insertSeparator();
+    menuBar->addSeparator();
     helpMenu = new KHelpMenu(this, "KWindowTest was programmed by Sven Radej");
-    menuBar->insertItem( "&Help", helpMenu->menu() );
+    QAction* helpAction = menuBar->addAction( "&Help" );
+    helpAction->setMenu(helpMenu->menu());
 
     /**************************************************/
     /*Now, we setup statusbar order is not important. */
@@ -93,6 +97,7 @@ setAutoSaveSettings();
     statusBar = new KStatusBar (this);
     statusBar->insertItem("Hi there!                         ", 0);
     statusBar->insertItem("Look for tooltips to see functions", 1);
+    setStatusBar(statusBar);
 
     //DigitalClock *clk = new DigitalClock (statusBar);
     //clk->setFrameStyle(QFrame::NoFrame);
@@ -114,100 +119,84 @@ setAutoSaveSettings();
 
     
     // First four  buttons
-    pix = BarIcon("filenew");
-    itemId = tb->insertButton(pix, 0, SIGNAL(clicked()), this, SLOT(slotNew()),
-                         true, "Create.. (toggles upper button)", 50);
-    pix = BarIcon("fileopen");
-    tb->insertButton(pix, 1, SIGNAL(clicked()), this, SLOT(slotOpen()),
-                         false, "Open");
-    pix = BarIcon("filefloppy");
-    tb->insertButton(pix, 2, SIGNAL(clicked()), this, SLOT(slotSave()),
-                          true, "Save (beep or delayed popup)");
-    tb->setDelayedPopup(2, itemsMenu);
-    pix = BarIcon("fileprint");
-    tb->insertButton(pix, 3, SIGNAL(clicked()), this, SLOT(slotPrint()),
-                         true, "Print (enables/disables open)");
+    fileNewAction = new KAction("filenew", "Create.. (toggles upper button)", actionCollection(), "filenew");
+    fileNewAction->setCheckable(true);
+    tb->addAction(fileNewAction);
+    connect(fileNewAction, SIGNAL(triggered(bool)), SLOT(slotNew()));
+
+    KAction* fileOpenAction = new KAction("fileopen", "Open", actionCollection(), "fileopen");
+    tb->addAction(fileOpenAction);
+    connect(fileOpenAction, SIGNAL(triggered(bool)), SLOT(slotOpen()));
+
+    KActionMenu* fileFloppyAction = new KActionMenu("filefloppy", "Save (beep or delayed popup)", actionCollection(), "filefloppy");
+    fileFloppyAction->setDelayed(true);
+    tb->addAction(fileFloppyAction);
+    connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotSave()));
+
+    KAction* filePrintAction = new KAction("fileprint", "Print (enables/disables open)", actionCollection(), "fileprint");
+    tb->addAction(filePrintAction);
+    connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotPrint()));
 
     // And a combobox
     // arguments: text (or strList), ID, writable, signal, object, slot, enabled,
     //            tooltiptext, size
-    tb->insertCombo (QString("one"), 4, true, SIGNAL(activated(const QString&)), this,
-                          SLOT(slotList(const QString&)), true, "ComboBox", 150);
+    testComboBox = new KComboBox(tb);
+    KWidgetAction* comboAction = new KWidgetAction(testComboBox, QString(), 0, 0, 0, actionCollection(), "combobox"); 
+    tb->addAction(comboAction);
+    connect(testComboBox, SIGNAL(activated(const QString&)), this, SLOT(slotList(const QString&)));
 
 
     // Then one line editor
     // arguments: text, id, signal, object (this), slot, enabled, tooltiptext, size
-    tb->insertLined ("ftp://ftp.kde.org/pub/kde", 5, SIGNAL(returnPressed()), this,
-                          SLOT(slotReturn()), true, "Location", 200);
-
-    // Set this Lined to auto size itself. Note that only one item (Lined or Combo)
-    // Can be set to autosize; If you specify more of them only last (according to
-    /// index) will be set to autosize itself. Only Lined or Combo can be
-    // set to autosize. All items after autoSized one must  be aligned right.
-    // Auto size is valid only for fullWidth toolbars.
-
-    tb->setItemAutoSized (5);
+    testLineEdit = new KLineEdit(tb);
+    testLineEdit->setText("ftp://ftp.kde.org/pub/kde");
+    KWidgetAction* lineEditAction = new KWidgetAction(testLineEdit, QString(), 0, 0, 0, actionCollection(), "location"); 
+    tb->addAction(lineEditAction);
+    connect(testLineEdit, SIGNAL(returnPressed()), this, SLOT(slotReturn()));
 
     // Now add another button and align it right
-    pix = BarIcon("exit");
-    tb->insertButton(pix, 6, SIGNAL(clicked()), KApplication::kApplication(),
-                          SLOT( quit() ), true, "Exit");
-    tb->alignItemRight (6);
+    exitAction = new KAction("exit", "Exit", actionCollection(), "exit");
+    connect (exitAction, SIGNAL(triggered(bool)), KApplication::kApplication(), SLOT( quit() ));
+    tb->addAction(exitAction);
 
     // Another toolbar
-    tb1 = new KToolBar(this, Qt::DockTop); // this one is normal and has separators
+    tb1 = new KToolBar(this); // this one is normal and has separators
+    addToolBar(tb1);
 
 
-    pix = BarIcon("filenew");
-    tb1->insertButton(pix, 0, true, "Create new file2 (Toggle)");
-    tb1->setToggle(0);
-    tb1->addConnection (0, SIGNAL(toggled(bool)), this, SLOT(slotToggle(bool)));
+    KAction* fileNewAction2 = new KAction("filenew", "Create new file2 (Toggle)", actionCollection(), "filenew2");
+    tb1->addAction(fileNewAction2);
+    connect(fileNewAction2, SIGNAL(toggled(bool)), this, SLOT(slotToggle(bool)));
 
-    pix = BarIcon("fileopen");
-    tb1->insertButton(pix, 1, SIGNAL(clicked()), this, SLOT(slotOpen()),
-                          true, "Open (starts progres in sb)");
+    KAction* fileOpenAction2 = new KAction("fileopen", "Open (starts progres in sb)", actionCollection(), "fileopen2");
+    connect(fileOpenAction2, SIGNAL(triggered(bool)), SLOT(slotOpen()));
+    tb1->addAction(fileOpenAction2);
 
-    tb1->insertSeparator ();
+    tb1->addSeparator ();
+
+    KAction* fileFloppyAction2 = new KAction("filefloppy", "Save file2 (autorepeat)", actionCollection(), "filefloppy2");
+    tb1->addAction(fileFloppyAction2);
+    connect(fileFloppyAction2, SIGNAL(triggered(bool)), this, SLOT(slotSave()));
+    qobject_cast<QToolButton*>(tb1->widgetForAction(fileFloppyAction2))->setAutoRepeat(true);
     
-    pix = BarIcon("filefloppy");
-    tb1->insertButton(pix, 2, SIGNAL(clicked()), this, SLOT(slotSave()),
-                      true, "Save file2 (autorepeat)");
-    tb1->setAutoRepeat(2);
+    KAction* filePrintAction2 = new KAction("fileprint", "Print (pops menu)", actionCollection(), "fileprint2");
+    filePrintAction2->setMenu(itemsMenu);
+    tb1->addAction(filePrintAction2);
     
-    pix = BarIcon("fileprint");
-    tb1->insertButton(pix, 3, itemsMenu, true, "Print (pops menu)");
+    tb1->addSeparator ();
     
-    tb1->insertSeparator ();
-    /**** RADIO BUTTONS */
-    pix = BarIcon("filenew");
-    tb1->insertButton(pix, 4, true, "Radiobutton1");
-    tb1->setToggle(4);
+    // *** RADIO BUTTONS
+    QActionGroup* radioGroup = new QActionGroup(this);
+    radioGroup->setExclusive(true);
+    new KToggleAction("filenew", "Radiobutton1", actionCollection(), "radioButton1", radioGroup);
+    new KToggleAction("fileopen", "Radiobutton2", actionCollection(), "radioButton2", radioGroup);
+    new KToggleAction("filefloppy", "Radiobutton3", actionCollection(), "radioButton3", radioGroup);
+    new KToggleAction("fileprint", "Radiobutton4", actionCollection(), "radioButton4", radioGroup);
 
-    pix = BarIcon("fileopen");
-    tb1->insertButton(pix, 5, true, "Radiobutton2");
-    tb1->setToggle(5);
-    
-    pix = BarIcon("filefloppy");
-    tb1->insertButton(pix, 6, true, "Radiobutton3");
-    tb1->setToggle(6);
-    
-    pix = BarIcon("fileprint");
-    tb1->insertButton(pix, 7, true, "Radiobutton4");
-    tb1->setToggle(7);
+    connect (radioGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotToggled(QAction*)));
 
-    //Create
-    rg = new KToolBarRadioGroup (tb1);
-
-    rg->addButton(4);
-    rg->addButton(5);
-    rg->addButton(6);
-    rg->addButton(7);
-
-    connect (tb1, SIGNAL(toggled(int)), this, SLOT(slotToggled(int)));
-    
-    // Set caption for floating toolbars
-    tb->setTitle ("Toolbar 1");
-    tb1->setTitle ("Toolbar 2");
+    tb->setWindowTitle ("Toolbar 1");
+    tb1->setWindowTitle ("Toolbar 2");
 
     // Set main widget. In this example it is Qt's multiline editor.
     widget = new QTextEdit (this);
@@ -218,42 +207,31 @@ setAutoSaveSettings();
     //addToolBar (tb1);
     //addToolBar (tb);
 
-    connect (tb, SIGNAL(highlighted(int,bool)), this, SLOT(slotMessage(int, bool)));
-    connect (tb1, SIGNAL(highlighted(int, bool)), this, SLOT(slotMessage(int, bool)));
-
-    // Floating is enabled by default, so you don't need this.
-    // tb->enableFloating(true);
-    // tb1->enableFloating(true);
-
-    // Show toolbars
-    tb->show();
-    tb1->show();
-
     //... and main widget
     setCentralWidget (widget);
 
     // This is not strictly related to toolbars, menubars or KMainWindow.
     // Setup popup for completions
     completions = new QMenu;
-  
-    completions->insertItem("/");
-    completions->insertItem("/usr/");
-    completions->insertItem("/lib/");
-    completions->insertItem("/var/");
-    completions->insertItem("/bin/");
-    completions->insertItem("/kde/");
-    completions->insertItem("/home/");
-    completions->insertItem("/vmlinuz :-)");
 
-    connect (completions, SIGNAL(activated(int)), this, SLOT(slotCompletionsMenu(int)));
+    completions->addAction("/");
+    completions->addAction("/usr/");
+    completions->addAction("/lib/");
+    completions->addAction("/var/");
+    completions->addAction("/bin/");
+    completions->addAction("/kde/");
+    completions->addAction("/home/");
+    completions->addAction("/vmlinuz :-)");
+
+    connect (completions, SIGNAL(triggered(QAction*)), this, SLOT(slotCompletionsMenu(QAction*)));
     pr = 0;
 }
 /***********************************/
 /*  Now slots for toolbar actions  */
 /***********************************/
-void testWindow::slotToggled(int)
+void testWindow::slotToggled(QAction*)
 {
-  statusBar->message ("Buton toggled", 1500);
+  statusBar->message ("Button toggled", 1500);
 }
 
 void testWindow::slotInsertClock()
@@ -265,8 +243,8 @@ void testWindow::slotInsertClock()
 
 void testWindow::slotNew()
 {
- tb1->toggleButton(0);
- toolBar()->removeItem( itemId );
+ tb1->actions()[0]->toggle();
+ //toolBar()->removeAction( fileNewAction );
 }
 void testWindow::slotOpen()
 {
@@ -301,12 +279,12 @@ void testWindow::slotPrint()
 {
     statusBar->changeItem("Print file pressed", 0);
     ena=!ena;
-    tb->setItemEnabled(1,ena );
+    qobject_cast<KAction*>(sender())->setEnabled(ena);
 }
 void testWindow::slotReturn()
 {
     QString s = "You entered ";
-    s = s + tb->getLinedText(5);
+    s = s + testLineEdit->text();
     statusBar->changeItem(s, 0);
 
 }
@@ -342,17 +320,17 @@ void testWindow::slotListCompletion()
      Combo is not behaving good and it is ugly. I will see how it behaves in Qt-1.3,
      and then decide should I make a new combobox.
      */
-  QString s(tb->getComboItem(4));  // get text in combo
+  QString s(testComboBox->currentText());  // get text in combo
   s+= "(completing)";
   //tb->getCombo(4)->changeItem(s.data());   // setTextIncombo
 
 }
 
-void testWindow::slotCompletionsMenu(int id)
+void testWindow::slotCompletionsMenu(QAction* action)
 {
   // Now set text in lined
-  QString s =completions->text(id);
-  tb->setLinedText(5, s);  // Cursor is automatically at the end of string after this
+  QString s =action->text();
+  testLineEdit->setText(s);  // Cursor is automatically at the end of string after this
 }
 
 void testWindow::slotHide2 ()
@@ -367,13 +345,6 @@ void testWindow::slotHide1 ()
 
 testWindow::~testWindow ()
 {
-  /********************************************************/
-  /*                                                      */
-  /*   THIS IS NOT ANY MORE IMPORTANT BUT ALLOWED!!!      */
-  /*                                                      */
-  /********************************************************/
-
-  delete tb1->getWidget(8);
   //debug ("kwindowtest: deleted clock");
   
   delete tb;
@@ -403,16 +374,15 @@ void testWindow::slotExit ()
 {
   if (exitB == true)
    {
-     tb->removeItem(6);
+     tb->removeAction(exitAction);
      exitB = false;
    }
   else
    {
-     QPixmap pix;
-     pix = BarIcon("exit");
-     tb->insertButton(pix, 6, SIGNAL(clicked()), KApplication::kApplication(),
-                           SLOT( quit() ), true, "Exit");
-     tb->alignItemRight (6);
+     if (tb->actions().count() >= 7)
+      tb->insertAction(tb->actions()[6], exitAction);
+     else
+      tb->addAction(exitAction);
      exitB = true;
    }
 }
@@ -420,7 +390,7 @@ void testWindow::slotExit ()
 void testWindow::slotLined()
 {
   lineL = !lineL;
-  tb->setItemEnabled(5, lineL); // enable/disable lined
+  testLineEdit->setEnabled(lineL); // enable/disable lined
 }
 
 void testWindow::slotToggle (bool on)
@@ -475,7 +445,7 @@ void testWindow::slotMessage(int, bool boo)
 
 void testWindow::slotClearCombo()
 {
-  tb->getCombo(4)->clear();
+  testComboBox->clear();
 }
 
 void testWindow::slotInsertListInCombo()
@@ -493,12 +463,12 @@ void testWindow::slotInsertListInCombo()
   list.append("ListTen");
   list.append("ListEleven");
   list.append("ListAndSoOn");
-  tb->getCombo(4)->insertStringList (list,0);
+  testComboBox->insertStringList (list,0);
 }
 
 void testWindow::slotMakeItem3Current()
 {
-  tb->getCombo(4)->setCurrentItem(3);
+  testComboBox->setCurrentItem(3);
 }
 
 int main( int argc, char *argv[] )

@@ -1817,7 +1817,7 @@ KWidgetAction::KWidgetAction( QWidget* widget,
   : KAction( text, cut, receiver, slot, parent, name )
   , m_widget( widget )
 {
-  connect( this, SIGNAL(enabled(bool)), widget, SLOT(setEnabled(bool)) );
+  connectChanged();
   setToolBarWidgetFactory(this);
 }
 
@@ -1840,6 +1840,11 @@ void KWidgetAction::destroyToolBarWidget(QWidget* widget)
   widget->setParent(0L);
 }
 
+void KWidgetAction::slotChanged( )
+{
+  if (isEnabled() != m_widget->isEnabled())
+    m_widget->setEnabled(isEnabled());
+}
 // END
 
 // BEGIN KPasteTextAction

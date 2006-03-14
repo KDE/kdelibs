@@ -1261,6 +1261,9 @@ public:
     virtual QWidget* createToolBarWidget(QToolBar* parent);
     virtual void destroyToolBarWidget(QWidget* widget);
 
+protected:
+    virtual void slotChanged();
+
 private:
     QPointer<QWidget> m_widget;
 

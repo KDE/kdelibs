@@ -31,7 +31,7 @@ public Q_SLOTS:
     void slotList(const QString &str);
     void slotOpen();
     void slotCompletion();
-    void slotCompletionsMenu(int id);
+    void slotCompletionsMenu(QAction* action);
     void slotHide2 ();
     void slotInsertClock();
     void slotHide1 ();
@@ -46,7 +46,7 @@ public Q_SLOTS:
     void slotGoGoGoo();
     void slotInsertListInCombo ();
     void slotMakeItem3Current ();
-    void slotToggled(int);
+    void slotToggled(QAction* action);
 protected:
     KMenuBar *menuBar;
     QMenu *fileMenu;
@@ -57,6 +57,10 @@ protected:
     KHelpMenu *helpMenu;
     KToolBar *tb;
     KToolBar *tb1;
+    class KLineEdit* testLineEdit;
+    class KComboBox* testComboBox;
+    KAction* fileNewAction;
+    KAction* exitAction;
     bool lineL;
     bool exitB;
     bool greenF;

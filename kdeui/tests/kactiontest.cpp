@@ -16,13 +16,13 @@ int main( int argc, char **argv )
 
     KActionCollection coll( static_cast<QObject *>( 0 ) );
 
-    QPointer<KAction> action1 = new KRadioAction("test",0, &coll);
-    QPointer<KAction> action2 = new KRadioAction("test",0, &coll);
-    QPointer<KAction> action3 = new KRadioAction("test",0, &coll);
-    QPointer<KAction> action4 = new KRadioAction("test",0, &coll);
-    QPointer<KAction> action5 = new KRadioAction("test",0, &coll);
-    QPointer<KAction> action6 = new KRadioAction("test",0, &coll);
-    QPointer<KAction> action7 = new KRadioAction("test",0, &coll);
+    QPointer<KAction> action1 = new KAction(&coll, "test");
+    QPointer<KAction> action2 = new KAction(&coll, "test");
+    QPointer<KAction> action3 = new KAction(&coll, "test");
+    QPointer<KAction> action4 = new KAction(&coll, "test");
+    QPointer<KAction> action5 = new KAction(&coll, "test");
+    QPointer<KAction> action6 = new KAction(&coll, "test");
+    QPointer<KAction> action7 = new KAction(&coll, "test");
 
     coll.clear();
     assert( coll.isEmpty() );
