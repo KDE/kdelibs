@@ -49,6 +49,129 @@ class HTMLCollection;
 
 // -------------------------------------------------------------------------
 
+class HTMLTablePartElementImpl : public HTMLElementImpl
+
+{
+public:
+    HTMLTablePartElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc)
+        { }
+
+    virtual void parseAttribute(AttributeImpl *attr);
+};
+
+// -------------------------------------------------------------------------
+
+class HTMLTableSectionElementImpl : public HTMLTablePartElementImpl
+{
+public:
+    HTMLTableSectionElementImpl(DocumentPtr *doc, ushort tagid, bool implicit);
+
+    ~HTMLTableSectionElementImpl();
+
+    virtual Id id() const;
+
+    HTMLElementImpl *insertRow ( long index, int& exceptioncode );
+    void deleteRow ( long index, int& exceptioncode );
+
+    int numRows() const;
+
+protected:
+    ushort _id;
+};
+
+// -------------------------------------------------------------------------
+
+class HTMLTableRowElementImpl : public HTMLTablePartElementImpl
+{
+public:
+    HTMLTableRowElementImpl(DocumentPtr *doc)
+        : HTMLTablePartElementImpl(doc) {}
+
+    virtual Id id() const;
+
+    long rowIndex() const;
+    long sectionRowIndex() const;
+
+    HTMLElementImpl *insertCell ( long index, int &exceptioncode );
+    void deleteCell ( long index, int &exceptioncode );
+
+protected:
+    int ncols;
+};
+
+// -------------------------------------------------------------------------
+
+class HTMLTableCellElementImpl : public HTMLTablePartElementImpl
+{
+public:
+    HTMLTableCellElementImpl(DocumentPtr *doc, int tagId);
+    ~HTMLTableCellElementImpl();
+
+    long cellIndex() const;
+
+    int col() const { return _col; }
+    void setCol(int col) { _col = col; }
+    int row() const { return _row; }
+    void setRow(int r) { _row = r; }
+
+    int colSpan() const { return cSpan; }
+    int rowSpan() const { return rSpan; }
+
+    virtual Id id() const { return _id; }
+    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void attach();
+
+protected:
+    int _row;
+    int _col;
+    int rSpan;
+    int cSpan;
+    int _id;
+    int rowHeight;
+    bool m_solid        : 1;
+    bool m_nowrap : 1;
+};
+
+// -------------------------------------------------------------------------
+
+class HTMLTableColElementImpl : public HTMLTablePartElementImpl
+{
+public:
+    HTMLTableColElementImpl(DocumentPtr *doc, ushort i);
+
+    virtual Id id() const;
+
+    void setTable(HTMLTableElementImpl *t) { table = t; }
+
+    // overrides
+    virtual void parseAttribute(AttributeImpl *attr);
+
+    int span() const { return _span; }
+
+protected:
+    // could be ID_COL or ID_COLGROUP ... The DOM is not quite clear on
+    // this, but since both elements work quite similar, we use one
+    // DOMElement for them...
+    ushort _id;
+    int _span;
+    HTMLTableElementImpl *table;
+};
+
+// -------------------------------------------------------------------------
+
+class HTMLTableCaptionElementImpl : public HTMLTablePartElementImpl
+{
+public:
+    HTMLTableCaptionElementImpl(DocumentPtr *doc)
+        : HTMLTablePartElementImpl(doc) {}
+
+    virtual Id id() const;
+    virtual void parseAttribute(AttributeImpl *attr);
+};
+
+// -------------------------------------------------------------------------
+
 /*
 This class helps memorize pointers to child objects that may be
 yanked around via the DOM. It always picks the first pointer of the
@@ -74,7 +197,7 @@ public:
                     break;
                 }
         }
-        return reinterpret_cast<ChildType*>(ptr); //Really static_cast..
+        return static_cast<ChildType*>(ptr);
     }
 
     void childAdded(ElementImpl* parent, NodeImpl* child) {
@@ -199,128 +322,6 @@ protected:
     friend class HTMLTableCellElementImpl;
 };
 
-// -------------------------------------------------------------------------
-
-class HTMLTablePartElementImpl : public HTMLElementImpl
-
-{
-public:
-    HTMLTablePartElementImpl(DocumentPtr *doc)
-        : HTMLElementImpl(doc)
-        { }
-
-    virtual void parseAttribute(AttributeImpl *attr);
-};
-
-// -------------------------------------------------------------------------
-
-class HTMLTableSectionElementImpl : public HTMLTablePartElementImpl
-{
-public:
-    HTMLTableSectionElementImpl(DocumentPtr *doc, ushort tagid, bool implicit);
-
-    ~HTMLTableSectionElementImpl();
-
-    virtual Id id() const;
-
-    HTMLElementImpl *insertRow ( long index, int& exceptioncode );
-    void deleteRow ( long index, int& exceptioncode );
-
-    int numRows() const;
-
-protected:
-    ushort _id;
-};
-
-// -------------------------------------------------------------------------
-
-class HTMLTableRowElementImpl : public HTMLTablePartElementImpl
-{
-public:
-    HTMLTableRowElementImpl(DocumentPtr *doc)
-        : HTMLTablePartElementImpl(doc) {}
-
-    virtual Id id() const;
-
-    long rowIndex() const;
-    long sectionRowIndex() const;
-
-    HTMLElementImpl *insertCell ( long index, int &exceptioncode );
-    void deleteCell ( long index, int &exceptioncode );
-
-protected:
-    int ncols;
-};
-
-// -------------------------------------------------------------------------
-
-class HTMLTableCellElementImpl : public HTMLTablePartElementImpl
-{
-public:
-    HTMLTableCellElementImpl(DocumentPtr *doc, int tagId);
-    ~HTMLTableCellElementImpl();
-
-    long cellIndex() const;
-
-    int col() const { return _col; }
-    void setCol(int col) { _col = col; }
-    int row() const { return _row; }
-    void setRow(int r) { _row = r; }
-
-    int colSpan() const { return cSpan; }
-    int rowSpan() const { return rSpan; }
-
-    virtual Id id() const { return _id; }
-    virtual void parseAttribute(AttributeImpl *attr);
-    virtual void attach();
-
-protected:
-    int _row;
-    int _col;
-    int rSpan;
-    int cSpan;
-    int _id;
-    int rowHeight;
-    bool m_solid        : 1;
-    bool m_nowrap : 1;
-};
-
-// -------------------------------------------------------------------------
-
-class HTMLTableColElementImpl : public HTMLTablePartElementImpl
-{
-public:
-    HTMLTableColElementImpl(DocumentPtr *doc, ushort i);
-
-    virtual Id id() const;
-
-    void setTable(HTMLTableElementImpl *t) { table = t; }
-
-    // overrides
-    virtual void parseAttribute(AttributeImpl *attr);
-
-    int span() const { return _span; }
-
-protected:
-    // could be ID_COL or ID_COLGROUP ... The DOM is not quite clear on
-    // this, but since both elements work quite similar, we use one
-    // DOMElement for them...
-    ushort _id;
-    int _span;
-    HTMLTableElementImpl *table;
-};
-
-// -------------------------------------------------------------------------
-
-class HTMLTableCaptionElementImpl : public HTMLTablePartElementImpl
-{
-public:
-    HTMLTableCaptionElementImpl(DocumentPtr *doc)
-        : HTMLTablePartElementImpl(doc) {}
-
-    virtual Id id() const;
-    virtual void parseAttribute(AttributeImpl *attr);
-};
 
 } //namespace
 
