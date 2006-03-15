@@ -588,38 +588,38 @@ public:
   // The following methods are deprecated:
 
   /// @deprecated
-  KDE_DEPRECATED static Type inputType( const QString& protocol );
+  static KDE_DEPRECATED Type inputType( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static Type outputType( const QString& protocol );
+  static KDE_DEPRECATED Type outputType( const QString& protocol );
   /**
    * @deprecated
    * Returns the list of fields this protocol returns when listing
    * The current possibilities are
    * Name, Type, Size, Date, AccessDate, Access, Owner, Group, Link, URL, MimeType
    */
-  KDE_DEPRECATED static QStringList listing( const QString& protocol );
+  static KDE_DEPRECATED QStringList listing( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static bool isSourceProtocol( const QString& protocol );
+  static KDE_DEPRECATED bool isSourceProtocol( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static bool supportsListing( const QString& protocol );
+  static KDE_DEPRECATED bool supportsListing( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static bool supportsReading( const QString& protocol );
+  static KDE_DEPRECATED bool supportsReading( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static bool supportsWriting( const QString& protocol );
+  static KDE_DEPRECATED bool supportsWriting( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static bool supportsMakeDir( const QString& protocol );
+  static KDE_DEPRECATED bool supportsMakeDir( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static bool supportsDeleting( const QString& protocol );
+  static KDE_DEPRECATED bool supportsDeleting( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static bool supportsLinking( const QString& protocol );
+  static KDE_DEPRECATED bool supportsLinking( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static bool supportsMoving( const QString& protocol );
+  static KDE_DEPRECATED bool supportsMoving( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static bool canCopyFromFile( const QString& protocol );
+  static KDE_DEPRECATED bool canCopyFromFile( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static bool canCopyToFile( const QString& protocol );
+  static KDE_DEPRECATED bool canCopyToFile( const QString& protocol );
   /// @deprecated
-  KDE_DEPRECATED static QString defaultMimetype( const QString& protocol);
+  static KDE_DEPRECATED QString defaultMimetype( const QString& protocol);
   //////////////////////// END DEPRECATED ///////////////////////
 
 protected:
