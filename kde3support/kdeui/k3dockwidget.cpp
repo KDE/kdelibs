@@ -1697,9 +1697,10 @@ K3DockManager::~K3DockManager()
   delete menuData;
   delete menu;
 
+  // ### FIXME: this seems to crash but why? (KDE4)
   K3DockWidget * obj;
-  foreach ( QObject *o, *childDock ) {
-  	obj=(K3DockWidget*)o;
+  Q_FOREACH ( QObject *o, *childDock ) {
+    obj = (K3DockWidget*) ( o );
     delete obj;
   }
 
@@ -2225,12 +2226,17 @@ void K3DockManager::writeConfig(QDomElement &base)
 
     // collect widget names
     QStringList nList;
-    foreach( QObject *o, *childDock )
+    Q_FOREACH( QObject *o, *childDock )
     {
-        K3DockWidget* dw = (K3DockWidget*) o;
+#ifdef __GNUC__ // ### KDE4
+# warning "Can dw be 0 and what should we do in the case that it is?"
+#endif        
+        K3DockWidget* dw = qobject_cast<K3DockWidget*> ( o );
+        if ( !dw )
+            continue;
         if ( dw->parent() == main )
-            mainWidgetStr = QLatin1String(dw->name());
-        nList.append(dw->name());
+            mainWidgetStr = dw->objectName();
+        nList.append( dw->objectName() );
     }
 
     for (QObjectList::iterator it = d->containerDocks.begin();it != d->containerDocks.end();++it)
@@ -2550,17 +2556,22 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
 
   QStringList nameList;
   QStringList findList;
-  QObjectList::iterator it = childDock->begin();
-  K3DockWidget * obj;
+  K3DockWidget* obj;
 
   // collect K3DockWidget's name
   QStringList nList;
-  while ( (obj=(K3DockWidget*)(*it)) ) {
-    ++it;
-    //debug("  +Add subdock %s", obj->name());
-    nList.append( obj->name() );
+  Q_FOREACH( QObject* o, *childDock )
+  {
+#ifdef __GNUC__ // ### KDE4
+# warning "Can obj be 0 and what should we do in the case that it is?"
+#endif        
+    obj = qobject_cast<K3DockWidget*> ( o );
+    if ( !obj )
+      continue;
+    //debug("  +Add subdock %s", obj->objectName());
+    nList.append( obj->objectName() );
     if ( obj->parent() == main )
-      c->writeEntry( "Main:view", obj->name() );
+      c->writeEntry( "Main:view", obj->objectName() );
   }
 
 //  kDebug(282)<<QString("list size: %1").arg(nList.count())<<endl;
