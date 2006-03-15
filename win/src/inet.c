@@ -25,6 +25,15 @@
 #include <arpa/inet.h>
 #include <ws2tcpip.h>
 
+#ifndef _CRT_ERRNO_DEFINED
+#define _CRT_ERRNO_DEFINED
+static int __cdecl _set_errno(int _Value)
+{
+	errno = _Value;
+	return 0;
+}
+#endif
+
 #ifdef __MINGW32__
 #define U_WORD(a,i) (a)->_S6_un._S6_u16[i]
 #else

@@ -47,7 +47,6 @@ add_definitions(-DUNICODE -DWIN32_LEAN_AND_MEAN )
 
 set(win_LIB_SRCS
    src/bootstrap.cpp
-   src/dummy.cpp
    src/fcntl.c
    src/fsync.c
    src/getenv.c
@@ -72,8 +71,9 @@ set(win_LIB_SRCS
    )
 
 
+set(CMAKE_DEBUG_POSTFIX "d")
 add_library(kdewin32 SHARED ${win_LIB_SRCS} )
-target_link_libraries(kdewin32 ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} advapi32 shell32 ws2_32 )
+target_link_libraries(kdewin32 ${QT_QTCORE_LIBRARY} advapi32 shell32 ws2_32 )
 set_target_properties(kdewin32 PROPERTIES DEFINE_SYMBOL MAKE_KDEWIN32_LIB )
 set_target_properties(kdewin32 PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 
