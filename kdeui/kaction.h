@@ -268,9 +268,9 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const QString& text, const KShortcut& cut,
+    KDE_DEPRECATED KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name ) KDE_DEPRECATED;
+             KActionCollection* parent, const char* name );
 
     /**
      * Constructs an action with text, icon, potential keyboard
@@ -291,9 +291,9 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
+    KDE_DEPRECATED KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name ) KDE_DEPRECATED;
+             KActionCollection* parent, const char* name );
 
     /**
      * Constructs an action with text, icon, potential keyboard
@@ -315,9 +315,9 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const QString& text, const QString& pix, const KShortcut& cut,
+    KDE_DEPRECATED KAction( const QString& text, const QString& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name ) KDE_DEPRECATED;
+             KActionCollection* parent, const char* name );
 
     /**
      * The same as the above constructor, but with a KGuiItem providing
@@ -330,9 +330,9 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KAction( const KGuiItem& item, const KShortcut& cut,
+    KDE_DEPRECATED KAction( const KGuiItem& item, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name ) KDE_DEPRECATED;
+             KActionCollection* parent, const char* name );
 
     /**
      * Standard destructor
@@ -428,7 +428,7 @@ public:
      * @param index The position into which the action is plugged. If
      * this is negative, the action is inserted at the end.
      */
-    int plug( QWidget *widget, int index = -1 ) KDE_DEPRECATED;
+    KDE_DEPRECATED int plug( QWidget *widget, int index = -1 );
 
     /**
      * "Unplug" or remove this action from a given widget.
@@ -442,7 +442,7 @@ public:
      *
      * @param w Remove the action from this GUI element.
      */
-    void unplug( QWidget *w ) KDE_DEPRECATED;
+    KDE_DEPRECATED void unplug( QWidget *w );
 
     /**
      * "Unplug" or remove this action from all widgets.  You do not need
@@ -464,7 +464,7 @@ public:
     /**
      * Returns how many widgets this action is added to.
      */
-    int containerCount() const KDE_DEPRECATED;
+    KDE_DEPRECATED int containerCount() const;
 
     /**
      * Returns a widget which this action is added to.

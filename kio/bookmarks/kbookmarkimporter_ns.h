@@ -33,20 +33,20 @@
  * A class for importing NS bookmarks
  * @deprecated
  */
-class KIO_EXPORT_DEPRECATED KNSBookmarkImporter : public QObject
+class KIO_EXPORT KNSBookmarkImporter : public QObject
 {
     Q_OBJECT
 public:
-    KNSBookmarkImporter( const QString & fileName ) : m_fileName(fileName) {}
-    ~KNSBookmarkImporter() {}
+    KDE_DEPRECATED KNSBookmarkImporter( const QString & fileName ) : m_fileName(fileName) {}
+    KDE_DEPRECATED ~KNSBookmarkImporter() {}
 
     // for compat reasons only
-    void parseNSBookmarks() { parseNSBookmarks(false); }
+    KDE_DEPRECATED void parseNSBookmarks() { parseNSBookmarks(false); }
     // go for it. Set utf8 to true for Mozilla, false for Netscape.
-    void parseNSBookmarks( bool utf8 );
+    KDE_DEPRECATED void parseNSBookmarks( bool utf8 );
 
-    static QString netscapeBookmarksFile( bool forSaving=false );
-    static QString mozillaBookmarksFile( bool forSaving=false );
+    static KDE_DEPRECATED QString netscapeBookmarksFile( bool forSaving=false );
+    static KDE_DEPRECATED QString mozillaBookmarksFile( bool forSaving=false );
 
 Q_SIGNALS:
     void newBookmark( const QString & text, const QString & url, const QString & additionalInfo );
@@ -91,15 +91,15 @@ private:
  * Warning, it overwrites the existing bookmarks.html file !
  * @deprecated
  */
-class KIO_EXPORT_DEPRECATED KNSBookmarkExporter
+class KIO_EXPORT KNSBookmarkExporter
 {
 public:
-    KNSBookmarkExporter(KBookmarkManager* mgr, const QString & fileName)
+    KDE_DEPRECATED KNSBookmarkExporter(KBookmarkManager* mgr, const QString & fileName)
       : m_fileName(fileName), m_pManager(mgr) { }
     ~KNSBookmarkExporter() {}
 
-    void write() { write(false); } // deprecated
-    void write( bool utf8 );
+    KDE_DEPRECATED void write() { write(false); } // deprecated
+    KDE_DEPRECATED void write( bool utf8 );
 
 protected:
     void writeFolder(QTextStream &stream, KBookmarkGroup parent);

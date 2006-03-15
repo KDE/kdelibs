@@ -174,8 +174,8 @@ public:
   const KXMLGUIClient *parentGUIClient() const;
 
   /** Deprecated **/
-  void setXMLFile( const QString& );
-  const QString& xmlFile() const;
+  KDE_DEPRECATED void setXMLFile( const QString& );
+  const KDE_DEPRECATED QString& xmlFile() const;
 
 
 Q_SIGNALS:
