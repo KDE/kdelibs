@@ -100,19 +100,19 @@
  * function declaration, right before the return type:
  *
  * \code
- * KDE_DEPRECATED DeprecatedConstructor();
  * KDE_DEPRECATED void deprecatedFunctionA();
  * KDE_DEPRECATED int deprecatedFunctionB() const;
  * \endcode
  *
  * For functions which are implemented inline,
  * the KDE_DEPRECATED macro is inserted at the front, right before the return
- * type, but after "static" or "virtual":
+ * type, but after "static", "inline" or "virtual":
  *
  * \code
  * KDE_DEPRECATED void deprecatedInlineFunctionA() { .. }
  * virtual KDE_DEPRECATED int deprecatedInlineFunctionB() { .. }
  * static KDE_DEPRECATED bool deprecatedInlineFunctionC() { .. }
+ * inline KDE_DEPRECATED bool deprecatedInlineFunctionD() { .. }
  * \endcode
  *
  * You can also mark whole structs or classes as deprecated, by inserting the
@@ -144,6 +144,9 @@
  * \note
  * KDE_DEPRECATED cannot be used at the end of the declaration anymore,
  * unlike what is done for KDE3.
+ *
+ * \note
+ * KDE_DEPRECATED cannot be used for constructors.
  */
 
 #ifndef KDE_DEPRECATED

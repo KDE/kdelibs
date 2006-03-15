@@ -76,7 +76,8 @@ The "const char *name" arguments in the constructors of QObject derived classes
 have been removed (not of all classes yet). Use setObjectName() instead if the object name is really necessary.
 </li>
 <li>The define KDE_DEPRECATED must be used now at the start of the declaration
-(but still after an eventual "static" or "virtual" keyword).
+(but still after an eventual "static", "inline" or "virtual" keyword).
+KDE_DEPRECATED does not work with constructors.
 Note that KDE_DEPRECATED still works at the end of the declaration with gcc,
 but that is not portable.</li>
 </ul>
