@@ -618,7 +618,7 @@ void KSelectAction::comboBoxDeleted(QObject* object)
 {
   foreach (KComboBox* comboBox, d->m_comboBoxes)
     if (object == comboBox) {
-      d->m_comboBoxes.remove(static_cast<KComboBox*>(object));
+      d->m_comboBoxes.removeAll(static_cast<KComboBox*>(object));
       break;
     }
 }

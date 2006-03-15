@@ -295,7 +295,7 @@ void KDEPrintd::processRequest()
 	replyType = "QString";
 	callingDcopClient()->endTransaction( req->transaction, replyType, outputData );
 
-	m_requestsPending.remove( ( unsigned int )0 );
+	m_requestsPending.removeAll( ( unsigned int )0 );
 	if ( m_requestsPending.count() > 0 )
 		QTimer::singleShot( 0, this, SLOT( processRequest() ) );
 }

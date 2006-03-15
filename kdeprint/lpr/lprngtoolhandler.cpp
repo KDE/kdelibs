@@ -239,7 +239,7 @@ QMap<QString,QString> LPRngToolHandler::parseZOptions(const QString& optstr)
 		bool	found(false);
 		for (QList< QPair<QString,QStringList> >::ConstIterator p=m_dict.begin(); p!=m_dict.end() && !found; ++p)
 		{
-			if ((*p).second.find(*it) != (*p).second.end())
+			if ((*p).second.contains(*it))
 			{
 				opts[(*p).first] = (*it);
 				found = true;

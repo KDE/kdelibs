@@ -577,8 +577,8 @@ K3DockWidget::~K3DockWidget()
     }
   }
   emit iMBeingClosed();
-  if (manager->d) manager->d->containerDocks.remove(this);
-  manager->childDock->remove( this );
+  if (manager->d) manager->d->containerDocks.removeAll(this);
+  manager->childDock->removeAll( this );
   delete pix;
   delete d; // destroy private data
   d=0;
@@ -2312,7 +2312,7 @@ void K3DockManager::writeConfig(QDomElement &base)
 
         base.appendChild(groupEl);
         nameList.append(obj->name());
-        nList.remove(nListIt);
+        nList.erase(nListIt);
         nListIt=nList.begin();
     }
 
@@ -2600,7 +2600,7 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
     }
 /*************************************************************************************************/
     if ( obj->isGroup ){
-      if ( (findList.find( obj->firstName ) != findList.end()) && (findList.find( obj->lastName ) != findList.end() )){
+      if ( (findList.indexOf( obj->firstName ) != -1) && (findList.indexOf( obj->lastName ) != -1 )){
 
         c->writeEntry( cname+":type", "GROUP");
         if ( !obj->parent() ){
@@ -2618,7 +2618,7 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
         nameList.append( obj->name() );
         findList.append( obj->name() );
         //debug("  Save %s", nList.current());
-        nList.remove(nListIt);
+        nList.erase(nListIt);
         nListIt=nList.begin(); //nList.first();
       } else {
 /*************************************************************************************************/
@@ -2653,7 +2653,7 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
         nameList.append( obj->name() );
         findList.append( obj->name() ); // not really need !!!
         //debug("  Save %s", nList.current());
-        nList.remove(nListIt);
+        nList.erase(nListIt);
         nListIt=nList.begin();
       } else {
 /*************************************************************************************************/
@@ -2671,7 +2671,7 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
         nameList.append( cname.latin1() );
         //debug("  Save %s", nList.current());
         findList.append( obj->name() );
-        nList.remove(nListIt);
+        nList.erase(nListIt);
         nListIt=nList.begin();
       }
     }
@@ -3274,7 +3274,7 @@ void K3DockContainer::prepareSave(QStringList &names)
 {
 
 	for (struct ListItem *tmp=m_childrenListBegin;tmp; tmp=tmp->next)
-		names.remove(tmp->data);
+		names.removeAll(tmp->data);
 //	for (uint i=0;i<m_children.count();i++)
 //	{
 //		names.remove(m_children.at(i));

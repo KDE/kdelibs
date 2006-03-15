@@ -100,7 +100,7 @@ void KMConfigFilter::loadConfig(KConfig *conf)
     KMPrinter *printer(it.next());
 		if (!printer->isSpecial() && !printer->isVirtual())
 		{
-			KListBox	*lb = (m_plist.find(printer->printerName()) == m_plist.end() ? m_list1 : m_list2);
+			KListBox *lb = (m_plist.contains(printer->printerName()) ? m_list2 : m_list1);
 			lb->insertItem(SmallIcon(printer->pixmap()), printer->printerName());
 		}
 	}

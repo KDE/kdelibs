@@ -4770,7 +4770,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
          const QStringList pair = QStringList::split("=", *nvp);
          if (pair.count() >= 2) {
             if (pair.first().toLower() == "attach") {
-               nvp = nvps.remove(nvp);
+               nvp = nvps.erase(nvp);
                triedToAttach = true;
             } else {
                ++nvp;
@@ -7149,7 +7149,7 @@ void KHTMLPart::dequeueWallet(DOM::HTMLFormElementImpl *form) {
   }
 
   if (d->m_wq) {
-    d->m_wq->callers.remove(KHTMLWalletQueue::Caller(form, form->getDocument()));
+    d->m_wq->callers.removeAll(KHTMLWalletQueue::Caller(form, form->getDocument()));
   }
 #endif // KHTML_NO_WALLET
 }

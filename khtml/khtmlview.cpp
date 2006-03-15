@@ -2590,7 +2590,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             DOMString s = en->getAttribute( ATTR_ACCESSKEY );
             if( s.length() == 1 ) {
                 QChar c = s.string()[ 0 ].toUpper();
-                keys.remove( c ); // remove manually assigned accesskeys
+                keys.removeAll( c ); // remove manually assigned accesskeys
             }
         }
     }
@@ -2646,9 +2646,9 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             if( key.isNull())
                 key = keys.front();
             ret[ (*it).element ] = key;
-            keys.remove( key );
+            keys.removeAll( key );
             QString url = (*it).url;
-            it = data.remove( it );
+            it = data.erase( it );
             // assign the same accesskey also to other elements pointing to the same url
             if( !url.isEmpty() && !url.startsWith( "javascript:", false )) {
                 for( QList< AccessKeyData >::Iterator it2 = data.begin();
@@ -2658,7 +2658,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                         ret[ (*it2).element ] = key;
                         if( it == it2 )
                             ++it;
-                        it2 = data.remove( it2 );
+                        it2 = data.erase( it2 );
                     } else
                         ++it2;
                 }
@@ -3018,7 +3018,7 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
     if (!items.contains(value))
         items.prepend(value);
     while ((int)items.count() > m_part->settings()->maxFormCompletionItems())
-        items.remove(items.fromLast());
+        items.erase(items.fromLast());
     d->formCompletions->writeEntry(name, items);
 }
 
@@ -3045,7 +3045,7 @@ bool KHTMLView::nonPasswordStorableSite(const QString& host) const
     QStringList sites =  d->formCompletions->readEntry("Sites", QStringList());
     d->formCompletions->setGroup(QString());//reset
 
-    return (sites.find(host) != sites.end());
+    return (sites.indexOf(host) != -1);
 }
 
 // returns true if event should be swallowed

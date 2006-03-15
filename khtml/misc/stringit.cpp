@@ -111,7 +111,7 @@ void TokenizerString::advanceSubstring()
 {
     if (m_composite) {
         m_currentString = m_substrings.first();
-        m_substrings.remove(m_substrings.begin());
+        m_substrings.removeFirst();
         if (m_substrings.isEmpty())
             m_composite = false;
     } else {

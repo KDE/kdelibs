@@ -982,7 +982,7 @@ QString DocumentImpl::nextState()
    if (!m_state.isEmpty())
    {
       state = m_state.first();
-      m_state.remove(m_state.begin());
+      m_state.erase(m_state.begin());
    }
    return state;
 }

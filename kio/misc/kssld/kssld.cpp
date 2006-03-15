@@ -222,7 +222,7 @@ void KSSLD::cacheClearList() {
 KSSLCNode *node;
 
 	Q_FOREACH( node , certList ) {
-		certList.remove(node);
+		certList.removeAll(node);
 		delete node;
 	}
 
@@ -318,13 +318,13 @@ KSSLCNode *node;
 		if (KSSLX509Map(node->cert->getSubject()).getValue("CN") == cn) {
 			if (!node->permanent &&
 				node->expires < QDateTime::currentDateTime()) {
-				certList.remove(node);
+				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				delete node;
 				continue;
 			}
 
-			certList.remove(node);
+			certList.removeAll(node);
 			certList.prepend(node);
 			cacheSaveToDisk();
 			return node->policy;
@@ -343,14 +343,14 @@ KSSLCNode *node;
 		if (cert == *(node->cert)) {  
 			if (!node->permanent &&
 				node->expires < QDateTime::currentDateTime()) {
-				certList.remove(node);
+				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				delete node;
 				cacheSaveToDisk();
 				return KSSLCertificateCache::Unknown;
 			}
 
-			certList.remove(node);
+			certList.removeAll(node);
 			certList.prepend(node);
 			return node->policy;
 		}
@@ -366,14 +366,14 @@ KSSLCNode *node;
 		if (KSSLX509Map(node->cert->getSubject()).getValue("CN") == cn) {
 			if (!node->permanent &&
 				node->expires < QDateTime::currentDateTime()) {
-				certList.remove(node);
+				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				delete node;
 				cacheSaveToDisk();
 				continue;
 			}
 
-			certList.remove(node);
+			certList.removeAll(node);
 			certList.prepend(node);
 			return true;
 		}
@@ -389,14 +389,14 @@ KSSLCNode *node;
 		if (cert == *(node->cert)) {
 			if (!node->permanent &&
 				node->expires < QDateTime::currentDateTime()) {
-				certList.remove(node);
+				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				delete node;
 				cacheSaveToDisk();
 				return false;
 			}
 
-			certList.remove(node);
+			certList.removeAll(node);
 			certList.prepend(node);
 			return true;
 		}
@@ -412,14 +412,14 @@ KSSLCNode *node;
 		if (cert == *(node->cert)) {
 			if (!node->permanent && node->expires <
 					QDateTime::currentDateTime()) {
-				certList.remove(node);
+				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				delete node;
 				cacheSaveToDisk();
 				return false;
 			}
 
-			certList.remove(node);
+			certList.removeAll(node);
 			certList.prepend(node);
 			return node->permanent;
 		}
@@ -434,7 +434,7 @@ KSSLCNode *node;
 bool gotOne = false;
 	Q_FOREACH( node , certList ) {
 		if (node->cert->getSubject() == subject) {
-			certList.remove(node);
+			certList.removeAll(node);
 			cfg->deleteGroup(node->cert->getMD5Digest());
 			searchRemoveCert(node->cert);
 			delete node;
@@ -453,7 +453,7 @@ KSSLCNode *node;
 bool gotOne = false;
 	Q_FOREACH( node , certList ) {
 		if (KSSLX509Map(node->cert->getSubject()).getValue("CN") == cn) {
-			certList.remove(node);
+			certList.removeAll(node);
 			cfg->deleteGroup(node->cert->getMD5Digest());
 			searchRemoveCert(node->cert);
 			delete node;
@@ -472,7 +472,7 @@ KSSLCNode *node;
 
 	Q_FOREACH( node , certList ) {
 		if (cert == *(node->cert)) {
-			certList.remove(node);
+			certList.removeAll(node);
 			cfg->deleteGroup(node->cert->getMD5Digest());
 			searchRemoveCert(node->cert);
 			delete node;
@@ -494,7 +494,7 @@ KSSLCNode *node;
 			node->permanent = permanent;
 			node->expires = expires;
 			node->policy = policy;
-			certList.remove(node);
+			certList.removeAll(node);
 			certList.prepend(node);
 			cacheSaveToDisk();
 			return true;
@@ -516,7 +516,7 @@ KSSLCNode *node;
 			node->permanent = permanent;
 			node->expires = expires;
 			node->policy = policy;
-			certList.remove(node);
+			certList.removeAll(node);
 			certList.prepend(node);
 			cacheSaveToDisk();
 			return true;
@@ -534,7 +534,7 @@ KSSLCNode *node;
 		if (cert == *(node->cert)) {
 			if (!node->permanent && node->expires <
 				       QDateTime::currentDateTime()) {
-				certList.remove(node);
+				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				searchRemoveCert(node->cert);
 				delete node;
@@ -542,7 +542,7 @@ KSSLCNode *node;
 				return QStringList();
 			}
 
-			certList.remove(node);
+			certList.removeAll(node);
 			certList.prepend(node);
 			return node->hosts;
 		}
@@ -562,7 +562,7 @@ KSSLCNode *node;
 		if (cert == *(node->cert)) {
 			if (!node->permanent && node->expires <
 				       	QDateTime::currentDateTime()) {
-				certList.remove(node);
+				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				searchRemoveCert(node->cert);
 				delete node;
@@ -574,7 +574,7 @@ KSSLCNode *node;
 				node->hosts << host;
 			}
 
-			certList.remove(node);
+			certList.removeAll(node);
 			certList.prepend(node);
 			cacheSaveToDisk();
 			return true;
@@ -592,15 +592,15 @@ KSSLCNode *node;
 		if (cert == *(node->cert)) {
 			if (!node->permanent && node->expires <
 				       	QDateTime::currentDateTime()) {
-				certList.remove(node);
+				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				searchRemoveCert(node->cert);
 				delete node;
 				cacheSaveToDisk();
 				return false;
 			}
-			node->hosts.remove(host);
-			certList.remove(node);
+			node->hosts.removeAll(host);
+			certList.removeAll(node);
 			certList.prepend(node);
 			cacheSaveToDisk();
 			return true;
@@ -768,7 +768,7 @@ QStringList x;
 KConfig cfg("ksslcalist", true, false);
 
 	x = cfg.groupList();
-	x.remove("<default>");
+	x.removeAll("<default>");
 
 return x;
 }

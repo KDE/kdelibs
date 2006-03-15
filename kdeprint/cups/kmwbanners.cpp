@@ -123,7 +123,7 @@ void KMWBanners::initPrinter(KMPrinter *p)
 			m_bans = p->option("kde-banners-supported").split(',',QString::SkipEmptyParts);
 			if (m_bans.count() == 0)
 				m_bans = defaultBanners();
-			if (m_bans.find("none") == m_bans.end())
+			if (!m_bans.contains("none"))
 				m_bans.prepend("none");
 			for ( QStringList::Iterator it=m_bans.begin(); it!=m_bans.end(); ++it )
 			{

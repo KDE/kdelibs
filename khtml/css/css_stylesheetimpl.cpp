@@ -384,7 +384,7 @@ void MediaListImpl::deleteMedium( const DOMString &oldMedium )
 
     for ( QList<DOMString>::Iterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
         if( (*it) == oldMedium ) {
-            m_lstMedia.remove( it );
+            m_lstMedia.erase( it );
             return;
         }
     }

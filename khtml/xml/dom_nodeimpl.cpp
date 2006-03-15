@@ -2010,7 +2010,7 @@ void RegisteredListenerList::setHTMLEventListener(int id, EventListener *listene
     if (!listener) {
         for (it = listeners->begin(); it != listeners->end(); ++it) {
             if ((*it).id == id && isHTMLEventListener((*it).listener)) {
-                listeners->remove(it);
+                listeners->erase(it);
                 break;
             }
         }
@@ -2068,7 +2068,7 @@ bool RegisteredListenerList::stillContainsListener(const RegisteredEventListener
 {
     if (!listeners)
         return false;
-    return listeners->find(listener) != listeners->end();
+    return listeners->contains(listener);
 }
 
 RegisteredListenerList::~RegisteredListenerList() {
