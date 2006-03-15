@@ -151,6 +151,7 @@ int main(int argc, char** argv)
 	for(QStringList::iterator it = imageList.begin(); it != imageList.end(); it++)
 	{
 		QImage input((*it));
+		input = input.convertToFormat( QImage::Format_ARGB32 );
 
 		QFileInfo fi((*it));
 		QString s = fi.baseName();
