@@ -111,13 +111,13 @@ ConfigPage::ConfigPage( QWidget *parent )
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
 
   QGroupBox *groupBox = new QGroupBox( i18n( "Resources" ), this );
-  QGridLayout *groupBoxLayout = new QGridLayout( 2, 2 );
+  QGridLayout *groupBoxLayout = new QGridLayout();
   groupBox->setLayout( groupBoxLayout );
   groupBoxLayout->setSpacing( 6 );
   groupBoxLayout->setMargin( 11 );
 
   mFamilyCombo = new KComboBox( false, groupBox );
-  groupBoxLayout->addMultiCellWidget( mFamilyCombo, 0, 0, 0, 1 );
+  groupBoxLayout->addWidget( mFamilyCombo, 0, 0, 1, 2 );
 
   mListView = new QTreeWidget( groupBox );
   mListView->setColumnCount( 3 );

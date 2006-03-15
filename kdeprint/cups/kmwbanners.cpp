@@ -103,11 +103,13 @@ KMWBanners::KMWBanners(QWidget *parent)
 			 "banners will be inserted before and/or after each print job sent "
 			 "to the printer. If you don't want to use banners, select <b>No Banner</b>.</p>"));
 
-	QGridLayout	*lay = new QGridLayout(this, 5, 2, 0, 10);
-	lay->setColStretch(1,1);
-	lay->addRowSpacing(1,20);
+	QGridLayout	*lay = new QGridLayout(this);
+    lay->setMargin(0);
+    lay->setSpacing(10);
+	lay->setColumnStretch(1,1);
+	lay->addItem(new QSpacerItem(0,20), 1, 0);
 	lay->setRowStretch(4,1);
-	lay->addMultiCellWidget(l0,0,0,0,1);
+    lay->addWidget(l0,0,0,1,2);
 	lay->addWidget(l1,2,0);
 	lay->addWidget(l2,3,0);
 	lay->addWidget(m_start,2,1);

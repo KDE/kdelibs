@@ -182,10 +182,12 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	l3->addWidget(m_commandlab);
 	l3->addWidget(m_command);
 	QHBoxLayout	*l0 = new QHBoxLayout(0, 0, KDialog::spacingHint());
-	QGridLayout	*l10 = new QGridLayout(0, 2, 2, 0, KDialog::spacingHint());
+	QGridLayout	*l10 = new QGridLayout();
+    l10->setMargin(0);
+    l10->setSpacing(KDialog::spacingHint());
 	l2->addLayout(l0, 1);
 	l0->addLayout(l10);
-	l10->addMultiCellWidget(m_view, 0, 0, 0, 1);
+	l10->addWidget(m_view, 0, 0, 1, 2);
 	l10->addWidget(gb_input, 1, 0);
 	l10->addWidget(gb_output, 1, 1);
 	l10->setRowStretch(0, 1);
@@ -200,10 +202,12 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	l7->addWidget(m_down);
 	l7->addStretch(1);
 	l0->addWidget(m_dummy, 1);
-	QGridLayout	*l1 = new QGridLayout(m_dummy, 9, 2, 0, KDialog::spacingHint());
+	QGridLayout	*l1 = new QGridLayout(m_dummy);
+    l1->setMargin(0);
+    l1->setSpacing(KDialog::spacingHint());
 	l1->addWidget(m_desclab, 0, 0, Qt::AlignRight|Qt::AlignVCenter);
 	l1->addWidget(m_desc, 0, 1);
-	l1->addMultiCellWidget(sep1, 1, 1, 0, 1);
+    l1->addWidget(sep1, 1, 0, 1, 2);
 	l1->addWidget(m_namelab, 2, 0, Qt::AlignRight|Qt::AlignVCenter);
 	l1->addWidget(m_name, 2, 1);
 	l1->addWidget(m_typelab, 3, 0, Qt::AlignRight|Qt::AlignVCenter);
@@ -213,7 +217,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	l1->addWidget(m_defaultlab, 5, 0, Qt::AlignRight|Qt::AlignVCenter);
 	l1->addWidget(m_default, 5, 1);
 	l1->addWidget( m_persistent, 6, 1 );
-	l1->addMultiCellWidget(gb, 7, 7, 0, 1);
+    l1->addWidget(gb, 7, 0, 1, 2);
 	l1->setRowStretch(8, 1);
 
 	QHBoxLayout	*l4 = new QHBoxLayout(w2);
@@ -225,17 +229,21 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	l6->addWidget(m_addval);
 	l6->addWidget(m_delval);
 	l6->addStretch(1);
-	QGridLayout	*l5 = new QGridLayout(w1, 3, 2, 0, KDialog::spacingHint());
+	QGridLayout	*l5 = new QGridLayout(w1);
+    l5->setMargin(0);
+    l5->setSpacing(KDialog::spacingHint());
 	l5->setRowStretch(2, 1);
 	l5->addWidget(m_editlab1, 0, 0, Qt::AlignRight|Qt::AlignVCenter);
 	l5->addWidget(m_editlab2, 1, 0, Qt::AlignRight|Qt::AlignVCenter);
 	l5->addWidget(m_edit1, 0, 1);
 	l5->addWidget(m_edit2, 1, 1);
 
-	QGridLayout	*l8 = new QGridLayout(gb_input->layout(), 2, 2,
-		KDialog::spacingHint());
-	QGridLayout	*l9 = new QGridLayout(gb_output->layout(), 2, 2,
-		KDialog::spacingHint());
+	QGridLayout	*l8 = new QGridLayout();
+    gb_input->layout()->addItem(l8);
+    l8->setMargin(KDialog::spacingHint());
+	QGridLayout	*l9 = new QGridLayout();
+    gb_output->layout()->addItem(l9);
+    l9->setMargin(KDialog::spacingHint());
 	l8->addWidget(m_inputfilelab, 0, 0);
 	l8->addWidget(m_inputpipelab, 1, 0);
 	l8->addWidget(m_inputfile, 0, 1);
@@ -879,7 +887,9 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	QVBoxLayout	*l0 = new QVBoxLayout(topmain);
 	l0->setMargin(0);
 	l0->setSpacing(10);
-	QGridLayout	*l5 = new QGridLayout(0, 2, 2, 0, 5);
+	QGridLayout	*l5 = new QGridLayout();
+    l5->setMargin(0);
+    l5->setSpacing(5);
 	l0->addLayout(l5);
 	l5->addWidget(m_idnamelab, 0, 0);
 	l5->addWidget(m_idname, 0, 1);
@@ -900,9 +910,11 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	l6->addWidget(m_mimetypelab, 0);
 	l6->addWidget(m_mimetype, 1);
 	l7->addWidget(m_gb1);
-	QGridLayout	*l2 = new QGridLayout(m_gb1->layout(), 4, 3, 10);
-	l2->addMultiCellWidget(m_availablemime, 0, 3, 2, 2);
-	l2->addMultiCellWidget(m_selectedmime, 0, 3, 0, 0);
+	QGridLayout	*l2 = new QGridLayout();
+    m_gb1->layout()->addItem(l2);
+    l2->setMargin(10);
+    l2->addWidget(m_availablemime, 0, 2, 4, 1);
+    l2->addWidget(m_selectedmime, 0, 0, 4, 1);
 	l2->addWidget(m_addmime, 1, 1);
 	l2->addWidget(m_removemime, 2, 1);
 	l2->setRowStretch(0, 1);

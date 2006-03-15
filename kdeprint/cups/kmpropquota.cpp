@@ -44,8 +44,10 @@ KMPropQuota::KMPropQuota(QWidget *parent)
 	l2->setBuddy(m_sizelimit);
 	l3->setBuddy(m_pagelimit);
 
-	QGridLayout	*main_ = new QGridLayout(this, 4, 2, 10, 10);
-	main_->setColStretch(1,1);
+	QGridLayout	*main_ = new QGridLayout(this);
+    main_->setMargin(10);
+    main_->setSpacing(10);
+	main_->setColumnStretch(1,1);
 	main_->setRowStretch(3,1);
 	main_->addWidget(l1,0,0);
 	main_->addWidget(l2,1,0);

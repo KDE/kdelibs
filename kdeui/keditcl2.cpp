@@ -871,7 +871,8 @@ KEdReplace::KEdReplace( QWidget *parent, bool modal )
   Q3ButtonGroup *group = new Q3ButtonGroup( i18n("Options"), page );
   topLayout->addWidget( group );
 
-  QGridLayout *gbox = new QGridLayout( group, 3, 2, spacingHint() );
+  QGridLayout *gbox = new QGridLayout( group );
+  gbox->setMargin(spacingHint());
   gbox->addItem(new QSpacerItem(0,fontMetrics().lineSpacing()), 0, 0);
 
   text = i18n("Case &sensitive");

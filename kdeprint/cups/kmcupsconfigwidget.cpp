@@ -89,20 +89,24 @@ KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent)
 	lay0->setSpacing(10);
 	lay0->addWidget(m_hostbox,1);
 	lay0->addWidget(m_loginbox,1);
-	QGridLayout	*lay2 = new QGridLayout(m_hostbox->layout(), 2, 2, 10);
-	lay2->setColStretch(1,1);
+	QGridLayout	*lay2 = new QGridLayout();
+    m_hostbox->layout()->addItem(lay2);
+    lay2->setMargin(10);
+	lay2->setColumnStretch(1,1);
 	lay2->addWidget(m_hostlabel,0,0);
 	lay2->addWidget(m_portlabel,1,0);
 	lay2->addWidget(m_host,0,1);
 	lay2->addWidget(m_port,1,1);
-	QGridLayout	*lay3 = new QGridLayout(m_loginbox->layout(), 4, 2, 10);
-	lay3->setColStretch(1,1);
+	QGridLayout	*lay3 = new QGridLayout();
+    m_loginbox->layout()->addItem(lay3);
+    lay3->setMargin(10);
+	lay3->setColumnStretch(1,1);
 	lay3->addWidget(m_loginlabel,0,0);
 	lay3->addWidget(m_passwordlabel,1,0);
 	lay3->addWidget(m_login,0,1);
 	lay3->addWidget(m_password,1,1);
-	lay3->addMultiCellWidget(m_savepwd,2,2,0,1);
-	lay3->addMultiCellWidget(m_anonymous,3,3,0,1);
+    lay3->addWidget(m_savepwd,2,0,1,2);
+    lay3->addWidget(m_anonymous,3,0,1,2);
 
 	// connections
 	connect(m_anonymous,SIGNAL(toggled(bool)),m_login,SLOT(setDisabled(bool)));

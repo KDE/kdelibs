@@ -73,11 +73,11 @@ KMWPassword::KMWPassword(QWidget *parent)
 	main_->addWidget( infotext_ );
 	main_->addSpacing( 10 );
 	main_->addWidget( m_btngroup );
-	QGridLayout *l1 = new QGridLayout( 0, 2, 3 );
+	QGridLayout *l1 = new QGridLayout( );
 	main_->addLayout( l1 );
 	main_->addStretch( 1 );
-	l1->setColSpacing( 0, 35 );
-	l1->setColStretch( 2, 1 );
+	l1->setColumnMinimumWidth( 0, 35 );
+	l1->setColumnStretch( 2, 1 );
 	l1->addWidget( loginlabel_, 0, 1 );
 	l1->addWidget( passwdlabel_, 1, 1 );
 	l1->addWidget( m_login, 0, 2 );

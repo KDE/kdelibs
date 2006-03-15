@@ -81,7 +81,8 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
         topLayout->setMargin(KDialog::marginHint());
         topLayout->setSpacing(KDialog::spacingHint());
         d->m_secCon = secureConnection;
-        d->m_layout = new QGridLayout(topLayout, 3, 3);
+        d->m_layout = new QGridLayout();
+        topLayout->addLayout(d->m_layout);
         d->m_layout->setSpacing(KDialog::spacingHint());
         d->m_layout->setColumnStretch(1, 1);
         d->m_layout->setColumnStretch(2, 1);

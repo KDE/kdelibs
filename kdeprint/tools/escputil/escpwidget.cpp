@@ -126,15 +126,19 @@ EscpWidget::EscpWidget(QWidget *parent)
 	KSeparator	*sep = new KSeparator(this);
 	sep->setFixedHeight(10);
 
-	QGridLayout	*l0 = new QGridLayout(this, 8, 2, 10, 10);
-	QGridLayout	*l1 = new QGridLayout(0, 2, 2, 0, 5);
-	l0->addMultiCellLayout(l1, 0, 0, 0, 1);
+	QGridLayout	*l0 = new QGridLayout(this);
+    l0->setMargin(10);
+    l0->setSpacing(10);
+	QGridLayout	*l1 = new QGridLayout();
+    l1->setMargin(0);
+    l1->setSpacing(5);
+    l0->addLayout(l1, 0, 0, 1, 2);
 	l1->addWidget(printerlab, 0, 0);
 	l1->addWidget(devicelab, 1, 0);
 	l1->addWidget(m_printer, 0, 1);
 	l1->addWidget(m_device, 1, 1);
-	l1->setColStretch(1, 1);
-	l0->addMultiCellWidget(sep, 1, 1, 0, 1);
+	l1->setColumnStretch(1, 1);
+    l0->addWidget(sep, 1, 0, 1, 2);
 	l0->addWidget(cleanbtn, 2, 0);
 	l0->addWidget(nozzlebtn, 3, 0);
 	l0->addWidget(alignbtn, 4, 0);
@@ -145,8 +149,8 @@ EscpWidget::EscpWidget(QWidget *parent)
 	l0->addWidget(alignlab, 4, 1);
 	l0->addWidget(inklab, 5, 1);
 	l0->addWidget(identlab, 6, 1);
-	l0->addMultiCellWidget(m_useraw, 7, 7, 0, 1);
-	l0->setColStretch(1, 1);
+    l0->addWidget(m_useraw, 7, 0, 1, 2);
+	l0->setColumnStretch(1, 1);
 }
 
 void EscpWidget::startCommand(const QString& arg)

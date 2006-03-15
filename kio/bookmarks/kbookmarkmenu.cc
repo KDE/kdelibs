@@ -778,8 +778,9 @@ KBookmarkEditFields::KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, Fields
   QLabel *tmpLabel;
   bool isF = (fieldsSet != FolderFieldsSet);
 
-  QGridLayout *grid = new QGridLayout( vbox, 2, isF ? 2 : 1 );
-
+  QGridLayout *grid = new QGridLayout();
+  vbox->addLayout(grid);
+  
   m_title = new KLineEdit( main );
   tmpLabel = new QLabel( main );
   tmpLabel->setText( i18n( "Name:" ) );

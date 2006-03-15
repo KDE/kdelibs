@@ -38,8 +38,10 @@ KMPropBanners::KMPropBanners(QWidget *parent, const char *name)
 	l1->setBuddy(m_startbanner);
 	l2->setBuddy(m_stopbanner);
 
-	QGridLayout	*main_ = new QGridLayout(this, 3, 2, 10, 10);
-	main_->setColStretch(1,1);
+	QGridLayout	*main_ = new QGridLayout(this);
+    main_->setMargin(10);
+    main_->setSpacing(10);
+	main_->setColumnStretch(1,1);
 	main_->setRowStretch(2,1);
 	main_->addWidget(l1,0,0);
 	main_->addWidget(l2,1,0);

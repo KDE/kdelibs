@@ -150,8 +150,9 @@ d->browserExtension = new KParts::BrowserExtension(this);
 _frame = new QFrame(parentWidget, widgetName);
 setWidget(_frame);
 
-_baseGrid = new QGridLayout(_frame, 15, 9, KDialog::marginHint(),
-		KDialog::spacingHint());
+_baseGrid = new QGridLayout(_frame);
+_baseGrid->setMargin(KDialog::marginHint());
+_baseGrid->setSpacing(KDialog::spacingHint());
 
 _sideList = new K3ListView(_frame);
 _sideList->setRootIsDecorated(true);
@@ -163,10 +164,10 @@ _parentP12 = new K3ListViewItem(_sideList, i18n("Client"));
 _parentP12->setExpandable(true);
 _sideList->setOpen(_parentP12, true);
 
-_baseGrid->addMultiCellWidget(_sideList, 0, 13, 0, 1);
+_baseGrid->addWidget(_sideList, 0, 0, 14, 2);
 
 _importAll = new QPushButton(i18n("Import &All"), _frame);
-_baseGrid->addMultiCellWidget(_importAll, 14, 14, 0, 1);
+_baseGrid->addWidget(_importAll, 14, 0, 1, 2);
 connect(_importAll, SIGNAL(clicked()), SLOT(slotImportAll()));
 
 
@@ -176,20 +177,21 @@ connect(_importAll, SIGNAL(clicked()), SLOT(slotImportAll()));
 //------------------------------------------------------------------------
 _pkcsFrame = new QFrame(_frame);
 
-grid = new QGridLayout(_pkcsFrame, 13, 6, KDialog::marginHint(),
-		KDialog::spacingHint() );
-grid->addMultiCellWidget(new QLabel(i18n("KDE Secure Certificate Import"), _pkcsFrame), 0, 0, 0, 5);
+grid = new QGridLayout(_pkcsFrame);
+grid->setMargin(KDialog::marginHint());
+grid->setSpacing(KDialog::spacingHint());
+grid->addWidget(new QLabel(i18n("KDE Secure Certificate Import"), _pkcsFrame), 0, 0, 1, 6);
 grid->addWidget(new QLabel(i18n("Chain:"), _pkcsFrame), 1, 0);
 _p12_chain = new KComboBox(_pkcsFrame);
-grid->addMultiCellWidget(_p12_chain, 1, 1, 1, 4);
+grid->addWidget(_p12_chain, 1, 1, 1, 4);
 connect(_p12_chain, SIGNAL(activated(int)), SLOT(slotChain(int)));
 
 grid->addWidget(new QLabel(i18n("Subject:"), _pkcsFrame), 2, 0);
 grid->addWidget(new QLabel(i18n("Issued by:"), _pkcsFrame), 2, 3);
 _p12_subject = KSSLInfoDlg::certInfoWidget(_pkcsFrame, QString(""));
 _p12_issuer = KSSLInfoDlg::certInfoWidget(_pkcsFrame, QString(""));
-grid->addMultiCellWidget(_p12_subject, 3, 6, 0, 2);
-grid->addMultiCellWidget(_p12_issuer, 3, 6, 3, 5);
+grid->addWidget(_p12_subject, 3, 0, 4, 3);
+grid->addWidget(_p12_issuer, 3, 3, 4, 3);
 
 grid->addWidget(new QLabel(i18n("File:"), _pkcsFrame), 7, 0);
 _p12_filenameLabel = new QLabel("", _pkcsFrame);
@@ -202,22 +204,23 @@ grid->addWidget(new QLabel("PKCS#12", _pkcsFrame), 7, 4);
 //  Make the first tab
 //
 _tabs = new QTabWidget(_pkcsFrame);
-grid->addMultiCellWidget(_tabs, 8, 12, 0, 5);
+grid->addWidget(_tabs, 8, 0, 5, 6);
 
 QFrame *tab = new QFrame(_pkcsFrame);
-QGridLayout *tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
-		KDialog::spacingHint() );
+QGridLayout *tabGrid = new QGridLayout(tab);
+tabGrid->setMargin(KDialog::marginHint());
+tabGrid->setSpacing(KDialog::spacingHint());
 tabGrid->addWidget(new QLabel(i18n("State:"), tab), 0, 0);
 _p12_certState = new QLabel("", tab);
-tabGrid->addMultiCellWidget(_p12_certState, 0, 0, 1, 4);
+tabGrid->addWidget(_p12_certState, 0, 1, 1, 4);
 
 tabGrid->addWidget(new QLabel(i18n("Valid from:"), tab), 1, 0);
 _p12_validFrom = new QLabel("", tab);
-tabGrid->addMultiCellWidget(_p12_validFrom, 1, 1, 1, 4);
+tabGrid->addWidget(_p12_validFrom, 1, 1, 1, 4);
 
 tabGrid->addWidget(new QLabel(i18n("Valid until:"), tab), 2, 0);
 _p12_validUntil = new QLabel("", tab);
-tabGrid->addMultiCellWidget(_p12_validUntil, 2, 2, 1, 4);
+tabGrid->addWidget(_p12_validUntil, 2, 1, 1, 4);
 
 tabGrid->addWidget(new QLabel(i18n("Serial number:"), tab), 3, 0);
 _p12_serialNum = new QLabel("", tab);
@@ -229,14 +232,15 @@ _tabs->addTab(tab, i18n("State"));
 // Make the second tab
 //
 tab = new QFrame(_pkcsFrame);
-tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
-		KDialog::spacingHint() );
+tabGrid = new QGridLayout(tab);
+tabGrid->setMargin(KDialog::marginHint());
+tabGrid->setSpacing(KDialog::spacingHint());
 tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
 _p12_digest = new QLabel(tab);
-tabGrid->addMultiCellWidget(_p12_digest, 0, 0, 1, 4);
+tabGrid->addWidget(_p12_digest, 0, 1, 1, 4);
 tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
 _p12_sig = new QTextEdit(tab);
-tabGrid->addMultiCellWidget(_p12_sig, 1, 3, 1, 4);
+tabGrid->addWidget(_p12_sig, 1, 1, 3, 4);
 _p12_sig->setReadOnly(true);
 
 _tabs->addTab(tab, i18n("Signature"));
@@ -246,11 +250,12 @@ _tabs->addTab(tab, i18n("Signature"));
 // Make the third tab
 //
 tab = new QFrame(_pkcsFrame);
-tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
-		KDialog::spacingHint() );
+tabGrid = new QGridLayout(tab);
+tabGrid->setMargin(KDialog::marginHint());
+tabGrid->setSpacing(KDialog::spacingHint());
 tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
 _p12_pubkey = new QTextEdit(tab);
-tabGrid->addMultiCellWidget(_p12_pubkey, 0, 3, 1, 4);
+tabGrid->addWidget(_p12_pubkey, 0, 1, 4, 4);
 _p12_pubkey->setReadOnly(true);
 
 
@@ -267,16 +272,17 @@ _pkcsFrame->hide();
 //   information.
 _x509Frame = new QFrame(_frame);
 
-grid = new QGridLayout(_x509Frame, 12, 6, KDialog::marginHint(),
-		KDialog::spacingHint() );
-grid->addMultiCellWidget(new QLabel(i18n("KDE Secure Certificate Import"), _x509Frame), 0, 0, 0, 5);
+grid = new QGridLayout(_x509Frame);
+grid->setMargin(KDialog::marginHint());
+grid->setSpacing(KDialog::spacingHint());
+grid->addWidget(new QLabel(i18n("KDE Secure Certificate Import"), _x509Frame), 0, 0, 1, 6);
 
 grid->addWidget(new QLabel(i18n("Subject:"), _x509Frame), 1, 0);
 grid->addWidget(new QLabel(i18n("Issued by:"), _x509Frame), 1, 3);
 _ca_subject = KSSLInfoDlg::certInfoWidget(_x509Frame, QString(""));
 _ca_issuer = KSSLInfoDlg::certInfoWidget(_x509Frame, QString(""));
-grid->addMultiCellWidget(_ca_subject, 2, 5, 0, 2);
-grid->addMultiCellWidget(_ca_issuer, 2, 5, 3, 5);
+grid->addWidget(_ca_subject, 2, 0, 4, 3);
+grid->addWidget(_ca_issuer, 2, 3, 4, 3);
 
 grid->addWidget(new QLabel(i18n("File:"), _x509Frame), 6, 0);
 _ca_filenameLabel = new QLabel("", _x509Frame);
@@ -289,22 +295,23 @@ grid->addWidget(new QLabel("PEM or DER Encoded X.509", _x509Frame), 6, 4);
 //  Make the first tab
 //
 _tabs = new QTabWidget(_x509Frame);
-grid->addMultiCellWidget(_tabs, 7, 11, 0, 5);
+grid->addWidget(_tabs, 7, 0, 5, 6);
 
 tab = new QFrame(_x509Frame);
-tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
-		KDialog::spacingHint() );
+tabGrid = new QGridLayout(tab);
+tabGrid->setMargin(KDialog::marginHint());
+tabGrid->setSpacing(KDialog::spacingHint());
 tabGrid->addWidget(new QLabel(i18n("State:"), tab), 0, 0);
 _ca_certState = new QLabel("", tab);
-tabGrid->addMultiCellWidget(_ca_certState, 0, 0, 1, 4);
+tabGrid->addWidget(_ca_certState, 0, 1, 1, 4);
 
 tabGrid->addWidget(new QLabel(i18n("Valid from:"), tab), 1, 0);
 _ca_validFrom = new QLabel("", tab);
-tabGrid->addMultiCellWidget(_ca_validFrom, 1, 1, 1, 4);
+tabGrid->addWidget(_ca_validFrom, 1, 1, 1, 4);
 
 tabGrid->addWidget(new QLabel(i18n("Valid until:"), tab), 2, 0);
 _ca_validUntil = new QLabel("", tab);
-tabGrid->addMultiCellWidget(_ca_validUntil, 2, 2, 1, 4);
+tabGrid->addWidget(_ca_validUntil, 2, 1, 1, 4);
 
 tabGrid->addWidget(new QLabel(i18n("Serial number:"), tab), 3, 0);
 _ca_serialNum = new QLabel("", tab);
@@ -316,14 +323,15 @@ _tabs->addTab(tab, i18n("State"));
 // Make the second tab
 //
 tab = new QFrame(_x509Frame);
-tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
-		KDialog::spacingHint() );
+tabGrid = new QGridLayout(tab);
+tabGrid->setMargin(KDialog::marginHint());
+tabGrid->setSpacing(KDialog::spacingHint());
 tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
 _ca_digest = new QLabel(tab);
-tabGrid->addMultiCellWidget(_ca_digest, 0, 0, 1, 4);
+tabGrid->addWidget(_ca_digest, 0, 1, 1, 4);
 tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
 _ca_sig = new QTextEdit(tab);
-tabGrid->addMultiCellWidget(_ca_sig, 1, 3, 1, 4);
+tabGrid->addWidget(_ca_sig, 1, 1, 3, 4);
 _ca_sig->setReadOnly(true);
 
 _tabs->addTab(tab, i18n("Signature"));
@@ -333,11 +341,12 @@ _tabs->addTab(tab, i18n("Signature"));
 // Make the third tab
 //
 tab = new QFrame(_x509Frame);
-tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
-		KDialog::spacingHint() );
+tabGrid = new QGridLayout(tab);
+tabGrid->setMargin(KDialog::marginHint());
+tabGrid->setSpacing(KDialog::spacingHint());
 tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
 _ca_pubkey = new QTextEdit(tab);
-tabGrid->addMultiCellWidget(_ca_pubkey, 0, 3, 1, 4);
+tabGrid->addWidget(_ca_pubkey, 0, 1, 4, 4);
 _ca_pubkey->setReadOnly(true);
 
 
@@ -352,9 +361,10 @@ _x509Frame->hide();
 //   The blank widget
 //------------------------------------------------------------------------
 _blankFrame = new QFrame(_frame);
-grid = new QGridLayout(_blankFrame, 1, 1, KDialog::marginHint(),
-		KDialog::spacingHint() );
-grid->addMultiCellWidget(new QLabel(i18n("KDE Secure Certificate Import"), _blankFrame), 0, 0, 0, 0);
+grid = new QGridLayout(_blankFrame);
+grid->setMargin(KDialog::marginHint());
+grid->setSpacing(KDialog::spacingHint());
+grid->addWidget(new QLabel(i18n("KDE Secure Certificate Import"), _blankFrame), 0, 0, 1, 1);
 _blankFrame->show();
 
 
@@ -362,12 +372,12 @@ _blankFrame->show();
 //
 // Finish it off
 //
-_baseGrid->addMultiCellWidget(new KSeparator(_frame), 13, 13, 2, 8);
+_baseGrid->addWidget(new KSeparator(_frame), 13, 2, 1, 7);
 _launch = new QPushButton(i18n("&Crypto Manager..."), _frame);
 _import = new QPushButton(i18n("&Import"), _frame);
 _save = new QPushButton(i18n("&Save..."), _frame);
 _done = new QPushButton(i18n("&Done"), _frame);
-_baseGrid->addMultiCellWidget(_launch, 14, 14, 4, 5);
+_baseGrid->addWidget(_launch, 14, 4, 1, 2);
 _baseGrid->addWidget(_import, 14, 6);
 _baseGrid->addWidget(_save, 14, 7);
 _baseGrid->addWidget(_done, 14, 8);
@@ -380,9 +390,9 @@ _save->setEnabled(false);
 
 
 
-_baseGrid->addMultiCellWidget(_pkcsFrame, 0, 12, 2, 8);
-_baseGrid->addMultiCellWidget(_x509Frame, 0, 12, 2, 8);
-_baseGrid->addMultiCellWidget(_blankFrame, 0, 12, 2, 8);
+_baseGrid->addWidget(_pkcsFrame, 0, 2, 13, 7);
+_baseGrid->addWidget(_x509Frame, 0, 2, 13, 7);
+_baseGrid->addWidget(_blankFrame, 0, 2, 13, 7);
 
 connect(_sideList, SIGNAL(selectionChanged(Q3ListViewItem*)),
 		this, SLOT(slotSelectionChanged(Q3ListViewItem*)));

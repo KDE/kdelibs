@@ -99,7 +99,9 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 	else
 		setFocusProxy(m_cmd);
 
-	QGridLayout	*l2 = new QGridLayout(0, 2, (m_usefilter?3:2), 0, 5);
+	QGridLayout	*l2 = new QGridLayout();
+    l2->setMargin(0);
+    l2->setSpacing(5);
 	int	c(0);
 	l0->addLayout(l2);
 	if (m_usefilter)

@@ -347,18 +347,22 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 	m_horizgrp->setButton(1);
 	slotPositionChanged();
 
-	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 10);
-	l0->addMultiCellWidget(colorbox, 0, 0, 0, 1);
+	QGridLayout	*l0 = new QGridLayout(this);
+    l0->setMargin(0);
+    l0->setSpacing(10);
+    l0->addWidget(colorbox, 0, 0, 1, 2);
 	l0->addWidget(sizebox, 1, 0);
 	l0->addWidget(positionbox, 1, 1);
-	l0->setColStretch(0, 1);
-	QGridLayout	*l1 = new QGridLayout(colorbox->layout(), 5, 2, 10);
+	l0->setColumnStretch(0, 1);
+	QGridLayout	*l1 = new QGridLayout();
+    colorbox->layout()->addItem(l1);
+    l1->setMargin(10);
 	l1->addWidget(m_brightness, 0, 0);
 	l1->addWidget(m_hue, 1, 0);
 	l1->addWidget(m_saturation, 2, 0);
 	l1->addWidget(sep, 3, 0);
 	l1->addWidget(m_gamma, 4, 0);
-	l1->addMultiCellWidget(m_preview, 0, 3, 1, 1);
+    l1->addWidget(m_preview, 0, 1, 4, 1);
 	l1->addWidget(defbtn, 4, 1);
 	QVBoxLayout	*l2 = new QVBoxLayout(sizebox->layout(), 3);
 	l2->addStretch(1);
@@ -367,7 +371,9 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 	l2->addSpacing(10);
 	l2->addWidget(m_size);
 	l2->addStretch(1);
-	QGridLayout	*l3 = new QGridLayout(positionbox->layout(), 2, 2, 10);
+	QGridLayout	*l3 = new QGridLayout();
+    positionbox->layout()->addItem(l3);
+    l0->setMargin(10);
 	QHBoxLayout	*l4 = new QHBoxLayout(0, 0, 10);
 	QVBoxLayout	*l5 = new QVBoxLayout(0, 0, 10);
 	l3->addLayout(l4, 0, 1);

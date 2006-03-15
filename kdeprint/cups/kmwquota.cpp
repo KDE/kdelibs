@@ -106,17 +106,19 @@ KMWQuota::KMWQuota(QWidget *parent)
 					"<b><nobr>No quota</nobr></b> (-1). Quota limits are defined on a per-user base and "
 					"applied to all users.</p>"), this);
 
-	QGridLayout	*l0 = new QGridLayout(this, 5, 3, 0, 10);
+	QGridLayout	*l0 = new QGridLayout(this);
+    l0->setMargin(0);
+    l0->setSpacing(10);
 	l0->setRowStretch(4, 1);
-	l0->setColStretch(1, 1);
-	l0->addMultiCellWidget(lab4, 0, 0, 0, 2);
+	l0->setColumnStretch(1, 1);
+    l0->addWidget(lab4, 0, 0, 1, 3);
 	l0->addWidget(lab1, 1, 0);
 	l0->addWidget(lab2, 2, 0);
 	l0->addWidget(lab3, 3, 0);
 	l0->addWidget(m_period, 1, 1);
 	l0->addWidget(m_timeunit, 1, 2);
-	l0->addMultiCellWidget(m_sizelimit, 2, 2, 1, 2);
-	l0->addMultiCellWidget(m_pagelimit, 3, 3, 1, 2);
+    l0->addWidget(m_sizelimit, 2, 1, 1, 2);
+    l0->addWidget(m_pagelimit, 3, 1, 1, 2);
 }
 
 KMWQuota::~KMWQuota()

@@ -75,12 +75,14 @@ StatusWindow::StatusWindow(int pid)
 #ifdef Q_WS_X11
 	KWin::setIcons(winId(), *(m_icon->pixmap()), SmallIcon("fileprint"));
 #endif
-	QGridLayout	*l0 = new QGridLayout(this, 2, 3, 10, 10);
+	QGridLayout	*l0 = new QGridLayout(this);
+    l0->setMargin(10);
+    l0->setSpacing(10);
 	l0->setRowStretch(0, 1);
-	l0->setColStretch(1, 1);
-	l0->addMultiCellWidget(m_label, 0, 0, 1, 2);
+	l0->setColumnStretch(1, 1);
+    l0->addWidget(m_label, 0, 1, 1, 2);
 	l0->addWidget(m_button, 1, 2);
-	l0->addMultiCellWidget(m_icon, 0, 1, 0, 0);
+    l0->addWidget(m_icon, 0, 0, 2, 1);
 	connect(m_button, SIGNAL(clicked()), SLOT(hide()));
 	resize(200, 50);
 }

@@ -1609,7 +1609,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   gb->layout()->setMargin(KDialog::marginHint());
   box->addWidget (gb);
 
-  gl = new QGridLayout (gb->layout(), 7, 2);
+  gl = new QGridLayout ();
+  gb->layout()->addItem(gl);
   gl->setColumnStretch(1, 1);
 
   l = d->explanationLabel = new QLabel( "", gb );
@@ -1678,7 +1679,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   gb->layout()->setMargin(KDialog::marginHint());
   box->addWidget (gb);
 
-  gl = new QGridLayout (gb->layout(), 4, 3);
+  gl = new QGridLayout ();
+  gb->layout()->addItem(gl);
   gl->addItem(new QSpacerItem(0, 10), 0, 0);
 
   /*** Set Owner ***/
@@ -1863,7 +1865,8 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   gb->layout()->setSpacing(KDialog::spacingHint());
   gb->layout()->setMargin(KDialog::marginHint());
 
-  gl = new QGridLayout (gb->layout(), 6, 6);
+  gl = new QGridLayout ();
+  gb->layout()->addItem(gl);
   gl->addItem(new QSpacerItem(0, 10), 0, 0);
 
   QVector<QWidget*> theNotSpecials;
@@ -3585,7 +3588,8 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   mainlayout->addWidget(tmpQGroupBox);
 
-  QGridLayout *grid = new QGridLayout(tmpQGroupBox->layout(), 2, 2);
+  QGridLayout *grid = new QGridLayout();
+  tmpQGroupBox->layout()->addItem(grid);
   grid->setSpacing( KDialog::spacingHint() );
   grid->setColumnStretch(1, 1);
 
@@ -3612,7 +3616,9 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   mainlayout->addWidget(tmpQGroupBox);
 
-  grid = new QGridLayout(tmpQGroupBox->layout(), 3, 2);
+  grid = new QGridLayout();
+  tmpQGroupBox->layout()->addItem(grid);
+  
   grid->setSpacing( KDialog::spacingHint() );
   grid->setColumnStretch(1, 1);
 
@@ -3651,7 +3657,9 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   mainlayout->addWidget(tmpQGroupBox);
 
-  grid = new QGridLayout(tmpQGroupBox->layout(), 2, 2);
+  grid = new QGridLayout();
+  tmpQGroupBox->layout()->addItem(grid);
+  
   grid->setSpacing(KDialog::spacingHint());
   grid->setColumnStretch(1, 1);
 

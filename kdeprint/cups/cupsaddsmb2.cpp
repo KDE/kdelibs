@@ -108,7 +108,9 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	l1->addWidget(m_title);
 	l1->addWidget(m_sep);
 	l1->addWidget(m_text);
-	QGridLayout *l3 = new QGridLayout( 0, 3, 2, 0, 10 );
+	QGridLayout *l3 = new QGridLayout();
+    l3->setMargin(0);
+    l3->setSpacing(10);
 	l1->addLayout( l3 );
 	l3->addWidget( m_loginlab, 1, 0 );
 	l3->addWidget( m_passwdlab, 2, 0 );
@@ -116,7 +118,7 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	l3->addWidget( m_logined, 1, 1 );
 	l3->addWidget( m_passwded, 2, 1 );
 	l3->addWidget( m_servered, 0, 1 );
-	l3->setColStretch( 1, 1 );
+	l3->setColumnStretch( 1, 1 );
 	l1->addSpacing( 10 );
 	l1->addWidget(m_bar);
 	l1->addWidget( m_textinfo );

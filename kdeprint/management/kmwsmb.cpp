@@ -52,13 +52,15 @@ KMWSmb::KMWSmb(QWidget *parent)
 	QVBoxLayout	*lay0 = new QVBoxLayout(this);
 	lay0->setMargin(0);
 	lay0->setSpacing(10);
-	QGridLayout	*lay1 = new QGridLayout(0, 3, 2, 0, 10);
+	QGridLayout	*lay1 = new QGridLayout();
+    lay1->setMargin(0);
+    lay1->setSpacing(10);
 	QHBoxLayout	*lay3 = new QHBoxLayout(0, 0, 10);
 	lay0->addLayout(lay1,0);
 	lay0->addWidget(m_view,1);
 	lay0->addLayout(lay3,0);
 	lay0->addSpacing(10);
-	lay1->setColStretch(1,1);
+	lay1->setColumnStretch(1,1);
 	lay1->addWidget(m_worklabel,0,0);
 	lay1->addWidget(m_serverlabel,1,0);
 	lay1->addWidget(m_printerlabel,2,0);

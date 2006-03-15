@@ -228,19 +228,23 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent)
 	  m_margin->setWhatsThis(whatsThisMarginsTextPage);
 	m_margin->setPageSize(595, 842);
 
-	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 10);
+	QGridLayout	*l0 = new QGridLayout(this);
+    l0->setMargin(0);
+    l0->setSpacing(10);
 	l0->addWidget(formatbox, 0, 0);
 	l0->addWidget(prettybox, 0, 1);
-	l0->addMultiCellWidget(marginbox, 1, 1, 0, 1);
+    l0->addWidget(marginbox, 1, 0, 1, 2);
 	QVBoxLayout	*l1 = new QVBoxLayout(formatbox->layout(), 5);
 	l1->addWidget(m_cpi);
 	l1->addWidget(m_lpi);
 	l1->addWidget(sep);
 	l1->addWidget(m_columns);
-	QGridLayout	*l2 = new QGridLayout(prettybox->layout(), 2, 2, 10);
+	QGridLayout	*l2 = new QGridLayout();
+    prettybox->layout()->addItem(l2);
+    l0->setMargin(10);
 	l2->addWidget(off, 0, 0);
 	l2->addWidget(on, 1, 0);
-	l2->addMultiCellWidget(m_prettypix, 0, 1, 1, 1);
+	l2->addWidget(m_prettypix, 0, 1, 2, 1);
 	QVBoxLayout	*l3 = new QVBoxLayout(marginbox->layout(), 10);
 	l3->addWidget(m_margin);
 }

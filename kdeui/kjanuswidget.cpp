@@ -547,7 +547,8 @@ bool KJanusWidget::setSwallowedWidget( QWidget *widget )
   //
   delete mSwallowPage->layout();
 
-  QGridLayout *gbox = new QGridLayout( mSwallowPage, 1, 1, 0 );
+  QGridLayout *gbox = new QGridLayout( mSwallowPage );
+  gbox->setMargin(0);
 
   //
   // Hide old children

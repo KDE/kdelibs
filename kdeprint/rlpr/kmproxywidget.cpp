@@ -46,9 +46,11 @@ KMProxyWidget::KMProxyWidget(QWidget *parent, const char *name)
 	m_proxyhost->setEnabled(false);
 	m_proxyport->setEnabled(false);
 
-	QGridLayout	*lay0 = new QGridLayout(layout(), 3, 2, 10);
-	lay0->setColStretch(1,1);
-	lay0->addMultiCellWidget(m_useproxy,0,0,0,1);
+	QGridLayout	*lay0 = new QGridLayout();
+    layout()->addItem(lay0);
+    lay0->setMargin(10);
+	lay0->setColumnStretch(1,1);
+    lay0->addWidget(m_useproxy,0,0, 1, 2);
 	lay0->addWidget(m_hostlabel,1,0);
 	lay0->addWidget(m_portlabel,2,0);
 	lay0->addWidget(m_proxyhost,1,1);
