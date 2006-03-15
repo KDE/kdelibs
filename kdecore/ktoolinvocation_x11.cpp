@@ -351,6 +351,8 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
      to = _to;
      cc = _cc;
      bcc = _bcc;
+     if( !command.contains( '%' ))
+         command += " %u";
    }
 
    if (config.readEntry("TerminalClient", false))
