@@ -36,6 +36,7 @@ class BrowserRun::BrowserRunPrivate
 {
 public:
   bool m_bHideErrorDialog;
+  QString contentDisposition;
 };
 
 BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
@@ -185,7 +186,8 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
   m_strURL = job->url();
   kdDebug(1000) << "slotBrowserMimetype: found " << type << " for " << m_strURL.prettyURL() << endl;
 
-  m_suggestedFilename = job->queryMetaData("content-disposition");
+  m_suggestedFilename = job->queryMetaData("content-disposition-filename");
+  d->contentDisposition = job->queryMetaData("content-disposition-type");
   //kdDebug(1000) << "m_suggestedFilename=" << m_suggestedFilename << endl;
 
   // Make a copy to avoid a dead reference
@@ -316,7 +318,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
 }
 
 //static
-BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename, int /*flags*/ )
+BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename, int flags )
 {
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
     // NOTE: Keep this funcion in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
@@ -332,13 +334,14 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QS
     // - multipart/* ("server push", see kmultipart)
     // - other strange 'internal' mimetypes like print/manager...
     // KEEP IN SYNC!!!
-    if ( mime->is( "text/html" ) ||
+    if (flags != (int)AttachmentDisposition && (
+         mime->is( "text/html" ) ||
          mime->is( "text/xml" ) ||
          mime->is( "inode/directory" ) ||
          mimeType.startsWith( "image" ) ||
          mime->is( "multipart/x-mixed-replace" ) ||
          mime->is( "multipart/replace" ) ||
-         mimeType.startsWith( "print" ) )
+         mimeType.startsWith( "print" ) ) )
         return Open;
 
     QString question = makeQuestion( url, mimeType, suggestedFilename );
@@ -505,6 +508,10 @@ bool BrowserRun::isExecutable( const QString &serviceType )
 bool BrowserRun::hideErrorDialog() const
 {
     return d->m_bHideErrorDialog;
+}
+
+QString BrowserRun::contentDisposition() const {
+    return d->contentDisposition;
 }
 
 #include "browserrun.moc"

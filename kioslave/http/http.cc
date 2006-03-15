@@ -2710,7 +2710,8 @@ try_again:
   QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
 
-  QString disposition; // Incase we get a Content-Disposition
+  QString dispositionType; // In case we get a Content-Disposition type
+  QString dispositionFilename; // In case we get a Content-Disposition filename
   QString mediaValue;
   QString mediaAttribute;
 
@@ -3245,7 +3246,7 @@ try_again:
               dispositionBuf--;
 
             if ( dispositionBuf > bufStart )
-              disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
+              dispositionFilename = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
 
             break;
           }
@@ -3258,7 +3259,7 @@ try_again:
             dispositionBuf++;
 
           if ( dispositionBuf > bufStart )
-            disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart ).stripWhiteSpace();
+            dispositionType = QString::fromLatin1( bufStart, dispositionBuf-bufStart ).stripWhiteSpace();
 
           while ( *dispositionBuf == ';' || *dispositionBuf == ' ' )
             dispositionBuf++;
@@ -3267,15 +3268,15 @@ try_again:
 
       // Content-Dispostion is not allowed to dictate directory
       // path, thus we extract the filename only.
-      if ( !disposition.isEmpty() )
+      if ( !dispositionFilename.isEmpty() )
       {
-        int pos = disposition.findRev( '/' );
+        int pos = dispositionFilename.findRev( '/' );
 
         if( pos > -1 )
-          disposition = disposition.mid(pos+1);
+          dispositionFilename = dispositionFilename.mid(pos+1);
 
-        kdDebug(7113) << "(" << m_pid << ") Content-Disposition: "
-                      << disposition<< endl;
+        kdDebug(7113) << "(" << m_pid << ") Content-Disposition: filename="
+                      << dispositionFilename<< endl;
       }
     }
     else if (strncasecmp(buf, "Proxy-Connection:", 17) == 0)
@@ -3748,11 +3749,19 @@ try_again:
   }
 #endif
 
-  if( !disposition.isEmpty() )
+  if( !dispositionType.isEmpty() )
   {
-    kdDebug(7113) << "(" << m_pid << ") Setting Content-Disposition metadata to: "
-                  << disposition << endl;
-    setMetaData("content-disposition", disposition);
+    kdDebug(7113) << "(" << m_pid << ") Setting Content-Disposition type to: "
+                  << dispositionType << endl;
+    setMetaData("content-disposition-type", dispositionType);
+  }
+  if( !dispositionFilename.isEmpty() )
+  {
+    kdDebug(7113) << "(" << m_pid << ") Setting Content-Disposition filename to: "
+                  << dispositionFilename << endl;
+    // ### KDE4:  setting content-disposition to filename for pre 3.5.2 compatability
+    setMetaData("content-disposition", dispositionFilename);
+    setMetaData("content-disposition-filename", dispositionFilename);
   }
 
   if (!m_request.lastModified.isEmpty())
