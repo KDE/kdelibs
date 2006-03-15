@@ -2421,6 +2421,8 @@ void KApplication::invokeMailer(const QString &_to, const QString &_cc, const QS
      to = _to;
      cc = _cc;
      bcc = _bcc;
+     if( !command.contains( '%' ))
+         command += " %u";
    }
 
    if (config.readBoolEntry("TerminalClient", false))
