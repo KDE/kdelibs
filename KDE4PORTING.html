@@ -77,9 +77,8 @@ have been removed (not of all classes yet). Use setObjectName() instead if the o
 </li>
 <li>The define KDE_DEPRECATED must be used now at the start of the declaration
 (but still after an eventual "static", "inline" or "virtual" keyword).
-KDE_DEPRECATED does not work with constructors.
-Note that KDE_DEPRECATED still works at the end of the declaration with gcc,
-but that is not portable.</li>
+KDE_DEPRECATED does not work with constructors, use KDE_CONSTRUCTOR_DEPRECATED
+instead.</li>
 </ul>
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>

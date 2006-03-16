@@ -146,12 +146,38 @@
  * unlike what is done for KDE3.
  *
  * \note
- * KDE_DEPRECATED cannot be used for constructors.
+ * KDE_DEPRECATED cannot be used for constructors, 
+ * use KDE_CONSTRUCTOR_DEPRECATED instead.
  */
 
 #ifndef KDE_DEPRECATED
 # define KDE_DEPRECATED Q_DECL_DEPRECATED
 #endif
+
+/**
+ * @def KDE_CONSTRUCTOR_DEPRECATED
+ *
+ * The KDE_CONSTRUCTOR_DEPRECATED macro can be used to trigger compile-time
+ * warnings with newer compilers when deprecated constructors are used.
+ *
+ * For non-inline constructors, the macro gets inserted at front of the
+ * constructor declaration, right before the return type:
+ *
+ * \code
+ * KDE_CONSTRUCTOR_DEPRECATED classA();
+ * \endcode
+ *
+ * For constructors which are implemented inline,
+ * the KDE_CONSTRUCTOR_DEPRECATED macro is inserted at the front,
+ * but after the "inline" keyword:
+ *
+ * \code
+ * KDE_CONSTRUCTOR_DEPRECATED classA() { .. }
+ * \endcode
+ *
+ * \note Do not forget that inlined constructors are not allowed in public
+ * headers for KDE.
+ */
 
 #ifndef KDE_CONSTRUCTOR_DEPRECATED
 # ifdef __GNUC__
