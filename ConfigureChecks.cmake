@@ -264,7 +264,15 @@ check_function_exists(__argz_stringify HAVE___ARGZ_STRINGIFY)
 check_library_exists(utempter addToUtmp "" HAVE_UTEMPTER)
 check_library_exists(crypt crypt "" HAVE_CRYPT)
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
-check_library_exists(resolv res_init "" HAVE_RESOLV_LIBRARY)
+
+# e.g. on slackware 9.1 res_init() is only a define for __res_init, so we check both, Alex
+set(HAVE_RESOLV_LIBRARY FALSE)
+check_library_exists(resolv res_init "" HAVE_RES_INIT_IN_RESOLV_LIBRARY)
+check_library_exists(resolv __res_init "" HAVE___RES_INIT_IN_RESOLV_LIBRARY)
+if (HAVE___RES_INIT_IN_RESOLV_LIBRARY OR HAVE_RES_INIT_IN_RESOLV_LIBRARY)
+   set(HAVE_RESOLV_LIBRARY TRUE)
+endif (HAVE___RES_INIT_IN_RESOLV_LIBRARY OR HAVE_RES_INIT_IN_RESOLV_LIBRARY)
+
 check_library_exists(util  openpty "" HAVE_OPENPTY)
 if (HAVE_OPENPTY)
   set(UTIL_LIBRARY util)
