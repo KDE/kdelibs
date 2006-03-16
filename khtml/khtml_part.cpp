@@ -3960,7 +3960,7 @@ void KHTMLPart::slotViewPageInfo()
   dlg->_close->setGuiItem(KStdGuiItem::close());
 
   if (d->m_doc)
-     dlg->_title->setText(d->m_doc->title().string());
+     dlg->_title->setHtml(d->m_doc->title().string());
 
   // If it's a frame, set the caption to "Frame Information"
   if ( parentPart() && d->m_doc && d->m_doc->isHTMLDocument() ) {
@@ -3973,7 +3973,7 @@ void KHTMLPart::slotViewPageInfo()
     editStr = i18n("   <a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
 
   QString squeezedURL = KStringHandler::csqueeze( url().prettyURL(), 80 );
-  dlg->_url->setText("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
+  dlg->_url->setHtml("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
   if (lastModified().isEmpty())
   {
     dlg->_lastModified->hide();
@@ -3987,7 +3987,7 @@ void KHTMLPart::slotViewPageInfo()
     dlg->_eLabel->hide();
     dlg->_encoding->hide();
   } else {
-    dlg->_encoding->setText(enc);
+    dlg->_encoding->setPlainText(enc);
   }
   /* populate the list view now */
   const QStringList headers = QStringList::split("\n", d->m_httpHeaders);

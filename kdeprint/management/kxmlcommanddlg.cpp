@@ -170,7 +170,6 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_outputpipe = new QLineEdit(gb_output);
 
 	m_comment = new KTextEdit( this );
-	m_comment->setTextFormat( Qt::PlainText );
 	QLabel *m_commentlab = new QLabel( i18n( "Comment:" ), this );
 
 	QVBoxLayout	*l2 = new QVBoxLayout(this);
@@ -398,7 +397,7 @@ void KXmlCommandAdvancedDlg::parseXmlCommand(KXmlCommand *xmlcmd)
 	m_inputpipe->setText(xmlcmd->io(true, true));
 	m_outputfile->setText(xmlcmd->io(false, false));
 	m_outputpipe->setText(xmlcmd->io(false, true));
-	m_comment->setText( xmlcmd->comment() );
+	m_comment->setPlainText( xmlcmd->comment() );
 
 	viewItem(0);
 }
@@ -811,7 +810,7 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 		xmlcmd->setIo(xmldlg->m_inputpipe->text(), true, true);
 		xmlcmd->setIo(xmldlg->m_outputfile->text(), false, false);
 		xmlcmd->setIo(xmldlg->m_outputpipe->text(), false, true);
-		xmlcmd->setComment( xmldlg->m_comment->text().replace( QRegExp( "\n" ), " " ) );
+		xmlcmd->setComment( xmldlg->m_comment->toPlainText().replace( QRegExp( "\n" ), " " ) );
 
 		// need to recreate the driver tree structure
 		DrMain	*driver = (xmldlg->m_opts.contains("__root__") ? static_cast<DrMain*>(xmldlg->m_opts["__root__"]) : 0);

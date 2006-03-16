@@ -670,7 +670,7 @@ void KCertPart::displayCACert(KSSLCertificate *c) {
 	_ca_certState->setPalette(cspl);
 	_ca_certState->setText(KSSLCertificate::verifyText(c->validate()));
 
-	_ca_pubkey->setText (c->getPublicKeyText());
+	_ca_pubkey->setPlainText (c->getPublicKeyText());
 	_ca_digest->setText(c->getMD5DigestText());
 	_ca_sig->setPlainText(c->getSignatureText());
 }

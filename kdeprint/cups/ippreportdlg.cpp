@@ -50,7 +50,7 @@ void IppReportDlg::slotUser1()
 		QPainter	painter(&printer);
 
 		// report is printed using QSimpleRichText
-		Q3SimpleRichText	rich(m_edit->text(), font());
+		Q3SimpleRichText	rich(m_edit->toHtml(), font());
 		rich.setWidth(&painter, printer.width());
 		int	margin = (int)(1.5 / 2.54 * printer.logicalDpiY());	// 1.5 cm
 		QRect	r(margin, margin, printer.width()-2*margin, printer.height()-2*margin);
@@ -84,7 +84,7 @@ void IppReportDlg::report(IppRequest *req, int group, const QString& caption)
 		IppReportDlg	dlg;
 		if (!caption.isEmpty())
 			dlg.setCaption(caption);
-		dlg.m_edit->setText(str_report);
+		dlg.m_edit->setHtml(str_report);
 		dlg.exec();
 	}
 	else

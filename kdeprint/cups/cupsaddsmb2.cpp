@@ -333,7 +333,7 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 			m_logined->setEnabled( true );
 			m_servered->setEnabled( true );
 			m_passwded->setEnabled( true );
-			m_text->setText(i18n("Driver successfully exported."));
+			m_text->setPlainText(i18n("Driver successfully exported."));
 			m_bar->reset();
 			m_textinfo->setText( QString() );
 			return;
@@ -358,7 +358,7 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 
 void CupsAddSmb::showError(const QString& msg)
 {
-	m_text->setText(i18n("<h3>Operation failed.</h3><p>%1</p>").arg(msg));
+	m_text->setHtml(i18n("<h3>Operation failed.</h3><p>%1</p>").arg(msg));
 	m_cancel->setEnabled(true);
 	m_logined->setEnabled( true );
 	m_servered->setEnabled( true );
@@ -372,7 +372,7 @@ bool CupsAddSmb::exportDest(const QString &dest, const QString& datadir)
 	CupsAddSmb	dlg;
 	dlg.m_dest = dest;
 	dlg.m_datadir = datadir;
-	dlg.m_text->setText(
+	dlg.m_text->setHtml(
 			i18n( "You are about to prepare the <b>%1</b> driver to be "
 			      "shared out to Windows clients through Samba. This operation "
 				  "requires the <a href=\"http://www.adobe.com/products/printerdrivers/main.html\">Adobe PostScript Driver</a>, a recent version of "

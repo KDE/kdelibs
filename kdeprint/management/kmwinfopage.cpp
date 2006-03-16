@@ -34,7 +34,7 @@ KMWInfoPage::KMWInfoPage(QWidget *parent)
 
 	//QLabel	*m_label = new QLabel(this);
 	KActiveLabel	*m_label = new KActiveLabel(this);
-	m_label->setText(i18n("<p>Welcome,</p><br>"
+	m_label->setHtml(i18n("<p>Welcome,</p><br>"
 		"<p>This wizard will help to install a new printer on your computer. "
 		"It will guide you through the various steps of the process of installing "
 		"and configuring a printer for your printing system. At each step, you "
