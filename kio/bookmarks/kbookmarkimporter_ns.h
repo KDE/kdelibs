@@ -33,12 +33,12 @@
  * A class for importing NS bookmarks
  * @deprecated
  */
-class KIO_EXPORT KNSBookmarkImporter : public QObject
+class KIO_EXPORT_DEPRECATED KNSBookmarkImporter : public QObject
 {
     Q_OBJECT
 public:
-    KDE_DEPRECATED KNSBookmarkImporter( const QString & fileName ) : m_fileName(fileName) {}
-    KDE_DEPRECATED ~KNSBookmarkImporter() {}
+    KDE_CONSTRUCTOR_DEPRECATED KNSBookmarkImporter( const QString & fileName ) : m_fileName(fileName) {}
+    ~KNSBookmarkImporter() {}
 
     // for compat reasons only
     KDE_DEPRECATED void parseNSBookmarks() { parseNSBookmarks(false); }
@@ -91,10 +91,10 @@ private:
  * Warning, it overwrites the existing bookmarks.html file !
  * @deprecated
  */
-class KIO_EXPORT KNSBookmarkExporter
+class KIO_EXPORT_DEPRECATED KNSBookmarkExporter
 {
 public:
-    KDE_DEPRECATED KNSBookmarkExporter(KBookmarkManager* mgr, const QString & fileName)
+    KDE_CONSTRUCTOR_DEPRECATED KNSBookmarkExporter(KBookmarkManager* mgr, const QString & fileName)
       : m_fileName(fileName), m_pManager(mgr) { }
     ~KNSBookmarkExporter() {}
 
