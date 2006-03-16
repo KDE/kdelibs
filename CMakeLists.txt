@@ -103,11 +103,22 @@ endif(DNSSD_FOUND)
 
 ########### install files ###############
 
-export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake)
+# write the installdirs into a cmake file which will be installed
+file(WRITE  ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake 
+"# this file was generated during the kdelibs build process
+set(KDE4_INSTALL_DIR         ${CMAKE_INSTALL_PREFIX})
+set(KDE4_LIB_INSTALL_DIR     ${CMAKE_INSTALL_PREFIX}${LIB_INSTALL_DIR})
+set(KDE4_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include)
+set(KDE4_BIN_INSTALL_DIR     ${CMAKE_INSTALL_PREFIX}/bin)
+set(KDE4_DATA_INSTALL_DIR    ${CMAKE_INSTALL_PREFIX}${DATA_INSTALL_DIR})
+")
+
+# ...and append all library dependencies
+export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
 
 install_files( /include FILES kde.pot )
 install_files( /include FILES kdelibs_export.h kdemacros.h )
-install_files( /share/apps/cmake/modules FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake )
+install_files( /share/apps/cmake/modules FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake)
 
 kde4_create_doxygen_docs(  )
 
