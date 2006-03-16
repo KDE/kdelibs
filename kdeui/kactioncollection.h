@@ -28,7 +28,6 @@
 
 #include <qobject.h>
 
-
 #include <kdelibs_export.h>
 
 class QString;
@@ -40,11 +39,16 @@ class KInstance;
 class KXMLGUIClient;
 class QActionGroup;
 
-// TODO KAction port - remove typedef
-typedef QList<KAction *> KActionPtrList;
-
 /**
- * A managed set of KAction objects.
+ * \short A container for a set of KAction objects.
+ *
+ * KActionCollection acts as the owning QObject for a set of KAction objects.  It
+ * allows them to be grouped for organized presentation of configuration to the user,
+ * saving + loading of configuration, and optionally for automatic plugging into
+ * specified widget(s).
+ *
+ * Additionally, KActionCollection provides several convenience functions for locating
+ * named actions - action(const char* name), , actions grouped by QActionGroup
  *
  * If you set the tooltips on KActions and want the tooltip to show in statusbar
  * (recommended) then you will need to connect a couple of the actionclass signals
@@ -61,6 +65,7 @@ typedef QList<KAction *> KActionPtrList;
  * \endcode
  *
  * \todo emit support signals
+ * \todo sort out whether actions should be added explicitly, how the list should be stored, etc.
  */
 class KDEUI_EXPORT KActionCollection : public QObject
 {
@@ -70,6 +75,10 @@ class KDEUI_EXPORT KActionCollection : public QObject
   Q_OBJECT
 
 public:
+  /**
+   * Constructor.  Allows specification of a KInstance other than the default
+   * global instance, where needed.
+   */
   KActionCollection( QObject *parent, KInstance *instance = 0 );
 
   /**
@@ -78,7 +87,7 @@ public:
   virtual ~KActionCollection();
 
   /**
-   * Clears the entire actionCollection, deleting all actions.
+   * Clears the entire action collection, deleting all actions.
    */
   void clear();
 
@@ -86,29 +95,95 @@ public:
    * This sets the default shortcut context for new actions created in this
    * collection.  The default is Qt::WindowShortcut (as with Qt).
    *
-   * If this collection has an associated widget, the default is changed to
-   * Qt::WidgetShortcut.
+   * If this collection has an associated widget, all actions' contexts are
+   * automatically changed to Qt::WidgetShortcut.
    */
   void setDefaultShortcutContext(Qt::ShortcutContext context);
+
+  /**
+   * Retrieves the default shortcut context for new actions created in this
+   * collection.  The default is Qt::WindowShortcut (as with Qt).
+   *
+   * If this collection has an associated widget, all actions will be changed to
+   * Qt::WidgetShortcut, however this function will still return the default
+   * if no widget was associated with this action collection.
+   */
   Qt::ShortcutContext defaultShortcutContext() const;
 
   /**
-   * Set widget(s) which will automatically have actions that are added to this
-   * collection added to them.
+   * Set an associated widget (clears any others).  Associated widgets automatically have all actions 
+   * in the action collection added to themselves.
    *
-   * Shortcut focus will automatically be set to Qt::WidgetShortcut, and will not
-   * be reverted if the associated widgets are cleared.
+   * Shortcut context will automatically be set to Qt::WidgetShortcut.
+   *
+   * \sa addAssociatedWidget(), removeAssociatedWidget(), clearAssociatedWidgets() and associatedWidgets().
    */
   void setAssociatedWidget(QWidget* widget);
+
+  /**
+   * Add an associated widget.  Associated widgets automatically have all actions 
+   * in the action collection added to themselves.
+   *
+   * Shortcut context will automatically be set to Qt::WidgetShortcut.
+   *
+   * \sa setAssociatedWidget(), removeAssociatedWidget(), clearAssociatedWidgets() and associatedWidgets().
+   */
   void addAssociatedWidget(QWidget* widget);
+
+  /**
+   * Remove an associated widget.  Removes all actions in this collection from 
+   * the removed associated widget.
+   *
+   * Shortcut context will automatically be reverted from Qt::WidgetShortcut,
+   * to the defaultShortcutContext() for this action collection.
+   *
+   * \sa addAssociatedWidget(), setAssociatedWidget(), clearAssociatedWidgets(), and associatedWidgets().
+   */
   void removeAssociatedWidget(QWidget* widget);
+
+  /**
+   * Clears all associated widgets.  All actions in this collection will be removed
+   * from associated widgets.
+   *
+   * Shortcut contexts for all actions will automatically be reverted from Qt::WidgetShortcut,
+   * to the defaultShortcutContext() for this action collection.
+   *
+   * \sa addAssociatedWidget(), setAssociatedWidget(), removeAssociatedWidget(), and associatedWidgets().
+   */
   void clearAssociatedWidgets();
+
+  /**
+   * Returns a list of widgets currently associated with this action collection.
+   *
+   * Associations are created to enable custom widgets to provide keyboard interactivity
+   * via KActions without having to use QWidget::grabShortcut().  An example of its use
+   * is katepart, which creates actions for each editor command and then sets its view
+   * as an associated widget.
+   *
+   * \sa addAssociatedWidget(), setAssociatedWidget(), removeAssociatedWidget(), and clearAssociatedWidgets().
+   */
   const QList<QWidget*>& associatedWidgets() const;
 
+  /**
+   * Returns the KConfig group with which settings will be loaded and saved.
+   */
   const QString& configGroup() const;
+
+  /**
+   * Returns whether this action collection's configuration should be global to KDE ( \e true ),
+   * or specific to the application ( \e false ).
+   */
   bool configIsGlobal() const;
 
+  /**
+   * Sets \a group as the KConfig group with which settings will be loaded and saved.
+   */
   void setConfigGroup( const QString& group );
+
+  /**
+   * Set whether this action collection's configuration should be global to KDE ( \e true ),
+   * or specific to the application ( \e false ).
+   */
   void setConfigGlobal( bool global );
 
   /**
@@ -122,7 +197,7 @@ public:
   void readSettings( KConfigBase* config = 0 );
 
   /**
-    * Write the current configurable associations to @p config,
+    * Write the current configurable key associations to @p config,
     * or (if @p config is zero) to the application's
     * configuration file.
     */
@@ -136,7 +211,10 @@ public:
 
   /** Returns the number of actions in the collection */
   int count() const;
-  bool isEmpty() const { return (count() == 0); }
+
+  /// Returns whether the action collection is empty or not.
+  inline bool isEmpty() const { return (count() == 0); }
+
   /**
    * Return the KAction* at position "index" in the action collection.
    * @see count()
@@ -151,25 +229,39 @@ public:
    */
   KAction* action( const char* name, const char* classname = 0 ) const;
 
+  /**
+   * Returns the list of KActions which belong to this action collection.
+   */
   const QList<KAction*> actions() const;
 
+  /**
+   * Returns the list of KActions without an QAction::actionGroup() which belong to this action collection.
+   */
   const QList<KAction*> actionsWithoutGroup() const;
 
+  /**
+   * Returns the list of all QActionGroups associated with actions in this action collection.
+   */
   const QList<QActionGroup*> actionGroups() const;
 
   /**
-   * This function returns all KActions which are both within the supplied \a group, and
+   * Returns all KActions which are both within the supplied \a group, and
    * part of this action collection.
    */
   const QList<KAction*> actionsInGroup(QActionGroup* group) const;
 
+  /**
+   * Set the \a instance associated with this action collection.
+   *
+   * \param instance the KInstance which is to be associated with this action collection, or to null to indicate the default KInstance.
+   */
   void setInstance( KInstance *instance );
 
   /** The instance with which this class is associated. */
   KInstance *instance() const;
 
   /**
-   * The parent KXMLGUIClient, return 0L if not available.
+   * The parent KXMLGUIClient, or null if not available.
    */
   const KXMLGUIClient *parentGUIClient() const;
 
@@ -179,13 +271,20 @@ public:
 
 
 Q_SIGNALS:
-  void inserted( KAction* );
-  void removed( KAction* );
+  /**
+   * Indicates that \a action was inserted into this action collection.
+   */
+  void inserted( KAction* action );
+
+  /**
+   * Indicates that \a action was removed from this action collection.
+   */
+  void removed( KAction* action );
 
 protected:
   virtual void childEvent ( QChildEvent * event );
 
-    virtual void virtual_hook( int id, void* data );
+  virtual void virtual_hook( int id, void* data );
 
 public:
   /**

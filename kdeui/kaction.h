@@ -33,10 +33,6 @@
 #include <kicontheme.h>
 #include <kglobal.h>
 
-#ifdef KDE3_SUPPORT
-#include <qicon.h> // remove if iconSet() is removed
-#endif
-
 class KAccel;
 class KActionCollection;
 class KGuiItem;
@@ -45,25 +41,27 @@ class KInstance;
 /**
  * @short Class to encapsulate user-driven action or event
  *
- * The KAction class (and derived and super classes) provides a way to
- * easily encapsulate a "real" user-selected action or event in your
- * program.
+ * The KAction class (and derived and super classes) extends QAction,
+ * which provides a way to easily encapsulate a "real" user-selected 
+ * action or event in your program.
  *
  * For instance, a user may want to @p paste the contents of
- * the clipboard or @p scroll @p down a document or @p quit the
- * application.  These are all @p actions -- events that the
+ * the clipboard, @p scroll @p down a document, or @p quit the
+ * application.  These are all \b actions -- events that the
  * user causes to happen.  The KAction class allows the developer to
- * deal with these actions in an easy and intuitive manner.
+ * deal with these actions in an easy and intuitive manner, and conforms
+ * to KDE's extended functionality requirements - including supporting
+ * multiple user-configurable shortcuts, and KDE named icons.  Actions
+ * also improve accessibility.
  *
- * Specifically, the KAction class encapsulated the various attributes
- * to an event/action.  For instance, an action might have an icon
- * that goes along with it (a clipboard for a "paste" action or
- * scissors for a "cut" action).  The action might have some text to
- * describe the action.  It will certainly have a method or function
- * that actually @p executes the action!  All these attributes
- * are contained within the KAction object.
+ * Specifically, QAction (and thus KAction) encapsulates the various attributes
+ * of an event/action.  For instance, an action might have an icon()
+ * that provides a visual representation (a clipboard for a "paste" action or
+ * scissors for a "cut" action).  The action should also be described by some text().
+ * It will certainly be connected to a method that actually @p executes the action!
+ * All these attributes are contained within the action object.
  *
- * The advantage of dealing with Actions is that you can manipulate
+ * The advantage of dealing with actions is that you can manipulate
  * the Action without regard to the GUI representation of it.  For
  * instance, in the "normal" way of dealing with actions like "cut",
  * you would manually insert a item for Cut into a menu and a button
@@ -73,28 +71,32 @@ class KInstance;
  * individually.  Setting the menu item and toolbar item up uses very
  * similar code - but has to be done twice!
  *
- * With the Action concept, you simply "plug" the Action into whatever
+ * With the action concept, you simply add the action to whatever
  * GUI element you want.  The KAction class will then take care of
  * correctly defining the menu item (with icons, accelerators, text,
- * etc) or toolbar button.. or whatever.  From then on, if you
- * manipulate the Action at all, the effect will propogate through all
+ * etc), toolbar button, or other.  From then on, if you
+ * manipulate the action at all, the effect will propogate through all
  * GUI representations of it.  Back to the "cut" example: if you want
- * to disable the Cut Action, you would simply do
- * 'cutAction->setEnabled(false)' and the menuitem and button would
+ * to disable the Cut Action, you would simply call
+ * 'cutAction->setEnabled(false)' and both the menuitem and button would
  * instantly be disabled!
  *
- * This is the biggest advantage to the Action concept -- there is a
+ * This is the biggest advantage to the action concept -- there is a
  * one-to-one relationship between the "real" action and @p all
  * GUI representations of it.
  *
- * KAction emits the activated() signal if the user activated the
- * corresponding GUI element ( menu item, toolbar button, etc. )
+ * KAction emits the hovered() signal on mouseover, and the triggered(bool checked)
+ * signal on activation of a corresponding GUI element ( menu item, toolbar button, etc. )
  *
- * If you are in the situation of wanting to map the activated()
+ * If you are in the situation of wanting to map the triggered()
  * signal of multiple action objects to one slot, with a special
- * argument bound to each action, then you might consider using
- * QSignalMapper . A tiny example:
+ * argument bound to each action, you have several options:
  *
+ * Using QActionGroup:
+ * \li Create a QActionGroup and assign it to each of the actions with setActionGroup(), then
+ * \li Connect the QActionGroup::triggered(QAction*) signal to your slot.
+ *
+ * Using QSignalMapper:
  * \code
  * QSignalMapper *desktopNumberMapper = new QSignalMapper( this );
  * connect( desktopNumberMapper, SIGNAL( mapped( int ) ),
@@ -102,47 +104,47 @@ class KInstance;
  *
  * for ( uint i = 0; i < numberOfDesktops; ++i ) {
  *     KAction *desktopAction = new KAction( i18n( "Move Window to Desktop %i" ).arg( i ), ... );
- *     connect( desktopAction, SIGNAL( activated() ), desktopNumberMapper, SLOT( map() ) );
+ *     connect( desktopAction, SIGNAL( triggered(bool) ), desktopNumberMapper, SLOT( map() ) );
  *     desktopNumberMapper->setMapping( desktopAction, i );
  * }
  * \endcode
  *
- * <b>General Usage:</b>\n
+ * \section kaction_general General Usage
  *
- * The steps to using actions are roughly as follows
+ * The steps to using actions are roughly as follows:
  *
  * @li Decide which attributes you want to associate with a given
  *     action (icons, text, keyboard shortcut, etc)
  * @li Create the action using KAction (or derived or super class).
- * @li "Plug" the Action into whatever GUI element you want.  Typically,
+ * @li Add the action into whatever GUI element you want.  Typically,
  *      this will be a menu or toolbar.
  *
- * <b>Detailed Example:</b>\n
+ * \section kaction_example Detailed Example
  *
  * Here is an example of enabling a "New [document]" action
  * \code
- * KAction *newAct = new KAction(i18n("&New"), "filenew",
- *                               KStdAccel::shortcut(KStdAccel::New),
- *                               this, SLOT(fileNew()),
- *                               actionCollection(), "new");
+ * KAction *newAct = new KAction("filenew", i18n("&New"), actionCollection(), "new");
+ * newAct->setShortcut(KStdAccel::shortcut(KStdAccel::New));
+ * connect(newAct, SIGNAL(triggered(bool)), SLOT(fileNew()));
  * \endcode
- * This line creates our action.  It says that wherever this action is
+ *
+ * This section creates our action.  It says that wherever this action is
  * displayed, it will use "&New" as the text, the standard icon, and
  * the standard shortcut.  It further says that whenever this action
  * is invoked, it will use the fileNew() slot to execute it.
  *
  * \code
  * QMenu *file = new QMenu;
- * newAct->plug(file);
+ * file->addAction(newAct);
  * \endcode
  * That just inserted the action into the File menu.  The point is, it's not
  * important in which menu it is: all manipulation of the item is
  * done through the newAct object.
  *
  * \code
- * newAct->plug(toolBar());
+ * toolBar()->addAction(newAct);
  * \endcode
- * And this inserted the Action into the main toolbar as a button.
+ * And this added the action into the main toolbar as a button.
  *
  * That's it!
  *
@@ -154,43 +156,26 @@ class KInstance;
  * and both the menuitem in File and the toolbar button will instantly
  * be disabled.
  *
- * Do not delete a KAction object without unplugging it from all its
- * containers. The simplest way to do that is to use the unplugAll()
- * as in the following example:
- * \code
- * newAct->unplugAll();
- * delete newAct;
- * \endcode
- * Normally you will not need to do this as KActionCollection manages
- * everything for you.
+ * Unlike with previous versions of KDE, the action can simply be deleted
+ * when you have finished with it - the destructor takes care of all
+ * of the cleanup.
  *
  * Note: if you are using a "standard" action like "new", "paste",
  * "quit", or any other action described in the KDE UI Standards,
  * please use the methods in the KStdAction class rather than
  * defining your own.
  *
- * <b>Usage Within the XML Framework:</b>\n
+ * \section kaction_xmlgui Usage Within the XML Framework
  *
  * If you are using KAction within the context of the XML menu and
- * toolbar building framework, then there are a few tiny changes.  The
- * first is that you must insert your new action into an action
- * collection.  The action collection (a KActionCollection) is,
- * logically enough, a central collection of all of the actions
- * defined in your application.  The XML UI framework code in KXMLGUI
- * classes needs access to this collection in order to build up the
- * GUI (it's how the builder code knows which actions are valid and
- * which aren't).
- *
- * Also, if you use the XML builder framework, then you do not ever
- * have to plug your actions into containers manually.  The framework
+ * toolbar building framework, you do not ever
+ * have to add your actions to containers manually.  The framework
  * does that for you.
  *
  * @see KStdAction
  */
 class KDEUI_EXPORT KAction : public QAction
 {
-  friend class KActionCollection;
-
   Q_OBJECT
 
   // Needed for save/load of shortcut - as XMLGui sets properties from XML attributes
@@ -208,9 +193,9 @@ public:
 
     /**
      * Constructs an action with text; a shortcut may be specified by
-     * the ampersand character (e.g. "&amp;Option" creates a shortcut with key \e O )
+     * the ampersand character (e.g. \"&amp;Option\" creates a shortcut with key \e O )
      *
-     * This is the most common KAction used when you do not have a
+     * This is the most common KAction constructor used when you do not have a
      * corresponding icon (note that it won't appear in the current version
      * of the "Edit ToolBar" dialog, because an action needs an icon to be
      * plugged in a toolbar...).
@@ -222,10 +207,10 @@ public:
     KAction(const QString& text, KActionCollection* parent, const char* name);
 
     /**
-     * Constructs an action with text and an icon; a shortcut may be specified by
-     * the ampersand character (e.g. "&amp;Option" creates a shortcut with key \e O )
+     * Constructs an action with text; a shortcut may be specified by
+     * the ampersand character (e.g. \"&amp;Option\" creates a shortcut with key \e O )
      *
-     * This is the other common KAction used.  Use it when you
+     * This is the other common KAction constructor used.  Use it when you
      * \e do have a corresponding icon.
      *
      * @param icon The icon to display.
@@ -256,17 +241,16 @@ public:
      * If you do not want or have a keyboard shortcut,
      * set the @p cut param to 0.
      *
-     * This is the most common KAction used when you do not have a
-     * corresponding icon (note that it won't appear in the current version
-     * of the "Edit ToolBar" dialog, because an action needs an icon to be
-     * plugged in a toolbar...).
-     *
      * @param text The text that will be displayed.
      * @param cut The corresponding keyboard shortcut.
      * @param receiver The SLOT's parent.
      * @param slot The SLOT to invoke to execute this action.
      * @param parent This action's parent.
      * @param name An internal name for this action.
+     *
+     * \deprecated This constructor was deprecated in line with the
+     *  recommendation for constructors to be kept simple (Designing Qt-Style C++ APIs,
+     *  "The Convenience Trap")
      */
     KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
@@ -290,6 +274,10 @@ public:
      * @param slot The SLOT to invoke to execute this action.
      * @param parent This action's parent.
      * @param name An internal name for this action.
+     *
+     * \deprecated This constructor was deprecated in line with the
+     *  recommendation for constructors to be kept simple (Designing Qt-Style C++ APIs,
+     *  "The Convenience Trap")
      */
     KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
@@ -314,6 +302,10 @@ public:
      * @param slot The SLOT to invoke to execute this action.
      * @param parent This action's parent.
      * @param name An internal name for this action.
+     *
+     * \deprecated This constructor was deprecated in line with the
+     *  recommendation for constructors to be kept simple (Designing Qt-Style C++ APIs,
+     *  "The Convenience Trap")
      */
     KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const QString& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
@@ -329,6 +321,10 @@ public:
      * @param slot The SLOT to invoke to execute this action.
      * @param parent This action's parent.
      * @param name An internal name for this action.
+     *
+     * \deprecated This constructor was deprecated in line with the
+     *  recommendation for constructors to be kept simple (Designing Qt-Style C++ APIs,
+     *  "The Convenience Trap")
      */
     KDE_CONSTRUCTOR_DEPRECATED KAction( const KGuiItem& item, const KShortcut& cut,
              const QObject* receiver, const char* slot,
@@ -427,6 +423,8 @@ public:
      * @param widget The GUI element to display this action
      * @param index The position into which the action is plugged. If
      * this is negative, the action is inserted at the end.
+     *
+     * \deprecated use QWidget::addAction() and QWidget::insertAction() instead.
      */
     KDE_DEPRECATED int plug( QWidget *widget, int index = -1 );
 
@@ -441,47 +439,52 @@ public:
      * instead.
      *
      * @param w Remove the action from this GUI element.
+     *
+     * \deprecated use QWidget::removeAction() instead, or simply delete the action.
      */
     KDE_DEPRECATED void unplug( QWidget *w );
 
     /**
-     * "Unplug" or remove this action from all widgets.  You do not need
-     * to call this function if the action is being deleted, it will be
-     * taken care of automatically.
+     * Convenience function to remove this action from all widgets.  This should
+     * rarely be needed, as deleting the action takes care of this automatically.
      */
     void unplugAll();
 
     /**
-     * returns whether the action is plugged into any container widget or not.
+     * Returns whether the action is plugged into any container widget or not.
      */
     bool isPlugged() const;
 
     /**
-     * returns whether the action is plugged into the given container
+     * Returns whether the action is plugged into the given container
      */
     bool isPlugged( QWidget *container ) const;
 
     /**
      * Returns how many widgets this action is added to.
+     *
+     * \deprecated use associatedWidgets().count() instead.
      */
     KDE_DEPRECATED int containerCount() const;
 
     /**
-     * Returns a widget which this action is added to.
+     * Convenience function to return a widget which this action is added to.
+     * Simply returns the widget specified in associatedWidgets(), if the
+     * index is valid.
      *
      * \param index index to the widget requested.
      */
     QWidget* container( int index ) const;
 
 signals:
-//#ifdef KDE3_SUPPORT
+#ifdef KDE3_SUPPORT
     /**
      * Emitted when this action is activated
      *
-     * \todo KDE4: make KDE3_SUPPORT
+     * \deprecated use triggered(bool checked) instead.
      */
-    void activated();
-//#endif
+    QT_MOC_COMPAT void activated();
+#endif
 
     /**
      * Emitted when the action is triggered. Also provides the state of the
@@ -495,17 +498,17 @@ protected:
 protected Q_SLOTS:
     /**
      * This function is connected to the QAction's triggered(bool) signal, and allows
-     * KAction to emit the triggered signal with mouse and keyboard modifiers attached,
-     * as well as the activation reason, if one was given.
+     * KAction to emit the triggered signal with mouse and keyboard modifiers attached.
      */
     virtual void slotTriggered();
 
 private:
+    // Core initialization, including Kiosk authorization checking
     void initPrivate(const char* name);
-    // Compatability functions here only
+    // Compatability initialization functions here only
     void initPrivate( const KShortcut& cut, const QObject* receiver, const char* slot, const char* name );
 
-    // You're not supposed to change the action name throughout its life
+    // You're not supposed to change the action name throughout its life - these methods are here to discourage you
     void setName ( const char * name );
     void setObjectName(const QString& name);
 

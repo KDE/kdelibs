@@ -294,8 +294,10 @@ void KActionCollection::removeAssociatedWidget(QWidget* widget)
 {
   d->associatedWidgets.removeAll(widget);
 
-  foreach (KAction* action, findChildren<KAction*>())
+  foreach (KAction* action, findChildren<KAction*>()) {
     widget->removeAction(action);
+    action->setShortcutContext(defaultShortcutContext());
+  }
 }
 
 void KActionCollection::clearAssociatedWidgets()

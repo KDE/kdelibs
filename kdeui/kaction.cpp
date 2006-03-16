@@ -263,7 +263,9 @@ void KAction::setShortcutText(const QString& shortcutText)
 
 void KAction::slotTriggered()
 {
+#ifdef KDE3_SUPPORT
   emit activated();
+#endif
   emit triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
 }
 
