@@ -156,7 +156,7 @@
 #ifndef KDE_CONSTRUCTOR_DEPRECATED
 # ifdef __GNUC__
 #  if __GNUC__ == 3 && __GNUC_MINOR__ <= 3 
-    // GCC 3.3.x cannot handle Qt4.1.2's definition of Q_DECL_CONSTRUCTOR_DEPRECATED
+    /* GCC 3.3.x cannot handle Qt 4.1.2's definition of Q_DECL_CONSTRUCTOR_DEPRECATED */
 #   define KDE_CONSTRUCTOR_DEPRECATED
 #  else
 #   define KDE_CONSTRUCTOR_DEPRECATED Q_DECL_CONSTRUCTOR_DEPRECATED
