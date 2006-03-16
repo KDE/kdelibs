@@ -122,7 +122,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_DEPRECATED KToggleAction( const QString& text, const KShortcut& cut = KShortcut(), 
+    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const KShortcut& cut = KShortcut(), 
                    KActionCollection* parent = 0, const char* name = 0 );
 
     /**
@@ -133,7 +133,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KDE_DEPRECATED KToggleAction( const QString& text, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const KShortcut& cut,
                    const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
@@ -143,7 +143,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KDE_DEPRECATED KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
+    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
              KActionCollection* parent = 0, const char* name = 0 );
 
     /**
@@ -153,7 +153,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KDE_DEPRECATED KToggleAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
+    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
                    KActionCollection* parent = 0, const char* name = 0 );
 
     /**
@@ -165,7 +165,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KDE_DEPRECATED KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                    const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
@@ -177,7 +177,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KDE_DEPRECATED KToggleAction( const QString& text, const QString& pix, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QString& pix, const KShortcut& cut,
                    const QObject* receiver, const char* slot,
                    KActionCollection* parent, const char* name = 0 );
 
@@ -283,7 +283,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_DEPRECATED KSelectAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0, const char* name = 0 );
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -293,7 +293,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KDE_DEPRECATED KSelectAction( const QString& text, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const KShortcut& cut,
                    const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
@@ -303,7 +303,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KDE_DEPRECATED KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
              KActionCollection* parent = 0, const char* name = 0 );
 
     /**
@@ -313,7 +313,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KDE_DEPRECATED KSelectAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
                    KActionCollection* parent = 0, const char* name = 0 );
 
     /**
@@ -325,7 +325,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KDE_DEPRECATED KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                    const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
 
     /**
@@ -337,7 +337,7 @@ public:
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KDE_DEPRECATED KSelectAction( const QString& text, const QString& pix, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QString& pix, const KShortcut& cut,
                    const QObject* receiver, const char* slot,
                    KActionCollection* parent, const char* name = 0 );
 
@@ -656,7 +656,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KDE_DEPRECATED KRecentFilesAction( const QString& text, const KShortcut& cut,
+  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const KShortcut& cut,
                       KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
 
@@ -670,7 +670,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KDE_DEPRECATED KRecentFilesAction( const QString& text, const KShortcut& cut,
+  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
                       KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
@@ -683,7 +683,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KDE_DEPRECATED KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
+  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                       KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
 
@@ -695,7 +695,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KDE_DEPRECATED KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
+  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
                       KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
 
@@ -710,7 +710,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KDE_DEPRECATED KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
+  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
                       KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
@@ -726,7 +726,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KDE_DEPRECATED KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
+  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
                       KActionCollection* parent, const char* name = 0,
                       int maxItems = 10 );
@@ -736,7 +736,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KDE_DEPRECATED KRecentFilesAction( KActionCollection* parent = 0, const char* name = 0,
+  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( KActionCollection* parent = 0, const char* name = 0,
                       int maxItems = 10 );
 
   /**
@@ -839,25 +839,25 @@ public:
     KFontAction(const QIcon& icon, const QString& text, KActionCollection* parent, const char* name);
     KFontAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
 
-    KDE_DEPRECATED KFontAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
+    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
                  const char* name = 0 );
-    KDE_DEPRECATED KFontAction( const QString& text, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const KShortcut& cut,
                  const QObject* receiver, const char* slot, KActionCollection* parent,
                  const char* name = 0 );
-    KDE_DEPRECATED KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
+    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
                  KActionCollection* parent = 0, const char* name = 0 );
-    KDE_DEPRECATED KFontAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
+    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
                  KActionCollection* parent = 0, const char* name = 0 );
-    KDE_DEPRECATED KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                  const QObject* receiver, const char* slot, KActionCollection* parent,
                  const char* name = 0 );
-    KDE_DEPRECATED KFontAction( const QString& text, const QString& pix, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QString& pix, const KShortcut& cut,
                  const QObject* receiver, const char* slot, KActionCollection* parent,
                  const char* name = 0 );
-    KDE_DEPRECATED KFontAction( uint fontListCriteria, const QString& text,
+    KDE_CONSTRUCTOR_DEPRECATED KFontAction( uint fontListCriteria, const QString& text,
                  const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
                  const char* name = 0 );
-    KDE_DEPRECATED KFontAction( uint fontListCriteria, const QString& text, const QString& pix,
+    KDE_CONSTRUCTOR_DEPRECATED KFontAction( uint fontListCriteria, const QString& text, const QString& pix,
                  const KShortcut& cut = KShortcut(),
                  KActionCollection* parent = 0, const char* name = 0 );
 
@@ -948,9 +948,9 @@ public:
     // Conflicts with constructor from KDE3
     //KActionMenu(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
 
-    KDE_DEPRECATED KActionMenu( const QString& text, const QIcon& icon,
+    KDE_CONSTRUCTOR_DEPRECATED KActionMenu( const QString& text, const QIcon& icon,
                  KActionCollection* parent = 0, const char* name = 0 );
-    KDE_DEPRECATED KActionMenu( const QString& text, const QString& icon,
+    KDE_CONSTRUCTOR_DEPRECATED KActionMenu( const QString& text, const QString& icon,
                  KActionCollection* parent = 0, const char* name = 0 );
     virtual ~KActionMenu();
 
@@ -1045,7 +1045,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_DEPRECATED KToolBarPopupAction( const QString& text, const QString& icon, const KShortcut& cut = KShortcut(),
+    KDE_CONSTRUCTOR_DEPRECATED KToolBarPopupAction( const QString& text, const QString& icon, const KShortcut& cut = KShortcut(),
                          KActionCollection* parent = 0, const char* name = 0 );
 
     /**
@@ -1063,7 +1063,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_DEPRECATED KToolBarPopupAction( const QString& text, const QString& icon, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KToolBarPopupAction( const QString& text, const QString& icon, const KShortcut& cut,
                          const QObject* receiver, const char* slot,
                          KActionCollection* parent = 0, const char* name = 0 );
 
@@ -1082,7 +1082,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_DEPRECATED KToolBarPopupAction( const KGuiItem& item, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KToolBarPopupAction( const KGuiItem& item, const KShortcut& cut,
                          const QObject* receiver, const char* slot,
                          KActionCollection* parent, const char* name );
 
@@ -1248,7 +1248,7 @@ public:
      * when plugged. This action may only be plugged into
      * ONE toolbar.
      */
-    KDE_DEPRECATED KWidgetAction( QWidget* widget, const QString& text,
+    KDE_CONSTRUCTOR_DEPRECATED KWidgetAction( QWidget* widget, const QString& text,
                    const KShortcut& cut,
                    const QObject* receiver, const char* slot,
                    KActionCollection* parent, const char* name );

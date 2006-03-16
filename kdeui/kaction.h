@@ -268,7 +268,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_DEPRECATED KAction( const QString& text, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const char* name );
 
@@ -291,7 +291,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_DEPRECATED KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const char* name );
 
@@ -315,7 +315,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_DEPRECATED KAction( const QString& text, const QString& pix, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const QString& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const char* name );
 
@@ -330,7 +330,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_DEPRECATED KAction( const KGuiItem& item, const KShortcut& cut,
+    KDE_CONSTRUCTOR_DEPRECATED KAction( const KGuiItem& item, const KShortcut& cut,
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const char* name );
 
