@@ -2,31 +2,9 @@ kde4_header()
 
 project(kstyle-keramik)
 
-ADD_DEFINITIONS(-DQT_PLUGIN)
+add_definitions(-DQT_PLUGIN)
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-#pixmaps.keramik keramikrc.h: genembed
-#	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\
-#	./genembed $$pics > pixmaps.keramik
-
-FILE(GLOB keramikPics "${CMAKE_CURRENT_SOURCE_DIR}/pics/*.png")
-FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt "" )
-FOREACH(pics ${keramikPics})
-  FILE(APPEND  ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt "${pics}\n" )
-ENDFOREACH(pics ${keramikPics})
-
-if (KDE4_NEED_WRAPPER_SCRIPTS)
-   set(GENEMBED_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genembed.sh)
-else (KDE4_NEED_WRAPPER_SCRIPTS)
-   set(GENEMBED_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genembed)
-endif (KDE4_NEED_WRAPPER_SCRIPTS)
-
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h
-  COMMAND ${GENEMBED_EXECUTABLE}
-  ARGS --file ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
-  DEPENDS genembed ${keramikPics}
-)
 
 
 ########### next target ###############
@@ -58,9 +36,7 @@ install_targets(${PLUGIN_INSTALL_DIR}/plugins/styles/ keramik )
 
 ########### next target ###############
 
-set(genembed_SRCS
-genembed.cpp
-)
+set(genembed_SRCS genembed.cpp )
 
 kde4_automoc(${genembed_SRCS})
 
@@ -68,6 +44,27 @@ kde4_add_executable(genembed ${genembed_SRCS})
 
 target_link_libraries(genembed  ${QT_AND_KDECORE_LIBS} kdefx )
 
+#pixmaps.keramik keramikrc.h: genembed
+#	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\
+#	./genembed $$pics > pixmaps.keramik
+
+file(GLOB keramikPics "${CMAKE_CURRENT_SOURCE_DIR}/pics/*.png")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt "" )
+foreach(pics ${keramikPics})
+   file(APPEND  ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt "${pics}\n" )
+endforeach(pics ${keramikPics})
+
+if (KDE4_NEED_WRAPPER_SCRIPTS)
+   set(GENEMBED_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genembed.sh)
+else (KDE4_NEED_WRAPPER_SCRIPTS)
+   get_target_property(GENEMBED_EXECUTABLE genembed LOCATION)
+endif (KDE4_NEED_WRAPPER_SCRIPTS)
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h
+  COMMAND ${GENEMBED_EXECUTABLE}
+  ARGS --file ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
+  DEPENDS genembed ${keramikPics}
+)
 
 ########### install files ###############
 
