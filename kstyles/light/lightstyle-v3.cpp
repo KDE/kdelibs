@@ -1800,7 +1800,7 @@ QSize LightStyleV3::sizeFromContents( ContentsType contents,
 	    if (pb->percentageVisible() && 
 	        (pb->indicatorFollowsStyle() || ! pb->centerIndicator()))
 	    {
-		int addw = pb->fontMetrics().width("100%" + 6);
+		int addw = pb->fontMetrics().width("100%") + 6;
 		return QSize(contentsSize.width() + addw, contentsSize.height());
 	    }
 	    else
