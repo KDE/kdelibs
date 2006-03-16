@@ -157,7 +157,7 @@ public:
   /**
    * Returns the minimal value of the ruler pointer.
    **/
-  KDE_DEPRECATED inline int minValue() const;
+  inline KDE_DEPRECATED int minValue() const;
 
   /**
    * Sets the maximum value of the ruler pointer (default is 100).
@@ -170,7 +170,7 @@ public:
   /**
    * Returns the maximal value of the ruler pointer.
    */
-  KDE_DEPRECATED inline int maxValue() const;
+  inline KDE_DEPRECATED int maxValue() const;
 
 
   /**
