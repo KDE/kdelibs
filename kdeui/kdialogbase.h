@@ -185,13 +185,13 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param user2 User button2 item.
      * @param user3 User button3 item.
      */
-    KDialogBase( QWidget *parent=0, const char *name=0, bool modal=true,
+    KDE_CONSTRUCTOR_DEPRECATED KDialogBase( QWidget *parent=0, const char *name=0, bool modal=true,
 		 const QString &caption=QString(),
 		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
 		 bool separator=false,
 		 const KGuiItem &user1=KGuiItem(),
 		 const KGuiItem &user2=KGuiItem(),
-		 KDE_DEPRECATED const KGuiItem &user3=KGuiItem() );
+		 const KGuiItem &user3=KGuiItem() );
 
     /**
      * In KDE4 a WFlag paramater should be added after modal and next
@@ -296,7 +296,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param no Text to use for the second button (defaults to i18n("No"))
      * @param cancel Text to use for the third button (defaults to i18n("Cancel"))
      */
-    KDE_DEPRECATED KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel,
+    KDE_CONSTRUCTOR_DEPRECATED KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel,
 		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel,
 		 QWidget *parent=0, const char *name=0,
 		 bool modal=true, bool separator=false,
