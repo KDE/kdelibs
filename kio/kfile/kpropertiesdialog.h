@@ -128,7 +128,7 @@ public:
    * @param name is the internal name.
    * @param modal tells the dialog whether it should be modal.
    * @param autoShow tells the dialog whether it should show itself automatically.  */
-  KDE_DEPRECATED KPropertiesDialog( const KUrl& _url, mode_t _mode,
+  KDE_CONSTRUCTOR_DEPRECATED KPropertiesDialog( const KUrl& _url, mode_t _mode,
                      QWidget* parent = 0L, const char* name = 0L,
                      bool modal = false, bool autoShow = true);
 #endif
