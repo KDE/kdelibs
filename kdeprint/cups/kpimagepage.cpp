@@ -418,7 +418,7 @@ void KPImagePage::setOptions(const QMap<QString,QString>& opts)
 
 	if (!(value=opts["position"]).isEmpty())
 	{
-		m_position->setPosition(value.latin1());
+		m_position->setPosition(value.toLatin1().constData());
 		int	pos = m_position->position();
 		m_vertgrp->setButton(pos/3);
 		m_horizgrp->setButton(pos%3);

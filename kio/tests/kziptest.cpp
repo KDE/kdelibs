@@ -32,11 +32,11 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
   {
     const KArchiveEntry* entry = dir->entry( (*it) );
     printf("mode=%07o %s %s size: %lld pos: %lld %s%s isdir=%d%s", entry->permissions(),
-	entry->user().latin1(), entry->group().latin1(),
+	entry->user().toLatin1().constData(), entry->group().toLatin1().constData(),
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->size(),
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->position(),
-	path.latin1(), (*it).latin1(), entry->isDirectory(),
-	entry->symlink().isEmpty() ? "" : QString(" symlink: %1").arg(entry->symlink()).latin1() );
+	path.toLatin1().constData(), (*it).toLatin1().constData(), entry->isDirectory(),
+	entry->symlink().isEmpty() ? "" : QString(" symlink: %1").arg(entry->symlink()).toLatin1().constData() );
 
 //    if (!entry->isDirectory()) printf("%d", ((KArchiveFile*)entry)->size());
     printf("\n");
@@ -59,15 +59,15 @@ void recursive_transfer(const KArchiveDirectory * dir,
 	{
     	    Q_ASSERT( e && e->isFile() );
     	    const KArchiveFile* f = (KArchiveFile*)e;
-    	    printf("FILE=%s\n", e->name().latin1());
+    	    printf("FILE=%s\n", e->name().toLatin1().constData());
 
     	    QByteArray arr( f->data() );
     	    printf("SIZE=%i\n",arr.size() );
     	    QString str( arr );
-    	    printf("DATA=%s\n", str.latin1());
+    	    printf("DATA=%s\n", str.toLatin1().constData());
 
 	    if (e->symlink().isEmpty()) {
-	        zip->writeFile( path+e->name().latin1(),
+	        zip->writeFile( path+e->name().toLatin1().constData(),
 			    "holgi", "holgrp",
 			    f->data(), arr.size() );
 	    } else
@@ -144,7 +144,7 @@ int main( int argc, char** argv )
     	    QByteArray arr( f->data() );
     	    printf("SIZE=%i\n",arr.size() );
     	    QString str( arr );
-    	    printf("DATA=%s\n", str.latin1());
+    	    printf("DATA=%s\n", str.toLatin1().constData());
 	}
     }
     zip.close();
@@ -171,8 +171,8 @@ int main( int argc, char** argv )
     QByteArray arr( f->data() );
     printf("SIZE=%i\n",arr.size() );
     QString str( arr );
-//    printf("DATA=%s\n", str.latin1());
-    printf("%s", str.latin1());
+//    printf("DATA=%s\n", str.toLatin1().constData());
+    printf("%s", str.toLatin1().constData());
     zip.close();
 
     return 0;

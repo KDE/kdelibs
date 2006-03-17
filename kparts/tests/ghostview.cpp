@@ -38,7 +38,7 @@ Shell::Shell()
     factory = KLibLoader::self()->factory( QFile::encodeName(ptr->library()) );
     if (factory)
     {
-      m_gvpart = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name().latin1(), "KParts::ReadOnlyPart"));
+      m_gvpart = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name().toLatin1().constData(), "KParts::ReadOnlyPart"));
       setCentralWidget( m_gvpart->widget() );
       // Integrate its GUI
       createGUI( m_gvpart );

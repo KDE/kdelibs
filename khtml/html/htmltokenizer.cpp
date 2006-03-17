@@ -317,7 +317,7 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
     while ( !src.isEmpty() ) {
         checkScriptBuffer();
         unsigned char ch = src->latin1();
-        if ( !scriptCodeResync && !brokenComments && !textarea && !xmp && !title && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QConstString( scriptCode+scriptCodeSize-3, 3 ).string() == "<!-" ) {
+        if ( !scriptCodeResync && !brokenComments && !textarea && !xmp && !title && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QString::fromRawData( scriptCode+scriptCodeSize-3, 3 ) == "<!-" ) {
             comment = true;
             scriptCode[ scriptCodeSize++ ] = ch;
             ++src;
@@ -348,7 +348,7 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
         // possible end of tagname, lets check.
         if ( !scriptCodeResync && !escaped && !src.escaped() && ( ch == '>' || ch == '/' || ch <= ' ' ) && ch &&
              scriptCodeSize >= searchStopperLen &&
-             !QConstString( scriptCode+scriptCodeSize-searchStopperLen, searchStopperLen ).string().find( searchStopper, 0, false )) {
+             !QString::fromRawData( scriptCode+scriptCodeSize-searchStopperLen, searchStopperLen ).find( searchStopper, 0, false )) {
             scriptCodeResync = scriptCodeSize-searchStopperLen+1;
             tquote = NoQuote;
             continue;
@@ -455,7 +455,7 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
         scriptCode[ scriptCodeSize++ ] = *src;
 
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
-        qDebug("comment is now: *%s*", src.toString().left(16).latin1());
+        qDebug("comment is now: *%s*", src.toString().left(16).toLatin1().constData());
 #endif
 
         if (strict)
@@ -745,10 +745,10 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
         checkBuffer();
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
         uint l = 0;
-        while(l < src.length() && (src.toString()[l]).latin1() != '>')
+        while(l < src.length() && (src.toString()[l]).toLatin1().constData() != '>')
             l++;
         qDebug("src is now: *%s*, tquote: %d",
-               src.toString().left(l).latin1(), tquote);
+               src.toString().left(l).toLatin1().constData(), tquote);
 #endif
         switch(tag) {
         case NoTag:
@@ -1586,7 +1586,7 @@ void HTMLTokenizer::finish()
             food += QString(scriptCode, scriptCodeSize);
         }
         else {
-            pos = QConstString(scriptCode, scriptCodeSize).string().find('>');
+            pos = QString::fromRawData(scriptCode, scriptCodeSize).find('>');
             food.setUnicode(scriptCode+pos+1, scriptCodeSize-pos-1); // deep copy
         }
         KHTML_DELETE_QCHAR_VEC(scriptCode);
@@ -1615,7 +1615,7 @@ void HTMLTokenizer::processToken()
     {
 #if 0
         if(currToken.tid) {
-            qDebug( "unexpected token id: %d, str: *%s*", currToken.tid,QConstString( buffer,dest-buffer ).string().latin1() );
+            qDebug( "unexpected token id: %d, str: *%s*", currToken.tid,QConstString( buffer,dest-buffer ).string().toLatin1().constData() );
             assert(0);
         }
 
@@ -1637,7 +1637,7 @@ void HTMLTokenizer::processToken()
     QString name = QString( getTagName(currToken.tid) );
     QString text;
     if(currToken.text)
-        text = QConstString(currToken.text->s, currToken.text->l).string();
+        text = QString::fromRawData(currToken.text->s, currToken.text->l);
 
     kDebug( 6036 ) << "Token --> " << name << "   id = " << currToken.tid << endl;
     if (currToken.flat)

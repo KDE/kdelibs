@@ -42,8 +42,8 @@ void Test::hostFoundSlot()
 
 void Test::boundSlot(const KResolverEntry& target)
 {
-  cout << "Socket has bound to " << target.address().toString().latin1() 
-       << " (really " << socket.localAddress().toString().latin1() << ")" << endl;
+  cout << "Socket has bound to " << target.address().toString().toLatin1().constData() 
+       << " (really " << socket.localAddress().toString().toLatin1().constData() << ")" << endl;
 }
 
 void Test::closedSlot()
@@ -64,7 +64,7 @@ void Test::readyAcceptSlot()
     }
 
   cout << "Accepted connection from "
-       << newsocket->peerAddress().toString().latin1() << endl;
+       << newsocket->peerAddress().toString().toLatin1().constData() << endl;
   
   QByteArray data("HTTP/1.0 200 Ok\r\n\r\n<html><p>Hello</p></html>");
 

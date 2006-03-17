@@ -199,7 +199,7 @@ void KConfigTest::testSimple()
 #if 0
   QString s;
   s = sc2.readEntry( "keywith=equalsign" );
-  fprintf(stderr, "comparing keywith=equalsign %s with %s -> ", STRINGENTRY1, s.latin1());
+  fprintf(stderr, "comparing keywith=equalsign %s with %s -> ", STRINGENTRY1, s.toLatin1().constData());
   if (s == STRINGENTRY1)
     fprintf(stderr, "OK\n");
   else {

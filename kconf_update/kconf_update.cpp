@@ -279,7 +279,7 @@ void KonfUpdate::checkGotFile(const QString &_file, const QString &id)
       file = _file.mid(i+1).trimmed();
    }
 
-//   qDebug("File %s, id %s", file.latin1(), id.latin1());
+//   qDebug("File %s, id %s", file.toLatin1().constData(), id.toLatin1().constData());
 
    KSimpleConfig cfg(file);
    cfg.setGroup("$Version");
@@ -416,7 +416,7 @@ void KonfUpdate::gotId(const QString &_id)
    {
        if (ids.contains(_id))
        {
-          //qDebug("Id '%s' was already in done-list", _id.latin1());
+          //qDebug("Id '%s' was already in done-list", _id.toLatin1().constData());
           if (!m_bUseConfigInfo)
           {
              skip = true;

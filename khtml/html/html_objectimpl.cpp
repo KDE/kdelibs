@@ -71,7 +71,7 @@ void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
         case ATTR_CODETYPE:
 	    if (attr->val()) {
 	      DOM::DOMStringImpl *stringImpl = attr->val();
-	      QString val = QConstString( stringImpl->s, stringImpl->l ).string();
+	      QString val = QString::fromRawData( stringImpl->s, stringImpl->l );
 	      setServiceType( val );
               needWidgetUpdate = true;
 	    }

@@ -195,13 +195,13 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
 
 #if 0
   QUrl qurl = QUrl::fromEncoded( "file:///home/dfaure/my#%23" );
-  printf( "toString = %s\n", qurl.toString().latin1() );
+  printf( "toString = %s\n", qurl.toString().toLatin1().constData() );
   printf( "toEncoded = %s\n", qurl.toEncoded().data() );
   qurl = QUrl::fromEncoded( "file:///home/dfaure/my#%2f" );
-  printf( "toString = %s\n", qurl.toString().latin1() );
+  printf( "toString = %s\n", qurl.toString().toLatin1().constData() );
   printf( "toEncoded = %s\n", qurl.toEncoded().data() );
   qurl = QUrl::fromEncoded( "file:///home/dfaure/my#/" );
-  printf( "toString = %s\n", qurl.toString().latin1() );
+  printf( "toString = %s\n", qurl.toString().toLatin1().constData() );
   printf( "toEncoded = %s\n", qurl.toEncoded().data() );
 #endif
 

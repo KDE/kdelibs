@@ -2665,7 +2665,7 @@ ValueImp *Konqueror::get(ExecState *exec, const Identifier &p) const
   if ( ext ) {
     KParts::BrowserInterface *iface = ext->browserInterface();
     if ( iface ) {
-      QVariant prop = iface->property( p.qstring().latin1() );
+      QVariant prop = iface->property( p.qstring().toLatin1().constData() );
 
       if ( prop.isValid() ) {
         switch( prop.type() ) {
@@ -2680,7 +2680,7 @@ ValueImp *Konqueror::get(ExecState *exec, const Identifier &p) const
     }
   }
 
-  return new KonquerorFunc(exec, this, p.qstring().latin1() );
+  return new KonquerorFunc(exec, this, p.qstring().toLatin1().constData() );
 }
 
 ValueImp *KonquerorFunc::callAsFunction(ExecState *exec, ObjectImp*, const List &args)

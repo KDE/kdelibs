@@ -2518,7 +2518,7 @@ static void moveItToNextWord(EditableCharacterIterator &it)
   EditableCharacterIterator copy;
   while (!it.isEnd() && !(*it).isSpace() && !(*it).isPunct()) {
 #if DEBUG_CARETMODE > 2
-    kDebug(6200) << "reading1 '" << (*it).latin1() << "'" << endl;
+    kDebug(6200) << "reading1 '" << (*it).toLatin1().constData() << "'" << endl;
 #endif
     copy = it;
     ++it;
@@ -2531,7 +2531,7 @@ static void moveItToNextWord(EditableCharacterIterator &it)
 
   while (!it.isEnd() && ((*it).isSpace() || (*it).isPunct())) {
 #if DEBUG_CARETMODE > 2
-    kDebug(6200) << "reading2 '" << (*it).latin1() << "'" << endl;
+    kDebug(6200) << "reading2 '" << (*it).toLatin1().constData() << "'" << endl;
 #endif
     copy = it;
     ++it;
@@ -2559,7 +2559,7 @@ static void moveItToPrevWord(EditableCharacterIterator &it)
     copy = it;
     --it;
 #if DEBUG_CARETMODE > 2
-    if (!it.isEnd()) kDebug(6200) << "reading1 '" << (*it).latin1() << "'" << endl;
+    if (!it.isEnd()) kDebug(6200) << "reading1 '" << (*it).toLatin1().constData() << "'" << endl;
 #endif
   } while (!it.isEnd() && ((*it).isSpace() || (*it).isPunct()));
 
@@ -2572,13 +2572,13 @@ static void moveItToPrevWord(EditableCharacterIterator &it)
     copy = it;
     --it;
 #if DEBUG_CARETMODE > 0
-    if (!it.isEnd()) kDebug(6200) << "reading2 '" << (*it).latin1() << "' (" << (int)(*it).latin1() << ") box " << it.caretBox() << endl;
+    if (!it.isEnd()) kDebug(6200) << "reading2 '" << (*it).toLatin1().constData() << "' (" << (int)(*it).toLatin1().constData() << ") box " << it.caretBox() << endl;
 #endif
   } while (!it.isEnd() && !(*it).isSpace() && !(*it).isPunct());
 
   it = copy;
 #if DEBUG_CARETMODE > 1
-    if (!it.isEnd()) kDebug(6200) << "effective '" << (*it).latin1() << "' (" << (int)(*it).latin1() << ") box " << it.caretBox() << endl;
+    if (!it.isEnd()) kDebug(6200) << "effective '" << (*it).toLatin1().constData() << "' (" << (int)(*it).toLatin1().constData() << ") box " << it.caretBox() << endl;
 #endif
 }
 

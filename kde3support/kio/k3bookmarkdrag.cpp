@@ -36,7 +36,7 @@ K3BookmarkDrag * K3BookmarkDrag::newDrag( const Q3ValueList<KBookmark> & bookmar
     KUrl::List::ConstIterator uit = urls.begin();
     KUrl::List::ConstIterator uEnd = urls.end();
     // Get each URL encoded in utf8 - and since we get it in escaped
-    // form on top of that, .latin1() is fine.
+    // form on top of that, .toLatin1().constData() is fine.
     for ( ; uit != uEnd ; ++uit )
         uris.append( K3URLDrag::urlToString(*uit).toLatin1() );
 

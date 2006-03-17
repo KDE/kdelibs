@@ -298,7 +298,7 @@ void KTimeZonesTest::tzfileUtcOffsets()
     /////////////////////////
     KTimeZones::ZoneMap allZones = KSystemTimeZones::zones();
     for ( KTimeZones::ZoneMap::const_iterator it = allZones.begin(), end = allZones.end(); it != end; ++it )
-      printf( "%s\n", it.key().latin1() );
+      printf( "%s\n", it.key().toLatin1().constData() );
     return 0;
   }
 

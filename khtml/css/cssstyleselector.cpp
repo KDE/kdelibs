@@ -519,7 +519,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     // count as author rules, and come before all other style sheets, see hack in append()
     numPropsToApply = addInlineDeclarations( e, e->m_styleDecls, numPropsToApply );
 
-//     qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
+//     qDebug( "styleForElement( %s )", e->tagName().string().toLatin1().constData() );
 //     qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
 // 	    selectors_size, schecked, smatch, numPropsToApply, properties_size );
 
@@ -828,8 +828,7 @@ static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DO
         pseudoState = PseudoNone;
         return;
     }
-    QConstString cu(attr.unicode(), attr.length());
-    QString u = cu.string();
+    QString u = QString::fromRawData(attr.unicode(), attr.length());
     if ( !u.contains("://") ) {
         if ( u[0] == '/' )
             u = encodedurl.host + u;

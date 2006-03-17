@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 	QStringList existing = cache.subkeyList("/kthemestyle");
 	for (QStringList::iterator i = existing.begin(); i != existing.end(); i++)
 	{
-		cout<<"Have:"<<(*i).latin1()<<"\n";
+		cout<<"Have:"<<(*i).toLatin1().constData()<<"\n";
 		cache.removeEntry("/ktmthestyle"+(*i));
 	}
 #endif

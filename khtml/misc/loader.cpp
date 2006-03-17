@@ -1082,7 +1082,7 @@ void Loader::slotFinished( KIO::Job* job )
 #ifdef LOADER_DEBUG
       kDebug(6060) << "Loader::slotFinished, with error. job->error()= " << j->error() << " job->isErrorPage()=" << j->isErrorPage() << endl;
 #endif
-      r->object->error( job->error(), job->errorText().ascii() );
+      r->object->error( job->error(), job->errorText().toAscii().constData() );
       emit requestFailed( r->m_docLoader, r->object );
   }
   else

@@ -26,32 +26,32 @@ int main(int argc, char **argv)
 
   list = t.findAllResources("data", "kfind/toolbar", true);
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-    kDebug() << "data " << (*it).ascii() << endl;
+    kDebug() << "data " << (*it).toAscii().constData() << endl;
   }
 
   list = t.findAllResources("config", "kcmdisplayrc");
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-    kDebug() << "config " << (*it).ascii() << endl;
+    kDebug() << "config " << (*it).toAscii().constData() << endl;
   }
 
   list = t.findAllResources("config", "kcmdisplayrc", false, true);
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-    kDebug() << "config2 " << (*it).ascii() << endl;
+    kDebug() << "config2 " << (*it).toAscii().constData() << endl;
   }
 
   list = t.findAllResources("html", "en/*/index.html", false);
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-    kDebug() << "docs " << (*it).ascii() << endl;
+    kDebug() << "docs " << (*it).toAscii().constData() << endl;
   }
 
   list = t.findAllResources("html", "*/*/*.html", false);
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-    kDebug() << "docs " << (*it).ascii() << endl;
+    kDebug() << "docs " << (*it).toAscii().constData() << endl;
   }
 
   list = t.findDirs("data", "kwin");
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-    kDebug() << "kwin dirs " << (*it).ascii() << endl;
+    kDebug() << "kwin dirs " << (*it).toAscii().constData() << endl;
   }
 
   kDebug() << "hit " << t.findResourceDir("config", "kcmdisplayrc") << endl;

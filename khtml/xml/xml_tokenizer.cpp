@@ -529,8 +529,8 @@ void XMLTokenizer::executeScripts()
             for (child = m_scriptsIt->current()->firstChild(); child; child = child->nextSibling()) {
                 if ( ( child->nodeType() == Node::TEXT_NODE || child->nodeType() == Node::CDATA_SECTION_NODE) &&
                      static_cast<TextImpl*>(child)->string() )
-                    scriptCode += QConstString(static_cast<TextImpl*>(child)->string()->s,
-                                               static_cast<TextImpl*>(child)->string()->l).string();
+                    scriptCode += QString::fromRawData(static_cast<TextImpl*>(child)->string()->s,
+                                                       static_cast<TextImpl*>(child)->string()->l);
             }
             // the script cannot do document.write until we support incremental parsing
             // ### handle the case where the script deletes the node or redirects to

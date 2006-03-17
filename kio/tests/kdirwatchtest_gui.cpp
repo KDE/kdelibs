@@ -62,7 +62,7 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
 
     lay->addWidget(tree = new KFileTreeView(this));
     QString view = "file:" + dir;
-    KFileTreeBranch *branch = tree->addBranch(KUrl(view.latin1()), "Our data dir");
+    KFileTreeBranch *branch = tree->addBranch(KUrl(view.toLatin1().constData()), "Our data dir");
     tree->addColumn("Folders");
     branch->setOpen(true);
 
@@ -72,9 +72,9 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
     connect(w1, SIGNAL(dirty(const QString &)), this, SLOT(slotDir1(const QString &)));
     connect(w2, SIGNAL(dirty(const QString &)), this, SLOT(slotDir2(const QString &)));
     connect(w3, SIGNAL(dirty(const QString &)), this, SLOT(slotDir3(const QString &)));
-    w1->addDir(dir.latin1());
-    w2->addDir(dir.latin1());
-    w3->addDir(dir.latin1());
+    w1->addDir(dir.toLatin1().constData());
+    w2->addDir(dir.toLatin1().constData());
+    w3->addDir(dir.toLatin1().constData());
 
     lay->addWidget(new QLabel("Directory = " + dir, this));
     lay->addWidget(new QLabel("File = " + file, this));
@@ -95,8 +95,8 @@ void KDirWatchTest_GUI::slotDir2(const QString &a)
 {
   // This used to cause bug #119341, fixed now
 #if 1
-  w2->stopDirScan(a.latin1());
-  w2->restartDirScan(a.latin1());
+  w2->stopDirScan(a.toLatin1().constData());
+  w2->restartDirScan(a.toLatin1().constData());
 #endif
   l2->setText("Test 2 changed " + a + " at " + QTime::currentTime().toString());
 }
@@ -108,13 +108,13 @@ void KDirWatchTest_GUI::slotDir3(const QString &a)
 
 void KDirWatchTest_GUI::slotDeleteClicked()
 {
-  remove(file.latin1());
+  remove(file.toLatin1().constData());
   d->setText("Delete clicked at " + QTime::currentTime().toString());
 }
 
 void KDirWatchTest_GUI::slotNewClicked()
 {
-  fclose(fopen(file.latin1(), "wb"));
+  fclose(fopen(file.toLatin1().constData(), "wb"));
   d->setText("New clicked at " + QTime::currentTime().toString());
 }
 

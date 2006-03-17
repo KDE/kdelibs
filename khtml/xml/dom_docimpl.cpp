@@ -710,7 +710,7 @@ unsigned short DocumentImpl::nodeType() const
 
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 {
-    uint id = khtml::getTagID( name.string().lower().latin1(), name.string().length() );
+    uint id = khtml::getTagID( name.string().lower().toLatin1().constData(), name.string().length() );
 
     ElementImpl *n = 0;
     switch(id)
@@ -1685,7 +1685,7 @@ bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent 
 
         if (renderInfo.URLElement()) {
             assert(renderInfo.URLElement()->isElementNode());
-            //qDebug("urlnode: %s  (%d)", getTagName(renderInfo.URLElement()->id()).string().latin1(), renderInfo.URLElement()->id());
+            //qDebug("urlnode: %s  (%d)", getTagName(renderInfo.URLElement()->id()).string().toLatin1().constData(), renderInfo.URLElement()->id());
 
             ElementImpl* e =  static_cast<ElementImpl*>(renderInfo.URLElement());
             DOMString href = khtml::parseURL(e->getAttribute(ATTR_HREF));
@@ -1806,12 +1806,12 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
 
         // First see if it's a HTML element name
         // xhtml is lower case - case sensitive, easy to implement
-        if ( cs && (id = lookup(n.string().ascii(), _name->l)) ) {
+        if ( cs && (id = lookup(n.string().toAscii().constData(), _name->l)) ) {
             map->addAlias(_prefix, _name, cs, id);
             return nsid + id;
         }
         // compatibility: upper case - case insensitive
-        if ( !cs && (id = lookup(n.string().lower().ascii(), _name->l )) ) {
+        if ( !cs && (id = lookup(n.string().lower().toAscii().constData(), _name->l )) ) {
             map->addAlias(_prefix, _name, cs, id);
             return nsid + id;
         }

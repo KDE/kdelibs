@@ -236,7 +236,7 @@ static Length parseLength(const QChar *s, unsigned int l)
         ++i;
 
     bool ok;
-    int r = QConstString(s, i).string().toInt(&ok);
+    int r = QString::fromRawData(s, i).toInt(&ok);
 
     /* Skip over any remaining digits, we are not that accurate (5.5% => 5%) */
     while (i < l && (s[i].isDigit() || s[i] == '.'))
@@ -400,7 +400,7 @@ int DOMStringImpl::toInt(bool* ok) const
     while (i < l && s[i].isDigit())
         ++i;
 
-    return QConstString(s, i).string().toInt(ok);
+    return QString::fromRawData(s, i).toInt(ok);
 }
 
 

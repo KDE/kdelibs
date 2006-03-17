@@ -118,7 +118,7 @@ xmlParserInputPtr meinExternalEntityLoader(const char *URL, const char *ID,
     else
         file = locate("dtd", URL);
 
-    ret = xmlNewInputFromFile(ctxt, file.latin1());
+    ret = xmlNewInputFromFile(ctxt, file.toLatin1().constData());
     if (ret == NULL) {
         if ((ctxt->sax != NULL) && (ctxt->sax->warning != NULL))
             ctxt->sax->warning(ctxt,

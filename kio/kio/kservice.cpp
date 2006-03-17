@@ -239,7 +239,7 @@ KService::init( const KDesktopFile *config )
   // Store all additional entries in the property map.
   // A QMap<QString,QString> would be easier for this but we can't
   // break BC, so we have to store it in m_mapProps.
-//  qWarning("Path = %s", entryPath().latin1());
+//  qWarning("Path = %s", entryPath().toLatin1().constData());
   QMap<QString,QString>::ConstIterator it = entryMap.begin();
   for( ; it != entryMap.end();++it)
   {

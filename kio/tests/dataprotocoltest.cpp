@@ -51,7 +51,7 @@ public:
       // remove key from map
       attributes_expected.remove(it);
     } else {
-      cout << endl << prefix.latin1() << " no such key expected";
+      cout << endl << prefix.toLatin1().constData() << " no such key expected";
       total++;
     }
   }
@@ -61,7 +61,7 @@ public:
     KIO::MetaData::ConstIterator it = attributes_expected.begin();
     KIO::MetaData::ConstIterator end = attributes_expected.end();
     for (; it != end; ++it) {
-      cout << endl << "Metadata[\"" << it.key().latin1()
+      cout << endl << "Metadata[\"" << it.key().toLatin1().constData()
       		<< "\"] was expected but not defined";
       total++;
     }
@@ -109,8 +109,8 @@ private:
     if (templat == s)
       passed++;
     else {
-      cout << endl << prefix.latin1() << "expected \"" << templat.latin1() << "\", found \""
-      		<< s.latin1() << "\"";
+      cout << endl << prefix.toLatin1().constData() << "expected \"" << templat.toLatin1().constData() 
+           << "\", found \"" << s.toLatin1().constData() << "\"";
       failure = true;
     }/*end if*/
     total++;

@@ -60,18 +60,18 @@ void Test::hostFoundSlot()
 
 void Test::boundSlot(const KResolverEntry& target)
 {
-  cout << "Socket has bound to " << target.address().toString().latin1() 
-       << " (really " << socket.localAddress().toString().latin1() << ")" << endl;
+  cout << "Socket has bound to " << target.address().toString().toLatin1().constData() 
+       << " (really " << socket.localAddress().toString().toLatin1().constData() << ")" << endl;
 }
 
 void Test::aboutToConnectSlot(const KResolverEntry& target)
 {
-  cout << "Socket is about to connect to " << target.address().toString().latin1() << endl;
+  cout << "Socket is about to connect to " << target.address().toString().toLatin1().constData() << endl;
 }
 
 void Test::connectedSlot(const KResolverEntry& target)
 {
-  cout << "Socket has connected to " << target.address().toString().latin1() << endl;
+  cout << "Socket has connected to " << target.address().toString().toLatin1().constData() << endl;
 }
 
 void Test::timedOutSlot()

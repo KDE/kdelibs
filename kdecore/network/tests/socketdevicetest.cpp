@@ -21,12 +21,12 @@ KSocketDevice* testserving()
     addrV4(KIpAddress::anyhostV4, 0);
 
   KSocketDevice* socket = new KSocketDevice;
-  cout << "Trying to bind to " << addrV6.toString().latin1() << endl;
+  cout << "Trying to bind to " << addrV6.toString().toLatin1().constData() << endl;
   if (!socket->bind(KResolverEntry(addrV6, socktype, 0)))
     {
-      cout << "Failed to bind to " << addrV6.toString().latin1() << endl;
+      cout << "Failed to bind to " << addrV6.toString().toLatin1().constData() << endl;
 
-      cout << "Trying " << addrV4.toString().latin1() << endl;
+      cout << "Trying " << addrV4.toString().toLatin1().constData() << endl;
       if (!socket->bind(KResolverEntry(addrV4, socktype, 0)))
 	{
 	  cout << "Failed as well" << endl;
@@ -35,7 +35,7 @@ KSocketDevice* testserving()
 	}
     }
 
-  cout << "Bound to: " << socket->localAddress().toString().latin1() << endl;
+  cout << "Bound to: " << socket->localAddress().toString().toLatin1().constData() << endl;
 
   if (!socket->listen())
     cout << "Failed to place socket in listen mode" << endl;
@@ -49,14 +49,14 @@ KSocketDevice* testconnecting(KSocketAddress addr)
 
   if (!socket->connect(KResolverEntry(addr, socktype, 0)))
     {
-      cout << "Connection failed to " << addr.toString().latin1() << endl;
+      cout << "Connection failed to " << addr.toString().toLatin1().constData() << endl;
       delete socket;
       return 0L;
     }
 
   cout << "Connection succeeded" << endl
-       << "Local address is: " << socket->localAddress().toString().latin1() << endl
-       << "Peer address is: " << socket->peerAddress().toString().latin1() << endl;
+       << "Local address is: " << socket->localAddress().toString().toLatin1().constData() << endl
+       << "Peer address is: " << socket->peerAddress().toString().toLatin1().constData() << endl;
   return socket;
 }
 
@@ -66,7 +66,7 @@ KSocketDevice* testaccepting(KSocketDevice* server)
   KSocketDevice* accepted = server->accept();
 
   if (accepted)
-    cout << "Accepted one client, peer address: " << accepted->peerAddress().toString().latin1() << endl;
+    cout << "Accepted one client, peer address: " << accepted->peerAddress().toString().toLatin1().constData() << endl;
   else
     cout << "Failed to accept" << endl;
 
@@ -81,8 +81,8 @@ bool testio(KSocketDevice* c1, KSocketDevice* c2)
   KSocketAddress sa;
 
   cout << "Testing I/O through sockets: from "
-       << c1->localAddress().toString().latin1() << " to "
-       << c2->localAddress().toString().latin1() << endl;
+       << c1->localAddress().toString().toLatin1().constData() << " to "
+       << c2->localAddress().toString().toLatin1().constData() << endl;
 
   sa = c2->localAddress();
   if ((sent = c1->writeData(sendbuf, sizeof sendbuf - 1, &sa)) == -1)
@@ -99,7 +99,7 @@ bool testio(KSocketDevice* c1, KSocketDevice* c2)
     }
   cout << "Received " << recvd << " bytes";
   if (sa)
-    cout << " from " << sa.toString().latin1();
+    cout << " from " << sa.toString().toLatin1().constData();
   cout << endl;
 
   if (sent != recvd || memcmp(sendbuf, recvbuf, recvd) != 0)
@@ -120,12 +120,12 @@ bool testdgram()
     addrV4(KIpAddress::localhostV4, 0);
 
   KSocketDevice* c1 = new KSocketDevice;
-  cout << "Trying to bind to " << addrV6.toString().latin1() << endl;
+  cout << "Trying to bind to " << addrV6.toString().toLatin1().constData() << endl;
   if (!c1->bind(KResolverEntry(addrV6, socktype, 0)))
     {
-      cout << "Failed to bind to " << addrV6.toString().latin1() << endl;
+      cout << "Failed to bind to " << addrV6.toString().toLatin1().constData() << endl;
 
-      cout << "Trying " << addrV4.toString().latin1() << endl;
+      cout << "Trying " << addrV4.toString().toLatin1().constData() << endl;
       if (!c1->bind(KResolverEntry(addrV4, socktype, 0)))
 	{
 	  cout << "Failed as well" << endl;
@@ -134,7 +134,7 @@ bool testdgram()
 	}
     }
 
-  cout << "Bound to: " << c1->localAddress().toString().latin1() << endl;
+  cout << "Bound to: " << c1->localAddress().toString().toLatin1().constData() << endl;
 
   KSocketDevice *c2 = new KSocketDevice;
   if (!c2->create(c1->localAddress().family(), socktype, 0))

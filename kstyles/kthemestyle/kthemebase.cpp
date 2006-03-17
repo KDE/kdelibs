@@ -564,7 +564,7 @@ void KThemeBase::applyConfigFile( QSettings& config )
     if ( keys.contains( "foreground" ) )
     {
         d->overrideForeground = true;
-        d->overrideForegroundCol = readColorEntry( &config, ( configFileName + "foreground" ).latin1(), 0 );
+        d->overrideForegroundCol = readColorEntry( &config, ( configFileName + "foreground" ).toLatin1().constData(), 0 );
     }
     else
         d->overrideForeground = false;
@@ -572,7 +572,7 @@ void KThemeBase::applyConfigFile( QSettings& config )
     if ( keys.contains( "background" ) )
     {
         d->overrideBackground = true;
-        d->overrideBackgroundCol = readColorEntry( &config, ( configFileName + "background" ).latin1(), 0 );
+        d->overrideBackgroundCol = readColorEntry( &config, ( configFileName + "background" ).toLatin1().constData(), 0 );
     }
     else
         d->overrideBackground = false;
@@ -582,7 +582,7 @@ void KThemeBase::applyConfigFile( QSettings& config )
     if ( keys.contains( "selectForeground" ) )
     {
         d->overrideSelectForeground = true;
-        d->overrideSelectForegroundCol = readColorEntry( &config, ( configFileName + "selectForeground" ).latin1(), 0 );
+        d->overrideSelectForegroundCol = readColorEntry( &config, ( configFileName + "selectForeground" ).toLatin1().constData(), 0 );
     }
     else
         d->overrideSelectForeground = false;
@@ -590,7 +590,7 @@ void KThemeBase::applyConfigFile( QSettings& config )
     if ( keys.contains( "selectBackground" ) )
     {
         d->overrideSelectBackground = true;
-        d->overrideSelectBackgroundCol = readColorEntry( &config, ( configFileName + "selectBackground" ).latin1(), 0 );
+        d->overrideSelectBackgroundCol = readColorEntry( &config, ( configFileName + "selectBackground" ).toLatin1().constData(), 0 );
     }
     else
         d->overrideSelectBackground = false;
@@ -598,7 +598,7 @@ void KThemeBase::applyConfigFile( QSettings& config )
     if ( keys.contains( "windowBackground" ) )
     {
         d->overrideWindowBackground = true;
-        d->overrideWindowBackgroundCol = readColorEntry( &config, ( configFileName + "windowBackground" ).latin1(), 0 );
+        d->overrideWindowBackgroundCol = readColorEntry( &config, ( configFileName + "windowBackground" ).toLatin1().constData(), 0 );
     }
     else
         d->overrideWindowBackground = false;
@@ -607,7 +607,7 @@ void KThemeBase::applyConfigFile( QSettings& config )
     if ( keys.contains( "windowForeground" ) )
     {
         d->overrideWindowForeground = true;
-        d->overrideWindowForegroundCol = readColorEntry( &config, ( configFileName + "windowForeground" ).latin1(), 0 );
+        d->overrideWindowForegroundCol = readColorEntry( &config, ( configFileName + "windowForeground" ).toLatin1().constData(), 0 );
     }
     else
         d->overrideWindowForeground = false;
@@ -656,7 +656,7 @@ QImage* KThemeBase::loadImage( const QString &name )
     image->load( path );
     if ( !image->isNull() )
         return ( image );
-    qWarning( "KThemeBase: Unable to load image %s\n", name.latin1() );
+    qWarning( "KThemeBase: Unable to load image %s\n", name.toLatin1().constData() );
     delete image;
     return ( NULL );
 }
@@ -668,7 +668,7 @@ KThemePixmap* KThemeBase::loadPixmap( const QString &name )
     pixmap->load( path );
     if ( !pixmap->isNull() )
         return pixmap;
-    qWarning( "KThemeBase: Unable to load pixmap %s\n", name.latin1() );
+    qWarning( "KThemeBase: Unable to load pixmap %s\n", name.toLatin1().constData() );
     delete pixmap;
     return ( NULL );
 }
@@ -1123,7 +1123,7 @@ void KThemeBase::applyMiscResourceGroup( QSettings *config )
     else
     {
         if ( tmpStr != "Opposite" && !tmpStr.isEmpty() )
-            qWarning( "KThemeBase: Unrecognized sb button option %s, using Opposite.\n", tmpStr.latin1() );
+            qWarning( "KThemeBase: Unrecognized sb button option %s, using Opposite.\n", tmpStr.toLatin1().constData() );
         ;
         prop[ "SButtonPosition" ] = QString::number( ( int ) SBOpposite );
     }
@@ -1135,7 +1135,7 @@ void KThemeBase::applyMiscResourceGroup( QSettings *config )
     else
     {
         if ( tmpStr != "Normal" && !tmpStr.isEmpty() )
-            qWarning( "KThemeBase: Unrecognized arrow option %s, using Normal.\n", tmpStr.latin1() );
+            qWarning( "KThemeBase: Unrecognized arrow option %s, using Normal.\n", tmpStr.toLatin1().constData() );
         prop[ "ArrowType" ] = QString::number( ( int ) LargeArrow );
     }
     tmpStr = config->readEntry( base + "ShadeStyle" );
@@ -1222,7 +1222,7 @@ void KThemeBase::applyResourceGroup( QSettings *config, int i )
     else
     {
         if ( tmpStr != "Tile" && !tmpStr.isEmpty() )
-            qWarning( "KThemeBase: Unrecognized scale option %s, using Tile.\n", tmpStr.latin1() );
+            qWarning( "KThemeBase: Unrecognized scale option %s, using Tile.\n", tmpStr.toLatin1().constData() );
         tmpVal = ( int ) TileScale;
     }
     prop[ "ScaleHint" ] = QString::number( tmpVal );
@@ -1246,7 +1246,7 @@ void KThemeBase::applyResourceGroup( QSettings *config, int i )
     else
     {
         if ( tmpStr != "None" && !tmpStr.isEmpty() )
-            qWarning( "KThemeBase: Unrecognized gradient option %s, using None.\n", tmpStr.latin1() );
+            qWarning( "KThemeBase: Unrecognized gradient option %s, using None.\n", tmpStr.toLatin1().constData() );
         tmpVal = ( int ) GrNone;
     }
     prop[ "Gradient" ] = QString::number( tmpVal );
@@ -1268,12 +1268,12 @@ void KThemeBase::applyResourceGroup( QSettings *config, int i )
 
     // Gradient low color or blend background
     if ( keys.contains( "GradientLow" ) )
-        prop[ "GrLow" ] = readColorEntry( config, QString( base + "GradientLow" ).latin1(),
+        prop[ "GrLow" ] = readColorEntry( config, QString( base + "GradientLow" ).toLatin1().constData(),
                                           &QApplication::palette().active().background() ).name();
 
     // Gradient high color
     if ( keys.contains( "GradientHigh" ) )
-        prop[ "GrHigh" ] = readColorEntry( config, QString( base + "GradientHigh" ).latin1(),
+        prop[ "GrHigh" ] = readColorEntry( config, QString( base + "GradientHigh" ).toLatin1().constData(),
                                            &QApplication::palette().active().foreground() ).name();
 
     // Extended color attributes
@@ -1281,9 +1281,9 @@ void KThemeBase::applyResourceGroup( QSettings *config, int i )
     {
         QColor fg, bg;
         if ( keys.contains( "Background" ) )
-            bg = readColorEntry( config, QString( base + "Background" ).latin1(), &bg );
+            bg = readColorEntry( config, QString( base + "Background" ).toLatin1().constData(), &bg );
         if ( keys.contains( "Foreground" ) )
-            fg = readColorEntry( config, QString( base + "Foreground" ).latin1(), &fg );
+            fg = readColorEntry( config, QString( base + "Foreground" ).toLatin1().constData(), &fg );
         prop[ "Foreground" ] = fg.name();
         prop[ "Background" ] = bg.name();
 

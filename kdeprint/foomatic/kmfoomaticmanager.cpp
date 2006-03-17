@@ -161,7 +161,7 @@ DrMain* KMFoomaticManager::createDriverFromXML(QDomElement *elem)
 						{
 							DrBase	*choice = new DrBase();
 							choice->setName(val.namedItem("ev_shortname").namedItem("en").toElement().text());
-							choice->set("text", i18n(val.namedItem("ev_longname").namedItem("en").toElement().text().latin1()));
+							choice->set("text", i18n(val.namedItem("ev_longname").namedItem("en").toElement().text().toLatin1().constData()));
 							static_cast<DrListOption*>(dropt)->addChoice(choice);
 							if (val.toElement().attribute("id") == defval)
 								valuetext = choice->name();
@@ -185,7 +185,7 @@ DrMain* KMFoomaticManager::createDriverFromXML(QDomElement *elem)
 					if (dropt)
 					{
 						dropt->setName(o.namedItem("arg_shortname").namedItem("en").toElement().text());
-						dropt->set("text", i18n(o.namedItem("arg_longname").namedItem("en").toElement().text().latin1()));
+						dropt->set("text", i18n(o.namedItem("arg_longname").namedItem("en").toElement().text().toLatin1().constData()));
 						driver->addOption(dropt);
 					}
 				}

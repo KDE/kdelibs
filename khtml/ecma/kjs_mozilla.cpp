@@ -48,7 +48,7 @@ MozillaSidebarExtension::MozillaSidebarExtension(ExecState *exec, KHTMLPart *p)
 bool MozillaSidebarExtension::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "MozillaSidebarExtension::get " << propertyName.ascii() << endl;
+  kDebug(6070) << "MozillaSidebarExtension::get " << propertyName.toAscii().constData() << endl;
 #endif
   return getStaticPropertySlot<MozillaSidebarExtensionFunc,MozillaSidebarExtension,ObjectImp>
             (exec,&MozillaSidebarExtensionTable,this, propertyName, slot);

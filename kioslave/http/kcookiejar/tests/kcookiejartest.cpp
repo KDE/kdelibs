@@ -182,7 +182,7 @@ static void processLine(QString line)
    if (line[0] == '#')
    {
       if (line[1] == '#')
-         qWarning("%s", line.latin1());
+         qWarning("%s", line.toLatin1().constData());
       return;
    }
 

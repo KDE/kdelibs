@@ -80,7 +80,7 @@ void Query::startQuery()
 	d->m_finished = false;
 #ifdef HAVE_DNSSD
 	DNSServiceRef ref;
-	if (DNSServiceBrowse(&ref,0,0, d->m_type.ascii(), 
+	if (DNSServiceBrowse(&ref,0,0, d->m_type.toAscii().constData(), 
 	    domainToDNS(d->m_domain),query_callback,reinterpret_cast<void*>(this))
 		   == kDNSServiceErr_NoError) d->setRef(ref);
 #endif

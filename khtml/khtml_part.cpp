@@ -158,7 +158,7 @@ void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & ev
         return;
 
     QString script;
-    script.sprintf("%s(", event.latin1());
+    script.sprintf("%s(", event.toLatin1().constData());
 
     KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
     const KParts::LiveConnectExtension::ArgList::const_iterator argsBegin = i;
@@ -862,7 +862,7 @@ QString KHTMLPart::documentSource() const
      QDataStream dataStream( &sourceArray, QIODevice::WriteOnly );
      KHTMLPageCache::self()->saveData( d->m_cacheId, &dataStream );
      QTextStream stream( sourceArray, QIODevice::ReadOnly );
-     stream.setCodec( QTextCodec::codecForName( encoding().latin1() ) );
+     stream.setCodec( QTextCodec::codecForName( encoding().toLatin1().constData() ) );
      sourceStr = stream.read();
   } else
   {
@@ -873,7 +873,7 @@ QString KHTMLPart::documentSource() const
       if ( f.open( QIODevice::ReadOnly ) )
       {
         QTextStream stream( &f );
-        stream.setCodec( QTextCodec::codecForName( encoding().latin1() ) );
+        stream.setCodec( QTextCodec::codecForName( encoding().toLatin1().constData() ) );
 	sourceStr = stream.read();
         f.close();
       }
@@ -1181,7 +1181,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KHTMLPart::executeScript caller='" << name() << "' node=" << n.nodeName().string().latin1() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " /* << script */ << endl;
+  kDebug(6070) << "KHTMLPart::executeScript caller='" << name() << "' node=" << n.nodeName().string().toLatin1().constData() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " /* << script */ << endl;
 #endif
   KJSProxy *proxy = jScript();
 
@@ -1287,7 +1287,7 @@ static int s_DOMTreeIndentLevel = 0;
 void KHTMLPart::slotDebugDOMTree()
 {
   if ( d->m_doc && d->m_doc->firstChild() )
-    qDebug("%s", d->m_doc->firstChild()->toString().string().latin1());
+    qDebug("%s", d->m_doc->firstChild()->toString().string().toLatin1().constData());
 
   // Now print the contents of the frames that contain HTML
 
@@ -4385,7 +4385,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     }
 
     QStringList dummy; // the list of servicetypes handled by the part is now unused.
-    KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_serviceName, dummy, child->m_params );
+    KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.toAscii().constData(), this, child->m_name.toAscii().constData(), mimetype, child->m_serviceName, dummy, child->m_params );
 
     if ( !part )
     {
@@ -6311,8 +6311,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     HTMLImageElementImpl *img = 0L;
     KUrl u;
 
-    // qDebug("****************** Event URL: %s", url.string().latin1());
-    // qDebug("****************** Event Target: %s", target.string().latin1());
+    // qDebug("****************** Event URL: %s", url.string().toLatin1().constData());
+    // qDebug("****************** Event Target: %s", target.string().toLatin1().constData());
 
     // Normal image...
     if ( url.length() == 0 && innerNode.handle() && innerNode.handle()->id() == ID_IMG )
@@ -7009,12 +7009,12 @@ khtml::Decoder *KHTMLPart::createDecoder()
 {
     khtml::Decoder *dec = new khtml::Decoder();
     if( !d->m_encoding.isNull() )
-        dec->setEncoding( d->m_encoding.latin1(),
+        dec->setEncoding( d->m_encoding.toLatin1().constData(),
             d->m_haveEncoding ? khtml::Decoder::UserChosenEncoding : khtml::Decoder::EncodingFromHTTPHeader);
     else {
         // Inherit the default encoding from the parent frame if there is one.
         const char *defaultEncoding = (parentPart() && parentPart()->d->m_decoder)
-            ? parentPart()->d->m_decoder->encoding() : settings()->encoding().latin1();
+            ? parentPart()->d->m_decoder->encoding() : settings()->encoding().toLatin1().constData();
         dec->setEncoding(defaultEncoding, khtml::Decoder::DefaultEncoding);
     }
 #ifdef APPLE_CHANGES

@@ -96,8 +96,8 @@ void KUrlCompletionTest::testLocalRelativePath()
     waitForCompletion();
     QStringList comp1all = m_completion->allMatches();
     assert( comp1all.count() == 2 );
-    assert( comp1all.find( "file1" ) != comp1all.end() );
-    assert( comp1all.find( "file#a" ) != comp1all.end() );
+    assert( comp1all.contains( "file1" ) );
+    assert( comp1all.contains( "file#a" ) );
     QString comp1 = m_completion->replacedPath( "file1" ); // like KUrlRequester does
     assert( comp1 == "file1" );
 
@@ -138,9 +138,9 @@ void KUrlCompletionTest::testLocalURL()
     QStringList comp1all = m_completion->allMatches();
     kDebug() << comp1all << endl;
     assert( comp1all.count() == 2 );
-    assert( comp1all.find( m_dirURL.url() + "file1" ) != comp1all.end() );
+    assert( comp1all.contains( m_dirURL.url() + "file1" ) );
     QString filehash = m_dirURL.url() + "file%23a";
-    assert( comp1all.find( filehash ) != comp1all.end() );
+    assert( comp1all.contains( filehash ) );
     QString filehashPath = m_completion->replacedPath( filehash ); // note that it returns a path!!
     kDebug() << filehashPath << endl;
     assert( filehashPath == m_dirURL.path() + "file#a" );

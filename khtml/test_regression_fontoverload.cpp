@@ -572,9 +572,9 @@ KDE_EXPORT void QApplication::setPalette( const QPalette &, bool ,
     if (done) return;
     QString xlfd = AHEM;
     XFontStruct *xfs;
-    xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
+    xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.toLatin1().constData() );
     if (!xfs) // as long as you don't do screenshots, it's maybe fine
-	qFatal("We will need some fonts. So make sure you have %s installed.", xlfd.latin1());
+	qFatal("We will need some fonts. So make sure you have %s installed.", xlfd.toLatin1().constData());
     XFreeFont(QPaintDevice::x11AppDisplay(), xfs);
     done = true;
 }

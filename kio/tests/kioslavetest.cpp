@@ -369,23 +369,23 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
                 kDebug() << "Access permissions : " << (mode_t)(it.value().toNumber()) << endl;
                 break;
             case KIO::UDS_USER:
-                kDebug() << "User : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "User : " << (it.value().toString().toAscii().constData() ) << endl;
                 break;
             case KIO::UDS_GROUP:
-                kDebug() << "Group : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "Group : " << (it.value().toString().toAscii().constData() ) << endl;
                 break;
             case KIO::UDS_NAME:
-                kDebug() << "Name : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "Name : " << (it.value().toString().toAscii().constData() ) << endl;
                 //m_strText = decodeFileName( it.value().toString() );
                 break;
             case KIO::UDS_URL:
-                kDebug() << "URL : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "URL : " << (it.value().toString().toAscii().constData() ) << endl;
                 break;
             case KIO::UDS_MIME_TYPE:
-                kDebug() << "MimeType : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "MimeType : " << (it.value().toString().toAscii().constData() ) << endl;
                 break;
             case KIO::UDS_LINK_DEST:
-                kDebug() << "LinkDest : " << (it.value().toString().ascii() ) << endl;
+                kDebug() << "LinkDest : " << (it.value().toString().toAscii().constData() ) << endl;
                 break;
             case KIO::UDS_SIZE:
                 kDebug() << "Size: " << KIO::convertSize(it.value().toNumber()) << endl;

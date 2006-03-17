@@ -890,7 +890,7 @@ uint stringUserToMod( const QString& mod )
 
 			// Check for lower-case equalent first because most
 			//  X11 names are all lower-case.
-			keySymX = XStringToKeysym( sKeySym.toLower().ascii() );
+			keySymX = XStringToKeysym( sKeySym.toLower().toAscii().constData() );
 			if( keySymX == 0 )
 				keySymX = XStringToKeysym( psKeySym );
 		}

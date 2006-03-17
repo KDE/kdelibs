@@ -17,7 +17,7 @@ int main( int argc, char **argv )
     qDebug("Insertion order:");
     qDebug("================");
     for ( ; it != list.end(); ++it )
-        qDebug( "%i: %s", (*it).index(), (*it).value().latin1() );
+        qDebug( "%i: %s", (*it).index(), (*it).value().toLatin1().constData() );
 
     list.sort();
     
@@ -26,7 +26,7 @@ int main( int argc, char **argv )
     
     it = list.begin();
     for ( ; it != list.end(); ++it )
-        qDebug( "%i: %s", (*it).index(), (*it).value().latin1() );
+        qDebug( "%i: %s", (*it).index(), (*it).value().toLatin1().constData() );
     
     return 0;
 }

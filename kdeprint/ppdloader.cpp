@@ -494,7 +494,7 @@ void PPDLoader::processPageSizes( DrMain *driver )
 	while ( it.hasNext() )
 	{
 		it.next();
-		//qDebug( "ADDING PAGESIZE: %16s, Size = ( %.2f, %.2f ),  Area = ( %.2f, %.2f, %.2f, %.2f )", it.current()->name.latin1(),
+		//qDebug( "ADDING PAGESIZE: %16s, Size = ( %.2f, %.2f ),  Area = ( %.2f, %.2f, %.2f, %.2f )", it.current()->name.toLatin1().constData(),
 		//		it.current()->size.width, it.current()->size.height,
 		//		it.current()->area.left, it.current()->area.bottom,
 		//		it.current()->area.right, it.current()->area.top );

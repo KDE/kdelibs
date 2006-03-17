@@ -251,7 +251,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                 if(view && view->part())
                     enc = view->part()->encoding();
             }
-            if((codec = KGlobal::charsets()->codecForName(enc.latin1())))
+            if((codec = KGlobal::charsets()->codecForName(enc.toLatin1().constData())))
                 break;
         }
     }
@@ -302,7 +302,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                 else
                 {
                     QByteArray hstr("--");
-                    hstr += m_boundary.latin1();
+                    hstr += m_boundary.toLatin1().constData();
                     hstr += "\r\n";
                     hstr += "Content-Disposition: form-data; name=\"";
                     hstr += (*it).data();
@@ -330,7 +330,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                             const KMimeType::Ptr ptr = KMimeType::findByURL(path);
                             if (!ptr->name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
-                                hstr += ptr->name().ascii();
+                                hstr += ptr->name().toAscii().constData();
                             }
                         } else if (!val.isEmpty()) {
                             fileNotUploads << path.pathOrURL();
@@ -392,7 +392,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     }
 
     if (m_multipart)
-        enc_string = ("--" + m_boundary + "--\r\n").ascii();
+        enc_string = ("--" + m_boundary + "--\r\n").toAscii().constData();
 
     const int old_size = form_data.size();
     form_data.resize( form_data.size() + enc_string.length() );

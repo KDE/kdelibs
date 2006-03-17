@@ -66,7 +66,7 @@ qWarning("%s: slotTimeout() %d:%06d", name(), tv.tv_sec % 100, tv.tv_usec);
   QString result;
   DCOPRef(m_remoteName, m_remoteName).call("function", QCString(name())).get(result);
     gettimeofday(&tv, 0);
-qWarning("%s: Got result '%s' %d:%06d", name(), result.latin1(), tv.tv_sec % 100, tv.tv_usec);
+qWarning("%s: Got result '%s' %d:%06d", name(), result.toLatin1().constData(), tv.tv_sec % 100, tv.tv_usec);
 }
 
 int main(int argc, char **argv)

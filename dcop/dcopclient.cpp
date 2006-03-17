@@ -810,7 +810,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 					pos--;
                 dcopSrv = contents.left( pos );
 //#ifndef NDEBUG
-//                qDebug("dcopserver address: %s", dcopSrv.latin1());
+//                qDebug("dcopserver address: %s", dcopSrv.toLatin1().constData());
 //#endif
             }
         }

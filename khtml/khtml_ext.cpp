@@ -493,7 +493,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
             name = service->name();
 
             providerList->insert( new KAction( name, icon, 0, d->m_khtml->browserExtension(),
-              SLOT( searchProvider() ), actionCollection(), QString( "searchProvider" + searchProviderPrefix ).latin1() ) );
+              SLOT( searchProvider() ), actionCollection(), QString( "searchProvider" + searchProviderPrefix ).toLatin1().constData() ) );
           }
         }
       }

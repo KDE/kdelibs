@@ -367,7 +367,7 @@ namespace
       {
 	sa.setHost(KIpAddress(he->h_addr_list[i], he->h_addrtype == AF_INET ? 4 : 6));
 	results.prepend(KResolverEntry(sa, socktype, proto, canon, m_hostname));
-	// qDebug("KStandardWorker::processResults: adding %s", sa.toString().latin1());
+	// qDebug("KStandardWorker::processResults: adding %s", sa.toString().toLatin1().constData());
       }
     //  qDebug("KStandardWorker::processResults: added %d entries", i);
   }

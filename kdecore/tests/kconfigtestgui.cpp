@@ -160,7 +160,7 @@ void KConfigTestView::groupEditReturnPressed()
   // test program this will do
   QString aText;
   aText.sprintf( "Group set to %s", QString( pConfig->group() ).isEmpty() ?
-		 QString("<default>").ascii() : pConfig->group().ascii() );
+		 QString("<default>").toAscii().constData() : pConfig->group().toAscii().constData() );
   pInfoLabel2->setText( aText );
 }
 

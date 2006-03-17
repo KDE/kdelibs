@@ -96,7 +96,7 @@ static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
 }
 
 static int cssPropertyId( const QString& p ) {
-  return DOM::getPropertyID(p.latin1(), p.length());
+  return DOM::getPropertyID(p.toLatin1().constData(), p.length());
 }
 
 static int cssPropertyId( const DOM::DOMString& name ) {

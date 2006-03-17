@@ -13,7 +13,7 @@ DummyMeta::DummyMeta( QObject *parent, const char *name,
 
 bool DummyMeta::readInfo( KFileMetaInfo::Internal & info )
 {
-   qDebug("#### DummyMeta:: readInfo: %s", info.path().latin1() );
+   qDebug("#### DummyMeta:: readInfo: %s", info.path().toLatin1().constData() );
    return 0L;
 }
 

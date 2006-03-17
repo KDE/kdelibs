@@ -187,7 +187,7 @@ CSSRuleImpl *CSSParser::parseRule( DOM::CSSStyleSheetImpl *sheet, const DOM::DOM
     for ( unsigned int i = 0; i < strlen(khtml_rule); i++ )
         data[i] = khtml_rule[i];
     memcpy( data + strlen( khtml_rule ), string.unicode(), string.length()*sizeof( unsigned short) );
-    // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
+    // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().toLatin1().constData() );
     data[length-4] = '}';
 
     runParser(length);
@@ -216,7 +216,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
         data[i] = khtml_value[i];
     memcpy( data + strlen( khtml_value ), string.unicode(), string.length()*sizeof( unsigned short) );
     data[length-4] = '}';
-    // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
+    // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().toLatin1().constData() );
 
     id = _id;
     important = _important;
@@ -1642,7 +1642,7 @@ bool CSSParser::parseShape( int propId, bool important )
     Value *value = valueList->current();
     ValueList *args = value->function->args;
     QString fname = qString( value->function->name ).toLower();
-    //qDebug( "parseShape: fname: %d", fname.latin1() );
+    //qDebug( "parseShape: fname: %d", fname.toLatin1().constData() );
     if ( fname != "rect(" || !args )
         return false;
 
@@ -2290,7 +2290,7 @@ int DOM::CSSParser::lex( void *_yylval )
     unsigned short *t = text( &length );
 
 #ifdef TOKEN_DEBUG
-    qDebug("CSSTokenizer: got token %d: '%s'", token, token == END ? "" : QString( (QChar *)t, length ).latin1() );
+    qDebug("CSSTokenizer: got token %d: '%s'", token, token == END ? "" : QString( (QChar *)t, length ).toLatin1().constData() );
 #endif
     switch( token ) {
     case '{':
@@ -2359,7 +2359,7 @@ int DOM::CSSParser::lex( void *_yylval )
         length--;
     case NUMBER:
         yylval->val = QString( (QChar *)t, length ).toDouble();
-        //qDebug("value = %s, converted=%.2f", QString( (QChar *)t, length ).latin1(), yylval->val );
+        //qDebug("value = %s, converted=%.2f", QString( (QChar *)t, length ).toLatin1().constData(), yylval->val );
         break;
 
     default:
@@ -2463,7 +2463,7 @@ unsigned short *DOM::CSSParser::text(int *length)
                 uc += toHex( *escape );
                 escape++;
             }
-//             qDebug(" converting escape: string='%s', value=0x%x", QString( (QChar *)e, current-e ).latin1(), uc );
+//             qDebug(" converting escape: string='%s', value=0x%x", QString( (QChar *)e, current-e ).toLatin1().constData(), uc );
             // can't handle chars outside utf16
             if ( uc > 0xffff )
                 uc = 0xfffd;
@@ -2492,7 +2492,7 @@ unsigned short *DOM::CSSParser::text(int *length)
             uc += toHex( *escape );
             escape++;
         }
-        //             qDebug(" converting escape: string='%s', value=0x%x", QString( (QChar *)e, current-e ).latin1(), uc );
+        //             qDebug(" converting escape: string='%s', value=0x%x", QString( (QChar *)e, current-e ).toLatin1().constData(), uc );
         // can't handle chars outside utf16
         if ( uc > 0xffff )
             uc = 0xfffd;
@@ -2517,7 +2517,7 @@ typedef unsigned int YY_CHAR;
         *yy_cp = 0; \
         yy_c_buf_p = yy_cp;
 #define YY_BREAK break;
-#define ECHO qDebug( "%s", QString( (QChar *)yytext, yyleng ).latin1() )
+#define ECHO qDebug( "%s", QString( (QChar *)yytext, yyleng ).toLatin1().constData() )
 #define YY_RULE_SETUP
 #define INITIAL 0
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)

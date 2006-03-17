@@ -201,7 +201,7 @@ void KShellCompletion::splitText(const QString &text, QString &text_start,
 //	text_compl = text.mid( last_unquoted_space + 1,
 //						   text.length() - end_space_len - (last_unquoted_space + 1) );
 
-	//kDebugInfo("split right = '%s'", text_compl.latin1());
+	//kDebugInfo("split right = '%s'", text_compl.toLatin1().constData());
 }
 
 /*

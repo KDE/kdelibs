@@ -151,7 +151,7 @@ static void cleanupDCOP(int dont_kill_dcop, int wait_for_exit)
 			pid = str.toULong();
 			if (pid)
 				break;
-			cleanupDCOPsocket(str.ascii());
+			cleanupDCOPsocket(str.toAscii().constData());
 		}
 	}
 	f.close();

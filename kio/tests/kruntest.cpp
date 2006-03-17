@@ -105,7 +105,7 @@ const char *bt(bool tr) { return tr?"true":"false"; }
 
 void checkBN(QString a, bool tr, QString b)
 {
-  check( QString().sprintf("binaryName('%s', %s)", a.latin1(), bt(tr)), KRun::binaryName(a, tr), b);
+  check( QString().sprintf("binaryName('%s', %s)", a.toLatin1().constData(), bt(tr)), KRun::binaryName(a, tr), b);
 }
 
 void checkPDE(const KService &service, const KUrl::List &urls, bool hs, bool tf, QString b)
@@ -114,8 +114,8 @@ void checkPDE(const KService &service, const KUrl::List &urls, bool hs, bool tf,
    QString().sprintf("processDesktopExec( "
       "service = {\nexec = %s\nterminal = %s, terminalOptions = %s\nsubstituteUid = %s, user = %s },"
        "\nURLs = { %s },\nhas_shell = %s, temp_files = %s )",
-      service.exec().latin1(), bt(service.terminal()), service.terminalOptions().latin1(), bt(service.substituteUid()), service.username().latin1(),
-       KShell::joinArgs(urls.toStringList()).latin1(), bt(hs), bt(tf)),
+      service.exec().toLatin1().constData(), bt(service.terminal()), service.terminalOptions().toLatin1().constData(), bt(service.substituteUid()), service.username().toLatin1().constData(),
+       KShell::joinArgs(urls.toStringList()).toLatin1().constData(), bt(hs), bt(tf)),
    KShell::joinArgs(KRun::processDesktopExec(service,urls,hs,tf)), b);
 }
 

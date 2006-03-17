@@ -1142,7 +1142,7 @@ QString RenderObject::information() const
     if ( continuation() )
         ts << " continuation=" << continuation();
     if (isText())
-        ts << " \"" << QConstString(static_cast<const RenderText *>(this)->text(), qMin(static_cast<const RenderText *>(this)->length(), 10u)).string() << "\"";
+        ts << " \"" << QString::fromRawData(static_cast<const RenderText *>(this)->text(), qMin(static_cast<const RenderText *>(this)->length(), 10u)) << "\"";
     return str;
 }
 
@@ -1598,7 +1598,7 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
         if (child->isText() && !static_cast<RenderText *>(child)->inlineTextBoxCount())
             continue;
 
-//        kDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QConstString(static_cast<RenderText *>(child)->text(), qMin(static_cast<RenderText *>(child)->length(), 10u)).string() + "\"" : QString()) << endl;
+//        kDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QString::fromRawData(static_cast<RenderText *>(child)->text(), qMin(static_cast<RenderText *>(child)->length(), 10u)) + "\"" : QString()) << endl;
 //        kDebug(6040) << "---------- checkSelectionPoint recursive -----------" << endl;
         khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off, state);
 //        kDebug(6040) << "-------- end checkSelectionPoint recursive ---------" << endl;

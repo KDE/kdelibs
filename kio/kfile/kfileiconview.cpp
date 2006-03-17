@@ -771,7 +771,7 @@ void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
     else // Name or Unsorted
         item->setKey( sortingKey( i->text(), i->isDir(), spec ));
 
-    //qDebug("** key for: %s: %s", i->text().latin1(), item->key().latin1());
+    //qDebug("** key for: %s: %s", i->text().toLatin1().constData(), item->key().toLatin1().constData());
 
     if ( d->previews->isChecked() ) {
         d->previewTimer.setSingleShot( true );

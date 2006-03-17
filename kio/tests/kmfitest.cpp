@@ -20,7 +20,7 @@ int main (int argc, char **argv)
 		qWarning("File: %s", file.toLocal8Bit().data());
 		KMimeType::Ptr p;
 		p = KMimeType::findByPath(file);
-		qWarning("Mime type (findByPath): %s", p->name().latin1());
+		qWarning("Mime type (findByPath): %s", p->name().toLatin1().constData());
 		KFileMetaInfo meta(file, QString::null, KFileMetaInfo::TechnicalInfo | KFileMetaInfo::ContentInfo);
 	}
 

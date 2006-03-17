@@ -133,7 +133,7 @@ void KCompletion::addItem( const QString& item, uint weight )
     node = node->insert( 0x0, true );
     if ( weighted )
         node->confirm( weight -1 );
-//     qDebug("*** added: %s (%i)", item.latin1(), node->weight());
+//     qDebug("*** added: %s (%i)", item.toLatin1().constData(), node->weight());
 }
 
 void KCompletion::addWeightedItem( const QString& item )

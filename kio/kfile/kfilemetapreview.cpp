@@ -52,14 +52,14 @@ void KFileMetaPreview::initPreviewProviders()
     QStringList::ConstIterator it = mimeTypes.begin();
     for ( ; it != mimeTypes.end(); ++it )
     {
-//         qDebug(".... %s", (*it).latin1());
+//         qDebug(".... %s", (*it).toLatin1().constData());
         m_previewProviders.insert( *it, imagePreview );
     }
 }
 
 KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeType )
 {
-//     qDebug("### looking for: %s", mimeType.latin1());
+//     qDebug("### looking for: %s", mimeType.toLatin1().constData());
     // often the first highlighted item, where we can be sure, there is no plugin
     // (this "folders reflect icons" is a konq-specific thing, right?)
     if ( mimeType == "inode/directory" )
@@ -69,7 +69,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     if ( provider )
         return provider;
 
-//qDebug("#### didn't find anything for: %s", mimeType.latin1());
+//qDebug("#### didn't find anything for: %s", mimeType.toLatin1().constData());
 
     if ( s_tryAudioPreview &&
          !mimeType.startsWith("text/") && !mimeType.startsWith("image/") )

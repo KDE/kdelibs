@@ -1205,7 +1205,7 @@ KSpell::slotStopCancel (int result)
     if (!dialog3slot.isEmpty())
     {
       dlgresult=result;
-      connect (this, SIGNAL (dialog3()), this, dialog3slot.ascii());
+      connect (this, SIGNAL (dialog3()), this, dialog3slot.toAscii().constData());
       emit dialog3();
     }
 }
@@ -1283,7 +1283,7 @@ void KSpell::dialog2( int result )
     break;
   }
 
-  connect( this, SIGNAL(dialog3()), this, dialog3slot.ascii() );
+  connect( this, SIGNAL(dialog3()), this, dialog3slot.toAscii().constData() );
   emit dialog3();
 }
 

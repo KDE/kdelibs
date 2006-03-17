@@ -59,8 +59,7 @@ static inline int closeWordAndGetWidth(const QFontMetrics &fm, const QChar *str,
 {
     if (wordEnd <= wordStart) return 0;
 
-    QConstString s(str + pos + wordStart, wordEnd - wordStart);
-    return fm.width(s.string());
+    return fm.width(QString::fromRawData(str + pos + wordStart, wordEnd - wordStart));
 }
 
 static inline void drawDirectedText(QPainter *p, Qt::LayoutDirection d,
@@ -97,9 +96,7 @@ static inline void closeAndDrawWord(QPainter *p, Qt::LayoutDirection d,
     if (d == Qt::RightToLeft)
       x -= width;
 
-    QConstString s(str + pos + wordStart, wordEnd - wordStart);
-
-    drawDirectedText( p, d, x, y, s.string() );
+    drawDirectedText( p, d, x, y, QString::fromRawData(str + pos + wordStart, wordEnd - wordStart) );
 
     if (d != Qt::RightToLeft)
       x += width;
@@ -111,8 +108,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
         int toAdd, Qt::LayoutDirection d, int from, int to, QColor bg, int uy, int h, int deco ) const
 {
     if (!str) return;
-    QConstString cstr = QConstString(str, slen);
-    QString qstr = cstr.string();
+    QString qstr = QString::fromRawData(str, slen);
 
     // ### fixme for RTL
     if ( !scFont && !letterSpacing && !wordSpacing && !toAdd && from==-1 ) {
@@ -122,8 +118,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
         // [pos, pos + len) segment. This makes painting *extremely* slow for
         // long render texts (in the order of several megabytes).
         // Hence, only hand over the piece of text of the actual inline text box
-	QConstString cstr = QConstString(str + pos, len);
-	drawDirectedText( p, d, x, y, cstr.string() );
+	drawDirectedText( p, d, x, y, QString::fromRawData(str + pos, len) );
     } else {
 	if (from < 0) from = 0;
 	if (to < 0) to = len;
@@ -163,17 +158,16 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	if (mode == Whole) {	// most likely variant is treated extra
 
 	    if (to < 0) to = len;
-	    const QConstString cstr(str + pos, len);
-	    const QConstString segStr(str + pos + from, to - from);
-	    const int preSegmentWidth = fm.width(cstr.string(), from);
-	    const int segmentWidth = fm.width(segStr.string());
+	    const QString segStr(QString::fromRawData(str + pos + from, to - from));
+	    const int preSegmentWidth = fm.width(QString::fromRawData(str + pos, len), from);
+	    const int segmentWidth = fm.width(segStr);
 	    const int eff_x = d == Qt::RightToLeft ? x - preSegmentWidth - segmentWidth
 					: x + preSegmentWidth;
 
 	    // draw whole string segment, with optional background
 	    if ( bg.isValid() )
 		p->fillRect( eff_x, uy, segmentWidth, h, bg );
-	    drawDirectedText( p, d, eff_x, y, segStr.string() );
+	    drawDirectedText( p, d, eff_x, y, segStr );
 	    if (deco)
 	        drawDecoration(p, eff_x, uy, y - uy, segmentWidth - 1, h, deco);
 	    return;
@@ -304,10 +298,9 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 
 int Font::width( QChar *chs, int, int pos, int len ) const
 {
-    const QConstString cstr(chs+pos, len);
     int w = 0;
 
-    const QString qstr = cstr.string();
+    const QString qstr = QString::fromRawData(chs+pos, len);
     if ( scFont ) {
 	const QString upper = qstr.toUpper();
 	const QChar *uc = qstr.unicode();
@@ -344,8 +337,7 @@ int Font::width( QChar *chs, int slen, int pos ) const
 	    str[pos] = chs[pos].toUpper();
 	    w = QFontMetrics( *scFont ).charWidth( str, pos );
 	} else {
-	    const QConstString cstr( chs, slen );
-	    w = fm.charWidth( cstr.string(), pos );
+	    w = fm.charWidth( QString::fromRawData( chs, slen ), pos );
 	}
     if ( letterSpacing )
 	w += letterSpacing;
@@ -456,7 +448,7 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
     // make sure we don't bust up X11
     size = qMax(0, qMin(255, size));
 
-//       qDebug("setting font to %s, italic=%d, weight=%d, size=%d", fontDef.family.latin1(), fontDef.italic,
+//       qDebug("setting font to %s, italic=%d, weight=%d, size=%d", fontDef.family.toLatin1().constData(), fontDef.italic,
 //    	   fontDef.weight, size );
 
 

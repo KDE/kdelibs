@@ -71,25 +71,25 @@ int main(int argc, char **argv)
 
     else if (argv1 == QLatin1String("justone")) {
         QString name = KFileDialog::getOpenFileName(startDir);
-        qDebug("filename=%s",name.latin1());
+        qDebug("filename=%s",name.toLatin1().constData());
     }
 
     else if (argv1 == QLatin1String("existingURL")) {
         KUrl url = KFileDialog::getExistingURL();
-        qDebug("URL=%s",url.url().latin1());
+        qDebug("URL=%s",url.url().toLatin1().constData());
         name1 = url.url();
     }
 
     else if (argv1 == QLatin1String("preview")) {
         KUrl u =  KFileDialog::getImageOpenURL();
-        qDebug("filename=%s", u.url().latin1());
+        qDebug("filename=%s", u.url().toLatin1().constData());
     }
 
     else if (argv1 == QLatin1String("preselect")) {
         names = KFileDialog::getOpenFileNames(QLatin1String("/etc/passwd"));
         QStringList::Iterator it = names.begin();
         while ( it != names.end() ) {
-            qDebug("selected file: %s", (*it).latin1());
+            qDebug("selected file: %s", (*it).toLatin1().constData());
             ++it;
         }
     }
@@ -139,7 +139,7 @@ int main(int argc, char **argv)
 //         url.setPath( "/" );
 //         KUrl selected = KDirSelectDialog::selectDirectory( url );
 //         name1 = selected.url();
-//         qDebug("*** selected: %s", selected.url().latin1());
+//         qDebug("*** selected: %s", selected.url().toLatin1().constData());
 //     }
 
     else {
@@ -164,16 +164,16 @@ int main(int argc, char **argv)
             qDebug("*** selectedURLs(): ");
 	    while ( it != list.end() ) {
 		name1 = (*it).url();
-		qDebug("  -> %s", name1.latin1());
+		qDebug("  -> %s", name1.toLatin1().constData());
 		++it;
             }
-            qDebug("*** selectedFile: %s", dlg.selectedFile().latin1());
-            qDebug("*** selectedURL: %s", dlg.selectedURL().url().latin1());
+            qDebug("*** selectedFile: %s", dlg.selectedFile().toLatin1().constData());
+            qDebug("*** selectedURL: %s", dlg.selectedURL().url().toLatin1().constData());
             qDebug("*** selectedFiles: ");
             QStringList l = dlg.selectedFiles();
             QStringList::Iterator it2 = l.begin();
             while ( it2 != l.end() ) {
-                qDebug("  -> %s", (*it2).latin1());
+                qDebug("  -> %s", (*it2).toLatin1().constData());
                 ++it2;
             }
 	}

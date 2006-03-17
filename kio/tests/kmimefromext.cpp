@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   // TODO: a cmd line parameter for controlling this bool ;)
   KMimeType::Ptr mime = KMimeType::findByPath( fileName, 0, true );
   if ( mime && mime->name() != KMimeType::defaultMimeType() )
-    printf( "%s\n", mime->name().latin1());
+    printf( "%s\n", mime->name().toLatin1().constData());
   else
     return 1; // error
      

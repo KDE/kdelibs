@@ -86,7 +86,7 @@ int Lookup::find(const struct HashTable *table,
 
 int Lookup::find(const struct HashTable *table, const Identifier &s)
 {
-  //printf("looking for:%s\n", s.ascii());
+  //printf("looking for:%s\n", s.toAscii().constData());
   const HashEntry *entry = ::findEntry(table, s.ustring().rep()->hash(), s.data(), s.size());
   if (entry)
     return entry->value;

@@ -221,10 +221,10 @@ void KFileMetaPropsPlugin::createLayout()
                 if ( l.find(*it)==l.end() )
                 {
                     d->m_add->setEnabled(true);
-                    kDebug(250) << "**first addable key is " << (*it).latin1() << "**" <<endl;
+                    kDebug(250) << "**first addable key is " << (*it).toLatin1().constData() << "**" <<endl;
                     break;
                 }
-                kDebug(250) << "**already existing key is " << (*it).latin1() << "**" <<endl;
+                kDebug(250) << "**already existing key is " << (*it).toLatin1().constData() << "**" <<endl;
         }
     } */
 }

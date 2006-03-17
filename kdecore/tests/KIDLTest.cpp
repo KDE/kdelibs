@@ -12,8 +12,8 @@ KIDLTest::KIDLTest( const DCOPCString& id )
 
 QString KIDLTest::hello( const QString& name )
 {
-    qDebug("Du heter %s", name.latin1() );
-    qDebug("Ha det %s", name.latin1() );
+    qDebug("Du heter %s", name.toLatin1().constData() );
+    qDebug("Ha det %s", name.toLatin1().constData() );
 	
     return QString("Jeg heter KIDLTest");
 }

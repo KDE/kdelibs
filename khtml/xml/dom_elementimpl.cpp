@@ -700,7 +700,7 @@ void ElementImpl::recalcStyle( StyleChange change )
     case Force: debug = "Force";
         break;
     }
-    qDebug("recalcStyle(%d: %s, changed: %d)[%p: %s]", change, debug, changed(), this, tagName().string().latin1());
+    qDebug("recalcStyle(%d: %s, changed: %d)[%p: %s]", change, debug, changed(), this, tagName().string().toLatin1().constData());
 #endif
     if ( hasParentRenderer && (change >= Inherit || changed()) ) {
         EDisplay oldDisplay = _style ? _style->display() : NONE;
@@ -722,7 +722,7 @@ void ElementImpl::recalcStyle( StyleChange change )
 		return;
             }
             if( m_render && newStyle ) {
-                //qDebug("--> setting style on render element bgcolor=%s", newStyle->backgroundColor().name().latin1());
+                //qDebug("--> setting style on render element bgcolor=%s", newStyle->backgroundColor().name().toLatin1().constData());
                 m_render->setStyle(newStyle);
             }
         }
@@ -740,7 +740,7 @@ void ElementImpl::recalcStyle( StyleChange change )
     for (n = _first; n; n = n->nextSibling()) {
         if ( change >= Inherit || n->isTextNode() ||
              n->hasChangedChild() || n->changed() ) {
-	    //qDebug("    (%p) calling recalcStyle on child %p/%s, change=%d", this, n, n->isElementNode() ? ((ElementImpl *)n)->tagName().string().latin1() : n->isTextNode() ? "text" : "unknown", change );
+	    //qDebug("    (%p) calling recalcStyle on child %p/%s, change=%d", this, n, n->isElementNode() ? ((ElementImpl *)n)->tagName().string().toLatin1().constData() : n->isTextNode() ? "text" : "unknown", change );
             n->recalcStyle( change );
         }
     }

@@ -133,7 +133,7 @@ void SMTP::sendMessage(void)
         finished = false;
         state = IN;
         writeString = QString::fromLatin1("helo %1\r\n").arg(domainName);
-        sock->write(writeString.ascii(), writeString.length());
+        sock->write(writeString.toAscii().constData(), writeString.length());
     }
     if(connected){
         kDebug() << "enabling read on sock...\n" << endl;
@@ -156,7 +156,7 @@ void SMTP::connectTimerTick(void)
     }
 
     kDebug() << "connecting to " << serverHost << ":" << hostPort << " ..... " << endl;
-    sock = new KNetwork::KBufferedSocket(serverHost.ascii(), QString::number(hostPort));
+    sock = new KNetwork::KBufferedSocket(serverHost.toAscii().constData(), QString::number(hostPort));
 
     if (!sock->connect()) {
         timeOutTimer.stop();
@@ -258,7 +258,7 @@ void SMTP::processLine(QString *line)
         state = IN;
         writeString = QString::fromLatin1("helo %1\r\n").arg(domainName);
         kDebug() << "out: " << writeString << endl;
-        sock->write(writeString.ascii(), writeString.length());
+        sock->write(writeString.toAscii().constData(), writeString.length());
         break;
     case GOODBYE:   //221
         state = QUIT;
@@ -269,19 +269,19 @@ void SMTP::processLine(QString *line)
             state = READY;
             writeString = QString::fromLatin1("mail from: %1\r\n").arg(senderAddress);
             kDebug() << "out: " << writeString << endl;
-            sock->write(writeString.ascii(), writeString.length());
+            sock->write(writeString.toAscii().constData(), writeString.length());
             break;
         case READY:
             state = SENTFROM;
             writeString = QString::fromLatin1("rcpt to: %1\r\n").arg(recipientAddress);
              kDebug() << "out: " << writeString << endl;
-            sock->write(writeString.ascii(), writeString.length());
+            sock->write(writeString.toAscii().constData(), writeString.length());
             break;
         case SENTFROM:
             state = SENTTO;
             writeString = QLatin1String("data\r\n");
              kDebug() << "out: " << writeString << endl;
-            sock->write(writeString.ascii(), writeString.length());
+            sock->write(writeString.toAscii().constData(), writeString.length());
             break;
         case DATA:
             state = FINISHED;
@@ -305,7 +305,7 @@ void SMTP::processLine(QString *line)
         writeString += messageBody;
         writeString += QLatin1String(".\r\n");
         kDebug() << "out: " << writeString;
-        sock->write(writeString.ascii(), writeString.length());
+        sock->write(writeString.toAscii().constData(), writeString.length());
         break;
     case ERROR:     //501
         state = CERROR;

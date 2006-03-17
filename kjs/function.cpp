@@ -171,7 +171,7 @@ void FunctionImp::processParameters(ExecState *exec, const List &args)
 #ifdef KJS_VERBOSE
   fprintf(stderr, "---------------------------------------------------\n"
 	  "processing parameters for %s call\n",
-	  functionName().isEmpty() ? "(internal)" : functionName().ascii());
+	  functionName().isEmpty() ? "(internal)" : functionName().toAscii().constData());
 #endif
 
   if (param) {
@@ -181,7 +181,7 @@ void FunctionImp::processParameters(ExecState *exec, const List &args)
     while (p) {
       if (it != args.end()) {
 #ifdef KJS_VERBOSE
-	fprintf(stderr, "setting parameter %s ", p->name.ascii());
+	fprintf(stderr, "setting parameter %s ", p->name.toAscii().constData());
 	printInfo(exec,"to", *it);
 #endif
 	variable->put(exec, p->name, v);

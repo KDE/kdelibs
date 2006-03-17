@@ -657,7 +657,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 Q3PtrList<KSSLCertificate> certs;
                 certs.setAutoDelete( true );
                 for (int i = certsnr; i >= 0; --i) {
-                    KSSLCertificate * cert = KSSLCertificate::fromString(args[i+2].ascii());
+                    KSSLCertificate * cert = KSSLCertificate::fromString(args[i+2].toAscii().constData());
                     if (cert) {
                         certs.prepend(cert);
                         if (cert->isSigner())

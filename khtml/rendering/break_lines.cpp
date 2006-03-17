@@ -96,7 +96,7 @@ namespace khtml {
         // build up string of thai chars
         if ( string != cache->string ) {
             //fprintf(stderr,"new string found (not in cache), calling libthai\n");
-            QByteArray cstr = thaiCodec->fromUnicode( QConstString(string,len).string());
+            QByteArray cstr = thaiCodec->fromUnicode( QString::fromRawData(string,len));
             //printf("About to call libthai::th_brk with str: %s",cstr.data());
 
             cache->numwbrpos = th_brk((const unsigned char*) cstr.data(), cache->wbrpos, cache->allocated);

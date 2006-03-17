@@ -19,7 +19,7 @@
 
 void debug(QString txt)
 {
- fprintf(stderr, "%s\n", txt.ascii());
+ fprintf(stderr, "%s\n", txt.toAscii().constData());
 }
 
 void debug(const char *txt)
@@ -121,8 +121,8 @@ int main(int argc, char *argv[])
             else if (n == KService::DCOP_Multi)
                result = "Multi";
 
-            qWarning("%s %s", (*it)->desktopEntryPath().latin1(),
-                              result.latin1());
+            qWarning("%s %s", (*it)->desktopEntryPath().toLatin1().constData(),
+                              result.toLatin1().constData());
          }
       }
    }

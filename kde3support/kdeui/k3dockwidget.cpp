@@ -106,7 +106,7 @@ K3DockMainWindow::K3DockMainWindow( QWidget* parent, const char *name, Qt::WFlag
 :KMainWindow( parent, name, f )
 {
   QString new_name = QString(name) + QString("_DockManager");
-  dockManager = new K3DockManager( this, new_name.latin1() );
+  dockManager = new K3DockManager( this, new_name.toLatin1().constData() );
   mainDockWidget = 0L;
 }
 
@@ -137,7 +137,7 @@ void K3DockMainWindow::setView( QWidget *view )
 
 K3DockWidget* K3DockMainWindow::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
 {
-  return new K3DockWidget( dockManager, name.latin1(), pixmap, parent, strCaption, strTabPageLabel );
+  return new K3DockWidget( dockManager, name.toLatin1().constData(), pixmap, parent, strCaption, strTabPageLabel );
 }
 
 void K3DockMainWindow::makeDockVisible( K3DockWidget* dock )
@@ -2207,7 +2207,7 @@ static Q3StrList listEntry(QDomElement &base, const QString &tagName, const QStr
     {
         QDomElement subel = n.toElement();
         if (subel.tagName() == subTagName)
-            list.append(subel.firstChild().toText().data().latin1());
+            list.append(subel.firstChild().toText().data().toLatin1().constData());
     }
 
     return list;
@@ -2423,7 +2423,7 @@ void K3DockManager::readConfig(QDomElement &base)
                                         (orientation == (int)Qt::Vertical)? K3DockWidget::DockLeft : K3DockWidget::DockTop,
                                         separatorPos);
                 if (obj)
-                    obj->setName(name.latin1());
+                    obj->setName(name.toLatin1().constData());
             }
         } else if (childEl.tagName() == "tabGroup") {
             // Read a tab group
@@ -2444,7 +2444,7 @@ void K3DockManager::readConfig(QDomElement &base)
                     list.next();
                 }
                 if (obj) {
-                    obj->setName(name.latin1());
+                    obj->setName(name.toLatin1().constData());
                     tab->showPage(tab->page(numberEntry(childEl, "currentTab")));
                 }
             }
@@ -2668,7 +2668,7 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
         } else {
           c->writeEntry( cname+":type", "DOCK");
         }
-        nameList.append( cname.latin1() );
+        nameList.append( cname.toLatin1().constData() );
         //debug("  Save %s", nList.current());
         findList.append( obj->name() );
         nList.erase(nListIt);
@@ -2777,7 +2777,7 @@ void K3DockManager::readConfig( KConfig* c, QString group )
       if ( first  && last ){
         obj = first->manualDock( last, ( p == Qt::Vertical ) ? K3DockWidget::DockLeft : K3DockWidget::DockTop, sepPos );
         if (obj){
-          obj->setName( oname.latin1() );
+          obj->setName( oname.toLatin1().constData() );
         }
       }
     }
@@ -2796,7 +2796,7 @@ void K3DockManager::readConfig( KConfig* c, QString group )
           tabDockGroup = tabDock->manualDock( d1, K3DockWidget::DockCenter );
         }
         if ( tabDockGroup ){
-          tabDockGroup->setName( oname.latin1() );
+          tabDockGroup->setName( oname.toLatin1().constData() );
           c->setGroup( group );
           if (tab)
             tab->showPage( tab->page( c->readEntry( oname+":curTab",0 ) ) );
@@ -2899,7 +2899,7 @@ K3DockWidget* K3DockManager::getDockWidgetFromName( const QString& dockName )
   K3DockWidget* autoCreate = 0L;
   if ( autoCreateDock ){
     kDebug(282)<<"Autocreating dock: "<<dockName<<endl;
-    autoCreate = new K3DockWidget( this, dockName.latin1(), QPixmap("") );
+    autoCreate = new K3DockWidget( this, dockName.toLatin1().constData(), QPixmap("") );
     autoCreateDock->append( autoCreate );
   }
   return autoCreate;
@@ -3061,7 +3061,7 @@ K3DockArea::K3DockArea( QWidget* parent, const char *name)
 :QWidget( parent, name)
 {
   QString new_name = QString(name) + QString("_DockManager");
-  dockManager = new K3DockManager( this, new_name.latin1() );
+  dockManager = new K3DockManager( this, new_name.toLatin1().constData() );
   mainDockWidget = 0L;
 }
 
@@ -3072,7 +3072,7 @@ K3DockArea::~K3DockArea()
 
 K3DockWidget* K3DockArea::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
 {
-  return new K3DockWidget( dockManager, name.latin1(), pixmap, parent, strCaption, strTabPageLabel );
+  return new K3DockWidget( dockManager, name.toLatin1().constData(), pixmap, parent, strCaption, strTabPageLabel );
 }
 
 void K3DockArea::makeDockVisible( K3DockWidget* dock )

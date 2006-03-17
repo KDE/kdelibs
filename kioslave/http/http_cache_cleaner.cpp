@@ -268,7 +268,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       else
       {
          totalSize += fileInfo->size;
-// fprintf(stderr, "Keep in cache: %s %d %d total = %d\n", fileInfo->name.ascii(), fileInfo->size, fileInfo->age, totalSize);
+// fprintf(stderr, "Keep in cache: %s %d %d total = %d\n", fileInfo->name.toAscii().constData(), fileInfo->size, fileInfo->age, totalSize);
       }
    }
    kDebug () << appName << ": Current size of cache = " << totalSize << " kB." << endl;

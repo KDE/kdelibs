@@ -145,7 +145,7 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
     QByteArray params;
     QDataStream stream(&params, QIODevice::WriteOnly);
     QByteArray fake_header("Set-Cookie: ");
-    fake_header.append(value.string().latin1());
+    fake_header.append(value.string().toLatin1().constData());
     fake_header.append("\n");
     stream << URL().url() << fake_header << windowId;
     if (!KApplication::dcopClient()->send("kcookiejar", "kcookiejar",

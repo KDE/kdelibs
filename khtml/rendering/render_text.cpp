@@ -143,7 +143,7 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
 
     p->setPen(hc);
 
-    //kDebug( 6040 ) << "textRun::painting(" << QConstString(text->str->s + m_start, m_len).string().left(30) << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
+    //kDebug( 6040 ) << "textRun::painting(" << QString::fromRawData(text->str->s + m_start, m_len).left(30) << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
     f->drawText(p, m_x + tx, m_y + ty + m_baseline, text->str->s, text->str->l,
     		m_start, m_len, m_toAdd,
 		m_reversed ? Qt::RightToLeft : Qt::LeftToRight,
@@ -404,7 +404,7 @@ int InlineTextBox::widthFromStart(int pos) const
   if (justified && m_toAdd > 0) do {
     //kDebug(6000) << "justify" << endl;
 
-//    QConstString cstr = QConstString(t->str->s + m_start, m_len);
+//    QConstString cstr = QString::fromRawData(t->str->s + m_start, m_len);
     for( int i = 0; i < m_len; i++ )
       if ( t->str->s[m_start+i].category() == QChar::Separator_Space )
 	numSpaces++;
@@ -526,8 +526,8 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
     m_hasReturn = true;
 
 #ifdef DEBUG_LAYOUT
-    QConstString cstr(str->s, str->l);
-    kDebug( 6040 ) << "RenderText ctr( "<< cstr.string().length() << " )  '" << cstr.string() << "'" << endl;
+    QString cstr = QString::fromRawData(str->s, str->l);
+    kDebug( 6040 ) << "RenderText ctr( "<< cstr.length() << " )  '" << cstr << "'" << endl;
 #endif
 }
 
@@ -927,12 +927,12 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 
             if (s->m_len > 0 && pI.phase != PaintActionSelection) {
 	        if (!haveSelection) {
-	            //kDebug( 6040 ) << "RenderObject::paintObject(" << QConstString(str->s + s->m_start, s->m_len).string() << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
+	            //kDebug( 6040 ) << "RenderObject::paintObject(" << QString::fromRawData(str->s + s->m_start, s->m_len) << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
 #ifndef APPLE_CHANGES
                     if (_style->textShadow())
                         s->paintShadow(pI.p, font, tx, ty, _style->textShadow());
 #endif
-// kDebug(6040) << QConstString(str->s + s->m_start, s->m_len).string().left(40) << endl;
+// kDebug(6040) << QString::fromRawData(str->s + s->m_start, s->m_len).left(40) << endl;
 		    font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
 				   s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
 	        }
@@ -1182,8 +1182,8 @@ void RenderText::setText(DOMStringImpl *text, bool force)
 
     setNeedsLayoutAndMinMaxRecalc();
 #ifdef BIDI_DEBUG
-    QConstString cstr(str->s, str->l);
-    kDebug( 6040 ) << "RenderText::setText( " << cstr.string().length() << " ) '" << cstr.string() << "'" << endl;
+    QString cstr = QString::fromRawData(str->s, str->l);
+    kDebug( 6040 ) << "RenderText::setText( " << cstr.length() << " ) '" << cstr << "'" << endl;
 #endif
 }
 

@@ -35,7 +35,7 @@
 
 void debug(QString txt)
 {
- fprintf(stderr, "%s\n", txt.ascii());
+ fprintf(stderr, "%s\n", txt.toAscii().constData());
 }
 
 void debug(const char *txt)
@@ -60,17 +60,17 @@ int main(int argc, char *argv[])
 
    QString instname = "kword";
    QString desktopPath = QString::fromLatin1( "Office/%1.desktop" ).arg( instname );
-   qDebug( "Looking for %s", desktopPath.latin1() );
+   qDebug( "Looking for %s", desktopPath.toLatin1().constData() );
    KService::Ptr service = KService::serviceByDesktopPath( desktopPath );
    if ( service )
-       qDebug( "found: %s", service->desktopEntryPath().latin1() );
+       qDebug( "found: %s", service->desktopEntryPath().toLatin1().constData() );
    else
        qDebug( "not found" );
 
-   qDebug( "Looking for desktop name = %s", instname.latin1() );
+   qDebug( "Looking for desktop name = %s", instname.toLatin1().constData() );
    service = KService::serviceByDesktopName( instname );
    if ( service )
-       qDebug( "found: %s", service->desktopEntryPath().latin1() );
+       qDebug( "found: %s", service->desktopEntryPath().toLatin1().constData() );
    else
        qDebug( "not found" );
 
@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
    for( QStringList::ConstIterator it = stringL.begin();
        it != stringL.end(); it++)
    {
-      debug((*it).ascii());
+      debug((*it).toAscii().constData());
    }
    debug("--End of list--");
 #endif
@@ -246,25 +246,25 @@ int main(int argc, char *argv[])
 
 
    QString rPattern = KImageIO::pattern( KImageIO::Reading );
-   debug("Read pattern:\n%s", rPattern.ascii());
+   debug("Read pattern:\n%s", rPattern.toAscii().constData());
 
    QString wPattern = KImageIO::pattern( KImageIO::Writing );
-   debug("Write pattern:\n%s", wPattern.ascii());
+   debug("Write pattern:\n%s", wPattern.toAscii().constData());
 
    QString suffix = KImageIO::suffix("JPEG");
-   debug("Standard suffix for JPEG: %s", suffix.ascii());
+   debug("Standard suffix for JPEG: %s", suffix.toAscii().constData());
 
    types = KImageIO::mimeTypes(KImageIO::Reading);
    debug("Can read (mimetypes):");
    for(QStringList::ConstIterator it = types.begin();
        it != types.end(); ++it)
-      debug("    %s", (*it).ascii());
+      debug("    %s", (*it).toAscii().constData());
 
    types = KImageIO::mimeTypes(KImageIO::Writing);
    debug("Can write (mimetypes):");
    for(QStringList::ConstIterator it = types.begin();
        it != types.end(); ++it)
-      debug("    %s", (*it).ascii());
+      debug("    %s", (*it).toAscii().constData());
 
    debug("done");
 #endif

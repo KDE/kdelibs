@@ -18,7 +18,7 @@ void Test::display()
 {
 	if (m_interface)
 	{
-		cout << "Interface: " << m_interface->name().latin1() << endl
+		cout << "Interface: " << m_interface->name().toLatin1().constData() << endl
 		     << "Index: " << m_interface->index() << " Flags: " << m_interface->flags() << endl;
 
 		QList<KSocketAddress> addresses = m_interface->address(),
@@ -28,34 +28,34 @@ void Test::display()
 		cout << "Addresses: ";
 		foreach (KSocketAddress a, addresses)
 		{
-			cout << a.toString().latin1() << " ";
+			cout << a.toString().toLatin1().constData() << " ";
 		}
 		cout << endl;
 
 		cout << "Netmasks: ";
 		foreach (KSocketAddress n, netmasks)
 		{
-			cout << n.toString().latin1() << " ";
+			cout << n.toString().toLatin1().constData() << " ";
 		}
 		cout << endl;
 
 		cout << "Broadcasts: ";
 		foreach (KSocketAddress b, broadcasts)
 		{
-			cout << b.toString().latin1() << " ";
+			cout << b.toString().toLatin1().constData() << " ";
 		}
 		cout << endl;
 
 		cout << "Destinations: ";
 		foreach (KSocketAddress d, destinations)
 		{
-			cout << d.toString().latin1() << " ";
+			cout << d.toString().toLatin1().constData() << " ";
 		}
 		cout << endl;
 		
 		/*
-		     << "Address: " << m_interface->address().toString().latin1() << " Netmask: " << m_interface->netmask().toString().latin1() << endl
-		     << "Broadcast: " << m_interface->broadcastAddress().toString().latin1() << " Destination: " << m_interface->destinationAddress().toString().latin1() << endl
+		     << "Address: " << m_interface->address().toString().toLatin1().constData() << " Netmask: " << m_interface->netmask().toString().toLatin1().constData() << endl
+		     << "Broadcast: " << m_interface->broadcastAddress().toString().toLatin1().constData() << " Destination: " << m_interface->destinationAddress().toString().toLatin1().constData() << endl
 		   */
 		cout << "Stats:" << endl 
 		     << " Received: " << endl

@@ -67,7 +67,7 @@ main(int argc, char *argv[])
    for(int i = 0; i < args->count(); i++)
    {
       printf("%d: %s\n", i, args->arg(i));
-      printf("%d: %s\n", i, args->url(i).url().ascii());
+      printf("%d: %s\n", i, args->url(i).url().toAscii().constData());
    }
 
    args->clear(); // Free up memory.

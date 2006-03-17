@@ -51,13 +51,13 @@ int main(int argc,char **argv)
   d.setCountry ("");
 
   qDebug( "-------------------------------------\nShould have german address formatting, local country formatting\n" );
-  qDebug( a.formattedAddress("Jim Knopf").latin1() );
+  qDebug( a.formattedAddress("Jim Knopf").toLatin1().constData() );
   qDebug( "-------------------------------------\nShould have US address formatting, local country formatting\n" );
-  qDebug( b.formattedAddress("Huck Finn").latin1() );
+  qDebug( b.formattedAddress("Huck Finn").toLatin1().constData() );
   qDebug( "-------------------------------------\nShould have german address formatting, local country formatting\n" );
-  qDebug( c.formattedAddress("Jim Knopf").latin1() );
+  qDebug( c.formattedAddress("Jim Knopf").toLatin1().constData() );
   qDebug( "-------------------------------------\nShould have local address formatting, local country formatting\n" );
-  qDebug( d.formattedAddress("Jim Knopf").latin1() );
+  qDebug( d.formattedAddress("Jim Knopf").toLatin1().constData() );
 }
 
 

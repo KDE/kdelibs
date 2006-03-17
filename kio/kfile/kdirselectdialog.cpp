@@ -224,7 +224,7 @@ void KDirSelectDialog::setCurrentURL( const KUrl& url )
             {
                 dirToList.setPath( path.left( pos +1 ) );
                 d->dirsToList.push( dirToList );
-//                 qDebug( "List: %s", dirToList.url().latin1());
+//                 qDebug( "List: %s", dirToList.url().toLatin1().constData());
             }
         }
     }

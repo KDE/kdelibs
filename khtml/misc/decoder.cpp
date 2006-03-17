@@ -323,7 +323,7 @@ QString Decoder::decode(const char *data, int len)
             // SCRIPT|STYLE|META|LINK|OBJECT|TITLE|BASE
             int invalid = 0; // invalid head tag count
 #ifdef APPLE_CHANGES
-            const char *ptr = buffer.latin1();
+            const char *ptr = buffer.toLatin1().constData();
             const char *pEnd = ptr + buffer.length();
 #else
             const char *ptr = buffer.data();

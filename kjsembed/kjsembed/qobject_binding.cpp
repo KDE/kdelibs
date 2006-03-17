@@ -47,7 +47,7 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
         QObject* receiver = 0;
         QObject* sender = senderImp->object<QObject>();
         // 2#signal
-        char *signal = qstrdup( createSignal(args[1]->toString(exec).ascii()).data() );
+		char *signal = qstrdup( createSignal(args[1]->toString(exec).ascii()).data() );
         // 1#slot
         char *slot = 0;
         if( args.size() == 4)
@@ -211,7 +211,7 @@ void QObjectBinding::put(KJS::ExecState *exec, const KJS::Identifier &propertyNa
             if( !propSet )
             {
                     KJSEmbed::throwError(exec,
-                            i18n("Setting property %1 failed: property invalid, read-only or does not exist").arg(propertyName.ascii()));
+                            i18n("Setting property %1 failed: property invalid, read-only or does not exist").arg(propertyName.toAscii().constData()));
             }
             */
 

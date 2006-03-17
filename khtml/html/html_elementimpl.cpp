@@ -304,7 +304,7 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
         // no digits!
         if (j == 0) return;
 
-        int v = qBound( -8192, QConstString(s, i).string().toInt(), 8191 ) ;
+        int v = qBound( -8192, QString::fromRawData(s, i).toInt(), 8191 ) ;
         const char* suffix = "px";
         if (!numOnly || multiLength) {
             // look if we find a % or *
@@ -387,7 +387,7 @@ void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
 	if ( basicLength > 1 ) {
 	    // IE ignores colors with three digits or less
 // 	    qDebug("trying to fix up color '%s'. basicLength=%d, length=%d",
-// 		   color.latin1(), basicLength, color.length() );
+// 		   color.toLatin1().constData(), basicLength, color.length() );
 	    int colors[3] = { 0, 0, 0 };
 	    int component = 0;
 	    int pos = 0;
@@ -421,7 +421,7 @@ void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
 	    // 	assert( colors[0] < 0x100 && colors[1] < 0x100 && colors[2] < 0x100 );
 
 	    color.sprintf("#%02x%02x%02x", colors[0], colors[1], colors[2] );
-// 	    qDebug( "trying to add fixed color string '%s'", color.latin1() );
+// 	    qDebug( "trying to add fixed color string '%s'", color.toLatin1().constData() );
 	    if ( m_styleDecls->setProperty(id, DOMString(color), false, true) )
 		return;
 	}
@@ -601,7 +601,7 @@ void HTMLElementImpl::setInnerText( const DOMString &text, int& exceptioncode )
 
 void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
 {
-    //qDebug("alignment is %s", alignment.string().latin1() );
+    //qDebug("alignment is %s", alignment.string().toLatin1().constData() );
     // vertical alignment with respect to the current baseline of the text
     // right or left means floating images
     int propfloat = -1;

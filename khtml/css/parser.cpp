@@ -1549,7 +1549,7 @@ yyreduce:
   yylen = yyr2[yyn];
 
   /* If YYLEN is nonzero, implement the default value of the action:
-     `$$ = $1'.
+     `$$ = $2'.
 
      Otherwise, the following line sets YYVAL to garbage.
      This behavior is undocumented and Bison
@@ -2013,7 +2013,7 @@ yyreduce:
 	    const DOMString dtag(tag);
             yyval.element = makeId(p->defaultNamespace, doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
 	} else {
-	    yyval.element = makeId(p->defaultNamespace, khtml::getTagID(tag.lower().ascii(), tag.length()));
+	    yyval.element = makeId(p->defaultNamespace, khtml::getTagID(tag.lower().toAscii().constData(), tag.length()));
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown tags
 // 	    assert($$ != 0);
@@ -2095,7 +2095,7 @@ yyreduce:
 	    yyval.attribute = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false, true);
 #endif
 	} else {
-	    yyval.attribute = khtml::getAttrID(attr.lower().ascii(), attr.length());
+	    yyval.attribute = khtml::getAttrID(attr.lower().toAscii().constData(), attr.length());
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown attributes
 	    assert(yyval.attribute != 0);
@@ -2361,7 +2361,7 @@ yyreduce:
 
     {
 	QString str = qString(yyvsp[-1].string);
-	yyval.prop_id = getPropertyID( str.lower().latin1(), str.length() );
+	yyval.prop_id = getPropertyID( str.lower().toLatin1().constData(), str.length() );
     ;}
     break;
 
@@ -2445,7 +2445,7 @@ yyreduce:
 
     {
       QString str = qString( yyvsp[-1].string );
-      yyval.value.id = getValueID( str.lower().latin1(), str.length() );
+      yyval.value.id = getValueID( str.lower().toLatin1().constData(), str.length() );
       yyval.value.unit = CSSPrimitiveValue::CSS_IDENT;
       yyval.value.string = yyvsp[-1].string;
   ;}

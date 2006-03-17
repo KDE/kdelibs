@@ -171,7 +171,7 @@ Navigator::Navigator(ExecState *exec, KHTMLPart *p)
 bool Navigator::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "Navigator::getOwnPropertySlot " << propertyName.ascii() << endl;
+  kDebug(6070) << "Navigator::getOwnPropertySlot " << propertyName.toAscii().constData() << endl;
 #endif
   return getStaticPropertySlot<NavigatorFunc, Navigator, ObjectImp>(exec, &NavigatorTable, this, propertyName, slot);
 }

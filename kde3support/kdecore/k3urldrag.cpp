@@ -58,10 +58,10 @@ void K3URLDrag::init(const KUrl::List &urls)
     KUrl::List::ConstIterator uit = urls.begin();
     KUrl::List::ConstIterator uEnd = urls.end();
     // Get each URL encoded in utf8 - and since we get it in escaped
-    // form on top of that, .latin1() is fine.
+    // form on top of that, .toLatin1().constData() is fine.
     for ( ; uit != uEnd ; ++uit )
     {
-        m_urls.append( urlToString(*uit).latin1() );
+        m_urls.append( urlToString(*uit).toLatin1().constData() );
     }
     setUris(m_urls);
 }
@@ -247,7 +247,7 @@ QByteArray K3URLDrag::encodedData( const char* mime ) const
                 s += "$@@$";
             }
 	    a.resize( s.length() + 1 );
-	    memcpy( a.data(), s.latin1(), a.size() );
+	    memcpy( a.data(), s.toLatin1().constData(), a.size() );
         }
     }
     return a;
