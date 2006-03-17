@@ -119,7 +119,7 @@ RegExp::RegExp(const UString &p, int flags)
   //    ;
   // Note: the Global flag is already handled by RegExpProtoFunc::execute
 
-  int errorCode = regcomp(&_regex, intern.toAscii().constData(), regflags);
+  int errorCode = regcomp(&_regex, intern.ascii(), regflags);
   if (errorCode != 0) {
 #ifndef NDEBUG
     char errorMessage[80];
@@ -199,7 +199,7 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
   const unsigned maxMatch = 10;
   regmatch_t rmatch[maxMatch];
 
-  char *str = strdup(s.toAscii().constData()); // TODO: why ???
+  char *str = strdup(s.ascii()); // TODO: why ???
   if (regexec(&_regex, str + i, maxMatch, rmatch, 0)) {
     free(str);
     return UString::null();

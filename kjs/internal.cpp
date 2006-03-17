@@ -346,13 +346,13 @@ RefPtr<ProgramNode> Parser::parse(const UString &sourceURL, int startingLineNumb
     if (errMsg)
       *errMsg = "Parse error";
 #ifdef KJS_VERBOSE
-    fprintf( stderr, "%s\n", UString(code,length).toAscii().constData() );
+    fprintf( stderr, "%s\n", UString(code,length).ascii() );
 #endif
     return RefPtr<ProgramNode>();
   }
 
 #ifdef KJS_VERBOSE
-  fprintf( stderr, "%s\n", prog->toString().toAscii().constData() );
+  fprintf( stderr, "%s\n", prog->toString().ascii() );
 #endif
 
   return prog;

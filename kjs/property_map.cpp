@@ -302,7 +302,7 @@ void PropertyMap::put(const Identifier &name, JSValue *value, int attributes, bo
     UString::Rep *rep = name._ustring.rep();
     
 #if DEBUG_PROPERTIES
-    printf("adding property %s, attributes = 0x%08x (", name.toAscii().constData(), attributes);
+    printf("adding property %s, attributes = 0x%08x (", name.ascii(), attributes);
     printAttributes(attributes);
     printf(")\n");
 #endif

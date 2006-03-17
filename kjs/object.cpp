@@ -77,11 +77,11 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
         tracing = true;
         for (int i = 0; i < depth; i++)
             putchar (' ');
-        printf ("*** calling:  %s\n", toString(exec).toAscii().constData());
+        printf ("*** calling:  %s\n", toString(exec).ascii());
         for (int j = 0; j < args.size(); j++) {
             for (int i = 0; i < depth; i++)
                 putchar (' ');
-            printf ("*** arg[%d] = %s\n", j, args[j]->toString(exec).toAscii().constData());
+            printf ("*** arg[%d] = %s\n", j, args[j]->toString(exec).ascii());
         }
         tracing = false;
     }
@@ -104,7 +104,7 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
         tracing = true;
         for (int i = 0; i < depth; i++)
             putchar (' ');
-        printf ("*** returning:  %s\n", ret->toString(exec).toAscii().constData());
+        printf ("*** returning:  %s\n", ret->toString(exec).ascii());
         tracing = false;
     }
 #endif
@@ -213,7 +213,7 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
   // and let it override the canPut() check.
   if ((attr == None || attr == DontDelete) && !canPut(exec,propertyName)) {
 #ifdef KJS_VERBOSE
-    fprintf( stderr, "WARNING: canPut %s said NO\n", propertyName.toAscii().constData() );
+    fprintf( stderr, "WARNING: canPut %s said NO\n", propertyName.ascii() );
 #endif
     return;
   }
@@ -612,7 +612,7 @@ JSObject *Error::create(ExecState *exec, ErrorType errtype, const UString &messa
 
 /*
 #ifndef NDEBUG
-  const char *msg = err->get(messagePropertyName)->toString().value().toAscii().constData();
+  const char *msg = err->get(messagePropertyName)->toString().value().ascii();
   if (l >= 0)
       fprintf(stderr, "KJS: %s at line %d. %s\n", estr, l, msg);
   else

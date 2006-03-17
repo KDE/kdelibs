@@ -652,7 +652,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
 #if 0
     printf("KJS Array::Sort length=%d\n", length);
     for ( unsigned int i = 0 ; i<length ; ++i )
-      printf("KJS Array::Sort: %d: %s\n", i, thisObj->get(exec, i)->toString(exec).toAscii().constData() );
+      printf("KJS Array::Sort: %d: %s\n", i, thisObj->get(exec, i)->toString(exec).ascii() );
 #endif
     JSObject *sortFunction = NULL;
     if (!args[0]->isUndefined())
@@ -717,7 +717,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
 #if 0
     printf("KJS Array::Sort -- Resulting array:\n");
     for ( unsigned int i = 0 ; i<length ; ++i )
-      printf("KJS Array::Sort: %d: %s\n", i, thisObj->get(exec, i)->toString(exec).toAscii().constData() );
+      printf("KJS Array::Sort: %d: %s\n", i, thisObj->get(exec, i)->toString(exec).ascii() );
 #endif
     result = thisObj;
     break;
