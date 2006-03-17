@@ -30,4 +30,5 @@ void bzero(void *s, size_t n)
 }
 
 
-#endif KDEWIN_STRINGS_H
+#endif
+
