@@ -47,6 +47,7 @@ add_definitions(-DUNICODE -DWIN32_LEAN_AND_MEAN )
 
 set(win_LIB_SRCS
    src/bootstrap.cpp
+   src/errno.c
    src/fcntl.c
    src/fsync.c
    src/getenv.c

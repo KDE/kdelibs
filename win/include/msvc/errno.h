@@ -25,6 +25,4 @@
 
 KDEWIN32_EXPORT int __cdecl _set_errno(int value);
 
-#define ENOTSUP ENOSYS
-
 #endif

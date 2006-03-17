@@ -30,15 +30,6 @@
 #include <sys/mman.h>
 #include <sys/socket.h>
 
-#ifndef _CRT_ERRNO_DEFINED
-#define _CRT_ERRNO_DEFINED
-static int __cdecl _set_errno(int _Value)
-{
-	errno = _Value;
-	return 0;
-}
-#endif
-
 #ifndef SECTION_MAP_EXECUTE_EXPLICIT
 //not defined in the February 2003 version of the Platform  SDK 
 #define SECTION_MAP_EXECUTE_EXPLICIT 0x0020
