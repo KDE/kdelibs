@@ -25,7 +25,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qpair.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class QWidget;
 class KInstance;
@@ -147,7 +147,7 @@ class KInstance;
  * 
  * @author Olivier Goffart  \<ogoffart\@kde.org\>
  */
-class KDE_EXPORT KNotification : public QObject
+class KDEUI_EXPORT KNotification : public QObject
 {
         Q_OBJECT
 
