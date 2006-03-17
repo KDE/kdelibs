@@ -63,6 +63,8 @@ static Atom kde_wm_change_state;
 static Atom kde_wm_window_opacity;
 static Atom kde_wm_window_shadow;
 static Atom wm_protocols;
+static Atom UTF8_STRING;
+
 static void kwin_net_create_atoms() {
     if (!atoms_created){
 	const int max = 20;
@@ -1135,9 +1137,13 @@ QString KWin::readNameProperty( WId win, unsigned long atom )
     QString result;
 #ifdef Q_WS_X11
     if ( XGetTextProperty( QX11Info::display(), win, &tp, atom ) != 0 && tp.value != NULL ) {
+        if (!UTF8_STRING)
+          UTF8_STRING = XInternAtom( qt_xdisplay(), "UTF8_STRING", False);
         if ( XmbTextPropertyToTextList( QX11Info::display(), &tp, &text, &count) == Success &&
                   text != NULL && count > 0 ) {
             result = QString::fromLocal8Bit( text[0] );
+        } else if ( tp.encoding == UTF8_STRING ) {
+            result = QString::fromUtf8 ( (const char*) tp.value );
         } else if ( tp.encoding == XA_STRING )
             result = QString::fromLocal8Bit( (const char*) tp.value );
         if( text != NULL )
