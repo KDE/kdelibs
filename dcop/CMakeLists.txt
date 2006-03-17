@@ -90,7 +90,7 @@ add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DANSICPP)
 if (UNIX)
    add_definitions(-DUNIXCONN)
 else (UNIX)
-   add_definitions(-DSOCKCONN -DTCPCONN -DKICE_EXPORT=DCOP_EXPORT)
+   add_definitions(-DSOCKCONN -DTCPCONN -DKICE_EXPORT=DCOP_EXPORT -DMAKE_DCOP_LIB)
 endif (UNIX)
 
 kde4_automoc(${DCOP_LIB_SRCS})
