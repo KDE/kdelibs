@@ -1138,7 +1138,7 @@ QString KWin::readNameProperty( WId win, unsigned long atom )
 #ifdef Q_WS_X11
     if ( XGetTextProperty( QX11Info::display(), win, &tp, atom ) != 0 && tp.value != NULL ) {
         if (!UTF8_STRING)
-          UTF8_STRING = XInternAtom( qt_xdisplay(), "UTF8_STRING", False);
+          UTF8_STRING = XInternAtom( QX11Info::display(), "UTF8_STRING", False);
         if ( XmbTextPropertyToTextList( QX11Info::display(), &tp, &text, &count) == Success &&
                   text != NULL && count > 0 ) {
             result = QString::fromLocal8Bit( text[0] );
