@@ -2,6 +2,7 @@
     This file is part of libkabc.
 
     Copyright (c) 2001,2003 Cornelius Schumacher <schumacher@kde.org>
+    Copyright (c) 2006 Tom Abers <tomalbers@kde.nl>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -37,6 +38,9 @@
 #include <ksavefile.h>
 #include <kstandarddirs.h>
 #include <ktempfile.h>
+#include <kurl.h>
+#include <jobclasses.h>
+#include <kio/netaccess.h>
 
 #include "formatfactory.h"
 #include "resourcefileconfig.h"
@@ -189,9 +193,31 @@ bool ResourceFile::doOpen()
 
     if ( file.size() == 0 ) {
       file.close();
+      kdDebug() << "File size is zero. Evaluating backups" << endl;
+      for (int i=0; i!=20; i++)
+      {
+        QFile backup( mFileName + "__" + QString::number(i) );
+        kdDebug() << "Evaluating" << backup.name() << " size: " << backup.size() << endl;
+        if ( backup.size() != 0 )
+        {
+          kdDebug() << "Restoring backup " << i << endl;
+          KURL src, dest;
+          src.setPath( mFileName + "__" + QString::number(i) );
+          dest.setPath( mFileName );
+          
+          KIO::DeleteJob* job = KIO::del( dest, false, false ); 
+          KIO::NetAccess::synchronousRun( job, 0);
+          
+          KIO::CopyJob* job2 = KIO::copy( src, dest, false ); 
+          KIO::NetAccess::synchronousRun( job2, 0);
+
+          backup.close();
+          return true; 
+        }
+        backup.close();
+      }
       return true;
     }
-
     bool ok = mFormat->checkFormat( &file );
     file.close();
 
@@ -307,8 +333,28 @@ bool ResourceFile::save( Ticket * )
     return false;
   }
 
-  // create backup file
-  QString extension = "_" + QString::number( QDate::currentDate().dayOfWeek() );
+  // Only do the logrotate dance when the __0 file is not 0 bytes.
+  QFile file( mFileName + "__0" );
+  if ( file.size() != 0 ) {
+    KURL last;
+    last.setPath( mFileName + "__20" );
+    kdDebug() << "deleting " << last << endl;
+    KIO::DeleteJob* job = KIO::del( last, false, false ); 
+    KIO::NetAccess::synchronousRun( job, 0);
+
+    for (int i=19; i>=0; i--)
+    {
+      KURL src, dest;
+      src.setPath( mFileName + "__" + QString::number(i) );
+      dest.setPath( mFileName + "__" + QString::number(i+1) );
+      kdDebug() << "moving " << src << " -> " << dest << endl;
+      KIO::SimpleJob* job = KIO::rename( src, dest, false ); 
+      KIO::NetAccess::synchronousRun( job, 0);
+    }
+  } else
+    kdDebug() << "Not starting logrotate __0 is 0 bytes." << endl;
+  
+  QString extension = "__0";
   (void) KSaveFile::backupFile( mFileName, QString::null /*directory*/,
                                 extension );
 
