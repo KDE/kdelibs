@@ -577,14 +577,20 @@ Q_SIGNALS:
      */
     void triggered( const QString& text );
 
-private Q_SLOTS:
-    void actionTriggered();
+protected Q_SLOTS:
+    /**
+     * This function is called whenever an action from the selections is triggered.
+     */
+    virtual void actionTriggered(QAction* action);
 
+private Q_SLOTS:
     void comboBoxDeleted(QObject* object);
 
 private:
+    void init();
+
     class KSelectActionPrivate;
-    KSelectActionPrivate *d;
+    KSelectActionPrivate* const d;
 };
 
 /**

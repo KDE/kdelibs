@@ -237,65 +237,65 @@ public:
 
 KSelectAction::KSelectAction( KActionCollection * parent, const char* name )
   : KAction(parent, name)
+  , d(new KSelectActionPrivate())
 {
-  d = new KSelectActionPrivate;
-  setToolBarWidgetFactory(this);
+  init();
 }
 
 KSelectAction::KSelectAction( const QString & text, KActionCollection * parent, const char* name )
   : KAction(text, parent, name)
+  , d(new KSelectActionPrivate())
 {
-  d = new KSelectActionPrivate;
-  setToolBarWidgetFactory(this);
+  init();
 }
 
 KSelectAction::KSelectAction( const QIcon & icon, const QString & text, KActionCollection * parent, const char* name )
   : KAction(icon, text, parent, name)
+  , d(new KSelectActionPrivate())
 {
-  d = new KSelectActionPrivate;
-  setToolBarWidgetFactory(this);
+  init();
 }
 
 KSelectAction::KSelectAction( const QString & icon, const QString & text, KActionCollection * parent, const char* name )
   : KAction(icon, text, parent, name)
+  , d(new KSelectActionPrivate())
 {
-  d = new KSelectActionPrivate;
-  setToolBarWidgetFactory(this);
+  init();
 }
 
 KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
                               KActionCollection* parent, const char* name )
   : KAction( text, cut, 0,0,parent, name )
+  , d(new KSelectActionPrivate())
 {
-  d = new KSelectActionPrivate;
-  setToolBarWidgetFactory(this);
+  init();
 }
 
 KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
                               const QObject* receiver, const char* slot,
                               KActionCollection* parent, const char* name )
   : KAction( text, cut, receiver, slot, parent, name )
+  , d(new KSelectActionPrivate())
 {
-  d = new KSelectActionPrivate;
-  setToolBarWidgetFactory(this);
+  init();
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
                               KActionCollection* parent, const char* name )
   : KAction( text, pix, cut, 0,0,parent, name )
+  , d(new KSelectActionPrivate())
 {
-  d = new KSelectActionPrivate;
-  setToolBarWidgetFactory(this);
+  init();
 }
 
 KSelectAction::KSelectAction( const QString& text, const QString& pix,
                               const KShortcut& cut,
                               KActionCollection* parent, const char* name )
   : KAction( text, pix, cut, 0,0,parent, name )
+  , d(new KSelectActionPrivate())
 {
-  d = new KSelectActionPrivate;
-  setToolBarWidgetFactory(this);
+  init();
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
@@ -304,9 +304,9 @@ KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
                               const char* slot, KActionCollection* parent,
                               const char* name )
   : KAction( text, pix, cut, receiver, slot, parent, name )
+  , d(new KSelectActionPrivate())
 {
-  d = new KSelectActionPrivate;
-  setToolBarWidgetFactory(this);
+  init();
 }
 
 KSelectAction::KSelectAction( const QString& text, const QString& pix,
@@ -315,14 +315,20 @@ KSelectAction::KSelectAction( const QString& text, const QString& pix,
                               const char* slot, KActionCollection* parent,
                               const char* name )
   : KAction( text, pix, cut, receiver, slot, parent, name )
+  , d(new KSelectActionPrivate())
 {
-  d = new KSelectActionPrivate;
-  setToolBarWidgetFactory(this);
+  init();
 }
 
 KSelectAction::~KSelectAction()
 {
   delete d;
+}
+
+void KSelectAction::init()
+{
+  setToolBarWidgetFactory(this);
+  connect(selectableActionGroup(), SIGNAL(actionTriggered(QAction*)), SLOT(actionTriggered(QAction*)));
 }
 
 QActionGroup * KSelectAction::selectableActionGroup( ) const
@@ -453,8 +459,6 @@ void KSelectAction::addAction(QAction* action)
   foreach (KComboBox* comboBox, d->m_comboBoxes)
     comboBox->addItem(action->icon(), action->text(), action);
 
-  connect(action, SIGNAL(triggered(bool)), SLOT(actionTriggered()));
-
   if (menu())
     menu()->addAction(action);
 }
@@ -497,17 +501,11 @@ QAction* KSelectAction::removeAction(QAction* action)
   foreach (KComboBox* comboBox, d->m_comboBoxes)
     comboBox->removeItem(index);
 
-  disconnect(action, SIGNAL(triggered(bool)), this, SLOT(actionTriggered()));
-
   return action;
 }
 
-void KSelectAction::actionTriggered()
+void KSelectAction::actionTriggered(QAction* action)
 {
-  QAction* action = qobject_cast<QAction*>(sender());
-  if (!action)
-    return;
-
   emit triggered(action);
   emit triggered(selectableActionGroup()->actions().indexOf(action));
   emit triggered(action->text());
