@@ -21,6 +21,7 @@
  */
 
 #include <assert.h>
+#include <signal.h>
 
 #include <QFile>
 #include <QTimer>
@@ -38,7 +39,7 @@
 
 TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 : QMainWindow(parent), m_flags(None), m_runCounter(0), m_testCounter(0), m_lastResult(Unknown),
-					   m_activeProcess(0), m_activeTreeItem(0), m_justProcessingQueue(false)
+					   m_activeProcess(0), m_activeTreeItem(0), m_suspended(false), m_justProcessingQueue(false)
 {
 	m_ui.setupUi(this);
 
@@ -52,6 +53,9 @@ TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 	connect(m_ui.actionSpecify_output_directory, SIGNAL(triggered(bool)), SLOT(setOutputDirectory()));
 	connect(m_ui.actionRun_tests, SIGNAL(triggered(bool)), SLOT(runTests()));
 
+	connect(m_ui.pauseContinueButton, SIGNAL(clicked(bool)), SLOT(pauseContinueButtonClicked()));
+	connect(m_ui.saveLogButton, SIGNAL(clicked(bool)), SLOT(saveLogButtonClicked()));
+
 	connect(m_ui.treeWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
 			this, SLOT(treeWidgetContextMenuRequested(const QPoint &)));
 
@@ -59,6 +63,7 @@ TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 	m_ui.progressBar->setValue(0);
 	m_ui.textEdit->setReadOnly(true);
 	m_ui.actionRun_tests->setEnabled(false);
+	m_ui.pauseContinueButton->setEnabled(false);
 
 	m_ui.treeWidget->headerItem()->setTextAlignment(0, Qt::AlignLeft);
 	m_ui.treeWidget->headerItem()->setText(0, i18n("Available Tests: 0"));
@@ -125,7 +130,6 @@ void TestRegressionWindow::toggleNoXvfbUse(bool checked)
 void TestRegressionWindow::setTestsDirectory()
 {
 	m_testsUrl = KDirSelectDialog::selectDirectory(QString(), true /* local only */);
-
 	initTestsDirectory();
 }
 
@@ -361,11 +365,51 @@ void TestRegressionWindow::directoryListingFinished(KIO::Job *)
 */
 
 	// This is an estimation of the number of tests which will be run.
-	// Most tests have DOM/RENDER/PAINT output, that's why 3 is a quite good guess.
-	const unsigned long progressBarRange = availableTests * 3;
+	// Most tests have RENDER/PAINT output, that's why 2 is a quite good guess.
+	const unsigned long progressBarRange = availableTests * 2;
 	m_ui.progressBar->setRange(0, progressBarRange);
 
 	m_ui.treeWidget->headerItem()->setText(0, i18n("Available Tests: %1").arg(availableTests));
+}
+
+void TestRegressionWindow::pauseContinueButtonClicked()
+{
+	assert(m_activeProcess != 0);
+
+	if(!m_suspended)
+	{
+		// Suspend process
+		kill(m_activeProcess->pid(), SIGSTOP);
+
+		m_suspended = true;
+		m_ui.pauseContinueButton->setText(i18n("Continue"));
+	}
+	else
+	{
+		// Continue process
+		kill(m_activeProcess->pid(), SIGCONT);
+
+		m_suspended = false;
+		m_ui.pauseContinueButton->setText(i18n("Pause"));
+	}
+}
+
+void TestRegressionWindow::saveLogButtonClicked()
+{
+	assert(m_activeProcess == 0);
+	m_saveLogUrl = KDirSelectDialog::selectDirectory(QString(), true /* local only */);
+
+	QString fileName = m_saveLogUrl.path() + "/logOutput.html";
+	if(QFileInfo(fileName).exists())
+	{
+		// Remove file if already existant...
+		QFile file(fileName);
+		if(!file.remove())
+		{
+			kError() << " Can't remove " << fileName << endl;
+			exit(1);
+		}
+	}
 }
 
 void TestRegressionWindow::runTests()
@@ -429,7 +473,9 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 	// Clean up gui...
 	m_ui.textEdit->clear();
 	m_ui.progressBar->reset();
+	m_ui.saveLogButton->setEnabled(false);
 	m_ui.actionRun_tests->setEnabled(false);
+	m_ui.pauseContinueButton->setEnabled(true);
 
 	// Start regression testing process...
 	m_activeProcess->setEnvironment(environment);
@@ -545,8 +591,25 @@ void TestRegressionWindow::testerExited(int /* exitCode */, QProcess::ExitStatus
 	if(m_testCounter >= 0) // All-tests mode
 		m_ui.progressBar->setValue(m_ui.progressBar->maximum());
 
-	m_ui.actionRun_tests->setEnabled(true);
+	// Eventually save log output...
+	if(!m_saveLogUrl.isEmpty())
+	{
+		// We should close our written log with </body></html>.
+		m_processingQueue.enqueue(QString::fromLatin1("\n</body>\n</html>"));
 
+		if(!m_justProcessingQueue)
+		{
+			m_justProcessingQueue = true;
+			QTimer::singleShot(50, this, SLOT(processQueue()));
+		}
+	}
+
+	// Cleanup gui...
+	m_ui.saveLogButton->setEnabled(true);
+	m_ui.actionRun_tests->setEnabled(true);
+	m_ui.pauseContinueButton->setEnabled(false);
+
+	// Cleanup data..
 	delete m_activeProcess;
 	m_activeProcess = 0;
 
@@ -773,7 +836,8 @@ void TestRegressionWindow::parseRegressionTestingOutput(QString data, TestResult
 		data.replace(expFailures, "<b><font size='4' color='red'>Failures:&nbsp;\\1</font></b>");
 	}
 
-	data.append("<br>");
+	if(!data.contains("</body>\n</html>")) // Don't put <br> behind </html>!
+		data.append("<br>");
 
 	// Update text edit...
 	updateLogOutput(data);
@@ -798,7 +862,9 @@ void TestRegressionWindow::treeWidgetContextMenuRequested(const QPoint &pos)
 
 		// Build & show popup menu...
 		QMenu menu(m_ui.treeWidget);
+
 		menu.addAction(SmallIcon("player_play"), i18n("Run test..."), this, SLOT(runSingleTest()));
+		menu.addSeparator();
 		menu.addAction(SmallIcon("add"), i18n("Add to ignores..."), this, SLOT(addToIgnores()));
 		menu.addAction(SmallIcon("button_cancel"), i18n("Remove from ignores..."), this, SLOT(removeFromIgnores()));
 		
@@ -828,6 +894,34 @@ void TestRegressionWindow::updateLogOutput(const QString &data)
 	// Go to end...
 	cursor.movePosition(QTextCursor::End);
 	m_ui.textEdit->setTextCursor(cursor);
+
+	// Eventually save log output...
+	if(!m_saveLogUrl.isEmpty())
+	{
+		QString fileName = m_saveLogUrl.path() + "/logOutput.html";
+		QIODevice::OpenMode fileFlags = QIODevice::WriteOnly;
+
+		bool fileExists = QFileInfo(fileName).exists();
+		if(fileExists)
+			fileFlags |= QIODevice::Append;
+
+		QFile file(fileName);
+		if(!file.open(fileFlags))
+		{
+			kError() << " Can't open " << fileName << endl;
+			exit(1);
+		}
+
+		if(!fileExists)
+			file.write(QString::fromLatin1("<html>\n<body>\n").toAscii());
+
+		file.write((data + "\n").toAscii());
+		file.close();
+
+		// Reset save log url, if we reached the end...
+		if(data.contains("</body>\n</html>"))
+			m_saveLogUrl = KUrl();
+	}
 }
 
 unsigned long TestRegressionWindow::countLogLines() const

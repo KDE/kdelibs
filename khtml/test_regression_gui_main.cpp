@@ -49,8 +49,6 @@ int main(int argc, char *argv[])
 TODO
 ----
 * Fix progress bars in "do not run html/js tests" mode
-* Offer option to save log to disk
-* Offer Pause/Continue buttons to control regression testing flow
 
 MAYBE-TODO
 ----------

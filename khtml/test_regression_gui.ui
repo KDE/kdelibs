@@ -61,11 +61,94 @@
        <number>6</number>
       </property>
       <item>
-       <widget class="QLabel" name="label_3" >
-        <property name="text" >
-         <string>Regression testing output...</string>
+       <layout class="QHBoxLayout" >
+        <property name="margin" >
+         <number>0</number>
         </property>
-       </widget>
+        <property name="spacing" >
+         <number>6</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_3" >
+          <property name="text" >
+           <string>Regression testing output...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" >
+           <size>
+            <width>111</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pauseContinueButton" >
+          <property name="sizePolicy" >
+           <sizepolicy>
+            <hsizetype>0</hsizetype>
+            <vsizetype>0</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize" >
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="toolTip" >
+           <string>Pause/Continue regression testing process</string>
+          </property>
+          <property name="whatsThis" >
+           <string>Pause/Continue regression testing process</string>
+          </property>
+          <property name="layoutDirection" >
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text" >
+           <string>Pause</string>
+          </property>
+          <property name="flat" >
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="saveLogButton" >
+          <property name="sizePolicy" >
+           <sizepolicy>
+            <hsizetype>0</hsizetype>
+            <vsizetype>0</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize" >
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="toolTip" >
+           <string>You may select a file where the log content is stored, before the regression testing started!</string>
+          </property>
+          <property name="whatsThis" >
+           <string>You may select a file where the log content is stored, before the regression testing started!</string>
+          </property>
+          <property name="text" >
+           <string>Output to file...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <widget class="QTextEdit" name="textEdit" />
@@ -100,6 +183,16 @@
      <height>27</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuMain" >
+    <property name="title" >
+     <string>Tests</string>
+    </property>
+    <addaction name="actionSpecify_tests_directory" />
+    <addaction name="actionSpecify_khtml_directory" />
+    <addaction name="actionSpecify_output_directory" />
+    <addaction name="separator" />
+    <addaction name="actionRun_tests" />
+   </widget>
    <widget class="QMenu" name="menuSettings" >
     <property name="tearOffEnabled" >
      <bool>false</bool>
@@ -111,16 +204,6 @@
     <addaction name="actionOnly_run_HTML_tests" />
     <addaction name="actionDo_not_supress_debug_output" />
     <addaction name="actionDo_not_use_Xvfb" />
-   </widget>
-   <widget class="QMenu" name="menuMain" >
-    <property name="title" >
-     <string>Tests</string>
-    </property>
-    <addaction name="actionSpecify_tests_directory" />
-    <addaction name="actionSpecify_khtml_directory" />
-    <addaction name="actionSpecify_output_directory" />
-    <addaction name="separator" />
-    <addaction name="actionRun_tests" />
    </widget>
    <addaction name="menuMain" />
    <addaction name="menuSettings" />

@@ -52,6 +52,9 @@ private Q_SLOTS:
 	void directoryListingResult(KIO::Job *job, const KIO::UDSEntryList &list);
 	void directoryListingFinished(KIO::Job *job);
 
+	void pauseContinueButtonClicked();
+	void saveLogButtonClicked();
+
 	void treeWidgetContextMenuRequested(const QPoint &pos);
 
 	void runTests();
@@ -111,6 +114,7 @@ private:
 	KUrl m_khtmlUrl;
 	KUrl m_testsUrl;
 	KUrl m_outputUrl;
+	KUrl m_saveLogUrl;
 
 	// Temporary variables
 	TestResult m_lastResult;
@@ -133,6 +137,8 @@ private:
 	QMap<QString, QStringList> m_ignoreMap;
 	QMap<QString, QStringList> m_failureMap;
 	QMap<QString, QStringList> m_directoryMap;
+
+	bool m_suspended;
 
 	// Processing queue
 	bool m_justProcessingQueue;
