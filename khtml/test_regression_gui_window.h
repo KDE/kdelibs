@@ -47,6 +47,7 @@ private Q_SLOTS:
 
 	void setTestsDirectory();
 	void setKHTMLDirectory();
+	void setOutputDirectory();
 		
 	void directoryListingResult(KIO::Job *job, const KIO::UDSEntryList &list);
 	void directoryListingFinished(KIO::Job *job);
@@ -109,6 +110,7 @@ private:
 
 	KUrl m_khtmlUrl;
 	KUrl m_testsUrl;
+	KUrl m_outputUrl;
 
 	// Temporary variables
 	TestResult m_lastResult;

@@ -51,12 +51,10 @@ TODO
 * Fix progress bars in "do not run html/js tests" mode
 * Offer option to save log to disk
 * Offer Pause/Continue buttons to control regression testing flow
-* Offer Right-Mouse-Button "Add to ignore"/"Remove from ignore" in context menu
 
 MAYBE-TODO
 ----------
 * Offer an integrated "index.html" viewer, after the regression testing is done
-* Offer a way to change the location where the regression testing output is stored
 */
 
 // vim:ts=4:tw=4:noet

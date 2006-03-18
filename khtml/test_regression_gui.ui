@@ -116,8 +116,10 @@
     <property name="title" >
      <string>Tests</string>
     </property>
-    <addaction name="actionSpecify_tests_location" />
+    <addaction name="actionSpecify_tests_directory" />
     <addaction name="actionSpecify_khtml_directory" />
+    <addaction name="actionSpecify_output_directory" />
+    <addaction name="separator" />
     <addaction name="actionRun_tests" />
    </widget>
    <addaction name="menuMain" />
@@ -175,14 +177,19 @@
     <string>Run single test...</string>
    </property>
   </action>
-  <action name="actionSpecify_tests_location" >
+  <action name="actionSpecify_tests_directory" >
    <property name="text" >
-    <string>Specify tests location...</string>
+    <string>Specify tests directory...</string>
    </property>
   </action>
   <action name="actionSpecify_khtml_directory" >
    <property name="text" >
     <string>Specify khtml directory...</string>
+   </property>
+  </action>
+  <action name="actionSpecify_output_directory" >
+   <property name="text" >
+    <string>Specify output directory...</string>
    </property>
   </action>
  </widget>

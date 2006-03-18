@@ -43,12 +43,13 @@ TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 	m_ui.setupUi(this);
 
 	// Setup actions/connections
-    connect(m_ui.actionOnly_run_JS_tests, SIGNAL(toggled(bool)), SLOT(toggleJSTests(bool)));
-    connect(m_ui.actionOnly_run_HTML_tests, SIGNAL(toggled(bool)), SLOT(toggleHTMLTests(bool)));
-    connect(m_ui.actionDo_not_supress_debug_output, SIGNAL(toggled(bool)), SLOT(toggleDebugOutput(bool)));
-    connect(m_ui.actionDo_not_use_Xvfb, SIGNAL(toggled(bool)), SLOT(toggleNoXvfbUse(bool)));
-    connect(m_ui.actionSpecify_tests_location, SIGNAL(triggered(bool)), SLOT(setTestsDirectory()));
-    connect(m_ui.actionSpecify_khtml_directory, SIGNAL(triggered(bool)), SLOT(setKHTMLDirectory()));
+	connect(m_ui.actionOnly_run_JS_tests, SIGNAL(toggled(bool)), SLOT(toggleJSTests(bool)));
+	connect(m_ui.actionOnly_run_HTML_tests, SIGNAL(toggled(bool)), SLOT(toggleHTMLTests(bool)));
+	connect(m_ui.actionDo_not_supress_debug_output, SIGNAL(toggled(bool)), SLOT(toggleDebugOutput(bool)));
+	connect(m_ui.actionDo_not_use_Xvfb, SIGNAL(toggled(bool)), SLOT(toggleNoXvfbUse(bool)));
+	connect(m_ui.actionSpecify_tests_directory, SIGNAL(triggered(bool)), SLOT(setTestsDirectory()));
+	connect(m_ui.actionSpecify_khtml_directory, SIGNAL(triggered(bool)), SLOT(setKHTMLDirectory()));
+	connect(m_ui.actionSpecify_output_directory, SIGNAL(triggered(bool)), SLOT(setOutputDirectory()));
 	connect(m_ui.actionRun_tests, SIGNAL(triggered(bool)), SLOT(runTests()));
 
 	connect(m_ui.treeWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
@@ -126,6 +127,11 @@ void TestRegressionWindow::setTestsDirectory()
 	m_testsUrl = KDirSelectDialog::selectDirectory(QString(), true /* local only */);
 
 	initTestsDirectory();
+}
+
+void TestRegressionWindow::setOutputDirectory()
+{
+	m_outputUrl = KDirSelectDialog::selectDirectory(QString(), true /* local only */);
 }
 
 void TestRegressionWindow::initTestsDirectory()
@@ -398,6 +404,9 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 
 	QStringList arguments;
 	arguments << "--base" << m_testsUrl.path();
+
+	if(!m_outputUrl.isEmpty())
+		arguments << "--output" << m_outputUrl.path();
 
 	if(!testFileName.isEmpty())
 		arguments << "--test" << testFileName;
