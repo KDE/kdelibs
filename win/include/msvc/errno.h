@@ -23,6 +23,9 @@
 #include <sys/types.h>
 #include <../include/errno.h>
 
+#ifndef _CRT_ERRNO_DEFINED
+#define _CRT_ERRNO_DEFINED
 KDEWIN32_EXPORT int __cdecl _set_errno(int value);
+#endif
 
 #endif
