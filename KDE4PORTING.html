@@ -465,7 +465,7 @@ cg.readXXX("entry name");
 </ul>
 
 <H4>KAction</H4>
-<p>Making KAction a subclass of QAction brings KDE more into line with the Qt way of creating user interfaces, and (for the most part) removes code duplication.</p>
+<p>Making KAction a subclass of QAction brings KDE more into line with the Qt way of creating user interfaces, improves accessibility, and removes code duplication.</p>
 <p>QAction in Qt4 is a true 1st class citizen - all QWidgets now have a list of associated actions, and QToolBar, QMenu etc. all use this list directly to show the graphical items (widgets, entries in the menu, etc).  This has replaced all usage of integers as "id"s.  There is also a new QEvent (QActionEvent), and the corresponding virtual protected function in QWidget, actionEvent().</p>
 <ul>
 <li>KAction is now a subclass of QAction.</li>
@@ -484,6 +484,7 @@ cg.readXXX("entry name");
 <li>setGroup() / group() removed - use QActionGroup instead (setActionGroup() / actionGroup())</li>
 <li>ActivationReason has been removed (not supported by Qt). For a surrogate, you can connect to QMenu::triggered(QAction*), QToolBar::actionTriggered(QAction*), etc.</li>
 <li>setters are no longer slots; where they were used as such, an intermediary will be required</li>
+<li>New feature from Qt: statusTip() / setStatusTip().  Usually this will be the same as the tooltip.  It appears in the status bar whenever the action is hovered in a QMenu.  A porting convenience is being investigated for automatic toolTip() -> statusTip(), but the best solution is to set both.</li>
 </ul>
 
 <H4>KActionCollection</H4>
