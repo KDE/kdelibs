@@ -497,6 +497,8 @@ cg.readXXX("entry name");
 <li>actionHighlighted(), actionStatusText(), clearStatusText() removed - use QAction::setStatusTip() as a replacement.  QStatusBars belonging to QMainWindow automatically get the statusTip() applied to them when they are moused over in a QMenu, via a QStatusTipEvent.</li>
 <li>groups() removed (now using QActionGroups) - see actionGroups() (and actionsWithoutGroup()) for replacement</li>
 <li>actions( const QString& group ) removed - use actionGroups() instead, and then QActionGroup::actions()</li>
+<li>action(int), count() deprecated - use actions() directly</li>
+<li>action(const char* name, const char* className) removed: action(const char* name), actions(const char* name), actionOfType&lt;Class&gt;(const char* name), actionsOfType&lt;Class&gt;(const char* name) are the replacements</li>
 </ul>
 
 <H4>KToggleAction</H4>

@@ -63,9 +63,6 @@ class QActionGroup;
  * connect(actionCollection(), SIGNAL( clearStatusText() ),
  *           statusBar(), SLOT( clear() ) );
  * \endcode
- *
- * \todo emit support signals
- * \todo sort out whether actions should be added explicitly, how the list should be stored, etc.
  */
 class KDEUI_EXPORT KActionCollection : public QObject
 {
@@ -93,7 +90,8 @@ public:
 
   /**
    * This sets the default shortcut context for new actions created in this
-   * collection.  The default is Qt::WindowShortcut (as with Qt).
+   * collection.  The default is not to assign a default context, and this
+   * can be restored by passing -1.
    *
    * If this collection has an associated widget, all actions' contexts are
    * automatically changed to Qt::WidgetShortcut.
@@ -102,11 +100,12 @@ public:
 
   /**
    * Retrieves the default shortcut context for new actions created in this
-   * collection.  The default is Qt::WindowShortcut (as with Qt).
+   * collection.  The default is -1, ie. do not assign a default context to
+   * added actions.
    *
    * If this collection has an associated widget, all actions will be changed to
-   * Qt::WidgetShortcut, however this function will still return the default
-   * if no widget was associated with this action collection.
+   * Qt::WidgetShortcut, however this function will still return the setting
+   * for when no widget is associated with this action collection.
    */
   Qt::ShortcutContext defaultShortcutContext() const;
 
@@ -209,30 +208,67 @@ public:
    */
   void addDocCollection( KActionCollection* pDoc );
 
-  /** Returns the number of actions in the collection */
-  int count() const;
+  /**
+   * Returns the number of actions in the collection.
+   *
+   * \deprecated use actions().count() instead
+   */
+  KDE_DEPRECATED int count() const;
 
-  /// Returns whether the action collection is empty or not.
-  inline bool isEmpty() const { return (count() == 0); }
+  /**
+   * Returns whether the action collection is empty or not.
+   */
+  inline bool isEmpty() const { return actions().isEmpty(); }
 
   /**
    * Return the KAction* at position "index" in the action collection.
-   * @see count()
+   *
+   * \deprecated use actions().value(int index) instead
    */
-  KAction* action( int index ) const;
+  KDE_DEPRECATED KAction* action( int index ) const;
+
   /**
-   * Find an action (optionally, of a given subclass of KAction) in the action collection.
-   * @param name Name of the KAction.
-   * @param classname Name of the KAction subclass.
+   * Find the first action with a given \a name in the action collection.
+   *
+   * @param name Name of the KAction, or null to match all actions
    * @return A pointer to the first KAction in the collection which matches the parameters or
    * null if nothing matches.
    */
-  KAction* action( const char* name, const char* classname = 0 ) const;
+  KAction* action( const char* name ) const;
+
+  /**
+   * Find all actions with a given \a name in the action collection.
+   *
+   * @param name Name of the KAction, or null to match all actions
+   * @return A list of all KActions in the collection which match the parameters
+   */
+  QList<KAction*> actions( const char* name ) const;
+
+  /**
+   * Find the first action of a given subclass of KAction in the action collection.
+   *
+   * @param name Name of the KAction, or null to match all actions.
+   * @return A pointer to the first KAction in the collection which matches the parameters or
+   * null if nothing matches.
+   */
+  template <class T>
+  KAction* actionOfType( const char* name ) const
+  { return actionOfTypeInternal(name, ((T)0)->staticMetaObject); }
+
+  /**
+   * Find all actions of a given subclass of KAction in the action collection.
+   *
+   * @param name Name of the KAction, or null to match all actions.
+   * @return A list of all KActions in the collection which match the parameters
+   */
+  template <class T>
+  KAction* actionsOfType( const char* name ) const
+  { return actionsOfTypeInternal(name, ((T)0)->staticMetaObject); }
 
   /**
    * Returns the list of KActions which belong to this action collection.
    */
-  const QList<KAction*> actions() const;
+  const QList<KAction*>& actions() const;
 
   /**
    * Returns the list of KActions without an QAction::actionGroup() which belong to this action collection.
@@ -281,8 +317,22 @@ Q_SIGNALS:
    */
   void removed( KAction* action );
 
+  /**
+   * Indicates that \a action was highlighted
+   */
+  void actionHighlighted(KAction* action);
+
+  /**
+   * Indicates that \a action was triggered
+   */
+  void actionTriggered(KAction* action);
+
 protected:
-  virtual void childEvent ( QChildEvent * event );
+  /// Overridden to perform connections when someone wants to know whether an action was highlighted or triggered
+  virtual void connectNotify ( const char * signal );
+
+  virtual void slotActionTriggered();
+  virtual void slotActionHighlighted();
 
   virtual void virtual_hook( int id, void* data );
 
@@ -316,13 +366,13 @@ public:
    */
   KAction* take( KAction* action );
 
-private slots:
-  void processAddedChildren();
-
 private:
-    KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
-    class KActionCollectionPrivate;
-    KActionCollectionPrivate* const d;
+  KAction* actionOfTypeInternal( const char* name, const QMetaObject& mo ) const;
+  QList<KAction*> actionsOfTypeInternal( const char* name, const QMetaObject& mo ) const;
+
+  KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
+  class KActionCollectionPrivate;
+  KActionCollectionPrivate* const d;
 };
 
 #endif

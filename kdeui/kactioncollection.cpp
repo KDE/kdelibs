@@ -51,24 +51,29 @@ public:
     m_instance = 0;
     m_parentGUIClient = 0L;
 
-    defaultShortcutContext = Qt::WindowShortcut;
+    defaultShortcutContext = static_cast<Qt::ShortcutContext>(-1);
     configIsGlobal = false;
+
+    connectHighlighted = connectTriggered = false;
   }
 
   KInstance *m_instance;
   QList<KActionCollection*> m_docList;
 
-  QMultiMap<QByteArray, KAction*> m_actionDict;
+  QMultiMap<QByteArray, KAction*> actionDict;
+  QList<KAction*> actionList;
+
   const KXMLGUIClient *m_parentGUIClient;
 
   QList<QWidget*> associatedWidgets;
-  QList<QObject*> addedChildren;
 
   bool configIsGlobal;
   QString configGroup;
   QString xmlFile;
 
   Qt::ShortcutContext defaultShortcutContext;
+
+  bool connectTriggered, connectHighlighted;
 };
 
 void KActionCollection::setXMLFile( const QString& xmlFile )
@@ -119,44 +124,91 @@ void KActionCollection::addDocCollection( KActionCollection* pDoc )
 
 void KActionCollection::clear()
 {
-  foreach(KAction* pAction, d->m_actionDict.values())
+  foreach(KAction* pAction, d->actionDict.values())
     delete pAction;
 }
 
-KAction* KActionCollection::action( const char* name, const char* classname ) const
+KAction* KActionCollection::action( const char* name ) const
 {
-  KAction* pAction = 0;
+  KAction* action = 0L;
 
-  if ( !classname && name )
-    pAction = d->m_actionDict.value (name);
+  if ( name )
+    action = d->actionDict.value (name);
 
-  else {
-    foreach( KAction* itAction, d->m_actionDict )
-    {
-      if ( ( !name || !itAction->objectName().compare( name ) )  &&
-          ( !classname || !strcmp( itAction->metaObject()->className(), classname ) ) ) {
-        pAction = itAction;
-        break;
-      }
-    }
+  if( !action ) {
+    for( int i = 0; i < d->m_docList.count() && !action; i++ )
+      action = d->m_docList[i]->action( name );
   }
 
-  if( !pAction ) {
-    for( int i = 0; i < d->m_docList.count() && !pAction; i++ )
-      pAction = d->m_docList[i]->action( name, classname );
+  return action;
+}
+
+QList<KAction*> KActionCollection::actions( const char* name ) const
+{
+  QList<KAction*> ret;
+
+  if ( name )
+    ret += d->actionDict.values(name);
+  else
+    ret = actions();
+
+  for( int i = 0; i < d->m_docList.count(); i++ )
+    ret += d->m_docList[i]->action( name );
+
+  return ret;
+}
+
+KAction* KActionCollection::actionOfTypeInternal( const char* name, const QMetaObject& mo ) const
+{
+  if (!name)
+    foreach (KAction* action, d->actionList)
+      if (mo.cast(action))
+        return action;
+
+  foreach (KAction* action, d->actionDict.values(name))
+    if (mo.cast(action))
+      return action;
+
+  KAction* action = 0L;
+
+  for( int i = 0; i < d->m_docList.count() && !action; i++ )
+    action = d->m_docList[i]->action( name );
+
+  return action;
+}
+
+QList<KAction*> KActionCollection::actionsOfTypeInternal( const char* name, const QMetaObject& mo ) const
+{
+  QList<KAction*> ret;
+
+  if (!name) {
+    foreach (KAction* action, d->actionList)
+      if (mo.cast(action))
+        ret.append(action);
+
+  } else {
+    foreach (KAction* action, d->actionDict.values(name))
+      if (mo.cast(action))
+        ret.append(action);
   }
 
-  return pAction;
+  for( int i = 0; i < d->m_docList.count(); i++ )
+    ret += d->m_docList[i]->actions( name );
+
+  return ret;
 }
 
 KAction* KActionCollection::action( int index ) const
 {
-  return *(d->m_actionDict.begin() + index);
+  if (index < 0 || index >= d->actionList.count())
+    return 0L;
+
+  return d->actionList.value(index);
 }
 
 int KActionCollection::count() const
 {
-  return d->m_actionDict.count();
+  return d->actionList.count();
 }
 
 void KActionCollection::setInstance( KInstance *instance )
@@ -177,32 +229,26 @@ const KXMLGUIClient *KActionCollection::parentGUIClient() const
 	return d->m_parentGUIClient;
 }
 
-const QList< KAction * > KActionCollection::actions( ) const
+const QList< KAction * >& KActionCollection::actions( ) const
 {
-  QList<KAction*> ret;
-  foreach (QObject* object, children())
-    if (KAction* action = qobject_cast<KAction*>(object))
-      ret.append(action);
-  return ret;
+  return d->actionList;
 }
 
 const QList< KAction * > KActionCollection::actionsWithoutGroup( ) const
 {
   QList<KAction*> ret;
-  foreach (QObject* object, children())
-    if (KAction* action = qobject_cast<KAction*>(object))
-      if (!action->actionGroup())
-        ret.append(action);
+  foreach (KAction* action, actions())
+    if (!action->actionGroup())
+      ret.append(action);
   return ret;
 }
 
 const QList< QActionGroup * > KActionCollection::actionGroups( ) const
 {
   QSet<QActionGroup*> set;
-  foreach (QObject* object, children())
-    if (KAction* action = qobject_cast<KAction*>(object))
-      if (action->actionGroup())
-        set.insert(action->actionGroup());
+  foreach (KAction* action, actions())
+    if (action->actionGroup())
+      set.insert(action->actionGroup());
   return set.toList();
 }
 
@@ -230,8 +276,8 @@ void KActionCollection::insert( KAction* action )
   }
 
   // look if we already have THIS action under THIS name ;)
-  QMap<QByteArray, KAction*>::const_iterator it = d->m_actionDict.find (name);
-  while (it != d->m_actionDict.end() && it.key() == name)
+  QMap<QByteArray, KAction*>::const_iterator it = d->actionDict.find (name);
+  while (it != d->actionDict.end() && it.key() == name)
   {
     if ( it.value() == action )
       return;
@@ -240,7 +286,23 @@ void KActionCollection::insert( KAction* action )
   }
 
   // really insert action
-  d->m_actionDict.insert(name, action);
+  d->actionDict.insert(name, action);
+  d->actionList.append(action);
+
+  if (d->connectHighlighted)
+    connect(action, SIGNAL(highlighted()), SLOT(slotActionHighlighted()));
+
+  if (d->connectTriggered)
+    connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
+
+  if (d->associatedWidgets.count()) {
+    action->setShortcutContext(Qt::WidgetShortcut);
+    foreach (QWidget* w, d->associatedWidgets)
+      w->addAction(action);
+
+  } else if (defaultShortcutContext() != -1) {
+    action->setShortcutContext(defaultShortcutContext());
+  }
 
   emit inserted( action );
 }
@@ -263,9 +325,23 @@ KAction* KActionCollection::take( KAction* action )
      name = QByteArray(unnamed_name);
   }
 
-  KAction *a = d->m_actionDict.take( name );
+  KAction *a = d->actionDict.take( name );
   if ( !a || a != action )
       return 0;
+
+  int index = d->actionList.indexOf(action);
+  Q_ASSERT(index != -1);
+  d->actionList.removeAt(index);
+
+  if (d->connectHighlighted)
+    disconnect(action, SIGNAL(highlighted()), this, SLOT(slotActionHighlighted()));
+
+  if (d->connectTriggered)
+    disconnect(action, SIGNAL(triggered(bool)), this, SLOT(slotActionTriggered()));
+
+  if (d->associatedWidgets.count())
+    foreach (QWidget* w, d->associatedWidgets)
+      w->removeAction(action);
 
   if ( a->parentCollection() == this )
       a->setParent(0L);
@@ -309,43 +385,6 @@ void KActionCollection::clearAssociatedWidgets()
 const QList<QWidget*>& KActionCollection::associatedWidgets() const
 {
   return d->associatedWidgets;
-}
-
-void KActionCollection::childEvent(QChildEvent* event)
-{
-  if (d->associatedWidgets.count() || defaultShortcutContext() != Qt::WindowShortcut) {
-    if (event->added()) {
-      if (!d->addedChildren.count())
-        QTimer::singleShot(0, this, SLOT(processAddedChildren()));
-
-      d->addedChildren.append(event->child());
-
-    } else if (event->removed()) {
-      if (QAction* action = qobject_cast<QAction*>(event->child()))
-        foreach (QWidget* w, d->associatedWidgets)
-          w->removeAction(action);
-    }
-  }
-
-  QObject::childEvent(event);
-}
-
-void KActionCollection::processAddedChildren()
-{
-  foreach (QObject* object, d->addedChildren) {
-    if (QAction* action = qobject_cast<QAction*>(object)) {
-      if (d->associatedWidgets.count()) {
-        action->setShortcutContext(Qt::WidgetShortcut);
-        foreach (QWidget* w, d->associatedWidgets)
-          w->addAction(action);
-
-      } else {
-        action->setShortcutContext(defaultShortcutContext());
-      }
-    }
-  }
-
-  d->addedChildren.clear();
 }
 
 const QString & KActionCollection::configGroup( ) const
@@ -436,6 +475,43 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll ) cons
   config->sync();
 }
 
+void KActionCollection::slotActionTriggered( )
+{
+  KAction* action = qobject_cast<KAction*>(sender());
+  if (action)
+    emit actionTriggered(action);
+}
+
+void KActionCollection::slotActionHighlighted( )
+{
+  KAction* action = qobject_cast<KAction*>(sender());
+  if (action)
+    emit actionHighlighted(action);
+}
+
+void KActionCollection::connectNotify ( const char * signal )
+{
+  if (d->connectHighlighted && d->connectTriggered)
+    return;
+
+  if (signal == SIGNAL(actionHighlighted(KAction*))) {
+    if (!d->connectHighlighted) {
+      d->connectHighlighted = true;
+      foreach (KAction* action, actions())
+        connect(action, SIGNAL(highlighted()), SLOT(slotActionHighlighted()));
+    }
+
+  } else if (signal == SIGNAL(actionTriggered(KAction*))) {
+    if (!d->connectTriggered) {
+      d->connectTriggered = true;
+      foreach (KAction* action, actions())
+        connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
+    }
+  }
+
+  QObject::connectNotify(signal);
+}
+
 //---------------------------------------------------------------------
 // KActionShortcutList
 //---------------------------------------------------------------------
@@ -460,7 +536,7 @@ const KShortcut& KActionShortcutList::shortcutDefault( uint i ) const
 bool KActionShortcutList::isConfigurable( uint i ) const
     { return m_actions.action(i)->isShortcutConfigurable(); }
 bool KActionShortcutList::setShortcut( uint i, const KShortcut& cut )
-    { if (i < m_actions.count()) { m_actions.action(i)->setShortcut( cut ); return true; } return false; }
+    { if ((int)i < m_actions.count()) { m_actions.action(i)->setShortcut( cut ); return true; } return false; }
 const KInstance* KActionShortcutList::instance() const
     { return m_actions.instance(); }
 QVariant KActionShortcutList::getOther( Other, uint ) const
@@ -542,7 +618,7 @@ const KShortcut& KActionPtrShortcutList::shortcutDefault( uint i ) const
 bool KActionPtrShortcutList::isConfigurable( uint i ) const
     { return m_actions[i]->isShortcutConfigurable(); }
 bool KActionPtrShortcutList::setShortcut( uint i, const KShortcut& cut )
-    { if (i < m_actions.count()) { m_actions[i]->setShortcut( cut ); return true; } return false; }
+    { if ((int)i < m_actions.count()) { m_actions[i]->setShortcut( cut ); return true; } return false; }
 QVariant KActionPtrShortcutList::getOther( Other, uint ) const
     { return QVariant(); }
 bool KActionPtrShortcutList::setOther( Other, uint, const QVariant &)
