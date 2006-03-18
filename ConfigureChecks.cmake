@@ -100,6 +100,13 @@ if(AKODE_FOUND)
 else(AKODE_FOUND)
 	set(HAVE_AKODE 0)
 endif(AKODE_FOUND)
+
+if(GETTEXT_FOUND)
+	set(ENABLE_NLS 1)
+else(GETTEXT_FOUND)
+	set(ENABLE_NLS 0)
+endif(GETTEXT_FOUND)
+
 				
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
 # If definitions like -D_GNU_SOURCE are needed for these checks they

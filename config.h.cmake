@@ -135,6 +135,9 @@
 
 #cmakedefine   HAVE_FLOAT_H 1
 
+/* define if message translations are enabled */
+#cmakedefine ENABLE_NLS 1
+
 /* define if you have aKodelib installed */
 #cmakedefine HAVE_AKODE 1
 

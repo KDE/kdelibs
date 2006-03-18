@@ -29,6 +29,10 @@ if(BZIP2_FOUND)
   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} kbzip2filter.cpp )
 endif(BZIP2_FOUND)
 
+# compile Gettext support if available
+if(GETTEXT_FOUND)
+  include_directories(${GETTEXT_INCLUDE_DIR})
+endif(GETTEXT_FOUND)
 
 if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
@@ -234,6 +238,10 @@ endif(BZIP2_FOUND)
 if(AGG_FOUND)
    target_link_libraries(kdecore  ${QT_QTXML_LIBRARY} ${AGG_LIBRARIES})
 endif(AGG_FOUND)
+
+if(GETTEXT_FOUND)
+  target_link_libraries(kdecore  ${GETTEXT_LIBRARIES})
+endif(GETTEXT_FOUND)
 
 if(HAVE_LIBDL)
    target_link_libraries(kdecore dl)
