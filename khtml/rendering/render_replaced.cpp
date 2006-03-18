@@ -118,8 +118,7 @@ void RenderWidget::detach()
 
     if ( m_widget ) {
         if ( m_view ) {
-            if (!isKHTMLWidget())
-                m_view->setWidgetVisible(this, false);
+            m_view->setWidgetVisible(this, false);
             m_view->removeChild( m_widget );
         }
 
@@ -228,8 +227,7 @@ void RenderWidget::setQWidget(QWidget *widget)
             else
                 setPos(xPos(), -500000);
         }
-        if (!isKHTMLWidget())
-            m_view->setWidgetVisible(this, false);
+        m_view->setWidgetVisible(this, false);
         m_view->addChild( m_widget, 0, -500000);
         if ( m_widget ) m_widget->hide();
         m_resizePending = false;
@@ -347,7 +345,7 @@ void RenderWidget::updateFromElement()
 
 void RenderWidget::slotWidgetDestructed()
 {
-    if (m_view && !isKHTMLWidget())
+    if (m_view)
        m_view->setWidgetVisible(this, false);
     m_widget = 0;
 }
@@ -359,7 +357,7 @@ void RenderWidget::setStyle(RenderStyle *_style)
     {
         m_widget->setFont(style()->font());
         if (style()->visibility() != VISIBLE) {
-            if (m_view && !isKHTMLWidget())
+            if (m_view)
                 m_view->setWidgetVisible(this, false);
             m_widget->hide();
         }
@@ -434,8 +432,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         xPos = xNew;
         yPos = yNew;
     }
-    if (!khtmlw)
-        m_view->setWidgetVisible(this, true);
+    m_view->setWidgetVisible(this, true);
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
     if (khtmlw)

@@ -241,6 +241,7 @@ public:
         complete = false;
         firstRelayout = true;
         needsFullRepaint = true;
+        dirtyLayout = false;
         layoutSchedulingEnabled = true;
         painting = false;
         updateRegion = QRegion();
@@ -367,6 +368,7 @@ public:
     bool needsFullRepaint			:1;
     bool painting				:1;
     bool possibleTripleClick			:1;
+    bool dirtyLayout                           :1;
     bool m_dialogsAllowed			:1;
     QRegion updateRegion;
     KHTMLToolTip *tooltip;
@@ -657,23 +659,25 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
-        QRect g = w->geometry();
-        if ( !rw->isFrame() && ((g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
-                                (g.right() <= pt.x()) || (g.left() > pt.x()+ew) ))
-            continue;
-        RenderLayer* rl = rw->needsMask() ? rw->enclosingStackingContext() : 0;
-        QRegion mask = rl ? rl->getMask() : QRegion();
-        if (!mask.isNull()) {
-            QPoint o(0,0);
-            o = contentsToViewport(o);
-            mask.translate(o.x(),o.y());
-            mask = mask.intersect( QRect(g.x(),g.y(),g.width(),g.height()) );
-            cr -= mask;
-        } else {
-            int x, y;
-            rw->absolutePosition(x,y);
-            contentsToViewport(x,y,x,y);
-            cr -= QRect(x,y,rw->width(),rw->height());
+	if (w && rw && !rw->isKHTMLWidget()) { 
+            QRect g = w->geometry();
+            if ( !rw->isFrame() && ((g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
+                                    (g.right() <= pt.x()) || (g.left() > pt.x()+ew) ))
+                continue;
+            RenderLayer* rl = rw->needsMask() ? rw->enclosingStackingContext() : 0;
+            QRegion mask = rl ? rl->getMask() : QRegion();
+            if (!mask.isNull()) {
+                QPoint o(0,0);
+                o = contentsToViewport(o);
+                mask.translate(o.x(),o.y());
+                mask = mask.intersect( QRect(g.x(),g.y(),g.width(),g.height()) );
+                cr -= mask;
+            } else {
+                int x, y;
+                rw->absolutePosition(x,y);
+                contentsToViewport(x,y,x,y);
+                cr -= QRect(x,y,rw->width(),rw->height());
+            }
         }
     }
 
@@ -3410,6 +3414,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         return;
     }
     else if ( e->timerId() == d->layoutTimerId ) {
+        d->dirtyLayout = true;
         layout();
         if (d->firstRelayout) {
             d->firstRelayout = false;
@@ -3472,6 +3477,30 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 
     if ( !updateRegion.isNull() )
         repaintContents( updateRegion );
+
+    // As widgets can only be accurately positioned during painting, every layout might
+    // dissociate a widget from its RenderWidget. E.g: if a RenderWidget was visible before layout, but the layout
+    // pushed it out of the viewport, it will not be repainted, and consequently it's assocoated widget won't be repositioned!
+    // Thus we need to check each supposedly 'visible' widget at the end of each layout, and remove it in case it's no more in sight.
+
+    if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
+        QWidget* w;
+        d->dirtyLayout = false;
+
+        QRect visibleRect(contentsX(), contentsY(), visibleWidth(), visibleHeight());
+        QPtrList<RenderWidget> toRemove;
+        for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
+            int xp = 0, yp = 0;
+            w = it.current();
+            RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
+            if (!rw->absolutePosition(xp, yp) ||
+                !visibleRect.intersects(QRect(xp, yp, w->width(), w->height())))
+                toRemove.append(rw);
+        }
+        for (RenderWidget* r = toRemove.first(); r; r = toRemove.next())
+            if ( (w = d->visibleWidgets.take(r) ) )
+                addChild(w, 0, -500000);
+    }
 
     emit repaintAccessKeys();
     if (d->emitCompletedAfterRepaint) {
