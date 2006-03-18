@@ -3,6 +3,8 @@
  *
  * Copyright (C) 2006 Nikolas Zimmermann <zimmermann@kde.org>
  *
+ * Icons: Copyright (C) 2006 The Aquaosk-2.0 Team
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either

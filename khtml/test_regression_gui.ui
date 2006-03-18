@@ -278,7 +278,7 @@
  </widget>
  <pixmapfunction></pixmapfunction>
  <resources>
-  <include location="test_regression_ui.qrc" />
+  <include location="test_regression_gui.qrc" />
  </resources>
  <connections/>
 </ui>
