@@ -499,14 +499,14 @@ public:
     }
 
     L toLeft(R r) {
-        typename QMap<R,L>::iterator i = m_rToL.find(r);
+        QMapIterator<R,L> i( m_rToL.find(r) );
         if (i != m_rToL.end())
             return *i;
         return L();
     }
 
     R toRight(L l) {
-        typename QMap<L,R>::iterator i = m_lToR.find(l);
+        QMapIterator<L,R> i = m_lToR.find(l);
         if (i != m_lToR.end())
             return *i;
         return R();
@@ -775,7 +775,7 @@ void KeyboardEventImpl::initKeyboardEvent(const DOMString &typeArg,
     if (keyIdentifierArg.length() == 1) {
         //Likely to be normal unicode id, unless it's one of the few
         //special values.
-        unsigned short code = keyIdentifierArg.unicode()[0].unicode();
+        unsigned short code = keyIdentifierArg.unicode()[0];
         if (code > 0x20 && code != 0x7F)
             keyVal = code;
     }
@@ -789,7 +789,7 @@ void KeyboardEventImpl::initKeyboardEvent(const DOMString &typeArg,
             modifiersList.string().stripWhiteSpace().simplifyWhiteSpace());
 
     unsigned modifiers = 0;
-    for (QStringList::iterator i = mods.begin(); i != mods.end(); ++i)
+    for (QStringList::Iterator i = mods.begin(); i != mods.end(); ++i)
         if (unsigned mask = keyModifiersToCode()->toRight((*i).latin1()))
             modifiers |= mask;
 
