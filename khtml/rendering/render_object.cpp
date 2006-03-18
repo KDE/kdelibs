@@ -2169,6 +2169,8 @@ void RenderObject::updateWidgetMasks() {
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling()) {
         if ( curr->isWidget() && static_cast<RenderWidget*>(curr)->needsMask() ) {
             QWidget* w = static_cast<RenderWidget*>(curr)->widget();
+            if (!w)
+                return;
             RenderLayer* l = curr->enclosingStackingContext();
             QRegion r = l ? l->getMask() : QRegion();
             int x,y;
