@@ -116,7 +116,7 @@ parser:
 
 ## test program
 check_PROGRAMS 	= testkhtml
-EXTRA_PROGRAMS = testkhtml_static testregression
+EXTRA_PROGRAMS = testkhtml_static testregression testregressiongui
 testkhtml_SOURCES = testkhtml.cpp domtreeview.cpp
 testkhtml_LDADD = libkhtml.la 
 testkhtml_static_SOURCES = testkhtml.cpp domtreeview.cpp 
@@ -124,6 +124,11 @@ testkhtml_static_LDADD = libkhtml.la
 testkhtml_static_LDFLAGS = -static
 testregression_SOURCES = test_regression.cpp test_regression_fontoverload.cpp
 testregression_LDADD = libkhtml.la
+
+testregressiongui_SOURCES = test_regression_gui.ui test_regression_gui.qrc \
+						    test_regression_gui_window.cpp test_regression_gui_main.cpp
+
+testregressiongui_LDADD = libkhtml.la
 
 DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
 DOXYGEN_EXCLUDE =  test*.* html rendering xml misc pics test 

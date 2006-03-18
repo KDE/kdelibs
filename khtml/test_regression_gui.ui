@@ -1,0 +1,194 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>874</width>
+    <height>646</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>KHTML Regression Testing Utility</string>
+  </property>
+  <widget class="QWidget" name="centralwidget" >
+   <layout class="QHBoxLayout" >
+    <property name="margin" >
+     <number>9</number>
+    </property>
+    <property name="spacing" >
+     <number>6</number>
+    </property>
+    <item>
+     <widget class="QTreeWidget" name="treeWidget" >
+      <property name="sizePolicy" >
+       <sizepolicy>
+        <hsizetype>0</hsizetype>
+        <vsizetype>7</vsizetype>
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize" >
+       <size>
+        <width>350</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="contextMenuPolicy" >
+       <enum>Qt::CustomContextMenu</enum>
+      </property>
+      <property name="columnCount" >
+       <number>1</number>
+      </property>
+      <column>
+       <property name="text" >
+        <string>0</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" >
+      <property name="margin" >
+       <number>0</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_3" >
+        <property name="text" >
+         <string>Regression testing output...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="textEdit" />
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2" >
+        <property name="text" >
+         <string>Regression testing status...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="progressBar" >
+        <property name="value" >
+         <number>24</number>
+        </property>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>874</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuSettings" >
+    <property name="tearOffEnabled" >
+     <bool>false</bool>
+    </property>
+    <property name="title" >
+     <string>Settings</string>
+    </property>
+    <addaction name="actionOnly_run_JS_tests" />
+    <addaction name="actionOnly_run_HTML_tests" />
+    <addaction name="actionDo_not_supress_debug_output" />
+    <addaction name="actionDo_not_use_Xvfb" />
+   </widget>
+   <widget class="QMenu" name="menuMain" >
+    <property name="title" >
+     <string>Tests</string>
+    </property>
+    <addaction name="actionSpecify_tests_location" />
+    <addaction name="actionSpecify_khtml_directory" />
+    <addaction name="actionRun_tests" />
+   </widget>
+   <addaction name="menuMain" />
+   <addaction name="menuSettings" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>626</y>
+     <width>874</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <action name="actionOnly_run_JS_tests" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Only run JS tests</string>
+   </property>
+  </action>
+  <action name="actionOnly_run_HTML_tests" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Only run HTML tests</string>
+   </property>
+  </action>
+  <action name="actionDo_not_supress_debug_output" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Do not supress debug output</string>
+   </property>
+  </action>
+  <action name="actionDo_not_use_Xvfb" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Do not use Xvfb</string>
+   </property>
+  </action>
+  <action name="actionRun_tests" >
+   <property name="text" >
+    <string>Run tests...</string>
+   </property>
+  </action>
+  <action name="actionRun_single_test" >
+   <property name="text" >
+    <string>Run single test...</string>
+   </property>
+  </action>
+  <action name="actionSpecify_tests_location" >
+   <property name="text" >
+    <string>Specify tests location...</string>
+   </property>
+  </action>
+  <action name="actionSpecify_khtml_directory" >
+   <property name="text" >
+    <string>Specify khtml directory...</string>
+   </property>
+  </action>
+ </widget>
+ <pixmapfunction></pixmapfunction>
+ <resources>
+  <include location="test_regression_ui.qrc" />
+ </resources>
+ <connections/>
+</ui>
