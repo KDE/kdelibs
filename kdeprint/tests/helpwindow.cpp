@@ -118,8 +118,7 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
 	     this, SLOT( setForwardAvailable( bool ) ) );
 
 
-    Q3ToolBar* toolbar = new Q3ToolBar( this );
-    addToolBar( toolbar, "Toolbar");
+    QToolBar* toolbar = addToolBar("Toolbar");
     QToolButton* button;
 
     button = new QToolButton( icon_back, tr("Backward"), "", browser, SLOT(backward()), toolbar );
@@ -135,10 +134,10 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
     pathCombo = new QComboBox( true, toolbar );
     connect( pathCombo, SIGNAL( activated( const QString & ) ),
 	     this, SLOT( pathSelected( const QString & ) ) );
-    toolbar->setStretchableWidget( pathCombo );
-    setRightJustification( true );
-    setDockEnabled( Qt::DockLeft, false );
-    setDockEnabled( Qt::DockRight, false );
+    //toolbar->setStretchableWidget( pathCombo );
+    //setRightJustification( true );
+    //setDockEnabled( Qt::DockLeft, false );
+    //setDockEnabled( Qt::DockRight, false );
 
     pathCombo->insertItem( home_ );
 
