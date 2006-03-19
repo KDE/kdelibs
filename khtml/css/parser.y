@@ -18,7 +18,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
 
@@ -38,6 +38,7 @@
 
 #include <assert.h>
 #include <kdebug.h>
+
 //#define CSS_DEBUG
 
 using namespace DOM;
@@ -85,7 +86,7 @@ static inline int getValueID(const char *tagStr, int len)
 %union {
     CSSRuleImpl *rule;
     CSSSelector *selector;
-    QPtrList<CSSSelector> *selectorList;
+    Q3PtrList<CSSSelector> *selectorList;
     bool ok;
     MediaListImpl *mediaList;
     CSSMediaRuleImpl *mediaRule;
@@ -410,12 +411,12 @@ maybe_media_list:
 media_list:
     medium {
 	$$ = new MediaListImpl();
-	$$->appendMedium( domString($1).toLower() );
+	$$->appendMedium( domString($1).lower() );
     }
     | media_list ',' maybe_space medium {
 	$$ = $1;
 	if ($$)
-	    $$->appendMedium( domString($4).toLower() );
+	    $$->appendMedium( domString($4).lower() );
     }
     | media_list error {
        delete $1;
@@ -523,7 +524,7 @@ ruleset:
 selector_list:
     selector %prec UNIMPORTANT_TOK {
 	if ( $1 ) {
-	    $$ = new QPtrList<CSSSelector>;
+	    $$ = new Q3PtrList<CSSSelector>;
             $$->setAutoDelete( true );
 #ifdef CSS_DEBUG
 	    kDebug( 6080 ) << "   got simple selector:" << endl;
@@ -640,11 +641,11 @@ element_name:
 	QString tag = qString($1);
 	if ( doc ) {
 	    if (doc->isHTMLDocument())
-		tag = tag.toLower();
+		tag = tag.lower();
 	    const DOMString dtag(tag);
             $$ = makeId(p->defaultNamespace, doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
 	} else {
-	    $$ = makeId(p->defaultNamespace, khtml::getTagID(tag.toLower().ascii(), tag.length()));
+	    $$ = makeId(p->defaultNamespace, khtml::getTagID(tag.lower().ascii(), tag.length()));
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown tags
 // 	    assert($$ != 0);
@@ -705,7 +706,7 @@ attrib_id:
 	QString attr = qString($1);
 	if ( doc ) {
 	    if (doc->isHTMLDocument())
-		attr = attr.toLower();
+		attr = attr.lower();
 	    const DOMString dattr(attr);
 #ifdef APPLE_CHANGES
             $$ = doc->attrId(0, dattr.implementation(), false);
@@ -713,7 +714,7 @@ attrib_id:
 	    $$ = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false, true);
 #endif
 	} else {
-	    $$ = khtml::getAttrID(attr.toLower().ascii(), attr.length());
+	    $$ = khtml::getAttrID(attr.lower().ascii(), attr.length());
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown attributes
 	    assert($$ != 0);
@@ -896,7 +897,7 @@ declaration:
 property:
     IDENT maybe_space {
 	QString str = qString($1);
-	$$ = getPropertyID( str.toLower().latin1(), str.length() );
+	$$ = getPropertyID( str.lower().latin1(), str.length() );
     }
   ;
 
@@ -945,7 +946,7 @@ term:
   | STRING maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_STRING; }
   | IDENT maybe_space {
       QString str = qString( $1 );
-      $$.id = getValueID( str.toLower().latin1(), str.length() );
+      $$.id = getValueID( str.lower().latin1(), str.length() );
       $$.unit = CSSPrimitiveValue::CSS_IDENT;
       $$.string = $1;
   }

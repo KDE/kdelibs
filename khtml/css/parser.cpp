@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 1.875a.  */
+/* A Bison parser, made by GNU Bison 2.0.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
@@ -45,8 +45,7 @@
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
-/* If NAME_PREFIX is specified substitute the variables and functions
-   names.  */
+/* Substitute the variable and function names.  */
 #define yyparse cssyyparse
 #define yylex   cssyylex
 #define yyerror cssyyerror
@@ -180,7 +179,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
 
@@ -200,6 +199,7 @@
 
 #include <assert.h>
 #include <kdebug.h>
+
 //#define CSS_DEBUG
 
 using namespace DOM;
@@ -278,7 +278,7 @@ typedef union YYSTYPE {
     Value value;
     ValueList *valueList;
 } YYSTYPE;
-/* Line 191 of yacc.c.  */
+/* Line 190 of yacc.c.  */
 
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -309,23 +309,26 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 
 
-/* Line 214 of yacc.c.  */
+/* Line 213 of yacc.c.  */
 
 
 #if ! defined (yyoverflow) || YYERROR_VERBOSE
 
+# ifndef YYFREE
+#  define YYFREE free
+# endif
+# ifndef YYMALLOC
+#  define YYMALLOC malloc
+# endif
+
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
-# if YYSTACK_USE_ALLOCA
-#  define YYSTACK_ALLOC alloca
-# else
-#  ifndef YYSTACK_USE_ALLOCA
-#   if defined (alloca) || defined (_ALLOCA_H)
-#    define YYSTACK_ALLOC alloca
+# ifdef YYSTACK_USE_ALLOCA
+#  if YYSTACK_USE_ALLOCA
+#   ifdef __GNUC__
+#    define YYSTACK_ALLOC __builtin_alloca
 #   else
-#    ifdef __GNUC__
-#     define YYSTACK_ALLOC __builtin_alloca
-#    endif
+#    define YYSTACK_ALLOC alloca
 #   endif
 #  endif
 # endif
@@ -338,20 +341,20 @@ static int cssyylex( YYSTYPE *yylval ) {
 #   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
 #   define YYSIZE_T size_t
 #  endif
-#  define YYSTACK_ALLOC malloc
-#  define YYSTACK_FREE free
+#  define YYSTACK_ALLOC YYMALLOC
+#  define YYSTACK_FREE YYFREE
 # endif
 #endif /* ! defined (yyoverflow) || YYERROR_VERBOSE */
 
 
 #if (! defined (yyoverflow) \
      && (! defined (__cplusplus) \
-	 || (YYSTYPE_IS_TRIVIAL)))
+	 || (defined (YYSTYPE_IS_TRIVIAL) && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  short yyss;
+  short int yyss;
   YYSTYPE yyvs;
   };
 
@@ -361,13 +364,13 @@ union yyalloc
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (short) + sizeof (YYSTYPE))				\
+     ((N) * (sizeof (short int) + sizeof (YYSTYPE))			\
       + YYSTACK_GAP_MAXIMUM)
 
 /* Copy COUNT objects from FROM to TO.  The source and destination do
    not overlap.  */
 # ifndef YYCOPY
-#  if 1 < __GNUC__
+#  if defined (__GNUC__) && 1 < __GNUC__
 #   define YYCOPY(To, From, Count) \
       __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
 #  else
@@ -403,7 +406,7 @@ union yyalloc
 #if defined (__STDC__) || defined (__cplusplus)
    typedef signed char yysigned_char;
 #else
-   typedef short yysigned_char;
+   typedef short int yysigned_char;
 #endif
 
 /* YYFINAL -- State number of the termination state. */
@@ -466,7 +469,7 @@ static const unsigned char yytranslate[] =
 #if YYDEBUG
 /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
    YYRHS.  */
-static const unsigned short yyprhs[] =
+static const unsigned short int yyprhs[] =
 {
        0,     0,     3,     9,    12,    15,    18,    25,    28,    34,
       35,    38,    39,    42,    45,    46,    52,    56,    60,    61,
@@ -547,25 +550,25 @@ static const yysigned_char yyrhs[] =
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const unsigned short yyrline[] =
+static const unsigned short int yyrline[] =
 {
-       0,   255,   255,   256,   257,   258,   262,   269,   275,   300,
-     301,   304,   306,   307,   310,   312,   317,   318,   321,   323,
-     334,   344,   347,   353,   354,   358,   366,   367,   371,   372,
-     375,   377,   388,   389,   390,   391,   392,   393,   394,   398,
-     399,   403,   406,   411,   415,   420,   427,   441,   442,   452,
-     474,   477,   483,   486,   492,   493,   494,   495,   499,   500,
-     504,   524,   537,   551,   558,   561,   582,   589,   590,   591,
-     595,   599,   604,   609,   616,   625,   637,   653,   659,   663,
-     673,   680,   686,   687,   688,   692,   701,   725,   730,   736,
-     744,   756,   759,   762,   765,   768,   771,   777,   778,   782,
-     788,   794,   801,   808,   815,   822,   831,   834,   837,   840,
-     845,   851,   855,   858,   863,   869,   891,   897,   904,   905,
-     909,   913,   929,   932,   935,   941,   942,   944,   945,   946,
-     952,   953,   954,   956,   962,   963,   964,   965,   966,   967,
-     968,   969,   970,   971,   972,   973,   974,   975,   976,   977,
-     978,   979,   984,   992,  1008,  1015,  1021,  1030,  1056,  1057,
-    1061,  1062
+       0,   256,   256,   257,   258,   259,   263,   270,   276,   301,
+     302,   305,   307,   308,   311,   313,   318,   319,   322,   324,
+     335,   345,   348,   354,   355,   359,   367,   368,   372,   373,
+     376,   378,   389,   390,   391,   392,   393,   394,   395,   399,
+     400,   404,   407,   412,   416,   421,   428,   442,   443,   453,
+     475,   478,   484,   487,   493,   494,   495,   496,   500,   501,
+     505,   525,   538,   552,   559,   562,   583,   590,   591,   592,
+     596,   600,   605,   610,   617,   626,   638,   654,   660,   664,
+     674,   681,   687,   688,   689,   693,   702,   726,   731,   737,
+     745,   757,   760,   763,   766,   769,   772,   778,   779,   783,
+     789,   795,   802,   809,   816,   823,   832,   835,   838,   841,
+     846,   852,   856,   859,   864,   870,   892,   898,   905,   906,
+     910,   914,   930,   933,   936,   942,   943,   945,   946,   947,
+     953,   954,   955,   957,   963,   964,   965,   966,   967,   968,
+     969,   970,   971,   972,   973,   974,   975,   976,   977,   978,
+     979,   980,   985,   993,  1009,  1016,  1022,  1031,  1057,  1058,
+    1062,  1063
 };
 #endif
 
@@ -574,26 +577,26 @@ static const unsigned short yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "UNIMPORTANT_TOK", "S", "SGML_CD", 
-  "INCLUDES", "DASHMATCH", "BEGINSWITH", "ENDSWITH", "CONTAINS", "STRING", 
-  "IDENT", "NTH", "HASH", "':'", "'.'", "'['", "'*'", "'|'", "IMPORT_SYM", 
-  "PAGE_SYM", "MEDIA_SYM", "FONT_FACE_SYM", "CHARSET_SYM", 
-  "NAMESPACE_SYM", "KHTML_RULE_SYM", "KHTML_DECLS_SYM", "KHTML_VALUE_SYM", 
-  "IMPORTANT_SYM", "QEMS", "EMS", "EXS", "PXS", "CMS", "MMS", "INS", 
-  "PTS", "PCS", "DEGS", "RADS", "GRADS", "MSECS", "SECS", "HERZ", "KHERZ", 
-  "DIMEN", "PERCENTAGE", "NUMBER", "URI", "FUNCTION", "NOTFUNCTION", 
-  "UNICODERANGE", "'{'", "'}'", "';'", "','", "'+'", "'~'", "'>'", "'-'", 
-  "']'", "'='", "')'", "'/'", "'@'", "$accept", "stylesheet", 
-  "khtml_rule", "khtml_decls", "khtml_value", "maybe_space", "maybe_sgml", 
-  "maybe_charset", "import_list", "import", "maybe_namespace", 
-  "namespace", "maybe_ns_prefix", "rule_list", "rule", "string_or_uri", 
-  "maybe_media_list", "media_list", "media", "ruleset_list", "medium", 
-  "page", "font_face", "combinator", "unary_operator", "ruleset", 
-  "selector_list", "selector", "namespace_selector", "simple_selector", 
-  "element_name", "specifier_list", "specifier", "class", "attrib_id", 
-  "attrib", "match", "ident_or_string", "pseudo", "declaration_block", 
-  "declaration_list", "declaration", "property", "prio", "expr", 
-  "operator", "term", "unary_term", "function", "hexcolor", "invalid_at", 
+  "$end", "error", "$undefined", "UNIMPORTANT_TOK", "S", "SGML_CD",
+  "INCLUDES", "DASHMATCH", "BEGINSWITH", "ENDSWITH", "CONTAINS", "STRING",
+  "IDENT", "NTH", "HASH", "':'", "'.'", "'['", "'*'", "'|'", "IMPORT_SYM",
+  "PAGE_SYM", "MEDIA_SYM", "FONT_FACE_SYM", "CHARSET_SYM", "NAMESPACE_SYM",
+  "KHTML_RULE_SYM", "KHTML_DECLS_SYM", "KHTML_VALUE_SYM", "IMPORTANT_SYM",
+  "QEMS", "EMS", "EXS", "PXS", "CMS", "MMS", "INS", "PTS", "PCS", "DEGS",
+  "RADS", "GRADS", "MSECS", "SECS", "HERZ", "KHERZ", "DIMEN", "PERCENTAGE",
+  "NUMBER", "URI", "FUNCTION", "NOTFUNCTION", "UNICODERANGE", "'{'", "'}'",
+  "';'", "','", "'+'", "'~'", "'>'", "'-'", "']'", "'='", "')'", "'/'",
+  "'@'", "$accept", "stylesheet", "khtml_rule", "khtml_decls",
+  "khtml_value", "maybe_space", "maybe_sgml", "maybe_charset",
+  "import_list", "import", "maybe_namespace", "namespace",
+  "maybe_ns_prefix", "rule_list", "rule", "string_or_uri",
+  "maybe_media_list", "media_list", "media", "ruleset_list", "medium",
+  "page", "font_face", "combinator", "unary_operator", "ruleset",
+  "selector_list", "selector", "namespace_selector", "simple_selector",
+  "element_name", "specifier_list", "specifier", "class", "attrib_id",
+  "attrib", "match", "ident_or_string", "pseudo", "declaration_block",
+  "declaration_list", "declaration", "property", "prio", "expr",
+  "operator", "term", "unary_term", "function", "hexcolor", "invalid_at",
   "invalid_rule", "invalid_block", "invalid_block_list", 0
 };
 #endif
@@ -601,7 +604,7 @@ static const char *const yytname[] =
 # ifdef YYPRINT
 /* YYTOKNUM[YYLEX-NUM] -- Internal token number corresponding to
    token YYLEX-NUM.  */
-static const unsigned short yytoknum[] =
+static const unsigned short int yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,    58,    46,    91,    42,   124,
@@ -696,7 +699,7 @@ static const unsigned char yydefact[] =
 };
 
 /* YYDEFGOTO[NTERM-NUM]. */
-static const short yydefgoto[] =
+static const short int yydefgoto[] =
 {
       -1,     5,     6,     7,     8,   234,    20,     9,    31,    92,
       93,    94,   213,   170,   220,   209,   268,   269,   221,   298,
@@ -709,7 +712,7 @@ static const short yydefgoto[] =
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
 #define YYPACT_NINF -170
-static const short yypact[] =
+static const short int yypact[] =
 {
      186,   226,   -27,   -11,    57,   114,  -170,  -170,  -170,  -170,
       -2,   124,  -170,  -170,  -170,  -170,  -170,   151,   151,   151,
@@ -745,7 +748,7 @@ static const short yypact[] =
 };
 
 /* YYPGOTO[NTERM-NUM].  */
-static const short yypgoto[] =
+static const short int yypgoto[] =
 {
     -170,  -170,  -170,  -170,  -170,    -1,   -90,  -170,  -170,   207,
     -170,  -170,  -170,  -170,  -170,   201,  -170,   157,  -170,  -170,
@@ -760,7 +763,7 @@ static const short yypgoto[] =
    number is the opposite.  If zero, do what YYDEFACT says.
    If YYTABLE_NINF, syntax error.  */
 #define YYTABLE_NINF -120
-static const short yytable[] =
+static const short int yytable[] =
 {
       11,   224,   169,    23,   171,    17,    18,    19,   119,   124,
      121,    26,    27,    34,    28,    35,    36,    37,    38,    39,
@@ -809,7 +812,7 @@ static const short yytable[] =
       78,   110,   280,   131,   204,     0,     0,   160
 };
 
-static const short yycheck[] =
+static const short int yycheck[] =
 {
        1,   170,    92,    10,    94,     6,     7,     8,    44,    47,
       46,    12,    13,    12,    15,    14,    15,    16,    17,    18,
@@ -918,7 +921,7 @@ static const unsigned char yystos[] =
 
 #define YYACCEPT	goto yyacceptlab
 #define YYABORT		goto yyabortlab
-#define YYERROR		goto yyerrlab1
+#define YYERROR		goto yyerrorlab
 
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
@@ -946,19 +949,52 @@ do								\
     }								\
 while (0)
 
+
 #define YYTERROR	1
 #define YYERRCODE	256
 
-/* YYLLOC_DEFAULT -- Compute the default location (before the actions
-   are run).  */
 
+/* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
+   If N is 0, then set CURRENT to the empty location which ends
+   the previous symbol: RHS[0] (always defined).  */
+
+#define YYRHSLOC(Rhs, K) ((Rhs)[K])
 #ifndef YYLLOC_DEFAULT
-# define YYLLOC_DEFAULT(Current, Rhs, N)         \
-  Current.first_line   = Rhs[1].first_line;      \
-  Current.first_column = Rhs[1].first_column;    \
-  Current.last_line    = Rhs[N].last_line;       \
-  Current.last_column  = Rhs[N].last_column;
+# define YYLLOC_DEFAULT(Current, Rhs, N)				\
+    do									\
+      if (N)								\
+	{								\
+	  (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;	\
+	  (Current).first_column = YYRHSLOC (Rhs, 1).first_column;	\
+	  (Current).last_line    = YYRHSLOC (Rhs, N).last_line;		\
+	  (Current).last_column  = YYRHSLOC (Rhs, N).last_column;	\
+	}								\
+      else								\
+	{								\
+	  (Current).first_line   = (Current).last_line   =		\
+	    YYRHSLOC (Rhs, 0).last_line;				\
+	  (Current).first_column = (Current).last_column =		\
+	    YYRHSLOC (Rhs, 0).last_column;				\
+	}								\
+    while (0)
 #endif
+
+
+/* YY_LOCATION_PRINT -- Print the location on the stream.
+   This macro was not mandated originally: define only if we know
+   we won't break user code: when these are the locations we know.  */
+
+#ifndef YY_LOCATION_PRINT
+# if YYLTYPE_IS_TRIVIAL
+#  define YY_LOCATION_PRINT(File, Loc)			\
+     fprintf (File, "%d.%d-%d.%d",			\
+              (Loc).first_line, (Loc).first_column,	\
+              (Loc).last_line,  (Loc).last_column)
+# else
+#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# endif
+#endif
+
 
 /* YYLEX -- calling `yylex' with the right arguments.  */
 
@@ -982,36 +1018,30 @@ do {						\
     YYFPRINTF Args;				\
 } while (0)
 
-# define YYDSYMPRINT(Args)			\
-do {						\
-  if (yydebug)					\
-    yysymprint Args;				\
-} while (0)
-
-# define YYDSYMPRINTF(Title, Token, Value, Location)		\
+# define YY_SYMBOL_PRINT(Title, Type, Value, Location)		\
 do {								\
   if (yydebug)							\
     {								\
       YYFPRINTF (stderr, "%s ", Title);				\
       yysymprint (stderr, 					\
-                  Token, Value);	\
+                  Type, Value);	\
       YYFPRINTF (stderr, "\n");					\
     }								\
 } while (0)
 
 /*------------------------------------------------------------------.
 | yy_stack_print -- Print the state stack from its BOTTOM up to its |
-| TOP (cinluded).                                                   |
+| TOP (included).                                                   |
 `------------------------------------------------------------------*/
 
 #if defined (__STDC__) || defined (__cplusplus)
 static void
-yy_stack_print (short *bottom, short *top)
+yy_stack_print (short int *bottom, short int *top)
 #else
 static void
 yy_stack_print (bottom, top)
-    short *bottom;
-    short *top;
+    short int *bottom;
+    short int *top;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
@@ -1041,9 +1071,9 @@ yy_reduce_print (yyrule)
 #endif
 {
   int yyi;
-  unsigned int yylineno = yyrline[yyrule];
+  unsigned int yylno = yyrline[yyrule];
   YYFPRINTF (stderr, "Reducing stack by rule %d (line %u), ",
-             yyrule - 1, yylineno);
+             yyrule - 1, yylno);
   /* Print the symbols being reduced, and their result.  */
   for (yyi = yyprhs[yyrule]; 0 <= yyrhs[yyi]; yyi++)
     YYFPRINTF (stderr, "%s ", yytname [yyrhs[yyi]]);
@@ -1061,8 +1091,7 @@ do {					\
 int yydebug;
 #else /* !YYDEBUG */
 # define YYDPRINTF(Args)
-# define YYDSYMPRINT(Args)
-# define YYDSYMPRINTF(Title, Token, Value, Location)
+# define YY_SYMBOL_PRINT(Title, Type, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
 #endif /* !YYDEBUG */
@@ -1079,10 +1108,6 @@ int yydebug;
    Do not make this value too large; the results are undefined if
    SIZE_MAX < YYSTACK_BYTES (YYMAXDEPTH)
    evaluated with infinite-precision integer arithmetic.  */
-
-#if YYMAXDEPTH == 0
-# undef YYMAXDEPTH
-#endif
 
 #ifndef YYMAXDEPTH
 # define YYMAXDEPTH 10000
@@ -1165,15 +1190,15 @@ yysymprint (yyoutput, yytype, yyvaluep)
   (void) yyvaluep;
 
   if (yytype < YYNTOKENS)
-    {
-      YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
-# ifdef YYPRINT
-      YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
-# endif
-    }
+    YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
+
+# ifdef YYPRINT
+  if (yytype < YYNTOKENS)
+    YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
+# endif
   switch (yytype)
     {
       default:
@@ -1189,10 +1214,11 @@ yysymprint (yyoutput, yytype, yyvaluep)
 
 #if defined (__STDC__) || defined (__cplusplus)
 static void
-yydestruct (int yytype, YYSTYPE *yyvaluep)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep)
 #else
 static void
-yydestruct (yytype, yyvaluep)
+yydestruct (yymsg, yytype, yyvaluep)
+    const char *yymsg;
     int yytype;
     YYSTYPE *yyvaluep;
 #endif
@@ -1200,66 +1226,70 @@ yydestruct (yytype, yyvaluep)
   /* Pacify ``unused variable'' warnings.  */
   (void) yyvaluep;
 
+  if (!yymsg)
+    yymsg = "Deleting";
+  YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
+
   switch (yytype)
     {
       case 82: /* maybe_media_list */
 
-        { delete yyvaluep->mediaList; yyvaluep->mediaList = 0; };
+        { delete (yyvaluep->mediaList); (yyvaluep->mediaList) = 0; };
 
         break;
       case 83: /* media_list */
 
-        { delete yyvaluep->mediaList; yyvaluep->mediaList = 0; };
+        { delete (yyvaluep->mediaList); (yyvaluep->mediaList) = 0; };
 
         break;
       case 85: /* ruleset_list */
 
-        { delete yyvaluep->ruleList; yyvaluep->ruleList = 0; };
+        { delete (yyvaluep->ruleList); (yyvaluep->ruleList) = 0; };
 
         break;
       case 92: /* selector_list */
 
-        { delete yyvaluep->selectorList; yyvaluep->selectorList = 0; };
+        { delete (yyvaluep->selectorList); (yyvaluep->selectorList) = 0; };
 
         break;
       case 93: /* selector */
 
-        { delete yyvaluep->selector; yyvaluep->selector = 0; };
+        { delete (yyvaluep->selector); (yyvaluep->selector) = 0; };
 
         break;
       case 95: /* simple_selector */
 
-        { delete yyvaluep->selector; yyvaluep->selector = 0; };
+        { delete (yyvaluep->selector); (yyvaluep->selector) = 0; };
 
         break;
       case 97: /* specifier_list */
 
-        { delete yyvaluep->selector; yyvaluep->selector = 0; };
+        { delete (yyvaluep->selector); (yyvaluep->selector) = 0; };
 
         break;
       case 98: /* specifier */
 
-        { delete yyvaluep->selector; yyvaluep->selector = 0; };
+        { delete (yyvaluep->selector); (yyvaluep->selector) = 0; };
 
         break;
       case 99: /* class */
 
-        { delete yyvaluep->selector; yyvaluep->selector = 0; };
+        { delete (yyvaluep->selector); (yyvaluep->selector) = 0; };
 
         break;
       case 101: /* attrib */
 
-        { delete yyvaluep->selector; yyvaluep->selector = 0; };
+        { delete (yyvaluep->selector); (yyvaluep->selector) = 0; };
 
         break;
       case 104: /* pseudo */
 
-        { delete yyvaluep->selector; yyvaluep->selector = 0; };
+        { delete (yyvaluep->selector); (yyvaluep->selector) = 0; };
 
         break;
       case 110: /* expr */
 
-        { delete yyvaluep->valueList; yyvaluep->valueList = 0; };
+        { delete (yyvaluep->valueList); (yyvaluep->valueList) = 0; };
 
         break;
 
@@ -1312,10 +1342,10 @@ yyparse ()
 #endif
 #endif
 {
-  /* The lookahead symbol.  */
+  /* The look-ahead symbol.  */
 int yychar;
 
-/* The semantic value of the lookahead symbol.  */
+/* The semantic value of the look-ahead symbol.  */
 YYSTYPE yylval;
 
 /* Number of syntax errors so far.  */
@@ -1326,7 +1356,7 @@ int yynerrs;
   int yyresult;
   /* Number of tokens to shift before error messages enabled.  */
   int yyerrstatus;
-  /* Lookahead token as an internal (translated) token number.  */
+  /* Look-ahead token as an internal (translated) token number.  */
   int yytoken = 0;
 
   /* Three stacks and their tools:
@@ -1338,9 +1368,9 @@ int yynerrs;
      to reallocate them elsewhere.  */
 
   /* The state stack.  */
-  short	yyssa[YYINITDEPTH];
-  short *yyss = yyssa;
-  register short *yyssp;
+  short int yyssa[YYINITDEPTH];
+  short int *yyss = yyssa;
+  register short int *yyssp;
 
   /* The semantic value stack.  */
   YYSTYPE yyvsa[YYINITDEPTH];
@@ -1377,6 +1407,9 @@ int yynerrs;
   yyssp = yyss;
   yyvsp = yyvs;
 
+
+  yyvsp[0] = yylval;
+
   goto yysetstate;
 
 /*------------------------------------------------------------.
@@ -1402,7 +1435,7 @@ int yynerrs;
 	   these so that the &'s don't force the real ones into
 	   memory.  */
 	YYSTYPE *yyvs1 = yyvs;
-	short *yyss1 = yyss;
+	short int *yyss1 = yyss;
 
 
 	/* Each stack pointer address is followed by the size of the
@@ -1430,7 +1463,7 @@ int yynerrs;
 	yystacksize = YYMAXDEPTH;
 
       {
-	short *yyss1 = yyss;
+	short int *yyss1 = yyss;
 	union yyalloc *yyptr =
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
@@ -1466,18 +1499,18 @@ int yynerrs;
 yybackup:
 
 /* Do appropriate processing given the current state.  */
-/* Read a lookahead token if we need one and don't already have one.  */
+/* Read a look-ahead token if we need one and don't already have one.  */
 /* yyresume: */
 
-  /* First try to decide what to do without reference to lookahead token.  */
+  /* First try to decide what to do without reference to look-ahead token.  */
 
   yyn = yypact[yystate];
   if (yyn == YYPACT_NINF)
     goto yydefault;
 
-  /* Not known => get a lookahead token if don't already have one.  */
+  /* Not known => get a look-ahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
+  /* YYCHAR is either YYEMPTY or YYEOF or a valid look-ahead symbol.  */
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
@@ -1492,7 +1525,7 @@ yybackup:
   else
     {
       yytoken = YYTRANSLATE (yychar);
-      YYDSYMPRINTF ("Next token is", yytoken, &yylval, &yylloc);
+      YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
     }
 
   /* If the proper action on seeing token YYTOKEN is to reduce or to
@@ -1512,8 +1545,8 @@ yybackup:
   if (yyn == YYFINAL)
     YYACCEPT;
 
-  /* Shift the lookahead token.  */
-  YYDPRINTF ((stderr, "Shifting token %s, ", yytname[yytoken]));
+  /* Shift the look-ahead token.  */
+  YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
 
   /* Discard the token being shifted unless it is eof.  */
   if (yychar != YYEOF)
@@ -1549,7 +1582,7 @@ yyreduce:
   yylen = yyr2[yyn];
 
   /* If YYLEN is nonzero, implement the default value of the action:
-     `$$ = $2'.
+     `$$ = $1'.
 
      Otherwise, the following line sets YYVAL to garbage.
      This behavior is undocumented and Bison
@@ -1566,7 +1599,7 @@ yyreduce:
 
     {
         CSSParser *p = static_cast<CSSParser *>(parser);
-	p->rule = yyvsp[-2].rule;
+	p->rule = (yyvsp[-2].rule);
     ;}
     break;
 
@@ -1581,8 +1614,8 @@ yyreduce:
 
     {
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( yyvsp[-1].valueList ) {
-	    p->valueList = yyvsp[-1].valueList;
+	if ( (yyvsp[-1].valueList) ) {
+	    p->valueList = (yyvsp[-1].valueList);
 #ifdef CSS_DEBUG
 	    kDebug( 6080 ) << "   got property for " << p->id <<
 		(p->important?" important":"")<< endl;
@@ -1607,7 +1640,7 @@ yyreduce:
 
     {
 #ifdef CSS_DEBUG
-     kDebug( 6080 ) << "charset rule: " << qString(yyvsp[-2].string) << endl;
+     kDebug( 6080 ) << "charset rule: " << qString((yyvsp[-2].string)) << endl;
 #endif
  ;}
     break;
@@ -1616,10 +1649,10 @@ yyreduce:
 
     {
      CSSParser *p = static_cast<CSSParser *>(parser);
-     if ( yyvsp[-1].rule && p->styleElement && p->styleElement->isCSSStyleSheet() ) {
-	 p->styleElement->append( yyvsp[-1].rule );
+     if ( (yyvsp[-1].rule) && p->styleElement && p->styleElement->isCSSStyleSheet() ) {
+	 p->styleElement->append( (yyvsp[-1].rule) );
      } else {
-	 delete yyvsp[-1].rule;
+	 delete (yyvsp[-1].rule);
      }
  ;}
     break;
@@ -1628,27 +1661,27 @@ yyreduce:
 
     {
 #ifdef CSS_DEBUG
-	kDebug( 6080 ) << "@import: " << qString(yyvsp[-3].string) << endl;
+	kDebug( 6080 ) << "@import: " << qString((yyvsp[-3].string)) << endl;
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( yyvsp[-1].mediaList && p->styleElement && p->styleElement->isCSSStyleSheet() )
-	    yyval.rule = new CSSImportRuleImpl( p->styleElement, domString(yyvsp[-3].string), yyvsp[-1].mediaList );
+	if ( (yyvsp[-1].mediaList) && p->styleElement && p->styleElement->isCSSStyleSheet() )
+	    (yyval.rule) = new CSSImportRuleImpl( p->styleElement, domString((yyvsp[-3].string)), (yyvsp[-1].mediaList) );
 	else
-	    yyval.rule = 0;
+	    (yyval.rule) = 0;
     ;}
     break;
 
   case 21:
 
     {
-        yyval.rule = 0;
+        (yyval.rule) = 0;
     ;}
     break;
 
   case 22:
 
     {
-        yyval.rule = 0;
+        (yyval.rule) = 0;
     ;}
     break;
 
@@ -1656,70 +1689,70 @@ yyreduce:
 
     {
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << "@namespace: " << qString(yyvsp[-2].string) << endl;
+    kDebug( 6080 ) << "@namespace: " << qString((yyvsp[-2].string)) << endl;
 #endif
       CSSParser *p = static_cast<CSSParser *>(parser);
     if (p->styleElement && p->styleElement->isCSSStyleSheet())
-        static_cast<CSSStyleSheetImpl*>(p->styleElement)->addNamespace(p, domString(yyvsp[-3].string), domString(yyvsp[-2].string));
+        static_cast<CSSStyleSheetImpl*>(p->styleElement)->addNamespace(p, domString((yyvsp[-3].string)), domString((yyvsp[-2].string)));
  ;}
     break;
 
   case 28:
 
-    { yyval.string.string = 0; ;}
+    { (yyval.string).string = 0; ;}
     break;
 
   case 29:
 
-    { yyval.string = yyvsp[-1].string; ;}
+    { (yyval.string) = (yyvsp[-1].string); ;}
     break;
 
   case 31:
 
     {
      CSSParser *p = static_cast<CSSParser *>(parser);
-     if ( yyvsp[-1].rule && p->styleElement && p->styleElement->isCSSStyleSheet() ) {
-	 p->styleElement->append( yyvsp[-1].rule );
+     if ( (yyvsp[-1].rule) && p->styleElement && p->styleElement->isCSSStyleSheet() ) {
+	 p->styleElement->append( (yyvsp[-1].rule) );
      } else {
-	 delete yyvsp[-1].rule;
+	 delete (yyvsp[-1].rule);
      }
  ;}
     break;
 
   case 38:
 
-    { delete yyvsp[-1].rule; yyval.rule = 0; ;}
+    { delete (yyvsp[-1].rule); (yyval.rule) = 0; ;}
     break;
 
   case 41:
 
     {
-	yyval.mediaList = new MediaListImpl();
+	(yyval.mediaList) = new MediaListImpl();
     ;}
     break;
 
   case 43:
 
     {
-	yyval.mediaList = new MediaListImpl();
-	yyval.mediaList->appendMedium( domString(yyvsp[0].string).lower() );
+	(yyval.mediaList) = new MediaListImpl();
+	(yyval.mediaList)->appendMedium( domString((yyvsp[0].string)).lower() );
     ;}
     break;
 
   case 44:
 
     {
-	yyval.mediaList = yyvsp[-3].mediaList;
-	if (yyval.mediaList)
-	    yyval.mediaList->appendMedium( domString(yyvsp[0].string).lower() );
+	(yyval.mediaList) = (yyvsp[-3].mediaList);
+	if ((yyval.mediaList))
+	    (yyval.mediaList)->appendMedium( domString((yyvsp[0].string)).lower() );
     ;}
     break;
 
   case 45:
 
     {
-       delete yyvsp[-1].mediaList;
-       yyval.mediaList = 0;
+       delete (yyvsp[-1].mediaList);
+       (yyval.mediaList) = 0;
     ;}
     break;
 
@@ -1727,29 +1760,29 @@ yyreduce:
 
     {
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( yyvsp[-4].mediaList && yyvsp[-1].ruleList &&
+	if ( (yyvsp[-4].mediaList) && (yyvsp[-1].ruleList) &&
 	     p->styleElement && p->styleElement->isCSSStyleSheet() ) {
-	    yyval.rule = new CSSMediaRuleImpl( static_cast<CSSStyleSheetImpl*>(p->styleElement), yyvsp[-4].mediaList, yyvsp[-1].ruleList );
+	    (yyval.rule) = new CSSMediaRuleImpl( static_cast<CSSStyleSheetImpl*>(p->styleElement), (yyvsp[-4].mediaList), (yyvsp[-1].ruleList) );
 	} else {
-	    yyval.rule = 0;
-	    delete yyvsp[-4].mediaList;
-	    delete yyvsp[-1].ruleList;
+	    (yyval.rule) = 0;
+	    delete (yyvsp[-4].mediaList);
+	    delete (yyvsp[-1].ruleList);
 	}
     ;}
     break;
 
   case 47:
 
-    { yyval.ruleList = 0; ;}
+    { (yyval.ruleList) = 0; ;}
     break;
 
   case 48:
 
     {
-      yyval.ruleList = yyvsp[-2].ruleList;
-      if ( yyvsp[-1].rule ) {
-	  if ( !yyval.ruleList ) yyval.ruleList = new CSSRuleListImpl();
-	  yyval.ruleList->append( yyvsp[-1].rule );
+      (yyval.ruleList) = (yyvsp[-2].ruleList);
+      if ( (yyvsp[-1].rule) ) {
+	  if ( !(yyval.ruleList) ) (yyval.ruleList) = new CSSRuleListImpl();
+	  (yyval.ruleList)->append( (yyvsp[-1].rule) );
       }
   ;}
     break;
@@ -1757,66 +1790,66 @@ yyreduce:
   case 49:
 
     {
-      yyval.string = yyvsp[-1].string;
+      (yyval.string) = (yyvsp[-1].string);
   ;}
     break;
 
   case 50:
 
     {
-      yyval.rule = 0;
+      (yyval.rule) = 0;
     ;}
     break;
 
   case 51:
 
     {
-      yyval.rule = 0;
+      (yyval.rule) = 0;
     ;}
     break;
 
   case 52:
 
     {
-      yyval.rule = 0;
+      (yyval.rule) = 0;
     ;}
     break;
 
   case 53:
 
     {
-      yyval.rule = 0;
+      (yyval.rule) = 0;
     ;}
     break;
 
   case 54:
 
-    { yyval.relation = CSSSelector::DirectAdjacent; ;}
+    { (yyval.relation) = CSSSelector::DirectAdjacent; ;}
     break;
 
   case 55:
 
-    { yyval.relation = CSSSelector::IndirectAdjacent; ;}
+    { (yyval.relation) = CSSSelector::IndirectAdjacent; ;}
     break;
 
   case 56:
 
-    { yyval.relation = CSSSelector::Child; ;}
+    { (yyval.relation) = CSSSelector::Child; ;}
     break;
 
   case 57:
 
-    { yyval.relation = CSSSelector::Descendant; ;}
+    { (yyval.relation) = CSSSelector::Descendant; ;}
     break;
 
   case 58:
 
-    { yyval.val = -1; ;}
+    { (yyval.val) = -1; ;}
     break;
 
   case 59:
 
-    { yyval.val = 1; ;}
+    { (yyval.val) = 1; ;}
     break;
 
   case 60:
@@ -1826,15 +1859,15 @@ yyreduce:
 	kDebug( 6080 ) << "got ruleset" << endl << "  selector:" << endl;
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( yyvsp[-1].selectorList && yyvsp[0].ok && p->numParsedProperties ) {
+	if ( (yyvsp[-1].selectorList) && (yyvsp[0].ok) && p->numParsedProperties ) {
 	    CSSStyleRuleImpl *rule = new CSSStyleRuleImpl( p->styleElement );
 	    CSSStyleDeclarationImpl *decl = p->createStyleDeclaration( rule );
-	    rule->setSelector( yyvsp[-1].selectorList );
+	    rule->setSelector( (yyvsp[-1].selectorList) );
 	    rule->setDeclaration(decl);
-	    yyval.rule = rule;
+	    (yyval.rule) = rule;
 	} else {
-	    yyval.rule = 0;
-	    delete yyvsp[-1].selectorList;
+	    (yyval.rule) = 0;
+	    delete (yyvsp[-1].selectorList);
 	    p->clearProperties();
 	}
     ;}
@@ -1843,16 +1876,16 @@ yyreduce:
   case 61:
 
     {
-	if ( yyvsp[0].selector ) {
-	    yyval.selectorList = new Q3PtrList<CSSSelector>;
-            yyval.selectorList->setAutoDelete( true );
+	if ( (yyvsp[0].selector) ) {
+	    (yyval.selectorList) = new Q3PtrList<CSSSelector>;
+            (yyval.selectorList)->setAutoDelete( true );
 #ifdef CSS_DEBUG
 	    kDebug( 6080 ) << "   got simple selector:" << endl;
-	    yyvsp[0].selector->print();
+	    (yyvsp[0].selector)->print();
 #endif
-	    yyval.selectorList->append( yyvsp[0].selector );
+	    (yyval.selectorList)->append( (yyvsp[0].selector) );
 	} else {
-	    yyval.selectorList = 0;
+	    (yyval.selectorList) = 0;
 	}
     ;}
     break;
@@ -1860,17 +1893,17 @@ yyreduce:
   case 62:
 
     {
-	if ( yyvsp[-3].selectorList && yyvsp[0].selector ) {
-	    yyval.selectorList = yyvsp[-3].selectorList;
-	    yyval.selectorList->append( yyvsp[0].selector );
+	if ( (yyvsp[-3].selectorList) && (yyvsp[0].selector) ) {
+	    (yyval.selectorList) = (yyvsp[-3].selectorList);
+	    (yyval.selectorList)->append( (yyvsp[0].selector) );
 #ifdef CSS_DEBUG
 	    kDebug( 6080 ) << "   got simple selector:" << endl;
-	    yyvsp[0].selector->print();
+	    (yyvsp[0].selector)->print();
 #endif
 	} else {
-	    delete yyvsp[-3].selectorList;
-	    delete yyvsp[0].selector;
-	    yyval.selectorList = 0;
+	    delete (yyvsp[-3].selectorList);
+	    delete (yyvsp[0].selector);
+	    (yyval.selectorList) = 0;
 	}
     ;}
     break;
@@ -1878,34 +1911,34 @@ yyreduce:
   case 63:
 
     {
-	delete yyvsp[-1].selectorList;
-	yyval.selectorList = 0;
+	delete (yyvsp[-1].selectorList);
+	(yyval.selectorList) = 0;
     ;}
     break;
 
   case 64:
 
     {
-	yyval.selector = yyvsp[0].selector;
+	(yyval.selector) = (yyvsp[0].selector);
     ;}
     break;
 
   case 65:
 
     {
-	if ( !yyvsp[-2].selector || !yyvsp[0].selector ) {
-	    delete yyvsp[-2].selector;
-	    delete yyvsp[0].selector;
-	    yyval.selector = 0;
+	if ( !(yyvsp[-2].selector) || !(yyvsp[0].selector) ) {
+	    delete (yyvsp[-2].selector);
+	    delete (yyvsp[0].selector);
+	    (yyval.selector) = 0;
 	} else {
-	    yyval.selector = yyvsp[0].selector;
-	    CSSSelector *end = yyvsp[0].selector;
+	    (yyval.selector) = (yyvsp[0].selector);
+	    CSSSelector *end = (yyvsp[0].selector);
 	    while( end->tagHistory )
 		end = end->tagHistory;
-	    end->relation = yyvsp[-1].relation;
-	    end->tagHistory = yyvsp[-2].selector;
-	    if ( yyvsp[-1].relation == CSSSelector::Descendant ||
-		 yyvsp[-1].relation == CSSSelector::Child ) {
+	    end->relation = (yyvsp[-1].relation);
+	    end->tagHistory = (yyvsp[-2].selector);
+	    if ( (yyvsp[-1].relation) == CSSSelector::Descendant ||
+		 (yyvsp[-1].relation) == CSSSelector::Child ) {
 		CSSParser *p = static_cast<CSSParser *>(parser);
 		DOM::DocumentImpl *doc = p->document();
 		if ( doc )
@@ -1918,72 +1951,72 @@ yyreduce:
   case 66:
 
     {
-	delete yyvsp[-1].selector;
-	yyval.selector = 0;
+	delete (yyvsp[-1].selector);
+	(yyval.selector) = 0;
     ;}
     break;
 
   case 67:
 
-    { yyval.string.string = 0; yyval.string.length = 0; ;}
+    { (yyval.string).string = 0; (yyval.string).length = 0; ;}
     break;
 
   case 68:
 
-    { static unsigned short star = '*'; yyval.string.string = &star; yyval.string.length = 1; ;}
+    { static unsigned short star = '*'; (yyval.string).string = &star; (yyval.string).length = 1; ;}
     break;
 
   case 69:
 
-    { yyval.string = yyvsp[-1].string; ;}
+    { (yyval.string) = (yyvsp[-1].string); ;}
     break;
 
   case 70:
 
     {
-	yyval.selector = new CSSSelector();
-	yyval.selector->tag = yyvsp[-1].element;
+	(yyval.selector) = new CSSSelector();
+	(yyval.selector)->tag = (yyvsp[-1].element);
     ;}
     break;
 
   case 71:
 
     {
-	yyval.selector = yyvsp[-1].selector;
-        if ( yyval.selector )
-	    yyval.selector->tag = yyvsp[-2].element;
+	(yyval.selector) = (yyvsp[-1].selector);
+        if ( (yyval.selector) )
+	    (yyval.selector)->tag = (yyvsp[-2].element);
     ;}
     break;
 
   case 72:
 
     {
-	yyval.selector = yyvsp[-1].selector;
-        if ( yyval.selector )
-            yyval.selector->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);;
+	(yyval.selector) = (yyvsp[-1].selector);
+        if ( (yyval.selector) )
+            (yyval.selector)->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);;
     ;}
     break;
 
   case 73:
 
     {
-        yyval.selector = new CSSSelector();
-        yyval.selector->tag = yyvsp[-1].element;
+        (yyval.selector) = new CSSSelector();
+        (yyval.selector)->tag = (yyvsp[-1].element);
 	CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace(yyval.selector->tag, domString(yyvsp[-2].string));
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[-2].string)));
     ;}
     break;
 
   case 74:
 
     {
-        yyval.selector = yyvsp[-1].selector;
-        if (yyval.selector) {
-            yyval.selector->tag = yyvsp[-2].element;
+        (yyval.selector) = (yyvsp[-1].selector);
+        if ((yyval.selector)) {
+            (yyval.selector)->tag = (yyvsp[-2].element);
             CSSParser *p = static_cast<CSSParser *>(parser);
             if (p->styleElement && p->styleElement->isCSSStyleSheet())
-                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace(yyval.selector->tag, domString(yyvsp[-3].string));
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[-3].string)));
         }
     ;}
     break;
@@ -1991,12 +2024,12 @@ yyreduce:
   case 75:
 
     {
-        yyval.selector = yyvsp[-1].selector;
-        if (yyval.selector) {
-            yyval.selector->tag = makeId(anyNamespace, anyLocalName);
+        (yyval.selector) = (yyvsp[-1].selector);
+        if ((yyval.selector)) {
+            (yyval.selector)->tag = makeId(anyNamespace, anyLocalName);
             CSSParser *p = static_cast<CSSParser *>(parser);
             if (p->styleElement && p->styleElement->isCSSStyleSheet())
-                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace(yyval.selector->tag, domString(yyvsp[-2].string));
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[-2].string)));
         }
     ;}
     break;
@@ -2006,14 +2039,14 @@ yyreduce:
     {
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	DOM::DocumentImpl *doc = p->document();
-	QString tag = qString(yyvsp[0].string);
+	QString tag = qString((yyvsp[0].string));
 	if ( doc ) {
 	    if (doc->isHTMLDocument())
 		tag = tag.lower();
 	    const DOMString dtag(tag);
-            yyval.element = makeId(p->defaultNamespace, doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
+            (yyval.element) = makeId(p->defaultNamespace, doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
 	} else {
-	    yyval.element = makeId(p->defaultNamespace, khtml::getTagID(tag.lower().toAscii().constData(), tag.length()));
+	    (yyval.element) = makeId(p->defaultNamespace, khtml::getTagID(tag.lower().ascii(), tag.length()));
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown tags
 // 	    assert($$ != 0);
@@ -2024,28 +2057,28 @@ yyreduce:
   case 77:
 
     {
-	yyval.element = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);
+	(yyval.element) = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);
     ;}
     break;
 
   case 78:
 
     {
-	yyval.selector = yyvsp[0].selector;
-	yyval.selector->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
+	(yyval.selector) = (yyvsp[0].selector);
+	(yyval.selector)->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
     ;}
     break;
 
   case 79:
 
     {
-	yyval.selector = yyvsp[-1].selector;
-	if ( yyval.selector ) {
-            CSSSelector *end = yyvsp[-1].selector;
+	(yyval.selector) = (yyvsp[-1].selector);
+	if ( (yyval.selector) ) {
+            CSSSelector *end = (yyvsp[-1].selector);
             while( end->tagHistory )
                 end = end->tagHistory;
             end->relation = CSSSelector::SubSelector;
-            end->tagHistory = yyvsp[0].selector;
+            end->tagHistory = (yyvsp[0].selector);
 	}
     ;}
     break;
@@ -2053,28 +2086,28 @@ yyreduce:
   case 80:
 
     {
-	delete yyvsp[-1].selector;
-	yyval.selector = 0;
+	delete (yyvsp[-1].selector);
+	(yyval.selector) = 0;
     ;}
     break;
 
   case 81:
 
     {
-	yyval.selector = new CSSSelector();
-	yyval.selector->match = CSSSelector::Id;
-	yyval.selector->attr = ATTR_ID;
-	yyval.selector->value = domString(yyvsp[0].string);
+	(yyval.selector) = new CSSSelector();
+	(yyval.selector)->match = CSSSelector::Id;
+	(yyval.selector)->attr = ATTR_ID;
+	(yyval.selector)->value = domString((yyvsp[0].string));
     ;}
     break;
 
   case 85:
 
     {
-	yyval.selector = new CSSSelector();
-	yyval.selector->match = CSSSelector::List;
-	yyval.selector->attr = ATTR_CLASS;
-	yyval.selector->value = domString(yyvsp[0].string);
+	(yyval.selector) = new CSSSelector();
+	(yyval.selector)->match = CSSSelector::List;
+	(yyval.selector)->attr = ATTR_CLASS;
+	(yyval.selector)->value = domString((yyvsp[0].string));
     ;}
     break;
 
@@ -2084,21 +2117,21 @@ yyreduce:
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	DOM::DocumentImpl *doc = p->document();
 
-	QString attr = qString(yyvsp[-1].string);
+	QString attr = qString((yyvsp[-1].string));
 	if ( doc ) {
 	    if (doc->isHTMLDocument())
 		attr = attr.lower();
 	    const DOMString dattr(attr);
 #ifdef APPLE_CHANGES
-            yyval.attribute = doc->attrId(0, dattr.implementation(), false);
+            (yyval.attribute) = doc->attrId(0, dattr.implementation(), false);
 #else
-	    yyval.attribute = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false, true);
+	    (yyval.attribute) = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false, true);
 #endif
 	} else {
-	    yyval.attribute = khtml::getAttrID(attr.lower().toAscii().constData(), attr.length());
+	    (yyval.attribute) = khtml::getAttrID(attr.lower().ascii(), attr.length());
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown attributes
-	    assert(yyval.attribute != 0);
+	    assert((yyval.attribute) != 0);
 	    }
     ;}
     break;
@@ -2106,244 +2139,244 @@ yyreduce:
   case 87:
 
     {
-	yyval.selector = new CSSSelector();
-	yyval.selector->attr = yyvsp[-1].attribute;
-	yyval.selector->match = CSSSelector::Set;
+	(yyval.selector) = new CSSSelector();
+	(yyval.selector)->attr = (yyvsp[-1].attribute);
+	(yyval.selector)->match = CSSSelector::Set;
     ;}
     break;
 
   case 88:
 
     {
-	yyval.selector = new CSSSelector();
-	yyval.selector->attr = yyvsp[-5].attribute;
-	yyval.selector->match = yyvsp[-4].match;
-	yyval.selector->value = domString(yyvsp[-2].string);
+	(yyval.selector) = new CSSSelector();
+	(yyval.selector)->attr = (yyvsp[-5].attribute);
+	(yyval.selector)->match = (yyvsp[-4].match);
+	(yyval.selector)->value = domString((yyvsp[-2].string));
     ;}
     break;
 
   case 89:
 
     {
-        yyval.selector = new CSSSelector();
-        yyval.selector->attr = yyvsp[-1].attribute;
-        yyval.selector->match = CSSSelector::Set;
+        (yyval.selector) = new CSSSelector();
+        (yyval.selector)->attr = (yyvsp[-1].attribute);
+        (yyval.selector)->match = CSSSelector::Set;
         CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace(yyval.selector->attr, domString(yyvsp[-3].string));
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->attr, domString((yyvsp[-3].string)));
     ;}
     break;
 
   case 90:
 
     {
-        yyval.selector = new CSSSelector();
-        yyval.selector->attr = yyvsp[-5].attribute;
-        yyval.selector->match = (CSSSelector::Match)yyvsp[-4].match;
-        yyval.selector->value = domString(yyvsp[-2].string);
+        (yyval.selector) = new CSSSelector();
+        (yyval.selector)->attr = (yyvsp[-5].attribute);
+        (yyval.selector)->match = (CSSSelector::Match)(yyvsp[-4].match);
+        (yyval.selector)->value = domString((yyvsp[-2].string));
         CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace(yyval.selector->attr, domString(yyvsp[-7].string));
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->attr, domString((yyvsp[-7].string)));
    ;}
     break;
 
   case 91:
 
     {
-	yyval.match = CSSSelector::Exact;
+	(yyval.match) = CSSSelector::Exact;
     ;}
     break;
 
   case 92:
 
     {
-	yyval.match = CSSSelector::List;
+	(yyval.match) = CSSSelector::List;
     ;}
     break;
 
   case 93:
 
     {
-	yyval.match = CSSSelector::Hyphen;
+	(yyval.match) = CSSSelector::Hyphen;
     ;}
     break;
 
   case 94:
 
     {
-	yyval.match = CSSSelector::Begin;
+	(yyval.match) = CSSSelector::Begin;
     ;}
     break;
 
   case 95:
 
     {
-	yyval.match = CSSSelector::End;
+	(yyval.match) = CSSSelector::End;
     ;}
     break;
 
   case 96:
 
     {
-	yyval.match = CSSSelector::Contain;
+	(yyval.match) = CSSSelector::Contain;
     ;}
     break;
 
   case 99:
 
     {
-	yyval.selector = new CSSSelector();
-	yyval.selector->match = CSSSelector::PseudoClass;
-	yyval.selector->value = domString(yyvsp[0].string);
+	(yyval.selector) = new CSSSelector();
+	(yyval.selector)->match = CSSSelector::PseudoClass;
+	(yyval.selector)->value = domString((yyvsp[0].string));
     ;}
     break;
 
   case 100:
 
     {
-	yyval.selector = new CSSSelector();
-	yyval.selector->match = CSSSelector::PseudoElement;
-        yyval.selector->value = domString(yyvsp[0].string);
+	(yyval.selector) = new CSSSelector();
+	(yyval.selector)->match = CSSSelector::PseudoElement;
+        (yyval.selector)->value = domString((yyvsp[0].string));
     ;}
     break;
 
   case 101:
 
     {
-        yyval.selector = new CSSSelector();
-        yyval.selector->match = CSSSelector::PseudoClass;
-        yyval.selector->string_arg = domString(yyvsp[-1].string);
-        yyval.selector->value = domString(yyvsp[-2].string);
+        (yyval.selector) = new CSSSelector();
+        (yyval.selector)->match = CSSSelector::PseudoClass;
+        (yyval.selector)->string_arg = domString((yyvsp[-1].string));
+        (yyval.selector)->value = domString((yyvsp[-2].string));
     ;}
     break;
 
   case 102:
 
     {
-        yyval.selector = new CSSSelector();
-        yyval.selector->match = CSSSelector::PseudoClass;
-        yyval.selector->string_arg = QString::number(yyvsp[-1].val);
-        yyval.selector->value = domString(yyvsp[-2].string);
+        (yyval.selector) = new CSSSelector();
+        (yyval.selector)->match = CSSSelector::PseudoClass;
+        (yyval.selector)->string_arg = QString::number((yyvsp[-1].val));
+        (yyval.selector)->value = domString((yyvsp[-2].string));
     ;}
     break;
 
   case 103:
 
     {
-        yyval.selector = new CSSSelector();
-        yyval.selector->match = CSSSelector::PseudoClass;
-        yyval.selector->string_arg = domString(yyvsp[-1].string);
-        yyval.selector->value = domString(yyvsp[-2].string);
+        (yyval.selector) = new CSSSelector();
+        (yyval.selector)->match = CSSSelector::PseudoClass;
+        (yyval.selector)->string_arg = domString((yyvsp[-1].string));
+        (yyval.selector)->value = domString((yyvsp[-2].string));
     ;}
     break;
 
   case 104:
 
     {
-        yyval.selector = new CSSSelector();
-        yyval.selector->match = CSSSelector::PseudoClass;
-        yyval.selector->string_arg = domString(yyvsp[-1].string);
-        yyval.selector->value = domString(yyvsp[-2].string);
+        (yyval.selector) = new CSSSelector();
+        (yyval.selector)->match = CSSSelector::PseudoClass;
+        (yyval.selector)->string_arg = domString((yyvsp[-1].string));
+        (yyval.selector)->value = domString((yyvsp[-2].string));
     ;}
     break;
 
   case 105:
 
     {
-        yyval.selector = new CSSSelector();
-        yyval.selector->match = CSSSelector::PseudoClass;
-        yyval.selector->simpleSelector = yyvsp[-1].selector;
-        yyval.selector->value = domString(yyvsp[-3].string);
+        (yyval.selector) = new CSSSelector();
+        (yyval.selector)->match = CSSSelector::PseudoClass;
+        (yyval.selector)->simpleSelector = (yyvsp[-1].selector);
+        (yyval.selector)->value = domString((yyvsp[-3].string));
     ;}
     break;
 
   case 106:
 
     {
-	yyval.ok = yyvsp[-1].ok;
+	(yyval.ok) = (yyvsp[-1].ok);
     ;}
     break;
 
   case 107:
 
     {
-	yyval.ok = false;
+	(yyval.ok) = false;
     ;}
     break;
 
   case 108:
 
     {
-	yyval.ok = yyvsp[-1].ok;
+	(yyval.ok) = (yyvsp[-1].ok);
     ;}
     break;
 
   case 109:
 
     {
-	yyval.ok = yyvsp[-2].ok;
-	if ( yyvsp[-1].ok )
-	    yyval.ok = yyvsp[-1].ok;
+	(yyval.ok) = (yyvsp[-2].ok);
+	if ( (yyvsp[-1].ok) )
+	    (yyval.ok) = (yyvsp[-1].ok);
     ;}
     break;
 
   case 110:
 
     {
-	yyval.ok = yyvsp[-2].ok;
+	(yyval.ok) = (yyvsp[-2].ok);
     ;}
     break;
 
   case 111:
 
     {
-	yyval.ok = yyvsp[-2].ok;
+	(yyval.ok) = (yyvsp[-2].ok);
     ;}
     break;
 
   case 112:
 
     {
-        yyval.ok = false;
+        (yyval.ok) = false;
     ;}
     break;
 
   case 113:
 
     {
-	yyval.ok = yyvsp[-3].ok;
-	if ( yyvsp[-2].ok )
-	    yyval.ok = yyvsp[-2].ok;
+	(yyval.ok) = (yyvsp[-3].ok);
+	if ( (yyvsp[-2].ok) )
+	    (yyval.ok) = (yyvsp[-2].ok);
     ;}
     break;
 
   case 114:
 
     {
-        yyval.ok = yyvsp[-3].ok;
+        (yyval.ok) = (yyvsp[-3].ok);
     ;}
     break;
 
   case 115:
 
     {
-	yyval.ok = false;
+	(yyval.ok) = false;
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( yyvsp[-4].prop_id && yyvsp[-1].valueList ) {
-	    p->valueList = yyvsp[-1].valueList;
+	if ( (yyvsp[-4].prop_id) && (yyvsp[-1].valueList) ) {
+	    p->valueList = (yyvsp[-1].valueList);
 #ifdef CSS_DEBUG
-	    kDebug( 6080 ) << "   got property: " << yyvsp[-4].prop_id <<
-		(yyvsp[0].b?" important":"")<< endl;
+	    kDebug( 6080 ) << "   got property: " << (yyvsp[-4].prop_id) <<
+		((yyvsp[0].b)?" important":"")<< endl;
 #endif
-	        bool ok = p->parseValue( yyvsp[-4].prop_id, yyvsp[0].b );
+	        bool ok = p->parseValue( (yyvsp[-4].prop_id), (yyvsp[0].b) );
                 if ( ok )
-		    yyval.ok = ok;
+		    (yyval.ok) = ok;
 #ifdef CSS_DEBUG
 	        else
 		    kDebug( 6080 ) << "     couldn't parse value!" << endl;
 #endif
 	} else {
-            delete yyvsp[-1].valueList;
+            delete (yyvsp[-1].valueList);
         }
 	delete p->valueList;
 	p->valueList = 0;
@@ -2353,49 +2386,49 @@ yyreduce:
   case 116:
 
     {
-        yyval.ok = false;
+        (yyval.ok) = false;
     ;}
     break;
 
   case 117:
 
     {
-	QString str = qString(yyvsp[-1].string);
-	yyval.prop_id = getPropertyID( str.lower().toLatin1().constData(), str.length() );
+	QString str = qString((yyvsp[-1].string));
+	(yyval.prop_id) = getPropertyID( str.lower().latin1(), str.length() );
     ;}
     break;
 
   case 118:
 
-    { yyval.b = true; ;}
+    { (yyval.b) = true; ;}
     break;
 
   case 119:
 
-    { yyval.b = false; ;}
+    { (yyval.b) = false; ;}
     break;
 
   case 120:
 
     {
-	yyval.valueList = new ValueList;
-	yyval.valueList->addValue( yyvsp[0].value );
+	(yyval.valueList) = new ValueList;
+	(yyval.valueList)->addValue( (yyvsp[0].value) );
     ;}
     break;
 
   case 121:
 
     {
-	yyval.valueList = yyvsp[-2].valueList;
-	if ( yyval.valueList ) {
-	    if ( yyvsp[-1].tok ) {
+	(yyval.valueList) = (yyvsp[-2].valueList);
+	if ( (yyval.valueList) ) {
+	    if ( (yyvsp[-1].tok) ) {
 		Value v;
 		v.id = 0;
 		v.unit = Value::Operator;
-		v.iValue = yyvsp[-1].tok;
-		yyval.valueList->addValue( v );
+		v.iValue = (yyvsp[-1].tok);
+		(yyval.valueList)->addValue( v );
 	    }
-	    yyval.valueList->addValue( yyvsp[0].value );
+	    (yyval.valueList)->addValue( (yyvsp[0].value) );
 	}
     ;}
     break;
@@ -2403,175 +2436,175 @@ yyreduce:
   case 122:
 
     {
-	yyval.tok = '/';
+	(yyval.tok) = '/';
     ;}
     break;
 
   case 123:
 
     {
-	yyval.tok = ',';
+	(yyval.tok) = ',';
     ;}
     break;
 
   case 124:
 
     {
-        yyval.tok = 0;
+        (yyval.tok) = 0;
   ;}
     break;
 
   case 125:
 
-    { yyval.value = yyvsp[0].value; ;}
+    { (yyval.value) = (yyvsp[0].value); ;}
     break;
 
   case 126:
 
-    { yyval.value = yyvsp[0].value; yyval.value.fValue *= yyvsp[-1].val; ;}
+    { (yyval.value) = (yyvsp[0].value); (yyval.value).fValue *= (yyvsp[-1].val); ;}
     break;
 
   case 127:
 
-    { yyval.value.id = 0; yyval.value.string = yyvsp[-1].string; yyval.value.unit = CSSPrimitiveValue::CSS_DIMENSION; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[-1].string); (yyval.value).unit = CSSPrimitiveValue::CSS_DIMENSION; ;}
     break;
 
   case 128:
 
-    { yyval.value.id = 0; yyval.value.string = yyvsp[-1].string; yyval.value.unit = CSSPrimitiveValue::CSS_STRING; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[-1].string); (yyval.value).unit = CSSPrimitiveValue::CSS_STRING; ;}
     break;
 
   case 129:
 
     {
-      QString str = qString( yyvsp[-1].string );
-      yyval.value.id = getValueID( str.lower().toLatin1().constData(), str.length() );
-      yyval.value.unit = CSSPrimitiveValue::CSS_IDENT;
-      yyval.value.string = yyvsp[-1].string;
+      QString str = qString( (yyvsp[-1].string) );
+      (yyval.value).id = getValueID( str.lower().latin1(), str.length() );
+      (yyval.value).unit = CSSPrimitiveValue::CSS_IDENT;
+      (yyval.value).string = (yyvsp[-1].string);
   ;}
     break;
 
   case 130:
 
-    { yyval.value.id = 0; yyval.value.string = yyvsp[-1].string; yyval.value.unit = CSSPrimitiveValue::CSS_URI; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[-1].string); (yyval.value).unit = CSSPrimitiveValue::CSS_URI; ;}
     break;
 
   case 131:
 
-    { yyval.value.id = 0; yyval.value.iValue = 0; yyval.value.unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ ;}
+    { (yyval.value).id = 0; (yyval.value).iValue = 0; (yyval.value).unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ ;}
     break;
 
   case 132:
 
-    { yyval.value.id = 0; yyval.value.string = yyvsp[0].string; yyval.value.unit = CSSPrimitiveValue::CSS_RGBCOLOR; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[0].string); (yyval.value).unit = CSSPrimitiveValue::CSS_RGBCOLOR; ;}
     break;
 
   case 133:
 
     {
-      yyval.value = yyvsp[0].value;
+      (yyval.value) = (yyvsp[0].value);
   ;}
     break;
 
   case 134:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_NUMBER; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_NUMBER; ;}
     break;
 
   case 135:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PERCENTAGE; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PERCENTAGE; ;}
     break;
 
   case 136:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PX; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PX; ;}
     break;
 
   case 137:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_CM; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_CM; ;}
     break;
 
   case 138:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_MM; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_MM; ;}
     break;
 
   case 139:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_IN; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_IN; ;}
     break;
 
   case 140:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PT; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PT; ;}
     break;
 
   case 141:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PC; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PC; ;}
     break;
 
   case 142:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_DEG; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_DEG; ;}
     break;
 
   case 143:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_RAD; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_RAD; ;}
     break;
 
   case 144:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_GRAD; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_GRAD; ;}
     break;
 
   case 145:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_MS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_MS; ;}
     break;
 
   case 146:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_S; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_S; ;}
     break;
 
   case 147:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_HZ; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_HZ; ;}
     break;
 
   case 148:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_KHZ; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_KHZ; ;}
     break;
 
   case 149:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_EMS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_EMS; ;}
     break;
 
   case 150:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = Value::Q_EMS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = Value::Q_EMS; ;}
     break;
 
   case 151:
 
-    { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_EXS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_EXS; ;}
     break;
 
   case 152:
 
     {
       Function *f = new Function;
-      f->name = yyvsp[-4].string;
-      f->args = yyvsp[-2].valueList;
-      yyval.value.id = 0;
-      yyval.value.unit = Value::Function;
-      yyval.value.function = f;
+      f->name = (yyvsp[-4].string);
+      f->args = (yyvsp[-2].valueList);
+      (yyval.value).id = 0;
+      (yyval.value).unit = Value::Function;
+      (yyval.value).function = f;
   ;}
     break;
 
@@ -2579,23 +2612,23 @@ yyreduce:
 
     {
       Function *f = new Function;
-      f->name = yyvsp[-2].string;
+      f->name = (yyvsp[-2].string);
       f->args = 0;
-      yyval.value.id = 0;
-      yyval.value.unit = Value::Function;
-      yyval.value.function = f;
+      (yyval.value).id = 0;
+      (yyval.value).unit = Value::Function;
+      (yyval.value).function = f;
   ;}
     break;
 
   case 154:
 
-    { yyval.string = yyvsp[-1].string; ;}
+    { (yyval.string) = (yyvsp[-1].string); ;}
     break;
 
   case 155:
 
     {
-	yyval.rule = 0;
+	(yyval.rule) = 0;
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "skipped invalid @-rule" << endl;
 #endif
@@ -2605,7 +2638,7 @@ yyreduce:
   case 156:
 
     {
-	yyval.rule = 0;
+	(yyval.rule) = 0;
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "skipped invalid @-rule" << endl;
 #endif
@@ -2615,7 +2648,7 @@ yyreduce:
   case 157:
 
     {
-	yyval.rule = 0;
+	(yyval.rule) = 0;
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "skipped invalid rule" << endl;
 #endif
@@ -2625,7 +2658,7 @@ yyreduce:
 
     }
 
-/* Line 999 of yacc.c.  */
+/* Line 1037 of yacc.c.  */
 
 
   yyvsp -= yylen;
@@ -2667,18 +2700,33 @@ yyerrlab:
 	{
 	  YYSIZE_T yysize = 0;
 	  int yytype = YYTRANSLATE (yychar);
+	  const char* yyprefix;
 	  char *yymsg;
-	  int yyx, yycount;
+	  int yyx;
 
-	  yycount = 0;
 	  /* Start YYX at -YYN if negative to avoid negative indexes in
 	     YYCHECK.  */
-	  for (yyx = yyn < 0 ? -yyn : 0;
-	       yyx < (int) (sizeof (yytname) / sizeof (char *)); yyx++)
+	  int yyxbegin = yyn < 0 ? -yyn : 0;
+
+	  /* Stay within bounds of both yycheck and yytname.  */
+	  int yychecklim = YYLAST - yyn;
+	  int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+	  int yycount = 0;
+
+	  yyprefix = ", expecting ";
+	  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
 	    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-	      yysize += yystrlen (yytname[yyx]) + 15, yycount++;
-	  yysize += yystrlen ("syntax error, unexpected ") + 1;
-	  yysize += yystrlen (yytname[yytype]);
+	      {
+		yysize += yystrlen (yyprefix) + yystrlen (yytname [yyx]);
+		yycount += 1;
+		if (yycount == 5)
+		  {
+		    yysize = 0;
+		    break;
+		  }
+	      }
+	  yysize += (sizeof ("syntax error, unexpected ")
+		     + yystrlen (yytname[yytype]));
 	  yymsg = (char *) YYSTACK_ALLOC (yysize);
 	  if (yymsg != 0)
 	    {
@@ -2687,16 +2735,13 @@ yyerrlab:
 
 	      if (yycount < 5)
 		{
-		  yycount = 0;
-		  for (yyx = yyn < 0 ? -yyn : 0;
-		       yyx < (int) (sizeof (yytname) / sizeof (char *));
-		       yyx++)
+		  yyprefix = ", expecting ";
+		  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
 		    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
 		      {
-			const char *yyq = ! yycount ? ", expecting " : " or ";
-			yyp = yystpcpy (yyp, yyq);
+			yyp = yystpcpy (yyp, yyprefix);
 			yyp = yystpcpy (yyp, yytname[yyx]);
-			yycount++;
+			yyprefix = " or ";
 		      }
 		}
 	      yyerror (yymsg);
@@ -2714,38 +2759,57 @@ yyerrlab:
 
   if (yyerrstatus == 3)
     {
-      /* If just tried and failed to reuse lookahead token after an
+      /* If just tried and failed to reuse look-ahead token after an
 	 error, discard it.  */
 
-      /* Return failure if at end of input.  */
-      if (yychar == YYEOF)
+      if (yychar <= YYEOF)
         {
-	  /* Pop the error token.  */
-          YYPOPSTACK;
-	  /* Pop the rest of the stack.  */
-	  while (yyss < yyssp)
-	    {
-	      YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
-	      yydestruct (yystos[*yyssp], yyvsp);
-	      YYPOPSTACK;
-	    }
-	  YYABORT;
+          /* If at end of input, pop the error token,
+	     then the rest of the stack, then return failure.  */
+	  if (yychar == YYEOF)
+	     for (;;)
+	       {
+
+		 YYPOPSTACK;
+		 if (yyssp == yyss)
+		   YYABORT;
+		 yydestruct ("Error: popping",
+                             yystos[*yyssp], yyvsp);
+	       }
         }
-
-      YYDSYMPRINTF ("Error: discarding", yytoken, &yylval, &yylloc);
-      yydestruct (yytoken, &yylval);
-      yychar = YYEMPTY;
-
+      else
+	{
+	  yydestruct ("Error: discarding", yytoken, &yylval);
+	  yychar = YYEMPTY;
+	}
     }
 
-  /* Else will try to reuse lookahead token after shifting the error
+  /* Else will try to reuse look-ahead token after shifting the error
      token.  */
   goto yyerrlab1;
 
 
-/*----------------------------------------------------.
-| yyerrlab1 -- error raised explicitly by an action.  |
-`----------------------------------------------------*/
+/*---------------------------------------------------.
+| yyerrorlab -- error raised explicitly by YYERROR.  |
+`---------------------------------------------------*/
+yyerrorlab:
+
+#ifdef __GNUC__
+  /* Pacify GCC when the user code never invokes YYERROR and the label
+     yyerrorlab therefore never appears in user code.  */
+  if (0)
+     goto yyerrorlab;
+#endif
+
+yyvsp -= yylen;
+  yyssp -= yylen;
+  yystate = *yyssp;
+  goto yyerrlab1;
+
+
+/*-------------------------------------------------------------.
+| yyerrlab1 -- common code for both syntax error and YYERROR.  |
+`-------------------------------------------------------------*/
 yyerrlab1:
   yyerrstatus = 3;	/* Each real token shifted decrements this.  */
 
@@ -2767,21 +2831,21 @@ yyerrlab1:
       if (yyssp == yyss)
 	YYABORT;
 
-      YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
-      yydestruct (yystos[yystate], yyvsp);
-      yyvsp--;
-      yystate = *--yyssp;
 
+      yydestruct ("Error: popping", yystos[yystate], yyvsp);
+      YYPOPSTACK;
+      yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
     }
 
   if (yyn == YYFINAL)
     YYACCEPT;
 
-  YYDPRINTF ((stderr, "Shifting error token, "));
-
   *++yyvsp = yylval;
 
+
+  /* Shift the error token. */
+  YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
 
   yystate = yyn;
   goto yynewstate;
@@ -2798,6 +2862,9 @@ yyacceptlab:
 | yyabortlab -- YYABORT comes here.  |
 `-----------------------------------*/
 yyabortlab:
+  yydestruct ("Error: discarding lookahead",
+              yytoken, &yylval);
+  yychar = YYEMPTY;
   yyresult = 1;
   goto yyreturn;
 
