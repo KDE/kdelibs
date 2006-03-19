@@ -16,19 +16,13 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qpointer.h>
-//Added by qt3to4:
-#include <QLabel>
-
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kmainwindow.h>
 #include <klineedit.h>
-#include <k3listview.h>
 #include <kstandarddirs.h>
 #include <ktoolbarlabelaction.h>
-#include <ksqueezedtextlabel.h> 
-#include <kdebug.h>
+#include <ksqueezedtextlabel.h>
 #include <kvbox.h>
 
 #include <assert.h>

@@ -3,8 +3,7 @@
 #include <kapplication.h>
 #include <kdialogbase.h>
 
-#include <qstring.h>
-#include <q3textview.h>
+#include <QTextBrowser>
 
 int main(int argc, char** argv)
 {
@@ -61,10 +60,10 @@ int main(int argc, char** argv)
 
      It is important that your main widget is created with the dialog object
      as its parent! */
-  Q3TextView view(text, QString(), &dialog);
+  QTextBrowser view(&dialog);
+  view.setHtml(text);
   //view.setMinimumSize(400, view.heightForWidth(400)+20);
   view.setMinimumSize( 250, 300 );
-  dialog.setMainWidget(&view);
   /* After finishing the setup of your main widget, the dialog needs to be
      adjusted. It is not done automatically, since the layout of the main
      widget may change before the dialog is shown. Additionally, setting a

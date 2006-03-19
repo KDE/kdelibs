@@ -1,9 +1,5 @@
-#include <qstring.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <khbox.h>
-#include <qtimer.h>
-//Added by qt3to4:
+#include <QPushButton>
+#include <QTimer>
 #include <QVBoxLayout>
 
 #include <kaboutdata.h>
@@ -15,6 +11,7 @@
 #include <klineedit.h>
 #include <kglobalsettings.h>
 #include <kcompletionbox.h>
+#include <khbox.h>
 
 #include "klineedittest.h"
 

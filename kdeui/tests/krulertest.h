@@ -3,12 +3,12 @@
 #ifndef krulertest_h
 #define krulertest_h
 
+#include <QCheckBox>
+#include <QRadioButton>
+#include <Q3ButtonGroup>
+
 #include <kapplication.h>
 #include <kmainwindow.h>
-#include <qwidget.h>
-#include <qcheckbox.h>
-#include <qradiobutton.h>
-#include <q3buttongroup.h>
 #include <knuminput.h>
 
 class KRuler;

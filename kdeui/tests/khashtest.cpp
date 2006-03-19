@@ -4,12 +4,9 @@
 #include <kapplication.h>
 #include <kpixmapeffect.h>
 #include <kimageeffect.h>
-#include <qpainter.h>
-#include <qdatetime.h>
-#include <qstring.h>
-#include <qimage.h>
-//Added by qt3to4:
-#include <QPaintEvent>
+
+#include <QPainter>
+#include <QDateTime>
 
 int cols = 3, rows = 3; // how many
 

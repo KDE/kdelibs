@@ -1,7 +1,3 @@
-/*
- *
- */
-
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <qpushbutton.h>
@@ -16,8 +12,7 @@
 #include <qmessagebox.h>
 #include <qtabbar.h>
 #include <qpalette.h>
-#include <q3multilineedit.h>
-//Added by qt3to4:
+#include <qtextedit.h>
 #include <QResizeEvent>
 
 #include <stdio.h>
@@ -54,8 +49,9 @@ TopLevel::TopLevel(QWidget *parent)
     pages[0] = w;
     w = new QWidget(test );
     w->setObjectName( "_page2" );
-    e = new Q3MultiLineEdit(w, "_editor");
-    e->setText("Write some usesless stuff here :-)");
+    e = new QTextEdit(w);
+    e->setObjectName( "_editor" );
+    e->setPlainText("Write some usesless stuff here :-)");
     w->resize(width(), height());
     test->addTab(w, "Seite 2");
     pages[1] = w;

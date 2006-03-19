@@ -6,11 +6,8 @@
 * License: GPL, version 2
 */
 
-#include <qlayout.h>
-#include <q3groupbox.h>
-//Added by qt3to4:
-#include <QHBoxLayout>
-#include <QBoxLayout>
+#include <QLayout>
+#include <Q3GroupBox>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>

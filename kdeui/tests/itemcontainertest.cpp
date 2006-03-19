@@ -6,15 +6,11 @@
 * License: GPL, version 2
 */
 
-#include <qlayout.h>
-#include <q3buttongroup.h>
-#include <qradiobutton.h>
-#include <qcheckbox.h>
-#include <qlabel.h>
-//Added by qt3to4:
-#include <QPixmap>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QLayout>
+#include <Q3ButtonGroup>
+#include <QRadioButton>
+#include <QCheckBox>
+#include <QLabel>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

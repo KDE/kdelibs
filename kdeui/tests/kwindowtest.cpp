@@ -1,11 +1,5 @@
-#include <qmessagebox.h>
-#include <qpixmap.h>
-#include <qnamespace.h>
-#include <qwidget.h>
-#include <qstring.h>
-#include <qcursor.h>
-//Added by qt3to4:
-#include <QFrame>
+#include <QMessageBox>
+#include <QTextEdit>
 
 #include <stdlib.h>
 
@@ -14,19 +8,10 @@
 #include <kcombobox.h>
 #include <khelpmenu.h>
 #include <kcmdlineargs.h>
-#include <kmenubar.h>
-#include <kiconloader.h>
 #include <kmenu.h>
 #include <kactionclasses.h>
 #include "kwindowtest.h"
 #include <klineedit.h>
-
-#include <kglobal.h>
-
-#include <qtextedit.h>
-
-
-//#include <dclock.h>
 
 /*
  Ok this is a constructor of our top widget. It inherits KMainWindow.

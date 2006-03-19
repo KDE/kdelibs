@@ -1,22 +1,17 @@
-#include <klocale.h>
-#include "kcompletiontest.h"
-
-#include <q3groupbox.h>
-#include <qlabel.h>
-#include <q3listbox.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qvariant.h>
-#include <qtooltip.h>
-//Added by qt3to4:
-#include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <Q3GroupBox>
+#include <QLabel>
+#include <Q3ListBox>
+#include <QPushButton>
+#include <QLayout>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <klineedit.h>
 #include <kcombobox.h>
+#include <klocale.h>
+#include "kcompletiontest.h"
+
 /*
  *  Constructs a Form1 which is a child of 'parent', with the
  *  widget flags set to 'f'

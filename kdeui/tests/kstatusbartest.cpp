@@ -1,7 +1,7 @@
 #include <qwidget.h>
 #include <qstring.h>
 #include <qmessagebox.h>
-#include <q3multilineedit.h>
+#include <qtextedit.h>
 #include <qnamespace.h>
 #include <qpixmap.h>
 #include <qcursor.h>
@@ -37,7 +37,7 @@ testWindow::testWindow (QWidget *)
     connect (statusbar, SIGNAL(pressed(int)), this, SLOT(slotPress(int)));
     connect (statusbar, SIGNAL(released(int)), this, SLOT(slotClick(int)));
 
-    widget = new Q3MultiLineEdit (this);
+    widget = new QTextEdit (this);
 
     setCentralWidget(widget);
 

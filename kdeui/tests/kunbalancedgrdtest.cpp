@@ -2,13 +2,9 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kpixmapeffect.h>
-#include <qpainter.h>
-#include <qstring.h>
-#include <qlayout.h>
-//Added by qt3to4:
-#include <QLabel>
+
+#include <QPainter>
 #include <QGridLayout>
-#include <QPaintEvent>
 
 int cols = 3, rows = 3; // how many
 

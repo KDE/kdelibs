@@ -64,7 +64,6 @@ int main(int argc, char** argv)
 	
   //view.setMinimumSize(400, view.heightForWidth(400)+20);
   view.setMinimumSize( 250, 300 );
-  dialog.setMainWidget(&view);
   /* After finishing the setup of your main widget, the dialog needs to be
      adjusted. It is not done automatically, since the layout of the main
      widget may change before the dialog is shown. Additionally, setting a

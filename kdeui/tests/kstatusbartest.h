@@ -5,7 +5,7 @@
 #include <kstatusbar.h>
 #include <kmainwindow.h>
 
-class Q3MultiLineEdit;
+class QTextEdit;
 
 class testWindow  : public KMainWindow
 {
@@ -14,19 +14,18 @@ class testWindow  : public KMainWindow
 public:
     testWindow (QWidget *parent=0);
     ~testWindow ();
-    
+
 public Q_SLOTS:
     void slotPress(int i);
     void slotClick(int i);
     void slotMenu(int i);
-    
+
 protected:
     QMenu *fileMenu;
     QMenu *smenu;
     KMenuBar *menuBar;
     KStatusBar *statusbar;
     bool insert;
-    Q3MultiLineEdit *widget;
+    QTextEdit *widget;
 };
 #endif
-

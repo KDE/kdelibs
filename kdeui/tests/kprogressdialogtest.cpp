@@ -46,8 +46,6 @@ int main(int argc, char *argv[])
     KApplication app;
     MyWidget w;
 
-    app.setMainWidget(&w);
-
     w.show();
 
     int ret = app.exec();

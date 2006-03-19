@@ -12,19 +12,19 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 
-#include <kactivelabel.h>
+#include "kactivelabel.h"
 
 #include "kactivelabeltest.h"
 
 KActiveLabelTest::KActiveLabelTest(QWidget *parent)
     : QWidget(parent)
 {
-  setCaption( "KActiveLabel test application" );
+  setWindowTitle( "KActiveLabel test application" );
 
   QVBoxLayout *layout = new QVBoxLayout( this );
 
   KActiveLabel *label = new KActiveLabel( this );
-  label->setText( "That's a small test text ;) <a href=\"whatsthis:click me if you can\">Click me</a>" );
+  label->setHtml( "That's a small test text ;) <a href=\"whatsthis:click me if you can\">Click me</a>" );
 
   layout->addWidget( label );
 }
@@ -39,7 +39,6 @@ int main( int argc, char ** argv )
   KActiveLabelTest *toplevel = new KActiveLabelTest( 0 );
   toplevel->show();
 
-  app.setMainWidget( toplevel );
   app.exec();
 }
 

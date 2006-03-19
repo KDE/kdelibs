@@ -1,16 +1,14 @@
-
 #include "kcolortest.h"
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kimageeffect.h>
+
 #include <stdio.h>
-#include <qdatetime.h>
-#include <qdesktopwidget.h>
-#include <qpainter.h>
-//Added by qt3to4:
-#include <QPixmap>
-#include <QPaintEvent>
+
+#include <QDesktopWidget>
+#include <QPainter>
+#include <QTime>
 
 bool fullscreen = false, oldway = false, intvsfade = false;
 int max = 20; // how many steps

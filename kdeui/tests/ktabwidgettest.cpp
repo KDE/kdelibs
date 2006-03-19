@@ -1,11 +1,6 @@
-#include <qcheckbox.h>
-#include <qlayout.h>
-#include <q3dragobject.h>
-//Added by qt3to4:
-#include <QGridLayout>
+#include <QLayout>
+#include <Q3DragObject>
 #include <QDragMoveEvent>
-#include <QDropEvent>
-#include <QLabel>
 #include <QMenu>
 
 #include <kapplication.h>

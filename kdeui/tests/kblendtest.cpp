@@ -3,11 +3,9 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kimageeffect.h>
-#include <qpainter.h>
-#include <qdatetime.h>
-#include <qstring.h>
-//Added by qt3to4:
-#include <QPaintEvent>
+
+#include <QPainter>
+#include <QDateTime>
 
 int cols = 3, rows = 3; // how many
 

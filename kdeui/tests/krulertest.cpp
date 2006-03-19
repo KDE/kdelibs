@@ -3,14 +3,9 @@
 #include "krulertest.h"
 
 #include "kruler.h"
-#include <qlayout.h>
-#include <qlabel.h>
-#include <qevent.h>
-#include <q3groupbox.h>
-//Added by qt3to4:
-#include <QMouseEvent>
-#include <QFrame>
-#include <QGridLayout>
+
+#include <QLayout>
+#include <QLabel>
 #include <QResizeEvent>
 
 /*
