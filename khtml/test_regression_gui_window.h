@@ -84,10 +84,10 @@ private: // Helpers
 	void initRegressionTesting(const QString &testFileName);
 	void updateItemStatus(TestResult result, QTreeWidgetItem *item, const QString &testFileName);
 	void updateLogOutput(const QString &data);
+	void updateProgressBarRange() const;
 	void parseRegressionTestingOutput(QString data, TestResult result, const QString &cacheName);
 
 	unsigned long countLogLines() const;
-	unsigned long countMapItems(const QMap<QString, QStringList > &map) const;
 
 	QString extractTestNameFromData(QString &data, TestResult &result) const;
 	QStringList readListFile(const QString &fileName) const;
@@ -95,21 +95,30 @@ private: // Helpers
 
 	QString pathFromItem(const QTreeWidgetItem *item) const;
 
-private:
-	enum TestFlags
+public:
+	// Flags
+	enum ProcessArgument
 	{
-		None		= 0,
-		JSTests		= 1,
-		HTMLTests	= 3,
-		DebugOutput	= 4,
-		NoXvfbUse	= 5
+		None		= 0x0,
+		JSTests		= 0x1,
+		HTMLTests	= 0x2,
+		DebugOutput	= 0x4,
+		NoXvfbUse	= 0x8
 	};
 
+	Q_DECLARE_FLAGS(ProcessArguments, ProcessArgument);
+
+private:
 	Ui::MainWindow m_ui;
 
-	int m_flags;
-	int m_runCounter;
-	int m_testCounter;
+	ProcessArguments m_flags;
+
+	long m_runCounter;
+	long m_testCounter;
+
+	unsigned long m_totalTests;
+	unsigned long m_totalTestsJS;
+	unsigned long m_totalTestsDOMTS;
 
 	KUrl m_khtmlUrl;
 	KUrl m_testsUrl;
@@ -127,6 +136,7 @@ private:
 	QPixmap m_passUnexpectedPixmap;
 	QPixmap m_crashPixmap;
 	QPixmap m_ignorePixmap;
+	QPixmap m_noBaselinePixmap;
 
 	QProcess *m_activeProcess;
 	QTreeWidgetItem *m_activeTreeItem;
@@ -144,6 +154,8 @@ private:
 	bool m_justProcessingQueue;
 	QQueue<QString> m_processingQueue;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(TestRegressionWindow::ProcessArguments)
 
 #endif
 

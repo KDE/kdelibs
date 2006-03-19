@@ -50,10 +50,6 @@ int main(int argc, char *argv[])
 /*
 TODO
 ----
-* Fix progress bars in "do not run html/js tests" mode
-
-MAYBE-TODO
-----------
 * Offer an integrated "index.html" viewer, after the regression testing is done
 */
 

@@ -37,9 +37,15 @@
 
 #include "test_regression_gui_window.moc"
 
+// Taken from QUrl
+#define Q_HAS_FLAG(a, b)	( ((a) & (b)) == (b) )
+#define Q_SET_FLAG(a, b)	{ (a) |= (b); }
+#define Q_UNSET_FLAG(a, b)	{ (a) &= ~(b); }
+
 TestRegressionWindow::TestRegressionWindow(QWidget *parent)
-: QMainWindow(parent), m_flags(None), m_runCounter(0), m_testCounter(0), m_lastResult(Unknown),
-					   m_activeProcess(0), m_activeTreeItem(0), m_suspended(false), m_justProcessingQueue(false)
+: QMainWindow(parent), m_flags(None), m_runCounter(0), m_testCounter(0), m_totalTests(0),
+					   m_totalTestsJS(0), m_totalTestsDOMTS(0), m_lastResult(Unknown), m_activeProcess(0),
+					   m_activeTreeItem(0), m_suspended(false), m_justProcessingQueue(false)
 {
 	m_ui.setupUi(this);
 
@@ -98,33 +104,49 @@ TestRegressionWindow::~TestRegressionWindow()
 void TestRegressionWindow::toggleJSTests(bool checked)
 {
 	if(checked)
-		m_flags |= (1 << JSTests);
+	{
+		Q_SET_FLAG(m_flags, JSTests)
+		Q_UNSET_FLAG(m_flags, HTMLTests)
+
+		m_ui.actionOnly_run_HTML_tests->setChecked(false);
+	}
 	else
-		m_flags &= (1 << JSTests);
+		Q_UNSET_FLAG(m_flags, JSTests)
+
+	// Eventually update progress bar range...
+	updateProgressBarRange();
 }
 
 void TestRegressionWindow::toggleHTMLTests(bool checked)
 {
 	if(checked)
-		m_flags |= (1 << HTMLTests);
+	{
+		Q_SET_FLAG(m_flags, HTMLTests)
+		Q_UNSET_FLAG(m_flags, JSTests)
+
+		m_ui.actionOnly_run_JS_tests->setChecked(false);
+	}
 	else
-		m_flags &= (1 << HTMLTests);
+		Q_UNSET_FLAG(m_flags, HTMLTests)
+
+	// Eventually update progress bar range...
+	updateProgressBarRange();
 }
 
 void TestRegressionWindow::toggleDebugOutput(bool checked)
 {
 	if(checked)
-		m_flags |= (1 << DebugOutput);
+		Q_SET_FLAG(m_flags, DebugOutput)
 	else
-		m_flags &= (1 << DebugOutput);
+		Q_UNSET_FLAG(m_flags, DebugOutput)
 }
 
 void TestRegressionWindow::toggleNoXvfbUse(bool checked)
 {
 	if(checked)
-		m_flags |= (1 << NoXvfbUse);
+		Q_SET_FLAG(m_flags, NoXvfbUse)
 	else
-		m_flags &= (1 << NoXvfbUse);
+		Q_UNSET_FLAG(m_flags, NoXvfbUse)
 }
 
 void TestRegressionWindow::setTestsDirectory()
@@ -278,21 +300,46 @@ void TestRegressionWindow::directoryListingFinished(KIO::Job *)
 {
 	QTreeWidgetItem *topLevelItem = m_ui.treeWidget->topLevelItem(0);
 
+	// Gather a lot of statistics...
+	unsigned long availableDomFiles = 0;
+	unsigned long availableDumpFiles = 0;
+	unsigned long availableRenderFiles = 0;
+
+	unsigned long ignoredJSTests = 0;
+	unsigned long availableJSTests = 0;
+
+	unsigned long ignoredXMLTests = 0;
+	unsigned long availableXMLTests = 0;
+
+	unsigned long ignoredHTMLTests = 0;
+	unsigned long availableHTMLTests = 0;
+
+	unsigned long ignoredDOMTSTests = 0;
+	unsigned long availableDOMTSTests = 0;
+
+	// Start the actual data processing...
 	QMap<QString, QStringList>::const_iterator it = m_directoryMap.constBegin();
 	const QMap<QString, QStringList>::const_iterator end = m_directoryMap.constEnd();
-
-	unsigned long availableTests = 0;
 
 	for(; it != end; ++it)
 	{
 		QString directory = it.key();
 		QStringList filenames = it.value();
 
+		if(filenames.isEmpty()) // Do not add empty directories at all...
+			continue;
+
 		bool hasIgnores = (m_ignoreMap.constFind(directory) != m_directoryMap.constEnd());
 		bool hasFailures = (m_failureMap.constFind(directory) != m_failureMap.constEnd());
 
-		if(filenames.isEmpty()) // Do not add empty directories at all...
-			continue;
+		// Extract parent directory...
+		int position = directory.lastIndexOf('/');
+
+		QString parentDirectory = directory.mid(0, (position == -1 ? 0 : position));
+		QString parentDirectoryItem = directory.mid(position + 1);
+
+		bool hasParentIgnores = (m_ignoreMap.constFind(parentDirectory) != m_directoryMap.constEnd());
+		bool hasParentFailures = (m_failureMap.constFind(parentDirectory) != m_failureMap.constEnd());
 
 		// Sort in ascending order...
 		filenames.sort();
@@ -306,15 +353,6 @@ void TestRegressionWindow::directoryListingFinished(KIO::Job *)
 		if(!directory.isEmpty())
 		{
 			parent = new QTreeWidgetItem(topLevelItem, QStringList(directory));
-
-			// Extract parent directory...
-			int position = directory.lastIndexOf('/');
-
-			QString parentDirectory = directory.mid(0, (position == -1 ? 0 : position));
-			QString parentDirectoryItem = directory.mid(position + 1);
-
-			bool hasParentIgnores = (m_ignoreMap.constFind(parentDirectory) != m_directoryMap.constEnd());
-			bool hasParentFailures = (m_failureMap.constFind(parentDirectory) != m_failureMap.constEnd());
 
 			// Directory is completely ignored, mark it 'yellow'...
 			if(hasParentIgnores && m_ignoreMap[parentDirectory].contains(parentDirectoryItem))
@@ -337,39 +375,171 @@ void TestRegressionWindow::directoryListingFinished(KIO::Job *)
 			assert(m_itemMap.constFind(cacheName) != m_directoryMap.constEnd());
 			m_itemMap.insert(cacheName, testItem);
 
+			bool ignore = (hasIgnores && m_ignoreMap[directory].contains(test));
+			bool ignoreParent = (hasParentIgnores && m_ignoreMap[parentDirectory].contains(parentDirectoryItem));
+
+			bool failure = (hasFailures && m_failureMap[directory].contains(test));
+
+			// Check baseline directory for this test...
+			QString baseLinePath = m_testsUrl.path() + "/baseline/" + cacheName;
+	
+			bool dom[9], render[9];
+			for(unsigned int i = 0; i < 9; ++i)
+			{
+				if(i == 0)
+				{
+					dom[i] = (QFileInfo(baseLinePath + "-dom").exists());
+					render[i] = (QFileInfo(baseLinePath + "-render").exists());
+				}
+				else
+				{
+					dom[i] = (QFileInfo(baseLinePath + "-" + QString::number(i) + "-dom").exists());
+					render[i] = (QFileInfo(baseLinePath + "-" + QString::number(i) + "-render").exists());
+				}
+			}
+
+			bool dump = (QFileInfo(baseLinePath + "-dump.png").exists());
+
 			// Ignored tests are marked 'yellow'...
-			if(hasIgnores && m_ignoreMap[directory].contains(test))
+			if(ignore)
 				testItem->setIcon(0, m_ignorePixmap);
 
 			// Tests, known to fail, are marked 'red'...
-			if(hasFailures && m_failureMap[directory].contains(test))
+			if(failure)
 				testItem->setIcon(0, m_failKnownPixmap);
 
-			availableTests++;
+			// Detect wheter the tests has no corresponding baseline items...
+			if(!ignore && !failure)
+			{
+				if(!dom && !dump && !render && !cacheName.endsWith(".js") && !cacheName.startsWith("domts"))
+				{
+					// See if parent directory is completely ignored...
+					if(!ignoreParent)
+						testItem->setIcon(0, m_noBaselinePixmap);
+				}
+			}
+
+			// Update statistics...
+			if(dump)
+				availableDumpFiles++;
+
+			for(unsigned i = 0; i < 9; ++i)
+			{
+				if(dom[i])
+					availableDomFiles++;
+
+				if(render[i])
+					availableRenderFiles++;
+			}
+
+			// Count DOM Testsuite files seperated... (these have no baseline items!)
+			if(cacheName.startsWith("domts"))
+			{
+				// See if parent directory is completely ignored...
+				if(ignore || ignoreParent)
+					ignoredDOMTSTests++;
+				else
+					availableDOMTSTests++;
+			}
+
+			if(cacheName.endsWith(".html") || cacheName.endsWith(".htm") || cacheName.endsWith(".xhtml"))
+			{
+				if(ignore || ignoreParent)
+					ignoredHTMLTests++;
+				else
+					availableHTMLTests++;
+			}
+			else if(cacheName.endsWith(".xml"))
+			{
+				if(ignore || ignoreParent)
+					ignoredXMLTests++;
+				else
+					availableXMLTests++;
+			}
+			else if(cacheName.endsWith(".js"))
+			{
+				unsigned long containedTests = 0;
+
+				// Try hard to _ESTIMATE_ the number of tests...
+				// I really meant estimate, no way to calculate it perfectly.
+
+				QString jsFilePath = m_testsUrl.path() + "/tests/" + cacheName;
+				assert(QFileInfo(jsFilePath).exists() == true);
+
+				QStringList fileList = readListFile(jsFilePath);
+				QString fileContent = fileList.join("");
+
+				// #1 -> Check js file for the 'reportResult' calls...
+				containedTests = fileContent.count("reportResult");
+
+				// #2 -> Check js file for 'openPage' calls...
+				containedTests += fileContent.count("openPage");
+
+				// #3 -> Check js file for 'checkOutput' calls...
+				containedTests += fileContent.count("checkOutput");
+
+				// #4 -> Fallback for ie. mozilla/ecma files...
+				if(containedTests == 0) // Doesn't use 'reportResult' scheme...
+					containedTests++;
+
+				if(ignore || ignoreParent)
+					ignoredJSTests += containedTests;
+				else
+					availableJSTests += containedTests;
+			}
 		}
 	}
 
-/* MAP DEBUGGING
-	unsigned long ignoreMapSize = countMapItems(m_ignoreMap);
-	unsigned long failureMapSize = countMapItems(m_failureMap);
-	unsigned long directoryMapSize = countMapItems(m_directoryMap);
+	// Now we can calculate all ignored/available tests...
+	unsigned long ignoredTests = ignoredJSTests + ignoredXMLTests + ignoredHTMLTests;
+	unsigned long availableTests = availableJSTests + availableXMLTests + availableHTMLTests;
 
-	kDebug() << "---------------------------------------" << endl
-			 << "Map statistics after directory listing:" << endl
-			 << "Available tests:    " << availableTests << endl
-			 << "Item Map Size:      " << m_itemMap.size() << endl
-			 << "Ignore Map Size:    " << m_ignoreMap.size() << " Items: " << ignoreMapSize << endl
-			 << "Failure Map Size:   " << m_failureMap.size() << " Items: " << failureMapSize << endl
-			 << "Directory Map Size: " << m_directoryMap.size() << " Items: " << directoryMapSize << endl
-			 << "---------------------------------------" << endl << endl;
-*/
+	// This estimates the number of total tests, depending on the mode...
+	m_totalTests = availableDomFiles + availableDumpFiles + availableRenderFiles +
+				   availableDOMTSTests + availableJSTests;
 
-	// This is an estimation of the number of tests which will be run.
-	// Most tests have RENDER/PAINT output, that's why 2 is a quite good guess.
-	const unsigned long progressBarRange = availableTests * 2;
-	m_ui.progressBar->setRange(0, progressBarRange);
+	m_totalTestsJS = availableJSTests;
+	m_totalTestsDOMTS = availableDOMTSTests;
 
-	m_ui.treeWidget->headerItem()->setText(0, i18n("Available Tests: %1").arg(availableTests));
+	// Update progress bar range...
+	updateProgressBarRange();
+
+	QString statistics = QString("<body><table border='0' align='center' cellspacing='15'>") +
+						 QString("<tr valign='top'><td colspan='3'><center><b>Statistics</b></center></td></tr>") +
+						 QString("<tr valign='middle'><td>JS Tests</td><td>" + QString::number(availableJSTests) + "</td><td>(" + QString::number(ignoredJSTests) + " ignored)</td></tr>") +
+						 QString("<tr valign='middle'><td>XML Tests</td><td>" + QString::number(availableXMLTests) + "</td><td>(" + QString::number(ignoredXMLTests) + " ignored)</td></tr>") +
+						 QString("<tr valign='middle'><td>HTML Tests</td><td>" + QString::number(availableHTMLTests) + "</td><td>(" + QString::number(ignoredHTMLTests) + " ignored)</td></tr>") +
+						 QString("</table></body>");
+
+	// Go to end...
+	QTextCursor cursor = m_ui.textEdit->textCursor();
+	cursor.movePosition(QTextCursor::End);
+	m_ui.textEdit->setTextCursor(cursor);
+
+	// Insert statistics...
+	m_ui.textEdit->insertHtml(statistics);
+
+	// Update treeview...
+	m_ui.treeWidget->headerItem()->setText(0, i18n("Available Tests: %1 (ignored: %2)")
+											  .arg(availableTests).arg(ignoredTests));
+}
+
+void TestRegressionWindow::updateProgressBarRange() const
+{
+	if(m_totalTests != 0 && m_totalTestsJS != 0)
+	{
+		unsigned long totalTests = m_totalTests;
+
+		if(Q_HAS_FLAG(m_flags, JSTests))
+			totalTests = m_totalTestsJS;
+		else if(Q_HAS_FLAG(m_flags, HTMLTests))
+		{
+			totalTests -= m_totalTestsJS;
+			totalTests -= m_totalTestsDOMTS;
+		}
+
+		m_ui.progressBar->setRange(0, totalTests);
+	}
 }
 
 void TestRegressionWindow::pauseContinueButtonClicked()
@@ -451,17 +621,16 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 
 	if(!m_outputUrl.isEmpty())
 		arguments << "--output" << m_outputUrl.path();
-
 	if(!testFileName.isEmpty())
 		arguments << "--test" << testFileName;
 
-	if(m_flags & (1 << JSTests))
+	if(Q_HAS_FLAG(m_flags, JSTests))
 		arguments << "--js";
-	if(m_flags & (1 << HTMLTests))
+	if(Q_HAS_FLAG(m_flags, HTMLTests))
 		arguments << "--html";
-	if(m_flags & (1 << DebugOutput))
+	if(Q_HAS_FLAG(m_flags, DebugOutput))
 		arguments << "--debug";
-	if(m_flags & (1 << NoXvfbUse))
+	if(Q_HAS_FLAG(m_flags, NoXvfbUse))
 		arguments << "--noxvfb";
 
 	connect(m_activeProcess, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(testerExited(int, QProcess::ExitStatus)));
@@ -550,6 +719,7 @@ void TestRegressionWindow::initLegend()
 	m_passUnexpectedPixmap = QPixmap(":/test/pics/passUnexpected.xpm");
 	m_ignorePixmap = QPixmap(":/test/pics/ignore.xpm");
 	m_crashPixmap = QPixmap(":/test/pics/crash.xpm");
+	m_noBaselinePixmap = QPixmap(":/test/pics/noBaseline.xpm");
 
 	QString legend = QLatin1String("<body><center><font size='8'>Welcome to the khtml<br/>") +
 					 QLatin1String("regression testing tool!</font></center><br/><br/>") +
@@ -560,6 +730,7 @@ void TestRegressionWindow::initLegend()
 					 QLatin1String("<tr valign='middle'><td>Fail</td><td><img src=':/test/pics/fail.xpm'></td></tr>") +
 					 QLatin1String("<tr valign='middle'><td>Fail known</td><td><img src=':/test/pics/failKnown.xpm'></td></tr>") +
 					 QLatin1String("<tr valign='middle'><td>Ignore</td><td><img src=':/test/pics/ignore.xpm'></td></tr>") +
+					 QLatin1String("<tr valign='middle'><td>Baseline missing</td><td><img src=':/test/pics/noBaseline.xpm'></td></tr>") +
 					 QLatin1String("<tr valign='middle'><td>Crash</td><td><img src=':/test/pics/crash.xpm'></td></tr>") +
 					 QLatin1String("</table></body>");
 
@@ -843,7 +1014,7 @@ void TestRegressionWindow::parseRegressionTestingOutput(QString data, TestResult
 	updateLogOutput(data);
 
 	// Update progressbar...
-	if(m_testCounter >= 0)
+	if(m_testCounter > 0)
 		m_ui.progressBar->setValue(m_testCounter);
 }
 
@@ -934,27 +1105,6 @@ unsigned long TestRegressionWindow::countLogLines() const
 		lines++;
 
 	return lines;
-}
-
-unsigned long TestRegressionWindow::countMapItems(const QMap<QString, QStringList > &map) const
-{
-	unsigned long counter = 0;
-
-	QMap<QString, QStringList>::const_iterator it = map.constBegin();
-	const QMap<QString, QStringList>::const_iterator end = map.constEnd();
-
-	for(; it != end; ++it)
-	{
-		QStringList list = it.value();
-
-		QStringList::const_iterator it2 = list.constBegin();
-		const QStringList::const_iterator end2 = list.constEnd();
-
-		for(; it2 != end2; ++it2)
-			counter++;
-	}
-
-	return counter;
 }
 
 QStringList TestRegressionWindow::readListFile(const QString &fileName) const
