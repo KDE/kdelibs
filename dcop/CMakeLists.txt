@@ -56,7 +56,7 @@ install_targets(/bin dcopserver_shutdown )
 
 if(KDE4_BUILD_TESTS)
 
-   set(testdcop_SRCS testdcop.cpp ${kICE_STAT_SRCS} )
+   set(testdcop_SRCS testdcop.cpp )
    
    kde4_automoc(${testdcop_SRCS})
    
@@ -90,7 +90,7 @@ add_definitions(-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DANSICPP)
 if (UNIX)
    add_definitions(-DUNIXCONN)
 else (UNIX)
-   add_definitions(-DSOCKCONN -DTCPCONN -DKICE_EXPORT=DCOP_EXPORT -DMAKE_DCOP_LIB)
+   add_definitions(-DSOCKCONN -DTCPCONN -DKICE_EXPORT=DCOP_EXPORT)
 endif (UNIX)
 
 kde4_automoc(${DCOP_LIB_SRCS})
