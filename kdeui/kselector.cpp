@@ -320,7 +320,7 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
     QPolygon array(3);
 
     painter->setPen( QPen() );
-    painter->setBrush( QBrush( QColorGroup(palette()).buttonText() ) );
+    painter->setBrush( QBrush( palette().color(QPalette::ButtonText) ) );
     if ( orientation() == Qt::Vertical )
     {
       array.setPoint( 0, pos.x()+0, pos.y()+0 );

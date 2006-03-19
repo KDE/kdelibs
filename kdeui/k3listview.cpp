@@ -2226,7 +2226,7 @@ const QColor &K3ListViewItem::backgroundColor()
 {
   if (isAlternate())
     return static_cast< K3ListView* >(listView())->alternateBackground();
-  return QColorGroup(listView()->viewport()->palette()).base();
+  return listView()->viewport()->palette().color(QPalette::Base);
 }
 
 QColor K3ListViewItem::backgroundColor(int column)
@@ -2234,7 +2234,7 @@ QColor K3ListViewItem::backgroundColor(int column)
   K3ListView* view = static_cast< K3ListView* >(listView());
   QColor color = isAlternate() ?
                  view->alternateBackground() :
-                 QColorGroup(view->viewport()->palette()).base();
+                 view->viewport()->palette().color(QPalette::Base);
 
   // calculate a different color if the current column is sorted (only if more than 1 column)
   if ( (view->columns() > 1) && view->shadeSortColumn() && (column == view->columnSorted()) )

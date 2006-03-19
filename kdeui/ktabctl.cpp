@@ -244,16 +244,16 @@ void KTabCtl::paintEvent(QPaintEvent *)
     int x1 = getChildRect().right() + 2;
     int x0 = getChildRect().left() - 1;
 
-    p.setPen(QColorGroup(palette()).light());
+    p.setPen(palette().color(QPalette::Light));
     p.drawLine(x0, y0 - 1, x1 - 1, y0 - 1);      /* 1st top line */
-    p.setPen(QColorGroup(palette()).midlight());
+    p.setPen(palette().color(QPalette::Midlight));
     p.drawLine(x0, y0, x1 - 1, y0);      /* 2nd top line */
-    p.setPen(QColorGroup(palette()).light());
+    p.setPen(palette().color(QPalette::Light));
     p.drawLine(x0, y0 + 1, x0, y1);      /* left line */
     p.setPen(Qt::black);
     p.drawLine(x1, y1, x0, y1);          /* bottom line */
     p.drawLine(x1, y1 - 1, x1, y0);
-    p.setPen(QColorGroup(palette()).dark());
+    p.setPen(palette().color(QPalette::Dark));
     p.drawLine(x0 + 1, y1 - 1, x1 - 1, y1 - 1);  /* bottom */
     p.drawLine(x1 - 1, y1 - 2, x1 - 1, y0 + 1);
     p.end();

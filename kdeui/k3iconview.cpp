@@ -660,7 +660,7 @@ void K3IconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
 	QPicture *pic = picture();
 	if ( isSelected() ) {
             // TODO something as nice as selectedIconPixmap if possible ;)
-	    p->fillRect( pixmapRect( false ), QBrush( cg.highlight(), Qt::Dense4Pattern) );
+	    p->fillRect( pixmapRect( false ), QBrush( cg.color(QPalette::Highlight), Qt::Dense4Pattern) );
 	}
 	p->drawPicture( x()-pic->boundingRect().x(), y()-pic->boundingRect().y(), *pic );
     } else
@@ -689,7 +689,7 @@ void K3IconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
         }
 #endif
         if ( isSelected() ) {
-            QPixmap selectedPix = kview->selectedIconPixmap( pix, cg.highlight() );
+            QPixmap selectedPix = kview->selectedIconPixmap( pix, cg.color( QPalette::Highlight ) );
             p->drawPixmap( iconX, iconY, selectedPix );
         } else {
             p->drawPixmap( iconX, iconY, *pix );
@@ -703,12 +703,12 @@ void K3IconViewItem::paintText( QPainter *p, const QColorGroup &cg )
     int textY = textRect( false ).y();
 
     if ( isSelected() ) {
-        p->fillRect( textRect( false ), cg.highlight() );
-        p->setPen( QPen( cg.highlightedText() ) );
+        p->fillRect( textRect( false ), cg.color( QPalette::Highlight ) );
+        p->setPen( QPen( cg.color( QPalette::HighlightedText ) ) );
     } else {
         if ( iconView()->itemTextBackground() != Qt::NoBrush )
             p->fillRect( textRect( false ), iconView()->itemTextBackground() );
-        p->setPen( cg.text() );
+        p->setPen( cg.color( QPalette::Text ) );
     }
 
     int align = iconView()->itemTextPos() == Q3IconView::Bottom ? Qt::AlignHCenter : Qt::AlignLeft;
