@@ -143,6 +143,8 @@ KDEWIN32_EXPORT int revoke(const char *tty);
 KDEWIN32_EXPORT long getpagesize(void);
 
 KDEWIN32_EXPORT int getopt(int argc, char **argv, const char *optstring);
+extern KDEWIN32_EXPORT char *optarg;
+extern KDEWIN32_EXPORT int optind; /*, opterr, optopt */
 
 #ifdef __cplusplus
 }

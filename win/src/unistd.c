@@ -329,7 +329,7 @@ KDEWIN32_EXPORT int revoke(const char *tty)
 
 /* getpagesize for windows */
 //static 
-long getpagesize (void)
+KDEWIN32_EXPORT long getpagesize (void)
 {
     static long g_pagesize = 0;
     if (! g_pagesize) {
@@ -364,10 +364,10 @@ long getpagesize (void)
 //
 // CE: from http://www.codeproject.com/cpp/xgetopt.asp
 //     removed unicode support to compile with mingw
-char	*optarg;		// global argument pointer
-int		optind = 0; 	// global argv index
+char *optarg = NULL;	// global argument pointer
+int   optind = 0; 		// global argv index
 
-int getopt(int argc, char **argv, const char *optstring)
+KDEWIN32_EXPORT int getopt(int argc, char **argv, const char *optstring)
 {
 	static char *next = NULL;
 	char c = '?';
