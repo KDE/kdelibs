@@ -231,7 +231,7 @@ setAutoSaveSettings();
 /***********************************/
 void testWindow::slotToggled(QAction*)
 {
-  statusBar->message ("Button toggled", 1500);
+  statusBar->showMessage ("Button toggled", 1500);
 }
 
 void testWindow::slotInsertClock()
@@ -263,7 +263,7 @@ void testWindow::slotGoGoGoo()
   if (pr->value()==100)
   {
     timer->stop();
-    statusBar->clear();
+    statusBar->clearMessage();
     delete pr;
     pr = 0;
   }
@@ -367,7 +367,7 @@ void testWindow::beYFixed()
 
 void testWindow::slotImportant ()
 {
-  statusBar->message("This important message will go away in 15 seconds", 15000);
+  statusBar->showMessage("This important message will go away in 15 seconds", 15000);
 }
 
 void testWindow::slotExit ()
@@ -437,9 +437,9 @@ void testWindow::slotFrame()
 void testWindow::slotMessage(int, bool boo)
 {
   if (boo)
-    statusBar->message("This button does this and that", 1500);
+    statusBar->showMessage("This button does this and that", 1500);
   else
-    statusBar->clear();
+    statusBar->clearMessage();
 }
 // Now few Combo slots, for Torben
 
@@ -463,12 +463,12 @@ void testWindow::slotInsertListInCombo()
   list.append("ListTen");
   list.append("ListEleven");
   list.append("ListAndSoOn");
-  testComboBox->insertStringList (list,0);
+  testComboBox->addItems (list);
 }
 
 void testWindow::slotMakeItem3Current()
 {
-  testComboBox->setCurrentItem(3);
+  testComboBox->setCurrentIndex(3);
 }
 
 int main( int argc, char *argv[] )
@@ -479,7 +479,6 @@ int main( int argc, char *argv[] )
     KApplication myApp;
     testWindow *test = new testWindow;
 
-    myApp.setMainWidget(test);
     myApp.setQuitOnLastWindowClosed( false ); // don't quit after the messagebox!
 
     i = QMessageBox::information(0, "Select", "Select type of mainwidget",

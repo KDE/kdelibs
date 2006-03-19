@@ -9,7 +9,6 @@ int main(int argc, char** argv)
   KCmdLineArgs::init(argc, argv, "test", "Test" ,"test app" ,"1.0");
   KApplication app;
   KDateTimeWidget dateTimeWidget;
-  app.setMainWidget(&dateTimeWidget);
   dateTimeWidget.show();
   // dateTimeWidget.setEnabled(false);
   return app.exec();

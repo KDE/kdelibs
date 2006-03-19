@@ -14,7 +14,6 @@ int main(int argc, char** argv)
   KApplication app;
 
   KDatePicker picker;
-  app.setMainWidget(&picker);
   picker.show();
   // picker.setEnabled(false);
   return app.exec();

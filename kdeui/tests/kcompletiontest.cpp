@@ -24,9 +24,9 @@
 Form1::Form1( QWidget* parent )
     : QWidget( parent, Qt::WDestructiveClose )
 {
-    setName( "Form1" );
+    setObjectName( "Form1" );
     resize( 559, 465 );
-    setCaption(  "Form1" );
+    setWindowTitle( "Form1" );
     Form1Layout = new QVBoxLayout( this );
     Form1Layout->setSpacing( 6 );
     Form1Layout->setMargin( 11 );
@@ -36,10 +36,12 @@ Form1::Form1( QWidget* parent )
     GroupBox1->setColumnLayout(0, Qt::Vertical );
     GroupBox1->layout()->setSpacing( 0 );
     GroupBox1->layout()->setMargin( 0 );
-    GroupBox1Layout = new QVBoxLayout( GroupBox1->layout() );
+    GroupBox1Layout = new QVBoxLayout;
     GroupBox1Layout->setAlignment( Qt::AlignTop );
     GroupBox1Layout->setSpacing( 6 );
     GroupBox1Layout->setMargin( 11 );
+    GroupBox1->layout()->addItem( GroupBox1Layout );
+    GroupBox1Layout->setParent(GroupBox1->layout());
 
     Layout9 = new QVBoxLayout;
     Layout9->setSpacing( 6 );
@@ -49,8 +51,9 @@ Form1::Form1( QWidget* parent )
     Layout1->setSpacing( 6 );
     Layout1->setMargin( 0 );
 
-    TextLabel1 = new QLabel( GroupBox1, "TextLabel1" );
-    TextLabel1->setText(  "Completion"  );
+    TextLabel1 = new QLabel( GroupBox1 );
+    TextLabel1->setObjectName( "TextLabel1" );
+    TextLabel1->setText( "Completion" );
     Layout1->addWidget( TextLabel1 );
 
     edit = new KLineEdit( GroupBox1 );
@@ -60,7 +63,7 @@ Form1::Form1( QWidget* parent )
     edit->completionObject()->setItems( defaultItems() );
     edit->completionObject()->setIgnoreCase( true );
     edit->setFocus();
-    QToolTip::add( edit, "right-click to change completion mode" );
+    edit->setToolTip( "right-click to change completion mode" );
 
     Layout2 = new QHBoxLayout;
     Layout2->setSpacing( 6 );
@@ -73,7 +76,7 @@ Form1::Form1( QWidget* parent )
     combo->setHistoryItems( defaultItems(), true );
     connect( combo, SIGNAL( activated( const QString& )),
 	     combo, SLOT( addToHistory( const QString& )));
-    QToolTip::add( combo, "KHistoryCombo" );
+    combo->setToolTip( "KHistoryCombo" );
     Layout2->addWidget( combo );
 
     LineEdit1 = new KLineEdit( GroupBox1 );
@@ -93,7 +96,8 @@ Form1::Form1( QWidget* parent )
     QSpacerItem* spacer = new QSpacerItem( 20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout3->addItem( spacer );
 
-    PushButton1_4 = new QPushButton( GroupBox1, "PushButton1_4" );
+    PushButton1_4 = new QPushButton( GroupBox1 );
+    PushButton1_4->setObjectName( "PushButton1_4" );
     PushButton1_4->setText( "Remove" );
     connect( PushButton1_4, SIGNAL( clicked() ), SLOT( slotRemove() ));
     Layout3->addWidget( PushButton1_4 );
@@ -107,18 +111,20 @@ Form1::Form1( QWidget* parent )
     Layout8->addWidget( ListBox1 );
     connect( ListBox1, SIGNAL( highlighted( const QString& )),
 	     SLOT( slotHighlighted( const QString& )));
-    QToolTip::add( ListBox1, "Contains the contents of the completion object.\n:x is the weighting, i.e. how often an item has been inserted");
+    ListBox1->setToolTip("Contains the contents of the completion object.\n:x is the weighting, i.e. how often an item has been inserted");
 
     Layout7 = new QVBoxLayout;
     Layout7->setSpacing( 6 );
     Layout7->setMargin( 0 );
 
-    PushButton1_3 = new QPushButton( GroupBox1, "PushButton1_3" );
+    PushButton1_3 = new QPushButton( GroupBox1 );
+    PushButton1_3->setObjectName( "PushButton1_3" );
     PushButton1_3->setText( "Completion items" );
     connect( PushButton1_3, SIGNAL( clicked() ), SLOT( slotList() ));
     Layout7->addWidget( PushButton1_3 );
 
-    PushButton1_2 = new QPushButton( GroupBox1, "PushButton1_2" );
+    PushButton1_2 = new QPushButton( GroupBox1 );
+    PushButton1_2->setObjectName( "PushButton1_2" );
     PushButton1_2->setText( "Clear" );
     connect( PushButton1_2, SIGNAL( clicked() ),
 	     edit->completionObject(), SLOT( clear() ));

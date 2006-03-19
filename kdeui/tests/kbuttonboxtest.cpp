@@ -36,9 +36,12 @@ int main(int argc, char **argv) {
 
   // example 1
   {
-    QDialog *w = new QDialog(0, "A common dialog", true);
-    w->setCaption("Example 1");
-    QVBoxLayout *tl = new QVBoxLayout(w, 5);
+    QDialog *w = new QDialog;
+    w->setObjectName( "A common dialog" );
+    w->setModal(true);
+    w->setWindowTitle("Example 1");
+    QVBoxLayout *tl = new QVBoxLayout(w);
+    tl->setMargin(5);
     QLabel *l = new QLabel("A very common dialog\n\n"\
 			   "OK and Cancel are left aligned, Help\n"\
 			   "is right aligned. Try resizing\n"\
@@ -67,9 +70,12 @@ int main(int argc, char **argv) {
 
   // example 2
   {    
-    QDialog *w = new QDialog(0, "Right aligned buttons", true);
-    w->setCaption("Example 2");
-    QVBoxLayout *tl = new QVBoxLayout(w, 5);
+    QDialog *w = new QDialog(0);
+    w->setObjectName("Right aligned buttons");
+    w->setModal(true);
+    w->setWindowTitle("Example 2");
+    QVBoxLayout *tl = new QVBoxLayout(w);
+    tl->setMargin(5);
     QLabel *l = new QLabel("Another common dialog\n\n"\
 			   "OK and Cancel are right aligned\n"\
 			   "Try resizing the window!", w);
@@ -93,9 +99,12 @@ int main(int argc, char **argv) {
 
   // example 3
   {    
-    QDialog *w = new QDialog(0, "Middle aligned buttons", true);
-    w->setCaption("Example 3");
-    QVBoxLayout *tl = new QVBoxLayout(w, 5);
+    QDialog *w = new QDialog(0);
+    w->setObjectName("Middle aligned buttons");
+    w->setModal(true);
+    w->setWindowTitle("Example 3");
+    QVBoxLayout *tl = new QVBoxLayout(w);
+    tl->setMargin(5);
     QLabel *l = new QLabel("Another common dialog\n\n"\
 			   "OK and Cancel are middle aligned\n"\
 			   "Try resizing the window!", w);
@@ -120,9 +129,12 @@ int main(int argc, char **argv) {
 
   // example 4
   {    
-    QDialog *w = new QDialog(0, "Bad example", true);
-    w->setCaption("Example 4");
-    QVBoxLayout *tl = new QVBoxLayout(w, 5);
+    QDialog *w = new QDialog(0);
+    w->setObjectName("Bad example");
+    w->setModal(true);
+    w->setWindowTitle("Example 4");
+    QVBoxLayout *tl = new QVBoxLayout(w);
+    tl->setMargin(5);
     QLabel *l = new QLabel("A very bad example\n\n"\
 			   "Sometimes it's a bad idea to take\n"
 			   "the maximum width for all buttons\n"
@@ -151,9 +163,12 @@ int main(int argc, char **argv) {
 
   // example 5
   {    
-    QDialog *w = new QDialog(0, "Bad example", true);
-    w->setCaption("Example 5");
-    QVBoxLayout *tl = new QVBoxLayout(w, 5);
+    QDialog *w = new QDialog(0);
+    w->setObjectName("Bad example");
+    w->setModal(true);
+    w->setWindowTitle("Example 5");
+    QVBoxLayout *tl = new QVBoxLayout(w);
+    tl->setMargin(5);
     QLabel *l = new QLabel("A better solution for the bad example\n\n"\
 			   "Use \"addButton(\"Push me and I give"
 			   "you a banana\", true);\" to\n"
@@ -183,9 +198,12 @@ int main(int argc, char **argv) {
 
   // example 6
   {    
-    QDialog *w = new QDialog(0, "Vertical", true);
-    w->setCaption("Example 6 (last)");
-    QHBoxLayout *tl = new QHBoxLayout(w, 5);
+    QDialog *w = new QDialog(0);
+    w->setObjectName("Vertical");
+    w->setModal(true);
+    w->setWindowTitle("Example 6 (last)");
+    QHBoxLayout *tl = new QHBoxLayout(w);
+    tl->setMargin(5);
     QLabel *l = new QLabel("Did I mention that it's possible\n"
 			   "to make vertically aligned buttons\n"
 			   "too?"

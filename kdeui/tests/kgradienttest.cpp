@@ -21,7 +21,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
 
     int x = 0, y = 0;
 
-    pix.resize(width()/cols, height()/rows);
+    pix = QPixmap(width()/cols, height()/rows);
     QPainter p(this);
     p.setPen(Qt::white);
 
@@ -109,7 +109,6 @@ int main(int argc, char **argv)
 
     KGradientWidget w;
     w.resize(250 * cols, 250 * rows);
-    app->setMainWidget(&w);
     w.show();
     return(app->exec());
 }

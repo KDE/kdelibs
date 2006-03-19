@@ -45,7 +45,7 @@ Test::Test( QWidget* parent )
   mWidget->setTabReorderingEnabled( true );
 
   QWidget * grid = new QWidget(this);
-  QGridLayout * gridlayout = new QGridLayout( grid, 5, 2 );
+  QGridLayout * gridlayout = new QGridLayout( grid );
 
   QPushButton * addTab = new QPushButton( "Add Tab", grid );
   gridlayout->addWidget( addTab, 0, 0 );
@@ -135,7 +135,7 @@ void Test::removeCurrentTab()
 {
   if ( mWidget->count()==1 ) return;
 
-  mWidget->removePage( mWidget->currentPage() );
+  mWidget->removeTab( mWidget->currentIndex() );
 }
 
 void Test::toggleLeftButton(bool state)
@@ -145,11 +145,12 @@ void Test::toggleLeftButton(bool state)
       mLeftWidget = new QToolButton( mWidget );
       connect( mLeftWidget, SIGNAL( clicked() ), SLOT( addTab() ) );
       mLeftWidget->setIcon( SmallIcon( "tab_new" ) );
-      mLeftWidget->setTextLabel("New");
-      mLeftWidget->setTextPosition(QToolButton::BesideIcon);
+      mLeftWidget->setText("New");
+      mLeftWidget->setToolTip("New");
+      mLeftWidget->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
       mLeftWidget->adjustSize();
     //mLeftWidget->setGeometry( 0, 0, h, h );
-      mLeftWidget->setPopup(mLeftPopup);
+      mLeftWidget->setMenu(mLeftPopup);
       mWidget->setCornerWidget( mLeftWidget, Qt::TopLeftCorner );
     }
     mLeftWidget->show();
@@ -170,10 +171,10 @@ void Test::toggleLeftPopup(bool state)
       mLeftPopup->insertItem(SmallIcon( "tab_new" ), "Label Tab", 2);
       connect(mLeftPopup, SIGNAL(activated(int)), SLOT(leftPopupActivated(int)));
     }
-    mLeftWidget->setPopup(mLeftPopup);
+    mLeftWidget->setMenu(mLeftPopup);
   }
   else
-    mLeftWidget->setPopup(0);
+    mLeftWidget->setMenu(0);
 }
 
 void Test::leftPopupActivated(int item)
@@ -185,7 +186,7 @@ void Test::leftPopupActivated(int item)
             break;
     case 2: mWidget->addTab( new QLabel( "Testlabel" ), QString("Tab %1").arg( mWidget->count()+1 ) );
             break;
-    case 3: mWidget->insertTab( new QWidget(), QString("Tab %1").arg( mWidget->count()+1 ), 1 );
+    case 3: mWidget->insertTab( 1, new QWidget(), QString("Tab %1").arg( mWidget->count()+1 ) );
   }
 }
 
@@ -196,11 +197,12 @@ if (state) {
       mRightWidget = new QToolButton( mWidget );
       QObject::connect( mRightWidget, SIGNAL( clicked() ), SLOT( removeCurrentTab() ) );
       mRightWidget->setIcon( SmallIcon( "tab_remove" ) );
-      mRightWidget->setTextLabel("Close");
-      mRightWidget->setTextPosition(QToolButton::BesideIcon);
+      mRightWidget->setText("Close");
+      mRightWidget->setToolTip("Close");
+      mRightWidget->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
       mRightWidget->adjustSize();
     //mRightButton->setGeometry( 0, 0, h, h );
-      mRightWidget->setPopup(mRightPopup);
+      mRightWidget->setMenu(mRightPopup);
       mWidget->setCornerWidget( mRightWidget, Qt::TopRightCorner );
     }
     mRightWidget->show();
@@ -220,24 +222,24 @@ void Test::toggleRightPopup(bool state)
       mRightPopup->insertItem(SmallIcon( "tab_remove" ), "Most Right Tab", 2);
       connect(mRightPopup, SIGNAL(activated(int)), SLOT(rightPopupActivated(int)));
     }
-    mRightWidget->setPopup(mRightPopup);
+    mRightWidget->setMenu(mRightPopup);
   }
   else
-    mRightWidget->setPopup(0);
+    mRightWidget->setMenu(0);
 }
 
 void Test::rightPopupActivated(int item)
 {
   switch (item) {
     case 0: if ( mWidget->count() >1) {
-              mWidget->removePage( mWidget->page(0) );
+              mWidget->removeTab( 0 );
             }
             break;
     case 1: removeCurrentTab();
             break;
     case 2: int count = mWidget->count();
             if (count>1) {
-              mWidget->removePage( mWidget->page(count-1) );
+              mWidget->removeTab( count-1 );
             }
   }
 }
@@ -262,14 +264,15 @@ void Test::contextMenu(QWidget *w, const QPoint &p)
   if (mContextPopup)
       delete mContextPopup;
 
+  int idx = mWidget->indexOf( w );
   mContextPopup = new QMenu(this);
   mContextPopup->insertItem( "Activate Tab", 4);
   mContextPopup->insertSeparator();
   mContextPopup->insertItem(SmallIcon( "konsole" ), "Set This Icon", 0);
   mContextPopup->insertItem(SmallIcon( "konqueror" ), "Set This Icon", 1);
   mContextPopup->insertSeparator();
-  mContextPopup->insertItem( mWidget->isTabEnabled(w) ? "Disable Tab" : "Enable Tab", 2);
-  mContextPopup->insertItem( mWidget->tabToolTip(w).isEmpty() ? "Set Tooltip" : "Remove Tooltip", 3);
+  mContextPopup->insertItem( mWidget->isTabEnabled(idx) ? "Disable Tab" : "Enable Tab", 2);
+  mContextPopup->insertItem( mWidget->tabToolTip(idx).isEmpty() ? "Set Tooltip" : "Remove Tooltip", 3);
   connect(mContextPopup, SIGNAL(activated(int)), SLOT(contextMenuActivated(int)));
 
   mContextWidgetIndex = mWidget->indexOf( w );
@@ -347,7 +350,7 @@ void Test::mouseMiddleClick(QWidget *w)
 {
   if ( mWidget->count()==1 ) return;
 
-  mWidget->removePage( w );
+  mWidget->removeTab( mWidget->indexOf( w ) );
 }
 
 void Test::movedTab(int from, int to)
@@ -357,9 +360,9 @@ void Test::movedTab(int from, int to)
 
 void Test::toggleLabels(bool state)
 {
-  mLeftWidget->setUsesTextLabel(state);
+  mLeftWidget->setToolButtonStyle(state?Qt::ToolButtonTextUnderIcon:Qt::ToolButtonIconOnly);
   mLeftWidget->adjustSize();
-  mRightWidget->setUsesTextLabel(state);
+  mRightWidget->setToolButtonStyle(state?Qt::ToolButtonTextUnderIcon:Qt::ToolButtonIconOnly);
   mRightWidget->adjustSize();
   mWidget->hide();   // trigger update
   mWidget->show();

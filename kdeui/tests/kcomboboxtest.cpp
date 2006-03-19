@@ -1,7 +1,3 @@
-#define protected public // for delegate()
-#include <kcombobox.h>
-#undef protected
-
 #include "kcomboboxtest.h"
 
 #include <assert.h>
@@ -21,19 +17,27 @@
 #include <qlabel.h>
 #include <khbox.h>
 #include <qtimer.h>
-//Added by qt3to4:
 #include <QVBoxLayout>
 
+#include <kcombobox.h>
+class KTestComboBox : public KComboBox
+{
+public:
+	KTestComboBox( bool rw, QWidget *parent=0 ) : KComboBox( rw, parent ) {}
+	KCompletionBase *delegate() const { return KCompletionBase::delegate(); }
+};
 
 KComboBoxTest::KComboBoxTest(QWidget* widget)
               :QWidget(widget)
 {
-  QVBoxLayout *vbox = new QVBoxLayout (this, KDialog::marginHint(), KDialog::spacingHint());
+  QVBoxLayout *vbox = new QVBoxLayout (this);
+  vbox->setMargin( KDialog::marginHint() );
+  vbox->setSpacing( KDialog::spacingHint() );
 
   // Test for KCombo's KLineEdit destruction
-  KComboBox *testCombo = new KComboBox( true, this ); // rw, with KLineEdit
+  KTestComboBox *testCombo = new KTestComboBox( true, this ); // rw, with KLineEdit
   testCombo->setEditable( false ); // destroys our KLineEdit
-  assert( testCombo->delegate() == 0L );
+  assert( testCombo->KTestComboBox::delegate() == 0L );
   delete testCombo; // not needed anymore
 
   // Qt combobox
@@ -42,7 +46,8 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   QLabel* lbl = new QLabel("&QCombobox:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-  m_qc = new QComboBox(hbox, "QtReadOnlyCombo" );
+  m_qc = new QComboBox(hbox);
+  m_qc->setObjectName( QLatin1String( "QtReadOnlyCombo" ) );
   lbl->setBuddy (m_qc);
   QObject::connect (m_qc, SIGNAL(activated(int)), SLOT(slotActivated(int)));
   QObject::connect (m_qc, SIGNAL(activated(const QString&)), SLOT (slotActivated(const QString&)));
@@ -130,18 +135,18 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   list.sort();
 
   // Setup the qcombobox
-  m_qc->insertStringList (list);
+  m_qc->addItems(list );
 
   // Setup read-only combo
-  m_ro->insertStringList( list );
+  m_ro->addItems( list );
   m_ro->completionObject()->setItems( list );
 
   // Setup read-write combo
-  m_rw->insertStringList( list );
+  m_rw->addItems( list );
   m_rw->completionObject()->setItems( list );
 
   // Setup read-write combo
-  m_hc->insertStringList( list );
+  m_hc->addItems( list );
   m_hc->completionObject()->setItems( list );
 
   // Setup konq's combobox
@@ -154,7 +159,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   m_konqc->setCompletionObject( s_pCompletion );
 
   QPixmap pix = SmallIcon("www");
-  m_konqc->insertItem( pix, "http://www.kde.org" );
+  m_konqc->addItem( pix, "http://www.kde.org" );
   m_konqc->setCurrentIndex( m_konqc->count()-1 );
 
   m_timer = new QTimer (this);
@@ -177,7 +182,8 @@ void KComboBoxTest::slotDisable ()
 
   m_btnEnable->setEnabled (!m_btnEnable->isEnabled());
 
-  m_timer->start (5000, true);
+  m_timer->setSingleShot(true);
+  m_timer->start (5000);
 }
 
 void KComboBoxTest::slotTimeout ()
@@ -200,17 +206,17 @@ void KComboBoxTest::slotTimeout ()
 
 void KComboBoxTest::slotActivated( int index )
 {
-  kDebug() << "Activated Combo: " << sender()->name() << ", index:" << index << endl;
+  kDebug() << "Activated Combo: " << qPrintable(sender()->objectName()) << ", index:" << index << endl;
 }
 
 void KComboBoxTest::slotActivated (const QString& item)
 {
-  kDebug() << "Activated Combo: " << sender()->name() << ", item: " << item << endl;
+  kDebug() << "Activated Combo: " << qPrintable(sender()->objectName()) << ", item: " << item << endl;
 }
 
 void KComboBoxTest::slotReturnPressed ()
 {
-  kDebug() << "Return Pressed: " << sender()->name() << endl;
+  kDebug() << "Return Pressed: " << qPrintable(sender()->objectName()) << endl;
 }
 
 void KComboBoxTest::slotReturnPressed(const QString& item)
@@ -231,7 +237,6 @@ int main ( int argc, char **argv)
   KApplication a;
 
   KComboBoxTest* t= new KComboBoxTest;
-  a.setMainWidget (t);
   t->show ();
   return a.exec();
 }

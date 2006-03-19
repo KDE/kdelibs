@@ -87,7 +87,6 @@ int main( int argc, char **argv )
   KGlobal::instance()->dirs()->addResourceDir("data", ".");
 
   MainWindow* mw = new MainWindow;
-  app.setMainWidget(mw);
   mw->show();
 
   return app.exec();

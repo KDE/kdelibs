@@ -14,7 +14,6 @@ int main(int argc, char** argv)
   KApplication app;
 
   KDateWidget dateWidget;
-  app.setMainWidget(&dateWidget);
   dateWidget.show();
   // dateWidget.setEnabled(false);
   return app.exec();

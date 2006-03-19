@@ -20,7 +20,7 @@ MainWindow::MainWindow()
 void MainWindow::showMessage()
 {
     statusBar()->show();
-    statusBar()->message( "test" );
+    statusBar()->showMessage( "test" );
 }
 
 int main( int argc, char **argv )

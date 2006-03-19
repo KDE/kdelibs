@@ -21,7 +21,9 @@
 KLineEditTest::KLineEditTest ( QWidget* widget )
               :QWidget( widget )
 {
-    QVBoxLayout* layout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
+    QVBoxLayout* layout = new QVBoxLayout( this );
+    layout->setMargin( KDialog::marginHint() );
+    layout->setSpacing( KDialog::spacingHint() );
 
     QStringList list;
     list << "Tree" << "Suuupa" << "Stroustrup" << "Stone" << "Slick"
@@ -44,12 +46,12 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     connect( m_btnExit, SIGNAL( clicked() ), SLOT( quitApp() ) );
 
     m_btnReadOnly = new QPushButton( "&Read Only", hbox );
-    m_btnReadOnly->setToggleButton (true);
+    m_btnReadOnly->setCheckable (true);
     m_btnReadOnly->setFixedSize(100,30);
     connect( m_btnReadOnly, SIGNAL( toggled(bool) ), SLOT( slotReadOnly(bool) ) );
 
     m_btnEnable = new QPushButton( "Dis&able", hbox );
-    m_btnEnable->setToggleButton (true);
+    m_btnEnable->setCheckable (true);
     m_btnEnable->setFixedSize(100,30);
     connect( m_btnEnable, SIGNAL( toggled(bool) ), SLOT( slotEnable(bool) ) );
 
@@ -58,13 +60,13 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     connect( m_btnHide, SIGNAL( clicked() ), SLOT( slotHide() ) );
 
 	m_btnClickMessage = new QPushButton( "Clicked Message", hbox);
-	m_btnClickMessage->setToggleButton (true);
+	m_btnClickMessage->setCheckable (true);
 	m_btnClickMessage->setFixedSize(100,30);
 	connect( m_btnClickMessage, SIGNAL( toggled(bool) ), SLOT( slotClickMessage(bool) ) );
 	
     layout->addWidget( m_lineedit );
     layout->addWidget( hbox );
-    setCaption( "KLineEdit Unit Test" );
+    setWindowTitle( "KLineEdit Unit Test" );
 }
 
 KLineEditTest::~KLineEditTest()
@@ -147,7 +149,6 @@ int main ( int argc, char **argv)
     t->lineEdit()->setEnableSqueezedText( true );
     t->lineEdit()->setText ("This is a really really really really really really "
                             "really really long line because I am a talkative fool!");
-    a.setMainWidget(t);
     t->show();
     return a.exec();
 }

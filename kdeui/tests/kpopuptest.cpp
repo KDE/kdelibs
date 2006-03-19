@@ -2,9 +2,9 @@
 #include <kcmdlineargs.h>
 #include <qwidget.h>
 #include <qcursor.h>
-//Added by qt3to4:
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QPainter>
 #include "kmenu.h"
 
 class DemoWidget : public QWidget {
@@ -18,7 +18,8 @@ void mousePressEvent(QMouseEvent *)
 
 void paintEvent(QPaintEvent *)
 {
-    drawText(32, 32, "Press a Mouse Button!");
+    QPainter paint(this);
+    paint.drawText(32, 32, "Press a Mouse Button!");
 }
 
 public:
@@ -37,8 +38,7 @@ int main(int argc, char **argv)
     KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
     KApplication app;
     DemoWidget w;
-    app.setMainWidget(&w);
-    w.setFont(QFont("helvetica", 12, QFont::Bold), true);
+    w.setFont(QFont("helvetica", 12, QFont::Bold));
     w.show();
     return app.exec();
 }

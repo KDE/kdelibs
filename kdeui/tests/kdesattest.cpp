@@ -27,10 +27,10 @@ KDesatWidget::KDesatWidget(QWidget *parent)
 
 void KDesatWidget::change(double) {
     desat_value = slide->value();
-    repaint(false);
+    repaint();
 }
 
-void KDesatWidget::paintEvent(QPaintEvent */*ev*/)
+void KDesatWidget::paintEvent(QPaintEvent * /*ev*/)
 {
     QTime time;
     int it, ft;
@@ -65,7 +65,6 @@ int main(int argc, char **argv)
     KApplication *app=new KApplication();
 
     KDesatWidget w;
-    app->setMainWidget(&w);
     w.show();
     return(app->exec());
 }

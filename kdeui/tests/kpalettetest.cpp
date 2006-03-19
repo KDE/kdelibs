@@ -32,7 +32,7 @@ int main( int argc, char **argv )
        for(int i = 0; i < myPalette.nrColors(); i++)
        {
          int r,g,b;
-         myPalette.color(i).rgb(&r, &g, &b);
+         myPalette.color(i).getRgb(&r, &g, &b);
          printf("#%d Name = \"%s\" #%02x%02x%02x\n", 
 		i, myPalette.colorName(i).toAscii().constData(), r,g,b);
        }

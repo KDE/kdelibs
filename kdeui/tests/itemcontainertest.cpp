@@ -60,11 +60,13 @@ KApplication *app;
 TopLevel::TopLevel(QWidget *parent)
     : QWidget(parent)
 {
-    setCaption("Item container test application");
+    setWindowTitle("Item container test application");
 
     QHBoxLayout* hBox = new QHBoxLayout( this );
-    QVBoxLayout* vBox = new QVBoxLayout( hBox );
+    QVBoxLayout* vBox = new QVBoxLayout;
     hBox->addSpacing( 5 );
+    hBox->addItem( vBox );
+    vBox->setParent( hBox );
 
     //Selection mode selection
     m_pbgMode = new Q3ButtonGroup( 1, Qt::Horizontal, "Selection Mode", this);
@@ -220,7 +222,6 @@ int main( int argc, char ** argv )
 
     toplevel->show();
     toplevel->resize( 600, 300 );
-    app->setMainWidget(toplevel);
     app->exec();
 }
 

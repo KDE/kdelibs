@@ -99,7 +99,6 @@ int main(int argc, char **argv)
     KApplication app;
 
     KBlendWidget w;
-    app.setMainWidget(&w);
     w.show();
     return(app.exec());
 }

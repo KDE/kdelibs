@@ -108,7 +108,6 @@ int main( int argc, char *argv[] )
         KApplication *myApp = new KApplication;
         testWindow *test = new testWindow;
 
-        myApp->setMainWidget(test);
         test->show();
         test->resize(test->width(), test->height()); // I really really really dunno why it doesn't show
         int ret = myApp->exec();

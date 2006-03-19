@@ -61,7 +61,7 @@ KRulerTest::KRulerTest()
 {
   mainframe = new QFrame(this);
 
-  layout = new QGridLayout(mainframe, 2, 2);
+  layout = new QGridLayout(mainframe);
 
   miniwidget = new QFrame(mainframe);
   miniwidget->setFrameStyle(QFrame::WinPanel | QFrame::Raised);
@@ -372,10 +372,9 @@ int main(int argc, char **argv)
   KRulerTest   *window;
 
   testapp = new KApplication;
-  testapp->setFont(QFont("Helvetica",12),true);
+  testapp->setFont(QFont("Helvetica",12));
 
   window = new KRulerTest();
-  testapp->setMainWidget(window);
   window->setCaption("KRulerTest");
   window->show();
   return testapp->exec();

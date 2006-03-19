@@ -14,8 +14,7 @@ int main (int argc,char **argv)
     KCharSelect selector( 0, "char selector" );
     selector.resize( selector.sizeHint() );
     selector.show();
-    selector.setCaption( "KCharSelect Test" );
+    selector.setWindowTitle( "KCharSelect Test" );
 
-    app.setMainWidget( &selector );
     return app.exec();
 }

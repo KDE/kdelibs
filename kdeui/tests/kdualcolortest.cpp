@@ -15,8 +15,8 @@ KDualColorWidget::KDualColorWidget(QWidget *parent)
 {
     lbl = new QLabel("Testing, testing, 1, 2, 3...", this);
     KDualColorButton *colorBtn =
-        new KDualColorButton(lbl->colorGroup().text(),
-                             lbl->colorGroup().background(), this);
+        new KDualColorButton(lbl->palette().color(QPalette::Text),
+                             lbl->palette().color(QPalette::Background), this);
     connect(colorBtn, SIGNAL(fgChanged(const QColor &)),
             SLOT(slotFgChanged(const QColor &)));
     connect(colorBtn, SIGNAL(bgChanged(const QColor &)),
@@ -24,7 +24,8 @@ KDualColorWidget::KDualColorWidget(QWidget *parent)
     connect(colorBtn, SIGNAL(currentChanged(KDualColorButton::DualColor)),
             SLOT(slotCurrentChanged(KDualColorButton::DualColor)));
     
-    QHBoxLayout *layout = new QHBoxLayout(this, 5);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setMargin(5);
     layout->addWidget(colorBtn, 0);
     layout->addWidget(lbl, 1);
     layout->activate();
@@ -62,7 +63,6 @@ int main(int argc, char **argv)
     KApplication *app=new KApplication();
 
     KDualColorWidget w;
-    app->setMainWidget(&w);
     w.show();
     return(app->exec());
 }

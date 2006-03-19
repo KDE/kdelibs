@@ -10,7 +10,7 @@
 
 
 KLedTest::KLedTest(QWidget* parent)
-  : QWidget(parent, 0),
+  : QWidget(parent),
     LedWidth(16),
     LedHeight(10),
     Grid(3),
@@ -36,10 +36,13 @@ KLedTest::KLedTest(QWidget* parent)
 
     l->move(5,5);
     //    ktmp tmpobj(l);
-    
-    t_toggle.start(1000, false);
-    t_color.start(3500, false);
-    t_look.start(3500, false);
+
+    t_toggle.setSingleShot(false);
+    t_toggle.start(1000);
+    t_color.setSingleShot(false);
+    t_color.start(3500);
+    t_look.setSingleShot(false);
+    t_look.start(3500);
     QObject::connect(&t_toggle, SIGNAL(timeout()), l, SLOT(toggle()));
     QObject::connect(&t_color, SIGNAL(timeout()), this, SLOT(nextColor()));
     QObject::connect(&t_look, SIGNAL(timeout()), this, SLOT(nextLook()));
@@ -152,7 +155,6 @@ int main( int argc, char **argv )
       }
     }
     */
-    a.setMainWidget(&widget);
     widget.show();
     return a.exec();				// go
 }

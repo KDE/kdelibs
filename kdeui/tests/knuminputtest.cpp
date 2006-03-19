@@ -33,9 +33,10 @@ void TopLevel::slotPrint( double n ) {
 TopLevel::TopLevel(QWidget *parent)
     : QWidget(parent)
 {
-    setCaption("KNumInput test application");
+    setWindowTitle("KNumInput test application");
 
-    QBoxLayout* l = new QHBoxLayout(this, 10);
+    QBoxLayout* l = new QHBoxLayout(this);
+    l->setMargin(10);
 
     Q3GroupBox* b1 = new Q3GroupBox("KIntNumInput", this);
     b1->setOrientation(Qt::Vertical);
@@ -167,7 +168,6 @@ int main( int argc, char ** argv )
     TopLevel *toplevel = new TopLevel(0);
 
     toplevel->show();
-    a->setMainWidget(toplevel);
     a->exec();
 }
 

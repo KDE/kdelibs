@@ -29,7 +29,7 @@ void KGradientWidget::paintEvent(QPaintEvent *)
 
     int x = 0, y = 0;
 
-    pix.resize(width()/cols, height()/rows);
+    pix = QPixmap(width()/cols, height()/rows);
     QPainter p(this);
     p.setPen(Qt::white);
 
@@ -129,18 +129,25 @@ void KGradientWidget::paintEvent(QPaintEvent *)
 myTopWidget::myTopWidget (QWidget *parent)
   :QWidget(parent)
 {
-  QGridLayout *lay = new QGridLayout (this, 2, 3, 0);
+  QGridLayout *lay = new QGridLayout ( this );
+  lay->setMargin( 0 );
 
   grds = new KGradientWidget(this);
-  lay->addMultiCellWidget(grds, 0, 0 ,0, 2);
+  lay->addWidget(grds, 0, 0 ,1, 3);
 
   bLabel = new QLabel("Balance: X = 000; Y = 000", this);
   lay->addWidget(bLabel, 1, 0);
 
-  xSlider = new QSlider ( -200, 200, 1, 100, Qt::Horizontal, this);
+  xSlider = new QSlider ( Qt::Horizontal, this);
+  xSlider->setMinimum( -200 );
+  xSlider->setMaximum(  200 );
+  xSlider->setValue( 100 );
   lay->addWidget(xSlider, 1, 1);
 
-  ySlider = new QSlider ( -200, 200, 1, 100, Qt::Horizontal, this);
+  ySlider = new QSlider ( Qt::Horizontal, this);
+  ySlider->setMinimum( -200 );
+  ySlider->setMaximum(  200 );
+  ySlider->setValue( 100 );
   lay->addWidget(ySlider, 1, 2);
 
   connect(xSlider, SIGNAL(valueChanged(int)), this, SLOT(rebalance()));
@@ -164,7 +171,7 @@ void myTopWidget::rebalance()
 
   if ((otime - itime )> 500)
     {
-      grds->repaint(false);
+      grds->repaint();
       itime = time.elapsed();
     }
 }
@@ -174,7 +181,6 @@ int main(int argc, char **argv)
     KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
     KApplication app;
     myTopWidget w;
-    app.setMainWidget(&w);
     w.show();
     return app.exec();
 }

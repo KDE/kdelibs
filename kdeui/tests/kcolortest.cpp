@@ -21,7 +21,7 @@ KColorWidget::KColorWidget(QWidget *parent)
 
   if (fullscreen || intvsfade) {
     QPixmap shot = QPixmap::grabWindow(QApplication::desktop()->winId());
-    original = shot.convertToImage();
+    original = shot.toImage();
   }
   else
     original = QImage("testimage.png");
@@ -162,7 +162,6 @@ int main(int argc, char **argv)
 
     KApplication *app = new KApplication();
     KColorWidget w;
-    app->setMainWidget(&w);
     w.show();
     w.doIntensityLoop();
     return(app->exec());

@@ -33,7 +33,7 @@ QFont default_font("Helvetica", 12);
 TopLevel::TopLevel(QWidget *parent)
     : QWidget(parent)
 {
-    setCaption("KTabCtl test application");
+    setWindowTitle("KTabCtl test application");
     setMinimumSize(300, 200);
 
     /*
@@ -43,7 +43,8 @@ TopLevel::TopLevel(QWidget *parent)
     test = new KTabCtl(this);
     test->setObjectName( "test" );
     connect(test, SIGNAL(tabSelected(int)), this, SLOT(tabChanged(int)));
-    QWidget *w = new QWidget(test, "_page1");
+    QWidget *w = new QWidget(test);
+    w->setObjectName("_page1");
     QPushButton *bt = new QPushButton("Click me to quit", w);
     bt->setObjectName( "_bt1" );
     connect(bt, SIGNAL(clicked()), this, SLOT(okPressed()));
@@ -60,7 +61,8 @@ TopLevel::TopLevel(QWidget *parent)
     pages[1] = w;
     w = new QWidget(test );
     w->setObjectName( "_page3" );
-    bt = new QPushButton("This button does absolutely nothing", w, "_bt3");
+    bt = new QPushButton("This button does absolutely nothing", w);
+    bt->setObjectName("_bt3");
     bt->adjustSize();
     bt->move(20, 20);
     test->addTab(w, "Seite 3");
@@ -100,7 +102,6 @@ int main( int argc, char ** argv )
     TopLevel *toplevel = new TopLevel(0);
 
     toplevel->show();
-    a.setMainWidget(toplevel);
     return a.exec();
 }
 

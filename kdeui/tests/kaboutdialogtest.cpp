@@ -51,14 +51,14 @@ int main(int argc, char** argv)
   if(logo.load("RayTracedGear.png"))
     {
       aboutData.setProgramLogo( logo );
-      pix=logo;
+      pix=QPixmap::fromImage(logo);
       about.setLogo(pix);
     } else {
       qDebug("main: No logo loaded.");
     }
   if(bg.load("background_1.png"))
     {
-      pix=bg;
+      pix=QPixmap::fromImage(bg);
       //about.setBackgroundTile(&pix);
       //about.showTile( true );
       about.enableLinkedHelp( true );

@@ -47,7 +47,13 @@ ExampleWidget::ExampleWidget( QWidget *parent )
 class Foo: public QDialog
 {
  public:
-   Foo() : QDialog(0, "foo", true) { resize(200,200); new QLabel("Hello World", this); show(); }
+   Foo() : QDialog(0) {
+	   setObjectName("foo");
+	   setModal(true);
+	   resize(200,200);
+	   new QLabel("Hello World", this);
+	   show();
+   }
 };
 
 void showResult(int test, int i)

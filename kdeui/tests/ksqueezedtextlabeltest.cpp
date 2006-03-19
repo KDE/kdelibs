@@ -8,7 +8,6 @@ int main( int argc, char **argv )
   KApplication app;
 
 	KSqueezedTextLabel l( "This is a rather long string", 0);
-	app.setMainWidget( &l );
 	l.show();
 
 	return app.exec();

@@ -23,7 +23,7 @@ void KHashWidget::paintEvent(QPaintEvent * /*ev*/)
 
     int x = 0, y = 0;
 
-    pix.resize(width()/cols, height()/rows);
+    pix = QPixmap(width()/cols, height()/rows);
     QPainter p(this);
     p.setPen(Qt::white);
 
@@ -85,9 +85,9 @@ void KHashWidget::paintEvent(QPaintEvent * /*ev*/)
     it = time.elapsed();
     KImageEffect::hash(image, KImageEffect::WestLite, 2);
     ft = time.elapsed();
-    pix.resize(image.width(), image.height());
+    pix = QPixmap(image.width(), image.height());
     pix.convertFromImage(image);
-    pix.resize(width()/cols, height()/rows);
+    pix = QPixmap(width()/cols, height()/rows);
     say.setNum( ft - it); say += " ms, CrossDiagonal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.setPen(Qt::blue);
@@ -136,7 +136,6 @@ int main(int argc, char **argv)
 
     KHashWidget w;
     w.resize(250 * cols, 250 * rows);
-    app->setMainWidget(&w);
     w.show();
     return(app->exec());
 }
