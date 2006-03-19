@@ -47,10 +47,4 @@ int main(int argc, char *argv[])
 	return app.exec();
 }
 
-/*
-TODO
-----
-* Offer an integrated "index.html" viewer, after the regression testing is done
-*/
-
 // vim:ts=4:tw=4:noet

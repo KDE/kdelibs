@@ -8,7 +8,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>874</width>
+    <width>875</width>
     <height>825</height>
    </rect>
   </property>
@@ -53,124 +53,139 @@
      </widget>
     </item>
     <item>
-     <layout class="QVBoxLayout" >
-      <property name="margin" >
-       <number>0</number>
-      </property>
-      <property name="spacing" >
-       <number>6</number>
-      </property>
-      <item>
+     <widget class="QTabWidget" name="tabWidget" >
+      <widget class="QWidget" name="firstTab" >
+       <attribute name="title" >
+        <string>Regression testing output...</string>
+       </attribute>
        <layout class="QHBoxLayout" >
         <property name="margin" >
-         <number>0</number>
+         <number>9</number>
         </property>
         <property name="spacing" >
          <number>6</number>
         </property>
         <item>
-         <widget class="QLabel" name="label_3" >
-          <property name="text" >
-           <string>Regression testing output...</string>
+         <layout class="QVBoxLayout" >
+          <property name="margin" >
+           <number>0</number>
           </property>
-         </widget>
-        </item>
-        <item>
-         <spacer>
-          <property name="orientation" >
-           <enum>Qt::Horizontal</enum>
+          <property name="spacing" >
+           <number>6</number>
           </property>
-          <property name="sizeHint" >
-           <size>
-            <width>111</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pauseContinueButton" >
-          <property name="sizePolicy" >
-           <sizepolicy>
-            <hsizetype>0</hsizetype>
-            <vsizetype>0</vsizetype>
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize" >
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="toolTip" >
-           <string>Pause/Continue regression testing process</string>
-          </property>
-          <property name="whatsThis" >
-           <string>Pause/Continue regression testing process</string>
-          </property>
-          <property name="layoutDirection" >
-           <enum>Qt::LeftToRight</enum>
-          </property>
-          <property name="text" >
-           <string>Pause</string>
-          </property>
-          <property name="flat" >
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="saveLogButton" >
-          <property name="sizePolicy" >
-           <sizepolicy>
-            <hsizetype>0</hsizetype>
-            <vsizetype>0</vsizetype>
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize" >
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="toolTip" >
-           <string>You may select a file where the log content is stored, before the regression testing started!</string>
-          </property>
-          <property name="whatsThis" >
-           <string>You may select a file where the log content is stored, before the regression testing started!</string>
-          </property>
-          <property name="text" >
-           <string>Output to file...</string>
-          </property>
-         </widget>
+          <item>
+           <layout class="QHBoxLayout" >
+            <property name="margin" >
+             <number>0</number>
+            </property>
+            <property name="spacing" >
+             <number>6</number>
+            </property>
+            <item>
+             <spacer>
+              <property name="orientation" >
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" >
+               <size>
+                <width>111</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pauseContinueButton" >
+              <property name="sizePolicy" >
+               <sizepolicy>
+                <hsizetype>0</hsizetype>
+                <vsizetype>0</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize" >
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip" >
+               <string>Pause/Continue regression testing process</string>
+              </property>
+              <property name="whatsThis" >
+               <string>Pause/Continue regression testing process</string>
+              </property>
+              <property name="layoutDirection" >
+               <enum>Qt::LeftToRight</enum>
+              </property>
+              <property name="text" >
+               <string>Pause</string>
+              </property>
+              <property name="flat" >
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="saveLogButton" >
+              <property name="sizePolicy" >
+               <sizepolicy>
+                <hsizetype>0</hsizetype>
+                <vsizetype>0</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize" >
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip" >
+               <string>You may select a file where the log content is stored, before the regression testing started!</string>
+              </property>
+              <property name="whatsThis" >
+               <string>You may select a file where the log content is stored, before the regression testing started!</string>
+              </property>
+              <property name="text" >
+               <string>Output to file...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="textEdit" />
+          </item>
+          <item>
+           <widget class="QLabel" name="statusLabel" >
+            <property name="text" >
+             <string>Regression testing status...</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QProgressBar" name="progressBar" >
+            <property name="value" >
+             <number>24</number>
+            </property>
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
-      </item>
-      <item>
-       <widget class="QTextEdit" name="textEdit" />
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2" >
-        <property name="text" >
-         <string>Regression testing status...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QProgressBar" name="progressBar" >
-        <property name="value" >
-         <number>24</number>
-        </property>
-        <property name="orientation" >
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
+      </widget>
+      <widget class="QWidget" name="secondTab" >
+       <attribute name="title" >
+        <string>View HTML Output...</string>
+       </attribute>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -179,7 +194,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>874</width>
+     <width>875</width>
      <height>27</height>
     </rect>
    </property>
@@ -213,7 +228,7 @@
     <rect>
      <x>0</x>
      <y>805</y>
-     <width>874</width>
+     <width>875</width>
      <height>20</height>
     </rect>
    </property>

@@ -29,6 +29,7 @@
 #include <QQueue>
 #include <QProcess>
 
+#include "khtml_part.h"
 #include "test_regression_gui.h"
 
 class TestRegressionWindow : public QMainWindow
@@ -80,6 +81,7 @@ private: // Helpers
 	};
 
 	void initLegend();
+	void initOutputBrowser();
 	void initTestsDirectory();
 	void initRegressionTesting(const QString &testFileName);
 	void updateItemStatus(TestResult result, QTreeWidgetItem *item, const QString &testFileName);
@@ -92,6 +94,7 @@ private: // Helpers
 	QString extractTestNameFromData(QString &data, TestResult &result) const;
 	QStringList readListFile(const QString &fileName) const;
 	void writeListFile(const QString &fileName, const QStringList &content) const;
+	void loadOutputHTML() const;
 
 	QString pathFromItem(const QTreeWidgetItem *item) const;
 
@@ -138,6 +141,7 @@ private:
 	QPixmap m_ignorePixmap;
 	QPixmap m_noBaselinePixmap;
 
+	KHTMLPart *m_browserPart;
 	QProcess *m_activeProcess;
 	QTreeWidgetItem *m_activeTreeItem;
 

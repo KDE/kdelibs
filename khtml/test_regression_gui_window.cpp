@@ -44,8 +44,9 @@
 
 TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 : QMainWindow(parent), m_flags(None), m_runCounter(0), m_testCounter(0), m_totalTests(0),
-					   m_totalTestsJS(0), m_totalTestsDOMTS(0), m_lastResult(Unknown), m_activeProcess(0),
-					   m_activeTreeItem(0), m_suspended(false), m_justProcessingQueue(false)
+					   m_totalTestsJS(0), m_totalTestsDOMTS(0), m_lastResult(Unknown),
+					   m_browserPart(0), m_activeProcess(0), m_activeTreeItem(0),
+					   m_suspended(false), m_justProcessingQueue(false)
 {
 	m_ui.setupUi(this);
 
@@ -74,8 +75,6 @@ TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 	m_ui.treeWidget->headerItem()->setTextAlignment(0, Qt::AlignLeft);
 	m_ui.treeWidget->headerItem()->setText(0, i18n("Available Tests: 0"));
 
-	initLegend();
-
 	// Load default values for tests directory/khtml directory...
 	KSimpleConfig config("testregressiongui");
 
@@ -83,6 +82,10 @@ TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 	m_khtmlUrl = KUrl::fromPath(config.readPathEntry("KHTMLDirectory"));
 
 	initTestsDirectory();
+
+	// Init early visible items in the text edit...
+	initLegend();
+	initOutputBrowser();
 }
 
 TestRegressionWindow::~TestRegressionWindow()
@@ -152,12 +155,15 @@ void TestRegressionWindow::toggleNoXvfbUse(bool checked)
 void TestRegressionWindow::setTestsDirectory()
 {
 	m_testsUrl = KDirSelectDialog::selectDirectory(QString(), true /* local only */);
+
 	initTestsDirectory();
+	loadOutputHTML();
 }
 
 void TestRegressionWindow::setOutputDirectory()
 {
 	m_outputUrl = KDirSelectDialog::selectDirectory(QString(), true /* local only */);
+	loadOutputHTML();
 }
 
 void TestRegressionWindow::initTestsDirectory()
@@ -651,6 +657,46 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 	m_activeProcess->start(program, arguments, QIODevice::ReadOnly);
 }
 
+void TestRegressionWindow::initOutputBrowser()
+{
+	assert(m_browserPart == 0);
+	m_browserPart = new KHTMLPart(m_ui.secondTab, 0, m_ui.secondTab, 0, KHTMLPart::BrowserViewGUI);
+
+	// Setup vertical layout for the browser widget...
+	QVBoxLayout *layout = new QVBoxLayout();
+	layout->addWidget(m_browserPart->widget());
+	m_ui.secondTab->setLayout(layout);
+
+	m_browserPart->setJavaEnabled(true);
+	m_browserPart->setJScriptEnabled(true);
+	m_browserPart->setPluginsEnabled(true);
+	m_browserPart->setURLCursor(QCursor(Qt::PointingHandCursor));
+
+	m_browserPart->widget()->show();
+
+	// Check if there is already an output/index.html present...
+	loadOutputHTML();
+}
+
+void TestRegressionWindow::loadOutputHTML() const
+{
+	if(m_testsUrl.isEmpty())
+		return;
+
+	QString fileName = m_testsUrl.path() + "/output/index.html";
+	if(!m_outputUrl.isEmpty())
+		fileName = m_outputUrl.path() + "/index.html";
+
+	QFileInfo indexHtml(fileName);
+	if(indexHtml.exists())
+	{
+		m_browserPart->openURL(KUrl::fromPathOrURL(fileName));
+		m_ui.tabWidget->setTabEnabled(1, true);
+	}
+	else
+		m_ui.tabWidget->setTabEnabled(1, false);
+}
+
 void TestRegressionWindow::updateItemStatus(TestResult result, QTreeWidgetItem *item, const QString &testFileName)
 {
 	if(!item)
@@ -779,6 +825,9 @@ void TestRegressionWindow::testerExited(int /* exitCode */, QProcess::ExitStatus
 	m_ui.saveLogButton->setEnabled(true);
 	m_ui.actionRun_tests->setEnabled(true);
 	m_ui.pauseContinueButton->setEnabled(false);
+
+	// Check if there is already an output/index.html present...
+	loadOutputHTML();
 
 	// Cleanup data..
 	delete m_activeProcess;
