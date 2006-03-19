@@ -83,6 +83,43 @@ install_files( /bin FILES checkXML )
 
 install_files(${KCONF_UPDATE_INSTALL_DIR} FILES move_kio_help_cache.sh )
 
+set(customizedir af bg ca cs da de dtd el en-GB en entities eo es et fi fo fr he hu id it ja ko lt nl nn no obsolete pl pt-BR pt ro ru sk sl sr sv tr uk wa xh xsl xx zh-CN zh-TW)
+ 
+foreach (_currentcustomizedir ${customizedir})
+	set(expr "customization/${_currentcustomizedir}/*.entities")
+	FILE(GLOB _file_CUST "${expr}" )
+	
+	foreach(_curentfile ${_file_CUST})
+		install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/${_currentcustomizedir} )
+	endforeach(_curentfile ${_file_CUST})
+
+    set(expr "customization/${_currentcustomizedir}/entities/*.docbook")
+    FILE(GLOB _file_CUST "${expr}" )
+
+    foreach(_curentfile ${_file_CUST})
+        install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/${_currentcustomizedir}/entities/ )
+    endforeach(_curentfile ${_file_CUST})
+
+
+    set(expr "customization/${_currentcustomizedir}/catalog")
+    FILE(GLOB _file_CUST "${expr}" )
+
+    foreach(_curentfile ${_file_CUST})
+        install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/${_currentcustomizedir} )
+    endforeach(_curentfile ${_file_CUST})
+
+
+    set(expr "customization/${_currentcustomizedir}/*.xml")
+    FILE(GLOB _file_CUST "${expr}" )
+
+    foreach(_curentfile ${_file_CUST})
+        install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/${_currentcustomizedir} )
+    endforeach(_curentfile ${_file_CUST})
+
+
+endforeach(_currentcustomizedir ${customizedir}) 
+	  
+
 kde4_create_doxygen_docs(  )
 
 kde4_footer()

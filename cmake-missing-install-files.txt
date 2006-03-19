@@ -1,5 +1,5 @@
---- /home/lmontel/install-unsermake-kdelibs.txt	2006-03-19 18:40:03.000000000 +0100
-+++ /home/lmontel/cmake-install-kdelibs.txt	2006-03-19 18:37:28.000000000 +0100
+--- install-unsermake-kdelibs.txt	2006-03-19 18:40:03.000000000 +0100
++++ cmake-install-kdelibs.txt	2006-03-19 23:19:06.000000000 +0100
 @@ -58,20 +58,12 @@
  ./bin/makekdewidgets
  ./bin/meinproc
@@ -286,366 +286,53 @@
  ./share/apps/khtml/icons/crystalsvg/22x22/actions/images_display.png
  ./share/apps/khtml/icons/crystalsvg/32x32/actions/bug.png
  ./share/apps/khtml/icons/crystalsvg/32x32/actions/images_display.png
-@@ -1336,1433 +1294,6 @@
+@@ -1336,7 +1294,6 @@
  ./share/apps/kjava/kjava.policy
  ./share/apps/kjava/pluginsinfo
  ./share/apps/knotify/eventsrc
 -./share/apps/ksgmltools2/customization/README
--./share/apps/ksgmltools2/customization/af/catalog
--./share/apps/ksgmltools2/customization/af/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/af/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/af/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/af/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/af/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/af/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/af/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/af/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/af/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/af/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/af/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/af/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/af/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/af/lang.entities
--./share/apps/ksgmltools2/customization/af/strings.entities
--./share/apps/ksgmltools2/customization/af/user.entities
--./share/apps/ksgmltools2/customization/bg/catalog
--./share/apps/ksgmltools2/customization/bg/contributor.entities
--./share/apps/ksgmltools2/customization/bg/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/bg/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/bg/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/bg/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/bg/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/bg/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/bg/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/bg/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/bg/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/bg/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/bg/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/bg/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/bg/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/bg/lang.entities
--./share/apps/ksgmltools2/customization/bg/strings.entities
--./share/apps/ksgmltools2/customization/bg/user.entities
--./share/apps/ksgmltools2/customization/ca/catalog
--./share/apps/ksgmltools2/customization/ca/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/ca/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/ca/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/ca/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/ca/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/ca/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/ca/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/ca/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/ca/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/ca/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/ca/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/ca/entities/underLGPL.docbook
--./share/apps/ksgmltools2/customization/ca/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/ca/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/ca/lang.entities
--./share/apps/ksgmltools2/customization/ca/strings.entities
--./share/apps/ksgmltools2/customization/ca/user.entities
+ ./share/apps/ksgmltools2/customization/af/catalog
+ ./share/apps/ksgmltools2/customization/af/entities/fdl-notice.docbook
+ ./share/apps/ksgmltools2/customization/af/entities/gpl-notice.docbook
+@@ -1390,7 +1347,6 @@
+ ./share/apps/ksgmltools2/customization/ca/lang.entities
+ ./share/apps/ksgmltools2/customization/ca/strings.entities
+ ./share/apps/ksgmltools2/customization/ca/user.entities
 -./share/apps/ksgmltools2/customization/catalog
--./share/apps/ksgmltools2/customization/cs/catalog
--./share/apps/ksgmltools2/customization/cs/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/cs/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/cs/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/cs/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/cs/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/cs/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/cs/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/cs/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/cs/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/cs/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/cs/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/cs/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/cs/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/cs/lang.entities
--./share/apps/ksgmltools2/customization/cs/strings.entities
--./share/apps/ksgmltools2/customization/cs/user.entities
--./share/apps/ksgmltools2/customization/da/catalog
--./share/apps/ksgmltools2/customization/da/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/da/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/da/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/da/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/da/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/da/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/da/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/da/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/da/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/da/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/da/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/da/entities/underLGPL.docbook
--./share/apps/ksgmltools2/customization/da/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/da/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/da/lang.entities
--./share/apps/ksgmltools2/customization/da/strings.entities
--./share/apps/ksgmltools2/customization/da/user.entities
--./share/apps/ksgmltools2/customization/de/catalog
--./share/apps/ksgmltools2/customization/de/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/de/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/de/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/de/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/de/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/de/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/de/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/de/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/de/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/de/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/de/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/de/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/de/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/de/lang.entities
--./share/apps/ksgmltools2/customization/de/strings.entities
--./share/apps/ksgmltools2/customization/de/user.entities
+ ./share/apps/ksgmltools2/customization/cs/catalog
+ ./share/apps/ksgmltools2/customization/cs/entities/fdl-notice.docbook
+ ./share/apps/ksgmltools2/customization/cs/entities/gpl-notice.docbook
+@@ -1443,10 +1399,6 @@
+ ./share/apps/ksgmltools2/customization/de/lang.entities
+ ./share/apps/ksgmltools2/customization/de/strings.entities
+ ./share/apps/ksgmltools2/customization/de/user.entities
 -./share/apps/ksgmltools2/customization/dtd/kdex.dtd
 -./share/apps/ksgmltools2/customization/dtd/modifications.elements
 -./share/apps/ksgmltools2/customization/dtd/rdbhier2.elements
 -./share/apps/ksgmltools2/customization/dtd/rdbpool.elements
--./share/apps/ksgmltools2/customization/el/catalog
--./share/apps/ksgmltools2/customization/el/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/el/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/el/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/el/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/el/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/el/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/el/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/el/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/el/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/el/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/el/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/el/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/el/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/el/lang.entities
--./share/apps/ksgmltools2/customization/el/strings.entities
--./share/apps/ksgmltools2/customization/el/user.entities
--./share/apps/ksgmltools2/customization/en-GB/catalog
--./share/apps/ksgmltools2/customization/en-GB/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/en-GB/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/en-GB/lang.entities
--./share/apps/ksgmltools2/customization/en-GB/strings.entities
--./share/apps/ksgmltools2/customization/en-GB/user.entities
--./share/apps/ksgmltools2/customization/en/catalog
--./share/apps/ksgmltools2/customization/en/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/en/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/en/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/en/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/en/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/en/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/en/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/en/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/en/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/en/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/en/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/en/entities/underLGPL.docbook
--./share/apps/ksgmltools2/customization/en/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/en/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/en/lang.entities
--./share/apps/ksgmltools2/customization/en/strings.entities
--./share/apps/ksgmltools2/customization/en/user.entities
--./share/apps/ksgmltools2/customization/entities/contributor.entities
--./share/apps/ksgmltools2/customization/entities/general.entities
+ ./share/apps/ksgmltools2/customization/el/catalog
+ ./share/apps/ksgmltools2/customization/el/entities/fdl-notice.docbook
+ ./share/apps/ksgmltools2/customization/el/entities/gpl-notice.docbook
+@@ -1501,7 +1453,6 @@
+ ./share/apps/ksgmltools2/customization/en/user.entities
+ ./share/apps/ksgmltools2/customization/entities/contributor.entities
+ ./share/apps/ksgmltools2/customization/entities/general.entities
 -./share/apps/ksgmltools2/customization/entities/kde-standard-accels.entities
--./share/apps/ksgmltools2/customization/entities/l10n.entities
--./share/apps/ksgmltools2/customization/eo/catalog
--./share/apps/ksgmltools2/customization/eo/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/eo/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/eo/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/eo/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/eo/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/eo/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/eo/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/eo/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/eo/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/eo/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/eo/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/eo/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/eo/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/eo/lang.entities
--./share/apps/ksgmltools2/customization/eo/strings.entities
--./share/apps/ksgmltools2/customization/eo/user.entities
--./share/apps/ksgmltools2/customization/es/catalog
--./share/apps/ksgmltools2/customization/es/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/es/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/es/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/es/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/es/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/es/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/es/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/es/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/es/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/es/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/es/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/es/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/es/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/es/lang.entities
--./share/apps/ksgmltools2/customization/es/strings.entities
--./share/apps/ksgmltools2/customization/es/user.entities
--./share/apps/ksgmltools2/customization/et/catalog
--./share/apps/ksgmltools2/customization/et/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/et/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/et/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/et/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/et/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/et/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/et/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/et/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/et/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/et/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/et/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/et/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/et/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/et/lang.entities
--./share/apps/ksgmltools2/customization/et/strings.entities
--./share/apps/ksgmltools2/customization/et/user.entities
--./share/apps/ksgmltools2/customization/fi/catalog
--./share/apps/ksgmltools2/customization/fi/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/fi/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/fi/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/fi/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/fi/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/fi/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/fi/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/fi/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/fi/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/fi/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/fi/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/fi/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/fi/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/fi/lang.entities
--./share/apps/ksgmltools2/customization/fi/strings.entities
--./share/apps/ksgmltools2/customization/fi/user.entities
--./share/apps/ksgmltools2/customization/fo/catalog
--./share/apps/ksgmltools2/customization/fo/contributor.entities
--./share/apps/ksgmltools2/customization/fo/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/fo/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/fo/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/fo/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/fo/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/fo/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/fo/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/fo/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/fo/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/fo/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/fo/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/fo/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/fo/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/fo/lang.entities
--./share/apps/ksgmltools2/customization/fo/strings.entities
--./share/apps/ksgmltools2/customization/fo/user.entities
--./share/apps/ksgmltools2/customization/fr/catalog
--./share/apps/ksgmltools2/customization/fr/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/fr/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/fr/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/fr/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/fr/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/fr/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/fr/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/fr/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/fr/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/fr/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/fr/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/fr/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/fr/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/fr/lang.entities
--./share/apps/ksgmltools2/customization/fr/strings.entities
--./share/apps/ksgmltools2/customization/fr/user.entities
--./share/apps/ksgmltools2/customization/he/catalog
--./share/apps/ksgmltools2/customization/he/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/he/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/he/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/he/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/he/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/he/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/he/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/he/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/he/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/he/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/he/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/he/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/he/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/he/lang.entities
--./share/apps/ksgmltools2/customization/he/strings.entities
--./share/apps/ksgmltools2/customization/he/user.entities
+ ./share/apps/ksgmltools2/customization/entities/l10n.entities
+ ./share/apps/ksgmltools2/customization/eo/catalog
+ ./share/apps/ksgmltools2/customization/eo/entities/fdl-notice.docbook
+@@ -1623,7 +1574,6 @@
+ ./share/apps/ksgmltools2/customization/he/lang.entities
+ ./share/apps/ksgmltools2/customization/he/strings.entities
+ ./share/apps/ksgmltools2/customization/he/user.entities
 -./share/apps/ksgmltools2/customization/htdig_index.xsl
--./share/apps/ksgmltools2/customization/hu/catalog
--./share/apps/ksgmltools2/customization/hu/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/hu/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/hu/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/hu/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/hu/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/hu/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/hu/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/hu/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/hu/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/hu/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/hu/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/hu/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/hu/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/hu/lang.entities
--./share/apps/ksgmltools2/customization/hu/strings.entities
--./share/apps/ksgmltools2/customization/hu/user.entities
--./share/apps/ksgmltools2/customization/id/catalog
--./share/apps/ksgmltools2/customization/id/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/id/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/id/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/id/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/id/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/id/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/id/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/id/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/id/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/id/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/id/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/id/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/id/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/id/lang.entities
--./share/apps/ksgmltools2/customization/id/strings.entities
--./share/apps/ksgmltools2/customization/id/user.entities
--./share/apps/ksgmltools2/customization/it/catalog
--./share/apps/ksgmltools2/customization/it/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/it/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/it/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/it/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/it/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/it/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/it/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/it/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/it/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/it/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/it/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/it/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/it/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/it/lang.entities
--./share/apps/ksgmltools2/customization/it/strings.entities
--./share/apps/ksgmltools2/customization/it/user.entities
--./share/apps/ksgmltools2/customization/ja/catalog
--./share/apps/ksgmltools2/customization/ja/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/ja/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/ja/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/ja/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/ja/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/ja/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/ja/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/ja/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/ja/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/ja/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/ja/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/ja/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/ja/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/ja/lang.entities
--./share/apps/ksgmltools2/customization/ja/strings.entities
--./share/apps/ksgmltools2/customization/ja/user.entities
+ ./share/apps/ksgmltools2/customization/hu/catalog
+ ./share/apps/ksgmltools2/customization/hu/entities/fdl-notice.docbook
+ ./share/apps/ksgmltools2/customization/hu/entities/gpl-notice.docbook
+@@ -1692,17 +1642,6 @@
+ ./share/apps/ksgmltools2/customization/ja/lang.entities
+ ./share/apps/ksgmltools2/customization/ja/strings.entities
+ ./share/apps/ksgmltools2/customization/ja/user.entities
 -./share/apps/ksgmltools2/customization/kde-chunk-online.xsl
 -./share/apps/ksgmltools2/customization/kde-chunk.xsl
 -./share/apps/ksgmltools2/customization/kde-man.xsl
@@ -657,403 +344,32 @@
 -./share/apps/ksgmltools2/customization/kde-ttlpg.xsl
 -./share/apps/ksgmltools2/customization/kde-web-navig.xsl
 -./share/apps/ksgmltools2/customization/kde-web.xsl
--./share/apps/ksgmltools2/customization/ko/catalog
--./share/apps/ksgmltools2/customization/ko/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/ko/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/ko/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/ko/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/ko/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/ko/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/ko/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/ko/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/ko/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/ko/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/ko/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/ko/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/ko/lang.entities
--./share/apps/ksgmltools2/customization/ko/strings.entities
--./share/apps/ksgmltools2/customization/ko/user.entities
--./share/apps/ksgmltools2/customization/lt/catalog
--./share/apps/ksgmltools2/customization/lt/contributor.entities
--./share/apps/ksgmltools2/customization/lt/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/lt/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/lt/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/lt/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/lt/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/lt/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/lt/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/lt/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/lt/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/lt/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/lt/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/lt/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/lt/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/lt/lang.entities
--./share/apps/ksgmltools2/customization/lt/strings.entities
--./share/apps/ksgmltools2/customization/lt/user.entities
--./share/apps/ksgmltools2/customization/nl/catalog
--./share/apps/ksgmltools2/customization/nl/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/nl/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/nl/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/nl/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/nl/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/nl/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/nl/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/nl/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/nl/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/nl/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/nl/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/nl/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/nl/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/nl/lang.entities
--./share/apps/ksgmltools2/customization/nl/strings.entities
--./share/apps/ksgmltools2/customization/nl/user.entities
--./share/apps/ksgmltools2/customization/nn/catalog
--./share/apps/ksgmltools2/customization/nn/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/nn/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/nn/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/nn/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/nn/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/nn/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/nn/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/nn/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/nn/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/nn/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/nn/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/nn/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/nn/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/nn/lang.entities
--./share/apps/ksgmltools2/customization/nn/strings.entities
--./share/apps/ksgmltools2/customization/nn/user.entities
--./share/apps/ksgmltools2/customization/no/catalog
--./share/apps/ksgmltools2/customization/no/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/no/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/no/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/no/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/no/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/no/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/no/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/no/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/no/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/no/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/no/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/no/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/no/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/no/lang.entities
--./share/apps/ksgmltools2/customization/no/strings.entities
--./share/apps/ksgmltools2/customization/no/user.entities
--./share/apps/ksgmltools2/customization/obsolete/general.entities
+ ./share/apps/ksgmltools2/customization/ko/catalog
+ ./share/apps/ksgmltools2/customization/ko/entities/fdl-notice.docbook
+ ./share/apps/ksgmltools2/customization/ko/entities/gpl-notice.docbook
+@@ -1789,10 +1728,6 @@
+ ./share/apps/ksgmltools2/customization/no/strings.entities
+ ./share/apps/ksgmltools2/customization/no/user.entities
+ ./share/apps/ksgmltools2/customization/obsolete/general.entities
 -./share/apps/ksgmltools2/customization/obsolete/kdex-412-10.dtd
 -./share/apps/ksgmltools2/customization/obsolete/kdex.dtd
 -./share/apps/ksgmltools2/customization/obsolete/modifications.elements
 -./share/apps/ksgmltools2/customization/obsolete/rdbpool.elements
--./share/apps/ksgmltools2/customization/pl/catalog
--./share/apps/ksgmltools2/customization/pl/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/pl/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/pl/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/pl/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/pl/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/pl/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/pl/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/pl/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/pl/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/pl/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/pl/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/pl/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/pl/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/pl/lang.entities
--./share/apps/ksgmltools2/customization/pl/strings.entities
--./share/apps/ksgmltools2/customization/pl/user.entities
--./share/apps/ksgmltools2/customization/pt-BR/catalog
--./share/apps/ksgmltools2/customization/pt-BR/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/underLGPL.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/pt-BR/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/pt-BR/lang.entities
--./share/apps/ksgmltools2/customization/pt-BR/strings.entities
--./share/apps/ksgmltools2/customization/pt-BR/user.entities
--./share/apps/ksgmltools2/customization/pt/catalog
--./share/apps/ksgmltools2/customization/pt/contributor.entities
--./share/apps/ksgmltools2/customization/pt/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/pt/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/pt/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/pt/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/pt/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/pt/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/pt/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/pt/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/pt/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/pt/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/pt/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/pt/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/pt/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/pt/lang.entities
--./share/apps/ksgmltools2/customization/pt/strings.entities
--./share/apps/ksgmltools2/customization/pt/user.entities
--./share/apps/ksgmltools2/customization/ro/catalog
--./share/apps/ksgmltools2/customization/ro/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/ro/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/ro/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/ro/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/ro/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/ro/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/ro/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/ro/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/ro/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/ro/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/ro/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/ro/entities/underLGPL.docbook
--./share/apps/ksgmltools2/customization/ro/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/ro/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/ro/lang.entities
--./share/apps/ksgmltools2/customization/ro/strings.entities
--./share/apps/ksgmltools2/customization/ro/user.entities
--./share/apps/ksgmltools2/customization/ru/catalog
--./share/apps/ksgmltools2/customization/ru/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/ru/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/ru/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/ru/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/ru/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/ru/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/ru/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/ru/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/ru/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/ru/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/ru/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/ru/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/ru/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/ru/lang.entities
--./share/apps/ksgmltools2/customization/ru/strings.entities
--./share/apps/ksgmltools2/customization/ru/user.entities
--./share/apps/ksgmltools2/customization/sk/catalog
--./share/apps/ksgmltools2/customization/sk/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/sk/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/sk/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/sk/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/sk/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/sk/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/sk/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/sk/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/sk/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/sk/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/sk/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/sk/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/sk/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/sk/lang.entities
--./share/apps/ksgmltools2/customization/sk/strings.entities
--./share/apps/ksgmltools2/customization/sk/user.entities
--./share/apps/ksgmltools2/customization/sl/catalog
--./share/apps/ksgmltools2/customization/sl/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/sl/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/sl/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/sl/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/sl/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/sl/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/sl/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/sl/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/sl/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/sl/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/sl/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/sl/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/sl/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/sl/lang.entities
--./share/apps/ksgmltools2/customization/sl/strings.entities
--./share/apps/ksgmltools2/customization/sl/user.entities
--./share/apps/ksgmltools2/customization/sr/catalog
--./share/apps/ksgmltools2/customization/sr/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/sr/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/sr/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/sr/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/sr/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/sr/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/sr/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/sr/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/sr/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/sr/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/sr/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/sr/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/sr/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/sr/lang.entities
--./share/apps/ksgmltools2/customization/sr/strings.entities
--./share/apps/ksgmltools2/customization/sr/user.entities
--./share/apps/ksgmltools2/customization/sv/catalog
--./share/apps/ksgmltools2/customization/sv/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/sv/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/sv/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/sv/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/sv/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/sv/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/sv/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/sv/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/sv/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/sv/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/sv/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/sv/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/sv/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/sv/lang.entities
--./share/apps/ksgmltools2/customization/sv/strings.entities
--./share/apps/ksgmltools2/customization/sv/user.entities
--./share/apps/ksgmltools2/customization/tr/catalog
--./share/apps/ksgmltools2/customization/tr/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/tr/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/tr/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/tr/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/tr/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/tr/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/tr/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/tr/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/tr/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/tr/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/tr/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/tr/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/tr/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/tr/lang.entities
--./share/apps/ksgmltools2/customization/tr/strings.entities
--./share/apps/ksgmltools2/customization/tr/user.entities
--./share/apps/ksgmltools2/customization/uk/catalog
--./share/apps/ksgmltools2/customization/uk/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/uk/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/uk/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/uk/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/uk/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/uk/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/uk/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/uk/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/uk/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/uk/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/uk/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/uk/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/uk/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/uk/lang.entities
--./share/apps/ksgmltools2/customization/uk/strings.entities
--./share/apps/ksgmltools2/customization/uk/user.entities
--./share/apps/ksgmltools2/customization/wa/catalog
--./share/apps/ksgmltools2/customization/wa/contributor.entities
--./share/apps/ksgmltools2/customization/wa/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/wa/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/wa/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/wa/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/wa/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/wa/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/wa/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/wa/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/wa/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/wa/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/wa/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/wa/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/wa/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/wa/lang.entities
--./share/apps/ksgmltools2/customization/wa/strings.entities
--./share/apps/ksgmltools2/customization/wa/user.entities
--./share/apps/ksgmltools2/customization/xh/catalog
--./share/apps/ksgmltools2/customization/xh/contributor.entities
--./share/apps/ksgmltools2/customization/xh/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/xh/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/xh/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/xh/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/xh/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/xh/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/xh/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/xh/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/xh/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/xh/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/xh/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/xh/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/xh/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/xh/lang.entities
--./share/apps/ksgmltools2/customization/xh/strings.entities
--./share/apps/ksgmltools2/customization/xh/user.entities
+ ./share/apps/ksgmltools2/customization/pl/catalog
+ ./share/apps/ksgmltools2/customization/pl/entities/fdl-notice.docbook
+ ./share/apps/ksgmltools2/customization/pl/entities/gpl-notice.docbook
+@@ -2019,7 +1954,6 @@
+ ./share/apps/ksgmltools2/customization/xh/lang.entities
+ ./share/apps/ksgmltools2/customization/xh/strings.entities
+ ./share/apps/ksgmltools2/customization/xh/user.entities
 -./share/apps/ksgmltools2/customization/xsl/README
--./share/apps/ksgmltools2/customization/xsl/ca.xml
--./share/apps/ksgmltools2/customization/xsl/cs.xml
--./share/apps/ksgmltools2/customization/xsl/da.xml
--./share/apps/ksgmltools2/customization/xsl/de.xml
--./share/apps/ksgmltools2/customization/xsl/el.xml
--./share/apps/ksgmltools2/customization/xsl/en.xml
--./share/apps/ksgmltools2/customization/xsl/es.xml
--./share/apps/ksgmltools2/customization/xsl/et.xml
--./share/apps/ksgmltools2/customization/xsl/fi.xml
--./share/apps/ksgmltools2/customization/xsl/fr.xml
--./share/apps/ksgmltools2/customization/xsl/hu.xml
--./share/apps/ksgmltools2/customization/xsl/it.xml
--./share/apps/ksgmltools2/customization/xsl/ja.xml
--./share/apps/ksgmltools2/customization/xsl/ko.xml
--./share/apps/ksgmltools2/customization/xsl/nl.xml
--./share/apps/ksgmltools2/customization/xsl/nn.xml
--./share/apps/ksgmltools2/customization/xsl/no.xml
--./share/apps/ksgmltools2/customization/xsl/pl.xml
--./share/apps/ksgmltools2/customization/xsl/pt.xml
--./share/apps/ksgmltools2/customization/xsl/pt_br.xml
--./share/apps/ksgmltools2/customization/xsl/ro.xml
--./share/apps/ksgmltools2/customization/xsl/ru.xml
--./share/apps/ksgmltools2/customization/xsl/sk.xml
--./share/apps/ksgmltools2/customization/xsl/sl.xml
--./share/apps/ksgmltools2/customization/xsl/sr.xml
--./share/apps/ksgmltools2/customization/xsl/sv.xml
--./share/apps/ksgmltools2/customization/xsl/zh_tw.xml
--./share/apps/ksgmltools2/customization/xx/catalog
--./share/apps/ksgmltools2/customization/xx/contributor.entities
--./share/apps/ksgmltools2/customization/xx/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/xx/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/xx/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/xx/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/xx/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/xx/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/xx/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/xx/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/xx/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/xx/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/xx/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/xx/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/xx/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/xx/lang.entities
--./share/apps/ksgmltools2/customization/xx/strings.entities
--./share/apps/ksgmltools2/customization/xx/user.entities
--./share/apps/ksgmltools2/customization/zh-CN/catalog
--./share/apps/ksgmltools2/customization/zh-CN/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/underLGPL.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/zh-CN/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/zh-CN/lang.entities
--./share/apps/ksgmltools2/customization/zh-CN/strings.entities
--./share/apps/ksgmltools2/customization/zh-CN/user.entities
--./share/apps/ksgmltools2/customization/zh-TW/catalog
--./share/apps/ksgmltools2/customization/zh-TW/entities/fdl-notice.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/gpl-notice.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/help-menu.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/install-compile.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/install-intro.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/lgpl-notice.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/report-bugs.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/underArtisticLicense.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/underBSDLicense.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/underFDL.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/underGPL.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/underX11License.docbook
--./share/apps/ksgmltools2/customization/zh-TW/entities/update-doc.docbook
--./share/apps/ksgmltools2/customization/zh-TW/lang.entities
--./share/apps/ksgmltools2/customization/zh-TW/strings.entities
--./share/apps/ksgmltools2/customization/zh-TW/user.entities
+ ./share/apps/ksgmltools2/customization/xsl/ca.xml
+ ./share/apps/ksgmltools2/customization/xsl/cs.xml
+ ./share/apps/ksgmltools2/customization/xsl/da.xml
+@@ -2100,669 +2034,6 @@
+ ./share/apps/ksgmltools2/customization/zh-TW/lang.entities
+ ./share/apps/ksgmltools2/customization/zh-TW/strings.entities
+ ./share/apps/ksgmltools2/customization/zh-TW/user.entities
 -./share/apps/ksgmltools2/docbook/README.kde
 -./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/40chg.txt
 -./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/41chg.txt
@@ -1720,7 +1036,7 @@
  ./share/apps/kssl/ca-bundle.crt
  ./share/apps/kstyle/themes/plastik.themerc
  ./share/apps/ktexteditor_docwordcompletion/docwordcompletionui.rc
-@@ -2841,11 +1372,6 @@
+@@ -2841,11 +2112,6 @@
  ./share/doc/HTML/en/common/web-doctop.png
  ./share/doc/HTML/en/common/x11-license.html
  ./share/doc/HTML/en/common/xml.dcl
@@ -1732,7 +1048,7 @@
  ./share/emoticons/Default/angry.png
  ./share/emoticons/Default/bat.png
  ./share/emoticons/Default/beer.png
-@@ -3492,10 +2018,6 @@
+@@ -3492,10 +2758,6 @@
  ./share/icons/crystalsvg/22x22/actions/contents2.png
  ./share/icons/crystalsvg/22x22/actions/contexthelp.png
  ./share/icons/crystalsvg/22x22/actions/crop.png
@@ -1743,7 +1059,7 @@
  ./share/icons/crystalsvg/22x22/actions/decrypted.png
  ./share/icons/crystalsvg/22x22/actions/down.png
  ./share/icons/crystalsvg/22x22/actions/edit.png
-@@ -4893,7 +3415,6 @@
+@@ -4893,7 +4155,6 @@
  ./share/mimelnk/application/x-ace.desktop
  ./share/mimelnk/application/x-afm.desktop
  ./share/mimelnk/application/x-amipro.desktop
@@ -1751,7 +1067,7 @@
  ./share/mimelnk/application/x-applixgraphics.desktop
  ./share/mimelnk/application/x-applixspread.desktop
  ./share/mimelnk/application/x-applixword.desktop
-@@ -4966,8 +3487,6 @@
+@@ -4966,8 +4227,6 @@
  ./share/mimelnk/application/x-mswrite.desktop
  ./share/mimelnk/application/x-object.desktop
  ./share/mimelnk/application/x-ogg.desktop
@@ -1760,7 +1076,7 @@
  ./share/mimelnk/application/x-pak.desktop
  ./share/mimelnk/application/x-perl-module.desktop
  ./share/mimelnk/application/x-perl.desktop
-@@ -5047,7 +3566,6 @@
+@@ -5047,7 +4306,6 @@
  ./share/mimelnk/image/svg+xml.desktop
  ./share/mimelnk/image/svg-xml.desktop
  ./share/mimelnk/image/tiff.desktop
@@ -1768,7 +1084,7 @@
  ./share/mimelnk/image/x-bmp.desktop
  ./share/mimelnk/image/x-dds.desktop
  ./share/mimelnk/image/x-djvu.desktop
-@@ -5112,15 +3630,12 @@
+@@ -5112,15 +4370,12 @@
  ./share/mimelnk/text/x-latex.desktop
  ./share/mimelnk/text/x-ldif.desktop
  ./share/mimelnk/text/x-log.desktop
@@ -1784,7 +1100,7 @@
  ./share/mimelnk/text/x-tcl.desktop
  ./share/mimelnk/text/x-tex.desktop
  ./share/mimelnk/text/x-vcalendar.desktop
-@@ -5162,7 +3677,6 @@
+@@ -5162,7 +4417,6 @@
  ./share/services/kded/kdetrayproxy.desktop
  ./share/services/kded/kpasswdserver.desktop
  ./share/services/kded/kssld.desktop
@@ -1792,7 +1108,7 @@
  ./share/services/kded/proxyscout.desktop
  ./share/services/khtml.desktop
  ./share/services/khtmlimage.desktop
-@@ -5195,7 +3709,6 @@
+@@ -5195,7 +4449,6 @@
  ./share/services/qimageioplugins/gif.desktop
  ./share/services/qimageioplugins/hdr.desktop
  ./share/services/qimageioplugins/ico.desktop
@@ -1800,7 +1116,7 @@
  ./share/services/qimageioplugins/jpeg.desktop
  ./share/services/qimageioplugins/mng.desktop
  ./share/services/qimageioplugins/pbm.desktop
-@@ -5245,3 +3758,4 @@
+@@ -5245,3 +4498,4 @@
  ./share/servicetypes/kurifilterplugin.desktop
  ./share/servicetypes/qimageio_plugin.desktop
  ./share/servicetypes/renamedlgplugin.desktop
