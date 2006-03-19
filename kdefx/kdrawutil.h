@@ -40,12 +40,12 @@
  * 
  * @param p       The painter to use for drawing the button.
  * @param r       Specifies the rect in which to draw the button.
- * @param g       Specifies the shading colors.
+ * @param pal     Specifies the shading colors.
  * @param sunken  Whether to draw the button as sunken (pressed) or not.
  * @param fill    The brush to use for filling the interior of the button.
  *                Pass @a null to prevent the button from being filled.
  */
-KDEFX_EXPORT void kDrawNextButton(QPainter *p, const QRect &r, const QColorGroup &g,
+KDEFX_EXPORT void kDrawNextButton(QPainter *p, const QRect &r, const QPalette &pal,
                      bool sunken=false, const QBrush *fill=0);
 
 /**
@@ -53,7 +53,7 @@ KDEFX_EXPORT void kDrawNextButton(QPainter *p, const QRect &r, const QColorGroup
  * @overload
  */
 KDEFX_EXPORT void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
-                     const QColorGroup &g, bool sunken=false, 
+                     const QPalette &pal, bool sunken=false, 
                      const QBrush *fill=0);
 
 /**
@@ -64,12 +64,12 @@ KDEFX_EXPORT void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
  *
  * @param p       The painter to use for drawing the button.
  * @param r       Specifies the rect in which to draw the button.
- * @param g       Specifies the shading colors.
+ * @param pal     Specifies the shading colors.
  * @param sunken  Whether to draw the button as sunken (pressed) or not.
  * @param fill    The brush to use for filling the interior of the button.
  *                Pass @a null to prevent the button from being filled.
  */
-KDEFX_EXPORT void kDrawBeButton(QPainter *p, QRect &r, const QColorGroup &g,
+KDEFX_EXPORT void kDrawBeButton(QPainter *p, QRect &r, const QPalette &pal,
                    bool sunken=false, const QBrush *fill=0);
 
 /**
@@ -78,7 +78,7 @@ KDEFX_EXPORT void kDrawBeButton(QPainter *p, QRect &r, const QColorGroup &g,
  * @overload
  */
 KDEFX_EXPORT void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
-                   const QColorGroup &g, bool sunken=false, 
+                   const QPalette &pal, bool sunken=false, 
                    const QBrush *fill=0);
 
 /**
@@ -90,10 +90,10 @@ KDEFX_EXPORT void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
  *
  * @param p       The painter to use for drawing the button.
  * @param r       Specifies the rect in which to draw the button.
- * @param g       Specifies the shading colors.
+ * @param pal     Specifies the shading colors.
  * @param sunken  Whether to draw the button as sunken (pressed) or not.
  */
-KDEFX_EXPORT void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGroup &g,
+KDEFX_EXPORT void kDrawRoundButton(QPainter *p, const QRect &r, const QPalette &pal,
                       bool sunken=false);
 
 /**
@@ -101,7 +101,7 @@ KDEFX_EXPORT void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGrou
  * @overload
  */
 KDEFX_EXPORT void kDrawRoundButton(QPainter *p, int x, int y, int w, int h,
-                      const QColorGroup &g, bool sunken=false);
+                      const QPalette &pal, bool sunken=false);
 
 /**
  * @relates KStyle
@@ -149,7 +149,7 @@ KDEFX_EXPORT void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool c
  *       prior to calling this routine.
  *
  * @param p             The painter to use for drawing the bitmaps.
- * @param g             Specifies the shading colors.
+ * @param pal           Specifies the shading colors.
  * @param x             The X coordinate at which to draw the bitmaps.
  * @param y             The Y coordinate at which to draw the bitmaps.
  * @param lightColor    The bitmap to use for the light part.
@@ -159,9 +159,9 @@ KDEFX_EXPORT void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool c
  * @param blackColor    The bitmap to use for the black part.
  * @param whiteColor    The bitmap to use for the white part.
  *
- * @see QColorGroup
+ * @see QPalette
  */
-KDEFX_EXPORT void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
+KDEFX_EXPORT void kColorBitmaps(QPainter *p, const QPalette &pal, int x, int y,
                    QBitmap *lightColor=0, QBitmap *midColor=0,
                    QBitmap *midlightColor=0, QBitmap *darkColor=0,
                    QBitmap *blackColor=0, QBitmap *whiteColor=0);
@@ -171,7 +171,7 @@ KDEFX_EXPORT void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
  * @c \#include @c <kdrawutil.h>
  * @overload
  */
- KDEFX_EXPORT void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y, int w,
+ KDEFX_EXPORT void kColorBitmaps(QPainter *p, const QPalette &pal, int x, int y, int w,
                    int h, bool isXBitmaps=true, const uchar *lightColor = 0,
                    const uchar *midColor=0, const uchar *midlightColor=0,
                    const uchar *darkColor=0, const uchar *blackColor=0,

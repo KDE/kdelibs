@@ -17,6 +17,8 @@ kstyle.cpp
 kcpuinfo.cpp
 )
 
+remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
+
 kde4_automoc(${kdefx_LIB_SRCS})
 
 kde4_add_library(kdefx SHARED ${kdefx_LIB_SRCS})

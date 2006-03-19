@@ -142,7 +142,7 @@ KPixmap& KPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
 
     QImage image = pixmap.toImage();
     if (image.depth() <=8)
-        image = image.convertDepth(32); //Sloww..
+        image = image.convertToFormat(QImage::Format_RGB32); //Sloww..
 
     KImageEffect::blend(image, initial_intensity, bgnd,
                   (KImageEffect::GradientType) eff, anti_dir);

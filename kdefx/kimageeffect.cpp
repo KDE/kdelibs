@@ -128,7 +128,7 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
     int rDiff, gDiff, bDiff;
     int rca, gca, bca, rcb, gcb, bcb;
 
-    QImage image(size, 32);
+    QImage image(size, QImage::Format_RGB32);
 
     if (size.width() == 0 || size.height() == 0) {
 #ifndef NDEBUG
@@ -416,7 +416,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
     int rDiff, gDiff, bDiff;
     int rca, gca, bca, rcb, gcb, bcb;
 
-    QImage image(size, 32);
+    QImage image(size, QImage::Format_RGB32);
 
     if (size.width() == 0 || size.height() == 0) {
 #ifndef NDEBUG
@@ -953,10 +953,10 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
     register int x, y;
 
     // for image, we handle only depth 32
-    if (image.depth()<32) image = image.convertDepth(32);
+    if (image.depth()<32) image = image.convertToFormat(QImage::Format_RGB32);
 
     // for modImage, we handle depth 8 and 32
-    if (modImage.depth()<8) modImage = modImage.convertDepth(8);
+    if (modImage.depth()<8) modImage = modImage.convertToFormat(QImage::Format_Indexed8);
 
     unsigned int *colorTable2 = (modImage.depth()==8) ?
 				 modImage.colorTable().data():0;
@@ -1078,7 +1078,7 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
     }
 
     if (dst.depth() != 32)
-        dst = dst.convertDepth(32);
+        dst = dst.convertToFormat(QImage::Format_RGB32);
 
     int pixels = dst.width() * dst.height();
 
@@ -1327,8 +1327,8 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
         return dst;
     }
 
-    if (src.depth() != 32) src = src.convertDepth(32);
-    if (dst.depth() != 32) dst = dst.convertDepth(32);
+    if (src.depth() != 32) src = src.convertToFormat(QImage::Format_RGB32);
+    if (dst.depth() != 32) dst = dst.convertToFormat(QImage::Format_RGB32);
 
     int pixels = src.width() * src.height();
 
@@ -1782,11 +1782,11 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
     register int x, y;
 
     // for image1 and image2, we only handle depth 32
-    if (image1.depth()<32) image1 = image1.convertDepth(32);
-    if (image2.depth()<32) image2 = image2.convertDepth(32);
+    if (image1.depth()<32) image1 = image1.convertToFormat(QImage::Format_RGB32);
+    if (image2.depth()<32) image2 = image2.convertToFormat(QImage::Format_RGB32);
 
     // for blendImage, we handle depth 8 and 32
-    if (blendImage.depth()<8) blendImage = blendImage.convertDepth(8);
+    if (blendImage.depth()<8) blendImage = blendImage.convertToFormat(QImage::Format_Indexed8);
 
     unsigned int *colorTable3 = (blendImage.depth()==8) ?
 				 blendImage.colorTable().data():0;
@@ -2265,7 +2265,8 @@ QImage& KImageEffect::dither(QImage &img, const QColor *palette, int size)
         palette == 0 || img.depth() <= 8)
       return img;
 
-    QImage dImage( img.width(), img.height(), 8, size );
+    QImage dImage( img.width(), img.height(), QImage::Format_Indexed8 );
+    dImage.setNumColors( size );
     int i;
 
     dImage.setNumColors( size );
@@ -2476,7 +2477,7 @@ bool KImageEffect::blend(
     if ( cw <= 0 || ch <= 0 ) return true;
   }
 
-  output.create(cw,ch,32);
+  output = QImage(cw,ch,QImage::Format_RGB32);
 //  output.setAlphaBuffer(true); // I should do some benchmarks to see if
 	// this is worth the effort
 
@@ -2754,8 +2755,8 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
         return(src);
 
     int depth = src.depth();
-    QImage dest(w, h, depth, src.numColors(),
-    depth == 1 ? QImage::LittleEndian : QImage::IgnoreEndian);
+    QImage dest(w, h, src.format());
+    dest.setNumColors(src.numColors());
     int *x_offset = (int *)malloc(w*sizeof(int));
     int *y_offset = (int *)malloc(h*sizeof(int));
     if(!x_offset || !y_offset){
@@ -2782,7 +2783,7 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
         }
     }
     else if(depth == 1) {
-        int r = src.bitOrder() == QImage::LittleEndian;
+        bool r = src.format() == QImage::Format_MonoLSB;
         dest.setColorTable(src.colorTable());
         for(int y=0; y < h; ++y){
             unsigned char *destData = dest.scanLine(y);
@@ -2918,7 +2919,7 @@ QImage KImageEffect::despeckle(QImage &src)
     Y[4]= {1, 0, 1, 1};
 
     unsigned int *destData;
-    QImage dest(src.width(), src.height(), 32);
+    QImage dest(src.width(), src.height(), QImage::Format_RGB32);
 
     packets = (src.width()+2)*(src.height()+2);
     red_channel = (unsigned int *)calloc(packets, sizeof(unsigned int));
@@ -3116,7 +3117,7 @@ unsigned int KImageEffect::generateNoise(unsigned int pixel,
 QImage KImageEffect::addNoise(QImage &src, NoiseType noise_type)
 {
     int x, y;
-    QImage dest(src.width(), src.height(), 32);
+    QImage dest(src.width(), src.height(), QImage::Format_RGB32);
     unsigned int *destData;
 
     if(src.depth() > 8){ // DirectClass source image
@@ -3252,7 +3253,7 @@ QImage KImageEffect::implode(QImage &src, double factor,
     unsigned int *destData;
     int x, y;
 
-    QImage dest(src.width(), src.height(), 32);
+    QImage dest(src.width(), src.height(), QImage::Format_RGB32);
 
     // compute scaling factor
     x_scale = 1.0;
@@ -3332,7 +3333,7 @@ QImage KImageEffect::rotate(QImage &img, RotateDirection r)
         unsigned int *srcData, *destData;
         switch(r){
         case Rotate90:
-            dest.create(img.height(), img.width(), img.depth());
+            dest = QImage(img.height(), img.width(), img.format());
             for(y=0; y < img.height(); ++y){
                 srcData = (unsigned int *)img.scanLine(y);
                 for(x=0; x < img.width(); ++x){
@@ -3342,7 +3343,7 @@ QImage KImageEffect::rotate(QImage &img, RotateDirection r)
             }
             break;
         case Rotate180:
-            dest.create(img.width(), img.height(), img.depth());
+            dest = QImage(img.width(), img.height(), img.format());
             for(y=0; y < img.height(); ++y){
                 srcData = (unsigned int *)img.scanLine(y);
                 destData = (unsigned int *)dest.scanLine(img.height()-y-1);
@@ -3351,7 +3352,7 @@ QImage KImageEffect::rotate(QImage &img, RotateDirection r)
             }
             break;
         case Rotate270:
-            dest.create(img.height(), img.width(), img.depth());
+            dest = QImage(img.height(), img.width(), img.format());
             for(y=0; y < img.height(); ++y){
                 srcData = (unsigned int *)img.scanLine(y);
                 for(x=0; x < img.width(); ++x){
@@ -3370,7 +3371,7 @@ QImage KImageEffect::rotate(QImage &img, RotateDirection r)
         unsigned int *srcTable, *destTable;
         switch(r){
         case Rotate90:
-            dest.create(img.height(), img.width(), img.depth());
+            dest = QImage(img.height(), img.width(), img.format());
             dest.setNumColors(img.numColors());
             srcTable = (unsigned int *)img.colorTable().data();
             destTable = (unsigned int *)dest.colorTable().data();
@@ -3385,7 +3386,7 @@ QImage KImageEffect::rotate(QImage &img, RotateDirection r)
             }
             break;
         case Rotate180:
-            dest.create(img.width(), img.height(), img.depth());
+            dest = QImage(img.width(), img.height(), img.format());
             dest.setNumColors(img.numColors());
             srcTable = (unsigned int *)img.colorTable().data();
             destTable = (unsigned int *)dest.colorTable().data();
@@ -3399,7 +3400,7 @@ QImage KImageEffect::rotate(QImage &img, RotateDirection r)
             }
             break;
         case Rotate270:
-            dest.create(img.height(), img.width(), img.depth());
+            dest = QImage(img.height(), img.width(), img.format());
             dest.setNumColors(img.numColors());
             srcTable = (unsigned int *)img.colorTable().data();
             destTable = (unsigned int *)dest.colorTable().data();
@@ -3503,7 +3504,7 @@ QImage KImageEffect::swirl(QImage &src, double degrees,
         x_scale, y_center, y_distance, y_scale;
     int x, y;
     unsigned int *q;
-    QImage dest(src.width(), src.height(), 32);
+    QImage dest(src.width(), src.height(), QImage::Format_RGB32);
 
     // compute scaling factor
     x_center = src.width()/2.0;
@@ -3581,7 +3582,7 @@ QImage KImageEffect::wave(QImage &src, double amplitude, double wavelength,
     int x, y;
     unsigned int *q;
 
-    QImage dest(src.width(), src.height() + (int)(2*fabs(amplitude)), 32);
+    QImage dest(src.width(), src.height() + (int)(2*fabs(amplitude)), QImage::Format_RGB32);
     // allocate sine map
     sine_map = (double *)malloc(dest.width()*sizeof(double));
     if(!sine_map)
@@ -3624,7 +3625,7 @@ QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
     unsigned int *s=0, *q;
 
     if(src.depth() < 32)
-        src.convertDepth(32);
+        src.convertToFormat(QImage::Format_RGB32);
     QImage dest(src);
     dest.detach();
 
@@ -3640,7 +3641,7 @@ QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
         return(dest);
     }
     */
-    unsigned int **jumpTable = (unsigned int **)src.jumpTable();
+    unsigned int **jumpTable = (unsigned int **)src.bits();
     for(y=0; y < dest.height(); ++y){
         sy = y-(width/2);
         q = (unsigned int *)dest.scanLine(y);
@@ -3688,7 +3689,7 @@ QImage KImageEffect::charcoal(QImage &src, double radius, double sigma)
     QImage img(edge(src, radius));
     img = blur(img, radius, sigma);
     normalize(img);
-    img.invertPixels(false);
+    img.invertPixels(QImage::InvertRgb);
     KImageEffect::toGray(img);
     return(img);
 }
@@ -3705,7 +3706,7 @@ void KImageEffect::normalize(QImage &image)
     unsigned char r, g, b, a;
 
     if(image.depth() < 32) // result will always be 32bpp
-        image = image.convertDepth(32);
+        image = image.convertToFormat(QImage::Format_RGB32);
 
     histogram = (struct double_packet *)
         malloc(256*sizeof(struct double_packet));
@@ -3913,7 +3914,7 @@ void KImageEffect::equalize(QImage &image)
     unsigned char r, g, b, a;
 
     if(image.depth() < 32) // result will always be 32bpp
-        image = image.convertDepth(32);
+        image = image.convertToFormat(QImage::Format_RGB32);
 
     histogram=(struct double_packet *) malloc(256*sizeof(struct double_packet));
     map=(struct double_packet *) malloc(256*sizeof(struct double_packet));
@@ -4064,7 +4065,7 @@ QImage KImageEffect::emboss(QImage &image, double radius, double sigma)
         return(dest);
     }
     if(image.depth() < 32)
-        image = image.convertDepth(32);
+        image = image.convertToFormat(QImage::Format_RGB32);
 
     i=0;
     j=width/2;
@@ -4274,7 +4275,7 @@ QImage KImageEffect::blur(QImage &src, double radius, double sigma)
         return(dest);
     }
     if(src.depth() < 32)
-        src = src.convertDepth(32);
+        src = src.convertToFormat(QImage::Format_RGB32);
 
     kernel=(double *) NULL;
     if(radius > 0)
@@ -4305,7 +4306,7 @@ QImage KImageEffect::blur(QImage &src, double radius, double sigma)
         return(dest);
     }
 
-    dest.create(src.width(), src.height(), 32);
+    dest = QImage(src.width(), src.height(), QImage::Format_RGB32);
 
     scanline = (unsigned int *)malloc(sizeof(unsigned int)*src.height());
     temp = (unsigned int *)malloc(sizeof(unsigned int)*src.height());
@@ -4315,8 +4316,8 @@ QImage KImageEffect::blur(QImage &src, double radius, double sigma)
         blurScanLine(kernel, width, p, q, src.width());
     }
 
-    unsigned int **srcTable = (unsigned int **)src.jumpTable();
-    unsigned int **destTable = (unsigned int **)dest.jumpTable();
+    unsigned int **srcTable = (unsigned int **)src.bits();
+    unsigned int **destTable = (unsigned int **)dest.bits();
     for(x=0; x < src.width(); ++x){
         for(y=0; y < src.height(); ++y){
             scanline[y] = srcTable[y][x];
@@ -4355,10 +4356,9 @@ bool KImageEffect::convolveImage(QImage *image, QImage *dest,
         qWarning("KImageEffect: Unable to allocate memory!");
         return(false);
     }
-    dest->reset();
-    dest->create(image->width(), image->height(), 32);
+    *dest = QImage(image->width(), image->height(), QImage::Format_RGB32);
     if(image->depth() < 32)
-        *image = image->convertDepth(32);
+        *image = image->convertToFormat(QImage::Format_RGB32);
 
     normalize=0.0;
     for(i=0; i < (width*width); i++)
@@ -4369,7 +4369,7 @@ bool KImageEffect::convolveImage(QImage *image, QImage *dest,
     for(i=0; i < (width*width); i++)
         normal_kernel[i] = normalize*kernel[i];
 
-    unsigned int **jumpTable = (unsigned int **)image->jumpTable();
+    unsigned int **jumpTable = (unsigned int **)image->bits();
     for(y=0; y < dest->height(); ++y){
         sy = y-(width/2);
         q = (unsigned int *)dest->scanLine(y);
@@ -4490,7 +4490,7 @@ QImage KImageEffect::shade(QImage &src, bool color_shading, double azimuth,
 
     unsigned int *q;
 
-    QImage dest(src.width(), src.height(), 32);
+    QImage dest(src.width(), src.height(), QImage::Format_RGB32);
 
     azimuth = DegreesToRadians(azimuth);
     elevation = DegreesToRadians(elevation);
@@ -4863,11 +4863,11 @@ QImage KImageEffect::bumpmap(QImage &img, QImage &map, double azimuth, double el
         return dst;
     }
 
-    dst.create( img.width(), img.height(), img.depth() );
+    dst = QImage( img.width(), img.height(), img.format() );
     int bm_width  = map.width();
     int bm_height = map.height();
     int bm_bpp = map.depth();
-    int bm_has_alpha = map.hasAlphaBuffer();
+    int bm_has_alpha = map.hasAlphaChannel();
 
     int yofs1, yofs2, yofs3;
 
@@ -4898,7 +4898,7 @@ QImage KImageEffect::bumpmap(QImage &img, QImage &map, double azimuth, double el
         uint* src_row = (unsigned int*)img.scanLine( y );
         uint* dest_row = (unsigned int*)dst.scanLine( y );
 
-        bumpmap_row( src_row, dest_row, img.width(), img.depth(), img.hasAlphaBuffer(),
+        bumpmap_row( src_row, dest_row, img.width(), img.depth(), img.hasAlphaChannel(),
                      bm_row1, bm_row2, bm_row3, bm_width, xofs,
                      tiled,
                      row_in_bumpmap, ambient, compensate,
