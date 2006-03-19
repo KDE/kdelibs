@@ -10,7 +10,7 @@ WHERE TO GET CMAKE
 
 Sources are at:
 
-ttp://www.cmake.org/files/v2.3/cmake-2.3.4-20060317.tar.gz
+http://www.cmake.org/files/v2.3/cmake-2.3.4-20060317.tar.gz
 
 unpack, run "./configure && make && make install" will install into /usr/local.
 
