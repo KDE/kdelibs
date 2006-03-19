@@ -328,7 +328,7 @@ KSelectAction::~KSelectAction()
 void KSelectAction::init()
 {
   setToolBarWidgetFactory(this);
-  connect(selectableActionGroup(), SIGNAL(actionTriggered(QAction*)), SLOT(actionTriggered(QAction*)));
+  connect(selectableActionGroup(), SIGNAL(triggered(QAction*)), SLOT(actionTriggered(QAction*)));
 }
 
 QActionGroup * KSelectAction::selectableActionGroup( ) const
