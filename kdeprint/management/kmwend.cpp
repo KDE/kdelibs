@@ -22,9 +22,10 @@
 #include "kmwizard.h"
 #include "util.h"
 
-#include <q3textview.h>
+#include <QTextBrowser>
+#include <QLayout>
+
 #include <klocale.h>
-#include <qlayout.h>
 
 KMWEnd::KMWEnd(QWidget *parent)
     : KMWizardPage(parent)
@@ -33,7 +34,7 @@ KMWEnd::KMWEnd(QWidget *parent)
 	m_title = i18n("Confirmation");
 	m_nextpage = KMWizard::Error;
 
-	m_view = new Q3TextView(this);
+	m_view = new QTextBrowser(this);
 
 	QVBoxLayout	*lay = new QVBoxLayout(this);
 	lay->setMargin(0);
@@ -117,5 +118,5 @@ void KMWEnd::initPrinter(KMPrinter *p)
 		}
 	}
 
-	m_view->setText(txt);
+	m_view->setHtml(txt);
 }

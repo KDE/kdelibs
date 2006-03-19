@@ -25,7 +25,7 @@
 class K3ListView;
 class Q3ListViewItem;
 class QLineEdit;
-class Q3TextView;
+class QTextBrowser;
 class QPushButton;
 class NetworkScanner;
 
@@ -49,7 +49,7 @@ private:
 	K3ListView	*m_list;
 	NetworkScanner *m_scanner;
 	QLineEdit	*m_uri;
-	Q3TextView	*m_info;
+	QTextBrowser	*m_info;
 	QPushButton	*m_ippreport;
 };
 

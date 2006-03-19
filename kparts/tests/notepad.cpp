@@ -6,7 +6,7 @@
 #include <qsplitter.h>
 #include <qfile.h>
 #include <qtextstream.h>
-#include <q3multilineedit.h>
+#include <QTextEdit>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -23,7 +23,8 @@ NotepadPart::NotepadPart( QWidget* parentWidget, const char*,
 {
   setInstance( NotepadFactory::instance() );
 
-  m_edit = new Q3MultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
+  m_edit = new QTextEdit( parentWidget );
+  m_edit->setPlainText( "NotepadPart's multiline edit" );
   setWidget( m_edit );
 
   (void)new KAction( "Search and replace", 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );

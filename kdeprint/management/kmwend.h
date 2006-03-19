@@ -22,7 +22,7 @@
 
 #include "kmwizardpage.h"
 
-class Q3TextView;
+class QTextBrowser;
 
 class KMWEnd : public KMWizardPage
 {
@@ -32,7 +32,7 @@ public:
 	void initPrinter(KMPrinter*);
 
 private:
-	Q3TextView	*m_view;
+	QTextBrowser *m_view;
 };
 
 #endif

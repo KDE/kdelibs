@@ -22,7 +22,7 @@
 
 #include "kmpropwidget.h"
 
-class Q3TextView;
+class QTextBrowser;
 
 class KMPropUsers : public KMPropWidget
 {
@@ -36,7 +36,7 @@ protected:
 	void configureWizard(KMWizard*);
 
 private:
-	Q3TextView	*m_text;
+	QTextBrowser *m_text;
 };
 
 #endif

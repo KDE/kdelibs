@@ -7,7 +7,7 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qtextstream.h>
-#include <q3multilineedit.h>
+#include <QTextEdit>
 #include <qlineedit.h>
 
 #include <kiconloader.h>
@@ -23,7 +23,7 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
     setObjectName( "Part1" );
   m_instance = new KInstance( "kpartstestpart" );
   setInstance( m_instance );
-  m_edit = new Q3MultiLineEdit( parentWidget );
+  m_edit = new QTextEdit( parentWidget );
   setWidget( m_edit );
   setXMLFile( "kpartstest_part1.rc" );
 
@@ -49,7 +49,7 @@ bool Part1::openFile()
     f.close();
   } else
     return false;
-  m_edit->setText(s);
+  m_edit->setPlainText(s);
 
   emit setStatusBarText( m_url.prettyURL() );
 

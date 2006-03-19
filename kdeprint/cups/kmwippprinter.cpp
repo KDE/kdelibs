@@ -24,20 +24,18 @@
 #include "kmcupsmanager.h"
 #include "networkscanner.h"
 
+#include <Q3Header>
+#include <QLineEdit>
+#include <QLabel>
+#include <QTextBrowser>
+#include <QLayout>
+
 #include <k3listview.h>
-#include <q3header.h>
 #include <kpushbutton.h>
-#include <qlineedit.h>
-#include <qlabel.h>
 #include <kmessagebox.h>
-#include <q3textview.h>
-#include <qlayout.h>
-#include <qregexp.h>
 #include <kseparator.h>
 #include <klocale.h>
 #include <kiconloader.h>
-#include <kguiitem.h>
-#include <kurl.h>
 
 KMWIppPrinter::KMWIppPrinter(QWidget *parent)
     : KMWizardPage(parent)
@@ -58,10 +56,9 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent)
 
 	l1->setBuddy(m_uri);
 
-	m_info = new Q3TextView(this);
-	m_info->setPaper(QColorGroup(palette()).background());
+	m_info = new QTextBrowser(this);
 	m_info->setMinimumHeight(100);
-	m_info->setText(i18n("<p>Either enter the printer URI directly, or use the network scanning facility.</p>"));
+	m_info->setHtml(i18n("<p>Either enter the printer URI directly, or use the network scanning facility.</p>"));
 	m_ippreport = new KPushButton(KGuiItem(i18n("&IPP Report"), "kdeprint_report"), this);
 	m_ippreport->setEnabled(false);
 
@@ -81,8 +78,8 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent)
 	QHBoxLayout	*lay3 = new QHBoxLayout(this);
 	lay3->setMargin(0);
 	lay3->setSpacing(10);
-	QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 0);
-	QHBoxLayout	*lay4 = new QHBoxLayout(0, 0, 0);
+	QVBoxLayout	*lay2 = new QVBoxLayout();
+	QHBoxLayout	*lay4 = new QHBoxLayout();
 
 	lay3->addWidget(m_list,1);
 	lay3->addLayout(lay2,1);
@@ -194,12 +191,12 @@ void KMWIppPrinter::slotPrinterSelected(Q3ListViewItem *item)
 			}
 			txt.append(i18n("<b>State</b>: %1<br>").arg(value));
 		}
-		m_info->setText(txt);
+		m_info->setHtml(txt);
 	}
 	else
 	{
 		m_uri->setText(uri);
-		m_info->setText(i18n("Unable to retrieve printer info. Printer answered:<br><br>%1").arg(ippErrorString((ipp_status_t)req.status())));
+		m_info->setHtml(i18n("Unable to retrieve printer info. Printer answered:<br><br>%1").arg(ippErrorString((ipp_status_t)req.status())));
 	}
 }
 

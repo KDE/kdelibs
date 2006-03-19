@@ -1,5 +1,5 @@
 #include "notepad.h" // this plugin applies to a notepad part
-#include <q3multilineedit.h>
+#include <QTextEdit>
 #include "plugin_spellcheck.h"
 #include <kaction.h>
 #include <kgenericfactory.h>
@@ -9,7 +9,7 @@
 
 PluginSpellCheck::PluginSpellCheck( QObject* parent, const char* name, 
                                     const QStringList& )
-    : Plugin( parent, name )
+    : Plugin( parent )
 {
     (void) new KAction( "&Select current line (plugin)", 0, this, SLOT(slotSpellCheck()),
                         actionCollection(), "spellcheck" );
@@ -21,14 +21,14 @@ PluginSpellCheck::~PluginSpellCheck()
 
 void PluginSpellCheck::slotSpellCheck()
 {
-    kDebug() << "Plugin parent : " << parent()->name() << " (" << parent()->className() << ")" << endl;
+    kDebug() << "Plugin parent : " << parent()->objectName() << " (" << parent()->metaObject()->className() << ")" << endl;
     // The parent is assumed to be a NotepadPart
     if ( !parent()->inherits("NotepadPart") )
        KMessageBox::error(0L,"You just called the spell-check action on a wrong part (not NotepadPart)");
     else
     {
          NotepadPart * part = (NotepadPart *) parent();
-         Q3MultiLineEdit * widget = (Q3MultiLineEdit *) part->widget();
+         QTextEdit * widget = (QTextEdit *) part->widget();
          widget->selectAll(); //selects current line !
     }
 }

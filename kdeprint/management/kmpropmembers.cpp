@@ -21,15 +21,15 @@
 #include "kmprinter.h"
 #include "kmwizard.h"
 
-#include <q3textview.h>
-#include <qlayout.h>
+#include <QTextBrowser>
+#include <QLayout>
+
 #include <klocale.h>
 
 KMPropMembers::KMPropMembers(QWidget *parent)
     : KMPropWidget(parent)
 {
-	m_members = new Q3TextView(this);
-	m_members->setPaper(QColorGroup(palette()).background());
+	m_members = new QTextBrowser(this);
 	m_members->setFrameStyle(QFrame::NoFrame);
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this);
@@ -55,14 +55,14 @@ void KMPropMembers::setPrinter(KMPrinter *p)
 		for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
 			txt.append("<li>" + (*it) + "</li>");
 		txt.append("</ul>");
-		m_members->setText(txt);
+		m_members->setHtml(txt);
 		emit enable(true);
 		emit enableChange(!p->isImplicit());
 	}
 	else
 	{
 		emit enable(false);
-		m_members->setText("");
+		m_members->setPlainText(QString());
 	}
 }
 
