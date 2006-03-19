@@ -56,7 +56,7 @@
      <widget class="QTabWidget" name="tabWidget" >
       <widget class="QWidget" name="firstTab" >
        <attribute name="title" >
-        <string>Regression testing output...</string>
+        <string>Regression testing output</string>
        </attribute>
        <layout class="QHBoxLayout" >
         <property name="margin" >
@@ -162,7 +162,7 @@
           <item>
            <widget class="QLabel" name="statusLabel" >
             <property name="text" >
-             <string>Regression testing status...</string>
+             <string>Regression testing status</string>
             </property>
            </widget>
           </item>
@@ -182,7 +182,7 @@
       </widget>
       <widget class="QWidget" name="secondTab" >
        <attribute name="title" >
-        <string>View HTML Output...</string>
+        <string>View HTML Output</string>
        </attribute>
       </widget>
      </widget>
@@ -195,19 +195,9 @@
      <x>0</x>
      <y>0</y>
      <width>875</width>
-     <height>27</height>
+     <height>28</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuMain" >
-    <property name="title" >
-     <string>Tests</string>
-    </property>
-    <addaction name="actionSpecify_tests_directory" />
-    <addaction name="actionSpecify_khtml_directory" />
-    <addaction name="actionSpecify_output_directory" />
-    <addaction name="separator" />
-    <addaction name="actionRun_tests" />
-   </widget>
    <widget class="QMenu" name="menuSettings" >
     <property name="tearOffEnabled" >
      <bool>false</bool>
@@ -220,6 +210,16 @@
     <addaction name="actionDo_not_supress_debug_output" />
     <addaction name="actionDo_not_use_Xvfb" />
    </widget>
+   <widget class="QMenu" name="menuMain" >
+    <property name="title" >
+     <string>Tests</string>
+    </property>
+    <addaction name="actionSpecify_tests_directory" />
+    <addaction name="actionSpecify_khtml_directory" />
+    <addaction name="actionSpecify_output_directory" />
+    <addaction name="separator" />
+    <addaction name="actionRun_tests" />
+   </widget>
    <addaction name="menuMain" />
    <addaction name="menuSettings" />
   </widget>
@@ -227,9 +227,9 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>805</y>
+     <y>804</y>
      <width>875</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
