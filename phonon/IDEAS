@@ -1,0 +1,18 @@
+- central config:
+  1. Phonon created widgets:
+    Selection of default audio/video playback/capture devices for
+    Phonon::Cateogry
+  2. Backend specific widgets:
+    The backend should be able to provide a widget to configure important
+    settings that cannot be set using above widgets.
+
+- on hotplug of a USB audio/video device:
+  1. If the device is plugged in for the first time
+    Check whether the backend now provides new device selections. If yes, open
+    up central config with the page that allows selection of the default
+    devices. Tell the user what new options are available.
+    Allow the user to set preference of devices: If device USB-Headset is
+    available use that, else use builtin speakers.
+  2. If the device has been configured before
+    Show a passive popup if the default device has changed because the new
+    device has higher preference.

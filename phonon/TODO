@@ -1,0 +1,3 @@
+VideoWidget:
+  QWidget already has a method isFullScreen -> rethink the way the Phonon
+Frontend and Backend APIs handle that

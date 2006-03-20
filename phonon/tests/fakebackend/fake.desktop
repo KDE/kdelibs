@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Service
+ServiceTypes=PhononBackend
+X-KDE-Library=phonon_fake
+X-KDE-PhononBackendInfo-Version=0.1
+X-KDE-PhononBackendInfo-Website=http://multimedia.kde.org/
+InitialPreference=1
+Name=Fake
+Comment=Testing Backend

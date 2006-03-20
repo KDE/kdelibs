@@ -1,0 +1,77 @@
+/*  This file is part of the KDE project
+    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+
+*/
+#ifndef Phonon_ABSTRACTVIDEOOUTPUTBASE_H
+#define Phonon_ABSTRACTVIDEOOUTPUTBASE_H
+
+#include "base.h"
+#include "phonondefs.h"
+
+class QString;
+
+namespace Phonon
+{
+	class AbstractVideoOutputPrivate;
+	namespace Ifaces
+	{
+		class AbstractVideoOutput;
+	}
+
+	class PHONON_EXPORT AbstractVideoOutput : public Base
+	{
+		friend class VideoPath;
+		friend class VideoPathPrivate;
+		K_DECLARE_PRIVATE( AbstractVideoOutput )
+		protected:
+			/**
+			 * \internal
+			 * Constructor that is called from derived classes.
+			 *
+			 * \param parent Standard QObject parent.
+			 */
+			AbstractVideoOutput( AbstractVideoOutputPrivate& d );
+
+			/**
+			 * \internal
+			 * After construction of the Iface object this method is called
+			 * throughout the complete class hierarchy in order to set up the
+			 * properties that were already set on the public interface.
+			 *
+			 * An example implementation could look like this:
+			 * \code
+			 * ParentClass::setupIface();
+			 * m_iface->setPropertyA( d->propertyA );
+			 * m_iface->setPropertyB( d->propertyB );
+			 * \endcode
+			 */
+			void setupIface();
+
+		private:
+			/**
+			 * \internal
+			 * Returns the Iface object. If the object does not exist it tries to
+			 * create it before returning.
+			 *
+			 * \return the Iface object, might return \c 0
+			 */
+			Ifaces::AbstractVideoOutput* iface();
+	};
+} //namespace Phonon
+
+// vim: sw=4 ts=4 tw=80 noet
+#endif // Phonon_ABSTRACTVIDEOOUTPUTBASE_H
