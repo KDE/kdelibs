@@ -83,40 +83,32 @@ install_files( /bin FILES checkXML )
 
 install_files(${KCONF_UPDATE_INSTALL_DIR} FILES move_kio_help_cache.sh )
 
+
+set(docbookdir xml-dtd-4.1.2  xml-dtd-4.2  xsl )
+
+foreach (_currentdocbookdir ${docbookdir})
+	#TODO
+endforeach(_currentdocbookdir ${docbookdir})
+
+
+MACRO(INSTALL_CUSTOMIZE_DIR _expr _directory)
+	FILE(GLOB _file_CUST "${_expr}" )
+    foreach(_curentfile ${_file_CUST})
+        install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/${_directory} )
+    endforeach(_curentfile ${_file_CUST})
+ENDMACRO(INSTALL_CUSTOMIZE_DIR _expr _directory)
+
 set(customizedir af bg ca cs da de dtd el en-GB en entities eo es et fi fo fr he hu id it ja ko lt nl nn no obsolete pl pt-BR pt ro ru sk sl sr sv tr uk wa xh xsl xx zh-CN zh-TW)
  
 foreach (_currentcustomizedir ${customizedir})
 	set(expr "customization/${_currentcustomizedir}/*.entities")
-	FILE(GLOB _file_CUST "${expr}" )
-	
-	foreach(_curentfile ${_file_CUST})
-		install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/${_currentcustomizedir} )
-	endforeach(_curentfile ${_file_CUST})
-
+	INSTALL_CUSTOMIZE_DIR( ${expr} ${_currentcustomizedir})
     set(expr "customization/${_currentcustomizedir}/entities/*.docbook")
-    FILE(GLOB _file_CUST "${expr}" )
-
-    foreach(_curentfile ${_file_CUST})
-        install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/${_currentcustomizedir}/entities/ )
-    endforeach(_curentfile ${_file_CUST})
-
-
+	INSTALL_CUSTOMIZE_DIR( ${expr} ${_currentcustomizedir}/entities/ )
     set(expr "customization/${_currentcustomizedir}/catalog")
-    FILE(GLOB _file_CUST "${expr}" )
-
-    foreach(_curentfile ${_file_CUST})
-        install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/${_currentcustomizedir} )
-    endforeach(_curentfile ${_file_CUST})
-
-
+    INSTALL_CUSTOMIZE_DIR(${expr} ${_currentcustomizedir} )
     set(expr "customization/${_currentcustomizedir}/*.xml")
-    FILE(GLOB _file_CUST "${expr}" )
-
-    foreach(_curentfile ${_file_CUST})
-        install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/${_currentcustomizedir} )
-    endforeach(_curentfile ${_file_CUST})
-
-
+    INSTALL_CUSTOMIZE_DIR(${expr} ${_currentcustomizedir} )
 endforeach(_currentcustomizedir ${customizedir}) 
 	  
 
