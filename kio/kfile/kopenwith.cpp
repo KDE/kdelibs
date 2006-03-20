@@ -183,7 +183,7 @@ static QPixmap appIcon(const QString &iconName)
     {
        QImage tmp = normal.toImage();
        tmp = tmp.scaled(20, 20, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-       normal.convertFromImage(tmp);
+       normal = QPixmap::fromImage(tmp);
     }
     return normal;
 }

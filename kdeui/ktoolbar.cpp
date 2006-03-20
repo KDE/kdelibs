@@ -151,7 +151,7 @@ public:
 };
 
 KToolBar::KToolBar( QWidget *parent, bool honorStyle, bool readConfig )
-    : QToolBar( parent, false)
+    : QToolBar( parent )
 {
     if ( !qobject_cast<QMainWindow*>(parent) )
          setWindowFlags( windowFlags() & ~Qt::WindowType_Mask ); //We're not a top-level!
@@ -723,7 +723,7 @@ void KToolBar::slotContextAboutToShow()
       kmw->setupToolbarMenuActions();
       // Only allow hiding a toolbar if the action is also plugged somewhere else (e.g. menubar)
       KAction *tbAction = kmw->toolBarMenuAction();
-      if ( tbAction && tbAction->containerCount() > 0 )
+      if ( tbAction && tbAction->associatedWidgets().count() > 0 )
           contextMenu()->addAction(tbAction);
   }
 
@@ -789,7 +789,7 @@ void KToolBar::slotContextAboutToHide()
   // Unplug the toolbar menu action
   KMainWindow *kmw = qobject_cast<KMainWindow *>(mainWindow());
   if ( kmw && kmw->toolBarMenuAction() )
-    if ( kmw->toolBarMenuAction()->containerCount() > 1 )
+    if ( kmw->toolBarMenuAction()->associatedWidgets().count() > 1 )
       contextMenu()->removeAction(kmw->toolBarMenuAction());
 
   // Unplug the configure toolbars action too, since it's afterwards anyway

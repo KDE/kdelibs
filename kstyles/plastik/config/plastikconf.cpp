@@ -49,7 +49,10 @@ extern "C"
 PlastikStyleConfig::PlastikStyleConfig(QWidget* parent): QWidget(parent)
 {
 	//Should have no margins here, the dialog provides them
-	QVBoxLayout* layout = new QVBoxLayout(this, 0, 0);
+	QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setMargin(0);
+    layout->setSpacing(0);
+
 	KGlobal::locale()->insertCatalog("kstyle_plastik_config");
 
 // 	scrollBarLines = new QCheckBox(i18n("Scrollbar handle lines"), this);
@@ -75,47 +78,47 @@ PlastikStyleConfig::PlastikStyleConfig(QWidget* parent): QWidget(parent)
     hbox3->layout()->addItem(new QSpacerItem(20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum) );
     checkMarkColor = new KColorButton(hbox3);
 
-// 	layout->add(scrollBarLines);
-	layout->add(animateProgressBar);
-	layout->add(drawToolBarSeparator);
-	layout->add(drawToolBarItemSeparator);
-// 	layout->add(drawFocusRect);
-	layout->add(drawTriangularExpander);
-	layout->add(inputFocusHighlight);
-    layout->add(customFocusHighlightColor);
-	layout->add(hbox1);
-    layout->add(customOverHighlightColor);
-    layout->add(hbox2);
-	layout->add(customCheckMarkColor);
-	layout->add(hbox3);
+// 	layout->addWidget(scrollBarLines);
+	layout->addWidget(animateProgressBar);
+	layout->addWidget(drawToolBarSeparator);
+	layout->addWidget(drawToolBarItemSeparator);
+// 	layout->addWidget(drawFocusRect);
+	layout->addWidget(drawTriangularExpander);
+	layout->addWidget(inputFocusHighlight);
+    layout->addWidget(customFocusHighlightColor);
+	layout->addWidget(hbox1);
+    layout->addWidget(customOverHighlightColor);
+    layout->addWidget(hbox2);
+	layout->addWidget(customCheckMarkColor);
+	layout->addWidget(hbox3);
 	layout->addStretch(1);
 
 	QSettings s;
-// 	origScrollBarLines = s.readBoolEntry("/plastikstyle/Settings/scrollBarLines", false);
+// 	origScrollBarLines = s.value("/plastikstyle/Settings/scrollBarLines", false).toBool();
 // 	scrollBarLines->setChecked(origScrollBarLines);
-	origAnimProgressBar = s.readBoolEntry("/plastikstyle/Settings/animateProgressBar", false);
+	origAnimProgressBar = s.value("/plastikstyle/Settings/animateProgressBar", false).toBool();
 	animateProgressBar->setChecked(origAnimProgressBar);
-	origDrawToolBarSeparator = s.readBoolEntry("/plastikstyle/Settings/drawToolBarSeparator", true);
+	origDrawToolBarSeparator = s.value("/plastikstyle/Settings/drawToolBarSeparator", true).toBool();
 	drawToolBarSeparator->setChecked(origDrawToolBarSeparator);
-	origDrawToolBarItemSeparator = s.readBoolEntry("/plastikstyle/Settings/drawToolBarItemSeparator", true);
+	origDrawToolBarItemSeparator = s.value("/plastikstyle/Settings/drawToolBarItemSeparator", true).toBool();
 	drawToolBarItemSeparator->setChecked(origDrawToolBarItemSeparator);
-// 	origDrawFocusRect = s.readBoolEntry("/plastikstyle/Settings/drawFocusRect", true);
+// 	origDrawFocusRect = s.value("/plastikstyle/Settings/drawFocusRect", true).toBool();
 // 	drawFocusRect->setChecked(origDrawFocusRect);
-	origDrawTriangularExpander = s.readBoolEntry("/plastikstyle/Settings/drawTriangularExpander", false);
+	origDrawTriangularExpander = s.value("/plastikstyle/Settings/drawTriangularExpander", false).toBool();
 	drawTriangularExpander->setChecked(origDrawTriangularExpander);
-	origInputFocusHighlight = s.readBoolEntry("/plastikstyle/Settings/inputFocusHighlight", true);
+	origInputFocusHighlight = s.value("/plastikstyle/Settings/inputFocusHighlight", true).toBool();
 	inputFocusHighlight->setChecked(origInputFocusHighlight);
-	origCustomOverHighlightColor = s.readBoolEntry("/plastikstyle/Settings/customOverHighlightColor", false);
+	origCustomOverHighlightColor = s.value("/plastikstyle/Settings/customOverHighlightColor", false).toBool();
 	customOverHighlightColor->setChecked(origCustomOverHighlightColor);
-	origOverHighlightColor = s.readEntry("/plastikstyle/Settings/overHighlightColor", "black");
+	origOverHighlightColor = s.value("/plastikstyle/Settings/overHighlightColor", "black").toString();
 	overHighlightColor->setColor(origOverHighlightColor);
-	origCustomFocusHighlightColor = s.readBoolEntry("/plastikstyle/Settings/customFocusHighlightColor", false);
+	origCustomFocusHighlightColor = s.value("/plastikstyle/Settings/customFocusHighlightColor", false).toBool();
 	customFocusHighlightColor->setChecked(origCustomFocusHighlightColor);
-	origFocusHighlightColor = s.readEntry("/plastikstyle/Settings/focusHighlightColor", "black");
+	origFocusHighlightColor = s.value("/plastikstyle/Settings/focusHighlightColor", "black").toString();
 	focusHighlightColor->setColor(origFocusHighlightColor);
-	origCustomCheckMarkColor = s.readBoolEntry("/plastikstyle/Settings/customCheckMarkColor", false);
+	origCustomCheckMarkColor = s.value("/plastikstyle/Settings/customCheckMarkColor", false).toBool();
 	customCheckMarkColor->setChecked(origCustomCheckMarkColor);
-	origCheckMarkColor = s.readEntry("/plastikstyle/Settings/checkMarkColor", "black");
+	origCheckMarkColor = s.value("/plastikstyle/Settings/checkMarkColor", "black").toString();
 	checkMarkColor->setColor(origCheckMarkColor);
 
 // 	connect(scrollBarLines, SIGNAL( toggled(bool) ), SLOT( updateChanged() ) );

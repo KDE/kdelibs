@@ -415,7 +415,7 @@ public:
 						Keramik::CenteredPainter painter(keramik_scrollbar_hbar_arrow2);
 						painter.draw(p, r, pal.button().color(), pal.background().color(), !(flags & State_Enabled));
 
-						p->setPen(pal.buttonText());
+						p->setPen(pal.buttonText().color());
 						p->drawLine(r.x()+r.width()/2 - 1, r.y() + r.height()/2 - 3,
 									r.x()+r.width()/2 - 1, r.y() + r.height()/2 + 3);
 
@@ -449,7 +449,7 @@ public:
 						Keramik::CenteredPainter painter(keramik_scrollbar_vbar_arrow2);
 						painter.draw(p, r, pal.button().color(), pal.background().color(), !(flags & State_Enabled));
 
-						p->setPen(pal.buttonText());
+						p->setPen(pal.buttonText().color());
 						p->drawLine(r.x()+r.width()/2 - 4, r.y()+r.height()/2,
 									r.x()+r.width()/2 + 2, r.y()+r.height()/2);
 
@@ -592,14 +592,14 @@ public:
 								Keramik::InactiveTabPainter(pos, true).draw(
 									p, x, y, w, h - 3, pal.button().color(), pal.background().color(),
 									disabled);
-								p->setPen  (pal.dark());
+								p->setPen  (pal.dark().color());
 								p->drawLine(x, y, x + w, y);
 							}
 							else
 							{
 								Keramik::InactiveTabPainter(pos, false).draw(
 									p, x, y + 3, w, h - 3, pal.button().color(), pal.background().color(), disabled);
-								p->setPen  (pal.light());
+								p->setPen  (pal.light().color());
 								p->drawLine(x, y + h - 1, x + w, y + h - 1);
 							}
 						}
@@ -643,6 +643,8 @@ public:
 					}
 				}
 			} //WT_Slider
+
+            default:
 			break;
 		}
 
