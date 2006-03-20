@@ -28,5 +28,7 @@
 
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
+#define popen _popen
+#define pclose _pclose
 
 #endif	// KDEWIN_STDIO_H

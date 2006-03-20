@@ -20,8 +20,6 @@
 #include <io.h> /* to avoid #includes */
 
 #define KPATH_SEPARATOR ';'
-#define popen _popen
-#define pclose _pclose
 
 #ifndef KDECORE_EXPORT
 # if defined(MAKE_KDECORE_LIB) || defined(MAKE_KDEFAKES_LIB)

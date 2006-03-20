@@ -29,4 +29,9 @@
 #include <sys/types.h>
 #include <../include/stdio.h>
 
+#define snprintf _snprintf
+#define vsnprintf _vsnprintf
+#define popen _popen
+#define pclose _pclose
+
 #endif /* KDE_STDIO_H_ */
