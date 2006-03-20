@@ -561,12 +561,19 @@ bool KMainWindow::isHelpMenuEnabled()
 
 void KMainWindow::setCaption( const QString &caption )
 {
-    setPlainCaption( kapp->makeStdCaption(caption) );
+    setPlainCaption( KInstance::makeStdCaption(caption) );
 }
 
 void KMainWindow::setCaption( const QString &caption, bool modified )
 {
-    setPlainCaption( kapp->makeStdCaption(caption, true, modified) );
+    KInstance::CaptionFlags flags = KInstance::HIGCompliantCaption;
+
+    if ( modified )
+    {
+        flags &= KInstance::ModifiedCaption;
+    }
+
+    setPlainCaption( KInstance::makeStdCaption(caption, flags) );
 }
 
 void KMainWindow::setPlainCaption( const QString &caption )
