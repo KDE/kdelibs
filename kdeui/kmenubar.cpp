@@ -191,7 +191,9 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       d->margin = 0; //margin();
       d->fallback_mode = false;
       bool wasShown = !isHidden();
-      reparent( parentWidget(), Qt::WType_TopLevel | Qt::WStyle_Tool | Qt::WStyle_Customize | Qt::WStyle_NoBorder, QPoint(0,0), false );
+      setParent(parentWidget(), Qt::WType_TopLevel | Qt::WStyle_Tool 
+              | Qt::WStyle_Customize | Qt::WStyle_NoBorder);
+      setGeometry(0,0,width(),height());
 #ifdef Q_WS_X11
       KWin::setType( winId(), NET::TopMenu );
       if( parentWidget())
@@ -212,7 +214,8 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       delete d->selection;
       d->selection = NULL;
 #endif
-      setBackgroundMode( Qt::PaletteButton );
+      setAttribute(Qt::WA_NoSystemBackground, false);
+      setBackgroundRole(QPalette::Button);
       setFrameStyle( d->frameStyle );
       setLineWidth( d->lineWidth );
       setMargin( d->margin );

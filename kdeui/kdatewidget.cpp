@@ -72,7 +72,6 @@ void KDateWidget::init(const QDate& date)
   QHBoxLayout *layout = new QHBoxLayout(this);
   layout->setMargin(0);
   layout->setSpacing(KDialog::spacingHint());
-  layout->setAutoAdd(true);
   d->m_day = new KDateWidgetSpinBox(1, 1, this);
   d->m_month = new QComboBox(this);
   const KCalendarSystem* calendar = KGlobal::locale()->calendar();
@@ -86,7 +85,10 @@ void KDateWidget::init(const QDate& date)
 
   d->m_year = new KDateWidgetSpinBox(calendar->minValidYear(),
                                      calendar->maxValidYear(), this);
-
+  layout->addWidget(d->m_day);
+  layout->addWidget(d->m_month);
+  layout->addWidget(d->m_year);
+  
   connect(d->m_day, SIGNAL(valueChanged(int)), this, SLOT(slotDateChanged()));
   connect(d->m_month, SIGNAL(activated(int)), this, SLOT(slotDateChanged()));
   connect(d->m_year, SIGNAL(valueChanged(int)), this, SLOT(slotDateChanged()));

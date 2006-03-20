@@ -280,14 +280,12 @@ void K3ListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
     QMenu *popup = KLineEdit::createStandardContextMenu();
 
     if (d->canChooseColumns) {
-        QMenu *subMenu = new QMenu(popup);
+        popup->addSeparator();
+        QMenu *subMenu = popup->addMenu(i18n("Search Columns"));
         connect(subMenu, SIGNAL(activated(int)), this, SLOT(searchColumnsMenuActivated(int)));
 
-        popup->insertSeparator();
-        popup->insertItem(i18n("Search Columns"), subMenu);
-
         subMenu->insertItem(i18n("All Visible Columns"), KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID);
-        subMenu->insertSeparator();
+        subMenu->addSeparator();
 
         bool allColumnsAreSearchColumns = true;
 	// TODO Make the entry order match the actual column order

@@ -1890,7 +1890,6 @@ void KPasteTextAction::init()
   m_popup = new KMenu;
   connect(m_popup, SIGNAL(aboutToShow()), this, SLOT(menuAboutToShow()));
   connect(m_popup, SIGNAL(triggered(QAction*)), this, SLOT(slotTriggered(QAction*)));
-  m_popup->setCheckable(true);
   m_mixedMode = true;
 }
 

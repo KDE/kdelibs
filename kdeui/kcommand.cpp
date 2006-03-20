@@ -108,18 +108,18 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
         KToolBarPopupAction * undo = new KToolBarPopupAction( i18n("&Undo"), "undo",
                                           KStdAccel::shortcut(KStdAccel::Undo), this, SLOT( undo() ),
                                           actionCollection, KStdAction::stdName( KStdAction::Undo ) );
-        connect( undo->popupMenu(), SIGNAL( aboutToShow() ), this, SLOT( slotUndoAboutToShow() ) );
-        connect( undo->popupMenu(), SIGNAL( activated( int ) ), this, SLOT( slotUndoActivated( int ) ) );
+        connect( undo->menu(), SIGNAL( aboutToShow() ), this, SLOT( slotUndoAboutToShow() ) );
+        connect( undo->menu(), SIGNAL( activated( int ) ), this, SLOT( slotUndoActivated( int ) ) );
         m_undo = undo;
-        m_undoPopup = undo->popupMenu();
+        m_undoPopup = undo->menu();
 
         KToolBarPopupAction * redo = new KToolBarPopupAction( i18n("&Redo"), "redo",
                                           KStdAccel::shortcut(KStdAccel::Redo), this, SLOT( redo() ),
                                           actionCollection, KStdAction::stdName( KStdAction::Redo ) );
-        connect( redo->popupMenu(), SIGNAL( aboutToShow() ), this, SLOT( slotRedoAboutToShow() ) );
-        connect( redo->popupMenu(), SIGNAL( activated( int ) ), this, SLOT( slotRedoActivated( int ) ) );
+        connect( redo->menu(), SIGNAL( aboutToShow() ), this, SLOT( slotRedoAboutToShow() ) );
+        connect( redo->menu(), SIGNAL( activated( int ) ), this, SLOT( slotRedoActivated( int ) ) );
         m_redo = redo;
-        m_redoPopup = redo->popupMenu();
+        m_redoPopup = redo->menu();
     }
     else
     {

@@ -380,7 +380,7 @@ void KGradientSelector::init()
 
 void KGradientSelector::drawContents( QPainter *painter )
 {
-  QImage image( contentsRect().width(), contentsRect().height(), 32 );
+  QImage image( contentsRect().width(), contentsRect().height(), QImage::Format_RGB32 );
 
   QColor col;
   float scale;
@@ -430,8 +430,7 @@ void KGradientSelector::drawContents( QPainter *painter )
 
   KImageEffect::dither( image, ditherPalette, 8 );
 
-  QPixmap p;
-  p.convertFromImage( image );
+  QPixmap p = QPixmap::fromImage(image);
 
   painter->drawPixmap( contentsRect().x(), contentsRect().y(), p );
 

@@ -192,7 +192,8 @@ void KLineEdit::setCompletedText( const QString& t, bool marked )
     if ( t != txt )
     {
         int start = marked ? txt.length() : t.length();
-        validateAndSet( t, cursorPosition(), start, t.length() );
+        setText(t);
+        setSelection(start, t.length());
         setUserSelection(false);
     }
     else
@@ -407,10 +408,10 @@ void KLineEdit::copy() const
 {
    if (!d->squeezedText.isEmpty() && d->squeezedStart)
    {
-      int start, end;
       KLineEdit *that = const_cast<KLineEdit *>(this);
-      if (!that->getSelection(&start, &end))
+      if (!that->hasSelectedText())
          return;
+      int start = selectionStart(), end = start + selectedText().length();
       if (start >= d->squeezedStart+3)
          start = start - 3 - d->squeezedStart + d->squeezedEnd;
       else if (start > d->squeezedStart)
@@ -544,16 +545,17 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             {
                 QString old_txt = text();
                 d->disableRestoreSelection = true;
-                int start,end;
-                getSelection(&start, &end);
+                int start = selectionStart();
 
                 deselect();
                 QLineEdit::keyPressEvent ( e );
                 int cPosition=cursorPosition();
+                setText(old_txt);
+                setCursorPosition(cPosition);
                 if (e->key() ==Qt::Key_Right && cPosition > start )
-                    validateAndSet(old_txt, cPosition, cPosition, old_txt.length());
+                    setSelection(cPosition, old_txt.length());
                 else
-                    validateAndSet(old_txt, cPosition, start, old_txt.length());
+                    setSelection(start, old_txt.length());
 
                 d->disableRestoreSelection = false;
                 return;
@@ -587,8 +589,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
                 bool cursorNotAtEnd=false;
 
-                int start,end;
-                getSelection(&start, &end);
+                int start = selectionStart();
                 int cPos = cursorPosition();
 
                 // When moving the cursor, we want to keep the autocompletion as an
@@ -652,8 +653,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             bool hadSelection=hasSelectedText();
             bool cursorNotAtEnd=false;
 
-            int start,end;
-            getSelection(&start, &end);
+            int start = selectionStart();
             int cPos = cursorPosition();
             QString keycode = e->text();
 
@@ -870,13 +870,11 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
     // menu item.
     if ( compObj() && !isReadOnly() && KAuthorized::authorize("lineedit_text_completion") )
     {
-        QMenu *subMenu = new QMenu( popup );
+        QMenu *subMenu = popup->addMenu( SmallIconSet("completion"), i18n("Text Completion") );
         connect( subMenu, SIGNAL( triggered ( QAction* ) ),
                  this, SLOT( completionMenuActivated( QAction* ) ) );
 
-        popup->insertSeparator();
-        popup->insertItem( SmallIconSet("completion"), i18n("Text Completion"),
-                           subMenu );
+        popup->addSeparator();
 
         noCompletionAction = subMenu->addAction( i18n("None"));
         shellCompletionAction = subMenu->addAction( i18n("Manual") );
@@ -903,7 +901,7 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
         popupAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopupAuto );
         if ( mode != KGlobalSettings::completionMode() )
         {
-            subMenu->insertSeparator();
+            subMenu->addSeparator();
             defaultAction = subMenu->addAction( i18n("Default") );
         }
     }
@@ -980,7 +978,8 @@ void KLineEdit::dropEvent(QDropEvent *e)
                 dropText += (*it).prettyURL();
             }
 
-            validateAndSet( dropText, dropText.length(), 0, 0);
+            setText(dropText);
+            setCursorPosition(dropText.length());
 
             e->accept();
             return;
@@ -1098,10 +1097,10 @@ void KLineEdit::userCancelled(const QString & cancelText)
       else
       {
         d->autoSuggest=false;
-        int start,end;
-        getSelection(&start, &end);
-        QString s=text().remove(start, end-start+1);
-        validateAndSet(s,start,s.length(),s.length());
+        int start = selectionStart() ;
+        QString s=text().remove(selectionStart(), selectedText().length());
+        setText(s);
+        setCursorPosition(start);
         d->autoSuggest=true;
       }
     }

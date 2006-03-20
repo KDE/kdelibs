@@ -110,7 +110,8 @@ void KDatePicker::init( const QDate &dt )
 
   QBoxLayout * topLayout = new QVBoxLayout(this);
 
-  d->navigationLayout = new QHBoxLayout(topLayout);
+  d->navigationLayout = new QHBoxLayout();
+  topLayout->addLayout(d->navigationLayout);
   d->navigationLayout->addStretch();
   yearBackward = new QToolButton(this);
   yearBackward->setAutoRaise(true);
@@ -193,7 +194,9 @@ void KDatePicker::init( const QDate &dt )
 
   topLayout->addWidget(table);
 
-  QBoxLayout * bottomLayout = new QHBoxLayout(topLayout);
+  QBoxLayout * bottomLayout = new QHBoxLayout();
+  topLayout->addLayout(bottomLayout);
+
   bottomLayout->addWidget(d->todayButton);
   bottomLayout->addWidget(line);
   bottomLayout->addWidget(d->selectWeek);
@@ -518,7 +521,7 @@ KDatePicker::setCloseButton( bool enable )
         d->navigationLayout->addSpacing(KDialog::spacingHint());
         d->navigationLayout->addWidget(d->closeButton);
         d->closeButton->setToolTip(i18n("Close"));
-        d->closeButton->setPixmap( SmallIcon("remove") );
+        d->closeButton->setIcon( SmallIcon("remove") );
         connect( d->closeButton, SIGNAL( clicked() ),
                  topLevelWidget(), SLOT( close() ) );
     }

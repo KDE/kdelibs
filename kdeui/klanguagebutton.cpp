@@ -120,11 +120,11 @@ void KLanguageButton::init()
   QHBoxLayout *layout = new QHBoxLayout(this);
   layout->setMargin(0);
   layout->setSpacing(0);
-  layout->setAutoAdd(true);
 #ifdef __GNUC__
 #warning check if the name is used by some code using KLanguageButton
 #endif
   d->button = new QPushButton( this ); // HPB don't touch this!!
+  layout->addWidget(d->button);
 
   clear();
 }
