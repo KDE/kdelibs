@@ -21,20 +21,18 @@
 #ifndef KPRINTERPROPERTYDIALOG_H
 #define KPRINTERPROPERTYDIALOG_H
 
-#include <kdialogbase.h>
-#include <qlist.h>
-#include <qmap.h>
+#include <kdialog.h>
 
 class KMPrinter;
 class KPrintDialogPage;
 class DrMain;
 class QTabWidget;
 
-class KDEPRINT_EXPORT KPrinterPropertyDialog : public KDialogBase
+class KDEPRINT_EXPORT KPrinterPropertyDialog : public KDialog
 {
 	Q_OBJECT
 public:
-	KPrinterPropertyDialog(KMPrinter *printer, QWidget *parent = 0, const char *name = 0);
+	KPrinterPropertyDialog(KMPrinter *printer, QWidget *parent = 0);
 	~KPrinterPropertyDialog();
 
 	KMPrinter* printer() 		{ return m_printer; }

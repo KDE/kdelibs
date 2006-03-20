@@ -37,17 +37,10 @@
 #include "treecombobox.h"
 #include "messagewindow.h"
 
-#include <q3groupbox.h>
-#include <qcheckbox.h>
-#include <kpushbutton.h>
-#include <qlabel.h>
-#include <qcombobox.h>
-#include <qtabwidget.h>
-
-#include <qlayout.h>
-#include <qregexp.h>
-#include <kmessagebox.h>
-#include <qdir.h>
+#include <Q3GroupBox>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
 
 #include <klocale.h>
 #include <kiconloader.h>
@@ -63,6 +56,7 @@
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kio/renamedlg.h>
+#include <kmessagebox.h>
 
 #include <time.h>
 #include <kvbox.h>
@@ -91,10 +85,9 @@ public:
 	bool b_systemEnabled;
 };
 
-KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
+KPrintDialog::KPrintDialog(QWidget *parent)
 : KDialog(parent, QString::null), d(new KPrintDialogPrivate)
 {
-	setObjectName(name);
 	setModal(true);
 		//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisLocationLabel = i18n(  " <qt><b>Printer Location:</b> The <em>Location</em> may describe where the"
@@ -845,7 +838,7 @@ void KPrintDialog::reload()
 {
 	// remove printer dependent pages (usually from plugin)
 	QTabWidget	*tabs = d->m_dummy->findChild<QTabWidget*>("TabWidget");
-	for (uint i=0; i<d->m_pages.count(); i++)
+	for (int i=0; i<d->m_pages.count(); i++)
 		if (d->m_pages.at(i)->onlyRealPrinters())
 		{
 			KPrintDialogPage	*page = d->m_pages.takeAt(i--);

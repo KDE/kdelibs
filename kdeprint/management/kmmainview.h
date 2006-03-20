@@ -24,7 +24,6 @@
 #warning internal header, do not use except if you are a KDEPrint developer
 #endif
 
-#include <qwidget.h>
 #include <kdeprint/kpreloadobject.h>
 #include <kmainwindow.h>
 
@@ -54,7 +53,7 @@ class KDEPRINT_MANAGEMENT_EXPORT KMMainView : public QWidget, public KPReloadObj
 {
 	Q_OBJECT
 public:
-	KMMainView(QWidget *parent = 0, const char *name = 0, KActionCollection *coll = 0);
+	KMMainView(QWidget *parent = 0, KActionCollection *coll = 0);
 	~KMMainView();
 
 	void setOrientation(int);

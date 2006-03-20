@@ -23,11 +23,9 @@
 #include <qstandarditemmodel.h>
 #include <qtreeview.h>
 
-TreeComboBox::TreeComboBox(QWidget *parent, const char *name)
+TreeComboBox::TreeComboBox(QWidget *parent)
 	: QComboBox(parent)
 {
-  setObjectName( name );
-
 	QTreeView   *view = new QTreeView(this);
 	view->header()->hide();
 	view->setRootIsDecorated(false);

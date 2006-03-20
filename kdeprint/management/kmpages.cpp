@@ -27,10 +27,9 @@
 #include <kiconloader.h>
 #include <kdialog.h>
 
-KMPages::KMPages(QWidget *parent, const char *name)
+KMPages::KMPages(QWidget *parent)
 : QTabWidget(parent)
 {
-  setObjectName(name);
 	initialize();
 }
 

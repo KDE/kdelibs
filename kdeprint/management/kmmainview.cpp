@@ -75,15 +75,17 @@ int kdeprint_management_add_printer_wizard( QWidget* parent )
 		return flag;
 }
 
-KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *coll)
+KMMainView::KMMainView(QWidget *parent, KActionCollection *coll)
     : QWidget(parent)
 {
 	m_current = 0;
 	m_first = true;
 
 	// create widgets
-	m_printerview = new KMPrinterView(this, "PrinterView");
-	m_printerpages = new KMPages(this, "PrinterPages");
+	m_printerview = new KMPrinterView(this);
+	m_printerview->setObjectName("PrinterView");
+	m_printerpages = new KMPages(this);
+	m_printerpages->setObjectName("PrinterPages");
 	m_pop = new QMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
 	m_toolbar->setMovable(false);

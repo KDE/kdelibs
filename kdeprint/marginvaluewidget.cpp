@@ -22,10 +22,9 @@
 #include <math.h>
 #include <kglobal.h>
 
-MarginValueWidget::MarginValueWidget(KNumInput *below, double value, QWidget *parent, const char *name)
+MarginValueWidget::MarginValueWidget(KNumInput *below, double value, QWidget *parent)
 : KDoubleNumInput(below, qMin(0.0,value),qMax(0.0,value),value,parent,0.01,2)
 {
-        setObjectName(name);
 	m_mode = Pixels;
 	m_block = false;
 	setPrecision(0);

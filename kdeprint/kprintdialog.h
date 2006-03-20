@@ -43,7 +43,7 @@ class KDEPRINT_EXPORT KPrintDialog : public KDialog, public KPReloadObject
 {
 	Q_OBJECT
 public:
-	KPrintDialog(QWidget *parent = 0, const char *name = 0);
+	KPrintDialog(QWidget *parent = 0);
 	~KPrintDialog();
 
 	void setFlags(int f);

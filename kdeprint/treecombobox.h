@@ -25,7 +25,7 @@
 class TreeComboBox : public QComboBox
 {
 public:
-	TreeComboBox(QWidget *parent = 0, const char *name = 0);
+	TreeComboBox(QWidget *parent = 0);
 	void insertItem(const QIcon& icon, const QString& text, bool oneBlock = false);
 };
 

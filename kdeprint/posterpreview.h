@@ -20,7 +20,7 @@
 #ifndef POSTERPREVIEW_H
 #define POSTERPREVIEW_H
 
-#include <qframe.h>
+#include <QFrame>
 #include <QList>
 
 class KProcess;
@@ -29,8 +29,8 @@ class PosterPreview : public QFrame
 {
 	Q_OBJECT
 public:
-	PosterPreview( QWidget *parent = 0, const char *name = 0 );
-	PosterPreview( const QString& postersize, const QString& mediasize, QWidget *parent = 0, const char *name = 0 );
+	PosterPreview( QWidget *parent = 0 );
+	PosterPreview( const QString& postersize, const QString& mediasize, QWidget *parent = 0 );
 	~PosterPreview();
 
 public Q_SLOTS:

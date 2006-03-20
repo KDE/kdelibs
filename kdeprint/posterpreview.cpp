@@ -20,30 +20,29 @@
 #include "posterpreview.h"
 
 #include <kprocess.h>
-#include <qpainter.h>
-#include <q3simplerichtext.h>
-#include <qtimer.h>
-#include <qpixmap.h>
 #include <kprinter.h>
 #include <klocale.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>
+
+#include <QPainter>
+#include <Q3SimpleRichText>
+#include <QTimer>
 #include <QMouseEvent>
+
 #include <stdio.h>
 
-PosterPreview::PosterPreview( QWidget *parent, const char *name )
+PosterPreview::PosterPreview( QWidget *parent )
 	: QFrame( parent )
 {
-  setObjectName( name );
 	m_postersize = m_mediasize = "A4";
 	m_cutmargin = 5;
 	init();
 }
 
-PosterPreview::PosterPreview( const QString& postersize, const QString& mediasize, QWidget *parent, const char *name )
+PosterPreview::PosterPreview( const QString& postersize, const QString& mediasize, QWidget *parent )
 	: QFrame( parent )
 {
-  setObjectName( name );
 	m_postersize = postersize;
 	m_mediasize = mediasize;
 	m_cutmargin = 5;

@@ -20,8 +20,7 @@
 #ifndef KMPAGES_H
 #define KMPAGES_H
 
-#include <qtabwidget.h>
-#include <qlist.h>
+#include <QTabWidget>
 
 class KMPrinter;
 class KMPrinterPage;
@@ -29,7 +28,7 @@ class KMPrinterPage;
 class KMPages : public QTabWidget
 {
 public:
-	KMPages(QWidget *parent = 0, const char *name = 0);
+	KMPages(QWidget *parent = 0);
 	~KMPages();
 
 	void setPrinter(KMPrinter *p);

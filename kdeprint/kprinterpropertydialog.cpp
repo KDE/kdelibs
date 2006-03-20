@@ -26,15 +26,17 @@
 #include "driver.h"
 
 #include <kmessagebox.h>
-#include <qtabwidget.h>
 #include <klocale.h>
-#include <kpushbutton.h>
-#include <kguiitem.h>
 
-KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, QString(), KDialogBase::Ok|KDialogBase::Cancel|KDialogBase::User1, KDialogBase::Ok, false, KStdGuiItem::save()),
+#include <QTabWidget>
+
+KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent)
+: KDialog(parent, QString(), KDialog::Ok|KDialog::Cancel|KDialog::User1, Qt::Dialog, KStdGuiItem::save()),
   m_printer(p), m_driver(0), m_current(0)
 {
+	setModal(true);
+	enableButtonSeparator(false);
+	setDefaultButton(KDialog::Ok);
 	// set a margin
 	m_tw = new QTabWidget(this);
 	connect(m_tw,SIGNAL(currentChanged(QWidget*)),SLOT(slotCurrentChanged(QWidget*)));
@@ -110,7 +112,7 @@ void KPrinterPropertyDialog::slotOk()
 {
 	if (!synchronize())
 		return;
-	KDialogBase::slotOk();
+	KDialog::slotButtonClicked(KDialog::Ok);
 }
 
 void KPrinterPropertyDialog::slotUser1()
@@ -128,12 +130,13 @@ void KPrinterPropertyDialog::slotUser1()
 
 void KPrinterPropertyDialog::enableSaveButton(bool state)
 {
-	showButton(KDialogBase::User1, state);
+	showButton(KDialog::User1, state);
 }
 
 void KPrinterPropertyDialog::setupPrinter(KMPrinter *pr, QWidget *parent)
 {
-	KPrinterPropertyDialog	dlg(pr,parent,"PropertyDialog");
+	KPrinterPropertyDialog	dlg(pr,parent);
+	dlg.setObjectName("PropertyDialog");
 	KMFactory::self()->uiManager()->setupPropertyDialog(&dlg);
 	if (dlg.m_pages.count() == 0)
 		KMessageBox::information(parent,i18n("No configurable options for that printer."),i18n("Printer Configuration"));
