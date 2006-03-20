@@ -21,7 +21,7 @@ kde4_automoc(${kdesu_LIB_SRCS})
 
 kde4_add_library(kdesu SHARED ${kdesu_LIB_SRCS})
 
-target_link_libraries(kdesu  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdesu  ${KDE4_KDECORE_LIBS} )
 
 set_target_properties(kdesu PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${LIB_INSTALL_DIR} kdesu )
@@ -33,7 +33,7 @@ set(kdesu_stub_SRCS kdesu_stub.c )
 
 kde4_add_executable(kdesu_stub ${kdesu_stub_SRCS})
 
-target_link_libraries(kdesu_stub  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdesu_stub  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin kdesu_stub )
 

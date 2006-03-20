@@ -15,7 +15,7 @@ kde4_automoc(${kcookiejar_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kcookiejar ${kcookiejar_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kcookiejar  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdeinit_kcookiejar  ${KDE4_KDECORE_LIBS} )
 
 install_targets(${LIB_INSTALL_DIR} kdeinit_kcookiejar )
 
@@ -38,7 +38,7 @@ kde4_add_dcop_skels(kded_kcookiejar_PART_SRCS ${kded_kcookiejar_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 
-target_link_libraries(kded_kcookiejar  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kded_kcookiejar  ${KDE4_KDECORE_LIBS} kio )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_kcookiejar )
 install_targets(${PLUGIN_INSTALL_DIR} kded_kcookiejar )

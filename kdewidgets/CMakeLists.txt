@@ -16,7 +16,7 @@ kde4_automoc(${makekdewidgets_SRCS})
 
 kde4_add_executable(makekdewidgets ${makekdewidgets_SRCS})
 
-target_link_libraries(makekdewidgets  ${QT_AND_KDECORE_LIBS} kdecore )
+target_link_libraries(makekdewidgets  ${KDE4_KDECORE_LIBS} kdecore )
 
 install_targets(/bin makekdewidgets )
 
@@ -51,7 +51,7 @@ qt4_add_resources(kdewidgets_PART_SRCS ${kdewidgets_QRC} )
 
 kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
-target_link_libraries(kdewidgets  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kdewidgets  ${KDE4_KDECORE_LIBS} kio )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/designer kdewidgets )
 install_targets(${PLUGIN_INSTALL_DIR}/plugins/designer kdewidgets )

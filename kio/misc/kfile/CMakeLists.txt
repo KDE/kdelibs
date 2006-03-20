@@ -13,7 +13,7 @@ kde4_automoc(${kfile_SRCS})
 
 kde4_add_executable(kfile ${kfile_SRCS})
 
-target_link_libraries(kfile  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kfile  ${KDE4_KDECORE_LIBS} kio )
 
 install_targets(/bin kfile )
 

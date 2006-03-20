@@ -19,7 +19,7 @@ kde4_add_dcop_skels(kwalletclient_LIB_SRCS ${kwalletclient_DCOP_SKEL_SRCS})
 
 kde4_add_library(kwalletclient SHARED ${kwalletclient_LIB_SRCS})
 
-target_link_libraries(kwalletclient  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kwalletclient  ${KDE4_KDECORE_LIBS} )
 
 set_target_properties(kwalletclient PROPERTIES VERSION 1.0.1 SOVERSION 1 )
 install_targets(${LIB_INSTALL_DIR} kwalletclient )

@@ -33,7 +33,7 @@ gen_kcfg_test_source(test1)
 
 kde4_add_executable(test1 ${test1_SRCS})
 
-target_link_libraries(test1  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test1  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -49,7 +49,7 @@ gen_kcfg_test_source(test2)
 
 kde4_add_executable(test2 ${test2_SRCS})
 
-target_link_libraries(test2  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test2  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -65,7 +65,7 @@ gen_kcfg_test_source(test3)
 
 kde4_add_executable(test3 ${test3_SRCS})
 
-target_link_libraries(test3  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test3  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -81,7 +81,7 @@ gen_kcfg_test_source(test4)
 
 kde4_add_executable(test4 ${test4_SRCS})
 
-target_link_libraries(test4  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test4  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -97,7 +97,7 @@ gen_kcfg_test_source(test5)
 
 kde4_add_executable(test5 ${test5_SRCS})
 
-target_link_libraries(test5  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test5  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -113,7 +113,7 @@ gen_kcfg_test_source(test6)
 
 kde4_add_executable(test6 ${test6_SRCS})
 
-target_link_libraries(test6  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test6  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -129,7 +129,7 @@ gen_kcfg_test_source(test7)
 
 kde4_add_executable(test7 ${test7_SRCS})
 
-target_link_libraries(test7  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test7  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -147,7 +147,7 @@ gen_kcfg_test_source(test8b)
 
 kde4_add_executable(test8 ${test8_SRCS})
 
-target_link_libraries(test8  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test8  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -163,7 +163,7 @@ gen_kcfg_test_source(test9)
 
 kde4_add_executable(test9 ${test9_SRCS})
 
-target_link_libraries(test9  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test9  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -179,7 +179,7 @@ gen_kcfg_test_source(test_dpointer)
 
 kde4_add_executable(test_dpointer ${test_dpointer_SRCS})
 
-target_link_libraries(test_dpointer  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test_dpointer  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -195,7 +195,7 @@ gen_kcfg_test_source(test_signal)
 
 kde4_add_executable(test_signal ${test_signal_SRCS})
 
-target_link_libraries(test_signal  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(test_signal  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -209,7 +209,7 @@ kde4_automoc(${kconfigcompiler_test_SRCS})
 
 #kde4_add_executable(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
 
-#target_link_libraries(kconfigcompiler_test  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY}_debug )
+#target_link_libraries(kconfigcompiler_test  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY}_debug )
 
 endif(KDE4_BUILD_TESTS)
 

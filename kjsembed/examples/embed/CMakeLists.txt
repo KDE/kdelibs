@@ -15,7 +15,7 @@ kde4_automoc(${embed_SRCS})
 
 kde4_add_executable(embed ${embed_SRCS})
 
-target_link_libraries(embed  ${QT_AND_KDECORE_LIBS} kjsembed )
+target_link_libraries(embed  ${KDE4_KDECORE_LIBS} kjsembed )
 
 install_targets(/bin embed )
 

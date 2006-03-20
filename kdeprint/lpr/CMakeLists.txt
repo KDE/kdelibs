@@ -29,7 +29,7 @@ kde4_automoc(${kdeprint_lpr_PART_SRCS})
 
 kde4_add_plugin(kdeprint_lpr ${kdeprint_lpr_PART_SRCS})
 
-target_link_libraries(kdeprint_lpr  ${QT_AND_KDECORE_LIBS} kdeprint_management ${KDEFAKES_LIB} )
+target_link_libraries(kdeprint_lpr  ${KDE4_KDECORE_LIBS} kdeprint_management ${KDEFAKES_LIB} )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_lpr )
 install_targets(${PLUGIN_INSTALL_DIR} kdeprint_lpr )
@@ -49,7 +49,7 @@ kde4_automoc(${make_driver_db_lpr_SRCS})
 
 kde4_add_executable(make_driver_db_lpr ${make_driver_db_lpr_SRCS})
 
-target_link_libraries(make_driver_db_lpr  ${QT_AND_KDECORE_LIBS} ${KDEFAKES_LIB} )
+target_link_libraries(make_driver_db_lpr  ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} )
 
 install_targets(/bin make_driver_db_lpr )
 

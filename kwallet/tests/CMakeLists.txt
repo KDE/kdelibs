@@ -16,7 +16,7 @@ kde4_automoc(${kwalletasync_SRCS})
 
 kde4_add_executable(kwalletasync ${kwalletasync_SRCS})
 
-target_link_libraries(kwalletasync  ${QT_AND_KDECORE_LIBS} kwalletclient )
+target_link_libraries(kwalletasync  ${KDE4_KDECORE_LIBS} kwalletclient )
 
 
 ########### next target ###############
@@ -29,7 +29,7 @@ kde4_automoc(${kwalletsync_SRCS})
 
 kde4_add_executable(kwalletsync ${kwalletsync_SRCS})
 
-target_link_libraries(kwalletsync  ${QT_AND_KDECORE_LIBS} kwalletclient )
+target_link_libraries(kwalletsync  ${KDE4_KDECORE_LIBS} kwalletclient )
 
 
 ########### next target ###############
@@ -43,7 +43,7 @@ kde4_automoc(${kwalletboth_SRCS})
 
 kde4_add_executable(kwalletboth ${kwalletboth_SRCS})
 
-target_link_libraries(kwalletboth  ${QT_AND_KDECORE_LIBS} kwalletclient )
+target_link_libraries(kwalletboth  ${KDE4_KDECORE_LIBS} kwalletclient )
 
 endif(KDE4_BUILD_TESTS)
 

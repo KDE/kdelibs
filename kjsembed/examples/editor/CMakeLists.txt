@@ -31,7 +31,7 @@ qt4_add_resources(editor_SRCS ${editor_QRC} )
 
 kde4_add_executable(editor ${editor_SRCS})
 
-target_link_libraries(editor  ${QT_AND_KDECORE_LIBS} kjsembed )
+target_link_libraries(editor  ${KDE4_KDECORE_LIBS} kjsembed )
 
 install_targets(/bin editor )
 

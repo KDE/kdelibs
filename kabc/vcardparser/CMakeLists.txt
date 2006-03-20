@@ -17,7 +17,7 @@ kde4_automoc(${testread_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testread ${testread_SRCS})
 
-target_link_libraries(testread  ${QT_AND_KDECORE_LIBS} kabc )
+target_link_libraries(testread  ${KDE4_KDECORE_LIBS} kabc )
 
 endif(KDE4_BUILD_TESTS)
 
@@ -32,7 +32,7 @@ kde4_automoc(${testwrite_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testwrite ${testwrite_SRCS})
 
-target_link_libraries(testwrite  ${QT_AND_KDECORE_LIBS} kabc )
+target_link_libraries(testwrite  ${KDE4_KDECORE_LIBS} kabc )
 
 endif(KDE4_BUILD_TESTS)
 
@@ -48,7 +48,7 @@ kde4_automoc(${testread2_SRCS})
 if(KDE4_BUILD_TESTS)
 kde4_add_executable(testread2 ${testread2_SRCS})
 
-target_link_libraries(testread2  ${QT_AND_KDECORE_LIBS} kabc )
+target_link_libraries(testread2  ${KDE4_KDECORE_LIBS} kabc )
 
 endif(KDE4_BUILD_TESTS)
 

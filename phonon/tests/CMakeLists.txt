@@ -10,7 +10,7 @@ set(audiodataoutputtest_SRCS audiodataoutputtest.cpp )
 
 kde4_automoc(${mediaobjecttest_SRCS} ${audiopathtest_SRCS} ${backendcapabilitiestest_SRCS} ${audiooutputtest_SRCS} ${audiodataoutputtest_SRCS})
 
-set(phononcoretests_LIBS ${QT_AND_KDECORE_LIBS} phononcore ${QT_QTTEST_LIBRARY})
+set(phononcoretests_LIBS ${KDE4_KDECORE_LIBS} phononcore ${QT_QTTEST_LIBRARY})
 
 if(KDE4_BUILD_TESTS)
   kde4_add_executable(mediaobjecttest ${mediaobjecttest_SRCS})

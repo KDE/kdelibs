@@ -95,7 +95,7 @@ kde4_add_dcop_skels(kabc_LIB_SRCS addresseehelper.h)
 
 kde4_add_library(kabc SHARED ${kabc_LIB_SRCS})
 
-target_link_libraries(kabc  ${QT_AND_KDECORE_LIBS} kio kresources )
+target_link_libraries(kabc  ${KDE4_KDECORE_LIBS} kio kresources )
 
 set_target_properties(kabc PROPERTIES VERSION 1.2.0 SOVERSION 1 )
 install_targets(${LIB_INSTALL_DIR} kabc )

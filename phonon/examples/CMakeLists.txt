@@ -13,7 +13,7 @@ if(KDE4_BUILD_TESTS)
 
 kde4_add_executable(crossfade ${crossfade_SRCS})
 
-target_link_libraries(crossfade  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(crossfade  ${KDE4_KDECORE_LIBS} )
 
 endif(KDE4_BUILD_TESTS)
 

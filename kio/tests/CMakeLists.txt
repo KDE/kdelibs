@@ -12,7 +12,7 @@ kde4_automoc(${ktradertest_SRCS})
 
 kde4_add_executable(ktradertest ${ktradertest_SRCS})
 
-target_link_libraries(ktradertest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(ktradertest  ${KDE4_KDECORE_LIBS} kio)
 
 install_targets(/bin ktradertest )
 
@@ -27,7 +27,7 @@ kde4_automoc(${ksycocatest_SRCS})
 
 kde4_add_executable(ksycocatest ${ksycocatest_SRCS})
 
-target_link_libraries(ksycocatest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(ksycocatest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -40,7 +40,7 @@ kde4_automoc(${getalltest_SRCS})
 
 kde4_add_executable(getalltest ${getalltest_SRCS})
 
-target_link_libraries(getalltest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(getalltest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -53,7 +53,7 @@ kde4_automoc(${kruntest_SRCS})
 
 kde4_add_executable(kruntest ${kruntest_SRCS})
 
-target_link_libraries(kruntest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kruntest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -66,7 +66,7 @@ kde4_automoc(${ktartest_SRCS})
 
 kde4_add_executable(ktartest ${ktartest_SRCS})
 
-target_link_libraries(ktartest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(ktartest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -79,7 +79,7 @@ kde4_automoc(${kziptest_SRCS})
 
 kde4_add_executable(kziptest ${kziptest_SRCS})
 
-target_link_libraries(kziptest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kziptest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -92,7 +92,7 @@ kde4_automoc(${kioslavetest_SRCS})
 
 kde4_add_executable(kioslavetest ${kioslavetest_SRCS})
 
-target_link_libraries(kioslavetest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kioslavetest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -105,7 +105,7 @@ kde4_automoc(${kdirwatchtest_SRCS})
 
 kde4_add_executable(kdirwatchtest ${kdirwatchtest_SRCS})
 
-target_link_libraries(kdirwatchtest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kdirwatchtest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -118,7 +118,7 @@ kde4_automoc(${speed_SRCS})
 
 kde4_add_executable(speed ${speed_SRCS})
 
-target_link_libraries(speed  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(speed  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -131,7 +131,7 @@ kde4_automoc(${kurifiltertest_SRCS})
 
 kde4_add_executable(kurifiltertest ${kurifiltertest_SRCS})
 
-target_link_libraries(kurifiltertest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kurifiltertest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -144,7 +144,7 @@ kde4_automoc(${kdefaultprogresstest_SRCS})
 
 kde4_add_executable(kdefaultprogresstest ${kdefaultprogresstest_SRCS})
 
-target_link_libraries(kdefaultprogresstest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kdefaultprogresstest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -157,7 +157,7 @@ kde4_automoc(${kmimemagictest_SRCS})
 
 kde4_add_executable(kmimemagictest ${kmimemagictest_SRCS})
 
-target_link_libraries(kmimemagictest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kmimemagictest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -170,7 +170,7 @@ kde4_automoc(${kiopassdlgtest_SRCS})
 
 kde4_add_executable(kiopassdlgtest ${kiopassdlgtest_SRCS})
 
-target_link_libraries(kiopassdlgtest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kiopassdlgtest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -183,7 +183,7 @@ kde4_automoc(${kscantest_SRCS})
 
 kde4_add_executable(kscantest ${kscantest_SRCS})
 
-target_link_libraries(kscantest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kscantest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -196,7 +196,7 @@ kde4_automoc(${kdirlistertest_SRCS})
 
 kde4_add_executable(kdirlistertest ${kdirlistertest_SRCS})
 
-target_link_libraries(kdirlistertest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kdirlistertest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -209,7 +209,7 @@ kde4_automoc(${previewtest_SRCS})
 
 kde4_add_executable(previewtest ${previewtest_SRCS})
 
-target_link_libraries(previewtest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(previewtest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -222,7 +222,7 @@ kde4_automoc(${kionetrctest_SRCS})
 
 kde4_add_executable(kionetrctest ${kionetrctest_SRCS})
 
-target_link_libraries(kionetrctest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kionetrctest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -235,7 +235,7 @@ kde4_automoc(${kdcopcheck_SRCS})
 
 kde4_add_executable(kdcopcheck ${kdcopcheck_SRCS})
 
-target_link_libraries(kdcopcheck  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kdcopcheck  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -248,7 +248,7 @@ kde4_automoc(${metatest_SRCS})
 
 kde4_add_executable(metatest ${metatest_SRCS})
 
-target_link_libraries(metatest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(metatest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -261,7 +261,7 @@ kde4_automoc(${kmimefromext_SRCS})
 
 kde4_add_executable(kmimefromext ${kmimefromext_SRCS})
 
-target_link_libraries(kmimefromext  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kmimefromext  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -274,7 +274,7 @@ kde4_automoc(${kpropsdlgtest_SRCS})
 
 kde4_add_executable(kpropsdlgtest ${kpropsdlgtest_SRCS})
 
-target_link_libraries(kpropsdlgtest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kpropsdlgtest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -287,7 +287,7 @@ kde4_automoc(${kmfitest_SRCS})
 
 kde4_add_executable(kmfitest ${kmfitest_SRCS})
 
-target_link_libraries(kmfitest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kmfitest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -300,7 +300,7 @@ kde4_automoc(${dataprotocoltest_SRCS})
 
 kde4_add_executable(dataprotocoltest ${dataprotocoltest_SRCS})
 
-target_link_libraries(dataprotocoltest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(dataprotocoltest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -312,7 +312,7 @@ kprotocolinfotest.cpp
 kde4_automoc(${kprotocolinfotest_SRCS})
 kde4_add_executable(kprotocolinfotest ${kprotocolinfotest_SRCS})
 
-target_link_libraries(kprotocolinfotest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kprotocolinfotest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -325,7 +325,7 @@ kde4_automoc(${ksycocaupdatetest_SRCS})
 
 kde4_add_executable(ksycocaupdatetest ${ksycocaupdatetest_SRCS})
 
-target_link_libraries(ksycocaupdatetest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(ksycocaupdatetest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -338,7 +338,7 @@ kde4_automoc(${netaccesstest_SRCS})
 
 kde4_add_executable(netaccesstest ${netaccesstest_SRCS})
 
-target_link_libraries(netaccesstest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(netaccesstest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -351,7 +351,7 @@ kde4_automoc(${jobtest_SRCS})
 
 kde4_add_executable(jobtest ${jobtest_SRCS})
 
-target_link_libraries(jobtest  ${QT_AND_KDECORE_LIBS} kio ${QT_QTTEST_LIBRARY} )
+target_link_libraries(jobtest  ${KDE4_KDECORE_LIBS} kio ${QT_QTTEST_LIBRARY} )
 
 
 ########### next target ###############
@@ -364,7 +364,7 @@ kde4_automoc(${kurlcompletiontest_SRCS})
 
 kde4_add_executable(kurlcompletiontest ${kurlcompletiontest_SRCS})
 
-target_link_libraries(kurlcompletiontest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kurlcompletiontest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -377,7 +377,7 @@ kde4_automoc(${kmimetypetest_SRCS})
 
 kde4_add_executable(kmimetypetest ${kmimetypetest_SRCS})
 
-target_link_libraries(kmimetypetest  ${QT_AND_KDECORE_LIBS} kio ${QT_QTTEST_LIBRARY} )
+target_link_libraries(kmimetypetest  ${KDE4_KDECORE_LIBS} kio ${QT_QTTEST_LIBRARY} )
 
 
 ########### next target ###############
@@ -390,7 +390,7 @@ kde4_automoc(${kbookmarktest_SRCS})
 
 kde4_add_executable(kbookmarktest ${kbookmarktest_SRCS})
 
-target_link_libraries(kbookmarktest  ${QT_AND_KDECORE_LIBS} kio ${QT_QTTEST_LIBRARY} )
+target_link_libraries(kbookmarktest  ${KDE4_KDECORE_LIBS} kio ${QT_QTTEST_LIBRARY} )
 
 
 ########### next target ###############
@@ -403,7 +403,7 @@ kde4_automoc(${kacltest_SRCS})
 
 kde4_add_executable(kacltest ${kacltest_SRCS})
 
-target_link_libraries(kacltest  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kacltest  ${KDE4_KDECORE_LIBS} kio)
 
 
 ########### next target ###############
@@ -416,7 +416,7 @@ kde4_automoc(${kdirwatchtest_gui_SRCS})
 
 kde4_add_executable(kdirwatchtest_gui ${kdirwatchtest_gui_SRCS})
 
-target_link_libraries(kdirwatchtest_gui  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kdirwatchtest_gui  ${KDE4_KDECORE_LIBS} kio)
 
 
 endif(KDE4_BUILD_TESTS)

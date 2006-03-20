@@ -16,7 +16,7 @@ kde4_automoc(${kdeinit_SRCS})
 
 kde4_add_executable(kdeinit ${kdeinit_SRCS})
 
-target_link_libraries(kdeinit  ${QT_AND_KDECORE_LIBS} kparts )
+target_link_libraries(kdeinit  ${KDE4_KDECORE_LIBS} kparts )
 
 install_targets(/bin kdeinit )
 
@@ -27,7 +27,7 @@ set(kdeinit_wrapper_SRCS wrapper.c )
 
 kde4_add_executable(kdeinit_wrapper ${kdeinit_wrapper_SRCS})
 
-target_link_libraries(kdeinit_wrapper  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdeinit_wrapper  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin kdeinit_wrapper )
 
@@ -38,7 +38,7 @@ set(kshell_SRCS shell.c )
 
 kde4_add_executable(kshell ${kshell_SRCS})
 
-target_link_libraries(kshell  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kshell  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin kshell )
 
@@ -49,7 +49,7 @@ set(kdeinit_shutdown_SRCS wrapper.c )
 
 kde4_add_executable(kdeinit_shutdown ${kdeinit_shutdown_SRCS})
 
-target_link_libraries(kdeinit_shutdown  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdeinit_shutdown  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin kdeinit_shutdown )
 
@@ -60,7 +60,7 @@ set(kwrapper_SRCS kwrapper.c )
 
 kde4_add_executable(kwrapper ${kwrapper_SRCS})
 
-target_link_libraries(kwrapper  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kwrapper  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin kwrapper )
 
@@ -72,7 +72,7 @@ set(lnusertemp_SRCS lnusertemp.c )
 
 kde4_add_executable(lnusertemp ${lnusertemp_SRCS})
 
-target_link_libraries(lnusertemp  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(lnusertemp  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin lnusertemp )
 
@@ -92,7 +92,7 @@ kde4_automoc(${kioslave_SRCS})
 
 kde4_add_executable(kioslave ${kioslave_SRCS})
 
-target_link_libraries(kioslave  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kioslave  ${KDE4_KDECORE_LIBS} kio )
 
 install_targets(/bin kioslave )
 
@@ -106,9 +106,9 @@ kde4_automoc(${kstartupconfig_SRCS})
 kde4_add_executable(kstartupconfig ${kstartupconfig_SRCS})
 
 if(WIN32)
-target_link_libraries(kstartupconfig  ${QT_AND_KDECORE_LIBS})
+target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS})
 else(WIN32)
-target_link_libraries(kstartupconfig  ${QT_AND_KDECORE_LIBS} kdefakes)
+target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS} kdefakes)
 endif(WIN32)
 
 install_targets(/bin kstartupconfig )
@@ -122,7 +122,7 @@ kde4_automoc(${kdostartupconfig_SRCS})
 
 kde4_add_executable(kdostartupconfig ${kdostartupconfig_SRCS})
 
-target_link_libraries(kdostartupconfig  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdostartupconfig  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin kdostartupconfig )
 
@@ -139,7 +139,7 @@ kde4_automoc(${klauncher_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( klauncher ${klauncher_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_klauncher  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kdeinit_klauncher  ${KDE4_KDECORE_LIBS} kio )
 
 install_targets(${LIB_INSTALL_DIR} kdeinit_klauncher )
 

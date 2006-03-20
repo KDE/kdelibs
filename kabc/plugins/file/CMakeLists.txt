@@ -14,7 +14,7 @@ resourcefileplugin.cpp
 kde4_automoc(${kabc_file_LIB_SRCS})
 
 kde4_add_library(kabc_file SHARED ${kabc_file_LIB_SRCS})
-target_link_libraries(kabc_file  ${QT_AND_KDECORE_LIBS} kabc)
+target_link_libraries(kabc_file  ${KDE4_KDECORE_LIBS} kabc)
 
 kde4_install_libtool_file(${LIB_INSTALL_DIR} kabc_file )
 install_targets(${LIB_INSTALL_DIR} kabc_file )
@@ -28,7 +28,7 @@ kde4_automoc(${kabc_file_PART_SRCS})
 
 kde4_add_plugin(kabc_file ${kabc_file_PART_SRCS})
 
-target_link_libraries(kabc_file  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kabc_file  ${KDE4_KDECORE_LIBS} )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_file )
 install_targets(${PLUGIN_INSTALL_DIR} kabc_file )

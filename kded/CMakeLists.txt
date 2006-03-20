@@ -13,7 +13,7 @@ kde4_automoc(${kded_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kded ${kded_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kded  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kdeinit_kded  ${KDE4_KDECORE_LIBS} kio )
 
 install_targets(${LIB_INSTALL_DIR} kdeinit_kded )
 
@@ -37,7 +37,7 @@ kde4_automoc(${kbuildsycoca_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kbuildsycoca ${kbuildsycoca_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kbuildsycoca  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kdeinit_kbuildsycoca  ${KDE4_KDECORE_LIBS} kio )
 
 install_targets(${LIB_INSTALL_DIR} kdeinit_kbuildsycoca )
 
@@ -52,7 +52,7 @@ kde4_automoc(${kdontchangethehostname_SRCS})
 
 kde4_add_executable(kdontchangethehostname ${kdontchangethehostname_SRCS})
 
-target_link_libraries(kdontchangethehostname  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kdontchangethehostname  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin kdontchangethehostname )
 
@@ -65,7 +65,7 @@ kde4_automoc(${kde-menu_SRCS})
 
 kde4_add_executable(kde-menu ${kde-menu_SRCS})
 
-target_link_libraries(kde-menu  ${QT_AND_KDECORE_LIBS} kio)
+target_link_libraries(kde-menu  ${KDE4_KDECORE_LIBS} kio)
 
 install_targets(/bin kde-menu )
 

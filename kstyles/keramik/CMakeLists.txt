@@ -6,34 +6,6 @@ add_definitions(-DQT_PLUGIN)
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
-
-########### next target ###############
-
-set(keramik_PART_SRCS
-   keramik.cpp
-   pixmaploader.cpp
-   gradients.cpp
-  colorutil.cpp
-)
-
-# this actually shouldn't be required, maybe current cmake cvs handles it correctly, Alex
-#set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
-
-if (WIN32)
-   set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
-   add_definitions(-DKDEFX_EXPORT=KDE_EXPORT)
-endif (WIN32)
-
-kde4_automoc(${keramik_PART_SRCS})
-
-kde4_add_plugin(keramik ${keramik_PART_SRCS})
-
-target_link_libraries(keramik  ${QT_AND_KDECORE_LIBS} kdefx )
-
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/styles keramik )
-install_targets(${PLUGIN_INSTALL_DIR}/plugins/styles/ keramik )
-
-
 ########### next target ###############
 
 set(genembed_SRCS genembed.cpp )
@@ -42,7 +14,7 @@ kde4_automoc(${genembed_SRCS})
 
 kde4_add_executable(genembed ${genembed_SRCS})
 
-target_link_libraries(genembed  ${QT_AND_KDECORE_LIBS} kdefx )
+target_link_libraries(genembed  ${KDE4_KDECORE_LIBS} kdefx )
 
 #pixmaps.keramik keramikrc.h: genembed
 #	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\
@@ -65,6 +37,33 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h
   ARGS --file ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
   DEPENDS genembed ${keramikPics}
 )
+
+########### next target ###############
+
+set(keramik_PART_SRCS
+   keramik.cpp
+   pixmaploader.cpp
+   gradients.cpp
+  colorutil.cpp
+)
+
+# this actually shouldn't be required, maybe current cmake cvs handles it correctly, Alex
+#set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
+
+if (WIN32)
+   set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
+   add_definitions(-DKDEFX_EXPORT=KDE_EXPORT)
+endif (WIN32)
+
+kde4_automoc(${keramik_PART_SRCS})
+
+kde4_add_plugin(keramik ${keramik_PART_SRCS})
+
+target_link_libraries(keramik  ${KDE4_KDECORE_LIBS} kdefx )
+
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/styles keramik )
+install_targets(${PLUGIN_INSTALL_DIR}/plugins/styles/ keramik )
+
 
 ########### install files ###############
 

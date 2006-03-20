@@ -40,7 +40,7 @@ kde4_add_dcop_skels(kded_kdeprintd_PART_SRCS ${kded_kdeprintd_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
 
-target_link_libraries(kded_kdeprintd  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kded_kdeprintd  ${KDE4_KDECORE_LIBS} kio )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_kdeprintd )
 install_targets(${PLUGIN_INSTALL_DIR} kded_kdeprintd )
@@ -110,7 +110,7 @@ kde4_add_dcop_skels(kdeprint_LIB_SRCS ${kdeprint_DCOP_SKEL_SRCS})
 
 kde4_add_library(kdeprint SHARED ${kdeprint_LIB_SRCS})
 
-target_link_libraries(kdeprint  ${QT_AND_KDECORE_LIBS} kparts )
+target_link_libraries(kdeprint  ${KDE4_KDECORE_LIBS} kparts )
 
 set_target_properties(kdeprint PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${LIB_INSTALL_DIR} kdeprint )

@@ -15,7 +15,7 @@ kde4_automoc(${kfindtest_SRCS})
 
 kde4_add_executable(kfindtest ${kfindtest_SRCS})
 
-target_link_libraries(kfindtest  ${QT_AND_KDECORE_LIBS} kutils )
+target_link_libraries(kfindtest  ${KDE4_KDECORE_LIBS} kutils )
 
 
 ########### next target ###############
@@ -28,7 +28,7 @@ kde4_automoc(${kreplacetest_SRCS})
 
 kde4_add_executable(kreplacetest ${kreplacetest_SRCS})
 
-target_link_libraries(kreplacetest  ${QT_AND_KDECORE_LIBS} kutils )
+target_link_libraries(kreplacetest  ${KDE4_KDECORE_LIBS} kutils )
 
 endif(KDE4_BUILD_TESTS)
 

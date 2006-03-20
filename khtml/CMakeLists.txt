@@ -310,7 +310,7 @@ kde4_add_dcop_skels(khtml_LIB_SRCS ${khtml_DCOP_SKEL_SRCS})
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml  ${QT_AND_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
+target_link_libraries(khtml  ${KDE4_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
 set_target_properties(khtml PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${LIB_INSTALL_DIR} khtml )
@@ -331,7 +331,7 @@ kde4_automoc(${khtmlpart_PART_SRCS})
 
 kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 
-target_link_libraries(khtmlpart  ${QT_AND_KDECORE_LIBS} khtml )
+target_link_libraries(khtmlpart  ${KDE4_KDECORE_LIBS} khtml )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/ khtmlpart )
 install_targets(${PLUGIN_INSTALL_DIR} khtmlpart )
@@ -355,7 +355,7 @@ kde4_add_plugin(khtmlimagepart ${khtmlimagepart_PART_SRCS})
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/ khtmlimagepart  )
 
-target_link_libraries(khtmlimagepart  ${QT_AND_KDECORE_LIBS} khtml)
+target_link_libraries(khtmlimagepart  ${KDE4_KDECORE_LIBS} khtml)
 
 install_targets(${LIB_INSTALL_DIR}/kde4 khtmlimagepart )
 
@@ -373,7 +373,7 @@ kde4_automoc(${testkhtml_SRCS})
 
 kde4_add_executable(testkhtml ${testkhtml_SRCS})
 
-target_link_libraries(testkhtml  ${QT_AND_KDECORE_LIBS} khtml )
+target_link_libraries(testkhtml  ${KDE4_KDECORE_LIBS} khtml )
 
 ########### next target ###############
 
@@ -386,7 +386,7 @@ kde4_automoc(${testkhtml_static_SRCS})
 
 kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS} )
 
-target_link_libraries(testkhtml_static  ${QT_AND_KDECORE_LIBS} khtml )
+target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml )
 
 ########### next target ###############
 
@@ -400,7 +400,7 @@ kde4_automoc(${testregression_SRCS})
 ## can't find private/qfontengine_p.h
 #kde4_add_executable(testregression ${testregression_SRCS})
 
-#target_link_libraries(testregression  ${QT_AND_KDECORE_LIBS} khtml)
+#target_link_libraries(testregression  ${KDE4_KDECORE_LIBS} khtml)
 
 endif(KDE4_BUILD_TESTS)
 

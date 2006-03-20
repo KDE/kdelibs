@@ -82,9 +82,9 @@ kde4_automoc(${kjs_LIB_SRCS})
 kde4_add_library(kjs SHARED ${kjs_LIB_SRCS})
 
 if(UNIX)
-   target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS} m )
+   target_link_libraries(kjs  ${KDE4_KDECORE_LIBS} m )
 else(UNIX)
-   target_link_libraries(kjs  ${QT_AND_KDECORE_LIBS})
+   target_link_libraries(kjs  ${KDE4_KDECORE_LIBS})
 endif(UNIX)
 
 if(PCRE_FOUND)
@@ -107,7 +107,7 @@ kde4_automoc(${testkjs_static_SRCS})
 
 kde4_add_executable(testkjs_static ${testkjs_static_SRCS})
 
-target_link_libraries(testkjs_static  ${QT_AND_KDECORE_LIBS} kjs)
+target_link_libraries(testkjs_static  ${KDE4_KDECORE_LIBS} kjs)
 
 ########### next target ###############
 
@@ -119,7 +119,7 @@ kde4_automoc(${testkjs_SRCS})
 
 kde4_add_executable(testkjs ${testkjs_SRCS})
 
-target_link_libraries(testkjs  ${QT_AND_KDECORE_LIBS} kjs )
+target_link_libraries(testkjs  ${KDE4_KDECORE_LIBS} kjs )
 
 endif(KDE4_BUILD_TESTS)
 

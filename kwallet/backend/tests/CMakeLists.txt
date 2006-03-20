@@ -15,7 +15,7 @@ kde4_automoc(${backendtest_SRCS})
 
 kde4_add_executable(backendtest ${backendtest_SRCS})
 
-target_link_libraries(backendtest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(backendtest  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -28,7 +28,7 @@ kde4_automoc(${testbf_SRCS})
 
 kde4_add_executable(testbf ${testbf_SRCS})
 
-target_link_libraries(testbf  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(testbf  ${KDE4_KDECORE_LIBS} )
 
 
 ########### next target ###############
@@ -41,7 +41,7 @@ kde4_automoc(${testsha_SRCS})
 
 kde4_add_executable(testsha ${testsha_SRCS})
 
-target_link_libraries(testsha  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(testsha  ${KDE4_KDECORE_LIBS} )
 
 endif(KDE4_BUILD_TESTS)
 

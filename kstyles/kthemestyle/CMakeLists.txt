@@ -19,7 +19,7 @@ kde4_automoc(${kthemestyle_PART_SRCS})
 
 kde4_add_plugin(kthemestyle ${kthemestyle_PART_SRCS})
 
-target_link_libraries(kthemestyle  ${QT_AND_KDECORE_LIBS} kdefx kdecore )
+target_link_libraries(kthemestyle  ${KDE4_KDECORE_LIBS} kdefx kdecore )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kthemestyle )
 install_targets(${PLUGIN_INSTALL_DIR} kthemestyle )

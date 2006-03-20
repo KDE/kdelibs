@@ -16,7 +16,7 @@ kde4_automoc(${kpartstest_SRCS})
 
 kde4_add_executable(kpartstest ${kpartstest_SRCS})
 
-target_link_libraries(kpartstest  ${QT_AND_KDECORE_LIBS} kparts )
+target_link_libraries(kpartstest  ${KDE4_KDECORE_LIBS} kparts )
 
 
 ########### next target ###############
@@ -30,7 +30,7 @@ kde4_automoc(${normalktmtest_SRCS})
 
 kde4_add_executable(normalktmtest ${normalktmtest_SRCS})
 
-target_link_libraries(normalktmtest  ${QT_AND_KDECORE_LIBS} kparts )
+target_link_libraries(normalktmtest  ${KDE4_KDECORE_LIBS} kparts )
 
 
 ########### next target ###############
@@ -43,7 +43,7 @@ kde4_automoc(${ghostviewtest_SRCS})
 
 kde4_add_executable(ghostviewtest ${ghostviewtest_SRCS})
 
-target_link_libraries(ghostviewtest  ${QT_AND_KDECORE_LIBS} kparts )
+target_link_libraries(ghostviewtest  ${KDE4_KDECORE_LIBS} kparts )
 
 
 ########### next target ###############
@@ -54,7 +54,7 @@ kde4_automoc(${spellcheckplugin_PART_SRCS})
 
 kde4_add_plugin(spellcheckplugin WITH_PREFIX ${spellcheckplugin_PART_SRCS})
 
-target_link_libraries(spellcheckplugin  ${QT_AND_KDECORE_LIBS} kparts )
+target_link_libraries(spellcheckplugin  ${KDE4_KDECORE_LIBS} kparts )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} spellcheckplugin )
 install_targets(${PLUGIN_INSTALL_DIR} spellcheckplugin )
@@ -68,7 +68,7 @@ kde4_automoc(${notepadpart_PART_SRCS})
 
 kde4_add_plugin(notepadpart WITH_PREFIX ${notepadpart_PART_SRCS})
 
-target_link_libraries(notepadpart  ${QT_AND_KDECORE_LIBS} kparts )
+target_link_libraries(notepadpart  ${KDE4_KDECORE_LIBS} kparts )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} notepadpart )
 install_targets(${PLUGIN_INSTALL_DIR} notepadpart )

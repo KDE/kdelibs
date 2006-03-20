@@ -25,7 +25,7 @@ kde4_add_dcop_skels(kded_kwalletd_PART_SRCS ${kded_kwalletd_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kwalletd ${kded_kwalletd_PART_SRCS})
 
-target_link_libraries(kded_kwalletd  ${QT_AND_KDECORE_LIBS} kio kwalletbackend kwalletclient )
+target_link_libraries(kded_kwalletd  ${KDE4_KDECORE_LIBS} kio kwalletbackend kwalletclient )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_kwalletd )
 install_targets(${PLUGIN_INSTALL_DIR} kded_kwalletd )

@@ -11,7 +11,7 @@ kde4_automoc(${phononifacesui_LIB_SRCS})
 
 kde4_add_library(phononifacesui SHARED ${phononifacesui_LIB_SRCS})
 
-target_link_libraries(phononifacesui  ${QT_AND_KDECORE_LIBS} phononifaces )
+target_link_libraries(phononifacesui  ${KDE4_KDECORE_LIBS} phononifaces )
 
 set_target_properties(phononifacesui PROPERTIES VERSION 0.0.0 SOVERSION 0 )
 install_targets(${LIB_INSTALL_DIR} phononifacesui )

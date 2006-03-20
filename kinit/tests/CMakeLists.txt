@@ -15,7 +15,7 @@ kde4_automoc(${klaunchertest_SRCS})
 
 kde4_add_executable(klaunchertest ${klaunchertest_SRCS})
 
-target_link_libraries(klaunchertest  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(klaunchertest  ${KDE4_KDECORE_LIBS} kio )
 
 endif(KDE4_BUILD_TESTS)
 

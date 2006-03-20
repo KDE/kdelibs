@@ -49,7 +49,7 @@ kde4_automoc(${kdeprint_cups_PART_SRCS})
 
 kde4_add_plugin(kdeprint_cups ${kdeprint_cups_PART_SRCS})
 
-target_link_libraries(kdeprint_cups  ${QT_AND_KDECORE_LIBS} kdeprint_management kio ${KDEFAKES_LIB} ${CUPS_LIBRARIES} )
+target_link_libraries(kdeprint_cups  ${KDE4_KDECORE_LIBS} kdeprint_management kio ${KDEFAKES_LIB} ${CUPS_LIBRARIES} )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_cups )
 install_targets(${PLUGIN_INSTALL_DIR} kdeprint_cups )
@@ -66,7 +66,7 @@ kde4_automoc(${make_driver_db_cups_SRCS})
 
 kde4_add_executable(make_driver_db_cups ${make_driver_db_cups_SRCS})
 
-target_link_libraries(make_driver_db_cups  ${QT_AND_KDECORE_LIBS} ${KDEFAKES_LIB} )
+target_link_libraries(make_driver_db_cups  ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} )
 
 install_targets(/bin make_driver_db_cups )
 
@@ -81,7 +81,7 @@ kde4_automoc(${cupsdoprint_SRCS})
 
 kde4_add_executable(cupsdoprint ${cupsdoprint_SRCS})
 
-target_link_libraries(cupsdoprint  ${QT_AND_KDECORE_LIBS} ${KDEFAKES_LIB} ${CUPS_LIBRARIES})
+target_link_libraries(cupsdoprint  ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} ${CUPS_LIBRARIES})
 
 install_targets(/bin cupsdoprint )
 

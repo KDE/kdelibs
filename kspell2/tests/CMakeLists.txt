@@ -14,7 +14,7 @@ kde4_automoc(${test_SRCS})
 
 kde4_add_executable(test ${test_SRCS})
 
-target_link_libraries(test  ${QT_AND_KDECORE_LIBS} kspell2 )
+target_link_libraries(test  ${KDE4_KDECORE_LIBS} kspell2 )
 
 
 ########### next target ###############
@@ -27,7 +27,7 @@ kde4_automoc(${test_filter_SRCS})
 
 kde4_add_executable(test_filter ${test_filter_SRCS})
 
-target_link_libraries(test_filter  ${QT_AND_KDECORE_LIBS} kspell2 )
+target_link_libraries(test_filter  ${KDE4_KDECORE_LIBS} kspell2 )
 
 
 ########### next target ###############
@@ -40,7 +40,7 @@ kde4_automoc(${backgroundtest_SRCS})
 
 kde4_add_executable(backgroundtest ${backgroundtest_SRCS})
 
-target_link_libraries(backgroundtest  ${QT_AND_KDECORE_LIBS} kspell2 )
+target_link_libraries(backgroundtest  ${KDE4_KDECORE_LIBS} kspell2 )
 
 
 ########### next target ###############
@@ -53,7 +53,7 @@ kde4_automoc(${test_dialog_SRCS})
 
 kde4_add_executable(test_dialog ${test_dialog_SRCS})
 
-target_link_libraries(test_dialog  ${QT_AND_KDECORE_LIBS} kspell2 )
+target_link_libraries(test_dialog  ${KDE4_KDECORE_LIBS} kspell2 )
 
 
 ########### next target ###############
@@ -70,7 +70,7 @@ message(STATUS "skipping kabc/tests test_highlighter")
 
 #kde4_add_executable(test_highlighter ${test_highlighter_SRCS})
 #
-#target_link_libraries(test_highlighter  ${QT_AND_KDECORE_LIBS} kspell2base )
+#target_link_libraries(test_highlighter  ${KDE4_KDECORE_LIBS} kspell2base )
 
 
 ########### next target ###############
@@ -91,7 +91,7 @@ message(STATUS "skipping kabc/tests test_configdialog")
 #
 #kde4_add_executable(test_configdialog ${test_configdialog_SRCS})
 #
-#target_link_libraries(test_configdialog  ${QT_AND_KDECORE_LIBS} kspell2base )
+#target_link_libraries(test_configdialog  ${KDE4_KDECORE_LIBS} kspell2base )
 
 endif(KDE4_BUILD_TESTS)
 

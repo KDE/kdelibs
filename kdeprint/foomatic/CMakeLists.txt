@@ -15,7 +15,7 @@ kde4_automoc(${kdeprint_foomatic_PART_SRCS})
 
 kde4_add_plugin(kdeprint_foomatic ${kdeprint_foomatic_PART_SRCS})
 
-target_link_libraries(kdeprint_foomatic  ${QT_AND_KDECORE_LIBS} kdeprint_management )
+target_link_libraries(kdeprint_foomatic  ${KDE4_KDECORE_LIBS} kdeprint_management )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_foomatic )
 install_targets(${PLUGIN_INSTALL_DIR} kdeprint_foomatic )
@@ -31,7 +31,7 @@ kde4_automoc(${make_driver_db_foomatic_SRCS})
 
 kde4_add_executable(make_driver_db_foomatic ${make_driver_db_foomatic_SRCS})
 
-target_link_libraries(make_driver_db_foomatic  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(make_driver_db_foomatic  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin make_driver_db_foomatic )
 

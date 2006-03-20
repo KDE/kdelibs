@@ -15,7 +15,7 @@ kde4_automoc(${kio_ftp_PART_SRCS})
 
 kde4_add_plugin(kio_ftp ${kio_ftp_PART_SRCS})
 
-target_link_libraries(kio_ftp  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kio_ftp  ${KDE4_KDECORE_LIBS} kio )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_ftp )
 install_targets(${PLUGIN_INSTALL_DIR} kio_ftp )

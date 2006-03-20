@@ -22,7 +22,7 @@ kde4_add_dcop_skels(kded_proxyscout_PART_SRCS ${kded_proxyscout_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 
-target_link_libraries(kded_proxyscout  ${QT_AND_KDECORE_LIBS} kio kjs )
+target_link_libraries(kded_proxyscout  ${KDE4_KDECORE_LIBS} kio kjs )
 
 # this needs -lresolv e.g on Slackware, but not on FreeBSD
 if (HAVE_RESOLV_LIBRARY)
@@ -41,7 +41,7 @@ kde4_automoc(${kpac_dhcp_helper_SRCS})
 
 kde4_add_executable(kpac_dhcp_helper ${kpac_dhcp_helper_SRCS})
 
-target_link_libraries(kpac_dhcp_helper  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kpac_dhcp_helper  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin kpac_dhcp_helper )
 

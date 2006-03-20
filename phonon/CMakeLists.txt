@@ -38,7 +38,7 @@ kde4_add_dcop_skels(phononcore_LIB_SRCS factory.h mixeriface.h )
 
 kde4_add_library(phononcore SHARED ${phononcore_LIB_SRCS})
 
-target_link_libraries(phononcore  ${QT_AND_KDECORE_LIBS} kio phononifaces )
+target_link_libraries(phononcore  ${KDE4_KDECORE_LIBS} kio phononifaces )
 
 set_target_properties(phononcore PROPERTIES VERSION 0.0.0 SOVERSION 0 )
 install_targets(${LIB_INSTALL_DIR} phononcore )

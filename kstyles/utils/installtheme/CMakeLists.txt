@@ -11,7 +11,7 @@ kde4_automoc(${kinstalltheme_SRCS})
 
 kde4_add_executable(kinstalltheme ${kinstalltheme_SRCS})
 
-target_link_libraries(kinstalltheme  ${QT_AND_KDECORE_LIBS} kdeui )
+target_link_libraries(kinstalltheme  ${KDE4_KDECORE_LIBS} kdeui )
 
 install_targets(/bin kinstalltheme )
 

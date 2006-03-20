@@ -13,7 +13,7 @@ kde4_add_plugin(phonon_fakeui ${phonon_fakeui_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} phonon_fakeui )
 
-target_link_libraries(phonon_fakeui  ${QT_AND_KDECORE_LIBS} phononifacesui kio )
+target_link_libraries(phonon_fakeui  ${KDE4_KDECORE_LIBS} phononifacesui kio )
 
 install_targets(${LIB_INSTALL_DIR}/kde4 phonon_fakeui )
 

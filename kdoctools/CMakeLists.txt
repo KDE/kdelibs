@@ -23,7 +23,7 @@ kde4_automoc(${kio_help_PART_SRCS})
 
 kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
-target_link_libraries(kio_help  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} )
+target_link_libraries(kio_help  ${KDE4_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}  kio_help )
 install_targets(${PLUGIN_INSTALL_DIR} kio_help )
@@ -37,7 +37,7 @@ kde4_automoc(${kio_ghelp_PART_SRCS})
 
 kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 
-target_link_libraries(kio_ghelp  ${QT_AND_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} )
+target_link_libraries(kio_ghelp  ${KDE4_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_ghelp )
 install_targets(${PLUGIN_INSTALL_DIR} kio_ghelp )
@@ -51,7 +51,7 @@ kde4_automoc(${meinproc_SRCS})
 
 kde4_add_executable(meinproc ${meinproc_SRCS})
 
-target_link_libraries(meinproc kio ${QT_AND_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
+target_link_libraries(meinproc kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
 set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
 install_targets(/bin meinproc )
@@ -69,7 +69,7 @@ kde4_automoc(${genshortcutents_SRCS})
 
 kde4_add_executable(genshortcutents ${genshortcutents_SRCS})
 
-target_link_libraries(genshortcutents  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(genshortcutents  ${KDE4_KDECORE_LIBS} )
 
 
 ########### install files ###############

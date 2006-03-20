@@ -286,7 +286,7 @@ macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  ${CMAK
 
 kde4_add_executable(kde-config ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
 
-target_link_libraries(kde-config ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kde-config ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin kde-config)
 

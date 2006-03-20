@@ -30,7 +30,7 @@ kde4_add_dcop_skels(knotify_KDEINIT_SRCS ${knotify_DCOP_SKEL_SRCS})
 
 kde4_add_kdeinit_executable( knotify ${knotify_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_knotify  ${QT_AND_KDECORE_LIBS} kdeui )
+target_link_libraries(kdeinit_knotify  ${KDE4_KDECORE_LIBS} kdeui )
 if (AKODE_FOUND)
   target_link_libraries(kdeinit_knotify  ${AKODE_LIBRARIES} )
 endif (AKODE_FOUND)

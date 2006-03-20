@@ -29,7 +29,7 @@ kde4_add_dcop_stubs(kresources_LIB_SRCS ${kresources_DCOP_STUB_SRCS})
 
 kde4_add_library(kresources SHARED ${kresources_LIB_SRCS})
 
-target_link_libraries(kresources  ${QT_AND_KDECORE_LIBS} kdeui kio )
+target_link_libraries(kresources  ${KDE4_KDECORE_LIBS} kdeui kio )
 
 set_target_properties(kresources PROPERTIES VERSION 1.2.0 SOVERSION 1 )
 install_targets(${LIB_INSTALL_DIR} kresources )
@@ -43,7 +43,7 @@ kde4_automoc(${kcm_kresources_PART_SRCS})
 
 kde4_add_plugin(kcm_kresources ${kcm_kresources_PART_SRCS})
 
-target_link_libraries(kcm_kresources  ${QT_AND_KDECORE_LIBS} kresources )
+target_link_libraries(kcm_kresources  ${KDE4_KDECORE_LIBS} kresources )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kcm_kresources )
 install_targets(${PLUGIN_INSTALL_DIR} kcm_kresources )
@@ -58,7 +58,7 @@ kde4_automoc(${testresources_SRCS})
 
 kde4_add_executable(testresources ${testresources_SRCS})
 
-target_link_libraries(testresources  ${QT_AND_KDECORE_LIBS} kresources)
+target_link_libraries(testresources  ${KDE4_KDECORE_LIBS} kresources)
 
 endif(KDE4_BUILD_TESTS)
 

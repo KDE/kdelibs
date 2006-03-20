@@ -22,7 +22,7 @@ qt4_add_resources(console_SRCS console.qrc )
 
 kde4_add_executable(console ${console_SRCS})
 
-target_link_libraries(console  ${QT_AND_KDECORE_LIBS} kjsembed )
+target_link_libraries(console  ${KDE4_KDECORE_LIBS} kjsembed )
 
 install_targets(/bin console )
 

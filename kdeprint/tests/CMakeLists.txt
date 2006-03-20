@@ -17,7 +17,7 @@ kde4_automoc(${helpviewer_SRCS})
 
 kde4_add_executable(helpviewer ${helpviewer_SRCS})
 
-target_link_libraries(helpviewer  ${QT_AND_KDECORE_LIBS} kdeprint )
+target_link_libraries(helpviewer  ${KDE4_KDECORE_LIBS} kdeprint )
 
 
 ########### next target ###############
@@ -30,7 +30,7 @@ kde4_automoc(${drawdemo_SRCS})
 
 kde4_add_executable(drawdemo ${drawdemo_SRCS})
 
-target_link_libraries(drawdemo  ${QT_AND_KDECORE_LIBS} kdeprint )
+target_link_libraries(drawdemo  ${KDE4_KDECORE_LIBS} kdeprint )
 
 endif(KDE4_BUILD_TESTS)
 

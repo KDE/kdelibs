@@ -17,7 +17,7 @@ kde4_add_dcop_skels(kcmshell_KDEINIT_SRCS ${kcmshell_DCOP_SKEL_SRCS})
 
 kde4_add_kdeinit_executable( kcmshell ${kcmshell_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kcmshell  ${QT_AND_KDECORE_LIBS} kutils )
+target_link_libraries(kdeinit_kcmshell  ${KDE4_KDECORE_LIBS} kutils )
 
 install_targets(${LIB_INSTALL_DIR} kdeinit_kcmshell )
 

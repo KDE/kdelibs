@@ -13,7 +13,7 @@ kde4_automoc(${kconfigtestgui_SRCS})
 
 kde4_add_executable(kconfigtestgui ${kconfigtestgui_SRCS})
 
-target_link_libraries(kconfigtestgui  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kconfigtestgui  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kconfigtestgui ${EXECUTABLE_OUTPUT_PATH}/kconfigtestgui)
 
@@ -25,7 +25,7 @@ kde4_automoc(${klocaletest_SRCS})
 
 kde4_add_executable(klocaletest ${klocaletest_SRCS})
 
-target_link_libraries(klocaletest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(klocaletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-klocaletest ${EXECUTABLE_OUTPUT_PATH}/klocaletest)
 
@@ -37,7 +37,7 @@ kde4_automoc(${kprocesstest_SRCS})
 
 kde4_add_executable(kprocesstest ${kprocesstest_SRCS})
 
-target_link_libraries(kprocesstest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kprocesstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kprocesstest ${EXECUTABLE_OUTPUT_PATH}/kprocesstest)
 
@@ -49,7 +49,7 @@ kde4_automoc(${ksimpleconfigtest_SRCS})
 
 kde4_add_executable(ksimpleconfigtest ${ksimpleconfigtest_SRCS})
 
-target_link_libraries(ksimpleconfigtest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(ksimpleconfigtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-ksimpleconfigtest ${EXECUTABLE_OUTPUT_PATH}/ksimpleconfigtest)
 
@@ -61,7 +61,7 @@ kde4_automoc(${kstddirstest_SRCS})
 
 kde4_add_executable(kstddirstest ${kstddirstest_SRCS})
 
-target_link_libraries(kstddirstest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kstddirstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kstddirstest ${EXECUTABLE_OUTPUT_PATH}/kstddirstest)
 
@@ -73,7 +73,7 @@ target_link_libraries(kstddirstest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 #
 #kde4_add_executable(kurltest ${kurltest_SRCS})
 #
-#target_link_libraries(kurltest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+#target_link_libraries(kurltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 #
 # add_test(kdecore-kurltest ${EXECUTABLE_OUTPUT_PATH}/kurltest)
 
@@ -85,7 +85,7 @@ kde4_automoc(${kurltest4_SRCS})
 
 kde4_add_executable(kurltest4 ${kurltest4_SRCS})
 
-target_link_libraries(kurltest4  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kurltest4  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kurltest4 ${EXECUTABLE_OUTPUT_PATH}/kurltest4)
 
@@ -97,7 +97,7 @@ kde4_automoc(${kuniqueapptest_SRCS})
 
 kde4_add_executable(kuniqueapptest ${kuniqueapptest_SRCS})
 
-target_link_libraries(kuniqueapptest  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kuniqueapptest  ${KDE4_KDECORE_LIBS} )
 
 # add_test(kdecore-kuniqueapptest ${EXECUTABLE_OUTPUT_PATH}/kuniqueapptest)
 
@@ -109,7 +109,7 @@ kde4_automoc(${krandomsequencetest_SRCS})
 
 kde4_add_executable(krandomsequencetest ${krandomsequencetest_SRCS})
 
-target_link_libraries(krandomsequencetest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(krandomsequencetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-krandomsequencetest ${EXECUTABLE_OUTPUT_PATH}/krandomsequencetest)
 
@@ -121,7 +121,7 @@ kde4_automoc(${kdebugtest_SRCS})
 
 kde4_add_executable(kdebugtest ${kdebugtest_SRCS})
 
-target_link_libraries(kdebugtest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kdebugtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kdebugtest ${EXECUTABLE_OUTPUT_PATH}/kdebugtest)
 
@@ -133,7 +133,7 @@ kde4_automoc(${kstringhandlertest_SRCS})
 
 kde4_add_executable(kstringhandlertest ${kstringhandlertest_SRCS})
 
-target_link_libraries(kstringhandlertest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kstringhandlertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kstringhandlertest ${EXECUTABLE_OUTPUT_PATH}/kstringhandlertest)
 
@@ -145,7 +145,7 @@ kde4_automoc(${kcmdlineargstest_SRCS})
 
 kde4_add_executable(kcmdlineargstest ${kcmdlineargstest_SRCS})
 
-target_link_libraries(kcmdlineargstest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kcmdlineargstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kcmdlineargstest ${EXECUTABLE_OUTPUT_PATH}/kcmdlineargstest)
 
@@ -157,7 +157,7 @@ kde4_automoc(${kapptest_SRCS})
 
 kde4_add_executable(kapptest ${kapptest_SRCS})
 
-target_link_libraries(kapptest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kapptest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kapptest ${EXECUTABLE_OUTPUT_PATH}/kapptest)
 
@@ -169,7 +169,7 @@ kde4_automoc(${kmemtest_SRCS})
 
 kde4_add_executable(kmemtest ${kmemtest_SRCS})
 
-target_link_libraries(kmemtest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kmemtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kmemtest ${EXECUTABLE_OUTPUT_PATH}/kmemtest)
 
@@ -187,7 +187,7 @@ kde4_add_dcop_skels(kidlservertest_SRCS ${kidlservertest_DCOP_SKEL_SRCS})
 
 kde4_add_executable(kidlservertest ${kidlservertest_SRCS})
 
-target_link_libraries(kidlservertest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kidlservertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kidlservertest ${EXECUTABLE_OUTPUT_PATH}/kidlservertest)
 
@@ -203,7 +203,7 @@ kde4_add_dcop_stubs(kidlclienttest_SRCS ${kidlclienttest_DCOP_STUB_SRCS})
 
 kde4_add_executable(kidlclienttest ${kidlclienttest_SRCS})
 
-target_link_libraries(kidlclienttest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kidlclienttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kidlclienttest ${EXECUTABLE_OUTPUT_PATH}/kidlclienttest)
 
@@ -215,7 +215,7 @@ kde4_automoc(${dcopkonqtest_SRCS})
 
 kde4_add_executable(dcopkonqtest ${dcopkonqtest_SRCS})
 
-target_link_libraries(dcopkonqtest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(dcopkonqtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-dcopkonqtest ${EXECUTABLE_OUTPUT_PATH}/dcopkonqtest)
 
@@ -227,7 +227,7 @@ kde4_automoc(${kipctest_SRCS})
 
 kde4_add_executable(kipctest ${kipctest_SRCS})
 
-target_link_libraries(kipctest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kipctest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kipctest ${EXECUTABLE_OUTPUT_PATH}/kipctest)
 
@@ -239,7 +239,7 @@ kde4_automoc(${cplusplustest_SRCS})
 
 kde4_add_executable(cplusplustest ${cplusplustest_SRCS})
 
-target_link_libraries(cplusplustest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(cplusplustest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-cplusplustest ${EXECUTABLE_OUTPUT_PATH}/cplusplustest)
 
@@ -251,7 +251,7 @@ kde4_automoc(${kiconloadertest_SRCS})
 
 kde4_add_executable(kiconloadertest ${kiconloadertest_SRCS})
 
-target_link_libraries(kiconloadertest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kiconloadertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kiconloadertest ${EXECUTABLE_OUTPUT_PATH}/kiconloadertest)
 
@@ -263,7 +263,7 @@ kde4_automoc(${kmdcodectest_SRCS})
 
 kde4_add_executable(kmdcodectest ${kmdcodectest_SRCS})
 
-target_link_libraries(kmdcodectest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kmdcodectest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kmdcodectest ${EXECUTABLE_OUTPUT_PATH}/kmdcodectest)
 
@@ -275,7 +275,7 @@ kde4_automoc(${knotifytest_SRCS})
 
 kde4_add_executable(knotifytest ${knotifytest_SRCS})
 
-target_link_libraries(knotifytest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(knotifytest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-knotifytest ${EXECUTABLE_OUTPUT_PATH}/knotifytest)
 
@@ -287,7 +287,7 @@ kde4_automoc(${kdatetimetest_SRCS})
 
 kde4_add_executable(kdatetimetest ${kdatetimetest_SRCS})
 
-target_link_libraries(kdatetimetest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kdatetimetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kdatetimetest ${EXECUTABLE_OUTPUT_PATH}/kdatetimetest)
 
@@ -299,7 +299,7 @@ kde4_automoc(${ksortablevaluelisttest_SRCS})
 
 kde4_add_executable(ksortablevaluelisttest ${ksortablevaluelisttest_SRCS})
 
-target_link_libraries(ksortablevaluelisttest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(ksortablevaluelisttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-ksortablevaluelisttest ${EXECUTABLE_OUTPUT_PATH}/ksortablevaluelisttest)
 
@@ -311,7 +311,7 @@ kde4_automoc(${krfcdatetest_SRCS})
 
 kde4_add_executable(krfcdatetest ${krfcdatetest_SRCS})
 
-target_link_libraries(krfcdatetest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(krfcdatetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-krfcdatetest ${EXECUTABLE_OUTPUT_PATH}/krfcdatetest)
 
@@ -323,7 +323,7 @@ kde4_automoc(${testqtargs_SRCS})
 
 kde4_add_executable(testqtargs ${testqtargs_SRCS})
 
-target_link_libraries(testqtargs  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(testqtargs  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-testqtargs ${EXECUTABLE_OUTPUT_PATH}/testqtargs)
 
@@ -335,7 +335,7 @@ kde4_automoc(${kprociotest_SRCS})
 
 kde4_add_executable(kprociotest ${kprociotest_SRCS})
 
-target_link_libraries(kprociotest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kprociotest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kprociotest ${EXECUTABLE_OUTPUT_PATH}/kprociotest)
 
@@ -347,7 +347,7 @@ kde4_automoc(${kcharsetstest_SRCS})
 
 kde4_add_executable(kcharsetstest ${kcharsetstest_SRCS})
 
-target_link_libraries(kcharsetstest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kcharsetstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kcharsetstest ${EXECUTABLE_OUTPUT_PATH}/kcharsetstest)
 
@@ -359,7 +359,7 @@ kde4_automoc(${kcalendartest_SRCS})
 
 kde4_add_executable(kcalendartest ${kcalendartest_SRCS})
 
-target_link_libraries(kcalendartest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kcalendartest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kcalendartest ${EXECUTABLE_OUTPUT_PATH}/kcalendartest)
 
@@ -371,7 +371,7 @@ kde4_automoc(${kmacroexpandertest_SRCS})
 
 kde4_add_executable(kmacroexpandertest ${kmacroexpandertest_SRCS})
 
-target_link_libraries(kmacroexpandertest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kmacroexpandertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kmacroexpandertest ${EXECUTABLE_OUTPUT_PATH}/kmacroexpandertest)
 
@@ -383,7 +383,7 @@ kde4_automoc(${kshelltest_SRCS})
 
 kde4_add_executable(kshelltest ${kshelltest_SRCS})
 
-target_link_libraries(kshelltest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kshelltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kshelltest ${EXECUTABLE_OUTPUT_PATH}/kshelltest)
 
@@ -396,7 +396,7 @@ kde4_automoc(${kxerrorhandlertest_SRCS})
 
 kde4_add_executable(kxerrorhandlertest ${kxerrorhandlertest_SRCS})
 
-target_link_libraries(kxerrorhandlertest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kxerrorhandlertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kxerrorhandlertest ${EXECUTABLE_OUTPUT_PATH}/kxerrorhandlertest)
 endif (UNIX)
@@ -409,7 +409,7 @@ kde4_automoc(${startserviceby_SRCS})
 
 kde4_add_executable(startserviceby ${startserviceby_SRCS})
 
-target_link_libraries(startserviceby  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(startserviceby  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-startserviceby ${EXECUTABLE_OUTPUT_PATH}/startserviceby)
 
@@ -421,7 +421,7 @@ kde4_automoc(${kglobaltest_SRCS})
 
 kde4_add_executable(kglobaltest ${kglobaltest_SRCS})
 
-target_link_libraries(kglobaltest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kglobaltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kglobaltest ${EXECUTABLE_OUTPUT_PATH}/kglobaltest)
 
@@ -433,7 +433,7 @@ kde4_automoc(${ktimezonestest_SRCS})
 
 kde4_add_executable(ktimezonestest ${ktimezonestest_SRCS})
 
-target_link_libraries(ktimezonestest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(ktimezonestest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-ktimezonestest ${EXECUTABLE_OUTPUT_PATH}/ktimezonestest)
 
@@ -445,7 +445,7 @@ kde4_automoc(${kconfigtest_SRCS})
 
 kde4_add_executable(kconfigtest ${kconfigtest_SRCS})
 
-target_link_libraries(kconfigtest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kconfigtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kconfigtest ${EXECUTABLE_OUTPUT_PATH}/kconfigtest)
 
@@ -457,7 +457,7 @@ kde4_automoc(${ktempfiletest_SRCS})
 
 kde4_add_executable(ktempfiletest ${ktempfiletest_SRCS})
 
-target_link_libraries(ktempfiletest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(ktempfiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-ktempfiletest ${EXECUTABLE_OUTPUT_PATH}/ktempfiletest)
 
@@ -469,7 +469,7 @@ add_test(kdecore-ktempfiletest ${EXECUTABLE_OUTPUT_PATH}/ktempfiletest)
 #
 # kde4_add_executable(kurlmimetest ${kurlmimetest_SRCS})
 #
-# target_link_libraries(kurlmimetest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+# target_link_libraries(kurlmimetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 #
 # add_test(kdecore-kurlmimetest ${EXECUTABLE_OUTPUT_PATH}/kurlmimetest)
 
@@ -482,7 +482,7 @@ kde4_automoc(${kstdacceltest_SRCS})
 
 kde4_add_executable(kstdacceltest ${kstdacceltest_SRCS})
 
-target_link_libraries(kstdacceltest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kstdacceltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kstdacceltest ${EXECUTABLE_OUTPUT_PATH}/kstdacceltest)
 
@@ -494,7 +494,7 @@ kde4_automoc(${klibloadertest_SRCS})
 
 kde4_add_executable(klibloadertest ${klibloadertest_SRCS})
 
-target_link_libraries(klibloadertest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(klibloadertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-klibloadertest ${EXECUTABLE_OUTPUT_PATH}/klibloadertest)
 
@@ -506,7 +506,7 @@ kde4_automoc(${kcompletiontest_SRCS})
 
 kde4_add_executable(kcompletiontest ${kcompletiontest_SRCS})
 
-target_link_libraries(kcompletiontest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kcompletiontest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kcompletiontest ${EXECUTABLE_OUTPUT_PATH}/kcompletiontest)
 
@@ -518,7 +518,7 @@ kde4_automoc(${klockfiletest_SRCS})
 
 kde4_add_executable(lt-klockfiletest ${klockfiletest_SRCS})
 
-target_link_libraries(lt-klockfiletest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(lt-klockfiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-klockfiletest ${EXECUTABLE_OUTPUT_PATH}/lt-klockfiletest)
 
@@ -530,7 +530,7 @@ kde4_automoc(${ktempdirtest_SRCS})
 
 kde4_add_executable(ktempdirtest ${ktempdirtest_SRCS})
 
-target_link_libraries(ktempdirtest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(ktempdirtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-ktempdirtest ${EXECUTABLE_OUTPUT_PATH}/ktempdirtest)
 
@@ -542,7 +542,7 @@ kde4_automoc(${ksharedptrtest_SRCS})
 
 kde4_add_executable(ksharedptrtest ${ksharedptrtest_SRCS})
 
-target_link_libraries(ksharedptrtest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(ksharedptrtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-ksharedptrtest ${EXECUTABLE_OUTPUT_PATH}/ksharedptrtest)
 
@@ -554,7 +554,7 @@ kde4_automoc(${kfiltertest_SRCS})
 
 kde4_add_executable(kfiltertest ${kfiltertest_SRCS})
 
-target_link_libraries(kfiltertest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kfiltertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kfiltertest ${EXECUTABLE_OUTPUT_PATH}/kfiltertest)
 
@@ -566,7 +566,7 @@ kde4_automoc(${kdatetimetest_SRCS})
 
 kde4_add_executable(kdatetimetest ${kdatetimetest_SRCS})
 
-target_link_libraries(kdatetimetest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kdatetimetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kdatetimetest ${EXECUTABLE_OUTPUT_PATH}/kdatetimetest)
 
@@ -578,7 +578,7 @@ kde4_automoc(${ksavefiletest_SRCS})
 
 kde4_add_executable(ksavefiletest ${ksavefiletest_SRCS})
 
-target_link_libraries(ksavefiletest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(ksavefiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-ksavefiletest ${EXECUTABLE_OUTPUT_PATH}/ksavefiletest)
 
@@ -590,7 +590,7 @@ kde4_automoc(${klibloadertestmodule_PART_SRCS})
 
 kde4_add_plugin(klibloadertestmodule WITH_PREFIX ${klibloadertestmodule_PART_SRCS})
 
-target_link_libraries(klibloadertestmodule  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(klibloadertestmodule  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
 install_targets(${PLUGIN_INSTALL_DIR} klibloadertestmodule )

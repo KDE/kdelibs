@@ -13,7 +13,7 @@ kde4_automoc(${designer_SRCS})
 
 kde4_add_executable(designer ${designer_SRCS})
 
-target_link_libraries(designer  ${QT_AND_KDECORE_LIBS} kjsembed QtDesignerComponents_debug )
+target_link_libraries(designer  ${KDE4_KDECORE_LIBS} kjsembed QtDesignerComponents_debug )
 
 install_targets(/bin designer )
 

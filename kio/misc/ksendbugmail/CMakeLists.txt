@@ -14,7 +14,7 @@ kde4_automoc(${ksendbugmail_SRCS})
 
 kde4_add_executable(ksendbugmail ${ksendbugmail_SRCS})
 
-target_link_libraries(ksendbugmail  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(ksendbugmail  ${KDE4_KDECORE_LIBS} kio )
 
 install_targets(/bin ksendbugmail )
 

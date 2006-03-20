@@ -18,7 +18,7 @@ message(STATUS "Skipped kdecore/kconfig_compiler example")
 
 #kde4_add_executable(example ${example_SRCS})
 #
-#target_link_libraries(example  ${QT_AND_KDECORE_LIBS} )
+#target_link_libraries(example  ${KDE4_KDECORE_LIBS} )
 
 endif(KDE4_BUILD_TESTS)
 
@@ -42,7 +42,7 @@ if(KDE4_BUILD_TESTS)
 message(STATUS "Skipped kdecore/kconfig_compiler autotest")
 #kde4_add_executable(autoexample ${autoexample_SRCS})
 #
-#target_link_libraries(autoexample  ${QT_AND_KDECORE_LIBS} kdeui )
+#target_link_libraries(autoexample  ${KDE4_KDECORE_LIBS} kdeui )
 #
 endif(KDE4_BUILD_TESTS)
 

@@ -11,7 +11,7 @@ kde4_automoc(${kabcformat_binary_PART_SRCS})
 
 kde4_add_plugin(kabcformat_binary ${kabcformat_binary_PART_SRCS})
 
-target_link_libraries(kabcformat_binary  ${QT_AND_KDECORE_LIBS} kabc )
+target_link_libraries(kabcformat_binary  ${KDE4_KDECORE_LIBS} kabc )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabcformat_binary )
 install_targets(${PLUGIN_INSTALL_DIR} kabcformat_binary )

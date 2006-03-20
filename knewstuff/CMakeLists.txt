@@ -25,7 +25,7 @@ kde4_automoc(${knewstuff_LIB_SRCS})
 
 kde4_add_library(knewstuff SHARED ${knewstuff_LIB_SRCS})
 
-target_link_libraries(knewstuff  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(knewstuff  ${KDE4_KDECORE_LIBS} kio )
 
 set_target_properties(knewstuff PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install_targets(${LIB_INSTALL_DIR} knewstuff )
@@ -39,7 +39,7 @@ kde4_automoc(${khotnewstuff_SRCS})
 
 kde4_add_executable(khotnewstuff ${khotnewstuff_SRCS})
 
-target_link_libraries(khotnewstuff  ${QT_AND_KDECORE_LIBS} knewstuff)
+target_link_libraries(khotnewstuff  ${KDE4_KDECORE_LIBS} knewstuff)
 
 install_targets(/bin khotnewstuff )
 
@@ -54,7 +54,7 @@ kde4_automoc(${testnewstuff_SRCS})
 
 kde4_add_executable(testnewstuff ${testnewstuff_SRCS})
 
-target_link_libraries(testnewstuff  ${QT_AND_KDECORE_LIBS} knewstuff)
+target_link_libraries(testnewstuff  ${KDE4_KDECORE_LIBS} knewstuff)
 
 
 ########### next target ###############
@@ -65,7 +65,7 @@ kde4_automoc(${ghns_SRCS})
 
 kde4_add_executable(ghns ${ghns_SRCS})
 
-target_link_libraries(ghns  ${QT_AND_KDECORE_LIBS} knewstuff)
+target_link_libraries(ghns  ${KDE4_KDECORE_LIBS} knewstuff)
 
 endif(KDE4_BUILD_TESTS)
 

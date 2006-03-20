@@ -14,7 +14,7 @@ kde4_automoc(${kntlm_LIB_SRCS})
 
 kde4_add_library(kntlm SHARED ${kntlm_LIB_SRCS})
 
-target_link_libraries(kntlm  ${QT_AND_KDECORE_LIBS} )
+target_link_libraries(kntlm  ${KDE4_KDECORE_LIBS} )
 
 set_target_properties(kntlm PROPERTIES VERSION 0.0.0 SOVERSION 0 )
 install_targets(${LIB_INSTALL_DIR} kntlm )

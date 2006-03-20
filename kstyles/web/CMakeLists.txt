@@ -13,7 +13,7 @@ kde4_automoc(${webstyle_LIB_SRCS})
 
 kde4_add_library(webstyle SHARED ${webstyle_LIB_SRCS})
 
-target_link_libraries(webstyle  ${QT_AND_KDECORE_LIBS} kdeui )
+target_link_libraries(webstyle  ${KDE4_KDECORE_LIBS} kdeui )
 
 set_target_properties(webstyle PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install_targets(${LIB_INSTALL_DIR} webstyle )
