@@ -622,6 +622,12 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 
 	QString program = m_khtmlUrl.path() + "/.libs/testregression";
 
+	if(!QFileInfo(program).exists())
+	{
+	        KMessageBox::error(0,"Can't find testregression executable","Error");
+	        return;
+	}
+
 	QStringList arguments;
 	arguments << "--base" << m_testsUrl.path();
 
