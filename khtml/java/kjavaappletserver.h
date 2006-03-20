@@ -169,13 +169,13 @@ public:
     PermissionDialog( QWidget* );
     ~PermissionDialog();
 
-    QByteArray exec( const QString & cert, const QString & perm );
+    QString exec( const QString & cert, const QString & perm );
 
 private Q_SLOTS:
      void clicked();
 
 private:
-    QByteArray m_button;
+    QString m_button;
 };
 
 #endif // KJAVAAPPLETSERVER_H

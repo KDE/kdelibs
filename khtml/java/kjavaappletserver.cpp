@@ -647,7 +647,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             if (KSSL::doesSSLWork() && !d->kssl)
                 d->kssl = new KSSL;
             QStringList sl;
-            QByteArray answer( "invalid" );
+            QString answer( "invalid" );
 
             if (!d->kssl) {
                 answer = "nossl";
@@ -714,7 +714,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                         answer = PermissionDialog( qApp->activeWindow() ).exec( text, args[0] );
                 }
             }
-            sl.push_front( QString(answer) );
+            sl.push_front( answer );
             sl.push_front( QString::number(ID_num) );
             process->send( KJAS_SECURITY_CONFIRM, sl );
             return;
@@ -812,7 +812,7 @@ PermissionDialog::PermissionDialog( QWidget* parent )
     : QObject(parent), m_button("no")
 {}
 
-QByteArray PermissionDialog::exec( const QString & cert, const QString & perm ) {
+QString PermissionDialog::exec( const QString & cert, const QString & perm ) {
     QPointer<QDialog> dialog = new QDialog( static_cast<QWidget*>(parent()) );
 
     dialog->setObjectName("PermissionDialog");
@@ -871,7 +871,7 @@ PermissionDialog::~PermissionDialog()
 
 void PermissionDialog::clicked()
 {
-    m_button = sender()->objectName().toUtf8();
+    m_button = sender()->objectName();
     static_cast<const QWidget*>(sender())->parentWidget()->close();
 }
 
