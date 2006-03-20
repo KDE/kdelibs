@@ -273,8 +273,8 @@ bool KJavaProcess::invokeJVM()
         if( !it.key().isEmpty() )
         {
             currarg = "-D" + it.key();
-            if( !it.data().isEmpty() )
-                currarg += "=" + it.data();
+            if( !it.value().isEmpty() )
+                currarg += "=" + it.value();
         }
 
         if( !currarg.isEmpty() )

@@ -98,7 +98,7 @@ public:
         jsstack.insert( ticket, this );
     }
     ~JSStackFrame() {
-        jsstack.erase( ticket );
+        jsstack.remove( ticket );
     }
     JSStack & jsstack;
     QStringList & args;
@@ -256,7 +256,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     dir.cdUp();
     kDebug(6100) << "dir = " << dir.absolutePath() << endl;
 
-    const QStringList entries = dir.entryList( "*.jar" );
+    const QStringList entries = dir.entryList(QDir::nameFiltersFromString( "*.jar" ));
     kDebug(6100) << "entries = " << entries.join( ":" ) << endl;
 
     QString classes;
@@ -384,7 +384,7 @@ bool KJavaAppletServer::createApplet( int contextId, int appletId,
     for( ; it != itEnd; ++it )
     {
         args.append( it.key() );
-        args.append( it.data() );
+        args.append( it.value() );
     }
 
     process->send( KJAS_CREATE_APPLET, args );
@@ -451,7 +451,7 @@ void KJavaAppletServer::removeDataJob( int loaderID )
 {
     const KIOJobMap::iterator it = d->kiojobs.find( loaderID );
     if (it != d->kiojobs.end()) {
-        it.data()->deleteLater();
+        it.value()->deleteLater();
         d->kiojobs.erase( it );
     }
 }
@@ -506,9 +506,9 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             KIOJobMap::iterator it = d->kiojobs.find( ID_num );
             if (ok && it != d->kiojobs.end()) {
                 QByteArray qba;
-                qba.setRawData(qb.data() + index, qb.size() - index - 1);
-                it.data()->data(qba);
-                qba.resetRawData(qb.data() + index, qb.size() - index - 1);
+                qba = QByteArray::fromRawData(qb.data() + index, qb.size() - index - 1);
+                it.value()->data(qba);
+                qba = QByteArray::fromRawData(qb.data() + index, qb.size() - index - 1);
             }
             kDebug(6100) << "PutData(" << ID_num << ") size=" << qb.size() - index << endl;
         } else
@@ -568,7 +568,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 const int cmd = args.first().toInt( &ok );
                 KIOJobMap::iterator it = d->kiojobs.find( ID_num );
                 if (ok && it != d->kiojobs.end())
-                    it.data()->jobCommand( cmd );
+                    it.value()->jobCommand( cmd );
                 kDebug(6100) << "KIO Data command: " << ID_num << " " << args.first() << endl;
             } else
                 kError(6100) << "KIO Data command error " << ok << " args:" << args.size() << endl;
@@ -701,7 +701,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                         QString subject = cert->getSubject() + QChar('\n');
                         QRegExp reg(QString("/[A-Z]+="));
                         int pos = 0;
-                        while ((pos = subject.find(reg, pos)) > -1)
+                        while ((pos = subject.indexOf(reg, pos)) > -1)
                             subject.replace(pos, 1, QString("\n    "));
                         text += subject.mid(1);
                     }
@@ -813,34 +813,43 @@ PermissionDialog::PermissionDialog( QWidget* parent )
 {}
 
 QByteArray PermissionDialog::exec( const QString & cert, const QString & perm ) {
-    QPointer<QDialog> dialog = new QDialog( static_cast<QWidget*>(parent()), "PermissionDialog");
+    QPointer<QDialog> dialog = new QDialog( static_cast<QWidget*>(parent()) );
 
-    dialog->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)1, 0, 0, dialog->sizePolicy().hasHeightForWidth() ) );
+    dialog->setObjectName("PermissionDialog");
+    QSizePolicy sizeplcy( QSizePolicy::Minimum, QSizePolicy::Minimum);
+    sizeplcy.setHeightForWidth(dialog->sizePolicy().hasHeightForWidth());
+    dialog->setSizePolicy(sizeplcy);
     dialog->setModal( true );
-    dialog->setCaption( i18n("Security Alert") );
+    dialog->setWindowTitle( i18n("Security Alert") );
 
-    QVBoxLayout* const dialogLayout = new QVBoxLayout( dialog, 11, 6, "dialogLayout");
+    QVBoxLayout* const dialogLayout = new QVBoxLayout( dialog );
+    dialogLayout->setMargin(11);
+    dialogLayout->setSpacing(6);
+    dialogLayout->setObjectName("dialogLayout");
 
     dialogLayout->addWidget( new QLabel( i18n("Do you grant Java applet with certificate(s):"), dialog ) );
-    dialogLayout->addWidget( new QLabel( cert, dialog, "message" ) );
-    dialogLayout->addWidget( new QLabel( i18n("the following permission"), dialog, "message" ) );
-    dialogLayout->addWidget( new QLabel( perm, dialog, "message" ) );
+    dialogLayout->addWidget( new QLabel( cert, dialog ) );
+    dialogLayout->addWidget( new QLabel( i18n("the following permission"), dialog ) );
+    dialogLayout->addWidget( new QLabel( perm, dialog ) );
     QSpacerItem* const spacer2 = new QSpacerItem( 20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding );
     dialogLayout->addItem( spacer2 );
 
-    QHBoxLayout* const buttonLayout = new QHBoxLayout( 0, 0, 6, "buttonLayout");
+    QHBoxLayout* const buttonLayout = new QHBoxLayout();
+    buttonLayout->setMargin(0);
+    buttonLayout->setSpacing(6);
+    buttonLayout->setObjectName("buttonLayout");
 
-    QPushButton* const no = new QPushButton( i18n("&No"), dialog, "no" );
+    QPushButton* const no = new QPushButton( i18n("&No"), dialog );
     no->setDefault( true );
     buttonLayout->addWidget( no );
 
-    QPushButton* const reject = new QPushButton( i18n("&Reject All"), dialog, "reject" );
+    QPushButton* const reject = new QPushButton( i18n("&Reject All"), dialog );
     buttonLayout->addWidget( reject );
 
-    QPushButton* const yes = new QPushButton( i18n("&Yes"), dialog, "yes" );
+    QPushButton* const yes = new QPushButton( i18n("&Yes"), dialog );
     buttonLayout->addWidget( yes );
 
-    QPushButton* const grant = new QPushButton( i18n("&Grant All"), dialog, "grant" );
+    QPushButton* const grant = new QPushButton( i18n("&Grant All"), dialog );
     buttonLayout->addWidget( grant );
     dialogLayout->addLayout( buttonLayout );
     dialog->resize( dialog->minimumSizeHint() );
@@ -862,7 +871,7 @@ PermissionDialog::~PermissionDialog()
 
 void PermissionDialog::clicked()
 {
-    m_button = sender()->name();
+    m_button = sender()->objectName().toUtf8();
     static_cast<const QWidget*>(sender())->parentWidget()->close();
 }
 
