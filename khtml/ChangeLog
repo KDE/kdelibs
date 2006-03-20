@@ -1,3 +1,7 @@
+2006-03-20  Dirk Mueller <mueller@kde.org>
+
+	* misc/loader.cpp: fix pixmap leak in tiled_pixmap()
+
 2006-03-20  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Improve the CSS :lang() selector to match clarified specification
