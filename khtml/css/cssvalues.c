@@ -39,7 +39,7 @@ struct css_value {
     int id;
 };
 
-static const css_value* findValue (register const char *str, register unsigned int len);
+static const css_value * findValue (register const char *str, register unsigned int len);
 /* maximum key range = 2971, duplicates = 0 */
 
 #ifdef __GNUC__

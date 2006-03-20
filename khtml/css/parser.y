@@ -53,28 +53,33 @@ using namespace DOM;
 // turn off inlining to void warning with newer gcc
 #undef __inline
 #define __inline
+
 #include "cssproperties.c"
 #include "cssvalues.c"
+
 #undef __inline
 
 int DOM::getPropertyID(const char *tagStr, int len)
 {
-    const struct props *propsPtr = findProp(tagStr, len);
-    if (!propsPtr)
-        return 0;
+    { // HTML CSS Properties
+        const struct css_prop *prop = findProp(tagStr, len);
+        if (!prop)
+            return 0;
 
-    return propsPtr->id;
+        return prop->id;
+    }
 }
 
 static inline int getValueID(const char *tagStr, int len)
 {
-    const struct css_value *val = findValue(tagStr, len);
-    if (!val)
-        return 0;
+    { // HTML CSS Values
+        const struct css_value *val = findValue(tagStr, len);
+        if (!val)
+            return 0;
 
-    return val->id;
+        return val->id;
+    }
 }
-
 
 #define YYDEBUG 0
 #define YYMAXDEPTH 0

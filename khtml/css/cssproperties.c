@@ -34,12 +34,12 @@
 /* Copyright 1999 W. Bastian */
 #include "cssproperties.h"
 #line 6 "cssproperties.gperf"
-struct props {
+struct css_prop {
     const char *name;
     int id;
 };
 
-static const struct props * findProp (register const char *str, register unsigned int len);
+static const struct css_prop * findProp (register const char *str, register unsigned int len);
 /* maximum key range = 350, duplicates = 0 */
 
 #ifdef __GNUC__
@@ -188,7 +188,7 @@ hash_prop (register const char *str, register unsigned int len)
 #ifdef __GNUC__
 __inline
 #endif
-const struct props *
+const struct css_prop *
 findProp (register const char *str, register unsigned int len)
 {
   enum
@@ -200,7 +200,7 @@ findProp (register const char *str, register unsigned int len)
       MAX_HASH_VALUE = 352
     };
 
-  static const struct props wordlist_prop[] =
+  static const struct css_prop wordlist_prop[] =
     {
 #line 102 "cssproperties.gperf"
       {"top", CSS_PROP_TOP},

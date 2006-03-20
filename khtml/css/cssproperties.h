@@ -131,8 +131,7 @@ DOM::DOMString getPropertyName(unsigned short id) KDE_NO_EXPORT;
 #define CSS_PROP__KHTML_FLOW_MODE 121
 #define CSS_PROP__KHTML_USER_INPUT 122
 
-#define CSS_PROP_MAX CSS_PROP_Z_INDEX
 #define CSS_PROP_TOTAL 123
-const size_t maxCSSPropertyNameLength = 28;
+const size_t maxCSSPropertyNameLength = 17;
 #endif
 
