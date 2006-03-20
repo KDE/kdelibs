@@ -37,11 +37,6 @@ that we would like to make for the next binary incompatible release.
   create the main window on demand.
   (Martijn)
 
-- Make KSystemTray's Quit option in the context menu call qApp->quit() instead of
-  closing all windows, so apps that save their window state on exit don't need
-  workarounds to detect a window close caused by the tray rather than the user.
-  (Martijn)
-
 - Make KSystemTray add its own reference to KApp, so tray apps that adhere to the
   style guide can safely close their main window without having to worry about
   the app quitting instead.

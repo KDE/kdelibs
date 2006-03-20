@@ -19,14 +19,14 @@
 */
 
 #include "config.h"
+#include "kaboutdata.h"
 #include "kaction.h"
+#include "kinstance.h"
+#include "klocale.h"
+#include "kmenu.h"
 #include "kmessagebox.h"
 #include "kshortcut.h"
 #include "ksystemtray.h"
-#include "kmenu.h"
-#include <kapplication.h>
-#include "klocale.h"
-#include "kaboutdata.h"
 
 #ifdef Q_WS_X11
 #include <kwin.h>
@@ -35,9 +35,10 @@
 #include <QX11Info>
 #endif
 
-#include <kiconloader.h>
 #include <kconfig.h>
+#include <kiconloader.h>
 
+#include <QApplication>
 #include <QMouseEvent>
 
 class KSystemTrayPrivate
@@ -75,7 +76,7 @@ KSystemTray::KSystemTray( QWidget* parent )
     setForegroundRole(QPalette::NoRole);
     hasQuit = 0;
     menu = new KMenu( this );
-    menu->addTitle( qApp->windowIcon(), kapp->caption() );
+    menu->addTitle( qApp->windowIcon(), KInstance::caption() );
     move( -1000, -1000 );
     KStdAction::quit(this, SLOT(maybeQuit()), d->actionCollection);
 
@@ -183,31 +184,21 @@ void KSystemTray::minimizeRestoreAction()
 
 void KSystemTray::maybeQuit()
 {
+    QString caption = KInstance::caption();
     QString query = i18n("<qt>Are you sure you want to quit <b>%1</b>?</qt>")
-                        .arg(kapp->caption());
+                        .arg(caption);
     if (KMessageBox::warningContinueCancel(this, query,
                                      i18n("Confirm Quit From System Tray"),
                                      KStdGuiItem::quit(),
                                      QString("systemtrayquit%1")
-                                            .arg(kapp->caption())) !=
+                                            .arg(caption)) !=
         KMessageBox::Continue)
     {
         return;
     }
 
     emit quitSelected();
-
-    // KDE4: stop closing the parent widget? it results in complex application code
-    //       instead make applications connect to the quitSelected() signal
-
-    if (parentWidget())
-    {
-        parentWidget()->close();
-    }
-    else
-    {
-        qApp->closeAllWindows();
-    }
+    qApp->quit();
 }
 
 void KSystemTray::toggleActive()
