@@ -96,7 +96,6 @@ int main(int argc, char *argv[])
   args->clear();
 
   QWidget *w = new QWidget();
-  app.setMainWidget(w);
   w->show();
 
   return app.exec();

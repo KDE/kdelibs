@@ -77,7 +77,7 @@ void KFilterTest::test_block_read( const QString & fileName )
 
     // This is what KGzipDev::readAll could do, if QIODevice::readAll was virtual....
 
-    QByteArray array(1024);
+    QByteArray array(1024,'\0');
     QByteArray read;
     int n;
     while ( ( n = dev->read( array.data(), array.size() ) ) )
@@ -86,7 +86,7 @@ void KFilterTest::test_block_read( const QString & fileName )
         read += QByteArray( array, n );
         //kDebug() << "read returned " << n << endl;
         //kDebug() << "read='" << read << "'" << endl;
-        QCOMPARE( (int)dev->at(), (int)read.size() );
+        QCOMPARE( (int)dev->pos(), (int)read.size() );
         //kDebug() << "dev.at = " << dev->at() << endl;
     }
     QCOMPARE( read, testData );
@@ -109,10 +109,10 @@ void KFilterTest::test_getch( const QString & fileName )
     bool ok = dev->open( QIODevice::ReadOnly );
     QVERIFY( ok );
     QByteArray read;
-    int ch;
-    while ( ( ch = dev->getch() ) != -1 ) {
+    char ch;
+    while ( dev->getChar(&ch) ) {
         //printf("%c",ch);
-        read += char( ch );
+        read += ch;
     }
     dev->close();
     delete dev;
@@ -134,7 +134,7 @@ void KFilterTest::test_textstream(  const QString & fileName )
     bool ok = dev->open( QIODevice::ReadOnly );
     QVERIFY( ok );
     QTextStream ts( dev );
-    QString readStr = ts.read();
+    QString readStr = ts.readAll();
     dev->close();
     delete dev;
 

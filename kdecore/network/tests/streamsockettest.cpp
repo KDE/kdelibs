@@ -105,7 +105,7 @@ void Test::readyWriteSlot()
   cout << endl << "Socket is ready for writing; will write: " << endl;
   cout << data.data() << endl;
   
-  socket.writeBlock(data.data(), data.length());
+  socket.write(data.data(), data.length());
   socket.enableWrite(false);
 }
 

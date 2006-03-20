@@ -69,58 +69,69 @@ KConfigTestView::KConfigTestView( QWidget *parent )
 {
   // Set the window caption/title
 
-  setCaption( "KConfig test" );
+  setWindowTitle( "KConfig test" );
 
   // Label and edit for the app config file
-  pAppFileLabel = new QLabel( this, "appconfiglabel" );
+  pAppFileLabel = new QLabel( this );
+  pAppFileLabel->setObjectName( "appconfiglabel" );
   pAppFileLabel->setText( "Application config file:" );
   pAppFileLabel->setGeometry( 20, 20, 200, 20 );
 
-  pAppFileEdit = new QLineEdit( this, "appconfigedit" );
+  pAppFileEdit = new QLineEdit( this );
+  pAppFileEdit->setObjectName( "appconfigedit" );
   pAppFileEdit->setGeometry( 240, 20, 160, 20 );
   connect( pAppFileEdit, SIGNAL(returnPressed()),
 	   SLOT(appConfigEditReturnPressed()));
 
   // Label and edit for the group
-  pGroupLabel = new QLabel( this, "grouplabel" );
+  pGroupLabel = new QLabel( this );
+  pGroupLabel->setObjectName( "grouplabel" );
   pGroupLabel->setText( "Group:" );
   pGroupLabel->setGeometry( 20, 60, 80, 20 );
 
-  pGroupEdit = new QLineEdit( this, "groupedit" );
+  pGroupEdit = new QLineEdit( this );
+  pGroupEdit->setObjectName( "groupedit" );
   pGroupEdit->setGeometry( 120, 60, 100, 20 );
   connect( pGroupEdit, SIGNAL(returnPressed()),
 	   SLOT(groupEditReturnPressed()));
 
   // Edit and label for the key/value pair
-  pKeyEdit = new QLineEdit( this, "keyedit" );
+  pKeyEdit = new QLineEdit( this );
+  pKeyEdit->setObjectName( "keyedit" );
   pKeyEdit->setGeometry( 20, 100, 80, 20 );
   connect( pKeyEdit, SIGNAL( returnPressed()),
 	   SLOT(keyEditReturnPressed()));
 
-  pEqualsLabel = new QLabel( this, "equalslabel" );
+  pEqualsLabel = new QLabel( this );
+  pEqualsLabel->setObjectName( "equalslabel" );
   pEqualsLabel->setGeometry( 105, 100, 20, 20 );
   pEqualsLabel->setText( "=" );
 
-  pValueEdit = new QLineEdit( this, "valueedit" );
+  pValueEdit = new QLineEdit( this );
+  pValueEdit->setObjectName( "valueedit" );
   pValueEdit->setGeometry( 120, 100, 100, 20 );
   pValueEdit->setText( "---" );
 
-  pWriteButton = new QPushButton( this, "writebutton" );
+  pWriteButton = new QPushButton( this );
+  pWriteButton->setObjectName( "writebutton" );
   pWriteButton->setGeometry( 20,140, 80, 20 );
   pWriteButton->setText( "Write entry" );
   connect( pWriteButton, SIGNAL(clicked()), SLOT( writeButtonClicked() ) );
 
   // Labels for the info line
-  pInfoLabel1 = new QLabel( this, "infolabel1" );
+  pInfoLabel1 = new QLabel( this );
+  pInfoLabel1->setObjectName( "infolabel1" );
   pInfoLabel1->setGeometry( 20, 200, 60, 20 );
   pInfoLabel1->setText( "Info:" );
 
-  pInfoLabel2 = new QLabel( this, "infolabel2" );
+  pInfoLabel2 = new QLabel( this );
+  pInfoLabel2->setObjectName( "infolabel2" );
   pInfoLabel2->setGeometry( 100, 200, 300, 20 );
   pInfoLabel2->setFrameStyle( QFrame::Panel | QFrame::Sunken );
 
   // Quit button
-  pQuitButton = new QPushButton( this, "quitbutton" );
+  pQuitButton = new QPushButton( this );
+  pQuitButton->setObjectName( "quitbutton" );
   pQuitButton->setText( "Quit" );
   pQuitButton->setGeometry( 340, 60, 60, 60 );
   connect( pQuitButton, SIGNAL(clicked()), qApp, SLOT(quit()) );
@@ -200,6 +211,5 @@ int main( int argc, char **argv )
    KApplication a;
 
   KConfigTestView *w = new KConfigTestView();
-  a.setMainWidget( w );
   return w->exec();
 }

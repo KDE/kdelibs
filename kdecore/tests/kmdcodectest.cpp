@@ -96,14 +96,14 @@ void testCodec (const char* msg, Codec type, bool isFile)
 
         if (!f.exists())
         {
-          kError() << "Could not find: " << f.name () << endl;
+          kError() << "Could not find: " << qPrintable(f.fileName()) << endl;
           return;
         }
 
         if (!f.open(QIODevice::ReadOnly))
         {
           f.close ();
-          kError() << "Could not open: " << f.name() << endl;
+          kError() << "Could not open: " << qPrintable(f.fileName()) << endl;
           return;
         }
 
@@ -115,7 +115,7 @@ void testCodec (const char* msg, Codec type, bool isFile)
         // Error! Exit!
         if ( count == -1 )
         {
-          kError () << "Error reading from: " << f.name() << endl;
+          kError () << "Error reading from: " << qPrintable(f.fileName()) << endl;
           f.close ();
           return;
         }

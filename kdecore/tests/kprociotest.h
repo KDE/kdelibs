@@ -31,7 +31,7 @@ class Dummy : public QObject
     while(true) {
        int result = proc->readln(line);
        if (result == -1) return;
-       printf("OUTPUT>> [%d] '%s'\n", result, line.latin1());
+       printf("OUTPUT>> [%d] '%s'\n", result, qPrintable(line));
     }
    }
 

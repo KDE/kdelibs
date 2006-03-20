@@ -54,11 +54,11 @@ int main(int argc, char *argv[])
  b = p.start();
  printf("Start returns %s\n", b ? "true" : "false");
 
- b = p.fputs("Hello World!");
- printf("fputs returns %s\n", b ? "true" : "false");
+ b = p.writeStdin(QString("Hello World!"));
+ printf("writeStdin returns %s\n", b ? "true" : "false");
 
- b = p.fputs("This is a test. It should come out in reverse (esrever)");
- printf("fputs returns %s\n", b ? "true" : "false");
+ b = p.writeStdin(QString("This is a test. It should come out in reverse (esrever)"));
+ printf("writeStdin returns %s\n", b ? "true" : "false");
  
  p.closeWhenDone();
 

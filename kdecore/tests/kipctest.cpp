@@ -8,8 +8,9 @@
 #include "kipctest.h"
 
 MyObject::MyObject()
-    : QObject(0L, "testobj")
+    : QObject(0L)
 {
+    setObjectName(QLatin1String( "testobj" ));
     connect(kapp, SIGNAL(kdisplayPaletteChanged()), SLOT(slotPaletteChanged()));
     connect(kapp, SIGNAL(kdisplayFontChanged()), SLOT(slotFontChanged()));
     connect(kapp, SIGNAL(kdisplayStyleChanged()), SLOT(slotStyleChanged()));
