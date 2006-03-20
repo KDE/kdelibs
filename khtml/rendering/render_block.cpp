@@ -2244,8 +2244,10 @@ RenderBlock::clearFloats()
 
     int offset = m_y;
     if (parentHasFloats)
+    {
         addOverHangingFloats( static_cast<RenderBlock *>( parent() ),
                               parent()->borderLeft() + parent()->paddingLeft(), offset, false );
+    }
 
     int xoffset = 0;
     if (prev) {
@@ -2275,10 +2277,22 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     // Prevent floats from being added to the canvas by the root element, e.g., <html>.
     if ( !flow->m_floatingObjects || (child && flow->isRoot()) )
         return;
+        
+    // if I am clear of my floats, don't add them
+    if (!child && style()->clear() == CBOTH)
+    {
+        return;
+    }
 
     QPtrListIterator<FloatingObject> it(*flow->m_floatingObjects);
     FloatingObject *r;
     for ( ; (r = it.current()); ++it ) {
+    
+        if (!child && r->type == FloatingObject::FloatLeft && style()->clear() == CLEFT )
+            continue;
+        if (!child && r->type == FloatingObject::FloatRight && style()->clear() == CRIGHT )
+            continue;
+            
         if ( ( !child && r->endY > offset ) ||
              ( child && flow->yPos() + r->endY > height() ) ) {
             if (child && !r->crossedLayer) {
