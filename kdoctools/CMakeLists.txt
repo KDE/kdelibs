@@ -84,31 +84,40 @@ install_files( /bin FILES checkXML )
 install_files(${KCONF_UPDATE_INSTALL_DIR} FILES move_kio_help_cache.sh )
 
 
+MACRO(INSTALL_CUSTOMIZE_DIR _expr _directory)
+    FILE(GLOB _file_CUST "${_expr}" )
+    foreach(_curentfile ${_file_CUST})
+        install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/${_directory} )
+    endforeach(_curentfile ${_file_CUST})
+ENDMACRO(INSTALL_CUSTOMIZE_DIR _expr _directory)
+
 set(docbookdir xml-dtd-4.1.2  xml-dtd-4.2  xsl )
 
 foreach (_currentdocbookdir ${docbookdir})
-	#TODO
+	set(expr "docbook/${_currentdocbookdir}/*.mod")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/)
+	set(expr "docbook/${_currentdocbookdir}/*.txt")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/)
+	set(expr "docbook/${_currentdocbookdir}/*.dtd")
+    INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/)
+	set(expr "docbook/${_currentdocbookdir}/*.cat")
+    INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/)
+	set(expr "docbook/${_currentdocbookdir}/ent/*.ent")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/ent/)
 endforeach(_currentdocbookdir ${docbookdir})
 
-
-MACRO(INSTALL_CUSTOMIZE_DIR _expr _directory)
-	FILE(GLOB _file_CUST "${_expr}" )
-    foreach(_curentfile ${_file_CUST})
-        install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/${_directory} )
-    endforeach(_curentfile ${_file_CUST})
-ENDMACRO(INSTALL_CUSTOMIZE_DIR _expr _directory)
 
 set(customizedir af bg ca cs da de dtd el en-GB en entities eo es et fi fo fr he hu id it ja ko lt nl nn no obsolete pl pt-BR pt ro ru sk sl sr sv tr uk wa xh xsl xx zh-CN zh-TW)
  
 foreach (_currentcustomizedir ${customizedir})
 	set(expr "customization/${_currentcustomizedir}/*.entities")
-	INSTALL_CUSTOMIZE_DIR( ${expr} ${_currentcustomizedir})
+	INSTALL_CUSTOMIZE_DIR( ${expr} customization/${_currentcustomizedir})
     set(expr "customization/${_currentcustomizedir}/entities/*.docbook")
-	INSTALL_CUSTOMIZE_DIR( ${expr} ${_currentcustomizedir}/entities/ )
+	INSTALL_CUSTOMIZE_DIR( ${expr} customization/${_currentcustomizedir}/entities/ )
     set(expr "customization/${_currentcustomizedir}/catalog")
-    INSTALL_CUSTOMIZE_DIR(${expr} ${_currentcustomizedir} )
+    INSTALL_CUSTOMIZE_DIR(${expr} customization/${_currentcustomizedir} )
     set(expr "customization/${_currentcustomizedir}/*.xml")
-    INSTALL_CUSTOMIZE_DIR(${expr} ${_currentcustomizedir} )
+    INSTALL_CUSTOMIZE_DIR(${expr} customization/${_currentcustomizedir} )
 endforeach(_currentcustomizedir ${customizedir}) 
 	  
 
