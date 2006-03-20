@@ -121,6 +121,9 @@ export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmak
 install_files( /include FILES kde.pot )
 install_files( /include FILES kdelibs_export.h kdemacros.h )
 install_files( /share/apps/cmake/modules FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake)
+if(WIN32)
+  install_files( /include FILES kdelibs_export_win.h )
+endif(WIN32)
 
 kde4_create_doxygen_docs(  )
 
