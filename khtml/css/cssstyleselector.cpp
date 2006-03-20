@@ -1076,7 +1076,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                     return false;
                return true;
             }
-            // no break    
+            // no break
         case CSSSelector::List:
         {
             if (sel->match != CSSSelector::Class) {
@@ -1408,7 +1408,20 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         case CSSSelector::PseudoLang: {
             DOMString value = e->getAttribute(ATTR_LANG);
-            if (value.isNull()) return false;
+            // The LANG attribute is inherited like a property
+            NodeImpl *n = e->parent();;
+            while (n && value.isEmpty()) {
+                if (n->isElementNode()) {
+                    // ### check xml:lang attribute in XML and XHTML documents
+                    value = static_cast<ElementImpl*>(n)->getAttribute(ATTR_LANG);
+                } else
+                if (n->isDocumentNode()) {
+                    value = static_cast<DocumentImpl*>(n)->contentLanguage();
+                }
+                n = n->parent();
+            }
+            if (value.isEmpty()) return false;
+
             QString langAttr = value.string();
             QString langSel = sel->string_arg.string();
 

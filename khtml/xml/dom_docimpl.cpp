@@ -173,7 +173,7 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     if (doc->doctype() && dtype)
         doc->doctype()->copyFrom(*dtype);
 
-    // the document must be created empty if all parameters are null 
+    // the document must be created empty if all parameters are null
     // (or empty for qName/nsURI as a tolerance) - see DOM 3 Core.
     if (dtype || !qualifiedName.isEmpty() || !namespaceURI.isEmpty()) {
         ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
@@ -610,7 +610,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 
     ElementMappingCache::ItemInfo* info = m_getElementByIdCache.get(stringKey);
 
-    if (!info) 
+    if (!info)
         return 0;
 
     //See if cache has an unambiguous answer.
@@ -1655,6 +1655,9 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
         // http://www.hixie.ch/tests/evil/css/import/main/preferred.html
         m_preferredStylesheetSet = content;
         updateStyleSelector();
+    }
+    else if (strcasecmp(equiv, "content-language") == 0) {
+        m_contentLanguage = content.string();
     }
 }
 

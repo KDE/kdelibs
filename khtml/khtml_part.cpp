@@ -1595,7 +1595,6 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     d->m_pageServices = d->m_job->queryMetaData("PageServices");
     d->m_pageReferrer = d->m_job->queryMetaData("referrer");
-
     d->m_bSecurityInQuestion = false;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
 
@@ -1638,6 +1637,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if ( !qData.isEmpty() && !d->m_haveEncoding ) // only use information if the user didn't override the settings
        d->m_encoding = qData;
 
+
     // Support for http-refresh
     qData = d->m_job->queryMetaData("http-refresh");
     if( !qData.isEmpty())
@@ -1650,6 +1650,11 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if (!baseURL.isEmpty())
       d->m_doc->setBaseURL(KURL( d->m_doc->completeURL(baseURL) ));
     */
+
+    // Support for Content-Language
+    QString language = d->m_job->queryMetaData("content-language");
+    if (!language.isEmpty())
+        d->m_doc->setContentLanguage(language);
 
     if ( !m_url.isLocalFile() ) {
         // Support for http last-modified
@@ -3966,10 +3971,10 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
     return true;
   }
 
-  //If we're asked to open up an anchor in the current URL, in current window, 
-  //merely gotoanchor, and do not reload the new page. Note that this does 
+  //If we're asked to open up an anchor in the current URL, in current window,
+  //merely gotoanchor, and do not reload the new page. Note that this does
   //not apply if the URL is the same page, but without a ref
-  if (cURL.hasRef() && (!hasTarget || target == "_self")) 
+  if (cURL.hasRef() && (!hasTarget || target == "_self"))
   {
     KURL curUrl = this->url();
     if (urlcmp(cURL.url(), curUrl.url(),
@@ -3977,7 +3982,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
               true))  // don't care if the ref changes!
     {
       m_url = cURL;
-      emit d->m_extension->openURLNotify();      
+      emit d->m_extension->openURLNotify();
       if ( !gotoAnchor( m_url.encodedHtmlRef()) )
         gotoAnchor( m_url.htmlRef() );
       emit d->m_extension->setLocationBarURL( m_url.prettyURL() );

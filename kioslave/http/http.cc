@@ -2712,6 +2712,7 @@ try_again:
 
   QString dispositionType; // In case we get a Content-Disposition type
   QString dispositionFilename; // In case we get a Content-Disposition filename
+
   QString mediaValue;
   QString mediaAttribute;
 
@@ -3278,6 +3279,11 @@ try_again:
         kdDebug(7113) << "(" << m_pid << ") Content-Disposition: filename="
                       << dispositionFilename<< endl;
       }
+    }
+    else if(strncasecmp(buf, "Content-Language:", 17) == 0) {
+      QString language = QString::fromLatin1(trimLead(buf+17)).stripWhiteSpace();
+      if (!language.isEmpty())
+        setMetaData("content-language", language);
     }
     else if (strncasecmp(buf, "Proxy-Connection:", 17) == 0)
     {
