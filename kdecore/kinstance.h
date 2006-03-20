@@ -118,6 +118,53 @@ class KDECORE_EXPORT KInstance
     QByteArray          instanceName() const;
 
     /**
+     * Returns a text for the window caption.
+     *
+     * This may be set by
+     * "-caption", otherwise it will be equivalent to the name of the
+     * executable.
+     * @return the text for the window caption
+     */
+    static QString caption();
+
+    /**
+     * @enum StandardCaptionFlag
+     * Used to specify how to construct a window caption
+     *
+     * @value AppName Indicates that the method shall include
+     * the application name when making the caption string.
+     * @value Modified Causes a 'modified' sign will be included in the
+     * returned string. This is useful when indicating that a file is
+     * modified, i.e., it contains data that has not been saved.
+     * @value HIGCompliant The base minimum flags required to align a
+     * caption with the KDE Human Interface Guidelines
+     */
+    enum CaptionFlag
+    {
+        NoCaptionFlags = 0,
+        AppNameCaption = 1,
+        ModifiedCaption = 2,
+        HIGCompliantCaption = AppNameCaption
+    };
+    Q_DECLARE_FLAGS(CaptionFlags, CaptionFlag);
+
+
+    /**
+     * Builds a caption that contains the application name along with the
+     * userCaption using a standard layout.
+     *
+     * To make a compliant caption
+     * for your window, simply do: @p setCaption(kapp->makeStdCaption(yourCaption));
+     *
+     * @param userCaption The caption string you want to display in the
+     * window caption area. Do not include the application name!
+     * @param flags 
+     * @return the created caption
+     */
+    static QString makeStdCaption( const QString &userCaption,
+                                   CaptionFlags flags = HIGCompliantCaption );
+
+    /**
      * Returns the KMimeSourceFactory of the instance.
      * Mainly added for API completeness and future extensibility.
      * @return the KMimeSourceFactory set as default for this application.

@@ -20,16 +20,19 @@
 
 #include <stdlib.h>
 
+#include <qapplication.h>
 #include <qbytearray.h>
 #include <qstring.h>
 
-#include "kinstance.h"
-#include "kconfig.h"
-#include "kiconloader.h"
 #include "kaboutdata.h"
-#include "kstandarddirs.h"
+#include "kcmdlineargs.h"
+#include "kconfig.h"
 #include "kglobal.h"
+#include "kiconloader.h"
+#include "kinstance.h"
+#include "klocale.h"
 #include "kmimesourcefactory.h"
+#include "kstandarddirs.h"
 
 #ifndef NDEBUG
   #include <qhash.h>
@@ -278,6 +281,45 @@ QByteArray KInstance::instanceName() const
 {
     DEBUG_CHECK_ALIVE
     return _name;
+}
+
+QString KInstance::caption()
+{
+    // Caption set from command line ?
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+    if (args && args->isSet("caption"))
+    {
+       return QString::fromLocal8Bit(args->getOption("caption"));
+    }
+    else
+      // We have some about data ?
+      if ( KGlobal::instance()->aboutData() )
+        return KGlobal::instance()->aboutData()->programName();
+      else
+        // Last resort : application name
+        return qApp->applicationName();
+}
+
+// 1999-09-20: Espen Sand
+// An attempt to simplify consistent captions.
+//
+QString KInstance::makeStdCaption( const QString &userCaption,
+                                   CaptionFlags flags )
+{
+  QString captionString = userCaption.isEmpty() ? caption() : userCaption;
+
+  // If the document is modified, add '[modified]'.
+  if (flags & ModifiedCaption)
+      captionString += QString::fromUtf8(" [") + i18n("modified") + QString::fromUtf8("]");
+
+  if ( !userCaption.isEmpty() ) {
+      // Add the application name if:
+      // User asked for it, it's not a duplication  and the app name (caption()) is not empty
+      if ( flags & AppNameCaption && !caption().isNull() && !userCaption.endsWith(caption())  )
+	  captionString += QString::fromUtf8(" - ") + caption();
+  }
+
+  return captionString;
 }
 
 KMimeSourceFactory* KInstance::mimeSourceFactory () const

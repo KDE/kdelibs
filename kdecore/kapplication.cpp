@@ -1064,7 +1064,7 @@ void KApplication::dcopFailure(const QString &msg)
        QMessageBox::critical
          (
            kapp->activeWindow(),
-           i18n("DCOP communications error (%1)").arg(kapp->caption()),
+           i18n("DCOP communications error (%1)").arg(KInstance::caption()),
            msgStr,
            i18n("&OK")
          );
@@ -1439,47 +1439,6 @@ void KApplication::applyGUIStyle()
     kdisplaySetPalette();
 }
 
-QString KApplication::caption()
-{
-    // Caption set from command line ?
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-    if (args && args->isSet("caption"))
-    {
-       return QString::fromLocal8Bit(args->getOption("caption"));
-    }
-    else
-      // We have some about data ?
-      if ( KGlobal::instance()->aboutData() )
-        return KGlobal::instance()->aboutData()->programName();
-      else
-        // Last resort : application name
-        return qApp->applicationName();
-}
-
-
-//
-// 1999-09-20: Espen Sand
-// An attempt to simplify consistent captions.
-//
-QString KApplication::makeStdCaption( const QString &userCaption,
-                                      bool withAppName, bool modified )
-{
-  QString captionString = userCaption.isEmpty() ? caption() : userCaption;
-
-  // If the document is modified, add '[modified]'.
-  if (modified)
-      captionString += QString::fromUtf8(" [") + i18n("modified") + QString::fromUtf8("]");
-
-  if ( !userCaption.isEmpty() ) {
-      // Add the application name if:
-      // User asked for it, it's not a duplication  and the app name (caption()) is not empty
-      if ( withAppName && !caption().isNull() && !userCaption.endsWith(caption())  )
-	  captionString += QString::fromUtf8(" - ") + caption();
-  }
-
-  return captionString;
-}
-
 QPalette KApplication::createApplicationPalette()
 {
     KConfigGroup cg( KGlobal::config(), "General" );
@@ -1773,7 +1732,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
     // set the specified caption
     if ( !topWidget->inherits("KMainWindow") ) { // KMainWindow does this already for us
-        topWidget->setWindowTitle( caption() );
+        topWidget->setWindowTitle( KInstance::caption() );
     }
 
 #if defined Q_WS_X11

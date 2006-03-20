@@ -282,36 +282,6 @@ public:
   static QByteArray launcher();
 
   /**
-   * Returns a text for the window caption.
-   *
-   * This may be set by
-   * "-caption", otherwise it will be equivalent to the name of the
-   * executable.
-   * @return the text for the window caption
-   */
-  static QString caption();
-
-  /**
-   * Builds a caption that contains the application name along with the
-   * userCaption using a standard layout.
-   *
-   * To make a compliant caption
-   * for your window, simply do: @p setCaption(kapp->makeStdCaption(yourCaption));
-   *
-   * @param userCaption The caption string you want to display in the
-   * window caption area. Do not include the application name!
-   * @param withAppName Indicates that the method shall include or ignore
-   * the application name when making the caption string. You are not
-   * compliant if you set this to @p false.
-   * @param modified If true, a 'modified' sign will be included in the
-   * returned string. This is useful when indicating that a file is
-   * modified, i.e., it contains data that has not been saved.
-   * @return the created caption
-   */
-  static QString makeStdCaption( const QString &userCaption,
-                          bool withAppName=true, bool modified=false );
-
-  /**
    * Get a file name in order to make a temporary copy of your document.
    *
    * @param pFilename The full path to the current file of your
