@@ -102,6 +102,43 @@ foreach (_currentdocbookdir ${docbookdir})
     INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/)
 	set(expr "docbook/${_currentdocbookdir}/ent/*.ent")
 	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/ent/)
+
+	set(expr "docbook/${_currentdocbookdir}/common/*.xsl")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/common/)
+	set(expr "docbook/${_currentdocbookdir}/common/*.xml")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/common/)
+	set(expr "docbook/${_currentdocbookdir}/common/*.dtd")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/common/)
+
+    set(expr "docbook/${_currentdocbookdir}/html/*.xsl")
+    INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/html/)
+    set(expr "docbook/${_currentdocbookdir}/html/*.xml")
+    INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/html/)
+    set(expr "docbook/${_currentdocbookdir}/html/*.dtd")
+    INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/html/)
+
+    set(expr "docbook/${_currentdocbookdir}/images/*.png")
+    INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/images/)
+	set(expr "docbook/${_currentdocbookdir}/images/*.gif")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/images/)
+	set(expr "docbook/${_currentdocbookdir}/images/*.tif")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/images/)
+
+	set(expr "docbook/${_currentdocbookdir}/images/callouts/*.png")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
+    set(expr "docbook/${_currentdocbookdir}/images/callouts/*.gif")
+    INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/images/callouts/)
+
+	set(expr "docbook/${_currentdocbookdir}/lib/lib.*")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/lib/)
+
+	set(expr "docbook/${_currentdocbookdir}/manpages/*.xsl")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/manpages/)
+
+	set(expr "docbook/${_currentdocbookdir}/params/*.xml")
+	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/params/)
+	
+
 endforeach(_currentdocbookdir ${docbookdir})
 
 

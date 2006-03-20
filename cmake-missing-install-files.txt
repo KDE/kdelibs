@@ -1,5 +1,5 @@
 --- install-unsermake-kdelibs.txt	2006-03-19 18:40:03.000000000 +0100
-+++ cmake-install-kdelibs.txt	2006-03-19 23:19:06.000000000 +0100
++++ cmake-install-kdelibs.txt	2006-03-20 12:55:31.000000000 +0100
 @@ -58,20 +58,12 @@
  ./bin/makekdewidgets
  ./bin/meinproc
@@ -366,74 +366,32 @@
  ./share/apps/ksgmltools2/customization/xsl/ca.xml
  ./share/apps/ksgmltools2/customization/xsl/cs.xml
  ./share/apps/ksgmltools2/customization/xsl/da.xml
-@@ -2100,669 +2034,6 @@
+@@ -2100,10 +2034,8 @@
  ./share/apps/ksgmltools2/customization/zh-TW/lang.entities
  ./share/apps/ksgmltools2/customization/zh-TW/strings.entities
  ./share/apps/ksgmltools2/customization/zh-TW/user.entities
 -./share/apps/ksgmltools2/docbook/README.kde
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/40chg.txt
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/41chg.txt
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/40chg.txt
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/41chg.txt
 -./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ChangeLog
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/calstblx.dtd
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/dbcentx.mod
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/dbgenent.mod
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/dbhierx.mod
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/dbnotnx.mod
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/dbpoolx.mod
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/docbook.cat
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/docbookx.dtd
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-amsa.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-amsb.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-amsc.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-amsn.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-amso.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-amsr.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-box.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-cyr1.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-cyr2.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-dia.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-grk1.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-grk2.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-grk3.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-grk4.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-lat1.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-lat2.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-num.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-pub.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-tech.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/readme.txt
--./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/soextblx.dtd
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/calstblx.dtd
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/dbcentx.mod
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/dbgenent.mod
+@@ -2133,10 +2065,7 @@
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/ent/iso-tech.ent
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/readme.txt
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.1.2/soextblx.dtd
 -./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ChangeLog
 -./share/apps/ksgmltools2/docbook/xml-dtd-4.2/README
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/calstblx.dtd
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.2/calstblx.dtd
 -./share/apps/ksgmltools2/docbook/xml-dtd-4.2/catalog.xml
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/dbcentx.mod
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/dbgenent.mod
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/dbhierx.mod
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/dbnotnx.mod
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/dbpoolx.mod
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbook.cat
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-amsa.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-amsb.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-amsc.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-amsn.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-amso.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-amsr.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-box.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-cyr1.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-cyr2.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-dia.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-grk1.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-grk2.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-grk3.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-grk4.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-lat1.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-lat2.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-num.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-pub.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-tech.ent
--./share/apps/ksgmltools2/docbook/xml-dtd-4.2/soextblx.dtd
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.2/dbcentx.mod
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.2/dbgenent.mod
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.2/dbhierx.mod
+@@ -2164,13 +2093,6 @@
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-pub.ent
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.2/ent/iso-tech.ent
+ ./share/apps/ksgmltools2/docbook/xml-dtd-4.2/soextblx.dtd
 -./share/apps/ksgmltools2/docbook/xsl/BUGS
 -./share/apps/ksgmltools2/docbook/xsl/ChangeLog
 -./share/apps/ksgmltools2/docbook/xsl/README
@@ -441,602 +399,64 @@
 -./share/apps/ksgmltools2/docbook/xsl/VERSION
 -./share/apps/ksgmltools2/docbook/xsl/WhatsNew
 -./share/apps/ksgmltools2/docbook/xsl/common/ChangeLog
--./share/apps/ksgmltools2/docbook/xsl/common/af.xml
--./share/apps/ksgmltools2/docbook/xsl/common/ar.xml
--./share/apps/ksgmltools2/docbook/xsl/common/autoidx-ng.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/bg.xml
--./share/apps/ksgmltools2/docbook/xsl/common/bn.xml
--./share/apps/ksgmltools2/docbook/xsl/common/bs.xml
--./share/apps/ksgmltools2/docbook/xsl/common/ca.xml
--./share/apps/ksgmltools2/docbook/xsl/common/common.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/cs.xml
--./share/apps/ksgmltools2/docbook/xsl/common/da.xml
--./share/apps/ksgmltools2/docbook/xsl/common/de.xml
--./share/apps/ksgmltools2/docbook/xsl/common/el.xml
--./share/apps/ksgmltools2/docbook/xsl/common/en.xml
--./share/apps/ksgmltools2/docbook/xsl/common/eo.xml
--./share/apps/ksgmltools2/docbook/xsl/common/es.xml
--./share/apps/ksgmltools2/docbook/xsl/common/et.xml
--./share/apps/ksgmltools2/docbook/xsl/common/eu.xml
--./share/apps/ksgmltools2/docbook/xsl/common/fi.xml
--./share/apps/ksgmltools2/docbook/xsl/common/fr.xml
--./share/apps/ksgmltools2/docbook/xsl/common/gentext.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/he.xml
--./share/apps/ksgmltools2/docbook/xsl/common/hr.xml
--./share/apps/ksgmltools2/docbook/xsl/common/hu.xml
--./share/apps/ksgmltools2/docbook/xsl/common/id.xml
--./share/apps/ksgmltools2/docbook/xsl/common/it.xml
--./share/apps/ksgmltools2/docbook/xsl/common/ja.xml
--./share/apps/ksgmltools2/docbook/xsl/common/ko.xml
--./share/apps/ksgmltools2/docbook/xsl/common/l10n.dtd
--./share/apps/ksgmltools2/docbook/xsl/common/l10n.xml
--./share/apps/ksgmltools2/docbook/xsl/common/l10n.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/la.xml
--./share/apps/ksgmltools2/docbook/xsl/common/labels.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/lt.xml
--./share/apps/ksgmltools2/docbook/xsl/common/nl.xml
--./share/apps/ksgmltools2/docbook/xsl/common/nn.xml
--./share/apps/ksgmltools2/docbook/xsl/common/no.xml
--./share/apps/ksgmltools2/docbook/xsl/common/olink.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/pi.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/pl.xml
--./share/apps/ksgmltools2/docbook/xsl/common/pt.xml
--./share/apps/ksgmltools2/docbook/xsl/common/pt_br.xml
--./share/apps/ksgmltools2/docbook/xsl/common/ro.xml
--./share/apps/ksgmltools2/docbook/xsl/common/ru.xml
--./share/apps/ksgmltools2/docbook/xsl/common/sk.xml
--./share/apps/ksgmltools2/docbook/xsl/common/sl.xml
--./share/apps/ksgmltools2/docbook/xsl/common/sr.xml
--./share/apps/ksgmltools2/docbook/xsl/common/sr_Latn.xml
--./share/apps/ksgmltools2/docbook/xsl/common/subtitles.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/sv.xml
--./share/apps/ksgmltools2/docbook/xsl/common/table.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/targetdatabase.dtd
--./share/apps/ksgmltools2/docbook/xsl/common/targets.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/th.xml
--./share/apps/ksgmltools2/docbook/xsl/common/titles.xsl
--./share/apps/ksgmltools2/docbook/xsl/common/tr.xml
--./share/apps/ksgmltools2/docbook/xsl/common/uk.xml
--./share/apps/ksgmltools2/docbook/xsl/common/vi.xml
--./share/apps/ksgmltools2/docbook/xsl/common/xh.xml
--./share/apps/ksgmltools2/docbook/xsl/common/zh_cn.xml
--./share/apps/ksgmltools2/docbook/xsl/common/zh_tw.xml
+ ./share/apps/ksgmltools2/docbook/xsl/common/af.xml
+ ./share/apps/ksgmltools2/docbook/xsl/common/ar.xml
+ ./share/apps/ksgmltools2/docbook/xsl/common/autoidx-ng.xsl
+@@ -2231,7 +2153,6 @@
+ ./share/apps/ksgmltools2/docbook/xsl/common/xh.xml
+ ./share/apps/ksgmltools2/docbook/xsl/common/zh_cn.xml
+ ./share/apps/ksgmltools2/docbook/xsl/common/zh_tw.xml
 -./share/apps/ksgmltools2/docbook/xsl/html/ChangeLog
--./share/apps/ksgmltools2/docbook/xsl/html/admon.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/autoidx-ng.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/autoidx.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/autotoc.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/biblio.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/block.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/callout.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/changebars.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/chunk-code.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/chunk-common.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/chunk.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/chunker.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/chunkfast.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/chunktoc.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/component.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/division.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/docbook.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/docbookng.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/ebnf.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/footnote.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/formal.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/glossary.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/graphics.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/html-rtf.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/html.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/htmltbl.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/index.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/info.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/inline.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/keywords.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/lists.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/maketoc.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/manifest.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/math.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/oldchunker.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/onechunk.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/admon.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/autoidx-ng.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/autoidx.xsl
+@@ -2268,10 +2189,8 @@
+ ./share/apps/ksgmltools2/docbook/xsl/html/math.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/oldchunker.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/onechunk.xsl
 -./share/apps/ksgmltools2/docbook/xsl/html/param.ent
--./share/apps/ksgmltools2/docbook/xsl/html/param.xml
--./share/apps/ksgmltools2/docbook/xsl/html/param.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/param.xml
+ ./share/apps/ksgmltools2/docbook/xsl/html/param.xsl
 -./share/apps/ksgmltools2/docbook/xsl/html/param.xweb
--./share/apps/ksgmltools2/docbook/xsl/html/pi.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/profile-chunk-code.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/profile-chunk.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/profile-docbook.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/profile-onechunk.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/qandaset.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/refentry.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/sections.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/synop.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/table.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/task.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/titlepage.templates.xml
--./share/apps/ksgmltools2/docbook/xsl/html/titlepage.templates.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/titlepage.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/toc.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/verbatim.xsl
--./share/apps/ksgmltools2/docbook/xsl/html/xref.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/pi.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/profile-chunk-code.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/profile-chunk.xsl
+@@ -2289,7 +2208,6 @@
+ ./share/apps/ksgmltools2/docbook/xsl/html/toc.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/verbatim.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/html/xref.xsl
 -./share/apps/ksgmltools2/docbook/xsl/images/ChangeLog
--./share/apps/ksgmltools2/docbook/xsl/images/blank.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/1.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/1.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/10.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/10.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/11.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/11.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/12.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/12.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/13.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/13.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/14.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/14.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/15.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/15.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/2.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/2.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/3.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/3.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/4.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/4.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/5.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/5.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/6.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/6.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/7.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/7.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/8.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/8.png
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/9.gif
--./share/apps/ksgmltools2/docbook/xsl/images/callouts/9.png
+ ./share/apps/ksgmltools2/docbook/xsl/images/blank.png
+ ./share/apps/ksgmltools2/docbook/xsl/images/callouts/1.gif
+ ./share/apps/ksgmltools2/docbook/xsl/images/callouts/1.png
+@@ -2321,7 +2239,6 @@
+ ./share/apps/ksgmltools2/docbook/xsl/images/callouts/8.png
+ ./share/apps/ksgmltools2/docbook/xsl/images/callouts/9.gif
+ ./share/apps/ksgmltools2/docbook/xsl/images/callouts/9.png
 -./share/apps/ksgmltools2/docbook/xsl/images/callouts/ChangeLog
--./share/apps/ksgmltools2/docbook/xsl/images/caution.gif
--./share/apps/ksgmltools2/docbook/xsl/images/caution.png
--./share/apps/ksgmltools2/docbook/xsl/images/caution.tif
--./share/apps/ksgmltools2/docbook/xsl/images/draft.png
--./share/apps/ksgmltools2/docbook/xsl/images/home.gif
--./share/apps/ksgmltools2/docbook/xsl/images/home.png
--./share/apps/ksgmltools2/docbook/xsl/images/important.gif
--./share/apps/ksgmltools2/docbook/xsl/images/important.png
--./share/apps/ksgmltools2/docbook/xsl/images/important.tif
--./share/apps/ksgmltools2/docbook/xsl/images/next.gif
--./share/apps/ksgmltools2/docbook/xsl/images/next.png
--./share/apps/ksgmltools2/docbook/xsl/images/note.gif
--./share/apps/ksgmltools2/docbook/xsl/images/note.png
--./share/apps/ksgmltools2/docbook/xsl/images/note.tif
--./share/apps/ksgmltools2/docbook/xsl/images/prev.gif
--./share/apps/ksgmltools2/docbook/xsl/images/prev.png
--./share/apps/ksgmltools2/docbook/xsl/images/tip.gif
--./share/apps/ksgmltools2/docbook/xsl/images/tip.png
--./share/apps/ksgmltools2/docbook/xsl/images/tip.tif
--./share/apps/ksgmltools2/docbook/xsl/images/toc-blank.png
--./share/apps/ksgmltools2/docbook/xsl/images/toc-minus.png
--./share/apps/ksgmltools2/docbook/xsl/images/toc-plus.png
--./share/apps/ksgmltools2/docbook/xsl/images/up.gif
--./share/apps/ksgmltools2/docbook/xsl/images/up.png
--./share/apps/ksgmltools2/docbook/xsl/images/warning.gif
--./share/apps/ksgmltools2/docbook/xsl/images/warning.png
--./share/apps/ksgmltools2/docbook/xsl/images/warning.tif
+ ./share/apps/ksgmltools2/docbook/xsl/images/caution.gif
+ ./share/apps/ksgmltools2/docbook/xsl/images/caution.png
+ ./share/apps/ksgmltools2/docbook/xsl/images/caution.tif
+@@ -2349,18 +2266,14 @@
+ ./share/apps/ksgmltools2/docbook/xsl/images/warning.gif
+ ./share/apps/ksgmltools2/docbook/xsl/images/warning.png
+ ./share/apps/ksgmltools2/docbook/xsl/images/warning.tif
 -./share/apps/ksgmltools2/docbook/xsl/lib/ChangeLog
--./share/apps/ksgmltools2/docbook/xsl/lib/lib.xml
--./share/apps/ksgmltools2/docbook/xsl/lib/lib.xsl
--./share/apps/ksgmltools2/docbook/xsl/lib/lib.xweb
+ ./share/apps/ksgmltools2/docbook/xsl/lib/lib.xml
+ ./share/apps/ksgmltools2/docbook/xsl/lib/lib.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/lib/lib.xweb
 -./share/apps/ksgmltools2/docbook/xsl/manpages/ChangeLog
 -./share/apps/ksgmltools2/docbook/xsl/manpages/README
--./share/apps/ksgmltools2/docbook/xsl/manpages/docbook.xsl
--./share/apps/ksgmltools2/docbook/xsl/manpages/lists.xsl
--./share/apps/ksgmltools2/docbook/xsl/manpages/sect23.xsl
--./share/apps/ksgmltools2/docbook/xsl/manpages/synop.xsl
--./share/apps/ksgmltools2/docbook/xsl/manpages/xref.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/manpages/docbook.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/manpages/lists.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/manpages/sect23.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/manpages/synop.xsl
+ ./share/apps/ksgmltools2/docbook/xsl/manpages/xref.xsl
 -./share/apps/ksgmltools2/docbook/xsl/params/ChangeLog
--./share/apps/ksgmltools2/docbook/xsl/params/admon.graphics.extension.xml
--./share/apps/ksgmltools2/docbook/xsl/params/admon.graphics.path.xml
--./share/apps/ksgmltools2/docbook/xsl/params/admon.graphics.xml
--./share/apps/ksgmltools2/docbook/xsl/params/admon.style.xml
--./share/apps/ksgmltools2/docbook/xsl/params/admon.textlabel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/admonition.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/admonition.title.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/alignment.xml
--./share/apps/ksgmltools2/docbook/xsl/params/annotate.toc.xml
--./share/apps/ksgmltools2/docbook/xsl/params/appendix.autolabel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/arbortext.extensions.xml
--./share/apps/ksgmltools2/docbook/xsl/params/article.appendix.title.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/author.othername.in.middle.xml
--./share/apps/ksgmltools2/docbook/xsl/params/autotoc.label.separator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/axf.extensions.xml
--./share/apps/ksgmltools2/docbook/xsl/params/base.dir.xml
--./share/apps/ksgmltools2/docbook/xsl/params/biblioentry.item.separator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/bibliography.collection.xml
--./share/apps/ksgmltools2/docbook/xsl/params/bibliography.numbered.xml
--./share/apps/ksgmltools2/docbook/xsl/params/blockquote.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/body.font.family.xml
--./share/apps/ksgmltools2/docbook/xsl/params/body.font.master.xml
--./share/apps/ksgmltools2/docbook/xsl/params/body.font.size.xml
--./share/apps/ksgmltools2/docbook/xsl/params/body.margin.bottom.xml
--./share/apps/ksgmltools2/docbook/xsl/params/body.margin.top.xml
--./share/apps/ksgmltools2/docbook/xsl/params/bridgehead.in.toc.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callout.defaultcolumn.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callout.graphics.extension.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callout.graphics.number.limit.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callout.graphics.path.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callout.graphics.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callout.list.table.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callout.unicode.font.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callout.unicode.number.limit.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callout.unicode.start.character.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callout.unicode.xml
--./share/apps/ksgmltools2/docbook/xsl/params/callouts.extension.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chapter.autolabel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunk.first.sections.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunk.quietly.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunk.section.depth.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunk.sections.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunk.separate.lots.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunk.toc.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunk.tocs.and.lots.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunker.output.cdata-section-elements.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunker.output.doctype-public.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunker.output.doctype-system.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunker.output.encoding.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunker.output.indent.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunker.output.media-type.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunker.output.method.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunker.output.omit-xml-declaration.xml
--./share/apps/ksgmltools2/docbook/xsl/params/chunker.output.standalone.xml
--./share/apps/ksgmltools2/docbook/xsl/params/citerefentry.link.xml
--./share/apps/ksgmltools2/docbook/xsl/params/collect.xref.targets.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.count.back.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.count.body.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.count.front.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.count.index.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.count.lot.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.count.titlepage.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.gap.back.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.gap.body.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.gap.front.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.gap.index.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.gap.lot.xml
--./share/apps/ksgmltools2/docbook/xsl/params/column.gap.titlepage.xml
--./share/apps/ksgmltools2/docbook/xsl/params/compact.list.item.spacing.xml
--./share/apps/ksgmltools2/docbook/xsl/params/component.label.includes.part.label.xml
--./share/apps/ksgmltools2/docbook/xsl/params/component.title.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/css.decoration.xml
--./share/apps/ksgmltools2/docbook/xsl/params/current.docid.xml
--./share/apps/ksgmltools2/docbook/xsl/params/default.float.class.xml
--./share/apps/ksgmltools2/docbook/xsl/params/default.image.width.xml
--./share/apps/ksgmltools2/docbook/xsl/params/default.table.width.xml
--./share/apps/ksgmltools2/docbook/xsl/params/default.units.xml
--./share/apps/ksgmltools2/docbook/xsl/params/dingbat.font.family.xml
--./share/apps/ksgmltools2/docbook/xsl/params/double.sided.xml
--./share/apps/ksgmltools2/docbook/xsl/params/draft.mode.xml
--./share/apps/ksgmltools2/docbook/xsl/params/draft.watermark.image.xml
--./share/apps/ksgmltools2/docbook/xsl/params/ebnf.assignment.xml
--./share/apps/ksgmltools2/docbook/xsl/params/ebnf.statement.terminator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/ebnf.table.bgcolor.xml
--./share/apps/ksgmltools2/docbook/xsl/params/ebnf.table.border.xml
--./share/apps/ksgmltools2/docbook/xsl/params/eclipse.autolabel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/eclipse.plugin.id.xml
--./share/apps/ksgmltools2/docbook/xsl/params/eclipse.plugin.name.xml
--./share/apps/ksgmltools2/docbook/xsl/params/eclipse.plugin.provider.xml
--./share/apps/ksgmltools2/docbook/xsl/params/emphasis.propagates.style.xml
--./share/apps/ksgmltools2/docbook/xsl/params/entry.propagates.style.xml
--./share/apps/ksgmltools2/docbook/xsl/params/equation.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/example.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/figure.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/firstterm.only.link.xml
--./share/apps/ksgmltools2/docbook/xsl/params/footer.column.widths.xml
--./share/apps/ksgmltools2/docbook/xsl/params/footer.content.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/footer.rule.xml
--./share/apps/ksgmltools2/docbook/xsl/params/footers.on.blank.pages.xml
--./share/apps/ksgmltools2/docbook/xsl/params/footnote.font.size.xml
--./share/apps/ksgmltools2/docbook/xsl/params/footnote.number.format.xml
--./share/apps/ksgmltools2/docbook/xsl/params/footnote.number.symbols.xml
--./share/apps/ksgmltools2/docbook/xsl/params/footnote.sep.leader.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/fop.extensions.xml
--./share/apps/ksgmltools2/docbook/xsl/params/formal.object.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/formal.procedures.xml
--./share/apps/ksgmltools2/docbook/xsl/params/formal.title.placement.xml
--./share/apps/ksgmltools2/docbook/xsl/params/formal.title.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/funcsynopsis.decoration.xml
--./share/apps/ksgmltools2/docbook/xsl/params/funcsynopsis.style.xml
--./share/apps/ksgmltools2/docbook/xsl/params/funcsynopsis.tabular.threshold.xml
--./share/apps/ksgmltools2/docbook/xsl/params/function.parens.xml
--./share/apps/ksgmltools2/docbook/xsl/params/generate.id.attributes.xml
--./share/apps/ksgmltools2/docbook/xsl/params/generate.index.xml
--./share/apps/ksgmltools2/docbook/xsl/params/generate.legalnotice.link.xml
--./share/apps/ksgmltools2/docbook/xsl/params/generate.manifest.xml
--./share/apps/ksgmltools2/docbook/xsl/params/generate.meta.abstract.xml
--./share/apps/ksgmltools2/docbook/xsl/params/generate.section.toc.level.xml
--./share/apps/ksgmltools2/docbook/xsl/params/generate.toc.xml
--./share/apps/ksgmltools2/docbook/xsl/params/glossary.as.blocks.xml
--./share/apps/ksgmltools2/docbook/xsl/params/glossary.collection.xml
--./share/apps/ksgmltools2/docbook/xsl/params/glossentry.show.acronym.xml
--./share/apps/ksgmltools2/docbook/xsl/params/glosslist.as.blocks.xml
--./share/apps/ksgmltools2/docbook/xsl/params/glossterm.auto.link.xml
--./share/apps/ksgmltools2/docbook/xsl/params/glossterm.separation.xml
--./share/apps/ksgmltools2/docbook/xsl/params/glossterm.width.xml
--./share/apps/ksgmltools2/docbook/xsl/params/graphic.default.extension.xml
--./share/apps/ksgmltools2/docbook/xsl/params/graphicsize.extension.xml
--./share/apps/ksgmltools2/docbook/xsl/params/header.column.widths.xml
--./share/apps/ksgmltools2/docbook/xsl/params/header.content.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/header.rule.xml
--./share/apps/ksgmltools2/docbook/xsl/params/headers.on.blank.pages.xml
--./share/apps/ksgmltools2/docbook/xsl/params/html.base.xml
--./share/apps/ksgmltools2/docbook/xsl/params/html.cellpadding.xml
--./share/apps/ksgmltools2/docbook/xsl/params/html.cellspacing.xml
--./share/apps/ksgmltools2/docbook/xsl/params/html.cleanup.xml
--./share/apps/ksgmltools2/docbook/xsl/params/html.ext.xml
--./share/apps/ksgmltools2/docbook/xsl/params/html.extra.head.links.xml
--./share/apps/ksgmltools2/docbook/xsl/params/html.longdesc.link.xml
--./share/apps/ksgmltools2/docbook/xsl/params/html.longdesc.xml
--./share/apps/ksgmltools2/docbook/xsl/params/html.stylesheet.type.xml
--./share/apps/ksgmltools2/docbook/xsl/params/html.stylesheet.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.alias.file.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.autolabel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.back.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.forward.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.hideshow.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.home.url.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.home.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.jump1.title.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.jump1.url.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.jump1.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.jump2.title.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.jump2.url.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.jump2.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.locate.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.next.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.options.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.prev.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.print.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.refresh.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.stop.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.button.zoom.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.chm.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.default.topic.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.display.progress.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.encoding.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.enhanced.decompilation.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.enumerate.images.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.force.map.and.alias.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhc.binary.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhc.folders.instead.books.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhc.section.depth.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhc.show.root.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhc.width.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhc.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhk.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhp.tail.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhp.window.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhp.windows.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.hhp.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.map.file.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.only.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.remember.window.position.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.show.advanced.search.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.show.favorities.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.show.menu.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.show.toolbar.text.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.title.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.use.hhk.xml
--./share/apps/ksgmltools2/docbook/xsl/params/htmlhelp.window.geometry.xml
--./share/apps/ksgmltools2/docbook/xsl/params/hyphenate.verbatim.xml
--./share/apps/ksgmltools2/docbook/xsl/params/hyphenate.xml
--./share/apps/ksgmltools2/docbook/xsl/params/ignore.image.scaling.xml
--./share/apps/ksgmltools2/docbook/xsl/params/img.src.path.xml
--./share/apps/ksgmltools2/docbook/xsl/params/index.on.role.xml
--./share/apps/ksgmltools2/docbook/xsl/params/index.on.type.xml
--./share/apps/ksgmltools2/docbook/xsl/params/index.prefer.titleabbrev.xml
--./share/apps/ksgmltools2/docbook/xsl/params/index.preferred.page.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/informal.object.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/informalequation.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/informalexample.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/informalfigure.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/informaltable.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/inherit.keywords.xml
--./share/apps/ksgmltools2/docbook/xsl/params/insert.olink.page.number.xml
--./share/apps/ksgmltools2/docbook/xsl/params/insert.olink.pdf.frag.xml
--./share/apps/ksgmltools2/docbook/xsl/params/insert.xref.page.number.xml
--./share/apps/ksgmltools2/docbook/xsl/params/l10n.gentext.default.language.xml
--./share/apps/ksgmltools2/docbook/xsl/params/l10n.gentext.language.xml
--./share/apps/ksgmltools2/docbook/xsl/params/l10n.gentext.use.xref.language.xml
--./share/apps/ksgmltools2/docbook/xsl/params/label.from.part.xml
--./share/apps/ksgmltools2/docbook/xsl/params/line-height.xml
--./share/apps/ksgmltools2/docbook/xsl/params/linenumbering.everyNth.xml
--./share/apps/ksgmltools2/docbook/xsl/params/linenumbering.extension.xml
--./share/apps/ksgmltools2/docbook/xsl/params/linenumbering.separator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/linenumbering.width.xml
--./share/apps/ksgmltools2/docbook/xsl/params/link.mailto.url.xml
--./share/apps/ksgmltools2/docbook/xsl/params/list.block.spacing.xml
--./share/apps/ksgmltools2/docbook/xsl/params/list.item.spacing.xml
--./share/apps/ksgmltools2/docbook/xsl/params/make.graphic.viewport.xml
--./share/apps/ksgmltools2/docbook/xsl/params/make.index.markup.xml
--./share/apps/ksgmltools2/docbook/xsl/params/make.single.year.ranges.xml
--./share/apps/ksgmltools2/docbook/xsl/params/make.valid.html.xml
--./share/apps/ksgmltools2/docbook/xsl/params/make.year.ranges.xml
--./share/apps/ksgmltools2/docbook/xsl/params/manifest.in.base.dir.xml
--./share/apps/ksgmltools2/docbook/xsl/params/manifest.xml
--./share/apps/ksgmltools2/docbook/xsl/params/manual.toc.xml
--./share/apps/ksgmltools2/docbook/xsl/params/marker.section.level.xml
--./share/apps/ksgmltools2/docbook/xsl/params/menuchoice.menu.separator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/menuchoice.separator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/monospace.font.family.xml
--./share/apps/ksgmltools2/docbook/xsl/params/monospace.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/monospace.verbatim.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/navig.graphics.extension.xml
--./share/apps/ksgmltools2/docbook/xsl/params/navig.graphics.path.xml
--./share/apps/ksgmltools2/docbook/xsl/params/navig.graphics.xml
--./share/apps/ksgmltools2/docbook/xsl/params/navig.showtitles.xml
--./share/apps/ksgmltools2/docbook/xsl/params/nominal.image.depth.xml
--./share/apps/ksgmltools2/docbook/xsl/params/nominal.image.width.xml
--./share/apps/ksgmltools2/docbook/xsl/params/nominal.table.width.xml
--./share/apps/ksgmltools2/docbook/xsl/params/normal.para.spacing.xml
--./share/apps/ksgmltools2/docbook/xsl/params/olink.base.uri.xml
--./share/apps/ksgmltools2/docbook/xsl/params/olink.debug.xml
--./share/apps/ksgmltools2/docbook/xsl/params/olink.doctitle.xml
--./share/apps/ksgmltools2/docbook/xsl/params/olink.fragid.xml
--./share/apps/ksgmltools2/docbook/xsl/params/olink.lang.fallback.sequence.xml
--./share/apps/ksgmltools2/docbook/xsl/params/olink.outline.ext.xml
--./share/apps/ksgmltools2/docbook/xsl/params/olink.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/olink.pubid.xml
--./share/apps/ksgmltools2/docbook/xsl/params/olink.resolver.xml
--./share/apps/ksgmltools2/docbook/xsl/params/olink.sysid.xml
--./share/apps/ksgmltools2/docbook/xsl/params/page.height.portrait.xml
--./share/apps/ksgmltools2/docbook/xsl/params/page.height.xml
--./share/apps/ksgmltools2/docbook/xsl/params/page.margin.bottom.xml
--./share/apps/ksgmltools2/docbook/xsl/params/page.margin.inner.xml
--./share/apps/ksgmltools2/docbook/xsl/params/page.margin.outer.xml
--./share/apps/ksgmltools2/docbook/xsl/params/page.margin.top.xml
--./share/apps/ksgmltools2/docbook/xsl/params/page.orientation.xml
--./share/apps/ksgmltools2/docbook/xsl/params/page.width.portrait.xml
--./share/apps/ksgmltools2/docbook/xsl/params/page.width.xml
--./share/apps/ksgmltools2/docbook/xsl/params/paper.type.xml
--./share/apps/ksgmltools2/docbook/xsl/params/para.propagates.style.xml
--./share/apps/ksgmltools2/docbook/xsl/params/part.autolabel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/passivetex.extensions.xml
--./share/apps/ksgmltools2/docbook/xsl/params/phrase.propagates.style.xml
--./share/apps/ksgmltools2/docbook/xsl/params/pixels.per.inch.xml
--./share/apps/ksgmltools2/docbook/xsl/params/points.per.em.xml
--./share/apps/ksgmltools2/docbook/xsl/params/preface.autolabel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/prefer.internal.olink.xml
--./share/apps/ksgmltools2/docbook/xsl/params/preferred.mediaobject.role.xml
--./share/apps/ksgmltools2/docbook/xsl/params/procedure.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/process.empty.source.toc.xml
--./share/apps/ksgmltools2/docbook/xsl/params/process.source.toc.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.arch.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.attribute.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.condition.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.conformance.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.lang.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.os.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.revision.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.revisionflag.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.role.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.security.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.separator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.userlevel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.value.xml
--./share/apps/ksgmltools2/docbook/xsl/params/profile.vendor.xml
--./share/apps/ksgmltools2/docbook/xsl/params/punct.honorific.xml
--./share/apps/ksgmltools2/docbook/xsl/params/qanda.defaultlabel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/qanda.inherit.numeration.xml
--./share/apps/ksgmltools2/docbook/xsl/params/qanda.title.level1.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/qanda.title.level2.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/qanda.title.level3.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/qanda.title.level4.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/qanda.title.level5.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/qanda.title.level6.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/qanda.title.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/qandadiv.autolabel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/refentry.generate.name.xml
--./share/apps/ksgmltools2/docbook/xsl/params/refentry.generate.title.xml
--./share/apps/ksgmltools2/docbook/xsl/params/refentry.pagebreak.xml
--./share/apps/ksgmltools2/docbook/xsl/params/refentry.separator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/refentry.title.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/refentry.xref.manvolnum.xml
--./share/apps/ksgmltools2/docbook/xsl/params/region.after.extent.xml
--./share/apps/ksgmltools2/docbook/xsl/params/region.before.extent.xml
--./share/apps/ksgmltools2/docbook/xsl/params/root.filename.xml
--./share/apps/ksgmltools2/docbook/xsl/params/root.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/rootid.xml
--./share/apps/ksgmltools2/docbook/xsl/params/runinhead.default.title.end.punct.xml
--./share/apps/ksgmltools2/docbook/xsl/params/runinhead.title.end.punct.xml
--./share/apps/ksgmltools2/docbook/xsl/params/sans.font.family.xml
--./share/apps/ksgmltools2/docbook/xsl/params/saxon.callouts.xml
--./share/apps/ksgmltools2/docbook/xsl/params/saxon.character.representation.xml
--./share/apps/ksgmltools2/docbook/xsl/params/saxon.linenumbering.xml
--./share/apps/ksgmltools2/docbook/xsl/params/saxon.tablecolumns.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.autolabel.max.depth.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.autolabel.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.label.includes.component.label.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.level1.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.level2.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.level3.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.level4.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.level5.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.level6.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.title.level1.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.title.level2.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.title.level3.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.title.level4.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.title.level5.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.title.level6.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/section.title.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/segmentedlist.as.table.xml
--./share/apps/ksgmltools2/docbook/xsl/params/shade.verbatim.style.xml
--./share/apps/ksgmltools2/docbook/xsl/params/shade.verbatim.xml
--./share/apps/ksgmltools2/docbook/xsl/params/show.comments.xml
--./share/apps/ksgmltools2/docbook/xsl/params/show.revisionflag.xml
--./share/apps/ksgmltools2/docbook/xsl/params/sidebar.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/simplesect.in.toc.xml
--./share/apps/ksgmltools2/docbook/xsl/params/spacing.paras.xml
--./share/apps/ksgmltools2/docbook/xsl/params/subscript.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/superscript.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/suppress.footer.navigation.xml
--./share/apps/ksgmltools2/docbook/xsl/params/suppress.header.navigation.xml
--./share/apps/ksgmltools2/docbook/xsl/params/suppress.navigation.xml
--./share/apps/ksgmltools2/docbook/xsl/params/symbol.font.family.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.borders.with.css.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.cell.border.color.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.cell.border.style.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.cell.border.thickness.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.cell.padding.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.entry.padding.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.footnote.number.format.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.footnote.number.symbols.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.frame.border.color.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.frame.border.style.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.frame.border.thickness.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/table.table.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/tablecolumns.extension.xml
--./share/apps/ksgmltools2/docbook/xsl/params/target.database.document.xml
--./share/apps/ksgmltools2/docbook/xsl/params/targets.filename.xml
--./share/apps/ksgmltools2/docbook/xsl/params/template.xml
--./share/apps/ksgmltools2/docbook/xsl/params/tex.math.delims.xml
--./share/apps/ksgmltools2/docbook/xsl/params/tex.math.file.xml
--./share/apps/ksgmltools2/docbook/xsl/params/tex.math.in.alt.xml
--./share/apps/ksgmltools2/docbook/xsl/params/textdata.default.encoding.xml
--./share/apps/ksgmltools2/docbook/xsl/params/textinsert.extension.xml
--./share/apps/ksgmltools2/docbook/xsl/params/title.font.family.xml
--./share/apps/ksgmltools2/docbook/xsl/params/title.margin.left.xml
--./share/apps/ksgmltools2/docbook/xsl/params/toc.indent.width.xml
--./share/apps/ksgmltools2/docbook/xsl/params/toc.list.type.xml
--./share/apps/ksgmltools2/docbook/xsl/params/toc.margin.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/toc.max.depth.xml
--./share/apps/ksgmltools2/docbook/xsl/params/toc.section.depth.xml
--./share/apps/ksgmltools2/docbook/xsl/params/ulink.footnote.number.format.xml
--./share/apps/ksgmltools2/docbook/xsl/params/ulink.footnotes.xml
--./share/apps/ksgmltools2/docbook/xsl/params/ulink.hyphenate.xml
--./share/apps/ksgmltools2/docbook/xsl/params/ulink.show.xml
--./share/apps/ksgmltools2/docbook/xsl/params/ulink.target.xml
--./share/apps/ksgmltools2/docbook/xsl/params/use.embed.for.svg.xml
--./share/apps/ksgmltools2/docbook/xsl/params/use.extensions.xml
--./share/apps/ksgmltools2/docbook/xsl/params/use.id.as.filename.xml
--./share/apps/ksgmltools2/docbook/xsl/params/use.id.function.xml
--./share/apps/ksgmltools2/docbook/xsl/params/use.local.olink.style.xml
--./share/apps/ksgmltools2/docbook/xsl/params/use.role.as.xrefstyle.xml
--./share/apps/ksgmltools2/docbook/xsl/params/use.role.for.mediaobject.xml
--./share/apps/ksgmltools2/docbook/xsl/params/use.svg.xml
--./share/apps/ksgmltools2/docbook/xsl/params/variablelist.as.blocks.xml
--./share/apps/ksgmltools2/docbook/xsl/params/variablelist.as.table.xml
--./share/apps/ksgmltools2/docbook/xsl/params/variablelist.max.termlength.xml
--./share/apps/ksgmltools2/docbook/xsl/params/verbatim.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/wordml.template.xml
--./share/apps/ksgmltools2/docbook/xsl/params/xep.extensions.xml
--./share/apps/ksgmltools2/docbook/xsl/params/xep.index.item.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/xref.label-page.separator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/xref.label-title.separator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/xref.properties.xml
--./share/apps/ksgmltools2/docbook/xsl/params/xref.title-page.separator.xml
--./share/apps/ksgmltools2/docbook/xsl/params/xref.with.number.and.title.xml
- ./share/apps/kssl/ca-bundle.crt
- ./share/apps/kstyle/themes/plastik.themerc
- ./share/apps/ktexteditor_docwordcompletion/docwordcompletionui.rc
-@@ -2841,11 +2112,6 @@
+ ./share/apps/ksgmltools2/docbook/xsl/params/admon.graphics.extension.xml
+ ./share/apps/ksgmltools2/docbook/xsl/params/admon.graphics.path.xml
+ ./share/apps/ksgmltools2/docbook/xsl/params/admon.graphics.xml
+@@ -2841,11 +2754,6 @@
  ./share/doc/HTML/en/common/web-doctop.png
  ./share/doc/HTML/en/common/x11-license.html
  ./share/doc/HTML/en/common/xml.dcl
@@ -1048,7 +468,7 @@
  ./share/emoticons/Default/angry.png
  ./share/emoticons/Default/bat.png
  ./share/emoticons/Default/beer.png
-@@ -3492,10 +2758,6 @@
+@@ -3492,10 +3400,6 @@
  ./share/icons/crystalsvg/22x22/actions/contents2.png
  ./share/icons/crystalsvg/22x22/actions/contexthelp.png
  ./share/icons/crystalsvg/22x22/actions/crop.png
@@ -1059,7 +479,7 @@
  ./share/icons/crystalsvg/22x22/actions/decrypted.png
  ./share/icons/crystalsvg/22x22/actions/down.png
  ./share/icons/crystalsvg/22x22/actions/edit.png
-@@ -4893,7 +4155,6 @@
+@@ -4893,7 +4797,6 @@
  ./share/mimelnk/application/x-ace.desktop
  ./share/mimelnk/application/x-afm.desktop
  ./share/mimelnk/application/x-amipro.desktop
@@ -1067,7 +487,7 @@
  ./share/mimelnk/application/x-applixgraphics.desktop
  ./share/mimelnk/application/x-applixspread.desktop
  ./share/mimelnk/application/x-applixword.desktop
-@@ -4966,8 +4227,6 @@
+@@ -4966,8 +4869,6 @@
  ./share/mimelnk/application/x-mswrite.desktop
  ./share/mimelnk/application/x-object.desktop
  ./share/mimelnk/application/x-ogg.desktop
@@ -1076,7 +496,7 @@
  ./share/mimelnk/application/x-pak.desktop
  ./share/mimelnk/application/x-perl-module.desktop
  ./share/mimelnk/application/x-perl.desktop
-@@ -5047,7 +4306,6 @@
+@@ -5047,7 +4948,6 @@
  ./share/mimelnk/image/svg+xml.desktop
  ./share/mimelnk/image/svg-xml.desktop
  ./share/mimelnk/image/tiff.desktop
@@ -1084,7 +504,7 @@
  ./share/mimelnk/image/x-bmp.desktop
  ./share/mimelnk/image/x-dds.desktop
  ./share/mimelnk/image/x-djvu.desktop
-@@ -5112,15 +4370,12 @@
+@@ -5112,15 +5012,12 @@
  ./share/mimelnk/text/x-latex.desktop
  ./share/mimelnk/text/x-ldif.desktop
  ./share/mimelnk/text/x-log.desktop
@@ -1100,7 +520,7 @@
  ./share/mimelnk/text/x-tcl.desktop
  ./share/mimelnk/text/x-tex.desktop
  ./share/mimelnk/text/x-vcalendar.desktop
-@@ -5162,7 +4417,6 @@
+@@ -5162,7 +5059,6 @@
  ./share/services/kded/kdetrayproxy.desktop
  ./share/services/kded/kpasswdserver.desktop
  ./share/services/kded/kssld.desktop
@@ -1108,7 +528,7 @@
  ./share/services/kded/proxyscout.desktop
  ./share/services/khtml.desktop
  ./share/services/khtmlimage.desktop
-@@ -5195,7 +4449,6 @@
+@@ -5195,7 +5091,6 @@
  ./share/services/qimageioplugins/gif.desktop
  ./share/services/qimageioplugins/hdr.desktop
  ./share/services/qimageioplugins/ico.desktop
@@ -1116,7 +536,7 @@
  ./share/services/qimageioplugins/jpeg.desktop
  ./share/services/qimageioplugins/mng.desktop
  ./share/services/qimageioplugins/pbm.desktop
-@@ -5245,3 +4498,4 @@
+@@ -5245,3 +5140,4 @@
  ./share/servicetypes/kurifilterplugin.desktop
  ./share/servicetypes/qimageio_plugin.desktop
  ./share/servicetypes/renamedlgplugin.desktop
