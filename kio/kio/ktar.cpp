@@ -301,10 +301,10 @@ bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
             delete filterDev;
             return false;
         }
-        Q_LONG len;
-        while ( !filterDev->atEnd() ) {
+        Q_LONG len = -1;
+        while ( !filterDev->atEnd() && len != 0) {
             len = filterDev->readBlock(buffer.data(),buffer.size());
-            if ( len <= 0 ) { // corrupted archive
+            if ( len < 0 ) { // corrupted archive
                 delete filterDev;
                 return false;
             }
