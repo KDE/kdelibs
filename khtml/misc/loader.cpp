@@ -546,7 +546,8 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
         for (int y = r.height(); y < h; y += r.height())
             copyBlt(bg, 0, y, bg, 0, 0, w, r.height());
 
-	delete oldbg;
+        if ( src == oldbg )
+            delete oldbg;
     }
 
     if (bg)
