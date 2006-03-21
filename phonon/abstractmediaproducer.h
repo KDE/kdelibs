@@ -209,8 +209,6 @@ namespace Phonon
 			 * In case you're not interested in the old state you can also
 			 * connect to a slot that only has one State argument.
 			 *
-			 * @param self A pointer to the MediaObject that emitted the signal.
-			 *             This can be usefull if you have several MediaObjects.
 			 * @param newstate The state the Player is in now.
 			 * @param oldstate The state the Player was in before.
 			 */
