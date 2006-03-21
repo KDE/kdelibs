@@ -258,7 +258,7 @@ KService::~KService()
   delete d;
 }
 
-QPixmap KService::pixmap( KIcon::Group _group, int _force_size, int _state, QString * _path ) const
+QPixmap KService::pixmap( K3Icon::Group _group, int _force_size, int _state, QString * _path ) const
 {
   KIconLoader *iconLoader=KGlobal::iconLoader();
   if (!iconLoader->extraDesktopThemesAdded())

@@ -63,8 +63,8 @@ void KMConfigDialog::addConfigPage(KMConfigPage *page)
 	{
 		QPixmap icon = KGlobal::instance()->iconLoader()->loadIcon(
 		                                                           page->pagePixmap(),
-		                                                           KIcon::NoGroup,
-                        	                                           KIcon::SizeMedium
+		                                                           K3Icon::NoGroup,
+                        	                                           K3Icon::SizeMedium
 		                                                          );
 
 		QFrame	*frame = addPage(page->pageName(),page->pageHeader(),icon);

@@ -34,7 +34,7 @@ KFileTreeViewItem::KFileTreeViewItem( KFileTreeViewItem *parent,
      m_branch( brnch ),
      m_wasListed(false)
 {
-   setPixmap(0, item->pixmap( KIcon::SizeSmall ));
+   setPixmap(0, item->pixmap( K3Icon::SizeSmall ));
    setText( 0, item->text());
 
 }
@@ -47,7 +47,7 @@ KFileTreeViewItem::KFileTreeViewItem( KFileTreeView* parent,
     m_branch( brnch ),
     m_wasListed(false)
 {
-   setPixmap(0, item->pixmap( KIcon::SizeSmall ));
+   setPixmap(0, item->pixmap( K3Icon::SizeSmall ));
    setText( 0, item->text());
 }
 

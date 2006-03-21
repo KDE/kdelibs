@@ -278,11 +278,11 @@ ToolTip=Draws a button which shows an arrow pointing into a certain direction.
 Group=Buttons (KDE)
 ConstructorArgs=(parent,Qt::UpArrow)
 
-[KAnimWidget]
+[KAnimatedButton]
 IncludeFile=kanimwidget.h
-ToolTip=This is a widget used to display animation using multiple individual pixmaps.
+ToolTip=An extended version of QToolButton which can display an animated icon.
 Group=Display (KDE)
-ConstructorArgs=("kde",0,parent)
+ConstructorArgs=(parent)
 
 [KValueSelector]
 IncludeFile=kcolordialog.h

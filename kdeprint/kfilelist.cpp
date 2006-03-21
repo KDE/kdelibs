@@ -194,7 +194,7 @@ void KFileList::addFiles(const KUrl::List& files)
         QStringList data;
         data << url.fileName() << mime->comment() << downloaded;
 				QTreeWidgetItem *item = new QTreeWidgetItem(data);
-				item->setIcon(0, mime->pixmap(url, KIcon::Small));
+				item->setIcon(0, mime->pixmap(url, K3Icon::Small));
         m_files->insertTopLevelItem(m_files->topLevelItemCount(), item);
 			}
 
@@ -222,7 +222,7 @@ void KFileList::setFileList(const QStringList& files)
     QStringList data;
     data << url.fileName() << mime->comment() << *it;
 		QTreeWidgetItem *item = new QTreeWidgetItem(data);
-		item->setIcon(0, mime->pixmap(url, KIcon::Small));
+		item->setIcon(0, mime->pixmap(url, K3Icon::Small));
     m_files->insertTopLevelItem(m_files->topLevelItemCount(), item);
 	}
 	slotSelectionChanged();

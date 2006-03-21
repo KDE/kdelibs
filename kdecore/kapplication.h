@@ -246,7 +246,7 @@ public:
    * @deprecated Use QApplication::windowIcon()
    */
   inline KDE_DEPRECATED QPixmap icon() const {
-      int size = IconSize(KIcon::Desktop);
+      int size = IconSize(K3Icon::Desktop);
       return windowIcon().pixmap(size,size);
   };
 
@@ -256,7 +256,7 @@ public:
    * @deprecated Use QApplication::windowIcon()
    */
   inline KDE_DEPRECATED QPixmap miniIcon() const {
-      int size = IconSize(KIcon::Small);
+      int size = IconSize(K3Icon::Small);
       return windowIcon().pixmap(size,size);
   };
 #endif

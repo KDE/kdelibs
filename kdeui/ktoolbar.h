@@ -31,17 +31,13 @@
 
 #include <kdelibs_export.h>
 
-class QMainWindow;
 class QMenu;
-class QDomDocument;
 class QDomElement;
-class QSize;
-class QStringList;
-class QTimer;
 
 class KMenu;
 class KXMLGUIClient;
 class KConfig;
+class KMainWindow;
 
  /**
   * @short Floatable toolbar with auto resize.
@@ -55,9 +51,8 @@ class KConfig;
   * construction. It will reread this config group on a
   * KApplication::appearanceChanged() signal.
   *
-  * @author Reginald Stadlbauer <reggie@kde.org>, Stephan Kulow <coolo@kde.org>, Sven Radej <radej@kde.org>.
+  * @author Reginald Stadlbauer <reggie@kde.org>, Stephan Kulow <coolo@kde.org>, Sven Radej <radej@kde.org>, Hamish Rodda <rodda@kde.org>.
   */
-
 class KDEUI_EXPORT KToolBar : public QToolBar
 {
     Q_OBJECT
@@ -107,39 +102,12 @@ public:
   /**
    * Returns the main window that this toolbar is docked with.
    */
-    QMainWindow* mainWindow() const;
+    KMainWindow* mainWindow() const;
 
   /**
    * Convenience function to set icon size
    */
     inline void setIconDimensions(int size) { QToolBar::setIconSize(QSize(size,size)); }
-
-  /**
-   * Set toolbar to full parent size (default).
-   *
-   * In full size mode the bar extends over the parent's full width or height.
-   * If the mode is disabled the toolbar tries to take as much space as it
-   * needs without wrapping, but it does not exceed the parent box. You can
-   * force a certain width or height with setMaxWidth() or
-   * setMaxHeight().
-   *
-   * If you want to use right-aligned items or auto-sized items you must use
-   * full size mode.
-   */
-    void setFullSize(bool flag = true);
-
-  /**
-   * Returns the full-size mode enabled flag.
-   * @return @p true if the full-size mode is enabled.
-   */
-    bool fullSize() const;
-
-  /**
-   * Set this toolbar to be "flat", i.e. not to have a handle or be moveable.
-   * \todo implement properly
-   */
-    void setFlat (bool flag) { setMovable(flag); }
-    bool isFlat() const { return isMovable(); }
 
   /**
    * Returns the default size for this type of toolbar.
@@ -173,17 +141,6 @@ public:
 
     void setXMLGUIClient( KXMLGUIClient *client );
 
-  /**
-   * This function hides QToolBar::setAllowedAreas() because kiosk uses this property
-   * to prevent the dock widget being moved to areas it shouldn't me moved to.
-   *
-   * It's not perfect, but it's the best case scenario for now
-   *
-   * \todo find a better way to perform this restriction - connect to the changed signal
-   * \todo enforce the restriction from construction time
-   */
-    void setAllowedAreas(Qt::ToolBarAreas areas);
-
     /**
      * Load state from an XML element, called by KXMLGUIBuilder
      */
@@ -215,15 +172,23 @@ public:
      */
     static Qt::ToolButtonStyle toolButtonStyleSetting();
 
+protected Q_SLOTS:
+    virtual void slotMovableChanged(bool movable);
+
 protected:
-    void mousePressEvent( QMouseEvent * );
+    virtual void mousePressEvent( QMouseEvent * );
     void applyAppearanceSettings(KConfig *config, const QString &_configGroup, bool forceGlobal = false);
     QString settingsGroup() const;
 
+    // Draggable toolbar configuration
+    virtual void dragEnterEvent(QDragEnterEvent* event);
+    virtual void dragMoveEvent(QDragMoveEvent* event);
+    virtual void dragLeaveEvent(QDragLeaveEvent* event);
+    virtual void dropEvent(QDropEvent* event);
+
 private Q_SLOTS:
-    void slotReadConfig ();
+    void slotReadConfig();
     void slotAppearanceChanged();
-    void slotOrientationChanged(Qt::Orientation orientation);
     void slotContextAboutToShow();
     void slotContextAboutToHide();
 
@@ -243,15 +208,13 @@ private:
     int dockWindowIndex();
     KMenu *contextMenu();
     void doModeChange();
-	bool isMainToolBar() const { return (objectName() == QLatin1String("mainToolBar")); } ;
-
-    QPointer<QWidget> stretchableWidget, rightAligned;
+    bool isMainToolBar() const;
 
 protected:
     virtual void virtual_hook( int id, void* data );
 
 private:
-    class KToolBarPrivate *d;
+    class KToolBarPrivate* const d;
 };
 
 #endif

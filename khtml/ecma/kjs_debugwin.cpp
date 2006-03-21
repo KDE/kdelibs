@@ -83,7 +83,7 @@ SourceDisplay::SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char 
 {
   verticalScrollBar()->setLineStep(QFontMetrics(m_font).height());
   viewport()->setBackgroundMode(Qt::NoBackground);
-  m_breakpointIcon = KGlobal::iconLoader()->loadIcon("stop",KIcon::Small);
+  m_breakpointIcon = KGlobal::iconLoader()->loadIcon("stop",K3Icon::Small);
 }
 
 SourceDisplay::~SourceDisplay()
@@ -299,8 +299,8 @@ KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage, boo
 
   QLabel *iconLabel = new QLabel("",page);
   iconLabel->setPixmap(KGlobal::iconLoader()->loadIcon("messagebox_critical",
-						       KIcon::NoGroup,KIcon::SizeMedium,
-						       KIcon::DefaultState,0,true));
+						       K3Icon::NoGroup,K3Icon::SizeMedium,
+						       K3Icon::DefaultState,0,true));
 
   QWidget *contents = new QWidget(page);
   QLabel *label = new QLabel(errorMessage,contents);
@@ -363,7 +363,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_execsAlloc = 0;
   m_steppingDepth = 0;
 
-  m_stopIcon = KGlobal::iconLoader()->loadIcon("stop",KIcon::Small);
+  m_stopIcon = KGlobal::iconLoader()->loadIcon("stop",K3Icon::Small);
   m_emptyIcon = QPixmap(m_stopIcon.width(),m_stopIcon.height());
   QBitmap emptyMask(m_stopIcon.width(),m_stopIcon.height(),true);
   m_emptyIcon.setMask(emptyMask);

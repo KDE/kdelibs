@@ -2,6 +2,7 @@
 
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Kurt Granroth <granroth@kde.org>
+   Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,76 +18,57 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
 #include <kanimwidget.h>
-#include <qpixmap.h>
-#include <qtimer.h>
-#include <qpainter.h>
-#include <qimage.h>
-#include <ktoolbar.h>
+
+#include <QAction>
+#include <QPixmap>
+#include <QTimer>
+#include <QImage>
+#include <QToolBar>
+#include <QPainter>
+
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <QMouseEvent>
 
-class KAnimWidgetPrivate
+class KAnimatedButtonPrivate
 {
 public:
-  bool                   loadingCompleted : 1;
-  bool                   initDone         : 1;
-  bool                   transparent      : 1;
   int                    frames;
   int                    current_frame;
   QPixmap                pixmap;
   QTimer                 timer;
   QString                icon_name;
-  int                    size;
 };
 
-KAnimWidget::KAnimWidget( const QString& icons, int size, QWidget *parent )
-  : QFrame( parent ),
-    d( new KAnimWidgetPrivate )
+KAnimatedButton::KAnimatedButton( QWidget *parent )
+  : QToolButton( parent ),
+    d( new KAnimatedButtonPrivate )
 {
   connect( &d->timer, SIGNAL(timeout()), this, SLOT(slotTimerUpdate()));
-
-  if (parent && qobject_cast<KToolBar*>(parent))
-    connect(parent, SIGNAL(modechange()), this, SLOT(updateIcons()));
-
-  d->loadingCompleted = false;
-  d->size = size;
-  d->initDone = false;
-  setIcons( icons );
-  setFrameStyle( StyledPanel | Sunken );
 }
 
-KAnimWidget::~KAnimWidget()
+KAnimatedButton::~KAnimatedButton()
 {
   d->timer.stop();
 
   delete d;
 }
 
-void KAnimWidget::start()
+void KAnimatedButton::start()
 {
   d->current_frame = 0;
   d->timer.start( 50 );
 }
 
-void KAnimWidget::stop()
+void KAnimatedButton::stop()
 {
   d->current_frame = 0;
   d->timer.stop();
-  repaint();
+  updateCurrentIcon();
 }
 
-void KAnimWidget::setSize( int size )
-{
-  if ( d->size == size )
-    return;
-
-  d->size = size;
-  updateIcons();
-}
-
-void KAnimWidget::setIcons( const QString& icons )
+void KAnimatedButton::setIcons( const QString& icons )
 {
   if ( d->icon_name == icons )
     return;
@@ -95,75 +77,12 @@ void KAnimWidget::setIcons( const QString& icons )
   updateIcons();
 }
 
-QString KAnimWidget::icons( ) const
+QString KAnimatedButton::icons( ) const
 {
    return d->icon_name;
 }
 
-int KAnimWidget::size( ) const
-{
-   return d->size;
-}
-
-
-void KAnimWidget::showEvent(QShowEvent* e)
-{
-  if (!d->initDone)
-  {
-     d->initDone = true;
-     updateIcons();
-  }
-  QFrame::showEvent(e);
-}
-
-void KAnimWidget::hideEvent(QHideEvent* e)
-{
-  QFrame::hideEvent(e);
-}
-
-void KAnimWidget::enterEvent( QEvent *e )
-{
-  if ( frameStyle() != NoFrame )
-  {
-    setFrameStyle( Panel | Raised );
-
-    // for the pathological case where the frame was set to NoFrame,
-    // then back again! if only setFrameStyle was virtual in Qt4 *sob*
-    setCursor( Qt::ArrowCursor );
-  }
-  else
-  {
-    setCursor( Qt::PointingHandCursor );
-  }
-
-  QFrame::enterEvent( e );
-}
-
-void KAnimWidget::leaveEvent( QEvent *e )
-{
-  if ( frameStyle() != NoFrame )
-  {
-    setFrameStyle( StyledPanel | Sunken );
-  }
-
-  QFrame::leaveEvent( e );
-}
-
-void KAnimWidget::mousePressEvent( QMouseEvent *e )
-{
-  QFrame::mousePressEvent( e );
-}
-
-void KAnimWidget::mouseReleaseEvent( QMouseEvent *e )
-{
-  if ( e->button() == Qt::LeftButton &&
-       rect().contains( e->pos() ) )
-    emit clicked();
-
-  QFrame::mouseReleaseEvent( e );
-}
-
-void KAnimWidget::slotTimerUpdate()
+void KAnimatedButton::slotTimerUpdate()
 {
   if(!isVisible())
     return;
@@ -172,36 +91,30 @@ void KAnimWidget::slotTimerUpdate()
   if (d->current_frame == d->frames)
      d->current_frame = 0;
 
-  // TODO
-  // We have to clear the widget when repainting a transparent image
-  // By doing it like this we get a bit of flicker though. A better
-  // way might be to merge it with the background in drawContents.
-  repaint();
+  updateCurrentIcon();
 }
 
-void KAnimWidget::drawContents( QPainter *p )
+void KAnimatedButton::updateCurrentIcon( )
 {
   if ( d->pixmap.isNull() )
     return;
 
   int w = d->pixmap.width();
   int h = w;
-  int x = (width()  - w) / 2;
-  int y = (height() - h) / 2;
-  p->drawPixmap(QPoint(x, y), d->pixmap, QRect(0, d->current_frame*h, w, h));
+
+  QPixmap pix(w, h);
+
+  {
+    QPainter p(&pix);
+    p.drawPixmap(QPoint(0,0), d->pixmap, QRect(0, d->current_frame*h, w, h));
+  }
+
+  setIcon(QIcon(pix));
 }
 
-void KAnimWidget::updateIcons()
+void KAnimatedButton::updateIcons()
 {
-  if (!d->initDone)
-     return;
-
-  if (qobject_cast<KToolBar*>(parent()))
-    d->size = ((KToolBar*)parent())->iconSize().width();
-  if (!d->size)
-     d->size = KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
-
-  QString path = KGlobal::iconLoader()->iconPath(d->icon_name, -d->size);
+  QString path = KGlobal::iconLoader()->iconPath(d->icon_name, -iconDimensions());
   QImage img(path);
 
   if (img.isNull())
@@ -209,18 +122,21 @@ void KAnimWidget::updateIcons()
 
   d->current_frame = 0;
   d->frames = img.height() / img.width();
-  d->transparent = img.hasAlphaBuffer();
-  if (d->pixmap.width() != d->size)
+  if (d->pixmap.width() != iconDimensions())
   {
-     img = img.scaled(d->size, d->size*d->frames, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+     img = img.scaled(iconDimensions(), iconDimensions()*d->frames, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
   }
-  d->pixmap = img;
+  d->pixmap = QPixmap::fromImage(img);
 
-  setFixedSize( d->size+2, d->size+2 );
-  resize( d->size+2, d->size+2 );
+  updateCurrentIcon();
 }
 
-void KAnimWidget::virtual_hook( int, void* )
+int KAnimatedButton::iconDimensions() const
+{
+  return qMin(iconSize().width(), iconSize().height());
+}
+
+void KAnimatedButton::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 #include "kanimwidget.moc"

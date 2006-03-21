@@ -79,12 +79,14 @@ public:
      *
      * Defaults to off.
      *
-     * WARNING: calls to text() of currently keyboard-selected items will
+     * \warning calls to text() of currently keyboard-selected items will
      * contain additional ampersand characters.
      *
-     * WARNING: though pre-existing keyboard shortcuts will not interfere with the
+     * \warning though pre-existing keyboard shortcuts will not interfere with the
      * operation of this feature, they may be confusing to the user as the existing
-     * shortcuts will not work.
+     * shortcuts will not work.  In addition, where text already contains ampersands,
+     * the underline produced is likely to confuse the user (as this feature uses
+     * underlining of text to indicate the current key selection sequence).
      */
     void setKeyboardShortcutsEnabled(bool enable);
 

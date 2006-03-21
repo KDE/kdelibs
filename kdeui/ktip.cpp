@@ -210,9 +210,9 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent)
     setCaption(i18n("Tip of the Day"));
 
     QIcon icon;
-    QPixmap pixmap = KGlobal::iconLoader()->loadIcon( "idea", KIcon::NoGroup, 32 );
+    QPixmap pixmap = KGlobal::iconLoader()->loadIcon( "idea", K3Icon::NoGroup, 32 );
     icon.addPixmap(pixmap, QIcon::Normal, QIcon::On);
-    pixmap = KGlobal::iconLoader()->loadIcon( "idea", KIcon::NoGroup, 16 );
+    pixmap = KGlobal::iconLoader()->loadIcon( "idea", K3Icon::NoGroup, 16 );
     icon.addPixmap(pixmap, QIcon::Normal, QIcon::On);
     setWindowIcon(icon);
 

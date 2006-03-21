@@ -26,7 +26,7 @@ QPixmap KUrlPixmapProvider::pixmapFor( const QString& url, int size ) {
 	    u.setPath( url );
 	else
 	    u = url;
-	return KMimeType::pixmapForURL( u, 0, KIcon::Desktop, size );
+	return KMimeType::pixmapForURL( u, 0, K3Icon::Desktop, size );
     }
 
 void KUrlPixmapProvider::virtual_hook( int id, void* data )

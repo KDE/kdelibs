@@ -149,7 +149,7 @@ QString KGuiItem::plainText() const
     return stripped;
 }
 
-QIcon KGuiItem::iconSet( KIcon::Group group, int size, KInstance* instance ) const
+QIcon KGuiItem::iconSet( K3Icon::Group group, int size, KInstance* instance ) const
 {
     if( d->m_hasIcon )
     {
@@ -179,7 +179,7 @@ QIcon KGuiItem::iconSet( KIcon::Group group, int size, KInstance* instance ) con
 
 QIcon KGuiItem::iconSet() const
 {
-    return iconSet( KIcon::Small );
+    return iconSet( K3Icon::Small );
 }
 
 #endif

@@ -488,7 +488,7 @@ void KHistoryCombo::addToHistory( const QString& item )
 
     // now add the item
     if ( myPixProvider )
-        addItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall), item);
+        addItem( myPixProvider->pixmapFor(item, K3Icon::SizeSmall), item);
     else
         addItem( item );
 
@@ -679,7 +679,7 @@ void KHistoryCombo::insertItems( const QStringList& items )
         const QString item = *it;
         if ( !item.isEmpty() ) { // only insert non-empty items
             if ( myPixProvider )
-                addItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall),
+                addItem( myPixProvider->pixmapFor(item, K3Icon::SizeSmall),
                             item );
             else
                 addItem( item );

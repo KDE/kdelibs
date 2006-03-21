@@ -408,6 +408,12 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <li>The two old copy methodes are removed, copyBlock equivalents are renamed to copy</li>
 </ul>
 
+<h4>KIcon</h4>
+<ul>
+<li>Renamed and deprecated to K3Icon</li>
+<li>Replacement is KIcon - now in kdeui</li>
+</ul>
+
 <H4>KConfigGroupSaver</H4>
 <p>
 The class KConfigGroupSaver has been deprecated, instead use KConfigGroup. The
@@ -464,6 +470,12 @@ cg.readXXX("entry name");
 <ul>
 <li>has been moved as K3ColorDrag to kde3support</li>
 <li>use QMimeData  direcly instead or KColorMimeData, which closest resembles KColorDrag</li>
+</ul>
+
+<h4>KIcon</h4>
+<ul>
+<li>New class (old one renamed to K3Icon)</li>
+<li>Thin wrapper around QIcon which creates a KIconEngine corresponding to the kde named icon</li>
 </ul>
 
 <H4>KAction</H4>
@@ -750,11 +762,12 @@ if needed (see the KURLDrag section)</li>
 <li>Ported to QToolBar</li>
 <li>IconText, iconText(), setIconText() replaced by QToolBar::toolButtonStyle() et. al.</li>
 <li>BarPosition, barPos(), setBarPos() replaced by Qt::ToolBarArea settings in QMainWindow; Unmanaged, Floating, and Flat are no longer supported (use QDockWidget if you need floating toolbars)</li>
-<li>fullSize(), setFullSize() removed as not supported by Qt - best estimation is to add a QAction with a widget requesting maximum available width, and to insert a tool bar break after the toolbar using QMainWindow::insertToolBarBreak()</li>
+<li>fullSize(), setFullSize() removed as now handled in QMainWindow - insert a tool bar break before and after the toolbar using QMainWindow::insertToolBarBreak() to have the toolbar take up all available horizontal space</li>
 <li>iconSize(), setIconSize() now a QToolBar property, and a QSize instead of an int - convenience function setIconDimensions() takes an int instead</li>
 <li>insert*() and all associated item-manipulation methods removed - all done through actions now. Compatibility layer possible however so far I haven't found the functions to be used much in KDE programs (mostly it's taken care of by xmlgui instead)</li>
-<li>setFlat() only partially working - you can't remove a toolbar's handle, but you can make it unmovable</li>
+<li>flat(), setFlat() replaced by movable(), setMovable() (old "flat" concept equivalent to not movable)</li>
 <li>layout-related methods removed (done by QToolBar's layout)</li>
+<li>alignItemRight() removed (as above), replacement is to add a KToolBarSeparator action before the action you want to be aligned right (or if you have a custom action already, just create a container widget and insert a QSpacerItem on the left of your custom widget (see KonqLogoAction in kdebase/konqueror/konq_actions.cc)</li>
 <li><tt>enum BarStatus</tt> and <tt>bool enable(BarStatus stat)</tt> have been
 removed</li>
 <li><tt>void enableMoving(bool flag)</tt> and <tt>void enableFloating (bool
@@ -842,6 +855,15 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
 <li>Moved to kde3support.</li>
 <li>Renamed to K3Wizard.</li>
 </ul>
+
+<h4>KAnimWidget</h4>
+<ul>
+<li>Renamed to KAnimatedButton</li>
+<li>Now a subclass of QToolButton, acts in a much more standard fashion</li>
+<li>size(), setSize() replaced by iconSize() + setIconSize()</li>
+<li>Call updateIcons() whenever you change the iconSize() (the setter is non virtual :(</li>
+</ul>
+
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 

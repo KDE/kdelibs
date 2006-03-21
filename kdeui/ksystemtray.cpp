@@ -299,7 +299,7 @@ QPixmap KSystemTray::loadIcon( const QString &icon, KInstance *instance )
 {
     KConfigGroup cg(instance->config(), "System Tray");
     int iconWidth = cg.readEntry("systrayIconWidth", 22);
-    return instance->iconLoader()->loadIcon( icon, KIcon::Panel, iconWidth );
+    return instance->iconLoader()->loadIcon( icon, K3Icon::Panel, iconWidth );
 }
 
 void KSystemTray::setPixmap( const QPixmap& p )

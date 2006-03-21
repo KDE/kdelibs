@@ -64,9 +64,9 @@ private:
   QString m_location;
 public:
   KImportedBookmarksActionMenu(
-    const QString &text, const QString& sIconName,
+    const KIcon& icon, const QString &text,
     KActionCollection* parent, const char* name)
-  : KActionMenu(text, sIconName, parent, name) {
+  : KActionMenu(icon, text, parent, name) {
      ;
   }
 };
@@ -89,9 +89,9 @@ private:
   bool m_readOnly;
 public:
   KBookmarkActionMenu(
-    const QString &text, const QString& sIconName,
+    const KIcon& icon, const QString &text,
     KActionCollection* parent, const char* name)
-  : KActionMenu(text, sIconName, parent, name) {
+  : KActionMenu(icon, text, parent, name) {
      ;
   }
 };

@@ -251,8 +251,8 @@ KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent)
 
 void KIconDialog::init()
 {
-    mGroupOrSize = KIcon::Desktop;
-    mContext = KIcon::Any;
+    mGroupOrSize = K3Icon::Desktop;
+    mContext = K3Icon::Any;
     mType = 0;
     mFileList = KGlobal::dirs()->findAllResources("appicon", QLatin1String("*.png"));
 
@@ -326,7 +326,7 @@ void KIconDialog::init()
     // When pressing Ok or Cancel, stop loading icons
     connect(this, SIGNAL(hidden()), mpCanvas, SLOT(stopLoading()));
 
-    // The order must match the context definitions in KIcon.
+    // The order must match the context definitions in K3Icon.
     mpCombo->addItem(i18n("Actions"));
     mpCombo->addItem(i18n("Applications"));
     mpCombo->addItem(i18n("Devices"));
@@ -395,7 +395,7 @@ void KIconDialog::setIconSize( int size )
 {
     // see KIconLoader, if you think this is weird
     if ( size == 0 )
-        mGroupOrSize = KIcon::Desktop; // default Group
+        mGroupOrSize = K3Icon::Desktop; // default Group
     else
         mGroupOrSize = -size; // yes, KIconLoader::queryIconsByContext is weird
 }
@@ -407,14 +407,14 @@ int KIconDialog::iconSize() const
 }
 
 #ifndef KDE_NO_COMPAT
-QString KIconDialog::selectIcon(KIcon::Group group, KIcon::Context context, bool user)
+QString KIconDialog::selectIcon(K3Icon::Group group, K3Icon::Context context, bool user)
 {
     setup( group, context, false, 0, user );
     return openDialog();
 }
 #endif
 
-void KIconDialog::setup(KIcon::Group group, KIcon::Context context,
+void KIconDialog::setup(K3Icon::Group group, K3Icon::Context context,
                         bool strictIconSize, int iconSize, bool user )
 {
     d->m_bStrictIconSize = strictIconSize;
@@ -428,7 +428,7 @@ void KIconDialog::setup(KIcon::Group group, KIcon::Context context,
     mpCombo->setCurrentIndex(mContext-1);
 }
 
-void KIconDialog::setup(KIcon::Group group, KIcon::Context context,
+void KIconDialog::setup(K3Icon::Group group, K3Icon::Context context,
                         bool strictIconSize, int iconSize, bool user,
                         bool lockUser, bool lockCustomDir )
 {
@@ -497,7 +497,7 @@ void KIconDialog::slotOk()
     KDialogBase::slotOk();
 }
 
-QString KIconDialog::getIcon(KIcon::Group group, KIcon::Context context,
+QString KIconDialog::getIcon(K3Icon::Group group, K3Icon::Context context,
                              bool strictIconSize, int iconSize, bool user,
                              QWidget *parent, const QString &caption)
 {
@@ -565,7 +565,7 @@ void KIconDialog::slotButtonClicked(int id)
 
 void KIconDialog::slotContext(int id)
 {
-    mContext = static_cast<KIcon::Context>(id+1);
+    mContext = static_cast<K3Icon::Context>(id+1);
     showIcons();
 }
 
@@ -625,8 +625,8 @@ KIconButton::KIconButton(KIconLoader *loader, QWidget *parent)
 
 void KIconButton::init( KIconLoader *loader )
 {
-    mGroup = KIcon::Desktop;
-    mContext = KIcon::Application;
+    mGroup = K3Icon::Desktop;
+    mContext = K3Icon::Application;
     mbUser = false;
 
     mpLoader = loader;
@@ -660,7 +660,7 @@ int KIconButton::iconSize() const
     return d->iconSize;
 }
 
-void KIconButton::setIconType(KIcon::Group group, KIcon::Context context, bool user)
+void KIconButton::setIconType(K3Icon::Group group, K3Icon::Context context, bool user)
 {
     mGroup = group;
     mContext = context;

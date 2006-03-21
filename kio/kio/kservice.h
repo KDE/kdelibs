@@ -128,7 +128,7 @@ public:
    *         null if not set
    * @see icon()
    */
-  QPixmap pixmap( KIcon::Group _group, int _force_size = 0, int _state = 0,
+  QPixmap pixmap( K3Icon::Group _group, int _force_size = 0, int _state = 0,
                   QString * _path = 0L ) const;
   /**
    * Checks whethe the service should be run in a terminal.

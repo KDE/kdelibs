@@ -718,7 +718,7 @@ void KAboutContainerBase::setProduct( const QString &appName,
     return;
   }
 
-  int size = IconSize(KIcon::Desktop);
+  int size = IconSize(K3Icon::Desktop);
   mIconLabel->setPixmap( qApp->windowIcon().pixmap(size,size) );
 
   const QString msg1 = i18n("%1 %2 (Using KDE %3)").arg(appName).arg(version).

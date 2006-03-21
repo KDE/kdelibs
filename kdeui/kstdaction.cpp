@@ -31,6 +31,9 @@
 #include <klocale.h>
 #include <kstdaccel.h>
 #include <kmainwindow.h>
+
+#include "kicon.h"
+
 #include "kstdaction_p.h"
 #include "kstdaction_p.moc"
 
@@ -88,12 +91,12 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 
 		switch( id ) {
 		 case OpenRecent:
-			pAction = new KRecentFilesAction(pInfo->psIconName, sLabel, parent, name ? name : pInfo->psName);
+			pAction = new KRecentFilesAction(KIcon(pInfo->psIconName), sLabel, parent, name ? name : pInfo->psName);
 			break;
 		 case ShowMenubar:
 		 case ShowToolbar:
 		 case ShowStatusbar:
-			pAction = new KAction(pInfo->psIconName, sLabel, parent, name ? name : pInfo->psName);
+			pAction = new KAction(KIcon(pInfo->psIconName), sLabel, parent, name ? name : pInfo->psName);
 			pAction->setCheckable(true);
 			pAction->setChecked(true);
 			break;
@@ -102,15 +105,16 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 			pAction->setCheckable(true);
 			break;
 		case PasteText:
-			pAction = new KPasteTextAction(iconName, sLabel, parent, name ? name : pInfo->psName);
+			pAction = new KPasteTextAction(KIcon(iconName), sLabel, parent, name ? name : pInfo->psName);
 			break;
 		// Same as default, but with the app icon
 		case AboutApp:
-			pAction = new KAction(qApp->windowIcon(), sLabel, parent, name ? name : pInfo->psName);
+			pAction = new KAction(sLabel, parent, name ? name : pInfo->psName);
+			pAction->QAction::setIcon(qApp->windowIcon());
 			break;
 
 		 default:
-			pAction = new KAction(iconName, sLabel, parent, name ? name : pInfo->psName);
+			pAction = new KAction(KIcon(iconName), sLabel, parent, name ? name : pInfo->psName);
 			break;
 		}
 	}

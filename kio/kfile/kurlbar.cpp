@@ -51,15 +51,15 @@
 ///////////////////////////////////////////////////////////////////
 
 template <> inline
-KIcon::Group KConfigBase::readEntry( const char *pKey,
-                                     const KIcon::Group& aDefault ) const
+K3Icon::Group KConfigBase::readEntry( const char *pKey,
+                                     const K3Icon::Group& aDefault ) const
 {
-  return static_cast<KIcon::Group>(readEntry(pKey,int(aDefault)));
+  return static_cast<K3Icon::Group>(readEntry(pKey,int(aDefault)));
 }
 
 template <> inline
 void KConfigBase::writeEntry( const char *pKey,
-                              const KIcon::Group& aValue,
+                              const K3Icon::Group& aValue,
                               KConfigBase::WriteConfigFlags flags)
 {
   writeEntry(pKey, int(aValue), flags);
@@ -78,7 +78,7 @@ public:
 
 KUrlBarItem::KUrlBarItem( KUrlBar *parent,
                           const KUrl& url, bool persistent, const QString& description,
-                          const QString& icon, KIcon::Group group )
+                          const QString& icon, K3Icon::Group group )
     : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
       m_pixmap( ),
@@ -90,7 +90,7 @@ KUrlBarItem::KUrlBarItem( KUrlBar *parent,
 
 KUrlBarItem::KUrlBarItem( KUrlBar *parent,
                           const KUrl& url, const QString& description,
-                          const QString& icon, KIcon::Group group )
+                          const QString& icon, K3Icon::Group group )
     : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
       m_pixmap(  ),
@@ -100,7 +100,7 @@ KUrlBarItem::KUrlBarItem( KUrlBar *parent,
     init( icon, group, description, true /*persistent*/ );
 }
 
-void KUrlBarItem::init( const QString& icon, KIcon::Group group,
+void KUrlBarItem::init( const QString& icon, K3Icon::Group group,
                         const QString& description, bool persistent )
 {
     d->isPersistent = persistent;
@@ -122,7 +122,7 @@ void KUrlBarItem::setURL( const KUrl& url )
         setText( url.fileName() );
 }
 
-void KUrlBarItem::setIcon( const QString& icon, KIcon::Group group )
+void KUrlBarItem::setIcon( const QString& icon, K3Icon::Group group )
 {
     m_icon  = icon;
     m_group = group;
@@ -131,7 +131,7 @@ void KUrlBarItem::setIcon( const QString& icon, KIcon::Group group )
         m_pixmap = KMimeType::pixmapForURL( m_url, 0, group, iconSize() );
     else
         m_pixmap = KGlobal::iconLoader()->loadIcon( icon, group, iconSize(),
-                                                    KIcon::DefaultState );
+                                                    K3Icon::DefaultState );
 }
 
 void KUrlBarItem::setDescription( const QString& desc )
@@ -191,7 +191,7 @@ void KUrlBarItem::paint( QPainter *p )
         p->setPen( oldPen );
     }
 
-    if ( m_parent->iconSize() < KIcon::SizeMedium ) {
+    if ( m_parent->iconSize() < K3Icon::SizeMedium ) {
         // small icon -> draw icon next to text
 
         // ### mostly cut & paste of QListBoxPixmap::paint() until Qt 3.1
@@ -262,7 +262,7 @@ QSize KUrlBarItem::sizeHint() const
     int hmin = 0;
     const KUrlBarListBox *lb =static_cast<const KUrlBarListBox*>(listBox());
 
-    if ( m_parent->iconSize() < KIcon::SizeMedium ) {
+    if ( m_parent->iconSize() < K3Icon::SizeMedium ) {
         wmin = Q3ListBoxPixmap::width( lb ) + KDialog::spacingHint() * 2;
         hmin = Q3ListBoxPixmap::height( lb ) + KDialog::spacingHint() * 2;
     }
@@ -324,7 +324,7 @@ KUrlBar::KUrlBar( bool useGlobalItems, QWidget *parent, Qt::WFlags f )
       m_isModified( false ),
       m_isImmutable( false ),
       m_listBox( 0L ),
-      m_iconSize( KIcon::SizeMedium ),d(new KUrlBarPrivate())
+      m_iconSize( K3Icon::SizeMedium ),d(new KUrlBarPrivate())
 {
     setListBox( 0L );
     setSizePolicy( QSizePolicy( isVertical() ?
@@ -345,7 +345,7 @@ KUrlBar::KUrlBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WF
       m_isModified( false ),
       m_isImmutable( false ),
       m_listBox( 0L ),
-      m_iconSize( KIcon::SizeMedium ),d(new KUrlBarPrivate())
+      m_iconSize( K3Icon::SizeMedium ),d(new KUrlBarPrivate())
 {
     setObjectName( name );
     setListBox( 0L );
@@ -367,7 +367,7 @@ KUrlBar::~KUrlBar()
 
 KUrlBarItem * KUrlBar::insertItem(const KUrl& url, const QString& description,
                                   bool applicationLocal,
-                                  const QString& icon, KIcon::Group group )
+                                  const QString& icon, K3Icon::Group group )
 {
     KUrlBarItem *item = new KUrlBarItem(this, url, description, icon, group);
     item->setApplicationLocal( applicationLocal );
@@ -376,7 +376,7 @@ KUrlBarItem * KUrlBar::insertItem(const KUrl& url, const QString& description,
 }
 
 KUrlBarItem * KUrlBar::insertDynamicItem(const KUrl& url, const QString& description,
-                                         const QString& icon, KIcon::Group group )
+                                         const QString& icon, K3Icon::Group group )
 {
     KUrlBarItem *item = new KUrlBarItem(this, url, false, description, icon, group);
     m_listBox->insertItem( item );
@@ -619,7 +619,7 @@ void KUrlBar::readItem( int i, KConfigBase *config, bool applicationLocal )
                 config->readEntry( QString("Description_") + number, QString() ),
                 applicationLocal,
                 config->readEntry( QString("Icon_") + number, QString() ),
-                config->readEntry( QString("IconGroup_") + number, KIcon::Group() ) );
+                config->readEntry( QString("IconGroup_") + number, K3Icon::Group() ) );
 }
 
 void KUrlBar::writeConfig( KConfig *config, const QString& itemGroup )
@@ -731,7 +731,7 @@ void KUrlBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos 
 
     KUrl lastURL = m_activeItem ? m_activeItem->url() : KUrl();
 
-    bool smallIcons = m_iconSize < KIcon::SizeMedium;
+    bool smallIcons = m_iconSize < K3Icon::SizeMedium;
     QMenu *popup = new QMenu();
     QAction* IconSize = popup->addAction( smallIcons ?
                        i18n("&Large Icons") : i18n("&Small Icons"));
@@ -752,7 +752,7 @@ void KUrlBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos 
 
     QAction* result = popup->exec( pos );
     if (result == IconSize) {
-        setIconSize( smallIcons ? KIcon::SizeMedium : KIcon::SizeSmallMedium );
+        setIconSize( smallIcons ? K3Icon::SizeMedium : K3Icon::SizeSmallMedium );
         m_listBox->triggerUpdate( true );
 
     } else if (result == AddItem) {

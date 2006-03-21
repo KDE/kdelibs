@@ -32,10 +32,10 @@ class KIconPrivate;
  * @see KIconTheme
  * @see KIconLoader
  */
-class KDECORE_EXPORT KIcon
+class KDECORE_EXPORT K3Icon
 {
 public:
-    KIcon() { size = 0; }
+    K3Icon() { size = 0; }
 
     /**
      * Return true if this icon is valid, false otherwise.
@@ -168,8 +168,8 @@ private:
     KIconPrivate* d;
 };
 
-inline KIcon::Group& operator++(KIcon::Group& group) { group = static_cast<KIcon::Group>(group+1); return group; }
-inline KIcon::Group operator++(KIcon::Group& group,int) { KIcon::Group ret = group; ++group; return ret; }
+inline K3Icon::Group& operator++(K3Icon::Group& group) { group = static_cast<K3Icon::Group>(group+1); return group; }
+inline K3Icon::Group operator++(K3Icon::Group& group,int) { K3Icon::Group ret = group; ++group; return ret; }
 
 /**
  * Class to use/access icon themes in KDE. This class is used by the
@@ -271,17 +271,17 @@ public:
 
     /**
      * The default size of this theme for a certain icon group.
-     * @param group The icon group. See KIcon::Group.
+     * @param group The icon group. See K3Icon::Group.
      * @return The default size in pixels for the given icon group.
      */
-    int defaultSize(KIcon::Group group) const;
+    int defaultSize(K3Icon::Group group) const;
 
     /**
      * Query available sizes for a group.
-     * @param group The icon group. See KIcon::Group.
+     * @param group The icon group. See K3Icon::Group.
      * @return a list of available sized for the given group
      */
-    QList<int> querySizes(KIcon::Group group) const;
+    QList<int> querySizes(K3Icon::Group group) const;
 
     /**
      * Query available icons for a size and context.
@@ -289,7 +289,7 @@ public:
      * @param context the context of the icons
      * @return the list of icon names
      */
-    QStringList queryIcons(int size, KIcon::Context context = KIcon::Any) const;
+    QStringList queryIcons(int size, K3Icon::Context context = K3Icon::Any) const;
 
     /**
      * Query available icons for a context and preferred size.
@@ -297,20 +297,20 @@ public:
      * @param context the context of the icons
      * @return the list of icon names
      */
-    QStringList queryIconsByContext(int size, KIcon::Context context = KIcon::Any) const;
+    QStringList queryIconsByContext(int size, K3Icon::Context context = K3Icon::Any) const;
 
 
     /**
      * Lookup an icon in the theme.
      * @param name The name of the icon, without extension.
      * @param size The desired size of the icon.
-     * @param match The matching mode. KIcon::MatchExact returns an icon
-     * only if matches exactly. KIcon::MatchBest returns the best matching
+     * @param match The matching mode. K3Icon::MatchExact returns an icon
+     * only if matches exactly. K3Icon::MatchBest returns the best matching
      * icon.
-     * @return A KIcon class that describes the icon. If an icon is found,
-     * @see KIcon::isValid will return true, and false otherwise.
+     * @return A K3Icon class that describes the icon. If an icon is found,
+     * @see K3Icon::isValid will return true, and false otherwise.
      */
-    KIcon iconPath(const QString& name, int size, KIcon::MatchType match) const;
+    K3Icon iconPath(const QString& name, int size, K3Icon::MatchType match) const;
 
     /**
      * List all icon themes installed on the system, global and local.

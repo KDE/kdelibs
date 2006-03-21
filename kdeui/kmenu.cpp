@@ -149,14 +149,15 @@ void KMenu::keyPressEvent(QKeyEvent* e)
     bool firstpass = true;
     QString keyString = e->text();
 
-    // check for common commands dealt with by QPopup
+    // check for common commands dealt with by QMenu
     int key = e->key();
     if (key == Qt::Key_Escape || key == Qt::Key_Return || key == Qt::Key_Enter
             || key == Qt::Key_Up || key == Qt::Key_Down || key == Qt::Key_Left
-            || key == Qt::Key_Right || key == Qt::Key_F1) {
+            || key == Qt::Key_Right || key == Qt::Key_F1 || key == Qt::Key_PageUp
+            || key == Qt::Key_PageDown || key == Qt::Key_Back || key == Qt::Key_Select) {
 
         resetKeyboardVars();
-        // continue event processing by Qpopup
+        // continue event processing by QMenu
         //e->ignore();
         d->keyboardModifiers = e->modifiers();
         QMenu::keyPressEvent(e);
@@ -238,7 +239,7 @@ void KMenu::keyPressEvent(QKeyEvent* e)
                 setActiveAction(a);
 
                 // check to see if we're underlining a different item
-                if (d->lastHitAction != a)
+                if (d->lastHitAction && d->lastHitAction != a)
                     // yes; revert the underlining
                     d->lastHitAction->setText(d->originalText);
 

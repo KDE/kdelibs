@@ -139,7 +139,7 @@ KMenu* KHelpMenu::menu()
     bool need_separator = false;
     if (KAuthorized::authorizeKAction("help_contents"))
     {
-      d->mHandBookAction = d->mMenu->addAction(BarIconSet( "contents", KIcon::SizeSmall),
+      d->mHandBookAction = d->mMenu->addAction(BarIconSet( "contents", K3Icon::SizeSmall),
                      i18n("%1 &Handbook").arg(appName) ,this, SLOT(appHelpActivated()),KStdAccel::shortcut(KStdAccel::Help));
       need_separator = true;
     }
@@ -245,7 +245,7 @@ void KHelpMenu::aboutApplication()
 
       QLabel *label1 = new QLabel(hbox);
 
-      int size = IconSize(KIcon::Desktop);
+      int size = IconSize(K3Icon::Desktop);
       label1->setPixmap( qApp->windowIcon().pixmap(size,size) );
       QLabel *label2 = new QLabel(hbox);
       label2->setText( d->mAboutAppText );

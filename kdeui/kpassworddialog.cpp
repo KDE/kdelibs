@@ -327,7 +327,7 @@ void KPasswordDialog::init()
 
     // Row 1: pixmap + prompt
     QLabel *lbl;
-    const QPixmap pix( KGlobal::iconLoader()->loadIcon( d->iconName, KIcon::NoGroup, KIcon::SizeHuge, 0, 0, true));
+    const QPixmap pix( KGlobal::iconLoader()->loadIcon( d->iconName, K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
     if (!pix.isNull()) {
 	lbl = new QLabel(m_pMain);
 	lbl->setPixmap(pix);

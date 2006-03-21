@@ -193,11 +193,11 @@ void DownloadDialog::addProvider(Provider *p)
     }
     else
     {
-      pix = KGlobal::iconLoader()->loadIcon(p->icon().path(), KIcon::Panel);
+      pix = KGlobal::iconLoader()->loadIcon(p->icon().path(), K3Icon::Panel);
       ret = true;
     }
   }
-  if(!ret) pix = KGlobal::iconLoader()->loadIcon("knewstuff", KIcon::Panel);
+  if(!ret) pix = KGlobal::iconLoader()->loadIcon("knewstuff", K3Icon::Panel);
   frame = addPage(p->name(), p->name(), pix);
   m_frame = frame;
 
@@ -355,8 +355,8 @@ void DownloadDialog::addEntry(Entry *entry)
   }*/
   installed = installStatus(entry);
 
-  if(installed > 0) pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
-  else if(installed < 0) pix = KGlobal::iconLoader()->loadIcon("history", KIcon::Small);
+  if(installed > 0) pix = KGlobal::iconLoader()->loadIcon("ok", K3Icon::Small);
+  else if(installed < 0) pix = KGlobal::iconLoader()->loadIcon("history", K3Icon::Small);
   else pix = QPixmap();
 
   QStringList texts;
@@ -476,7 +476,7 @@ void DownloadDialog::install(Entry *e)
   KConfigGroup cg(KGlobal::config(), "KNewStuffStatus");
   cg.writeEntry(m_entryname, e->releaseDate());
 
-  QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
+  QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", K3Icon::Small);
 
   if(m_entryitem)
     m_entryitem->setIcon(0, pix);

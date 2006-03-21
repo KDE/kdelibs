@@ -148,7 +148,7 @@ void KCModuleContainer::addModule( const QString& module )
 	proxy->setObjectName( module.toLatin1() );
 
 	d->tabWidget->addTab( proxy, QIcon(KGlobal::iconLoader()->loadIcon(
-					proxy->moduleInfo().icon(), KIcon::Desktop)),
+					proxy->moduleInfo().icon(), K3Icon::Desktop)),
 			/* QT eats ampersands for dinner. But not this time. */
 			proxy->moduleInfo().moduleName().replace( "&", "&&" ));
 

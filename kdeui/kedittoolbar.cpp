@@ -29,6 +29,7 @@
 #include <qapplication.h>
 #include <qtextstream.h>
 #include <QTreeWidget>
+#include <QMimeData>
 
 #include <kaction.h>
 #include <kstandarddirs.h>
@@ -139,6 +140,28 @@ protected:
   virtual Qt::DropActions supportedDropActions() const
   {
     return Qt::MoveAction;
+  }
+
+  virtual QMimeData* mimeData(const QList<QTreeWidgetItem*> items) const
+  {
+    QMimeData* mimedata = new QMimeData();
+
+    QByteArray data;
+    {
+      QDataStream stream(&data, QIODevice::WriteOnly);
+
+      QStringList actionNames;
+      foreach (QTreeWidgetItem* item, items) {
+        if (!item->text(3).isEmpty())
+          actionNames.append(item->text(3));
+      }
+
+      stream << actionNames;
+    }
+
+    mimedata->setData("application/x-kde-action-list", data);
+
+    return mimedata;
   }
 };
 } // namespace
@@ -700,10 +723,10 @@ void KEditToolbarWidget::setupLayout()
           this,           SLOT(slotToolbarSelected(const QString&)));
 
 //  QPushButton *new_toolbar = new QPushButton(i18n("&New"), this);
-//  new_toolbar->setPixmap(BarIcon("filenew", KIcon::SizeSmall));
+//  new_toolbar->setPixmap(BarIcon("filenew", K3Icon::SizeSmall));
 //  new_toolbar->setEnabled(false); // disabled until implemented
 //  QPushButton *del_toolbar = new QPushButton(i18n("&Delete"), this);
-//  del_toolbar->setPixmap(BarIcon("editdelete", KIcon::SizeSmall));
+//  del_toolbar->setPixmap(BarIcon("editdelete", K3Icon::SizeSmall));
 //  del_toolbar->setEnabled(false); // disabled until implemented
 
   // our list of inactive actions
@@ -736,15 +759,7 @@ void KEditToolbarWidget::setupLayout()
   // With Qt-4.1 only setting MiniumWidth results in a 0-width icon column ...
   m_activeList->setMinimumSize(m_inactiveList->minimumWidth(), 100);
   active_label->setBuddy(m_activeList);
-#ifdef _GNUC
-#warning "kde4: dropped signal doesn't exist now"
-#endif
-#if 0  
-  connect(m_inactiveList, SIGNAL(dropped(QTreeWidget*,QDropEvent*,QTreeWidgetItem*)),
-          this,              SLOT(slotDropped(QTreeWidget*,QDropEvent*,QTreeWidgetItem*)));
-  connect(m_activeList, SIGNAL(dropped(QTreeWidget*,QDropEvent*,QTreeWidgetItem*)),
-          this,            SLOT(slotDropped(QTreeWidget*,QDropEvent*,QTreeWidgetItem*)));
-#endif
+
   connect(m_activeList, SIGNAL(itemSelectionChanged()),
           this,         SLOT(slotActiveSelectionChanged()));
   connect(m_activeList, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
@@ -910,8 +925,8 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   QMap<QString, bool> active_list;
 
   // see if our current action is in this toolbar
-  QDomNode n = elem.lastChild();
-  for( ; !n.isNull(); n = n.previousSibling() )
+  QDomNode n = elem.firstChild();
+  for( ; !n.isNull(); n = n.nextSibling() )
   {
     QDomElement it = n.toElement();
     if (it.isNull()) continue;
@@ -949,16 +964,14 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     // iterate through this client's actions
     // This used to iterate through _all_ actions, but we don't support
     // putting any action into any client...
-    for (int i = 0;  i < actionCollection->count(); i++)
+    foreach (KAction* action, actionCollection->actions())
     {
-      KAction *action = actionCollection->action( i );
-
       // do we have a match?
       if (it.attribute( attrName ) == action->objectName())
       {
         // we have a match!
         ToolbarItem *act = new ToolbarItem(m_activeList, it.tagName(), action->objectName(), action->toolTip());
-        act->setText(1, action->text());
+        act->setText(1, action->text().remove(QChar('&')));
         if (action->hasIcon())
           act->setIcon(0, action->icon());
 
@@ -969,21 +982,19 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   }
 
   // go through the rest of the collection
-  for (int i = actionCollection->count() - 1; i > -1; --i)
+  foreach (KAction* action, actionCollection->actions())
   {
-    KAction *action = actionCollection->action( i );
-
     // skip our active ones
     if (active_list.contains(action->objectName()))
       continue;
 
     ToolbarItem *act = new ToolbarItem(m_inactiveList, tagActionList, action->objectName(), action->toolTip());
-    act->setText(1, action->text());
+    act->setText(1, action->text().remove(QChar('&')));
     if (action->hasIcon())
       act->setIcon(0, action->icon());
   }
 
-  m_inactiveList->sortItems(1, Qt::DescendingOrder);
+  m_inactiveList->sortItems(1, Qt::AscendingOrder);
 
   // finally, add default separators to the inactive list
   ToolbarItem *act = new ToolbarItem(0L, tagSeparator, sep_name.arg(sep_num++), QString());

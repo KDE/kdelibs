@@ -31,8 +31,7 @@ public:
 	enum PrinterType { All, Regular, Specials };
 
 	KPrintAction(const QString& text, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
-	KPrintAction(const QString& text, const QIcon& icon, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
-	KPrintAction(const QString& text, const QString& icon, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
+	KPrintAction(const KIcon& icon, const QString& text, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
 	virtual ~KPrintAction();
 
 	static KPrintAction* exportAll(QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);

@@ -137,8 +137,8 @@ void CupsdDialog::addConfPage(CupsdPage *page)
 {
 	QPixmap icon = KGlobal::instance()->iconLoader()->loadIcon(
 	                                                           page->pixmap(),
-                                                                   KIcon::NoGroup,
-                                                                   KIcon::SizeMedium
+                                                                   K3Icon::NoGroup,
+                                                                   K3Icon::SizeMedium
 	                                                          );
 
 	KVBox	*box = addVBoxPage(page->pageLabel(), page->header(), icon);

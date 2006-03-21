@@ -854,11 +854,11 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       config.setDesktopGroup();
       iconStr = config.readEntry( "Icon" );
       if ( config.hasDeviceType() )
-	iconButton->setIconType( KIcon::Desktop, KIcon::Device );
+	iconButton->setIconType( K3Icon::Desktop, K3Icon::Device );
       else
-	iconButton->setIconType( KIcon::Desktop, KIcon::Application );
+	iconButton->setIconType( K3Icon::Desktop, K3Icon::Application );
     } else
-      iconButton->setIconType( KIcon::Desktop, KIcon::FileSystem );
+      iconButton->setIconType( K3Icon::Desktop, K3Icon::FileSystem );
     iconButton->setIcon(iconStr);
     iconArea = iconButton;
     connect( iconButton, SIGNAL( iconChanged(const QString&) ),
@@ -867,7 +867,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QLabel *iconLabel = new QLabel( d->m_frame );
     int bsize = 66 + 2 * iconLabel->style()->pixelMetric(QStyle::PM_ButtonMargin);
     iconLabel->setFixedSize(bsize, bsize);
-    iconLabel->setPixmap( KGlobal::iconLoader()->loadIcon( iconStr, KIcon::Desktop, 48) );
+    iconLabel->setPixmap( KGlobal::iconLoader()->loadIcon( iconStr, K3Icon::Desktop, 48) );
     iconArea = iconLabel;
   }
   grid->addWidget(iconArea, curRow, 0, Qt::AlignLeft);
@@ -2872,7 +2872,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   unmounted = new KIconButton( d->m_frame );
   int bsize = 66 + 2 * unmounted->style()->pixelMetric(QStyle::PM_ButtonMargin);
   unmounted->setFixedSize(bsize, bsize);
-  unmounted->setIconType(KIcon::Desktop, KIcon::Device);
+  unmounted->setIconType(K3Icon::Desktop, K3Icon::Device);
   layout->addWidget(unmounted, 7, 0);
 
   label = new QLabel( i18n("Unmounted Icon"),  d->m_frame );
@@ -3228,7 +3228,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
         }
 
         Q3ListViewItem *item = new Q3ListViewItem(majorGroup, min, (*it)->comment());
-        item->setPixmap(0, (*it)->pixmap(KIcon::Small, IconSize(KIcon::Small)));
+        item->setPixmap(0, (*it)->pixmap(K3Icon::Small, IconSize(K3Icon::Small)));
      }
      QMap<QString,Q3ListViewItem*>::iterator mit = majorMap.find( "all" );
      if ( mit != majorMap.end())

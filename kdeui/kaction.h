@@ -33,6 +33,8 @@
 #include <kicontheme.h>
 #include <kglobal.h>
 
+#include "kicon.h"
+
 class KAccel;
 class KActionCollection;
 class KGuiItem;
@@ -218,7 +220,7 @@ public:
      * @param parent The action collection to contain this action.
      * @param name The internal name for this action.
      */
-    KAction(const QIcon& icon, const QString& text, KActionCollection* parent, const char* name);
+    KAction(const KIcon& icon, const QString& text, KActionCollection* parent, const char* name);
 
     /**
      * \overload KAction(const QIcon&, const QString&, KActionCollection*, const char*)
@@ -231,7 +233,7 @@ public:
      * @param parent The action collection to contain this action.
      * @param name The internal name for this action.
      */
-    KAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
+    KDE_CONSTRUCTOR_DEPRECATED KAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
 
     /**
      * Constructs an action with text, potential keyboard
@@ -398,9 +400,14 @@ public:
     bool hasIcon() const;
 
     /**
-     * Get the name which was passed to KIconLoader to retrieve this icon
+     * Set the icon for this action.
+     * 
+     * This function hides QAction::setIcon(const QIcon&) to encourage programmers to pass
+     * KIcons (which adhere to KDE style guidelines).
+     *
+     * \param icon the KIcon to assign to this action
      */
-    const QString& iconName() const;
+    void setIcon(const KIcon& icon);
 
     /**
      * Set the icon for this action.
@@ -408,8 +415,10 @@ public:
      * \param icon the KDE icon name to pass to KIconLoader.
      * \param group the icon group
      * \param instance the KInstance from which to retrieve the icon loader.
+     *
+     * \deprecated Use setIcon(KIcon("kdeiconname")) instead
      */
-    void setIconName(const QString& icon, KIcon::Group group = KIcon::NoGroup, int size = -1, KInstance* instance = KGlobal::instance());
+    KDE_DEPRECATED void setIconName(const QString& icon);
 
     /**
      * "Plug" or insert this action into a given widget.

@@ -78,7 +78,7 @@ KFileTreeView::KFileTreeView( QWidget *parent )
     m_bDrag = false;
     m_branches.setAutoDelete( true );
 
-    m_openFolderPixmap = DesktopIcon( "folder_open",KIcon::SizeSmall,KIcon::ActiveState );
+    m_openFolderPixmap = DesktopIcon( "folder_open",K3Icon::SizeSmall,K3Icon::ActiveState );
 }
 
 KFileTreeView::~KFileTreeView()
@@ -359,7 +359,7 @@ void KFileTreeView::slotSelectionChanged()
 KFileTreeBranch* KFileTreeView::addBranch( const KUrl &path, const QString& name,
                               bool showHidden )
 {
-    const QPixmap& folderPix = KMimeType::mimeType("inode/directory")->pixmap( KIcon::Desktop,KIcon::SizeSmall );
+    const QPixmap& folderPix = KMimeType::mimeType("inode/directory")->pixmap( K3Icon::Desktop,K3Icon::SizeSmall );
 
     return addBranch( path, name, folderPix, showHidden);
 }
@@ -493,7 +493,7 @@ QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
       else
       {
          // TODO: different modes, user Pixmaps ?
-         pix = item->fileItem()->pixmap( KIcon::SizeSmall ); // , KIcon::DefaultState);
+         pix = item->fileItem()->pixmap( K3Icon::SizeSmall ); // , K3Icon::DefaultState);
 
          /* Only if it is a dir and the user wants open dir pixmap and it is open,
           * change the fileitem's pixmap to the open folder pixmap. */
@@ -526,7 +526,7 @@ void KFileTreeView::slotAnimation()
       uint & iconNumber = it.value().iconNumber;
       QString icon = QString::fromLatin1( it.value().iconBaseName ).append( QString::number( iconNumber ) );
       // kDebug(250) << "Loading icon " << icon << endl;
-      item->setPixmap( 0, DesktopIcon( icon,KIcon::SizeSmall,KIcon::ActiveState )); // KFileTreeViewFactory::instance() ) );
+      item->setPixmap( 0, DesktopIcon( icon,K3Icon::SizeSmall,K3Icon::ActiveState )); // KFileTreeViewFactory::instance() ) );
 
       iconNumber++;
       if ( iconNumber > it.value().iconCount )

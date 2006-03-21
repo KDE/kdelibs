@@ -45,15 +45,9 @@ KPrintAction::KPrintAction(const QString& text, PrinterType type, QWidget *paren
 	initialize(type, parentWidget);
 }
 
-KPrintAction::KPrintAction(const QString& text, const QIcon& icon, PrinterType type, QWidget *parentWidget, KActionCollection *parent, const char 
+KPrintAction::KPrintAction(const KIcon& icon, const QString& text, PrinterType type, QWidget *parentWidget, KActionCollection *parent, const char 
 *name)
-: KActionMenu(text, icon, parent, name),d(new KPrintActionPrivate())
-{
-	initialize(type, parentWidget);
-}
-
-KPrintAction::KPrintAction(const QString& text, const QString& icon, PrinterType type, QWidget *parentWidget, KActionCollection *parent, const char *name)
-: KActionMenu(text, icon, parent, name),d(new KPrintActionPrivate())
+: KActionMenu(icon, text, parent, name),d(new KPrintActionPrivate())
 {
 	initialize(type, parentWidget);
 }

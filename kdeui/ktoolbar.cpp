@@ -34,7 +34,6 @@
 #include <string.h>
 
 #include <QMouseEvent>
-#include <QMainWindow>
 #include <qdrawutil.h>
 #include <qicon.h>
 #include <qlayout.h>
@@ -45,7 +44,6 @@
 #include <qtimer.h>
 
 #include <kaction.h>
-#include <kanimwidget.h>
 #include <kapplication.h>
 #include <kcombobox.h>
 #include <kconfig.h>
@@ -69,19 +67,15 @@ class KToolBarPrivate
 {
 public:
     KToolBarPrivate() {
-        m_iconSize     = 0;
-        m_transparent  = true;
-        m_honorStyle   = false;
+        honorStyle   = false;
 
-        m_enableContext  = true;
-
-        fullSize = false;
+        enableContext  = true;
 
         m_xmlguiClient   = 0;
 
         oldPos = Qt::TopToolBarArea;
 
-        modified = m_isHorizontal = positioned = false;
+        modified = false;
 
         IconSizeDefault = 22;
         ToolButtonStyleDefault = "TextUnderIcon";
@@ -92,23 +86,13 @@ public:
         HiddenDefault = false;
 
         context = 0L;
+
+        dropIndicatorAction = 0L;
     }
 
-    ~KToolBarPrivate() {
-        while (!idleButtons.isEmpty())
-            delete idleButtons.takeFirst();
-    }
-
-    int m_iconSize;
-    bool m_transparent : 1;
-    bool m_honorStyle : 1;
-    bool m_isHorizontal : 1;
-    bool m_enableContext : 1;
+    bool honorStyle : 1;
+    bool enableContext : 1;
     bool modified : 1;
-    bool positioned : 1;
-    bool fullSize : 1;
-
-    QWidget *m_parent;
 
     Qt::ToolBarArea oldPos;
 
@@ -145,17 +129,16 @@ public:
   int OffsetDefault;
   QString PositionDefault;
 
-  QList<QWidget *> idleButtons;
+  QList<KAction*> actionsBeingDragged;
+  QAction* dropIndicatorAction;
 
   KMenu* context;
 };
 
 KToolBar::KToolBar( QWidget *parent, bool honorStyle, bool readConfig )
     : QToolBar( parent )
+    , d(new KToolBarPrivate)
 {
-    if ( !qobject_cast<QMainWindow*>(parent) )
-         setWindowFlags( windowFlags() & ~Qt::WindowType_Mask ); //We're not a top-level!
-
     init( readConfig, honorStyle );
 
     // The old KToolBar added itself automatically
@@ -163,14 +146,18 @@ KToolBar::KToolBar( QWidget *parent, bool honorStyle, bool readConfig )
       mainWindow()->addToolBar(this);
 }
 
-KToolBar::KToolBar( QWidget *parent, Qt::ToolBarArea area, bool /*newLine*/, bool honorStyle, bool readConfig )
+KToolBar::KToolBar( QWidget *parent, Qt::ToolBarArea area, bool newLine, bool honorStyle, bool readConfig )
     : QToolBar(parent)
+    , d(new KToolBarPrivate)
 {
-    // FIXME QT4 figure out how to implement newLine
     init( readConfig, honorStyle );
 
-    if (mainWindow())
+    if (mainWindow()) {
+      if (newLine)
+        mainWindow()->addToolBarBreak();
+
       mainWindow()->addToolBar(area, this);
+    }
 }
 
 KToolBar::~KToolBar()
@@ -181,9 +168,7 @@ KToolBar::~KToolBar()
 
 void KToolBar::init( bool readConfig, bool honorStyle )
 {
-    d = new KToolBarPrivate;
-    setFullSize( true );
-    d->m_honorStyle = honorStyle;
+    d->honorStyle = honorStyle;
 
     // finally, read in our configurable settings
     if ( readConfig )
@@ -195,17 +180,24 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     connect( this, SIGNAL( toolButtonStyleChanged(Qt::ToolButtonStyle) ), mainWindow(), SLOT( setSettingsDirty() ) );
     connect( this, SIGNAL( movableChanged(bool) ), mainWindow(), SLOT( setSettingsDirty() ) );
     connect( this, SIGNAL( orientationChanged(Qt::Orientation) ), mainWindow(), SLOT( setSettingsDirty() ) );
+
+    if (!KAuthorized::authorize("movable_toolbars"))
+        setMovable(false);
+
+    connect( this, SIGNAL( movableChanged(bool) ), SLOT( slotMovableChanged(bool) ) );
+
+    setAcceptDrops(true);
 }
 
 void KToolBar::setEnableContextMenu(bool enable )
 {
-    d->m_enableContext = enable;
+    d->enableContext = enable;
 }
 
 
 bool KToolBar::contextMenuEnabled() const
 {
-    return d->m_enableContext;
+    return d->enableContext;
 }
 
 #if 0
@@ -313,7 +305,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 
     //kDebug(220) << name() << "                ToolButtonStyle=" << ToolButtonStyle << " hasDefault:" << config->hasDefault( "ToolButtonStyle" ) << " d->ToolButtonStyleDefault=" << d->ToolButtonStyleDefault << endl;
 
-    if(d->m_honorStyle && ToolButtonStyle == d->ToolButtonStyleDefault && !cg.hasDefault("ToolButtonStyle") )
+    if(d->honorStyle && ToolButtonStyle == d->ToolButtonStyleDefault && !cg.hasDefault("ToolButtonStyle") )
     {
       //kDebug(220) << name() << "                reverting ToolButtonStyle to default" << endl;
       cg.revertToDefault("ToolButtonStyle");
@@ -380,7 +372,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
     if ( !mainWindow() )
         return;
-    if ( isMovable() && d->m_enableContext ) {
+    if ( isMovable() && d->enableContext ) {
         if ( m->button() == Qt::RightButton ) {
             QPointer<KToolBar> guard( this );
             contextMenu()->exec( m->globalPos() );
@@ -428,12 +420,6 @@ void KToolBar::loadState( const QDomElement &element )
             text = element.namedItem( "Text" ).toElement().text().toUtf8();
         if ( !text.isEmpty() )
             setWindowTitle( i18n( text ) );
-    }
-
-    {
-        QByteArray attrFullWidth = element.attribute( "fullWidth" ).toLower().toLatin1();
-        if ( !attrFullWidth.isEmpty() )
-            setFullSize( attrFullWidth == "true" );
     }
 
     /*
@@ -534,19 +520,19 @@ void KToolBar::getAttributes( QString &position, QString &toolButtonStyle, int &
 {
     // get all of the stuff to save
     switch ( mainWindow()->toolBarArea(this) ) {
-    case Qt::BottomToolBarArea:
-        position = "Bottom";
-        break;
-    case Qt::LeftToolBarArea:
-        position = "Left";
-        break;
-    case Qt::RightToolBarArea:
-        position = "Right";
-        break;
-    case Qt::TopToolBarArea:
-    default:
-        position = "Top";
-        break;
+      case Qt::BottomToolBarArea:
+          position = "Bottom";
+          break;
+      case Qt::LeftToolBarArea:
+          position = "Left";
+          break;
+      case Qt::RightToolBarArea:
+          position = "Right";
+          break;
+      case Qt::TopToolBarArea:
+      default:
+          position = "Top";
+          break;
     }
 
     switch (this->toolButtonStyle()) {
@@ -650,9 +636,9 @@ KMenu *KToolBar::contextMenu()
   if (theme)
   {
       if (isMainToolBar())
-          avSizes = theme->querySizes( KIcon::MainToolbar);
+          avSizes = theme->querySizes( K3Icon::MainToolbar);
       else
-          avSizes = theme->querySizes( KIcon::Toolbar);
+          avSizes = theme->querySizes( K3Icon::Toolbar);
   }
 
   d->iconSizes = avSizes;
@@ -679,7 +665,7 @@ KMenu *KToolBar::contextMenu()
       const int progression[] = {16, 22, 32, 48, 64, 96, 128, 192, 256};
 
       for (uint i = 0; i < 9; i++) {
-		  foreach ( int it, avSizes ) {
+          foreach ( int it, avSizes ) {
               if (it >= progression[i]) {
                   QString text;
                   if ( it < 19 )
@@ -759,7 +745,7 @@ void KToolBar::slotContextAboutToShow()
   QMapIterator<QAction*,int> it = d->contextIconSizes;
   while (it.hasNext()) {
     it.next();
-    if (it.value() == d->m_iconSize) {
+    if (it.value() == iconSize().width()) {
       it.key()->setChecked(true);
       break;
     }
@@ -971,7 +957,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
         // we read in the ToolButtonStyle property *only* if we intend on actually
         // honoring it
-        if (d->m_honorStyle)
+        if (d->honorStyle)
             d->ToolButtonStyleDefault = cg.readEntry(attrToolButtonStyle, d->ToolButtonStyleDefault);
         else
             d->ToolButtonStyleDefault = "TextUnderIcon";
@@ -1020,44 +1006,115 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
     }
 
     // ...and check if the icon size has changed
-    if (iconSize != d->m_iconSize && applyIconSize) {
+    if (iconSize != KToolBar::iconSize().width() && applyIconSize) {
         setIconDimensions(iconSize);
     }
 }
 
-QMainWindow * KToolBar::mainWindow( ) const
+KMainWindow * KToolBar::mainWindow( ) const
 {
-  return qobject_cast<QMainWindow*>(const_cast<QObject*>(parent()));
-}
-
-void KToolBar::setAllowedAreas( Qt::ToolBarAreas areas )
-{
-  if (KAuthorized::authorize("movable_toolbars"))
-    QToolBar::setAllowedAreas(areas);
-}
-
-void KToolBar::setFullSize( bool flag )
-{
-  d->fullSize = flag;
-}
-
-bool KToolBar::fullSize( ) const
-{
-  return d->fullSize;
-}
-
-void KToolBar::slotOrientationChanged( Qt::Orientation orientation )
-{
-  // May need to do stuff here
-  // connect me first :)
+  return qobject_cast<KMainWindow*>(const_cast<QObject*>(parent()));
 }
 
 int KToolBar::iconSizeDefault() const
 {
-    if (!::qstrcmp(QObject::name(), "mainToolBar"))
-        return KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
+    if (QObject::objectName() ==  "mainToolBar")
+        return KGlobal::iconLoader()->currentSize(K3Icon::MainToolbar);
 
-    return KGlobal::iconLoader()->currentSize(KIcon::Toolbar);
+    return KGlobal::iconLoader()->currentSize(K3Icon::Toolbar);
+}
+
+void KToolBar::slotMovableChanged( bool movable )
+{
+    if (movable && !KAuthorized::authorize("movable_toolbars"))
+        setMovable(false);
+}
+
+bool KToolBar::isMainToolBar( ) const
+{
+  return objectName() == QLatin1String("mainToolBar");
+}
+
+void KToolBar::dragEnterEvent( QDragEnterEvent * event )
+{
+  if (event->proposedAction() == Qt::CopyAction && event->mimeData()->hasFormat("application/x-kde-action-list")) {
+    QByteArray data = event->mimeData()->data("application/x-kde-action-list");
+
+    QDataStream stream(data);
+
+    QStringList actionNames;
+
+    stream >> actionNames;
+
+    foreach (const QString& actionName, actionNames) {
+      foreach (QAction* action, actions())
+        if (action->objectName() == actionName)
+          continue;
+
+      KAction* newAction = mainWindow()->actionCollection()->action(actionName.toAscii().constData());
+      if (!newAction)
+        continue;
+
+      d->actionsBeingDragged.append(newAction);
+    }
+
+    if (d->actionsBeingDragged.count()) {
+      QAction* overAction = actionAt(event->pos());
+
+      QFrame* dropIndicatorWidget = new QFrame(this);
+      dropIndicatorWidget->resize(8, height() - 4);
+      dropIndicatorWidget->setFrameShape(QFrame::VLine);
+      dropIndicatorWidget->setLineWidth(3);
+
+      d->dropIndicatorAction = insertWidget(overAction, dropIndicatorWidget);
+
+      insertAction(overAction, d->dropIndicatorAction);
+
+      event->acceptProposedAction();
+      return;
+    }
+  }
+
+  QToolBar::dragEnterEvent(event);
+}
+
+void KToolBar::dragMoveEvent( QDragMoveEvent * event )
+{
+  forever {
+    if (d->dropIndicatorAction) {
+      QAction* overAction = actionAt(event->pos());
+
+      if (overAction != d->dropIndicatorAction) {
+        int dropIndicatorIndex = actions().indexOf(d->dropIndicatorAction);
+        if (dropIndicatorIndex + 1 < actions().count())
+          if (actions()[dropIndicatorIndex + 1] == overAction)
+            break;
+
+        insertAction(overAction, d->dropIndicatorAction);
+      }
+
+      event->accept();
+      return;
+    }
+    break;
+  }
+
+  QToolBar::dragMoveEvent(event);
+}
+
+void KToolBar::dragLeaveEvent( QDragLeaveEvent * event )
+{
+  delete d->dropIndicatorAction;
+  event->accept();
+}
+
+void KToolBar::dropEvent( QDropEvent * event )
+{
+  foreach (KAction* action, d->actionsBeingDragged)
+    insertAction(d->dropIndicatorAction, action);
+
+  delete d->dropIndicatorAction;
+  event->accept();
 }
 
 #include "ktoolbar.moc"

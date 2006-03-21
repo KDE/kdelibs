@@ -535,7 +535,7 @@ void KFileIconView::slotSmallColumns()
     setSpacing( 0 );
 
     d->noArrangement = false; // now we can arrange
-    setIconSize( KIcon::SizeSmall );
+    setIconSize( K3Icon::SizeSmall );
 }
 
 void KFileIconView::slotLargeRows()
@@ -544,14 +544,14 @@ void KFileIconView::slotLargeRows()
     // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
     d->noArrangement = true; // stop arrangeItemsInGrid()!
 
-    setGridX( KGlobal::iconLoader()->currentSize( KIcon::Desktop ) + 50 );
+    setGridX( KGlobal::iconLoader()->currentSize( K3Icon::Desktop ) + 50 );
     setItemTextPos( Bottom );
     setArrangement( LeftToRight );
     setWordWrapIconText( true );
     setSpacing( 5 ); // default in QIconView
 
     d->noArrangement = false; // now we can arrange
-    setIconSize( KIcon::SizeMedium );
+    setIconSize( K3Icon::SizeMedium );
 }
 
 void KFileIconView::stopPreview()
@@ -609,7 +609,7 @@ void KFileIconView::gotPreview( const KFileItem *item, const QPixmap& pix )
 {
     KFileIconViewItem *it = viewItem( item );
     if ( it )
-        if( item->overlays() & KIcon::HiddenOverlay )
+        if( item->overlays() & K3Icon::HiddenOverlay )
         {
             QPixmap p( pix );
 

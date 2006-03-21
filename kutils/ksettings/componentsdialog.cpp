@@ -121,7 +121,7 @@ void ComponentsDialog::show()
         ( *it )->load();
         QTreeWidgetItem * item = new QTreeWidgetItem( d->listview, QStringList( ( *it )->name() ) );
         if( ! ( *it )->icon().isEmpty() )
-            item->setIcon( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
+            item->setIcon( 0, SmallIcon( ( *it )->icon(), IconSize( K3Icon::Small ) ) );
         item->setCheckState( 0, ( *it )->isPluginEnabled() ? Qt::Checked : Qt::Unchecked );
         d->plugininfomap[ item ] = ( *it );
     }
@@ -143,7 +143,7 @@ void ComponentsDialog::executed( QTreeWidgetItem * item, int )
     info->setPluginEnabled( checked );
     //checkDependencies( info );
     // show info about the component on the right
-    d->iconwidget->setPixmap( SmallIcon( info->icon(), KIcon::SizeLarge ) );
+    d->iconwidget->setPixmap( SmallIcon( info->icon(), K3Icon::SizeLarge ) );
     d->commentwidget->setText( info->comment() );
     //d->descriptionwidget->setText( info->description() );
 }

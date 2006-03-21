@@ -123,7 +123,7 @@ public:
 
     /**
      * Sets the size of the icons to be shown / selected.
-     * @see KIcon::StdSizes
+     * @see K3Icon::StdSizes
      * @see iconSize
      */
     void setIconSize(int size);
@@ -138,16 +138,16 @@ public:
     /**
      * @deprecated in KDE 3.0, use the static method getIcon instead.
      */
-    QString selectIcon(KIcon::Group group=KIcon::Desktop, KIcon::Context
-	    context=KIcon::Application, bool user=false);
+    QString selectIcon(K3Icon::Group group=K3Icon::Desktop, K3Icon::Context
+	    context=K3Icon::Application, bool user=false);
 #endif
 
     /**
      * Allows you to set the same parameters as in the class method
      * getIcon().
      */
-    void setup( KIcon::Group group,
-                KIcon::Context context = KIcon::Application,
+    void setup( K3Icon::Group group,
+                K3Icon::Context context = K3Icon::Application,
                 bool strictIconSize = false, int iconSize = 0,
                 bool user = false );
 
@@ -158,7 +158,7 @@ public:
      * dir itself.
      */
 
-    void setup( KIcon::Group group, KIcon::Context context,
+    void setup( K3Icon::Group group, K3Icon::Context context,
                 bool strictIconSize, int iconSize, bool user, bool lockUser,
                 bool lockCustomDir );
 
@@ -195,8 +195,8 @@ public:
      * @return The name of the icon, suitable for loading with KIconLoader.
      * @version New in 3.0
      */
-    static QString getIcon(KIcon::Group group=KIcon::Desktop,
-                           KIcon::Context context=KIcon::Application,
+    static QString getIcon(K3Icon::Group group=K3Icon::Desktop,
+                           K3Icon::Context context=K3Icon::Application,
                            bool strictIconSize=false, int iconSize = 0,
                            bool user=false, QWidget *parent=0,
                            const QString &caption=QString());
@@ -219,7 +219,7 @@ private:
     void showIcons();
 
     int mGroupOrSize;
-    KIcon::Context mContext;
+    K3Icon::Context mContext;
     int mType;
 
     QStringList mFileList;
@@ -280,10 +280,10 @@ public:
     bool strictIconSize() const;
 
     /**
-     * Sets the icon group and context. Use KIcon::NoGroup if you want to
+     * Sets the icon group and context. Use K3Icon::NoGroup if you want to
      * allow icons for any group in the given context.
      */
-    void setIconType(KIcon::Group group, KIcon::Context context, bool user=false);
+    void setIconType(K3Icon::Group group, K3Icon::Context context, bool user=false);
 
     /**
      * Sets the button's initial icon.
@@ -305,7 +305,7 @@ public:
 
     /**
      * Sets the size of the icon to be shown / selected.
-     * @see KIcon::StdSizes
+     * @see K3Icon::StdSizes
      * @see iconSize
      */
     void setIconSize( int size );
@@ -330,8 +330,8 @@ private:
     void init( KIconLoader *loader );
 
     bool mbUser;
-    KIcon::Group mGroup;
-    KIcon::Context mContext;
+    K3Icon::Group mGroup;
+    K3Icon::Context mContext;
 
     QString mIcon;
     KIconDialog *mpDialog;

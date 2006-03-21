@@ -59,7 +59,7 @@ KActionSelector::KActionSelector( QWidget *parent )
   d->selectedInsertionPolicy = BelowCurrent;
   d->showUpDownButtons = true;
 
-  //int isz = IconSize( KIcon::Small );
+  //int isz = IconSize( K3Icon::Small );
 
   QHBoxLayout *lo = new QHBoxLayout( this );
   lo->setSpacing( KDialog::spacingHint() );

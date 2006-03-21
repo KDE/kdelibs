@@ -170,7 +170,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                 }
 
                 mHoverCloseButton = new QPushButton( this );
-                mHoverCloseButton->setIcon( KGlobal::iconLoader()->loadIconSet("fileclose", KIcon::Toolbar, KIcon::SizeSmall) );
+                mHoverCloseButton->setIcon( KGlobal::iconLoader()->loadIconSet("fileclose", K3Icon::Toolbar, K3Icon::SizeSmall) );
                 mHoverCloseButton->setGeometry( rect );
                 QToolTip::add(mHoverCloseButton,i18n("Close this tab"));
                 mHoverCloseButton->setFlat(true);

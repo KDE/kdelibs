@@ -134,7 +134,7 @@ bool KIconEffect::hasEffect(int group, int state) const
 
 QString KIconEffect::fingerprint(int group, int state) const
 {
-    if ( group >= KIcon::LastGroup ) return "";
+    if ( group >= K3Icon::LastGroup ) return "";
     QString cached = d->mKey[group][state];
     if (cached.isEmpty())
     {
@@ -164,12 +164,12 @@ QString KIconEffect::fingerprint(int group, int state) const
 
 QImage KIconEffect::apply(QImage image, int group, int state) const
 {
-    if (state >= KIcon::LastState)
+    if (state >= K3Icon::LastState)
     {
 	kDebug(265) << "Illegal icon state: " << state << "\n";
 	return image;
     }
-    if (group >= KIcon::LastGroup)
+    if (group >= K3Icon::LastGroup)
     {
 	kDebug(265) << "Illegal icon group: " << group << "\n";
 	return image;
@@ -221,12 +221,12 @@ QImage KIconEffect::apply(QImage image, int effect, float value, const QColor &c
 
 QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state) const
 {
-    if (state >= KIcon::LastState)
+    if (state >= K3Icon::LastState)
     {
 	kDebug(265) << "Illegal icon state: " << state << "\n";
 	return pixmap;
     }
-    if (group >= KIcon::LastGroup)
+    if (group >= K3Icon::LastGroup)
     {
 	kDebug(265) << "Illegal icon group: " << group << "\n";
 	return pixmap;

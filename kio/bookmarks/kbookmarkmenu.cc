@@ -595,7 +595,7 @@ void KBookmarkMenu::fillBookmarkMenu()
 
        KActionMenu * actionMenu;
        actionMenu = new KImportedBookmarksActionMenu(
-                              info.name, info.type,
+                              KIcon(info.type), info.name,
                               m_actionCollection, "kbookmarkmenu" );
 
        actionMenu->setProperty( "type", info.type );
@@ -625,14 +625,14 @@ void KBookmarkMenu::fillBookmarkMenu()
     text.replace( '&', "&&" );
     if ( !separatorInserted && m_bIsRoot) {
       // inserted before the first konq bookmark, to avoid the separator if no konq bookmark
-      m_parentMenu->insertSeparator();
+      m_parentMenu->addSeparator();
       separatorInserted = true;
     }
     if ( !bm.isGroup() )
     {
       if ( bm.isSeparator() )
       {
-        m_parentMenu->insertSeparator();
+        m_parentMenu->addSeparator();
       }
       else
       {
@@ -652,7 +652,7 @@ void KBookmarkMenu::fillBookmarkMenu()
     else
     {
       //kDebug(7043) << "Creating bookmark submenu named " << bm.text() << endl;
-      KActionMenu * actionMenu = new KBookmarkActionMenu( text, bm.icon(),
+      KActionMenu * actionMenu = new KBookmarkActionMenu( KIcon(bm.icon()), text,
                                                           m_actionCollection,
                                                           "kbookmarkmenu" );
       actionMenu->setProperty( "address", bm.address() );
@@ -1073,7 +1073,7 @@ void KBookmarkMenuNSImporter::newFolder( const QString & text, bool, const QStri
 {
   QString _text = KStringHandler::csqueeze(text);
   _text.replace( '&', "&&" );
-  KActionMenu * actionMenu = new KActionMenu( _text, "folder", m_actionCollection, 0L );
+  KActionMenu * actionMenu = new KActionMenu( KIcon("folder"), _text, m_actionCollection, 0L );
   actionMenu->plug( mstack.top()->m_parentMenu );
   mstack.top()->m_actions.append( actionMenu );
   KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_menu->m_pOwner, actionMenu->kMenu(),

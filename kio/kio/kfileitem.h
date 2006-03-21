@@ -323,14 +323,14 @@ public:
    * Returns a pixmap representing the file.
    * @param _size Size for the pixmap in pixels. Zero will return the
    * globally configured default size.
-   * @param _state The state of the icon: KIcon::DefaultState,
-   * KIcon::ActiveState or KIcon::DisabledState.
+   * @param _state The state of the icon: K3Icon::DefaultState,
+   * K3Icon::ActiveState or K3Icon::DisabledState.
    * @return the pixmap
    */
   QPixmap pixmap( int _size, int _state=0 ) const;
 
   /**
-   * Returns the overlays (bitfield of KIcon::*Overlay flags) that are used
+   * Returns the overlays (bitfield of K3Icon::*Overlay flags) that are used
    * for this item's pixmap. Overlays are used to show for example, whether
    * a file can be modified.
    * @return the overlays of the pixmap

@@ -32,13 +32,12 @@
 #include <qapplication.h>
 #include <kdebug.h>
 #include <kguiitem.h>
-#include <kmainwindow.h>
-#include <kmenubar.h>
-#include <kmenu.h>
-#include <ktoolbar.h>
-#include <kinstance.h>
-#include <kiconloader.h>
-#include <kauthorized.h>
+
+#include "kmainwindow.h"
+#include "kmenubar.h"
+#include "kmenu.h"
+#include "ktoolbar.h"
+#include "kicon.h"
 
 /**
 * How it works.
@@ -73,8 +72,6 @@ public:
     m_configurable = true;
   }
 
-  QString m_iconName;
-
   KShortcut m_shortcut;
   KShortcut m_defaultShortcut;
 
@@ -97,7 +94,7 @@ KAction::KAction( const QString & text, KActionCollection * parent, const char* 
   initPrivate(name);
 }
 
-KAction::KAction( const QIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KAction::KAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
   : QAction(icon, text, parent), d(new KActionPrivate)
 {
   initPrivate(name);
@@ -216,21 +213,9 @@ KActionCollection *KAction::parentCollection() const
 void KAction::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-void KAction::setIconName( const QString & icon, KIcon::Group group, int size, KInstance* instance )
+void KAction::setIconName( const QString & icon )
 {
-  d->m_iconName = icon;
-  if (group == KIcon::NoGroup)
-    group = KIcon::Toolbar;
-  if (size == -1 && instance->iconLoader()->theme())
-    size = instance->iconLoader()->theme()->defaultSize((KIcon::Group)group);
-  else
-    size = KIcon::SizeSmall;
-  setIcon(instance->iconLoader()->loadIconSet(icon, (KIcon::Group)group, size));
-}
-
-const QString & KAction::iconName( ) const
-{
-  return d->m_iconName;
+  setIcon(KIcon(icon));
 }
 
 const KShortcut & KAction::shortcut( ) const
@@ -314,7 +299,7 @@ QWidget* KAction::container( int index ) const
   return 0L;
 }
 
-void KAction::setName ( const char * name )
+void KAction::setName ( const char * )
 {
   // Not allowed
   Q_ASSERT(false);
@@ -324,6 +309,11 @@ void KAction::setObjectName(const QString&)
 {
   // Not allowed
   Q_ASSERT(false);
+}
+
+void KAction::setIcon( const KIcon & icon )
+{
+  QAction::setIcon(icon);
 }
 
 /* vim: et sw=2 ts=2

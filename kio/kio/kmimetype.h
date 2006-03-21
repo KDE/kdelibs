@@ -120,13 +120,13 @@ public:
    * @param group The icon group where the icon is going to be used.
    * @param force_size Override globallly configured icon size.
    *        Use 0 for the default size
-   * @param state The icon state, one of: @p KIcon::DefaultState,
-   *         @p KIcon::ActiveState or @p KIcon::DisabledState.
+   * @param state The icon state, one of: @p K3Icon::DefaultState,
+   *         @p K3Icon::ActiveState or @p K3Icon::DisabledState.
    * @param path Output parameter to get the full path. Seldom needed.
    *              Ignored if 0
    * @return the pixmap of the mime type, can be a default icon if not found
    */
-  virtual QPixmap pixmap( KIcon::Group group, int force_size = 0, int state = 0,
+  virtual QPixmap pixmap( K3Icon::Group group, int force_size = 0, int state = 0,
                           QString * path = 0L ) const;
 
   /**
@@ -139,13 +139,13 @@ public:
    * @param _group The icon group where the icon is going to be used.
    * @param _force_size Override globallly configured icon size.
    *        Use 0 for the default size
-   * @param _state The icon state, one of: KIcon::DefaultState,
-   * KIcon::ActiveState or KIcon::DisabledState.
+   * @param _state The icon state, one of: K3Icon::DefaultState,
+   * K3Icon::ActiveState or K3Icon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    *              Ignored if 0
    * @return the pixmap of the URL, can be a default icon if not found
    */
-  virtual QPixmap pixmap( const KUrl& _url, KIcon::Group _group, int _force_size = 0,
+  virtual QPixmap pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size = 0,
 	    int _state = 0, QString * _path = 0L ) const;
 
   /**
@@ -160,13 +160,13 @@ public:
    * @param _group The icon group where the icon is going to be used.
    * @param _force_size Override globally configured icon size.
    *        Use 0 for the default size
-   * @param _state The icon state, one of: KIcon::DefaultState,
-   * KIcon::ActiveState or KIcon::DisabledState.
+   * @param _state The icon state, one of: K3Icon::DefaultState,
+   * K3Icon::ActiveState or K3Icon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    *              Ignored if 0
    * @return the pixmap of the URL, can be a default icon if not found
    */
-  static QPixmap pixmapForURL( const KUrl & _url, mode_t _mode = 0, KIcon::Group _group = KIcon::Desktop,
+  static QPixmap pixmapForURL( const KUrl & _url, mode_t _mode = 0, K3Icon::Group _group = K3Icon::Desktop,
                                int _force_size = 0, int _state = 0, QString * _path = 0L );
 
 
@@ -541,7 +541,7 @@ public:
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
   virtual QString icon( const KUrl& _url, bool _is_local ) const;
-  virtual QPixmap pixmap( const KUrl& _url, KIcon::Group _group, int _force_size = 0,
+  virtual QPixmap pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size = 0,
                           int _state = 0, QString * _path = 0L ) const;
   virtual QString comment( const QString& _url, bool _is_local ) const;
   virtual QString comment( const KUrl& _url, bool _is_local ) const;
@@ -605,7 +605,7 @@ public:
   static pid_t run( const KUrl& _url, bool _is_local );
 
 protected:
-  virtual QPixmap pixmap( KIcon::Group group, int force_size = 0, int state = 0,
+  virtual QPixmap pixmap( K3Icon::Group group, int force_size = 0, int state = 0,
                           QString * path = 0L ) const
      { return KMimeType::pixmap( group, force_size, state, path ); }
 

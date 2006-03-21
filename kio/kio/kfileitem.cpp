@@ -480,14 +480,14 @@ int KFileItem::overlays() const
 {
   int _state = 0;
   if ( m_bLink )
-      _state |= KIcon::LinkOverlay;
+      _state |= K3Icon::LinkOverlay;
 
   if ( !S_ISDIR( m_fileMode ) // Locked dirs have a special icon, use the overlay for files only
        && !isReadable())
-     _state |= KIcon::LockOverlay;
+     _state |= K3Icon::LockOverlay;
 
   if ( isHidden() )
-     _state |= KIcon::HiddenOverlay;
+     _state |= K3Icon::HiddenOverlay;
 
   if( S_ISDIR( m_fileMode ) && m_bIsLocalURL)
   {
@@ -495,12 +495,12 @@ int KFileItem::overlays() const
         KNFSShare::instance()->isDirectoryShared( m_url.path() ))
     {
       //kDebug()<<"KFileShare::isDirectoryShared : "<<m_url.path()<<endl;
-      _state |= KIcon::ShareOverlay;
+      _state |= K3Icon::ShareOverlay;
     }
   }
 
   if ( m_pMimeType->name() == "application/x-gzip" && m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
-     _state |= KIcon::ZipOverlay;
+     _state |= K3Icon::ZipOverlay;
   return _state;
 }
 
@@ -542,7 +542,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   bool isLocalURL;
   KUrl url = mostLocalURL(isLocalURL);
 
-  QPixmap p = mime->pixmap( url, KIcon::Desktop, _size, _state );
+  QPixmap p = mime->pixmap( url, K3Icon::Desktop, _size, _state );
   //kDebug() << "finding pixmap for " << url.url() << " : " << mime->name() << endl;
   if (p.isNull())
       kWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;

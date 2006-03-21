@@ -675,7 +675,7 @@ void KApplication::init()
 #ifdef Q_WS_MACX
   if (type() == GuiClient) {
       QPixmap pixmap = KGlobal::iconLoader()->loadIcon( KCmdLineArgs::appName(),
-              KIcon::NoGroup, KIcon::SizeLarge, KIcon::DefaultState, 0L, false );
+              K3Icon::NoGroup, K3Icon::SizeLarge, K3Icon::DefaultState, 0L, false );
       if (!pixmap.isNull()) {
           QImage i = pixmap.toImage().convertDepth(32).smoothScale(40, 40);
           for(int y = 0; y < i.height(); y++) {

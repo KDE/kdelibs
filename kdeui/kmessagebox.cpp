@@ -82,7 +82,7 @@ static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
         break;
     }
 
-   QPixmap ret = KApplication::kApplication()->iconLoader()->loadIcon(icon_name, KIcon::NoGroup, KIcon::SizeMedium, KIcon::DefaultState, 0, true);
+   QPixmap ret = KApplication::kApplication()->iconLoader()->loadIcon(icon_name, K3Icon::NoGroup, K3Icon::SizeMedium, K3Icon::DefaultState, 0, true);
 
    if (ret.isNull())
        return QMessageBox::standardIcon(icon);
@@ -1012,7 +1012,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
         dialog->setWindowIcon(ret);
     }
   
-    int size = IconSize(KIcon::Desktop);
+    int size = IconSize(K3Icon::Desktop);
     QPixmap icon = qApp->windowIcon().pixmap(size,size);
     createKMessageBox(dialog, icon, text, QStringList(), QString(), 0, options);
     return;

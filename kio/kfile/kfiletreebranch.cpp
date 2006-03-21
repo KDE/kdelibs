@@ -142,7 +142,7 @@ void KFileTreeBranch::slotRefreshItems( const KFileItemList& list )
     {
         KFileTreeViewItem *item = findTVIByURL((*kit)->url());
         if (item) {
-            item->setPixmap(0, item->fileItem()->pixmap( KIcon::SizeSmall ));
+            item->setPixmap(0, item->fileItem()->pixmap( K3Icon::SizeSmall ));
             item->setText( 0, item->fileItem()->text());
         }
     }

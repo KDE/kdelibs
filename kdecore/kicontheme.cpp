@@ -56,8 +56,8 @@ public:
     QStringList iconList() const;
     QString dir() const { return mDir; }
 
-    KIcon::Context context() const { return mContext; }
-    KIcon::Type type() const { return mType; }
+    K3Icon::Context context() const { return mContext; }
+    K3Icon::Type type() const { return mType; }
     int size() const { return mSize; }
     int minSize() const { return mMinSize; }
     int maxSize() const { return mMaxSize; }
@@ -65,8 +65,8 @@ public:
 
 private:
     bool mbValid;
-    KIcon::Type mType;
-    KIcon::Context mContext;
+    K3Icon::Type mType;
+    K3Icon::Context mContext;
     int mSize, mMinSize, mMaxSize;
     int mThreshold;
 
@@ -178,7 +178,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     foreach(KIconThemeDir *dir, mDirs)
     {
         if(!dir) break;
-        if ((dir->type() == KIcon::Scalable) && !scIcons.contains(dir->size()))
+        if ((dir->type() == K3Icon::Scalable) && !scIcons.contains(dir->size()))
         {
             QList<int> lst;
             for (i=dir->minSize(); i<=dir->maxSize(); i++)
@@ -235,9 +235,9 @@ QString KIconTheme::lockOverlay() const { return d->lockOverlay; }
 QString KIconTheme::zipOverlay() const { return d->zipOverlay; }
 QString KIconTheme::shareOverlay() const { return d->shareOverlay; }
 
-int KIconTheme::defaultSize(KIcon::Group group) const
+int KIconTheme::defaultSize(K3Icon::Group group) const
 {
-    if ((group < 0) || (group >= KIcon::LastGroup))
+    if ((group < 0) || (group >= K3Icon::LastGroup))
     {
         kDebug(264) << "Illegal icon group: " << group << "\n";
         return -1;
@@ -245,10 +245,10 @@ int KIconTheme::defaultSize(KIcon::Group group) const
     return mDefSize[group];
 }
 
-QList<int> KIconTheme::querySizes(KIcon::Group group) const
+QList<int> KIconTheme::querySizes(K3Icon::Group group) const
 {
     QList<int> empty;
-    if ((group < 0) || (group >= KIcon::LastGroup))
+    if ((group < 0) || (group >= K3Icon::LastGroup))
     {
         kDebug(264) << "Illegal icon group: " << group << "\n";
         return empty;
@@ -256,7 +256,7 @@ QList<int> KIconTheme::querySizes(KIcon::Group group) const
     return mSizes[group];
 }
 
-QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
+QStringList KIconTheme::queryIcons(int size, K3Icon::Context context) const
 {
     int delta = 1000, dw;
 
@@ -267,20 +267,20 @@ QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
     for(int i=0; i<mDirs.size(); ++i)
     {
         dir = mDirs.at(i);
-        if ((context != KIcon::Any) && (context != dir->context()))
+        if ((context != K3Icon::Any) && (context != dir->context()))
             continue;
-        if ((dir->type() == KIcon::Fixed) && (dir->size() == size))
+        if ((dir->type() == K3Icon::Fixed) && (dir->size() == size))
         {
             result += dir->iconList();
             continue;
         }
-        if ((dir->type() == KIcon::Scalable) &&
+        if ((dir->type() == K3Icon::Scalable) &&
             (size >= dir->minSize()) && (size <= dir->maxSize()))
         {
             result += dir->iconList();
             continue;
         }
-	if ((dir->type() == KIcon::Threshold) &&
+	if ((dir->type() == K3Icon::Threshold) &&
             (abs(size-dir->size())<dir->threshold()))
             result+=dir->iconList();
     }
@@ -292,7 +292,7 @@ QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
     for(int i=0; i<mDirs.size(); ++i)
     {
         dir = mDirs.at(i);
-      if ((context != KIcon::Any) && (context != dir->context()))
+      if ((context != K3Icon::Any) && (context != dir->context()))
             continue;
         dw = dir->size() - size;
         if ((dw > 6) || (abs(dw) >= abs(delta)))
@@ -306,7 +306,7 @@ QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
     return best->iconList();
 }
 
-QStringList KIconTheme::queryIconsByContext(int size, KIcon::Context context) const
+QStringList KIconTheme::queryIconsByContext(int size, K3Icon::Context context) const
 {
     int dw;
     KIconThemeDir *dir;
@@ -322,7 +322,7 @@ QStringList KIconTheme::queryIconsByContext(int size, KIcon::Context context) co
     for(int i=0;i<mDirs.size();++i)
     {
         dir = mDirs.at(i);
-        if ((context != KIcon::Any) && (context != dir->context()))
+        if ((context != K3Icon::Any) && (context != dir->context()))
             continue;
         dw = abs(dir->size() - size);
         iconlist[(dw<127)?dw:127]+=dir->iconList();
@@ -334,9 +334,9 @@ QStringList KIconTheme::queryIconsByContext(int size, KIcon::Context context) co
     return iconlistResult;
 }
 
-KIcon KIconTheme::iconPath(const QString& name, int size, KIcon::MatchType match) const
+K3Icon KIconTheme::iconPath(const QString& name, int size, K3Icon::MatchType match) const
 {
-    KIcon icon;
+    K3Icon icon;
     QString path;
     int delta = -1000, dw;
     KIconThemeDir *dir;
@@ -347,23 +347,23 @@ KIcon KIconTheme::iconPath(const QString& name, int size, KIcon::MatchType match
     {
         dir = mDirs.at(i);
 
-        if (match == KIcon::MatchExact)
+        if (match == K3Icon::MatchExact)
         {
-            if ((dir->type() == KIcon::Fixed) && (dir->size() != size))
+            if ((dir->type() == K3Icon::Fixed) && (dir->size() != size))
                 continue;
-            if ((dir->type() == KIcon::Scalable) &&
+            if ((dir->type() == K3Icon::Scalable) &&
                 ((size < dir->minSize()) || (size > dir->maxSize())))
               continue;
-            if ((dir->type() == KIcon::Threshold) &&
+            if ((dir->type() == K3Icon::Threshold) &&
 		(abs(dir->size()-size) > dir->threshold()))
                 continue;
         } else
         {
           // dw < 0 means need to scale up to get an icon of the requested size
-          if (dir->type() == KIcon::Fixed)
+          if (dir->type() == K3Icon::Fixed)
           {
             dw = dir->size() - size;
-          } else if (dir->type() == KIcon::Scalable)
+          } else if (dir->type() == K3Icon::Scalable)
           {
             if (size < dir->minSize())
               dw = dir->minSize() - size;
@@ -371,7 +371,7 @@ KIcon KIconTheme::iconPath(const QString& name, int size, KIcon::MatchType match
               dw = dir->maxSize() - size;
             else
               dw = 0;
-          } else if (dir->type() == KIcon::Threshold)
+          } else if (dir->type() == K3Icon::Threshold)
           {
             if (size < dir->size() - dir->threshold())
               dw = dir->size() - dir->threshold() - size;
@@ -399,7 +399,7 @@ KIcon KIconTheme::iconPath(const QString& name, int size, KIcon::MatchType match
         icon.context = dir->context();
 
         // if we got in MatchExact that far, we find no better
-        if (match == KIcon::MatchExact)
+        if (match == K3Icon::MatchExact)
             return icon;
 	else
         {
@@ -494,42 +494,42 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
     mSize = config->readEntry("Size", 0);
     mMinSize = 1;    // just set the variables to something
     mMaxSize = 50;   // meaningful in case someone calls minSize or maxSize
-    mType = KIcon::Fixed;
+    mType = K3Icon::Fixed;
 
     if (mSize == 0)
         return;
 
     QString tmp = config->readEntry("Context");
     if (tmp == "Devices")
-        mContext = KIcon::Device;
+        mContext = K3Icon::Device;
     else if (tmp == "MimeTypes")
-        mContext = KIcon::MimeType;
+        mContext = K3Icon::MimeType;
     else if (tmp == "FileSystems")
-        mContext = KIcon::FileSystem;
+        mContext = K3Icon::FileSystem;
     else if (tmp == "Applications")
-        mContext = KIcon::Application;
+        mContext = K3Icon::Application;
     else if (tmp == "Actions")
-        mContext = KIcon::Action;
+        mContext = K3Icon::Action;
     else {
         kDebug(264) << "Invalid Context= line for icon theme: " << mDir << "\n";
         return;
     }
     tmp = config->readEntry("Type");
     if (tmp == "Fixed")
-        mType = KIcon::Fixed;
+        mType = K3Icon::Fixed;
     else if (tmp == "Scalable")
-        mType = KIcon::Scalable;
+        mType = K3Icon::Scalable;
     else if (tmp == "Threshold")
-        mType = KIcon::Threshold;
+        mType = K3Icon::Threshold;
     else {
         kDebug(264) << "Invalid Type= line for icon theme: " <<  mDir << "\n";
         return;
     }
-    if (mType == KIcon::Scalable)
+    if (mType == K3Icon::Scalable)
     {
         mMinSize = config->readEntry("MinSize", mSize);
         mMaxSize = config->readEntry("MaxSize", mSize);
-    } else if (mType == KIcon::Threshold)
+    } else if (mType == K3Icon::Threshold)
 	mThreshold = config->readEntry("Threshold", 2);
     mbValid = true;
 }

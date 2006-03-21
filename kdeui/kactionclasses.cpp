@@ -83,7 +83,7 @@ KToggleAction::KToggleAction( const QString & text, KActionCollection * parent, 
   setActionGroup(exclusiveGroup);
 }
 
-KToggleAction::KToggleAction( const QIcon & icon, const QString & text, KActionCollection * parent, const char* name, QActionGroup * exclusiveGroup )
+KToggleAction::KToggleAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name, QActionGroup * exclusiveGroup )
     : KAction(icon, text, parent, name)
 {
   init();
@@ -249,7 +249,7 @@ KSelectAction::KSelectAction( const QString & text, KActionCollection * parent, 
   init();
 }
 
-KSelectAction::KSelectAction( const QIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KSelectAction::KSelectAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
   : KAction(icon, text, parent, name)
   , d(new KSelectActionPrivate())
 {
@@ -640,8 +640,8 @@ QWidget * KSelectAction::createToolBarWidget( QToolBar * parent )
       button->setFocusPolicy(Qt::NoFocus);
       button->setIconSize(parent->iconSize());
       button->setToolButtonStyle(parent->toolButtonStyle());
-      QObject::connect(parent, SIGNAL(iconSizeChanged(QSize)),
-                       button, SLOT(setIconSize(QSize)));
+      QObject::connect(parent, SIGNAL(iconSizeChanged(const QSize&)),
+                       button, SLOT(setIconSize(const QSize&)));
       QObject::connect(parent, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
                        button, SLOT(setToolButtonStyle(Qt::ToolButtonStyle)));
       button->setDefaultAction(this);
@@ -716,7 +716,7 @@ KRecentFilesAction::KRecentFilesAction( const QString & text, KActionCollection 
   setText(text);
 }
 
-KRecentFilesAction::KRecentFilesAction( const QIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KRecentFilesAction::KRecentFilesAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
   : KSelectAction(icon, text, parent, name)
 {
   d = new KRecentFilesActionPrivate;
@@ -1058,7 +1058,7 @@ KFontAction::KFontAction( const QString & text, KActionCollection * parent, cons
     setEditable( true );
 }
 
-KFontAction::KFontAction( const QIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KFontAction::KFontAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
   : KSelectAction( icon, text, parent, name )
 {
     QStringList list;
@@ -1225,7 +1225,7 @@ KFontSizeAction::KFontSizeAction( const QString & icon, const QString & text, KA
   init();
 }
 
-KFontSizeAction::KFontSizeAction( const QIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KFontSizeAction::KFontSizeAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
   : KSelectAction( icon, text, parent, name )
 {
   init();
@@ -1363,13 +1363,12 @@ void KFontSizeAction::slotTriggered()
 // END
 
 // BEGIN KActionMenu
-class KActionMenu::KActionMenuPrivate
+class KActionMenuPrivate
 {
 public:
   KActionMenuPrivate()
   {
-      m_popup = new KMenu();
-      m_popup->setObjectName( "KActionMenu::KActionMenuPrivate");
+    m_popup = new KMenu();
     m_delayed = true;
     m_stickyMenu = true;
   }
@@ -1384,52 +1383,56 @@ public:
 
 KActionMenu::KActionMenu( KActionCollection * parent, const char* name )
   : KAction( parent, name )
+  , d(new KActionMenuPrivate)
 {
-  d = new KActionMenuPrivate;
   setShortcutConfigurable( false );
+  setToolBarWidgetFactory(this);
 }
 
 KActionMenu::KActionMenu( const QString & text, KActionCollection * parent, const char* name )
   : KAction( text, parent, name )
+  , d(new KActionMenuPrivate)
 {
-  d = new KActionMenuPrivate;
   setShortcutConfigurable( false );
+  setToolBarWidgetFactory(this);
 }
 
-KActionMenu::KActionMenu( const QIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KActionMenu::KActionMenu( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
   : KAction( icon, text, parent, name )
+  , d(new KActionMenuPrivate)
 {
-  d = new KActionMenuPrivate;
   setShortcutConfigurable( false );
-}
-
-/*KActionMenu::KActionMenu( const QString & icon, const QString & text, KActionCollection * parent )
-  : KAction( icon, text, parent )
-{
-  d = new KActionMenuPrivate;
-  setShortcutConfigurable( false );
-}*/
-
-KActionMenu::KActionMenu( const QString& text, const QIcon& icon,
-                          KActionCollection* parent, const char* name )
-  : KAction( text, icon, 0, 0,0, parent,name )
-{
-  d = new KActionMenuPrivate;
-  setShortcutConfigurable( false );
-}
-
-KActionMenu::KActionMenu( const QString& text, const QString& icon,
-                          KActionCollection* parent, const char* name )
-  : KAction( text, icon, 0, 0,0, parent, name )
-{
-  d = new KActionMenuPrivate;
-  setShortcutConfigurable( false );
+  setToolBarWidgetFactory(this);
 }
 
 KActionMenu::~KActionMenu()
 {
     delete d;
     delete menu();
+}
+
+QWidget * KActionMenu::createToolBarWidget( QToolBar * parent )
+{
+  QToolButton* button = new QToolButton(parent);
+  button->setAutoRaise(true);
+  button->setFocusPolicy(Qt::NoFocus);
+  button->setIconSize(parent->iconSize());
+  button->setToolButtonStyle(parent->toolButtonStyle());
+  QObject::connect(parent, SIGNAL(iconSizeChanged(const QSize&)),
+                   button, SLOT(setIconSize(const QSize&)));
+  QObject::connect(parent, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
+                   button, SLOT(setToolButtonStyle(Qt::ToolButtonStyle)));
+  button->setDefaultAction(this);
+  QObject::connect(button, SIGNAL(triggered(QAction*)), parent, SIGNAL(actionTriggered(QAction*)));
+
+  if (delayed())
+    button->setPopupMode(QToolButton::DelayedPopup);
+  else if (stickyMenu())
+    button->setPopupMode(QToolButton::InstantPopup);
+  else
+    button->setPopupMode(QToolButton::MenuButtonPopup);
+
+  return button;
 }
 
 void KActionMenu::insert( KAction* cmd, QAction* before )
@@ -1574,8 +1577,8 @@ QWidget * KToolBarPopupAction::createToolBarWidget( QToolBar * parent )
   button->setFocusPolicy(Qt::NoFocus);
   button->setIconSize(parent->iconSize());
   button->setToolButtonStyle(parent->toolButtonStyle());
-  QObject::connect(parent, SIGNAL(iconSizeChanged(QSize)),
-                   button, SLOT(setIconSize(QSize)));
+  QObject::connect(parent, SIGNAL(iconSizeChanged(const QSize&)),
+                   button, SLOT(setIconSize(const QSize&)));
   QObject::connect(parent, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
                    button, SLOT(setToolButtonStyle(Qt::ToolButtonStyle)));
   button->setDefaultAction(this);
@@ -1665,7 +1668,7 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
 // BEGIN KToggleToolBarAction
 KToggleToolBarAction::KToggleToolBarAction( const char* toolBarName,
          const QString& text, KActionCollection* parent, const char* name )
-  : KToggleAction( text, KShortcut(), parent, name )
+  : KToggleAction( text, parent, name )
   , m_toolBarName( toolBarName )
   , m_toolBar( 0L )
   , m_beingToggled( false )
@@ -1674,7 +1677,7 @@ KToggleToolBarAction::KToggleToolBarAction( const char* toolBarName,
 
 KToggleToolBarAction::KToggleToolBarAction( KToolBar *toolBar, const QString &text,
                                             KActionCollection *parent, const char *name )
-  : KToggleAction( text, KShortcut(), parent, name )
+  : KToggleAction( text, parent, name )
   , m_toolBarName( 0 ), m_toolBar( toolBar ), m_beingToggled( false )
 {
     m_toolBar->installEventFilter(this);
@@ -1747,10 +1750,9 @@ void KToggleToolBarAction::slotToggled( bool checked )
 
 // BEGIN KToggleFullScreenAction
 KToggleFullScreenAction::KToggleFullScreenAction( KActionCollection * parent, const char* name )
-  : KToggleAction( i18n("F&ull Screen Mode"), parent, name ),
+  : KToggleAction( KIcon("window_fullscreen"), i18n("F&ull Screen Mode"), parent, name ),
     m_window( 0L )
 {
-  setIconName("window_fullscreen");
 }
 
 KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut,
@@ -1760,7 +1762,7 @@ KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut,
   : KToggleAction( i18n("F&ull Screen Mode"), cut, receiver, slot, parent, name ),
     m_window( 0L )
 {
-  setIconName("window_fullscreen");
+  setIcon(KIcon("window_fullscreen"));
   setWindow( window );
 }
 
@@ -1862,7 +1864,7 @@ KPasteTextAction::KPasteTextAction( const QString & text, KActionCollection * pa
   init();
 }
 
-KPasteTextAction::KPasteTextAction( const QIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KPasteTextAction::KPasteTextAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
   : KAction( icon, text, parent, name )
 {
   init();

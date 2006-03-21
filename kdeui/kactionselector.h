@@ -115,7 +115,7 @@ public:
   /**
     This enum identifies the icon sizes, used for the move buttons.
     The values correspond to the following pixel sizes:
-    @li SmallIcon - the return value of IconSize( KIcon::Small ), the user defined size
+    @li SmallIcon - the return value of IconSize( K3Icon::Small ), the user defined size
                 of a small icon in KDE. This is the default setting.
     @li Small - 16px
     @li Medium - 22px

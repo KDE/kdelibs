@@ -34,7 +34,7 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent )
 {
     KConfigGroup cg( KGlobal::config(), ConfigGroup );
     m_initializeSpeedbar = cg.readEntry( "Set speedbar defaults", true );
-    setIconSize(KIcon::SizeSmallMedium);
+    setIconSize(K3Icon::SizeSmallMedium);
     readConfig( KGlobal::config(), "KFileDialog Speedbar" );
 
     if ( m_initializeSpeedbar )

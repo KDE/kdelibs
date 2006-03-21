@@ -58,7 +58,7 @@ public:
     KUrlBarItem( KUrlBar *parent, const KUrl& url, bool persistent,
                  const QString& description = QString(),
                  const QString& icon = QString(),
-                 KIcon::Group group = KIcon::Panel );
+                 K3Icon::Group group = K3Icon::Panel );
 
     /**
      * Creates a persistent KUrlBarItem to be used in the @p parent KUrlBar. You need
@@ -75,7 +75,7 @@ public:
     KUrlBarItem( KUrlBar *parent, const KUrl& url,
                  const QString& description = QString(),
                  const QString& icon = QString(),
-                 KIcon::Group group = KIcon::Panel );
+                 K3Icon::Group group = K3Icon::Panel );
 
     /**
      * Destroys the item
@@ -93,7 +93,7 @@ public:
      * of the icon groups.
      * @see icon
      */
-    void setIcon( const QString& icon, KIcon::Group group = KIcon::Panel );
+    void setIcon( const QString& icon, K3Icon::Group group = K3Icon::Panel );
     /**
      * Sets the description of this item that will be shown as item-text.
      * @see description
@@ -143,7 +143,7 @@ public:
      * returns the icon-group of this item (determines icon-effects).
      * @see setIcon
      */
-    KIcon::Group iconGroup() const              { return m_group; }
+    K3Icon::Group iconGroup() const              { return m_group; }
     /**
      * returns the pixmap  of this item.
      */
@@ -176,7 +176,7 @@ protected:
 
 private:
     int iconSize() const;
-    void init( const QString& icon, KIcon::Group group,
+    void init( const QString& icon, K3Icon::Group group,
                const QString& description, bool persistent );
 
     KUrl m_url;
@@ -184,7 +184,7 @@ private:
     QString m_icon;
     QString m_toolTip;
     QPixmap m_pixmap;
-    KIcon::Group m_group;
+    K3Icon::Group m_group;
     KUrlBar *m_parent;
     bool m_appLocal :1;
 
@@ -262,7 +262,7 @@ public:
                                       const QString& description,
                                       bool applicationLocal = true,
                                       const QString& icon = QString(),
-                                      KIcon::Group group = KIcon::Panel );
+                                      K3Icon::Group group = K3Icon::Panel );
     /**
      * Inserts a new dynamic item into the KUrlBar and returns the created
      * KUrlBarItem.
@@ -275,7 +275,7 @@ public:
     virtual KUrlBarItem * insertDynamicItem( const KUrl& url,
                                              const QString& description,
                                              const QString& icon = QString(),
-                                             KIcon::Group group = KIcon::Panel );
+                                             K3Icon::Group group = K3Icon::Panel );
     /**
      * The items can be arranged either vertically in one column or
      * horizontally in one row.
@@ -303,13 +303,13 @@ public:
 
     /**
      * Sets the default iconsize to be used for items inserted with
-     * insertItem. By default KIcon::SizeMedium.
+     * insertItem. By default K3Icon::SizeMedium.
      * @see iconsize
      */
     virtual void setIconSize( int size );
     /**
      * @returns the default iconsize used for items inserted with
-     * insertItem. By default KIcon::SizeMedium
+     * insertItem. By default K3Icon::SizeMedium
      * @see setIconSize
      */
     int iconSize() const { return m_iconSize; }
@@ -605,7 +605,7 @@ public:
     KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
                        const QString& description, QString icon,
                        bool appLocal = true,
-                       int iconSize = KIcon::SizeMedium,
+                       int iconSize = K3Icon::SizeMedium,
                        QWidget *parent = 0);
     /**
      * Destroys the dialog.

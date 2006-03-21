@@ -259,7 +259,7 @@ void KMJobViewer::initActions()
 	KAction	*ract = new KAction(i18n("&Resume"),"run",0,this,SLOT(slotResume()),actionCollection(),"job_resume");
 	KAction	*dact = new KAction(i18n("Remo&ve"),"edittrash",Qt::Key_Delete,this,SLOT(slotRemove()),actionCollection(),"job_remove");
 	KAction *sact = new KAction(i18n("Res&tart"),"redo",0,this,SLOT(slotRestart()),actionCollection(),"job_restart");
-	KActionMenu *mact = new KActionMenu(i18n("&Move to Printer"),"fileprint",actionCollection(),"job_move");
+	KActionMenu *mact = new KActionMenu(KIcon("fileprint"),i18n("&Move to Printer"),actionCollection(),"job_move");
 	mact->setDelayed(false);
 	connect(mact->popupMenu(),SIGNAL(activated(int)),SLOT(slotMove(int)));
 	connect(mact->popupMenu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
@@ -294,7 +294,7 @@ void KMJobViewer::initActions()
 	}
 
 	// Filter actions
-	KActionMenu	*fact = new KActionMenu(i18n("&Select Printer"), "kdeprint_printer", actionCollection(), "filter_modify");
+	KActionMenu	*fact = new KActionMenu(KIcon("kdeprint_printer"), i18n("&Select Printer"), actionCollection(), "filter_modify");
 	fact->setDelayed(false);
 	connect(fact->popupMenu(),SIGNAL(activated(int)),SLOT(slotPrinterSelected(int)));
 	connect(fact->popupMenu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));

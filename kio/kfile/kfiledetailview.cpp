@@ -300,7 +300,7 @@ void KFileDetailView::updateView( bool b )
     Q3ListViewItemIterator it( (Q3ListView*)this );
     for ( ; it.current(); ++it ) {
         KFileListViewItem *item=static_cast<KFileListViewItem *>(it.current());
-        item->setPixmap( 0, item->fileInfo()->pixmap(KIcon::SizeSmall) );
+        item->setPixmap( 0, item->fileInfo()->pixmap(K3Icon::SizeSmall) );
     }
 }
 
@@ -540,9 +540,9 @@ Q3DragObject *KFileDetailView::dragObject()
     const KUrl::List urls = KFileView::selectedItems()->urlList();
     QPixmap pixmap;
     if( urls.count() > 1 )
-        pixmap = DesktopIcon( "kmultiple", KIcon::SizeSmall );
+        pixmap = DesktopIcon( "kmultiple", K3Icon::SizeSmall );
     if( pixmap.isNull() )
-        pixmap = currentFileItem()->pixmap( KIcon::SizeSmall );
+        pixmap = currentFileItem()->pixmap( K3Icon::SizeSmall );
 
     QPoint hotspot;
     hotspot.setX( pixmap.width() / 2 );
@@ -668,7 +668,7 @@ void KFileDetailView::contentsDropEvent( QDropEvent *e )
 
 void KFileListViewItem::init()
 {
-    KFileListViewItem::setPixmap( COL_NAME, inf->pixmap(KIcon::SizeSmall));
+    KFileListViewItem::setPixmap( COL_NAME, inf->pixmap(K3Icon::SizeSmall));
 
     setText( COL_NAME, inf->text() );
     setText( COL_SIZE, KGlobal::locale()->formatNumber( inf->size(), 0));

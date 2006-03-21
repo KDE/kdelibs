@@ -67,8 +67,8 @@ void testFrame::showPath( const KUrl &url )
    QString fname = "TestBranch"; // url.fileName ();
    /* try a user icon */
    KIconLoader *loader = KGlobal::iconLoader();
-   QPixmap pix = loader->loadIcon( "contents2", KIcon::Small );
-   QPixmap pixOpen = loader->loadIcon( "contents", KIcon::Small );
+   QPixmap pix = loader->loadIcon( "contents2", K3Icon::Small );
+   QPixmap pixOpen = loader->loadIcon( "contents", K3Icon::Small );
 
    KFileTreeBranch *nb = treeView->addBranch( url, fname, pix );
 

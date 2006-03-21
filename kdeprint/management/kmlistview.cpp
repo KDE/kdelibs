@@ -78,7 +78,7 @@ void KMListViewItem::updatePrinter(KMPrinter *p)
 	if (p)
 	{
 		int	oldstate = m_state;
-		int	st(p->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay);
+		int	st(p->isValid() ? (int)K3Icon::DefaultState : (int)K3Icon::LockOverlay);
 		m_state = ((p->isHardDefault() ? 0x1 : 0x0) | (p->ownSoftDefault() ? 0x2 : 0x0) | (p->isValid() ? 0x4 : 0x0));
 		update = (oldstate != m_state);
 		QString	name = (p->isVirtual() ? p->instanceName() : p->name());

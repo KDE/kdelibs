@@ -177,7 +177,7 @@ bool KApplicationTree::isDirSel()
 
 static QPixmap appIcon(const QString &iconName)
 {
-    QPixmap normal = KGlobal::iconLoader()->loadIcon(iconName, KIcon::Small, 0, KIcon::DefaultState, 0L, true);
+    QPixmap normal = KGlobal::iconLoader()->loadIcon(iconName, K3Icon::Small, 0, K3Icon::DefaultState, 0L, true);
     // make sure they are not larger than 20x20
     if (normal.width() > 20 || normal.height() > 20)
     {

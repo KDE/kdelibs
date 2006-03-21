@@ -778,7 +778,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
     toolbar = new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
-    toolbar->setFlat(true);
+    toolbar->setMovable(false);
     qInstallMsgHandler( oldHandler );
 
     d->pathCombo = new KUrlComboBox( KUrlComboBox::Directories, true,
@@ -793,12 +793,12 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     u.setPath( QDir::rootPath() );
     QString text = i18n("Root Folder: %1").arg( u.path() );
     d->pathCombo->addDefaultURL( u,
-                                 KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+                                 KMimeType::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
 
     u.setPath( QDir::homePath() );
     text = i18n("Home Folder: %1").arg( u.path( +1 ) );
-    d->pathCombo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+    d->pathCombo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
 
     KUrl docPath;
@@ -808,14 +808,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     {
         text = i18n("Documents: %1").arg( docPath.path( +1 ) );
         d->pathCombo->addDefaultURL( docPath,
-                                     KMimeType::pixmapForURL( docPath, 0, KIcon::Small ),
+                                     KMimeType::pixmapForURL( docPath, 0, K3Icon::Small ),
                                      text );
     }
 
     u.setPath( KGlobalSettings::desktopPath() );
     text = i18n("Desktop: %1").arg( u.path( +1 ) );
     d->pathCombo->addDefaultURL( u,
-                                 KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+                                 KMimeType::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
 
     d->url = getStartURL( startDir, d->fileClass );
@@ -880,7 +880,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     connect( showBookmarksAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleBookmarks( bool )) );
 
-    KActionMenu *menu = new KActionMenu( i18n("Configure"), "configure", coll, "extra menu" );
+    KActionMenu *menu = new KActionMenu( KIcon("configure"), i18n("Configure"), coll, "extra menu" );
     menu->setWhatsThis(i18n("<qt>This is the configuration menu for the file dialog. "
                             "Various options can be accessed from this menu including: <ul>"
                             "<li>how files are sorted in the list</li>"

@@ -205,7 +205,8 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
         }
         else
         {
-            KActionMenu *action = new KBookmarkActionMenu( text, bm.icon(),
+            KActionMenu *action = new KBookmarkActionMenu( KIcon(bm.icon()),
+                                                           text,
                                                            m_actionCollection,
                                                            "bookmarkbar-actionmenu");
             action->setProperty( "address", bm.address() );

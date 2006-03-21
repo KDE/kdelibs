@@ -224,7 +224,7 @@ class PageNode
 				QPixmap icon;
 				if( ! m_value.group->icon.isNull() )
 					icon = SmallIcon( m_value.group->icon,
-							IconSize( KIcon::Small ) );
+							IconSize( K3Icon::Small ) );
 				KVBox * page = dlg->addVBoxPage( m_value.group->name,
 						QString(), icon );
 				QLabel * comment = new QLabel( m_value.group->comment, page );

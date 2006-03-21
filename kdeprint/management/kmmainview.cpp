@@ -185,12 +185,12 @@ void KMMainView::initActions()
 	vact->setCurrentItem(0);
 	connect(vact,SIGNAL(activated(int)),SLOT(slotChangeView(int)));
 
-	KActionMenu	*stateAct = new KActionMenu(i18n("Start/Stop Printer"), "kdeprint_printstate", m_actions, "printer_state_change");
+	KActionMenu	*stateAct = new KActionMenu(KIcon("kdeprint_printstate"), i18n("Start/Stop Printer"), m_actions, "printer_state_change");
 	stateAct->setDelayed(false);
 	stateAct->insert(new KAction(i18n("&Start Printer"),"kdeprint_enableprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_start"));
 	stateAct->insert(new KAction(i18n("Sto&p Printer"),"kdeprint_stopprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_stop"));
 
-	stateAct = new KActionMenu(i18n("Enable/Disable Job Spooling"), "kdeprint_queuestate", m_actions, "printer_spool_change");
+	stateAct = new KActionMenu(KIcon("kdeprint_queuestate"), i18n("Enable/Disable Job Spooling"), m_actions, "printer_spool_change");
 	stateAct->setDelayed(false);
 	stateAct->insert(new KAction(i18n("&Enable Job Spooling"),"kdeprint_enableprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_enable"));
 	stateAct->insert(new KAction(i18n("&Disable Job Spooling"),"kdeprint_stopprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_disable"));
@@ -233,7 +233,7 @@ void KMMainView::initActions()
 	new KAction( i18n( "%1 &Handbook" ).arg( "KDEPrint" ), "contents", 0, this, SLOT( slotHelp() ), m_actions, "invoke_help" );
 	new KAction( i18n( "%1 &Web Site" ).arg( "KDEPrint" ), "network", 0, this, SLOT( slotHelp() ), m_actions, "invoke_web" );
 
-	KActionMenu	*mact = new KActionMenu(i18n("Pri&nter Tools"), "package_utilities", m_actions, "printer_tool");
+	KActionMenu	*mact = new KActionMenu(KIcon("package_utilities"), i18n("Pri&nter Tools"), m_actions, "printer_tool");
 	mact->setDelayed(false);
 	connect(mact->popupMenu(), SIGNAL(activated(int)), SLOT(slotToolSelected(int)));
 	QStringList	files = KGlobal::dirs()->findAllResources("data", "kdeprint/tools/*.desktop");

@@ -214,7 +214,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     d->pixmaps[COL_SOUND]   = psound;
     d->pixmaps[COL_TASKBAR] = ptaskbar;
 
-    int w = KIcon::SizeSmall + 6;
+    int w = K3Icon::SizeSmall + 6;
 
     Q3Header *header = m_listview->header();
     d->header = header;

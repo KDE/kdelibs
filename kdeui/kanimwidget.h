@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Kurt Granroth <granroth@kde.org>
+   Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,7 +19,7 @@
 #ifndef KANIMWIDGET_H
 #define KANIMWIDGET_H
 
-#include <QFrame>
+#include <QToolButton>
 
 #include <kdelibs_export.h>
 
@@ -26,70 +27,41 @@ class QStringList;
 class QPainter;
 class QMouseEvent;
 
-class KAnimWidgetPrivate;
 /**
- * @short Standard "About KDE" dialog box
+ * @short An extended version of QToolButton which can display an animated icon.
  *
- * This is a widget used to display animation using multiple
- * individual pixmaps.  This widget allows you to deal with variable
- * size icons (e.g., ones that will change based on a global setting)
- * as it loads the icons internally.  All you need to do is pass along
+ * This widget extends QToolButton with the ability to display animation
+ * using a sequence of individual pixmaps.  All you need to do is pass along
  * a list of icon names and their size and everything else is taken
  * care of.
  *
- * This widget also emits a 'clicked()' signal when it received a
- * mouse press event.
- *
- * A quick example:
- * \code
- * KAnimWidget *anim = new KAnimWidget("kde", 0, this);
- * anim->start();
- * \endcode
- *
- * That example will search for the pixmaps "one.png", "two.png", and
- * "three.png" in the share/icons/small/ directories as well as the
- * app's pics directory.
+ * \note if you change the iconSize() via setIconSize(), you will need to call
+ *       updateIcons() also to force reloading of the correct icon size.
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDEUI_EXPORT KAnimWidget : public QFrame
+class KDEUI_EXPORT KAnimatedButton : public QToolButton
 {
   Q_OBJECT
-  Q_PROPERTY( int size READ size WRITE setSize )
   Q_PROPERTY( QString icons READ icons WRITE setIcons )
 
 public:
   /**
-   * This is the most common constructor.  Pass along the name of the
-   * animated icons to use (e.g., "kde") for the animation and an
-   * optional size to load and you're set.  If you omit the size, the
-   * default size will be used.
+   * Construct an animated tool button.
    *
-   * @param icons  The icons name (e.g., "kde") to use for the animation
-   * @param size   The size to load
-   *               You don't have to set it if the parent is a
-   *               KToolBar; in this case it will use the toolbar's
-   *               size.
-   * @param parent The standard parent
+   * @param parent The parent widget
    */
-  KAnimWidget( const QString& icons, int size = 0, QWidget *parent = 0L );
+  KAnimatedButton(QWidget *parent = 0L);
 
   /**
    * Destructor
    */
-  virtual ~KAnimWidget();
+  virtual ~KAnimatedButton();
 
   /**
-   * Sets the size of the icons.
-   *
-   * @param size The size of the icons
+   * Returns the current maximum dimension (width or length) for an icon.
    */
-  void setSize( int size );
-
-  /**
-  * Returns the current size.
-  */
-  int size() const;
+  int iconDimensions() const;
 
   /**
   * Returns the current icons
@@ -115,26 +87,27 @@ public Q_SLOTS:
    */
   void stop();
 
+  /**
+   * Updates the icons by reloading them if required.
+   *
+   * You must call this after you change the icon size, in order for the correct
+   * size icon to be loaded.
+   */
+  void updateIcons();
+
 Q_SIGNALS:
   void clicked();
 
-protected:
-  virtual void drawContents( QPainter *p );
-  virtual void leaveEvent( QEvent *e );
-  virtual void enterEvent( QEvent *e );
-  virtual void hideEvent( QHideEvent *e);
-  virtual void showEvent( QShowEvent *e);
-  virtual void mousePressEvent( QMouseEvent *e );
-  virtual void mouseReleaseEvent( QMouseEvent *e );
-
 protected Q_SLOTS:
   void slotTimerUpdate();
-  void updateIcons();
 
 protected:
   virtual void virtual_hook( int id, void* data );
+
 private:
-  KAnimWidgetPrivate *const d;
+  void updateCurrentIcon();
+
+  class KAnimatedButtonPrivate *const d;
 };
 
 #endif // _KANIMWIDGET_H

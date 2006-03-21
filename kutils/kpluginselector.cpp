@@ -168,7 +168,7 @@ void KPluginSelectionWidget::init( const QList<KPluginInfo*> & plugininfos,
         {
             QTreeWidgetItem * item = new KPluginInfoLVI( *it, listview );
             if( ! ( *it )->icon().isEmpty() )
-                item->setIcon( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
+                item->setIcon( 0, SmallIcon( ( *it )->icon(), IconSize( K3Icon::Small ) ) );
             if ( ( *it )->isPluginEnabled() )
                 item->setCheckState( 0, Qt::Checked );
             else

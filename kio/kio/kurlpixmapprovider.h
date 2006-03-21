@@ -48,7 +48,7 @@ public:
      * @param url the URL to fetch a pixmap for
      * @param size the size of the pixmap in pixels, or 0 for default.
      * @return the resulting pixmap
-     * @see KIcon::StdSizes
+     * @see K3Icon::StdSizes
      */
     virtual QPixmap pixmapFor( const QString& url, int size = 0 );
 protected:

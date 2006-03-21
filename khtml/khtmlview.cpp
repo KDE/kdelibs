@@ -891,13 +891,13 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
             pixmap.fill( QColor( qRgba( 127, 127, 127, 127 ) ) );
 
             QPainter p( &pixmap );
-            icon = KGlobal::iconLoader()->loadIcon( "1uparrow", KIcon::Small );
+            icon = KGlobal::iconLoader()->loadIcon( "1uparrow", K3Icon::Small );
             p.drawPixmap( 16, 0, icon );
-            icon = KGlobal::iconLoader()->loadIcon( "1leftarrow", KIcon::Small );
+            icon = KGlobal::iconLoader()->loadIcon( "1leftarrow", K3Icon::Small );
             p.drawPixmap( 0, 16, icon );
-            icon = KGlobal::iconLoader()->loadIcon( "1downarrow", KIcon::Small );
+            icon = KGlobal::iconLoader()->loadIcon( "1downarrow", K3Icon::Small );
             p.drawPixmap( 16, 32,icon  );
-            icon = KGlobal::iconLoader()->loadIcon( "1rightarrow", KIcon::Small );
+            icon = KGlobal::iconLoader()->loadIcon( "1rightarrow", K3Icon::Small );
             p.drawPixmap( 32, 16, icon );
             p.drawEllipse( 23, 23, 2, 2 );
 
@@ -1169,7 +1169,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     if ( mailtoCursor && isVisible() && hasFocus() ) {
 #ifdef Q_WS_X11
         if( !d->cursor_icon_widget ) {
-            QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( "mail_generic", KIcon::Small, 0, KIcon::DefaultState, 0, true );
+            QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( "mail_generic", K3Icon::Small, 0, K3Icon::DefaultState, 0, true );
 #ifdef Q_WS_X11
             d->cursor_icon_widget = new QWidget( 0, Qt::WX11BypassWM );
             XSetWindowAttributes attr;

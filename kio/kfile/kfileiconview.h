@@ -108,12 +108,12 @@ public:
     virtual KFileItem * prevItem( const KFileItem * ) const;
 
     /**
-     * Sets the size of the icons to show. Defaults to KIcon::SizeSmall.
+     * Sets the size of the icons to show. Defaults to K3Icon::SizeSmall.
      */
     void setIconSize( int size );
 
     /**
-     * Sets the size of the previews. Defaults to KIcon::SizeLarge.
+     * Sets the size of the previews. Defaults to K3Icon::SizeLarge.
      */
     void setPreviewSize( int size );
 

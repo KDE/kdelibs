@@ -104,7 +104,7 @@ void KMIconViewItem::updatePrinter(KMPrinter *p, int mode)
 	}
 	if (mode != m_mode || ((oldstate&0x4) != (m_state&0x4)) || (p && p->pixmap() != m_pixmap))
 	{
-		int	iconstate = (m_state&0x4 ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay);
+		int	iconstate = (m_state&0x4 ? (int)K3Icon::DefaultState : (int)K3Icon::LockOverlay);
 		if (p)
 			m_pixmap = p->pixmap();
 		m_mode = mode;

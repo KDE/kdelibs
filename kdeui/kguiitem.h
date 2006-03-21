@@ -61,10 +61,10 @@ public:
     QString text() const;
     QString plainText() const;
 #ifndef KDE_NO_COMPAT
-    QIcon iconSet( KIcon::Group, int size = 0, KInstance* instance = KGlobal::instance()) const;
+    QIcon iconSet( K3Icon::Group, int size = 0, KInstance* instance = KGlobal::instance()) const;
     QIcon iconSet() const;
 #else
-    QIcon iconSet( KIcon::Group=KIcon::Small, int size = 0, KInstance* instance = KGlobal::instance()) const;
+    QIcon iconSet( K3Icon::Group=K3Icon::Small, int size = 0, KInstance* instance = KGlobal::instance()) const;
 #endif
 
     QString iconName() const;

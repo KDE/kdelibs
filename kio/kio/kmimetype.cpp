@@ -446,7 +446,7 @@ KMimeType::~KMimeType()
 {
 }
 
-QPixmap KMimeType::pixmap( KIcon::Group _group, int _force_size, int _state,
+QPixmap KMimeType::pixmap( K3Icon::Group _group, int _force_size, int _state,
                            QString * _path ) const
 {
   KIconLoader *iconLoader=KGlobal::iconLoader();
@@ -462,7 +462,7 @@ QPixmap KMimeType::pixmap( KIcon::Group _group, int _force_size, int _state,
   return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
 }
 
-QPixmap KMimeType::pixmap( const KUrl& _url, KIcon::Group _group, int _force_size,
+QPixmap KMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size,
                            int _state, QString * _path ) const
 {
   KIconLoader *iconLoader=KGlobal::iconLoader();
@@ -478,7 +478,7 @@ QPixmap KMimeType::pixmap( const KUrl& _url, KIcon::Group _group, int _force_siz
   return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
 }
 
-QPixmap KMimeType::pixmapForURL( const KUrl & _url, mode_t _mode, KIcon::Group _group,
+QPixmap KMimeType::pixmapForURL( const KUrl & _url, mode_t _mode, K3Icon::Group _group,
                                  int _force_size, int _state, QString * _path )
 {
   KIconLoader *iconLoader=KGlobal::iconLoader();
@@ -746,7 +746,7 @@ QString KDEDesktopMimeType::icon( const KUrl& _url, bool _is_local ) const
   return icon;
 }
 
-QPixmap KDEDesktopMimeType::pixmap( const KUrl& _url, KIcon::Group _group, int _force_size,
+QPixmap KDEDesktopMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size,
                                     int _state, QString * _path ) const
 {
   QString _icon = icon( _url, _url.isLocalFile() );
