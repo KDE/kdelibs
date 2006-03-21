@@ -2279,6 +2279,8 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
         return;
         
     // if I am clear of my floats, don't add them
+    // the CSS spec also mentions that child floats
+    // are not cleared.
     if (!child && style()->clear() == CBOTH)
     {
         return;
