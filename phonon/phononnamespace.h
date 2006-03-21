@@ -97,6 +97,10 @@ namespace Phonon
 		CommunicationCategory
 	};
 
+	/**
+	 * Returns a (translated) string to show to the user identifying the given
+	 * Category.
+	 */
 	QString PHONON_EXPORT categoryToString( Category c );
 } //namespace Phonon
 

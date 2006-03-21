@@ -47,11 +47,33 @@ class PHONON_EXPORT AudioSource : public NameDescriptionTuple
 	friend class AvCapture;
 	friend class AvCapturePrivate;
 	public:
+		/**
+		 * Constructs an invalid AudioSource
+		 *
+		 * \see isValid
+		 */
 		AudioSource();
-		AudioSource( const AudioSource& );
+
+		/**
+		 * Constructs a copy of \p audioSource.
+		 *
+		 * \see isValid
+		 */
+		AudioSource( const AudioSource& audioSource );
+
 		~AudioSource();
-		const AudioSource& operator=( const AudioSource& );
-		bool operator==( const AudioSource& ) const;
+
+		/**
+		 * Assigns a copy of the AudioSource \p audioSource to this
+		 * AudioSource and returns a reference to it.
+		 */
+		const AudioSource& operator=( const AudioSource& audioSource );
+
+		/**
+		 * Returns \c true if this AudioSource describes the same source
+		 * as \p audioSource; otherwise returns \c false.
+		 */
+		bool operator==( const AudioSource& audioSource ) const;
 
 		/**
 		 * Tells whether this audio source is associated with a video
@@ -60,11 +82,23 @@ class PHONON_EXPORT AudioSource : public NameDescriptionTuple
 		 *
 		 * \return The index of the VideoSource, or \c -1 if
 		 * there is none.
+		 *
+		 * \see associatedVideoSource
 		 */
 		int indexOfAssociatedVideoSource() const;
 
+		/**
+		 * Returns the VideoSource object of the associated video
+		 * source.
+		 *
+		 * \see indexOfAssociatedVideoSource
+		 */
 		VideoSource associatedVideoSource() const;
 
+		/**
+		 * Returns a new AudioSource object that describes the source
+		 * with the given \p index.
+		 */
 		static AudioSource fromIndex( int index );
 
 	protected:

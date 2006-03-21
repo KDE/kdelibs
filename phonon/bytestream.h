@@ -138,7 +138,7 @@ namespace Phonon
 			 * \todo Actually I have no idea what array size should be used.
 			 * Some tests would be good.
 			 *
-			 * \data A QByteArray holding the data. After this call you are free
+			 * \param data A QByteArray holding the data. After this call you are free
 			 * to dispose of the array.
 			 *
 			 * \see needData

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2004-2005 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2004-2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -61,8 +61,16 @@ class PHONON_EXPORT Factory : public QObject
 		 */
 		static Factory* self();
 
+		/**
+		 * Create a new Ui::Ifaces::VideoWidget.
+		 *
+		 * \return a pointer to the Ui::Ifaces::VideoWidget the backend provides
+		 */
 		Ui::Ifaces::VideoWidget* createVideoWidget( QWidget* parent = 0 );
 
+		/**
+		 * \return a pointer to the backend interface.
+		 */
 		const Ui::Ifaces::Backend* backend() const;
 
 	Q_SIGNALS:
@@ -80,16 +88,30 @@ class PHONON_EXPORT Factory : public QObject
 		 */
 		void recreateObjects();
 
+		/**
+		 * Emitted after the backend has successfully been changed.
+		 */
 		void backendChanged();
 
 	protected:
+		/**
+		 * \internal
+		 * Singleton constructor
+		 */
 		Factory();
 		~Factory();
 
 	protected:
+		/**
+		 * \internal
+		 * Gets the QObject interface and calls Phonon::Factory::registerQObject
+		 */
 		template<class T> T* Factory::registerObject( T* o );
 
 	private Q_SLOTS:
+		/**
+		 * deletes itself - called from the destructor of Phonon::Factory
+		 */
 		void deleteNow();
 
 	private:

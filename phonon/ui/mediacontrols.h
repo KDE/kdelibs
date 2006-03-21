@@ -45,7 +45,36 @@ namespace Ui
 class PHONON_EXPORT MediaControls : public QWidget
 {
 	Q_OBJECT
+	/**
+	 * This property holds whether the slider showing the progress of the
+	 * playback is visible.
+	 *
+	 * By default the slider is visible. It is enabled/disabled automatically
+	 * depending on whether the media can be seeked or not.
+	 */
+	Q_PROPERTY( bool seekSliderVisible READ isSeekSliderVisible WRITE setSeekSliderVisible )
+
+	/**
+	 * This property holds whether the slider controling the volume is visible.
+	 *
+	 * By default the slider is visible if an AudioOutput has been set with
+	 * setAudioOutput.
+	 *
+	 * \see setAudioOutput
+	 */
+	Q_PROPERTY( bool volumeControlVisible READ isVolumeControlVisible WRITE setVolumeControlVisible )
+
+	/**
+	 * This property holds whether the button controlling loop behaviour is
+	 * visible.
+	 *
+	 * By default the loop button is hidden.
+	 */
+	Q_PROPERTY( bool loopControlVisible READ isLoopControlVisible WRITE setLoopControlVisible )
 	public:
+		/**
+		 * Constructs a media control widget with a \p parent.
+		 */
 		MediaControls( QWidget* parent = 0 );
 		~MediaControls();
 
@@ -54,11 +83,19 @@ class PHONON_EXPORT MediaControls : public QWidget
 		bool isLoopControlVisible() const;
 
 	public Q_SLOTS:
-		void setMediaProducer( AbstractMediaProducer* );
-		void setAudioOutput( AudioOutput* audioOutput );
 		void setSeekSliderVisible( bool );
 		void setVolumeControlVisible( bool );
 		void setLoopControlVisible( bool );
+
+		/**
+		 * Sets the media producer object to be controlled by this widget.
+		 */
+		void setMediaProducer( AbstractMediaProducer* );
+
+		/**
+		 * Sets the audio output object to be controlled by this widget.
+		 */
+		void setAudioOutput( AudioOutput* audioOutput );
 
 	private Q_SLOTS:
 		void stateChanged( Phonon::State, Phonon::State );

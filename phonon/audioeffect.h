@@ -35,7 +35,11 @@ namespace Phonon
 	}
 
 	/**
-	 * @author Matthias Kretz <kretz@kde.org>
+	 * \short Audio effects that can be inserted into an AudioPath.
+	 *
+	 * \warning This class is not finished.
+	 *
+	 * \author Matthias Kretz <kretz@kde.org>
 	 */
 	class PHONON_EXPORT AudioEffect : public QObject, public Base
 	{

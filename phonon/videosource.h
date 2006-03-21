@@ -38,7 +38,7 @@ namespace Phonon
  *
  * \author Matthias Kretz <kretz@kde.org>
  * \see AvCapture
- * \see VideoSource
+ * \see AudioSource
  */
 class PHONON_EXPORT VideoSource : public NameDescriptionTuple
 {
@@ -46,11 +46,33 @@ class PHONON_EXPORT VideoSource : public NameDescriptionTuple
 	friend class BackendCapabilities;
 	friend class AvCapture;
 	public:
+		/**
+		 * Constructs an invalid VideoSource
+		 *
+		 * \see isValid
+		 */
 		VideoSource();
-		VideoSource( const VideoSource& );
+
+		/**
+		 * Constructs a copy of \p videoSource.
+		 *
+		 * \see isValid
+		 */
+		VideoSource( const VideoSource& videoSource );
+
 		~VideoSource();
-		const VideoSource& operator=( const VideoSource& );
-		bool operator==( const VideoSource& ) const;
+
+		/**
+		 * Assigns a copy of the VideoSource \p videoSource to this
+		 * VideoSource and returns a reference to it.
+		 */
+		const VideoSource& operator=( const VideoSource& videoSource );
+
+		/**
+		 * Returns \c true if this VideoSource describes the same source
+		 * as \p videoSource; otherwise returns \c false.
+		 */
+		bool operator==( const VideoSource& videoSource ) const;
 
 		/**
 		 * Tells whether this video source is associated with a audio
@@ -62,8 +84,18 @@ class PHONON_EXPORT VideoSource : public NameDescriptionTuple
 		 */
 		int indexOfAssociatedAudioSource() const;
 
+		/**
+		 * Returns the AudioSource object of the associated audio
+		 * source.
+		 *
+		 * \see indexOfAssociatedAudioSource
+		 */
 		AudioSource associatedAudioSource() const;
 
+		/**
+		 * Returns a new VideoSource object that describes the source
+		 * with the given \p index.
+		 */
 		static VideoSource fromIndex( int index );
 
 	protected:

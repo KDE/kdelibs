@@ -44,9 +44,6 @@ class PHONON_EXPORT NameDescriptionTuple
 {
 	Q_DECLARE_PRIVATE( NameDescriptionTuple )
 	public:
-		/** \internal
-		 * Frees the memory used
-		 */
 		~NameDescriptionTuple();
 
 		/**
@@ -75,6 +72,12 @@ class PHONON_EXPORT NameDescriptionTuple
 		 */
 		int index() const;
 
+		/**
+		 * Returns \c true if the Tuple is valid (index != -1); otherwise returns
+		 * \c false.
+		 */
+		bool isValid() const;
+
 	protected:
 		/**
 		 * \internal
@@ -88,6 +91,10 @@ class PHONON_EXPORT NameDescriptionTuple
 		 */
 		NameDescriptionTuple( NameDescriptionTuplePrivate &dd );
 
+		/**
+		 * \internal
+		 * private data pointer
+		 */
 		NameDescriptionTuplePrivate* d_ptr;
 
 	private:

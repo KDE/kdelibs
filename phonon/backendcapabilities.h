@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -52,7 +52,7 @@ class PHONON_EXPORT BackendCapabilities : public QObject
 		static BackendCapabilities* self();
 
 		/**
-		 * Returns whether the current Backend supports video.
+		 * \copydoc Phonon::Ifaces::Backend::supportsVideo
 		 *
 		 * If the backend does not support video the classes
 		 * VideoPath, VideoEffect and all AbstractVideoOutput subclasses won't
@@ -60,7 +60,14 @@ class PHONON_EXPORT BackendCapabilities : public QObject
 		 */
 		bool supportsVideo() const;
 
+		/**
+		 * \copydoc Phonon::Ifaces::Backend::supportsOSD
+		 */
 		bool supportsOSD() const;
+
+		/**
+		 * \copydoc Phonon::Ifaces::Backend::supportsSubtitles
+		 */
 		bool supportsSubtitles() const;
 
 		/**

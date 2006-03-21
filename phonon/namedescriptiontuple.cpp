@@ -61,5 +61,10 @@ const QString& NameDescriptionTuple::description() const
 	return d_func()->description;
 }
 
+bool NameDescriptionTuple::isValid() const
+{
+	return d_func()->index != -1;
+}
+
 } //namespace Phonon
 // vim: sw=4 ts=4 noet
