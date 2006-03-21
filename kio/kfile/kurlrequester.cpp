@@ -381,7 +381,7 @@ void KUrlRequester::slotUpdateURL()
 {
     // bin compat, myButton is declared as QPushButton
     KUrl u;
-    u = KUrl( KUrl( QDir::currentPath() + '/' ), url() );
+    u = KUrl( KUrl::fromPath( QDir::currentPath() + '/' ), url() );
     (static_cast<KUrlDragPushButton *>( myButton ))->setURL( u );
 }
 
