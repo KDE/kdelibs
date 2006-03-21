@@ -691,7 +691,7 @@ int main(int argc, char *argv[])
 
     int rv = 1;
 
-    if ( !args->isSet( "debug" ) ) {
+    if ( args->isSet( "debug" ) ) {
         KSimpleConfig dc( "kdebugrc" );
         static int areas[] = { 1000, 6000, 6005, 6010, 6020, 6030,
                                6031, 6035, 6036, 6040, 6041, 6045,
