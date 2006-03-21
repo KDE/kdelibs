@@ -53,7 +53,7 @@ namespace Ifaces
 	{
 		K_DECLARE_PRIVATE( VideoWidget )
 		Q_OBJECT
-		Q_PROPERTY( bool fullscreen READ isFullscreen WRITE setFullscreen );
+		Q_PROPERTY( bool fullscreen READ isFullscreen WRITE setFullscreen )
 		public:
 			/**
 			 * Standard QWidget constructor.

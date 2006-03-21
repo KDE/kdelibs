@@ -106,7 +106,7 @@ class PHONON_EXPORT Factory : public QObject
 		 * \internal
 		 * Gets the QObject interface and calls Phonon::Factory::registerQObject
 		 */
-		template<class T> T* Factory::registerObject( T* o );
+		template<class T> T* registerObject( T* o );
 
 	private Q_SLOTS:
 		/**

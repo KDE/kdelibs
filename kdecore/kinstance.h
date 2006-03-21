@@ -146,7 +146,7 @@ class KDECORE_EXPORT KInstance
         ModifiedCaption = 2,
         HIGCompliantCaption = AppNameCaption
     };
-    Q_DECLARE_FLAGS(CaptionFlags, CaptionFlag);
+    Q_DECLARE_FLAGS(CaptionFlags, CaptionFlag)
 
 
     /**

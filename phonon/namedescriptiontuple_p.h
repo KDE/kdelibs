@@ -40,7 +40,7 @@ namespace Phonon
 			{
 			}
 
-			NameDescriptionTuplePrivate& NameDescriptionTuplePrivate::operator=( const NameDescriptionTuplePrivate& rhs )
+			NameDescriptionTuplePrivate& operator=( const NameDescriptionTuplePrivate& rhs )
 			{
 				index = rhs.index;
 				name = rhs.name;

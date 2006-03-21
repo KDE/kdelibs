@@ -220,7 +220,7 @@ class PHONON_EXPORT Factory : public QObject, public DCOPObject
 		 * \internal
 		 * Gets the QObject interface and calls registerQObject
 		 */
-		template<class T> T* Factory::registerObject( T* o );
+		template<class T> T* registerObject( T* o );
 	public:
 		/**
 		 * \internal
