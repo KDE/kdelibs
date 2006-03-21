@@ -536,6 +536,7 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 
     if ( w != r.width() || h != r.height() )
     {
+	QPixmap* oldbg = bg;
         bg = new QPixmap(w, h);
         //Tile horizontally on the first stripe
         for (int x = 0; x < w; x += r.width())
@@ -544,6 +545,9 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
         //Copy first stripe down
         for (int y = r.height(); y < h; y += r.height())
             copyBlt(bg, 0, y, bg, 0, 0, w, r.height());
+
+        if ( src == oldbg )
+            delete oldbg;
     }
 
     if (bg)

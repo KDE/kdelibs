@@ -1,3 +1,7 @@
+2006-03-20  Dirk Mueller <mueller@kde.org>
+
+	* misc/loader.cpp: fix pixmap leak in tiled_pixmap()
+
 2006-03-07  Germain Garand  <germain@ebooksfrance.org>
 
         Scope: relayout/repaint/widget masks fixes. Refine stacking context exploration. Optimise.
