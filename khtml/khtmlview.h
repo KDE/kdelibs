@@ -171,6 +171,10 @@ public:
 
 
 signals:
+    /**
+     * This signal is used for internal layouting. Don't use it to check if rendering finished.
+     * Use @ref KHTMLPart completed() signal instead.
+     */
     void finishedLayout();
     void cleared();
     void zoomView( int );
