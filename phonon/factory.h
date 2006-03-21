@@ -48,22 +48,16 @@ namespace Phonon
 	class BasePrivate;
 
 /**
+ * \internal
  * \brief Factory to access the preferred Backend.
  *
- * This class is used internally to map the backends functionality to the API.
- * This class is your entry point to KDE Multimedia usage. It provides the
- * necessary objects for playing audio and video.
- *
- * For simple access to just playing an audio file see SimplePlayer.
- *
- * \remarks
- * Extensions to the existing functionality can either be added by using the
- * reserved virtual functions in Backend or by adding a new interface e.g.
- * BackendV2 and creating a BackendV2 instance when the Backend instance is
- * created.
+ * This class is used internally to get the backend's implementation of the
+ * Ifaces interfaces. It keeps track of the objects that were created. When a
+ * request for a backend changes comes it asks all frontend objects to delete
+ * their backend objects and then checks whether they were all deleted. Only
+ * then the old backend is unloaded and the new backend is loaded.
  *
  * \author Matthias Kretz <kretz@kde.org>
- * \internal
  */
 class PHONON_EXPORT Factory : public QObject, public DCOPObject
 {
@@ -76,7 +70,7 @@ class PHONON_EXPORT Factory : public QObject, public DCOPObject
 		 * Returns a pointer to the factory.
 		 * Use this function to get an instance of Factory.
 		 *
-		 * @return a pointer to the factory. If no factory exists until now then
+		 * \return a pointer to the factory. If no factory exists until now then
 		 * one is created
 		 */
 		static Factory* self();
@@ -84,23 +78,78 @@ class PHONON_EXPORT Factory : public QObject, public DCOPObject
 		/**
 		 * Create a new Ifaces::MediaObject.
 		 *
-		 * @return a pointer to the Ifaces::MediaObject the backend provides
+		 * \return a pointer to the Ifaces::MediaObject the backend provides
 		 */
 		Ifaces::MediaObject* createMediaObject( QObject* parent = 0 );
+		/**
+		 * Create a new Ifaces::AvCapture.
+		 *
+		 * \return a pointer to the Ifaces::AvCapture the backend provides
+		 */
 		Ifaces::AvCapture* createAvCapture( QObject* parent = 0 );
+		/**
+		 * Create a new Ifaces::ByteStream.
+		 *
+		 * \return a pointer to the Ifaces::ByteStream the backend provides
+		 */
 		Ifaces::ByteStream* createByteStream( QObject* parent = 0 );
 		
+		/**
+		 * Create a new Ifaces::AudioPath.
+		 *
+		 * \return a pointer to the Ifaces::AudioPath the backend provides
+		 */
 		Ifaces::AudioPath* createAudioPath( QObject* parent = 0 );
+		/**
+		 * Create a new Ifaces::AudioEffect.
+		 *
+		 * \return a pointer to the Ifaces::AudioEffect the backend provides
+		 */
 		Ifaces::AudioEffect* createAudioEffect( QObject* parent = 0 );
+		/**
+		 * Create a new Ifaces::VolumeFaderEffect.
+		 *
+		 * \return a pointer to the Ifaces::VolumeFaderEffect the backend provides
+		 */
 		Ifaces::VolumeFaderEffect* createVolumeFaderEffect( QObject* parent = 0 );
+		/**
+		 * Create a new Ifaces::AudioOutput.
+		 *
+		 * \return a pointer to the Ifaces::AudioOutput the backend provides
+		 */
 		Ifaces::AudioOutput* createAudioOutput( QObject* parent = 0 );
+		/**
+		 * Create a new Ifaces::AudioDataOutput.
+		 *
+		 * \return a pointer to the Ifaces::AudioDataOutput the backend provides
+		 */
 		Ifaces::AudioDataOutput* createAudioDataOutput( QObject* parent = 0 );
 
+		/**
+		 * Create a new Ifaces::VideoPath.
+		 *
+		 * \return a pointer to the Ifaces::VideoPath the backend provides
+		 */
 		Ifaces::VideoPath* createVideoPath( QObject* parent = 0 );
+		/**
+		 * Create a new Ifaces::VideoEffect.
+		 *
+		 * \return a pointer to the Ifaces::VideoEffect the backend provides
+		 */
 		Ifaces::VideoEffect* createVideoEffect( QObject* parent = 0 );
 
+		/**
+		 * \return a pointer to the backend interface.
+		 */
 		const Ifaces::Backend* backend() const;
+
+		/**
+		 * \copydoc Phonon::Ifaces::Backend::uiLibrary()
+		 */
 		const char* uiLibrary() const;
+		/**
+		 * \copydoc Phonon::Ifaces::Backend::uiSymbol()
+		 */
 		const char* uiSymbol() const;
 #if 0
 		/**
@@ -153,21 +202,37 @@ class PHONON_EXPORT Factory : public QObject, public DCOPObject
 		 */
 		void recreateObjects();
 
+		/**
+		 * Emitted after the backend has successfully been changed.
+		 */
 		void backendChanged();
 
 	protected:
+		/**
+		 * \internal
+		 * Singleton constructor
+		 */
 		Factory();
 		~Factory();
 
 	protected:
+		/**
+		 * \internal
+		 * Gets the QObject interface and calls registerQObject
+		 */
 		template<class T> T* Factory::registerObject( T* o );
 	public:
 		/**
 		 * \internal
+		 * registers the backend object
 		 */
 		void registerQObject( QObject* o );
 
 	private Q_SLOTS:
+		/**
+		 * \internal
+		 * unregisters the backend object
+		 */
 		void objectDestroyed( QObject * );
 
 	private:

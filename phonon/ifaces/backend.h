@@ -62,6 +62,16 @@ namespace Ifaces
 	 * class which utilizes it for Phonon::BackendCapabilities and to create all the
 	 * other backend classes.
 	 *
+	 * \remarks
+	 * If you need new factory-methods for the backend:
+	 * - add a new Phonon::Ifaces::BackendV2 interface that inherits
+	 *   Phonon::Ifaces::Backend and in Phonon::Factory check whether you can
+	 *   qobject_cast<Phonon::Ifaces::BackendV2*>( d->backend ). If the cast succeeds
+	 *   you have a backend that implements your new virtual functions.
+	 * - simply add the new Phonon::Ifaces classes to libphononifaces and backends
+	 *   can then implement those interfaces and instead of implementing
+	 *   Ifaces::Backend implementing Ifaces::BackendV2.
+	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
 	class PHONON_EXPORT Backend : public QObject
