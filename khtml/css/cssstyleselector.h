@@ -126,7 +126,7 @@ namespace khtml
         KHTML_EXPORT static void clear();
         static void reparseConfiguration();
 
-	static void loadDefaultStyle(const KHTMLSettings *s = 0);
+	static void loadDefaultStyle(const KHTMLSettings *s, DOM::DocumentImpl *doc);
 
 	RenderStyle *styleForElement(DOM::ElementImpl *e);
 
@@ -184,7 +184,7 @@ namespace khtml
 public:
 
     private:
-        void init(const KHTMLSettings* settings);
+        void init(const KHTMLSettings* settings, DOM::DocumentImpl* doc);
 
         void mapBackgroundAttachment(BackgroundLayer* layer, DOM::CSSValueImpl* value);
         void mapBackgroundImage(BackgroundLayer* layer, DOM::CSSValueImpl* value);
