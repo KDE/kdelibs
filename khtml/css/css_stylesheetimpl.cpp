@@ -216,10 +216,13 @@ void CSSStyleSheetImpl::addNamespace(CSSParser* p, const DOM::DOMString& prefix,
 
     m_namespaces = new CSSNamespace(prefix, uri, m_namespaces);
 
-    if (prefix.isEmpty())
+    if (prefix.isEmpty()) {
+        Q_ASSERT(m_doc != 0);
+
         // Set the default namespace on the parser so that selectors that omit namespace info will
         // be able to pick it up easily.
         p->defaultNamespace = m_doc->getId(NodeImpl::NamespaceId, uri.implementation(), false, false, &exceptioncode);
+    }
 }
 
 void CSSStyleSheetImpl::determineNamespace(Q_UINT32& id, const DOM::DOMString& prefix)
@@ -236,9 +239,12 @@ void CSSStyleSheetImpl::determineNamespace(Q_UINT32& id, const DOM::DOMString& p
     else {
         int exceptioncode = 0;
         CSSNamespace* ns = m_namespaces->namespaceForPrefix(prefix);
-        if (ns)
+        if (ns) {
+            Q_ASSERT(m_doc != 0);
+
             // Look up the id for this namespace URI.
             id = makeId(m_doc->getId(NodeImpl::NamespaceId, ns->uri().implementation(), false, false, &exceptioncode), localNamePart(id));
+        }
     }
 }
 

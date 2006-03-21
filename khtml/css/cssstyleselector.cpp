@@ -191,7 +191,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 {
     KHTMLView* view = doc->view();
 
-    init(view ? view->part()->settings() : 0);
+    init(view ? view->part()->settings() : 0, doc);
 
     strictParsing = _strictParsing;
     m_medium = view ? view->mediaType() : QString("all");
@@ -249,7 +249,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
 CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
 {
-    init(0L);
+    init(0L, 0L);
 
     KHTMLView *view = sheet->doc()->view();
     m_medium = view ? view->mediaType() : "screen";
@@ -258,7 +258,7 @@ CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
     authorStyle->append( sheet, m_medium );
 }
 
-void CSSStyleSelector::init(const KHTMLSettings* _settings)
+void CSSStyleSelector::init(const KHTMLSettings* _settings, DocumentImpl* doc)
 {
     element = 0;
     settings = _settings;
@@ -267,7 +267,7 @@ void CSSStyleSelector::init(const KHTMLSettings* _settings)
     pseudoProps = (CSSOrderedProperty **)malloc(128*sizeof(CSSOrderedProperty *));
     propsToApplySize = 128;
     pseudoPropsSize = 128;
-    if(!s_defaultStyle) loadDefaultStyle(settings);
+    if(!s_defaultStyle) loadDefaultStyle(settings, doc);
 
     defaultStyle = s_defaultStyle;
     defaultPrintStyle = s_defaultPrintStyle;
@@ -291,7 +291,7 @@ void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
     authorStyle->append( sheet, m_medium );
 }
 
-void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
+void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *doc)
 {
     if(s_defaultStyle) return;
 
@@ -310,7 +310,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 	    style += s->settingsToCSS();
 	DOMString str(style);
 
-	s_defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
+	s_defaultSheet = new DOM::CSSStyleSheetImpl(doc);
 	s_defaultSheet->parseString( str );
 
 	// Collect only strict-mode rules.
@@ -333,7 +333,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 	QString style = QString::fromLatin1( file.data() );
 	DOMString str(style);
 
-	s_quirksSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
+	s_quirksSheet = new DOM::CSSStyleSheetImpl(doc);
 	s_quirksSheet->parseString( str );
 
 	// Collect only quirks-mode rules.
