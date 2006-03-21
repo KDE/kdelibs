@@ -362,45 +362,61 @@ install_targets(${LIB_INSTALL_DIR}/kde4 khtmlimagepart )
 
 if(KDE4_BUILD_TESTS)
 
-########### next target ###############
+    ########### next target ###############
 
-set(testkhtml_SRCS
-testkhtml.cpp
-domtreeview.cpp
-)
+    set(testkhtml_SRCS
+        testkhtml.cpp
+        domtreeview.cpp
+    )
 
-kde4_automoc(${testkhtml_SRCS})
+    kde4_automoc(${testkhtml_SRCS})
 
-kde4_add_executable(testkhtml ${testkhtml_SRCS})
+    kde4_add_executable(testkhtml ${testkhtml_SRCS})
 
-target_link_libraries(testkhtml  ${KDE4_KDECORE_LIBS} khtml )
+    target_link_libraries(testkhtml  ${KDE4_KDECORE_LIBS} khtml )
 
-########### next target ###############
+    ########### next target ###############
 
-set(testkhtml_static_SRCS
-testkhtml.cpp
-domtreeview.cpp
-)
+    set(testkhtml_static_SRCS
+        testkhtml.cpp
+        domtreeview.cpp
+    )
 
-kde4_automoc(${testkhtml_static_SRCS})
+    kde4_automoc(${testkhtml_static_SRCS})
 
-kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS} )
+    kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS} )
 
-target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml )
+    target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml )
 
-########### next target ###############
+    ########### next target ###############
 
-set(testregression_SRCS
-test_regression.cpp
-test_regression_fontoverload.cpp
-)
+    set(testregression_SRCS
+        test_regression.cpp
+        test_regression_fontoverload.cpp
+    )
 
-kde4_automoc(${testregression_SRCS})
+    kde4_automoc(${testregression_SRCS})
 
-## can't find private/qfontengine_p.h
-#kde4_add_executable(testregression ${testregression_SRCS})
+    kde4_add_executable(testregression ${testregression_SRCS})
 
-#target_link_libraries(testregression  ${KDE4_KDECORE_LIBS} khtml)
+    target_link_libraries(testregression  ${KDE4_KDECORE_LIBS} khtml)
+
+    ########### next target ###############
+
+    set(testregressiongui_SRCS
+        test_regression_gui_window.cpp
+        test_regression_gui_main.cpp
+    )
+
+    qt4_add_resources(testregressiongui_SRCS test_regression_gui.qrc)
+
+    kde4_add_ui_files(testregressiongui_SRCS test_regression_gui.ui)
+
+    kde4_automoc(${testregressiongui_SRCS})
+
+    kde4_add_executable(testregressiongui ${testregressiongui_SRCS})
+
+    target_link_libraries(testregressiongui  ${KDE4_KDECORE_LIBS} khtml)
 
 endif(KDE4_BUILD_TESTS)
 

@@ -621,11 +621,19 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 	environment << "KDE_DEBUG=false"; // No Dr. Konqi please!
 
 	QString program = m_khtmlUrl.path() + "/.libs/testregression";
+	QString program2 = m_khtmlUrl.path() + "/testregression"; // with CMake, it's in $buildir/bin
 
 	if(!QFileInfo(program).exists())
 	{
-		KMessageBox::error(0, i18n("Can't find testregression executable!"));
-		return;
+		if(!QFileInfo(program2).exists())
+		{
+			KMessageBox::error(0, i18n("Can't find testregression executable!"));
+			return;
+		} 
+		else
+		{
+			program = program2;
+		}
 	}
 
 	QStringList arguments;
