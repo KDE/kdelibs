@@ -5,7 +5,9 @@ project(kioslave-http)
 add_subdirectory( kcookiejar ) 
 
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kio/httpfilter ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
+if(GSSAPI_FOUND)
+  include_directories( ${GSSAPI_INCS} )
+endif(GSSAPI_FOUND)
 
 ########### next target ###############
 
@@ -39,6 +41,9 @@ kde4_automoc(${kio_http_PART_SRCS})
 kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
 
 target_link_libraries(kio_http  ${KDE4_KDECORE_LIBS} kio kntlm )
+if(GSSAPI_FOUND)
+  target_link_libraries(kio_http ${GSSAPI_LIBS} )
+endif(GSSAPI_FOUND)
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_http )
 install_targets(${PLUGIN_INSTALL_DIR}  kio_http )

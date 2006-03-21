@@ -107,6 +107,17 @@ else(GETTEXT_FOUND)
 	set(ENABLE_NLS 0)
 endif(GETTEXT_FOUND)
 
+if(GSSAPI_FOUND)
+	set(HAVE_LIBGSSAPI 1)
+	if(GSSAPI_FLAVOR STREQUAL "MIT")
+		set(GSSAPI_MIT 1)
+	else(GSSAPI_FLAVOR STREQUAL "MIT")
+		set(GSSAPI_MIT 0)
+	endif(GSSAPI_FLAVOR STREQUAL "MIT")
+else(GSSAPI_FOUND)
+	set(HAVE_LIBGSSAPI 0)
+	set(GSSAPI_MIT 0)
+endif(GSSAPI_FOUND)
 				
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
 # If definitions like -D_GNU_SOURCE are needed for these checks they
