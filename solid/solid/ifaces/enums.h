@@ -42,7 +42,8 @@ namespace Enums
     {
         enum Type { Unknown = 0, Processor = 1, Block = 2,
                     Storage = 4, Cdrom = 8,
-                    Volume = 16, OpticalDisc = 32 };
+                    Volume = 16, OpticalDisc = 32,
+                    Display = 64 };
         Q_DECLARE_FLAGS( Types, Type );
     };
     Q_DECLARE_OPERATORS_FOR_FLAGS( Capability::Types )
@@ -74,6 +75,17 @@ namespace Enums
         Q_DECLARE_FLAGS( ContentTypes, ContentType )
     };
     Q_DECLARE_OPERATORS_FOR_FLAGS( OpticalDisc::ContentTypes )
+
+    struct Display
+    {
+        /**
+         * Lcd: Display is a LCD (Liquid Crystal Display) panel.
+         * Crt: Display is a CRT (Cathode Ray Tube) tube.
+         * TvOut: Display is a TV Out port.
+         * UnknowDisplayType: Display type is unknow.
+         */
+        enum DisplayType{ Lcd, Crt, TvOut, UnknowDisplayType };
+    };
 }
 }
 }
