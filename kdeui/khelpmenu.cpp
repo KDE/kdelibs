@@ -133,7 +133,6 @@ KMenu* KHelpMenu::menu()
     d->mMenu = new KMenu();
     connect( d->mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    d->mMenu->setIcon(SmallIcon("help"));
     d->mMenu->setTitle(i18n("&Help"));
 
     bool need_separator = false;
