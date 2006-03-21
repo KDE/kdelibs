@@ -171,13 +171,6 @@ protected:
      */
     virtual void keyPressEvent( QKeyEvent * );
 
-    /**
-     * Reimplemented to remove an eventual tooltip
-     */
-    virtual void hideEvent( QHideEvent * );
-
-    virtual bool eventFilter( QObject *o, QEvent *e );
-
     // DND support
     virtual Q3DragObject *dragObject();
     virtual void contentsDragEnterEvent( QDragEnterEvent *e );
@@ -192,7 +185,6 @@ private Q_SLOTS:
     void slotActivate( Q3IconViewItem * );
     void highlighted( Q3IconViewItem *item );
     void showToolTip( Q3IconViewItem *item );
-    void removeToolTip();
     void slotActivateMenu( Q3IconViewItem *, const QPoint& );
     void slotSelectionChanged();
 
@@ -221,7 +213,6 @@ Q_SIGNALS:
 private:
     KMimeTypeResolver<KFileIconViewItem,KFileIconView> *m_resolver;
 
-    QLabel *toolTip;
     int th;
     int myIconSize;
 

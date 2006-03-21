@@ -115,7 +115,6 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 
     setViewName( i18n("Icon View") );
 
-    toolTip = 0;
     setResizeMode( Adjust );
     setMaxItemWidth( 300 );
     setWordWrapIconText( false );
@@ -141,8 +140,6 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 
     connect( this, SIGNAL( onItem( Q3IconViewItem * ) ),
 	     SLOT( showToolTip( Q3IconViewItem * ) ) );
-    connect( this, SIGNAL( onViewport() ),
-	     SLOT( removeToolTip() ) );
     connect( this, SIGNAL( contextMenuRequested(Q3IconViewItem*,const QPoint&)),
 	     SLOT( slotActivateMenu( Q3IconViewItem*, const QPoint& ) ) );
 
@@ -170,8 +167,6 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 	connect( this, SIGNAL( selectionChanged( Q3IconViewItem * )),
 		 SLOT( highlighted( Q3IconViewItem * )));
 
-    viewport()->installEventFilter( this );
-
     // for mimetype resolving
     m_resolver = new KMimeTypeResolver<KFileIconViewItem,KFileIconView>(this);
 }
@@ -179,7 +174,6 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 KFileIconView::~KFileIconView()
 {
     delete m_resolver;
-    removeToolTip();
     delete d;
 }
 
@@ -230,43 +224,17 @@ void KFileIconView::writeConfig( KConfigGroup *configGroup)
         configGroup->writeEntry( "KFileIconView_ShowPreviews", showPreviews );
 }
 
-void KFileIconView::removeToolTip()
-{
-    delete toolTip;
-    toolTip = 0;
-}
-
 void KFileIconView::showToolTip( Q3IconViewItem *item )
 {
-    delete toolTip;
-    toolTip = 0;
-
     if ( !item )
 	return;
 
     int w = maxItemWidth() - ( itemTextPos() == Bottom ? 0 :
 			       item->pixmapRect().width() ) - 4;
     if ( fontMetrics().width( item->text() ) >= w ) {
-	toolTip = new QLabel(0,
-			      Qt::WStyle_StaysOnTop | Qt::WStyle_Customize | Qt::WStyle_NoBorder | Qt::WStyle_Tool | Qt::WX11BypassWM );
-	toolTip->setText(QString::fromLatin1(" %1 ").arg(item->text()));
-	toolTip->setFrameStyle( QFrame::Plain | QFrame::Box );
-	toolTip->setLineWidth( 1 );
-	toolTip->setAlignment( Qt::AlignLeft | Qt::AlignTop );
-	toolTip->move( QCursor::pos() + QPoint( 14, 14 ) );
-	toolTip->adjustSize();
-	QRect screen = QApplication::desktop()->screenGeometry(
-			QApplication::desktop()->screenNumber(QCursor::pos()));
-	if (toolTip->x()+toolTip->width() > screen.right()) {
-		toolTip->move(toolTip->x()+screen.right()-toolTip->x()-toolTip->width(), toolTip->y());
-	}
-	if (toolTip->y()+toolTip->height() > screen.bottom()) {
-		toolTip->move(toolTip->x(), screen.bottom()-toolTip->y()-toolTip->height()+toolTip->y());
-	}
-        // ### where is the font in Qt 4
-        // toolTip->setFont( QToolTip::font() );
-	toolTip->setPalette( QToolTip::palette());
-	toolTip->show();
+	QToolTip::showText(QCursor::pos() + QPoint( 14, 14 ), QString::fromLatin1(" %1 ").arg(item->text()), this);
+    } else {
+	QToolTip::showText(QCursor::pos() + QPoint( 14, 14 ), "", this);
     }
 }
 
@@ -278,12 +246,6 @@ void KFileIconView::slotActivateMenu( Q3IconViewItem* item, const QPoint& pos )
     }
     KFileIconViewItem *i = (KFileIconViewItem*) item;
     sig->activateMenu( i->fileInfo(), pos );
-}
-
-void KFileIconView::hideEvent( QHideEvent *e )
-{
-    removeToolTip();
-    K3IconView::hideEvent( e );
 }
 
 void KFileIconView::keyPressEvent( QKeyEvent *e )
@@ -726,19 +688,6 @@ void KFileIconView::listingCompleted()
     }
 
     m_resolver->start( d->previews->isChecked() ? 0 : 10 );
-}
-
-// need to remove our tooltip, eventually
-bool KFileIconView::eventFilter( QObject *o, QEvent *e )
-{
-    if ( o == viewport() || o == this ) {
-        int type = e->type();
-        if ( type == QEvent::Leave ||
-             type == QEvent::FocusOut )
-            removeToolTip();
-    }
-
-    return K3IconView::eventFilter( o, e );
 }
 
 /////////////////////////////////////////////////////////////////
