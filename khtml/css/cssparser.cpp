@@ -324,23 +324,7 @@ DOM::DocumentImpl *CSSParser::document() const
     return doc;
 }
 
-
-// defines units allowed for a certain property, used in parseUnit
-enum Units
-{
-    FUnknown   = 0x0000,
-    FInteger   = 0x0001,
-    FNumber    = 0x0002,  // Real Numbers
-    FPercent   = 0x0004,
-    FLength    = 0x0008,
-    FAngle     = 0x0010,
-    FTime      = 0x0020,
-    FFrequency = 0x0040,
-    FRelative  = 0x0100,
-    FNonNeg    = 0x0200
-};
-
-static bool validUnit( Value *value, int unitflags, bool strict )
+bool CSSParser::validUnit( Value *value, int unitflags, bool strict )
 {
     if ( unitflags & FNonNeg && value->fValue < 0 )
         return false;

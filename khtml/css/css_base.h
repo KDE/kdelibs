@@ -259,7 +259,7 @@ namespace DOM {
     };
 
     KDE_NO_EXPORT int getPropertyID(const char *tagStr, int len);
-
+    KDE_NO_EXPORT int getValueID(const char *tagStr, int len);
 }
 
 #endif

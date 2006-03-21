@@ -70,7 +70,7 @@ int DOM::getPropertyID(const char *tagStr, int len)
     }
 }
 
-static inline int getValueID(const char *tagStr, int len)
+int DOM::getValueID(const char *tagStr, int len)
 {
     { // HTML CSS Values
         const struct css_value *val = findValue(tagStr, len);
