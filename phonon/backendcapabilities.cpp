@@ -23,6 +23,8 @@
 #include "audiosource.h"
 #include "videosource.h"
 
+static KStaticDeleter<Phonon::BackendCapabilities> sd;
+
 namespace Phonon
 {
 
@@ -32,8 +34,6 @@ class BackendCapabilities::Private
 		const Ifaces::Backend* backend;
 };
 
-static ::KStaticDeleter<BackendCapabilities> sd;
-
 BackendCapabilities* BackendCapabilities::m_self = 0;
 
 BackendCapabilities* BackendCapabilities::self()
@@ -41,7 +41,7 @@ BackendCapabilities* BackendCapabilities::self()
 	if( !m_self )
 	{
 		m_self = new BackendCapabilities();
-		sd.setObject( m_self, m_self );
+		::sd.setObject( m_self, m_self );
 	}
 	return m_self;
 }
