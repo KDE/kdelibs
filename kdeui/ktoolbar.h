@@ -91,7 +91,7 @@ public:
    * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
-    KToolBar( QWidget *parentWindow, Qt::ToolBarArea area, bool newLine = false,
+    KToolBar( QMainWindow* parentWindow, Qt::ToolBarArea area, bool newLine = false,
               bool honorStyle = false, bool readConfig = true );
 
   /**
@@ -204,11 +204,14 @@ private Q_SLOTS:
 
 private:
     void init( bool readConfig = true, bool honorStyle = false );
-    void getAttributes( QString &position, QString &toolButtonStyle, int &index );
+    void getAttributes( QString &position, Qt::ToolButtonStyle &toolButtonStyle, int &index );
     int dockWindowIndex();
     KMenu *contextMenu();
     void doModeChange();
     bool isMainToolBar() const;
+
+    static Qt::ToolButtonStyle toolButtonStyleFromString(const QString& style);
+    static QString toolButtonStyleToString(Qt::ToolButtonStyle);
 
 protected:
     virtual void virtual_hook( int id, void* data );

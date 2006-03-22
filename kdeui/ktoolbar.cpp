@@ -78,7 +78,7 @@ public:
         modified = false;
 
         IconSizeDefault = 22;
-        ToolButtonStyleDefault = "TextUnderIcon";
+        ToolButtonStyleDefault = Qt::ToolButtonTextUnderIcon;
 
         NewLineDefault = false;
         OffsetDefault = 0;
@@ -124,7 +124,7 @@ public:
   // Default Values.
   bool HiddenDefault;
   int IconSizeDefault;
-  QString ToolButtonStyleDefault;
+  Qt::ToolButtonStyle ToolButtonStyleDefault;
   bool NewLineDefault;
   int OffsetDefault;
   QString PositionDefault;
@@ -140,24 +140,21 @@ KToolBar::KToolBar( QWidget *parent, bool honorStyle, bool readConfig )
     , d(new KToolBarPrivate)
 {
     init( readConfig, honorStyle );
-
-    // The old KToolBar added itself automatically
-    if (mainWindow())
-      mainWindow()->addToolBar(this);
 }
 
-KToolBar::KToolBar( QWidget *parent, Qt::ToolBarArea area, bool newLine, bool honorStyle, bool readConfig )
+KToolBar::KToolBar( QMainWindow* parent, Qt::ToolBarArea area, bool newLine, bool honorStyle, bool readConfig )
     : QToolBar(parent)
     , d(new KToolBarPrivate)
 {
     init( readConfig, honorStyle );
 
-    if (mainWindow()) {
-      if (newLine)
-        mainWindow()->addToolBarBreak();
+    if (newLine)
+      mainWindow()->addToolBarBreak(area);
 
-      mainWindow()->addToolBar(area, this);
-    }
+    mainWindow()->addToolBar(area, this);
+
+    if (newLine)
+      mainWindow()->addToolBarBreak(area);
 }
 
 KToolBar::~KToolBar()
@@ -290,7 +287,8 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
         configGroup = settingsGroup();
     //kDebug(220) << name() << " saveSettings() group=" << _configGroup << " -> " << configGroup << endl;
 
-    QString position, ToolButtonStyle;
+    QString position;
+    Qt::ToolButtonStyle ToolButtonStyle;
     int index;
     getAttributes( position, ToolButtonStyle, index );
 
@@ -313,7 +311,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     else
     {
       //kDebug(220) << name() << "                writing ToolButtonStyle " << ToolButtonStyle << endl;
-      cg.writeEntry("ToolButtonStyle", ToolButtonStyle);
+      cg.writeEntry("ToolButtonStyle", toolButtonStyleToString(ToolButtonStyle));
     }
 
     if(!cg.hasDefault("IconSize") && iconSize().width() == iconSizeDefault() )
@@ -396,15 +394,7 @@ Qt::ToolButtonStyle KToolBar::toolButtonStyleSetting()
 {
     QString grpToolbar(QLatin1String("Toolbar style"));
     KConfigGroup saver(KGlobal::config(), grpToolbar);
-    QString ToolButtonStyle = KGlobal::config()->readEntry(QLatin1String("ToolButtonStyle"),QString::fromLatin1("TextUnderIcon"));
-    if ( ToolButtonStyle == "TextBesideIcon" )
-        return Qt::ToolButtonTextBesideIcon;
-    else if ( ToolButtonStyle == "TextUnderIcon" )
-        return Qt::ToolButtonTextUnderIcon;
-    else if ( ToolButtonStyle == "TextOnly" )
-        return Qt::ToolButtonTextOnly;
-    else
-        return Qt::ToolButtonIconOnly;
+    return toolButtonStyleFromString(KGlobal::config()->readEntry(QLatin1String("ToolButtonStyle"),QString::fromLatin1("TextUnderIcon")));
 }
 
 void KToolBar::loadState( const QDomElement &element )
@@ -448,7 +438,7 @@ void KToolBar::loadState( const QDomElement &element )
         d->HiddenDefault = element.attribute( "hiddenDefault" ) == "true";
         d->IconSizeDefault = element.attribute( "iconSizeDefault" ).toInt();
         d->PositionDefault = element.attribute( "positionDefault" );
-        d->ToolButtonStyleDefault = element.attribute( "toolButtonStyleDefault" );
+        d->ToolButtonStyleDefault = toolButtonStyleFromString(element.attribute( "toolButtonStyleDefault" ));
     }
     //kDebug(220) << name() << " loadState loadingAppDefaults=" << loadingAppDefaults << endl;
 
@@ -516,7 +506,7 @@ int KToolBar::dockWindowIndex()
     return mainWindow()->layout()->indexOf(this);
 }
 
-void KToolBar::getAttributes( QString &position, QString &toolButtonStyle, int &index )
+void KToolBar::getAttributes( QString &position, Qt::ToolButtonStyle &toolButtonStyle, int &index )
 {
     // get all of the stuff to save
     switch ( mainWindow()->toolBarArea(this) ) {
@@ -535,21 +525,7 @@ void KToolBar::getAttributes( QString &position, QString &toolButtonStyle, int &
           break;
     }
 
-    switch (this->toolButtonStyle()) {
-      default:
-      case Qt::ToolButtonIconOnly:
-        toolButtonStyle = "IconOnly";
-        break;
-      case Qt::ToolButtonTextOnly:
-        toolButtonStyle = "TextOnly";
-        break;
-      case Qt::ToolButtonTextBesideIcon:
-        toolButtonStyle = "TextBesideIcon";
-        break;
-      case Qt::ToolButtonTextUnderIcon:
-        toolButtonStyle = "TextUnderIcon";
-        break;
-    }
+    toolButtonStyle = KToolBar::toolButtonStyle();
 
     index = dockWindowIndex();
 }
@@ -557,13 +533,14 @@ void KToolBar::getAttributes( QString &position, QString &toolButtonStyle, int &
 void KToolBar::saveState( QDomElement &current )
 {
     Q_ASSERT( !current.isNull() );
-    QString position, ToolButtonStyle;
+    QString position;
+    Qt::ToolButtonStyle ToolButtonStyle;
     int index = -1;
     getAttributes( position, ToolButtonStyle, index );
 
     current.setAttribute( "noMerge", "1" );
     current.setAttribute( "position", position );
-    current.setAttribute( "toolButtonStyle", ToolButtonStyle );
+    current.setAttribute( "toolButtonStyle", toolButtonStyleToString(ToolButtonStyle) );
     current.setAttribute( "index", index );
     // FIXME KAction port
     //current.setAttribute( "offset", offset() );
@@ -579,7 +556,7 @@ void KToolBar::saveState( QDomElement &current )
     current.setAttribute( "hiddenDefault", d->HiddenDefault ? "true" : "false" );
     current.setAttribute( "iconSizeDefault", d->IconSizeDefault );
     current.setAttribute( "positionDefault", d->PositionDefault );
-    current.setAttribute( "toolButtonStyleDefault", d->ToolButtonStyleDefault );
+    current.setAttribute( "toolButtonStyleDefault", toolButtonStyleToString(d->ToolButtonStyleDefault) );
 
     //kDebug(220) << name() << " saveState: saving index=" << index << " ToolButtonStyle=" << ToolButtonStyle << " hidden=" << isHidden() << endl;
 }
@@ -948,7 +925,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
     bool applyIconSize = !xmlgui;
 
     int iconSize = d->IconSizeDefault;
-    QString ToolButtonStyle = d->ToolButtonStyleDefault;
+    Qt::ToolButtonStyle ToolButtonStyle = d->ToolButtonStyleDefault;
 
     // this is the first iteration
     QString grpToolbar(QLatin1String("Toolbar style"));
@@ -958,9 +935,9 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         // we read in the ToolButtonStyle property *only* if we intend on actually
         // honoring it
         if (d->honorStyle)
-            d->ToolButtonStyleDefault = cg.readEntry(attrToolButtonStyle, d->ToolButtonStyleDefault);
+            d->ToolButtonStyleDefault = toolButtonStyleFromString(cg.readEntry(attrToolButtonStyle, toolButtonStyleToString(d->ToolButtonStyleDefault)));
         else
-            d->ToolButtonStyleDefault = "TextUnderIcon";
+            d->ToolButtonStyleDefault = Qt::ToolButtonTextUnderIcon;
 
         // Use the default icon size for toolbar icons.
         d->IconSizeDefault = cg.readNumEntry(attrIconSize, d->IconSizeDefault);
@@ -974,7 +951,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
             // read in the ToolButtonStyle property
             if ( config->hasKey( attrToolButtonStyle ) ) {
-                ToolButtonStyle = config->readEntry(attrToolButtonStyle, QString());
+                ToolButtonStyle = toolButtonStyleFromString(config->readEntry(attrToolButtonStyle, QString()));
                 applyToolButtonStyle = true;
                 //kdDebug(220) << name() << " read ToolButtonStyle=" << d->ToolButtonStyleDefault << ", that will be the default" << endl;
             }
@@ -989,20 +966,10 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         // revert back to the old group
     } // end block for KConfigGroup
 
-    Qt::ToolButtonStyle tool_button_style;
-    if ( ToolButtonStyle == "TextBesideIcon" )
-        tool_button_style = Qt::ToolButtonTextBesideIcon;
-    else if ( ToolButtonStyle == "TextUnderIcon" )
-        tool_button_style = Qt::ToolButtonTextUnderIcon;
-    else if ( ToolButtonStyle == "TextOnly" )
-        tool_button_style = Qt::ToolButtonTextOnly;
-    else
-        tool_button_style = Qt::ToolButtonIconOnly;
-
     // check if the icon/text has changed
-    if (tool_button_style != toolButtonStyle() && applyToolButtonStyle) {
+    if (ToolButtonStyle != toolButtonStyle() && applyToolButtonStyle) {
         //kdDebug(220) << name() << " applyAppearanceSettings setToolButtonStyle " << tool_button_style << endl;
-        setToolButtonStyle(tool_button_style);
+        setToolButtonStyle(ToolButtonStyle);
     }
 
     // ...and check if the icon size has changed
@@ -1115,6 +1082,34 @@ void KToolBar::dropEvent( QDropEvent * event )
 
   delete d->dropIndicatorAction;
   event->accept();
+}
+
+Qt::ToolButtonStyle KToolBar::toolButtonStyleFromString( const QString & style )
+{
+  if ( style == "TextBesideIcon" || style == "icontextright" )
+    return Qt::ToolButtonTextBesideIcon;
+  else if ( style == "TextUnderIcon" || style == "icontextbottom" )
+    return Qt::ToolButtonTextUnderIcon;
+  else if ( style == "TextOnly" || "textonly" )
+    return Qt::ToolButtonTextOnly;
+  else
+    return Qt::ToolButtonIconOnly;
+}
+
+QString KToolBar::toolButtonStyleToString( Qt::ToolButtonStyle style )
+{
+  switch( style )
+  {
+    case Qt::ToolButtonIconOnly:
+    default:
+      return "IconOnly";
+    case Qt::ToolButtonTextBesideIcon:
+      return "TextBesideIcon";
+    case Qt::ToolButtonTextOnly:
+      return "TextOnly";
+    case Qt::ToolButtonTextUnderIcon:
+      return "TextUnderIcon";
+  }
 }
 
 #include "ktoolbar.moc"
