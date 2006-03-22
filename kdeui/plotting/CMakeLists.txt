@@ -11,7 +11,7 @@ kde4_automoc(${kdeeduplot_LIB_SRCS})
 
 kde4_add_library(kdeeduplot SHARED ${kdeeduplot_LIB_SRCS})
 
-target_link_libraries(kdeeduplot  ${LIB_KDEUI} )
+target_link_libraries(kdeeduplot  ${KDE4_KDEUI_LIBS} )
 
 set_target_properties(kdeeduplot PROPERTIES VERSION 1.2.0 SOVERSION 1 )
 install_targets(${LIB_INSTALL_DIR} kdeeduplot )
