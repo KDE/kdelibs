@@ -99,7 +99,8 @@ setAutoSaveSettings();
     tb = toolBar();
 
     // and set it to full width
-    tb->setFullSize(true);
+    //tb->setFullSize(true);
+    // in KDE4 this would be something with QMainWindow::insertToolBarBreak()
 
 
     
@@ -113,7 +114,7 @@ setAutoSaveSettings();
     tb->addAction(fileOpenAction);
     connect(fileOpenAction, SIGNAL(triggered(bool)), SLOT(slotOpen()));
 
-    KActionMenu* fileFloppyAction = new KActionMenu("filefloppy", "Save (beep or delayed popup)", actionCollection(), "filefloppy");
+    KActionMenu* fileFloppyAction = new KActionMenu(KIcon("filefloppy"), "Save (beep or delayed popup)", actionCollection(), "filefloppy");
     fileFloppyAction->setDelayed(true);
     tb->addAction(fileFloppyAction);
     connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotSave()));
