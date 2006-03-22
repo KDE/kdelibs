@@ -190,10 +190,9 @@ void DockApplication::initToolBars()
   QPixmap p(folder);
   QIcon i(p);
   KToolBar* tool_bar_0 = toolBar(0);
-  tool_bar_0->setFullSize(false);
   tool_bar_0->addAction(i, "Action1");
   tool_bar_0->addAction(i, "Action2");
-  tool_bar_0->setFullSize( true );
+  insertToolBarBreak( tool_bar_0 );
 }
 
 void DockApplication::initStatusBar()
