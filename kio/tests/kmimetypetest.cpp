@@ -72,7 +72,7 @@ void KMimeTypeTest::testFindByPath()
     // Can't use KIconLoader since this is a "without GUI" test.
     QString fh = locate( "icon", "crystalsvg/22x22/filesystems/folder_home.png" );
     QVERIFY( !fh.isEmpty() );
-    mf = KMimeType::findByURL( fh, 0, true, false );
+    mf = KMimeType::findByPath( fh );
     QVERIFY( mf );
     QCOMPARE( mf->name(), QString::fromLatin1( "image/png" ) );
 }
