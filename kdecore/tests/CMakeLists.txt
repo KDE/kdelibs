@@ -595,7 +595,6 @@ target_link_libraries(klibloadertestmodule  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIB
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
 install_targets(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
@@ -622,6 +621,8 @@ target_link_libraries(kautostarttest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY
 
 add_test(kdecore-kautostarttest ${EXECUTABLE_OUTPUT_PATH}/kautostarttest)
 
+
+endif(KDE4_BUILD_TESTS)
 ########### install files ###############
 
 
