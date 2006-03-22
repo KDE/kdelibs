@@ -142,7 +142,7 @@ public: \
 	/**
 	 * Standard QObject constructor.
 	 *
-	 * @param parent QObject parent
+	 * \param parent QObject parent
 	 */ \
 	classname( QObject* parent = 0 ); \
 protected: \
@@ -199,7 +199,7 @@ public: \
 	/**
 	 * Standard QObject constructor.
 	 *
-	 * @param parent QObject parent
+	 * \param parent QObject parent
 	 */ \
 	classname( QObject* parent = 0 ); \
 protected: \
