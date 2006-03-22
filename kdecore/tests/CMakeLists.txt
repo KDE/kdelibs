@@ -597,6 +597,31 @@ install_targets(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
 
 endif(KDE4_BUILD_TESTS)
 
+########### next target ###############
+
+set(knotificationrestrictionstest_SRCS knotificationrestrictionstest.cpp )
+
+kde4_automoc(${knotificationrestrictionstest_SRCS})
+
+kde4_add_executable(knotificationrestrictionstest ${knotificationrestrictionstest_SRCS})
+
+target_link_libraries(knotificationrestrictionstest  ${QT_AND_KDECORE_LIBS})
+
+add_test(kdecore-knotificationrestrictionstest ${EXECUTABLE_OUTPUT_PATH}/knotificationrestrictionstest)
+
+########### next target ###############
+
+set(kautostarttest_SRCS kautostarttest.cpp )
+
+
+kde4_automoc(${kautostarttest_SRCS})
+
+kde4_add_executable(kautostarttest ${kautostarttest_SRCS})
+
+target_link_libraries(kautostarttest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-kautostarttest ${EXECUTABLE_OUTPUT_PATH}/kautostarttest)
+
 ########### install files ###############
 
 

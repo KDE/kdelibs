@@ -212,6 +212,7 @@
 #cmakedefine HAVE_X11_EXTENSIONS_SHAPE_H 1
 #cmakedefine HAVE_X11_EXTENSIONS_XSHM_H 1
 #cmakedefine HAVE_X11_ICE_ICELIB_H 1
+#cmakedefine HAVE_XTEST 1
 #cmakedefine HAVE_XRENDER 1
 
 
