@@ -44,7 +44,8 @@ set(keramik_PART_SRCS
    keramik.cpp
    pixmaploader.cpp
    gradients.cpp
-  colorutil.cpp
+   colorutil.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h  # adding the generated header here will force the correct generation of the dependencies to genembed
 )
 
 # this actually shouldn't be required, maybe current cmake cvs handles it correctly, Alex
