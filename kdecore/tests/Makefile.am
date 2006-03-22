@@ -100,5 +100,5 @@ ksharedptrtest_SOURCES = ksharedptrtest.cpp
 kfiltertest_SOURCES = kfiltertest.cpp
 kdatetimetest_SOURCES = kdatetimetest.cpp
 ksavefiletest_SOURCES = ksavefiletest.cpp
-knotificationrestrictions_SOURCES = knotificationrestrictions.cpp
+knotificationrestrictions_SOURCES = knotificationrestrictionstest.cpp
 kautostart_SOURCES = kautostart.cpp
