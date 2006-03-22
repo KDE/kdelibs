@@ -23,7 +23,7 @@
 
 #include "config.h"
 
-#include "HashTraits.h"
+#include "kxmlcore/HashTraits.h"
 #include "JSLock.h"
 #include "interpreter.h"
 #include "object.h"
