@@ -31,6 +31,9 @@
 #include "kshortcutlist.h"
 
 #include <qkeysequence.h>
+#ifdef Q_WS_X11
+#include <qx11info_x11.h>
+#endif
 
 namespace KStdAccel
 {
@@ -140,6 +143,8 @@ static KStdAccelInfo* infoPtr( StdAccel id )
 
 /** Initialize the accelerator @p id by checking if it is overridden
     in the configuration file (and if it isn't, use the default).
+    On X11, if QApplication was initialized with GUI disabled,
+    the default will always be used.
 */
 static void initialize( StdAccel id )
 {
@@ -151,7 +156,12 @@ static void initialize( StdAccel id )
 		return;
 	}
 
+#ifdef Q_WS_X11
+	// Code within this block breaks if we aren't running in GUI mode.
+	if( QX11Info::display() && cg.hasKey( pInfo->psName ) ) {
+#else
 	if( cg.hasKey( pInfo->psName ) ) {
+#endif	
 		QString s = cg.readEntry( pInfo->psName );
 		if( s != "none" )
 			pInfo->cut.init( s );

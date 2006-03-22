@@ -81,6 +81,8 @@ namespace KStdAccel
 
   /**
    * Returns the keybinding for @p accel.
+   * On X11, if QApplication was initialized with GUI disabled, the
+   * default keybinding will always be returned.
    * @param id the id of the accelerator
    */
   KDECORE_EXPORT const KShortcut& shortcut(StdAccel id);
