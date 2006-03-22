@@ -13,7 +13,7 @@ kde4_add_plugin(kcm_crypto ${kcm_crypto_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kcm_crypto )
 
-target_link_libraries(kcm_crypto  ${LIB_KDE3SUPPORT} )
+target_link_libraries(kcm_crypto  ${KDE4_KDE3SUPPORT_LIBS} )
 
 install_targets(${LIB_INSTALL_DIR}/kde4 kcm_crypto )
 
