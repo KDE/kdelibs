@@ -140,6 +140,10 @@ KToolBar::KToolBar( QWidget *parent, bool honorStyle, bool readConfig )
     , d(new KToolBarPrivate)
 {
     init( readConfig, honorStyle );
+
+    // KToolBar is auto-added to the top area of the main window if parent is a QMainWindow
+    if (QMainWindow* mw = qobject_cast<QMainWindow*>(parent))
+      mw->addToolBar(this);
 }
 
 KToolBar::KToolBar( QMainWindow* parent, Qt::ToolBarArea area, bool newLine, bool honorStyle, bool readConfig )
@@ -474,6 +478,11 @@ void KToolBar::loadState( const QDomElement &element )
         QString attrNewLine = element.attribute( "newline" ).toLower();
         if ( !attrNewLine.isEmpty() )
             newLine = attrNewLine == "true";
+
+        if (newLine && mainWindow()) {
+          mainWindow()->addToolBarBreak(mainWindow()->toolBarArea(this));
+          mainWindow()->insertToolBarBreak(this);
+        }
     }
 
     {
