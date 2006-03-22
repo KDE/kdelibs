@@ -28,48 +28,47 @@ testWindow::testWindow (QWidget *parent)
 {
     ena=false;
     setCaption("test window");
-setAutoSaveSettings();
     /******************************/
     /* First, we setup setup Menus */
     /******************************/
     menuBar = new KMenuBar (this);
     setMenuBar(menuBar);
 
-    // First popup... 
+    // First popup...
     fileMenu = new QMenu;
     // We insert this popup in menubar with caption "File".
     // Prefix "&" means that "F" will be underlined
     QAction* fileAction = menuBar->addMenu(fileMenu);
     fileAction->setText("&File");
-    // We insert item "Exit" with accelerator ALT-Q, and connect
+    // We insert item "Quit" with accelerator ALT-Q, and connect
     // it to application's exit-slot.
-    fileMenu->addAction("&Exit", KApplication::kApplication(),
+    fileMenu->addAction("&Quit", KApplication::kApplication(),
                           SLOT( quit() ), Qt::ALT + Qt::Key_Q );
 
     // Another popup...
     toolBarMenu = new QMenu;
     QAction* toolBarsAction = menuBar->addAction("&Toolbars");
     toolBarsAction->setMenu(toolBarMenu);
-    toolBarMenu->addAction ("(Un)Hide tollbar 1", this, SLOT(slotHide1()));
-    toolBarMenu->addAction ("(Un)Hide tollbar 2", this, SLOT(slotHide2()));
+    toolBarMenu->addAction ("(Un)Hide toolbar 1", this, SLOT(slotHide1()));
+    toolBarMenu->addAction ("(Un)Hide toolbar 2", this, SLOT(slotHide2()));
 
     itemsMenu = new QMenu;
     QAction* itemsAction = menuBar->addAction ("&Items");
     itemsAction->setMenu(itemsMenu);
 
     exitB = true;   // exit button is shown
-    lineL = true;   // Lined is enabled
+    lineL = true;   // LineEdit is enabled
     greenF = false;  // Frame not inserted
-    
+
     itemsMenu->addAction ("delete/insert exit button", this, SLOT(slotExit()));
-    itemsMenu->addAction ("insert/delete green frame!", this, SLOT(slotFrame()));
-    itemsMenu->addAction ("enable/disable Lined", this, SLOT(slotLined()));
+    //itemsMenu->addAction ("insert/delete green frame!", this, SLOT(slotFrame()));
+    itemsMenu->addAction ("enable/disable lineedit", this, SLOT(slotLined()));
     itemsMenu->addAction ("Toggle fileNew", this, SLOT(slotNew()));
-    itemsMenu->addAction ("Clear comboBox", this, SLOT(slotClearCombo()));
-    itemsMenu->addAction ("Insert List in Combo", this, SLOT(slotInsertListInCombo()));
-    itemsMenu->addAction ("Make item 3 curent", this, SLOT(slotMakeItem3Current()));
+    itemsMenu->addAction ("Combo: clear", this, SLOT(slotClearCombo()));
+    itemsMenu->addAction ("Combo: insert list", this, SLOT(slotInsertListInCombo()));
+    itemsMenu->addAction ("Combo: make item 3 current", this, SLOT(slotMakeItem3Current()));
     //itemsMenu->addAction ("Insert clock!", this, SLOT(slotInsertClock()));
-    itemsMenu->addAction ("Important!", this, SLOT(slotImportant()));
+    itemsMenu->addAction ("Important msg in statusbar", this, SLOT(slotImportant()));
 
     menuBar->addSeparator();
     helpMenu = new KHelpMenu(this, "KWindowTest was programmed by Sven Radej");
@@ -77,7 +76,7 @@ setAutoSaveSettings();
     helpAction->setMenu(helpMenu->menu());
 
     /**************************************************/
-    /*Now, we setup statusbar order is not important. */
+    /*Now, we setup statusbar; order is not important. */
     /**************************************************/
     statusBar = new KStatusBar (this);
     statusBar->insertItem("Hi there!                         ", 0);
@@ -92,25 +91,21 @@ setAutoSaveSettings();
     /* And now the toolbar */
     /***********************/
 
-    // pixmap which we will use
-    QPixmap pix;
-
-    // Create toolbar...
+    // Create main toolbar...
     tb = toolBar();
 
     // and set it to full width
     //tb->setFullSize(true);
-    // in KDE4 this would be something with QMainWindow::insertToolBarBreak()
+    addToolBarBreak();
 
 
-    
     // First four  buttons
-    fileNewAction = new KAction("filenew", "Create.. (toggles upper button)", actionCollection(), "filenew");
+    fileNewAction = new KAction(KIcon("filenew"), "Create.. (toggles upper button)", actionCollection(), "filenew");
     fileNewAction->setCheckable(true);
     tb->addAction(fileNewAction);
     connect(fileNewAction, SIGNAL(triggered(bool)), SLOT(slotNew()));
 
-    KAction* fileOpenAction = new KAction("fileopen", "Open", actionCollection(), "fileopen");
+    KAction* fileOpenAction = new KAction(KIcon("fileopen"), "Open", actionCollection(), "fileopen");
     tb->addAction(fileOpenAction);
     connect(fileOpenAction, SIGNAL(triggered(bool)), SLOT(slotOpen()));
 
@@ -119,7 +114,7 @@ setAutoSaveSettings();
     tb->addAction(fileFloppyAction);
     connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotSave()));
 
-    KAction* filePrintAction = new KAction("fileprint", "Print (enables/disables open)", actionCollection(), "fileprint");
+    KAction* filePrintAction = new KAction(KIcon("fileprint"), "Print (enables/disables open)", actionCollection(), "fileprint");
     tb->addAction(filePrintAction);
     connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotPrint()));
 
@@ -127,7 +122,7 @@ setAutoSaveSettings();
     // arguments: text (or strList), ID, writable, signal, object, slot, enabled,
     //            tooltiptext, size
     testComboBox = new KComboBox(tb);
-    KWidgetAction* comboAction = new KWidgetAction(testComboBox, QString(), 0, 0, 0, actionCollection(), "combobox"); 
+    KWidgetAction* comboAction = new KWidgetAction(testComboBox, QString(), 0, 0, 0, actionCollection(), "combobox");
     tb->addAction(comboAction);
     connect(testComboBox, SIGNAL(activated(const QString&)), this, SLOT(slotList(const QString&)));
 
@@ -136,7 +131,7 @@ setAutoSaveSettings();
     // arguments: text, id, signal, object (this), slot, enabled, tooltiptext, size
     testLineEdit = new KLineEdit(tb);
     testLineEdit->setText("ftp://ftp.kde.org/pub/kde");
-    KWidgetAction* lineEditAction = new KWidgetAction(testLineEdit, QString(), 0, 0, 0, actionCollection(), "location"); 
+    KWidgetAction* lineEditAction = new KWidgetAction(testLineEdit, QString(), 0, 0, 0, actionCollection(), "location");
     tb->addAction(lineEditAction);
     connect(testLineEdit, SIGNAL(returnPressed()), this, SLOT(slotReturn()));
 
@@ -147,6 +142,7 @@ setAutoSaveSettings();
 
     // Another toolbar
     tb1 = new KToolBar(this); // this one is normal and has separators
+    tb1->setObjectName( "AnotherToolbar" );
     addToolBar(tb1);
 
 
@@ -164,13 +160,13 @@ setAutoSaveSettings();
     tb1->addAction(fileFloppyAction2);
     connect(fileFloppyAction2, SIGNAL(triggered(bool)), this, SLOT(slotSave()));
     qobject_cast<QToolButton*>(tb1->widgetForAction(fileFloppyAction2))->setAutoRepeat(true);
-    
+
     KAction* filePrintAction2 = new KAction("fileprint", "Print (pops menu)", actionCollection(), "fileprint2");
     filePrintAction2->setMenu(itemsMenu);
     tb1->addAction(filePrintAction2);
-    
+
     tb1->addSeparator ();
-    
+
     // *** RADIO BUTTONS
     QActionGroup* radioGroup = new QActionGroup(this);
     radioGroup->setExclusive(true);
@@ -186,15 +182,11 @@ setAutoSaveSettings();
 
     // Set main widget. In this example it is Qt's multiline editor.
     widget = new QTextEdit (this);
+    setCentralWidget (widget);
 
     // Setup is now complete
 
-    // add two toolbars
-    //addToolBar (tb1);
-    //addToolBar (tb);
-
-    //... and main widget
-    setCentralWidget (widget);
+    setAutoSaveSettings();
 
     // This is not strictly related to toolbars, menubars or KMainWindow.
     // Setup popup for completions
@@ -284,7 +276,7 @@ void testWindow::slotList(const QString &str)
 void testWindow::slotCompletion()
 {
   // Now do a completion
-  // Call your completing function and set that text in klined
+  // Call your completing function and set that text in lineedit
   // QString s = tb->getLinedText(/* ID */ 4)
   // QString completed = complete (s);
   // tb->setLinedText(/* ID */ 4, completed.data())
@@ -293,8 +285,8 @@ void testWindow::slotCompletion()
 
   completions->popup(QCursor::pos()); // This popup should understunf keys up and down
 
-  /* This is just an example. KLined automatically sets cursor at end of string
-   when ctrl-d or ctrl-s is pressed. KToolBar will also put cursor at end of text in Lined
+  /* This is just an example. KLineEdit automatically sets cursor at end of string
+   when ctrl-d or ctrl-s is pressed. KToolBar will also put cursor at end of text in LineEdit
    after inserting text with setLinedText (...).
   */
 
@@ -332,7 +324,7 @@ void testWindow::slotHide1 ()
 testWindow::~testWindow ()
 {
   //debug ("kwindowtest: deleted clock");
-  
+
   delete tb;
   delete tb1;
   delete menuBar;
@@ -468,7 +460,7 @@ int main( int argc, char *argv[] )
     myApp.setQuitOnLastWindowClosed( false ); // don't quit after the messagebox!
 
     i = QMessageBox::information(0, "Select", "Select type of mainwidget",
-                             "Fixed", "Y-fixed", "Resizable");
+                                 "Fixed", "Y-fixed", "Resizable");
     if (i == 0)
         test->beFixed();
     else if (i == 1)
