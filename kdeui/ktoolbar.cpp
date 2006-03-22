@@ -78,7 +78,7 @@ public:
         modified = false;
 
         IconSizeDefault = 22;
-        ToolButtonStyleDefault = Qt::ToolButtonIconOnly;
+        ToolButtonStyleDefault = Qt::ToolButtonTextUnderIcon;
 
         NewLineDefault = false;
         OffsetDefault = 0;
@@ -398,7 +398,7 @@ Qt::ToolButtonStyle KToolBar::toolButtonStyleSetting()
 {
     QString grpToolbar(QLatin1String("Toolbar style"));
     KConfigGroup saver(KGlobal::config(), grpToolbar);
-    return toolButtonStyleFromString(KGlobal::config()->readEntry(QLatin1String("ToolButtonStyle"),QString::fromLatin1("IconOnly")));
+    return toolButtonStyleFromString(KGlobal::config()->readEntry(QLatin1String("ToolButtonStyle"),QString::fromLatin1("TextUnderIcon")));
 }
 
 void KToolBar::loadState( const QDomElement &element )
@@ -450,6 +450,9 @@ void KToolBar::loadState( const QDomElement &element )
         QString attrIconText = element.attribute( "iconText" ).toLower().toLatin1();
         if ( !attrIconText.isEmpty() ) {
             setToolButtonStyle(toolButtonStyleFromString(attrIconText));
+        } else {
+          if (d->honorStyle)
+            setToolButtonStyle(d->ToolButtonStyleDefault);
         }
     }
 
@@ -951,7 +954,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         if (d->honorStyle)
             d->ToolButtonStyleDefault = toolButtonStyleFromString(cg.readEntry(attrToolButtonStyle, toolButtonStyleToString(d->ToolButtonStyleDefault)));
         else
-            d->ToolButtonStyleDefault = Qt::ToolButtonIconOnly;
+            d->ToolButtonStyleDefault = Qt::ToolButtonTextUnderIcon;
 
         // Use the default icon size for toolbar icons.
         d->IconSizeDefault = cg.readNumEntry(attrIconSize, d->IconSizeDefault);
