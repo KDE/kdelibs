@@ -24,11 +24,63 @@
 #include "../ifaces/ui/videowidget.h"
 #include "../abstractvideooutput_p.h"
 #include <QHBoxLayout>
+#include <QAction>
+#include <QChildEvent>
+#include <QPalette>
+#include <QCloseEvent>
 
 namespace Phonon
 {
 namespace Ui
 {
+class FullScreenVideoWidget : public QWidget
+{
+	public:
+		FullScreenVideoWidget( QWidget* parent );
+	protected:
+		void childEvent( QChildEvent* e );
+		void closeEvent( QCloseEvent* e );
+};
+
+FullScreenVideoWidget::FullScreenVideoWidget( QWidget* parent )
+	: QWidget( parent, Qt::Window )
+{
+	QPalette pal = palette();
+	pal.setColor( QPalette::Window, Qt::black );
+	setPalette( pal );
+	setCursor( QCursor( Qt::BlankCursor ) );
+	setAttribute( Qt::WA_OpaquePaintEvent, true );
+	setLayout( new QHBoxLayout );
+	layout()->setMargin( 0 );
+	hide();
+}
+
+void FullScreenVideoWidget::childEvent( QChildEvent* e )
+{
+	if( !( e->child() && e->child()->isWidgetType() ) )
+		return;
+
+	QWidget* child = qobject_cast<QWidget*>( e->child() );
+	Q_ASSERT( child );
+	if( e->added() )
+	{
+		layout()->addWidget( child );
+		showFullScreen();
+	}
+	else if( e->removed() )
+	{
+		layout()->removeWidget( child );
+		hide();
+	}
+}
+
+void FullScreenVideoWidget::closeEvent( QCloseEvent* e )
+{
+	e->ignore();
+	VideoWidget* vw = qobject_cast<VideoWidget*>( parent() );
+	vw->exitFullScreen();
+}
+
 class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 {
 	K_DECLARE_PUBLIC( VideoWidget )
@@ -47,14 +99,15 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 
 	protected:
 		VideoWidgetPrivate( VideoWidget* parent )
-			: fullscreen( false )
-			, layout( parent )
+			: layout( parent )
+			, fullScreenWidget( 0 )
 		{
 			layout.setMargin( 0 );
 		}
 
-		bool fullscreen;
 		QHBoxLayout layout;
+		QAction* fullScreenAction;
+		FullScreenVideoWidget* fullScreenWidget;
 };
 }}
 

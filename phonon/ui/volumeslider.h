@@ -38,22 +38,43 @@ namespace Ui
 class PHONON_EXPORT VolumeSlider : public QWidget
 {
 	Q_OBJECT
+	/**
+	 * This property holds the maximum volume that can be set with this slider.
+	 *
+	 * By default the maximum value is 1.0 (100%).
+	 */
 	Q_PROPERTY( float maximumVolume READ maximumVolume WRITE setMaximumVolume )
+	/**
+	 * This property holds whether the icon next to the slider is visible.
+	 *
+	 * By default the icon is visible.
+	 */
 	Q_PROPERTY( bool iconVisible READ isIconVisible WRITE setIconVisible )
+	/**
+	 * This property holds the orientation of the slider.
+	 *
+	 * The orientation must be Qt::Vertical (the default) or Qt::Horizontal.
+	 */
+	Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation )
 	public:
+		/**
+		 * Constructs a new volume slider with a \p parent.
+		 */
 		VolumeSlider( QWidget* parent = 0 );
 		~VolumeSlider();
 
-		/**
-		 * defaults to 1.0
-		 */
 		float maximumVolume() const;
 		bool isIconVisible() const;
+		Qt::Orientation orientation() const;
 
 	public Q_SLOTS:
 		void setMaximumVolume( float );
 		void setIconVisible( bool );
 		void setOrientation( Qt::Orientation );
+
+		/**
+		 * Sets the audio output object to be controlled by this slider.
+		 */
 		void setAudioOutput( AudioOutput* );
 
 	private Q_SLOTS:

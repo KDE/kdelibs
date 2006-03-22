@@ -41,8 +41,16 @@ class PHONON_EXPORT SeekSlider : public QWidget
 {
 	Q_OBJECT
 	Q_DECLARE_PRIVATE( SeekSlider )
+	/**
+	 * This property holds whether the icon next to the slider is visible.
+	 *
+	 * By default the icon is visible.
+	 */
 	Q_PROPERTY( bool iconVisible READ isIconVisible WRITE setIconVisible )
 	public:
+		/**
+		 * Constructs a new seek slider with a \p parent.
+		 */
 		SeekSlider( QWidget* parent = 0 );
 		~SeekSlider();
 
@@ -50,6 +58,10 @@ class PHONON_EXPORT SeekSlider : public QWidget
 
 	public Q_SLOTS:
 		void setIconVisible( bool );
+
+		/**
+		 * Sets the media producer object to be controlled by this slider.
+		 */
 		void setMediaProducer( AbstractMediaProducer* );
 
 	private Q_SLOTS:

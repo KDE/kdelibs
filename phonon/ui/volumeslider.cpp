@@ -83,6 +83,11 @@ void VolumeSlider::setMaximumVolume( float volume )
 	setWhatsThis( i18n( "Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%" ).arg( max ) );
 }
 
+Qt::Orientation VolumeSlider::orientation() const
+{
+	return d->slider.orientation();
+}
+
 void VolumeSlider::setOrientation( Qt::Orientation o )
 {
 	d->slider.setOrientation( o );

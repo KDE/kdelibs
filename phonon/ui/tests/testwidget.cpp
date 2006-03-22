@@ -197,7 +197,7 @@ void TestWidget::loadFile( const QString & file )
 		vpath->addOutput( vout );
 
 		vout->setMinimumSize( 160, 120 );
-		vout->setFullscreen( false );
+		vout->setFullScreen( false );
 		vout->show();
 	}
 	stateChanged( m_media->state() );

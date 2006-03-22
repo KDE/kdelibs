@@ -42,6 +42,8 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
+static KStaticDeleter<Phonon::Factory> sd;
+
 namespace Phonon
 {
 class Factory::Private
@@ -117,8 +119,6 @@ class Factory::Private
 		QList<BasePrivate*> basePrivateList;
 };
 
-static ::KStaticDeleter<Factory> sd;
-
 Factory * Factory::m_self = 0;
 
 Factory * Factory::self()
@@ -126,7 +126,7 @@ Factory * Factory::self()
 	if( ! m_self )
 	{
 		m_self = new Factory();
-		sd.setObject( m_self, m_self );
+		::sd.setObject( m_self, m_self );
 	}
 	return m_self;
 }

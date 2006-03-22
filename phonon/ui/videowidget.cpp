@@ -22,6 +22,10 @@
 #include "factory.h"
 
 #include <phonon/ifaces/ui/videowidget.h>
+#include <klocale.h>
+#include <kiconloader.h>
+#include <QAction>
+#include <kdebug.h>
 
 namespace Phonon
 {
@@ -33,6 +37,7 @@ VideoWidget::VideoWidget( QWidget* parent )
 	, Phonon::AbstractVideoOutput( *new VideoWidgetPrivate( this ) )
 {
 	K_D( VideoWidget );
+	init();
 	d->createIface();
 }
 
@@ -40,6 +45,17 @@ VideoWidget::VideoWidget( VideoWidgetPrivate& d, QWidget* parent )
 	: QWidget( parent )
 	, Phonon::AbstractVideoOutput( d )
 {
+	init();
+}
+
+void VideoWidget::init()
+{
+	K_D( VideoWidget );
+	d->fullScreenAction = new QAction( SmallIcon( "window_fullscreen" ), i18n( "F&ull Screen Mode" ), this );
+	d->fullScreenAction->setShortcut( Qt::Key_F );
+	d->fullScreenAction->setCheckable( true );
+	d->fullScreenAction->setChecked( false );
+	connect( d->fullScreenAction, SIGNAL( triggered( bool ) ), SLOT( setFullScreen( bool ) ) );
 }
 
 Ifaces::VideoWidget* VideoWidget::iface()
@@ -59,25 +75,50 @@ void VideoWidgetPrivate::createIface()
 	q->setupIface();
 }
 
-bool VideoWidget::isFullscreen() const
+void VideoWidget::setFullScreen( bool newFullScreen )
 {
-	K_D( const VideoWidget );
-	return d->iface() ? d->iface()->isFullscreen() : d->fullscreen;
+	kDebug() << k_funcinfo << newFullScreen << endl;
+	K_D( VideoWidget );
+	// TODO: disable screensaver? or should we leave that responsibility to the
+	// application?
+	if( ! d->fullScreenWidget )
+		d->fullScreenWidget = new FullScreenVideoWidget( this );
+	QWidget* w = iface() ? qobject_cast<QWidget*>( d->iface()->qobject() ) : 0;
+	if( newFullScreen )
+	{
+		if( w )
+			w->setParent( d->fullScreenWidget );
+		else
+			d->fullScreenWidget->show();
+		hide();
+	}
+	else
+	{
+		show();
+		if( w )
+		{
+			w->setParent( this );
+			layout()->addWidget( w );
+		}
+		else
+			d->fullScreenWidget->hide();
+	}
+	// make sure the action is in the right state
+	d->fullScreenAction->setChecked( newFullScreen );
 }
 
-void VideoWidget::setFullscreen( bool newFullscreen )
+void VideoWidget::exitFullScreen()
 {
-	K_D( VideoWidget );
-	if( iface() )
-		d->iface()->setFullscreen( newFullscreen );
-	else
-		d->fullscreen = newFullscreen;
+	setFullScreen( false );
+}
+
+void VideoWidget::enterFullScreen()
+{
+	setFullScreen( true );
 }
 
 bool VideoWidgetPrivate::aboutToDeleteIface()
 {
-	if( iface() )
-		fullscreen = iface()->isFullscreen();
 	return AbstractVideoOutputPrivate::aboutToDeleteIface();
 }
 
@@ -88,10 +129,12 @@ void VideoWidget::setupIface()
 	AbstractVideoOutput::setupIface();
 
 	QWidget* w = qobject_cast<QWidget*>( d->iface()->qobject() );
-	d->layout.addWidget( w );
-	d->iface()->setFullscreen( d->fullscreen );
 	if( w )
+	{
+		w->addAction( d->fullScreenAction );
+		d->layout.addWidget( w );
 		setSizePolicy( w->sizePolicy() );
+	}
 }
 
 /*

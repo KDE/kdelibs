@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -31,64 +31,73 @@ class AbstractVideoOutput;
 
 namespace Ui
 {
-namespace Ifaces
-{
-	class VideoWidget;
-}
+	namespace Ifaces
+	{
+		class VideoWidget;
+	}
 	class VideoWidgetPrivate;
 	/**
-	 * @short Widget to display video.
+	 * \short Widget to display video.
 	 *
 	 * This widget shows the video signal and provides an object that can be
 	 * plugged into the VideoPath.
 	 *
-	 * @code
+	 * \code
 	 * VideoWidget* vwidget = new VideoWidget( this );
 	 * videoPath->addOutput( vwidget );
-	 * @endcode
+	 * \endcode
 	 *
-	 * @author Matthias Kretz <kretz@kde.org>
+	 * \author Matthias Kretz <kretz@kde.org>
 	 */
 	class PHONON_EXPORT VideoWidget : public QWidget, public Phonon::AbstractVideoOutput
 	{
 		K_DECLARE_PRIVATE( VideoWidget )
 		Q_OBJECT
-		Q_PROPERTY( bool fullscreen READ isFullscreen WRITE setFullscreen )
+		/**
+		 * This property holds whether the video is shown using the complete
+		 * screen.
+		 *
+		 * The property differs from QWidget::fullScreen in that it is
+		 * writeable.
+		 *
+		 * By default the widget is not shown in fullScreen.
+		 */
+		Q_PROPERTY( bool fullScreen READ isFullScreen WRITE setFullScreen )
 		public:
 			/**
-			 * Standard QWidget constructor.
-			 *
-			 * @param parent The parent widget.
+			 * Constructs a new video widget with a \p parent.
 			 */
 			VideoWidget( QWidget* parent = 0 );
 
-			/**
-			 * Tells whether the VideoWidget should show the video using the
-			 * full screen.
-			 *
-			 * @return @c true if the video is shown fullscreen
-			 * @return @c false if the video is shown in a window
-			 *
-			 * @see setFullscreen
-			 */
-			bool isFullscreen() const;
-
 		public Q_SLOTS:
+			void setFullScreen( bool fullscreen );
+
 			/**
-			 * Sets whether the video should be shown using the full screen.
-			 *
-			 * @param fullscreen If @c true show video fullscreen, if @false
-			 * show in a window.
-			 *
-			 * @see isFullscreen
+			 * Convenience slot, calling setFullScreen( false )
 			 */
-			void setFullscreen( bool fullscreen );
+			void exitFullScreen();
+
+			/**
+			 * Convenience slot, calling setFullScreen( true )
+			 */
+			void enterFullScreen();
 
 		protected:
+			/**
+			 * \internal
+			 *
+			 * Constructs a new video widget with private data pointer \p d and
+			 * a \p parent.
+			 */
 			VideoWidget( VideoWidgetPrivate& d, QWidget* parent );
+			
+			/**
+			 * \copydoc Phonon::AbstractVideoOutput::setupIface
+			 */
 			void setupIface();
 
 		private:
+			void init();
 			Ui::Ifaces::VideoWidget* iface();
 	};
 }} //namespace Phonon::Ui
