@@ -1,0 +1,93 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 2006 Aaron Seigo <aseigo@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
+
+#ifndef KDELIBS_KAUTOSTART_H
+#define KDELIBS_KAUTOSTART_H
+
+#include <QObject>
+
+#include "kdelibs_export.h"
+
+/**
+ * KNotificationRestrictions provides a simple mechanism to avoid disruptions
+ * during full screen presentations or other use cases where the screensaver or
+ * desktop notifcations are innapropriate.
+ *
+ * Using KNotificationRestrictions is quite straightforward: create an instance
+ * of KNotificationRestrictions, passing in the set of or'd flags representing
+ * the services that should be prevented from interupting the user. When done
+ * (for instance when the presentation is complete) simply delete the
+ * KNotificationRestrictions object.
+ *
+ * Example: to ensure the screensaver does not turn on during a presentation
+ *
+ * void MyApp::doPresentation()
+ * {
+ *   KNotificationRestrictions restrict(KNotificationRestrictions::ScreenSaver);
+ *   // show presentation
+ * }
+ */
+class KDE_EXPORT KNotificationRestrictions : public QObject
+{
+    Q_OBJECT
+
+    public:
+        /**
+         * @enum
+         * @value NoServices the baseline "don't disable anything" value
+         * @value ScreenSaver causes the screensaver to be prevented from
+         *        automatically turning on
+         * @value MessagingPopups (NOT IMPLEMENTED YET) causes instant messaging
+         *        and email notifications to not appear
+         * @value Notificiations (NOT IMPLEMENTED YET) causes non-critical
+         *        desktop messages to be supressed
+         * @value CriticalNotifications (NOT IMPLEMENTED YET) causes all desktop
+         *        notifications, including critical ones such as battery low
+         *        warnings to be surpressed
+         */
+        enum Service
+        {
+            NoServices = 0,
+            ScreenSaver = 1,
+            MessagingPopups = 2,
+            Notifications = 4,
+            CriticalNotifications = 8,
+            NonCriticalServices = ScreenSaver |
+                                  MessagingPopups |
+                                  Notifications,
+            AllServices = NonCriticalServices | CriticalNotifications
+        };
+        Q_DECLARE_FLAGS(Services, Service);
+
+        KNotificationRestrictions(Services control = NonCriticalServices,
+                                  QObject* parent = 0);
+        virtual ~KNotificationRestrictions();
+
+    private slots:
+        void screensaverFakeKeyEvent();
+
+    private:
+        void startScreenSaverPrevention();
+        void stopScreenSaverPrevention();
+
+        class Private;
+        Private *d;
+};
+
+#endif
