@@ -1,19 +1,19 @@
 /*
  * This file is part of KDE.
- * 
+ *
  * Copyright (c) 2001,2002,2003 Cornelius Schumacher <schumacher@kde.org>
  * Copyright (c) 2003 Waldo Bastian <bastian@kde.org>
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -38,7 +38,7 @@
    * @short Class for storing a preferences setting
    * @author Cornelius Schumacher
    * @see KConfigSkeleton
-   * 
+   *
    * This class represents one preferences setting as used by @ref KConfigSkeleton.
    * Subclasses of KConfigSkeletonItem implement storage functions for a certain type of
    * setting. Normally you don't have to use this class directly. Use the special
@@ -54,7 +54,7 @@
 
     /**
      * Constructor.
-     * 
+     *
      * @param _group Config file group.
      * @param _key Config file key.
      */
@@ -93,7 +93,7 @@
     {
       mKey = _key;
     }
-    
+
     /**
      * Return config file key.
      */
@@ -125,7 +125,7 @@
     {
       mLabel = l;
     }
-    
+
     /**
       Return label of item. See setLabel().
     */
@@ -135,13 +135,13 @@
     }
 
     /**
-      Set WhatsThis description og item.
+      Set WhatsThis description of item.
     */
     void setWhatsThis( const QString &w )
     {
       mWhatsThis = w;
     }
-    
+
     /**
       Return WhatsThis description of item. See setWhatsThis().
     */
@@ -153,7 +153,6 @@
     /**
      * This function is called by @ref KConfigSkeleton to read the value for this setting
      * from a config file.
-     * value.
      */
     virtual void readConfig(KConfig *) = 0;
 
@@ -172,7 +171,7 @@
      * Set item to @p p
      */
     virtual void setProperty(const QVariant &p) = 0;
-    
+
     /**
      * Return item as property
      */
@@ -229,6 +228,10 @@
 template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonItem
   {
   public:
+    /** @copydoc KConfigSkeletonItem(const QString&, const QString&)
+         @param reference The initial value to hold in the item
+         @param defaultValue The default value for the item
+     */
     KConfigSkeletonGenericItem(const QString & _group, const QString & _key, T & reference,
                 T defaultValue)
       : KConfigSkeletonItem(_group, _key), mReference(reference),
@@ -268,11 +271,15 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
       mDefault = v;
     }
 
+    /**
+      Set the value for this item to the default value
+     */
     virtual void setDefault()
     {
       mReference = mDefault;
     }
 
+    /** @copydoc KConfigSkeletonItem::writeConfig(KConfig *) */
     virtual void writeConfig(KConfig * config)
     {
       if ( mReference != mLoadedValue ) // Is this needed?
@@ -285,6 +292,7 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
       }
     }
 
+    /** @copydoc KConfigSkeletonItem::readDefault(KConfig*) */
     void readDefault(KConfig * config)
     {
       config->setReadDefaults(true);
@@ -293,6 +301,7 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
       mDefault = mReference;
     }
 
+    /** @copydoc KConfigSkeletonItem::swapDefault() */
     void swapDefault()
     {
       T tmp = mReference;
@@ -310,15 +319,15 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
    * @short Class for handling preferences settings for an application.
    * @author Cornelius Schumacher
    * @see KConfigSkeletonItem
-   * 
+   *
    * This class provides an interface to preferences settings. Preferences items
    * can be registered by the addItem() function corresponding to the data type of
    * the seetting. KConfigSkeleton then handles reading and writing of config files and
    * setting of default values.
-   * 
+   *
    * Normally you will subclass KConfigSkeleton, add data members for the preferences
    * settings and register the members in the constructor of the subclass.
-   * 
+   *
    * Example:
    * \code
    * class MyPrefs : public KConfigSkeleton
@@ -329,32 +338,32 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
    *       setCurrentGroup("MyGroup");
    *       addItemBool("MySetting1",mMyBool,false);
    *       addItemColor("MySetting2",mMyColor,QColor(1,2,3));
-   * 
+   *
    *       setCurrentGroup("MyOtherGroup");
    *       addItemFont("MySetting3",mMyFont,QFont("helvetica",12));
    *     }
-   * 
+   *
    *     bool mMyBool;
    *     QColor mMyColor;
    *     QFont mMyFont;
    * }
    * \endcode
-   * 
+   *
    * It might be convenient in many cases to make this subclass of KConfigSkeleton a
    * singleton for global access from all over the application without passing
    * references to the KConfigSkeleton object around.
-   * 
+   *
    * You can write the data to the configuration file by calling @ref writeConfig()
    * and read the data from the configuration file by calling @ref readConfig().
    * If you want to watch for config changes, use @ref configChanged() signal.
-   * 
+   *
    * If you have items, which are not covered by the existing addItem() functions
    * you can add customized code for reading, writing and default setting by
    * implementing the functions @ref usrUseDefaults(), @ref usrReadConfig() and
    * @ref usrWriteConfig().
-   * 
+   *
    * Internally preferences settings are stored in instances of subclasses of
-   * @ref KConfigSkeletonItem. You can also add KConfigSkeletonItem subclasses 
+   * @ref KConfigSkeletonItem. You can also add KConfigSkeletonItem subclasses
    * for your own types and call the generic @ref addItem() to register them.
    *
    * In many cases you don't have to write the specific KConfigSkeleton
@@ -373,14 +382,38 @@ public:
   public:
     enum Type { Normal, Password, Path };
 
-    ItemString(const QString & group, const QString & key,
+    /** @enum Type
+        The type of string that is held in this item
+
+        @var ItemString::Type ItemString::Normal
+        A normal string
+
+        @var ItemString::Type ItemString::Password
+        A password string
+
+        @var ItemString::Type ItemString::Path
+        A path to a file or directory
+     */
+
+
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem
+        @param type The type of string held by the item
+     */
+    ItemString(const QString & _group, const QString & _key,
                QString & reference,
                const QString & defaultValue = QLatin1String(""), // NOT QString() !!
                Type type = Normal);
 
+    /** @copydoc KConfigSkeletonItem::writeConfig(KConfig*) */
     void writeConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
 
   private:
@@ -393,7 +426,8 @@ public:
   class KDECORE_EXPORT ItemPassword:public ItemString
   {
   public:
-    ItemPassword(const QString & group, const QString & key,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemPassword(const QString & _group, const QString & _key,
                QString & reference,
                const QString & defaultValue = QLatin1String("")); // NOT QString() !!
   };
@@ -404,7 +438,8 @@ public:
   class KDECORE_EXPORT ItemPath:public ItemString
   {
   public:
-    ItemPath(const QString & group, const QString & key,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemPath(const QString & _group, const QString & _key,
              QString & reference,
              const QString & defaultValue = QString());
   };
@@ -416,7 +451,8 @@ public:
   class KDECORE_EXPORT ItemProperty:public KConfigSkeletonGenericItem < QVariant >
   {
   public:
-    ItemProperty(const QString & group, const QString & key,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemProperty(const QString & _group, const QString & _key,
                  QVariant & reference, QVariant defaultValue = 0);
 
     void readConfig(KConfig * config);
@@ -431,11 +467,17 @@ public:
   class KDECORE_EXPORT ItemBool:public KConfigSkeletonGenericItem < bool >
   {
   public:
-    ItemBool(const QString & group, const QString & key, bool & reference,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemBool(const QString & _group, const QString & _key, bool & reference,
              bool defaultValue = true);
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
 
@@ -446,19 +488,36 @@ public:
   class KDECORE_EXPORT ItemInt:public KConfigSkeletonGenericItem < qint32 >
   {
   public:
-    ItemInt(const QString & group, const QString & key, qint32 &reference,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemInt(const QString & _group, const QString & _key, qint32 &reference,
             qint32 defaultValue = 0);
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
+
+    /** Get the minimum value that is allowed to be stored in this item */
     QVariant minValue() const;
+
+    /** Get the maximum value this is allowed to be stored in this item */
     QVariant maxValue() const;
 
+    /** Set the minimum value for the item
+        @sa minValue()
+     */
     void setMinValue(qint32);
+
+    /** Set the maximum value for the item
+        @sa maxValue
+     */
     void setMaxValue(qint32);
-    
-  private:  
+
+  private:
     bool mHasMin : 1;
     bool mHasMax : 1;
     qint32 mMin;
@@ -471,20 +530,32 @@ public:
   class KDECORE_EXPORT ItemLongLong:public KConfigSkeletonGenericItem < qint64 >
   {
   public:
-    ItemLongLong(const QString & group, const QString & key, qint64 &reference,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemLongLong(const QString & _group, const QString & _key, qint64 &reference,
             qint64 defaultValue = 0);
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
 
+    /** @copydoc ItemInt::minValue() */
     QVariant minValue() const;
+
+    /** @copydoc ItemInt::maxValue() */
     QVariant maxValue() const;
 
+    /** @copydoc ItemInt::setMinValue(qint32) */
     void setMinValue(qint64);
+
+    /** @copydoc ItemInt::setMaxValue(qint32) */
     void setMaxValue(qint64);
-    
-  private:  
+
+  private:
     bool mHasMin : 1;
     bool mHasMax : 1;
     qint64 mMin;
@@ -505,12 +576,18 @@ public:
       QString whatsThis;
     };
 
-    ItemEnum(const QString & group, const QString & key, qint32 &reference,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem
+        @param choices The list of enums that can be stored in this item
+      */
+    ItemEnum(const QString & _group, const QString & _key, qint32 &reference,
              const QList<Choice> &choices, qint32 defaultValue = 0);
 
     QList<Choice> choices() const;
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::writeConfig(KConfig*) */
     void writeConfig(KConfig * config);
 
   private:
@@ -524,19 +601,32 @@ public:
   class KDECORE_EXPORT ItemUInt:public KConfigSkeletonGenericItem < quint32 >
   {
   public:
-    ItemUInt(const QString & group, const QString & key,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemUInt(const QString & _group, const QString & _key,
              quint32 &reference, quint32 defaultValue = 0);
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
+
+    /** @copydoc ItemInt::minValue() */
     QVariant minValue() const;
+
+    /** @copydoc ItemInt::maxValue() */
     QVariant maxValue() const;
 
+    /** @copydoc ItemInt::setMinValue(qint32) */
     void setMinValue(quint32);
+
+    /** @copydoc ItemInt::setMaxValue(qint32) */
     void setMaxValue(quint32);
-    
-  private:  
+
+  private:
     bool mHasMin : 1;
     bool mHasMax : 1;
     quint32 mMin;
@@ -549,20 +639,32 @@ public:
   class KDECORE_EXPORT ItemULongLong:public KConfigSkeletonGenericItem < quint64 >
   {
   public:
-    ItemULongLong(const QString & group, const QString & key, quint64 &reference,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemULongLong(const QString & _group, const QString & _key, quint64 &reference,
             quint64 defaultValue = 0);
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
 
+    /** @copydoc ItemInt::minValue() */
     QVariant minValue() const;
+
+    /** @copydoc ItemInt::maxValue() */
     QVariant maxValue() const;
 
+    /** @copydoc ItemInt::setMinValue(qint32) */
     void setMinValue(quint64);
+
+    /** @copydoc ItemInt::setMaxValue(qint32) */
     void setMaxValue(quint64);
-    
-  private:  
+
+  private:
     bool mHasMin : 1;
     bool mHasMax : 1;
     quint64 mMin;
@@ -576,19 +678,32 @@ public:
   class KDECORE_EXPORT ItemDouble:public KConfigSkeletonGenericItem < double >
   {
   public:
-    ItemDouble(const QString & group, const QString & key,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemDouble(const QString & _group, const QString & _key,
                double &reference, double defaultValue = 0);
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
+
+    /** @copydoc ItemInt::minValue() */
     QVariant minValue() const;
+
+    /** @copydoc ItemInt::maxValue() */
     QVariant maxValue() const;
 
+    /** @copydoc ItemInt::setMinValue() */
     void setMinValue(double);
+
+    /** @copydoc ItemInt::setMaxValue() */
     void setMaxValue(double);
-    
-  private:  
+
+  private:
     bool mHasMin : 1;
     bool mHasMax : 1;
     double mMin;
@@ -602,7 +717,8 @@ public:
   class KDECORE_EXPORT ItemColor:public KConfigSkeletonGenericItem < QColor >
   {
   public:
-    ItemColor(const QString & group, const QString & key,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemColor(const QString & _group, const QString & _key,
               QColor & reference,
               const QColor & defaultValue = QColor(128, 128, 128));
 
@@ -618,7 +734,8 @@ public:
   class KDECORE_EXPORT ItemFont:public KConfigSkeletonGenericItem < QFont >
   {
   public:
-    ItemFont(const QString & group, const QString & key, QFont & reference,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemFont(const QString & _group, const QString & _key, QFont & reference,
              const QFont & defaultValue = KGlobalSettings::generalFont());
 
     void readConfig(KConfig * config);
@@ -633,7 +750,8 @@ public:
   class KDECORE_EXPORT ItemRect:public KConfigSkeletonGenericItem < QRect >
   {
   public:
-    ItemRect(const QString & group, const QString & key, QRect & reference,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemRect(const QString & _group, const QString & _key, QRect & reference,
              const QRect & defaultValue = QRect());
 
     void readConfig(KConfig * config);
@@ -648,7 +766,8 @@ public:
   class KDECORE_EXPORT ItemPoint:public KConfigSkeletonGenericItem < QPoint >
   {
   public:
-    ItemPoint(const QString & group, const QString & key, QPoint & reference,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemPoint(const QString & _group, const QString & _key, QPoint & reference,
               const QPoint & defaultValue = QPoint());
 
     void readConfig(KConfig * config);
@@ -738,7 +857,7 @@ public:
 public:
   /**
    * Constructor.
-   * 
+   *
    * @param configname name of config file. If no name is given, the default
    * config file as returned by kapp()->config() is used.
    */
@@ -746,7 +865,7 @@ public:
 
   /**
    * Constructor.
-   * 
+   *
    * @param config configuration object to use.
    */
   KConfigSkeleton(KSharedConfig::Ptr config);
@@ -781,9 +900,9 @@ public:
   void setCurrentGroup(const QString & group);
 
   /**
-   * Returns the current group used for addItem() calls. 
+   * Returns the current group used for addItem() calls.
    */
-  QString currentGroup() const 
+  QString currentGroup() const
   {
     return mCurrentGroup;
   }
@@ -792,17 +911,17 @@ public:
    * Register a custom @ref KConfigSkeletonItem with a given name. If the name
    * parameter is null, take the name from KConfigSkeletonItem::key().
    * Note that all names must be unique but that multiple entries can have
-   * the same key if they reside in different groups. 
+   * the same key if they reside in different groups.
    */
   void addItem(KConfigSkeletonItem *, const QString & name = QString() );
 
   /**
    * Register an item of type QString.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
-   * @param defaultValue Default value, which is used when the config file 
+   * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
@@ -812,10 +931,10 @@ public:
                             const QString & key = QString());
 
   /**
-   * Register a password item of type QString. The string value is written 
-   * encrypted to the config file. Note that the current encryption scheme 
+   * Register a password item of type QString. The string value is written
+   * encrypted to the config file. Note that the current encryption scheme
    * is very weak.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -831,8 +950,8 @@ public:
   /**
    * Register a path item of type QString. The string value is interpreted
    * as a path. This means, dollar expension is activated for this value, so
-   * that e.g. $HOME gets expanded. 
-   * 
+   * that e.g. $HOME gets expanded.
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -849,7 +968,7 @@ public:
    * Register a property item of type QVariant. Note that only the following
    * QVariant types are allowed: String, StringList, Font, Point, Rect, Size,
    * Color, Int, UInt, Bool, Double, DateTime and Date.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -863,7 +982,7 @@ public:
                                 const QString & key = QString());
   /**
    * Register an item of type bool.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -878,7 +997,7 @@ public:
 
   /**
    * Register an item of type qint32.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -892,7 +1011,7 @@ public:
 
   /**
    * Register an item of type quint32.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -907,7 +1026,7 @@ public:
 
   /**
    * Register an item of type qint64.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -927,7 +1046,7 @@ public:
 
   /**
    * Register an item of type quint64
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -947,7 +1066,7 @@ public:
 
   /**
    * Register an item of type double.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -962,7 +1081,7 @@ public:
 
   /**
    * Register an item of type QColor.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -977,7 +1096,7 @@ public:
 
   /**
    * Register an item of type QFont.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -993,7 +1112,7 @@ public:
 
   /**
    * Register an item of type QRect.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -1008,7 +1127,7 @@ public:
 
   /**
    * Register an item of type QPoint.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -1023,7 +1142,7 @@ public:
 
   /**
    * Register an item of type QSize.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -1038,7 +1157,7 @@ public:
 
   /**
    * Register an item of type QDateTime.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -1053,7 +1172,7 @@ public:
 
   /**
    * Register an item of type QStringList.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -1068,7 +1187,7 @@ public:
 
   /**
    * Register an item of type QList<int>.
-   * 
+   *
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
@@ -1159,7 +1278,7 @@ private:
 
   KConfigSkeletonItem::List mItems;
   KConfigSkeletonItem::Dict mItemDict;
-  
+
   bool mUseDefaults;
 
   class Private;
