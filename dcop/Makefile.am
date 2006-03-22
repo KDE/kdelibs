@@ -28,7 +28,7 @@ INCLUDES = $(all_includes)
 KDE_CXXFLAGS = -UQT3_SUPPORT
 
 bin_PROGRAMS = dcopserver_shutdown
-check_PROGRAMS = testdcop testdcopc
+check_PROGRAMS = testdcop
  # dcop_deadlock_test
 
 lib_LTLIBRARIES  = libDCOP.la 
@@ -60,9 +60,6 @@ testdcop_LDADD = libDCOP.la
 #dcop_deadlock_test_SOURCES = dcop_deadlock_test.cpp
 #dcop_deadlock_test_LDADD = ../kdecore/libkdecore.la
 
-testdcopc_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-testdcopc_SOURCES = testdcopc.c dcopc.c
-testdcopc_LDADD =  KDE-ICE/libkICE.la $(LIBSM)
 
 EXTRA_DIST = HOWTO ICE Mainpage.dox
 
