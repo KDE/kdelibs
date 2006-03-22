@@ -31,12 +31,12 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	kxerrorhandlertest startserviceby kglobaltest ktimezonestest \
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest klibloadertest \
 	kcompletiontest klockfiletest ktempdirtest ksharedptrtest kfiltertest \
-	kdatetimetest ksavefiletest knotificationrestrictions
+	kdatetimetest ksavefiletest kautostarttest knotificationrestrictionstest
 
 # TODO kurltest4 when it works
 
 # List of tests to run automatically from "make check"
-TESTS = kcompletiontest kautostart\
+TESTS = kcompletiontest kautostarttest \
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest \
 	kstringhandlertest krfcdatetest kcalendartest klibloadertest
 
@@ -100,5 +100,5 @@ ksharedptrtest_SOURCES = ksharedptrtest.cpp
 kfiltertest_SOURCES = kfiltertest.cpp
 kdatetimetest_SOURCES = kdatetimetest.cpp
 ksavefiletest_SOURCES = ksavefiletest.cpp
-knotificationrestrictions_SOURCES = knotificationrestrictionstest.cpp
-kautostart_SOURCES = kautostart.cpp
+kautostarttest_SOURCES = kautostarttest.cpp
+knotificationrestrictionstest_SOURCES = knotificationrestrictionstest.cpp
