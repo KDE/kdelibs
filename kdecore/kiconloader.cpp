@@ -750,15 +750,17 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
 	// Use the extension as the format. Works for XPM and PNG, but not for SVG
 	QString ext = icon.path.right(3).toUpper();
+#ifdef HAVE_LIBAGG
 	if(ext != "SVG" && ext != "VGZ")
 	{
+#endif
 	    img = new QImage(icon.path, ext.toLatin1());
 	    if (img->isNull()) {
                 delete img;
 		return pix;
             }
-	}
 #ifdef HAVE_LIBAGG
+	}
 	else
 	{
 	    // Special stuff for SVG icons
