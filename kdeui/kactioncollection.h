@@ -48,21 +48,7 @@ class QActionGroup;
  * specified widget(s).
  *
  * Additionally, KActionCollection provides several convenience functions for locating
- * named actions - action(const char* name), , actions grouped by QActionGroup
- *
- * If you set the tooltips on KActions and want the tooltip to show in statusbar
- * (recommended) then you will need to connect a couple of the actionclass signals
- * to the toolbar.
- * The easiest way of doing this is in your KMainWindow subclass, where you create
- * a statusbar, do:
- *
- * \code
- * actionCollection()->setHighlightingEnabled(true);
- * connect(actionCollection(), SIGNAL( actionStatusText( const QString & ) ),
- *           statusBar(), SLOT( message( const QString & ) ) );
- * connect(actionCollection(), SIGNAL( clearStatusText() ),
- *           statusBar(), SLOT( clear() ) );
- * \endcode
+ * named actions, and actions grouped by QActionGroup.
  */
 class KDEUI_EXPORT KActionCollection : public QObject
 {

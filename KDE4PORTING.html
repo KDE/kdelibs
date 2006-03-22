@@ -762,7 +762,7 @@ if needed (see the KURLDrag section)</li>
 <li>Ported to QToolBar</li>
 <li>IconText, iconText(), setIconText() replaced by QToolBar::toolButtonStyle() et. al.</li>
 <li>BarPosition, barPos(), setBarPos() replaced by Qt::ToolBarArea settings in QMainWindow; Unmanaged, Floating, and Flat are no longer supported (use QDockWidget if you need floating toolbars)</li>
-<li>fullSize(), setFullSize() removed as now handled in QMainWindow - insert a tool bar break before and after the toolbar using QMainWindow::insertToolBarBreak() to have the toolbar take up all available horizontal space</li>
+<li>fullSize(), setFullSize() removed as now handled in QMainWindow - add or insert a tool bar break before (not needed for the first toolbar) and after the toolbar using QMainWindow::{add|insert}ToolBarBreak() to have the toolbar take up all available horizontal space</li>
 <li>iconSize(), setIconSize() now a QToolBar property, and a QSize instead of an int - convenience function setIconDimensions() takes an int instead</li>
 <li>insert*() and all associated item-manipulation methods removed - all done through actions now. Compatibility layer possible however so far I haven't found the functions to be used much in KDE programs (mostly it's taken care of by xmlgui instead)</li>
 <li>flat(), setFlat() replaced by movable(), setMovable() (old "flat" concept equivalent to not movable)</li>
