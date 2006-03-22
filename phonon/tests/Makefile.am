@@ -39,7 +39,5 @@ audiodataoutputtest_SOURCES = audiodataoutputtest.cpp
 
 TESTS = audiopathtest \
 		backendcapabilitiestest \
-		audiooutputtest \
-		audiodataoutputtest \
-		mediaobjecttest
+		audiooutputtest
 		#videopathtest

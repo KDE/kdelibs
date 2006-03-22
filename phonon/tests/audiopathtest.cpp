@@ -31,15 +31,15 @@ void AudioPathTest::initTestCase()
 {
 	qRegisterMetaType<Phonon::State>( "Phonon::State" );
 
-	m_url.setUrl( getenv( "PHONON_TESTURL" ) );
-	if( !m_url.isValid() )
-		QFAIL( "You need to set PHONON_TESTURL to a valid URL" );
+	//m_url.setUrl( getenv( "PHONON_TESTURL" ) );
+	//if( !m_url.isValid() )
+		//QFAIL( "You need to set PHONON_TESTURL to a valid URL" );
 
-	m_media = new MediaObject( this );
+	//m_media = new MediaObject( this );
 	m_path = new AudioPath( this );
 	m_output = new AudioOutput( this );
 
-	m_media->setUrl( m_url );
+	//m_media->setUrl( m_url );
 }
 
 void AudioPathTest::checkForDefaults()
@@ -92,7 +92,7 @@ void AudioPathTest::cleanupTestCase()
 {
 	delete m_output;
 	delete m_path;
-	delete m_media;
+	//delete m_media;
 }
 
 QTEST_KDEMAIN( AudioPathTest, NoGUI )
