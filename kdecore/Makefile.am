@@ -116,7 +116,7 @@ libkdecore_la_SOURCES = kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
 
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
-libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(AGG_LIBS) $(LIB_IDN) network/libkdecorenetwork.la $(LIBZ) $(LIBBZ2) $(LIB_QT) $(LIB_QT3SUPPORT) @LTLIBINTL@ # ../kdefx/libkdefx.la
+libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIB_XTST) $(LIBRESOLV) $(LIBUTIL) $(AGG_LIBS) $(LIB_IDN) network/libkdecorenetwork.la $(LIBZ) $(LIBBZ2) $(LIB_QT) $(LIB_QT3SUPPORT) @LTLIBINTL@ # ../kdefx/libkdefx.la
 libkdecore_la_NMCHECK = $(srcdir)/libkdecore.nmcheck
 libkdecore_la_NMCHECKWEAK = $(srcdir)/libkdecore_weak.nmcheck $(srcdir)/libqt-mt_weak.nmcheck \
 	$(top_srcdir)/dcop/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/standard_weak.nmcheck
