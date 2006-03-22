@@ -55,8 +55,8 @@
 	* - <a href="kutils/html/index.html"><b>kutils</b></a>
         *   (<a href="kutils/html/classes.html">classes</a>)\n
 	*   <i>High-level utils, like search/replace support.</i>
-	* - <a href="arts/html/index.html"><b>arts</b></a>
-        *   (<a href="arts/html/classes.html">classes</a>)\n
+	* - <a href="phonon/html/namespacePhonon.html"><b>Phonon</b></a>
+        *   (<a href="phonon/html/classes.html">classes</a>)\n
 	*   <i>KDE bindings for arts including knotify.</i>
 	* - <a href="knewstuff/html/index.html"><b>knewstuff</b></a>
         *   (<a href="knewstuff/html/classes.html">classes</a>)\n
