@@ -81,7 +81,7 @@ class KDE_EXPORT KAutostart : public QObject
             NoConditions = 0,
             CheckCommand = 1
         };
-        Q_DECLARE_FLAGS(Conditions, Condition);
+        Q_DECLARE_FLAGS(Conditions, Condition)
 
         /**
          * Enumerates the various autostart phases that occur during start-up.

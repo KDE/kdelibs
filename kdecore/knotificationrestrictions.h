@@ -73,7 +73,7 @@ class KDE_EXPORT KNotificationRestrictions : public QObject
                                   Notifications,
             AllServices = NonCriticalServices | CriticalNotifications
         };
-        Q_DECLARE_FLAGS(Services, Service);
+        Q_DECLARE_FLAGS(Services, Service)
 
         KNotificationRestrictions(Services control = NonCriticalServices,
                                   QObject* parent = 0);
