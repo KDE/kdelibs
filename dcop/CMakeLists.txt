@@ -65,14 +65,7 @@ if(KDE4_BUILD_TESTS)
    target_link_libraries(testdcop  ${QT_QTCORE_LIBRARY} DCOP )
    
    
-   ########### next target ###############
    
-#   set(testdcopc_SRCS testdcopc.c dcopc.c ${kICE_STAT_SRCS} )
-   
-#   kde4_add_executable(testdcopc ${testdcopc_SRCS})
-   
-#   target_link_libraries(testdcopc  ${QT_QTCORE_LIBRARY} DCOP)
-
 endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
