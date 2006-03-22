@@ -34,7 +34,7 @@ namespace Ifaces
 }
 namespace Fake
 {
-	class PHONON_EXPORT Backend : public Ui::Ifaces::Backend
+	class PHONON_FAKEUI_EXPORT Backend : public Ui::Ifaces::Backend
 	{
 		Q_OBJECT
 		public:

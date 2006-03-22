@@ -47,7 +47,7 @@ namespace Fake
 {
 	class AudioOutput;
 
-	class PHONON_EXPORT Backend : public Ifaces::Backend
+	class PHONON_FAKE_EXPORT Backend : public Ifaces::Backend
 	{
 		Q_OBJECT
 		public:

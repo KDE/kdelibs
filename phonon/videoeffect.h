@@ -33,7 +33,7 @@ namespace Phonon
 		class VideoEffect;
 	}
 
-	class PHONON_EXPORT VideoEffect : public QObject, public Base
+	class PHONONCORE_EXPORT VideoEffect : public QObject, public Base
 	{
 		friend class VideoPath;
 		friend class VideoPathPrivate;

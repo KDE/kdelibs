@@ -49,7 +49,7 @@ namespace Phonon
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONON_EXPORT AudioDataOutput : public AbstractAudioOutput
+	class PHONONCORE_EXPORT AudioDataOutput : public AbstractAudioOutput
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AudioDataOutput )

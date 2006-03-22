@@ -35,7 +35,7 @@ namespace Ui
  *
  * \author Matthias Kretz <kretz@kde.org>
  */
-class PHONON_EXPORT VolumeSlider : public QWidget
+class PHONONUI_EXPORT VolumeSlider : public QWidget
 {
 	Q_OBJECT
 	/**

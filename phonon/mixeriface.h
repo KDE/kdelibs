@@ -25,7 +25,7 @@
 
 namespace Phonon
 {
-class PHONON_EXPORT MixerIface : public DCOPObject
+class PHONONCORE_EXPORT MixerIface : public DCOPObject
 {
 	K_DCOP
 	k_dcop:

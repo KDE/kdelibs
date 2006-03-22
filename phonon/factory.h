@@ -59,7 +59,7 @@ namespace Phonon
  *
  * \author Matthias Kretz <kretz@kde.org>
  */
-class PHONON_EXPORT Factory : public QObject, public DCOPObject
+class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 {
 	friend void ::KStaticDeleter<Factory>::destructObject();
 	friend class Phonon::BasePrivate;

@@ -40,7 +40,7 @@ namespace Phonon
  * \see AudioCaptureSource
  * \see VideoCaptureSource
  */
-class PHONON_EXPORT NameDescriptionTuple
+class PHONONCORE_EXPORT NameDescriptionTuple
 {
 	Q_DECLARE_PRIVATE( NameDescriptionTuple )
 	public:

@@ -48,7 +48,7 @@ namespace Phonon
 	 * \author Matthias Kretz <kretz@kde.org>
 	 * \see Phonon::Ui::VolumeSlider
 	 */
-	class PHONON_EXPORT AudioOutput : public AbstractAudioOutput, public MixerIface
+	class PHONONCORE_EXPORT AudioOutput : public AbstractAudioOutput, public MixerIface
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AudioOutput )

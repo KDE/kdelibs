@@ -41,7 +41,7 @@ namespace Phonon
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONON_EXPORT AudioEffect : public QObject, public Base
+	class PHONONCORE_EXPORT AudioEffect : public QObject, public Base
 	{
 		friend class AudioPath;
 		friend class AudioPathPrivate;

@@ -74,7 +74,7 @@ namespace Ifaces
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONON_EXPORT Backend : public QObject
+	class PHONONIFACES_EXPORT Backend : public QObject
 	{
 		Q_OBJECT
 		public:

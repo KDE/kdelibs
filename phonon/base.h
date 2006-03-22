@@ -33,7 +33,7 @@ namespace Phonon
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONON_EXPORT Base
+	class PHONONCORE_EXPORT Base
 	{
 		K_DECLARE_PRIVATE( Base )
 		protected:

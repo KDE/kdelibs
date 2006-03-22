@@ -121,7 +121,7 @@ namespace Phonon
 	 * Returns a (translated) string to show to the user identifying the given
 	 * Category.
 	 */
-	QString PHONON_EXPORT categoryToString( Category c );
+	QString PHONONCORE_EXPORT categoryToString( Category c );
 } //namespace Phonon
 
 class kdbgstream;
@@ -129,7 +129,7 @@ class kdbgstream;
 /**
  * Implements needed operator to use Phonon::State with kDebug
  */
-inline PHONON_EXPORT kdbgstream& operator<<( kdbgstream & stream, const Phonon::State state )
+inline PHONONCORE_EXPORT kdbgstream& operator<<( kdbgstream & stream, const Phonon::State state )
 {
 	switch( state )
 	{

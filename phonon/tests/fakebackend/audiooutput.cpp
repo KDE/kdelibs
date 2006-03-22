@@ -21,7 +21,9 @@
 #include <QVector>
 #include <kdebug.h>
 
+#ifdef HAVE_SYS_SOUNDCARD_H
 #include <sys/soundcard.h>
+#endif
 #include <sys/ioctl.h>
 #include <iostream>
 
@@ -100,6 +102,7 @@ void AudioOutput::openDevice()
 	if( m_dsp.isOpen() )
 		return;
 
+#ifdef HAVE_SYS_SOUNDCARD_H
 	if( !m_dsp.open( QIODevice::WriteOnly ) )
 		kWarning() << "couldn't open /dev/dsp for writing" << endl;
 	else
@@ -112,6 +115,7 @@ void AudioOutput::openDevice()
 		ioctl( fd, SNDCTL_DSP_STEREO, &stereo );
 		ioctl( fd, SNDCTL_DSP_SPEED, &samplingRate );
 	}
+#endif
 }
 
 void AudioOutput::closeDevice()

@@ -37,7 +37,7 @@ class SeekSliderPrivate;
  *
  * \author Matthias Kretz <kretz@kde.org>
  */
-class PHONON_EXPORT SeekSlider : public QWidget
+class PHONONUI_EXPORT SeekSlider : public QWidget
 {
 	Q_OBJECT
 	Q_DECLARE_PRIVATE( SeekSlider )

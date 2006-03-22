@@ -29,7 +29,7 @@ class KUrl;
 namespace Phonon
 {
 
-class PHONON_EXPORT SimplePlayer : public QObject
+class PHONONCORE_EXPORT SimplePlayer : public QObject
 {
 	Q_OBJECT
 	public:

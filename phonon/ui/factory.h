@@ -48,7 +48,7 @@ namespace Ifaces
  * \author Matthias Kretz <kretz@kde.org>
  * \internal
  */
-class PHONON_EXPORT Factory : public QObject
+class PHONONUI_EXPORT Factory : public QObject
 {
 	Q_OBJECT
 	public:

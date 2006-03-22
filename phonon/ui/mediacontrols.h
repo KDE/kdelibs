@@ -42,7 +42,7 @@ namespace Ui
  *
  * \author Matthias Kretz <kretz@kde.org>
  */
-class PHONON_EXPORT MediaControls : public QWidget
+class PHONONUI_EXPORT MediaControls : public QWidget
 {
 	Q_OBJECT
 	/**

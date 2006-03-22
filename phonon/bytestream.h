@@ -71,7 +71,7 @@ namespace Phonon
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONON_EXPORT ByteStream : public AbstractMediaProducer
+	class PHONONCORE_EXPORT ByteStream : public AbstractMediaProducer
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( ByteStream )

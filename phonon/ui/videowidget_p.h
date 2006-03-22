@@ -35,6 +35,7 @@ namespace Ui
 {
 class FullScreenVideoWidget : public QWidget
 {
+	Q_OBJECT
 	public:
 		FullScreenVideoWidget( QWidget* parent );
 	protected:

@@ -49,7 +49,7 @@ namespace Ui
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONON_EXPORT VideoWidget : public QWidget, public Phonon::AbstractVideoOutput
+	class PHONONUI_EXPORT VideoWidget : public QWidget, public Phonon::AbstractVideoOutput
 	{
 		K_DECLARE_PRIVATE( VideoWidget )
 		Q_OBJECT

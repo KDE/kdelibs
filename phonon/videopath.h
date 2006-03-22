@@ -55,7 +55,7 @@ namespace Phonon
 	 * \author Matthias Kretz <kretz@kde.org>
 	 * \see AudioPath
 	 */
-	class PHONON_EXPORT VideoPath : public QObject, public Base, private BaseDestructionHandler
+	class PHONONCORE_EXPORT VideoPath : public QObject, public Base, private BaseDestructionHandler
 	{
 		friend class AbstractMediaProducer;
 		friend class AbstractMediaProducerPrivate;

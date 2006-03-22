@@ -31,7 +31,7 @@ namespace Phonon
 		class AbstractAudioOutput;
 	}
 
-	class PHONON_EXPORT AbstractAudioOutput : public QObject, public Base
+	class PHONONCORE_EXPORT AbstractAudioOutput : public QObject, public Base
 	{
 		friend class AudioPath;
 		friend class AudioPathPrivate;

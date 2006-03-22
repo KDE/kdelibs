@@ -51,7 +51,7 @@ namespace Phonon
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONON_EXPORT MediaObject : public AbstractMediaProducer
+	class PHONONCORE_EXPORT MediaObject : public AbstractMediaProducer
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( MediaObject )

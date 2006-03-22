@@ -49,7 +49,7 @@ namespace Phonon
 	 * @see BackendCapabilities::availableAudioSources
 	 * @see BackendCapabilities::availableVideoSources
 	 */
-	class PHONON_EXPORT AvCapture : public AbstractMediaProducer
+	class PHONONCORE_EXPORT AvCapture : public AbstractMediaProducer
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AvCapture )

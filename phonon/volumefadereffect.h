@@ -42,7 +42,7 @@ namespace Phonon
 	 * \author Matthias Kretz <kretz@kde.org>
 	 * \see AudioOutput::setVolume
 	 */
-	class PHONON_EXPORT VolumeFaderEffect : public AudioEffect
+	class PHONONCORE_EXPORT VolumeFaderEffect : public AudioEffect
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( VolumeFaderEffect )

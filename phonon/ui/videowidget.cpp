@@ -163,5 +163,6 @@ QSize VideoWidget::minimumSizeHint()
 }} //namespace Phonon::Ui
 
 #include "videowidget.moc"
+#include "videowidget_p.moc"
 
 // vim: sw=4 ts=4 tw=80 noet

@@ -28,7 +28,7 @@ namespace Phonon
 namespace Ifaces
 {
 	class BasePrivate;
-	class PHONON_EXPORT Base
+	class PHONONIFACES_EXPORT Base
 	{
 		Q_DECLARE_PRIVATE( Base )
 		public:

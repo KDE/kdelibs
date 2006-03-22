@@ -37,7 +37,7 @@ namespace Phonon
  *
  * \author Matthias Kretz <kretz@kde.org>
  */
-class PHONON_EXPORT BackendCapabilities : public QObject
+class PHONONCORE_EXPORT BackendCapabilities : public QObject
 {
 	friend void ::KStaticDeleter<BackendCapabilities>::destructObject();
 

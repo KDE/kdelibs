@@ -32,7 +32,7 @@ namespace Phonon
 		class AbstractVideoOutput;
 	}
 
-	class PHONON_EXPORT AbstractVideoOutput : public Base
+	class PHONONCORE_EXPORT AbstractVideoOutput : public Base
 	{
 		friend class VideoPath;
 		friend class VideoPathPrivate;
