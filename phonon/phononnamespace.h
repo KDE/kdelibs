@@ -34,6 +34,8 @@
  * Phonon::Ifaces.
  *
  * \author Matthias Kretz <kretz@kde.org>
+ *
+ * \see Phonon::Ui
  */
 namespace Phonon
 {
@@ -90,10 +92,28 @@ namespace Phonon
 	 */
 	enum Category
 	{
+		/**
+		 * No application should use that category - it's the default, though.
+		 */
 		UnspecifiedCategory,
+		/**
+		 * If the sounds produced are notifications (bing, beep and such) you
+		 * should use this category.
+		 */
 		NotificationCategory,
+		/**
+		 * If your application is a music player (like a jukebox or media player
+		 * playing an audio file).
+		 */
 		MusicCategory,
+		/**
+		 * If the sound is the audio channel of a video.
+		 */
 		VideoCategory,
+		/**
+		 * If your applications produces sounds from communication with somebody
+		 * else (VoIP, voice chat).
+		 */
 		CommunicationCategory
 	};
 
