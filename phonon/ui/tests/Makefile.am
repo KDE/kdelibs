@@ -27,4 +27,4 @@ seekslider_SOURCES = seekslider.cpp
 guitest_SOURCES = main.cpp testwidget.cpp
 mediaplayer_SOURCES = mediaplayer.cpp
 
-TESTS = seekslider
+#TESTS = seekslider
