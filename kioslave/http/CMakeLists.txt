@@ -2,7 +2,11 @@ kde4_header()
 
 project(kioslave-http)
 
-add_subdirectory( kcookiejar ) 
+add_subdirectory( kcookiejar )
+
+if (GSSAPI_FOUND)
+    ADD_DEFINITIONS(${GSSAPI_INCS})
+endif (GSSAPI_FOUND)
 
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kio/httpfilter ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 if(GSSAPI_FOUND)
