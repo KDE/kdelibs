@@ -22,7 +22,7 @@
 #include <qtest_kde.h>
 
 #include "kautostarttest.h"
-#include "/home/kde/kde4build/kdelibs/kdecore/tests/kautostarttest.moc"
+#include "kautostarttest.moc"
 
 #include <QFile>
 
