@@ -570,7 +570,7 @@ void KMainWindow::setCaption( const QString &caption, bool modified )
 
     if ( modified )
     {
-        flags &= KInstance::ModifiedCaption;
+        flags |= KInstance::ModifiedCaption;
     }
 
     setPlainCaption( KInstance::makeStdCaption(caption, flags) );
