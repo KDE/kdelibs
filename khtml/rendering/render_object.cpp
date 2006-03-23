@@ -2109,19 +2109,21 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
                 n = n->previousSibling();
             }
             if (sibling->isReset())
+            {
                 if (last != sibling)
                     sibling->insertAfter(i, last);
                 else
                     sibling->insertAfter(i, 0);
-            else
+            }
+            else if (last->parent())
                 last->parent()->insertAfter(i, last);
         }
-        else {
+        else if (parent()) {
             // Nothing found among siblings, let our parent search
             last = parent()->getCounter(counter, false);
             if (last->isReset())
                 last->insertAfter(i, 0);
-            else
+            else if (last->parent())
                 last->parent()->insertAfter(i, last);
         }
     }
