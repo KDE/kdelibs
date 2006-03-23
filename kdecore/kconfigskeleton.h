@@ -213,15 +213,15 @@
      */
     void readImmutability(KConfig *config);
 
-    QString mGroup;
-    QString mKey;
-    QString mName;
+    QString mGroup; ///< The group name for this item
+    QString mKey; ///< The config key for this item
+    QString mName; ///< The name of this item
 
   private:
-    bool mIsImmutable;
+    bool mIsImmutable; ///< Indicates this item is immutable
 
-    QString mLabel;
-    QString mWhatsThis;
+    QString mLabel; ///< The label for this item
+    QString mWhatsThis; ///< The What's This text for this item
   };
 
 
@@ -310,8 +310,8 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
     }
 
   protected:
-    T & mReference;
-    T mDefault;
+    T & mReference; ///< Stores the value for this item
+    T mDefault; ///< The default value for this item
     T mLoadedValue;
   };
 
@@ -722,8 +722,13 @@ public:
               QColor & reference,
               const QColor & defaultValue = QColor(128, 128, 128));
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
 
@@ -738,8 +743,13 @@ public:
     ItemFont(const QString & _group, const QString & _key, QFont & reference,
              const QFont & defaultValue = KGlobalSettings::generalFont());
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
 
@@ -754,8 +764,13 @@ public:
     ItemRect(const QString & _group, const QString & _key, QRect & reference,
              const QRect & defaultValue = QRect());
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
 
@@ -770,8 +785,13 @@ public:
     ItemPoint(const QString & _group, const QString & _key, QPoint & reference,
               const QPoint & defaultValue = QPoint());
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
 
@@ -782,11 +802,17 @@ public:
   class KDECORE_EXPORT ItemSize:public KConfigSkeletonGenericItem < QSize >
   {
   public:
-    ItemSize(const QString & group, const QString & key, QSize & reference,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemSize(const QString & _group, const QString & _key, QSize & reference,
              const QSize & defaultValue = QSize());
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
 
@@ -797,12 +823,18 @@ public:
   class KDECORE_EXPORT ItemDateTime:public KConfigSkeletonGenericItem < QDateTime >
   {
   public:
-    ItemDateTime(const QString & group, const QString & key,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemDateTime(const QString & _group, const QString & _key,
                  QDateTime & reference,
                  const QDateTime & defaultValue = QDateTime());
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
 
@@ -813,12 +845,18 @@ public:
   class KDECORE_EXPORT ItemStringList:public KConfigSkeletonGenericItem < QStringList >
   {
   public:
-    ItemStringList(const QString & group, const QString & key,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemStringList(const QString & _group, const QString & _key,
                    QStringList & reference,
                    const QStringList & defaultValue = QStringList());
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
 
@@ -829,11 +867,14 @@ public:
   class KDECORE_EXPORT ItemPathList:public ItemStringList
   {
   public:
-    ItemPathList(const QString & group, const QString & key,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemPathList(const QString & _group, const QString & _key,
                    QStringList & reference,
                    const QStringList & defaultValue = QStringList());
 
+    /** @copydoc KConfigSkeletonItem::readConfig */
     void readConfig(KConfig * config);
+    /** @copydoc KConfigSkeletonItem::writeConfig */
     void writeConfig(KConfig * config);
   };
 
@@ -844,12 +885,18 @@ public:
   class KDECORE_EXPORT ItemIntList:public KConfigSkeletonGenericItem < QList < int > >
   {
   public:
-    ItemIntList(const QString & group, const QString & key,
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+    ItemIntList(const QString & _group, const QString & _key,
                 QList < int >&reference,
                 const QList < int >&defaultValue = QList < int >());
 
+    /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
+
+    /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
 
