@@ -1,3 +1,22 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 2005, 2006 KJSEmbed Authors
+    See included AUTHORS file.
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
 #include <QDomDocument>
 #include <QDomText>
 #include <QDomNamedNodeMap>
@@ -660,17 +679,17 @@ DomNodeListBinding::DomNodeListBinding( KJS::ExecState *exec, const QDomNodeList
 namespace NodeListNS {
 START_SCALAR_METHOD( count, QDomNodeList )
     result = KJS::Number( value.count( ) );
-END_SCALAR_METHOD	
+END_SCALAR_METHOD
 
 START_SCALAR_METHOD( length, QDomNodeList )
     result = KJS::Number( value.length( ) );
-END_SCALAR_METHOD	
+END_SCALAR_METHOD
 
 START_SCALAR_METHOD( item, QDomNodeList )
     int idx = KJSEmbed::extractInt( exec, args, 0);
     QDomNode node = value.item(idx);
     result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD	
+END_SCALAR_METHOD
 
 }
 
@@ -746,7 +765,7 @@ namespace NamedNodeMapNS {
 START_SCALAR_METHOD( contains, QDomNamedNodeMap )
     QString name = KJSEmbed::extractQString( exec, args, 0);
     result = KJS::Boolean( value.contains(name) );
-END_SCALAR_METHOD	
+END_SCALAR_METHOD
 
 START_SCALAR_METHOD( count, QDomNamedNodeMap )
     result = KJS::Number(value.count());
@@ -756,7 +775,7 @@ START_SCALAR_METHOD( item, QDomNamedNodeMap )
     int idx = KJSEmbed::extractInt( exec, args, 0);
     QDomNode node = value.item(idx);
     result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD	
+END_SCALAR_METHOD
 
 START_SCALAR_METHOD( length, QDomNamedNodeMap )
     result = KJS::Number( value.length( ) );
@@ -766,7 +785,7 @@ START_SCALAR_METHOD( namedItem, QDomNamedNodeMap )
     QString name = KJSEmbed::extractQString( exec, args, 0);
     QDomNode node = value.namedItem(name);
     result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD	
+END_SCALAR_METHOD
 
 START_SCALAR_METHOD( namedItemNS, QDomNamedNodeMap )
     QString nsuri = KJSEmbed::extractQString( exec, args, 0);
@@ -792,7 +811,7 @@ START_SCALAR_METHOD( setNamedItem, QDomNamedNodeMap )
     QDomNode newNode = KJSEmbed::extractScalar<QDomNode>(exec,args,0);
     QDomNode node = value.setNamedItem(newNode);
     result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD	
+END_SCALAR_METHOD
 
 START_SCALAR_METHOD( setNamedItemNS, QDomNamedNodeMap )
     QDomNode newNode = KJSEmbed::extractScalar<QDomNode>(exec,args,0);
