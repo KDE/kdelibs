@@ -117,6 +117,15 @@ Qt::ShortcutContext KActionCollection::defaultShortcutContext( ) const
   return d->defaultShortcutContext;
 }
 
+void KActionCollection::applyDefaultShortcutContext()
+{
+  if (defaultShortcutContext() == -1)
+    return;
+
+  foreach (KAction* action, actions())
+    action->setShortcutContext(defaultShortcutContext());
+}
+
 void KActionCollection::addDocCollection( KActionCollection* pDoc )
 {
   d->m_docList.append( pDoc );
@@ -361,7 +370,8 @@ void KActionCollection::addAssociatedWidget(QWidget* widget)
   d->associatedWidgets.append(widget);
 
   foreach (KAction* action, findChildren<KAction*>()) {
-    action->setShortcutContext(Qt::WidgetShortcut);
+    if (defaultShortcutContext() == -1)
+      action->setShortcutContext(Qt::WidgetShortcut);
     widget->addAction(action);
   }
 }
@@ -370,10 +380,8 @@ void KActionCollection::removeAssociatedWidget(QWidget* widget)
 {
   d->associatedWidgets.removeAll(widget);
 
-  foreach (KAction* action, findChildren<KAction*>()) {
+  foreach (KAction* action, findChildren<KAction*>())
     widget->removeAction(action);
-    action->setShortcutContext(defaultShortcutContext());
-  }
 }
 
 void KActionCollection::clearAssociatedWidgets()

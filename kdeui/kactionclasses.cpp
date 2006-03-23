@@ -323,12 +323,14 @@ KSelectAction::KSelectAction( const QString& text, const QString& pix,
 KSelectAction::~KSelectAction()
 {
   delete d;
+  delete menu();
 }
 
 void KSelectAction::init()
 {
   setToolBarWidgetFactory(this);
   connect(selectableActionGroup(), SIGNAL(triggered(QAction*)), SLOT(actionTriggered(QAction*)));
+  setMenu(new KMenu());
 }
 
 QActionGroup * KSelectAction::selectableActionGroup( ) const
@@ -459,8 +461,7 @@ void KSelectAction::addAction(QAction* action)
   foreach (KComboBox* comboBox, d->m_comboBoxes)
     comboBox->addItem(action->icon(), action->text(), action);
 
-  if (menu())
-    menu()->addAction(action);
+  menu()->addAction(action);
 }
 
 QAction* KSelectAction::addAction(const QString& text)
@@ -500,6 +501,8 @@ QAction* KSelectAction::removeAction(QAction* action)
 
   foreach (KComboBox* comboBox, d->m_comboBoxes)
     comboBox->removeItem(index);
+
+  menu()->removeAction(action);
 
   return action;
 }
@@ -649,10 +652,7 @@ QWidget * KSelectAction::createToolBarWidget( QToolBar * parent )
 
       button->setPopupMode(toolButtonPopupMode());
 
-      KMenu* newMenu = new KMenu();
-      button->setMenu(newMenu);
-      foreach (QAction* action, actions())
-        newMenu->addAction(action);
+      button->setMenu(menu());
       d->m_buttons.append(button);
       return button;
     }
@@ -1368,15 +1368,12 @@ class KActionMenuPrivate
 public:
   KActionMenuPrivate()
   {
-    m_popup = new KMenu();
     m_delayed = true;
     m_stickyMenu = true;
   }
   ~KActionMenuPrivate()
   {
-    delete m_popup; m_popup = 0;
   }
-  KMenu *m_popup;
   bool m_delayed;
   bool m_stickyMenu;
 };
@@ -1511,9 +1508,8 @@ void KActionMenu::setStickyMenu(bool sticky) {
 
 KMenu* KActionMenu::kMenu()
 {
-  // FIXME is this right - parentWidget() ?
   if (!menu())
-    setMenu(new KMenu(parentWidget()));
+    setMenu(new KMenu());
 
   return qobject_cast<KMenu*>(menu());
 }

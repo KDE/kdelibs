@@ -79,7 +79,8 @@ public:
    * collection.  The default is not to assign a default context, and this
    * can be restored by passing -1.
    *
-   * If this collection has an associated widget, all actions' contexts are
+   * If this collection has an associated widget, and there is no default
+   * shortcut context specified, all actions' contexts are
    * automatically changed to Qt::WidgetShortcut.
    */
   void setDefaultShortcutContext(Qt::ShortcutContext context);
@@ -89,17 +90,25 @@ public:
    * collection.  The default is -1, ie. do not assign a default context to
    * added actions.
    *
-   * If this collection has an associated widget, all actions will be changed to
-   * Qt::WidgetShortcut, however this function will still return the setting
-   * for when no widget is associated with this action collection.
+   * If this collection has an associated widget, and there is no default
+   * shortcut context specified, all actions will be changed to
+   * Qt::WidgetShortcut.  However, this function will not return Qt::WidgetShortcut
+   * when no widget is associated with this action collection and no default has
+   * been set.
    */
   Qt::ShortcutContext defaultShortcutContext() const;
+
+  /**
+   * Applies the current default context (if there is one set) to all of the
+   * actions in this action collection.
+   */
+  void applyDefaultShortcutContext();
 
   /**
    * Set an associated widget (clears any others).  Associated widgets automatically have all actions 
    * in the action collection added to themselves.
    *
-   * Shortcut context will automatically be set to Qt::WidgetShortcut.
+   * Shortcut context will automatically be set to Qt::WidgetShortcut, if no defaultShortcutContext() has been set.
    *
    * \sa addAssociatedWidget(), removeAssociatedWidget(), clearAssociatedWidgets() and associatedWidgets().
    */
@@ -109,7 +118,7 @@ public:
    * Add an associated widget.  Associated widgets automatically have all actions 
    * in the action collection added to themselves.
    *
-   * Shortcut context will automatically be set to Qt::WidgetShortcut.
+   * Shortcut context will automatically be set to Qt::WidgetShortcut, if no defaultShortcutContext() has been set.
    *
    * \sa setAssociatedWidget(), removeAssociatedWidget(), clearAssociatedWidgets() and associatedWidgets().
    */
@@ -119,8 +128,8 @@ public:
    * Remove an associated widget.  Removes all actions in this collection from 
    * the removed associated widget.
    *
-   * Shortcut context will automatically be reverted from Qt::WidgetShortcut,
-   * to the defaultShortcutContext() for this action collection.
+   * Shortcut context will not be reverted from Qt::WidgetShortcut, which would have been
+   * assigned if no defaultShortcutContext() was set for this action collection.
    *
    * \sa addAssociatedWidget(), setAssociatedWidget(), clearAssociatedWidgets(), and associatedWidgets().
    */
