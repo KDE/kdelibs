@@ -150,6 +150,9 @@ public:
      */
     void saveState( QDomElement &e );
 
+    /// Reimplemented to support context menu activation on disabled tool buttons
+    bool eventFilter(QObject* watched, QEvent* event);
+
 Q_SIGNALS:
     /**
      * This signal is emitted when the toolbar is getting deleted,
@@ -176,7 +179,8 @@ protected Q_SLOTS:
     virtual void slotMovableChanged(bool movable);
 
 protected:
-    virtual void mousePressEvent( QMouseEvent * );
+    virtual void contextMenuEvent(QContextMenuEvent* event);
+    virtual void actionEvent(QActionEvent* event);
     void applyAppearanceSettings(KConfig *config, const QString &_configGroup, bool forceGlobal = false);
     QString settingsGroup() const;
 

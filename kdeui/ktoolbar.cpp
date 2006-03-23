@@ -370,19 +370,18 @@ void KToolBar::setXMLGUIClient( KXMLGUIClient *client )
     d->m_xmlguiClient = client;
 }
 
-void KToolBar::mousePressEvent ( QMouseEvent *m )
+void KToolBar::contextMenuEvent(QContextMenuEvent* event)
 {
-    if ( !mainWindow() )
+    if ( mainWindow() && isMovable() && d->enableContext ) {
+        QPointer<KToolBar> guard( this );
+        contextMenu()->exec( event->globalPos() );
+        // "Configure Toolbars" recreates toolbars, so we might not exist anymore.
+        if ( guard )
+            slotContextAboutToHide();
         return;
-    if ( isMovable() && d->enableContext ) {
-        if ( m->button() == Qt::RightButton ) {
-            QPointer<KToolBar> guard( this );
-            contextMenu()->exec( m->globalPos() );
-            // "Configure Toolbars" recreates toolbars, so we might not exist anymore.
-            if ( guard )
-                slotContextAboutToHide();
-        }
     }
+
+    return QToolBar::contextMenuEvent(event);
 }
 
 //static
@@ -1128,6 +1127,36 @@ QString KToolBar::toolButtonStyleToString( Qt::ToolButtonStyle style )
     case Qt::ToolButtonTextUnderIcon:
       return "TextUnderIcon";
   }
+}
+
+bool KToolBar::eventFilter( QObject * watched, QEvent * event )
+{
+  // Generate context menu events for disabled buttons too...
+  if (event->type() == QEvent::MouseButtonPress) {
+    if (QWidget* ww = qobject_cast<QWidget*>(watched)) {
+      if (ww->parent() == this) {
+        if (!ww->isEnabled()) {
+          QMouseEvent* me = static_cast<QMouseEvent*>(event);
+          if (me->buttons() & Qt::RightButton) {
+            QCoreApplication::postEvent(this, new QContextMenuEvent(QContextMenuEvent::Mouse, me->pos(), me->globalPos()));
+          }
+        }
+      }
+    }
+  }
+
+  return QToolBar::eventFilter(watched, event);
+}
+
+void KToolBar::actionEvent( QActionEvent * event )
+{
+  if (event->type() == QEvent::ActionRemoved)
+    widgetForAction(event->action())->removeEventFilter(this);
+
+  QToolBar::actionEvent(event);
+
+  if (event->type() == QEvent::ActionAdded)
+    widgetForAction(event->action())->installEventFilter(this);
 }
 
 #include "ktoolbar.moc"
