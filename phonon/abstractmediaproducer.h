@@ -25,8 +25,6 @@
 #include <QObject>
 #include "basedestructionhandler.h"
 
-template<class T> class QList;
-
 namespace Phonon
 {
 	class VideoPath;
