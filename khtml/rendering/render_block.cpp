@@ -176,6 +176,10 @@ void RenderBlock::updateFirstLetter()
         firstLetter->setIsAnonymous( true );
         firstLetterContainer->addChild(firstLetter, firstLetterContainer->firstChild());
 
+        // if this object is the result of a :begin, then the text may have not been
+        // generated yet if it is a counter
+        textObj->recalcMinMaxWidths();
+
         // The original string is going to be either a generated content string or a DOM node's
         // string.  We want the original string before it got transformed in case first-letter has
         // no text-transform or a different text-transform applied to it.
