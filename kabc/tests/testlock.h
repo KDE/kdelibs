@@ -24,13 +24,12 @@
 #include "lock.h"
 
 #include <qwidget.h>
-//Added by qt3to4:
 #include <QLabel>
 
 class QLabel;
 class Q3ListView;
 
-class KABC_EXPORT LockWidget : public QWidget
+class LockWidget : public QWidget
 {
     Q_OBJECT
   public:

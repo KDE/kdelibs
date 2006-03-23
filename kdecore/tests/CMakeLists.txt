@@ -604,7 +604,7 @@ kde4_automoc(${knotificationrestrictionstest_SRCS})
 
 kde4_add_executable(knotificationrestrictionstest ${knotificationrestrictionstest_SRCS})
 
-target_link_libraries(knotificationrestrictionstest  ${QT_AND_KDECORE_LIBS})
+target_link_libraries(knotificationrestrictionstest  ${KDE4_KDECORE_LIBS})
 
 add_test(kdecore-knotificationrestrictionstest ${EXECUTABLE_OUTPUT_PATH}/knotificationrestrictionstest)
 
@@ -617,7 +617,7 @@ kde4_automoc(${kautostarttest_SRCS})
 
 kde4_add_executable(kautostarttest ${kautostarttest_SRCS})
 
-target_link_libraries(kautostarttest  ${QT_AND_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kautostarttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kautostarttest ${EXECUTABLE_OUTPUT_PATH}/kautostarttest)
 

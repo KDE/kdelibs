@@ -43,7 +43,7 @@
  * // we will actually start up on log in
  * config.setAutoStart(autostart.autoStarts());
  */
-class KDE_EXPORT KAutostart : public QObject
+class KDECORE_EXPORT KAutostart : public QObject
 {
     Q_OBJECT
 

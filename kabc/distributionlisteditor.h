@@ -51,7 +51,7 @@ class KABC_EXPORT EmailSelectDialog : public KDialogBase
 /**
   @obsolete
 */
-class DistributionListEditor : public QWidget
+class KABC_EXPORT DistributionListEditor : public QWidget
 {
     Q_OBJECT
   public:

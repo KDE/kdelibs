@@ -67,7 +67,9 @@ LockWidget::LockWidget( const QString &identifier )
                                    this );
     topLayout->addWidget( pidLabel );
 
-    QHBoxLayout *identifierLayout = new QHBoxLayout( topLayout );
+    QHBoxLayout *identifierLayout = new QHBoxLayout();
+	identifierLayout->setParent( topLayout );
+    topLayout->addItem( identifierLayout );
 
     QLabel *resourceLabel = new QLabel( "Identifier:", this );
     identifierLayout->addWidget( resourceLabel );
@@ -121,7 +123,7 @@ void LockWidget::updateLockView()
   
   QDir dir( Lock::locksDir() );
   
-  QStringList files = dir.entryList( "*.lock" );
+  QStringList files = dir.entryList( QStringList( "*.lock" ) );
   
   QStringList::ConstIterator it;
   for( it = files.begin(); it != files.end(); ++it ) {
@@ -200,7 +202,6 @@ int main(int argc,char **argv)
 
   LockWidget mainWidget( identifier );
 
-  kapp->setMainWidget( &mainWidget );
   mainWidget.show();
 
   return app.exec();  

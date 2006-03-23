@@ -360,7 +360,7 @@ target_link_libraries(khtmlimagepart  ${KDE4_KDECORE_LIBS} khtml)
 install_targets(${LIB_INSTALL_DIR}/kde4 khtmlimagepart )
 
 
-if(KDE4_BUILD_TESTS)
+if(KDE4_BUILD_TESTS AND NOT WIN32)
 
     ########### next target ###############
 
@@ -418,7 +418,7 @@ if(KDE4_BUILD_TESTS)
 
     target_link_libraries(testregressiongui  ${KDE4_KDECORE_LIBS} khtml)
 
-endif(KDE4_BUILD_TESTS)
+endif(KDE4_BUILD_TESTS AND NOT WIN32)
 
 ########### install files ###############
 
