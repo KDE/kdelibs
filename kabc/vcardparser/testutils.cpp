@@ -83,7 +83,7 @@ Addressee::List vCardsAsAddresseeList()
   return l;
 }
 
-QString vCardsAsText()
+QByteArray vCardsAsText()
 {
   QByteArray vcards = vcardAsText( "tests/vcard1.vcf" );
   vcards += vcardAsText( "tests/vcard2.vcf" );
