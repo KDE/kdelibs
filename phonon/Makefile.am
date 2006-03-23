@@ -52,6 +52,6 @@ kde_servicetypes_DATA = phononbackend.desktop
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/phonon
 
 DOXYGEN_REFERENCES = dcop kdecore kio
-
+DOXYGEN_SET_EXPAND_AS_DEFINED = PHONON_ABSTRACTBASE PHONON_OBJECT PHONON_HEIR
 include ../admin/Doxyfile.am
 
