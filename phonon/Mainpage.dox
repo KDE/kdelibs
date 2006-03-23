@@ -1,0 +1,28 @@
+/** \file Mainpage.dox
+    \brief Mainpage of the %Phonon API Documentation.
+*/
+/** \mainpage The %Phonon API.
+
+\section phonon_intro Introduction
+%Phonon is the Multimedia API for %KDE. You should evaluate whether %Phonon
+supplies all you need before looking at frameworks like gstreamer or NMM. The
+range of applications goes from full featured media players and capture
+applications to voice/video chats.
+
+\section phonon_examples Examples
+Not yet...
+
+\section phonon_frontend The Frontend API
+ - for simple playback use \ref Phonon::SimplePlayer
+ - add ref to overview of frontend objects
+ - \ref Phonon "The Phonon namespace"
+ - \ref Phonon::Ui "The Phonon::Ui namespace"
+ - \ref Phonon::MediaObject "The central class for playback functionality (MediaObject)"
+
+\section phonon_backend Backend Development
+If you want to write a new backend for %Phonon this is for you:
+ - \ref Phonon::Ifaces
+ - \ref Phonon::Ui::Ifaces
+ - \ref Phonon::Ifaces::Backend
+
+*/
