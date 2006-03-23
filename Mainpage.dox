@@ -57,7 +57,7 @@
 	*   <i>High-level utils, like search/replace support.</i>
 	* - <a href="phonon/html/namespacePhonon.html"><b>Phonon</b></a>
         *   (<a href="phonon/html/classes.html">classes</a>)\n
-	*   <i>KDE bindings for arts including knotify.</i>
+	*   <i>KDE Multimedia classes.</i>
 	* - <a href="knewstuff/html/index.html"><b>knewstuff</b></a>
         *   (<a href="knewstuff/html/classes.html">classes</a>)\n
 	*   <i>Upload and download of application data.</i>
