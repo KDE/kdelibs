@@ -740,7 +740,7 @@ public:
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  */
-class KDE_EXPORT KTimeZoneData
+class KDECORE_EXPORT KTimeZoneData
 {
 public:
     KTimeZoneData();

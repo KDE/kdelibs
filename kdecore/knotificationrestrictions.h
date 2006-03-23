@@ -43,7 +43,7 @@
  *   // show presentation
  * }
  */
-class KDE_EXPORT KNotificationRestrictions : public QObject
+class KDECORE_EXPORT KNotificationRestrictions : public QObject
 {
     Q_OBJECT
 
