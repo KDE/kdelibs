@@ -22,12 +22,13 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qfileinfo.h>
+#include <qdir.h>
 
 #include <ktoolinvocation.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kfiledialog.h>
 #include <kglobal.h>
 #include <klineedit.h>
 #include <klocale.h>
