@@ -2,7 +2,9 @@ kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
-include_directories( ${CMAKE_SOURCE_DIR}/kdecore ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+macro_use_lib_kdecore()
+
+include_directories( ${QT_INCLUDES} )
 
 
 ########### next target ###############

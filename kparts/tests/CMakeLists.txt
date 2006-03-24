@@ -1,8 +1,9 @@
 kde4_header()
 
 if(KDE4_BUILD_TESTS)
-		
-include_directories( ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kfile ${CMAKE_SOURCE_DIR}/kio ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+
+macro_use_lib_kparts()
+include_directories( ${QT_INCLUDES} )
 
 
 ########### next target ###############

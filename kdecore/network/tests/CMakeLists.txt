@@ -1,8 +1,9 @@
 kde4_header()
 
-if(KDE4_BUILD_TESTS) 
-		
-include_directories( ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR}/kdecore/network )
+if(KDE4_BUILD_TESTS)
+
+macro_use_lib_kdecore()
+include_directories( ${QT_INCLUDES} )
 
 
 ########### next target ###############
