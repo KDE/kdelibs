@@ -203,6 +203,11 @@ check_include_files( X11/extensions/shape.h HAVE_X11_EXTENSIONS_SHAPE_H)
 check_include_files( "X11/Xlib.h;X11/extensions/XShm.h"  HAVE_X11_EXTENSIONS_XSHM_H)
 check_include_files( X11/ICE/ICElib.h       HAVE_X11_ICE_ICELIB_H)
 check_include_files( X11/extensions/Xrender.h HAVE_XRENDER)
+if (X11_XTest_FOUND)
+  set(HAVE_XTEST 1)
+else (X11_XTest_FOUND)
+  set(HAVE_XTEST 0)
+endif (X11_XTest_FOUND)
 
 
 #check_symbol_exists(sockaddr_in6 "netinet/in.h" HAVE_STRUCT_SOCKADDR_IN6)

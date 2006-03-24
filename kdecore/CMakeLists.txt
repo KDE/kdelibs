@@ -255,9 +255,9 @@ if(HAVE_LIBDL)
    target_link_libraries(kdecore dl)
 endif(HAVE_LIBDL)
 
-if(HAVE_XTEST)
-   target_link_libraries(kdecore -lXtst)
-endif(HAVE_XTEST)
+if(X11_XTest_FOUND)
+   target_link_libraries(kdecore ${X11_XTest_LIB})
+endif(X11_XTest_FOUND)
 
 set_target_properties(kdecore PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install_targets(${LIB_INSTALL_DIR} kdecore )
