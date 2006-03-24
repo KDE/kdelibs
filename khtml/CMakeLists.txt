@@ -385,6 +385,9 @@ if(KDE4_BUILD_TESTS AND NOT WIN32)
 
     ########### next target ###############
 
+# #### TODO: declare/set this var somewhere?
+# Note that testregression can't be compiled by default, it needs private Qt headers.
+if (BUILD_TESTREGRESSION)
     set(testregression_SRCS
         test_regression.cpp
         test_regression_fontoverload.cpp
@@ -395,6 +398,7 @@ if(KDE4_BUILD_TESTS AND NOT WIN32)
     kde4_add_executable(testregression ${testregression_SRCS})
 
     target_link_libraries(testregression  ${KDE4_KDECORE_LIBS} khtml)
+endif (BUILD_TESTREGRESSION)
 
     ########### next target ###############
 
