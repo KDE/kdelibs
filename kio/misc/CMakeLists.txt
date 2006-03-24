@@ -7,9 +7,7 @@ add_subdirectory( ksendbugmail )
 add_subdirectory( kpac )
 add_subdirectory( kssld )
 add_subdirectory( kfile )
-
-MESSAGE(STATUS "kio/misc/kwalletd/ excluded from build, multiple definition of functions from kwalletwizard.ui3")
-#add_subdirectory( kwalletd )
+add_subdirectory( kwalletd )
 add_subdirectory( kntlm )
 
 ########### next target ###############
