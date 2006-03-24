@@ -23,6 +23,10 @@
 #ifndef _KJS_OPERATIONS_H_
 #define _KJS_OPERATIONS_H_
 
+#ifdef __APPLE__
+#include <math.h>
+#endif
+
 namespace KJS {
 
   class ExecState;
