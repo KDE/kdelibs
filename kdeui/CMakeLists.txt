@@ -155,7 +155,7 @@ kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
 target_link_libraries(kdeui  ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} kdefx )
 
-set_target_properties(kdeui PROPERTIES VERSION 4.2.0 SOVERSION 4 )
+set_target_properties(kdeui PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install_targets(${LIB_INSTALL_DIR} kdeui )
 
 

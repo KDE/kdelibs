@@ -79,7 +79,7 @@ add_subdirectory( network )
 if (NOT WIN32)
 
    kde4_add_library(kdefakes SHARED fakes.c)
-   set_target_properties(kdefakes PROPERTIES VERSION 4.2.0 SOVERSION 4 )
+   set_target_properties(kdefakes PROPERTIES VERSION 5.0.0 SOVERSION 5 )
    install_targets(${LIB_INSTALL_DIR} kdefakes )
 
    #no ttyname on windows
@@ -259,7 +259,7 @@ if(X11_XTest_FOUND)
    target_link_libraries(kdecore ${X11_XTest_LIB})
 endif(X11_XTest_FOUND)
 
-set_target_properties(kdecore PROPERTIES VERSION 4.2.0 SOVERSION 4 )
+set_target_properties(kdecore PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install_targets(${LIB_INSTALL_DIR} kdecore )
 
 
