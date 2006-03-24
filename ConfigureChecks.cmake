@@ -198,6 +198,7 @@ check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)
 check_include_files(sys/asoundlib.h HAVE_SYS_ASOUNDLIB_H)
 check_include_files(alsa/asoundlib.h HAVE_ALSA_ASOUNDLIB_H)
 
+check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H)
 
 check_include_files( X11/extensions/shape.h HAVE_X11_EXTENSIONS_SHAPE_H)
 check_include_files( "X11/Xlib.h;X11/extensions/XShm.h"  HAVE_X11_EXTENSIONS_XSHM_H)

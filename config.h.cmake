@@ -208,6 +208,7 @@
 #cmakedefine HAVE_UNISTD_H 1
 #cmakedefine HAVE_UTIL_H 1
 #cmakedefine HAVE_VALUES_H 1
+#cmakedefine HAVE_ARPA_NAMESER8_COMPAT_H
 
 #cmakedefine HAVE_X11_EXTENSIONS_SHAPE_H 1
 #cmakedefine HAVE_X11_EXTENSIONS_XSHM_H 1
