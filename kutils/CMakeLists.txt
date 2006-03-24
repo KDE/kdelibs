@@ -2,12 +2,12 @@ kde4_header()
 
 project(kutils)
 
-add_subdirectory( ksettings )
-add_subdirectory( tests )
-
 macro_use_lib_kio()
 
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${QT_INCLUDES} )
+
+add_subdirectory( ksettings )
+add_subdirectory( tests )
 
 # kutils/ksettings/Makefile.am: ksettings
 
