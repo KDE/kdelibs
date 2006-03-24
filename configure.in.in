@@ -306,7 +306,10 @@ if test "x$kde_use_qt_emb" != "xyes"; then
    CXXFLAGS="$CXXFLAGS $USE_RTTI"
 fi
 
-rgb_file="$x_libraries/X11/rgb.txt"
+AC_ARG_WITH([rgbfile],
+  AC_HELP_STRING([--with-rgbfile=path], [Define custom path for rgb.txt. (default: \$(x11libdir)/X11/rgb.txt)]),
+  [rgb_file=$withval], [rgb_file="$x_libraries/X11/rgb.txt"])
+
 AC_DEFINE_UNQUOTED(X11_RGBFILE, "$rgb_file", [where rgb.txt is in])
 
 AC_MSG_CHECKING([for Compiler version])
