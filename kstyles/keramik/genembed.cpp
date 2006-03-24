@@ -324,7 +324,7 @@ int main(int argc, char** argv)
 			read++;
 		}
 
-		cerr<<qPrintable(s)<<":"<<pixSolid<<"/"<<pixCount<<"("<<reallySolid<<")\n";
+		//cerr<<qPrintable(s)<<":"<<pixSolid<<"/"<<pixCount<<"("<<reallySolid<<")\n";
 
 		cout<<!reallySolid<<"\n";
 
