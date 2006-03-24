@@ -69,7 +69,7 @@ const Context Context::callingContext() const
 
 // ------------------------------ Interpreter ----------------------------------
 
-Interpreter::Interpreter(JSObject *global) 
+Interpreter::Interpreter(JSObject *global)
   : rep(0)
   , m_argumentsPropertyName(&argumentsPropertyName)
   , m_specialPrototypePropertyName(&specialPrototypePropertyName)
@@ -343,7 +343,7 @@ void Interpreter::restoreBuiltins (const SavedBuiltins &builtins)
   rep->restoreBuiltins(builtins);
 }
 
-SavedBuiltins::SavedBuiltins() : 
+SavedBuiltins::SavedBuiltins() :
   _internal(0)
 {
 }
