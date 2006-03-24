@@ -7,9 +7,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 enable_testing()
 include(CTest)
 
-# generate non-quiet makefiles
-set(CMAKE_VERBOSE_MAKEFILE ON)
-
 # Always include srcdir and builddir in include path
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -49,7 +46,6 @@ include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
 
 # macro_use_lib_foo() adds the include directories for foo and everything that it depends upon.
 # Those macros are only valid inside of kdelibs, of course.
-# TODO: maybe we want to add linking to the requested libs, inside those macros.
 
 macro(macro_use_lib_dcop)
     include_directories( ${CMAKE_SOURCE_DIR}/dcop )
