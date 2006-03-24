@@ -1,8 +1,5 @@
 kde4_header()
 
-include_directories( ${CMAKE_SOURCE_DIR}/kio/kfile )
-
-
 ########### next target ###############
 
 set(kfile_SRCS

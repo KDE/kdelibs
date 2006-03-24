@@ -14,9 +14,11 @@ macro_use_lib_kdeui()
 include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
    ${CMAKE_CURRENT_SOURCE_DIR}/kio
+   ${CMAKE_CURRENT_SOURCE_DIR}/kfile
    ${CMAKE_CURRENT_SOURCE_DIR}/kssl
    ${CMAKE_CURRENT_BINARY_DIR}/kio
    ${CMAKE_CURRENT_BINARY_DIR}/kssl
+   ${CMAKE_CURRENT_BINARY_DIR}/kfile
    ${CMAKE_SOURCE_DIR}/kwallet/client
    ${ZLIB_INCLUDE_DIR}
    ${QT_INCLUDES}
