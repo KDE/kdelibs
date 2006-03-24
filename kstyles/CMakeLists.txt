@@ -1,14 +1,11 @@
 kde4_header()
 
+macro_use_lib_kdecore()
+include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${QT_INCLUDES} )
+
 add_subdirectory( keramik )
 add_subdirectory( plastik )
 add_subdirectory( utils )
-
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-
-########### install files ###############
-
 
 kde4_footer()
 

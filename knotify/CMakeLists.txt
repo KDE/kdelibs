@@ -2,19 +2,10 @@ kde4_header()
 
 project(knotify)
 
-add_subdirectory( daemon ) 
-add_subdirectory( config ) 
+macro_use_lib_kio()
+include_directories( ${QT_INCLUDES} )
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-
-########### install files ###############
-
+add_subdirectory( daemon )
+add_subdirectory( config )
 
 kde4_footer()
-
-
-
-#original Makefile.am contents follow:
-
-#SUBDIRS=daemon config

@@ -1,9 +1,5 @@
 kde4_header()
 
-include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/bookmarks ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-
-
 set(ktradertest_SRCS
 ktradertest.cpp
 )

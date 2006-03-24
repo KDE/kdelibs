@@ -2,9 +2,10 @@ kde4_header()
 
 project(kdeinit)
 
-add_subdirectory( tests ) 
+add_subdirectory( tests )
 
-include_directories( ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+macro_use_lib_kparts()
+include_directories( ${QT_INCLUDES} )
 
 
 if(NOT WIN32)

@@ -5,7 +5,8 @@ project(kdewidgets)
 add_subdirectory( pics ) 
 add_subdirectory( tests ) 
 
-include_directories( ${CMAKE_SOURCE_DIR}/kfile ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+macro_use_lib_kio()
+include_directories(  ${QT_INCLUDES} )
 
 
 ########### next target ###############

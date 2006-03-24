@@ -1,6 +1,5 @@
 kde4_header()
 add_subdirectory( fakebackend ) 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 set(mediaobjecttest_SRCS mediaobjecttest.cpp )
 set(audiopathtest_SRCS audiopathtest.cpp )

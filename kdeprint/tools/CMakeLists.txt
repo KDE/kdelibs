@@ -1,17 +1,5 @@
 kde4_header()
 
-add_subdirectory( escputil ) 
-
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-
-########### install files ###############
-
+add_subdirectory( escputil )
 
 kde4_footer()
-
-
-
-#original Makefile.am contents follow:
-
-#SUBDIRS = escputil

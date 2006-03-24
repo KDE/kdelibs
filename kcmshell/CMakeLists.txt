@@ -2,7 +2,8 @@ kde4_header()
 
 project(kcmshell)
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR}/kutils)
+macro_use_lib_kparts()
+include_directories( ${CMAKE_SOURCE_DIR}/kutils ${QT_INCLUDES} )
 
 
 ########### next target ###############

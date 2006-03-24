@@ -2,7 +2,8 @@ kde4_header()
 
 project(kjsembed-kjsembed)
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+macro_use_lib_kdeui()
+include_directories( ${CMAKE_SOURCE_DIR}/kjs ${QT_INCLUDES} )
 
 
 ########### next target ###############
@@ -38,7 +39,7 @@ kde4_automoc(${kjsembed_LIB_SRCS})
 
 kde4_add_library(kjsembed SHARED ${kjsembed_LIB_SRCS})
 
-target_link_libraries(kjsembed  ${KDE4_KDECORE_LIBS} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTDESIGNER_LIBRARY} kdeui kparts kjs khtml )
+target_link_libraries(kjsembed ${KDE4_KDEUI_LIBS} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTDESIGNER_LIBRARY} kjs )
 
 set_target_properties(kjsembed PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install_targets(${LIB_INSTALL_DIR} kjsembed )

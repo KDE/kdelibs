@@ -10,6 +10,9 @@ include(CTest)
 # generate non-quiet makefiles
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+# Always include srcdir and builddir in include path
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 # search packages used by KDE
 find_package(KDE4Internal REQUIRED)
 find_package(Perl REQUIRED)
@@ -41,13 +44,36 @@ macro_optional_find_package(GSSAPI)
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
 link_directories(${KDE4_LIB_DIR})
 
-include_directories(
-  ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdeui
-  ${CMAKE_SOURCE_DIR}/kio/kio  ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_SOURCE_DIR}/kio/kfile
-  ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kssl
-  ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kabc
-  ${KDE4_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
-)
+# for including config.h and for includes like <kparts/foo.h>
+include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
+
+# macro_use_lib_foo() adds the include directories for foo and everything that it depends upon.
+# Those macros are only valid inside of kdelibs, of course.
+# TODO: maybe we want to add linking to the requested libs, inside those macros.
+
+macro(macro_use_lib_dcop)
+    include_directories( ${CMAKE_SOURCE_DIR}/dcop )
+endmacro(macro_use_lib_dcop)
+
+macro(macro_use_lib_kdecore)
+    macro_use_lib_dcop()
+    include_directories( ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network )
+endmacro(macro_use_lib_kdecore)
+
+macro(macro_use_lib_kdeui)
+    macro_use_lib_kdecore()
+    include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui )
+endmacro(macro_use_lib_kdeui)
+
+macro(macro_use_lib_kio)
+    macro_use_lib_kdeui()
+    include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kio ${CMAKE_SOURCE_DIR}/kio/kfile ${CMAKE_SOURCE_DIR}/kio/bookmarks )
+endmacro(macro_use_lib_kio)
+
+macro(macro_use_lib_kparts)
+    macro_use_lib_kio()
+    include_directories( ${CMAKE_SOURCE_DIR}/kparts )
+endmacro(macro_use_lib_kparts)
 
 # create config.h
 include(ConfigureChecks.cmake)

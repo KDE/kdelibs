@@ -2,14 +2,15 @@ kde4_header()
 
 project(kdeui)
 
+macro_use_lib_kdecore()
+include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/interfaces ${QT_INCLUDES} )
+
 if (UNIX AND NOT APPLE)
 	add_subdirectory( kdetrayproxy )
 endif (UNIX AND NOT APPLE)
 
 add_subdirectory( tests )
 add_subdirectory( about )
-
-include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/interfaces ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############

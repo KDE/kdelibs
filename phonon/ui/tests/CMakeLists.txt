@@ -1,8 +1,5 @@
 kde4_header()
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-
 set(seekslider_SRCS seekslider.cpp )
 kde4_automoc(${seekslider_SRCS})
 if(KDE4_BUILD_TESTS)

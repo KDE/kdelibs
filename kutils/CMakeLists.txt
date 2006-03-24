@@ -5,7 +5,9 @@ project(kutils)
 add_subdirectory( ksettings )
 add_subdirectory( tests )
 
-include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+macro_use_lib_kio()
+
+include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${QT_INCLUDES} )
 
 # kutils/ksettings/Makefile.am: ksettings
 

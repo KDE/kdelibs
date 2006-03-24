@@ -29,7 +29,7 @@
 #include <QApplication>
 #include <kglobal.h>
 #include <kconfig.h>
-#include <kprotocolinfo.h>
+#include "../kio/kio/kprotocolinfo.h"
 #include <kstandarddirs.h>
 #include <stdlib.h> // getenv(), srand(), rand()
 #include <unistd.h>

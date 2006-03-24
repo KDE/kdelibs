@@ -2,21 +2,36 @@ kde4_header()
 
 project(kde3support)
 
-add_subdirectory( kdecore ) 
-add_subdirectory( kdeui ) 
-add_subdirectory( kio ) 
-add_subdirectory( kparts ) 
+# inter-subdir dependencies
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_DIR}/kdeui )
+#${CMAKE_CURRENT_SOURCE_DIR}/kparts ${CMAKE_CURRENT_SOURCE_DIR}/kutils )
+
+# all dependent libs
+macro_use_lib_kparts()
+include_directories( ${QT_INCLUDES} )
+
+add_subdirectory( kdeui )
+add_subdirectory( kio )
+add_subdirectory( kparts )
 
 if(UNIX)
-   add_subdirectory( kunittest ) 
-   add_subdirectory( tests ) 
+   add_subdirectory( kunittest )
+   add_subdirectory( tests )
 endif(UNIX)
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kparts )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdeui ${CMAKE_SOURCE_DIR}/kutils ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kio/bookmarks)
-
 add_definitions(-DKDE3_SUPPORT)
+
+# kde3support/kdecore/Makefile.am: kde3core
+
+set(kde3core_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3shortcut.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3keysequence.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3shortcutmenu.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3urldrag.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3multipledrag.cpp
+)
+
+install_files( /include FILES kdecore/k3shortcut.h kdecore/k3keysequence.h kdecore/k3shortcutmenu.h kdecore/k3urldrag.h kdecore/k3multipledrag.h )
 
 # kde3support/kdeui/Makefile.am: kde3ui
 
@@ -42,17 +57,6 @@ set(k3parts_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kde3support/kparts/dockmainwindow3.cpp
 )
 
-# kde3support/kdecore/Makefile.am: kde3core
-
-set(kde3core_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3shortcut.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3keysequence.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3shortcutmenu.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3urldrag.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3multipledrag.cpp
-)
-
-
 ########### next target ###############
 
 set(kde3support_LIB_SRCS
@@ -77,19 +81,3 @@ install_targets(${LIB_INSTALL_DIR} kde3support )
 
 
 kde4_footer()
-
-
-
-#original Makefile.am contents follow:
-
-#SUBDIRS = kdecore kdeui kio kparts kmdi kunittest . tests
-#lib_LTLIBRARIES = libkde3support.la
-#
-#libkde3support_la_SOURCES = dummy.cpp
-#
-#libkde3support_la_LDFLAGS = -no-undefined $(all_libraries) \
-#        $(KDE_MT_LDFLAGS)
-#libkde3support_la_LIBADD = ./kmdi/libk3mdi.la ./kparts/libk3parts.la ./kio/libk3io.la ./kdeui/libkde3ui.la ./kdecore/libkde3core.la
-#
-#dummy.cpp:
-#	echo >dummy.cpp

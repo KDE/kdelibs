@@ -2,7 +2,7 @@ kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
-include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdeui ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR}/kde3support/kdeui)
+include_directories( ${QT_INCLUDES} ${CMAKE_SOURCE_DIR}/kde3support/kdeui )
 
 
 ########### next target ###############

@@ -1,7 +1,5 @@
 kde4_header()
 
-#include_directories( ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
-
 set(kab2kabc_SRCS kab2kabc.cpp kabapi.cc kabaddressbook.cc qconfigDB.cc)
 
 kde4_automoc(${kab2kabc_SRCS})

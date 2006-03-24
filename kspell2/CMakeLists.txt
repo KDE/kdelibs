@@ -2,7 +2,8 @@ kde4_header()
 
 project(kspell2)
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${CMAKE_SOURCE_DIR}/kutils )
+macro_use_lib_kparts()
+include_directories( ${CMAKE_SOURCE_DIR}/kutils ${QT_INCLUDES} )
 
 # kspell2/Makefile.am: kspell2base
 
@@ -24,6 +25,9 @@ set(kspell2_noinst_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kspell2/ui/highlighter.cpp
   ${CMAKE_SOURCE_DIR}/kspell2/ui/configdialog.cpp
 )
+
+# for the subdirs
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 add_subdirectory( ui )
 add_subdirectory( tests )

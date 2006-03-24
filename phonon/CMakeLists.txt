@@ -1,10 +1,12 @@
 kde4_header()
 
+# Those apply to all subdirs
+macro_use_lib_kio()
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${QT_INCLUDES} )
+
 add_subdirectory( ifaces ) 
 add_subdirectory( ui ) 
 add_subdirectory( tests ) 
-
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############

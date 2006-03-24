@@ -26,7 +26,6 @@
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <kmessageboxwrapper.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <assert.h>

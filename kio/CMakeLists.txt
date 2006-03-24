@@ -9,13 +9,17 @@ if(HAVE_SSL)
    include_directories(${OPENSSL_INCLUDE_DIR})
 endif(HAVE_SSL)
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+# This applies to all subdirs; let's put kio's dependencies (and own dirs) here, once and for all
+macro_use_lib_kdeui()
+include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
+   ${CMAKE_CURRENT_SOURCE_DIR}/kio
+   ${CMAKE_CURRENT_SOURCE_DIR}/kssl
+   ${CMAKE_CURRENT_BINARY_DIR}/kio
+   ${CMAKE_CURRENT_BINARY_DIR}/kssl
    ${CMAKE_SOURCE_DIR}/kwallet/client
-   ${CMAKE_SOURCE_DIR}/kdecore/network
-   ${CMAKE_BINARY_DIR}/kio/kssl
-   ${CMAKE_BINARY_DIR}/kio
    ${ZLIB_INCLUDE_DIR}
+   ${QT_INCLUDES}
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
@@ -32,7 +36,11 @@ endif (UNIX)
 add_subdirectory( pics ) 
 add_subdirectory( tests ) 
 add_subdirectory( kioexec ) 
-add_subdirectory( httpfilter ) 
+
+# for kio/http.h
+include_directories( ${CMAKE_SOURCE_DIR}/interfaces )
+# for the kfile usage in bookmarks
+include_directories( ${CMAKE_SOURCE_DIR}/kio/kfile )
 
 # kio/kio/Makefile.am: kiocore
 

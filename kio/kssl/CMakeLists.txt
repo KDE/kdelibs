@@ -2,12 +2,6 @@ kde4_header()
 
 add_subdirectory( kssl )
 
-include_directories( ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kwallet/client ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-
-########### next target ###############
-
-
 ########### install files ###############
 install_files( /include FILES kssl.h                        ksslcertificatehome.h         ksslsettings.h                ksslcertificate.h             ksslconnectioninfo.h          ksslcertificatefactory.h      ksslcertificatecache.h        ksslpeerinfo.h                ksslinfodlg.h                 ksslcertdlg.h                 ksslutils.h                   kopenssl.h                    ksslall.h            ksslpkcs12.h            ksslcertchain.h            ksslkeygen.h            ksslx509v3.h            ksslsigners.h           ksslpkcs7.h          ksslpemcallback.h       ksslconfig.h            ksslsession.h           ksslx509map.h           ksmimecrypto.h )
 

@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kprotocolinfo.h"
+#include "../../kio/kio/kprotocolinfo.h"
 #include "kprotocolinfofactory.h"
 
 #include <kstandarddirs.h>

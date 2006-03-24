@@ -2,9 +2,8 @@ kde4_header()
 
 project(kcert)
 
-include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-include_directories(${OPENSSL_INCLUDE_DIR} ${CMAKE_BINARY_DIR}/kio/kssl )
+macro_use_lib_kio()
+include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_BINARY_DIR}/kio/kssl ${QT_INCLUDES} ${OPENSSL_INCLUDE_DIR} )
 
 ########### next target ###############
 

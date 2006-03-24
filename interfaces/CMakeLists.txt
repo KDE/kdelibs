@@ -2,6 +2,9 @@ kde4_header()
 
 project(interfaces)
 
+macro_use_lib_kparts()
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
+
 add_subdirectory( kdocument ) 
 add_subdirectory( ktexteditor ) 
 add_subdirectory( kregexpeditor ) 
@@ -11,9 +14,6 @@ add_subdirectory( terminal )
 add_subdirectory( khexedit ) 
 add_subdirectory( kimproxy ) 
 add_subdirectory( kspeech ) 
-
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
 
 ########### install files ###############
 

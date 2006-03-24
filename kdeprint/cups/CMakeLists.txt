@@ -1,8 +1,8 @@
 kde4_header()
 
-add_subdirectory( cupsdconf2 ) 
+add_subdirectory( cupsdconf2 )
 
-include_directories( ${CUPS_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kfile ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/kdeprint/management ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CUPS_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/kdeprint/management ${QT_INCLUDES} )
 
 
 ########### next target ###############

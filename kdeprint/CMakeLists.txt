@@ -4,6 +4,10 @@ project(kdeprint)
 
 ADD_DEFINITIONS(-D_KDEPRINT_COMPILE)
 
+macro_use_lib_kio()
+# Needed for the subdirs
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
+
 # you can find macro_optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
 # it is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
@@ -24,8 +28,7 @@ if(CUPS_FOUND)
 endif(CUPS_FOUND)
 
 
-include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kded ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-include_directories(${ZLIB_INCLUDE_DIR})
+include_directories( ${QT_INCLUDES} ${ZLIB_INCLUDE_DIR} )
 
 
 ########### next target ###############

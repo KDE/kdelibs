@@ -3,9 +3,11 @@ kde4_header()
 find_package(LibXml2 REQUIRED)
 find_package(LibXslt REQUIRED)
 
-include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/bzip2 ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+macro_use_lib_kio()
+#include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/bzip2 )
+include_directories( ${QT_INCLUDES} )
 
-include_directories(${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR})
+include_directories( ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR} )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
