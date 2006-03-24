@@ -1755,8 +1755,8 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             if (offset)
             {
                 //kDebug(7007) << "Setting metadata for resume to " << (unsigned long) offset << endl;
-		// TODO KDE4: rename to seek or offset and document it
-		// This isn't used only for resuming, but potentially also for extracting (#72302).
+                // TODO KDE4: rename to seek or offset and document it
+                // This isn't used only for resuming, but potentially also for extracting (#72302).
                 m_getJob->addMetaData( "resume", KIO::number(offset) );
 
                 // Might or might not get emitted
@@ -2061,7 +2061,7 @@ void ListJob::slotFinished()
                 m_redirectionURL = m_url;
                 m_redirectionURL.setProtocol( proto );
                 m_error = 0;
-		emit redirection(this,m_redirectionURL);
+                emit redirection(this,m_redirectionURL);
             }
         }
     }
@@ -2461,7 +2461,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 url.setPath(localPath);
             }
 
-	    info.uSource = url;
+            info.uSource = url;
             info.uDest = m_currentDest;
             //kDebug(7007) << " uSource=" << info.uSource << " uDest(1)=" << info.uDest << endl;
             // Append filename or dirname to destination URL, if allowed
@@ -2722,7 +2722,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
     {
         m_conflictError = job->error();
         if ( (m_conflictError == ERR_DIR_ALREADY_EXIST)
-             || (m_conflictError == ERR_FILE_ALREADY_EXIST) )
+             || (m_conflictError == ERR_FILE_ALREADY_EXIST) ) // can't happen?
         {
             KUrl oldURL = ((SimpleJob*)job)->url();
             // Should we skip automatically ?
@@ -2972,7 +2972,8 @@ void CopyJob::slotResultCopyingFiles( Job * job )
             m_conflictError = job->error(); // save for later
             // Existing dest ?
             if ( ( m_conflictError == ERR_FILE_ALREADY_EXIST )
-                 || ( m_conflictError == ERR_DIR_ALREADY_EXIST ) )
+                 || ( m_conflictError == ERR_DIR_ALREADY_EXIST )
+                 || ( m_conflictError == ERR_IDENTICAL_FILES ) )
             {
                 removeSubjob( job );
                 assert ( !hasSubjobs() );
@@ -3054,7 +3055,8 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         m_reportTimer->stop();
 
     if ( ( m_conflictError == ERR_FILE_ALREADY_EXIST )
-      || ( m_conflictError == ERR_DIR_ALREADY_EXIST ) )
+         || ( m_conflictError == ERR_DIR_ALREADY_EXIST )
+         || ( m_conflictError == ERR_IDENTICAL_FILES ) )
     {
         // Its modification time:
         const UDSEntry entry = ((KIO::StatJob*)job)->statResult();
@@ -3067,6 +3069,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         // Offer overwrite only if the existing thing is a file
         // If src==dest, use "overwrite-itself"
         RenameDlg_Mode mode;
+        bool isDir = true;
 
         if( m_conflictError == ERR_DIR_ALREADY_EXIST )
             mode = (RenameDlg_Mode) 0;
@@ -3078,14 +3081,15 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
                 mode = M_OVERWRITE_ITSELF;
             else
                 mode = M_OVERWRITE;
+            isDir = false;
         }
 
-	if ( m_bSingleFileCopy )
+        if ( m_bSingleFileCopy )
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
-	else
+        else
             mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
 
-        res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
+        res = Observer::self()->open_RenameDlg( this, !isDir ?
                                 i18n("File Already Exists") : i18n("Already Exists as Folder"),
                                 (*it).uSource.url(),
                                 (*it).uDest.url(),
@@ -3480,7 +3484,9 @@ void CopyJob::slotResultRenaming( Job* job )
         // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
         if ( m_currentSrcURL.isLocalFile() && m_currentSrcURL.url(-1) != dest.url(-1) &&
              m_currentSrcURL.url(-1).toLower() == dest.url(-1).toLower() &&
-             ( err == ERR_FILE_ALREADY_EXIST || err == ERR_DIR_ALREADY_EXIST ) )
+             ( err == ERR_FILE_ALREADY_EXIST ||
+               err == ERR_DIR_ALREADY_EXIST ||
+               err == ERR_IDENTICAL_FILES ) )
         {
             kDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
             QByteArray _src( QFile::encodeName(m_currentSrcURL.path()) );
@@ -3521,7 +3527,9 @@ void CopyJob::slotResultRenaming( Job* job )
         Q_ASSERT( m_currentSrcURL == *m_currentStatSrc );
 
         // Existing dest?
-        if ( ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST )
+        if ( ( err == ERR_DIR_ALREADY_EXIST ||
+               err == ERR_FILE_ALREADY_EXIST ||
+               err == ERR_IDENTICAL_FILES )
              && isInteractive() )
         {
             if (m_reportTimer)
@@ -3571,7 +3579,7 @@ void CopyJob::slotResultRenaming( Job* job )
 
                 RenameDlg_Result r = Observer::self()->open_RenameDlg(
                     this,
-                    err == ERR_FILE_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
+                    err != ERR_DIR_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
                     m_currentSrcURL.url(),
                     dest.url(),
                     mode, newPath,
@@ -3931,7 +3939,7 @@ void DeleteJob::statNextSrc()
         for ( QStringList::Iterator it = m_parentDirs.begin() ; it != m_parentDirs.end() ; ++it )
             KDirWatch::self()->stopDirScan( *it );
         state = STATE_DELETING_FILES;
-	deleteNextFile();
+        deleteNextFile();
     }
 }
 
