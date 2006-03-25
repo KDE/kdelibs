@@ -419,6 +419,9 @@ void HTMLTokenizer::scriptHandler()
     script = false;
     scriptCodeSize = scriptCodeResync = 0;
 
+    if (parser->skipMode() || followingFrameset)
+        return;
+
     if ( !m_executingScript && cachedScript.isEmpty() ) {
         src.append(pendingQueue.pop());
     } else if ( cachedScript.isEmpty() ) {
