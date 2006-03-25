@@ -30,6 +30,7 @@ class QString;
 namespace Phonon
 {
 	class AudioOutputPrivate;
+	class AudioOutputDevice;
 	namespace Ifaces
 	{
 		class AudioOutput;
@@ -76,13 +77,27 @@ namespace Phonon
 		 * category defaults to Phonon::UnspecifiedCategory.
 		 *
 		 * \see Phonon::categoryToString
+		 * \see outputDevice
 		 */
 		Q_PROPERTY( Category category READ category WRITE setCategory )
+		/**
+		 * This property holds the (hardware) destination for the output.
+		 *
+		 * The default device is determined by the category and the global
+		 * configuration for that category of outputs. Normally you don't need
+		 * to override this setting - letting the user change the global
+		 * configuration is the right choice. You can still override the
+		 * device though, if you have good reasons to do so.
+		 *
+		 * \see outputDeviceChanged
+		 */
+		Q_PROPERTY( AudioOutputDevice outputDevice READ outputDevice WRITE setOutputDevice )
 		PHONON_HEIR( AudioOutput )
 		public:
 			QString name() const;
 			float volume() const;
 			Phonon::Category category() const;
+			AudioOutputDevice outputDevice() const;
 
 		private:
 			QString categoryName() const;
@@ -91,6 +106,7 @@ namespace Phonon
 			void setName( const QString& newName );
 			void setVolume( float newVolume );
 			void setCategory( Phonon::Category category );
+			void setOutputDevice( const AudioOutputDevice& newAudioOutputDevice );
 
 		Q_SIGNALS:
 			/**
@@ -100,6 +116,18 @@ namespace Phonon
 			 * to keep a widget showing the current volume up to date.
 			 */
 			void volumeChanged( float newVolume );
+
+			/**
+			 * This signal is emitted when the (hardware) device for the output
+			 * has changed.
+			 *
+			 * The change can happen either through setOutputDevice, if the
+			 * global configuration for the used category has changed or if
+			 * changing the category via setCategory needs another device.
+			 *
+			 * \see outputDevice
+			 */
+			void outputDeviceChanged( const AudioOutputDevice& newAudioOutputDevice );
 	};
 } //namespace Phonon
 

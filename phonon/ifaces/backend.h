@@ -196,37 +196,70 @@ namespace Ifaces
 			virtual void freeSoundcardDevices() = 0;
 
 			/**
-			 * Returns the number of available capture sources. An associated
-			 * name and description can be found using audioSourceName
-			 * and audioSourceDescription.
+			 * Returns the number of available audio output devices. An associated
+			 * name and description can be found using audioOutputDeviceName
+			 * and audioOutputDeviceDescription.
 			 *
-			 * \return The number of available capture sources.
-			 * \see audioSourceName
-			 * \see audioSourceDescription
+			 * \return The number of available output devices.
+			 * \see audioOutputDeviceName
+			 * \see audioOutputDeviceDescription
 			 *
 			 * \test The return value has to be \f$\ge0\f$
 			 */
-			virtual int audioSourceCount() const = 0;
+			virtual int audioOutputDeviceCount() const = 0;
+
+			/**
+			 * Returns the name of the output device.
+			 *
+			 * \param index \f$0<\mathrm{index}\leq\mathrm{audioOutputDeviceCount}\f$
+			 *
+			 * \return The name of this output device.
+			 *
+			 * \test The return value has to be non-empty.
+			 */
+			virtual QString audioOutputDeviceName( int index ) const = 0;
+
+			/**
+			 * Returns a description for the output device.
+			 *
+			 * \param index \f$0<index\leq\f$ audioOutputDeviceCount
+			 *
+			 * \return The description for this output device.
+			 */
+			virtual QString audioOutputDeviceDescription( int index ) const = 0;
+
+			/**
+			 * Returns the number of available capture sources. An associated
+			 * name and description can be found using audioCaptureDeviceName
+			 * and audioCaptureDeviceDescription.
+			 *
+			 * \return The number of available capture sources.
+			 * \see audioCaptureDeviceName
+			 * \see audioCaptureDeviceDescription
+			 *
+			 * \test The return value has to be \f$\ge0\f$
+			 */
+			virtual int audioCaptureDeviceCount() const = 0;
 
 			/**
 			 * Returns the name of the capture source.
 			 *
-			 * \param index \f$0<\mathrm{index}\leq\mathrm{audioSourceCount}\f$
+			 * \param index \f$0<\mathrm{index}\leq\mathrm{audioCaptureDeviceCount}\f$
 			 *
 			 * \return The name of this capture source.
 			 *
 			 * \test The return value has to be non-empty.
 			 */
-			virtual QString audioSourceName( int index ) const = 0;
+			virtual QString audioCaptureDeviceName( int index ) const = 0;
 
 			/**
 			 * Returns a description for the capture source.
 			 *
-			 * \param index \f$0<index\leq\f$ audioSourceCount
+			 * \param index \f$0<index\leq\f$ audioCaptureDeviceCount
 			 *
 			 * \return The description for this capture source.
 			 */
-			virtual QString audioSourceDescription( int index ) const = 0;
+			virtual QString audioCaptureDeviceDescription( int index ) const = 0;
 
 			/**
 			 * Returns the index of the video capture source that is associated
@@ -234,40 +267,40 @@ namespace Ifaces
 			 * source is a TV card, the audio and video sources should be marked
 			 * as belonging together.
 			 */
-			virtual int audioSourceVideoIndex( int index ) const = 0;
+			virtual int audioCaptureDeviceVideoIndex( int index ) const = 0;
 
 			/**
 			 * Returns the number of available capture sources. An associated
-			 * name and description can be found using videoSourceName
-			 * and videoSourceDescription.
+			 * name and description can be found using videoCaptureDeviceName
+			 * and videoCaptureDeviceDescription.
 			 *
 			 * \return The number of available capture sources.
-			 * \see videoSourceName
-			 * \see videoSourceDescription
+			 * \see videoCaptureDeviceName
+			 * \see videoCaptureDeviceDescription
 			 *
 			 * \test The return value has to be \f$\ge0\f$
 			 */
-			virtual int videoSourceCount() const = 0;
+			virtual int videoCaptureDeviceCount() const = 0;
 
 			/**
 			 * Returns the name of the capture source.
 			 *
-			 * \param index \f$0<\mathrm{index}\leq\mathrm{videoSourceCount}\f$
+			 * \param index \f$0<\mathrm{index}\leq\mathrm{videoCaptureDeviceCount}\f$
 			 *
 			 * \return The name of this capture source.
 			 *
 			 * \test The return value has to be non-empty.
 			 */
-			virtual QString videoSourceName( int index ) const = 0;
+			virtual QString videoCaptureDeviceName( int index ) const = 0;
 
 			/**
 			 * Returns a description for the capture source.
 			 *
-			 * \param index \f$0<index\leq\f$ videoSourceCount
+			 * \param index \f$0<\mathrm{index}\leq\mathrm{videoCaptureDeviceCount}\f$
 			 *
 			 * \return The description for this capture source.
 			 */
-			virtual QString videoSourceDescription( int index ) const = 0;
+			virtual QString videoCaptureDeviceDescription( int index ) const = 0;
 
 			/**
 			 * Returns the index of the audio capture source that is associated
@@ -275,7 +308,7 @@ namespace Ifaces
 			 * source is a TV card, the audio and video sources should be marked
 			 * as belonging together.
 			 */
-			virtual int videoSourceAudioIndex( int index ) const = 0;
+			virtual int videoCaptureDeviceAudioIndex( int index ) const = 0;
 
 			// effects
 			virtual const QStringList& availableAudioEffects() const = 0;

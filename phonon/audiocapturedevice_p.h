@@ -24,30 +24,24 @@
 
 namespace Phonon
 {
-	class AudioSourcePrivate : public NameDescriptionTuplePrivate
+	class AudioCaptureDevicePrivate : public NameDescriptionTuplePrivate
 	{
-		Q_DECLARE_PUBLIC( AudioSource )
+		Q_DECLARE_PUBLIC( AudioCaptureDevice )
 		protected:
-			AudioSourcePrivate()
+			AudioCaptureDevicePrivate()
 				: NameDescriptionTuplePrivate()
 				, videoIndex( -1 )
 			{
 			}
 
-			AudioSourcePrivate( const AudioSourcePrivate* cpy )
-				: NameDescriptionTuplePrivate( cpy )
-				, videoIndex( cpy->videoIndex )
-			{
-			}
-			
-			AudioSourcePrivate& operator=( const AudioSourcePrivate& rhs )
+			AudioCaptureDevicePrivate& operator=( const AudioCaptureDevicePrivate& rhs )
 			{
 				videoIndex = rhs.videoIndex;
 				NameDescriptionTuplePrivate::operator=( rhs );
 				return *this;
 			}
 
-			bool operator==( const AudioSourcePrivate& rhs ) const
+			bool operator==( const AudioCaptureDevicePrivate& rhs ) const
 			{
 				return NameDescriptionTuplePrivate::operator==( rhs ) && videoIndex == rhs.videoIndex;
 			}

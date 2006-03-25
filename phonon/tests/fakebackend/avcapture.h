@@ -33,10 +33,10 @@ namespace Fake
 			AvCapture( QObject* parent );
 			virtual ~AvCapture();
 
-			virtual int audioSource() const;
-			virtual int setAudioSource( int index );
-			virtual int videoSource() const;
-			virtual int setVideoSource( int index );
+			virtual int audioCaptureDevice() const;
+			virtual int setAudioCaptureDevice( int index );
+			virtual int videoCaptureDevice() const;
+			virtual int setVideoCaptureDevice( int index );
 
 		private:
 	};

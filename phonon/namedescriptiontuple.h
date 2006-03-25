@@ -87,18 +87,22 @@ class PHONONCORE_EXPORT NameDescriptionTuple
 				const QString& name, const QString& description );
 		/**
 		 * \internal
-		 * for copy ctor
-		 */
-		NameDescriptionTuple( NameDescriptionTuplePrivate &dd );
-
-		/**
-		 * \internal
 		 * private data pointer
 		 */
 		NameDescriptionTuplePrivate* d_ptr;
 
 	private:
-		Q_DISABLE_COPY( NameDescriptionTuple )
+		/**
+		 * \internal
+		 * disable copy ctor
+		 */
+		NameDescriptionTuple( const NameDescriptionTuple & );
+
+		/**
+		 * \internal
+		 * disable assignment operator
+		 */
+		const NameDescriptionTuple& operator=( const NameDescriptionTuple& );
 };
 } //namespace Phonon
 

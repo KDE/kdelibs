@@ -17,44 +17,19 @@
 
 */
 
-#ifndef PHONON_VIDEOCAPTURESOURCE_P_H
-#define PHONON_VIDEOCAPTURESOURCE_P_H
+#ifndef PHONON_AUDIOOUTPUTDEVICE_P_H
+#define PHONON_AUDIOOUTPUTDEVICE_P_H
 
 #include "namedescriptiontuple_p.h"
 
 namespace Phonon
 {
-	class VideoSourcePrivate : public NameDescriptionTuplePrivate
+	class AudioOutputDevicePrivate : public NameDescriptionTuplePrivate
 	{
-		Q_DECLARE_PUBLIC( VideoSource )
+		Q_DECLARE_PUBLIC( AudioOutputDevice )
 		protected:
-			VideoSourcePrivate()
-				: NameDescriptionTuplePrivate()
-				, audioIndex( -1 )
-			{
-			}
-
-			VideoSourcePrivate( const VideoSourcePrivate* cpy )
-				: NameDescriptionTuplePrivate( cpy )
-				, audioIndex( cpy->audioIndex )
-			{
-			}
-			
-			VideoSourcePrivate& operator=( const VideoSourcePrivate& rhs )
-			{
-				audioIndex = rhs.audioIndex;
-				NameDescriptionTuplePrivate::operator=( rhs );
-				return *this;
-			}
-
-			bool operator==( const VideoSourcePrivate& rhs ) const
-			{
-				return NameDescriptionTuplePrivate::operator==( rhs ) && audioIndex == rhs.audioIndex;
-			}
-
-			int audioIndex;
 	};
 } // namespace Phonon
 
-#endif // PHONON_VIDEOCAPTURESOURCE_P_H
+#endif // PHONON_AUDIOOUTPUTDEVICE_P_H
 // vim: sw=4 ts=4 noet tw=80

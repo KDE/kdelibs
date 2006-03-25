@@ -17,49 +17,38 @@
 
 */
 
-#include "namedescriptiontuple.h"
+#ifndef PHONON_VIDEOCAPTUREDEVICE_P_H
+#define PHONON_VIDEOCAPTUREDEVICE_P_H
+
 #include "namedescriptiontuple_p.h"
-#include <QString>
 
 namespace Phonon
 {
+	class VideoCaptureDevicePrivate : public NameDescriptionTuplePrivate
+	{
+		Q_DECLARE_PUBLIC( VideoCaptureDevice )
+		protected:
+			VideoCaptureDevicePrivate()
+				: NameDescriptionTuplePrivate()
+				, audioIndex( -1 )
+			{
+			}
 
-NameDescriptionTuple::NameDescriptionTuple( NameDescriptionTuplePrivate& dd,
-		int index, const QString& name, const QString& description )
-	: d_ptr( &dd )
-{
-	Q_D( NameDescriptionTuple );
-	d->index = index;
-	d->name = name;
-	d->description = description;
-}
+			VideoCaptureDevicePrivate& operator=( const VideoCaptureDevicePrivate& rhs )
+			{
+				audioIndex = rhs.audioIndex;
+				NameDescriptionTuplePrivate::operator=( rhs );
+				return *this;
+			}
 
-NameDescriptionTuple::~NameDescriptionTuple()
-{
-	Q_D( NameDescriptionTuple );
-	delete d;
-	d_ptr = 0;
-}
+			bool operator==( const VideoCaptureDevicePrivate& rhs ) const
+			{
+				return NameDescriptionTuplePrivate::operator==( rhs ) && audioIndex == rhs.audioIndex;
+			}
 
-int NameDescriptionTuple::index() const
-{
-	return d_func()->index;
-}
+			int audioIndex;
+	};
+} // namespace Phonon
 
-const QString& NameDescriptionTuple::name() const
-{
-	return d_func()->name;
-}
-
-const QString& NameDescriptionTuple::description() const
-{
-	return d_func()->description;
-}
-
-bool NameDescriptionTuple::isValid() const
-{
-	return d_func()->index != -1;
-}
-
-} //namespace Phonon
-// vim: sw=4 ts=4 noet
+#endif // PHONON_VIDEOCAPTUREDEVICE_P_H
+// vim: sw=4 ts=4 noet tw=80

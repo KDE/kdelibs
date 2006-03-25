@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,6 +20,7 @@
 #include "audiooutput_p.h"
 #include "ifaces/audiooutput.h"
 #include "factory.h"
+#include "audiooutputdevice.h"
 
 #include <kglobal.h>
 #include <kinstance.h>
@@ -39,7 +40,7 @@ void AudioOutput::setName( const QString& newName )
 {
 	K_D( AudioOutput );
 	if( d->iface() )
-		d->name = d->iface()->setName( newName );
+		d->iface()->setName( newName );
 	else
 		d->name = newName;
 }
@@ -54,7 +55,7 @@ void AudioOutput::setVolume( float newVolume )
 {
 	K_D( AudioOutput );
 	if( d->iface() )
-		d->volume = d->iface()->setVolume( newVolume );
+		d->iface()->setVolume( newVolume );
 	else
 		d->volume = newVolume;
 }
@@ -75,6 +76,22 @@ void AudioOutput::setCategory( Category c )
 {
 	K_D( AudioOutput );
 	d->category = c;
+	//TODO: select the according AudioOutputDevice
+}
+
+AudioOutputDevice AudioOutput::outputDevice() const
+{
+	K_D( const AudioOutput );
+	return AudioOutputDevice::fromIndex( d->iface() ? d->iface()->outputDevice() : d->outputDeviceIndex );
+}
+
+void AudioOutput::setOutputDevice( const AudioOutputDevice& newAudioOutputDevice )
+{
+	K_D( AudioOutput );
+	if( iface() )
+		d->iface()->setOutputDevice( newAudioOutputDevice.index() );
+	else
+		d->outputDeviceIndex = newAudioOutputDevice.index();
 }
 
 bool AudioOutputPrivate::aboutToDeleteIface()

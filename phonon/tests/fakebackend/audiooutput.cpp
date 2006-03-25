@@ -33,6 +33,7 @@ namespace Fake
 {
 AudioOutput::AudioOutput( QObject* parent )
 	: AbstractAudioOutput( parent )
+	, m_device( 1 )
 	, m_dsp( "/dev/dsp" )
 {
 }
@@ -51,17 +52,27 @@ float AudioOutput::volume() const
 	return m_volume;
 }
 
-QString AudioOutput::setName( const QString& newName )
+int AudioOutput::outputDevice() const
 {
-	m_name = newName;
-	return m_name;
+	return m_device;
 }
 
-float AudioOutput::setVolume( float newVolume )
+void AudioOutput::setName( const QString& newName )
+{
+	m_name = newName;
+}
+
+void AudioOutput::setVolume( float newVolume )
 {
 	m_volume = newVolume;
 	emit volumeChanged( m_volume );
-	return m_volume;
+}
+
+void AudioOutput::setOutputDevice( int newDevice )
+{
+	Q_ASSERT( newDevice >= 1 );
+	Q_ASSERT( newDevice <= 2 );
+	m_device = newDevice;
 }
 
 void AudioOutput::processBuffer( const QVector<float>& buffer )

@@ -37,10 +37,12 @@ namespace Fake
 			// Attributes Getters:
 			virtual QString name() const;
 			virtual float volume() const;
+			virtual int outputDevice() const;
 
 			// Attributes Setters:
-			virtual QString setName( const QString& newName );
-			virtual float setVolume( float newVolume );
+			virtual void setName( const QString& newName );
+			virtual void setVolume( float newVolume );
+			virtual void setOutputDevice( int newDevice );
 
 			virtual void processBuffer( const QVector<float>& buffer );
 
@@ -53,6 +55,7 @@ namespace Fake
 		private:
 			float m_volume;
 			QString m_name;
+			int m_device;
 			QFile m_dsp;
 	};
 }} //namespace Phonon::Fake

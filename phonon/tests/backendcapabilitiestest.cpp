@@ -21,6 +21,9 @@
 #include "backendcapabilitiestest.h"
 #include "../backendcapabilities.h"
 #include "../factory.h"
+#include "../audiooutputdevice.h"
+#include "../audiocapturedevice.h"
+#include "../videocapturedevice.h"
 
 using namespace Phonon;
 
@@ -34,8 +37,24 @@ void BackendCapabilitiesTest::sensibleValues()
 	BackendCapabilities* c = BackendCapabilities::self();
 	//if( c->supportsVideo() ) create VideoWidget and such - needs UI libs
 	QVERIFY( c->knownMimeTypes().size() > 0 ); // a backend that doesn't know any mimetypes is useless
-	QVERIFY( c->availableAudioSources().size() >= 0 );
-	QVERIFY( c->availableVideoSources().size() >= 0 );
+	QVERIFY( c->availableAudioOutputDevices().size() >= 0 );
+	for( int i = 0; i < c->availableAudioOutputDevices().size(); ++i )
+	{
+		QVERIFY( c->availableAudioOutputDevices().at( i ).index() == i+1 );
+		QVERIFY( !c->availableAudioOutputDevices().at( i ).name().isEmpty() );
+	}
+	QVERIFY( c->availableAudioCaptureDevices().size() >= 0 );
+	for( int i = 0; i < c->availableAudioCaptureDevices().size(); ++i )
+	{
+		QVERIFY( c->availableAudioCaptureDevices().at( i ).index() == i+1 );
+		QVERIFY( !c->availableAudioCaptureDevices().at( i ).name().isEmpty() );
+	}
+	QVERIFY( c->availableVideoCaptureDevices().size() >= 0 );
+	for( int i = 0; i < c->availableVideoCaptureDevices().size(); ++i )
+	{
+		QVERIFY( c->availableVideoCaptureDevices().at( i ).index() == i+1 );
+		QVERIFY( !c->availableVideoCaptureDevices().at( i ).name().isEmpty() );
+	}
 	QVERIFY( c->availableAudioEffects().size() >= 0 );
 	QVERIFY( c->availableVideoEffects().size() >= 0 );
 }

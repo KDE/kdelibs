@@ -31,10 +31,10 @@ namespace Ifaces
 	class AvCapture : virtual public AbstractMediaProducer
 	{
 		public:
-			virtual int audioSource() const = 0;
-			virtual int setAudioSource( int index ) = 0;
-			virtual int videoSource() const = 0;
-			virtual int setVideoSource( int index ) = 0;
+			virtual int audioCaptureDevice() const = 0;
+			virtual int setAudioCaptureDevice( int index ) = 0;
+			virtual int videoCaptureDevice() const = 0;
+			virtual int setVideoCaptureDevice( int index ) = 0;
 	};
 }} //namespace Phonon::Ifaces
 

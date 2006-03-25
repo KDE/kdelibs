@@ -25,12 +25,14 @@
 #include <kdelibs_export.h>
 #include <kstaticdeleter.h>
 #include <kmimetype.h>
-#include <QList>
-#include "videosource.h"
-#include "audiosource.h"
+
+template<class T> class QList;
 
 namespace Phonon
 {
+class AudioOutputDevice;
+class AudioCaptureDevice;
+class VideoCaptureDevice;
 
 /**
  * Singleton class describing the capabilities of the Backend.
@@ -76,20 +78,28 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		KMimeType::List knownMimeTypes() const;
 
 		/**
-		 * Returns the audio sources the backend supports.
+		 * Returns the audio output devices the backend supports.
 		 *
-		 * \return A list of AudioSource objects that give a name and
-		 * description for every supported audio source.
+		 * \return A list of AudioOutputDevice objects that give a name and
+		 * description for every supported audio output device.
 		 */
-		QList<AudioSource> availableAudioSources() const;
+		QList<AudioOutputDevice> availableAudioOutputDevices() const;
 
 		/**
-		 * Returns the video sources the backend supports.
+		 * Returns the audio capture devices the backend supports.
 		 *
-		 * \return A list of VideoSource objects that give a name and
-		 * description for every supported video source.
+		 * \return A list of AudioCaptureDevice objects that give a name and
+		 * description for every supported audio capture device.
 		 */
-		QList<VideoSource> availableVideoSources() const;
+		QList<AudioCaptureDevice> availableAudioCaptureDevices() const;
+
+		/**
+		 * Returns the video capture devices the backend supports.
+		 *
+		 * \return A list of VideoCaptureDevice objects that give a name and
+		 * description for every supported video capture device.
+		 */
+		QList<VideoCaptureDevice> availableVideoCaptureDevices() const;
 
 		QStringList availableAudioEffects() const;
 		QStringList availableVideoEffects() const;

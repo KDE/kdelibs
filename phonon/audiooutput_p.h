@@ -37,6 +37,7 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 		AudioOutputPrivate()
 			: volume( 1.0 )
 			, category( Phonon::UnspecifiedCategory )
+			, outputDeviceIndex( -1 )
 		{ 
 			const KAboutData* ad = KGlobal::instance()->aboutData();
 			if( ad )
@@ -49,6 +50,7 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 		float volume;
 		Category category;
 		QString name;
+		int outputDeviceIndex;
 };
 } //namespace Phonon
 

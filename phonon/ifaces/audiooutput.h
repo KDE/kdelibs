@@ -33,10 +33,12 @@ namespace Ifaces
 			// Attributes Getters:
 			virtual QString name() const = 0;
 			virtual float volume() const = 0;
+			virtual int outputDevice() const = 0;
 
 			// Attributes Setters:
-			virtual QString setName( const QString& newName ) = 0;
-			virtual float setVolume( float newVolume ) = 0;
+			virtual void setName( const QString& newName ) = 0;
+			virtual void setVolume( float newVolume ) = 0;
+			virtual void setOutputDevice( int newDevice ) = 0;
 
 		//Q_SIGNALS:
 		protected:

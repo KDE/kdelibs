@@ -29,35 +29,35 @@ MediaObject::MediaObject( QObject* parent )
 	: AbstractMediaProducer( parent )
 	, m_aboutToFinishNotEmitted( true )
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 }
 
 MediaObject::~MediaObject()
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 }
 
 KUrl MediaObject::url() const
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 	return m_url;
 }
 
 long MediaObject::totalTime() const
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 	return 1000*60*3; // 3 minutes
 }
 
 long MediaObject::aboutToFinishTime() const
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 	return m_aboutToFinishTime;
 }
 
 void MediaObject::setUrl( const KUrl& url )
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 	stop();
 	m_url = url;
 	emit length( totalTime() );
@@ -65,7 +65,7 @@ void MediaObject::setUrl( const KUrl& url )
 
 void MediaObject::setAboutToFinishTime( long newAboutToFinishTime )
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 	m_aboutToFinishTime = newAboutToFinishTime;
 	if( currentTime() < totalTime() - m_aboutToFinishTime ) // not about to finish
 		m_aboutToFinishNotEmitted = true;
@@ -73,13 +73,13 @@ void MediaObject::setAboutToFinishTime( long newAboutToFinishTime )
 
 void MediaObject::play()
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 	AbstractMediaProducer::play();
 }
 
 void MediaObject::pause()
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 	if( state() == PlayingState || state() == BufferingState )
 	{
 		AbstractMediaProducer::pause();
@@ -88,14 +88,14 @@ void MediaObject::pause()
 
 void MediaObject::stop()
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 	AbstractMediaProducer::stop();
 	m_aboutToFinishNotEmitted = true;
 }
 
 void MediaObject::seek( long time )
 {
-	kDebug() << k_funcinfo << endl;
+	//kDebug() << k_funcinfo << endl;
 	AbstractMediaProducer::seek( time );
 
 	if( currentTime() < totalTime() - m_aboutToFinishTime ) // not about to finish

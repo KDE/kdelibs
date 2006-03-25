@@ -32,23 +32,23 @@ AvCapture::~AvCapture()
 {
 }
 
-int AvCapture::audioSource() const
+int AvCapture::audioCaptureDevice() const
 {
 	return 1;
 }
 
-int AvCapture::setAudioSource( int index )
+int AvCapture::setAudioCaptureDevice( int index )
 {
 	Q_UNUSED( index );
 	return 1;
 }
 
-int AvCapture::videoSource() const
+int AvCapture::videoCaptureDevice() const
 {
 	return 1;
 }
 
-int AvCapture::setVideoSource( int index )
+int AvCapture::setVideoCaptureDevice( int index )
 {
 	Q_UNUSED( index );
 	return 1;

@@ -74,15 +74,19 @@ namespace Fake
 
 			virtual void freeSoundcardDevices();
 
-			virtual int audioSourceCount() const;
-			virtual QString audioSourceName( int index ) const;
-			virtual QString audioSourceDescription( int index ) const;
-			virtual int audioSourceVideoIndex( int index ) const;
+			virtual int audioOutputDeviceCount() const;
+			virtual QString audioOutputDeviceName( int index ) const;
+			virtual QString audioOutputDeviceDescription( int index ) const;
 
-			virtual int videoSourceCount() const;
-			virtual QString videoSourceName( int index ) const;
-			virtual QString videoSourceDescription( int index ) const;
-			virtual int videoSourceAudioIndex( int index ) const;
+			virtual int audioCaptureDeviceCount() const;
+			virtual QString audioCaptureDeviceName( int index ) const;
+			virtual QString audioCaptureDeviceDescription( int index ) const;
+			virtual int audioCaptureDeviceVideoIndex( int index ) const;
+
+			virtual int videoCaptureDeviceCount() const;
+			virtual QString videoCaptureDeviceName( int index ) const;
+			virtual QString videoCaptureDeviceDescription( int index ) const;
+			virtual int videoCaptureDeviceAudioIndex( int index ) const;
 
 			// effects
 			virtual const QStringList& availableAudioEffects() const;

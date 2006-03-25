@@ -28,8 +28,8 @@ class QStringList;
 namespace Phonon
 {
 	class AvCapturePrivate;
-	class AudioSource;
-	class VideoSource;
+	class AudioCaptureDevice;
+	class VideoCaptureDevice;
 	namespace Ifaces
 	{
 		class AvCapture;
@@ -42,12 +42,12 @@ namespace Phonon
 	 * This class gives you access to the capture capabilities of the backend.
 	 * There might be more than only one possible capture source, for audio, as
 	 * well as for video. The list of available sources is available through
-	 * BackendCapabilities::availableAudioSources and
-	 * BackendCapabilities::availableVideoSources.
+	 * BackendCapabilities::availableAudioCaptureDevices and
+	 * BackendCapabilities::availableVideoCaptureDevices.
 	 *
 	 * @author Matthias Kretz <kretz@kde.org>
-	 * @see BackendCapabilities::availableAudioSources
-	 * @see BackendCapabilities::availableVideoSources
+	 * @see BackendCapabilities::availableAudioCaptureDevices
+	 * @see BackendCapabilities::availableVideoCaptureDevices
 	 */
 	class PHONONCORE_EXPORT AvCapture : public AbstractMediaProducer
 	{
@@ -58,69 +58,69 @@ namespace Phonon
 			/**
 			 * Returns the currently used capture source for the audio signal.
 			 *
-			 * @see AudioSource
-			 * @see setAudioSource( const AudioSource& )
-			 * @see setAudioSource( int )
+			 * @see AudioCaptureDevice
+			 * @see setAudioCaptureDevice( const AudioCaptureDevice& )
+			 * @see setAudioCaptureDevice( int )
 			 */
-			const AudioSource& audioSource() const;
+			AudioCaptureDevice audioCaptureDevice() const;
 
 			/**
 			 * Returns the currently used capture source for the video signal.
 			 *
-			 * @see VideoSource
-			 * @see setVideoSource( const VideoSource& )
-			 * @see setVideoSource( int )
+			 * @see VideoCaptureDevice
+			 * @see setVideoCaptureDevice( const VideoCaptureDevice& )
+			 * @see setVideoCaptureDevice( int )
 			 */
-			const VideoSource& videoSource() const;
+			VideoCaptureDevice videoCaptureDevice() const;
 
 		public Q_SLOTS:
 			/**
 			 * Sets the audio capture source to use.
 			 *
-			 * @param source An object of class AudioSource. A list of
+			 * @param source An object of class AudioCaptureDevice. A list of
 			 * available objects can be queried from
-			 * BackendCapabilities::availableAudioSources.
+			 * BackendCapabilities::availableAudioCaptureDevices.
 			 *
-			 * @see audioSource
-			 * @see setAudioSource( int )
+			 * @see audioCaptureDevice
+			 * @see setAudioCaptureDevice( int )
 			 */
-			void setAudioSource( const AudioSource& source );
+			void setAudioCaptureDevice( const AudioCaptureDevice& source );
 
 			/**
 			 * Sets the capture source to use.
 			 *
 			 * @param sourceIndex An index corresponding an object of class
-			 * AudioSource. A list of available objects can be queried from
-			 * BackendCapabilities::availableAudioSources.
+			 * AudioCaptureDevice. A list of available objects can be queried from
+			 * BackendCapabilities::availableAudioCaptureDevices.
 			 *
-			 * @see audioSource
-			 * @see setAudioSource( const AudioSource& )
+			 * @see audioCaptureDevice
+			 * @see setAudioCaptureDevice( const AudioCaptureDevice& )
 			 */
-			void setAudioSource( int sourceIndex );
+			void setAudioCaptureDevice( int sourceIndex );
 
 			/**
 			 * Sets the video capture source to use.
 			 *
-			 * @param source An object of class VideoSource. A list of
+			 * @param source An object of class VideoCaptureDevice. A list of
 			 * available objects can be queried from
-			 * BackendCapabilities::availableVideoSources.
+			 * BackendCapabilities::availableVideoCaptureDevices.
 			 *
-			 * @see videoSource
-			 * @see setVideoSource( int )
+			 * @see videoCaptureDevice
+			 * @see setVideoCaptureDevice( int )
 			 */
-			void setVideoSource( const VideoSource& source );
+			void setVideoCaptureDevice( const VideoCaptureDevice& source );
 
 			/**
 			 * Sets the capture source to use.
 			 *
 			 * @param sourceIndex An index corresponding an object of class
-			 * VideoSource. A list of available objects can be queried from
-			 * BackendCapabilities::availableVideoSources.
+			 * VideoCaptureDevice. A list of available objects can be queried from
+			 * BackendCapabilities::availableVideoCaptureDevices.
 			 *
-			 * @see videoSource
-			 * @see setVideoSource( const VideoSource& )
+			 * @see videoCaptureDevice
+			 * @see setVideoCaptureDevice( const VideoCaptureDevice& )
 			 */
-			void setVideoSource( int sourceIndex );
+			void setVideoCaptureDevice( int sourceIndex );
 	};
 } //namespace Phonon
 

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,94 +21,65 @@
 #include "ifaces/avcapture.h"
 #include "factory.h"
 #include "ifaces/backend.h"
+#include "audiocapturedevice.h"
+#include "videocapturedevice.h"
 
 namespace Phonon
 {
 PHONON_HEIR_IMPL( AvCapture, AbstractMediaProducer )
 
-const AudioSource& AvCapture::audioSource() const
+AudioCaptureDevice AvCapture::audioCaptureDevice() const
 {
 	K_D( const AvCapture );
-	if( d->iface() && d->iface()->audioSource() != d->audioSource.index() )
-	{
-		int index = d->iface()->audioSource();
-		const Ifaces::Backend* backend = Factory::self()->backend();
-		const_cast<AvCapturePrivate*>( d )->audioSource = AudioSource( index,
-				backend->audioSourceName( index ),
-				backend->audioSourceDescription( index ) );
-	}
-	return d->audioSource;
+	return AudioCaptureDevice::fromIndex( d->iface() ? d->iface()->audioCaptureDevice() : d->audioCaptureDevice );
 }
 
-void AvCapture::setAudioSource( const AudioSource& audioSource )
+void AvCapture::setAudioCaptureDevice( const AudioCaptureDevice& audioCaptureDevice )
 {
 	K_D( AvCapture );
 	if( d->iface() )
-		d->iface()->setAudioSource( audioSource.index() );
+		d->iface()->setAudioCaptureDevice( audioCaptureDevice.index() );
 	else
-		d->audioSource = audioSource;
+		d->audioCaptureDevice = audioCaptureDevice.index();
 }
 
-void AvCapture::setAudioSource( int audioSourceIndex )
+void AvCapture::setAudioCaptureDevice( int audioCaptureDeviceIndex )
 {
 	K_D( AvCapture );
 	if( d->iface() )
-		d->iface()->setAudioSource( audioSourceIndex );
+		d->iface()->setAudioCaptureDevice( audioCaptureDeviceIndex );
 	else
-	{
-		const Ifaces::Backend* backend = Factory::self()->backend();
-		if( backend )
-			d->audioSource = AudioSource( audioSourceIndex,
-					backend->audioSourceName( audioSourceIndex ),
-					backend->audioSourceDescription( audioSourceIndex ) );
-	}
+		d->audioCaptureDevice = audioCaptureDeviceIndex;
 }
 
-const VideoSource& AvCapture::videoSource() const
+VideoCaptureDevice AvCapture::videoCaptureDevice() const
 {
 	K_D( const AvCapture );
-	if( d->iface() && d->iface()->videoSource() != d->videoSource.index() )
-	{
-		int index = d->iface()->videoSource();
-		const Ifaces::Backend* backend = Factory::self()->backend();
-		const_cast<AvCapturePrivate*>( d )->videoSource = VideoSource( index,
-				backend->videoSourceName( index ),
-				backend->videoSourceDescription( index ) );
-	}
-	return d->videoSource;
+	return VideoCaptureDevice::fromIndex( d->iface() ? d->iface()->videoCaptureDevice() : d->videoCaptureDevice );
 }
 
-void AvCapture::setVideoSource( const VideoSource& videoSource )
+void AvCapture::setVideoCaptureDevice( const VideoCaptureDevice& videoCaptureDevice )
 {
 	K_D( AvCapture );
 	if( d->iface() )
-		d->iface()->setVideoSource( videoSource.index() );
+		d->iface()->setVideoCaptureDevice( videoCaptureDevice.index() );
 	else
-		d->videoSource = videoSource;
+		d->videoCaptureDevice = videoCaptureDevice.index();
 }
 
-void AvCapture::setVideoSource( int videoSourceIndex )
+void AvCapture::setVideoCaptureDevice( int videoCaptureDeviceIndex )
 {
 	K_D( AvCapture );
 	if( d->iface() )
-		d->iface()->setVideoSource( videoSourceIndex );
+		d->iface()->setVideoCaptureDevice( videoCaptureDeviceIndex );
 	else
-	{
-		const Ifaces::Backend* backend = Factory::self()->backend();
-		if( backend )
-			d->videoSource = VideoSource( videoSourceIndex,
-					backend->videoSourceName( videoSourceIndex ),
-					backend->videoSourceDescription( videoSourceIndex ) );
-	}
+		d->videoCaptureDevice = videoCaptureDeviceIndex;
 }
 
 bool AvCapturePrivate::aboutToDeleteIface()
 {
-	int index = iface()->audioSource();
-	const Ifaces::Backend* backend = Factory::self()->backend();
-	audioSource = AudioSource( index,
-			backend->audioSourceName( index ),
-			backend->audioSourceDescription( index ) );
+	audioCaptureDevice = iface()->audioCaptureDevice();
+	videoCaptureDevice = iface()->videoCaptureDevice();
 	return AbstractMediaProducerPrivate::aboutToDeleteIface();
 }
 
@@ -119,7 +90,8 @@ void AvCapture::setupIface()
 	AbstractMediaProducer::setupIface();
 
 	// set up attributes
-	d->iface()->setAudioSource( d->audioSource.index() );
+	d->iface()->setAudioCaptureDevice( d->audioCaptureDevice );
+	d->iface()->setVideoCaptureDevice( d->videoCaptureDevice );
 }
 
 } //namespace Phonon

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef PHONON_AUDIOCAPTURESOURCE_H
-#define PHONON_AUDIOCAPTURESOURCE_H
+#ifndef PHONON_AUDIOCAPTUREDEVICE_H
+#define PHONON_AUDIOCAPTUREDEVICE_H
 
 #include "namedescriptiontuple.h"
 
@@ -26,8 +26,8 @@ class QString;
 
 namespace Phonon
 {
-	class AudioSourcePrivate;
-	class VideoSource;
+	class AudioCaptureDevicePrivate;
+	class VideoCaptureDevice;
 
 /**
  * \short Description for possible AvCapture audio choices.
@@ -38,76 +38,73 @@ namespace Phonon
  *
  * \author Matthias Kretz <kretz@kde.org>
  * \see AvCapture
- * \see VideoSource
+ * \see VideoCaptureDevice
  */
-class PHONONCORE_EXPORT AudioSource : public NameDescriptionTuple
+class PHONONCORE_EXPORT AudioCaptureDevice : public NameDescriptionTuple
 {
-	Q_DECLARE_PRIVATE( AudioSource )
-	friend class BackendCapabilities;
-	friend class AvCapture;
-	friend class AvCapturePrivate;
+	Q_DECLARE_PRIVATE( AudioCaptureDevice )
 	public:
 		/**
-		 * Constructs an invalid AudioSource
+		 * Constructs an invalid AudioCaptureDevice
 		 *
 		 * \see isValid
 		 */
-		AudioSource();
+		AudioCaptureDevice();
 
 		/**
-		 * Constructs a copy of \p audioSource.
+		 * Constructs a copy of \p audioCaptureDevice.
 		 *
 		 * \see isValid
 		 */
-		AudioSource( const AudioSource& audioSource );
+		AudioCaptureDevice( const AudioCaptureDevice& audioCaptureDevice );
 
-		~AudioSource();
-
-		/**
-		 * Assigns a copy of the AudioSource \p audioSource to this
-		 * AudioSource and returns a reference to it.
-		 */
-		const AudioSource& operator=( const AudioSource& audioSource );
+		~AudioCaptureDevice();
 
 		/**
-		 * Returns \c true if this AudioSource describes the same source
-		 * as \p audioSource; otherwise returns \c false.
+		 * Assigns a copy of the AudioCaptureDevice \p audioCaptureDevice to this
+		 * AudioCaptureDevice and returns a reference to it.
 		 */
-		bool operator==( const AudioSource& audioSource ) const;
+		const AudioCaptureDevice& operator=( const AudioCaptureDevice& audioCaptureDevice );
+
+		/**
+		 * Returns \c true if this AudioCaptureDevice describes the same source
+		 * as \p audioCaptureDevice; otherwise returns \c false.
+		 */
+		bool operator==( const AudioCaptureDevice& audioCaptureDevice ) const;
 
 		/**
 		 * Tells whether this audio source is associated with a video
 		 * source. For example a DV capture will provide both an audio
 		 * and a video signal.
 		 *
-		 * \return The index of the VideoSource, or \c -1 if
+		 * \return The index of the VideoCaptureDevice, or \c -1 if
 		 * there is none.
 		 *
-		 * \see associatedVideoSource
+		 * \see associatedVideoCaptureDevice
 		 */
-		int indexOfAssociatedVideoSource() const;
+		int indexOfAssociatedVideoCaptureDevice() const;
 
 		/**
-		 * Returns the VideoSource object of the associated video
+		 * Returns the VideoCaptureDevice object of the associated video
 		 * source.
 		 *
-		 * \see indexOfAssociatedVideoSource
+		 * \see indexOfAssociatedVideoCaptureDevice
 		 */
-		VideoSource associatedVideoSource() const;
+		VideoCaptureDevice associatedVideoCaptureDevice() const;
 
 		/**
-		 * Returns a new AudioSource object that describes the source
+		 * Returns a new AudioCaptureDevice object that describes the source
 		 * with the given \p index.
 		 */
-		static AudioSource fromIndex( int index );
+		static AudioCaptureDevice fromIndex( int index );
 
 	protected:
 		/**
 		 * \internal
 		 * Sets the data.
 		 */
-		AudioSource( int index, const QString& name, const QString& description, int videoIndex = -1 );
+		AudioCaptureDevice( int index, const QString& name, const QString& description, int videoIndex = -1 );
 };
 } //namespace Phonon
 
-#endif // PHONON_CAPTURESOURCE_H
+#endif // PHONON_AUDIOCAPTUREDEVICE_H

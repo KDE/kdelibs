@@ -126,12 +126,35 @@ const KMimeType::List& Backend::knownMimeTypes() const
 	return m_supportedMimeTypes;
 }
 
-int Backend::audioSourceCount() const
+int Backend::audioOutputDeviceCount() const
 {
 	return 2;
 }
 
-QString Backend::audioSourceName( int index ) const
+QString Backend::audioOutputDeviceName( int index ) const
+{
+	switch( index )
+	{
+		case 1:
+			return "internal Soundcard";
+		case 2:
+			return "USB Headset";
+	}
+	return QString();
+}
+
+QString Backend::audioOutputDeviceDescription( int index ) const
+{
+	Q_UNUSED( index );
+	return QString(); // no description
+}
+
+int Backend::audioCaptureDeviceCount() const
+{
+	return 2;
+}
+
+QString Backend::audioCaptureDeviceName( int index ) const
 {
 	switch( index )
 	{
@@ -144,7 +167,7 @@ QString Backend::audioSourceName( int index ) const
 	}
 }
 
-QString Backend::audioSourceDescription( int index ) const
+QString Backend::audioCaptureDeviceDescription( int index ) const
 {
 	switch( index )
 	{
@@ -157,7 +180,7 @@ QString Backend::audioSourceDescription( int index ) const
 	}
 }
 
-int Backend::audioSourceVideoIndex( int index ) const
+int Backend::audioCaptureDeviceVideoIndex( int index ) const
 {
 	switch( index )
 	{
@@ -168,12 +191,12 @@ int Backend::audioSourceVideoIndex( int index ) const
 	}
 }
 
-int Backend::videoSourceCount() const
+int Backend::videoCaptureDeviceCount() const
 {
 	return 2;
 }
 
-QString Backend::videoSourceName( int index ) const
+QString Backend::videoCaptureDeviceName( int index ) const
 {
 	switch( index )
 	{
@@ -186,7 +209,7 @@ QString Backend::videoSourceName( int index ) const
 	}
 }
 
-QString Backend::videoSourceDescription( int index ) const
+QString Backend::videoCaptureDeviceDescription( int index ) const
 {
 	switch( index )
 	{
@@ -199,7 +222,7 @@ QString Backend::videoSourceDescription( int index ) const
 	}
 }
 
-int Backend::videoSourceAudioIndex( int index ) const
+int Backend::videoCaptureDeviceAudioIndex( int index ) const
 {
 	switch( index )
 	{

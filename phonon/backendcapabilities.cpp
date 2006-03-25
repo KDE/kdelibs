@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,8 +20,10 @@
 #include "backendcapabilities.h"
 #include "ifaces/backend.h"
 #include "factory.h"
-#include "audiosource.h"
-#include "videosource.h"
+#include "audiocapturedevice.h"
+#include "videocapturedevice.h"
+#include "audiooutputdevice.h"
+#include <QList>
 
 static KStaticDeleter<Phonon::BackendCapabilities> sd;
 
@@ -77,34 +79,40 @@ KMimeType::List BackendCapabilities::knownMimeTypes() const
 	return d->backend ? d->backend->knownMimeTypes() : KMimeType::List();
 }
 
-QList<AudioSource> BackendCapabilities::availableAudioSources() const
+QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices() const
 {
 	if( d->backend )
 	{
-		QList<AudioSource> ret;
-		for( int i = 1; i <= d->backend->audioSourceCount(); ++i )
-			ret.append( AudioSource( i,
-						d->backend->audioSourceName( i ),
-						d->backend->audioSourceDescription( i ),
-						d->backend->audioSourceVideoIndex( i ) ) );
+		QList<AudioOutputDevice> ret;
+		for( int i = 1; i <= d->backend->audioOutputDeviceCount(); ++i )
+			ret.append( AudioOutputDevice::fromIndex( i ) );
 		return ret;
 	}
-	return QList<AudioSource>();
+	return QList<AudioOutputDevice>();
 }
 
-QList<VideoSource> BackendCapabilities::availableVideoSources() const
+QList<AudioCaptureDevice> BackendCapabilities::availableAudioCaptureDevices() const
 {
 	if( d->backend )
 	{
-		QList<VideoSource> ret;
-		for( int i = 1; i <= d->backend->videoSourceCount(); ++i )
-			ret.append( VideoSource( i,
-						d->backend->videoSourceName( i ),
-						d->backend->videoSourceDescription( i ),
-						d->backend->videoSourceAudioIndex( i ) ) );
+		QList<AudioCaptureDevice> ret;
+		for( int i = 1; i <= d->backend->audioCaptureDeviceCount(); ++i )
+			ret.append( AudioCaptureDevice::fromIndex( i ) );
 		return ret;
 	}
-	return QList<VideoSource>();
+	return QList<AudioCaptureDevice>();
+}
+
+QList<VideoCaptureDevice> BackendCapabilities::availableVideoCaptureDevices() const
+{
+	if( d->backend )
+	{
+		QList<VideoCaptureDevice> ret;
+		for( int i = 1; i <= d->backend->videoCaptureDeviceCount(); ++i )
+			ret.append( VideoCaptureDevice::fromIndex( i ) );
+		return ret;
+	}
+	return QList<VideoCaptureDevice>();
 }
 
 QStringList BackendCapabilities::availableAudioEffects() const

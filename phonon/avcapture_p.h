@@ -23,8 +23,6 @@
 #include "avcapture.h"
 #include "ifaces/avcapture.h"
 #include "abstractmediaproducer_p.h"
-#include "audiosource.h"
-#include "videosource.h"
 
 namespace Phonon
 {
@@ -33,8 +31,8 @@ class AvCapturePrivate : public AbstractMediaProducerPrivate
 	K_DECLARE_PUBLIC( AvCapture )
 	PHONON_PRIVATECLASS( AvCapture, AbstractMediaProducer )
 	protected:
-		AudioSource audioSource;
-		VideoSource videoSource;
+		int audioCaptureDevice;
+		int videoCaptureDevice;
 };
 }
 

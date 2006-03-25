@@ -11,28 +11,30 @@ add_subdirectory( tests )
 
 ########### next target ###############
 
-set(phononcore_LIB_SRCS 
-   phononnamespace.cpp 
-   base.cpp 
-   factory.cpp 
-   abstractmediaproducer.cpp 
-   mediaobject.cpp 
-   avcapture.cpp 
-   audiopath.cpp 
-   videopath.cpp 
-   audiooutput.cpp 
-   abstractvideooutput.cpp 
-   audioeffect.cpp 
-   videoeffect.cpp 
-   abstractaudiooutput.cpp 
-   audiodataoutput.cpp 
-   simpleplayer.cpp 
-   backendcapabilities.cpp 
-   bytestream.cpp 
-   namedescriptiontuple.cpp 
-   audiosource.cpp 
-   videosource.cpp 
-   volumefadereffect.cpp )
+set(phononcore_LIB_SRCS
+	namedescriptiontuple.cpp
+	audiooutputdevice.cpp
+	audiocapturedevice.cpp
+	videocapturedevice.cpp
+	phononnamespace.cpp
+	base.cpp
+	abstractmediaproducer.cpp
+	mediaobject.cpp
+	avcapture.cpp
+	bytestream.cpp
+	audiopath.cpp
+	videopath.cpp
+	audioeffect.cpp
+	volumefadereffect.cpp
+	videoeffect.cpp
+	abstractaudiooutput.cpp
+	audiooutput.cpp
+	audiodataoutput.cpp
+	abstractvideooutput.cpp
+	simpleplayer.cpp
+	backendcapabilities.cpp
+	factory.cpp
+	)
 
 kde4_automoc(${phononcore_LIB_SRCS})
 
@@ -48,7 +50,30 @@ install_targets(${LIB_INSTALL_DIR} phononcore )
 
 ########### install files ###############
 
-install_files( /include/phonon FILES  base.h phononnamespace.h abstractmediaproducer.h mediaobject.h avcapture.h mixeriface.h audiopath.h videopath.h audioeffect.h audiooutput.h videoeffect.h abstractvideooutput.h abstractaudiooutput.h audiodataoutput.h simpleplayer.h bytestream.h backendcapabilities.h namedescriptiontuple.h audiosource.h videosource.h volumefadereffect.h )
+install_files( /include/phonon FILES
+	namedescriptiontuple.h
+	audiooutputdevice.h
+	audiocapturedevice.h
+	videocapturedevice.h
+	phononnamespace.h
+	base.h
+	abstractmediaproducer.h
+	mediaobject.h
+	avcapture.h
+	bytestream.h
+	audiopath.h
+	videopath.h
+	audioeffect.h
+	volumefadereffect.h
+	videoeffect.h
+	mixeriface.h
+	abstractaudiooutput.h
+	audiooutput.h
+	audiodataoutput.h
+	abstractvideooutput.h
+	simpleplayer.h
+	backendcapabilities.h
+	)
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES  phononbackend.desktop )
 
 kde4_footer()
