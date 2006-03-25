@@ -27,8 +27,8 @@ phononinclude_HEADERS = base.h phononnamespace.h abstractmediaproducer.h mediaob
 		       videopath.h audioeffect.h audiooutput.h videoeffect.h \
 		       abstractvideooutput.h abstractaudiooutput.h audiodataoutput.h \
 		       simpleplayer.h bytestream.h \
-		       backendcapabilities.h namedescriptiontuple.h audiosource.h \
-		       videosource.h volumefadereffect.h
+		       backendcapabilities.h namedescriptiontuple.h audiocapturedevice.h audiooutputdevice.h \
+		       videocapturedevice.h volumefadereffect.h
 
 libphononcore_la_SOURCES = phononnamespace.cpp base.cpp factory.cpp abstractmediaproducer.cpp mediaobject.cpp \
 			  avcapture.cpp factory.skel \
@@ -38,8 +38,8 @@ libphononcore_la_SOURCES = phononnamespace.cpp base.cpp factory.cpp abstractmedi
 			  abstractaudiooutput.cpp audiodataoutput.cpp \
 			  simpleplayer.cpp \
 			  backendcapabilities.cpp bytestream.cpp \
-			  namedescriptiontuple.cpp audiosource.cpp \
-			  videosource.cpp volumefadereffect.cpp
+			  namedescriptiontuple.cpp audiocapturedevice.cpp audiooutputdevice.cpp \
+			  videocapturedevice.cpp volumefadereffect.cpp
 
 libphononcore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_LDFLAGS) \
 			  $(USER_LDFLAGS) -version-info 0:0:0 -no-undefined
