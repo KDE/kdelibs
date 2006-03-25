@@ -113,6 +113,11 @@ public:
     TokenizerString() : m_currentChar(0), m_lines(0), m_composite(false) {}
     TokenizerString(const QChar *str, int length) : m_currentString(str, length), m_currentChar(m_currentString.m_current), m_lines(0), m_composite(false) {}
     TokenizerString(const QString &str) : m_currentString(str), m_currentChar(m_currentString.m_current), m_lines(0), m_composite(false) {}
+    TokenizerString(const TokenizerString &o) : m_pushedChar1(o.m_pushedChar1), m_pushedChar2(o.m_pushedChar2),
+                                                m_currentString(o.m_currentString), m_substrings(o.m_substrings),
+                                                m_lines(o.m_lines), m_composite(o.m_composite) { 
+        m_currentChar = m_pushedChar1.isNull() ? m_currentString.m_current : &m_pushedChar1; 
+    } 
 
     void clear();
 
@@ -171,6 +176,25 @@ private:
     int m_lines;
     bool m_composite;
 
+};
+
+
+class TokenizerQueue : public QValueList<TokenizerString>
+{
+
+public:
+    TokenizerQueue() {}
+    ~TokenizerQueue() {}
+    void  push( const TokenizerString &t ) { prepend(t); }
+    TokenizerString pop() {
+        if (isEmpty()) 
+            return TokenizerString();
+        TokenizerString t(first());
+        remove( begin() );
+        return t;
+    }
+    TokenizerString& top() { return first(); }
+    TokenizerString& bottom() { return last(); }
 };
 
 }

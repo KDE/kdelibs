@@ -1,3 +1,12 @@
+2006-03-25  Germain Garand  <germain@ebooksfrance.org>
+
+        Scope: fix handling of nested/external scripts in the tokenizer (#91701) 
+
+        * misc/stringit.h (TokenizerQueue): a LIFO stack of TokenizerStrings
+        * html/htmltokenizer.{h,cpp} (scriptHandler/write/notifyFinished): use a TokenizerQueue to store
+        postponed fragments while executing/loading scripts.
+        (fixUpChar): unrelated - fill in missing unicode replacements.
+
 2006-03-20  Dirk Mueller <mueller@kde.org>
 
 	* misc/loader.cpp: fix pixmap leak in tiled_pixmap()
@@ -14,8 +23,7 @@
 
         Scope: relayout/repaint/widget masks fixes. Refine stacking context exploration. Optimise.
 
-        * khtmlview.cpp (reset/timerEvent): remove obsolete code checking validity of visible widgets list.
-        (drawContents): use widget geometry rather than the RenderWidget's rect (fixes widget borders not being updated)
+        * khtmlview.cpp (drawContents): use widget geometry rather than the RenderWidget's rect (fixes widget borders not being updated)
         Check if widget is in the dirty rect before doing any work.
 
         * rendering/render_block.cpp (layoutBlockChildren): I meant !child->isPositioned() here, not isPositioned(). No need to
