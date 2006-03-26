@@ -18,31 +18,56 @@ function write_header( class_doc )
     '#include <' + includes + '>\n' +
     '#include <kjsembed/qobject_binding.h>\n' +
     '\n' +
-    'KJS_BINDING( BINDING' + compoundname + ' )\n' +
+    'KJS_BINDING( Binding' + compoundname + ' )\n' +
     '' +
     '#endif // BIND_' + compoundname + '_H';
 
-  var fname = output_dir + compoundname + '.h';
+  var fname = output_dir + compoundname + '_bind.h';
   header = new File( fname );
   
   if( !header.open( File.WriteOnly ) )
-    throw "Unable to open output header";
+    throw "Unable to open output header, " + fname;
 
   header.writeln( template );
   header.close();
 }
 
-function process_method( method_elem )
+function write_binding_method( compounddef, method_elem )
 {
+  compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
+
   var type = method_elem.firstChildElement('type').toElement().toString();
   var name = method_elem.firstChildElement('name').toElement().toString();
   var args = method_elem.firstChildElement('argsstring').toElement().toString();
-  println( '   Return: ' + type + '  Method: ' + name + ' args ' + args );
+
+  method_template =
+    '\n' +
+    '// ' + type + ' ' + name + args + '\n' +
+    'START_QOBJECT_METHOD( ' + name + ', ' + compoundname + ')\n' +
+    '/* stuff */\n' +
+    'END_QOBJECT_METHOD\n';
+
+  return method_template;
 }
 
-function process_class_info( class_doc )
+function write_binding( class_doc )
 {
-  write_header( class_doc );
+  compounddef = class_doc.firstChild().toElement();
+  includes = compounddef.firstChildElement('includes').toElement().toString();
+  compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
+
+  template = 
+    '#include <QDebug>\n' +
+    '\n' +
+    '#include <kjsembed/object_binding.h>\n' +
+    '#include <kjsembed/value_binding.h>\n' +
+    '#include <kjs/object.h>\n' +
+    '\n' +
+    '#include <' + compoundname + '_bind.h>\n' +
+    '\n' +
+    'using namespace KJSEmbed;\n' +
+    '\n' +
+    'namespace Binding' + compoundname + 'NS {\n';
 
   // List the methods
   var methodList = class_doc.elementsByTagName( "memberdef" );
@@ -51,9 +76,26 @@ function process_class_info( class_doc )
 	var kind = member_elem.attribute( 'kind' );
 
 	if ( kind == 'function' ) {
-	  process_method( member_elem );
+	  template += write_binding_method( compounddef, member_elem );
 	}
   }
+
+  template += '};\n';
+
+  var fname = output_dir + compoundname + '_bind.cpp';
+
+  binding = new File( fname );
+  if( !binding.open( File.WriteOnly ) )
+    throw "Unable to open output binding, " + fname;
+
+  binding.writeln( template );
+  binding.close();
+}
+
+function process_class_info( class_doc )
+{
+  write_header( class_doc );
+  write_binding( class_doc );
 }
 
 function process_class( compound_elem )
