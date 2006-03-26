@@ -143,7 +143,7 @@ KACLListViewItem::KACLListViewItem( Q3ListView* parent,
    type( _type ), value( _value ), isDefault( defaults ),
    qualifier( _qualifier ), isPartial( false )
 {
-    m_pACLListView = dynamic_cast<KACLListView*>( parent );
+    m_pACLListView = qobject_cast<KACLListView*>( parent );
     repaint();
 }
 

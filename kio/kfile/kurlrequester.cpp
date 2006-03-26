@@ -140,9 +140,9 @@ public:
         QString txt = combo ? combo->currentText() : edit->text();
         KUrlCompletion *comp;
         if ( combo )
-            comp = dynamic_cast<KUrlCompletion*>(combo->completionObject());
+            comp = qobject_cast<KUrlCompletion*>(combo->completionObject());
         else
-            comp = dynamic_cast<KUrlCompletion*>(edit->completionObject());
+            comp = qobject_cast<KUrlCompletion*>(edit->completionObject());
 
         if ( comp )
             return comp->replacedPath( txt );
@@ -164,8 +164,8 @@ KUrlRequester::KUrlRequester( QWidget *editWidget, QWidget *parent)
 
     // must have this as parent
     editWidget->reparent( this, 0, QPoint(0,0) );
-    d->edit = dynamic_cast<KLineEdit*>( editWidget );
-    d->combo = dynamic_cast<KComboBox*>( editWidget );
+    d->edit = qobject_cast<KLineEdit*>( editWidget );
+    d->combo = qobject_cast<KComboBox*>( editWidget );
 
     init();
 }
@@ -397,7 +397,7 @@ KEditListBox::CustomEditor KUrlRequester::customEditor()
 
     KLineEdit *edit = d->edit;
     if ( !edit && d->combo )
-        edit = dynamic_cast<KLineEdit*>( d->combo->lineEdit() );
+        edit = qobject_cast<KLineEdit*>( d->combo->lineEdit() );
 
 #ifndef NDEBUG
     if ( !edit )

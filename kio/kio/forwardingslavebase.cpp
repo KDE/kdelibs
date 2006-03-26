@@ -354,7 +354,7 @@ void ForwardingSlaveBase::slotResult(KIO::Job *job)
     }
     else
     {
-        KIO::StatJob *stat_job = dynamic_cast<KIO::StatJob *>(job);
+        KIO::StatJob *stat_job = qobject_cast<KIO::StatJob *>(job);
         if ( stat_job!=0L )
         {
             KIO::UDSEntry entry = stat_job->statResult();

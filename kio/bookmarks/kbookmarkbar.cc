@@ -287,7 +287,7 @@ QString KBookmarkBar::handleToolbarDragMoveEvent(
     bool &atFirst, KBookmarkManager *mgr)
 {
     Q_UNUSED( mgr );
-    Q_ASSERT( actions.isEmpty() || (tb == dynamic_cast<KToolBar*>(actions.first()->container(0))) );
+    Q_ASSERT( actions.isEmpty() || (tb == qobject_cast<KToolBar*>(actions.first()->container(0))) );
     p->m_sepToolBar = tb;
     p->m_sepToolBar->removeAction(m_toolBarSeparator);
 

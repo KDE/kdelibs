@@ -1015,7 +1015,7 @@ void KRun::slotStatResult( KIO::Job * job )
   } else {
 
     kDebug(7010) << "Finished" << endl;
-    if(!dynamic_cast<KIO::StatJob*>(job))
+    if(!qobject_cast<KIO::StatJob*>(job))
         kFatal() << "job is a " << typeid(*job).name() << " should be a StatJob" << endl;
 
     const KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();

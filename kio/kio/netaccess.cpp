@@ -382,7 +382,7 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
   }
 
   if ( finalURL ) {
-      SimpleJob *sj = dynamic_cast<SimpleJob*>( job );
+      SimpleJob *sj = qobject_cast<SimpleJob*>( job );
       if ( sj ) {
           m_url = sj->url();
       }
