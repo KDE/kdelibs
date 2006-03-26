@@ -7,11 +7,11 @@ var output_dir = 'output/';
  */
 function write_header( class_doc )
 {
-  compounddef = class_doc.firstChild().toElement();
-  includes = compounddef.firstChildElement('includes').toElement().toString();
-  compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
+  var compounddef = class_doc.firstChild().toElement();
+  var includes = compounddef.firstChildElement('includes').toElement().toString();
+  var compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
 
-  template =
+  var template =
     '#ifndef BIND_' + compoundname + '_H\n' +
     '#define BIND_' + compoundname + '_H\n' +
     '\n' +
@@ -78,11 +78,11 @@ function write_binding_methodlut( compounddef )
 
 function write_binding( class_doc )
 {
-  compounddef = class_doc.firstChild().toElement();
-  includes = compounddef.firstChildElement('includes').toElement().toString();
-  compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
+  var compounddef = class_doc.firstChild().toElement();
+  var includes = compounddef.firstChildElement('includes').toElement().toString();
+  var compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
 
-  template = 
+  var template = 
     '#include <QDebug>\n' +
     '\n' +
     '#include <kjsembed/object_binding.h>\n' +
@@ -134,13 +134,12 @@ function process_class( compound_elem )
   // Find the class description file
   var fname = intermediate_dir + compound_elem.attribute( 'refid' ) + '.xml';
 
-  classinfo = new File( fname );
-  content = '';
+  var classinfo = new File( fname );
   if ( !classinfo.open( File.ReadOnly ) )
     throw "Could not open class info file" + fname;
 
   // Read the index
-  content = classinfo.readAll();
+  var content = classinfo.readAll();
 
   // Create the DOM
   var class_doc = new QDomDocument("class");
@@ -154,14 +153,13 @@ function process_class( compound_elem )
 //
 println( 'About to load class list...' );
 
-var input = new File( intermediate_dir + 'index.xml' );
 
-var content = '';
+// Read the index
+var input = new File( intermediate_dir + 'index.xml' );
 if( !input.open( File.ReadOnly ) )
   throw "Unable to open class list";
 
-// Read the index
-content = input.readAll();
+var content = input.readAll();
 
 
 // Create the DOM
