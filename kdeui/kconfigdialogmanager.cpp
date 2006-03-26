@@ -195,7 +195,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
     if(!object->isWidgetType())
       continue; // Skip non-widgets
 
-    QWidget *childWidget = (QWidget *)object;
+    QWidget *childWidget = static_cast<QWidget *>(object);
 
     QString widgetName = childWidget->objectName();
     bool bParseChildren = true;
@@ -233,13 +233,13 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
             connect(childWidget, *changedIt,
                   this, SIGNAL(widgetModified()));
 
-            QComboBox *cb = dynamic_cast<QComboBox *>(childWidget);
+            QComboBox *cb = qobject_cast<QComboBox *>(childWidget);
             if (cb && cb->isEditable())
               connect(cb, SIGNAL(textChanged(const QString &)),
                     this, SIGNAL(widgetModified()));
 	  }
         }
-        Q3GroupBox *gb = dynamic_cast<Q3GroupBox *>(childWidget);
+        Q3GroupBox *gb = qobject_cast<Q3GroupBox *>(childWidget);
         if (!gb)
           bParseChildren = false;
         else
@@ -389,14 +389,14 @@ QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget)
 
 void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 {
-  Q3ButtonGroup *bg = dynamic_cast<Q3ButtonGroup *>(w);
+  Q3ButtonGroup *bg = qobject_cast<Q3ButtonGroup *>(w);
   if (bg)
   {
     bg->setButton(v.toInt());
     return;
   }
 
-  QComboBox *cb = dynamic_cast<QComboBox *>(w);
+  QComboBox *cb = qobject_cast<QComboBox *>(w);
   if (cb && cb->isEditable())
   {
     int i = cb->findText(v.toString());
@@ -416,11 +416,11 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 
 QVariant KConfigDialogManager::property(QWidget *w)
 {
-  Q3ButtonGroup *bg = dynamic_cast<Q3ButtonGroup *>(w);
+  Q3ButtonGroup *bg = qobject_cast<Q3ButtonGroup *>(w);
   if (bg)
     return QVariant(bg->selectedId());
 
-  QComboBox *cb = dynamic_cast<QComboBox *>(w);
+  QComboBox *cb = qobject_cast<QComboBox *>(w);
   if (cb && cb->isEditable())
       return QVariant(cb->currentText());
 

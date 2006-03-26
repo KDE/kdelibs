@@ -272,7 +272,7 @@ void KComboBox::setLineEdit( QLineEdit *edit )
     }
 
     QComboBox::setLineEdit( edit );
-    d->klineEdit = dynamic_cast<KLineEdit*>( edit );
+    d->klineEdit = qobject_cast<KLineEdit*>( edit );
     setDelegate( d->klineEdit );
 
     // Connect the returnPressed signal for both Q[K]LineEdits'

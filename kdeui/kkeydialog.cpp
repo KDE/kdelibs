@@ -836,7 +836,7 @@ bool KKeyChooser::checkStandardShortcutsConflict( const KShortcut& cut, bool bWa
 		if( bWarnUser ) {
 			if( !promptForReassign( seq, KStdAccel::label(id), Standard, parent ))
                                 return true;
-                        removeStandardShortcut( KStdAccel::label(id), dynamic_cast< KKeyChooser* > ( parent ), KStdAccel::shortcut( id ), cut);
+                        removeStandardShortcut( KStdAccel::label(id), qobject_cast< KKeyChooser* > ( parent ), KStdAccel::shortcut( id ), cut);
                 }
 	}
     }
@@ -861,7 +861,7 @@ bool KKeyChooser::checkGlobalShortcutsConflict( const KShortcut& cut, bool bWarn
                     if( bWarnUser ) {
 			if( !promptForReassign( cut.seq(iSeq), it.key(), Global, parent ))
                                     return true;
-                            removeGlobalShortcut( it.key(), dynamic_cast< KKeyChooser* >( parent ), (*it), cut);
+                            removeGlobalShortcut( it.key(), qobject_cast< KKeyChooser* >( parent ), (*it), cut);
                     }
 		}
 	}

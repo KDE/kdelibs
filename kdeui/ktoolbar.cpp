@@ -697,7 +697,7 @@ void KToolBar::slotContextAboutToShow()
   // and ToolBarHandler::setupActions() deletes it, so better not keep it around.
   // So we currently plug/unplug the last two actions of the menu.
   // Another way would be to keep around the actions and plug them all into a (new each time) popupmenu.
-  KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+  KMainWindow *kmw = qobject_cast<KMainWindow *>(mainWindow());
   if ( kmw ) {
       kmw->setupToolbarMenuActions();
       // Only allow hiding a toolbar if the action is also plugged somewhere else (e.g. menubar)
@@ -848,7 +848,7 @@ void KToolBar::slotAppearanceChanged()
     applyAppearanceSettings(KGlobal::config(), QString::null, true /* lose local settings */ );
 
     // And remember to save the new look later
-    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    KMainWindow *kmw = qobject_cast<KMainWindow *>(mainWindow());
     if ( kmw )
         kmw->setSettingsDirty();
 }

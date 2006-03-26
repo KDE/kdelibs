@@ -225,7 +225,7 @@ void ToolBarHandler::connectToActionContainer( KAction *action )
 
 void ToolBarHandler::connectToActionContainer( QWidget *container )
 {
-    QMenu *popupMenu = dynamic_cast<QMenu *>( container );
+    QMenu *popupMenu = qobject_cast<QMenu *>( container );
     if ( !popupMenu )
         return;
 

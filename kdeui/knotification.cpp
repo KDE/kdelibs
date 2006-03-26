@@ -148,7 +148,7 @@ void KNotification::raiseWidget(QWidget *w)
 		QWidget *pw=w->parentWidget();
 		raiseWidget(pw);
 
-		if( QTabWidget *tab_widget=dynamic_cast<QTabWidget*>(pw))
+		if( QTabWidget *tab_widget=qobject_cast<QTabWidget*>(pw))
 		{
 			tab_widget->setCurrentIndex(tab_widget->indexOf(w));
 		}

@@ -306,7 +306,7 @@ QWidget* KCursorPrivateAutoHideEventFilter::actualWidget() const
     QWidget* w = m_widget;
 
     // Is w a QAbstractScrollArea ? Call setCursor on the viewport in that case.
-    QAbstractScrollArea * sv = dynamic_cast<QAbstractScrollArea *>( w );
+    QAbstractScrollArea * sv = qobject_cast<QAbstractScrollArea *>( w );
     if ( sv )
         w = sv->viewport();
 
