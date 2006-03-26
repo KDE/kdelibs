@@ -44,18 +44,21 @@ void testKRun::foundMimeType( const QString& _type )
   kDebug() << "testKRun::foundMimeType " << _type << endl;
   kDebug() << "testKRun::foundMimeType URL=" << m_strURL.url() << endl;
   m_bFinished = true;
-  m_timer.start( 0, true );
+  m_timer.setSingleShot( true );
+  m_timer.start( 0 );
   return;
 }
 
 Receiver::Receiver()
 {
         QVBoxLayout *lay = new QVBoxLayout(this);
-        lay->setAutoAdd(true);
         QPushButton * h = new QPushButton( "Press here to terminate", this );
+        lay->addWidget( h );
         start = new QPushButton( "Launch KRuns", this );
+        lay->addWidget( start );
         stop = new QPushButton( "Stop those KRuns", this );
         stop->setEnabled(false);
+        lay->addWidget( stop );
         QObject::connect( h, SIGNAL(clicked()), kapp, SLOT(quit()) );
         QObject::connect( start, SIGNAL(clicked()), this, SLOT(slotStart()) );
         QObject::connect( stop, SIGNAL(clicked()), this, SLOT(slotStop()) );
@@ -202,7 +205,6 @@ int main(int argc, char **argv)
   checkPDE( s4, l1, false, false, "'kate' '\"/tmp\"'");
 
   Receiver receiver;
-  app.setMainWidget(&receiver);
   return app.exec();
 }
 

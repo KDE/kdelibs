@@ -38,6 +38,10 @@ int main(int argc, char *argv[])
   KApplication app;
 
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+  if( args->count() < 1 ) {
+    printf( "No filename specified\n" );
+    return 1;
+  }
   QString fileName = args->arg( 0 );
 
   // The "true" here means only the filename will be looked at.

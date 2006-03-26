@@ -103,7 +103,7 @@ class KDirListerTest : public QWidget
 {
    Q_OBJECT
 public:
-   KDirListerTest( QWidget *parent=0, const char *name=0 );
+   KDirListerTest( QWidget *parent=0 );
    ~KDirListerTest();
 
 public Q_SLOTS:

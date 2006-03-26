@@ -128,7 +128,7 @@ void KACLTest::testAsString()
 void KACLTest::testSetACL()
 {
   m_acl.setACL( s_testACL2 );
-  check( "setACL: ", s_testACLEffective.simplifyWhiteSpace(), m_acl.asString().simplifyWhiteSpace() );
+  check( "setACL: ", s_testACLEffective.simplified(), m_acl.asString().simplified() );
 }
 
 void KACLTest::testGetOwnerPermissions()
@@ -159,7 +159,7 @@ void KACLTest::testGetAllUserPermissions()
   ACLUserPermissionsList list = m_acl.allUserPermissions();
   ACLUserPermissionsConstIterator it = list.begin();
   QString name;
-  unsigned short permissions;
+  unsigned short permissions = 0;
   int count = 0;
   while ( it != list.end() ) {
     name = ( *it ).first;

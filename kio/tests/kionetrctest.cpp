@@ -30,7 +30,7 @@ void output( const KUrl& u )
     for ( ; it != l.macdef.end(); ++it )
     {
         kDebug() << "Macro: " << it.key() << "= "
-                  << it.data().join("   ") << endl;
+                  << it.value().join("   ") << endl;
     }
 }
 

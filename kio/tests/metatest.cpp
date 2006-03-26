@@ -43,7 +43,7 @@ void printKeyValues(KFileMetaInfo& info)
     for (it = l.begin(); it!=l.end(); ++it)
     {
         KFileMetaInfoItem item = info.item(*it);
-        if ( item.isValid() && item.value().canCast(QVariant::String)) {
+        if ( item.isValid() && item.value().canConvert(QVariant::String)) {
             kDebug() << item.key() << "(" << item.translatedKey() << ") -> "
                       << item.string() << endl;
         }
@@ -277,7 +277,7 @@ int main( int argc, char **argv )
             kDebug() << "got no validator\n";
         else
         {
-            kDebug() << "validator is a " << v->className() << endl;
+            kDebug() << "validator is a " << v->metaObject()->className() << endl;
             delete v;
         }
         
@@ -306,13 +306,10 @@ int main( int argc, char **argv )
         kDebug() << "type of thumbnail is " << thumbitem.value().typeName() << endl;
     
     
-    if (thumbitem.isValid() && thumbitem.value().canCast(QVariant::Image))
+    if (thumbitem.isValid() && thumbitem.value().canConvert(QVariant::Image))
     {
         QLabel* label = new QLabel(0);
-        app.setMainWidget(label);
-        QPixmap pix;
-        pix.convertFromImage(thumbitem.value().value<QImage>());
-        label->setPixmap(pix);
+        label->setPixmap(QPixmap::fromImage(thumbitem.value().value<QImage>()));
         label->show();
         app.exec();
     }

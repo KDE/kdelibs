@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     else {
       QFile f( tmpURL.path() );
       if (!f.open(QIODevice::ReadOnly))
-        kFatal() << "Cannot open: " << f.name() << ". The error was: " << f.errorString() << endl;
+        kFatal() << "Cannot open: " << f.fileName() << ". The error was: " << f.errorString() << endl;
       else {
         f.close();
       }

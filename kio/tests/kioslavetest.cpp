@@ -35,17 +35,20 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
   job = 0L;
 
-  main_widget = new QWidget( this, "");
-  QBoxLayout *topLayout = new QVBoxLayout( main_widget, 10, 5 );
+  main_widget = new QWidget( this );
+  QBoxLayout *topLayout = new QVBoxLayout( main_widget );
+  topLayout->setMargin( 10 );
+  topLayout->setSpacing( 5 );
 
-  QGridLayout *grid = new QGridLayout( 2, 2, 10 );
+  QGridLayout *grid = new QGridLayout();
+  grid->setSpacing( 10 );
   topLayout->addLayout( grid );
 
   grid->setRowStretch(0,1);
   grid->setRowStretch(1,1);
 
-  grid->setColStretch(0,1);
-  grid->setColStretch(1,100);
+  grid->setColumnStretch(0,1);
+  grid->setColumnStretch(1,100);
 
   lb_from = new QLabel( "From:", main_widget );
   grid->addWidget( lb_from, 0, 0 );
@@ -67,7 +70,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   topLayout->addWidget( box, 10 );
   connect( opButtons, SIGNAL(buttonClicked(QAbstractButton*)), SLOT(changeOperation(QAbstractButton*)) );
 
-  QBoxLayout *hbLayout = new QHBoxLayout( box, 15 );
+  QBoxLayout *hbLayout = new QHBoxLayout( box );
 
   rbList = new QRadioButton( "List", box );
   opButtons->addButton( rbList );
@@ -123,18 +126,18 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   topLayout->addWidget( box, 10 );
   connect( progressButtons, SIGNAL(clicked(int)), SLOT(changeProgressMode(int)) );
 
-  hbLayout = new QHBoxLayout( box, 15 );
+  hbLayout = new QHBoxLayout( box );
 
   rbProgressNone = new QRadioButton( "None", box );
-  progressButtons->insert( rbProgressNone );
+  progressButtons->addButton( rbProgressNone );
   hbLayout->addWidget( rbProgressNone, 5 );
 
   rbProgressDefault = new QRadioButton( "Default", box );
-  progressButtons->insert( rbProgressDefault );
+  progressButtons->addButton( rbProgressDefault );
   hbLayout->addWidget( rbProgressDefault, 5 );
 
   rbProgressStatus = new QRadioButton( "Status", box );
-  progressButtons->insert( rbProgressStatus );
+  progressButtons->addButton( rbProgressStatus );
   hbLayout->addWidget( rbProgressStatus, 5 );
 
   b = progressButtons->buttons()[pr];
@@ -143,10 +146,12 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
   // statusbar progress widget
   statusProgress = new StatusbarProgress( statusBar() );
-  statusBar()->addWidget( statusProgress, 0, true );
+  statusBar()->addPermanentWidget( statusProgress, 0 );
 
   // run & stop butons
-  hbLayout = new QHBoxLayout( topLayout, 15 );
+  hbLayout = new QHBoxLayout();
+  topLayout->addLayout( hbLayout );
+  hbLayout->setParent( topLayout );
 
   pbStart = new QPushButton( "&Start", main_widget );
   pbStart->setFixedSize( pbStart->sizeHint() );
@@ -453,7 +458,7 @@ void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
     if (!strcmp(fileData, "BIG\n"))
 	data.fill(0, 29*1024*1024);
     else
-	data.duplicate(fileData, strlen(fileData));
+	data = QByteArray(fileData, strlen(fileData));
     kDebug(0) << "DataReq: \"" << fileData << "\"" << endl;
 }
 
@@ -536,7 +541,6 @@ int main(int argc, char **argv) {
   // Bug in KTMW / Qt / layouts ?
   test.resize( test.sizeHint() );
 
-  app.setMainWidget(&test);
   app.exec();
 }
 

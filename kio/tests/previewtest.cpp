@@ -14,7 +14,7 @@
 PreviewTest::PreviewTest()
     :QWidget()
 {
-    QGridLayout *layout = new QGridLayout(this, 2, 2);
+    QGridLayout *layout = new QGridLayout(this);
     m_url = new KLineEdit(this);
     m_url->setText("/home/malte/gore_bush.jpg");
     layout->addWidget(m_url, 0, 0);
@@ -23,7 +23,7 @@ PreviewTest::PreviewTest()
     layout->addWidget(btn, 0, 1);
     m_preview = new QLabel(this);
     m_preview->setMinimumSize(400, 300);
-    layout->addMultiCellWidget(m_preview, 1, 1, 0, 1);
+    layout->addWidget(m_preview, 1, 0, 1, 2);
 }
 
 void PreviewTest::slotGenerate()
@@ -59,7 +59,6 @@ int main(int argc, char **argv)
     KApplication app;
     PreviewTest *w = new PreviewTest;
     w->show();
-    app.setMainWidget(w);
     return app.exec();
 }
 

@@ -39,7 +39,6 @@ int main(int argc, char **argv)
     KCmdLineArgs::init(argc, argv, &about);
     KApplication app;
     KDirWatchTest_GUI *mainWin = new KDirWatchTest_GUI();
-    app.setMainWidget( mainWin );
     mainWin->show();
     return app.exec();
 }
@@ -49,7 +48,8 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
     QPushButton *e,*f;
     KFileTreeView *tree;
 
-    QVBoxLayout *lay = new QVBoxLayout(this, 0, -1);
+    QVBoxLayout *lay = new QVBoxLayout(this);
+    lay->setMargin( 0 );
     lay->addWidget(l1 = new QLineEdit( "Test 1", this));
     lay->addWidget(l2 = new QLineEdit( "Test 2", this));
     lay->addWidget(l3 = new QLineEdit( "Test 3", this));
@@ -57,7 +57,7 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
     lay->addWidget(e = new QPushButton("new file", this));
     lay->addWidget(f = new QPushButton("delete file", this));
 
-    dir = QDir::currentDirPath();
+    dir = QDir::currentPath();
     file = dir + "/testfile_kdirwatchtest_gui";
 
     lay->addWidget(tree = new KFileTreeView(this));

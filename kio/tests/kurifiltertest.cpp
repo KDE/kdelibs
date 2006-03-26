@@ -132,13 +132,13 @@ void testLocalFile( const QString& filename )
 
     if ( tmpFile.open( QIODevice::ReadWrite ) )
     {
-        QByteArray fname = QFile::encodeName( tmpFile.name() );
+        QByteArray fname = QFile::encodeName( tmpFile.fileName() );
         filter(fname, fname, KURIFilterData::LOCAL_FILE);
         tmpFile.close();
         tmpFile.remove();
     }
     else
-        kDebug() << "Couldn't create " << tmpFile.name() << ", skipping test" << endl;
+        kDebug() << "Couldn't create " << tmpFile.fileName() << ", skipping test" << endl;
 }
 
 static const char appName[] = "kurifiltertest";

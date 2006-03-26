@@ -28,8 +28,9 @@
 using namespace KIO;
 
 SpeedTest::SpeedTest( const KUrl & url )
-    : QObject(0, "speed")
+    : QObject(0)
 {
+    setObjectName( "speed" );
     Job *job = listRecursive( url );
     //Job *job = del( KUrl("file:" + QDir::currentPath()) ); DANGEROUS !
     connect(job, SIGNAL( result( KIO::Job*)),

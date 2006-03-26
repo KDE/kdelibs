@@ -30,8 +30,8 @@
 #include <cstdlib>
 
 
-KDirListerTest::KDirListerTest( QWidget *parent, const char *name )
-  : QWidget( parent, name )
+KDirListerTest::KDirListerTest( QWidget *parent )
+  : QWidget( parent )
 {
   lister = new KDirLister( false /* true */ );
   debug = new PrintSignals;
@@ -151,12 +151,11 @@ void KDirListerTest::completed()
 
 int main ( int argc, char *argv[] )
 {
-    KCmdLineArgs::init( argc, argv, "kdirlistertest", 0, 0, 0, 0 );
+  KCmdLineArgs::init( argc, argv, "kdirlistertest", 0, 0, 0, 0 );
   KApplication app;
 
   KDirListerTest *test = new KDirListerTest( 0 );
   test->show();
-  app.setMainWidget( test );
   return app.exec();
 }
 

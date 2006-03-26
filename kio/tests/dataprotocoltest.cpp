@@ -37,7 +37,7 @@ public:
     testStrings("MIME Type: ",mime_type_expected,type);
   }
 
-  void totalSize(KIO::filesize_t bytes) {
+  void totalSize(KIO::filesize_t /*bytes*/) {
 //    cout << "content size: " << bytes << " bytes" << endl;
   }
 
@@ -47,9 +47,9 @@ public:
     QString prefix = "Metadata[\""+key+"\"]: ";
     KIO::MetaData::Iterator it = attributes_expected.find(key);
     if (it != attributes_expected.end()) {
-      testStrings(prefix,it.data(),value);
+      testStrings(prefix,it.value(),value);
       // remove key from map
-      attributes_expected.remove(it);
+      attributes_expected.erase(it);
     } else {
       cout << endl << prefix.toLatin1().constData() << " no such key expected";
       total++;
@@ -270,13 +270,13 @@ int main(int /*argc*/,char* /*argv*/[]) {
 
     QByteArray exp_content;
     uint exp_content_len = strlen(testcases[i].exp_content);
-    exp_content.setRawData(testcases[i].exp_content,exp_content_len);
+    exp_content = QByteArray::fromRawData(testcases[i].exp_content,exp_content_len);
     kio_data.setExpectedContent(exp_content);
 
     kio_data.get(KUrl(testcases[i].url));
 
     kio_data.endTestcase();
-    exp_content.resetRawData(testcases[i].exp_content,exp_content_len);
+    exp_content = QByteArray(testcases[i].exp_content,exp_content_len);
   }/*next i*/
   kio_data.endTestrun();
 
