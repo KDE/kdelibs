@@ -1,7 +1,8 @@
 kde4_header()
 
 project(kio)
-ADD_DEFINITIONS(-D_LARGEFILE64_SOURCE)
+
+add_definitions(-D_LARGEFILE64_SOURCE)
 
 if(HAVE_SSL)
    set(KSSL_HAVE_SSL 1)
@@ -25,7 +26,7 @@ include_directories(
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
-macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
+#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 add_subdirectory( kssl )
 add_subdirectory( kio ) 

@@ -294,7 +294,7 @@ set(xdg_directorydir    ${CMAKE_INSTALL_PREFIX}${XDG_DIRECTORY_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kde-config.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp @ONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)  
 
-macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  ${CMAKE_CURRENT_BINARY_DIR}/all_languages )
+#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  ${CMAKE_CURRENT_BINARY_DIR}/all_languages )
 
 kde4_add_executable(kde-config ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
 

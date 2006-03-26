@@ -32,7 +32,7 @@ kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kjavaappletviewer )
 install_targets(${PLUGIN_INSTALL_DIR} kjavaappletviewer )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kjava.policy.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
-macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
+#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
 
 ########### install files ###############
 

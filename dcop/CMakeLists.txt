@@ -3,7 +3,7 @@ kde4_header()
 project(dcop)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dcop-path.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
-macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
+#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
 
 # dcop/KDE-ICE/Makefile.am: kICE
 

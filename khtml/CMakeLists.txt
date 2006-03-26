@@ -318,7 +318,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
 extern \"C\"  KDE_EXPORT void* init_libkhtml();\n
 extern \"C\"  KDE_EXPORT void* init_libkhtmlpart() { return init_libkhtml(); }\n" )
 
-macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp )
+#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp )
 
 set(khtmlpart_PART_SRCS ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp )
 
@@ -340,7 +340,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp
 extern \"C\"  KDE_EXPORT void* init_khtmlimagefactory();\n
 extern \"C\"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefactory(); }\n" )
 
-macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp )
+#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp )
 
 set(khtmlimagepart_PART_SRCS ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp )
 
