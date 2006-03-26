@@ -278,10 +278,10 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
             delete filterDev;
             return false;
         }
-        qint64 len;
-        while ( !filterDev->atEnd() ) {
+        qint64 len = -1;
+        while ( !filterDev->atEnd() && len != 0 ) {
             len = filterDev->read(buffer.data(),buffer.size());
-            if ( len <= 0 ) { // corrupted archive
+            if ( len < 0 ) { // corrupted archive
                 delete filterDev;
                 return false;
             }
