@@ -34,13 +34,13 @@ function write_header( class_doc )
 
 function write_binding_method( compounddef, method_elem )
 {
-  compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
+  var compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
 
   var type = method_elem.firstChildElement('type').toElement().toString();
   var name = method_elem.firstChildElement('name').toElement().toString();
   var args = method_elem.firstChildElement('argsstring').toElement().toString();
 
-  method_template =
+  var method_template =
     '\n' +
     '// ' + type + ' ' + name + args + '\n' +
     'START_QOBJECT_METHOD( ' + name + ', ' + compoundname + ')\n' +
@@ -48,6 +48,32 @@ function write_binding_method( compounddef, method_elem )
     'END_QOBJECT_METHOD\n';
 
   return method_template;
+}
+
+function write_binding_methodlut( compounddef )
+{
+  var compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
+
+  var lut_template =
+    '\n' +
+    'START_METHOD_LUT( Bind' + compoundname + ')\n';
+
+  // Generate the binding for each method
+  var methodList = compounddef.elementsByTagName( "memberdef" );
+  for( var idx = 0; idx < methodList.length(); ++idx ) {
+	var member_elem = methodList.item(idx).toElement();
+	var kind = member_elem.attribute( 'kind' );
+	var name = member_elem.firstChildElement('name').toElement().toString();
+
+	if ( kind == 'function' ) {
+	  lut_template += '{' + name + ', 0, KJS::DontDelete|KJS::ReadOnly, &Binding' + compoundname + 'NS::' + name + ' },\n';
+	}
+  }
+
+
+  lut_template += 'END_METHOD_LUT\n';
+
+  return lut_template;
 }
 
 function write_binding( class_doc )
@@ -69,7 +95,7 @@ function write_binding( class_doc )
     '\n' +
     'namespace Binding' + compoundname + 'NS {\n';
 
-  // List the methods
+  // Generate the binding for each method
   var methodList = class_doc.elementsByTagName( "memberdef" );
   for( idx = 0; idx < methodList.length(); ++idx ) {
 	var member_elem = methodList.item(idx).toElement();
@@ -81,6 +107,8 @@ function write_binding( class_doc )
   }
 
   template += '};\n';
+  template += '\n';
+  template += write_binding_methodlut( compounddef );
 
   var fname = output_dir + compoundname + '_bind.cpp';
 
