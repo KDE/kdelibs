@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="dir_000000" kind="dir">
+    <compoundname>input/</compoundname>
+    <innerfile refid="qlabel_8h">qlabel.h</innerfile>
+    <innerfile refid="qwidget_8h">qwidget.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/"/>
+  </compounddef>
+</doxygen>

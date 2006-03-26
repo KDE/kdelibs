@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="qlabel_8h" kind="file">
+    <compoundname>qlabel.h</compoundname>
+    <includes local="no">QtGui/qframe.h</includes>
+    <incdepgraph>
+      <node id="0">
+        <label>input/qlabel.h</label>
+        <link refid="qlabel.h"/>
+        <childnode refid="1" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>QtGui/qframe.h</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classQLabel">QLabel</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h"/>
+  </compounddef>
+</doxygen>

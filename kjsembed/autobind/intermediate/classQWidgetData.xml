@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="classQWidgetData" kind="class" prot="public">
+    <compoundname>QWidgetData</compoundname>
+    <includes refid="qwidget_8h" local="no">qwidget.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classQWidgetData_1o0" prot="public" static="no" mutable="no">
+        <type>WId</type>
+        <definition>WId QWidgetData::winid</definition>
+        <argsstring></argsstring>
+        <name>winid</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="80" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="80" bodyend="-1"/>
+        <referencedby refid="classQWidget_1a3" compoundref="qwidget_8h" startline="770" endline="771">QWidget::winId</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o1" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint QWidgetData::widget_attributes</definition>
+        <argsstring></argsstring>
+        <name>widget_attributes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="81" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="81" bodyend="-1"/>
+        <referencedby refid="classQWidget_1a199" compoundref="qwidget_8h" startline="872" endline="877">QWidget::testAttribute</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o2" prot="public" static="no" mutable="no">
+        <type>Qt::WindowFlags</type>
+        <definition>Qt::WindowFlags QWidgetData::window_flags</definition>
+        <argsstring></argsstring>
+        <name>window_flags</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="82" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="82" bodyend="-1"/>
+        <referencedby refid="classQWidget_1a192" compoundref="qwidget_8h" startline="767" endline="768">QWidget::windowFlags</referencedby>
+        <referencedby refid="classQWidget_1a194" compoundref="qwidget_8h" startline="765" endline="766">QWidget::windowType</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o3" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint QWidgetData::window_state</definition>
+        <argsstring></argsstring>
+        <name>window_state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="83" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o4" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint QWidgetData::focus_policy</definition>
+        <argsstring></argsstring>
+        <name>focus_policy</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="84" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o5" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint QWidgetData::sizehint_forced</definition>
+        <argsstring></argsstring>
+        <name>sizehint_forced</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="85" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o6" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint QWidgetData::is_closing</definition>
+        <argsstring></argsstring>
+        <name>is_closing</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="86" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o7" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint QWidgetData::in_show</definition>
+        <argsstring></argsstring>
+        <name>in_show</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="87" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o8" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint QWidgetData::in_set_window_state</definition>
+        <argsstring></argsstring>
+        <name>in_set_window_state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="88" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o9" prot="public" static="no" mutable="yes">
+        <type>uint</type>
+        <definition>uint QWidgetData::fstrut_dirty</definition>
+        <argsstring></argsstring>
+        <name>fstrut_dirty</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="89" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o10" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint QWidgetData::context_menu_policy</definition>
+        <argsstring></argsstring>
+        <name>context_menu_policy</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="90" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o11" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint QWidgetData::window_modality</definition>
+        <argsstring></argsstring>
+        <name>window_modality</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="91" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="91" bodyend="-1"/>
+        <referencedby refid="classQWidget_1a8" compoundref="qwidget_8h" startline="782" endline="783">QWidget::isModal</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o12" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint QWidgetData::unused</definition>
+        <argsstring></argsstring>
+        <name>unused</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="92" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o13" prot="public" static="no" mutable="no">
+        <type>QRect</type>
+        <definition>QRect QWidgetData::crect</definition>
+        <argsstring></argsstring>
+        <name>crect</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="93" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o14" prot="public" static="no" mutable="yes">
+        <type>QPalette</type>
+        <definition>QPalette QWidgetData::pal</definition>
+        <argsstring></argsstring>
+        <name>pal</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="94" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o15" prot="public" static="no" mutable="no">
+        <type>QFont</type>
+        <definition>QFont QWidgetData::fnt</definition>
+        <argsstring></argsstring>
+        <name>fnt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="95" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="95" bodyend="-1"/>
+        <referencedby refid="classQWidget_1a70" compoundref="qwidget_8h" startline="818" endline="819">QWidget::fontInfo</referencedby>
+        <referencedby refid="classQWidget_1a69" compoundref="qwidget_8h" startline="815" endline="816">QWidget::fontMetrics</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="classQWidgetData_1o16" prot="public" static="no" mutable="no">
+        <type>QRect</type>
+        <definition>QRect QWidgetData::wrect</definition>
+        <argsstring></argsstring>
+        <name>wrect</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="107" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" line="78" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qwidget.h" bodystart="77" bodyend="108"/>
+    <listofallmembers>
+      <member refid="classQWidgetData_1o10" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>context_menu_policy</name></member>
+      <member refid="classQWidgetData_1o13" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>crect</name></member>
+      <member refid="classQWidgetData_1o15" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>fnt</name></member>
+      <member refid="classQWidgetData_1o4" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>focus_policy</name></member>
+      <member refid="classQWidgetData_1o9" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>fstrut_dirty</name></member>
+      <member refid="classQWidgetData_1o8" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>in_set_window_state</name></member>
+      <member refid="classQWidgetData_1o7" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>in_show</name></member>
+      <member refid="classQWidgetData_1o6" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>is_closing</name></member>
+      <member refid="classQWidgetData_1o14" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>pal</name></member>
+      <member refid="classQWidgetData_1o5" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>sizehint_forced</name></member>
+      <member refid="classQWidgetData_1o12" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>unused</name></member>
+      <member refid="classQWidgetData_1o1" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>widget_attributes</name></member>
+      <member refid="classQWidgetData_1o2" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>window_flags</name></member>
+      <member refid="classQWidgetData_1o11" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>window_modality</name></member>
+      <member refid="classQWidgetData_1o3" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>window_state</name></member>
+      <member refid="classQWidgetData_1o0" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>winid</name></member>
+      <member refid="classQWidgetData_1o16" prot="public" virt="non-virtual"><scope>QWidgetData</scope><name>wrect</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

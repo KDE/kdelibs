@@ -1,0 +1,742 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="classQLabel" kind="class" prot="public">
+    <compoundname>QLabel</compoundname>
+    <includes refid="qlabel_8h" local="no">qlabel.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classQLabel_1a0" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>QLabel::QLabel</definition>
+        <argsstring>(QWidget *parent=0, Qt::WFlags f=0)</argsstring>
+        <name>QLabel</name>
+        <param>
+          <type><ref refid="classQWidget" kindref="compound">QWidget</ref> *</type>
+          <declname>parent</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>Qt::WFlags</type>
+          <declname>f</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a1" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>QLabel::QLabel</definition>
+        <argsstring>(const QString &amp;text, QWidget *parent=0, Qt::WFlags f=0)</argsstring>
+        <name>QLabel</name>
+        <param>
+          <type>const QString &amp;</type>
+          <declname>text</declname>
+        </param>
+        <param>
+          <type><ref refid="classQWidget" kindref="compound">QWidget</ref> *</type>
+          <declname>parent</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>Qt::WFlags</type>
+          <declname>f</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>QLabel::~QLabel</definition>
+        <argsstring>()</argsstring>
+        <name>~QLabel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QString</type>
+        <definition>QString QLabel::text</definition>
+        <argsstring>() const </argsstring>
+        <name>text</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const QPixmap *</type>
+        <definition>const QPixmap* QLabel::pixmap</definition>
+        <argsstring>() const </argsstring>
+        <name>pixmap</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const QPicture *</type>
+        <definition>const QPicture* QLabel::picture</definition>
+        <argsstring>() const </argsstring>
+        <name>picture</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="53"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QMovie *</type>
+        <definition>QMovie* QLabel::movie</definition>
+        <argsstring>() const </argsstring>
+        <name>movie</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Qt::TextFormat</type>
+        <definition>Qt::TextFormat QLabel::textFormat</definition>
+        <argsstring>() const </argsstring>
+        <name>textFormat</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="59"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setTextFormat</definition>
+        <argsstring>(Qt::TextFormat)</argsstring>
+        <name>setTextFormat</name>
+        <param>
+          <type>Qt::TextFormat</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="60"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Qt::Alignment</type>
+        <definition>Qt::Alignment QLabel::alignment</definition>
+        <argsstring>() const </argsstring>
+        <name>alignment</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a10" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setAlignment</definition>
+        <argsstring>(Qt::Alignment)</argsstring>
+        <name>setAlignment</name>
+        <param>
+          <type>Qt::Alignment</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a11" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setWordWrap</definition>
+        <argsstring>(bool on)</argsstring>
+        <name>setWordWrap</name>
+        <param>
+          <type>bool</type>
+          <declname>on</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a12" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QLabel::wordWrap</definition>
+        <argsstring>() const </argsstring>
+        <name>wordWrap</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a13" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QLabel::indent</definition>
+        <argsstring>() const </argsstring>
+        <name>indent</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setIndent</definition>
+        <argsstring>(int)</argsstring>
+        <name>setIndent</name>
+        <param>
+          <type>int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a15" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QLabel::margin</definition>
+        <argsstring>() const </argsstring>
+        <name>margin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="71"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a16" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setMargin</definition>
+        <argsstring>(int)</argsstring>
+        <name>setMargin</name>
+        <param>
+          <type>int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a17" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QLabel::hasScaledContents</definition>
+        <argsstring>() const </argsstring>
+        <name>hasScaledContents</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="74"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setScaledContents</definition>
+        <argsstring>(bool)</argsstring>
+        <name>setScaledContents</name>
+        <param>
+          <type>bool</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a19" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QSize</type>
+        <definition>QSize QLabel::sizeHint</definition>
+        <argsstring>() const </argsstring>
+        <name>sizeHint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a20" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QSize</type>
+        <definition>QSize QLabel::minimumSizeHint</definition>
+        <argsstring>() const </argsstring>
+        <name>minimumSizeHint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="77"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setBuddy</definition>
+        <argsstring>(QWidget *)</argsstring>
+        <name>setBuddy</name>
+        <param>
+          <type><ref refid="classQWidget" kindref="compound">QWidget</ref> *</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a22" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQWidget" kindref="compound">QWidget</ref> *</type>
+        <definition>QWidget* QLabel::buddy</definition>
+        <argsstring>() const </argsstring>
+        <name>buddy</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a23" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QLabel::heightForWidth</definition>
+        <argsstring>(int) const </argsstring>
+        <name>heightForWidth</name>
+        <param>
+          <type>int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setPixmap</definition>
+        <argsstring>(const QPixmap &amp;)</argsstring>
+        <name>setPixmap</name>
+        <param>
+          <type>const QPixmap &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="86"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setPicture</definition>
+        <argsstring>(const QPicture &amp;)</argsstring>
+        <name>setPicture</name>
+        <param>
+          <type>const QPicture &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="88"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setMovie</definition>
+        <argsstring>(QMovie *movie)</argsstring>
+        <name>setMovie</name>
+        <param>
+          <type>QMovie *</type>
+          <declname>movie</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="91"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a27" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setNum</definition>
+        <argsstring>(int)</argsstring>
+        <name>setNum</name>
+        <param>
+          <type>int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a28" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::setNum</definition>
+        <argsstring>(double)</argsstring>
+        <name>setNum</name>
+        <param>
+          <type>double</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="94"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1a29" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="95"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classQLabel_1o0" prot="public" static="no" mutable="no">
+        <type>public</type>
+        <definition>public QLabel::Q_SLOTS</definition>
+        <argsstring></argsstring>
+        <name>Q_SLOTS</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="85" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="classQLabel_100" prot="public" static="no" readable="yes" writable="yes">
+        <type>QString</type>
+        <definition>QString QLabel::text</definition>
+        <argsstring></argsstring>
+        <name>text</name>
+        <read>text</read>
+        <write>setText</write>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="36" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classQLabel_101" prot="public" static="no" readable="yes" writable="yes">
+        <type>Qt</type>
+        <definition>Qt QLabel::TextFormat</definition>
+        <argsstring></argsstring>
+        <name>TextFormat</name>
+        <read>textFormat</read>
+        <write>setTextFormat</write>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="37" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classQLabel_102" prot="public" static="no" readable="yes" writable="yes">
+        <type>QPixmap</type>
+        <definition>QPixmap QLabel::pixmap</definition>
+        <argsstring></argsstring>
+        <name>pixmap</name>
+        <read>pixmap</read>
+        <write>setPixmap</write>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="38" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classQLabel_103" prot="public" static="no" readable="yes" writable="yes">
+        <type>bool</type>
+        <definition>bool QLabel::scaledContents</definition>
+        <argsstring></argsstring>
+        <name>scaledContents</name>
+        <read>hasScaledContents</read>
+        <write>setScaledContents</write>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="39" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classQLabel_104" prot="public" static="no" readable="yes" writable="yes">
+        <type>Qt</type>
+        <definition>Qt QLabel::Alignment</definition>
+        <argsstring></argsstring>
+        <name>Alignment</name>
+        <read>alignment</read>
+        <write>setAlignment</write>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="40" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classQLabel_105" prot="public" static="no" readable="yes" writable="yes">
+        <type>bool</type>
+        <definition>bool QLabel::wordWrap</definition>
+        <argsstring></argsstring>
+        <name>wordWrap</name>
+        <read>wordWrap</read>
+        <write>setWordWrap</write>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="41" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classQLabel_106" prot="public" static="no" readable="yes" writable="yes">
+        <type>int</type>
+        <definition>int QLabel::margin</definition>
+        <argsstring></argsstring>
+        <name>margin</name>
+        <read>margin</read>
+        <write>setMargin</write>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="42" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classQLabel_107" prot="public" static="no" readable="yes" writable="yes">
+        <type>int</type>
+        <definition>int QLabel::indent</definition>
+        <argsstring></argsstring>
+        <name>indent</name>
+        <read>indent</read>
+        <write>setIndent</write>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="43" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classQLabel_1b0" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QLabel::event</definition>
+        <argsstring>(QEvent *e)</argsstring>
+        <name>event</name>
+        <param>
+          <type>QEvent *</type>
+          <declname>e</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="98"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1b1" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::paintEvent</definition>
+        <argsstring>(QPaintEvent *)</argsstring>
+        <name>paintEvent</name>
+        <param>
+          <type>QPaintEvent *</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1b2" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::changeEvent</definition>
+        <argsstring>(QEvent *)</argsstring>
+        <name>changeEvent</name>
+        <param>
+          <type>QEvent *</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="100"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classQLabel_1d0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>QLabel::Q_PRIVATE_SLOT</definition>
+        <argsstring>(d_func(), void movieUpdated(const QRect &amp;)) Q_PRIVATE_SLOT(d_func()</argsstring>
+        <name>Q_PRIVATE_SLOT</name>
+        <param>
+          <type>d_func()</type>
+        </param>
+        <param>
+          <type>void </type>
+          <declname>movieUpdated</declname>
+          <array>(const QRect &amp;)</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="120"/>
+      </memberdef>
+      <memberdef kind="function" id="classQLabel_1d1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QLabel::movieResized</definition>
+        <argsstring>(const QSize &amp;)) friend class QTipLabel</argsstring>
+        <name>movieResized</name>
+        <param>
+          <type>const QSize &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="123"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" line="34" bodyfile="/home/rich/kdesvn/kdelibs/kjsembed/autobind/input/qlabel.h" bodystart="33" bodyend="124"/>
+    <listofallmembers>
+      <member refid="classQLabel_104" prot="public" virt="non-virtual"><scope>QLabel</scope><name>Alignment</name></member>
+      <member refid="classQLabel_1a9" prot="public" virt="non-virtual"><scope>QLabel</scope><name>alignment</name></member>
+      <member refid="classQLabel_1a22" prot="public" virt="non-virtual"><scope>QLabel</scope><name>buddy</name></member>
+      <member refid="classQLabel_1b2" prot="protected" virt="non-virtual"><scope>QLabel</scope><name>changeEvent</name></member>
+      <member refid="classQLabel_1a29" prot="public" virt="non-virtual"><scope>QLabel</scope><name>clear</name></member>
+      <member refid="classQLabel_1b0" prot="protected" virt="non-virtual"><scope>QLabel</scope><name>event</name></member>
+      <member refid="classQLabel_1a17" prot="public" virt="non-virtual"><scope>QLabel</scope><name>hasScaledContents</name></member>
+      <member refid="classQLabel_1a23" prot="public" virt="non-virtual"><scope>QLabel</scope><name>heightForWidth</name></member>
+      <member refid="classQLabel_107" prot="public" virt="non-virtual"><scope>QLabel</scope><name>indent</name></member>
+      <member refid="classQLabel_1a13" prot="public" virt="non-virtual"><scope>QLabel</scope><name>indent</name></member>
+      <member refid="classQLabel_106" prot="public" virt="non-virtual"><scope>QLabel</scope><name>margin</name></member>
+      <member refid="classQLabel_1a15" prot="public" virt="non-virtual"><scope>QLabel</scope><name>margin</name></member>
+      <member refid="classQLabel_1a20" prot="public" virt="non-virtual"><scope>QLabel</scope><name>minimumSizeHint</name></member>
+      <member refid="classQLabel_1a6" prot="public" virt="non-virtual"><scope>QLabel</scope><name>movie</name></member>
+      <member refid="classQLabel_1d1" prot="private" virt="non-virtual"><scope>QLabel</scope><name>movieResized</name></member>
+      <member refid="classQLabel_1b1" prot="protected" virt="non-virtual"><scope>QLabel</scope><name>paintEvent</name></member>
+      <member refid="classQLabel_1a5" prot="public" virt="non-virtual"><scope>QLabel</scope><name>picture</name></member>
+      <member refid="classQLabel_102" prot="public" virt="non-virtual"><scope>QLabel</scope><name>pixmap</name></member>
+      <member refid="classQLabel_1a4" prot="public" virt="non-virtual"><scope>QLabel</scope><name>pixmap</name></member>
+      <member refid="classQLabel_1d0" prot="private" virt="non-virtual"><scope>QLabel</scope><name>Q_PRIVATE_SLOT</name></member>
+      <member refid="classQLabel_1o0" prot="public" virt="non-virtual"><scope>QLabel</scope><name>Q_SLOTS</name></member>
+      <member refid="classQLabel_1a0" prot="public" virt="non-virtual"><scope>QLabel</scope><name>QLabel</name></member>
+      <member refid="classQLabel_1a1" prot="public" virt="non-virtual"><scope>QLabel</scope><name>QLabel</name></member>
+      <member refid="classQLabel_103" prot="public" virt="non-virtual"><scope>QLabel</scope><name>scaledContents</name></member>
+      <member refid="classQLabel_1a10" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setAlignment</name></member>
+      <member refid="classQLabel_1a21" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setBuddy</name></member>
+      <member refid="classQLabel_1a14" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setIndent</name></member>
+      <member refid="classQLabel_1a16" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setMargin</name></member>
+      <member refid="classQLabel_1a26" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setMovie</name></member>
+      <member refid="classQLabel_1a27" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setNum</name></member>
+      <member refid="classQLabel_1a28" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setNum</name></member>
+      <member refid="classQLabel_1a25" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setPicture</name></member>
+      <member refid="classQLabel_1a24" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setPixmap</name></member>
+      <member refid="classQLabel_1a18" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setScaledContents</name></member>
+      <member refid="classQLabel_1a8" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setTextFormat</name></member>
+      <member refid="classQLabel_1a11" prot="public" virt="non-virtual"><scope>QLabel</scope><name>setWordWrap</name></member>
+      <member refid="classQLabel_1a19" prot="public" virt="non-virtual"><scope>QLabel</scope><name>sizeHint</name></member>
+      <member refid="classQLabel_100" prot="public" virt="non-virtual"><scope>QLabel</scope><name>text</name></member>
+      <member refid="classQLabel_1a3" prot="public" virt="non-virtual"><scope>QLabel</scope><name>text</name></member>
+      <member refid="classQLabel_1a7" prot="public" virt="non-virtual"><scope>QLabel</scope><name>textFormat</name></member>
+      <member refid="classQLabel_101" prot="public" virt="non-virtual"><scope>QLabel</scope><name>TextFormat</name></member>
+      <member refid="classQLabel_105" prot="public" virt="non-virtual"><scope>QLabel</scope><name>wordWrap</name></member>
+      <member refid="classQLabel_1a12" prot="public" virt="non-virtual"><scope>QLabel</scope><name>wordWrap</name></member>
+      <member refid="classQLabel_1a2" prot="public" virt="non-virtual"><scope>QLabel</scope><name>~QLabel</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
