@@ -173,7 +173,7 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
         return;
     }
 
-    if (dynamic_cast<QMenu*>(widget))
+    if (qobject_cast<QMenu*>(widget))
     {
         // create a popup accel manager that can deal with dynamic menus
         KPopupAccelManager::manage(static_cast<QMenu*>(widget));
@@ -211,14 +211,14 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     {
         cnt++;
 
-        QTabBar *tabBar = dynamic_cast<QTabBar*>(it->m_widget);
+        QTabBar *tabBar = qobject_cast<QTabBar*>(it->m_widget);
         if (tabBar)
         {
             if (checkChange(contents[cnt]))
                 tabBar->setTabText(it->m_index, contents[cnt].accelerated());
             continue;
         }
-        QMenuBar *menuBar = dynamic_cast<QMenuBar*>(it->m_widget);
+        QMenuBar *menuBar = qobject_cast<QMenuBar*>(it->m_widget);
         if (menuBar)
         {
             if (it->m_index >= 0)
@@ -233,7 +233,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
             }
         }
         // we possibly reserved an accel, but we won't set it as it looks silly
-        if ( dynamic_cast<Q3GroupBox*>( it->m_widget ) )
+        if ( qobject_cast<Q3GroupBox*>( it->m_widget ) )
              continue;
 
         kDebug(125) << "write " << cnt << " " << it->m_widget->metaObject()->className() << " " <<contents[cnt].accelerated() << endl;
@@ -280,21 +280,21 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 {
   // first treat the special cases
 
-  QTabBar *tabBar = dynamic_cast<QTabBar*>(w);
+  QTabBar *tabBar = qobject_cast<QTabBar*>(w);
   if (tabBar)
   {
       manageTabBar(tabBar, item);
       return;
   }
 
-  QStackedWidget *wds = dynamic_cast<QStackedWidget*>( w );
+  QStackedWidget *wds = qobject_cast<QStackedWidget*>( w );
   if ( wds )
   {
       QWidgetStackAccelManager::manage( wds );
       // return;
   }
 
-  QMenu *popupMenu = dynamic_cast<QMenu*>(w);
+  QMenu *popupMenu = qobject_cast<QMenu*>(w);
   if (popupMenu)
   {
       // create a popup accel manager that can deal with dynamic menus
@@ -302,27 +302,27 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       return;
   }
 
-  QStackedWidget *wdst = dynamic_cast<QStackedWidget*>( w );
+  QStackedWidget *wdst = qobject_cast<QStackedWidget*>( w );
   if ( wdst )
   {
       QWidgetStackAccelManager::manage( wdst );
       // return;
   }
 
-  QMenuBar *menuBar = dynamic_cast<QMenuBar*>(w);
+  QMenuBar *menuBar = qobject_cast<QMenuBar*>(w);
   if (menuBar)
   {
       manageMenuBar(menuBar, item);
       return;
   }
 
-  if (dynamic_cast<QComboBox*>(w) || dynamic_cast<QLineEdit*>(w) ||
-      dynamic_cast<Q3TextEdit*>(w) || dynamic_cast<Q3TextView*>(w) ||
-      dynamic_cast<QSpinBox*>(w) || w->inherits( "KMultiTabBar" ) )
+  if (qobject_cast<QComboBox*>(w) || qobject_cast<QLineEdit*>(w) ||
+      qobject_cast<Q3TextEdit*>(w) || qobject_cast<Q3TextView*>(w) ||
+      qobject_cast<QSpinBox*>(w) || w->inherits( "KMultiTabBar" ) )
       return;
 
   // now treat 'ordinary' widgets
-  QLabel *label =  dynamic_cast<QLabel*>(w);
+  QLabel *label =  qobject_cast<QLabel*>(w);
   if ( label  ) {
       if ( !label->buddy() )
           label = 0;
@@ -334,7 +334,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       }
   }
 
-  if (w->focusPolicy() != Qt::NoFocus || label || dynamic_cast<Q3GroupBox*>(w) || dynamic_cast<QRadioButton*>( w ))
+  if (w->focusPolicy() != Qt::NoFocus || label || qobject_cast<Q3GroupBox*>(w) || qobject_cast<QRadioButton*>( w ))
   {
     QString content;
     QVariant variant;
@@ -366,11 +366,11 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 
         // put some more weight on the usual action elements
         int weight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
-        if (dynamic_cast<QPushButton*>(w) || dynamic_cast<QCheckBox*>(w) || dynamic_cast<QRadioButton*>(w) || dynamic_cast<QLabel*>(w))
+        if (qobject_cast<QPushButton*>(w) || qobject_cast<QCheckBox*>(w) || qobject_cast<QRadioButton*>(w) || qobject_cast<QLabel*>(w))
             weight = KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT;
 
         // don't put weight on group boxes, as usually the contents are more important
-        if (dynamic_cast<Q3GroupBox*>(w))
+        if (qobject_cast<Q3GroupBox*>(w))
             weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
 
         // put a lot of extra weight on the KDialogBaseButton's
