@@ -45,6 +45,10 @@ START_OBJECT_METHOD( callFileReadLine, QFile )
     result = KJS::String( object->readLine().data() );
 END_OBJECT_METHOD
 
+START_OBJECT_METHOD( callFileReadAll, QFile )
+    result = KJS::String( object->readAll().data() );
+END_OBJECT_METHOD
+
 START_OBJECT_METHOD( callFileWriteLine, QFile )
     result = KJS::Number( (long int)object->write(KJSEmbed::extractQByteArray(exec, args, 0) + "\n") );
 END_OBJECT_METHOD
@@ -120,6 +124,7 @@ START_METHOD_LUT( FileIO )
     {"open", 1, KJS::DontDelete|KJS::ReadOnly, &callFileOpen },
     {"close", 0, KJS::DontDelete|KJS::ReadOnly, &callFileClose },
     {"readln", 0, KJS::DontDelete|KJS::ReadOnly, &callFileReadLine },
+    {"readAll", 0, KJS::DontDelete|KJS::ReadOnly, &callFileReadAll },
     {"writeln", 1, KJS::DontDelete|KJS::ReadOnly, &callFileWriteLine },
     {"atEnd", 0, KJS::DontDelete|KJS::ReadOnly, &callFileAtEnd }
 END_METHOD_LUT
