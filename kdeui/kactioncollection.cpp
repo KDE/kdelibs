@@ -305,7 +305,10 @@ void KActionCollection::insert( KAction* action )
     connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
 
   if (d->associatedWidgets.count()) {
-    action->setShortcutContext(Qt::WidgetShortcut);
+    if (defaultShortcutContext() != -1)
+      action->setShortcutContext(defaultShortcutContext());
+    else
+      action->setShortcutContext(Qt::WidgetShortcut);
     foreach (QWidget* w, d->associatedWidgets)
       w->addAction(action);
 
