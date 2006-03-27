@@ -201,6 +201,13 @@ class KLocalizedStringPrivate;
  */
 class KDECORE_EXPORT KLocalizedString
 {
+
+    friend KLocalizedString ki18n (const char* msg);
+    friend KLocalizedString ki18nc (const char *ctxt, const char *msg);
+    friend KLocalizedString ki18np (const char *singular, const char *plural);
+    friend KLocalizedString ki18ncp (const char *ctxt,
+                                     const char *singular, const char *plural);
+
 public:
     /**
      * Constructs an empty message, which is not valid for finalization.
@@ -225,60 +232,6 @@ public:
      * Destructor.
      */
     ~KLocalizedString ();
-
-    /**
-     * Creates localized string from a given message.
-     * Normaly you should use i18n() templates instead, as you need real
-     * KLocalizedString object only in special cases.
-     * All text arguments must be UTF-8 encoded and must not be empty or NULL.
-     *
-     * @param msg message text
-     * @return created KLocalizedString
-     */
-    friend KLocalizedString ki18n (const char* msg);
-
-    /**
-     * Creates localized string from a given message, with added context.
-     * Context is only for disambiguation purposes (both for lookup and
-     * for translators), it is not part of the message.
-     * Normaly you should use i18nc() templates instead, as you need real
-     * KLocalizedString object only in special cases.
-     * All text arguments must be UTF-8 encoded and must not be empty or NULL.
-     *
-     * @param ctxt context text
-     * @param msg message text
-     * @return created KLocalizedString
-     */
-    friend KLocalizedString ki18nc (const char *ctxt, const char *msg);
-
-    /**
-     * Creates localized string from a given plural and singular form.
-     * Normaly you should use i18np() templates instead, as you need real
-     * KLocalizedString object only in special cases.
-     * All text arguments must be UTF-8 encoded and must not be empty or NULL.
-     *
-     * @param singular message text in singular
-     * @param plural message text in plural
-     * @return created KLocalizedString
-     */
-    friend KLocalizedString ki18np (const char *singular, const char *plural);
-
-    /**
-     * Creates localized string from a given plural and singular form,
-     * with added context.
-     * Context is only for disambiguation purposes (both for lookup and
-     * for translators), it is not part of the message.
-     * Normaly you should use i18ncp() templates instead, as you need real
-     * KLocalizedString object only in special cases.
-     * All text arguments must be UTF-8 encoded and must not be empty or NULL.
-     *
-     * @param ctxt context text
-     * @param singular message text in singular
-     * @param plural message text in plural
-     * @return created KLocalizedString
-     */
-    friend KLocalizedString ki18ncp (const char *ctxt,
-                                     const char *singular, const char *plural);
 
     /**
      * Finalizes the translation, creates QString with placeholders
@@ -396,6 +349,59 @@ private:
 
     KLocalizedStringPrivate * const d;
 };
+
+/**
+* Creates localized string from a given message.
+* Normaly you should use i18n() templates instead, as you need real
+* KLocalizedString object only in special cases.
+* All text arguments must be UTF-8 encoded and must not be empty or NULL.
+*
+* @param msg message text
+* @return created KLocalizedString
+*/
+extern KLocalizedString ki18n (const char* msg);
+
+/**
+* Creates localized string from a given message, with added context.
+* Context is only for disambiguation purposes (both for lookup and
+* for translators), it is not part of the message.
+* Normaly you should use i18nc() templates instead, as you need real
+* KLocalizedString object only in special cases.
+* All text arguments must be UTF-8 encoded and must not be empty or NULL.
+*
+* @param ctxt context text
+* @param msg message text
+* @return created KLocalizedString
+*/
+extern KLocalizedString ki18nc (const char *ctxt, const char *msg);
+
+/**
+* Creates localized string from a given plural and singular form.
+* Normaly you should use i18np() templates instead, as you need real
+* KLocalizedString object only in special cases.
+* All text arguments must be UTF-8 encoded and must not be empty or NULL.
+*
+* @param singular message text in singular
+* @param plural message text in plural
+* @return created KLocalizedString
+*/
+extern KLocalizedString ki18np (const char *singular, const char *plural);
+
+/**
+* Creates localized string from a given plural and singular form,
+* with added context.
+* Context is only for disambiguation purposes (both for lookup and
+* for translators), it is not part of the message.
+* Normaly you should use i18ncp() templates instead, as you need real
+* KLocalizedString object only in special cases.
+* All text arguments must be UTF-8 encoded and must not be empty or NULL.
+*
+* @param ctxt context text
+* @param singular message text in singular
+* @param plural message text in plural
+* @return created KLocalizedString
+*/
+extern KLocalizedString ki18ncp (const char *ctxt, const char *singular, const char *plural);
 
 #ifndef NDEBUG
 #define I18N_ERR_MSG String_literal_as_second_argument_to_i18n___Perhaps_you_need_i18nc_or_i18np
