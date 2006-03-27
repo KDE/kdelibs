@@ -619,7 +619,7 @@ kde4_add_executable(knotificationrestrictionstest ${knotificationrestrictionstes
 
 target_link_libraries(knotificationrestrictionstest  ${KDE4_KDECORE_LIBS})
 
-add_test(kdecore-knotificationrestrictionstest ${EXECUTABLE_OUTPUT_PATH}/knotificationrestrictionstest)
+# add_test(kdecore-knotificationrestrictionstest ${EXECUTABLE_OUTPUT_PATH}/knotificationrestrictionstest)
 
 ########### next target ###############
 
