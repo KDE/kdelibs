@@ -92,6 +92,10 @@ ENDMACRO(INSTALL_CUSTOMIZE_DIR _expr _directory)
 
 set(docbookdir xml-dtd-4.1.2  xml-dtd-4.2  xsl )
 
+
+set(expr "docbook/README.kde")
+INSTALL_CUSTOMIZE_DIR( ${expr} docbook/)
+
 foreach (_currentdocbookdir ${docbookdir})
 	set(expr "docbook/${_currentdocbookdir}/*.mod")
 	INSTALL_CUSTOMIZE_DIR( ${expr} docbook/${_currentdocbookdir}/)
@@ -172,6 +176,12 @@ foreach (_currentdocbookdir ${docbookdir})
 endforeach(_currentdocbookdir ${docbookdir})
 
 
+set(expr "customization/*.xsl")
+INSTALL_CUSTOMIZE_DIR( ${expr} customization/)
+
+set(expr "customization/README")
+INSTALL_CUSTOMIZE_DIR( ${expr} customization/)
+
 set(customizedir af bg ca cs da de dtd el en-GB en entities eo es et fi fo fr he hu id it ja ko lt nl nn no obsolete pl pt-BR pt ro ru sk sl sr sv tr uk wa xh xsl xx zh-CN zh-TW)
  
 foreach (_currentcustomizedir ${customizedir})
@@ -193,10 +203,10 @@ foreach (_currentcustomizedir ${customizedir})
     INSTALL_CUSTOMIZE_DIR(${expr} customization/${_currentcustomizedir} )
     set(expr "customization/${_currentcustomizedir}/*.xml")
     INSTALL_CUSTOMIZE_DIR(${expr} customization/${_currentcustomizedir} )
-	set(expr "customization/${_currentcustomizedir}/dtd/*.dtd")
-	INSTALL_CUSTOMIZE_DIR(${expr} customization/${_currentcustomizedir}/dtd/)
-	set(expr "customization/${_currentcustomizedir}/dtd/*.elements")
-	INSTALL_CUSTOMIZE_DIR(${expr} customization/${_currentcustomizedir}/dtd/)
+	set(expr "customization/${_currentcustomizedir}/*.dtd")
+	INSTALL_CUSTOMIZE_DIR(${expr} customization/${_currentcustomizedir}/)
+	set(expr "customization/${_currentcustomizedir}/*.elements")
+	INSTALL_CUSTOMIZE_DIR(${expr} customization/${_currentcustomizedir}/)
 	
 endforeach(_currentcustomizedir ${customizedir}) 
 	  

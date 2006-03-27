@@ -317,11 +317,7 @@ that we would like to make for the next binary incompatible release.
 - CMake:
    * install man pages (e.g. doc/kdelibs/man-kbuildsycoca.8.docbook)
    * compile and install documentation (doc/kspell)
-   * install /share/apps/ksgmltools2/customization/dtd
    * install /share/apps/ksgmltools2/customization/entities/kde-standard-accels.entities
-   * install /share/apps/ksgmltools2/customization/*.xsl
-   * install /share/apps/ksgmltools2/customization/README
-   * install /share/apps/ksgmltools2/docbook/README.kde
 
 - Increase version numbers in sonames of our libraries (*.so.version). 
   Unless we rename them all anyway, see next item.
