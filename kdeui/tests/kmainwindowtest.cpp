@@ -14,7 +14,7 @@ MainWindow::MainWindow()
 
     setCentralWidget( new QLabel( "foo", this ) );
 
-    menuBar()->insertItem( "hi" );
+    menuBar()->addAction( "hi" );
 }
 
 void MainWindow::showMessage()

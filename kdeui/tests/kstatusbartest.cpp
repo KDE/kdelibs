@@ -21,7 +21,7 @@ testWindow::testWindow (QWidget *)
     // Setup Menus
     menuBar = new KMenuBar (this);
     fileMenu = new QMenu;
-    menuBar->insertItem ("&File", fileMenu);
+    menuBar->addAction ( "&File" );
     fileMenu->insertItem ("&Exit", KApplication::kApplication(),
                           SLOT( quit() ), Qt::ALT + Qt::Key_Q );
     statusbar = new KStatusBar (this);

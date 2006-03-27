@@ -10,7 +10,7 @@ int main( int argc, char **argv )
   KApplication app;
   KEdit *edit = new KEdit( 0L );
   QMenu *pop = new QMenu( 0L );
-  pop->insertItem( "Popupmenu item" );
+  pop->addAction( QAction( "Popupmenu item", this ) );
   edit->installRBPopup( pop );
   edit->show();
   return app.exec();

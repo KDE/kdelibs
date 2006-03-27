@@ -26,11 +26,13 @@ public:
     DemoWidget() : QWidget()
     {
         menu = new KMenu("Popup Menu:");
-        menu->insertItem("Item1");
-        menu->insertItem("Item2");
-        menu->insertSeparator();
-        menu->insertItem("Quit", qApp, SLOT(quit()));
-    }       
+        menu->addAction( "Item1" );
+        menu->addAction( "Item2" );
+        menu->addSeparator();
+        QAction *a = new QAction( "Quit", this );
+        menu->addAction( a );
+        connect( a, SIGNAL(triggered()), qApp, SLOT(quit()));
+    }
 };
 
 int main(int argc, char **argv)

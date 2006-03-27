@@ -131,7 +131,7 @@ loadPredefined(Iter begin, Iter end, QMap<QChar,bool>& keys)
 {
     for (Iter i = begin; i != end; ++i) {
         QString item = Deref::deref(i);
-        int user_ampersand = item.find(QChar('&'));
+        int user_ampersand = item.indexOf(QChar('&'));
         if( user_ampersand >= 0 ) {
             // Sanity check.  Note that we don't try to find an
             // accelerator if the user shoots him/herself in the foot
