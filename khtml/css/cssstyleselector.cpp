@@ -302,7 +302,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *do
 	QFile f(locate( "data", "khtml/css/html4.css" ) );
 	f.open(QIODevice::ReadOnly);
 
-	QByteArray file( f.size()+1 );
+	QByteArray file( f.size()+1, 0 );
 	int readbytes = f.read( file.data(), f.size() );
 	f.close();
 	if ( readbytes >= 0 )
@@ -327,7 +327,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *do
 	QFile f(locate( "data", "khtml/css/quirks.css" ) );
 	f.open(QIODevice::ReadOnly);
 
-	QByteArray file( f.size()+1 );
+	QByteArray file( f.size()+1, 0 );
 	int readbytes = f.read( file.data(), f.size() );
 	f.close();
 	if ( readbytes >= 0 )
@@ -783,7 +783,7 @@ static bool subject;
 static void cleanpath(QString &path)
 {
     int pos;
-    while ( (pos = path.find( "/../" )) != -1 ) {
+    while ( (pos = path.indexOf( "/../" )) != -1 ) {
         int prev = 0;
         if ( pos > 0 )
             prev = path.lastIndexOf( "/", pos -1 );
@@ -801,9 +801,9 @@ static void cleanpath(QString &path)
     // We don't want to waste a function call on the search for the anchor
     // in the vast majority of cases where there is no "//" in the path.
     int refPos = -2;
-    while ( (pos = path.find( "//", pos )) != -1) {
+    while ( (pos = path.indexOf( "//", pos )) != -1) {
         if (refPos == -2)
-            refPos = path.find("#", 0);
+            refPos = path.indexOf("#", 0);
         if (refPos > 0 && pos >= refPos)
             break;
 
@@ -812,7 +812,7 @@ static void cleanpath(QString &path)
         else
             pos += 2;
     }
-    while ( (pos = path.find( "/./" )) != -1)
+    while ( (pos = path.indexOf( "/./" )) != -1)
         path.remove( pos, 2 );
     //kDebug() << "checkPseudoState " << path << endl;
 }
@@ -860,7 +860,7 @@ static inline bool matchNth(int count, const QString& nth)
         b = 0;
     }
     else {
-        int n = nth.find('n');
+        int n = nth.indexOf('n');
         if (n != -1) {
             if (nth[0] == '-')
                 if (n==1)
@@ -873,11 +873,11 @@ static inline bool matchNth(int count, const QString& nth)
                 else
                     a = nth.left(n).toInt();
 
-            int p = nth.find('+');
+            int p = nth.indexOf('+');
             if (p != -1)
                 b = nth.mid(p+1).toInt();
             else {
-                p = nth.find('-');
+                p = nth.indexOf('-');
                 b = -nth.mid(p+1).toInt();
             }
         }
@@ -1098,7 +1098,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             const int selStrlen = selStr.length();
             int pos = 0;
             for ( ;; ) {
-                pos = str.find(selStr, pos, strictParsing);
+                pos = str.indexOf(selStr, pos, (strictParsing ? Qt::CaseSensitive : Qt::CaseInsensitive));
                 if ( pos == -1 ) return false;
                 if ( pos == 0 || str[pos-1].isSpace() ) {
                     int endpos = pos + selStrlen;
@@ -1114,7 +1114,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             //kDebug( 6080 ) << "checking for contains match" << endl;
             QString str = value.string();
             QString selStr = sel->value.string();
-            int pos = str.find(selStr, 0, strictParsing);
+            int pos = str.indexOf(selStr, 0, (strictParsing ? Qt::CaseSensitive : Qt::CaseInsensitive));
             if(pos == -1) return false;
             break;
         }
@@ -1123,7 +1123,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             //kDebug( 6080 ) << "checking for beginswith match" << endl;
             QString str = value.string();
             QString selStr = sel->value.string();
-            int pos = str.find(selStr, 0, strictParsing);
+            int pos = str.indexOf(selStr, 0, (strictParsing ? Qt::CaseSensitive : Qt::CaseInsensitive));
             if(pos != 0) return false;
             break;
         }
@@ -1135,7 +1135,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    if (strictParsing && !str.endsWith(selStr)) return false;
 	    if (!strictParsing) {
 	        int pos = str.length() - selStr.length();
-		if (pos < 0 || pos != str.find(selStr, pos, false) )
+		if (pos < 0 || pos != str.indexOf(selStr, pos, Qt::CaseInsensitive) )
 		    return false;
 	    }
             break;
@@ -1147,7 +1147,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             QString selStr = sel->value.string();
             if(str.length() < selStr.length()) return false;
             // Check if str begins with selStr:
-            if(str.find(selStr, 0, strictParsing) != 0) return false;
+            if(str.indexOf(selStr, 0, (strictParsing ? Qt::CaseSensitive : Qt::CaseInsensitive)) != 0) return false;
             // It does. Check for exact match or following '-':
             if(str.length() != selStr.length()
                 && str[selStr.length()] != '-') return false;
@@ -1934,14 +1934,14 @@ static QColor colorForCSSValue( int css_value )
 #ifndef APPLE_CHANGES
     if ( !uicol->css_value ) {
 	if ( css_value == CSS_VAL_INFOBACKGROUND )
-	    return QToolTip::palette().inactive().background();
+	    return QToolTip::palette().color( QPalette::Inactive, QPalette::Background );
 	else if ( css_value == CSS_VAL_INFOTEXT )
-	    return QToolTip::palette().inactive().foreground();
+	    return QToolTip::palette().color( QPalette::Inactive, QPalette::Foreground );
 	else if ( css_value == CSS_VAL_BACKGROUND ) {
 	    KConfig bckgrConfig("kdesktoprc", true, false); // No multi-screen support
 	    bckgrConfig.setGroup("Desktop0");
 	    // Desktop background.
-	    return bckgrConfig.readEntry("Color1", qApp->palette().disabled().background());
+	    return bckgrConfig.readEntry("Color1", qApp->palette().color( QPalette::Disabled, QPalette::Background ) );
 	}
 	return QColor();
     }

@@ -237,6 +237,10 @@ protected:
 public:
   // Let standard constructor/copy constructor/destructor/assignment operator
   // be defined by the compiler. They do exactly what we want.
+  CaretBoxIterator()
+    : cbl( 0 ), index( 0 )
+  {
+  }
 
   bool operator ==(const CaretBoxIterator &it) const
   {

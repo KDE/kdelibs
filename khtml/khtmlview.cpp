@@ -478,7 +478,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     setResizePolicy(Manual);
     viewport()->setMouseTracking(true);
-    viewport()->setBackgroundMode(Qt::NoBackground);
+    viewport()->setAttribute(Qt::WA_NoSystemBackground);
 
     // Should this just be removed??
     // KImageIO::registerFormats();
@@ -625,7 +625,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 #endif
     // kDebug( 6000 ) << "drawContents this="<< this <<" x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
-        p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
+        p->fillRect(ex, ey, ew, eh, palette().brush(QPalette::Active, QPalette::Base));
         return;
     } else if ( d->complete && static_cast<RenderCanvas*>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
         // an external update request happens while we have a layout scheduled
@@ -643,7 +643,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     for (Q3PtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
-        if (strcmp(w->name(), "__khtml")) {
+        if (strcmp(w->objectName(), "__khtml")) {
             int x, y;
             rw->absolutePosition(x, y);
             //contentsToViewport(x, y, x, y);
@@ -668,7 +668,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             d->vertPaintBuffer->resize(10, visibleHeight());
         d->tp->begin(d->vertPaintBuffer);
         d->tp->translate(-ex, -ey);
-        d->tp->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
+        d->tp->fillRect(ex, ey, ew, eh, palette().brush(QPalette::Active, QPalette::Base));
         m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, QRect(ex, ey, ew, eh));
         d->tp->end();
 	p->drawPixmap(ex, ey, *d->vertPaintBuffer, 0, 0, ew, eh);
@@ -682,7 +682,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
             d->tp->begin(d->paintBuffer);
             d->tp->translate(-ex, -ey-py);
-            d->tp->fillRect(ex, ey+py, ew, ph, palette().active().brush(QColorGroup::Base));
+            d->tp->fillRect(ex, ey+py, ew, ph, palette().brush(QPalette::Active, QPalette::Base));
             m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, QRect(ex, ey+py, ew, ph));
             d->tp->end();
 
@@ -869,7 +869,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     d->isDoubleClick = false;
 
-    DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
+    DOM::NodeImpl::MouseEvent mev( _mouse->buttons(), DOM::NodeImpl::MousePress );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
     //kDebug(6000) << "innerNode="<<mev.innerNode.nodeName().string()<<endl;
@@ -901,9 +901,11 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
             p.drawPixmap( 32, 16, icon );
             p.drawEllipse( 23, 23, 2, 2 );
 
-            d->m_mouseScrollIndicator = new QWidget( this, 0 );
+            d->m_mouseScrollIndicator = new QWidget( this );
             d->m_mouseScrollIndicator->setFixedSize( 48, 48 );
-            d->m_mouseScrollIndicator->setPaletteBackgroundPixmap( pixmap );
+            QPalette palette;
+            palette.setBrush( d->m_mouseScrollIndicator->backgroundRole(), QBrush( pixmap ) );
+            d->m_mouseScrollIndicator->setPalette( palette );
         }
         d->m_mouseScrollIndicator->move( point.x()-24, point.y()-24 );
 
@@ -915,18 +917,22 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
             d->m_mouseScrollIndicator->show();
             d->m_mouseScrollIndicator->unsetCursor();
 
-            QBitmap mask = d->m_mouseScrollIndicator->paletteBackgroundPixmap()->createHeuristicMask( true );
+            QBitmap mask = d->m_mouseScrollIndicator->palette().brush(d->m_mouseScrollIndicator->backgroundRole()).texture().createHeuristicMask( true );
 
 	    if ( hasHorBar && !hasVerBar ) {
-                QBitmap bm( 16, 16, true );
-                bitBlt( &mask, 16,  0, &bm, 0, 0, -1, -1 );
-                bitBlt( &mask, 16, 32, &bm, 0, 0, -1, -1 );
+                QBitmap bm( 16, 16 );
+                bm.clear();
+                QPainter painter( &mask );
+                painter.drawImage( QRectF( 16, 0, bm.width(), bm.height() ), bm.toImage(), bm.rect() );
+                painter.drawImage( QRectF( 16, 32, bm.width(), bm.height() ), bm.toImage(), bm.rect() );
                 d->m_mouseScrollIndicator->setCursor( Qt::SizeHorCursor );
             }
             else if ( !hasHorBar && hasVerBar ) {
-                QBitmap bm( 16, 16, true );
-                bitBlt( &mask,  0, 16, &bm, 0, 0, -1, -1 );
-                bitBlt( &mask, 32, 16, &bm, 0, 0, -1, -1 );
+                QBitmap bm( 16, 16 );
+                bm.clear();
+                QPainter painter( &mask );
+                painter.drawImage( QRectF( 0, 16, bm.width(), bm.height() ), bm.toImage(), bm.rect() );
+                painter.drawImage( QRectF( 32, 16, bm.width(), bm.height() ), bm.toImage(), bm.rect() );
                 d->m_mouseScrollIndicator->setCursor( Qt::SizeVerCursor );
             }
             else
@@ -984,7 +990,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
     d->isDoubleClick = true;
 
-    DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick );
+    DOM::NodeImpl::MouseEvent mev( _mouse->buttons(), DOM::NodeImpl::MouseDblClick );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
     // We do the same thing as viewportMousePressEvent() here, since the DOM does not treat
@@ -1025,7 +1031,7 @@ static inline void forwardPeripheralEvent(khtml::RenderWidget* r, QMouseEvent* m
     int absy = 0;
     r->absolutePosition(absx, absy);
     QPoint p(x-absx, y-absy);
-    QMouseEvent fw(me->type(), p, me->button(), me->state());
+    QMouseEvent fw(me->type(), p, me->button(), me->buttons(), me->modifiers());
     QWidget* w = r->widget();
     if(w)
         static_cast<khtml::RenderWidget::EventPropagator*>(w)->sendEvent(&fw);
@@ -1070,9 +1076,9 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
-    DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
+    DOM::NodeImpl::MouseEvent mev( _mouse->buttons(), DOM::NodeImpl::MouseMove );
     // Do not modify :hover/:active state while mouse is pressed.
-    m_part->xmlDocImpl()->prepareMouseEvent( _mouse->state() & Qt::MouseButtonMask /*readonly ?*/, xm, ym, &mev );
+    m_part->xmlDocImpl()->prepareMouseEvent( _mouse->buttons() /*readonly ?*/, xm, ym, &mev );
 
 //     kDebug(6000) << "mouse move: " << _mouse->pos()
 // 		  << " button " << _mouse->button()
@@ -1105,7 +1111,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
             c = KCursor::ibeamCursor();
         if ( mev.url.length() && m_part->settings()->changeCursor() ) {
             c = m_part->urlCursor();
-	    if (mev.url.string().startsWith("mailto:") && mev.url.string().find('@')>0)
+	    if (mev.url.string().startsWith("mailto:") && mev.url.string().indexOf('@')>0)
                 mailtoCursor = true;
         }
 
@@ -1118,7 +1124,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         break;
     case CURSOR_POINTER:
         c = m_part->urlCursor();
-	if (mev.url.string().startsWith("mailto:") && mev.url.string().find('@')>0)
+	if (mev.url.string().startsWith("mailto:") && mev.url.string().indexOf('@')>0)
             mailtoCursor = true;
         break;
     case CURSOR_PROGRESS:
@@ -1184,14 +1190,16 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
                 d->cursor_icon_widget->setMask( icon_pixmap.mask());
             else
                 d->cursor_icon_widget->clearMask();
-            d->cursor_icon_widget->setBackgroundPixmap( icon_pixmap );
+            QPalette palette;
+            palette.setBrush( d->cursor_icon_widget->backgroundRole(), QBrush( icon_pixmap ) );
+            d->cursor_icon_widget->setPalette( palette );
             d->cursor_icon_widget->erase();
         }
         QPoint c_pos = QCursor::pos();
         d->cursor_icon_widget->move( c_pos.x() + 15, c_pos.y() + 15 );
 #ifdef Q_WS_X11
         XRaiseWindow( QX11Info::display(), d->cursor_icon_widget->winId());
-        QApplication::flushX();
+        QApplication::flush();
 #elif defined(Q_WS_WIN)
         SetWindowPos( d->cursor_icon_widget->winId(), HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE );
 #else
@@ -1222,7 +1230,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     bool swallowEvent = false;
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-    DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
+    DOM::NodeImpl::MouseEvent mev( _mouse->buttons(), DOM::NodeImpl::MouseRelease );
 
     if ( m_part->xmlDocImpl() )
     {
@@ -1234,7 +1242,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
         if (d->clickCount > 0 &&
             QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance()) {
             QMouseEvent me(d->isDoubleClick ? QEvent::MouseButtonDblClick : QEvent::MouseButtonRelease,
-                           _mouse->pos(), _mouse->button(), _mouse->state());
+                           _mouse->pos(), _mouse->button(), _mouse->buttons(), _mouse->modifiers());
             dispatchMouseEvent(EventImpl::CLICK_EVENT, mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                d->clickCount, &me, true, DOM::NodeImpl::MouseRelease);
         }
@@ -1321,7 +1329,7 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
         }
         else
         {
-            d->postponed_autorepeat = new QKeyEvent( _ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
+            d->postponed_autorepeat = new QKeyEvent( _ke->type(), _ke->key(), _ke->modifiers(),
                 _ke->text(), _ke->isAutoRepeat(), _ke->count());
             if( _ke->isAccepted())
                 d->postponed_autorepeat->accept();
@@ -1362,7 +1370,8 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 				findTimeout();
 			}
 
-			d->timer.start(3000, true);
+			d->timer.setSingleShot(true);
+			d->timer.start(3000);
 			_ke->accept();
 			return;
 		}
@@ -1379,7 +1388,8 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
 			findAhead(true);
 
-			d->timer.start(3000, true);
+			d->timer.setSingleShot(true);
+			d->timer.start(3000);
 			_ke->accept();
 			return;
 		}
@@ -1397,14 +1407,14 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 #endif // KHTML_NO_CARET
 
     // If CTRL was hit, be prepared for access keys
-    if (d->accessKeysEnabled && _ke->key() == Qt::Key_Control && _ke->state()==0 && !d->accessKeysActivated)
+    if (d->accessKeysEnabled && _ke->key() == Qt::Key_Control && _ke->modifiers()==0 && !d->accessKeysActivated)
     {
         d->accessKeysPreActivate=true;
         _ke->accept();
         return;
     }
 
-    if (_ke->key() == Qt::Key_Shift && _ke->state()==0)
+    if (_ke->key() == Qt::Key_Shift && _ke->modifiers()==0)
 	    d->scrollSuspendPreActivate=true;
 
     // accesskey handling needs to be done before dispatching, otherwise e.g. lineedits
@@ -1412,7 +1422,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
     if (d->accessKeysEnabled && d->accessKeysActivated)
     {
-        int state = ( _ke->state() & ( Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier ));
+        int state = ( _ke->modifiers() & ( Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier ));
         if ( state==0 || state==Qt::ShiftModifier) {
 	if (_ke->key() != Qt::Key_Shift) accessKeysTimeout();
         handleAccessKey( _ke );
@@ -1429,7 +1439,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     }
 
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
-    if (_ke->state() & Qt::ShiftModifier)
+    if (_ke->modifiers() & Qt::ShiftModifier)
       switch(_ke->key())
         {
         case Qt::Key_Space:
@@ -1603,7 +1613,8 @@ void KHTMLView::startFindAhead( bool linksOnly )
 	d->typeAheadActivated = true;
         // disable, so that the shortcut ( / or ' by default ) doesn't interfere
 	m_part->enableFindAheadActions( false );
-	d->timer.start(3000, true);
+	d->timer.setSingleShot(true);
+	d->timer.start(3000);
 }
 
 void KHTMLView::findAhead(bool increase)
@@ -1644,8 +1655,10 @@ void KHTMLView::findAhead(bool increase)
 
 void KHTMLView::updateFindAheadTimeout()
 {
-    if( d->typeAheadActivated )
-        d->timer.start( 3000, true );
+    if( d->typeAheadActivated ) {
+        d->timer.setSingleShot( true );
+        d->timer.start( 3000 );
+    }
 }
 
 #endif // KHTML_NO_TYPE_AHEAD_FIND
@@ -1666,7 +1679,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 
     if( d->scrollSuspendPreActivate && _ke->key() != Qt::Key_Shift )
         d->scrollSuspendPreActivate = false;
-    if( _ke->key() == Qt::Key_Shift && d->scrollSuspendPreActivate && _ke->state() == Qt::ShiftModifier
+    if( _ke->key() == Qt::Key_Shift && d->scrollSuspendPreActivate && _ke->modifiers() == Qt::ShiftModifier
         && !(QApplication::keyboardModifiers() & Qt::ShiftModifier))
         if (d->scrollTimerId)
                 d->scrollSuspended = !d->scrollSuspended;
@@ -1675,7 +1688,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
     {
         if (d->accessKeysPreActivate && _ke->key() != Qt::Key_Control) 
             d->accessKeysPreActivate=false;
-        if (d->accessKeysPreActivate && _ke->state() == Qt::ControlModifier && 
+        if (d->accessKeysPreActivate && _ke->modifiers() == Qt::ControlModifier && 
             !(QApplication::keyboardModifiers() & Qt::ControlModifier))
         {
 	    displayAccessKeys();
@@ -1797,7 +1810,7 @@ static void handleWidget(QWidget* w, KHTMLView* view)
         return;
 
     if (!qobject_cast<QFrame*>(w))
-	w->setBackgroundMode( Qt::NoBackground );
+	w->setAttribute( Qt::WA_NoSystemBackground );
     static_cast<HackWidget *>(w)->setNoErase();
     w->installEventFilter(view);
 
@@ -1818,7 +1831,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
 		&& m_part->xmlDocImpl()->focusNode()->contentEditable())) {
 //kDebug(6200) << "editable/navigable" << endl;
-	    if ( (ke->state() & Qt::ControlModifier) || (ke->state() & Qt::ShiftModifier) ) {
+	    if ( (ke->modifiers() & Qt::ControlModifier) || (ke->modifiers() & Qt::ShiftModifier) ) {
 		switch ( ke->key() ) {
 		case Qt::Key_Left:
 		case Qt::Key_Right:
@@ -1849,8 +1862,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    if (c->isWidgetType()) {
 		QWidget *w = static_cast<QWidget *>(c);
 		// don't install the event filter on toplevels
-		if (w->parentWidget(true) == view) {
-		    if (!strcmp(w->name(), "__khtml")) {
+		if (w->parentWidget() == view) {
+		    if (!strcmp(w->objectName(), "__khtml")) {
 			w->unsetCursor();
 			handleWidget(w, this);
 		    }
@@ -1862,10 +1875,10 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
         QWidget *c = v;
 	while (v && v != view) {
             c = v;
-	    v = v->parentWidget(true);
+	    v = v->parentWidget();
 	}
 
-	if (v && !strcmp(c->name(), "__khtml")) {
+	if (v && !strcmp(c->objectName(), "__khtml")) {
 	    bool block = false;
 	    QWidget *w = static_cast<QWidget *>(o);
 	    switch(e->type()) {
@@ -1912,7 +1925,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		if (w->parentWidget() == view && !qobject_cast<QScrollBar*>(w)) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
 		    QPoint pt = (me->pos() + w->pos());
-		    QMouseEvent me2(me->type(), pt, me->button(), me->state());
+		    QMouseEvent me2(me->type(), pt, me->button(), me->buttons(), me->modifiers());
 
 		    if (e->type() == QEvent::MouseMove)
 			viewportMouseMoveEvent(&me2);
@@ -2213,7 +2226,7 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
             }
             if( !accesskey.isNull()) {
 	        QRect rec=en->getRect();
-	        QLabel *lab=new QLabel(accesskey,viewport(),0,Qt::WDestructiveClose);
+	        QLabel *lab=new QLabel(accesskey,viewport(),Qt::WDestructiveClose);
 	        connect( origview, SIGNAL(hideAccessKeys()), lab, SLOT(close()) );
 	        connect( this, SIGNAL(repaintAccessKeys()), lab, SLOT(repaint()));
 	        lab->setPalette(QToolTip::palette());
@@ -2625,7 +2638,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             // then first character of the following words,
             // and then simply the first free character
             if( key.isNull() && !text.isEmpty()) {
-                QStringList words = QStringList::split( ' ', text );
+                QStringList words = text.split( ' ' );
                 for( QStringList::ConstIterator it = words.begin();
                      it != words.end();
                      ++it ) {
@@ -2650,7 +2663,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             QString url = (*it).url;
             it = data.erase( it );
             // assign the same accesskey also to other elements pointing to the same url
-            if( !url.isEmpty() && !url.startsWith( "javascript:", false )) {
+            if( !url.isEmpty() && !url.startsWith( "javascript:", Qt::CaseInsensitive )) {
                 for( QList< AccessKeyData >::Iterator it2 = data.begin();
                      it2 != data.end();
                      ) {
@@ -2856,7 +2869,7 @@ void KHTMLView::print(bool quick)
 #ifdef __GNUC__
 #warning "This could not be tested when merge was done, suspect"
 #endif
-            p->setClipRect(0, headerHeight/scale, pageWidth/scale, pageHeight/scale);
+            p->setClipRect(0, (int)(headerHeight/scale), (int)(pageWidth/scale), (int)(pageHeight/scale));
             p->translate(0, headerHeight-top);
 
             bottom = top+pageHeight;
@@ -2872,7 +2885,7 @@ void KHTMLView::print(bool quick)
             kDebug(6000) << "printed: page " << page <<" bottom At = " << bottom << endl;
 
             top = bottom;
-            p->resetXForm();
+            p->resetMatrix();
             page++;
         }
 
@@ -3018,7 +3031,7 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
     if (!items.contains(value))
         items.prepend(value);
     while ((int)items.count() > m_part->settings()->maxFormCompletionItems())
-        items.erase(items.fromLast());
+        items.erase(items.isEmpty() ? items.end() : --items.end());
     d->formCompletions->writeEntry(name, items);
 }
 
@@ -3095,10 +3108,10 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
     if (d->accessKeysEnabled && d->accessKeysPreActivate && button!=-1)
     	d->accessKeysPreActivate=false;
 
-    bool ctrlKey = (_mouse->state() & Qt::ControlModifier);
-    bool altKey = (_mouse->state() & Qt::AltModifier);
-    bool shiftKey = (_mouse->state() & Qt::ShiftModifier);
-    bool metaKey = (_mouse->state() & Qt::MetaModifier);
+    bool ctrlKey = (_mouse->modifiers() & Qt::ControlModifier);
+    bool altKey = (_mouse->modifiers() & Qt::AltModifier);
+    bool shiftKey = (_mouse->modifiers() & Qt::ShiftModifier);
+    bool metaKey = (_mouse->modifiers() & Qt::MetaModifier);
 
     // mouseout/mouseover
     if (setUnder && (d->prevMouseX != pageX || d->prevMouseY != pageY)) {
@@ -3107,7 +3120,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
         // it again. calculating is expensive! (Dirk)
         NodeImpl *oldUnder = 0;
 	if (d->prevMouseX >= 0 && d->prevMouseY >= 0) {
-	    NodeImpl::MouseEvent mev( _mouse->stateAfter(), static_cast<NodeImpl::MouseEventType>(mouseEventType));
+	    NodeImpl::MouseEvent mev( _mouse->buttons(), static_cast<NodeImpl::MouseEventType>(mouseEventType));
 	    m_part->xmlDocImpl()->prepareMouseEvent( true, d->prevMouseX, d->prevMouseY, &mev );
 	    oldUnder = mev.innerNode.handle();
 
@@ -3193,7 +3206,7 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
     if (d->accessKeysEnabled && d->accessKeysPreActivate) d->accessKeysPreActivate=false;
 
-    if ( ( e->state() & Qt::ControlModifier) == Qt::ControlModifier )
+    if ( ( e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier )
     {
         emit zoomView( - e->delta() );
         e->accept();
@@ -3227,7 +3240,7 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
         d->scrollBarMoved = true;
         Q3ScrollView::viewportWheelEvent( e );
 
-        QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, QPoint(-1,-1), QPoint(-1,-1), Qt::NoButton, e->state() );
+        QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, QPoint(-1,-1), QPoint(-1,-1), Qt::NoButton, e->buttons(), e->modifiers() );
         emit viewportMouseMoveEvent ( tempEvent );
         delete tempEvent;
     }
@@ -3958,7 +3971,7 @@ void KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
   NodeImpl *oldCaretNode = m_part->d->caretNode().handle();
   long oldOffset = m_part->d->caretOffset();
 
-  bool ctrl = _ke->state() & Qt::ControlModifier;
+  bool ctrl = _ke->modifiers() & Qt::ControlModifier;
 
 // FIXME: this is that widely indented because I will write ifs around it.
       switch(_ke->key()) {
@@ -4012,7 +4025,7 @@ void KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
 
     d->m_caretViewContext->caretMoved = true;
 
-    if (_ke->state() & Qt::ShiftModifier) {	// extend selection
+    if (_ke->modifiers() & Qt::ShiftModifier) {	// extend selection
       updateSelection(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
     } else {			// clear any selection
       if (foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs))

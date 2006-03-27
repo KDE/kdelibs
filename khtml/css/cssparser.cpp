@@ -1922,7 +1922,7 @@ bool CSSParser::parseColor(const QString &name, QRgb& rgb)
 
     // try a little harder
     QColor tc;
-    tc.setNamedColor(name.lower());
+    tc.setNamedColor(name.toLower());
     if (tc.isValid()) {
         rgb = tc.rgb();
         return true;

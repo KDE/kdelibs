@@ -2047,11 +2047,11 @@ yyreduce:
 	QString tag = qString((yyvsp[0].string));
 	if ( doc ) {
 	    if (doc->isHTMLDocument())
-		tag = tag.lower();
+		tag = tag.toLower();
 	    const DOMString dtag(tag);
             (yyval.element) = makeId(p->defaultNamespace, doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
 	} else {
-	    (yyval.element) = makeId(p->defaultNamespace, khtml::getTagID(tag.lower().ascii(), tag.length()));
+	    (yyval.element) = makeId(p->defaultNamespace, khtml::getTagID(tag.toLower().toAscii(), tag.length()));
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown tags
 // 	    assert($$ != 0);
@@ -2125,7 +2125,7 @@ yyreduce:
 	QString attr = qString((yyvsp[-1].string));
 	if ( doc ) {
 	    if (doc->isHTMLDocument())
-		attr = attr.lower();
+		attr = attr.toLower();
 	    const DOMString dattr(attr);
 #ifdef APPLE_CHANGES
             (yyval.attribute) = doc->attrId(0, dattr.implementation(), false);
@@ -2133,7 +2133,7 @@ yyreduce:
 	    (yyval.attribute) = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false, true);
 #endif
 	} else {
-	    (yyval.attribute) = khtml::getAttrID(attr.lower().ascii(), attr.length());
+	    (yyval.attribute) = khtml::getAttrID(attr.toLower().toAscii(), attr.length());
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown attributes
 	    assert((yyval.attribute) != 0);
@@ -2399,7 +2399,7 @@ yyreduce:
 
     {
 	QString str = qString((yyvsp[-1].string));
-	(yyval.prop_id) = getPropertyID( str.lower().latin1(), str.length() );
+	(yyval.prop_id) = getPropertyID( str.toLower().toLatin1(), str.length() );
     ;}
     break;
 
@@ -2483,7 +2483,7 @@ yyreduce:
 
     {
       QString str = qString( (yyvsp[-1].string) );
-      (yyval.value).id = getValueID( str.lower().latin1(), str.length() );
+      (yyval.value).id = getValueID( str.toLower().toLatin1(), str.length() );
       (yyval.value).unit = CSSPrimitiveValue::CSS_IDENT;
       (yyval.value).string = (yyvsp[-1].string);
   ;}

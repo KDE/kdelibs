@@ -56,8 +56,8 @@ DOMString khtml::parseURL(const DOMString &url)
        (i->s[o].toLower() == 'u') &&
        (i->s[o+1].toLower() == 'r') &&
        (i->s[o+2].toLower() == 'l') &&
-       i->s[o+3].latin1() == '(' &&
-       i->s[o+l-1].latin1() == ')') {
+       i->s[o+3].toLatin1() == '(' &&
+       i->s[o+l-1].toLatin1() == ')') {
         o += 4;
         l -= 5;
     }
@@ -66,7 +66,7 @@ DOMString khtml::parseURL(const DOMString &url)
     while(l > 0 && (i->s[o+l-1] <= ' ')) l--;
 
     if(l >= 2 && i->s[o] == i->s[o+l-1] &&
-       (i->s[o].latin1() == '\'' || i->s[o].latin1() == '\"')) {
+       (i->s[o].toLatin1() == '\'' || i->s[o].toLatin1() == '\"')) {
         o++;
         l -= 2;
     }

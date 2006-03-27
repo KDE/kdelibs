@@ -147,7 +147,7 @@ void CSSStyleDeclarationImpl::setProperty(const DOMString &propertyName, const D
     int propID = propertyID(propertyName);
     if (!propID) // set exception?
         return;
-    bool important = priority.string().find("important", 0, false) != -1;
+    bool important = priority.string().indexOf("important", 0, Qt::CaseInsensitive) != -1;
     setProperty(propID, value, important);
 }
 
@@ -897,21 +897,21 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     parsedFontName = parsedFontName.toLower();
     // kDebug(0) << "searching for face '" << parsedFontName << "'" << endl;
 
-    int pos = available.find( ',' + parsedFontName + ',', 0, false );
+    int pos = available.indexOf( ',' + parsedFontName + ',', 0, Qt::CaseInsensitive );
     if ( pos == -1 ) {
         // many pages add extra MSs to make sure it's windows only ;(
         if ( parsedFontName.startsWith( "ms " ) )
             parsedFontName = parsedFontName.mid( 3 );
         if ( parsedFontName.endsWith( " ms" ) )
             parsedFontName.truncate( parsedFontName.length() - 3 );
-        pos = available.find( ",ms " + parsedFontName + ',', 0, false );
+        pos = available.indexOf( ",ms " + parsedFontName + ',', 0, Qt::CaseInsensitive );
         if ( pos == -1 )
-            pos = available.find( ',' + parsedFontName + " ms,", 0, false );
+            pos = available.indexOf( ',' + parsedFontName + " ms,", 0, Qt::CaseInsensitive );
     }
 
     if ( pos != -1 ) {
        ++pos;
-       int p = available.find(',', pos);
+       int p = available.indexOf(',', pos);
        assert( p != -1 ); // available is supposed to start and end with ,
        parsedFontName = available.mid( pos, p - pos);
        // kDebug(0) << "going for '" << parsedFontName << "'" << endl;
