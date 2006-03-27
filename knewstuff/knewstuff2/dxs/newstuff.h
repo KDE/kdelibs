@@ -12,6 +12,9 @@
 
 #include <qdialog.h>
 #include <knewstuff/provider.h>
+
+#include "dxs.h"
+
 using namespace KNS;
 namespace KIO { class JOB; }
 
@@ -45,6 +48,8 @@ class NewStuffDialog : public QDialog
         // private storage class
         class NewStuffDialogPrivate * d;
 
+	Dxs *m_dxs;
+
     private slots:
         void slotResetMessageColors();
         void slotNetworkTimeout();
@@ -57,6 +62,11 @@ class NewStuffDialog : public QDialog
         void slotLoadProvider( int provider = 0 );
         void slotProviderInfoData( KIO::Job *, const QByteArray & );
         void slotProviderInfoResult( KIO::Job * );
+	// DXS
+        void slotLoadProvidersListDXS();
+        void slotLoadProviderDXS(int index);
+	void slotCategories(QValueList<KNS::Category*> categories);
+	void slotEntries(QValueList<KNS::Entry*> entries);
         // file downloading
         void slotDownloadItem( AvailableItem * );
         void slotItemMessage( KIO::Job *, const QString & );

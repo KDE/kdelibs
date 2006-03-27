@@ -46,6 +46,7 @@
 #include "kdxsbutton.h"
 #include "qasyncpixmap.h"
 #include "qasyncframe.h"
+#include "dxs.h"
 
 // define the providers.xml location
 //#define PROVIDERS_URL "http://kpdf.kde.org/newstuff/providers.xml"
@@ -105,6 +106,28 @@ class AvailableItem : public Entry
     public:
         typedef QValueList< AvailableItem * > List;
         enum State { Normal = 0, Installing = 1, Uninstalling = 2 };
+
+	/// BEGIN DXS
+	// FIXME?!
+	AvailableItem(Entry *e)
+	: m_state(Normal), m_progress(0)
+	{
+		setPayload(e->payload());
+		setName(e->name());
+		setAuthor(e->author());
+		setAuthorEmail(e->authorEmail());
+		setType(e->type());
+		setLicence(e->license());
+		setSummary(e->summary());
+		setVersion(e->version());
+		setRelease(e->release());
+		setReleaseDate(e->releaseDate());
+		setPayload(e->payload());
+		setPreview(e->preview());
+		setRating(e->rating());
+		setDownloads(e->downloads());
+	}
+	/// END DXS
 
         AvailableItem( const QDomElement & element )
             : Entry( element ), m_state( Normal ), m_progress( 0 )
@@ -572,7 +595,7 @@ NewStuffDialog::NewStuffDialog( QWidget * parentWidget )
         d->typeCombo->setMinimumWidth( 150 );
         d->typeCombo->setEnabled( false );
         connect( d->typeCombo, SIGNAL( activated(int) ),
-                 this, SLOT( slotLoadProvider(int) ) );
+                 this, SLOT( slotLoadProviderDXS(int) ) );
 
         QLabel * label2 = new QLabel( i18n("Order by:"), panelFrame );
         panelLayout->addWidget( label2, 0, 2 );
@@ -612,7 +635,8 @@ NewStuffDialog::NewStuffDialog( QWidget * parentWidget )
     slotResetMessageColors();
 
     // start loading providers list
-    QTimer::singleShot( 100, this, SLOT( slotLoadProvidersList() ) );
+    //QTimer::singleShot( 100, this, SLOT( slotLoadProvidersList() ) );
+    QTimer::singleShot( 100, this, SLOT( slotLoadProvidersListDXS() ) );
 }
 
 NewStuffDialog::~NewStuffDialog()
@@ -717,6 +741,61 @@ void NewStuffDialog::slotSortingSelected( int sortType ) // SLOT
 {
     d->itemsView->setSorting( sortType );
 }
+
+
+///////////////// DXS ////////////////////
+
+void NewStuffDialog::slotLoadProviderDXS(int index)
+{
+	Q_UNUSED(index);
+
+	QString category = d->typeCombo->currentText();
+
+	m_dxs->call_entries(category, QString::null);
+}
+
+void NewStuffDialog::slotLoadProvidersListDXS()
+{
+	m_dxs = new Dxs();
+	m_dxs->setEndpoint("http://localhost/cgi-bin/hotstuff-dxs.pl");
+
+	connect(m_dxs,
+		SIGNAL(signalCategories(QValueList<KNS::Category*>)),
+		SLOT(slotCategories(QValueList<KNS::Category*>)));
+	connect(m_dxs,
+		SIGNAL(signalEntries(QValueList<KNS::Entry*>)),
+		SLOT(slotEntries(QValueList<KNS::Entry*>)));
+
+	m_dxs->call_categories();
+}
+
+void NewStuffDialog::slotCategories(QValueList<KNS::Category*> categories)
+{
+	for(QValueList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
+	{
+		KNS::Category *category = (*it);
+		kdDebug() << "Category: " << category->name << endl;
+		d->typeCombo->insertItem(category->name);
+		// FIXME: use icon
+	}
+	d->typeCombo->setEnabled(true);
+}
+
+void NewStuffDialog::slotEntries(QValueList<KNS::Entry*> entries)
+{
+	AvailableItem::List itemList;
+
+	for(QValueList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
+	{
+		KNS::Entry *entry = (*it);
+		kdDebug() << "Entry: " << entry->name() << endl;
+		itemList.append(new AvailableItem(entry));
+	}
+
+	d->itemsView->setItems( itemList );
+}
+
+///////////////// DXS ////////////////////
 
 
 //BEGIN ProvidersList Loading

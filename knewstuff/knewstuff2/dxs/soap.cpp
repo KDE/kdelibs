@@ -90,7 +90,7 @@ void Soap::call_soap(QDomElement element, QString endpoint)
 	doc.appendChild(env);
 	QDomElement body = doc.createElement("SOAP-ENV:Body");
 	env.appendChild(body);
-	element.setAttribute("xmlns:ns", "urn:GHNS");
+	element.setAttribute("xmlns:ns", "urn:DXS");
 	body.appendChild(element);
 
 	QString s = doc.toString();

@@ -9,6 +9,15 @@ namespace KNS
 {
 
 class Soap;
+class Entry;
+
+class Category
+{
+public:
+	Category(){}
+	QString name;
+	QString icon;
+};
 
 class Dxs : public QObject
 {
@@ -20,6 +29,7 @@ public:
 
 	void call_info();
 	void call_categories();
+	void call_entries(QString category, QString feed);
 	void call_comments(int id);
 	void call_changes(int id);
 	void call_history(int id);
@@ -30,7 +40,8 @@ public:
 
 signals:
 	void signalInfo(QString provider, QString server, QString version);
-	void signalCategories(QStringList categories);
+	void signalCategories(QValueList<KNS::Category*> categories);
+	void signalEntries(QValueList<KNS::Entry*> entries);
 	void signalComments(QStringList comments);
 	void signalChanges(QStringList comments);
 	void signalHistory(QStringList entries);

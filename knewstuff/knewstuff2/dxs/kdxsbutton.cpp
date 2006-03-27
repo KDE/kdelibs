@@ -38,14 +38,15 @@ KDXSButton::KDXSButton(QWidget *parent)
 	m_p = new KPopupMenu(this);
 	m_p->insertItem(il->loadIcon("knewstuff", KIcon::Small),
 		i18n("Deinstall"), install);
-	m_p->insertItem(il->loadIcon("bookmark_add", KIcon::Small),
-		i18n("Subscribe"), subscribe);
 	m_p->insertItem(il->loadIcon("leftjust", KIcon::Small),
 		i18n("Comments"), comments);
 	m_p->insertItem(il->loadIcon("leftjust", KIcon::Small),
 		i18n("Changelog"), changes);
 
 	m_history = new KPopupMenu(this);
+
+	m_history->insertItem(i18n("(Search...)"), historyinactive);
+	m_history->setItemEnabled(historyinactive, false);
 
 	m_p->insertItem(il->loadIcon("kmultiple", KIcon::Small),
 		i18n("Switch version"), m_history, historysub);
@@ -63,6 +64,8 @@ KDXSButton::KDXSButton(QWidget *parent)
 		i18n("Add Comment"), collabcomment);
 	pcollab->insertItem(il->loadIcon("translate", KIcon::Small),
 		i18n("Translate"), collabtranslation);
+	pcollab->insertItem(il->loadIcon("bookmark_add", KIcon::Small),
+		i18n("Subscribe"), collabsubscribe);
 	pcollab->insertItem(il->loadIcon("remove", KIcon::Small),
 		i18n("Report bad entry"), collabremoval);
 	pcollab->insertItem(il->loadIcon("mail_new", KIcon::Small),
@@ -75,23 +78,26 @@ KDXSButton::KDXSButton(QWidget *parent)
         connect(this, SIGNAL(clicked()), SLOT(slotClicked()));
 
 	connect(m_p, SIGNAL(activated(int)), SLOT(slotActivated(int)));
-	connect(m_p, SIGNAL(highlighted(int)), SLOT(slotHighlighted(int)));
 
 	connect(m_contact, SIGNAL(activated(int)), SLOT(slotActivated(int)));
 	connect(pcollab, SIGNAL(activated(int)), SLOT(slotActivated(int)));
 
-	connect(m_history, SIGNAL(activated(int)), SLOT(slotActivated(int)));
+	connect(m_history, SIGNAL(activated(int)), SLOT(slotVersionsActivated(int)));
+	connect(m_history, SIGNAL(highlighted(int)), SLOT(slotVersionsHighlighted(int)));
 
 	m_dxs = new KNS::Dxs();
 	//m_dxs->setEndpoint("http://localhost:8080/cgi-bin/run.sh");
-	m_dxs->setEndpoint("http://localhost/cgi-bin/kstuff-ws.pl");
+	m_dxs->setEndpoint("http://localhost/cgi-bin/hotstuff-dxs.pl");
 
 	connect(m_dxs,
 		SIGNAL(signalInfo(QString, QString, QString)),
 		SLOT(slotInfo(QString, QString, QString)));
 	connect(m_dxs,
-		SIGNAL(signalCategories(QStringList)),
-		SLOT(slotCategories(QStringList)));
+		SIGNAL(signalCategories(QValueList<KNS::Category*>)),
+		SLOT(slotCategories(QValueList<KNS::Category*>)));
+	connect(m_dxs,
+		SIGNAL(signalEntries(QValueList<KNS::Entry*>)),
+		SLOT(slotEntries(QValueList<KNS::Entry*>)));
 	connect(m_dxs,
 		SIGNAL(signalComments(QStringList)),
 		SLOT(slotComments(QStringList)));
@@ -157,11 +163,21 @@ void KDXSButton::slotInfo(QString provider, QString server, QString version)
 		i18n("Provider information"));
 }
 
-void KDXSButton::slotCategories(QStringList categories)
+void KDXSButton::slotCategories(QValueList<KNS::Category*> categories)
 {
-	for(QStringList::Iterator it = categories.begin(); it != categories.end(); it++)
+	for(QValueList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
 	{
-		kdDebug() << "Category: " << (*it) << endl;
+		KNS::Category *category = (*it);
+		kdDebug() << "Category: " << category->name << endl;
+	}
+}
+
+void KDXSButton::slotEntries(QValueList<KNS::Entry*> entries)
+{
+	for(QValueList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
+	{
+		KNS::Entry *entry = (*it);
+		kdDebug() << "Entry: " << entry->name() << endl;
 	}
 }
 
@@ -199,12 +215,16 @@ void KDXSButton::slotHistory(QStringList entries)
 {
 	KIconLoader *il = KGlobal::iconLoader();
 
+	m_history->clear();
+
+	int i = 0;
 	for(QStringList::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
 		kdDebug() << (*it) << endl;
 
 		m_history->insertItem(il->loadIcon("history", KIcon::Small),
-			i18n((*it)));
+			i18n((*it)), historyslots + i);
+		i++;
 	}
 
 	if(entries.size() == 0)
@@ -213,7 +233,7 @@ void KDXSButton::slotHistory(QStringList entries)
 		m_history->setItemEnabled(historydisabled, false);
 	}
 
-	m_p->setCursor(Qt::ArrowCursor);
+	m_history->setCursor(Qt::ArrowCursor);
 }
 
 void KDXSButton::slotRemoval(bool success)
@@ -287,6 +307,14 @@ void KDXSButton::slotFault()
 		i18n("Desktop Exchange Service"));
 }
 
+void KDXSButton::slotVersionsActivated(int id)
+{
+	int version = id - historyslots;
+
+	Q_UNUSED(version);
+	// and now???
+}
+
 void KDXSButton::slotActivated(int id)
 {
 	int ret;
@@ -329,7 +357,7 @@ void KDXSButton::slotActivated(int id)
 		if(authenticate())
 			m_dxs->call_removal(0);
 	}
-	if(id == subscribe)
+	if(id == collabsubscribe)
 	{
 		if(authenticate())
 			m_dxs->call_subscription(0, true);
@@ -371,15 +399,14 @@ void KDXSButton::slotActivated(int id)
 	}
 }
 
-void KDXSButton::slotHighlighted(int id)
+void KDXSButton::slotVersionsHighlighted(int id)
 {
 	kdDebug() << "highlighted!" << endl;
 
-	if(id == historysub)
+	if(id == historyinactive)
 	{
-		m_history->clear();
-
-		m_p->setCursor(KCursor::workingCursor());
+		//m_history->setItemEnabled(historyinactive, true);
+		m_history->setCursor(KCursor::workingCursor());
 		kdDebug() << "hourglass!" << endl;
 
 		m_dxs->call_history(0);

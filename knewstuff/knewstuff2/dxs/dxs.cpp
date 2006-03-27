@@ -4,6 +4,8 @@
 
 #include <kdebug.h>
 
+#include <knewstuff/entry.h>
+
 #include <qdom.h>
 #include <qstringlist.h>
 
@@ -39,6 +41,24 @@ void Dxs::call_categories()
 	QDomDocument doc;
 	QDomElement info = doc.createElement("ns:GHNSCategories");
 	m_soap->call(info, m_endpoint);
+}
+
+void Dxs::call_entries(QString category, QString feed)
+{
+	QDomDocument doc;
+	QDomElement entries = doc.createElement("ns:GHNSList");
+	QDomElement ecategory = doc.createElement("category");
+	QDomText t = doc.createTextNode(category);
+	ecategory.appendChild(t);
+	entries.appendChild(ecategory);
+	if(!feed.isEmpty())
+	{
+		QDomElement efeed = doc.createElement("feed");
+		QDomText t2 = doc.createTextNode(feed);
+		efeed.appendChild(t2);
+		entries.appendChild(efeed);
+	}
+	m_soap->call(entries, m_endpoint);
 }
 
 void Dxs::call_comments(int id)
@@ -152,16 +172,76 @@ void Dxs::slotResult(QDomNode node)
 	}
 	else if(m_soap->localname(node) == "GHNSCategoriesResponse")
 	{
-		QStringList categories;
+		QValueList<KNS::Category*> categories;
 
 		QDomNode array = node.firstChild();
 		QDomNodeList catlist = array.toElement().elementsByTagName("categories");
 		for(unsigned int i = 0; i < catlist.count(); i++)
 		{
-			categories << catlist.item(i).toElement().text();
+			//categories << catlist.item(i).toElement().text();
+
+			KNS::Category *category = new KNS::Category();
+
+			QDomNode node = catlist.item(i).toElement();
+			QString name = m_soap->xpath(node, "/category");
+			QString icon = m_soap->xpath(node, "/icon");
+
+			//category->setName(name);
+			//category->setIcon(icon);
+			category->name = name;
+			category->icon = icon;
+
+			categories << category;
 		}
 
 		emit signalCategories(categories);
+	}
+	else if(m_soap->localname(node) == "GHNSListResponse")
+	{
+		QValueList<KNS::Entry*> entries;
+
+		QDomNode array = node.firstChild();
+		QDomNodeList entrylist = array.toElement().elementsByTagName("entry");
+		for(unsigned int i = 0; i < entrylist.count(); i++)
+		{
+			//entries << entrylist.item(i).toElement().text();
+
+			QDomElement element = entrylist.item(i).toElement();
+			element.setTagName("stuff");
+			KNS::Entry *entry = new KNS::Entry(element);
+
+//			QString name = m_soap->xpath(node, "/name");
+//			QString author = m_soap->xpath(node, "/author");
+//			QString version = m_soap->xpath(node, "/version");
+//			QString release = m_soap->xpath(node, "/release");
+//			QString releasedate = m_soap->xpath(node, "/releasedate");
+//			QString rating = m_soap->xpath(node, "/ratings");
+//			QString downloads = m_soap->xpath(node, "/downloads");
+//			QString category = m_soap->xpath(node, "/category");
+//			QString licence = m_soap->xpath(node, "/licence");
+//			QString preview = m_soap->xpath(node, "/preview");
+//			QString payload = m_soap->xpath(node, "/payload");
+//			QString summary = m_soap->xpath(node, "/summary");
+
+//			entry->setName(name);
+//			entry->setAuthor(author); // missing: author's email?
+//			entry->setVersion(version);
+//			entry->setRelease(QString(version).toInt());
+//			entry->setReleaseDate(QDate::fromString(releasedate, Qt::ISODate));
+//			entry->setRating(QString(rating).toInt());
+//			entry->setDownloads(QString(downloads).toInt());
+//			entry->setType(category); // migrate to category
+//			entry->setLicence(licence);
+//			entry->setPreview(preview);
+//			entry->setPayload(payload);
+//			entry->setSummary(summary);
+
+			entries << entry;
+
+			kdDebug() << "ENTRY: " << entry->name() << " by " << entry->author() << endl;
+		}
+
+		emit signalEntries(entries);
 	}
 	else if(m_soap->localname(node) == "GHNSCommentsResponse")
 	{

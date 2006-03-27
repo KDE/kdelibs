@@ -9,6 +9,7 @@ namespace KNS
 {
 	class Dxs;
 	class Entry;
+	class Category;
 };
 
 class KPopupMenu;
@@ -24,11 +25,13 @@ public:
 
 public slots:
 	void slotActivated(int id);
-	void slotHighlighted(int id);
+	void slotVersionsActivated(int id);
+	void slotVersionsHighlighted(int id);
         void slotClicked();
 
 	void slotInfo(QString provider, QString server, QString version);
-	void slotCategories(QStringList categories);
+	void slotCategories(QValueList<KNS::Category*> categories);
+	void slotEntries(QValueList<KNS::Entry*> entries);
 	void slotComments(QStringList comments);
 	void slotHistory(QStringList entries);
 	void slotChanges(QStringList entries);
@@ -48,7 +51,6 @@ private:
 		deinstall,
 		comments,
 		changes,
-		subscribe,
 		info,
 
 		historysub,
@@ -56,6 +58,7 @@ private:
 		collabrating,
 		collabcomment,
 		collaboratesub,
+		collabsubscribe,
 		collabremoval,
 		collabtranslation,
 
@@ -66,7 +69,9 @@ private:
 
 	enum States
 	{
-		historydisabled
+		historyinactive,
+		historydisabled,
+		historyslots
 	};
 
 	KNS::Dxs *m_dxs;
