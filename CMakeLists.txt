@@ -1,5 +1,12 @@
 project(kdelibs)
 
+#########################################################################
+# Disallow in-source build
+STRING(COMPARE EQUAL "${kdelibs_SOURCE_DIR}" "${kdelibs_BINARY_DIR}" insource)
+IF(insource)
+  MESSAGE(FATAL_ERROR "kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
+ENDIF(insource)
+
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
