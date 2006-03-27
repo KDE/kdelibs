@@ -181,10 +181,10 @@ void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
 }
 
 void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive, 
-                                 const QStyleOption* opt,
+                                 const QStyleOption* /*opt*/,
                                  QRect r, QPalette pal, State flags,
                                  QPainter* p, 
-                                 const QWidget* widget,
+                                 const QWidget* /*widget*/,
                                  KStyle::Option* kOpt) const
 {
     if (widgetType == WT_Tree)
@@ -578,6 +578,9 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         case PE_IndicatorButtonDropDown:
             drawKStylePrimitive(WT_ToolButton, Generic::ArrowDown, option, r, pal, flags, painter, widget);
             return;
+
+        default:
+            break;
     }
     
     QCommonStyle::drawPrimitive(elem, option, painter, widget);
@@ -1607,6 +1610,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             }
             return;
         }
+
+        default:
+            break;
     }
     
     QCommonStyle::drawControl(element, option, p, widget);
@@ -1620,6 +1626,8 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
         case SH_MenuBar_MouseTracking:
         case SH_Menu_MouseTracking:
             return true;
+        default:
+            break;
     };
 
     return QCommonStyle::styleHint(hint, option, widget, returnData);
@@ -1774,6 +1782,9 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
 
         case PM_ToolBarItemSpacing:
             return widgetLayoutProp(WT_ToolBar, ToolBar::ItemSpacing);
+
+        default:
+            break;
     }
 
     return QCommonStyle::pixelMetric(metric, option, widget);
@@ -2031,6 +2042,8 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
 //             int fw = widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth);
 //             return contents.adjusted(fw,fw,-fw,-fw);
 //         }
+        default:
+            break;
     }
     
     return QCommonStyle::subElementRect(sr, option, widget);
@@ -2349,6 +2362,9 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
             }
             break;
         } //CC_ToolButton
+
+        default:
+            break;
     } //switch
 
     QCommonStyle::drawComplexControl(cc, opt, p, w);
@@ -2356,7 +2372,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
 
 
 QRect KStyle::internalSubControlRect (ComplexControl control, const QStyleOptionComplex* option,
-                                       SubControl subControl, const QWidget* w) const
+                                       SubControl subControl, const QWidget* /*w*/) const
 {
     QRect r = option->rect;
 
@@ -2394,6 +2410,9 @@ QRect KStyle::internalSubControlRect (ComplexControl control, const QStyleOption
                 else
                     return handleRTL(option, QRect(r.x(), r.bottom() - majorSize + 1, r.width(), majorSize));
             }
+
+            default:
+                break;
         }
     }
 
@@ -2513,6 +2532,9 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                         return handleRTL(option,
                                 QRect(groove.x(), slider.bottom() + 1, groove.width(), groove.bottom() - slider.bottom()));
                 }
+                
+                default:
+                    break;
             }
         } //CC_ScrollBar
 
@@ -2573,6 +2595,8 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                                          QRect(r.left()+fw, r.top()+fw, r.width()-fw-bw, r.height()-2*fw) );
                     case SC_SpinBoxFrame:
                         return (sb->frame || !supportFrameless) ? r : QRect();
+                    default:
+                        break;
                 }
             } //option ok
         } //CC_SpinBox
@@ -2612,9 +2636,14 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
 //                         return cb->popupRect;
                         // popupRect seems to be empty, so use QStyleOption::rect as Qt's styles do
                         return r;
+                    default:
+                        break;
                 }
             } //option ok
         } //CC_ComboBox
+
+        default:
+            break;
     }
 
     return QCommonStyle::subControlRect(control, option, subControl, widget);
@@ -2909,6 +2938,8 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                 return expandDim(QSize(w, h), WT_Header, Header::ContentsMargin);
             }
         }
+        default:
+            break;
     }
     
     return QCommonStyle::sizeFromContents(type, option, contentsSize, widget);

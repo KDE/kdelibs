@@ -293,7 +293,7 @@ void DataProtocol::get(const KUrl& url) {
 #if defined(TESTKIO) || defined(DATAKIOSLAVE)
   MetaData::ConstIterator it;
   for (it = hdr.attributes.begin(); it != hdr.attributes.end(); ++it) {
-    setMetaData(it.key(),it.data());
+    setMetaData(it.key(),it.value());
   }/*next it*/
 #else
   setAllMetaData(hdr.attributes);
