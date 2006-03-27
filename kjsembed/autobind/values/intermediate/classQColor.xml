@@ -1,0 +1,1938 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="classQColor" kind="class" prot="public">
+    <compoundname>QColor</compoundname>
+    <includes refid="qcolor_8h" local="no">qcolor.h</includes>
+      <sectiondef kind="public-type">
+      <memberdef kind="enum" id="classQColor_1w4" prot="public" static="no">
+        <name>Spec</name>
+        <enumvalue id="classQColor_1w4w0" prot="public">
+          <name>Invalid</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classQColor_1w4w1" prot="public">
+          <name>Rgb</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classQColor_1w4w2" prot="public">
+          <name>Hsv</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classQColor_1w4w3" prot="public">
+          <name>Cmyk</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="46" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="46" bodyend="46"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classQColor_1a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>QColor::QColor</definition>
+        <argsstring>()</argsstring>
+        <name>QColor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="48" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="214" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>QColor::QColor</definition>
+        <argsstring>(Qt::GlobalColor color)</argsstring>
+        <name>QColor</name>
+        <param>
+          <type>Qt::GlobalColor</type>
+          <declname>color</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>QColor::QColor</definition>
+        <argsstring>(int r, int g, int b, int a=255)</argsstring>
+        <name>QColor</name>
+        <param>
+          <type>int</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>a</declname>
+          <defval>255</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="50" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="217" bodyend="218"/>
+        <references refid="classQColor_1a28">setRgb</references>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>QColor::QColor</definition>
+        <argsstring>(QRgb rgb)</argsstring>
+        <name>QColor</name>
+        <param>
+          <type>QRgb</type>
+          <declname>rgb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>QColor::QColor</definition>
+        <argsstring>(const QString &amp;name)</argsstring>
+        <name>QColor</name>
+        <param>
+          <type>const QString &amp;</type>
+          <declname>name</declname>
+          <defname>aname</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="52" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="223" bodyend="224"/>
+        <references refid="classQColor_1a9">setNamedColor</references>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>QColor::QColor</definition>
+        <argsstring>(const char *name)</argsstring>
+        <name>QColor</name>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+          <defname>aname</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="53" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="220" bodyend="221"/>
+        <references refid="classQColor_1a9">setNamedColor</references>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>QColor::QColor</definition>
+        <argsstring>(const QColor &amp;color)</argsstring>
+        <name>QColor</name>
+        <param>
+          <type>const <ref refid="classQColor" kindref="compound">QColor</ref> &amp;</type>
+          <declname>color</declname>
+          <defname>acolor</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="54" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="226" bodyend="228"/>
+        <references refid="classQColor_1r16">ct</references>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QColor::isValid</definition>
+        <argsstring>() const </argsstring>
+        <name>isValid</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="56" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="230" bodyend="231"/>
+        <references refid="classQColor_1w4w0">Invalid</references>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QString</type>
+        <definition>QString QColor::name</definition>
+        <argsstring>() const </argsstring>
+        <name>name</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setNamedColor</definition>
+        <argsstring>(const QString &amp;name)</argsstring>
+        <name>setNamedColor</name>
+        <param>
+          <type>const QString &amp;</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="59"/>
+        <referencedby refid="classQColor_1a5" compoundref="qcolor_8h" startline="220" endline="221">QColor</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a10" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQColor_1w4" kindref="member">Spec</ref></type>
+        <definition>Spec QColor::spec</definition>
+        <argsstring>() const </argsstring>
+        <name>spec</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="64" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="63" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a11" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::alpha</definition>
+        <argsstring>() const </argsstring>
+        <name>alpha</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setAlpha</definition>
+        <argsstring>(int alpha)</argsstring>
+        <name>setAlpha</name>
+        <param>
+          <type>int</type>
+          <declname>alpha</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a13" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::alphaF</definition>
+        <argsstring>() const </argsstring>
+        <name>alphaF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setAlphaF</definition>
+        <argsstring>(qreal alpha)</argsstring>
+        <name>setAlphaF</name>
+        <param>
+          <type>qreal</type>
+          <declname>alpha</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="70"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a15" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::red</definition>
+        <argsstring>() const </argsstring>
+        <name>red</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a16" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::green</definition>
+        <argsstring>() const </argsstring>
+        <name>green</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a17" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::blue</definition>
+        <argsstring>() const </argsstring>
+        <name>blue</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="74"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setRed</definition>
+        <argsstring>(int red)</argsstring>
+        <name>setRed</name>
+        <param>
+          <type>int</type>
+          <declname>red</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setGreen</definition>
+        <argsstring>(int green)</argsstring>
+        <name>setGreen</name>
+        <param>
+          <type>int</type>
+          <declname>green</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a20" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setBlue</definition>
+        <argsstring>(int blue)</argsstring>
+        <name>setBlue</name>
+        <param>
+          <type>int</type>
+          <declname>blue</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="77"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a21" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::redF</definition>
+        <argsstring>() const </argsstring>
+        <name>redF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a22" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::greenF</definition>
+        <argsstring>() const </argsstring>
+        <name>greenF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a23" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::blueF</definition>
+        <argsstring>() const </argsstring>
+        <name>blueF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setRedF</definition>
+        <argsstring>(qreal red)</argsstring>
+        <name>setRedF</name>
+        <param>
+          <type>qreal</type>
+          <declname>red</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setGreenF</definition>
+        <argsstring>(qreal green)</argsstring>
+        <name>setGreenF</name>
+        <param>
+          <type>qreal</type>
+          <declname>green</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setBlueF</definition>
+        <argsstring>(qreal blue)</argsstring>
+        <name>setBlueF</name>
+        <param>
+          <type>qreal</type>
+          <declname>blue</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="84"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a27" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::getRgb</definition>
+        <argsstring>(int *r, int *g, int *b, int *a=0) const </argsstring>
+        <name>getRgb</name>
+        <param>
+          <type>int *</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>a</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="86"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a28" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setRgb</definition>
+        <argsstring>(int r, int g, int b, int a=255)</argsstring>
+        <name>setRgb</name>
+        <param>
+          <type>int</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>a</declname>
+          <defval>255</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="87"/>
+        <referencedby refid="classQColor_1a2" compoundref="qcolor_8h" startline="217" endline="218">QColor</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a29" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::getRgbF</definition>
+        <argsstring>(qreal *r, qreal *g, qreal *b, qreal *a=0) const </argsstring>
+        <name>getRgbF</name>
+        <param>
+          <type>qreal *</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>a</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a30" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setRgbF</definition>
+        <argsstring>(qreal r, qreal g, qreal b, qreal a=1.0)</argsstring>
+        <name>setRgbF</name>
+        <param>
+          <type>qreal</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>a</declname>
+          <defval>1.0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="90"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a31" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QRgb</type>
+        <definition>QRgb QColor::rgba</definition>
+        <argsstring>() const </argsstring>
+        <name>rgba</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="92"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setRgba</definition>
+        <argsstring>(QRgb rgba)</argsstring>
+        <name>setRgba</name>
+        <param>
+          <type>QRgb</type>
+          <declname>rgba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a33" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QRgb</type>
+        <definition>QRgb QColor::rgb</definition>
+        <argsstring>() const </argsstring>
+        <name>rgb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="95"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a34" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setRgb</definition>
+        <argsstring>(QRgb rgb)</argsstring>
+        <name>setRgb</name>
+        <param>
+          <type>QRgb</type>
+          <declname>rgb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="96"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a35" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::hue</definition>
+        <argsstring>() const </argsstring>
+        <name>hue</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="98"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a36" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::saturation</definition>
+        <argsstring>() const </argsstring>
+        <name>saturation</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a37" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::value</definition>
+        <argsstring>() const </argsstring>
+        <name>value</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="100"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a38" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::hueF</definition>
+        <argsstring>() const </argsstring>
+        <name>hueF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="102"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a39" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::saturationF</definition>
+        <argsstring>() const </argsstring>
+        <name>saturationF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="103"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a40" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::valueF</definition>
+        <argsstring>() const </argsstring>
+        <name>valueF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a41" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::getHsv</definition>
+        <argsstring>(int *h, int *s, int *v, int *a=0) const </argsstring>
+        <name>getHsv</name>
+        <param>
+          <type>int *</type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>a</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="106"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a42" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setHsv</definition>
+        <argsstring>(int h, int s, int v, int a=255)</argsstring>
+        <name>setHsv</name>
+        <param>
+          <type>int</type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>a</declname>
+          <defval>255</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="107"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a43" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::getHsvF</definition>
+        <argsstring>(qreal *h, qreal *s, qreal *v, qreal *a=0) const </argsstring>
+        <name>getHsvF</name>
+        <param>
+          <type>qreal *</type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>a</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setHsvF</definition>
+        <argsstring>(qreal h, qreal s, qreal v, qreal a=1.0)</argsstring>
+        <name>setHsvF</name>
+        <param>
+          <type>qreal</type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>a</declname>
+          <defval>1.0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="110"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a45" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::cyan</definition>
+        <argsstring>() const </argsstring>
+        <name>cyan</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="112"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a46" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::magenta</definition>
+        <argsstring>() const </argsstring>
+        <name>magenta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a47" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::yellow</definition>
+        <argsstring>() const </argsstring>
+        <name>yellow</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a48" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int QColor::black</definition>
+        <argsstring>() const </argsstring>
+        <name>black</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="115"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a49" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::cyanF</definition>
+        <argsstring>() const </argsstring>
+        <name>cyanF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="117"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a50" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::magentaF</definition>
+        <argsstring>() const </argsstring>
+        <name>magentaF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="118"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a51" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::yellowF</definition>
+        <argsstring>() const </argsstring>
+        <name>yellowF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="119"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a52" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QColor::blackF</definition>
+        <argsstring>() const </argsstring>
+        <name>blackF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="120"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a53" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::getCmyk</definition>
+        <argsstring>(int *c, int *m, int *y, int *k, int *a=0)</argsstring>
+        <name>getCmyk</name>
+        <param>
+          <type>int *</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>a</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="122"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setCmyk</definition>
+        <argsstring>(int c, int m, int y, int k, int a=255)</argsstring>
+        <name>setCmyk</name>
+        <param>
+          <type>int</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>a</declname>
+          <defval>255</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="123"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::getCmykF</definition>
+        <argsstring>(qreal *c, qreal *m, qreal *y, qreal *k, qreal *a=0)</argsstring>
+        <name>getCmykF</name>
+        <param>
+          <type>qreal *</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>a</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="125"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a56" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::setCmykF</definition>
+        <argsstring>(qreal c, qreal m, qreal y, qreal k, qreal a=1.0)</argsstring>
+        <name>setCmykF</name>
+        <param>
+          <type>qreal</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>a</declname>
+          <defval>1.0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a57" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>QColor QColor::toRgb</definition>
+        <argsstring>() const </argsstring>
+        <name>toRgb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="128"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a58" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>QColor QColor::toHsv</definition>
+        <argsstring>() const </argsstring>
+        <name>toHsv</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="129"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a59" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>QColor QColor::toCmyk</definition>
+        <argsstring>() const </argsstring>
+        <name>toCmyk</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="130"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a60" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>QColor QColor::convertTo</definition>
+        <argsstring>(Spec colorSpec) const </argsstring>
+        <name>convertTo</name>
+        <param>
+          <type><ref refid="classQColor_1w4" kindref="member">Spec</ref></type>
+          <declname>colorSpec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="132"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a61" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>QColor QColor::light</definition>
+        <argsstring>(int f=150) const </argsstring>
+        <name>light</name>
+        <param>
+          <type>int</type>
+          <declname>f</declname>
+          <defval>150</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="146"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a62" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>QColor QColor::dark</definition>
+        <argsstring>(int f=200) const </argsstring>
+        <name>dark</name>
+        <param>
+          <type>int</type>
+          <declname>f</declname>
+          <defval>200</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="147"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref> &amp;</type>
+        <definition>QColor&amp; QColor::operator=</definition>
+        <argsstring>(const QColor &amp;)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classQColor" kindref="compound">QColor</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="149"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref> &amp;</type>
+        <definition>QColor&amp; QColor::operator=</definition>
+        <argsstring>(Qt::GlobalColor color)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>Qt::GlobalColor</type>
+          <declname>color</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="150"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a65" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QColor::operator==</definition>
+        <argsstring>(const QColor &amp;c) const </argsstring>
+        <name>operator==</name>
+        <param>
+          <type>const <ref refid="classQColor" kindref="compound">QColor</ref> &amp;</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="152"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a66" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QColor::operator!=</definition>
+        <argsstring>(const QColor &amp;c) const </argsstring>
+        <name>operator!=</name>
+        <param>
+          <type>const <ref refid="classQColor" kindref="compound">QColor</ref> &amp;</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="153"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1a67" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>QColor::operator QVariant</definition>
+        <argsstring>() const </argsstring>
+        <name>operator QVariant</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="155"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classQColor_1e0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>QStringList</type>
+        <definition>static QStringList QColor::colorNames</definition>
+        <argsstring>()</argsstring>
+        <name>colorNames</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="61"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1e1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>static QColor QColor::fromRgb</definition>
+        <argsstring>(QRgb rgb)</argsstring>
+        <name>fromRgb</name>
+        <param>
+          <type>QRgb</type>
+          <declname>rgb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="134"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1e2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>static QColor QColor::fromRgba</definition>
+        <argsstring>(QRgb rgba)</argsstring>
+        <name>fromRgba</name>
+        <param>
+          <type>QRgb</type>
+          <declname>rgba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="135"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1e3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>static QColor QColor::fromRgb</definition>
+        <argsstring>(int r, int g, int b, int a=255)</argsstring>
+        <name>fromRgb</name>
+        <param>
+          <type>int</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>a</declname>
+          <defval>255</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1e4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>static QColor QColor::fromRgbF</definition>
+        <argsstring>(qreal r, qreal g, qreal b, qreal a=1.0)</argsstring>
+        <name>fromRgbF</name>
+        <param>
+          <type>qreal</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>a</declname>
+          <defval>1.0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="138"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1e5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>static QColor QColor::fromHsv</definition>
+        <argsstring>(int h, int s, int v, int a=255)</argsstring>
+        <name>fromHsv</name>
+        <param>
+          <type>int</type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>a</declname>
+          <defval>255</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="140"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1e6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>static QColor QColor::fromHsvF</definition>
+        <argsstring>(qreal h, qreal s, qreal v, qreal a=1.0)</argsstring>
+        <name>fromHsvF</name>
+        <param>
+          <type>qreal</type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>a</declname>
+          <defval>1.0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1e7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>static QColor QColor::fromCmyk</definition>
+        <argsstring>(int c, int m, int y, int k, int a=255)</argsstring>
+        <name>fromCmyk</name>
+        <param>
+          <type>int</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>a</declname>
+          <defval>255</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="143"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1e8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>static QColor QColor::fromCmykF</definition>
+        <argsstring>(qreal c, qreal m, qreal y, qreal k, qreal a=1.0)</argsstring>
+        <name>fromCmykF</name>
+        <param>
+          <type>qreal</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>a</declname>
+          <defval>1.0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="144"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classQColor_1d0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>QColor::QColor</definition>
+        <argsstring>(int, int, int, Spec)</argsstring>
+        <name>QColor</name>
+        <param>
+          <type>int</type>
+        </param>
+        <param>
+          <type>int</type>
+        </param>
+        <param>
+          <type>int</type>
+        </param>
+        <param>
+          <type><ref refid="classQColor_1w4" kindref="member">Spec</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="177"/>
+      </memberdef>
+      <memberdef kind="function" id="classQColor_1d1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void QColor::invalidate</definition>
+        <argsstring>()</argsstring>
+        <name>invalidate</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="180"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classQColor_1r0" prot="private" static="no" mutable="no">
+        <type><ref refid="classQColor_1w4" kindref="member">Spec</ref></type>
+        <definition>Spec QColor::cspec</definition>
+        <argsstring></argsstring>
+        <name>cspec</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="182" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="182" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r1" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::alpha</definition>
+        <argsstring></argsstring>
+        <name>alpha</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="185" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="185" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r2" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::red</definition>
+        <argsstring></argsstring>
+        <name>red</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="186" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="186" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r3" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::green</definition>
+        <argsstring></argsstring>
+        <name>green</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="187" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="187" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r4" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::blue</definition>
+        <argsstring></argsstring>
+        <name>blue</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="188" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r5" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::pad</definition>
+        <argsstring></argsstring>
+        <name>pad</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="189" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="189" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r6" prot="private" static="no" mutable="no">
+        <type>QColor::@0::@1</type>
+        <definition>struct QColor::@0::@1  QColor::argb</definition>
+        <argsstring></argsstring>
+        <name>argb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="190"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r7" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::hue</definition>
+        <argsstring></argsstring>
+        <name>hue</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="193" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="193" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r8" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::saturation</definition>
+        <argsstring></argsstring>
+        <name>saturation</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="194" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="194" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r9" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="195" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="195" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r10" prot="private" static="no" mutable="no">
+        <type>QColor::@0::@2</type>
+        <definition>struct QColor::@0::@2  QColor::ahsv</definition>
+        <argsstring></argsstring>
+        <name>ahsv</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="197"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r11" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::cyan</definition>
+        <argsstring></argsstring>
+        <name>cyan</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="200" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="200" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r12" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::magenta</definition>
+        <argsstring></argsstring>
+        <name>magenta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="201" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r13" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::yellow</definition>
+        <argsstring></argsstring>
+        <name>yellow</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="202" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r14" prot="private" static="no" mutable="no">
+        <type>ushort</type>
+        <definition>ushort QColor::black</definition>
+        <argsstring></argsstring>
+        <name>black</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="203" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r15" prot="private" static="no" mutable="no">
+        <type>QColor::@0::@3</type>
+        <definition>struct QColor::@0::@3  QColor::acmyk</definition>
+        <argsstring></argsstring>
+        <name>acmyk</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="204"/>
+      </memberdef>
+      <memberdef kind="variable" id="classQColor_1r16" prot="private" static="no" mutable="no">
+        <type>QColor::@0</type>
+        <definition>union QColor::@0  QColor::ct</definition>
+        <argsstring></argsstring>
+        <name>ct</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="205"/>
+        <referencedby refid="classQColor_1a6" compoundref="qcolor_8h" startline="226" endline="228">QColor</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="friend">
+      <memberdef kind="friend" id="classQColor_1n0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend class</type>
+        <definition>friend class QColormap</definition>
+        <argsstring></argsstring>
+        <name>QColormap</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="207" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="friend" id="classQColor_1n1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend Q_GUI_EXPORT QDataStream &amp;</type>
+        <definition>Q_GUI_EXPORT QDataStream&amp; operator&lt;&lt;</definition>
+        <argsstring>(QDataStream &amp;, const QColor &amp;)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>QDataStream &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="classQColor" kindref="compound">QColor</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="209"/>
+      </memberdef>
+      <memberdef kind="friend" id="classQColor_1n2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend Q_GUI_EXPORT QDataStream &amp;</type>
+        <definition>Q_GUI_EXPORT QDataStream&amp; operator&gt;&gt;</definition>
+        <argsstring>(QDataStream &amp;, QColor &amp;)</argsstring>
+        <name>operator&gt;&gt;</name>
+        <param>
+          <type>QDataStream &amp;</type>
+        </param>
+        <param>
+          <type><ref refid="classQColor" kindref="compound">QColor</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="210"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" line="44" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qcolor.h" bodystart="43" bodyend="212"/>
+    <listofallmembers>
+      <member refid="classQColor_1r15" prot="private" virt="non-virtual"><scope>QColor</scope><name>acmyk</name></member>
+      <member refid="classQColor_1r10" prot="private" virt="non-virtual"><scope>QColor</scope><name>ahsv</name></member>
+      <member refid="classQColor_1r1" prot="private" virt="non-virtual"><scope>QColor</scope><name>alpha</name></member>
+      <member refid="classQColor_1a11" prot="public" virt="non-virtual"><scope>QColor</scope><name>alpha</name></member>
+      <member refid="classQColor_1a13" prot="public" virt="non-virtual"><scope>QColor</scope><name>alphaF</name></member>
+      <member refid="classQColor_1r6" prot="private" virt="non-virtual"><scope>QColor</scope><name>argb</name></member>
+      <member refid="classQColor_1r14" prot="private" virt="non-virtual"><scope>QColor</scope><name>black</name></member>
+      <member refid="classQColor_1a48" prot="public" virt="non-virtual"><scope>QColor</scope><name>black</name></member>
+      <member refid="classQColor_1a52" prot="public" virt="non-virtual"><scope>QColor</scope><name>blackF</name></member>
+      <member refid="classQColor_1r4" prot="private" virt="non-virtual"><scope>QColor</scope><name>blue</name></member>
+      <member refid="classQColor_1a17" prot="public" virt="non-virtual"><scope>QColor</scope><name>blue</name></member>
+      <member refid="classQColor_1a23" prot="public" virt="non-virtual"><scope>QColor</scope><name>blueF</name></member>
+      <member refid="classQColor_1w4w3" prot="public" virt="non-virtual"><scope>QColor</scope><name>Cmyk</name></member>
+      <member refid="classQColor_1e0" prot="public" virt="non-virtual"><scope>QColor</scope><name>colorNames</name></member>
+      <member refid="classQColor_1a60" prot="public" virt="non-virtual"><scope>QColor</scope><name>convertTo</name></member>
+      <member refid="classQColor_1r0" prot="private" virt="non-virtual"><scope>QColor</scope><name>cspec</name></member>
+      <member refid="classQColor_1r16" prot="private" virt="non-virtual"><scope>QColor</scope><name>ct</name></member>
+      <member refid="classQColor_1r11" prot="private" virt="non-virtual"><scope>QColor</scope><name>cyan</name></member>
+      <member refid="classQColor_1a45" prot="public" virt="non-virtual"><scope>QColor</scope><name>cyan</name></member>
+      <member refid="classQColor_1a49" prot="public" virt="non-virtual"><scope>QColor</scope><name>cyanF</name></member>
+      <member refid="classQColor_1a62" prot="public" virt="non-virtual"><scope>QColor</scope><name>dark</name></member>
+      <member refid="classQColor_1e7" prot="public" virt="non-virtual"><scope>QColor</scope><name>fromCmyk</name></member>
+      <member refid="classQColor_1e8" prot="public" virt="non-virtual"><scope>QColor</scope><name>fromCmykF</name></member>
+      <member refid="classQColor_1e5" prot="public" virt="non-virtual"><scope>QColor</scope><name>fromHsv</name></member>
+      <member refid="classQColor_1e6" prot="public" virt="non-virtual"><scope>QColor</scope><name>fromHsvF</name></member>
+      <member refid="classQColor_1e1" prot="public" virt="non-virtual"><scope>QColor</scope><name>fromRgb</name></member>
+      <member refid="classQColor_1e3" prot="public" virt="non-virtual"><scope>QColor</scope><name>fromRgb</name></member>
+      <member refid="classQColor_1e2" prot="public" virt="non-virtual"><scope>QColor</scope><name>fromRgba</name></member>
+      <member refid="classQColor_1e4" prot="public" virt="non-virtual"><scope>QColor</scope><name>fromRgbF</name></member>
+      <member refid="classQColor_1a53" prot="public" virt="non-virtual"><scope>QColor</scope><name>getCmyk</name></member>
+      <member refid="classQColor_1a55" prot="public" virt="non-virtual"><scope>QColor</scope><name>getCmykF</name></member>
+      <member refid="classQColor_1a41" prot="public" virt="non-virtual"><scope>QColor</scope><name>getHsv</name></member>
+      <member refid="classQColor_1a43" prot="public" virt="non-virtual"><scope>QColor</scope><name>getHsvF</name></member>
+      <member refid="classQColor_1a27" prot="public" virt="non-virtual"><scope>QColor</scope><name>getRgb</name></member>
+      <member refid="classQColor_1a29" prot="public" virt="non-virtual"><scope>QColor</scope><name>getRgbF</name></member>
+      <member refid="classQColor_1r3" prot="private" virt="non-virtual"><scope>QColor</scope><name>green</name></member>
+      <member refid="classQColor_1a16" prot="public" virt="non-virtual"><scope>QColor</scope><name>green</name></member>
+      <member refid="classQColor_1a22" prot="public" virt="non-virtual"><scope>QColor</scope><name>greenF</name></member>
+      <member refid="classQColor_1w4w2" prot="public" virt="non-virtual"><scope>QColor</scope><name>Hsv</name></member>
+      <member refid="classQColor_1r7" prot="private" virt="non-virtual"><scope>QColor</scope><name>hue</name></member>
+      <member refid="classQColor_1a35" prot="public" virt="non-virtual"><scope>QColor</scope><name>hue</name></member>
+      <member refid="classQColor_1a38" prot="public" virt="non-virtual"><scope>QColor</scope><name>hueF</name></member>
+      <member refid="classQColor_1w4w0" prot="public" virt="non-virtual"><scope>QColor</scope><name>Invalid</name></member>
+      <member refid="classQColor_1d1" prot="private" virt="non-virtual"><scope>QColor</scope><name>invalidate</name></member>
+      <member refid="classQColor_1a7" prot="public" virt="non-virtual"><scope>QColor</scope><name>isValid</name></member>
+      <member refid="classQColor_1a61" prot="public" virt="non-virtual"><scope>QColor</scope><name>light</name></member>
+      <member refid="classQColor_1r12" prot="private" virt="non-virtual"><scope>QColor</scope><name>magenta</name></member>
+      <member refid="classQColor_1a46" prot="public" virt="non-virtual"><scope>QColor</scope><name>magenta</name></member>
+      <member refid="classQColor_1a50" prot="public" virt="non-virtual"><scope>QColor</scope><name>magentaF</name></member>
+      <member refid="classQColor_1a8" prot="public" virt="non-virtual"><scope>QColor</scope><name>name</name></member>
+      <member refid="classQColor_1a67" prot="public" virt="non-virtual"><scope>QColor</scope><name>operator QVariant</name></member>
+      <member refid="classQColor_1a66" prot="public" virt="non-virtual"><scope>QColor</scope><name>operator!=</name></member>
+      <member refid="classQColor_1n1" prot="private" virt="non-virtual"><scope>QColor</scope><name>operator&lt;&lt;</name></member>
+      <member refid="classQColor_1a63" prot="public" virt="non-virtual"><scope>QColor</scope><name>operator=</name></member>
+      <member refid="classQColor_1a64" prot="public" virt="non-virtual"><scope>QColor</scope><name>operator=</name></member>
+      <member refid="classQColor_1a65" prot="public" virt="non-virtual"><scope>QColor</scope><name>operator==</name></member>
+      <member refid="classQColor_1n2" prot="private" virt="non-virtual"><scope>QColor</scope><name>operator&gt;&gt;</name></member>
+      <member refid="classQColor_1r5" prot="private" virt="non-virtual"><scope>QColor</scope><name>pad</name></member>
+      <member refid="classQColor_1a0" prot="public" virt="non-virtual"><scope>QColor</scope><name>QColor</name></member>
+      <member refid="classQColor_1a1" prot="public" virt="non-virtual"><scope>QColor</scope><name>QColor</name></member>
+      <member refid="classQColor_1a2" prot="public" virt="non-virtual"><scope>QColor</scope><name>QColor</name></member>
+      <member refid="classQColor_1a3" prot="public" virt="non-virtual"><scope>QColor</scope><name>QColor</name></member>
+      <member refid="classQColor_1a4" prot="public" virt="non-virtual"><scope>QColor</scope><name>QColor</name></member>
+      <member refid="classQColor_1a5" prot="public" virt="non-virtual"><scope>QColor</scope><name>QColor</name></member>
+      <member refid="classQColor_1a6" prot="public" virt="non-virtual"><scope>QColor</scope><name>QColor</name></member>
+      <member refid="classQColor_1d0" prot="private" virt="non-virtual"><scope>QColor</scope><name>QColor</name></member>
+      <member refid="classQColor_1n0" prot="private" virt="non-virtual"><scope>QColor</scope><name>QColormap</name></member>
+      <member refid="classQColor_1r2" prot="private" virt="non-virtual"><scope>QColor</scope><name>red</name></member>
+      <member refid="classQColor_1a15" prot="public" virt="non-virtual"><scope>QColor</scope><name>red</name></member>
+      <member refid="classQColor_1a21" prot="public" virt="non-virtual"><scope>QColor</scope><name>redF</name></member>
+      <member refid="classQColor_1w4w1" prot="public" virt="non-virtual"><scope>QColor</scope><name>Rgb</name></member>
+      <member refid="classQColor_1a33" prot="public" virt="non-virtual"><scope>QColor</scope><name>rgb</name></member>
+      <member refid="classQColor_1a31" prot="public" virt="non-virtual"><scope>QColor</scope><name>rgba</name></member>
+      <member refid="classQColor_1r8" prot="private" virt="non-virtual"><scope>QColor</scope><name>saturation</name></member>
+      <member refid="classQColor_1a36" prot="public" virt="non-virtual"><scope>QColor</scope><name>saturation</name></member>
+      <member refid="classQColor_1a39" prot="public" virt="non-virtual"><scope>QColor</scope><name>saturationF</name></member>
+      <member refid="classQColor_1a12" prot="public" virt="non-virtual"><scope>QColor</scope><name>setAlpha</name></member>
+      <member refid="classQColor_1a14" prot="public" virt="non-virtual"><scope>QColor</scope><name>setAlphaF</name></member>
+      <member refid="classQColor_1a20" prot="public" virt="non-virtual"><scope>QColor</scope><name>setBlue</name></member>
+      <member refid="classQColor_1a26" prot="public" virt="non-virtual"><scope>QColor</scope><name>setBlueF</name></member>
+      <member refid="classQColor_1a54" prot="public" virt="non-virtual"><scope>QColor</scope><name>setCmyk</name></member>
+      <member refid="classQColor_1a56" prot="public" virt="non-virtual"><scope>QColor</scope><name>setCmykF</name></member>
+      <member refid="classQColor_1a19" prot="public" virt="non-virtual"><scope>QColor</scope><name>setGreen</name></member>
+      <member refid="classQColor_1a25" prot="public" virt="non-virtual"><scope>QColor</scope><name>setGreenF</name></member>
+      <member refid="classQColor_1a42" prot="public" virt="non-virtual"><scope>QColor</scope><name>setHsv</name></member>
+      <member refid="classQColor_1a44" prot="public" virt="non-virtual"><scope>QColor</scope><name>setHsvF</name></member>
+      <member refid="classQColor_1a9" prot="public" virt="non-virtual"><scope>QColor</scope><name>setNamedColor</name></member>
+      <member refid="classQColor_1a18" prot="public" virt="non-virtual"><scope>QColor</scope><name>setRed</name></member>
+      <member refid="classQColor_1a24" prot="public" virt="non-virtual"><scope>QColor</scope><name>setRedF</name></member>
+      <member refid="classQColor_1a28" prot="public" virt="non-virtual"><scope>QColor</scope><name>setRgb</name></member>
+      <member refid="classQColor_1a34" prot="public" virt="non-virtual"><scope>QColor</scope><name>setRgb</name></member>
+      <member refid="classQColor_1a32" prot="public" virt="non-virtual"><scope>QColor</scope><name>setRgba</name></member>
+      <member refid="classQColor_1a30" prot="public" virt="non-virtual"><scope>QColor</scope><name>setRgbF</name></member>
+      <member refid="classQColor_1a10" prot="public" virt="non-virtual"><scope>QColor</scope><name>spec</name></member>
+      <member refid="classQColor_1w4" prot="public" virt="non-virtual"><scope>QColor</scope><name>Spec</name></member>
+      <member refid="classQColor_1a59" prot="public" virt="non-virtual"><scope>QColor</scope><name>toCmyk</name></member>
+      <member refid="classQColor_1a58" prot="public" virt="non-virtual"><scope>QColor</scope><name>toHsv</name></member>
+      <member refid="classQColor_1a57" prot="public" virt="non-virtual"><scope>QColor</scope><name>toRgb</name></member>
+      <member refid="classQColor_1r9" prot="private" virt="non-virtual"><scope>QColor</scope><name>value</name></member>
+      <member refid="classQColor_1a37" prot="public" virt="non-virtual"><scope>QColor</scope><name>value</name></member>
+      <member refid="classQColor_1a40" prot="public" virt="non-virtual"><scope>QColor</scope><name>valueF</name></member>
+      <member refid="classQColor_1r13" prot="private" virt="non-virtual"><scope>QColor</scope><name>yellow</name></member>
+      <member refid="classQColor_1a47" prot="public" virt="non-virtual"><scope>QColor</scope><name>yellow</name></member>
+      <member refid="classQColor_1a51" prot="public" virt="non-virtual"><scope>QColor</scope><name>yellowF</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

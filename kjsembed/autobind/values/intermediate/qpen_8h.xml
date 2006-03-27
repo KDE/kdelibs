@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="qpen_8h" kind="file">
+    <compoundname>qpen.h</compoundname>
+    <includes local="no">QtGui/qcolor.h</includes>
+    <incdepgraph>
+      <node id="16">
+        <label>QtGui/qcolor.h</label>
+      </node>
+      <node id="15">
+        <label>input/qpen.h</label>
+        <link refid="qpen.h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classQPen">QPen</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="qpen_8h_1a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Q_GUI_EXPORT QDataStream &amp;</type>
+        <definition>Q_GUI_EXPORT QDataStream&amp; operator&lt;&lt;</definition>
+        <argsstring>(QDataStream &amp;, const QPen &amp;)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>QDataStream &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="classQPen" kindref="compound">QPen</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpen.h" line="35"/>
+      </memberdef>
+      <memberdef kind="function" id="qpen_8h_1a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Q_GUI_EXPORT QDataStream &amp;</type>
+        <definition>Q_GUI_EXPORT QDataStream&amp; operator&gt;&gt;</definition>
+        <argsstring>(QDataStream &amp;, QPen &amp;)</argsstring>
+        <name>operator&gt;&gt;</name>
+        <param>
+          <type>QDataStream &amp;</type>
+        </param>
+        <param>
+          <type><ref refid="classQPen" kindref="compound">QPen</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpen.h" line="36"/>
+      </memberdef>
+      <memberdef kind="function" id="qpen_8h_1a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Q_DECLARE_TYPEINFO</definition>
+        <argsstring>(QPen, Q_MOVABLE_TYPE)</argsstring>
+        <name>Q_DECLARE_TYPEINFO</name>
+        <param>
+          <type><ref refid="classQPen" kindref="compound">QPen</ref></type>
+        </param>
+        <param>
+          <type>Q_MOVABLE_TYPE</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpen.h" line="95"/>
+      </memberdef>
+      <memberdef kind="function" id="qpen_8h_1a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Q_GUI_EXPORT QDebug</type>
+        <definition>Q_GUI_EXPORT QDebug operator&lt;&lt;</definition>
+        <argsstring>(QDebug, const QPen &amp;)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>QDebug</type>
+        </param>
+        <param>
+          <type>const <ref refid="classQPen" kindref="compound">QPen</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpen.h" line="99"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpen.h"/>
+  </compounddef>
+</doxygen>

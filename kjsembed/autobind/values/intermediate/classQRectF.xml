@@ -1,0 +1,1460 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="classQRectF" kind="class" prot="public">
+    <compoundname>QRectF</compoundname>
+    <includes refid="qrect_8h" local="no">qrect.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classQRectF_1a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>QRectF::QRectF</definition>
+        <argsstring>()</argsstring>
+        <name>QRectF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="476" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="476" bodyend="476"/>
+        <referencedby refid="classQRectF_1a49" compoundref="qrect_8h" startline="731" endline="732">adjusted</referencedby>
+        <referencedby refid="classQRectF_1a40" compoundref="qrect_8h" startline="690" endline="691">translated</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>QRectF::QRectF</definition>
+        <argsstring>(const QPointF &amp;topleft, const QSizeF &amp;size)</argsstring>
+        <name>QRectF</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>topleft</declname>
+          <defname>atopLeft</defname>
+        </param>
+        <param>
+          <type>const <ref refid="classQSizeF" kindref="compound">QSizeF</ref> &amp;</type>
+          <declname>size</declname>
+          <defname>asize</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="477" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="592" bodyend="598"/>
+        <references refid="classQSizeF_1a7" compoundref="qsize_8h" startline="259" endline="260">QSizeF::height</references>
+        <references refid="classQSizeF_1a6" compoundref="qsize_8h" startline="256" endline="257">QSizeF::width</references>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>QRectF::QRectF</definition>
+        <argsstring>(qreal left, qreal top, qreal width, qreal height)</argsstring>
+        <name>QRectF</name>
+        <param>
+          <type>qreal</type>
+          <declname>left</declname>
+          <defname>aleft</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>top</declname>
+          <defname>atop</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>width</declname>
+          <defname>awidth</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>height</declname>
+          <defname>aheight</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="478" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="587" bodyend="590"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>QRectF::QRectF</definition>
+        <argsstring>(const QRect &amp;rect)</argsstring>
+        <name>QRectF</name>
+        <param>
+          <type>const <ref refid="classQRect" kindref="compound">QRect</ref> &amp;</type>
+          <declname>rect</declname>
+          <defname>r</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="479" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="600" bodyend="603"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QRectF::isNull</definition>
+        <argsstring>() const </argsstring>
+        <name>isNull</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="481" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="605" bodyend="606"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QRectF::isEmpty</definition>
+        <argsstring>() const </argsstring>
+        <name>isEmpty</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="482" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="608" bodyend="609"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QRectF::isValid</definition>
+        <argsstring>() const </argsstring>
+        <name>isValid</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="483" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="611" bodyend="612"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQRectF" kindref="compound">QRectF</ref></type>
+        <definition>QRectF QRectF::normalized</definition>
+        <argsstring>() const </argsstring>
+        <name>normalized</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="484"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QRectF::left</definition>
+        <argsstring>() const </argsstring>
+        <name>left</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="486" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="486" bodyend="486"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QRectF::top</definition>
+        <argsstring>() const </argsstring>
+        <name>top</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="487" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="487" bodyend="487"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a10" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QRectF::right</definition>
+        <argsstring>() const </argsstring>
+        <name>right</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="488" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="488" bodyend="488"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a11" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QRectF::bottom</definition>
+        <argsstring>() const </argsstring>
+        <name>bottom</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="489" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="489" bodyend="489"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a12" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QRectF::x</definition>
+        <argsstring>() const </argsstring>
+        <name>x</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="491" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="614" bodyend="615"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a13" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QRectF::y</definition>
+        <argsstring>() const </argsstring>
+        <name>y</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="492" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="617" bodyend="618"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a14" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setLeft</definition>
+        <argsstring>(qreal pos)</argsstring>
+        <name>setLeft</name>
+        <param>
+          <type>qreal</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="493" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="620" bodyend="620"/>
+        <referencedby refid="classQRectF_1a28" compoundref="qrect_8h" startline="632" endline="632">setBottomLeft</referencedby>
+        <referencedby refid="classQRectF_1a25" compoundref="qrect_8h" startline="628" endline="628">setTopLeft</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a15" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setTop</definition>
+        <argsstring>(qreal pos)</argsstring>
+        <name>setTop</name>
+        <param>
+          <type>qreal</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="494" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="624" bodyend="624"/>
+        <referencedby refid="classQRectF_1a25" compoundref="qrect_8h" startline="628" endline="628">setTopLeft</referencedby>
+        <referencedby refid="classQRectF_1a27" compoundref="qrect_8h" startline="630" endline="630">setTopRight</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a16" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setRight</definition>
+        <argsstring>(qreal pos)</argsstring>
+        <name>setRight</name>
+        <param>
+          <type>qreal</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="495" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="622" bodyend="622"/>
+        <referencedby refid="classQRectF_1a26" compoundref="qrect_8h" startline="634" endline="634">setBottomRight</referencedby>
+        <referencedby refid="classQRectF_1a27" compoundref="qrect_8h" startline="630" endline="630">setTopRight</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a17" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setBottom</definition>
+        <argsstring>(qreal pos)</argsstring>
+        <name>setBottom</name>
+        <param>
+          <type>qreal</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="496" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="626" bodyend="626"/>
+        <referencedby refid="classQRectF_1a28" compoundref="qrect_8h" startline="632" endline="632">setBottomLeft</referencedby>
+        <referencedby refid="classQRectF_1a26" compoundref="qrect_8h" startline="634" endline="634">setBottomRight</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a18" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setX</definition>
+        <argsstring>(qreal pos)</argsstring>
+        <name>setX</name>
+        <param>
+          <type>qreal</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="497" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="497" bodyend="497"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a19" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setY</definition>
+        <argsstring>(qreal pos)</argsstring>
+        <name>setY</name>
+        <param>
+          <type>qreal</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="498" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="498" bodyend="498"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a20" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>QPointF QRectF::topLeft</definition>
+        <argsstring>() const </argsstring>
+        <name>topLeft</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="500" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="500" bodyend="500"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a21" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>QPointF QRectF::bottomRight</definition>
+        <argsstring>() const </argsstring>
+        <name>bottomRight</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="501" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="501" bodyend="501"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a22" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>QPointF QRectF::topRight</definition>
+        <argsstring>() const </argsstring>
+        <name>topRight</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="502" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="502" bodyend="502"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a23" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>QPointF QRectF::bottomLeft</definition>
+        <argsstring>() const </argsstring>
+        <name>bottomLeft</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="503" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="503" bodyend="503"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a24" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>QPointF QRectF::center</definition>
+        <argsstring>() const </argsstring>
+        <name>center</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="504" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="636" bodyend="637"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a25" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setTopLeft</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>setTopLeft</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="506" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="628" bodyend="628"/>
+        <references refid="classQRectF_1a14" compoundref="qrect_8h" startline="620" endline="620">setLeft</references>
+        <references refid="classQRectF_1a15" compoundref="qrect_8h" startline="624" endline="624">setTop</references>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a26" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setBottomRight</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>setBottomRight</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="507" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="634" bodyend="634"/>
+        <references refid="classQRectF_1a17" compoundref="qrect_8h" startline="626" endline="626">setBottom</references>
+        <references refid="classQRectF_1a16" compoundref="qrect_8h" startline="622" endline="622">setRight</references>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a27" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setTopRight</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>setTopRight</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="508" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="630" bodyend="630"/>
+        <references refid="classQRectF_1a16" compoundref="qrect_8h" startline="622" endline="622">setRight</references>
+        <references refid="classQRectF_1a15" compoundref="qrect_8h" startline="624" endline="624">setTop</references>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setBottomLeft</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>setBottomLeft</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="509" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="632" bodyend="632"/>
+        <references refid="classQRectF_1a17" compoundref="qrect_8h" startline="626" endline="626">setBottom</references>
+        <references refid="classQRectF_1a14" compoundref="qrect_8h" startline="620" endline="620">setLeft</references>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a29" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveLeft</definition>
+        <argsstring>(qreal pos)</argsstring>
+        <name>moveLeft</name>
+        <param>
+          <type>qreal</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="511" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="639" bodyend="639"/>
+        <referencedby refid="classQRectF_1a36" compoundref="qrect_8h" startline="651" endline="651">moveBottomLeft</referencedby>
+        <referencedby refid="classQRectF_1a33" compoundref="qrect_8h" startline="647" endline="647">moveTopLeft</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a30" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveTop</definition>
+        <argsstring>(qreal pos)</argsstring>
+        <name>moveTop</name>
+        <param>
+          <type>qreal</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="512" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="641" bodyend="641"/>
+        <referencedby refid="classQRectF_1a33" compoundref="qrect_8h" startline="647" endline="647">moveTopLeft</referencedby>
+        <referencedby refid="classQRectF_1a35" compoundref="qrect_8h" startline="649" endline="649">moveTopRight</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a31" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveRight</definition>
+        <argsstring>(qreal pos)</argsstring>
+        <name>moveRight</name>
+        <param>
+          <type>qreal</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="513" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="643" bodyend="643"/>
+        <referencedby refid="classQRectF_1a34" compoundref="qrect_8h" startline="653" endline="653">moveBottomRight</referencedby>
+        <referencedby refid="classQRectF_1a35" compoundref="qrect_8h" startline="649" endline="649">moveTopRight</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a32" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveBottom</definition>
+        <argsstring>(qreal pos)</argsstring>
+        <name>moveBottom</name>
+        <param>
+          <type>qreal</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="514" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="645" bodyend="645"/>
+        <referencedby refid="classQRectF_1a36" compoundref="qrect_8h" startline="651" endline="651">moveBottomLeft</referencedby>
+        <referencedby refid="classQRectF_1a34" compoundref="qrect_8h" startline="653" endline="653">moveBottomRight</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a33" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveTopLeft</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>moveTopLeft</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="515" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="647" bodyend="647"/>
+        <references refid="classQRectF_1a29" compoundref="qrect_8h" startline="639" endline="639">moveLeft</references>
+        <references refid="classQRectF_1a30" compoundref="qrect_8h" startline="641" endline="641">moveTop</references>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a34" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveBottomRight</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>moveBottomRight</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="516" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="653" bodyend="653"/>
+        <references refid="classQRectF_1a32" compoundref="qrect_8h" startline="645" endline="645">moveBottom</references>
+        <references refid="classQRectF_1a31" compoundref="qrect_8h" startline="643" endline="643">moveRight</references>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a35" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveTopRight</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>moveTopRight</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="517" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="649" bodyend="649"/>
+        <references refid="classQRectF_1a31" compoundref="qrect_8h" startline="643" endline="643">moveRight</references>
+        <references refid="classQRectF_1a30" compoundref="qrect_8h" startline="641" endline="641">moveTop</references>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a36" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveBottomLeft</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>moveBottomLeft</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="518" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="651" bodyend="651"/>
+        <references refid="classQRectF_1a32" compoundref="qrect_8h" startline="645" endline="645">moveBottom</references>
+        <references refid="classQRectF_1a29" compoundref="qrect_8h" startline="639" endline="639">moveLeft</references>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a37" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveCenter</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>moveCenter</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="519" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="655" bodyend="655"/>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a38" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::translate</definition>
+        <argsstring>(qreal dx, qreal dy)</argsstring>
+        <name>translate</name>
+        <param>
+          <type>qreal</type>
+          <declname>dx</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>dy</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="521" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="666" bodyend="670"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a39" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::translate</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>translate</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="522" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="672" bodyend="676"/>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a40" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQRectF" kindref="compound">QRectF</ref></type>
+        <definition>QRectF QRectF::translated</definition>
+        <argsstring>(qreal dx, qreal dy) const </argsstring>
+        <name>translated</name>
+        <param>
+          <type>qreal</type>
+          <declname>dx</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>dy</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="524" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="690" bodyend="691"/>
+        <references refid="classQRectF_1a0" compoundref="qrect_8h" startline="476" endline="476">QRectF</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a41" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQRectF" kindref="compound">QRectF</ref></type>
+        <definition>QRectF QRectF::translated</definition>
+        <argsstring>(const QPointF &amp;p) const </argsstring>
+        <name>translated</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="525" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="693" bodyend="694"/>
+        <references refid="classQRectF_1a0" compoundref="qrect_8h" startline="476" endline="476">QRectF</references>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a42" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveTo</definition>
+        <argsstring>(qreal x, qreal t)</argsstring>
+        <name>moveTo</name>
+        <param>
+          <type>qreal</type>
+          <declname>x</declname>
+          <defname>ax</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>t</declname>
+          <defname>ay</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="527" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="678" bodyend="682"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a43" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::moveTo</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>moveTo</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="528" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="684" bodyend="688"/>
+        <references refid="classQPointF_1a4" compoundref="qpoint_8h" startline="230" endline="233">QPointF::x</references>
+        <references refid="classQPointF_1a5" compoundref="qpoint_8h" startline="235" endline="238">QPointF::y</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a44" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setRect</definition>
+        <argsstring>(qreal x, qreal y, qreal w, qreal h)</argsstring>
+        <name>setRect</name>
+        <param>
+          <type>qreal</type>
+          <declname>x</declname>
+          <defname>ax</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>y</declname>
+          <defname>ay</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>w</declname>
+          <defname>aaw</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>h</declname>
+          <defname>aah</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="530" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="704" bodyend="710"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a45" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::getRect</definition>
+        <argsstring>(qreal *x, qreal *y, qreal *w, qreal *h) const </argsstring>
+        <name>getRect</name>
+        <param>
+          <type>qreal *</type>
+          <declname>x</declname>
+          <defname>ax</defname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>y</declname>
+          <defname>ay</defname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>w</declname>
+          <defname>aaw</defname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>h</declname>
+          <defname>aah</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="531" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="696" bodyend="702"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a46" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setCoords</definition>
+        <argsstring>(qreal x1, qreal y1, qreal x2, qreal y2)</argsstring>
+        <name>setCoords</name>
+        <param>
+          <type>qreal</type>
+          <declname>x1</declname>
+          <defname>xp1</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>y1</declname>
+          <defname>yp1</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>x2</declname>
+          <defname>xp2</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>y2</declname>
+          <defname>yp2</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="533" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="720" bodyend="726"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a47" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::getCoords</definition>
+        <argsstring>(qreal *x1, qreal *y1, qreal *x2, qreal *y2) const </argsstring>
+        <name>getCoords</name>
+        <param>
+          <type>qreal *</type>
+          <declname>x1</declname>
+          <defname>xp1</defname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>y1</declname>
+          <defname>yp1</defname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>x2</declname>
+          <defname>xp2</defname>
+        </param>
+        <param>
+          <type>qreal *</type>
+          <declname>y2</declname>
+          <defname>yp2</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="534" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="712" bodyend="718"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a48" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::adjust</definition>
+        <argsstring>(qreal x1, qreal y1, qreal x2, qreal y2)</argsstring>
+        <name>adjust</name>
+        <param>
+          <type>qreal</type>
+          <declname>x1</declname>
+          <defname>xp1</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>y1</declname>
+          <defname>yp1</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>x2</declname>
+          <defname>xp2</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>y2</declname>
+          <defname>yp2</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="536" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="728" bodyend="729"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a49" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQRectF" kindref="compound">QRectF</ref></type>
+        <definition>QRectF QRectF::adjusted</definition>
+        <argsstring>(qreal x1, qreal y1, qreal x2, qreal y2) const </argsstring>
+        <name>adjusted</name>
+        <param>
+          <type>qreal</type>
+          <declname>x1</declname>
+          <defname>xp1</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>y1</declname>
+          <defname>yp1</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>x2</declname>
+          <defname>xp2</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>y2</declname>
+          <defname>yp2</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="537" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="731" bodyend="732"/>
+        <references refid="classQRectF_1a0" compoundref="qrect_8h" startline="476" endline="476">QRectF</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a50" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQSizeF" kindref="compound">QSizeF</ref></type>
+        <definition>QSizeF QRectF::size</definition>
+        <argsstring>() const </argsstring>
+        <name>size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="539" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="663" bodyend="664"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a51" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QRectF::width</definition>
+        <argsstring>() const </argsstring>
+        <name>width</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="540" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="657" bodyend="658"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a52" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QRectF::height</definition>
+        <argsstring>() const </argsstring>
+        <name>height</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="541" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="660" bodyend="661"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a53" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setWidth</definition>
+        <argsstring>(qreal w)</argsstring>
+        <name>setWidth</name>
+        <param>
+          <type>qreal</type>
+          <declname>w</declname>
+          <defname>aw</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="542" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="734" bodyend="735"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a54" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setHeight</definition>
+        <argsstring>(qreal h)</argsstring>
+        <name>setHeight</name>
+        <param>
+          <type>qreal</type>
+          <declname>h</declname>
+          <defname>ah</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="543" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="737" bodyend="738"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a55" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void QRectF::setSize</definition>
+        <argsstring>(const QSizeF &amp;s)</argsstring>
+        <name>setSize</name>
+        <param>
+          <type>const <ref refid="classQSizeF" kindref="compound">QSizeF</ref> &amp;</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="544" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="740" bodyend="744"/>
+        <references refid="classQSizeF_1a7" compoundref="qsize_8h" startline="259" endline="260">QSizeF::height</references>
+        <references refid="classQSizeF_1a6" compoundref="qsize_8h" startline="256" endline="257">QSizeF::width</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a56" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQRectF" kindref="compound">QRectF</ref></type>
+        <definition>QRectF QRectF::operator|</definition>
+        <argsstring>(const QRectF &amp;r) const </argsstring>
+        <name>operator|</name>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="546"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a57" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQRectF" kindref="compound">QRectF</ref></type>
+        <definition>QRectF QRectF::operator &amp;</definition>
+        <argsstring>(const QRectF &amp;r) const </argsstring>
+        <name>operator &amp;</name>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="547"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a58" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+        <definition>QRectF &amp; QRectF::operator|=</definition>
+        <argsstring>(const QRectF &amp;r)</argsstring>
+        <name>operator|=</name>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="548" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="751" bodyend="755"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a59" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+        <definition>QRectF &amp; QRectF::operator &amp;=</definition>
+        <argsstring>(const QRectF &amp;r)</argsstring>
+        <name>operator &amp;=</name>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="549" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="757" bodyend="761"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a60" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QRectF::contains</definition>
+        <argsstring>(const QPointF &amp;p) const </argsstring>
+        <name>contains</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="551"/>
+        <referencedby refid="classQRectF_1a61" compoundref="qrect_8h" startline="746" endline="749">contains</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a61" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QRectF::contains</definition>
+        <argsstring>(qreal x, qreal y) const </argsstring>
+        <name>contains</name>
+        <param>
+          <type>qreal</type>
+          <declname>x</declname>
+          <defname>ax</defname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>y</declname>
+          <defname>ay</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="552" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="746" bodyend="749"/>
+        <references refid="classQRectF_1a60">contains</references>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a62" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QRectF::contains</definition>
+        <argsstring>(const QRectF &amp;r) const </argsstring>
+        <name>contains</name>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="553"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a63" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQRectF" kindref="compound">QRectF</ref></type>
+        <definition>QRectF QRectF::unite</definition>
+        <argsstring>(const QRectF &amp;r) const </argsstring>
+        <name>unite</name>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="554" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="767" bodyend="770"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a64" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQRectF" kindref="compound">QRectF</ref></type>
+        <definition>QRectF QRectF::intersect</definition>
+        <argsstring>(const QRectF &amp;r) const </argsstring>
+        <name>intersect</name>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="555" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="763" bodyend="766"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a65" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool QRectF::intersects</definition>
+        <argsstring>(const QRectF &amp;r) const </argsstring>
+        <name>intersects</name>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="556"/>
+      </memberdef>
+      <memberdef kind="function" id="classQRectF_1a66" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classQRect" kindref="compound">QRect</ref></type>
+        <definition>QRect QRectF::toRect</definition>
+        <argsstring>() const </argsstring>
+        <name>toRect</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="561" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="784" bodyend="787"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classQRectF_1r0" prot="private" static="no" mutable="no">
+        <type>qreal</type>
+        <definition>qreal QRectF::xp</definition>
+        <argsstring></argsstring>
+        <name>xp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="564" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="564" bodyend="-1"/>
+        <referencedby refid="qrect_8h_1a8" compoundref="qrect_8h" startline="778" endline="782">operator!=</referencedby>
+        <referencedby refid="qrect_8h_1a7" compoundref="qrect_8h" startline="772" endline="776">operator==</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="classQRectF_1r1" prot="private" static="no" mutable="no">
+        <type>qreal</type>
+        <definition>qreal QRectF::yp</definition>
+        <argsstring></argsstring>
+        <name>yp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="565" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="565" bodyend="-1"/>
+        <referencedby refid="qrect_8h_1a8" compoundref="qrect_8h" startline="778" endline="782">operator!=</referencedby>
+        <referencedby refid="qrect_8h_1a7" compoundref="qrect_8h" startline="772" endline="776">operator==</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="classQRectF_1r2" prot="private" static="no" mutable="no">
+        <type>qreal</type>
+        <definition>qreal QRectF::w</definition>
+        <argsstring></argsstring>
+        <name>w</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="566" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="566" bodyend="-1"/>
+        <referencedby refid="qrect_8h_1a8" compoundref="qrect_8h" startline="778" endline="782">operator!=</referencedby>
+        <referencedby refid="qrect_8h_1a7" compoundref="qrect_8h" startline="772" endline="776">operator==</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="classQRectF_1r3" prot="private" static="no" mutable="no">
+        <type>qreal</type>
+        <definition>qreal QRectF::h</definition>
+        <argsstring></argsstring>
+        <name>h</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="567" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="567" bodyend="-1"/>
+        <referencedby refid="qrect_8h_1a8" compoundref="qrect_8h" startline="778" endline="782">operator!=</referencedby>
+        <referencedby refid="qrect_8h_1a7" compoundref="qrect_8h" startline="772" endline="776">operator==</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="friend">
+      <memberdef kind="friend" id="classQRectF_1n0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>friend Q_CORE_EXPORT bool</type>
+        <definition>Q_CORE_EXPORT bool operator==</definition>
+        <argsstring>(const QRectF &amp;, const QRectF &amp;)</argsstring>
+        <name>operator==</name>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="558"/>
+      </memberdef>
+      <memberdef kind="friend" id="classQRectF_1n1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>friend Q_CORE_EXPORT bool</type>
+        <definition>Q_CORE_EXPORT bool operator!=</definition>
+        <argsstring>(const QRectF &amp;, const QRectF &amp;)</argsstring>
+        <name>operator!=</name>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="classQRectF" kindref="compound">QRectF</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="559"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" line="474" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qrect.h" bodystart="473" bodyend="568"/>
+    <listofallmembers>
+      <member refid="classQRectF_1a48" prot="public" virt="non-virtual"><scope>QRectF</scope><name>adjust</name></member>
+      <member refid="classQRectF_1a49" prot="public" virt="non-virtual"><scope>QRectF</scope><name>adjusted</name></member>
+      <member refid="classQRectF_1a11" prot="public" virt="non-virtual"><scope>QRectF</scope><name>bottom</name></member>
+      <member refid="classQRectF_1a23" prot="public" virt="non-virtual"><scope>QRectF</scope><name>bottomLeft</name></member>
+      <member refid="classQRectF_1a21" prot="public" virt="non-virtual"><scope>QRectF</scope><name>bottomRight</name></member>
+      <member refid="classQRectF_1a24" prot="public" virt="non-virtual"><scope>QRectF</scope><name>center</name></member>
+      <member refid="classQRectF_1a60" prot="public" virt="non-virtual"><scope>QRectF</scope><name>contains</name></member>
+      <member refid="classQRectF_1a61" prot="public" virt="non-virtual"><scope>QRectF</scope><name>contains</name></member>
+      <member refid="classQRectF_1a62" prot="public" virt="non-virtual"><scope>QRectF</scope><name>contains</name></member>
+      <member refid="classQRectF_1a47" prot="public" virt="non-virtual"><scope>QRectF</scope><name>getCoords</name></member>
+      <member refid="classQRectF_1a45" prot="public" virt="non-virtual"><scope>QRectF</scope><name>getRect</name></member>
+      <member refid="classQRectF_1r3" prot="private" virt="non-virtual"><scope>QRectF</scope><name>h</name></member>
+      <member refid="classQRectF_1a52" prot="public" virt="non-virtual"><scope>QRectF</scope><name>height</name></member>
+      <member refid="classQRectF_1a64" prot="public" virt="non-virtual"><scope>QRectF</scope><name>intersect</name></member>
+      <member refid="classQRectF_1a65" prot="public" virt="non-virtual"><scope>QRectF</scope><name>intersects</name></member>
+      <member refid="classQRectF_1a5" prot="public" virt="non-virtual"><scope>QRectF</scope><name>isEmpty</name></member>
+      <member refid="classQRectF_1a4" prot="public" virt="non-virtual"><scope>QRectF</scope><name>isNull</name></member>
+      <member refid="classQRectF_1a6" prot="public" virt="non-virtual"><scope>QRectF</scope><name>isValid</name></member>
+      <member refid="classQRectF_1a8" prot="public" virt="non-virtual"><scope>QRectF</scope><name>left</name></member>
+      <member refid="classQRectF_1a32" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveBottom</name></member>
+      <member refid="classQRectF_1a36" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveBottomLeft</name></member>
+      <member refid="classQRectF_1a34" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveBottomRight</name></member>
+      <member refid="classQRectF_1a37" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveCenter</name></member>
+      <member refid="classQRectF_1a29" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveLeft</name></member>
+      <member refid="classQRectF_1a31" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveRight</name></member>
+      <member refid="classQRectF_1a42" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveTo</name></member>
+      <member refid="classQRectF_1a43" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveTo</name></member>
+      <member refid="classQRectF_1a30" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveTop</name></member>
+      <member refid="classQRectF_1a33" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveTopLeft</name></member>
+      <member refid="classQRectF_1a35" prot="public" virt="non-virtual"><scope>QRectF</scope><name>moveTopRight</name></member>
+      <member refid="classQRectF_1a7" prot="public" virt="non-virtual"><scope>QRectF</scope><name>normalized</name></member>
+      <member refid="classQRectF_1a57" prot="public" virt="non-virtual"><scope>QRectF</scope><name>operator &amp;</name></member>
+      <member refid="classQRectF_1a59" prot="public" virt="non-virtual"><scope>QRectF</scope><name>operator &amp;=</name></member>
+      <member refid="classQRectF_1n1" prot="public" virt="non-virtual"><scope>QRectF</scope><name>operator!=</name></member>
+      <member refid="classQRectF_1n0" prot="public" virt="non-virtual"><scope>QRectF</scope><name>operator==</name></member>
+      <member refid="classQRectF_1a56" prot="public" virt="non-virtual"><scope>QRectF</scope><name>operator|</name></member>
+      <member refid="classQRectF_1a58" prot="public" virt="non-virtual"><scope>QRectF</scope><name>operator|=</name></member>
+      <member refid="classQRectF_1a0" prot="public" virt="non-virtual"><scope>QRectF</scope><name>QRectF</name></member>
+      <member refid="classQRectF_1a1" prot="public" virt="non-virtual"><scope>QRectF</scope><name>QRectF</name></member>
+      <member refid="classQRectF_1a2" prot="public" virt="non-virtual"><scope>QRectF</scope><name>QRectF</name></member>
+      <member refid="classQRectF_1a3" prot="public" virt="non-virtual"><scope>QRectF</scope><name>QRectF</name></member>
+      <member refid="classQRectF_1a10" prot="public" virt="non-virtual"><scope>QRectF</scope><name>right</name></member>
+      <member refid="classQRectF_1a17" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setBottom</name></member>
+      <member refid="classQRectF_1a28" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setBottomLeft</name></member>
+      <member refid="classQRectF_1a26" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setBottomRight</name></member>
+      <member refid="classQRectF_1a46" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setCoords</name></member>
+      <member refid="classQRectF_1a54" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setHeight</name></member>
+      <member refid="classQRectF_1a14" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setLeft</name></member>
+      <member refid="classQRectF_1a44" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setRect</name></member>
+      <member refid="classQRectF_1a16" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setRight</name></member>
+      <member refid="classQRectF_1a55" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setSize</name></member>
+      <member refid="classQRectF_1a15" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setTop</name></member>
+      <member refid="classQRectF_1a25" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setTopLeft</name></member>
+      <member refid="classQRectF_1a27" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setTopRight</name></member>
+      <member refid="classQRectF_1a53" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setWidth</name></member>
+      <member refid="classQRectF_1a18" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setX</name></member>
+      <member refid="classQRectF_1a19" prot="public" virt="non-virtual"><scope>QRectF</scope><name>setY</name></member>
+      <member refid="classQRectF_1a50" prot="public" virt="non-virtual"><scope>QRectF</scope><name>size</name></member>
+      <member refid="classQRectF_1a9" prot="public" virt="non-virtual"><scope>QRectF</scope><name>top</name></member>
+      <member refid="classQRectF_1a20" prot="public" virt="non-virtual"><scope>QRectF</scope><name>topLeft</name></member>
+      <member refid="classQRectF_1a22" prot="public" virt="non-virtual"><scope>QRectF</scope><name>topRight</name></member>
+      <member refid="classQRectF_1a66" prot="public" virt="non-virtual"><scope>QRectF</scope><name>toRect</name></member>
+      <member refid="classQRectF_1a38" prot="public" virt="non-virtual"><scope>QRectF</scope><name>translate</name></member>
+      <member refid="classQRectF_1a39" prot="public" virt="non-virtual"><scope>QRectF</scope><name>translate</name></member>
+      <member refid="classQRectF_1a40" prot="public" virt="non-virtual"><scope>QRectF</scope><name>translated</name></member>
+      <member refid="classQRectF_1a41" prot="public" virt="non-virtual"><scope>QRectF</scope><name>translated</name></member>
+      <member refid="classQRectF_1a63" prot="public" virt="non-virtual"><scope>QRectF</scope><name>unite</name></member>
+      <member refid="classQRectF_1r2" prot="private" virt="non-virtual"><scope>QRectF</scope><name>w</name></member>
+      <member refid="classQRectF_1a51" prot="public" virt="non-virtual"><scope>QRectF</scope><name>width</name></member>
+      <member refid="classQRectF_1a12" prot="public" virt="non-virtual"><scope>QRectF</scope><name>x</name></member>
+      <member refid="classQRectF_1r0" prot="private" virt="non-virtual"><scope>QRectF</scope><name>xp</name></member>
+      <member refid="classQRectF_1a13" prot="public" virt="non-virtual"><scope>QRectF</scope><name>y</name></member>
+      <member refid="classQRectF_1r1" prot="private" virt="non-virtual"><scope>QRectF</scope><name>yp</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

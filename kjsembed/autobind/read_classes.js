@@ -18,7 +18,7 @@ function write_header( class_doc )
     '#include <' + includes + '>\n' +
     '#include <kjsembed/qobject_binding.h>\n' +
     '\n' +
-    'KJS_BINDING( Binding' + compoundname + ' )\n' +
+    'KJS_BINDING( ' + compoundname + ' )\n' +
     '' +
     '#endif // BIND_' + compoundname + '_H';
 
@@ -56,21 +56,22 @@ function write_binding_methodlut( compounddef )
 
   var lut_template =
     '\n' +
-    'START_METHOD_LUT( Bind' + compoundname + ')\n';
+    'START_METHOD_LUT( ' + compoundname + ')\n';
 
   // Generate the binding for each method
   var methodList = compounddef.elementsByTagName( "memberdef" );
-  for( var idx = 0; idx < methodList.length(); ++idx ) {
-	var member_elem = methodList.item(idx).toElement();
-	var kind = member_elem.attribute( 'kind' );
-	var name = member_elem.firstChildElement('name').toElement().toString();
+  for( var idx = 0; idx < methodList.length(); ++idx )
+  {
+    var member_elem = methodList.item(idx).toElement();
+    var kind = member_elem.attribute( 'kind' );
+    var name = member_elem.firstChildElement('name').toElement().toString();
 
-	if ( kind == 'function' ) {
-	  lut_template += '{' + name + ', 0, KJS::DontDelete|KJS::ReadOnly, &Binding' + compoundname + 'NS::' + name + ' },\n';
-	}
+    var numParams = member_elem.elementsByTagName("param").count();
+    if ( kind == 'function' )
+    {
+        lut_template += '{'+ name +', '+ numParams +', KJS::DontDelete|KJS::ReadOnly, &' + compoundname + 'NS::' + name + ' },\n';
+    }
   }
-
-
   lut_template += 'END_METHOD_LUT\n';
 
   return lut_template;

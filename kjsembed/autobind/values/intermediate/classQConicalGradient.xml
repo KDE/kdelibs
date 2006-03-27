@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="classQConicalGradient" kind="class" prot="public">
+    <compoundname>QConicalGradient</compoundname>
+    <basecompoundref refid="classQGradient" prot="public" virt="non-virtual"></basecompoundref>
+    <includes refid="qbrush_8h" local="no">qbrush.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classQConicalGradient_1a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>QConicalGradient::QConicalGradient</definition>
+        <argsstring>(const QPointF &amp;center, qreal startAngle)</argsstring>
+        <name>QConicalGradient</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>center</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>startAngle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" line="215"/>
+      </memberdef>
+      <memberdef kind="function" id="classQConicalGradient_1a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>QConicalGradient::QConicalGradient</definition>
+        <argsstring>(qreal cx, qreal cy, qreal startAngle)</argsstring>
+        <name>QConicalGradient</name>
+        <param>
+          <type>qreal</type>
+          <declname>cx</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>cy</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>startAngle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" line="216"/>
+      </memberdef>
+      <memberdef kind="function" id="classQConicalGradient_1a2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>QPointF QConicalGradient::center</definition>
+        <argsstring>() const </argsstring>
+        <name>center</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" line="218"/>
+      </memberdef>
+      <memberdef kind="function" id="classQConicalGradient_1a3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>qreal</type>
+        <definition>qreal QConicalGradient::angle</definition>
+        <argsstring>() const </argsstring>
+        <name>angle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" line="219"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="10">
+        <label>QGradient</label>
+        <link refid="classQGradient"/>
+      </node>
+      <node id="9">
+        <label>QConicalGradient</label>
+        <link refid="classQConicalGradient"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="12">
+        <label>QGradient</label>
+        <link refid="classQGradient"/>
+      </node>
+      <node id="11">
+        <label>QConicalGradient</label>
+        <link refid="classQConicalGradient"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" line="213" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" bodystart="212" bodyend="220"/>
+    <listofallmembers>
+      <member refid="classQConicalGradient_1a3" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>angle</name></member>
+      <member refid="classQConicalGradient_1a2" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>center</name></member>
+      <member refid="classQGradient_1w7w2" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>ConicalGradient</name></member>
+      <member refid="classQGradient_1w7w0" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>LinearGradient</name></member>
+      <member refid="classQGradient_1w7w3" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>NoGradient</name></member>
+      <member refid="classQGradient_1a7" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>operator==</name></member>
+      <member refid="classQGradient_1a8" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>operator==</name></member>
+      <member refid="classQGradient_1w8w4" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>PadSpread</name></member>
+      <member refid="classQConicalGradient_1a0" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>QConicalGradient</name></member>
+      <member refid="classQConicalGradient_1a1" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>QConicalGradient</name></member>
+      <member refid="classQGradient_1a0" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>QGradient</name></member>
+      <member refid="classQGradient_1w7w1" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>RadialGradient</name></member>
+      <member refid="classQGradient_1w8w5" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>ReflectSpread</name></member>
+      <member refid="classQGradient_1w8w6" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>RepeatSpread</name></member>
+      <member refid="classQGradient_1a4" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>setColorAt</name></member>
+      <member refid="classQGradient_1a2" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>setSpread</name></member>
+      <member refid="classQGradient_1a5" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>setStops</name></member>
+      <member refid="classQGradient_1a3" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>spread</name></member>
+      <member refid="classQGradient_1w8" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>Spread</name></member>
+      <member refid="classQGradient_1a6" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>stops</name></member>
+      <member refid="classQGradient_1w7" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>Type</name></member>
+      <member refid="classQGradient_1a1" prot="public" virt="non-virtual"><scope>QConicalGradient</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

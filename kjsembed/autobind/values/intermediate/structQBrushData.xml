@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="structQBrushData" kind="struct" prot="public">
+    <compoundname>QBrushData</compoundname>
+    <includes refid="qbrush_8h" local="no">qbrush.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structQBrushData_1o0" prot="public" static="no" mutable="no">
+        <type>QAtomic</type>
+        <definition>QAtomic QBrushData::ref</definition>
+        <argsstring></argsstring>
+        <name>ref</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" line="111" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structQBrushData_1o1" prot="public" static="no" mutable="no">
+        <type>Qt::BrushStyle</type>
+        <definition>Qt::BrushStyle QBrushData::style</definition>
+        <argsstring></argsstring>
+        <name>style</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" line="112" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" bodystart="112" bodyend="-1"/>
+        <referencedby refid="classQBrush_1a12" compoundref="qbrush_8h" startline="116" endline="116">QBrush::style</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="structQBrushData_1o2" prot="public" static="no" mutable="no">
+        <type><ref refid="classQColor" kindref="compound">QColor</ref></type>
+        <definition>QColor QBrushData::color</definition>
+        <argsstring></argsstring>
+        <name>color</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" line="113" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" bodystart="113" bodyend="-1"/>
+        <referencedby refid="classQBrush_1a16" compoundref="qbrush_8h" startline="117" endline="117">QBrush::color</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>QBrushData</label>
+        <link refid="structQBrushData"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>color</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>QColor</label>
+        <link refid="classQColor"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" line="110" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qbrush.h" bodystart="109" bodyend="114"/>
+    <listofallmembers>
+      <member refid="structQBrushData_1o2" prot="public" virt="non-virtual"><scope>QBrushData</scope><name>color</name></member>
+      <member refid="structQBrushData_1o0" prot="public" virt="non-virtual"><scope>QBrushData</scope><name>ref</name></member>
+      <member refid="structQBrushData_1o1" prot="public" virt="non-virtual"><scope>QBrushData</scope><name>style</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

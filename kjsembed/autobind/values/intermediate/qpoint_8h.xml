@@ -1,0 +1,543 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="qpoint_8h" kind="file">
+    <compoundname>qpoint.h</compoundname>
+    <includes local="no">QtCore/qnamespace.h</includes>
+    <incdepgraph>
+      <node id="18">
+        <label>input/qpoint.h</label>
+        <link refid="qpoint.h"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>QtCore/qnamespace.h</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classQPoint">QPoint</innerclass>
+    <innerclass refid="classQPointF">QPointF</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="qpoint_8h_1a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Q_DECLARE_TYPEINFO</definition>
+        <argsstring>(QPoint, Q_MOVABLE_TYPE)</argsstring>
+        <name>Q_DECLARE_TYPEINFO</name>
+        <param>
+          <type><ref refid="classQPoint" kindref="compound">QPoint</ref></type>
+        </param>
+        <param>
+          <type>Q_MOVABLE_TYPE</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="72"/>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Q_CORE_EXPORT QDataStream &amp;</type>
+        <definition>Q_CORE_EXPORT QDataStream&amp; operator&lt;&lt;</definition>
+        <argsstring>(QDataStream &amp;, const QPoint &amp;)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>QDataStream &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="78"/>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Q_CORE_EXPORT QDataStream &amp;</type>
+        <definition>Q_CORE_EXPORT QDataStream&amp; operator&gt;&gt;</definition>
+        <argsstring>(QDataStream &amp;, QPoint &amp;)</argsstring>
+        <name>operator&gt;&gt;</name>
+        <param>
+          <type>QDataStream &amp;</type>
+        </param>
+        <param>
+          <type><ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="79"/>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const QPoint &amp;p1, const QPoint &amp;p2)</argsstring>
+        <name>operator==</name>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="123" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="122" bodyend="123"/>
+        <references refid="classQPoint_1r0" compoundref="qpoint_8h" startline="67">QPoint::xp</references>
+        <references refid="classQPoint_1r1" compoundref="qpoint_8h" startline="68">QPoint::yp</references>
+        <referencedby refid="classQPen_1a27" compoundref="qpen_8h" startline="83" endline="83">QPen::operator!=</referencedby>
+        <referencedby refid="classQBrush_1a22" compoundref="qbrush_8h" startline="72" endline="72">QBrush::operator!=</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator!=</definition>
+        <argsstring>(const QPoint &amp;p1, const QPoint &amp;p2)</argsstring>
+        <name>operator!=</name>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="126" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="125" bodyend="126"/>
+        <references refid="classQPoint_1r0" compoundref="qpoint_8h" startline="67">QPoint::xp</references>
+        <references refid="classQPoint_1r1" compoundref="qpoint_8h" startline="68">QPoint::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref></type>
+        <definition>const QPoint operator+</definition>
+        <argsstring>(const QPoint &amp;p1, const QPoint &amp;p2)</argsstring>
+        <name>operator+</name>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="129" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="128" bodyend="129"/>
+        <references refid="classQPoint_1r0" compoundref="qpoint_8h" startline="67">QPoint::xp</references>
+        <references refid="classQPoint_1r1" compoundref="qpoint_8h" startline="68">QPoint::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref></type>
+        <definition>const QPoint operator-</definition>
+        <argsstring>(const QPoint &amp;p1, const QPoint &amp;p2)</argsstring>
+        <name>operator-</name>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="132" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="131" bodyend="132"/>
+        <references refid="classQPoint_1r0" compoundref="qpoint_8h" startline="67">QPoint::xp</references>
+        <references refid="classQPoint_1r1" compoundref="qpoint_8h" startline="68">QPoint::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref></type>
+        <definition>const QPoint operator *</definition>
+        <argsstring>(const QPoint &amp;p, qreal c)</argsstring>
+        <name>operator *</name>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="135" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="134" bodyend="135"/>
+        <references refid="classQPoint_1r0" compoundref="qpoint_8h" startline="67">QPoint::xp</references>
+        <references refid="classQPoint_1r1" compoundref="qpoint_8h" startline="68">QPoint::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref></type>
+        <definition>const QPoint operator *</definition>
+        <argsstring>(qreal c, const QPoint &amp;p)</argsstring>
+        <name>operator *</name>
+        <param>
+          <type>qreal</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="138" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="137" bodyend="138"/>
+        <references refid="classQPoint_1r0" compoundref="qpoint_8h" startline="67">QPoint::xp</references>
+        <references refid="classQPoint_1r1" compoundref="qpoint_8h" startline="68">QPoint::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref></type>
+        <definition>const QPoint operator-</definition>
+        <argsstring>(const QPoint &amp;p)</argsstring>
+        <name>operator-</name>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="141" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="140" bodyend="141"/>
+        <references refid="classQPoint_1r0" compoundref="qpoint_8h" startline="67">QPoint::xp</references>
+        <references refid="classQPoint_1r1" compoundref="qpoint_8h" startline="68">QPoint::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a10" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref></type>
+        <definition>const QPoint operator/</definition>
+        <argsstring>(const QPoint &amp;p, qreal c)</argsstring>
+        <name>operator/</name>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="152" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="151" bodyend="155"/>
+        <references refid="classQPoint_1r0" compoundref="qpoint_8h" startline="67">QPoint::xp</references>
+        <references refid="classQPoint_1r1" compoundref="qpoint_8h" startline="68">QPoint::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a11" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Q_CORE_EXPORT QDebug</type>
+        <definition>Q_CORE_EXPORT QDebug operator&lt;&lt;</definition>
+        <argsstring>(QDebug, const QPoint &amp;)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>QDebug</type>
+        </param>
+        <param>
+          <type>const <ref refid="classQPoint" kindref="compound">QPoint</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="158"/>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Q_DECLARE_TYPEINFO</definition>
+        <argsstring>(QPointF, Q_MOVABLE_TYPE)</argsstring>
+        <name>Q_DECLARE_TYPEINFO</name>
+        <param>
+          <type><ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        </param>
+        <param>
+          <type>Q_MOVABLE_TYPE</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="205"/>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Q_CORE_EXPORT QDataStream &amp;</type>
+        <definition>Q_CORE_EXPORT QDataStream&amp; operator&lt;&lt;</definition>
+        <argsstring>(QDataStream &amp;, const QPointF &amp;)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>QDataStream &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="211"/>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Q_CORE_EXPORT QDataStream &amp;</type>
+        <definition>Q_CORE_EXPORT QDataStream&amp; operator&gt;&gt;</definition>
+        <argsstring>(QDataStream &amp;, QPointF &amp;)</argsstring>
+        <name>operator&gt;&gt;</name>
+        <param>
+          <type>QDataStream &amp;</type>
+        </param>
+        <param>
+          <type><ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="212"/>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a15" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const QPointF &amp;p1, const QPointF &amp;p2)</argsstring>
+        <name>operator==</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="278" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="277" bodyend="280"/>
+        <references refid="classQPointF_1r0" compoundref="qpoint_8h" startline="201">QPointF::xp</references>
+        <references refid="classQPointF_1r1" compoundref="qpoint_8h" startline="202">QPointF::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a16" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator!=</definition>
+        <argsstring>(const QPointF &amp;p1, const QPointF &amp;p2)</argsstring>
+        <name>operator!=</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="283" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="282" bodyend="285"/>
+        <references refid="classQPointF_1r0" compoundref="qpoint_8h" startline="201">QPointF::xp</references>
+        <references refid="classQPointF_1r1" compoundref="qpoint_8h" startline="202">QPointF::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a17" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>const QPointF operator+</definition>
+        <argsstring>(const QPointF &amp;p1, const QPointF &amp;p2)</argsstring>
+        <name>operator+</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="288" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="287" bodyend="290"/>
+        <references refid="classQPointF_1r0" compoundref="qpoint_8h" startline="201">QPointF::xp</references>
+        <references refid="classQPointF_1r1" compoundref="qpoint_8h" startline="202">QPointF::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a18" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>const QPointF operator-</definition>
+        <argsstring>(const QPointF &amp;p1, const QPointF &amp;p2)</argsstring>
+        <name>operator-</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="293" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="292" bodyend="295"/>
+        <references refid="classQPointF_1r0" compoundref="qpoint_8h" startline="201">QPointF::xp</references>
+        <references refid="classQPointF_1r1" compoundref="qpoint_8h" startline="202">QPointF::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a19" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>const QPointF operator *</definition>
+        <argsstring>(const QPointF &amp;p, qreal c)</argsstring>
+        <name>operator *</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="298" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="297" bodyend="300"/>
+        <references refid="classQPointF_1r0" compoundref="qpoint_8h" startline="201">QPointF::xp</references>
+        <references refid="classQPointF_1r1" compoundref="qpoint_8h" startline="202">QPointF::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a20" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>const QPointF operator *</definition>
+        <argsstring>(qreal c, const QPointF &amp;p)</argsstring>
+        <name>operator *</name>
+        <param>
+          <type>qreal</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="303" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="302" bodyend="305"/>
+        <references refid="classQPointF_1r0" compoundref="qpoint_8h" startline="201">QPointF::xp</references>
+        <references refid="classQPointF_1r1" compoundref="qpoint_8h" startline="202">QPointF::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a21" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>const QPointF operator-</definition>
+        <argsstring>(const QPointF &amp;p)</argsstring>
+        <name>operator-</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="308" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="307" bodyend="310"/>
+        <references refid="classQPointF_1r0" compoundref="qpoint_8h" startline="201">QPointF::xp</references>
+        <references refid="classQPointF_1r1" compoundref="qpoint_8h" startline="202">QPointF::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a22" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref></type>
+        <definition>const QPointF operator/</definition>
+        <argsstring>(const QPointF &amp;p, qreal c)</argsstring>
+        <name>operator/</name>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type>qreal</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="321" bodyfile="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" bodystart="320" bodyend="324"/>
+        <references refid="classQPointF_1r0" compoundref="qpoint_8h" startline="201">QPointF::xp</references>
+        <references refid="classQPointF_1r1" compoundref="qpoint_8h" startline="202">QPointF::yp</references>
+      </memberdef>
+      <memberdef kind="function" id="qpoint_8h_1a23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Q_CORE_EXPORT QDebug</type>
+        <definition>Q_CORE_EXPORT QDebug operator&lt;&lt;</definition>
+        <argsstring>(QDebug d, const QPointF &amp;p)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>QDebug</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classQPointF" kindref="compound">QPointF</ref> &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h" line="332"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/qpoint.h"/>
+  </compounddef>
+</doxygen>

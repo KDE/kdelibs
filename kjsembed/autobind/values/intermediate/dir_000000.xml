@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='iso-8859-1' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.4.4">
+  <compounddef id="dir_000000" kind="dir">
+    <compoundname>input/</compoundname>
+    <innerfile refid="qbrush_8h">qbrush.h</innerfile>
+    <innerfile refid="qcolor_8h">qcolor.h</innerfile>
+    <innerfile refid="qfont_8h">qfont.h</innerfile>
+    <innerfile refid="qpen_8h">qpen.h</innerfile>
+    <innerfile refid="qpoint_8h">qpoint.h</innerfile>
+    <innerfile refid="qrect_8h">qrect.h</innerfile>
+    <innerfile refid="qsize_8h">qsize.h</innerfile>
+    <innerfile refid="qurl_8h">qurl.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/kde4/kdesvn/kdelibs/kjsembed/autobind/values/input/"/>
+  </compounddef>
+</doxygen>
