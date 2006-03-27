@@ -12,8 +12,4 @@ mimetypeimagedata_DATA = jpeg.desktop jpg.desktop tiff.desktop x-xpm.desktop x-x
 
 mimetypeimagedatadir = $(kde_mimedir)/image
 
-install-data-local: uninstall.desktop
-	$(mkinstalldirs) $(DESTDIR)$(mimetypeimagedatadir)
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeimagedatadir)/wmf.desktop
-
 EXTRA_DIST = $(mimetypeimagedata_DATA)

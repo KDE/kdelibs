@@ -70,10 +70,4 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 
 mimetypeapplicationdatadir = $(kde_mimedir)/application
 
-install-data-local: uninstall.desktop
-	$(mkinstalldirs) $(DESTDIR)$(mimetypeapplicationdatadir)
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-applix.desktop
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-oowriter.desktop
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-ooimpress.desktop
-
 EXTRA_DIST = $(mimetypeapplicationdata_DATA)

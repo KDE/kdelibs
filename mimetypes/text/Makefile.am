@@ -10,10 +10,4 @@ mimetypetextdata_DATA = x-c++src.desktop x-c++hdr.desktop x-csrc.desktop x-java.
 
 mimetypetextdatadir = $(kde_mimedir)/text
 
-install-data-local: uninstall.desktop
-	$(mkinstalldirs) $(DESTDIR)$(mimetypetextdatadir)
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypetextdatadir)/x-perl.desktop
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypetextdatadir)/x-python.desktop
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypetextdatadir)/x-lyx.desktop
-
 EXTRA_DIST = $(mimetypetextdata_DATA)
