@@ -62,7 +62,11 @@ void KAutostartTest::testStartInEnvDetection()
     QFETCH(bool, doesAutostart);
 
     KAutostart autostart("panel");
-    QCOMPARE(autostart.autostarts(env), doesAutostart);
+    // Let's see if panel.desktop actually exists
+    if ( locate("panel", "autostart").isEmpty() )
+        QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
+    else
+        QCOMPARE(autostart.autostarts(env), doesAutostart);
 }
 
 void KAutostartTest::testStartphase_data()
