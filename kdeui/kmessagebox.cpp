@@ -82,7 +82,7 @@ static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
         break;
     }
 
-   QPixmap ret = KApplication::kApplication()->iconLoader()->loadIcon(icon_name, KIcon::NoGroup, KIcon::SizeMedium, KIcon::DefaultState, 0, true);
+   QPixmap ret = KGlobal::iconLoader()->loadIcon(icon_name, KIcon::NoGroup, KIcon::SizeMedium, KIcon::DefaultState, 0, true);
 
    if (ret.isNull())
        return QMessageBox::standardIcon(icon);
