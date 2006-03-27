@@ -30,7 +30,7 @@ set(kde3core_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3multipledrag.cpp
 )
 
-install_files( /include FILES kdecore/k3shortcut.h kdecore/k3keysequence.h kdecore/k3shortcutmenu.h kdecore/k3urldrag.h kdecore/k3multipledrag.h )
+install_files( /include FILES kdecore/k3shortcut.h kdecore/k3keysequence.h kdecore/k3shortcutmenu.h kdecore/k3urldrag.h kdecore/k3multipledrag.h kdecore/k3sqlpropertymap.h )
 
 # kde3support/kdeui/Makefile.am: kde3ui
 
