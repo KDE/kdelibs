@@ -660,8 +660,17 @@ static KURL::List resolveURLs( const KURL::List& _urls, const KService& _service
   if ( mx1.expandMacrosShellQuote( exec ) && !mx1.hasUrls ) {
     Q_ASSERT( supportedProtocols.isEmpty() ); // huh? If you support protocols you need %u or %U...
   } else {
-    if ( supportedProtocols.isEmpty() ) // compat: assume KIO if not set
-      supportedProtocols.append( "KIO" );
+    if ( supportedProtocols.isEmpty() )
+    {
+      // compat mode: assume KIO if not set and it's a KDE app
+      QStringList categories = _service.property("Categories").toStringList();
+      if ( categories.find("KDE") != categories.end() )
+         supportedProtocols.append( "KIO" );
+      else { // if no KDE app, be a bit over-generic
+         supportedProtocols.append( "http");
+         supportedProtocols.append( "ftp");
+      }
+    }
   }
   kdDebug(7010) << "supportedProtocols:" << supportedProtocols << endl;
 
