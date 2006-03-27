@@ -230,7 +230,7 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
 {
     QString url = _url.string();
     QString s;
-    int pos = url.find('#');
+    int pos = url.indexOf('#');
     //kDebug(0) << "map pos of #:" << pos << endl;
     s = QString(_url.unicode() + pos + 1, _url.length() - pos - 1);
 
@@ -294,7 +294,7 @@ static int parseDocTypePart(const QString& buffer, int index)
         else if (ch == '-') {
             int tmpIndex=index;
             if (buffer[index+1] == '-' &&
-                ((tmpIndex=buffer.find("--", index+2)) != -1))
+                ((tmpIndex=buffer.indexOf("--", index+2)) != -1))
                 index = tmpIndex+2;
             else
                 return index;
@@ -327,7 +327,7 @@ static bool parseDocTypeDeclaration(const QString& buffer,
     // Skip through any comments and processing instructions.
     int index = 0;
     do {
-        index = buffer.find('<', index);
+        index = buffer.indexOf('<', index);
         if (index == -1) break;
         QChar nextChar = buffer[index+1];
         if (nextChar == '!') {
@@ -337,10 +337,10 @@ static bool parseDocTypeDeclaration(const QString& buffer,
                 break;
             }
             index = parseDocTypePart(buffer,index);
-            index = buffer.find('>', index);
+            index = buffer.indexOf('>', index);
         }
         else if (nextChar == '?')
-            index = buffer.find('>', index);
+            index = buffer.indexOf('>', index);
         else
             break;
     } while (index != -1);
@@ -368,7 +368,7 @@ static bool parseDocTypeDeclaration(const QString& buffer,
         // |start| is the first character (after the quote) and |end|
         // is the final quote, so there are |end|-|start| characters.
         int publicIDStart = index+1;
-        int publicIDEnd = buffer.find(theChar, publicIDStart);
+        int publicIDEnd = buffer.indexOf(theChar, publicIDStart);
         if (publicIDEnd == -1)
             return false;
         index = parseDocTypePart(buffer, publicIDEnd+1);
@@ -382,7 +382,7 @@ static bool parseDocTypeDeclaration(const QString& buffer,
             // We have a system identifier.
             *resultFlags |= PARSEMODE_HAVE_SYSTEM_ID;
             int systemIDStart = index+1;
-            int systemIDEnd = buffer.find(next, systemIDStart);
+            int systemIDEnd = buffer.indexOf(next, systemIDStart);
             if (systemIDEnd == -1)
                 return false;
             systemID = buffer.mid(systemIDStart, systemIDEnd - systemIDStart);
@@ -407,7 +407,7 @@ static bool parseDocTypeDeclaration(const QString& buffer,
             if (next != '\"' && next != '\'')
                 return false;
             int systemIDStart = index+1;
-            int systemIDEnd = buffer.find(next, systemIDStart);
+            int systemIDEnd = buffer.indexOf(next, systemIDStart);
             if (systemIDEnd == -1)
                 return false;
             systemID = buffer.mid(systemIDStart, systemIDEnd - systemIDStart);

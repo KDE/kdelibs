@@ -128,9 +128,8 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
             hbg = pseudoStyle->backgroundColor();
         hc = pseudoStyle->color();
     } else {
-        const QColorGroup &grp = style->palette().active();
-        hc = grp.highlightedText();
-        hbg = grp.highlight();
+        hc = style->palette().color( QPalette::Active, QPalette::HighlightedText );
+        hbg = style->palette().color( QPalette::Active, QPalette::Highlight );
 	// ### should be at most retrieved once per render text
 	QColor bg = khtml::retrieveBackgroundColor(text);
 	// It may happen that the contrast is -- well -- virtually non existent.
@@ -213,7 +212,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
                     m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
 
         p.end();
-        QImage img = pixmap.convertToImage().convertDepth(32);
+        QImage img = pixmap.toImage().convertToFormat(QImage::Format_RGB32);
 
         int md = thickness*thickness; // max-dist^2
 
@@ -259,8 +258,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
             }
         }
 
-        QImage res(w,h,32);
-        res.setAlphaBuffer(true);
+        QImage res(w,h,QImage::Format_ARGB32);
         int r = qRed(color);
         int g = qGreen(color);
         int b = qBlue(color);
@@ -589,6 +587,7 @@ DOM::DOMStringImpl* RenderText::originalString() const
 
 InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkFirstLetter )
 {
+  Q_UNUSED( checkFirstLetter );
     // The text boxes point to parts of the rendertext's str string
     // (they don't include '\n')
     // Find the text box that includes the character at @p offset
@@ -647,6 +646,8 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
 
 bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction /*hitTestAction*/, bool inBox)
 {
+  Q_UNUSED( inBox );
+
     assert(parent());
 
     bool inside = false;

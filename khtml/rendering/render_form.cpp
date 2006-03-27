@@ -397,7 +397,7 @@ void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
     }
 
     if (m_input->autoComplete()) {
-        popup->insertSeparator();
+        popup->addSeparator();
         QAction* act = popup->addAction( SmallIconSet("history_clear"), i18n("Clear &History"));
         act->setEnabled(compObj() && !compObj()->isEmpty());
         connect(act, SIGNAL(triggered()),
@@ -406,7 +406,7 @@ void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
 
     if (echoMode() == QLineEdit::Normal &&
         !isReadOnly()) {
-        popup->insertSeparator();
+        popup->addSeparator();
 
         m_spellAction->plug(popup);
         m_spellAction->setEnabled( !text().isEmpty() );
@@ -444,7 +444,7 @@ bool LineEditWidget::event( QEvent *e )
 
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
-        if ( ke->state() & Qt::ControlModifier ) {
+        if ( ke->modifiers() & Qt::ControlModifier ) {
             switch ( ke->key() ) {
                 case Qt::Key_Left:
                 case Qt::Key_Right:
@@ -531,9 +531,9 @@ void RenderLineEdit::slotReturnPressed()
 
 void RenderLineEdit::handleFocusOut()
 {
-    if ( widget() && widget()->edited() ) {
+    if ( widget() && widget()->isModified() ) {
         element()->onChange();
-        widget()->setEdited( false );
+        widget()->setModified( false );
     }
 }
 
@@ -579,7 +579,7 @@ void RenderLineEdit::updateFromElement()
         int pos = widget()->cursorPosition();
         widget()->setText(element()->value().string());
 
-        widget()->setEdited( false );
+        widget()->setModified( false );
 
         widget()->setCursorPosition(pos);
         widget()->blockSignals(false);
@@ -835,9 +835,9 @@ void RenderFileButton::calcMinMaxWidth()
 
 void RenderFileButton::handleFocusOut()
 {
-    if ( widget()->lineEdit() && widget()->lineEdit()->edited() ) {
+    if ( widget()->lineEdit() && widget()->lineEdit()->isModified() ) {
         element()->onChange();
-        widget()->lineEdit()->setEdited( false );
+        widget()->lineEdit()->setModified( false );
     }
 }
 
@@ -847,7 +847,7 @@ void RenderFileButton::updateFromElement()
     edit->blockSignals(true);
     edit->setText(element()->value().string());
     edit->blockSignals(false);
-    edit->setEdited( false );
+    edit->setModified( false );
 
     RenderFormElement::updateFromElement();
 }
@@ -907,7 +907,7 @@ bool ComboBoxWidget::event(QEvent *e)
 	{
 	case Qt::Key_Return:
 	case Qt::Key_Enter:
-	    popup();
+	    showPopup();
 	    ke->accept();
 	    return true;
 	default:
@@ -1017,7 +1017,7 @@ void RenderSelect::updateFromElement()
                 }
                 else {
                     static_cast<KComboBox*>(m_widget)
-                        ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+                        ->insertItem(listIndex, QString(text.implementation()->s, text.implementation()->l));
 #ifdef __GNUC__
   #warning "This needs fixing (though did it work in 3?)"
 #endif
@@ -1046,7 +1046,7 @@ void RenderSelect::updateFromElement()
                         l->item( listIndex )->setSelectable( false );
                     }
                 }  else
-                    static_cast<KComboBox*>(m_widget)->insertItem(text, listIndex);
+                    static_cast<KComboBox*>(m_widget)->insertItem(listIndex, text);
             }
             else
                 KHTMLAssert(false);
@@ -1197,8 +1197,8 @@ void RenderSelect::slotSelected(int index) // emitted by the combobox only
             changed |= (opt->m_selected == false);
             opt->m_selected = true;
 
-            if ( index != static_cast<ComboBoxWidget*>( m_widget )->currentItem() )
-                static_cast<ComboBoxWidget*>( m_widget )->setCurrentItem( index );
+            if ( index != static_cast<ComboBoxWidget*>( m_widget )->currentIndex() )
+                static_cast<ComboBoxWidget*>( m_widget )->setCurrentIndex( index );
 
             // When selecting an optgroup item, and we move forward to we
             // shouldn't emit onChange. Hence this bool, the if above doesn't do it.
@@ -1279,7 +1279,7 @@ void RenderSelect::updateSelection()
                 if (found)
                     static_cast<HTMLOptionElementImpl*>(listItems[i])->m_selected = false;
                 else if (static_cast<HTMLOptionElementImpl*>(listItems[i])->selected()) {
-                    static_cast<KComboBox*>( m_widget )->setCurrentItem(i);
+                    static_cast<KComboBox*>( m_widget )->setCurrentIndex(i);
                     found = true;
                 }
                 firstOption = i;
@@ -1342,7 +1342,7 @@ Q3PopupMenu *TextAreaWidget::createPopupMenu(const QPoint& pos)
     }
 
     if (!isReadOnly()) {
-        popup->insertSeparator();
+        popup->addSeparator();
 
         m_findAction->plug(popup);
         m_findAction->setEnabled( !text().isEmpty() );
@@ -1615,7 +1615,7 @@ bool TextAreaWidget::event( QEvent *e )
 {
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
-        if ( ke->state() & Qt::ControlModifier ) {
+        if ( ke->modifiers() & Qt::ControlModifier ) {
             switch ( ke->key() ) {
                 case Qt::Key_Left:
                 case Qt::Key_Right:

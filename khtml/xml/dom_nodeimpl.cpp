@@ -528,10 +528,10 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
         default:
             break;
     }
-    bool ctrlKey = (_mouse->state() & Qt::ControlModifier);
-    bool altKey = (_mouse->state() & Qt::AltModifier);
-    bool shiftKey = (_mouse->state() & Qt::ShiftModifier);
-    bool metaKey = false; // ### qt support?
+    bool ctrlKey = (_mouse->modifiers() & Qt::ControlModifier);
+    bool altKey = (_mouse->modifiers() & Qt::AltModifier);
+    bool shiftKey = (_mouse->modifiers() & Qt::ShiftModifier);
+    bool metaKey = (_mouse->modifiers() & Qt::MetaModifier);
 
     EventImpl* const evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
                    detail,screenX,screenY,clientX,clientY,pageX,pageY,ctrlKey,altKey,shiftKey,metaKey,

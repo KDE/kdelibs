@@ -525,9 +525,10 @@ RenderLayer::showScrollbar(Qt::Orientation o, bool show)
 
     if (show && !sb) {
         Q3ScrollView* scrollView = m_object->element()->getDocument()->view();
-        sb = new QScrollBar(o, scrollView, "__khtml");
+        sb = new QScrollBar(o, scrollView );
+        sb->setObjectName("__khtml");
         scrollView->addChild(sb, 0, -50000);
-	sb->setBackgroundMode(Qt::NoBackground);
+        sb->setAttribute(Qt::WA_NoSystemBackground);
         sb->show();
         if (!m_scrollMediator)
             m_scrollMediator = new RenderScrollMediator(this);
@@ -680,7 +681,8 @@ void RenderLayer::checkScrollbarsAfterLayout()
     if (m_hBar) {
         int pageStep = (clientWidth-PAGE_KEEP);
         if (pageStep < 0) pageStep = clientWidth;
-        m_hBar->setSteps(LINE_STEP, pageStep);
+        m_hBar->setSingleStep(LINE_STEP);
+        m_hBar->setPageStep(pageStep);
 #ifdef APPLE_CHANGES
         m_hBar->setKnobProportion(clientWidth, m_scrollWidth);
 #else
@@ -690,7 +692,8 @@ void RenderLayer::checkScrollbarsAfterLayout()
     if (m_vBar) {
         int pageStep = (clientHeight-PAGE_KEEP);
         if (pageStep < 0) pageStep = clientHeight;
-        m_vBar->setSteps(LINE_STEP, pageStep);
+        m_vBar->setSingleStep(LINE_STEP);
+        m_vBar->setPageStep(pageStep);
 #ifdef APPLE_CHANGES
         m_vBar->setKnobProportion(clientHeight, m_scrollHeight);
 #else
@@ -1324,7 +1327,7 @@ static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLay
         write(ts, *l, layerBounds, damageRect, clipRectToApply, -1, indent);
 
     if (negList) {
-        for (unsigned i = 0; i != negList->count(); ++i)
+        for (int i = 0; i != negList->count(); ++i)
             writeLayers(ts, rootLayer, negList->at(i), paintDirtyRect, indent );
     }
 
@@ -1333,7 +1336,7 @@ static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLay
 
     QVector<RenderLayer*>* posList = l->posZOrderList();
     if (posList) {
-        for (unsigned i = 0; i != posList->count(); ++i)
+        for (int i = 0; i != posList->count(); ++i)
             writeLayers(ts, rootLayer, posList->at(i), paintDirtyRect, indent);
     }
 }

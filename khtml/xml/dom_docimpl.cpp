@@ -103,7 +103,7 @@ DOMImplementationImpl::~DOMImplementationImpl()
 bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMString &version )
 {
     // ### update when we (fully) support the relevant features
-    QString lower = feature.string().lower();
+    QString lower = feature.string().toLower();
     if ((lower == "html" || lower == "xml") &&
         (version.isEmpty() || version == "1.0" || version == "2.0" || version == "null"))
         return true;
@@ -710,7 +710,7 @@ unsigned short DocumentImpl::nodeType() const
 
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 {
-    uint id = khtml::getTagID( name.string().lower().toLatin1().constData(), name.string().length() );
+    uint id = khtml::getTagID( name.string().toLower().toLatin1().constData(), name.string().length() );
 
     ElementImpl *n = 0;
     switch(id)
@@ -1607,9 +1607,9 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     {
         // get delay and url
         QString str = content.string().trimmed();
-        int pos = str.find(QRegExp("[;,]"));
+        int pos = str.indexOf(QRegExp("[;,]"));
         if ( pos == -1 )
-            pos = str.find(QRegExp("[ \t]"));
+            pos = str.indexOf(QRegExp("[ \t]"));
 
         bool ok = false;
 	int delay = qMax( 0, content.implementation()->toInt(&ok) );
@@ -1624,12 +1624,12 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             pos++;
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;
             str = str.mid(pos);
-            if(str.find("url", 0,  false ) == 0)  str = str.mid(3);
+            if(str.indexOf("url", 0, Qt::CaseInsensitive ) == 0)  str = str.mid(3);
             str = str.trimmed();
             if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).trimmed();
             while(str.length() &&
                   (str[str.length()-1] == ';' || str[str.length()-1] == ','))
-                str.setLength(str.length()-1);
+                str.resize(str.length()-1);
             str = parseURL( DOMString(str) ).string();
             QString newURL = getDocument()->completeURL( str );
             if ( ok )
@@ -1653,7 +1653,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     }
     else if(v && (strcasecmp(equiv, "pragma") == 0 || strcasecmp(equiv, "cache-control") == 0))
     {
-        QString str = content.string().lower().trimmed();
+        QString str = content.string().toLower().trimmed();
         KUrl url = v->part()->url();
         if ((str == "no-cache") && url.protocol().startsWith("http"))
         {
@@ -1793,8 +1793,9 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         return 0;
     }
 
-    NodeImpl::Id id, nsid = 0;
-    QConstString n(_name->s, _name->l);
+    NodeImpl::Id id, nsid;
+    id = nsid = 0;
+    const QString n = QString::fromRawData(_name->s, _name->l);
     bool cs = true; // case sensitive
     if (_type != NodeImpl::NamespaceId) {
         if (_nsURI)
@@ -1806,12 +1807,12 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
 
         // First see if it's a HTML element name
         // xhtml is lower case - case sensitive, easy to implement
-        if ( cs && (id = lookup(n.string().toAscii().constData(), _name->l)) ) {
+        if ( cs && (id = lookup(n.toAscii().constData(), _name->l)) ) {
             map->addAlias(_prefix, _name, cs, id);
             return nsid + id;
         }
         // compatibility: upper case - case insensitive
-        if ( !cs && (id = lookup(n.string().lower().toAscii().constData(), _name->l )) ) {
+        if ( !cs && (id = lookup(n.toLower().toAscii().constData(), _name->l )) ) {
             map->addAlias(_prefix, _name, cs, id);
             return nsid + id;
         }
@@ -1819,7 +1820,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
 
     // Look in the names array for the name
     // compatibility mode has to lookup upper case
-    QString name = cs ? n.string() : n.string().toUpper();
+    QString name = cs ? n : n.toUpper();
 
     if (!_nsURI) {
         id = (NodeImpl::Id)(long) map->ids.find( name );
@@ -1830,8 +1831,8 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         id = (NodeImpl::Id)(long) map->ids.find( name );
         if (!readonly && id && _prefix && _prefix->l) {
             // we were called in registration mode... check if the alias exists
-            QConstString px( _prefix->s, _prefix->l );
-            QString qn("aliases: " + (cs ? px.string() : px.string().toUpper()) + ":" + name);
+            const QString px = QString::fromRawData( _prefix->s, _prefix->l );
+            QString qn("aliases: " + (cs ? px : px.toUpper()) + ":" + name);
             if (!map->ids.find( qn )) {
                 map->ids.insert( qn, (void*)id );
             }

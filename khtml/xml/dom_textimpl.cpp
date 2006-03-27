@@ -42,7 +42,7 @@ static DOMString escapeHTML( const DOMString& in )
     //FIXME: this is rather slow
     DOMString s;
     for ( unsigned int i = 0; i < in.length(); ++i ) {
-        switch( in[i].latin1() ) {
+        switch( in[i].toLatin1() ) {
         case '&':
             s += "&amp;";
             break;

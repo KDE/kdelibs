@@ -160,7 +160,7 @@ void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
                                       KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice)
 {
     QString tmp(configStr);
-    int splitIndex = tmp.find(':');
+    int splitIndex = tmp.indexOf(':');
     if ( splitIndex == -1)
     {
         domain = configStr.toLower();
@@ -171,7 +171,7 @@ void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
     {
         domain = tmp.left(splitIndex).toLower();
         QString adviceString = tmp.mid( splitIndex+1, tmp.length() );
-        int splitIndex2 = adviceString.find( ':' );
+        int splitIndex2 = adviceString.indexOf( ':' );
         if( splitIndex2 == -1 ) {
             // Java advice only
             javaAdvice = strToAdvice( adviceString );
@@ -352,7 +352,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
                   for (right=url.length(); right>0 && url[right-1]=='*' ; --right);
                   for (left=0; left<right && url[left]=='*' ; ++left);
 
-                  rx.setWildcard(true);
+                  rx.setPatternSyntax(QRegExp::Wildcard);
                   rx.setPattern(url.mid(left,right-left));
 
                   d->adFilters.append(rx);
@@ -677,7 +677,7 @@ static const KPerDomainSettings &lookup_hostname_policy(
   // there's no dots left.
   QString host_part = hostname;
   int dot_idx = -1;
-  while( (dot_idx = host_part.find(QChar('.'))) >= 0 ) {
+  while( (dot_idx = host_part.indexOf(QChar('.'))) >= 0 ) {
     host_part.remove(0,dot_idx);
     it = d->domainPolicy.find(host_part);
     Q_ASSERT(notfound == d->domainPolicy.end());
@@ -734,7 +734,7 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
 	  QVector<QRegExp>::iterator it;
 	  for (it=d->adFilters.begin(); it != d->adFilters.end(); ++it)
             {
-                if ((*it).search(url) != -1)
+                if ((*it).indexIn(url) != -1)
                 {
                     kDebug( 6080 ) << "Filtered: " << url << endl;
                     return true;
@@ -754,14 +754,13 @@ void KHTMLSettings::addAdFilter( const QString &url )
     if (url.length()>2 && url[0]=='/' && url[url.length()-1] == '/')
     {
         QString inside = url.mid(1, url.length()-2);
-        rx.setWildcard(false);
         rx.setPattern(inside);
     }
     else
     {
         int left,right;
 
-        rx.setWildcard(true);
+        rx.setPatternSyntax(QRegExp::Wildcard);
         for (right=url.length(); right>0 && url[right-1]=='*' ; --right);
         for (left=0; left<right && url[left]=='*' ; ++left);
 

@@ -58,7 +58,7 @@ HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentPtr *doc)
 
 void HTMLObjectBaseElementImpl::setServiceType(const QString & val) {
     serviceType = val.toLower();
-    int pos = serviceType.find( ";" );
+    int pos = serviceType.indexOf( ";" );
     if ( pos!=-1 )
         serviceType.truncate( pos );
 }

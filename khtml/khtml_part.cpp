@@ -217,6 +217,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIProfile prof )
 : KParts::ReadOnlyPart( parent )
 {
+    setObjectName( name );
     d = 0;
     KHTMLFactory::registerPart( this );
     setInstance(  KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() );
@@ -251,17 +252,35 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bMousePressed = false;
   d->m_bRightMousePressed = false;
   d->m_bCleared = false;
-  d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), Qt::CTRL + Qt::Key_U, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
-  d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
-  d->m_paViewInfo = new KAction( i18n( "View Document Information" ), Qt::CTRL+Qt::Key_I, this, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
-  d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
+  d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), actionCollection(), "viewDocumentSource" );
+  d->m_paViewDocument->setShortcut( Qt::CTRL + Qt::Key_U );
+  connect( d->m_paViewDocument, SIGNAL( triggered( bool ) ), this, SLOT( slotViewDocumentSource() ) );
+
+  d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), actionCollection(), "viewFrameSource" );
+  connect( d->m_paViewFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotViewFrameSource() ) );
+
+  d->m_paViewInfo = new KAction( i18n( "View Document Information" ), actionCollection(), "viewPageInfo" );
+  d->m_paViewInfo->setShortcut( Qt::CTRL+Qt::Key_I );
+  connect( d->m_paViewInfo, SIGNAL( triggered( bool ) ), this, SLOT( slotViewPageInfo() ) );
+
+  d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), actionCollection(), "saveBackground" );
+  connect( d->m_paSaveBackground, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveBackground() ) );
+
   d->m_paSaveDocument = KStdAction::saveAs( this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   if ( parentPart() )
       d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
-  d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
-  d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
-  d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
-  d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), 0, this, SLOT( slotStopAnimations() ), actionCollection(), "stopAnimations" );
+
+  d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), actionCollection(), "saveFrame" );
+  connect( d->m_paSaveFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveFrame() ) );
+
+  d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), actionCollection(), "debugRenderTree" );
+  connect( d->m_paDebugRenderTree, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugRenderTree() ) );
+
+  d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), actionCollection(), "debugDOMTree" );
+  connect( d->m_paDebugDOMTree, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugDOMTree() ) );
+
+  d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), actionCollection(), "stopAnimations" );
+  connect( d->m_paStopAnimations, SIGNAL( triggered( bool ) ), this, SLOT( slotStopAnimations() ) );
 
   d->m_paSetEncoding = new KActionMenu( KIcon("charset"), i18n( "Set &Encoding" ), actionCollection(), "setEncoding" );
   d->m_paSetEncoding->setDelayed( false );
@@ -291,7 +310,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSetEncoding->insert( new KActionSeparator( actionCollection() ) );
 
 
-  d->m_manualDetection = new KSelectAction( i18nc( "short for Manual Detection", "Manual" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "manualDetection" );
+  d->m_manualDetection = new KSelectAction( i18nc( "short for Manual Detection", "Manual" ), actionCollection(), "manualDetection" );
+  connect( d->m_manualDetection, SIGNAL( triggered( bool ) ), this, SLOT( slotSetEncoding() ) );
   QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
   d->m_manualDetection->setItems( encodings );
   d->m_manualDetection->setCurrentItem( -1 );
@@ -346,7 +366,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   }
 
 
-  d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), 0, this, SLOT( slotUseStylesheet() ), actionCollection(), "useStylesheet" );
+  d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), actionCollection(), "useStylesheet" );
+  connect( d->m_paUseStylesheet, SIGNAL( triggered( bool ) ), this, SLOT( slotUseStylesheet() ) );
 
   if ( prof == BrowserViewGUI ) {
       d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "viewmag+", i18n( "Enlarge Font" ), actionCollection(), "incFontSizes");
@@ -378,10 +399,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 				       "Find the previous occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
-  d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), KShortcut( '/' ), this, SLOT( slotFindAheadText()),
-      actionCollection(), "findAheadText");
-  d->m_paFindAheadLinks = new KAction( i18n("Find Links as You Type"), KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
-      actionCollection(), "findAheadLink");
+  d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), actionCollection(), "findAheadText");
+  d->m_paFindAheadText->setShortcut( KShortcut( '/' ) );
+  connect( d->m_paFindAheadText, SIGNAL( triggered( bool ) ), this, SLOT( slotFindAheadText()) );
+
+  d->m_paFindAheadLinks = new KAction( i18n("Find Links as You Type"), actionCollection(), "findAheadLink");
+  d->m_paFindAheadLinks->setShortcut( KShortcut( '\'' ) );
+  connect( d->m_paFindAheadLinks, SIGNAL( triggered( bool ) ), this, SLOT( slotFindAheadLink() ) );
+
   d->m_paFindAheadText->setEnabled( false );
   d->m_paFindAheadLinks->setEnabled( false );
 
@@ -394,7 +419,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paFindAheadLinks->setShortcut( KShortcut());
   }
 
-  d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), "frameprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
+  d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), actionCollection(), "printFrame" );
+  d->m_paPrintFrame->setIcon( KIcon( "frameprint" ) );
+  connect( d->m_paPrintFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotPrintFrame() ) );
   d->m_paPrintFrame->setWhatsThis( i18n( "Print Frame<p>"
 					 "Some pages have several frames. To print only a single frame, click "
 					 "on it and then use this function." ) );
@@ -403,9 +430,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   if ( parentPart() )
       d->m_paSelectAll->setShortcut( KShortcut() ); // avoid clashes
 
-  d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"),
-  				Qt::Key_F7, this, SLOT(slotToggleCaretMode()),
-                                actionCollection(), "caretMode");
+  d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"), actionCollection(), "caretMode");
+  d->m_paToggleCaretMode->setShortcut( Qt::Key_F7 );
+  connect( d->m_paToggleCaretMode, SIGNAL( triggered( bool ) ), this, SLOT(slotToggleCaretMode()) );
   d->m_paToggleCaretMode->setChecked(isCaretMode());
   if (parentPart())
       d->m_paToggleCaretMode->setShortcut(KShortcut()); // avoid clashes
@@ -863,7 +890,7 @@ QString KHTMLPart::documentSource() const
      KHTMLPageCache::self()->saveData( d->m_cacheId, &dataStream );
      QTextStream stream( sourceArray, QIODevice::ReadOnly );
      stream.setCodec( QTextCodec::codecForName( encoding().toLatin1().constData() ) );
-     sourceStr = stream.read();
+     sourceStr = stream.readAll();
   } else
   {
     QString tmpFile;
@@ -874,7 +901,7 @@ QString KHTMLPart::documentSource() const
       {
         QTextStream stream( &f );
         stream.setCodec( QTextCodec::codecForName( encoding().toLatin1().constData() ) );
-	sourceStr = stream.read();
+	sourceStr = stream.readAll();
         f.close();
       }
       KIO::NetAccess::removeTempFile( tmpFile );
@@ -1167,7 +1194,8 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
     khtml::Tokenizer* t = d->m_doc->tokenizer();
     if(t)
       t->abort();
-    d->m_redirectionTimer.start( 0, true );
+    d->m_redirectionTimer.setSingleShot( true );
+    d->m_redirectionTimer.start( 0 );
   }
 
   return ret;
@@ -1298,7 +1326,7 @@ void KHTMLPart::slotDebugDOMTree()
   for (; it != end; ++it )
     if ( !( *it )->m_part.isNull() && (*it)->m_part->inherits( "KHTMLPart" ) ) {
       KParts::ReadOnlyPart* const p = ( *it )->m_part;
-      kDebug(6050) << QString().leftJustified(s_DOMTreeIndentLevel*4,' ') << "FRAME " << p->name() << " " << endl;
+      kDebug(6050) << QString().leftJustified(s_DOMTreeIndentLevel*4,' ') << "FRAME " << p->objectName() << " " << endl;
       static_cast<KHTMLPart*>( p )->slotDebugDOMTree();
     }
   s_DOMTreeIndentLevel = indentLevel;
@@ -1344,7 +1372,9 @@ void KHTMLPart::setAutoloadImages( bool enable )
     d->m_paLoadImages = 0;
   }
   else if ( !d->m_paLoadImages )
-    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "images_display", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
+    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), actionCollection(), "loadImages" );
+    d->m_paLoadImages->setIcon( KIcon( "images_display" ) );
+    connect( d->m_paLoadImages, SIGNAL( triggered( bool ) ), this, SLOT( slotLoadImages() ) );
 
   if ( d->m_paLoadImages ) {
     QList<KAction*> lst;
@@ -2030,8 +2060,10 @@ void KHTMLPart::slotLoaderRequestStarted( khtml::DocLoader* dl, khtml::CachedObj
       ++(p->d->m_totalObjectCount);
       p = p->parentPart();
       if ( !p && op->d->m_loadedObjects <= op->d->m_totalObjectCount
-        && !op->d->m_progressUpdateTimer.isActive())
-	op->d->m_progressUpdateTimer.start( 200, true );
+        && !op->d->m_progressUpdateTimer.isActive()) {
+        op->d->m_progressUpdateTimer.setSingleShot( true );
+        op->d->m_progressUpdateTimer.start( 200 );
+      }
     }
   }
 }
@@ -2045,8 +2077,10 @@ void KHTMLPart::slotLoaderRequestDone( khtml::DocLoader* dl, khtml::CachedObject
       ++(p->d->m_loadedObjects);
       p = p->parentPart();
       if ( !p && op->d->m_loadedObjects <= op->d->m_totalObjectCount && op->d->m_jobPercent <= 100
-        && !op->d->m_progressUpdateTimer.isActive())
-	op->d->m_progressUpdateTimer.start( 200, true );
+        && !op->d->m_progressUpdateTimer.isActive()) {
+        op->d->m_progressUpdateTimer.setSingleShot( true );
+        op->d->m_progressUpdateTimer.start( 200 );
+      }
     }
   }
 
@@ -2085,16 +2119,20 @@ void KHTMLPart::slotJobPercent( KIO::Job* /*job*/, unsigned long percent )
 {
   d->m_jobPercent = percent;
 
-  if ( !parentPart() )
-    d->m_progressUpdateTimer.start( 0, true );
+  if ( !parentPart() ) {
+    d->m_progressUpdateTimer.setSingleShot( true );
+    d->m_progressUpdateTimer.start( 0 );
+  }
 }
 
 void KHTMLPart::slotJobDone( KIO::Job* /*job*/ )
 {
   d->m_jobPercent = 100;
 
-  if ( !parentPart() )
-    d->m_progressUpdateTimer.start( 0, true );
+  if ( !parentPart() ) {
+    d->m_progressUpdateTimer.setSingleShot( true );
+    d->m_progressUpdateTimer.start( 0 );
+  }
 }
 
 void KHTMLPart::slotUserSheetStatDone( KIO::Job *_job )
@@ -2186,8 +2224,10 @@ void KHTMLPart::checkCompleted()
   while ( p ) {
     KHTMLPart* op = p;
     p = p->parentPart();
-    if ( !p && !op->d->m_progressUpdateTimer.isActive())
-      op->d->m_progressUpdateTimer.start( 0, true );
+    if ( !p && !op->d->m_progressUpdateTimer.isActive()) {
+      op->d->m_progressUpdateTimer.setSingleShot( true );
+      op->d->m_progressUpdateTimer.start( 0 );
+    }
   }
 
   checkEmitLoadEvent(); // if we didn't do it before
@@ -2200,7 +2240,8 @@ void KHTMLPart::checkCompleted()
     // deferred until the parent emits a completed signal.
     if ( parentPart() == 0 ) {
       //kDebug(6050) << this << " starting redirection timer" << endl;
-      d->m_redirectionTimer.start( qMax(0, 1000 * d->m_delayRedirect), true );
+      d->m_redirectionTimer.setSingleShot( true );
+      d->m_redirectionTimer.start( qMax(0, 1000 * d->m_delayRedirect) );
     } else {
       //kDebug(6050) << this << " not toplevel -> not starting redirection timer. Waiting for slotParentCompleted." << endl;
     }
@@ -2318,7 +2359,8 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockH
     kDebug(6050) << " d->m_bComplete=" << d->m_bComplete << endl;
     if ( d->m_bComplete ) {
       d->m_redirectionTimer.stop();
-      d->m_redirectionTimer.start( qMax(0, 1000 * d->m_delayRedirect), true );
+      d->m_redirectionTimer.setSingleShot( true );
+      d->m_redirectionTimer.start( qMax(0, 1000 * d->m_delayRedirect) );
     }
   }
 }
@@ -2331,14 +2373,14 @@ void KHTMLPart::slotRedirect()
   d->m_redirectURL.clear();
 
   // SYNC check with ecma/kjs_window.cpp::goURL !
-  if ( u.find( QLatin1String( "javascript:" ), 0, false ) == 0 )
+  if ( u.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 )
   {
     QString script = KUrl::decode_string( u.right( u.length() - 11 ) );
     kDebug( 6050 ) << "KHTMLPart::slotRedirect script=" << script << endl;
     QVariant res = executeScript( DOM::Node(), script );
     if ( res.type() == QVariant::String ) {
       begin( url() );
-      write( res.asString() );
+      write( res.toString() );
       end();
     }
     emit completed();
@@ -2756,18 +2798,18 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
         {
             DOMString nodeText = d->m_findNode->nodeValue();
             DOMStringImpl *t = nodeText.implementation();
-            QConstString s(t->s, t->l);
+            const QString s = QString::fromRawData(t->s, t->l);
 
             int matchLen = 0;
             if ( isRegExp ) {
               QRegExp matcher( str );
-              matcher.setCaseSensitive( caseSensitive );
-              d->m_findPos = matcher.search(s.string(), d->m_findPos+1);
+              matcher.setCaseSensitivity( caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive );
+              d->m_findPos = matcher.indexIn(s, d->m_findPos+1);
               if ( d->m_findPos != -1 )
                 matchLen = matcher.matchedLength();
             }
             else {
-              d->m_findPos = s.string().find(str, d->m_findPos+1, caseSensitive);
+              d->m_findPos = s.indexOf(str, d->m_findPos+1, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive );
               matchLen = str.length();
             }
 
@@ -2834,7 +2876,7 @@ void KHTMLPart::slotFind()
     return;
   if (!part->inherits("KHTMLPart") )
   {
-      kError(6000) << "slotFind: part is a " << part->className() << ", can't do a search into it" << endl;
+      kError(6000) << "slotFind: part is a " << part->metaObject()->className() << ", can't do a search into it" << endl;
       return;
   }
   static_cast<KHTMLPart *>( part )->findText();
@@ -2847,7 +2889,7 @@ void KHTMLPart::slotFindNext()
     return;
   if (!part->inherits("KHTMLPart") )
   {
-      kError(6000) << "slotFindNext: part is a " << part->className() << ", can't do a search into it" << endl;
+      kError(6000) << "slotFindNext: part is a " << part->metaObject()->className() << ", can't do a search into it" << endl;
       return;
   }
   static_cast<KHTMLPart *>( part )->findTextNext();
@@ -2860,7 +2902,7 @@ void KHTMLPart::slotFindPrev()
     return;
   if (!part->inherits("KHTMLPart") )
   {
-      kError(6000) << "slotFindNext: part is a " << part->className() << ", can't do a search into it" << endl;
+      kError(6000) << "slotFindNext: part is a " << part->metaObject()->className() << ", can't do a search into it" << endl;
       return;
   }
   static_cast<KHTMLPart *>( part )->findTextNext( true ); // reverse
@@ -2879,7 +2921,7 @@ void KHTMLPart::slotFindAheadText()
     return;
   if (!part->inherits("KHTMLPart") )
   {
-      kError(6000) << "slotFindNext: part is a " << part->className() << ", can't do a search into it" << endl;
+      kError(6000) << "slotFindNext: part is a " << part->metaObject()->className() << ", can't do a search into it" << endl;
       return;
   }
   static_cast<KHTMLPart *>( part )->view()->startFindAhead( false );
@@ -2894,7 +2936,7 @@ void KHTMLPart::slotFindAheadLink()
     return;
   if (!part->inherits("KHTMLPart") )
   {
-      kError(6000) << "slotFindNext: part is a " << part->className() << ", can't do a search into it" << endl;
+      kError(6000) << "slotFindNext: part is a " << part->metaObject()->className() << ", can't do a search into it" << endl;
       return;
   }
   static_cast<KHTMLPart *>( part )->view()->startFindAhead( true );
@@ -3139,7 +3181,7 @@ bool KHTMLPart::findTextNext( bool reverse )
           s.truncate( d->m_findPosEnd );
         if ( !s.isEmpty() )
         {
-          newLine = s.find( '\n' ) != -1; // did we just get a newline?
+          newLine = s.indexOf( '\n' ) != -1; // did we just get a newline?
           if( !( options & KFind::FindBackwards ))
           {
             //kDebug(6050) << "StringPortion: " << index << "-" << index+s.length()-1 << " -> " << lastNode << endl;
@@ -3656,8 +3698,8 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     return;
   }
 
-  if (url.find( QLatin1String( "javascript:" ),0, false ) == 0 ) {
-    QString jscode = KUrl::decode_string( url.mid( url.find( "javascript:", 0, false ) ) );
+  if (url.indexOf( QLatin1String( "javascript:" ),0, Qt::CaseInsensitive ) == 0 ) {
+    QString jscode = KUrl::decode_string( url.mid( url.indexOf( "javascript:", 0, Qt::CaseInsensitive ) ) );
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     if (url.startsWith("javascript:window.open"))
       jscode += i18n(" (In new window)");
@@ -3766,7 +3808,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     if (u.protocol() == QLatin1String("mailto")) {
       QString mailtoMsg /* = QString::fromLatin1("<img src=%1>").arg(locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")))*/;
       mailtoMsg += i18n("Email to: ") + KUrl::decode_string(u.path());
-      QStringList queries = QStringList::split('&', u.query().mid(1));
+      QStringList queries = u.query().mid(1).split('&');
       QStringList::Iterator it = queries.begin();
       const QStringList::Iterator itEnd = queries.end();
       for (; it != itEnd; ++it)
@@ -3831,7 +3873,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
   if ( !target.isEmpty() )
       hasTarget = true;
 
-  if ( url.find( QLatin1String( "javascript:" ), 0, false ) == 0 )
+  if ( url.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 )
   {
     crossFrameExecuteScript( target, KUrl::decode_string( url.mid( 11 ) ) );
     return false;
@@ -3964,7 +4006,7 @@ void KHTMLPart::slotViewPageInfo()
 
   // If it's a frame, set the caption to "Frame Information"
   if ( parentPart() && d->m_doc && d->m_doc->isHTMLDocument() ) {
-     dlg->setCaption(i18n("Frame Information"));
+     dlg->setWindowTitle(i18n("Frame Information"));
   }
 
   QString editStr = QString();
@@ -3990,13 +4032,13 @@ void KHTMLPart::slotViewPageInfo()
     dlg->_encoding->setPlainText(enc);
   }
   /* populate the list view now */
-  const QStringList headers = QStringList::split("\n", d->m_httpHeaders);
+  const QStringList headers = d->m_httpHeaders.split("\n");
 
   QStringList::ConstIterator it = headers.begin();
   const QStringList::ConstIterator itEnd = headers.end();
 
   for (; it != itEnd; ++it) {
-    const QStringList header = QStringList::split(QRegExp(":[ ]+"), *it);
+    const QStringList header = (*it).split(QRegExp(":[ ]+"));
     if (header.count() != 2)
        continue;
     new Q3ListViewItem(dlg->_headers, header[0], header[1]);
@@ -4091,7 +4133,7 @@ void KHTMLPart::slotSecurity()
     KSSLCertificate *x = KSSLCertificate::fromString(d->m_ssl_peer_certificate.toLocal8Bit());
     if (x) {
        // Set the chain back onto the certificate
-       const QStringList cl = QStringList::split(QString("\n"), d->m_ssl_peer_chain);
+       const QStringList cl = d->m_ssl_peer_chain.split(QString("\n"));
        Q3PtrList<KSSLCertificate> ncl;
 
        ncl.setAutoDelete(true);
@@ -4240,13 +4282,13 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   (*it)->m_params = params;
 
   // Support for <frame src="javascript:string">
-  if ( url.find( QLatin1String( "javascript:" ), 0, false ) == 0 )
+  if ( url.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 )
   {
       QVariant res = executeScript( DOM::Node(frame->element()), KUrl::decode_string( url.right( url.length() - 11) ) );
       KUrl myurl;
       myurl.setProtocol("javascript");
       if ( res.type() == QVariant::String )
-	myurl.setPath(res.asString());
+	myurl.setPath(res.toString());
       return processObjectRequest(*it, myurl, QString("text/html") );
   }
   KUrl u = url.isEmpty() ? KUrl() : completeURL( url );
@@ -4569,7 +4611,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
   KTrader::OfferList offers = KTrader::self()->query( mimetype, "KParts/ReadOnlyPart", constr, QString() );
 
   if ( offers.isEmpty() ) {
-    int pos = mimetype.find( "-plugin" );
+    int pos = mimetype.indexOf( "-plugin" );
     if (pos < 0)
         return 0L;
     QString stripped_mime = mimetype.left( pos );
@@ -4725,7 +4767,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   QString urlstring = u.url();
 
-  if ( urlstring.find( QLatin1String( "javascript:" ), 0, false ) == 0 ) {
+  if ( urlstring.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 ) {
     urlstring = KUrl::decode_string(urlstring);
     crossFrameExecuteScript( _target, urlstring.right( urlstring.length() - 11) );
     return;
@@ -4757,7 +4799,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   if (u.protocol() == "mailto") {
       // 1)  Check for attach= and strip it
       QString q = u.query().mid(1);
-      QStringList nvps = QStringList::split("&", q);
+      QStringList nvps = q.split("&");
       bool triedToAttach = false;
 
       QStringList::Iterator nvp = nvps.begin();
@@ -4767,7 +4809,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 // remove returns an iterator pointing to the next item
 
       while (nvp != nvpEnd) {
-         const QStringList pair = QStringList::split("=", *nvp);
+         const QStringList pair = (*nvp).split("=");
          if (pair.count() >= 2) {
             if (pair.first().toLower() == "attach") {
                nvp = nvps.erase(nvp);
@@ -4939,7 +4981,8 @@ void KHTMLPart::slotParentCompleted()
   if ( !d->m_redirectURL.isEmpty() && !d->m_redirectionTimer.isActive() )
   {
     //kDebug(6050) << this << ": starting timer for child redirection -> " << d->m_redirectURL << endl;
-    d->m_redirectionTimer.start( qMax(0, 1000 * d->m_delayRedirect), true );
+    d->m_redirectionTimer.setSingleShot( true );
+    d->m_redirectionTimer.start( qMax(0, 1000 * d->m_delayRedirect) );
   }
 }
 
@@ -5010,7 +5053,7 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::URLArgs &arg
 
   // TODO: handle child target correctly! currently the script are always executed fur the parent
   QString urlStr = url.url();
-  if ( urlStr.find( QLatin1String( "javascript:" ), 0, false ) == 0 ) {
+  if ( urlStr.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 ) {
       QString script = KUrl::decode_string( urlStr.right( urlStr.length() - 11 ) );
       executeScript( DOM::Node(), script );
       return;
@@ -5135,7 +5178,7 @@ KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f,
   if (!checkFrameAccess(callingHtmlPart))
      return 0;
 
-  if (!childFrame && !parentPart() && (name() == f))
+  if (!childFrame && !parentPart() && (objectName() == f))
      return this;
 
   FrameIt it = d->m_frames.find( f );
@@ -5271,7 +5314,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 #ifndef NDEBUG
   QString indent= QString().leftJustified( s_saveStateIndentLevel * 4, ' ' );
   const int indentLevel = s_saveStateIndentLevel++;
-  kDebug( 6050 ) << indent << "saveState this=" << this << " '" << name() << "' saving URL " << m_url.url() << endl;
+  kDebug( 6050 ) << indent << "saveState this=" << this << " '" << objectName() << "' saving URL " << m_url.url() << endl;
 #endif
 
   stream << m_url << (qint32)d->m_view->contentsX() << (qint32)d->m_view->contentsY()
@@ -6002,7 +6045,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
           d->m_endOffset = d->m_startOffset;
           d->m_doc->clearSelection();
 #else // KHTML_NO_CARET
-	  d->m_view->moveCaretTo(node, offset, (_mouse->state() & Qt::ShiftModifier) == 0);
+	  d->m_view->moveCaretTo(node, offset, (_mouse->modifiers() & Qt::ShiftModifier) == 0);
 #endif // KHTML_NO_CARET
 	  d->m_initialNode = d->m_selectionStart;
 	  d->m_initialOffset = d->m_startOffset;
@@ -6060,7 +6103,7 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
         d->m_extendMode = selectLine ? d->ExtendByLine : d->ExtendByWord;
 
 	// Extend existing selection if Shift was pressed
-	if (_mouse->state() & Qt::ShiftModifier) {
+	if (_mouse->modifiers() & Qt::ShiftModifier) {
           d->caretNode() = node;
 	  d->caretOffset() = offset;
           d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
@@ -6360,7 +6403,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     // The mouse is over something
     if ( url.length() )
     {
-      bool shiftPressed = ( _mouse->state() & Qt::ShiftModifier );
+      bool shiftPressed = ( _mouse->modifiers() & Qt::ShiftModifier );
 
       // Image map
       if ( !innerNode.isNull() && innerNode.elementId() == ID_IMG )
@@ -6403,7 +6446,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 #ifndef KHTML_NO_SELECTION
     // selection stuff
     if( d->m_bMousePressed && innerNode.handle() && innerNode.handle()->renderer() &&
-        ( (_mouse->state() & Qt::LeftButton) != 0 )) {
+        ( (_mouse->buttons() & Qt::LeftButton) != 0 )) {
       extendSelectionTo(event->x(), event->y(),
                         event->absX(), event->absY(), innerNode);
 #else
@@ -6586,7 +6629,8 @@ void KHTMLPart::slotSelectAll()
 void KHTMLPart::startAutoScroll()
 {
    connect(&d->m_scrollTimer, SIGNAL( timeout() ), this, SLOT( slotAutoScroll() ));
-   d->m_scrollTimer.start(100, false);
+   d->m_scrollTimer.setSingleShot(false);
+   d->m_scrollTimer.start(100);
 }
 
 void KHTMLPart::stopAutoScroll()
@@ -7281,7 +7325,8 @@ void KHTMLPart::setDebugScript( bool enable )
   unplugActionList( "debugScriptList" );
   if ( enable ) {
     if (!d->m_paDebugScript) {
-      d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
+      d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), actionCollection(), "debugScript" );
+      connect( d->m_paDebugScript, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugScript() ) );
     }
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
     QList<KAction*> lst;
@@ -7335,7 +7380,6 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 
 void KHTMLPart::suppressedPopupMenu() {
   KMenu *m = new KMenu(0L);
-  m->setCheckable(true);
   if ( d->m_openableSuppressedPopups )
       m->insertItem(i18np("&Show Blocked Popup Window","Show %n Blocked Popup Windows", d->m_openableSuppressedPopups), this, SLOT(showSuppressedPopups()));
   m->insertItem(i18n("Show Blocked Window Passive Popup &Notification"), this, SLOT(togglePopupPassivePopup()),0,57);

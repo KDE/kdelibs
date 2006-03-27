@@ -265,7 +265,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
             if ( !berrorPic ) {
                 //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
                 qDrawShadePanel( paintInfo.p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
-                                 KApplication::palette().inactive(), true, 1 );
+                                 KApplication::palette(), true, 1 );
             }
 
             QPixmap pix = *Cache::brokenPixmap;
@@ -340,7 +340,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
 	    // don't touch it unless you know what you're doing
     	    paintInfo.p->setBrushOrigin(_tx, _ty - paintInfo.r.y());
             paintInfo.p->fillRect(_tx, _ty, width(), height(),
-		    QBrush(style()->palette().active().highlight(),
+		    QBrush(style()->palette().color( QPalette::Active, QPalette::Highlight ),
 		    Qt::Dense4Pattern));
 	}
     }

@@ -779,9 +779,7 @@ void KeyboardEventImpl::initKeyboardEvent(const DOMString &typeArg,
         virtKeyVal = keyIdentifiersToVirtKeys()->toRight(keyIdentifierArg.string().toLatin1());
 
     //Process modifier list.
-    QStringList mods =
-        QStringList::split(' ',
-            modifiersList.string().trimmed().simplified());
+    QStringList mods = modifiersList.string().trimmed().simplified().split( ' ' );
 
     unsigned modifiers = 0;
     for (QStringList::iterator i = mods.begin(); i != mods.end(); ++i)

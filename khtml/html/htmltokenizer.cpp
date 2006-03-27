@@ -316,7 +316,7 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
 
     while ( !src.isEmpty() ) {
         checkScriptBuffer();
-        unsigned char ch = src->latin1();
+        unsigned char ch = src->toLatin1();
         if ( !scriptCodeResync && !brokenComments && !textarea && !xmp && !title && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QString::fromRawData( scriptCode+scriptCodeSize-3, 3 ) == "<!-" ) {
             comment = true;
             scriptCode[ scriptCodeSize++ ] = ch;
@@ -348,7 +348,7 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
         // possible end of tagname, lets check.
         if ( !scriptCodeResync && !escaped && !src.escaped() && ( ch == '>' || ch == '/' || ch <= ' ' ) && ch &&
              scriptCodeSize >= searchStopperLen &&
-             !QString::fromRawData( scriptCode+scriptCodeSize-searchStopperLen, searchStopperLen ).find( searchStopper, 0, false )) {
+             !QString::fromRawData( scriptCode+scriptCodeSize-searchStopperLen, searchStopperLen ).indexOf( searchStopper, 0, Qt::CaseInsensitive )) {
             scriptCodeResync = scriptCodeSize-searchStopperLen+1;
             tquote = NoQuote;
             continue;
@@ -526,7 +526,7 @@ void HTMLTokenizer::parseProcessingInstruction(TokenizerString &src)
     char oldchar = 0;
     while ( !src.isEmpty() )
     {
-        unsigned char chbegin = src->latin1();
+        unsigned char chbegin = src->toLatin1();
         if(chbegin == '\'') {
             tquote = tquote == SingleQuote ? NoQuote : SingleQuote;
         }
@@ -557,7 +557,7 @@ void HTMLTokenizer::parseText(TokenizerString &src)
         checkBuffer();
 
         // ascii is okay because we only do ascii comparisons
-        unsigned char chbegin = src->latin1();
+        unsigned char chbegin = src->toLatin1();
 
         if (skipLF && ( chbegin != '\n' ))
         {
@@ -630,7 +630,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
             int uc = EntityChar.unicode();
             int ll = qMin<uint>(src.length(), 8);
             while(ll--) {
-                QChar csrc(src->lower());
+                QChar csrc(src->toLower());
                 cc = csrc.cell();
 
                 if(csrc.row() || !((cc >= '0' && cc <= '9') || (cc >= 'a' && cc <= 'f'))) {
@@ -1586,7 +1586,7 @@ void HTMLTokenizer::finish()
             food += QString(scriptCode, scriptCodeSize);
         }
         else {
-            pos = QString::fromRawData(scriptCode, scriptCodeSize).find('>');
+            pos = QString::fromRawData(scriptCode, scriptCodeSize).indexOf('>');
             food.setUnicode(scriptCode+pos+1, scriptCodeSize-pos-1); // deep copy
         }
         KHTML_DELETE_QCHAR_VEC(scriptCode);

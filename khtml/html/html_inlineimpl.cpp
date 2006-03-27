@@ -178,7 +178,7 @@ void HTMLAnchorElementImpl::focus(  )
 
 void HTMLAnchorElementImpl::click()
 {
-    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, Qt::LeftButton, 0);
     dispatchMouseEvent(&me,EventImpl::CLICK_EVENT, 1);
 }
 

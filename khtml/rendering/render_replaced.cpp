@@ -37,6 +37,7 @@
 #include <kglobalsettings.h>
 #include <qobject.h>
 #include <QVector>
+#include <QMatrix>
 #include <qpaintengine.h>
 
 #include "khtml_ext.h"
@@ -155,7 +156,7 @@ void  RenderWidget::resizeWidget( int w, int h )
     w = qMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
-        m_resizePending = !strcmp(m_widget->name(), "__khtml");
+        m_resizePending = !strcmp(m_widget->objectName(), "__khtml");
         ref();
         element()->ref();
         QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
@@ -210,8 +211,8 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( !strcmp(m_widget->name(), "__khtml") && !qobject_cast<QFrame*>(m_widget))
-                m_widget->setBackgroundMode( Qt::NoBackground );
+            if ( !strcmp(m_widget->objectName(), "__khtml") && !qobject_cast<QFrame*>(m_widget))
+                m_widget->setAttribute( Qt::WA_NoSystemBackground );
 
             if (m_widget->focusPolicy() > Qt::StrongFocus)
                 m_widget->setFocusPolicy(Qt::StrongFocus);
@@ -258,8 +259,11 @@ void RenderWidget::updateFromElement()
             int lowlightVal = 100 + (2*contrast_+4)*10;
 
             if (backgroundColor.isValid()) {
-                if (strcmp(widget()->name(), "__khtml"))
-                    widget()->setEraseColor(backgroundColor );
+                if (strcmp(widget()->objectName(), "__khtml")) {
+                    QPalette palette;
+                    palette.setColor(widget()->backgroundRole(), backgroundColor);
+                    widget()->setPalette(palette);
+                }
                 for ( int i = 0; i < QPalette::NColorGroups; ++i ) {
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Background, backgroundColor );
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Light, backgroundColor.light(highlightVal) );
@@ -309,7 +313,7 @@ void RenderWidget::updateFromElement()
             m_widget->setPalette(pal);
         }
         else
-            m_widget->unsetPalette();
+            m_widget->setPalette(QPalette());
         // Border:
         if (shouldPaintBackgroundOrBorder())
         {
@@ -379,7 +383,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     int xPos = _tx+borderLeft()+paddingLeft();
     int yPos = _ty+borderTop()+paddingTop();
 
-    bool khtmlw = !strcmp(m_widget->name(), "__khtml");
+    bool khtmlw = !strcmp(m_widget->objectName(), "__khtml");
     int childw = m_widget->width();
     int childh = m_widget->height();
     if ( (childw == 2000 || childh == 3072) && m_widget->inherits( "KHTMLView" ) ) {
@@ -528,7 +532,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     QPixmap* const pm = PaintBuffer::grab( widget->size() );
     if (!pm)
     {
-        kWarning(6040) << "Rendering widget [ " << widget->className() << " ] failed due to invalid size." << endl;
+        kWarning(6040) << "Rendering widget [ " << widget->metaObject()->className() << " ] failed due to invalid size." << endl;
         return;
     }
 
@@ -536,16 +540,16 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     if ( external ) {
 	// even hackier!
         QPainter pt( pm );
-        const QColor c = widget->colorGroup().base();
+        const QColor c = widget->palette().color(QPalette::Base);
         for (int i = 0; i < cnt; ++i)
             pt.fillRect( br[i], c );
     } else {
         QRect dr;
         for (int i = 0; i < cnt; ++i ) {
             dr = br[i];
-	    dr.translate( tx, ty );
-	    dr = p->xForm( dr );
-	    bitBlt(pm, br[i].topLeft(), p->device(), dr);
+            dr.translate( tx, ty );
+            dr = p->matrix().mapRect(dr);
+            bitBlt(pm, br[i].topLeft(), p->device(), dr);
         }
     }
 
@@ -688,12 +692,12 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         const QPoint p(me.clientX() - absx + m_view->contentsX(),
                  me.clientY() - absy + m_view->contentsY());
         QMouseEvent::Type type;
-        int button = 0;
-        int state = 0;
+        Qt::MouseButton button = Qt::NoButton;
+        Qt::KeyboardModifiers state = 0;
 
         if (qme) {
             button = qme->button();
-            state = qme->state();
+            state = qme->modifiers();
             type = qme->type();
         } else {
             switch(me.id())  {
@@ -734,7 +738,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 //     kDebug(6000) << "sending event to widget "
 //                   << " pos=" << p << " type=" << type
 //                   << " button=" << button << " state=" << state << endl;
-        QMouseEvent e(type, p, button, state);
+        QMouseEvent e(type, p, button, button, state);
         static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
         ret = e.isAccepted();
         break;
@@ -774,7 +778,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 
         QKeyEvent* const ke = domKeyEv.qKeyEvent();
         if (ke->isAutoRepeat()) {
-            QKeyEvent releaseEv( QEvent::KeyRelease, ke->key(), ke->ascii(), ke->state(),
+            QKeyEvent releaseEv( QEvent::KeyRelease, ke->key(), ke->modifiers(),
                                ke->text(), ke->isAutoRepeat(), ke->count() );
             static_cast<EventPropagator *>(m_widget)->sendEvent(&releaseEv);
         }
@@ -851,8 +855,8 @@ void RenderWidget::dump(QTextStream &stream, const QString &ind) const
 {
     RenderReplaced::dump(stream,ind);
     if ( widget() )
-        stream << " color=" << widget()->foregroundColor().name()
-               << " bg=" << widget()->backgroundColor().name();
+        stream << " color=" << widget()->palette().color( widget()->foregroundRole() ).name()
+               << " bg=" << widget()->palette().color( widget()->backgroundRole() ).name();
     else
         stream << " null widget";
 }

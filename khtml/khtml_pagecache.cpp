@@ -88,7 +88,7 @@ void
 KHTMLPageCacheEntry::addData(const QByteArray &data)
 {
   if (m_file->status() == 0)
-     m_file->dataStream()->writeRawBytes(data.data(), data.size());
+     m_file->dataStream()->writeRawData(data.data(), data.size());
 }
 
 void
@@ -97,7 +97,7 @@ KHTMLPageCacheEntry::endData()
   m_complete = true;
   if ( m_file->status() == 0) {
     m_file->file()->flush();
-    m_file->dataStream()->device()->at(0);
+    m_file->dataStream()->device()->seek(0);
   }
 }
 
@@ -261,9 +261,8 @@ KHTMLPageCache::sendData()
   }
   else
   {
-     byteArray.setRawData(buf, n);
+     byteArray = QByteArray(buf, n);
      delivery->emitData(byteArray);
-     byteArray.resetRawData(buf, n);
      d->delivery.append( delivery );
   }
   QTimer::singleShot(0, this, SLOT(sendData()));
@@ -298,7 +297,7 @@ KHTMLPageCache::saveData(long id, QDataStream *str)
      }
      else
      {
-        str->writeRawBytes(buf, n);
+        str->writeRawData(buf, n);
      }
   }
 

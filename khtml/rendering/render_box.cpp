@@ -330,7 +330,7 @@ void RenderBox::paintRootBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     }
 
     if( !bgColor.isValid() && canvas()->view())
-        bgColor = canvas()->view()->palette().active().color(QColorGroup::Base);
+        bgColor = canvas()->view()->palette().color(QPalette::Active, QPalette::Base);
 
     int w = width();
     int h = height();

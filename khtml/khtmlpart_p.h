@@ -365,6 +365,7 @@ public:
   KAction *m_paDebugRenderTree;
   KAction *m_paStopAnimations;
   KToggleAction *m_paToggleCaretMode;
+  QMap<QAction*, int> m_paLanguageMap;
 
   KParts::PartManager *m_manager;
 

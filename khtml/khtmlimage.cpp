@@ -63,6 +63,8 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
                         QObject *parent, const char *name, KHTMLPart::GUIProfile prof )
     : KParts::ReadOnlyPart( parent ), m_image( 0 )
 {
+    setObjectName( name );
+
     KHTMLPart* parentPart = qobject_cast<KHTMLPart*>( parent );
     setInstance( KHTMLImageFactory::instance(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 

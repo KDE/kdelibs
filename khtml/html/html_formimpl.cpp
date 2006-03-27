@@ -138,7 +138,7 @@ static QByteArray encodeCString(const QByteArray& e)
     // safe characters like NS handles them for compatibility
     static const char *safe = "-._*";
     QByteArray encoded(( e.length()+e.count( '\n' ) )*3
-                     +e.count('\r') * 3 + 1);
+                     +e.count('\r') * 3 + 1, 0);
     int enclen = 0;
     bool crmissing = false;
     unsigned char oldc;
@@ -226,7 +226,9 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     kDebug( 6030 ) << "form: formData()" << endl;
 #endif
 
-    QByteArray form_data(0);
+    QByteArray form_data;
+    form_data.resize(0);
+
     QByteArray enc_string = ""; // used for non-multipart data
 
     // find out the QTextcodec to use
@@ -234,7 +236,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     const QChar space(' ');
     const unsigned int strLength = str.length();
     for(unsigned int i=0; i < strLength; ++i) if(str[i].latin1() == ',') str[i] = space;
-    const QStringList charsets = QStringList::split(' ', str);
+    const QStringList charsets = str.split(' ');
     QTextCodec* codec = 0;
     KHTMLView *view = getDocument()->view();
     {
@@ -404,12 +406,12 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
 void HTMLFormElementImpl::setEnctype( const DOMString& type )
 {
-    if(type.string().find("multipart", 0, false) != -1 || type.string().find("form-data", 0, false) != -1)
+    if(type.string().indexOf("multipart", 0, Qt::CaseInsensitive) != -1 || type.string().indexOf("form-data", 0, Qt::CaseInsensitive) != -1)
     {
         m_enctype = "multipart/form-data";
         m_multipart = true;
         m_post = true;
-    } else if (type.string().find("text", 0, false) != -1 || type.string().find("plain", 0, false) != -1)
+    } else if (type.string().indexOf("text", 0, Qt::CaseInsensitive) != -1 || type.string().indexOf("plain", 0, Qt::CaseInsensitive) != -1)
     {
         m_enctype = "text/plain";
         m_multipart = false;
@@ -432,7 +434,7 @@ static QString calculateAutoFillKey(const HTMLFormElementImpl& e)
     // by saving passwords under wrong lookup key.
     const QString name = e.getAttribute(ATTR_NAME).string().trimmed();
     const QRegExp re("[;,!]");
-    const QStringList url = QStringList::split(re, k.url());
+    const QStringList url = k.url().split(re);
     return url[0] + '#' + name;
 }
 
@@ -1158,7 +1160,7 @@ void HTMLButtonElementImpl::activate()
 
 void HTMLButtonElementImpl::click()
 {
-    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0), Qt::LeftButton, Qt::LeftButton, 0);
     dispatchMouseEvent(&me,EventImpl::CLICK_EVENT, 1);
 }
 
@@ -1371,7 +1373,7 @@ void HTMLInputElementImpl::select(  )
 
 void HTMLInputElementImpl::click()
 {
-    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0), Qt::LeftButton, Qt::LeftButton, 0);
     dispatchMouseEvent(&me,0, 1);
     dispatchMouseEvent(&me,EventImpl::CLICK_EVENT, 1);
 }
@@ -2314,7 +2316,7 @@ int HTMLSelectElementImpl::optionToListIndex(int optionIndex) const
 
     //See if we're asked for the very last item, and check whether it's an <option>
     //to fastpath clear
-    if (optionIndex == (m_length - 1) && items[itemsSize - 1]->id() == ID_OPTION)
+    if ((uint)optionIndex == (m_length - 1) && items[itemsSize - 1]->id() == ID_OPTION)
         return itemsSize - 1;
 
     int listIndex = 0;
