@@ -101,6 +101,10 @@ KLocaleTest::formatDate()
 	QString full("dddd dd MMMM yyyy");
 	QDate date;
 
+        // Ensure that user configuration isn't messing with us;
+        // shouldn't happen though, since qtest_kde.h sets KDEHOME.
+        QCOMPARE(locale.dateFormat(), QString("%A %d %B %Y"));
+
 	date.setYMD(2002, 5, 3);
 	QCOMPARE(locale.formatDate(date), date.toString(full));
 	QCOMPARE(locale.formatDate(date, true), date.toString(small));

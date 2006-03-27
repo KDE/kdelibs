@@ -29,6 +29,7 @@ Q_DECLARE_FLAGS(KDEMainFlags, KDEMainFlag)
 int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
+    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
     KAboutData aboutData( "qttest", "qttest", "version" ); \
     KCmdLineArgs::init( argc, argv, &aboutData );   \
     KDEMainFlags mainFlags( flags );                 \
