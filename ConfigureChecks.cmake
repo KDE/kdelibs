@@ -244,7 +244,6 @@ check_function_exists(rindex    HAVE_RINDEX)
 check_function_exists(memcpy    HAVE_MEMCPY)
 check_function_exists(bcopy     HAVE_BCOPY)
 check_function_exists(backtrace HAVE_BACKTRACE)
-check_function_exists(getservbyname_r HAVE_DECL_GETSERVBYNAME_R)
 check_function_exists(getservbyname_r HAVE_GETSERVBYNAME_R)
 check_function_exists(getcwd    HAVE_GETCWD)
 check_function_exists(getgroups HAVE_GETGROUPS)
@@ -362,6 +361,7 @@ check_prototype_exists(gethostname "stdlib.h;unistd.h" HAVE_GETHOSTNAME_PROTO)
 check_prototype_exists(initgroups "unistd.h;sys/types.h;unistd.h;grp.h" HAVE_INITGROUPS_PROTO)
 check_prototype_exists(setreuid unistd.h HAVE_SETREUID_PROTO)
 check_prototype_exists(seteuid unistd.h HAVE_SETEUID_PROTO)
+check_prototype_exists(getservbyname_r netdb.h HAVE_DECL_GETSERVBYNAME_R)
 
 # check for existing datatypes
 
