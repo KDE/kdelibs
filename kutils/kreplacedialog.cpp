@@ -134,9 +134,9 @@ void KReplaceDialog::slotOk()
             if ( check.cap(1).length()%2 && check.cap(2).toInt() > caps )
             {
                 KMessageBox::information( this, i18n(
-                        "Your replacement string is referencing a capture greater than '\\%1', ").arg( caps ) +
+                        "Your replacement string is referencing a capture greater than '\\%1', ",  caps ) +
                     ( caps ?
-                        i18n("but your pattern only defines 1 capture.",
+                        i18np("but your pattern only defines 1 capture.",
                              "but your pattern only defines %n captures.", caps ) :
                         i18n("but your pattern defines no captures.") ) +
                     i18n("\nPlease correct.") );

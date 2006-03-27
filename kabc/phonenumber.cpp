@@ -147,14 +147,14 @@ QString PhoneNumber::label( int type )
 QString PhoneNumber::typeLabel( int type )
 {
   if ( type & Pref )
-    return i18n( "Preferred phone", "Preferred" );
+    return i18nc( "Preferred phone", "Preferred" );
 
   switch ( type ) {
     case Home:
-      return i18n("Home phone", "Home");
+      return i18nc("Home phone", "Home");
       break;
     case Work:
-      return i18n("Work phone", "Work");
+      return i18nc("Work phone", "Work");
       break;
     case Msg:
       return i18n("Messenger");
@@ -169,7 +169,7 @@ QString PhoneNumber::typeLabel( int type )
       return i18n("Fax");
       break;  
     case Cell:
-      return i18n("Mobile Phone", "Mobile" );
+      return i18nc("Mobile Phone", "Mobile" );
       break;  
     case Video:
       return i18n("Video");
@@ -181,7 +181,7 @@ QString PhoneNumber::typeLabel( int type )
       return i18n("Modem");
       break;
     case Car:
-      return i18n("Car Phone", "Car" );
+      return i18nc("Car Phone", "Car" );
       break;
     case Isdn:
       return i18n("ISDN");

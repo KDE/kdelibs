@@ -653,7 +653,7 @@ QString KFileItem::getStatusBarInfo()
       if ( comment.isEmpty() )
         tmp = i18n ( "Symbolic Link" );
       else
-        tmp = i18n("%1 (Link)").arg(comment);
+        tmp = i18n("%1 (Link)", comment);
       text += "->";
       text += linkDest();
       text += "  ";
@@ -697,7 +697,7 @@ QString KFileItem::getToolTipText(int maxcount)
 
   QString type = Qt::escape(mimeComment());
   if ( m_bLink ) {
-   tip += i18n("Link to %1 (%2)").arg(linkDest(), type) + end;
+   tip += i18n("Link to %1 (%2)", linkDest(), type) + end;
   } else
     tip += type + end;
 

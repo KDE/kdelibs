@@ -140,12 +140,12 @@ bool BinaryFormat::checkHeader( QDataStream &stream ) const
   }
 
   if ( magic != 0x2e93e ) {
-    kError() << i18n("File '%1' is not binary format.").arg( file->fileName() ) << endl;
+    kError() << i18n("File '%1' is not binary format.",  file->fileName() ) << endl;
     return false;
   }
 
   if ( version != BINARY_FORMAT_VERSION ) {
-    kError() << i18n("File '%1' is the wrong version.").arg( file->fileName() ) << endl;
+    kError() << i18n("File '%1' is the wrong version.",  file->fileName() ) << endl;
     return false;
   }
 

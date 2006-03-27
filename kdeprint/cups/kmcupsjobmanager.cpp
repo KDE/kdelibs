@@ -402,7 +402,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 	KMPrinter	*prt = KMManager::self()->findPrinter(j->printer());
 	if (!prt)
 	{
-		KMManager::self()->setErrorMsg(i18n("Unable to find printer %1.").arg(j->printer()));
+		KMManager::self()->setErrorMsg(i18n("Unable to find printer %1.", j->printer()));
 		return false;
 	}
 	KMManager::self()->completePrinterShort(prt);
@@ -419,7 +419,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 	dlg.addPage(new KPTagsPage(true, &dlg));
 	dlg.setOptions(opts);
 	dlg.enableSaveButton(false);
-	dlg.setCaption(i18n("Attributes of Job %1@%2 (%3)").arg(j->id()).arg(j->printer()).arg(j->name()));
+	dlg.setCaption(i18n("Attributes of Job %1@%2 (%3)", j->id(), j->printer(), j->name()));
 	if (dlg.exec())
 	{
 		opts.clear();

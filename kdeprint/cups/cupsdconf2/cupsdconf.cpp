@@ -812,7 +812,7 @@ void CupsResource::setPath(const QString& path)
 
 int CupsResource::typeFromText(const QString& text)
 {
-	if (text == i18n("Base", "Root") || text == i18n("All printers") || text == i18n("All classes") || text == i18n("Print jobs")) return RESOURCE_GLOBAL;
+	if (text == i18nc("Base", "Root") || text == i18n("All printers") || text == i18n("All classes") || text == i18n("Print jobs")) return RESOURCE_GLOBAL;
 	else if (text == i18n("Administration")) return RESOURCE_ADMIN;
 	else if (text.indexOf(i18n("Class")) == 0) return RESOURCE_CLASS;
 	else if (text.indexOf(i18n("Printer")) == 0) return RESOURCE_PRINTER;
@@ -835,7 +835,7 @@ QString CupsResource::textToPath(const QString& text)
 	else if (text == i18n("All printers")) path = "/printers";
 	else if (text == i18n("All classes")) path = "/classes";
 	else if (text == i18n("Print jobs")) path = "/jobs";
-	else if (text == i18n("Base", "Root")) path = "/";
+	else if (text == i18nc("Base", "Root")) path = "/";
 	else if (text.indexOf(i18n("Printer")) == 0)
 	{
 		path = "/printers/";
@@ -851,7 +851,7 @@ QString CupsResource::textToPath(const QString& text)
 
 QString CupsResource::pathToText(const QString& path)
 {
-	QString	text(i18n("Base", "Root"));
+	QString	text(i18nc("Base", "Root"));
 	if (path == "/admin") text = i18n("Administration");
 	else if (path == "/printers") text = i18n("All printers");
 	else if (path == "/classes") text = i18n("All classes");

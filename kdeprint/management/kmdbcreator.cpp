@@ -95,10 +95,10 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	else if (KStandardDirs::findExe(exestr).isEmpty())
 		msg = i18n("The executable %1 could not be found in your "
 		           "PATH. Check that this program exists and is "
-			   "accessible in your PATH variable.").arg(exestr);
+			   "accessible in your PATH variable.", exestr);
 	else if (!m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
 		msg = i18n("Unable to start the creation of the driver "
-		           "database. The execution of %1 failed.").arg(exestr);
+		           "database. The execution of %1 failed.", exestr);
 	if (!msg.isEmpty())
 	{
 		KMManager::self()->setErrorMsg(msg);

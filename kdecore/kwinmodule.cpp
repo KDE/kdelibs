@@ -409,7 +409,7 @@ QString KWinModule::desktopName( int desktop ) const
     const char* name = d->desktopName( (desktop > 0 && desktop <= (int) d->numberOfDesktops() ) ? desktop : currentDesktop() );
     if ( name && name[0] )
 	return QString::fromUtf8( name );
-    return i18n("Desktop %1").arg( desktop );
+    return i18n("Desktop %1",  desktop );
 }
 
 void KWinModule::setDesktopName( int desktop, const QString& name )

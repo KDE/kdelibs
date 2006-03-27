@@ -96,7 +96,7 @@ void MetaInfoProtocol::put(const KUrl& url, int, bool, bool)
     }
     else
     {
-        error(ERR_NO_CONTENT, i18n("No metainfo for %1").arg(url.path()));
+        error(ERR_NO_CONTENT, i18n("No metainfo for %1", url.path()));
         return;
     }
     finished();

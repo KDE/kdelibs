@@ -136,20 +136,20 @@ bool ResourceNet::load()
   QString tempFile;
 
   if ( !KIO::NetAccess::download( mUrl, tempFile, 0 ) ) {
-    addressBook()->error( i18n( "Unable to download file '%1'." ).arg( mUrl.prettyURL() ) );
+    addressBook()->error( i18n( "Unable to download file '%1'." ,  mUrl.prettyURL() ) );
     return false;
   }
 
   QFile file( tempFile );
   if ( !file.open( QIODevice::ReadOnly ) ) {
-    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( tempFile ) );
+    addressBook()->error( i18n( "Unable to open file '%1'." ,  tempFile ) );
     KIO::NetAccess::removeTempFile( tempFile );
     return false;
   }
 
   bool result = clearAndLoad( &file );
   if ( !result )
-      addressBook()->error( i18n( "Problems during parsing file '%1'." ).arg( tempFile ) );
+      addressBook()->error( i18n( "Problems during parsing file '%1'." ,  tempFile ) );
 
   KIO::NetAccess::removeTempFile( tempFile );
 
@@ -178,7 +178,7 @@ bool ResourceNet::asyncLoad()
     ok = mTempFile->close();
 
   if ( !ok ) {
-    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile->name() ) );
+    emit loadingError( this, i18n( "Unable to open file '%1'." ,  mTempFile->name() ) );
     deleteLocalTempFile();
     return false;
   }
@@ -239,13 +239,13 @@ bool ResourceNet::save( Ticket* )
   }
 
   if ( !ok ) {
-    addressBook()->error( i18n( "Unable to save file '%1'." ).arg( tempFile.name() ) );
+    addressBook()->error( i18n( "Unable to save file '%1'." ,  tempFile.name() ) );
     return false;
   }
 
   ok = KIO::NetAccess::upload( tempFile.name(), mUrl, 0 );
   if ( !ok )
-    addressBook()->error( i18n( "Unable to upload to '%1'." ).arg( mUrl.prettyURL() ) );
+    addressBook()->error( i18n( "Unable to upload to '%1'." ,  mUrl.prettyURL() ) );
 
   return ok;
 }
@@ -270,7 +270,7 @@ bool ResourceNet::asyncSave( Ticket* )
   }
 
   if ( !ok ) {
-    emit savingError( this, i18n( "Unable to save file '%1'." ).arg( mTempFile->name() ) );
+    emit savingError( this, i18n( "Unable to save file '%1'." ,  mTempFile->name() ) );
     deleteLocalTempFile();
     return false;
   }
@@ -355,10 +355,10 @@ void ResourceNet::downloadFinished( KIO::Job* )
     if ( clearAndLoad( &file ) )
       emit loadingFinished( this );
     else
-      emit loadingError( this, i18n( "Problems during parsing file '%1'." ).arg( mTempFile->name() ) );
+      emit loadingError( this, i18n( "Problems during parsing file '%1'." ,  mTempFile->name() ) );
   }
   else {
-    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile->name() ) );
+    emit loadingError( this, i18n( "Unable to open file '%1'." ,  mTempFile->name() ) );
   }
 
   deleteLocalTempFile();

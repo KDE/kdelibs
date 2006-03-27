@@ -156,7 +156,7 @@ DrMain* PPDLoader::loadDriver( const QString& filename, QString* msg )
 	PPDLoader loader;
 	DrMain *driver = loader.readFromFile( filename );
 	if ( !driver && msg )
-		*msg = filename + i18n( "(line %1): " ).arg( kdeprint_ppdscanner_numberoflines() ) + loader.errorMsg();
+		*msg = filename + i18n( "(line %1): " ,  kdeprint_ppdscanner_numberoflines() ) + loader.errorMsg();
 	return driver;
 }
 

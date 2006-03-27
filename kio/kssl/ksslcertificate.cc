@@ -335,14 +335,13 @@ char *x = NULL;
 #ifdef KSSL_HAVE_SSL
 	EVP_PKEY *pkey = d->kossl->X509_get_pubkey(d->m_cert);
 	if (pkey) {
-		rc = i18n("Unknown", "Unknown key algorithm");
+		rc = i18nc("Unknown", "Unknown key algorithm");
 		#ifndef NO_RSA
 			if (pkey->type == EVP_PKEY_RSA) {
-				rc = i18n("Key type: RSA (%1 bit)") + "\n";
-
 				x = d->kossl->BN_bn2hex(pkey->pkey.rsa->n);
+                                rc = i18n("Key type: RSA (%1 bit)", strlen(x)*4) + "\n";
+
 				rc += i18n("Modulus: ");
-				rc = rc.arg(strlen(x)*4);
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
 						rc += ":";
@@ -361,12 +360,11 @@ char *x = NULL;
 		#endif
 		#ifndef NO_DSA
 			if (pkey->type == EVP_PKEY_DSA) {
-				rc = i18n("Key type: DSA (%1 bit)") + "\n";
-
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->p);
-				rc += i18n("Prime: ");
 				// hack - this may not be always accurate
-				rc = rc.arg(strlen(x)*4) ;
+                                rc = i18n("Key type: DSA (%1 bit)", strlen(x)*4) + "\n";
+
+				rc += i18n("Prime: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
 						rc += ":";

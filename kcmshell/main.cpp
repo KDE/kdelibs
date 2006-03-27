@@ -314,7 +314,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 #endif
 
     KCMShellMultiDialog *dlg = new KCMShellMultiDialog( dtype, 
-            i18n("Configure - %1").arg(kapp->caption()), 0, "", true );
+            i18n("Configure - %1", kapp->caption()), 0, "", true );
 
     for (KService::List::ConstIterator it = modules.begin(); it != modules.end(); ++it)
         dlg->addModule(KCModuleInfo(*it));

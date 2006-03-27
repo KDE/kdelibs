@@ -65,7 +65,7 @@ bool ApsHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool shor
 			QMap<QString,QString>	opts = loadResources(entry);
 			if (opts.contains("PRINTER"))
 			{
-				prt->setDescription(i18n("APS Driver (%1)").arg(opts["PRINTER"]));
+				prt->setDescription(i18n("APS Driver (%1)", opts["PRINTER"]));
 				prt->setDriverInfo(prt->description());
 			}
 		}
@@ -109,7 +109,7 @@ bool ApsHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool shor
 				prot = "ncp";
 			}
 			if (!prt->device().isEmpty())
-				prt->setLocation(i18n("Network printer (%1)").arg(prot));
+				prt->setLocation(i18n("Network printer (%1)", prot));
 		}
 		return true;
 	}
@@ -212,13 +212,13 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 	QString	prot = prt->deviceProtocol();
 	if (prot != "parallel" && prot != "lpd" && prot != "smb" && prot != "ncp")
 	{
-		manager()->setErrorMsg(i18n("Unsupported backend: %1.").arg(prot));
+		manager()->setErrorMsg(i18n("Unsupported backend: %1.", prot));
 		return NULL;
 	}
 	QString	path = sysconfDir() + "/" + prt->printerName();
 	if (!KStandardDirs::makeDir(path, 0755))
 	{
-		manager()->setErrorMsg(i18n("Unable to create directory %1.").arg(path));
+		manager()->setErrorMsg(i18n("Unable to create directory %1.", path));
 		return NULL;
 	}
 	if (prot == "smb" || prot == "ncp")
@@ -238,7 +238,7 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 				{
 					if (work.isEmpty())
 					{
-						manager()->setErrorMsg(i18n("Missing element: %1.").arg("Workgroup"));
+						manager()->setErrorMsg(i18n("Missing element: %1.", QString("Workgroup")));
 						return NULL;
 					}
 					t << "SMB_SERVER='" << server << "'" << endl;
@@ -255,13 +255,13 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 				}
 				else
 				{
-					manager()->setErrorMsg( i18n( "Invalid printer backend specification: %1" ).arg( prt->device() ) );
+					manager()->setErrorMsg( i18n( "Invalid printer backend specification: %1" ,  prt->device() ) );
 					return NULL;
 				}
 			}
 			else
 			{
-				manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(f.fileName()));
+				manager()->setErrorMsg(i18n("Unable to create the file %1.", f.fileName()));
 				return NULL;
 			}
 		}
@@ -286,13 +286,13 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 				}
 				else
 				{
-					manager()->setErrorMsg( i18n( "Invalid printer backend specification: %1" ).arg( prt->device() ) );
+					manager()->setErrorMsg( i18n( "Invalid printer backend specification: %1" ,  prt->device() ) );
 					return NULL;
 				}
 			}
 			else
 			{
-				manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(f.fileName()));
+				manager()->setErrorMsg(i18n("Unable to create the file %1.", f.fileName()));
 				return NULL;
 			}
 		}
@@ -362,7 +362,7 @@ bool ApsHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain 
 	}
 	else
 	{
-		manager()->setErrorMsg(i18n("Unable to create the file %1.").arg(f.fileName()));
+		manager()->setErrorMsg(i18n("Unable to create the file %1.", f.fileName()));
 		return false;
 	}
 }
@@ -375,7 +375,7 @@ bool ApsHandler::removePrinter(KMPrinter*, PrintcapEntry *entry)
 	QFile::remove(path + "/apsfilterrc");
 	if (!QDir(path).rmdir(path))
 	{
-		manager()->setErrorMsg(i18n("Unable to remove directory %1.").arg(path));
+		manager()->setErrorMsg(i18n("Unable to remove directory %1.", path));
 		return false;
 	}
 	return true;

@@ -391,7 +391,7 @@ void KDirOperator::mkdir()
          name = KIO::RenameDlg::suggestName( url(), name );
 
     QString dir = KInputDialog::getText( i18n( "New Folder" ),
-                                         i18n( "Create new folder in:\n%1" ).arg( where ),
+                                         i18n( "Create new folder in:\n%1" ,  where ),
                                          name, &ok, this);
     if (ok)
       mkdir( KIO::encodeFileName( dir ), true );
@@ -419,7 +419,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 
     if ( exists ) // url was already existant
     {
-        KMessageBox::sorry(viewWidget(), i18n("A file or folder named %1 already exists.").arg(url.pathOrURL()));
+        KMessageBox::sorry(viewWidget(), i18n("A file or folder named %1 already exists.", url.pathOrURL()));
         enterDirectory = false;
     }
     else if ( !writeOk ) {
@@ -460,14 +460,14 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
         int ret;
         if ( items.count() == 1 ) {
             ret = KMessageBox::warningContinueCancel( parent,
-                i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" )
-                .arg( files.first() ),
+                i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" ,
+                  files.first() ),
                                                       i18n("Delete File"),
                                                       KStdGuiItem::del(), "AskForDelete" );
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
-                i18n("Do you really want to delete this item?", "Do you really want to delete these %n items?", items.count() ),
+                i18np("Do you really want to delete this item?", "Do you really want to delete these %n items?", items.count() ),
                                                     files,
                                                     i18n("Delete Files"),
                                                     KStdGuiItem::del(), "AskForDelete" );
@@ -515,17 +515,17 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
         int ret;
         if ( items.count() == 1 ) {
             ret = KMessageBox::warningContinueCancel( parent,
-                i18n( "<qt>Do you really want to trash\n <b>'%1'</b>?</qt>" )
-                .arg( files.first() ),
+                i18n( "<qt>Do you really want to trash\n <b>'%1'</b>?</qt>" ,
+                  files.first() ),
                                                       i18n("Trash File"),
-                                                      KGuiItem(i18n("to trash", "&Trash"),"edittrash"), "AskForTrash" );
+                                                      KGuiItem(i18nc("to trash", "&Trash"),"edittrash"), "AskForTrash" );
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
-                i18n("translators: not called for n == 1", "Do you really want to trash these %n items?", items.count() ),
+                i18np("translators: not called for n == 1", "Do you really want to trash these %n items?", items.count() ),
                                                     files,
                                                     i18n("Trash Files"),
-                                                    KGuiItem(i18n("to trash", "&Trash"),"edittrash"), "AskForTrash" );
+                                                    KGuiItem(i18nc("to trash", "&Trash"),"edittrash"), "AskForTrash" );
         doIt = (ret == KMessageBox::Continue);
     }
 

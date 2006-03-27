@@ -389,57 +389,57 @@ QString KCalendarSystemJalali::monthName(int month, int year, bool shortName)
     switch ( month )
       {
       case 1:
-        return locale()->translate("Far");
+        return ki18n("Far").toString(locale());
       case 2:
-        return locale()->translate("Ord");
+        return ki18n("Ord").toString(locale());
       case 3:
-        return locale()->translate("Kho");
+        return ki18n("Kho").toString(locale());
       case 4:
-        return locale()->translate("Tir");
+        return ki18n("Tir").toString(locale());
       case 5:
-        return locale()->translate("Mor");
+        return ki18n("Mor").toString(locale());
       case 6:
-        return locale()->translate("Sha");
+        return ki18n("Sha").toString(locale());
       case 7:
-        return locale()->translate("Meh");
+        return ki18n("Meh").toString(locale());
       case 8:
-        return locale()->translate("Aba");
+        return ki18n("Aba").toString(locale());
       case 9:
-        return locale()->translate("Aza");
+        return ki18n("Aza").toString(locale());
       case 10:
-        return locale()->translate("Dei");
+        return ki18n("Dei").toString(locale());
       case 11:
-        return locale()->translate("Bah");
+        return ki18n("Bah").toString(locale());
       case 12:
-        return locale()->translate("Esf");
+        return ki18n("Esf").toString(locale());
     }
   else
     switch ( month )
       {
       case 1:
-        return locale()->translate("Farvardin");
+        return ki18n("Farvardin").toString(locale());
       case 2:
-        return locale()->translate("Ordibehesht");
+        return ki18n("Ordibehesht").toString(locale());
       case 3:
-        return locale()->translate("Khordad");
+        return ki18n("Khordad").toString(locale());
       case 4:
-        return locale()->translate("Tir");
+        return ki18n("Tir").toString(locale());
       case 5:
-        return locale()->translate("Mordad");
+        return ki18n("Mordad").toString(locale());
       case 6:
-        return locale()->translate("Shahrivar");
+        return ki18n("Shahrivar").toString(locale());
       case 7:
-        return locale()->translate("Mehr");
+        return ki18n("Mehr").toString(locale());
       case 8:
-        return locale()->translate("Aban");
+        return ki18n("Aban").toString(locale());
       case 9:
-        return locale()->translate("Azar");
+        return ki18n("Azar").toString(locale());
       case 10:
-      	return locale()->translate("Dei");
+      	return ki18n("Dei").toString(locale());
       case 11:
-        return locale()->translate("Bahman");
+        return ki18n("Bahman").toString(locale());
       case 12:
-        return locale()->translate("Esfand");
+        return ki18n("Esfand").toString(locale());
       }
 
   return QString();
@@ -473,37 +473,37 @@ QString KCalendarSystemJalali::weekDayName(int day, bool shortName) const
     switch (day)
       {
       case 1:
-        return locale()->translate("2sh");
+        return ki18n("2sh").toString(locale());
       case 2:
-        return locale()->translate("3sh");
+        return ki18n("3sh").toString(locale());
       case 3:
-        return locale()->translate("4sh");
+        return ki18n("4sh").toString(locale());
       case 4:
-        return locale()->translate("5sh");
+        return ki18n("5sh").toString(locale());
       case 5:
-        return locale()->translate("Jom");
+        return ki18n("Jom").toString(locale());
       case 6:
-        return locale()->translate("shn");
+        return ki18n("shn").toString(locale());
       case 7:
-        return locale()->translate("1sh");
+        return ki18n("1sh").toString(locale());
       }
   else
     switch ( day )
       {
       case 1:
-        return locale()->translate("Do shanbe");
+        return ki18n("Do shanbe").toString(locale());
       case 2:
-        return locale()->translate("Se shanbe");
+        return ki18n("Se shanbe").toString(locale());
       case 3:
-        return locale()->translate("Chahar shanbe");
+        return ki18n("Chahar shanbe").toString(locale());
       case 4:
-        return locale()->translate("Panj shanbe");
+        return ki18n("Panj shanbe").toString(locale());
       case 5:
-        return locale()->translate("Jumee");
+        return ki18n("Jumee").toString(locale());
       case 6:
-        return locale()->translate("Shanbe");
+        return ki18n("Shanbe").toString(locale());
       case 7:
-        return locale()->translate("Yek-shanbe");
+        return ki18n("Yek-shanbe").toString(locale());
       }
 
   return QString();

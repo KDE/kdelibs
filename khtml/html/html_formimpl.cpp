@@ -637,7 +637,7 @@ void HTMLFormElementImpl::submit(  )
                                                                                  "in an encrypted wallet. When the wallet is unlocked, it "
                                                                                  "can then automatically restore the login information "
                                                                                  "next time you visit %1. Do you want to store "
-                                                                                 "the information now?").arg(formUrl.host()),
+                                                                                 "the information now?", formUrl.host()),
                                                                             QStringList(), QString(), &checkboxResult, KMessageBox::Notify);
 
                 if ( savePassword == KDialogBase::Yes ) {

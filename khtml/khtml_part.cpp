@@ -291,7 +291,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSetEncoding->insert( new KActionSeparator( actionCollection() ) );
 
 
-  d->m_manualDetection = new KSelectAction( i18n( "short for Manual Detection", "Manual" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "manualDetection" );
+  d->m_manualDetection = new KSelectAction( i18nc( "short for Manual Detection", "Manual" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "manualDetection" );
   QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
   d->m_manualDetection->setItems( encodings );
   d->m_manualDetection->setCurrentItem( -1 );
@@ -606,7 +606,7 @@ bool KHTMLPart::openURL( const KUrl &url )
         d->m_statusBarExtension->addStatusBarItem(d->m_statusBarUALabel, 0, false);
         d->m_statusBarUALabel->setPixmap(SmallIcon("agent", instance()));
       } 
-      d->m_statusBarUALabel->setToolTip(i18n("The fake user-agent '%1' is in use.").arg(userAgent));
+      d->m_statusBarUALabel->setToolTip(i18n("The fake user-agent '%1' is in use.", userAgent));
     } else if (d->m_statusBarUALabel) {
       d->m_statusBarExtension->removeStatusBarItem(d->m_statusBarUALabel);
       delete d->m_statusBarUALabel;
@@ -1155,7 +1155,7 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
       KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
-      dlg->addError(i18n("<b>Error</b>: %1: %2").arg(filename, msg.qstring()));
+      dlg->addError(i18n("<b>Error</b>: %1: %2", filename, msg.qstring()));
     }
   }
 
@@ -1201,7 +1201,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
       KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
-      dlg->addError(i18n("<b>Error</b>: node %1: %2").arg(n.nodeName().string()).arg(msg.qstring()));
+      dlg->addError(i18n("<b>Error</b>: node %1: %2", n.nodeName().string(), msg.qstring()));
     }
   }
 
@@ -1666,9 +1666,9 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   begin();
   QString errText = QString::fromLatin1( "<HTML dir=%1><HEAD><TITLE>" )
                            .arg(QApplication::isRightToLeft() ? "rtl" : "ltr");
-  errText += i18n( "Error while loading %1" ).arg( Qt::escape(reqUrl.prettyURL()) );
+  errText += i18n( "Error while loading %1" ,  Qt::escape(reqUrl.prettyURL()) );
   errText += QLatin1String( "</TITLE></HEAD><BODY><P>" );
-  errText += i18n( "An error occurred while loading <B>%1</B>:" ).arg( Qt::escape(reqUrl.prettyURL()) );
+  errText += i18n( "An error occurred while loading <B>%1</B>:" ,  Qt::escape(reqUrl.prettyURL()) );
   errText += QLatin1String( "</P>" );
   errText += Qt::convertFromPlainText( KIO::buildErrorString( errorCode, text ) );
   errText += QLatin1String( "</BODY></HTML>" );
@@ -1719,16 +1719,16 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   doc += QLatin1String( "<h3>" );
   doc += i18n( "Details of the Request:" );
   doc += QLatin1String( "</h3><ul><li>" );
-  doc += i18n( "URL: %1" ).arg( url );
+  doc += i18n( "URL: %1" ,  url );
   doc += QLatin1String( "</li><li>" );
   if ( !protocol.isNull() ) {
     // uncomment for 3.1... i18n change
     // doc += i18n( "Protocol: %1" ).arg( protocol ).arg( protocol );
     doc += QLatin1String( "</li><li>" );
   }
-  doc += i18n( "Date and Time: %1" ).arg( datetime );
+  doc += i18n( "Date and Time: %1" ,  datetime );
   doc += QLatin1String( "</li><li>" );
-  doc += i18n( "Additional Information: %1" ).arg( text );
+  doc += i18n( "Additional Information: %1" ,  text );
   doc += QLatin1String( "</li></ul><h3>" );
   doc += i18n( "Description:" );
   doc += QLatin1String( "</h3><p>" );
@@ -2068,7 +2068,7 @@ void KHTMLPart::slotProgressUpdate()
     if( d->m_bComplete )
       emit d->m_extension->infoMessage( i18n( "Page loaded." ));
     else if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
-      emit d->m_extension->infoMessage( i18n( "%n Image of %1 loaded.", "%n Images of %1 loaded.", d->m_loadedObjects).arg(d->m_totalObjectCount) );
+      emit d->m_extension->infoMessage( i18np( "%n Image of %1 loaded.", "%n Images of %1 loaded.", d->m_loadedObjects, d->m_totalObjectCount) );
   }
 
   emit d->m_extension->loadingProgress( percent );
@@ -3701,7 +3701,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
       if ( com.isNull() )
         tmp = i18n( "Symbolic Link");
       else
-        tmp = i18n("%1 (Link)").arg(com);
+        tmp = i18n("%1 (Link)", com);
       char buff_two[1024];
       text += " -> ";
       int n = readlink ( path.data(), buff_two, 1022);
@@ -3721,11 +3721,11 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     else if ( ok && S_ISREG( buff.st_mode ) )
     {
       if (buff.st_size < 1024)
-        text = i18n("%2 (%1 bytes)").arg((long) buff.st_size).arg(text2); // always put the URL last, in case it contains '%'
+        text = i18n("%2 (%1 bytes)", (long) buff.st_size, text2); // always put the URL last, in case it contains '%'
       else
       {
         float d = (float) buff.st_size/1024.0;
-        text = i18n("%2 (%1 K)").arg(KGlobal::locale()->formatNumber(d, 2)).arg(text2); // was %.2f
+        text = i18n("%2 (%1 K)", KGlobal::locale()->formatNumber(d, 2), text2); // was %.2f
       }
       text += "  ";
       text += com;
@@ -3864,7 +3864,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
   }
 
   if (!checkLinkSecurity(cURL,
-			 i18n( "<qt>This untrusted page links to<BR><B>%1</B>.<BR>Do you want to follow the link?" ),
+			 ki18n( "<qt>This untrusted page links to<BR><B>%1</B>.<BR>Do you want to follow the link?" ),
 			 i18n( "Follow" )))
     return false;
 
@@ -3970,7 +3970,7 @@ void KHTMLPart::slotViewPageInfo()
   QString editStr = QString();
 
   if (!d->m_pageServices.isEmpty())
-    editStr = i18n("   <a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
+    editStr = i18n("   <a href=\"%1\">[Properties]</a>", d->m_pageServices);
 
   QString squeezedURL = KStringHandler::csqueeze( url().prettyURL(), 80 );
   dlg->_url->setHtml("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
@@ -4732,7 +4732,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
 
   if (!checkLinkSecurity(u,
-			 i18n( "<qt>The form will be submitted to <BR><B>%1</B><BR>on your local filesystem.<BR>Do you want to submit the form?" ),
+			 ki18n( "<qt>The form will be submitted to <BR><B>%1</B><BR>on your local filesystem.<BR>Do you want to submit the form?" ),
 			 i18n( "Submit" )))
     return;
 
@@ -5687,7 +5687,7 @@ void KHTMLPart::setStatusBarText( const QString& text, StatusBarPriority p)
     if (!tobe.isEmpty() && d->m_jobspeed)
       tobe += " ";
     if (d->m_jobspeed)
-      tobe += i18n( "(%1/s)" ).arg( KIO::convertSize( d->m_jobspeed ) );
+      tobe += i18n( "(%1/s)" ,  KIO::convertSize( d->m_jobspeed ) );
   }
   tobe = "<qt>"+tobe;
 
@@ -6737,7 +6737,7 @@ void KHTMLPart::selectAll()
   emitSelectionChanged();
 }
 
-bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const QString &message, const QString &button)
+bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &message, const QString &button)
 {
   bool linkAllowed = true;
 
@@ -6753,14 +6753,14 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const QString &message, co
     if (!message.isEmpty())
     {
 	    response = KMessageBox::warningContinueCancel( 0,
-							   message.arg(Qt::escape(linkURL.prettyURL())),
+							   message.subs(Qt::escape(linkURL.prettyURL())).toString(),
 							   i18n( "Security Warning" ),
 							   button);
     }
     else
     {
 	    KMessageBox::error( 0,
-				i18n( "<qt>Access by untrusted page to<BR><B>%1</B><BR> denied.").arg(Qt::escape(linkURL.prettyURL())),
+				i18n( "<qt>Access by untrusted page to<BR><B>%1</B><BR> denied.", Qt::escape(linkURL.prettyURL())),
 				i18n( "Security Alert" ));
     }
 
@@ -7182,7 +7182,7 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
     connect(d->m_statusBarWalletLabel, SIGNAL(leftClickedURL()), SLOT(launchWalletManager()));
     connect(d->m_statusBarWalletLabel, SIGNAL(rightClickedURL()), SLOT(walletMenu()));
   } 
-  d->m_statusBarWalletLabel->setToolTip(i18n("The wallet '%1' is open and being used for form data and passwords.").arg(KWallet::Wallet::NetworkWallet()));
+  d->m_statusBarWalletLabel->setToolTip(i18n("The wallet '%1' is open and being used for form data and passwords.", KWallet::Wallet::NetworkWallet()));
 #endif // KHTML_NO_WALLET
 }
 
@@ -7337,7 +7337,7 @@ void KHTMLPart::suppressedPopupMenu() {
   KMenu *m = new KMenu(0L);
   m->setCheckable(true);
   if ( d->m_openableSuppressedPopups )
-      m->insertItem(i18n("&Show Blocked Popup Window","Show %n Blocked Popup Windows", d->m_openableSuppressedPopups), this, SLOT(showSuppressedPopups()));
+      m->insertItem(i18np("&Show Blocked Popup Window","Show %n Blocked Popup Windows", d->m_openableSuppressedPopups), this, SLOT(showSuppressedPopups()));
   m->insertItem(i18n("Show Blocked Window Passive Popup &Notification"), this, SLOT(togglePopupPassivePopup()),0,57);
   m->setItemChecked(57,d->m_settings->jsPopupBlockerPassivePopup());
   m->insertItem(i18n("&Configure JavaScript New Window Policies..."), this, SLOT(launchJSConfigDialog()));

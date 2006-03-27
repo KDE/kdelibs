@@ -855,19 +855,19 @@ int TCPSlaveBase::verifyCertificate()
            {
              do {
                 if (ksv == KSSLCertificate::InvalidHost) {
-                        QString msg = i18n("The IP address of the host %1 "
-                                           "does not match the one the "
-                                           "certificate was issued to.");
                    result = messageBox( WarningYesNoCancel,
-                              msg.arg(ourHost),
+                              i18n("The IP address of the host %1 "
+                                   "does not match the one the "
+                                   "certificate was issued to.",
+                                   ourHost),
                               i18n("Server Authentication"),
                               i18n("&Details"),
                               i18n("Co&ntinue") );
                 } else {
-                   QString msg = i18n("The server certificate failed the "
-                                      "authenticity test (%1).");
                    result = messageBox( WarningYesNoCancel,
-                              msg.arg(ourHost),
+                              i18n("The server certificate failed the "
+                                   "authenticity test (%1).",
+                                   ourHost),
                               i18n("Server Authentication"),
                               i18n("&Details"),
                               i18n("Co&ntinue") );
@@ -991,10 +991,10 @@ int TCPSlaveBase::verifyCertificate()
           setMetaData("ssl_action", "reject");
         } else {
           do {
-             QString msg = i18n("The server certificate failed the "
-                                "authenticity test (%1).");
              result = messageBox(WarningYesNoCancel,
-                                 msg.arg(ourHost),
+                                 i18n("The server certificate failed the "
+                                      "authenticity test (%1).",
+                                      ourHost),
                                  i18n("Server Authentication"),
                                  i18n("&Details"),
                                  i18n("Co&nnect"));

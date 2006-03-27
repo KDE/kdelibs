@@ -123,7 +123,7 @@ void KMWRlpr::updatePrinter(KMPrinter *p)
 	{
 		p->setName(m_queue->text());
 		p->setPrinterName(p->name());
-		p->setDescription(i18n("Remote queue %1 on %2").arg(m_queue->text()).arg(m_host->text()));
+		p->setDescription(i18n("Remote queue %1 on %2", m_queue->text(), m_host->text()));
 	}
 }
 

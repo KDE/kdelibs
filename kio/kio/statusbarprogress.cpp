@@ -134,7 +134,7 @@ void StatusbarProgress::slotSpeed( KIO::Job*, unsigned long speed ) {
   if ( speed == 0 ) { // spped is measured in bytes-per-second
     m_pLabel->setText( i18n( " Stalled ") );
   } else {
-    m_pLabel->setText( i18n( " %1/s ").arg( KIO::convertSize( speed )) );
+    m_pLabel->setText( i18n( " %1/s ",  KIO::convertSize( speed )) );
   }
 }
 

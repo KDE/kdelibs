@@ -73,7 +73,7 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 
 	if (entry)
 	{
-		setCaption(i18n("Printcap Entry: %1").arg(entry->name));
+		setCaption(i18n("Printcap Entry: %1", entry->name));
 		m_fields = entry->fields;
 		m_aliases->setText(entry->aliases.join("|"));
 		Q3ListViewItem	*root = new Q3ListViewItem(m_view, entry->name), *item = 0;

@@ -963,7 +963,7 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
     whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<p>"
                          "%1<br>http://www.kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
                          "By clicking on the button next to the text edit box you can browse to an "
-                         "appropriate URL.</qt>").arg(QDir::homePath());
+                         "appropriate URL.</qt>", QDir::homePath());
     label = new QLabel( i18n("&URL:"), grid );
     m_urlEdit = new KUrlRequester( url.prettyURL(), grid );
     m_urlEdit->setMode( KFile::Directory );
@@ -990,13 +990,13 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
             appName = KGlobal::instance()->aboutData()->programName();
         if ( appName.isEmpty() )
             appName = QLatin1String( KGlobal::instance()->instanceName() );
-        m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)").arg( appName ), box );
+        m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)",  appName ), box );
         m_appLocal->setChecked( appLocal );
         m_appLocal->setWhatsThis(                         i18n("<qt>Select this setting if you want this "
                               "entry to show only when using the current application (%1).<p>"
                               "If this setting is not selected, the entry will be available in all "
-                              "applications.</qt>")
-                              .arg(appName));
+                              "applications.</qt>",
+                               appName));
     }
     else
         m_appLocal = 0L;

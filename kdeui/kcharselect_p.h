@@ -50,7 +50,7 @@ public:
 			const ushort uni = m_tableNum * 256 + columnCount(QModelIndex())*index.row() + index.column();;
 			QString s;
 			s.sprintf( "%04X", uint( uni ) );
-			QString result=i18n( "Character","<qt><font size=\"+4\" face=\"%1\">%2</font><br>Unicode code point: U+%3<br>(In decimal: %4)<br>(Character: %5)</qt>" ).arg( m_fontName ).arg( QChar( uni ) ).arg( s ).arg( uni ).arg( QChar( uni ) );
+			QString result=i18nc( "Character","<qt><font size=\"+4\" face=\"%1\">%2</font><br>Unicode code point: U+%3<br>(In decimal: %4)<br>(Character: %5)</qt>" ,  m_fontName ,  QChar( uni ) ,  s ,  uni ,  QChar( uni ) );
 			return QVariant(result);
 		} else if (role == Qt::TextAlignmentRole)
 			return QVariant(Qt::AlignHCenter | Qt::AlignVCenter);

@@ -78,9 +78,9 @@ void KPrintProcess::slotExited( KProcess* )
 			}
 		case Finishing:
 			if ( !normalExit() )
-				emit printError( this, i18n( "Abnormal process termination (<b>%1</b>)." ).arg( m_command ) );
+				emit printError( this, i18n( "Abnormal process termination (<b>%1</b>)." ,  m_command ) );
 			else if ( exitStatus() != 0 )
-				emit printError( this, i18n( "<b>%1</b>: execution failed with message:<p>%2</p>" ).arg( m_command ).arg( m_buffer ) );
+				emit printError( this, i18n( "<b>%1</b>: execution failed with message:<p>%2</p>" ,  m_command ,  m_buffer ) );
 			else
 				emit printTerminated( this );
 			break;

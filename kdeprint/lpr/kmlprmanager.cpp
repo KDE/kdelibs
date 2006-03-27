@@ -358,7 +358,7 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	if (!KStandardDirs::makeDir(sd, 0755))
 	{
 		setErrorMsg(i18n("Unable to create the spool directory %1. Check that you "
-		                 "have the required permissions for that operation.").arg(sd));
+		                 "have the required permissions for that operation.", sd));
 		return false;
 	}
 	PrintcapEntry	*entry = handler->createEntry(prt);
@@ -390,7 +390,7 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 			if (!m_lpchelper->restart(msg))
 			{
 				setErrorMsg(i18n("The printer has been created but the print daemon "
-				                 "could not be restarted. %1").arg(msg));
+				                 "could not be restarted. %1", msg));
 				return false;
 			}
 		}
@@ -419,7 +419,7 @@ bool KMLprManager::removePrinter(KMPrinter *prt)
 				if (!status)
 					setErrorMsg(i18n("Unable to remove spool directory %1. "
 					                 "Check that you have write permissions "
-					                 "for that directory.").arg(sd));
+					                 "for that directory.", sd));
 				return status;
 			}
 			else
@@ -496,7 +496,7 @@ void KMLprManager::slotEditPrintcap()
 
 QString KMLprManager::stateInformation()
 {
-	return i18n("Spooler type: %1").arg(LprSettings::self()->mode() == LprSettings::LPR ? "LPR (BSD compatible)" : "LPRng");
+	return i18n("Spooler type: %1", LprSettings::self()->mode() == LprSettings::LPR ? "LPR (BSD compatible)" : "LPRng");
 }
 
 #include "kmlprmanager.moc"

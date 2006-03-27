@@ -405,7 +405,7 @@ void KFileDialog::slotOk()
     }
 
     if ( !selectedURL.isValid() ) {
-       KMessageBox::sorry( d->mainWidget, i18n("%1\ndoes not appear to be a valid URL.\n").arg(d->url.url()), i18n("Invalid URL") );
+       KMessageBox::sorry( d->mainWidget, i18n("%1\ndoes not appear to be a valid URL.\n", d->url.url()), i18n("Invalid URL") );
        return;
     }
 
@@ -791,13 +791,13 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     KUrl u;
     u.setPath( QDir::rootPath() );
-    QString text = i18n("Root Folder: %1").arg( u.path() );
+    QString text = i18n("Root Folder: %1",  u.path() );
     d->pathCombo->addDefaultURL( u,
                                  KMimeType::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
 
     u.setPath( QDir::homePath() );
-    text = i18n("Home Folder: %1").arg( u.path( +1 ) );
+    text = i18n("Home Folder: %1",  u.path( +1 ) );
     d->pathCombo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
 
@@ -806,14 +806,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     if ( (u.path(+1) != docPath.path(+1)) &&
          QDir(docPath.path(+1)).exists() )
     {
-        text = i18n("Documents: %1").arg( docPath.path( +1 ) );
+        text = i18n("Documents: %1",  docPath.path( +1 ) );
         d->pathCombo->addDefaultURL( docPath,
                                      KMimeType::pixmapForURL( docPath, 0, K3Icon::Small ),
                                      text );
     }
 
     u.setPath( KGlobalSettings::desktopPath() );
-    text = i18n("Desktop: %1").arg( u.path( +1 ) );
+    text = i18n("Desktop: %1",  u.path( +1 ) );
     d->pathCombo->addDefaultURL( u,
                                  KMimeType::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
@@ -857,7 +857,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     coll->action( "up" )->plug( toolbar );
     coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<p>"
                                             "For instance, if the current location is file:/home/%1 clicking this "
-                                            "button will take you to file:/home.</qt>").arg( KUser().loginName() ));
+                                            "button will take you to file:/home.</qt>",  KUser().loginName() ));
     coll->action( "back" )->plug( toolbar );
     coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
     coll->action( "forward" )->plug( toolbar );
@@ -1437,7 +1437,7 @@ KUrl::List KFileDialog::tokenize( const QString& line ) const
         KMessageBox::sorry(that, i18n("The requested filenames\n"
                                       "%1\n"
                                       "do not appear to be valid;\n"
-                                      "make sure every filename is enclosed in double quotes.").arg(line),
+                                      "make sure every filename is enclosed in double quotes.", line),
                            i18n("Filename Error"));
         return urls;
     }
@@ -1886,8 +1886,8 @@ void KFileDialog::updateAutoSelectExtension (void)
         if (!d->extension.isEmpty ())
         {
             // remember: sync any changes to the string with below
-            d->autoSelectExtCheckBox->setText (i18n ("Automatically select filename e&xtension (%1)").arg (d->extension));
-            whatsThisExtension = i18n ("the extension <b>%1</b>").arg (d->extension);
+            d->autoSelectExtCheckBox->setText (i18n ("Automatically select filename e&xtension (%1)",  d->extension));
+            whatsThisExtension = i18n ("the extension <b>%1</b>",  d->extension);
 
             d->autoSelectExtCheckBox->setEnabled (true);
             d->autoSelectExtCheckBox->setChecked (d->autoSelectExtChecked);
@@ -1929,10 +1929,10 @@ void KFileDialog::updateAutoSelectExtension (void)
                   "</ol>"
                   "If unsure, keep this option enabled as it makes your "
                   "files more manageable."
-                    )
-                .arg (locationLabelText)
-                .arg (locationLabelText)
-                .arg (whatsThisExtension)
+                    ,
+                  locationLabelText,
+                  locationLabelText,
+                  whatsThisExtension)
             + "</qt>"
             );
 

@@ -258,7 +258,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     layout->addWidget(new QLabel(i18n("SSL version:"), this), 9, 0);
     layout->addWidget(new QLabel(sslversion, this), 9, 1);
     layout->addWidget(new QLabel(i18n("Cipher strength:"), this), 10, 0);
-    layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher").arg(usedbits).arg(bits), this), 10, 1);
+    layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher", usedbits, bits), this), 10, 1);
     d->m_layout->addLayout(layout, 2, 0, 1, 3);
 
     displayCert(cert);
@@ -423,7 +423,7 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
         new QLabel(tmp, _frame);
     }
     if (!(tmp = cert.getValue("ST")).isEmpty()) {
-        label = new QLabel(i18n("Federal State","State:"), _frame);
+        label = new QLabel(i18nc("Federal State","State:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, _frame);
     }

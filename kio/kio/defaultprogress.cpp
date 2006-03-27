@@ -222,8 +222,8 @@ void DefaultProgress::showTotals()
     QString tmps;
     if ( m_iTotalDirs > 1 )
       // that we have a singular to translate looks weired but is only logical
-      tmps = i18n("%n folder", "%n folders", m_iTotalDirs) + "   ";
-    tmps += i18n("%n file", "%n files", m_iTotalFiles);
+      tmps = i18np("%n folder", "%n folders", m_iTotalDirs) + "   ";
+    tmps += i18np("%n file", "%n files", m_iTotalFiles);
     progressLabel->setText( tmps );
   }
 }
@@ -234,11 +234,11 @@ QString DefaultProgress::makePercentString( unsigned long percent,
                                             unsigned long totalFiles )
 {
   if ( totalSize )
-      return i18n( "%1 % of %2 " ).arg( percent ).arg( KIO::convertSize( totalSize ) );
+      return i18n( "%1 % of %2 " ,  percent ,  KIO::convertSize( totalSize ) );
   else if ( totalFiles )
-      return i18n( "%1 % of 1 file", "%1 % of %n files", totalFiles ).arg( percent );
+      return i18np( "%1 % of 1 file", "%1 % of %n files", totalFiles ,  percent );
   else
-      return i18n( "%1 %" ).arg( percent );
+      return i18n( "%1 %" ,  percent );
 }
 
 void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
@@ -280,9 +280,9 @@ void DefaultProgress::slotProcessedSize( KIO::Job*, KIO::filesize_t bytes ) {
     return;
   m_iProcessedSize = bytes;
 
-  QString tmp = i18n( "%1 of %2 complete")
-                .arg( KIO::convertSize(bytes) )
-                .arg( KIO::convertSize(m_iTotalSize));
+  QString tmp = i18n( "%1 of %2 complete",
+                  KIO::convertSize(bytes) ,
+                  KIO::convertSize(m_iTotalSize));
   sizeLabel->setText( tmp );
 }
 
@@ -294,9 +294,9 @@ void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long dirs )
   m_iProcessedDirs = dirs;
 
   QString tmps;
-  tmps = i18n("%1 / %n folder", "%1 / %n folders", m_iTotalDirs).arg( m_iProcessedDirs );
+  tmps = i18np("%1 / %n folder", "%1 / %n folders", m_iTotalDirs,  m_iProcessedDirs );
   tmps += "   ";
-  tmps += i18n("%1 / %n file", "%1 / %n files", m_iTotalFiles).arg( m_iProcessedFiles );
+  tmps += i18np("%1 / %n file", "%1 / %n files", m_iTotalFiles,  m_iProcessedFiles );
   progressLabel->setText( tmps );
 }
 
@@ -309,10 +309,10 @@ void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long files )
 
   QString tmps;
   if ( m_iTotalDirs > 1 ) {
-    tmps = i18n("%1 / %n folder", "%1 / %n folders", m_iTotalDirs).arg( m_iProcessedDirs );
+    tmps = i18np("%1 / %n folder", "%1 / %n folders", m_iTotalDirs,  m_iProcessedDirs );
     tmps += "   ";
   }
-  tmps += i18n("%1 / %n file", "%1 / %n files", m_iTotalFiles).arg( m_iProcessedFiles );
+  tmps += i18np("%1 / %n file", "%1 / %n files", m_iTotalFiles,  m_iProcessedFiles );
   progressLabel->setText( tmps );
 }
 
@@ -322,8 +322,8 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long speed )
   if ( speed == 0 ) {
     speedLabel->setText( i18n( "Stalled") );
   } else {
-    speedLabel->setText( i18n( "%1/s ( %2 remaining )").arg( KIO::convertSize( speed ))
-        .arg( KIO::convertSeconds( KIO::calculateRemainingSeconds( m_iTotalSize, m_iProcessedSize, speed ))) );
+    speedLabel->setText( i18n( "%1/s ( %2 remaining )",  KIO::convertSize( speed ),
+          KIO::convertSeconds( KIO::calculateRemainingSeconds( m_iTotalSize, m_iProcessedSize, speed ))) );
   }
 }
 
@@ -398,7 +398,7 @@ void DefaultProgress::slotStating( KIO::Job*, const KUrl& url )
 
 void DefaultProgress::slotMounting( KIO::Job*, const QString & dev, const QString & point )
 {
-  setWindowTitle(i18n("Mounting %1").arg(dev));
+  setWindowTitle(i18n("Mounting %1", dev));
   sourceEdit->setText(point);
   setDestVisible( false );
 }
@@ -413,7 +413,7 @@ void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
 void DefaultProgress::slotCanResume( KIO::Job*, KIO::filesize_t offset )
 {
   if ( offset ) {
-    resumeLabel->setText( i18n("Resuming from %1").arg(KIO::number(offset)) );
+    resumeLabel->setText( i18n("Resuming from %1", KIO::number(offset)) );
   } else {
     resumeLabel->setText( i18n("Not resumable") );
   }
@@ -451,7 +451,7 @@ void DefaultProgress::slotClean() {
       int s = d->startTime.elapsed();
       if (!s)
         s = 1;
-      speedLabel->setText(i18n("%1/s (done)").arg(KIO::convertSize(1000 * m_iTotalSize / s)));
+      speedLabel->setText(i18n("%1/s (done)", KIO::convertSize(1000 * m_iTotalSize / s)));
     }
     setOnlyClean(false);
   }

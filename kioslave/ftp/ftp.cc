@@ -347,7 +347,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
   kDebug(7102) << "ftpOpenConnection " << m_host << ":" << m_port << " "
                 << m_user << " [password hidden]" << endl;
 
-  infoMessage( i18n("Opening connection to host %1").arg(m_host) );
+  infoMessage( i18n("Opening connection to host %1", m_host) );
 
   if ( m_host.isEmpty() )
   {
@@ -365,7 +365,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
 
   if (!ftpOpenControlConnection(host, port) )
     return false;          // error emitted by ftpOpenControlConnection
-  infoMessage( i18n("Connected to host %1").arg(m_host) );
+  infoMessage( i18n("Connected to host %1", m_host) );
 
   if(loginMode != loginDefered)
   {
@@ -413,7 +413,7 @@ bool Ftp::ftpOpenControlConnection( const QString &host, unsigned short int port
     if(m_iRespType != 2)
     { // login not successful, do we have an message text?
       if(psz[0])
-        sErrorMsg = i18n("%1.\n\nReason: %2").arg(host).arg(psz);
+        sErrorMsg = i18n("%1.\n\nReason: %2", host, psz);
       iErrorCode = ERR_COULD_NOT_CONNECT;
     }
   }
@@ -484,7 +484,7 @@ bool Ftp::ftpLogin()
       {
         errorMsg = i18n("Message sent:\nLogin using username=%1 and "
                         "password=[hidden]\n\nServer replied:\n%2\n\n"
-                        ).arg(user).arg(ftpResponse(0));
+                        , user, ftpResponse(0));
       }
 
       if ( user != FTP_LOGIN )
@@ -493,7 +493,7 @@ bool Ftp::ftpLogin()
       info.prompt = i18n("You need to supply a username and a password "
                           "to access this site.");
       info.commentLabel = i18n( "Site:" );
-      info.comment = i18n("<b>%1</b>").arg( m_host );
+      info.comment = i18n("<b>%1</b>",  m_host );
       info.keepPassword = true; // Prompt the user for persistence as well.
       info.readOnly = (!m_user.isEmpty() && m_user != FTP_LOGIN);
 
@@ -585,7 +585,7 @@ bool Ftp::ftpLogin()
   if( !ftpSendCmd("pwd") || (m_iRespType != 2) )
   {
     kDebug(7102) << "Couldn't issue pwd command" << endl;
-    error( ERR_COULD_NOT_LOGIN, i18n("Could not login to %1.").arg(m_host) ); // or anything better ?
+    error( ERR_COULD_NOT_LOGIN, i18n("Could not login to %1.", m_host) ); // or anything better ?
     return false;
   }
 

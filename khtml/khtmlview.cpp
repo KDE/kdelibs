@@ -1609,6 +1609,7 @@ void KHTMLView::startFindAhead( bool linksOnly )
 void KHTMLView::findAhead(bool increase)
 {
 	QString status;
+	QString text = d->findString.toLower();
 
 	if(d->findLinksOnly)
 	{
@@ -1616,12 +1617,12 @@ void KHTMLView::findAhead(bool increase)
 		                 KHTMLPart::FindLinksOnly, this);
 		if(m_part->findTextNext())
 		{
-			status = i18n("Link found: \"%1\".");
+			status = i18n("Link found: \"%1\".", text);
 		}
 		else
 		{
 			if(increase) KNotifyClient::beep();
-			status = i18n("Link not found: \"%1\".");
+			status = i18n("Link not found: \"%1\".", text);
 		}
 	}
 	else
@@ -1629,17 +1630,16 @@ void KHTMLView::findAhead(bool increase)
 		m_part->findText(d->findString, KHTMLPart::FindNoPopups, this);
 		if(m_part->findTextNext())
 		{
-			status = i18n("Text found: \"%1\".");
+			status = i18n("Text found: \"%1\".", text);
 		}
 		else
 		{
 			if(increase) KNotifyClient::beep();
-			status = i18n("Text not found: \"%1\".");
+			status = i18n("Text not found: \"%1\".", text);
 		}
 	}
 
-	m_part->setStatusBarText(status.arg(d->findString.toLower()),
-	                         KHTMLPart::BarDefaultText);
+	m_part->setStatusBarText(status, KHTMLPart::BarDefaultText);
 }
 
 void KHTMLView::updateFindAheadTimeout()
@@ -2708,7 +2708,7 @@ void KHTMLView::print(bool quick)
     QString docname = m_part->xmlDocImpl()->URL().prettyURL();
     if ( !docname.isEmpty() )
         docname = KStringHandler::csqueeze(docname, 80);
-    if(quick || printer->setup(this, i18n("Print %1").arg(docname))) {
+    if(quick || printer->setup(this, i18n("Print %1", docname))) {
         viewport()->setCursor( Qt::WaitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
         printer->setFullPage(false);

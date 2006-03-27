@@ -185,7 +185,7 @@ void KXmlCommandSelector::slotAddCommand()
 			if (KMessageBox::warningContinueCancel(
 				this,
 				i18n("A command named %1 already exists. Do you want "
-				     "to continue and edit the existing one?").arg(cmdId),
+				     "to continue and edit the existing one?", cmdId),
 				QString(),
 				KStdGuiItem::cont()) == KMessageBox::Cancel)
 			{
@@ -221,7 +221,7 @@ void KXmlCommandSelector::slotEditCommand()
 		slotCommandSelected(m_cmd->currentIndex());
 	}
 	else
-		KMessageBox::error(this, i18n("Internal error. The XML driver for the command %1 could not be found.").arg(xmlId));
+		KMessageBox::error(this, i18n("Internal error. The XML driver for the command %1 could not be found.", xmlId));
 }
 
 void KXmlCommandSelector::slotBrowse()

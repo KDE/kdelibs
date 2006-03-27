@@ -250,16 +250,16 @@ void KFileSharePropsPlugin::applyChanges()
              if (!ok) {
                 if (share)
                   KMessageBox::detailedError(properties,
-                    i18n("Sharing folder '%1' failed.").arg(path),
+                    i18n("Sharing folder '%1' failed.", path),
                     i18n("An error occurred while trying to share folder '%1'. "
-                         "Make sure that the Perl script 'fileshareset' is set suid root.")
-                         .arg(path));
+                         "Make sure that the Perl script 'fileshareset' is set suid root.",
+                          path));
                 else
                   KMessageBox::error(properties,
-                    i18n("Unsharing folder '%1' failed.").arg(path),
+                    i18n("Unsharing folder '%1' failed.", path),
                     i18n("An error occurred while trying to unshare folder '%1'. "
-                         "Make sure that the Perl script 'fileshareset' is set suid root.")
-                         .arg(path));
+                         "Make sure that the Perl script 'fileshareset' is set suid root.",
+                          path));
 
                 properties->abortApplying();
                 break;

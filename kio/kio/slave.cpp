@@ -370,7 +370,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     KTempFile socketfile(prefix, QLatin1String(".slave-socket"));
     if ( socketfile.status() != 0 )
     {
-	error_text = i18n("Unable to create io-slave: %1").arg(strerror(errno));
+	error_text = i18n("Unable to create io-slave: %1", strerror(errno));
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
 	return 0;
     }
@@ -406,7 +406,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
        QString _name = KProtocolInfo::exec(protocol);
        if (_name.isEmpty())
        {
-          error_text = i18n("Unknown protocol '%1'.").arg(protocol);
+          error_text = i18n("Unknown protocol '%1'.", protocol);
           error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
           delete slave;
           return 0;
@@ -414,7 +414,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
        QString lib_path = KLibLoader::findLibrary(QFile::encodeName(_name));
        if (lib_path.isEmpty())
        {
-          error_text = i18n("Can not find io-slave for protocol '%1'.").arg(protocol);
+          error_text = i18n("Can not find io-slave for protocol '%1'.", protocol);
           error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
           return 0;
        }
@@ -453,7 +453,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     stream2 >> pid >> errorStr;
     if (!pid)
     {
-        error_text = i18n("Unable to create io-slave:\nklauncher said: %1").arg(errorStr);
+        error_text = i18n("Unable to create io-slave:\nklauncher said: %1", errorStr);
         error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
         delete slave;
         return 0;

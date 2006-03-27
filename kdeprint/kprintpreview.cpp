@@ -273,7 +273,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 			QString	msg = i18n("The preview program %1 cannot be found. "
 						       "Check that the program is correctly installed and "
 						       "located in a directory included in your PATH "
-						       "environment variable.").arg(exe);
+						       "environment variable.", exe);
 			return continuePrint(msg, parentW, previewOnly);
 		}
 		proc << exe << file;
@@ -300,7 +300,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 			               "viewer could be found.");
 			else
 				msg = i18n( "Preview failed: KDE could not find any application "
-						    "to preview files of type %1." ).arg( mime->name() );
+						    "to preview files of type %1." ,  mime->name() );
 
 			return continuePrint(msg, parentW, previewOnly);
 		}
@@ -309,7 +309,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	// start the preview process
 	if (!proc.startPreview())
 	{
-		QString	msg = i18n("Preview failed: unable to start program %1.").arg(exe);
+		QString	msg = i18n("Preview failed: unable to start program %1.", exe);
 		return continuePrint(msg, parentW, previewOnly);
 	}
 	else if (!previewOnly)

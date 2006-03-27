@@ -441,7 +441,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   KMenu *debugMenu = new KMenu(this);
   menuBar()->insertItem("&Debug",debugMenu);
 
-  m_nextAction       = new KAction(i18n("Next breakpoint","&Next"),"dbgnext",KShortcut(),this,SLOT(slotNext()),
+  m_nextAction       = new KAction(i18nc("Next breakpoint","&Next"),"dbgnext",KShortcut(),this,SLOT(slotNext()),
 				   actionCollection(),"next");
   m_stepAction       = new KAction(i18n("&Step"),"dbgstep",KShortcut(),this,SLOT(slotStep()),
 				   actionCollection(),"step");
@@ -452,7 +452,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_breakAction      = new KAction(i18n("&Break at Next Statement"),"dbgrunto",KShortcut(),this,SLOT(slotBreakNext()),
 				   actionCollection(),"breaknext");
 
-  m_nextAction->setToolTip(i18n("Next breakpoint","Next"));
+  m_nextAction->setToolTip(i18nc("Next breakpoint","Next"));
   m_stepAction->setToolTip(i18n("Step"));
   m_continueAction->setToolTip(i18n("Continue"));
   m_stopAction->setToolTip(i18n("Stop"));
@@ -817,9 +817,9 @@ bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
     if (sidValue->type() == NumberType) { // sid is not set for Function() constructor
       int sourceId = (int)sidValue->toNumber(exec);
       assert(m_sourceFragments[sourceId]);
-      exceptionMsg = i18n("Parse error at %1 line %2")
-		     .arg(m_sourceFragments[sourceId]->sourceFile->url)
-		     .arg(m_sourceFragments[sourceId]->baseLine+m_sourceFragments[sourceId]->errorLine-1);
+      exceptionMsg = i18n("Parse error at %1 line %2",
+		      m_sourceFragments[sourceId]->sourceFile->url,
+		      m_sourceFragments[sourceId]->baseLine+m_sourceFragments[sourceId]->errorLine-1);
     }
   }
 
@@ -828,8 +828,8 @@ bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
     // An exception occurred and we're not currently executing any code... this can
     // happen in some cases e.g. a parse error, or native code accessing funcitons like
     // Object::put()
-    QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1")
-		  .arg(exceptionMsg);
+    QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1",
+		   exceptionMsg);
     KJSErrorDialog dlg(dlgParent,msg,false);
     dlg.exec();
     dontShowAgain = dlg.dontShowAgain();
@@ -839,10 +839,10 @@ bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
     abort();
 #if 0
     SourceFragment *sourceFragment = m_sourceFragments[ctx.sourceId()];
-    QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1 line %2:\n%3")
-		  .arg(KStringHandler::rsqueeze( sourceFragment->sourceFile->url,80),
-		  QString::number( sourceFragment->baseLine+ctx.curStmtFirstLine()-1),
-		  exceptionMsg);
+    QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1 line %2:\n%3",
+ 		       KStringHandler::rsqueeze( sourceFragment->sourceFile->url,80),
+ 		       sourceFragment->baseLine+ctx.curStmtFirstLine()-1,
+		       exceptionMsg);
 
     KJSErrorDialog dlg(dlgParent,msg,true);
     dlg.exec();

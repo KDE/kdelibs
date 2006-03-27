@@ -64,21 +64,21 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 		int	p = val.indexOf('@');
 		if (p != -1)
 		{
-			prt->setLocation(i18n("Remote queue (%1) on %2").arg(val.left(p)).arg(val.mid(p+1)));
+			prt->setLocation(i18n("Remote queue (%1) on %2", val.left(p), val.mid(p+1)));
 			uri.setProtocol("lpd");
 			uri.setHost(val.mid(p+1));
 			uri.setPath("/" + val.left(p));
 		}
 		else if ((p = val.indexOf('%')) != -1)
 		{
-			prt->setLocation(i18n("Network printer (%1)").arg("socket"));
+			prt->setLocation(i18n("Network printer (%1)", QString("socket")));
 			uri.setProtocol("socket");
 			uri.setHost(val.left(p));
 			uri.setPort(val.mid(p+1).toInt());
 		}
 		else
 		{
-			prt->setLocation(i18n("Local printer on %1").arg(val));
+			prt->setLocation(i18n("Local printer on %1", val));
 			uri.setProtocol("parallel");
 			uri.setPath(val);
 		}
@@ -88,7 +88,7 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 		QString rm = entry->has("rm") ?
 				entry->field("rm") :
 				LprSettings::self()->defaultRemoteHost();
-		prt->setLocation(i18n("Remote queue (%1) on %2").arg(val).arg(rm));
+		prt->setLocation(i18n("Remote queue (%1) on %2", val, rm));
 		uri.setProtocol("lpd");
 		uri.setHost(rm);
 		uri.setPath("/" + val);
@@ -124,7 +124,7 @@ PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 	QString	prot = uri.protocol();
 	if (!prot.isEmpty() && prot != "parallel" && prot != "file" && prot != "lpd" && prot != "socket")
 	{
-		manager()->setErrorMsg(i18n("Unsupported backend: %1.").arg(prot));
+		manager()->setErrorMsg(i18n("Unsupported backend: %1.", prot));
 		return NULL;
 	}
 	PrintcapEntry	*entry = new PrintcapEntry;

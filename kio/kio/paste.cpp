@@ -108,7 +108,7 @@ static KIO::CopyJob* chooseAndPaste( const KUrl& u, const QMimeData* mimeData,
         const QString& fmt = formats[i];
         KMimeType::Ptr mime = KMimeType::mimeType( fmt );
         if ( mime != KMimeType::defaultMimeTypePtr() )
-            formatLabels.append( i18n( "%1 (%2)" ).arg( mime->comment() ).arg( fmt ) );
+            formatLabels.append( i18n( "%1 (%2)" ,  mime->comment() ,  fmt ) );
         else
             formatLabels.append( fmt );
     }
@@ -199,7 +199,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
 KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, bool move )
 {
   if ( !destUrl.isValid() ) {
-    KMessageBox::error( widget, i18n( "Malformed URL\n%1" ).arg( destUrl.url() ) );
+    KMessageBox::error( widget, i18n( "Malformed URL\n%1" ,  destUrl.url() ) );
     return 0;
   }
 
@@ -273,9 +273,9 @@ KIO_EXPORT QString KIO::pasteActionText()
     KUrl::List urls = KUrl::List::fromMimeData( mimeData );
     if ( !urls.isEmpty() ) {
         if ( urls.first().isLocalFile() )
-            return i18n( "&Paste File", "&Paste %n Files", urls.count() );
+            return i18np( "&Paste File", "&Paste %n Files", urls.count() );
         else
-            return i18n( "&Paste URL", "&Paste %n URLs", urls.count() );
+            return i18np( "&Paste URL", "&Paste %n URLs", urls.count() );
     } else if ( !mimeData->formats().isEmpty() ) {
         return i18n( "&Paste Clipboard Contents" );
     } else {

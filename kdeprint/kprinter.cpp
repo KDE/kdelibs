@@ -698,7 +698,7 @@ bool KPrinter::autoConfigure(const QString& prname, QWidget *parent)
 
 void reportError(KPrinter *p)
 {
-	if (!KNotifyClient::event(0,"printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1").arg(p->errorMessage())))
+	if (!KNotifyClient::event(0,"printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1", p->errorMessage())))
 		kDebug(500) << "could not send notify event" << endl;
 }
 
@@ -917,7 +917,7 @@ void KPrinter::setSearchName(const QString& s)
 bool KPrinter::newPage()
 {
 	d->m_pagenumber++;
-	d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(d->m_pagenumber), this);
+	d->m_impl->statusMessage(i18n("Generating print data: page %1", d->m_pagenumber), this);
 	return d->m_printer->newPage();
 }
 

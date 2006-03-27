@@ -414,6 +414,6 @@ void OfflineDialog::loadCache()
       i18n("Successfully downloaded directory server contents!") );
   } else {
     KMessageBox::error( this,
-      i18n("An error occurred downloading directory server contents into file %1.").arg(mDst) );
+      i18n("An error occurred downloading directory server contents into file %1.", mDst) );
   }
 }

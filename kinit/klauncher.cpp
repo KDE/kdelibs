@@ -730,8 +730,8 @@ KLauncher::requestDone(KLaunchRequest *request)
    {
       DCOPresult.result = 1;
       DCOPresult.dcopName = "";
-      DCOPresult.error = i18n("KDEInit could not launch '%1'.")
-	 .arg(QLatin1String(request->name));
+      DCOPresult.error = i18n("KDEInit could not launch '%1'.",
+	  QLatin1String(request->name));
       if (!request->errorMsg.isEmpty())
          DCOPresult.error += ":\n" + request->errorMsg;
       DCOPresult.pid = 0;
@@ -908,7 +908,7 @@ KLauncher::start_service_by_name(const QString &serviceName, const QStringList &
    if (!service)
    {
       DCOPresult.result = ENOENT;
-      DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
+      DCOPresult.error = i18n("Could not find service '%1'.", serviceName);
       cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
       return false;
    }
@@ -933,7 +933,7 @@ KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStri
    if (!service)
    {
       DCOPresult.result = ENOENT;
-      DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
+      DCOPresult.error = i18n("Could not find service '%1'.", serviceName);
       cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
       return false;
    }
@@ -948,7 +948,7 @@ KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStri
    if (!service)
    {
       DCOPresult.result = ENOENT;
-      DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
+      DCOPresult.error = i18n("Could not find service '%1'.", serviceName);
       cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
       return false;
    }
@@ -963,7 +963,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    if (!service->isValid())
    {
       DCOPresult.result = ENOEXEC;
-      DCOPresult.error = i18n("Service '%1' is malformatted.").arg(service->desktopEntryPath());
+      DCOPresult.error = i18n("Service '%1' is malformatted.", service->desktopEntryPath());
       cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
       return false;
    }
@@ -999,7 +999,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    if (!request->arg_list.count())
    {
       DCOPresult.result = ENOEXEC;
-      DCOPresult.error = i18n("Service '%1' is malformatted.").arg(service->desktopEntryPath());
+      DCOPresult.error = i18n("Service '%1' is malformatted.", service->desktopEntryPath());
       delete request;
       cancel_service_startup_info( NULL, startup_id, envs );
       return false;
@@ -1075,7 +1075,7 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
     KStartupInfoData data;
     data.setName( service->name());
     data.setIcon( service->icon());
-    data.setDescription( i18n( "Launching %1" ).arg( service->name()));
+    data.setDescription( i18n( "Launching %1" ,  service->name()));
     if( !wmclass.isEmpty())
         data.setWMClass( wmclass );
     if( silent )
@@ -1269,7 +1269,7 @@ KLauncher::requestSlave(const QString &protocol,
     QString _name = KProtocolInfo::exec(protocol);
     if (_name.isEmpty())
     {
-	error = i18n("Unknown protocol '%1'.\n").arg(protocol);
+	error = i18n("Unknown protocol '%1'.\n", protocol);
         return 0;
     }
 
@@ -1323,7 +1323,7 @@ KLauncher::requestSlave(const QString &protocol,
     requestDone(request);
     if (!pid)
     {
-       error = i18n("Error loading '%1'.\n").arg(QLatin1String(name));
+       error = i18n("Error loading '%1'.\n", QLatin1String(name));
     }
     return pid;
 }

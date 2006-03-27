@@ -149,8 +149,8 @@ bool StdAddressBook::saveAll()
     if ( !(*it)->readOnly() && (*it)->isOpen() ) {
       Ticket *ticket = requestSaveTicket( *it );
       if ( !ticket ) {
-        error( i18n( "Unable to save to resource '%1'. It is locked." )
-                   .arg( (*it)->resourceName() ) );
+        error( i18n( "Unable to save to resource '%1'. It is locked." ,
+                     (*it)->resourceName() ) );
         return false;
       }
 

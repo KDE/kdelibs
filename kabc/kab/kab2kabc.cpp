@@ -284,8 +284,8 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
   fileName += "addressbook.kab";
   if ( !QFile::exists( fileName ) ) {
     if ( !quiet ) {
-      KMessageBox::error( 0, "<qt>" + i18n( "Address book file <b>%1</b> not found! Make sure the old address book is located there and you have read permission for this file." )
-                          .arg( fileName ) + "</qt>" );
+      KMessageBox::error( 0, "<qt>" + i18n( "Address book file <b>%1</b> not found! Make sure the old address book is located there and you have read permission for this file." ,
+                            fileName ) + "</qt>" );
     }
     kDebug(5700) << "No KDE 2 addressbook found." << endl;
     return;

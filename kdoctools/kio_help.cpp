@@ -111,7 +111,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
 	}
         else
 	{
-	    unicodeError( i18n("There is no documentation available for %1." ).arg(path) );
+	    unicodeError( i18n("There is no documentation available for %1." , path) );
 	    finished();
             return QString();
 	}
@@ -214,7 +214,7 @@ void HelpProtocol::get( const KUrl& url )
         kDebug( 7119 ) << "parsed " << mParsed.length() << endl;
 
         if (mParsed.isEmpty()) {
-            unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ).arg( file ) );
+            unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ,  file ) );
         } else {
             int pos1 = mParsed.indexOf( "charset=" );
             if ( pos1 > 0 ) {
@@ -247,7 +247,7 @@ void HelpProtocol::get( const KUrl& url )
         kDebug( 7119 ) << "parsed " << mParsed.length() << endl;
 
         if (mParsed.isEmpty()) {
-            unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ).arg( file ) );
+            unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ,  file ) );
         } else {
             QString query = url.query(), anchor;
 
@@ -315,7 +315,7 @@ void HelpProtocol::emitFile( const KUrl& url )
             return;
         }
 
-        unicodeError( i18n("Could not find filename %1 in %2.").arg(filename).arg( url.url() ) );
+        unicodeError( i18n("Could not find filename %1 in %2.", filename,  url.url() ) );
         return;
     }
 

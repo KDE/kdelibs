@@ -372,7 +372,7 @@ KSpellConfig::interpret( const QString &fname, QString &lname,
     sChangeEncoding(KS_E_LATIN2);
   }
   else {
-    lname=""; hname=i18n("Unknown ispell dictionary", "Unknown");
+    lname=""; hname=i18nc("Unknown ispell dictionary", "Unknown");
   }
   if (!extension.isEmpty())
   {
@@ -500,8 +500,8 @@ void KSpellConfig::getAvailDictsIspell () {
       langfnames.removeFirst();
       langfnames.prepend ( fname );
 
-      hname=i18n("default spelling dictionary"
-                 ,"Default - %1 [%2]").arg(hname).arg(fname);
+      hname=i18nc("default spelling dictionary"
+                 ,"Default - %1 [%2]", hname, fname);
 
       dictcombo->setItemText (0,hname);
     }
@@ -583,8 +583,8 @@ void KSpellConfig::getAvailDictsAspell () {
         langfnames.erase ( langfnames.begin() );
         langfnames.prepend ( fname );
 
-        hname=i18n("default spelling dictionary"
-                   ,"Default - %1").arg(hname);
+        hname=i18nc("default spelling dictionary"
+                   ,"Default - %1", hname);
 
         dictcombo->setItemText (0,hname);
       }
@@ -650,8 +650,8 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
           langfnames.erase ( langfnames.begin() );
           langfnames.prepend ( fname );
 
-          hname=i18n("default spelling dictionary"
-                     ,"Default - %1 [%2]").arg(hname).arg(fname);
+          hname=i18nc("default spelling dictionary"
+                     ,"Default - %1 [%2]", hname, fname);
 
           box->setItemText (0,hname);
         }
@@ -739,8 +739,8 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
             langfnames.erase ( langfnames.begin() );
             langfnames.prepend ( fname );
 
-            hname=i18n("default spelling dictionary"
-                       ,"Default - %1").arg(hname);
+            hname=i18nc("default spelling dictionary"
+                       ,"Default - %1", hname);
 
             box->setItemText (0,hname);
           }

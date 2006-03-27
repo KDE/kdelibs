@@ -562,7 +562,7 @@ QString Sym::toString( bool bUserSpace ) const
 	s = XKeysymToString( m_sym );
 #endif
 	capitalizeKeyname( s );
-	return bUserSpace ? i18n("QAccel", s.toLatin1()) : s;
+	return bUserSpace ? i18nc("QAccel", s.toLatin1()) : s;
 }
 
 QString Sym::toStringInternal() const { return toString( false ); }

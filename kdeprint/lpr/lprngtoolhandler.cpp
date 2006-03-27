@@ -69,7 +69,7 @@ bool LPRngToolHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, boo
 				user,
 				pass );
 		prt->setDevice( uri );
-		prt->setLocation(i18n("Network printer (%1)").arg("smb"));
+		prt->setLocation(i18n("Network printer (%1)", QString("smb")));
 	}
 
 	// look for comment
@@ -96,7 +96,7 @@ bool LPRngToolHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, boo
 						model = str.mid(p, q-p);
 				}
 			}
-			prt->setDriverInfo(i18n("IFHP Driver (%1)").arg((model.isEmpty() ? i18n("unknown") : model)));
+			prt->setDriverInfo(i18n("IFHP Driver (%1)", (model.isEmpty() ? i18n("unknown") : model)));
 			prt->setOption("driverID", model);
 		}
 	//}
@@ -167,7 +167,7 @@ DrMain* LPRngToolHandler::loadDriver(KMPrinter *prt, PrintcapEntry *entry, bool 
 	if (driver)
 	{
 		QString	model = prt->option("driverID");
-		driver->set("text", i18n("LPRngTool Common Driver (%1)").arg((model.isEmpty() ? i18n("unknown") : model)));
+		driver->set("text", i18n("LPRngTool Common Driver (%1)", (model.isEmpty() ? i18n("unknown") : model)));
 		if (!model.isEmpty())
 			driver->set("driverID", model);
 		QMap<QString,QString>	opts = parseZOptions(entry->field("prefix_z"));
@@ -273,7 +273,7 @@ PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 	QString	prot = prt->deviceProtocol();
 	if (prot != "parallel" && prot != "lpd" && prot != "smb" && prot != "socket")
 	{
-		manager()->setErrorMsg(i18n("Unsupported backend: %1.").arg(prot));
+		manager()->setErrorMsg(i18n("Unsupported backend: %1.", prot));
 		return NULL;
 	}
 	PrintcapEntry	*entry = new PrintcapEntry;
@@ -317,7 +317,7 @@ PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 		}
 		else
 		{
-			manager()->setErrorMsg( i18n( "Invalid printer backend specification: %1" ).arg( prt->device() ) );
+			manager()->setErrorMsg( i18n( "Invalid printer backend specification: %1" ,  prt->device() ) );
 			delete entry;
 			return NULL;
 		}

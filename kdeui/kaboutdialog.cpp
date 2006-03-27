@@ -721,10 +721,10 @@ void KAboutContainerBase::setProduct( const QString &appName,
   int size = IconSize(K3Icon::Desktop);
   mIconLabel->setPixmap( qApp->windowIcon().pixmap(size,size) );
 
-  const QString msg1 = i18n("%1 %2 (Using KDE %3)").arg(appName).arg(version).
-    arg(QLatin1String(KDE_VERSION_STRING));
-  const QString msg2 = !year.isEmpty() ? i18n("%1 %2, %3").arg(QChar(0xA9)).arg(year).
-    arg(author) : QLatin1String("");
+  const QString msg1 = i18n("%1 %2 (Using KDE %3)", appName, version, 
+    QLatin1String(KDE_VERSION_STRING));
+  const QString msg2 = !year.isEmpty() ? i18n("%1 %2, %3", QChar(0xA9), year, 
+    author) : QLatin1String("");
 
   //if (!year.isEmpty())
   //  msg2 = i18n("%1 %2, %3").arg(QChar(0xA9)).arg(year).arg(author);
@@ -1548,7 +1548,7 @@ KAboutDialog::KAboutDialog( int layoutType, const QString &_caption,
   setModal(modal);
   enableButtonSeparator( separator );
   setDefaultButton(defaultButton);
-  setPlainCaption( i18n("About %1").arg(_caption) );
+  setPlainCaption( i18n("About %1", _caption) );
 
   mContainerBase = new KAboutContainerBase( layoutType, this );
   setMainWidget(mContainerBase);

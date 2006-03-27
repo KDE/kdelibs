@@ -584,7 +584,7 @@ void KPasswordDialog::enableOkBtn()
           d->m_MatchLabel->setText( i18n("Password is empty") );
       } else {
           if ((int) pass.length() < minPasswordLength) {
-              d->m_MatchLabel->setText(i18n("Password must be at least 1 character long", "Password must be at least %n characters long", minPasswordLength));
+              d->m_MatchLabel->setText(i18np("Password must be at least 1 character long", "Password must be at least %n characters long", minPasswordLength));
           } else {
               d->m_MatchLabel->setText( match? i18n("Passwords match")
                                               :i18n("Passwords do not match") );

@@ -77,7 +77,7 @@ bool KMWLocal::isValid(QString& msg)
 {
 	if (m_localuri->text().isEmpty())
 	{
-		msg = i18n("The URI is empty","Empty URI.");
+		msg = i18nc("The URI is empty","Empty URI.");
 		return false;
 	}
 	else if (m_uris.indexOf(m_localuri->text()) == -1)

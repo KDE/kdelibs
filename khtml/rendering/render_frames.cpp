@@ -823,7 +823,7 @@ void RenderPartObject::slotPartLoadingErrorNotify()
             KUrl pluginPageURL( embed->pluginPage );
             QString shortURL = pluginPageURL.protocol() == "http" ? pluginPageURL.host() : pluginPageURL.prettyURL();
             int res = KMessageBox::questionYesNo( m_view,
-                                                  i18n("No plugin found for '%1'.\nDo you want to download one from %2?").arg(mimeName).arg(shortURL),
+                                                  i18n("No plugin found for '%1'.\nDo you want to download one from %2?", mimeName, shortURL),
                                                   i18n("Missing Plugin"), i18n("Download"), i18n("Do Not Download"), QString("plugin-")+serviceType);
             if ( res == KMessageBox::Yes )
             {

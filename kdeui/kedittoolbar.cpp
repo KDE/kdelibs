@@ -950,14 +950,14 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
       if ( name.isEmpty() )
           act->setText(1, i18n("<Merge>"));
       else
-          act->setText(1, i18n("<Merge %1>").arg(name));
+          act->setText(1, i18n("<Merge %1>", name));
       continue;
     }
 
     if (it.tagName() == tagActionList)
     {
       ToolbarItem *act = new ToolbarItem(m_activeList, tagActionList, it.attribute(attrName), i18n("This is a dynamic list of actions. You can move it, but if you remove it you won't be able to re-add it.") );
-      act->setText(1, i18n("ActionList: %1").arg(it.attribute(attrName)));
+      act->setText(1, i18n("ActionList: %1", it.attribute(attrName)));
       continue;
     }
 

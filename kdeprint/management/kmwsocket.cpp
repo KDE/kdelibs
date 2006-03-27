@@ -135,7 +135,7 @@ void KMWSocket::slotScanFinished()
 		QString	name;
     NetworkScanner::SocketInfo *info(it.next());
 		if (info->Name.isEmpty())
-			name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(info->IP);
+			name = i18nc("Unknown host - 1 is the IP", "<Unknown> (%1)", info->IP);
 		else
 			name = info->Name;
 		Q3ListViewItem	*item = new Q3ListViewItem(m_list,name,info->IP,QString::number(info->Port));

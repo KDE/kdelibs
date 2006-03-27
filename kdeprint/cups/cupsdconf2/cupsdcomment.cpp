@@ -36,7 +36,7 @@ QString Comment::toolTip() const
 {
         QString str = comment_;
         str.replace(QRegExp("^#[\\s]*"), "").replace(QRegExp("\n#[\\s]*"), "\n");
-        return i18n("Do not translate the keyword between brackets (e.g. ServerName, ServerAdmin, etc.)", str.toUtf8());
+        return i18nc("Do not translate the keyword between brackets (e.g. ServerName, ServerAdmin, etc.)", str.toUtf8());
 }
 
 QString Comment::key() const

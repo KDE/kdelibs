@@ -531,7 +531,7 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
 			return;
 #endif
       enable_i18n();
-      usage( i18n("Unknown option '%1'.").arg(QString::fromLocal8Bit(_opt)));
+      usage( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt)));
    }
 
    if ((result & 4) != 0)
@@ -551,7 +551,7 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
 				return;
 #endif
          enable_i18n();
-         usage( i18n("Unknown option '%1'.").arg(QString::fromLocal8Bit(_opt)));
+         usage( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt)));
       }
       if (argument.isEmpty())
       {
@@ -559,7 +559,7 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
          if (i >= argc)
          {
             enable_i18n();
-            usage( i18n("'%1' missing.").arg( opt_name));
+            usage( i18n("'%1' missing.",  opt_name));
          }
          argument = argv[i];
       }
@@ -654,7 +654,7 @@ KCmdLineArgs::parseAllArgs()
                email = " <" + (*it).emailAddress() + ">";
              authorlist += QString("    ") + (*it).name() + email + "\n";
            }
-           printQ( i18n("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2").arg ( QString(about->programName()) ).arg( authorlist ) );
+           printQ( i18nc("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2",   QString(about->programName()) ,  authorlist ) );
          }
        } else {
          printQ( i18n("This application was written by somebody who wants to remain anonymous.") );
@@ -667,9 +667,9 @@ KCmdLineArgs::parseAllArgs()
              printQ( i18n( "Please use http://bugs.kde.org to report bugs.\n" ) );
            else {
              if( about->authors().count() == 1 && about->authors().first().emailAddress() == about->bugAddress() )
-               printQ( i18n( "Please report bugs to %1.\n" ).arg( about->authors().first().emailAddress() ) );
+               printQ( i18n( "Please report bugs to %1.\n" ,  about->authors().first().emailAddress() ) );
              else
-               printQ( i18n( "Please report bugs to %1.\n" ).arg(about->bugAddress()) );
+               printQ( i18n( "Please report bugs to %1.\n" , about->bugAddress()) );
            }
          }
          else
@@ -695,7 +695,7 @@ KCmdLineArgs::parseAllArgs()
             if (ignoreUnknown)
                continue;
             enable_i18n();
-            usage( i18n("Unexpected argument '%1'.").arg(QString::fromLocal8Bit(argv[i])));
+            usage( i18n("Unexpected argument '%1'.", QString::fromLocal8Bit(argv[i])));
          }
          else
          {
@@ -830,7 +830,6 @@ KCmdLineArgs::usage(const char *id)
 
    QString optionFormatString   = "  %1 %2\n";
    QString optionFormatStringDef  = "  %1 %2 [%3]\n";
-   QString optionHeaderString = i18n("\n%1:\n");
    QString tmp;
    QString usage;
 
@@ -846,7 +845,7 @@ KCmdLineArgs::usage(const char *id)
    {
       if ((*args)->name)
       {
-         usage = i18n("[%1-options]").arg((*args)->name)+" "+usage;
+         usage = i18n("[%1-options]", (*args)->name)+" "+usage;
       }
       --args;
    }
@@ -866,10 +865,10 @@ KCmdLineArgs::usage(const char *id)
      }
    }
 
-   printQ(i18n("Usage: %1 %2\n").arg(argv[0]).arg(usage));
+   printQ(i18n("Usage: %1 %2\n", argv[0], usage));
    printQ("\n"+about->shortDescription()+"\n");
 
-   printQ(optionHeaderString.arg(i18n("Generic options")));
+   printQ(i18n("\nGeneric options:\n"));
    printQ(optionFormatString.arg("--help", -25).arg(i18n("Show help about options")));
 
    args = argsList->begin();
@@ -878,7 +877,7 @@ KCmdLineArgs::usage(const char *id)
       if ((*args)->name && (*args)->id)
       {
          QString option = QString("--help-%1").arg((*args)->id);
-         QString desc = i18n("Show %1 specific options").arg((*args)->name);
+         QString desc = i18n("Show %1 specific options", (*args)->name);
 
          printQ(optionFormatString.arg(option, -25).arg(desc));
       }
@@ -911,7 +910,7 @@ KCmdLineArgs::usage(const char *id)
      bool hasOptions = false;
      QString optionsHeader;
      if ((*args)->name)
-        optionsHeader = optionHeaderString.arg(i18n("%1 options").arg(QLatin1String((*args)->name)));
+        optionsHeader = i18n("\n%1 options:\n", QLatin1String((*args)->name));
      else
         optionsHeader = i18n("\nOptions:\n");
 

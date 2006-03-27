@@ -64,7 +64,7 @@ int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
     KTrader::OfferList offers = KTrader::self()->query(serviceType, "Application", constraint, preferences);
     if ( offers.isEmpty() ) {
         if ( error )
-            *error = i18n("No service implementing %1").arg( serviceType );
+            *error = i18n("No service implementing %1",  serviceType );
         kWarning() << "KDCOPServiceStarter: No service implementing " << serviceType << endl;
         return -1;
     }

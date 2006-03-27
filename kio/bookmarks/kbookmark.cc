@@ -118,8 +118,8 @@ KBookmarkGroup KBookmarkGroup::createNewFolder( KBookmarkManager* mgr, const QSt
         bool ok;
         QString caption = parentGroup().fullText().isEmpty() ?
                       i18n( "Create New Bookmark Folder" ) :
-                      i18n( "Create New Bookmark Folder in %1" )
-                      .arg( parentGroup().text() );
+                      i18n( "Create New Bookmark Folder in %1" ,
+                        parentGroup().text() );
         txt = KInputDialog::getText( caption, i18n( "New folder:" ),
                       QString(), &ok );
         if ( !ok )

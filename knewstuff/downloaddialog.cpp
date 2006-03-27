@@ -393,7 +393,7 @@ void DownloadDialog::slotDetails()
 
   QString lang = KGlobal::locale()->language();
 
-  QString info = i18n
+  QString info = ki18n
   (
     "Name: %1\n"
     "Author: %2\n"
@@ -403,24 +403,24 @@ void DownloadDialog::slotDetails()
     "Rating: %6\n"
     "Downloads: %7\n"
     "Release date: %8\n"
-    "Summary: %9\n"
-    ).arg(e->name()
-    ).arg(e->author()
-    ).arg(e->license()
-    ).arg(e->version()
-    ).arg(e->release()
-    ).arg(e->rating()
-    ).arg(e->downloads()
-    ).arg(KGlobal::locale()->formatDate(e->releaseDate())
-    ).arg(e->summary(lang)
-  );
+    "Summary: %9\n")
+    .subs(e->name())
+    .subs(e->author())
+    .subs(e->license())
+    .subs(e->version())
+    .subs(e->release())
+    .subs(e->rating())
+    .subs(e->downloads())
+    .subs(KGlobal::locale()->formatDate(e->releaseDate()))
+    .subs(e->summary(lang))
+    .toString();
 
   info.append(i18n
   (
     "Preview: %1\n"
     "Payload: %2\n"
-    ).arg(e->preview().url()
-    ).arg(e->payload().url()
+    , e->preview().url()
+    , e->payload().url()
   ));
 
   KMessageBox::information(this, info, i18n("Details"));

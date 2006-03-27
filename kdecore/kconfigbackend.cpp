@@ -1086,7 +1086,7 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
   {
     errorMsg = i18n("Will not save configuration.\n");
     allWritable = false;
-    errorMsg += i18n("Configuration file \"%1\" not writable.\n").arg(mLocalFileName);
+    errorMsg += i18n("Configuration file \"%1\" not writable.\n", mLocalFileName);
   }
   // We do not have an immutability flag for kdeglobals. However, making kdeglobals mutable while making
   // the local config file immutable is senseless.
@@ -1094,7 +1094,7 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
   {
     if ( errorMsg.isEmpty() )
       errorMsg = i18n("Will not save configuration.\n");
-    errorMsg += i18n("Configuration file \"%1\" not writable.\n").arg(mGlobalFileName);
+    errorMsg += i18n("Configuration file \"%1\" not writable.\n", mGlobalFileName);
     allWritable = false;
   }
 

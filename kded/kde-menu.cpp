@@ -97,7 +97,7 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
                DCOPRef kicker( "kicker", "kicker" );
                bool result = kicker.call( "highlightMenuItem", menuId );
                if (!result)
-                  error(3, i18n("Menu item '%1' could not be highlighted.").arg(menuId).toLocal8Bit());
+                  error(3, i18n("Menu item '%1' could not be highlighted.", menuId).toLocal8Bit());
             }
             exit(0);
          }
@@ -162,11 +162,11 @@ int main(int argc, char **argv)
    KService::Ptr s = KService::serviceByMenuId(menuId);
 
    if (!s)
-      error(1, i18n("No menu item '%1'.").arg(menuId));
+      error(1, i18n("No menu item '%1'.", menuId));
 
    findMenuEntry(KServiceGroup::root(), "", menuId);
 
-   error(2, i18n("Menu item '%1' not found in menu.").arg(menuId));
+   error(2, i18n("Menu item '%1' not found in menu.", menuId));
    return 2;
 }
 

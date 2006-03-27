@@ -185,81 +185,81 @@ QString KSocketBase::errorString(KSocketBase::SocketError code)
   switch (code)
     {
     case NoError:
-      reason = i18n("Socket error code NoError", "no error");
+      reason = i18nc("Socket error code NoError", "no error");
       break;
 
     case LookupFailure:
-      reason = i18n("Socket error code LookupFailure",
+      reason = i18nc("Socket error code LookupFailure",
 		    "name lookup has failed");
       break;
 
     case AddressInUse:
-      reason = i18n("Socket error code AddressInUse",
+      reason = i18nc("Socket error code AddressInUse",
 		    "address already in use");
       break;
 
     case AlreadyBound:
-      reason = i18n("Socket error code AlreadyBound",
+      reason = i18nc("Socket error code AlreadyBound",
 		    "socket is already bound");
       break;
 
     case AlreadyCreated:
-      reason = i18n("Socket error code AlreadyCreated",
+      reason = i18nc("Socket error code AlreadyCreated",
 		    "socket is already created");
       break;
       
     case NotBound:
-      reason = i18n("Socket error code NotBound",
+      reason = i18nc("Socket error code NotBound",
 		    "socket is not bound");
       break;
 
     case NotCreated:
-      reason = i18n("Socket error code NotCreated",
+      reason = i18nc("Socket error code NotCreated",
 		    "socket has not been created");
       break;
 
     case WouldBlock:
-      reason = i18n("Socket error code WouldBlock",
+      reason = i18nc("Socket error code WouldBlock",
 		    "operation would block");
       break;
 
     case ConnectionRefused:
-      reason = i18n("Socket error code ConnectionRefused",
+      reason = i18nc("Socket error code ConnectionRefused",
 		    "connection actively refused");
       break;
 
     case ConnectionTimedOut:
-      reason = i18n("Socket error code ConnectionTimedOut",
+      reason = i18nc("Socket error code ConnectionTimedOut",
 		    "connection timed out");
       break;
 
     case InProgress:
-      reason = i18n("Socket error code InProgress",
+      reason = i18nc("Socket error code InProgress",
 		    "operation is already in progress");
       break;
 
     case NetFailure:
-      reason = i18n("Socket error code NetFailure",
+      reason = i18nc("Socket error code NetFailure",
 		    "network failure occurred");
       break;
 
     case NotSupported:
-      reason = i18n("Socket error code NotSupported",
+      reason = i18nc("Socket error code NotSupported",
 		    "operation is not supported");
       break;
 
     case Timeout:
-      reason = i18n("Socket error code Timeout",
+      reason = i18nc("Socket error code Timeout",
 		    "timed operation timed out");
       break;
 
     case UnknownError:
-      reason = i18n("Socket error code UnknownError",
+      reason = i18nc("Socket error code UnknownError",
 		    "an unknown/unexpected error has happened");
       break;
 
     case RemotelyDisconnected:
-      reason = i18n("Socket error code RemotelyDisconnected",
+      reason = i18nc("Socket error code RemotelyDisconnected",
 		    "remote host closed connection");
       break;
 

@@ -130,7 +130,7 @@ QString KMJob::stateString()
 			str = i18n("Completed");
 			break;
 		default:
-			str = i18n("Unknown State", "Unknown");
+			str = i18nc("Unknown State", "Unknown");
 			break;
 	}
 	return str;

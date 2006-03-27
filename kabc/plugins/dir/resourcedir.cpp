@@ -179,7 +179,7 @@ bool ResourceDir::load()
     QFile file( mPath + "/" + (*it) );
 
     if ( !file.open( QIODevice::ReadOnly ) ) {
-      addressBook()->error( i18n( "Unable to open file '%1' for reading" ).arg( file.fileName() ) );
+      addressBook()->error( i18n( "Unable to open file '%1' for reading" ,  file.fileName() ) );
       ok = false;
       continue;
     }
@@ -199,8 +199,8 @@ bool ResourceDir::asyncLoad()
 
   bool ok = load();
   if ( !ok )
-    emit loadingError( this, i18n( "Loading resource '%1' failed!" )
-                       .arg( resourceName() ) );
+    emit loadingError( this, i18n( "Loading resource '%1' failed!" ,
+                         resourceName() ) );
   else
     emit loadingFinished( this );
 
@@ -222,7 +222,7 @@ bool ResourceDir::save( Ticket * )
 
     QFile file( mPath + "/" + (*it).uid() );
     if ( !file.open( QIODevice::WriteOnly ) ) {
-      addressBook()->error( i18n( "Unable to open file '%1' for writing" ).arg( file.fileName() ) );
+      addressBook()->error( i18n( "Unable to open file '%1' for writing" ,  file.fileName() ) );
       continue;
     }
 
@@ -243,8 +243,8 @@ bool ResourceDir::asyncSave( Ticket *ticket )
 {
   bool ok = save( ticket );
   if ( !ok )
-    emit savingError( this, i18n( "Saving resource '%1' failed!" )
-                      .arg( resourceName() ) );
+    emit savingError( this, i18n( "Saving resource '%1' failed!" ,
+                        resourceName() ) );
   else
     emit savingFinished( this );
 

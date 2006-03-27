@@ -130,8 +130,8 @@ QString KNewStuffGeneric::downloadDestination( KNS::Entry *entry )
 
   if ( KStandardDirs::exists( file ) ) {
     int result = KMessageBox::warningContinueCancel( parentWidget(),
-        i18n("The file '%1' already exists. Do you want to overwrite it?")
-        .arg( file ),
+        i18n("The file '%1' already exists. Do you want to overwrite it?",
+          file ),
         QString(), i18n("Overwrite") );
     if ( result == KMessageBox::Cancel ) return QString();
   }

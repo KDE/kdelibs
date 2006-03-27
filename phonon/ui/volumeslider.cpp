@@ -62,8 +62,8 @@ VolumeSlider::VolumeSlider( QWidget* parent )
 	d->layout.addWidget( &d->icon );
 	d->layout.addWidget( &d->slider );
 
-	setToolTip( i18n( "Volume: %1%" ).arg( "100" ) );
-	setWhatsThis( i18n( "Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%" ).arg( "100" ) );
+	setToolTip( i18n( "Volume: %1%", 100 ) );
+	setWhatsThis( i18n( "Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%", 100 ) );
 }
 
 VolumeSlider::~VolumeSlider()
@@ -80,7 +80,7 @@ void VolumeSlider::setMaximumVolume( float volume )
 {
 	int max = static_cast<int>( volume * 100 );
 	d->slider.setMaximum( max );
-	setWhatsThis( i18n( "Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%" ).arg( max ) );
+	setWhatsThis( i18n( "Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%" ,  max ) );
 }
 
 Qt::Orientation VolumeSlider::orientation() const
@@ -108,7 +108,7 @@ void VolumeSlider::setAudioOutput( AudioOutput* output )
 
 void VolumeSlider::sliderChanged( int value )
 {
-	setToolTip( i18n( "Volume: %1%" ).arg( value ) );
+	setToolTip( i18n( "Volume: %1%" ,  value ) );
 	d->ignoreVolumeChange = true;
 	d->output->setVolume( ( static_cast<float>( value ) ) * 0.01 );
 	d->ignoreVolumeChange = false;

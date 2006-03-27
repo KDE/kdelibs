@@ -141,7 +141,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     tmpLabel->setWhatsThis(qwtstr );
 
     setButtonGuiItem( Ok,  KGuiItem( i18n("&Send"), "mail_send", i18n( "Send bug report." ),
-                    i18n( "Send this bug report to %1." ).arg( m_aboutData->bugAddress() ) ) );
+                    i18n( "Send this bug report to %1." ,  m_aboutData->bugAddress() ) ) );
 
   }
   else
@@ -220,7 +220,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     // Severity
     m_bgSeverity = new QGroupBox( i18n("Se&verity"), parent );
     static const char * const sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
-    const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18n("normal severity","Normal"), i18n("Wishlist"), i18n("Translation") };
+    const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18nc("normal severity","Normal"), i18n("Wishlist"), i18n("Translation") };
     QHBoxLayout *severityLayout=new QHBoxLayout(m_bgSeverity);
     for (int i = 0 ; i < 5 ; i++ )
     {
@@ -312,7 +312,7 @@ void KBugReport::appChanged(int i)
     if (d->appname == appName && m_aboutData)
         m_strVersion = m_aboutData->version();
     else
-        m_strVersion = i18n("unknown program name", "unknown");
+        m_strVersion = i18nc("unknown program name", "unknown");
 
     if ( !d->submitBugButton )
         m_strVersion += d->kde_version;

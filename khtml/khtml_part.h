@@ -35,6 +35,7 @@
 #include <kdemacros.h>
 #include <kfind.h>
 #include <kfinddialog.h>
+#include <klocalizedstring.h>
 #include <qregexp.h>
 
 class KHTMLPartPrivate;
@@ -1580,7 +1581,7 @@ private:
 
   khtml::ChildFrame *recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KUrl &url, const KParts::URLArgs &args, bool callParent = true );
 
-  bool checkLinkSecurity( const KUrl &linkURL,const QString &message = QString(), const QString &button = QString() );
+  bool checkLinkSecurity( const KUrl &linkURL,const KLocalizedString &message = KLocalizedString(), const QString &button = QString() );
   QVariant executeScript( const QString& filename, int baseLine, const DOM::Node &n, const QString& script );
 
   KJSProxy *jScript();

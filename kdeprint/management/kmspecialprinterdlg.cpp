@@ -178,7 +178,7 @@ bool KMSpecialPrinterDlg::checkSettings()
 					&msg);
 
 	if (!msg.isEmpty())
-		KMessageBox::error(this, i18n("Invalid settings. %1.").arg(msg));
+		KMessageBox::error(this, i18n("Invalid settings. %1.", msg));
 
 	return (msg.isEmpty());
 }
@@ -197,7 +197,7 @@ void KMSpecialPrinterDlg::setPrinter(KMPrinter *printer)
 		m_location->setText(printer->location());
 		m_icon->setIcon(printer->pixmap());
 
-		setCaption(i18n("Configuring %1").arg(printer->name()));
+		setCaption(i18n("Configuring %1", printer->name()));
 	}
 }
 

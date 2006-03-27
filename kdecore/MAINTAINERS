@@ -42,6 +42,7 @@ kkeysequence.cpp	Ellis Whitehead <ellis@kde.org>
 kkeysequence_emb.cpp	Ellis Whitehead <ellis@kde.org>
 klibloader.cpp
 klocale.cpp		Hans Petter Bieker <bieker@kde.org>
+klocalizedstring.cpp	Chusslove Illich <caslav.ilic@gmx.net>
 kmdcodec.cpp
 kmimesourcefactory.cpp
 kmultipledrag.cpp	David Faure <faure@kde.org>

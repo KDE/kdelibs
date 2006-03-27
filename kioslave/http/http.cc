@@ -1501,8 +1501,8 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
 
   // default error message if the following code fails
   kError = ERR_INTERNAL;
-  errorString = i18n("An unexpected error (%1) occurred while attempting to %2.")
-                      .arg( code ).arg( action );
+  errorString = i18n("An unexpected error (%1) occurred while attempting to %2.",
+                        code ,  action );
 
   switch ( code )
   {
@@ -1551,7 +1551,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
 
       //kError = ERR_SLAVE_DEFINED;
       errorString = i18n("An error occurred while attempting to %1, %2. A "
-                         "summary of the reasons is below.<ul>").arg( action ).arg( url );
+                         "summary of the reasons is below.<ul>",  action ,  url );
 
       for ( QStringList::Iterator it = errors.begin(); it != errors.end(); ++it )
         errorString += "<li>" + *it + "</li>";
@@ -1562,7 +1562,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
     case 500: // hack: Apache mod_dav returns this instead of 403 (!)
       // 403 Forbidden
       kError = ERR_ACCESS_DENIED;
-      errorString = i18n("Access was denied while attempting to %1.").arg( action );
+      errorString = i18n("Access was denied while attempting to %1.",  action );
       break;
     case 405:
       // 405 Method Not Allowed
@@ -1587,14 +1587,14 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
         errorString = i18n("The server was unable to maintain the liveness of "
                            "the properties listed in the propertybehavior XML "
                            "element or you attempted to overwrite a file while "
-                           "requesting that files are not overwritten. %1")
-                           .arg( ow );
+                           "requesting that files are not overwritten. %1",
+                             ow );
 
       }
       else if ( m_request.method == DAV_LOCK )
       {
         kError = ERR_ACCESS_DENIED;
-        errorString = i18n("The requested lock could not be granted. %1").arg( ow );
+        errorString = i18n("The requested lock could not be granted. %1",  ow );
       }
       break;
     case 415:
@@ -1605,7 +1605,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
     case 423:
       // 423 Locked
       kError = ERR_ACCESS_DENIED;
-      errorString = i18n("Unable to %1 because the resource is locked.").arg( action );
+      errorString = i18n("Unable to %1 because the resource is locked.",  action );
       break;
     case 425:
       // 424 Failed Dependency
@@ -1617,7 +1617,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       {
         kError = ERR_WRITE_ACCESS_DENIED;
         errorString = i18n("Unable to %1 because the destination server refuses "
-                           "to accept the file or folder.").arg( action );
+                           "to accept the file or folder.",  action );
       }
       break;
     case 507:
@@ -1645,7 +1645,7 @@ void HTTPProtocol::httpError()
 
   switch ( m_request.method ) {
     case HTTP_PUT:
-      action = i18n( "upload %1" ).arg(m_request.url.prettyURL());
+      action = i18n( "upload %1" , m_request.url.prettyURL());
       break;
     default:
       // this should not happen, this function is for http errors only
@@ -1654,8 +1654,8 @@ void HTTPProtocol::httpError()
 
   // default error message if the following code fails
   kError = ERR_INTERNAL;
-  errorString = i18n("An unexpected error (%1) occurred while attempting to %2.")
-                      .arg( m_responseCode ).arg( action );
+  errorString = i18n("An unexpected error (%1) occurred while attempting to %2.",
+                        m_responseCode ,  action );
 
   switch ( m_responseCode )
   {
@@ -1665,7 +1665,7 @@ void HTTPProtocol::httpError()
       // 403 Forbidden
       // 405 Method Not Allowed
       kError = ERR_ACCESS_DENIED;
-      errorString = i18n("Access was denied while attempting to %1.").arg( action );
+      errorString = i18n("Access was denied while attempting to %1.",  action );
       break;
     case 409:
       // 409 Conflict
@@ -1677,13 +1677,13 @@ void HTTPProtocol::httpError()
     case 423:
       // 423 Locked
       kError = ERR_ACCESS_DENIED;
-      errorString = i18n("Unable to %1 because the resource is locked.").arg( action );
+      errorString = i18n("Unable to %1 because the resource is locked.",  action );
       break;
     case 502:
       // 502 Bad Gateway
       kError = ERR_WRITE_ACCESS_DENIED;
       errorString = i18n("Unable to %1 because the destination server refuses "
-                         "to accept the file or folder.").arg( action );
+                         "to accept the file or folder.",  action );
       break;
     case 507:
       // 507 Insufficient Storage
@@ -1973,7 +1973,7 @@ bool HTTPProtocol::httpOpenConnection()
     kDebug(7113) << "(" << m_pid << ") Connecting to proxy server: "
                   << proxy_host << ", port: " << proxy_port << endl;
 
-    infoMessage( i18n("Connecting to %1...").arg(m_state.hostname) );
+    infoMessage( i18n("Connecting to %1...", m_state.hostname) );
 
     setConnectTimeout( m_proxyConnTimeout );
 
@@ -1991,11 +1991,11 @@ bool HTTPProtocol::httpOpenConnection()
           errCode = ERR_UNKNOWN_PROXY_HOST;
           break;
         case KSocketBase::Timeout:
-          errMsg = i18n("Proxy %1 at port %2").arg(proxy_host).arg(proxy_port);
+          errMsg = i18n("Proxy %1 at port %2", proxy_host, proxy_port);
           errCode = ERR_SERVER_TIMEOUT;
           break;
         default:
-          errMsg = i18n("Proxy %1 at port %2").arg(proxy_host).arg(proxy_port);
+          errMsg = i18n("Proxy %1 at port %2", proxy_host, proxy_port);
           errCode = ERR_COULD_NOT_CONNECT;
       }
       error( errCode, errMsg );
@@ -2027,7 +2027,7 @@ bool HTTPProtocol::httpOpenConnection()
         default:
           errCode = ERR_COULD_NOT_CONNECT;
           if (m_state.port != m_iDefaultPort)
-            errMsg = i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port);
+            errMsg = i18n("%1 (port %2)", m_state.hostname, m_state.port);
           else
             errMsg = m_state.hostname;
       }
@@ -2560,7 +2560,7 @@ bool HTTPProtocol::httpOpen()
   if ( moreData || davData )
     res = sendBody();
 
-  infoMessage(i18n("%1 contacted. Waiting for reply...").arg(m_request.hostname));
+  infoMessage(i18n("%1 contacted. Waiting for reply...", m_request.hostname));
 
   return res;
 }
@@ -3809,7 +3809,7 @@ bool HTTPProtocol::sendBody()
     return false;
   }
 
-  infoMessage( i18n( "Sending data to %1" ).arg( m_request.hostname ) );
+  infoMessage( i18n( "Sending data to %1" ,  m_request.hostname ) );
 
   QString size = QString ("Content-Length: %1\r\n\r\n").arg(length);
   kDebug( 7113 ) << "(" << m_pid << ")" << size << endl;
@@ -4218,8 +4218,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   if ( !dataInternal ) {
     if ( (m_iSize > 0) && (m_iSize != NO_SIZE)) {
        totalSize(m_iSize);
-       infoMessage( i18n( "Retrieving %1 from %2...").arg(KIO::convertSize(m_iSize))
-         .arg( m_request.hostname ) );
+       infoMessage( i18n( "Retrieving %1 from %2...", KIO::convertSize(m_iSize),
+           m_request.hostname ) );
     }
     else
     {
@@ -4227,7 +4227,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     }
   }
   else
-    infoMessage( i18n( "Retrieving from %1..." ).arg( m_request.hostname ) );
+    infoMessage( i18n( "Retrieving from %1..." ,  m_request.hostname ) );
 
   if (m_request.bCachedRead)
   {
@@ -5022,7 +5022,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
       info.verifyPath = false;
       info.digestInfo = m_strAuthorization;
       info.commentLabel = i18n( "Site:" );
-      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname );
+      info.comment = i18n("<b>%1</b> at <b>%2</b>",  m_strRealm ,  m_request.hostname );
     }
   }
   else if ( m_responseCode == 407 )
@@ -5039,7 +5039,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
       info.verifyPath = false;
       info.digestInfo = m_strProxyAuthorization;
       info.commentLabel = i18n( "Proxy:" );
-      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strProxyRealm ).arg( m_proxyURL.host() );
+      info.comment = i18n("<b>%1</b> at <b>%2</b>",  m_strProxyRealm ,  m_proxyURL.host() );
     }
   }
 }
@@ -5060,7 +5060,7 @@ bool HTTPProtocol::getAuthorization()
      if (m_request.bErrorPage)
         errorPage();
      else
-        error( ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %1 but authentication is disabled.").arg(m_request.hostname));
+        error( ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %1 but authentication is disabled.", m_request.hostname));
      return false;
   }
 

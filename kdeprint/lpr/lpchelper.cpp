@@ -232,7 +232,7 @@ bool LpcHelper::changeState(const QString& printer, const QString& op, QString& 
 {
 	if (m_exepath.isEmpty())
 	{
-		msg = i18n("The executable %1 couldn't be found in your PATH.").arg("lpc");
+		msg = i18n("The executable %1 couldn't be found in your PATH.", QString("lpc"));
 		return false;
 	}
 	QString	result = execute(m_exepath + " " + op + " " + KProcess::quote(printer));
@@ -256,11 +256,11 @@ bool LpcHelper::changeState(const QString& printer, const QString& op, QString& 
 			msg = i18n("Permission denied.");
 			break;
 		case -2:
-			msg = i18n("Printer %1 does not exist.").arg(printer);
+			msg = i18n("Printer %1 does not exist.", printer);
 			break;
 		default:
 		case 1:
-			msg = i18n("Unknown error: %1").arg(result.replace(QRegExp("\\n"), " "));
+			msg = i18n("Unknown error: %1", result.replace(QRegExp("\\n"), " "));
 			break;
 	}
 	return (status == 0);
@@ -270,7 +270,7 @@ bool LpcHelper::removeJob(KMJob *job, QString& msg)
 {
 	if (m_lprmpath.isEmpty())
 	{
-		msg = i18n("The executable %1 couldn't be found in your PATH.").arg("lprm");
+		msg = i18n("The executable %1 couldn't be found in your PATH.", QString("lprm"));
 		return false;
 	}
 	QString	result = execute(m_lprmpath + " -P " + KProcess::quote(job->printer()) + " " + QString::number(job->id()));
@@ -279,7 +279,7 @@ bool LpcHelper::removeJob(KMJob *job, QString& msg)
 	else if (result.indexOf("Permission denied") != -1 || result.indexOf("no permissions") != -1)
 		msg = i18n("Permission denied.");
 	else
-		msg = i18n("Execution of lprm failed: %1").arg(result);
+		msg = i18n("Execution of lprm failed: %1", result);
 	return false;
 }
 
@@ -288,7 +288,7 @@ bool LpcHelper::changeJobState(KMJob *job, int state, QString& msg)
 {
 	if (m_lprmpath.isEmpty())
 	{
-		msg = i18n("The executable %1 couldn't be found in your PATH.").arg("lpc");
+		msg = i18n("The executable %1 couldn't be found in your PATH.", QString("lpc"));
 		return false;
 	}
 	QString	result = execute(m_exepath + (state == KMJob::Held ? " hold " : " release ") + KProcess::quote(job->printer()) + " " + QString::number(job->id()));
@@ -311,7 +311,7 @@ bool LpcHelper::restart(QString& msg)
 		s = "checkpc";
 	if (!s.isEmpty())
 	{
-		msg = i18n("The executable %1 couldn't be found in your PATH.").arg(s);
+		msg = i18n("The executable %1 couldn't be found in your PATH.", s);
 		return false;
 	}
 	::system(QFile::encodeName(m_exepath + " reread"));

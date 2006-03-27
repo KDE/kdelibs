@@ -12,6 +12,7 @@ if env.has_key('RUNTESTS') and env['RUNTESTS']:
 		'kconfigtestgui'         : ['kconfigtestgui.cpp', StandaloneTest],
 		'kdebugtest'             : ['kdebugtest.cpp', StandaloneTest],
 		'klocaletest'            : ['klocaletest.cpp', QTestLibTest],
+		'klocalizedstringtest'   : ['klocalizedstringtest.cpp', QTestLibTest],
 		#'klocaletest2'          : ['klocaletest2.cpp klocale.cpp libintl.cpp kcatalog.cpp', StandaloneTest],
 		#'kcatalog'              : ['kcatalog.cpp libintl.cpp', StandaloneTest],
 		'ksimpleconfigtest'      : ['ksimpleconfigtest.cpp', StandaloneTest],

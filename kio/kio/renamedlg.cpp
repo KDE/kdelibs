@@ -148,7 +148,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     // User tries to overwrite a file with itself ?
     if ( _mode & M_OVERWRITE_ITSELF ) {
         QLabel *lb = new QLabel( i18n( "This action would overwrite '%1' with itself.\n"
-                                       "Please enter a new file name:" ).arg( KStringHandler::csqueeze( d->src.pathOrURL(),100 ) ), this );
+                                       "Please enter a new file name:" ,  KStringHandler::csqueeze( d->src.pathOrURL(),100 ) ), this );
         d->bRename->setText(i18n("C&ontinue"));
         pLayout->addWidget( lb );
     }
@@ -219,13 +219,13 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
             QString sentence1;
             if (mtimeDest < mtimeSrc)
-                sentence1 = i18n("An older item named '%1' already exists.");
+                sentence1 = i18n("An older item named '%1' already exists.", d->dest.pathOrURL());
             else if (mtimeDest == mtimeSrc)
-                sentence1 = i18n("A similar file named '%1' already exists.");
+                sentence1 = i18n("A similar file named '%1' already exists.", d->dest.pathOrURL());
             else
-                sentence1 = i18n("A newer item named '%1' already exists.");
+                sentence1 = i18n("A newer item named '%1' already exists.", d->dest.pathOrURL());
 
-            QLabel * lb1 = new KSqueezedTextLabel( sentence1.arg(d->dest.pathOrURL() ), this );
+            QLabel * lb1 = new KSqueezedTextLabel( sentence1, this );
             gridLayout->addWidget( lb1, 0, 0, 1, 2 ); // takes the complete first line
 
             lb1 = new QLabel( this );
@@ -235,7 +235,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             int row = 1;
             if ( sizeDest != (KIO::filesize_t)-1 )
             {
-                QLabel * lb = new QLabel( i18n("size %1").arg( KIO::convertSize(sizeDest) ), this );
+                QLabel * lb = new QLabel( i18n("size %1",  KIO::convertSize(sizeDest) ), this );
                 gridLayout->addWidget( lb, row, 1 );
                 row++;
 
@@ -243,14 +243,14 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             if ( ctimeDest != (time_t)-1 )
             {
                 QDateTime dctime; dctime.setTime_t( ctimeDest );
-                QLabel * lb = new QLabel( i18n("created on %1").arg( KGlobal::locale()->formatDateTime(dctime) ), this );
+                QLabel * lb = new QLabel( i18n("created on %1",  KGlobal::locale()->formatDateTime(dctime) ), this );
                 gridLayout->addWidget( lb, row, 1 );
                 row++;
             }
             if ( mtimeDest != (time_t)-1 )
             {
                 QDateTime dmtime; dmtime.setTime_t( mtimeDest );
-                QLabel * lb = new QLabel( i18n("modified on %1").arg( KGlobal::locale()->formatDateTime(dmtime) ), this );
+                QLabel * lb = new QLabel( i18n("modified on %1",  KGlobal::locale()->formatDateTime(dmtime) ), this );
                 gridLayout->addWidget( lb, row, 1 );
                 row++;
             }
@@ -259,7 +259,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             {
                 // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
 
-                QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'").arg(d->src.pathOrURL()), this );
+                QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'", d->src.pathOrURL()), this );
                 gridLayout->addWidget( lb2, 5, 0, 1, 2 ); // takes the complete first line
 
                 lb2 = new QLabel( this );
@@ -270,21 +270,21 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
                 if ( sizeSrc != (KIO::filesize_t)-1 )
                 {
-                    QLabel * lb = new QLabel( i18n("size %1").arg( KIO::convertSize(sizeSrc) ), this );
+                    QLabel * lb = new QLabel( i18n("size %1",  KIO::convertSize(sizeSrc) ), this );
                     gridLayout->addWidget( lb, row, 1 );
                     row++;
                 }
                 if ( ctimeSrc != (time_t)-1 )
                 {
                     QDateTime dctime; dctime.setTime_t( ctimeSrc );
-                    QLabel * lb = new QLabel( i18n("created on %1").arg( KGlobal::locale()->formatDateTime(dctime) ), this );
+                    QLabel * lb = new QLabel( i18n("created on %1",  KGlobal::locale()->formatDateTime(dctime) ), this );
                     gridLayout->addWidget( lb, row, 1 );
                     row++;
                 }
                 if ( mtimeSrc != (time_t)-1 )
                 {
                     QDateTime dmtime; dmtime.setTime_t( mtimeSrc );
-                    QLabel * lb = new QLabel( i18n("modified on %1").arg( KGlobal::locale()->formatDateTime(dmtime) ), this );
+                    QLabel * lb = new QLabel( i18n("modified on %1",  KGlobal::locale()->formatDateTime(dmtime) ), this );
                     gridLayout->addWidget( lb, row, 1 );
                     row++;
                 }
@@ -297,13 +297,13 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         // file must be preserved (e.g. when renaming).
         QString sentence1;
         if (mtimeDest < mtimeSrc)
-            sentence1 = i18n("An older item named '%1' already exists.");
+            sentence1 = i18n("An older item named '%1' already exists.", d->dest.pathOrURL());
         else if (mtimeDest == mtimeSrc)
-            sentence1 = i18n("A similar file named '%1' already exists.");
+            sentence1 = i18n("A similar file named '%1' already exists.", d->dest.pathOrURL());
         else
-            sentence1 = i18n("A newer item named '%1' already exists.");
+            sentence1 = i18n("A newer item named '%1' already exists.", d->dest.pathOrURL());
 
-        QLabel *lb = new KSqueezedTextLabel( sentence1.arg(d->dest.pathOrURL()), this );
+        QLabel *lb = new KSqueezedTextLabel( sentence1, this );
         pLayout->addWidget(lb);
     }
     QHBoxLayout* layout2 = new QHBoxLayout();
@@ -417,7 +417,7 @@ void RenameDlg::renamePressed()
   KUrl u = newDestURL();
   if ( !u.isValid() )
   {
-    KMessageBox::error( this, i18n( "Malformed URL\n%1" ).arg( u.url() ) );
+    KMessageBox::error( this, i18n( "Malformed URL\n%1" ,  u.url() ) );
     return;
   }
 

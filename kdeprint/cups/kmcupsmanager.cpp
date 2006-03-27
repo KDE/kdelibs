@@ -573,7 +573,7 @@ DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 	}
 	setErrorMsg(i18n("Unable to create the Foomatic driver [%1,%2]. "
 				"Either that driver does not exist, or you don't have "
-				"the required permissions to perform that operation.").arg(comps[1]).arg(comps[2]));
+				"the required permissions to perform that operation.", comps[1], comps[2]));
 	QFile::remove(tmpFile);
 	return NULL;
 }
@@ -730,7 +730,7 @@ void* KMCupsManager::loadCupsdConfFunction(const char *name)
 	}
 	void*	func = m_cupsdconf->symbol(name);
 	if (!func)
-		setErrorMsg(i18n("Symbol %1 not found in cupsdconf library.").arg(name));
+		setErrorMsg(i18n("Symbol %1 not found in cupsdconf library.", name));
 	return func;
 }
 
@@ -853,7 +853,7 @@ void KMCupsManager::printerIppReport()
 		req.dump(2);
 		if (req.doRequest("/printers/"))
 		{
-			ippReport(req, IPP_TAG_PRINTER, i18n("IPP Report for %1").arg(m_currentprinter->printerName()));
+			ippReport(req, IPP_TAG_PRINTER, i18n("IPP Report for %1", m_currentprinter->printerName()));
 		}
 		else
 		{
@@ -905,7 +905,7 @@ void KMCupsManager::slotConnectionSuccess()
 		else
 		{
 			setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
-				"Error: %1." ).arg( i18n( "the IPP request failed for an unknown reason" ) ) );
+				"Error: %1." ,  i18n( "the IPP request failed for an unknown reason" ) ) );
 			setUpdatePossible( false );
 		}
 	}
@@ -930,7 +930,7 @@ void KMCupsManager::slotConnectionFailed( int errcode )
 	}
 
 	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
-				"Error: %1." ).arg( m_socket.errorString() ) );
+				"Error: %1." ,  m_socket.errorString() ) );
 	setUpdatePossible( false );
 }
 

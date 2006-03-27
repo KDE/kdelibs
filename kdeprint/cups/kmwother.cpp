@@ -77,7 +77,7 @@ void KMWOther::initPrinter(KMPrinter *p)
 			return;
 
 		Q3ListViewItem *item = 0, *lastparent = 0, *root;
-		root = new Q3ListViewItem( m_uriview, i18n( "CUPS Server %1:%2" ).arg( CupsInfos::self()->host() ).arg( CupsInfos::self()->port() ) );
+		root = new Q3ListViewItem( m_uriview, i18n( "CUPS Server %1:%2" ,  CupsInfos::self()->host() ,  CupsInfos::self()->port() ) );
 		root->setPixmap( 0, SmallIcon( "gear" ) );
 		root->setOpen( true );
 		QHash<QString, Q3ListViewItem*> parents, last;

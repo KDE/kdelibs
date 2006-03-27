@@ -417,7 +417,7 @@ void KDirSelectDialog::slotMkdir()
         name = KIO::RenameDlg::suggestName( url(), name );
 
     QString directory = KIO::encodeFileName( KInputDialog::getText( i18n( "New Folder" ),
-                                         i18n( "Create new folder in:\n%1" ).arg( where ),
+                                         i18n( "Create new folder in:\n%1" ,  where ),
                                          name, &ok, this));
     if (!ok)
       return;
@@ -440,7 +440,7 @@ void KDirSelectDialog::slotMkdir()
     if ( exists ) // url was already existant
     {
         QString which = folderurl.isLocalFile() ? folderurl.path() : folderurl.prettyURL();
-        KMessageBox::sorry(this, i18n("A file or folder named %1 already exists.").arg(which));
+        KMessageBox::sorry(this, i18n("A file or folder named %1 already exists.", which));
         selectDirectory = false;
     }
     else if ( !writeOk ) {

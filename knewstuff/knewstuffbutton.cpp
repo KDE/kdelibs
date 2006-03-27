@@ -60,7 +60,7 @@ void Button::init()
 
 void Button::setButtonText(const QString& what)
 {
-    setText(i18n("Download New %1").arg(what));
+    setText(i18n("Download New %1", what));
 }
 
 void Button::setProviderList(const QString& providerList)

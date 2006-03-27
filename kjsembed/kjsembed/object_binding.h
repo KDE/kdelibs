@@ -205,7 +205,7 @@ namespace KJSEmbed
             }
             else
             {
-                throwError(exec, KJS::GeneralError, i18n("%1 is not an Object type").arg(className.ascii()));
+                throwError(exec, KJS::GeneralError, i18n("%1 is not an Object type", className.ascii()));
                 //throwError(exec, i18n("%1 is not an Object type").arg(className.ascii()));
                 return KJS::Null();
             }

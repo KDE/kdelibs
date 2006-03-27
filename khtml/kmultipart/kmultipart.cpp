@@ -319,7 +319,7 @@ void KMultiPart::setPart( const QString& mimeType )
              ( m_mimeType, QString(), widget(), 0L, this, 0L );
     if ( !m_part ) {
         // TODO launch external app
-        KMessageBox::error( widget(), i18n("No handler found for %1!").arg(m_mimeType) );
+        KMessageBox::error( widget(), i18n("No handler found for %1!", m_mimeType) );
         return;
     }
     // By making the part a child XMLGUIClient of ours, we get its GUI merged in.

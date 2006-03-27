@@ -72,11 +72,11 @@ class KPluginInfoLVI : public QTreeWidgetItem
                 "<tr><td><b>Description:</b></td><td>%1</td></tr>"
                 "<tr><td><b>Author:</b></td><td>%2</td></tr>"
                 "<tr><td><b>Version:</b></td><td>%3</td></tr>"
-                "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>" )
-                .arg( m_pluginInfo->comment(),
-                      m_pluginInfo->author(),
-                      m_pluginInfo->version(),
-                      m_pluginInfo->license() );
+                "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>",
+                m_pluginInfo->comment(),
+                m_pluginInfo->author(),
+                m_pluginInfo->version(),
+                m_pluginInfo->license() );
             setToolTip(0, toolTip);
         }
 

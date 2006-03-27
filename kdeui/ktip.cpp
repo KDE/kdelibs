@@ -330,7 +330,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent)
 
     KPushButton *next = new KPushButton( KStdGuiItem::forward(
             KStdGuiItem::UseRTL ), this );
-    next->setText( i18n("Opposite to Previous","&Next") );
+    next->setText( i18nc("Opposite to Previous","&Next") );
     hbox2->addWidget(next);
 
     KPushButton *ok = new KPushButton(KStdGuiItem::close(), this);

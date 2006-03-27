@@ -24,6 +24,7 @@
 
 #include <qstring.h>
 #include <kdelibs_export.h>
+#include <klocalizedstring.h>
 
 class QStringList;
 class QTextCodec;
@@ -35,95 +36,11 @@ class KGlobal;
 class KConfigBase;
 class KCatalog;
 class KCalendarSystem;
+class KLocalePrivate;
 
 /**
  * \file klocale.h
  */
-
-#ifndef I18N_NOOP
-/**
- * \relates KLocale
- * I18N_NOOP marks a string to be translated without translating it.
- * Do not use this unless you know you need it.
- * http://developer.kde.org/documentation/other/developer-faq.html#q2.11.2
- * 
- * Example usage where say_something() returns either "hello" or "goodbye":
- * \code
- *   (void) I18N_NOOP("hello");
- *   (void) I18N_NOOP("goodbye");
- *   ...
- *   mystring = i18n( say_something() );
- * \endcode
- */
-#define I18N_NOOP(x) x
-#endif
-
-#ifndef I18N_NOOP2
-/**
- * \relates KLocale
- *  If the string is too ambiguous to be translated well to a non-english
- *  language, use this instead of I18N_NOOP to separate lookup string and english.
- * 
- * Example usage where say_something() returns either "hello" or "goodbye":
- * \code
- *   (void) I18N_NOOP2("greeting", "hello");
- *   (void) I18N_NOOP2("greeting", "goodbye");
- *   ...
- *   mystring = i18n("greeting", say_something());
- * \endcode
- * \warning You need to call i18n( comment, stringVar ) later on, not just i18n( stringVar ).
- * \since 3.3
- */
-#define I18N_NOOP2(comment,x) x
-#endif
-
-/**
- * \relates KLocale
- *  i18n is the function that does everything you need to translate
- *  a string. You just wrap around every user visible string a i18n
- *  call to get a QString with the string in the user's preferred
- *  language.
- *
- *  The argument must be an UTF-8 encoded string (If you only use
- *  characters that are in US-ASCII, you're on the safe side. But
- *  for e.g. German umlauts or French accents should be recoded to
- *  UTF-8)
- **/
-KDECORE_EXPORT QString i18n(const char *text);
-
-/**
- * \relates KLocale
- *  If the string is too ambiguous to be translated well to a non-english
- *  language, use this form of i18n to separate lookup string and english
- *  text.
- *  @see translate
- **/
-KDECORE_EXPORT QString i18n(const char *comment, const char *text);
-
-/**
- * \relates KLocale
- *  If you want to handle plural forms, use this form of i18n.
- *  @param singular the singular form of the word, for example "file".
-  * @param plural the plural form of the word. Must contain a "%n" that will
- *                be replaced by the number @p n, for example "%n files"
- *  @param n the number
- *  @return the correct singular or plural for the selected language,
- *          depending on n
- *  @see translate
- **/
-KDECORE_EXPORT QString i18n(const char *singular, const char *plural, unsigned long n);
-
-/**
- * \relates KLocale
- * Qt3's uic generates i18n( "msg", "comment" ) calls which conflict
- * with our i18n method. We use uic -tr tr2i18n to redirect
- * to the right i18n() function
-**/
-inline QString tr2i18n(const char* message, const char* =0) {
-  if (!message || !message[0])
-    return QString();
-  return i18n(message);
-}
 
 /**
   *
@@ -175,64 +92,92 @@ public:
   ~KLocale();
 
   /**
-   * Translates the string into the corresponding string in
-   * the national language, if available. If not, returns
-   * the string itself.
-   * There is a KDE wide message file that contains the most
-   * often used phrases, so we can avoid duplicating the
-   * translation of these phrases. If a phrase is not found
-   * in the catalog given to the constructor, it will search
-   * in the system catalog. This makes it possible to override
-   * some phrases for your needs.
+   * Raw translation from message catalogs.
    *
-   * The argument must be an UTF-8 encoded string (If you only use
-   * characters that are in US-ASCII you're on the safe side. But
-   * for e.g. german umlauts or french accents should be recoded to
-   * UTF-8)
+   * Never use this directly to get message translations. See i18n* and ki18n*
+   * calls related to KLocalizedString.
    *
-   * @param index The lookup text and default text, if not found.
+   * @param msg the message. Must not be null. Must be UTF-8 encoded.
+   * @param lang language in which the translation was found. If no translation
+   *             was found, KLocale::defaultLanguage() is reported. If null,
+   *             the language is not reported.
+   * @param trans raw translation, or original if not found. If no translation
+   *              was found, original message is reported. If null, the
+   *              translation is not reported.
+   *
+   * @see KLocalizedString
    */
-  QString translate( const char *index ) const;
+  void translateRaw(const char* msg,
+                    QString *lang, QString *trans) const;
 
   /**
-   * Translates the string into the corresponding string in the
-   * national language, if available.
+   * Raw translation from message catalogs, with given context.
+   * Context + message are used as the lookup key in catalogs.
    *
-   * The real contents of the string is in the argument fallback,
-   * but the meaning of it is coded into the argument index.
-   * In some cases you'll need this function, when english is
-   * too ambiguous to express it.
+   * Never use this directly to get message translations. See i18n* and ki18n*
+   * calls related to KLocalizedString.
    *
-   * Most of the times the translators will tell you if it can't
-   * be translated as it, but think of cases as "New", where the
-   * translations differs depending on what is New.
-   * Or simple cases as "Open", that can be used to express something
-   * is open or it can be used to express that you want something to
-   * open... There are tons of such examples.
+   * @param ctxt the context. Must not be null. Must be UTF-8 encoded.
+   * @param msg the message. Must not be null. Must be UTF-8 encoded.
+   * @param lang language in which the translation was found. If no translation
+   *             was found, KLocale::defaultLanguage() is reported. If null,
+   *             the language is not reported.
+   * @param trans raw translation, or original if not found. If no translation
+   *              was found, original message is reported. If null, the
+   *              translation is not reported.
    *
-   * If translate("Open") is not enough to translate it well, use
-   * translate("To Open", "Open") or translate("Is Open", "Open").
-   * The english user will see "Open" in both cases, but the translated
-   * version may vary. Of course you can also use i18n()
-   *
-   * @param comment the comment. The lookup text is made out of comment + @p fallback
-   * @param fallback the default text, if not found
-   * @return translation
+   * @see KLocalizedString
    */
-  QString translate( const char *comment, const char *fallback) const;
+  void translateRaw(const char *ctxt, const char *msg,
+                    QString *lang, QString *trans) const;
 
   /**
-   * Used to get the correct, translated singular or plural of a
-   * word.
-   * @param singular the singular form of the word, for example "file".
-   * @param plural the plural form of the word. Must contain a "%n" that will
-   *               be replaced by the number @p n, for example "%n files"
-   * @param n the number
-   * @return the correct singular or plural for the selected language,
-   *         depending on n
+   * Raw translation from message catalogs, with given singular/plural form.
+   * Singular form is used as the lookup key in catalogs.
+   *
+   * Never use this directly to get message translations. See i18n* and ki18n*
+   * calls related to KLocalizedString.
+   *
+   * @param singular the singular form. Must not be null. Must be UTF-8 encoded.
+   * @param plural the plural form. Must not be null. Must be UTF-8 encoded.
+   * @param n number on which the forms are decided.
+   * @param lang language in which the translation was found. If no translation
+   *             was found, KLocale::defaultLanguage() is reported. If null,
+   *             the language is not reported.
+   * @param trans raw translation, or original if not found. If no translation
+   *              was found, original message is reported (either plural or
+   *              singular, as determined by @p n ). If null, the
+   *              translation is not reported.
+   *
+   * @see KLocalizedString
    */
-  QString translate( const char *singular, const char *plural,
-		     unsigned long n) const;
+  void translateRaw(const char *singular, const char *plural,  unsigned long n,
+                    QString *lang, QString *trans) const;
+
+  /**
+   * Raw translation from message catalogs, with given context and
+   * singular/plural form.
+   * Context + singular form is used as the lookup key in catalogs.
+   *
+   * Never use this directly to get message translations. See i18n* and ki18n*
+   * calls related to KLocalizedString.
+   *
+   * @param ctxt the context. Must not be null. Must be UTF-8 encoded.
+   * @param singular the singular form. Must not be null. Must be UTF-8 encoded.
+   * @param plural the plural form. Must not be null. Must be UTF-8 encoded.
+   * @param n number on which the forms are decided.
+   * @param lang language in which the translation was found. If no translation
+   *             was found, KLocale::defaultLanguage() is reported. If null,
+   *             the language is not reported.
+   * @param trans raw translation, or original if not found. If no translation
+   *              was found, original message is reported (either plural or
+   *              singular, as determined by @p n ). If null, the
+   *              translation is not reported.
+   *
+   * @see KLocalizedString
+   */
+  void translateRaw(const char *ctxt, const char *singular, const char *plural,
+                    unsigned long n, QString *lang, QString *trans) const;
 
   /**
    * Changes the current encoding.
@@ -1090,8 +1035,7 @@ protected:
   static void initInstance();
 
 private:
-  class Private;
-  Private *const d;
+  KLocalePrivate * const d;
 };
 
 #endif

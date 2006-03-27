@@ -267,7 +267,7 @@ void CupsAddSmb::doNextAction()
 		{
 			m_state = MkDir;
 			//m_text->setText(i18n("Creating directory %1").arg(m_actions[m_actionindex]));
-			m_textinfo->setText(i18n("Creating folder %1").arg(m_actions[m_actionindex]));
+			m_textinfo->setText(i18n("Creating folder %1", m_actions[m_actionindex]));
 			s.append(" ").append(m_actions[m_actionindex].toLatin1());
 			m_actionindex++;
 		}
@@ -275,7 +275,7 @@ void CupsAddSmb::doNextAction()
 		{
 			m_state = Copy;
 			//m_text->setText(i18n("Uploading %1").arg(m_actions[m_actionindex+1]));
-			m_textinfo->setText(i18n("Uploading %1").arg(m_actions[m_actionindex+1]));
+			m_textinfo->setText(i18n("Uploading %1", m_actions[m_actionindex+1]));
 			s.append(" ").append(QFile::encodeName(m_actions[m_actionindex]).data()).append(" ").append(m_actions[m_actionindex+1].toLatin1());
 			m_actionindex += 2;
 		}
@@ -283,7 +283,7 @@ void CupsAddSmb::doNextAction()
 		{
 			m_state = AddDriver;
 			//m_text->setText(i18n("Installing driver for %1").arg(m_actions[m_actionindex]));
-			m_textinfo->setText(i18n("Installing driver for %1").arg(m_actions[m_actionindex]));
+			m_textinfo->setText(i18n("Installing driver for %1", m_actions[m_actionindex]));
 			s.append(" \"").append(m_actions[m_actionindex].toLatin1()).append("\" \"").append(m_actions[m_actionindex+1].toLatin1()).append("\"");
 			m_actionindex += 2;
 		}
@@ -291,7 +291,7 @@ void CupsAddSmb::doNextAction()
 		{
 			m_state = AddPrinter;
 			//m_text->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
-			m_textinfo->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
+			m_textinfo->setText(i18n("Installing printer %1", m_actions[m_actionindex]));
 			QByteArray	dest = m_actions[m_actionindex].toLocal8Bit();
 			if (s == "addprinter")
 				s.append(" ").append(dest).append(" ").append(dest).append(" \"").append(dest).append("\" \"\"");
@@ -358,7 +358,7 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 
 void CupsAddSmb::showError(const QString& msg)
 {
-	m_text->setHtml(i18n("<h3>Operation failed.</h3><p>%1</p>").arg(msg));
+	m_text->setHtml(i18n("<h3>Operation failed.</h3><p>%1</p>", msg));
 	m_cancel->setEnabled(true);
 	m_logined->setEnabled( true );
 	m_servered->setEnabled( true );
@@ -379,7 +379,7 @@ bool CupsAddSmb::exportDest(const QString &dest, const QString& datadir)
 				  "Samba 2.2.x and a running SMB service on the target server. "
 				  "Click <b>Export</b> to start the operation. Read the <a href=\"man:/cupsaddsmb\">cupsaddsmb</a> "
 				  "manual page in Konqueror or type <tt>man cupsaddsmb</tt> in a "
-				  "console window to learn more about this functionality." ).arg( dest ) );
+				  "console window to learn more about this functionality." ,  dest ) );
 	dlg.exec();
 	return dlg.m_status;
 }
@@ -404,7 +404,7 @@ bool CupsAddSmb::doExport()
 	m_bar->setRange(0, 18);
 	m_bar->setValue(0);
 	//m_text->setText(i18n("<p>Preparing to upload driver to host <b>%1</b>").arg(m_servered->text()));
-	m_textinfo->setText(i18n("Preparing to upload driver to host %1").arg(m_servered->text()));
+	m_textinfo->setText(i18n("Preparing to upload driver to host %1", m_servered->text()));
 	m_cancel->setEnabled(false);
 	m_logined->setEnabled( false );
 	m_servered->setEnabled( false );
@@ -415,7 +415,7 @@ bool CupsAddSmb::doExport()
 
 	if ((ppdfile = cupsGetPPD(m_dest.toLocal8Bit())) == NULL)
 	{
-		showError(i18n("The driver for printer <b>%1</b> could not be found.").arg(m_dest));
+		showError(i18n("The driver for printer <b>%1</b> could not be found.", m_dest));
 		return false;
 	}
 
@@ -455,7 +455,7 @@ bool CupsAddSmb::doInstall()
 	m_actions << "quit";
 
 	//m_text->setText(i18n("Preparing to install driver on host <b>%1</b>").arg(m_servered->text()));
-	m_textinfo->setText(i18n("Preparing to install driver on host %1").arg(m_servered->text()));
+	m_textinfo->setText(i18n("Preparing to install driver on host %1", m_servered->text()));
 
 	m_proc.clearArguments();
 	m_proc << "rpcclient" << m_servered->text();

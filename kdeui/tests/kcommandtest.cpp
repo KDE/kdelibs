@@ -101,7 +101,7 @@ void KCommandTest::testCommandHistoryAdd()
         QCOMPARE( KTestCommand::executedCommands.join( "," ), QString( "1" ) );
         QVERIFY( undo->isEnabled() );
         QVERIFY( ch.isUndoAvailable() );
-        QCOMPARE( undo->text(), i18n( "&Undo: %1" ).arg(1) );
+        QCOMPARE( undo->text(), i18n( "&Undo: %1" , 1) );
         QVERIFY( !redo->isEnabled() );
         QVERIFY( !ch.isRedoAvailable() );
         ch.updateActions();
@@ -133,7 +133,7 @@ void KCommandTest::testCommandHistoryAdd()
         ch.addCommand( c2 );
         QVERIFY( undo->isEnabled() );
         QVERIFY( ch.isUndoAvailable() );
-        QCOMPARE( undo->text(), i18n( "&Undo: %1" ).arg(2) );
+        QCOMPARE( undo->text(), i18n( "&Undo: %1" , 2) );
         QCOMPARE( commandListToString( ch.undoCommands() ), QString( "2,1" ) );
         QCOMPARE( commandListToString( ch.undoCommands(1) ), QString( "2" ) );
         QVERIFY( !redo->isEnabled() );
@@ -145,7 +145,7 @@ void KCommandTest::testCommandHistoryAdd()
         QVERIFY( redo->isEnabled() );
         QVERIFY( ch.isRedoAvailable() );
         QCOMPARE( commandListToString( ch.redoCommands() ), QString( "2" ) );
-        QCOMPARE( redo->text(), i18n( "&Redo: %1" ).arg(2) );
+        QCOMPARE( redo->text(), i18n( "&Redo: %1" , 2) );
         ch.updateActions();
         QVERIFY( undo->isEnabled() );
         QVERIFY( ch.isUndoAvailable() );
@@ -165,7 +165,7 @@ void KCommandTest::testCommandHistoryAdd()
         QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
         QVERIFY( ch.isRedoAvailable() );
-        QCOMPARE( redo->text(), i18n( "&Redo: %1" ).arg(1) );
+        QCOMPARE( redo->text(), i18n( "&Redo: %1" , 1) );
         QCOMPARE( KTestCommand::unexecutedCommands.join( "," ), QString( "2,1" ) );
         ch.redo();
         QCOMPARE( KTestCommand::executedCommands.join( "," ), QString( "2,1" ) );
@@ -263,13 +263,13 @@ void KCommandTest::testUndoLimit()
         QVERIFY( redo );
         QVERIFY( redo->isEnabled() );
         QVERIFY( ch.isRedoAvailable() );
-        QCOMPARE( redo->text(), i18n( "&Redo: %1" ).arg( 2 ) );
+        QCOMPARE( redo->text(), i18n( "&Redo: %1" ,  2 ) );
         ch.redo();
         QVERIFY( undo->isEnabled() );
         QVERIFY( ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
         QVERIFY( ch.isRedoAvailable() );
-        QCOMPARE( redo->text(), i18n( "&Redo: %1" ).arg( 3 ) );
+        QCOMPARE( redo->text(), i18n( "&Redo: %1" ,  3 ) );
         ch.redo();
 
         ch.setUndoLimit( 1 );
@@ -280,7 +280,7 @@ void KCommandTest::testUndoLimit()
         QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
         QVERIFY( ch.isRedoAvailable() );
-        QCOMPARE( redo->text(), i18n( "&Redo: %1" ).arg( 3 ) );
+        QCOMPARE( redo->text(), i18n( "&Redo: %1" ,  3 ) );
 
         redo->setEnabled( false ); // imagine the app goes into readonly mode
         ch.updateActions(); // then back to readwrite, so it calls this

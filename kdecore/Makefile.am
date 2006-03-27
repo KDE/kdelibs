@@ -40,7 +40,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h \
 	kcmdlineargs.h kconfigbackend.h kapplication.h kauthorized.h ktoolinvocation.h \
 	kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h \
-	kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
+	kprocctrl.h klocale.h klocalizedstring.h kicontheme.h kiconloader.h kdebug.h \
 	kwinmodule.h kwin.h kshortcut.h kkeynative.h kaccel.h \
 	kglobalaccel.h kstdaccel.h kshortcutlist.h kcatalog.h \
 	kcompletion.h kstringhandler.h \
@@ -84,7 +84,7 @@ libkdecore_la_SOURCES = kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
 	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
 	kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp \
 	kstandarddirs.cpp kpty.cpp kprocess.cpp kprocctrl.cpp \
-	klocale.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp \
+	klocale.cpp klocalizedstring.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp \
 	kiconloader.cpp kwin.cpp kwinmodule.cpp kcharsets.cpp \
 	kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp \
 	kaccelaction.cpp kshortcutmenu.cpp kaccelbase.cpp kaccel.cpp \

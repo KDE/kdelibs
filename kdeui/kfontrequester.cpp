@@ -110,9 +110,9 @@ void KFontRequester::setToolTip()
   }
   else
   {
-    m_sampleLabel->setToolTip( i18n( "Preview of the \"%1\" font" ).arg( m_title ) );
+    m_sampleLabel->setToolTip( i18n( "Preview of the \"%1\" font" ,  m_title ) );
     m_sampleLabel->setWhatsThis(        i18n( "This is a preview of the \"%1\" font. You can change it"
-        " by clicking the \"Choose...\" button." ).arg( m_title ) );
+        " by clicking the \"Choose...\" button." ,  m_title ) );
   }
 }
 

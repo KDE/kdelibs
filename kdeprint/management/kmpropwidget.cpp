@@ -47,7 +47,7 @@ void KMPropWidget::slotChange()
 	int	value = requestChange();
 	if (value == -1)
 	{
-		KMessageBox::error(this, i18n("<qt>Unable to change printer properties. Error received from manager:<p>%1</p></qt>").arg(KMManager::self()->errorMsg()));
+		KMessageBox::error(this, i18n("<qt>Unable to change printer properties. Error received from manager:<p>%1</p></qt>", KMManager::self()->errorMsg()));
 		KMManager::self()->setErrorMsg(QString());
 	}
 	KMTimer::self()->release((value == 1));

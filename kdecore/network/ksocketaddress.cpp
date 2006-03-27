@@ -615,8 +615,8 @@ QString KSocketAddress::toString() const
   else if (d->addr.generic->sa_family == AF_UNIX)
     return QString(QLatin1String("unix:%1")).arg(serviceName());
   else
-    return i18n("1: the unknown socket address family number", 
-		"Unknown family %1").arg(d->addr.generic->sa_family);
+    return i18nc("1: the unknown socket address family number", 
+		"Unknown family %1", d->addr.generic->sa_family);
 
   return fmt.arg(nodeName()).arg(serviceName());
 }

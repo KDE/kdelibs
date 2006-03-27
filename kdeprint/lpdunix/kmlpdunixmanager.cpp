@@ -217,7 +217,7 @@ void KMLpdUnixManager::parseEtcPrintcap()
 			{
 				KMPrinter	*printer = ::createPrinter(entry);
 				if (entry.contains("rm"))
-					printer->setDescription(i18n("Remote printer queue on %1").arg(entry["rm"]));
+					printer->setDescription(i18n("Remote printer queue on %1", entry["rm"]));
 				else
 					printer->setDescription(i18n("Local printer"));
 				addPrinter(printer);
@@ -268,7 +268,7 @@ void KMLpdUnixManager::parseEtcPrintersConf()
 				if (entry.contains("bsdaddr"))
 				{
 					QStringList	l = entry["bsdaddr"].split(',',QString::SkipEmptyParts);
-					printer->setDescription(i18n("Remote printer queue on %1").arg(l[0]));
+					printer->setDescription(i18n("Remote printer queue on %1", l[0]));
 				}
 				else
 					printer->setDescription(i18n("Local printer"));
@@ -312,7 +312,7 @@ void KMLpdUnixManager::parseEtcLpPrinters()
 			printer->setType(KMPrinter::Printer);
 			printer->setState(KMPrinter::Idle);
 			if (!remote.isEmpty())
-				printer->setDescription(i18n("Remote printer queue on %1").arg(remote));
+				printer->setDescription(i18n("Remote printer queue on %1", remote));
 			else
 				printer->setDescription(i18n("Local printer"));
 			addPrinter(printer);
@@ -368,7 +368,7 @@ void KMLpdUnixManager::parseSpoolInterface()
 			printer->setType(KMPrinter::Printer);
 			printer->setState(KMPrinter::Idle);
 			if (!remote.isEmpty())
-				printer->setDescription(i18n("Remote printer queue on %1").arg(remote));
+				printer->setDescription(i18n("Remote printer queue on %1", remote));
 			else
 				printer->setDescription(i18n("Local printer"));
 			addPrinter(printer);

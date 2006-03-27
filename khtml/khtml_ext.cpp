@@ -462,7 +462,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
         name = "Google";
       }
 
-      new KAction( i18n( "Search '%1' at %2" ).arg( selectedText ).arg( name ), icon, 0, d->m_khtml->browserExtension(),
+      new KAction( i18n( "Search '%1' at %2" ,  selectedText ,  name ), icon, 0, d->m_khtml->browserExtension(),
                      SLOT( searchProvider() ), actionCollection(), "searchProvider" );
 
       // favorite search providers
@@ -471,7 +471,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       favoriteEngines = config.readEntry("FavoriteSearchEngines", favoriteEngines);
 
       if ( !favoriteEngines.isEmpty()) {
-        KActionMenu* providerList = new KActionMenu( i18n( "Search '%1' At" ).arg( selectedText ), actionCollection(), "searchProviderList" );
+        KActionMenu* providerList = new KActionMenu( i18n( "Search '%1' At" ,  selectedText ), actionCollection(), "searchProviderList" );
 
         QStringList::ConstIterator it = favoriteEngines.begin();
         for ( ; it != favoriteEngines.end(); ++it ) {
@@ -500,7 +500,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
 
       if ( selectedText.contains("://") && KUrl(selectedText).isValid() )
-         new KAction( i18n( "Open '%1'" ).arg( selectedText ), "window_new", 0,
+         new KAction( i18n( "Open '%1'" ,  selectedText ), "window_new", 0,
          d->m_khtml->browserExtension(), SLOT( openSelection() ), actionCollection(), "openSelection" );
   }
   else if ( url.isEmpty() && !isImage )
@@ -600,7 +600,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     }
 
     QString name = KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25);
-    new KAction( i18n( "View Image (%1)" ).arg(d->m_suggestedFilename.isEmpty() ? name.replace("&", "&&") : d->m_suggestedFilename.replace("&", "&&")), 0, this, SLOT( slotViewImage() ),
+    new KAction( i18n( "View Image (%1)" , d->m_suggestedFilename.isEmpty() ? name.replace("&", "&&") : d->m_suggestedFilename.replace("&", "&&")), 0, this, SLOT( slotViewImage() ),
                  actionCollection(), "viewimage" );
 
     if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled())
@@ -611,7 +611,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       if (!d->m_imageURL.host().isEmpty() &&
           !d->m_imageURL.protocol().isEmpty())
       {
-        new KAction( i18n( "Block Images From %1" ).arg(d->m_imageURL.host()), 0, this, SLOT( slotBlockHost() ),
+        new KAction( i18n( "Block Images From %1" , d->m_imageURL.host()), 0, this, SLOT( slotBlockHost() ),
                      actionCollection(), "blockhost" );
       }
     }
@@ -816,7 +816,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
         QFileInfo info( destURL.path() );
         if( info.exists() ) {
           // TODO: use KIO::RenameDlg (shows more information)
-          query = KMessageBox::warningContinueCancel( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ).arg( info.fileName() ), i18n( "Overwrite File?" ), i18n( "Overwrite" ) );
+          query = KMessageBox::warningContinueCancel( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ,  info.fileName() ), i18n( "Overwrite File?" ), i18n( "Overwrite" ) );
         }
        }
    } while ( query == KMessageBox::Cancel );
@@ -877,7 +877,7 @@ void KHTMLPopupGUIClient::saveURL( const KUrl &url, const KUrl &destURL,
                 QString cmd = KStandardDirs::findExe(downloadManger);
                 if (cmd.isEmpty())
                 {
-                    QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ").arg(downloadManger);
+                    QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ", downloadManger);
                     QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
                     KMessageBox::detailedSorry(0,errMsg,errMsgEx);
                     cfg.writePathEntry("DownloadManager",QString());
@@ -979,7 +979,7 @@ void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
         if ( num > 0 ) numStr.prepend( QLatin1Char('+') );
 
         // xgettext: no-c-format
-        addAction( i18n( "%1%" ).arg( fastZoomSizes[ofs + i] ) );
+        addAction( i18n( "%1%" ,  fastZoomSizes[ofs + i] ) );
     }
 
     connect( selectableActionGroup(), SIGNAL( triggered(QAction*) ), this, SLOT( slotTriggered(QAction*) ) );

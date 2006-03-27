@@ -213,12 +213,12 @@ bool ResourceFile::load()
 
   QFile file( mFileName );
   if ( !file.open( QIODevice::ReadOnly ) ) {
-    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mFileName ) );
+    addressBook()->error( i18n( "Unable to open file '%1'." ,  mFileName ) );
     return false;
   }
 
   if ( !clearAndLoad( &file ) ) {
-      addressBook()->error( i18n( "Problems during parsing file '%1'." ).arg( mFileName ) );
+      addressBook()->error( i18n( "Problems during parsing file '%1'." ,  mFileName ) );
     return false;
   }
 
@@ -249,7 +249,7 @@ bool ResourceFile::asyncLoad()
     ok = mTempFile->close(); // we only need the filename
 
   if ( !ok ) {
-    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile->name() ) );
+    emit loadingError( this, i18n( "Unable to open file '%1'." ,  mTempFile->name() ) );
     deleteLocalTempFile();
     return false;
   }
@@ -319,7 +319,7 @@ bool ResourceFile::save( Ticket * )
 
   if ( !ok ) {
     saveFile.abort();
-    addressBook()->error( i18n( "Unable to save file '%1'." ).arg( mFileName ) );
+    addressBook()->error( i18n( "Unable to save file '%1'." ,  mFileName ) );
   }
 
   mDirWatch.startScan();
@@ -347,7 +347,7 @@ bool ResourceFile::asyncSave( Ticket * )
   }
 
   if ( !ok ) {
-    emit savingError( this, i18n( "Unable to save file '%1'." ).arg( mTempFile->name() ) );
+    emit savingError( this, i18n( "Unable to save file '%1'." ,  mTempFile->name() ) );
     deleteLocalTempFile();
     return false;
   }
@@ -466,10 +466,10 @@ void ResourceFile::downloadFinished( KIO::Job* )
     if ( clearAndLoad( &file ) )
       emit loadingFinished( this );
     else
-      emit loadingError( this, i18n( "Problems during parsing file '%1'." ).arg( mTempFile->name() ) );
+      emit loadingError( this, i18n( "Problems during parsing file '%1'." ,  mTempFile->name() ) );
   }
   else {
-    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile->name() ) );
+    emit loadingError( this, i18n( "Unable to open file '%1'." ,  mTempFile->name() ) );
   }
 
   deleteLocalTempFile();

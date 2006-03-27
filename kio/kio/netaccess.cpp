@@ -59,7 +59,7 @@ bool NetAccess::download(const KUrl& u, QString & target, QWidget* window)
     {
         if(!lastErrorMsg)
             lastErrorMsg = new QString;
-        *lastErrorMsg = i18n("File '%1' is not readable").arg(target);
+        *lastErrorMsg = i18n("File '%1' is not readable", target);
         lastErrorCode = ERR_COULD_NOT_READ;
     }
     return accessible;

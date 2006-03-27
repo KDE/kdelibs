@@ -501,7 +501,7 @@ bool KBuildSycoca::recreate()
 #ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build
                         // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
     if (!silent)
-      KMessageBox::error(0, i18n("Error creating database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n").arg(path.toLocal8Bit().data()), i18n("KBuildSycoca"));
+      KMessageBox::error(0, i18n("Error creating database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n", path.toLocal8Bit().data()), i18n("KBuildSycoca"));
 #endif
     return false;
   }
@@ -530,7 +530,7 @@ bool KBuildSycoca::recreate()
       fprintf(stderr, "kbuildsycoca: Disk full?\n");
 #ifdef KBUILDSYCOCA_GUI
       if (!silent)
-        KMessageBox::error(0, i18n("Error writing database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n").arg(path.toLocal8Bit().data()), i18n("KBuildSycoca"));
+        KMessageBox::error(0, i18n("Error writing database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n", path.toLocal8Bit().data()), i18n("KBuildSycoca"));
 #endif
       return false;
     }

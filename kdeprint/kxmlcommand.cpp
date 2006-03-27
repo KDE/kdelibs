@@ -658,7 +658,7 @@ QString KXmlCommandManager::selectCommand(QWidget *parent)
 	KLibrary *lib = KLibLoader::self()->library( "libkdeprint_management_module" );
 	if ( !lib )
 	{
-		KMessageBox::error( parent, i18n( "Unable to load KDE print management library: %1" ).arg( KLibLoader::self()->lastErrorMessage() ) );
+		KMessageBox::error( parent, i18n( "Unable to load KDE print management library: %1" ,  KLibLoader::self()->lastErrorMessage() ) );
 		return QString();
 	}
 	else
@@ -794,12 +794,12 @@ bool KXmlCommandManager::checkCommand(const QString& xmlId, int inputCheck, int 
 		if (inputCheck > None && (cmd.indexOf("%in") == -1 || inputCheck == Advanced) && cmd.indexOf("%filterinput") == -1)
 		{
 			status = false;
-			errmsg = i18n("The command does not contain the required tag %1.").arg(inputCheck == Advanced ? "%filterinput" : "{%in,%filterinput}");
+			errmsg = i18n("The command does not contain the required tag %1.", inputCheck == Advanced ? "%filterinput" : "{%in,%filterinput}");
 		}
 		if (status && outputCheck > None && (cmd.indexOf("%out") == -1 || outputCheck == Advanced) && cmd.indexOf("filteroutput") == -1)
 		{
 			status = false;
-			errmsg = i18n("The command does not contain the required tag %1.").arg(outputCheck == Advanced ? "%filteroutput" : "{%out,%filteroutput}");
+			errmsg = i18n("The command does not contain the required tag %1.", outputCheck == Advanced ? "%filteroutput" : "{%out,%filteroutput}");
 		}
 	}
 

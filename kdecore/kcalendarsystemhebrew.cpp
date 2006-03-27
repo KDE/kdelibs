@@ -402,33 +402,33 @@ QString KCalendarSystemHebrew::monthName(int month, int year, bool /*shortName*/
   switch(month)
   {
   case 1:
-    return locale()->translate("Tishrey");
+    return ki18n("Tishrey").toString(locale());
   case 2:
-    return locale()->translate("Heshvan");
+    return ki18n("Heshvan").toString(locale());
   case 3:
-    return locale()->translate("Kislev");
+    return ki18n("Kislev").toString(locale());
   case 4:
-    return locale()->translate("Tevet");
+    return ki18n("Tevet").toString(locale());
   case 5:
-    return locale()->translate("Shvat");
+    return ki18n("Shvat").toString(locale());
   case 6:
-    return locale()->translate("Adar");
+    return ki18n("Adar").toString(locale());
   case 7:
-    return locale()->translate("Nisan");
+    return ki18n("Nisan").toString(locale());
   case 8:
-    return locale()->translate("Iyar");
+    return ki18n("Iyar").toString(locale());
   case 9:
-    return locale()->translate("Sivan");
+    return ki18n("Sivan").toString(locale());
   case 10:
-    return locale()->translate("Tamuz");
+    return ki18n("Tamuz").toString(locale());
   case 11:
-    return locale()->translate("Av");
+    return ki18n("Av").toString(locale());
   case 12:
-    return locale()->translate("Elul");
+    return ki18n("Elul").toString(locale());
   case 13:
-    return locale()->translate("Adar I");
+    return ki18n("Adar I").toString(locale());
   case 14:
-    return locale()->translate("Adar II");
+    return ki18n("Adar II").toString(locale());
   default:
     break;
   }

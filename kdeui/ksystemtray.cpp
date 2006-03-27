@@ -185,8 +185,8 @@ void KSystemTray::minimizeRestoreAction()
 void KSystemTray::maybeQuit()
 {
     QString caption = KInstance::caption();
-    QString query = i18n("<qt>Are you sure you want to quit <b>%1</b>?</qt>")
-                        .arg(caption);
+    QString query = i18n("<qt>Are you sure you want to quit <b>%1</b>?</qt>",
+                         caption);
     if (KMessageBox::warningContinueCancel(this, query,
                                      i18n("Confirm Quit From System Tray"),
                                      KStdGuiItem::quit(),

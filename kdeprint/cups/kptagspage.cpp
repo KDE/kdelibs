@@ -117,7 +117,7 @@ bool KPTagsPage::isValid(QString& msg)
 			continue;
 		else if (tag.indexOf(re) != -1)
 		{
-			msg = i18n("The tag name must not contain any spaces, tabs or quotes: <b>%1</b>.").arg(tag);
+			msg = i18n("The tag name must not contain any spaces, tabs or quotes: <b>%1</b>.", tag);
 			return false;
 		}
 	}

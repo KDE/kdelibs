@@ -113,7 +113,7 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent )
 	d->timer = new QTimer( this );
 	d->socket = new KBufferedSocket( QString(), QString(), this );
 	QLabel *label = new QLabel( i18n( "Network scan:" ), this );
-	d->subnetlab = new QLabel( i18n( "Subnet: %1" ).arg( d->scanString() ), this );
+	d->subnetlab = new QLabel( i18n( "Subnet: %1" ,  d->scanString() ), this );
 
 	QGridLayout *l0 = new QGridLayout( this );
   l0->setMargin( 0 );
@@ -159,7 +159,7 @@ void NetworkScanner::slotScanClicked()
 				KMessageBox::warningContinueCancel( this->parentWidget(),
 					i18n( "You are about to scan a subnet (%1.*) that does not "
 						  "correspond to the current subnet of this computer (%2.*). Do you want "
-						  "to scan the specified subnet anyway?" ).arg( d->prefixaddress ).arg( d->localPrefix() ),
+						  "to scan the specified subnet anyway?" ,  d->prefixaddress ,  d->localPrefix() ),
 					QString(), KGuiItem( i18n( "&Scan" ), "viewmag" ), "askForScan" ) == KMessageBox::Continue )
 			start();
 	}
@@ -275,7 +275,7 @@ QString NetworkScanner::subnet() const
 void NetworkScanner::setSubnet( const QString& sn )
 {
 	d->prefixaddress = sn;
-	d->subnetlab->setText( i18n( "Subnet: %1" ).arg( d->scanString() ) );
+	d->subnetlab->setText( i18n( "Subnet: %1" ,  d->scanString() ) );
 }
 
 int NetworkScanner::port() const
@@ -286,7 +286,7 @@ int NetworkScanner::port() const
 void NetworkScanner::setPort( int p )
 {
 	d->port = p;
-	d->subnetlab->setText( i18n( "Subnet: %1" ).arg( d->scanString() ) );
+	d->subnetlab->setText( i18n( "Subnet: %1" ,  d->scanString() ) );
 }
 
 bool NetworkScanner::checkPrinter( const QString& host, int port )

@@ -489,7 +489,7 @@ QStringList KMManager::detectLocalPrinters()
 {
 	QStringList	list;
 	for (int i=0; i<3; i++)
-		list << QString() << QString::fromLatin1("parallel:/dev/lp%1").arg(i) << i18n("Parallel Port #%1").arg(i+1) << QString();
+		list << QString() << QString::fromLatin1("parallel:/dev/lp%1").arg(i) << i18n("Parallel Port #%1", i+1) << QString();
 	return list;
 }
 
@@ -497,7 +497,7 @@ int KMManager::addPrinterWizard(QWidget *parent)
 {
 	KLibrary	*lib = KLibLoader::self()->library("libkdeprint_management_module");
 	if (!lib)
-		setErrorMsg(i18n("Unable to load KDE print management library: %1").arg(KLibLoader::self()->lastErrorMessage()));
+		setErrorMsg(i18n("Unable to load KDE print management library: %1", KLibLoader::self()->lastErrorMessage()));
 	else
 	{
 		int (*func)(QWidget*) = (int(*)(QWidget*))lib->symbol("add_printer_wizard");
@@ -513,7 +513,7 @@ bool KMManager::invokeOptionsDialog(QWidget *parent)
 {
 	KLibrary	*lib = KLibLoader::self()->library("libkdeprint_management_module");
 	if (!lib)
-		setErrorMsg(i18n("Unable to load KDE print management library: %1").arg(KLibLoader::self()->lastErrorMessage()));
+		setErrorMsg(i18n("Unable to load KDE print management library: %1", KLibLoader::self()->lastErrorMessage()));
 	else
 	{
 		bool (*func)(QWidget*) = (bool(*)(QWidget*))lib->symbol("config_dialog");

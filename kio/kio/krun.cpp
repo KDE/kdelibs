@@ -103,7 +103,7 @@ pid_t KRun::runURL( const KUrl& u, const QString& _mimetype, bool tempFile, bool
   if ( _mimetype == "inode/directory-locked" )
   {
     KMessageBoxWrapper::error( 0L,
-            i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>").arg(Qt::escape(u.prettyURL())) );
+            i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", Qt::escape(u.prettyURL())) );
     return 0;
   }
   else if ( _mimetype == "application/x-desktop" )
@@ -143,13 +143,13 @@ pid_t KRun::runURL( const KUrl& u, const QString& _mimetype, bool tempFile, bool
   {
     KMessageBox::sorry( 0L,
         i18n("<qt>The file <b>%1</b> is an executable program. "
-             "For safety it will not be started.</qt>").arg(Qt::escape(u.prettyURL())));
+             "For safety it will not be started.</qt>", Qt::escape(u.prettyURL())));
     return 0;
   }
   if ( noAuth )
   {
     KMessageBoxWrapper::error( 0L,
-        i18n("<qt>You do not have permission to run <b>%1</b>.</qt>").arg(Qt::escape(u.prettyURL())) );
+        i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", Qt::escape(u.prettyURL())) );
     return 0;
   }
 
@@ -519,7 +519,7 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
           data.setName( execName );
       else if( service && !service->name().isEmpty())
           data.setName( service->name());
-      data.setDescription( i18n( "Launching %1" ).arg( data.name()));
+      data.setDescription( i18n( "Launching %1" ,  data.name()));
       if( !iconName.isEmpty())
           data.setIcon( iconName );
       else if( service && !service->icon().isEmpty())
@@ -782,7 +782,7 @@ void KRun::init()
   if ( !m_strURL.isValid() )
   {
     d->m_showingError = true;
-    KMessageBoxWrapper::error( d->m_window, i18n( "Malformed URL\n%1" ).arg( m_strURL.url() ) );
+    KMessageBoxWrapper::error( d->m_window, i18n( "Malformed URL\n%1" ,  m_strURL.url() ) );
     d->m_showingError = false;
     m_bFault = true;
     m_bFinished = true;
@@ -818,7 +818,7 @@ void KRun::init()
       if ( KDE_stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
         d->m_showingError = true;
-        KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ).arg( Qt::escape(m_strURL.prettyURL()) ) );
+        KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ,  Qt::escape(m_strURL.prettyURL()) ) );
         d->m_showingError = false;
         m_bFault = true;
         m_bFinished = true;
@@ -1304,7 +1304,7 @@ KProcessRunner::slotProcessExited(KProcess * p)
     if ( !QFile( binName ).exists() && KStandardDirs::findExe( binName ).isEmpty() )
     {
       kapp->ref();
-      KMessageBox::sorry( 0L, i18n("Could not find the program '%1'").arg( binName ) );
+      KMessageBox::sorry( 0L, i18n("Could not find the program '%1'",  binName ) );
       kapp->deref();
     }
   }

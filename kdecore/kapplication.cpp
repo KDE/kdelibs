@@ -705,7 +705,7 @@ void KApplication::init()
   bool rtl = isRightToLeft();
   installTranslator(new KDETranslator(this));
   setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
-  if (i18n( "Dear Translator! Translate this string to the string 'LTR' in "
+  if (i18nc( "Dear Translator! Translate this string to the string 'LTR' in "
 	 "left-to-right languages (as english) or to 'RTL' in right-to-left "
 	 "languages (such as Hebrew and Arabic) to get proper widget layout.",
          "LTR" ) == "RTL")
@@ -1064,7 +1064,7 @@ void KApplication::dcopFailure(const QString &msg)
        QMessageBox::critical
          (
            kapp->activeWindow(),
-           i18n("DCOP communications error (%1)").arg(KInstance::caption()),
+           i18n("DCOP communications error (%1)", KInstance::caption()),
            msgStr,
            i18n("&OK")
          );
@@ -1123,7 +1123,7 @@ void KApplication::parseCommandLine( )
 		   }
 
        if (d->overrideStyle.isEmpty())
-          fprintf(stderr, "%s", i18n("The style %1 was not found\n").arg(reqStyle).toLocal8Bit().data());
+          fprintf(stderr, "%s", i18n("The style %1 was not found\n", reqStyle).toLocal8Bit().data());
     }
 
     bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);

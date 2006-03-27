@@ -216,7 +216,7 @@ bool CupsdDialog::restartServer(QString& msg)
                         success = proc.start( KProcess::Block ) && proc.normalExit();
                 }
                 if( !success )    
-			msg = i18n("Unable to restart CUPS server (pid = %1)").arg(serverPid);
+			msg = i18n("Unable to restart CUPS server (pid = %1)", serverPid);
 	}
         return (msg.isEmpty());
 }
@@ -247,10 +247,10 @@ bool CupsdDialog::configure(const QString& filename, QWidget *parent, QString *m
 	{
 		QFileInfo	fi(fn);
 		if (!fi.exists() || !fi.isReadable() || !fi.isWritable())
-			errormsg = i18n("Internal error: file '%1' not readable/writable!").arg(fn);
+			errormsg = i18n("Internal error: file '%1' not readable/writable!", fn);
 		// check file size
 		if (fi.size() == 0)
-			errormsg = i18n("Internal error: empty file '%1'!").arg(fn);
+			errormsg = i18n("Internal error: empty file '%1'!", fn);
 	}
 
 	if (!errormsg.isEmpty())
@@ -307,7 +307,7 @@ void CupsdDialog::slotOk()
 		}
 		else if (!newconf_.saveToFile(filename_))
 		{
-			msg = i18n("Unable to write configuration file %1").arg(filename_);
+			msg = i18n("Unable to write configuration file %1", filename_);
 				ok = false;
 		}
 		if (!ok)

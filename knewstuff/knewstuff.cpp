@@ -36,7 +36,7 @@ KAction* KNS::standardAction(const QString& what,
                              const char *slot, KActionCollection* parent,
                              const char *name)
 {
-    return new KAction(i18n("Download New %1").arg(what), "knewstuff",
+    return new KAction(i18n("Download New %1", what), "knewstuff",
                        0, recvr, slot, parent, name);
 }
 

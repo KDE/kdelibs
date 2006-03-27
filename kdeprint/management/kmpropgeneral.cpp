@@ -35,7 +35,7 @@ KMPropGeneral::KMPropGeneral(QWidget *parent)
 	m_description = new QLabel("",this);
 
 	QLabel	*l1 = new QLabel(i18n("Printer name:"), this);
-	QLabel	*l2 = new QLabel(i18n("Physical Location", "Location:"), this);
+	QLabel	*l2 = new QLabel(i18nc("Physical Location", "Location:"), this);
 	QLabel	*l3 = new QLabel(i18n("Description:"), this);
 
 	// layout

@@ -222,8 +222,8 @@ void KMFactory::loadFactory(const QString& syst)
                 if (!m_factory)
                 {
                         KMessageBox::error(0,
-                            i18n("<qt>There was an error loading %1. The diagnostic is:<p>%2</p></qt>")
-                            .arg(libname).arg(KLibLoader::self()->lastErrorMessage()));
+                            i18n("<qt>There was an error loading %1. The diagnostic is:<p>%2</p></qt>",
+                             libname, KLibLoader::self()->lastErrorMessage()));
                 }
 	}
 }

@@ -144,7 +144,7 @@ void KMJobViewer::updateCaption()
 	QString	pixname("fileprint");
 	if (!m_prname.isEmpty())
 	{
-		setCaption(i18n("Print Jobs for %1").arg(m_prname));
+		setCaption(i18n("Print Jobs for %1", m_prname));
 		KMPrinter	*prt = KMManager::self()->findPrinter(m_prname);
 		if (prt)
 			pixname = prt->pixmap();
@@ -165,9 +165,9 @@ void KMJobViewer::updateStatusBar()
 
 	int	limit = m_manager->limit();
 	if (limit == 0)
-		statusBar()->changeItem(i18n("Max.: %1").arg(i18n("Unlimited")), 0);
+		statusBar()->changeItem(i18n("Max.: %1", i18n("Unlimited")), 0);
 	else
-		statusBar()->changeItem(i18n("Max.: %1").arg(limit), 0);
+		statusBar()->changeItem(i18n("Max.: %1", limit), 0);
 }
 
 void KMJobViewer::addToManager()
@@ -238,7 +238,7 @@ void KMJobViewer::init()
 		m_view = new KJobListView(this);
     QStringList headerLabels;
     headerLabels << i18n("Job ID") << i18n("Owner") << i18n("Name")
-                 << i18n("Status", "State") << i18n("Size (KB)") << i18n("Page(s)");
+                 << i18nc("Status", "State") << i18n("Size (KB)") << i18n("Page(s)");
     m_view->setHeaderLabels(headerLabels);
 		connect( m_view, SIGNAL( dropped( QDropEvent*, QTreeWidgetItem* ) ), SLOT( slotDropped( QDropEvent*, QTreeWidgetItem* ) ) );
 		KMFactory::self()->uiManager()->setupJobViewer(m_view);
@@ -330,7 +330,7 @@ void KMJobViewer::initActions()
 		KStatusBar	*statusbar = statusBar();
 		m_stickybox = new QCheckBox( i18n( "Keep window permanent" ), statusbar );
 		statusbar->addWidget( m_stickybox, 1 );
-		statusbar->insertItem(" " + i18n("Max.: %1").arg(i18n("Unlimited"))+ " ", 0, 0);
+		statusbar->insertItem(" " + i18n("Max.: %1", i18n("Unlimited"))+ " ", 0, 0);
 		statusbar->setItemFixed(0);
 		updateStatusBar();
 
@@ -481,7 +481,7 @@ void KMJobViewer::send(int cmd, const QString& name, const QString& arg)
 	jobSelection(l);
 	if (!m_manager->sendCommand(l,cmd,arg))
 	{
-		KMessageBox::error(this,"<qt>"+i18n("Unable to perform action \"%1\" on selected jobs. Error received from manager:").arg(name)+"<p>"+KMManager::self()->errorMsg()+"</p></qt>");
+		KMessageBox::error(this,"<qt>"+i18n("Unable to perform action \"%1\" on selected jobs. Error received from manager:", name)+"<p>"+KMManager::self()->errorMsg()+"</p></qt>");
 		// error reported, clean it
 		KMManager::self()->setErrorMsg(QString());
 	}
@@ -516,7 +516,7 @@ void KMJobViewer::slotMove(int prID)
 	if (prID >= 0 && prID < (int)(m_printers.count()))
 	{
 		KMPrinter	*p = m_printers.at(prID);
-		send(KMJob::Move,i18n("Move to %1").arg(p->printerName()),p->printerName());
+		send(KMJob::Move,i18n("Move to %1", p->printerName()),p->printerName());
 	}
 }
 

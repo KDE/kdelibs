@@ -169,7 +169,7 @@ public:
 KPropertiesDialog::KPropertiesDialog (KFileItem* item,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(item->url().fileName())),
+  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" , KIO::decodeFileName(item->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),d(new KPropertiesDialogPrivate)
 {
@@ -184,7 +184,7 @@ KPropertiesDialog::KPropertiesDialog (KFileItem* item,
 
 KPropertiesDialog::KPropertiesDialog (const QString& title,
                                       QWidget* parent, const char* name, bool modal)
-  : KDialogBase (KDialogBase::Tabbed, i18n ("Properties for %1").arg(title),
+  : KDialogBase (KDialogBase::Tabbed, i18n ("Properties for %1", title),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),d(new KPropertiesDialogPrivate)
 {
@@ -198,8 +198,8 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
   : KDialogBase (KDialogBase::Tabbed,
                  // TODO: replace <never used> with "Properties for 1 item". It's very confusing how it has to be translated otherwise
                  // (empty translation before the "\n" is not allowed by msgfmt...)
-		 _items.count()>1 ? i18n( "<never used>","Properties for %n Selected Items",_items.count()) :
-		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_items.first()->url().fileName())),
+		 _items.count()>1 ? i18np( "<never used>","Properties for %n Selected Items",_items.count()) :
+		 i18n( "Properties for %1" , KIO::decodeFileName(_items.first()->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),d(new KPropertiesDialogPrivate)
 {
@@ -223,7 +223,7 @@ KPropertiesDialog::KPropertiesDialog (const KUrl& _url, mode_t /* _mode is now u
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed,
-		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
+		 i18n( "Properties for %1" , KIO::decodeFileName(_url.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
   m_singleUrl( _url ),d(new KPropertiesDialogPrivate)
@@ -242,7 +242,7 @@ KPropertiesDialog::KPropertiesDialog (const KUrl& _url,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed,
-		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
+		 i18n( "Properties for %1" , KIO::decodeFileName(_url.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
   m_singleUrl( _url ),d(new KPropertiesDialogPrivate)
@@ -261,7 +261,7 @@ KPropertiesDialog::KPropertiesDialog (const KUrl& _tempUrl, const KUrl& _current
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed,
-		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_tempUrl.fileName())),
+		 i18n( "Properties for %1" , KIO::decodeFileName(_tempUrl.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
 
@@ -1167,10 +1167,10 @@ void KFilePropsPlugin::slotFoundMountPoint( const QString&,
 					    unsigned long kBAvail )
 {
     d->m_freeSpaceLabel->setText(
-	i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
-	.arg(KIO::convertSizeFromKiB(kBAvail))
-	.arg(KIO::convertSizeFromKiB(kBSize))
-	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
+	i18nc("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)",
+	 KIO::convertSizeFromKiB(kBAvail),
+	 KIO::convertSizeFromKiB(kBSize),
+	  100 - (int)(100.0 * kBAvail / kBSize) ));
 }
 
 // attention: copy&paste below, due to compiler bug
@@ -1181,10 +1181,10 @@ void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
 					    const QString& )
 {
     d->m_freeSpaceLabel->setText(
-	i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
-	.arg(KIO::convertSizeFromKiB(kBAvail))
-	.arg(KIO::convertSizeFromKiB(kBSize))
-	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
+	i18nc("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)",
+	 KIO::convertSizeFromKiB(kBAvail),
+	 KIO::convertSizeFromKiB(kBSize),
+	  100 - (int)(100.0 * kBAvail / kBSize) ));
 }
 
 void KFilePropsPlugin::slotDirSizeUpdate()
@@ -1192,11 +1192,11 @@ void KFilePropsPlugin::slotDirSizeUpdate()
     KIO::filesize_t totalSize = d->dirSizeJob->totalSize();
     KIO::filesize_t totalFiles = d->dirSizeJob->totalFiles();
          KIO::filesize_t totalSubdirs = d->dirSizeJob->totalSubdirs();
-    m_sizeLabel->setText( i18n("Calculating... %1 (%2)\n%3, %4")
-			  .arg(KIO::convertSize(totalSize))
-                         .arg(KGlobal::locale()->formatNumber(totalSize, 0))
-        .arg(i18n("1 file","%n files",totalFiles))
-        .arg(i18n("1 sub-folder","%n sub-folders",totalSubdirs)));
+    m_sizeLabel->setText( i18n("Calculating... %1 (%2)\n%3, %4",
+			   KIO::convertSize(totalSize),
+                          KGlobal::locale()->formatNumber(totalSize, 0),
+         i18np("1 file","%n files",totalFiles),
+         i18np("1 sub-folder","%n sub-folders",totalSubdirs)));
 }
 
 void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
@@ -1211,8 +1211,8 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
     m_sizeLabel->setText( QString::fromLatin1("%1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
 			  .arg(KGlobal::locale()->formatNumber(totalSize, 0))
-        .arg(i18n("1 file","%n files",totalFiles))
-        .arg(i18n("1 sub-folder","%n sub-folders",totalSubdirs)));
+        .arg(i18np("1 file","%n files",totalFiles))
+        .arg(i18np("1 sub-folder","%n sub-folders",totalSubdirs)));
   }
   m_sizeStopButton->setEnabled(false);
   // just in case you change something and try again :)
@@ -1414,7 +1414,7 @@ void KFilePropsPlugin::applyIconChanges()
     {
         if ( !f.open( QIODevice::ReadWrite ) ) {
           KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not "
-				      "have sufficient access to write to <b>%1</b>.</qt>").arg(path));
+				      "have sufficient access to write to <b>%1</b>.</qt>", path));
           return;
         }
         f.close();
@@ -1615,7 +1615,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   l = d->explanationLabel = new QLabel( "", gb );
   if (isLink)
-    d->explanationLabel->setText(i18n("This file is a link and does not have permissions.",
+    d->explanationLabel->setText(i18np("This file is a link and does not have permissions.",
 				      "All files are links and do not have permissions.",
 				      properties->items().count()));
   else if (!d->canChangePermissions)
@@ -1904,7 +1904,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   QString execWhatsThis;
   if (isDir) {
-    l = new QLabel( i18n("Enter folder", "Enter"), gb );
+    l = new QLabel( i18nc("Enter folder", "Enter"), gb );
     execWhatsThis = i18n("Enable this flag to allow entering the folder.");
   }
   else {
@@ -1964,7 +1964,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 			   "be executed with the permissions of the group.");
   l->setWhatsThis(setGidWhatsThis);
 
-  l = new QLabel(i18n("File permission", "Sticky"), gb);
+  l = new QLabel(i18nc("File permission", "Sticky"), gb);
   gl->addWidget(l, 4, 5);
   QString stickyWhatsThis;
   if (isDir)
@@ -2258,7 +2258,7 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     enableAccessControls(d->canChangePermissions && !d->isIrregular && !d->hasExtendedACL);
     if (d->canChangePermissions)
       d->explanationLabel->setText(d->isIrregular || d->hasExtendedACL ?
-				   i18n("This file uses advanced permissions",
+				   i18np("This file uses advanced permissions",
 				      "These files use advanced permissions.",
 				      properties->items().count()) : "");
     if (d->partialPermissions & UniExec) {
@@ -2279,7 +2279,7 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
 
     if (d->canChangePermissions)
       d->explanationLabel->setText(d->isIrregular || d->hasExtendedACL ?
-				   i18n("This folder uses advanced permissions.",
+				   i18np("This folder uses advanced permissions.",
 				      "These folders use advanced permissions.",
 				      properties->items().count()) : "");
     if (d->partialPermissions & S_ISVTX) {
@@ -2575,7 +2575,7 @@ void KUrlPropsPlugin::applyChanges()
   QFile f( path );
   if ( !f.open( QIODevice::ReadWrite ) ) {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
-				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
+				"sufficient access to write to <b>%1</b>.</qt>", path));
     return;
   }
   f.close();
@@ -2737,7 +2737,7 @@ void KBindingPropsPlugin::applyChanges()
   if ( !f.open( QIODevice::ReadWrite ) )
   {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
-				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
+				"sufficient access to write to <b>%1</b>.</qt>", path));
     return;
   }
   f.close();
@@ -2994,10 +2994,10 @@ void KDevicePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
   int percUsed = 100 - (int)(100.0 * kBAvail / kBSize);
 
   d->m_freeSpaceLabel->setText(
-      i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
-      .arg(KIO::convertSizeFromKiB(kBAvail))
-      .arg(KIO::convertSizeFromKiB(kBSize))
-      .arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
+      i18nc("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)",
+       KIO::convertSizeFromKiB(kBAvail),
+       KIO::convertSizeFromKiB(kBSize),
+        100 - (int)(100.0 * kBAvail / kBSize) ));
 
   d->m_freeSpaceBar->setRange(0, 100);
   d->m_freeSpaceBar->setValue(percUsed);
@@ -3024,7 +3024,7 @@ void KDevicePropsPlugin::applyChanges()
   if ( !f.open( QIODevice::ReadWrite ) )
   {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient "
-				"access to write to <b>%1</b>.</qt>").arg(path));
+				"access to write to <b>%1</b>.</qt>", path));
     return;
   }
   f.close();
@@ -3179,7 +3179,7 @@ void KDesktopPropsPlugin::slotSelectMimetype()
 void KDesktopPropsPlugin::slotAddFiletype()
 {
   KDialogBase dlg(w, "KPropertiesMimetypes", true,
-                  i18n("Add File Type for %1").arg(properties->kurl().fileName()),
+                  i18n("Add File Type for %1", properties->kurl().fileName()),
                   KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok);
 
   KGuiItem okItem(i18n("&Add"), QString() /* no icon */,
@@ -3304,7 +3304,7 @@ void KDesktopPropsPlugin::applyChanges()
 
   if ( !f.open( QIODevice::ReadWrite ) ) {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
-				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
+				"sufficient access to write to <b>%1</b>.</qt>", path));
     return;
   }
   f.close();
@@ -3387,7 +3387,7 @@ void KDesktopPropsPlugin::slotBrowseExec()
 void KDesktopPropsPlugin::slotAdvanced()
 {
   KDialogBase dlg(w, "KPropertiesDesktopAdv", true,
-      i18n("Advanced Options for %1").arg(properties->kurl().fileName()),
+      i18n("Advanced Options for %1", properties->kurl().fileName()),
       KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok);
   Ui_KPropertiesDesktopAdvBase w;
   w.setupUi(&dlg);
@@ -3805,7 +3805,7 @@ void KExecPropsPlugin::applyChanges()
 
   if ( !f.open( QIODevice::ReadWrite ) ) {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
-				"sufficient access to write to <b>%1</b>.</qt>").arg(path));
+				"sufficient access to write to <b>%1</b>.</qt>", path));
     return;
   }
   f.close();
@@ -4050,7 +4050,7 @@ void KApplicationPropsPlugin::applyChanges()
 
   if ( !f.open( QIODevice::ReadWrite ) ) {
     KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not "
-				"have sufficient access to write to <b>%1</b>.</qt>").arg(path));
+				"have sufficient access to write to <b>%1</b>.</qt>", path));
     return;
   }
   f.close();

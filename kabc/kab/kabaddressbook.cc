@@ -203,7 +203,7 @@ bool AddressBook::Entry::Address::nameOfField(const char* key, QString& value)
 	 ||
 	 !fields->insert
 	 (map<const char*, const QString, less<const char*> >::value_type
-	  (Fields[counter++], i18n("As in addresses", "State"))).second)
+	  (Fields[counter++], i18nc("As in addresses", "State"))).second)
 	{
 	  kDebug(KAB_KDEBUG_AREA) 
 	    << "AddressBook::Entry::Address::nameOfField (while "
@@ -439,7 +439,7 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 		  "could not be created. kab will probably not "
 		  "work correctly without it.\n"
 		  "Make sure you have not removed write permission "
-		  "from your local KDE directory (usually ~/.kde).").arg(filename));
+		  "from your local KDE directory (usually ~/.kde).", filename));
 	  state=PermDenied;
 	}
   }
@@ -463,13 +463,13 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 		  "could not be created. kab will probably not "
 		  "work correctly without it.\n"
 		  "Make sure you have not removed write permission "
-		  "from your local KDE directory (usually ~/.kde).").arg(filename));
+		  "from your local KDE directory (usually ~/.kde).", filename));
 	  state=PermDenied;
 	} else {
 	  KMessageBox::information
 	    (this,
-	     i18n("kab has created your standard addressbook in\n\"%1\"")
-	     .arg(filename));
+	     i18n("kab has created your standard addressbook in\n\"%1\"",
+	      filename));
 	}
     }
   // ----- load the user standard file:
@@ -574,8 +574,8 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	           "cannot be reloaded. kab may close or save it.\n"
 	           "Save it if you accidentally deleted your data file.\n"
 	           "Close it if you intended to do so.\n"
-	           "Your file will be closed by default.")
-		 .arg(oldfile.absoluteFilePath()),
+	           "Your file will be closed by default.",
+		  oldfile.absoluteFilePath()),
 	      i18n("File Error"),
 	      KStdGuiItem::close(), KStdGuiItem::save()))
 	    {
@@ -620,7 +620,7 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	  if (KMessageBox::questionYesNo
 	     (this,
 	      i18n("The file \"%1\" cannot be found. "
-	           "Create a new one?").arg(fname), 
+	           "Create a new one?", fname), 
 	      i18n("No Such File"),
 	      i18n("Create"), KStdGuiItem::cancel())==KMessageBox::Yes)
 	    {

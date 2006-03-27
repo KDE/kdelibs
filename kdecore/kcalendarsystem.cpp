@@ -125,24 +125,24 @@ QString KCalendarSystem::weekDayName (int weekDay, bool shortName) const
   if ( shortName )
     switch ( weekDay )
       {
-      case 1:  return locale()->translate("Monday", "Mon");
-      case 2:  return locale()->translate("Tuesday", "Tue");
-      case 3:  return locale()->translate("Wednesday", "Wed");
-      case 4:  return locale()->translate("Thursday", "Thu");
-      case 5:  return locale()->translate("Friday", "Fri");
-      case 6:  return locale()->translate("Saturday", "Sat");
-      case 7:  return locale()->translate("Sunday", "Sun");
+      case 1:  return ki18nc("Monday", "Mon").toString(locale());
+      case 2:  return ki18nc("Tuesday", "Tue").toString(locale());
+      case 3:  return ki18nc("Wednesday", "Wed").toString(locale());
+      case 4:  return ki18nc("Thursday", "Thu").toString(locale());
+      case 5:  return ki18nc("Friday", "Fri").toString(locale());
+      case 6:  return ki18nc("Saturday", "Sat").toString(locale());
+      case 7:  return ki18nc("Sunday", "Sun").toString(locale());
       }
   else
     switch ( weekDay )
       {
-      case 1:  return locale()->translate("Monday");
-      case 2:  return locale()->translate("Tuesday");
-      case 3:  return locale()->translate("Wednesday");
-      case 4:  return locale()->translate("Thursday");
-      case 5:  return locale()->translate("Friday");
-      case 6:  return locale()->translate("Saturday");
-      case 7:  return locale()->translate("Sunday");
+      case 1:  return ki18n("Monday").toString(locale());
+      case 2:  return ki18n("Tuesday").toString(locale());
+      case 3:  return ki18n("Wednesday").toString(locale());
+      case 4:  return ki18n("Thursday").toString(locale());
+      case 5:  return ki18n("Friday").toString(locale());
+      case 6:  return ki18n("Saturday").toString(locale());
+      case 7:  return ki18n("Sunday").toString(locale());
       }
 
   return QString();

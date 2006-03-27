@@ -1126,7 +1126,7 @@ QString KDateTime::toString(const QString &format) const
                 case 'P':     // am/pm
                 {
                     bool am = (d->dt().time().hour() < 12);
-                    QString ap = locale->translate(am ? "am" : "pm");
+                    QString ap = ki18n(am ? "am" : "pm").toString(locale);
                     if (ap.isEmpty())
                         result += am ? QLatin1String("am") : QLatin1String("pm");
                     else
@@ -1136,7 +1136,7 @@ QString KDateTime::toString(const QString &format) const
                 case 'p':     // AM/PM
                 {
                     bool am = (d->dt().time().hour() < 12);
-                    QString ap = locale->translate(am ? "am" : "pm").toUpper();
+                    QString ap = ki18n(am ? "am" : "pm").toString(locale).toUpper();
                     if (ap.isEmpty())
                         result += am ? QLatin1String("AM") : QLatin1String("PM");
                     else
@@ -2468,7 +2468,7 @@ int getAmPm(const QString &string, int &offset, KLocale *locale)
     if (locale)
     {
         // Check localised form first
-        QString aps = locale->translate("am");
+        QString aps = ki18n("am").toString(locale);
         if (part.startsWith(aps, Qt::CaseInsensitive))
         {
             ap = 1;
@@ -2476,7 +2476,7 @@ int getAmPm(const QString &string, int &offset, KLocale *locale)
         }
         else
         {
-            aps = locale->translate("pm");
+            aps = ki18n("pm").toString(locale);
             if (part.startsWith(aps, Qt::CaseInsensitive))
             {
                 ap = 2;

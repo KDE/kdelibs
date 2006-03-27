@@ -333,7 +333,7 @@ KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, QWidget* parent )
     {
         text = i18n("<qt>Select the program that should be used to open <b>%1</b>. "
                      "If the program is not listed, enter the name or click "
-                     "the browse button.</qt>").arg( _urls.first().fileName() );
+                     "the browse button.</qt>",  _urls.first().fileName() );
     }
     else
         // Should never happen ??
@@ -362,10 +362,10 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
-  setWindowTitle(i18n("Choose Application for %1").arg(serviceType));
+  setWindowTitle(i18n("Choose Application for %1", serviceType));
   QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
                       "If the program is not listed, enter the name or click "
-                      "the browse button.</qt>").arg(serviceType);
+                      "the browse button.</qt>", serviceType);
   qServiceType = serviceType;
   init( text, value );
   if (remember)

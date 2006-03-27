@@ -31,7 +31,8 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	kxerrorhandlertest startserviceby kglobaltest ktimezonestest \
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest klibloadertest \
 	kcompletiontest klockfiletest ktempdirtest ksharedptrtest kfiltertest \
-	kdatetimetest ksavefiletest kautostarttest knotificationrestrictionstest
+	kdatetimetest ksavefiletest kautostarttest knotificationrestrictionstest \
+	klocalizedstringtest
 
 # TODO kurltest4 when it works
 
@@ -53,6 +54,7 @@ LDADD = ../libkdecore.la -lQtTest_debug
 kconfigtestgui_SOURCES = kconfigtestgui.cpp
 kdebugtest_SOURCES = kdebugtest.cpp
 klocaletest_SOURCES = klocaletest.cpp
+klocalizedstring_SOURCES = klocalizedstringtest.cpp
 #klocaletest2_SOURCES = klocaletest2.cpp klocale.cpp libintl.cpp kcatalog.cpp
 #kcatalog_SOURCES = kcatalog.cpp libintl.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp

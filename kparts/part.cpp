@@ -494,7 +494,7 @@ bool ReadWritePart::queryClose()
 
   int res = KMessageBox::warningYesNoCancel( widget(),
           i18n( "The document \"%1\" has been modified.\n"
-                "Do you want to save your changes or discard them?" ).arg( docName ),
+                "Do you want to save your changes or discard them?" ,  docName ),
           i18n( "Close Document" ), KStdGuiItem::save(), KStdGuiItem::discard() );
 
   bool abortClose=false;

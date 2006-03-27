@@ -139,7 +139,7 @@ KMenu* KHelpMenu::menu()
     if (KAuthorized::authorizeKAction("help_contents"))
     {
       d->mHandBookAction = d->mMenu->addAction(BarIconSet( "contents", K3Icon::SizeSmall),
-                     i18n("%1 &Handbook").arg(appName) ,this, SLOT(appHelpActivated()),KStdAccel::shortcut(KStdAccel::Help));
+                     i18n("%1 &Handbook", appName) ,this, SLOT(appHelpActivated()),KStdAccel::shortcut(KStdAccel::Help));
       need_separator = true;
     }
 
@@ -163,7 +163,7 @@ KMenu* KHelpMenu::menu()
     if (KAuthorized::authorizeKAction("help_about_app"))
     {
       d->mAboutAppAction = d->mMenu->addAction( qApp->windowIcon(),
-        i18n( "&About %1" ).arg(appName), this, SLOT( aboutApplication() ) );
+        i18n( "&About %1" , appName), this, SLOT( aboutApplication() ) );
     }
 
     if (KAuthorized::authorizeKAction("help_about_kde"))
@@ -228,7 +228,7 @@ void KHelpMenu::aboutApplication()
   {
     if( !d->mAboutApp )
     {
-      d->mAboutApp = new KDialog( d->mParent, i18n("About %1").arg(kapp->caption()),
+      d->mAboutApp = new KDialog( d->mParent, i18n("About %1", kapp->caption()),
                    KDialog::Yes, Qt::Dialog );
       d->mAboutApp->setObjectName( "about" );
       d->mAboutApp->enableButtonSeparator( true );

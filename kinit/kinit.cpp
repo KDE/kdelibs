@@ -558,7 +558,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      d.handle = 0;
      if (libpath.isEmpty() && execpath.isEmpty())
      {
-        QString errorMsg = i18n("Could not find '%1' executable.").arg(QFile::decodeName(_name));
+        QString errorMsg = i18n("Could not find '%1' executable.", QFile::decodeName(_name));
         exitWithErrorMsg(errorMsg);
      }
 
@@ -574,8 +574,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
           if (execpath.isEmpty())
           {
              // Error
-             QString errorMsg = i18n("Could not open library '%1'.\n%2").arg(QFile::decodeName(libpath))
-		.arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
+             QString errorMsg = i18n("Could not open library '%1'.\n%2", QFile::decodeName(libpath),
+		 ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
              exitWithErrorMsg(errorMsg);
           }
           else
@@ -626,9 +626,9 @@ static pid_t launch(int argc, const char *_name, const char *args,
            {
               const char * ltdlError = lt_dlerror();
               fprintf(stderr, "Could not find kdemain: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
-              QString errorMsg = i18n("Could not find 'kdemain' in '%1'.\n%2")
- 		 .arg(QLatin1String(libpath))
-                 .arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
+              QString errorMsg = i18n("Could not find 'kdemain' in '%1'.\n%2",
+ 		  QLatin1String(libpath),
+                  ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
               exitWithErrorMsg(errorMsg);
            }
         }

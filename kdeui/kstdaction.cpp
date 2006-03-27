@@ -53,18 +53,18 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 	if( pInfo ) {
 		QString sLabel, iconName = pInfo->psIconName;
 		switch( id ) {
-		 case Back: sLabel = i18n("go back", "&Back");
+		 case Back: sLabel = i18nc("go back", "&Back");
 			if (QApplication::isRightToLeft() )
 			    iconName = "forward";
 			break;
 
-		 case Forward: sLabel = i18n("go forward", "&Forward");
+		 case Forward: sLabel = i18nc("go forward", "&Forward");
 			if (QApplication::isRightToLeft() )
 			    iconName = "back";
 			break;
 
-		 case Home: sLabel = i18n("beginning (of line)", "&Home"); break;
-		 case Help: sLabel = i18n("show help", "&Help"); break;
+		 case Home: sLabel = i18nc("beginning (of line)", "&Home"); break;
+		 case Help: sLabel = i18nc("show help", "&Help"); break;
 		 case Preferences:
 		 case AboutApp:
 		 case HelpContents:
@@ -78,7 +78,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 			    aboutData = KGlobal::instance()->aboutData();
 			*/
 			QString appName = (aboutData) ? aboutData->programName() : qApp->applicationName();
-			sLabel = i18n(pInfo->psLabel).arg(appName);
+			sLabel = i18n(pInfo->psLabel, appName);
 			}
 			break;
 		 default: sLabel = i18n(pInfo->psLabel);

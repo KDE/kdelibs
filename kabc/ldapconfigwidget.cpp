@@ -191,7 +191,7 @@ void LdapConfigWidget::initWidget()
   }
 
   if ( mFeatures & W_DN ) {
-    label = new QLabel( i18n( "Distinguished Name", "DN:" ), this );
+    label = new QLabel( i18nc( "Distinguished Name", "DN:" ), this );
     mDn = new KLineEdit( this);
     mDn->setObjectName("kcfg_ldapdn" );
 

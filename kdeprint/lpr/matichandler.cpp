@@ -83,7 +83,7 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 	}
 	else
 	{
-		prt->setLocation(i18n("Local printer on %1").arg(val));
+		prt->setLocation(i18n("Local printer on %1", val));
 		KUrl	url(val);
 		if (val.indexOf("usb") != -1)
 			url.setProtocol("usb");
@@ -285,7 +285,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 	}
 	manager()->setErrorMsg(i18n("Unable to create the Foomatic driver [%1,%2]. "
 	                            "Either that driver does not exist, or you don't have "
-	                            "the required permissions to perform that operation.").arg(comps[1]).arg(comps[2]));
+	                            "the required permissions to perform that operation.", comps[1], comps[2]));
 	return NULL;
 }
 
@@ -404,7 +404,7 @@ bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
 	}
 	manager()->setErrorMsg(i18n("Unable to create the Foomatic driver [%1,%2]. "
 	                            "Either that driver does not exist, or you don't have "
-	                            "the required permissions to perform that operation.").arg(mdriver).arg(mprinter));
+	                            "the required permissions to perform that operation.", mdriver, mprinter));
 
 	return false;
 }
@@ -418,7 +418,7 @@ PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
 		(prot != "smb" || m_smbpath.isEmpty()) &&
 		 prot != "parallel")
 	{
-		manager()->setErrorMsg(i18n("Unsupported backend: %1.").arg(prot));
+		manager()->setErrorMsg(i18n("Unsupported backend: %1.", prot));
 		return NULL;
 	}
 	if (m_exematicpath.isEmpty())
@@ -454,7 +454,7 @@ bool MaticHandler::removePrinter(KMPrinter *prt, PrintcapEntry *entry)
 		return true;
 	if (!QFile::remove(af))
 	{
-		manager()->setErrorMsg(i18n("Unable to remove driver file %1.").arg(af));
+		manager()->setErrorMsg(i18n("Unable to remove driver file %1.", af));
 		return false;
 	}
 	return true;

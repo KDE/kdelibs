@@ -121,8 +121,8 @@ namespace KPAC
             catch ( const Script::Error& e )
             {
                 KNotifyClient::event( "script-error", i18n(
-                    "The proxy configuration script is invalid:\n%1" )
-                    .arg( e.message() ) );
+                    "The proxy configuration script is invalid:\n%1" ,
+                      e.message() ) );
                 success = false;
             }
         else KNotifyClient::event( "download-error", m_downloader->error() );
@@ -181,8 +181,8 @@ namespace KPAC
         {
             KNotifyClient::Instance notifyInstance( m_instance );
             KNotifyClient::event( "evaluation-error", i18n(
-                "The proxy configuration script returned an error:\n%1" )
-                    .arg( e.message() ) );
+                "The proxy configuration script returned an error:\n%1" ,
+                      e.message() ) );
         }
         return "DIRECT";
     }

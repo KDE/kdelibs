@@ -169,7 +169,7 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
                     dlg->addPage(dp);
                 }
 
-		dlg->setCaption(i18n("Configuration of %1").arg(dlg->printer()->name()));
+		dlg->setCaption(i18n("Configuration of %1", dlg->printer()->name()));
 		if ( KXmlCommandManager::self()->checkCommand( "poster", KXmlCommandManager::None, KXmlCommandManager::None ) ) {
                     KPPosterPage *pp = new KPPosterPage( dlg );
                     pp->setObjectName( "PosterPage" );

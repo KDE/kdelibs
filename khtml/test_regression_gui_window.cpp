@@ -526,8 +526,7 @@ void TestRegressionWindow::directoryListingFinished(KIO::Job *)
 	m_ui.textEdit->insertHtml(statistics);
 
 	// Update treeview...
-	m_ui.treeWidget->headerItem()->setText(0, i18n("Available Tests: %1 (ignored: %2)")
-											  .arg(availableTests).arg(ignoredTests));
+	m_ui.treeWidget->headerItem()->setText(0, i18n("Available Tests: %1 (ignored: %2)", availableTests, ignoredTests));
 }
 
 void TestRegressionWindow::updateProgressBarRange() const

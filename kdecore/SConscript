@@ -9,7 +9,7 @@ kapplication.cpp kauthorized.cpp
 kdebug.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp
 kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp
 kstandarddirs.cpp kprocess.cpp kprocctrl.cpp
-klocale.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp
+klocale.cpp klocalizedstring.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp
 kiconloader.cpp kcharsets.cpp
 kckey.cpp kshortcut.cpp kdatetime.cpp
 kkeynative_x11.cpp 
@@ -81,7 +81,7 @@ kconfigdata.h ksimpleconfig.h
 kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h
 kcmdlineargs.h kconfigbackend.h kapplication.h kauthorized.h ktoolinvocation.h
 kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h
-kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h
+kprocctrl.h klocale.h klocalizedstring.h kicontheme.h kiconloader.h kdebug.h
 kwinmodule.h kwin.h kshortcut.h kkeynative.h kaccel.h
 kglobalaccel.h kstdaccel.h kshortcutlist.h kcatalog.h kcompletion.h
 kstringhandler.h kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h

@@ -393,14 +393,14 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   d->kbGroup->hide();
   d->kbGroup->setExclusive( true );
 
-  m_prbNone = new QRadioButton( i18n("no key", "&None"), d->fCArea );
+  m_prbNone = new QRadioButton( i18nc("no key", "&None"), d->fCArea );
   d->kbGroup->insert( m_prbNone, NoKey );
   m_prbNone->setEnabled( false );
   grid->addWidget( m_prbNone, 1, 0 );
   m_prbNone->setWhatsThis(i18n("The selected action will not be associated with any key.") );
   connect( m_prbNone, SIGNAL(clicked()), SLOT(slotNoKey()) );
 
-  m_prbDef = new QRadioButton( i18n("default key", "De&fault"), d->fCArea );
+  m_prbDef = new QRadioButton( i18nc("default key", "De&fault"), d->fCArea );
   d->kbGroup->insert( m_prbDef, DefaultKey );
   m_prbDef->setEnabled( false );
   grid->addWidget( m_prbDef, 1, 1 );
@@ -717,7 +717,7 @@ void KKeyChooser::setShortcut( const KShortcut& cut )
 		    && key.sym() < 0x3000 && QChar(key.sym()).isLetterOrNumber() ) {
 			QString s = i18n( 	"In order to use the '%1' key as a shortcut, "
 						"it must be combined with the "
-						"Win, Alt, Ctrl, and/or Shift keys." ).arg(QChar(key.sym()));
+						"Win, Alt, Ctrl, and/or Shift keys." , QChar(key.sym()));
 			KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
 			return;
 		}
@@ -936,8 +936,8 @@ void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sT
 	QString s =
 		i18n("The '%1' key combination has already been allocated "
 		"to the \"%2\" action.\n"
-		"Please choose a unique key combination.").
-		arg(cut.toString()).arg(sAction);
+		"Please choose a unique key combination.", 
+		cut.toString(), sAction);
 
 	KMessageBox::sorry( this, s, sTitle );
 }
@@ -952,21 +952,23 @@ bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAc
                 sTitle = i18n("Conflict with Standard Application Shortcut");
 		s = i18n("The '%1' key combination has already been allocated "
 		"to the standard action \"%2\".\n"
-		"Do you want to reassign it from that action to the current one?");
+		"Do you want to reassign it from that action to the current one?",
+		cut.toString(), sAction.trimmed());
         }
         else if( type == Global ) {
                 sTitle = i18n("Conflict with Global Shortcut");
 		s = i18n("The '%1' key combination has already been allocated "
 		"to the global action \"%2\".\n"
-		"Do you want to reassign it from that action to the current one?");
+		"Do you want to reassign it from that action to the current one?",
+		cut.toString(), sAction.trimmed());
         }
         else {
                 sTitle = i18n("Key Conflict");
 		s = i18n("The '%1' key combination has already been allocated "
 		"to the \"%2\" action.\n"
-		"Do you want to reassign it from that action to the current one?");
+		"Do you want to reassign it from that action to the current one?",
+		cut.toString(), sAction.trimmed());
         }
-	s = s.arg(cut.toString()).arg(sAction.trimmed());
 
 	return KMessageBox::warningContinueCancel( parent, s, sTitle, i18n("Reassign") ) == KMessageBox::Continue;
 }

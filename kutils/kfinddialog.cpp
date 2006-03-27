@@ -552,7 +552,7 @@ void KFindDialog::slotPlaceholdersAboutToShow()
     QRegExp r( pattern() );
     uint n = r.numCaptures();
     for ( uint i=0; i < n; i++ )
-        m_placeholders->addAction( new PlaceHolderAction(m_placeholders, i18n("Captured Text (%1)").arg( i+1 ), i+1 ) );
+        m_placeholders->addAction( new PlaceHolderAction(m_placeholders, i18n("Captured Text (%1)",  i+1 ), i+1 ) );
 }
 
 void KFindDialog::slotOk()

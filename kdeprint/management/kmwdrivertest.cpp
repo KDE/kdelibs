@@ -119,7 +119,7 @@ void KMWDriverTest::initPrinter(KMPrinter *p)
 
 	if (checkDriver && !m_driver)
 	{
-		KMessageBox::error(this, i18n("<qt>Unable to load the requested driver:<p>%1</p></qt>").arg(KMManager::self()->errorMsg()));
+		KMessageBox::error(this, i18n("<qt>Unable to load the requested driver:<p>%1</p></qt>", KMManager::self()->errorMsg()));
 		KMManager::self()->setErrorMsg(QString());
 	}
 	m_settings->setEnabled((m_driver != 0));

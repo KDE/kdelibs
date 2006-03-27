@@ -339,7 +339,7 @@ bool AddressBook::load()
   bool ok = true;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     if ( !(*it)->load() ) {
-      error( i18n("Unable to load resource '%1'").arg( (*it)->resourceName() ) );
+      error( i18n("Unable to load resource '%1'",  (*it)->resourceName() ) );
       ok = false;
     }
   }
@@ -358,7 +358,7 @@ bool AddressBook::asyncLoad()
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     d->mPendingLoadResources.append( *it );
     if ( !(*it)->asyncLoad() ) {
-      error( i18n("Unable to load resource '%1'").arg( (*it)->resourceName() ) );
+      error( i18n("Unable to load resource '%1'",  (*it)->resourceName() ) );
       ok = false;
     }
   }

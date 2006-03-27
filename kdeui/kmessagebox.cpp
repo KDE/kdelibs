@@ -997,7 +997,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
 {
     QString _caption = caption;
     if (_caption.isEmpty())
-        _caption = i18n("About %1").arg(kapp->caption());
+        _caption = i18n("About %1", kapp->caption());
 
     KDialog *dialog= new KDialog(parent, caption,
       KDialog::Yes, Qt::Dialog);

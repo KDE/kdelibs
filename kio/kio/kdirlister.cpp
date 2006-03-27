@@ -285,7 +285,7 @@ bool KDirListerCache::validURL( const KDirLister *lister, const KUrl& url ) cons
   {
     if ( lister->d->autoErrorHandling )
     {
-      QString tmp = i18n("Malformed URL\n%1").arg( url.prettyURL() );
+      QString tmp = i18n("Malformed URL\n%1",  url.prettyURL() );
       KMessageBox::error( lister->d->errorParent, tmp );
     }
     return false;
@@ -295,7 +295,7 @@ bool KDirListerCache::validURL( const KDirLister *lister, const KUrl& url ) cons
   {
     if ( lister->d->autoErrorHandling )
     {
-      QString tmp = i18n("URL cannot be listed\n%1").arg( url.prettyURL() );
+      QString tmp = i18n("URL cannot be listed\n%1",  url.prettyURL() );
       KMessageBox::error( lister->d->errorParent, tmp );
     }
     return false;

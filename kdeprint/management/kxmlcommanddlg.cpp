@@ -798,7 +798,7 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 	if (!xmlcmd)
 		return false;
 
-	KDialogBase	dlg(parent, 0, true, i18n("Command Edit for %1").arg(xmlcmd->name()), KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, false);
+	KDialogBase	dlg(parent, 0, true, i18n("Command Edit for %1", xmlcmd->name()), KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, false);
 	KXmlCommandAdvancedDlg	*xmldlg = new KXmlCommandAdvancedDlg(&dlg);
 	dlg.setMainWidget(xmldlg);
 	//dlg.enableButton(KDialogBase::Ok, false);
@@ -952,7 +952,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 
 void KXmlCommandDlg::setCommand(KXmlCommand *xmlCmd)
 {
-	setCaption(i18n("Command Edit for %1").arg(xmlCmd->name()));
+	setCaption(i18n("Command Edit for %1", xmlCmd->name()));
 
 	m_cmd = xmlCmd;
 	m_description->setText(i18n(xmlCmd->description().toUtf8()));

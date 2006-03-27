@@ -1158,6 +1158,88 @@ the message code. (Note: this is not new to KDE4, but very seldomly used in
 KDE3.)</li>
 </ul>
 
+<h4>i18n calls</h4>
+
+<p>The basic call, a message without arguments, context or plural, remains as is:</p>
+<pre>
+i18n("Just plain info");
+</pre>
+
+<p>If there are arguments, <code>arg</code> methods are no longer used to substitute the placeholders. Instead, arguments are added to the call:</p>
+<pre>
+i18n("%1 has scored %2", playerName, score);
+</pre>
+<p>Arguments can be of type <code>int</code>, <code>double</code>, <code>QString</code>, <code>QChar</code> (and perhaps more in the future).</p>
+
+<p>Context and plural calls now have different names, <code>i18nc</code> and <code>i18np</code>, and take arguments in the same way:</p>
+<pre>
+i18nc("Player name - score", "%1 - %2", playerName, score);
+i18np("1 image in album %1", "%n images in album %1", n, albumName);
+</pre>
+
+<p>There is one new variant, the context-plural call:</p>
+<pre>
+i18ncp("Personal file", "1 file", "%n files", n);
+</pre>
+
+<p><code>i18n*</code> calls are realized as templates, and so will take at most some finite number of arguments.</p>
+
+<p>Notes on placeholder substitution:</p>
+<ul>
+<li>Placeholders are substituted in one pass, so no need to worry about argument itself containing a placeholder.</li>
+<li>All same-numbered placeholders are substituted with same argument. This is in contrast to what single-argument <code>arg</code> methods of <code>QString</code> do.</li>
+<li>Always provide exactly as many arguments as there are unique placeholders. Otherwise you will get error marks in messages at runtime (when compiled in debug mode). The only exception is plural placeholder, which need not be present in singular form.</li>
+</ul>
+
+<p>Sometimes you might need old-style syntax for argument substitution. For example, when there are many arguments, or, more importantly, when it is convenient to <i>defer</i> substitution of arguments. This is possible using new <code>ki18n</code> call, with <code>subs</code> methods for argument substitution and <code>toString</code> method for finalization:</p>
+<pre>
+KLocalizedString ks = ki18n("The Foo-machine reported: %1");
+case (fooErrCode) {
+    ERR_OXI: ks.subs(i18n("Out of oxidizer")); break;
+    ERR_HYD: ks.subs(i18n("Out of hydrazine")); break;
+    ERR_PIL: ks.subs(i18n("Out of pilots")); break;
+    default: ks.subs(i18n("Unknown catastrophe"));
+}
+QString scream = ks.toString();
+</pre>
+
+<p>Note that <code>ki18n</code> returns object of type <code>KLocalizedString</code>, hence the <code>toString</code> method for conversion to plain <code>QString</code>. The <code>ki18n</code> call should be used rarely; the previous example can as well be rewritten to:</p>
+<pre>
+QString problem;
+case (fooErrCode) {
+    ERR_OXI: problem = i18n("Out of oxidizer"); break;
+    ...
+}
+QString scream = i18n("The Foo-machine reported: %1", problem);
+</pre>
+
+<p>Another case when you might want to use <code>ki18n</code> is if you want to format arguments. <code>subs</code> methods can take formatting arguments, similar to those of <code>arg</code> methods in <code>QString</code>. You should <i>never</i> use methods other than <code>subs</code> to format numbers in localized messages:</p>
+<pre>
+i18n("Rounds: %1", myNumberFormat(n, 8)); // bad, number not localized
+ki18n("Rounds: %1").subs(n, 8).toString(); // good, number is localized
+</pre>
+
+<p>There is a context, plural and context-plural variant of <code>ki18n</code> as well:</p>
+<pre>
+ki18nc("No function", "None").toString();
+ki18np("1 file found", "%n files found").subs(n).toString();
+ki18ncp("Personal file", "1 file", "%n files").subs(n).toString();
+</pre>
+
+<p>Extra notes on placeholder substitution for <code>ki18n*</code> calls:</p>
+<ul>
+<li>Plural placeholder <code>%n</code> will be substituted by the first supplied argument. If you give non-number as the first argument, you will get a runtime error mark in the message (in debug mode).</li>
+</ul>
+
+<p>If you need translation using locale (KLocale object) other than the default, you can use overloaded <code>toString</code> method which takes pointer to locale object (this replaces <code>KLocale::translate(...)</code> from KDE3):</p>
+<pre>
+KLocale *myLocale;
+...
+ki18n("Welcome!").toString(myLocale);
+</pre>
+
+<p>There is a script for semi-automatic conversion of KDE 3 code, <code>i18nk34conv.pl</code> in <code>branches/work/kde4-l10n/scripts/conversion/</code>. It will convert most of the calls automatically, and mark the places that need manual review. There is also the script <code>i18ncheckarg.pl</code> in <code>branches/work/kde4-l10n/scripts</code>, which will check whether placeholders and arguments match. Use it to catch and correct deferred substitutions (like in the examples above). Both these scripts you can just run without any arguments in top directory of your sources (but you can also specify paths or filenames as arguments). <i>Do not</i> run conversion script twice on same sources!</p>
+
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 
 </BODY>

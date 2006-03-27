@@ -41,7 +41,7 @@ void BugMailer::slotError(int errornum) {
             break;
         default:
             lstr = sm->getLastLine().trimmed();
-            lstr = i18n("Server said: \"%1\"").arg(lstr);
+            lstr = i18n("Server said: \"%1\"", lstr);
     }
     fputs(lstr.toUtf8().data(), stdout);
     fflush(stdout);

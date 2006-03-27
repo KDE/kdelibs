@@ -146,7 +146,7 @@ QString KAboutTranslator::emailAddress() const
 #undef mEmail
 
 #ifdef __GNUC__
-# warning KAboutData use the KDE3 trick for translating the data of the translators instead of using correctly i18n( "context", "text" );
+# warning KAboutData use the KDE3 trick for translating the data of the translators instead of using correctly i18nc( "context", "text" );
 #endif
 
 class KAboutData::Private
@@ -517,7 +517,7 @@ KAboutData::translators() const
 QString
 KAboutData::aboutTranslationTeam()
 {
-    return i18n("replace this with information about your translation team",
+    return i18nc("replace this with information about your translation team",
             "<p>KDE is translated into many languages thanks to the work "
             "of the translation teams all over the world.</p>"
             "<p>For more information on KDE internationalization "
@@ -579,7 +579,7 @@ KAboutData::license() const
       }
 
   if (!l.isEmpty())
-     result += i18n("This program is distributed under the terms of the %1.").arg( l );
+     result += i18n("This program is distributed under the terms of the %1.",  l );
 
   if (!f.isEmpty())
   {

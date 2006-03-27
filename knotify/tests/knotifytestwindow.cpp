@@ -44,7 +44,7 @@ void KNotifyTestWindow::slotSendOnlineEvent()
 {
 	KNotification::ContextList contexts;
 	contexts.append( qMakePair( QString("group") , view.c_group->currentText() ) );
-	KNotification::event("online" , i18n( "the contact %1 is now online" ).arg( view.c_name->text() ) ,
+	KNotification::event("online" , i18n( "the contact %1 is now online" ,  view.c_name->text() ) ,
 						 QPixmap() , this , QStringList() , contexts );
 }
 
@@ -52,7 +52,7 @@ void KNotifyTestWindow::slotSendMessageEvent( )
 {
 	KNotification::ContextList contexts;
 	contexts.append( qMakePair( QString("group") , view.c_group->currentText() ) );
-	KNotification *n = KNotification::event("message" , i18n( "new message : %1" ).arg( view.c_text->text() ) ,
+	KNotification *n = KNotification::event("message" , i18n( "new message : %1" ,  view.c_text->text() ) ,
 											QPixmap() , this , QStringList(i18n("Read")) , contexts );
 	connect( n , SIGNAL(activated(unsigned int )), this , SLOT(slotMessageRead()));
 }

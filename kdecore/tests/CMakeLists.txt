@@ -33,6 +33,18 @@ add_test(kdecore-klocaletest ${EXECUTABLE_OUTPUT_PATH}/klocaletest)
 
 ########### next target ###############
 
+set(klocalizedstringtest_SRCS klocalizedstringtest.cpp )
+
+kde4_automoc(${klocalizedstringtest_SRCS})
+
+kde4_add_executable(klocalizedstringtest ${klocalizedstringtest_SRCS})
+
+target_link_libraries(klocalizedstringtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-klocalizedstringtest ${EXECUTABLE_OUTPUT_PATH}/klocalizedstringtest)
+
+########### next target ###############
+
 set(kprocesstest_SRCS kprocesstest.cpp )
 
 kde4_automoc(${kprocesstest_SRCS})

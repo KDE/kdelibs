@@ -295,11 +295,11 @@ void Engine::upload( Entry *entry )
   } 
 
   QString text = i18n("The files to be uploaded have been created at:\n");
-  text.append( i18n("Data file: %1\n").arg( mUploadFile) );
+  text.append( i18n("Data file: %1\n",  mUploadFile) );
   if (!mPreviewFile.isEmpty()) {
-    text.append( i18n("Preview image: %1\n").arg( mPreviewFile) );
+    text.append( i18n("Preview image: %1\n",  mPreviewFile) );
   }
-  text.append( i18n("Content information: %1\n").arg( mUploadMetaFile) );
+  text.append( i18n("Content information: %1\n",  mUploadMetaFile) );
   text.append( i18n("Those files can now be uploaded.\n") );
   text.append( i18n("Beware that any people might have access to them at any time.") );
 

@@ -255,7 +255,7 @@ bool BrowserRun::allowExecution( const QString &serviceType, const KUrl &url )
     if ( !url.isLocalFile() ) // Don't permit to execute remote files
         return false;
 
-    return ( KMessageBox::warningContinueCancel( 0, i18n( "Do you really want to execute '%1'? " ).arg( url.prettyURL() ),
+    return ( KMessageBox::warningContinueCancel( 0, i18n( "Do you really want to execute '%1'? " ,  url.prettyURL() ),
     i18n("Execute File?"), i18n("Execute") ) == KMessageBox::Continue );
 }
 
@@ -274,9 +274,9 @@ static QString makeQuestion( const KUrl& url, const QString& mimeType, const QSt
     // The strange order in the i18n() calls below is due to the possibility
     // of surl containing a '%'
     if ( suggestedFilename.isEmpty() )
-        return i18n("Open '%2'?\nType: %1").arg(comment).arg(surl);
+        return i18n("Open '%2'?\nType: %1", comment, surl);
     else
-        return i18n("Open '%3'?\nName: %2\nType: %1").arg(comment).arg(suggestedFilename).arg(surl);
+        return i18n("Open '%3'?\nName: %2\nType: %1", comment, suggestedFilename, surl);
 }
 
 //static
@@ -290,7 +290,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
 
     // Text used for the open button
     QString openText = (offer && !offer->name().isEmpty())
-                       ? i18n("&Open with '%1'").arg(offer->name())
+                       ? i18n("&Open with '%1'", offer->name())
                        : i18n("&Open With...");
 
     int choice = KMessageBox::questionYesNoCancel(
@@ -363,7 +363,7 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFilename
             QString cmd=KStandardDirs::findExe(downloadManger);
             if (cmd.isEmpty())
             {
-                QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ").arg(downloadManger);
+                QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ", downloadManger);
                 QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
                 KMessageBox::detailedSorry(0,errMsg,errMsgEx);
                 cfg.writePathEntry("DownloadManager",QString());

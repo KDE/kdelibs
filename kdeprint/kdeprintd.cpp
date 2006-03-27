@@ -160,7 +160,7 @@ void KDEPrintd::slotPrintTerminated( KPrintProcess *proc )
 
 void KDEPrintd::slotPrintError( KPrintProcess *proc, const QString& msg )
 {
-	KNotifyClient::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1").arg(msg));
+	KNotifyClient::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1", msg));
 	m_processpool.removeAll( proc );
 }
 
@@ -202,9 +202,9 @@ void KDEPrintd::statusMessage(const QString& msg, int pid, const QString& appNam
 	{
 		w = new StatusWindow(pid);
 		if (appName.isEmpty())
-			w->setWindowTitle(i18n("Printing Status - %1").arg("(pid="+QString::number(pid)+")"));
+			w->setWindowTitle(i18n("Printing Status - %1", QString("(pid=%1)").arg(pid)));
 		else
-			w->setWindowTitle(i18n("Printing Status - %1").arg(appName));
+			w->setWindowTitle(i18n("Printing Status - %1", appName));
 		connect(w, SIGNAL(destroyed()), SLOT(slotClosed()));
 		w->show();
 		m_windows.insert(pid, w);
@@ -269,7 +269,7 @@ void KDEPrintd::processRequest()
 
 	QDataStream input( &params, QIODevice::WriteOnly );
 	input.setVersion ( QDataStream::Qt_3_1 );
-	input << info << i18n( "Authentication failed (user name=%1)" ).arg( info.username ) << 0 << req->seqNbr;
+	input << info << i18n( "Authentication failed (user name=%1)" ,  info.username ) << 0 << req->seqNbr;
 	if ( callingDcopClient()->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo,QString,long int,long int)",
 				params, replyType, reply ) )
 	{

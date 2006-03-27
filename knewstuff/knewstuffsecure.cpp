@@ -128,16 +128,16 @@ void KNewStuffSecure::slotValidated(int result)
           valid = false;
       } else
       {
-          signatureStr = i18n("The resource was signed with key <i>0x%1</i>, belonging to <i>%2 &lt;%3&gt;</i>.").arg(key.id.right(8)).arg(key.name).arg(key.mail);
+          signatureStr = i18n("The resource was signed with key <i>0x%1</i>, belonging to <i>%2 &lt;%3&gt;</i>.", key.id.right(8), key.name, key.mail);
       }
    }
   if (!valid)
   {
       signatureStr.prepend( "<br>");
-      if (KMessageBox::warningContinueCancel(parentWidget(), i18n("<qt>There is a problem with the resource file you have downloaded. The errors are :<b>%1</b><br>%2<br><br>Installation of the resource is <b>not recommended</b>.<br><br>Do you want to proceed with the installation?</qt>").arg(errorString).arg(signatureStr), i18n("Problematic Resource File")) == KMessageBox::Continue)
+      if (KMessageBox::warningContinueCancel(parentWidget(), i18n("<qt>There is a problem with the resource file you have downloaded. The errors are :<b>%1</b><br>%2<br><br>Installation of the resource is <b>not recommended</b>.<br><br>Do you want to proceed with the installation?</qt>", errorString, signatureStr), i18n("Problematic Resource File")) == KMessageBox::Continue)
           valid = true;
   } else
-    KMessageBox::information(parentWidget(), i18n("<qt>%1<br><br>Press OK to install it.</qt>").arg(signatureStr), i18n("Valid Resource"), "Show Valid Signature Information");
+    KMessageBox::information(parentWidget(), i18n("<qt>%1<br><br>Press OK to install it.</qt>", signatureStr), i18n("Valid Resource"), "Show Valid Signature Information");
   if (valid)
   {
      installResource();

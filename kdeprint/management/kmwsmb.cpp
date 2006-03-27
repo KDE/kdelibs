@@ -101,7 +101,7 @@ void KMWSmb::initPrinter(KMPrinter *printer)
 	{
 		QString login = printer->option( "kde-login" );
 		m_view->setLoginInfos(login,printer->option("kde-password"));
-		m_loginlabel->setText( i18n( "Login: %1" ).arg( login.isEmpty() ? i18n( "<anonymous>" ) : login ) );
+		m_loginlabel->setText( i18n( "Login: %1" ,  login.isEmpty() ? i18n( "<anonymous>" ) : login ) );
 	}
 }
 

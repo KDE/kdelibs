@@ -1376,7 +1376,7 @@ ValueImp *Window::openWindow(ExecState *exec, const List& args)
                                           "window via JavaScript.\n"
                                           "Do you want to allow this?" ) :
                                     i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via JavaScript.<br />"
-                                          "Do you want to allow this?</qt>").arg(KStringHandler::csqueeze(Qt::escape(url.prettyURL()),  100)),
+                                          "Do you want to allow this?</qt>", KStringHandler::csqueeze(Qt::escape(url.prettyURL()),  100)),
                                     caption, i18n("Allow"), i18n("Do Not Allow") ) == KMessageBox::Yes )
       policy = KHTMLSettings::KJSWindowOpenAllow;
   } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )
@@ -2519,11 +2519,11 @@ ValueImp *ExternalFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, cons
 
     QString question;
     if ( title.isEmpty() )
-      question = i18n("Do you want a bookmark pointing to the location \"%1\" to be added to your collection?")
-                 .arg(url);
+      question = i18n("Do you want a bookmark pointing to the location \"%1\" to be added to your collection?",
+                  url);
     else
-      question = i18n("Do you want a bookmark pointing to the location \"%1\" titled \"%2\" to be added to your collection?")
-                 .arg(url).arg(title);
+      question = i18n("Do you want a bookmark pointing to the location \"%1\" titled \"%2\" to be added to your collection?",
+                  url, title);
 
     emit part->browserExtension()->requestFocus(part);
 

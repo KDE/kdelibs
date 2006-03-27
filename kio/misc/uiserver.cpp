@@ -139,12 +139,12 @@ ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
    m_columns->header()->hide();
 
    m_items[ListProgress::TB_ADDRESS]        =new Q3CheckListItem(m_columns, i18n("URL"), Q3CheckListItem::CheckBox);
-   m_items[ListProgress::TB_REMAINING_TIME] =new Q3CheckListItem(m_columns, i18n("Remaining Time", "Rem. Time"), Q3CheckListItem::CheckBox);
+   m_items[ListProgress::TB_REMAINING_TIME] =new Q3CheckListItem(m_columns, i18nc("Remaining Time", "Rem. Time"), Q3CheckListItem::CheckBox);
    m_items[ListProgress::TB_SPEED]          =new Q3CheckListItem(m_columns, i18n("Speed"), Q3CheckListItem::CheckBox);
    m_items[ListProgress::TB_TOTAL]          =new Q3CheckListItem(m_columns, i18n("Size"), Q3CheckListItem::CheckBox);
    m_items[ListProgress::TB_PROGRESS]       =new Q3CheckListItem(m_columns, i18n("%"), Q3CheckListItem::CheckBox);
    m_items[ListProgress::TB_COUNT]          =new Q3CheckListItem(m_columns, i18n("Count"), Q3CheckListItem::CheckBox);
-   m_items[ListProgress::TB_RESUME]         =new Q3CheckListItem(m_columns, i18n("Resume", "Res."), Q3CheckListItem::CheckBox);
+   m_items[ListProgress::TB_RESUME]         =new Q3CheckListItem(m_columns, i18nc("Resume", "Res."), Q3CheckListItem::CheckBox);
    m_items[ListProgress::TB_LOCAL_FILENAME] =new Q3CheckListItem(m_columns, i18n("Local Filename"), Q3CheckListItem::CheckBox);
    m_items[ListProgress::TB_OPERATION]      =new Q3CheckListItem(m_columns, i18n("Operation"), Q3CheckListItem::CheckBox);
 
@@ -249,7 +249,7 @@ void ProgressItem::setProcessedSize( KIO::filesize_t size ) {
 void ProgressItem::setProcessedFiles( unsigned long files ) {
   m_iProcessedFiles = files;
 
-  QString tmps = i18n("%1 / %2").arg( m_iProcessedFiles ).arg( m_iTotalFiles );
+  QString tmps = i18n("%1 / %2",  m_iProcessedFiles ,  m_iTotalFiles );
   setText( ListProgress::TB_COUNT, tmps );
 
   defaultProgress->slotProcessedFiles( 0, m_iProcessedFiles );
@@ -286,7 +286,7 @@ void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
     tmps = i18n( "Stalled");
     tmps2 = tmps;
   } else {
-    tmps = i18n( "%1/s").arg( KIO::convertSize( m_iSpeed ));
+    tmps = i18n( "%1/s",  KIO::convertSize( m_iSpeed ));
     tmps2 = KIO::convertSeconds( m_remainingSeconds );
   }
   setText( ListProgress::TB_SPEED, tmps );
@@ -463,12 +463,12 @@ ListProgress::ListProgress (QWidget *parent)
 
   m_lpcc[TB_OPERATION].title=i18n("Operation");
   m_lpcc[TB_LOCAL_FILENAME].title=i18n("Local Filename");
-  m_lpcc[TB_RESUME].title=i18n("Resume", "Res.");
+  m_lpcc[TB_RESUME].title=i18nc("Resume", "Res.");
   m_lpcc[TB_COUNT].title=i18n("Count");
   m_lpcc[TB_PROGRESS].title=i18n("%");
   m_lpcc[TB_TOTAL].title=i18n("Size");
   m_lpcc[TB_SPEED].title=i18n("Speed");
-  m_lpcc[TB_REMAINING_TIME].title=i18n("Remaining Time", "Rem. Time");
+  m_lpcc[TB_REMAINING_TIME].title=i18nc("Remaining Time", "Rem. Time");
   m_lpcc[TB_ADDRESS].title=i18n("URL");
   readSettings();
 
@@ -602,10 +602,10 @@ UIServer::UIServer()
   addToolBar(Qt::LeftToolBarArea, toolBar());
 
   // setup statusbar
-  statusBar()->insertItem( i18n(" Files: %1 ").arg( 0 ), ID_TOTAL_FILES);
-  statusBar()->insertItem( i18n("Remaining Size", " Rem. Size: %1 kB ").arg( "0" ), ID_TOTAL_SIZE);
-  statusBar()->insertItem( i18n("Remaining Time", " Rem. Time: 00:00:00 "), ID_TOTAL_TIME);
-  statusBar()->insertItem( i18n(" %1 kB/s ").arg("0"), ID_TOTAL_SPEED);
+  statusBar()->insertItem( i18n(" Files: %1 ",  0 ), ID_TOTAL_FILES);
+  statusBar()->insertItem( i18nc("Remaining Size", " Rem. Size: %1 kB ",  0 ), ID_TOTAL_SIZE);
+  statusBar()->insertItem( i18nc("Remaining Time", " Rem. Time: 00:00:00 "), ID_TOTAL_TIME);
+  statusBar()->insertItem( i18n(" %1 kB/s ", 0), ID_TOTAL_SPEED);
 
   // setup listview
   listProgress = new ListProgress( this );
@@ -1092,12 +1092,12 @@ void UIServer::slotUpdate() {
   }
 
   // update statusbar
-  statusBar()->changeItem( i18n( " Files: %1 ").arg( iTotalFiles ), ID_TOTAL_FILES);
-  statusBar()->changeItem( i18n( "Remaining Size", " Rem. Size: %1 ").arg( KIO::convertSize( iTotalSize ) ),
+  statusBar()->changeItem( i18n( " Files: %1 ",  iTotalFiles ), ID_TOTAL_FILES);
+  statusBar()->changeItem( i18nc( "Remaining Size", " Rem. Size: %1 ",  KIO::convertSize( iTotalSize ) ),
                            ID_TOTAL_SIZE);
-  statusBar()->changeItem( i18n( "Remaining Time", " Rem. Time: %1 ").arg( KIO::convertSeconds( totalRemTime ) ),
+  statusBar()->changeItem( i18nc( "Remaining Time", " Rem. Time: %1 ",  KIO::convertSeconds( totalRemTime ) ),
                            ID_TOTAL_TIME);
-  statusBar()->changeItem( i18n( " %1/s ").arg( KIO::convertSize( iTotalSpeed ) ),
+  statusBar()->changeItem( i18n( " %1/s ",  KIO::convertSize( iTotalSpeed ) ),
                            ID_TOTAL_SPEED);
 
 }

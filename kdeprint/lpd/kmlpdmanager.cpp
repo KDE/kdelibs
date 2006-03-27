@@ -84,15 +84,15 @@ bool KMLpdManager::completePrinterShort(KMPrinter *printer)
 	if (entry)
 	{
 		QString	type(entry->comment(2)), driver(entry->comment(7)), lp(entry->arg("lp"));
-		printer->setDescription(i18n("Local printer queue (%1)").arg(type.isEmpty() ? i18n("Unknown type of local printer queue", "Unknown") : type));
+		printer->setDescription(i18n("Local printer queue (%1)", type.isEmpty() ? i18nc("Unknown type of local printer queue", "Unknown") : type));
 		printer->setLocation(i18n("<Not available>"));
-		printer->setDriverInfo(driver.isEmpty() ? i18n("Unknown Driver", "Unknown") : driver);
+		printer->setDriverInfo(driver.isEmpty() ? i18nc("Unknown Driver", "Unknown") : driver);
 		// device
 		KUrl	url;
 		if (!entry->arg("rm").isEmpty())
 		{
 			url = QString::fromLatin1("lpd://%1/%2").arg(entry->arg("rm")).arg(entry->arg("rp"));
-			printer->setDescription(i18n("Remote LPD queue %1@%2").arg(entry->arg("rp")).arg(entry->arg("rm")));
+			printer->setDescription(i18n("Remote LPD queue %1@%2", entry->arg("rp"), entry->arg("rm")));
 		}
 		else if (!lp.isEmpty() && lp != "/dev/null")
 			url = QString::fromLatin1("parallel:%1").arg(lp);
@@ -155,14 +155,14 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	// create spool directory (if necessary) and update PrintcapEntry object
 	if (!createSpooldir(ent))
 	{
-		setErrorMsg(i18n("Unable to create spool directory %1 for printer %2.").arg(ent->arg("sd")).arg(ent->m_name));
+		setErrorMsg(i18n("Unable to create spool directory %1 for printer %2.", ent->arg("sd"), ent->m_name));
 		delete ent;
 		return false;
 	}
 	if (!printer->driver() || printer->driver()->get("drtype") == "printtool")
 		if (!createPrinttoolEntry(printer,ent))
 		{
-			setErrorMsg(i18n("Unable to save information for printer <b>%1</b>.").arg(printer->printerName()));
+			setErrorMsg(i18n("Unable to save information for printer <b>%1</b>.", printer->printerName()));
 			delete ent;
 			return false;
 		}
@@ -190,7 +190,7 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	cmd += QFile::encodeName(KProcess::quote(ent->arg("sd")));
 	if (system(cmd.data()) != 0)
 	{
-		setErrorMsg(i18n("Unable to set correct permissions on spool directory %1 for printer <b>%2</b>.").arg(ent->arg("sd")).arg(ent->m_name));
+		setErrorMsg(i18n("Unable to set correct permissions on spool directory %1 for printer <b>%2</b>.", ent->arg("sd"), ent->m_name));
 		return false;
 	}
 
@@ -241,7 +241,7 @@ bool KMLpdManager::enablePrinter(KMPrinter *printer, bool state)
 	}
 	else
 	{
-		setErrorMsg(i18n("Unable to execute command \"%1\".").arg(cmd));
+		setErrorMsg(i18n("Unable to execute command \"%1\".", cmd));
 		return false;
 	}
 }
@@ -373,7 +373,7 @@ PrinttoolEntry* KMLpdManager::findPrinttoolEntry(const QString& name)
 		loadPrinttoolDb(driverDirectory()+"/printerdb");
 	PrinttoolEntry	*ent = m_ptentries.value(name, 0);
 	if (!ent)
-		setErrorMsg(i18n("Couldn't find driver <b>%1</b> in printtool database.").arg(name));
+		setErrorMsg(i18n("Couldn't find driver <b>%1</b> in printtool database.", name));
 	return ent;
 }
 
@@ -412,7 +412,7 @@ PrintcapEntry* KMLpdManager::findPrintcapEntry(const QString& name)
 {
 	PrintcapEntry	*ent = m_entries.value(name, 0);
 	if (!ent)
-		setErrorMsg(i18n("Couldn't find printer <b>%1</b> in printcap file.").arg(name));
+		setErrorMsg(i18n("Couldn't find printer <b>%1</b> in printcap file.", name));
 	return ent;
 }
 
@@ -453,7 +453,7 @@ bool KMLpdManager::checkGsDriver(const QString& gsdriver)
 		return true;
 	else if (!m_gschecker->checkGsDriver(gsdriver))
 	{
-		setErrorMsg(i18n("The driver device <b>%1</b> is not compiled in your GhostScript distribution. Check your installation or use another driver.").arg(gsdriver));
+		setErrorMsg(i18n("The driver device <b>%1</b> is not compiled in your GhostScript distribution. Check your installation or use another driver.", gsdriver));
 		return false;
 	}
 	return true;

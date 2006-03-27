@@ -261,8 +261,8 @@ KCModule * KCModuleProxy::realModule() const
 			stream >> result;
 
 			d->kcm = KCModuleLoader::reportError( KCModuleLoader::Inline,
-					i18n( "Argument is application name", "This configuration section is "
-						"already opened in %1" ).arg( result ), " ", that );
+					i18nc( "Argument is application name", "This configuration section is "
+						"already opened in %1" ,  result ), " ", that );
 
 			d->topLayout->addWidget( d->kcm );
 		}

@@ -561,7 +561,7 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
   for ( int i = 0; colorPaletteName[i].m_fileName; ++i )
   {
       diskPaletteList.removeAll( colorPaletteName[i].m_fileName );
-      paletteList.append( i18n( "palette name", colorPaletteName[i].m_displayName ) );
+      paletteList.append( i18nc( "palette name", colorPaletteName[i].m_displayName ) );
   }
   paletteList += diskPaletteList;
   paletteList.append( i18n_namedColors );
@@ -678,7 +678,7 @@ KPaletteTable::readNamedColor( void )
         const QColor color ( red, green, blue );
         if ( color.isValid() )
         {
-            const QString colorName( i18n("color", name.toLatin1().data()) );
+            const QString colorName( i18nc("color", name.toLatin1().data()) );
             list.append( colorName );
             d->m_namedColorMap[ colorName ] = color;
         }
@@ -778,7 +778,7 @@ KPaletteTable::setPalette( const QString &_paletteName )
   // We must again find the file name of the palette from the eventual translation
   for ( int i = 0; colorPaletteName[i].m_fileName; ++i )
   {
-      if ( paletteName == i18n( "palette name", colorPaletteName[i].m_displayName ) )
+      if ( paletteName == i18nc( "palette name", colorPaletteName[i].m_displayName ) )
       {
           paletteName = colorPaletteName[i].m_fileName;
           break;
@@ -864,12 +864,12 @@ KPaletteTable::slotColorTextSelected( const QString &colorText )
 void
 KPaletteTable::addToCustomColors( const QColor &color)
 {
-  setPalette(i18n("palette name",colorPaletteName[customColorIndex].m_displayName));
+  setPalette(i18nc("palette name",colorPaletteName[customColorIndex].m_displayName));
   mPalette->addColor( color );
   mPalette->save();
   delete mPalette;
   mPalette = 0;
-  setPalette(i18n("palette name",colorPaletteName[customColorIndex].m_displayName));
+  setPalette(i18nc("palette name",colorPaletteName[customColorIndex].m_displayName));
 }
 
 void
@@ -894,7 +894,7 @@ KPaletteTable::addToRecentColors( const QColor &color)
   }
   delete recentPal;
   if (recentIsSelected)
-      setPalette( i18n( "palette name", colorPaletteName[ recentColorIndex ].m_displayName ) );
+      setPalette( i18nc( "palette name", colorPaletteName[ recentColorIndex ].m_displayName ) );
 }
 
 class KCDPickerFilter;
@@ -1276,7 +1276,7 @@ KColorDialog::readSettings()
 
   config->setGroup("Colors");
   QString palette = config->readEntry("CurrentPalette");
-  if (palette.isEmpty()) palette=i18n("palette name",colorPaletteName[fortyColorIndex].m_displayName);
+  if (palette.isEmpty()) palette=i18nc("palette name",colorPaletteName[fortyColorIndex].m_displayName);
   d->table->setPalette(palette);
   config->setGroup( oldgroup );
 }

@@ -136,7 +136,7 @@ void KMWIppPrinter::slotScanFinished()
 		NetworkScanner::SocketInfo *info(it.next());
 		QString	name;
 		if (info->Name.isEmpty())
-			name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(info->IP);
+			name = i18nc("Unknown host - 1 is the IP", "<Unknown> (%1)", info->IP);
 		else
 		name = info->Name;
 		Q3ListViewItem	*item = new Q3ListViewItem(m_list,name,info->IP,QString::number(info->Port));
@@ -170,16 +170,16 @@ void KMWIppPrinter::slotPrinterSelected(Q3ListViewItem *item)
 	{
 		QString	value, txt;
 		int 	state;
-		if (req.name("printer-name",value)) txt.append(i18n("<b>Name</b>: %1<br>").arg(value));
-		if (req.text("printer-location",value) && !value.isEmpty()) txt.append(i18n("<b>Location</b>: %1<br>").arg(value));
-		if (req.text("printer-info",value) && !value.isEmpty()) txt.append(i18n("<b>Description</b>: %1<br>").arg(value.replace(QRegExp(";"),"<br>")));
+		if (req.name("printer-name",value)) txt.append(i18n("<b>Name</b>: %1<br>", value));
+		if (req.text("printer-location",value) && !value.isEmpty()) txt.append(i18n("<b>Location</b>: %1<br>", value));
+		if (req.text("printer-info",value) && !value.isEmpty()) txt.append(i18n("<b>Description</b>: %1<br>", value.replace(QRegExp(";"),"<br>")));
 		if (req.uri("printer-uri-supported",value))
 		{
 			if (value[0] == '/')
 				value.prepend(QString::fromLatin1("ipp://%1:%2").arg(item->text(1)).arg(item->text(2)));
 			m_uri->setText(value);
 		}
-		if (req.text("printer-make-and-model",value) && !value.isEmpty()) txt.append(i18n("<b>Model</b>: %1<br>").arg(value));
+		if (req.text("printer-make-and-model",value) && !value.isEmpty()) txt.append(i18n("<b>Model</b>: %1<br>", value));
 		if (req.enumvalue("printer-state",state))
 		{
 			switch (state)
@@ -187,16 +187,16 @@ void KMWIppPrinter::slotPrinterSelected(Q3ListViewItem *item)
 				case IPP_PRINTER_IDLE: value = i18n("Idle"); break;
 				case IPP_PRINTER_STOPPED: value = i18n("Stopped"); break;
 				case IPP_PRINTER_PROCESSING: value = i18n("Processing..."); break;
-				default: value = i18n("Unknown State", "Unknown"); break;
+				default: value = i18nc("Unknown State", "Unknown"); break;
 			}
-			txt.append(i18n("<b>State</b>: %1<br>").arg(value));
+			txt.append(i18n("<b>State</b>: %1<br>", value));
 		}
 		m_info->setHtml(txt);
 	}
 	else
 	{
 		m_uri->setText(uri);
-		m_info->setHtml(i18n("Unable to retrieve printer info. Printer answered:<br><br>%1").arg(ippErrorString((ipp_status_t)req.status())));
+		m_info->setHtml(i18n("Unable to retrieve printer info. Printer answered:<br><br>%1", ippErrorString((ipp_status_t)req.status())));
 	}
 }
 
@@ -215,12 +215,12 @@ void KMWIppPrinter::slotIppReport()
 		req.addURI(IPP_TAG_OPERATION, "printer-uri", uri);
 		if (req.doRequest("/ipp/"))
 		{
-			QString	caption = i18n("IPP Report for %1").arg(item->text(0));
+			QString	caption = i18n("IPP Report for %1", item->text(0));
 			static_cast<KMCupsManager*>(KMManager::self())->ippReport(req, IPP_TAG_PRINTER, caption);
 		}
 		else
-			KMessageBox::error(this, i18n("Unable to generate report. IPP request failed with message: "
-			                              "%1 (0x%2).").arg(ippErrorString((ipp_status_t)req.status())).arg(req.status(),0,16));
+			KMessageBox::error(this, ki18n("Unable to generate report. IPP request failed with message: "
+			                               "%1 (0x%2).").subs(ippErrorString((ipp_status_t)req.status())).subs(req.status(),0,16).toString());
 	}
 }
 

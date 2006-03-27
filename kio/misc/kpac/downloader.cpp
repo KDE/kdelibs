@@ -78,8 +78,8 @@ namespace KPAC
         else
         {
             if ( job->error() )
-                setError( i18n( "Could not download the proxy configuration script:\n%1" )
-                              .arg( job->errorString() ) );
+                setError( i18n( "Could not download the proxy configuration script:\n%1" ,
+                                job->errorString() ) );
             else setError( i18n( "Could not download the proxy configuration script" ) ); // error page
             failed();
         }

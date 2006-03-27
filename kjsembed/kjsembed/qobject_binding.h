@@ -142,7 +142,7 @@ KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBin
                 }
                 else
                 {
-                    KJS::throwError(exec, KJS::GeneralError, i18n("%1 is not an Object type").arg(clazz));
+                    KJS::throwError(exec, KJS::GeneralError, i18n("%1 is not an Object type", clazz));
                     // throwError(exec, i18n("%1 is not an Object type").arg(clazz));
                     return new KJS::JSObject();
                 }

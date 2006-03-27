@@ -168,7 +168,7 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
 
     if ( m_undo ) {
         m_undo->setEnabled(true);
-        m_undo->setText( i18n("&Undo: %1").arg(command->name()) );
+        m_undo->setText( i18n("&Undo: %1", command->name()) );
     }
     if ( m_redo && m_redo->isEnabled() ) {
         m_redo->setEnabled(false);
@@ -199,7 +199,7 @@ void KCommandHistory::undo() {
     emit commandExecuted( command );
     if ( m_redo ) {
         m_redo->setEnabled(true);
-        m_redo->setText( i18n("&Redo: %1").arg(command->name()) );
+        m_redo->setText( i18n("&Redo: %1", command->name()) );
     }
 
     --d->m_current;
@@ -208,7 +208,7 @@ void KCommandHistory::undo() {
         if (m_undo ) {
             KCommand* command = m_commands[ d->m_current ];
             m_undo->setEnabled(true);
-            m_undo->setText( i18n("&Undo: %1").arg(command->name()) );
+            m_undo->setText( i18n("&Undo: %1", command->name()) );
         }
     } else {
         // undoing further is not possible
@@ -231,7 +231,7 @@ void KCommandHistory::redo() {
 
     if ( m_undo ) {
         m_undo->setEnabled(true);
-        m_undo->setText( i18n("&Undo: %1").arg(command->name()) );
+        m_undo->setText( i18n("&Undo: %1", command->name()) );
     }
 
     ++d->m_current;
@@ -243,7 +243,7 @@ void KCommandHistory::redo() {
         if ( m_redo ) {
             command = m_commands[ d->m_current + 1 ];
             m_redo->setEnabled(true);
-            m_redo->setText( i18n("&Redo: %1").arg(command->name()) );
+            m_redo->setText( i18n("&Redo: %1", command->name()) );
         }
     } else {
         if( m_redo ) {
@@ -305,7 +305,7 @@ void KCommandHistory::slotUndoAboutToShow()
     // TODO make number of items configurable ?
     const int end = qMax( d->m_current - 9, 0 );
     for ( int i = d->m_current; i >= end; --i ) {
-        m_undoPopup->addAction( i18n("Undo: %1").arg(m_commands[i]->name()) );
+        m_undoPopup->addAction( i18n("Undo: %1", m_commands[i]->name()) );
     }
 }
 
@@ -323,7 +323,7 @@ void KCommandHistory::slotRedoAboutToShow()
     // TODO make number of items configurable ?
     const int end = qMin( d->m_current + 10, m_commands.count() - 1 );
     for ( int i = d->m_current + 1; i < end; ++i ) {
-        m_redoPopup->addAction( i18n("Redo: %1").arg(m_commands[i]->name()) );
+        m_redoPopup->addAction( i18n("Redo: %1", m_commands[i]->name()) );
     }
 }
 

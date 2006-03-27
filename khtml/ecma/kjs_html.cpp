@@ -2088,7 +2088,7 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
                          "window via JavaScript.\n"
                          "Do you want to allow the form to be submitted?" ) :
                    i18n( "<qt>This site is submitting a form which will open <p>%1</p> in a new browser window via JavaScript.<br />"
-                         "Do you want to allow the form to be submitted?</qt>").arg(KStringHandler::csqueeze(form.action().string(),  100)),
+                         "Do you want to allow the form to be submitted?</qt>", KStringHandler::csqueeze(form.action().string(),  100)),
                    caption, i18n("Allow"), i18n("Do Not Allow") ) == KMessageBox::Yes )
               block = false;
 

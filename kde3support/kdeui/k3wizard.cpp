@@ -46,7 +46,7 @@ K3Wizard::K3Wizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f 
     helpButton()->setIcon( SmallIconSet( "help" ) );
 
     backButton()->setText( i18n( "&Back" ) );
-    nextButton()->setText( i18n( "Opposite to Back","&Next" ) );
+    nextButton()->setText( i18nc( "Opposite to Back","&Next" ) );
   }
 
   QFont font = titleFont();

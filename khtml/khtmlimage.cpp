@@ -181,16 +181,16 @@ void KHTMLImage::notifyFinished( khtml::CachedObject *o )
 
     if ( mimeType ) {
         if (m_image && !m_image->suggestedTitle().isEmpty()) {
-            caption = i18n( "%1 (%2 - %3x%4 Pixels)" ).arg( m_image->suggestedTitle(), mimeType->comment() ).arg( m_image->pixmap_size().width() ).arg( m_image->pixmap_size().height() );
+            caption = i18n( "%1 (%2 - %3x%4 Pixels)", m_image->suggestedTitle(), mimeType->comment(), m_image->pixmap_size().width(), m_image->pixmap_size().height() );
         } else {
-            caption = i18n( "%1 - %2x%3 Pixels" ).arg( mimeType->comment() )
-                .arg( m_image->pixmap_size().width() ).arg( m_image->pixmap_size().height() );
+            caption = i18n( "%1 - %2x%3 Pixels" ,  mimeType->comment() ,
+                  m_image->pixmap_size().width() ,  m_image->pixmap_size().height() );
         }
     } else {
         if (m_image && !m_image->suggestedTitle().isEmpty()) {
-            caption = i18n( "%1 (%2x%3 Pixels)" ).arg(m_image->suggestedTitle()).arg( m_image->pixmap_size().width() ).arg( m_image->pixmap_size().height() );
+            caption = i18n( "%1 (%2x%3 Pixels)" , m_image->suggestedTitle(),  m_image->pixmap_size().width() ,  m_image->pixmap_size().height() );
         } else {
-            caption = i18n( "Image - %1x%2 Pixels" ).arg( m_image->pixmap_size().width() ).arg( m_image->pixmap_size().height() );
+            caption = i18n( "Image - %1x%2 Pixels" ,  m_image->pixmap_size().width() ,  m_image->pixmap_size().height() );
         }
     }
 

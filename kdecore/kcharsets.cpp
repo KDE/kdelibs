@@ -492,7 +492,7 @@ QStringList KCharsets::descriptiveEncodingNames() const
     for ( const LanguageForEncoding* pos = language_for_encoding; pos->index; ++pos ) {
         const QString name = QString::fromLatin1( pos->index );
         const QString description = i18n( language_names[ pos->data ] );
-        encodings.append( i18n("Descriptive Encoding Name", "%1 ( %2 )"). arg ( description ). arg( name ) );
+        encodings.append( i18nc("Descriptive Encoding Name", "%1 ( %2 )",    description ,   name ) );
     }
     encodings.sort();
     return encodings;

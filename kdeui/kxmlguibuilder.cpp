@@ -168,7 +168,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     else if ( context.isEmpty() )
       i18nText = i18n( text );
     else
-      i18nText = i18n( context, text );
+      i18nText = i18nc( context, text );
 
     QString icon = element.attribute( d->attrIcon );
     QIcon pix;

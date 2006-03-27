@@ -271,7 +271,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	d->m_printers->setMinimumHeight(25);
 	QLabel	*m_printerlabel = new QLabel(i18n("&Name:"), m_pbox);
 	m_printerlabel->setWhatsThis(whatsThisPrinterSelect);
-	QLabel	*m_statelabel = new QLabel(i18n("Status", "State:"), m_pbox);
+	QLabel	*m_statelabel = new QLabel(i18nc("Status", "State:"), m_pbox);
 	m_statelabel->setWhatsThis(whatsThisPrinterState);
 	QLabel	*m_typelabel = new QLabel(i18n("Type:"), m_pbox);
 	m_typelabel->setWhatsThis(whatsThisPrinterType);

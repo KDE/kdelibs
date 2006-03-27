@@ -242,7 +242,7 @@ K3DockWidgetHeader::K3DockWidgetHeader( K3DockWidget* parent, const char* name )
   connect( closeButton, SIGNAL(clicked()), parent, SLOT(undock()));
 
   stayButton = new K3DockButton_Private( this, "DockStayButton" );
-  stayButton->setToolTip( i18n("Freeze the window geometry", "Freeze") );
+  stayButton->setToolTip( i18nc("Freeze the window geometry", "Freeze") );
   stayButton->setCheckable( true );
   auxPix = QPixmap( not_close_xpm );
   stayButton->setIcon( QIcon( auxPix ) );
@@ -250,7 +250,7 @@ K3DockWidgetHeader::K3DockWidgetHeader( K3DockWidget* parent, const char* name )
   connect( stayButton, SIGNAL(clicked()), this, SLOT(slotStayClicked()));
 
   dockbackButton = new K3DockButton_Private( this, "DockbackButton" );
-  dockbackButton->setToolTip( i18n("Dock this window", "Dock") );
+  dockbackButton->setToolTip( i18nc("Dock this window", "Dock") );
   auxPix = QPixmap( dockback_xpm );
   dockbackButton->setIcon( QIcon( auxPix ) );
   dockbackButton->setFixedSize( auxPix.size() );
@@ -2946,13 +2946,13 @@ void K3DockManager::slotMenuPopup()
     ++it;
     if ( obj->mayBeHide() )
     {
-      menu->insertItem( i18n("Hide %1").arg(obj->windowTitle()));
+      menu->insertItem( i18n("Hide %1", obj->windowTitle()));
       menuData->append( new MenuDockData( obj, true ) );
     }
 
     if ( obj->mayBeShow() )
     {
-      menu->insertItem( i18n("Show %1").arg(obj->windowTitle()));
+      menu->insertItem( i18n("Show %1", obj->windowTitle()));
       menuData->append( new MenuDockData( obj, false ) );
     }
   }

@@ -589,11 +589,11 @@ KMenu *KToolBar::contextMenu()
   orient->setObjectName( "orient" );
   d->context->addMenu( orient );
 
-  d->contextTop = orient->addAction( i18n("toolbar position string","Top"), this, SLOT(slotContextTop()) );
+  d->contextTop = orient->addAction( i18nc("toolbar position string","Top"), this, SLOT(slotContextTop()) );
   d->contextTop->setChecked(true);
-  d->contextLeft = orient->addAction( i18n("toolbar position string","Left"), this , SLOT(slotContextLeft()) );
-  d->contextRight = orient->addAction( i18n("toolbar position string","Right"), this, SLOT(slotContextRight()) );
-  d->contextBottom = orient->addAction( i18n("toolbar position string","Bottom"), this, SLOT(slotContextBottom()) );
+  d->contextLeft = orient->addAction( i18nc("toolbar position string","Left"), this , SLOT(slotContextLeft()) );
+  d->contextRight = orient->addAction( i18nc("toolbar position string","Right"), this, SLOT(slotContextRight()) );
+  d->contextBottom = orient->addAction( i18nc("toolbar position string","Bottom"), this, SLOT(slotContextBottom()) );
 
   QActionGroup* positionGroup = new QActionGroup(orient);
   foreach (QAction* action, orient->actions()) {
@@ -642,13 +642,13 @@ KMenu *KToolBar::contextMenu()
       foreach ( int it, avSizes ) {
           QString text;
           if ( it < 19 )
-              text = i18n("Small (%1x%2)").arg(it).arg(it);
+              text = i18n("Small (%1x%2)", it, it);
           else if (it < 25)
-              text = i18n("Medium (%1x%2)").arg(it).arg(it);
+              text = i18n("Medium (%1x%2)", it, it);
           else if (it < 35)
-              text = i18n("Large (%1x%2)").arg(it).arg(it);
+              text = i18n("Large (%1x%2)", it, it);
           else
-              text = i18n("Huge (%1x%2)").arg(it).arg(it);
+              text = i18n("Huge (%1x%2)", it, it);
           // save the size in the contextIconSizes map
           d->contextIconSizes.insert(size->addAction( text, this, SLOT(slotContextIconSize())), it );
       }
@@ -662,13 +662,13 @@ KMenu *KToolBar::contextMenu()
               if (it >= progression[i]) {
                   QString text;
                   if ( it < 19 )
-                      text = i18n("Small (%1x%2)").arg(it).arg(it);
+                      text = i18n("Small (%1x%2)", it, it);
                   else if (it < 25)
-                      text = i18n("Medium (%1x%2)").arg(it).arg(it);
+                      text = i18n("Medium (%1x%2)", it, it);
                   else if (it < 35)
-                      text = i18n("Large (%1x%2)").arg(it).arg(it);
+                      text = i18n("Large (%1x%2)", it, it);
                   else
-                      text = i18n("Huge (%1x%2)").arg(it).arg(it);
+                      text = i18n("Huge (%1x%2)", it, it);
                   // save the size in the contextIconSizes map
                   d->contextIconSizes.insert(size->addAction( text, this, SLOT(slotContextIconSize())), it );
                   break;

@@ -162,7 +162,7 @@ void KMVirtualManager::setAsDefault(KMPrinter *p, const QString& name, QWidget *
 						  "This setting is specific to KDE and will not be available outside KDE "
 						  "applications. Note that this will only make your personal default printer "
 						  "as undefined for non-KDE applications and should not prevent you from "
-						  "printing normally. Do you really want to set <b>%1</b> as your personal default?</qt>" ).arg( instname ),
+						  "printing normally. Do you really want to set <b>%1</b> as your personal default?</qt>" ,  instname ),
 					QString(), i18n("Set as Default"), "setSpecialAsDefault" ) == KMessageBox::No )
 			return;
 	}

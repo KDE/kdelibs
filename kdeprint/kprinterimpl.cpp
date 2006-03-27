@@ -163,7 +163,7 @@ bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
 					proc << (flag?"mv":"cp") << f[0] << p->outputFileName();
 					if (!proc.start(KProcess::Block) || !proc.normalExit() || proc.exitStatus() != 0)
 					{
-						p->setErrorMessage(i18n("Cannot save print file to %1. Check that you have write access to it.").arg(p->outputFileName()));
+						p->setErrorMessage(i18n("Cannot save print file to %1. Check that you have write access to it.", p->outputFileName()));
 						return false;
 					}
 				}
@@ -229,7 +229,7 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 
 	QString	message(msg);
 	if (printer && !msg.isEmpty())
-		message.prepend(i18n("Printing document: %1").arg(printer->docName())+"\n");
+		message.prepend(i18n("Printing document: %1", printer->docName())+"\n");
 
 	DCOPClient	*dclient = KApplication::dcopClient();
 	if (!dclient || (!dclient->isAttached() && !dclient->attach()))
@@ -247,7 +247,7 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 
 bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool flag)
 {
-	statusMessage(i18n("Sending print data to printer: %1").arg(printer->printerName()), printer);
+	statusMessage(i18n("Sending print data to printer: %1", printer->printerName()), printer);
 
 	QString	command(cmd), filestr;
 	QStringList	printfiles;
@@ -279,7 +279,7 @@ bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QS
 			if (pid == 0)
 				msg += i18n("The KDE print server (<b>kdeprintd</b>) could not be contacted. Check that this server is running.");
 			else
-				msg += i18n("1 is the command that <files> is given to", "Check the command syntax:\n%1 <files>").arg(cmd);
+				msg += i18nc("1 is the command that <files> is given to", "Check the command syntax:\n%1 <files>", cmd);
 			printer->setErrorMessage(msg);
 			return false;
 		}
@@ -351,7 +351,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		KXmlCommand	*filter = KXmlCommandManager::self()->loadCommand(flist[i]);
 		if (!filter)
 		{
-			printer->setErrorMessage(i18n("<p>Could not load filter description for <b>%1</b>.</p>").arg(flist[i]));
+			printer->setErrorMessage(i18n("<p>Could not load filter description for <b>%1</b>.</p>", flist[i]));
 			return -1; // Error
 		}
 		if (i == 0)
@@ -367,7 +367,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		}
 		else
 		{
-			printer->setErrorMessage(i18n("<p>Error while reading filter description for <b>%1</b>. Empty command line received.</p>").arg(flist[i]));
+			printer->setErrorMessage(i18n("<p>Error while reading filter description for <b>%1</b>. Empty command line received.</p>", flist[i]));
 			return -1;
 		}
 	}
@@ -384,7 +384,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 				"<p>" + i18n("The MIME type %1 is not supported as input of the filter chain "
 				     "(this may happen with non-CUPS spoolers when performing page selection "
 				     "on a non-PostScript file). Do you want KDE to convert the file to a supported "
-				     "format?</p>").arg(mime),
+				     "format?</p>", mime),
 				QString(), i18n("Convert")) == KMessageBox::Continue)
 			{
 				QStringList	ff;
@@ -419,7 +419,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 						else
 						{
 							KMessageBox::error(0,
-								i18n("<qt>Operation failed with message:<br>%1<br>Select another target format.</qt>").arg(printer->errorMessage()));
+								i18n("<qt>Operation failed with message:<br>%1<br>Select another target format.</qt>", printer->errorMessage()));
 						}
 					}
 				}
@@ -441,7 +441,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		int status = system(QFile::encodeName(cmd));
 		if (status < 0 || WEXITSTATUS(status) == 127)
 		{
-			printer->setErrorMessage(i18n("Error while filtering. Command was: <b>%1</b>.").arg(filtercmd));
+			printer->setErrorMessage(i18n("Error while filtering. Command was: <b>%1</b>.", filtercmd));
 			return -1;
 		}
 		if (flag) QFile::remove(*it);
@@ -483,7 +483,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 		{
 			// special case of empty file
 			KMessageBox::information( NULL,
-					i18n( "<qt>The print file is empty and will be ignored:<p>%1</p></qt>" ).arg( *it ),
+					i18n( "<qt>The print file is empty and will be ignored:<p>%1</p></qt>" ,  *it ),
 					QString(), "emptyFileNotPrinted" );
 			if ( flag )
 				QFile::remove( *it );
@@ -503,7 +503,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 						    "<li> You can cancel the printjob. "
 						    "(Select <em>Cancel</em>) </li>"
 						    "</ul> "
-						    "Do you want KDE to attempt and convert this file to %2?</qt>").arg(mime).arg(primaryMimeType),
+						    "Do you want KDE to attempt and convert this file to %2?</qt>", mime, primaryMimeType),
 					       QString(),
 					       i18n("Convert"),
 					       i18n("Keep"),
@@ -521,7 +521,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 							     "<li> See if the required external program is available.on your "
 							     "system.</li>"
 							     "</ul>"
-							     "</qt>").arg(mime).arg(primaryMimeType),
+							     "</qt>", mime, primaryMimeType),
 							      i18n("Print"));
 					if (flag)
 						QFile::remove(*it);

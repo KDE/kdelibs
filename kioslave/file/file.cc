@@ -189,7 +189,7 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
                 break;
 #if defined(ENOTSUP)
             case ENOTSUP: // from setACL since chmod can't return ENOTSUP
-                error( KIO::ERR_UNSUPPORTED_ACTION, i18n( "Setting ACL for %1" ).arg( url.path() ) );
+                error( KIO::ERR_UNSUPPORTED_ACTION, i18n( "Setting ACL for %1" ,  url.path() ) );
                 break;
 #endif
             case ENOSPC:
@@ -557,7 +557,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
         {
             // couldn't chmod. Eat the error if the filesystem apparently doesn't support it.
             if ( KIO::testFileSystemFlag( _dest_orig, KIO::SupportsChmod ) )
-                 warning( i18n( "Could not change permissions for\n%1" ).arg( dest_orig ) );
+                 warning( i18n( "Could not change permissions for\n%1" ,  dest_orig ) );
         }
     }
 
@@ -722,8 +722,8 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
             }
             else {
                 error( KIO::ERR_SLAVE_DEFINED,
-                        i18n("Cannot copy file from %1 to %2. (Errno: %3)")
-                        .arg( src.path() ).arg( dest.path() ).arg( errno ) );
+                        i18n("Cannot copy file from %1 to %2. (Errno: %3)",
+                          src.path() ,  dest.path() ,  errno ) );
             }
           } else
 #endif
@@ -790,7 +790,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
        {
         // Eat the error if the filesystem apparently doesn't support chmod.
         if ( KIO::testFileSystemFlag( _dest, KIO::SupportsChmod ) )
-            warning( i18n( "Could not change permissions for\n%1" ).arg( dest.path() ) );
+            warning( i18n( "Could not change permissions for\n%1" ,  dest.path() ) );
        }
     }
 #ifdef USE_POSIX_ACL
@@ -1131,7 +1131,7 @@ void FileProtocol::listDir( const KUrl& url)
 #ifdef ENOMEDIUM
 	case ENOMEDIUM:
             error( ERR_SLAVE_DEFINED,
-                   i18n( "No media in device for %1" ).arg( url.path() ) );
+                   i18n( "No media in device for %1" ,  url.path() ) );
             break;
 #endif
         default:
@@ -1605,7 +1605,7 @@ static QString testLogFile( const QByteArray& _filename )
     FILE * f = KDE_fopen( _filename, "rb" );
     if ( f == 0L ) {
 	unlink( _filename );
-	result = i18n("Could not read %1").arg(QFile::decodeName(_filename));
+	result = i18n("Could not read %1", QFile::decodeName(_filename));
 	return result;
     }
 

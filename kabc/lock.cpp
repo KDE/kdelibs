@@ -105,8 +105,8 @@ bool Lock::lock()
       QString identifier( mIdentifier );
       identifier.replace( '_', '/' );
 
-      mError = i18n("The resource '%1' is locked by application '%2'.")
-               .arg( identifier ).arg( app );
+      mError = i18n("The resource '%1' is locked by application '%2'.",
+                 identifier ,  app );
       return false;
     }
   }
@@ -145,8 +145,8 @@ bool Lock::unlock()
       QFile::remove( mLockUniqueName );
       emit unlocked();
     } else {
-      mError = i18n("Unlock failed. Lock file is owned by other process: %1 (%2)")
-               .arg( app ).arg( QString::number( pid ) );
+      mError = i18n("Unlock failed. Lock file is owned by other process: %1 (%2)",
+                    app, pid );
       kDebug() << "Lock::unlock(): " << mError << endl;
       return false;
     }

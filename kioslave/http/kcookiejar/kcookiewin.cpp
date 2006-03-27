@@ -112,7 +112,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     int count = cookieList.count();
 
     KVBox* vBox = new KVBox( hBox );
-    QString txt = i18n("You received a cookie from",
+    QString txt = i18np("You received a cookie from",
                        "You received %n cookies from", count);
     QLabel* lbl = new QLabel( txt, vBox );
     lbl->setAlignment( Qt::AlignCenter );
@@ -313,7 +313,7 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
 
     if ( cookieCount > 1 )
     {
-        QPushButton* btnNext = new QPushButton( i18n("Next cookie","&Next >>"), this );
+        QPushButton* btnNext = new QPushButton( i18nc("Next cookie","&Next >>"), this );
         btnNext->setFixedSize( btnNext->sizeHint() );
         grid->addWidget( btnNext, 8, 0, 1, 2 );
         connect( btnNext, SIGNAL(clicked()), SLOT(slotNextCookie()) );

@@ -295,57 +295,57 @@ QString KCalendarSystemHijri::monthName(int month, int year, bool shortName)
     switch ( month )
       {
       case 1:
-        return locale()->translate("Muharram");
+        return ki18n("Muharram").toString(locale());
       case 2:
-        return locale()->translate("Safar");
+        return ki18n("Safar").toString(locale());
       case 3:
-        return locale()->translate("R. Awal");
+        return ki18n("R. Awal").toString(locale());
       case 4:
-        return locale()->translate("R. Thaani");
+        return ki18n("R. Thaani").toString(locale());
       case 5:
-        return locale()->translate("J. Awal");
+        return ki18n("J. Awal").toString(locale());
       case 6:
-        return locale()->translate("J. Thaani");
+        return ki18n("J. Thaani").toString(locale());
       case 7:
-        return locale()->translate("Rajab");
+        return ki18n("Rajab").toString(locale());
       case 8:
-        return locale()->translate("Sha`ban");
+        return ki18n("Sha`ban").toString(locale());
       case 9:
-        return locale()->translate("Ramadan");
+        return ki18n("Ramadan").toString(locale());
       case 10:
-        return locale()->translate("Shawwal");
+        return ki18n("Shawwal").toString(locale());
       case 11:
-        return locale()->translate("Qi`dah");
+        return ki18n("Qi`dah").toString(locale());
       case 12:
-        return locale()->translate("Hijjah");
+        return ki18n("Hijjah").toString(locale());
     }
   else
     switch ( month )
       {
       case 1:
-        return locale()->translate("Muharram");
+        return ki18n("Muharram").toString(locale());
       case 2:
-        return locale()->translate("Safar");
+        return ki18n("Safar").toString(locale());
       case 3:
-        return locale()->translate("Rabi` al-Awal");
+        return ki18n("Rabi` al-Awal").toString(locale());
       case 4:
-        return locale()->translate("Rabi` al-Thaani");
+        return ki18n("Rabi` al-Thaani").toString(locale());
       case 5:
-        return locale()->translate("Jumaada al-Awal");
+        return ki18n("Jumaada al-Awal").toString(locale());
       case 6:
-        return locale()->translate("Jumaada al-Thaani");
+        return ki18n("Jumaada al-Thaani").toString(locale());
       case 7:
-        return locale()->translate("Rajab");
+        return ki18n("Rajab").toString(locale());
       case 8:
-        return locale()->translate("Sha`ban");
+        return ki18n("Sha`ban").toString(locale());
       case 9:
-        return locale()->translate("Ramadan");
+        return ki18n("Ramadan").toString(locale());
       case 10:
-        return locale()->translate("Shawwal");
+        return ki18n("Shawwal").toString(locale());
       case 11:
-        return locale()->translate("Thu al-Qi`dah");
+        return ki18n("Thu al-Qi`dah").toString(locale());
       case 12:
-        return locale()->translate("Thu al-Hijjah");
+        return ki18n("Thu al-Hijjah").toString(locale());
       }
 
   return QString();
@@ -360,57 +360,57 @@ QString KCalendarSystemHijri::monthNamePossessive(int month, int year,
     switch ( month )
       {
       case 1:
-        return locale()->translate("of Muharram");
+        return ki18n("of Muharram").toString(locale());
       case 2:
-        return locale()->translate("of Safar");
+        return ki18n("of Safar").toString(locale());
       case 3:
-        return locale()->translate("of R. Awal");
+        return ki18n("of R. Awal").toString(locale());
       case 4:
-        return locale()->translate("of R. Thaani");
+        return ki18n("of R. Thaani").toString(locale());
       case 5:
-        return locale()->translate("of J. Awal");
+        return ki18n("of J. Awal").toString(locale());
       case 6:
-        return locale()->translate("of J. Thaani");
+        return ki18n("of J. Thaani").toString(locale());
       case 7:
-        return locale()->translate("of Rajab");
+        return ki18n("of Rajab").toString(locale());
       case 8:
-        return locale()->translate("of Sha`ban");
+        return ki18n("of Sha`ban").toString(locale());
       case 9:
-        return locale()->translate("of Ramadan");
+        return ki18n("of Ramadan").toString(locale());
       case 10:
-        return locale()->translate("of Shawwal");
+        return ki18n("of Shawwal").toString(locale());
       case 11:
-        return locale()->translate("of Qi`dah");
+        return ki18n("of Qi`dah").toString(locale());
       case 12:
-        return locale()->translate("of Hijjah");
+        return ki18n("of Hijjah").toString(locale());
     }
   else
     switch ( month )
       {
       case 1:
-        return locale()->translate("of Muharram");
+        return ki18n("of Muharram").toString(locale());
       case 2:
-        return locale()->translate("of Safar");
+        return ki18n("of Safar").toString(locale());
       case 3:
-        return locale()->translate("of Rabi` al-Awal");
+        return ki18n("of Rabi` al-Awal").toString(locale());
       case 4:
-        return locale()->translate("of Rabi` al-Thaani");
+        return ki18n("of Rabi` al-Thaani").toString(locale());
       case 5:
-        return locale()->translate("of Jumaada al-Awal");
+        return ki18n("of Jumaada al-Awal").toString(locale());
       case 6:
-        return locale()->translate("of Jumaada al-Thaani");
+        return ki18n("of Jumaada al-Thaani").toString(locale());
       case 7:
-        return locale()->translate("of Rajab");
+        return ki18n("of Rajab").toString(locale());
       case 8:
-        return locale()->translate("of Sha`ban");
+        return ki18n("of Sha`ban").toString(locale());
       case 9:
-        return locale()->translate("of Ramadan");
+        return ki18n("of Ramadan").toString(locale());
       case 10:
-        return locale()->translate("of Shawwal");
+        return ki18n("of Shawwal").toString(locale());
       case 11:
-        return locale()->translate("of Thu al-Qi`dah");
+        return ki18n("of Thu al-Qi`dah").toString(locale());
       case 12:
-        return locale()->translate("of Thu al-Hijjah");
+        return ki18n("of Thu al-Hijjah").toString(locale());
       }
 
   return QString();
@@ -442,37 +442,37 @@ QString KCalendarSystemHijri::weekDayName(int day, bool shortName) const
     switch (day)
       {
       case 1:
-        return locale()->translate("Ith");
+        return ki18n("Ith").toString(locale());
       case 2:
-        return locale()->translate("Thl");
+        return ki18n("Thl").toString(locale());
       case 3:
-        return locale()->translate("Arb");
+        return ki18n("Arb").toString(locale());
       case 4:
-        return locale()->translate("Kha");
+        return ki18n("Kha").toString(locale());
       case 5:
-        return locale()->translate("Jum");
+        return ki18n("Jum").toString(locale());
       case 6:
-        return locale()->translate("Sab");
+        return ki18n("Sab").toString(locale());
       case 7:
-        return locale()->translate("Ahd");
+        return ki18n("Ahd").toString(locale());
       }
   else
     switch ( day )
       {
       case 1:
-        return locale()->translate("Yaum al-Ithnain");
+        return ki18n("Yaum al-Ithnain").toString(locale());
       case 2:
-        return locale()->translate("Yau al-Thulatha");
+        return ki18n("Yau al-Thulatha").toString(locale());
       case 3:
-        return locale()->translate("Yaum al-Arbi'a");
+        return ki18n("Yaum al-Arbi'a").toString(locale());
       case 4:
-        return locale()->translate("Yaum al-Khamees");
+        return ki18n("Yaum al-Khamees").toString(locale());
       case 5:
-        return locale()->translate("Yaum al-Jumma");
+        return ki18n("Yaum al-Jumma").toString(locale());
       case 6:
-        return locale()->translate("Yaum al-Sabt");
+        return ki18n("Yaum al-Sabt").toString(locale());
       case 7:
-        return locale()->translate("Yaum al-Ahad");
+        return ki18n("Yaum al-Ahad").toString(locale());
       }
 
   return QString();

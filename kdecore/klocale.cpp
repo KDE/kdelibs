@@ -43,6 +43,7 @@
 #include "kdebug.h"
 #include "kcalendarsystem.h"
 #include "kcalendarsystemfactory.h"
+#include "klocalizedstring.h"
 
 #ifdef Q_WS_WIN
 #include <windows.h>
@@ -52,7 +53,7 @@ static const char * const SYSTEM_MESSAGES = "kdelibs";
 
 static const char *maincatalog = 0;
 
-class KLocale::Private
+class KLocalePrivate
 {
 public:
   /**
@@ -124,11 +125,12 @@ public:
   /**
    * @internal function used by the translate versions
    */
-  QString translate_priv(const char *msgctxt,
-                         const char *msgid,
-                         const char *msgid_plural = 0,
-                         unsigned long n = 0,
-                         QString *language = 0) const;
+  void translate_priv(const char *msgctxt,
+                      const char *msgid,
+                      const char *msgid_plural = 0,
+                      unsigned long n = 0,
+                      QString *language = 0,
+                      QString *translation = 0) const;
 
   /**
    * @internal function used to determine if we are using the en_US translation
@@ -157,8 +159,8 @@ public:
   QString positiveSign;
   QString negativeSign;
   int fracDigits;
-  SignPosition positiveMonetarySignPosition;
-  SignPosition negativeMonetarySignPosition;
+  KLocale::SignPosition positiveMonetarySignPosition;
+  KLocale::SignPosition negativeMonetarySignPosition;
   bool positivePrefixCurrencySymbol;
   bool negativePrefixCurrencySymbol;
 
@@ -202,7 +204,7 @@ public:
 static KLocale *this_klocale = 0;
 
 KLocale::KLocale( const QString & catalog, KConfigBase * config )
-	: d(new Private)
+	: d(new KLocalePrivate)
 {
   d->config = config;
   d->languages = 0;
@@ -233,7 +235,7 @@ QString KLocale::_initLanguage(KConfigBase *config)
   return QString();
 }
 
-void KLocale::Private::initMainCatalogs(const QString & catalog)
+void KLocalePrivate::initMainCatalogs(const QString & catalog)
 {
   // Use the first non-null string.
   QString mainCatalog = catalog;
@@ -258,13 +260,13 @@ void KLocale::Private::initMainCatalogs(const QString & catalog)
   }
 }
 
-void KLocale::Private::initLanguageList(KConfigBase * config, bool useEnv)
+void KLocalePrivate::initLanguageList(KConfigBase * config, bool useEnv)
 {
   KConfigGroup cg(config, "Locale");
 
   country = cg.readEntry( "Country" );
   if ( country.isEmpty() )
-    country = defaultCountry();
+    country = KLocale::defaultCountry();
 
   // Reset the list and add the new languages
   QStringList list;
@@ -286,7 +288,7 @@ void KLocale::Private::initLanguageList(KConfigBase * config, bool useEnv)
       foreach (QString lang, langs)
 	{
 	  QString ln, aCountry, chrset;
-	  splitLocale(lang, ln, aCountry, chrset);
+	  KLocale::splitLocale(lang, ln, aCountry, chrset);
 
 	  if (!aCountry.isEmpty()) {
 	    list += ln + '_' + aCountry;
@@ -302,7 +304,7 @@ void KLocale::Private::initLanguageList(KConfigBase * config, bool useEnv)
   setLanguage( list );
 }
 
-void KLocale::Private::doFormatInit(const KLocale *parent)
+void KLocalePrivate::doFormatInit(const KLocale *parent)
 {
   if ( formatInited ) return;
 
@@ -311,7 +313,7 @@ void KLocale::Private::doFormatInit(const KLocale *parent)
   formatInited = true;
 }
 
-void KLocale::Private::initFormat(KLocale *parent)
+void KLocalePrivate::initFormat(KLocale *parent)
 {
   if (!config) config = KGlobal::instance()->config();
   Q_ASSERT( config );
@@ -364,10 +366,10 @@ void KLocale::Private::initFormat(KLocale *parent)
 		      positivePrefixCurrencySymbol);
   readConfigBoolEntry("NegativePrefixCurrencySymbol", true,
 		      negativePrefixCurrencySymbol);
-  readConfigNumEntry("PositiveMonetarySignPosition", BeforeQuantityMoney,
-		     positiveMonetarySignPosition, SignPosition);
-  readConfigNumEntry("NegativeMonetarySignPosition", ParensAround,
-		     negativeMonetarySignPosition, SignPosition);
+  readConfigNumEntry("PositiveMonetarySignPosition", KLocale::BeforeQuantityMoney,
+		     positiveMonetarySignPosition, KLocale::SignPosition);
+  readConfigNumEntry("NegativeMonetarySignPosition", KLocale::ParensAround,
+		     negativeMonetarySignPosition, KLocale::SignPosition);
 
   // Date and time
   readConfigEntry("TimeFormat", "%H:%M:%S", timeFormat);
@@ -378,8 +380,8 @@ void KLocale::Private::initFormat(KLocale *parent)
   // other
   readConfigNumEntry("PageSize", QPrinter::A4, pageSize,
 		     QPrinter::PageSize);
-  readConfigNumEntry("MeasureSystem", Metric, measureSystem,
-		     MeasureSystem);
+  readConfigNumEntry("MeasureSystem", KLocale::Metric,
+		     measureSystem, KLocale::MeasureSystem);
   readConfigEntry("CalendarSystem", "gregorian", calendarType);
   delete calendar;
   calendar = 0; // ### HPB Is this the correct place?
@@ -421,7 +423,7 @@ bool KLocale::setLanguage(const QString & language)
   return d->setLanguage(language);
 }
 
-bool KLocale::Private::setLanguage(const QString & _language)
+bool KLocalePrivate::setLanguage(const QString & _language)
 {
   if ( languageList.contains( _language ) ) {
  	 languageList.removeAll( _language );
@@ -444,7 +446,7 @@ bool KLocale::setLanguage(const QStringList & languages)
   return d->setLanguage(languages);
 }
 
-bool KLocale::Private::setLanguage(const QStringList & languages)
+bool KLocalePrivate::setLanguage(const QStringList & languages)
 {
   // This list might contain
   // 1) some empty strings that we have to eliminate
@@ -479,7 +481,7 @@ bool KLocale::Private::setLanguage(const QStringList & languages)
   return true; // we found something. Maybe it's only English, but we found something
 }
 
-bool KLocale::Private::isApplicationTranslatedInto( const QString & lang)
+bool KLocalePrivate::isApplicationTranslatedInto( const QString & lang)
 {
   if ( lang.isEmpty() ) {
     return false;
@@ -550,7 +552,7 @@ void KLocale::insertCatalog( const QString & catalog )
   d->updateCatalogs( ); // evaluate the changed list and generate the neccessary KCatalog objects
 }
 
-void KLocale::Private::updateCatalogs( )
+void KLocalePrivate::updateCatalogs( )
 {
   // some changes have occured. Maybe we have learned or forgotten some languages.
   // Maybe the language precedence has changed.
@@ -597,26 +599,24 @@ KLocale::~KLocale()
   delete d;
 }
 
-QString KLocale::Private::translate_priv(const char *msgctxt,
-                                         const char *msgid,
-                                         const char *msgid_plural,
-                                         unsigned long n,
-                                         QString *language) const
+void KLocalePrivate::translate_priv(const char *msgctxt,
+                                    const char *msgid,
+                                    const char *msgid_plural,
+                                    unsigned long n,
+                                    QString *language,
+                                    QString *translation) const
 {
   if ( !msgid || !msgid[0] ) {
     kWarning() << "KLocale: trying to look up \"\" in catalog. "
-                << "Fix the program" << endl;
-    return QString();
+               << "Fix the program" << endl;
   }
   if ( msgctxt && !msgctxt[0] ) {
     kWarning() << "KLocale: trying to use \"\" as context to message. "
-                << "Fix the program" << endl;
-    return QString();
+               << "Fix the program" << endl;
   }
   if ( msgid_plural && !msgid_plural[0] ) {
     kWarning() << "KLocale: trying to use \"\" as plural message. "
-                << "Fix the program" << endl;
-    return QString();
+               << "Fix the program" << endl;
   }
 
   // determine the fallback string
@@ -631,10 +631,12 @@ QString KLocale::Private::translate_priv(const char *msgctxt,
   }
   if ( language )
     *language = KLocale::defaultLanguage();
+  if ( translation )
+    *translation = fallback;
 
   // shortcut evaluation if en_US is main language: do not consult the catalogs
   if ( useDefaultLanguage() )
-    return fallback;
+    return;
 
   for ( QList<KCatalog>::ConstIterator it = catalogs.begin();
         it != catalogs.end();
@@ -644,58 +646,52 @@ QString KLocale::Private::translate_priv(const char *msgctxt,
     // the catalog as it will not have an assiciated mo-file. For this default language we can
     // immediately pick the fallback string.
     if ( (*it).language() == KLocale::defaultLanguage() )
-      return fallback;
+      return;
 
     QString text;
-    if ( msgctxt == NULL ) {
-      if (msgid_plural == NULL)
-        text = (*it).translate( msgid );
-      else
-        text = (*it).translate( msgid, msgid_plural, n );
-    }
-    else {
-      if ( msgid_plural == NULL )
-        text = (*it).translate( msgctxt, msgid );
-      else
+    if ( msgctxt != NULL and msgid_plural != NULL )
         text = (*it).translate( msgctxt, msgid, msgid_plural, n );
-    }
+    else if ( msgid_plural != NULL )
+        text = (*it).translate( msgid, msgid_plural, n );
+    else if ( msgctxt != NULL )
+        text = (*it).translate( msgctxt, msgid );
+    else
+        text = (*it).translate( msgid );
 
     if ( text != fallback ) {
       // we found it
       if ( language )
         *language = (*it).language();
-      return text;
+      if ( translation )
+        *translation = text;
+      return;
     }
   }
-
-  // translation not found, return fallback
-  return fallback;
 }
 
-QString KLocale::translate(const char* msgid) const
+void KLocale::translateRaw(const char* msg,
+                           QString *lang, QString *trans) const
 {
-  return d->translate_priv(0, msgid);
+  d->translate_priv(0, msg, 0, 0, lang, trans);
 }
 
-QString KLocale::translate( const char *index, const char *fallback) const
+void KLocale::translateRaw(const char *ctxt, const char *msg,
+                           QString *lang, QString *trans) const
 {
-  return d->translate_priv(index, fallback);
+  d->translate_priv(ctxt, msg, 0, 0, lang, trans);
 }
 
-static QString put_n_in(const QString &orig, unsigned long n)
+void KLocale::translateRaw(const char *singular, const char *plural, unsigned long n,
+                           QString *lang, QString *trans) const
 {
-  QString ret = orig;
-  int index = ret.indexOf("%n");
-  if (index == -1)
-    return ret;
-  ret.replace(index, 2, QString::number(n));
-  return ret;
+  d->translate_priv(0, singular, plural, n, lang, trans);
 }
 
-QString KLocale::translate( const char *singular, const char *plural,
-                            unsigned long n ) const
+void KLocale::translateRaw(const char *ctxt, const char *singular, const char *plural,
+                           unsigned long n,
+                           QString *lang, QString *trans) const
 {
-  return put_n_in( d->translate_priv( 0, singular, plural, n ), n );
+  d->translate_priv(ctxt, singular, plural, n, lang, trans);
 }
 
 QString KLocale::translateQt( const char *context, const char *source,
@@ -712,23 +708,23 @@ QString KLocale::translateQt( const char *context, const char *source,
   }
 
   QString language;
-  QString r;
 
   if ( message && message[0]) {
-    r = d->translate_priv(source, message, 0, 0, &language);
+    d->translate_priv(source, message, 0, 0, &language, 0);
     if (language != defaultLanguage())
-      return r;
+      return i18nc(source, message);
   }
 
   if ( context && context[0] && message && message[0]) {
-    r = d->translate_priv(context, message, 0, 0, &language);
+    d->translate_priv(context, message, 0, 0, &language, 0);
     if (language != defaultLanguage())
-      return r;
+      return i18nc(context, message);
   }
 
-  r = d->translate_priv(0, source, 0, 0, &language);
+  d->translate_priv(0, source, 0, 0, &language, 0);
   if (language != defaultLanguage())
-    return r;
+    return i18n(source);
+
   return QString();
 }
 
@@ -1556,7 +1552,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	case 'p':
 	  {
 	    QString s;
-	    s = translate("pm").toLower();
+	    s = i18n("pm").toLower();
 	    int len = s.length();
 	    if (str.mid(strpos, len) == s)
 	      {
@@ -1565,7 +1561,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	      }
 	    else
 	      {
-		s = translate("am").toLower();
+		s = i18n("am").toLower();
 		len = s.length();
 		if (str.mid(strpos, len) == s) {
 		  pm = false;
@@ -1690,9 +1686,9 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuratio
 	      {
 		QString s;
 		if ( pTime.hour() >= 12 )
-		  put_it_in( buffer, index, translate("pm") );
+		  put_it_in( buffer, index, i18n("pm") );
 		else
-		  put_it_in( buffer, index, translate("am") );
+		  put_it_in( buffer, index, i18n("am") );
 	      }
 	      break;
 	    default:
@@ -1728,36 +1724,9 @@ QString KLocale::formatDateTime(const QDateTime &pDateTime,
 				bool shortFormat,
 				bool includeSeconds) const
 {
-  return translate("concatenation of dates and time", "%1 %2")
-    .arg( formatDate( pDateTime.date(), shortFormat ) )
-    .arg( formatTime( pDateTime.time(), includeSeconds ) );
-}
-
-QString i18n(const char* text)
-{
-  register KLocale *instance = KGlobal::locale();
-  if (instance)
-    return instance->translate(text);
-  return QString::fromUtf8(text);
-}
-
-QString i18n(const char* index, const char *text)
-{
-  register KLocale *instance = KGlobal::locale();
-  if (instance)
-    return instance->translate(index, text);
-  return QString::fromUtf8(text);
-}
-
-QString i18n(const char* singular, const char* plural, unsigned long n)
-{
-  register KLocale *instance = KGlobal::locale();
-  if (instance)
-    return instance->translate(singular, plural, n);
-  if (n == 1)
-    return put_n_in(QString::fromUtf8(singular), n);
-  else
-    return put_n_in(QString::fromUtf8(plural), n);
+  return i18nc( "concatenation of dates and time", "%1 %2",
+                formatDate( pDateTime.date(), shortFormat ),
+                formatTime( pDateTime.time(), includeSeconds ) );
 }
 
 void KLocale::initInstance()
@@ -1808,12 +1777,12 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
   return QString();
 }
 
-bool KLocale::Private::useDefaultLanguage() const
+bool KLocalePrivate::useDefaultLanguage() const
 {
   return language == KLocale::defaultLanguage();
 }
 
-void KLocale::Private::initEncoding(KConfigBase *)
+void KLocalePrivate::initEncoding(KConfigBase *)
 {
   const int mibDefault = 4; // ISO 8859-1
 
@@ -1829,26 +1798,26 @@ void KLocale::Private::initEncoding(KConfigBase *)
   Q_ASSERT( codecForEncoding );
 }
 
-void KLocale::Private::initFileNameEncoding(KConfigBase *)
+void KLocalePrivate::initFileNameEncoding(KConfigBase *)
 {
   // If the following environment variable is set, assume all filenames
   // are in UTF-8 regardless of the current C locale.
   utf8FileEncoding = getenv("KDE_UTF8_FILENAMES") != 0;
   if (utf8FileEncoding)
   {
-    QFile::setEncodingFunction(KLocale::Private::encodeFileNameUTF8);
-    QFile::setDecodingFunction(KLocale::Private::decodeFileNameUTF8);
+    QFile::setEncodingFunction(KLocalePrivate::encodeFileNameUTF8);
+    QFile::setDecodingFunction(KLocalePrivate::decodeFileNameUTF8);
   }
   // Otherwise, stay with QFile's default filename encoding functions
   // which, on Unix platforms, use the locale's codec.
 }
 
-QByteArray KLocale::Private::encodeFileNameUTF8( const QString & fileName )
+QByteArray KLocalePrivate::encodeFileNameUTF8( const QString & fileName )
 {
   return fileName.toUtf8();
 }
 
-QString KLocale::Private::decodeFileNameUTF8( const QByteArray & localFileName )
+QString KLocalePrivate::decodeFileNameUTF8( const QByteArray & localFileName )
 {
   return QString::fromUtf8(localFileName);
 }
@@ -2052,7 +2021,7 @@ bool KLocale::setEncoding(int mibEnum)
   return d->setEncoding(mibEnum);
 }
 
-bool KLocale::Private::setEncoding(int mibEnum)
+bool KLocalePrivate::setEncoding(int mibEnum)
 {
   QTextCodec * codec = QTextCodec::codecForMib(mibEnum);
   if (codec)
@@ -2172,7 +2141,7 @@ const KCalendarSystem * KLocale::calendar() const
   return d->calendar;
 }
 
-KLocale::KLocale(const KLocale & rhs) : d(new Private)
+KLocale::KLocale(const KLocale & rhs) : d(new KLocalePrivate)
 {
   *this = rhs;
 }

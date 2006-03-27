@@ -100,17 +100,17 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
           "The desktop file (%2) as well as the library (%3) was found but "
           "yet the module could not be loaded properly. Most likely "
           "the factory declaration was wrong, or the "
-          "create_* function was missing.</qt>")
-          .arg( mod.moduleName() )
-          .arg( mod.fileName() )
-          .arg( lib->fileName() ),
+          "create_* function was missing.</qt>",
+            mod.moduleName() ,
+            mod.fileName() ,
+            lib->fileName() ),
           QString(), parent );
     }
 
     lib->unload();
   }
-  return reportError( report, i18n("The specified library %1 could not be found.")
-      .arg( mod.library() ), QString(), parent );
+  return reportError( report, i18n("The specified library %1 could not be found.",
+        mod.library() ), QString(), parent );
   return 0;
 }
 
@@ -125,8 +125,8 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
   if ( !mod.service() )
   {
     return reportError( report,
-        i18n("The module %1 could not be found.")
-        .arg( mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br>The desktop file %1 could not be found.</qt>").arg(mod.fileName()), parent );
+        i18n("The module %1 could not be found.",
+          mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br>The desktop file %1 could not be found.</qt>", mod.fileName()), parent );
   }
 
   if (!mod.library().isEmpty())
@@ -145,8 +145,8 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
     if (module)
       return module;
     return reportError( report,
-        i18n("The module %1 could not be loaded.")
-        .arg( mod.moduleName() ), QString(), parent );
+        i18n("The module %1 could not be loaded.",
+          mod.moduleName() ), QString(), parent );
   }
 
   /*
@@ -164,8 +164,8 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
   else
   {
     return reportError( report,
-        i18n("The module %1 is not a valid configuration module.")
-        .arg( mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br>The desktop file %1 does not specify a library.</qt>").arg(mod.fileName()), parent );
+        i18n("The module %1 is not a valid configuration module.",
+          mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br>The desktop file %1 does not specify a library.</qt>", mod.fileName()), parent );
   }
 
   return 0;
@@ -199,8 +199,8 @@ void KCModuleLoader::showLastLoaderError(QWidget *parent)
         "KDE upgrade leaving an orphaned control module<li>You have old third party "
         "modules lying around.</ul><p>Check these points carefully and try to remove "
         "the module mentioned in the error message. If this fails, consider contacting "
-        "your distributor or packager.</p></qt>")
-      .arg(KLibLoader::self()->lastErrorMessage()));
+        "your distributor or packager.</p></qt>",
+       KLibLoader::self()->lastErrorMessage()));
 
 }
 
@@ -267,7 +267,7 @@ KCModule* KCModuleLoader::reportError( ErrorReporting report, const QString & te
         "KDE upgrade leaving an orphaned control module<li>You have old third party "
         "modules lying around.</ul><p>Check these points carefully and try to remove "
         "the module mentioned in the error message. If this fails, consider contacting "
-        "your distributor or packager.</p></qt>").arg(KLibLoader::self()->lastErrorMessage());
+        "your distributor or packager.</p></qt>", KLibLoader::self()->lastErrorMessage());
   if( report & Dialog )
     KMessageBox::detailedError( parent, text, details );
   if( report & Inline )

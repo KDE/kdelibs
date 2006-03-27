@@ -159,14 +159,17 @@ void KMInstancePage::slotRemove()
 	bool	reload(false);
 
 	QString	src = m_view->currentText();
-        QString msg = (src != i18n("(Default)") ? i18n("Do you really want to remove instance %1?") : i18n("You can't remove the default instance. However all settings of %1 will be discarded. Continue?"));
-	if (!src.isEmpty() && KMessageBox::warningContinueCancel(this,msg.arg(src),QString(),KStdGuiItem::del()) == KMessageBox::Continue)
+	if (!src.isEmpty())
 	{
-		if (src == i18n("(Default)"))
-			src.clear();
-		reload = KMFactory::self()->virtualManager()->isDefault(m_printer,src);
-		KMFactory::self()->virtualManager()->remove(m_printer,src);
-		setPrinter(m_printer);
+	        QString msg = (src != i18n("(Default)") ? i18n("Do you really want to remove instance %1?", src) : i18n("You can't remove the default instance. However all settings of %1 will be discarded. Continue?", src));
+		if (KMessageBox::warningContinueCancel(this,msg,QString(),KStdGuiItem::del()) == KMessageBox::Continue)
+		{
+			if (src == i18n("(Default)"))
+				src.clear();
+			reload = KMFactory::self()->virtualManager()->isDefault(m_printer,src);
+			KMFactory::self()->virtualManager()->remove(m_printer,src);
+			setPrinter(m_printer);
+		}
 	}
 
 	KMTimer::self()->release(reload);
@@ -211,9 +214,9 @@ void KMInstancePage::slotSettings()
 		if (src == i18n("(Default)")) src.clear();
 		KMPrinter	*pr = KMFactory::self()->virtualManager()->findInstance(m_printer,src);
 		if ( !pr )
-			KMessageBox::error( this, i18n( "Unable to find instance %1." ).arg( m_view->currentText() ) );
+			KMessageBox::error( this, i18n( "Unable to find instance %1." ,  m_view->currentText() ) );
 		else if ( !pr->isSpecial() && !KMFactory::self()->manager()->completePrinterShort( pr ) )
-			KMessageBox::error( this, i18n( "Unable to retrieve printer information. Message from printing system: %1." ).arg( KMFactory::self()->manager()->errorMsg() ) );
+			KMessageBox::error( this, i18n( "Unable to retrieve printer information. Message from printing system: %1." ,  KMFactory::self()->manager()->errorMsg() ) );
 		else
 		{
 			int oldAppType = KMFactory::self()->settings()->application;
@@ -263,12 +266,12 @@ void KMInstancePage::slotTest()
 		KMPrinter	*mpr = KMFactory::self()->virtualManager()->findInstance(m_printer,src);
 		if (!mpr)
 			KMessageBox::error(this,i18n("Internal error: printer not found."));
-		else if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?").arg(mpr->printerName()), QString(), i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
+		else if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?", mpr->printerName()), QString(), i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
 		{
 			if (!KMFactory::self()->virtualManager()->testInstance(mpr))
-				KMessageBox::error(this, i18n("Unable to send test page to %1.").arg(mpr->printerName()));
+				KMessageBox::error(this, i18n("Unable to send test page to %1.", mpr->printerName()));
 			else
-				KMessageBox::information(this,i18n("Test page successfully sent to printer %1.").arg(mpr->printerName()));
+				KMessageBox::information(this,i18n("Test page successfully sent to printer %1.", mpr->printerName()));
 		}
 	}
 

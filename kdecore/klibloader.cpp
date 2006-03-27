@@ -172,7 +172,7 @@ KLibFactory* KLibrary::factory()
     void* sym = symbol( symname );
     if ( !sym )
     {
-        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer an %2 function." ).arg( name(), QLatin1String("init_") + name() );
+        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer an %2 function.", name(), QLatin1String("init_") + name() );
         kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
@@ -183,7 +183,7 @@ KLibFactory* KLibrary::factory()
 
     if( !m_factory )
     {
-        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer a KDE compatible factory." ).arg( name() );
+        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer a KDE compatible factory." ,  name() );
         kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
@@ -423,7 +423,7 @@ KLibrary* KLibLoader::library( const char *_name )
 #ifndef NDEBUG
         kDebug(150) << "library=" << _name << ": No file named " << libname << " found in paths." << endl;
 #endif
-        d->errorMessage = i18n("Library files for \"%1\" not found in paths.").arg( QString(libname) );
+        d->errorMessage = i18n("Library files for \"%1\" not found in paths.",  QString(libname) );
         return 0;
       }
 

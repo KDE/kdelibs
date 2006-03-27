@@ -41,13 +41,13 @@ KMInfoPage::KMInfoPage(QWidget *parent)
 	m_model = new QLabel(this);
 	m_uri = new QLabel(this);
 	m_device = new QLabel(this);
-	QLabel	*m_loclabel = new QLabel(i18n("Physical Location", "Location:"), this);
+	QLabel	*m_loclabel = new QLabel(i18nc("Physical Location", "Location:"), this);
 	m_loclabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 	QLabel	*m_desclabel = new QLabel(i18n("Description:"), this);
 	m_desclabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 	QLabel	*m_typelabel = new QLabel(i18n("Type:"), this);
 	m_typelabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-	QLabel	*m_statelabel = new QLabel(i18n("Status", "State:"), this);
+	QLabel	*m_statelabel = new QLabel(i18nc("Status", "State:"), this);
 	m_statelabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 	QLabel	*m_urilabel = new QLabel(i18n("URI:"), this);
 	m_urilabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
@@ -121,7 +121,7 @@ void KMInfoPage::setPrinter(KMPrinter *p)
 			else m_type->setText(i18n("Local printer"));
 		else if (p->isSpecial())
 			m_type->setText(i18n("Special (pseudo) printer"));
-		else m_type->setText(i18n("Unknown class of printer", "Unknown"));
+		else m_type->setText(i18nc("Unknown class of printer", "Unknown"));
 		m_state->setText(p->stateString());
 		m_location->setText(p->location());
 		m_description->setText(p->description());

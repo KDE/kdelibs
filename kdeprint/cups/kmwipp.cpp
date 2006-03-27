@@ -69,7 +69,7 @@ bool KMWIpp::isValid(QString& msg)
 	}
 	else
 	{
-		msg = i18n("<nobr>Unable to connect to <b>%1</b> on port <b>%2</b> .</nobr>").arg(text(0)).arg(p);
+		msg = i18n("<nobr>Unable to connect to <b>%1</b> on port <b>%2</b> .</nobr>", text(0), p);
 		return false;
 	}
 }

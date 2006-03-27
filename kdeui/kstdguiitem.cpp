@@ -165,7 +165,7 @@ KGuiItem KStdGuiItem::clear()
 
 KGuiItem KStdGuiItem::help()
 {
-  return KGuiItem( i18n( "show help", "&Help" ), "help",
+  return KGuiItem( i18nc( "show help", "&Help" ), "help",
                    i18n( "Show help" ) );
 }
 
@@ -185,7 +185,7 @@ KGuiItem KStdGuiItem::back( BidiMode useBidi )
 {
   QString icon = ( useBidi == UseRTL && QApplication::isRightToLeft() )
                  ? "forward" : "back";
-  return KGuiItem( i18n( "go back", "&Back" ), icon,
+  return KGuiItem( i18nc( "go back", "&Back" ), icon,
                    i18n( "Go back one step" ) );
 }
 
@@ -193,7 +193,7 @@ KGuiItem KStdGuiItem::forward( BidiMode useBidi )
 {
   QString icon = ( useBidi == UseRTL && QApplication::isRightToLeft() )
                  ? "back" : "forward";
-  return KGuiItem( i18n( "go forward", "&Forward" ), icon,
+  return KGuiItem( i18nc( "go forward", "&Forward" ), icon,
                    i18n( "Go forward one step" ) );
 }
 
@@ -241,7 +241,7 @@ KGuiItem KStdGuiItem::reset()
 
 KGuiItem KStdGuiItem::insert()
 {
-  return KGuiItem( i18n( "Verb", "&Insert" ) );
+  return KGuiItem( i18nc( "Verb", "&Insert" ) );
 }
 
 KGuiItem KStdGuiItem::configure()

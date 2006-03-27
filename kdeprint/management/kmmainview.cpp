@@ -66,7 +66,7 @@ int kdeprint_management_add_printer_wizard( QWidget* parent )
 			flag = 1;
 			// check if the printer already exists, and ask confirmation if needed.
 			if (KMFactory::self()->manager()->findPrinter(dlg.printer()->name()) != 0)
-				if (KMessageBox::warningContinueCancel(parent,i18n("The printer %1 already exists. Continuing will overwrite existing printer. Do you want to continue?").arg(dlg.printer()->name())) == KMessageBox::Cancel)
+				if (KMessageBox::warningContinueCancel(parent,i18n("The printer %1 already exists. Continuing will overwrite existing printer. Do you want to continue?", dlg.printer()->name())) == KMessageBox::Cancel)
 					flag = 0;
 			// try to add printer only if flag is true.
 			if (flag && !KMFactory::self()->manager()->createPrinter(dlg.printer()))
@@ -230,8 +230,8 @@ void KMMainView::initActions()
 	tact->setChecked(KMManager::self()->isFilterEnabled());
 	connect(tact, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
 
-	new KAction( i18n( "%1 &Handbook" ).arg( "KDEPrint" ), "contents", 0, this, SLOT( slotHelp() ), m_actions, "invoke_help" );
-	new KAction( i18n( "%1 &Web Site" ).arg( "KDEPrint" ), "network", 0, this, SLOT( slotHelp() ), m_actions, "invoke_web" );
+	new KAction( i18n( "%1 &Handbook" , QString("KDEPrint") ), "contents", 0, this, SLOT( slotHelp() ), m_actions, "invoke_help" );
+	new KAction( i18n( "%1 &Web Site" , QString("KDEPrint") ), "network", 0, this, SLOT( slotHelp() ), m_actions, "invoke_web" );
 
 	KActionMenu	*mact = new KActionMenu(KIcon("package_utilities"), i18n("Pri&nter Tools"), m_actions, "printer_tool");
 	mact->setDelayed(false);
@@ -522,7 +522,7 @@ void KMMainView::slotChangePrinterState()
 		else if (opname == "stop")
 			result = m_manager->startPrinter(m_current, false);
 		if (!result)
-			showErrorMsg(i18n("Unable to modify the state of printer %1.").arg(m_current->printerName()));
+			showErrorMsg(i18n("Unable to modify the state of printer %1.", m_current->printerName()));
 		KMTimer::self()->release(result);
 	}
 }
@@ -533,14 +533,14 @@ void KMMainView::slotRemove()
 	{
 		KMTimer::self()->hold();
 		bool	result(false);
-		if (KMessageBox::warningYesNo(this,i18n("Do you really want to remove %1?").arg(m_current->printerName())) == KMessageBox::Yes)
+		if (KMessageBox::warningYesNo(this,i18n("Do you really want to remove %1?", m_current->printerName())) == KMessageBox::Yes)
 			if (m_current->isSpecial())
 			{
 				if (!(result=m_manager->removeSpecialPrinter(m_current)))
-					showErrorMsg(i18n("Unable to remove special printer %1.").arg(m_current->printerName()));
+					showErrorMsg(i18n("Unable to remove special printer %1.", m_current->printerName()));
 			}
 			else if (!(result=m_manager->removePrinter(m_current)))
-				showErrorMsg(i18n("Unable to remove printer %1.").arg(m_current->printerName()));
+				showErrorMsg(i18n("Unable to remove printer %1.", m_current->printerName()));
 		KMTimer::self()->release(result);
 	}
 }
@@ -570,18 +570,18 @@ void KMMainView::slotConfigure()
 			if (driver)
 			{
 				KMDriverDialog	dlg(this);
-				dlg.setCaption(i18n("Configure %1").arg(m_current->printerName()));
+				dlg.setCaption(i18n("Configure %1", m_current->printerName()));
 				dlg.setDriver(driver);
 				// disable OK button for remote printer (read-only dialog)
 				if (m_current->isRemote())
 					dlg.enableButtonOK(false);
 				if (dlg.exec())
 					if (!m_manager->savePrinterDriver(m_current,driver))
-						showErrorMsg(i18n("Unable to modify settings of printer %1.").arg(m_current->printerName()));
+						showErrorMsg(i18n("Unable to modify settings of printer %1.", m_current->printerName()));
 				delete driver;
 			}
 			else
-				showErrorMsg(i18n("Unable to load a valid driver for printer %1.").arg(m_current->printerName()));
+				showErrorMsg(i18n("Unable to load a valid driver for printer %1.", m_current->printerName()));
 		}
 		KMTimer::self()->release(needRefresh);
 	}
@@ -605,7 +605,7 @@ void KMMainView::slotHardDefault()
 		KMTimer::self()->hold();
 		bool	result = m_manager->setDefaultPrinter(m_current);
 		if (!result)
-			showErrorMsg(i18n("Unable to define printer %1 as default.").arg(m_current->printerName()));
+			showErrorMsg(i18n("Unable to define printer %1 as default.", m_current->printerName()));
 		KMTimer::self()->release(result);
 	}
 }
@@ -640,12 +640,12 @@ void KMMainView::slotTest()
 	if (m_current)
 	{
 		KMTimer::self()->hold();
-		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?").arg(m_current->printerName()), QString(), i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
+		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?", m_current->printerName()), QString(), i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
 		{
 			if (KMFactory::self()->manager()->testPrinter(m_current))
-				KMessageBox::information(this,i18n("Test page successfully sent to printer %1.").arg(m_current->printerName()));
+				KMessageBox::information(this,i18n("Test page successfully sent to printer %1.", m_current->printerName()));
 			else
-				showErrorMsg(i18n("Unable to test printer %1.").arg(m_current->printerName()));
+				showErrorMsg(i18n("Unable to test printer %1.", m_current->printerName()));
 		}
 		KMTimer::self()->release(true);
 	}
@@ -658,11 +658,12 @@ void KMMainView::showErrorMsg(const QString& msg, bool usemgr)
 	{
 		s.prepend("<p>");
 		s.append(" ");
-		s += i18n("Error message received from manager:</p><p>%1</p>");
+		QString err;
 		if (m_manager->errorMsg().isEmpty())
-			s = s.arg(i18n("Internal error (no error message)."));
+			err = i18n("Internal error (no error message).");
 		else
-			s = s.arg(m_manager->errorMsg());
+			err = m_manager->errorMsg();
+		s += i18n("Error message received from manager:</p><p>%1</p>", err);
 		// clean up error message
 		m_manager->setErrorMsg(QString());
 	}

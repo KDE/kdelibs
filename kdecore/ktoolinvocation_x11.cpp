@@ -179,7 +179,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
 #if 0
            if (Tty != qApp->type())
                QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
-               i18n("Could not launch the KDE Help Center:\n\n%1").arg(error), i18n("&OK"));
+               i18n("Could not launch the KDE Help Center:\n\n%1", error), i18n("&OK"));
            else
                kWarning() << "Could not launch help:\n" << error << endl;
 	   return;
@@ -459,7 +459,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 #if 0
      if (Tty != qApp->type())
        QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Mail Client"),
-             i18n("Could not launch the mail client:\n\n%1").arg(error), i18n("&OK"));
+             i18n("Could not launch the mail client:\n\n%1", error), i18n("&OK"));
      else
        kWarning() << "Could not launch mail client:\n" << error << endl;
 #endif
@@ -480,7 +480,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
 #if 0
       if (Tty != qApp->type())
           QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Browser"),
-               i18n("Could not launch the browser:\n\n%1").arg(error), i18n("&OK"));
+               i18n("Could not launch the browser:\n\n%1", error), i18n("&OK"));
       else
           kWarning() << "Could not launch browser:\n" << error << endl;
       return;

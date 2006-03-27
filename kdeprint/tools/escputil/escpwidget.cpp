@@ -170,7 +170,7 @@ void EscpWidget::startCommand(const QString& arg)
 		else if (protocol != "file" && protocol != "parallel" && protocol != "serial" && !protocol.isEmpty())
 		{
 			KMessageBox::error(this,
-				i18n("Unsupported connection type: %1").arg(protocol));
+				i18n("Unsupported connection type: %1", protocol));
 			return;
 		}
 	}
