@@ -314,6 +314,15 @@ that we would like to make for the next binary incompatible release.
   onto items, and dropping between items like in the bookmark editor).
   (David, Till etc.)
 
+- CMake:
+   * install man pages (e.g. doc/kdelibs/man-kbuildsycoca.8.docbook)
+   * compile and install documentation (doc/kspell)
+   * install /share/apps/ksgmltools2/customization/dtd
+   * install /share/apps/ksgmltools2/customization/entities/kde-standard-accels.entities
+   * install /share/apps/ksgmltools2/customization/*.xsl
+   * install /share/apps/ksgmltools2/customization/README
+   * install /share/apps/ksgmltools2/docbook/README.kde
+
 - Increase version numbers in sonames of our libraries (*.so.version). 
   Unless we rename them all anyway, see next item.
 
@@ -337,3 +346,4 @@ that we would like to make for the next binary incompatible release.
   For KIO jobs it's more tricky, we'll have to think of a way to split core from gui, 
   not sure how yet. Proposals welcome. (David)
   When doing the reorganization, we could also rename the last .cc files to .cpp. (David)
+
