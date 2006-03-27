@@ -1,6 +1,5 @@
 kde4_header()
 
-include_directories( ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 # simple first try: add a target "doc" which calls meinproc, and have it depend on meinproc
 add_custom_target(doc 

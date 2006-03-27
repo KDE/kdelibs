@@ -5,6 +5,8 @@ project(dcop)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dcop-path.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
 
+include_directories( ${QT_INCLUDES} )
+
 # dcop/KDE-ICE/Makefile.am: kICE
 
 set(kICE_STAT_SRCS
@@ -38,8 +40,6 @@ add_subdirectory( dcopidlng )
 add_subdirectory( dcopidl2cpp )
 add_subdirectory( client )
 add_subdirectory( tests )
-
-include_directories( ${QT_INCLUDES} )
 
 ########### next target ###############
 

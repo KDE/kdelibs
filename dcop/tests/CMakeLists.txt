@@ -2,8 +2,7 @@ kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
-macro_use_lib_dcop()
-include_directories( ${QT_INCLUDES} )
+include_directories( ${KDE4_DCOP_INCLUDES} )
 
 
 ########### next target ###############

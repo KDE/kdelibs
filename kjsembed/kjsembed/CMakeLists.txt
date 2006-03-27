@@ -2,8 +2,8 @@ kde4_header()
 
 project(kjsembed-kjsembed)
 
-macro_use_lib_kdeui()
-include_directories( ${CMAKE_SOURCE_DIR}/kjs ${QT_INCLUDES} )
+include_directories( ${KDE4_KDEUI_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/kjs )
 
 
 ########### next target ###############

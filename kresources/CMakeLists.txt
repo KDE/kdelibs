@@ -2,8 +2,7 @@ kde4_header()
 
 project(kresources)
 
-macro_use_lib_kio()
-include_directories( ${QT_INCLUDES} )
+include_directories( ${KDE4_KIO_INCLUDES} )
 
 
 ########### next target ###############

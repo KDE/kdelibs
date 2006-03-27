@@ -2,7 +2,6 @@ kde4_header()
 
 add_subdirectory( icons )
 
-include_directories( ${QT_INCLUDES}  )
 
 
 ########### next target ###############

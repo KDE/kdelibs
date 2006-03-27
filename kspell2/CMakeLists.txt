@@ -2,8 +2,8 @@ kde4_header()
 
 project(kspell2)
 
-macro_use_lib_kparts()
-include_directories( ${CMAKE_SOURCE_DIR}/kutils ${QT_INCLUDES} )
+include_directories( ${KDE4_KPARTS_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/kutils )
 
 # kspell2/Makefile.am: kspell2base
 

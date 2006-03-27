@@ -2,9 +2,9 @@ kde4_header()
 
 project(kwallet)
 
-macro_use_lib_kdecore()
+include_directories( ${KDE4_KDECORE_INCLUDES} )
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/client ${QT_INCLUDES} )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/client )
 
 add_subdirectory( client ) 
 add_subdirectory( backend ) 

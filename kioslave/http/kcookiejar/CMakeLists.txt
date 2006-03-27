@@ -3,8 +3,7 @@ kde4_header()
 add_subdirectory( tests ) 
 
 # all done by parent dir
-# macro_use_lib_kio()
-# include_directories( ${QT_INCLUDES} )
+# include_directories( ${KDE4_KIO_INCLUDES} )
 
 
 ########### next target ###############

@@ -2,7 +2,6 @@ kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
-include_directories( ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 #test5.cpp test5.h: $(srcdir)/test5.kcfg ../kconfig_compiler $(srcdir)/test5.kcfgc
 #	../kconfig_compiler $(srcdir)/test5.kcfg $(srcdir)/test5.kcfgc

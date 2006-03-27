@@ -1,6 +1,6 @@
 kde4_header()
 
-include_directories( ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${HSPELL_INCLUDE_DIR}  )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${HSPELL_INCLUDE_DIR}  )
 
 
 ########### next target ###############

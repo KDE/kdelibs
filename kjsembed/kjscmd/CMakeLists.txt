@@ -2,9 +2,8 @@ kde4_header()
 
 project(kjsembed-kjscmd)
 
-macro_use_lib_kdecore()
+include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/kjsembed/kjsembed )
-include_directories( ${QT_INCLUDES} )
 
 
 ########### next target ###############

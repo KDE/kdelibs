@@ -1,6 +1,6 @@
 kde4_header()
 
-include_directories( ${CMAKE_SOURCE_DIR}/kdeprint/management ${QT_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/kdeprint/management )
 
 
 ########### next target ###############

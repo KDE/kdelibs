@@ -2,11 +2,10 @@ kde4_header()
 
 project(kabc)
 
-macro_use_lib_kio()
+include_directories( ${KDE4_KIO_INCLUDES} )
 
 include_directories(
- ${QT_INCLUDES}
- ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
  ${CMAKE_CURRENT_BINARY_DIR}
  ${CMAKE_CURRENT_SOURCE_DIR}/kab
  ${CMAKE_CURRENT_BINARY_DIR}/kab

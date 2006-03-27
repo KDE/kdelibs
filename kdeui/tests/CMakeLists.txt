@@ -2,8 +2,7 @@ kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
-macro_use_lib_kdeui()
-include_directories( ${QT_INCLUDES} )
+include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 
 ########### next target ###############

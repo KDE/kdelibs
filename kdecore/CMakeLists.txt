@@ -3,15 +3,14 @@ kde4_header()
 project(kdecore)
 
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
-macro_use_lib_dcop()
 # hack for kacceleratormanager
 include_directories( ${CMAKE_SOURCE_DIR}/kdeui )
-#include_directories( ${CMAKE_SOURCE_DIR}/kdefx )
 
 # our own subdirs
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/network )
 
-include_directories( ${QT_INCLUDES} ${ZLIB_INCLUDE_DIR} )
+include_directories( ${ZLIB_INCLUDE_DIR} )
+include_directories( ${KDE4_DCOP_INCLUDES} )
 
 
 # kdecore_OPTIONAL_SRCS is used to collect source files

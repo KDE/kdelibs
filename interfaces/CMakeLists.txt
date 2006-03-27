@@ -2,7 +2,7 @@ kde4_header()
 
 project(interfaces)
 
-macro_use_lib_kparts()
+include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 add_subdirectory( kdocument ) 

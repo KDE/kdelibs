@@ -1,6 +1,5 @@
 kde4_header()
 
-include_directories( ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 if(AKODE_FOUND)
   include_directories( ${AKODE_INCLUDE_DIR} )
 endif(AKODE_FOUND)

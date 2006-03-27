@@ -7,8 +7,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_
 #${CMAKE_CURRENT_SOURCE_DIR}/kparts ${CMAKE_CURRENT_SOURCE_DIR}/kutils )
 
 # all dependent libs
-macro_use_lib_kparts()
-include_directories( ${QT_INCLUDES} )
+include_directories( ${KDE4_KPARTS_INCLUDES} )
 
 add_subdirectory( kdeui )
 add_subdirectory( kio )

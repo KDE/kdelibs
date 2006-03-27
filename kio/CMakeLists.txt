@@ -11,7 +11,6 @@ if(HAVE_SSL)
 endif(HAVE_SSL)
 
 # This applies to all subdirs; let's put kio's dependencies (and own dirs) here, once and for all
-macro_use_lib_kdeui()
 include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
    ${CMAKE_CURRENT_SOURCE_DIR}/kio
@@ -22,8 +21,8 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/kfile
    ${CMAKE_SOURCE_DIR}/kwallet/client
    ${ZLIB_INCLUDE_DIR}
-   ${QT_INCLUDES}
 )
+include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )

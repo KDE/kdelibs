@@ -5,8 +5,7 @@ project(kdewidgets)
 add_subdirectory( pics ) 
 add_subdirectory( tests ) 
 
-macro_use_lib_kio()
-include_directories(  ${QT_INCLUDES} )
+include_directories( ${KDE4_KIO_INCLUDES} )
 
 
 ########### next target ###############

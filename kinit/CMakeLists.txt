@@ -4,9 +4,8 @@ project(kdeinit)
 
 add_subdirectory( tests )
 
-macro_use_lib_kparts()
+include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
-include_directories( ${QT_INCLUDES} )
 
 
 if(NOT WIN32)

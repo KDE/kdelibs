@@ -1,6 +1,6 @@
 kde4_header()
 
-include_directories( ${CMAKE_SOURCE_DIR}/kde3support ${QT_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/kde3support )
 
 ########### next target ###############
 

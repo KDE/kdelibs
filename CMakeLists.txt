@@ -44,32 +44,20 @@ link_directories(${KDE4_LIB_DIR})
 # for including config.h and for includes like <kparts/foo.h>
 include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
 
-# macro_use_lib_foo() adds the include directories for foo and everything that it depends upon.
-# Those macros are only valid inside of kdelibs, of course.
+# Those variables for include_directories() are only valid inside of kdelibs, of course.
+# Use the one variable for the lib you depend upon.
+# E.g. kdeui uses ${KDE4_KDECORE_INCLUDES}. Something that depends on kparts uses ${KDE4_KPARTS_INCLUDES}.
 
-macro(macro_use_lib_dcop)
-    include_directories( ${CMAKE_SOURCE_DIR}/dcop )
-endmacro(macro_use_lib_dcop)
-
-macro(macro_use_lib_kdecore)
-    macro_use_lib_dcop()
-    include_directories( ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network )
-endmacro(macro_use_lib_kdecore)
-
-macro(macro_use_lib_kdeui)
-    macro_use_lib_kdecore()
-    include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui )
-endmacro(macro_use_lib_kdeui)
-
-macro(macro_use_lib_kio)
-    macro_use_lib_kdeui()
-    include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kio ${CMAKE_SOURCE_DIR}/kio/kfile ${CMAKE_SOURCE_DIR}/kio/bookmarks )
-endmacro(macro_use_lib_kio)
-
-macro(macro_use_lib_kparts)
-    macro_use_lib_kio()
-    include_directories( ${CMAKE_SOURCE_DIR}/kparts )
-endmacro(macro_use_lib_kparts)
+# DCOP depends on Qt
+set(KDE4_DCOP_INCLUDES ${CMAKE_SOURCE_DIR}/dcop ${QT_INCLUDES})
+# kdecore depends on DCOP  (libldtl isn't included since it's internal to kdecore)
+set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_DCOP_INCLUDES})
+# kdeui depends on kdefx+kdecore
+set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui ${KDE4_KDECORE_INCLUDES})
+# kio depends on kdeui
+set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kio ${CMAKE_SOURCE_DIR}/kio/kfile ${CMAKE_SOURCE_DIR}/kio/bookmarks ${KDE4_KDEUI_INCLUDES})
+# kparts depends on kio
+set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts ${KDE4_KIO_INCLUDES})
 
 # create config.h
 include(ConfigureChecks.cmake)

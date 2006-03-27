@@ -1,7 +1,6 @@
 kde4_header()
 
-macro_use_lib_kdeui()
-include_directories( ${QT_INCLUDES} )
+include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 
 ########### next target ###############

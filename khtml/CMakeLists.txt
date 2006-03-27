@@ -198,7 +198,7 @@ add_subdirectory( css )
 add_subdirectory( pics )
 add_subdirectory( ecma )
 
-macro_use_lib_kparts()
+include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kwallet/client ${CMAKE_SOURCE_DIR}/kutils )
@@ -226,7 +226,7 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/java
 )
 
-include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${QT_INCLUDES} )
+include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
 
 add_subdirectory( kmultipart )
 if(NOT KDE4_USE_QT_EMB)

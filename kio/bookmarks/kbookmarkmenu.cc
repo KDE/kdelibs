@@ -780,7 +780,7 @@ KBookmarkEditFields::KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, Fields
 
   QGridLayout *grid = new QGridLayout();
   vbox->addLayout(grid);
-  
+
   m_title = new KLineEdit( main );
   tmpLabel = new QLabel( main );
   tmpLabel->setText( i18n( "Name:" ) );

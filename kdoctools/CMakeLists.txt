@@ -3,9 +3,8 @@ kde4_header()
 find_package(LibXml2 REQUIRED)
 find_package(LibXslt REQUIRED)
 
-macro_use_lib_kio()
+include_directories( ${KDE4_KIO_INCLUDES} )
 #include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/bzip2 )
-include_directories( ${QT_INCLUDES} )
 
 include_directories( ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR} )
 

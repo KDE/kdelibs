@@ -2,8 +2,7 @@ kde4_header()
 
 project(knotify)
 
-macro_use_lib_kio()
-include_directories( ${QT_INCLUDES} )
+include_directories( ${KDE4_KIO_INCLUDES} )
 
 add_subdirectory( daemon )
 add_subdirectory( config )

@@ -2,8 +2,7 @@ kde4_header()
 
 project(kconf_update)
 
-macro_use_lib_kdecore()
-include_directories( ${QT_INCLUDES} )
+include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 
 ########### next target ###############

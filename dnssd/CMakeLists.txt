@@ -2,8 +2,8 @@ kde4_header()
 
 project(dnssd)
 
-macro_use_lib_kdecore()
-include_directories( ${DNSSD_INCLUDE_DIR} ${QT_INCLUDES} )
+include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${DNSSD_INCLUDE_DIR} )
 
 
 ########### next target ###############

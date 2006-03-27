@@ -4,7 +4,7 @@ project(kdeprint)
 
 ADD_DEFINITIONS(-D_KDEPRINT_COMPILE)
 
-macro_use_lib_kio()
+include_directories( ${KDE4_KIO_INCLUDES} )
 # Needed for the subdirs
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
@@ -28,7 +28,7 @@ if(CUPS_FOUND)
 endif(CUPS_FOUND)
 
 
-include_directories( ${QT_INCLUDES} ${ZLIB_INCLUDE_DIR} )
+include_directories( ${ZLIB_INCLUDE_DIR} )
 
 
 ########### next target ###############

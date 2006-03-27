@@ -2,9 +2,9 @@ kde4_header()
 
 project(kutils)
 
-macro_use_lib_kio()
+include_directories( ${KDE4_KIO_INCLUDES} )
 
-include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${QT_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor )
 
 add_subdirectory( ksettings )
 add_subdirectory( tests )

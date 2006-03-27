@@ -10,7 +10,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/modules")
 find_package(Qt4 REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
-include_directories(${QT_INCLUDES})
 
 # find the headers
 file(GLOB _win_headers include/*.h)

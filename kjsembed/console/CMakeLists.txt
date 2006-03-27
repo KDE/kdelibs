@@ -2,8 +2,8 @@ kde4_header()
 
 project(kjsembed-console)
 
-macro_use_lib_kdeui()
-include_directories( ${CMAKE_SOURCE_DIR}/kjsembed ${CMAKE_SOURCE_DIR}/kjsembed/kjsembed ${QT_INCLUDES} )
+include_directories( ${KDE4_KDEUI_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/kjsembed ${CMAKE_SOURCE_DIR}/kjsembed/kjsembed )
 
 
 ########### next target ###############

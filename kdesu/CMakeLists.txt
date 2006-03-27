@@ -2,7 +2,7 @@ kde4_header()
 
 project(kdesu)
 
-include_directories( ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kio ${QT_INCLUDES} )
+include_directories( ${KDE4_KIO_INCLUDES} )
 
 
 ########### next target ###############

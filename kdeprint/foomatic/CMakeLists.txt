@@ -1,6 +1,5 @@
 kde4_header()
 
-include_directories( ${QT_INCLUDES} )
 
 ########### next target ###############
 
