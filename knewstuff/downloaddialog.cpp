@@ -436,8 +436,8 @@ void DownloadDialog::slotDetails()
     ).subs(e->rating()
     ).subs(e->downloads()
     ).subs(KGlobal::locale()->formatDate(e->releaseDate())
-    ).subs(e->summary(lang).toString()
-  );
+    ).subs(e->summary(lang)
+  ).toString();
 
   info.append(i18n
   (
