@@ -315,6 +315,9 @@ cmakedefine   HAVE__ICETRANSNOLISTEN
 #cmakedefine HAVE_DLERROR 1
 #cmakedefine HAVE_DLD 1
 
+#cmakedefine HAVE_PTHREAD_ATTR_GET_NP 1
+#cmakedefine HAVE_PTHREAD_GETATTR_NP 1
+
 /********** HAVE_XXX_PROTO *******************/
 
 #cmakedefine HAVE_STRLCAT_PROTO 1

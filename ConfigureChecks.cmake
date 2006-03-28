@@ -318,6 +318,9 @@ check_library_exists(dl dlerror ""  HAVE_DLERROR)
 check_function_exists(shl_load HAVE_SHL_LOAD)
 check_function_exists(dld_init HAVE_DLD)
 
+check_library_exists(pthread pthread_attr_get_np "" HAVE_PTHREAD_ATTR_GET_NP)
+check_library_exists(pthread pthread_getattr_np "" HAVE_PTHREAD_GETATTR_NP)
+
 check_function_exists(getmntinfo HAVE_GETMNTINFO)
 check_function_exists(inet_pton  HAVE_INET_PTON)
 check_function_exists(inet_ntop  HAVE_INET_NTOP)

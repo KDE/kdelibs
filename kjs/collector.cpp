@@ -322,12 +322,15 @@ void Collector::markCurrentThreadConservatively()
     pthread_t thread = pthread_self();
     if (stackBase == 0 || thread != stackThread) {
         pthread_attr_t sattr;
-#ifdef HAVE_PTHREAD_NP_H
-        // e.g. on FreeBSD 5.4, neundorf@kde.org
+#if defined(HAVE_PTHREAD_ATTR_GET_NP)
+        // FreeBSD, NetBSD
         pthread_attr_get_np(thread, &sattr);
-#else
-        // FIXME: this function is non-portable; other POSIX systems may have different np alternatives
+#elif defined(HAVE_PTHREAD_GETATTR_NP)
+        // Linux
         pthread_getattr_np(thread, &sattr);
+#else
+        // FIXME: other POSIX systems may have different np alternatives
+#error Unknown pthreads api
 #endif
         // Should work but fails on Linux (?)
         //  pthread_attr_getstack(&sattr, &stackBase, &stackSize);
