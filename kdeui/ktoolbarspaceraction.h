@@ -29,7 +29,7 @@
  *
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KToolbarSpacerAction : public KAction, public QActionWidgetFactory
+class KDEUI_EXPORT KToolbarSpacerAction : public KAction, public QActionWidgetFactory
 {
   Q_OBJECT
   Q_PROPERTY(int width READ width WRITE setWidth)
