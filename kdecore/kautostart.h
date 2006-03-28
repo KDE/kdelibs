@@ -134,11 +134,11 @@ class KDECORE_EXPORT KAutostart : public QObject
          * Returns the user-visible name this autostart service is registered as
          * @see setEntryName
          */
-        QString name() const;
+        QString visibleName() const;
         /**
          * Sets the user-visible name for this autostart service.
          */
-        void setName(const QString& entryName);
+        void setVisibleName(const QString& entryName);
 
         /**
          * Checks whether or not a service by the given name is registered
@@ -146,7 +146,7 @@ class KDECORE_EXPORT KAutostart : public QObject
          * set to actually autostart or not.
          * @param entryName the name of the service to check for
          */
-        static bool serviceRegistered(const QString& entryName);
+        static bool isServiceRegistered(const QString& entryName);
 
         /**
          * Returns the executable to check for when attempting to autostart

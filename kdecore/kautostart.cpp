@@ -109,17 +109,17 @@ void KAutostart::setCommand(const QString& command)
     return d->df->writeEntry("Exec", command);
 }
 
-QString KAutostart::name() const
+QString KAutostart::visibleName() const
 {
     return d->df->readName();
 }
 
-void KAutostart::setName(const QString& name)
+void KAutostart::setVisibleName(const QString& name)
 {
     d->df->writeEntry("Name", name);
 }
 
-bool KAutostart::serviceRegistered(const QString& entryName)
+bool KAutostart::isServiceRegistered(const QString& entryName)
 {
     return QFile::exists(locate("autostart", entryName + ".desktop"));
 }
