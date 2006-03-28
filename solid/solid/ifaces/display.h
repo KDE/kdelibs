@@ -27,7 +27,9 @@ namespace KDEHW
 namespace Ifaces
 {
     /**
-     * This class specifies Display capability interface.
+     * This class specifies Display capability interface and represent display
+     * devices attached to the system.
+     * A display is a device, like CRT monitor, LCD screen and TVs, able to show something to the user.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
     class Display : virtual public Capability, public Enums::Display
@@ -45,8 +47,9 @@ namespace Ifaces
         virtual DisplayType displayType() const = 0;
 
         /**
+         * Get the brightness level in percent.
          * Avaible only if displayType is lcd.
-         * @returns the brightness level in percent.
+         * @returns the brightness level in percent. If displayType is different from lcd, return 100.
          */
         virtual int lcdBrightness() const = 0;
     };

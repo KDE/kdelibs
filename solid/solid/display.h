@@ -30,7 +30,9 @@ namespace KDEHW
     }
 
     /**
-     * This class implement Display capability interface.
+     * This class implement Display capability interface and represent display
+     * devices attached to the system.
+     * A display is a device, like CRT monitor, LCD screen and TVs, able to show something to the user.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
     class Display : public Capability, public Ifaces::Enums::Display
@@ -61,7 +63,8 @@ namespace KDEHW
 
         /**
          * Get the brightness level in percent.
-         * @returns the brightness level in percent.
+         * Avaible only if displayType is lcd.
+         * @returns the brightness level in percent. If displayType is different from lcd, return 100.
          */
         int lcdBrightness() const;
 
