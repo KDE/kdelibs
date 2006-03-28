@@ -220,7 +220,6 @@
 #cmakedefine   HAVE_BACKTRACE 1
 #cmakedefine   HAVE_BCOPY 1
 #cmakedefine   HAVE_CRYPT  1  
-#cmakedefine   HAVE_DECL_GETSERVBYNAME_R 1
 #cmakedefine   HAVE_FADVISE 1
 #cmakedefine   HAVE_FREEADDRINFO 1
 #cmakedefine   HAVE_FUNC__FINITE 1
@@ -331,6 +330,7 @@ cmakedefine   HAVE__ICETRANSNOLISTEN
 #cmakedefine HAVE_MKSTEMPS_PROTO 1
 #cmakedefine HAVE_MKDTEMP_PROTO 1
 #cmakedefine HAVE_MKSTEMP_PROTO 1
+#cmakedefine HAVE_GETSERVBYNAME_R_PROTO 1
 
 /********* structs ******************/
 

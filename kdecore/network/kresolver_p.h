@@ -46,7 +46,7 @@ extern QMutex getXXbyYYmutex;
 #endif
 
 /* some systems have the functions, but don't declare them */
-#if defined(HAVE_GETSERVBYNAME_R) && !HAVE_DECL_GETSERVBYNAME_R
+#if defined(HAVE_GETSERVBYNAME_R) && !HAVE_GETSERVBYNAME_R_PROTO
 extern "C" {
   struct servent;
   extern int getservbyname_r(const char* serv, const char* proto,

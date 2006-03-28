@@ -361,7 +361,7 @@ check_prototype_exists(gethostname "stdlib.h;unistd.h" HAVE_GETHOSTNAME_PROTO)
 check_prototype_exists(initgroups "unistd.h;sys/types.h;unistd.h;grp.h" HAVE_INITGROUPS_PROTO)
 check_prototype_exists(setreuid unistd.h HAVE_SETREUID_PROTO)
 check_prototype_exists(seteuid unistd.h HAVE_SETEUID_PROTO)
-check_prototype_exists(getservbyname_r netdb.h HAVE_DECL_GETSERVBYNAME_R)
+check_prototype_exists(getservbyname_r netdb.h HAVE_GETSERVBYNAME_R_PROTO)
 
 # check for existing datatypes
 
