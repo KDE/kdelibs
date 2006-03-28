@@ -1,5 +1,5 @@
 /*
-    This file is part of KOrganizer.
+    This file is part of KNewStuff.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -73,14 +73,14 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
   mReleaseSpin->setMinimum( 1 );
   topLayout->addWidget( mReleaseSpin, 3, 1 );
 
-  QLabel *licenceLabel = new QLabel( i18n("License:"), topPage );
-  topLayout->addWidget( licenceLabel, 4, 0 );
-  mLicenceCombo = new QComboBox( topPage );
-  mLicenceCombo->setEditable( true );
-  mLicenceCombo->addItem( i18n("GPL") );
-  mLicenceCombo->addItem( i18n("LGPL") );
-  mLicenceCombo->addItem( i18n("BSD") );
-  topLayout->addWidget( mLicenceCombo, 4, 1 );
+  QLabel *licenseLabel = new QLabel( i18n("License:"), topPage );
+  topLayout->addWidget( licenseLabel, 4, 0 );
+  mLicenseCombo = new QComboBox( topPage );
+  mLicenseCombo->setEditable( true );
+  mLicenseCombo->addItem( i18n("GPL") );
+  mLicenseCombo->addItem( i18n("LGPL") );
+  mLicenseCombo->addItem( i18n("BSD") );
+  topLayout->addWidget( mLicenseCombo, 4, 1 );
 
   QLabel *languageLabel = new QLabel( i18n("Language:"), topPage );
   topLayout->addWidget( languageLabel, 5, 0 );
@@ -123,7 +123,7 @@ void UploadDialog::slotOk()
   entry->setAuthor( mAuthorEdit->text() );
   entry->setVersion( mVersionEdit->text() );
   entry->setRelease( mReleaseSpin->value() );
-  entry->setLicence( mLicenceCombo->currentText() );
+  entry->setLicense( mLicenseCombo->currentText() );
   entry->setPreview( KUrl( mPreviewUrl->url().section("/", -1) ), mLanguageCombo->currentText() );
   entry->setSummary( mSummaryEdit->toPlainText(), mLanguageCombo->currentText() );
 
@@ -133,7 +133,7 @@ void UploadDialog::slotOk()
     cg.writeEntry("author", mAuthorEdit->text());
     cg.writeEntry("version", mVersionEdit->text());
     cg.writeEntry("release", mReleaseSpin->value());
-    cg.writeEntry("licence", mLicenceCombo->currentText());
+    cg.writeEntry("licence", mLicenseCombo->currentText());
     cg.writeEntry("preview", mPreviewUrl->url());
     cg.writeEntry("summary", mSummaryEdit->toPlainText());
     cg.writeEntry("language", mLanguageCombo->currentText());
@@ -162,7 +162,7 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
   QString preview = cg.readEntry("preview");
   QString summary = cg.readEntry("summary");
   QString lang = cg.readEntry("language");
-  QString licence = cg.readEntry("licence");
+  QString license = cg.readEntry("licence");
 
   if(!name.isNull())
   {
@@ -176,7 +176,7 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
       mPreviewUrl->setURL(preview);
       mSummaryEdit->setPlainText(summary);
       if(!lang.isEmpty()) mLanguageCombo->setCurrentIndex(mLanguageCombo->findText(lang));
-      if(!licence.isEmpty()) mLicenceCombo->setCurrentIndex(mLicenceCombo->findText(licence));
+      if(!license.isEmpty()) mLicenseCombo->setCurrentIndex(mLicenseCombo->findText(license));
     }
   }
 }

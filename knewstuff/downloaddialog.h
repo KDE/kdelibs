@@ -82,9 +82,10 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
     /**
       Restricts the display of available data to a certain data type.
 
-      @param type a Hotstuff data type such as "korganizer/calendar"
+      @param category a Hotstuff data type such as "korganizer/calendar"
     */
-    void setType(const QString &type);
+    void setCategory(const QString &category);
+    void setType(const QString &type) KDE_DEPRECATED;
 
     /**
       Explicitly uses this provider list instead of the one read from
@@ -121,6 +122,16 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
     void addEntry(Entry *entry);
 
     /**
+      Adds an additional entry to the current provider.
+      This is normally done internally.
+      This version takes into accounts the download variant.
+
+      @param entry a Hotstuff data entry to be added
+      @param variants all variants this entry is intended for
+    */
+    void addEntry(Entry *entry, const QStringList& variants);
+
+    /**
       Clears the entry list of the current provider.
       This is normally done internally.
     */
@@ -129,13 +140,21 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
     /**
       Opens the download dialog.
       This is a convenience method which automatically sets up the dialog.
-      @see setType()
+      @see setCategory()
       @see load()
 
-      @param type a data type such as "korganizer/calendar"
+      @param category a data type such as "korganizer/calendar"
       @param caption the dialog caption
     */
-    static void open(const QString& type, const QString& caption=QString());
+    static void open(const QString& category , const QString& caption=QString());
+
+    /**
+      Returns the list of installed data entries.
+
+      @return list of data entries which have been installed
+    */
+    QList<Entry*> installedEntries();
+    // ### KDE 4.0: the open() method should return this
 
   public Q_SLOTS:
     /**
@@ -159,6 +178,7 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
     void slotSelected();
     void slotPage(QWidget *w);
     void slotFinish();
+    void slotEmail(const QString& link);
 
   private:
     void init(Engine *e);

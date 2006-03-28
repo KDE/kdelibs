@@ -1,5 +1,5 @@
 /*
-    This file is part of KOrganizer.
+    This file is part of KNewStuff.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -57,19 +57,19 @@ class KDE_EXPORT Engine : public QObject
       Constructor.
 
       @param newStuff a KNewStuff object
-      @param type the Hotstuff data type such as "korganizer/calendar"
+      @param category the Hotstuff data type such as "korganizer/calendar"
       @param parentWidget the parent window
     */
-    Engine( KNewStuff *newStuff, const QString &type, QWidget *parentWidget = 0 );
+    Engine( KNewStuff *newStuff, const QString &category, QWidget *parentWidget = 0 );
     /**
       Constructor.
 
       @param newStuff a KNewStuff object
-      @param type the Hotstuff data type such as "korganizer/calendar"
+      @param category the Hotstuff data type such as "korganizer/calendar"
       @param providerList the URL of the provider list
       @param parentWidget the parent window
     */
-    Engine( KNewStuff *newStuff, const QString &type, const QString &providerList, QWidget *parentWidget = 0 );
+    Engine( KNewStuff *newStuff, const QString &category, const QString &providerList, QWidget *parentWidget = 0 );
 
     /**
       Destructor.
@@ -77,11 +77,11 @@ class KDE_EXPORT Engine : public QObject
     virtual ~Engine();
 
     /**
-      Returns the previously set data type.
+      Returns the previously set category.
 
       @return the Hotstuff data type
     */
-    QString type() const { return mType; }
+    QString category() const { return mCategory; }
 
     /**
       Returns the previously set parent widget.
@@ -180,7 +180,7 @@ class KDE_EXPORT Engine : public QObject
 
     Private* const d;
 
-    QString mType;
+    QString mCategory;
 };
 
 }

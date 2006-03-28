@@ -1,5 +1,5 @@
 /*
-    This file is part of KOrganizer.
+    This file is part of KNewStuff.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -46,24 +46,24 @@ struct Engine::Private
     KNewStuff *mNewStuff;
 };
 
-Engine::Engine( KNewStuff *newStuff, const QString &type,
+Engine::Engine( KNewStuff *newStuff, const QString &category,
                 QWidget *parentWidget ) :
   mParentWidget( parentWidget ), mDownloadDialog( 0 ),
   mUploadDialog( 0 ), mProviderDialog( 0 ), mUploadProvider( 0 ),
-  d(new Private), mType( type )
+  d(new Private), mCategory( category )
 {
   d->mNewStuff = newStuff;
   mProviderLoader = new ProviderLoader( mParentWidget );
 
 }
 
-Engine::Engine( KNewStuff *newStuff, const QString &type,
+Engine::Engine( KNewStuff *newStuff, const QString &category,
                 const QString &providerList, QWidget *parentWidget ) :
                 mParentWidget( parentWidget ),
 		mDownloadDialog( 0 ), mUploadDialog( 0 ),
 		mProviderDialog( 0 ), mUploadProvider( 0 ),
                 mProviderList( providerList ), d(new Private),
-		mType( type )
+		mCategory( category )
 {
   d->mNewStuff = newStuff;
   d->mIgnoreInstallResult = false;
@@ -88,7 +88,7 @@ void Engine::download()
   connect( mProviderLoader,
            SIGNAL( providersLoaded( Provider::List * ) ),
            SLOT( getMetaInformation( Provider::List * ) ) );
-  mProviderLoader->load( mType, mProviderList );
+  mProviderLoader->load( mCategory, mProviderList );
 }
 
 void Engine::getMetaInformation( Provider::List *providers )
@@ -108,7 +108,7 @@ void Engine::getMetaInformation( Provider::List *providers )
 	p = providers->at(i);
     if ( p->downloadUrl().isEmpty() ) continue;
 
-    KIO::TransferJob *job = KIO::get( p->downloadUrl() );
+    KIO::TransferJob *job = KIO::get( p->downloadUrl(), false, false );
     connect( job, SIGNAL( result( KIO::Job * ) ),
              SLOT( slotNewStuffJobResult( KIO::Job * ) ) );
     connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
@@ -154,7 +154,11 @@ void Engine::slotNewStuffJobResult( KIO::Job *job )
         for ( p = knewstuff.firstChild(); !p.isNull(); p = p.nextSibling() ) {
           QDomElement stuff = p.toElement();
           if ( stuff.tagName() != "stuff" ) continue;
-          if ( stuff.attribute("type", mType) != mType ) continue;
+          if ( stuff.attribute("category", mCategory) != mCategory ) {
+            if ( stuff.attribute("type", mCategory) != mCategory ) {
+              continue;
+            }
+          }
 
           Entry *entry = new Entry( stuff );
           mNewStuffList.append( entry );
@@ -235,7 +239,7 @@ void Engine::upload(const QString &fileName, const QString &previewName )
   connect( mProviderLoader,
            SIGNAL( providersLoaded( Provider::List * ) ),
            SLOT( selectUploadProvider( Provider::List * ) ) );
-  mProviderLoader->load( mType );
+  mProviderLoader->load( mCategory );
 }
 
 void Engine::selectUploadProvider( Provider::List *providers )
@@ -342,7 +346,7 @@ bool Engine::createMetaFile( Entry *entry )
   QDomElement de = doc.createElement("knewstuff");
   doc.appendChild( de );
 
-  entry->setType(type());
+  entry->setCategory(category());
   de.appendChild( entry->createDomElement( doc, de ) );
 
   kDebug(5850) << "--DOM START--" << endl << doc.toString()

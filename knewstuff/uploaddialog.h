@@ -1,5 +1,5 @@
 /*
-    This file is part of KOrganizer.
+    This file is part of KNewStuff.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -91,7 +91,7 @@ class UploadDialog : public KDialogBase
     KUrlRequester *mPreviewUrl;
     QTextEdit *mSummaryEdit;
     QComboBox *mLanguageCombo;
-    QComboBox *mLicenceCombo;
+    QComboBox *mLicenseCombo;
 
     QList<Entry*> mEntryList;
     KUrl mPayloadUrl;

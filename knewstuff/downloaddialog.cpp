@@ -29,7 +29,7 @@
 #include <kmessagebox.h>
 #include <kurl.h>
 #include <kconfig.h>
-#include <kapplication.h>
+#include <ktoolinvocation.h>
 #include <kiconloader.h>
 
 #include <knewstuff/entry.h>
@@ -53,6 +53,10 @@ struct DownloadDialog::Private
     QString m_providerlist;
     QWidget *m_page;
     QTreeWidget *m_lvtmp_r, *m_lvtmp_d, *m_lvtmp_l;
+    QList<Entry*> m_installlist;
+    QMap<KIO::Job*, Provider*> m_variantjobs;
+    QMap<KIO::Job*, QStringList> m_variants;
+    QMap<Provider*, Provider*> m_newproviders;
 };
 
 class NumSortListViewItem : public QTreeWidgetItem
@@ -253,6 +257,8 @@ void DownloadDialog::addProvider(Provider *p)
 
   box->addLayout(vbox);
 
+  connect(rt, SIGNAL(linkClicked(const QString&)), SLOT(slotEmail(const QString&)));
+
   connect(in, SIGNAL(clicked()), SLOT(slotInstall()));
   connect(de, SIGNAL(clicked()), SLOT(slotDetails()));
 
@@ -303,24 +309,26 @@ void DownloadDialog::slotResult(KIO::Job *job)
     if(stuff.tagName() == "stuff")
     {
       Entry *entry = new Entry(stuff);
-      kDebug() << "TYPE::" << entry->type() << " FILTER::" << m_filter << endl;
-      if(!entry->type().isEmpty())
+      kDebug() << "TYPE::" << entry->category() << " FILTER::" << m_filter << endl;
+      if(!entry->category().isEmpty())
       {
-        if((!m_filter.isEmpty()) && (entry->type() != m_filter)) continue;
+        if((!m_filter.isEmpty()) && (entry->category() != m_filter)) continue;
       }
 
-      if((!m_filter.isEmpty()) && (m_jobs[job]))
+      if((!m_filter.isEmpty()) && (d->m_variantjobs[job]))
       {
-        Provider *p = m_jobs[job];
-        addProvider(p);
-        slotPage(m_frame);
-        m_jobs[job] = 0;
+        Provider *p = d->m_variantjobs[job];
+        if(d->m_newproviders[p])
+        {
+          addProvider(p);
+          slotPage(m_frame);
+          d->m_newproviders[p] = 0;
+        }
       }
-      addEntry(entry);
+
+      if(d->m_variantjobs[job]) addEntry(entry, d->m_variants[job]);
     }
   }
-
-  m_data[job] = "";
 }
 
 int DownloadDialog::installStatus(Entry *entry)
@@ -337,47 +345,63 @@ int DownloadDialog::installStatus(Entry *entry)
   return installed;
 }
 
-void DownloadDialog::addEntry(Entry *entry)
+void DownloadDialog::addEntry(Entry *entry, const QStringList& variants)
 {
   QPixmap pix;
   int installed;
 
-  /*if(m_engine)
-  {
-    if(m_map.count() == 0)
-    {
-      m_frame = addPage(i18n("Welcome"), i18n("Welcome"), QPixmap(""));
-      Provider *p = new Provider();
-      p->setName(i18n("Generic"));
-      addProvider(p);
-      slotPage(m_frame);
-    }
-  }*/
   installed = installStatus(entry);
 
   if(installed > 0) pix = KGlobal::iconLoader()->loadIcon("ok", K3Icon::Small);
   else if(installed < 0) pix = KGlobal::iconLoader()->loadIcon("history", K3Icon::Small);
   else pix = QPixmap();
 
+  QString lang = KGlobal::locale()->language();
   QStringList texts;
 
-  texts << entry->name() << entry->version() << QString("%1").arg(entry->rating());
-  QTreeWidgetItem *tmp_r = new NumSortListViewItem(lv_r, texts );
+  if(variants.contains("score"))
+  {
+    QString ratingstring = QString("%1").arg(entry->rating());
+    texts << entry->name(lang) << entry->version() << ratingstring;
+    QTreeWidgetItem *tmp_r = new NumSortListViewItem(lv_r, texts );
+    texts.clear();
+    tmp_r->setIcon(0, pix);
+  }
 
-  texts.clear();
-  texts << entry->name() << entry->version() << QString("%1").arg(entry->downloads());
-  QTreeWidgetItem *tmp_d = new NumSortListViewItem(lv_d, texts);
+  if(variants.contains("downloads"))
+  {
+    QString downloadsstring = QString("%1").arg(entry->downloads());
+    texts << entry->name(lang) << entry->version() << downloadsstring;
+    QTreeWidgetItem *tmp_d = new NumSortListViewItem(lv_d, texts);
+    texts.clear();
+    tmp_d->setIcon(0, pix);
+  }
 
-  texts.clear();
-  texts << entry->name() << entry->version() << KGlobal::locale()->formatDate(entry->releaseDate());
-  QTreeWidgetItem *tmp_l = new DateSortListViewItem(lv_l, texts);
-
-  tmp_r->setIcon(0, pix);
-  tmp_d->setIcon(0, pix);
-  tmp_l->setIcon(0, pix);
+  if(variants.contains("latest"))
+  {
+    QString releasedatestring = KGlobal::locale()->formatDate(entry->releaseDate());
+    texts << entry->name(lang) << entry->version() << releasedatestring;
+    QTreeWidgetItem *tmp_l = new DateSortListViewItem(lv_l, texts);
+    texts.clear();
+    tmp_l->setIcon(0, pix);
+  }
 
   m_entries.append(entry);
 
+  kDebug() << "added entry " << entry->name() << " for variants " << variants << endl;
+}
+
+void DownloadDialog::addEntry(Entry *entry)
+{
+  QStringList variants;
+
+  variants << "score";
+  variants << "downloads";
+  variants << "latest";
+
+  addEntry(entry, variants);
+
+  // not used anymore due to variants (but still used by engine)
   kDebug() << "added entry " << entry->name() << endl;
 }
 
@@ -403,24 +427,24 @@ void DownloadDialog::slotDetails()
     "Rating: %6\n"
     "Downloads: %7\n"
     "Release date: %8\n"
-    "Summary: %9\n")
-    .subs(e->name())
-    .subs(e->author())
-    .subs(e->license())
-    .subs(e->version())
-    .subs(e->release())
-    .subs(e->rating())
-    .subs(e->downloads())
-    .subs(KGlobal::locale()->formatDate(e->releaseDate()))
-    .subs(e->summary(lang))
-    .toString();
+    "Summary: %9\n"
+    ).subs(e->name(lang)
+    ).subs(e->author()
+    ).subs(e->license()
+    ).subs(e->version()
+    ).subs(e->release()
+    ).subs(e->rating()
+    ).subs(e->downloads()
+    ).subs(KGlobal::locale()->formatDate(e->releaseDate())
+    ).subs(e->summary(lang).toString()
+  );
 
   info.append(i18n
   (
     "Preview: %1\n"
     "Payload: %2\n"
-    , e->preview().url()
-    , e->payload().url()
+    , e->preview(lang).url()
+    , e->payload(lang).url()
   ));
 
   KMessageBox::information(this, info, i18n("Details"));
@@ -428,14 +452,11 @@ void DownloadDialog::slotDetails()
 
 QTreeWidgetItem *DownloadDialog::currentEntryItem()
 {
-  switch(m_curtab)
-  {
-    case 0: return lv_r->currentItem(); break;
-    case 1: return lv_d->currentItem(); break;
-    case 2: return lv_l->currentItem(); break;
-    default:
-      return 0;
-  }
+  if((m_curtab == 0) && (lv_r->currentItem())) return lv_r->currentItem();
+  if((m_curtab == 1) && (lv_d->currentItem())) return lv_d->currentItem();
+  if((m_curtab == 2) && (lv_l->currentItem())) return lv_l->currentItem();
+
+  return 0;
 }
 
 void DownloadDialog::slotInstall()
@@ -445,7 +466,6 @@ void DownloadDialog::slotInstall()
   d->m_lvtmp_r->setEnabled( false );
   d->m_lvtmp_l->setEnabled( false );
   d->m_lvtmp_d->setEnabled( false );
-
 
   m_entryitem = currentEntryItem();
   m_entryname = m_entryitem->text(0);
@@ -459,7 +479,7 @@ void DownloadDialog::slotInstall()
   }
   else
   {
-    m_s = new KNewStuffGeneric(e->type(), this);
+    m_s = new KNewStuffGeneric(e->category(), this);
 
     m_entry = e;
 
@@ -478,8 +498,33 @@ void DownloadDialog::install(Entry *e)
 
   QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", K3Icon::Small);
 
+  QString lang = KGlobal::locale()->language();
+
   if(m_entryitem)
+  {
     m_entryitem->setIcon(0, pix);
+
+    QList<QTreeWidgetItem*> list;
+    QTreeWidgetItem *item;
+    list = lv_r->findItems(e->name(lang), Qt::MatchExactly, 0);
+    if(list.count() > 0)
+    {
+      item = list.at(0);
+      //item->setPixmap(0, pix);
+    }
+    list = lv_d->findItems(e->name(lang), Qt::MatchExactly, 0);
+    if(list.count() > 0)
+    {
+      item = list.at(0);
+      //item->setPixmap(0, pix);
+    }
+    list = lv_l->findItems(e->name(lang), Qt::MatchExactly, 0);
+    if(list.count() > 0)
+    {
+      item = list.at(0);
+      //item->setPixmap(0, pix);
+    }
+  }
 
   if(currentEntryItem() == m_entryitem)
   {
@@ -487,6 +532,8 @@ void DownloadDialog::install(Entry *e)
     in = (m_buttons[d->m_page]->at(0));
     if(in) in->setEnabled(false);
   }
+
+  d->m_installlist.append(e);
 }
 
 void DownloadDialog::slotInstalled(KIO::Job *job)
@@ -520,7 +567,28 @@ void DownloadDialog::slotInstalled(KIO::Job *job)
 void DownloadDialog::slotTab(int tab)
 {
   kDebug() << "switch tab to: " << tab << endl;
+
+  Entry *eold = getEntry();
   m_curtab = tab;
+  Entry *e = getEntry();
+
+  if(e == eold) return;
+
+  if(e)
+  {
+    slotSelected();
+  }
+  else
+  {
+    QPushButton *de, *in;
+    in = (m_buttons[d->m_page]->at(0));
+    de = (m_buttons[d->m_page]->at(1));
+
+    if(in) in->setEnabled(false);
+    if(de) de->setEnabled(false);
+
+    m_rt->clear();
+  }
 }
 
 void DownloadDialog::slotSelected()
@@ -529,20 +597,75 @@ void DownloadDialog::slotSelected()
   bool enabled;
   Entry *e = getEntry();
   QString lang = KGlobal::locale()->language();
+  bool ret;
 
   if(e)
   {
+    QList<QTreeWidgetItem*> list;
+    QTreeWidgetItem *item;
+    if(m_curtab != 0)
+    {
+      lv_r->clearSelection();
+      list = lv_r->findItems(e->name(lang), Qt::MatchExactly, 0);
+      if(list.count() > 0)
+      {
+        item = list.at(0);
+        lv_r->setItemSelected(item, true);
+      }
+    }
+    if(m_curtab != 1)
+    {
+      lv_d->clearSelection();
+      list = lv_d->findItems(e->name(lang), Qt::MatchExactly, 0);
+      if(list.count() > 0)
+      {
+        item = list.at(0);
+        lv_d->setItemSelected(item, true);
+      }
+    }
+    if(m_curtab != 2)
+    {
+      lv_l->clearSelection();
+      list = lv_l->findItems(e->name(lang), Qt::MatchExactly, 0);
+      if(list.count() > 0)
+      {
+        item = list.at(0);
+        lv_l->setItemSelected(item, true);
+      }
+    }
+
     if(!e->preview(lang).isValid())
     {
-      m_rt->setHtml(QString("<b>%1</b><br>%2<br>%3<br><br><i>%4</i><br>(%5)").arg(
-        e->name()).arg(e->author()).arg(KGlobal::locale()->formatDate(e->releaseDate())).arg(e->summary(lang)).arg(e->license()));
+      ret = 0;
     }
     else
     {
-      KIO::NetAccess::download(e->preview(lang), tmp, this);
-      m_rt->setHtml(QString("<b>%1</b><br>%2<br>%3<br><br><img src='%4'><br><i>%5</i><br>(%6)").arg(
-        e->name()).arg(e->author()).arg(KGlobal::locale()->formatDate(e->releaseDate())).arg(tmp).arg(e->summary(lang)).arg(e->license()));
+      ret = KIO::NetAccess::download(e->preview(lang), tmp, this);
     }
+
+    QString desc = QString("<b>%1</b><br>").arg(e->name());
+    if(!e->authorEmail().isNull())
+    {
+      desc += QString("<a href='mailto:" + e->authorEmail() + "'>" + e->author() + "</a>");
+    }
+    else
+    {
+      desc += QString("%1").arg(e->author());
+    }
+    desc += QString("<br>%1").arg(KGlobal::locale()->formatDate(e->releaseDate()));
+    desc += QString("<br><br>");
+    if(ret)
+    {
+      desc += QString("<img src='%1'>").arg(tmp);
+    }
+    else
+    {
+      desc += i18n("Preview not available.");
+    }
+    desc += QString("<br><i>%1</i>").arg(e->summary(lang));
+    desc += QString("<br>(%1)").arg(e->license());
+
+    m_rt->setHtml(desc);
 
     if(installStatus(e) == 1) enabled = false;
     else enabled = true;
@@ -553,6 +676,13 @@ void DownloadDialog::slotSelected()
     if(in) in->setEnabled(enabled);
     if(de) de->setEnabled(true);
   }
+}
+
+void DownloadDialog::slotEmail(const QString& link)
+{
+  kDebug() << "EMAIL: " << link << endl;
+  KToolInvocation::invokeMailer(link);
+  slotSelected(); // QTextBrowser oddity workaround as it cannot handle mailto: URLs
 }
 
 Entry *DownloadDialog::getEntry()
@@ -566,8 +696,10 @@ Entry *DownloadDialog::getEntry()
 
   m_entryname = m_entryitem->text(0);
 
+  QString lang = KGlobal::locale()->language();
+
   Q_FOREACH( Entry *e , m_entries )
-    if(e->name() == entryName)
+    if(e->name(lang) == entryName)
       return e;
 
   return 0;
@@ -606,15 +738,82 @@ void DownloadDialog::slotPage(QWidget *w)
 
 void DownloadDialog::loadProvider(Provider *p)
 {
+  QMap<KIO::Job*, Provider*>::Iterator it;
+
+  for(it = m_jobs.begin(); it != m_jobs.end(); it++)
+  {
+    if(it.value() == p)
+    {
+      kDebug() << "-- found provider data in cache" << endl;
+      slotResult(it.key());
+      return;
+    }
+  }
+
+  QStringList variants;
+  variants << "score";
+  variants << "downloads";
+  variants << "latest";
+
+  // Optimise URLs so each unique URL only gets fetched once
+
+  QMap<QString, QStringList> urls;
+
+  for(QStringList::Iterator it = variants.begin(); it != variants.end(); it++)
+  {
+    QString url = p->downloadUrlVariant((*it)).url();
+    if(!urls.contains(url))
+    {
+      urls[url] = QStringList();
+    }
+    urls[url] << (*it);
+
+    it = variants.erase(it);
+  }
+
+  // Now fetch the URLs while keeping the variant list for each attached
+
+  for(QMap<QString, QStringList>::Iterator it = urls.begin(); it != urls.end(); it++)
+  {
+    QString url = it.key();
+    QStringList urlvariants = it.value();
+
+    KIO::TransferJob *variantjob = KIO::get(url);
+    d->m_newproviders[p] = p;
+    d->m_variantjobs[variantjob] = p;
+    d->m_variants[variantjob] = urlvariants;
+    m_data[variantjob] = "";
+
+    connect(variantjob, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));
+    connect(variantjob, SIGNAL(data(KIO::Job*, const QByteArray&)),
+      SLOT(slotData(KIO::Job*, const QByteArray&)));
+  }
+
+  if(variants.count() == 0) return;
+
+  // If not all variants are given, use default URL for those
+
+  kDebug() << "-- reached old downloadurl section; variants left: " << variants.count() << endl;
+
   KIO::TransferJob *job = KIO::get(p->downloadUrl());
 
-  m_jobs[job] = p;
+  d->m_newproviders[p] = p;
+  d->m_variantjobs[job] = p;
+  d->m_variants[job] = variants;
+  //m_jobs[job] = p; // not used anymore due to variants
+  m_data[job] = "";
 
   connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));
   connect(job, SIGNAL(data(KIO::Job*, const QByteArray&)),
     SLOT(slotData(KIO::Job*, const QByteArray&)));
 }
 
+void DownloadDialog::setCategory(const QString &category)
+{
+  m_filter = category;
+}
+
+// DEPRECATED
 void DownloadDialog::setType(const QString &type)
 {
   m_filter = type;
@@ -633,10 +832,10 @@ void DownloadDialog::slotApply()
 {
 }
 
-void DownloadDialog::open(const QString& type, const QString& caption)
+void DownloadDialog::open(const QString& category, const QString& caption)
 {
   DownloadDialog d(0L, 0, caption);
-  d.setType(type);
+  d.setCategory(category);
   d.load();
   d.exec();
 }
@@ -645,5 +844,10 @@ void DownloadDialog::slotFinish()
 {
   showPage(1);
   //updateBackground();
+}
+
+QList<Entry*> DownloadDialog::installedEntries()
+{
+  return d->m_installlist;
 }
 

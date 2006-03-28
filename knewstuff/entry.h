@@ -1,5 +1,5 @@
 /*
-    This file is part of KOrganizer.
+    This file is part of KNewStuff.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -58,26 +58,26 @@ class KDE_EXPORT Entry
     /**
      * Sets the (unique) name for this data object.
      */
-    void setName( const QString & );
+    void setName( const QString &, const QString &lang = QString() );
 
     /**
      * Retrieve the name of the data object.
      *
      * @return object name
      */
-    QString name() const;
+    QString name( const QString &lang = QString() ) const;
 
     /**
-     * Sets the application type, e.g. 'kdesktop/wallpaper'.
+     * Sets the data category, e.g. 'kdesktop/wallpaper'.
      */
-    void setType( const QString & );
+    void setCategory( const QString & );
 
     /**
-     * Retrieve the type of the data object.
+     * Retrieve the category of the data object.
      *
-     * @return object type
+     * @return object category
      */
-    QString type() const;
+    QString category() const;
 
     /**
      * Sets the full name of the object's author.
@@ -92,9 +92,21 @@ class KDE_EXPORT Entry
     QString author() const;
 
     /**
+     * Sets the email address of the object's author.
+     */
+    void setAuthorEmail( const QString & );
+
+    /**
+     * Retrieve the author's email address of the object.
+     *
+     * @return object author email address
+     */
+    QString authorEmail() const;
+
+    /**
      * Sets the license (abbreviation) applicable to the object.
      */
-    void setLicence( const QString & );
+    void setLicense( const QString & );
 
     /**
      * Retrieve the license name of the object.
@@ -231,16 +243,22 @@ class KDE_EXPORT Entry
      */
     QDomElement createDomElement( QDomDocument &, QDomElement &parent );
 
+    /**
+     * @internal
+     */
+    void setCompatibility( bool compatibility );
+
   protected:
     QDomElement addElement( QDomDocument &doc, QDomElement &parent,
                             const QString &tag, const QString &value );
 
   private:
-    QString mName;
-    QString mType;
+    QMap<QString,QString> mNameMap;
+    QString mCategory;
     QString mAuthor;
-    QString mLicence;
+    QString mLicense;
     QMap<QString,QString> mSummaryMap;
+    QString mChangelog;
     QString mVersion;
     int mRelease;
     QDate mReleaseDate;
@@ -248,6 +266,7 @@ class KDE_EXPORT Entry
     QMap<QString,KUrl> mPreviewMap;
     int mRating;
     int mDownloads;
+    bool mCompatibility;
 
     QStringList mLangs;
 };

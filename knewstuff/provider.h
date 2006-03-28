@@ -1,5 +1,5 @@
 /*
-    This file is part of KOrganizer.
+    This file is part of KNewStuff.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -84,6 +84,14 @@ class KNEWSTUFF_EXPORT Provider
      * @return download URL
      */
     KUrl downloadUrl() const;
+
+    /**
+     * Variant to retrieve 'tagged' download URLs.
+     * Variant can be one of 'score', 'downloads', 'latest'.
+     *
+     * @return download specific URL
+     */
+    KUrl downloadUrlVariant( QString variant ) const;
 
     /**
      * Sets the upload URL.
@@ -172,14 +180,14 @@ class KNEWSTUFF_EXPORT ProviderLoader : public QObject
 	~ProviderLoader();
     /**
      * Starts asynchronously loading the list of providers of the
-     * specified type.
+     * specified category.
      *
-     * @param type data type such as 'kdesktop/wallpaper'.
+     * @param category data type such as 'kdesktop/wallpaper'.
      * @param providerList the URl to the list of providers; if empty
      *    we first try the ProvidersUrl from KGlobal::config, then we
      *    fall back to a hardcoded value.
      */
-    void load( const QString &type, const QString &providerList = QString() );
+    void load( const QString &category, const QString &providerList = QString() );
 
   Q_SIGNALS:
     /**

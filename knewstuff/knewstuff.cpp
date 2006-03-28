@@ -1,5 +1,5 @@
 /*
-    This file is part of KOrganizer.
+    This file is part of KNewStuff.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -52,7 +52,7 @@ KNewStuff::KNewStuff( const QString &type, const QString &providerList, QWidget 
 
 QString KNewStuff::type() const
 {
-  return mEngine->type();
+  return mEngine->category();
 }
 
 QWidget *KNewStuff::parentWidget() const

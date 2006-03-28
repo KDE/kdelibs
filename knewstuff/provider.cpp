@@ -1,5 +1,5 @@
 /*
-    This file is part of KOrganizer.
+    This file is part of KNewStuff.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -25,10 +25,61 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 
+#include <qhash.h>
+#include <qcoreapplication.h>
+
 #include "provider.h"
 #include "provider.moc"
 
 using namespace KNS;
+
+// BCI for KDE 3.5 only
+class ProviderPrivate
+{
+  public:
+  ProviderPrivate(){}
+  KUrl mDownloadUrlLatest;
+  KUrl mDownloadUrlScore;
+  KUrl mDownloadUrlDownloads;
+};
+
+static QHash<void*, ProviderPrivate*> *d_ptr_prov = 0;
+
+static void cleanup_d_ptr_prov()
+{
+  delete d_ptr_prov;
+  d_ptr_prov = 0; // not in BIC guide - add there
+}
+
+static ProviderPrivate *d_prov(const Provider *p)
+{
+  if(!d_ptr_prov)
+  {
+    d_ptr_prov = new QHash<void*, ProviderPrivate*>();
+    qAddPostRoutine(cleanup_d_ptr_prov);
+  }
+  ProviderPrivate *ret = d_ptr_prov->value((void*)p);
+  if(!ret)
+  {
+    ret = new ProviderPrivate();
+    d_ptr_prov->insert((void*)p, ret);
+  }
+  return ret;
+}
+
+KUrl Provider::downloadUrlVariant( QString variant ) const
+{
+  if((variant == "latest") && (d_prov(this)->mDownloadUrlLatest.isValid()))
+    return d_prov(this)->mDownloadUrlLatest;
+  if((variant == "score") && (d_prov(this)->mDownloadUrlScore.isValid()))
+    return d_prov(this)->mDownloadUrlScore;
+  if((variant == "downloads") && (d_prov(this)->mDownloadUrlDownloads.isValid()))
+    return d_prov(this)->mDownloadUrlDownloads;
+
+  return mDownloadUrl;
+}
+
+// BCI part ends here
 
 Provider::Provider() : mNoUpload( false )
 {
@@ -118,6 +169,10 @@ void Provider::parseDomElement( const QDomElement &element )
   setUploadUrl( KUrl( element.attribute("uploadurl") ) );
   setNoUploadUrl( KUrl( element.attribute("nouploadurl") ) );
 
+  d_prov(this)->mDownloadUrlLatest = KUrl( element.attribute("downloadurl-latest") );
+  d_prov(this)->mDownloadUrlScore = KUrl( element.attribute("downloadurl-score") );
+  d_prov(this)->mDownloadUrlDownloads = KUrl( element.attribute("downloadurl-downloads") );
+
   KUrl iconurl( element.attribute("icon") );
   if(!iconurl.isValid()) iconurl.setPath( element.attribute("icon") );
   setIcon( iconurl );
@@ -156,7 +211,7 @@ ProviderLoader::~ProviderLoader()
 		mProviders.clear();
 }
 
-void ProviderLoader::load( const QString &type, const QString &providersList )
+void ProviderLoader::load( const QString &category, const QString &providersList )
 {
   kDebug(5850) << "ProviderLoader::load()" << endl;
 
@@ -175,12 +230,12 @@ void ProviderLoader::load( const QString &type, const QString &providersList )
     QString server = cfg->readEntry( "MasterServer",
                                      "http://korganizer.kde.org" );
   
-    providersUrl = server + "/knewstuff/" + type + "/providers.xml";
+    providersUrl = server + "/knewstuff/" + category + "/providers.xml";
   }
 
   kDebug(5850) << "ProviderLoader::load(): providersUrl: " << providersUrl << endl;
   
-  KIO::TransferJob *job = KIO::get( KUrl( providersUrl ) );
+  KIO::TransferJob *job = KIO::get( KUrl( providersUrl ), false, false );
   connect( job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotJobResult( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),

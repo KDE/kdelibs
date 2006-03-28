@@ -1,4 +1,5 @@
 /*
+    This file is part of KNewStuff.
     Copyright (c) 2004 Aaron J. Seigo <aseigo@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -82,7 +83,7 @@ void Button::showDialog()
         m_downloadDialog = new DownloadDialog(0, this);
     }
 
-    m_downloadDialog->setType(m_type);
+    m_downloadDialog->setCategory(m_type);
     m_downloadDialog->load(m_providerList);
 
     m_downloadDialog->exec(); // TODO: make non-modal?

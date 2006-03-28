@@ -1,5 +1,5 @@
 /*
-    This file is part of KOrganizer.
+    This file is part of KNewStuff.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -20,19 +20,68 @@
 
 #include "entry.h"
 
+#include <qhash.h>
+#include <qcoreapplication.h>
+
 #include <kglobal.h>
 #include <klocale.h>
 
 using namespace KNS;
 
+// BCI for KDE 3.5 only
+
+class EntryPrivate
+{
+  public:
+  EntryPrivate(){}
+  QString mEmail;
+};
+
+static QHash<void*, EntryPrivate*> *d_ptr = 0;
+
+static void cleanup_d_ptr()
+{
+  delete d_ptr;
+  d_ptr = 0; // not in BIC guide - add there
+}
+
+static EntryPrivate *d(const Entry *e)
+{
+  if(!d_ptr)
+  {
+    d_ptr = new QHash<void*, EntryPrivate*>();
+    qAddPostRoutine(cleanup_d_ptr);
+  }
+  EntryPrivate *ret = d_ptr->value((void*)e);
+  if(!ret)
+  {
+    ret = new EntryPrivate();
+    d_ptr->insert((void*)e, ret);
+  }
+  return ret;
+}
+
+QString Entry::authorEmail() const
+{
+  return d(this)->mEmail;
+}
+
+void Entry::setAuthorEmail( const QString& email )
+{
+  d(this)->mEmail = email;
+}
+
+// BCI part ends here
+
 Entry::Entry() :
   mRelease( 0 ), mReleaseDate( QDate::currentDate() ), mRating( 0 ),
-  mDownloads( 0 )
+  mDownloads( 0 ), mCompatibility( false )
 {
 }
 
 Entry::Entry( const QDomElement &e ) :
-  mRelease( 0 ), mRating( 0 ), mDownloads( 0 )
+  mRelease( 0 ), mReleaseDate( QDate::currentDate() ), mRating( 0 ),
+  mDownloads( 0 ), mCompatibility( false )
 {
   parseDomElement( e );
 }
@@ -42,25 +91,37 @@ Entry::~Entry()
 }
 
 
-void Entry::setName( const QString &name )
+void Entry::setName( const QString &name, const QString &lang )
 {
-  mName = name;
+  mNameMap.insert( lang, name );
+
+  if ( !mLangs.contains( lang ) )
+    mLangs.append( lang );
 }
 
-QString Entry::name() const
+QString Entry::name( const QString &lang ) const
 {
-  return mName;
+  if ( mNameMap.isEmpty() ) return QString();
+
+  if ( !mNameMap[ lang ].isEmpty() ) return mNameMap[ lang ];
+  else {
+    QStringList langs = KGlobal::locale()->languageList();
+    for(QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
+      if( !mNameMap[ *it ].isEmpty() ) return mNameMap[ *it ];
+  }
+  if ( !mNameMap[ QString() ].isEmpty() ) return mNameMap[ QString() ];
+  else return *(mNameMap.begin());
 }
 
 
-void Entry::setType( const QString &type )
+void Entry::setCategory( const QString &category )
 {
-  mType = type;
+  mCategory = category;
 }
 
-QString Entry::type() const
+QString Entry::category() const
 {
-  return mType;
+  return mCategory;
 }
 
 
@@ -75,14 +136,14 @@ QString Entry::author() const
 }
 
 
-void Entry::setLicence( const QString &license )
+void Entry::setLicense( const QString &license )
 {
-  mLicence = license;
+  mLicense = license;
 }
 
 QString Entry::license() const
 {
-  return mLicence;
+  return mLicense;
 }
 
 
@@ -224,14 +285,28 @@ QStringList Entry::langs()
 void Entry::parseDomElement( const QDomElement &element )
 {
   if ( element.tagName() != "stuff" ) return;
-  mType = element.attribute("type");
+  mCategory = element.attribute("category");
+  if ( mCategory.isEmpty()) {
+    mCategory = element.attribute("type");
+    if ( !mCategory.isEmpty()) {
+      mCompatibility = true;
+    }
+  }
 
   QDomNode n;
   for( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
     QDomElement e = n.toElement();
-    if ( e.tagName() == "name" ) setName( e.text().trimmed() );
-    if ( e.tagName() == "author" ) setAuthor( e.text().trimmed() );
-    if ( e.tagName() == "licence" ) setLicence( e.text().trimmed() );
+    if ( e.tagName() == "name" ) {
+      QString lang = e.attribute( "lang" );
+      setName( e.text().trimmed(), lang );
+    }
+    if ( e.tagName() == "author" ) {
+      setAuthor( e.text().trimmed() );
+      QString email = e.attribute( "email" );
+      setAuthorEmail( email );
+    }
+    if ( e.tagName() == "email" ) setAuthorEmail( e.text().trimmed() ); /* kde-look; change on server! */
+    if ( e.tagName() == "licence" ) setLicense( e.text().trimmed() );
     if ( e.tagName() == "summary" ) {
       QString lang = e.attribute( "lang" );
       setSummary( e.text().trimmed(), lang );
@@ -256,13 +331,14 @@ void Entry::parseDomElement( const QDomElement &element )
 }
 
 QDomElement Entry::createDomElement( QDomDocument &doc,
-                                              QDomElement &parent )
+                                     QDomElement &parent )
 {
   QDomElement entry = doc.createElement( "stuff" );
-  entry.setAttribute("type", mType);
   parent.appendChild( entry );
 
-  addElement( doc, entry, "name", name() );
+  if (mCompatibility) entry.setAttribute("type", mCategory);
+  else entry.setAttribute("category", mCategory);
+
   addElement( doc, entry, "author", author() );
   addElement( doc, entry, "licence", license() );
   addElement( doc, entry, "version", version() );
@@ -275,8 +351,11 @@ QDomElement Entry::createDomElement( QDomDocument &doc,
 
   QStringList ls = langs();
   QStringList::ConstIterator it;
+  QDomElement e;
   for( it = ls.begin(); it != ls.end(); ++it ) {
-    QDomElement e = addElement( doc, entry, "summary", summary( *it ) );
+    e = addElement( doc, entry, "name", name( *it ) );
+    e.setAttribute( "lang", *it );
+    e = addElement( doc, entry, "summary", summary( *it ) );
     e.setAttribute( "lang", *it );
     e = addElement( doc, entry, "preview", preview( *it ).url() );
     e.setAttribute( "lang", *it );
