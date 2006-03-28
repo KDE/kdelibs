@@ -155,6 +155,10 @@ void KHostName::changeX()
          continue;
 
       QCString newNetId = newName+netId.mid(i);
+      QCString oldNetId = netId.left(i);
+
+      if(oldNetId != oldName)
+         continue;
 
       cmd = "xauth remove "+KProcess::quote(netId);
       system(QFile::encodeName(cmd));
