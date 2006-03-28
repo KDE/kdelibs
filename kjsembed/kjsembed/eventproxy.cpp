@@ -100,8 +100,11 @@ void EventProxy::callHandler( QEvent *e )
 
     if ( !fun->implementsCall() )
     {
-        QString msg = i18n( "Bad event handler: Object %1 Identifier %2 Method %3 Type: %4." ,
-                         jsobj->className().ascii(), id.ascii(), fun->className().ascii(), e->type());
+    QString msg = i18n( "Bad event handler: Object %1 Identifier %2 Method %3 Type: %4.")
+		    .arg(jsobj->className().ascii())
+		    .arg(id.ascii())
+		    .arg(fun->className().ascii())
+		    .arg(e->type());
         throwError(exec, KJS::GeneralError, msg);
 //        throwError(exec, msg, KJS::TypeError );
         return;

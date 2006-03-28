@@ -303,7 +303,9 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
 
     if ( types.size() <= idx )
     {
-        KJS::throwError(exec, KJS::GeneralError, i18n("The slot sked for %1 arguments but there are only %2 arguments available.", idx, types.size()));
+	    KJS::throwError(exec, KJS::GeneralError, i18n("The slot sked for %1 arguments but there are only %2 arguments available.")
+	                    .arg(idx)
+	                    .arg( types.size()));
 //        KJSEmbed::throwError(exec,
 //                i18n("The slot asked for %1 arguments but there are only are %2 arguments available.")
 //                        .arg(idx)
@@ -349,7 +351,9 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             break;
     }
     qDebug("Cast failure %s value Type %d", types[idx].constData(), args[idx]->type() );
-    KJS::throwError(exec, KJS::GeneralError, i18n("Cast failure %1 value Type %2", types[idx].constData(), args[idx]->type()));
+	KJS::throwError(exec, KJS::GeneralError, i18n("Cast failure %1 value Type %2")
+	                .arg(types[idx].constData() )
+	                .arg(args[idx]->type()) );
     //KJSEmbed::throwError(exec,
     //        i18n("Cast failure %1 value Type %2")
     //                .arg(types[idx].constData())
@@ -408,7 +412,7 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
 
     if( !success )
     {
-        KJS::throwError(exec, KJS::GeneralError, i18n("Call to '%1' failed.", m_memberName.constData()));
+        KJS::throwError(exec, KJS::GeneralError, i18n("Call to '%1' failed.").arg( m_memberName.constData()));
         // KJSEmbed::throwError(exec, i18n("Call to '%1' failed.").arg(m_memberName.constData()));
     }
     return KJS::Boolean(success);
