@@ -100,14 +100,14 @@ void KAutostartTest::testStartphase()
 void KAutostartTest::testStartName()
 {
     KAutostart autostart("panel");
-    QCOMPARE(autostart.name(), QString("KDE Panel"));
+    QCOMPARE(autostart.visibleName(), QString("KDE Panel"));
 }
 
 void KAutostartTest::testServiceRegistered()
 {
     KAutostart autostart;
-    QCOMPARE(KAutostart::serviceRegistered("panel"), true);
-    QCOMPARE(KAutostart::serviceRegistered("doesnotexist"), false);
+    QCOMPARE(KAutostart::isServiceRegistered("panel"), true);
+    QCOMPARE(KAutostart::isServiceRegistered("doesnotexist"), false);
 }
 
 void KAutostartTest::testRegisteringAndManipulatingANewService()
@@ -119,7 +119,7 @@ void KAutostartTest::testRegisteringAndManipulatingANewService()
         QCOMPARE(autostart.autostarts(), false);
         autostart.setCommand("aseigo");
         autostart.setCommandToCheck("/bin/ls");
-        autostart.setName("doesnotexisttest");
+        autostart.setVisibleName("doesnotexisttest");
         autostart.setStartPhase(KAutostart::BaseDesktop);
         autostart.setAllowedEnvironments(QStringList("KDE"));
         autostart.addToAllowedEnvironments("XFCE");
@@ -145,7 +145,7 @@ void KAutostartTest::testRegisteringAndManipulatingANewService()
         QCOMPARE(autostart.autostarts("GNOME"), false);
         QCOMPARE(autostart.autostarts("XFCE"), true);
         QCOMPARE(autostart.autostarts("XFCE", KAutostart::CheckCommand), true);
-        QCOMPARE(autostart.name(), QString("doesnotexisttest"));
+        QCOMPARE(autostart.visibleName(), QString("doesnotexisttest"));
         QCOMPARE(autostart.commandToCheck(), QString("/bin/ls"));
         QCOMPARE((int)autostart.startPhase(), (int)KAutostart::BaseDesktop);
         QCOMPARE(autostart.allowedEnvironments(), allowedEnvs);
