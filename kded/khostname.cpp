@@ -154,6 +154,10 @@ void KHostName::changeX()
          continue;
 
       QByteArray newNetId = newName+netId.mid(i);
+      QByteArray oldNetId = netId.left(i);
+
+      if (oldNetId != oldName)
+	continue;
 
       cmd = "xauth remove "+KProcess::quote(netId);
       system(QFile::encodeName(cmd));
@@ -356,9 +360,7 @@ int main(int argc, char **argv)
 
    KHostName hn;
 
-   if(!getenv("XAUTHLOCALHOSTNAME"))
-       hn.changeX();
-
+   hn.changeX();
    hn.changeDcop();
    hn.changeStdDirs("socket");
    hn.changeStdDirs("tmp");
