@@ -923,16 +923,16 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
                 QBitmap bm( 16, 16 );
                 bm.clear();
                 QPainter painter( &mask );
-                painter.drawImage( QRectF( 16, 0, bm.width(), bm.height() ), bm.toImage(), bm.rect() );
-                painter.drawImage( QRectF( 16, 32, bm.width(), bm.height() ), bm.toImage(), bm.rect() );
+                painter.drawPixmap( QRectF( 16, 0, bm.width(), bm.height() ), bm, bm.rect() );
+                painter.drawPixmap( QRectF( 16, 32, bm.width(), bm.height() ), bm, bm.rect() );
                 d->m_mouseScrollIndicator->setCursor( Qt::SizeHorCursor );
             }
             else if ( !hasHorBar && hasVerBar ) {
                 QBitmap bm( 16, 16 );
                 bm.clear();
                 QPainter painter( &mask );
-                painter.drawImage( QRectF( 0, 16, bm.width(), bm.height() ), bm.toImage(), bm.rect() );
-                painter.drawImage( QRectF( 32, 16, bm.width(), bm.height() ), bm.toImage(), bm.rect() );
+                painter.drawPixmap( QRectF( 0, 16, bm.width(), bm.height() ), bm, bm.rect() );
+                painter.drawPixmap( QRectF( 32, 16, bm.width(), bm.height() ), bm, bm.rect() );
                 d->m_mouseScrollIndicator->setCursor( Qt::SizeVerCursor );
             }
             else
