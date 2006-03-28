@@ -37,7 +37,7 @@
  * already added to a KPlotObject will be invalid.
  *
  * @author Jason Harris
- * @version 1.0
+ * @version 1.1
  */
 class KDE_EXPORT KPlotObject{
 public:

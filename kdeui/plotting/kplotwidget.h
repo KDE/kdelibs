@@ -29,20 +29,46 @@ class KPlotAxis;
 class KPlotObject;
 
 /**
- * @class KPlotWidget
+ *@class KPlotWidget
  *
- * @short Generic data plotting widget.
+ *@short Generic data plotting widget.
  *
- * Widget for drawing plots. Includes adjustable axes (KPlotAxis) with
- * tickmarks and labels and a list of KPlotObjects to be drawn.
+ *Widget for drawing plots. The basic idea behind KPlotWidget is that 
+ *you don't have to worry about any transformation from your data's 
+ *natural units to screen pixel coordinates; this is handled internally
+ *by the widget.  
  *
- * @note KPlotWidget will take care of the objects added to it, so when
- * clearing the objects list (eg with clearObjectList()) any previous reference
- * to a KPlotObject already added to a KPlotWidget will be invalid
+ *Data to be plotted are represented by one or more instances of 
+ *KPlotObject.  KPlotObject contains a list of QPointFs to be plotted 
+ *(again, in the data's natural units), as well as information about how 
+ *the data are to be rendered in the plot (i.e., as separate points or 
+ *connected by lines?  With what color and point style? etc).  See 
+ *KPlotObject for more information.
  *
- * @author Jason Harris
+ *KPlotWidget automatically adds axis labels with tickmarks and tick 
+ *labels.  These are encapsulated in the KPlotAxis class.  All you have 
+ *to do is set the limits of the plotting area in data units, and 
+ *KPlotWidget wil figure out the optimal positions and labels for the 
+ *tickmarks on the axes.
  *
- * @version 1.1
+ *Example of usage:
+ *
+ *  KPlotWidget *kpw = new KPlotWidget( 0.0, 1.0, 0.0, 1.0, this );
+ *  KPlotObject *kpo = new KPlotObject( "parabola", QColor(Qt::red), KPlotObject::CURVE );
+ *
+ *  //Add points to kpo:
+ *  for ( float x=0.0; x<=1.0; x+=0.1 )
+ *    kpo->addPoint( QPointF( x, x*x ) );
+ *    
+ *  kpw->addObject( kpo );
+ *  update();
+ *
+ *@note KPlotWidget will take care of the objects added to it, so when
+ *clearing the objects list (eg with clearObjectList()) any previous 
+ *reference to a KPlotObject already added to a KPlotWidget will be invalid.
+ *
+ *@author Jason Harris
+ *@version 1.1
  */
 class KDE_EXPORT KPlotWidget : public QFrame {
 	Q_OBJECT
@@ -74,7 +100,7 @@ public:
 	virtual ~KPlotWidget();
 
 	/**
-	 * The kinds of axes we have
+	 *@enum Axis The kinds of axes we have
 	 */
 	enum Axis
 	{
@@ -82,6 +108,10 @@ public:
 		BottomAxis
 	};
 
+	/**
+	 *@return suggested size for widget
+	 *@note Currently just returns QSize(150,150)
+	 */
 	virtual QSize minimumSizeHint() const;
 
 	/**
@@ -150,7 +180,7 @@ public:
 	/**
 	 * @return the number of KPlotObjects in the list
 	 */
-	int objectCount() const { return ObjectList.count(); }
+	int objectCount() const { return ObjectList.size(); }
 
 	/**
 	 * @return a pointer to a specific KPlotObject in the list
@@ -219,25 +249,25 @@ public:
 	bool areObjectToolTipsShown() const { return ShowObjectToolTips; }
 
 	/**
-	 * @returns the number of pixels to the left of the plot area.
+	 * @return the number of pixels to the left of the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
 	virtual int leftPadding() const;
 	/**
-	 * @returns the number of pixels to the right of the plot area.
+	 * @return the number of pixels to the right of the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
 	virtual int rightPadding() const;
 	/**
-	 * @returns the number of pixels above the plot area.
+	 * @return the number of pixels above the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
 	virtual int topPadding() const;
 	/**
-	 * @returns the number of pixels below the plot area.
+	 * @return the number of pixels below the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
