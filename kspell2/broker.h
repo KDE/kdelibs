@@ -106,6 +106,11 @@ namespace KSpell2
         QStringList languages() const;
 
         /**
+         * Returns a localized list of names of supported languages.
+         */
+        QStringList languagesName() const;
+
+        /**
          * Returns the Settings object used by the broker.
          */
         Settings *settings() const;
@@ -123,6 +128,7 @@ namespace KSpell2
         Broker( KSharedConfig *config );
         void loadPlugins();
         void loadPlugin( const QString& );
+        mutable QStringList languagesNameCache;
     private:
         class Private;
         Private* const d;

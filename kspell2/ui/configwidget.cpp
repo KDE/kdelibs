@@ -58,10 +58,9 @@ void ConfigWidget::init( Broker *broker )
     QVBoxLayout *layout = new QVBoxLayout( this, 0, 0, "KSpell2ConfigUILayout");
     d->ui = new KSpell2ConfigUI( this );
 
-    QStringList langs = d->broker->languages();
     //QStringList clients = d->broker->clients();
-    d->ui->m_langCombo->insertItems(d->ui->m_langCombo->count(), langs );
-    setCorrectLanguage( langs );
+    d->ui->m_langCombo->insertItems( 0, d->broker->languagesName() );
+    setCorrectLanguage( d->broker->languages() );
     //d->ui->m_clientCombo->insertStringList( clients );
     d->ui->m_skipUpperCB->setChecked( !d->broker->settings()->checkUppercase() );
     d->ui->m_skipRunTogetherCB->setChecked( d->broker->settings()->skipRunTogether() );
@@ -84,7 +83,9 @@ void KSpell2::ConfigWidget::save()
 void ConfigWidget::setFromGUI()
 {
     d->broker->settings()->setDefaultLanguage(
-        d->ui->m_langCombo->currentText() );
+        d->broker->languages()[
+            d->broker->languagesName().findIndex( 
+                d->ui->m_langCombo->currentText() ) ] );
     d->broker->settings()->setCheckUppercase(
         !d->ui->m_skipUpperCB->isChecked() );
     d->broker->settings()->setSkipRunTogether(

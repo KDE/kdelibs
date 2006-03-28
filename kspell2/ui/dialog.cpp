@@ -117,14 +117,9 @@ void Dialog::initGui()
     d->ui = new KSpell2UI( this );
     d->ui->m_suggestions->setSorting( NONSORTINGCOLUMN );
     d->ui->m_language->clear();
-    d->ui->m_language->insertItems( d->ui->m_language->count(), d->checker->broker()->languages() );
-    for ( int i = 0; !d->ui->m_language->itemText( i ).isNull(); ++i ) {
-        QString ct = d->ui->m_language->itemText( i );
-        if ( ct == d->checker->broker()->settings()->defaultLanguage() ) {
-            d->ui->m_language->setCurrentIndex( i );
-            break;
-        }
-    }
+    d->ui->m_language->insertItems( 0, d->checker->broker()->languagesName() );
+    d->ui->m_language->setCurrentIndex( d->checker->broker()->languages().findIndex(
+                                 d->checker->broker()->settings()->defaultLanguage() ) );
 }
 
 void Dialog::activeAutoCorrect( bool _active )
@@ -238,7 +233,9 @@ void Dialog::slotSuggest()
 
 void Dialog::slotChangeLanguage( const QString& lang )
 {
-    d->checker->changeLanguage( lang );
+    d->checker->changeLanguage(
+        d->checker->broker()->languages()[
+            d->checker->broker()->languagesName().findIndex( lang ) ] );
     slotSuggest();
 }
 
