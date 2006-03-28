@@ -66,6 +66,8 @@ void Connection::suspend()
     m_suspended = true;
     if (notifier)
        notifier->setEnabled(false);
+    if (socket && receiver)
+       QObject::disconnect(socket, SIGNAL(readyRead()), receiver, member);
 }
 
 void Connection::resume()
@@ -73,6 +75,8 @@ void Connection::resume()
     m_suspended = false;
     if (notifier)
        notifier->setEnabled(true);
+    if (socket && receiver)
+       QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
 }
 
 void Connection::close()
@@ -136,8 +140,9 @@ void Connection::init(KNetwork::KStreamSocket *sock)
         notifier = 0L;
 	if ( m_suspended ) {
             suspend();
+	} else {
+            QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
 	}
-	QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
     }
     dequeue();
 }
