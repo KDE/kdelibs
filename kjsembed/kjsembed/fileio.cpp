@@ -65,7 +65,7 @@ START_STATIC_OBJECT_METHOD( callOpenFile )
     }
     delete file;
 //    KJSEmbed::throwError(exec,i18n("Could not open file '%1'").arg(KJSEmbed::extractQString( exec, args, 0)));
-    KJS::throwError(exec, KJS::GeneralError, i18n("Could not open file '%1'", KJSEmbed::extractQString( exec, args, 0)));
+KJS::throwError(exec, KJS::GeneralError, i18n("Could not open file '%1'").arg( KJSEmbed::extractQString( exec, args, 0)));
     return KJS::Null();
 END_STATIC_OBJECT_METHOD
 
