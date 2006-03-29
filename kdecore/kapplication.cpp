@@ -746,7 +746,7 @@ static int my_system (const char *command) {
    if (pid == 0) {
       const char* shell = "/bin/sh";
       execl(shell, shell, "-c", command, (void *)0);
-      ::exit(127);
+      ::_exit(127);
    }
    do {
       if (waitpid(pid, &status, 0) == -1) {

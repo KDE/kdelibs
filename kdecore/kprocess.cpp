@@ -311,8 +311,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
   if (pipe(fd))
      fd[0] = fd[1] = -1; // Pipe failed.. continue
 
-  QApplication::flush();
-
   // we don't use vfork() because
   // - it has unclear semantics and is not standardized
   // - we do way too much magic in the child
