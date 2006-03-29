@@ -116,7 +116,8 @@ void SMTP::setMessageHeader(const QString &header)
 void SMTP::openConnection(void)
 {
     kDebug() << "started connect timer" << endl;
-    connectTimer.start(100, true);
+    connectTimer.setSingleShot(true);
+    connectTimer.start(100);
 }
 
 void SMTP::closeConnection(void)
@@ -137,7 +138,8 @@ void SMTP::sendMessage(void)
     }
     if(connected){
         kDebug() << "enabling read on sock...\n" << endl;
-        interactTimer.start(timeOut, true);
+        interactTimer.setSingleShot(true);
+        interactTimer.start(timeOut);
         sock->enableRead(true);
     }
 }
@@ -219,8 +221,10 @@ void SMTP::socketReadyToRead()
     lastLine = lineBuffer.left(nl);
     lineBuffer = lineBuffer.right(lineBuffer.length() - nl - 1);
     processLine(&lastLine);
-    if(connected)
-        interactTimer.start(timeOut, true);
+    if(connected) {
+        interactTimer.setSingleShot(true);
+        interactTimer.start(timeOut);
+    }
 }
 
 void SMTP::socketClosed()

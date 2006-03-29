@@ -291,8 +291,8 @@ QString KBookmarkBar::handleToolbarDragMoveEvent(
     p->m_sepToolBar = tb;
     p->m_sepToolBar->removeAction(m_toolBarSeparator);
 
-    int index;
-    QWidget* b;
+    int index = 0;
+    QWidget* b = 0;
 
     for (int i = 0; i < tb->actions().count(); ++i)
       if (QWidget* button = tb->widgetForAction(tb->actions()[i]))

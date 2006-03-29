@@ -59,20 +59,17 @@ public:
         dropItem = 0;
 
         noArrangement = false;
-	ignoreMaximumSize = false;
-	smallColumns = new KAction( i18n("Small Icons"), 0, parent,
-					 SLOT( slotSmallColumns() ),
-					 parent->actionCollection(),
-					 "small columns" );
+        ignoreMaximumSize = false;
+        smallColumns = new KAction( i18n("Small Icons"), parent->actionCollection(), "small columns" );
+        connect( smallColumns, SIGNAL( triggered( bool ) ), parent, SLOT( slotSmallColumns() ) );
 
-	largeRows = new KAction( i18n("Large Icons"), 0, parent,
-				      SLOT( slotLargeRows() ),
-				      parent->actionCollection(),
-				      "large rows" );
+        largeRows = new KAction( i18n("Large Icons"), parent->actionCollection(), "large rows" );
+        connect( largeRows, SIGNAL( triggered( bool ) ), parent, SLOT( slotLargeRows() ) );
 
-    QActionGroup* sizeGroup = new QActionGroup(parent);
-	smallColumns->setActionGroup(sizeGroup);
-	largeRows->setActionGroup(sizeGroup);
+
+        QActionGroup* sizeGroup = new QActionGroup(parent);
+        smallColumns->setActionGroup(sizeGroup);
+        largeRows->setActionGroup(sizeGroup);
 
         previews = new KToggleAction( i18n("Thumbnail Previews"),
                                       parent->actionCollection(),
@@ -253,7 +250,7 @@ void KFileIconView::keyPressEvent( QKeyEvent *e )
     K3IconView::keyPressEvent( e );
 
     // ignore Ctrl-Return so that the dialog can catch it.
-    if ( (e->state() & Qt::ControlModifier) &&
+    if ( (e->modifiers() & Qt::ControlModifier) &&
          (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) )
         e->ignore();
 }
@@ -796,9 +793,9 @@ bool KFileIconView::acceptDrag(QDropEvent* e) const
 {
     return KUrl::List::canDecode( e->mimeData() ) &&
        (e->source()!=const_cast<KFileIconView*>(this)) &&
-       ( e->action() == QDropEvent::Copy
-      || e->action() == QDropEvent::Move
-      || e->action() == QDropEvent::Link );
+       ( e->dropAction() == Qt::CopyAction
+      || e->dropAction() == Qt::MoveAction
+      || e->dropAction() == Qt::LinkAction );
 }
 
 void KFileIconView::contentsDragEnterEvent( QDragEnterEvent *e )
@@ -807,7 +804,7 @@ void KFileIconView::contentsDragEnterEvent( QDragEnterEvent *e )
         e->ignore();            // No
         return;
     }
-    e->acceptAction();     // Yes
+    e->acceptProposedAction();     // Yes
 
     if ((dropOptions() & AutoOpenDirs) == 0)
        return;
@@ -830,7 +827,7 @@ void KFileIconView::contentsDragMoveEvent( QDragMoveEvent *e )
         e->ignore();            // No
         return;
     }
-    e->acceptAction();     // Yes
+    e->acceptProposedAction();     // Yes
 
     if ((dropOptions() & AutoOpenDirs) == 0)
        return;
@@ -865,7 +862,7 @@ void KFileIconView::contentsDropEvent( QDropEvent *e )
         e->ignore();            // No
         return;
     }
-    e->acceptAction();     // Yes
+    e->acceptProposedAction();     // Yes
 
     KFileIconViewItem *item = dynamic_cast<KFileIconViewItem*>(findItem( contentsToViewport( e->pos() ) ));
     KFileItem * fileItem = 0;

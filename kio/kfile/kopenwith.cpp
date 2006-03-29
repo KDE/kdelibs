@@ -411,7 +411,8 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   label = new QLabel( _text, this );
   topLayout->addWidget(label);
 
-  QHBoxLayout* hbox = new QHBoxLayout(topLayout);
+  QHBoxLayout* hbox = new QHBoxLayout();
+  topLayout->addLayout( hbox );
 
   QToolButton *clearButton = new QToolButton( this );
   clearButton->setIcon( BarIcon( "locationbar_erase" ) );

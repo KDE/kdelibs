@@ -1232,77 +1232,85 @@ void KDirOperator::setupActions()
     myActionCollection = new KActionCollection( this );
     myActionCollection->setObjectName( "KDirOperator::myActionCollection" );
     myActionCollection->setAssociatedWidget( topLevelWidget() );
+
     actionMenu = new KActionMenu( i18n("Menu"), myActionCollection, "popupMenu" );
+
     upAction = KStdAction::up( this, SLOT( cdUp() ), myActionCollection, "up" );
     upAction->setText( i18n("Parent Folder") );
+
     backAction = KStdAction::back( this, SLOT( back() ), myActionCollection, "back" );
+
     forwardAction = KStdAction::forward( this, SLOT(forward()), myActionCollection, "forward" );
+
     homeAction = KStdAction::home( this, SLOT( home() ), myActionCollection, "home" );
     homeAction->setText(i18n("Home Folder"));
+
     reloadAction = KStdAction::redisplay( this, SLOT(rereadDir()), myActionCollection, "reload" );
-    actionSeparator = new KActionSeparator( myActionCollection, "separator" );
-    mkdirAction = new KAction( i18n("New Folder..."), 0,
-                                 this, SLOT( mkdir() ), myActionCollection, "mkdir" );
-    KAction* trash = new KAction( i18n( "Move to Trash" ), "edittrash", Qt::Key_Delete, 0,0,myActionCollection, "trash" );
-    connect( trash, SIGNAL( triggered(bool) ), SLOT( trashSelected() ) );
-    new KAction( i18n( "Delete" ), "editdelete", Qt::SHIFT+Qt::Key_Delete, this,
-                  SLOT( deleteSelected() ), myActionCollection, "delete" );
-    mkdirAction->setIconName( QLatin1String("folder_new") );
     reloadAction->setText( i18n("Reload") );
     reloadAction->setShortcut( KStdAccel::shortcut( KStdAccel::Reload ));
 
+    actionSeparator = new KActionSeparator( myActionCollection, "separator" );
+
+    mkdirAction = new KAction( i18n("New Folder..."), myActionCollection, "mkdir" );
+    mkdirAction->setIconName( QLatin1String("folder_new") );
+    connect( mkdirAction, SIGNAL( triggered( bool ) ), this, SLOT( mkdir() ) );
+
+    KAction* trash = new KAction( i18n( "Move to Trash" ), myActionCollection, "trash" );
+    trash->setIcon( KIcon( "edittrash" ) );
+    trash->setShortcut( Qt::Key_Delete ); 
+    connect( trash, SIGNAL( triggered(bool) ), SLOT( trashSelected() ) );
+
+    KAction* action = new KAction( i18n( "Delete" ), myActionCollection, "delete" );
+    action->setIcon( KIcon( "editdelete" ) );
+    action->setShortcut( Qt::SHIFT+Qt::Key_Delete );
+    connect( action, SIGNAL( triggered( bool ) ), this, SLOT( deleteSelected() ) );
 
     // the sort menu actions
     sortActionMenu = new KActionMenu( i18n("Sorting"), myActionCollection, "sorting menu");
-    byNameAction = new KAction( i18n("By Name"), 0,
-                                     this, SLOT( slotSortByName() ),
-                                     myActionCollection, "by name" );
-    byDateAction = new KAction( i18n("By Date"), 0,
-                                     this, SLOT( slotSortByDate() ),
-                                     myActionCollection, "by date" );
-    bySizeAction = new KAction( i18n("By Size"), 0,
-                                     this, SLOT( slotSortBySize() ),
-                                     myActionCollection, "by size" );
-    reverseAction = new KToggleAction( i18n("Reverse"), 0,
-                                       this, SLOT( slotSortReversed() ),
-                                       myActionCollection, "reversed" );
+
+    byNameAction = new KAction( i18n("By Name"), myActionCollection, "by name" );
+    connect( byNameAction, SIGNAL( triggered( bool ) ), this, SLOT( slotSortByName() ) );
+
+    byDateAction = new KAction( i18n("By Date"), myActionCollection, "by date" );
+    connect( byDateAction, SIGNAL( triggered( bool ) ), this, SLOT( slotSortByDate() ) );
+
+    bySizeAction = new KAction( i18n("By Size"), myActionCollection, "by size" );
+    connect( bySizeAction, SIGNAL( triggered( bool ) ), this, SLOT( slotSortBySize() ) );
+
+    reverseAction = new KToggleAction( i18n("Reverse"), myActionCollection, "reversed" );
+    connect( reverseAction, SIGNAL( triggered( bool ) ), this, SLOT( slotSortReversed() ) );
 
     QActionGroup* sortGroup = new QActionGroup(this);
     byNameAction->setActionGroup(sortGroup);
     byDateAction->setActionGroup(sortGroup);
     bySizeAction->setActionGroup(sortGroup);
 
-
     dirsFirstAction = new KToggleAction( i18n("Folders First"), myActionCollection, "dirs first");
+    connect( dirsFirstAction, SIGNAL( toggled( bool ) ), SLOT( slotToggleDirsFirst() ));
+
     caseInsensitiveAction = new KToggleAction(i18n("Case Insensitive"), myActionCollection, "case insensitive" );
-
-    connect( dirsFirstAction, SIGNAL( toggled( bool ) ),
-             SLOT( slotToggleDirsFirst() ));
-    connect( caseInsensitiveAction, SIGNAL( toggled( bool ) ),
-             SLOT( slotToggleIgnoreCase() ));
-
-
+    connect( caseInsensitiveAction, SIGNAL( toggled( bool ) ), SLOT( slotToggleIgnoreCase() ));
 
     // the view menu actions
     viewActionMenu = new KActionMenu( i18n("&View"), myActionCollection, "view menu" );
-    connect( viewActionMenu->popupMenu(), SIGNAL( aboutToShow() ),
-             SLOT( insertViewDependentActions() ));
+    connect( viewActionMenu->popupMenu(), SIGNAL( aboutToShow() ), SLOT( insertViewDependentActions() ));
 
-    shortAction = new KAction( QLatin1String("view_multicolumn"), i18n("Short View"), myActionCollection, "short view");
+    shortAction = new KAction(i18n("Short View"), myActionCollection, "short view");
+    shortAction->setIcon( KIcon( QLatin1String("view_multicolumn") ) );
+    connect( shortAction, SIGNAL( activated() ), SLOT( slotSimpleView() ));
 
-    detailedAction = new KAction( QLatin1String("view_detailed"), i18n("Detailed View"), myActionCollection, "detailed view");
+    detailedAction = new KAction( i18n("Detailed View"), myActionCollection, "detailed view");
+    detailedAction->setIcon( KIcon( QLatin1String("view_detailed") ) );
+    connect( detailedAction, SIGNAL( activated() ), SLOT( slotDetailedView() ));
 
-    showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), KShortcut(),
-                                          myActionCollection, "show hidden" );
-//    showHiddenAction->setCheckedState( i18n("Hide Hidden Files") );
-    separateDirsAction = new KToggleAction( i18n("Separate Folders"), KShortcut(),
-                                            this,
-                                            SLOT(slotSeparateDirs()),
-                                            myActionCollection, "separate dirs" );
-    KToggleAction *previewAction = new KToggleAction(i18n("Show Preview"),
-                                                     "thumbnail", KShortcut(),
-                                                     myActionCollection,
-                                                     "preview" );
+    showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), myActionCollection, "show hidden" );
+    connect( showHiddenAction, SIGNAL( toggled( bool ) ), SLOT( slotToggleHidden( bool ) ));
+
+    separateDirsAction = new KToggleAction( i18n("Separate Folders"), myActionCollection, "separate dirs" );
+    connect( separateDirsAction, SIGNAL( triggered( bool ) ), this, SLOT(slotSeparateDirs()) );
+
+    KToggleAction *previewAction = new KToggleAction(i18n("Show Preview"), myActionCollection, "preview" );
+    previewAction->setIcon( KIcon( "thumbnail" ) );
     previewAction->setCheckedState(i18n("Hide Preview"));
     connect( previewAction, SIGNAL( toggled( bool )),
              SLOT( togglePreview( bool )));
@@ -1312,15 +1320,9 @@ void KDirOperator::setupActions()
     shortAction->setActionGroup( detailGroup );
     detailedAction->setActionGroup( detailGroup );
 
-    connect( shortAction, SIGNAL( activated() ),
-             SLOT( slotSimpleView() ));
-    connect( detailedAction, SIGNAL( activated() ),
-             SLOT( slotDetailedView() ));
-    connect( showHiddenAction, SIGNAL( toggled( bool ) ),
-             SLOT( slotToggleHidden( bool ) ));
-
-    new KAction( i18n("Properties"), KShortcut(Qt::ALT+Qt::Key_Return), this,
-                 SLOT(slotProperties()), myActionCollection, "properties" );
+    action = new KAction( i18n("Properties"), myActionCollection, "properties" );
+    action->setShortcut( KShortcut(Qt::ALT+Qt::Key_Return) );
+    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(slotProperties()) );
 }
 
 void KDirOperator::setupMenu()

@@ -196,7 +196,8 @@ ProgressItem::ProgressItem( ListProgress* view, Q3ListViewItem *after, QByteArra
   connect ( &m_showTimer, SIGNAL( timeout() ), this, SLOT(slotShowDefaultProgress()) );
 
   if ( showDefault ) {
-    m_showTimer.start( 500, true );
+    m_showTimer.setSingleShot( true );
+    m_showTimer.start( 500 );
   }
 }
 
@@ -440,7 +441,8 @@ void ProgressItem::updateVisibility()
   {
     if ( m_visible && m_defaultProgressVisible )
     {
-      m_showTimer.start(250, true); // Show delayed
+      m_showTimer.setSingleShot(true);
+      m_showTimer.start(250); // Show delayed
     }
     else
     {
@@ -676,7 +678,7 @@ void UIServer::slotShowContextMenu(K3ListView*, Q3ListViewItem* item, const QPoi
       m_contextMenu=new QMenu(this);
       m_idCancelItem = m_contextMenu->insertItem(i18n("Cancel Job"), this, SLOT(slotCancelCurrent()));
 //      m_contextMenu->insertItem(i18n("Toggle Progress"), this, SLOT(slotToggleDefaultProgress()));
-      m_contextMenu->insertSeparator();
+      m_contextMenu->addSeparator();
       m_contextMenu->insertItem(i18n("Settings..."), this, SLOT(slotConfigure()));
    }
    if ( item )

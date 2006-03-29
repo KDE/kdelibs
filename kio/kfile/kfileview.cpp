@@ -248,9 +248,9 @@ sort_by_name:
 }
 #endif
 
-void  KFileView::updateView(bool f)
+void  KFileView::updateView(bool)
 {
-    widget()->repaint(f);
+    widget()->repaint();
 }
 
 void KFileView::updateView(const KFileItem *)

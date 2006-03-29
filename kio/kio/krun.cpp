@@ -642,7 +642,7 @@ static KUrl::List resolveURLs( const KUrl::List& _urls, const KService& _service
     {
       // compat mode: assume KIO if not set and it's a KDE app
       QStringList categories = _service.property("Categories").toStringList();
-      if ( categories.find("KDE") != categories.end() )
+      if ( categories.contains("KDE") )
          supportedProtocols.append( "KIO" );
       else { // if no KDE app, be a bit over-generic
          supportedProtocols.append( "http");

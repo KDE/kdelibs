@@ -112,7 +112,9 @@ public:
   KBookmarkAction(
     const QString& text, const QString& sIconName, const KShortcut& cut,
     KActionCollection* parent, const char* name)
-  : KAction(text, sIconName, cut, 0,0,parent, name) {
+  : KAction(text, parent, name) {
+      setIcon( KIcon( sIconName ) );
+      setShortcut( cut );
   }
 };
 

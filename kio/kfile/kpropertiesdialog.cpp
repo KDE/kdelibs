@@ -925,7 +925,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QPushButton *button = new QPushButton(box);
 
     QIcon iconSet = SmallIconSet(QString::fromLatin1("configure"));
-    QPixmap pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
+    QPixmap pixMap = iconSet.pixmap( d->m_frame->style()->pixelMetric(QStyle::PM_SmallIconSize) );
     button->setIcon( iconSet );
     button->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
     if ( d->mimeType == KMimeType::defaultMimeType() )
@@ -3874,7 +3874,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   addExtensionButton = new QPushButton( QString(), d->m_frame );
   iconSet = SmallIconSet( "back" );
   addExtensionButton->setIcon( iconSet );
-  pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
+  pixMap = iconSet.pixmap( d->m_frame->style()->pixelMetric( QStyle::PM_SmallIconSize ) );
   addExtensionButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   connect( addExtensionButton, SIGNAL( clicked() ),
             SLOT( slotAddExtension() ) );

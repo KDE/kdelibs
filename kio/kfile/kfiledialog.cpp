@@ -869,7 +869,8 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
     KToggleAction *showSidebarAction =
-        new KToggleAction(i18n("Show Quick Access Navigation Panel"), Qt::Key_F9, coll,"toggleSpeedbar");
+        new KToggleAction(i18n("Show Quick Access Navigation Panel"), coll,"toggleSpeedbar");
+    showSidebarAction->setShortcut( Qt::Key_F9 );
     showSidebarAction->setCheckedState(i18n("Hide Quick Access Navigation Panel"));
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );

@@ -81,7 +81,7 @@ void KFileMetaInfoWidget::init(KFileMetaInfoItem item, Mode mode)
             case QVariant::Image :
                 m_widget = new QLabel(this);
                 m_widget->setObjectName(QLatin1String("info image"));
-                static_cast<QLabel*>(m_widget)->setPixmap(QPixmap(m_value.value<QImage>()));
+                static_cast<QLabel*>(m_widget)->setPixmap(QPixmap::fromImage(m_value.value<QImage>()));
                 break;
             case QVariant::Pixmap :
                 m_widget = new QLabel(this);

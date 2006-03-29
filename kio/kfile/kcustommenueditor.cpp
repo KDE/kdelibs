@@ -68,7 +68,7 @@ public:
       if (normal.width() > 16 || normal.height() > 16) {
           QImage tmp = normal.toImage();
           tmp = tmp.scaled(16, 16, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-          normal.convertFromImage(tmp);
+          normal = QPixmap::fromImage(tmp);
       }
       setText(0, serviceName);
       setPixmap(0, normal);

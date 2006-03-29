@@ -505,7 +505,7 @@ void KFileDetailView::keyPressEvent( QKeyEvent *e )
     K3ListView::keyPressEvent( e );
 
     if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) {
-        if ( e->state() & Qt::ControlModifier )
+        if ( e->modifiers() & Qt::ControlModifier )
             e->ignore();
         else
             e->accept();
@@ -576,9 +576,9 @@ bool KFileDetailView::acceptDrag(QDropEvent* e) const
 {
     return KUrl::List::canDecode( e->mimeData() ) &&
        (e->source()!= const_cast<KFileDetailView*>(this)) &&
-       ( e->action() == QDropEvent::Copy
-      || e->action() == QDropEvent::Move
-      || e->action() == QDropEvent::Link );
+       ( e->dropAction() == Qt::CopyAction
+      || e->dropAction() == Qt::MoveAction
+      || e->dropAction() == Qt::LinkAction );
 }
 
 void KFileDetailView::contentsDragEnterEvent( QDragEnterEvent *e )
@@ -587,7 +587,7 @@ void KFileDetailView::contentsDragEnterEvent( QDragEnterEvent *e )
         e->ignore();            // No
         return;
     }
-    e->acceptAction();     // Yes
+    e->acceptProposedAction();     // Yes
 
     if ((dropOptions() & AutoOpenDirs) == 0)
        return;
@@ -610,7 +610,7 @@ void KFileDetailView::contentsDragMoveEvent( QDragMoveEvent *e )
         e->ignore();            // No
         return;
     }
-    e->acceptAction();     // Yes
+    e->acceptProposedAction();     // Yes
 
     if ((dropOptions() & AutoOpenDirs) == 0)
        return;
@@ -645,7 +645,7 @@ void KFileDetailView::contentsDropEvent( QDropEvent *e )
         e->ignore();            // No
         return;
     }
-    e->acceptAction();     // Yes
+    e->acceptProposedAction();     // Yes
 
     KFileListViewItem *item = dynamic_cast<KFileListViewItem*>(itemAt( contentsToViewport( e->pos() ) ));
     KFileItem * fileItem = 0;

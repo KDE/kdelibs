@@ -163,7 +163,7 @@ KUrlRequester::KUrlRequester( QWidget *editWidget, QWidget *parent)
 {
 
     // must have this as parent
-    editWidget->reparent( this, 0, QPoint(0,0) );
+    editWidget->setParent( this );
     d->edit = qobject_cast<KLineEdit*>( editWidget );
     d->combo = qobject_cast<KComboBox*>( editWidget );
 
@@ -206,7 +206,7 @@ void KUrlRequester::init()
 
     myButton = new KUrlDragPushButton( this);
     QIcon iconSet = SmallIconSet(QLatin1String("fileopen"));
-    QPixmap pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
+    QPixmap pixMap = iconSet.pixmap( style()->pixelMetric(QStyle::PM_SmallIconSize) );
     myButton->setIcon( iconSet );
     myButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
     myButton->setToolTip(i18n("Open file dialog"));

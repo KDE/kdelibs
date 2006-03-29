@@ -107,8 +107,10 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
         }
         d->m_layout->addItem(new QSpacerItem(0, 50), 0, 0); // give minimum height to look better
 
-        QHBoxLayout *buttonLayout = new QHBoxLayout(topLayout, KDialog::spacingHint());
+        QHBoxLayout *buttonLayout = new QHBoxLayout();
+        buttonLayout->setSpacing(KDialog::spacingHint());
         buttonLayout->addStretch( 1 );
+        topLayout->addLayout( buttonLayout );
 
         KPushButton *button;
 
@@ -377,7 +379,7 @@ KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, Qt::WFlags f)
 : Q3ScrollView(parent, name, f)
 {
     _frame = 0L;
-    setBackgroundMode(Qt::PaletteButton);
+    setBackgroundRole(QPalette::Button);
     setValues(QString(), 0L);
 }
 
@@ -391,7 +393,7 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
     if (certName.isEmpty()) {
         _frame = new QFrame(this);
         addChild(_frame);
-        viewport()->setBackgroundMode(_frame->backgroundMode());
+        viewport()->setBackgroundRole(_frame->backgroundRole());
         _frame->show();
         updateScrollBars();
         show();
@@ -400,7 +402,7 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
 
     KSSLX509Map cert(certName);
     QString tmp;
-    viewport()->setBackgroundMode(Qt::PaletteButton);
+    viewport()->setBackgroundRole(QPalette::Button);
     _frame = new QFrame(this);
     QGridLayout *grid = new QGridLayout(_frame);
     grid->setMargin(KDialog::marginHint());
@@ -448,7 +450,7 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
         }
     }
     if (label && viewport()) {
-        viewport()->setBackgroundMode(label->backgroundMode());
+        viewport()->setBackgroundRole(label->backgroundRole());
     }
     addChild(_frame);
     updateScrollBars();

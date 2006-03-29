@@ -128,11 +128,13 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
              SLOT( slotComboTextChanged( const QString& ) ));
 
     m_contextMenu = new QMenu( this );
-    KAction* newFolder = new KAction( i18n("New Folder..."), "folder_new", 0, this, SLOT( slotMkdir() ), d->actions,0);
+    KAction* newFolder = new KAction( i18n("New Folder..."), d->actions,0);
+    newFolder->setIcon( KIcon( "folder_new" ) );
+    connect( newFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotMkdir() ) );
     newFolder->plug(m_contextMenu);
     m_contextMenu->addSeparator();
-    m_showHiddenFolders = new KToggleAction ( i18n( "Show Hidden Folders" ), 0, this,
-                                        SLOT( slotShowHiddenFoldersToggled() ), d->actions);
+    m_showHiddenFolders = new KToggleAction( i18n( "Show Hidden Folders" ), d->actions, 0 );
+    connect( m_showHiddenFolders, SIGNAL( triggered( bool ) ), this, SLOT( slotShowHiddenFoldersToggled() ) );
     m_showHiddenFolders->plug(m_contextMenu);
 
     d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );

@@ -54,7 +54,7 @@ KFilePreview::~KFilePreview()
     // don't delete the preview, we can reuse it
     // (it will get deleted by ~KDirOperator)
     if ( preview && preview->parentWidget() == this ) {
-        preview->reparent(0L, 0, QPoint(0, 0), false);
+        preview->setParent(0);
     }
 }
 
@@ -72,7 +72,7 @@ void KFilePreview::init( KFileView *view )
     l->setMinimumSize(l->sizeHint());
     l->move(10, 5);
     preview->setMinimumWidth(l->sizeHint().width()+20);
-    setResizeMode(preview, QSplitter::KeepSize);
+    setStretchFactor(indexOf( preview ), 0);
 
     // Why copy the actions? --ellis, 13 Jan 02.
     //for ( uint i = 0; i < view->actionCollection()->count(); i++ )
@@ -90,7 +90,7 @@ void KFilePreview::setFileView( KFileView *view )
     //}
 
     delete left;
-    view->widget()->reparent( this, QPoint(0,0) );
+    view->widget()->setParent( this );
     view->KFileView::setViewMode(All);
     view->setParentView(this);
     view->setSorting( sorting() );
@@ -123,7 +123,7 @@ void KFilePreview::setPreviewWidget(const QWidget *w, const KUrl &)
 
     delete preview;
     preview = const_cast<QWidget*>(w);
-    preview->reparent((QSplitter*)this, 0, QPoint(0, 0), true);
+    preview->setParent((QSplitter*)this);
     preview->resize(preview->sizeHint());
     preview->show();
 }
@@ -150,7 +150,7 @@ void KFilePreview::updateView(bool b)
 {
     left->updateView(b);
     if(preview)
-        preview->repaint(b);
+        preview->repaint();
 }
 
 void KFilePreview::updateView(const KFileItem *i)

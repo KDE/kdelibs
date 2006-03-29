@@ -215,7 +215,7 @@ namespace
     // @returns the local machine's IP address in dotted quad notation
     struct MyIpAddress : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *call( ExecState*, JSObject*, const List& args )
         {
             if ( args.size() ) return Undefined();
             char hostname[ 256 ];
@@ -247,7 +247,7 @@ namespace
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 2 ) return Undefined();
-            QRegExp pattern( args[ 1 ]->toString( exec ).qstring(), true, true );
+            QRegExp pattern( args[ 1 ]->toString( exec ).qstring(), Qt::CaseSensitive, QRegExp::Wildcard );
             return Boolean( pattern.exactMatch(args[ 0 ]->toString( exec ).qstring()) );
         }
     };
@@ -438,7 +438,7 @@ namespace KPAC
         if (!findObj || !findObj->implementsCall())
             throw Error( "No such function FindProxyForURL" );
     
-        JSObject *thisObj;
+        JSObject *thisObj = 0;
         List args;
         args.append(String(url.url()));
         args.append(String(url.host()));

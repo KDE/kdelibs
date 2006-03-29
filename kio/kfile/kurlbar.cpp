@@ -176,11 +176,11 @@ void KUrlBarItem::paint( QPainter *p )
     if ( isCurrent() || isSelected() ) {
         int h = height( box );
 
-        QBrush brush = box->colorGroup().brush( QColorGroup::Highlight );
+        QBrush brush = box->palette().brush( QPalette::Highlight );
         p->fillRect( 0, 0, w, h, brush );
         QPen pen = p->pen();
         QPen oldPen = pen;
-        pen.setColor( box->colorGroup().mid() );
+        pen.setColor( box->palette().color( QPalette::Mid ) );
         p->setPen( pen );
 
         p->drawPoint( 0, 0 );
@@ -213,10 +213,10 @@ void KUrlBarItem::paint( QPainter *p )
             int xPos = pm->width() + margin + 2;
 
             if ( isCurrent() || isSelected() ) {
-                p->setPen( box->colorGroup().highlight().dark(115) );
+                p->setPen( box->palette().color( QPalette::Highlight ).dark(115) );
                 p->drawText( xPos + ( QApplication::isRightToLeft() ? -1 : 1),
                              yPos + 1, visibleText );
-                p->setPen( box->colorGroup().highlightedText() );
+                p->setPen( box->palette().color( QPalette::HighlightedText ) );
             }
 
             p->drawText( xPos, yPos, visibleText );
@@ -245,10 +245,10 @@ void KUrlBarItem::paint( QPainter *p )
             x = qMax( x, margin );
 
             if ( isCurrent() || isSelected() ) {
-                p->setPen( box->colorGroup().highlight().dark(115) );
+                p->setPen( box->palette().color( QPalette::Highlight ).dark(115) );
                 p->drawText( x + ( QApplication::isRightToLeft() ? -1 : 1),
                              y + 1, visibleText );
-                p->setPen( box->colorGroup().highlightedText() );
+                p->setPen( box->palette().color( QPalette::HighlightedText ) );
             }
 
             p->drawText( x, y, visibleText );
@@ -410,7 +410,7 @@ void KUrlBar::setListBox( KUrlBarListBox *view )
     else {
         m_listBox = view;
         if ( m_listBox->parentWidget() != this )
-            m_listBox->reparent( this, QPoint(0,0) );
+            m_listBox->setParent( this );
         m_listBox->resize( width(), height() );
     }
 
@@ -830,7 +830,7 @@ KUrlBarListBox::~KUrlBarListBox()
 void KUrlBarListBox::paintEvent( QPaintEvent* )
 {
     QPainter p(this);
-    p.setPen( colorGroup().mid() );
+    p.setPen( palette().color( QPalette::Mid ) );
     p.drawRect( 0, 0, width() - 1, height() - 1 );
 }
 

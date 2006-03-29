@@ -72,6 +72,11 @@ KIO_EXPORT PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const
  */
 struct KIO_EXPORT PreferencesMaxima
 {
+  PreferencesMaxima()
+    : iMax( 0 ), iMin( 0 ), fMax( 0 ), fMin( 0 )
+  {
+  }
+
   enum Type { PM_ERROR, PM_INVALID_INT, PM_INVALID_DOUBLE, PM_DOUBLE, PM_INT };
 
   Type type;

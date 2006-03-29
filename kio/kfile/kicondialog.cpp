@@ -176,7 +176,7 @@ void KIconCanvas::slotLoadFiles()
 	    }
 	}
 	QPixmap pm;
-	pm.convertFromImage(img);
+	pm.fromImage(img);
 	QFileInfo fi(*it);
 	Q3IconViewItem *item = new Q3IconViewItem(this, fi.baseName(), pm);
 	item->setKey(*it);

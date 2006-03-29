@@ -315,8 +315,7 @@ int KWalletD::doTransactionOpen(const QByteArray& appid, const QString& wallet, 
 
 			// Create the wallet
 			KWallet::Backend *b = new KWallet::Backend(KWallet::Wallet::LocalWallet());
-			QByteArray p;
-			p.duplicate(wiz->_pass1->text().toUtf8(), wiz->_pass1->text().length());
+			QByteArray p(wiz->_pass1->text().toUtf8(), wiz->_pass1->text().length());
 			b->open(p);
 			b->createFolder(KWallet::Wallet::PasswordFolder());
 			b->createFolder(KWallet::Wallet::FormDataFolder());
@@ -427,7 +426,7 @@ int KWalletD::internalOpen(const QByteArray& appid, const QString& wallet, bool 
 			KWin::setOnAllDesktops(kpd->winId(), true);
 			if (kpd->exec() == KDialog::Accepted) {
 				p = kpd->password();
-				int rc = b->open(QByteArray().duplicate(p, strlen(p)));
+				int rc = b->open(QByteArray(p, strlen(p)));
 				if (!b->isOpen()) {
 					kpd->setPrompt(i18n("<qt>Error opening the wallet '<b>%1</b>'. Please try again.<br>(Error code %2: %3)", Qt::escape(wallet), rc, KWallet::Backend::openRCToString(rc)));
 					kpd->clearPassword();
@@ -621,8 +620,7 @@ void KWalletD::doTransactionChangePassword(const QByteArray& appid, const QStrin
 		const char *p = kpd->password();
 		if (p) {
 			_passwords[wallet] = p;
-			QByteArray pa;
-			pa.duplicate(p, strlen(p));
+			QByteArray pa(p, strlen(p));
 			int rc = w->close(pa);
 			if (rc < 0) {
 				KMessageBox::sorryWId(wId, i18n("Error re-encrypting the wallet. Password was not changed."), i18n("KDE Wallet Service"));
@@ -674,7 +672,7 @@ int KWalletD::closeWallet(KWallet::Backend *w, int handle, bool force) {
 			}
 			_wallets.remove(handle);
 			if (_passwords.contains(wallet)) {
-				w->close(QByteArray().duplicate(_passwords[wallet].data(), _passwords[wallet].length()));
+				w->close(QByteArray(_passwords[wallet].data(), _passwords[wallet].length()));
 				_passwords[wallet].fill(0);
 				_passwords.remove(wallet);
 			}
@@ -698,7 +696,7 @@ int KWalletD::close(int handle, bool force) {
 		if (_handles.contains(appid)) { // we know this app
 			if (_handles[appid].contains(handle)) {
 				// the app owns this handle
-				_handles[appid].remove(_handles[appid].find(handle));
+				_handles[appid].removeAt(_handles[appid].indexOf(handle));
 				contains = true;
 				if (_handles[appid].isEmpty()) {
 					_handles.remove(appid);
@@ -716,7 +714,7 @@ int KWalletD::close(int handle, bool force) {
 				invalidateHandle(handle);
 			}
 			if (_passwords.contains(w->walletName())) {
-				w->close(QByteArray().duplicate(_passwords[w->walletName()].data(), _passwords[w->walletName()].length()));
+				w->close(QByteArray(_passwords[w->walletName()].data(), _passwords[w->walletName()].length()));
 				_passwords[w->walletName()].fill(0);
 				_passwords.remove(w->walletName());
 			}
@@ -785,7 +783,7 @@ void KWalletD::sync(int handle) {
 	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
 		QByteArray p;
 		QString wallet = b->walletName();
-		p.duplicate(_passwords[wallet].data(), _passwords[wallet].length());
+		p = QByteArray(_passwords[wallet].data(), _passwords[wallet].length());
 		b->sync(p);
 		p.fill(0);
 	}
@@ -1080,7 +1078,7 @@ void KWalletD::slotAppUnregistered(const QByteArray& app) {
 	if (_handles.contains(app)) {
 		QList<int> l = _handles[app];
 		for (QList<int>::Iterator i = l.begin(); i != l.end(); ++i) {
-			_handles[app].remove(*i);
+			_handles[app].removeAll(*i);
 			KWallet::Backend *w = _wallets.find(*i);
 			if (w && !_leaveOpen && 0 == w->deref()) {
 				close(w->walletName(), true);
@@ -1095,7 +1093,7 @@ void KWalletD::invalidateHandle(int handle) {
 	for (QMap<QByteArray,QList<int> >::Iterator i = _handles.begin();
 							i != _handles.end();
 									++i) {
-		i.data().remove(handle);
+		i.value().removeAll(handle);
 	}
 }
 
@@ -1177,7 +1175,7 @@ QStringList KWalletD::users(const QString& wallet) const {
 							++it) {
 		if (it.current()->walletName() == wallet) {
 			for (QMap<QByteArray,QList<int> >::ConstIterator hit = _handles.begin(); hit != _handles.end(); ++hit) {
-				if (hit.data().contains(it.currentKey())) {
+				if (hit.value().contains(it.currentKey())) {
 					rc += hit.key();
 				}
 			}
@@ -1195,7 +1193,7 @@ bool KWalletD::disconnectApplication(const QString& wallet, const QByteArray& ap
 							++it) {
 		if (it.current()->walletName() == wallet) {
 			if (_handles[application].contains(it.currentKey())) {
-				_handles[application].remove(it.currentKey());
+				_handles[application].removeAll(it.currentKey());
 
 				if (_handles[application].isEmpty()) {
 					_handles.remove(application);
@@ -1389,7 +1387,7 @@ void KWalletD::closeAllWallets() {
 	for (QMap<QString,QByteArray>::Iterator it = _passwords.begin();
 						it != _passwords.end();
 						++it) {
-		it.data().fill(0);
+		it.value().fill(0);
 	}
 	_passwords.clear();
 }

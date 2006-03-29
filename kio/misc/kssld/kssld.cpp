@@ -699,7 +699,7 @@ static QStringList caReadCerticatesFromFile(QString filename) {
 	QStringList certificates;
 	QString certificate;
 	QFile file(filename);
-        QByteArray temp(1000);
+        QByteArray temp(1000, 0);
 
 	if (!file.open(QIODevice::ReadOnly))
 		return certificates;
@@ -850,7 +850,7 @@ return true;
 ///////////////////////////////////////////////////////////////////////////
 
 void KSSLD::searchAddCert(KSSLCertificate *cert) {
-	skMD5Digest.insert(cert->getMD5Digest(), cert, true);
+	skMD5Digest.insert(cert->getMD5Digest(), cert);
 
 	QStringList mails;
 	cert->getEmails(mails);

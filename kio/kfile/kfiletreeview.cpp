@@ -114,7 +114,7 @@ void KFileTreeView::contentsDragEnterEvent( QDragEnterEvent *ev )
       ev->ignore();
       return;
    }
-   ev->acceptAction();
+   ev->acceptProposedAction();
    m_currentBeforeDropItem = selectedItem();
 
    Q3ListViewItem *item = itemAt( contentsToViewport( ev->pos() ) );
@@ -136,7 +136,7 @@ void KFileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
       e->ignore();
       return;
    }
-   e->acceptAction();
+   e->acceptProposedAction();
 
 
    Q3ListViewItem *afterme;
@@ -190,7 +190,7 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
        return;
     }
 
-    e->acceptAction();
+    e->acceptProposedAction();
     Q3ListViewItem *afterme;
     Q3ListViewItem *parent;
     findDrop(e->pos(), parent, afterme);
@@ -242,9 +242,9 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
     */
    return ancestOK && KUrl::List::canDecode( e->mimeData() ) &&
        // Why this test? All DnDs are one of those AFAIK (DF)
-      ( e->action() == QDropEvent::Copy
-	|| e->action() == QDropEvent::Move
-	|| e->action() == QDropEvent::Link );
+      ( e->dropAction() == Qt::CopyAction
+     || e->dropAction() == Qt::MoveAction
+     || e->dropAction() == Qt::LinkAction );
 }
 
 
