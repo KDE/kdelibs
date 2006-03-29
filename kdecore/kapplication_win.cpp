@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
 
@@ -25,8 +25,8 @@
 
 /**
  * MS Windows-related actions for KApplication startup.
- * 
- * - Use Qt translation which will be usable for QFileDialog 
+ *
+ * - Use Qt translation which will be usable for QFileDialog
  *    and other Qt-only GUIs. The "qt_<language>.qm" file should be stored
  *    in the same place as .po files for a given language.
  *
@@ -34,11 +34,11 @@
 */
 void KApplication_init_windows()
 {
-	QString qt_transl_file = ::locate( "locale", KGlobal::locale()->language() 
+	QString qt_transl_file = ::locate( "locale", KGlobal::locale()->language()
 		+ "/LC_MESSAGES/qt_" + KGlobal::locale()->language() + ".qm" );
 	QTranslator *qt_transl = new QTranslator();
 	if (qt_transl->load( qt_transl_file, ""))
-		kapp->installTranslator( qt_transl );
+		qApp->installTranslator( qt_transl );
 	else
 		delete qt_transl;
 }
