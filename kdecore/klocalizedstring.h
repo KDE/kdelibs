@@ -202,10 +202,10 @@ class KLocalizedStringPrivate;
 class KDECORE_EXPORT KLocalizedString
 {
 
-    friend KLocalizedString ki18n (const char* msg);
-    friend KLocalizedString ki18nc (const char *ctxt, const char *msg);
-    friend KLocalizedString ki18np (const char *singular, const char *plural);
-    friend KLocalizedString ki18ncp (const char *ctxt,
+    friend KLocalizedString KDECORE_EXPORT ki18n (const char* msg);
+    friend KLocalizedString KDECORE_EXPORT ki18nc (const char *ctxt, const char *msg);
+    friend KLocalizedString KDECORE_EXPORT ki18np (const char *singular, const char *plural);
+    friend KLocalizedString KDECORE_EXPORT ki18ncp (const char *ctxt,
                                      const char *singular, const char *plural);
 
 public:
