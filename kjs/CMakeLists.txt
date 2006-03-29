@@ -2,7 +2,13 @@ kde4_header()
 
 project(kjs)
 
+# Configuration checks
+check_library_exists(pthread pthread_attr_get_np "" HAVE_PTHREAD_ATTR_GET_NP)
+check_library_exists(pthread pthread_getattr_np "" HAVE_PTHREAD_GETATTR_NP)
+
+# Generate global.h
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
+
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kxmlcore ${QT_INCLUDES} )

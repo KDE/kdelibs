@@ -23,6 +23,9 @@
 #ifndef KJS_GLOBAL_H
 #define KJS_GLOBAL_H
 
+#cmakedefine HAVE_PTHREAD_ATTR_GET_NP 1
+#cmakedefine HAVE_PTHREAD_GETATTR_NP 1
+
 // maximum global call stack size. Protects against accidental or
 // malicious infinite recursions. Define to -1 if you want no limit.
 #define KJS_MAX_STACK 1000
