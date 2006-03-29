@@ -25,8 +25,10 @@ To get full debugging, pass -DCMAKE_BUILD_TYPE=debugfull
 If something hasn't been found, use ccmake . to set the missing things manually.
 
 Next;
-% cd kdelibs
-% cmake -DCMAKE_INSTALL_PREFIX=/usr/local/KDE-4.0 -DCMAKE_BUILD_TYPE=debugfull
+% cd
+% mkdir build-kdelibs
+% cd build-kdelibs
+% cmake -DCMAKE_INSTALL_PREFIX=/usr/local/KDE-4.0 -DCMAKE_BUILD_TYPE=debugfull /path/to/kdelibs/sources
 % make
 % make install
 
