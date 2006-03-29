@@ -156,7 +156,7 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		 * Checks whether a certain mimetype is playable.
 		 */
 		bool isMimeTypePlayable( const QString & mimetype ) const;
-
+#endif
 		/**
 		 * Get the name of the Backend. It's the name from the .desktop file.
 		 */
@@ -185,7 +185,6 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		 * Get the website of the Backend. It's the website from the .desktop file.
 		 */
 		QString backendWebsite() const;
-#endif
 
 	Q_SIGNALS:
 		/**

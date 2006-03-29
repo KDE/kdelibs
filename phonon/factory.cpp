@@ -57,7 +57,8 @@ class Factory::Private
 
 		void createBackend()
 		{
-			KTrader::OfferList offers = KTrader::self()->query( "PhononBackend", "Type == 'Service'" );
+			KTrader::OfferList offers = KTrader::self()->query( "PhononBackend",
+					"Type == 'Service' AND [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
 			KTrader::OfferListIterator it = offers.begin();
 			KTrader::OfferListIterator end = offers.end();
 			QStringList errormsg;
@@ -258,13 +259,14 @@ bool Factory::isMimeTypePlayable( const QString & type ) const
 	}
 	return false;
 }
+#endif
 
 QString Factory::backendName() const
 {
 	if( d->service )
 		return d->service->name();
 	else
-		return QString::null;
+		return QString();
 }
 
 QString Factory::backendComment() const
@@ -272,15 +274,15 @@ QString Factory::backendComment() const
 	if( d->service )
 		return d->service->comment();
 	else
-		return QString::null;
+		return QString();
 }
 
 QString Factory::backendVersion() const
 {
 	if( d->service )
-		return d->service->property( "X-KDE-MMBackendInfo-Version" ).toString();
+		return d->service->property( "X-KDE-PhononBackendInfo-Version" ).toString();
 	else
-		return QString::null;
+		return QString();
 }
 
 QString Factory::backendIcon() const
@@ -288,17 +290,16 @@ QString Factory::backendIcon() const
 	if( d->service )
 		return d->service->icon();
 	else
-		return QString::null;
+		return QString();
 }
 
 QString Factory::backendWebsite() const
 {
 	if( d->service )
-		return d->service->property( "X-KDE-MMBackendInfo-Website" ).toString();
+		return d->service->property( "X-KDE-PhononBackendInfo-Website" ).toString();
 	else
-		return QString::null;
+		return QString();
 }
-#endif
 
 template<class T> inline T* Factory::registerObject( T* o )
 {
