@@ -7,9 +7,10 @@ if(insource)
   MESSAGE(FATAL_ERROR "kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
 endif(insource)
 # ... and warn in case of an earlier in-source build
-if(EXISTS ${kdelibs_SOURCE_DIR}/kdemacros.h)
+set(generatedFileInSourceDir EXISTS ${kdelibs_SOURCE_DIR}/kdemacros.h OR EXISTS ${kdelibs_SOURCE_DIR}/config.h)
+if(${generatedFileInSourceDir})
   message(FATAL_ERROR "Please run svn-clean, it would seem that your source directory has generated files in it...")
-endif(EXISTS ${kdelibs_SOURCE_DIR}/kdemacros.h)
+endif(${generatedFileInSourceDir})
 #########################################################################
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
