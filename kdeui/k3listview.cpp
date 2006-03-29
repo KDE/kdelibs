@@ -905,7 +905,7 @@ void K3ListView::contentsDropEvent(QDropEvent* e)
 
   if (acceptDrag (e))
   {
-    e->acceptAction();
+    e->acceptProposedAction();
     Q3ListViewItem *afterme;
     Q3ListViewItem *parent;
 
@@ -977,7 +977,7 @@ void K3ListView::contentsDragMoveEvent(QDragMoveEvent *event)
 {
   if (acceptDrag(event))
   {
-    event->acceptAction();
+    event->acceptProposedAction();
     //Clean up the view
 
     findDrop(event->pos(), d->parentItemDrop, d->afterItemDrop);
@@ -989,8 +989,10 @@ void K3ListView::contentsDragMoveEvent(QDragMoveEvent *event)
       d->dragExpand.stop();
       d->dragOverItem = item;
       d->dragOverPoint = vp;
-      if ( d->dragOverItem && d->dragOverItem->isExpandable() && !d->dragOverItem->isOpen() )
-        d->dragExpand.start( QApplication::startDragTime(), true );
+      if ( d->dragOverItem && d->dragOverItem->isExpandable() && !d->dragOverItem->isOpen() ) {
+        d->dragExpand.setSingleShot( true );
+        d->dragExpand.start( QApplication::startDragTime() );
+      }
     }
     if (dropVisualizer())
     {
@@ -1349,7 +1351,7 @@ QRect K3ListView::drawItemHighlighter(QPainter *painter, Q3ListViewItem *item)
       frOpt.init(this);
       frOpt.state = QStyle::State_FocusAtBorder;
       frOpt.rect  = r;
-      frOpt.backgroundColor = palette().highlight();
+      frOpt.backgroundColor = palette().color( QPalette::Highlight );
       style()->drawPrimitive(QStyle::PE_FrameFocusRect, &frOpt, painter);
     }
   }

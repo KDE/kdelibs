@@ -29,7 +29,7 @@
 
 
 KMainWindowInterface::KMainWindowInterface(KMainWindow * mainWindow)
-	: DCOPObject( mainWindow->name())
+	: DCOPObject( mainWindow->objectName().toLatin1() )
 {
 	m_MainWindow = mainWindow;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -50,7 +50,7 @@ DCOPCStringList KMainWindowInterface::actions()
 	QList<KAction *> lst = m_dcopActionProxy->actions();
 	foreach( KAction*it, lst ) {
 		if (it->isPlugged())
-			tmp_actions.append( it->name() );
+			tmp_actions.append( it->objectName().toLatin1() );
 	}
 	return tmp_actions;
 }

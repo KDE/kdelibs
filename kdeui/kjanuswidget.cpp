@@ -150,7 +150,10 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       d->mListFrame = new QWidget( this );
       hbox->addWidget( d->mListFrame );
 
-      ( new QVBoxLayout( d->mListFrame, 0, 0 ) )->setAutoAdd( true );
+      QLayout *layout = new QVBoxLayout( d->mListFrame );
+      layout->setMargin(0);
+      layout->setSpacing(0);
+      layout->setAutoAdd( true );
       mIconList = new IconListBox( d->mListFrame );
 
       QFont listFont( mIconList->font() );
@@ -573,7 +576,7 @@ bool KJanusWidget::setSwallowedWidget( QWidget *widget )
   {
     if( widget->parent() != mSwallowPage )
     {
-      widget->reparent( mSwallowPage, 0, QPoint(0,0) );
+      widget->setParent( mSwallowPage );
     }
     gbox->addWidget(widget, 0, 0 );
     gbox->activate();
@@ -911,7 +914,7 @@ void KJanusWidget::addWidgetBelowList( QWidget * widget )
 {
   if( ( mFace == TreeList || mFace == IconList ) && d->mListFrame )
   {
-    widget->reparent( d->mListFrame, QPoint() );
+    widget->setParent( d->mListFrame );
   }
 }
 

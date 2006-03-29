@@ -115,7 +115,7 @@ KEdit::insertText(QTextStream *stream)
       }
    }
    else {
-        textLine = stream->read(); // Read all !
+        textLine = stream->readAll(); // Read all !
         insertAt( textLine, line, col);
    }
    setUndoDepth( oldUndoDepth );

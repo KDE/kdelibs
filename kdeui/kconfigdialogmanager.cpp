@@ -221,7 +221,10 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 		   // it again using the super class name. This fixes a problem with using QtRuby/Korundum
 		   // widgets with KConfigXT where 'Qt::Widget' wasn't being seen a the real deal, even
 		   // though it was a 'QWidget'.
-            changedIt = s_changedMap->find(childWidget->metaObject()->superClassName());
+            if ( childWidget->metaObject()->superClass() )
+              changedIt = s_changedMap->find(childWidget->metaObject()->superClass()->className());
+            else
+              changedIt = s_changedMap->find(0);
           }
 
           if (changedIt == s_changedMap->end())

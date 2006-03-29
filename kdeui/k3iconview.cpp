@@ -105,7 +105,8 @@ void K3IconView::slotOnItem( Q3IconViewItem *item )
                 viewport()->setCursor( KCursor().handCursor() );
 
             if ( (m_autoSelectDelay > -1) ) {
-                m_pAutoSelect->start( m_autoSelectDelay, true );
+                m_pAutoSelect->setSingleShot( true );
+                m_pAutoSelect->start( m_autoSelectDelay );
             }
         }
         m_pCurrentItem = item;
@@ -265,7 +266,8 @@ void K3IconView::updateDragHoldItem( QDropEvent *e )
     d->dragHoldItem = item;
     if( item  )
     {
-      d->dragHoldTimer.start( 1000, true );
+      d->dragHoldTimer.setSingleShot( true );
+      d->dragHoldTimer.start( 1000 );
     }
     else
     {
@@ -315,7 +317,8 @@ void K3IconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 
     emit doubleClicked( item, e->globalPos() );
   }
-  d->doubleClickIgnoreTimer.start(0, true);
+  d->doubleClickIgnoreTimer.setSingleShot(true);
+  d->doubleClickIgnoreTimer.start(0);
 }
 
 void K3IconView::slotMouseButtonClicked( int btn, Q3IconViewItem *item, const QPoint &pos )
@@ -388,7 +391,7 @@ void K3IconView::cancelPendingHeldSignal()
 void K3IconView::wheelEvent( QWheelEvent *e )
 {
     if (horizontalScrollBar() && (arrangement() == Q3IconView::TopToBottom)) {
-        QWheelEvent ce(e->pos(), e->delta(), e->modifiers(), Qt::Horizontal);
+        QWheelEvent ce(e->pos(), e->delta(), e->buttons(), e->modifiers(), Qt::Horizontal);
         QApplication::sendEvent( horizontalScrollBar(), &ce);
 	if (ce.isAccepted()) {
             e->accept();

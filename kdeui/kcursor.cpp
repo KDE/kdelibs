@@ -64,8 +64,8 @@ QCursor KCursor::handCursor()
                                 0xf8, 0xff, 0x07, 0xf8, 0xff, 0x07, 0xf8, 0xff, 0x07, 0xf8, 0xff,
                                 0x07, 0xf8, 0xff, 0x07, 0xf0, 0xff, 0x07, 0xf0, 0xff, 0x07, 0xe0,
                                 0xff, 0x03, 0xc0, 0xff, 0x03, 0xc0, 0xff, 0x01, 0xc0, 0xff, 0x01};
-                        QBitmap hand_bitmap(22, 22, HAND_BITS, true);
-                        QBitmap hand_mask(22, 22, HAND_MASK_BITS, true);
+                        QBitmap hand_bitmap = QBitmap::fromData(QSize( 22, 22 ), HAND_BITS);
+                        QBitmap hand_mask = QBitmap::fromData(QSize( 22, 22 ), HAND_MASK_BITS);
                         hand_cursor = new QCursor(hand_bitmap, hand_mask, 7, 0);
                         // Hack to force QCursor to call XCreatePixmapCursor() immediately
                         // so the bitmaps don't get pushed out of the Xcursor LRU cache.

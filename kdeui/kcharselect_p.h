@@ -36,8 +36,8 @@ public:
 	KCharSelectItemModel(int tableNum,const QString& fontName, QObject *parent):QAbstractTableModel(parent),m_tableNum(tableNum),m_fontName(fontName){}
 
 	enum internalRoles {CharacterRole=Qt::UserRole};	
-	int rowCount(const QModelIndex &parent) const { return 8;}
-	int columnCount(const QModelIndex &parent) const { return 32;}
+	int rowCount(const QModelIndex&) const { return 8;}
+	int columnCount(const QModelIndex&) const { return 32;}
 	
 	void setFont(const QString& fontName) {m_fontName=fontName;m_font=QFont(fontName); reset();}
 	Qt::ItemFlags flags(const QModelIndex &) const {

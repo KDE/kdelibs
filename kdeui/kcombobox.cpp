@@ -259,7 +259,7 @@ void KComboBox::wheelEvent( QWheelEvent *ev )
 void KComboBox::setLineEdit( QLineEdit *edit )
 {
     if ( !isEditable() && edit &&
-         !qstrcmp( edit->className(), "QLineEdit" ) )
+         !qstrcmp( edit->metaObject()->className(), "QLineEdit" ) )
     {
         // uic generates code that creates a read-only KComboBox and then
         // calls combo->setEditable( true ), which causes QComboBox to set up
@@ -456,7 +456,7 @@ void KHistoryCombo::addContextMenuItems( QMenu* menu )
 {
     if ( menu )
     {
-        menu->insertSeparator();
+        menu->addSeparator();
         int id = menu->insertItem( SmallIconSet("history_clear"), i18n("Clear &History"), this, SLOT( slotClear()));
         if (!count())
            menu->setItemEnabled(id, false);

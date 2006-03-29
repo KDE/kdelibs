@@ -497,7 +497,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 			pItem = new KKeyChooserItem( pParentItem, pItem, pList, iAction );
 			if(pAList) {
 				int size = style()->pixelMetric(QStyle::PM_SmallIconSize);
-				pItem->setPixmap(0,pAList->action(iAction)->iconSet().pixmap(QSize(size,size),QIcon::Normal));
+				pItem->setPixmap(0,pAList->action(iAction)->icon().pixmap(QSize(size,size),QIcon::Normal));
 			}
 		}
 	}

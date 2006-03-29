@@ -206,7 +206,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
     QByteArray name = element.attribute( d->attrName ).toUtf8();
 
-    KToolBar *bar = static_cast<KToolBar*>(d->m_widget->child( name, "KToolBar" ));
+    KToolBar *bar = static_cast<KToolBar*>(d->m_widget->findChild<KToolBar*>( name ));
     if( !bar )
     {
        bar = new KToolBar( d->m_widget, honor, false );
@@ -300,7 +300,7 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
     if ( QMenu *menu = qobject_cast<QMenu*>( parent ) )
     {
       // Don't insert multiple separators in a row
-      int count = menu->count();
+      int count = menu->actions().count();
       if (count)
       {
          int previousId = -1;

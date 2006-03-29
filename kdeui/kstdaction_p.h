@@ -139,8 +139,9 @@ Q_OBJECT
 
 public:
     AutomaticAction(const QString &icon, const QString &text, const QKeySequence &cut, const char *slot, KActionCollection *parent, const char *name)
-      : KAction(icon, text, parent, name)
+      : KAction(text, parent, name)
     {
+      setIcon(KIcon(icon));
       setShortcut(cut);
       connect(this, SIGNAL( activated() ), this, slot );
     }

@@ -152,21 +152,23 @@ KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
     popup->setObjectName( "PixmapRegionSelectorPopup");
     popup->addTitle(i18n("Image Operations"));
 
-   KAction *action = new KAction(i18n("&Rotate Clockwise"), "rotate_cw",
-                                0, this, SLOT(rotateClockwise()),
-                                actions, "rotateclockwise");
-   popup->addAction(action);
+    KAction *action = new KAction(i18n("&Rotate Clockwise"), actions, "rotateclockwise");
+    action->setIcon( KIcon( "rotate_cw" ) );
+    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(rotateClockwise()) );
 
-   action = new KAction(i18n("Rotate &Counterclockwise"), "rotate_ccw",
-                                0, this, SLOT(rotateCounterclockwise()),
-                                actions, "rotatecounterclockwise");
-   popup->addAction(action);
+    popup->addAction(action);
+
+    action = new KAction(i18n("Rotate &Counterclockwise"), actions, "rotatecounterclockwise");
+    action->setIcon( KIcon( "rotate_ccw" ) );
+    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(rotateCounterclockwise()) );
+
+    popup->addAction(action);
 
 /*
    I wonder if it would be appropiate to have here an "Open with..." option to
    edit the image (antlarr)
 */
-   return popup;
+    return popup;
 }
 
 void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction)

@@ -527,7 +527,10 @@ void KDialogBase::updateBackground()
   if( !mTile || !mTile->get() )
   {
     QPixmap nullPixmap;
-    setBackgroundPixmap(nullPixmap);
+
+    QPalette palette;
+    palette.setBrush( backgroundRole(), QBrush( nullPixmap ) );
+    setPalette(palette);
 #if 0
     if( d->mButton.box )
     {
@@ -535,12 +538,14 @@ void KDialogBase::updateBackground()
       d->mButton.box->setBackgroundMode(Qt::PaletteBackground);
     }
 #endif
-    setBackgroundMode(Qt::PaletteBackground);
+    setBackgroundRole(QPalette::Background);
   }
   else
   {
     const QPixmap *pix = mTile->get();
-    setBackgroundPixmap(*pix);
+    QPalette palette;
+    palette.setBrush( backgroundRole(), QBrush( *pix ) );
+    setPalette(palette);
 #if 0
     if( d->mButton.box )
     {
@@ -557,7 +562,7 @@ void KDialogBase::showTile( bool state )
   mShowTile = state;
   if( !mShowTile || !mTile || !mTile->get() )
   {
-    setBackgroundMode(Qt::PaletteBackground);
+    setBackgroundRole(QPalette::Background);
 #if 0
     if( d->mButton.box )
     {
@@ -572,7 +577,9 @@ void KDialogBase::showTile( bool state )
   else
   {
     const QPixmap *pix = mTile->get();
-    setBackgroundPixmap(*pix);
+    QPalette palette;
+    palette.setBrush( backgroundRole(), QBrush( *pix ) );
+    setPalette(palette);
 #if 0
     if( d->mButton.box )
     {

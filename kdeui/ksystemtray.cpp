@@ -82,9 +82,9 @@ KSystemTray::KSystemTray( QWidget* parent )
 
     if (parentWidget())
     {
-        new KAction(i18n("Minimize"), KShortcut(),
-                    this, SLOT( minimizeRestoreAction() ),
-                    d->actionCollection, "minimizeRestore");
+        KAction *action = new KAction(i18n("Minimize"), d->actionCollection, "minimizeRestore");
+        connect( action, SIGNAL( triggered( bool ) ), this, SLOT( minimizeRestoreAction() ) );
+
 #ifdef Q_WS_X11
 	KWin::WindowInfo info = KWin::windowInfo( parentWidget()->winId());
 	d->on_all_desktops = info.onAllDesktops();

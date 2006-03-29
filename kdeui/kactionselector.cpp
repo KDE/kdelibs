@@ -64,14 +64,16 @@ KActionSelector::KActionSelector( QWidget *parent )
   QHBoxLayout *lo = new QHBoxLayout( this );
   lo->setSpacing( KDialog::spacingHint() );
 
-  QVBoxLayout *loAv = new QVBoxLayout( lo );
+  QVBoxLayout *loAv = new QVBoxLayout();
+  lo->addLayout( loAv );
   d->lAvailable = new QLabel( i18n("&Available:"), this );
   loAv->addWidget( d->lAvailable );
   d->availableListWidget = new QListWidget( this );
   loAv->addWidget( d->availableListWidget );
   d->lAvailable->setBuddy( d->availableListWidget );
 
-  QVBoxLayout *loHBtns = new QVBoxLayout( lo );
+  QVBoxLayout *loHBtns = new QVBoxLayout();
+  lo->addLayout( loHBtns );
   loHBtns->addStretch( 1 );
   d->btnAdd = new QToolButton( this );
   loHBtns->addWidget( d->btnAdd );
@@ -79,14 +81,16 @@ KActionSelector::KActionSelector( QWidget *parent )
   loHBtns->addWidget( d->btnRemove );
   loHBtns->addStretch( 1 );
 
-  QVBoxLayout *loS = new QVBoxLayout( lo );
+  QVBoxLayout *loS = new QVBoxLayout();
+  lo->addLayout( loS );
   d->lSelected = new QLabel( i18n("&Selected:"), this );
   loS->addWidget( d->lSelected );
   d->selectedListWidget = new QListWidget( this );
   loS->addWidget( d->selectedListWidget );
   d->lSelected->setBuddy( d->selectedListWidget );
 
-  QVBoxLayout *loVBtns = new QVBoxLayout( lo );
+  QVBoxLayout *loVBtns = new QVBoxLayout();
+  lo->addLayout( loVBtns );
   loVBtns->addStretch( 1 );
   d->btnUp = new QToolButton( this );
   d->btnUp->setAutoRepeat( true );

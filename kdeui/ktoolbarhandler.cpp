@@ -100,9 +100,9 @@ namespace
         {
             KToggleToolBarAction *action = new KToggleToolBarAction(
                 toolBar,
-                toolBar->label(),
+                toolBar->windowTitle(),
                 m_actionCollection,
-                toolBar->name() );
+                toolBar->objectName().toLatin1() );
             // ## tooltips, whatsthis?
             m_toolBarActions.append( action );
         }

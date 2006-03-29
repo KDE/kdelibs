@@ -99,7 +99,7 @@ QMap<DCOPCString,DCOPRef> KDCOPActionProxy::actionMap( const DCOPCString &appId 
 
   QList<KAction *> lst = actions();
   foreach ( KAction*it, lst ) {
-    res.insert( it->name(), DCOPRef( id, actionObjectId( it->name() ) ) );
+    res.insert( it->objectName().toLatin1(), DCOPRef( id, actionObjectId( it->objectName().toLatin1() ) ) );
   }
 
   return res;

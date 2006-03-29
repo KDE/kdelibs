@@ -246,7 +246,7 @@ KLed::paintFlat() // paint a ROUND FLAT led lamp
     width /= 3;
     i = i.scaled(width, width, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     delete tmpMap;
-    dest = new QPixmap(i);
+    dest = new QPixmap(QPixmap::fromImage(i));
     paint.begin(this);
     paint.drawPixmap(0, 0, *dest);
     paint.end();
@@ -341,7 +341,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     width /= 3;
     i = i.scaled(width, width, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     delete tmpMap;
-    dest = new QPixmap(i);
+    dest = new QPixmap(QPixmap::fromImage(i));
     paint.begin(this);
     paint.drawPixmap(0, 0, *dest);
     paint.end();
@@ -448,7 +448,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     width /= 3;
     i = i.scaled(width, width, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     delete tmpMap;
-    dest = new QPixmap(i);
+    dest = new QPixmap(QPixmap::fromImage(i));
     paint.begin(this);
     paint.drawPixmap(0, 0, *dest);
     paint.end();

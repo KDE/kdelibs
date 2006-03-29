@@ -229,8 +229,9 @@ void KDialog::setButtonStyle( int style )
 
 	delete d->buttonBox->layout();
 	QBoxLayout *lay;
-	lay = new QBoxLayout( d->buttonBox, (d->mButtonOrientation == Qt::Horizontal) ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom ,
-						  0, spacingHint());
+	lay = new QBoxLayout( (d->mButtonOrientation == Qt::Horizontal) ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom , d->buttonBox );
+	lay->setMargin( 0 );
+  lay->setSpacing( spacingHint() );
 
 	int numButton = 0;
 	QPushButton *prevButton = 0;
@@ -600,8 +601,8 @@ bool KDialog::avoidArea( QWidget *w, const QRect& area, int screen )
   QRect scr = screenRect( w, screen );
   QRect avoid( area ); // let's add some margin
   avoid.translate( -5, -5 );
-  avoid.rRight() += 10;
-  avoid.rBottom() += 10;
+  avoid.setRight( avoid.right() + 10 );
+  avoid.setBottom( avoid.bottom() + 10 );
 
   if ( qMax( fg.top(), avoid.top() ) <= qMin( fg.bottom(), avoid.bottom() ) )
   {

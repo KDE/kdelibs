@@ -55,7 +55,8 @@ void KListBox::slotOnItem( Q3ListBoxItem *item )
         viewport()->setCursor( KCursor().handCursor() );
 
     if ( item && (m_autoSelectDelay > -1) && m_bUseSingle ) {
-      m_pAutoSelect->start( m_autoSelectDelay, true );
+      m_pAutoSelect->setSingleShot( true );
+      m_pAutoSelect->start( m_autoSelectDelay );
       m_pCurrentItem = item;
     }
 }

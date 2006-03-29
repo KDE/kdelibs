@@ -271,7 +271,8 @@ KAction *selectAll(KActionCollection* parent)
 
 KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *_name )
 {
-    KToggleAction *ret = new KToggleAction("showmenu", i18n("Show &Menubar"), parent, _name ? _name : name(ShowMenubar));
+    KToggleAction *ret = new KToggleAction(i18n("Show &Menubar"), parent, _name ? _name : name(ShowMenubar));
+    ret->setIcon(KIcon("showmenu"));
 
     if (recvr && slot)
             QObject::connect(ret, SIGNAL(triggered(bool)), recvr, slot);
