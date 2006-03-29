@@ -34,29 +34,28 @@ void BackendCapabilitiesTest::initTestCase()
 
 void BackendCapabilitiesTest::sensibleValues()
 {
-	BackendCapabilities* c = BackendCapabilities::self();
-	//if( c->supportsVideo() ) create VideoWidget and such - needs UI libs
-	QVERIFY( c->knownMimeTypes().size() > 0 ); // a backend that doesn't know any mimetypes is useless
-	QVERIFY( c->availableAudioOutputDevices().size() >= 0 );
-	for( int i = 0; i < c->availableAudioOutputDevices().size(); ++i )
+	//if( BackendCapabilities::supportsVideo() ) create VideoWidget and such - needs UI libs
+	QVERIFY( BackendCapabilities::knownMimeTypes().size() > 0 ); // a backend that doesn't know any mimetypes is useless
+	QVERIFY( BackendCapabilities::availableAudioOutputDevices().size() >= 0 );
+	for( int i = 0; i < BackendCapabilities::availableAudioOutputDevices().size(); ++i )
 	{
-		QVERIFY( c->availableAudioOutputDevices().at( i ).index() == i+1 );
-		QVERIFY( !c->availableAudioOutputDevices().at( i ).name().isEmpty() );
+		QVERIFY( BackendCapabilities::availableAudioOutputDevices().at( i ).index() == i+1 );
+		QVERIFY( !BackendCapabilities::availableAudioOutputDevices().at( i ).name().isEmpty() );
 	}
-	QVERIFY( c->availableAudioCaptureDevices().size() >= 0 );
-	for( int i = 0; i < c->availableAudioCaptureDevices().size(); ++i )
+	QVERIFY( BackendCapabilities::availableAudioCaptureDevices().size() >= 0 );
+	for( int i = 0; i < BackendCapabilities::availableAudioCaptureDevices().size(); ++i )
 	{
-		QVERIFY( c->availableAudioCaptureDevices().at( i ).index() == i+1 );
-		QVERIFY( !c->availableAudioCaptureDevices().at( i ).name().isEmpty() );
+		QVERIFY( BackendCapabilities::availableAudioCaptureDevices().at( i ).index() == i+1 );
+		QVERIFY( !BackendCapabilities::availableAudioCaptureDevices().at( i ).name().isEmpty() );
 	}
-	QVERIFY( c->availableVideoCaptureDevices().size() >= 0 );
-	for( int i = 0; i < c->availableVideoCaptureDevices().size(); ++i )
+	QVERIFY( BackendCapabilities::availableVideoCaptureDevices().size() >= 0 );
+	for( int i = 0; i < BackendCapabilities::availableVideoCaptureDevices().size(); ++i )
 	{
-		QVERIFY( c->availableVideoCaptureDevices().at( i ).index() == i+1 );
-		QVERIFY( !c->availableVideoCaptureDevices().at( i ).name().isEmpty() );
+		QVERIFY( BackendCapabilities::availableVideoCaptureDevices().at( i ).index() == i+1 );
+		QVERIFY( !BackendCapabilities::availableVideoCaptureDevices().at( i ).name().isEmpty() );
 	}
-	QVERIFY( c->availableAudioEffects().size() >= 0 );
-	QVERIFY( c->availableVideoEffects().size() >= 0 );
+	QVERIFY( BackendCapabilities::availableAudioEffects().size() >= 0 );
+	QVERIFY( BackendCapabilities::availableVideoEffects().size() >= 0 );
 }
 
 void BackendCapabilitiesTest::checkSignals()
