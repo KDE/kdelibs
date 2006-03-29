@@ -47,11 +47,11 @@
 #include <qpushbutton.h>
 #include <qregexp.h>
 #include <QTextDocument>
-#include <QX11Info>
 
 #include <assert.h>
 
 #ifdef Q_WS_X11
+#include <QX11Info>
 #include <X11/Xlib.h>
 #endif
 
