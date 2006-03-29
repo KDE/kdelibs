@@ -35,14 +35,14 @@ namespace Phonon
 
 	/**
 	 * \short The NameDescriptionTupleModel class provides a model from
-	 * a list of NameDescriptionTuple.
+	 * a list of NameDescriptionTuple objects.
 	 *
 	 * NameDescriptionTupleModel is a readonly model that supplies a list
-	 * using NameDescriptionTuple::name for the text and
-	 * NameDescriptionTuple::description for the tooltip. It also provides
-	 * the methods moveUp and moveDown to order the list. The resulting
-	 * order of the NameDescriptionTuple::index values can then be retrieved
-	 * using tupleIndexOrder.
+	 * using NameDescriptionTuple::name() for the text and
+	 * NameDescriptionTuple::description() for the tooltip. It also provides
+	 * the methods moveUp() and moveDown() to order the list. The resulting
+	 * order of the NameDescriptionTuple::index() values can then be retrieved
+	 * using tupleIndexOrder().
 	 *
 	 * An example use case would be to give the user a QComboBox to select
 	 * the output device:

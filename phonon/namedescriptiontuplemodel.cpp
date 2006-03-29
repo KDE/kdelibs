@@ -142,6 +142,11 @@ QList<int> NameDescriptionTupleModel::tupleIndexOrder() const
 	return ret;
 }
 
+int NameDescriptionTupleModel::tupleIndexAtPositionIndex( int positionIndex ) const
+{
+	return d_func()->data.at( positionIndex ).index();
+}
+
 }
 
 #include "namedescriptiontuplemodel.moc"
