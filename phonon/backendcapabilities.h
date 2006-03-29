@@ -60,22 +60,22 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		 * VideoPath, VideoEffect and all AbstractVideoOutput subclasses won't
 		 * do anything.
 		 */
-		bool supportsVideo() const;
+		static bool supportsVideo();
 
 		/**
 		 * \copydoc Phonon::Ifaces::Backend::supportsOSD
 		 */
-		bool supportsOSD() const;
+		static bool supportsOSD();
 
 		/**
 		 * \copydoc Phonon::Ifaces::Backend::supportsSubtitles
 		 */
-		bool supportsSubtitles() const;
+		static bool supportsSubtitles();
 
 		/**
 		 * Returns a list of mime types that the Backend can decode.
 		 */
-		KMimeType::List knownMimeTypes() const;
+		static KMimeType::List knownMimeTypes();
 
 		/**
 		 * Returns the audio output devices the backend supports.
@@ -83,7 +83,7 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		 * \return A list of AudioOutputDevice objects that give a name and
 		 * description for every supported audio output device.
 		 */
-		QList<AudioOutputDevice> availableAudioOutputDevices() const;
+		static QList<AudioOutputDevice> availableAudioOutputDevices();
 
 		/**
 		 * Returns the audio capture devices the backend supports.
@@ -91,7 +91,7 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		 * \return A list of AudioCaptureDevice objects that give a name and
 		 * description for every supported audio capture device.
 		 */
-		QList<AudioCaptureDevice> availableAudioCaptureDevices() const;
+		static QList<AudioCaptureDevice> availableAudioCaptureDevices();
 
 		/**
 		 * Returns the video capture devices the backend supports.
@@ -99,10 +99,10 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		 * \return A list of VideoCaptureDevice objects that give a name and
 		 * description for every supported video capture device.
 		 */
-		QList<VideoCaptureDevice> availableVideoCaptureDevices() const;
+		static QList<VideoCaptureDevice> availableVideoCaptureDevices();
 
-		QStringList availableAudioEffects() const;
-		QStringList availableVideoEffects() const;
+		static QStringList availableAudioEffects();
+		static QStringList availableVideoEffects();
 
 	Q_SIGNALS:
 		/**

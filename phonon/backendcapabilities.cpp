@@ -41,16 +41,14 @@ BackendCapabilities* BackendCapabilities::m_self = 0;
 BackendCapabilities* BackendCapabilities::self()
 {
 	if( !m_self )
-	{
-		m_self = new BackendCapabilities();
-		::sd.setObject( m_self, m_self );
-	}
+		::sd.setObject( m_self, new BackendCapabilities() );
 	return m_self;
 }
 
 BackendCapabilities::BackendCapabilities()
 	: d( new Private() )
 {
+	m_self = this;
 	d->backend = Factory::self()->backend();
 	connect( Factory::self(), SIGNAL( backendChanged() ), SLOT( slotBackendChanged() ) );
 }
@@ -59,28 +57,33 @@ BackendCapabilities::~BackendCapabilities()
 {
 }
 
-bool BackendCapabilities::supportsVideo() const
+bool BackendCapabilities::supportsVideo()
 {
+	const BackendCapabilities::Private* d = self()->d;
 	return d->backend ? d->backend->supportsVideo() : false;
 }
 
-bool BackendCapabilities::supportsOSD() const
+bool BackendCapabilities::supportsOSD()
 {
+	const BackendCapabilities::Private* d = self()->d;
 	return d->backend ? d->backend->supportsOSD() : false;
 }
 
-bool BackendCapabilities::supportsSubtitles() const
+bool BackendCapabilities::supportsSubtitles()
 {
+	const BackendCapabilities::Private* d = self()->d;
 	return d->backend ? d->backend->supportsSubtitles() : false;
 }
 
-KMimeType::List BackendCapabilities::knownMimeTypes() const
+KMimeType::List BackendCapabilities::knownMimeTypes()
 {
+	const BackendCapabilities::Private* d = self()->d;
 	return d->backend ? d->backend->knownMimeTypes() : KMimeType::List();
 }
 
-QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices() const
+QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices()
 {
+	const BackendCapabilities::Private* d = self()->d;
 	if( d->backend )
 	{
 		QList<AudioOutputDevice> ret;
@@ -91,8 +94,9 @@ QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices() cons
 	return QList<AudioOutputDevice>();
 }
 
-QList<AudioCaptureDevice> BackendCapabilities::availableAudioCaptureDevices() const
+QList<AudioCaptureDevice> BackendCapabilities::availableAudioCaptureDevices()
 {
+	const BackendCapabilities::Private* d = self()->d;
 	if( d->backend )
 	{
 		QList<AudioCaptureDevice> ret;
@@ -103,8 +107,9 @@ QList<AudioCaptureDevice> BackendCapabilities::availableAudioCaptureDevices() co
 	return QList<AudioCaptureDevice>();
 }
 
-QList<VideoCaptureDevice> BackendCapabilities::availableVideoCaptureDevices() const
+QList<VideoCaptureDevice> BackendCapabilities::availableVideoCaptureDevices()
 {
+	const BackendCapabilities::Private* d = self()->d;
 	if( d->backend )
 	{
 		QList<VideoCaptureDevice> ret;
@@ -115,13 +120,15 @@ QList<VideoCaptureDevice> BackendCapabilities::availableVideoCaptureDevices() co
 	return QList<VideoCaptureDevice>();
 }
 
-QStringList BackendCapabilities::availableAudioEffects() const
+QStringList BackendCapabilities::availableAudioEffects()
 {
+	const BackendCapabilities::Private* d = self()->d;
 	return d->backend ? d->backend->availableAudioEffects() : QStringList();
 }
 
-QStringList BackendCapabilities::availableVideoEffects() const
+QStringList BackendCapabilities::availableVideoEffects()
 {
+	const BackendCapabilities::Private* d = self()->d;
 	return d->backend ? d->backend->availableVideoEffects() : QStringList();
 }
 
