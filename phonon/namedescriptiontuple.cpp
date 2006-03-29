@@ -24,11 +24,31 @@
 namespace Phonon
 {
 
+NameDescriptionTuple::NameDescriptionTuple( const NameDescriptionTuple& rhs )
+	: d_ptr( new NameDescriptionTuplePrivate )
+{
+	Q_D( NameDescriptionTuple );
+	d->q_ptr = this;
+	d->index = rhs.index();
+	d->name = rhs.name();
+	d->description = rhs.description();
+}
+
+const NameDescriptionTuple& NameDescriptionTuple::operator=( const NameDescriptionTuple& rhs )
+{
+	Q_D( NameDescriptionTuple );
+	d->index = rhs.index();
+	d->name = rhs.name();
+	d->description = rhs.description();
+	return *this;
+}
+
 NameDescriptionTuple::NameDescriptionTuple( NameDescriptionTuplePrivate& dd,
 		int index, const QString& name, const QString& description )
 	: d_ptr( &dd )
 {
 	Q_D( NameDescriptionTuple );
+	d->q_ptr = this;
 	d->index = index;
 	d->name = name;
 	d->description = description;

@@ -21,6 +21,7 @@
 #define PHONON_NAMEDESCRIPTIONTUPLE_P_H
 
 #include <QString>
+#include <kdebug.h>
 
 namespace Phonon
 {
@@ -50,7 +51,10 @@ namespace Phonon
 
 			bool operator==( const NameDescriptionTuplePrivate& rhs ) const
 			{
-				return index == rhs.index && name == rhs.name && description == rhs.description;
+				if( index == rhs.index && ( name != rhs.name || description != rhs.description ) )
+					kError( 600 ) << "Same index (" << index <<
+						"), but different name/description. This is a bug in the Phonon backend." << endl;
+				return index == rhs.index;// && name == rhs.name && description == rhs.description;
 			}
 
 			int index;

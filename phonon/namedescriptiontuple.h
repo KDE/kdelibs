@@ -37,13 +37,26 @@ namespace Phonon
  * information like which audio and video choices belong together.
  *
  * \author Matthias Kretz <kretz@kde.org>
- * \see AudioCaptureSource
- * \see VideoCaptureSource
+ * \see AudioCaptureDevice
+ * \see VideoCaptureDevice
  */
 class PHONONCORE_EXPORT NameDescriptionTuple
 {
 	Q_DECLARE_PRIVATE( NameDescriptionTuple )
 	public:
+		/**
+		 * Constructs a tuple that is a copy of \p tuple.
+		 *
+		 * \see isValid
+		 */
+		NameDescriptionTuple( const NameDescriptionTuple& tuple );
+
+		/**
+		 * Assigns a copy of the tuple \p tuple to this tuple, and returns a
+		 * reference to it.
+		 */
+		const NameDescriptionTuple& operator=( const NameDescriptionTuple& tuple );
+
 		~NameDescriptionTuple();
 
 		/**
@@ -90,19 +103,6 @@ class PHONONCORE_EXPORT NameDescriptionTuple
 		 * private data pointer
 		 */
 		NameDescriptionTuplePrivate* d_ptr;
-
-	private:
-		/**
-		 * \internal
-		 * disable copy ctor
-		 */
-		NameDescriptionTuple( const NameDescriptionTuple & );
-
-		/**
-		 * \internal
-		 * disable assignment operator
-		 */
-		const NameDescriptionTuple& operator=( const NameDescriptionTuple& );
 };
 } //namespace Phonon
 
