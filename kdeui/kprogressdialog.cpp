@@ -101,7 +101,7 @@ void KProgressDialog::slotAutoShow()
 void KProgressDialog::show()
 {
     KDialog::show();
-    mShown = true;
+    d->mShown = true;
 }
 
 void KProgressDialog::reject()
