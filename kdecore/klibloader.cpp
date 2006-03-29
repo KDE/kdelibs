@@ -24,9 +24,10 @@
 #include <qdir.h>
 #include <qtimer.h>
 #include <QStack>
+#include <qapplication.h>
 
-#include "kapplication.h"
 #include "kstandarddirs.h"
+#include "kinstance.h"
 #include "kdebug.h"
 #include "klocale.h"
 #include "ltdl.h"
@@ -462,7 +463,7 @@ void KLibLoader::unloadLibrary( const char *libname )
 {
   if (!m_libs.contains(libname))
     return;
-  
+
   KLibWrapPrivate *wrap = m_libs[ libname ];
   if (--wrap->ref_count)
     return;

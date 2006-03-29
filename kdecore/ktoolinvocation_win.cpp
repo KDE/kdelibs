@@ -17,9 +17,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-//#include "ktoolinvocation_x11.cpp" 
+//#include "ktoolinvocation_x11.cpp"
 
-#define THREADGUARD 
+#define THREADGUARD
 #include "config.h"
 
 #include "ktoolinvocation.h"
@@ -253,15 +253,13 @@ KToolInvocation::kdeinitExecWait( const QString& name, const QStringList &args,
 }
 
 
-#if 1  // TODO: merge with relating parts from x11 
+#if 1  // TODO: merge with relating parts from x11
 
-#include <kapplication.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kurl.h>
 
 #include "kcheckaccelerators.h"
-#include "kappdcopiface.h"
 
 #include <qassistantclient.h>
 #include <qdir.h>
@@ -276,7 +274,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
 {
    QString url;
    QString appname;
-   
+
    if (_appname.isEmpty()) {
      appname = qApp->applicationName();
    } else

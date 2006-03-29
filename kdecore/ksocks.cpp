@@ -198,9 +198,9 @@ KDanteSocksTable::~KDanteSocksTable() {
 KSocks *KSocks::_me = 0;
 #ifdef __CYGWIN__
 bool KSocks::_disabled = true;
-#else 
+#else
 bool KSocks::_disabled = false;
-#endif 
+#endif
 static KStaticDeleter<KSocks> med;
 
 void KSocks::disable()
@@ -212,7 +212,7 @@ void KSocks::disable()
 KSocks *KSocks::self() {
   // Note that we don't use a static deleter here. It makes no sense and tends to cause crashes.
   if (!_me) {
-     if (kapp) {
+     if (KGlobal::_instance) {
         KConfigGroup cfg(KGlobal::config(), "Socks");
         _me = new KSocks(&cfg);
      } else {

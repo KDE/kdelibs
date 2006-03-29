@@ -38,7 +38,8 @@
 
 #include "kaboutdata.h"
 #include "klocale.h"
-#include "kapplication.h"
+#include "kdeversion.h"
+#include "kinstance.h"
 #include "kglobal.h"
 #include "kstringhandler.h"
 #include "kstaticdeleter.h"
@@ -1238,7 +1239,7 @@ KCmdLineArgs::isSet(const char *_opt) const
       if (result) break;
       ++args;
    }
-  
+
    if (result == 0)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");

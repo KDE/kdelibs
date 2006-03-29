@@ -41,7 +41,6 @@
 #include <QProcess>
 
 #include <kde_file.h>
-#include "kapplication.h"
 #include "ksavefile.h"
 #include "kstandarddirs.h"
 #include "ktempfile.h"
@@ -322,7 +321,7 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
     QString rcspath = KStandardDirs::findExe("rcs");
     if ( cipath.isEmpty() || copath.isEmpty() || rcspath.isEmpty() )
         return false;
- 
+
     // Check in the file unlocked with 'ci'
     QProcess ci;
     if ( !backupDir.isEmpty() )
