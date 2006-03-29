@@ -57,7 +57,7 @@ class KWinModulePrivate : public QWidget, public NETRootInfo4
 {
 public:
     KWinModulePrivate(int _what)
-	: QWidget(0,0), NETRootInfo4( QX11Info::display(),
+	: QWidget(0), NETRootInfo4( QX11Info::display(),
                                      _what >= KWinModule::INFO_WINDOWS ?
                                      windows_properties : desktop_properties,
                                      2,

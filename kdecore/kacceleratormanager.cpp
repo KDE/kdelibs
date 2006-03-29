@@ -823,13 +823,13 @@ void KPopupAccelManager::setMenuEntries(const KAccelStringList &list)
 void KPopupAccelManager::manage(QMenu *popup)
 {
   // don't add more than one manager to a popup
-  if (popup->child(0, "KPopupAccelManager", false) == 0 )
+  if (popup->findChild<KPopupAccelManager*>(QString()) == 0 )
     new KPopupAccelManager(popup);
 }
 
 void QWidgetStackAccelManager::manage( QStackedWidget *stack )
 {
-    if ( stack->child( 0, "QWidgetStackAccelManager", false ) == 0 )
+    if ( stack->findChild<QWidgetStackAccelManager*>(QString()) == 0 )
         new QWidgetStackAccelManager( stack );
 }
 
