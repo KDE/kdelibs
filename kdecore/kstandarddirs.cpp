@@ -1756,3 +1756,37 @@ QString locateLocal( const char *type,
     QString file = filename.mid(slash);
     return inst->dirs()->saveLocation(type, dir, createDir) + file;
 }
+
+bool checkAccess(const QString& pathname, int mode)
+{
+  int accessOK = access( QFile::encodeName(pathname), mode );
+  if ( accessOK == 0 )
+    return true;  // OK, I can really access the file
+
+  // else
+  // if we want to write the file would be created. Check, if the
+  // user may write to the directory to create the file.
+  if ( (mode & W_OK) == 0 )
+    return false;   // Check for write access is not part of mode => bail out
+
+
+  if (!access( QFile::encodeName(pathname), F_OK)) // if it already exists
+      return false;
+
+  //strip the filename (everything until '/' from the end
+  QString dirName(pathname);
+  int pos = dirName.lastIndexOf('/');
+  if ( pos == -1 )
+    return false;   // No path in argument. This is evil, we won't allow this
+  else if ( pos == 0 ) // don't turn e.g. /root into an empty string
+      pos = 1;
+
+  dirName.truncate(pos); // strip everything starting from the last '/'
+
+  accessOK = access( QFile::encodeName(dirName), W_OK );
+  // -?- Can I write to the accessed diretory
+  if ( accessOK == 0 )
+    return true;  // Yes
+  else
+    return false; // No
+}

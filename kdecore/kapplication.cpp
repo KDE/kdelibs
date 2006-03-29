@@ -109,7 +109,7 @@
 #include <fixx11h.h>
 #endif
 
-#ifndef Q_WS_WIN // TODO: could be removed ? 
+#ifndef Q_WS_WIN // TODO: could be removed ?
 #include <KDE-ICE/ICElib.h>
 #undef Bool
 #else
@@ -709,7 +709,7 @@ void KApplication::init()
 	 "left-to-right languages (as english) or to 'RTL' in right-to-left "
 	 "languages (such as Hebrew and Arabic) to get proper widget layout.",
          "LTR" ) == "RTL")
-  rtl = !rtl;	
+  rtl = !rtl;
   setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
 
   // install appdata resource type
@@ -1654,7 +1654,7 @@ QString KApplication::tempSaveName( const QString& pFilename )
 
 
 QString KApplication::checkRecoverFile( const QString& pFilename,
-        bool& bRecover ) 
+        bool& bRecover )
 {
   QString aFilename;
 
@@ -1690,40 +1690,6 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
     }
 }
 
-
-bool checkAccess(const QString& pathname, int mode)
-{
-  int accessOK = access( QFile::encodeName(pathname), mode );
-  if ( accessOK == 0 )
-    return true;  // OK, I can really access the file
-
-  // else
-  // if we want to write the file would be created. Check, if the
-  // user may write to the directory to create the file.
-  if ( (mode & W_OK) == 0 )
-    return false;   // Check for write access is not part of mode => bail out
-
-
-  if (!access( QFile::encodeName(pathname), F_OK)) // if it already exists
-      return false;
-
-  //strip the filename (everything until '/' from the end
-  QString dirName(pathname);
-  int pos = dirName.lastIndexOf('/');
-  if ( pos == -1 )
-    return false;   // No path in argument. This is evil, we won't allow this
-  else if ( pos == 0 ) // don't turn e.g. /root into an empty string
-      pos = 1;
-
-  dirName.truncate(pos); // strip everything starting from the last '/'
-
-  accessOK = access( QFile::encodeName(dirName), W_OK );
-  // -?- Can I write to the accessed diretory
-  if ( accessOK == 0 )
-    return true;  // Yes
-  else
-    return false; // No
-}
 
 void KApplication::setTopWidget( QWidget *topWidget )
 {

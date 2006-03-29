@@ -670,25 +670,6 @@ private:
 
 
 /**
- * \relates KGlobal
- * Check, if a file may be accessed in a given mode.
- * This is a wrapper around the access() system call.
- * checkAccess() calls access() with the given parameters.
- * If this is OK, checkAccess() returns true. If not, and W_OK
- * is part of mode, it is checked if there is write access to
- * the directory. If yes, checkAccess() returns true.
- * In all other cases checkAccess() returns false.
- *
- * Other than access() this function EXPLICITLY ignores non-existant
- * files if checking for write access.
- *
- * @param pathname The full path of the file you want to test
- * @param mode     The access mode, as in the access() system call.
- * @return Whether the access is allowed, true = Access allowed
- */
-KDECORE_EXPORT bool checkAccess(const QString& pathname, int mode);
-
-/**
    Provides highlevel access to session management on a per-object
    base.
 
