@@ -36,9 +36,6 @@ namespace Fake
 		public:
 			VideoWidget( QWidget* parent = 0 );
 
-			virtual bool isFullscreen() const;
-			virtual void setFullscreen( bool );
-
 		public:
 			virtual QObject* qobject() { return this; }
 			virtual const QObject* qobject() const { return this; }

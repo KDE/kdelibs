@@ -38,19 +38,6 @@ VideoWidget::VideoWidget( QWidget* parent )
 	setMinimumSize( 100, 100 );
 }
 
-bool VideoWidget::isFullscreen() const
-{
-	return QWidget::isFullScreen();
-}
-
-void VideoWidget::setFullscreen( bool fullscreen )
-{
-	if( fullscreen )
-		setWindowState( windowState() | Qt::WindowFullScreen );
-	else
-		setWindowState( windowState() & ~Qt::WindowFullScreen );
-}
-
 }}} //namespace Phonon::Ui::Fake
 
 #include "videowidget.moc"
