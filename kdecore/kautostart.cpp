@@ -21,7 +21,8 @@
 #include "kautostart.h"
 
 #include "kaboutdata.h"
-#include "kapplication.h"
+#include "kglobal.h"
+#include "kinstance.h"
 #include "kdesktopfile.h"
 #include "kstandarddirs.h"
 
@@ -50,9 +51,9 @@ KAutostart::KAutostart(const QString& entryName,
       d(new Private)
 {
     KGlobal::dirs()->addResourceType("autostart", "share/autostart");
-    if (entryName.isEmpty() && kapp)
+    if (entryName.isEmpty())
     {
-        d->name = kapp->aboutData()->appName();
+        d->name = KGlobal::instance()->aboutData()->appName();
     }
     else
     {

@@ -62,8 +62,8 @@ class KDECORE_EXPORT KAutostart : public QObject
          * executed on startup is not the same as entryName, then you will want
          * to set the associated command with setExec(const QString&)
          * @see setExec
-         * @param entryName the name used to identify the service. If non is
-         *        provided then it uses the name registered with KAboutData
+         * @param entryName the name used to identify the service. If none is
+         *        provided then it uses the name registered with KAboutData.
          * @param parent QObject
          */
         KAutostart(const QString& entryName = QString(),
