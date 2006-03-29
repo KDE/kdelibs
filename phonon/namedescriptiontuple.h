@@ -55,7 +55,7 @@ class PHONONCORE_EXPORT NameDescriptionTuple
 		 * Assigns a copy of the tuple \p tuple to this tuple, and returns a
 		 * reference to it.
 		 */
-		const NameDescriptionTuple& operator=( const NameDescriptionTuple& tuple );
+		NameDescriptionTuple& operator=( const NameDescriptionTuple& tuple );
 
 		~NameDescriptionTuple();
 

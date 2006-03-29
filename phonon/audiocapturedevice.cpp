@@ -58,7 +58,7 @@ AudioCaptureDevice::~AudioCaptureDevice()
 {
 }
 
-const AudioCaptureDevice& AudioCaptureDevice::operator=( const AudioCaptureDevice& rhs )
+AudioCaptureDevice& AudioCaptureDevice::operator=( const AudioCaptureDevice& rhs )
 {
 	*d_func() = *rhs.d_func();
 	return *this;

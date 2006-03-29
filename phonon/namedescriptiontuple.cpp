@@ -34,7 +34,7 @@ NameDescriptionTuple::NameDescriptionTuple( const NameDescriptionTuple& rhs )
 	d->description = rhs.description();
 }
 
-const NameDescriptionTuple& NameDescriptionTuple::operator=( const NameDescriptionTuple& rhs )
+NameDescriptionTuple& NameDescriptionTuple::operator=( const NameDescriptionTuple& rhs )
 {
 	Q_D( NameDescriptionTuple );
 	d->index = rhs.index();

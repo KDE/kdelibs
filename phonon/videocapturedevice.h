@@ -64,7 +64,7 @@ class PHONONCORE_EXPORT VideoCaptureDevice : public NameDescriptionTuple
 		 * Assigns a copy of the VideoCaptureDevice \p videoCaptureDevice to this
 		 * VideoCaptureDevice and returns a reference to it.
 		 */
-		const VideoCaptureDevice& operator=( const VideoCaptureDevice& videoCaptureDevice );
+		VideoCaptureDevice& operator=( const VideoCaptureDevice& videoCaptureDevice );
 
 		/**
 		 * Returns \c true if this VideoCaptureDevice describes the same source

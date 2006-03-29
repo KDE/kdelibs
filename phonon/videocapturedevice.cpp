@@ -58,7 +58,7 @@ VideoCaptureDevice::~VideoCaptureDevice()
 {
 }
 
-const VideoCaptureDevice& VideoCaptureDevice::operator=( const VideoCaptureDevice& rhs )
+VideoCaptureDevice& VideoCaptureDevice::operator=( const VideoCaptureDevice& rhs )
 {
 	*d_func() = *rhs.d_func();
 	return *this;

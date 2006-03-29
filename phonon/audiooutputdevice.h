@@ -63,7 +63,7 @@ class PHONONCORE_EXPORT AudioOutputDevice : public NameDescriptionTuple
 		 * Assigns a copy of the AudioOutputDevice \p audioOutputDevice to this
 		 * AudioOutputDevice and returns a reference to it.
 		 */
-		const AudioOutputDevice& operator=( const AudioOutputDevice& audioOutputDevice );
+		AudioOutputDevice& operator=( const AudioOutputDevice& audioOutputDevice );
 
 		/**
 		 * Returns \c true if this AudioOutputDevice describes the same source

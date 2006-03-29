@@ -53,7 +53,7 @@ AudioOutputDevice::~AudioOutputDevice()
 {
 }
 
-const AudioOutputDevice& AudioOutputDevice::operator=( const AudioOutputDevice& rhs )
+AudioOutputDevice& AudioOutputDevice::operator=( const AudioOutputDevice& rhs )
 {
 	*d_func() = *rhs.d_func();
 	return *this;

@@ -64,7 +64,7 @@ class PHONONCORE_EXPORT AudioCaptureDevice : public NameDescriptionTuple
 		 * Assigns a copy of the AudioCaptureDevice \p audioCaptureDevice to this
 		 * AudioCaptureDevice and returns a reference to it.
 		 */
-		const AudioCaptureDevice& operator=( const AudioCaptureDevice& audioCaptureDevice );
+		AudioCaptureDevice& operator=( const AudioCaptureDevice& audioCaptureDevice );
 
 		/**
 		 * Returns \c true if this AudioCaptureDevice describes the same source
