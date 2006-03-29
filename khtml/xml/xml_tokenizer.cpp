@@ -232,11 +232,6 @@ bool XMLHandler::endCDATA()
 
 bool XMLHandler::characters( const QString& ch )
 {
-    //this is needed for xhtml parsing. otherwise we try to attach
-    //"\n\t" to html, head and other nodes which don't accept textchildren
-    if ( ch.trimmed().isEmpty() )
-        return true;
-
     if (currentNode()->nodeType() == Node::TEXT_NODE ||
         currentNode()->nodeType() == Node::CDATA_SECTION_NODE ||
         enterText()) {
@@ -519,8 +514,10 @@ void XMLTokenizer::executeScripts()
             // we have a src attribute
             m_cachedScript = m_doc->document()->docLoader()->requestScript(scriptSrc, charset);
             ++(*m_scriptsIt);
-            m_cachedScript->ref(this); // will call executeScripts() again if already cached
-            return;
+            if (m_cachedScript) {
+                m_cachedScript->ref(this); // will call executeScripts() again if already cached
+                return;
+            }
         }
         else {
             // no src attribute - execute from contents of tag

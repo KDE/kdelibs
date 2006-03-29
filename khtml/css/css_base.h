@@ -107,6 +107,7 @@ namespace DOM {
 	    Id,
 	    Exact,
 	    Set,
+	    Class,
 	    List,
 	    Hyphen,
 	    PseudoClass,

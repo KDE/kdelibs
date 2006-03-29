@@ -1,3 +1,103 @@
+2006-03-25  Germain Garand  <germain@ebooksfrance.org>
+
+        Scope: fix handling of nested/external scripts in the tokenizer (#91701) 
+
+        * misc/stringit.h (TokenizerQueue): a LIFO stack of TokenizerStrings
+        * html/htmltokenizer.{h,cpp} (scriptHandler/write/notifyFinished): use a TokenizerQueue to store
+        postponed fragments while executing/loading scripts.
+        (fixUpChar): unrelated - fill in missing unicode replacements.
+
+2006-03-20  Dirk Mueller <mueller@kde.org>
+
+	* misc/loader.cpp: fix pixmap leak in tiled_pixmap()
+
+2006-03-20  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Improve the CSS :lang() selector to match clarified specification
+
+        * khtml_part.cpp: parse HTTP content-language
+        * xml/dom_docimpl.cpp: parse HTTP-EQUIV content-language
+        * css/cssstyleselector.cpp: match :lang() against parents and ultimately the document
+
+2006-03-07  Germain Garand  <germain@ebooksfrance.org>
+
+        Scope: relayout/repaint/widget masks fixes. Refine stacking context exploration. Optimise.
+
+        * khtmlview.cpp (drawContents): use widget geometry rather than the RenderWidget's rect (fixes widget borders not being updated)
+        Check if widget is in the dirty rect before doing any work.
+
+        * rendering/render_block.cpp (layoutBlockChildren): I meant !child->isPositioned() here, not isPositioned(). No need to
+        dirty positioned children as this is handled by the containing block chain through layoutPositionedObjects
+        (layoutPositionedObjects): always relayout fixed objects.
+
+        * rendering/render_canvas.cpp (layout): check canvas dimensions and call layoutBlock directly with relayoutChildren boolean.
+
+        * rendering/render_layer.{h,cpp} (paintedRegion): constrain our shape to the visibleRect. Use convertToLayerCoords to get a correct
+        visibleFlowRegion (updateWidgetMasks): don't forget to update the mask if it reverts to none at all.
+
+        * rendering/render_object.{h,cpp} (containingBlock): for relpos inlines, return the nearest block (skipping to next containingBlock gives
+        stalled layout flags problems - #121653). (updateWidgetMasks): mask the content box, not the border box.
+        (enclosingStackingContext) new. Returns the layer defining current stacking context.
+
+        * rendering/render_replaced.{h,cpp} (isKHTMLWidget): new flag for KHTML-proxied widgets.
+        (detach/resizeWidget/setQWidget/layout/updateFromElement/slotWidgetDestructed/setStyle/paint): use the flag insead of strcmp's
+        Only allow !khtml widgets to register in the view (only those need masking).
+
+2006-03-05  Charles Samuels  <charles@kde.org>
+	* link not accessable with negative text-indent (#96275)
+	* Wrong :hover effect with negative text-indent (#90510)
+	* text not selectable if it has a negative text-indent
+
+2006-03-05  Charles Samuels  <charles@kde.org>
+        * javascript timeouts that cross a midnight boundary shall not occur early
+
+2006-03-03  Germain Garand  <germain@ebooksfrance.org>
+
+        get iframes, objects and some other overlaid widgets to obey their stacking context (#31121)
+
+        * khtmlview.cpp: mask widgets more precisely (i.e. allow layers to paint over overlaid widgets,
+        when they ought to).
+
+        * rendering/render_canvas.{cpp,h}: update widget masks after pos child layout/positioning;
+        set a boolean m_needsWidgetMasks to optimise for common case (where we have no such widgets).
+
+        * rendering/render_layer.{cpp,h} (updateWidgetMasks/paintedRegion):  build a rough mask for the positive Z order
+        childs. We'll apply that mask later to widgets that are under our aegis.
+
+        * rendering/render_object.{cpp,h} (visibleFlowRegion): helper for calculation of broad region we want to mask in flows.
+        (updateWidgetMasks): walk our children looking for widgets suitable to masking. Apply our enclosingLayer's mask,
+        transformis transformandi.
+
+        * rendering/render_replaced.cpp: overlaid widgets must advertise their existence to the enclosing layer.
+
+2006-03-01  Germain Garand  <germain@ebooksfrance.org>
+
+        Improve selectorText
+
+        * css/css_base.cpp (extractPseudoType): don't reset 'value' after parsing the pseudo-style, we need it for selectorText.
+          (selectorText): - correctly handle CSS3 pseudo selectors,
+                          - merge some improvements from WebCore (Mitz Pettel sub-selector patch + fix ::Set handling)
+        * css/css_ruleimpl.cpp (selectorText): handle of multiple, comma-separated selectors
+
+2006-02-28  Germain Garand  <germain@ebooksfrance.org>
+
+        Common-case style selection optimisation inspired from WebCore.
+
+        * css/css_base.cpp/.h: add 'Class' to possible matching modes
+        * css/cssstyleselector.cpp: treat 'Class' extra, not anymore as an ordinary List.
+        * css/parser.cpp/y: use 'Class' matching mode
+        * html/html_elementimpl.cpp: when parsing ATTR_CLASS, set a boolean to remember if it is or not a class list.
+        * xml/dom_elementimpl.{cpp,h}: add m_hasClassList boolean + setter/getter
+
+2006-02-28  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_object.cpp (dirtyFormattingContext): be more efficient with inlineflow objects.
+        * rendering/render_block.cpp (layoutBlockChildren): be more efficient with regard to positioned objects relayout.
+        Merge WC margin-collapse regression fix (WC/#3508).
+        (layoutPositionedObjects) Objects with staticX() need a relayout too.
+        * rendering/render_canvas.cpp (layout): no need to relayout positioned objects here. This would mark entire branches of the tree
+        as needing a layout, thus stalling update requests in those branches (#116626)
+
 2006-01-14  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * rendering/render_image.cpp (calcReplacedWidth,calcReplacedHeight):

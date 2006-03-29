@@ -145,7 +145,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_USEMAP:
         if ( attr->value()[0] == '#' )
-            usemap = attr->value();
+            usemap = attr->value().lower();
         else {
             QString url = getDocument()->completeURL( khtml::parseURL( attr->value() ).string() );
             // ### we remove the part before the anchor and hope
@@ -446,9 +446,9 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
     {
         DOMString s = attr->value();
         if(*s.unicode() == '#')
-            name = QString(s.unicode()+1, s.length()-1);
+            name = QString(s.unicode()+1, s.length()-1).lower();
         else
-            name = s.string();
+            name = s.string().lower();
 	// ### make this work for XML documents, e.g. in case of <html:map...>
         if(getDocument()->isHTMLDocument())
             static_cast<HTMLDocumentImpl*>(getDocument())->mapMap[name] = this;

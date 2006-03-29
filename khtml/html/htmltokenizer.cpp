@@ -7,7 +7,8 @@
               (C) 1999 Lars Knoll (knoll@kde.org)
               (C) 1999 Antti Koivisto (koivisto@kde.org)
               (C) 2001-2003 Dirk Mueller (mueller@kde.org)
-              (C) 2002 Apple Computer, Inc.
+              (C) 2004 Apple Computer, Inc.
+              (C) 2006 Germain Garand (germain@ebooksfrance.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -90,38 +91,36 @@ static const char titleEnd [] = "</title";
 #define fixUpChar(x) \
             switch ((x).unicode()) \
             { \
-            /* ALL of these should be changed to Unicode SOON */ \
             case 0x80: (x) = 0x20ac; break; \
-            case 0x82: (x) = ',';    break; \
+            case 0x82: (x) = 0x201a;    break; \
             case 0x83: (x) = 0x0192; break; \
-            case 0x84: (x) = '"';    break; \
+            case 0x84: (x) = 0x201e;    break; \
             case 0x85: (x) = 0x2026; break; \
             case 0x86: (x) = 0x2020; break; \
             case 0x87: (x) = 0x2021; break; \
             case 0x88: (x) = 0x02C6; break; \
             case 0x89: (x) = 0x2030; break; \
             case 0x8A: (x) = 0x0160; break; \
-            case 0x8b: (x) = '<';    break; \
+            case 0x8b: (x) = 0x2039;    break; \
             case 0x8C: (x) = 0x0152; break; \
             case 0x8E: (x) = 0x017D; break; \
-            case 0x91: (x) = '\'';   break; \
-            case 0x92: (x) = '\'';   break; \
-            case 0x93: (x) = '"';    break; \
-            case 0x94: (x) = '"';    break; \
-            case 0x95: (x) = '*';    break; \
-            case 0x96: (x) = '-';    break; \
-            case 0x97: (x) = '-';    break; \
-            case 0x98: (x) = '~';    break; \
+            case 0x91: (x) = 0x2018;   break; \
+            case 0x92: (x) = 0x2019;   break; \
+            case 0x93: (x) = 0x201C;    break; \
+            case 0x94: (x) = 0X201D;    break; \
+            case 0x95: (x) = 0x2022;    break; \
+            case 0x96: (x) = 0x2013;    break; \
+            case 0x97: (x) = 0x2014;    break; \
+            case 0x98: (x) = 0x02DC;    break; \
             case 0x99: (x) = 0x2122; break; \
             case 0x9A: (x) = 0x0161; break; \
-            case 0x9b: (x) = '>';    break; \
+            case 0x9b: (x) = 0x203A;    break; \
             case 0x9C: (x) = 0x0153; break; \
             case 0x9E: (x) = 0x017E; break; \
             case 0x9F: (x) = 0x0178; break; \
             default: break; \
             }
 #endif
-
 // ----------------------------------------------------------------------------
 
 HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
@@ -387,27 +386,30 @@ void HTMLTokenizer::scriptHandler()
     currToken.tid = ID_SCRIPT + ID_CLOSE_TAG;
     processToken();
 
-    TokenizerString prependingSrc;
+    // Scripts following a frameset element should not be executed or even loaded in the case of extern scripts.
+    bool followingFrameset = (parser->doc()->body() && parser->doc()->body()->id() == ID_FRAMESET);
+    bool deferredScript = false;
 
-    if ( !parser->skipMode() ) {
+    if ( !parser->skipMode() && !followingFrameset) {
         CachedScript* cs = 0;
 
         // forget what we just got, load from src url instead
         if ( !currentScriptSrc.isEmpty() &&
-             (cs = parser->doc()->docLoader()->requestScript(currentScriptSrc, scriptSrcCharset) ))
+             (cs = parser->doc()->docLoader()->requestScript(currentScriptSrc, scriptSrcCharset) )) {
             cachedScript.enqueue(cs);
+        }
 
         if (cs) {
-            pendingSrc.prepend(src);
+            pendingQueue.push(src);
+            uint scriptCount = cachedScript.count();
             setSrc(TokenizerString());
             scriptCodeSize = scriptCodeResync = 0;
             cs->ref(this);
+            if (cachedScript.count() == scriptCount)
+                deferredScript = true;
         }
         else if (currentScriptSrc.isEmpty() && view && javascript ) {
-            if ( !m_executingScript )
-                pendingSrc.prepend(src);
-            else
-                prependingSrc = src;
+            pendingQueue.push(src);
             setSrc(TokenizerString());
             scriptCodeSize = scriptCodeResync = 0;
             scriptExecution( exScript, QString(), tagStartLineno /*scriptStartLineno*/ );
@@ -417,12 +419,17 @@ void HTMLTokenizer::scriptHandler()
     script = false;
     scriptCodeSize = scriptCodeResync = 0;
 
+    if (parser->skipMode() || followingFrameset)
+        return;
+
     if ( !m_executingScript && cachedScript.isEmpty() ) {
-        // kDebug( 6036 ) << "adding pending Output to parsed string" << endl;
-        src.append(pendingSrc);
-        pendingSrc.clear();
-    } else if ( !prependingSrc.isEmpty() )
-        write( prependingSrc, false );
+        src.append(pendingQueue.pop());
+    } else if ( cachedScript.isEmpty() ) {
+        write( pendingQueue.pop(), false );
+    } else if ( !deferredScript && pendingQueue.count() > 1) {
+       TokenizerString t = pendingQueue.pop();
+       pendingQueue.top().prepend( t );
+    }
 }
 
 void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptURL,
@@ -1294,10 +1301,14 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
     if ( !buffer )
         return;
 
-    if ( ( m_executingScript && appendData ) ||
-         ( !m_executingScript && cachedScript.count() ) ) {
+    if ( ( m_executingScript && appendData ) || cachedScript.count() ) {
         // don't parse; we will do this later
-        pendingSrc.append(str);
+        if (pendingQueue.isEmpty())
+            pendingQueue.push(str);
+        else if (appendData)
+            pendingQueue.bottom().append(str);
+        else
+            pendingQueue.top().append(str);
         return;
     }
 
@@ -1705,9 +1716,9 @@ void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)
     assert(!cachedScript.isEmpty());
     bool done = false;
     while (!done && cachedScript.head()->isLoaded()) {
-#ifdef TOKEN_DEBUG
+
         kDebug( 6036 ) << "Finished loading an external script" << endl;
-#endif
+
         CachedScript* cs = cachedScript.dequeue();
         DOMString scriptSource = cs->script();
 #ifdef TOKEN_DEBUG
@@ -1725,12 +1736,15 @@ void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)
         done = cachedScript.isEmpty();
 
         // 'script' is true when we are called synchronously from
-        // parseScript(). In that case parseScript() will take care
+        // scriptHandler(). In that case scriptHandler() will take care
         // of 'scriptOutput'.
         if ( !script ) {
-            TokenizerString rest = pendingSrc;
-            pendingSrc.clear();
-            write(rest, false);
+            if (!done && pendingQueue.count() > 1) {
+               TokenizerString t = pendingQueue.pop();
+               pendingQueue.top().prepend( t );
+            } else if (done) {
+                write(pendingQueue.pop(), false);
+            }
             // we might be deleted at this point, do not
             // access any members.
         }

@@ -56,6 +56,7 @@ public:
     // it would have an overflow height of borderTop() + paddingTop() + 100px.
     virtual int overflowHeight() const  { return m_overflowHeight; }
     virtual int overflowWidth() const   { return m_overflowWidth; }
+    virtual int negativeOverflowWidth() const { return m_negativeOverflowWidth; }
     virtual void setOverflowHeight(int h) { m_overflowHeight = h; }
     virtual void setOverflowWidth(int w) { m_overflowWidth = w; }
 
@@ -146,6 +147,8 @@ public:
     int lowestAbsolutePosition() const;
     int leftmostAbsolutePosition() const;
     int rightmostAbsolutePosition() const;
+    
+    virtual bool absolutePosition(int &xPos, int &yPos, bool=false);
 
     int rightOffset() const;
     int rightRelOffset(int y, int fixedOffset, bool applyTextIndent=true, int *heightRemaining = 0, bool *canClearLine = 0) const;
@@ -337,6 +340,7 @@ protected:
     // XXX Generalize to work with top and left as well.
     int m_overflowHeight;
     int m_overflowWidth;
+    int m_negativeOverflowWidth;
 
 private:
     Q3PtrList<FloatingObject>* m_floatingObjects;

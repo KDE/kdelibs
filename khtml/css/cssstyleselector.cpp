@@ -753,6 +753,7 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
 	case CSS_PROP_FONT_SIZE:
 	case CSS_PROP_FONT_WEIGHT:
         case CSS_PROP_FONT_FAMILY:
+        case CSS_PROP_FONT_VARIANT:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
         case CSS_PROP_DIRECTION:
@@ -994,7 +995,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	    if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
 		return;
 	    }
-	    if(!checkOneSelector(sel, elem)) return;
+	    if(!checkOneSelector(sel, elem, true)) return;
 	    //kDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
 	    break;
 	}
@@ -1026,7 +1027,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     return;
 }
 
-bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
+bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isSubSelector)
 {
     if(!e)
         return false;
@@ -1072,25 +1073,35 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         case CSSSelector::Set:
             break;
+        case CSSSelector::Class:
+            if (!e->hasClassList()) {
+                if( (strictParsing && strcmp(sel->value, value) ) ||
+                    (!strictParsing && strcasecmp(sel->value, value)))
+                    return false;
+               return true;
+            }
+            // no break
         case CSSSelector::List:
         {
-            const QChar* s = value.unicode();
-            int l = value.length();
-            while( l && !s->isSpace() )
-              l--,s++;
-	    if (!l) {
-		// There is no list, just a single item.  We can avoid
-		// allocing QStrings and just treat this as an exact
-		// match check.
-		if( (strictParsing && strcmp(sel->value, value) ) ||
-		    (!strictParsing && strcasecmp(sel->value, value)))
-		    return false;
-		break;
-	    }
+            if (sel->match != CSSSelector::Class) {
+                const QChar* s = value.unicode();
+                int l = value.length();
+                while( l && !s->isSpace() )
+                    l--,s++;
+                if (!l) {
+		    // There is no list, just a single item.  We can avoid
+		    // allocing QStrings and just treat this as an exact
+		    // match check.
+		    if( (strictParsing && strcmp(sel->value, value) ) ||
+		        (!strictParsing && strcasecmp(sel->value, value)))
+		        return false;
+		    break;
+	        }
+            }
 
             // The selector's value can't contain a space, or it's totally bogus.
-            l = sel->value.find(' ');
-            if (l != -1)
+            // ### check if this can still happen
+            if (sel->value.find(' ') != -1)
                 return false;
 
             QString str = value.string();
@@ -1365,8 +1376,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    break;
         case CSSSelector::PseudoHover: {
 	    // If we're in quirks mode, then hover should never match anchors with no
-	    // href.  This is important for sites like wsj.com.
-	    if (strictParsing || e->id() != ID_A || e->hasAnchor()) {
+	    // href and *:hover should not match anything. This is important for sites like wsj.com.
+	    if (strictParsing || isSubSelector || sel->relation == CSSSelector::SubSelector || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
 		if (element == e)
 		    style->setAffectedByHoverRules(true);
 		if (e->renderer()) {
@@ -1386,7 +1397,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoActive:
 	    // If we're in quirks mode, then :active should never match anchors with no
 	    // href.
-	    if (strictParsing || e->id() != ID_A || e->hasAnchor()) {
+	    if (strictParsing || isSubSelector || sel->relation == CSSSelector::SubSelector || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
 		if (element == e)
 		    style->setAffectedByActiveRules(true);
 		else if (e->renderer())
@@ -1401,7 +1412,20 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         case CSSSelector::PseudoLang: {
             DOMString value = e->getAttribute(ATTR_LANG);
-            if (value.isNull()) return false;
+            // The LANG attribute is inherited like a property
+            NodeImpl *n = e->parent();;
+            while (n && value.isEmpty()) {
+                if (n->isElementNode()) {
+                    // ### check xml:lang attribute in XML and XHTML documents
+                    value = static_cast<ElementImpl*>(n)->getAttribute(ATTR_LANG);
+                } else
+                if (n->isDocumentNode()) {
+                    value = static_cast<DocumentImpl*>(n)->contentLanguage();
+                }
+                n = n->parent();
+            }
+            if (value.isEmpty()) return false;
+
             QString langAttr = value.string();
             QString langSel = sel->string_arg.string();
 
@@ -1768,6 +1792,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
 	case CSS_PROP_FONT_SIZE:
 	case CSS_PROP_FONT_WEIGHT:
         case CSS_PROP_FONT_FAMILY:
+        case CSS_PROP_FONT_VARIANT:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
         case CSS_PROP_BACKGROUND_IMAGE:

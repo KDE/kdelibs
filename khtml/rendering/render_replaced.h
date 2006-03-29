@@ -91,6 +91,8 @@ public:
     virtual void paint( PaintInfo& i, int tx, int ty );
     virtual bool isWidget() const { return true; };
 
+    virtual bool isFrame() const { return false; }
+
     virtual void detach( );
     virtual void layout( );
 
@@ -102,6 +104,7 @@ public:
     void deref();
 
     void cancelPendingResize();
+    bool needsMask() const { return m_needsMask; }
 
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
@@ -115,6 +118,7 @@ public:
 
 public Q_SLOTS:
     void slotWidgetDestructed();
+    bool isKHTMLWidget() const { return m_isKHTMLWidget; }
 
 protected:
     virtual bool canHaveBorder() const { return false; }
@@ -138,6 +142,8 @@ protected:
 
     bool m_resizePending;
     bool m_discardResizes;
+    bool m_isKHTMLWidget;
+    bool m_needsMask;
 
 public:
     class EventPropagator : public QWidget {

@@ -53,25 +53,6 @@ class TableLayout;
 class RenderTable : public RenderBlock
 {
 public:
-    enum Rules {
-        None    = 0x00,
-        RGroups = 0x01,
-        CGroups = 0x02,
-        Groups  = 0x03,
-        Rows    = 0x05,
-        Cols    = 0x0a,
-        All     = 0x0f
-    };
-    enum Frame {
-        Void   = 0x00,
-        Above  = 0x01,
-        Below  = 0x02,
-        Lhs    = 0x04,
-        Rhs    = 0x08,
-        Hsides = 0x03,
-        Vsides = 0x0c,
-        Box    = 0x0f
-    };
 
     RenderTable(DOM::NodeImpl* node);
     ~RenderTable();
@@ -87,8 +68,6 @@ public:
 
     int borderHSpacing() const { return hspacing; }
     int borderVSpacing() const { return vspacing; }
-
-    Rules getRules() const { return rules; }
 
     bool collapseBorders() const { return style()->borderCollapse(); }
     int borderLeft() const;
@@ -197,9 +176,6 @@ protected:
 
     CollapsedBorderValue* m_currentBorder;
 
-    Frame frame                 : 4;
-    Rules rules                 : 4;
-
     bool has_col_elems		: 1;
     uint needSectionRecalc	: 1;
     uint padding		: 22;
@@ -262,6 +238,10 @@ public:
     RenderTableCell *cellAt( int row,  int col ) const {
 	return (*(grid[row].row))[col];
     }
+
+    virtual int lowestPosition(bool includeOverflowInterior, bool includeSelf) const;
+    virtual int rightmostPosition(bool includeOverflowInterior, bool includeSelf) const;
+    virtual int leftmostPosition(bool includeOverflowInterior, bool includeSelf) const;
 
     virtual void paint( PaintInfo& i, int tx, int ty);
 
@@ -423,9 +403,9 @@ public:
 	{ return m_percentageHeight; }
     void setCellPercentageHeight(int h)
 	{ m_percentageHeight = h; }
-    bool hasFlexedAnonymous() const 
-        { return m_hasFlexedAnonymous; }      
-    void setHasFlexedAnonymous(bool b=true) 
+    bool hasFlexedAnonymous() const
+        { return m_hasFlexedAnonymous; }
+    void setHasFlexedAnonymous(bool b=true)
         { m_hasFlexedAnonymous = b; }
 
 protected:

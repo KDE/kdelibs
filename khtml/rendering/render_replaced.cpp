@@ -23,6 +23,7 @@
  *
  */
 #include "render_replaced.h"
+#include "render_layer.h"
 #include "render_canvas.h"
 #include "render_line.h"
 
@@ -103,6 +104,8 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_arena.reset(renderArena());
     m_resizePending = false;
     m_discardResizes = false;
+    m_isKHTMLWidget = false;
+    m_needsMask = false;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -156,7 +159,7 @@ void  RenderWidget::resizeWidget( int w, int h )
     w = qMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
-        m_resizePending = !strcmp(m_widget->objectName(), "__khtml");
+        m_resizePending = isKHTMLWidget();
         ref();
         element()->ref();
         QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
@@ -211,7 +214,7 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( !strcmp(m_widget->objectName(), "__khtml") && !qobject_cast<QFrame*>(m_widget))
+            if ( (m_isKHTMLWidget = !strcmp(m_widget->objectName(), "__khtml")) && !qobject_cast<QFrame*>(m_widget))
                 m_widget->setAttribute( Qt::WA_NoSystemBackground );
 
             if (m_widget->focusPolicy() > Qt::StrongFocus)
@@ -237,9 +240,26 @@ void RenderWidget::layout( )
 {
     KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
-    if ( m_widget )
+    if ( m_widget ) {
         resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                       m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
+        if (!isKHTMLWidget() && !isFrame() && !m_needsMask) {
+            m_needsMask = true;
+            RenderLayer* rl = enclosingStackingContext();
+            RenderLayer* el = enclosingLayer();
+            while (rl && el && el != rl) {
+                if (el->renderer()->style()->position() != STATIC) {
+                    m_needsMask = false;
+                    break;
+                }
+                el = el->parent();
+            }                                                                                                                                      
+            if (m_needsMask) {
+                rl->setHasOverlaidWidgets();
+                canvas()->setNeedsWidgetMasks();
+            }
+        }
+    }
 
     setNeedsLayout(false);
 }
@@ -259,7 +279,7 @@ void RenderWidget::updateFromElement()
             int lowlightVal = 100 + (2*contrast_+4)*10;
 
             if (backgroundColor.isValid()) {
-                if (strcmp(widget()->objectName(), "__khtml")) {
+                if (!isKHTMLWidget()) {
                     QPalette palette;
                     palette.setColor(widget()->backgroundRole(), backgroundColor);
                     widget()->setPalette(palette);
@@ -383,7 +403,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     int xPos = _tx+borderLeft()+paddingLeft();
     int yPos = _ty+borderTop()+paddingTop();
 
-    bool khtmlw = !strcmp(m_widget->objectName(), "__khtml");
+    bool khtmlw = isKHTMLWidget();
     int childw = m_widget->width();
     int childh = m_widget->height();
     if ( (childw == 2000 || childh == 3072) && m_widget->inherits( "KHTMLView" ) ) {

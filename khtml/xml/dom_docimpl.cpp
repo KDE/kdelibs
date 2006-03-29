@@ -1672,6 +1672,9 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
         m_preferredStylesheetSet = content;
         updateStyleSelector();
     }
+    else if (strcasecmp(equiv, "content-language") == 0) {
+        m_contentLanguage = content.string();
+    }
 }
 
 bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent *ev )

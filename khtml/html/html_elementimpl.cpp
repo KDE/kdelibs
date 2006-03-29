@@ -175,12 +175,21 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         getDocument()->incDOMTreeVersion();
         break;
     case ATTR_CLASS:
+        if (attr->val()) {
+          DOMString v = attr->value();
+          const QChar* s = v.unicode();
+          int l = v.length();
+          while( l && !s->isSpace() )
+            l--,s++;
+          setHasClassList(l);
+        } else
+          setHasClassList(false);                 
+    // no break                                         
     case ATTR_NAME:
         setChanged(); // in case of a CSS selector on class/name
         getDocument()->incDOMTreeVersion();
         break;
     case ATTR_STYLE:
-        setHasStyle();
         if (m_styleDecls)
 	    m_styleDecls->removeCSSHints();
 	else

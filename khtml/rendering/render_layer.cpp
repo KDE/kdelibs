@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 2006 Germain Garand <germain@ebooksfrance.org>
  *
  * Portions are Copyright (C) 1998 Netscape Communications Corporation.
  *
@@ -96,6 +97,7 @@ m_posZOrderList( 0 ),
 m_negZOrderList( 0 ),
 m_zOrderListsDirty( true ),
 m_markedForRepaint( false ),
+m_hasOverlaidWidgets( false ),
 m_marquee( 0 )
 {
 }
@@ -114,6 +116,7 @@ RenderLayer::~RenderLayer()
 
 void RenderLayer::updateLayerPosition()
 {
+
     // The canvas is sized to the docWidth/Height over in RenderCanvas::layout, so we
     // don't need to ever update our layer position here.
     if (renderer()->isCanvas())
@@ -141,46 +144,47 @@ void RenderLayer::updateLayerPosition()
         RenderLayer* positionedParent = enclosingPositionedAncestor();
 
         // For positioned layers, we subtract out the enclosing positioned layer's scroll offset.
-        positionedParent->subtractScrollOffset(x, y);
-        
-        if (positionedParent->renderer()->isRelPositioned() &&
-            positionedParent->renderer()->isInlineFlow()) {
-            // When we have an enclosing relpositioned inline, we need to add in the offset of the first line
-            // box from the rest of the content, but only in the cases where we know we're positioned
-            // relative to the inline itself.
-            RenderFlow* flow = static_cast<RenderFlow*>(positionedParent->renderer());
-            int sx = 0, sy = 0;
-            if (flow->firstLineBox()) {
-                if (flow->style()->direction() == LTR)
-                    sx = flow->firstLineBox()->xPos();
-                else
-                    sx = flow->lastLineBox()->xPos();
-                sy = flow->firstLineBox()->yPos();
-            } else {
-                sx = flow->staticX(); // ###
-                sy = flow->staticY();
-            }
-            bool isInlineType = m_object->style()->isOriginalDisplayInlineType();
-            
-            if (!m_object->hasStaticX())
-                x += sx;
-            
-            // This is not terribly intuitive, but we have to match other browsers.  Despite being a block display type inside
-            // an inline, we still keep our x locked to the left of the relative positioned inline.  Arguably the correct
-            // behavior would be to go flush left to the block that contains the inline, but that isn't what other browsers
-            // do.
-            if (m_object->hasStaticX() && !isInlineType)
-                // Avoid adding in the left border/padding of the containing block twice.  Subtract it out.
-                x += sx - (m_object->containingBlock()->borderLeft() + m_object->containingBlock()->paddingLeft());
-            
-            if (!m_object->hasStaticY())
-                y += sy;
-        }
+        positionedParent->subtractScrollOffset(x, y);        
+        positionedParent->checkInlineRelOffset(m_object, x, y);        
     }
     else if (parent())
         parent()->subtractScrollOffset(x, y);
 
     setPos(x,y);
+}
+
+QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer) 
+{
+    updateZOrderLists();
+    QRegion r;
+    if (m_negZOrderList) {
+        uint count = m_negZOrderList->count();
+        for (uint i = 0; i < count; i++) {
+            RenderLayer* child = m_negZOrderList->at(i);
+            r += child->paintedRegion(rootLayer);
+        }
+    }
+    const RenderStyle *s= renderer()->style();
+    if (s->visibility() == VISIBLE) {
+        int x = 0; int y = 0;
+        convertToLayerCoords(rootLayer,x,y);
+        QRect cr(x,y,width(),height());
+        if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || 
+             s->scrollsOverflow() || renderer()->isReplaced() ) {
+            r += cr;
+        } else {
+            r += renderer()->visibleFlowRegion(x, y);
+        }
+    }
+    
+    if (m_posZOrderList) {
+        uint count = m_posZOrderList->count();
+        for (uint i = 0; i < count; i++) {
+            RenderLayer* child = m_posZOrderList->at(i);
+            r += child->paintedRegion(rootLayer);
+        }
+    }
+    return r;
 }
 
 void RenderLayer::repaint( bool markForRepaint )
@@ -227,20 +231,47 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
         QRect layerBounds, damageRect, fgrect;
         calculateRects(rootLayer, renderer()->viewRect(), layerBounds, damageRect, fgrect);
         QRect vr = damageRect.intersect( layerBounds );
-        if (vr != m_visibleRect && vr.isValid())
+        if (vr != m_visibleRect && vr.isValid()) {
             renderer()->canvas()->repaintViewRectangle( vr.x(), vr.y(), vr.width(), vr.height() );
+            m_visibleRect = vr;
+        }
     }
     m_markedForRepaint = false;   
 #endif
     
     for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
         child->updateLayerPositions(rootLayer, doFullRepaint, checkForRepaint);
-        
+
     // With all our children positioned, now update our marquee if we need to.
     if (m_marquee)
         m_marquee->updateMarqueePosition();
 }
 
+void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer) 
+{
+    if (hasOverlaidWidgets() && !renderer()->canvas()->pagedMode()) {
+        updateZOrderLists();
+        uint count = m_posZOrderList ? m_posZOrderList->count() : 0;
+        bool needUpdate = (count || !m_region.isNull());
+        if (count) {
+            Q3ScrollView* sv = m_object->element()->getDocument()->view();
+            m_region = QRect(0,0,sv->contentsWidth(),sv->contentsHeight());
+
+            for (uint i = 0; i < count; i++) {
+                RenderLayer* child = m_posZOrderList->at(i);
+                if (child->zIndex() == 0 && child->renderer()->style()->position() == STATIC)
+                    continue; // we don't know the widget's exact stacking position within flow
+                m_region -= child->paintedRegion(rootLayer);
+            }
+        } else {
+            m_region = QRegion();
+        }
+        if (needUpdate)
+            renderer()->updateWidgetMasks();
+    }    
+    for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
+        child->updateWidgetMasks(rootLayer);
+}
 
 short RenderLayer::width() const
 {
@@ -450,6 +481,44 @@ void RenderLayer::subtractScrollOffset(int& x, int& y)
 {
     x -= scrollXOffset();
     y -= scrollYOffset();
+}
+
+void RenderLayer::checkInlineRelOffset(const RenderObject* o, int& x, int& y)
+{
+    if(o->style()->position() != ABSOLUTE || !renderer()->isRelPositioned() || !renderer()->isInlineFlow())
+        return;
+
+    // Our renderer is an enclosing relpositioned inline, we need to add in the offset of the first line
+    // box from the rest of the content, but only in the cases where we know our descendant is positioned
+    // relative to the inline itself.
+    assert( o->container() == m_object );
+
+    RenderFlow* flow = static_cast<RenderFlow*>(m_object);
+    int sx = 0, sy = 0;
+    if (flow->firstLineBox()) {
+        if (flow->style()->direction() == LTR)
+            sx = flow->firstLineBox()->xPos();
+        else
+            sx = flow->lastLineBox()->xPos();
+        sy = flow->firstLineBox()->yPos();
+    } else {
+        sx = flow->staticX(); // ###
+        sy = flow->staticY();
+    }
+    bool isInlineType = o->style()->isOriginalDisplayInlineType();
+            
+    if (!o->hasStaticX())
+        x += sx;
+            
+    // Despite the positioned child being a block display type inside an inline, we still keep
+    // its x locked to our left.  Arguably the correct behavior would be to go flush left to 
+    // the block that contains us, but that isn't what other browsers do.
+    if (o->hasStaticX() && !isInlineType)
+        // Avoid adding in the left border/padding of the containing block twice.  Subtract it out.
+        x += sx - (o->containingBlock()->borderLeft() + o->containingBlock()->paddingLeft());
+            
+    if (!o->hasStaticY())
+        y += sy;
 }
 
 void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repaint)

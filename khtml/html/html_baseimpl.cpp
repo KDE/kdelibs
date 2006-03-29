@@ -360,8 +360,6 @@ void HTMLFrameElementImpl::attach()
 
 void HTMLFrameElementImpl::setLocation( const DOMString& str )
 {
-    if ( url == str )
-        return;
 
     url = str;
 

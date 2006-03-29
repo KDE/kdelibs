@@ -144,6 +144,7 @@ unsigned int CSSSelector::specificity() const
     case Exact:
     case Set:
     case List:
+    case Class:
     case Hyphen:
     case PseudoClass:
     case PseudoElement:
@@ -278,7 +279,6 @@ void CSSSelector::extractPseudoType() const
     else
     if (match == PseudoElement && !element)
         _pseudoType = PseudoOther;
-    value = DOMString();
 }
 
 
@@ -312,38 +312,19 @@ DOMString CSSSelector::selectorText() const
     DOMString str;
     const CSSSelector* cs = this;
     quint16 tag = localNamePart(cs->tag);
-    if ( tag == anyLocalName && cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
-    {
-        str = "#";
-        str += cs->value;
-    }
-    else if ( tag == anyLocalName && cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
-    {
-        str = ".";
-        str += cs->value;
-    }
-    else if ( tag == anyLocalName && cs->match == CSSSelector::PseudoClass )
-    {
-        str = ":";
-        str += cs->value;
-    }
-    else if ( tag == anyLocalName && cs->match == CSSSelector::PseudoElement )
-    {
-        str = "::";
-        str += cs->value;
-    }
-    else
-    {
-        if ( tag == anyLocalName )
-            str = "*";
-        else if ( tag != anyLocalName )
-            str = getTagName( cs->tag );
+    if (tag == anyLocalName && cs->match == CSSSelector::None)
+        str = "*";
+    else if (tag != anyLocalName)
+        str = getTagName( cs->tag );
+          
+    const CSSSelector* op = 0;
+    while (true) {
         if ( cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
         {
             str += "#";
             str += cs->value;
         }
-        else if ( cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
+        else if ( cs->match == CSSSelector::Class )
         {
             str += ".";
             str += cs->value;
@@ -352,6 +333,14 @@ DOMString CSSSelector::selectorText() const
         {
             str += ":";
             str += cs->value;
+            if (!cs->string_arg.isEmpty()) { // e.g :nth-child(...)
+                str += cs->string_arg;
+                str += ")";
+            } else if (cs->simpleSelector && !op) { // :not(...)
+                op = cs;
+                cs = cs->simpleSelector;
+                continue;
+            }
         }
         else if ( cs->match == CSSSelector::PseudoElement )
         {
@@ -368,7 +357,6 @@ DOMString CSSSelector::selectorText() const
                 str += "=";
                 break;
             case CSSSelector::Set:
-                str += " "; // ## correct?
                 break;
             case CSSSelector::List:
                 str += "~=";
@@ -388,11 +376,24 @@ DOMString CSSSelector::selectorText() const
             default:
                 kWarning(6080) << "Unhandled case in CSSStyleRuleImpl::selectorText : match=" << cs->match << endl;
             }
-            str += "\"";
-            str += cs->value;
-            str += "\"]";
+            if (cs->match != CSSSelector::Set) {
+                str += "\"";
+                str += cs->value;
+                str += "\"";
+            }
+            str += "]";
         }
+        if (op && !cs->tagHistory) {
+            cs=op;
+            op=0;
+            str += ")";
+        }
+            
+        if ((cs->relation != CSSSelector::SubSelector && !op) || !cs->tagHistory)
+            break;
+        cs = cs->tagHistory;
     }
+    
     if ( cs->tagHistory ) {
         DOMString tagHistoryText = cs->tagHistory->selectorText();
         if ( cs->relation == DirectAdjacent )
@@ -401,8 +402,6 @@ DOMString CSSSelector::selectorText() const
             str = tagHistoryText + " ~ " + str;
         else if ( cs->relation == Child )
             str = tagHistoryText + " > " + str;
-        else if ( cs->relation == SubSelector )
-            str += tagHistoryText; // the ":" is provided by selectorText()
         else // Descendant
             str = tagHistoryText + " " + str;
     }

@@ -7,6 +7,7 @@
  *           (C) 2003 Apple Computer, Inc.
  *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2006 Charles Samuels (charles@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -99,6 +100,7 @@ RenderBlock::RenderBlock(DOM::NodeImpl* node)
     m_topMarginQuirk = m_bottomMarginQuirk = false;
     m_overflowHeight = 0;
     m_overflowWidth = 0;
+    m_negativeOverflowWidth = 0;
 }
 
 RenderBlock::~RenderBlock()
@@ -174,6 +176,11 @@ void RenderBlock::updateFirstLetter()
         firstLetter->setIsAnonymous( true );
         firstLetterContainer->addChild(firstLetter, firstLetterContainer->firstChild());
 
+        // if this object is the result of a :begin, then the text may have not been
+        // generated yet if it is a counter
+        if (textObj->recalcMinMax())
+            textObj->recalcMinMaxWidths();
+
         // The original string is going to be either a generated content string or a DOM node's
         // string.  We want the original string before it got transformed in case first-letter has
         // no text-transform or a different text-transform applied to it.
@@ -224,20 +231,27 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
 
     // If the requested beforeChild is not one of our children, then this is most likely because
     // there is an anonymous block box within this object that contains the beforeChild. So
-    // just insert the child into the anonymous block box instead of here.
+    // just insert the child into the anonymous block box instead of here. This may also be 
+    // needed in cases of things like anonymous tables.
     if (beforeChild && beforeChild->parent() != this) {
 
         KHTMLAssert(beforeChild->parent());
-        KHTMLAssert(beforeChild->parent()->isAnonymousBlock());
-
-        if (newChild->isInline()) {
-            beforeChild->parent()->addChild(newChild,beforeChild);
-            return;
-        }
-        else if (beforeChild->parent()->firstChild() != beforeChild)
-            return beforeChild->parent()->addChild(newChild, beforeChild);
-        else
+        
+        // In the special case where we are prepending a block-level element before
+        // something contained inside an anonymous block, we can just prepend it before
+        // the anonymous block.
+        if (!newChild->isInline() && beforeChild->parent()->isAnonymousBlock() &&
+            beforeChild->parent()->parent() == this && 
+            beforeChild->parent()->firstChild() == beforeChild)
             return addChildToFlow(newChild, beforeChild->parent());
+
+        // Otherwise find our kid inside which the beforeChild is, and delegate to it.
+        // This may be many levels deep due to anonymous tables, table sections, etc.
+        RenderObject* responsible = beforeChild->parent();
+        while (responsible->parent() != this)
+            responsible = responsible->parent();
+
+        return responsible->addChild(newChild,beforeChild);
     }
 
     // prevent elements that haven't received a layout yet from getting painted by pushing
@@ -286,7 +300,15 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
             RenderBlock* newBox = createAnonymousBlock();
             RenderBox::addChild(newBox,beforeChild);
             newBox->addChild(newChild);
-            newBox->setPos(newBox->xPos(), -500000);
+
+            //the above may actually destroy newBox in case an anonymous
+            //table got created, and made the anonymous block redundant.
+            //so look up what to hide indirectly.
+            RenderObject* toHide = newChild;
+            while (toHide->parent() != this)
+                toHide = toHide->parent();
+
+            toHide->setPos(toHide->xPos(), -500000);
             return;
         }
         else {
@@ -441,7 +463,6 @@ void RenderBlock::makePageBreakAvoidBlocks()
     }
 }
 
-
 void RenderBlock::removeChild(RenderObject *oldChild)
 {
     // If this child is a block, and if our previous and next siblings are
@@ -572,6 +593,16 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     calcWidth();
     m_overflowWidth = m_width;
+    m_negativeOverflowWidth = 0;
+    if (style()->direction() == LTR )
+    {
+        int cw=0;
+        if (style()->textIndent().isPercent())
+            cw = containingBlock()->contentWidth();
+        m_negativeOverflowWidth = -style()->textIndent().minWidth(cw);
+        if (m_negativeOverflowWidth < 0)
+            m_negativeOverflowWidth = 0;
+    }
 
     if ( oldWidth != m_width )
         relayoutChildren = true;
@@ -588,6 +619,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     clearFloats();
 
+    int previousHeight = m_height;
     m_height = 0;
     m_overflowHeight = 0;
     m_clearStatus = CNONE;
@@ -648,14 +680,14 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     int oldHeight = m_height;
     calcHeight();
     if (oldHeight != m_height) {
-        relayoutChildren = true;
-
         // If the block got expanded in size, then increase our overflowheight to match.
         if (m_overflowHeight > m_height)
             m_overflowHeight -= (borderBottom()+paddingBottom());
         if (m_overflowHeight < m_height)
             m_overflowHeight = m_height;
     }
+    if (previousHeight != m_height)
+        relayoutChildren = true;
 
     if (isTableCell()) {
         // Table cells need to grow to accommodate both overhanging floats and
@@ -737,19 +769,22 @@ void RenderBlock::adjustPositionedBlock(RenderObject* child, const MarginInfo& m
     }
 
     if (child->isBox() && child->hasStaticY()) {
-        int marginOffset = 0;
+        int y = m_height;
         if (!marginInfo.canCollapseWithTop()) {
+            child->calcVerticalMargins();
+            int marginTop = child->marginTop(); 
             int collapsedTopPos = marginInfo.posMargin();
             int collapsedTopNeg = marginInfo.negMargin();
-            bool posMargin = child->marginTop() >= 0;
-            if (posMargin && child->marginTop() > collapsedTopPos)
-                collapsedTopPos = child->marginTop();
-            else if (!posMargin && child->marginTop() > collapsedTopNeg)
-                collapsedTopNeg = child->marginTop();
-            marginOffset += (collapsedTopPos - collapsedTopNeg) - child->marginTop();
+            if (marginTop > 0) {
+                if (marginTop > collapsedTopPos)
+                    collapsedTopPos = marginTop;
+            } else {
+                if (-marginTop > collapsedTopNeg)
+                    collapsedTopNeg = -marginTop;
+            }
+            y += (collapsedTopPos - collapsedTopNeg) - marginTop;
         }
-
-        static_cast<RenderBox*>(child)->setStaticY(m_height + marginOffset);
+        static_cast<RenderBox*>(child)->setStaticY(y);
     }
 }
 
@@ -1031,7 +1066,7 @@ void RenderBlock::collapseMargins(RenderObject* child, MarginInfo& marginInfo, i
             // So go ahead and mark the item as dirty.
             child->setChildNeedsLayout(true);
 
-        if (!child->flowAroundFloats() || child->hasFloats())
+        if (!child->flowAroundFloats() && child->hasFloats())
             child->markAllDescendantsWithFloatsForLayout();
 
         // Our guess was wrong. Make the child lay itself out again.
@@ -1304,9 +1339,9 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         int oldTopNegMargin = m_maxTopNegMargin;
 
         // make sure we relayout children if we need it.
-        if (relayoutChildren ||
-            (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())) ||
-            (child->isRenderBlock() && child->style()->height().isPercent()))
+        if (!child->isPositioned() && (relayoutChildren ||
+             (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())) ||
+             (child->isRenderBlock() && child->style()->height().isPercent())))
             child->setChildNeedsLayout(true);
 
         // Handle the four types of special elements first.  These include positioned content, floating content, compacts and
@@ -1387,8 +1422,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             overflowDelta += child->overflowHeight();
 
         // See if this child has made our overflow need to grow.
-        int rightChildPos = child->xPos() + qMax(child->effectiveWidth(), (int)child->width());
-        if (child->isRelPositioned()) {
+        int rightChildPos = child->effectiveXPos() + qMax(child->effectiveWidth(), (int)child->width());
+        if (child->isRelPositioned() && (hasOverflowClip() || !isTableCell())) {
             // CSS 2.1-9.4.3 - allow access to relatively positioned content
             // ### left overflow support
             int xoff = 0, yoff = 0;
@@ -1401,6 +1436,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
         m_overflowHeight = qMax(m_height + overflowDelta, m_overflowHeight);
         m_overflowWidth = qMax(rightChildPos, m_overflowWidth);
+        
+        m_negativeOverflowWidth = qMax(m_negativeOverflowWidth, child->negativeOverflowWidth());
 
         // Insert our compact into the block margin if we have one.
         insertCompactIfNeeded(child, compactInfo);
@@ -1421,6 +1458,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
 void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pageBreakInfo, MarginInfo &marginInfo)
 {
+    (void)marginInfo;
     int childTop = child->yPos();
     int childBottom = child->yPos()+child->height();
 #ifdef PAGE_DEBUG
@@ -1520,11 +1558,14 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
                 r->repaintDuringLayout();
                 r->setMarkedForRepaint(false);
             }
-            if ( relayoutChildren || (r->hasStaticY() && r->parent() != this && r->parent()->isBlockFlow()) )
+            if ( relayoutChildren || r->style()->position() == FIXED ||
+                   ((r->hasStaticY()||r->hasStaticX()) && r->parent() != this && r->parent()->isBlockFlow()) ) {
                 r->setChildNeedsLayout(true);
+                r->dirtyFormattingContext(false);
+            }
             r->layoutIfNeeded();
             if (adjOverflow && r->style()->position() == ABSOLUTE) {
-                if (r->xPos() + r->effectiveWidth() > m_overflowWidth)
+                if (r->effectiveXPos() + r->effectiveWidth() > m_overflowWidth)
                     m_overflowWidth = r->xPos() + r->effectiveWidth();
                 if (r->yPos() + r->effectiveHeight() > m_overflowHeight)
                     m_overflowHeight = r->yPos() + r->effectiveHeight();
@@ -1585,8 +1626,6 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
     // 2. paint contents
     int scrolledX = _tx;
     int scrolledY = _ty;
-    int _y = pI.r.y();
-    int _h = pI.r.height();
     if (style()->hidesOverflow() && m_layer)
         m_layer->subtractScrollOffset(scrolledX, scrolledY);
 
@@ -2150,6 +2189,11 @@ int RenderBlock::leftmostAbsolutePosition() const
     return left;
 }
 
+bool RenderBlock::absolutePosition(int &xPos, int &yPos, bool f)
+{
+    return RenderFlow::absolutePosition(xPos, yPos, f);
+}
+
 int
 RenderBlock::leftBottom()
 {
@@ -2205,8 +2249,10 @@ RenderBlock::clearFloats()
 
     int offset = m_y;
     if (parentHasFloats)
+    {
         addOverHangingFloats( static_cast<RenderBlock *>( parent() ),
                               parent()->borderLeft() + parent()->paddingLeft(), offset, false );
+    }
 
     int xoffset = 0;
     if (prev) {
@@ -2236,10 +2282,24 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     // Prevent floats from being added to the canvas by the root element, e.g., <html>.
     if ( !flow->m_floatingObjects || (child && flow->isRoot()) )
         return;
+        
+    // if I am clear of my floats, don't add them
+    // the CSS spec also mentions that child floats
+    // are not cleared.
+    if (!child && style()->clear() == CBOTH)
+    {
+        return;
+    }
 
     Q3PtrListIterator<FloatingObject> it(*flow->m_floatingObjects);
     FloatingObject *r;
     for ( ; (r = it.current()); ++it ) {
+    
+        if (!child && r->type == FloatingObject::FloatLeft && style()->clear() == CLEFT )
+            continue;
+        if (!child && r->type == FloatingObject::FloatRight && style()->clear() == CRIGHT )
+            continue;
+            
         if ( ( !child && r->endY > offset ) ||
              ( child && flow->yPos() + r->endY > height() ) ) {
             if (child && !r->crossedLayer) {

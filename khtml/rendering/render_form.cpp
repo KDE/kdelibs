@@ -98,8 +98,7 @@ void RenderFormElement::layout()
         resizeWidget(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
 
-    if ( !style()->width().isPercent() )
-        setNeedsLayout(false);
+    setNeedsLayout(false);
 }
 
 

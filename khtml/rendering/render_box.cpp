@@ -165,18 +165,9 @@ void RenderBox::setStyle(RenderStyle *_style)
         m_layer = 0;
     }
 
-    if (m_layer) {
-        // Make sure our z-index values are only applied if we're positioned or
-        // relpositioned.
-        if (!isPositioned() && !isRelPositioned()) {
-            // Set the auto z-index flag.
-            if (isRoot())
-                style()->setZIndex(0);
-            else
-                style()->setHasAutoZIndex();
-        }
+    if (m_layer)
         m_layer->styleChanged();
-    }
+
     // ### outlineSize() and outlineOffset() not merged yet
     if (style()->outlineWidth() > 0 && style()->outlineWidth() > maximalOutlineSize(PaintActionOutline))
         static_cast<RenderCanvas*>(document()->renderer())->setMaximalOutlineSize(style()->outlineWidth());
@@ -642,8 +633,12 @@ bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
     RenderObject *o = container();
     if( o && o->absolutePosition(xPos, yPos, f))
     {
-        if ( o->style()->hidesOverflow() && o->layer() )
-            o->layer()->subtractScrollOffset( xPos, yPos );
+        if ( o->layer() ) {
+            if (o->style()->hidesOverflow())
+                o->layer()->subtractScrollOffset( xPos, yPos );
+            if (isPositioned())
+                o->layer()->checkInlineRelOffset(this, xPos, yPos);
+        }            
 
         if(!isInline() || isReplaced())
             xPos += m_x, yPos += m_y;
@@ -688,15 +683,21 @@ void RenderBox::repaint(bool immediate)
     int ow = style() ? style()->outlineWidth() /* style()->outlineSize() */ : 0;
     if( isInline() && !isReplaced() )
     {
-	RenderObject* p = parent();
-	Q_ASSERT(p);
-	while( p->isInline() && !p->isReplaced() )
-	    p = p->parent();
-        p->repaintRectangle( -ow, -ow, p->effectiveWidth()+ow*2, p->effectiveHeight()+ow*2, immediate);
+        RenderObject* p = parent();
+        Q_ASSERT(p);
+        while( p->isInline() && !p->isReplaced() )
+            p = p->parent();
+        int off = 0;
+        if (!p->hasOverflowClip());
+            off = p->negativeOverflowWidth();
+        p->repaintRectangle( -ow - off, -ow, p->effectiveWidth()+ow*2, p->effectiveHeight()+ow*2, immediate);
     }
     else
     {
-        repaintRectangle( -ow, -ow, effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
+        int off = 0;
+        if (!hasOverflowClip());
+            off = negativeOverflowWidth();
+        repaintRectangle( -ow - off, -ow, effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
     }
 }
 
@@ -705,19 +706,24 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool immediate, boo
     x += m_x;
     y += m_y;
 
-    // Apply the relative position offset when invalidating a
-    // rectangle.  The layer is translated, but the render box isn't,
-    // so we need to do this to get the right dirty rect.
-    if (isRelPositioned())
+    // Apply the relative position offset when invalidating a rectangle.  The layer
+    // is translated, but the render box isn't, so we need to do this to get the
+    // right dirty rect.  Since this is called from RenderObject::setStyle, the relative position
+    // flag on the RenderObject has been cleared, so use the one on the style().
+    if (style()->position() == RELATIVE && m_layer)
         relativePositionOffset(x,y);
 
-    if (style()->position()==FIXED) f=true;
+    if (style()->position() == FIXED) f=true;
 
     // kDebug( 6040 ) << "RenderBox(" <<this << ", " << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
     if( o ) {
-        if (o->style()->hidesOverflow() && o->layer())
-            o->layer()->subtractScrollOffset(x,y); // For overflow:auto/scroll/hidden.
+         if (o->layer()) {
+             if (o->style()->hidesOverflow())
+                 o->layer()->subtractScrollOffset(x,y); // For overflow:auto/scroll/hidden.
+             if (style()->position() == ABSOLUTE)
+                 o->layer()->checkInlineRelOffset(this,x,y);
+        }
         o->repaintRectangle(x, y, w, h, immediate, f);
     }
 }
@@ -1024,7 +1030,7 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
     }
     if (result != -1) {
         result = height.width(result);
-        if (cb->isTableCell() && !isTable() && style()->boxSizing() != BORDER_BOX) {
+        if (cb->isTableCell() && style()->boxSizing() != BORDER_BOX) {
             result -= (borderTop() + paddingTop() + borderBottom() + paddingBottom());
             result = qMax(0, result);
         }
@@ -1192,8 +1198,7 @@ void RenderBox::calcAbsoluteHorizontal()
         r = style()->right().width(cw);
 
     int static_distance=0;
-    if ((parent()->style()->direction()==LTR && (l==AUTO && r==AUTO ))
-            || style()->left().isStatic())
+    if (parent()->style()->direction()==LTR && (l==AUTO && r==AUTO ))
     {
         // calc hypothetical location in the normal flow
         // used for 1) left=static-position
@@ -1203,23 +1208,22 @@ void RenderBox::calcAbsoluteHorizontal()
         // all positioned elements are blocks, so that
         // would be at the left edge
 
+        RenderObject* po = parent();
         static_distance = m_staticX - cb->borderLeft(); // Should already have been set through layout of the parent().
-        for (RenderObject* po = parent(); po && po != cb; po = po->parent())
+        for (; po && po != cb; po = po->parent())
             static_distance += po->xPos();
 
-        if (l==AUTO || style()->left().isStatic())
-            l = static_distance;
+        l = static_distance;
     }
 
-    else if ((parent()->style()->direction()==RTL && (l==AUTO && r==AUTO ))
-            || style()->right().isStatic())
+    else if (parent()->style()->direction()==RTL && (l==AUTO && r==AUTO ))
     {
-        static_distance = m_staticX - cb->borderLeft(); // Should already have been set through layout of the parent().
-        for (RenderObject* po = parent(); po && po != cb; po = po->parent())
-            static_distance += po->xPos();
+        RenderObject* po = parent();
+        static_distance = m_staticX + cw + cb->borderRight() - po->width(); // Should already have been set through layout of the parent().
+        for (; po && po != cb; po = po->parent())
+            static_distance -= po->xPos();
 
-        if (r==AUTO || style()->right().isStatic())
-            r = static_distance;
+        r = static_distance;
     }
 
     int w = m_width, ml, mr, x;
@@ -1460,14 +1464,18 @@ void RenderBox::calcAbsoluteVerticalValues(HeightType heightType, RenderObject* 
     else if (!height.isVariable())
     {
         h = height.width(ch);
-        if (ourHeight - pab > h)
-            ourHeight = h + pab;
+        if (ourHeight - pab > h) {
+            if (!isTable())
+                ourHeight = h + pab;
+            else
+                h = ourHeight - pab;
+        }
     }
     else if (isReplaced())
         h = intrinsicHeight();
 
     int static_top=0;
-    if ((t==AUTO && b==AUTO ) || style()->top().isStatic())
+    if (t==AUTO && b==AUTO)
     {
         // calc hypothetical location in the normal flow
         // used for 1) top=static-position
@@ -1478,7 +1486,7 @@ void RenderBox::calcAbsoluteVerticalValues(HeightType heightType, RenderObject* 
         for (; po && po != cb; po = po->parent())
             static_top += po->yPos();
 
-        if (h==AUTO || style()->top().isStatic())
+        if (h==AUTO)
             t = static_top;
     }
 

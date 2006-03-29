@@ -113,17 +113,10 @@ bool HTMLCollectionImpl::nodeMatches(NodeImpl *current, bool& deep) const
         break;
     case TABLE_ROWS:
     case TSECTION_ROWS:
-    case TABLE_BODY_ROWS:
         if(e->id() == ID_TR)
             check = true;
         else if(e->id() == ID_TABLE)
             deep = false;
-        else if (type == TABLE_BODY_ROWS) {
-            //Avoid going inside the thead, tfoot.
-            const HTMLTableElementImpl* table = static_cast<const HTMLTableElementImpl*>(m_refNode);
-            if (e == table->tHead() || e == table->tFoot())
-                deep = false;
-        }
         break;
     case SELECT_OPTIONS:
         if(e->id() == ID_OPTION)
@@ -222,40 +215,34 @@ NodeImpl *HTMLCollectionImpl::item ( unsigned long index ) const
     //For table.rows, we first need to check header, then bodies, then footer.
     //we pack any extra headers/footer with bodies. This matches IE, and 
     //means doing the usual thing with length is right
-    //### fix constness throughout instead of loosing the const
-    HTMLTableElementImpl* table = const_cast<HTMLTableElementImpl*>(
-                            static_cast<const HTMLTableElementImpl*>(m_refNode));
+    const HTMLTableElementImpl* table = static_cast<const HTMLTableElementImpl*>(m_refNode);
 
-    //Keep track of position for the namedItem code
-    unsigned long origIndex = index;
+    long                          sectionIndex;
+    HTMLTableSectionElementImpl*  section;
 
     NodeImpl* found = 0;
-    if (table->tHead()) {
-        HTMLCollectionImpl headerRows(table->tHead(), TSECTION_ROWS);
-        unsigned headerLength = headerRows.length();
-        if (index < headerLength)
-            found = headerRows.item(index);
-        else
-            index -= headerLength;
-    }
-
-    if (!found) {
-        HTMLCollectionImpl bodyRows(table, TABLE_BODY_ROWS);
-        unsigned bodyLength = bodyRows.length();
-        if (index < bodyLength)
-            found = bodyRows.item(index);
-        else
-            index -= bodyLength;
-    }
-
-    if (!found && table->tFoot()) {
-        HTMLCollectionImpl footerRows(table->tFoot(), TSECTION_ROWS);
-        found = footerRows.item(index);
+    if (table->findRowSection(index, section, sectionIndex)) {
+        HTMLCollectionImpl rows(section, TSECTION_ROWS);
+        found = rows.item(sectionIndex);
     }
 
     m_cache->current.node = found; //namedItem needs this.
-    m_cache->position     = origIndex;
+    m_cache->position     = index;
     return found;
+}
+
+unsigned long HTMLCollectionImpl::calcLength(NodeImpl *start) const
+{
+    if (type != TABLE_ROWS)
+        return NodeListImpl::calcLength(start);
+
+    unsigned length = 0;
+    const HTMLTableElementImpl* table = static_cast<const HTMLTableElementImpl*>(m_refNode);
+    for (NodeImpl* kid = table->firstChild(); kid; kid = kid->nextSibling()) {
+        HTMLCollectionImpl rows(kid, TSECTION_ROWS);
+        length += rows.length();
+    }
+    return length;
 }
 
 NodeImpl *HTMLCollectionImpl::firstItem() const
@@ -353,19 +340,14 @@ NodeImpl *HTMLFormCollectionImpl::item( unsigned long index ) const
     return 0;
 }
 
-unsigned long HTMLFormCollectionImpl::length() const
+unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl *start) const
 {
-    m_cache->updateNodeListInfo(m_refNode->getDocument());
-    if (!m_cache->hasLength)
-    {
-        m_cache->length = 0;
-        Q3PtrList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( m_refNode )->formElements;
-        for ( unsigned i = 0; i < l.count(); i++ )
-            if ( l.at( i )->isEnumeratable() )
-                ++m_cache->length;
-        m_cache->hasLength = true;
-    }
-    return m_cache->length;
+    unsigned length = 0;
+    Q3PtrList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( m_refNode )->formElements;
+    for ( unsigned i = 0; i < l.count(); i++ )
+        if ( l.at( i )->isEnumeratable() )
+            ++length;
+    return length;
 }
 
 NodeImpl *HTMLFormCollectionImpl::namedItem( const DOMString &name ) const

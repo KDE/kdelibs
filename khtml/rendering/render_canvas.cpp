@@ -72,6 +72,8 @@ RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
     m_selectionEnd = 0;
     m_selectionStartPos = -1;
     m_selectionEndPos = -1;
+    
+    m_needsWidgetMasks = false;
 
     // Create a new root layer for our layer hierarchy.
     m_layer = new (node->getDocument()->renderArena()) RenderLayer(this);
@@ -165,6 +167,8 @@ void RenderCanvas::layout()
     kDebug() << "RenderCanvas::layout time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
+    int oldWidth = m_width;
+    int oldHeight = m_height;
 
     if (m_pagedMode || !m_view) {
         m_width = m_rootWidth;
@@ -176,7 +180,9 @@ void RenderCanvas::layout()
         m_viewportHeight = m_height = m_view->visibleHeight();
     }
 
-    RenderBlock::layout();
+    bool relayoutChildren = (oldWidth != m_width) || (oldHeight != m_height);
+
+    RenderBlock::layoutBlock( relayoutChildren );
 
     int docW = docWidth();
     int docH = docHeight();
@@ -216,9 +222,6 @@ void RenderCanvas::layout()
         setHeight( m_viewportHeight = s.height() );
     }
 
-    // ### we could maybe do the call below better and only pass true if the docsize changed.
-    layoutPositionedObjects( true );
-
 #ifdef SPEED_DEBUG
     kDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
 #endif
@@ -227,6 +230,9 @@ void RenderCanvas::layout()
 
     layer()->resize( qMax( docW,int( m_width ) ), qMax( docH,m_height ) );
     layer()->updateLayerPositions( layer(), needsFullRepaint(), true );
+    
+    if (!m_pagedMode && m_needsWidgetMasks)
+        layer()->updateWidgetMasks(layer());
 
     scheduleDeferredRepaints();
     setNeedsLayout(false);
@@ -249,10 +255,9 @@ bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
         xPos = 0;
         yPos = m_pageTop;
     }
-    else
-    if ( f && m_view) {
-	xPos = m_view->contentsX();
-	yPos = m_view->contentsY();
+    else if ( f && m_view) {
+        xPos = m_view->contentsX();
+        yPos = m_view->contentsY();
     }
     else {
         xPos = yPos = 0;
@@ -372,10 +377,13 @@ static QRect enclosingPositionedRect (RenderObject *n)
     if (enclosingParent) {
         int ox, oy;
         enclosingParent->absolutePosition(ox, oy);
-        rect.setX(ox);
+        int off = 0;
+        if (!enclosingParent->hasOverflowClip())
+            off = enclosingParent->negativeOverflowWidth();
+        rect.setX(ox - off);
         rect.setY(oy);
-        rect.setWidth (enclosingParent->effectiveWidth());
-        rect.setHeight (enclosingParent->effectiveHeight());
+        rect.setWidth(enclosingParent->effectiveWidth());
+        rect.setHeight(enclosingParent->effectiveHeight());
     }
     return rect;
 }

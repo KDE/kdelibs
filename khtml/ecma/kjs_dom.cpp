@@ -670,6 +670,20 @@ bool DOMNodeList::getOwnPropertySlot(ExecState *exec, const Identifier& property
   return DOMObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
+ReferenceList DOMNodeList::propList(ExecState *exec, bool recursive)
+{
+  ReferenceList properties = ObjectImp::propList(exec,recursive);
+
+  for (unsigned i = 0; i < m_impl->length(); ++i) {
+      properties.append(Reference(this, i));
+  }
+
+  properties.append(Reference(this, lengthPropertyName));
+
+  return properties;
+}
+
+// Need to support both get and call, so that list[0] and list(0) work.
 ValueImp* DOMNodeList::callAsFunction(ExecState *exec, ObjectImp *, const List &args)
 {
   // Do not use thisObj here. See HTMLCollection.

@@ -64,7 +64,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_render(0),
       m_tabIndex( 0 ),
       m_hasId( false ),
-      m_hasStyle( false ),
       m_attached(false),
       m_closed(false),
       m_changed( false ),
@@ -74,7 +73,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_specified( false ),
       m_focused( false ),
       m_active( false ),
-      m_styleElement( false ),
       m_implicit( false ),
       m_rendererNeedsClose( false ),
       m_htmlCompat( false )
@@ -743,7 +741,7 @@ void NodeImpl::checkAddChild(NodeImpl *newChild, int &exceptioncode)
         // newChild is a DocumentFragment... check all its children instead of newChild itself
         NodeImpl *child;
         for (child = newChild->firstChild(); child; child = child->nextSibling()) {
-            if (!childAllowed(child)) {
+            if (!childTypeAllowed(child->nodeType())) {
                 exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
                 return;
             }
@@ -751,7 +749,7 @@ void NodeImpl::checkAddChild(NodeImpl *newChild, int &exceptioncode)
     }
     else {
         // newChild is not a DocumentFragment... check if it's allowed directly
-        if(!childAllowed(newChild)) {
+        if(!childTypeAllowed(newChild->nodeType())) {
             exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
             return;
         }
@@ -1356,7 +1354,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     // do not add applyChanges here! This function is only used during parsing
 
     // short check for consistency with DTD
-    if(!isXMLElementNode() && !newChild->isXMLElementNode() && !childAllowed(newChild))
+    if(getDocument()->isHTMLDocument() && !childAllowed(newChild))
     {
         //kDebug( 6020 ) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id() << endl;
         return 0;
@@ -1648,13 +1646,13 @@ unsigned long NodeListImpl::length() const
 {
     m_cache->updateNodeListInfo(m_refNode->getDocument());
     if (!m_cache->hasLength) {
-        m_cache->length    = recursiveLength( m_refNode );
+        m_cache->length    = calcLength( m_refNode );
         m_cache->hasLength = true;
     }
     return m_cache->length;
 }
 
-unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
+unsigned long NodeListImpl::calcLength(NodeImpl *start) const
 {
     unsigned long len = 0;
     for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
@@ -1662,7 +1660,7 @@ unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
         if (nodeMatches(n, recurse))
                 len++;
         if (recurse)
-            len+= recursiveLength(n);
+            len+= NodeListImpl::calcLength(n);
         }
 
     return len;

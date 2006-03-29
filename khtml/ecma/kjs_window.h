@@ -204,14 +204,31 @@ namespace KJS {
   };
 
   /**
+   * like QDateTime, but properly handles milliseconds
+   */
+  class DateTimeMS
+  {
+  	QDate mDate;
+  	QTime mTime;
+  public:
+    DateTimeMS addMSecs(int s) const;
+    bool operator >(const DateTimeMS &other) const;
+    bool operator >=(const DateTimeMS &other) const;
+    
+    int msecsTo(const DateTimeMS &other) const;
+    
+    static DateTimeMS now();
+  };
+
+  /**
    * An action (either function or string) to be executed after a specified
    * time interval, either once or repeatedly. Used for window.setTimeout()
    * and window.setInterval()
    */
   class ScheduledAction {
   public:
-    ScheduledAction(ObjectImp* _func, List _args, QTime _nextTime, int _interval, bool _singleShot, int _timerId);
-    ScheduledAction(QString _code, QTime _nextTime, int _interval, bool _singleShot, int _timerId);
+    ScheduledAction(ObjectImp* _func, List _args, DateTimeMS _nextTime, int _interval, bool _singleShot, int _timerId);
+    ScheduledAction(QString _code, DateTimeMS _nextTime, int _interval, bool _singleShot, int _timerId);
     ~ScheduledAction();
     bool execute(Window *window);
     void mark();
@@ -222,7 +239,7 @@ namespace KJS {
     bool isFunction;
     bool singleShot;
 
-    QTime nextTime;
+    DateTimeMS nextTime;
     int interval;
     bool executing;
     int timerId;

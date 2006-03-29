@@ -903,11 +903,7 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
     {
         if( p->id() == ID_FORM )
             return static_cast<HTMLFormElementImpl *>(p);
-        NodeImpl *s = p->previousSibling();
-        if (!s)
-            p = p->parentNode();
-        else
-            p = s;
+        p = p->parentNode();
     }
 #ifdef FORMS_DEBUG
     kDebug( 6030 ) << "couldn't find form!" << endl;

@@ -5,6 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2002-2004 Apple Computer, Inc.
+ *           (C) 2006 Germain Garand <germain@ebooksfrance.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -78,6 +79,8 @@ using namespace khtml;
 #ifndef NDEBUG
 static void *baseOfRenderObjectBeingDeleted;
 #endif
+
+//#define MASK_DEBUG
 
 void* RenderObject::operator new(size_t sz, RenderArena* renderArena) throw()
 {
@@ -387,6 +390,14 @@ RenderLayer* RenderObject::enclosingLayer() const
     return 0;
 }
 
+RenderLayer* RenderObject::enclosingStackingContext() const
+{
+    RenderLayer* l = enclosingLayer();
+    while (l && !l->isStackingContext())
+        l = l->parent();
+    return l;
+}
+
 int RenderObject::offsetLeft() const
 {
     if ( isPositioned() )
@@ -440,12 +451,14 @@ int RenderObject::offsetTop() const
 
 RenderObject* RenderObject::offsetParent() const
 {
+    // can't really use containing blocks here (#113280)
     bool skipTables = isPositioned() || isRelPositioned();
     bool strict = !style()->htmlHacks();
     RenderObject* curr = parent();
-    while (curr && !curr->isPositioned() && !curr->isRelPositioned() && 
-                   !(strict && skipTables ? curr->isRoot() : curr->isBody())) {
-        if (!skipTables && (curr->isTableCell() || curr->isTable()))
+    while (curr && (!curr->element() || 
+                    (!curr->isPositioned() && !curr->isRelPositioned() && 
+                        !(strict && skipTables ? curr->isRoot() : curr->isBody())))) {
+        if (!skipTables && curr->element() && (curr->isTableCell() || curr->isTable()))
             break;
         curr = curr->parent();
     }
@@ -479,14 +492,12 @@ int RenderObject::scrollHeight() const
 
 bool RenderObject::hasStaticX() const
 {
-    return (style()->left().isVariable() && style()->right().isVariable()) ||
-            style()->left().isStatic() ||
-            style()->right().isStatic();
+    return (style()->left().isVariable() && style()->right().isVariable());
 }
 
 bool RenderObject::hasStaticY() const
 {
-    return (style()->top().isVariable() && style()->bottom().isVariable()) || style()->top().isStatic();
+    return (style()->top().isVariable() && style()->bottom().isVariable());
 }
 
 void RenderObject::updatePixmap(const QRect& /*r*/, CachedImage* image)
@@ -569,8 +580,12 @@ RenderBlock *RenderObject::containingBlock() const
     }
     else if(m_style->position() == ABSOLUTE) {
         while (o &&
-               ( o->style()->position() == STATIC || ( o->isInline() && !o->isReplaced() ) ) && !o->isCanvas())
+               ( o->style()->position() == STATIC || ( o->isInline() && !o->isReplaced() ) ) && !o->isCanvas()) {
+               // for relpos inlines, return the nearest block - it will host the positioned objects list
+               if (o->isInline() && !o->isReplaced() && o->style()->position() == RELATIVE)
+                   return o->containingBlock();
             o = o->parent();
+        }
     } else {
         while(o && ( ( o->isInline() && !o->isReplaced() ) || o->isTableRow() || o->isTableSection() ||
                        o->isTableCol() || o->isFrameSet() ) )
@@ -1256,6 +1271,8 @@ void RenderObject::setStyle(RenderStyle *style)
     m_relPositioned = false;
     m_paintBackground = false;
 
+    // only honour z-index for non-static objects
+    // ### and objects with opacity
     if ( style->position() == STATIC ) {
         if ( isRoot() )
             style->setZIndex( 0 );
@@ -1293,9 +1310,16 @@ void RenderObject::setStyle(RenderStyle *style)
             }
             setNeedsLayoutAndMinMaxRecalc();
         } else if (!isText() && d == RenderStyle::Visible) {
-            if (layer() && !isInlineFlow())
+            if (layer() && !isInlineFlow()) {
                 layer()->repaint();
-            else
+                if (canvas() && canvas()->needsWidgetMasks()) { 
+                    RenderLayer *p, *d = 0;
+                    for (p=layer()->parent();p;p=p->parent())
+                        if (p->hasOverlaidWidgets()) d=p;
+                    if (d) // deepest
+                        d->updateWidgetMasks( canvas()->layer() );
+                }
+            } else
                 repaint();
         }
     }
@@ -1308,9 +1332,17 @@ void RenderObject::dirtyFormattingContext( bool checkContainer )
     m_markedForRepaint = true;
     if (layer() && (style()->position() == FIXED || style()->position() == ABSOLUTE))
         return;
-    if (m_parent && (checkContainer || style()->width().isVariable() || style()->height().isVariable() ||
-                     !(isFloating() || flowAroundFloats() || isTableCell())))
-        m_parent->dirtyFormattingContext(false);
+    if (m_parent) {
+         if (isInlineFlow()) {
+             if (!checkContainer && !m_parent->isInline())
+                 return;
+             else
+                 m_parent->dirtyFormattingContext(false);
+         } 
+         else if (checkContainer || style()->width().isVariable() || style()->height().isVariable() ||
+                     !(isFloating() || flowAroundFloats() || isTableCell()))
+             m_parent->dirtyFormattingContext(false);
+    }
 }
 
 void RenderObject::repaintDuringLayout()
@@ -1664,7 +1696,8 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
                 (_y >= ty) && (_y < ty + height()) && (_x >= tx) && (_x < tx + width())) || isRoot() || isBody();
     bool inOverflowRect = inside;
     if ( !inOverflowRect ) {
-        QRect overflowRect( tx, ty, overflowWidth(), overflowHeight() );
+        int no = negativeOverflowWidth();
+        QRect overflowRect( tx-no, ty, overflowWidth()+no, overflowHeight() );
         inOverflowRect = overflowRect.contains( _x, _y );
     }
 
@@ -2093,19 +2126,21 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
                 n = n->previousSibling();
             }
             if (sibling->isReset())
+            {
                 if (last != sibling)
                     sibling->insertAfter(i, last);
                 else
                     sibling->insertAfter(i, 0);
-            else
+            }
+            else if (last->parent())
                 last->parent()->insertAfter(i, last);
         }
-        else {
+        else if (parent()) {
             // Nothing found among siblings, let our parent search
             last = parent()->getCounter(counter, false);
             if (last->isReset())
                 last->insertAfter(i, 0);
-            else
+            else if (last->parent())
                 last->parent()->insertAfter(i, last);
         }
     }
@@ -2149,6 +2184,54 @@ void RenderObject::insertCounter(const QString& counter, CounterNode* val)
     counters->insert(counter, val);
 }
 
+void RenderObject::updateWidgetMasks() {
+    for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling()) {
+        if ( curr->isWidget() && static_cast<RenderWidget*>(curr)->needsMask() ) {
+            QWidget* w = static_cast<RenderWidget*>(curr)->widget();
+            if (!w)
+                return;
+            RenderLayer* l = curr->enclosingStackingContext();
+            QRegion r = l ? l->getMask() : QRegion();
+            int x,y;
+            if (!r.isNull() && curr->absolutePosition(x,y)) {
+                x+= curr->borderLeft()+curr->paddingLeft();
+                y+= curr->borderBottom()+curr->paddingBottom();
+                r = r.intersect(QRect(x,y,curr->width(),curr->height()));
+#ifdef MASK_DEBUG
+                QMemArray<QRect> ar = r.rects();
+                kdDebug(6040) << "|| Setting widget mask for " << curr->information() << endl;
+                for (int i = 0; i < ar.size() ; ++i) {
+                    kdDebug(6040) << "		" <<  ar[i] << endl;
+                }
+#endif
+                r.translate(-x,-y);
+                w->setMask(r);
+            } else {
+                w->clearMask();
+            }
+        }
+        else if (!curr->layer() || !curr->layer()->isStackingContext())
+            curr->updateWidgetMasks();
+  
+    }
+}
+
+QRegion RenderObject::visibleFlowRegion(int x, int y) const
+{
+    QRegion r;
+    for (RenderObject* ro=firstChild();ro;ro=ro->nextSibling()) {
+        if( !ro->layer() && !ro->isInlineFlow() && ro->style()->visibility() == VISIBLE) {
+            const RenderStyle *s = ro->style();
+            if (ro->isRelPositioned())
+                static_cast<const RenderBox*>(ro)->relativePositionOffset(x,y);
+            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() )
+                r += QRect(x + ro->effectiveXPos(),y + ro->yPos(), ro->effectiveWidth(), ro->effectiveHeight());
+            else
+                r += ro->visibleFlowRegion(x+ro->effectiveXPos(),y+ro->yPos());
+        }
+    }
+    return r;
+}
 
 #undef RED_LUMINOSITY
 #undef GREEN_LUMINOSITY

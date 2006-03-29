@@ -317,7 +317,7 @@ protected:
     QString scriptSrcCharset;
     bool javascript;
     // the HTML code we will parse after the external script we are waiting for has loaded
-    TokenizerString pendingSrc;
+    TokenizerQueue pendingQueue;
     // true if we are executing a script while parsing a document. This causes the parsing of
     // the output of the script to be postponed until after the script has finished executing
     int m_executingScript;
@@ -339,7 +339,7 @@ protected:
     // on an already loaded document
     int m_autoCloseTimer;
 
-#define CBUFLEN 20
+#define CBUFLEN 1024
     char cBuffer[CBUFLEN+2];
     unsigned int cBufferPos;
 

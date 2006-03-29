@@ -1371,10 +1371,11 @@ void KHTMLPart::setAutoloadImages( bool enable )
     delete d->m_paLoadImages;
     d->m_paLoadImages = 0;
   }
-  else if ( !d->m_paLoadImages )
+  else if ( !d->m_paLoadImages ) {
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), actionCollection(), "loadImages" );
     d->m_paLoadImages->setIcon( KIcon( "images_display" ) );
     connect( d->m_paLoadImages, SIGNAL( triggered( bool ) ), this, SLOT( slotLoadImages() ) );
+  }
 
   if ( d->m_paLoadImages ) {
     QList<KAction*> lst;
@@ -1583,7 +1584,6 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     d->m_pageServices = d->m_job->queryMetaData("PageServices");
     d->m_pageReferrer = d->m_job->queryMetaData("referrer");
-
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
 
     {
@@ -1615,6 +1615,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if ( !qData.isEmpty() && !d->m_haveEncoding ) // only use information if the user didn't override the settings
        d->m_encoding = qData;
 
+
     // Support for http-refresh
     qData = d->m_job->queryMetaData("http-refresh");
     if( !qData.isEmpty())
@@ -1627,6 +1628,11 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if (!baseURL.isEmpty())
       d->m_doc->setBaseURL(KUrl( d->m_doc->completeURL(baseURL) ));
     */
+
+    // Support for Content-Language
+    QString language = d->m_job->queryMetaData("content-language");
+    if (!language.isEmpty())
+        d->m_doc->setContentLanguage(language);
 
     if ( !m_url.isLocalFile() ) {
         // Support for http last-modified
@@ -2790,7 +2796,7 @@ bool KHTMLPart::initFindNode( bool selection, bool reverse, bool fromCursor )
 // Old method (its API limits the available features - remove in KDE-4)
 bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp )
 {
-    if ( !initFindNode( false, !forward, false ) )
+    if ( !initFindNode( false, !forward, d->m_findNode ) )
       return false;
     while(1)
     {

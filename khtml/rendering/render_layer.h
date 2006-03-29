@@ -185,6 +185,7 @@ public:
     // Scrolling methods for layers that can scroll their overflow.
     void scrollOffset(int& x, int& y);
     void subtractScrollOffset(int& x, int& y);
+    void checkInlineRelOffset(const RenderObject* o, int& x, int& y);
     short scrollXOffset() { return m_scrollX; }
     int scrollYOffset() { return m_scrollY; }
     void scrollToOffset(int x, int y, bool updateScrollbars = true, bool repaint = true);
@@ -215,6 +216,12 @@ public:
     void updateZOrderLists();
     QVector<RenderLayer*>* posZOrderList() const { return m_posZOrderList; }
     QVector<RenderLayer*>* negZOrderList() const { return m_negZOrderList; }
+
+    void setHasOverlaidWidgets(bool b=true) { m_hasOverlaidWidgets = b; }
+    bool hasOverlaidWidgets() const { return m_hasOverlaidWidgets; }
+    QRegion getMask() const { return m_region; }
+    QRegion paintedRegion(RenderLayer* rootLayer);
+    void updateWidgetMasks(RenderLayer* rootLayer);
 
     // Gets the nearest enclosing positioned ancestor layer (also includes
     // the <html> layer and the root layer).
@@ -311,7 +318,11 @@ protected:
     bool m_zOrderListsDirty;
     
     bool m_markedForRepaint;
+
     QRect m_visibleRect;
+
+    bool m_hasOverlaidWidgets; 
+    QRegion m_region; // used by overlaid (non z-order aware) widgets
 
     Marquee* m_marquee; // Used by layers with overflow:marquee
 };

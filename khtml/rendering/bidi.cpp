@@ -659,7 +659,7 @@ InlineFlowBox* RenderBlock::createLineBoxes(RenderObject* obj)
     return box;
 }
 
-InlineFlowBox* RenderBlock::constructLine(const BidiIterator &start, const BidiIterator &end)
+InlineFlowBox* RenderBlock::constructLine(const BidiIterator &/*start*/, const BidiIterator &end)
 {
     if (!sFirstBidiRun)
         return 0; // We had no runs. Don't make a root inline box at all. The line is empty.
@@ -783,6 +783,8 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
     int rightPos = lineBox->placeBoxesHorizontally(x);
     if (rightPos > m_overflowWidth)
         m_overflowWidth = rightPos; // FIXME: Work for rtl overflow also.
+    if (x < 0)
+        m_negativeOverflowWidth = qMax(m_negativeOverflowWidth, -x);
 }
 
 void RenderBlock::computeVerticalPositionsForLine(InlineFlowBox* lineBox)
@@ -865,7 +867,6 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
 #endif
         }
         if (doPageBreak) {
-            int oldYPos = lineBox->yPos();
             int pTop = pageTopAfter(lineBox->yPos());
 
             m_height = pTop;

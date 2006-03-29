@@ -59,8 +59,6 @@ RenderTable::RenderTable(DOM::NodeImpl* node)
     tableLayout = 0;
     m_currentBorder = 0;
 
-    rules = None;
-    frame = Void;
     has_col_elems = false;
     hspacing = vspacing = 0;
     padding = 0;
@@ -303,6 +301,8 @@ void RenderTable::layout()
     m_height += bpTop;
 
     int oldHeight = m_height;
+    if (isPositioned())
+        m_height += calculatedHeight + bpBottom;
     calcHeight();
     int newHeight = m_height;
     m_height = oldHeight;
@@ -310,7 +310,7 @@ void RenderTable::layout()
     Length h = style()->height();
     int th = -(bpTop + bpBottom); // Tables size as though CSS height includes border/padding.
     if (isPositioned())
-        th = newHeight; // FIXME: Leave this alone for now but investigate later.
+        th += newHeight;
     else if (h.isFixed())
         th += h.value();
     else if (h.isPercent())
@@ -625,7 +625,9 @@ RenderTableCol *RenderTable::colElement( int col ) {
 	    if ( !next && child->parent()->isTableCol() )
 		next = child->parent()->nextSibling();
 	    child = next;
-	} else
+	} else if (child == tCaption) {
+	    child = child->nextSibling();
+        } else
 	    break;
     }
     return 0;
@@ -1196,7 +1198,7 @@ void RenderTableSection::calcRowHeight()
 	int totalCols = row->size();
 	int totalRows = grid.size();
 	bool pagedMode = canvas()->pagedMode();
-	
+
 	grid[r].needFlex = false;
 
 	for ( int c = 0; c < totalCols; c++ ) {
@@ -1224,7 +1226,7 @@ void RenderTableSection::calcRowHeight()
             ch = cell->style()->height().width(0);
             if ( cell->height() > ch)
                 ch = cell->height();
-            
+
             if (!cell->style()->height().isVariable())
                 grid[r].needFlex = true;
 
@@ -1454,7 +1456,7 @@ int RenderTableSection::layoutRows( int toAdd )
 
 bool RenderTableSection::flexCellChildren(RenderObject* p) const
 {
-    if (!p) 
+    if (!p)
         return false;
     RenderObject* o = p->firstChild();
     bool didFlex = false;
@@ -1491,6 +1493,57 @@ inline static RenderTableRow *nextTableRow(RenderObject *row)
     while (row && !row->isTableRow())
         row = row->nextSibling();
     return static_cast<RenderTableRow *>(row);
+}
+
+int RenderTableSection::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    int bottom = RenderContainer::lowestPosition(includeOverflowInterior, includeSelf);
+    if (!includeOverflowInterior && hasOverflowClip())
+        return bottom;
+
+    for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
+        for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
+            if (cell->isTableCell()) {
+                int bp = cell->yPos() + cell->lowestPosition(false);
+                bottom = qMax(bottom, bp);
+        }
+    }
+
+    return bottom;
+}
+
+int RenderTableSection::rightmostPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    int right = RenderContainer::rightmostPosition(includeOverflowInterior, includeSelf);
+    if (!includeOverflowInterior && hasOverflowClip())
+        return right;
+
+    for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
+        for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
+            if (cell->isTableCell()) {
+                int rp = cell->xPos() + cell->rightmostPosition(false);
+                right = qMax(right, rp);
+        }
+    }
+
+    return right;
+}
+
+int RenderTableSection::leftmostPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    int left = RenderContainer::leftmostPosition(includeOverflowInterior, includeSelf);
+    if (!includeOverflowInterior && hasOverflowClip())
+        return left;
+
+    for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
+        for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
+            if (cell->isTableCell()) {
+                int lp = cell->xPos() + cell->leftmostPosition(false);
+                left = qMin(left, lp);
+        }
+    }
+
+    return left;
 }
 
 void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
@@ -1629,8 +1682,6 @@ void RenderTableSection::addSpaceAt(int pos, int dy)
     for ( int r = 0; r < totalRows; r++ ) {
         if (rowPos[r] >= pos) {
             rowPos[r] += dy;
-            Row *row = grid[r].row;
-            int totalCols = row->size();
             int rindx;
             for ( int c = 0; c < nEffCols; c++ )
             {
@@ -1839,7 +1890,12 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
         if( last && last->isAnonymous() && last->isTableCell() )
             cell = static_cast<RenderTableCell *>(last);
         else {
-	    cell = new (renderArena()) RenderTableCell(document() /* anonymous object */);
+            // If beforeChild is inside an anonymous cell, insert into the cell.
+            if (last && !last->isTableCell() && last->parent() && last->parent()->isAnonymous()) {
+                last->parent()->addChild(child, beforeChild);
+                return;
+            }
+            cell = new (renderArena()) RenderTableCell(document() /* anonymous object */);
 	    RenderStyle *newStyle = new RenderStyle();
 	    newStyle->inheritFrom(style());
 	    newStyle->setDisplay( TABLE_CELL );

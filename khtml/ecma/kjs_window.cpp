@@ -1885,7 +1885,7 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
 ////////////////////// ScheduledAction ////////////////////////
 
 // KDE 4: Make those parameters const ... &
-ScheduledAction::ScheduledAction(ObjectImp *_func, List _args, QTime _nextTime, int _interval, bool _singleShot,
+ScheduledAction::ScheduledAction(ObjectImp* _func, List _args, DateTimeMS _nextTime, int _interval, bool _singleShot,
 				  int _timerId)
 {
   //kDebug(6070) << "ScheduledAction::ScheduledAction(isFunction) " << this << endl;
@@ -1900,7 +1900,7 @@ ScheduledAction::ScheduledAction(ObjectImp *_func, List _args, QTime _nextTime, 
 }
 
 // KDE 4: Make it const QString &
-ScheduledAction::ScheduledAction(QString _code, QTime _nextTime, int _interval, bool _singleShot, int _timerId)
+ScheduledAction::ScheduledAction(QString _code, DateTimeMS _nextTime, int _interval, bool _singleShot, int _timerId)
 {
   //kDebug(6070) << "ScheduledAction::ScheduledAction(!isFunction) " << this << endl;
   //func = 0;
@@ -2000,7 +2000,8 @@ int WindowQObject::installTimeout(const Identifier &handler, int t, bool singleS
 {
   int id = ++lastTimerId;
   if (t < 10) t = 10;
-  QTime nextTime = QTime::currentTime().addMSecs(-pausedTime).addMSecs(t);
+  DateTimeMS nextTime = DateTimeMS::now().addMSecs(-pausedTime + t);
+  
   ScheduledAction *action = new ScheduledAction(handler.qstring(),nextTime,t,singleShot,id);
   scheduledActions.append(action);
   setNextTimer();
@@ -2014,7 +2015,8 @@ int WindowQObject::installTimeout(ValueImp *func, List args, int t, bool singleS
     return 0;
   int id = ++lastTimerId;
   if (t < 10) t = 10;
-  QTime nextTime = QTime::currentTime().addMSecs(-pausedTime).addMSecs(t);
+  
+  DateTimeMS nextTime = DateTimeMS::now().addMSecs(-pausedTime + t);
   ScheduledAction *action = new ScheduledAction(objFunc,args,nextTime,t,singleShot,id);
   scheduledActions.append(action);
   setNextTimer();
@@ -2056,8 +2058,9 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
   currentlyDispatching = true;
 
-  QTime currentActual = QTime::currentTime();
-  QTime currentAdjusted = currentActual.addMSecs(-pausedTime);
+
+  DateTimeMS currentActual = DateTimeMS::now();
+  DateTimeMS currentAdjusted = currentActual.addMSecs(-pausedTime);
 
   // Work out which actions are to be executed. We take a separate copy of
   // this list since the main one may be modified during action execution
@@ -2094,12 +2097,70 @@ void WindowQObject::timerEvent(QTimerEvent *)
       action->nextTime = action->nextTime.addMSecs(action->interval);
   }
 
-  pausedTime += currentActual.msecsTo(QTime::currentTime());
+  pausedTime += currentActual.msecsTo(DateTimeMS::now());
 
   currentlyDispatching = false;
 
   // Work out when next event is to occur
   setNextTimer();
+}
+
+DateTimeMS DateTimeMS::addMSecs(int s) const
+{
+  DateTimeMS c = *this;
+  c.mTime = mTime.addMSecs(s);
+  if (s > 0)
+  {
+    if (c.mTime < mTime)
+      c.mDate = mDate.addDays(1);
+  }
+  else
+  {
+    if (c.mTime > mTime)
+      c.mDate = mDate.addDays(-1);
+  }
+  return c;
+}
+
+bool DateTimeMS::operator >(const DateTimeMS &other) const
+{
+  if (mDate > other.mDate)
+    return true;
+
+  if (mDate < other.mDate)
+    return false;
+
+  return mTime > other.mTime;
+}
+
+bool DateTimeMS::operator >=(const DateTimeMS &other) const
+{
+  if (mDate > other.mDate)
+    return true;
+
+  if (mDate < other.mDate)
+    return false;
+
+  return mTime >= other.mTime;
+}
+
+int DateTimeMS::msecsTo(const DateTimeMS &other) const
+{
+	int d = mDate.daysTo(other.mDate);
+	int ms = mTime.msecsTo(other.mTime);
+	return d*24*60*60*1000 + ms;
+}
+
+
+DateTimeMS DateTimeMS::now()
+{
+  DateTimeMS t;
+  QTime before = QTime::currentTime();
+  t.mDate = QDate::currentDate();
+  t.mTime = QTime::currentTime();
+  if (t.mTime < before)
+    t.mDate = QDate::currentDate(); // prevent race condition in hacky way :)
+  return t;
 }
 
 void WindowQObject::setNextTimer()
@@ -2111,13 +2172,13 @@ void WindowQObject::setNextTimer()
     return;
 
   Q3PtrListIterator<ScheduledAction> it(scheduledActions);
-  QTime nextTime = it.current()->nextTime;
+  DateTimeMS nextTime = it.current()->nextTime;
   for (++it; it.current(); ++it)
     if (nextTime > it.current()->nextTime)
       nextTime = it.current()->nextTime;
 
-  QTime nextTimeActual = nextTime.addMSecs(pausedTime);
-  int nextInterval = QTime::currentTime().msecsTo(nextTimeActual);
+  DateTimeMS nextTimeActual = nextTime.addMSecs(pausedTime);
+  int nextInterval = DateTimeMS::now().msecsTo(nextTimeActual);
   if (nextInterval < 0)
     nextInterval = 0;
   timerIds.append(startTimer(nextInterval));

@@ -532,6 +532,9 @@ public:
         return m_getElementByIdCache;
     }
 
+    QString contentLanguage() const { return m_contentLanguage; }
+    void setContentLanguage(const QString& cl) { m_contentLanguage = cl; }
+
 Q_SIGNALS:
     void finishedParsing();
 
@@ -552,6 +555,8 @@ protected:
     QString m_usersheet;
     QString m_printSheet;
     QStringList m_availableSheets;
+
+    QString m_contentLanguage;
 
     // Track the number of currently loading top-level stylesheets.  Sheets
     // loaded using the @import directive are not included in this count.

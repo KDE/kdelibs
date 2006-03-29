@@ -146,6 +146,7 @@ public:
 
     virtual RenderLayer* layer() const { return 0; }
     RenderLayer* enclosingLayer() const;
+    RenderLayer* enclosingStackingContext() const;
     void addLayers(RenderLayer* parentLayer, RenderObject* newObject);
     void removeLayers(RenderLayer* parentLayer);
     void moveLayers(RenderLayer* oldParent, RenderLayer* newParent);
@@ -538,6 +539,11 @@ public:
     virtual int xPos() const { return 0; }
     virtual int yPos() const { return 0; }
 
+    /** the position of the object from where it begins drawing, including
+     * its negative overflow
+     */
+    int effectiveXPos() const { return xPos() - (hasOverflowClip() ? 0 : negativeOverflowWidth()); }
+
     /** Leftmost coordinate of this inline element relative to containing
      * block. Always zero for non-inline elements.
      */
@@ -560,6 +566,8 @@ public:
     // of borderTop() + paddingTop() + 100px.
     virtual int overflowHeight() const { return height(); }
     virtual int overflowWidth() const { return width(); }
+    // how much goes over the left hand side (0 or a positive number)
+    virtual int negativeOverflowWidth() const { return 0; }
 
     /**
      * Returns the height that is effectively considered when contemplating the
@@ -570,7 +578,7 @@ public:
      * Returns the width that is effectively considered when contemplating the
      * object as a whole -- usually the overflow width, or the width if clipped.
      */
-    int effectiveWidth() const { return hasOverflowClip() ? width() : overflowWidth(); }
+    int effectiveWidth() const { return hasOverflowClip() ? width() : overflowWidth() + negativeOverflowWidth(); }
 
     // IE extensions, heavily used in ECMA
     virtual short offsetWidth() const { return width(); }
@@ -733,6 +741,8 @@ public:
     virtual long maxOffset() const { return 0; }
 
     virtual void updatePixmap(const QRect&, CachedImage *);
+    
+    QRegion visibleFlowRegion(int x, int y) const;
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
@@ -740,7 +750,7 @@ protected:
     virtual QRect viewRect() const;
     void remove();
     void invalidateVerticalPositions();
-
+    void updateWidgetMasks();
 
     virtual void removeLeftoverAnonymousBoxes();
 

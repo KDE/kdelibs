@@ -503,7 +503,7 @@ public:
     }
 
     L toLeft(R r) {
-        typename QMap<R,L>::iterator i = m_rToL.find(r);
+        typename QMap<R,L>::iterator i( m_rToL.find(r) );
         if (i != m_rToL.end())
             return *i;
         return L();
@@ -782,7 +782,7 @@ void KeyboardEventImpl::initKeyboardEvent(const DOMString &typeArg,
     QStringList mods = modifiersList.string().trimmed().simplified().split( ' ' );
 
     unsigned modifiers = 0;
-    for (QStringList::iterator i = mods.begin(); i != mods.end(); ++i)
+    for (QStringList::Iterator i = mods.begin(); i != mods.end(); ++i)
         if (unsigned mask = keyModifiersToCode()->toRight((*i).toLatin1()))
             modifiers |= mask;
 

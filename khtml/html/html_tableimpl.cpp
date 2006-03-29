@@ -7,6 +7,7 @@
  *           (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2006 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -50,11 +51,6 @@ using namespace DOM;
 HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
   : HTMLElementImpl(doc)
 {
-    tCaption = 0;
-    head = 0;
-    foot = 0;
-    firstBody = 0;
-
     rules = None;
     frame = Void;
 
@@ -84,8 +80,8 @@ NodeImpl* HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
 {
     int exceptioncode = 0;
     NodeImpl* r;
-    if(tCaption) {
-        replaceChild ( c, tCaption, exceptioncode );
+    if(ElementImpl* cap = caption()) {
+        replaceChild ( c, cap, exceptioncode );
         r = c;
     }
     else
@@ -98,13 +94,13 @@ NodeImpl* HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
 {
     int exceptioncode = 0;
     NodeImpl* r;
-    if(head) {
+    if( ElementImpl* head = tHead() ) {
         replaceChild( s, head, exceptioncode );
         r = s;
     }
-    else if( foot )
+    else if(ElementImpl* foot = tFoot())
         r = insertBefore( s, foot, exceptioncode );
-    else if( firstBody )
+    else if(ElementImpl* firstBody = tFirstBody())
         r = insertBefore( s, firstBody, exceptioncode );
     else
         r = appendChild( s, exceptioncode );
@@ -117,10 +113,10 @@ NodeImpl* HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
 {
     int exceptioncode = 0;
     NodeImpl* r;
-    if(foot) {
+    if(ElementImpl* foot = tFoot()) {
         replaceChild ( s, foot, exceptioncode );
         r = s;
-    } else if( firstBody )
+    } else if(ElementImpl* firstBody = tFirstBody())
         r = insertBefore( s, firstBody, exceptioncode );
     else
         r = appendChild( s, exceptioncode );
@@ -133,7 +129,7 @@ NodeImpl* HTMLTableElementImpl::setTBody( HTMLTableSectionElementImpl *s )
     int exceptioncode = 0;
     NodeImpl* r;
 
-    if(firstBody) {
+    if(ElementImpl* firstBody = tFirstBody()) {
         replaceChild ( s, firstBody, exceptioncode );
         r = s;
     } else
@@ -145,181 +141,227 @@ NodeImpl* HTMLTableElementImpl::setTBody( HTMLTableSectionElementImpl *s )
 
 HTMLElementImpl *HTMLTableElementImpl::createTHead(  )
 {
-    if(!head)
+    if(!tHead())
     {
         int exceptioncode = 0;
-        head = new HTMLTableSectionElementImpl(docPtr(), ID_THEAD, true /* implicit */);
-        if(foot)
+        ElementImpl* head = new HTMLTableSectionElementImpl(docPtr(), ID_THEAD, true /* implicit */);
+        if(ElementImpl* foot = tFoot())
             insertBefore( head, foot, exceptioncode );
-        else if(firstBody)
+        else if(ElementImpl* firstBody = tFirstBody())
             insertBefore( head, firstBody, exceptioncode);
         else
             appendChild(head, exceptioncode);
     }
-    return head;
+    return tHead();
 }
 
 void HTMLTableElementImpl::deleteTHead(  )
 {
-    if(head) {
+    if(ElementImpl* head = tHead()) {
         int exceptioncode = 0;
-        HTMLElementImpl::removeChild(head, exceptioncode);
+        removeChild(head, exceptioncode);
     }
-    head = 0;
 }
 
 HTMLElementImpl *HTMLTableElementImpl::createTFoot(  )
 {
-    if(!foot)
+    if(!tFoot())
     {
         int exceptioncode = 0;
-        foot = new HTMLTableSectionElementImpl(docPtr(), ID_TFOOT, true /*implicit */);
-        if(firstBody)
+        ElementImpl* foot = new HTMLTableSectionElementImpl(docPtr(), ID_TFOOT, true /*implicit */);
+        if(ElementImpl* firstBody = tFirstBody())
             insertBefore( foot, firstBody, exceptioncode );
         else
             appendChild(foot, exceptioncode);
     }
-    return foot;
+    return tFoot();
 }
 
 void HTMLTableElementImpl::deleteTFoot(  )
 {
-    if(foot) {
+    if(ElementImpl* foot = tFoot()) {
         int exceptioncode = 0;
-        HTMLElementImpl::removeChild(foot, exceptioncode);
+        removeChild(foot, exceptioncode);
     }
-    foot = 0;
 }
 
 HTMLElementImpl *HTMLTableElementImpl::createCaption(  )
 {
-    if(!tCaption)
+    if(!caption())
     {
         int exceptioncode = 0;
-        tCaption = new HTMLTableCaptionElementImpl(docPtr());
+        ElementImpl* tCaption = new HTMLTableCaptionElementImpl(docPtr());
         insertBefore( tCaption, firstChild(), exceptioncode );
     }
-    return tCaption;
+    return caption();
 }
 
 void HTMLTableElementImpl::deleteCaption(  )
 {
-    if(tCaption) {
+    if(ElementImpl* tCaption = caption()) {
         int exceptioncode = 0;
-        HTMLElementImpl::removeChild(tCaption, exceptioncode);
+        removeChild(tCaption, exceptioncode);
     }
-    tCaption = 0;
+}
+
+/**
+ Helper. This checks whether the section contains the desired index, and if so,
+ returns the section. Otherwise, it adjust the index, and returns 0.
+ indeces < 0 are considered to be infinite.
+
+ lastSection is adjusted to reflect the parameter passed in.
+*/
+static inline HTMLTableSectionElementImpl* processSection(HTMLTableSectionElementImpl* section,
+                                HTMLTableSectionElementImpl* &lastSection, long& index)
+{
+    lastSection = section;
+    if ( index < 0 ) //append/last mode
+        return 0;
+    
+    long rows   = section->numRows();
+    if ( index >= rows ) {
+        section =  0;
+        index   -= rows;
+    }
+    return section;
+}
+
+
+bool HTMLTableElementImpl::findRowSection(long index,
+                        HTMLTableSectionElementImpl*& outSection,
+                        long&                         outIndex) const
+{
+    HTMLTableSectionElementImpl* foot = tFoot();
+    HTMLTableSectionElementImpl* head = tHead();
+
+    HTMLTableSectionElementImpl* section = 0L;
+    HTMLTableSectionElementImpl* lastSection = 0L;
+
+    if ( head )
+        section = processSection( head, lastSection, index );
+
+    if ( !section ) {
+        for ( NodeImpl *node = firstChild(); node; node = node->nextSibling() ) {
+            if ( ( node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY ) &&
+                   node != foot && node != head ) {
+                section = processSection( static_cast<HTMLTableSectionElementImpl *>(node),
+                        lastSection, index );
+                if ( section )
+                    break;
+            }
+        }
+    }
+
+    if ( !section && foot )
+        section = processSection( foot, lastSection, index );
+
+    outIndex = index;
+    if ( section ) {
+        outSection = section;
+        return true;
+    } else {
+        outSection = lastSection;
+        return false;
+    }
 }
 
 HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode )
 {
     // The DOM requires that we create a tbody if the table is empty
-    // (cf DOM2TS HTMLTableElement31 test)
-    // (note: this is different from "if the table has no sections", since we can have
-    // <TABLE><TR>)
-    if(!firstBody && !head && !foot && !hasChildNodes())
+    // (cf DOM2TS HTMLTableElement31 test). This includes even the cases where
+    // there are <tr>'s immediately under the table, as they're essentially
+    // ignored by these functions.
+    HTMLTableSectionElementImpl* foot = tFoot();
+    HTMLTableSectionElementImpl* head = tHead();
+    if(!tFirstBody() && !foot && !head)
         setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
 
-    kDebug(6030) << k_funcinfo << index << endl;
-    HTMLTableSectionElementImpl* section = 0L;
-    HTMLTableSectionElementImpl* lastSection = 0L;
-    NodeImpl *node = firstChild();
-    // The DOM requires that index=-1 means 'append after last'
-    bool append = (index == -1);
-    bool found = false;
-    for ( ; node && (index>=0 || append) ; node = node->nextSibling() )
-    {
-	// there could be 2 tfoot elements in the table. Only the first one is the "foot", that's why we have the more
-	// complicated if statement below.
-        if ( node != foot && (node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY) )
-        {
-            section = static_cast<HTMLTableSectionElementImpl *>(node);
-            lastSection = section;
-            //kDebug(6030) << k_funcinfo << "section=" << section->tagName() << " rows:" << section->numRows() << endl;
-            if ( !append )
-            {
-                int rows = section->numRows();
-                if ( rows > index ) {
-		    found = true;
-                    break;
-                } else
-                    index -= rows;
-                //kDebug(6030) << "       index is now " << index << endl;
-            }
-        }
-    }
-    // insertRow(numRows) appends to TFOOT. insertRow(-1) appends to TBODY, hence the !append.
-    if ( !found && !append )
-        section = static_cast<HTMLTableSectionElementImpl *>(foot);
+    //kdDebug(6030) << k_funcinfo << index << endl;
 
-    // If index has decreased to 0, it means "insert before first row in current section"
-    // or "append after last row" (if there's no current section anymore)
-    if ( !section && ( index == 0 || append ) )
-    {
-        section = lastSection;
-        index = section ? section->numRows() : 0;
-    }
-    if ( section && (index >= 0 || append) ) {
-        //kDebug(6030) << "Inserting row into section " << section << "(" << section->tagName().string() << ") at index " << index << endl;
-        return section->insertRow( index, exceptioncode );
-    } else {
-        // No more sections => index is too big
-        exceptioncode = DOMException::INDEX_SIZE_ERR;
-        return 0L;
-    }
+    long sectionIndex;
+    HTMLTableSectionElementImpl* section;
+    if ( findRowSection( index, section, sectionIndex ) )
+        return section->insertRow( sectionIndex, exceptioncode );
+    else if ( index == -1 || sectionIndex == 0 )
+        return section->insertRow( section->numRows(), exceptioncode );
+
+    // The index is too big.
+    exceptioncode = DOMException::INDEX_SIZE_ERR;
+    return 0L;
 }
 
 void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
 {
-    HTMLTableSectionElementImpl* section = 0L;
-    NodeImpl *node = firstChild();
-    bool lastRow = index == -1;
-    HTMLTableSectionElementImpl* lastSection = 0L;
-    bool found = false;
-    for ( ; node ; node = node->nextSibling() )
-    {
-        if ( node != foot && (node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY) )
-        {
-            section = static_cast<HTMLTableSectionElementImpl *>(node);
-            lastSection = section;
-            int rows = section->numRows();
-            if ( !lastRow )
-            {
-                if ( rows > index ) {
-                    found = true;
-                    break;
-                } else
-                    index -= rows;
-            }
-        }
-        section = 0L;
-    }
-    if ( !found && foot )
-        section = static_cast<HTMLTableSectionElementImpl *>(foot);
-
-    if ( lastRow )
-        lastSection->deleteRow( -1, exceptioncode );
-    else if ( section && index >= 0 && index < section->numRows() )
-        section->deleteRow( index, exceptioncode );
+    long sectionIndex;
+    HTMLTableSectionElementImpl* section;
+    if ( findRowSection( index, section, sectionIndex ) )
+        section->deleteRow( sectionIndex, exceptioncode );
+    else if ( section && index == -1 )
+        section->deleteRow( -1, exceptioncode );
     else
         exceptioncode = DOMException::INDEX_SIZE_ERR;
 }
 
 NodeImpl *HTMLTableElementImpl::appendChild(NodeImpl *child, int &exceptioncode)
 {
-    // #105586, allow javascript to insert a TR inside a TABLE, creation section as needed
-    if(child->id() == ID_TR && (!getDocument()->parsing() || getDocument()->htmlMode() == DocumentImpl::XHtml)) {
-        // See insertRow
-        if (!firstBody && !head && !foot && !hasChildNodes()) {
-            setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
-        }
-        Q_ASSERT( firstBody );
-        if (firstBody) {
-            return firstBody->appendChild( child, exceptioncode );
-        }
-    }
+     NodeImpl* retval = HTMLElementImpl::appendChild( child, exceptioncode );
+     if(retval)
+         handleChildAppend( child );
+     return retval;
+}
 
-    return HTMLElementImpl::appendChild( child, exceptioncode );
+void HTMLTableElementImpl::handleChildAdd( NodeImpl *child )
+{
+    switch(child->id()) {
+    case ID_CAPTION:
+        tCaption.childAdded(this, child);
+        break;
+    case ID_THEAD:
+        head.childAdded(this, child);
+        break;
+    case ID_TFOOT:
+        foot.childAdded(this, child);
+        break;
+    case ID_TBODY:
+        firstBody.childAdded(this, child);
+        break;
+    }
+}
+
+void HTMLTableElementImpl::handleChildAppend( NodeImpl *child )
+{
+    switch(child->id()) {
+    case ID_CAPTION:
+        tCaption.childAppended(child);
+        break;
+    case ID_THEAD:
+        head.childAppended(child);
+        break;
+    case ID_TFOOT:
+        foot.childAppended(child);
+        break;
+    case ID_TBODY:
+        firstBody.childAppended(child);
+        break;
+    }
+}
+
+void HTMLTableElementImpl::handleChildRemove( NodeImpl *child )
+{
+    switch(child->id()) {
+    case ID_CAPTION:
+        tCaption.childRemoved(this, child);
+        break;
+    case ID_THEAD:
+        head.childRemoved(this, child);
+        break;
+    case ID_TFOOT:
+        foot.childRemoved(this, child);
+        break;
+    case ID_TBODY:
+        firstBody.childRemoved(this, child);
+        break;
+    }
 }
 
 NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
@@ -328,32 +370,37 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     kDebug( 6030 ) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )" << endl;
 #endif
 
-    int exceptioncode = 0;
-    NodeImpl *retval = appendChild( child, exceptioncode );
-    if ( retval ) {
-	switch(child->id()) {
-	case ID_CAPTION:
-	    if ( !tCaption )
-		tCaption = static_cast<HTMLTableCaptionElementImpl *>(child);
-	    break;
-	case ID_COL:
-	case ID_COLGROUP:
-	    break;
-	case ID_THEAD:
-	    if ( !head )
-		head = static_cast<HTMLTableSectionElementImpl *>(child);
-	    break;
-	case ID_TFOOT:
-	    if ( !foot )
-		foot = static_cast<HTMLTableSectionElementImpl *>(child);
-	    break;
-	case ID_TBODY:
-	    if ( !firstBody )
-		firstBody = static_cast<HTMLTableSectionElementImpl *>(child);
-	    break;
-	}
-    }
+    NodeImpl *retval = HTMLElementImpl::addChild( child );
+    if ( retval )
+        handleChildAppend( child );
+
     return retval;
+}
+
+NodeImpl *HTMLTableElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode )
+{
+    NodeImpl* retval = HTMLElementImpl::insertBefore( newChild, refChild, exceptioncode);
+    if (retval)
+        handleChildAdd( newChild );
+
+    return retval;
+}
+
+NodeImpl *HTMLTableElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
+{
+    handleChildRemove( oldChild ); //Always safe.
+
+    NodeImpl* retval = HTMLElementImpl::replaceChild( newChild, oldChild, exceptioncode );
+    if (retval)
+        handleChildAdd( newChild );
+
+    return retval;
+}
+
+NodeImpl *HTMLTableElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
+{
+    handleChildRemove( oldChild );
+    return HTMLElementImpl::removeChild( oldChild, exceptioncode);
 }
 
 void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
@@ -515,6 +562,7 @@ void HTMLTableElementImpl::attach()
 
 void HTMLTableElementImpl::close()
 {
+    ElementImpl* firstBody = tFirstBody();
     if (firstBody && !firstBody->closed())
         firstBody->close();
     HTMLElementImpl::close();
@@ -630,14 +678,13 @@ NodeImpl::Id HTMLTableSectionElementImpl::id() const
     return _id;
 }
 
-
 // these functions are rather slow, since we need to get the row at
 // the index... but they aren't used during usual HTML parsing anyway
 HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index, int& exceptioncode )
 {
     HTMLTableRowElementImpl *r = 0L;
-    NodeListImpl *children = childNodes();
-    int numRows = children ? (int)children->length() : 0;
+    HTMLCollectionImpl rows(const_cast<HTMLTableSectionElementImpl*>(this), HTMLCollectionImpl::TSECTION_ROWS);
+    int numRows = rows.length();
     //kDebug(6030) << k_funcinfo << "index=" << index << " numRows=" << numRows << endl;
     if ( index < -1 || index > numRows ) {
         exceptioncode = DOMException::INDEX_SIZE_ERR; // per the DOM
@@ -652,38 +699,29 @@ HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index, int& except
             if(index < 1)
                 n = firstChild();
             else
-                n = children->item(index);
+                n = rows.item(index);
             insertBefore(r, n, exceptioncode );
         }
     }
-    delete children;
     return r;
 }
 
 void HTMLTableSectionElementImpl::deleteRow( long index, int &exceptioncode )
 {
-    NodeListImpl *children = childNodes();
-    int numRows = children ? (int)children->length() : 0;
+    HTMLCollectionImpl rows(const_cast<HTMLTableSectionElementImpl*>(this), HTMLCollectionImpl::TSECTION_ROWS);
+    int numRows = rows.length();
     if ( index == -1 ) index = numRows - 1;
     if( index >= 0 && index < numRows )
-        HTMLElementImpl::removeChild(children->item(index), exceptioncode);
+        HTMLElementImpl::removeChild(rows.item(index), exceptioncode);
     else
         exceptioncode = DOMException::INDEX_SIZE_ERR;
-    delete children;
 }
 
 
 int HTMLTableSectionElementImpl::numRows() const
 {
-    int rows = 0;
-    const NodeImpl *n = firstChild();
-    while (n) {
-        if (n->id() == ID_TR)
-            rows++;
-        n = n->nextSibling();
-    }
-
-    return rows;
+    HTMLCollectionImpl rows(const_cast<HTMLTableSectionElementImpl*>(this), HTMLCollectionImpl::TSECTION_ROWS);
+    return rows.length();
 }
 
 // -------------------------------------------------------------------------

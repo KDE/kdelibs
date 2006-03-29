@@ -133,7 +133,7 @@ public:
     };
 
     KHTMLViewPrivate()
-        : underMouse( 0 ), underMouseNonShared( 0 )
+        : underMouse( 0 ), underMouseNonShared( 0 ), visibleWidgets( 107 )
     {
 #ifndef KHTML_NO_CARET
 	m_caretViewContext = 0;
@@ -352,7 +352,7 @@ public:
     bool needsFullRepaint			:1;
     bool painting				:1;
     bool possibleTripleClick			:1;
-    bool dirtyLayout				:1;
+    bool dirtyLayout                           :1;
     bool m_dialogsAllowed			:1;
     QRegion updateRegion;
     Q3PtrDict<QWidget> visibleWidgets;
@@ -639,15 +639,32 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     }
     d->painting = true;
 
-    QRegion cr = QRect(ex, ey, ew, eh);
+    QPoint pt = contentsToViewport(QPoint(ex, ey)); /// ??? ex/ey below instead - check history
+    QRegion cr = QRect(pt.x(), pt.y(), ew, eh);
+
+    // kdDebug(6000) << "clip rect: " << QRect(pt.x(), pt.y(), ew, eh) << endl;
     for (Q3PtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
-        if (strcmp(w->objectName(), "__khtml")) {
-            int x, y;
-            rw->absolutePosition(x, y);
-            //contentsToViewport(x, y, x, y);
-            cr -= QRect(x, y, rw->width(), rw->height());
+	if (w && rw && !rw->isKHTMLWidget()) { 
+            QRect g = w->geometry();
+            if ( !rw->isFrame() && ((g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
+                                    (g.right() <= pt.x()) || (g.left() > pt.x()+ew) ))
+                continue;
+            RenderLayer* rl = rw->needsMask() ? rw->enclosingStackingContext() : 0;
+            QRegion mask = rl ? rl->getMask() : QRegion();
+            if (!mask.isNull()) {
+                QPoint o(0,0);
+                o = contentsToViewport(o);
+                mask.translate(o.x(),o.y());
+                mask = mask.intersect( QRect(g.x(),g.y(),g.width(),g.height()) );
+                cr -= mask;
+            } else {
+                int x, y;
+                rw->absolutePosition(x,y);
+                contentsToViewport(x,y,x,y);
+                cr -= QRect(x,y,rw->width(),rw->height());
+            }
         }
     }
 
@@ -747,10 +764,14 @@ void KHTMLView::layout()
     if( m_part && m_part->xmlDocImpl() ) {
         DOM::DocumentImpl *document = m_part->xmlDocImpl();
 
-        khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>(document->renderer());
-        if ( !root ) return;
+        khtml::RenderCanvas* canvas = static_cast<khtml::RenderCanvas *>(document->renderer());
+        if ( !canvas ) return;
 
         d->layoutSchedulingEnabled=false;
+
+        // the reference object for the overflow property on canvas 
+        RenderObject * ref = 0;
+        RenderObject* root = document->documentElement() ? document->documentElement()->renderer() : 0;
 
         if (document->isHTMLDocument()) {
              NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
@@ -763,6 +784,20 @@ void KHTMLView::layout()
 //                      d->tooltip = 0;
 //                  }
              }
+             else if (root) // only apply body's overflow to canvas if root as a visible overflow
+                     ref = (!body || root->style()->hidesOverflow()) ? root : body->renderer();
+        } else {
+            ref = root;
+        }
+        
+        if (ref) {
+            if( ref->style()->overflow() == OHIDDEN ) {
+                if (d->vmode == Auto) Q3ScrollView::setVScrollBarMode(AlwaysOff);
+                if (d->hmode == Auto) Q3ScrollView::setHScrollBarMode(AlwaysOff);
+            } else {
+                if (Q3ScrollView::vScrollBarMode() == AlwaysOff) Q3ScrollView::setVScrollBarMode(d->vmode);
+                if (Q3ScrollView::hScrollBarMode() == AlwaysOff) Q3ScrollView::setHScrollBarMode(d->hmode);
+            }            
         }
         d->needsFullRepaint = d->firstRelayout;
         if (_height !=  visibleHeight() || _width != visibleWidth()) {;
@@ -772,7 +807,7 @@ void KHTMLView::layout()
         }
         //QTime qt;
         //qt.start();
-        root->layout();
+        canvas->layout();
 
         emit finishedLayout();
         if (d->firstRelayout) {
@@ -3467,6 +3502,11 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     if ( !updateRegion.isNull() )
         repaintContents( updateRegion );
 
+    // As widgets can only be accurately positioned during painting, every layout might
+    // dissociate a widget from its RenderWidget. E.g: if a RenderWidget was visible before layout, but the layout
+    // pushed it out of the viewport, it will not be repainted, and consequently it's assocoated widget won't be repositioned!
+    // Thus we need to check each supposedly 'visible' widget at the end of each layout, and remove it in case it's no more in sight.
+
     if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
         QWidget* w;
         d->dirtyLayout = false;
@@ -3486,6 +3526,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
             if ( (w = d->visibleWidgets.take(r) ) )
                 addChild(w, 0, -500000);
     }
+
     emit repaintAccessKeys();
     if (d->emitCompletedAfterRepaint) {
         bool full = d->emitCompletedAfterRepaint == KHTMLViewPrivate::CSFull;
@@ -3546,7 +3587,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h, bool asap)
     d->updateRegion = d->updateRegion.unite(QRect(x,y,w,h));
 
     if (asap && !parsing)
-        unscheduleRelayout();
+        unscheduleRepaint();
 
     if ( !d->repaintTimerId )
         d->repaintTimerId = startTimer( time );

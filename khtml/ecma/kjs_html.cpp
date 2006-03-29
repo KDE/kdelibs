@@ -2598,6 +2598,19 @@ ValueImp* HTMLCollection::indexGetter(ExecState *exec, unsigned index)
   return getDOMNode(exec, m_impl->item(index));
 }
 
+ReferenceList KJS::HTMLCollection::propList(ExecState *exec, bool recursive)
+{
+  ReferenceList properties = ObjectImp::propList(exec,recursive);
+
+  for (unsigned i = 0; i < m_impl->length(); ++i) {
+      properties.append(Reference(this, i));
+  }
+
+  properties.append(Reference(this, lengthPropertyName));
+
+  return properties;
+}
+
 ValueImp *HTMLCollection::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   HTMLCollection *thisObj = static_cast<HTMLCollection *>(slot.slotBase());
