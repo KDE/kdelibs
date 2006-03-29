@@ -30,6 +30,7 @@ namespace Phonon
 
 	/**
 	 * \internal
+	 * Base class for all %Phonon frontend classes.
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
@@ -38,10 +39,8 @@ namespace Phonon
 		K_DECLARE_PRIVATE( Base )
 		protected:
 			/**
-			 * Standard QObject constructor.
-			 *
+			 * \internal
 			 * \param d private object
-			 * \param parent QObject parent
 			 */
 			Base( BasePrivate& d );
 
@@ -54,11 +53,28 @@ namespace Phonon
 			 * need the pointer to the Ifaces object intact. The
 			 * QObject::destroyed signals comes after the Ifaces object was
 			 * deleted.
+			 *
+			 * As this class cannot derive from QObject a simple handler
+			 * interface is used.
 			 */
 			void addDestructionHandler( BaseDestructionHandler* handler );
+			/**
+			 * \internal
+			 * This class has its own destroyed signal since some cleanup calls
+			 * need the pointer to the Ifaces object intact. The
+			 * QObject::destroyed signals comes after the Ifaces object was
+			 * deleted.
+			 *
+			 * As this class cannot derive from QObject a simple handler
+			 * interface is used.
+			 */
 			void removeDestructionHandler( BaseDestructionHandler* handler );
 
 		protected:
+			/**
+			 * \internal
+			 * private data pointer
+			 */
 			BasePrivate* k_ptr;
 	};
 } //namespace Phonon
