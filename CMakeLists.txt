@@ -2,14 +2,15 @@ project(kdelibs)
 
 #########################################################################
 # Disallow in-source build
-STRING(COMPARE EQUAL "${kdelibs_SOURCE_DIR}" "${kdelibs_BINARY_DIR}" insource)
+string(COMPARE EQUAL "${kdelibs_SOURCE_DIR}" "${kdelibs_BINARY_DIR}" insource)
 if(insource)
-  MESSAGE(FATAL_ERROR "kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
+   message(FATAL_ERROR "kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
 endif(insource)
+
 # ... and warn in case of an earlier in-source build
 set(generatedFileInSourceDir EXISTS ${kdelibs_SOURCE_DIR}/kdemacros.h OR EXISTS ${kdelibs_SOURCE_DIR}/config.h)
 if(${generatedFileInSourceDir})
-  message(FATAL_ERROR "Please run svn-clean, it would seem that your source directory has generated files in it...")
+   message(FATAL_ERROR "Please run svn-clean, it would seem that your source directory has generated files in it...")
 endif(${generatedFileInSourceDir})
 #########################################################################
 
