@@ -34,8 +34,6 @@ libphononui_la_LIBADD = $(top_builddir)/phonon/libphononcore.la $(top_builddir)/
 METASOURCES = AUTO
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/phonon/ui
-
 DOXYGEN_REFERENCES = dcop kdecore kio phonon
-
 include ../../admin/Doxyfile.am
 

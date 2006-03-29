@@ -50,8 +50,7 @@ METASOURCES = AUTO
 kde_servicetypes_DATA = phononbackend.desktop
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/phonon
-
-DOXYGEN_REFERENCES = dcop kdecore kio
+DOXYGEN_REFERENCES = dcop kdecore kio phonon/ui phonon/ifaces phonon/ifaces/ui
 DOXYGEN_SET_EXPAND_AS_DEFINED = PHONON_ABSTRACTBASE PHONON_OBJECT PHONON_HEIR
 include ../admin/Doxyfile.am
 

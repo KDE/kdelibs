@@ -29,3 +29,7 @@ libphononifacesui_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_LDFLAGS) $(USER_
 libphononifacesui_la_LIBADD = ../libphononifaces.la $(LIB_KDECORE)
 
 METASOURCES = AUTO
+
+SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/phonon/ifaces/ui
+DOXYGEN_REFERENCES = dcop kdecore kio phonon phonon/ui phonon/ifaces
+include ../../../admin/Doxyfile.am
