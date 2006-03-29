@@ -36,13 +36,16 @@ KAction* KNS::standardAction(const QString& what,
                              const char *slot, KActionCollection* parent,
                              const char *name)
 {
-    return new KAction(i18n("Download New %1", what), "knewstuff",
-                       0, recvr, slot, parent, name);
+  KAction *action = new KAction( i18n("Download New %1", what), parent, name );
+  action->setIcon( KIcon( "knewstuff" ) );
+  QObject::connect( action, SIGNAL( triggered( bool ) ), recvr, slot );
+
+  return action;
 }
 
 KNewStuff::KNewStuff( const QString &type, QWidget *parentWidget )
 {
-    mEngine = new Engine( this, type, parentWidget );
+  mEngine = new Engine( this, type, parentWidget );
 }
 
 KNewStuff::KNewStuff( const QString &type, const QString &providerList, QWidget *parentWidget )
