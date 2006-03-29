@@ -111,7 +111,7 @@ static QList<QByteArray> split(const QByteArray &str)
 
 void KHostName::changeX()
 {
-   QString cmd = "xauth list";
+   QString cmd = "xauth -n list";
    FILE *xFile = popen(QFile::encodeName(cmd), "r");
    if (!xFile)
    {
@@ -159,9 +159,9 @@ void KHostName::changeX()
       if (oldNetId != oldName)
 	continue;
 
-      cmd = "xauth remove "+KProcess::quote(netId);
+      cmd = "xauth -n remove "+KProcess::quote(netId);
       system(QFile::encodeName(cmd));
-      cmd = "xauth add ";
+      cmd = "xauth -n add ";
       cmd += KProcess::quote(newNetId);
       cmd += " ";
       cmd += KProcess::quote(authName);
