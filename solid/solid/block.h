@@ -29,17 +29,66 @@ namespace KDEHW
         class Block;
     }
 
+    /**
+     * This capability is available on block devices.
+     *
+     * A block device is an adressable device such as drive or partition.
+     * It is possible to interact with such a device using a special file
+     * in the system.
+     */
     class Block : public Capability
     {
         Q_OBJECT
     public:
+        /**
+         * Creates a new Block object.
+         * You generally won't need this. It's created when necessary using
+         * Device::as().
+         *
+         * @param iface the capability interface provided by the backend
+         * @param parent the parent QObject
+         * @see KDEHW::Device::as()
+         */
         Block( Ifaces::Block *iface, QObject *parent = 0 );
+
+        /**
+         * Destroys a Block object.
+         */
         virtual ~Block();
 
+
+        /**
+         * Get the KDEHW::Capability::Type of the Block capability.
+         *
+         * @return the Block capability type
+         * @see KDEHW::Ifaces::Enums::Capability::Type
+         */
         static Type type() { return Capability::Block; }
 
+
+        /**
+         * Retrieves the major number of the node file to interact with
+         * the device.
+         *
+         * @return the device major number
+         */
         int major() const;
+
+        /**
+         * Retrieves the minor number of the node file to interact with
+         * the device.
+         *
+         * @return the device minor number
+         */
         int minor() const;
+
+        /**
+         * Retrieves the absolute path of the special file to interact
+         * with the device.
+         *
+         * @return the absolute path of the special file to interact with
+         * the device
+         */
         QString device() const;
 
     private:

@@ -27,14 +27,42 @@ namespace KDEHW
 {
 namespace Ifaces
 {
+    /**
+     * Default implementation of the KDEHW::Ifaces::Capability interface.
+     *
+     * @see KDEHW::Ifaces::Capability
+     */
     class AbstractCapability : public QObject, virtual public Capability
     {
         Q_OBJECT
     public:
+        /**
+         * Creates a new AbstractCapability object.
+         *
+         * @param parent the parent QObject
+         */
         AbstractCapability( QObject *parent = 0 );
+
+        /**
+         * Destroys an AbstractCapability object.
+         */
         virtual ~AbstractCapability();
 
+        /**
+         * Override from KDEHW::Ifaces::Capability. It simply returns
+         * 'this' since we inherit from QObject.
+         *
+         * @return this capability as a QObject
+         * @see KDEHW::Ifaces::Capability::qobject()
+         */
 	virtual const QObject *qobject() const;
+
+        /**
+         * This method is the const version of the above method.
+         *
+         * @return this capability as a const QObject
+         * @see KDEHW::Ifaces::Capability::qobject()
+         */
 	virtual QObject *qobject();
     };
 }

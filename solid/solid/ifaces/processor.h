@@ -26,6 +26,9 @@ namespace KDEHW
 {
 namespace Ifaces
 {
+    /**
+     * This capability is available on processors.
+     */
     class Processor : virtual public Capability
     {
 //         Q_PROPERTY( int number READ number )
@@ -33,10 +36,33 @@ namespace Ifaces
 //         Q_PROPERTY( bool canThrottle READ canThrottle )
 
     public:
+        /**
+         * Destroys a Processor object.
+         */
         virtual ~Processor();
 
+        /**
+         * Retrieves the processor number in the system.
+         *
+         * @return the internal processor number in the system, starting from zero
+         */
         virtual int number() const = 0;
+
+        /**
+         * Retrieves the maximum speed of the processor.
+         *
+         * @return the maximum speed in MHz
+         */
         virtual qulonglong maxSpeed() const = 0;
+
+        /**
+         * Indicates if the processor can throttle.
+         *
+         * A processor supports throttling when it's able of decreasing
+         * it's own clockspeed (generally for power management).
+         *
+         * @return true if the processor can throttle, false otherwise
+         */
         virtual bool canThrottle() const = 0;
     };
 }

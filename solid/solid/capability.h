@@ -27,11 +27,26 @@
 
 namespace KDEHW
 {
+    /**
+     * Base class of all the capabilities.
+     *
+     * A capability describes what a device can do. A device generally has
+     * a set of capabilities.
+     */
     class Capability : public QObject, public Ifaces::Enums::Capability
     {
         Q_OBJECT
     public:
+        /**
+         * Creates a new Capability object.
+         *
+         * @param parent the parent QObject
+         */
         Capability( QObject *parent = 0 );
+
+        /**
+         * Destroys a Capability object.
+         */
         virtual ~Capability();
     };
 }

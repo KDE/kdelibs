@@ -28,6 +28,11 @@ namespace KDEHW
 {
 namespace Ifaces
 {
+    /**
+     * This capability is available on CD-ROM drives.
+     *
+     * A Cdrom is a storage that can handle optical discs.
+     */
     class Cdrom : virtual public Storage, public Enums::Cdrom
     {
 //         Q_PROPERTY( MediumTypes supportedMedia READ supportedMedia )
@@ -37,15 +42,48 @@ namespace Ifaces
 //         Q_ENUMS( MediumType )
 
     public:
+        /**
+         * Destroys a Cdrom object.
+         */
         virtual ~Cdrom();
 
+        /**
+         * Retrieves the medium types this drive supports.
+         *
+         * @return the flag set indicating the supported medium types
+         */
         virtual MediumTypes supportedMedia() const = 0;
+
+        /**
+         * Retrieves the maximum read speed of this drive in kilobytes.
+         *
+         * @return the maximum read speed
+         */
         virtual int readSpeed() const = 0;
+
+        /**
+         * Retrieves the maximum write speed of this drive in kilobytes.
+         *
+         * @return the maximum write speed
+         */
         virtual int writeSpeed() const = 0;
+
+        /**
+         * Retrieves the list of supported write speeds of this drive in
+         * kilobytes.
+         *
+         * @return the list of supported write speeds
+         */
         virtual QList<int> writeSpeeds() const = 0;
 
     protected:
     //signals:
+        /**
+         * This signal is emitted when the eject button is pressed
+         * on the drive.
+         *
+         * Please note that some (broken) drives doesn't report this event.
+         */
         virtual void ejectPressed() = 0;
     };
 }

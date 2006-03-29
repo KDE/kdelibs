@@ -29,12 +29,46 @@ namespace KDEHW
 {
 namespace Ifaces
 {
+    /**
+     * Base interface of all the capabilities.
+     *
+     * A capability describes what a device can do. A device generally has
+     * a set of capabilities.
+     *
+     * @see KDEHW::Ifaces::AbstractCapability
+     */
     class Capability : public Enums::Capability
     {
     public:
+        /**
+         * Destroys a Capability object.
+         */
         virtual ~Capability();
 
+        /**
+         * Retrieves a QObject representing this capability.
+         *
+         * Capabilities have properties and signals, but QObject can't
+         * be inherited multiple times. Then we need to be able to get a
+         * QObject instance representing a capability and holding its
+         * properties and signals.
+         *
+         * In most implementation this method will simply return 'this'.
+         * In this case the capabilities provided by the backend can subclass
+         * KDEHW::Ifaces::AbstractCapability which provide the necessary
+         * implementation.
+         *
+         * @return this capability as a QObject
+         * @see KDEHW::Ifaces::AbstractCapability::qobject()
+         */
 	virtual QObject *qobject() = 0;
+
+        /**
+         * This method is the const version of the above method.
+         *
+         * @return this capability as a const QObject
+         * @see KDEHW::Ifaces::AbstractCapability::qobject()
+         */
         virtual const QObject *qobject() const = 0;
     };
 }

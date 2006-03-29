@@ -26,6 +26,11 @@ namespace KDEHW
 {
 namespace Ifaces
 {
+    /**
+     * This capability is available on optical discs.
+     *
+     * An optical disc is a volume that can be inserted in a cdrom drive.
+     */
     class OpticalDisc : virtual public Volume, public Enums::OpticalDisc
     {
 //         Q_PROPERTY( ContentTypes availableContent READ availableContent )
@@ -37,13 +42,56 @@ namespace Ifaces
 //         Q_ENUMS( ContentType DiscType )
 
     public:
+        /**
+         * Destroys an OpticalDisc object.
+         */
         virtual ~OpticalDisc();
 
+
+        /**
+         * Retrieves the content types this disc contains (audio, video,
+         * data...).
+         *
+         * @return the flag set indicating the available contents
+         */
         virtual ContentTypes availableContent() const = 0;
+
+        /**
+         * Retrieves the disc type (cdr, cdrw...).
+         *
+         * @return the disc type
+         */
         virtual DiscType discType() const = 0;
+
+        /**
+         * Indicates if it's possible to write additional data to the disc.
+         *
+         * @return true if the disc is appendable, false otherwise
+         */
         virtual bool isAppendable() const = 0;
+
+        /**
+         * Indicates if the disc is blank.
+         *
+         * @return true if the disc is blank, false otherwise
+         */
         virtual bool isBlank() const = 0;
+
+        /**
+         * Indicates if the disc is rewritable.
+         *
+         * A disc is rewritable if you can write on it several times.
+         *
+         * @return true if the disc is rewritable, false otherwise
+         */
         virtual bool isRewritable() const = 0;
+
+        /**
+         * Retrieves the disc capacity (that is the maximum size of a
+         * volume could have on this disc).
+         *
+         * @return the capacity of the disc in bytes
+         */
         virtual qulonglong capacity() const = 0;
     };
 }

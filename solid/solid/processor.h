@@ -29,17 +29,60 @@ namespace KDEHW
         class Processor;
     }
 
+    /**
+     * This capability is available on processors.
+     */
     class Processor : public Capability
     {
         Q_OBJECT
     public:
+        /**
+         * Creates a new Processor object.
+         * You generally won't need this. It's created when necessary using
+         * Device::as().
+         *
+         * @param iface the capability interface provided by the backend
+         * @param parent the parent QObject
+         * @see KDEHW::Device::as()
+         */
         Processor( Ifaces::Processor *iface, QObject *parent = 0 );
+
+        /**
+         * Destroys a Processor object.
+         */
         virtual ~Processor();
 
+
+        /**
+         * Get the KDEHW::Capability::Type of the Processor capability.
+         *
+         * @return the Processor capability type
+         * @see KDEHW::Ifaces::Enums::Capability::Type
+         */
         static Type type() { return Capability::Processor; }
 
+        /**
+         * Retrieves the processor number in the system.
+         *
+         * @return the internal processor number in the system, starting from zero
+         */
         int number() const;
+
+        /**
+         * Retrieves the maximum speed of the processor.
+         *
+         * @return the maximum speed in MHz
+         */
         qulonglong maxSpeed() const;
+
+        /**
+         * Indicates if the processor can throttle.
+         *
+         * A processor supports throttling when it's able of decreasing
+         * it's own clockspeed (generally for power management).
+         *
+         * @return true if the processor can throttle, false otherwise
+         */
         bool canThrottle() const;
 
     private:

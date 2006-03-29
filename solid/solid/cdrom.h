@@ -30,21 +30,77 @@ namespace KDEHW
         class Cdrom;
     }
 
+    /**
+     * This capability is available on CD-ROM drives.
+     *
+     * A Cdrom is a storage that can handle optical discs.
+     */
     class Cdrom : public Storage, public Ifaces::Enums::Cdrom
     {
         Q_OBJECT
     public:
+        /**
+         * Creates a new Cdrom object.
+         * You generally won't need this. It's created when necessary using
+         * Device::as().
+         *
+         * @param iface the capability interface provided by the backend
+         * @param parent the parent QObject
+         * @see KDEHW::Device::as()
+         */
         Cdrom( Ifaces::Cdrom *iface, QObject *parent = 0 );
+
+        /**
+         * Destroys a Cdrom object.
+         */
         virtual ~Cdrom();
 
+
+        /**
+         * Get the KDEHW::Capability::Type of the Cdrom capability.
+         *
+         * @return the Cdrom capability type
+         * @see KDEHW::Ifaces::Enums::Capability::Type
+         */
         static Type type() { return Capability::Cdrom; }
 
+
+        /**
+         * Retrieves the medium types this drive supports.
+         *
+         * @return the flag set indicating the supported medium types
+         */
         MediumTypes supportedMedia() const;
+
+        /**
+         * Retrieves the maximum read speed of this drive in kilobytes.
+         *
+         * @return the maximum read speed
+         */
         int readSpeed() const;
+
+        /**
+         * Retrieves the maximum write speed of this drive in kilobytes.
+         *
+         * @return the maximum write speed
+         */
         int writeSpeed() const;
+
+        /**
+         * Retrieves the list of supported write speeds of this drive in
+         * kilobytes.
+         *
+         * @return the list of supported write speeds
+         */
         QList<int> writeSpeeds() const;
 
     signals:
+        /**
+         * This signal is emitted when the eject button is pressed
+         * on the drive.
+         *
+         * Please note that some (broken) drives doesn't report this event.
+         */
         void ejectPressed();
 
     private slots:
