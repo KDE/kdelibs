@@ -21,6 +21,13 @@
 #define BASEDESTRUCTIONHANDLER_H
 namespace Phonon
 {
+/**
+ * \internal
+ *
+ * Callback interface to keep track of Phonon frontend object destruction.
+ *
+ * \author Matthias Kretz <kretz@kde.org>
+ */
 class BaseDestructionHandler
 {
 	friend class Base;
@@ -28,6 +35,11 @@ class BaseDestructionHandler
 	public:
 		virtual ~BaseDestructionHandler() {}
 	protected:
+		/**
+		 * \internal
+		 * called from Base::~Base if this object was registered
+		 * using Base::addDestructionHandler().
+		 */
 		virtual void phononObjectDestroyed( Base* ) = 0;
 };
 }
