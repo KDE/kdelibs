@@ -305,15 +305,28 @@ target_link_libraries(kpopuptest  ${KDE4_KDECORE_LIBS} kdeui)
 
 ########### next target ###############
 
-set(kprogresstest_SRCS
-kprogresstest.cpp
+set(kprogressbartest_SRCS
+kprogressbartest.cpp
 )
 
-kde4_automoc(${kprogresstest_SRCS})
+kde4_automoc(${kprogressbartest_SRCS})
 
-#kde4_add_executable(kprogresstest ${kprogresstest_SRCS})
+kde4_add_executable(kprogressbartest ${kprogressbartest_SRCS})
 
-#target_link_libraries(kprogresstest  ${KDE4_KDECORE_LIBS} kdeui)
+target_link_libraries(kprogressbartest  ${KDE4_KDECORE_LIBS} kdeui)
+
+
+########### next target ###############
+
+set(kprogressdialogtest_SRCS
+kprogressdialogtest.cpp
+)
+
+kde4_automoc(${kprogressdialogtest_SRCS})
+
+kde4_add_executable(kprogressdialogtest ${kprogressdialogtest_SRCS})
+
+target_link_libraries(kprogressdialogtest  ${KDE4_KDECORE_LIBS} kdeui)
 
 
 ########### next target ###############
