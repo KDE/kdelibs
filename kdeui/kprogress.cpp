@@ -216,7 +216,6 @@ void KProgressDialog::slotAutoShow()
 
     show();
     kapp->processEvents();
-    mShown = true;
 }
 
 void KProgressDialog::slotCancel()
@@ -393,6 +392,13 @@ void KProgressDialog::slotAutoActions(int percentage)
         }
     }
 }
+
+void KProgressDialog::show()
+{
+    KDialogBase::show();
+    mShown = true;
+}
+
 
 void KProgress::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

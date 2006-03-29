@@ -361,6 +361,11 @@ class KDEUI_EXPORT KProgressDialog : public KDialogBase
          */
         int  minimumDuration() const;
 
+ 	/**
+	 * Reimplemented for internal reasons, the API is not affected.
+	 */
+        virtual void show();
+
     protected slots:
         void slotAutoShow();
         void slotAutoActions(int percentage);
