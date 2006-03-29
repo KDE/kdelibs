@@ -960,14 +960,13 @@ void KApplication::init(bool GUIenabled)
 static int my_system (const char *command) {
    int pid, status;
 
-   QApplication::flushX();
    pid = fork();
    if (pid == -1)
       return -1;
    if (pid == 0) {
       const char* shell = "/bin/sh";
       execl(shell, shell, "-c", command, (void *)0);
-      ::exit(127);
+      ::_exit(127);
    }
    do {
       if (waitpid(pid, &status, 0) == -1) {
