@@ -38,6 +38,7 @@
 #include <ktempfile.h>
 #include <kdebug.h>
 #include <kurl.h>
+#include <kstandarddirs.h>
 #include <kio/job.h>
 #include <kio/scheduler.h>
 
