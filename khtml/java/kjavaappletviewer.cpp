@@ -220,6 +220,8 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
    m_statusbar_icon (0L),
    m_closed (true)
 {
+    setObjectName( name );
+
     if (!serverMaintainer) {
         serverMaintainerDeleter.setObject (serverMaintainer,
                                            new KJavaServerMaintainer);

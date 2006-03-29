@@ -81,8 +81,8 @@ SourceDisplay::SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char 
   : Q3ScrollView(parent,name), m_currentLine(-1), m_sourceFile(0), m_debugWin(debugWin),
     m_font(KGlobalSettings::fixedFont())
 {
-  verticalScrollBar()->setLineStep(QFontMetrics(m_font).height());
-  viewport()->setBackgroundMode(Qt::NoBackground);
+  verticalScrollBar()->setSingleStep(QFontMetrics(m_font).height());
+  viewport()->setAttribute(Qt::WA_NoSystemBackground);
   m_breakpointIcon = KGlobal::iconLoader()->loadIcon("stop",K3Icon::Small);
 }
 
@@ -184,7 +184,7 @@ void SourceDisplay::showEvent(QShowEvent *)
 void SourceDisplay::drawContents(QPainter *p, int clipx, int clipy, int clipw, int cliph)
 {
   if (!m_sourceFile) {
-    p->fillRect(clipx,clipy,clipw,cliph,palette().active().base());
+    p->fillRect(clipx,clipy,clipw,cliph,palette().color( QPalette::Active, QPalette::Base ));
     return;
   }
 
@@ -209,26 +209,26 @@ void SourceDisplay::drawContents(QPainter *p, int clipx, int clipy, int clipw, i
     QString linenoStr = QString().sprintf("%d",lineno+1);
 
 
-    p->fillRect(0,height*lineno,linenoWidth,height,palette().active().mid());
+    p->fillRect(0,height*lineno,linenoWidth,height,palette().color( QPalette::Active, QPalette::Mid ));
 
-    p->setPen(palette().active().text());
+    p->setPen(palette().color( QPalette::Active, QPalette::Text ));
     p->drawText(0,height*lineno,linenoWidth,height,Qt::AlignRight,linenoStr);
 
     QColor bgColor;
     QColor textColor;
 
     if (lineno == m_currentLine) {
-      bgColor = palette().active().highlight();
-      textColor = palette().active().highlightedText();
+      bgColor = palette().color( QPalette::Active, QPalette::Highlight );
+      textColor = palette().color( QPalette::Active, QPalette::HighlightedText );
     }
     else if (m_debugWin->haveBreakpoint(m_sourceFile,lineno+1,lineno+1)) {
-      bgColor = palette().active().text();
-      textColor = palette().active().base();
+      bgColor = palette().color( QPalette::Active, QPalette::Text );
+      textColor = palette().color( QPalette::Active, QPalette::Base );
       p->drawPixmap(2,height*lineno+height/2-m_breakpointIcon.height()/2,m_breakpointIcon);
     }
     else {
-      bgColor = palette().active().base();
-      textColor = palette().active().text();
+      bgColor = palette().color( QPalette::Active, QPalette::Base );
+      textColor = palette().color( QPalette::Active, QPalette::Text );
     }
 
     p->fillRect(linenoWidth,height*lineno,right-linenoWidth,height,bgColor);
@@ -238,10 +238,10 @@ void SourceDisplay::drawContents(QPainter *p, int clipx, int clipy, int clipw, i
   }
 
   int remainingTop = height*(lastLine+1);
-  p->fillRect(0,remainingTop,linenoWidth,bottom-remainingTop,palette().active().mid());
+  p->fillRect(0,remainingTop,linenoWidth,bottom-remainingTop,palette().color( QPalette::Active, QPalette::Mid ));
 
   p->fillRect(linenoWidth,remainingTop,
-	      right-linenoWidth,bottom-remainingTop,palette().active().base());
+	      right-linenoWidth,bottom-remainingTop,palette().color( QPalette::Active, QPalette::Base ));
 }
 
 //-------------------------------------------------------------------------
@@ -306,11 +306,15 @@ KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage, boo
   QLabel *label = new QLabel(errorMessage,contents);
   m_dontShowAgainCb = new QCheckBox(i18n("&Do not show this message again"),contents);
 
-  QVBoxLayout *vl = new QVBoxLayout(contents,0,spacingHint());
+  QVBoxLayout *vl = new QVBoxLayout(contents);
+  vl->setMargin(0);
+  vl->setSpacing(spacingHint());
   vl->addWidget(label);
   vl->addWidget(m_dontShowAgainCb);
 
-  QHBoxLayout *topLayout = new QHBoxLayout(page,0,spacingHint());
+  QHBoxLayout *topLayout = new QHBoxLayout(page);
+  topLayout->setMargin(0);
+  topLayout->setSpacing(spacingHint());
   topLayout->addWidget(iconLabel);
   topLayout->addWidget(contents);
   topLayout->addStretch(10);
@@ -365,7 +369,8 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 
   m_stopIcon = KGlobal::iconLoader()->loadIcon("stop",K3Icon::Small);
   m_emptyIcon = QPixmap(m_stopIcon.width(),m_stopIcon.height());
-  QBitmap emptyMask(m_stopIcon.width(),m_stopIcon.height(),true);
+  QBitmap emptyMask(m_stopIcon.width(),m_stopIcon.height());
+  emptyMask.clear();
   m_emptyIcon.setMask(emptyMask);
 
   setCaption(i18n("JavaScript Debugger"));
@@ -373,7 +378,8 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   QWidget *mainWidget = new QWidget(this);
   setCentralWidget(mainWidget);
 
-  QVBoxLayout *vl = new QVBoxLayout(mainWidget,5);
+  QVBoxLayout *vl = new QVBoxLayout(mainWidget);
+  vl->setMargin(5);
 
   // frame list & code
   QSplitter *hsplitter = new QSplitter(Qt::Vertical,mainWidget);
@@ -441,16 +447,25 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   KMenu *debugMenu = new KMenu(this);
   menuBar()->insertItem("&Debug",debugMenu);
 
-  m_nextAction       = new KAction(i18nc("Next breakpoint","&Next"),"dbgnext",KShortcut(),this,SLOT(slotNext()),
-				   actionCollection(),"next");
-  m_stepAction       = new KAction(i18n("&Step"),"dbgstep",KShortcut(),this,SLOT(slotStep()),
-				   actionCollection(),"step");
-  m_continueAction   = new KAction(i18n("&Continue"),"dbgrun",KShortcut(),this,SLOT(slotContinue()),
-				   actionCollection(),"cont");
-  m_stopAction       = new KAction(i18n("St&op"),"stop",KShortcut(),this,SLOT(slotStop()),
-				   actionCollection(),"stop");
-  m_breakAction      = new KAction(i18n("&Break at Next Statement"),"dbgrunto",KShortcut(),this,SLOT(slotBreakNext()),
-				   actionCollection(),"breaknext");
+  m_nextAction = new KAction(i18nc("Next breakpoint","&Next"), actionCollection(),"next");
+  m_nextAction->setIcon( KIcon( "dbgnext" ) );
+  connect( m_nextAction, SIGNAL( triggered( bool ) ), this, SLOT(slotNext()) );
+
+  m_stepAction = new KAction(i18n("&Step"), actionCollection(),"step");
+  m_stepAction->setIcon( KIcon( "dbgstep" ) );
+  connect( m_stepAction, SIGNAL( triggered( bool ) ), this,SLOT(slotStep()) );
+
+  m_continueAction = new KAction(i18n("&Continue"), actionCollection(),"cont");
+  m_continueAction->setIcon( KIcon( "dbgrun" ) );
+  connect( m_continueAction, SIGNAL( triggered( bool ) ),this,SLOT(slotContinue()) );
+
+  m_stopAction = new KAction(i18n("St&op"), actionCollection(),"stop");
+  m_stopAction->setIcon( KIcon( "stop" ) );
+  connect( m_stopAction, SIGNAL( triggered( bool ) ),this,SLOT(slotStop()) );
+
+  m_breakAction = new KAction(i18n("&Break at Next Statement"), actionCollection(),"breaknext");
+  m_breakAction->setIcon( KIcon( "dbgrunto" ) );
+  connect( m_breakAction, SIGNAL( triggered( bool ) ),this,SLOT(slotBreakNext()) );
 
   m_nextAction->setToolTip(i18nc("Next breakpoint","Next"));
   m_stepAction->setToolTip(i18n("Step"));
@@ -536,10 +551,10 @@ void KJSDebugWin::slotBreakNext()
 
 void KJSDebugWin::slotToggleBreakpoint(int lineno)
 {
-  if (m_sourceSel->currentItem() < 0)
+  if (m_sourceSel->currentIndex() < 0)
     return;
 
-  SourceFile *sourceFile = m_sourceSelFiles.at(m_sourceSel->currentItem());
+  SourceFile *sourceFile = m_sourceSelFiles.at(m_sourceSel->currentIndex());
 
   // Find the source fragment containing the selected line (if any)
   int sourceId = -1;
@@ -547,7 +562,7 @@ void KJSDebugWin::slotToggleBreakpoint(int lineno)
   QMap<int,SourceFragment*>::Iterator it;
 
   for (it = m_sourceFragments.begin(); it != m_sourceFragments.end(); ++it) {
-    SourceFragment *sourceFragment = it.data();
+    SourceFragment *sourceFragment = it.value();
     if (sourceFragment &&
 	sourceFragment->sourceFile == sourceFile &&
 	sourceFragment->baseLine <= lineno &&
@@ -605,9 +620,9 @@ void KJSDebugWin::slotEval()
   ExecState *exec;
   ObjectImp *thisobj;
   if (m_execStates.isEmpty()) {
-    if (m_sourceSel->currentItem() < 0)
+    if (m_sourceSel->currentIndex() < 0)
       return;
-    SourceFile *sourceFile = m_sourceSelFiles.at(m_sourceSel->currentItem());
+    SourceFile *sourceFile = m_sourceSelFiles.at(m_sourceSel->currentIndex());
     if (!sourceFile->interpreter)
       return;
     exec = sourceFile->interpreter->globalExec();
@@ -725,14 +740,14 @@ bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
       sourceFile = new SourceFile(m_nextSourceUrl,code,exec->interpreter());
       setSourceFile(exec->interpreter(),m_nextSourceUrl,sourceFile);
       m_sourceSelFiles.append(sourceFile);
-      m_sourceSel->insertItem(m_nextSourceUrl);
+      m_sourceSel->addItem(m_nextSourceUrl);
     }
     else {
       // Sourced passed from somewhere else (possibly an eval call)... we don't know the url,
       // but we still know the interpreter
       sourceFile = new SourceFile("(unknown)",source.qstring(),exec->interpreter());
       m_sourceSelFiles.append(sourceFile);
-      m_sourceSel->insertItem("???");
+      m_sourceSel->addItem("???");
     }
   }
   else {
@@ -746,10 +761,10 @@ bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
   SourceFragment *sf = new SourceFragment(sourceId,m_nextSourceBaseLine,errorLine,sourceFile);
   m_sourceFragments[sourceId] = sf;
 
-  if (m_sourceSel->currentItem() < 0)
-    m_sourceSel->setCurrentItem(index);
+  if (m_sourceSel->currentIndex() < 0)
+    m_sourceSel->setCurrentIndex(index);
 
-  if (m_sourceSel->currentItem() == index) {
+  if (m_sourceSel->currentIndex() == index) {
     displaySourceFile(sourceFile,true);
   }
 
@@ -771,7 +786,7 @@ bool KJSDebugWin::sourceUnused(KJS::ExecState *exec, int sourceId)
   // Now remove the fragment (and the SourceFile, if it was the last fragment in that file)
   SourceFragment *fragment = m_sourceFragments[sourceId];
   if (fragment) {
-    m_sourceFragments.erase(sourceId);
+    m_sourceFragments.remove(sourceId);
 
     SourceFile *sourceFile = fragment->sourceFile;
     if (sourceFile->hasOneRef()) {
@@ -927,7 +942,7 @@ void KJSDebugWin::setSourceLine(int sourceId, int lineno)
   if (m_curSourceFile != source->sourceFile) {
       for (int i = 0; i < m_sourceSel->count(); i++)
 	if (m_sourceSelFiles.at(i) == sourceFile)
-	  m_sourceSel->setCurrentItem(i);
+	  m_sourceSel->setCurrentIndex(i);
       displaySourceFile(sourceFile,false);
   }
   m_sourceDisplay->setCurrentLine(source->baseLine+lineno-2);
@@ -951,8 +966,8 @@ void KJSDebugWin::clearInterpreter(Interpreter *interpreter)
   QMap<int,SourceFragment*>::Iterator it;
 
   for (it = m_sourceFragments.begin(); it != m_sourceFragments.end(); ++it)
-    if (it.data() && it.data()->sourceFile->interpreter == interpreter)
-      it.data()->sourceFile->interpreter = 0;
+    if (it.value() && it.value()->sourceFile->interpreter == interpreter)
+      it.value()->sourceFile->interpreter = 0;
 }
 
 SourceFile *KJSDebugWin::getSourceFile(Interpreter *interpreter, QString url)

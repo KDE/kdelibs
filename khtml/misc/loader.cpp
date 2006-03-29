@@ -1024,7 +1024,8 @@ void Loader::load(DocLoader* dl, CachedObject *object, bool incremental)
 
     emit requestStarted( req->m_docLoader, req->object );
 
-    m_timer.start(0, true);
+    m_timer.setSingleShot(true);
+    m_timer.start(0);
 }
 
 void Loader::servePendingRequests()
@@ -1127,8 +1128,10 @@ void Loader::slotFinished( KIO::Job* job )
 
   delete r;
 
-  if ( (m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT / 2) )
-      m_timer.start(0, true);
+  if ( (m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT / 2) ) {
+      m_timer.setSingleShot(true);
+      m_timer.start(0);
+  }
 }
 
 void Loader::slotData( KIO::Job*job, const QByteArray &data )

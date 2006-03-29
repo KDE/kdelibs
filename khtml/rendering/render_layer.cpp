@@ -252,7 +252,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
     if (hasOverlaidWidgets() && !renderer()->canvas()->pagedMode()) {
         updateZOrderLists();
         uint count = m_posZOrderList ? m_posZOrderList->count() : 0;
-        bool needUpdate = (count || !m_region.isNull());
+        bool needUpdate = (count || !m_region.isEmpty());
         if (count) {
             Q3ScrollView* sv = m_object->element()->getDocument()->view();
             m_region = QRect(0,0,sv->contentsWidth(),sv->contentsHeight());

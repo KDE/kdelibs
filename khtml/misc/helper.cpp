@@ -60,7 +60,7 @@ QColor khtml::retrieveBackgroundColor(const RenderObject *obj)
   }/*wend*/
 
   // everything transparent? Use base then.
-  return obj->style()->palette().active().base();
+  return obj->style()->palette().color( QPalette::Active, QPalette::Base );
 }
 
 /** checks whether the given colors have enough contrast
@@ -76,8 +76,8 @@ bool khtml::hasSufficientContrast(const QColor &c1, const QColor &c2)
 
   int h1, s1, v1, h2, s2, v2;
   int hdist = -CONTRAST_DISTANCE;
-  c1.hsv(&h1,&s1,&v1);
-  c2.hsv(&h2,&s2,&v2);
+  c1.getHsv(&h1,&s1,&v1);
+  c2.getHsv(&h2,&s2,&v2);
   if(h1!=-1 && h2!=-1) { // grey values have no hue
       hdist = qAbs(h1-h2);
       if (hdist > 180) hdist = 360-hdist;

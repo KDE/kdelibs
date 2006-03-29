@@ -557,7 +557,7 @@ void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const Backgrou
         for (InlineRunBox* curr = this; curr; curr = curr->nextLineBox())
             totalWidth += curr->width();
         QRect clipRect(_tx, _ty, width(), height());
-        clipRect = p->xForm(clipRect);
+        clipRect = p->matrix().mapRect(clipRect);
         p->save();
         p->setClipRect( clipRect );
         object()->paintBackgroundExtended(p, c, bgLayer, my, mh, startX, _ty,

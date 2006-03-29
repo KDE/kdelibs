@@ -231,7 +231,7 @@ bool DOM::strcasecmp( const DOMString &as, const DOMString &bs )
     if ( !( a && b ) )  return true;
     int l = as.length();
     while ( l-- ) {
-        if ( *a != *b && a->lower() != b->lower() ) return true;
+        if ( *a != *b && a->toLower() != b->toLower() ) return true;
 	a++,b++;
     }
     return false;
@@ -243,9 +243,9 @@ bool DOM::strcasecmp( const DOMString &as, const char* bs )
     int l = as.length();
     if ( !bs ) return ( l != 0 );
     while ( l-- ) {
-        if ( a->latin1() != *bs ) {
+        if ( a->toLatin1() != *bs ) {
             char cc = ( ( *bs >= 'A' ) && ( *bs <= 'Z' ) ) ? ( ( *bs ) + 'a' - 'A' ) : ( *bs );
-            if ( a->lower().latin1() != cc ) return true;
+            if ( a->toLower().toLatin1() != cc ) return true;
         }
         a++, bs++;
     }

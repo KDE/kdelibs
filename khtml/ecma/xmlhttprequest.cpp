@@ -152,7 +152,7 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
 
       ValueImp *header = getResponseHeader("Content-Type");
       if (header->type() != UndefinedType) {
-	mimeType = QStringList::split(";", header->toString(exec).qstring())[0].trimmed();
+	mimeType = header->toString(exec).qstring().split(";")[0].trimmed();
       }
 
       if (mimeType == "text/xml" || mimeType == "application/xml" || mimeType == "application/xhtml+xml") {
@@ -308,7 +308,7 @@ void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async)
   }
 
 
-  method = _method.lower();
+  method = _method.toLower();
   url = _url;
   async = _async;
 
@@ -332,8 +332,7 @@ void XMLHttpRequest::send(const QString& _body)
 
     // FIXME: determine post encoding correctly by looking in headers
     // for charset.
-    QByteArray buf;
-    buf.duplicate(_body.toUtf8().data(), _body.length());
+    QByteArray buf = QByteArray(_body.toUtf8().data(), _body.length());
 
     job = KIO::http_post( url, buf, false );
     if(contentType.isNull())
@@ -353,7 +352,7 @@ void XMLHttpRequest::send(const QString& _body)
     for (QMap<QString, QString>::ConstIterator i = begin; i != end; ++i) {
       if (i != begin)
         rh += "\r\n";
-      rh += i.key() + ": " + i.data();
+      rh += i.key() + ": " + i.value();
     }
 
     job->addMetaData("customHTTPHeader", rh);
@@ -422,7 +421,7 @@ void XMLHttpRequest::abort()
 
 void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value)
 {
-  QString name = _name.lower().trimmed();
+  QString name = _name.toLower().trimmed();
 
   // Content-type needs to be set seperately from the other headers
   if(name == "content-type") {
@@ -450,8 +449,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
 
   // Reject all banned headers. See BANNED_HTTP_HEADERS above.
   // kDebug() << "Banned HTTP Headers: " << BANNED_HTTP_HEADERS << endl;
-  QStringList bannedHeaders = QStringList::split(',',
-                                  QString::fromLatin1(BANNED_HTTP_HEADERS));
+  QStringList bannedHeaders = QString::fromLatin1(BANNED_HTTP_HEADERS).split(',');
 
   if (bannedHeaders.contains(name))
     return;   // Denied
@@ -465,7 +463,7 @@ ValueImp *XMLHttpRequest::getAllResponseHeaders() const
     return Undefined();
   }
 
-  int endOfLine = responseHeaders.find("\n");
+  int endOfLine = responseHeaders.indexOf("\n");
 
   if (endOfLine == -1) {
     return Undefined();
@@ -480,17 +478,17 @@ ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
     return Undefined();
   }
 
-  QRegExp headerLinePattern(name + ":", false);
+  QRegExp headerLinePattern(name + ":", Qt::CaseInsensitive);
 
   int matchLength;
-  int headerLinePos = headerLinePattern.search(responseHeaders, 0);
+  int headerLinePos = headerLinePattern.indexIn(responseHeaders, 0);
   matchLength = headerLinePattern.matchedLength();
   while (headerLinePos != -1) {
     if (headerLinePos == 0 || responseHeaders[headerLinePos-1] == '\n') {
       break;
     }
 
-    headerLinePos = headerLinePattern.search(responseHeaders, headerLinePos + 1);
+    headerLinePos = headerLinePattern.indexIn(responseHeaders, headerLinePos + 1);
     matchLength = headerLinePattern.matchedLength();
   }
 
@@ -499,7 +497,7 @@ ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
     return Undefined();
   }
 
-  int endOfLine = responseHeaders.find("\n", headerLinePos + matchLength);
+  int endOfLine = responseHeaders.indexOf("\n", headerLinePos + matchLength);
 
   return String(responseHeaders.mid(headerLinePos + matchLength, endOfLine - (headerLinePos + matchLength)).trimmed());
 }
@@ -510,10 +508,10 @@ static ValueImp *httpStatus(const QString& response, bool textStatus = false)
     return Undefined();
   }
 
-  int endOfLine = response.find("\n");
+  int endOfLine = response.indexOf("\n");
   QString firstLine = (endOfLine == -1) ? response : response.left(endOfLine);
-  int codeStart = firstLine.find(" ");
-  int codeEnd = firstLine.find(" ", codeStart + 1);
+  int codeStart = firstLine.indexOf(" ");
+  int codeEnd = firstLine.indexOf(" ", codeStart + 1);
 
   if (codeStart == -1 || codeEnd == -1) {
     return Undefined();
@@ -607,9 +605,9 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
 
     // NOTE: Replace a 304 response with a 200! Both IE and Mozilla do this.
     // Problem first reported through bug# 110272.
-    int codeStart = responseHeaders.find("304");
+    int codeStart = responseHeaders.indexOf("304");
     if ( codeStart != -1) {
-      int codeEnd = responseHeaders.find("\n", codeStart+3);
+      int codeEnd = responseHeaders.indexOf("\n", codeStart+3);
       if (codeEnd != -1)
         responseHeaders.replace(codeStart, (codeEnd-codeStart), "200 OK");
     }
@@ -627,11 +625,11 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
 
     if ( pos > -1 ) {
       pos += 13;
-      int index = responseHeaders.find('\n', pos);
+      int index = responseHeaders.indexOf('\n', pos);
       QString type = responseHeaders.mid(pos, (index-pos));
-      index = type.find (';');
+      index = type.indexOf(';');
       if (index > -1)
-        encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", false)).trimmed();
+        encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", Qt::CaseInsensitive)).trimmed();
     }
 
     decoder = new Decoder;

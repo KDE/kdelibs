@@ -742,7 +742,7 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
     case Length:
       return Number(part->frames().count());
     case Name:
-      return String(part->name());
+      return String(part->objectName());
     case SideBar:
       return new MozillaSidebarExtension(exec, part);
     case _Navigator:
@@ -1016,7 +1016,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, ValueImp *valu
       return;
     case Name:
       if (isSafeScript(exec))
-        part->setName( value->toString(exec).qstring().toLocal8Bit().data() );
+        part->setObjectName( value->toString(exec).qstring().toLocal8Bit().data() );
       return;
     default:
       break;
@@ -1064,7 +1064,7 @@ void Window::closeNow()
     } else {
       //kDebug(6070) << k_funcinfo << " -> closing window" << endl;
       // We want to make sure that window.open won't find this part by name.
-      part->setName( 0 );
+      part->setObjectName( QString() );
       part->deleteLater();
       part = 0;
     }
@@ -1262,7 +1262,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
       // check if we're allowed to inject javascript
       // SYNC check with khtml_part.cpp::slotRedirect!
       if ( isSafeScript(exec) ||
-            dstUrl.find(QLatin1String("javascript:"), 0, false) != 0 )
+            dstUrl.indexOf(QLatin1String("javascript:"), 0, Qt::CaseInsensitive) != 0 )
         part->scheduleRedirection(-1,
                                   dstUrl,
                                   lockHistory);
@@ -1423,12 +1423,12 @@ ValueImp *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStr
       winargs.toolBarsVisible = false;
       winargs.statusBarVisible = false;
       winargs.scrollBarsVisible = false;
-      QStringList flist = QStringList::split(',', features);
+      QStringList flist = features.split(',');
       QStringList::ConstIterator it = flist.begin();
       while (it != flist.end()) {
         QString s = *it++;
         QString key, val;
-        int pos = s.find('=');
+        int pos = s.indexOf('=');
         if (pos >= 0) {
           key = s.left(pos).trimmed().toLower();
           val = s.mid(pos + 1).trimmed().toLower();
@@ -1702,7 +1702,7 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
 #else
       //TODO
 #endif
-      widget->setActiveWindow();
+      widget->activateWindow();
       emit part->browserExtension()->requestFocus(part);
     }
     return Undefined();
@@ -1716,12 +1716,11 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
           return Undefined();
        QByteArray  in, out;
        char *binData = s.ascii();
-       in.setRawData( binData, s.size() );
+       in = QByteArray( binData, s.size() );
        if (id == Window::AToB)
            KCodecs::base64Decode( in, out );
        else
            KCodecs::base64Encode( in, out );
-       in.resetRawData( binData, s.size() );
        UChar *d = new UChar[out.size()];
        for (int i = 0; i < out.size(); i++)
            d[i].uc = (uchar) out[i];
@@ -2447,8 +2446,8 @@ void Location::put(ExecState *exec, const Identifier &p, ValueImp *v, int attr)
       url.setRef(str);
       break;
     case Host: {
-      QString host = str.left(str.find(":"));
-      QString port = str.mid(str.find(":")+1);
+      QString host = str.left(str.indexOf(":"));
+      QString port = str.mid(str.indexOf(":")+1);
       url.setHost(host);
       url.setPort(port.toUInt());
       break;
@@ -2680,7 +2679,7 @@ ValueImp *HistoryFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const
     steps = 1;
     break;
   case History::Go:
-    steps = n;
+    steps = (int)n;
     break;
   default:
     return Undefined();

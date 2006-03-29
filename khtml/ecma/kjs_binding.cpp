@@ -164,11 +164,6 @@ QString UString::qstring() const
   return QString((QChar*) data(), size());
 }
 
-QConstString UString::qconststring() const
-{
-  return QConstString((QChar*) data(), size());
-}
-
 DOM::DOMString Identifier::domString() const
 {
   return DOM::DOMString((QChar*) data(), size());
@@ -201,7 +196,7 @@ QVariant ValueToVariant(ExecState* exec, ValueImp *val) {
   QVariant res;
   switch (val->type()) {
   case BooleanType:
-    res = QVariant(val->toBoolean(exec), 0);
+    res = QVariant(val->toBoolean(exec));
     break;
   case NumberType:
     res = QVariant(val->toNumber(exec));

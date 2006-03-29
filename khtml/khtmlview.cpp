@@ -653,7 +653,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
                 continue;
             RenderLayer* rl = rw->needsMask() ? rw->enclosingStackingContext() : 0;
             QRegion mask = rl ? rl->getMask() : QRegion();
-            if (!mask.isNull()) {
+            if (!mask.isEmpty()) {
                 QPoint o(0,0);
                 o = contentsToViewport(o);
                 mask.translate(o.x(),o.y());

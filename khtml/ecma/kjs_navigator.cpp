@@ -188,14 +188,14 @@ ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
     return String("Mozilla");
   case AppName:
     // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
-    if (userAgent.find(QLatin1String("Mozilla")) >= 0 &&
-        userAgent.find(QLatin1String("compatible")) == -1)
+    if (userAgent.indexOf(QLatin1String("Mozilla")) >= 0 &&
+        userAgent.indexOf(QLatin1String("compatible")) == -1)
     {
       //kDebug() << "appName -> Mozilla" << endl;
       return String("Netscape");
     }
-    if (userAgent.find(QLatin1String("Microsoft")) >= 0 ||
-        userAgent.find(QLatin1String("MSIE")) >= 0)
+    if (userAgent.indexOf(QLatin1String("Microsoft")) >= 0 ||
+        userAgent.indexOf(QLatin1String("MSIE")) >= 0)
     {
       //kDebug() << "appName -> IE" << endl;
       return String("Microsoft Internet Explorer");
@@ -204,17 +204,17 @@ ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
     return String("Konqueror");
   case AppVersion:
     // We assume the string is something like Mozilla/version (properties)
-    return String(userAgent.mid(userAgent.find('/') + 1));
+    return String(userAgent.mid(userAgent.indexOf('/') + 1));
   case Product:
     // We are pretending to be Mozilla or Safari
-    if (userAgent.find(QLatin1String("Mozilla")) >= 0 &&
-        userAgent.find(QLatin1String("compatible")) == -1)
+    if (userAgent.indexOf(QLatin1String("Mozilla")) >= 0 &&
+        userAgent.indexOf(QLatin1String("compatible")) == -1)
     {
         return String("Gecko");
     }
     // When spoofing as IE, we use Undefined().
-    if (userAgent.find(QLatin1String("Microsoft")) >= 0 ||
-        userAgent.find(QLatin1String("MSIE")) >= 0)
+    if (userAgent.indexOf(QLatin1String("Microsoft")) >= 0 ||
+        userAgent.indexOf(QLatin1String("MSIE")) >= 0)
     {
         return Undefined();
     }
@@ -222,9 +222,9 @@ ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
     return String("Konqueror/khtml");
   case ProductSub:
     {
-      int ix = userAgent.find("Gecko");
+      int ix = userAgent.indexOf("Gecko");
       if (ix >= 0 && userAgent.length() >= ix+14 && userAgent.at(ix+5) == '/' &&
-          userAgent.find(QRegExp("\\d{8}"), ix+6) == ix+6)
+          userAgent.indexOf(QRegExp("\\d{8}"), ix+6) == ix+6)
       {
           // We have Gecko/<productSub> in the UA string
           return String(userAgent.mid(ix+6, 8));
@@ -245,10 +245,10 @@ ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
     return String(userAgent);
   case Platform:
     // yet another evil hack, but necessary to spoof some sites...
-    if ( (userAgent.find(QLatin1String("Win"),0,false)>=0) )
+    if ( (userAgent.indexOf(QLatin1String("Win"),0,Qt::CaseInsensitive)>=0) )
       return String("Win32");
-    else if ( (userAgent.find(QLatin1String("Macintosh"),0,false)>=0) ||
-              (userAgent.find(QLatin1String("Mac_PowerPC"),0,false)>=0) )
+    else if ( (userAgent.indexOf(QLatin1String("Macintosh"),0,Qt::CaseInsensitive)>=0) ||
+              (userAgent.indexOf(QLatin1String("Mac_PowerPC"),0,Qt::CaseInsensitive)>=0) )
       return String("MacPPC");
     else
     {
@@ -328,7 +328,7 @@ PluginBase::PluginBase(ExecState *exec)
                 for ( type=types.begin(); type!=types.end(); ++type ) {
 
                     // get mime information
-                    QStringList tokens = QStringList::split(':', *type, true);
+                    QStringList tokens = (*type).split(':', QString::KeepEmptyParts);
                     if ( tokens.count() < 3 ) // we need 3 items
                         continue;
 

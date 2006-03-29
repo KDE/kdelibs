@@ -446,9 +446,9 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
     {
         DOMString s = attr->value();
         if(*s.unicode() == '#')
-            name = QString(s.unicode()+1, s.length()-1).lower();
+            name = QString(s.unicode()+1, s.length()-1).toLower();
         else
-            name = s.string().lower();
+            name = s.string().toLower();
 	// ### make this work for XML documents, e.g. in case of <html:map...>
         if(getDocument()->isHTMLDocument())
             static_cast<HTMLDocumentImpl*>(getDocument())->mapMap[name] = this;

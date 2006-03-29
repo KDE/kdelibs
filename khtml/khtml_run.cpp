@@ -66,7 +66,8 @@ void KHTMLRun::foundMimeType( const QString &_type )
 
     if ( m_bFinished )
     {
-        m_timer.start( 0, true );
+        m_timer.setSingleShot( true );
+        m_timer.start( 0 );
         return;
     }
 

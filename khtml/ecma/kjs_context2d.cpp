@@ -637,7 +637,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
             return throwError(exec, SyntaxError);
 
         if (!sourceContext) {
-            QString compositeOperator = contextObject->_globalComposite->toString(exec).qstring().lower();
+            QString compositeOperator = contextObject->_globalComposite->toString(exec).qstring().toLower();
             QPainter::CompositionMode mode = compositeOperatorFromString(compositeOperator);
             drawingContext->setCompositionMode( mode );
             drawingContext->drawPixmap( QRectF( dx, dy, dw, dh ), pixmap, QRectF( sx, sy, sw, sh ) );
@@ -671,7 +671,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         float dy = args[6]->toNumber(exec);
         float dw = args[7]->toNumber(exec);
         float dh = args[8]->toNumber(exec);
-        QString compositeOperator = args[9]->toString(exec).qstring().lower();
+        QString compositeOperator = args[9]->toString(exec).qstring().toLower();
         khtml::CachedImage *ci = i->image();
         if (ci) {
             QPixmap pixmap = ci->pixmap();
@@ -705,7 +705,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
     case Context2D::SetCompositeOperation: {
         if (args.size() != 1)
             return throwError(exec, SyntaxError);
-        QString compositeOperator = args[0]->toString(exec).qstring().lower();
+        QString compositeOperator = args[0]->toString(exec).qstring().toLower();
         QPainter::CompositionMode mode = compositeOperatorFromString( compositeOperator );
         //###
         drawingContext->setCompositionMode(mode);
@@ -1088,7 +1088,7 @@ void Context2D::putValueProperty(ExecState *exec, int token, ValueImp *value, in
 
     case GlobalCompositeOperation: {
         _globalComposite = value;
-        QString compositeOperator = value->toString(exec).qstring().lower();
+        QString compositeOperator = value->toString(exec).qstring().toLower();
         QPainter::CompositionMode mode = compositeOperatorFromString( compositeOperator );
         context->setCompositionMode( mode );
         break;

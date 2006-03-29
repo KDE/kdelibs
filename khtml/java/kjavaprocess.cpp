@@ -286,7 +286,7 @@ bool KJavaProcess::invokeJVM()
     {
         // BUG HERE: if an argument contains space (-Dname="My name")
         // this parsing will fail. Need more sophisticated parsing -- use KShell?
-        const QStringList args = QStringList::split( " ", d->extraArgs );
+        const QStringList args = d->extraArgs.split( " " );
         QStringList::ConstIterator it = args.begin();
         const QStringList::ConstIterator itEnd = args.end();
         for ( ; it != itEnd; ++it )
@@ -380,8 +380,7 @@ void KJavaProcess::slotReceivedData( int fd, int& len )
         return;
     }
 
-    QByteArray qb;
-    emit received( qb.duplicate( msg, num_len ) );
+    emit received( QByteArray( msg, num_len ) );
     delete[] msg;
     len = num_bytes + num_bytes_msg;
 }
