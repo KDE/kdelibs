@@ -77,7 +77,7 @@ void VideoWidgetPrivate::createIface()
 
 void VideoWidget::setFullScreen( bool newFullScreen )
 {
-	kDebug() << k_funcinfo << newFullScreen << endl;
+	kDebug( 602 ) << k_funcinfo << newFullScreen << endl;
 	K_D( VideoWidget );
 	// TODO: disable screensaver? or should we leave that responsibility to the
 	// application?

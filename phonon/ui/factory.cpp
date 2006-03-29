@@ -71,7 +71,7 @@ class Factory::Private
 								//library, SLOT( slotObjectCreated( QObject* ) ) );
 					}
 					else
-						kWarning( 600 ) << "given symbol '" << symbol << "' not found" << endl;
+						kWarning( 602 ) << "given symbol '" << symbol << "' not found" << endl;
 				}
 			}
 			if( factory )
@@ -81,17 +81,17 @@ class Factory::Private
 				{
 					QString e = i18n( "create method returned 0" );
 					errormsg.append( e );
-					kDebug( 600 ) << "Error getting ui backend from factory for " <<
+					kDebug( 602 ) << "Error getting ui backend from factory for " <<
 						lib << ":\n" << e << endl;
 				}
 				else
-					kDebug( 600 ) << "using ui backend: " << lib << endl;
+					kDebug( 602 ) << "using ui backend: " << lib << endl;
 			}
 			else
 			{
 				QString e = KLibLoader::self()->lastErrorMessage();
 				errormsg.append( e );
-				kDebug( 600 ) << "Error getting factory for " << lib <<
+				kDebug( 602 ) << "Error getting factory for " << lib <<
 					":\n" << e << endl;
 			}
 			if( 0 == backend )
@@ -124,7 +124,7 @@ Factory::Factory()
 
 Factory::~Factory()
 {
-	kDebug( 600 ) << k_funcinfo << endl;
+	kDebug( 602 ) << k_funcinfo << endl;
 	emit deleteYourObjects(); //FIXME: this is probably emitted twice: once through Phonon::Factory::~Factory, and the second one from here
 	delete d->backend;
 	delete d;
