@@ -35,8 +35,9 @@ KMTimer* KMTimer::self()
 }
 
 KMTimer::KMTimer(QObject *parent, const char *name)
-: QTimer(parent, name), m_count(0)
+: QTimer(parent), m_count(0)
 {
+  setObjectName( name );
 	connect(this, SIGNAL(timeout()), SLOT(slotTimeout()));
 }
 
@@ -90,7 +91,8 @@ void KMTimer::startTimer(int t)
 		conf->setGroup("General");
 		t = conf->readEntry("TimerDelay", 5) * 1000;
 	}
-	start(t, true);
+  setSingleShot( true );
+	start(t);
 }
 
 #include "kmtimer.moc"

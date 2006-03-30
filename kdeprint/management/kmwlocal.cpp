@@ -65,7 +65,9 @@ KMWLocal::KMWLocal(QWidget *parent)
 	QVBoxLayout	*lay0 = new QVBoxLayout(this);
 	lay0->setMargin(0);
 	lay0->setSpacing(10);
-	QHBoxLayout	*lay1 = new QHBoxLayout(0, 0, 10);
+	QHBoxLayout	*lay1 = new QHBoxLayout();
+  lay1->setMargin(0);
+  lay1->setSpacing(10);
 	lay0->addWidget(l2, 0);
 	lay0->addWidget(m_ports, 1);
 	lay0->addLayout(lay1, 0);

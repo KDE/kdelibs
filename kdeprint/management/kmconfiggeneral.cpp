@@ -79,19 +79,24 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	lay0->addWidget(m_testpagebox);
 	lay0->addWidget(m_statusbox);
 	lay0->addStretch(1);
-	QVBoxLayout	*lay1 = new QVBoxLayout(m_timerbox->layout(),
-		KDialog::spacingHint());
+	QVBoxLayout	*lay1 = new QVBoxLayout();
+  lay1->setSpacing(KDialog::spacingHint());
+  m_timerbox->layout()->addItem(lay1);
 	lay1->addWidget(m_timer);
-	QVBoxLayout	*lay2 = new QVBoxLayout(m_testpagebox->layout(),
-		KDialog::spacingHint());
-	QHBoxLayout	*lay3 = new QHBoxLayout(0, 0, 0);
+	QVBoxLayout	*lay2 = new QVBoxLayout();
+  lay2->setSpacing(KDialog::spacingHint());
+  m_testpagebox->layout()->addItem(lay2);
+	QHBoxLayout	*lay3 = new QHBoxLayout();
+  lay3->setMargin(0);
+  lay3->setSpacing(0);
 	lay2->addWidget(m_defaulttestpage);
 	lay2->addWidget(m_testpage);
 	lay2->addLayout(lay3);
 	lay3->addStretch(1);
 	lay3->addWidget(m_preview);
-	QVBoxLayout	*lay4 = new QVBoxLayout(m_statusbox->layout(),
-		KDialog::spacingHint());
+	QVBoxLayout	*lay4 = new QVBoxLayout();
+  lay4->setSpacing(KDialog::spacingHint());
+  m_statusbox->layout()->addItem(lay4);
 	lay4->addWidget(m_statusmsg);
 	lay4->addWidget(m_uselast);
 	m_preview->setEnabled( !m_testpage->url().isEmpty());

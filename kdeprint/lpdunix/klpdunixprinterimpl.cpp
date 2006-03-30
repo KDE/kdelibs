@@ -29,6 +29,7 @@
 KLpdUnixPrinterImpl::KLpdUnixPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/)
 : KPrinterImpl(parent)
 {
+  setObjectName( name );
 }
 
 KLpdUnixPrinterImpl::~KLpdUnixPrinterImpl()

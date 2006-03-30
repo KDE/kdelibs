@@ -93,7 +93,7 @@ CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent)
 	m1->addWidget(browsetimeout_, 3, 1);
 	m1->addWidget(browseaddresses_, 4, 1);
 	m1->addWidget(browseorder_, 5, 1);
-	QGridLayout	*m3 = new QGridLayout(0);
+	QGridLayout	*m3 = new QGridLayout();
 	m1->addLayout(m3, 6, 1);
   m2->setMargin(0);
   m2->setSpacing(5);

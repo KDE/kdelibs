@@ -133,15 +133,15 @@ KPSchedulePage::KPSchedulePage(QWidget *parent)
 	m_gmtdiff -= ts->tm_hour;
 
 	m_time = new QComboBox(this);
-	m_time->insertItem(i18n("Immediately"));
-	m_time->insertItem(i18n("Never (hold indefinitely)"));
-	m_time->insertItem(i18n("Daytime (6 am - 6 pm)"));
-	m_time->insertItem(i18n("Evening (6 pm - 6 am)"));
-	m_time->insertItem(i18n("Night (6 pm - 6 am)"));
-	m_time->insertItem(i18n("Weekend"));
-	m_time->insertItem(i18n("Second Shift (4 pm - 12 am)"));
-	m_time->insertItem(i18n("Third Shift (12 am - 8 am)"));
-	m_time->insertItem(i18n("Specified Time"));
+	m_time->addItem(i18n("Immediately"));
+	m_time->addItem(i18n("Never (hold indefinitely)"));
+	m_time->addItem(i18n("Daytime (6 am - 6 pm)"));
+	m_time->addItem(i18n("Evening (6 pm - 6 am)"));
+	m_time->addItem(i18n("Night (6 pm - 6 am)"));
+	m_time->addItem(i18n("Weekend"));
+	m_time->addItem(i18n("Second Shift (4 pm - 12 am)"));
+	m_time->addItem(i18n("Third Shift (12 am - 8 am)"));
+	m_time->addItem(i18n("Specified Time"));
         m_time->setWhatsThis(whatsThisScheduledPrinting);
 	m_tedit = new QDateTimeEdit(this);
 #warning "kde4: How to port m_tedit->setAutoAdvance ?"	
@@ -176,7 +176,9 @@ KPSchedulePage::KPSchedulePage(QWidget *parent)
     l0->setMargin(0);
     l0->setSpacing(7);
 	l0->addWidget(lab, 0, 0);
-	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 5);
+	QHBoxLayout	*l1 = new QHBoxLayout();
+  l1->setMargin(0);
+  l1->setSpacing(5);
 	l0->addLayout(l1, 0, 1);
 	l1->addWidget(m_time);
 	l1->addWidget(m_tedit);
@@ -229,7 +231,7 @@ void KPSchedulePage::setOptions(const QMap<QString,QString>& opts)
 
 		if (item != -1)
 		{
-			m_time->setCurrentItem(item);
+			m_time->setCurrentIndex(item);
 			slotTimeChanged();
 		}
 	}

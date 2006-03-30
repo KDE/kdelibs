@@ -69,7 +69,9 @@ KMWSocket::KMWSocket(QWidget *parent)
 	QHBoxLayout	*lay3 = new QHBoxLayout(this);
 	lay3->setMargin(0);
 	lay3->setSpacing(10);
-	QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 0);
+	QVBoxLayout	*lay2 = new QVBoxLayout();
+  lay2->setMargin(0);
+  lay2->setSpacing(0);
 
 	lay3->addWidget(m_list,1);
 	lay3->addLayout(lay2,1);

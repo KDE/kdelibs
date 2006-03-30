@@ -70,6 +70,8 @@ static int trials = 5;
 KMCupsManager::KMCupsManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMManager(parent)
 {
+  setObjectName( name );
+
 	// be sure to create the CupsInfos object -> password
 	// management is handled correctly.
 	CupsInfos::self();
@@ -805,10 +807,15 @@ QStringList KMCupsManager::detectLocalPrinters()
 
 void KMCupsManager::createPluginActions(KActionCollection *coll)
 {
-	KAction	*act = new KAction(i18n("&Export Driver..."), "kdeprint_uploadsmb", 0, this, SLOT(exportDriver()), coll, "plugin_export_driver");
+	KAction	*act = new KAction(i18n("&Export Driver..."), coll, "plugin_export_driver");
+  act->setIcon( KIcon( "kdeprint_uploadsmb" ) );
 	act->setActionGroup(pluginGroup());
-	act = new KAction(i18n("&Printer IPP Report"), "kdeprint_report", 0, this, SLOT(printerIppReport()), coll, "plugin_printer_ipp_report");
+  connect( act, SIGNAL( triggered( bool ) ), this, SLOT(exportDriver()) );
+
+	act = new KAction(i18n("&Printer IPP Report"), coll, "plugin_printer_ipp_report");
+  act->setIcon( KIcon( "kdeprint_report" ) );
 	act->setActionGroup(pluginGroup());
+  connect( act, SIGNAL( triggered( bool ) ), this, SLOT(printerIppReport()) );
 }
 
 void KMCupsManager::validatePluginActions(KActionCollection *coll, KMPrinter *pr)
@@ -918,7 +925,7 @@ void KMCupsManager::slotAsyncConnect()
 			  QString::number( CupsInfos::self()->port() ) );
 }
 
-void KMCupsManager::slotConnectionFailed( int errcode )
+void KMCupsManager::slotConnectionFailed( int )
 {
 	kDebug(500) << "Connection failed trials=" << trials << endl;
 	if ( trials > 0 )

@@ -42,7 +42,7 @@ public:
 protected:
 	QObject* createObject(QObject *parent = 0, const char *name = 0, const char * /*classname*/ = "QObject", const QStringList& args = QStringList())
 	{
-		KDialogBase	*dlg = new KDialogBase(static_cast<QWidget*>(parent), name, true, i18n("EPSON InkJet Printer Utilities"), KDialogBase::Close);
+		KDialogBase	*dlg = new KDialogBase(KDialogBase::Swallow, 0, static_cast<QWidget*>(parent), name, true, i18n("EPSON InkJet Printer Utilities"), KDialogBase::Close);
 		EscpWidget	*w = new EscpWidget(dlg);
 		if (args.count() > 0)
 			w->setDevice(args[0]);
@@ -73,19 +73,19 @@ EscpWidget::EscpWidget(QWidget *parent)
 
 	QPushButton	*cleanbtn = new QPushButton(this);
 	cleanbtn->setObjectName(QLatin1String("-c"));
-	cleanbtn->setPixmap(DesktopIcon("exec"));
+	cleanbtn->setIcon(DesktopIcon("exec"));
 	QPushButton	*nozzlebtn = new QPushButton(this);
 	nozzlebtn->setObjectName(QLatin1String("-n"));
-	nozzlebtn->setPixmap(DesktopIcon("exec"));
+	nozzlebtn->setIcon(DesktopIcon("exec"));
 	QPushButton	*alignbtn = new QPushButton(this);
 	alignbtn->setObjectName(QLatin1String("-a"));
-	alignbtn->setPixmap(DesktopIcon("exec"));
+	alignbtn->setIcon(DesktopIcon("exec"));
 	QPushButton	*inkbtn = new QPushButton(this);
 	inkbtn->setObjectName(QLatin1String("-i"));
-	inkbtn->setPixmap(DesktopIcon("kdeprint_inklevel"));
+	inkbtn->setIcon(DesktopIcon("kdeprint_inklevel"));
 	QPushButton	*identbtn = new QPushButton(this);
 	identbtn->setObjectName(QLatin1String("-d"));
-	identbtn->setPixmap(DesktopIcon("exec"));
+	identbtn->setIcon(DesktopIcon("exec"));
 
 	QFont	f(font());
 	f.setBold(true);
@@ -117,11 +117,11 @@ EscpWidget::EscpWidget(QWidget *parent)
 	inklab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
 	identlab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
 
-	cleanbtn->setAccel(Q3Accel::shortcutKey(cleanlab->text()));
-	nozzlebtn->setAccel(Q3Accel::shortcutKey(nozzlelab->text()));
-	alignbtn->setAccel(Q3Accel::shortcutKey(alignlab->text()));
-	inkbtn->setAccel(Q3Accel::shortcutKey(inklab->text()));
-	identbtn->setAccel(Q3Accel::shortcutKey(identlab->text()));
+	cleanbtn->setShortcut(Q3Accel::shortcutKey(cleanlab->text()));
+	nozzlebtn->setShortcut(Q3Accel::shortcutKey(nozzlelab->text()));
+	alignbtn->setShortcut(Q3Accel::shortcutKey(alignlab->text()));
+	inkbtn->setShortcut(Q3Accel::shortcutKey(inklab->text()));
+	identbtn->setShortcut(Q3Accel::shortcutKey(identlab->text()));
 
 	KSeparator	*sep = new KSeparator(this);
 	sep->setFixedHeight(10);
@@ -253,7 +253,7 @@ void EscpWidget::slotReceivedStderr(KProcess*, char *buf, int len)
 
 void EscpWidget::slotButtonClicked()
 {
-	QString	arg = sender()->name();
+	QString	arg = sender()->objectName();
 	startCommand(arg);
 }
 

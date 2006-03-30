@@ -33,14 +33,14 @@ ImagePreview::ImagePreview(QWidget *parent ) : QWidget(parent ) {
 	gamma_ = 1000;
 	bw_ = false;
 
-	setBackgroundMode(Qt::NoBackground);
+	setAttribute(Qt::WA_NoSystemBackground);
 }
 
 ImagePreview::~ImagePreview(){
 }
 
 void ImagePreview::setImage(const QImage& image){
-	image_ = image.convertDepth(32);
+	image_ = image.convertToFormat(QImage::Format_RGB32);
 	image_.detach();
 	resize(image_.size());
 	update();
@@ -64,7 +64,8 @@ void ImagePreview::paintEvent(QPaintEvent*){
 	p.drawImage(x,y,tmpImage);
 	p.end();
 
-	bitBlt(this, QPoint(0, 0), &buffer, buffer.rect());
+  QPainter painter( this );
+  painter.drawImage( QPoint( 0, 0 ), buffer.toImage() );
 }
 
 void ImagePreview::setBlackAndWhite(bool on){

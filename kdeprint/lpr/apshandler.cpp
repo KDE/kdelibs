@@ -160,7 +160,7 @@ QMap<QString,QString> ApsHandler::loadVarFile(const QString& filename)
 	return opts;
 }
 
-DrMain* ApsHandler::loadDriver(KMPrinter *prt, PrintcapEntry *entry, bool config)
+DrMain* ApsHandler::loadDriver(KMPrinter*, PrintcapEntry *entry, bool config)
 {
 	DrMain	*driver = loadApsDriver(config);
 	if (driver /* && config */ )    // Load resources in all case, to get the correct page size
@@ -315,7 +315,7 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 	return entry;
 }
 
-bool ApsHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain *driver, bool*)
+bool ApsHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry*, DrMain *driver, bool*)
 {
 	if (driver->get("gsdriver").isEmpty())
 	{

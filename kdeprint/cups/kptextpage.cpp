@@ -234,7 +234,9 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent)
 	l0->addWidget(formatbox, 0, 0);
 	l0->addWidget(prettybox, 0, 1);
     l0->addWidget(marginbox, 1, 0, 1, 2);
-	QVBoxLayout	*l1 = new QVBoxLayout(formatbox->layout(), 5);
+	QVBoxLayout	*l1 = new QVBoxLayout();
+  l1->setSpacing(5);
+  formatbox->layout()->addItem(l1);
 	l1->addWidget(m_cpi);
 	l1->addWidget(m_lpi);
 	l1->addWidget(sep);
@@ -245,7 +247,9 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent)
 	l2->addWidget(off, 0, 0);
 	l2->addWidget(on, 1, 0);
 	l2->addWidget(m_prettypix, 0, 1, 2, 1);
-	QVBoxLayout	*l3 = new QVBoxLayout(marginbox->layout(), 10);
+	QVBoxLayout	*l3 = new QVBoxLayout();
+  l3->setSpacing(10);
+  marginbox->layout()->addItem(l3);
 	l3->addWidget(m_margin);
 }
 

@@ -80,7 +80,7 @@ public Q_SLOTS:
 	void slotManagerConfigure();
 	void slotAddSpecial();
 	void slotRefresh();
-	void slotToolSelected(int);
+	void slotToolSelected(QAction*);
 	void slotToggleFilter(bool);
 	void slotHelp();
 

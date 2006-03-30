@@ -30,7 +30,7 @@
 #include <klocale.h>
 
 PortDialog::PortDialog(QWidget *parent, const char *name)
-	: KDialogBase(parent, name, true, QString(), Ok|Cancel, Ok, true)
+	: KDialogBase(Swallow, 0, parent, name, true, QString(), Ok|Cancel, Ok, true)
 {
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
@@ -47,7 +47,7 @@ PortDialog::PortDialog(QWidget *parent, const char *name)
 	QVBoxLayout	*m1 = new QVBoxLayout(dummy);
   m1->setMargin(0);
   m1->setSpacing(10);
-	QGridLayout	*m2 = new QGridLayout(0);
+	QGridLayout	*m2 = new QGridLayout();
 	m1->addLayout(m2);
   m2->setMargin(0);
   m2->setSpacing(5);

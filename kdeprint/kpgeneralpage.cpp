@@ -327,10 +327,10 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
   lay0->setMargin(0);
   lay0->setSpacing(KDialog::spacingHint());
   this->setWhatsThis(whatsThisPrintPropertiesGeneralPage);
-	QGridLayout	*lay1 = new QGridLayout(0);
+	QGridLayout	*lay1 = new QGridLayout();
   lay1->setMargin(0);
   lay1->setSpacing(KDialog::spacingHint());
-	QGridLayout	*lay2 = new QGridLayout(0);
+	QGridLayout	*lay2 = new QGridLayout();
   lay2->setMargin(0);
   lay2->setSpacing(KDialog::spacingHint());
 	lay0->addStretch(1);
@@ -350,7 +350,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
 	lay2->addWidget(m_nupbox, 1, 1);
 	lay2->setColumnStretch(0, 1);
 	lay2->setColumnStretch(1, 1);
-	QGridLayout	*lay3 = new QGridLayout(0);
+	QGridLayout	*lay3 = new QGridLayout();
 	lay3->setSpacing(KDialog::spacingHint());
   m_orientbox->layout()->addItem(lay3);
 	lay3->addWidget(m_portrait, 0, 0);
@@ -358,7 +358,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
 	lay3->addWidget(m_revland, 2, 0);
 	lay3->addWidget(m_revport, 3, 0);
 	lay3->addWidget(m_orientpix, 0, 3, 1, 1);
-	QGridLayout	*lay4 = new QGridLayout(0);
+	QGridLayout	*lay4 = new QGridLayout();
   lay4->setSpacing(KDialog::spacingHint());
   m_duplexbox->layout()->addItem(lay4);
 	lay4->addWidget(m_dupnone, 0, 0);
@@ -366,14 +366,14 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
 	lay4->addWidget(m_dupshort, 2, 0);
 	lay4->addWidget(m_duplexpix, 0, 2, 1, 1);
 	lay4->setRowStretch( 0, 1 );
-	QGridLayout	*lay5 = new QGridLayout(0);
+	QGridLayout	*lay5 = new QGridLayout();
   lay5->setSpacing(KDialog::spacingHint());
   m_nupbox->layout()->addItem(lay5);
 	lay5->addWidget(m_nup1, 0, 0);
 	lay5->addWidget(m_nup2, 1, 0);
 	lay5->addWidget(m_nup4, 2, 0);
 	lay5->addWidget(m_nuppix, 0, 2, 1, 1);
-	QGridLayout	*lay6 = new QGridLayout(0);
+	QGridLayout	*lay6 = new QGridLayout();
   lay6->setSpacing(KDialog::spacingHint());
   m_bannerbox->layout()->addItem(lay6);
 	lay6->addWidget(m_startbannerlabel, 0, 0);

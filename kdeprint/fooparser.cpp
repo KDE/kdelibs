@@ -1050,22 +1050,22 @@ yyreduce:
 
   case 7:
 #line 51 "/space/kde/kde4/kdelibs/kdeprint/fooparser.y"
-    { QMap<QString,QVariant>::ConstIterator it = yyvsp[0].toMap().begin(); yyvsp[-2].asMap().insert(it.key(), it.data()); yyval = yyvsp[-2]; ;}
+    { QMap<QString,QVariant>::ConstIterator it = yyvsp[0].toMap().begin(); yyvsp[-2].toMap().insert(it.key(), it.value()); yyval = yyvsp[-2]; ;}
     break;
 
   case 8:
 #line 54 "/space/kde/kde4/kdelibs/kdeprint/fooparser.y"
-    { yyval.asMap().insert(yyvsp[-3].toString(), yyvsp[0]); ;}
+    { yyval.toMap().insert(yyvsp[-3].toString(), yyvsp[0]); ;}
     break;
 
   case 9:
 #line 57 "/space/kde/kde4/kdelibs/kdeprint/fooparser.y"
-    { yyval.asList().append(yyvsp[0]); ;}
+    { yyval.toList().append(yyvsp[0]); ;}
     break;
 
   case 10:
 #line 58 "/space/kde/kde4/kdelibs/kdeprint/fooparser.y"
-    { yyvsp[-2].asList().append(yyvsp[0]); yyval = yyvsp[-2]; ;}
+    { yyvsp[-2].toList().append(yyvsp[0]); yyval = yyvsp[-2]; ;}
     break;
 
   case 11:

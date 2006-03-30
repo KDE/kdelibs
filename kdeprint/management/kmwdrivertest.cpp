@@ -68,7 +68,9 @@ KMWDriverTest::KMWDriverTest(QWidget *parent)
 	QGridLayout	*lay2 = new QGridLayout();
     lay2->setMargin(0);
     lay2->setSpacing(0);
-	QHBoxLayout	*lay3 = new QHBoxLayout(0, 0, 10);
+	QHBoxLayout	*lay3 = new QHBoxLayout();
+  lay3->setMargin(0);
+  lay3->setSpacing(10);
 	lay1->addWidget(l0,0);
 	lay1->addLayout(lay2,0);
 	lay1->addLayout(lay3,0);

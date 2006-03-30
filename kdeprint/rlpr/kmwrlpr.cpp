@@ -68,7 +68,9 @@ KMWRlpr::KMWRlpr(QWidget *parent)
 	QHBoxLayout	*lay0 = new QHBoxLayout(this);
 	lay0->setMargin(0);
 	lay0->setSpacing(10);
-	QVBoxLayout	*lay1 = new QVBoxLayout(0, 0, 5);
+	QVBoxLayout	*lay1 = new QVBoxLayout();
+  lay1->setMargin(0);
+  lay1->setSpacing(5);
 	lay0->addWidget(m_view,1);
 	lay0->addLayout(lay1,1);
 	lay1->addWidget(m_hostlabel);

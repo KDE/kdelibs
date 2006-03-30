@@ -28,6 +28,7 @@
 KExtPrinterImpl::KExtPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/)
 : KPrinterImpl(parent)
 {
+  setObjectName( name );
 }
 
 KExtPrinterImpl::~KExtPrinterImpl()

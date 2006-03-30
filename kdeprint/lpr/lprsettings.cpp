@@ -31,8 +31,9 @@
 LprSettings* LprSettings::m_self = 0;
 
 LprSettings::LprSettings(QObject *parent, const char *name)
-: QObject(parent, name), KPReloadObject(true)
+: QObject(parent), KPReloadObject(true)
 {
+  setObjectName( name );
 	init();
 }
 

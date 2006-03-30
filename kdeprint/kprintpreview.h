@@ -21,13 +21,13 @@
 #ifndef KPRINTPREVIEW_H
 #define KPRINTPREVIEW_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <qstring.h>
 #include <kprocess.h>
 
 class KLibFactory;
 
-class KPrintPreview : public KDialogBase
+class KPrintPreview : public KDialog
 {
 	Q_OBJECT
 public:
@@ -55,6 +55,9 @@ public:
 	virtual ~KPreviewProc();
 
 	bool startPreview();
+
+signals:
+  void finished();
 
 protected Q_SLOTS:
 	void slotProcessExited(KProcess*);

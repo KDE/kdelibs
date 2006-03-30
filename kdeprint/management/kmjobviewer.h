@@ -76,8 +76,8 @@ protected Q_SLOTS:
 	void slotRemove();
 	void slotRestart();
 	void slotRightClicked(QTreeWidgetItem*,const QPoint&,int);
-	void slotMove(int prID);
-	void slotPrinterSelected(int);
+	void slotMove(QAction*);
+	void slotPrinterSelected(QAction*);
 	void slotShowCompleted(bool);
 	void slotRefresh();
 	void slotClose();

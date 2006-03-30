@@ -38,7 +38,8 @@ void KIconSelectAction::setItems(const QStringList& lst, const QStringList& icon
 
   for (int i = 0; i < lst.count(); ++i) {
     if ( !lst.at(i).isEmpty() ) {
-      KAction* action = new KAction(iconlst.at(i), lst.at(i), parentCollection(), 0);
+      KAction* action = new KAction(lst.at(i), parentCollection(), 0);
+      action->setIcon( KIcon( iconlst.at(i) ) );
       action->setShortcutConfigurable(false);
       addAction(action);
 

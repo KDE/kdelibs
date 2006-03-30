@@ -68,7 +68,7 @@ void KMConfigDialog::addConfigPage(KMConfigPage *page)
 		                                                          );
 
 		QFrame	*frame = addPage(page->pageName(),page->pageHeader(),icon);
-		page->reparent(frame,QPoint(0,0));
+		page->setParent(frame);
 		QVBoxLayout	*lay = new QVBoxLayout(frame);
 		lay->setMargin(0);
 		lay->setSpacing(0);

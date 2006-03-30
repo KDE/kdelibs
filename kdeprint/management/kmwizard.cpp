@@ -52,8 +52,10 @@
 #include "sidepixmap.h"
 
 KMWizard::KMWizard(QWidget *parent, const char *name)
-: QDialog(parent,name,true)
+: QDialog(parent)
 {
+  setObjectName( name );
+
 	m_start = KMWizard::Start;
 	m_end = KMWizard::End;
 	m_inclusive = true;
@@ -90,9 +92,15 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	QVBoxLayout *main0_ = new QVBoxLayout(this);
 	main0_->setMargin(10);
 	main0_->setSpacing(10);
-	QVBoxLayout	*main_ = new QVBoxLayout(0, 0, 0);
-	QHBoxLayout *main1_ = new QHBoxLayout(0, 0, 10);
-	QHBoxLayout	*btn_ = new QHBoxLayout(0, 0, 10);
+	QVBoxLayout	*main_ = new QVBoxLayout();
+  main_->setMargin(0);
+  main_->setSpacing(0);
+	QHBoxLayout *main1_ = new QHBoxLayout();
+  main1_->setMargin(0);
+  main1_->setSpacing(0);
+	QHBoxLayout	*btn_ = new QHBoxLayout();
+  btn_->setMargin(0);
+  btn_->setSpacing(0);
 	main0_->addLayout(main1_);
 	if (m_side)
 		main1_->addWidget(m_side);

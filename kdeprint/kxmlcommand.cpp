@@ -35,7 +35,7 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kdebug.h>
 #include <kprocess.h>
 #include <klibloader.h>
@@ -816,7 +816,7 @@ bool KXmlCommandManager::configure(KXmlCommand *xmlCmd, QWidget *parent)
 {
 	if (xmlCmd->driver())
 	{
-		KDialogBase	dlg(parent, 0, true, xmlCmd->description(), KDialogBase::Ok);
+		KDialog dlg(parent, xmlCmd->description(), KDialog::Ok);
 		DriverView	view(&dlg);
 
 		dlg.setMainWidget(&view);

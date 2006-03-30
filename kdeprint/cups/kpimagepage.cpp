@@ -285,19 +285,19 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 	slotDefaultClicked();
 
 	m_sizetype = new QComboBox(sizebox);
-	m_sizetype->insertItem(i18n("Natural Image Size"));
-	m_sizetype->insertItem(i18n("Resolution (ppi)"));
+	m_sizetype->addItem(i18n("Natural Image Size"));
+	m_sizetype->addItem(i18n("Resolution (ppi)"));
 	// xgettext:no-c-format
-	m_sizetype->insertItem(i18n("% of Page"));
+	m_sizetype->addItem(i18n("% of Page"));
 	// xgettext:no-c-format
-	m_sizetype->insertItem(i18n("% of Natural Image Size"));
+	m_sizetype->addItem(i18n("% of Natural Image Size"));
 
 	m_size = new KIntNumInput(sizebox);
 	m_size->setRange(1, 1200, 20, true);
 	m_size->setValue(72);
 
 	connect(m_sizetype, SIGNAL(activated(int)), SLOT(slotSizeTypeChanged(int)));
-	m_sizetype->setCurrentItem(0);
+	m_sizetype->setCurrentIndex(0);
 	slotSizeTypeChanged(0);
 
 	QLabel	*lab = new QLabel(i18n("&Image size type:"), sizebox);
@@ -364,7 +364,9 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 	l1->addWidget(m_gamma, 4, 0);
     l1->addWidget(m_preview, 0, 1, 4, 1);
 	l1->addWidget(defbtn, 4, 1);
-	QVBoxLayout	*l2 = new QVBoxLayout(sizebox->layout(), 3);
+	QVBoxLayout	*l2 = new QVBoxLayout();
+  l2->setSpacing(2);
+  sizebox->layout()->addItem(l2);
 	l2->addStretch(1);
 	l2->addWidget(lab);
 	l2->addWidget(m_sizetype);
@@ -374,8 +376,12 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 	QGridLayout	*l3 = new QGridLayout();
     positionbox->layout()->addItem(l3);
     l0->setMargin(10);
-	QHBoxLayout	*l4 = new QHBoxLayout(0, 0, 10);
-	QVBoxLayout	*l5 = new QVBoxLayout(0, 0, 10);
+	QHBoxLayout	*l4 = new QHBoxLayout();
+  l4->setMargin(0);
+  l4->setSpacing(10);
+	QVBoxLayout	*l5 = new QVBoxLayout();
+  l5->setMargin(0);
+  l5->setSpacing(10);
 	l3->addLayout(l4, 0, 1);
 	l3->addLayout(l5, 1, 0);
 	l3->addWidget(m_position, 1, 1);
@@ -411,7 +417,7 @@ void KPImagePage::setOptions(const QMap<QString,QString>& opts)
 		type = 2;
 	else if (!opts["natural-scaling"].isEmpty() && (ival = opts["natural-scaling"].toInt()) != 1)
 		type = 3;
-	m_sizetype->setCurrentItem(type);
+	m_sizetype->setCurrentIndex(type);
 	slotSizeTypeChanged(type);
 	if (type != 0)
 		m_size->setValue(ival);

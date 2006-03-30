@@ -129,7 +129,9 @@ KPHpgl2Page::KPHpgl2Page(QWidget *parent)
 	l0->addWidget(box);
 	l0->addStretch(1);
 
-	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), 10);
+	QVBoxLayout	*l1 = new QVBoxLayout();
+  l1->setSpacing(10);
+  box->layout()->addItem(l1);
 	l1->addWidget(m_blackplot);
 	l1->addWidget(m_fitplot);
 	l1->addWidget(m_penwidth);

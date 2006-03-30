@@ -38,8 +38,8 @@ KMWUsers::KMWUsers(QWidget *parent)
 
 	m_users = new KEditListBox(i18n("Users"), this, 0, false, KEditListBox::Add|KEditListBox::Remove);
 	m_type = new QComboBox(this);
-	m_type->insertItem(i18n("Allowed Users"));
-	m_type->insertItem(i18n("Denied Users"));
+	m_type->addItem(i18n("Allowed Users"));
+	m_type->addItem(i18n("Denied Users"));
 
 	QLabel	*lab1 = new QLabel(i18n("Define here a group of allowed/denied users for this printer."), this);
 	QLabel	*lab2 = new QLabel(i18n("&Type:"), this);
@@ -49,7 +49,9 @@ KMWUsers::KMWUsers(QWidget *parent)
 	QVBoxLayout	*l0 = new QVBoxLayout(this);
 	l0->setMargin(0);
 	l0->setSpacing(10);
-	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 10);
+	QHBoxLayout	*l1 = new QHBoxLayout();
+  l1->setMargin(0);
+  l1->setSpacing(10);
 	l0->addWidget(lab1, 0);
 	l0->addLayout(l1, 0);
 	l1->addWidget(lab2, 0);
@@ -79,7 +81,7 @@ void KMWUsers::initPrinter(KMPrinter *p)
 			l.clear();
 	}
 	m_users->insertStringList(l);
-	m_type->setCurrentItem(i);
+	m_type->setCurrentIndex(i);
 }
 
 void KMWUsers::updatePrinter(KMPrinter *p)

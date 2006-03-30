@@ -446,7 +446,7 @@ PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
 	return entry;
 }
 
-bool MaticHandler::removePrinter(KMPrinter *prt, PrintcapEntry *entry)
+bool MaticHandler::removePrinter(KMPrinter*, PrintcapEntry *entry)
 {
 	// remove Foomatic driver
 	QString	af = entry->field("af");

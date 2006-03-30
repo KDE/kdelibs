@@ -21,8 +21,10 @@
 
 // automatically connect to "pluginActionActived(int)" in the receiver.
 PluginAction::PluginAction(int ID, const QString& txt, const QString& icon, int accel, KActionCollection *parent, const char *name)
-: KAction(txt, icon, accel, 0,0,parent, name), m_id(ID)
+: KAction(txt, parent, name), m_id(ID)
 {
+  setIcon( KIcon( icon ) );
+  setShortcut( accel );
 	connect(this, SIGNAL(activated()), SLOT(slotActivated()));
 }
 

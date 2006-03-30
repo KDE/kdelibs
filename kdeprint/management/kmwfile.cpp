@@ -46,7 +46,9 @@ KMWFile::KMWFile(QWidget *parent)
 	QVBoxLayout	*lay1 = new QVBoxLayout(this);
 	lay1->setMargin(0);
 	lay1->setSpacing(30);
-	QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 5);
+	QVBoxLayout	*lay2 = new QVBoxLayout();
+  lay2->setMargin(0);
+  lay2->setSpacing(5);
 	lay1->addWidget(l1);
 	lay1->addLayout(lay2);
 	lay1->addStretch(1);

@@ -32,7 +32,7 @@
 #include <kiconloader.h>
 
 LocationDialog::LocationDialog(QWidget *parent, const char *name)
-	: KDialogBase(parent, name, true, QString(), Ok|Cancel, Ok, true)
+	: KDialogBase(Swallow, 0, parent, name, true, QString(), Ok|Cancel, Ok, true)
 {
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);

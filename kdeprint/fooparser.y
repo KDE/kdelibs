@@ -48,14 +48,14 @@ foodata:   VAR '=' '{' fieldlist '}' ';'  { static_cast<Foomatic2Loader*>(fooloa
 ;
 
 fieldlist:   assignment                 { $$ = $1; }
-		   | fieldlist ',' assignment   { QMap<QString,QVariant>::ConstIterator it = $3.toMap().begin(); $1.asMap().insert(it.key(), it.data()); $$ = $1; }
+		   | fieldlist ',' assignment   { QMap<QString,QVariant>::ConstIterator it = $3.toMap().begin(); $1.toMap().insert(it.key(), it.value()); $$ = $1; }
 ;
 
-assignment:   STRING '=' '>' value              { $$.asMap().insert($1.toString(), $4); }
+assignment:   STRING '=' '>' value              { $$.toMap().insert($1.toString(), $4); }
 ;
 
-valuelist:   value                { $$.asList().append($1); }
-		   | valuelist ',' value  { $1.asList().append($3); $$ = $1; }
+valuelist:   value                { $$.toList().append($1); }
+		   | valuelist ',' value  { $1.toList().append($3); $$ = $1; }
 ;
 
 value:   UNDEF             { $$ = QVariant(); }

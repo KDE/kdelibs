@@ -90,8 +90,8 @@ KMWQuota::KMWQuota(QWidget *parent)
 	m_pagelimit->setSpecialValueText(i18n("None"));
 	m_timeunit = new QComboBox(this);
 	for (int i=0;i<N_TIME_LIMITS;i++)
-		m_timeunit->insertItem(i18n(time_keywords[i]));
-	m_timeunit->setCurrentItem(3);
+		m_timeunit->addItem(i18n(time_keywords[i]));
+	m_timeunit->setCurrentIndex(3);
 
 	QLabel	*lab1 = new QLabel(i18n("&Period:"), this);
 	QLabel	*lab2 = new QLabel(i18n("&Size limit (KB):"), this);
@@ -150,7 +150,7 @@ void KMWQuota::initPrinter(KMPrinter *p)
 	{
 		un = findUnit(qu);
 	}
-	m_timeunit->setCurrentItem(un);
+	m_timeunit->setCurrentIndex(un);
 	m_period->setValue(qu);
 }
 

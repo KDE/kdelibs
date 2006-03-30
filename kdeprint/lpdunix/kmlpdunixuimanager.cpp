@@ -26,6 +26,7 @@
 KMLpdUnixUiManager::KMLpdUnixUiManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMUiManager(parent)
 {
+  setObjectName( name );
 	m_printdialogflags |= KMUiManager::PrintCommand;
 }
 

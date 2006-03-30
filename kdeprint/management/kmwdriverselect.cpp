@@ -51,7 +51,9 @@ KMWDriverSelect::KMWDriverSelect(QWidget *parent)
 	main_->setSpacing(10);
 	main_->addWidget(l1,0);
 	main_->addWidget(m_list,1);
-	QHBoxLayout	*lay0 = new QHBoxLayout(0, 0, 0);
+	QHBoxLayout	*lay0 = new QHBoxLayout();
+  lay0->setMargin(0);
+  lay0->setSpacing(0);
 	main_->addLayout(lay0,0);
 	lay0->addStretch(1);
 	lay0->addWidget(m_drivercomment);

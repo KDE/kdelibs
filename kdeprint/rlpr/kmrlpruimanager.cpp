@@ -31,6 +31,7 @@
 KMRlprUiManager::KMRlprUiManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMUiManager(parent)
 {
+  setObjectName( name );
 }
 
 KMRlprUiManager::~KMRlprUiManager()

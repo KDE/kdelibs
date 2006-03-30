@@ -47,7 +47,9 @@ KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
 	lay0->setSpacing(KDialog::spacingHint());
 	lay0->addWidget(m_dirbox);
 	lay0->addStretch(1);
-	QVBoxLayout *lay1 = new QVBoxLayout(m_dirbox->layout(), 10);
+	QVBoxLayout *lay1 = new QVBoxLayout();
+  lay1->setSpacing(10);
+  m_dirbox->layout()->addItem(lay1);
 	lay1->addWidget(m_stddir);
 	lay1->addWidget(m_installdir);
 

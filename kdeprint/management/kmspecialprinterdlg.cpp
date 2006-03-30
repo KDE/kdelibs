@@ -40,7 +40,7 @@
 #include <kseparator.h>
 
 KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, QString(), Ok|Cancel, Ok)
+: KDialogBase(Swallow, 0, parent, name, true, QString(), Ok|Cancel, Ok)
 {
 	setCaption(i18n("Add Special Printer"));
 
@@ -77,7 +77,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 		m_mimelist << mimetype;
 	}
 	m_mimelist.sort();
-	m_mimetype->insertStringList(m_mimelist);
+	m_mimetype->addItems(m_mimelist);
 
 	QLabel	*m_mimetypelabel = new QLabel(i18n("&Format:"), m_outfile_gb);
 	m_mimetypelabel->setBuddy (m_mimetype);

@@ -39,6 +39,7 @@
 KMCupsJobManager::KMCupsJobManager(QObject *parent, const char *name, const QStringList & /*args*/)
     : KMJobManager(parent)
 {
+  setObjectName( name );
 }
 
 KMCupsJobManager::~KMCupsJobManager()

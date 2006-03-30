@@ -55,7 +55,9 @@ bool KPreviewProc::startPreview()
 {
 	if (start())
 	{
-		qApp->enter_loop();
+		QEventLoop eventLoop;
+		connect(this, SIGNAL(finished()), &eventLoop, SLOT(quit()));
+		eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 		return m_bOk;
 	}
 	else
@@ -64,7 +66,7 @@ bool KPreviewProc::startPreview()
 
 void KPreviewProc::slotProcessExited(KProcess* proc)
 {
-	qApp->exit_loop();
+	emit finished();
 	if ( proc->normalExit() && proc->exitStatus() == 0 )
 		m_bOk = true;
 	else
@@ -141,7 +143,8 @@ static bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly
 //*******************************************************************************************
 
 KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
-: KDialogBase(parent, "PreviewDlg", true, i18n("Print Preview"), 0),d(new KPrintPreviewPrivate(this))
+: KDialog(parent, i18n("Print Preview")),
+  d(new KPrintPreviewPrivate(this))
 {
 	kDebug(500) << "kdeprint: creating preview dialog" << endl;
 	d->previewonly_ = previewOnly;
@@ -152,8 +155,21 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 		KStdAction::close(this, SLOT(reject()), d->actions_, "close_print");
 	else
 	{
-		new KAction(i18n("Print"), "fileprint", Qt::Key_Return, this, SLOT(accept()), d->actions_, "continue_print");
-		new KAction(i18n("Cancel"), "stop", Qt::Key_Escape, this, SLOT(reject()), d->actions_, "stop_print");
+    KAction *action = 0;
+    action = new KAction(i18n("Print"), d->actions_, "continue_print");
+    action->setIcon( KIcon( "fileprint" ) );
+    action->setShortcut( Qt::Key_Return );
+    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(accept()) );
+
+    action = new KAction(i18n("Print"), d->actions_, "continue_print");
+    action->setIcon( KIcon( "fileprint" ) );
+    action->setShortcut( Qt::Key_Return );
+    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(accept()) );
+
+    action = new KAction(i18n("Cancel"), d->actions_, "stop_print");
+    action->setIcon( KIcon( "stop" ) );
+    action->setShortcut( Qt::Key_Escape );
+    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(reject()) );
 	}
 
 }

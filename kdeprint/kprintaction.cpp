@@ -60,7 +60,7 @@ KPrintAction::~KPrintAction()
 void KPrintAction::initialize(PrinterType type, QWidget *parentWidget)
 {
 	connect(popupMenu(), SIGNAL(aboutToShow()), SLOT(slotAboutToShow()));
-	connect(popupMenu(), SIGNAL(activated(int)), SLOT(slotActivated(int)));
+	connect(popupMenu(), SIGNAL(triggered(QAction*)), SLOT(slotActivated(QAction*)));
 
 	d->type = type;
 	d->parentWidget = parentWidget;
@@ -87,15 +87,17 @@ void KPrintAction::slotAboutToShow()
 						popupMenu()->addSeparator();
 					first = true;
 				}
-				popupMenu()->insertItem(SmallIconSet(printer->pixmap()), printer->name(), ID++);
+				QAction *action = popupMenu()->addAction(SmallIconSet(printer->pixmap()), printer->name());
+				action->setData(ID++);
 				d->printers.append(printer->name());
 			}
 		}
 	}
 }
 
-void KPrintAction::slotActivated(int ID)
+void KPrintAction::slotActivated(QAction *action)
 {
+  int ID = action->data().toInt();
 	KPrinter	printer(false);
 	KMPrinter	*mprt = KMManager::self()->findPrinter(d->printers[ID]);
 	if (mprt && mprt->autoConfigure(&printer, d->parentWidget))

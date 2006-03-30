@@ -62,6 +62,7 @@
 KMCupsUiManager::KMCupsUiManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMUiManager(parent)
 {
+  setObjectName( name );
 }
 
 KMCupsUiManager::~KMCupsUiManager()

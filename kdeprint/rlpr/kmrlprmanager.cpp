@@ -31,6 +31,8 @@
 KMRlprManager::KMRlprManager(QObject *parent, const char *name, const QStringList & /*args*/)
     : KMManager(parent)
 {
+  setObjectName( name );
+
 	setHasManagement(true);
 	setPrinterOperationMask(KMManager::PrinterCreation|KMManager::PrinterRemoval|KMManager::PrinterTesting);
 }

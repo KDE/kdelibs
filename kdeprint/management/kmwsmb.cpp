@@ -55,7 +55,9 @@ KMWSmb::KMWSmb(QWidget *parent)
 	QGridLayout	*lay1 = new QGridLayout();
     lay1->setMargin(0);
     lay1->setSpacing(10);
-	QHBoxLayout	*lay3 = new QHBoxLayout(0, 0, 10);
+	QHBoxLayout	*lay3 = new QHBoxLayout();
+  lay3->setMargin(0);
+  lay3->setSpacing(10);
 	lay0->addLayout(lay1,0);
 	lay0->addWidget(m_view,1);
 	lay0->addLayout(lay3,0);

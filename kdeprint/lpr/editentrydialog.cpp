@@ -32,7 +32,7 @@
 #include <kiconloader.h>
 
 EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, QString(), Ok|Cancel)
+: KDialogBase(Swallow, 0, parent, name, true, QString(), Ok|Cancel)
 {
 	QWidget	*w = new QWidget(this);
 	setMainWidget(w);
@@ -43,9 +43,9 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 	m_view->addColumn("");
 	m_view->header()->hide();
 	m_type = new QComboBox(w);
-	m_type->insertItem(i18n("String"));
-	m_type->insertItem(i18n("Number"));
-	m_type->insertItem(i18n("Boolean"));
+	m_type->addItem(i18n("String"));
+	m_type->addItem(i18n("Number"));
+	m_type->addItem(i18n("Boolean"));
 	m_stack = new QStackedWidget(w);
 	m_boolean = new QCheckBox(i18n("Enabled"), m_stack);
 	m_string = new QLineEdit(m_stack);
@@ -60,8 +60,12 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 	QVBoxLayout	*l0 = new QVBoxLayout(w);
 	l0->setMargin(0);
 	l0->setSpacing(10);
-	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 10);
-	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 5);
+	QHBoxLayout	*l1 = new QHBoxLayout();
+  l1->setMargin(0);
+  l1->setSpacing(10);
+	QHBoxLayout	*l2 = new QHBoxLayout();
+  l2->setMargin(0);
+  l2->setSpacing(5);
 	l0->addLayout(l1);
 	l1->addWidget(lab0);
 	l1->addWidget(m_aliases);
@@ -104,7 +108,7 @@ Field EditEntryDialog::createField()
 {
 	Field	f;
 	f.name = m_name->text();
-	f.type = (Field::Type)(m_type->currentItem());
+	f.type = (Field::Type)(m_type->currentIndex());
 	switch (f.type)
 	{
 		case Field::String: f.value = m_string->text(); break;
@@ -137,7 +141,7 @@ void EditEntryDialog::slotItemSelected(Q3ListViewItem *item)
 		m_current = item->text(1);
 		Field	f = m_fields[m_current];
 		m_name->setText(f.name);
-		m_type->setCurrentItem(f.type);
+		m_type->setCurrentIndex(f.type);
 		slotTypeChanged(f.type);
 		m_string->setText(f.value);
 		m_number->setValue(f.value.toInt());

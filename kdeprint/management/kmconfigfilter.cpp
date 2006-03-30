@@ -65,7 +65,9 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
 	l0->setMargin(0);
 	l0->setSpacing(KDialog::spacingHint());
 	l0->addWidget(box, 1);
-	QVBoxLayout	*l1 = new QVBoxLayout(box->layout(), KDialog::spacingHint());
+	QVBoxLayout	*l1 = new QVBoxLayout();
+  l1->setSpacing(KDialog::spacingHint());
+  box->layout()->addItem(l1);
 	l1->addWidget(lab);
 	QGridLayout	*l2 = new QGridLayout();
     l2->setMargin(0);
@@ -79,7 +81,8 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
     l2->addWidget(m_list2, 0, 2, 4, 1);
 	l2->addWidget(m_add, 1, 1);
 	l2->addWidget(m_remove, 2, 1);
-	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, KDialog::spacingHint());
+	QHBoxLayout	*l3 = new QHBoxLayout();
+  l3->setSpacing(KDialog::spacingHint());
 	l1->addLayout(l3, 0);
 	l3->addWidget(lab1, 0);
 	l3->addWidget(m_locationre, 1);

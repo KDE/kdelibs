@@ -308,7 +308,7 @@ bool NetworkScanner::checkPrinter( const QString& host, int port )
 }
 
 NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *name)
-	: KDialogBase(scanner, name, true, QString(), Ok|Cancel, Ok, true)
+	: KDialogBase(Swallow, 0, scanner, name, true, QString(), Ok|Cancel, Ok, true)
 {
 	scanner_ = scanner;
 	QWidget	*dummy = new QWidget(this);

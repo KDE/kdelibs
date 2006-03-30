@@ -47,8 +47,8 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 	connect(m_cmd, SIGNAL(activated(int)), SLOT(slotCommandSelected(int)));
 	QPushButton	*m_add = new KPushButton(this);
 	QPushButton	*m_edit = new KPushButton(this);
-	m_add->setPixmap(SmallIcon("filenew"));
-	m_edit->setPixmap(SmallIcon("configure"));
+	m_add->setIcon(SmallIcon("filenew"));
+	m_edit->setIcon(SmallIcon("configure"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddCommand()));
 	connect(m_edit, SIGNAL(clicked()), SLOT(slotEditCommand()));
 	m_add->setToolTip( i18n("New command"));
@@ -88,7 +88,9 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 		setTabOrder(m_cmd, m_add);
 		setTabOrder(m_add, m_edit);
 
-		QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 10);
+		QHBoxLayout	*l1 = new QHBoxLayout();
+    l1->setMargin(0);
+    l1->setSpacing(10);
 		l0->addLayout(l1);
 		l1->addWidget(m_line);
 		l1->addWidget(m_browse);
@@ -109,11 +111,15 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 		l2->addWidget(m_usefilter, 0, c++);
 	}
 	l2->addWidget(m_cmd, 0, c);
-	QHBoxLayout *l4 = new QHBoxLayout( 0, 0, 5 );
+	QHBoxLayout *l4 = new QHBoxLayout();
+    l4->setMargin(0);
+    l4->setSpacing(5);
 	l2->addLayout( l4, 1, c );
 	l4->addWidget( m_helpbtn, 0 );
 	l4->addWidget( m_shortinfo, 1 );
-	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 0);
+	QHBoxLayout	*l3 = new QHBoxLayout();
+    l3->setMargin(0);
+    l3->setSpacing(0);
 	l2->addLayout(l3, 0, c+1);
 	l3->addWidget(m_add);
 	l3->addWidget(m_edit);
@@ -139,11 +145,11 @@ void KXmlCommandSelector::loadCommands()
 		++it;
 		desclist << (*it);
 	}
-	m_cmd->insertStringList(desclist);
+	m_cmd->addItems(desclist);
 
 	int	index = m_cmdlist.indexOf(thisCmd);
 	if (index != -1)
-		m_cmd->setCurrentItem(index);
+		m_cmd->setCurrentIndex(index);
 	if (m_cmd->currentIndex() != -1 && m_cmd->isEnabled())
 		slotCommandSelected(m_cmd->currentIndex());
 }
@@ -167,7 +173,7 @@ void KXmlCommandSelector::setCommand(const QString& cmd)
 	if (m_line)
 		m_line->setText((index == -1 ? cmd : QString()));
 	if (index != -1)
-		m_cmd->setCurrentItem(index);
+		m_cmd->setCurrentIndex(index);
 	if (m_cmd->currentIndex() != -1 && m_cmd->isEnabled())
 		slotCommandSelected(m_cmd->currentIndex());
 }
@@ -216,7 +222,7 @@ void KXmlCommandSelector::slotEditCommand()
 			xmlCmd->driver();
 			KXmlCommandManager::self()->saveCommand(xmlCmd);
 		}
-		m_cmd->changeItem(xmlCmd->description(), m_cmd->currentIndex());
+		m_cmd->setItemText(m_cmd->currentIndex(), xmlCmd->description());
 		delete xmlCmd;
 		slotCommandSelected(m_cmd->currentIndex());
 	}

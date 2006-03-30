@@ -29,8 +29,10 @@
 #include <klocale.h>
 
 KMPrinterView::KMPrinterView(QWidget *parent, const char *name)
-: QStackedWidget(parent/*,name*/), m_type(KMPrinterView::Icons)
+: QStackedWidget(parent), m_type(KMPrinterView::Icons)
 {
+  setObjectName( name );
+
 	m_iconview = new KMIconView(this);
 	insertWidget(0,m_iconview);
 	m_listview = new KMListView(this);

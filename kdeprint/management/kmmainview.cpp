@@ -187,23 +187,65 @@ void KMMainView::initActions()
 
 	KActionMenu	*stateAct = new KActionMenu(KIcon("kdeprint_printstate"), i18n("Start/Stop Printer"), m_actions, "printer_state_change");
 	stateAct->setDelayed(false);
-	stateAct->insert(new KAction(i18n("&Start Printer"),"kdeprint_enableprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_start"));
-	stateAct->insert(new KAction(i18n("Sto&p Printer"),"kdeprint_stopprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_stop"));
+  KAction *action = new KAction(i18n("&Start Printer"), m_actions,"printer_start");
+  action->setIcon( KIcon( "kdeprint_enableprinter" ) );
+  connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
+	stateAct->insert(action);
+
+  action = new KAction(i18n("Sto&p Printer"), m_actions,"printer_stop");
+  action->setIcon( KIcon( "kdeprint_stopprinter" ) );
+  connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
+	stateAct->insert(action);
 
 	stateAct = new KActionMenu(KIcon("kdeprint_queuestate"), i18n("Enable/Disable Job Spooling"), m_actions, "printer_spool_change");
 	stateAct->setDelayed(false);
-	stateAct->insert(new KAction(i18n("&Enable Job Spooling"),"kdeprint_enableprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_enable"));
-	stateAct->insert(new KAction(i18n("&Disable Job Spooling"),"kdeprint_stopprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_disable"));
 
-	new KAction(i18n("&Remove"),"edittrash",0,this,SLOT(slotRemove()),m_actions,"printer_remove");
-	new KAction(i18n("&Configure..."),"configure",0,this,SLOT(slotConfigure()),m_actions,"printer_configure");
-	new KAction(i18n("Add &Printer/Class..."),"kdeprint_addprinter",0,this,SLOT(slotAdd()),m_actions,"printer_add");
-	new KAction(i18n("Add &Special (pseudo) Printer..."),"kdeprint_addpseudo",0,this,SLOT(slotAddSpecial()),m_actions,"printer_add_special");
-	new KAction(i18n("Set as &Local Default"),"kdeprint_defaulthard",0,this,SLOT(slotHardDefault()),m_actions,"printer_hard_default");
-	new KAction(i18n("Set as &User Default"),"kdeprint_defaultsoft",0,this,SLOT(slotSoftDefault()),m_actions,"printer_soft_default");
-	new KAction(i18n("&Test Printer..."),"kdeprint_testprinter",0,this,SLOT(slotTest()),m_actions,"printer_test");
-	new KAction(i18n("Configure &Manager..."),"kdeprint_configmgr",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
-	new KAction(i18n("Initialize Manager/&View"),"reload",0,this,SLOT(slotInit()),m_actions,"view_refresh");
+  action = new KAction(i18n("&Enable Job Spooling"), m_actions,"printer_enable");
+  action->setIcon( KIcon( "kdeprint_enableprinter" ) );
+  connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
+	stateAct->insert(action);
+
+  action = new KAction(i18n("&Disable Job Spooling"), m_actions,"printer_disable");
+  action->setIcon( KIcon( "kdeprint_stopprinter" ) );
+  connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
+	stateAct->insert(action);
+
+  action = new KAction(i18n("&Remove"), m_actions,"printer_remove");
+  action->setIcon( KIcon( "edittrash" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotRemove()) );
+
+  action = new KAction(i18n("&Configure..."), m_actions,"printer_configure");
+  action->setIcon( KIcon( "configure" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotConfigure()) );
+
+  action = new KAction(i18n("Add &Printer/Class..."), m_actions,"printer_add");
+  action->setIcon( KIcon( "kdeprint_addprinter" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotAdd()) );
+
+  action = new KAction(i18n("Add &Special (pseudo) Printer..."), m_actions,"printer_add_special");
+  action->setIcon( KIcon( "kdeprint_addpseudo" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotAddSpecial()) );
+
+  action = new KAction(i18n("Set as &Local Default"), m_actions,"printer_hard_default");
+  action->setIcon( KIcon( "kdeprint_defaulthard" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotHardDefault()) );
+
+  action = new KAction(i18n("Set as &User Default"), m_actions,"printer_soft_default");
+  action->setIcon( KIcon( "kdeprint_defaultsoft" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotSoftDefault()) );
+
+  action = new KAction(i18n("&Test Printer..."), m_actions,"printer_test");
+  action->setIcon( KIcon( "kdeprint_testprinter" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotTest()) );
+
+  action = new KAction(i18n("Configure &Manager..."), m_actions,"manager_configure");
+  action->setIcon( KIcon( "kdeprint_configmgr" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotManagerConfigure()) );
+
+  action = new KAction(i18n("Initialize Manager/&View"), m_actions,"view_refresh");
+  action->setIcon( KIcon( "reload" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotInit()) );
+
 
 	KIconSelectAction	*dact = new KIconSelectAction(i18n("&Orientation"),m_actions,"orientation_change");
 	iconlst.clear();
@@ -212,8 +254,14 @@ void KMMainView::initActions()
 	dact->setCurrentItem(0);
 	connect(dact,SIGNAL(activated(int)),SLOT(slotChangeDirection(int)));
 
-	new KAction(i18n("R&estart Server"),"kdeprint_restartsrv",0,this,SLOT(slotServerRestart()),m_actions,"server_restart");
-	new KAction(i18n("Configure &Server..."),"kdeprint_configsrv",0,this,SLOT(slotServerConfigure()),m_actions,"server_configure");
+  action = new KAction(i18n("R&estart Server"), m_actions,"server_restart");
+  action->setIcon( KIcon( "kdeprint_restartsrv" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotServerRestart()) );
+
+  action = new KAction(i18n("Configure &Server..."), m_actions,"server_configure");
+  action->setIcon( KIcon( "kdeprint_configsrv" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this,SLOT(slotServerConfigure()) );
+
 
 	KToggleAction	*tact = new KToggleAction(i18n("Show &Toolbar"),m_actions,"view_toolbar");
 	tact->setCheckedState(i18n("Hide &Toolbar"));
@@ -221,27 +269,35 @@ void KMMainView::initActions()
 	tact = new KToggleAction( i18n( "Show Me&nu Toolbar" ), m_actions, "view_menubar" );
 	tact->setCheckedState(i18n("Hide Me&nu Toolbar"));
 	connect( tact, SIGNAL( toggled( bool ) ), SLOT( slotToggleMenuBar( bool ) ) );
-	tact = new KToggleAction("kdeprint_printer_infos", i18n("Show Pr&inter Details"), m_actions,"view_printerinfos");
+	tact = new KToggleAction(i18n("Show Pr&inter Details"), m_actions,"view_printerinfos");
+  tact->setIcon( KIcon( "kdeprint_printer_infos" ) );
 	tact->setCheckedState(KGuiItem(i18n("Hide Pr&inter Details"),"kdeprint_printer_infos"));
 	tact->setChecked(true);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
 
-	tact = new KToggleAction(i18n("Toggle Printer &Filtering"), "filter", 0, m_actions, "view_pfilter");
+	tact = new KToggleAction(i18n("Toggle Printer &Filtering"), m_actions, "view_pfilter");
+  tact->setIcon( KIcon( "filter" ) );
 	tact->setChecked(KMManager::self()->isFilterEnabled());
 	connect(tact, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
 
-	new KAction( i18n( "%1 &Handbook" , QString("KDEPrint") ), "contents", 0, this, SLOT( slotHelp() ), m_actions, "invoke_help" );
-	new KAction( i18n( "%1 &Web Site" , QString("KDEPrint") ), "network", 0, this, SLOT( slotHelp() ), m_actions, "invoke_web" );
+  action = new KAction( i18n( "%1 &Handbook" , QString("KDEPrint") ), m_actions, "invoke_help" );
+  action->setIcon( KIcon( "contents" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotHelp() ) );
+
+  action = new KAction( i18n( "%1 &Web Site" , QString("KDEPrint") ), m_actions, "invoke_web" );
+  action->setIcon( KIcon( "network" ) );
+  connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotHelp() ) );
 
 	KActionMenu	*mact = new KActionMenu(KIcon("package_utilities"), i18n("Pri&nter Tools"), m_actions, "printer_tool");
 	mact->setDelayed(false);
-	connect(mact->popupMenu(), SIGNAL(activated(int)), SLOT(slotToolSelected(int)));
+	connect(mact->popupMenu(), SIGNAL(triggered(QAction*)), SLOT(slotToolSelected(QAction*)));
 	QStringList	files = KGlobal::dirs()->findAllResources("data", "kdeprint/tools/*.desktop");
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 	{
 		KSimpleConfig	conf(*it);
 		conf.setGroup("Desktop Entry");
-		mact->popupMenu()->insertItem(conf.readEntry("Name", "Unnamed"), mact->popupMenu()->count());
+		QAction *action = mact->popupMenu()->addAction(conf.readEntry("Name", "Unnamed"));
+		action->setData(mact->popupMenu()->actions().count());
 		m_toollist << conf.readEntry("X-KDE-Library");
 	}
 
@@ -823,8 +879,10 @@ void KMMainView::removePluginActions()
 	qDeleteAll(pactions);
 }
 
-void KMMainView::slotToolSelected(int ID)
+void KMMainView::slotToolSelected(QAction *action)
 {
+  int ID = action->data().toInt();
+
 	KMTimer::self()->hold();
 
 	QString	libname = m_toollist[ID];

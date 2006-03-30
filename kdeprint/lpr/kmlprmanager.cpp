@@ -44,6 +44,8 @@
 KMLprManager::KMLprManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMManager(parent)
 {
+  setObjectName( name );
+
 	m_lpchelper = new LpcHelper(this);
 	m_currentprinter = 0;
 
@@ -465,8 +467,10 @@ QString KMLprManager::printOptions(KPrinter *prt)
 
 void KMLprManager::createPluginActions(KActionCollection *coll)
 {
-	KAction	*act = new KAction(i18n("&Edit printcap Entry..."), "kdeprint_report", 0, this, SLOT(slotEditPrintcap()), coll, "plugin_editprintcap");
+	KAction	*act = new KAction(i18n("&Edit printcap Entry..."), coll, "plugin_editprintcap");
+  act->setIcon( KIcon( "kdeprint_report" ) );
 	act->setActionGroup(pluginGroup());
+  connect( act, SIGNAL( triggered( bool ) ), this, SLOT(slotEditPrintcap() ) );
 }
 
 void KMLprManager::validatePluginActions(KActionCollection *coll, KMPrinter *prt)

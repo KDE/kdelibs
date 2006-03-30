@@ -29,6 +29,8 @@
 KMLprJobManager::KMLprJobManager(QObject *parent, const char *name, const QStringList & /*args*/)
     : KMJobManager(parent)
 {
+    setObjectName( name );
+
     m_lpqhelper = new LpqHelper(this );
     m_lpqhelper->setObjectName( "LpqHelper" );
 }
@@ -57,7 +59,7 @@ int KMLprJobManager::actions()
 		return (KMJob::Remove | KMJob::Hold | KMJob::Resume);
 }
 
-bool KMLprJobManager::sendCommandSystemJob(const QList<KMJob*>& jobs, int action, const QString& arg)
+bool KMLprJobManager::sendCommandSystemJob(const QList<KMJob*>& jobs, int action, const QString&)
 {
 	QString	msg;
 	QListIterator<KMJob*>	it(jobs);

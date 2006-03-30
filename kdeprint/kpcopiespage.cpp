@@ -242,7 +242,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 	l3->addLayout(l2);
 	l2->addWidget(m_pagesetlabel,0);
 	l2->addWidget(m_pageset,1);
-	QGridLayout	*l5 = new QGridLayout(0);
+	QGridLayout	*l5 = new QGridLayout();
 	m_copybox->layout()->addItem(l5);
 	l5->setMargin(10);
 	l5->setRowStretch(4,1);

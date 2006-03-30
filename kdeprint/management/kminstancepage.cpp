@@ -49,7 +49,9 @@ KMInstancePage::KMInstancePage(QWidget *parent)
 	main_->setMargin(0);
 	main_->setSpacing(0);
 	main_->addWidget(m_view);
-	QVBoxLayout	*sub_ = new QVBoxLayout(0, 0, 0);
+	QVBoxLayout	*sub_ = new QVBoxLayout();
+  sub_->setMargin(0);
+  sub_->setSpacing(0);
 	main_->addLayout(sub_);
 	for (QList<QPushButton*>::Iterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
 		if (*it)

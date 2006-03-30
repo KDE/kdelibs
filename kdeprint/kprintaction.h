@@ -43,7 +43,7 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
 	void slotAboutToShow();
-	void slotActivated(int);
+	void slotActivated(QAction*);
 
 protected:
 	void initialize(PrinterType type, QWidget *parentWidget);

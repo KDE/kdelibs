@@ -49,7 +49,9 @@ KMConfigCommand::KMConfigCommand(QWidget *parent)
 	l0->setSpacing(KDialog::spacingHint());
 	l0->addWidget(gb);
 	l0->addStretch(1);
-	QVBoxLayout	*l2 = new QVBoxLayout(gb->layout(), KDialog::spacingHint());
+	QVBoxLayout	*l2 = new QVBoxLayout();
+  l2->setSpacing(KDialog::spacingHint());
+  gb->layout()->addItem(l2);
 	l2->addWidget(lab);
 	l2->addWidget(sel);
 }

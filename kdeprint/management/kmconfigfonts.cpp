@@ -60,11 +60,16 @@ KMConfigFonts::KMConfigFonts(QWidget *parent)
 	QLabel	*lab0 = new QLabel(i18n("Additional director&y:"), box2);
 	lab0->setBuddy(m_addpath);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(box->layout(), KDialog::spacingHint());
+	QVBoxLayout	*l0 = new QVBoxLayout();
+  l0->setSpacing(KDialog::spacingHint());
+  box->layout()->addItem(l0);
 	l0->addWidget(m_embedfonts);
-	QVBoxLayout	*l1 = new QVBoxLayout(box2->layout(), KDialog::spacingHint());
+	QVBoxLayout	*l1 = new QVBoxLayout();
+  l1->setSpacing(KDialog::spacingHint());
+  box2->layout()->addItem(l1);
 	l1->addWidget(m_fontpath);
-	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, KDialog::spacingHint());
+	QHBoxLayout	*l2 = new QHBoxLayout();
+  l2->setSpacing(KDialog::spacingHint());
 	l1->addLayout(l2);
 	l2->addWidget(m_up);
 	l2->addWidget(m_down);
@@ -72,7 +77,8 @@ KMConfigFonts::KMConfigFonts(QWidget *parent)
 	l1->addSpacing(10);
 	l1->addWidget(lab0);
 	l1->addWidget(m_addpath);
-	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, KDialog::spacingHint());
+	QHBoxLayout	*l3 = new QHBoxLayout();
+  l3->setSpacing(KDialog::spacingHint());
 	l1->addLayout(l3);
 	l3->addStretch(1);
 	l3->addWidget(m_add);
@@ -105,8 +111,8 @@ KMConfigFonts::KMConfigFonts(QWidget *parent)
 void KMConfigFonts::loadConfig(KConfig *)
 {
 	QSettings	settings;
-	m_embedfonts->setChecked(settings.readBoolEntry("/qt/embedFonts", true));
-	QStringList	paths = settings.readListEntry("/qt/fontPath", ':');
+	m_embedfonts->setChecked(settings.value("/qt/embedFonts", true).toBool());
+	QStringList	paths = settings.value("/qt/fontPath", ':').toStringList();
 	Q3ListViewItem	*item(0);
 	for (QStringList::ConstIterator it=paths.begin(); it!=paths.end(); ++it)
 		item = new Q3ListViewItem(m_fontpath, item, *it);
@@ -123,7 +129,7 @@ void KMConfigFonts::saveConfig(KConfig *)
 		l << item->text(0);
 		item = item->nextSibling();
 	}
-	settings.writeEntry("/qt/fontPath", l, ':');
+	settings.setValue("/qt/fontPath", l);
 }
 
 void KMConfigFonts::slotSelected()

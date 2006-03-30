@@ -37,8 +37,8 @@ KMConfigLpr::KMConfigLpr(QWidget *parent)
 	Q3GroupBox	*m_modebox = new Q3GroupBox(1, Qt::Vertical, i18n("Spooler"), this);
 
 	m_mode = new QComboBox(m_modebox);
-	m_mode->insertItem("LPR (BSD compatible)");
-	m_mode->insertItem("LPRng");
+	m_mode->addItem("LPR (BSD compatible)");
+	m_mode->addItem("LPRng");
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this);
 	l0->setMargin(5);
@@ -49,7 +49,7 @@ KMConfigLpr::KMConfigLpr(QWidget *parent)
 
 void KMConfigLpr::loadConfig(KConfig*)
 {
-	m_mode->setCurrentItem(LprSettings::self()->mode());
+	m_mode->setCurrentIndex(LprSettings::self()->mode());
 }
 
 void KMConfigLpr::saveConfig(KConfig *conf)

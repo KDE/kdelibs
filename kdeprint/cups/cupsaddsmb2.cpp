@@ -102,7 +102,9 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	QHBoxLayout	*l0 = new QHBoxLayout(this);
 	l0->setMargin(10);
 	l0->setSpacing(10);
-	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 10);
+	QVBoxLayout	*l1 = new QVBoxLayout();
+	l1->setMargin(0);
+	l1->setSpacing(10);
 	l0->addWidget(m_side);
 	l0->addLayout(l1);
 	l1->addWidget(m_title);
@@ -123,7 +125,9 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	l1->addWidget(m_bar);
 	l1->addWidget( m_textinfo );
 	l1->addSpacing(30);
-	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 10);
+	QHBoxLayout	*l2 = new QHBoxLayout();
+	l2->setMargin(0);
+	l2->setSpacing(10);
 	l1->addLayout(l2);
 	l2->addStretch(1);
 	l2->addWidget(m_doit);

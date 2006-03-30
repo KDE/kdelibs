@@ -45,7 +45,7 @@ extern "C"
 
 	KDEPRINT_MANAGEMENT_MODULE_EXPORT QString select_command( QWidget* parent )
 	{
-		KDialogBase dlg( parent, 0, true, i18n( "Select Command" ), KDialogBase::Ok|KDialogBase::Cancel );
+		KDialogBase dlg( KDialogBase::Swallow, 0, parent, 0, true, i18n( "Select Command" ), KDialogBase::Ok|KDialogBase::Cancel );
 		KXmlCommandSelector *xmlSel = new KXmlCommandSelector( false, &dlg, &dlg );
                 xmlSel->setObjectName( "CommandSelector" );
 		dlg.setMainWidget( xmlSel );

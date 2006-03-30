@@ -103,11 +103,11 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_desc = new QLineEdit(m_dummy);
 	m_name = new QLineEdit(m_dummy);
 	m_type = new QComboBox(m_dummy);
-	m_type->insertItem(i18n("String"));
-	m_type->insertItem(i18n("Integer"));
-	m_type->insertItem(i18n("Float"));
-	m_type->insertItem(i18n("List"));
-	m_type->insertItem(i18n("Boolean"));
+	m_type->addItem(i18n("String"));
+	m_type->addItem(i18n("Integer"));
+	m_type->addItem(i18n("Float"));
+	m_type->addItem(i18n("List"));
+	m_type->addItem(i18n("Boolean"));
 	m_format = new QLineEdit(m_dummy);
 	m_default = new QLineEdit(m_dummy);
 	QLabel	*m_namelab = new QLabel(i18n("&Name:"), m_dummy);
@@ -175,12 +175,18 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	QVBoxLayout	*l2 = new QVBoxLayout(this);
 	l2->setMargin(0);
 	l2->setSpacing(KDialog::spacingHint());
-	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, KDialog::spacingHint());
-	QVBoxLayout	*l7 = new QVBoxLayout(0, 0, 0);
+	QHBoxLayout	*l3 = new QHBoxLayout();
+  l3->setMargin(0);
+  l3->setSpacing(KDialog::spacingHint());
+	QVBoxLayout	*l7 = new QVBoxLayout();
+  l7->setMargin(0);
+  l7->setSpacing(0);
 	l2->addLayout(l3, 0);
 	l3->addWidget(m_commandlab);
 	l3->addWidget(m_command);
-	QHBoxLayout	*l0 = new QHBoxLayout(0, 0, KDialog::spacingHint());
+	QHBoxLayout	*l0 = new QHBoxLayout();
+  l0->setMargin(0);
+  l0->setSpacing(KDialog::spacingHint());
 	QGridLayout	*l10 = new QGridLayout();
     l10->setMargin(0);
     l10->setSpacing(KDialog::spacingHint());
@@ -223,7 +229,9 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	l4->setMargin(0);
 	l4->setSpacing(KDialog::spacingHint());
 	l4->addWidget(m_values);
-	QVBoxLayout	*l6 = new QVBoxLayout(0, 0, 0);
+	QVBoxLayout	*l6 = new QVBoxLayout();
+  l6->setMargin(0);
+  l6->setSpacing(0);
 	l4->addLayout(l6);
 	l6->addWidget(m_addval);
 	l6->addWidget(m_delval);
@@ -252,10 +260,13 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	l9->addWidget(m_outputfile, 0, 1);
 	l9->addWidget(m_outputpipe, 1, 1);
 
-	QVBoxLayout	*l11 = new QVBoxLayout(gb->layout());
+	QVBoxLayout	*l11 = new QVBoxLayout();
+  gb->layout()->addItem(l11);
 	l11->addWidget(m_stack);
 
-	QVBoxLayout *l12 = new QVBoxLayout( 0, 0, 0 );
+	QVBoxLayout *l12 = new QVBoxLayout();
+  l12->setMargin(0);
+  l12->setSpacing(0);
 	l2->addSpacing( 10 );
 	l2->addLayout( l12 );
 	l12->addWidget( m_commentlab );
@@ -467,8 +478,8 @@ void KXmlCommandAdvancedDlg::viewItem(Q3ListViewItem *item)
 			bool	isgroup = (opt->type() < DrBase::String);
 			if (!isgroup)
 			{
-				m_type->setCurrentItem(opt->type() - DrBase::String);
-				typeId = m_type->currentItem();
+				m_type->setCurrentIndex(opt->type() - DrBase::String);
+				typeId = m_type->currentIndex();
 				m_format->setText(opt->get("format"));
 				m_default->setText(opt->get("default"));
 			}
@@ -588,7 +599,7 @@ void KXmlCommandAdvancedDlg::slotApplyChanges()
 		// recreate option
 		if (m_type->isEnabled())
 		{
-			int	type = m_type->currentItem() + DrBase::String;
+			int	type = m_type->currentIndex() + DrBase::String;
 			switch (type)
 			{
 				case DrBase::Integer:
@@ -751,7 +762,7 @@ void KXmlCommandAdvancedDlg::slotCommandChanged(const QString& cmd)
 
 void KXmlCommandAdvancedDlg::slotValueSelected(Q3ListViewItem *item)
 {
-	m_addval->setEnabled(m_type->currentItem() != 4 || m_values->childCount() < 2);
+	m_addval->setEnabled(m_type->currentIndex() != 4 || m_values->childCount() < 2);
 	m_delval->setEnabled(item != 0);
 }
 
@@ -798,7 +809,7 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 	if (!xmlcmd)
 		return false;
 
-	KDialogBase	dlg(parent, 0, true, i18n("Command Edit for %1", xmlcmd->name()), KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, false);
+	KDialogBase	dlg(KDialogBase::Swallow, 0, parent, 0, true, i18n("Command Edit for %1", xmlcmd->name()), KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, false);
 	KXmlCommandAdvancedDlg	*xmldlg = new KXmlCommandAdvancedDlg(&dlg);
 	dlg.setMainWidget(xmldlg);
 	//dlg.enableButton(KDialogBase::Ok, false);
@@ -834,7 +845,7 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 //-----------------------------------------------------------------------------------------------------
 
 KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, QString(), Ok|Cancel|Details, Ok, true)
+: KDialogBase(Swallow, 0, parent, name, true, QString(), Ok|Cancel|Details, Ok, true)
 {
 	setButtonText(Details, i18n("&Mime Type Settings"));
 	m_cmd = 0;
@@ -895,7 +906,9 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	l5->addWidget(m_desclab, 1, 0);
 	l5->addWidget(m_description, 1, 1);
 	l0->addWidget(m_gb2);
-	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 0);
+	QHBoxLayout	*l3 = new QHBoxLayout();
+  l3->setMargin(0);
+  l3->setSpacing(0);
 	l0->addLayout(l3);
 	l3->addWidget(m_edit);
 	l3->addStretch(1);
@@ -903,7 +916,9 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	QVBoxLayout	*l7 = new QVBoxLayout(dummy);
 	l7->setMargin(0);
 	l7->setSpacing(10);
-	QHBoxLayout	*l6 = new QHBoxLayout(0, 0, 5);
+	QHBoxLayout	*l6 = new QHBoxLayout();
+  l6->setMargin(0);
+  l6->setSpacing(5);
 	l7->addWidget(sep1);
 	l7->addLayout(l6);
 	l6->addWidget(m_mimetypelab, 0);
@@ -918,9 +933,13 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	l2->addWidget(m_removemime, 2, 1);
 	l2->setRowStretch(0, 1);
 	l2->setRowStretch(3, 1);
-	QHBoxLayout	*l4 = new QHBoxLayout(m_gb2->layout(), 10);
+	QHBoxLayout	*l4 = new QHBoxLayout();
+  l4->setSpacing(5);
+  m_gb2->layout()->addItem(l4);
 	l4->addWidget(m_requirements);
-	QVBoxLayout	*l8 = new QVBoxLayout(0, 0, 0);
+	QVBoxLayout	*l8 = new QVBoxLayout();
+  l8->setMargin(0);
+  l8->setSpacing(0);
 	l4->addLayout(l8);
 	l8->addWidget(m_addreq);
 	l8->addWidget(m_removereq);
@@ -943,7 +962,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	}
 
 	m_mimelist.sort();
-	m_mimetype->insertStringList(m_mimelist);
+	m_mimetype->addItems(m_mimelist);
 	m_availablemime->insertStringList(m_mimelist);
 
 	setMainWidget(topmain);

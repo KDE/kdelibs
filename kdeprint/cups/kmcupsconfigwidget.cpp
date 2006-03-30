@@ -41,8 +41,9 @@ public:
 };
 
 PortValidator::PortValidator(QWidget *parent, const char *name)
-: QIntValidator(1, 65535, parent, name)
+: QIntValidator(1, 65535, parent)
 {
+  setObjectName( name );
 }
 
 QValidator::State PortValidator::validate(QString& txt, int&) const

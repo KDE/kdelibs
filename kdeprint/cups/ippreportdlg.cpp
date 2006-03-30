@@ -30,7 +30,7 @@
 #include <qpainter.h>
 
 IppReportDlg::IppReportDlg(QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, i18n("IPP Report"), Close|User1, Close, false, KGuiItem(i18n("&Print"), "fileprint"))
+: KDialogBase(Swallow, 0, parent, name, true, i18n("IPP Report"), Close|User1, Close, false, KGuiItem(i18n("&Print"), "fileprint"))
 {
 	m_edit = new KTextEdit(this);
 	m_edit->setReadOnly(true);
