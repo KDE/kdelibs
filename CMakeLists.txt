@@ -59,16 +59,16 @@ link_directories(${KDE4_LIB_DIR})
 # for including config.h and for includes like <kparts/foo.h>
 include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
 
-if (UNIX)
-   include_directories(${X11_INCLUDE_DIR})
-endif (UNIX)
-
 # Those variables for include_directories() are only valid inside of kdelibs, of course.
 # Use the one variable for the lib you depend upon.
 # E.g. kdeui uses ${KDE4_KDECORE_INCLUDES}. Something that depends on kparts uses ${KDE4_KPARTS_INCLUDES}.
 
 # DCOP depends on Qt
 set(KDE4_DCOP_INCLUDES ${CMAKE_SOURCE_DIR}/dcop ${QT_INCLUDES})
+if (UNIX)
+  set(KDE4_DCOP_INCLUDES ${KDE4_DCOP_INCLUDES} ${X11_INCLUDE_DIR})
+endif (UNIX)
+
 # kdecore depends on DCOP  (libldtl isn't included since it's internal to kdecore)
 set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_DCOP_INCLUDES})
 # kdeui depends on kdefx+kdecore

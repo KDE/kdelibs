@@ -5,7 +5,7 @@ project(dcop)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dcop-path.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
 
-include_directories( ${QT_INCLUDES} )
+include_directories( ${KDE4_DCOP_INCLUDES} )
 
 # dcop/KDE-ICE/Makefile.am: kICE
 
