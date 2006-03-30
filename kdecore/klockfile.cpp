@@ -39,7 +39,8 @@
 
 #include "kde_file.h"
 #include "krandom.h"
-#include "kcmdlineargs.h"
+#include "kglobal.h"
+#include "kinstance.h"
 #include "ktempfile.h"
 
 // TODO: http://www.spinnaker.de/linux/nfs-locking.html
@@ -133,15 +134,15 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   hostname[0] = 0;
   gethostname(hostname, 255);
   hostname[255] = 0;
-  QByteArray instanceName = KCmdLineArgs::appName();
+  QByteArray instanceName = KGlobal::instance()->instanceName();
 
   (*(uniqueFile.textStream())) << QString::number(getpid()) << endl
       << instanceName << endl
       << hostname << endl;
   uniqueFile.close();
-  
+
   QByteArray uniqueName = QFile::encodeName( uniqueFile.name() );
-      
+
 #ifdef Q_OS_UNIX
   // Create lock file
   result = ::link( uniqueName, lockFileName );

@@ -2,6 +2,9 @@ kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
+# Tests don't need to go into toplevel/bin, they are fine in the current dir.
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
+
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 
@@ -77,18 +80,6 @@ kde4_add_executable(kstddirstest ${kstddirstest_SRCS})
 target_link_libraries(kstddirstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kstddirstest ${EXECUTABLE_OUTPUT_PATH}/kstddirstest)
-
-########### next target ###############
-
-#set(kurltest_SRCS kurltest.cpp )
-#
-#kde4_automoc(${kurltest_SRCS})
-#
-#kde4_add_executable(kurltest ${kurltest_SRCS})
-#
-#target_link_libraries(kurltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-#
-# add_test(kdecore-kurltest ${EXECUTABLE_OUTPUT_PATH}/kurltest)
 
 ########### next target ###############
 
@@ -192,17 +183,13 @@ set(kidlservertest_SRCS KIDLTest.cpp )
 
 kde4_automoc(${kidlservertest_SRCS})
 
-set( kidlservertest_DCOP_SKEL_SRCS
-KIDLTest.h
-)
-
-kde4_add_dcop_skels(kidlservertest_SRCS ${kidlservertest_DCOP_SKEL_SRCS})
+kde4_add_dcop_skels(kidlservertest_SRCS KIDLTest.h)
 
 kde4_add_executable(kidlservertest ${kidlservertest_SRCS})
 
 target_link_libraries(kidlservertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-# add_test(kdecore-kidlservertest ${EXECUTABLE_OUTPUT_PATH}/kidlservertest)
+#add_test(kdecore-kidlservertest ${EXECUTABLE_OUTPUT_PATH}/kidlservertest)
 
 ########### next target ###############
 
@@ -521,7 +508,7 @@ kde4_add_executable(kcompletiontest ${kcompletiontest_SRCS})
 
 target_link_libraries(kcompletiontest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-# add_test(kdecore-kcompletiontest ${EXECUTABLE_OUTPUT_PATH}/kcompletiontest)
+add_test(kdecore-kcompletiontest ${EXECUTABLE_OUTPUT_PATH}/kcompletiontest)
 
 ########### next target ###############
 
@@ -529,11 +516,11 @@ set(klockfiletest_SRCS klockfiletest.cpp )
 
 kde4_automoc(${klockfiletest_SRCS})
 
-kde4_add_executable(lt-klockfiletest ${klockfiletest_SRCS})
+kde4_add_executable(klockfiletest ${klockfiletest_SRCS})
 
-target_link_libraries(lt-klockfiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(klockfiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-add_test(kdecore-klockfiletest ${EXECUTABLE_OUTPUT_PATH}/lt-klockfiletest)
+add_test(kdecore-klockfiletest ${EXECUTABLE_OUTPUT_PATH}/klockfiletest)
 
 ########### next target ###############
 

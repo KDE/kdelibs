@@ -7,6 +7,8 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 
+// TODO remove AutoDcopRegistration
+
 // By default, unit tests get no gui and no dcop registration.
 // Pass GUI if you use any GUI classes
 enum KDEMainFlag { NoGUI = 0, GUI = 1, AutoDcopRegistration = 2 }; // bitfield, next item is 4!
@@ -30,12 +32,11 @@ int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
     setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
-    KAboutData aboutData( "qttest", "qttest", "version" ); \
-    KCmdLineArgs::init( argc, argv, &aboutData );   \
-    KDEMainFlags mainFlags( flags );                 \
-    if ( (mainFlags & AutoDcopRegistration) == 0 ) \
-        KApplication::disableAutoDcopRegistration(); \
-    KApplication app( (mainFlags & GUI) != 0 ); \
+    KAboutData aboutData( "qttest", "qttest", "version" );  \
+    KDEMainFlags mainFlags = flags;                         \
+    QApplication app( argc, argv, (mainFlags & GUI) != 0 ); \
+    KInstance instance( &aboutData ); \
+    app.setApplicationName( "qttest" ); \
     TestObject tc; \
     return QTest::qExec( &tc, argc, argv ); \
 }

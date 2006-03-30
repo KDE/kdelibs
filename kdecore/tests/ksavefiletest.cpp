@@ -70,6 +70,9 @@ void KSaveFileTest::test_numberedBackupFile()
     test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
     test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
     //test( "numbered backup", KSaveFile::numberedBackupFile( f.name(),5 ) );
+
+    f.setAutoDelete( true );
+    // TODO also clean up all the numbered backups!
 }
 
 void KSaveFileTest::test_rcsBackupFile()
@@ -93,6 +96,8 @@ void KSaveFileTest::test_rcsBackupFile()
         fl.close();
         test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString("/tmp"), "Another Testmsg" ) );
     }
+    QFile::remove( f.name() + ",v" );
+    f.unlink();
 }
 
 

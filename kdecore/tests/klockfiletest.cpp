@@ -69,7 +69,7 @@ Test_KLockFile::testStale()
 		char hostname[256];
 		if (::gethostname(hostname, sizeof(hostname)) == 0)
 			QCOMPARE(host, QLatin1String(hostname));
-		QCOMPARE(app, QLatin1String("lt-klockfiletest")); // libtool name
+		QCOMPARE(app, QLatin1String("qttest")); // this is our KInstance name
 	}
 }
 
