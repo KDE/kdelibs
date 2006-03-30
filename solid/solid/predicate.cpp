@@ -77,6 +77,7 @@ KDEHW::Predicate::Predicate( const QString &capability,
     map["Cdrom"] = Capability::Cdrom;
     map["Volume"] = Capability::Volume;
     map["OpticalDisc"] = Capability::OpticalDisc;
+    map["Camera"] = Capability::Camera;
     map["Display"] = Capability::Display;
 
     if ( map.contains( capability ) )
@@ -210,6 +211,9 @@ QString KDEHW::Predicate::toString() const
             break;
         case Capability::OpticalDisc:
             capability = "OpticalDisc";
+            break;
+        case Capability::Camera:
+            capability = "Camera";
             break;
         case Capability::Display:
             capability = "Display";

@@ -63,12 +63,13 @@ namespace Enums
          * - Cdrom : A CD-ROM drive
          * - Volume : A volume
          * - OpticalDisc : An optical disc
+         * - Camera : A digital camera
          * - Display : A video display
          */
         enum Type { Unknown = 0, Processor = 1, Block = 2,
                     Storage = 4, Cdrom = 8,
                     Volume = 16, OpticalDisc = 32,
-                    Display = 64 };
+                    Camera = 64, Display = 128 };
 
         /**
          * This type stores an OR combination of Type values.
@@ -201,6 +202,23 @@ namespace Enums
                         DvdPlusRecordable, DvdPlusRewritable, UnknownDiscType };
     };
     Q_DECLARE_OPERATORS_FOR_FLAGS( OpticalDisc::ContentTypes )
+
+
+    /**
+     * This struct holds the enumerations used by KDEHW::Camera
+     * and KDEHW::Ifaces::Camera. You shouldn't use it directly.
+     */
+    struct Camera
+    {
+        /**
+         * This enum type defines the access method that can be used for a camera.
+         *
+         * - MassStorage : A mass storage camera
+         * - Ptp : A camera supporting Picture Transfer Protocol (PTP)
+         * - Proprietary : A camera using a proprietary protocol
+         */
+        enum AccessType { MassStorage, Ptp, Proprietary };
+    };
 
 
     /**
