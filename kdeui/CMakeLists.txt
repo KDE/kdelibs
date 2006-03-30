@@ -138,16 +138,16 @@ kde4_automoc(${kdeui_LIB_SRCS})
 set( kdeui_UI
 kspellui.ui
 kkeydialogui.ui
+kshortcutdialog_simple.ui
+kshortcutdialog_advanced.ui
 )
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
-set( kdeui_UI3
-kshortcutdialog_simple.ui3
-kshortcutdialog_advanced.ui3
-)
-
-kde4_add_ui3_files(kdeui_LIB_SRCS ${kdeui_UI3} )
+#set( kdeui_UI3
+#)
+#
+#kde4_add_ui3_files(kdeui_LIB_SRCS ${kdeui_UI3} )
 
 set( kdeui_DCOP_SKEL_SRCS
 kmainwindowiface.h
