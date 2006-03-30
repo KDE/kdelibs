@@ -31,9 +31,12 @@
  
 #ifdef HAVE_SYS_SOUNDCARD_H
  #include <sys/soundcard.h>
- #define HAVE_OSS_SUPPORT
 #elif defined(HAVE_MACHINE_SOUNDCARD_H)
  #include <machine/soundcard.h>
+#endif
+
+/* Check for OSS MIDI API */
+#if defined(SNDCTL_SEQ_NRSYNTHS) && defined(CTL_MAIN_VOLUME)
  #define HAVE_OSS_SUPPORT
 #else
  #undef HAVE_OSS_SUPPORT
