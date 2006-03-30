@@ -1,0 +1,15 @@
+Ian's List:
+* Slot return types should use the value factories so all
+  bound types are supported.
+* Ability to layer bindings.
+	- Matt says that by using QCoreApplication we get a large
+	  speedup.  If we can layer the bindings so that users
+	  could start with only core Qt.  Then we give the ability
+	  to add on KDE and Qt gui bindings at run time.  This
+	  will keep small scripts with out guis fast, but not
+	  make adding KDE support harder.
+* Bindings for KParts (be able to load readonly and readwrite parts)
+* Bindings for KIO (net access api)
+* Bindings for DCOP (dbus or what ever it is this week)
+* Handle QPixmap and Image gracefully in QPainter bindings.
+
