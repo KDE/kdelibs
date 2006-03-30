@@ -337,6 +337,8 @@ cmakedefine   HAVE__ICETRANSNOLISTEN
 #cmakedefine HAVE_STRUCT_UCRED 1
 #cmakedefine HAVE_STRUCT_ADDRINFO 1
 #cmakedefine HAVE_STRUCT_SOCKADDR_IN6 1
+#cmakedefine HAVE_STRUCT_STATVFS 1
+#cmakedefine HAVE_STRUCT_STATFS 1
 
 /*********************/
 

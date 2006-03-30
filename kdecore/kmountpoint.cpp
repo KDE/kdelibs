@@ -222,7 +222,11 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
 
 #ifdef HAVE_GETMNTINFO
 
+#if defined(HAVE_STRUCT_STATVFS)
+    struct statvfs *mounted;
+#elif defined(HAVE_STRUCT_STATFS)
     struct statfs *mounted;
+#endif
 
     int num_fs = getmntinfo(&mounted, MNT_NOWAIT);
 
