@@ -105,17 +105,19 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
 
         // TODO also move this out of KCommandHistory, to make it core-only.
 
-        KToolBarPopupAction * undo = new KToolBarPopupAction( i18n("&Undo"), "undo",
-                                          KStdAccel::shortcut(KStdAccel::Undo), this, SLOT( undo() ),
+        KToolBarPopupAction * undo = new KToolBarPopupAction( KIcon("undo"), i18n("&Undo"),
                                           actionCollection, KStdAction::stdName( KStdAction::Undo ) );
+        undo->setShortcut( KStdAccel::shortcut(KStdAccel::Undo) );
+        connect( undo, SIGNAL(triggered(bool)), this, SLOT( undo() ) );
         connect( undo->menu(), SIGNAL( aboutToShow() ), this, SLOT( slotUndoAboutToShow() ) );
         connect( undo->menu(), SIGNAL( activated( int ) ), this, SLOT( slotUndoActivated( int ) ) );
         m_undo = undo;
         m_undoPopup = undo->menu();
 
-        KToolBarPopupAction * redo = new KToolBarPopupAction( i18n("&Redo"), "redo",
-                                          KStdAccel::shortcut(KStdAccel::Redo), this, SLOT( redo() ),
+        KToolBarPopupAction * redo = new KToolBarPopupAction( KIcon("redo"), i18n("&Redo"),
                                           actionCollection, KStdAction::stdName( KStdAction::Redo ) );
+        redo->setShortcut( KStdAccel::shortcut(KStdAccel::Redo) );
+        connect( redo, SIGNAL(triggered(bool)), this, SLOT( redo() ) );
         connect( redo->menu(), SIGNAL( aboutToShow() ), this, SLOT( slotRedoAboutToShow() ) );
         connect( redo->menu(), SIGNAL( activated( int ) ), this, SLOT( slotRedoActivated( int ) ) );
         m_redo = redo;

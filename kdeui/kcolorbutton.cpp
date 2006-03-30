@@ -168,7 +168,7 @@ void KColorButton::dropEvent( QDropEvent *event)
 
 void KColorButton::keyPressEvent( QKeyEvent *e )
 {
-  KKey key( e );
+  int key = e->key() | e->modifiers();
 
   if ( KStdAccel::copy().contains( key ) ) {
     QMimeData *mime=new QMimeData;

@@ -1517,6 +1517,17 @@ KMenu* KActionMenu::kMenu()
 
 // BEGIN KToolBarPopupAction
 
+KToolBarPopupAction::KToolBarPopupAction( const KIcon& icon,
+                                          const QString& text,
+                                          KActionCollection* parent, const char* name )
+  : KAction( icon, text, parent, name )
+{
+  m_delayed = true;
+  m_stickyMenu = true;
+  setToolBarWidgetFactory(this);
+  setMenu(new KMenu);
+}
+
 KToolBarPopupAction::KToolBarPopupAction( const QString& text,
                                           const QString& icon,
                                           const KShortcut& cut,

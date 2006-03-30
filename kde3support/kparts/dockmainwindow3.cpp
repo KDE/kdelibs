@@ -22,7 +22,6 @@
 #include "dockmainwindow3.h"
 #include <kparts/event.h>
 #include <kparts/part.h>
-#include <kaccel.h>
 #include <kparts/plugin.h>
 #include <kstatusbar.h>
 #include <kinstance.h>

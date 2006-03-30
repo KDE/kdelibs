@@ -43,8 +43,6 @@ class QIcon;
 class QString;
 class KToolBar;
 
-class KAccel;
-class KAccelActions;
 class KConfig;
 class KConfigBase;
 class KUrl;
@@ -1035,6 +1033,17 @@ class KDEUI_EXPORT KToolBarPopupAction : public KAction, public QActionWidgetFac
 public:
     //Not all constructors - because we need an icon, since this action only makes
     // sense when being plugged at least in a toolbar.
+    /**
+     * Create a KToolBarPopupAction, with a text, an icon, a
+     * parent and a name.
+     *
+     * @param icon The icon to display.
+     * @param text The text that will be displayed.
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KToolBarPopupAction( const KIcon& icon, const QString& text, KActionCollection* parent = 0, const char* name = 0 );
+
     /**
      * Create a KToolBarPopupAction, with a text, an icon, an optional accelerator,
      * parent and name.

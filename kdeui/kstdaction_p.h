@@ -138,7 +138,7 @@ class AutomaticAction : public KAction {
 Q_OBJECT
 
 public:
-    AutomaticAction(const QString &icon, const QString &text, const QKeySequence &cut, const char *slot, KActionCollection *parent, const char *name)
+    AutomaticAction(const KIcon &icon, const QString &text, const QKeySequence &cut, const char *slot, KActionCollection *parent, const char *name)
       : KAction(text, parent, name)
     {
       setIcon(KIcon(icon));

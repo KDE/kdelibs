@@ -21,14 +21,11 @@
 
 #include "kstdaccel.h"
 
-#include "kaccelaction.h"
-#include "kaccelbase.h"
 #include "kconfig.h"
 #include "kdebug.h"
 #include "kglobal.h"
 #include "klocale.h"
 #include "kshortcut.h"
-#include "kshortcutlist.h"
 
 #include <qkeysequence.h>
 #ifdef Q_WS_X11
@@ -172,6 +169,29 @@ static void initialize( StdAccel id )
 	pInfo->bInitialized = true;
 }
 
+void saveShortcut(StdAccel id, const KShortcut& newShortcut)
+{
+	KConfigGroup cg( KGlobal::config(), "Shortcuts" );
+	KStdAccelInfo* pInfo = infoPtr( id );
+
+	if( !pInfo ) {
+		kWarning(125) << "KStdAccel: id not found!" << endl; // -- ellis
+		return;
+	}
+	
+	pInfo->cut = newShortcut;
+	
+	bool sameAsDefault = (newShortcut == shortcutDefault( id ));
+	
+	if (sameAsDefault)
+		if( cg.hasKey( pInfo->psName ) )
+			cg.deleteEntry( pInfo->psName );
+		else
+			return;
+
+	cg.writeEntry( pInfo->psName, pInfo->cut.toStringInternal() );
+}
+
 QString name( StdAccel id )
 {
 	KStdAccelInfo* pInfo = infoPtr( id );
@@ -210,9 +230,9 @@ const KShortcut& shortcut( StdAccel id )
 	return pInfo->cut;
 }
 
-StdAccel findStdAccel( const KKeySequence& seq )
+StdAccel findStdAccel( const QKeySequence& seq )
 {
-	if( !seq.isNull() ) {
+	if( !seq.isEmpty() ) {
 		for( uint i = 0; g_infoStdAccel[i].psName != 0; i++ ) {
 			StdAccel id = g_infoStdAccel[i].id;
 			if( id != AccelNone ) {
@@ -226,6 +246,15 @@ StdAccel findStdAccel( const KKeySequence& seq )
 	return AccelNone;
 }
 
+StdAccel findStdAccel( const char* keyName )
+{
+	for( uint i = 0; g_infoStdAccel[i].psName != 0; i++ )
+		if (qstrcmp(g_infoStdAccel[i].psName, keyName))
+			return g_infoStdAccel[i].id;
+
+	return AccelNone;
+}
+
 KShortcut shortcutDefault( StdAccel id )
 {
 	KShortcut cut;
@@ -233,12 +262,12 @@ KShortcut shortcutDefault( StdAccel id )
 	KStdAccelInfo* pInfo = infoPtr( id );
 	if( pInfo ) {
 		KStdAccelInfo& info = *pInfo;
-		KKeySequence key2;
+		QKeySequence key2;
 
 		cut.init( (info.cutDefault) ) ;
 
 		if( info.cutDefault2 )
-			key2.init( QKeySequence(info.cutDefault2) );
+			key2 = QKeySequence(info.cutDefault2);
 
 		if( key2.count() )
 			cut.append( key2 );
@@ -295,66 +324,6 @@ const KShortcut& up()                    { return shortcut( Up ); }
 const KShortcut& back()                  { return shortcut( Back ); }
 const KShortcut& forward()               { return shortcut( Forward ); }
 const KShortcut& showMenubar()           { return shortcut( ShowMenubar ); }
-
-//---------------------------------------------------------------------
-// ShortcutList
-//---------------------------------------------------------------------
-
-ShortcutList::ShortcutList()
-	{ }
-
-ShortcutList::~ShortcutList()
-	{ }
-
-uint ShortcutList::count() const
-{
-	static uint g_nAccels = 0;
-	if( g_nAccels == 0 ) {
-		for( ; g_infoStdAccel[g_nAccels].psName != 0; g_nAccels++ )
-			;
-	}
-	return g_nAccels;
-}
-
-QString ShortcutList::name( uint i ) const
-	{ return g_infoStdAccel[i].psName; }
-
-QString ShortcutList::label( uint i ) const
-	{ return i18n((g_infoStdAccel[i].psDesc) ? g_infoStdAccel[i].psDesc : g_infoStdAccel[i].psName); }
-
-QString ShortcutList::whatsThis( uint ) const
-	{ return QString(); }
-
-const KShortcut& ShortcutList::shortcut( uint i ) const
-{
-	if( !g_infoStdAccel[i].bInitialized )
-		initialize( g_infoStdAccel[i].id );
-	return g_infoStdAccel[i].cut;
-}
-
-const KShortcut& ShortcutList::shortcutDefault( uint i ) const
-{
-	static KShortcut cut;
-	cut = KStdAccel::shortcutDefault( g_infoStdAccel[i].id );
-	return cut;
-}
-
-bool ShortcutList::isConfigurable( uint i ) const
-	{ return (g_infoStdAccel[i].id != AccelNone); }
-
-bool ShortcutList::setShortcut( uint i, const KShortcut& cut )
-	{ g_infoStdAccel[i].cut = cut; return true; }
-
-QVariant ShortcutList::getOther( Other, uint ) const
-	{ return QVariant(); }
-
-bool ShortcutList::setOther( Other, uint, const QVariant &)
-	{ return false; }
-
-bool ShortcutList::save() const
-{
-	return writeSettings( QString(), 0, false, true );
-}
 
 }
 

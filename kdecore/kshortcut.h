@@ -1,5 +1,6 @@
 /*  This file is part of the KDE libraries
     Copyright (C) 2001,2002 Ellis Whitehead <ellis@kde.org>
+    Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,561 +28,15 @@
 
 #include "kdelibs_export.h"
 
-#include <qnamespace.h>
-#include <qkeysequence.h>
-
-class QKeyEvent;
-class QKeySequence;
-class QString;
-
-class KKeyNative;
-
-/**
-* @short Represents a single key
-*
-* A KKey object represents a single key with possible modifiers
-* (Shift, Ctrl, Alt, Win).  It can represent both keys which are
-* understood by Qt as well as those which are additionally supported
-* by the underlying system (e.g. X11).
-* @see KKeyNative
-* @see KKeySequence
-* @see KShortcut
-*/
-
-class KDECORE_EXPORT KKey
-{
- public:
-	enum {
-		/**
-		 * The number of flags.
-		 * @see ModFlag
-		 */
-		MOD_FLAG_COUNT = 4
-	};
-	/**
-	 * Flags to represent the modifiers. You can combine modifiers
-	 * by ORing them.
-	 */
-	enum ModFlag {
-		SHIFT = Qt::SHIFT,  ///< Shift modifier
-		CTRL = Qt::CTRL,    ///< Control (Ctrl) modifier
-		ALT = Qt::ALT,      ///< Alt modifier
-		WIN = Qt::META      ///< Windows key or Meta modifier
-	};
-
-	/**
-	 * Creates a new null KKey.
-	 * @see clear()
-	 * @see isNull()
-	 * @see null()
-	 */
-	KKey();
-
-	/**
-	 * Creates a new key for the given Qt key code.
-	 * @param keyQt the qt keycode
-	 * @see Qt::Key
-	 */
-	KKey( int keyQt );
-
-	/**
-	 * Creates a new key from the first key code of the given key sequence.
-	 * @param keySeq the key sequence that contains the key
-	 */
-	KKey( const QKeySequence& keySeq );
-
-	/**
-	 * Extracts the key from the given key event.
-	 * @param keyEvent the key event to get the key from
-	 */
-	KKey( const QKeyEvent* keyEvent );
-
-	/**
-	 * Copy constructor.
-	 * @param key the key to copy
-	 */
-	KKey( const KKey& key );
-
-	/**
-	 * Creates a new key from the given description. The form of the description
-	 * is "[modifier+[modifier+]]+key", for example "e", "CTRL+q" or
-	 * "CTRL+ALT+DEL". Allowed modifiers are "SHIFT", "CTRL", "ALT", "WIN" and
-	 * "META". "WIN" and "META" are equivalent. Modifiers are not case-sensitive.
-	 * @param key the description of the key
-	 * @see KKeyServer::Sym::init()
-	 */
-	KKey( const QString& key );
-	/**
-	 * @internal
-	 */
-	KKey( uint key, uint mod );
-	~KKey();
-
-	/** @name Initialization methods */
-	/** @{ */
-
-	/**
-	 * Clears the key. The key is null after calling this function.
-	 * @see isNull()
-	 */
-	void clear();
-
-	/**
-	 * Initializes the key with the given Qt key code.
-	 * @param keyQt the qt keycode
-	 * @return @c true if successful, @c false otherwise
-	 * @see Qt::Key
-	 */
-	bool init( int keyQt );
-
-	/**
-	 * Initializes the key with the first key code of the given key sequence.
-	 * @param keySeq the key sequence that contains the key
-	 * @return @c true if successful, @c false otherwise
-	 */
-	bool init( const QKeySequence& keySeq );
-
-	/**
-	 * Initializes the key by extracting the code from the given key event.
-	 * @param keyEvent the key event to get the key from
-	 * @return @c true if successful, @c false otherwise
-	 */
-	bool init( const QKeyEvent* keyEvent );
-
-	/**
-	 * Copies the given key.
-	 * @param key the key to copy
-	 * @return @c true if successful, @c false otherwise
-	 */
-	bool init( const KKey& key );
-
-	/**
-	 * Initializes the key with the given description. The form of the description
-	 * is "[modifier+[modifier+]]+key", for example "e", "CTRL+q" or
-	 * "CTRL+ALT+DEL". Allowed modifiers are "SHIFT", "CTRL", "ALT", "WIN" and
-	 * "META". "WIN" and "META" are equivalent. Modifiers are not case-sensitive.
-	 * @param key the description of the key
-	 * @return @c true if successful, @c false otherwise
-	 * @see KKeyServer::Sym::init()
-	 */
-	bool init( const QString& key);
-
-	/**
-	 * @internal
-	 */
-	bool init( uint key, uint mod );
-
-	/**
-	 * Copies the key.
-	 */
-	KKey& operator =( const KKey& key )
-		{ init( key ); return *this; }
-
-	/** @} */
-	/** @name Query methods */
-	/** @{ */
-	
-	/**
-	 * Returns @c true if the key is null (after clear() or empty
-	 * constructor).
-	 * @return @c true if the key is null, @c false otherwise
-	 * @see clear()
-	 * @see null()
-	 */
-	bool isNull() const;
-
-	/**
-	 * @internal
-	 */
-	uint sym() const;
-	/**
-	 * @internal
-	 */
-	uint modFlags() const;
-
-	/** @} */
-	/** @name Comparison methods */
-	/** @{ */
-	
-	/**
-	 * Compares this key with the given KKey object. Returns a negative
-	 * number if the given KKey is larger, 0 if they are equal and
-	 * a positive number this KKey is larger. The returned value
-	 * is the difference between the symbol or, if the symbols
-	 * are equal, the difference between the encoded modifiers.
-	 * @param key the key to compare with this key
-	 * @return a negative number if the given KKey is larger, 0 if
-	 * they are equal and a positive number this KKey is larger
-	 */
-	int compare( const KKey& key ) const;
-
-	/**
-	 * Compares the symbol and modifiers of both keys.
-	 * @see compare()
-	 */
-	bool operator == ( const KKey& key ) const
-		{ return compare( key ) == 0; }
-	/**
-	 * Compares the symbol and modifiers of both keys.
-	 * @see compare()
-	 */
-	bool operator != ( const KKey& key ) const
-		{ return compare( key ) != 0; }
-	/**
-	 * Compares the symbol and modifiers of both keys.
-	 * @see compare()
-	 */
-	bool operator < ( const KKey& key ) const
-		{ return compare( key ) < 0; }
-
-	/** @} */
-	/** @name Conversion methods */
-	/** @{ */
-	
-	/**
-	 * Returns the qt key code.
-	 * @return the qt key code or 0 if there is no key set.
-	 * @see Qt::Key
-	 */
-	int keyCodeQt() const;
-
-	/**
-	 * Returns a human-readable representation of the key in the form
-	 * "modifier+key". Note that the representation is localised,
-	 * use toStringInternal() for cases like saving to configuration files.
-	 * @return the string representation of the key
-	 * @see toStringInternal()
-	 */
-	QString toString() const;
-
-	/**
-	 * Returns an untranslated text representation of the key in the form
-	 * "modifier+key", suitable e.g. for saving in configuration files.
-	 */
-	QString toStringInternal() const;
-
-	/** @} */
-	/** @name Operation methods */
-	/** @{ */
-	
-	/**
-	 * @internal
-	 */
-	void simplify();
-	
-	/** @} */
-
-	/**
-	 * Returns a null key.
-	 * @return the null key
-	 * @see isNull()
-	 * @see clear()
-	 */
-	static KKey& null();
-
-	/**
-	 * Returns a user-readable representation of the given modifiers.
-	 * @param f the modifiers to convert
-	 * @return the string representation of the modifiers
-	 */
-	static QString modFlagLabel( ModFlag f );
-
- private:
-	/*
-	 * Under X11, m_key will hold an X11 key symbol.
-	 * For Qt/Embedded, it will hold the Qt key code.
-	 */
-	/**
-	 * Returns the native key symbol value key.  Under X11, this is the X
-	 * keycode.  Under Qt/Embedded, this is the Qt keycode.
-	 * @see /usr/include/X11/keysymdef.h
-	 * @see qnamespace.h
-	 */
-	uint m_sym;
-	/**
-	 * m_mod holds the
-	 */
-	uint m_mod;
-
- private:
-	friend class KKeyNative;
-};
-
-/**
-* @short Represents a sequence of keys
-*
-* A KKeySequence object holds a sequence of up to 4 keys.
-* Example: Ctrl+X,I
-* @see KKey
-* @see KShortcut
-*/
-
-class KDECORE_EXPORT KKeySequence
-{
- public:
-	enum {
-		/**
-		 * Defines the maximum length of the key sequence
-		 */
-		MAX_KEYS = 4
-	};
-
-	/**
-	 * Create a new null key sequence.
-	 * @see isNull()
-	 * @see null()
-	 * @see clear()
-	 */
-	KKeySequence();
-
-	/**
-	 * Copies the given qt key sequence.
-	 * @param keySeq the qt key sequence to copy
-	 */
-	KKeySequence( const QKeySequence& keySeq );
-
-	/**
-	 * Create a new key sequence that only contains the given key.
-	 * @param key the key to add
-	 */
-	KKeySequence( const KKey& key );
-
-	/**
-	 * Create a new key sequence that only contains the given key.
-	 * @param key the key to add
-	 */
-	KKeySequence( const KKeyNative& key );
-
-	/**
-	 * Copies the given key sequence.
-	 * @param keySeq the key sequence to copy
-	 */
-	KKeySequence( const KKeySequence& keySeq );
-
-	/**
-	 * Creates a new key sequence that contains the given key sequence.
-	 * The description consists of comma-separated keys as
-	 * required by KKey::KKey(const QString&).
-	 * @param keySeq the description of the key
-	 * @see KKeyServer::Sym::init()
-	 * @see KKey::KKey(const QString&)
-	 */
-	KKeySequence( const QString& keySeq );
-
-	~KKeySequence();
-
-	/** @name Initialization methods */
-	/** @{ */
-
-	/**
-	 * Clears the key sequence. The key sequence is null after calling this
-	 * function.
-	 * @see isNull()
-	 */
-	void clear();
-
-	/**
-	 * Copies the given qt key sequence over this key sequence.
-	 * @param keySeq the qt key sequence to copy
-	 * @return @c true if successful, @c false otherwise
-	 */
-	bool init( const QKeySequence& keySeq );
-
-	/**
-	 * Initializes the key sequence to only contain the given key.
-	 * @param key the key to set
-	 * @return @c true if successful, @c false otherwise
-	 */
-	bool init( const KKey& key );
-
-	/**
-	 * Initializes the key sequence to only contain the given key.
-	 * @param key the key to set
-	 * @return @c true if successful, @c false otherwise
-	 */
-	bool init( const KKeyNative& key );
-
-	/**
-	 * Copies the given key sequence over this key sequence.
-	 * @param keySeq the key sequence to copy
-	 * @return @c true if successful, @c false otherwise
-	 */
-	bool init( const KKeySequence& keySeq );
-
-	/**
-	 * Initializes this key sequence to contain the given key sequence.
-	 * The description consists of comma-separated keys as
-	 * required by KKey::KKey(const QString&).
-	 * @param key the description of the key
-	 * @return @c true if successful, @c false otherwise
-	 * @see KKeyServer::Sym::init()
-	 * @see KKey::KKey(const QString&)
-	 */
-	bool init( const QString& key );
-
-	/**
-	 * Copy the given key sequence into this sequence.
-	 * @param seq the key sequence to copy
-	 */
-	KKeySequence& operator =( const KKeySequence& seq )
-		{ init( seq ); return *this; }
-
-	/** @} */
-	/** @name Accessor methods */
-	/** @{ */
-
-	/**
-	 * Return the @p i'th key of this sequence, or a null key if there
-	 * are less then @p i keys.
-	 * @param i the key to retrieve
-	 * @return the @p i'th key, or KKey::null() if there are less
-	 *         than @p i keys
-	 * @see MAX_KEYS
-	 */
-	const KKey key( uint i ) const;
-
-	/**
-	 * Sets the @p i'th key of the sequence. You can not introduce gaps
-	 * in a sequence, so you must use an @p i <= count(). Also note that
-	 * the maximum length of a key sequence is MAX_KEYS.
-	 * @param i the position of the new key (<= count(), <= MAX_KEYS)
-	 * @param key the key to set
-	 * @return @c true if successful, @c false otherwise
-	 */
-	bool setKey( uint i, const KKey& key );
-
-	/** @} */
-	/** @name Query methods */
-	/** @{ */
-
-	/**
-	 * Returns the number of key strokes of this sequence.
-	 * @return the number of key strokes
-	 * @see MAX_KEYS
-	 */
-	uint count() const;
-
-	/**
-	 * @internal
-	 */
-	bool isTriggerOnRelease() const;
-
-	/**
-	 * Returns @c true if the key sequence is null (after clear() or empty
-	 * constructor).
-	 * @return @c true if the key sequence is null, @c false otherwise
-	 * @see clear()
-	 * @see null()
-	 */
-	bool isNull() const;
-
-	/**
-	 * Returns @c true if this key sequence begins with the given sequence.
-	 * @param keySeq the key sequence to search
-	 * @return @c true if this key sequence begins with the given sequence,
-	 *         @c false otherwise
-	 */
-	bool startsWith( const KKeySequence& keySeq ) const;
-
-	/** @} */
-	/** @name Comparison methods */
-	/** @{ */
-
-	/**
-	 * Compares this object with the given key sequence. Returns a negative
-	 * number if the given KKeySequence is larger, 0 if they are equal and
-	 * a positive number this KKeySequence is larger. Key sequences are
-	 * compared by comparing the individual keys, starting from the beginning
-	 * until an unequal key has been found. If a sequence contains more
-	 * keys, it is considered larger.
-	 * @param keySeq the key sequence to compare to
-	 * @return a negative number if the given KKeySequence is larger, 0 if
-	 * they are equal and a positive number this KKeySequence is larger
-	 * @see KKey::sequence
-	 */
-	int compare( const KKeySequence& keySeq ) const;
-
-	/**
-	 * Compares the keys of both sequences.
-	 * @see compare()
-	 */
-	bool operator == ( const KKeySequence& seq ) const
-		{ return compare( seq ) == 0; }
-
-	/**
-	 * Compares the keys of both sequences.
-	 * @see compare()
-	 */
-	bool operator != ( const KKeySequence& seq ) const
-		{ return compare( seq ) != 0; }
-
-	/**
-	 * Compares the keys of both sequences.
-	 * @see compare()
-	 */
-	bool operator < ( const KKeySequence& seq ) const
-		{ return compare( seq ) < 0; }
-	// TODO: consider adding Qt::SequenceMatch matches(...) methods for QKeySequence equivalence
-
-	/** @} */
-	/** @name Conversion methods */
-	/** @{ */
-
-	/**
-	 * Converts this key sequence to a QKeySequence.
-	 * @return the QKeySequence
-	 */
-	QKeySequence qt() const;
-
-	/**
-	 * Returns the qt key code of the first key.
-	 * @return the qt key code of the first key
-	 * @see Qt::Key
-	 * @see KKey::keyCodeQt()
-	 */
-	int keyCodeQt() const;
-
-	/**
-	 * Returns the key sequence as a number of key presses as
-	 * returned by KKey::toString(), separated by commas.
-	 * @return the string represenation of this key sequence
-	 * @see KKey::toString()
-	 */
-	QString toString() const;
-
-	/**
-	 * @internal
-	 */
-	QString toStringInternal() const;
-
-	/** @} */
-
-	/**
-	 * Returns a null key sequence.
-	 * @return the null key sequence
-	 * @see isNull()
-	 * @see clear()
-	 */
-	static KKeySequence& null();
-
- protected:
-	//uchar m_nKeys;
-	uchar m_bTriggerOnRelease;
-	//KKey m_rgkey[MAX_KEYS];
-	QKeySequence m_seq;
-
- private:
-	class KKeySequencePrivate* d;
-	friend class KKeyNative;
-	friend class KShortcut;
-};
+#include <QKeySequence>
+#include <QSharedDataPointer>
 
 /**
 * @short Represents a keyboard shortcut
 *
 * The KShortcut class is used to represent a keyboard shortcut to an action.
 * A shortcut is normally a single key with modifiers, such as Ctrl+V.
-* A KShortcut object may also contain an alternate key which will also
+* A KShortcut object may also contain multiple alternate keys which will also
 * activate the action it's associated to, as long as no other actions have
 * defined that key as their primary key.  Ex: Ctrl+V;Shift+Insert.
 *
@@ -589,29 +44,19 @@ class KDECORE_EXPORT KKeySequence
 * the below code binds the escape key to the close action.
 *
 * \code
-*  KAction *closeAction = KStdAction::close( this, SLOT( close() ), actionCollection() );
+*  KAction *closeAction = KStdAction::close(this, SLOT( close() ), actionCollection());
 *  KShortcut closeShortcut = closeAction->shortcut();
-*  closeShortcut.append( KKey(Key_Escape));
+*  closeShortcut.append(Qt::Key_Escape);
 *  closeAction->setShortcut(closeShortcut);
 * \endcode
 *
-* Note that a shortcut cannot have more than 2 key combinations associated with it, so the above
-* code would not do anything (and .append would return false) if the closeAction already had
-* an key and alternate key.
+* \note This class is implicitly shared, and all functions are reentrant.
 *
+* \todo make constructors explicit
 */
-
 class KDECORE_EXPORT KShortcut
 {
- public:
-	enum {
-		/**
-		 * The maximum number of key sequences that can be contained in
-		 * a KShortcut.
-		 */
-		MAX_SEQUENCES = 4
-	};
-
+public:
 	/**
 	 * Creates a new null shortcut.
 	 * @see null()
@@ -636,20 +81,6 @@ class KDECORE_EXPORT KShortcut
 	KShortcut( const QKeySequence& keySeq );
 
 	/**
-	 * Creates a new shortcut that contains only the given key
-	 * in its only sequence.
-	 * @param key the key to add
-	 */
-	KShortcut( const KKey& key );
-
-	/**
-	 * Creates a new shortcut that contains only the given key
-	 * sequence.
-	 * @param keySeq the key sequence to add
-	 */
-	KShortcut( const KKeySequence& keySeq );
-
-	/**
 	 * Copies the given shortcut.
 	 * @param shortcut the shortcut to add
 	 */
@@ -658,20 +89,15 @@ class KDECORE_EXPORT KShortcut
 	/**
 	 * Creates a new key sequence that contains the given key sequence.
 	 * The description consists of semicolon-separated keys as
-	 * used in KKeySequence::KKeySequence(const QString&).
+	 * used in QKeySequence::fromString(const QString&, SequenceFormat).
 	 * @param shortcut the description of the key
-	 * @see KKeySequence::KKeySequence(const QString&)
-	 */
-	KShortcut( const char* shortcut );
-
-	/**
-	 * Creates a new key sequence that contains the given key sequence.
-	 * The description consists of semicolon-separated keys as
-	 * used in KKeySequence::KKeySequence(const QString&).
-	 * @param shortcut the description of the key
-	 * @see KKeySequence::KKeySequence(const QString&)
+	 * @see QKeySequence::fromString(const QString&, SequenceFormat).
 	 */
 	KShortcut( const QString& shortcut );
+	
+	/**
+	 * Destructor.
+	 */
 	~KShortcut();
 
 	/** @name Initialization methods */
@@ -699,18 +125,6 @@ class KDECORE_EXPORT KShortcut
 	bool init( const QKeySequence& keySeq );
 
 	/**
-	 * Initializes the shortcut with the given key as its only sequence.
-	 * @param key the key to add
-	 */
-	bool init( const KKey& key );
-
-	/**
-	 * Initializes the shortcut with the given qt key sequence.
-	 * @param keySeq the qt key sequence to add
-	 */
-	bool init( const KKeySequence& keySeq );
-
-	/**
 	 * Copies the given shortcut.
 	 * @param shortcut the shortcut to add
 	 */
@@ -719,9 +133,9 @@ class KDECORE_EXPORT KShortcut
 	/**
 	 * Initializes the key sequence with the given key sequence.
 	 * The description consists of semicolon-separated keys as
-	 * used in KKeySequence::KKeySequence(const QString&).
+	 * used in QKeySequence::fromString(const QString&, SequenceFormat).
 	 * @param shortcut the description of the key
-	 * @see KKeySequence::KKeySequence(const QString&)
+	 * @see QKeySequence::fromString(const QString&, SequenceFormat).
 	 */
 	bool init( const QString& shortcut );
 
@@ -742,25 +156,29 @@ class KDECORE_EXPORT KShortcut
 	 * @return the number of sequences
 	 * MAX_SEQUENCES
 	 */
-	uint count() const;
+	int count() const;
 
 	/**
 	 * Returns the @p i'th key sequence of this shortcut.
 	 * @param i the number of the key sequence to retrieve
-	 * @return the @p i'th sequence or KKeySequence::null() if
+	 * @return the @p i'th sequence or a null QKeySequence if
 	 *         there are less than @p i key sequences
 	 * @see MAX_SEQUENCES
 	 */
-	const KKeySequence seq( uint i ) const;
+	const QKeySequence seq( int i ) const;
+	
+	/**
+	 * Returns all key sequences in order.
+	 */
+	const QList<QKeySequence>& sequences() const;
 
 	/**
 	 * Returns the key code of the first key sequence, or
 	 * null if there is no first key sequence.
 	 * @return the key code of the first sequence's first key
 	 * @see Qt::Key
-	 * @see KKeySequence::keyCodeQt()
 	 */
-	int keyCodeQt() const;
+	int keyQt() const;
 
 	/**
 	 * Returns @c true if the shortcut is null (after clear() or empty
@@ -778,16 +196,7 @@ class KDECORE_EXPORT KShortcut
 	 * @return @c true if a key sequence starts with the key, @c false
 	 *         otherwise
 	 */
-	bool contains( const KKey& key ) const;
-
-	/**
-	 * Checks whether this shortcut contains a sequence that starts
-	 * with the given key.
-	 * @param key the key to check
-	 * @return @c true if a key sequence starts with the key, @c false
-	 *         otherwise
-	 */
-	bool contains( const KKeyNative& key ) const;
+	bool contains( int keyQt ) const;
 
 	/**
 	 * Checks whether this shortcut contains the given sequence.
@@ -795,7 +204,7 @@ class KDECORE_EXPORT KShortcut
 	 * @return @c true if the shortcut has the given key sequence,
 	 *         @c false otherwise
 	 */
-	bool contains( const KKeySequence& keySeq ) const;
+	bool contains( const QKeySequence& keySeq ) const;
 
 	/** @} */
 	/** @name Comparison methods */
@@ -811,8 +220,6 @@ class KDECORE_EXPORT KShortcut
 	 * @param shortcut the shortcut to compare to
 	 * @return a negative number if the given KShortcut is larger, 0 if
 	 * they are equal and a positive number this KShortcut is larger
-	 * @see KKey::compare()
-	 * @see KKeySequence::compare()
 	 */
 	int compare( const KShortcut& shortcut ) const;
 
@@ -822,8 +229,7 @@ class KDECORE_EXPORT KShortcut
 	 * @return @c true, if both shortcuts are equal, @c false otherwise
 	 * @see compare()
 	 */
-	bool operator == ( const KShortcut& cut ) const
-		{ return compare( cut ) == 0; }
+	bool operator == ( const KShortcut& cut ) const;
 
 	/**
 	 * Compares the sequences of both shortcuts.
@@ -832,7 +238,7 @@ class KDECORE_EXPORT KShortcut
 	 * @see compare()
 	 */
 	bool operator != ( const KShortcut& cut ) const
-		{ return compare( cut ) != 0; }
+		{ return !operator==( cut ); }
 
 	/**
 	 * Compares the sequences of both shortcuts.
@@ -851,12 +257,11 @@ class KDECORE_EXPORT KShortcut
 	 * Sets the @p i 'th key sequence of the shortcut. You can not introduce
 	 * gaps in the list of sequences, so you must use an @p i <= count().
 	 * Also note that the maximum number of key sequences is MAX_SEQUENCES.
-	 * @param i the position of the new key sequence (0 <= i <= count(),
-	 * 0 <= i \< MAX_SEQUENCES)
+	 * @param i the position of the new key sequence. if i is at or greater than
+	 *        count(), the sequence will be appended instead.
 	 * @param keySeq the key sequence to set
-	 * @return @c true if successful, @c false otherwise
 	 */
-	bool setSeq( uint i, const KKeySequence& keySeq );
+	void setSeq( int i, const QKeySequence& keySeq );
 
 	/**
 	 * Appends the given key sequence.  This sets it as either the keysequence or
@@ -864,22 +269,21 @@ class KDECORE_EXPORT KShortcut
 	 * sequences then this call does nothing, and returns false.
 	 *
 	 * @param keySeq the key sequence to add
-	 * @return @c true if successful, @c false otherwise
 	 * @see setSeq()
 	*/
-	bool append( const KKeySequence& keySeq );
+	void append( const QKeySequence& keySeq );
 
 	/**
 	 * Removes the given key sequence from this shortcut
 	 * @param keySeq the key sequence to remove
 	*/
-	void remove( const KKeySequence& keySeq );
+	void remove( const QKeySequence& keySeq );
 
 	/** @} */
 	/** @name Conversion methods */
 	/** @{ */
 
-        /**
+	/**
 	 * Converts this shortcut to a key sequence. The first key sequence
 	 * will be taken.
 	 */
@@ -887,17 +291,14 @@ class KDECORE_EXPORT KShortcut
 
 	/**
 	 * Returns a description of the shortcut as semicolon-separated
-	 * key sequences, as returned by KKeySequence::toString().
+	 * key sequences, as returned by QKeySequence::toString().
 	 * @return the string represenation of this shortcut
-	 * @see KKey::toString()
-	 * @see KKeySequence::toString()
+	 * @see QKeySequence::toString()
 	 */
 	QString toString() const;
 
-	/**
-	 * @internal
-	 */
-	QString toStringInternal( const KShortcut* pcutDefault = 0 ) const;
+	/// \internal
+	QString toStringInternal( const KShortcut* pcutDefault = 0L ) const;
 
 	/** @} */
 
@@ -907,20 +308,10 @@ class KDECORE_EXPORT KShortcut
 	 * @see isNull()
 	 * @see clear()
 	 */
-	static KShortcut& null();
+	static const KShortcut& null();
 
- protected:
-	uint m_nSeqs;
-	KKeySequence m_seq[MAX_SEQUENCES];
-
- private:
-	class KShortcutPrivate* d;
-	friend class KKeyNative;
-
-#ifndef KDE_NO_COMPAT
- public:
-	operator int () const    { return keyCodeQt(); }
-#endif
+private:
+	QSharedDataPointer<class KShortcutPrivate> d;
 };
 
 #endif // KSHORTCUT_H

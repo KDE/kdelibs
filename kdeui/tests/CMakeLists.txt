@@ -691,6 +691,20 @@ kde4_add_executable(kdialogtest ${kdialogtest_SRCS})
 
 target_link_libraries(kdialogtest  ${KDE4_KDECORE_LIBS} kdeui)
 
+
+
+########### next target ###############
+
+set(kglobalacceltest_SRCS
+kglobalacceltest.cpp
+)
+
+kde4_automoc(${kglobalacceltest_SRCS})
+
+kde4_add_executable(kglobalacceltest ${kglobalacceltest_SRCS})
+
+target_link_libraries(kglobalacceltest  ${KDE4_KDECORE_LIBS} kdeui)
+
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############

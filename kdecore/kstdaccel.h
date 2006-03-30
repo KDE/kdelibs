@@ -20,9 +20,9 @@
 #ifndef KSTDACCEL_H
 #define KSTDACCEL_H
 
-#include <qstring.h>
-#include <kshortcut.h>
-#include "kdelibs_export.h"
+#include <QString>
+
+#include "kshortcut.h"
 
 class QKeyEvent;
 
@@ -32,10 +32,6 @@ class QKeyEvent;
  * the key configuration. These are the standard keybindings that should
  * be used in all KDE applications. They will be configurable,
  * so do not hardcode the default behavior.
- *
- * If you want real configurable keybindings in your applications,
- * please checkout the class KAccel in kaccel.h
- * @see KAccelShortcutList
  */
 namespace KStdAccel
 {
@@ -116,8 +112,17 @@ namespace KStdAccel
    * @return the id of the standard accelerator, or AccelNone if there
    *          is none
    */
-  KDECORE_EXPORT StdAccel findStdAccel( const KKeySequence &keySeq );
+  KDECORE_EXPORT StdAccel findStdAccel( const QKeySequence &keySeq );
 
+  /**
+   * Return the StdAccel id of the standard accel action which
+   * has \a keyName as its name, or AccelNone if none of them do.
+   * This is used by class KKeyChooser.
+   * @param keySeq the key sequence to search
+   * @return the id of the standard accelerator, or AccelNone if there
+   *          is none
+   */
+  KDECORE_EXPORT StdAccel findStdAccel( const char* keyName );
 
   /**
    * Returns the hardcoded default shortcut for @p id.
@@ -126,6 +131,11 @@ namespace KStdAccel
    * @return the default shortcut of the accelerator
    */
   KDECORE_EXPORT KShortcut shortcutDefault(StdAccel id);
+
+  /**
+   * Saves the new shortcut \a cut for standard accel \a id.
+   */
+  KDECORE_EXPORT void saveShortcut(StdAccel id, const KShortcut& newShortcut);
 
   /**
    * Open file. Default: Ctrl-o

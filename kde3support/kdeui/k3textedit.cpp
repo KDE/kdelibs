@@ -74,7 +74,7 @@ K3TextEdit::~K3TextEdit()
 
 void K3TextEdit::keyPressEvent( QKeyEvent *e )
 {
-    KKey key( e );
+    int key = e->key();
 
     if ( KStdAccel::copy().contains( key ) ) {
         copy();

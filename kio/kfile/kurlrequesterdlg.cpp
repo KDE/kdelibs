@@ -26,7 +26,6 @@
 #include <qstring.h>
 #include <qtoolbutton.h>
 
-#include <kaccel.h>
 #include <kfiledialog.h>
 #include <kglobal.h>
 #include <kiconloader.h>

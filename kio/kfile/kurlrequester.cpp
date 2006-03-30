@@ -19,7 +19,6 @@
 
 #include "kurlrequester.h"
 
-#include <kaccel.h>
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -31,11 +30,13 @@
 #include <klocale.h>
 #include <kurlcompletion.h>
 #include <kprotocolinfo.h>
+#include <kstdaccel.h>
 
 #include <qevent.h>
 #include <qstring.h>
 #include <qdrag.h>
 #include <qmimedata.h>
+#include <QAction>
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -224,9 +225,9 @@ void KUrlRequester::init()
     myCompletion = new KUrlCompletion();
     d->setCompletionObject( myCompletion );
 
-    KAccel *accel = new KAccel( this );
-    accel->insert( KStdAccel::Open, this, SLOT( slotOpenDialog() ));
-    accel->readSettings();
+    QAction* openAction = new QAction(this);
+    openAction->setShortcut(KStdAccel::Open);
+    connect(openAction, SIGNAL(triggered(bool)), SLOT( slotOpenDialog() ));
 }
 
 

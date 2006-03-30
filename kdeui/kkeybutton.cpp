@@ -54,12 +54,6 @@ const int XKeyRelease = KeyRelease;
 //  I18N_NOOP("Primary"), I18N_NOOP("Alternate"), I18N_NOOP("Multi-Key") 
 //};
 
-class KKeyButtonPrivate
-{
- public:
-	bool bQtShortcut;
-};
-
 /***********************************************************************/
 /* KKeyButton                                                          */
 /*                                                                     */
@@ -70,31 +64,22 @@ class KKeyButtonPrivate
 KKeyButton::KKeyButton(QWidget *parent)
 :	QPushButton( parent )
 {
-	d = new KKeyButtonPrivate;
 	setFocusPolicy( Qt::StrongFocus );
 	m_bEditing = false;
 	connect( this, SIGNAL(clicked()), this, SLOT(captureShortcut()) );
-	setShortcut( KShortcut(), true );
+	setShortcut( KShortcut() );
 }
 
 KKeyButton::~KKeyButton ()
 {
-	delete d;
 }
 
-void KKeyButton::setShortcut( const KShortcut& cut, bool bQtShortcut )
+void KKeyButton::setShortcut( const KShortcut& cut )
 {
-	d->bQtShortcut = bQtShortcut;
 	m_cut = cut;
 	QString keyStr = m_cut.toString();
 	keyStr.replace('&', QLatin1String("&&"));
 	setText( keyStr.isEmpty() ? i18n("None") : keyStr );
-}
-
-// deprecated //
-void KKeyButton::setShortcut( const KShortcut& cut )
-{
-	setShortcut( cut, false );
 }
 
 void KKeyButton::setText( const QString& text )
@@ -110,13 +95,14 @@ void KKeyButton::captureShortcut()
 	m_bEditing = true;
 	repaint();
 
-        {
-	KShortcutDialog dlg( m_cut, d->bQtShortcut, this );
-	if( dlg.exec() == KDialog::Accepted )
-                cut = dlg.shortcut();
-        } // emit the signal after the dialog is destroyed, otherwise it still has grab
-        if( !cut.isNull())
-	    emit capturedShortcut( cut );
+	{
+		KShortcutDialog dlg( m_cut, this );
+		if( dlg.exec() == KDialog::Accepted )
+			cut = dlg.shortcut();
+	} // emit the signal after the dialog is destroyed, otherwise it still has grab
+	
+	if( !cut.isNull())
+		emit capturedShortcut( cut );
 
 	m_bEditing = false;
 	repaint();

@@ -48,7 +48,6 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <kshortcut.h>
 #include <kstandarddirs.h>
 #include <kcharsets.h>
-#include <kaccel.h>
 #include <klocale.h>
 #include <stdlib.h>
 #include "../kio/kio/kprotocolinfo.h"
@@ -155,7 +154,7 @@ int KGlobalSettings::contextMenuKey ()
 {
     KConfigGroup g(KGlobal::config(), "Shortcuts");
     KShortcut cut (g.readEntry ("PopupMenuContext", "Menu"));
-    return cut.keyCodeQt();
+    return cut.keyQt();
 }
 
 QColor KGlobalSettings::toolBarHighlightColor()

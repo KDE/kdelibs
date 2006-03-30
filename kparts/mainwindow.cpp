@@ -29,7 +29,6 @@
 #include <qapplication.h>
 #include <kxmlguifactory.h>
 
-#include <kaccel.h>
 #include <kdebug.h>
 
 #include <assert.h>

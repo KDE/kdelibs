@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2002,2003 Ellis Whitehead <ellis@kde.org>
+    Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,27 +23,6 @@
 #include <qvariant.h>
 #include <QKeyEvent>
 
-#ifdef Q_WS_X11
-	#define XK_XKB_KEYS
-	#define XK_MISCELLANY
-	#include <X11/Xlib.h>	// For x11Event()
-	#include <X11/keysymdef.h> // For XK_...
-	#include <fixx11h.h>
-
-	#ifdef KeyPress
-		const int XKeyPress = KeyPress;
-		const int XKeyRelease = KeyRelease;
-		const int XFocusOut = FocusOut;
-		const int XFocusIn = FocusIn;
-		#undef KeyRelease
-		#undef KeyPress
-		#undef FocusOut
-		#undef FocusIn
-	#endif
-#elif defined(Q_WS_WIN)
-# include <kkeyserver.h>
-#endif
-
 #include <kshortcutdialog_simple.h>
 #include <kshortcutdialog_advanced.h>
 
@@ -52,71 +32,90 @@
 #include <qtimer.h>
 #include <QStackedWidget>
 
-
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kiconloader.h>
-#include <kkeynative.h>
 #include <klocale.h>
 #include <kstdguiitem.h>
 #include <kpushbutton.h>
 
+#include "kkeyserver.h"
+
 bool KShortcutDialog::s_showMore = false;
 
-KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent )
-: KDialog( parent, i18n("Configure Shortcut"),
-               KDialog::Details|KDialog::Ok|KDialog::Cancel )
+class KShortcutDialogPrivate
+{
+public:
+	KShortcut shortcut;
+	bool bGrab;
+	KPushButton* ptxtCurrent;
+	uint iSeq;
+	uint iKey;
+	bool bRecording;
+	uint mod;
+	QWidget* simpleBase;
+	QWidget* advBase;
+	Ui::KShortcutDialogSimple *simple;
+	Ui::KShortcutDialogAdvanced *adv;
+	QStackedWidget *stack;
+};
+
+KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, QWidget* parent )
+	: KDialog( parent, i18n("Configure Shortcut"), KDialog::Details|KDialog::Ok|KDialog::Cancel )
+	, d(new KShortcutDialogPrivate)
 {
 	enableButtonSeparator( true );
 	setModal(true);
 
 	setButtonText(Details, i18n("Advanced"));
-	m_stack = new QStackedWidget(this);
-	m_stack->setMinimumWidth(360);
-	setMainWidget(m_stack);
+	d->stack = new QStackedWidget(this);
+	d->stack->setMinimumWidth(360);
+	setMainWidget(d->stack);
 
-	m_simple = new KShortcutDialogSimple(m_stack);
-	m_stack->addWidget(m_simple);
+	d->simpleBase = new QWidget(d->stack);
+	d->simple = new Ui::KShortcutDialogSimple();
+	d->simple->setupUi(d->simpleBase);
+	d->stack->addWidget(d->simpleBase);
 
-	m_adv = new KShortcutDialogAdvanced(m_stack);
-	m_stack->addWidget(m_adv);
+	d->advBase = new QWidget(d->stack);
+	d->adv = new Ui::KShortcutDialogAdvanced();
+	d->adv->setupUi(d->advBase);
+	d->stack->addWidget(d->advBase);
 
-	m_stack->setCurrentWidget(m_simple);
+	d->stack->setCurrentWidget(d->simpleBase);
 
-	m_bQtShortcut = bQtShortcut;
+	d->bGrab = false;
+	d->iSeq = 0;
+	d->iKey = 0;
+	d->ptxtCurrent = 0;
+	d->bRecording = false;
+	d->mod = 0;
 
-	m_bGrab = false;
-	m_iSeq = 0;
-	m_iKey = 0;
-	m_ptxtCurrent = 0;
-	m_bRecording = false;
-	m_mod = 0;
-
-	m_simple->m_btnClearShortcut->setIcon( SmallIcon( "locationbar_erase" ) );
-	m_adv->m_btnClearPrimary->setIcon( SmallIcon( "locationbar_erase" ) );
-	m_adv->m_btnClearAlternate->setIcon( SmallIcon( "locationbar_erase" ) );
-	connect(m_simple->m_btnClearShortcut, SIGNAL(clicked()),
+	d->simple->m_btnClearShortcut->setIcon( SmallIcon( "locationbar_erase" ) );
+	d->adv->m_btnClearPrimary->setIcon( SmallIcon( "locationbar_erase" ) );
+	d->adv->m_btnClearAlternate->setIcon( SmallIcon( "locationbar_erase" ) );
+	connect(d->simple->m_btnClearShortcut, SIGNAL(clicked()),
 	        this, SLOT(slotClearShortcut()));
-	connect(m_adv->m_btnClearPrimary, SIGNAL(clicked()),
+	connect(d->adv->m_btnClearPrimary, SIGNAL(clicked()),
 	        this, SLOT(slotClearPrimary()));
-	connect(m_adv->m_btnClearAlternate, SIGNAL(clicked()),
+	connect(d->adv->m_btnClearAlternate, SIGNAL(clicked()),
 	        this, SLOT(slotClearAlternate()));
 
-	connect(m_adv->m_txtPrimary, SIGNAL(clicked()),
-		m_adv->m_btnPrimary, SLOT(animateClick()));
-	connect(m_adv->m_txtAlternate, SIGNAL(clicked()),
-		m_adv->m_btnAlternate, SLOT(animateClick()));
-	connect(m_adv->m_btnPrimary, SIGNAL(clicked()),
+	connect(d->adv->m_txtPrimary, SIGNAL(clicked()),
+		d->adv->m_btnPrimary, SLOT(animateClick()));
+	connect(d->adv->m_txtAlternate, SIGNAL(clicked()),
+		d->adv->m_btnAlternate, SLOT(animateClick()));
+	connect(d->adv->m_btnPrimary, SIGNAL(clicked()),
 		this, SLOT(slotSelectPrimary()));
-	connect(m_adv->m_btnAlternate, SIGNAL(clicked()),
+	connect(d->adv->m_btnAlternate, SIGNAL(clicked()),
 		this, SLOT(slotSelectAlternate()));
 
 	connect(this, SIGNAL(buttonClicked(KDialog::ButtonCode)), SLOT(slotButtonClicked(KDialog::ButtonCode)));
 
 	KGuiItem ok = KStdGuiItem::ok();
-	ok.setText( i18n( "OK" ) );
+	ok.setText( i18n( "Ok" ) );
 	setButtonGuiItem( Ok , ok );
 
 	KGuiItem cancel = KStdGuiItem::cancel();
@@ -128,68 +127,79 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
 
 	s_showMore = KConfigGroup(KGlobal::config(), "General").readEntry("ShowAlternativeShortcutConfig", s_showMore);
 	updateDetails();
-
-	#ifdef Q_WS_X11
-	kapp->installX11EventFilter( this );	// Allow button to capture X Key Events.
-	#endif
 }
 
 KShortcutDialog::~KShortcutDialog()
 {
+	setRecording(false);
+
 	KConfigGroup group(KGlobal::config(), "General");
 	group.writeEntry("ShowAlternativeShortcutConfig", s_showMore);
+	
+	delete d;
 }
 
 void KShortcutDialog::setShortcut( const KShortcut & shortcut )
 {
-	m_shortcut = shortcut;
+	d->shortcut = shortcut;
 	updateShortcutDisplay();
 }
 
 void KShortcutDialog::updateShortcutDisplay()
 {
-	QString s[2] = { m_shortcut.seq(0).toString(), m_shortcut.seq(1).toString() };
+	QString s[2];
+	if (d->shortcut.count())
+		s[0] = d->shortcut.seq(0).toString();
+	if (d->shortcut.count() > 1)
+		s[1] = d->shortcut.seq(1).toString();
 
-	if( m_bRecording ) {
-		m_ptxtCurrent->setDefault( true );
-		m_ptxtCurrent->setFocus();
+	if( d->bRecording ) {
+		d->ptxtCurrent->setDefault( true );
+		d->ptxtCurrent->setFocus();
 
-		// Display modifiers for the first key in the KKeySequence
-		if( m_iKey == 0 ) {
-			if( m_mod ) {
+		// Display modifiers for the first key in the QKeySequence
+		if( d->iKey == 0 ) {
+			if( d->mod ) {
 				QString keyModStr;
-				if( m_mod & KKey::WIN )   keyModStr += KKey::modFlagLabel(KKey::WIN) + "+";
-				if( m_mod & KKey::ALT )   keyModStr += KKey::modFlagLabel(KKey::ALT) + "+";
-				if( m_mod & KKey::CTRL )  keyModStr += KKey::modFlagLabel(KKey::CTRL) + "+";
-				if( m_mod & KKey::SHIFT ) keyModStr += KKey::modFlagLabel(KKey::SHIFT) + "+";
-				s[m_iSeq] = keyModStr;
-	}
+#if defined(Q_WS_MAC)
+				if( d->mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + "+";
+				if( d->mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + "+";
+				if( d->mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + "+";
+				if( d->mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + "+";
+#else
+				if( d->mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + "+";
+				if( d->mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + "+";
+				if( d->mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + "+";
+				if( d->mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + "+";
+#endif
+				s[d->iSeq] = keyModStr;
+			}
 		}
 		// When in the middle of entering multi-key shortcuts,
 		//  add a "," to the end of the displayed shortcut.
 		else
-			s[m_iSeq] += ",";
+			s[d->iSeq] += ",";
 	}
 	else {
-		m_adv->m_txtPrimary->setDefault( false );
-		m_adv->m_txtAlternate->setDefault( false );
+		d->adv->m_txtPrimary->setDefault( false );
+		d->adv->m_txtAlternate->setDefault( false );
 		this->setFocus();
 	}
 
 	s[0].replace('&', QLatin1String("&&"));
 	s[1].replace('&', QLatin1String("&&"));
 
-	m_simple->m_txtShortcut->setText( s[0] );
-	m_adv->m_txtPrimary->setText( s[0] );
-	m_adv->m_txtAlternate->setText( s[1] );
+	d->simple->m_txtShortcut->setText( s[0] );
+	d->adv->m_txtPrimary->setText( s[0] );
+	d->adv->m_txtAlternate->setText( s[1] );
 
 	// Determine the enable state of the 'Less' button
 	bool bLessOk;
 	// If there is no shortcut defined,
-	if( m_shortcut.count() == 0 )
+	if( d->shortcut.count() == 0 )
 		bLessOk = true;
 	// If there is a single shortcut defined, and it is not a multi-key shortcut,
-	else if( m_shortcut.count() == 1 && m_shortcut.seq(0).count() <= 1 )
+	else if( d->shortcut.count() == 1 && d->shortcut.seq(0).count() <= 1 )
 		bLessOk = true;
 	// Otherwise, we have an alternate shortcut or multi-key shortcut(s).
 	else
@@ -200,32 +210,32 @@ void KShortcutDialog::updateShortcutDisplay()
 void KShortcutDialog::slotButtonClicked(KDialog::ButtonCode code)
 {
 	if (code == KDialog::Details) {
-		s_showMore = (m_stack->currentWidget() != m_adv);
+		s_showMore = (d->stack->currentWidget() != d->advBase);
 		updateDetails();
 	}
 }
 
 void KShortcutDialog::updateDetails()
 {
-	bool showAdvanced = s_showMore || (m_shortcut.count() > 1);
+	bool showAdvanced = s_showMore || (d->shortcut.count() > 1);
 	setDetails(showAdvanced);
-	m_bRecording = false;
-	m_iSeq = 0;
-	m_iKey = 0;
+	setRecording(false);
+	d->iSeq = 0;
+	d->iKey = 0;
 
 	if (showAdvanced)
 	{
-		m_stack->setCurrentWidget(m_adv);
-		m_adv->m_btnPrimary->setChecked( true );
+		d->stack->setCurrentWidget(d->advBase);
+		d->adv->m_btnPrimary->setChecked( true );
 		slotSelectPrimary();
 	}
 	else
 	{
-		m_stack->setCurrentWidget(m_simple);
-		m_ptxtCurrent = m_simple->m_txtShortcut;
-		m_simple->m_txtShortcut->setDefault( true );
-		m_simple->m_txtShortcut->setFocus();
-		m_adv->m_btnMultiKey->setChecked( false );
+		d->stack->setCurrentWidget(d->simpleBase);
+		d->ptxtCurrent = d->simple->m_txtShortcut;
+		d->simple->m_txtShortcut->setDefault( true );
+		d->simple->m_txtShortcut->setFocus();
+		d->adv->m_btnMultiKey->setChecked( false );
 	}
 	qApp->processEvents();
 	adjustSize();
@@ -233,225 +243,126 @@ void KShortcutDialog::updateDetails()
 
 void KShortcutDialog::slotSelectPrimary()
 {
-	m_bRecording = false;
-	m_iSeq = 0;
-	m_iKey = 0;
-	m_ptxtCurrent = m_adv->m_txtPrimary;
-	m_ptxtCurrent->setDefault(true);
-	m_ptxtCurrent->setFocus();
+	setRecording(false);
+	d->iSeq = 0;
+	d->iKey = 0;
+	d->ptxtCurrent = d->adv->m_txtPrimary;
+	d->ptxtCurrent->setDefault(true);
+	d->ptxtCurrent->setFocus();
 	updateShortcutDisplay();
 }
 
 void KShortcutDialog::slotSelectAlternate()
 {
-	m_bRecording = false;
-	m_iSeq = 1;
-	m_iKey = 0;
-	m_ptxtCurrent = m_adv->m_txtAlternate;
-	m_ptxtCurrent->setDefault(true);
-	m_ptxtCurrent->setFocus();
+	setRecording(false);
+	d->iSeq = 1;
+	d->iKey = 0;
+	d->ptxtCurrent = d->adv->m_txtAlternate;
+	d->ptxtCurrent->setDefault(true);
+	d->ptxtCurrent->setFocus();
 	updateShortcutDisplay();
 }
 
 void KShortcutDialog::slotClearShortcut()
 {
-	m_shortcut.setSeq( 0, KKeySequence() );
+	d->shortcut.setSeq( 0, QKeySequence() );
 	updateShortcutDisplay();
 }
 
 void KShortcutDialog::slotClearPrimary()
 {
-	m_shortcut.setSeq( 0, KKeySequence() );
-	m_adv->m_btnPrimary->setChecked( true );
+	d->shortcut.setSeq( 0, QKeySequence() );
+	d->adv->m_btnPrimary->setChecked( true );
 	slotSelectPrimary();
 }
 
 void KShortcutDialog::slotClearAlternate()
 {
-	if( m_shortcut.count() == 2 )
-		m_shortcut.init( m_shortcut.seq(0) );
-	m_adv->m_btnAlternate->setChecked( true );
+	if( d->shortcut.count() == 2 )
+		d->shortcut.init( d->shortcut.seq(0) );
+	d->adv->m_btnAlternate->setChecked( true );
 	slotSelectAlternate();
 }
 
 void KShortcutDialog::slotMultiKeyMode( bool bOn )
 {
 	// If turning off multi-key mode during a recording,
-	if( !bOn && m_bRecording ) {
-		m_bRecording = false;
-	m_iKey = 0;
+	if( !bOn && d->bRecording ) {
+		setRecording(false);
+	d->iKey = 0;
 		updateShortcutDisplay();
 	}
 }
 
-#ifdef Q_WS_X11
-/* we don't use the generic Qt code on X11 because it allows us
- to grab the keyboard so that all keypresses are seen
- */
-bool KShortcutDialog::x11Event( XEvent *pEvent )
+QKeySequence appendToSequence(const QKeySequence& seq, int keyQt)
 {
-	switch( pEvent->type ) {
-		case XKeyPress:
-			x11KeyPressEvent( pEvent );
-			return true;
-		case XKeyRelease:
-			x11KeyReleaseEvent( pEvent );
-				return true;
-		case XFocusIn:
-			if (!m_bGrab) {
-				//kDebug(125) << "FocusIn and Grab!" << endl;
-				grabKeyboard();
-				m_bGrab = true;
-			}
-			//else
-			//	kDebug(125) << "FocusIn" << endl;
-			break;
-		case XFocusOut:
-			if (m_bGrab) {
-				//kDebug(125) << "FocusOut and Ungrab!" << endl;
-				releaseKeyboard();
-				m_bGrab = false;
-			}
-			//else
-			//	kDebug(125) << "FocusOut" << endl;
-			break;
+	switch (seq.count()) {
+		case 0:
+			return QKeySequence(keyQt);
+		case 1:
+			return QKeySequence(seq[0], keyQt);
+		case 2:
+			return QKeySequence(seq[0], seq[1], keyQt);
+		case 3:
+			return QKeySequence(seq[0], seq[1], seq[2], keyQt);
 		default:
-			//kDebug(125) << "x11Event->type = " << pEvent->type << endl;
-			break;
-	}
-	return KDialog::x11Event( pEvent );
-}
-
-static uint getModsFromModX( uint keyModX )
-{
-	uint mod = 0;
-	if( keyModX & KKeyNative::modXShift() ) mod += KKey::SHIFT;
-	if( keyModX & KKeyNative::modXCtrl() )  mod += KKey::CTRL;
-	if( keyModX & KKeyNative::modXAlt() )   mod += KKey::ALT;
-	if( keyModX & KKeyNative::modXWin() )   mod += KKey::WIN;
-	return mod;
-}
-
-static bool convertSymXToMod( uint keySymX, uint* pmod )
-{
-	switch( keySymX ) {
-		// Don't allow setting a modifier key as an accelerator.
-		// Also, don't release the focus yet.  We'll wait until
-		//  we get a 'normal' key.
-		case XK_Shift_L:   case XK_Shift_R:   *pmod = KKey::SHIFT; break;
-		case XK_Control_L: case XK_Control_R: *pmod = KKey::CTRL; break;
-		case XK_Alt_L:     case XK_Alt_R:     *pmod = KKey::ALT; break;
-		// FIXME: check whether the Meta or Super key are for the Win modifier
-		case XK_Meta_L:    case XK_Meta_R:
-		case XK_Super_L:   case XK_Super_R:   *pmod = KKey::WIN; break;
-		case XK_Hyper_L:   case XK_Hyper_R:
-		case XK_Mode_switch:
-		case XK_Num_Lock:
-		case XK_Caps_Lock:
-			break;
-		default:
-			return false;
-				}
-	return true;
-}
-
-void KShortcutDialog::x11KeyPressEvent( XEvent* pEvent )
-{
-	KKeyNative keyNative( pEvent );
-	uint keyModX = keyNative.mod();
-	uint keySymX = keyNative.sym();
-
-	m_mod = getModsFromModX( keyModX );
-
-	if( keySymX ) {
-		m_bRecording = true;
-
-		uint mod = 0;
-		if( convertSymXToMod( keySymX, &mod ) ) {
-			if( mod )
-				m_mod |= mod;
-		}
-		else
-			keyPressed( KKey(keyNative) );
-	}
-	updateShortcutDisplay();
-}
-
-void KShortcutDialog::x11KeyReleaseEvent( XEvent* pEvent )
-{
-	// We're only interested in the release of modifier keys,
-	//  and then only when it's for the first key in a sequence.
-	if( m_bRecording && m_iKey == 0 ) {
-		KKeyNative keyNative( pEvent );
-		uint keyModX = keyNative.mod();
-		uint keySymX = keyNative.sym();
-
-		m_mod = getModsFromModX( keyModX );
-
-		uint mod = 0;
-		if( convertSymXToMod( keySymX, &mod ) && mod ) {
-			m_mod &= ~mod;
-			if( !m_mod )
-				m_bRecording = false;
-		}
-		updateShortcutDisplay();
+			return seq;
 	}
 }
-#elif defined(Q_WS_WIN)
+
 void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 {
-	kDebug() << e->text() << " " << (int)e->text()[0].toLatin1()<<  " " << (int)e->ascii() << endl;
+	KDialog::keyPressEvent(e);
+
+	kDebug() << k_funcinfo << "'" << e->text() << "': " << e->key() << endl;
+
 	//if key is a letter, it must be stored as lowercase
 	int keyQt = QChar( e->key() & 0xff ).isLetter() ?
 		(QChar( e->key() & 0xff ).toLower().toLatin1() | (e->key() & 0xffff00) )
 		: e->key();
-	int modQt = KKeyServer::qtButtonStateToMod( e->modifiers() );
-	KKeyNative keyNative( KKey(keyQt, modQt) );
-	m_mod = keyNative.mod();
-	uint keySym = keyNative.sym();
 
-	switch( keySym ) {
+	switch( keyQt ) {
 		case Qt::Key_Shift:
-			m_mod |= KKey::SHIFT;
-			m_bRecording = true;
+			d->mod |= Qt::SHIFT;
+			setRecording(true);
 			break;
 		case Qt::Key_Control:
-			m_mod |= KKey::CTRL;
-			m_bRecording = true;
+			d->mod |= Qt::CTRL;
+			setRecording(true);
 			break;
 		case Qt::Key_Alt:
-			m_mod |= KKey::ALT;
-			m_bRecording = true;
+			d->mod |= Qt::ALT;
+			setRecording(true);
 			break;
-		case Qt::Key_Menu:
-		case Qt::Key_Meta: //unused
+		case Qt::Key_Meta:
+			d->mod |= Qt::META;
+			setRecording(true);
+			break;
+		case Qt::Key_Menu: //unused
 			break;
 		default:
-			if( keyNative.sym() == Qt::Key_Return && m_iKey > 0 ) {
+			if( keyQt == Qt::Key_Return && d->iKey > 0 ) {
 				accept();
 				return;
 			}
 			//accept
-			if (keyNative.sym()) {
-				KKey key = keyNative;
-				key.simplify();
-				KKeySequence seq;
-				if( m_iKey == 0 )
-					seq = key;
-				else {
-					seq = m_shortcut.seq( m_iSeq );
-					seq.setKey( m_iKey, key );
-				}
-				m_shortcut.setSeq( m_iSeq, seq );
+			if (keyQt) {
+				QKeySequence seq;
+				if( d->iKey == 0 )
+					seq = keyQt | d->mod;
+				else
+					seq = appendToSequence(d->shortcut.seq( d->iSeq ), keyQt );
 
-				if(m_adv->m_btnMultiKey->isChecked())
-					m_iKey++;
+				d->shortcut.setSeq( d->iSeq, seq );
 
-				m_bRecording = true;
+				if(d->adv->m_btnMultiKey->isChecked())
+					d->iKey++;
+
+				setRecording(true);
 
 				updateShortcutDisplay();
 
-				if( !m_adv->m_btnMultiKey->isChecked() )
+				if( !d->adv->m_btnMultiKey->isChecked() )
 					QTimer::singleShot(500, this, SLOT(accept()));
 			}
 			return;
@@ -459,78 +370,56 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 
 	// If we are editing the first key in the sequence,
 	//  display modifier keys which are held down
-	if( m_iKey == 0 ) {
+	if( d->iKey == 0 ) {
 		updateShortcutDisplay();
 	}
 }
 
-bool KShortcutDialog::event ( QEvent * e )
+void KShortcutDialog::keyReleaseEvent( QKeyEvent * e )
 {
-	if (e->type()==QEvent::KeyRelease) {
-		int modQt = KKeyServer::qtButtonStateToMod( static_cast<QKeyEvent*>(e)->modifiers() );
-		KKeyNative keyNative( KKey(static_cast<QKeyEvent*>(e)->key(), modQt) );
-		uint keySym = keyNative.sym();
+	KDialog::keyReleaseEvent(e);
 
-		bool change = true;
-		switch( keySym ) {
+	bool change = true;
+	switch( e->key() ) {
 		case Qt::Key_Shift:
-			if (m_mod & KKey::SHIFT)
-				m_mod ^= KKey::SHIFT;
+			if (d->mod & Qt::SHIFT)
+				d->mod ^= Qt::SHIFT;
 			break;
 		case Qt::Key_Control:
-			if (m_mod & KKey::CTRL)
-				m_mod ^= KKey::CTRL;
+			if (d->mod & Qt::CTRL)
+				d->mod ^= Qt::CTRL;
 			break;
 		case Qt::Key_Alt:
-			if (m_mod & KKey::ALT)
-				m_mod ^= KKey::ALT;
+			if (d->mod & Qt::ALT)
+				d->mod ^= Qt::ALT;
+			break;
+		case Qt::Key_Meta:
+			if (d->mod & Qt::META)
+				d->mod ^= Qt::META;
 			break;
 		default:
 			change = false;
-		}
-		if (change)
-			updateShortcutDisplay();
 	}
-	return KDialog::event(e);
+	
+	if (change)
+		updateShortcutDisplay();
 }
-#endif
 
-void KShortcutDialog::keyPressed( KKey key )
+const KShortcut & KShortcutDialog::shortcut( ) const
 {
-	kDebug(125) << "keyPressed: " << key.toString() << endl;
+  return d->shortcut;
+}
 
-	key.simplify();
-	if( m_bQtShortcut ) {
-		key = key.keyCodeQt();
-		if( key.isNull() ) {
-			// TODO: message box about key not able to be used as application shortcut
-		}
+void KShortcutDialog::setRecording( bool recording )
+{
+	if (d->bRecording != recording) {
+		d->bRecording = recording;
+		/*if (d->bRecording) {
+			grabKeyboard();
+		} else {
+			releaseKeyboard();
+		}*/
 	}
-
-	KKeySequence seq;
-	if( m_iKey == 0 )
-		seq = key;
-	else {
-		// Remove modifiers
-		key.init( key.sym(), 0 );
-		seq = m_shortcut.seq( m_iSeq );
-		seq.setKey( m_iKey, key );
-	}
-
-	m_shortcut.setSeq( m_iSeq, seq );
-
-	m_mod = 0;
-	if( m_adv->m_btnMultiKey->isChecked() && m_iKey < KKeySequence::MAX_KEYS - 1 )
-		m_iKey++;
-	else {
-		m_iKey = 0;
-		m_bRecording = false;
-	}
-
-	updateShortcutDisplay();
-
-	if( !m_adv->m_btnMultiKey->isChecked() )
-		QTimer::singleShot(500, this, SLOT(accept()));
 }
 
 #include "kshortcutdialog.moc"

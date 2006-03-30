@@ -25,7 +25,6 @@
 #include <qlayout.h>
 
 #include <kparts/part.h>
-#include <kaccel.h>
 #include <kaction.h>
 #include <klibloader.h>
 #include <ktrader.h>
@@ -85,7 +84,6 @@ public:
                 mainwidget_->setObjectName( "MainWidget" );
 		toolbar_ = new KToolBar(mainwidget_, "PreviewToolBar", true);
 		actions_ = new KActionCollection(dlg);
-		accel_ = new KAccel(dlg);
 		previewonly_ = false;
 	}
 	~KPrintPreviewPrivate()
@@ -101,7 +99,6 @@ public:
 	KToolBar		*toolbar_;
 	KActionCollection	*actions_;
 	QWidget			*mainwidget_;
-	KAccel			*accel_;
 	bool			previewonly_;
 };
 

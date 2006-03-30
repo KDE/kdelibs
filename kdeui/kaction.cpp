@@ -7,7 +7,7 @@
               (C) 2001 Holger Freyther <freyther@kde.org>
               (C) 2002 Ellis Whitehead <ellis@kde.org>
               (C) 2002 Joseph Wenninger <jowenn@kde.org>
-              (C) 2005 Hamish Rodda <rodda@kde.org>
+              (C) 2005-2006 Hamish Rodda <rodda@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -38,44 +38,24 @@
 #include "kmenu.h"
 #include "ktoolbar.h"
 #include "kicon.h"
-
-/**
-* How it works.
-* KActionCollection is an organizing container for KActions.
-* KActionCollection keeps track of the information necessary to handle
-* configuration and shortcuts.
-*
-* Focus Widget pointer:
-* This is the widget which is the focus for action shortcuts.
-* It is set either by passing a QWidget* to the KActionCollection constructor
-* or by calling setWidget() if the widget wasn't known when the object was
-* initially constructed (as in KXMLGUIClient and KParts::PartBase)
-*
-* Shortcuts:
-* An action's shortcut will not not be connected unless a focus widget has
-* been specified in KActionCollection.
-*
-* XML Filename:
-* This is used to save user-modified settings back to the *ui.rc file.
-* It is set by KXMLGUIFactory.
-*/
+#include "kglobalaccel.h"
 
 //---------------------------------------------------------------------
-// KAction::KActionPrivate
+// KActionPrivate
 //---------------------------------------------------------------------
 
-class KAction::KActionPrivate
+class KActionPrivate
 {
 public:
   KActionPrivate()
   {
-    m_configurable = true;
+    configurable = true;
+    globalShortcutAllowed = false;
   }
 
-  KShortcut m_shortcut;
-  KShortcut m_defaultShortcut;
+  KShortcut shortcut, defaultShortcut, globalShortcut, defaultGlobalShortcut;
 
-  bool m_configurable;
+  bool configurable, globalShortcutAllowed;
 };
 
 //---------------------------------------------------------------------
@@ -174,30 +154,28 @@ void KAction::initPrivate( const KShortcut& cut,
 {
     initPrivate(name);
 
-    d->m_defaultShortcut = cut;
-
     if ( receiver && slot )
         connect( this, SIGNAL( activated() ), receiver, slot );
 
     if( !cut.isNull() && objectName().isEmpty() )
         kWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
 
-    KAction::setShortcut( cut );
+    setShortcut( cut );
 }
 
 const KShortcut& KAction::defaultShortcut() const
 {
-  return d->m_defaultShortcut;
+  return d->defaultShortcut;
 }
 
 bool KAction::isShortcutConfigurable() const
 {
-  return d->m_configurable;
+  return d->configurable;
 }
 
 void KAction::setShortcutConfigurable( bool b )
 {
-    d->m_configurable = b;
+    d->configurable = b;
 }
 
 bool KAction::hasIcon() const
@@ -218,9 +196,14 @@ void KAction::setIconName( const QString & icon )
   setIcon(KIcon(icon));
 }
 
-const KShortcut & KAction::shortcut( ) const
+const KShortcut & KAction::shortcut(ShortcutTypes type) const
 {
-  return d->m_shortcut;
+  Q_ASSERT(type);
+
+  if (type == DefaultShortcut)
+    return d->defaultShortcut;
+
+  return d->shortcut;
 }
 
 QString KAction::shortcutText() const
@@ -228,22 +211,32 @@ QString KAction::shortcutText() const
   return shortcut().toString();
 }
 
-void KAction::setShortcut( const KShortcut & shortcut )
+void KAction::setShortcut( const KShortcut & shortcut, ShortcutTypes type )
 {
-  d->m_shortcut = shortcut;
-  QAction::setShortcut(shortcut.seq(0).qt());
+  Q_ASSERT(type);
 
-  if (shortcut.count() > 1) {
-    QList<QKeySequence> alternateShortcuts;
-    for (uint i = 1; i < shortcut.count(); ++i)
-      alternateShortcuts.append(shortcut.seq(i).qt());
-    setAlternateShortcuts(alternateShortcuts);
+  if (type & DefaultShortcut)
+    setDefaultShortcut(shortcut);
+
+  if ((type & CustomShortcut) && d->shortcut != shortcut) {
+    d->shortcut = shortcut;
+
+    if (d->shortcut.count()) {
+      QAction::setShortcut(shortcut.seq(0));
+
+      if (d->shortcut.count() > 1) {
+        QList<QKeySequence> alternateShortcuts;
+        for (int i = 1; i < shortcut.count(); ++i)
+          alternateShortcuts.append(d->shortcut.seq(i));
+        setAlternateShortcuts(alternateShortcuts);
+      }
+    }
   }
 }
 
 void KAction::setShortcutText(const QString& shortcutText)
 {
-  return setShortcut(KShortcut(shortcutText));
+  return setShortcut(KShortcut(shortcutText), CustomShortcut);
 }
 
 void KAction::slotTriggered()
@@ -314,6 +307,58 @@ void KAction::setObjectName(const QString&)
 void KAction::setIcon( const KIcon & icon )
 {
   QAction::setIcon(icon);
+}
+
+const KShortcut & KAction::globalShortcut(ShortcutTypes type) const
+{
+  Q_ASSERT(type);
+
+  if (type == DefaultShortcut)
+    return d->defaultGlobalShortcut;
+
+  return d->globalShortcut;
+}
+
+void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type )
+{
+  Q_ASSERT(type);
+
+  if (type & DefaultShortcut)
+    setDefaultGlobalShortcut(shortcut);
+
+  if ((type & CustomShortcut) && d->globalShortcut != shortcut) {
+    d->globalShortcut = shortcut;
+
+    KGlobalAccel::self()->checkAction(this);
+  }
+}
+
+const KShortcut & KAction::defaultGlobalShortcut( ) const
+{
+  return d->defaultGlobalShortcut;
+}
+
+void KAction::setDefaultGlobalShortcut( const KShortcut & shortcut )
+{
+  d->defaultGlobalShortcut = shortcut;
+}
+
+void KAction::setDefaultShortcut( const KShortcut & shortcut )
+{
+  d->defaultShortcut = shortcut;
+}
+
+bool KAction::globalShortcutAllowed( ) const
+{
+  return d->globalShortcutAllowed;
+}
+
+void KAction::setGlobalShortcutAllowed( bool allowed )
+{
+  if (d->globalShortcutAllowed != allowed) {
+    d->globalShortcutAllowed = allowed;
+    KGlobalAccel::self()->checkAction(this);
+  }
 }
 
 /* vim: et sw=2 ts=2

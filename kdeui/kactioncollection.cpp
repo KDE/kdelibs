@@ -27,7 +27,6 @@
 #include "kactioncollection.h"
 
 #include "kaction.h"
-#include "kactionshortcutlist.h"
 #include "ktoolbar.h"
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
@@ -43,7 +42,9 @@
 
 #include <stdio.h>
 
-class KActionCollection::KActionCollectionPrivate
+QList<KActionCollection*> KActionCollection::s_allCollections;
+
+class KActionCollectionPrivate
 {
 public:
   KActionCollectionPrivate()
@@ -55,6 +56,8 @@ public:
     configIsGlobal = false;
 
     connectHighlighted = connectTriggered = false;
+
+    configGroup = "Shortcuts";
   }
 
   KInstance *m_instance;
@@ -91,6 +94,8 @@ KActionCollection::KActionCollection( QObject *parent,
   : QObject( parent )
   , d(new KActionCollectionPrivate)
 {
+  s_allCollections.append(this);
+
   setInstance( instance );
 }
 
@@ -98,12 +103,16 @@ KActionCollection::KActionCollection( const KXMLGUIClient *parent )
   : QObject( 0 )
   , d(new KActionCollectionPrivate)
 {
+  s_allCollections.append(this);
+
   d->m_parentGUIClient=parent;
   d->m_instance=parent->instance();
 }
 
 KActionCollection::~KActionCollection()
 {
+  s_allCollections.removeAll(this);
+
   delete d;
 }
 
@@ -372,7 +381,7 @@ void KActionCollection::addAssociatedWidget(QWidget* widget)
 {
   d->associatedWidgets.append(widget);
 
-  foreach (KAction* action, findChildren<KAction*>()) {
+  foreach (KAction* action, actions()) {
     if (defaultShortcutContext() == -1)
       action->setShortcutContext(Qt::WidgetShortcut);
     widget->addAction(action);
@@ -383,7 +392,7 @@ void KActionCollection::removeAssociatedWidget(QWidget* widget)
 {
   d->associatedWidgets.removeAll(widget);
 
-  foreach (KAction* action, findChildren<KAction*>())
+  foreach (KAction* action, actions())
     widget->removeAction(action);
 }
 
@@ -424,22 +433,20 @@ void KActionCollection::readSettings( KConfigBase* config )
   if( !config )
     config = KGlobal::config();
 
-  QString sGroup = (!configGroup().isEmpty()) ? configGroup() : QString("Shortcuts");
-
-  kDebug(125) << "\treadSettings( \"" << sGroup << "\", " << config << " )" << endl;
-  if( !config->hasGroup( sGroup ) )
+  kDebug(125) << "\treadSettings( \"" << configGroup() << "\", " << config << " )" << endl;
+  if( !config->hasGroup( configGroup() ) )
     return;
 
-  KConfigGroup cg( config, sGroup );
+  KConfigGroup cg( config, configGroup() );
 
-  foreach (KAction* action, findChildren<KAction*>()) {
+  foreach (KAction* action, actions()) {
     if( action->isShortcutConfigurable() ) {
       QString entry = cg.readEntry( action->objectName(), QString() );
       if( !entry.isEmpty() ) {
         if( entry == "none" )
-          action->setShortcut( KShortcut() );
+          action->setShortcut( KShortcut(), KAction::CustomShortcut );
         else
-          action->setShortcut( KShortcut(entry) );
+          action->setShortcut( KShortcut(entry), KAction::CustomShortcut );
       }
       else // default shortcut
         action->setShortcut( action->defaultShortcut() );
@@ -451,17 +458,63 @@ void KActionCollection::readSettings( KConfigBase* config )
   kDebug(125) << k_funcinfo << " done" << endl;
 }
 
-void KActionCollection::writeSettings( KConfigBase* config, bool writeAll ) const
+void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, KAction* oneAction ) const
 {
   kDebug(125) << k_funcinfo << configGroup() << ", " << config << ", " << writeAll << ", " << configIsGlobal() << " )" << endl;
+
+  if (!xmlFile().isEmpty()) {
+    kDebug(129) << "KActionCollection::save(): xmlFile = " << xmlFile() << endl;
+
+    QString attrShortcut  = QLatin1String("shortcut");
+
+    // Read XML file
+    QString sXml( KXMLGUIFactory::readConfigFile( xmlFile(), false, instance() ) );
+    QDomDocument doc;
+    doc.setContent( sXml );
+
+    // Process XML data
+
+    // Get hold of ActionProperties tag
+    QDomElement elem = KXMLGUIFactory::actionPropertiesElement( doc );
+
+    // now, iterate through our actions
+    foreach (KAction* action, actions()) {
+        bool bSameAsDefault = (action->shortcut() == action->defaultShortcut());
+        //kdDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
+
+        // now see if this element already exists
+        // and create it if necessary (unless bSameAsDefault)
+        QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, action->objectName(), !bSameAsDefault );
+        if ( act_elem.isNull() )
+            continue;
+
+        if( bSameAsDefault ) {
+            act_elem.removeAttribute( attrShortcut );
+            //kdDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
+            if( act_elem.attributes().count() == 1 )
+                elem.removeChild( act_elem );
+        } else {
+            act_elem.setAttribute( attrShortcut, action->shortcut().toStringInternal() );
+        }
+    }
+
+    // Write back to XML file
+    KXMLGUIFactory::saveConfigFile( doc, xmlFile(), instance() );
+    return;
+  }
+
   if( !config )
       config = KGlobal::config();
 
-  QString sGroup = (!configGroup().isEmpty()) ? configGroup() : QString("Shortcuts");
+  KConfigGroup cg( config, configGroup() );
 
-  KConfigGroup cg( config, sGroup );
+  QList<KAction*> writeActions;
+  if (oneAction)
+    writeActions.append(oneAction);
+  else
+    writeActions = actions();
 
-  foreach (KAction* action, findChildren<KAction*>()) {
+  foreach (KAction* action, writeActions) {
     if( action->isShortcutConfigurable() ) {
       bool bConfigHasAction = !cg.readEntry( action->objectName(), QString() ).isEmpty();
       bool bSameAsDefault = (action->shortcut() == action->defaultShortcut());
@@ -523,130 +576,13 @@ void KActionCollection::connectNotify ( const char * signal )
   QObject::connectNotify(signal);
 }
 
-//---------------------------------------------------------------------
-// KActionShortcutList
-//---------------------------------------------------------------------
-
-KActionShortcutList::KActionShortcutList( KActionCollection* pColl )
-: m_actions( *pColl )
-    { }
-KActionShortcutList::~KActionShortcutList()
-    { }
-uint KActionShortcutList::count() const
-    { return m_actions.count(); }
-QString KActionShortcutList::name( uint i ) const
-    { return m_actions.action(i)->objectName(); }
-QString KActionShortcutList::label( uint i ) const
-    { return m_actions.action(i)->text(); }
-QString KActionShortcutList::whatsThis( uint i ) const
-    { return m_actions.action(i)->whatsThis(); }
-const KShortcut& KActionShortcutList::shortcut( uint i ) const
-    { return m_actions.action(i)->shortcut(); }
-const KShortcut& KActionShortcutList::shortcutDefault( uint i ) const
-    { return m_actions.action(i)->defaultShortcut(); }
-bool KActionShortcutList::isConfigurable( uint i ) const
-    { return m_actions.action(i)->isShortcutConfigurable(); }
-bool KActionShortcutList::setShortcut( uint i, const KShortcut& cut )
-    { if ((int)i < m_actions.count()) { m_actions.action(i)->setShortcut( cut ); return true; } return false; }
-const KInstance* KActionShortcutList::instance() const
-    { return m_actions.instance(); }
-QVariant KActionShortcutList::getOther( Other, uint ) const
-    { return QVariant(); }
-bool KActionShortcutList::setOther( Other, uint, const QVariant &)
-    { return false; }
-const KAction *KActionShortcutList::action( uint i) const
-    { return m_actions.action(i); }
-
-bool KActionShortcutList::save() const
-{
-    const KXMLGUIClient* guiClient=m_actions.parentGUIClient();
-    const QString xmlFile=guiClient ? guiClient->xmlFile() : m_actions.xmlFile();
-    kDebug(129) << "KActionShortcutList::save(): xmlFile = " << xmlFile << endl;
-
-    if( m_actions.xmlFile().isEmpty() )
-        return writeSettings();
-
-    QString attrShortcut  = QLatin1String("shortcut");
-    QString attrAccel     = QLatin1String("accel"); // Depricated attribute
-
-    // Read XML file
-    QString sXml( KXMLGUIFactory::readConfigFile( xmlFile, false, instance() ) );
-    QDomDocument doc;
-    doc.setContent( sXml );
-
-    // Process XML data
-
-    // Get hold of ActionProperties tag
-    QDomElement elem = KXMLGUIFactory::actionPropertiesElement( doc );
-
-    // now, iterate through our actions
-    foreach (KAction* action, m_actions.findChildren<KAction*>()) {
-        bool bSameAsDefault = (action->shortcut() == action->defaultShortcut());
-        //kdDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
-
-        // now see if this element already exists
-        // and create it if necessary (unless bSameAsDefault)
-        QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, action->objectName(), !bSameAsDefault );
-        if ( act_elem.isNull() )
-            continue;
-
-        act_elem.removeAttribute( attrAccel );
-        if( bSameAsDefault ) {
-            act_elem.removeAttribute( attrShortcut );
-            //kdDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
-            if( act_elem.attributes().count() == 1 )
-                elem.removeChild( act_elem );
-        } else {
-            act_elem.setAttribute( attrShortcut, action->shortcut().toStringInternal() );
-        }
-    }
-
-    // Write back to XML file
-    return KXMLGUIFactory::saveConfigFile( doc, guiClient ? guiClient->localXMLFile() : m_actions.xmlFile(), instance() );
-}
-
-//---------------------------------------------------------------------
-// KActionPtrShortcutList
-//---------------------------------------------------------------------
-
-KActionPtrShortcutList::KActionPtrShortcutList( const QList<KAction*>& list )
-: m_actions( list )
-    { }
-KActionPtrShortcutList::~KActionPtrShortcutList()
-    { }
-uint KActionPtrShortcutList::count() const
-    { return m_actions.count(); }
-QString KActionPtrShortcutList::name( uint i ) const
-    { return m_actions[i]->objectName(); }
-QString KActionPtrShortcutList::label( uint i ) const
-    { return m_actions[i]->text(); }
-QString KActionPtrShortcutList::whatsThis( uint i ) const
-    { return m_actions[i]->whatsThis(); }
-const KShortcut& KActionPtrShortcutList::shortcut( uint i ) const
-    { return m_actions[i]->shortcut(); }
-const KShortcut& KActionPtrShortcutList::shortcutDefault( uint i ) const
-    { return m_actions[i]->defaultShortcut(); }
-bool KActionPtrShortcutList::isConfigurable( uint i ) const
-    { return m_actions[i]->isShortcutConfigurable(); }
-bool KActionPtrShortcutList::setShortcut( uint i, const KShortcut& cut )
-    { if ((int)i < m_actions.count()) { m_actions[i]->setShortcut( cut ); return true; } return false; }
-QVariant KActionPtrShortcutList::getOther( Other, uint ) const
-    { return QVariant(); }
-bool KActionPtrShortcutList::setOther( Other, uint, const QVariant &)
-    { return false; }
-
-bool KActionPtrShortcutList::save() const
-    { return false; }
-
-void KActionShortcutList::virtual_hook( int id, void* data )
-{ KShortcutList::virtual_hook( id, data ); }
-
-void KActionPtrShortcutList::virtual_hook( int id, void* data )
-{ KShortcutList::virtual_hook( id, data ); }
-
-
 void KActionCollection::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+const QList< KActionCollection * >& KActionCollection::allCollections( )
+{
+	return s_allCollections;
+}
 
 /* vim: et sw=2 ts=2
  */

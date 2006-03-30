@@ -36,6 +36,7 @@
 #include <kpixmapprovider.h>
 #include <kstdaccel.h>
 #include <kurl.h>
+#include <kicon.h>
 
 #include <kdebug.h>
 
@@ -457,9 +458,9 @@ void KHistoryCombo::addContextMenuItems( QMenu* menu )
     if ( menu )
     {
         menu->addSeparator();
-        int id = menu->insertItem( SmallIconSet("history_clear"), i18n("Clear &History"), this, SLOT( slotClear()));
+        QAction* clearHistory = menu->addAction( KIcon("history_clear"), i18n("Clear &History"), this, SLOT( slotClear()));
         if (!count())
-           menu->setItemEnabled(id, false);
+           clearHistory->setEnabled(false);
     }
 }
 
@@ -613,7 +614,7 @@ void KHistoryCombo::rotateDown()
 
 void KHistoryCombo::keyPressEvent( QKeyEvent *e )
 {
-    KKey event_key( e );
+    int event_key = e->key() | e->modifiers();
 
     // going up in the history, rotating when reaching QListBox::count()
     if ( KStdAccel::rotateUp().contains(event_key) )

@@ -41,8 +41,8 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kcmdlineargs.h kconfigbackend.h kapplication.h kauthorized.h ktoolinvocation.h \
 	kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h \
 	kprocctrl.h klocale.h klocalizedstring.h kicontheme.h kiconloader.h kdebug.h \
-	kwinmodule.h kwin.h kshortcut.h kkeynative.h kaccel.h \
-	kglobalaccel.h kstdaccel.h kshortcutlist.h kcatalog.h \
+	kwinmodule.h kwin.h \
+	kstdaccel.h kcatalog.h \
 	kcompletion.h kstringhandler.h \
 	kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h \
 	kallocator.h kvmallocator.h kcrash.h krfcdate.h \
@@ -60,7 +60,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h \
 	kde_file.h ktimezones.h ktzfiletimezone.h \
 	kfilterbase.h kfilterdev.h kdatetime.h qtest_kde.h conversion_check.h \
-	kdedmodule.h kautostart.h knotificationrestrictions.h
+	kdedmodule.h kautostart.h knotificationrestrictions.h kshortcut.h
 
 libkdefakes_la_SOURCES = fakes.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
@@ -72,10 +72,10 @@ fakes_nonpic.c:$(srcdir)/fakes.c
 	-rm -f fakes_nonpic.c
 	$(LN_S) $(srcdir)/fakes.c fakes_nonpic.c
 
-noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
+noinst_HEADERS = kckey.h \
 	kcompletion_private.h netwm_p.h \
-	kglobalaccel_x11.h kglobalaccel_win.h kkeyserver_x11.h kkeyserver.h \
-	kshortcutmenu.h ksycocadict.h ksycocafactory.h netsupp.h \
+	kglobalaccel_win.h \
+	ksycocadict.h ksycocafactory.h netsupp.h \
 	kcheckaccelerators.h kcalendarsystemgregorian.h \
 	kcalendarsystemhijri.h kcalendarsystemhebrew.h kcalendarsystemjalali.h \
 	kprotocolinfofactory.h
@@ -86,9 +86,8 @@ libkdecore_la_SOURCES = kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
 	kstandarddirs.cpp kpty.cpp kprocess.cpp kprocctrl.cpp \
 	klocale.cpp klocalizedstring.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp \
 	kiconloader.cpp kwin.cpp kwinmodule.cpp kcharsets.cpp \
-	kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp \
-	kaccelaction.cpp kshortcutmenu.cpp kaccelbase.cpp kaccel.cpp \
-	kglobalaccel_x11.cpp kglobalaccel.cpp kstdaccel.cpp kshortcutlist.cpp \
+	kckey.cpp kshortcut.cpp \
+	kstdaccel.cpp \
 	kcrash.cpp kurl.cpp kglobal.cpp kglobalsettings.cpp \
 	kallocator.cpp kvmallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \

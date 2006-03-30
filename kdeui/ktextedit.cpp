@@ -86,7 +86,7 @@ KTextEdit::~KTextEdit()
 
 void KTextEdit::keyPressEvent( QKeyEvent *e )
 {
-    KKey key( e );
+    int key = e->key() | e->modifiers();
 
     if ( KStdAccel::copy().contains( key ) ) {
         copy();

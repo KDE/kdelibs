@@ -44,7 +44,6 @@ class QStatusBar;
 class KMenuBar;
 class KMWSessionManaged;
 class KMainWindowPrivate;
-class KAccel;
 class KToolBar;
 class KToolBarMenuAction;
 class DCOPObject;

@@ -239,7 +239,7 @@ KAction *buildAutomaticAction(KActionCollection* parent, StdAction id, const cha
     const KStdActionInfo* p = infoPtr( id );
     if (!p)
         return 0;
-    AutomaticAction *action = new AutomaticAction(p->psIconName, p->psLabel, KStdAccel::shortcut(p->idAccel), slot, parent, p->psName);
+    AutomaticAction *action = new AutomaticAction(KIcon(p->psIconName), p->psLabel, KStdAccel::shortcut(p->idAccel), slot, parent, p->psName);
     action->setWhatsThis(p->psWhatsThis);
     return action;
 }

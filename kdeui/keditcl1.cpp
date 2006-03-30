@@ -377,10 +377,9 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
       return;
   }
 
-  KKey key(e);
-  int keyQt = key.keyCodeQt();
+  int key = e->key() | e->modifiers();
 
-  if ( keyQt == Qt::CTRL+Qt::Key_K ){
+  if ( key == Qt::CTRL+Qt::Key_K ){
 
     int line = 0;
     int col  = 0;
@@ -435,7 +434,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
     setModified(true);
     return;
   }
-  else if ( keyQt == Qt::CTRL+Qt::Key_Y ){
+  else if ( key == Qt::CTRL+Qt::Key_Y ){
 
     int line = 0;
     int col  = 0;
@@ -460,7 +459,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
   else if ( isReadOnly() )
     Q3MultiLineEdit::keyPressEvent( e );
   // If this is an unmodified printable key, send it directly to QMultiLineEdit.
-  else if ( !(key.keyCodeQt() & (Qt::CTRL | Qt::ALT)) && !e->text().isEmpty() && e->text().unicode()->isPrint() )
+  else if ( !(key & (Qt::CTRL | Qt::ALT)) && !e->text().isEmpty() && e->text().unicode()->isPrint() )
     Q3MultiLineEdit::keyPressEvent( e );
   else if ( KStdAccel::paste().contains( key ) ) {
     paste();

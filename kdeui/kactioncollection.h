@@ -70,6 +70,11 @@ public:
   virtual ~KActionCollection();
 
   /**
+   * Access the list of all action collections in existance for this app
+   */
+  static const QList<KActionCollection*>& allCollections();
+
+  /**
    * Clears the entire action collection, deleting all actions.
    */
   void clear();
@@ -194,8 +199,13 @@ public:
     * Write the current configurable key associations to @p config,
     * or (if @p config is zero) to the application's
     * configuration file.
+    *
+    * \param config Config object to save to, or null to use the application's config object.
+    * \param writeDefaults set to true to write settings which are already at defaults.
+    * \param oneAction pass an action here if you just want to save the values for one action, eg.
+    *                  if you know that action is the only one which has changed.
     */
-  void writeSettings( KConfigBase* config = 0, bool writeAll = true ) const;
+  void writeSettings( KConfigBase* config = 0, bool writeDefaults = false, KAction* oneAction = 0L ) const;
 
   /**
    * Doc/View model.  This lets you add the action collection of a document
@@ -366,8 +376,10 @@ private:
   QList<KAction*> actionsOfTypeInternal( const char* name, const QMetaObject& mo ) const;
 
   KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
-  class KActionCollectionPrivate;
-  KActionCollectionPrivate* const d;
+
+  class KActionCollectionPrivate* const d;
+
+  static QList<KActionCollection*> s_allCollections;
 };
 
 #endif

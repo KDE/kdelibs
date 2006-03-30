@@ -444,7 +444,7 @@ void KLineEdit::resizeEvent( QResizeEvent * ev )
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
-    KKey key( e );
+    int key = e->key() | e->modifiers();
 
     if ( KStdAccel::copy().contains( key ) )
     {
@@ -1110,7 +1110,7 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
 {
     KShortcut scKey;
 
-    KKey key( e );
+    int key = e->key() | e->modifiers();
     KeyBindingMap keys = getKeyBindings();
 
     if (keys[TextCompletion].isNull())

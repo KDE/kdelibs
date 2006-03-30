@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2002,2003 Ellis Whitehead <ellis@kde.org>
+    Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,13 +21,12 @@
 #ifndef KSHORTCUTDIALOG_H
 #define KSHORTCUTDIALOG_H
 
+#include <kshortcut.h>
+
 #include "kdialogbase.h"
-#include "kshortcut.h"
 
 class QStackedWidget;
 class KPushButton;
-class KShortcutDialogSimple;
-class KShortcutDialogAdvanced;
 
 /**
  * @short Dialog for configuring a shortcut.
@@ -41,42 +41,20 @@ class KDEUI_EXPORT KShortcutDialog : public KDialog
 {
 	Q_OBJECT
 public:
-	KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent = 0 );
+	KShortcutDialog( const KShortcut& shortcut, QWidget* parent = 0 );
 	~KShortcutDialog();
 
 	void setShortcut( const KShortcut & shortcut );
-	const KShortcut& shortcut() const { return m_shortcut; }
+	const KShortcut& shortcut() const;
 
 private:
-	// true if qt shortcut, false if native shortcut
-	bool m_bQtShortcut;
-
-	KShortcut m_shortcut;
-	bool m_bGrab;
-	KPushButton* m_ptxtCurrent;
-	uint m_iSeq;
-	uint m_iKey;
-	bool m_bRecording;
-	uint m_mod;
-	KShortcutDialogSimple *m_simple;
-	KShortcutDialogAdvanced *m_adv;
-	QStackedWidget *m_stack;
-
 	void updateShortcutDisplay();
-	//void displayMods();
-	void keyPressed( KKey key );
+	void keyPressed( int key );
 	void updateDetails();
+	void setRecording(bool recording);
 
-	#ifdef Q_WS_X11
-	virtual bool x11Event( XEvent *pEvent );
-	//void x11EventKeyPress( XEvent *pEvent );
-	void x11KeyPressEvent( XEvent* pEvent );
-	void x11KeyReleaseEvent( XEvent* pEvent );
-	#endif
-	#ifdef Q_WS_WIN
 	virtual void keyPressEvent( QKeyEvent * e );
-	virtual bool event(QEvent * e);
-	#endif
+	virtual void keyReleaseEvent( QKeyEvent * event );
 
 protected Q_SLOTS:
 	void slotButtonClicked(KDialog::ButtonCode code);
@@ -88,8 +66,8 @@ protected Q_SLOTS:
 	void slotMultiKeyMode( bool bOn );
 
 private:
-        class KShortcutDialogPrivate* d;
-        static bool s_showMore;
+	class KShortcutDialogPrivate* const d;
+	static bool s_showMore;
 };
 
 #endif // _KSHORTCUTDIALOG_H_

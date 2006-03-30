@@ -37,7 +37,7 @@ KContextMenuManager::KContextMenuManager( QObject* parent )
     : QObject( parent )
 {
   KConfigGroup shortCutGroup( KGlobal::config(), QLatin1String("Shortcuts") );
-  mMenuKey = KShortcut( shortCutGroup.readEntry(QLatin1String("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyCodeQt();
+  mMenuKey = KShortcut( shortCutGroup.readEntry(QLatin1String("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyQt();
 
   KConfigGroup contextMenuGroup( &shortCutGroup, QLatin1String("ContextMenus") );
   mShowOnPress = contextMenuGroup.readEntry(QLatin1String("ShowOnPress"), true);

@@ -34,7 +34,6 @@
 #include <QFileDialog>
 
 
-#include <kaccel.h>
 #include <kaction.h>
 #include <kapplication.h>
 #include <kauthorized.h>

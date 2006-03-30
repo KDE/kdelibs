@@ -123,12 +123,12 @@ void AddressLineEdit::keyPressEvent(QKeyEvent *e)
 {
     bool accept = false;
 
-    if (KStdAccel::shortcut(KStdAccel::SubstringCompletion).contains(KKey(e)))
+    if (KStdAccel::shortcut(KStdAccel::SubstringCompletion).contains(e->key() | e->modifiers()))
     {
         doCompletion(true);
         accept = true;
     }
-    else if (KStdAccel::shortcut(KStdAccel::TextCompletion).contains(KKey(e)))
+    else if (KStdAccel::shortcut(KStdAccel::TextCompletion).contains(e->key() | e->modifiers()))
     {
         int len = text().length();
 

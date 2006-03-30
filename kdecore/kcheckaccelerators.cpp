@@ -83,7 +83,7 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
     if( !sKey.isEmpty() ) {
       KShortcut cuts( sKey );
       if( cuts.count() > 0 )
-        key = int(cuts.seq(0).qt());
+        key = int(cuts.seq(0));
     }
     alwaysShow = cg.readEntry( "AlwaysShowCheckAccelerators", false );
     autoCheck = cg.readEntry( "AutoCheckAccelerators", true );

@@ -42,7 +42,7 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 	knumvalidator.h kdialog.h kdialogbase.h kjanuswidget.h kaboutdialog.h 	kauthicon.h \
 	kmessagebox.h ksharedpixmap.h kdualcolorbutton.h 	ktextbrowser.h kaction.h \
 	kactioncollection.h 	kactionclasses.h khelpmenu.h kcmodule.h kcmenumngr.h \
-	kactionshortcutlist.h kstdaction.h 	kcombobox.h k3iconview.h k3listview.h klistbox.h \
+	kstdaction.h 	kcombobox.h k3iconview.h k3listview.h klistbox.h \
 	kbugreport.h kpassworddialog.h 	kxmlguiclient.h kxmlguibuilder.h kxmlguifactory.h \
 	kwordwrap.h 	kedittoolbar.h kanimwidget.h krootpixmap.h kaboutkde.h \
 	kaboutapplication.h 	kpushbutton.h kdcopactionproxy.h kcolorcombo.h kcompletionbox.h \
@@ -52,7 +52,8 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 	ktabbar.h ktabwidget.h ksplashscreen.h 	kconfigdialog.h kactionselector.h \
 	klanguagebutton.h k3listviewsearchline.h 	kpixmapregionselectorwidget.h \
 	kpixmapregionselectordialog.h k3iconviewsearchline.h 	ktoolbarlabelaction.h kshortcutdialog.h khbox.h \
-	kvbox.h 	kconfigdialogmanager.h knotification.h kiconengine.h kicon.h
+	kvbox.h kconfigdialogmanager.h knotification.h kiconengine.h kicon.h ktoolbarspaceraction.h \
+	kglobalaccel.h
 
 # the order of the sources isn't randomly (at least not completely).
 # the order is predictated by the use of X11 header files
@@ -65,8 +66,8 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kmenu.cpp ktoolbar.cpp 	kaction.cpp \
 			kprogressdialog.cpp kcolordialog.cpp kselector.cpp kdatepicker.cpp kdatetable.cpp \
 				kfontrequester.cpp kfontdialog.cpp ktabctl.cpp kstatusbar.cpp kmainwindow.cpp \
 				keditlistbox.cpp kseparator.cpp krestrictedline.cpp kcolorbutton.cpp 	ksystemtray.cpp \
-			kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp 	kshortcutdialog_simple.ui3 \
-			kshortcutdialog_advanced.ui3 kshortcutdialog.cpp kkeybutton.cpp 	kkeydialog.cpp kruler.cpp \
+			kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp 	kshortcutdialog_simple.ui \
+			kshortcutdialog_advanced.ui kshortcutdialog.cpp kkeybutton.cpp 	kkeydialog.cpp kruler.cpp \
 			kcursor.cpp kcharselect.cpp kcolormimedata.cpp knumvalidator.cpp 	kdialog.cpp \
 			kdialogbase.cpp kjanuswidget.cpp kaboutdialog.cpp kauthicon.cpp 	kmessagebox.cpp \
 			kdualcolorbutton.cpp 	ktextbrowser.cpp khelpmenu.cpp kcmenumngr.cpp k3iconview.cpp \
@@ -83,11 +84,12 @@ libkdeui_la_SOURCES = ksharedpixmap.cpp kmenu.cpp ktoolbar.cpp 	kaction.cpp \
 				k3listviewsearchline.cpp kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
 				kwhatsthismanager.cpp k3iconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
 				kconfigdialogmanager.cpp knotification.cpp knotificationmanager.cpp knotificationmanager.skel \
-			kiconengine.cpp kicon.cpp ktoolbarspaceraction.cpp
+			kiconengine.cpp kicon.cpp ktoolbarspaceraction.cpp kkeyserver_x11.cpp \
+			kglobalaccel_x11.cpp kglobalaccel.cpp
 
 noinst_HEADERS = k3listviewlineedit.h kdialogbase_priv.h kaboutdialog_private.h \
 		kcursor_private.h kdepackages.h kxmlguifactory_p.h kstdaction_p.h kwhatsthismanager_p.h \
-		knotificationmanager.h ktoolbarspaceraction.h
+		knotificationmanager.h kkeyserver_x11.h kkeyserver.h kglobalaccel_x11.h
 
 scripts_SCRIPTS = preparetips
 scriptsdir = $(kde_bindir)

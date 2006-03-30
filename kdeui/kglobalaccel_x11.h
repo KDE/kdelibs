@@ -17,42 +17,46 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KGLOBALACCEL_WIN_H
-#define _KGLOBALACCEL_WIN_H
+#ifndef _KGLOBALACCEL_X11_H
+#define _KGLOBALACCEL_X11_H
 
-#include <qmap.h>
-#include <qwidget.h>
-
-#include "kaccelbase.h"
-#include "kkeyserver.h"
-#include "kshortcut.h"
+#include <QWidget>
 
 /**
  * @internal
+ *
+ * The KGlobalAccel private class handles grabbing of global keys,
+ * and notification of when these keys are pressed.
  */
-class KGlobalAccelPrivate : public QWidget, public KAccelBase
+class KGlobalAccelImpl : public QWidget
 {
-	friend class KGlobalAccel;
 	Q_OBJECT
- public:
-	KGlobalAccelPrivate();
-	virtual ~KGlobalAccelPrivate();
 
-	virtual void setEnabled( bool );
+public:
+	KGlobalAccelImpl(class KGlobalAccel* owner);
 
-	virtual bool emitSignal( Signal );
-	virtual bool connectKey( KAccelAction&, const KKeyServer::Key& );
-	virtual bool connectKey( const KKeyServer::Key& );
-	virtual bool disconnectKey( KAccelAction&, const KKeyServer::Key& );
-	virtual bool disconnectKey( const KKeyServer::Key& );
-
- protected:
-
+public:
 	/**
-	 * @param bGrab Set to true to grab key, false to ungrab key.
+	 * This function registers or unregisters a certain key for global capture,
+	 * depending on \b grab.
+	 *
+	 * Before destruction, every grabbed key will be released, so this
+	 * object does not need to do any tracking.
+	 *
+	 * \param key the Qt keycode to grab or release.
+	 * \param grab true to grab they key, false to release the key.
+	 *
+	 * \return true if successful, otherwise false.
 	 */
-	bool grabKey( const KKeyServer::Key&, bool bGrab, KAccelAction* );
+	bool grabKey(int key, bool grab);
+	
+	/// Enable all shortcuts.  There will not be any grabbed shortcuts at this point.
+	void enable();
 
+	/// Disable all shortcuts.  There will not be any grabbed shortcuts at this point.
+	void disable();
+	
+private:
 	/**
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.
 	 * If a match is found the activated activated is emitted and the function
@@ -60,20 +64,11 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	 *
 	 * This is public for compatibility only. You do not need to call it.
 	 */
-//	virtual bool x11Event( XEvent* );
-//	void x11MappingNotify();
-//	bool x11KeyPress( const XEvent *pEvent );
-	void activate( KAccelAction* pAction, const QKeySequence& seq );
-  static void blockShortcuts( bool block );
-  void disableBlocking( bool disable );
-
- protected Q_SLOTS:
-	void slotActivated( int iAction );
-
- private:
-  bool m_blocked;
-  bool m_blockingDisabled;
-
+	virtual bool x11Event( XEvent* );
+	void x11MappingNotify();
+	bool x11KeyPress( const XEvent *pEvent );
+	
+	KGlobalAccel* m_owner;
 };
 
-#endif // _KGLOBALACCEL_WIN_H
+#endif // _KGLOBALACCEL_X11_H

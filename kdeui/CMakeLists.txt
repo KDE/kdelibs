@@ -128,12 +128,16 @@ set(kdeui_LIB_SRCS
  kicon.cpp
  ktoolbarspaceraction.cpp
  kmanagerselection.cpp
+kglobalaccel_x11.cpp
+kglobalaccel.cpp
+kkeyserver_x11.cpp
 )
 
 kde4_automoc(${kdeui_LIB_SRCS})
 
 set( kdeui_UI
 kspellui.ui
+kkeydialogui.ui
 )
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
@@ -215,7 +219,6 @@ install_files( /include FILES
  khelpmenu.h
  kcmodule.h
  kcmenumngr.h
- kactionshortcutlist.h
  kstdaction.h
  kcombobox.h
  k3iconview.h
@@ -274,6 +277,7 @@ install_files( /include FILES
  kicon.h
  ktoolbarspaceraction.h
  kmanagerselection.h
+ kglobalaccel.h
 )
 
 kde4_create_doxygen_docs( INTERNAL_DOCS REFERENCES kdecore kdefx dcop kio kutils  )

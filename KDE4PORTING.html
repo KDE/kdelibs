@@ -113,21 +113,23 @@ instead.</li>
 
 <H4>KAccel</H4>
 <ul>
-<li>Removed methods that were marked deprecated from KDE2</li>
+<li>Removed. Replaced by the new KAction/QAction framework.</li>
+<li>See KActionCollection::setAssociatedWidget() if you need the old KAccel widget-binding behavior.</li>
 </ul>
 
 <H4>KAccelBase</H4>
 <ul>
-<li>insert() only takes one KShortcut "default" argument now instead of two</li>
+<li>Removed. Replaced by the new KAction/QAction framework.</li>
 </ul>
 
 <H4>KAccelAction</H4>
 <ul>
-<li>KDE3 supported 3 modifier key shortcuts and 4 modifier key (3+META) shortcuts, because earlier versions of Qt3 didn't
+<li>Removed. Replaced by the new KAction/QAction framework.</li>
+<li>[Old note] KDE3 supported 3 modifier key shortcuts and 4 modifier key (3+META) shortcuts, because earlier versions of Qt3 didn't
     support a META modifier/WIN key.  This is changed, so now all shortcuts can be 4 modifier key.  All instances of
     shortcut3 and shortcut4 have been reduced just to "shortcut".</li>
-<li>The constructor, init(), and insert() functions now only take only KShortcut "default" argument instead of two</li>
-<li>Removed shortcutDefault3() and shortcutDefault4().  Use shortcutDefault() instead</li>
+<li>[Old note] The constructor, init(), and insert() functions now only take only KShortcut "default" argument instead of two</li>
+<li>[Old note] Removed shortcutDefault3() and shortcutDefault4().  Use shortcutDefault() instead</li>
 </ul>
 
 <H4>KApplication</H4>
@@ -254,25 +256,26 @@ Desktop Entry Spec</a>
 <H4>KGlobalAccel</H4>
 <ul>
 <li>bool useFourModifierKeys() has been removed (we always use four modifier keys now).</li>
-<li>The constructor only takes one KShortcut "default" argument now instead of two.</li>
+<li>Now a singleton</li>
+<li>You shouldn't need to access this class much... just use setGlobalShortcut() in KAction.</li>
 </ul>
 
 <H4>KKey</H4>
 <ul>
+<li>Removed. Use plain ints as the Qt key code instead.</li>
+<li>When replacing KKey(QKeyEvent*), you need to OR the event->key() and event->modifiers() to get the replacement.</li>
 <li>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</li>
 </ul>
 
 <H4>KKeySequence</H4>
 <ul>
-<li>Is being phased out.  It was originally created to hold multiple key sequence before
-   QKeySequence could support it (Qt 3.0). You should use QKeySequence instead.
-   A K3KeySequence convenience class is also available.
-</li>
+<li>Removed, use QKeySequence instead.</li>
+<li>Note that QKeySequence expects multiple shortcuts to be separated by ", " (ie a comma then a space) in converting from text.</li>
 </ul>
 
 <H4>KKeyNative</H4>
 <ul>
-<li>modX(ModFlags) is now a direct function call.  IE, modX(KKey::WIN) -&gt; modXWin()</li>
+<li>Removed. Use plain ints as the Qt key code instead.</li>
 </ul>
 
 <H4>KNotifyClient</H4>
@@ -307,7 +310,14 @@ Desktop Entry Spec</a>
 
 <H4>KShortcut</H4>
 <ul>
-<li>Is being phased out.  A K3Shortcut class is available.  Watch here for more info.</li>
+<li>Now implicitly shared and reentrant</li>
+<li>Only uses QKeySequences now</li>
+</ul>
+
+<H4>KShortcutList and derivatives</H4>
+<ul>
+<li>Removed - no longer needed</li>
+<li>Saving and loading of shortcuts now performed in KActionCollection, KGlobalAccel, and KStdAccel.</li>
 </ul>
 
 <H4>KStringHandler</H4>
@@ -483,7 +493,7 @@ cg.readXXX("entry name");
 <p>QAction in Qt4 is a true 1st class citizen - all QWidgets now have a list of associated actions, and QToolBar, QMenu etc. all use this list directly to show the graphical items (widgets, entries in the menu, etc).  This has replaced all usage of integers as "id"s.  There is also a new QEvent (QActionEvent), and the corresponding virtual protected function in QWidget, actionEvent().</p>
 <ul>
 <li>KAction is now a subclass of QAction.</li>
-<li>Don't use setIconSet() anymore, use setIconName() instead, there is no compatibility class or function</li>
+<li>Don't use setIconSet() anymore, use setIcon(KIcon(iconName)) instead</li>
 <li>New constructors more closely model QAction (old constructors deprecated)</li>
 <li>You should never rename the objectName() of a KAction - as KActionCollection holds a map, and it is not told of name changes (thus the setObjectName() functions are made private)</li>
 <li>"icon" property is now a QIcon, use iconName() / setIconName() for KDE named icons</li>
@@ -499,6 +509,8 @@ cg.readXXX("entry name");
 <li>ActivationReason has been removed (not supported by Qt). For a surrogate, you can connect to QMenu::triggered(QAction*), QToolBar::actionTriggered(QAction*), etc.</li>
 <li>setters are no longer slots; where they were used as such, an intermediary will be required</li>
 <li>New feature from Qt: statusTip() / setStatusTip().  Usually this will be the same as the tooltip.  It appears in the status bar whenever the action is hovered in a QMenu.  A porting convenience is being investigated for automatic toolTip() -> statusTip(), but the best solution is to set both.</li>
+<li>New feature: globalShortcut() and globalShortcutAllowed().  Automatically communicates with KGlobalAccel to register a global shortcut (ie. one that does not need the application to have focus to be activated).</li>
+<li>setShortcut() now defaults to setting the default shortcut as well (as it was by far the most common use case).  To just set the custom shortcut, use setShortcut(myShortcut, KAction::CustomShortcut)</li>
 </ul>
 
 <H4>KActionCollection</H4>
@@ -776,12 +788,6 @@ flag)</tt> have been removed in favor of <tt>setMovingEnabled(bool)</tt></li>
 <tt>maximumHeight()/maximumWidth()</tt></li>
 <li><tt>void setMaxHeight (int h)</tt> and <tt>void setMaxWidth (int dw)</tt>
 removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
-</ul>
-
-<h4>KToolBarButton</h4>
-<ul>
-<li>Don't use setIconSet anymore, use setIcon instead, there is no compatibility class or function</li>
-<li>setPopup -&gt; setMenu</li>
 </ul>
 
 <h4>KPushButton</h4>

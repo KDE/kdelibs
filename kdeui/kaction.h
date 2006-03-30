@@ -35,7 +35,6 @@
 
 #include "kicon.h"
 
-class KAccel;
 class KActionCollection;
 class KGuiItem;
 class KInstance;
@@ -184,7 +183,26 @@ class KDEUI_EXPORT KAction : public QAction
   // FIXME KAction port : replace (this hides QAction::shortcut)
   Q_PROPERTY( QString shortcut READ shortcutText WRITE setShortcutText )
 
+  Q_PROPERTY( KShortcut defaultShortcut READ defaultShortcut WRITE setDefaultShortcut )
+  Q_PROPERTY( bool shortcutConfigurable READ isShortcutConfigurable WRITE setShortcutConfigurable )
+  Q_PROPERTY( KShortcut globalShortcut READ globalShortcut WRITE setGlobalShortcut )
+  Q_PROPERTY( KShortcut defaultGlobalShortcut READ defaultGlobalShortcut WRITE setDefaultGlobalShortcut )
+  Q_PROPERTY( bool globalShortcutAllowed READ globalShortcutAllowed WRITE setGlobalShortcutAllowed )
+
 public:
+    /**
+     * A simple enumeration to define the type of shortcut, whether default or customised.
+     * Used primarily so setShortcut() and setGlobalShortcut() can be made to also set the
+     * default shortcut by default.
+     */
+    enum ShortcutType {
+      /// The shortcut is a custom shortcut
+      CustomShortcut = 0x1,
+      /// The shortcut is a default shortcut
+      DefaultShortcut = 0x2
+    };
+    Q_DECLARE_FLAGS(ShortcutTypes, ShortcutType)
+
     /**
      * Constructs an action in the specified KActionCollection.
      *
@@ -347,8 +365,11 @@ public:
      *
      * This is preferred over QAction::shortcut(), as it allows for multiple shortcuts
      * per action.
+     *
+     * \param type the type of shortcut to return.  Should both be specified, only the 
+     *             custom shortcut will be returned.  Defaults to the custom shortcut, if one exists.
      */
-    const KShortcut& shortcut() const;
+    const KShortcut& shortcut(ShortcutTypes types = CustomShortcut) const;
 
     /**
      * Get the text version of the kde shortcut for this action.
@@ -362,8 +383,12 @@ public:
      *
      * This is preferred over QAction::setShortcut(), as it allows for multiple shortcuts
      * per action.
+     *
+     * \param shortcut shortcut(s) to use for this action in its specified shortcutContext()
+     * \param type type of shortcut to be set, whether the custom shortcut, the default shortcut,
+     *            or both (the default).
      */
-    void setShortcut(const KShortcut& shortcut);
+    void setShortcut(const KShortcut& shortcut, ShortcutTypes type = static_cast<ShortcutType>(CustomShortcut | DefaultShortcut));
 
     /**
      * \overload void setShortcut(const KShortcut& shortcut)
@@ -395,15 +420,81 @@ public:
     void setShortcutConfigurable(bool configurable);
 
     /**
+     * Get the global shortcut for this action, if one exists. Global shortcuts
+     * allow your actions to respond to accellerators independently of the focused window.
+     * Unlike regular shortcuts, the application's window does not need focus
+     * for them to be activated.
+     *
+     * \param type the type of shortcut to be returned. Should both be specified, only the 
+     *             custom shortcut will be returned.  Defaults to the custom shortcut,
+     *             if one exists.
+     *
+     * \sa KGlobalAccel
+     * \sa setGlobalShortcut()
+     */
+    const KShortcut& globalShortcut(ShortcutTypes type = CustomShortcut) const;
+
+    /**
+     * Assign a global shortcut for this action. Global shortcuts
+     * allow your actions to respond to keys independently of the focused window.
+     * Unlike regular shortcuts, the application's window does not need focus
+     * for them to be activated.
+     *
+     * \param shortcut shortcut(s) to grab as global accelerators.
+     * \param the type of shortcut to be set, whether the custom shortcut, the default shortcut,
+     *            or both (the default).
+     *
+     * \note For convenience, passing a shortcut also sets the default (as this is by far
+     *       the most common use case; mostly custom shortcuts are loaded from configuration
+     *       files).  Pass \b false for \a isDefault to just set this
+     *       shortcut.
+     *
+     * \sa KGlobalAccel
+     * \sa globalShortcut()
+     */
+    void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type = static_cast<ShortcutType>(CustomShortcut | DefaultShortcut));
+
+    /**
+     * Get the default global shortcut for this action, if one exists.
+     *
+     * \sa globalShortcut()
+     */
+    const KShortcut& defaultGlobalShortcut() const;
+
+    /**
+     * Set the default global shortcut for this action.
+     *
+     * \param shortcut default global shortcut(s).
+     *
+     * \sa defaultGlobalShortcut()
+     */
+    void setDefaultGlobalShortcut(const KShortcut& shortcut);
+
+    /**
+     * Returns true if this action is permitted to have a global shortcut.
+     * Defaults to false.
+     */
+    bool globalShortcutAllowed() const;
+
+    /**
+     * Indicate whether the programmer and/or user may define a global shortcut for this action.
+     * Defaults to false.
+     *
+     * \param allowed set to \e true if this action may have a global shortcut, otherwise \e false.
+     */
+    void setGlobalShortcutAllowed(bool allowed);
+
+    /**
      * Convenience function to determine if this action has an associated icon.
      */
     bool hasIcon() const;
 
     /**
      * Set the icon for this action.
-     * 
+     *
      * This function hides QAction::setIcon(const QIcon&) to encourage programmers to pass
-     * KIcons (which adhere to KDE style guidelines).
+     * KIcons (which adhere to KDE style guidelines).  The QAction call can of course still
+     * be accessed manually for the rare instances where KIcon does not make sense.
      *
      * \param icon the KIcon to assign to this action
      */
@@ -416,7 +507,7 @@ public:
      * \param group the icon group
      * \param instance the KInstance from which to retrieve the icon loader.
      *
-     * \deprecated Use setIcon(KIcon("kdeiconname")) instead
+     * \deprecated Use setIcon(KIcon("kdeiconname")) instead, or pass KIcon("kdeiconname") to the constructor.
      */
     KDE_DEPRECATED void setIconName(const QString& icon);
 
@@ -522,9 +613,10 @@ private:
     void setObjectName(const QString& name);
 
 private:
-    class KActionPrivate;
-    KActionPrivate* const d;
+    class KActionPrivate* const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KAction::ShortcutTypes)
 
 #include <kactioncollection.h>
 #include <kactionclasses.h>

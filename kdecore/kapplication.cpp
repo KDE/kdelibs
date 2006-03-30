@@ -45,7 +45,6 @@
 #undef QT_NO_TRANSLATION
 #include "kapplication.h"
 #define QT_NO_TRANSLATION
-#include "kaccel.h"
 #include "kauthorized.h"
 #include "kaboutdata.h"
 #include "kcheckaccelerators.h"
@@ -62,6 +61,7 @@
 #include "klocale.h"
 #include "kstandarddirs.h"
 #include "kmimesourcefactory.h"
+#include "kstdaccel.h"
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
@@ -294,27 +294,9 @@ void KApplication::removeX11EventFilter( const QWidget* filter )
     }
 }
 
-// FIXME: remove this when we've get a better method of
-// customizing accelerator handling -- hopefully in Qt.
-// For now, this is set whenever an accelerator is overridden
-// in KAccelEventHandler so that the AccelOverride isn't sent twice. -- ellis, 19/10/02
-extern bool kde_g_bKillAccelOverride;
-
 bool KApplication::notify(QObject *receiver, QEvent *event)
 {
     QEvent::Type t = event->type();
-    if (kde_g_bKillAccelOverride)
-    {
-       kde_g_bKillAccelOverride = false;
-       // Indicate that the accelerator has been overridden.
-       if (t == QEvent::ShortcutOverride)
-       {
-          static_cast<QKeyEvent *>(event)->accept();
-          return true;
-       }
-       else
-          kWarning(125) << "kde_g_bKillAccelOverride set, but received an event other than AccelOverride." << endl;
-    }
 
     if ((t == QEvent::ShortcutOverride) || (t == QEvent::KeyPress))
     {
@@ -324,7 +306,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
        {
           // We have a keypress for a lineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
-          KKey key(kevent);
+          int key = kevent->key() | kevent->modifiers();
           if (_selectAll.contains(key))
           {
              if (t == QEvent::KeyPress)
@@ -338,7 +320,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
              }
           }
           // Ctrl-U deletes from start of line.
-          if (key == KKey(Qt::CTRL + Qt::Key_U))
+          if (key == Qt::CTRL + Qt::Key_U)
           {
              if (t == QEvent::KeyPress)
              {
@@ -364,7 +346,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
        {
           // We have a keypress for a multilineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
-          if (_selectAll.contains(KKey(kevent)))
+          if (_selectAll.contains(kevent->key() | kevent->modifiers()))
           {
              if (t == QEvent::KeyPress)
              {
@@ -1337,7 +1319,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
                 break;
 
             case KIPC::BlockShortcuts:
-                KGlobalAccel::blockShortcuts(arg);
+                // FIXME KAccel port
+                //KGlobalAccel::blockShortcuts(arg);
                 emit kipcMessage(id, arg); // some apps may do additional things
                 break;
             }

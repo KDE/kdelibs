@@ -1,0 +1,238 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 2001,2002 Ellis Whitehead <ellis@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
+
+#include "config.h"
+
+#include <qwindowdefs.h>
+
+#include "kaction.h"
+#include "kglobalaccel_x11.h"
+#include "kglobalaccel.h"
+#include "kkeyserver_x11.h"
+
+#include <kapplication.h>
+#include <kdebug.h>
+
+#include <qregexp.h>
+#include <qwidget.h>
+#include <qmetaobject.h>
+#include <qmenu.h>
+
+#ifdef Q_WS_X11
+#include <kxerrorhandler.h>
+#endif
+
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/keysym.h>
+#include <fixx11h.h>
+
+extern "C" {
+  static int XGrabErrorHandler( Display *, XErrorEvent *e ) {
+	if ( e->error_code != BadAccess ) {
+	    kWarning() << "grabKey: got X error " << e->type << " instead of BadAccess\n";
+	}
+	return 1;
+  }
+}
+
+// g_keyModMaskXAccel
+//	mask of modifiers which can be used in shortcuts
+//	(meta, alt, ctrl, shift)
+// g_keyModMaskXOnOrOff
+//	mask of modifiers where we don't care whether they are on or off
+//	(caps lock, num lock, scroll lock)
+static uint g_keyModMaskXAccel = 0;
+static uint g_keyModMaskXOnOrOff = 0;
+
+static void calculateGrabMasks()
+{
+	g_keyModMaskXAccel = KKeyServer::accelModMaskX();
+	g_keyModMaskXOnOrOff =
+			KKeyServer::modXLock() |
+			KKeyServer::modXNumLock() |
+			KKeyServer::modXScrollLock() |
+			KKeyServer::modXModeSwitch();
+	//kDebug() << "g_keyModMaskXAccel = " << g_keyModMaskXAccel
+	//	<< "g_keyModMaskXOnOrOff = " << g_keyModMaskXOnOrOff << endl;
+}
+
+//----------------------------------------------------
+
+KGlobalAccelImpl::KGlobalAccelImpl(KGlobalAccel* owner)
+	: m_owner(owner)
+{
+}
+
+bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
+{
+	if( !keyQt ) {
+		kWarning(125) << k_funcinfo << "Tried to grab key with null code." << endl;
+		return false;
+	}
+
+	int keyCodeX;
+	uint keyModX;
+	KKeyServer::keyQtToX(keyQt, keyCodeX);
+	KKeyServer::keyQtToModX(keyQt, keyModX);
+
+	keyModX &= g_keyModMaskXAccel; // Get rid of any non-relevant bits in mod
+	
+	// HACK: make Alt+Print work
+	if( keyCodeX == XK_Sys_Req ) {
+	    keyModX |= KKeyServer::modXAlt();
+	    keyCodeX = 111;
+	}
+
+	if( !keyCodeX )
+		return false;
+
+#ifdef Q_WS_X11
+	KXErrorHandler handler( XGrabErrorHandler );
+#endif
+
+	// We'll have to grab 8 key modifier combinations in order to cover all
+	//  combinations of CapsLock, NumLock, ScrollLock.
+	// Does anyone with more X-savvy know how to set a mask on QX11Info::appRootWindow so that
+	//  the irrelevant bits are always ignored and we can just make one XGrabKey
+	//  call per accelerator? -- ellis
+#ifndef NDEBUG
+	QString sDebug = QString("\tcode: 0x%1 state: 0x%2 | ").arg(keyCodeX,0,16).arg(keyModX,0,16);
+#endif
+	uint keyModMaskX = ~g_keyModMaskXOnOrOff;
+	for( uint irrelevantBitsMask = 0; irrelevantBitsMask <= 0xff; irrelevantBitsMask++ ) {
+		if( (irrelevantBitsMask & keyModMaskX) == 0 ) {
+#ifndef NDEBUG
+			sDebug += QString("0x%3, ").arg(irrelevantBitsMask, 0, 16);
+#endif
+			if( grab )
+				XGrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask,
+					QX11Info::appRootWindow(), True, GrabModeAsync, GrabModeSync );
+			else
+				XUngrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask, QX11Info::appRootWindow() );
+		}
+	}
+
+	bool failed = false;
+	if( grab ) {
+#ifdef Q_WS_X11
+		failed = handler.error( true ); // sync now
+#endif
+		if( failed ) {
+			kDebug(125) << "grab failed!\n";
+			return false;
+		}
+	}
+	
+	return !failed;
+}
+
+bool KGlobalAccelImpl::x11Event( XEvent* event )
+{
+	switch( event->type ) {
+		case MappingNotify:
+			XRefreshKeyboardMapping(&event->xmapping);
+			x11MappingNotify();
+			return true;
+
+		 case XKeyPress:
+			if( x11KeyPress( event ) )
+				return true;
+
+		 default:
+			return false;
+	}
+}
+
+void KGlobalAccelImpl::x11MappingNotify()
+{
+	kDebug(125) << "KGlobalAccelImpl::x11MappingNotify()" << endl;
+	// Maybe the X modifier map has been changed.
+	uint oldKeyModMaskXAccel = g_keyModMaskXAccel;
+	uint oldKeyModMaskXOnOrOff = g_keyModMaskXOnOrOff;
+
+	KKeyServer::initializeMods();
+	calculateGrabMasks();
+	
+	if (oldKeyModMaskXAccel != g_keyModMaskXAccel || oldKeyModMaskXOnOrOff != g_keyModMaskXOnOrOff)
+		// Do new XGrabKey()s.
+		m_owner->regrabKeys();
+}
+
+bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
+{
+	// do not change this line unless you really really know what you are doing (Matthias)
+	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() ) {
+		XUngrabKeyboard( QX11Info::display(), pEvent->xkey.time );
+		XFlush( QX11Info::display()); // avoid X(?) bug
+	}
+
+	uchar keyCodeX = pEvent->xkey.keycode;
+	uint keyModX = pEvent->xkey.state & (g_keyModMaskXAccel | KKeyServer::MODE_SWITCH);
+
+	// If numlock is active and a keypad key is pressed, XOR the SHIFT state.
+	//  e.g., KP_4 => Shift+KP_Left, and Shift+KP_4 => KP_Left.
+	if( pEvent->xkey.state & KKeyServer::modXNumLock() ) {
+		// TODO: what's the xor operator in c++?
+		uint sym = XKeycodeToKeysym( QX11Info::display(), keyCodeX, 0 );
+		// If this is a keypad key,
+		if( sym >= XK_KP_Space && sym <= XK_KP_9 ) {
+			switch( sym ) {
+				// Leave the following keys unaltered
+				// FIXME: The proper solution is to see which keysyms don't change when shifted.
+				case XK_KP_Multiply:
+				case XK_KP_Add:
+				case XK_KP_Subtract:
+				case XK_KP_Divide:
+					break;
+				default:
+					if( keyModX & KKeyServer::modXShift() )
+						keyModX &= ~KKeyServer::modXShift();
+					else
+						keyModX |= KKeyServer::modXShift();
+			}
+		}
+	}
+
+	int keyCodeQt;
+	int keyModQt;
+	KKeyServer::symToKeyQt(keyCodeX, keyCodeQt);
+	KKeyServer::modXToQt(keyModX, keyModQt);
+	
+	int keyQt = keyCodeQt | keyModQt;
+
+	// All that work for this hey...
+	if (m_owner->keyPressed(keyQt))
+		return true;
+
+	return false;
+}
+
+void KGlobalAccelImpl::enable( )
+{
+	calculateGrabMasks();
+	kapp->installX11EventFilter( this );
+}
+
+void KGlobalAccelImpl::disable( )
+{
+	kapp->removeX11EventFilter( this );
+}
+
+#include "kglobalaccel_x11.moc"

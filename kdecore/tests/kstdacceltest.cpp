@@ -58,8 +58,8 @@ void KStdAccelTest::testFindStdAccel()
 void KStdAccelTest::testRemoveShortcut()
 {
     KShortcut cutShortCut = KStdAccel::shortcut( KStdAccel::Cut );
-    cutShortCut.remove( KKey( Qt::SHIFT + Qt::Key_Delete ) );
-    cutShortCut.remove( KKey( Qt::CTRL + Qt::Key_X ) );
+    cutShortCut.remove( Qt::SHIFT + Qt::Key_Delete );
+    cutShortCut.remove( Qt::CTRL + Qt::Key_X );
     //qDebug( "%s", qPrintable( cutShortCut.toString() ) );
     QVERIFY( cutShortCut.isNull() );
 }
@@ -74,23 +74,21 @@ void KStdAccelTest::testKShortcut()
     QVERIFY( zero.isNull() );
     QVERIFY( zero.count() == 0 );
 
-    KShortcut quit( "CTRL+X,CTRL+C;Z,Z" ); // quit in emacs vs. quit in vi :)
+    KShortcut quit( "Ctrl+X, Ctrl+C;Z, Z" ); // quit in emacs vs. quit in vi :)
     QCOMPARE( (int)quit.count(), 2 );
     QVERIFY( !quit.isNull() );
     QCOMPARE( quit.seq(0).toString(), QString::fromLatin1("Ctrl+X, Ctrl+C") );
     QCOMPARE( quit.seq(1).toString(), QString::fromLatin1("Z, Z") );
-    QCOMPARE( quit.keyCodeQt(), (int)(Qt::CTRL + Qt::Key_X) );
+    QCOMPARE( quit.seq(0), QKeySequence(Qt::CTRL + Qt::Key_X, Qt::CTRL + Qt::Key_C) );
     QVERIFY( quit.compare( null ) > 0 );
     QVERIFY( null < quit );
     QVERIFY( quit != null );
     QVERIFY( !( quit == null ) );
 
-    QVERIFY( quit.contains( KKey( Qt::CTRL+Qt::Key_X ) ) );
-    QVERIFY( !quit.contains( KKey( Qt::CTRL+Qt::Key_Z ) ) );
-    QVERIFY( !quit.contains( KKey( Qt::CTRL+Qt::Key_C ) ) );
-    KKeySequence seq;
-    seq.setKey( 0, Qt::CTRL+Qt::Key_X );
-    seq.setKey( 1, Qt::CTRL+Qt::Key_C );
+    QVERIFY( quit.contains( Qt::CTRL+Qt::Key_X ) );
+    QVERIFY( !quit.contains( Qt::CTRL+Qt::Key_Z ) );
+    QVERIFY( !quit.contains( Qt::CTRL+Qt::Key_C ) );
+    QKeySequence seq( Qt::CTRL+Qt::Key_X, Qt::CTRL+Qt::Key_C );
     QVERIFY( quit.contains( seq ) );
     QVERIFY( !null.contains( seq ) );
 
@@ -99,7 +97,7 @@ void KStdAccelTest::testKShortcut()
 
     QKeySequence casted = quit; // is this a good idea?
     QCOMPARE( QString(casted), seq.toString() );
-    QVERIFY( casted == seq.qt() );
+    QVERIFY( casted == seq );
 
     QVERIFY( KShortcut::null() == null );
 }

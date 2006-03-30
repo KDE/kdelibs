@@ -35,7 +35,6 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kaccel.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <knotification.h>
@@ -45,6 +44,9 @@
 #include "kdatepicker.h"
 #include "kdatetable.h"
 #include "kmenu.h"
+#include "kactioncollection.h"
+#include "kaction.h"
+
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qpen.h>
@@ -162,14 +164,34 @@ KDateTable::~KDateTable()
 
 void KDateTable::initAccels()
 {
-  KAccel* accel = new KAccel(this, "date table accel");
-  accel->insert(KStdAccel::Next, this, SLOT(nextMonth()));
-  accel->insert(KStdAccel::Prior, this, SLOT(previousMonth()));
-  accel->insert(KStdAccel::Home, this, SLOT(beginningOfMonth()));
-  accel->insert(KStdAccel::End, this, SLOT(endOfMonth()));
-  accel->insert(KStdAccel::BeginningOfLine, this, SLOT(beginningOfWeek()));
-  accel->insert(KStdAccel::EndOfLine, this, SLOT(endOfWeek()));
-  accel->readSettings();
+  KActionCollection* localCollection = new KActionCollection(this);
+  localCollection->setAssociatedWidget(this);
+
+  KAction* next = new KAction(localCollection, 0);
+  next->setShortcut(KStdAccel::Next);
+  connect(next, SIGNAL(triggered(bool)), SLOT(nextMonth()));
+
+  KAction* prior = new KAction(localCollection, 0);
+  prior->setShortcut(KStdAccel::Prior);
+  connect(prior, SIGNAL(triggered(bool)), SLOT(previousMonth()));
+
+  KAction* beginMonth = new KAction(localCollection, 0);
+  beginMonth->setShortcut(KStdAccel::Home);
+  connect(beginMonth, SIGNAL(triggered(bool)), SLOT(beginningOfMonth()));
+
+  KAction* endMonth = new KAction(localCollection, 0);
+  endMonth->setShortcut(KStdAccel::End);
+  connect(endMonth, SIGNAL(triggered(bool)), SLOT(endOfMonth()));
+
+  KAction* beginWeek = new KAction(localCollection, 0);
+  beginWeek->setShortcut(KStdAccel::BeginningOfLine);
+  connect(beginWeek, SIGNAL(triggered(bool)), SLOT(beginningOfWeek()));
+
+  KAction* endWeek = new KAction(localCollection, 0);
+  endWeek->setShortcut(KStdAccel::EndOfLine);
+  connect(endWeek, SIGNAL(triggered(bool)), SLOT(endOfWeek()));
+
+  localCollection->readSettings();
 }
 
 int KDateTable::posFromDate( const QDate &dt )
