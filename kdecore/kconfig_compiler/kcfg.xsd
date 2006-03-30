@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  kcfg XSD v1.0 -->
 <xsd:schema
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	          xmlns="http://www.kde.org/standards/kcfg/1.0"
-	     xmlns:kcfg="http://www.kde.org/standards/kcfg/1.0"
-	targetNamespace="http://www.kde.org/standards/kcfg/1.0"
-	version="1.0"
-	elementFormDefault="qualified" >
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns="http://www.kde.org/standards/kcfg/1.0"
+             xmlns:kcfg="http://www.kde.org/standards/kcfg/1.0"
+        targetNamespace="http://www.kde.org/standards/kcfg/1.0"
+        version="1.0"
+        elementFormDefault="qualified" >
     
     <xsd:annotation>
         <xsd:documentation>
@@ -15,7 +15,7 @@
             Copyright (c) 2003 Waldo Bastian &lt;bastian@kde.org&gt;
             Copyright (c) 2003 Zack Rusin &lt;zack@kde.org&gt;
             Copyright (c) 2004 Frans Englich &lt;frans.englich@telia.com&gt;
-			Copyright (c) 2006 Michaël Larouche &lt;michael.larouche@kdemail.net&gt;
+            Copyright (c) 2006 Michaël Larouche &lt;michael.larouche@kdemail.net&gt;
             
             Permission to use, copy, modify and distribute this DTD
             and its accompanying documentation for any purpose and without fee
@@ -44,15 +44,15 @@
 
             <![CDATA[
 
-		<?xml version="1.0" encoding="UTF-8" ?>
-		<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
-		      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 
-		                          http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
-		<!-- the content -->
-		</kcfg>
+                <?xml version="1.0" encoding="UTF-8" ?>
+                <kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 
+                                          http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+                <!-- the content -->
+                </kcfg>
 
-	    ]]>
+            ]]>
 
         </xsd:documentation>
     </xsd:annotation>
@@ -63,15 +63,15 @@
                 <xsd:element name="include" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
                 <xsd:element name="kcfgfile" >
                     <xsd:complexType>
-		    	<xsd:sequence>
-				<xsd:element name="parameter" type="kcfg:parameter" minOccurs="0" maxOccurs="unbounded" />
-				<!-- FIXME: Are really unbounded occurances of parameter allowed? -->
-				</xsd:sequence>
+                        <xsd:sequence>
+                            <xsd:element name="parameter" type="kcfg:parameter" minOccurs="0" maxOccurs="unbounded" />
+                            <!-- FIXME: Are really unbounded occurances of parameter allowed? -->
+                        </xsd:sequence>
                         <xsd:attribute name="name" type="xsd:string" use="optional"/>
                         <xsd:attribute name="arg" type="xsd:boolean" use="optional"/>
                     </xsd:complexType>
                 </xsd:element>
-				<xsd:element name="signal" type="kcfg:signal" minOccurs="0" maxOccurs="unbounded" />
+                <xsd:element name="signal" type="kcfg:signal" minOccurs="0" maxOccurs="unbounded" />
                 <xsd:element name="group" maxOccurs="unbounded" >
                     <xsd:complexType>
                         <xsd:sequence>
@@ -130,16 +130,16 @@
                                             </xsd:complexType>
                                         </xsd:element>
                                         
-                                       <xsd:element name="emit" minOccurs="0">
+                                        <xsd:element name="emit" minOccurs="0">
                                             <xsd:complexType>
-												<xsd:simpleContent>
-													<xsd:extension base="xsd:string">
-														<xsd:attribute name="signal" use="required" type="xsd:string"/>
-													</xsd:extension>
+                                                <xsd:simpleContent>
+                                                    <xsd:extension base="xsd:string">
+                                                        <xsd:attribute name="signal" use="required" type="xsd:string"/>
+                                                    </xsd:extension>
                                                 </xsd:simpleContent>
                                             </xsd:complexType>
-                                       </xsd:element>
-									   
+                                        </xsd:element>
+                                                                           
                                     </xsd:choice>
                                     <xsd:attribute name="name" use="optional" type="xsd:string"/>
                                     <xsd:attribute name="key" use="optional" type="xsd:string"/>
@@ -156,38 +156,38 @@
     </xsd:element>
 
     <xsd:simpleType name="datatype">
-	<xsd:restriction base="xsd:string">
-	    <xsd:enumeration value="String"/>
-	    <xsd:enumeration value="StringList"/>
-	    <xsd:enumeration value="Font"/>
-	    <xsd:enumeration value="Rect"/>
-	    <xsd:enumeration value="Size"/>
-	    <xsd:enumeration value="Color"/>
-	    <xsd:enumeration value="Point"/>
-	    <xsd:enumeration value="Int"/>
-	    <xsd:enumeration value="UInt"/>
-	    <xsd:enumeration value="Bool"/>
-	    <xsd:enumeration value="Double"/>
-	    <xsd:enumeration value="DateTime"/>
-	    <xsd:enumeration value="LongLong"/>
-	    <xsd:enumeration value="ULongLong"/>
-	    <xsd:enumeration value="IntList"/>
-	    <xsd:enumeration value="Enum"/>
-	    <xsd:enumeration value="Path"/>
-	    <xsd:enumeration value="PathList"/>
-	    <xsd:enumeration value="Password"/>
-	</xsd:restriction>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="String"/>
+            <xsd:enumeration value="StringList"/>
+            <xsd:enumeration value="Font"/>
+            <xsd:enumeration value="Rect"/>
+            <xsd:enumeration value="Size"/>
+            <xsd:enumeration value="Color"/>
+            <xsd:enumeration value="Point"/>
+            <xsd:enumeration value="Int"/>
+            <xsd:enumeration value="UInt"/>
+            <xsd:enumeration value="Bool"/>
+            <xsd:enumeration value="Double"/>
+            <xsd:enumeration value="DateTime"/>
+            <xsd:enumeration value="LongLong"/>
+            <xsd:enumeration value="ULongLong"/>
+            <xsd:enumeration value="IntList"/>
+            <xsd:enumeration value="Enum"/>
+            <xsd:enumeration value="Path"/>
+            <xsd:enumeration value="PathList"/>
+            <xsd:enumeration value="Password"/>
+        </xsd:restriction>
     </xsd:simpleType>
     
     <xsd:complexType name="parameter">
         <xsd:sequence>
             <xsd:element minOccurs="0" name="values">
-	    	<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="value" maxOccurs="unbounded" type="xsd:string"/>
-			</xsd:sequence>
-		</xsd:complexType>
-	    </xsd:element>
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="value" maxOccurs="unbounded" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
         </xsd:sequence>
         <xsd:attribute name="name" use="required" type="xsd:string"/>
         <xsd:attribute name="type" use="optional" type="kcfg:datatype" />
@@ -196,24 +196,25 @@
     
     <xsd:complexType name="code">
         <xsd:simpleContent>
-        	<xsd:extension base="xsd:string"/>
+            <xsd:extension base="xsd:string"/>
         </xsd:simpleContent>
     </xsd:complexType>
     
-	<xsd:complexType name="signal">
-		<xsd:sequence>
-			<xsd:element name="label" minOccurs="0" type="xsd:string"/>
-			<xsd:element name="argument" maxOccurs="unbounded" minOccurs="0" >
-				<xsd:complexType>
-					<xsd:simpleContent>
-						<xsd:extension base="xsd:string">
-							<xsd:attribute use="required" name="type" type="kcfg:datatype"/>
-						</xsd:extension>
-					</xsd:simpleContent>
-				</xsd:complexType>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="name" use="required" type="xsd:string" />
-	</xsd:complexType>
+    <xsd:complexType name="signal">
+        <xsd:sequence>
+            <xsd:element name="label" minOccurs="0" type="xsd:string"/>
+            <xsd:element name="argument" maxOccurs="unbounded" minOccurs="0" >
+                <xsd:complexType>
+                    <xsd:simpleContent>
+                        <xsd:extension base="xsd:string">
+                            <xsd:attribute use="required" name="type" type="kcfg:datatype"/>
+                        </xsd:extension>
+                    </xsd:simpleContent>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="name" use="required" type="xsd:string" />
+    </xsd:complexType>
+
 </xsd:schema>
 
