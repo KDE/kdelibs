@@ -447,7 +447,7 @@ kde4_add_executable(kconfigtest ${kconfigtest_SRCS})
 
 target_link_libraries(kconfigtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-# add_test(kdecore-kconfigtest ${EXECUTABLE_OUTPUT_PATH}/kconfigtest)
+add_test(kdecore-kconfigtest ${EXECUTABLE_OUTPUT_PATH}/kconfigtest)
 
 ########### next target ###############
 
@@ -463,16 +463,15 @@ add_test(kdecore-ktempfiletest ${EXECUTABLE_OUTPUT_PATH}/ktempfiletest)
 
 ########### next target ###############
 
-# set(kurlmimetest_SRCS kurlmimetest.cpp )
-#
-# kde4_automoc(${kurlmimetest_SRCS})
-#
-# kde4_add_executable(kurlmimetest ${kurlmimetest_SRCS})
-#
-# target_link_libraries(kurlmimetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-#
-# add_test(kdecore-kurlmimetest ${EXECUTABLE_OUTPUT_PATH}/kurlmimetest)
+set(kurlmimetest_SRCS kurlmimetest.cpp )
 
+kde4_automoc(${kurlmimetest_SRCS})
+
+kde4_add_executable(kurlmimetest ${kurlmimetest_SRCS})
+
+target_link_libraries(kurlmimetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-kurlmimetest ${EXECUTABLE_OUTPUT_PATH}/kurlmimetest)
 
 ########### next target ###############
 
@@ -612,7 +611,6 @@ target_link_libraries(knotificationrestrictionstest  ${KDE4_KDECORE_LIBS})
 
 set(kautostarttest_SRCS kautostarttest.cpp )
 
-
 kde4_automoc(${kautostarttest_SRCS})
 
 kde4_add_executable(kautostarttest ${kautostarttest_SRCS})
@@ -622,10 +620,8 @@ target_link_libraries(kautostarttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 add_test(kdecore-kautostarttest ${EXECUTABLE_OUTPUT_PATH}/kautostarttest)
 
 
-endif(KDE4_BUILD_TESTS)
-########### install files ###############
+#######################################
 
+endif(KDE4_BUILD_TESTS)
 
 kde4_footer()
-
-
