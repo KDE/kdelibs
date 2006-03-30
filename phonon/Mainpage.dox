@@ -1,7 +1,7 @@
 /** \file Mainpage.dox
     \brief Mainpage of the %Phonon API Documentation.
 */
-/** \mainpage The %Phonon API.
+/** \mainpage The Phonon API.
 
 \section phonon_intro Introduction
 %Phonon is the Multimedia API for %KDE. You should evaluate whether %Phonon
