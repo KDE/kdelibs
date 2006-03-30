@@ -17,10 +17,7 @@ Make sure you get the following stuff from SVN:
 It is important that you compile AND INSTALL the above packages in the above
 order.
 
-Further you will need GNU make, autoconf 2.52 and a working C++ compiler (e.g.
-gcc 3.3.x). 29 May 2005: It is not yet possible to use automake for compiling
-KDE-4. The latest version of usermake (from svn.kde.org/home/kde/trunk/
-kdenonbeta/unsermake) is required.
+Further you will need GNU make, a working C++ compiler (e.g. gcc 3.3.x or later).
 
 Preparations
 
@@ -55,120 +52,29 @@ ldconfig -m $QTDIR/lib
 
 You probably also want to add $KDEDIR/bin and $QTDIR/bin to your path.
 
-Preparing SVN modules
-
-NOTE: Is this still so?
-
-All KDE modules require an "admin" sub-directory. You can create it by making a
-symbolic link from kde-common/admin, make sure to check out the kde-common
-module.
-
-Example:
-
-cd kdelibs
-ln -s ../kde-common/admin
-
-With the new source management technology, Subversion, handling this special
-sub-directory has to be done differently. If an "admin" sub-directory doesn't
-exist, do as follows($KDE_MODULE is the module you're working with):
-
-cd $KDE_MODULE
-svn propset svn:externals admin https://svn.kde.org/home/kde/branches/work/kde4/kde-common/admin
-
-
-
-The URL in the above command has to be adapted to your situation:
-i.e. replace https with svn+ssh, replace svn.kde.org with your account
-name (e.g. username@svn.kde.org) and replace the work branch of the
-URL (/branches/work/kde4/) with the branch you're using
-(e.g. /trunk/KDE/kde-common/ for the main development tree).
-
-
-
-Compiling with unsermake
-
-
-
-The magic sequence to compile & install a package is:
-
-export PATH=$PATH:/your/path/toward/unsermake/module # for (t)csh: setenv PATH ${PATH}:/your/path/toward/unsermake/module
-unsermake -f Makefile.cvs
-./configure --enable-debug
-unsermake
-unsermake install
-
-Compiling with unsermake and a build directory different than the source
-directory
-
-Most of the KDE modules allow to store the compilation (build) objects at a
-different location in the filesystem than the location that contains the KDE
-sources. This setup provides a few advantages (like easier cleanup of builds).
-In order to compile KDE this way, the following sequence of commands is
-required, provided that SRC_DIR=/your/path/to/KDE/sources, BUILD_DIR=/your/path
-/to/build/objects/ and $KDE_MODULE is the module that you want to compile.
-
-export PATH=$PATH:/your/path/toward/unsermake/module # for (t)csh: setenv PATH ${PATH}:/your/path/toward/unsermake/module
-cd $SRC_DIR/$KDE_MODULE
-unsermake -f Makefile.cvs
-cd $BUILD_DIR
-mkdir $KDE_MODULE
-cd $KDE_MODULE
-$SRC_DIR/$KDE_MODULE/configure --enable-debug
-unsermake
-unsermake install
-
-Notes about compiling
-
-Currently, it is not possible to use automake to generate makefiles for
-KDE-4.x. Unsermake is mandatory (see above). It is planned that, for KDE-4, a
-new build system to be adopted (like scons: http://scons.org), in order to
-paliate for the complex task of building a project of the size of KDE.
-
 For configuring Qt, the magic sequence is:
 
 ./configure -system-zlib -qt-gif -system-libjpeg -system-libpng -no-exceptions -debug -fast
 make
 
+Compiling KDE
+
+... see the file COMPILING-WITH-CMAKE.
+
 Common problems
 
 One of the biggest problems is picking up the correct version of Qt, especially
 if your system has more version of Qt installed. Be aware that information
-about library paths gets saved in the "config.cache" file, "Makefile.in" as
-well as "Makefile" files. So it can be that after some struggle to get QTDIR/
-KDEDIR setup correctly your setup is actually correct, but old -incorrect-
-settings are still lying around.
+about library paths gets saved in the "CMakeCache.txt" file.
+So it can be that after some struggle to get QTDIR/KDEDIR setup correctly your
+setup is actually correct, but old -incorrect- settings are still lying around.
 
 First, double check LD_LIBRARY_PATH points first to $QTDIR/lib
 
 If its correct, the best thing to do in such a case is to use the svn-clean 
 script available in kdesdk/scripts . This removes all files which aren't stored
-in SVN. You can then start all over again with "unsermake -f Makefile.cvs". WARNING:
-Make sure you don't have any important files lying around in your source tree any
-more, they will be deleted!
-
-New directories
-
-:
-
-When a new directory gets added to SVN it usually only contains a Makefile.am
-but not a Makefile. If you try to compile such a directory you will get an
-error like:
-
-  Making all in management
-  make[3]: Entering directory /home/gregturp/KDE/kdelibs/kdeprint/management'
-  make[3]: *** No rule to make target ll'.  Stop.
-  make[3]: Leaving directory /home/gregturp/KDE/kdelibs/kdeprint/management'
-  make[2]: *** [all-recursive] Error 1
-  make[2]: Leaving directory /home/gregturp/KDE/kdelibs/kdeprint'
-  make[1]: *** [all-recursive] Error 1
-  make[1]: Leaving directory /home/gregturp/KDE/kdelibs'
-  make: *** [all-recursive-am] Error 2
-
-The solution is to redo "make -f Makefile.cvs; ./configure".
-
-You can create a single Makefile from a Makefile.am file with the kdesdk/
-scripts/create_makefile script. Make sure to run it from the toplevel
-directory. (E.g. /home/username/KDE/kdelibs)
+in SVN. You can then start all over again. WARNING: Make sure you don't have any
+important files lying around in your source tree any more, they will be deleted!
 
 Problems?
 
@@ -176,7 +82,7 @@ See http://www.kde.org/compilationfaq.html for common build problems and their
 solution.
 
 If you encounter _LINK_ problems you are probably doing something wrong. Do a
-"make cvs-clean" and start from scratch, usually this solves the problem.
+"svn-clean" and start from scratch, usually this solves the problem.
 
 If you encounter missing include files, especially if the files start with a
 'q', you probably have not setup your QTDIR correct or have the wrong version
@@ -193,5 +99,4 @@ kde-devel-request@kde.org with "subscribe" in the subject.
 Have fun!
 
 Cheers,
-Waldo Bastian
-bastian@kde.org
+Waldo Bastian and other KDE developers
