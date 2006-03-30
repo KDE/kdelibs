@@ -5961,9 +5961,9 @@ static bool firstRunAt(khtml::RenderObject *renderNode, int y, NodeImpl *&startN
         if (n->isText()) {
             khtml::RenderText* const textRenderer = static_cast<khtml::RenderText *>(n);
             const khtml::InlineTextBoxArray &runs = textRenderer->inlineTextBoxes();
-	    const unsigned lim = runs.count();
+            const unsigned lim = runs.count();
             for (unsigned i = 0; i != lim; ++i) {
-                if (runs[i]->m_y == y) {
+                if (runs[i]->m_y == y && textRenderer->element()) {
                     startNode = textRenderer->element();
                     startOffset = runs[i]->m_start;
                     return true;
@@ -6004,7 +6004,7 @@ static bool lastRunAt(khtml::RenderObject *renderNode, int y, NodeImpl *&endNode
             khtml::RenderText* const textRenderer =  static_cast<khtml::RenderText *>(n);
             const khtml::InlineTextBoxArray &runs = textRenderer->inlineTextBoxes();
             for (int i = (int)runs.count()-1; i >= 0; --i) {
-                if (runs[i]->m_y == y) {
+                if (runs[i]->m_y == y && textRenderer->element()) {
                     endNode = textRenderer->element();
                     endOffset = runs[i]->m_start + runs[i]->m_len;
                     return true;
