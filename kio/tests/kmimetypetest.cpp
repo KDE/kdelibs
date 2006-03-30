@@ -65,7 +65,11 @@ void KMimeTypeTest::testFindByPath()
 {
     KMimeType::Ptr mf;
 
-    mf = KMimeType::findByPath( KStandardDirs::findExe( "kioexec" ) );
+    QString exePath = KStandardDirs::findExe( "kioexec" );
+    if ( exePath.isEmpty() )
+        QSKIP( "kioexec not found", SkipAll );
+
+    mf = KMimeType::findByPath( exePath );
     QVERIFY( mf );
     QCOMPARE( mf->name(), QString::fromLatin1( "application/x-executable" ) );
 
