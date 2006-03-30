@@ -52,8 +52,8 @@ START_CTOR( FormBuilder, Form, 2 )
             if( returnWidget == 0 )
             {
                 delete formBuilder;
-	            return KJS::throwError(exec, KJS::GeneralError, i18n("There was an error reading the file '%1'")
-	                                   .arg(fileName));
+	            return KJS::throwError(exec, KJS::GeneralError, i18n("There was an error reading the file '%1'",
+	                                    fileName));
                 //return KJSEmbed::throwError(exec, i18n("There was an error reading the file '%1'").arg(fileName));
             }
             KJS::JSObject *form = new KJSEmbed::QObjectBinding( exec, returnWidget );
@@ -62,8 +62,8 @@ START_CTOR( FormBuilder, Form, 2 )
         }
                 // Throw error could not read file
         delete formBuilder;
-	    return KJS::throwError(exec, KJS::GeneralError, i18n("Could not read file '%1'")
-	                           .arg(fileName));
+	    return KJS::throwError(exec, KJS::GeneralError, i18n("Could not read file '%1'",
+	                            fileName));
         // return KJSEmbed::throwError(exec, i18n("Could not read file '%1'").arg(fileName));
     }
             // Trow error incorrect args

@@ -154,8 +154,8 @@ START_CTOR( Widget, Widget, 0 )
             StaticBinding::publish( exec, widgetObject, Widget::methods() );
             return widgetObject;
         }
-	    return KJS::throwError(exec, KJS::GeneralError, i18n("'%1' is not a valid QWidget.")
-	                           .arg(widgetName));
+	    return KJS::throwError(exec, KJS::GeneralError, i18n("'%1' is not a valid QWidget.",
+	                            widgetName));
         // return KJSEmbed::throwError(exec, i18n("'%1' is not a valid QWidget.").arg(widgetName));
     }
     // Trow error incorrect args
@@ -206,8 +206,8 @@ START_CTOR( Layout, Layout, 0 )
             StaticBinding::publish( exec, layoutObject, Layout::methods() );
             return layoutObject;
         }
-	    return KJS::throwError(exec, KJS::GeneralError, i18n("'%1' is not a valid QLayout.")
-	                           .arg(layoutName));
+	    return KJS::throwError(exec, KJS::GeneralError, i18n("'%1' is not a valid QLayout.",
+	                            layoutName));
         // return KJSEmbed::throwError(exec, i18n("'%1' is not a valid QLayout.").arg(layoutName));
     }
     // Trow error incorrect args
