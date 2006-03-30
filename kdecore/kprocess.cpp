@@ -766,7 +766,7 @@ void KProcess::setUseShell(bool useShell, const char *shell)
     d->shell = shell;
   else
 // #ifdef NON_FREE // ... as they ship non-POSIX /bin/sh
-#if !defined(__linux__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(__GNU__)
+#if !defined(__linux__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(__GNU__) && !defined(__DragonFly__)
   // Solaris POSIX ...
   if (!access( "/usr/xpg4/bin/sh", X_OK ))
     d->shell = "/usr/xpg4/bin/sh";
