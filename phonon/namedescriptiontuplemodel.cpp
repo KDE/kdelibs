@@ -92,6 +92,7 @@ QVariant NameDescriptionTupleModel::data( const QModelIndex& index, int role ) c
 
 	switch( role )
 	{
+		case Qt::EditRole:
 		case Qt::DisplayRole:
 			return d->data.at( index.row() ).name();
 			break;
