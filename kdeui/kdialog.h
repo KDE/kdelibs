@@ -143,7 +143,7 @@ class KDialogTile;
  *
  *
  * This class can be used in many ways. Note that most KDE ui widgets
- * and many of KDE core applications use the KDialogBase so for more
+ * and many of KDE core applications use the KDialog so for more
  * inspiration you should study the code for these.
  *
  *
@@ -813,4 +813,4 @@ protected:
       static KDialogQueue *_self;
 };
 
-#endif // __KDIALOG_H
+#endif // KDIALOG_H
