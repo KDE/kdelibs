@@ -244,7 +244,7 @@ qint64 KSocketBuffer::sendTo(KActiveSocketBase* dev, qint64 len)
       // better by concatenating a few of them into a big buffer
       // question is: how big should that buffer be? 2 kB should be enough
 
-      Q_ULONG bufsize = 1460;
+      uint bufsize = 1460;
       if (len != -1 && len < bufsize)
 	bufsize = len;
       QByteArray buf(bufsize, '\0');

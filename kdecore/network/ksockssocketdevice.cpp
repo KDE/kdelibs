@@ -188,7 +188,7 @@ KSocksSocketDevice* KSocksSocketDevice::accept()
   return new KSocksSocketDevice(newfd);
 }
 
-static int socks_read_common(int sockfd, char *data, Q_ULONG maxlen, KSocketAddress* from, ssize_t &retval, bool peek = false)
+static int socks_read_common(int sockfd, char *data, quint64 maxlen, KSocketAddress* from, ssize_t &retval, bool peek = false)
 {
   kde_socklen_t len;
   if (from)
@@ -212,7 +212,7 @@ static int socks_read_common(int sockfd, char *data, Q_ULONG maxlen, KSocketAddr
   return 0;
 }
 
-qint64 KSocksSocketDevice::readBlock(char *data, Q_ULONG maxlen)
+qint64 KSocksSocketDevice::readBlock(char *data, quint64 maxlen)
 {
   resetError();
   if (m_sockfd == -1)
@@ -233,7 +233,7 @@ qint64 KSocksSocketDevice::readBlock(char *data, Q_ULONG maxlen)
   return retval;
 }
 
-qint64 KSocksSocketDevice::readBlock(char *data, Q_ULONG maxlen, KSocketAddress &from)
+qint64 KSocksSocketDevice::readBlock(char *data, quint64 maxlen, KSocketAddress &from)
 {
   resetError();
   if (m_sockfd == -1)
@@ -254,7 +254,7 @@ qint64 KSocksSocketDevice::readBlock(char *data, Q_ULONG maxlen, KSocketAddress 
   return retval;
 }
 
-qint64 KSocksSocketDevice::peekBlock(char *data, Q_ULONG maxlen)
+qint64 KSocksSocketDevice::peekBlock(char *data, quint64 maxlen)
 {
   resetError();
   if (m_sockfd == -1)
@@ -275,7 +275,7 @@ qint64 KSocksSocketDevice::peekBlock(char *data, Q_ULONG maxlen)
   return retval;
 }
 
-qint64 KSocksSocketDevice::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
+qint64 KSocksSocketDevice::peekBlock(char *data, quint64 maxlen, KSocketAddress& from)
 {
   resetError();
   if (m_sockfd == -1)
@@ -296,12 +296,12 @@ qint64 KSocksSocketDevice::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress&
   return retval;
 }
 
-qint64 KSocksSocketDevice::writeBlock(const char *data, Q_ULONG len)
+qint64 KSocksSocketDevice::writeBlock(const char *data, quint64 len)
 {
   return writeBlock(data, len, KSocketAddress());
 }
 
-qint64 KSocksSocketDevice::writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to)
+qint64 KSocksSocketDevice::writeBlock(const char *data, quint64 len, const KSocketAddress& to)
 {
   resetError();
   if (m_sockfd == -1)

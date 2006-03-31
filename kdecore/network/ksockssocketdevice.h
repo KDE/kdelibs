@@ -83,7 +83,7 @@ public:
   /**
    * Overrides reading.
    */
-  virtual qint64 readBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 readBlock(char *data, quint64 maxlen);
 
   /**
    * Overrides reading.
@@ -91,27 +91,27 @@ public:
    * @todo (Thiago, you saw this coming) Actually document this.
    *       What is the @p from for?
    */
-  virtual qint64 readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 readBlock(char *data, quint64 maxlen, KSocketAddress& from);
 
   /**
    * Overrides peeking.
    */
-  virtual qint64 peekBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 peekBlock(char *data, quint64 maxlen);
 
   /**
    * Overrides peeking.
    */
-  virtual qint64 peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 peekBlock(char *data, quint64 maxlen, KSocketAddress& from);
 
   /**
    * Overrides writing.
    */
-  virtual qint64 writeBlock(const char *data, Q_ULONG len);
+  virtual qint64 writeBlock(const char *data, quint64 len);
 
   /**
    * Overrides writing.
    */
-  virtual qint64 writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
+  virtual qint64 writeBlock(const char *data, quint64 len, const KSocketAddress& to);
 
   /**
    * Overrides getting socket address.

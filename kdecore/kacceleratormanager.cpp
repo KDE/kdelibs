@@ -223,11 +223,11 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
         {
             if (it->m_index >= 0)
             {
-                QMenuItem *mitem = menuBar->findItem(menuBar->idAt(it->m_index));
-                if (mitem)
+                QAction *maction = menuBar->actions()[it->m_index];
+                if (maction)
                 {
                     checkChange(contents[cnt]);
-                    mitem->setText(contents[cnt].accelerated());
+                    maction->setText(contents[cnt].accelerated());
                 }
                 continue;
             }
@@ -402,20 +402,20 @@ void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
 
 void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
 {
-    QMenuItem *mitem;
+    QAction *maction;
     QString s;
 
-    for (uint i=0; i<mbar->actions().count(); ++i)
+    for (int i=0; i<mbar->actions().count(); ++i)
     {
-        mitem = mbar->findItem(mbar->idAt(i));
-        if (!mitem)
+        maction = mbar->actions()[i];
+        if (!maction)
             continue;
 
         // nothing to do for separators
-        if (mitem->isSeparator())
+        if (maction->isSeparator())
             continue;
 
-        s = mitem->text();
+        s = maction->text();
         if (!s.isEmpty())
         {
             Item *it = new Item;
@@ -430,8 +430,8 @@ void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
         }
 
         // have a look at the popup as well, if present
-        if (mitem->menu ())
-            KPopupAccelManager::manage(mitem->menu ());
+        if (maction->menu())
+            KPopupAccelManager::manage(maction->menu());
     }
 }
 
@@ -774,19 +774,19 @@ void KPopupAccelManager::calculateAccelerators()
 
 void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
 {
-  QMenuItem *mitem;
+  QAction *maction;
   QString s;
 
   list.clear();
 
   // read out the menu entries
-  for (uint i=0; i<m_popup->actions().count(); i++)
+  for (int i=0; i<m_popup->actions().count(); i++)
   {
-    mitem = m_popup->findItem(m_popup->idAt(i));
-    if (mitem->isSeparator())
+    maction = m_popup->actions()[i];
+    if (maction->isSeparator())
       continue;
 
-    s = mitem->text();
+    s = maction->text();
 
     // in full menus, look at entries with global accelerators last
     int weight = 50;
@@ -796,25 +796,25 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
     list.append(KAccelString(s, weight));
 
     // have a look at the popup as well, if present
-    if (mitem->menu())
-        KPopupAccelManager::manage(mitem->menu());
+    if (maction->menu())
+        KPopupAccelManager::manage(maction->menu());
   }
 }
 
 
 void KPopupAccelManager::setMenuEntries(const KAccelStringList &list)
 {
-  QMenuItem *mitem;
+  QAction *maction;
 
   uint cnt = 0;
-  for (uint i=0; i<m_popup->actions().count(); i++)
+  for (int i=0; i<m_popup->actions().count(); i++)
   {
-    mitem = m_popup->findItem(m_popup->idAt(i));
-    if (mitem->isSeparator())
+    maction = m_popup->actions()[i];
+    if (maction->isSeparator())
       continue;
 
     if (KAcceleratorManagerPrivate::checkChange(list[cnt]))
-        mitem->setText(list[cnt].accelerated());
+        maction->setText(list[cnt].accelerated());
     cnt++;
   }
 }
