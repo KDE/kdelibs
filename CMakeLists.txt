@@ -26,6 +26,9 @@ include(CTest)
 # Always include srcdir and builddir in include path
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# Use colors
+set(CMAKE_COLOR_MAKEFILE ON)
+
 # search packages used by KDE
 find_package(KDE4Internal REQUIRED)
 find_package(Perl REQUIRED)
