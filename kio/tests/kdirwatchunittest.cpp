@@ -88,6 +88,17 @@ void KDirWatchTest::VERIFY_DELETED(const QString& alert)
             m_lastSignal == alert);
 }
 
+void KDirWatchTest::remove_file (const QString& file)
+{
+  ::unlink (QFile::encodeName(file));
+}
+
+void KDirWatchTest::touch_file (const QString& file)
+{
+  QFile f(file);
+  f.open(IO_WriteOnly);
+}
+
 KUNITTEST_MODULE ( kunittest_kdirwatch, "KDirWatchTest" )
 KUNITTEST_MODULE_REGISTER_TESTER (KDirWatchTest)
 
@@ -112,6 +123,10 @@ void KDirWatchTest::allTests()
     VERIFY_NOTHING();
     dir->mkdir ("does");
     VERIFY_DIRTY (m_workingDir);
+    touch_file (m_workingDir + "/file");
+    VERIFY_DIRTY (m_workingDir + "/file");
+    VERIFY_NOTHING ();
+    remove_file (m_workingDir + "/file");
     d->addDir (m_workingDir + "/does/not/exist");
     d->removeDir (m_workingDir);
     VERIFY_NOTHING();

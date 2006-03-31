@@ -54,6 +54,9 @@ private:
   /* verify that deleted got emitted */
   void VERIFY_DELETED (const QString&);
 
+  void touch_file (const QString& file);
+  void remove_file (const QString& file);
+
   QString  m_lastSignal;
   QString m_workingDir;
   KDirWatch* d;
