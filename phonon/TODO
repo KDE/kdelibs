@@ -1,0 +1,8 @@
+- Add MIME types to the backends desktop file that give the types the backend
+  can support in the best case. Those can then be used in places where the
+  backend is only conditionally loaded if it can decode the MIME type at hand.
+  Examples:
+     o KFileAudioPreview asks audio/mp3 supported? Backend desktop file
+       says yes, backend is loaded, backend says no (decoder not installed).
+     o KFileAudioPreview asks application/pdf supported? Backend desktop file
+       says no -> no backend loaded
