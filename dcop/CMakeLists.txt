@@ -116,9 +116,6 @@ install_targets(/bin dcopserver )
 ########### install files ###############
 install_files( /include FILES dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h )
 
-
-kde4_create_doxygen_docs( EXCLUDE KDE-ICE testdcop.h testdcop.cpp  )
-
 kde4_footer()
 
 

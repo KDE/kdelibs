@@ -301,7 +301,5 @@ install_files( ${CONFIG_INSTALL_DIR}/colors FILES 40.colors Web.colors Royal.col
 install_files( /include FILES kconfig.h kconfigskeleton.h   kconfigdata.h ksimpleconfig.h    kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h   kcmdlineargs.h kconfigbackend.h kapplication.h kauthorized.h ktoolinvocation.h   kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h   kprocctrl.h klocale.h klocalizedstring.h kicontheme.h kiconloader.h kdebug.h   kwinmodule.h kwin.h kshortcut.h kstdaccel.h kcatalog.h    kcompletion.h kstringhandler.h   kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h    kallocator.h kvmallocator.h kcrash.h krfcdate.h    kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h   krandomsequence.h knotifyclient.h kiconeffect.h    kaudioplayer.h kdcoppropertyproxy.h netwm.h kacceleratormanager.h    netwm_def.h kpixmapprovider.h kstaticdeleter.h     kprocio.h kasyncio.h krandom.h   kbufferedio.h kmimesourcefactory.h kcodecs.h ksocks.h    ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h   kgenericfactory.h kgenericfactory.tcc     ktypelist.h ksortablevaluelist.h kclipboard.h   kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h
  kmountpoint.h kuser.h klockfile.h    kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h   kde_file.h ktimezones.h ktzfiletimezone.h kfilterbase.h kfilterdev.h kdatetime.h qtest_kde.h conversion_check.h   kdedmodule.h kautostart.h knotificationrestrictions.h )
 
-kde4_create_doxygen_docs( REFERENCES dcop kdeui kparts kio EXCLUDE malloc kde_file.h  )
-
 kde4_footer()
 

@@ -35,9 +35,6 @@ install_targets(${LIB_INSTALL_DIR} kdnssd )
 ########### install files ###############
 install_files( /include/dnssd FILES domainbrowser.h query.h remoteservice.h   publicservice.h servicebase.h servicebrowser.h settings.h )
 
-
-kde4_create_doxygen_docs(  )
-
 kde4_footer()
 
 

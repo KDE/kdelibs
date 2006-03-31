@@ -425,8 +425,6 @@ install_files( ${SERVICES_INSTALL_DIR} FILES khtml.desktop khtmlimage.desktop )
 install_files( ${DATA_INSTALL_DIR}/khtml FILES khtml.rc khtml_browser.rc khtml_popupmenu.rc )
 install_files( /include FILES khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h )
 
-kde4_create_doxygen_docs( REFERENCES kdecore kdeui kio kdefx kparts EXCLUDE test*.* html rendering xml misc pics test  )
-
 kde4_footer()
 
 

@@ -37,9 +37,7 @@ set(kded_kdeprintd_PART_SRCS kdeprintd.cpp kprintprocess.cpp )
 
 kde4_automoc(${kded_kdeprintd_PART_SRCS})
 
-set( kded_kdeprintd_DCOP_SKEL_SRCS kdeprintd.h )
-
-kde4_add_dcop_skels(kded_kdeprintd_PART_SRCS ${kded_kdeprintd_DCOP_SKEL_SRCS})
+kde4_add_dcop_skels(kded_kdeprintd_PART_SRCS kdeprintd.h )
 
 kde4_add_plugin(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
 
@@ -52,64 +50,60 @@ install_targets(${PLUGIN_INSTALL_DIR} kded_kdeprintd )
 ########### next target ###############
 
 set(kdeprint_LIB_SRCS
-kmfactory.cpp
-kmjob.cpp
-kmjobmanager.cpp
-kmmanager.cpp
-kmprinter.cpp
-kmuimanager.cpp
-kmvirtualmanager.cpp
-driver.cpp
-driveritem.cpp
-droptionview.cpp
-driverview.cpp
-kmdbentry.cpp
-kprintpreview.cpp
-kprintdialog.cpp
-kprinter.cpp
-kprinterimpl.cpp
-kprintdialogpage.cpp
-kpcopiespage.cpp
-kpdriverpage.cpp
-kprinterpropertydialog.cpp
-kpgeneralpage.cpp
-kpqtpage.cpp
-kmthreadjob.cpp
-kpipeprocess.cpp
-kpfilterpage.cpp
-kmspecialmanager.cpp
-kdeprintcheck.cpp
-plugincombobox.cpp
-kpreloadobject.cpp
-kfilelist.cpp
-kprintaction.cpp
-kpfileselectpage.cpp
-treecombobox.cpp
-kxmlcommand.cpp
-util.cpp
-printerfilter.cpp
-marginpreview.cpp
-marginvaluewidget.cpp
-marginwidget.cpp
-kpmarginpage.cpp
-messagewindow.cpp
-posterpreview.cpp
-kpposterpage.cpp
-foomatic2loader.cpp
-fooparser.cpp
-fooscanner.cpp
-ppdparser.cpp
-ppdscanner.cpp
-ppdloader.cpp
-)
+   kmfactory.cpp
+   kmjob.cpp
+   kmjobmanager.cpp
+   kmmanager.cpp
+   kmprinter.cpp
+   kmuimanager.cpp
+   kmvirtualmanager.cpp
+   driver.cpp
+   driveritem.cpp
+   droptionview.cpp
+   driverview.cpp
+   kmdbentry.cpp
+   kprintpreview.cpp
+   kprintdialog.cpp
+   kprinter.cpp
+   kprinterimpl.cpp
+   kprintdialogpage.cpp
+   kpcopiespage.cpp
+   kpdriverpage.cpp
+   kprinterpropertydialog.cpp
+   kpgeneralpage.cpp
+   kpqtpage.cpp
+   kmthreadjob.cpp
+   kpipeprocess.cpp
+   kpfilterpage.cpp
+   kmspecialmanager.cpp
+   kdeprintcheck.cpp
+   plugincombobox.cpp
+   kpreloadobject.cpp
+   kfilelist.cpp
+   kprintaction.cpp
+   kpfileselectpage.cpp
+   treecombobox.cpp
+   kxmlcommand.cpp
+   util.cpp
+   printerfilter.cpp
+   marginpreview.cpp
+   marginvaluewidget.cpp
+   marginwidget.cpp
+   kpmarginpage.cpp
+   messagewindow.cpp
+   posterpreview.cpp
+   kpposterpage.cpp
+   foomatic2loader.cpp
+   fooparser.cpp
+   fooscanner.cpp
+   ppdparser.cpp
+   ppdscanner.cpp
+   ppdloader.cpp
+   )
 
 kde4_automoc(${kdeprint_LIB_SRCS})
 
-set( kdeprint_DCOP_SKEL_SRCS
-kmfactory.h
-)
-
-kde4_add_dcop_skels(kdeprint_LIB_SRCS ${kdeprint_DCOP_SKEL_SRCS})
+kde4_add_dcop_skels(kdeprint_LIB_SRCS kmfactory.h )
 
 kde4_add_library(kdeprint SHARED ${kdeprint_LIB_SRCS})
 
@@ -128,8 +122,6 @@ install_files( ${CONFIG_INSTALL_DIR}/ui FILES kprintpreviewui.rc )
 install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kdeprintrc.upd )
 install_files( /include FILES kprinter.h kprintaction.h )
 install_files( /include/kdeprint FILES kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h driver.h kmjobmanager.h kmjob.h )
-
-kde4_create_doxygen_docs(  )
 
 kde4_footer()
 

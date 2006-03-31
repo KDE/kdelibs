@@ -4,7 +4,6 @@ project(kdelibs)
 # Disallow in-source build
 string(COMPARE EQUAL "${kdelibs_SOURCE_DIR}" "${kdelibs_BINARY_DIR}" insource)
 if(insource)
-   message(STATUS "debug output for Kurt, remove ASAP again: insource -${insource}- srcdir: -${kdelibs_SOURCE_DIR}- bindir: -${kdelibs_BINARY_DIR}-")
    message(FATAL_ERROR "kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
 endif(insource)
 
@@ -153,10 +152,8 @@ install_files( /include FILES kde.pot )
 install_files( /include FILES kdelibs_export.h kdemacros.h )
 install_files( /share/apps/cmake/modules FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake)
 if(WIN32)
-  install_files( /include FILES kdelibs_export_win.h )
+   install_files( /include FILES kdelibs_export_win.h )
 endif(WIN32)
-
-kde4_create_doxygen_docs(  )
 
 
 

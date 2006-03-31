@@ -4,10 +4,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kde3support )
 
 ########### next target ###############
 
-set(kunittest_LIB_SRCS
-runner.cpp
-tester.cpp
-)
+set(kunittest_LIB_SRCS runner.cpp tester.cpp )
 
 kde4_automoc(${kunittest_LIB_SRCS})
 
@@ -21,9 +18,7 @@ install_targets(${LIB_INSTALL_DIR} kunittest )
 
 ########### next target ###############
 
-set(kunittestmodrunner_SRCS
-modrunner.cpp
-)
+set(kunittestmodrunner_SRCS modrunner.cpp )
 
 kde4_automoc(${kunittestmodrunner_SRCS})
 
@@ -37,7 +32,5 @@ install_targets(/bin kunittestmodrunner )
 ########### install files ###############
 install_files( /include/kunittest FILES runner.h tester.h module.h )
 
-
-kde4_create_doxygen_docs( )
 
 kde4_footer()

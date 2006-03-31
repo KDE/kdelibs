@@ -36,8 +36,6 @@ install_targets(${LIB_INSTALL_DIR} kparts )
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES kpart.desktop krop.desktop krwp.desktop browserview.desktop  )
 install_files( /include/kparts FILES part.h plugin.h partmanager.h mainwindow.h event.h   browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h     componentfactory.h browserrun.h statusbarextension.h )
 
-kde4_create_doxygen_docs( REFERENCES kdecore kdeui kdefx kio  )
-
 kde4_footer()
 
 

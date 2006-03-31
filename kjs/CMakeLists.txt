@@ -19,9 +19,9 @@ if(PCRE_FOUND)
 else(PCRE_FOUND)
 # if pcre is not installed, at least the posix regex.h has to be available
    if(APPLE)
-     check_include_files("sys/types.h;regex.h" HAVE_REGEX_H)
+      check_include_files("sys/types.h;regex.h" HAVE_REGEX_H)
    else(APPLE)
-     check_include_files(regex.h HAVE_REGEX_H)
+      check_include_files(regex.h HAVE_REGEX_H)
    endif(APPLE)
    if (NOT HAVE_REGEX_H)
       message(FATAL_ERROR "Neither the PCRE regular expression library nor the POSIX regex.h header have been found. Consider installing PCRE.")
@@ -49,43 +49,43 @@ create_lut(regexp_object.cpp regexp_object.lut.h regexp_object.cpp)
 create_lut(keywords.table lexer.lut.h lexer.cpp)
 
 set(kjs_LIB_SRCS
-ustring.cpp
-date_object.cpp
-collector.cpp
-nodes.cpp
-grammar.cpp
-lexer.cpp
-lookup.cpp
-operations.cpp
-regexp.cpp
-function_object.cpp
-string_object.cpp
-bool_object.cpp
-number_object.cpp
-internal.cpp
-array_object.cpp
-math_object.cpp
-object_object.cpp
-regexp_object.cpp
-error_object.cpp
-function.cpp
-debugger.cpp
-value.cpp
-list.cpp
-object.cpp
-interpreter.cpp
-property_map.cpp
-property_slot.cpp
-nodes2string.cpp
-identifier.cpp
-reference.cpp
-reference_list.cpp
-scope_chain.cpp
-dtoa.cpp
-fpconst.cpp
-JSLock.cpp
-JSImmediate.cpp
-)
+   ustring.cpp
+   date_object.cpp
+   collector.cpp
+   nodes.cpp
+   grammar.cpp
+   lexer.cpp
+   lookup.cpp
+   operations.cpp
+   regexp.cpp
+   function_object.cpp
+   string_object.cpp
+   bool_object.cpp
+   number_object.cpp
+   internal.cpp
+   array_object.cpp
+   math_object.cpp
+   object_object.cpp
+   regexp_object.cpp
+   error_object.cpp
+   function.cpp
+   debugger.cpp
+   value.cpp
+   list.cpp
+   object.cpp
+   interpreter.cpp
+   property_map.cpp
+   property_slot.cpp
+   nodes2string.cpp
+   identifier.cpp
+   reference.cpp
+   reference_list.cpp
+   scope_chain.cpp
+   dtoa.cpp
+   fpconst.cpp
+   JSLock.cpp
+   JSImmediate.cpp
+   )
 
 kde4_automoc(${kjs_LIB_SRCS})
 
@@ -107,36 +107,30 @@ install_targets(${LIB_INSTALL_DIR} kjs )
 
 if(KDE4_BUILD_TESTS)
 
-########### testkjs_static ###############
-
-set(testkjs_static_SRCS
-testkjs.cpp
-)
-
-kde4_automoc(${testkjs_static_SRCS})
-
-kde4_add_executable(testkjs_static ${testkjs_static_SRCS})
-
-target_link_libraries(testkjs_static  ${KDE4_KDECORE_LIBS} kjs)
-
-########### testkjs ###############
-
-set(testkjs_SRCS
-testkjs.cpp
-)
-
-kde4_automoc(${testkjs_SRCS})
-
-kde4_add_executable(testkjs ${testkjs_SRCS})
-
-target_link_libraries(testkjs  ${KDE4_KDECORE_LIBS} kjs )
+   ########### testkjs_static ###############
+   
+   set(testkjs_static_SRCS testkjs.cpp )
+   
+   kde4_automoc(${testkjs_static_SRCS})
+   
+   kde4_add_executable(testkjs_static ${testkjs_static_SRCS})
+   
+   target_link_libraries(testkjs_static  ${KDE4_KDECORE_LIBS} kjs)
+   
+   ########### testkjs ###############
+   
+   set(testkjs_SRCS testkjs.cpp )
+   
+   kde4_automoc(${testkjs_SRCS})
+   
+   kde4_add_executable(testkjs ${testkjs_SRCS})
+   
+   target_link_libraries(testkjs  ${KDE4_KDECORE_LIBS} kjs )
 
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
 install_files( /include/kjs FILES value.h types.h object.h interpreter.h operations.h             ustring.h lookup.h global.h identifier.h property_map.h           property_slot.h reference.h reference_list.h completion.h            scope_chain.h list.h function.h JSLock.h JSImmediate.h JSType.h )
-
-kde4_create_doxygen_docs()
 
 kde4_footer()
 

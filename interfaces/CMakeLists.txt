@@ -18,8 +18,6 @@ add_subdirectory( kspeech )
 ########### install files ###############
 
 
-kde4_create_doxygen_docs( RECURSIVE REFERENCES kdecore kdefx kdeui kparts dcop EXCLUDE kspeech ktexteditor  )
-
 kde4_footer()
 
 

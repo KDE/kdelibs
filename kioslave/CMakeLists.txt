@@ -2,12 +2,10 @@ kde4_header()
 
 add_subdirectory( file ) 
 if (UNIX) 
-add_subdirectory( http ) 
+   add_subdirectory( http ) 
 endif (UNIX)
 add_subdirectory( ftp ) 
 add_subdirectory( metainfo ) 
-
-kde4_create_doxygen_docs(  )
 
 kde4_footer()
 

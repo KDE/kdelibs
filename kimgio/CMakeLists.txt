@@ -139,8 +139,6 @@ install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES png.desktop xpm.de
 
 install_files( ${SERVICETYPES_INSTALL_DIR}/ FILES qimageio_plugin.desktop)
 
-kde4_create_doxygen_docs(  )
-
 kde4_footer()
 
 

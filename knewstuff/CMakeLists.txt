@@ -76,8 +76,6 @@ install_files( /include/knewstuff FILES downloaddialog.h engine.h entry.h knewst
 
 kde4_install_icons( ${ICON_INSTALL_DIR} crystalsvg )
 
-kde4_create_doxygen_docs(  )
-
 kde4_footer()
 
 

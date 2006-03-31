@@ -12,11 +12,6 @@ add_subdirectory( tests )
 
 
 
-########### install files ###############
-
-
-kde4_create_doxygen_docs( REFERENCES dcop EXCLUDE backend  )
-
 kde4_footer()
 
 

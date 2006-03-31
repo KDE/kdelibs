@@ -108,8 +108,6 @@ install_files( ${DATA_INSTALL_DIR}/kabc FILES countrytransl.map )
 install_files( ${SERVICES_INSTALL_DIR}/kresources FILES kabc_manager.desktop )
 install_files( /include/kabc FILES address.h addressbook.h addressee.h addresseedialog.h    distributionlist.h distributionlistdialog.h distributionlisteditor.h    errorhandler.h field.h format.h formatfactory.h format.h geo.h key.h    phonenumber.h picture.h plugin.h resource.h    secrecy.h sound.h stdaddressbook.h timezone.h    vcardformat.h vcardconverter.h ldifconverter.h    addresslineedit.h addresseelist.h lock.h locknull.h ldif.h    ldapurl.h ldapconfigwidget.h sortmode.h )
 
-kde4_create_doxygen_docs( REFERENCES kdecore kdeui EXCLUDE scripts  )
-
 kde4_footer()
 
 

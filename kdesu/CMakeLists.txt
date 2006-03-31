@@ -41,8 +41,6 @@ install_targets(/bin kdesu_stub )
 ########### install files ###############
 install_files( /include/kdesu FILES  defaults.h client.h process.h kdesu_pty.h kcookie.h su.h ssh.h stub.h)
 
-kde4_create_doxygen_docs(  )
-
 kde4_footer()
 
 

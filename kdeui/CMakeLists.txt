@@ -6,7 +6,7 @@ include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/interfaces )
 
 if (UNIX AND NOT APPLE)
-	add_subdirectory( kdetrayproxy )
+   add_subdirectory( kdetrayproxy )
 endif (UNIX AND NOT APPLE)
 
 add_subdirectory( tests )
@@ -128,33 +128,26 @@ set(kdeui_LIB_SRCS
  kicon.cpp
  ktoolbarspaceraction.cpp
  kmanagerselection.cpp
-kglobalaccel_x11.cpp
-kglobalaccel.cpp
-kkeyserver_x11.cpp
+ kglobalaccel.cpp
 )
+
+if (UNIX AND NOT APPLE)
+   set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_x11.cpp kkeyserver_x11.cpp )
+endif (UNIX AND NOT APPLE)
+
 
 kde4_automoc(${kdeui_LIB_SRCS})
 
 set( kdeui_UI
-kspellui.ui
-kkeydialogui.ui
-kshortcutdialog_simple.ui
-kshortcutdialog_advanced.ui
-)
+   kspellui.ui
+   kkeydialogui.ui
+   kshortcutdialog_simple.ui
+   kshortcutdialog_advanced.ui
+   )
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
-#set( kdeui_UI3
-#)
-#
-#kde4_add_ui3_files(kdeui_LIB_SRCS ${kdeui_UI3} )
-
-set( kdeui_DCOP_SKEL_SRCS
-kmainwindowiface.h
-knotificationmanager.h
-)
-
-kde4_add_dcop_skels(kdeui_LIB_SRCS ${kdeui_DCOP_SKEL_SRCS})
+kde4_add_dcop_skels(kdeui_LIB_SRCS kmainwindowiface.h knotificationmanager.h )
 
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
@@ -279,8 +272,6 @@ install_files( /include FILES
  kmanagerselection.h
  kglobalaccel.h
 )
-
-kde4_create_doxygen_docs( INTERNAL_DOCS REFERENCES kdecore kdefx dcop kio kutils  )
 
 install_files( /bin preparetips )
 

@@ -23,8 +23,6 @@ install_targets(/bin kconf_update )
 ########### install files ###############
 
 
-kde4_create_doxygen_docs(  )
-
 kde4_footer()
 
 

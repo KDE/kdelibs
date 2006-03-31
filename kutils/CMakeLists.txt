@@ -39,11 +39,7 @@ ${ksettings_STAT_SRCS}
 
 kde4_automoc(${kutils_LIB_SRCS})
 
-set( kutils_DCOP_SKEL_SRCS
-kcmoduleproxyIface.h
-)
-
-kde4_add_dcop_skels(kutils_LIB_SRCS ${kutils_DCOP_SKEL_SRCS})
+kde4_add_dcop_skels(kutils_LIB_SRCS kcmoduleproxyIface.h)
 
 kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
 
@@ -57,8 +53,6 @@ install_targets(${LIB_INSTALL_DIR} kutils )
 
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES kplugininfo.desktop )
 install_files( /include FILES kfind.h kfinddialog.h kreplace.h kreplacedialog.h                    kcmoduleinfo.h kcmoduleloader.h kcmultidialog.h                    kmultitabbar.h kplugininfo.h kcmoduleproxy.h                    kpluginselector.h kcmodulecontainer.h )
-
-kde4_create_doxygen_docs( REFERENCES kdecore kdeui kio  )
 
 kde4_footer()
 

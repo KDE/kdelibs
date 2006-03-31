@@ -282,8 +282,6 @@ install_files( ${SERVICES_INSTALL_DIR}/kded FILES kpasswdserver.desktop )
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES renamedlgplugin.desktop )
 install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kioslave.upd )
 
-kde4_create_doxygen_docs( REFERENCES kdecore kdefx kjs dcop kdeui kio/kio kio/kfile EXCLUDE kssl/kssl  )
-
 kde4_footer()
 
 

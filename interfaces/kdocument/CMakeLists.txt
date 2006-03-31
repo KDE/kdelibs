@@ -5,9 +5,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/interfaces )
 
 ########### next target ###############
 
-set(kdocument_LIB_SRCS
-kdocument.cpp
-)
+set(kdocument_LIB_SRCS kdocument.cpp )
 
 kde4_automoc(${kdocument_LIB_SRCS})
 
@@ -22,8 +20,6 @@ install_targets(${LIB_INSTALL_DIR} kdocument )
 ########### install files ###############
 install_files( /include/kdocument FILES factory.h document.h view.h )
 
-
-kde4_create_doxygen_docs( REFERENCES kparts  )
 
 kde4_footer()
 
