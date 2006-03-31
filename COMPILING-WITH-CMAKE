@@ -19,12 +19,15 @@ Ensure cmake is in your $PATH.
 (I don't think you even need to do this, but it makes some sense:
 Ensure you run 'unsermake clean' first in all your KDE source directories.)
 
+Use a separate builddir to build KDE modules, not the sourcedir.
+
 To get regular debugging, pass -DCMAKE_BUILD_TYPE=debug
 To get full debugging, pass -DCMAKE_BUILD_TYPE=debugfull
 
-If something hasn't been found, use ccmake . to set the missing things manually.
+If something hasn't been found, use "cd builddir; ccmake sourcedir" to set the 
+missing (or wrong) things manually.
 
-Next;
+Short example:
 % cd
 % mkdir build-kdelibs
 % cd build-kdelibs
