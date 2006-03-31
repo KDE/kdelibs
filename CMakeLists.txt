@@ -11,7 +11,8 @@ endif(insource)
 # ... and warn in case of an earlier in-source build
 set(generatedFileInSourceDir EXISTS ${kdelibs_SOURCE_DIR}/kdemacros.h OR EXISTS ${kdelibs_SOURCE_DIR}/config.h)
 if(${generatedFileInSourceDir})
-   message(FATAL_ERROR "Please run svn-clean, it would seem that your source directory has generated files in it...")
+   message(STATUS "kdemacros.h or config.h exists in your source directory.")
+   message(FATAL_ERROR "Please run svn-clean, it would seem that your source directory has generated files in it.")
 endif(${generatedFileInSourceDir})
 #########################################################################
 
@@ -64,10 +65,7 @@ include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
 # E.g. kdeui uses ${KDE4_KDECORE_INCLUDES}. Something that depends on kparts uses ${KDE4_KPARTS_INCLUDES}.
 
 # DCOP depends on Qt
-set(KDE4_DCOP_INCLUDES ${CMAKE_SOURCE_DIR}/dcop ${QT_INCLUDES})
-if (UNIX)
-  set(KDE4_DCOP_INCLUDES ${KDE4_DCOP_INCLUDES} ${X11_INCLUDE_DIR})
-endif (UNIX)
+set(KDE4_DCOP_INCLUDES ${CMAKE_SOURCE_DIR}/dcop ${QT_INCLUDES} ${_KDE4_PLATFORM_INCLUDE_DIRS})
 
 # kdecore depends on DCOP  (libldtl isn't included since it's internal to kdecore)
 set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_DCOP_INCLUDES})
