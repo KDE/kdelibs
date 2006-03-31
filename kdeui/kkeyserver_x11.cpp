@@ -26,7 +26,7 @@
 #include <qwindowdefs.h>
 #include <QFlags>
 
-#if defined(Q_WS_X11) || defined(Q_WS_WIN) || defined(Q_WS_MACX) // Only compile this module if we're compiling for X11, mac or win32
+#if defined(Q_WS_X11) || defined(Q_WS_WIN) || defined(Q_WS_MAC) // Only compile this module if we're compiling for X11 or win32
 
 #include "kkeyserver_x11.h"
 #include "kshortcut.h"
@@ -391,6 +391,8 @@ bool initializeMods()
 	return true;
 }
 
+#endif //Q_WS_X11
+
 static void intializeKKeyLabels()
 {
 	KConfigGroup cg( KGlobal::config(), "Keyboard" );
@@ -401,8 +403,6 @@ static void intializeKKeyLabels()
 	g_bMacLabels = (g_rgModInfo[2].sLabel == "Command");
 	g_bInitializedKKeyLabels = true;
 }
-
-#endif //Q_WS_X11
 
 //---------------------------------------------------------------------
 // Public functions
@@ -421,6 +421,22 @@ uint modXScrollLock() { if( !g_bInitializedMods ) { initializeMods(); } return g
 uint modXModeSwitch() { if( !g_bInitializedMods ) { initializeMods(); } return g_modXModeSwitch; } 
 
 bool keyboardHasMetaKey() { return modXMeta() != 0; }
+
+#else
+
+/* FIXME: why is this stuff still all tied to X11 interfaces?  Is it used anywhere other than the
+X11-specific portions of kglobalaccel? */
+
+uint modXShift() { return 0; }
+uint modXCtrl() { return 0; }
+uint modXAlt() { return 0; }
+uint modXMeta() { return 0; }
+
+uint modXNumLock() { return 0; }
+uint modXLock() { return 0; }
+uint modXScrollLock() { return 0; }
+uint modXModeSwitch() { return 0; }
+
 #endif //Q_WS_X11
 
 bool keyQtToX( int keyQt, int& keySym )
@@ -435,7 +451,7 @@ bool keyQtToX( int keyQt, int& keySym )
 #ifdef Q_WS_WIN
 	keySym = symQt;
 	return true;
-#elif defined(Q_WS_MACX)
+#elif defined(Q_WS_MAC)
 	keySym = symQt;
 	return true;
 #elif defined(Q_WS_X11)
@@ -462,7 +478,7 @@ bool symToKeyQt( uint keySym, int& keyQt )
 		else
 			keyQt = keySym;
 	}
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) || defined(Q_WS_MAC)
 	else if( keySym < 0x3000 )
 		keyQt = keySym;
 #elif defined(Q_WS_X11)
@@ -481,8 +497,12 @@ bool symToKeyQt( uint keySym, int& keyQt )
 	return (keyQt != Qt::Key_unknown);
 }
 
+/* are these things actually used anywhere?  there's no way
+   they can do anything on non-X11 */
+
 bool keyQtToModX( int modQt, uint & modX )
 {
+#ifdef Q_WS_X11
 	if( !g_bInitializedMods )
 		initializeMods();
 
@@ -493,11 +513,13 @@ bool keyQtToModX( int modQt, uint & modX )
 			continue;
 		}
 	}
+#endif
 	return true;
 }
 
 bool modXToQt( uint modX, int& modQt )
 {
+#ifdef Q_WS_X11
 	if( !g_bInitializedMods )
 		initializeMods();
 
@@ -508,6 +530,7 @@ bool modXToQt( uint modX, int& modQt )
 			continue;
 		}
 	}
+#endif
 	return true;
 }
 
@@ -532,22 +555,6 @@ bool keyboardHasWinKey() {
   return true;
 }
 
-#elif defined(Q_WS_MACX)
-
-bool modXToModQt(uint modX, int& modQt)
-{
-    return modToModQt( modX, modQt );
-}
-
-bool keyboardHasWinKey() {
-//! TODO - A win key on the Mac...?
-  return false;
-}
-
-bool modXToMod( uint , uint& )
-{
-    return false;
-}
 #elif defined(Q_WS_X11)
 
 bool codeXToSym( uchar codeX, uint modX, uint& sym )
@@ -608,4 +615,4 @@ uint accelModMaskX()
 
 } // end of namespace KKeyServer block
 
-#endif //Q_WS_X11 || Q_WS_WIN
+#endif //Q_WS_X11 || Q_WS_WIN || Q_WS_MAC
