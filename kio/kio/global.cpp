@@ -1405,10 +1405,10 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 
 #ifdef HAVE_GETMNTINFO
 
-#if defined(HAVE_STRUCT_STATVFS)
-    struct statvfs *mounted;
-#elif defined(HAVE_STRUCT_STATFS)
+#if defined(HAVE_STRUCT_STATFS)
     struct statfs *mounted;
+#elif defined(HAVE_STRUCT_STATVFS)
+    struct statvfs *mounted;
 #endif
 
     int num_fs = getmntinfo(&mounted, MNT_NOWAIT);
@@ -1675,10 +1675,10 @@ static QString get_mount_info(const QString& filename,
 
 #ifdef HAVE_GETMNTINFO
 
-#if defined(HAVE_STRUCT_STATVFS)
-    struct statvfs *mounted;
-#elif defined(HAVE_STRUCT_STATFS)
+#if defined(HAVE_STRUCT_STATFS)
     struct statfs *mounted;
+#elif defined(HAVE_STRUCT_STATVFS)
+    struct statvfs *mounted;
 #endif
     char    realpath_buffer[MAXPATHLEN];
 
