@@ -519,7 +519,7 @@ cg.readXXX("entry name");
 <li>*AutoConnectShortcuts removed - irrelevant</li>
 <li>*accel() removed - irrelevant (KAccel no longer handles keypresses)</li>
 <li>New functions setConfigGroup(), setConfigGlobal(), configGroup(), configIsGlobal() - the action collection now stores the group whether the config is global. referenced in readSettings() / writeSettings()</li>
-<li>readShortcutSettings() and writeShortcutSettings() renamed without the "Shortcut"</li>
+<li>readShortcutSettings() and writeShortcutSettings() renamed without the "Shortcut".  Set the configGroup() with setConfigGroup() either prior to each call, or (preferably) at the creation time of the action collection.</li>
 <li>{set}HighlightingEnabled(), {connect|disconnect}Highlight() removed - highlighting is always enabled now</li>
 <li>actionHighlighted(), actionStatusText(), clearStatusText() removed - use QAction::setStatusTip() as a replacement.  QStatusBars belonging to QMainWindow automatically get the statusTip() applied to them when they are moused over in a QMenu, via a QStatusTipEvent.</li>
 <li>groups() removed (now using QActionGroups) - see actionGroups() (and actionsWithoutGroup()) for replacement</li>
