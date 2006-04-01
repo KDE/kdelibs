@@ -73,14 +73,16 @@
       <context attribute="Normal Text" lineEndContext="#stay" name="Default">
         <RegExpr attribute="Keyword" context="#stay" String="if " insensitive="TRUE" beginRegion="Region1" firstNonSpace="true"/>
         <StringDetect attribute="Keyword" context="#stay" String="end if" insensitive="TRUE" endRegion="Region1"/>
-        <RegExpr attribute="Keyword" context="#stay" String="case " insensitive="TRUE" beginRegion="Region2" firstNonSpace="true"/>
-        <StringDetect attribute="Keyword" context="#stay" String="end case" insensitive="TRUE" endRegion="Region2"/>
         <RegExpr attribute="Keyword" context="#stay" String="\sloop\s+" insensitive="TRUE" beginRegion="Region3"/>
         <RegExpr attribute="Keyword" context="#stay" String="\sloop$" insensitive="TRUE" beginRegion="Region3"/>
         <StringDetect attribute="Keyword" context="#stay" String="end loop;" insensitive="TRUE" endRegion="Region3"/>
         <RegExpr attribute="Keyword" context="#stay" String="\sselect\s+" insensitive="TRUE" beginRegion="Region4"/>
         <RegExpr attribute="Keyword" context="#stay" String="\sselect$" insensitive="TRUE" beginRegion="Region4"/>
         <StringDetect attribute="Keyword" context="#stay" String="end select;" insensitive="TRUE" endRegion="Region4"/>
+        <RegExpr attribute="Keyword" context="#stay" String="\b(begin|case|record)\b" insensitive="true" beginRegion="Region5"/>
+        <RegExpr attribute="Keyword" context="#stay" String="\bend(?=((\{[^}]*(\}|$)|\(\*.*(\*\)|$))*)([.;\s]|$)|//|$)" insensitive="true" endRegion="Region5"/>
+        <StringDetect attribute="Region Marker" context="Region Marker" String="--  BEGIN" beginRegion="RegionMarker" firstNonSpace="true" />
+        <StringDetect attribute="Region Marker" context="Region Marker" String="--  END" endRegion="RegionMarker" firstNonSpace="true" />
         <keyword attribute="Keyword" context="#stay" String="keywords"/>
         <Float attribute="Float" context="#stay"/>
         <Int attribute="Decimal" context="#stay"/>
@@ -88,6 +90,7 @@
         <DetectChar attribute="String" context="String" char="&quot;"/>
         <Detect2Chars attribute="Comment" context="Comment" char="-" char1="-"/>
       </context>
+      <context attribute="Region Marker" lineEndContext="#pop" name="Region Marker"/>
       <context attribute="String" lineEndContext="#pop" name="String">
         <DetectChar attribute="String" context="#pop" char="&quot;"/>
       </context>
@@ -102,6 +105,7 @@
       <itemData name="Char"        defStyleNum="dsChar" />
       <itemData name="String"      defStyleNum="dsString" />
       <itemData name="Comment"     defStyleNum="dsComment" />
+      <itemData name="Region Marker" defStyleNum="dsRegionMarker" />
     </itemDatas>
   </highlighting>
   <general>
