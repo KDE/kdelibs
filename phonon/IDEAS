@@ -16,3 +16,35 @@
   2. If the device has been configured before
     Show a passive popup if the default device has changed because the new
     device has higher preference.
+
+ device info persistance
+=========================
+On device selections: should the user be presented with options that are
+currently not available? It might actually be confusing to select a device that
+is not usable at the moment.
+
+Some situations:
+(device A is always available)
+- user plugs device B
+- selects device B as default
+next day: device B unplugged
+- phonon falls back to device A as B is not available and shows a passive popup
+  informing the user about the fallback
+- user opens config dialog
+- device B still shows up as default
+- selects device A, closes dialog
+- opens dialog again
+- device B is gone...
+- user plugs device B
+- device B reappears
+
+The Backend has to provide the information about devices. Those can map directly
+to hardware or a soundserver or some other virtual device. The Backend has to
+have some unique identifier. For example the ALSA devices could be identified
+using the ALSA device names (either hw:0, hw:1 or aliases from asoundrc). OSS
+devices could be identified using /dev/dsp, /dev/dsp1 and so on.
+=> the backend internal uid is a string
+In the Frontend all that is needed is a name and a description of the device
+(both translated to the current locale) and a unique identifier to talk to the
+backend. This identifier could be the same as used internally by the Backend,
+but doesn't have to be.
