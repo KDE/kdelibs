@@ -265,6 +265,7 @@ Desktop Entry Spec</a>
 <li>Removed. Use plain ints as the Qt key code instead.</li>
 <li>When replacing KKey(QKeyEvent*), you need to OR the event->key() and event->modifiers() to get the replacement.</li>
 <li>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</li>
+<li>modFlagLabel() was removed, use either KKeyServer::modToStringUser(), or QKeySequence(Qt::yourmodifier).toString()</li>
 </ul>
 
 <H4>KKeySequence</H4>
