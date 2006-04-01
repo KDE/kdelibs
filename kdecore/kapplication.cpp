@@ -956,7 +956,7 @@ void KApplication::saveState( QSessionManager& sm )
         // to a different display (ie. if we are in a university lab and try,
         // try to restore a multihead session, our apps could be started on
         // someone else's display instead of our own)
-        QByteArray displayname = getenv(DISPLAY);
+        QByteArray displayname = getenv("DISPLAY");
         if (! displayname.isNull()) {
             // only store the command if we actually have a DISPLAY
             // environment variable
