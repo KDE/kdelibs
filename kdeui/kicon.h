@@ -50,6 +50,14 @@ class KDEUI_EXPORT KIcon : public QIcon
     explicit KIcon(const QString& iconName, KIconLoader* iconLoader = 0L);
 
    /**
+     * Copy constructor which takes any QIcon.
+     *
+     * \param icon the icon to copy.  This should have once been a KIcon,
+     *             if you want to preserve KDE icon effects.
+     */
+    explicit KIcon(const QIcon& copy);
+
+   /**
      * Constructor for a null icon.
      */
     explicit KIcon();

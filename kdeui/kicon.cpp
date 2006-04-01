@@ -30,3 +30,8 @@ KIcon::KIcon(const QString& iconName, KIconLoader* iconLoader)
 KIcon::KIcon()
 {
 }
+
+KIcon::KIcon(const QIcon& copy)
+  : QIcon(copy)
+{
+}

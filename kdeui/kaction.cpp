@@ -361,6 +361,11 @@ void KAction::setGlobalShortcutAllowed( bool allowed )
   }
 }
 
+KIcon KAction::icon( ) const
+{
+  return KIcon(QAction::icon());
+}
+
 /* vim: et sw=2 ts=2
  */
 

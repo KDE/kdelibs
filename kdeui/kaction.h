@@ -490,6 +490,13 @@ public:
     bool hasIcon() const;
 
     /**
+     * Return the icon for this action.
+     *
+     * This function hides QAction::icon() to be able to return a KIcon.
+     */
+    KIcon icon() const;
+
+    /**
      * Set the icon for this action.
      *
      * This function hides QAction::setIcon(const QIcon&) to encourage programmers to pass
