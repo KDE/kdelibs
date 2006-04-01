@@ -58,7 +58,7 @@ class Factory::Private
 		void createBackend()
 		{
 			KTrader::OfferList offers = KTrader::self()->query( "PhononBackend",
-					"Type == 'Service' AND [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
+					"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
 			KTrader::OfferListIterator it = offers.begin();
 			KTrader::OfferListIterator end = offers.end();
 			QStringList errormsg;
