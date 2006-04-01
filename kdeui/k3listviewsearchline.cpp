@@ -330,10 +330,10 @@ void K3ListViewSearchLine::connectListView(K3ListView *lv)
 
 void K3ListViewSearchLine::disconnectListView(K3ListView *lv)
 {
-    connect(lv, SIGNAL(destroyed( QObject * )),
-            this, SLOT(listViewDeleted( QObject *)));
-    connect(lv, SIGNAL(itemAdded(Q3ListViewItem *)),
-            this, SLOT(itemAdded(Q3ListViewItem *)));
+    disconnect(lv, SIGNAL(destroyed( QObject * )),
+              this, SLOT(listViewDeleted( QObject *)));
+    disconnect(lv, SIGNAL(itemAdded(Q3ListViewItem *)),
+              this, SLOT(itemAdded(Q3ListViewItem *)));
 }
 
 bool K3ListViewSearchLine::canChooseColumnsCheck()
