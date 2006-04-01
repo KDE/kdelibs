@@ -300,9 +300,9 @@ class KDEUI_EXPORT KTreeWidgetSearchLineWidget : public QWidget
 public:
     /**
      * Creates a KTreeWidgetSearchLineWidget for \a treeWidget with \a parent as the
-     * parent with and \a name.
+     * parent.
      */
-    KTreeWidgetSearchLineWidget(QTreeWidget *treeWidget = 0, QWidget *parent = 0);
+    KTreeWidgetSearchLineWidget(QWidget *parent = 0, QTreeWidget *treeWidget = 0);
 
     /**
      * Destroys the KTreeWidgetSearchLineWidget

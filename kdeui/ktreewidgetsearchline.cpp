@@ -372,8 +372,8 @@ void KTreeWidgetSearchLine::disconnectTreeWidget(QTreeWidget *tw)
 {
     disconnect(tw, SIGNAL(destroyed( QObject * )),
             this, SLOT(treeWidgetDeleted( QObject *)));
-    disconnect(tw, SIGNAL(itemAdded(QTreeWidgetItem *)),
-            this, SLOT(itemAdded(QTreeWidgetItem *)));
+    disconnect(tw->model(), SIGNAL(rowsInserted(const QModelIndex&, int, int)),
+            this, SLOT(rowsInserted(const QModelIndex&, int, int)));
 }
 
 bool KTreeWidgetSearchLine::canChooseColumnsCheck()
@@ -523,9 +523,8 @@ public:
     QToolButton *clearButton;
 };
 
-KTreeWidgetSearchLineWidget::KTreeWidgetSearchLineWidget(QTreeWidget *treeWidget,
-                                                     QWidget *parent) :
-    QWidget(parent)
+KTreeWidgetSearchLineWidget::KTreeWidgetSearchLineWidget(QWidget *parent, QTreeWidget *treeWidget)
+    : QWidget(parent)
 {
     d = new KTreeWidgetSearchLineWidgetPrivate;
     d->treeWidget = treeWidget;
