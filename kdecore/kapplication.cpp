@@ -117,12 +117,6 @@ typedef void* IceIOErrorHandler;
 #include <windows.h>
 #endif
 
-#ifdef Q_WS_X11
-#define DISPLAY "DISPLAY"
-#elif defined(Q_WS_QWS)
-#define DISPLAY "QWS_DISPLAY"
-#endif
-
 #if defined Q_WS_X11
 #include <kipc.h>
 #include <QX11Info>

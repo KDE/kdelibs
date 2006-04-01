@@ -41,6 +41,11 @@
 #include <kstartupinfo.h>
 #endif
 
+/* I don't know why, but I end up with complaints about
+   a forward-declaration of QWidget in the activeWidow()->show
+   call below on Qt/Mac if I don't include this here... */
+#include <QWidget>
+
 #include <kconfig.h>
 #include "kdebug.h"
 #include "kuniqueapplication.h"

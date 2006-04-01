@@ -1147,7 +1147,7 @@ KCmdLineArgs::setOption(const QByteArray &opt, const char *value)
       addArgument(argString);
       addArgument(value);
 
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) || defined(Q_WS_QWS)
       // Hack coming up!
       if (argString == "-display")
       {
