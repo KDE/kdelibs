@@ -8,7 +8,7 @@ using namespace std;
 #include "netif.h"
 
 Test::Test(const QString& interface)
-  : QObject(0,0),
+  : QObject(0),
     m_interface(0)
 {
 	m_interface = new KNetworkInterface(interface);

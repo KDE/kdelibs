@@ -45,8 +45,7 @@ void Test::stateChangedSlot(int newstate)
 void Test::gotErrorSlot(int errorcode)
 {
   cerr << "Socket got error " << errorcode << endl
-       << "Current socket state: " << socket.state() << endl
-       << "Device status: " << socket.status() << endl;
+       << "Current socket state: " << socket.state() << endl;
   if (socket.isFatalError(errorcode))
     QCoreApplication::exit();
 }

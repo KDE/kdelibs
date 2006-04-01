@@ -17,7 +17,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#undef QT3_SUPPORT
 #include <config.h>
 
 #include <sys/types.h>
@@ -47,6 +46,7 @@
 #include <qfile.h>
 #include <qdatastream.h>
 #include <qtextstream.h>
+#include <qplatformdefs.h>
 
 #include "kglobal.h"
 #include "krandom.h"

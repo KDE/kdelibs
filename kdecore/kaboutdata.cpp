@@ -19,10 +19,12 @@
  *
  */
 
-#undef QT3_SUPPORT
+#include <config.h>
+
 #include "kaboutdata.h"
 #include "kstandarddirs.h"
 #include "klocale.h"
+
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qimage.h>

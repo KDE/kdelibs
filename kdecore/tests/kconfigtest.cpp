@@ -23,6 +23,7 @@
 
 #include <kconfig.h>
 #include <kdebug.h>
+#include <QtGui/QFont>
 
 KCONFIG_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
 KCONFIG_DECLARE_ENUM_QOBJECT(KConfigTest,Flags)

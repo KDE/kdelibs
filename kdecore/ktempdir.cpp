@@ -17,7 +17,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#undef QT3_SUPPORT
 #include <config.h>
 
 #include <sys/types.h>
@@ -44,6 +43,7 @@
 #endif
 
 #include <qdir.h>
+#include <qplatformdefs.h>
 
 #include "kglobal.h"
 #include "krandom.h"
@@ -175,8 +175,8 @@ static bool
 rmtree(const QByteArray& name)
 {
     kDebug() << "Checking directory for remove " << name << endl;
-    KDE_struct_stat st;
-    if ( KDE_lstat( name.data(), &st ) == -1 ) // Do not dereference symlink!
+    QT_STATBUF st;
+    if ( QT_LSTAT( name.data(), &st ) == -1 ) // Do not dereference symlink!
         return false;
     if ( S_ISDIR( st.st_mode ) )
     {

@@ -17,9 +17,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "klockfile.h"
+#include <config.h>
 
-#include "config.h"
+#include "klockfile.h"
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -36,8 +36,8 @@
 #include <qdatetime.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qplatformdefs.h>
 
-#include "kde_file.h"
 #include "krandom.h"
 #include "kglobal.h"
 #include "kinstance.h"
@@ -54,7 +54,7 @@ public:
    bool recoverLock;
    bool linkCountSupport;
    QTime staleTimer;
-   KDE_struct_stat statBuf;
+   QT_STATBUF statBuf;
    int pid;
    QString hostname;
    QString instance;
@@ -91,8 +91,8 @@ KLockFile::setStaleTime(int _staleTime)
   d->staleTime = _staleTime;
 }
 
-static bool operator==( const KDE_struct_stat &st_buf1,
-			const KDE_struct_stat &st_buf2)
+static bool operator==( const QT_STATBUF &st_buf1,
+			const QT_STATBUF &st_buf2)
 {
 #define FIELD_EQ(what)       (st_buf1.what == st_buf2.what)
   return FIELD_EQ(st_dev) && FIELD_EQ(st_ino) &&
@@ -100,28 +100,28 @@ static bool operator==( const KDE_struct_stat &st_buf1,
 #undef FIELD_EQ
 }
 
-static bool operator!=( const KDE_struct_stat& st_buf1,
-			const KDE_struct_stat& st_buf2 )
+static bool operator!=( const QT_STATBUF& st_buf1,
+			const QT_STATBUF& st_buf2 )
 {
   return !(st_buf1 == st_buf2);
 }
 
 static bool testLinkCountSupport(const QByteArray &fileName)
 {
-   KDE_struct_stat st_buf;
+   QT_STATBUF st_buf;
    int result = -1;
    // Check if hardlinks raise the link count at all?
    if(!::link( fileName, fileName+".test" )) {
-     result = KDE_lstat( fileName, &st_buf );
+     result = QT_LSTAT( fileName, &st_buf );
      ::unlink( fileName+".test" );
    }
    return (result < 0 || ((result == 0) && (st_buf.st_nlink == 2)));
 }
 
-static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &st_buf, bool &linkCountSupport)
+static KLockFile::LockResult lockFile(const QString &lockFile, QT_STATBUF &st_buf, bool &linkCountSupport)
 {
   QByteArray lockFileName = QFile::encodeName( lockFile );
-  int result = KDE_lstat( lockFileName, &st_buf );
+  int result = QT_LSTAT( lockFileName, &st_buf );
   if (result == 0)
      return KLockFile::LockFail;
   
@@ -156,12 +156,12 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   return KLockFile::LockOK;
 #endif
 
-  KDE_struct_stat st_buf2;
-  result = KDE_lstat( uniqueName, &st_buf2 );
+  QT_STATBUF st_buf2;
+  result = QT_LSTAT( uniqueName, &st_buf2 );
   if (result != 0)
      return KLockFile::LockError;
 
-  result = KDE_lstat( lockFileName, &st_buf );
+  result = QT_LSTAT( lockFileName, &st_buf );
   if (result != 0)
      return KLockFile::LockError;
 
@@ -180,7 +180,7 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   return KLockFile::LockOK;
 }
 
-static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct_stat &st_buf, bool &linkCountSupport)
+static KLockFile::LockResult deleteStaleLock(const QString &lockFile, QT_STATBUF &st_buf, bool &linkCountSupport)
 {
    // This is dangerous, we could be deleting a new lock instead of
    // the old stale one, let's be very careful
@@ -206,13 +206,13 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
 
    // check if link count increased with exactly one
    // and if the lock file still matches
-   KDE_struct_stat st_buf1;
-   KDE_struct_stat st_buf2;
-   memcpy(&st_buf1, &st_buf, sizeof(KDE_struct_stat));
+   QT_STATBUF st_buf1;
+   QT_STATBUF st_buf2;
+   memcpy(&st_buf1, &st_buf, sizeof(QT_STATBUF));
    st_buf1.st_nlink++;
-   if ((KDE_lstat(tmpFile, &st_buf2) == 0) && st_buf1 == st_buf2)
+   if ((QT_LSTAT(tmpFile, &st_buf2) == 0) && st_buf1 == st_buf2)
    {
-      if ((KDE_lstat(lckFile, &st_buf2) == 0) && st_buf1 == st_buf2)
+      if ((QT_LSTAT(lckFile, &st_buf2) == 0) && st_buf1 == st_buf2)
       {
          // - - if yes, delete lock file, delete temp file, retry lock
          qWarning("WARNING: deleting stale lockfile %s", lckFile.data());
@@ -229,7 +229,7 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
    }
 
    if (!linkCountSupport &&
-       (KDE_lstat(lckFile, &st_buf2) == 0) && st_buf == st_buf2)
+       (QT_LSTAT(lckFile, &st_buf2) == 0) && st_buf == st_buf2)
    {
       // Without support for link counts we will have a little race condition
       qWarning("WARNING: deleting stale lockfile %s", lckFile.data());
@@ -255,7 +255,7 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
   int n = 5;
   while(true)
   {
-     KDE_struct_stat st_buf;
+     QT_STATBUF st_buf;
      result = lockFile(d->file, st_buf, d->linkCountSupport);
      if (result == KLockFile::LockOK)
      {
@@ -318,7 +318,7 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
         }
         else
         {
-           memcpy(&(d->statBuf), &st_buf, sizeof(KDE_struct_stat));
+           memcpy(&(d->statBuf), &st_buf, sizeof(QT_STATBUF));
            d->staleTimer.start();
 
            d->pid = -1;

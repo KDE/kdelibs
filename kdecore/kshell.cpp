@@ -19,7 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#undef QT3_SUPPORT
+#include <config.h>
+
 #include "kshell.h"
 
 #include <qfile.h>

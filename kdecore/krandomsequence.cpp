@@ -18,7 +18,8 @@
   Boston, MA 02110-1301, USA.
 */
 
-#undef QT3_SUPPORT
+#include <config.h>
+
 #include "krandomsequence.h"
 #include "krandom.h"
 #include <string.h>

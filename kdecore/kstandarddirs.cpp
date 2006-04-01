@@ -23,7 +23,7 @@
  * Generated:	Thu Mar  5 16:05:28 EST 1998
  */
 
-#include "config.h"
+#include <config.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -43,6 +43,7 @@
 #include <qsettings.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qplatformdefs.h>
 
 #include "kstandarddirs.h"
 #include "kconfig.h"
@@ -52,7 +53,6 @@
 #include "ksimpleconfig.h"
 #include "kuser.h"
 #include "kstaticdeleter.h"
-#include <kde_file.h>
 
 
 class KStandardDirs::KStandardDirsPrivate
@@ -326,9 +326,9 @@ for (QStringList::ConstIterator pit = prefixes.begin();
 static quint32 updateHash(const QString &file, quint32 hash)
 {
     QByteArray cFile = QFile::encodeName(file);
-    KDE_struct_stat buff;
+    QT_STATBUF buff;
     if ((access(cFile, R_OK) == 0) &&
-        (KDE_stat( cFile, &buff ) == 0) &&
+        (QT_STAT( cFile, &buff ) == 0) &&
         (S_ISREG( buff.st_mode )))
     {
        hash = hash + (quint32) buff.st_ctime;
@@ -436,8 +436,8 @@ QString KStandardDirs::findResourceDir( const char *type,
 
 bool KStandardDirs::exists(const QString &fullPath)
 {
-    KDE_struct_stat buff;
-    if (access(QFile::encodeName(fullPath), R_OK) == 0 && KDE_stat( QFile::encodeName(fullPath), &buff ) == 0)
+    QT_STATBUF buff;
+    if (access(QFile::encodeName(fullPath), R_OK) == 0 && QT_STAT( QFile::encodeName(fullPath), &buff ) == 0)
 	if (fullPath.at(fullPath.length() - 1) != '/') {
 	    if (S_ISREG( buff.st_mode ))
 		return true;
@@ -470,7 +470,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 #endif
 
     struct dirent *ep;
-    KDE_struct_stat buff;
+    QT_STATBUF buff;
 
     QString _dot(".");
     QString _dotdot("..");
@@ -485,7 +485,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 	continue; // No match
 
       QString pathfn = path + fn;
-      if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
+      if ( QT_STAT( QFile::encodeName(pathfn), &buff ) != 0 ) {
 	kDebug() << "Error stat'ing " << pathfn << " : " << perror << endl;
 	continue; // Couldn't stat (e.g. no read permissions)
       }
@@ -512,8 +512,8 @@ static void lookupDirectory(const QString& path, const QString &relPart,
      // We look for a single file.
      QString fn = pattern;
      QString pathfn = path + fn;
-     KDE_struct_stat buff;
-     if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 )
+     QT_STATBUF buff;
+     if ( QT_STAT( QFile::encodeName(pathfn), &buff ) != 0 )
         return; // File not found
      if ( S_ISREG( buff.st_mode))
      {
@@ -559,7 +559,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 #else
     assert(prefix.at(prefix.length() - 1) == '/');
 #endif
-    KDE_struct_stat buff;
+    QT_STATBUF buff;
 
     if (path.contains('*') || path.contains('?')) {
 
@@ -584,7 +584,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 		    continue; // No match
 		QString rfn = relPart+fn;
 		fn = prefix + fn;
-		if ( KDE_stat( QFile::encodeName(fn), &buff ) != 0 ) {
+		if ( QT_STAT( QFile::encodeName(fn), &buff ) != 0 ) {
 		    kDebug() << "Error statting " << fn << " : " << perror << endl;
 		    continue; // Couldn't stat (e.g. no permissions)
 		}
@@ -718,8 +718,8 @@ void KStandardDirs::createSpecialResource(const char *type)
       link[result] = 0;
       if (!QDir::isRelativePath(link))
       {
-         KDE_struct_stat stat_buf;
-         int res = KDE_lstat(link, &stat_buf);
+         QT_STATBUF stat_buf;
+         int res = QT_LSTAT(link, &stat_buf);
          if ((res == -1) && (errno == ENOENT))
          {
             relink = true;
@@ -1160,8 +1160,8 @@ QString KStandardDirs::saveLocation(const char *type,
     }
     QString fullPath = path + (path.endsWith("/") ? "" : "/") + suffix;
 
-    KDE_struct_stat st;
-    if (KDE_stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
+    QT_STATBUF st;
+    if (QT_STAT(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
 #ifndef NDEBUG
 	    kDebug() << QString("save location %1 doesn't exist").arg(fullPath) << endl;
@@ -1218,19 +1218,19 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
 
     while( i < len )
     {
-        KDE_struct_stat st;
+        QT_STATBUF st;
         int pos = target.indexOf('/', i);
         base += target.mid(i - 1, pos - i + 1);
         QByteArray baseEncoded = QFile::encodeName(base);
         // bail out if we encountered a problem
-        if (KDE_stat(baseEncoded, &st) != 0)
+        if (QT_STAT(baseEncoded, &st) != 0)
         {
           // Directory does not exist....
           // Or maybe a dangling symlink ?
-          if (KDE_lstat(baseEncoded, &st) == 0)
+          if (QT_LSTAT(baseEncoded, &st) == 0)
               (void)unlink(baseEncoded); // try removing
 
-	  if ( KDE_mkdir(baseEncoded, (mode_t) mode) != 0) {
+	  if ( QT_MKDIR(baseEncoded, (mode_t) mode) != 0) {
             baseEncoded.prepend( "trying to create local folder " );
 	    perror(baseEncoded.data());
 	    return false; // Couldn't create it :-(

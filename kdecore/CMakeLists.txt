@@ -18,6 +18,9 @@ include_directories( ${KDE4_DCOP_INCLUDES} )
 # if it's used, *always* append to it
 set(kdecore_OPTIONAL_SRCS)
 
+# no more qt3support needed (but we still need qt3support.lib!)
+remove_definitions(-DQT3_SUPPORT_WARNINGS)
+remove_definitions(-DQT3_SUPPORT)
 
 # you can find macro_optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
 # it is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)

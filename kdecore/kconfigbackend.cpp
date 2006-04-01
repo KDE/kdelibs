@@ -39,6 +39,7 @@
 #include <qfileinfo.h>
 #include <qtextcodec.h>
 #include <qtextstream.h>
+#include <qplatformdefs.h>
 
 #include "kconfigbackend.h"
 
@@ -978,8 +979,8 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
   int fileMode = -1;
   bool createNew = true;
 
-  KDE_struct_stat buf;
-  if (KDE_stat(QFile::encodeName(filename), &buf) == 0)
+  QT_STATBUF buf;
+  if (QT_STAT(QFile::encodeName(filename), &buf) == 0)
   {
      if (buf.st_uid == getuid())
      {
@@ -1021,7 +1022,7 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
   {
      // Open existing file.
      // We use open() to ensure that we call without O_CREAT.
-     int fd = KDE_open( QFile::encodeName(filename), O_WRONLY | O_TRUNC );
+     int fd = QT_OPEN( QFile::encodeName(filename), O_WRONLY | O_TRUNC );
      if (fd < 0)
      {
         return bEntriesLeft;

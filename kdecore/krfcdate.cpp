@@ -18,8 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#undef QT3_SUPPORT
-#include "config.h"
+#include <config.h>
+
 #include "krfcdate.h"
 
 #include <sys/param.h>
