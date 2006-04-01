@@ -24,6 +24,7 @@
 #include "backendcapabilities.h"
 #include "factory.h"
 #include "ifaces/backend.h"
+#include <QSet>
 
 namespace Phonon
 {
@@ -41,10 +42,13 @@ AudioCaptureDevice::AudioCaptureDevice( const AudioCaptureDevice& rhs )
 AudioCaptureDevice AudioCaptureDevice::fromIndex( int index )
 {
 	const Ifaces::Backend* b = Factory::self()->backend();
-	return AudioCaptureDevice( index,
-			b->audioCaptureDeviceName( index ),
-			b->audioCaptureDeviceDescription( index ),
-			b->audioCaptureDeviceVideoIndex( index ) );
+	if( b->audioCaptureDeviceIndexes().contains( index ) )
+		return AudioCaptureDevice( index,
+				b->audioCaptureDeviceName( index ),
+				b->audioCaptureDeviceDescription( index ),
+				b->audioCaptureDeviceVideoIndex( index ) );
+	else
+		return AudioCaptureDevice(); //isValid() == false
 }
 
 AudioCaptureDevice::AudioCaptureDevice( int index, const QString& name, const QString& description, int videoIndex )
