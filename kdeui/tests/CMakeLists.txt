@@ -486,6 +486,19 @@ target_link_libraries(klistviewtest  ${KDE4_KDECORE_LIBS} kdeui)
 
 ########### next target ###############
 
+set(ktreewidgetsearchlinetest_SRCS
+ktreewidgetsearchlinetest.cpp
+)
+
+kde4_automoc(${ktreewidgetsearchlinetest_SRCS})
+
+kde4_add_executable(ktreewidgetsearchlinetest ${ktreewidgetsearchlinetest_SRCS})
+
+target_link_libraries(ktreewidgetsearchlinetest  ${KDE4_KDECORE_LIBS} kdeui)
+
+
+########### next target ###############
+
 set(ktextedittest_SRCS
 ktextedittest.cpp
 )
