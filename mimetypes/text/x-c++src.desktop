@@ -6,7 +6,7 @@ Comment[x-test]=xxC++ Source Filexx
 Icon=source_cpp
 Type=MimeType
 MimeType=text/x-c++src
-Patterns=*.cpp;*.cxx;*.cc;*.C;*.CPP;
+Patterns=*.cpp;*.cxx;*.cc;*.C;*.CPP;*.c++;
 X-KDE-IsAlso=text/plain
 
 [Property::X-KDE-text]

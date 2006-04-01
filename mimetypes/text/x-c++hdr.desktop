@@ -6,7 +6,7 @@ Comment[x-test]=xxC++ Header Filexx
 Icon=source_h
 Type=MimeType
 MimeType=text/x-c++hdr
-Patterns=*.hh;*.hpp;*.H;
+Patterns=*.hh;*.hpp;*.H;*.h++;
 X-KDE-IsAlso=text/plain
 
 [Property::X-KDE-text]
