@@ -19,6 +19,8 @@ PHONON_DECLARE_TESTS(
 	audiooutputtest
 	audiodataoutputtest
 	audiooutputdevicetest
+	audiocapturedevicetest
+	videocapturedevicetest
 	)
 
 kde4_footer()
