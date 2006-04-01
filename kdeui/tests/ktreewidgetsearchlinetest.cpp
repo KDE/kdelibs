@@ -22,7 +22,7 @@ KTreeWidgetSearchLineTest::KTreeWidgetSearchLineTest()
     tw->hideColumn(2);
 
     KTreeWidgetSearchLineWidget* searchWidget = new KTreeWidgetSearchLineWidget(container);
-    m_searchLine = searchWidget->createSearchLine(tw);
+    m_searchLine = searchWidget->searchLine();
     m_searchLine->setTreeWidget(tw);
 
     QTreeWidgetItem* red = new QTreeWidgetItem( tw, QStringList() << "Red");
