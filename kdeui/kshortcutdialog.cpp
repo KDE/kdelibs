@@ -414,11 +414,11 @@ void KShortcutDialog::setRecording( bool recording )
 {
 	if (d->bRecording != recording) {
 		d->bRecording = recording;
-		/*if (d->bRecording) {
+		if (d->bRecording) {
 			grabKeyboard();
 		} else {
 			releaseKeyboard();
-		}*/
+		}
 	}
 }
 
