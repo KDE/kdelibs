@@ -262,7 +262,7 @@ namespace KDE
   extern KDECORE_EXPORT char *gai_strerror(int errorcode);
   /** \internal */
   extern KDECORE_EXPORT int getnameinfo(const struct sockaddr *sa,
-			 unsigned int salen,
+			 kde_socklen_t salen,
 			 char *host, size_t hostlen,
 			 char *serv, size_t servlen,
 			 int flags);

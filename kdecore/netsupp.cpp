@@ -30,6 +30,8 @@
 
 #include <qglobal.h>
 
+#include <kdebug.h>
+
 // This is so that, if addrinfo is defined, it doesn't clobber our definition
 // It might be defined in the few cases in which we are replacing the system's
 // broken getaddrinfo
@@ -931,7 +933,7 @@ static void findport(unsigned short port, char *serv, size_t servlen, int flags)
   qsnprintf(serv, servlen, "%u", ntohs(port));
 }
 
-int getnameinfo(const struct sockaddr *sa, ksocklen_t salen,
+int getnameinfo(const struct sockaddr *sa, kde_socklen_t salen,
 		char *host, size_t hostlen, char *serv, size_t servlen,
 		int flags)
 {

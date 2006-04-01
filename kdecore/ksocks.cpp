@@ -61,22 +61,22 @@ enum SymbolKeys {
 extern "C" {
 // Function pointer table
 static int     (*F_SOCKSinit)   (char *) = 0L;
-static int     (*F_connect)     (int, const struct sockaddr *, ksocklen_t) = 0L;
+static int     (*F_connect)     (int, const struct sockaddr *, kde_socklen_t) = 0L;
 static signed long int (*F_read)        (int, void *, unsigned long int) = 0L;
 static signed long int (*F_write)       (int, const void *, unsigned long int) = 0L;
 static int     (*F_recvfrom)    (int, void *, unsigned long int, int, struct sockaddr *,
-                                 ksocklen_t *) = 0L;
+                                 kde_socklen_t *) = 0L;
 static int     (*F_sendto)      (int, const void *, unsigned long int, int,
-                                 const struct sockaddr *, ksocklen_t) = 0L;
+                                 const struct sockaddr *, kde_socklen_t) = 0L;
 static int     (*F_recv)        (int, void *, unsigned long int, int) = 0L;
 static int     (*F_send)        (int, const void *, unsigned long int, int) = 0L;
-static int     (*F_getsockname) (int, struct sockaddr *, ksocklen_t *) = 0L;
-static int     (*F_getpeername) (int, struct sockaddr *, ksocklen_t *) = 0L;
-static int     (*F_accept)      (int, struct sockaddr *, ksocklen_t *) = 0L;
+static int     (*F_getsockname) (int, struct sockaddr *, kde_socklen_t *) = 0L;
+static int     (*F_getpeername) (int, struct sockaddr *, kde_socklen_t *) = 0L;
+static int     (*F_accept)      (int, struct sockaddr *, kde_socklen_t *) = 0L;
 static int     (*F_select)      (int, fd_set *, fd_set *, fd_set *,
                                                      struct timeval *) = 0L;
 static int     (*F_listen)      (int, int) = 0L;
-static int     (*F_bind)        (int, const struct sockaddr *, ksocklen_t) = 0L;
+static int     (*F_bind)        (int, const struct sockaddr *, kde_socklen_t) = 0L;
 }
 
 
@@ -345,7 +345,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
                          _socksLib->symbol(it.value().toLatin1());
           break;
          case S_connect:
-           F_connect = (int (*)(int, const struct sockaddr *, ksocklen_t))
+           F_connect = (int (*)(int, const struct sockaddr *, kde_socklen_t))
                        _socksLib->symbol(it.value().toLatin1());
           break;
          case S_read:
@@ -358,12 +358,12 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
           break;
          case S_recvfrom:
            F_recvfrom = (int (*)(int, void *, unsigned long int, int,
-                                 struct sockaddr *, ksocklen_t *))
+                                 struct sockaddr *, kde_socklen_t *))
                         _socksLib->symbol(it.value().toLatin1());
           break;
          case S_sendto:
            F_sendto = (int (*)(int, const void *, unsigned long int, int,
-                               const struct sockaddr *, ksocklen_t))
+                               const struct sockaddr *, kde_socklen_t))
                       _socksLib->symbol(it.value().toLatin1());
           break;
          case S_recv:
@@ -375,15 +375,15 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
                     _socksLib->symbol(it.value().toLatin1());
           break;
          case S_getsockname:
-           F_getsockname = (int (*)(int, struct sockaddr *, ksocklen_t *))
+           F_getsockname = (int (*)(int, struct sockaddr *, kde_socklen_t *))
                            _socksLib->symbol(it.value().toLatin1());
           break;
          case S_getpeername:
-           F_getpeername = (int (*)(int, struct sockaddr *, ksocklen_t *))
+           F_getpeername = (int (*)(int, struct sockaddr *, kde_socklen_t *))
                            _socksLib->symbol(it.value().toLatin1());
           break;
          case S_accept:
-           F_accept = (int (*)(int, struct sockaddr *, ksocklen_t *))
+           F_accept = (int (*)(int, struct sockaddr *, kde_socklen_t *))
                       _socksLib->symbol(it.value().toLatin1());
           break;
          case S_select:
@@ -395,7 +395,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
                       _socksLib->symbol(it.value().toLatin1());
           break;
          case S_bind:
-           F_bind = (int (*)(int, const struct sockaddr *, ksocklen_t))
+           F_bind = (int (*)(int, const struct sockaddr *, kde_socklen_t))
                     _socksLib->symbol(it.value().toLatin1());
           break;
          default:
@@ -477,7 +477,7 @@ bool KSocks::hasWorkingAsyncConnect()
  */
 
 int KSocks::connect (int sockfd, const sockaddr *serv_addr,
-                                                   ksocklen_t addrlen) {
+                                                   kde_socklen_t addrlen) {
    if (_useSocks && F_connect)
       return (*F_connect)(sockfd, serv_addr, addrlen);
    else return ::connect(sockfd, (sockaddr*) serv_addr, (socklen_t)addrlen);
@@ -499,7 +499,7 @@ signed long int KSocks::write (int fd, const void *buf, unsigned long int count)
 
 
 int KSocks::recvfrom (int s, void *buf, unsigned long int len, int flags,
-                                sockaddr *from, ksocklen_t *fromlen) {
+                                sockaddr *from, kde_socklen_t *fromlen) {
    if (_useSocks && F_recvfrom) {
       return (*F_recvfrom)(s, buf, len, flags, from, fromlen);
    } else {
@@ -512,7 +512,7 @@ int KSocks::recvfrom (int s, void *buf, unsigned long int len, int flags,
 
 
 int KSocks::sendto (int s, const void *msg, unsigned long int len, int flags,
-                             const sockaddr *to, ksocklen_t tolen) {
+                             const sockaddr *to, kde_socklen_t tolen) {
    if (_useSocks && F_sendto)
       return (*F_sendto)(s, msg, len, flags, to, tolen);
    else return ::sendto(s, (char*) msg, len, flags, to, (socklen_t)tolen);
@@ -533,7 +533,7 @@ int KSocks::send (int s, const void *msg, unsigned long int len, int flags) {
 }
 
 
-int KSocks::getsockname (int s, sockaddr *name, ksocklen_t *namelen) {
+int KSocks::getsockname (int s, sockaddr *name, kde_socklen_t *namelen) {
    if (_useSocks && F_getsockname) {
       return (*F_getsockname)(s, name, namelen);
    } else {
@@ -545,7 +545,7 @@ int KSocks::getsockname (int s, sockaddr *name, ksocklen_t *namelen) {
 }
 
 
-int KSocks::getpeername (int s, sockaddr *name, ksocklen_t *namelen) {
+int KSocks::getpeername (int s, sockaddr *name, kde_socklen_t *namelen) {
    if (_useSocks && F_getpeername) {
       return (*F_getpeername)(s, name, namelen);
    } else {
@@ -557,7 +557,7 @@ int KSocks::getpeername (int s, sockaddr *name, ksocklen_t *namelen) {
 }
 
 
-int KSocks::accept (int s, sockaddr *addr, ksocklen_t *addrlen) {
+int KSocks::accept (int s, sockaddr *addr, kde_socklen_t *addrlen) {
    if (_useSocks && F_accept) {
      return (*F_accept)(s, addr, addrlen);
    } else {
@@ -584,13 +584,13 @@ int KSocks::listen (int s, int backlog) {
 }
 
 
-int KSocks::bind (int sockfd, const sockaddr *my_addr, ksocklen_t addrlen) {
+int KSocks::bind (int sockfd, const sockaddr *my_addr, kde_socklen_t addrlen) {
    if (_useSocks && F_bind)
       return (*F_bind)(sockfd, my_addr, addrlen);
    else return ::bind(sockfd, my_addr, (socklen_t)addrlen);
 }
 
-int KSocks::bind (int sockfd, sockaddr *my_addr, ksocklen_t addrlen) {
+int KSocks::bind (int sockfd, sockaddr *my_addr, kde_socklen_t addrlen) {
    if (_useSocks && F_bind)
       return (*F_bind)(sockfd, my_addr, addrlen);
    else return ::bind(sockfd, my_addr, (socklen_t)addrlen);

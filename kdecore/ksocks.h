@@ -32,8 +32,9 @@ class KLibrary;
 class KConfigBase;
 struct sockaddr;
 
+#ifdef __CYGWIN__
 typedef unsigned ksocklen_t;
-
+#endif
 
 /**
  * This class provides you with an interface to a 
@@ -99,7 +100,7 @@ public:
     * name. Read the appropriate man page.
     */
     int     connect     (int sockfd, const sockaddr *serv_addr, 
-                                ksocklen_t addrlen);
+                                kde_socklen_t addrlen);
    /**
     * This is the re-implementation of libc's function of the same
     * name. Read the appropriate man page.
@@ -115,13 +116,13 @@ public:
     * name. Read the appropriate man page.
     */
     int     recvfrom    (int s, void *buf, unsigned long int len, int flags, 
-                                sockaddr *from, ksocklen_t *fromlen);
+                                sockaddr *from, kde_socklen_t *fromlen);
    /**
     * This is the re-implementation of libc's function of the same
     * name. Read the appropriate man page.
     */
     int     sendto      (int s, const void *msg, unsigned long int len, int flags,
-                             const sockaddr *to, ksocklen_t tolen);
+                             const sockaddr *to, kde_socklen_t tolen);
    /**
     * This is the re-implementation of libc's function of the same
     * name. Read the appropriate man page.
@@ -136,17 +137,17 @@ public:
     * This is the re-implementation of libc's function of the same
     * name. Read the appropriate man page.
     */
-    int     getsockname (int s, sockaddr *name, ksocklen_t *namelen);
+    int     getsockname (int s, sockaddr *name, kde_socklen_t *namelen);
    /**
     * This is the re-implementation of libc's function of the same
     * name. Read the appropriate man page.
     */
-    int     getpeername (int s, sockaddr *name, ksocklen_t *namelen);
+    int     getpeername (int s, sockaddr *name, kde_socklen_t *namelen);
    /**
     * This is the re-implementation of libc's function of the same
     * name. Read the appropriate man page.
     */
-    int     accept      (int s, sockaddr *addr, ksocklen_t *addrlen);
+    int     accept      (int s, sockaddr *addr, kde_socklen_t *addrlen);
    /**
     * This is the re-implementation of libc's function of the same
     * name. Read the appropriate man page.
@@ -164,9 +165,9 @@ public:
     * name. Read the appropriate man page.
     */
     int     bind        (int sockfd, sockaddr *my_addr, 
-                                     ksocklen_t addrlen);
+                                     kde_socklen_t addrlen);
     int     bind        (int sockfd, const sockaddr *my_addr, 
-                                     ksocklen_t addrlen);
+                                     kde_socklen_t addrlen);
 
     /**
     *  If you're using this, you're probably doing something wrong.
