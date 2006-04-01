@@ -188,6 +188,8 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     connect( this, SIGNAL( movableChanged(bool) ), SLOT( slotMovableChanged(bool) ) );
 
     setAcceptDrops(true);
+
+    setFont(KGlobalSettings::toolBarFont());
 }
 
 void KToolBar::setEnableContextMenu(bool enable )
