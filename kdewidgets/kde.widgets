@@ -107,6 +107,17 @@ ToolTip=ListView Search Line (KDE)
 Group=Input (KDE)
 ConstructorArgs=(parent, 0)
 
+[KTreeWidgetSearchLineWidget]
+ToolTip=QTreeWidget Search Line Widget (KDE)
+IncludeFile=ktreewidgetsearchline.h
+Group=Input (KDE)
+ConstructorArgs=(0, parent)
+
+[KTreeWidgetSearchLine]
+ToolTip=QTreeWidget Search Line (KDE)
+Group=Input (KDE)
+ConstructorArgs=(parent, 0)
+
 [K3ListViewSearchLineWidget]
 ToolTip=ListView Search Line Widget (KDE)
 IncludeFile=k3listviewsearchline.h
