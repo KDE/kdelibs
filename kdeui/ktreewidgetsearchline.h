@@ -310,12 +310,6 @@ public:
     ~KTreeWidgetSearchLineWidget();
 
     /**
-     * Creates the search line.  This can be useful to reimplement in cases where
-     * a KTreeWidgetSearchLine subclass is used.
-     */
-    virtual KTreeWidgetSearchLine *createSearchLine(QTreeWidget *treeWidget);
-
-    /**
      * Returns a pointer to the search line.
      */
     KTreeWidgetSearchLine *searchLine() const;
@@ -328,6 +322,16 @@ protected Q_SLOTS:
      * subclasses.
      */
     virtual void createWidgets();
+
+protected:
+    /**
+     * Creates the search line.  This can be useful to reimplement in cases where
+     * a KTreeWidgetSearchLine subclass is used.
+     *
+     * It is const because it is be called from searchLine(), which to the user
+     * doesn't conceptually alter the widget.
+     */
+    virtual KTreeWidgetSearchLine *createSearchLine(QTreeWidget *treeWidget) const;
 
 private:
     class KTreeWidgetSearchLineWidgetPrivate;

@@ -23,41 +23,11 @@
     <number>6</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
+    <widget class="KTreeWidgetSearchLineWidget" name="searchFilter" >
+     <property name="whatsThis" >
+      <string>Search interactively for shortcut names (e.g. Copy) or combination of keys (e.g. Ctrl+C) by typing them here.</string>
      </property>
-     <property name="spacing" >
-      <number>6</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="clearSearch" >
-       <property name="toolTip" >
-        <string>Clear Search</string>
-       </property>
-       <property name="text" >
-        <string>Clear Search</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="searchLabel" >
-       <property name="whatsThis" >
-        <string>Search interactively for shortcut names (e.g. Copy) or combination of keys (e.g. Ctrl+C) by typing them here.</string>
-       </property>
-       <property name="text" >
-        <string>&amp;Search:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="seachFilter" >
-       <property name="whatsThis" >
-        <string>Search interactively for shortcut names (e.g. Copy) or combination of keys (e.g. Ctrl+C) by typing them here.</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    </widget>
    </item>
    <item>
     <widget class="QTreeWidget" name="list" >
@@ -251,6 +221,13 @@
    <class>KKeyButton</class>
    <extends>QPushButton</extends>
    <header>kkeybutton.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
+  <customwidget>
+   <class>KTreeWidgetSearchLineWidget</class>
+   <extends>QWidget</extends>
+   <header>ktreewidgetsearchline.h</header>
    <container>0</container>
    <pixmap></pixmap>
   </customwidget>

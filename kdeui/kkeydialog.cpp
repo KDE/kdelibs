@@ -205,12 +205,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 	
 	  d->ui->setupUi(this);
 	
-	  d->ui->clearSearch->setIcon(KIcon(QApplication::isRightToLeft() ? "clear_left" : "locationbar_erase"));
-	
-	  /*QTreeWidgetSearchLine* listViewSearch = new QTreeWidgetSearchLine(this);
-	  connect(clearSearch, SIGNAL(pressed()), listViewSearch, SLOT(clear()));*/
-	
-	  //listViewSearch->setListView(d->ui->list); // Plug into search line
+	  d->ui->searchFilter->searchLine()->setTreeWidget(d->ui->list); // Plug into search line
 	
 	  d->ui->list->header()->setStretchLastSection(false);
 	

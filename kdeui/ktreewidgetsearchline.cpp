@@ -218,15 +218,13 @@ void KTreeWidgetSearchLine::setTreeWidget(QTreeWidget *tw)
 
 void KTreeWidgetSearchLine::setTreeWidgets(const QList<QTreeWidget *> &tw)
 {
-    for (QList<QTreeWidget *>::Iterator it = d->treeWidgets.begin();
-         it != d->treeWidgets.end(); ++it)
-             disconnectTreeWidget(*it);
+    foreach (QTreeWidget* treeWidget, d->treeWidgets)
+        disconnectTreeWidget(treeWidget);
 
     d->treeWidgets = tw;
 
-    for (QList<QTreeWidget *>::Iterator it = d->treeWidgets.begin();
-         it != d->treeWidgets.end(); ++it)
-        connectTreeWidget(*it);
+    foreach (QTreeWidget* treeWidget, d->treeWidgets)
+        connectTreeWidget(treeWidget);
 
     checkColumns();
     setEnabled(!d->treeWidgets.isEmpty());
@@ -537,11 +535,9 @@ KTreeWidgetSearchLineWidget::~KTreeWidgetSearchLineWidget()
     delete d;
 }
 
-KTreeWidgetSearchLine *KTreeWidgetSearchLineWidget::createSearchLine(QTreeWidget *treeWidget)
+KTreeWidgetSearchLine *KTreeWidgetSearchLineWidget::createSearchLine(QTreeWidget *treeWidget) const
 {
-    if(!d->searchLine)
-        d->searchLine = new KTreeWidgetSearchLine(this, treeWidget);
-    return d->searchLine;
+    return new KTreeWidgetSearchLine(const_cast<KTreeWidgetSearchLineWidget*>(this), treeWidget);
 }
 
 void KTreeWidgetSearchLineWidget::createWidgets()
@@ -557,8 +553,7 @@ void KTreeWidgetSearchLineWidget::createWidgets()
     QLabel *label = new QLabel(i18n("S&earch:"), this);
     label->setObjectName(QLatin1String("kde toolbar widget"));
 
-    d->searchLine = createSearchLine(d->treeWidget);
-    d->searchLine->show();
+    searchLine()->show();
 
     label->setBuddy(d->searchLine);
     label->show();
@@ -574,6 +569,8 @@ void KTreeWidgetSearchLineWidget::createWidgets()
 
 KTreeWidgetSearchLine *KTreeWidgetSearchLineWidget::searchLine() const
 {
+    if (!d->searchLine)
+        d->searchLine = createSearchLine(d->treeWidget);
     return d->searchLine;
 }
 
