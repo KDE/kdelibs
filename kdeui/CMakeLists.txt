@@ -129,6 +129,7 @@ set(kdeui_LIB_SRCS
  ktoolbarspaceraction.cpp
  kmanagerselection.cpp
  kglobalaccel.cpp
+ ktreewidgetsearchline.cpp
 )
 
 if (UNIX)
@@ -275,6 +276,7 @@ install_files( /include FILES
  ktoolbarspaceraction.h
  kmanagerselection.h
  kglobalaccel.h
+ ktreewidgetsearchline.h
 )
 
 install_files( /bin preparetips )
