@@ -24,6 +24,7 @@
 #include "videocapturedevice.h"
 #include "audiooutputdevice.h"
 #include <QList>
+#include <QSet>
 
 static KStaticDeleter<Phonon::BackendCapabilities> sd;
 
@@ -84,40 +85,40 @@ KMimeType::List BackendCapabilities::knownMimeTypes()
 QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices()
 {
 	const BackendCapabilities::Private* d = self()->d;
+	QList<AudioOutputDevice> ret;
 	if( d->backend )
 	{
-		QList<AudioOutputDevice> ret;
-		for( int i = 1; i <= d->backend->audioOutputDeviceCount(); ++i )
+		QSet<int> deviceIndexes = d->backend->audioOutputDeviceIndexes();
+		foreach( int i, deviceIndexes )
 			ret.append( AudioOutputDevice::fromIndex( i ) );
-		return ret;
 	}
-	return QList<AudioOutputDevice>();
+	return ret;
 }
 
 QList<AudioCaptureDevice> BackendCapabilities::availableAudioCaptureDevices()
 {
 	const BackendCapabilities::Private* d = self()->d;
+	QList<AudioCaptureDevice> ret;
 	if( d->backend )
 	{
-		QList<AudioCaptureDevice> ret;
-		for( int i = 1; i <= d->backend->audioCaptureDeviceCount(); ++i )
+		QSet<int> deviceIndexes = d->backend->audioCaptureDeviceIndexes();
+		foreach( int i, deviceIndexes )
 			ret.append( AudioCaptureDevice::fromIndex( i ) );
-		return ret;
 	}
-	return QList<AudioCaptureDevice>();
+	return ret;
 }
 
 QList<VideoCaptureDevice> BackendCapabilities::availableVideoCaptureDevices()
 {
 	const BackendCapabilities::Private* d = self()->d;
+	QList<VideoCaptureDevice> ret;
 	if( d->backend )
 	{
-		QList<VideoCaptureDevice> ret;
-		for( int i = 1; i <= d->backend->videoCaptureDeviceCount(); ++i )
+		QSet<int> deviceIndexes = d->backend->videoCaptureDeviceIndexes();
+		foreach( int i, deviceIndexes )
 			ret.append( VideoCaptureDevice::fromIndex( i ) );
-		return ret;
 	}
-	return QList<VideoCaptureDevice>();
+	return ret;
 }
 
 QStringList BackendCapabilities::availableAudioEffects()

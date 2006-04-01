@@ -25,6 +25,7 @@
 #include <kdelibs_export.h>
 
 class KUrl;
+template<class T> class QSet;
 
 namespace Phonon
 {
@@ -196,66 +197,60 @@ namespace Ifaces
 			virtual void freeSoundcardDevices() = 0;
 
 			/**
-			 * Returns the number of available audio output devices. An associated
+			 * Returns the indexes of the available audio output devices. An associated
 			 * name and description can be found using audioOutputDeviceName
 			 * and audioOutputDeviceDescription.
 			 *
-			 * \return The number of available output devices.
+			 * \return The indexes of the available output devices.
+			 *
 			 * \see audioOutputDeviceName
 			 * \see audioOutputDeviceDescription
-			 *
-			 * \test The return value has to be \f$\ge0\f$
 			 */
-			virtual int audioOutputDeviceCount() const = 0;
+			virtual QSet<int> audioOutputDeviceIndexes() const = 0;
 
 			/**
 			 * Returns the name of the output device.
 			 *
-			 * \param index \f$0<\mathrm{index}\leq\mathrm{audioOutputDeviceCount}\f$
+			 * \param index A value out of audioOutputDeviceIndexes()
 			 *
 			 * \return The name of this output device.
-			 *
-			 * \test The return value has to be non-empty.
 			 */
 			virtual QString audioOutputDeviceName( int index ) const = 0;
 
 			/**
 			 * Returns a description for the output device.
 			 *
-			 * \param index \f$0<index\leq\f$ audioOutputDeviceCount
+			 * \param index A value out of audioOutputDeviceIndexes()
 			 *
 			 * \return The description for this output device.
 			 */
 			virtual QString audioOutputDeviceDescription( int index ) const = 0;
 
 			/**
-			 * Returns the number of available capture sources. An associated
+			 * Returns the indexes of the available capture sources. An associated
 			 * name and description can be found using audioCaptureDeviceName
 			 * and audioCaptureDeviceDescription.
 			 *
-			 * \return The number of available capture sources.
+			 * \return The indexes of the available capture sources.
+			 *
 			 * \see audioCaptureDeviceName
 			 * \see audioCaptureDeviceDescription
-			 *
-			 * \test The return value has to be \f$\ge0\f$
 			 */
-			virtual int audioCaptureDeviceCount() const = 0;
+			virtual QSet<int> audioCaptureDeviceIndexes() const = 0;
 
 			/**
 			 * Returns the name of the capture source.
 			 *
-			 * \param index \f$0<\mathrm{index}\leq\mathrm{audioCaptureDeviceCount}\f$
+			 * \param index A value out of audioCaptureDeviceIndexes()
 			 *
 			 * \return The name of this capture source.
-			 *
-			 * \test The return value has to be non-empty.
 			 */
 			virtual QString audioCaptureDeviceName( int index ) const = 0;
 
 			/**
 			 * Returns a description for the capture source.
 			 *
-			 * \param index \f$0<index\leq\f$ audioCaptureDeviceCount
+			 * \param index A value out of audioCaptureDeviceIndexes()
 			 *
 			 * \return The description for this capture source.
 			 */
@@ -266,37 +261,37 @@ namespace Ifaces
 			 * with the given audio capture source. For example if the capture
 			 * source is a TV card, the audio and video sources should be marked
 			 * as belonging together.
+			 *
+			 * \param index A value out of audioCaptureDeviceIndexes()
+			 *
+			 * \return The index of the associated VideoCaptureSource object.
 			 */
 			virtual int audioCaptureDeviceVideoIndex( int index ) const = 0;
 
 			/**
-			 * Returns the number of available capture sources. An associated
+			 * Returns the indexes of the available capture sources. An associated
 			 * name and description can be found using videoCaptureDeviceName
 			 * and videoCaptureDeviceDescription.
 			 *
-			 * \return The number of available capture sources.
+			 * \return The indexes of the available capture sources.
 			 * \see videoCaptureDeviceName
 			 * \see videoCaptureDeviceDescription
-			 *
-			 * \test The return value has to be \f$\ge0\f$
 			 */
-			virtual int videoCaptureDeviceCount() const = 0;
+			virtual QSet<int> videoCaptureDeviceIndexes() const = 0;
 
 			/**
 			 * Returns the name of the capture source.
 			 *
-			 * \param index \f$0<\mathrm{index}\leq\mathrm{videoCaptureDeviceCount}\f$
+			 * \param index A value out of videoCaptureDeviceIndexes()
 			 *
 			 * \return The name of this capture source.
-			 *
-			 * \test The return value has to be non-empty.
 			 */
 			virtual QString videoCaptureDeviceName( int index ) const = 0;
 
 			/**
 			 * Returns a description for the capture source.
 			 *
-			 * \param index \f$0<\mathrm{index}\leq\mathrm{videoCaptureDeviceCount}\f$
+			 * \param index A value out of videoCaptureDeviceIndexes()
 			 *
 			 * \return The description for this capture source.
 			 */
@@ -307,6 +302,10 @@ namespace Ifaces
 			 * with the given video capture source. For example if the capture
 			 * source is a TV card, the audio and video sources should be marked
 			 * as belonging together.
+			 *
+			 * \param index A value out of videoCaptureDeviceIndexes()
+			 *
+			 * \return The index of the associated AudioCaptureSource object.
 			 */
 			virtual int videoCaptureDeviceAudioIndex( int index ) const = 0;
 

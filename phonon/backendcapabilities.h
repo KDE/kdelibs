@@ -74,9 +74,45 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 
 		/**
 		 * Returns a list of mime types that the Backend can decode.
+		 *
+		 * \see isMimeTypeKnown()
 		 */
 		static KMimeType::List knownMimeTypes();
 
+		/**
+		 * Often all you want to know is whether one given MIME type can be
+		 * decoded by the backend. Use this method in favor of knownMimeTypes()
+		 * as it can give you a negative answer without having a backend loaded.
+		 *
+		 * \see knownMimeTypes();
+		 */
+		static bool isMimeTypeKnown( KMimeType::Ptr ); //FIXME: not implemented
+
+#if 0
+		/**
+		 * Returns the audio output devices the backend reports as usable. That
+		 * doesn't have to say the device will certainly work as the backend
+		 * might not be able to open the device if it's blocked by another
+		 * application. But at least the device is physically available.
+		 *
+		 * \return A list of AudioOutputDevice objects that give a name and
+		 * description for every supported audio output device.
+		 * 
+		 * \see knownAudioOutputDevices
+		 */
+		static QList<AudioOutputDevice> usableAudioOutputDevices();
+
+		/**
+		 * Returns the audio output devices the backend has ever reported as
+		 * usable.
+		 *
+		 * \return A list of AudioOutputDevice objects that give a name and
+		 * description for every supported audio output device.
+		 *
+		 * \see usableAudioOutputDevices
+		 */
+		static QList<AudioOutputDevice> knownAudioOutputDevices();
+#endif
 		/**
 		 * Returns the audio output devices the backend supports.
 		 *

@@ -30,6 +30,7 @@
 
 #include <kgenericfactory.h>
 #include "volumefadereffect.h"
+#include <QSet>
 
 typedef KGenericFactory<Phonon::Fake::Backend, Phonon::Ifaces::Backend> FakeBackendFactory;
 K_EXPORT_COMPONENT_FACTORY( phonon_fake, FakeBackendFactory( "fakebackend" ) )
@@ -126,18 +127,20 @@ const KMimeType::List& Backend::knownMimeTypes() const
 	return m_supportedMimeTypes;
 }
 
-int Backend::audioOutputDeviceCount() const
+QSet<int> Backend::audioOutputDeviceIndexes() const
 {
-	return 2;
+	QSet<int> set;
+	set << 10000 << 10001;
+	return set;
 }
 
 QString Backend::audioOutputDeviceName( int index ) const
 {
 	switch( index )
 	{
-		case 1:
+		case 10000:
 			return "internal Soundcard";
-		case 2:
+		case 10001:
 			return "USB Headset";
 	}
 	return QString();
@@ -149,18 +152,20 @@ QString Backend::audioOutputDeviceDescription( int index ) const
 	return QString(); // no description
 }
 
-int Backend::audioCaptureDeviceCount() const
+QSet<int> Backend::audioCaptureDeviceIndexes() const
 {
-	return 2;
+	QSet<int> set;
+	set << 20000 << 20001;
+	return set;
 }
 
 QString Backend::audioCaptureDeviceName( int index ) const
 {
 	switch( index )
 	{
-		case 1:
+		case 20000:
 			return "Soundcard";
-		case 2:
+		case 20001:
 			return "DV";
 		default:
 			return QString();
@@ -171,9 +176,9 @@ QString Backend::audioCaptureDeviceDescription( int index ) const
 {
 	switch( index )
 	{
-		case 1:
+		case 20000:
 			return "first description";
-		case 2:
+		case 20001:
 			return "second description";
 		default:
 			return QString();
@@ -184,25 +189,27 @@ int Backend::audioCaptureDeviceVideoIndex( int index ) const
 {
 	switch( index )
 	{
-		case 2:
-			return 2;
+		case 20001:
+			return 30001;
 		default:
 			return -1;
 	}
 }
 
-int Backend::videoCaptureDeviceCount() const
+QSet<int> Backend::videoCaptureDeviceIndexes() const
 {
-	return 2;
+	QSet<int> set;
+	set << 30000 << 30001;
+	return set;
 }
 
 QString Backend::videoCaptureDeviceName( int index ) const
 {
 	switch( index )
 	{
-		case 1:
+		case 30000:
 			return "USB Webcam";
-		case 2:
+		case 30001:
 			return "DV";
 		default:
 			return QString();
@@ -213,9 +220,9 @@ QString Backend::videoCaptureDeviceDescription( int index ) const
 {
 	switch( index )
 	{
-		case 1:
+		case 30000:
 			return "first description";
-		case 2:
+		case 30001:
 			return "second description";
 		default:
 			return QString();
@@ -226,8 +233,8 @@ int Backend::videoCaptureDeviceAudioIndex( int index ) const
 {
 	switch( index )
 	{
-		case 2:
-			return 2;
+		case 30001:
+			return 20001;
 		default:
 			return -1;
 	}
