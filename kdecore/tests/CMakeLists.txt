@@ -389,7 +389,7 @@ add_test(kdecore-kshelltest ${EXECUTABLE_OUTPUT_PATH}/kshelltest)
 
 ########### next target ###############
 
-if (UNIX)
+if (UNIX AND NOT APPLE)
 set(kxerrorhandlertest_SRCS kxerrorhandlertest.cpp )
 
 kde4_automoc(${kxerrorhandlertest_SRCS})
@@ -399,7 +399,7 @@ kde4_add_executable(kxerrorhandlertest ${kxerrorhandlertest_SRCS})
 target_link_libraries(kxerrorhandlertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kxerrorhandlertest ${EXECUTABLE_OUTPUT_PATH}/kxerrorhandlertest)
-endif (UNIX)
+endif (UNIX AND NOT APPLE)
 
 ########### next target ###############
 
