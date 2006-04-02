@@ -67,7 +67,7 @@ set(win_LIB_SRCS
    src/uname.c
    src/unistd.c
    src/win32_utils.c
-   src/win32_utils2.cpp
+   #src/win32_utils2.cpp
    )
 
 

@@ -23,6 +23,7 @@
 // include everywhere
 #include <sys/types.h>
 
+#include <direct.h>
 #include <io.h> /* access(), etc.*/
 #include <process.h> /* getpid(), etc.*/
 

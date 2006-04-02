@@ -20,8 +20,9 @@
 #include <winposix_export.h>
 #include <windows.h>
 
-#include <sys/stat.h>
+#include <direct.h>
 #include <stdarg.h>
+#include <sys/stat.h>
 
 #include <kde_file_win.h>
 

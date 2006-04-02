@@ -20,12 +20,13 @@
 #include <winposix_export.h>
 #include <windows.h>
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <limits.h>
 #include <errno.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <direct.h>
 
 /**
  * @internal Canonical name: never ends with a slash

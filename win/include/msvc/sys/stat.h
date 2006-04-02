@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _SYS_STAT_H
-#define _SYS_STAT_H
+#ifndef KDEWIN_SYS_STAT_H
+#define KDEWIN_SYS_STAT_H
 
 #include <winposix_export.h>
 
@@ -95,4 +95,4 @@ KDEWIN32_EXPORT int fchmod(int __fd, mode_t __mode);
 KDEWIN32_EXPORT int	mkdir( const char *_path, mode_t __mode );
 #endif
 */
-#endif /* _SYS_STAT_H */
+#endif /* KDEWIN_SYS_STAT_H */

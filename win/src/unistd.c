@@ -20,12 +20,14 @@
 #include <winposix_export.h>
 #include <windows.h>
 
-#include <unistd.h>
-#include <sys/stat.h>
-#include <string.h>
+#include <direct.h>
 #include <errno.h>
-#include <stdlib.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 #include "win32_utils.h"
 
@@ -321,11 +323,6 @@ KDEWIN32_EXPORT char* mkdtemp (char* _template)
     return 0;
 }
 
-
-// from kdecore/fakes.c
-#ifndef ENOTSUP
-#define ENOTSUP 134 /* Not supported */
-#endif
 KDEWIN32_EXPORT int revoke(const char *tty)
 {
         errno = ENOTSUP;
