@@ -1818,6 +1818,14 @@ bool KToggleFullScreenAction::eventFilter( QObject* o, QEvent* e )
 
 // BEGIN KWidgetAction
 KWidgetAction::KWidgetAction( QWidget* widget,
+    const QString& text, KActionCollection* parent, const char* name )
+  : KAction( text, parent, name )
+  , m_widget( widget )
+{
+  setToolBarWidgetFactory(this);
+}
+
+KWidgetAction::KWidgetAction( QWidget* widget,
     const QString& text, const KShortcut& cut,
     const QObject* receiver, const char* slot,
     KActionCollection* parent, const char* name )

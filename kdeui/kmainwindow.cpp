@@ -727,7 +727,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     // One day will need to save the version number, but for now, assume 0
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-	foreach (KToolBar* toolbar, toolBars()) {
+    foreach (KToolBar* toolbar, toolBars()) {
         QString group;
         if (!configGroup.isEmpty())
         {

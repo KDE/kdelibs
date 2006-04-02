@@ -127,7 +127,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       mTreeList->setColumnCount(1);
       mTreeList->header()->hide();
       connect( mTreeList, SIGNAL(itemSelectionChanged()), SLOT(slotShowPage()) );
-      connect( mTreeList, SIGNAL(itemClicked(QTreeWidgetItem*)), SLOT(slotItemClicked(QTreeWidgetItem*)));
+      connect( mTreeList, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(slotItemClicked(QTreeWidgetItem*)));
 
       //
       // Page area. Title at top with a separator below and a pagestack using
@@ -901,9 +901,9 @@ void KJanusWidget::unfoldTreeList( bool persist )
   if( mFace == TreeList )
   {
     if( persist )
-      connect( mTreeList, SIGNAL( collapsed( QTreeWidgetItem* ) ), this, SLOT( slotReopen( QTreeWidgetItem* ) ) );
+      connect( mTreeList, SIGNAL( itemCollapsed( QTreeWidgetItem* ) ), this, SLOT( slotReopen( QTreeWidgetItem* ) ) );
     else
-      disconnect( mTreeList, SIGNAL( collapsed( QTreeWidgetItem* ) ), this, SLOT( slotReopen( QTreeWidgetItem* ) ) );
+      disconnect( mTreeList, SIGNAL( itemCollapsed( QTreeWidgetItem* ) ), this, SLOT( slotReopen( QTreeWidgetItem* ) ) );
 
     for (int i = 0; i < mTreeList->topLevelItemCount(); ++i)
       expandTree(mTreeList->topLevelItem(i));

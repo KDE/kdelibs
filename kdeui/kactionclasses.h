@@ -1258,6 +1258,14 @@ public:
      * ONE toolbar.
      */
     KDE_CONSTRUCTOR_DEPRECATED KWidgetAction( QWidget* widget, const QString& text,
+                   KActionCollection* parent, const char* name );
+
+    /**
+     * Create an action that will embed widget into a toolbar
+     * when plugged. This action may only be plugged into
+     * ONE toolbar.
+     */
+    KDE_CONSTRUCTOR_DEPRECATED KWidgetAction( QWidget* widget, const QString& text,
                    const KShortcut& cut,
                    const QObject* receiver, const char* slot,
                    KActionCollection* parent, const char* name );
