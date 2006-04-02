@@ -307,12 +307,12 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
     }
     if ( _x > _tx + m_x + m_width ) {
 	// to the right
-	return m_reversed ? SelectionPointBeforeInLine : SelectionPointAfterInLine;
+	return  SelectionPointAfterInLine;
     }
 
     // The Y matches, check if we're on the left
     if ( _x < _tx + m_x ) {
-        return m_reversed ? SelectionPointAfterInLine : SelectionPointBeforeInLine;
+        return SelectionPointBeforeInLine;
     }
 
     // consider spacing for justified text
