@@ -79,7 +79,8 @@ class SlaveInterfacePrivate;
    MSG_NEED_SUBURL_DATA,
    MSG_CANRESUME,
    MSG_AUTH_KEY, // deprecated.
-   MSG_DEL_AUTH_KEY // deprecated.
+   MSG_DEL_AUTH_KEY, // deprecated.
+   MSG_CANSEEK
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
