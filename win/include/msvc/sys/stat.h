@@ -76,14 +76,11 @@ extern "C" {
 #define	S_ISSOCK(m)	(((m)&_IFMT) == _IFSOCK)
 
 KDEWIN32_EXPORT int lstat( const char *__path, struct stat *__buf);
+KDEWIN32_EXPORT int lstat64( const char *__path, struct stat64 *__buf);
 
 KDEWIN32_EXPORT int fchmod(int __fd, mode_t __mode);
 
 // KDEWIN32_EXPORT int mkdir( const char *_path, mode_t __mode );
- extern int mkdir( const char *_path );
- extern int chdir( const char *dirname );
- extern char *getcwd( char *buffer, int maxlen );
- extern int rmdir( const char *dirname );
 
 #endif
 

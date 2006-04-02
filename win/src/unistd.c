@@ -81,6 +81,11 @@ KDEWIN32_EXPORT int lstat(const char *path, struct stat *sb)
   return _stat(path,(struct _stat*)sb);
 }
 
+KDEWIN32_EXPORT int lstat64(const char *path, struct stat64 *sb)
+{
+  return _stat64(path,(struct _stat64*)sb);
+}
+
 KDEWIN32_EXPORT int fchmod(int __fd, mode_t __mode)
 {
   return 0;
