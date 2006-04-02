@@ -653,9 +653,9 @@ void KApplication::init()
 #ifdef Q_WS_MACX
   if (type() == GuiClient) {
       QPixmap pixmap = KGlobal::iconLoader()->loadIcon( KCmdLineArgs::appName(),
-              K3Icon::NoGroup, K3Icon::SizeLarge, K3Icon::DefaultState, 0L, false );
+              K3Icon::NoGroup, K3Icon::SizeEnormous, K3Icon::DefaultState, 0L, false );
       if (!pixmap.isNull()) {
-          QImage i = pixmap.toImage().convertToFormat(QImage::Format_ARGB32).scaled(40, 40, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+          QImage i = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);
           for(int y = 0; y < i.height(); y++) {
               uchar *l = i.scanLine(y);
               for(int x = 0; x < i.width(); x+=4)
