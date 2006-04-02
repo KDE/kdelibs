@@ -38,8 +38,10 @@
 #include <kxerrorhandler.h>
 #endif
 
+
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include <fixx11h.h>
 
@@ -89,7 +91,7 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 
 	int keyCodeX;
 	uint keyModX;
-	KKeyServer::keyQtToX(keyQt, keyCodeX);
+	KKeyServer::keyQtToCodeX(keyQt, keyCodeX);
 	KKeyServer::keyQtToModX(keyQt, keyModX);
 
 	keyModX &= g_keyModMaskXAccel; // Get rid of any non-relevant bits in mod
@@ -102,6 +104,8 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 
 	if( !keyCodeX )
 		return false;
+
+    kDebug(125) << "grabKey keyQt " << (keyQt & ~Qt::KeyboardModifierMask) << " mod " << (keyQt & Qt::KeyboardModifierMask) << " ( key: '" << QKeySequence(keyQt).toString() << "', grab: " << grab << " ): keyCodeX: " << keyCodeX << " keyModX: " << keyModX << endl;
 
 #ifdef Q_WS_X11
 	KXErrorHandler handler( XGrabErrorHandler );
@@ -129,6 +133,10 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 		}
 	}
 
+#ifndef NDEBUG
+	kDebug(125) << sDebug << endl;
+#endif
+
 	bool failed = false;
 	if( grab ) {
 #ifdef Q_WS_X11
@@ -136,8 +144,11 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 #endif
 		if( failed ) {
 			kDebug(125) << "grab failed!\n";
-			return false;
-		}
+			for( uint m = 0; m <= 0xff; m++ ) {
+				if( m & keyModMaskX == 0 )
+					XUngrabKey( QX11Info::display(), keyCodeX, keyModX | m, QX11Info::appRootWindow() );
+				}
+			}
 	}
 	
 	return !failed;
@@ -186,11 +197,15 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 	uchar keyCodeX = pEvent->xkey.keycode;
 	uint keyModX = pEvent->xkey.state & (g_keyModMaskXAccel | KKeyServer::MODE_SWITCH);
 
+	KeySym keySym;
+	XLookupString( (XKeyEvent*) pEvent, 0, 0, &keySym, 0 );
+	uint keySymX = (uint)keySym;
+
 	// If numlock is active and a keypad key is pressed, XOR the SHIFT state.
 	//  e.g., KP_4 => Shift+KP_Left, and Shift+KP_4 => KP_Left.
 	if( pEvent->xkey.state & KKeyServer::modXNumLock() ) {
-		// TODO: what's the xor operator in c++?
 		uint sym = XKeycodeToKeysym( QX11Info::display(), keyCodeX, 0 );
+		// TODO: what's the xor operator in c++?
 		// If this is a keypad key,
 		if( sym >= XK_KP_Space && sym <= XK_KP_9 ) {
 			switch( sym ) {
@@ -212,12 +227,14 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 
 	int keyCodeQt;
 	int keyModQt;
-	KKeyServer::symToKeyQt(keyCodeX, keyCodeQt);
+	KKeyServer::symXToKeyQt(keySymX, keyCodeQt);
 	KKeyServer::modXToQt(keyModX, keyModQt);
 	
 	int keyQt = keyCodeQt | keyModQt;
+	
+	kDebug(125) << k_funcinfo << "Qt " << keyQt << " [Key: " << keyCodeQt << " Mod: " << keyModQt << "] X [Key: " << keySymX << " Mod: " << keyModX << "]" << endl;
 
-	// All that work for this hey...
+	// All that work for this hey... argh...
 	if (m_owner->keyPressed(keyQt))
 		return true;
 

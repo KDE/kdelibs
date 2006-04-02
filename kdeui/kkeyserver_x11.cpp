@@ -439,9 +439,71 @@ uint modXModeSwitch() { return 0; }
 
 #endif //Q_WS_X11
 
-bool keyQtToX( int keyQt, int& keySym )
+uint getModsRequired(uint sym)
 {
-	int symQt = keyQt & ~Qt::KeyboardModifierMask; 
+	uint mod = 0;
+
+#ifdef Q_WS_X11
+	// FIXME: This might not be true on all keyboard layouts!
+	if( sym == XK_Sys_Req ) return Qt::ALT;
+	if( sym == XK_Break ) return Qt::CTRL;
+
+	if( sym < 0x3000 ) {
+		QChar c(sym);
+		if( c.isLetter() && c.toLower() != c.toUpper() && sym == c.toUpper().unicode() )
+			return Qt::SHIFT;
+	}
+
+	uchar code = XKeysymToKeycode( QX11Info::display(), sym );
+	if( code ) {
+		// need to check index 0 before the others, so that a null-mod
+		//  can take precedence over the others, in case the modified
+		//  key produces the same symbol.
+		if( sym == XKeycodeToKeysym( QX11Info::display(), code, 0 ) )
+			;
+		else if( sym == XKeycodeToKeysym( QX11Info::display(), code, 1 ) )
+			mod = Qt::SHIFT;
+		else if( sym == XKeycodeToKeysym( QX11Info::display(), code, 2 ) )
+			mod = MODE_SWITCH;
+		else if( sym == XKeycodeToKeysym( QX11Info::display(), code, 3 ) )
+			mod = Qt::SHIFT | MODE_SWITCH;
+	}
+#endif
+	return mod;
+}
+
+bool keyQtToCodeX( int keyQt, int& keyCode )
+{
+	int sym;
+	uint mod;
+	keyQtToSymX(keyQt, sym);
+	keyQtToModX(keyQt, mod);
+
+	// Get any extra mods required by the sym.
+	//  E.g., XK_Plus requires SHIFT on the en layout.
+	uint modExtra = getModsRequired(sym);
+	// Get the X modifier equivalent.
+	if( !sym || !keyQtToModX( keyQt & Qt::KeyboardModifierMask | modExtra, mod ) ) {
+		keyCode = 0;
+		return false;
+	}
+
+	// FIXME: Accomadate non-standard layouts
+	// XKeysymToKeycode returns the wrong keycode for XK_Print and XK_Break.
+	// Specifically, it returns the code for SysReq instead of Print
+	if( sym == XK_Print && !(mod & Mod1Mask) )
+		keyCode = 111; // code for Print
+	else if( sym == XK_Break || (sym == XK_Pause && (mod & ControlMask)) )
+		keyCode = 114;
+	else
+		keyCode = XKeysymToKeycode( QX11Info::display(), sym );
+	
+	return true;
+}
+
+bool keyQtToSymX( int keyQt, int& keySym )
+{
+	int symQt = keyQt & ~Qt::KeyboardModifierMask;
 
 	if( symQt < 0x1000 ) {
 		keySym = QChar(symQt).toLower().unicode();
@@ -470,11 +532,11 @@ bool keyQtToX( int keyQt, int& keySym )
 #endif
 }
 
-bool symToKeyQt( uint keySym, int& keyQt )
+bool symXToKeyQt( uint keySym, int& keyQt )
 {
 	if( keySym < 0x1000 ) {
 		if( keySym >= 'a' && keySym <= 'z' )
-			keyQt = QChar(keySym).toUpper().unicode();
+			keyQt = QChar(keySym).toLower().unicode();
 		else
 			keyQt = keySym;
 	}

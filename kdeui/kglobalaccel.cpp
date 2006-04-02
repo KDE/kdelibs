@@ -193,25 +193,17 @@ void KGlobalAccel::checkAction( KAction* action )
 	QList<int> needToGrab;
 	if (action->isEnabled() && action->globalShortcutAllowed())
 		foreach (const KShortcut& cut, action->globalShortcut().sequences())
-			if (!cut.isNull() && cut.seq(0)) {
-				kDebug() << "Need to grab key " << (int)cut.seq(0) << endl;
+			if (!cut.isNull() && cut.seq(0))
 				needToGrab.append(cut.seq(0));
-			}
 	
-	foreach (int key, currentlyGrabbed) {
-		if (needToGrab.contains(key)) {
-			kDebug() << "Already have key " << key << endl;
+	foreach (int key, currentlyGrabbed)
+		if (needToGrab.contains(key))
 			needToGrab.removeAll(key);
-		} else {
-			kDebug() << "Releasing key " << key << endl;
+		else
 			grabKey(key, false, action);
-		}
-	}
 	
-	foreach (int key, needToGrab) {
-		kDebug() << "Grabbing key " << key << endl;
+	foreach (int key, needToGrab)
 		grabKey(key, true, action);
-	}
 }
 
 void KGlobalAccel::actionChanged( )

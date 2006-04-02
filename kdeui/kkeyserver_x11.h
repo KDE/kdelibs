@@ -132,7 +132,15 @@ namespace KKeyServer
 	 * @param sym if successful, the symbol will be written here
 	 * @return true if successful, false otherwise
 	 */
-	KDEUI_EXPORT bool keyQtToX( int keyQt, int& sym );
+	KDEUI_EXPORT bool keyQtToSymX( int keyQt, int& sym );
+
+	/**
+	 * Extracts the code from the given Qt key.
+	 * @param keyQt the qt key code
+	 * @param keyCode if successful, the symbol will be written here
+	 * @return true if successful, false otherwise
+	 */
+	KDEUI_EXPORT bool keyQtToCodeX( int keyQt, int& keyCode );
 
 	/**
 	 * Extracts the modifiers from the given Qt key and
@@ -149,7 +157,7 @@ namespace KKeyServer
 	 * @param keyQt if successful, the qt key code will be written here
 	 * @return true if successful, false otherwise
 	 */
-	KDEUI_EXPORT bool symToKeyQt( uint sym, int& keyQt );
+	KDEUI_EXPORT bool symXToKeyQt( uint sym, int& keyQt );
 
 	/**
 	 * Converts the mask of ORed X11 modifiers to

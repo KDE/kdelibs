@@ -193,6 +193,8 @@ void KKeyChooser::save()
 	commitChanges();
 	foreach (KActionCollection* collection, d->collections)
 		collection->writeSettings();
+	if (KGlobalAccel::self()->actionsWithGlobalShortcut().count())
+		KGlobalAccel::self()->writeSettings();
 }
 
 void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
