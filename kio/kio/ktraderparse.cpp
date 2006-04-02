@@ -25,26 +25,32 @@
 extern "C"
 {
 #include "ktraderparse.h"
-
-void KTraderParse_mainParse( const char *_code );
 }
 
 #include "ktraderparsetree.h"
+#include <kdebug.h>
 
 using namespace KIO;
 
 static ParseTreeBase::Ptr *pTree = 0;
+static const char* sCode = 0;
 
 ParseTreeBase::Ptr KIO::parseConstraints( const QString& _constr )
 {
-  KTraderParse_mainParse( _constr.ascii() );
+  QCString str = _constr.utf8();
+  sCode = str.data();
+  KTraderParse_mainParse( sCode );
+  sCode = 0;
   assert( pTree );
   return *pTree;
 }
 
 ParseTreeBase::Ptr KIO::parsePreferences( const QString& _prefs )
 {
-  KTraderParse_mainParse( _prefs.ascii() );
+  QCString str = _prefs.utf8();
+  sCode = str.data();
+  KTraderParse_mainParse( sCode );
+  sCode = 0;
   assert( pTree );
   return *pTree;
 }
@@ -52,8 +58,14 @@ ParseTreeBase::Ptr KIO::parsePreferences( const QString& _prefs )
 void KTraderParse_setParseTree( void *_ptr1 )
 {
   if ( !pTree )
-    pTree = new ParseTreeBase::Ptr; // ### leak
+    pTree = new ParseTreeBase::Ptr; // ### leak; should use KStaticDeleter
   *pTree = static_cast<ParseTreeBase*>( _ptr1 );
+}
+
+
+void KTraderParse_error( const char* err )
+{
+  kdWarning(7014) << "Parsing '" << sCode << "' gave " << err << endl;
 }
 
 void* KTraderParse_newOR( void *_ptr1, void *_ptr2 )

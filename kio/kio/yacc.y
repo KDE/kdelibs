@@ -116,7 +116,7 @@ factor: '(' bool_or ')' { $$ = KTraderParse_newBRACKETS( $<ptr>2 ); }
 
 void yyerror ( const char *s )  /* Called by yyparse on error */
 {
-    printf ("ERROR: %s\n", s);
+    KTraderParse_error( s );
 }
 
 void KTraderParse_mainParse( const char *_code )
