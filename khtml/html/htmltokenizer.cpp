@@ -1739,10 +1739,11 @@ void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)
         // scriptHandler(). In that case scriptHandler() will take care
         // of 'scriptOutput'.
         if ( !script ) {
-            if (!done && pendingQueue.count() > 1) {
+            if (pendingQueue.count() > 1) {
                TokenizerString t = pendingQueue.pop();
                pendingQueue.top().prepend( t );
-            } else if (done) {
+            }
+            if (done) {
                 write(pendingQueue.pop(), false);
             }
             // we might be deleted at this point, do not
