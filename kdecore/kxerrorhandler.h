@@ -26,6 +26,9 @@
 #define KXERRORHANDLER_H
 
 #include <qwindowdefs.h>
+
+#ifdef Q_WS_X11
+
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
 #include <kdelibs_export.h>
@@ -101,5 +104,7 @@ class KDECORE_EXPORT KXErrorHandler
         class Private;
         Private * d;
     };
+
+#endif // Q_WS_X11
 
 #endif

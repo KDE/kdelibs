@@ -488,6 +488,7 @@ bool keyQtToCodeX( int keyQt, int& keyCode )
 		return false;
 	}
 
+#ifdef Q_WS_X11
 	// FIXME: Accomadate non-standard layouts
 	// XKeysymToKeycode returns the wrong keycode for XK_Print and XK_Break.
 	// Specifically, it returns the code for SysReq instead of Print
@@ -497,7 +498,8 @@ bool keyQtToCodeX( int keyQt, int& keyCode )
 		keyCode = 114;
 	else
 		keyCode = XKeysymToKeycode( QX11Info::display(), sym );
-	
+#endif
+
 	return true;
 }
 
