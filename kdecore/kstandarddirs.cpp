@@ -23,13 +23,18 @@
  * Generated:	Thu Mar  5 16:05:28 EST 1998
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
 #endif
 #include <sys/param.h>
 #include <sys/types.h>
@@ -1230,7 +1235,11 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
           if (QT_LSTAT(baseEncoded, &st) == 0)
               (void)unlink(baseEncoded); // try removing
 
+#ifdef Q_WS_WIN
+	  if ( QT_MKDIR(baseEncoded) != 0) {
+#else
 	  if ( QT_MKDIR(baseEncoded, (mode_t) mode) != 0) {
+#endif
             baseEncoded.prepend( "trying to create local folder " );
 	    perror(baseEncoded.data());
 	    return false; // Couldn't create it :-(

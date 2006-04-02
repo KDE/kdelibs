@@ -649,7 +649,7 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
       return;
 
     QString text;
-    if ( msgctxt != NULL and msgid_plural != NULL )
+    if ( msgctxt != NULL && msgid_plural != NULL )
         text = (*it).translate( msgctxt, msgid, msgid_plural, n );
     else if ( msgid_plural != NULL )
         text = (*it).translate( msgid, msgid_plural, n );

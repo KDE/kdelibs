@@ -47,7 +47,6 @@ if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       ${CMAKE_SOURCE_DIR}/libltdl/ltdl_win.c
       kapplication_win.cpp 
-      kglobalaccel_win.cpp
       ktoolinvocation_win.cpp 
       #netsupp_win32.cpp is obsolete
       )
