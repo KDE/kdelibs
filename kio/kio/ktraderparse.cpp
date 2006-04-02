@@ -19,6 +19,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <kdebug.h>
 
 // TODO: Torben: On error free memory!
 
@@ -34,11 +35,14 @@ void KTraderParse_mainParse( const char *_code );
 using namespace KIO;
 
 static ParseTreeBase::Ptr *pTree = 0;
+static const char* sCode = 0;
 
 ParseTreeBase::Ptr KIO::parseConstraints( const QString& _constr )
 {
   const QByteArray buffer = _constr.toUtf8();
-  KTraderParse_mainParse( buffer.constData() );
+  sCode = buffer.constData();
+  KTraderParse_mainParse( sCode );
+  sCode = 0;
   assert( pTree );
   return *pTree;
 }
@@ -46,7 +50,9 @@ ParseTreeBase::Ptr KIO::parseConstraints( const QString& _constr )
 ParseTreeBase::Ptr KIO::parsePreferences( const QString& _prefs )
 {
   const QByteArray buffer = _prefs.toUtf8();
-  KTraderParse_mainParse( buffer.constData() );
+  sCode = buffer.constData();
+  KTraderParse_mainParse( sCode );
+  sCode = 0;
   assert( pTree );
   return *pTree;
 }
@@ -54,8 +60,14 @@ ParseTreeBase::Ptr KIO::parsePreferences( const QString& _prefs )
 void KTraderParse_setParseTree( void *_ptr1 )
 {
   if ( !pTree )
-    pTree = new ParseTreeBase::Ptr; // ### leak
+    pTree = new ParseTreeBase::Ptr; // ### leak; should use KStaticDeleter
   *pTree = static_cast<ParseTreeBase*>( _ptr1 );
+}
+
+
+void KTraderParse_error( const char* err )
+{
+  kWarning(7014) << "Parsing '" << sCode << "' gave " << err << endl;
 }
 
 void* KTraderParse_newOR( void *_ptr1, void *_ptr2 )
