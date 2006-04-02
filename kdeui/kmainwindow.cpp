@@ -1117,7 +1117,13 @@ KToolBar *KMainWindow::toolBar( const QString& name )
 
 QList<KToolBar*> KMainWindow::toolBars() const
 {
-    return findChildren<KToolBar*>();
+    QList<KToolBar*> ret;
+
+    foreach (QObject* child, children())
+        if (KToolBar* toolBar = qobject_cast<KToolBar*>(child))
+            ret.append(toolBar);
+
+    return ret;
 }
 
 const QList<KMainWindow*>& KMainWindow::memberList() { return sMemberList; }
