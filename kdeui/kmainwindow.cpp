@@ -727,7 +727,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     // One day will need to save the version number, but for now, assume 0
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-	foreach (KToolBar* toolbar, findChildren<KToolBar*>()) {
+	foreach (KToolBar* toolbar, toolBars()) {
         QString group;
         if (!configGroup.isEmpty())
         {
@@ -842,7 +842,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-    foreach (KToolBar* toolbar, findChildren<KToolBar*>()) {
+    foreach (KToolBar* toolbar, toolBars()) {
         QString group;
         if (!configGroup.isEmpty())
         {
@@ -870,7 +870,7 @@ void KMainWindow::finalizeGUI( bool force )
     // the toolbariterator should give them in the proper order.
     // Both the XMLGUI and applySettings call this, hence "force" for the latter.
     /* FIXME KAction port - not needed?
-    foreach (KToolBar* toolbar, findChildren<KToolBar*>()) {
+    foreach (KToolBar* toolbar, toolBars()) {
         toolbar->positionYourself( force );
     }*/
 
