@@ -75,6 +75,11 @@ int SuProcess::exec(const char *password, int check)
 
     QCStringList args;
 
+#ifdef Q_OS_DARWIN
+    args += "-c";
+    args += "staff";
+#endif
+
     if ((m_Scheduler != SchedNormal) || (m_Priority > 50))
         args += "root";
     else
@@ -82,7 +87,9 @@ int SuProcess::exec(const char *password, int check)
     
     args += "-c";
     args += QCString(__KDE_BINDIR) + "/kdesu_stub";
+#ifndef Q_OS_DARWIN
     args += "-";
+#endif
 
     QCString command = __PATH_SU;
     if (::access(__PATH_SU, X_OK) != 0)
