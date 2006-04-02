@@ -699,6 +699,10 @@ bool KateDocument::insertText( uint line, uint col, const QString &s, bool block
 
   bool replacetabs = ( config()->configFlags() & KateDocumentConfig::cfReplaceTabsDyn && ! m_isInUndo );
   uint tw = config()->tabWidth();
+  uint insertPosExpanded = insertPos;
+  KateTextLine::Ptr l = m_buffer->line( line );
+  if (l != 0)
+    insertPosExpanded = l->cursorX( insertPos, tw );
 
   for (uint pos = 0; pos < len; pos++)
   {
@@ -706,28 +710,30 @@ bool KateDocument::insertText( uint line, uint col, const QString &s, bool block
 
     if (ch == '\n')
     {
+      editInsertText (line, insertPos, buf);
+
       if ( !blockwise )
       {
-        editInsertText (line, insertPos, buf);
         editWrapLine (line, insertPos + buf.length());
+        insertPos = insertPosExpanded = 0;
       }
       else
       {
-        editInsertText (line, col, buf);
-
         if ( line == lastLine() )
-          editWrapLine (line, col + buf.length());
+          editWrapLine (line, insertPos + buf.length());
       }
 
       line++;
-      insertPos = 0;
       buf.truncate(0);
+      l = m_buffer->line( line );
+      if (l)
+        insertPosExpanded = l->cursorX( insertPos, tw );
     }
     else
     {
       if ( replacetabs && ch == '\t' )
       {
-        uint tr = tw - ( ((blockwise?col:insertPos)+buf.length())%tw ); //###
+        uint tr = tw - ( insertPosExpanded+buf.length() )%tw;
         for ( uint i=0; i < tr; i++ )
           buf += ' ';
       }
@@ -736,10 +742,7 @@ bool KateDocument::insertText( uint line, uint col, const QString &s, bool block
     }
   }
 
-  if ( !blockwise )
-    editInsertText (line, insertPos, buf);
-  else
-    editInsertText (line, col, buf);
+  editInsertText (line, insertPos, buf);
 
   editEnd ();
   emit textInserted(line,insertPos);
