@@ -1497,8 +1497,10 @@ static void kdeinit_library_path()
    QByteArray display = getenv(DISPLAY);
    if (display.isEmpty())
    {
+#if defined(Q_WS_X11) || defined(Q_WS_QWS)
      fprintf(stderr, "kdeinit: Aborting. $"DISPLAY" is not set.\n");
      exit(255);
+#endif
    }
    int i;
    if((i = display.lastIndexOf('.')) > display.lastIndexOf(':') && i >= 0)

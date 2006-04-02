@@ -46,6 +46,12 @@ static char *getDisplay()
    char *screen;
    char *colon;
    char *i;
+
+#if !defined(QWS) && !defined(Q_WS_X11)
+	// no such thing as a display on these systems
+	return NULL;
+#endif
+
 /*
  don't test for a value from qglobal.h but instead distinguish
  Qt/X11 from Qt/Embedded by the fact that Qt/E apps have -DQWS
@@ -173,11 +179,13 @@ static int openSocket()
 
   /* append $DISPLAY */
   display = getDisplay();
+#if defined(Q_WS_X11) || defined(QWS)
   if (display == NULL)
   {
      fprintf(stderr, "Error: Could not determine display.\n");
      return -1;
   }
+#endif
 
   if (strlen(sock_file)+strlen(display)+strlen("/kdeinit_")+2 > MAX_SOCK_FILE)
   {
@@ -185,8 +193,10 @@ static int openSocket()
      return -1;
   }
   strcat(sock_file, "/kdeinit_");
+#if defined(Q_WS_X11) || defined(QWS)
   strcat(sock_file, display);
   free(display);
+#endif
 
   if (strlen(sock_file) >= sizeof(server.sun_path))
   {
