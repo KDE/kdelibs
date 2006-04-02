@@ -92,8 +92,8 @@ class UIServerSystemTray:public KSystemTray
          :KSystemTray(uis)
       {
          KMenu* pop= contextMenu();
-         pop->insertItem(i18n("Settings..."), uis, SLOT(slotConfigure()));
-         pop->insertItem(i18n("Remove"), uis, SLOT(slotRemoveSystemTrayIcon()));
+         pop->addAction(i18n("Settings..."), uis, SLOT(slotConfigure()));
+         pop->addAction(i18n("Remove"), uis, SLOT(slotRemoveSystemTrayIcon()));
          setPixmap(loadIcon("filesave"));
          //actionCollection()->action("file_quit")->setEnabled(true);
          KStdAction::quit(uis, SLOT(slotQuit()), actionCollection());
@@ -676,10 +676,10 @@ void UIServer::slotShowContextMenu(K3ListView*, Q3ListViewItem* item, const QPoi
    if (m_contextMenu==0)
    {
       m_contextMenu=new QMenu(this);
-      m_idCancelItem = m_contextMenu->insertItem(i18n("Cancel Job"), this, SLOT(slotCancelCurrent()));
+      m_cancelAction = m_contextMenu->addAction(i18n("Cancel Job"), this, SLOT(slotCancelCurrent()));
 //      m_contextMenu->insertItem(i18n("Toggle Progress"), this, SLOT(slotToggleDefaultProgress()));
       m_contextMenu->addSeparator();
-      m_contextMenu->insertItem(i18n("Settings..."), this, SLOT(slotConfigure()));
+      m_contextMenu->addAction(i18n("Settings..."), this, SLOT(slotConfigure()));
    }
    if ( item )
        item->setSelected( true );
@@ -691,7 +691,7 @@ void UIServer::slotShowContextMenu(K3ListView*, Q3ListViewItem* item, const QPoi
        break;
      }
    }
-   m_contextMenu->setItemEnabled( m_idCancelItem, enabled);
+   m_cancelAction->setEnabled(enabled);
 
    m_contextMenu->popup(pos);
 }

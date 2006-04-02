@@ -1,4 +1,4 @@
-/* 
+/*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000-2001 Dawit Alemayehu <adawit@kde.org>
  *
@@ -18,7 +18,9 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -29,12 +31,13 @@
 #include <qbytearray.h>
 #include <qdir.h>
 #include <qfile.h>
+#include <qplatformdefs.h>
+#include <kde_file.h>	// KDE_fdopen
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <ksavefile.h>
 #include <kstaticdeleter.h>
-#include <kde_file.h>
 
 #include "kio/authinfo.h"
 
@@ -188,9 +191,9 @@ bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
 
 int NetRC::openf( const QString& f )
 {
-  KDE_struct_stat sbuff;
+  QT_STATBUF sbuff;
   QByteArray ef = QFile::encodeName(f);
-  if ( KDE_stat(ef, &sbuff) != 0 )
+  if ( QT_STAT(ef, &sbuff) != 0 )
     return -1;
 
   // Security check!!
@@ -198,7 +201,7 @@ int NetRC::openf( const QString& f )
        sbuff.st_uid != geteuid() )
     return -1;
 
-  return KDE_open( ef, O_RDONLY );
+  return QT_OPEN( ef, O_RDONLY );
 }
 
 QString NetRC::extract( const char* buf, const char* key, int& pos )

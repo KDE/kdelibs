@@ -17,7 +17,10 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
 #include "kmimetype.h"
 #include "kservicetypefactory.h"
 #include "kmimemagic.h"
@@ -44,11 +47,11 @@
 #include <kstandarddirs.h>
 #include <kurl.h>
 #include <ksycoca.h>
-#include <kde_file.h>
 
 #include <qset.h>
 #include <qstring.h>
 #include <qfile.h>
+#include <qplatformdefs.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -169,8 +172,8 @@ KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
 
   if ( !_fast_mode && _is_local_file && (_mode == 0 || _mode == (mode_t)-1) )
   {
-    KDE_struct_stat buff;
-    if ( KDE_stat( QFile::encodeName(path), &buff ) != -1 )
+    QT_STATBUF buff;
+    if ( QT_STAT( QFile::encodeName(path), &buff ) != -1 )
       _mode = buff.st_mode;
   }
 

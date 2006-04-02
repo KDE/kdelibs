@@ -23,7 +23,10 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
 #include <stdlib.h>
 #include <assert.h>
 #include <limits.h>
@@ -36,6 +39,7 @@
 #include <qtextstream.h>
 #include <qthread.h>
 #include <qevent.h>
+#include <qplatformdefs.h>
 
 #include <kapplication.h>
 #include <kauthorized.h>
@@ -45,7 +49,6 @@
 #include <kprotocolinfo.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <kde_file.h>
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -253,9 +256,9 @@ void DirectoryListThread::run()
 			if ( m_filter.isEmpty() || file.startsWith( m_filter ) ) {
 
 				if ( m_onlyExe || m_onlyDir || m_appendSlashToDir ) {
-					KDE_struct_stat sbuff;
+					QT_STATBUF sbuff;
 
-					if ( KDE_stat( dirEntry->d_name, &sbuff ) == 0 ) {
+					if ( QT_STAT( dirEntry->d_name, &sbuff ) == 0 ) {
 
 						// Verify executable
 
@@ -1273,11 +1276,11 @@ void KUrlCompletion::postProcessMatch( QString *pMatch ) const
 
 //			kDebug() << "postProcess: stating " << copy << endl;
 
-			KDE_struct_stat sbuff;
+			QT_STATBUF sbuff;
 
 			QByteArray file = QFile::encodeName( copy );
 
-			if ( KDE_stat( file.data(), &sbuff ) == 0 ) {
+			if ( QT_STAT( file.data(), &sbuff ) == 0 ) {
 				if ( S_ISDIR ( sbuff.st_mode ) )
 					pMatch->append( QLatin1Char( '/' ) );
 			}

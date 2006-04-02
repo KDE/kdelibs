@@ -19,6 +19,10 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <sys/time.h>
 #include <pwd.h>
 #include <grp.h>
@@ -34,6 +38,7 @@
 #include <qfile.h>
 #include <qmap.h>
 #include <QTextDocument>
+#include <qplatformdefs.h>
 
 #include <kdebug.h>
 #include <kfilemetainfo.h>
@@ -42,7 +47,6 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
-#include <kde_file.h>
 #include <klocale.h>
 #include <kmimetype.h>
 #include <krun.h>
@@ -146,15 +150,15 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
        * stat("/is/unaccessible/") -> EPERM            H.Z.
        * This is the reason for the -1
        */
-      KDE_struct_stat buf;
+      QT_STATBUF buf;
       QByteArray path = QFile::encodeName(m_url.path( -1 ));
-      if ( KDE_lstat( path.data(), &buf ) == 0 )
+      if ( QT_LSTAT( path.data(), &buf ) == 0 )
       {
         mode = buf.st_mode;
         if ( S_ISLNK( mode ) )
         {
           m_bLink = true;
-          if ( KDE_stat( path.data(), &buf ) == 0 )
+          if ( QT_STAT( path.data(), &buf ) == 0 )
               mode = buf.st_mode;
           else // link pointing to nowhere (see kio/file/file.cc)
               mode = (S_IFMT-1) | S_IRWXU | S_IRWXG | S_IRWXO;
@@ -306,8 +310,8 @@ KIO::filesize_t KFileItem::size() const
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
   if ( m_bIsLocalURL )
   {
-    KDE_struct_stat buf;
-    if ( KDE_stat( QFile::encodeName(m_url.path( -1 )), &buf ) == 0 )
+    QT_STATBUF buf;
+    if ( QT_STAT( QFile::encodeName(m_url.path( -1 )), &buf ) == 0 )
         return buf.st_size;
   }
   return 0L;
@@ -371,8 +375,8 @@ time_t KFileItem::time( unsigned int which ) const
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
   if ( m_bIsLocalURL )
   {
-    KDE_struct_stat buf;
-    if ( KDE_stat( QFile::encodeName(m_url.path(-1)), &buf ) == 0 )
+    QT_STATBUF buf;
+    if ( QT_STAT( QFile::encodeName(m_url.path(-1)), &buf ) == 0 )
     {
         m_time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ?
                                buf.st_mtime :
@@ -389,8 +393,8 @@ QString KFileItem::user() const
 {
   if ( m_user.isEmpty() && m_bIsLocalURL )
   {
-    KDE_struct_stat buff;
-    if ( KDE_lstat( QFile::encodeName(m_url.path( -1 )), &buff ) == 0) // get uid/gid of the link, if it's a link
+    QT_STATBUF buff;
+    if ( QT_LSTAT( QFile::encodeName(m_url.path( -1 )), &buff ) == 0) // get uid/gid of the link, if it's a link
     {
       struct passwd *user = getpwuid( buff.st_uid );
       if ( user != 0L )
@@ -405,8 +409,8 @@ QString KFileItem::group() const
 #ifdef Q_OS_UNIX
   if (m_group.isEmpty() && m_bIsLocalURL )
   {
-    KDE_struct_stat buff;
-    if ( KDE_lstat( QFile::encodeName(m_url.path( -1 )), &buff ) == 0) // get uid/gid of the link, if it's a link
+    QT_STATBUF buff;
+    if ( QT_LSTAT( QFile::encodeName(m_url.path( -1 )), &buff ) == 0) // get uid/gid of the link, if it's a link
     {
       struct group *ge = getgrgid( buff.st_gid );
       if ( ge != 0L ) {

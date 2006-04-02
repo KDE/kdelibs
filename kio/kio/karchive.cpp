@@ -19,6 +19,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "karchive.h"
 #include "klimitediodevice.h"
@@ -27,13 +30,13 @@
 #include <ksavefile.h>
 #include <kfilterdev.h>
 #include <kfilterbase.h>
-#include <kde_file.h>
 
 #include <q3ptrlist.h>
 #include <QStack>
 #include <qmap.h>
 #include <qdir.h>
 #include <qfile.h>
+#include <qplatformdefs.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -216,8 +219,8 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
         return false;
     }
 
-    KDE_struct_stat fi;
-    if (KDE_lstat(QFile::encodeName(fileName),&fi) == -1) {
+    QT_STATBUF fi;
+    if (QT_LSTAT(QFile::encodeName(fileName),&fi) == -1) {
         kWarning() << "KArchive::addLocalFile stating " << fileName
         	<< " failed: " << strerror(errno) << endl;
         return false;

@@ -242,7 +242,7 @@ void RMB::fillContextMenu( QMenu* contextMenu, const QString & address, int val 
 {
   KBookmark bookmark = atAddress(address);
 
-  int id;
+  QAction *a;
 
   // binner:
   // "Add Bookmark Here" when pointing at a bookmark looks strange and if you
@@ -251,8 +251,8 @@ void RMB::fillContextMenu( QMenu* contextMenu, const QString & address, int val 
   // TODO rename these, but, message freeze... umm...
 
 //  if (bookmark.isGroup()) {
-    id = contextMenu->insertItem( SmallIcon("bookmark_add"), i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
-    contextMenu->setItemParameter( id, val );
+    a = contextMenu->addAction( SmallIcon("bookmark_add"), i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
+    a->setData( val );
 /*  }
   else
   {
@@ -265,28 +265,28 @@ void RMB::fillContextMenu2( QMenu* contextMenu, const QString & address, int val
 {
   KBookmark bookmark = atAddress(address);
 
-  int id;
+  QAction *a;
 
   if (bookmark.isGroup()) {
-    id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), recv, SLOT(slotRMBActionEditAt(int)) );
-    contextMenu->setItemParameter( id, val );
+    a = contextMenu->addAction( i18n( "Open Folder in Bookmark Editor" ), recv, SLOT(slotRMBActionEditAt(int)) );
+    a->setData( val );
     contextMenu->addSeparator();
-    id = contextMenu->insertItem( SmallIcon("editdelete"), i18n( "Delete Folder" ), recv, SLOT(slotRMBActionRemove(int)) );
-    contextMenu->setItemParameter( id, val );
+    a = contextMenu->addAction( SmallIcon("editdelete"), i18n( "Delete Folder" ), recv, SLOT(slotRMBActionRemove(int)) );
+    a->setData( val );
     contextMenu->addSeparator();
-    id = contextMenu->insertItem( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
-    contextMenu->setItemParameter( id, val );
+    a = contextMenu->addAction( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
+    a->setData( val );
   }
   else
   {
-    id = contextMenu->insertItem( i18n( "Copy Link Address" ), recv, SLOT(slotRMBActionCopyLocation(int)) );
-    contextMenu->setItemParameter( id, val );
+    a = contextMenu->addAction( i18n( "Copy Link Address" ), recv, SLOT(slotRMBActionCopyLocation(int)) );
+    a->setData( val );
     contextMenu->addSeparator();
-    id = contextMenu->insertItem( SmallIcon("editdelete"), i18n( "Delete Bookmark" ), recv, SLOT(slotRMBActionRemove(int)) );
-    contextMenu->setItemParameter( id, val );
+    a = contextMenu->addAction( SmallIcon("editdelete"), i18n( "Delete Bookmark" ), recv, SLOT(slotRMBActionRemove(int)) );
+    a->setData( val );
     contextMenu->addSeparator();
-    id = contextMenu->insertItem( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
-    contextMenu->setItemParameter( id, val );
+    a = contextMenu->addAction( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
+    a->setData( val );
   }
 }
 

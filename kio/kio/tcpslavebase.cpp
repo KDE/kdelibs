@@ -54,7 +54,6 @@
 #include <ktoolinvocation.h>
 
 #include <kprotocolmanager.h>
-#include <kde_file.h>
 #include <kstreamsocket.h>
 
 #include "kio/tcpslavebase.h"

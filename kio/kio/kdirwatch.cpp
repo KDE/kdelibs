@@ -31,8 +31,9 @@
 // deep copies for list of dirs. (sven)
 // Mar 28. 1998 - Created.  (sven)
 
-
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #ifdef HAVE_DNOTIFY
 #include <unistd.h>
@@ -47,17 +48,16 @@
 #include <assert.h>
 #include <qdir.h>
 #include <qfile.h>
-#include <q3ptrlist.h>
 #include <qsocketnotifier.h>
 #include <qstringlist.h>
 #include <qtimer.h>
+#include <qplatformdefs.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kstaticdeleter.h>
-#include <kde_file.h>
 
 // debug
 #include <sys/ioctl.h>
@@ -786,9 +786,9 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 
   // we have a new path to watch
 
-  KDE_struct_stat stat_buf;
+  QT_STATBUF stat_buf;
   QByteArray tpath = QFile::encodeName(path);
-  bool exists = (KDE_stat(tpath, &stat_buf) == 0);
+  bool exists = (QT_STAT(tpath, &stat_buf) == 0);
 
   Entry newEntry;
   m_mapEntries.insert( path, newEntry );
@@ -1033,8 +1033,8 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
   int ev = NoChange;
   if (wasWatching == 0) {
     if (!notify) {
-      KDE_struct_stat stat_buf;
-      bool exists = (KDE_stat(QFile::encodeName(e->path), &stat_buf) == 0);
+      QT_STATBUF stat_buf;
+      bool exists = (QT_STAT(QFile::encodeName(e->path), &stat_buf) == 0);
       if (exists) {
 	e->m_ctime = stat_buf.st_ctime;
 	e->m_status = Normal;
@@ -1124,8 +1124,8 @@ int KDirWatchPrivate::scanEntry(Entry* e)
     e->msecLeft += e->freq;
   }
 
-  KDE_struct_stat stat_buf;
-  bool exists = (KDE_stat(QFile::encodeName(e->path), &stat_buf) == 0);
+  QT_STATBUF stat_buf;
+  bool exists = (QT_STAT(QFile::encodeName(e->path), &stat_buf) == 0);
   if (exists) {
 
     if (e->m_status == NonExistent) {

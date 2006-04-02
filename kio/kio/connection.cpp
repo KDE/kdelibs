@@ -18,10 +18,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
-#include <kde_file.h>
 #include <qtimer.h>
+#include <qplatformdefs.h>
+#include <kde_file.h>	// KDE_fdopen
 
 #include <sys/types.h>
 #include <sys/signal.h>

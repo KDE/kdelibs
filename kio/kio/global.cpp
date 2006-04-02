@@ -25,11 +25,11 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kprotocolmanager.h>
-#include <kde_file.h>
 
 #include <qbytearray.h>
 #include <qdatetime.h>
 #include <QTextDocument>
+#include <qplatformdefs.h>
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -1617,15 +1617,15 @@ static QString get_mount_info(const QString& filename,
 
     if (!gotRoot)
     {
-       KDE_struct_stat stat_buf;
-       KDE_stat("/", &stat_buf);
+       QT_STATBUF stat_buf;
+       QT_STAT("/", &stat_buf);
        gotRoot = true;
        rootDevice = stat_buf.st_dev;
     }
 
     bool gotDevice = false;
-    KDE_struct_stat stat_buf;
-    if (KDE_stat(QFile::encodeName(filename), &stat_buf) == 0)
+    QT_STATBUF stat_buf;
+    if (QT_STAT(QFile::encodeName(filename), &stat_buf) == 0)
     {
        gotDevice = true;
        if (stat_buf.st_dev == rootDevice)
