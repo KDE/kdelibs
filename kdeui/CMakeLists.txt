@@ -277,6 +277,8 @@ install_files( /include FILES
  kmanagerselection.h
  kglobalaccel.h
  ktreewidgetsearchline.h
+ kkeyserver_x11.h
+ kkeyserver.h
 )
 
 install_files( /bin preparetips )
