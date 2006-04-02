@@ -48,7 +48,7 @@ static char *getDisplay()
    char *i;
 
 #if !defined(QWS) && !defined(Q_WS_X11)
-	// no such thing as a display on these systems
+	/* no such thing as a display on these systems */
 	return NULL;
 #endif
 
