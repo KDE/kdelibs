@@ -950,7 +950,7 @@ QString KStandardDirs::findExe( const QString& appname,
         info.setFile( real_appname );
         if( info.exists() && ( ignore || info.isExecutable() )
             && info.isFile() ) {
-            kDebug() << "indExe(): returning " << real_appname << endl;
+            kDebug() << "findExe(): returning " << real_appname << endl;
             return real_appname;
         }
         kDebug() << "findExe(): failed, returning empty string" << endl;
