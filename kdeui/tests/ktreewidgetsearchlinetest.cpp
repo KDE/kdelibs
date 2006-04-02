@@ -21,9 +21,8 @@ KTreeWidgetSearchLineTest::KTreeWidgetSearchLineTest()
     tw->setHeaderLabels(QStringList() << "Item" << "Price" << "HIDDEN COLUMN" << "Source");
     tw->hideColumn(2);
 
-    KTreeWidgetSearchLineWidget* searchWidget = new KTreeWidgetSearchLineWidget(container);
+    KTreeWidgetSearchLineWidget* searchWidget = new KTreeWidgetSearchLineWidget(container,tw);
     m_searchLine = searchWidget->searchLine();
-    m_searchLine->setTreeWidget(tw);
 
     QTreeWidgetItem* red = new QTreeWidgetItem( tw, QStringList() << "Red");
     tw->expandItem(red);
@@ -57,7 +56,7 @@ KTreeWidgetSearchLineTest::KTreeWidgetSearchLineTest()
     layout->addWidget(hbox);
 
     m_searchLine->setFocus();
-    
+
     resize(350, 600);
 }
 

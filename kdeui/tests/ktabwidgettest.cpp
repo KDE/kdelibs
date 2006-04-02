@@ -1,7 +1,8 @@
 #include <QLayout>
-#include <Q3DragObject>
 #include <QDragMoveEvent>
+#include <QDropEvent>
 #include <QMenu>
+#include <QMimeData>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -100,30 +101,31 @@ void Test::addTab()
 
 void Test::testCanDecode(const QDragMoveEvent *e, bool &accept /* result */)
 {
-  if ( Q3TextDrag::canDecode(e) )    // don't accept=false if it cannot be decoded!
+  if ( e->mimeData()->hasText() )    // don't accept=false if it cannot be decoded!
     accept = true;
 }
 
 void Test::receivedDropEvent( QDropEvent *e )
 {
-  QString dropText;
-  if (Q3TextDrag::decode(e, dropText)) {
-    mWidget->addTab( new QWidget(), dropText );
+  if (e->mimeData()->hasText()) {
+    mWidget->addTab( new QWidget(), e->mimeData()->text() );
   }
 }
 
 void Test::receivedDropEvent( QWidget *w, QDropEvent *e )
 {
-  QString dropText;
-  if (Q3TextDrag::decode(e, dropText)) {
-    mWidget->setTabText( mWidget->indexOf( w ), dropText );
+  if (e->mimeData()->hasText()) {
+    mWidget->setTabText( mWidget->indexOf( w ), e->mimeData()->text() );
   }
 }
 
 void Test::initiateDrag( QWidget *w )
 {
-   Q3DragObject *d = new Q3TextDrag( mWidget->tabText( mWidget->indexOf( w ) ), this );
-   d->dragCopy(); // do NOT delete d.
+   QDrag *drag = new QDrag( this );
+   QMimeData *mimeData = new QMimeData;
+   mimeData->setText(mWidget->tabText( mWidget->indexOf(w)));
+   drag->setMimeData(mimeData);
+   drag->start(); // do NOT delete d.
 }
 
 void Test::removeCurrentTab()
@@ -159,12 +161,12 @@ void Test::toggleLeftPopup(bool state)
   if (state) {
     if (!mLeftPopup) {
       mLeftPopup = new QMenu(this);
-      mLeftPopup->insertItem(SmallIcon( "tab_new" ), "Empty Tab", 0);
-      mLeftPopup->insertItem(SmallIcon( "tab_new" ), "Empty Tab After First", 3);
-      mLeftPopup->insertSeparator();
-      mLeftPopup->insertItem(SmallIcon( "tab_new" ), "Button Tab", 1);
-      mLeftPopup->insertItem(SmallIcon( "tab_new" ), "Label Tab", 2);
-      connect(mLeftPopup, SIGNAL(activated(int)), SLOT(leftPopupActivated(int)));
+      mLeftPopup->addAction(SmallIcon( "tab_new" ), "Empty Tab");
+      mLeftPopup->addAction(SmallIcon( "tab_new" ), "Empty Tab After First");
+      mLeftPopup->addSeparator();
+      mLeftPopup->addAction(SmallIcon( "tab_new" ), "Button Tab");
+      mLeftPopup->addAction(SmallIcon( "tab_new" ), "Label Tab");
+      connect(mLeftPopup, SIGNAL(triggered(QAction*)), SLOT(leftPopupActivated(QAction*)));
     }
     mLeftWidget->setMenu(mLeftPopup);
   }
@@ -172,16 +174,17 @@ void Test::toggleLeftPopup(bool state)
     mLeftWidget->setMenu(0);
 }
 
-void Test::leftPopupActivated(int item)
+void Test::leftPopupActivated(QAction *action)
 {
-  switch (item) {
+  switch (mLeftPopup->actions().indexOf(action)){
     case 0: mWidget->addTab( new QWidget(), QString("Tab %1").arg( mWidget->count()+1 ) );
             break;
-    case 1: mWidget->addTab( new QPushButton( "Testbutton" ), QString("Tab %1").arg( mWidget->count()+1 ) );
+    case 1: mWidget->insertTab( 1, new QWidget(), QString("Tab %1").arg( mWidget->count()+1 ) );
             break;
-    case 2: mWidget->addTab( new QLabel( "Testlabel" ), QString("Tab %1").arg( mWidget->count()+1 ) );
+    case 3: mWidget->addTab( new QPushButton( "Testbutton" ), QString("Tab %1").arg( mWidget->count()+1 ) );
             break;
-    case 3: mWidget->insertTab( 1, new QWidget(), QString("Tab %1").arg( mWidget->count()+1 ) );
+    case 4: mWidget->addTab( new QLabel( "Testlabel" ), QString("Tab %1").arg( mWidget->count()+1 ) );
+            break;
   }
 }
 
@@ -211,11 +214,11 @@ void Test::toggleRightPopup(bool state)
   if (state) {
     if (!mRightPopup) {
       mRightPopup = new QMenu(this);
-      mRightPopup->insertItem(SmallIcon( "tab_remove" ), "Current Tab", 1);
-      mRightPopup->insertSeparator();
-      mRightPopup->insertItem(SmallIcon( "tab_remove" ), "Most Left Tab", 0);
-      mRightPopup->insertItem(SmallIcon( "tab_remove" ), "Most Right Tab", 2);
-      connect(mRightPopup, SIGNAL(activated(int)), SLOT(rightPopupActivated(int)));
+      mRightPopup->addAction(SmallIcon( "tab_remove" ), "Current Tab");
+      mRightPopup->addSeparator();
+      mRightPopup->addAction(SmallIcon( "tab_remove" ), "Most Left Tab");
+      mRightPopup->addAction(SmallIcon( "tab_remove" ), "Most Right Tab");
+      connect(mRightPopup, SIGNAL(triggered(QAction*)), SLOT(rightPopupActivated(QAction*)));
     }
     mRightWidget->setMenu(mRightPopup);
   }
@@ -223,25 +226,26 @@ void Test::toggleRightPopup(bool state)
     mRightWidget->setMenu(0);
 }
 
-void Test::rightPopupActivated(int item)
+void Test::rightPopupActivated(QAction *action)
 {
-  switch (item) {
-    case 0: if ( mWidget->count() >1) {
+  switch (mRightPopup->actions().indexOf(action)) {
+    case 0: removeCurrentTab();
+            break;
+    case 2: if ( mWidget->count() >1) {
               mWidget->removeTab( 0 );
             }
             break;
-    case 1: removeCurrentTab();
-            break;
-    case 2: int count = mWidget->count();
+    case 3: int count = mWidget->count();
             if (count>1) {
               mWidget->removeTab( count-1 );
             }
+            break;
   }
 }
 
 void Test::toggleTabPosition(bool state)
 {
-  mWidget->setTabPosition(state ? QTabWidget::North : QTabWidget::South );
+  mWidget->setTabPosition(state ? QTabWidget::South : QTabWidget::North );
 }
 
 void Test::toggleTabShape(bool state)
@@ -261,43 +265,41 @@ void Test::contextMenu(QWidget *w, const QPoint &p)
 
   int idx = mWidget->indexOf( w );
   mContextPopup = new QMenu(this);
-  mContextPopup->insertItem( "Activate Tab", 4);
-  mContextPopup->insertSeparator();
-  mContextPopup->insertItem(SmallIcon( "konsole" ), "Set This Icon", 0);
-  mContextPopup->insertItem(SmallIcon( "konqueror" ), "Set This Icon", 1);
-  mContextPopup->insertSeparator();
-  mContextPopup->insertItem( mWidget->isTabEnabled(idx) ? "Disable Tab" : "Enable Tab", 2);
-  mContextPopup->insertItem( mWidget->tabToolTip(idx).isEmpty() ? "Set Tooltip" : "Remove Tooltip", 3);
-  connect(mContextPopup, SIGNAL(activated(int)), SLOT(contextMenuActivated(int)));
+  mContextPopup->addAction( "Activate Tab");
+  mContextPopup->addSeparator();
+  mContextPopup->addAction(SmallIcon( "konsole" ), "Set This Icon");
+  mContextPopup->addAction(SmallIcon( "konqueror" ), "Set This Icon");
+  mContextPopup->addSeparator();
+  mContextPopup->addAction( mWidget->isTabEnabled(idx) ? "Disable Tab" : "Enable Tab");
+  mContextPopup->addAction( mWidget->tabToolTip(idx).isEmpty() ? "Set Tooltip" : "Remove Tooltip");
+  connect(mContextPopup, SIGNAL(triggered(QAction*)), SLOT(contextMenuActivated(QAction*)));
 
   mContextWidgetIndex = mWidget->indexOf( w );
   mContextPopup->popup(p);
 }
 
-void Test::contextMenuActivated(int item)
+void Test::contextMenuActivated(QAction *action)
 {
-  switch (item) {
+  switch (mTabbarContextPopup->actions().indexOf(action)) {
   case 0:
-      mWidget->setTabIcon( mContextWidgetIndex, SmallIcon( "konsole" ) );
-      break;
-  case 1:
-      mWidget->setTabIcon( mContextWidgetIndex, SmallIcon( "konqueror" ) );
+      mWidget->setCurrentIndex( mContextWidgetIndex );
       break;
   case 2:
-      mWidget->setTabEnabled( mContextWidgetIndex, !(mWidget->isTabEnabled(mContextWidgetIndex)) );
+      mWidget->setTabIcon( mContextWidgetIndex, SmallIcon( "konsole" ) );
       break;
   case 3:
+      mWidget->setTabIcon( mContextWidgetIndex, SmallIcon( "konqueror" ) );
+      break;
+  case 4:
+      mWidget->setTabEnabled( mContextWidgetIndex, !(mWidget->isTabEnabled(mContextWidgetIndex)) );
+      break;
+  case 5:
       if ( mWidget->tabToolTip(mContextWidgetIndex).isEmpty() )
           mWidget->setTabToolTip( mContextWidgetIndex, "This is a tool tip.");
       else
           mWidget->setTabToolTip( mContextWidgetIndex, QString() );
       break;
-  case 4:
-      mWidget->setCurrentIndex( mContextWidgetIndex );
-      break;
   }
-  delete mContextPopup;
-  mContextPopup = 0;
 }
 
 void Test::tabbarContextMenu(const QPoint &p)
@@ -306,26 +308,25 @@ void Test::tabbarContextMenu(const QPoint &p)
       delete mTabbarContextPopup;
 
   mTabbarContextPopup = new QMenu(this);
-  mTabbarContextPopup->insertItem(SmallIcon( "tab_new" ), mLeftWidget->isVisible() ? "Hide \"Add\" Button" : "Show \"Add\" Button", 0);
-  mTabbarContextPopup->insertItem(SmallIcon( "tab_remove" ), mRightWidget->isVisible() ? "Hide \"Remove\" Button" : "Show \"Remove\" Button", 1);
-  mTabbarContextPopup->insertSeparator();
-  mTabbarContextPopup->insertItem(mWidget->tabPosition()==QTabWidget::North ? "Put Tabbar to Bottom" : "Put Tabbar to Top", 2);
-  connect(mTabbarContextPopup, SIGNAL(activated(int)), SLOT(tabbarContextMenuActivated(int)));
+  mTabbarContextPopup->addAction(SmallIcon( "tab_new" ), mLeftWidget->isVisible() ? "Hide \"Add\" Button" : "Show \"Add\" Button");
+  mTabbarContextPopup->addAction(SmallIcon( "tab_remove" ), mRightWidget->isVisible() ? "Hide \"Remove\" Button" : "Show \"Remove\" Button");
+  mTabbarContextPopup->addSeparator();
+  mTabbarContextPopup->addAction(mWidget->tabPosition()==QTabWidget::North ? "Put Tabbar to Bottom" : "Put Tabbar to Top");
+  connect(mTabbarContextPopup, SIGNAL(triggered(QAction*)), SLOT(tabbarContextMenuActivated(QAction*)));
 
   mTabbarContextPopup->popup(p);
 }
 
-void Test::tabbarContextMenuActivated(int item)
+void Test::tabbarContextMenuActivated(QAction *action)
 {
-  switch (item) {
+  switch (mTabbarContextPopup->actions().indexOf(action)) {
     case 0: mLeftButton->toggle();
             break;
     case 1: mRightButton->toggle();
             break;
-    case 2: mTabsBottom->toggle();
+    case 3: mTabsBottom->toggle();
+            break;
   }
-  delete mTabbarContextPopup;
-  mTabbarContextPopup = 0;
 }
 
 void Test::mouseDoubleClick(QWidget *w)

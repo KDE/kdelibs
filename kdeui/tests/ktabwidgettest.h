@@ -41,10 +41,10 @@ private Q_SLOTS:
   void mouseMiddleClick(QWidget*);
   void movedTab( int, int );
 
-  void leftPopupActivated(int);
-  void rightPopupActivated(int);
-  void contextMenuActivated(int);
-  void tabbarContextMenuActivated(int);
+  void leftPopupActivated(QAction*);
+  void rightPopupActivated(QAction*);
+  void contextMenuActivated(QAction*);
+  void tabbarContextMenuActivated(QAction*);
 
 private:
   KTabWidget*     mWidget;

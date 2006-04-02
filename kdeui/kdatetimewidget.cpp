@@ -43,10 +43,11 @@ void KDateTimeWidget::init()
   QHBoxLayout *layout = new QHBoxLayout(this);
   layout->setMargin(0);
   layout->setSpacing(KDialog::spacingHint());
-  layout->setAutoAdd(true);
 
   d->dateWidget = new KDateWidget(this);
   d->timeWidget = new QTimeEdit(this);
+  layout->addWidget( d->dateWidget );
+  layout->addWidget( d->timeWidget );
 
   connect(d->dateWidget, SIGNAL(changed(QDate)),
           SLOT(slotValueChanged()));
