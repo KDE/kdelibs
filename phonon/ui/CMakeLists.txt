@@ -1,14 +1,16 @@
 kde4_header()
 
-add_subdirectory( tests ) 
+add_subdirectory( ifaces )
+add_subdirectory( tests )
 
 ########### next target ###############
 
-set(phononui_LIB_SRCS 
-   factory.cpp 
-   videowidget.cpp 
-   seekslider.cpp 
-   mediacontrols.cpp 
+set(phononui_LIB_SRCS
+   ifaces/backend.cpp
+   factory.cpp
+   videowidget.cpp
+   seekslider.cpp
+   mediacontrols.cpp
    volumeslider.cpp
    effectwidget.cpp
    )
@@ -17,7 +19,7 @@ kde4_automoc(${phononui_LIB_SRCS})
 
 kde4_add_library(phononui SHARED ${phononui_LIB_SRCS})
 
-target_link_libraries(phononui  ${KDE4_KDECORE_LIBS} phononcore phononifacesui )
+target_link_libraries(phononui  ${KDE4_KDECORE_LIBS} phononcore )
 
 set_target_properties(phononui PROPERTIES VERSION 0.0.0 SOVERSION 0 )
 install_targets(${LIB_INSTALL_DIR} phononui )

@@ -22,7 +22,7 @@
 
 #include <QObject>
 #include <kdelibs_export.h>
-#include <phonon/ifaces/ui/backend.h>
+#include <phonon/ui/ifaces/backend.h>
 
 namespace Phonon
 {

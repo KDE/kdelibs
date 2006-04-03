@@ -21,7 +21,7 @@
 #include "videowidget_p.h"
 #include "factory.h"
 
-#include <phonon/ifaces/ui/videowidget.h>
+#include <phonon/ui/ifaces/videowidget.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <QAction>

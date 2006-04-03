@@ -21,7 +21,7 @@
 #define VIDEOWIDGET_P_H
 
 #include "videowidget.h"
-#include "../ifaces/ui/videowidget.h"
+#include "ifaces/videowidget.h"
 #include "../abstractvideooutput_p.h"
 #include <QHBoxLayout>
 #include <QAction>

@@ -18,9 +18,9 @@
 */
 
 #include "factory.h"
-#include <phonon/ifaces/ui/videowidget.h>
-#include <phonon/ifaces/ui/backend.h>
-#include <phonon/factory.h>
+#include "ifaces/videowidget.h"
+#include "ifaces/backend.h"
+#include "../factory.h"
 
 #include <QFile>
 

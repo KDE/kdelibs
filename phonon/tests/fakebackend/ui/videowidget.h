@@ -20,7 +20,7 @@
 #define Phonon_UI_FAKE_VIDEOWIDGET_H
 
 #include <QWidget>
-#include <phonon/ifaces/ui/videowidget.h>
+#include <phonon/ui/ifaces/videowidget.h>
 
 class QString;
 

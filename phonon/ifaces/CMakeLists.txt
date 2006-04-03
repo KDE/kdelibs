@@ -1,7 +1,5 @@
 kde4_header()
 
-add_subdirectory( ui ) 
-
 ########### install files ###############
 
 install_files( /include/phonon/ifaces FILES
