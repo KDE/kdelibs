@@ -64,12 +64,13 @@ namespace Enums
          * - Volume : A volume
          * - OpticalDisc : An optical disc
          * - Camera : A digital camera
+         * - PortableMediaPlayer: A portable media player
          * - Display : A video display
          */
         enum Type { Unknown = 0, Processor = 1, Block = 2,
                     Storage = 4, Cdrom = 8,
                     Volume = 16, OpticalDisc = 32,
-                    Camera = 64, Display = 128 };
+                    Camera = 64, PortableMediaPlayer = 128, Display = 256 };
 
         /**
          * This type stores an OR combination of Type values.
@@ -220,6 +221,20 @@ namespace Enums
         enum AccessType { MassStorage, Ptp, Proprietary };
     };
 
+    /**
+     * This struct holds the enumerations used by KDEHW::PortableMediaPlayer
+     * and KDEHW::Ifaces::PortableMediaPlayer. You shouldn't use it directly.
+     */
+    struct PortableMediaPlayer
+    {
+        /**
+         * This enum type defines the access method that can be used for a portable media player
+         *
+         * - MassStorage : A mass storage portable media player
+         * - Proprietary : A portable media player using a proprietary protocol
+         */
+         enum AccessType { MassStorage, Proprietary };
+    };
 
     /**
      * This struct holds the enumerations used by KDEHW::Display

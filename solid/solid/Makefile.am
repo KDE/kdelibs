@@ -6,11 +6,11 @@ lib_LTLIBRARIES  = libkdehw.la
 libkdehw_la_LIBADD = $(LIB_QTCORE) $(LIB_QT) $(LIB_KDECORE) $(LIB_KIO) ifaces/libkdehwifaces.la
 libkdehw_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
 
-include_HEADERS = device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h display.h predicate.h
+include_HEADERS = device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h display.h predicate.h
 
 METASOURCES = AUTO
 
-libkdehw_la_SOURCES = device.cpp devicemanager.cpp capability.cpp processor.cpp block.cpp storage.cpp cdrom.cpp volume.cpp opticaldisc.cpp camera.cpp display.cpp predicate.cpp predicateparse.cpp predicate_lexer.c predicate_parser.c
+libkdehw_la_SOURCES = device.cpp devicemanager.cpp capability.cpp processor.cpp block.cpp storage.cpp cdrom.cpp volume.cpp opticaldisc.cpp camera.cpp portablemediaplayer.cpp display.cpp predicate.cpp predicateparse.cpp predicate_lexer.c predicate_parser.c
 
 
 kde_servicetypes_DATA = kdehwdevicemanager.desktop
