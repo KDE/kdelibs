@@ -163,7 +163,6 @@ KToolBar::KToolBar( QMainWindow* parent, Qt::ToolBarArea area, bool newLine, boo
 
 KToolBar::~KToolBar()
 {
-    emit toolbarDestroyed();
     delete d;
 }
 

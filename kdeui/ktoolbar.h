@@ -153,15 +153,6 @@ public:
     /// Reimplemented to support context menu activation on disabled tool buttons
     bool eventFilter(QObject* watched, QEvent* event);
 
-Q_SIGNALS:
-    /**
-     * This signal is emitted when the toolbar is getting deleted,
-     * and before ~KToolbar finishes (so it's still time to remove
-     * widgets from the toolbar).
-     * Used by KWidgetAction.
-     */
-    void toolbarDestroyed();
-
 public:
     /**
      * Returns the global setting for "Toolbars transparent when moving"
