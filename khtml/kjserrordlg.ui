@@ -86,7 +86,7 @@
                 <enum>RichText</enum>
             </property>
         </widget>
-        <widget class="KActiveLabel" row="0" column="0" rowspan="1" colspan="3">
+        <widget class="KSqueezedTextLabel" row="0" column="0" rowspan="1" colspan="3">
             <property name="name">
                 <cstring>_url</cstring>
             </property>
@@ -117,7 +117,7 @@
 </tabstops>
 <includes>
     <include location="global" impldecl="in declaration">kdialog.h</include>
-    <include location="global" impldecl="in declaration">kactivelabel.h</include>
+    <include location="global" impldecl="in declaration">ksqueezedtextlabel.h</include>
 </includes>
 <slots>
     <slot>init()</slot>
