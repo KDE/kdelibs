@@ -639,8 +639,8 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     }
     d->painting = true;
 
-    QPoint pt = contentsToViewport(QPoint(ex, ey)); /// ??? ex/ey below instead - check history
-    QRegion cr = QRect(pt.x(), pt.y(), ew, eh);
+    QPoint pt = contentsToViewport(QPoint(ex, ey));
+    QRegion cr = QRect(ex, ey, ew, eh);
 
     // kdDebug(6000) << "clip rect: " << QRect(pt.x(), pt.y(), ew, eh) << endl;
     for (Q3PtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
@@ -654,15 +654,11 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             RenderLayer* rl = rw->needsMask() ? rw->enclosingStackingContext() : 0;
             QRegion mask = rl ? rl->getMask() : QRegion();
             if (!mask.isEmpty()) {
-                QPoint o(0,0);
-                o = contentsToViewport(o);
-                mask.translate(o.x(),o.y());
                 mask = mask.intersect( QRect(g.x(),g.y(),g.width(),g.height()) );
                 cr -= mask;
             } else {
                 int x, y;
                 rw->absolutePosition(x,y);
-                contentsToViewport(x,y,x,y);
                 cr -= QRect(x,y,rw->width(),rw->height());
             }
         }
