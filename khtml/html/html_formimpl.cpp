@@ -630,7 +630,9 @@ void HTMLFormElementImpl::submit(  )
                     // otherwise we might have a potential security problem
                     // by saving passwords under wrong lookup key.
 
-                    getDocument()->view()->part()->saveToWallet(key, m_walletMap);
+                    if (view->part()) {
+                        view->part()->saveToWallet(key, m_walletMap);
+                    }
                 } else if ( savePassword == KDialogBase::No ) {
                     view->addNonPasswordStorableSite(formUrl.host());
                 }
