@@ -32,7 +32,7 @@ namespace Ifaces
 	class VideoPath;
 	class AudioPath;
 
-	class AbstractMediaProducer : virtual public Base
+	class AbstractMediaProducer : public Base
 	{
 		public:
 			/**

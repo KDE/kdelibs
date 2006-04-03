@@ -35,7 +35,7 @@ namespace Ifaces
 	/**
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class AudioEffect : virtual public Effect
+	class AudioEffect : public Effect
 	{
 		Q_DECLARE_PRIVATE( AudioEffect )
 		public:

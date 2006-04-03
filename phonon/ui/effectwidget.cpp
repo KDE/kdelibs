@@ -91,6 +91,7 @@ void EffectWidget::autogenerateUi()
 			QCheckBox* cb = new QCheckBox( this );
 			control = cb;
 			cb->setChecked( para.value() > 0.0f );
+			connect( cb, SIGNAL( toggled( bool ) ), SLOT( setToggleParameter( bool ) ) );
 		}
 		else if( para.isBoundedBelow() && para.isBoundedAbove() )
 		{
@@ -101,6 +102,8 @@ void EffectWidget::autogenerateUi()
 				sb->setRange( qRound( para.minimumValue() ),
 						qRound( para.maximumValue() ) );
 				sb->setValue( qRound( para.value() ) );
+				connect( sb, SIGNAL( valueChanged( int ) ),
+						SLOT( setIntParameter( int ) ) );
 			}
 			else
 			{
@@ -108,6 +111,8 @@ void EffectWidget::autogenerateUi()
 				control = sb;
 				sb->setRange( para.minimumValue(), para.maximumValue() );
 				sb->setValue( para.value() );
+				connect( sb, SIGNAL( valueChanged( double ) ),
+						SLOT( setFloatParameter( double ) ) );
 			}
 		}
 		else
@@ -116,11 +121,38 @@ void EffectWidget::autogenerateUi()
 			control = sb;
 			sb->setDecimals( 7 );
 			sb->setRange( -3.402824e38, 3.402824e38 ); // [-inf, inf] for floats (single precision)
+			connect( sb, SIGNAL( valueChanged( double ) ),
+					SLOT( setFloatParameter( double ) ) );
 		}
 		control->setToolTip( para.description() );
 		label->setBuddy( control );
 		pLayout->addWidget( control );
+		d->parameterForObject.insert( control, para );
 	}
+}
+
+void EffectWidget::setToggleParameter( bool checked )
+{
+	Q_D( EffectWidget );
+	EffectParameter p = d->parameterForObject[ sender() ];
+	if( p.isValid() )
+		p.setValue( checked ? 1.0f : 0.0f );
+}
+
+void EffectWidget::setIntParameter( int value )
+{
+	Q_D( EffectWidget );
+	EffectParameter p = d->parameterForObject[ sender() ];
+	if( p.isValid() )
+		p.setValue( static_cast<float>( value ) );
+}
+
+void EffectWidget::setFloatParameter( double value )
+{
+	Q_D( EffectWidget );
+	EffectParameter p = d->parameterForObject[ sender() ];
+	if( p.isValid() )
+		p.setValue( static_cast<float>( value ) );
 }
 
 }} // namespace Phonon::Ui

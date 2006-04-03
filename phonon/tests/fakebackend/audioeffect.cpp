@@ -98,7 +98,7 @@ inline float clamp( const float& min, const float& value, const float& max )
 
 void AudioEffect::processBuffer( QVector<float>& buffer )
 {
-	int enqueue;
+	//int enqueue;
 	for( int i = 0; i < buffer.size(); ++i )
 	{
 		m_delayBuffer.enqueue( buffer[ i ] * m_level + m_delayBuffer.head() * m_feedback );

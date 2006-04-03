@@ -31,7 +31,7 @@ namespace Ifaces
 
 class EffectPrivate : public BasePrivate
 {
-	friend class Effect;
+	Q_DECLARE_PUBLIC( Effect )
 	private:
 		QList<Phonon::EffectParameter> parameterList;
 };

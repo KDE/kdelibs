@@ -33,7 +33,7 @@ namespace Ifaces
 	/**
 	 * @author Matthias Kretz <kretz@kde.org>
 	 */
-	class AudioPath : virtual public Base
+	class AudioPath : public Base
 	{
 		public:
 			virtual int availableChannels() const = 0;

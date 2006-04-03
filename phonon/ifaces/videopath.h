@@ -28,7 +28,7 @@ namespace Ifaces
 	class VideoEffect;
 	class AbstractVideoOutput;
 
-	class VideoPath : virtual public Base
+	class VideoPath : public Base
 	{
 		public:
 			// Operations:

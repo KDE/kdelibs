@@ -21,6 +21,8 @@
 #define PHONON_UI_EFFECTWIDGET_P_H
 
 #include "effectwidget.h"
+#include "../effectparameter.h"
+#include <QHash>
 
 namespace Phonon
 {
@@ -34,6 +36,7 @@ namespace Ui
 
 		private:
 			Effect* effect;
+			QHash<QObject*, Phonon::EffectParameter> parameterForObject;
 	};
 }} // namespace Phonon::Ui
 #endif // PHONON_UI_EFFECTWIDGET_P_H

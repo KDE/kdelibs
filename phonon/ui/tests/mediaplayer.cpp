@@ -31,6 +31,7 @@ using namespace Phonon::Ui;
 
 MediaPlayer::MediaPlayer( QWidget* parent )
 	: QWidget( parent )
+	, m_effectWidget( 0 )
 {
 	QVBoxLayout* layout = new QVBoxLayout( this );
 
@@ -66,6 +67,7 @@ void MediaPlayer::openEffectWidget()
 {
 	if( !m_effectWidget )
 		m_effectWidget = new EffectWidget( m_effect );
+	m_effectWidget->show();
 	m_effectWidget->raise();
 }
 

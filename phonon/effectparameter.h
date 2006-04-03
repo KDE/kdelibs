@@ -51,6 +51,18 @@ class PHONONCORE_EXPORT EffectParameter
 	friend class AudioEffectPrivate;
 	public:
 		/**
+		 * Creates an invalid effect parameter.
+		 *
+		 * \see isValid()
+		 */
+		EffectParameter();
+
+		/**
+		 * A parameter that has no pointer to an effect is invalid.
+		 */
+		bool isValid() const;
+
+		/**
 		 * The name of the parameter. Can be used as the label.
 		 *
 		 * \return A label for the parameter.

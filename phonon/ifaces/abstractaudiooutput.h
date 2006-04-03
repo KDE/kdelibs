@@ -25,7 +25,7 @@ namespace Phonon
 {
 namespace Ifaces
 {
-	class AbstractAudioOutput : virtual public Base
+	class AbstractAudioOutput : public Base
 	{
 	};
 }} //namespace Phonon::Ifaces

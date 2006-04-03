@@ -23,6 +23,17 @@
 namespace Phonon
 {
 
+EffectParameter::EffectParameter()
+	: d( new EffectParameterPrivate )
+{
+	d->effect = 0;
+}
+
+bool EffectParameter::isValid() const
+{
+	return d->effect != 0;
+}
+
 EffectParameter::EffectParameter( int parameterId, Hints hints,
 		float min, float max, float defaultValue, const QString& name,
 		const QString& description )

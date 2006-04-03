@@ -28,7 +28,7 @@ namespace Phonon
 {
 namespace Ifaces
 {
-	class AbstractVideoOutput : virtual public Base
+	class AbstractVideoOutput : public Base
 	{
 	};
 }} //namespace Phonon::Ifaces

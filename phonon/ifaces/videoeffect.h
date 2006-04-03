@@ -27,7 +27,7 @@ namespace Phonon
 {
 namespace Ifaces
 {
-	class VideoEffect : virtual public Effect
+	class VideoEffect : public Effect
 	{
 		public:
 			// Attributes Getters:

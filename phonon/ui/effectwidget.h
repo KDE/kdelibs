@@ -43,6 +43,11 @@ namespace Ui
 			EffectWidget( EffectWidgetPrivate& dd, Effect* effect, QWidget* parent );
 			EffectWidgetPrivate* d_ptr;
 
+		private slots:
+			void setToggleParameter( bool checked );
+			void setIntParameter( int value );
+			void setFloatParameter( double value );
+
 		private:
 			void init( Effect* effect );
 			void autogenerateUi();
