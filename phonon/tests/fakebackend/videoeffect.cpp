@@ -42,6 +42,15 @@ void VideoEffect::setType( const QString& type )
 	m_type = type;
 }
 
+float VideoEffect::value( int parameterId ) const
+{
+	return 0.0f;
+}
+
+void VideoEffect::setValue( int parameterId, float newValue )
+{
+}
+
 }} //namespace Phonon::Fake
 
 #include "videoeffect.moc"

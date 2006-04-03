@@ -14,6 +14,7 @@ add_subdirectory( tests )
 set(phononcore_LIB_SRCS
 	ifaces/backend.cpp
 	ifaces/base.cpp
+	ifaces/effect.cpp
 	ifaces/audioeffect.cpp
 	namedescriptiontuple.cpp
 	namedescriptiontuplemodel.cpp

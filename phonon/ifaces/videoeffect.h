@@ -19,7 +19,7 @@
 #ifndef Phonon_IFACES_VIDEOEFFECT_H
 #define Phonon_IFACES_VIDEOEFFECT_H
 
-#include "base.h"
+#include "effect.h"
 
 class QString;
 
@@ -27,7 +27,7 @@ namespace Phonon
 {
 namespace Ifaces
 {
-	class VideoEffect : virtual public Base
+	class VideoEffect : virtual public Effect
 	{
 		public:
 			// Attributes Getters:

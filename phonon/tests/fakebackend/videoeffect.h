@@ -34,6 +34,8 @@ namespace Fake
 			virtual ~VideoEffect();
 			virtual QString type() const;
 			virtual void setType( const QString& type );
+			virtual float value( int parameterId ) const;
+			virtual void setValue( int parameterId, float newValue );
 
 		public:
 			virtual QObject* qobject() { return this; }

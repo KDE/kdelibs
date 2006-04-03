@@ -21,7 +21,7 @@
 #define PHONON_IFACES_AUDIOEFFECT_P_H
 
 #include "audioeffect.h"
-#include "base_p.h"
+#include "effect_p.h"
 #include <QList>
 
 namespace Phonon
@@ -29,11 +29,10 @@ namespace Phonon
 namespace Ifaces
 {
 
-class AudioEffectPrivate : public BasePrivate
+class AudioEffectPrivate : public EffectPrivate
 {
 	friend class AudioEffect;
 	private:
-		QList<Phonon::EffectParameter> parameterList;
 };
 
 }} // namespace Phonon::Ifaces

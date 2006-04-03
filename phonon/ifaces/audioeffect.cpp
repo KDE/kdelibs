@@ -18,36 +18,16 @@
 */
 
 #include "audioeffect.h"
-#include "audioeffect_p.h"
+//#include "audioeffect_p.h"
 
 namespace Phonon
 {
 namespace Ifaces
 {
 
-QList<Phonon::EffectParameter> AudioEffect::parameterList() const
+EffectParameter::Hints AudioEffect::fromLadspaHints( int x )
 {
-	Q_D( const AudioEffect );
-	return d->parameterList;
-}
-
-AudioEffect::AudioEffect()
-	: Base( *new AudioEffectPrivate )
-{
-}
-
-AudioEffect::AudioEffect( AudioEffectPrivate& dd )
-	: Base( dd )
-{
-}
-
-void AudioEffect::addParameter( int parameterId, Phonon::EffectParameter::Hints hints,
-		float min, float max, float defaultValue, const QString& name,
-		const QString& description )
-{
-	Q_D( AudioEffect );
-	d->parameterList.append( EffectParameter( parameterId, hints, min, max, defaultValue, name, description ) );
-	qSort( d->parameterList );
+	return EffectParameter::Hints( x & 0x37 );
 }
 
 }} // namespace Phonon::Ifaces

@@ -25,8 +25,10 @@
 #include <phonon/videopath.h>
 #include <phonon/audiooutput.h>
 #include <phonon/audiopath.h>
+#include <phonon/audioeffect.h>
 #include <phonon/ui/videowidget.h>
 #include <phonon/ui/mediacontrols.h>
+#include <phonon/ui/effectwidget.h>
 #include <kurl.h>
 
 class MediaPlayer : public QWidget
@@ -36,13 +38,17 @@ class MediaPlayer : public QWidget
 		MediaPlayer( QWidget* parent = 0 );
 		void setUrl( const KUrl& url );
 
+	private slots:
+		void openEffectWidget();
 	private:
 		Phonon::MediaObject* m_media;
 		Phonon::AudioPath* m_apath;
 		Phonon::AudioOutput* m_aoutput;
 		Phonon::VideoPath* m_vpath;
+		Phonon::AudioEffect* m_effect;
 		Phonon::Ui::VideoWidget* m_vwidget;
 		Phonon::Ui::MediaControls* m_controls;
+		Phonon::Ui::EffectWidget* m_effectWidget;
 };
 
 #endif // MEDIAPLAYER_H

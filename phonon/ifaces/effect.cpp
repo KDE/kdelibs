@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,41 +16,40 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef Phonon_IFACES_AUDIOEFFECT_H
-#define Phonon_IFACES_AUDIOEFFECT_H
 
 #include "effect.h"
-#include "../effectparameter.h"
-
-class QString;
-class QStringList;
-template<class T> class QList;
+#include "effect_p.h"
 
 namespace Phonon
 {
 namespace Ifaces
 {
-	class AudioEffectPrivate;
 
-	/**
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
-	class AudioEffect : virtual public Effect
-	{
-		Q_DECLARE_PRIVATE( AudioEffect )
-		public:
-			virtual QString type() const = 0;
-			virtual void setType( const QString& type ) = 0;
+QList<Phonon::EffectParameter> Effect::parameterList() const
+{
+	Q_D( const Effect );
+	return d->parameterList;
+}
 
-		protected:
-			/**
-			 * Masks the hints as they come from a LADSPA effect.
-			 *
-			 * Provided for convenience.
-			 */
-			EffectParameter::Hints fromLadspaHints( int );
-	};
-}} //namespace Phonon::Ifaces
+Effect::Effect()
+	: Base( *new EffectPrivate )
+{
+}
 
-// vim: sw=4 ts=4 tw=80 noet
-#endif // Phonon_IFACES_AUDIOEFFECT_H
+Effect::Effect( EffectPrivate& dd )
+	: Base( dd )
+{
+}
+
+void Effect::addParameter( int parameterId, const QString& name,
+		EffectParameter::Hints hints, float defaultValue,
+		float min, float max, const QString& description )
+{
+	Q_D( Effect );
+	d->parameterList.append( EffectParameter( parameterId, hints, min, max, defaultValue, name, description ) );
+	qSort( d->parameterList );
+}
+
+}} // namespace Phonon::Ifaces
+
+// vim: sw=4 ts=4 noet

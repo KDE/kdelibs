@@ -13,6 +13,7 @@ install_files( /include/phonon/ifaces FILES
 	audiodataoutput.h
 	videopath.h
 	abstractvideooutput.h
+	effect.h
 	videoeffect.h
 	audioeffect.h
 	bytestream.h

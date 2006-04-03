@@ -51,6 +51,7 @@ namespace Fake
 		private:
 			QString m_type;
 			QQueue<float> m_delayBuffer;
+			float m_feedback, m_level;
 	};
 }} //namespace Phonon::Fake
 

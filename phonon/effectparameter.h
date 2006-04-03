@@ -33,8 +33,7 @@ class AudioEffect;
 
 namespace Ifaces
 {
-	class AudioEffect;
-	class VideoEffect;
+	class Effect;
 }
 
 /**
@@ -47,8 +46,7 @@ namespace Ifaces
 class PHONONCORE_EXPORT EffectParameter
 {
 	friend class EffectParameterPrivate;
-	friend class Phonon::Ifaces::AudioEffect;
-	friend class Phonon::Ifaces::VideoEffect;
+	friend class Phonon::Ifaces::Effect;
 	friend class AudioEffect;
 	friend class AudioEffectPrivate;
 	public:

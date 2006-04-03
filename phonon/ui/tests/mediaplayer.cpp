@@ -19,7 +19,12 @@
 
 #include "mediaplayer.h"
 #include <QVBoxLayout>
-#include <phonon/audioeffect.h>
+#include <kcmdlineargs.h>
+#include <kapplication.h>
+#include <kaboutdata.h>
+#include <cstdlib>
+#include <QVBoxLayout>
+#include <QPushButton>
 
 using namespace Phonon;
 using namespace Phonon::Ui;
@@ -49,8 +54,19 @@ MediaPlayer::MediaPlayer( QWidget* parent )
 	m_controls->setMediaProducer( m_media );
 	m_controls->setAudioOutput( m_aoutput );
 
-	AudioEffect* effect = new AudioEffect( m_apath );
-	m_apath->insertEffect( effect );
+	m_effect = new AudioEffect( m_apath );
+	m_apath->insertEffect( m_effect );
+	QPushButton* button = new QPushButton( this );
+	layout->addWidget( button );
+	button->setText( "configure effect" );
+	connect( button, SIGNAL( clicked() ), SLOT( openEffectWidget() ) );
+}
+
+void MediaPlayer::openEffectWidget()
+{
+	if( !m_effectWidget )
+		m_effectWidget = new EffectWidget( m_effect );
+	m_effectWidget->raise();
 }
 
 void MediaPlayer::setUrl( const KUrl& url )
@@ -58,12 +74,6 @@ void MediaPlayer::setUrl( const KUrl& url )
 	m_media->setUrl( url );
 	//m_vwidget->setVisible( m_media->hasVideo() );
 }
-
-#include <kcmdlineargs.h>
-#include <kapplication.h>
-#include <kaboutdata.h>
-#include <cstdlib>
-#include <QVBoxLayout>
 
 int main( int argc, char ** argv )
 {
