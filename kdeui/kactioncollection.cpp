@@ -72,22 +72,11 @@ public:
 
   bool configIsGlobal;
   QString configGroup;
-  QString xmlFile;
 
   Qt::ShortcutContext defaultShortcutContext;
 
   bool connectTriggered, connectHighlighted;
 };
-
-void KActionCollection::setXMLFile( const QString& xmlFile )
-{
-  d->xmlFile = xmlFile;
-}
-
-const QString& KActionCollection::xmlFile() const
-{
-  return d->xmlFile;
-}
 
 KActionCollection::KActionCollection( QObject *parent,
                                       KInstance *instance )
@@ -462,13 +451,13 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, KActi
 {
   kDebug(125) << k_funcinfo << configGroup() << ", " << config << ", " << writeAll << ", " << configIsGlobal() << " )" << endl;
 
-  if (!xmlFile().isEmpty()) {
-    kDebug(129) << "KActionCollection::save(): xmlFile = " << xmlFile() << endl;
+  if (parentGUIClient() && !parentGUIClient()->xmlFile().isEmpty()) {
+    kDebug(129) << "KActionCollection::save(): xmlFile = " << parentGUIClient()->xmlFile() << endl;
 
     QString attrShortcut  = QLatin1String("shortcut");
 
     // Read XML file
-    QString sXml( KXMLGUIFactory::readConfigFile( xmlFile(), false, instance() ) );
+    QString sXml( KXMLGUIFactory::readConfigFile( parentGUIClient()->xmlFile(), false, instance() ) );
     QDomDocument doc;
     doc.setContent( sXml );
 
@@ -499,7 +488,7 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, KActi
     }
 
     // Write back to XML file
-    KXMLGUIFactory::saveConfigFile( doc, xmlFile(), instance() );
+    KXMLGUIFactory::saveConfigFile( doc, parentGUIClient()->xmlFile(), instance() );
     return;
   }
 

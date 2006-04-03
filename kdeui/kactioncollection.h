@@ -306,11 +306,6 @@ public:
    */
   const KXMLGUIClient *parentGUIClient() const;
 
-  /** Deprecated **/
-  KDE_DEPRECATED void setXMLFile( const QString& );
-  const KDE_DEPRECATED QString& xmlFile() const;
-
-
 Q_SIGNALS:
   /**
    * Indicates that \a action was inserted into this action collection.
