@@ -118,7 +118,11 @@ else(GSSAPI_FOUND)
 	set(HAVE_LIBGSSAPI 0)
 	set(GSSAPI_MIT 0)
 endif(GSSAPI_FOUND)
-				
+
+# FIXME: Make this changeable! 
+# khtml svg support
+set(SVG_SUPPORT 1)
+
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
 # If definitions like -D_GNU_SOURCE are needed for these checks they
 # should be added to _KDE4_PLATFORM_DEFINITIONS when it is originally
