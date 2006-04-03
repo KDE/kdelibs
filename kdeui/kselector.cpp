@@ -102,7 +102,7 @@ void KXYSelector::paintEvent( QPaintEvent *ev )
   painter.begin( this );
 
   QBrush brush;
-  qDrawShadePanel( &painter, 0, 0, width(), height(), QColorGroup(palette()),
+  qDrawShadePanel( &painter, 0, 0, width(), height(), palette(),
       true, 2, &brush );
 
   drawContents( &painter );
@@ -238,10 +238,10 @@ void KSelector::paintEvent( QPaintEvent * )
   {
     if ( orientation() == Qt::Vertical )
       qDrawShadePanel( &painter, 0, 3, width()-5, height()-6,
-        QColorGroup(palette()), true, 2, &brush );
+        palette(), true, 2, &brush );
     else
       qDrawShadePanel( &painter, 3, 0, width()-6, height()-5,
-        QColorGroup(palette()), true, 2, &brush );
+        palette(), true, 2, &brush );
   }
 
   QPoint pos = calcArrowPos( value() );

@@ -44,14 +44,14 @@
 #include <kmanagerselection.h>
 
 #ifdef Q_WS_X11
-#include <kwin.h> 
-#include <kwinmodule.h> 
-#include <qxembed.h> 
+#include <kwin.h>
+#include <kwinmodule.h>
+#include <qxembed.h>
 #include <qx11info_x11.h>
 
-#include <X11/Xlib.h> 
-#include <X11/Xutil.h> 
-#include <X11/Xatom.h> 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
 #endif
 
 /*
@@ -191,8 +191,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       d->margin = 0; //margin();
       d->fallback_mode = false;
       bool wasShown = !isHidden();
-      setParent(parentWidget(), Qt::WType_TopLevel | Qt::WStyle_Tool 
-              | Qt::WStyle_Customize | Qt::WStyle_NoBorder);
+      setParent(parentWidget(), Qt::Window | Qt::Tool | Qt::FramelessWindowHint);
       setGeometry(0,0,width(),height());
 #ifdef Q_WS_X11
       KWin::setType( winId(), NET::TopMenu );
@@ -247,18 +246,20 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
         {
 	    if( ev->type() == QEvent::Resize )
 		return false; // ignore resizing of parent, QMenuBar would try to adjust size
+#ifdef QT3_SUPPORT
 	    if ( ev->type() == QEvent::Accel || ev->type() == QEvent::AccelAvailable )
             {
 		if ( QApplication::sendEvent( topLevelWidget(), ev ) )
 		    return true;
 	    }
+#endif
             /* FIXME QEvent::ShowFullScreen is no more
             if(ev->type() == QEvent::ShowFullScreen )
                 // will update the state properly
                 setTopLevelMenuInternal( d->topLevel );
             */
         }
-        if( parentWidget() && obj == parentWidget() && ev->type() == QEvent::Reparent )
+        if( parentWidget() && obj == parentWidget() && ev->type() == QEvent::ParentChange )
             {
 #ifdef Q_WS_X11
             XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
@@ -332,7 +333,7 @@ void KMenuBar::selectionTimeout()
             QApplication::desktop()->screenNumber(QPoint(0,0)) );
         QRect area = QApplication::desktop()->screenGeometry(screen);
         int margin = 0;
-	move(area.left() - margin, area.top() - margin); 
+	move(area.left() - margin, area.top() - margin);
         setFixedSize(area.width() + 2* margin , heightForWidth( area.width() + 2 * margin ) );
 #ifdef Q_WS_X11
         int strut_height = height() - margin;
@@ -472,7 +473,7 @@ void KMenuBar::setMargin( int margin )
 void KMenuBar::closeEvent( QCloseEvent* e )
 {
     if( d->topLevel )
-        e->ignore(); // mainly for the fallback mode 
+        e->ignore(); // mainly for the fallback mode
     else
         QMenuBar::closeEvent( e );
 }
@@ -501,14 +502,14 @@ void KMenuBar::paintEvent( QPaintEvent* pe )
         bool up_enabled = isUpdatesEnabled();
         Qt::BackgroundMode bg_mode = backgroundMode();
         BackgroundOrigin bg_origin = backgroundOrigin();
-        
+
         setUpdatesEnabled(false);
         setBackgroundMode(Qt::X11ParentRelative);
         setBackgroundOrigin(WindowOrigin);
 
 	p.eraseRect( rect() );
 	erase();
-        
+
         QColorGroup g = colorGroup();
         bool e;
 
@@ -550,10 +551,10 @@ void KMenuBar::paintEvent( QPaintEvent* pe )
                     if ( item_active && actItemDown )
                         flags |= QStyle::State_Down;
                     flags |= QStyle::State_HasFocus;
-                    
+
                     mi->state = flags;
-                    
-                    
+
+
                     style()->drawControl(QStyle::CE_MenuBarItem, &miOpt, &p, this);
                 }
                 else

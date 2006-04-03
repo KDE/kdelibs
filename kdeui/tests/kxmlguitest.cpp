@@ -21,6 +21,7 @@ int main( int argc, char **argv )
 {
     KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
     KApplication app;
+    KAction *a;
 
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // Let's add $PWD (ideally $srcdir instead...) to it
@@ -41,7 +42,7 @@ int main( int argc, char **argv )
     shell->setInstance( new KInstance( "konqueror" ) );
     shell->instance()->dirs()->addResourceDir( "data", QDir::currentPath() );
 
-    (void)new KAction( "Split", "view_left_right", 0, 0, 0, shell->actionCollection(), "splitviewh" );
+    a = new KAction( KIcon( "view_left_right" ), "Split", shell->actionCollection(), "splitviewh" );
 
     shell->setXMLFile( "./kxmlguitest_shell.rc" );
 
@@ -49,8 +50,10 @@ int main( int argc, char **argv )
 
     Client *part = new Client;
 
-    (void)new KAction( "decfont", "viewmag-", 0, 0, 0, part->actionCollection(), "decFontSizes" );
-    (void)new KAction( "sec", "unlock", Qt::ALT + Qt::Key_1, part, SLOT( slotSec() ), part->actionCollection(), "security" );
+    a = new KAction( KIcon( "viewmag-" ), "decfont", part->actionCollection(), "decFontSizes" );
+    a = new KAction( KIcon( "unlock" ), "sec", part->actionCollection(), "security" );
+    a->setDefaultShortcut( Qt::ALT + Qt::Key_1 );
+    a->connect( a, SIGNAL(triggered(bool)), part, SLOT( slotSec() ) );
 
     part->setXMLFile( "./kxmlguitest_part.rc" );
 

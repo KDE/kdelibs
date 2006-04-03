@@ -145,9 +145,9 @@ void KLineEdit::init()
 
     QPalette p = palette();
     if ( !d->previousHighlightedTextColor.isValid() )
-      d->previousHighlightedTextColor=p.color(QPalette::Normal,QColorGroup::HighlightedText);
+      d->previousHighlightedTextColor=p.color(QPalette::Normal,QPalette::HighlightedText);
     if ( !d->previousHighlightColor.isValid() )
-      d->previousHighlightColor=p.color(QPalette::Normal,QColorGroup::Highlight);
+      d->previousHighlightColor=p.color(QPalette::Normal,QPalette::Highlight);
 }
 
 QString KLineEdit::clickMessage() const
@@ -1164,9 +1164,9 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     if (d->completionBox && d->completionBox->isVisible ())
     {
         int key = e->key();
-        Qt::ButtonState state = e->modifiers();
+        Qt::KeyboardModifiers modifiers = e->modifiers();
         if ((key == Qt::Key_Backtab || key == Qt::Key_Tab) &&
-            (state == Qt::NoButton || (state & Qt::ShiftModifier)))
+            (modifiers == Qt::NoModifier || (modifiers & Qt::ShiftModifier)))
         {
             return true;
         }
@@ -1276,15 +1276,15 @@ void KLineEdit::setUserSelection(bool userSelection)
 
     if (userSelection)
     {
-        p.setColor(QColorGroup::Highlight, d->previousHighlightColor);
-        p.setColor(QColorGroup::HighlightedText, d->previousHighlightedTextColor);
+        p.setColor(QPalette::Highlight, d->previousHighlightColor);
+        p.setColor(QPalette::HighlightedText, d->previousHighlightedTextColor);
     }
     else
     {
-        QColor color=p.color(QPalette::Disabled, QColorGroup::Text);
-        p.setColor(QColorGroup::HighlightedText, color);
-        color=p.color(QPalette::Active, QColorGroup::Base);
-        p.setColor(QColorGroup::Highlight, color);
+        QColor color=p.color(QPalette::Disabled, QPalette::Text);
+        p.setColor(QPalette::HighlightedText, color);
+        color=p.color(QPalette::Active, QPalette::Base);
+        p.setColor(QPalette::Highlight, color);
     }
 
     d->userSelection=userSelection;
@@ -1330,7 +1330,7 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
     if ( d->enableClickMsg && d->drawClickMsg && !hasFocus() ) {
         QPainter p( this );
         QPen tmp = p.pen();
-        p.setPen( palette().color( QPalette::Disabled, QColorGroup::Text ) );
+        p.setPen( palette().color( QPalette::Disabled, QPalette::Text ) );
         QRect cr = contentsRect();
         p.drawText( cr, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage );
         p.setPen( tmp );

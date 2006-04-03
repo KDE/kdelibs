@@ -148,7 +148,7 @@ void KUrlLabel::updateColor ()
 void KUrlLabel::setLinkColor (const QColor& col)
 {
   QPalette p = palette();
-  p.setColor (QColorGroup::Foreground, col);
+  p.setColor (QPalette::Foreground, col);
   setPalette (p);
 
   update();
@@ -321,15 +321,15 @@ bool KUrlLabel::event (QEvent *e)
   {
     // use parentWidget() unless you are a toplevel widget, then try qAapp
     QPalette p = parentWidget() ? parentWidget()->palette() : qApp->palette();
-    p.setBrush(QColorGroup::Base, p.brush(QPalette::Normal, QColorGroup::Background));
-    p.setColor(QColorGroup::Foreground, palette().color(QPalette::Active,QPalette::Foreground));
+    p.setBrush(QPalette::Base, p.brush(QPalette::Normal, QPalette::Background));
+    p.setColor(QPalette::Foreground, palette().color(QPalette::Active, QPalette::Foreground));
     setPalette(p);
     d->LinkColor = KGlobalSettings::linkColor();
     setLinkColor(d->LinkColor);
     return true;
   }
   else
-    return QLabel::event(e);  
+    return QLabel::event(e);
 }
 
 

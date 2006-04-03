@@ -82,8 +82,8 @@ class KFontChooser::Private
 {
 public:
     Private()
-        { m_palette.setColor(QPalette::Active, QColorGroup::Text, Qt::black);
-          m_palette.setColor(QPalette::Active, QColorGroup::Base, Qt::white); }
+        { m_palette.setColor(QPalette::Active, QPalette::Text, Qt::black);
+          m_palette.setColor(QPalette::Active, QPalette::Base, Qt::white); }
     QPalette m_palette;
 };
 
@@ -378,28 +378,28 @@ void KFontChooser::fillSizeList() {
 
 void KFontChooser::setColor( const QColor & col )
 {
-  d->m_palette.setColor( QPalette::Active, QColorGroup::Text, col );
+  d->m_palette.setColor( QPalette::Active, QPalette::Text, col );
   QPalette pal = sampleEdit->palette();
-  pal.setColor( QPalette::Active, QColorGroup::Text, col );
+  pal.setColor( QPalette::Active, QPalette::Text, col );
   sampleEdit->setPalette( pal );
 }
 
 QColor KFontChooser::color() const
 {
-  return d->m_palette.color( QPalette::Active, QColorGroup::Text );
+  return d->m_palette.color( QPalette::Active, QPalette::Text );
 }
 
 void KFontChooser::setBackgroundColor( const QColor & col )
 {
-  d->m_palette.setColor( QPalette::Active, QColorGroup::Base, col );
+  d->m_palette.setColor( QPalette::Active, QPalette::Base, col );
   QPalette pal = sampleEdit->palette();
-  pal.setColor( QPalette::Active, QColorGroup::Base, col );
+  pal.setColor( QPalette::Active, QPalette::Base, col );
   sampleEdit->setPalette( pal );
 }
 
 QColor KFontChooser::backgroundColor() const
 {
-  return d->m_palette.color( QPalette::Active, QColorGroup::Base );
+  return d->m_palette.color( QPalette::Active, QPalette::Base );
 }
 
 void KFontChooser::setSizeIsRelative( Qt::CheckState relative )

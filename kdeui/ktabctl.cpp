@@ -30,6 +30,14 @@
 #include <qpixmap.h>
 #include <QResizeEvent>
 
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#else
+#ifndef INT_MAX
+#define INT_MAX 2147483647
+#endif
+#endif
+
 #include "ktabctl.h"
 
 KTabCtl::KTabCtl(QWidget *parent)
@@ -122,7 +130,7 @@ void KTabCtl::setSizes()
     tabs->resize(min);         /* make sure that the tabbar does not require more space than actually needed. */
 
 
-    QSize max(QCOORD_MAX,QCOORD_MAX);
+    QSize max(INT_MAX,INT_MAX);
     //int th = min.height();          /* the height of the tabbar itself (without pages and stuff) */
 
     for (int i = 0; i < pages.size(); i++) {
