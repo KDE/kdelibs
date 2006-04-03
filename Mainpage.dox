@@ -78,3 +78,6 @@
 	*
 	*/
 
+// DOXYGEN_VERSION=4.0
+// DOXYGEN_NAME=kdelibs
+// DOXYGEN_ENABLE=YES
