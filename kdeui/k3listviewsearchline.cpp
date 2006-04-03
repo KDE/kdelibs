@@ -34,8 +34,6 @@
 #include <Q3Header>
 #include <QToolButton>
 
-#define KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID 2004
-
 class K3ListViewSearchLine::K3ListViewSearchLinePrivate
 {
 public:
@@ -44,7 +42,9 @@ public:
         activeSearch(false),
         keepParentsVisible(true),
         canChooseColumns(true),
-        queuedSearches(0) {}
+        queuedSearches(0),
+        allVisibleColumnsAction(0)
+    {}
 
     QList<K3ListView *> listViews;
     Qt::CaseSensitivity caseSensitive;
@@ -54,6 +54,7 @@ public:
     QString search;
     int queuedSearches;
     QList<int> searchColumns;
+    QAction *allVisibleColumnsAction;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -282,34 +283,40 @@ void K3ListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
     if (d->canChooseColumns) {
         popup->addSeparator();
         QMenu *subMenu = popup->addMenu(i18n("Search Columns"));
-        connect(subMenu, SIGNAL(activated(int)), this, SLOT(searchColumnsMenuActivated(int)));
+        connect(subMenu, SIGNAL(triggered(QAction*)), this, SLOT(searchColumnsMenuActivated(QAction*)));
 
-        subMenu->insertItem(i18n("All Visible Columns"), KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID);
+        d->allVisibleColumnsAction = subMenu->addAction(i18n("All Visible Columns"));
+        d->allVisibleColumnsAction->setCheckable( true );
         subMenu->addSeparator();
 
         bool allColumnsAreSearchColumns = true;
-	// TODO Make the entry order match the actual column order
+        // TODO Make the entry order match the actual column order
         Q3Header* const header = d->listViews.first()->header();
-	int visibleColumns = 0;
-	for(int i = 0; i < d->listViews.first()->columns(); i++) {
-	    if(d->listViews.first()->columnWidth(i)>0) {
-	        QString columnText = d->listViews.first()->columnText(i);
-	        if(columnText.isEmpty()) {
-		    int visiblePosition=1;
-		    for(int j = 0; j < header->mapToIndex(i); j++)
-		        if(d->listViews.first()->columnWidth(header->mapToSection(j))>0)
-		            visiblePosition++;
-		    columnText = i18nc("Column number %1","Column No. %1", visiblePosition);
-	        }
-                subMenu->insertItem(columnText, visibleColumns);
-	        if(d->searchColumns.isEmpty() || d->searchColumns.indexOf(i) != -1)
-		    subMenu->setItemChecked(visibleColumns, true);
-                else
-                    allColumnsAreSearchColumns = false;
-	        visibleColumns++;
-	    }
+        int visibleColumns = 0;
+        for(int i = 0; i < d->listViews.first()->columns(); i++) {
+          if(d->listViews.first()->columnWidth(i)>0) {
+            QString columnText = d->listViews.first()->columnText(i);
+            if(columnText.isEmpty()) {
+              int visiblePosition=1;
+              for(int j = 0; j < header->mapToIndex(i); j++)
+                if(d->listViews.first()->columnWidth(header->mapToSection(j))>0)
+                  visiblePosition++;
+
+              columnText = i18nc("Column number %1","Column No. %1", visiblePosition);
+            }
+            QAction *action = subMenu->addAction(columnText);
+            action->setData( visibleColumns );
+            action->setCheckable( true );
+
+            if(d->searchColumns.isEmpty() || d->searchColumns.indexOf(i) != -1)
+              action->setChecked(true);
+            else
+              allColumnsAreSearchColumns = false;
+
+            visibleColumns++;
+          }
         }
-        subMenu->setItemChecked(KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID, allColumnsAreSearchColumns);
+        d->allVisibleColumnsAction->setChecked( allColumnsAreSearchColumns );
 
         // searchColumnsMenuActivated() relies on one possible "all" representation
         if(allColumnsAreSearchColumns && !d->searchColumns.isEmpty())
@@ -317,7 +324,8 @@ void K3ListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
     }
 
     popup->exec( e->globalPos() );
-	delete popup;
+
+    delete popup;
 }
 
 void K3ListViewSearchLine::connectListView(K3ListView *lv)
@@ -415,9 +423,11 @@ void K3ListViewSearchLine::listViewDeleted(QObject *o)
     setEnabled(d->listViews.isEmpty());
 }
 
-void K3ListViewSearchLine::searchColumnsMenuActivated(int id)
+void K3ListViewSearchLine::searchColumnsMenuActivated(QAction *action)
 {
-    if(id == KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID) {
+    int id = action->data().toInt();
+
+    if(action == d->allVisibleColumnsAction) {
         if(d->searchColumns.isEmpty())
             d->searchColumns.append(0);
         else

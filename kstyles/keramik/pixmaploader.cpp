@@ -62,7 +62,8 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 	//Like getColored, but desaturate a bit, and lower gamma..
 
 	//Create a real image...
-	QImage* img = new QImage(edata->width, edata->height, 32);
+	QImage::Format format = ( edata->haveAlpha && !blend ? QImage::Format_ARGB32 : QImage::Format_RGB32 );
+	QImage* img = new QImage(edata->width, edata->height, format);
 
 
 
@@ -80,7 +81,6 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 	{
 		if (blend)
 		{
-			img->setAlphaBuffer(false);
 			quint32* write = reinterpret_cast< quint32* >(img->bits() );
 			int size = img->width()*img->height() * 3;
 
@@ -104,7 +104,6 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 		}
 		else
 		{
-			img->setAlphaBuffer(true);
 			quint32* write = reinterpret_cast< quint32* >(img->bits() );
 			int size = img->width()*img->height() * 3;
 
@@ -127,7 +126,6 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 	}
 	else
 	{
-		img->setAlphaBuffer(false);
 		quint32* write = reinterpret_cast< quint32* >(img->bits() );
 		int size = img->width()*img->height() * 2;
 
@@ -153,7 +151,8 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 		return 0;
 
 	//Create a real image...
-	QImage* img = new QImage(edata->width, edata->height, 32);
+	QImage::Format format = ( edata->haveAlpha && !blend ? QImage::Format_ARGB32 : QImage::Format_RGB32 );
+	QImage* img = new QImage(edata->width, edata->height, format);
 
 	//OK, now, fill it in, using the color..
 	quint32 r, g,b;
@@ -169,8 +168,6 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 	{
 		if (blend)
 		{
-			img->setAlphaBuffer(false);
-
 			quint32* write = reinterpret_cast< quint32* >(img->bits() );
 			int size = img->width()*img->height() * 3;
 			for (int pos = 0; pos < size; pos+=3)
@@ -196,8 +193,6 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 		}
 		else
 		{
-			img->setAlphaBuffer(true);
-
 			quint32* write = reinterpret_cast< quint32* >(img->bits() );
 			int size = img->width()*img->height() * 3;
 
@@ -220,8 +215,6 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 	}
 	else
 	{
-		img->setAlphaBuffer(false);
-
 		quint32* write = reinterpret_cast< quint32* >(img->bits() );
 		int size = img->width()*img->height() * 2;
 
@@ -282,10 +275,10 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 	}
 
 	if (width == 0 && height == 0)
-		result = new QPixmap(*img);
+		result = new QPixmap(QPixmap::fromImage(*img));
 	else
-		result = new QPixmap(img->scaled(width  ? width  : img->width(),
-										 height ? height : img->height()));//,
+		result = new QPixmap(QPixmap::fromImage(img->scaled(width  ? width  : img->width(),
+										 height ? height : img->height())));//,
 										//Qt::IgnoreAspectRatio,
 										//Qt::SmoothTransformation));
 

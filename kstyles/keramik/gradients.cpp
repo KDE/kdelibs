@@ -110,7 +110,7 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c,
 		if (menu)
 		{
 			QImage gr = KImageEffect::gradient(QSize(4,height), c.light(93), ColorUtil::lighten(c,109), KImageEffect::VerticalGradient );
-			QPixmap grT(gr);
+			QPixmap grT(QPixmap::fromImage(gr));
 			QPainter p2(pix);
 			p2.drawTiledPixmap(0,0, 18, height, grT);
 			p2.end();
@@ -123,8 +123,8 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c,
 			QImage top = KImageEffect::gradient(QSize(4,h1),  ColorUtil::lighten(c,110), c.light(94), KImageEffect::VerticalGradient );
 			QImage bot = KImageEffect::gradient(QSize(4,h2), c.light(94), ColorUtil::lighten(c,109), KImageEffect::VerticalGradient );
 			
-			QPixmap topT(top);
-			QPixmap botT(bot);
+			QPixmap topT(QPixmap::fromImage(top));
+			QPixmap botT(QPixmap::fromImage(bot));
 			
 			QPainter p2(pix);
 			p2.drawTiledPixmap(0, 0, 18, h1, topT);
@@ -144,8 +144,8 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c,
 		QImage top = KImageEffect::gradient(QSize(h1,4), ColorUtil::lighten(c,110), c.light(94), KImageEffect::HorizontalGradient );
 		QImage bot = KImageEffect::gradient(QSize(h2,4), c.light(94), ColorUtil::lighten(c,109), KImageEffect::HorizontalGradient );
 		
-		QPixmap topT(top);
-		QPixmap botT(bot);
+		QPixmap topT(QPixmap::fromImage(top));
+		QPixmap botT(QPixmap::fromImage(bot));
 
 		QPainter p2(pix);
 		p2.drawTiledPixmap(0,  0, h1, 18, topT);

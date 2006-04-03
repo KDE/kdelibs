@@ -68,7 +68,10 @@ void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 	float	w = prt.width();
 	float	h = prt.height();
 	unsigned int	it, il, ib, ir;
-	prt.margins( &it, &il, &ib, &ir );
+	it = prt.paperRect().top() - prt.pageRect().top();
+	il = prt.paperRect().left() - prt.pageRect().left();
+	ib = prt.paperRect().bottom() - prt.pageRect().bottom();
+	ir = prt.paperRect().right() - prt.pageRect().right();
 	float	mt = it;
 	float	ml = il;
 	float	mb = ib;

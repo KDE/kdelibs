@@ -277,7 +277,7 @@ private:
 private Q_SLOTS:
     void itemAdded(Q3ListViewItem *item) const;
     void listViewDeleted( QObject *listView );
-    void searchColumnsMenuActivated(int);
+    void searchColumnsMenuActivated(QAction*);
 
 private:
     class K3ListViewSearchLinePrivate;

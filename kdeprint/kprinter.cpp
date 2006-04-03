@@ -560,12 +560,23 @@ int KPrinter::numCopies() const
 
 QSize KPrinter::margins() const
 {
-	return d->m_printer->margins();
+	return QSize( d->m_printer->paperRect().left() - d->m_printer->pageRect().left(),
+                d->m_printer->paperRect().top() - d->m_printer->pageRect().top() );
 }
 
 void KPrinter::margins( uint *top, uint *left, uint *bottom, uint *right ) const
 {
-	d->m_printer->margins( top, left, bottom, right );
+  if ( top )
+    *top = d->m_printer->paperRect().top() - d->m_printer->pageRect().top();
+
+  if ( left )
+    *left = d->m_printer->paperRect().left() - d->m_printer->pageRect().left();
+
+  if ( bottom )
+    *bottom = d->m_printer->paperRect().bottom() - d->m_printer->pageRect().bottom();
+
+  if ( right )
+    *right = d->m_printer->paperRect().right() - d->m_printer->pageRect().right();
 }
 
 /*int KPrinter::metric(int m) const
@@ -951,7 +962,7 @@ void KPrinter::setMargins(QSize m)
 	setMargins( m.height(), m.width(), m.height(), m.width() );
 }
 
-void KPrinter::setMargins( uint top, uint left, uint bottom, uint right )
+void KPrinter::setMargins( uint /*top*/, uint /*left*/, uint /*bottom*/, uint /*right*/ )
 {
 #ifdef __GNUC__
 	#warning KDE4 porting: find out how to specify margins in QT4
