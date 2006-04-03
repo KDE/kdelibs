@@ -28,7 +28,7 @@ namespace Phonon
 namespace Ifaces
 {
 	class BasePrivate;
-	class PHONONIFACES_EXPORT Base
+	class PHONONCORE_EXPORT Base
 	{
 		Q_DECLARE_PRIVATE( Base )
 		public:
@@ -38,7 +38,14 @@ namespace Ifaces
 			virtual const QObject* qobject() const = 0;
 
 		protected:
+			Base();
+			Base( BasePrivate& dd );
+
 			BasePrivate* d_ptr;
+
+		private:
+			Base( const Base& );
+			Base& operator=( const Base& );
 	};
 }} //namespace Phonon::Ifaces
 

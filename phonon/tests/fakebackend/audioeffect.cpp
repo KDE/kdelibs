@@ -47,6 +47,15 @@ void AudioEffect::setType( const QString& type )
 	m_type = type;
 }
 
+float AudioEffect::value( int parameterId ) const
+{
+	return 0.0f;
+}
+
+void AudioEffect::setValue( int parameterId, float newValue )
+{
+}
+
 inline float clamp( const float& min, const float& value, const float& max )
 {
 	return ( min > value ) ? min : ( max < value ) ? max : value;

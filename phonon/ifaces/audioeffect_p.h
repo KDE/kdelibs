@@ -17,25 +17,26 @@
 
 */
 
-#ifndef PHONON_UI_EFFECTWIDGET_P_H
-#define PHONON_UI_EFFECTWIDGET_P_H
+#ifndef PHONON_IFACES_AUDIOEFFECT_P_H
+#define PHONON_IFACES_AUDIOEFFECT_P_H
 
-#include "effectwidget.h"
+#include "audioeffect.h"
+#include "base_p.h"
+#include <QList>
 
 namespace Phonon
 {
-namespace Ui
+namespace Ifaces
 {
-	class EffectWidgetPrivate
-	{
-		Q_DECLARE_PUBLIC( EffectWidget )
-		protected:
-			EffectWidget* q_ptr;
 
-		private:
-			Effect* effect;
-	};
-}} // namespace Phonon::Ui
-#endif // PHONON_UI_EFFECTWIDGET_P_H
+class AudioEffectPrivate : public BasePrivate
+{
+	friend class AudioEffect;
+	private:
+		QList<Phonon::EffectParameter> parameterList;
+};
 
+}} // namespace Phonon::Ifaces
+
+#endif // PHONON_IFACES_AUDIOEFFECT_P_H
 // vim: sw=4 ts=4 tw=80

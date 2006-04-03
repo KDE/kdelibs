@@ -36,12 +36,10 @@ namespace Fake
 		public:
 			AudioEffect( QObject* parent );
 			virtual ~AudioEffect();
-
-			// Attributes Getters:
 			virtual QString type() const;
-
-			// Attributes Setters:
+			virtual float value( int parameterId ) const;
 			virtual void setType( const QString& type );
+			virtual void setValue( int parameterId, float newValue );
 
 			// Fake specific:
 			virtual void processBuffer( QVector<float>& buffer );

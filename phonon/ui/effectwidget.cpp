@@ -20,7 +20,24 @@
 #include "effectwidget.h"
 #include "effectwidget_p.h"
 
-EffectWidget::EffectWidget( AudioEffect* effect, QWidget* parent )
+#include <QtAlgorithms>
+#include <QList>
+
+#include "../effect.h"
+#include "../effectparameter.h"
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QDoubleSpinBox>
+#include <QSpinBox>
+#include <QCheckBox>
+
+namespace Phonon
+{
+namespace Ui
+{
+
+EffectWidget::EffectWidget( Effect* effect, QWidget* parent )
 	: QWidget( parent )
 	, d_ptr( new EffectWidgetPrivate )
 {
@@ -29,21 +46,84 @@ EffectWidget::EffectWidget( AudioEffect* effect, QWidget* parent )
 
 EffectWidget::~EffectWidget()
 {
-	delete d_ptr
+	delete d_ptr;
+	d_ptr = 0;
 }
 
-EffectWidget::EffectWidget( EffectWidgetPrivate& d, AudioEffect* effect, QWidget* parent )
+EffectWidget::EffectWidget( EffectWidgetPrivate& dd, Effect* effect, QWidget* parent )
 	: QWidget( parent )
+	, d_ptr( &dd )
 {
-	d_ptr = &d;
 	init( effect );
 }
 
-void EffectWidget::init( AudioEffect* effect )
+void EffectWidget::init( Effect* effect )
 {
 	Q_D( EffectWidget );
+	d->q_ptr = this;
 	d->effect = effect;
+	//TODO: look up whether there is a specialized widget for this effect. This
+	//could be a DSO or a Designer ui file found via KTrader.
+	//
+	//if no specialized widget is available:
+	autogenerateUi();
 }
+
+void EffectWidget::autogenerateUi()
+{
+	Q_D( EffectWidget );
+	QVBoxLayout* mainLayout = new QVBoxLayout( this );
+	QList<EffectParameter> plist = d->effect->parameterList();
+	qSort( plist );
+	foreach( EffectParameter para, plist )
+	{
+		QHBoxLayout* pLayout = new QHBoxLayout;
+		mainLayout->addLayout( pLayout );
+
+		QLabel* label = new QLabel( this );
+		pLayout->addWidget( label );
+		label->setText( para.name() );
+		label->setToolTip( para.description() );
+
+		QWidget* control;
+		if( para.isToggleControl() )
+		{
+			QCheckBox* cb = new QCheckBox( this );
+			control = cb;
+			cb->setChecked( para.value() > 0.0f );
+		}
+		else if( para.isBoundedBelow() && para.isBoundedAbove() )
+		{
+			if( para.isIntegerControl() )
+			{
+				QSpinBox* sb = new QSpinBox( this );
+				control = sb;
+				sb->setRange( qRound( para.minimumValue() ),
+						qRound( para.maximumValue() ) );
+				sb->setValue( qRound( para.value() ) );
+			}
+			else
+			{
+				QDoubleSpinBox* sb = new QDoubleSpinBox( this );
+				control = sb;
+				sb->setRange( para.minimumValue(), para.maximumValue() );
+				sb->setValue( para.value() );
+			}
+		}
+		else
+		{
+			QDoubleSpinBox* sb = new QDoubleSpinBox( this );
+			control = sb;
+			sb->setDecimals( 7 );
+			sb->setRange( -3.402824e38, 3.402824e38 ); // [-inf, inf] for floats (single precision)
+		}
+		control->setToolTip( para.description() );
+		label->setBuddy( control );
+		pLayout->addWidget( control );
+	}
+}
+
+}} // namespace Phonon::Ui
 
 #include "effectwidget.moc"
 

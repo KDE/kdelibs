@@ -17,25 +17,24 @@
 
 */
 
-#ifndef PHONON_UI_EFFECTWIDGET_P_H
-#define PHONON_UI_EFFECTWIDGET_P_H
+#ifndef IFACES_BASE_P_H
+#define IFACES_BASE_P_H
 
-#include "effectwidget.h"
+#include "ifaces/base.h"
 
 namespace Phonon
 {
-namespace Ui
+namespace Ifaces
 {
-	class EffectWidgetPrivate
-	{
-		Q_DECLARE_PUBLIC( EffectWidget )
-		protected:
-			EffectWidget* q_ptr;
 
-		private:
-			Effect* effect;
-	};
-}} // namespace Phonon::Ui
-#endif // PHONON_UI_EFFECTWIDGET_P_H
+class BasePrivate
+{
+	Q_DECLARE_PUBLIC( Base )
+	protected:
+		Base* q_ptr;
+};
 
+}} // namespace Phonon::Ifaces
+
+#endif // IFACES_BASE_P_H
 // vim: sw=4 ts=4 tw=80

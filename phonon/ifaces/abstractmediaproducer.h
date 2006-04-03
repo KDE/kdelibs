@@ -50,7 +50,6 @@ namespace Ifaces
 			virtual void removeVideoPath( VideoPath* videoPath ) = 0;
 			virtual void removeAudioPath( AudioPath* audioPath ) = 0;
 
-			// Attributes Getters:
 			/**
 			 * Get the current state.
 			 */
@@ -73,25 +72,17 @@ namespace Ifaces
 			virtual long currentTime() const = 0;
 			/**
 			 * Return the time interval in milliseconds between two ticks.
-			 
-			 * Change the interval the tick signal is emitted. If you set \p
-			 * msec to 0 the signal gets disabled.
-			 *
-			 * \param msec tick interval in milliseconds
 			 *
 			 * @returns Returns the tick intervall that it was set to (might not
 			 * be the same as you asked for).
 			 */
 			virtual long tickInterval() const = 0;
 
-			// Attributes Setters:
 			/**
-			 * Return the time interval in milliseconds between two ticks.
-			 
 			 * Change the interval the tick signal is emitted. If you set \p
 			 * msec to 0 the signal gets disabled.
 			 *
-			 * \param msec tick interval in milliseconds
+			 * \param newTickInterval tick interval in milliseconds
 			 *
 			 * @returns Returns the tick intervall that it was set to (might not
 			 * be the same as you asked for).

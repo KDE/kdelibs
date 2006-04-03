@@ -17,25 +17,39 @@
 
 */
 
-#ifndef PHONON_UI_EFFECTWIDGET_P_H
-#define PHONON_UI_EFFECTWIDGET_P_H
-
-#include "effectwidget.h"
+#include "audioeffect.h"
+#include "audioeffect_p.h"
 
 namespace Phonon
 {
-namespace Ui
+namespace Ifaces
 {
-	class EffectWidgetPrivate
-	{
-		Q_DECLARE_PUBLIC( EffectWidget )
-		protected:
-			EffectWidget* q_ptr;
 
-		private:
-			Effect* effect;
-	};
-}} // namespace Phonon::Ui
-#endif // PHONON_UI_EFFECTWIDGET_P_H
+QList<Phonon::EffectParameter> AudioEffect::parameterList() const
+{
+	Q_D( const AudioEffect );
+	return d->parameterList;
+}
 
-// vim: sw=4 ts=4 tw=80
+AudioEffect::AudioEffect()
+	: Base( *new AudioEffectPrivate )
+{
+}
+
+AudioEffect::AudioEffect( AudioEffectPrivate& dd )
+	: Base( dd )
+{
+}
+
+void AudioEffect::addParameter( int parameterId, Phonon::EffectParameter::Hints hints,
+		float min, float max, float defaultValue, const QString& name,
+		const QString& description )
+{
+	Q_D( AudioEffect );
+	d->parameterList.append( EffectParameter( parameterId, hints, min, max, defaultValue, name, description ) );
+	qSort( d->parameterList );
+}
+
+}} // namespace Phonon::Ifaces
+
+// vim: sw=4 ts=4 noet

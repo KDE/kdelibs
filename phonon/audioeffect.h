@@ -20,14 +20,17 @@
 #define Phonon_AUDIOEFFECT_H
 
 #include "base.h"
+#include "effect.h"
 #include "phonondefs.h"
 #include <QObject>
 
 class QString;
 class QStringList;
+template<class T> class QList;
 
 namespace Phonon
 {
+	class EffectParameter;
 	class AudioEffectPrivate;
 	namespace Ifaces
 	{
@@ -41,7 +44,7 @@ namespace Phonon
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONONCORE_EXPORT AudioEffect : public QObject, public Base
+	class PHONONCORE_EXPORT AudioEffect : public QObject, public Effect, public Base
 	{
 		friend class AudioPath;
 		friend class AudioPathPrivate;
@@ -50,9 +53,14 @@ namespace Phonon
 		PHONON_OBJECT( AudioEffect )
 		public:
 			QString type() const;
+			virtual QList<EffectParameter> parameterList() const;
 
 		public Q_SLOTS:
 			void setType( const QString& );
+
+		protected:
+			virtual float value( int parameterId ) const;
+			virtual void setValue( int parameterId, float newValue );
 	};
 } //namespace Phonon
 

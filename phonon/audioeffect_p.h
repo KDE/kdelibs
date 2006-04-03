@@ -23,6 +23,7 @@
 #include "audioeffect.h"
 #include "ifaces/audioeffect.h"
 #include "base_p.h"
+#include <QHash>
 
 namespace Phonon
 {
@@ -30,8 +31,9 @@ class AudioEffectPrivate : public BasePrivate
 {
 	K_DECLARE_PUBLIC( AudioEffect )
 	PHONON_PRIVATECLASS( AudioEffect, Base )
-	protected:
+	private:
 		QString type;
+		QHash<int, float> parameterValues;
 };
 } //namespace Phonon
 

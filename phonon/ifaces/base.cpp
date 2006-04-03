@@ -18,13 +18,29 @@
 */
 
 #include "base.h"
+#include "base_p.h"
 
 namespace Phonon
 {
 namespace Ifaces
 {
+
+Base::Base()
+	: d_ptr( 0 )
+{
+}
+
+Base::Base( BasePrivate& dd )
+	: d_ptr( &dd )
+{
+}
+
 Base::~Base()
-{}
+{
+	delete d_ptr;
+	d_ptr = 0;
+}
+
 }} //namespace Phonon::Ifaces
 
 // vim: sw=4 ts=4 noet

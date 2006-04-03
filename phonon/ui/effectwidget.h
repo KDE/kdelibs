@@ -21,27 +21,31 @@
 #define PHONON_UI_EFFECTWIDGET_H
 
 #include <QWidget>
+#include <kdelibs_export.h>
 
 namespace Phonon
 {
+class Effect;
+
 namespace Ui
 {
 	class EffectWidgetPrivate;
 
-	class EffectWidget : public QWidget
+	class PHONONUI_EXPORT EffectWidget : public QWidget
 	{
 		Q_OBJECT
 		Q_DECLARE_PRIVATE( EffectWidget )
 		public:
-			EffectWidget( AudioEffect* effect, QWidget* parent = 0 );
+			EffectWidget( Effect* effect, QWidget* parent = 0 );
 			~EffectWidget();
 
 		protected:
-			EffectWidget( EffectWidgetPrivate& d, AudioEffect* effect, QWidget* parent );
+			EffectWidget( EffectWidgetPrivate& dd, Effect* effect, QWidget* parent );
 			EffectWidgetPrivate* d_ptr;
 
 		private:
-			void init( AudioEffect* effect );
+			void init( Effect* effect );
+			void autogenerateUi();
 	};
 }} // namespace Phonon::Ui
 #endif // PHONON_UI_EFFECTWIDGET_H

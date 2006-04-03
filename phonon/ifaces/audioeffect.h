@@ -20,25 +20,38 @@
 #define Phonon_IFACES_AUDIOEFFECT_H
 
 #include "base.h"
+#include "../effectparameter.h"
 
 class QString;
 class QStringList;
+template<class T> class QList;
 
 namespace Phonon
 {
 namespace Ifaces
 {
+	class AudioEffectPrivate;
+
 	/**
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
 	class AudioEffect : virtual public Base
 	{
+		Q_DECLARE_PRIVATE( AudioEffect )
 		public:
-			// Attributes Getters:
+			QList<Phonon::EffectParameter> parameterList() const;
 			virtual QString type() const = 0;
-
-			// Attributes Setters:
+			virtual float value( int parameterId ) const = 0;
 			virtual void setType( const QString& type ) = 0;
+			virtual void setValue( int parameterId, float newValue ) = 0;
+
+		protected:
+			AudioEffect();
+			AudioEffect( AudioEffectPrivate& dd );
+			void addParameter( int parameterId,
+					EffectParameter::Hints hints, float min, float max,
+					float defaultValue, const QString& name,
+					const QString& description = QString() );
 	};
 }} //namespace Phonon::Ifaces
 

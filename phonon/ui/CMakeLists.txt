@@ -9,7 +9,9 @@ set(phononui_LIB_SRCS
    videowidget.cpp 
    seekslider.cpp 
    mediacontrols.cpp 
-   volumeslider.cpp )
+   volumeslider.cpp
+   effectwidget.cpp
+   )
 
 kde4_automoc(${phononui_LIB_SRCS})
 
@@ -23,6 +25,12 @@ install_targets(${LIB_INSTALL_DIR} phononui )
 
 ########### install files ###############
 
-install_files( /include/phonon/ui FILES  videowidget.h seekslider.h mediacontrols.h  						volumeslider.h )
+install_files( /include/phonon/ui FILES
+	videowidget.h
+	seekslider.h
+	mediacontrols.h
+	volumeslider.h
+	effectwidget.h
+	)
 
 kde4_footer()

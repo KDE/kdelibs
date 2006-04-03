@@ -4,15 +4,19 @@ kde4_header()
 include_directories( ${KDE4_KIO_INCLUDES} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
-add_subdirectory( ifaces ) 
-add_subdirectory( ui ) 
-add_subdirectory( tests ) 
+add_subdirectory( ifaces )
+add_subdirectory( ui )
+add_subdirectory( tests )
 
 
 ########### next target ###############
 
 set(phononcore_LIB_SRCS
+	ifaces/backend.cpp
+	ifaces/base.cpp
+	ifaces/audioeffect.cpp
 	namedescriptiontuple.cpp
+	namedescriptiontuplemodel.cpp
 	audiooutputdevice.cpp
 	audiocapturedevice.cpp
 	videocapturedevice.cpp
@@ -24,6 +28,8 @@ set(phononcore_LIB_SRCS
 	bytestream.cpp
 	audiopath.cpp
 	videopath.cpp
+	effect.cpp
+	effectparameter.cpp
 	audioeffect.cpp
 	volumefadereffect.cpp
 	videoeffect.cpp
@@ -42,7 +48,7 @@ kde4_add_dcop_skels(phononcore_LIB_SRCS factory.h mixeriface.h )
 
 kde4_add_library(phononcore SHARED ${phononcore_LIB_SRCS})
 
-target_link_libraries(phononcore  ${KDE4_KDECORE_LIBS} kio phononifaces )
+target_link_libraries(phononcore  ${KDE4_KDECORE_LIBS} kio )
 
 set_target_properties(phononcore PROPERTIES VERSION 0.0.0 SOVERSION 0 )
 install_targets(${LIB_INSTALL_DIR} phononcore )
@@ -52,6 +58,7 @@ install_targets(${LIB_INSTALL_DIR} phononcore )
 
 install_files( /include/phonon FILES
 	namedescriptiontuple.h
+	namedescriptiontuplemodel.h
 	audiooutputdevice.h
 	audiocapturedevice.h
 	videocapturedevice.h
@@ -63,6 +70,8 @@ install_files( /include/phonon FILES
 	bytestream.h
 	audiopath.h
 	videopath.h
+	effect.h
+	effectparameter.h
 	audioeffect.h
 	volumefadereffect.h
 	videoeffect.h
@@ -73,6 +82,7 @@ install_files( /include/phonon FILES
 	abstractvideooutput.h
 	simpleplayer.h
 	backendcapabilities.h
+	phonondefs.h
 	)
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES  phononbackend.desktop )
 
