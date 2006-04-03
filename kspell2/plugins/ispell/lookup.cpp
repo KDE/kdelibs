@@ -558,7 +558,7 @@ static void dumpindex (indexp, depth)
  *
  * \return
  */
-struct dent * ISpellChecker::ispell_lookup (ichar_t *s, int dotree)
+struct dent * ISpellChecker::ispell_lookup (ichar_t *s, int /* dotree */)
 {
     register struct dent *	dp;
     register char *		s1;

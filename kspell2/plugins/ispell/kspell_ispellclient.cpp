@@ -34,6 +34,7 @@ using namespace KSpell2;
 ISpellClient::ISpellClient( QObject *parent, const char *name, const QStringList& /* args */  )
     : Client( parent )
 {
+  setObjectName( name );
 }
 
 ISpellClient::~ISpellClient()

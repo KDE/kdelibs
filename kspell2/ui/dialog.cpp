@@ -58,7 +58,7 @@ public:
 
 Dialog::Dialog( BackgroundChecker *checker,
                 QWidget *parent, const char *name )
-    : KDialogBase( parent, name, true,
+    : KDialogBase( Swallow, 0, parent, name, true,
                    i18n( "Check Spelling" ),
                    Help|Cancel|User1, Cancel,  true,
                    i18n( "&Finished" ) ),d(new Private)
@@ -118,7 +118,7 @@ void Dialog::initGui()
     d->ui->m_suggestions->setSorting( NONSORTINGCOLUMN );
     d->ui->m_language->clear();
     d->ui->m_language->insertItems( 0, d->checker->broker()->languagesName() );
-    d->ui->m_language->setCurrentIndex( d->checker->broker()->languages().findIndex(
+    d->ui->m_language->setCurrentIndex( d->checker->broker()->languages().indexOf(
                                  d->checker->broker()->settings()->defaultLanguage() ) );
 }
 
@@ -235,7 +235,7 @@ void Dialog::slotChangeLanguage( const QString& lang )
 {
     d->checker->changeLanguage(
         d->checker->broker()->languages()[
-            d->checker->broker()->languagesName().findIndex( lang ) ] );
+            d->checker->broker()->languagesName().indexOf( lang ) ] );
     slotSuggest();
 }
 

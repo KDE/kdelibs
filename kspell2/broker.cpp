@@ -185,7 +185,7 @@ QStringList Broker::languagesName() const
             variantName,         // dictionary variant name e.g. w_accents
             localizedLang,       // localized language
             localizedCountry;    // localized country
-    const char*  variantEnglish; // dictionary variant in English
+    const char*  variantEnglish = 0; // dictionary variant in English
 
     int underscorePos,     // position of "_" char
         minusPos,          // position of "-" char
@@ -223,8 +223,8 @@ QStringList Broker::languagesName() const
 
     for ( QStringList::Iterator it = allDictionaries.begin(); it != allDictionaries.end(); ++it ) {
         currentDictionary = *it;
-        minusPos = currentDictionary.find( "-" );
-      	underscorePos = currentDictionary.find( "_" );
+        minusPos = currentDictionary.indexOf( "-" );
+      	underscorePos = currentDictionary.indexOf( "_" );
 	if ( underscorePos != -1 && underscorePos <= 3 ) {
            cISOName = currentDictionary.mid( underscorePos + 1, 2 );
            lISOName = currentDictionary.left( underscorePos );
@@ -255,7 +255,7 @@ QStringList Broker::languagesName() const
 	   if ( variantList[ variantCount ].variantShortName != 0 )
            	variantEnglish = variantList[ variantCount ].variantEnglishName;
 	   else
-           	variantEnglish = variantName.latin1();
+           	variantEnglish = variantName.toLatin1();
 	}
 	if ( !cISOName.isEmpty() && !variantName.isEmpty() )
              allLocalizedDictionaries.append( i18nc(

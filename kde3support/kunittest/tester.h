@@ -517,8 +517,10 @@ namespace KUnitTest
     {
     public:
         Tester(const char *name = 0L)
-        : QObject(0L, name), m_results(new TestResults()), m_exceptionState(false)
-        {}
+        : QObject(0L), m_results(new TestResults()), m_exceptionState(false)
+        {
+          setObjectName( name );
+        }
 
         virtual ~Tester() { delete m_results; }
 

@@ -239,9 +239,7 @@ ISpellChecker::checkWord( const QString& utf8Word )
 		return false;
 	else {
 		/* convert to 8bit string and null terminate */
-		int len_out = utf8Word.length();
-
-		out = m_translate_in->fromUnicode( utf8Word, len_out );
+		out = m_translate_in->fromUnicode( utf8Word );
 	}
 
 	if (!strtoichar(iWord, out.data(), INPUTWORDLEN + MAXAFFIXLEN, 0))
@@ -275,9 +273,7 @@ ISpellChecker::suggestWord(const QString& utf8Word)
 	else
 		{
 			/* convert to 8bit string and null terminate */
-
-			int len_out = utf8Word.length();
-			out = m_translate_in->fromUnicode( utf8Word, len_out );
+			out = m_translate_in->fromUnicode( utf8Word );
 		}
 
 	if (!strtoichar(iWord, out.data(), INPUTWORDLEN + MAXAFFIXLEN, 0))
@@ -330,7 +326,7 @@ s_allDics()
 
 	while ( (tmp = ispell_dirs[i++]) ) {
 		QDir dir( tmp );
-		QStringList lst = dir.entryList( "*.hash" );
+		QStringList lst = dir.entryList( QStringList( "*.hash" ) );
 		for ( QStringList::Iterator it = lst.begin(); it != lst.end(); ++it ) {
 			QFileInfo info( *it );
 			for (size_t i = 0; i < size_ispell_map; i++)
@@ -411,7 +407,7 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 }
 
 void
-ISpellChecker::setDictionaryEncoding( const QString& hashname, const char * encoding )
+ISpellChecker::setDictionaryEncoding( const QString& /*hashname*/, const char * encoding )
 {
 	/* Get Hash encoding from XML file. This should always work! */
 	try_autodetect_charset(encoding);

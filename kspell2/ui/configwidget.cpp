@@ -55,7 +55,10 @@ void ConfigWidget::init( Broker *broker )
 {
     d->broker = broker;
 
-    QVBoxLayout *layout = new QVBoxLayout( this, 0, 0, "KSpell2ConfigUILayout");
+    QVBoxLayout *layout = new QVBoxLayout( this );
+    layout->setMargin( 0 );
+    layout->setSpacing( 0 );
+    layout->setObjectName( "KSpell2ConfigUILayout" );
     d->ui = new KSpell2ConfigUI( this );
 
     //QStringList clients = d->broker->clients();
@@ -84,7 +87,7 @@ void ConfigWidget::setFromGUI()
 {
     d->broker->settings()->setDefaultLanguage(
         d->broker->languages()[
-            d->broker->languagesName().findIndex( 
+            d->broker->languagesName().indexOf(
                 d->ui->m_langCombo->currentText() ) ] );
     d->broker->settings()->setCheckUppercase(
         !d->ui->m_skipUpperCB->isChecked() );

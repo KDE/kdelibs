@@ -34,7 +34,7 @@ public:
 };
 
 ConfigDialog::ConfigDialog( Broker *broker, QWidget *parent )
-    : KDialogBase( parent, "KSpell2ConfigDialog", true,
+    : KDialogBase( Swallow, 0, parent, "KSpell2ConfigDialog", true,
                    i18n( "KSpell2 Configuration" ),
                    KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel,
                    KDialogBase::Ok, true ),d(new Private)

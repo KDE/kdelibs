@@ -129,7 +129,10 @@ class KCertPartPrivate {
 KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
                      QObject *parent, const char *name,
 		     const QStringList & /*args*/ )
-          : KParts::ReadWritePart(parent),d(new KCertPartPrivate) {
+          : KParts::ReadWritePart(parent),d(new KCertPartPrivate)
+{
+  setObjectName( name );
+
 KInstance *instance = new KInstance("KCertPart");
 QGridLayout *grid;
 setInstance(instance);
@@ -147,7 +150,8 @@ _ca = NULL;
 _silentImport = false;
 d->browserExtension = new KParts::BrowserExtension(this);
 
-_frame = new QFrame(parentWidget, widgetName);
+_frame = new QFrame(parentWidget);
+_frame->setObjectName(widgetName);
 setWidget(_frame);
 
 _baseGrid = new QGridLayout(_frame);
@@ -623,10 +627,10 @@ void KCertPart::displayPKCS12() {
 		int cnt = 0;
 		_p12_chain->setEnabled(true);
 		_p12_chain->clear();
-		_p12_chain->insertItem(i18n("0 - Site Certificate"));
+		_p12_chain->addItem(i18n("0 - Site Certificate"));
 		for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
 			KSSLX509Map map(c->getSubject());
-			_p12_chain->insertItem(QString::number(++cnt)+" - "+map.getValue("CN"));
+			_p12_chain->addItem(QString::number(++cnt)+" - "+map.getValue("CN"));
 		}
 		_p12_chain->setCurrentIndex(0);
 	} else {

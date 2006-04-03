@@ -194,21 +194,21 @@ PlastikStyle::PlastikStyle() :
 //     verticalLine = 0;
 // 
     QSettings settings;
-    _contrast = settings.readNumEntry("/Qt/KDE/contrast", 6);
+    _contrast = settings.value("/Qt/KDE/contrast", 6).toInt();
 //     settings.beginGroup("/plastikstyle/Settings");
-    _scrollBarLines = settings.readBoolEntry("/scrollBarLines", false);
-    _animateProgressBar = settings.readBoolEntry("/animateProgressBar", false);
-    _drawToolBarSeparator = settings.readBoolEntry("/drawToolBarSeparator", true);
-    _drawToolBarItemSeparator = settings.readBoolEntry("/drawToolBarItemSeparator", true);
-    _drawFocusRect = settings.readBoolEntry("/drawFocusRect", true);
-    _drawTriangularExpander = settings.readBoolEntry("/drawTriangularExpander", false);
-    _inputFocusHighlight = settings.readBoolEntry("/inputFocusHighlight", true);
-    _customOverHighlightColor = settings.readBoolEntry("/customOverHighlightColor", false);
-    _overHighlightColor.setNamedColor( settings.readEntry("/overHighlightColor", "black") );
-    _customFocusHighlightColor = settings.readBoolEntry("/customFocusHighlightColor", false);
-    _focusHighlightColor.setNamedColor( settings.readEntry("/focusHighlightColor", "black") );
-    _customCheckMarkColor = settings.readBoolEntry("/customCheckMarkColor", false);
-    _checkMarkColor.setNamedColor( settings.readEntry("/checkMarkColor", "black") );
+    _scrollBarLines = settings.value("/scrollBarLines", false).toBool();
+    _animateProgressBar = settings.value("/animateProgressBar", false).toBool();
+    _drawToolBarSeparator = settings.value("/drawToolBarSeparator", true).toBool();
+    _drawToolBarItemSeparator = settings.value("/drawToolBarItemSeparator", true).toBool();
+    _drawFocusRect = settings.value("/drawFocusRect", true).toBool();
+    _drawTriangularExpander = settings.value("/drawTriangularExpander", false).toBool();
+    _inputFocusHighlight = settings.value("/inputFocusHighlight", true).toBool();
+    _customOverHighlightColor = settings.value("/customOverHighlightColor", false).toBool();
+    _overHighlightColor.setNamedColor( settings.value("/overHighlightColor", "black").toString() );
+    _customFocusHighlightColor = settings.value("/customFocusHighlightColor", false).toBool();
+    _focusHighlightColor.setNamedColor( settings.value("/focusHighlightColor", "black").toString() );
+    _customCheckMarkColor = settings.value("/customCheckMarkColor", false).toBool();
+    _checkMarkColor.setNamedColor( settings.value("/checkMarkColor", "black").toString() );
     settings.endGroup();
 // 
 //     // setup pixmap cache...
@@ -672,7 +672,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     if(!enabled) surfaceFlags|=Is_Disabled;
                     if(r.height() >= 4)
                         renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
-                                      pal.background().color(), surface, pal.background(),
+                                      pal.color( QPalette::Background ), surface, pal.color( QPalette::Background ),
                                       _contrast+3, surfaceFlags);
 
                     // set contour-like color for the case _scrollBarLines is set and we paint lines instead of dots.
@@ -739,10 +739,10 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     contourFlags |= /*Round_UpperLeft|Round_BottomLeft|*/Is_Horizontal;
                     surfaceFlags |= /*Round_UpperLeft|Round_BottomLeft|*/Is_Horizontal;
 
-                    renderContour(p, r, pal.background(), getColor(pal, ButtonContour),
+                    renderContour(p, r, pal.color( QPalette::Background ), getColor(pal, ButtonContour),
                             contourFlags);
                     renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
-                                  pal.background(), pal.button().color(), getColor(pal,MouseOverHighlight), _contrast+3,
+                                  pal.color( QPalette::Background ), pal.button().color(), getColor(pal,MouseOverHighlight), _contrast+3,
                             surfaceFlags);
                     return;
                 }
@@ -765,10 +765,10 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 //                     contourFlags |= Round_BottomLeft|Round_BottomRight;
 //                     surfaceFlags |= Round_BottomLeft|Round_BottomRight;
 
-                    renderContour(p, r, pal.background(), getColor(pal, ButtonContour),
+                    renderContour(p, r, pal.color( QPalette::Background ), getColor(pal, ButtonContour),
                                   contourFlags);
                     renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
-                                  pal.background(), pal.button().color(), getColor(pal,MouseOverHighlight), _contrast+3,
+                                  pal.color( QPalette::Background ), pal.button().color(), getColor(pal,MouseOverHighlight), _contrast+3,
                                   surfaceFlags);
                     return;
                 }
@@ -785,9 +785,9 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     // draw double buffered to avoid flickr...
                     QPixmap buffer;
                     if(hor) {
-                        buffer.resize(2, r.height() );
+                        buffer = QPixmap(2, r.height() );
                     } else {
-                        buffer.resize(r.width(), 2 );
+                        buffer = QPixmap(r.width(), 2 );
                     }
                     QRect br(buffer.rect() );
                     QPainter bp(&buffer);
@@ -796,17 +796,17 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                         bp.fillRect(br, QBrush(pal.mid().color().dark()));
                     } else {
                         if(hor) {
-                            bp.setPen(pal.background().color().dark(106));
+                            bp.setPen(pal.color( QPalette::Background ).dark(106));
                             bp.drawLine(br.left(), br.top(), br.right(), br.top());
-                            bp.setPen(pal.background().color().light(106));
+                            bp.setPen(pal.color( QPalette::Background ).light(106));
                             bp.drawLine(br.left(), br.bottom(), br.right(), br.bottom());
-                            bp.fillRect(br.left(), br.top()+1, br.width(), br.height()-2,pal.background());
+                            bp.fillRect(br.left(), br.top()+1, br.width(), br.height()-2,pal.color( QPalette::Background ));
                         } else {
-                            bp.setPen(pal.background().color().dark(106));
+                            bp.setPen(pal.color( QPalette::Background ).dark(106));
                             bp.drawLine(br.left(), br.top(), br.left(), br.bottom());
-                            bp.setPen(pal.background().color().light(106));
+                            bp.setPen(pal.color( QPalette::Background ).light(106));
                             bp.drawLine(br.right(), br.top(), br.right(), br.bottom());
-                            bp.fillRect(br.left()+1, br.top(), br.width()-2, br.height(),pal.background());
+                            bp.fillRect(br.left()+1, br.top(), br.width()-2, br.height(),pal.color( QPalette::Background ));
                         }
                     }
 
@@ -1000,12 +1000,12 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     if (horizontal) {
                         int center = r.y()+r.height()/2;
                         renderContour(p, QRect(r.left(), center-2, r.width(), 4),
-                                      pal.background(), pal.background().color().dark(enabled?150:130),
+                                      pal.color( QPalette::Background ), pal.color( QPalette::Background ).dark(enabled?150:130),
                                     Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
                     } else {
                         int center = r.x()+r.width()/2;
                         renderContour(p, QRect(center-2, r.top(), 4, r.height()),
-                                      pal.background(), pal.background().color().dark(enabled?150:130),
+                                      pal.color( QPalette::Background ), pal.color( QPalette::Background ).dark(enabled?150:130),
                                     Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
                     }
 
@@ -1574,7 +1574,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 //                         }
         }
 
-                const QMatrix oldMatrix( p->worldMatrix() );
+                const QMatrix oldMatrix( p->matrix() );
 
 //                     if (flags & Style_Down) {
 //                         p->translate(pixelMetric(PM_ButtonShiftHorizontal),
@@ -1601,7 +1601,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
         p->setPen(arrowColor);
 
-        p->drawLineSegments(a, 0, 3);
+        p->drawLines(a.constData(), 3);
         p->drawPoint(a[6]);
 
         p->setMatrix( oldMatrix );
@@ -2081,10 +2081,9 @@ void PlastikStyle::renderPixel(QPainter *p,
         }
 
 
-        QImage aImg(1,1,32); // 1x1
-        aImg.setAlphaBuffer(true);
+        QImage aImg(1,1,QImage::Format_ARGB32); // 1x1
         aImg.setPixel(0,0,qRgba(qRed(rgb),qGreen(rgb),qBlue(rgb),alpha));
-        QPixmap *result = new QPixmap(aImg);
+        QPixmap *result = new QPixmap(QPixmap::fromImage( aImg ));
 
         p->drawPixmap(pos, *result);
 
@@ -2208,15 +2207,15 @@ void PlastikStyle::renderCheckBox(QPainter *p, const QRect &rect, const QPalette
     {
         case CheckBox::CheckOn:
         {
-            bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, checkmark_dark_bits, true);
+            bmp = QBitmap::fromData(QSize( CHECKMARKSIZE, CHECKMARKSIZE ), checkmark_dark_bits);
             bmp.setMask(bmp);
             p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 50) );
             p->drawPixmap(x, y, bmp);
-            bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, checkmark_light_bits, true);
+            bmp = QBitmap::fromData(QSize( CHECKMARKSIZE, CHECKMARKSIZE ), checkmark_light_bits);
             bmp.setMask(bmp);
             p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(125), 50) );
             p->drawPixmap(x, y, bmp);
-            bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, checkmark_aa_bits, true);
+            bmp = QBitmap::fromData(QSize( CHECKMARKSIZE, CHECKMARKSIZE ), checkmark_aa_bits);
             bmp.setMask(bmp);
             p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 150) );
             p->drawPixmap(x, y, bmp);
@@ -2232,7 +2231,7 @@ void PlastikStyle::renderCheckBox(QPainter *p, const QRect &rect, const QPalette
 
         case CheckBox::CheckTriState:
         {
-            bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, checkmark_tristate_bits, true);
+            bmp = QBitmap::fromData(QSize( CHECKMARKSIZE, CHECKMARKSIZE ), checkmark_tristate_bits);
             bmp.setMask(bmp);
             p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 50) );
             p->drawPixmap(x, y, bmp);
@@ -2254,7 +2253,7 @@ void PlastikStyle::renderRadioButton(QPainter *p, const QRect &r, const QPalette
     QColor contentColor = enabled?pal.base().color():pal.background().color();
 
     QBitmap bmp;
-    bmp = QBitmap(13, 13, radiobutton_mask_bits, true);
+    bmp = QBitmap::fromData(QSize( 13, 13 ), radiobutton_mask_bits);
             // first the surface...
     uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
     if(!enabled) {
@@ -2269,28 +2268,28 @@ void PlastikStyle::renderRadioButton(QPainter *p, const QRect &r, const QPalette
 
             // ...then contour, anti-alias, mouseOver...
             // contour
-    bmp = QBitmap(13, 13, radiobutton_contour_bits, true);
+    bmp = QBitmap::fromData(QSize( 13, 13 ), radiobutton_contour_bits);
     bmp.setMask(bmp);
     p->setPen(alphaBlendColors(pal.background().color(), contourColor, 50) );
     p->drawPixmap(x, y, bmp);
             // anti-alias outside
-    bmp = QBitmap(13, 13, radiobutton_aa_outside_bits, true);
+    bmp = QBitmap::fromData(QSize( 13, 13 ), radiobutton_aa_outside_bits);
     bmp.setMask(bmp);
     p->setPen(alphaBlendColors(pal.background().color(), contourColor, 150) );
     p->drawPixmap(x, y, bmp);
             // highlighting...
     if(mouseOver) {
-        bmp = QBitmap(13, 13, radiobutton_highlight1_bits, true);
+        bmp = QBitmap::fromData(QSize( 13, 13 ), radiobutton_highlight1_bits);
         bmp.setMask(bmp);
         p->setPen(alphaBlendColors(contentColor, getColor(pal,MouseOverHighlight), 80) );
         p->drawPixmap(x, y, bmp);
-        bmp = QBitmap(13, 13, radiobutton_highlight2_bits, true);
+        bmp = QBitmap::fromData(QSize( 13, 13 ), radiobutton_highlight2_bits);
         bmp.setMask(bmp);
         p->setPen(alphaBlendColors(contentColor, getColor(pal,MouseOverHighlight), 150) );
         p->drawPixmap(x, y, bmp);
     }
             // anti-alias inside, "above" the higlighting!
-    bmp = QBitmap(13, 13, radiobutton_aa_inside_bits, true);
+    bmp = QBitmap::fromData(QSize( 13, 13 ), radiobutton_aa_inside_bits);
     bmp.setMask(bmp);
     if(mouseOver) {
         p->setPen(alphaBlendColors(getColor(pal,MouseOverHighlight), contourColor, 180) );
@@ -2311,15 +2310,15 @@ void PlastikStyle::renderRadioButton(QPainter *p, const QRect &r, const QPalette
     {
         case RadioButton::RadioOn:
         {
-            bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_dark_bits, true);
+            bmp = QBitmap::fromData(QSize( CHECKMARKSIZE, CHECKMARKSIZE ), radiomark_dark_bits);
             bmp.setMask(bmp);
             p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 50) );
             p->drawPixmap(x+2, y+2, bmp);
-            bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_light_bits, true);
+            bmp = QBitmap::fromData(QSize( CHECKMARKSIZE, CHECKMARKSIZE ), radiomark_light_bits);
             bmp.setMask(bmp);
             p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(125), 50) );
             p->drawPixmap(x+2, y+2, bmp);
-            bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_aa_bits, true);
+            bmp = QBitmap::fromData(QSize( CHECKMARKSIZE, CHECKMARKSIZE ), radiomark_aa_bits);
             bmp.setMask(bmp);
             p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 150) );
             p->drawPixmap(x+2, y+2, bmp);
@@ -2577,13 +2576,13 @@ void PlastikStyle::renderTab(QPainter *p,
             if( (!isFirst&&!reverseLayout) || (!isLast&&reverseLayout) ) {
                 p->drawPoint(r.left(), bottom?(triangular?r.bottom()-2:r.bottom()-3):(triangular?r.top()+2:r.top()+3) );
                 renderSurface(p, QRect(r.left(), bottom?r.top()+3:(triangular?r.top()+3:r.top()+4), 1, (triangular?r.height()-6:r.height()-7) ),
-                            pal.background().color(), pal.button(), getColor(pal,MouseOverHighlight), _contrast,
+                            pal.color( QPalette::Background ), pal.color( QPalette::Button ), getColor(pal,MouseOverHighlight), _contrast,
                             Draw_Top|Draw_Bottom|Is_Horizontal);
             }
             if( (!isLast&&!reverseLayout) || (!isFirst&&reverseLayout) ) {
                 p->drawPoint(r.right(), bottom?(triangular?r.bottom()-2:r.bottom()-3):(triangular?r.top()+2:r.top()+3) );
                 renderSurface(p, QRect(r.right(), bottom?r.top()+3:(triangular?r.top()+3:r.top()+4), 1, (triangular?r.height()-6:r.height()-7) ),
-                            pal.background().color(), pal.button(), getColor(pal,MouseOverHighlight), _contrast,
+                            pal.color( QPalette::Background ), pal.color( QPalette::Button ), getColor(pal,MouseOverHighlight), _contrast,
                             Draw_Top|Draw_Bottom|Is_Horizontal);
             }
         }
@@ -2674,7 +2673,7 @@ void PlastikStyle::renderTab(QPainter *p,
             }
         }
         renderContour(p, Rc,
-                        pal.background().color(), getColor(pal, ButtonContour),
+                        pal.color( QPalette::Background ), getColor(pal, ButtonContour),
                         contourFlags);
 
         uint surfaceFlags = Is_Horizontal;
@@ -2696,7 +2695,7 @@ void PlastikStyle::renderTab(QPainter *p,
             surfaceFlags |= Draw_Top|Draw_Bottom;
         }
         renderSurface(p, Rs,
-                        pal.background().color(), pal.button(), getColor(pal,MouseOverHighlight), _contrast,
+                        pal.color(QPalette::Background), pal.color( QPalette::Button ), getColor(pal,MouseOverHighlight), _contrast,
                         surfaceFlags);
 
     // some "position specific" paintings...
@@ -3171,12 +3170,12 @@ QColor PlastikStyle::getColor(const QPalette &pal, const ColorType t, const Widg
             if( _customOverHighlightColor )
                 return _overHighlightColor;
             else
-                return pal.highlight();
+                return pal.color( QPalette::Highlight );
         case FocusHighlight:
             if( _customFocusHighlightColor )
                 return _focusHighlightColor;
             else
-                return pal.highlight();
+                return pal.color( QPalette::Highlight );
         case CheckMark:
             if( _customCheckMarkColor )
                 return _checkMarkColor;

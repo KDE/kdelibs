@@ -30,12 +30,13 @@ namespace KSpell2
         FoundMisspelling = 2003,
         FinishedChecking  = 2004
     };
-    class MisspellingEvent : public QCustomEvent
+
+    class MisspellingEvent : public QEvent
     {
     public:
         MisspellingEvent( const QString& word,
                          int pos )
-            : QCustomEvent( FoundMisspelling ), m_word( word ),
+            : QEvent( (Type)FoundMisspelling ), m_word( word ),
               m_position( pos )
             {}
 
@@ -45,16 +46,27 @@ namespace KSpell2
         int     position() const {
             return m_position;
         }
+
+        Type type() const
+        {
+          return (Type)FoundMisspelling;
+        }
+
     private:
         QString m_word;
         int     m_position;
     };
-    class FinishedCheckingEvent : public QCustomEvent
+    class FinishedCheckingEvent : public QEvent
     {
     public:
         FinishedCheckingEvent()
-            : QCustomEvent( FinishedChecking )
+            : QEvent( (Type)FinishedChecking )
             {}
+
+        Type type() const
+        {
+          return (Type)FinishedChecking;
+        }
     };
 
 }

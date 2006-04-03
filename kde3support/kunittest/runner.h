@@ -201,8 +201,8 @@ namespace KUnitTest
          */
         TesterAutoregister(const char *name, Tester *test)
         {
-            if ( test->name() == 0 )
-                test->setName(name);
+            if ( test->objectName() == 0 )
+                test->setObjectName(name);
             Runner::registerTester(name, test);
         }
     };

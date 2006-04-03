@@ -33,6 +33,7 @@ using namespace KSpell2;
 ASpellClient::ASpellClient( QObject *parent, const char *name, const QStringList& /* args */  )
     : Client( parent )
 {
+    setObjectName( name );
     m_config = new_aspell_config();
 }
 
