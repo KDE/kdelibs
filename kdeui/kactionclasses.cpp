@@ -178,7 +178,11 @@ void KToggleAction::slotToggled( bool checked )
     d->m_checkedGuiItem->setToolTip(toolTip());
     setToolTip(string);
 
-    // TODO: icon switching?
+    if (d->m_checkedGuiItem->hasIconSet()) {
+      QIcon icon = d->m_checkedGuiItem->iconSet();
+      d->m_checkedGuiItem->setIcon(QAction::icon());
+      QAction::setIcon(icon);
+    }
   }
 }
 // END
