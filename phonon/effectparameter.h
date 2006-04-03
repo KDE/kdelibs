@@ -137,8 +137,18 @@ class PHONONCORE_EXPORT EffectParameter
 		 */
 		inline bool operator!=( const EffectParameter& rhs ) const { return ! operator==( rhs ); }
 
+		/**
+		 * \internal
+		 * compares the ids of the parameters
+		 */
 		bool operator<( const EffectParameter& rhs ) const;
+
+		/**
+		 * \internal
+		 * compares the ids of the parameters
+		 */
 		bool operator>( const EffectParameter& rhs ) const;
+
 		/* default cctor, operator=, and ~EffectParameter
 		 * are sufficient */
 
@@ -199,6 +209,10 @@ class PHONONCORE_EXPORT EffectParameter
 		EffectParameter( int parameterId, Hints hints, float min, float max,
 				float defaultValue, const QString& name, const QString& description = QString() );
 
+		/**
+		 * \internal
+		 * Sets the pointer to the Effect object for value() and setValue().
+		 */
 		void setEffect( Effect* effect );
 
 		/**

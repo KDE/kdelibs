@@ -35,5 +35,5 @@ libphononifaces_la_LIBADD = $(LIB_KDECORE)
 METASOURCES = AUTO
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/phonon/ifaces
-DOXYGEN_REFERENCES = dcop kdecore kio phonon phonon/ifaces/ui
+DOXYGEN_REFERENCES = dcop kdecore kio phonon phonon/ui/ifaces
 include ../../admin/Doxyfile.am
