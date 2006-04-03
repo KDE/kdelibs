@@ -34,6 +34,10 @@ namespace Ifaces
      */
     class Display : virtual public Capability, public Enums::Display
     {
+//         Q_PROPERTY( DisplayType displayType READ displayType )
+//         Q_PROPERTY( int lcdBrightness READ lcdBrightness )
+//         Q_ENUMS( DisplayType )
+
     public:
         /**
          * Destruct the Display object.
