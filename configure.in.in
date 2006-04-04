@@ -162,7 +162,7 @@ AC_CHECK_RANDOM
 AC_CHECK_MKSTEMPS
 AC_CHECK_MKSTEMP
 AC_CHECK_MKDTEMP
-AC_CHECK_FUNCS(strtoll socket seteuid setegid strfmon stpcpy gettimeofday readdir_r setpriority statvfs statfs)
+AC_CHECK_FUNCS(strtoll socket seteuid setegid strfmon stpcpy gettimeofday readdir_r setpriority)
 
 AH_BOTTOM([
 /* provide a definition for a 32 bit entity, usable as a typedef, possibly
@@ -225,6 +225,14 @@ if test -n "$qt_includes"; then
   QNAMESPACE_H="$qt_includes/qnamespace.h"
 fi
 AC_SUBST(QNAMESPACE_H)
+
+AC_MSG_CHECKING([if getmntinfo() uses struct statvfs])
+AC_TRY_LINK([#include <sys/types.h>
+#include <sys/statvfs.h>
+],[int flags = 0; struct statvfs *mntbufp; return getmntinfo(&mntbufp, flags);],
+[AC_MSG_RESULT(yes)
+AC_DEFINE(GETMNTINFO_USES_STATVFS,,[getmntinfo() uses struct statvfs])],
+AC_MSG_RESULT(no))
 
 dnl output files
 AC_SUBST(x_includes)
