@@ -36,16 +36,16 @@ NO_STATICS( QLinearGradient )
 START_CTOR( QLinearGradient, QLinearGradient, 0 )
    if (args.size() == 2 )
    {
-       const QPointF & start = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
-       const QPointF & finalStop = (KJSEmbed::extractObject<const QPointF &>(exec, args, 1, 0));
+   const QPointF & start = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
+   const QPointF & finalStop = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
        return new KJSEmbed::QLinearGradientBinding(exec, QLinearGradient(start, finalStop))
    }
    if (args.size() == 4 )
    {
-       qreal xStart = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-       qreal yStart = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-       qreal xFinalStop = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-       qreal yFinalStop = (KJSEmbed::extractObject<qreal>(exec, args, 3, 0));
+   qreal xStart = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal yStart = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal xFinalStop = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal yFinalStop = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
        return new KJSEmbed::QLinearGradientBinding(exec, QLinearGradient(xStart, yStart, xFinalStop, yFinalStop))
    }
 END_CTOR

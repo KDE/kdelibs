@@ -77,52 +77,62 @@ END_VARIANT_METHOD
 
 // void setLeft(int pos)
 START_VARIANT_METHOD( setLeft, QRect )
-   int pos = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int pos = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setLeft(pos);
 END_VARIANT_METHOD
 
 // void setTop(int pos)
 START_VARIANT_METHOD( setTop, QRect )
-   int pos = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int pos = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setTop(pos);
 END_VARIANT_METHOD
 
 // void setRight(int pos)
 START_VARIANT_METHOD( setRight, QRect )
-   int pos = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int pos = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setRight(pos);
 END_VARIANT_METHOD
 
 // void setBottom(int pos)
 START_VARIANT_METHOD( setBottom, QRect )
-   int pos = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int pos = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setBottom(pos);
 END_VARIANT_METHOD
 
 // void setX(int x)
 START_VARIANT_METHOD( setX, QRect )
-   int x = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int x = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setX(x);
 END_VARIANT_METHOD
 
 // void setY(int y)
 START_VARIANT_METHOD( setY, QRect )
-   int y = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int y = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setY(y);
 END_VARIANT_METHOD
 
 // void setTopLeft(const QPoint &p)
 START_VARIANT_METHOD( setTopLeft, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
+    value.setTopLeft(p);
 END_VARIANT_METHOD
 
 // void setBottomRight(const QPoint &p)
 START_VARIANT_METHOD( setBottomRight, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
+    value.setBottomRight(p);
 END_VARIANT_METHOD
 
 // void setTopRight(const QPoint &p)
 START_VARIANT_METHOD( setTopRight, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
+    value.setTopRight(p);
 END_VARIANT_METHOD
 
 // void setBottomLeft(const QPoint &p)
 START_VARIANT_METHOD( setBottomLeft, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
+    value.setBottomLeft(p);
 END_VARIANT_METHOD
 
 // QPoint topLeft() const 
@@ -157,128 +167,130 @@ END_VARIANT_METHOD
 
 // void moveLeft(int pos)
 START_VARIANT_METHOD( moveLeft, QRect )
-   int pos = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int pos = KJSEmbed::extractValue<int>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveTop(int pos)
 START_VARIANT_METHOD( moveTop, QRect )
-   int pos = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int pos = KJSEmbed::extractValue<int>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveRight(int pos)
 START_VARIANT_METHOD( moveRight, QRect )
-   int pos = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int pos = KJSEmbed::extractValue<int>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveBottom(int pos)
 START_VARIANT_METHOD( moveBottom, QRect )
-   int pos = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int pos = KJSEmbed::extractValue<int>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveTopLeft(const QPoint &p)
 START_VARIANT_METHOD( moveTopLeft, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveBottomRight(const QPoint &p)
 START_VARIANT_METHOD( moveBottomRight, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveTopRight(const QPoint &p)
 START_VARIANT_METHOD( moveTopRight, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveBottomLeft(const QPoint &p)
 START_VARIANT_METHOD( moveBottomLeft, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveCenter(const QPoint &p)
 START_VARIANT_METHOD( moveCenter, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void translate(int dx, int dy)
 START_VARIANT_METHOD( translate, QRect )
-   int dx = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int dy = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
+   int dx = KJSEmbed::extractValue<int>(exec, args, 0);
+   int dy = KJSEmbed::extractValue<int>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void translate(const QPoint &p)
 START_VARIANT_METHOD( translate, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QRect translated(int dx, int dy) const 
 START_VARIANT_METHOD( translated, QRect )
-   int dx = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int dy = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
+   int dx = KJSEmbed::extractValue<int>(exec, args, 0);
+   int dy = KJSEmbed::extractValue<int>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QRect translated(const QPoint &p) const 
 START_VARIANT_METHOD( translated, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveTo(int x, int t)
 START_VARIANT_METHOD( moveTo, QRect )
-   int x = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int t = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
+   int x = KJSEmbed::extractValue<int>(exec, args, 0);
+   int t = KJSEmbed::extractValue<int>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveTo(const QPoint &p)
 START_VARIANT_METHOD( moveTo, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void setRect(int x, int y, int w, int h)
 START_VARIANT_METHOD( setRect, QRect )
-   int x = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int y = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   int w = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-   int h = (KJSEmbed::extractObject<int>(exec, args, 3, 0));
+   int x = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y = KJSEmbed::extractValue<int>(exec, args, 0);
+   int w = KJSEmbed::extractValue<int>(exec, args, 0);
+   int h = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setRect(h);
 END_VARIANT_METHOD
 
 // void getRect(int *x, int *y, int *w, int *h) const 
 START_VARIANT_METHOD( getRect, QRect )
-   int * x = (KJSEmbed::extractObject<int *>(exec, args, 0, 0));
-   int * y = (KJSEmbed::extractObject<int *>(exec, args, 1, 0));
-   int * w = (KJSEmbed::extractObject<int *>(exec, args, 2, 0));
-   int * h = (KJSEmbed::extractObject<int *>(exec, args, 3, 0));
+   int * x = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * y = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * w = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * h = KJSEmbed::extractValue<int *>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void setCoords(int x1, int y1, int x2, int y2)
 START_VARIANT_METHOD( setCoords, QRect )
-   int x1 = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int y1 = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   int x2 = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-   int y2 = (KJSEmbed::extractObject<int>(exec, args, 3, 0));
+   int x1 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y1 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int x2 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y2 = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setCoords(y2);
 END_VARIANT_METHOD
 
 // void getCoords(int *x1, int *y1, int *x2, int *y2) const 
 START_VARIANT_METHOD( getCoords, QRect )
-   int * x1 = (KJSEmbed::extractObject<int *>(exec, args, 0, 0));
-   int * y1 = (KJSEmbed::extractObject<int *>(exec, args, 1, 0));
-   int * x2 = (KJSEmbed::extractObject<int *>(exec, args, 2, 0));
-   int * y2 = (KJSEmbed::extractObject<int *>(exec, args, 3, 0));
+   int * x1 = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * y1 = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * x2 = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * y2 = KJSEmbed::extractValue<int *>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void adjust(int x1, int y1, int x2, int y2)
 START_VARIANT_METHOD( adjust, QRect )
-   int x1 = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int y1 = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   int x2 = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-   int y2 = (KJSEmbed::extractObject<int>(exec, args, 3, 0));
+   int x1 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y1 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int x2 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y2 = KJSEmbed::extractValue<int>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QRect adjusted(int x1, int y1, int x2, int y2) const 
 START_VARIANT_METHOD( adjusted, QRect )
-   int x1 = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int y1 = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   int x2 = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-   int y2 = (KJSEmbed::extractObject<int>(exec, args, 3, 0));
+   int x1 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y1 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int x2 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y2 = KJSEmbed::extractValue<int>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QSize size() const 
@@ -301,57 +313,60 @@ END_VARIANT_METHOD
 
 // void setWidth(int w)
 START_VARIANT_METHOD( setWidth, QRect )
-   int w = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int w = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setWidth(w);
 END_VARIANT_METHOD
 
 // void setHeight(int h)
 START_VARIANT_METHOD( setHeight, QRect )
-   int h = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int h = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setHeight(h);
 END_VARIANT_METHOD
 
 // void setSize(const QSize &s)
 START_VARIANT_METHOD( setSize, QRect )
-   const QSize & s = (KJSEmbed::extractObject<const QSize &>(exec, args, 0, 0));
+   const QSize & s = KJSEmbed::extractValue<const QSize &>(exec, args, 0);
+    value.setSize(s);
 END_VARIANT_METHOD
 
 // bool contains(const QPoint &p, bool proper=false) const 
 START_VARIANT_METHOD( contains, QRect )
-   const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
-   bool proper = (KJSEmbed::extractObject<bool>(exec, args, 1, false));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
+   bool proper = KJSEmbed::extractValue<bool>(exec, args, false);
 END_VARIANT_METHOD
 
 // bool contains(int x, int y) const 
 START_VARIANT_METHOD( contains, QRect )
-   int x = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int y = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
+   int x = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y = KJSEmbed::extractValue<int>(exec, args, 0);
 END_VARIANT_METHOD
 
 // bool contains(int x, int y, bool proper) const 
 START_VARIANT_METHOD( contains, QRect )
-   int x = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int y = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   bool proper = (KJSEmbed::extractObject<bool>(exec, args, 2, 0));
+   int x = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y = KJSEmbed::extractValue<int>(exec, args, 0);
+   bool proper = KJSEmbed::extractValue<bool>(exec, args, 0);
 END_VARIANT_METHOD
 
 // bool contains(const QRect &r, bool proper=false) const 
 START_VARIANT_METHOD( contains, QRect )
-   const QRect & r = (KJSEmbed::extractObject<const QRect &>(exec, args, 0, 0));
-   bool proper = (KJSEmbed::extractObject<bool>(exec, args, 1, false));
+   const QRect & r = KJSEmbed::extractValue<const QRect &>(exec, args, 0);
+   bool proper = KJSEmbed::extractValue<bool>(exec, args, false);
 END_VARIANT_METHOD
 
 // QRect unite(const QRect &r) const 
 START_VARIANT_METHOD( unite, QRect )
-   const QRect & r = (KJSEmbed::extractObject<const QRect &>(exec, args, 0, 0));
+   const QRect & r = KJSEmbed::extractValue<const QRect &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QRect intersect(const QRect &r) const 
 START_VARIANT_METHOD( intersect, QRect )
-   const QRect & r = (KJSEmbed::extractObject<const QRect &>(exec, args, 0, 0));
+   const QRect & r = KJSEmbed::extractValue<const QRect &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // bool intersects(const QRect &r) const 
 START_VARIANT_METHOD( intersects, QRect )
-   const QRect & r = (KJSEmbed::extractObject<const QRect &>(exec, args, 0, 0));
+   const QRect & r = KJSEmbed::extractValue<const QRect &>(exec, args, 0);
 END_VARIANT_METHOD
 }
 
@@ -367,22 +382,22 @@ START_CTOR( QRect, QRect, 0 )
    }
    if (args.size() == 2 )
    {
-       const QPoint & topleft = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
-       const QPoint & bottomright = (KJSEmbed::extractObject<const QPoint &>(exec, args, 1, 0));
+   const QPoint & topleft = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
+   const QPoint & bottomright = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
        return new KJSEmbed::QRectBinding(exec, QRect(topleft, bottomright))
    }
    if (args.size() == 2 )
    {
-       const QPoint & topleft = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
-       const QSize & size = (KJSEmbed::extractObject<const QSize &>(exec, args, 1, 0));
+   const QPoint & topleft = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
+   const QSize & size = KJSEmbed::extractValue<const QSize &>(exec, args, 0);
        return new KJSEmbed::QRectBinding(exec, QRect(topleft, size))
    }
    if (args.size() == 4 )
    {
-       int left = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-       int top = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-       int width = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-       int height = (KJSEmbed::extractObject<int>(exec, args, 3, 0));
+   int left = KJSEmbed::extractValue<int>(exec, args, 0);
+   int top = KJSEmbed::extractValue<int>(exec, args, 0);
+   int width = KJSEmbed::extractValue<int>(exec, args, 0);
+   int height = KJSEmbed::extractValue<int>(exec, args, 0);
        return new KJSEmbed::QRectBinding(exec, QRect(left, top, width, height))
    }
 END_CTOR

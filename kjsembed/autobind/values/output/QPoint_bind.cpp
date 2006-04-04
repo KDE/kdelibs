@@ -35,12 +35,14 @@ END_VARIANT_METHOD
 
 // void setX(int x)
 START_VARIANT_METHOD( setX, QPoint )
-   int x = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int x = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setX(x);
 END_VARIANT_METHOD
 
 // void setY(int y)
 START_VARIANT_METHOD( setY, QPoint )
-   int y = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int y = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setY(y);
 END_VARIANT_METHOD
 
 // int manhattanLength() const 
@@ -74,8 +76,8 @@ START_CTOR( QPoint, QPoint, 0 )
    }
    if (args.size() == 2 )
    {
-       int xpos = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-       int ypos = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
+   int xpos = KJSEmbed::extractValue<int>(exec, args, 0);
+   int ypos = KJSEmbed::extractValue<int>(exec, args, 0);
        return new KJSEmbed::QPointBinding(exec, QPoint(xpos, ypos))
    }
 END_CTOR

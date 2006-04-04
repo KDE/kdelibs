@@ -23,7 +23,8 @@ END_VARIANT_METHOD
 
 // void setFamily(const QString &)
 START_VARIANT_METHOD( setFamily, QFont )
-   const QString &  = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
+   const QString & arg0 = KJSEmbed::extractValue<const QString &>(exec, args, 0);
+    value.setFamily(arg0);
 END_VARIANT_METHOD
 
 // int pointSize() const 
@@ -34,7 +35,8 @@ END_VARIANT_METHOD
 
 // void setPointSize(int)
 START_VARIANT_METHOD( setPointSize, QFont )
-   int  = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int arg0 = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setPointSize(arg0);
 END_VARIANT_METHOD
 
 // qreal pointSizeF() const 
@@ -45,7 +47,8 @@ END_VARIANT_METHOD
 
 // void setPointSizeF(qreal)
 START_VARIANT_METHOD( setPointSizeF, QFont )
-   qreal  = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal arg0 = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setPointSizeF(arg0);
 END_VARIANT_METHOD
 
 // int pixelSize() const 
@@ -56,7 +59,8 @@ END_VARIANT_METHOD
 
 // void setPixelSize(int)
 START_VARIANT_METHOD( setPixelSize, QFont )
-   int  = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int arg0 = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setPixelSize(arg0);
 END_VARIANT_METHOD
 
 // int weight() const 
@@ -67,7 +71,8 @@ END_VARIANT_METHOD
 
 // void setWeight(int)
 START_VARIANT_METHOD( setWeight, QFont )
-   int  = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int arg0 = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setWeight(arg0);
 END_VARIANT_METHOD
 
 // bool bold() const 
@@ -78,12 +83,14 @@ END_VARIANT_METHOD
 
 // void setBold(bool)
 START_VARIANT_METHOD( setBold, QFont )
-   bool  = (KJSEmbed::extractObject<bool>(exec, args, 0, 0));
+   bool arg0 = KJSEmbed::extractValue<bool>(exec, args, 0);
+    value.setBold(arg0);
 END_VARIANT_METHOD
 
 // void setStyle(Style style)
 START_VARIANT_METHOD( setStyle, QFont )
-   Style style = (KJSEmbed::extractObject<Style>(exec, args, 0, 0));
+   Style style = KJSEmbed::extractObject<Style>(exec, args, 0, 0);
+    value.setStyle(style);
 END_VARIANT_METHOD
 
 // Style style() const 
@@ -100,7 +107,8 @@ END_VARIANT_METHOD
 
 // void setItalic(bool b)
 START_VARIANT_METHOD( setItalic, QFont )
-   bool b = (KJSEmbed::extractObject<bool>(exec, args, 0, 0));
+   bool b = KJSEmbed::extractValue<bool>(exec, args, 0);
+    value.setItalic(b);
 END_VARIANT_METHOD
 
 // bool underline() const 
@@ -111,7 +119,8 @@ END_VARIANT_METHOD
 
 // void setUnderline(bool)
 START_VARIANT_METHOD( setUnderline, QFont )
-   bool  = (KJSEmbed::extractObject<bool>(exec, args, 0, 0));
+   bool arg0 = KJSEmbed::extractValue<bool>(exec, args, 0);
+    value.setUnderline(arg0);
 END_VARIANT_METHOD
 
 // bool overline() const 
@@ -122,7 +131,8 @@ END_VARIANT_METHOD
 
 // void setOverline(bool)
 START_VARIANT_METHOD( setOverline, QFont )
-   bool  = (KJSEmbed::extractObject<bool>(exec, args, 0, 0));
+   bool arg0 = KJSEmbed::extractValue<bool>(exec, args, 0);
+    value.setOverline(arg0);
 END_VARIANT_METHOD
 
 // bool strikeOut() const 
@@ -133,7 +143,8 @@ END_VARIANT_METHOD
 
 // void setStrikeOut(bool)
 START_VARIANT_METHOD( setStrikeOut, QFont )
-   bool  = (KJSEmbed::extractObject<bool>(exec, args, 0, 0));
+   bool arg0 = KJSEmbed::extractValue<bool>(exec, args, 0);
+    value.setStrikeOut(arg0);
 END_VARIANT_METHOD
 
 // bool fixedPitch() const 
@@ -144,7 +155,8 @@ END_VARIANT_METHOD
 
 // void setFixedPitch(bool)
 START_VARIANT_METHOD( setFixedPitch, QFont )
-   bool  = (KJSEmbed::extractObject<bool>(exec, args, 0, 0));
+   bool arg0 = KJSEmbed::extractValue<bool>(exec, args, 0);
+    value.setFixedPitch(arg0);
 END_VARIANT_METHOD
 
 // bool kerning() const 
@@ -155,7 +167,8 @@ END_VARIANT_METHOD
 
 // void setKerning(bool)
 START_VARIANT_METHOD( setKerning, QFont )
-   bool  = (KJSEmbed::extractObject<bool>(exec, args, 0, 0));
+   bool arg0 = KJSEmbed::extractValue<bool>(exec, args, 0);
+    value.setKerning(arg0);
 END_VARIANT_METHOD
 
 // StyleHint styleHint() const 
@@ -172,13 +185,15 @@ END_VARIANT_METHOD
 
 // void setStyleHint(StyleHint, StyleStrategy=PreferDefault)
 START_VARIANT_METHOD( setStyleHint, QFont )
-   StyleHint  = (KJSEmbed::extractObject<StyleHint>(exec, args, 0, 0));
-   StyleStrategy  = (KJSEmbed::extractObject<StyleStrategy>(exec, args, 1, PreferDefault));
+   StyleHint arg0 = KJSEmbed::extractValue<StyleHint>(exec, args, 0);
+   StyleStrategy arg1 = KJSEmbed::extractObject<StyleStrategy>(exec, args, 1, PreferDefault);
+    value.setStyleHint(arg0);
 END_VARIANT_METHOD
 
 // void setStyleStrategy(StyleStrategy s)
 START_VARIANT_METHOD( setStyleStrategy, QFont )
-   StyleStrategy s = (KJSEmbed::extractObject<StyleStrategy>(exec, args, 0, 0));
+   StyleStrategy s = KJSEmbed::extractObject<StyleStrategy>(exec, args, 0, 0);
+    value.setStyleStrategy(s);
 END_VARIANT_METHOD
 
 // int stretch() const 
@@ -189,7 +204,8 @@ END_VARIANT_METHOD
 
 // void setStretch(int)
 START_VARIANT_METHOD( setStretch, QFont )
-   int  = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int arg0 = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setStretch(arg0);
 END_VARIANT_METHOD
 
 // bool rawMode() const 
@@ -200,7 +216,8 @@ END_VARIANT_METHOD
 
 // void setRawMode(bool)
 START_VARIANT_METHOD( setRawMode, QFont )
-   bool  = (KJSEmbed::extractObject<bool>(exec, args, 0, 0));
+   bool arg0 = KJSEmbed::extractValue<bool>(exec, args, 0);
+    value.setRawMode(arg0);
 END_VARIANT_METHOD
 
 // bool exactMatch() const 
@@ -211,7 +228,7 @@ END_VARIANT_METHOD
 
 // bool isCopyOf(const QFont &) const 
 START_VARIANT_METHOD( isCopyOf, QFont )
-   const QFont &  = (KJSEmbed::extractObject<const QFont &>(exec, args, 0, 0));
+   const QFont & arg0 = KJSEmbed::extractValue<const QFont &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // Qt::HANDLE handle() const 
@@ -222,7 +239,8 @@ END_VARIANT_METHOD
 
 // void setRawName(const QString &)
 START_VARIANT_METHOD( setRawName, QFont )
-   const QString &  = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
+   const QString & arg0 = KJSEmbed::extractValue<const QString &>(exec, args, 0);
+    value.setRawName(arg0);
 END_VARIANT_METHOD
 
 // QString rawName() const 
@@ -245,7 +263,7 @@ END_VARIANT_METHOD
 
 // bool fromString(const QString &)
 START_VARIANT_METHOD( fromString, QFont )
-   const QString &  = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
+   const QString & arg0 = KJSEmbed::extractValue<const QString &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QString defaultFamily() const 
@@ -268,7 +286,7 @@ END_VARIANT_METHOD
 
 // QFont resolve(const QFont &) const 
 START_VARIANT_METHOD( resolve, QFont )
-   const QFont &  = (KJSEmbed::extractObject<const QFont &>(exec, args, 0, 0));
+   const QFont & arg0 = KJSEmbed::extractValue<const QFont &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // uint resolve() const 
@@ -279,17 +297,17 @@ END_VARIANT_METHOD
 
 // void resolve(uint mask)
 START_VARIANT_METHOD( resolve, QFont )
-   uint mask = (KJSEmbed::extractObject<uint>(exec, args, 0, 0));
+   uint mask = KJSEmbed::extractValue<uint>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QString substitute(const QString &)
 START_VARIANT_METHOD( substitute, QFont )
-   const QString &  = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
+   const QString & arg0 = KJSEmbed::extractValue<const QString &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QStringList substitutes(const QString &)
 START_VARIANT_METHOD( substitutes, QFont )
-   const QString &  = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
+   const QString & arg0 = KJSEmbed::extractValue<const QString &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QStringList substitutions()
@@ -300,19 +318,19 @@ END_VARIANT_METHOD
 
 // void insertSubstitution(const QString &, const QString &)
 START_VARIANT_METHOD( insertSubstitution, QFont )
-   const QString &  = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
-   const QString &  = (KJSEmbed::extractObject<const QString &>(exec, args, 1, 0));
+   const QString & arg0 = KJSEmbed::extractValue<const QString &>(exec, args, 0);
+   const QString & arg1 = KJSEmbed::extractValue<const QString &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void insertSubstitutions(const QString &, const QStringList &)
 START_VARIANT_METHOD( insertSubstitutions, QFont )
-   const QString &  = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
-   const QStringList &  = (KJSEmbed::extractObject<const QStringList &>(exec, args, 1, 0));
+   const QString & arg0 = KJSEmbed::extractValue<const QString &>(exec, args, 0);
+   const QStringList & arg1 = KJSEmbed::extractValue<const QStringList &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void removeSubstitution(const QString &)
 START_VARIANT_METHOD( removeSubstitution, QFont )
-   const QString &  = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
+   const QString & arg0 = KJSEmbed::extractValue<const QString &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void initialize()
@@ -346,26 +364,26 @@ START_CTOR( QFont, QFont, 0 )
    }
    if (args.size() == 4 )
    {
-       const QString & family = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
-       int pointSize = (KJSEmbed::extractObject<int>(exec, args, 1, -1));
-       int weight = (KJSEmbed::extractObject<int>(exec, args, 2, -1));
-       bool italic = (KJSEmbed::extractObject<bool>(exec, args, 3, false));
+   const QString & family = KJSEmbed::extractValue<const QString &>(exec, args, 0);
+   int pointSize = KJSEmbed::extractValue<int>(exec, args, -1);
+   int weight = KJSEmbed::extractValue<int>(exec, args, -1);
+   bool italic = KJSEmbed::extractValue<bool>(exec, args, false);
        return new KJSEmbed::QFontBinding(exec, QFont(family, pointSize, weight, italic))
    }
    if (args.size() == 2 )
    {
-       const QFont &  = (KJSEmbed::extractObject<const QFont &>(exec, args, 0, 0));
-       QPaintDevice * pd = (KJSEmbed::extractObject<QPaintDevice *>(exec, args, 1, 0));
+   const QFont & arg0 = KJSEmbed::extractValue<const QFont &>(exec, args, 0);
+   QPaintDevice * pd = KJSEmbed::extractValue<QPaintDevice *>(exec, args, 0);
        return new KJSEmbed::QFontBinding(exec, QFont(, pd))
    }
    if (args.size() == 1 )
    {
-       const QFont &  = (KJSEmbed::extractObject<const QFont &>(exec, args, 0, 0));
+   const QFont & arg0 = KJSEmbed::extractValue<const QFont &>(exec, args, 0);
        return new KJSEmbed::QFontBinding(exec, QFont())
    }
    if (args.size() == 1 )
    {
-       QFontPrivate *  = (KJSEmbed::extractObject<QFontPrivate *>(exec, args, 0, 0));
+   QFontPrivate * arg0 = KJSEmbed::extractValue<QFontPrivate *>(exec, args, 0);
        return new KJSEmbed::QFontBinding(exec, QFont())
    }
 END_CTOR

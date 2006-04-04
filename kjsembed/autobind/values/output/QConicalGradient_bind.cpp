@@ -36,15 +36,15 @@ NO_STATICS( QConicalGradient )
 START_CTOR( QConicalGradient, QConicalGradient, 0 )
    if (args.size() == 2 )
    {
-       const QPointF & center = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
-       qreal startAngle = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
+   const QPointF & center = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
+   qreal startAngle = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
        return new KJSEmbed::QConicalGradientBinding(exec, QConicalGradient(center, startAngle))
    }
    if (args.size() == 3 )
    {
-       qreal cx = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-       qreal cy = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-       qreal startAngle = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
+   qreal cx = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal cy = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal startAngle = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
        return new KJSEmbed::QConicalGradientBinding(exec, QConicalGradient(cx, cy, startAngle))
    }
 END_CTOR

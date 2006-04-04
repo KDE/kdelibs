@@ -29,7 +29,8 @@ END_VARIANT_METHOD
 
 // void setNamedColor(const QString &name)
 START_VARIANT_METHOD( setNamedColor, QColor )
-   const QString & name = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
+   const QString & name = KJSEmbed::extractValue<const QString &>(exec, args, 0);
+    value.setNamedColor(name);
 END_VARIANT_METHOD
 
 // Spec spec() const 
@@ -46,7 +47,8 @@ END_VARIANT_METHOD
 
 // void setAlpha(int alpha)
 START_VARIANT_METHOD( setAlpha, QColor )
-   int alpha = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int alpha = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setAlpha(alpha);
 END_VARIANT_METHOD
 
 // qreal alphaF() const 
@@ -57,7 +59,8 @@ END_VARIANT_METHOD
 
 // void setAlphaF(qreal alpha)
 START_VARIANT_METHOD( setAlphaF, QColor )
-   qreal alpha = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal alpha = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setAlphaF(alpha);
 END_VARIANT_METHOD
 
 // int red() const 
@@ -80,17 +83,20 @@ END_VARIANT_METHOD
 
 // void setRed(int red)
 START_VARIANT_METHOD( setRed, QColor )
-   int red = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int red = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setRed(red);
 END_VARIANT_METHOD
 
 // void setGreen(int green)
 START_VARIANT_METHOD( setGreen, QColor )
-   int green = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int green = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setGreen(green);
 END_VARIANT_METHOD
 
 // void setBlue(int blue)
 START_VARIANT_METHOD( setBlue, QColor )
-   int blue = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int blue = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setBlue(blue);
 END_VARIANT_METHOD
 
 // qreal redF() const 
@@ -113,49 +119,54 @@ END_VARIANT_METHOD
 
 // void setRedF(qreal red)
 START_VARIANT_METHOD( setRedF, QColor )
-   qreal red = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal red = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setRedF(red);
 END_VARIANT_METHOD
 
 // void setGreenF(qreal green)
 START_VARIANT_METHOD( setGreenF, QColor )
-   qreal green = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal green = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setGreenF(green);
 END_VARIANT_METHOD
 
 // void setBlueF(qreal blue)
 START_VARIANT_METHOD( setBlueF, QColor )
-   qreal blue = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal blue = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setBlueF(blue);
 END_VARIANT_METHOD
 
 // void getRgb(int *r, int *g, int *b, int *a=0) const 
 START_VARIANT_METHOD( getRgb, QColor )
-   int * r = (KJSEmbed::extractObject<int *>(exec, args, 0, 0));
-   int * g = (KJSEmbed::extractObject<int *>(exec, args, 1, 0));
-   int * b = (KJSEmbed::extractObject<int *>(exec, args, 2, 0));
-   int * a = (KJSEmbed::extractObject<int *>(exec, args, 3, 0));
+   int * r = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * g = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * b = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * a = KJSEmbed::extractValue<int *>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void setRgb(int r, int g, int b, int a=255)
 START_VARIANT_METHOD( setRgb, QColor )
-   int r = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int g = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   int b = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-   int a = (KJSEmbed::extractObject<int>(exec, args, 3, 255));
+   int r = KJSEmbed::extractValue<int>(exec, args, 0);
+   int g = KJSEmbed::extractValue<int>(exec, args, 0);
+   int b = KJSEmbed::extractValue<int>(exec, args, 0);
+   int a = KJSEmbed::extractValue<int>(exec, args, 255);
+    value.setRgb(a);
 END_VARIANT_METHOD
 
 // void getRgbF(qreal *r, qreal *g, qreal *b, qreal *a=0) const 
 START_VARIANT_METHOD( getRgbF, QColor )
-   qreal * r = (KJSEmbed::extractObject<qreal *>(exec, args, 0, 0));
-   qreal * g = (KJSEmbed::extractObject<qreal *>(exec, args, 1, 0));
-   qreal * b = (KJSEmbed::extractObject<qreal *>(exec, args, 2, 0));
-   qreal * a = (KJSEmbed::extractObject<qreal *>(exec, args, 3, 0));
+   qreal * r = KJSEmbed::extractObject<qreal *>(exec, args, 0, 0);
+   qreal * g = KJSEmbed::extractObject<qreal *>(exec, args, 1, 0);
+   qreal * b = KJSEmbed::extractObject<qreal *>(exec, args, 2, 0);
+   qreal * a = KJSEmbed::extractObject<qreal *>(exec, args, 3, 0);
 END_VARIANT_METHOD
 
 // void setRgbF(qreal r, qreal g, qreal b, qreal a=1.0)
 START_VARIANT_METHOD( setRgbF, QColor )
-   qreal r = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal g = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-   qreal b = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-   qreal a = (KJSEmbed::extractObject<qreal>(exec, args, 3, 1.0));
+   qreal r = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal g = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
+   qreal b = KJSEmbed::extractObject<qreal>(exec, args, 2, 0);
+   qreal a = KJSEmbed::extractObject<qreal>(exec, args, 3, 1.0);
+    value.setRgbF(a);
 END_VARIANT_METHOD
 
 // QRgb rgba() const 
@@ -166,7 +177,8 @@ END_VARIANT_METHOD
 
 // void setRgba(QRgb rgba)
 START_VARIANT_METHOD( setRgba, QColor )
-   QRgb rgba = (KJSEmbed::extractObject<QRgb>(exec, args, 0, 0));
+   QRgb rgba = KJSEmbed::extractObject<QRgb>(exec, args, 0, 0);
+    value.setRgba(rgba);
 END_VARIANT_METHOD
 
 // QRgb rgb() const 
@@ -177,7 +189,8 @@ END_VARIANT_METHOD
 
 // void setRgb(QRgb rgb)
 START_VARIANT_METHOD( setRgb, QColor )
-   QRgb rgb = (KJSEmbed::extractObject<QRgb>(exec, args, 0, 0));
+   QRgb rgb = KJSEmbed::extractObject<QRgb>(exec, args, 0, 0);
+    value.setRgb(rgb);
 END_VARIANT_METHOD
 
 // int hue() const 
@@ -218,34 +231,36 @@ END_VARIANT_METHOD
 
 // void getHsv(int *h, int *s, int *v, int *a=0) const 
 START_VARIANT_METHOD( getHsv, QColor )
-   int * h = (KJSEmbed::extractObject<int *>(exec, args, 0, 0));
-   int * s = (KJSEmbed::extractObject<int *>(exec, args, 1, 0));
-   int * v = (KJSEmbed::extractObject<int *>(exec, args, 2, 0));
-   int * a = (KJSEmbed::extractObject<int *>(exec, args, 3, 0));
+   int * h = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * s = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * v = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * a = KJSEmbed::extractValue<int *>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void setHsv(int h, int s, int v, int a=255)
 START_VARIANT_METHOD( setHsv, QColor )
-   int h = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int s = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   int v = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-   int a = (KJSEmbed::extractObject<int>(exec, args, 3, 255));
+   int h = KJSEmbed::extractValue<int>(exec, args, 0);
+   int s = KJSEmbed::extractValue<int>(exec, args, 0);
+   int v = KJSEmbed::extractValue<int>(exec, args, 0);
+   int a = KJSEmbed::extractValue<int>(exec, args, 255);
+    value.setHsv(a);
 END_VARIANT_METHOD
 
 // void getHsvF(qreal *h, qreal *s, qreal *v, qreal *a=0) const 
 START_VARIANT_METHOD( getHsvF, QColor )
-   qreal * h = (KJSEmbed::extractObject<qreal *>(exec, args, 0, 0));
-   qreal * s = (KJSEmbed::extractObject<qreal *>(exec, args, 1, 0));
-   qreal * v = (KJSEmbed::extractObject<qreal *>(exec, args, 2, 0));
-   qreal * a = (KJSEmbed::extractObject<qreal *>(exec, args, 3, 0));
+   qreal * h = KJSEmbed::extractObject<qreal *>(exec, args, 0, 0);
+   qreal * s = KJSEmbed::extractObject<qreal *>(exec, args, 1, 0);
+   qreal * v = KJSEmbed::extractObject<qreal *>(exec, args, 2, 0);
+   qreal * a = KJSEmbed::extractObject<qreal *>(exec, args, 3, 0);
 END_VARIANT_METHOD
 
 // void setHsvF(qreal h, qreal s, qreal v, qreal a=1.0)
 START_VARIANT_METHOD( setHsvF, QColor )
-   qreal h = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal s = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-   qreal v = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-   qreal a = (KJSEmbed::extractObject<qreal>(exec, args, 3, 1.0));
+   qreal h = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal s = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
+   qreal v = KJSEmbed::extractObject<qreal>(exec, args, 2, 0);
+   qreal a = KJSEmbed::extractObject<qreal>(exec, args, 3, 1.0);
+    value.setHsvF(a);
 END_VARIANT_METHOD
 
 // int cyan() const 
@@ -298,38 +313,40 @@ END_VARIANT_METHOD
 
 // void getCmyk(int *c, int *m, int *y, int *k, int *a=0)
 START_VARIANT_METHOD( getCmyk, QColor )
-   int * c = (KJSEmbed::extractObject<int *>(exec, args, 0, 0));
-   int * m = (KJSEmbed::extractObject<int *>(exec, args, 1, 0));
-   int * y = (KJSEmbed::extractObject<int *>(exec, args, 2, 0));
-   int * k = (KJSEmbed::extractObject<int *>(exec, args, 3, 0));
-   int * a = (KJSEmbed::extractObject<int *>(exec, args, 4, 0));
+   int * c = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * m = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * y = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * k = KJSEmbed::extractValue<int *>(exec, args, 0);
+   int * a = KJSEmbed::extractValue<int *>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void setCmyk(int c, int m, int y, int k, int a=255)
 START_VARIANT_METHOD( setCmyk, QColor )
-   int c = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int m = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   int y = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-   int k = (KJSEmbed::extractObject<int>(exec, args, 3, 0));
-   int a = (KJSEmbed::extractObject<int>(exec, args, 4, 255));
+   int c = KJSEmbed::extractValue<int>(exec, args, 0);
+   int m = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y = KJSEmbed::extractValue<int>(exec, args, 0);
+   int k = KJSEmbed::extractValue<int>(exec, args, 0);
+   int a = KJSEmbed::extractValue<int>(exec, args, 255);
+    value.setCmyk(a);
 END_VARIANT_METHOD
 
 // void getCmykF(qreal *c, qreal *m, qreal *y, qreal *k, qreal *a=0)
 START_VARIANT_METHOD( getCmykF, QColor )
-   qreal * c = (KJSEmbed::extractObject<qreal *>(exec, args, 0, 0));
-   qreal * m = (KJSEmbed::extractObject<qreal *>(exec, args, 1, 0));
-   qreal * y = (KJSEmbed::extractObject<qreal *>(exec, args, 2, 0));
-   qreal * k = (KJSEmbed::extractObject<qreal *>(exec, args, 3, 0));
-   qreal * a = (KJSEmbed::extractObject<qreal *>(exec, args, 4, 0));
+   qreal * c = KJSEmbed::extractObject<qreal *>(exec, args, 0, 0);
+   qreal * m = KJSEmbed::extractObject<qreal *>(exec, args, 1, 0);
+   qreal * y = KJSEmbed::extractObject<qreal *>(exec, args, 2, 0);
+   qreal * k = KJSEmbed::extractObject<qreal *>(exec, args, 3, 0);
+   qreal * a = KJSEmbed::extractObject<qreal *>(exec, args, 4, 0);
 END_VARIANT_METHOD
 
 // void setCmykF(qreal c, qreal m, qreal y, qreal k, qreal a=1.0)
 START_VARIANT_METHOD( setCmykF, QColor )
-   qreal c = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal m = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-   qreal y = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-   qreal k = (KJSEmbed::extractObject<qreal>(exec, args, 3, 0));
-   qreal a = (KJSEmbed::extractObject<qreal>(exec, args, 4, 1.0));
+   qreal c = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal m = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
+   qreal y = KJSEmbed::extractObject<qreal>(exec, args, 2, 0);
+   qreal k = KJSEmbed::extractObject<qreal>(exec, args, 3, 0);
+   qreal a = KJSEmbed::extractObject<qreal>(exec, args, 4, 1.0);
+    value.setCmykF(a);
 END_VARIANT_METHOD
 
 // QColor toRgb() const 
@@ -352,17 +369,17 @@ END_VARIANT_METHOD
 
 // QColor convertTo(Spec colorSpec) const 
 START_VARIANT_METHOD( convertTo, QColor )
-   Spec colorSpec = (KJSEmbed::extractObject<Spec>(exec, args, 0, 0));
+   Spec colorSpec = KJSEmbed::extractObject<Spec>(exec, args, 0, 0);
 END_VARIANT_METHOD
 
 // QColor light(int f=150) const 
 START_VARIANT_METHOD( light, QColor )
-   int f = (KJSEmbed::extractObject<int>(exec, args, 0, 150));
+   int f = KJSEmbed::extractValue<int>(exec, args, 150);
 END_VARIANT_METHOD
 
 // QColor dark(int f=200) const 
 START_VARIANT_METHOD( dark, QColor )
-   int f = (KJSEmbed::extractObject<int>(exec, args, 0, 200));
+   int f = KJSEmbed::extractValue<int>(exec, args, 200);
 END_VARIANT_METHOD
 
 // QStringList colorNames()
@@ -373,62 +390,62 @@ END_VARIANT_METHOD
 
 // QColor fromRgb(QRgb rgb)
 START_VARIANT_METHOD( fromRgb, QColor )
-   QRgb rgb = (KJSEmbed::extractObject<QRgb>(exec, args, 0, 0));
+   QRgb rgb = KJSEmbed::extractObject<QRgb>(exec, args, 0, 0);
 END_VARIANT_METHOD
 
 // QColor fromRgba(QRgb rgba)
 START_VARIANT_METHOD( fromRgba, QColor )
-   QRgb rgba = (KJSEmbed::extractObject<QRgb>(exec, args, 0, 0));
+   QRgb rgba = KJSEmbed::extractObject<QRgb>(exec, args, 0, 0);
 END_VARIANT_METHOD
 
 // QColor fromRgb(int r, int g, int b, int a=255)
 START_VARIANT_METHOD( fromRgb, QColor )
-   int r = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int g = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   int b = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-   int a = (KJSEmbed::extractObject<int>(exec, args, 3, 255));
+   int r = KJSEmbed::extractValue<int>(exec, args, 0);
+   int g = KJSEmbed::extractValue<int>(exec, args, 0);
+   int b = KJSEmbed::extractValue<int>(exec, args, 0);
+   int a = KJSEmbed::extractValue<int>(exec, args, 255);
 END_VARIANT_METHOD
 
 // QColor fromRgbF(qreal r, qreal g, qreal b, qreal a=1.0)
 START_VARIANT_METHOD( fromRgbF, QColor )
-   qreal r = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal g = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-   qreal b = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-   qreal a = (KJSEmbed::extractObject<qreal>(exec, args, 3, 1.0));
+   qreal r = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal g = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
+   qreal b = KJSEmbed::extractObject<qreal>(exec, args, 2, 0);
+   qreal a = KJSEmbed::extractObject<qreal>(exec, args, 3, 1.0);
 END_VARIANT_METHOD
 
 // QColor fromHsv(int h, int s, int v, int a=255)
 START_VARIANT_METHOD( fromHsv, QColor )
-   int h = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int s = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   int v = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-   int a = (KJSEmbed::extractObject<int>(exec, args, 3, 255));
+   int h = KJSEmbed::extractValue<int>(exec, args, 0);
+   int s = KJSEmbed::extractValue<int>(exec, args, 0);
+   int v = KJSEmbed::extractValue<int>(exec, args, 0);
+   int a = KJSEmbed::extractValue<int>(exec, args, 255);
 END_VARIANT_METHOD
 
 // QColor fromHsvF(qreal h, qreal s, qreal v, qreal a=1.0)
 START_VARIANT_METHOD( fromHsvF, QColor )
-   qreal h = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal s = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-   qreal v = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-   qreal a = (KJSEmbed::extractObject<qreal>(exec, args, 3, 1.0));
+   qreal h = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal s = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
+   qreal v = KJSEmbed::extractObject<qreal>(exec, args, 2, 0);
+   qreal a = KJSEmbed::extractObject<qreal>(exec, args, 3, 1.0);
 END_VARIANT_METHOD
 
 // QColor fromCmyk(int c, int m, int y, int k, int a=255)
 START_VARIANT_METHOD( fromCmyk, QColor )
-   int c = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int m = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-   int y = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-   int k = (KJSEmbed::extractObject<int>(exec, args, 3, 0));
-   int a = (KJSEmbed::extractObject<int>(exec, args, 4, 255));
+   int c = KJSEmbed::extractValue<int>(exec, args, 0);
+   int m = KJSEmbed::extractValue<int>(exec, args, 0);
+   int y = KJSEmbed::extractValue<int>(exec, args, 0);
+   int k = KJSEmbed::extractValue<int>(exec, args, 0);
+   int a = KJSEmbed::extractValue<int>(exec, args, 255);
 END_VARIANT_METHOD
 
 // QColor fromCmykF(qreal c, qreal m, qreal y, qreal k, qreal a=1.0)
 START_VARIANT_METHOD( fromCmykF, QColor )
-   qreal c = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal m = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-   qreal y = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-   qreal k = (KJSEmbed::extractObject<qreal>(exec, args, 3, 0));
-   qreal a = (KJSEmbed::extractObject<qreal>(exec, args, 4, 1.0));
+   qreal c = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal m = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
+   qreal y = KJSEmbed::extractObject<qreal>(exec, args, 2, 0);
+   qreal k = KJSEmbed::extractObject<qreal>(exec, args, 3, 0);
+   qreal a = KJSEmbed::extractObject<qreal>(exec, args, 4, 1.0);
 END_VARIANT_METHOD
 }
 
@@ -444,43 +461,43 @@ START_CTOR( QColor, QColor, 0 )
    }
    if (args.size() == 1 )
    {
-       Qt::GlobalColor color = static_cast<Qt::GlobalColor>(KJSEmbed::extractInt(exec, args, 0, 0));
+   Qt::GlobalColor color = static_cast<Qt::GlobalColor>(KJSEmbed::extractInt(exec, args, 5, 0));
        return new KJSEmbed::QColorBinding(exec, QColor(color))
    }
    if (args.size() == 4 )
    {
-       int r = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-       int g = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-       int b = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-       int a = (KJSEmbed::extractObject<int>(exec, args, 3, 255));
+   int r = KJSEmbed::extractValue<int>(exec, args, 0);
+   int g = KJSEmbed::extractValue<int>(exec, args, 0);
+   int b = KJSEmbed::extractValue<int>(exec, args, 0);
+   int a = KJSEmbed::extractValue<int>(exec, args, 255);
        return new KJSEmbed::QColorBinding(exec, QColor(r, g, b, a))
    }
    if (args.size() == 1 )
    {
-       QRgb rgb = (KJSEmbed::extractObject<QRgb>(exec, args, 0, 0));
+   QRgb rgb = KJSEmbed::extractObject<QRgb>(exec, args, 5, 0);
        return new KJSEmbed::QColorBinding(exec, QColor(rgb))
    }
    if (args.size() == 1 )
    {
-       const QString & name = (KJSEmbed::extractObject<const QString &>(exec, args, 0, 0));
+   const QString & name = KJSEmbed::extractValue<const QString &>(exec, args, 0);
        return new KJSEmbed::QColorBinding(exec, QColor(name))
    }
    if (args.size() == 1 )
    {
-       const char * name = (KJSEmbed::extractObject<const char *>(exec, args, 0, 0));
+   const char * name = KJSEmbed::extractObject<const char *>(exec, args, 5, 0);
        return new KJSEmbed::QColorBinding(exec, QColor(name))
    }
    if (args.size() == 1 )
    {
-       const QColor & color = (KJSEmbed::extractObject<const QColor &>(exec, args, 0, 0));
+   const QColor & color = KJSEmbed::extractValue<const QColor &>(exec, args, 0);
        return new KJSEmbed::QColorBinding(exec, QColor(color))
    }
    if (args.size() == 4 )
    {
-       int  = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-       int  = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
-       int  = (KJSEmbed::extractObject<int>(exec, args, 2, 0));
-       Spec  = (KJSEmbed::extractObject<Spec>(exec, args, 3, 0));
+   int arg0 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int arg1 = KJSEmbed::extractValue<int>(exec, args, 0);
+   int arg2 = KJSEmbed::extractValue<int>(exec, args, 0);
+   Spec arg3 = KJSEmbed::extractObject<Spec>(exec, args, 5, 0);
        return new KJSEmbed::QColorBinding(exec, QColor(, , , ))
    }
 END_CTOR

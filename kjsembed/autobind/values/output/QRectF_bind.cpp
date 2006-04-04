@@ -77,32 +77,38 @@ END_VARIANT_METHOD
 
 // void setLeft(qreal pos)
 START_VARIANT_METHOD( setLeft, QRectF )
-   qreal pos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal pos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setLeft(pos);
 END_VARIANT_METHOD
 
 // void setTop(qreal pos)
 START_VARIANT_METHOD( setTop, QRectF )
-   qreal pos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal pos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setTop(pos);
 END_VARIANT_METHOD
 
 // void setRight(qreal pos)
 START_VARIANT_METHOD( setRight, QRectF )
-   qreal pos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal pos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setRight(pos);
 END_VARIANT_METHOD
 
 // void setBottom(qreal pos)
 START_VARIANT_METHOD( setBottom, QRectF )
-   qreal pos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal pos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setBottom(pos);
 END_VARIANT_METHOD
 
 // void setX(qreal pos)
 START_VARIANT_METHOD( setX, QRectF )
-   qreal pos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal pos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setX(pos);
 END_VARIANT_METHOD
 
 // void setY(qreal pos)
 START_VARIANT_METHOD( setY, QRectF )
-   qreal pos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal pos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setY(pos);
 END_VARIANT_METHOD
 
 // QPointF topLeft() const 
@@ -137,148 +143,154 @@ END_VARIANT_METHOD
 
 // void setTopLeft(const QPointF &p)
 START_VARIANT_METHOD( setTopLeft, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
+    value.setTopLeft(p);
 END_VARIANT_METHOD
 
 // void setBottomRight(const QPointF &p)
 START_VARIANT_METHOD( setBottomRight, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
+    value.setBottomRight(p);
 END_VARIANT_METHOD
 
 // void setTopRight(const QPointF &p)
 START_VARIANT_METHOD( setTopRight, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
+    value.setTopRight(p);
 END_VARIANT_METHOD
 
 // void setBottomLeft(const QPointF &p)
 START_VARIANT_METHOD( setBottomLeft, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
+    value.setBottomLeft(p);
 END_VARIANT_METHOD
 
 // void moveLeft(qreal pos)
 START_VARIANT_METHOD( moveLeft, QRectF )
-   qreal pos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal pos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
 END_VARIANT_METHOD
 
 // void moveTop(qreal pos)
 START_VARIANT_METHOD( moveTop, QRectF )
-   qreal pos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal pos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
 END_VARIANT_METHOD
 
 // void moveRight(qreal pos)
 START_VARIANT_METHOD( moveRight, QRectF )
-   qreal pos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal pos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
 END_VARIANT_METHOD
 
 // void moveBottom(qreal pos)
 START_VARIANT_METHOD( moveBottom, QRectF )
-   qreal pos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal pos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
 END_VARIANT_METHOD
 
 // void moveTopLeft(const QPointF &p)
 START_VARIANT_METHOD( moveTopLeft, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveBottomRight(const QPointF &p)
 START_VARIANT_METHOD( moveBottomRight, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveTopRight(const QPointF &p)
 START_VARIANT_METHOD( moveTopRight, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveBottomLeft(const QPointF &p)
 START_VARIANT_METHOD( moveBottomLeft, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveCenter(const QPointF &p)
 START_VARIANT_METHOD( moveCenter, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void translate(qreal dx, qreal dy)
 START_VARIANT_METHOD( translate, QRectF )
-   qreal dx = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal dy = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
+   qreal dx = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal dy = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
 END_VARIANT_METHOD
 
 // void translate(const QPointF &p)
 START_VARIANT_METHOD( translate, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QRectF translated(qreal dx, qreal dy) const 
 START_VARIANT_METHOD( translated, QRectF )
-   qreal dx = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal dy = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
+   qreal dx = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal dy = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
 END_VARIANT_METHOD
 
 // QRectF translated(const QPointF &p) const 
 START_VARIANT_METHOD( translated, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void moveTo(qreal x, qreal t)
 START_VARIANT_METHOD( moveTo, QRectF )
-   qreal x = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal t = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
+   qreal x = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal t = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
 END_VARIANT_METHOD
 
 // void moveTo(const QPointF &p)
 START_VARIANT_METHOD( moveTo, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // void setRect(qreal x, qreal y, qreal w, qreal h)
 START_VARIANT_METHOD( setRect, QRectF )
-   qreal x = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal y = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-   qreal w = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-   qreal h = (KJSEmbed::extractObject<qreal>(exec, args, 3, 0));
+   qreal x = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal y = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
+   qreal w = KJSEmbed::extractObject<qreal>(exec, args, 2, 0);
+   qreal h = KJSEmbed::extractObject<qreal>(exec, args, 3, 0);
+    value.setRect(h);
 END_VARIANT_METHOD
 
 // void getRect(qreal *x, qreal *y, qreal *w, qreal *h) const 
 START_VARIANT_METHOD( getRect, QRectF )
-   qreal * x = (KJSEmbed::extractObject<qreal *>(exec, args, 0, 0));
-   qreal * y = (KJSEmbed::extractObject<qreal *>(exec, args, 1, 0));
-   qreal * w = (KJSEmbed::extractObject<qreal *>(exec, args, 2, 0));
-   qreal * h = (KJSEmbed::extractObject<qreal *>(exec, args, 3, 0));
+   qreal * x = KJSEmbed::extractObject<qreal *>(exec, args, 0, 0);
+   qreal * y = KJSEmbed::extractObject<qreal *>(exec, args, 1, 0);
+   qreal * w = KJSEmbed::extractObject<qreal *>(exec, args, 2, 0);
+   qreal * h = KJSEmbed::extractObject<qreal *>(exec, args, 3, 0);
 END_VARIANT_METHOD
 
 // void setCoords(qreal x1, qreal y1, qreal x2, qreal y2)
 START_VARIANT_METHOD( setCoords, QRectF )
-   qreal x1 = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal y1 = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-   qreal x2 = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-   qreal y2 = (KJSEmbed::extractObject<qreal>(exec, args, 3, 0));
+   qreal x1 = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal y1 = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
+   qreal x2 = KJSEmbed::extractObject<qreal>(exec, args, 2, 0);
+   qreal y2 = KJSEmbed::extractObject<qreal>(exec, args, 3, 0);
+    value.setCoords(y2);
 END_VARIANT_METHOD
 
 // void getCoords(qreal *x1, qreal *y1, qreal *x2, qreal *y2) const 
 START_VARIANT_METHOD( getCoords, QRectF )
-   qreal * x1 = (KJSEmbed::extractObject<qreal *>(exec, args, 0, 0));
-   qreal * y1 = (KJSEmbed::extractObject<qreal *>(exec, args, 1, 0));
-   qreal * x2 = (KJSEmbed::extractObject<qreal *>(exec, args, 2, 0));
-   qreal * y2 = (KJSEmbed::extractObject<qreal *>(exec, args, 3, 0));
+   qreal * x1 = KJSEmbed::extractObject<qreal *>(exec, args, 0, 0);
+   qreal * y1 = KJSEmbed::extractObject<qreal *>(exec, args, 1, 0);
+   qreal * x2 = KJSEmbed::extractObject<qreal *>(exec, args, 2, 0);
+   qreal * y2 = KJSEmbed::extractObject<qreal *>(exec, args, 3, 0);
 END_VARIANT_METHOD
 
 // void adjust(qreal x1, qreal y1, qreal x2, qreal y2)
 START_VARIANT_METHOD( adjust, QRectF )
-   qreal x1 = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal y1 = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-   qreal x2 = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-   qreal y2 = (KJSEmbed::extractObject<qreal>(exec, args, 3, 0));
+   qreal x1 = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal y1 = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
+   qreal x2 = KJSEmbed::extractObject<qreal>(exec, args, 2, 0);
+   qreal y2 = KJSEmbed::extractObject<qreal>(exec, args, 3, 0);
 END_VARIANT_METHOD
 
 // QRectF adjusted(qreal x1, qreal y1, qreal x2, qreal y2) const 
 START_VARIANT_METHOD( adjusted, QRectF )
-   qreal x1 = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal y1 = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-   qreal x2 = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-   qreal y2 = (KJSEmbed::extractObject<qreal>(exec, args, 3, 0));
+   qreal x1 = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal y1 = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
+   qreal x2 = KJSEmbed::extractObject<qreal>(exec, args, 2, 0);
+   qreal y2 = KJSEmbed::extractObject<qreal>(exec, args, 3, 0);
 END_VARIANT_METHOD
 
 // QSizeF size() const 
@@ -301,48 +313,51 @@ END_VARIANT_METHOD
 
 // void setWidth(qreal w)
 START_VARIANT_METHOD( setWidth, QRectF )
-   qreal w = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal w = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setWidth(w);
 END_VARIANT_METHOD
 
 // void setHeight(qreal h)
 START_VARIANT_METHOD( setHeight, QRectF )
-   qreal h = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal h = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setHeight(h);
 END_VARIANT_METHOD
 
 // void setSize(const QSizeF &s)
 START_VARIANT_METHOD( setSize, QRectF )
-   const QSizeF & s = (KJSEmbed::extractObject<const QSizeF &>(exec, args, 0, 0));
+   const QSizeF & s = KJSEmbed::extractValue<const QSizeF &>(exec, args, 0);
+    value.setSize(s);
 END_VARIANT_METHOD
 
 // bool contains(const QPointF &p) const 
 START_VARIANT_METHOD( contains, QRectF )
-   const QPointF & p = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
+   const QPointF & p = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // bool contains(qreal x, qreal y) const 
 START_VARIANT_METHOD( contains, QRectF )
-   qreal x = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal y = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
+   qreal x = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal y = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
 END_VARIANT_METHOD
 
 // bool contains(const QRectF &r) const 
 START_VARIANT_METHOD( contains, QRectF )
-   const QRectF & r = (KJSEmbed::extractObject<const QRectF &>(exec, args, 0, 0));
+   const QRectF & r = KJSEmbed::extractValue<const QRectF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QRectF unite(const QRectF &r) const 
 START_VARIANT_METHOD( unite, QRectF )
-   const QRectF & r = (KJSEmbed::extractObject<const QRectF &>(exec, args, 0, 0));
+   const QRectF & r = KJSEmbed::extractValue<const QRectF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QRectF intersect(const QRectF &r) const 
 START_VARIANT_METHOD( intersect, QRectF )
-   const QRectF & r = (KJSEmbed::extractObject<const QRectF &>(exec, args, 0, 0));
+   const QRectF & r = KJSEmbed::extractValue<const QRectF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // bool intersects(const QRectF &r) const 
 START_VARIANT_METHOD( intersects, QRectF )
-   const QRectF & r = (KJSEmbed::extractObject<const QRectF &>(exec, args, 0, 0));
+   const QRectF & r = KJSEmbed::extractValue<const QRectF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QRect toRect() const 
@@ -364,21 +379,21 @@ START_CTOR( QRectF, QRectF, 0 )
    }
    if (args.size() == 2 )
    {
-       const QPointF & topleft = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
-       const QSizeF & size = (KJSEmbed::extractObject<const QSizeF &>(exec, args, 1, 0));
+   const QPointF & topleft = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
+   const QSizeF & size = KJSEmbed::extractValue<const QSizeF &>(exec, args, 0);
        return new KJSEmbed::QRectFBinding(exec, QRectF(topleft, size))
    }
    if (args.size() == 4 )
    {
-       qreal left = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-       qreal top = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-       qreal width = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-       qreal height = (KJSEmbed::extractObject<qreal>(exec, args, 3, 0));
+   qreal left = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal top = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal width = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal height = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
        return new KJSEmbed::QRectFBinding(exec, QRectF(left, top, width, height))
    }
    if (args.size() == 1 )
    {
-       const QRect & rect = (KJSEmbed::extractObject<const QRect &>(exec, args, 0, 0));
+   const QRect & rect = KJSEmbed::extractValue<const QRect &>(exec, args, 0);
        return new KJSEmbed::QRectFBinding(exec, QRectF(rect))
    }
 END_CTOR

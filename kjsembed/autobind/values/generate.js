@@ -59,7 +59,6 @@ function write_binding_method( compounddef, method_elem )
   return method_template;
 }
 
-
 function write_ctor( compoundDef )
 {
     var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
@@ -95,26 +94,8 @@ function write_ctor( compoundDef )
                         for ( argIdx = 0; argIdx < memberArgList.count(); ++argIdx )
                         {
                             var param = memberArgList.item(argIdx).toElement();
-                            var paramType = param.firstChildElement('type').toElement().toString();
                             var paramVar = param.firstChildElement('declname').toElement().toString();
-                            var paramDefault = param.firstChildElement('defval').toElement();
-
-                            if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
-                            {
-                                ctor +=
-                                    '       ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + argIdx + ', ';
-                            }
-                            else
-                            {
-                                ctor +=
-                                    '       ' + paramType + ' ' + paramVar + ' = (KJSEmbed::extractObject<' + paramType + '>(exec, args, ' + argIdx + ', ';
-                            }
-
-                            if (!paramDefault.isNull())
-                                ctor += paramDefault.toString() + '));\n';
-                            else
-                                ctor += '0));\n';
-
+                            ctor += extract_parameter(param, argIdx);
                             tmpArgs += paramVar + ', ';
                         }
 
@@ -253,26 +234,19 @@ function write_binding_new( class_doc )
                         for ( paramIdx = 0; paramIdx < methodArgList.count(); ++paramIdx )
                         {
                             var param = methodArgList.item(paramIdx).toElement();
-                            var paramType = param.firstChildElement('type').toElement().toString();
                             var paramVar = param.firstChildElement('declname').toElement().toString();
+                            var paramVarElement = param.firstChildElement('declname').toElement();
                             var paramDefault = param.firstChildElement('defval').toElement();
-
-                            if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
-                            {
-                                methods +=
-                                    '   ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
-                            }
-                            else
-                            {
-                                methods +=
-                                    '   ' + paramType + ' ' + paramVar + ' = (KJSEmbed::extractObject<' + paramType + '>(exec, args, ' + paramIdx + ', ';
-                            }
-
-                            if (!paramDefault.isNull())
-                                methods += paramDefault.toString() + '));\n';
-                            else
-                                methods += '0));\n';
+                            methods += extract_parameter(param, paramIdx);
                         }
+                        if ( methodName.indexOf('set') != -1 )
+                        {   // setter, we can handle this for now
+                            if ( paramVarElement.isNull() )
+                                methods += '    value.' + methodName + '(arg0);\n';
+                            else
+                                methods += '    value.' + methodName + '(' + paramVar + ');\n';
+                        }
+
 
                         methods += 'END_VARIANT_METHOD\n';
                     }
@@ -311,6 +285,74 @@ function write_binding_new( class_doc )
     bindingFile.writeln( ctor );
     bindingFile.writeln( methodLut );
     bindingFile.close();
+}
+
+// An array of primitive Qt types, this is annoying but seems to be necessary
+var variant_types = [
+    'QBitArray', 'QBitmap', 'bool', 'QBrush',
+    'QByteArray', 'QChar', 'QColor', 'QCursor',
+    'QDate', 'QDateTime', 'double', 'QFont',
+    'QIcon', 'QImage', 'int', 'QKeySequence',
+    'QLine', 'QLineF', 'QVariantList', 'QLocale',
+    'qlonglong', 'QVariantMap', 'QPalette', 'QPen',
+    'QPixmap', 'QPoint', 'QPointArray', 'QPointF',
+    'QPolygon', 'QRect', 'QRectF', 'QRegExp',
+    'QRegion', 'QSize', 'QSizeF', 'QSizePolicy',
+    'QString', 'QStringList', 'QTextFormat',
+    'QTextLength', 'QTime', 'uint', 'qulonglong',
+    'QUrl'
+];
+
+function isVariant( variable )
+{
+    for (var i in variant_types)
+    {
+        if (variable.indexOf(variant_types[i]) != -1)
+            return true;
+    }
+    return false;
+}
+
+function extract_parameter( parameter, paramNum )
+{
+    var extracted = '';
+    var paramType = parameter.firstChildElement('type').toElement().toString();
+    var paramVar = parameter.firstChildElement('declname').toElement().toString();
+    var paramVarElement = parameter.firstChildElement('declname').toElement();
+    var paramDefault = parameter.firstChildElement('defval').toElement();
+
+    if (paramVarElement.isNull())
+        paramVar = 'arg' + paramNum;
+
+    if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
+    {
+        extracted +=
+            '   ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
+
+        if (!paramDefault.isNull())
+            extracted += paramDefault.toString() + '));\n';
+        else
+            extracted += '0));\n';
+
+        return extracted;
+    }
+    else if ( isVariant(paramType) )
+    {
+        extracted +=
+            '   ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + paramType + '>(exec, args, ';
+    }
+    else    // It's an object, or something else?
+    {
+        extracted +=
+            '   ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractObject<' + paramType + '>(exec, args, ' + paramIdx + ', ';
+    }
+
+    if (!paramDefault.isNull())
+        extracted += paramDefault.toString() + ');\n';
+    else
+        extracted += '0);\n';
+
+    return extracted;
 }
 
 function process_class_info( classDoc )

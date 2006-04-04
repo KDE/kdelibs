@@ -42,18 +42,18 @@ NO_STATICS( QRadialGradient )
 START_CTOR( QRadialGradient, QRadialGradient, 0 )
    if (args.size() == 3 )
    {
-       const QPointF & center = (KJSEmbed::extractObject<const QPointF &>(exec, args, 0, 0));
-       qreal radius = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-       const QPointF & focalPoint = (KJSEmbed::extractObject<const QPointF &>(exec, args, 2, QPointF()));
+   const QPointF & center = KJSEmbed::extractValue<const QPointF &>(exec, args, 0);
+   qreal radius = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   const QPointF & focalPoint = KJSEmbed::extractValue<const QPointF &>(exec, args, QPointF());
        return new KJSEmbed::QRadialGradientBinding(exec, QRadialGradient(center, radius, focalPoint))
    }
    if (args.size() == 5 )
    {
-       qreal cx = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-       qreal cy = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-       qreal radius = (KJSEmbed::extractObject<qreal>(exec, args, 2, 0));
-       qreal fx = (KJSEmbed::extractObject<qreal>(exec, args, 3, 0));
-       qreal fy = (KJSEmbed::extractObject<qreal>(exec, args, 4, 0));
+   qreal cx = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal cy = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal radius = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal fx = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal fy = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
        return new KJSEmbed::QRadialGradientBinding(exec, QRadialGradient(cx, cy, radius, fx, fy))
    }
 END_CTOR

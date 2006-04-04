@@ -47,12 +47,14 @@ END_VARIANT_METHOD
 
 // void setWidth(int w)
 START_VARIANT_METHOD( setWidth, QSize )
-   int w = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int w = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setWidth(w);
 END_VARIANT_METHOD
 
 // void setHeight(int h)
 START_VARIANT_METHOD( setHeight, QSize )
-   int h = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int h = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setHeight(h);
 END_VARIANT_METHOD
 
 // void transpose()
@@ -63,25 +65,25 @@ END_VARIANT_METHOD
 
 // void scale(int w, int h, Qt::AspectRatioMode mode)
 START_VARIANT_METHOD( scale, QSize )
-   int w = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-   int h = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
+   int w = KJSEmbed::extractValue<int>(exec, args, 0);
+   int h = KJSEmbed::extractValue<int>(exec, args, 0);
    Qt::AspectRatioMode mode = static_cast<Qt::AspectRatioMode>(KJSEmbed::extractInt(exec, args, 2, 0));
 END_VARIANT_METHOD
 
 // void scale(const QSize &s, Qt::AspectRatioMode mode)
 START_VARIANT_METHOD( scale, QSize )
-   const QSize & s = (KJSEmbed::extractObject<const QSize &>(exec, args, 0, 0));
+   const QSize & s = KJSEmbed::extractValue<const QSize &>(exec, args, 0);
    Qt::AspectRatioMode mode = static_cast<Qt::AspectRatioMode>(KJSEmbed::extractInt(exec, args, 1, 0));
 END_VARIANT_METHOD
 
 // QSize expandedTo(const QSize &) const 
 START_VARIANT_METHOD( expandedTo, QSize )
-   const QSize &  = (KJSEmbed::extractObject<const QSize &>(exec, args, 0, 0));
+   const QSize & arg0 = KJSEmbed::extractValue<const QSize &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QSize boundedTo(const QSize &) const 
 START_VARIANT_METHOD( boundedTo, QSize )
-   const QSize &  = (KJSEmbed::extractObject<const QSize &>(exec, args, 0, 0));
+   const QSize & arg0 = KJSEmbed::extractValue<const QSize &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // int & rwidth()
@@ -109,8 +111,8 @@ START_CTOR( QSize, QSize, 0 )
    }
    if (args.size() == 2 )
    {
-       int w = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
-       int h = (KJSEmbed::extractObject<int>(exec, args, 1, 0));
+   int w = KJSEmbed::extractValue<int>(exec, args, 0);
+   int h = KJSEmbed::extractValue<int>(exec, args, 0);
        return new KJSEmbed::QSizeBinding(exec, QSize(w, h))
    }
 END_CTOR

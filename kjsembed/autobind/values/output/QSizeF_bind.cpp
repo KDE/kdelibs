@@ -47,12 +47,14 @@ END_VARIANT_METHOD
 
 // void setWidth(qreal w)
 START_VARIANT_METHOD( setWidth, QSizeF )
-   qreal w = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal w = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setWidth(w);
 END_VARIANT_METHOD
 
 // void setHeight(qreal h)
 START_VARIANT_METHOD( setHeight, QSizeF )
-   qreal h = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal h = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setHeight(h);
 END_VARIANT_METHOD
 
 // void transpose()
@@ -63,25 +65,25 @@ END_VARIANT_METHOD
 
 // void scale(qreal w, qreal h, Qt::AspectRatioMode mode)
 START_VARIANT_METHOD( scale, QSizeF )
-   qreal w = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-   qreal h = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
+   qreal w = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal h = KJSEmbed::extractObject<qreal>(exec, args, 1, 0);
    Qt::AspectRatioMode mode = static_cast<Qt::AspectRatioMode>(KJSEmbed::extractInt(exec, args, 2, 0));
 END_VARIANT_METHOD
 
 // void scale(const QSizeF &s, Qt::AspectRatioMode mode)
 START_VARIANT_METHOD( scale, QSizeF )
-   const QSizeF & s = (KJSEmbed::extractObject<const QSizeF &>(exec, args, 0, 0));
+   const QSizeF & s = KJSEmbed::extractValue<const QSizeF &>(exec, args, 0);
    Qt::AspectRatioMode mode = static_cast<Qt::AspectRatioMode>(KJSEmbed::extractInt(exec, args, 1, 0));
 END_VARIANT_METHOD
 
 // QSizeF expandedTo(const QSizeF &) const 
 START_VARIANT_METHOD( expandedTo, QSizeF )
-   const QSizeF &  = (KJSEmbed::extractObject<const QSizeF &>(exec, args, 0, 0));
+   const QSizeF & arg0 = KJSEmbed::extractValue<const QSizeF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // QSizeF boundedTo(const QSizeF &) const 
 START_VARIANT_METHOD( boundedTo, QSizeF )
-   const QSizeF &  = (KJSEmbed::extractObject<const QSizeF &>(exec, args, 0, 0));
+   const QSizeF & arg0 = KJSEmbed::extractValue<const QSizeF &>(exec, args, 0);
 END_VARIANT_METHOD
 
 // qreal & rwidth()
@@ -115,13 +117,13 @@ START_CTOR( QSizeF, QSizeF, 0 )
    }
    if (args.size() == 1 )
    {
-       const QSize & sz = (KJSEmbed::extractObject<const QSize &>(exec, args, 0, 0));
+   const QSize & sz = KJSEmbed::extractValue<const QSize &>(exec, args, 0);
        return new KJSEmbed::QSizeFBinding(exec, QSizeF(sz))
    }
    if (args.size() == 2 )
    {
-       qreal w = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-       qreal h = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
+   qreal w = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal h = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
        return new KJSEmbed::QSizeFBinding(exec, QSizeF(w, h))
    }
 END_CTOR

@@ -23,7 +23,8 @@ END_VARIANT_METHOD
 
 // void setStyle(Qt::BrushStyle)
 START_VARIANT_METHOD( setStyle, QBrush )
-   Qt::BrushStyle  = static_cast<Qt::BrushStyle>(KJSEmbed::extractInt(exec, args, 0, 0));
+   Qt::BrushStyle arg0 = static_cast<Qt::BrushStyle>(KJSEmbed::extractInt(exec, args, 0, 0));
+    value.setStyle(arg0);
 END_VARIANT_METHOD
 
 // QPixmap texture() const 
@@ -34,7 +35,8 @@ END_VARIANT_METHOD
 
 // void setTexture(const QPixmap &pixmap)
 START_VARIANT_METHOD( setTexture, QBrush )
-   const QPixmap & pixmap = (KJSEmbed::extractObject<const QPixmap &>(exec, args, 0, 0));
+   const QPixmap & pixmap = KJSEmbed::extractValue<const QPixmap &>(exec, args, 0);
+    value.setTexture(pixmap);
 END_VARIANT_METHOD
 
 // const QColor & color() const 
@@ -45,12 +47,14 @@ END_VARIANT_METHOD
 
 // void setColor(const QColor &color)
 START_VARIANT_METHOD( setColor, QBrush )
-   const QColor & color = (KJSEmbed::extractObject<const QColor &>(exec, args, 0, 0));
+   const QColor & color = KJSEmbed::extractValue<const QColor &>(exec, args, 0);
+    value.setColor(color);
 END_VARIANT_METHOD
 
 // void setColor(Qt::GlobalColor color)
 START_VARIANT_METHOD( setColor, QBrush )
    Qt::GlobalColor color = static_cast<Qt::GlobalColor>(KJSEmbed::extractInt(exec, args, 0, 0));
+    value.setColor(color);
 END_VARIANT_METHOD
 
 // const QGradient * gradient() const 
@@ -78,46 +82,46 @@ START_CTOR( QBrush, QBrush, 0 )
    }
    if (args.size() == 1 )
    {
-       Qt::BrushStyle bs = static_cast<Qt::BrushStyle>(KJSEmbed::extractInt(exec, args, 0, 0));
+   Qt::BrushStyle bs = static_cast<Qt::BrushStyle>(KJSEmbed::extractInt(exec, args, 0, 0));
        return new KJSEmbed::QBrushBinding(exec, QBrush(bs))
    }
    if (args.size() == 2 )
    {
-       const QColor & color = (KJSEmbed::extractObject<const QColor &>(exec, args, 0, 0));
-       Qt::BrushStyle bs = static_cast<Qt::BrushStyle>(KJSEmbed::extractInt(exec, args, 1, Qt::SolidPattern));
+   const QColor & color = KJSEmbed::extractValue<const QColor &>(exec, args, 0);
+   Qt::BrushStyle bs = static_cast<Qt::BrushStyle>(KJSEmbed::extractInt(exec, args, 0, Qt::SolidPattern));
        return new KJSEmbed::QBrushBinding(exec, QBrush(color, bs))
    }
    if (args.size() == 2 )
    {
-       Qt::GlobalColor color = static_cast<Qt::GlobalColor>(KJSEmbed::extractInt(exec, args, 0, 0));
-       Qt::BrushStyle bs = static_cast<Qt::BrushStyle>(KJSEmbed::extractInt(exec, args, 1, Qt::SolidPattern));
+   Qt::GlobalColor color = static_cast<Qt::GlobalColor>(KJSEmbed::extractInt(exec, args, 0, 0));
+   Qt::BrushStyle bs = static_cast<Qt::BrushStyle>(KJSEmbed::extractInt(exec, args, 0, Qt::SolidPattern));
        return new KJSEmbed::QBrushBinding(exec, QBrush(color, bs))
    }
    if (args.size() == 2 )
    {
-       const QColor & color = (KJSEmbed::extractObject<const QColor &>(exec, args, 0, 0));
-       const QPixmap & pixmap = (KJSEmbed::extractObject<const QPixmap &>(exec, args, 1, 0));
+   const QColor & color = KJSEmbed::extractValue<const QColor &>(exec, args, 0);
+   const QPixmap & pixmap = KJSEmbed::extractValue<const QPixmap &>(exec, args, 0);
        return new KJSEmbed::QBrushBinding(exec, QBrush(color, pixmap))
    }
    if (args.size() == 2 )
    {
-       Qt::GlobalColor color = static_cast<Qt::GlobalColor>(KJSEmbed::extractInt(exec, args, 0, 0));
-       const QPixmap & pixmap = (KJSEmbed::extractObject<const QPixmap &>(exec, args, 1, 0));
+   Qt::GlobalColor color = static_cast<Qt::GlobalColor>(KJSEmbed::extractInt(exec, args, 0, 0));
+   const QPixmap & pixmap = KJSEmbed::extractValue<const QPixmap &>(exec, args, 0);
        return new KJSEmbed::QBrushBinding(exec, QBrush(color, pixmap))
    }
    if (args.size() == 1 )
    {
-       const QPixmap & pixmap = (KJSEmbed::extractObject<const QPixmap &>(exec, args, 0, 0));
+   const QPixmap & pixmap = KJSEmbed::extractValue<const QPixmap &>(exec, args, 0);
        return new KJSEmbed::QBrushBinding(exec, QBrush(pixmap))
    }
    if (args.size() == 1 )
    {
-       const QBrush & brush = (KJSEmbed::extractObject<const QBrush &>(exec, args, 0, 0));
+   const QBrush & brush = KJSEmbed::extractValue<const QBrush &>(exec, args, 0);
        return new KJSEmbed::QBrushBinding(exec, QBrush(brush))
    }
    if (args.size() == 1 )
    {
-       const QGradient & gradient = (KJSEmbed::extractObject<const QGradient &>(exec, args, 0, 0));
+   const QGradient & gradient = KJSEmbed::extractObject<const QGradient &>(exec, args, 0, 0);
        return new KJSEmbed::QBrushBinding(exec, QBrush(gradient))
    }
 END_CTOR

@@ -23,7 +23,8 @@ END_VARIANT_METHOD
 
 // void setStyle(Qt::PenStyle)
 START_VARIANT_METHOD( setStyle, QPen )
-   Qt::PenStyle  = static_cast<Qt::PenStyle>(KJSEmbed::extractInt(exec, args, 0, 0));
+   Qt::PenStyle arg0 = static_cast<Qt::PenStyle>(KJSEmbed::extractInt(exec, args, 0, 0));
+    value.setStyle(arg0);
 END_VARIANT_METHOD
 
 // QVector< qreal > dashPattern() const 
@@ -34,7 +35,8 @@ END_VARIANT_METHOD
 
 // void setDashPattern(const QVector< qreal > &pattern)
 START_VARIANT_METHOD( setDashPattern, QPen )
-   const QVector< qreal > & pattern = (KJSEmbed::extractObject<const QVector< qreal > &>(exec, args, 0, 0));
+   const QVector< qreal > & pattern = KJSEmbed::extractObject<const QVector< qreal > &>(exec, args, 0, 0);
+    value.setDashPattern(pattern);
 END_VARIANT_METHOD
 
 // qreal miterLimit() const 
@@ -45,7 +47,8 @@ END_VARIANT_METHOD
 
 // void setMiterLimit(qreal limit)
 START_VARIANT_METHOD( setMiterLimit, QPen )
-   qreal limit = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal limit = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setMiterLimit(limit);
 END_VARIANT_METHOD
 
 // qreal widthF() const 
@@ -56,7 +59,8 @@ END_VARIANT_METHOD
 
 // void setWidthF(qreal width)
 START_VARIANT_METHOD( setWidthF, QPen )
-   qreal width = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal width = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setWidthF(width);
 END_VARIANT_METHOD
 
 // int width() const 
@@ -67,7 +71,8 @@ END_VARIANT_METHOD
 
 // void setWidth(int width)
 START_VARIANT_METHOD( setWidth, QPen )
-   int width = (KJSEmbed::extractObject<int>(exec, args, 0, 0));
+   int width = KJSEmbed::extractValue<int>(exec, args, 0);
+    value.setWidth(width);
 END_VARIANT_METHOD
 
 // QColor color() const 
@@ -78,7 +83,8 @@ END_VARIANT_METHOD
 
 // void setColor(const QColor &color)
 START_VARIANT_METHOD( setColor, QPen )
-   const QColor & color = (KJSEmbed::extractObject<const QColor &>(exec, args, 0, 0));
+   const QColor & color = KJSEmbed::extractValue<const QColor &>(exec, args, 0);
+    value.setColor(color);
 END_VARIANT_METHOD
 
 // QBrush brush() const 
@@ -89,7 +95,8 @@ END_VARIANT_METHOD
 
 // void setBrush(const QBrush &brush)
 START_VARIANT_METHOD( setBrush, QPen )
-   const QBrush & brush = (KJSEmbed::extractObject<const QBrush &>(exec, args, 0, 0));
+   const QBrush & brush = KJSEmbed::extractValue<const QBrush &>(exec, args, 0);
+    value.setBrush(brush);
 END_VARIANT_METHOD
 
 // bool isSolid() const 
@@ -107,6 +114,7 @@ END_VARIANT_METHOD
 // void setCapStyle(Qt::PenCapStyle pcs)
 START_VARIANT_METHOD( setCapStyle, QPen )
    Qt::PenCapStyle pcs = static_cast<Qt::PenCapStyle>(KJSEmbed::extractInt(exec, args, 0, 0));
+    value.setCapStyle(pcs);
 END_VARIANT_METHOD
 
 // Qt::PenJoinStyle joinStyle() const 
@@ -118,6 +126,7 @@ END_VARIANT_METHOD
 // void setJoinStyle(Qt::PenJoinStyle pcs)
 START_VARIANT_METHOD( setJoinStyle, QPen )
    Qt::PenJoinStyle pcs = static_cast<Qt::PenJoinStyle>(KJSEmbed::extractInt(exec, args, 0, 0));
+    value.setJoinStyle(pcs);
 END_VARIANT_METHOD
 
 // bool isDetached()
@@ -139,26 +148,26 @@ START_CTOR( QPen, QPen, 0 )
    }
    if (args.size() == 1 )
    {
-       Qt::PenStyle  = static_cast<Qt::PenStyle>(KJSEmbed::extractInt(exec, args, 0, 0));
+   Qt::PenStyle arg0 = static_cast<Qt::PenStyle>(KJSEmbed::extractInt(exec, args, 0, 0));
        return new KJSEmbed::QPenBinding(exec, QPen())
    }
    if (args.size() == 1 )
    {
-       const QColor & color = (KJSEmbed::extractObject<const QColor &>(exec, args, 0, 0));
+   const QColor & color = KJSEmbed::extractValue<const QColor &>(exec, args, 0);
        return new KJSEmbed::QPenBinding(exec, QPen(color))
    }
    if (args.size() == 5 )
    {
-       const QBrush & brush = (KJSEmbed::extractObject<const QBrush &>(exec, args, 0, 0));
-       qreal width = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
-       Qt::PenStyle s = static_cast<Qt::PenStyle>(KJSEmbed::extractInt(exec, args, 2, Qt::SolidLine));
-       Qt::PenCapStyle c = static_cast<Qt::PenCapStyle>(KJSEmbed::extractInt(exec, args, 3, Qt::SquareCap));
-       Qt::PenJoinStyle j = static_cast<Qt::PenJoinStyle>(KJSEmbed::extractInt(exec, args, 4, Qt::BevelJoin));
+   const QBrush & brush = KJSEmbed::extractValue<const QBrush &>(exec, args, 0);
+   qreal width = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   Qt::PenStyle s = static_cast<Qt::PenStyle>(KJSEmbed::extractInt(exec, args, 0, Qt::SolidLine));
+   Qt::PenCapStyle c = static_cast<Qt::PenCapStyle>(KJSEmbed::extractInt(exec, args, 0, Qt::SquareCap));
+   Qt::PenJoinStyle j = static_cast<Qt::PenJoinStyle>(KJSEmbed::extractInt(exec, args, 0, Qt::BevelJoin));
        return new KJSEmbed::QPenBinding(exec, QPen(brush, width, s, c, j))
    }
    if (args.size() == 1 )
    {
-       const QPen & pen = (KJSEmbed::extractObject<const QPen &>(exec, args, 0, 0));
+   const QPen & pen = KJSEmbed::extractValue<const QPen &>(exec, args, 0);
        return new KJSEmbed::QPenBinding(exec, QPen(pen))
    }
 END_CTOR

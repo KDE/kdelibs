@@ -35,12 +35,14 @@ END_VARIANT_METHOD
 
 // void setX(qreal x)
 START_VARIANT_METHOD( setX, QPointF )
-   qreal x = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal x = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setX(x);
 END_VARIANT_METHOD
 
 // void setY(qreal y)
 START_VARIANT_METHOD( setY, QPointF )
-   qreal y = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
+   qreal y = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+    value.setY(y);
 END_VARIANT_METHOD
 
 // qreal & rx()
@@ -74,13 +76,13 @@ START_CTOR( QPointF, QPointF, 0 )
    }
    if (args.size() == 1 )
    {
-       const QPoint & p = (KJSEmbed::extractObject<const QPoint &>(exec, args, 0, 0));
+   const QPoint & p = KJSEmbed::extractValue<const QPoint &>(exec, args, 0);
        return new KJSEmbed::QPointFBinding(exec, QPointF(p))
    }
    if (args.size() == 2 )
    {
-       qreal xpos = (KJSEmbed::extractObject<qreal>(exec, args, 0, 0));
-       qreal ypos = (KJSEmbed::extractObject<qreal>(exec, args, 1, 0));
+   qreal xpos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
+   qreal ypos = KJSEmbed::extractObject<qreal>(exec, args, 0, 0);
        return new KJSEmbed::QPointFBinding(exec, QPointF(xpos, ypos))
    }
 END_CTOR
