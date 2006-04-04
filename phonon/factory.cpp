@@ -44,6 +44,8 @@
 
 static KStaticDeleter<Phonon::Factory> sd;
 
+#define PHONON_LOAD_BACKEND_GLOBAL 1
+
 namespace Phonon
 {
 class Factory::Private
@@ -65,7 +67,15 @@ class Factory::Private
 			for( ; it != end; ++it )
 			{
 				KService::Ptr ptr = *it;
+#ifdef PHONON_LOAD_BACKEND_GLOBAL
+				// This code is in here temporarily until NMM gets fixed.
+				// Currently the NMM backend will fail with undefined symbols if
+				// the backend is not loaded with global symbol resolution
+				KLibrary* library = KLibLoader::self()->globalLibrary( QFile::encodeName( ptr->library() ) );
+				KLibFactory * factory = library->factory();
+#else
 				KLibFactory * factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
+#endif
 				if( factory )
 				{
 					backend = ( Ifaces::Backend* )factory->create( 0, "Multimedia Backend", "Phonon::Ifaces::Backend" );
