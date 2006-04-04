@@ -102,8 +102,8 @@ void KEditListBox::init( bool checkAtEntering, Buttons buttons,
 
     QWidget *editingWidget = representationWidget ?
                              representationWidget : m_lineEdit;
-    grid->addWidget(editingWidget,1,1,0,1);
-    grid->addWidget(m_listView, 2, 6, 0, 0);
+    grid->addWidget(editingWidget,1,0,1,2);
+    grid->addWidget(m_listView, 2, 0, 4, 1);
 
     setButtons( buttons );
 
