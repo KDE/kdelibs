@@ -989,7 +989,7 @@ public:
      * On the opposite, if the main action can be clicked, it can only happen
      * in a toolbar: in a menu, the parent of a submenu can't be activated.
      * To get a "normal" menu item when plugged a menu (and no submenu)
-     * use KToolBarMenuAction.
+     * use KToolBarPopupAction.
      */
     void setDelayed(bool delayed);
 
