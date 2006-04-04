@@ -31,8 +31,7 @@
 #include <qbytearray.h>
 #include <qdir.h>
 #include <qfile.h>
-#include <qplatformdefs.h>
-#include <kde_file.h>	// KDE_fdopen
+#include <kde_file.h>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -191,9 +190,9 @@ bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
 
 int NetRC::openf( const QString& f )
 {
-  QT_STATBUF sbuff;
+  KDE_struct_stat sbuff;
   QByteArray ef = QFile::encodeName(f);
-  if ( QT_STAT(ef, &sbuff) != 0 )
+  if ( KDE_stat(ef, &sbuff) != 0 )
     return -1;
 
   // Security check!!
@@ -201,7 +200,7 @@ int NetRC::openf( const QString& f )
        sbuff.st_uid != geteuid() )
     return -1;
 
-  return QT_OPEN( ef, O_RDONLY );
+  return KDE_open( ef, O_RDONLY );
 }
 
 QString NetRC::extract( const char* buf, const char* key, int& pos )

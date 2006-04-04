@@ -24,16 +24,16 @@
 #include "kmimemagic.h"
 
 #include <qfile.h>
-#include <qplatformdefs.h>
 
 #include <kdebug.h>
 #include <kapplication.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
+#include <kde_file.h>
 #include <assert.h>
 
-static int fsmagic(struct config_rec* conf, const char *fn, QT_STATBUF *sb);
+static int fsmagic(struct config_rec* conf, const char *fn, KDE_struct_stat *sb);
 static void process(struct config_rec* conf,  const QString &);
 static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes);
 static int tagmagic(unsigned char *buf, int nbytes);
@@ -1359,7 +1359,7 @@ void process(struct config_rec* conf, const QString & fn)
 {
 	int fd = 0;
 	unsigned char buf[HOWMANY + 1];	/* one extra for terminating '\0' */
-	QT_STATBUF sb;
+	KDE_struct_stat sb;
 	int nbytes = 0;         /* number of bytes read from a datafile */
         int tagbytes = 0;       /* size of prefixed tag */
         QByteArray fileName = QFile::encodeName( fn );
@@ -1371,7 +1371,7 @@ void process(struct config_rec* conf, const QString & fn)
 		//resultBuf += "\n";
 		return;
 	}
-	if ((fd = QT_OPEN(fileName.constData(), O_RDONLY)) < 0) {
+	if ((fd = KDE_open(fileName.constData(), O_RDONLY)) < 0) {
 		/* We can't open it, but we were able to stat it. */
 		/*
 		 * if (sb.st_mode & 0002) addResult("writable, ");
@@ -1443,7 +1443,7 @@ static void tryit(struct config_rec* conf, unsigned char *buf, int nb)
 }
 
 static int
-fsmagic(struct config_rec* conf, const char *fn, QT_STATBUF *sb)
+fsmagic(struct config_rec* conf, const char *fn, KDE_struct_stat *sb)
 {
     int ret = 0;
 
@@ -1451,7 +1451,7 @@ fsmagic(struct config_rec* conf, const char *fn, QT_STATBUF *sb)
      * Fstat is cheaper but fails for files you don't have read perms on.
      * On 4.2BSD and similar systems, use lstat() to identify symlinks.
      */
-    ret = QT_LSTAT(fn, sb);  /* don't merge into if; see "ret =" above */
+    ret = KDE_lstat(fn, sb);  /* don't merge into if; see "ret =" above */
 
     if (ret) {
         return 1;
@@ -1484,7 +1484,7 @@ fsmagic(struct config_rec* conf, const char *fn, QT_STATBUF *sb)
     {
         char buf[BUFSIZ + BUFSIZ + 4];
         register int nch;
-        QT_STATBUF tstatbuf;
+        KDE_struct_stat tstatbuf;
 
         if ((nch = readlink(fn, buf, BUFSIZ - 1)) <= 0) {
             conf->resultBuf = MIME_INODE_LINK;
@@ -1494,7 +1494,7 @@ fsmagic(struct config_rec* conf, const char *fn, QT_STATBUF *sb)
         buf[nch] = '\0'; /* readlink(2) forgets this */
         /* If broken symlink, say so and quit early. */
         if (*buf == '/') {
-            if (QT_STAT(buf, &tstatbuf) < 0) {
+            if (KDE_stat(buf, &tstatbuf) < 0) {
                 conf->resultBuf = MIME_INODE_LINK;
                 //conf->resultBuf += "\nbroken";
                 return 1;
@@ -1514,7 +1514,7 @@ fsmagic(struct config_rec* conf, const char *fn, QT_STATBUF *sb)
                 strcat(buf2, buf);
                 tmp = buf2;
             }
-            if (QT_STAT(tmp, &tstatbuf) < 0) {
+            if (KDE_stat(tmp, &tstatbuf) < 0) {
                 conf->resultBuf = MIME_INODE_LINK;
                 //conf->resultBuf += "\nbroken";
                 return 1;

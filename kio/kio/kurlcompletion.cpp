@@ -39,7 +39,6 @@
 #include <qtextstream.h>
 #include <qthread.h>
 #include <qevent.h>
-#include <qplatformdefs.h>
 
 #include <kapplication.h>
 #include <kauthorized.h>
@@ -49,6 +48,7 @@
 #include <kprotocolinfo.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kde_file.h>
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -256,9 +256,9 @@ void DirectoryListThread::run()
 			if ( m_filter.isEmpty() || file.startsWith( m_filter ) ) {
 
 				if ( m_onlyExe || m_onlyDir || m_appendSlashToDir ) {
-					QT_STATBUF sbuff;
+					KDE_struct_stat sbuff;
 
-					if ( QT_STAT( dirEntry->d_name, &sbuff ) == 0 ) {
+					if ( KDE_stat( dirEntry->d_name, &sbuff ) == 0 ) {
 
 						// Verify executable
 
@@ -1276,11 +1276,11 @@ void KUrlCompletion::postProcessMatch( QString *pMatch ) const
 
 //			kDebug() << "postProcess: stating " << copy << endl;
 
-			QT_STATBUF sbuff;
+			KDE_struct_stat sbuff;
 
 			QByteArray file = QFile::encodeName( copy );
 
-			if ( QT_STAT( file.data(), &sbuff ) == 0 ) {
+			if ( KDE_stat( file.data(), &sbuff ) == 0 ) {
 				if ( S_ISDIR ( sbuff.st_mode ) )
 					pMatch->append( QLatin1Char( '/' ) );
 			}

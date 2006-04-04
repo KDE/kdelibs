@@ -31,7 +31,6 @@
 
 #include <qwidget.h>
 #include <qpointer.h>
-#include <qplatformdefs.h>
 
 #include "kuserprofile.h"
 #include "kmimetype.h"
@@ -65,6 +64,7 @@
 #include <kmacroexpander.h>
 #include <kshell.h>
 #include <QTextDocument>
+#include <kde_file.h>
 
 #ifdef Q_WS_X11
 #include <kwin.h>
@@ -827,8 +827,8 @@ void KRun::init()
   {
     if ( m_mode == 0 )
     {
-      QT_STATBUF buff;
-      if ( QT_STAT( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
+      KDE_struct_stat buff;
+      if ( KDE_stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
         d->m_showingError = true;
         KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ,  Qt::escape(m_strURL.prettyURL()) ) );

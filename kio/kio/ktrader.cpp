@@ -16,11 +16,15 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "ktrader.h"
 #include "ktraderparsetree.h"
 
-#include <q3tl.h>
 #include <qbuffer.h>
+#include <q3tl.h>
 
 #include <kuserprofile.h>
 #include <kstandarddirs.h>

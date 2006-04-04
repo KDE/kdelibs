@@ -42,7 +42,6 @@ extern "C" {
 }
 #include <qtimer.h>
 #include <qfile.h>
-#include <qplatformdefs.h>
 
 #include <kapplication.h>
 #include <kauthorized.h>
@@ -53,6 +52,7 @@ extern "C" {
 #include <kdialog.h>
 #include <kmessagebox.h>
 #include <kdatastream.h>
+#include <kde_file.h>
 
 #include <errno.h>
 
@@ -3368,8 +3368,8 @@ void CopyJob::setNextDirAttribute()
             const KUrl& url = (*it).uDest;
             if ( url.isLocalFile() && (*it).mtime != (time_t)-1 ) {
                 const QByteArray path = QFile::encodeName( url.path() );
-                QT_STATBUF statbuf;
-                if (QT_LSTAT(path, &statbuf) == 0) {
+                KDE_struct_stat statbuf;
+                if (KDE_lstat(path, &statbuf) == 0) {
                     struct utimbuf utbuf;
                     utbuf.actime = statbuf.st_atime; // access time, unchanged
                     utbuf.modtime = (*it).mtime; // modification time
@@ -3565,15 +3565,15 @@ void CopyJob::slotResultRenaming( Job* job )
                 time_t mtimeSrc = (time_t) -1;
                 time_t mtimeDest = (time_t) -1;
 
-                QT_STATBUF stat_buf;
+                KDE_struct_stat stat_buf;
                 if ( m_currentSrcURL.isLocalFile() &&
-                    QT_STAT(QFile::encodeName(m_currentSrcURL.path()), &stat_buf) == 0 ) {
+                    KDE_stat(QFile::encodeName(m_currentSrcURL.path()), &stat_buf) == 0 ) {
                     sizeSrc = stat_buf.st_size;
                     ctimeSrc = stat_buf.st_ctime;
                     mtimeSrc = stat_buf.st_mtime;
                 }
                 if ( dest.isLocalFile() &&
-                    QT_STAT(QFile::encodeName(dest.path()), &stat_buf) == 0 ) {
+                    KDE_stat(QFile::encodeName(dest.path()), &stat_buf) == 0 ) {
                     sizeDest = stat_buf.st_size;
                     ctimeDest = stat_buf.st_ctime;
                     mtimeDest = stat_buf.st_mtime;

@@ -39,7 +39,6 @@
 #include <qfileinfo.h>
 #include <qtextcodec.h>
 #include <qtextstream.h>
-#include <qplatformdefs.h>
 
 #include "kconfigbackend.h"
 
@@ -256,7 +255,7 @@ KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
    {
       if (d->globalLockFile)
          return d->globalLockFile;
-      
+
       if (!mGlobalFileName.isEmpty())
       {
          d->globalLockFile = new KLockFile(mGlobalFileName+".lock");
@@ -267,7 +266,7 @@ KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
    {
       if (d->localLockFile)
          return d->localLockFile;
-      
+
       if (!mLocalFileName.isEmpty())
       {
          d->localLockFile = new KLockFile(mLocalFileName+".lock");
@@ -351,7 +350,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
       QFile aConfigFile( it.previous() );
       if (!aConfigFile.open( QIODevice::ReadOnly ))
 	   continue;
-      parseSingleConfigFile( aConfigFile, 0L, true, 
+      parseSingleConfigFile( aConfigFile, 0L, true,
                              (aConfigFile.fileName() != mGlobalFileName) );
       aConfigFile.close();
       if (bFileImmutable)
@@ -464,7 +463,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       act.sa_flags = SA_ONESHOT;
 #else
       act.sa_flags = SA_RESETHAND;
-#endif      
+#endif
       sigaction( SIGBUS, &act, &mmap_old_sigact );
 
       if (sigsetjmp (mmap_jmpbuf, 1))
@@ -510,7 +509,7 @@ qWarning("SIGBUS while reading %s", rFile.fileName().toLatin1().data());
       if (*s == '[')  //group
       {
          // In a group [[ and ]] have a special meaning
-         while ((s < eof) && (*s != '\n')) 
+         while ((s < eof) && (*s != '\n'))
          {
             if (*s == ']')
             {
@@ -749,12 +748,12 @@ void KConfigINIBackEnd::sync(bool bMerge)
          if (lf && lf->isLocked())
             lf = 0; // Already locked, we don't need to lock/unlock again
 
-         if (lf) 
+         if (lf)
          {
             lf->lock( KLockFile::ForceFlag );
             // But what if the locking failed? Ignore it for now...
          }
-         
+
          QFileInfo info(mLocalFileName);
          if ((d->localLastSize == info.size()) &&
              (d->localLastModified == info.lastModified()))
@@ -771,13 +770,13 @@ void KConfigINIBackEnd::sync(bool bMerge)
       }
 
       bEntriesLeft = writeConfigFile( mLocalFileName, false, mergeLocalFile );
-      
+
       // Only if we didn't have to merge anything can we use our in-memory state
       // the next time around. Otherwise the config-file may contain entries
-      // that are different from our in-memory state which means we will have to 
-      // do a merge from then on. 
-      // We do not automatically update the in-memory state with the on-disk 
-      // state when writing the config to disk. We only do so when 
+      // that are different from our in-memory state which means we will have to
+      // do a merge from then on.
+      // We do not automatically update the in-memory state with the on-disk
+      // state when writing the config to disk. We only do so when
       // KCOnfig::reparseConfiguration() is called.
       // For KDE 4.0 we may wish to reconsider that.
       if (!mergeLocalFile)
@@ -801,7 +800,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
       if (lf && lf->isLocked())
          lf = 0; // Already locked, we don't need to lock/unlock again
 
-      if (lf) 
+      if (lf)
       {
          lf->lock( KLockFile::ForceFlag );
          // But what if the locking failed? Ignore it for now...
@@ -979,8 +978,8 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
   int fileMode = -1;
   bool createNew = true;
 
-  QT_STATBUF buf;
-  if (QT_STAT(QFile::encodeName(filename), &buf) == 0)
+  KDE_struct_stat buf;
+  if (KDE_stat(QFile::encodeName(filename), &buf) == 0)
   {
      if (buf.st_uid == getuid())
      {
@@ -1022,7 +1021,7 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
   {
      // Open existing file.
      // We use open() to ensure that we call without O_CREAT.
-     int fd = QT_OPEN( QFile::encodeName(filename), O_WRONLY | O_TRUNC );
+     int fd = KDE_open( QFile::encodeName(filename), O_WRONLY | O_TRUNC );
      if (fd < 0)
      {
         return bEntriesLeft;

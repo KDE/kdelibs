@@ -18,8 +18,11 @@
    Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#include <q3cstring.h>
-#include <q3ptrlist.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <qlist.h>
 #include <qtextcodec.h>
 
 #include <kdebug.h>
@@ -67,7 +70,7 @@ public:
 };
 
 /************************* SessionData::AuthDataList ****************************/
-class SessionData::AuthDataList : public Q3PtrList<SessionData::AuthData>
+class SessionData::AuthDataList : public QList<SessionData::AuthData*>
 {
 public:
   AuthDataList();
@@ -92,7 +95,7 @@ SessionData::AuthDataList::AuthDataList()
 #ifdef Q_OS_UNIX
   m_kdesuClient = new KDEsuClient;
 #endif
-  setAutoDelete(true);
+  qDeleteAll(*this);
 }
 
 SessionData::AuthDataList::~AuthDataList()
@@ -106,10 +109,10 @@ SessionData::AuthDataList::~AuthDataList()
 
 void SessionData::AuthDataList::addData( SessionData::AuthData* d )
 {
-  Q3PtrListIterator<SessionData::AuthData> it ( *this );
-  for ( ; it.current(); ++it )
+  QList<SessionData::AuthData*>::iterator it;
+  for ( it = begin() ; it != end(); ++it )
   {
-    if ( it.current()->isKeyMatch( d->key ) )
+    if ( (*it)->isKeyMatch( d->key ) )
         return;
   }
   registerAuthData( d );
@@ -118,13 +121,13 @@ void SessionData::AuthDataList::addData( SessionData::AuthData* d )
 
 void SessionData::AuthDataList::removeData( const QByteArray& gkey )
 {
-  Q3PtrListIterator<SessionData::AuthData> it( *this );
-  for( ; it.current(); ++it )
+  QList<SessionData::AuthData*>::iterator it;
+  for ( it = begin() ; it != end(); ++it )
   {
-    if ( it.current()->isGroupMatch(gkey) &&  pingCacheDaemon() )
+    if ( (*it)->isGroupMatch(gkey) &&  pingCacheDaemon() )
     {
-        unregisterAuthData( it.current() );
-        remove( it.current() );
+        unregisterAuthData( (*it) );
+        erase( it );
     }
   }
 }
@@ -198,9 +201,9 @@ void SessionData::AuthDataList::purgeCachedData()
 {
   if ( !isEmpty() && pingCacheDaemon() )
   {
-    Q3PtrListIterator<SessionData::AuthData> it( *this );
-    for ( ; it.current(); ++it )
-        unregisterAuthData( it.current() );
+    QList<SessionData::AuthData*>::iterator it;
+    for ( it = begin() ; it != end(); ++it )
+        unregisterAuthData( (*it) );
   }
 }
 
