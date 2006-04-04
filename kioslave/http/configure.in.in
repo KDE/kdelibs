@@ -11,7 +11,7 @@ AC_ARG_WITH(gssapi,
 
 if test "x$with_gssapi" = "xCHECK" ; then
   with_gssapi=NOTFOUND
-  KDE_FIND_PATH(krb5-config, KRB5_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/bin /usr/local/bin /opt/local/bin], [
+  KDE_FIND_PATH(krb5-config, KRB5_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/bin /usr/local/bin /opt/local/bin /usr/lib/mit/bin], [
     AC_MSG_WARN([Could not find krb5-config])
   ])
 
