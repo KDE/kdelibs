@@ -17,8 +17,9 @@
  *  widget flags set to 'f'
  */
 Form1::Form1( QWidget* parent )
-    : QWidget( parent, Qt::WDestructiveClose )
+    : QWidget( parent )
 {
+    setAttribute( Qt::WA_DeleteOnClose );
     setObjectName( "Form1" );
     resize( 559, 465 );
     setWindowTitle( "Form1" );

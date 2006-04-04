@@ -235,7 +235,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      *
      * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
      *        IconList.
-     * @param f widget flags, by default it is just set to WStyle_DialogBorder.
+     * @param f widget flags, by default it is just set to MSWindowsFixedSizeDialogHint.
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
      * @param parent Parent of the dialog.

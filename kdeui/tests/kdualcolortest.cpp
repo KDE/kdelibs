@@ -17,7 +17,7 @@ KDualColorWidget::KDualColorWidget(QWidget *parent)
             SLOT(slotBgChanged(const QColor &)));
     connect(colorBtn, SIGNAL(currentChanged(KDualColorButton::DualColor)),
             SLOT(slotCurrentChanged(KDualColorButton::DualColor)));
-    
+
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setMargin(5);
     layout->addWidget(colorBtn, 0);
@@ -29,7 +29,7 @@ KDualColorWidget::KDualColorWidget(QWidget *parent)
 void KDualColorWidget::slotFgChanged(const QColor &c)
 {
     QPalette p = lbl->palette();
-    p.setColor(QColorGroup::Text, c);
+    p.setColor(QPalette::Text, c);
     lbl->setPalette(p);
 }
 
@@ -37,7 +37,7 @@ void KDualColorWidget::slotBgChanged(const QColor &c)
 {
     QPalette p = lbl->palette();
     QBrush b(c, Qt::SolidPattern);
-    p.setBrush(QColorGroup::Background, b);
+    p.setBrush(QPalette::Background, b);
     setPalette(p);
 }
 

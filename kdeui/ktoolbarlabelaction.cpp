@@ -118,7 +118,7 @@ QWidget * KToolBarLabelAction::createToolBarWidget(QToolBar* parent)
   newLabel->setBackgroundRole(QPalette::Button);
   newLabel->setAlignment((QApplication::isRightToLeft()
         ? Qt::AlignRight : Qt::AlignLeft) |
-       Qt::AlignVCenter | Qt::TextShowMnemonic );
+       Qt::AlignVCenter );
   newLabel->adjustSize();
 
   if (d->m_buddy)

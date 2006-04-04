@@ -18,7 +18,9 @@ KBlendWidget::KBlendWidget(QWidget *parent)
     image = QImage("testimage.png");
 
     resize(image.width()*2+60, image.height()*3+80);
-    setBackgroundColor(bgnd);
+    QPalette palette;
+    palette.setColor(backgroundRole(), bgnd);
+    setPalette(palette);
 }
 
 void KBlendWidget::paintEvent(QPaintEvent */*ev*/)

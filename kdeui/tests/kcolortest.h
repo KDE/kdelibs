@@ -15,6 +15,7 @@ protected:
 private:
     QImage image, original;
     KPixmap pixmap;
+    bool m_bFirst;
 
 };
 

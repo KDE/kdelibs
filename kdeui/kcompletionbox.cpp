@@ -45,7 +45,7 @@ public:
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent )
- :KListBox( parent, 0, Qt::WType_Popup ), d(new KCompletionBoxPrivate)
+ :KListBox( parent, 0, Qt::Popup ), d(new KCompletionBoxPrivate)
 {
 
     d->m_parent        = parent;

@@ -16,7 +16,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <qtimer.h>
 #include <qpainter.h>
@@ -168,7 +170,7 @@ void K3IconView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-  Qt::ButtonState keybstate = QApplication::keyboardModifiers();
+  Qt::KeyboardModifiers keybstate = QApplication::keyboardModifiers();
   Q3IconViewItem* previousItem = currentItem();
   setCurrentItem( m_pCurrentItem );
 
@@ -244,7 +246,7 @@ void K3IconView::emitExecute( Q3IconViewItem *item, const QPoint &pos )
     return;
   }
 
-  Qt::ButtonState keybstate = QApplication::keyboardModifiers();
+  Qt::KeyboardModifiers keybstate = QApplication::keyboardModifiers();
 
   m_pAutoSelect->stop();
 

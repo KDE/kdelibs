@@ -22,7 +22,7 @@
 #include <kglobalsettings.h>
 #include <kcursor.h>
 #include <kapplication.h>
-#include <kipc.h> 
+#include <kipc.h>
 #include <kdebug.h>
 
 #include "klistbox.h"
@@ -81,23 +81,23 @@ void KListBox::slotSettingsChanged(int category)
 						  const QPoint & ) ),
 		this, SLOT( slotMouseButtonClicked( int, Q3ListBoxItem *,
 						    const QPoint & ) ) );
-//         disconnect( this, SIGNAL( doubleClicked( QListBoxItem *, 
+//         disconnect( this, SIGNAL( doubleClicked( QListBoxItem *,
 // 						 const QPoint & ) ),
-// 		    this, SLOT( slotExecute( QListBoxItem *, 
+// 		    this, SLOT( slotExecute( QListBoxItem *,
 // 					     const QPoint & ) ) );
 
     if( m_bUseSingle )
     {
-      connect( this, SIGNAL( mouseButtonClicked( int, Q3ListBoxItem *, 
+      connect( this, SIGNAL( mouseButtonClicked( int, Q3ListBoxItem *,
 						 const QPoint & ) ),
 	       this, SLOT( slotMouseButtonClicked( int, Q3ListBoxItem *,
 						   const QPoint & ) ) );
     }
     else
     {
-//         connect( this, SIGNAL( doubleClicked( QListBoxItem *, 
+//         connect( this, SIGNAL( doubleClicked( QListBoxItem *,
 // 					      const QPoint & ) ),
-//                  this, SLOT( slotExecute( QListBoxItem *, 
+//                  this, SLOT( slotExecute( QListBoxItem *,
 // 					  const QPoint & ) ) );
     }
 
@@ -118,9 +118,9 @@ void KListBox::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-  Qt::ButtonState keybstate = QApplication::keyboardModifiers();
+  Qt::KeyboardModifiers keybstate = QApplication::keyboardModifiers();
 
-  Q3ListBoxItem* previousItem = item( currentItem() ); 
+  Q3ListBoxItem* previousItem = item( currentItem() );
   setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
@@ -130,8 +130,8 @@ void KListBox::slotAutoSelect()
       blockSignals( true );
 
       //No Ctrl? Then clear before!
-      if( !(keybstate & Qt::ControlModifier) )  
-	clearSelection(); 
+      if( !(keybstate & Qt::ControlModifier) )
+	clearSelection();
 
       bool select = !m_pCurrentItem->isSelected();
       bool update = viewport()->updatesEnabled();
@@ -150,7 +150,7 @@ void KListBox::slotAutoSelect()
 	}
 	setSelected( it, select );
       }
-      
+
       blockSignals( block );
       viewport()->setUpdatesEnabled( update );
       triggerUpdate( false );
@@ -167,7 +167,7 @@ void KListBox::slotAutoSelect()
       blockSignals( true );
 
       if( !m_pCurrentItem->isSelected() )
-	clearSelection(); 
+	clearSelection();
 
       blockSignals( block );
 
@@ -180,10 +180,10 @@ void KListBox::slotAutoSelect()
 
 void KListBox::emitExecute( Q3ListBoxItem *item, const QPoint &pos )
 {
-  Qt::ButtonState keybstate = QApplication::keyboardModifiers();
-    
+  Qt::KeyboardModifiers keybstate = QApplication::keyboardModifiers();
+
   m_pAutoSelect->stop();
-  
+
   //Don't emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & Qt::ShiftModifier) || (keybstate & Qt::ControlModifier)) ) ) {
     emit executed( item );
@@ -221,7 +221,7 @@ void KListBox::focusOutEvent( QFocusEvent *fe )
   Q3ListBox::focusOutEvent( fe );
 }
 
-void KListBox::leaveEvent( QEvent *e ) 
+void KListBox::leaveEvent( QEvent *e )
 {
   m_pAutoSelect->stop();
 

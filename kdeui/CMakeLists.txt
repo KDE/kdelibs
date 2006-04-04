@@ -4,6 +4,7 @@ project(kdeui)
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/interfaces )
+add_definitions(-DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS)
 
 if (UNIX AND NOT APPLE)
    add_subdirectory( kdetrayproxy )
@@ -171,11 +172,11 @@ install_files( /include FILES
  kprogressdialog.h
  kcolordialog.h
  kselector.h
- kdatepicker.h 
+ kdatepicker.h
  kdatetable.h
- kfontdialog.h 
+ kfontdialog.h
  kmenu.h
- kfontrequester.h 
+ kfontrequester.h
  ktabctl.h
  kstatusbar.h
  kmainwindow.h

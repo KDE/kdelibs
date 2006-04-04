@@ -18,6 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "kkeybutton.h"
 #include "kshortcutdialog.h"
 
@@ -31,12 +35,11 @@
 #include <kglobalaccel.h>
 #include <klocale.h>
 
-#include "config.h"
 #ifdef Q_WS_X11
 #define XK_XKB_KEYS
 #define XK_MISCELLANY
-#include <X11/Xlib.h>	// For x11Event() 
-#include <X11/keysymdef.h> // For XK_... 
+#include <X11/Xlib.h>	// For x11Event()
+#include <X11/keysymdef.h> // For XK_...
 
 #ifdef KeyPress
 const int XFocusOut = FocusOut;
@@ -50,8 +53,8 @@ const int XKeyRelease = KeyRelease;
 #endif // KeyPress
 #endif // Q_WS_X11
 
-//static const char* psTemp[] = { 
-//  I18N_NOOP("Primary"), I18N_NOOP("Alternate"), I18N_NOOP("Multi-Key") 
+//static const char* psTemp[] = {
+//  I18N_NOOP("Primary"), I18N_NOOP("Alternate"), I18N_NOOP("Multi-Key")
 //};
 
 /***********************************************************************/
@@ -100,7 +103,7 @@ void KKeyButton::captureShortcut()
 		if( dlg.exec() == KDialog::Accepted )
 			cut = dlg.shortcut();
 	} // emit the signal after the dialog is destroyed, otherwise it still has grab
-	
+
 	if( !cut.isNull())
 		emit capturedShortcut( cut );
 
@@ -111,7 +114,7 @@ void KKeyButton::captureShortcut()
 void KKeyButton::paintEvent( QPaintEvent* )
 {
   QPainter painter(this);
- 
+
   QPolygon a( 4 );
   a.setPoint( 0, 0, 0) ;
   a.setPoint( 1, width(), 0 );
@@ -136,7 +139,7 @@ void KKeyButton::paintEvent( QPaintEvent* )
   painter.setClipping( false );
   if( width() > 12 && height() > 8 )
     qDrawShadePanel( &painter, 6, 4, width() - 12, height() - 8,
-                     QColorGroup(palette()), true, 1, 0L );
+                     palette(), true, 1, 0L );
   if ( m_bEditing )
   {
     painter.setPen( palette().color( QPalette::Base ) );

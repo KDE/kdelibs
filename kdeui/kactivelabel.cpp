@@ -19,6 +19,7 @@
 
 #include <QWhatsThis>
 #include <Q3SimpleRichText>
+#include <QFocusEvent>
 
 #include <ktoolinvocation.h>
 
@@ -50,8 +51,8 @@ KActiveLabelPrivate::KActiveLabelPrivate(KActiveLabel *qq)
 void KActiveLabelPrivate::updatePalette()
 {
     QPalette p = q->palette();
-    p.setBrush(QColorGroup::Base, p.brush(QPalette::Normal, QColorGroup::Background));
-    p.setColor(QColorGroup::Text, p.color(QPalette::Normal, QColorGroup::Foreground));
+    p.setBrush(QPalette::Base, p.brush(QPalette::Normal, QPalette::Background));
+    p.setColor(QPalette::Text, p.color(QPalette::Normal, QPalette::Foreground));
     q->setPalette(p);
 }
 

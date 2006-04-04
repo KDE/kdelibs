@@ -20,6 +20,10 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "kdialog.h"
 
 #include <qlayout.h>
@@ -51,7 +55,6 @@
 #include <kseparator.h>
 #include <kurllabel.h>
 
-#include "config.h"
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
 #include <netwm.h>
@@ -113,7 +116,7 @@ KDialog::KDialog(QWidget *parent, const char *name, bool modal, Qt::WFlags f)
 KDialog::KDialog( QWidget *parent, const QString &caption  ,
 		ButtonCodes buttonMask ,  Qt::WFlags f  ,
 		const KGuiItem &user1,  const KGuiItem &user2, const KGuiItem &user3 )
-    :  QDialog( parent, f |  Qt::WStyle_DialogBorder),  d(new Private)
+    :  QDialog( parent, f |  Qt::MSWindowsFixedSizeDialogHint),  d(new Private)
 {
   setCaption( caption );
   setModal( true );

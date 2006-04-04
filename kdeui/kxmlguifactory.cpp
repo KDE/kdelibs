@@ -31,6 +31,7 @@
 #include <qwidget.h>
 #include <qdatetime.h>
 #include <qvariant.h>
+#include <QTextCodec>
 
 #include <kaction.h>
 #include <kdebug.h>

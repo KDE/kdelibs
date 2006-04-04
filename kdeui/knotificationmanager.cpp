@@ -19,6 +19,9 @@
 #include "knotificationmanager.h"
 #include "knotification.h"
 
+#include <QHash>
+#include <QWidget>
+
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <dcopclient.h>
@@ -26,8 +29,6 @@
 #include <kiconloader.h>
 #include <kconfig.h>
 #include <klocale.h>
-
-#include <QHash>
 
 typedef QHash<QString,QString> Dict;
 
@@ -50,14 +51,14 @@ KNotificationManager * KNotificationManager::self()
 
 KNotificationManager::KNotificationManager() : DCOPObject("KNotification") , d(new Private)
 {
-	
+
 	bool b1=connectDCOPSignal("knotify", "Notify",
-					  "notificationClosed(int,int)", 
+					  "notificationClosed(int,int)",
 					  "notificationClosed(int,int)", false);
 	bool b2=connectDCOPSignal("knotify", "Notify",
-					  "actionInvoked (int,int)", 
+					  "actionInvoked (int,int)",
 					  "notificationActivated(int,int)", false);
-	
+
 	kDebug() << k_funcinfo << b1 << " " << b2 << endl;
 }
 
@@ -103,7 +104,7 @@ void KNotificationManager::close( int id)
 	}
 }
 
-unsigned int KNotificationManager::notify( KNotification* n , const QPixmap &pix , const QStringList &actions , 
+unsigned int KNotificationManager::notify( KNotification* n , const QPixmap &pix , const QStringList &actions ,
 										   const KNotification::ContextList & contexts , const QString &appname)
 {
 	kDebug() << k_funcinfo << endl;
@@ -119,10 +120,10 @@ unsigned int KNotificationManager::notify( KNotification* n , const QPixmap &pix
 	{
 		kDebug() << k_funcinfo << "error while contacting knotify server" << endl;
 	}
-	else 
+	else
 	{
 		QDataStream reply(&replyData, QIODevice::ReadOnly);
-		if (replyType == "int") 
+		if (replyType == "int")
 		{
 			int result;
 			reply >> result;

@@ -8,12 +8,12 @@
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	 Library General Public License for more details.
+   Library General Public License for more details.
 
-	 You should have received a copy of the GNU Library General Public License
-	 along with this library; see the file COPYING.LIB.  If not, write to
-	 the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-	 Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #include "karrowbutton.h"
@@ -68,9 +68,9 @@ void KArrowButton::paintEvent(QPaintEvent*)
 	opt.init(this);
 	opt.lineWidth    = 2;
 	opt.midLineWidth = 0;
-	
-        p.fillRect( rect(), QColorGroup(palette()).brush( QColorGroup::Background ) );
-        
+
+	p.fillRect( rect(), palette().brush( QPalette::Background ) );
+
 	style()->drawPrimitive( QStyle::PE_Frame, &opt, &p, this);
 
 	if (d->arrow == Qt::NoArrow)

@@ -28,6 +28,8 @@
 #include <kurl.h>
 #include <QAction>
 #include <QMenu>
+#include <QKeyEvent>
+
 class KTextBrowser::KTextBrowserPrivate
 {
 public:

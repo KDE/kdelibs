@@ -52,7 +52,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
           ButtonCodes dialogButtons,
           ButtonCode defaultButton,
           bool modal ) :
-    KDialogBase( dialogType, Qt::WStyle_DialogBorder,
+    KDialogBase( dialogType, Qt::MSWindowsFixedSizeDialogHint,
           parent, 0 /*name*/, modal, i18n("Configure"), dialogButtons, defaultButton ),
     d(new KConfigDialogPrivate(dialogType))
 {

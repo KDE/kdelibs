@@ -69,7 +69,7 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 			  ButtonCode defaultButton, bool separator,
 			  const KGuiItem &user1, const KGuiItem &user2,
 			  const KGuiItem &user3 )
-  :KDialog( parent, caption , (ButtonCode)buttonMask , Qt::WStyle_DialogBorder , user1, user2, user3 ),
+  :KDialog( parent, caption , (ButtonCode)buttonMask , Qt::MSWindowsFixedSizeDialogHint , user1, user2, user3 ),
    mJanus(0) ,  mShowTile(false), d(new KDialogBasePrivate)
 {
   setObjectName( name );
@@ -85,7 +85,7 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 			  QWidget *parent, const char *name, bool modal,
 			  bool separator, const KGuiItem &user1,
 			  const KGuiItem &user2, const KGuiItem &user3 )
-  :KDialog( parent, caption , (ButtonCode)buttonMask , Qt::WStyle_DialogBorder , user1, user2, user3 ),
+  :KDialog( parent, caption , (ButtonCode)buttonMask , Qt::MSWindowsFixedSizeDialogHint , user1, user2, user3 ),
    mJanus(0) ,  mShowTile(false), d(new KDialogBasePrivate)
 {
   setObjectName( name );
@@ -136,7 +136,7 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 			  QWidget *parent, const char *name, bool modal,
 			  bool separator, const KGuiItem &yes,
 			  const KGuiItem &no, const KGuiItem &cancel )
-  :KDialog( parent, caption ,(ButtonCode) buttonMask , Qt::WStyle_DialogBorder ),
+  :KDialog( parent, caption ,(ButtonCode) buttonMask , Qt::MSWindowsFixedSizeDialogHint ),
    mJanus(0) ,  mShowTile(false), d(new KDialogBasePrivate)
 {
   setObjectName( name );
@@ -644,18 +644,18 @@ void KDialogBase::virtual_hook( int id, void* data )
 { KDialog::virtual_hook( id, data ); }
 
 
-//This is done in order to keep the same behavior as in KDE3: 
+//This is done in order to keep the same behavior as in KDE3:
 //  slotOk may call accept,  so we need to call slotOk only if accept() is called because the button Ok has been pressed
-void KDialogBase::accept() 
-{ 
+void KDialogBase::accept()
+{
 	if(sender() && sender()->inherits("QSignalMapper"))  QTimer::singleShot(0,this,SLOT(slotOk()));
-	else KDialog::accept(); 
+	else KDialog::accept();
 }
 void KDialogBase::slotOk() { KDialog::accept(); }
 void KDialogBase::reject()
-{ 
+{
 	if(sender() && sender()->inherits("QSignalMapper"))  QTimer::singleShot(0,this,SLOT(slotCancel()));
-	else KDialog::reject(); 
+	else KDialog::reject();
 }
 void KDialogBase::slotCancel() { KDialog::reject(); }
 

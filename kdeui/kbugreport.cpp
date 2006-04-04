@@ -25,6 +25,8 @@
 #include <qregexp.h>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QCloseEvent>
+#include <QTextCodec>
 
 #include <kaboutdata.h>
 #include "ktoolinvocation.h"
