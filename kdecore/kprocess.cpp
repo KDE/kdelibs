@@ -23,7 +23,6 @@
 #include <config.h>
 #endif
 
-#include <qplatformdefs.h>
 #include "kprocess.h"
 #include "kprocctrl.h"
 #include "kpty.h"
@@ -164,7 +163,7 @@ KProcess::setupEnvironment()
    }
    if (!d->wd.isEmpty())
    {
-      QT_CHDIR(QFile::encodeName(d->wd).data());
+      chdir(QFile::encodeName(d->wd).data());
    }
 }
 

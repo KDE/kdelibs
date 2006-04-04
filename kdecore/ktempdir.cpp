@@ -43,7 +43,6 @@
 #endif
 
 #include <qdir.h>
-#include <qplatformdefs.h>
 
 #include "kglobal.h"
 #include "krandom.h"
@@ -175,8 +174,8 @@ static bool
 rmtree(const QByteArray& name)
 {
     kDebug() << "Checking directory for remove " << name << endl;
-    QT_STATBUF st;
-    if ( QT_LSTAT( name.data(), &st ) == -1 ) // Do not dereference symlink!
+    KDE_struct_stat st;
+    if ( KDE_lstat( name.data(), &st ) == -1 ) // Do not dereference symlink!
         return false;
     if ( S_ISDIR( st.st_mode ) )
     {

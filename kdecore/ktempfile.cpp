@@ -46,7 +46,6 @@
 #include <qfile.h>
 #include <qdatastream.h>
 #include <qtextstream.h>
-#include <qplatformdefs.h>
 
 #include "kglobal.h"
 #include "krandom.h"

@@ -38,7 +38,6 @@
 #include <qdir.h>
 #include <qstring.h>
 #include <QProcess>
-#include <qplatformdefs.h>
 
 #include <kde_file.h>
 #include "ksavefile.h"
@@ -85,8 +84,8 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
       // if we're overwriting an existing file, ensure temp file's
       // permissions are the same as existing file so the existing
       // file's permissions are preserved
-      QT_STATBUF stat_buf;
-      if (QT_STAT(QFile::encodeName(real_filename), &stat_buf)==0)
+      KDE_struct_stat stat_buf;
+      if (KDE_stat(QFile::encodeName(real_filename), &stat_buf)==0)
       {
          // But only if we own the existing file
          if (stat_buf.st_uid == getuid())
@@ -169,13 +168,13 @@ write_all(int fd, const char *buf, size_t len)
 }
 
 static bool
-copy_all( int fd, QT_STATBUF *buff, QString newName )
+copy_all( int fd, KDE_struct_stat *buff, QString newName )
 {
    QByteArray cNewName = QFile::encodeName( newName );
    const char *copyname = cNewName.data();
    int permissions = buff->st_mode & 07777;
 
-   if ( QT_STAT( copyname, buff ) == 0 )
+   if ( KDE_stat( copyname, buff ) == 0 )
    {
       if ( unlink( copyname ) != 0 )
       {
@@ -185,7 +184,7 @@ copy_all( int fd, QT_STATBUF *buff, QString newName )
    }
 
    mode_t old_umask = umask( 0 );
-   int fd2 = QT_OPEN( copyname,
+   int fd2 = KDE_open( copyname,
                        O_WRONLY | O_CREAT | O_EXCL, permissions | S_IWUSR );
    umask( old_umask );
 
@@ -255,12 +254,12 @@ bool KSaveFile::simpleBackupFile( const QString& qFilename,
    QByteArray cFilename = QFile::encodeName( qFilename );
    const char *filename = cFilename.data();
 
-   int fd = QT_OPEN( filename, O_RDONLY );
+   int fd = KDE_open( filename, O_RDONLY );
    if ( fd < 0 )
       return false;
 
-   QT_STATBUF buff;
-   if ( QT_FSTAT( fd, &buff ) < 0 )
+   KDE_struct_stat buff;
+   if ( KDE_fstat( fd, &buff ) < 0 )
    {
       ::close( fd );
       return false;
@@ -302,12 +301,12 @@ bool KSaveFile::rcsBackupFile( const QString& qFilename,
         QString sBackup = backupDir + '/' + qFilename;
         QByteArray cFilename = QFile::encodeName( qFilename );
         const char *filename = cFilename.data();
-        int fd = QT_OPEN( filename, O_RDONLY );
+        int fd = KDE_open( filename, O_RDONLY );
         if ( fd < 0 )
             return false;
 
-        QT_STATBUF buff;
-        if ( QT_FSTAT( fd, &buff ) < 0 )
+        KDE_struct_stat buff;
+        if ( KDE_fstat( fd, &buff ) < 0 )
         {
             ::close( fd );
             return false;
@@ -366,12 +365,12 @@ bool KSaveFile::numberedBackupFile( const QString& qFilename,
    QByteArray cFilename = QFile::encodeName( qFilename );
    const char *filename = cFilename.data();
 
-   int fd = QT_OPEN( filename, O_RDONLY );
+   int fd = KDE_open( filename, O_RDONLY );
    if ( fd < 0 )
       return false;
 
-   QT_STATBUF buff;
-   if ( QT_FSTAT( fd, &buff) < 0 )
+   KDE_struct_stat buff;
+   if ( KDE_fstat( fd, &buff) < 0 )
    {
       ::close( fd );
       return false;
