@@ -287,17 +287,6 @@ DL[compact] > DT {
 	display: compact;
 }
 
-/* for right to left */
-
-*[dir="rtl"] UL,
-*[dir="rtl"] OL,
-*[dir="rtl"] DIR,
-*[dir="rtl"] MENU,
-*[dir="rtl"] DD {
-	margin-right:40px;
-	margin-left: auto;
-}
-
 OL UL,
 UL OL,
 UL UL,
