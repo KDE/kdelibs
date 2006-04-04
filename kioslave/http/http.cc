@@ -3596,6 +3596,16 @@ try_again:
       error(ERR_ACCESS_DENIED, u.url());
       return false;
     }
+
+    // preserve #ref: (bug 124654)
+    // if we were at http://host/resource1#ref, we sent a GET for "/resource1"
+    // if we got redirected to http://host/resource2, then we have to re-add
+    // the fragment:
+    if (m_request.url.hasRef() && !u.hasRef() &&
+        (m_request.url.host() == u.host()) &&
+        (m_request.url.protocol() == u.protocol()))
+      u.setRef(m_request.url.ref());
+    
     m_bRedirect = true;
     m_redirectLocation = u;
 
