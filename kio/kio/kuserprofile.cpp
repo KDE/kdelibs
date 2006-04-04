@@ -181,7 +181,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     kDebug(7014) << "Sorted list:" << endl;
     OfferList::Iterator itOff = offers.begin();
     for( ; itOff != offers.end(); ++itOff )
-        kDebug(7014) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
+        kDebug(7014) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << " preference=" << (*itOff).preference() << endl;
 #endif
 
     //kDebug(7014) << "Returning " << offers.count() << " offers" << endl;

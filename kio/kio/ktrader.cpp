@@ -155,7 +155,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
       if ( p.type == PreferencesReturn::PRT_DOUBLE )
 	sorter.append( KTraderSorter( (*it).service(), p.f, (*it).preference(), (*it).allowAsDefault() ) );
     }
-    qBubbleSort( sorter );
+    qSort( sorter );
 
     QList<KTraderSorter>::Iterator it2 = sorter.begin();
     for( ; it2 != sorter.end(); ++it2 )
