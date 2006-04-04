@@ -438,10 +438,11 @@ namespace KIO
     UDS_LINK_DEST = 14 | UDS_STRING,
     /// An alternative URL (If different from the caption)
     UDS_URL = 15 | UDS_STRING,
-    /// A mime type; prevents guessing
+    /// A mime type; the slave should set it if it's known.
     UDS_MIME_TYPE = 16 | UDS_STRING,
     /// A mime type to be used for displaying only.
     /// But when 'running' the file, the mimetype is re-determined
+    /// This is for special cases like symlinks in FTP; you probably don't want to use this one.
     UDS_GUESSED_MIME_TYPE = 17 | UDS_STRING,
     /// XML properties, e.g. for WebDAV
     UDS_XML_PROPERTIES = 18 | UDS_STRING,
