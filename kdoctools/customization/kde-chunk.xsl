@@ -87,18 +87,6 @@ set       toc,title
    <meta name="GENERATOR" content="KDE XSL Stylesheet V{$KDE_VERSION} using libxslt"/>
 </xsl:template>
 
-<xsl:template match="/book/bookinfo/legalnotice" mode="titlepage.mode">
-  <xsl:variable name="filename" select="concat($kde.common,'fdl-notice.html')"/>
-  <xsl:variable name="title">
-    <xsl:apply-templates select="." mode="title.markup"/>
-  </xsl:variable>
-  <p>
-    <a href="{$filename}">
-      <xsl:copy-of select="$title"/>
-    </a>
-  </p>
-</xsl:template>
-
 <!-- try with olinks: it nearly works --><!--
   <xsl:template match="olink">
     <a>
