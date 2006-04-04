@@ -145,11 +145,13 @@ namespace khtml
 
     protected:
 
+	DOM::NodeImpl* checkSubSelectors(DOM::CSSSelector *sel, DOM::ElementImpl *e,  DOM::NodeImpl *n, bool &onlyHoverActive, bool isAncestor);
+
 	/* checks if the complete selector (which can be build up from a few CSSSelector's
 	    with given relationships matches the given Element */
 	void checkSelector(int selector, DOM::ElementImpl *e);
 	/* checks if the selector matches the given Element */
-	bool checkOneSelector(DOM::CSSSelector *selector, DOM::ElementImpl *e, bool isSubSelector = false);
+	bool checkOneSelector(DOM::CSSSelector *selector, DOM::ElementImpl *e, DOM::ElementImpl *subject, bool isAncestor);
 
 #ifdef APPLE_CHANGES
 	/* This function fixes up the default font size if it detects that the

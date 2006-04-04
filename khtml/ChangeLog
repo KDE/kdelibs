@@ -1,6 +1,13 @@
+2006-04-04  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Make so-called nondeterministic CSS matching work
+
+        * css/cssstyleselector.{h,cpp} (checkSubSelector/checkOneSelector):
+            Extract combinator matching from checkSelector and make it a recursive function. Clean-up checkOneSelector.
+
 2006-03-25  Germain Garand  <germain@ebooksfrance.org>
 
-        Scope: fix handling of nested/external scripts in the tokenizer (#91701) 
+        Scope: fix handling of nested/external scripts in the tokenizer (#91701)
 
         * misc/stringit.h (TokenizerQueue): a LIFO stack of TokenizerStrings
         * html/htmltokenizer.{h,cpp} (scriptHandler/write/notifyFinished): use a TokenizerQueue to store
