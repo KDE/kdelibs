@@ -59,179 +59,258 @@ function write_binding_method( compounddef, method_elem )
   return method_template;
 }
 
-function write_method_lut( compounddef )
+
+function write_ctor( compoundDef )
 {
-  var compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
-
-  var lut_template =
-    '\n' +
-    'START_METHOD_LUT( ' + compoundname + ')\n';
-
-  // Generate the binding for each method
-  var methodList = compounddef.elementsByTagName( "memberdef" );
-  for( var idx = 0; idx < methodList.length(); ++idx )
-  {
-        var member_elem = methodList.item(idx).toElement();
-        var kind = member_elem.attribute( 'kind' );
-        var name = member_elem.firstChildElement('name').toElement().toString();
-
-        var numParams = member_elem.elementsByTagName("param").count();
-        if ( kind == 'function' )
-        {
-            lut_template += '{'+ name +', '+ numParams +', KJS::DontDelete|KJS::ReadOnly, &' + compoundname + 'NS::' + name + ' },\n';
-    }
-  }
-  lut_template += 'END_METHOD_LUT\n';
-
-  return lut_template;
-}
-
-function write_binding( class_doc )
-{
-    var compounddef = class_doc.firstChild().toElement();
-    var includes = compounddef.firstChildElement('includes').toElement().toString();
-    var compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
-
-    var includeFiles = "#include <QDebug>\n";
-
-    var template =
+    var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
+    var ctor =
         '\n' +
-        '#include <' + compoundname + '_bind.h>\n' +
-        '\n' +
-        'using namespace KJSEmbed;\n' +
-        '\n' +
-        compoundname + 'Binding::' + compoundname + '( KJS::ExecState *exec, const ' + compoundname +' &value )\n' +
-        '   : ValueBinding(exec, value)\n' +
-        '{\n' +
-        '   StaticBinding::publish(exec, this, ' + compoundname + '::methods() );\n' +
-        '   StaticBinding::publish(exec, this, ValueFactory::methods() );\n' +
-        '}\n\n' +
-        'namespace ' + compoundname + 'NS\n' +
-        '{\n';
+        'START_CTOR( ' + compoundName + ', ' + compoundName + ', 0 )\n';
 
-    // Generate the binding for each method
-    var methodList = class_doc.elementsByTagName( "memberdef" );
-    var methodType = '';
-    var methodName = '';
-    var methodArgs = '';
-    var methodArgList;
-    var paramType = '';
-    var paramVar = '';
-    var paramDefault = '';
-    for( idx = 0; idx < methodList.length(); ++idx )
+    // Generate the ctor bindings
+    var methodList = compoundDef.elementsByTagName( "memberdef" );
+    for( var idx = 0; idx < methodList.length(); ++idx )
     {
-        var member_elem = methodList.item(idx).toElement();
-        var kind = member_elem.attribute( 'kind' );
-        methodName = member_elem.firstChildElement('name').toElement().toString();
-
-        if ( kind == 'function' ) // Make sure we're working with a function here
+        var memberElement = methodList.item(idx).toElement();
+        var memberKind = memberElement.attribute( 'kind' );
+        var memberName = memberElement.firstChildElement('name').toElement().toString();
+        var memberArgList = memberElement.elementsByTagName('param');
+        if ( memberKind == 'function' )
         {
-            if ( methodName.indexOf('operator') == -1 ) // Make sure this is not an operator.
+            if ( memberName.indexOf('operator') == -1 ) // Make sure this is not an operator.
             {
-                // These should all be eventually refactored to separate functions
-                // but get it working first ;)
-
-                if ( methodName.indexOf(compoundname) == -1 ) // Not a ctor
+                if ( memberName.indexOf(compoundName) != -1 )
                 {
-                    methodType = member_elem.firstChildElement('type').toElement().toString();
-                    methodArgs = member_elem.firstChildElement('argsstring').toElement().toString();
-                    template = template +
-                        '\n' +
-                        '// ' + methodType + ' ' + methodName + methodArgs + '\n' +
-                        'START_VARIANT_METHOD( ' + methodName + ', ' + compoundname + ' )\n';
-
-                    // Handle arguments
-                    methodArgList = member_elem.elementsByTagName('param');
-                    for ( idx2 = 0; idx2 < methodArgList.length(); ++idx2 )
+                    if ( memberName.indexOf('~') == -1 )
                     {
-                        var param = methodArgList.item(idx2).toElement();
-                        paramType = param.firstChildElement('type').toElement().toString();
-                        paramVar = param.firstChildElement('declname').toElement().toString();
-                        paramDefault = param.firstChildElement('defval').toElement();
+                        ctor += '   if (args.size() == ' + memberArgList.count() + ' )\n' +
+                                '   {\n';
 
-                        if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
+                        var tmpArgs = '';
+                        if ( memberArgList.count() == 0 )
                         {
-                            println('enum value');
-                            template = template +
-                                '   ' + paramType + ' ' + paramVar + ' = (' + paramType + ')KJSEmbed::extractInt(exec, args, ' + idx2 + ', ';
-                        }
-                        else
-                        {
-                            template = template +
-                                '   ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractObject<' + paramType + '>(exec, args, ' + idx2 + ', ';
+                            tmpArgs = compoundName + '()';
                         }
 
-                        if (!paramDefault.isNull())
-                            template = template + paramDefault.toString() + ');\n';
-                        else
-                            template = template + '0);\n';
+                        for ( argIdx = 0; argIdx < memberArgList.count(); ++argIdx )
+                        {
+                            var param = memberArgList.item(argIdx).toElement();
+                            var paramType = param.firstChildElement('type').toElement().toString();
+                            var paramVar = param.firstChildElement('declname').toElement().toString();
+                            var paramDefault = param.firstChildElement('defval').toElement();
+
+                            if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
+                            {
+                                ctor +=
+                                    '       ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + argIdx + ', ';
+                            }
+                            else
+                            {
+                                ctor +=
+                                    '       ' + paramType + ' ' + paramVar + ' = (KJSEmbed::extractObject<' + paramType + '>(exec, args, ' + argIdx + ', ';
+                            }
+
+                            if (!paramDefault.isNull())
+                                ctor += paramDefault.toString() + '));\n';
+                            else
+                                ctor += '0));\n';
+
+                            tmpArgs += paramVar + ', ';
+                        }
+
+                        var tmpIdx = tmpArgs.lastIndexOf(',');
+                        tmpArgs = tmpArgs.substr(0, tmpIdx);
+
+                        ctor +=
+                            '       return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '))\n' +
+                            '   }\n';
                     }
-
-                    template = template + 'END_VARIANT_METHOD\n';
-                }
-
- //             if ( methodName.indexOf('~') != -1 ) // This is a ctor
-                else
-                {
-                    println('ctor');
-                    methodArgList = member_elem.elementsByTagName('param');
-
-                    template = template +
-                        '\n' +
-                        'START_CTOR(' + compoundname + ', ' + compoundname + ', ' + methodArgList.count() + ' )\n';
-
-                    var tmpArgs = '';
-                    for ( idx3 = 0; idx3 < methodArgList.count(); ++idx3 )
-                    {
-                        var param = methodArgList.item(idx3).toElement();
-                        paramType = param.firstChildElement('type').toElement().toString();
-                        paramVar = param.firstChildElement('declname').toElement().toString();
-                        paramDefault = param.firstChildElement('defval').toElement();
-
-
-                        if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
-                        {
-                            template = template +
-                                '   ' + paramType + ' ' + paramVar + ' = (' + paramType + ')KJSEmbed::extractInt(exec, args, ' + idx3 + ', ';
-                        }
-                        else
-                        {
-                            template = template +
-                                '   ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractObject<' + paramType + '>(exec, args, ' + idx3 + ', ';
-                        }
-
-                        if (!paramDefault.isNull())
-                            template = template + paramDefault.toString() + ');\n';
-                        else
-                            template = template + '0);\n';
-
-                        tmpArgs = tmpArgs + paramVar + ', ';
-                    }
-
-                    var tmpIdx = tmpArgs.lastIndexOf(',');
-                    tmpArgs = tmpArgs.substr(0, tmpIdx);
-
-                    template = template + 
-                        '   return new KJSEmbed::' + compoundname + 'Binding(exec, ' +
-                        compoundname + '(' + tmpArgs + '))\n' +
-                    'END_CTOR\n';
                 }
             }
         }
     }
 
-    template += '}\n\n';
-    template += write_method_lut( compounddef );
+    ctor += 'END_CTOR\n';
+    return ctor;
+}
 
-    var fileName = output_dir + compoundname + '_bind.cpp';
 
-    binding = new File( fileName );
-    if( !binding.open( File.WriteOnly ) )
+function write_method_lut( compoundDef )
+{
+    var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
+    var lut_template =
+        '\n' +
+        'START_METHOD_LUT( ' + compoundName + ' )\n';
+
+    // Generate the binding for each method
+    var methodList = compoundDef.elementsByTagName( "memberdef" );
+    for( var idx = 0; idx < methodList.length(); ++idx )
+    {
+        var memberElement = methodList.item(idx).toElement();
+        var memberKind = memberElement.attribute('kind');
+        var memberProt = memberElement.attribute('prot');
+        var memberName = memberElement.firstChildElement('name').toElement().toString();
+
+        var numParams = memberElement.elementsByTagName("param").count();
+        if ( memberKind == 'function' )
+        {
+            if ( memberProt == 'public' )
+            {
+                if ( memberName.indexOf('operator') == -1 ) // Make sure this is not an operator.
+                {
+                    if ( memberName.indexOf(compoundName) == -1 ) // Make sure this is not a ctor or dtor
+                    {
+                    lut_template += '    { '+ memberName +', '+ numParams +', KJS::DontDelete|KJS::ReadOnly, &' + compoundName + 'NS::' + memberName + ' },\n';
+                    }
+                }
+            }
+        }
+    }
+    lut_template += 'END_METHOD_LUT\n';
+
+    return lut_template;
+}
+
+function write_binding_new( class_doc )
+{
+    // This is just looking at brush.cpp and determining the order of the source..
+    var includes = '<QtGui>';
+    var bindingCtor = '';
+    var methods = '';
+    var enums = '';
+    var statics = '';
+    var ctor = '';
+    var methodLut = '';
+
+    // Eventually all of these should be moved to their own functions, but once again
+    // lets get it working first..
+
+    // These are vars we need for all of this to work correctly
+    var compoundDef = class_doc.firstChild().toElement();
+    var compounIncludes = compoundDef.firstChildElement('includes').toElement().toString();
+    var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
+
+    // Binding Ctor
+    bindingCtor +=
+        '\n' +
+        '#include <' + compoundName + '_bind.h>\n' +
+        '\n' +
+        'using namespace KJSEmbed;\n' +
+        '\n' +
+        compoundName + 'Binding::' + compoundName + '( KJS::ExecState *exec, const ' + compoundName +' &value )\n' +
+        '   : ValueBinding(exec, value)\n' +
+        '{\n' +
+        '   StaticBinding::publish(exec, this, ' + compoundName + '::methods() );\n' +
+        '   StaticBinding::publish(exec, this, ValueFactory::methods() );\n' +
+        '}\n\n';
+
+    // Methods
+    methods +=
+        'namespace ' + compoundName + 'NS\n' +
+        '{\n';
+
+    var methodList = class_doc.elementsByTagName( "memberdef" );
+    for( idx = 0; idx < methodList.length(); ++idx )
+    {
+        var methodElement = methodList.item(idx).toElement();
+        var methodKind = methodElement.attribute('kind');
+        var methodProt = methodElement.attribute('prot');
+        var methodName = methodElement.firstChildElement('name').toElement().toString();
+
+        if ( methodKind == 'function' ) // Make sure we're working with a function here
+        {
+            if ( methodProt == 'public' )
+            {
+                if ( methodName.indexOf('operator') == -1 ) // Make sure this is not an operator.
+                {
+                    if ( methodName.indexOf(compoundName) == -1 ) // Not a ctor
+                    {
+                        var methodType = methodElement.firstChildElement('type').toElement().toString();
+                        var methodArgs = methodElement.firstChildElement('argsstring').toElement().toString();
+                        methods +=
+                            '\n' +
+                            '// ' + methodType + ' ' + methodName + methodArgs + '\n' +
+                            'START_VARIANT_METHOD( ' + methodName + ', ' + compoundName + ' )\n';
+
+                        // Handle arguments
+                        var methodArgList = methodElement.elementsByTagName('param');
+                        if ( methodArgList.count() == 0 )
+                        {
+                            methods +=
+                            '   ' + methodType + ' tmp = value.' + methodName + '();\n';
+
+                            if ( methodType.indexOf('Qt::') != -1 )  // Enum Value
+                            {
+                                methods += 
+                                '   result = KJS::Number( tmp );\n';
+                            }
+                            else
+                            {
+                                methods +=
+                                "   result = KJSEmbed::createValue( exec, \"" + methodType + "\", tmp );\n";
+                            }
+                        }
+                        for ( paramIdx = 0; paramIdx < methodArgList.count(); ++paramIdx )
+                        {
+                            var param = methodArgList.item(paramIdx).toElement();
+                            var paramType = param.firstChildElement('type').toElement().toString();
+                            var paramVar = param.firstChildElement('declname').toElement().toString();
+                            var paramDefault = param.firstChildElement('defval').toElement();
+
+                            if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
+                            {
+                                methods +=
+                                    '   ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
+                            }
+                            else
+                            {
+                                methods +=
+                                    '   ' + paramType + ' ' + paramVar + ' = (KJSEmbed::extractObject<' + paramType + '>(exec, args, ' + paramIdx + ', ';
+                            }
+
+                            if (!paramDefault.isNull())
+                                methods += paramDefault.toString() + '));\n';
+                            else
+                                methods += '0));\n';
+                        }
+
+                        methods += 'END_VARIANT_METHOD\n';
+                    }
+                }
+            }
+        }
+    }
+
+    methods +=
+        '}\n';
+
+    // Enums
+    enums += 'NO_ENUMS( ' + compoundName + ' ) \n';
+
+    // Statics
+    enums += 'NO_STATICS( ' + compoundName + ' ) \n';
+
+    // Ctor
+    ctor = write_ctor( compoundDef );
+
+    // Method LUT
+    methodLut += write_method_lut( compoundDef );
+
+
+    // Write everything
+    var fileName = output_dir + compoundName + '_bind.cpp';
+    var bindingFile = new File( fileName );
+    if( !bindingFile.open( File.WriteOnly ) )
         throw "Unable to open output binding, " + fileName;
 
-    binding.writeln( includeFiles );
-    binding.writeln( template );
-    binding.close();
+    bindingFile.writeln( includes );
+    bindingFile.writeln( bindingCtor );
+    bindingFile.writeln( methods );
+    bindingFile.writeln( enums );
+    bindingFile.writeln( statics );
+    bindingFile.writeln( ctor );
+    bindingFile.writeln( methodLut );
+    bindingFile.close();
 }
 
 function process_class_info( classDoc )
@@ -239,9 +318,8 @@ function process_class_info( classDoc )
     println("   Writing Header");
     write_header( classDoc );
     println("   Writing Binding");
-    write_binding( classDoc );
+    write_binding_new( classDoc );
 }
-
 
 function process_class( compound_elem )
 {
