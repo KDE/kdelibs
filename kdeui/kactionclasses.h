@@ -120,7 +120,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const KShortcut& cut = KShortcut(), 
+    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const KShortcut& cut = KShortcut(),
                    KActionCollection* parent = 0, const char* name = 0 );
 
     /**
@@ -1023,6 +1023,10 @@ private:
  * with "Other" leading to a dialog...).
  *
  * FIXME KAction port - what does this add over KActionMenu?
+ * Answer: a KActionMenu shows a submenu in a menu, whereas KToolBarPopupAction
+ * is a -simple- menuitem in a menu, and has a popupup only in a toolbar.
+ * Use cases: Back/Forward, Undo/Redo. Simple click is what's most commonly used, and enough for menus,
+ * but in toolbars there is -also- an optional popup to go back N steps or undo N steps.
  */
 class KDEUI_EXPORT KToolBarPopupAction : public KAction, public QActionWidgetFactory
 {
