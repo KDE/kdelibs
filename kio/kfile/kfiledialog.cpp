@@ -402,8 +402,9 @@ void KFileDialog::slotOk()
             }
         }
 
+        KURL url = KIO::NetAccess::mostLocalURL(d->url,topLevelWidget());
         if ( (mode() & KFile::LocalOnly) == KFile::LocalOnly &&
-             !d->url.isLocalFile() ) {
+             !url.isLocalFile() ) {
 // ### after message freeze, add message for directories!
             KMessageBox::sorry( d->mainWidget,
                                 i18n("You can only select local files."),
@@ -411,6 +412,7 @@ void KFileDialog::slotOk()
             return;
         }
 
+        d->url = url;
         accept();
         return;
     }
@@ -444,15 +446,16 @@ void KFileDialog::slotOk()
        return;
     }
 
+    KURL url = KIO::NetAccess::mostLocalURL(selectedURL,topLevelWidget());
     if ( (mode() & KFile::LocalOnly) == KFile::LocalOnly &&
-         !selectedURL.isLocalFile() ) {
+         !url.isLocalFile() ) {
         KMessageBox::sorry( d->mainWidget,
                             i18n("You can only select local files."),
                             i18n("Remote Files Not Accepted") );
         return;
     }
 
-    d->url = selectedURL;
+    d->url = url;
 
     // d->url is a correct URL now
 
@@ -1536,8 +1539,9 @@ QString KFileDialog::selectedFile() const
 {
     if ( result() == QDialog::Accepted )
     {
-       if (d->url.isLocalFile())
-           return d->url.path();
+      KURL url = KIO::NetAccess::mostLocalURL(d->url,topLevelWidget());
+       if (url.isLocalFile())
+           return url.path();
        else {
            KMessageBox::sorry( d->mainWidget,
                                i18n("You can only select local files."),
@@ -1550,14 +1554,16 @@ QString KFileDialog::selectedFile() const
 QStringList KFileDialog::selectedFiles() const
 {
     QStringList list;
+    KURL url;
 
     if ( result() == QDialog::Accepted ) {
         if ( (ops->mode() & KFile::Files) == KFile::Files ) {
             KURL::List urls = parseSelectedURLs();
             QValueListConstIterator<KURL> it = urls.begin();
             while ( it != urls.end() ) {
-                if ( (*it).isLocalFile() )
-                    list.append( (*it).path() );
+              url = KIO::NetAccess::mostLocalURL(*it,topLevelWidget());
+                if ( url.isLocalFile() )
+                    list.append( url.path() );
                 ++it;
             }
         }
