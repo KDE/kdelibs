@@ -338,8 +338,6 @@ cmakedefine   HAVE__ICETRANSNOLISTEN
 #cmakedefine HAVE_STRUCT_UCRED 1
 #cmakedefine HAVE_STRUCT_ADDRINFO 1
 #cmakedefine HAVE_STRUCT_SOCKADDR_IN6 1
-#cmakedefine HAVE_STRUCT_STATVFS 1
-#cmakedefine HAVE_STRUCT_STATFS 1
 
 /*********************/
 
@@ -544,3 +542,5 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 # include <crt_externs.h>
 # define environ (*_NSGetEnviron())
 #endif
+
+#cmakedefine GETMNTINFO_USES_STATVFS 1

@@ -5,6 +5,7 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckPrototypeExists)
 include(CheckTypeSize)
+include(CheckCSourceCompiles)
 
 # The FindKDE4.cmake module sets _KDE4_PLATFORM_DEFINITIONS with
 # definitions like _GNU_SOURCE that are needed on each platform.
@@ -379,19 +380,16 @@ set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
 check_type_size("struct sockaddr_in6" HAVE_STRUCT_SOCKADDR_IN6)
 SET(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 
-set(CMAKE_EXTRA_INCLUDE_FILES sys/statvfs.h)
-check_type_size("struct statvfs" HAVE_STRUCT_STATVFS)
-SET(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
-
-set(CMAKE_EXTRA_INCLUDE_FILES sys/param.h sys/ucred.h sys/mount.h)
-check_type_size("struct statfs" HAVE_STRUCT_STATFS)
-SET(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
-
-set(CMAKE_EXTRA_INCLUDE_FILES sys/statfs.h)
-check_type_size("struct statfs" HAVE_STRUCT_STATFS)
-SET(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
-
 set(CONFIG_QT_DOCDIR "\"${QT_DOC_DIR}/html/\"")
 set(CONFIG_KDELIBS_DOXYDIR "\"/tmp/\"")
 
+check_c_source_compiles("
+  #include <sys/types.h>
+  #include <sys/statvfs.h>
+  int main(){
+    struct statvfs *mntbufp;
+    int flags;
+    return getmntinfo(&mntbufp, flags);
+  }
+" GETMNTINFO_USES_STATVFS )
 
