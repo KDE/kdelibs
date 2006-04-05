@@ -29,7 +29,7 @@
 #include <kjs/object.h>
 
 #include "console.h"
-#include "jsconsole.h"
+#include "ui_jsconsole.h"
 #include "kjs_object_model.h"
 
 Ui::KJSConsole m_ui;

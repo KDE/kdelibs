@@ -26,7 +26,7 @@
 
 #include "ksconfig.h"
 #include "kspelldlg.h"
-#include "kspellui.h"
+#include "ui_kspellui.h"
 
 //to initially disable sorting in the suggestions listview
 #define NONSORTINGCOLUMN 2

@@ -119,7 +119,7 @@ extern "C" {
 #include "kfilesharedlg.h"
 
 #include "kpropertiesdesktopbase.h"
-#include "kpropertiesdesktopadvbase.h"
+#include "ui_kpropertiesdesktopadvbase.h"
 #include "kpropertiesmimetypebase.h"
 #ifdef USE_POSIX_ACL
 #include "kacleditwidget.h"

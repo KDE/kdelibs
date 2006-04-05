@@ -23,8 +23,8 @@
 #include <qvariant.h>
 #include <QKeyEvent>
 
-#include <kshortcutdialog_simple.h>
-#include <kshortcutdialog_advanced.h>
+#include <ui_kshortcutdialog_simple.h>
+#include <ui_kshortcutdialog_advanced.h>
 
 #include <qcheckbox.h>
 #include <qlayout.h>

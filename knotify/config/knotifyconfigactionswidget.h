@@ -23,7 +23,7 @@
 
 
 #include <QWidget>
-#include "knotifyconfigactionswidgetbase.h"
+#include "ui_knotifyconfigactionswidgetbase.h"
 
 class KNotifyConfigElement;
 

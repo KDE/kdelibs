@@ -24,7 +24,7 @@
 #include "kkeydialog.h"
 #include "kkeybutton.h"
 
-#include "kkeydialogui.h"
+#include "ui_kkeydialogui.h"
 
 #include <string.h>
 
