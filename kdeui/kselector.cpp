@@ -21,6 +21,8 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QPixmap>
+#include <QStyle>
+#include <QStyleOption>
 
 #include <kimageeffect.h>
 
@@ -50,8 +52,9 @@ KXYSelector::~KXYSelector()
 
 void KXYSelector::setRange( int _minX, int _minY, int _maxX, int _maxY )
 {
-  px = 2;
-  py = 2;
+  int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+  px = w;
+  py = w;
   minX = _minX;
   minY = _minY;
   maxX = _maxX;
@@ -70,6 +73,9 @@ void KXYSelector::setYValue( int _yPos )
 
 void KXYSelector::setValues( int _xPos, int _yPos )
 {
+  int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+  if (w < 5) w = 5;
+
   xPos = _xPos;
   yPos = _yPos;
 
@@ -83,27 +89,39 @@ void KXYSelector::setValues( int _xPos, int _yPos )
   else if ( yPos < minY )
     yPos = minY;
 
-  int xp = 2 + (width() - 4) * xPos / (maxX - minX);
-  int yp = height() - 2 - (height() - 4) * yPos / (maxY - minY);
+  int xp = w + (width() - 2 * w) * xPos / (maxX - minX);
+  int yp = height() - w - (height() - 2 * w) * yPos / (maxY - minY);
 
   setPosition( xp, yp );
 }
 
 QRect KXYSelector::contentsRect() const
 {
-  return QRect( 2, 2, width()-4, height()-4 );
+  int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+  if (w < 5) {
+    w = 5;
+  }
+  QRect contents(rect());
+  contents.adjust(w, w, -w, -w);
+  return contents;
 }
 
-void KXYSelector::paintEvent( QPaintEvent *ev )
+void KXYSelector::paintEvent( QPaintEvent * /* ev */ )
 {
-  QRect paintRect = ev->rect();
+  QStyleOptionFrame opt;
+  opt.initFrom(this);
+ 
+  int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
+  if ( w < 5 ) {
+    w = 5 - w;
+  }
+  opt.rect.adjust( w, w, -w, -w );
+  opt.state = QStyle::State_Sunken;
 
   QPainter painter;
   painter.begin( this );
 
-  QBrush brush;
-  qDrawShadePanel( &painter, 0, 0, width(), height(), palette(),
-      true, 2, &brush );
+  style()->drawPrimitive( QStyle::PE_Frame, &opt, &painter, this );
 
   drawContents( &painter );
   drawCursor( &painter, px, py );
@@ -113,17 +131,14 @@ void KXYSelector::paintEvent( QPaintEvent *ev )
 
 void KXYSelector::mousePressEvent( QMouseEvent *e )
 {
-  int xVal, yVal;
-  valuesFromPosition( e->pos().x() - 2, e->pos().y() - 2, xVal, yVal );
-  setValues( xVal, yVal );
-
-  emit valueChanged( xPos, yPos );
+  mouseMoveEvent( e );
 }
 
 void KXYSelector::mouseMoveEvent( QMouseEvent *e )
 {
   int xVal, yVal;
-  valuesFromPosition( e->pos().x() - 2, e->pos().y() - 2, xVal, yVal );
+  int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
+  valuesFromPosition( e->pos().x() - w, e->pos().y() - w, xVal, yVal );
   setValues( xVal, yVal );
 
   emit valueChanged( xPos, yPos );
@@ -141,8 +156,10 @@ void KXYSelector::wheelEvent( QWheelEvent *e )
 
 void KXYSelector::valuesFromPosition( int x, int y, int &xVal, int &yVal ) const
 {
-  xVal = ( (maxX-minX) * (x-2) ) / ( width()-4 );
-  yVal = maxY - ( ( (maxY-minY) * (y-2) ) / ( height()-4 ) );
+  int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
+  if ( w < 5 ) w = 5;
+  xVal = ( ( maxX - minX ) * ( x - w ) ) / ( width() - 2 * w );
+  yVal = maxY - ( ( ( maxY - minY ) * (y - w) ) / ( height() - 2 * w ) );
 
   if ( xVal > maxX )
     xVal = maxX;
@@ -157,19 +174,20 @@ void KXYSelector::valuesFromPosition( int x, int y, int &xVal, int &yVal ) const
 
 void KXYSelector::setPosition( int xp, int yp )
 {
-  if ( xp < 2 )
-    xp = 2;
-  else if ( xp > width() - 2 )
-    xp = width() - 2;
+  int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
+  if (w < 5) w = 5;
+  if ( xp < w )
+    xp = w;
+  else if ( xp > width() - w )
+    xp = width() - w;
 
-  if ( yp < 2 )
-    yp = 2;
-  else if ( yp > height() - 2 )
-    yp = height() - 2;
+  if ( yp < w )
+    yp = w;
+  else if ( yp > height() - w )
+    yp = height() - w;
 
   px = xp;
   py = yp;
-
 
   update();
 }
@@ -218,15 +236,19 @@ KSelector::~KSelector()
 
 QRect KSelector::contentsRect() const
 {
+  int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
+  int iw = (w < 5) ? 5 : w;
   if ( orientation() == Qt::Vertical )
-    return QRect( 2, 5, width()-9, height()-10 );
+    return QRect( w, iw, width() - w * 2 - 5, height() - 2 * iw );
   else
-    return QRect( 5, 2, width()-10, height()-9 );
+    return QRect( iw, w, width() - 2 * iw, height() - w * 2 - 5 );
 }
 
 void KSelector::paintEvent( QPaintEvent * )
 {
   QPainter painter;
+  int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
+  int iw = (w < 5) ? 5 : w;
 
   painter.begin( this );
 
@@ -236,12 +258,14 @@ void KSelector::paintEvent( QPaintEvent * )
 
   if ( indent() )
   {
+    QStyleOptionFrame opt;
+    opt.initFrom( this );
+    opt.state = QStyle::State_Sunken;
     if ( orientation() == Qt::Vertical )
-      qDrawShadePanel( &painter, 0, 3, width()-5, height()-6,
-        palette(), true, 2, &brush );
+      opt.rect.adjust( 0, iw - w, -iw, w - iw );
     else
-      qDrawShadePanel( &painter, 3, 0, width()-6, height()-5,
-        palette(), true, 2, &brush );
+      opt.rect.adjust(iw - w, 0, w - iw, -iw);
+    style()->drawPrimitive( QStyle::PE_Frame, &opt, &painter, this );
   }
 
   QPoint pos = calcArrowPos( value() );
@@ -279,13 +303,15 @@ void KSelector::sliderChange( SliderChange change )
 void KSelector::moveArrow( const QPoint &pos )
 {
   int val;
+  int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+  int iw = (w < 5) ? 5 : w;
 
   if ( orientation() == Qt::Vertical )
-    val = ( maximum() - minimum() ) * (height()-pos.y()-3)
-        / (height()-10) + minimum();
+    val = ( maximum() - minimum() ) * (height() - pos.y() - 5 + w) 
+            / (height() - iw * 2) + minimum();
   else
-    val = ( maximum() - minimum() ) * (width()-pos.x()-3)
-        / (width()-10) + minimum();
+    val = ( maximum() - minimum() ) * (width() - pos.x() - 5 + w) 
+            / (width() - iw * 2) + minimum();
 
   setValue( val );
 }
@@ -293,16 +319,17 @@ void KSelector::moveArrow( const QPoint &pos )
 QPoint KSelector::calcArrowPos( int val )
 {
   QPoint p;
-
+  int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
+  int iw = ( w < 5 ) ? 5 : w;
   if ( orientation() == Qt::Vertical )
   {
-    p.setY( height() - ( (height()-10) * val
+    p.setY( height() - ( (height() - 2 * iw) * val
         / ( maximum() - minimum() ) + 5 ) );
     p.setX( width() - 5 );
   }
   else
   {
-    p.setX( width() - ( (width()-10) * val
+    p.setX( width() - ( (width() - 2 * iw) * val
         / ( maximum() - minimum() ) + 5 ) );
     p.setY( height() - 5 );
   }
@@ -321,16 +348,14 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
 
     painter->setPen( QPen() );
     painter->setBrush( QBrush( palette().color(QPalette::ButtonText) ) );
+    array.setPoint( 0, pos.x()+0, pos.y()+0 );
+    array.setPoint( 1, pos.x()+5, pos.y()+5 );
     if ( orientation() == Qt::Vertical )
     {
-      array.setPoint( 0, pos.x()+0, pos.y()+0 );
-      array.setPoint( 1, pos.x()+5, pos.y()+5 );
       array.setPoint( 2, pos.x()+5, pos.y()-5 );
     }
     else
     {
-      array.setPoint( 0, pos.x()+0, pos.y()+0 );
-      array.setPoint( 1, pos.x()+5, pos.y()+5 );
       array.setPoint( 2, pos.x()-5, pos.y()+5 );
     }
 
@@ -340,11 +365,11 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
   {
     if ( orientation() == Qt::Vertical )
     {
-       repaint(pos.x(), pos.y()-5, 6, 11);
+       repaint(pos.x(), pos.y() - 5, 6, 11);
     }
     else
     {
-       repaint(pos.x()-5, pos.y(), 11, 6);
+       repaint(pos.x() - 5, pos.y(), 11, 6);
     }
   }
 }
