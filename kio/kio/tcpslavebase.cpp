@@ -621,6 +621,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
       } else {
         ++it;
       }
+      delete pkcs;
     }
 
     if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
