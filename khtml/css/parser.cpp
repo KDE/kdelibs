@@ -393,14 +393,12 @@ extern "C" {
 #   define YYMALLOC malloc
 #   if (! defined (malloc) && ! defined (YYINCLUDED_STDLIB_H) \
 	&& (defined (__STDC__) || defined (__cplusplus)))
-void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 #  ifndef YYFREE
 #   define YYFREE free
 #   if (! defined (free) && ! defined (YYINCLUDED_STDLIB_H) \
 	&& (defined (__STDC__) || defined (__cplusplus)))
-void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 #  ifdef __cplusplus
@@ -1692,14 +1690,14 @@ yyreduce:
     {
         CSSParser *p = static_cast<CSSParser *>(parser);
 	p->rule = (yyvsp[-2].rule);
-    ;}
+    }
     break;
 
   case 7:
 
     {
 	/* can be empty */
-    ;}
+    }
     break;
 
   case 8:
@@ -1725,7 +1723,7 @@ yyreduce:
 #endif
 	delete p->valueList;
 	p->valueList = 0;
-    ;}
+    }
     break;
 
   case 15:
@@ -1734,7 +1732,7 @@ yyreduce:
 #ifdef CSS_DEBUG
      kDebug( 6080 ) << "charset rule: " << qString((yyvsp[-2].string)) << endl;
 #endif
- ;}
+ }
     break;
 
   case 19:
@@ -1746,7 +1744,7 @@ yyreduce:
      } else {
 	 delete (yyvsp[-1].rule);
      }
- ;}
+ }
     break;
 
   case 20:
@@ -1760,21 +1758,21 @@ yyreduce:
 	    (yyval.rule) = new CSSImportRuleImpl( p->styleElement, domString((yyvsp[-3].string)), (yyvsp[-1].mediaList) );
 	else
 	    (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 21:
 
     {
         (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 22:
 
     {
         (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 25:
@@ -1786,17 +1784,17 @@ yyreduce:
       CSSParser *p = static_cast<CSSParser *>(parser);
     if (p->styleElement && p->styleElement->isCSSStyleSheet())
         static_cast<CSSStyleSheetImpl*>(p->styleElement)->addNamespace(p, domString((yyvsp[-3].string)), domString((yyvsp[-2].string)));
- ;}
+ }
     break;
 
   case 28:
 
-    { (yyval.string).string = 0; ;}
+    { (yyval.string).string = 0; }
     break;
 
   case 29:
 
-    { (yyval.string) = (yyvsp[-1].string); ;}
+    { (yyval.string) = (yyvsp[-1].string); }
     break;
 
   case 31:
@@ -1808,19 +1806,19 @@ yyreduce:
      } else {
 	 delete (yyvsp[-1].rule);
      }
- ;}
+ }
     break;
 
   case 38:
 
-    { delete (yyvsp[-1].rule); (yyval.rule) = 0; ;}
+    { delete (yyvsp[-1].rule); (yyval.rule) = 0; }
     break;
 
   case 41:
 
     {
 	(yyval.mediaList) = new MediaListImpl();
-    ;}
+    }
     break;
 
   case 43:
@@ -1828,7 +1826,7 @@ yyreduce:
     {
 	(yyval.mediaList) = new MediaListImpl();
 	(yyval.mediaList)->appendMedium( domString((yyvsp[0].string)).lower() );
-    ;}
+    }
     break;
 
   case 44:
@@ -1837,7 +1835,7 @@ yyreduce:
 	(yyval.mediaList) = (yyvsp[-3].mediaList);
 	if ((yyval.mediaList))
 	    (yyval.mediaList)->appendMedium( domString((yyvsp[0].string)).lower() );
-    ;}
+    }
     break;
 
   case 45:
@@ -1845,7 +1843,7 @@ yyreduce:
     {
        delete (yyvsp[-1].mediaList);
        (yyval.mediaList) = 0;
-    ;}
+    }
     break;
 
   case 46:
@@ -1860,12 +1858,12 @@ yyreduce:
 	    delete (yyvsp[-4].mediaList);
 	    delete (yyvsp[-1].ruleList);
 	}
-    ;}
+    }
     break;
 
   case 47:
 
-    { (yyval.ruleList) = 0; ;}
+    { (yyval.ruleList) = 0; }
     break;
 
   case 48:
@@ -1876,72 +1874,72 @@ yyreduce:
 	  if ( !(yyval.ruleList) ) (yyval.ruleList) = new CSSRuleListImpl();
 	  (yyval.ruleList)->append( (yyvsp[-1].rule) );
       }
-  ;}
+  }
     break;
 
   case 49:
 
     {
       (yyval.string) = (yyvsp[-1].string);
-  ;}
+  }
     break;
 
   case 50:
 
     {
       (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 51:
 
     {
       (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 52:
 
     {
       (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 53:
 
     {
       (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 54:
 
-    { (yyval.relation) = CSSSelector::DirectAdjacent; ;}
+    { (yyval.relation) = CSSSelector::DirectAdjacent; }
     break;
 
   case 55:
 
-    { (yyval.relation) = CSSSelector::IndirectAdjacent; ;}
+    { (yyval.relation) = CSSSelector::IndirectAdjacent; }
     break;
 
   case 56:
 
-    { (yyval.relation) = CSSSelector::Child; ;}
+    { (yyval.relation) = CSSSelector::Child; }
     break;
 
   case 57:
 
-    { (yyval.relation) = CSSSelector::Descendant; ;}
+    { (yyval.relation) = CSSSelector::Descendant; }
     break;
 
   case 58:
 
-    { (yyval.val) = -1; ;}
+    { (yyval.val) = -1; }
     break;
 
   case 59:
 
-    { (yyval.val) = 1; ;}
+    { (yyval.val) = 1; }
     break;
 
   case 60:
@@ -1962,7 +1960,7 @@ yyreduce:
 	    delete (yyvsp[-1].selectorList);
 	    p->clearProperties();
 	}
-    ;}
+    }
     break;
 
   case 61:
@@ -1979,7 +1977,7 @@ yyreduce:
 	} else {
 	    (yyval.selectorList) = 0;
 	}
-    ;}
+    }
     break;
 
   case 62:
@@ -1997,7 +1995,7 @@ yyreduce:
 	    delete (yyvsp[0].selector);
 	    (yyval.selectorList) = 0;
 	}
-    ;}
+    }
     break;
 
   case 63:
@@ -2005,14 +2003,14 @@ yyreduce:
     {
 	delete (yyvsp[-1].selectorList);
 	(yyval.selectorList) = 0;
-    ;}
+    }
     break;
 
   case 64:
 
     {
 	(yyval.selector) = (yyvsp[0].selector);
-    ;}
+    }
     break;
 
   case 65:
@@ -2037,7 +2035,7 @@ yyreduce:
 		    doc->setUsesDescendantRules(true);
 	    }
 	}
-    ;}
+    }
     break;
 
   case 66:
@@ -2045,22 +2043,22 @@ yyreduce:
     {
 	delete (yyvsp[-1].selector);
 	(yyval.selector) = 0;
-    ;}
+    }
     break;
 
   case 67:
 
-    { (yyval.string).string = 0; (yyval.string).length = 0; ;}
+    { (yyval.string).string = 0; (yyval.string).length = 0; }
     break;
 
   case 68:
 
-    { static unsigned short star = '*'; (yyval.string).string = &star; (yyval.string).length = 1; ;}
+    { static unsigned short star = '*'; (yyval.string).string = &star; (yyval.string).length = 1; }
     break;
 
   case 69:
 
-    { (yyval.string) = (yyvsp[-1].string); ;}
+    { (yyval.string) = (yyvsp[-1].string); }
     break;
 
   case 70:
@@ -2068,7 +2066,7 @@ yyreduce:
     {
 	(yyval.selector) = new CSSSelector();
 	(yyval.selector)->tag = (yyvsp[-1].element);
-    ;}
+    }
     break;
 
   case 71:
@@ -2077,7 +2075,7 @@ yyreduce:
 	(yyval.selector) = (yyvsp[-1].selector);
         if ( (yyval.selector) )
 	    (yyval.selector)->tag = (yyvsp[-2].element);
-    ;}
+    }
     break;
 
   case 72:
@@ -2086,7 +2084,7 @@ yyreduce:
 	(yyval.selector) = (yyvsp[-1].selector);
         if ( (yyval.selector) )
             (yyval.selector)->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);;
-    ;}
+    }
     break;
 
   case 73:
@@ -2097,7 +2095,7 @@ yyreduce:
 	CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[-2].string)));
-    ;}
+    }
     break;
 
   case 74:
@@ -2110,7 +2108,7 @@ yyreduce:
             if (p->styleElement && p->styleElement->isCSSStyleSheet())
                 static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[-3].string)));
         }
-    ;}
+    }
     break;
 
   case 75:
@@ -2123,7 +2121,7 @@ yyreduce:
             if (p->styleElement && p->styleElement->isCSSStyleSheet())
                 static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[-2].string)));
         }
-    ;}
+    }
     break;
 
   case 76:
@@ -2143,14 +2141,14 @@ yyreduce:
 	    // the default stylesheet - which must not contain unknown tags
 // 	    assert($$ != 0);
 	}
-    ;}
+    }
     break;
 
   case 77:
 
     {
 	(yyval.element) = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);
-    ;}
+    }
     break;
 
   case 78:
@@ -2158,7 +2156,7 @@ yyreduce:
     {
 	(yyval.selector) = (yyvsp[0].selector);
 	(yyval.selector)->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
-    ;}
+    }
     break;
 
   case 79:
@@ -2172,7 +2170,7 @@ yyreduce:
             end->relation = CSSSelector::SubSelector;
             end->tagHistory = (yyvsp[0].selector);
 	}
-    ;}
+    }
     break;
 
   case 80:
@@ -2180,7 +2178,7 @@ yyreduce:
     {
 	delete (yyvsp[-1].selector);
 	(yyval.selector) = 0;
-    ;}
+    }
     break;
 
   case 81:
@@ -2190,7 +2188,7 @@ yyreduce:
 	(yyval.selector)->match = CSSSelector::Id;
 	(yyval.selector)->attr = ATTR_ID;
 	(yyval.selector)->value = domString((yyvsp[0].string));
-    ;}
+    }
     break;
 
   case 85:
@@ -2200,7 +2198,7 @@ yyreduce:
 	(yyval.selector)->match = CSSSelector::Class;
 	(yyval.selector)->attr = ATTR_CLASS;
 	(yyval.selector)->value = domString((yyvsp[0].string));
-    ;}
+    }
     break;
 
   case 86:
@@ -2225,7 +2223,7 @@ yyreduce:
 	    // the default stylesheet - which must not contain unknown attributes
 	    assert((yyval.attribute) != 0);
 	    }
-    ;}
+    }
     break;
 
   case 87:
@@ -2234,7 +2232,7 @@ yyreduce:
 	(yyval.selector) = new CSSSelector();
 	(yyval.selector)->attr = (yyvsp[-1].attribute);
 	(yyval.selector)->match = CSSSelector::Set;
-    ;}
+    }
     break;
 
   case 88:
@@ -2244,7 +2242,7 @@ yyreduce:
 	(yyval.selector)->attr = (yyvsp[-5].attribute);
 	(yyval.selector)->match = (yyvsp[-4].match);
 	(yyval.selector)->value = domString((yyvsp[-2].string));
-    ;}
+    }
     break;
 
   case 89:
@@ -2256,7 +2254,7 @@ yyreduce:
         CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->attr, domString((yyvsp[-3].string)));
-    ;}
+    }
     break;
 
   case 90:
@@ -2269,49 +2267,49 @@ yyreduce:
         CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->attr, domString((yyvsp[-7].string)));
-   ;}
+   }
     break;
 
   case 91:
 
     {
 	(yyval.match) = CSSSelector::Exact;
-    ;}
+    }
     break;
 
   case 92:
 
     {
 	(yyval.match) = CSSSelector::List;
-    ;}
+    }
     break;
 
   case 93:
 
     {
 	(yyval.match) = CSSSelector::Hyphen;
-    ;}
+    }
     break;
 
   case 94:
 
     {
 	(yyval.match) = CSSSelector::Begin;
-    ;}
+    }
     break;
 
   case 95:
 
     {
 	(yyval.match) = CSSSelector::End;
-    ;}
+    }
     break;
 
   case 96:
 
     {
 	(yyval.match) = CSSSelector::Contain;
-    ;}
+    }
     break;
 
   case 99:
@@ -2320,7 +2318,7 @@ yyreduce:
 	(yyval.selector) = new CSSSelector();
 	(yyval.selector)->match = CSSSelector::PseudoClass;
 	(yyval.selector)->value = domString((yyvsp[0].string));
-    ;}
+    }
     break;
 
   case 100:
@@ -2329,7 +2327,7 @@ yyreduce:
 	(yyval.selector) = new CSSSelector();
 	(yyval.selector)->match = CSSSelector::PseudoElement;
         (yyval.selector)->value = domString((yyvsp[0].string));
-    ;}
+    }
     break;
 
   case 101:
@@ -2339,7 +2337,7 @@ yyreduce:
         (yyval.selector)->match = CSSSelector::PseudoClass;
         (yyval.selector)->string_arg = domString((yyvsp[-1].string));
         (yyval.selector)->value = domString((yyvsp[-2].string));
-    ;}
+    }
     break;
 
   case 102:
@@ -2349,7 +2347,7 @@ yyreduce:
         (yyval.selector)->match = CSSSelector::PseudoClass;
         (yyval.selector)->string_arg = QString::number((yyvsp[-1].val));
         (yyval.selector)->value = domString((yyvsp[-2].string));
-    ;}
+    }
     break;
 
   case 103:
@@ -2359,7 +2357,7 @@ yyreduce:
         (yyval.selector)->match = CSSSelector::PseudoClass;
         (yyval.selector)->string_arg = domString((yyvsp[-1].string));
         (yyval.selector)->value = domString((yyvsp[-2].string));
-    ;}
+    }
     break;
 
   case 104:
@@ -2369,7 +2367,7 @@ yyreduce:
         (yyval.selector)->match = CSSSelector::PseudoClass;
         (yyval.selector)->string_arg = domString((yyvsp[-1].string));
         (yyval.selector)->value = domString((yyvsp[-2].string));
-    ;}
+    }
     break;
 
   case 105:
@@ -2379,28 +2377,28 @@ yyreduce:
         (yyval.selector)->match = CSSSelector::PseudoClass;
         (yyval.selector)->simpleSelector = (yyvsp[-1].selector);
         (yyval.selector)->value = domString((yyvsp[-3].string));
-    ;}
+    }
     break;
 
   case 106:
 
     {
 	(yyval.ok) = (yyvsp[-1].ok);
-    ;}
+    }
     break;
 
   case 107:
 
     {
 	(yyval.ok) = false;
-    ;}
+    }
     break;
 
   case 108:
 
     {
 	(yyval.ok) = (yyvsp[-1].ok);
-    ;}
+    }
     break;
 
   case 109:
@@ -2409,28 +2407,28 @@ yyreduce:
 	(yyval.ok) = (yyvsp[-2].ok);
 	if ( (yyvsp[-1].ok) )
 	    (yyval.ok) = (yyvsp[-1].ok);
-    ;}
+    }
     break;
 
   case 110:
 
     {
 	(yyval.ok) = (yyvsp[-2].ok);
-    ;}
+    }
     break;
 
   case 111:
 
     {
 	(yyval.ok) = (yyvsp[-2].ok);
-    ;}
+    }
     break;
 
   case 112:
 
     {
         (yyval.ok) = false;
-    ;}
+    }
     break;
 
   case 113:
@@ -2439,14 +2437,14 @@ yyreduce:
 	(yyval.ok) = (yyvsp[-3].ok);
 	if ( (yyvsp[-2].ok) )
 	    (yyval.ok) = (yyvsp[-2].ok);
-    ;}
+    }
     break;
 
   case 114:
 
     {
         (yyval.ok) = (yyvsp[-3].ok);
-    ;}
+    }
     break;
 
   case 115:
@@ -2472,14 +2470,14 @@ yyreduce:
         }
 	delete p->valueList;
 	p->valueList = 0;
-    ;}
+    }
     break;
 
   case 116:
 
     {
         (yyval.ok) = false;
-    ;}
+    }
     break;
 
   case 117:
@@ -2487,17 +2485,17 @@ yyreduce:
     {
 	QString str = qString((yyvsp[-1].string));
 	(yyval.prop_id) = getPropertyID( str.toLower().toLatin1(), str.length() );
-    ;}
+    }
     break;
 
   case 118:
 
-    { (yyval.b) = true; ;}
+    { (yyval.b) = true; }
     break;
 
   case 119:
 
-    { (yyval.b) = false; ;}
+    { (yyval.b) = false; }
     break;
 
   case 120:
@@ -2505,7 +2503,7 @@ yyreduce:
     {
 	(yyval.valueList) = new ValueList;
 	(yyval.valueList)->addValue( (yyvsp[0].value) );
-    ;}
+    }
     break;
 
   case 121:
@@ -2522,48 +2520,48 @@ yyreduce:
 	    }
 	    (yyval.valueList)->addValue( (yyvsp[0].value) );
 	}
-    ;}
+    }
     break;
 
   case 122:
 
     {
 	(yyval.tok) = '/';
-    ;}
+    }
     break;
 
   case 123:
 
     {
 	(yyval.tok) = ',';
-    ;}
+    }
     break;
 
   case 124:
 
     {
         (yyval.tok) = 0;
-  ;}
+  }
     break;
 
   case 125:
 
-    { (yyval.value) = (yyvsp[0].value); ;}
+    { (yyval.value) = (yyvsp[0].value); }
     break;
 
   case 126:
 
-    { (yyval.value) = (yyvsp[0].value); (yyval.value).fValue *= (yyvsp[-1].val); ;}
+    { (yyval.value) = (yyvsp[0].value); (yyval.value).fValue *= (yyvsp[-1].val); }
     break;
 
   case 127:
 
-    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[-1].string); (yyval.value).unit = CSSPrimitiveValue::CSS_DIMENSION; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[-1].string); (yyval.value).unit = CSSPrimitiveValue::CSS_DIMENSION; }
     break;
 
   case 128:
 
-    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[-1].string); (yyval.value).unit = CSSPrimitiveValue::CSS_STRING; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[-1].string); (yyval.value).unit = CSSPrimitiveValue::CSS_STRING; }
     break;
 
   case 129:
@@ -2573,119 +2571,119 @@ yyreduce:
       (yyval.value).id = getValueID( str.toLower().toLatin1(), str.length() );
       (yyval.value).unit = CSSPrimitiveValue::CSS_IDENT;
       (yyval.value).string = (yyvsp[-1].string);
-  ;}
+  }
     break;
 
   case 130:
 
-    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[-1].string); (yyval.value).unit = CSSPrimitiveValue::CSS_URI; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[-1].string); (yyval.value).unit = CSSPrimitiveValue::CSS_URI; }
     break;
 
   case 131:
 
-    { (yyval.value).id = 0; (yyval.value).iValue = 0; (yyval.value).unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ ;}
+    { (yyval.value).id = 0; (yyval.value).iValue = 0; (yyval.value).unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ }
     break;
 
   case 132:
 
-    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[0].string); (yyval.value).unit = CSSPrimitiveValue::CSS_RGBCOLOR; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[0].string); (yyval.value).unit = CSSPrimitiveValue::CSS_RGBCOLOR; }
     break;
 
   case 133:
 
     {
       (yyval.value) = (yyvsp[0].value);
-  ;}
+  }
     break;
 
   case 134:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_NUMBER; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_NUMBER; }
     break;
 
   case 135:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PERCENTAGE; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PERCENTAGE; }
     break;
 
   case 136:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PX; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PX; }
     break;
 
   case 137:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_CM; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_CM; }
     break;
 
   case 138:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_MM; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_MM; }
     break;
 
   case 139:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_IN; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_IN; }
     break;
 
   case 140:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PT; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PT; }
     break;
 
   case 141:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PC; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PC; }
     break;
 
   case 142:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_DEG; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_DEG; }
     break;
 
   case 143:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_RAD; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_RAD; }
     break;
 
   case 144:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_GRAD; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_GRAD; }
     break;
 
   case 145:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_MS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_MS; }
     break;
 
   case 146:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_S; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_S; }
     break;
 
   case 147:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_HZ; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_HZ; }
     break;
 
   case 148:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_KHZ; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_KHZ; }
     break;
 
   case 149:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_EMS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_EMS; }
     break;
 
   case 150:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = Value::Q_EMS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = Value::Q_EMS; }
     break;
 
   case 151:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_EXS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[-1].val); (yyval.value).unit = CSSPrimitiveValue::CSS_EXS; }
     break;
 
   case 152:
@@ -2697,7 +2695,7 @@ yyreduce:
       (yyval.value).id = 0;
       (yyval.value).unit = Value::Function;
       (yyval.value).function = f;
-  ;}
+  }
     break;
 
   case 153:
@@ -2709,12 +2707,12 @@ yyreduce:
       (yyval.value).id = 0;
       (yyval.value).unit = Value::Function;
       (yyval.value).function = f;
-  ;}
+  }
     break;
 
   case 154:
 
-    { (yyval.string) = (yyvsp[-1].string); ;}
+    { (yyval.string) = (yyvsp[-1].string); }
     break;
 
   case 155:
@@ -2724,7 +2722,7 @@ yyreduce:
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "skipped invalid @-rule" << endl;
 #endif
-    ;}
+    }
     break;
 
   case 156:
@@ -2734,7 +2732,7 @@ yyreduce:
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "skipped invalid @-rule" << endl;
 #endif
-    ;}
+    }
     break;
 
   case 157:
@@ -2744,7 +2742,7 @@ yyreduce:
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "skipped invalid rule" << endl;
 #endif
-    ;}
+    }
     break;
 
 
