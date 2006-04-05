@@ -64,7 +64,7 @@ const KInstance *Factory::partInstanceFromLibrary( const QCString &libraryName )
     if ( !factory )
         return 0;
     KParts::Factory *pfactory = dynamic_cast<KParts::Factory *>( factory );
-    if ( !factory )
+    if ( !pfactory )
         return 0;
     return pfactory->partInstance();
 }
