@@ -242,7 +242,7 @@ void KHSSelector::drawPalette( QPixmap *pixmap )
 		p = (uint *) image.scanLine( ySize - s - 1 );
 		for( h = 0; h < xSize; h++ )
 		{
-			col.setHsv( 359*h/(xSize-1), 255*s/(ySize-1), 192 );
+			col.setHsv( 359*h/(xSize-1), 255*s/((ySize == 1) ? 1 : ySize-1), 192 );
 			*p = col.rgb();
 			p++;
 		}
@@ -305,7 +305,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 
 			for( int x = 0; x < xSize; x++ )
 			{
-				col.setHsv( _hue, _sat, 255*x/(xSize-1) );
+				col.setHsv( _hue, _sat, 255*x/((xSize == 1) ? 1 : xSize-1) );
 				rgb = col.rgb();
 				*p++ = rgb;
 			}
@@ -317,7 +317,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 		for ( int v = 0; v < ySize; v++ )
 		{
 			p = (uint *) image.scanLine( ySize - v - 1 );
-			col.setHsv( _hue, _sat, 255*v/(ySize-1) );
+			col.setHsv( _hue, _sat, 255*v/((ySize == 1) ? 1 : ySize-1) );
 			rgb = col.rgb();
 			for ( int i = 0; i < xSize; i++ )
 				*p++ = rgb;
