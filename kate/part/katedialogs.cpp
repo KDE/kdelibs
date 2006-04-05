@@ -1594,7 +1594,7 @@ void KateModOnHdPrompt::slotDiff()
   // Start a KProcess that creates a diff
   KProcIO *p = new KProcIO();
   p->setComm( KProcess::All );
-  *p << "diff" << "-ub" << "-" <<  m_doc->url().path();
+  *p << "diff" << "-u" << "-" <<  m_doc->url().path();
   connect( p, SIGNAL(processExited(KProcess*)), this, SLOT(slotPDone(KProcess*)) );
   connect( p, SIGNAL(readReady(KProcIO*)), this, SLOT(slotPRead(KProcIO*)) );
 
@@ -1625,6 +1625,8 @@ void KateModOnHdPrompt::slotPRead( KProcIO *p)
 void KateModOnHdPrompt::slotPDone( KProcess *p )
 {
   setCursor( ArrowCursor );
+  if ( ! m_tmpfile )
+    m_tmpfile = new KTempFile();
   m_tmpfile->close();
 
   if ( ! p->normalExit() /*|| p->exitStatus()*/ )
