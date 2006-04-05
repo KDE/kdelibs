@@ -668,7 +668,7 @@ void KDialogBase::setButtonStyle( int style )
     return;
   }
 
-  if( style < 0 || style > ActionStyleMAX ) { style = ActionStyle0; }
+  if( style < 0 || style >= ActionStyleMAX ) { style = ActionStyle0; }
   d->mButton.style = style;
 
   const int *layout;
