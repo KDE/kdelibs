@@ -34,6 +34,7 @@ class AudioOutputDevice;
 class AudioCaptureDevice;
 class VideoCaptureDevice;
 class AudioEffectDescription;
+class VideoEffectDescription;
 
 /**
  * Singleton class describing the capabilities of the Backend.
@@ -145,7 +146,14 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		 * description for every supported audio effect.
 		 */
 		static QList<AudioEffectDescription> availableAudioEffects();
-		static QStringList availableVideoEffects();
+
+		/**
+		 * Returns descriptions for the video effects the backend supports.
+		 *
+		 * \return A list of VideoEffectDescription objects that give a name and
+		 * description for every supported video effect.
+		 */
+		static QList<VideoEffectDescription> availableVideoEffects();
 
 	Q_SIGNALS:
 		/**

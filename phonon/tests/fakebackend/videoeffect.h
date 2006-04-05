@@ -30,10 +30,8 @@ namespace Fake
 	{
 		Q_OBJECT
 		public:
-			VideoEffect( QObject* parent );
+			VideoEffect( int effectId, QObject* parent );
 			virtual ~VideoEffect();
-			virtual QString type() const;
-			virtual void setType( const QString& type );
 			virtual float value( int parameterId ) const;
 			virtual void setValue( int parameterId, float newValue );
 
@@ -42,7 +40,6 @@ namespace Fake
 			virtual const QObject* qobject() const { return this; }
 
 		private:
-			QString m_type;
 	};
 }} //namespace Phonon::Fake
 

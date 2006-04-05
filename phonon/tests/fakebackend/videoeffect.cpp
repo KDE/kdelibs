@@ -23,23 +23,13 @@ namespace Phonon
 {
 namespace Fake
 {
-VideoEffect::VideoEffect( QObject* parent )
+VideoEffect::VideoEffect( int effectId, QObject* parent )
 	: QObject( parent )
 {
 }
 
 VideoEffect::~VideoEffect()
 {
-}
-
-QString VideoEffect::type() const
-{
-	return m_type;
-}
-
-void VideoEffect::setType( const QString& type )
-{
-	m_type = type;
 }
 
 float VideoEffect::value( int parameterId ) const

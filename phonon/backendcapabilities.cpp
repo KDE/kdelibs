@@ -26,6 +26,7 @@
 #include "audioeffectdescription.h"
 #include <QList>
 #include <QSet>
+#include "videoeffectdescription.h"
 
 static KStaticDeleter<Phonon::BackendCapabilities> sd;
 
@@ -135,10 +136,17 @@ QList<AudioEffectDescription> BackendCapabilities::availableAudioEffects()
 	return ret;
 }
 
-QStringList BackendCapabilities::availableVideoEffects()
+QList<VideoEffectDescription> BackendCapabilities::availableVideoEffects()
 {
 	const BackendCapabilities::Private* d = self()->d;
-	return d->backend ? d->backend->availableVideoEffects() : QStringList();
+	QList<VideoEffectDescription> ret;
+	if( d->backend )
+	{
+		QSet<int> deviceIndexes = d->backend->videoEffectIndexes();
+		foreach( int i, deviceIndexes )
+			ret.append( VideoEffectDescription::fromIndex( i ) );
+	}
+	return ret;
 }
 
 void BackendCapabilities::slotBackendChanged()

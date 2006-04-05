@@ -17,29 +17,35 @@
 
 */
 
-#ifndef AUDIOEFFECT_P_H
-#define AUDIOEFFECT_P_H
+#ifndef PHONON_VIDEOEFFECTDESCRIPTION_H
+#define PHONON_VIDEOEFFECTDESCRIPTION_H
 
-#include "audioeffect.h"
-#include "ifaces/audioeffect.h"
-#include "base_p.h"
-#include <QHash>
+#include "namedescriptiontuple.h"
 
 namespace Phonon
 {
-class AudioEffectPrivate : public BasePrivate
-{
-	K_DECLARE_PUBLIC( AudioEffect )
-	PHONON_PRIVATECLASS( AudioEffect, Base )
-	protected:
-		AudioEffectPrivate()
-		{
-		}
-	private:
-		int type;
-		QHash<int, float> parameterValues;
-};
-} //namespace Phonon
 
-#endif // AUDIOEFFECT_P_H
-// vim: sw=4 ts=4 tw=80
+class VideoEffectDescriptionPrivate;
+
+class PHONONCORE_EXPORT VideoEffectDescription : public NameDescriptionTuple
+{
+	Q_DECLARE_PRIVATE( VideoEffectDescription )
+	public:
+		VideoEffectDescription();
+		VideoEffectDescription( const VideoEffectDescription& effectDescription );
+		VideoEffectDescription& operator=( const VideoEffectDescription& effectDescription );
+		bool operator==( const VideoEffectDescription& effectDescription ) const;
+		static VideoEffectDescription fromIndex( int index );
+
+	protected:
+		/**
+		 * \internal
+		 * Creates new (valid) description.
+		 */
+		VideoEffectDescription( int index, const QString& name, const QString& description );
+};
+
+}
+
+#endif // PHONON_VIDEOEFFECTDESCRIPTION_H
+// vim: sw=4 ts=4 noet tw=80

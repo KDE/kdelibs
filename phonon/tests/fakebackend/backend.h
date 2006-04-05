@@ -65,7 +65,7 @@ namespace Fake
 			virtual Ifaces::AudioDataOutput*  createAudioDataOutput( QObject* parent );
 
 			virtual Ifaces::VideoPath*        createVideoPath( QObject* parent );
-			virtual Ifaces::VideoEffect*      createVideoEffect( QObject* parent );
+			virtual Ifaces::VideoEffect*      createVideoEffect( int effectId, QObject* parent );
 
 			virtual bool supportsVideo() const;
 			virtual bool supportsOSD() const;
@@ -93,7 +93,9 @@ namespace Fake
 			virtual QString audioEffectName( int index ) const;
 			virtual QString audioEffectDescription( int index ) const;
 
-			virtual const QStringList& availableVideoEffects() const;
+			virtual QSet<int> videoEffectIndexes() const;
+			virtual QString videoEffectName( int index ) const;
+			virtual QString videoEffectDescription( int index ) const;
 
 			virtual const char* uiLibrary() const;
 			//virtual const char* uiSymbol() const;

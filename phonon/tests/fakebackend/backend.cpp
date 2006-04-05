@@ -96,9 +96,9 @@ Ifaces::VideoPath*        Backend::createVideoPath( QObject* parent )
 	return new VideoPath( parent );
 }
 
-Ifaces::VideoEffect*      Backend::createVideoEffect( QObject* parent )
+Ifaces::VideoEffect*      Backend::createVideoEffect( int effectId, QObject* parent )
 {
-	return new VideoEffect( parent );
+	return new VideoEffect( effectId, parent );
 }
 
 bool Backend::supportsVideo() const
@@ -267,11 +267,31 @@ QString Backend::audioEffectDescription( int index ) const
 	return QString();
 }
 
-const QStringList& Backend::availableVideoEffects() const
+QSet<int> Backend::videoEffectIndexes() const
 {
-	if( m_videoEffects.isEmpty() )
-		const_cast<Backend*>( this )->m_videoEffects << "videoEffect1" << "videoEffect2";
-	return m_videoEffects;
+	QSet<int> ret;
+	ret << 0x7E000001;
+	return ret;
+}
+
+QString Backend::videoEffectName( int index ) const
+{
+	switch( index )
+	{
+		case 0x7E000001:
+			return "VideoEffect1";
+	}
+	return QString();
+}
+
+QString Backend::videoEffectDescription( int index ) const
+{
+	switch( index )
+	{
+		case 0x7E000001:
+			return "Description 1";
+	}
+	return QString();
 }
 
 const char* Backend::uiLibrary() const

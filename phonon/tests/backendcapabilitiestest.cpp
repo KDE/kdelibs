@@ -25,6 +25,7 @@
 #include "../audiocapturedevice.h"
 #include "../videocapturedevice.h"
 #include "../audioeffectdescription.h"
+#include "../videoeffectdescription.h"
 
 using namespace Phonon;
 
@@ -62,6 +63,11 @@ void BackendCapabilitiesTest::sensibleValues()
 		QVERIFY( !BackendCapabilities::availableAudioEffects().at( i ).name().isEmpty() );
 	}
 	QVERIFY( BackendCapabilities::availableVideoEffects().size() >= 0 );
+	for( int i = 0; i < BackendCapabilities::availableVideoEffects().size(); ++i )
+	{
+		QVERIFY( BackendCapabilities::availableVideoEffects().at( i ).index() == i+1 );
+		QVERIFY( !BackendCapabilities::availableVideoEffects().at( i ).name().isEmpty() );
+	}
 }
 
 void BackendCapabilitiesTest::checkSignals()

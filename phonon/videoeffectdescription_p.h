@@ -17,24 +17,22 @@
 
 */
 
-#ifndef PHONON_IFACES_AUDIOEFFECT_P_H
-#define PHONON_IFACES_AUDIOEFFECT_P_H
+#ifndef AUDIOEFFECTDESCRIPTION_P_H
+#define AUDIOEFFECTDESCRIPTION_P_H
 
-#include "audioeffect.h"
-#include "effect_p.h"
+#include "videoeffectdescription.h"
+#include "namedescriptiontuple_p.h"
 
 namespace Phonon
 {
-namespace Ifaces
-{
 
-class AudioEffectPrivate : public EffectPrivate
+class VideoEffectDescriptionPrivate : public NameDescriptionTuplePrivate
 {
-	friend class AudioEffect;
-	private:
+	Q_DECLARE_PUBLIC( VideoEffectDescription )
+	protected:
 };
 
-}} // namespace Phonon::Ifaces
+} // namespace Phonon
 
-#endif // PHONON_IFACES_AUDIOEFFECT_P_H
+#endif // AUDIOEFFECTDESCRIPTION_P_H
 // vim: sw=4 ts=4 tw=80

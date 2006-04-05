@@ -49,6 +49,8 @@ class PHONONCORE_EXPORT EffectParameter
 	friend class Phonon::Ifaces::Effect;
 	friend class AudioEffect;
 	friend class AudioEffectPrivate;
+	friend class VideoEffect;
+	friend class VideoEffectPrivate;
 	public:
 		/**
 		 * Creates an invalid effect parameter.

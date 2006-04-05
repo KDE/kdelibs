@@ -22,6 +22,8 @@
 #include "base.h"
 #include "phonondefs.h"
 #include <QObject>
+#include "effect.h"
+#include "videoeffectdescription.h"
 
 class QString;
 
@@ -33,18 +35,61 @@ namespace Phonon
 		class VideoEffect;
 	}
 
-	class PHONONCORE_EXPORT VideoEffect : public QObject, public Base
+	class PHONONCORE_EXPORT VideoEffect : public QObject, public Effect, public Base
 	{
 		friend class VideoPath;
 		friend class VideoPathPrivate;
-		K_DECLARE_PRIVATE( VideoEffect )
 		Q_OBJECT
-		PHONON_OBJECT( VideoEffect )
-		public:
-			QString type() const;
+		K_DECLARE_PRIVATE( VideoEffect )
 
-		public Q_SLOTS:
-			void setType( const QString& );
+		public:
+			/**
+			 * Standard QObject constructor.
+			 *
+			 * \param parent QObject parent
+			 */
+			VideoEffect( const VideoEffectDescription& type, QObject* parent = 0 );
+
+			VideoEffectDescription type() const;
+			virtual QList<EffectParameter> parameterList() const;
+
+		protected:
+			/**
+			 * \internal
+			 *
+			 * Constructs new video effect with private data \p dd and a
+			 * \p parent.
+			 */
+			VideoEffect( VideoEffectPrivate& dd, QObject* parent, const VideoEffectDescription& type = VideoEffectDescription() );
+
+			/**
+			 * \internal
+			 * After construction of the Iface object this method is called
+			 * throughout the complete class hierarchy in order to set up the
+			 * properties that were already set on the public interface.
+			 *
+			 * An example implementation could look like this:
+			 * \code
+			 * ParentClass::setupIface();
+			 * m_iface->setPropertyA( d->propertyA );
+			 * m_iface->setPropertyB( d->propertyB );
+			 * \endcode
+			 */
+			void setupIface();
+
+		private:
+			/**
+			 * \internal
+			 * Returns the Iface object. If the object does not exist it tries to
+			 * create it before returning.
+			 *
+			 * \return the Iface object, might return \c 0
+			 */
+			Ifaces::VideoEffect* iface();
+
+		protected:
+			virtual float value( int parameterId ) const;
+			virtual void setValue( int parameterId, float newValue );
 	};
 } //namespace Phonon
 

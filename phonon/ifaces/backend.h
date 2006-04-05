@@ -133,7 +133,7 @@ namespace Ifaces
 			/**
 			 * Creates an instance of VideoEffect
 			 */
-			virtual VideoEffect*      createVideoEffect( QObject* parent ) = 0;
+			virtual VideoEffect*      createVideoEffect( int effectId, QObject* parent ) = 0;
 
 			/**
 			 * Tells whether the backend is audio only or can handle video files
@@ -314,7 +314,9 @@ namespace Ifaces
 			virtual QString audioEffectName( int index ) const = 0;
 			virtual QString audioEffectDescription( int index ) const = 0;
 
-			virtual const QStringList& availableVideoEffects() const = 0;
+			virtual QSet<int> videoEffectIndexes() const = 0;
+			virtual QString videoEffectName( int index ) const = 0;
+			virtual QString videoEffectDescription( int index ) const = 0;
 
 			/**
 			 * Returns the name of the DSO implementing Ui::Ifaces.

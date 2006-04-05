@@ -23,6 +23,7 @@
 #include "videoeffect.h"
 #include "ifaces/videoeffect.h"
 #include "base_p.h"
+#include <QHash>
 
 namespace Phonon
 {
@@ -31,7 +32,13 @@ class VideoEffectPrivate : public BasePrivate
 	K_DECLARE_PUBLIC( VideoEffect )
 	PHONON_PRIVATECLASS( VideoEffect, Base )
 	protected:
-		QString type;
+		VideoEffectPrivate()
+		{
+		}
+
+	private:
+		int type;
+		QHash<int, float> parameterValues;
 };
 }
 

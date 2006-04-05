@@ -223,8 +223,8 @@ Ifaces::classname* Factory::create ## classname( QObject* parent ) \
 { \
 	return d->backend ? registerObject( d->backend->create ## classname( parent ) ) : 0; \
 }
-#define FACTORY_IMPL_1ARG( type1, name1, classname ) \
-Ifaces::AudioEffect* Factory::createAudioEffect( type1 name1, QObject* parent ) \
+#define FACTORY_IMPL_1ARG( type1, classname ) \
+Ifaces::classname* Factory::create ## classname( type1 name1, QObject* parent ) \
 { \
 	return d->backend ? registerObject( d->backend->create ## classname( name1, parent ) ) : 0; \
 }
@@ -233,12 +233,12 @@ FACTORY_IMPL( MediaObject )
 FACTORY_IMPL( AvCapture )
 FACTORY_IMPL( ByteStream )
 FACTORY_IMPL( AudioPath )
-FACTORY_IMPL_1ARG( int, effectId, AudioEffect )
+FACTORY_IMPL_1ARG( int, AudioEffect )
 FACTORY_IMPL( VolumeFaderEffect )
 FACTORY_IMPL( AudioOutput )
 FACTORY_IMPL( AudioDataOutput )
 FACTORY_IMPL( VideoPath )
-FACTORY_IMPL( VideoEffect )
+FACTORY_IMPL_1ARG( int, VideoEffect )
 
 #undef FACTORY_IMPL
 

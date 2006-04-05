@@ -136,7 +136,7 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		 *
 		 * \return a pointer to the Ifaces::VideoEffect the backend provides
 		 */
-		Ifaces::VideoEffect* createVideoEffect( QObject* parent = 0 );
+		Ifaces::VideoEffect* createVideoEffect( int effectId, QObject* parent = 0 );
 
 		/**
 		 * \return a pointer to the backend interface.

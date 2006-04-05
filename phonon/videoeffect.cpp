@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,33 +18,90 @@
 */
 #include "videoeffect.h"
 #include "videoeffect_p.h"
-#include "ifaces/videoeffect.h"
+#include "effectparameter.h"
 #include "factory.h"
+#include "ifaces/videoeffect.h"
+#include "videoeffectdescription.h"
 
 namespace Phonon
 {
-PHONON_OBJECT_IMPL( VideoEffect )
 
-QString VideoEffect::type() const
-{
-	K_D( const VideoEffect );
-	return d->iface() ? d->iface()->type() : d->type;
-}
-
-void VideoEffect::setType( const QString& type )
+VideoEffect::VideoEffect( const VideoEffectDescription& type, QObject* parent )
+	: QObject( parent )
+	, Base( *new VideoEffectPrivate )
 {
 	K_D( VideoEffect );
-	if( d->iface() )
-		d->iface()->setType( type );
+	d->type = type.index();
+	d->createIface();
+}
+
+VideoEffect::VideoEffect( VideoEffectPrivate& dd, QObject* parent, const VideoEffectDescription& type )
+	: QObject( parent )
+	, Base( dd )
+{
+	K_D( VideoEffect );
+	d->type = type.index();
+}
+
+Ifaces::VideoEffect* VideoEffect::iface()
+{
+	K_D( VideoEffect );
+	if( !d->iface() )
+		d->createIface();
+	return d->iface();
+}
+
+void VideoEffectPrivate::createIface()
+{
+	if( iface_ptr )
+		return;
+	K_Q( VideoEffect );
+	setIface( Factory::self()->createVideoEffect( type, q ) );
+	q->setupIface();
+}
+
+VideoEffectDescription VideoEffect::type() const
+{
+	K_D( const VideoEffect );
+	return VideoEffectDescription::fromIndex( d->type );
+}
+
+QList<EffectParameter> VideoEffect::parameterList() const
+{
+	K_D( const VideoEffect );
+	QList<EffectParameter> ret;
+	// create an iface object if possible
+	if( const_cast<VideoEffect*>( this )->iface() )
+	{
+		ret = d->iface()->parameterList();
+		for( int i = 0; i < ret.size(); ++i )
+			ret[ i ].setEffect( const_cast<VideoEffect*>( this ) );
+	}
+	return ret;
+}
+
+float VideoEffect::value( int parameterId ) const
+{
+	K_D( const VideoEffect );
+	return d->iface() ? d->iface()->value( parameterId ) : d->parameterValues[ parameterId ];
+}
+
+void VideoEffect::setValue( int parameterId, float newValue )
+{
+	K_D( VideoEffect );
+	if( iface() )
+		d->iface()->setValue( parameterId, newValue );
 	else
-		d->type = type;
+		d->parameterValues[ parameterId ] = newValue;
 }
 
 bool VideoEffectPrivate::aboutToDeleteIface()
 {
 	if( iface() )
 	{
-		type = iface()->type();
+		QList<EffectParameter> plist = iface()->parameterList();
+		foreach( EffectParameter p, plist )
+			parameterValues[ p.id() ] = p.value();
 	}
 	return true;
 }
@@ -55,7 +112,10 @@ void VideoEffect::setupIface()
 	Q_ASSERT( d->iface() );
 
 	// set up attributes
-	d->iface()->setType( d->type );
+	QList<EffectParameter> plist = d->iface()->parameterList();
+	foreach( EffectParameter p, plist )
+		if( d->parameterValues.contains( p.id() ) )
+			p.setValue( d->parameterValues[ p.id() ] );
 }
 
 } //namespace Phonon

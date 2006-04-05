@@ -27,14 +27,14 @@ namespace Phonon
 {
 namespace Ifaces
 {
+	//class VideoEffectPrivate;
+
+	/**
+	 * \author Matthias Kretz <kretz@kde.org>
+	 */
 	class VideoEffect : public Effect
 	{
-		public:
-			// Attributes Getters:
-			virtual QString type() const = 0;
-
-			// Attributes Setters:
-			virtual void setType( const QString& type ) = 0;
+		//Q_DECLARE_PRIVATE( VideoEffect )
 	};
 }} //namespace Phonon::Ifaces
 
