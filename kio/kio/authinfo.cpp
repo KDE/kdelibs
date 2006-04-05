@@ -326,6 +326,7 @@ bool NetRC::parse( int fd )
   }
 
   delete [] buf;
+  fclose (fstream);
   close (fd);
   return true;
 }
