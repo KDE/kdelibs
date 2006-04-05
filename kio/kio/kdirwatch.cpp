@@ -853,6 +853,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 				    const QString& _path, Entry* sub_entry )
 {
+  kdDebug(7001) << "KDirWatchPrivate::removeEntry for '" << _path << "' sub_entry: " << sub_entry << endl;
   Entry* e = entry(_path);
   if (!e) {
     kWarning(7001) << "KDirWatch::removeDir can't handle '" << _path << "'" << endl;
@@ -994,7 +995,7 @@ bool KDirWatchPrivate::stopEntryScan( KDirWatch* instance, Entry* e)
       stillWatching += client->count;
   }
 
-  kDebug(7001) << instance->objectName() << " stopped scanning " << e->path
+  kDebug(7001) << (instance ? instance->objectName() : "all") << " stopped scanning " << e->path
 		<< " (now " << stillWatching << " watchers)" << endl;
 
   if (stillWatching == 0) {
@@ -1025,7 +1026,7 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
   if (newWatching == 0)
     return false;
 
-  kDebug(7001) << instance->objectName() << " restarted scanning " << e->path
+  kDebug(7001) << (instance ? instance->objectName() : "all") << " restarted scanning " << e->path
 		<< " (now " << wasWatching+newWatching << " watchers)" << endl;
 
   // restart watching and emit pending events
