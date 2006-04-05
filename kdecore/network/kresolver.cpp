@@ -661,7 +661,7 @@ QList<QByteArray> KResolver::protocolName(int protonum)
 
 QList<QByteArray> KResolver::protocolName(const char *protoname)
 {
-  struct protoent *pe;
+  struct protoent *pe = 0L;
 #ifndef HAVE_GETPROTOBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
@@ -690,6 +690,7 @@ QList<QByteArray> KResolver::protocolName(const char *protoname)
       if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) == ERANGE)
 #  endif
 	{
+          pe = 0L;
 	  buflen += 1024;
 	  delete [] buf;
 	}
@@ -720,7 +721,7 @@ QList<QByteArray> KResolver::protocolName(const char *protoname)
 
 int KResolver::protocolNumber(const char *protoname)
 {
-  struct protoent *pe;
+  struct protoent *pe = 0L;
 #ifndef HAVE_GETPROTOBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
@@ -750,6 +751,7 @@ int KResolver::protocolNumber(const char *protoname)
       if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) == ERANGE)
 #  endif
 	{
+          pe = 0L;
 	  buflen += 1024;
 	  delete [] buf;
 	}
@@ -776,7 +778,7 @@ int KResolver::protocolNumber(const char *protoname)
 
 int KResolver::servicePort(const char *servname, const char *protoname)
 {
-  struct servent *se;
+  struct servent *se = 0L;
 #ifndef HAVE_GETSERVBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
@@ -805,6 +807,7 @@ int KResolver::servicePort(const char *servname, const char *protoname)
       if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) == ERANGE)
 #  endif
 	{
+          se = 0L;
 	  buflen += 1024;
 	  delete [] buf;
 	}
@@ -831,7 +834,7 @@ int KResolver::servicePort(const char *servname, const char *protoname)
 
 QList<QByteArray> KResolver::serviceName(const char* servname, const char *protoname)
 {
-  struct servent *se;
+  struct servent *se = 0L;
 #ifndef HAVE_GETSERVBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
@@ -860,6 +863,7 @@ QList<QByteArray> KResolver::serviceName(const char* servname, const char *proto
       if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) == ERANGE)
 #  endif
 	{
+          se = 0L;
 	  buflen += 1024;
 	  delete [] buf;
 	}
@@ -890,7 +894,7 @@ QList<QByteArray> KResolver::serviceName(const char* servname, const char *proto
 
 QList<QByteArray> KResolver::serviceName(int port, const char *protoname)
 {
-  struct servent *se;
+  struct servent *se = 0L;
 #ifndef HAVE_GETSERVBYPORT_R
   QMutexLocker locker(&getXXbyYYmutex);
 
@@ -919,6 +923,7 @@ QList<QByteArray> KResolver::serviceName(int port, const char *protoname)
       if (getservbyport_r(port, protoname, &servbuf, buf, buflen, &se) == ERANGE)
 #  endif
 	{
+          se = 0L;
 	  buflen += 1024;
 	  delete [] buf;
 	}
