@@ -22,7 +22,7 @@ set(kunittestmodrunner_SRCS modrunner.cpp )
 
 kde4_automoc(${kunittestmodrunner_SRCS})
 
-kde4_add_executable(kunittestmodrunner ${kunittestmodrunner_SRCS})
+kde4_add_executable(kunittestmodrunner NOGUI ${kunittestmodrunner_SRCS})
 
 target_link_libraries(kunittestmodrunner ${KDE4_KDECORE_LIBS} kunittest)
 

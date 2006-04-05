@@ -8,7 +8,7 @@ set(kcookiejartest_SRCS kcookiejartest.cpp )
 
 kde4_automoc(${kcookiejartest_SRCS})
 
-kde4_add_executable(kcookiejartest ${kcookiejartest_SRCS})
+kde4_add_executable(kcookiejartest NOGUI ${kcookiejartest_SRCS})
 
 target_link_libraries(kcookiejartest  ${KDE4_KDECORE_LIBS} kio )
 

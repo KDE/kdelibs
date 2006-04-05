@@ -40,18 +40,11 @@ install_targets(${PLUGIN_INSTALL_DIR} kdeprint_lpr )
 # windows TODO
 if (UNIX)
 
-set(make_driver_db_lpr_SRCS
-make_driver_db_lpr.c
-${CMAKE_CURRENT_SOURCE_DIR}/../driverparse.c
-)
+   kde4_add_executable(make_driver_db_lpr NOGUI make_driver_db_lpr.c ${CMAKE_CURRENT_SOURCE_DIR}/../driverparse.c )
 
-kde4_automoc(${make_driver_db_lpr_SRCS})
+   target_link_libraries(make_driver_db_lpr  ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} )
 
-kde4_add_executable(make_driver_db_lpr ${make_driver_db_lpr_SRCS})
-
-target_link_libraries(make_driver_db_lpr  ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} )
-
-install_targets(/bin make_driver_db_lpr )
+   install_targets(/bin make_driver_db_lpr )
 
 endif (UNIX)
 

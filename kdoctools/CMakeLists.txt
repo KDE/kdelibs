@@ -50,7 +50,7 @@ set(meinproc_SRCS meinproc.cpp xslt.cpp )
 
 kde4_automoc(${meinproc_SRCS})
 
-kde4_add_executable(meinproc ${meinproc_SRCS})
+kde4_add_executable(meinproc NOGUI ${meinproc_SRCS})
 
 target_link_libraries(meinproc kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
 set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
@@ -60,17 +60,13 @@ install_targets(/bin meinproc )
 
 ########### next target ###############
 
-set(genshortcutents_SRCS
-genshortcutents.cpp
-)
-
-
+set(genshortcutents_SRCS genshortcutents.cpp )
 
 kde4_automoc(${genshortcutents_SRCS})
 
-kde4_add_executable(genshortcutents ${genshortcutents_SRCS})
+kde4_add_executable(genshortcutents NOGUI ${genshortcutents_SRCS})
 
-target_link_libraries(genshortcutents  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} )
 
 
 ########### install files ###############

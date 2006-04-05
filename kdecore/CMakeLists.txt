@@ -83,7 +83,7 @@ if (NOT WIN32)
    install_targets(${LIB_INSTALL_DIR} kdefakes )
 
    #no ttyname on windows
-   kde4_add_executable(kgrantpty kgrantpty.c)
+   kde4_add_executable(kgrantpty NOGUI kgrantpty.c)
    target_link_libraries(kgrantpty  kdefakes )
    install_targets(/bin kgrantpty )
    
@@ -288,7 +288,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/all_languages.desktop ${CMAKE_CURRENT
 
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  ${CMAKE_CURRENT_BINARY_DIR}/all_languages )
 
-kde4_add_executable(kde-config ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
+kde4_add_executable(kde-config NOGUI ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
 
 target_link_libraries(kde-config ${KDE4_KDECORE_LIBS} )
 

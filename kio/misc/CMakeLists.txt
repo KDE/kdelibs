@@ -41,13 +41,11 @@ install_targets(/bin kio_uiserver )
 
 ########### next target ###############
 
-set(kmailservice_SRCS
-kmailservice.cpp
-)
+set(kmailservice_SRCS kmailservice.cpp )
 
 kde4_automoc(${kmailservice_SRCS})
 
-kde4_add_executable(kmailservice ${kmailservice_SRCS})
+kde4_add_executable(kmailservice NOGUI ${kmailservice_SRCS})
 
 target_link_libraries(kmailservice  ${KDE4_KDECORE_LIBS} )
 
@@ -56,13 +54,11 @@ install_targets(/bin kmailservice )
 
 ########### next target ###############
 
-set(ktelnetservice_SRCS
-ktelnetservice.cpp
-)
+set(ktelnetservice_SRCS ktelnetservice.cpp )
 
 kde4_automoc(${ktelnetservice_SRCS})
 
-kde4_add_executable(ktelnetservice ${ktelnetservice_SRCS})
+kde4_add_executable(ktelnetservice NOGUI ${ktelnetservice_SRCS})
 
 target_link_libraries(ktelnetservice  ${KDE4_KDECORE_LIBS} kdeui )
 

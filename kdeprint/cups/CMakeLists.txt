@@ -57,29 +57,16 @@ install_targets(${PLUGIN_INSTALL_DIR} kdeprint_cups )
 
 ########### next target ###############
 
-set(make_driver_db_cups_SRCS
-make_driver_db_cups.c
-${CMAKE_CURRENT_SOURCE_DIR}/../driverparse.c
-)
+kde4_add_executable(make_driver_db_cups NOGUI make_driver_db_cups.c ${CMAKE_CURRENT_SOURCE_DIR}/../driverparse.c )
 
-kde4_automoc(${make_driver_db_cups_SRCS})
-
-kde4_add_executable(make_driver_db_cups ${make_driver_db_cups_SRCS})
-
-target_link_libraries(make_driver_db_cups  ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} )
+target_link_libraries(make_driver_db_cups ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} )
 
 install_targets(/bin make_driver_db_cups )
 
 
 ########### next target ###############
 
-set(cupsdoprint_SRCS
-cupsdoprint.c
-)
-
-kde4_automoc(${cupsdoprint_SRCS})
-
-kde4_add_executable(cupsdoprint ${cupsdoprint_SRCS})
+kde4_add_executable(cupsdoprint cupsdoprint.c)
 
 target_link_libraries(cupsdoprint  ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} ${CUPS_LIBRARIES})
 

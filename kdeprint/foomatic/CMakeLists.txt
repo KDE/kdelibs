@@ -21,13 +21,7 @@ install_targets(${PLUGIN_INSTALL_DIR} kdeprint_foomatic )
 
 ########### next target ###############
 
-set(make_driver_db_foomatic_SRCS
-make_driver_db_foomatic.c
-)
-
-kde4_automoc(${make_driver_db_foomatic_SRCS})
-
-kde4_add_executable(make_driver_db_foomatic ${make_driver_db_foomatic_SRCS})
+kde4_add_executable(make_driver_db_foomatic NOGUI make_driver_db_foomatic.c)
 
 target_link_libraries(make_driver_db_foomatic  ${KDE4_KDECORE_LIBS} )
 

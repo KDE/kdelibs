@@ -52,14 +52,14 @@ install_targets(${PLUGIN_INSTALL_DIR} kcm_kresources )
 
 if(KDE4_BUILD_TESTS)
 
-set(testresources_SRCS testresources.cpp )
-
-kde4_automoc(${testresources_SRCS})
-
-kde4_add_executable(testresources ${testresources_SRCS})
-
-target_link_libraries(testresources  ${KDE4_KDECORE_LIBS} kresources)
-
+   set(testresources_SRCS testresources.cpp )
+   
+   kde4_automoc(${testresources_SRCS})
+   
+   kde4_add_executable(testresources ${testresources_SRCS})
+   
+   target_link_libraries(testresources  ${KDE4_KDECORE_LIBS} kresources)
+   
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############

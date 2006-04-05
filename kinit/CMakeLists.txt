@@ -15,7 +15,7 @@ set(kdeinit_SRCS kinit.cpp setproctitle.cpp )
 
 kde4_automoc(${kdeinit_SRCS})
 
-kde4_add_executable(kdeinit ${kdeinit_SRCS})
+kde4_add_executable(kdeinit NOGUI ${kdeinit_SRCS})
 
 target_link_libraries(kdeinit  ${KDE4_KDECORE_LIBS} kparts )
 
@@ -26,7 +26,7 @@ install_targets(/bin kdeinit )
 
 set(kdeinit_wrapper_SRCS wrapper.c )
 
-kde4_add_executable(kdeinit_wrapper ${kdeinit_wrapper_SRCS})
+kde4_add_executable(kdeinit_wrapper NOGUI ${kdeinit_wrapper_SRCS})
 
 target_link_libraries(kdeinit_wrapper  ${KDE4_KDECORE_LIBS} )
 
@@ -37,7 +37,7 @@ install_targets(/bin kdeinit_wrapper )
 
 set(kshell_SRCS shell.c )
 
-kde4_add_executable(kshell ${kshell_SRCS})
+kde4_add_executable(kshell NOGUI ${kshell_SRCS})
 
 target_link_libraries(kshell  ${KDE4_KDECORE_LIBS} )
 
@@ -48,7 +48,7 @@ install_targets(/bin kshell )
 
 set(kdeinit_shutdown_SRCS wrapper.c )
 
-kde4_add_executable(kdeinit_shutdown ${kdeinit_shutdown_SRCS})
+kde4_add_executable(kdeinit_shutdown NOGUI ${kdeinit_shutdown_SRCS})
 
 target_link_libraries(kdeinit_shutdown  ${KDE4_KDECORE_LIBS} )
 
@@ -59,7 +59,7 @@ install_targets(/bin kdeinit_shutdown )
 
 set(kwrapper_SRCS kwrapper.c )
 
-kde4_add_executable(kwrapper ${kwrapper_SRCS})
+kde4_add_executable(kwrapper NOGUI ${kwrapper_SRCS})
 
 target_link_libraries(kwrapper  ${KDE4_KDECORE_LIBS} )
 
@@ -71,7 +71,7 @@ endif(NOT WIN32)
 
 set(lnusertemp_SRCS lnusertemp.c )
 
-kde4_add_executable(lnusertemp ${lnusertemp_SRCS})
+kde4_add_executable(lnusertemp NOGUI ${lnusertemp_SRCS})
 
 target_link_libraries(lnusertemp  ${KDE4_KDECORE_LIBS} )
 
@@ -81,17 +81,16 @@ install_targets(/bin lnusertemp )
 ########### next target ###############
 
 if(WIN32)
-set(kioslave_SRCS kioslave.cpp
+   set(kioslave_SRCS kioslave.cpp
                   ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
                   ${CMAKE_SOURCE_DIR}/libltdl/ltdl_win.c)
 else(WIN32)
-set(kioslave_SRCS kioslave.cpp
-                  ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c)
+   set(kioslave_SRCS kioslave.cpp ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c)
 endif(WIN32)
 
 kde4_automoc(${kioslave_SRCS})
 
-kde4_add_executable(kioslave ${kioslave_SRCS})
+kde4_add_executable(kioslave NOGUI ${kioslave_SRCS})
 
 target_link_libraries(kioslave  ${KDE4_KDECORE_LIBS} kio )
 
@@ -104,12 +103,12 @@ set(kstartupconfig_SRCS kstartupconfig.cpp )
 
 kde4_automoc(${kstartupconfig_SRCS})
 
-kde4_add_executable(kstartupconfig ${kstartupconfig_SRCS})
+kde4_add_executable(kstartupconfig NOGUI ${kstartupconfig_SRCS})
 
 if(WIN32)
-target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS})
+   target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS})
 else(WIN32)
-target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS} kdefakes)
+   target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS} kdefakes)
 endif(WIN32)
 
 install_targets(/bin kstartupconfig )
@@ -121,7 +120,7 @@ set(kdostartupconfig_SRCS kdostartupconfig.cpp )
 
 kde4_automoc(${kdostartupconfig_SRCS})
 
-kde4_add_executable(kdostartupconfig ${kdostartupconfig_SRCS})
+kde4_add_executable(kdostartupconfig NOGUI ${kdostartupconfig_SRCS})
 
 target_link_libraries(kdostartupconfig  ${KDE4_KDECORE_LIBS} )
 

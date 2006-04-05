@@ -2,33 +2,29 @@ kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
-
-
-########### next target ###############
-
-set(kfindtest_SRCS
-kfindtest.cpp
-)
-
-kde4_automoc(${kfindtest_SRCS})
-
-kde4_add_executable(kfindtest ${kfindtest_SRCS})
-
-target_link_libraries(kfindtest  ${KDE4_KDECORE_LIBS} kutils )
-
-
-########### next target ###############
-
-set(kreplacetest_SRCS
-kreplacetest.cpp
-)
-
-kde4_automoc(${kreplacetest_SRCS})
-
-kde4_add_executable(kreplacetest ${kreplacetest_SRCS})
-
-target_link_libraries(kreplacetest  ${KDE4_KDECORE_LIBS} kutils )
+   include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
+   
+   
+   ########### next target ###############
+   
+   set(kfindtest_SRCS kfindtest.cpp )
+   
+   kde4_automoc(${kfindtest_SRCS})
+   
+   kde4_add_executable(kfindtest ${kfindtest_SRCS})
+   
+   target_link_libraries(kfindtest  ${KDE4_KDECORE_LIBS} kutils )
+   
+   
+   ########### next target ###############
+   
+   set(kreplacetest_SRCS kreplacetest.cpp )
+   
+   kde4_automoc(${kreplacetest_SRCS})
+   
+   kde4_add_executable(kreplacetest ${kreplacetest_SRCS})
+   
+   target_link_libraries(kreplacetest  ${KDE4_KDECORE_LIBS} kutils )
 
 endif(KDE4_BUILD_TESTS)
 

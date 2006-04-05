@@ -48,24 +48,24 @@ install_targets(/bin khotnewstuff )
 
 if(KDE4_BUILD_TESTS)
 
-set(testnewstuff_SRCS testnewstuff.cpp )
-
-kde4_automoc(${testnewstuff_SRCS})
-
-kde4_add_executable(testnewstuff ${testnewstuff_SRCS})
-
-target_link_libraries(testnewstuff  ${KDE4_KDECORE_LIBS} knewstuff)
-
-
-########### next target ###############
-
-set(ghns_SRCS ghns.cpp )
-
-kde4_automoc(${ghns_SRCS})
-
-kde4_add_executable(ghns ${ghns_SRCS})
-
-target_link_libraries(ghns  ${KDE4_KDECORE_LIBS} knewstuff)
+   set(testnewstuff_SRCS testnewstuff.cpp )
+   
+   kde4_automoc(${testnewstuff_SRCS})
+   
+   kde4_add_executable(testnewstuff ${testnewstuff_SRCS})
+   
+   target_link_libraries(testnewstuff  ${KDE4_KDECORE_LIBS} knewstuff)
+   
+   
+   ########### next target ###############
+   
+   set(ghns_SRCS ghns.cpp )
+   
+   kde4_automoc(${ghns_SRCS})
+   
+   kde4_add_executable(ghns ${ghns_SRCS})
+   
+   target_link_libraries(ghns  ${KDE4_KDECORE_LIBS} knewstuff)
 
 endif(KDE4_BUILD_TESTS)
 

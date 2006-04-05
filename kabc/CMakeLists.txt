@@ -40,6 +40,10 @@ add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/field.src.cpp
    )
 
+add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.h
+   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
+   )
+
 add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/field.cpp
    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts
    COMMAND  ${PERL_EXECUTABLE}
@@ -56,13 +60,14 @@ add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/field.cpp
 set(kabc_LIB_SRCS
    address.cpp
    addressbook.cpp
-   addressee.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/addressee.h
+   ${CMAKE_CURRENT_BINARY_DIR}/field.cpp
    addresseedialog.cpp
    distributionlist.cpp
    distributionlistdialog.cpp
    distributionlisteditor.cpp
    errorhandler.cpp
-   field.cpp
    formatfactory.cpp
    geo.cpp
    key.cpp

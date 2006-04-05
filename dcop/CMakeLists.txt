@@ -45,7 +45,7 @@ add_subdirectory( tests )
 
 set(dcopserver_shutdown_SRCS dcopserver_shutdown.c )
 
-kde4_add_executable(dcopserver_shutdown ${dcopserver_shutdown_SRCS})
+kde4_add_executable(dcopserver_shutdown NOGUI ${dcopserver_shutdown_SRCS})
 
 target_link_libraries(dcopserver_shutdown ${KDEWIN32_LIBRARIES})
 
@@ -60,7 +60,7 @@ if(KDE4_BUILD_TESTS)
    
    kde4_automoc(${testdcop_SRCS})
    
-   kde4_add_executable(testdcop ${testdcop_SRCS})
+   kde4_add_executable(testdcop NOGUI ${testdcop_SRCS})
    
    target_link_libraries(testdcop  ${QT_QTCORE_LIBRARY} DCOP )
    

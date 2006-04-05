@@ -5,15 +5,15 @@ kde4_header()
 ########### next target ###############
 
 set(dcopidl2cpp_SRCS
-main.cpp
-skel.cpp
-stub.cpp
-stubimpl.cpp
-)
+   main.cpp
+   skel.cpp
+   stub.cpp
+   stubimpl.cpp
+   )
 
 kde4_automoc(${dcopidl2cpp_SRCS})
 
-kde4_add_executable(dcopidl2cpp ${dcopidl2cpp_SRCS})
+kde4_add_executable(dcopidl2cpp NOGUI ${dcopidl2cpp_SRCS})
 
 target_link_libraries(dcopidl2cpp  ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} DCOP)
 

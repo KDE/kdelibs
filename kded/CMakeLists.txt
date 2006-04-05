@@ -49,7 +49,7 @@ set(kdontchangethehostname_SRCS khostname.cpp )
 
 kde4_automoc(${kdontchangethehostname_SRCS})
 
-kde4_add_executable(kdontchangethehostname ${kdontchangethehostname_SRCS})
+kde4_add_executable(kdontchangethehostname NOGUI ${kdontchangethehostname_SRCS})
 
 target_link_libraries(kdontchangethehostname  ${KDE4_KDECORE_LIBS} )
 
@@ -62,7 +62,7 @@ set(kde-menu_SRCS kde-menu.cpp )
 
 kde4_automoc(${kde-menu_SRCS})
 
-kde4_add_executable(kde-menu ${kde-menu_SRCS})
+kde4_add_executable(kde-menu NOGUI ${kde-menu_SRCS})
 
 target_link_libraries(kde-menu  ${KDE4_KDECORE_LIBS} kio)
 

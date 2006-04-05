@@ -8,6 +8,6 @@ set(ICEAUTH_EXEC_SRC
    process.c 
 )
 
-kde4_add_executable(iceauth  ${ICEAUTH_EXEC_SRC} )
+kde4_add_executable(iceauth  NOGUI ${ICEAUTH_EXEC_SRC} )
 target_link_libraries(iceauth ${KDEWIN32_LIBRARIES} DCOP )
 install_targets(/bin iceauth )

@@ -12,7 +12,7 @@ kde4_automoc(${dcop_SRCS})
 # in MSVC both target "dcop" (the executable listed here) and DCOP (the library) are
 # considered the same and so it complains, that's why rename the target here and give the
 # resulting executable the original name
-kde4_add_executable(dcop_executable ${dcop_SRCS})
+kde4_add_executable(dcop_executable NOGUI ${dcop_SRCS})
 set_target_properties(dcop_executable PROPERTIES OUTPUT_NAME dcop)
 
 target_link_libraries(dcop_executable  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
@@ -26,7 +26,7 @@ set(dcopfind_SRCS dcopfind.cpp )
 
 kde4_automoc(${dcopfind_SRCS})
 
-kde4_add_executable(dcopfind ${dcopfind_SRCS})
+kde4_add_executable(dcopfind NOGUI ${dcopfind_SRCS})
 
 target_link_libraries(dcopfind  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
@@ -37,7 +37,7 @@ install_targets(/bin dcopfind )
 
 set(dcopclient_SRCS dcopclient.c )
 
-kde4_add_executable(dcopclient ${dcopclient_SRCS} )
+kde4_add_executable(dcopclient NOGUI ${dcopclient_SRCS} )
 
 target_link_libraries(dcopclient  ${QT_QTCORE_LIBRARY} DCOP)
 
@@ -46,13 +46,9 @@ install_targets(/bin dcopclient )
 
 ########### next target ###############
 
-set(dcopobject_SRCS
-dcopobject.c
-)
+set(dcopobject_SRCS dcopobject.c )
 
-kde4_automoc(${dcopobject_SRCS})
-
-kde4_add_executable(dcopobject ${dcopobject_SRCS})
+kde4_add_executable(dcopobject NOGUI ${dcopobject_SRCS})
 
 target_link_libraries(dcopobject  ${QT_QTCORE_LIBRARY} DCOP )
 
@@ -61,13 +57,9 @@ install_targets(/bin dcopobject )
 
 ########### next target ###############
 
-set(dcopref_SRCS
-dcopref.c
-)
+set(dcopref_SRCS dcopref.c )
 
-kde4_automoc(${dcopref_SRCS})
-
-kde4_add_executable(dcopref ${dcopref_SRCS})
+kde4_add_executable(dcopref NOGUI ${dcopref_SRCS})
 
 target_link_libraries(dcopref  ${QT_QTCORE_LIBRARY} DCOP)
 
@@ -76,13 +68,11 @@ install_targets(/bin dcopref )
 
 ########### next target ###############
 
-set(dcopstart_SRCS
-dcopstart.cpp
-)
+set(dcopstart_SRCS dcopstart.cpp )
 
 kde4_automoc(${dcopstart_SRCS})
 
-kde4_add_executable(dcopstart ${dcopstart_SRCS})
+kde4_add_executable(dcopstart NOGUI ${dcopstart_SRCS})
 
 target_link_libraries(dcopstart  ${QT_QTCORE_LIBRARY} DCOP)
 
@@ -91,13 +81,11 @@ install_targets(/bin dcopstart )
 
 ########### next target ###############
 
-set(dcopquit_SRCS
-dcopquit.cpp
-)
+set(dcopquit_SRCS dcopquit.cpp )
 
 kde4_automoc(${dcopquit_SRCS})
 
-kde4_add_executable(dcopquit ${dcopquit_SRCS})
+kde4_add_executable(dcopquit NOGUI ${dcopquit_SRCS})
 
 target_link_libraries(dcopquit  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
