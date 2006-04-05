@@ -193,6 +193,11 @@ namespace {	// Private.
 		uint pixel_size = (tga.pixel_size/8);
 		uint size = tga.width * tga.height * pixel_size;
 
+		if (size < 1)
+		{
+			kdDebug(399) << "This TGA file is broken with size " << size << endl;
+			return false;
+		}
 
 		// Read palette.
 		char palette[768];
