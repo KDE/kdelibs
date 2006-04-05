@@ -24,7 +24,7 @@ namespace Phonon
 namespace Fake
 {
 VolumeFaderEffect::VolumeFaderEffect( QObject* parent )
-	: AudioEffect( parent )
+	: AudioEffect( -1, parent )
 	, m_fadeTime( 0 )
 {
 }

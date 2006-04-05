@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include "../../backendcapabilities.h"
 
 using namespace Phonon;
 using namespace Phonon::Ui;
@@ -55,7 +56,7 @@ MediaPlayer::MediaPlayer( QWidget* parent )
 	m_controls->setMediaProducer( m_media );
 	m_controls->setAudioOutput( m_aoutput );
 
-	m_effect = new AudioEffect( m_apath );
+	m_effect = new AudioEffect( BackendCapabilities::availableAudioEffects().first(), m_apath );
 	m_apath->insertEffect( m_effect );
 	QPushButton* button = new QPushButton( this );
 	layout->addWidget( button );

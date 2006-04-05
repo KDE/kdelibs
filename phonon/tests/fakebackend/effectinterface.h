@@ -16,41 +16,28 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef Phonon_FAKE_AUDIOEFFECT_H
-#define Phonon_FAKE_AUDIOEFFECT_H
 
-#include <QObject>
-#include "../../ifaces/audioeffect.h"
+#ifndef PHONON_FAKE_EFFECTINTERFACE_H
+#define PHONON_FAKE_EFFECTINTERFACE_H
+
+#include <QQueue>
 
 namespace Phonon
 {
 namespace Fake
 {
-	class EffectInterface;
-
 	/**
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class AudioEffect : public QObject, virtual public Ifaces::AudioEffect
+	class EffectInterface
 	{
-		Q_OBJECT
 		public:
-			AudioEffect( int effectId, QObject* parent );
-			virtual ~AudioEffect();
-			virtual float value( int parameterId ) const;
-			virtual void setValue( int parameterId, float newValue );
-
-			// Fake specific:
-			virtual void processBuffer( QVector<float>& buffer );
-
-		public:
-			virtual QObject* qobject() { return this; }
-			virtual const QObject* qobject() const { return this; }
-
-		private:
-			EffectInterface* m_effect;
+			virtual ~EffectInterface() {}
+			virtual float value( int parameterId ) const = 0;
+			virtual void setValue( int parameterId, float newValue ) = 0;
+			virtual void processBuffer( QVector<float>& buffer ) = 0;
 	};
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80 noet
-#endif // Phonon_FAKE_AUDIOEFFECT_H
+#endif // PHONON_FAKE_EFFECTINTERFACE_H

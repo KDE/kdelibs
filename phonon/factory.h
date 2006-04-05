@@ -105,7 +105,7 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		 *
 		 * \return a pointer to the Ifaces::AudioEffect the backend provides
 		 */
-		Ifaces::AudioEffect* createAudioEffect( QObject* parent = 0 );
+		Ifaces::AudioEffect* createAudioEffect( int effectId, QObject* parent = 0 );
 		/**
 		 * Create a new Ifaces::VolumeFaderEffect.
 		 *

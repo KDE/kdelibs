@@ -69,9 +69,9 @@ Ifaces::AudioPath*        Backend::createAudioPath( QObject* parent )
 	return new AudioPath( parent );
 }
 
-Ifaces::AudioEffect*      Backend::createAudioEffect( QObject* parent )
+Ifaces::AudioEffect*      Backend::createAudioEffect( int effectId, QObject* parent )
 {
-	return new AudioEffect( parent );
+	return new AudioEffect( effectId, parent );
 }
 
 Ifaces::VolumeFaderEffect*      Backend::createVolumeFaderEffect( QObject* parent )
@@ -240,11 +240,31 @@ int Backend::videoCaptureDeviceAudioIndex( int index ) const
 	}
 }
 
-const QStringList& Backend::availableAudioEffects() const
+QSet<int> Backend::audioEffectIndexes() const
 {
-	if( m_audioEffects.isEmpty() )
-		const_cast<Backend*>( this )->m_audioEffects << "audioEffect1" << "audioEffect2";
-	return m_audioEffects;
+	QSet<int> ret;
+	ret << 0x7F000001;
+	return ret;
+}
+
+QString Backend::audioEffectName( int index ) const
+{
+	switch( index )
+	{
+		case 0x7F000001:
+			return "Delay";
+	}
+	return QString();
+}
+
+QString Backend::audioEffectDescription( int index ) const
+{
+	switch( index )
+	{
+		case 0x7F000001:
+			return "Simple delay effect with time, feedback and level controls.";
+	}
+	return QString();
 }
 
 const QStringList& Backend::availableVideoEffects() const

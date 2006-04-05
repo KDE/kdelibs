@@ -21,24 +21,48 @@
 #include "effectparameter.h"
 #include "factory.h"
 #include "ifaces/audioeffect.h"
+#include "audioeffectdescription.h"
 
 namespace Phonon
 {
-PHONON_OBJECT_IMPL( AudioEffect )
-
-QString AudioEffect::type() const
-{
-	K_D( const AudioEffect );
-	return d->iface() ? d->iface()->type() : d->type;
-}
-
-void AudioEffect::setType( const QString& type )
+AudioEffect::AudioEffect( const AudioEffectDescription& type, QObject* parent )
+	: QObject( parent )
+	, Base( *new AudioEffectPrivate )
 {
 	K_D( AudioEffect );
-	if( iface() )
-		d->iface()->setType( type );
-	else
-		d->type = type;
+	d->type = type.index();
+	d->createIface();
+}
+
+AudioEffect::AudioEffect( AudioEffectPrivate& dd, QObject* parent, const AudioEffectDescription& type )
+	: QObject( parent )
+	, Base( dd )
+{
+	K_D( AudioEffect );
+	d->type = type.index();
+}
+
+Ifaces::AudioEffect* AudioEffect::iface()
+{
+	K_D( AudioEffect );
+	if( !d->iface() )
+		d->createIface();
+	return d->iface();
+}
+
+void AudioEffectPrivate::createIface()
+{
+	if( iface_ptr )
+		return;
+	K_Q( AudioEffect );
+	setIface( Factory::self()->createAudioEffect( type, q ) );
+	q->setupIface();
+}
+
+AudioEffectDescription AudioEffect::type() const
+{
+	K_D( const AudioEffect );
+	return AudioEffectDescription::fromIndex( d->type );
 }
 
 QList<EffectParameter> AudioEffect::parameterList() const
@@ -74,7 +98,6 @@ bool AudioEffectPrivate::aboutToDeleteIface()
 {
 	if( iface() )
 	{
-		type = iface()->type();
 		QList<EffectParameter> plist = iface()->parameterList();
 		foreach( EffectParameter p, plist )
 			parameterValues[ p.id() ] = p.value();
@@ -88,7 +111,10 @@ void AudioEffect::setupIface()
 	Q_ASSERT( d->iface() );
 
 	// set up attributes
-	d->iface()->setType( d->type );
+	QList<EffectParameter> plist = d->iface()->parameterList();
+	foreach( EffectParameter p, plist )
+		if( d->parameterValues.contains( p.id() ) )
+			p.setValue( d->parameterValues[ p.id() ] );
 }
 
 } //namespace Phonon

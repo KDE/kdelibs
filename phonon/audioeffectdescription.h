@@ -17,30 +17,35 @@
 
 */
 
-#ifndef AUDIOEFFECT_P_H
-#define AUDIOEFFECT_P_H
+#ifndef PHONON_AUDIOEFFECTDESCRIPTION_H
+#define PHONON_AUDIOEFFECTDESCRIPTION_H
 
-#include "audioeffect.h"
-#include "ifaces/audioeffect.h"
-#include "base_p.h"
-#include <QHash>
+#include "namedescriptiontuple.h"
 
 namespace Phonon
 {
-class AudioEffectPrivate : public BasePrivate
-{
-	K_DECLARE_PUBLIC( AudioEffect )
-	PHONON_PRIVATECLASS( AudioEffect, Base )
-	protected:
-		AudioEffectPrivate()
-			: type( -1 )
-		{
-		}
-	private:
-		int type;
-		QHash<int, float> parameterValues;
-};
-} //namespace Phonon
 
-#endif // AUDIOEFFECT_P_H
-// vim: sw=4 ts=4 tw=80
+class AudioEffectDescriptionPrivate;
+
+class PHONONCORE_EXPORT AudioEffectDescription : public NameDescriptionTuple
+{
+	Q_DECLARE_PRIVATE( AudioEffectDescription )
+	public:
+		AudioEffectDescription();
+		AudioEffectDescription( const AudioEffectDescription& effectDescription );
+		AudioEffectDescription& operator=( const AudioEffectDescription& effectDescription );
+		bool operator==( const AudioEffectDescription& effectDescription ) const;
+		static AudioEffectDescription fromIndex( int index );
+
+	protected:
+		/**
+		 * \internal
+		 * Creates new (valid) description.
+		 */
+		AudioEffectDescription( int index, const QString& name, const QString& description );
+};
+
+}
+
+#endif // PHONON_AUDIOEFFECTDESCRIPTION_H
+// vim: sw=4 ts=4 noet tw=80

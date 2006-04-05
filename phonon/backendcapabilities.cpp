@@ -23,6 +23,7 @@
 #include "audiocapturedevice.h"
 #include "videocapturedevice.h"
 #include "audiooutputdevice.h"
+#include "audioeffectdescription.h"
 #include <QList>
 #include <QSet>
 
@@ -121,10 +122,17 @@ QList<VideoCaptureDevice> BackendCapabilities::availableVideoCaptureDevices()
 	return ret;
 }
 
-QStringList BackendCapabilities::availableAudioEffects()
+QList<AudioEffectDescription> BackendCapabilities::availableAudioEffects()
 {
 	const BackendCapabilities::Private* d = self()->d;
-	return d->backend ? d->backend->availableAudioEffects() : QStringList();
+	QList<AudioEffectDescription> ret;
+	if( d->backend )
+	{
+		QSet<int> deviceIndexes = d->backend->audioEffectIndexes();
+		foreach( int i, deviceIndexes )
+			ret.append( AudioEffectDescription::fromIndex( i ) );
+	}
+	return ret;
 }
 
 QStringList BackendCapabilities::availableVideoEffects()

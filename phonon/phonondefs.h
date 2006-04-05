@@ -89,7 +89,7 @@ protected: \
 	 *
 	 * \param parent Standard QObject parent.
 	 */ \
-	classname( classname ## Private& d, QObject* parent ); \
+	classname( classname ## Private& dd, QObject* parent ); \
 	/**
 	 * \internal
 	 * After construction of the Iface object this method is called
@@ -146,7 +146,13 @@ public: \
 	 */ \
 	classname( QObject* parent = 0 ); \
 protected: \
-	classname( classname ## Private& d, QObject* parent ); \
+	/**
+	 * \internal
+	 *
+	 * Constructs new instance of this class with private data \p dd and a
+	 * \p parent.
+	 */ \
+	classname( classname ## Private& dd, QObject* parent ); \
 	/**
 	 * \internal
 	 * After construction of the Iface object this method is called
@@ -203,7 +209,7 @@ public: \
 	 */ \
 	classname( QObject* parent = 0 ); \
 protected: \
-	classname( classname ## Private& d, QObject* parent ); \
+	classname( classname ## Private& dd, QObject* parent ); \
 	/**
 	 * \internal
 	 * After construction of the Iface object this method is called
@@ -229,9 +235,9 @@ private: \
 	Ifaces::classname* iface(); \
 
 #define PHONON_ABSTRACTBASE_IMPL( classname ) \
-classname::classname( classname ## Private& d, QObject* parent ) \
+classname::classname( classname ## Private& dd, QObject* parent ) \
 	: QObject( parent ) \
-	, Base( d ) \
+	, Base( dd ) \
 { \
 } \
 Ifaces::classname* classname::iface() \
@@ -250,9 +256,9 @@ classname::classname( QObject* parent ) \
 	K_D( classname ); \
 	d->createIface(); \
 } \
-classname::classname( classname ## Private& d, QObject* parent ) \
+classname::classname( classname ## Private& dd, QObject* parent ) \
 	: QObject( parent ) \
-	, Base( d ) \
+	, Base( dd ) \
 { \
 } \
 Ifaces::classname* classname::iface() \
@@ -278,8 +284,8 @@ classname::classname( QObject* parent ) \
 	K_D( classname ); \
 	d->createIface(); \
 } \
-classname::classname( classname ## Private& d, QObject* parent ) \
-	: parentclass( d, parent ) \
+classname::classname( classname ## Private& dd, QObject* parent ) \
+	: parentclass( dd, parent ) \
 { \
 } \
 Ifaces::classname* classname::iface() \

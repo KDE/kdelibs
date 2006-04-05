@@ -23,12 +23,16 @@
 #include "audiopath.h"
 #include <kdebug.h>
 #include <QVector>
+#include <cmath>
+#include <QFile>
+#include <QByteArray>
 
 namespace Phonon
 {
 namespace Fake
 {
 static const int SAMPLE_RATE = 44100;
+static const float SAMPLE_RATE_FLOAT = 44100.0f;
 
 AbstractMediaProducer::AbstractMediaProducer( QObject* parent )
 	: QObject( parent )
@@ -36,6 +40,8 @@ AbstractMediaProducer::AbstractMediaProducer( QObject* parent )
 	, m_tickTimer( new QTimer( this ) )
 	, m_bufferSize( 512 )
 	, m_lastSamplesMissing( 0 )
+	, m_position( 0.0f )
+	, m_frequency( 440.0f )
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
 	connect( m_tickTimer, SIGNAL( timeout() ), SLOT( emitTick() ) );
@@ -160,6 +166,8 @@ void AbstractMediaProducer::stop()
 	//kDebug( 604 ) << k_funcinfo << endl;
 	m_tickTimer->stop();
 	setState( Phonon::StoppedState );
+	m_position = 0.0f;
+	m_frequency = 440.0f;
 }
 
 void AbstractMediaProducer::seek( long time )
@@ -222,61 +230,45 @@ void AbstractMediaProducer::emitTick()
 		tickInterval = m_tickInterval;
 	}
 	QVector<float> buffer( m_bufferSize );
-	fillBuffer( &buffer );
 
 	const int availableSamples = tickInterval * SAMPLE_RATE / 1000 + m_lastSamplesMissing;
 	const int bufferCount = availableSamples / m_bufferSize;
 	m_lastSamplesMissing = availableSamples - bufferCount * m_bufferSize;
-	foreach( AudioPath* ap, m_audioPathList )
+	for( int i = 0; i < bufferCount; ++i )
 	{
-		for( int i = 0; i < bufferCount; ++i )
+		fillBuffer( &buffer );
+		foreach( AudioPath* ap, m_audioPathList )
 			ap->processBuffer( buffer );
 	}
 }
 
-float dampEdges( const float& f )
-{
-	if( f > 0.8f )
-		return 0.8f + ( f - 0.8f ) * ( 3.0f - 2.5f * f );
-	else if( f < -0.8f )
-		return -0.8f + ( f + 0.8f ) * ( -3.0f - 2.5f * f );
-	else return f;
-}
+static const float TWOPI = 6.28318530718f;
+static const float maxFrequency = 1760.0f;
+static const float minFrequency = 440.0f;
+static const float frequencyToDelta = TWOPI / SAMPLE_RATE_FLOAT;
 
-void AbstractMediaProducer::fillBuffer( QVector<float>* buffer ) const
+void AbstractMediaProducer::fillBuffer( QVector<float>* buffer )
 {
-	Q_ASSERT( buffer );
-	/* create a triangle wave function:
-	 *     / \   / \
-	 *        \ /   \ /
-	 */
-	float f = 0;
-	float df = 8.0f / static_cast<float>( m_bufferSize );
-	int i = 0;
-	for( ; i < m_bufferSize / 8; ++i )
+	//static QFile createdump( "createdump" );
+	//if( !createdump.isOpen() )
+		//createdump.open( QIODevice::WriteOnly );
+
+	m_frequency *= 1.059463094359f;
+	if( m_frequency > maxFrequency )
+		m_frequency = minFrequency;
+	float delta = frequencyToDelta * m_frequency;
+
+	float* data = buffer->data();
+	const float * const end = data + m_bufferSize;
+
+	while( data != end )
 	{
-		( *buffer )[ i ] = dampEdges( f );
-		f += df;
-	}
-	for( ; i < m_bufferSize * 3 / 8; ++i )
-	{
-		( *buffer )[ i ] = dampEdges( f );
-		f -= df;
-	}
-	for( ; i < m_bufferSize * 5 / 8; ++i )
-	{
-		( *buffer )[ i ] = dampEdges( f );
-		f += df;
-	}
-	for( ; i < m_bufferSize * 7 / 8; ++i )
-	{
-		( *buffer )[ i ] = dampEdges( f );
-		f -= df;
-	}
-	for( ; i < m_bufferSize; ++i )
-	{
-		( *buffer )[ i ] = dampEdges( f );
-		f += df;
+		const float sample = sinf( m_position );
+		//createdump.write( QByteArray::number( sample ) + "\n" );
+		*( data++ ) = sample;
+		m_position += delta;
+		if( m_position > TWOPI )
+			m_position -= TWOPI;
 	}
 }
 

@@ -23,6 +23,7 @@
 #include "effect.h"
 #include "phonondefs.h"
 #include <QObject>
+#include "audioeffectdescription.h"
 
 class QString;
 class QStringList;
@@ -32,6 +33,7 @@ namespace Phonon
 {
 	class EffectParameter;
 	class AudioEffectPrivate;
+	class AudioEffectDescription;
 	namespace Ifaces
 	{
 		class AudioEffect;
@@ -50,13 +52,51 @@ namespace Phonon
 		friend class AudioPathPrivate;
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AudioEffect )
-		PHONON_OBJECT( AudioEffect )
+
 		public:
-			QString type() const;
+			/**
+			 * Standard QObject constructor.
+			 *
+			 * \param parent QObject parent
+			 */
+			AudioEffect( const AudioEffectDescription& type, QObject* parent = 0 );
+
+			AudioEffectDescription type() const;
 			virtual QList<EffectParameter> parameterList() const;
 
-		public Q_SLOTS:
-			void setType( const QString& );
+		protected:
+			/**
+			 * \internal
+			 *
+			 * Constructs new audio effect with private data \p dd and a
+			 * \p parent.
+			 */
+			AudioEffect( AudioEffectPrivate& dd, QObject* parent, const AudioEffectDescription& type = AudioEffectDescription() );
+
+			/**
+			 * \internal
+			 * After construction of the Iface object this method is called
+			 * throughout the complete class hierarchy in order to set up the
+			 * properties that were already set on the public interface.
+			 *
+			 * An example implementation could look like this:
+			 * \code
+			 * ParentClass::setupIface();
+			 * m_iface->setPropertyA( d->propertyA );
+			 * m_iface->setPropertyB( d->propertyB );
+			 * \endcode
+			 */
+			void setupIface();
+
+		private:
+			/**
+			 * \internal
+			 * Returns the Iface object. If the object does not exist it tries to
+			 * create it before returning.
+			 *
+			 * \return the Iface object, might return \c 0
+			 */
+			Ifaces::AudioEffect* iface();
 
 		protected:
 			virtual float value( int parameterId ) const;

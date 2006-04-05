@@ -38,10 +38,6 @@ namespace Ifaces
 	class AudioEffect : public Effect
 	{
 		Q_DECLARE_PRIVATE( AudioEffect )
-		public:
-			virtual QString type() const = 0;
-			virtual void setType( const QString& type ) = 0;
-
 		protected:
 			/**
 			 * Masks the hints as they come from a LADSPA effect.

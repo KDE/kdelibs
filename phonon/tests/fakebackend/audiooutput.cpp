@@ -78,6 +78,12 @@ void AudioOutput::setOutputDevice( int newDevice )
 
 void AudioOutput::processBuffer( const QVector<float>& buffer )
 {
+	//static QFile indump( "indump" );
+	//if( !indump.isOpen() )
+		//indump.open( QIODevice::WriteOnly );
+	//static QFile outdump( "outdump" );
+	//if( !outdump.isOpen() )
+		//outdump.open( QIODevice::WriteOnly );
 	openDevice();
 	if( !m_dsp.isOpen() )
 		return;
@@ -88,7 +94,9 @@ void AudioOutput::processBuffer( const QVector<float>& buffer )
 	int converted;
 	for( int i = 0; i < buffer.size(); ++i )
 	{
+		//indump.write( QByteArray::number( buffer[ i ] ) + "\n" );
 		converted = static_cast<qint16>( m_volume * buffer[ i ] * static_cast<float>( 0x7FFF ) );
+		//outdump.write( QByteArray::number( converted ) + "\n" );
 		*pcm++ = converted;
 		*pcm++ = converted;
 	}

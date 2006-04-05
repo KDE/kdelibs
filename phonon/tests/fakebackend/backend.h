@@ -59,7 +59,7 @@ namespace Fake
 			virtual Ifaces::ByteStream*       createByteStream( QObject* parent );
 
 			virtual Ifaces::AudioPath*        createAudioPath( QObject* parent );
-			virtual Ifaces::AudioEffect*      createAudioEffect( QObject* parent );
+			virtual Ifaces::AudioEffect*      createAudioEffect( int effectId, QObject* parent );
 			virtual Ifaces::VolumeFaderEffect* createVolumeFaderEffect( QObject* parent );
 			virtual Ifaces::AudioOutput*      createAudioOutput( QObject* parent );
 			virtual Ifaces::AudioDataOutput*  createAudioDataOutput( QObject* parent );
@@ -89,7 +89,10 @@ namespace Fake
 			virtual int videoCaptureDeviceAudioIndex( int index ) const;
 
 			// effects
-			virtual const QStringList& availableAudioEffects() const;
+			virtual QSet<int> audioEffectIndexes() const;
+			virtual QString audioEffectName( int index ) const;
+			virtual QString audioEffectDescription( int index ) const;
+
 			virtual const QStringList& availableVideoEffects() const;
 
 			virtual const char* uiLibrary() const;

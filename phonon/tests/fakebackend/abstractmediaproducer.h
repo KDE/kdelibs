@@ -31,7 +31,7 @@ namespace Phonon
 {
 namespace Fake
 {
-	class AbstractMediaProducer : public QObject, virtual public Ifaces::AbstractMediaProducer
+	class KDE_EXPORT AbstractMediaProducer : public QObject, virtual public Ifaces::AbstractMediaProducer
 	{
 		Q_OBJECT
 		public:
@@ -63,7 +63,7 @@ namespace Fake
 			virtual const QObject* qobject() const { return this; }
 
 		protected:
-			void fillBuffer( QVector<float>* buffer ) const;
+			void fillBuffer( QVector<float>* buffer );
 			void setState( State );
 
 		protected Q_SLOTS:
@@ -77,6 +77,9 @@ namespace Fake
 			int m_bufferSize;
 			QList<AudioPath*> m_audioPathList;
 			int m_lastSamplesMissing;
+
+			// for sound synthesis
+			float m_position, m_frequency;
 	};
 }} //namespace Phonon::Fake
 

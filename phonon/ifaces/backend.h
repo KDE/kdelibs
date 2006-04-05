@@ -108,7 +108,7 @@ namespace Ifaces
 			/**
 			 * Creates an instance of AudioEffect
 			 */
-			virtual AudioEffect*      createAudioEffect( QObject* parent ) = 0;
+			virtual AudioEffect*      createAudioEffect( int effectId, QObject* parent ) = 0;
 
 			/**
 			 * Creates an instance of VolumeFaderEffect
@@ -310,7 +310,10 @@ namespace Ifaces
 			virtual int videoCaptureDeviceAudioIndex( int index ) const = 0;
 
 			// effects
-			virtual const QStringList& availableAudioEffects() const = 0;
+			virtual QSet<int> audioEffectIndexes() const = 0;
+			virtual QString audioEffectName( int index ) const = 0;
+			virtual QString audioEffectDescription( int index ) const = 0;
+
 			virtual const QStringList& availableVideoEffects() const = 0;
 
 			/**

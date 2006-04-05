@@ -41,7 +41,6 @@ namespace Phonon
 class PHONONCORE_EXPORT AudioOutputDevice : public NameDescriptionTuple
 {
 	Q_DECLARE_PRIVATE( AudioOutputDevice )
-	friend class BackendCapabilities;
 	public:
 		/**
 		 * Constructs an invalid AudioOutputDevice

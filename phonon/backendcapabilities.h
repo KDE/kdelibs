@@ -33,6 +33,7 @@ namespace Phonon
 class AudioOutputDevice;
 class AudioCaptureDevice;
 class VideoCaptureDevice;
+class AudioEffectDescription;
 
 /**
  * Singleton class describing the capabilities of the Backend.
@@ -137,7 +138,13 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		 */
 		static QList<VideoCaptureDevice> availableVideoCaptureDevices();
 
-		static QStringList availableAudioEffects();
+		/**
+		 * Returns descriptions for the audio effects the backend supports.
+		 *
+		 * \return A list of AudioEffectDescription objects that give a name and
+		 * description for every supported audio effect.
+		 */
+		static QList<AudioEffectDescription> availableAudioEffects();
 		static QStringList availableVideoEffects();
 
 	Q_SIGNALS:
