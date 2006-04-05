@@ -273,6 +273,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   }
 
   if ( supports_inotify ) {
+    available += ", Inotify";
     fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
 
     mSn = new QSocketNotifier( m_inotify_fd, QSocketNotifier::Read, this );
@@ -876,6 +877,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 				    const QString& _path, Entry* sub_entry )
 {
+  kdDebug(7001) << "KDirWatchPrivate::removeEntry for '" << _path << "' sub_entry: " << sub_entry << endl;
   Entry* e = entry(_path);
   if (!e) {
     kdDebug(7001) << "KDirWatchPrivate::removeEntry can't handle '" << _path << "'" << endl;
@@ -1046,7 +1048,7 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
   if (newWatching == 0)
     return false;
 
-  kdDebug(7001) << instance->name() << " restarted scanning " << e->path
+  kdDebug(7001) << (instance ? instance->name() : "all") << " restarted scanning " << e->path
 		<< " (now " << wasWatching+newWatching << " watchers)" << endl;
 
   // restart watching and emit pending events
