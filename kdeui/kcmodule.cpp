@@ -79,10 +79,13 @@ KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
     : QWidget( parent ), d(new KCModulePrivate)
 {
     if ( instance )
+    {
         setObjectName( instance->instanceName() );
+        KGlobal::locale()->insertCatalog(instance->instanceName());
+    }
+
     init();
     d->_instance = instance;
-    KGlobal::locale()->insertCatalog(instance->instanceName());
     d->_hasOwnInstance = false;
     KGlobal::setActiveInstance(this->instance());
 }
