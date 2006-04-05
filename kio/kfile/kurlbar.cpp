@@ -462,14 +462,14 @@ void KUrlBar::resizeEvent( QResizeEvent *e )
 void KUrlBar::paletteChange( const QPalette & )
 {
     QPalette pal = palette();
-    QColor selectedTextColor = pal.color( QPalette::Normal, QColorGroup::BrightText );
-    QColor foreground = pal.color( QPalette::Normal, QColorGroup::Foreground );
-    pal.setColor( QPalette::Normal,   QColorGroup::Base, Qt::gray );
-    pal.setColor( QPalette::Normal,   QColorGroup::HighlightedText, selectedTextColor );
-    pal.setColor( QPalette::Normal,   QColorGroup::Text, foreground );
-    pal.setColor( QPalette::Inactive, QColorGroup::Base, Qt::gray );
-    pal.setColor( QPalette::Inactive, QColorGroup::HighlightedText, selectedTextColor );
-    pal.setColor( QPalette::Inactive, QColorGroup::Text, foreground );
+    QColor selectedTextColor = pal.color( QPalette::Normal, QPalette::BrightText );
+    QColor foreground = pal.color( QPalette::Normal, QPalette::Foreground );
+    pal.setColor( QPalette::Normal,   QPalette::Base, Qt::gray );
+    pal.setColor( QPalette::Normal,   QPalette::HighlightedText, selectedTextColor );
+    pal.setColor( QPalette::Normal,   QPalette::Text, foreground );
+    pal.setColor( QPalette::Inactive, QPalette::Base, Qt::gray );
+    pal.setColor( QPalette::Inactive, QPalette::HighlightedText, selectedTextColor );
+    pal.setColor( QPalette::Inactive, QPalette::Text, foreground );
 
     setPalette( pal );
 }

@@ -629,7 +629,7 @@ KFileItem * KFileIconView::prevItem( const KFileItem *fileItem ) const
     return 0L;
 }
 
-void KFileIconView::setSorting( QDir::SortSpec spec )
+void KFileIconView::setSorting( QDir::SortFlags spec )
 {
     KFileView::setSorting( spec );
 
@@ -705,7 +705,7 @@ void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
     }
 
     // see also setSorting()
-    QDir::SortSpec spec = KFileView::sorting();
+    QDir::SortFlags spec = KFileView::sorting();
 
     if ( spec & QDir::Time )
         // warning, time_t is often signed -> cast it

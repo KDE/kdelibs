@@ -59,10 +59,10 @@ public:
         emit activatedMenu( i, pos );
     }
 
-    void changeSorting( QDir::SortSpec sorting ) {
+    void changeSorting( QDir::SortFlags sorting ) {
         emit sortingChanged( sorting );
     }
-    
+
     void dropURLs(const KFileItem *i, QDropEvent*e, const KUrl::List&urls) {
         emit dropped(i, e, urls);
     }
@@ -70,7 +70,7 @@ public:
 Q_SIGNALS:
     void dirActivated(const KFileItem*);
 
-    void sortingChanged( QDir::SortSpec );
+    void sortingChanged( QDir::SortFlags );
 
     /**
      * the item maybe be 0L, indicating that we're in multiselection mode and
@@ -174,7 +174,7 @@ public:
       * Returns the sorting order of the internal list. Newly added files
       * are added through this sorting.
       */
-    QDir::SortSpec sorting() const { return m_sorting; }
+    QDir::SortFlags sorting() const { return m_sorting; }
 
     /**
       * Sets the sorting order of the view.
@@ -190,7 +190,7 @@ public:
       *
       * @see sortingKey
       */
-    virtual void setSorting(QDir::SortSpec sort);
+    virtual void setSorting(QDir::SortFlags sort);
 
     /**
      * Tells whether the current items are in reversed order (shortcut to
@@ -350,9 +350,9 @@ public:
     virtual void writeConfig( KConfigGroup *);
 
     /**
-     * Various options for drag and drop support. 
+     * Various options for drag and drop support.
      * These values can be or'd together.
-     * @li @p AutoOpenDirs Automatically open directory after hovering above it 
+     * @li @p AutoOpenDirs Automatically open directory after hovering above it
      * for a short while while dragging.
      */
     enum DropOptions {
@@ -363,13 +363,13 @@ public:
      * All options are disabled by default.
      */
     virtual void setDropOptions(int options);
-    
+
     /**
      * Returns the DND options in effect.
      * See DropOptions for details.
      */
     int dropOptions();
-    
+
     /**
      * This method calculates a QString from the given parameters, that is
      * suitable for sorting with e.g. QIconView or QListView. Their
@@ -379,11 +379,11 @@ public:
      * @param value Any string that should be used as sort criterion
      * @param isDir Tells whether the key is computed for an item representing
      *              a directory (directories are usually sorted before files)
-     * @param sortSpec An ORed combination of QDir::SortSpec flags.
-     *                 Currently, the values IgnoreCase, Reversed and
-     *                 DirsFirst are taken into account.
+     * @param SortFlags An ORed combination of QDir::SortFlag flags.
+     *                  Currently, the values IgnoreCase, Reversed and
+     *                  DirsFirst are taken into account.
      */
-    static QString sortingKey( const QString& value, bool isDir, int sortSpec);
+    static QString sortingKey( const QString& value, bool isDir, QDir::SortFlags SortFlags);
 
     /**
      * An overloaded method that takes not a QString, but a number as sort
@@ -391,7 +391,7 @@ public:
      * If you use a time_t, you need to cast that to KIO::filesize_t because
      * of ambiguity problems.
      */
-    static QString sortingKey( KIO::filesize_t value, bool isDir,int sortSpec);
+    static QString sortingKey( KIO::filesize_t value, bool isDir,QDir::SortFlags SortFlags);
 
     /**
      * @internal
@@ -407,8 +407,8 @@ protected:
     KFileViewSignaler *sig;
 
 private:
-    static QDir::SortSpec defaultSortSpec;
-    QDir::SortSpec m_sorting;
+    static QDir::SortFlags defaultSortFlags;
+    QDir::SortFlags m_sorting;
     QString m_viewName;
 
     /**

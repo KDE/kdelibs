@@ -90,7 +90,7 @@ public:
     virtual void insertItem( KFileItem *i );
     virtual void clear();
 
-    virtual void setSorting( QDir::SortSpec sort );
+    virtual void setSorting( QDir::SortFlags sort );
 
     virtual void readConfig( KConfigGroup *);
     virtual void writeConfig( KConfigGroup *);
@@ -106,7 +106,7 @@ protected:
     KFileView *right;
 
 protected Q_SLOTS:
-    void slotSortingChanged( QDir::SortSpec );
+    void slotSortingChanged( QDir::SortFlags );
 
 private:
     KFileView *focusView( KFileView *preferred ) const;

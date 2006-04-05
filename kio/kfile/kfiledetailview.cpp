@@ -323,7 +323,7 @@ void KFileDetailView::setSortingKey( KFileListViewItem *item,
                                      const KFileItem *i )
 {
     // see also setSorting()
-    QDir::SortSpec spec = KFileView::sorting();
+    QDir::SortFlags spec = KFileView::sorting();
 
     if ( spec & QDir::Time )
         item->setKey( sortingKey( i->time( KIO::UDS_MODIFICATION_TIME ),
@@ -352,8 +352,8 @@ void KFileDetailView::slotSortingChanged( int col )
 {
     // col is the section here, not the index!
 
-    QDir::SortSpec sort = sorting();
-    int sortSpec = -1;
+    QDir::SortFlags sort = sorting();
+    QDir::SortFlags sortSpec = QDir::Unsorted;
     bool reversed = (col == m_sortingCol) && (sort & QDir::Reversed) == 0;
     m_sortingCol = col;
 
@@ -391,7 +391,7 @@ void KFileDetailView::slotSortingChanged( int col )
         sortSpec &= ~QDir::IgnoreCase;
 
 
-    KFileView::setSorting( static_cast<QDir::SortSpec>( sortSpec ) );
+    KFileView::setSorting( sortSpec );
 
     const KFileItemList itemList = *items();
     KFileItemList::const_iterator kit = itemList.begin();
@@ -417,11 +417,11 @@ void KFileDetailView::slotSortingChanged( int col )
     K3ListView::sort();
 
     if ( !m_blockSortingSignal )
-        sig->changeSorting( static_cast<QDir::SortSpec>( sortSpec ) );
+        sig->changeSorting( sortSpec );
 }
 
 
-void KFileDetailView::setSorting( QDir::SortSpec spec )
+void KFileDetailView::setSorting( QDir::SortFlags spec )
 {
     int col = 0;
     if ( spec & QDir::Time )
@@ -435,12 +435,12 @@ void KFileDetailView::setSorting( QDir::SortSpec spec )
 
     // inversed, because slotSortingChanged will reverse it
     if ( spec & QDir::Reversed )
-        spec = (QDir::SortSpec) (spec & ~QDir::Reversed);
+        spec &= ~QDir::Reversed;
     else
-        spec = (QDir::SortSpec) (spec | QDir::Reversed);
+        spec |= QDir::Reversed;
 
     m_sortingCol = col;
-    KFileView::setSorting( (QDir::SortSpec) spec );
+    KFileView::setSorting( spec );
 
 
     // don't emit sortingChanged() when called via setSorting()

@@ -22,7 +22,7 @@
 #define KDIROPERATOR_H_
 
 #include <qwidget.h>
-#include <q3ptrstack.h>
+#include <qstack.h>
 
 #include <kaction.h>
 #include <kcompletion.h>
@@ -239,12 +239,12 @@ class KIO_EXPORT KDirOperator : public QWidget
     /**
      * Sets the way to sort files and directories.
      */
-    void setSorting( QDir::SortSpec );
+    void setSorting( QDir::SortFlags );
 
     /**
      * @returns the current way of sorting files and directories
      */
-    QDir::SortSpec sorting() const { return mySorting; }
+    QDir::SortFlags sorting() const { return mySorting; }
 
     /**
      * @returns true if we are displaying the root directory of the current url
@@ -815,12 +815,12 @@ private:
     /**
      * Contains all URLs you can reach with the back button.
      */
-    Q3PtrStack<KUrl> backStack;
+    QStack<KUrl*> backStack;
 
     /**
      * Contains all URLs you can reach with the forward button.
      */
-    Q3PtrStack<KUrl> forwardStack;
+    QStack<KUrl*> forwardStack;
 
     KDirLister *dir;
     KUrl currUrl;
@@ -828,7 +828,7 @@ private:
     KCompletion myCompletion;
     KCompletion myDirCompletion;
     bool myCompleteListDirty;
-    QDir::SortSpec mySorting;
+    QDir::SortFlags mySorting;
 
     /**
      * Checks whether we preview support is available for the current
@@ -913,7 +913,7 @@ private Q_SLOTS:
 
     void slotViewActionAdded( KAction * );
     void slotViewActionRemoved( KAction * );
-    void slotViewSortingChanged( QDir::SortSpec );
+    void slotViewSortingChanged( QDir::SortFlags );
 
     void slotClearView();
     void slotRefreshItems( const KFileItemList& items );

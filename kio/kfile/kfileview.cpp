@@ -36,7 +36,7 @@
 #undef Unsorted
 #endif
 
-QDir::SortSpec KFileView::defaultSortSpec = static_cast<QDir::SortSpec>(QDir::Name | QDir::IgnoreCase | QDir::DirsFirst);
+QDir::SortFlags KFileView::defaultSortFlags = (QDir::Name | QDir::IgnoreCase | QDir::DirsFirst);
 
 class KFileView::KFileViewPrivate
 {
@@ -63,7 +63,7 @@ public:
 KFileView::KFileView()
 	:d(new KFileViewPrivate())
 {
-    m_sorting  = KFileView::defaultSortSpec;
+    m_sorting  = KFileView::defaultSortFlags;
 
     sig = new KFileViewSignaler();
     sig->setObjectName("view-signaller");
@@ -99,8 +99,8 @@ void KFileView::setParentView(KFileView *parent)
                 parent->sig, SIGNAL( fileSelected(const KFileItem*)));
         QObject::connect(sig, SIGNAL( fileHighlighted(const KFileItem *) ),
                             parent->sig,SIGNAL(fileHighlighted(const KFileItem*)));
-        QObject::connect(sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
-                            parent->sig, SIGNAL(sortingChanged( QDir::SortSpec)));
+        QObject::connect(sig, SIGNAL( sortingChanged( QDir::SortFlags ) ),
+                            parent->sig, SIGNAL(sortingChanged( QDir::SortFlags)));
         QObject::connect(sig, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KUrl::List&) ),
                             parent->sig, SIGNAL(dropped(const KFileItem *, QDropEvent*, const KUrl::List&)));
     }
@@ -140,7 +140,7 @@ void KFileView::insertItem( KFileItem * )
 {
 }
 
-void KFileView::setSorting(QDir::SortSpec new_sort)
+void KFileView::setSorting(QDir::SortFlags new_sort)
 {
     m_sorting = new_sort;
 }
@@ -157,7 +157,7 @@ void KFileView::sortReversed()
 {
     int spec = sorting();
 
-    setSorting( static_cast<QDir::SortSpec>( spec ^ QDir::Reversed ) );
+    setSorting( static_cast<QDir::SortFlags>( spec ^ QDir::Reversed ) );
 }
 
 #if 0
@@ -188,10 +188,10 @@ int KFileView::compareItems(const KFileItem *fi1, const KFileItem *fi2) const
 	}
 	else {
 
-	    QDir::SortSpec sort = static_cast<QDir::SortSpec>(m_sorting & QDir::SortByMask);
+	    QDir::SortFlags sort = static_cast<QDir::SortFlags>(m_sorting & QDir::SortByMask);
 
 	    //if (fi1->isDir() || fi2->isDir())
-            // sort = static_cast<QDir::SortSpec>(KFileView::defaultSortSpec & QDir::SortByMask);
+            // sort = static_cast<QDir::SortFlags>(KFileView::defaultSortSpec & QDir::SortByMask);
 
             switch (sort) {
                 case QDir::Name:
@@ -373,19 +373,19 @@ void KFileView::writeConfig( KConfigGroup *)
 {
 }
 
-QString KFileView::sortingKey( const QString& value, bool isDir, int sortSpec )
+QString KFileView::sortingKey( const QString& value, bool isDir, QDir::SortFlags SortFlags )
 {
-    bool reverse   = sortSpec & QDir::Reversed;
-    bool dirsFirst = sortSpec & QDir::DirsFirst;
+    bool reverse   = SortFlags & QDir::Reversed;
+    bool dirsFirst = SortFlags & QDir::DirsFirst;
     char start = (isDir && dirsFirst) ? (reverse ? '2' : '0') : '1';
-    QString result = (sortSpec & QDir::IgnoreCase) ? value.toLower() : value;
+    QString result = (SortFlags & QDir::IgnoreCase) ? value.toLower() : value;
     return result.prepend( QLatin1Char(start) );
 }
 
-QString KFileView::sortingKey( KIO::filesize_t value, bool isDir, int sortSpec)
+QString KFileView::sortingKey( KIO::filesize_t value, bool isDir, QDir::SortFlags SortFlags)
 {
-    bool reverse = sortSpec & QDir::Reversed;
-    bool dirsFirst = sortSpec & QDir::DirsFirst;
+    bool reverse = SortFlags & QDir::Reversed;
+    bool dirsFirst = SortFlags & QDir::DirsFirst;
     char start = (isDir && dirsFirst) ? (reverse ? '2' : '0') : '1';
     return KIO::number( value ).rightJustified( 24, '0' ).prepend( QLatin1Char(start) );
 }

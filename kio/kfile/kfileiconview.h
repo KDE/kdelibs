@@ -131,7 +131,7 @@ public:
 
     void ensureItemVisible( const KFileItem * );
 
-    virtual void setSorting(QDir::SortSpec sort);
+    virtual void setSorting(QDir::SortFlags sort);
 
     //most times configGroup should be really a KConfigGroup
     virtual void readConfig( KConfigGroup *configGroup );

@@ -133,7 +133,7 @@ public:
     virtual void insertItem( KFileItem *i );
 
     // implemented to get noticed about sorting changes (for sortingIndicator)
-    virtual void setSorting( QDir::SortSpec );
+    virtual void setSorting( QDir::SortFlags );
 
     void ensureItemVisible( const KFileItem * );
 

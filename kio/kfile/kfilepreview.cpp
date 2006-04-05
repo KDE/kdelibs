@@ -134,7 +134,7 @@ void KFilePreview::insertItem(KFileItem *item)
     left->insertItem(item);
 }
 
-void KFilePreview::setSorting( QDir::SortSpec sort )
+void KFilePreview::setSorting( QDir::SortFlags sort )
 {
     left->setSorting( sort );
     KFileView::setSorting( left->sorting() );

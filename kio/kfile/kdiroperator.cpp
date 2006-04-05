@@ -62,9 +62,7 @@
 #include "kfilemetapreview.h"
 
 
-template class Q3PtrStack<KUrl>;
 template class QHash<QString,KFileItem*>;
-
 
 class KDirOperator::KDirOperatorPrivate
 {
@@ -100,7 +98,7 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent)
     myPreview = 0L;
     myMode = KFile::ModeMax; //try to make KFileDialog::getOpenURL (without s) to work again
     m_viewKind = KFile::Simple;
-    mySorting = static_cast<QDir::SortSpec>(QDir::Name | QDir::DirsFirst);
+    mySorting = QDir::Name | QDir::DirsFirst;
 
     if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentPath();
@@ -134,9 +132,6 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent)
 
     myCompleteListDirty = false;
 
-    backStack.setAutoDelete( true );
-    forwardStack.setAutoDelete( true );
-
     // action stuff
     setupActions();
     setupMenu();
@@ -156,13 +151,15 @@ KDirOperator::~KDirOperator()
         m_fileView = 0L;
     }
 
+    qDeleteAll( backStack );
+    qDeleteAll( forwardStack );
     delete myPreview;
     delete dir;
     delete d;
 }
 
 
-void KDirOperator::setSorting( QDir::SortSpec spec )
+void KDirOperator::setSorting( QDir::SortFlags spec )
 {
     if ( m_fileView )
         m_fileView->setSorting( spec );
@@ -328,24 +325,24 @@ void KDirOperator::slotDefaultPreview()
 
 void KDirOperator::slotSortByName()
 {
-    int sorting = (m_fileView->sorting()) & ~QDir::SortByMask;
-    m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Name ));
+    QDir::SortFlags sorting = (m_fileView->sorting()) & ~QDir::SortByMask;
+    m_fileView->setSorting( sorting | QDir::Name );
     mySorting = m_fileView->sorting();
     caseInsensitiveAction->setEnabled( true );
 }
 
 void KDirOperator::slotSortBySize()
 {
-    int sorting = (m_fileView->sorting()) & ~QDir::SortByMask;
-    m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Size ));
+    QDir::SortFlags sorting = (m_fileView->sorting()) & ~QDir::SortByMask;
+    m_fileView->setSorting( sorting | QDir::Size );
     mySorting = m_fileView->sorting();
     caseInsensitiveAction->setEnabled( false );
 }
 
 void KDirOperator::slotSortByDate()
 {
-    int sorting = (m_fileView->sorting()) & ~QDir::SortByMask;
-    m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::Time ));
+    QDir::SortFlags sorting = (m_fileView->sorting()) & ~QDir::SortByMask;
+    m_fileView->setSorting( sorting | QDir::Time );
     mySorting = m_fileView->sorting();
     caseInsensitiveAction->setEnabled( false );
 }
@@ -361,11 +358,11 @@ void KDirOperator::slotToggleDirsFirst()
     if ( !m_fileView )
       return;
 
-    QDir::SortSpec sorting = m_fileView->sorting();
+    QDir::SortFlags sorting = m_fileView->sorting();
     if ( !KFile::isSortDirsFirst( sorting ) )
-        m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::DirsFirst ));
+        m_fileView->setSorting( sorting | QDir::DirsFirst );
     else
-        m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting & ~QDir::DirsFirst));
+        m_fileView->setSorting( sorting & ~QDir::DirsFirst );
     mySorting = m_fileView->sorting();
 }
 
@@ -374,11 +371,11 @@ void KDirOperator::slotToggleIgnoreCase()
     if ( !m_fileView )
       return;
 
-    QDir::SortSpec sorting = m_fileView->sorting();
+    QDir::SortFlags sorting = m_fileView->sorting();
     if ( !KFile::isSortCaseInsensitive( sorting ) )
-        m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting | QDir::IgnoreCase ));
+        m_fileView->setSorting( sorting | QDir::IgnoreCase );
     else
-        m_fileView->setSorting( static_cast<QDir::SortSpec>( sorting & ~QDir::IgnoreCase));
+        m_fileView->setSorting( sorting & ~QDir::IgnoreCase );
     mySorting = m_fileView->sorting();
 }
 
@@ -1035,8 +1032,8 @@ void KDirOperator::connectView(KFileView *view)
             this, SLOT( selectFile(const KFileItem*) ) );
     connect(sig, SIGNAL( fileHighlighted(const KFileItem *) ),
             this, SLOT( highlightFile(const KFileItem*) ));
-    connect(sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
-            this, SLOT( slotViewSortingChanged( QDir::SortSpec )));
+    connect(sig, SIGNAL( sortingChanged( QDir::SortFlags ) ),
+            this, SLOT( slotViewSortingChanged( QDir::SortFlags )));
     connect(sig, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KUrl::List&) ),
             this, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KUrl::List&)) );
 
@@ -1257,7 +1254,7 @@ void KDirOperator::setupActions()
 
     KAction* trash = new KAction( i18n( "Move to Trash" ), myActionCollection, "trash" );
     trash->setIcon( KIcon( "edittrash" ) );
-    trash->setShortcut( Qt::Key_Delete ); 
+    trash->setShortcut( Qt::Key_Delete );
     connect( trash, SIGNAL( triggered(bool) ), SLOT( trashSelected() ) );
 
     KAction* action = new KAction( i18n( "Delete" ), myActionCollection, "delete" );
@@ -1416,7 +1413,7 @@ void KDirOperator::readConfig( KConfigGroup *configGroup)
     if ( !configGroup )
         return;
     defaultView = 0;
-    int sorting = 0;
+    QDir::SortFlags sorting = QDir::Name;
 
     QString viewStyle = configGroup->readEntry( "View Style", "Simple" );
     if ( viewStyle == QLatin1String("Detail") )
@@ -1446,7 +1443,7 @@ void KDirOperator::readConfig( KConfigGroup *configGroup)
     else if ( sortBy == QLatin1String("Date") )
         sorting |= QDir::Time;
 
-    mySorting = static_cast<QDir::SortSpec>( sorting );
+    mySorting = sorting;
     setSorting( mySorting );
 
 
@@ -1610,7 +1607,7 @@ void KDirOperator::slotViewActionRemoved( KAction *action )
 	viewActionMenu->remove( d->viewActionSeparator );
 }
 
-void KDirOperator::slotViewSortingChanged( QDir::SortSpec sort )
+void KDirOperator::slotViewSortingChanged( QDir::SortFlags sort )
 {
     mySorting = sort;
     updateSortActions();

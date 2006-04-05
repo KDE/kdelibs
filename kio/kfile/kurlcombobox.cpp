@@ -66,7 +66,7 @@ void KUrlComboBox::init( Mode mode )
     myMode    = mode;
     urlAdded  = false;
     myMaximum = 10; // default
-    setInsertPolicy( NoInsertion );
+    setInsertPolicy( NoInsert );
     setTrapReturnKey( true );
     setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
 

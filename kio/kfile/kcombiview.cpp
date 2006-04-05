@@ -53,9 +53,9 @@ KCombiView::KCombiView( QWidget *parent)
     left->setParentView( this );
     left->setAcceptDrops(false);
     left->installEventFilter( this );
-    
-    connect( sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
-             SLOT( slotSortingChanged( QDir::SortSpec ) ));
+
+    connect( sig, SIGNAL( sortingChanged( QDir::SortFlags ) ),
+             SLOT( slotSortingChanged( QDir::SortFlags ) ));
 }
 
 KCombiView::~KCombiView()
@@ -74,7 +74,7 @@ void KCombiView::setRight(KFileView *view)
     lst << left->gridX() + 2 * left->spacing();
     setSizes( lst );
     setStretchFactor(indexOf(left),0); //setResizeMode( left, QSplitter::KeepSize );
-    
+
 
     right->setParentView( this );
     right->widget()->setAcceptDrops(acceptDrops());
@@ -97,7 +97,7 @@ void KCombiView::insertItem( KFileItem *item )
     }
 }
 
-void KCombiView::setSorting( QDir::SortSpec sort )
+void KCombiView::setSorting( QDir::SortFlags sort )
 {
     if ( !right )
         kFatal() << "You need to call setRight( someview ) before!" << endl;
@@ -292,7 +292,7 @@ KFileItem * KCombiView::prevItem( const KFileItem *fileItem ) const
     return item;
 }
 
-void KCombiView::slotSortingChanged( QDir::SortSpec sorting )
+void KCombiView::slotSortingChanged( QDir::SortFlags sorting )
 {
     KFileView::setSorting( sorting );
 }
@@ -353,7 +353,7 @@ void KCombiView::virtual_hook( int id, void* data )
 bool KCombiView::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
-    
+
     // only the focused view may have a selection
     if ( type == QEvent::FocusIn )
     {
@@ -362,7 +362,7 @@ bool KCombiView::eventFilter( QObject *o, QEvent *e )
         else if ( o == right->widget() )
             left->clearSelection();
     }
-    
+
     return QSplitter::eventFilter( o, e );
 }
 

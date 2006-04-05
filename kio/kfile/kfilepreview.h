@@ -81,7 +81,7 @@ public:
     virtual KFileItem * nextItem( const KFileItem * ) const;
     virtual KFileItem * prevItem( const KFileItem * ) const;
 
-    virtual void setSorting( QDir::SortSpec sort );
+    virtual void setSorting( QDir::SortFlags sort );
 
     virtual void readConfig( KConfigGroup *);
     virtual void writeConfig( KConfigGroup *);
