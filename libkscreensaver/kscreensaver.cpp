@@ -221,7 +221,7 @@ void KBlankEffect::blankBlocks()
     kapp->flushX();
 
     if ( d->effectProgress >= bx*by ) {
-        delete block;
+        delete[] block;
         finished();
     }
 }
