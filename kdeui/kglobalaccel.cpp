@@ -26,7 +26,7 @@
 #elif defined(Q_WS_MACX)
 #include "kglobalaccel_mac.h"
 #elif defined(Q_WS_WIN)
-// do nothing, there's no header for win right now
+#include "kglobalaccel_win.h"
 #else
 #include "kglobalaccel_emb.h"
 #endif

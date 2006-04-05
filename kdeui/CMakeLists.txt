@@ -140,6 +140,9 @@ if (UNIX)
    	set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_x11.cpp kkeyserver_x11.cpp )
 	endif (APPLE)
 endif (UNIX)
+if (WIN32)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_win.cpp )
+endif (WIN32)
 
 
 kde4_automoc(${kdeui_LIB_SRCS})
