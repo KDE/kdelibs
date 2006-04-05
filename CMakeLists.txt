@@ -18,16 +18,6 @@ endif(${generatedFileInSourceDir})
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-# support for Dart: http://public.kitware.com/dashboard.php?name=kde
-enable_testing()
-include(CTest)
-
-# Always include srcdir and builddir in include path
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# Use colors
-set(CMAKE_COLOR_MAKEFILE ON)
-
 # search packages used by KDE
 find_package(KDE4Internal REQUIRED)
 find_package(Perl REQUIRED)
@@ -37,8 +27,11 @@ if (APPLE)
    find_package(Carbon REQUIRED)
 endif (APPLE)
 
-include (MacroAdditionalCleanFiles)
-include (MacroAddFileDependencies)
+# set some default settings
+include(KDE4Defaults)
+
+# make some more macros available
+include (MacroLibrary)
 
 # macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
