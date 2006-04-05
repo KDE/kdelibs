@@ -5,7 +5,7 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckPrototypeExists)
 include(CheckTypeSize)
-include(CheckCSourceCompiles)
+include(CheckCXXSourceCompiles)
 
 # The FindKDE4.cmake module sets _KDE4_PLATFORM_DEFINITIONS with
 # definitions like _GNU_SOURCE that are needed on each platform.
@@ -383,7 +383,7 @@ SET(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 set(CONFIG_QT_DOCDIR "\"${QT_DOC_DIR}/html/\"")
 set(CONFIG_KDELIBS_DOXYDIR "\"/tmp/\"")
 
-check_c_source_compiles("
+check_cxx_source_compiles("
   #include <sys/types.h>
   #include <sys/statvfs.h>
   int main(){
