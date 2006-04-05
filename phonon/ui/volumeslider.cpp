@@ -109,9 +109,12 @@ void VolumeSlider::setAudioOutput( AudioOutput* output )
 void VolumeSlider::sliderChanged( int value )
 {
 	setToolTip( i18n( "Volume: %1%" ,  value ) );
-	d->ignoreVolumeChange = true;
-	d->output->setVolume( ( static_cast<float>( value ) ) * 0.01 );
-	d->ignoreVolumeChange = false;
+	if( d->output )
+	{
+		d->ignoreVolumeChange = true;
+		d->output->setVolume( ( static_cast<float>( value ) ) * 0.01 );
+		d->ignoreVolumeChange = false;
+	}
 }
 
 void VolumeSlider::volumeChanged( float value )
