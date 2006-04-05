@@ -622,6 +622,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
           !pkcs->getCertificate()->x509V3Extensions().certTypeSSLClient())) {
         certs.remove(*it);
       }
+      delete pkcs;
     }
 
     if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
