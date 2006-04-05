@@ -426,7 +426,7 @@ int KColorCells::posToCell(const QPoint &pos, bool ignoreBorders)
 
 void KColorCells::mouseMoveEvent( QMouseEvent *e )
 {
-    if( !(e->state() && LeftButton)) return;
+    if( !(e->state() & LeftButton)) return;
 
     if(inMouse) {
         int delay = KGlobalSettings::dndEventDelay();
@@ -530,7 +530,7 @@ void KColorPatch::drawContents( QPainter *painter )
 void KColorPatch::mouseMoveEvent( QMouseEvent *e )
 {
         // Drag color object
-        if( !(e->state() && LeftButton)) return;
+        if( !(e->state() & LeftButton)) return;
 	KColorDrag *d = new KColorDrag( color, this);
 	d->dragCopy();
 }
