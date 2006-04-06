@@ -26,6 +26,8 @@ void PredicateParse_mainParse( const char *_code );
 
 #include "predicate.h"
 
+#include <cstdlib>
+
 #include <QStringList>
 
 #include <kdebug.h>
