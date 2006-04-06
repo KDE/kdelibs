@@ -4413,15 +4413,15 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     // However we don't want to ask for flash and other plugin things..
     if ( child->m_type != khtml::ChildFrame::Object )
     {
-      QString suggestedFilename;
+      QString suggestedFileName;
       if ( child->m_run )
-        suggestedFilename = child->m_run->suggestedFilename();
+        suggestedFileName = child->m_run->suggestedFileName();
 
       KParts::BrowserRun::AskSaveResult res = KParts::BrowserRun::askEmbedOrSave(
-        url, mimetype, suggestedFilename  );
+        url, mimetype, suggestedFileName  );
       switch( res ) {
       case KParts::BrowserRun::Save:
-        KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString(), 0, suggestedFilename);
+        KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString(), 0, suggestedFileName );
         // fall-through
       case KParts::BrowserRun::Cancel:
         child->m_bCompleted = true;

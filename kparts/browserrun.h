@@ -61,36 +61,36 @@ namespace KParts {
         KUrl url() const { return m_strURL; }
 
         bool hideErrorDialog() const;
-        
-        // Suggested filename given by the server (e.g. HTTP content-disposition)
-        QString suggestedFilename() const { return m_suggestedFilename; }
-        
+
+        // Suggested file name given by the server (e.g. HTTP content-disposition)
+        QString suggestedFileName() const { return m_suggestedFileName; }
+
         enum AskSaveResult { Save, Open, Cancel };
         /**
          * Ask the user whether to save or open a url in another application.
          * @param url the URL in question
          * @param offer the application that will be used to open the URL
          * @param mimeType the mimetype of the URL
-         * @param suggestedFilename optional filename suggested by the server
+         * @param suggestedFileName optional file name suggested by the server
          * @return Save, Open or Cancel.
          */
-        static AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename = QString() );
+        static AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName = QString() );
         /**
          * Similar to askSave but for the case where the current application is
          * able to embed the url itself (instead of passing it to another app).
          * @param url the URL in question
          * @param mimeType the mimetype of the URL
-         * @param suggestedFilename optional filename suggested by the server
+         * @param suggestedFileName optional filename suggested by the server
          * @param flags reserved for later use
          * @return Save, Open or Cancel.
          */
-        static AskSaveResult askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFilename = QString(), int flags = 0 );
+        static AskSaveResult askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName = QString(), int flags = 0 );
 
         // virtual so that KHTML can implement differently (HTML cache)
-        virtual void save( const KUrl & url, const QString & suggestedFilename );
+        virtual void save( const KUrl & url, const QString & suggestedFileName );
 
         // static so that it can be called from other classes
-        static void simpleSave( const KUrl & url, const QString & suggestedFilename,
+        static void simpleSave( const KUrl & url, const QString & suggestedFileName,
                                 QWidget* window =0 );
 
 
@@ -139,7 +139,7 @@ namespace KParts {
         QPointer<QWidget> m_window;
         // Suggested filename given by the server (e.g. HTTP content-disposition)
         // When set, we should really be saving instead of embedding
-        QString m_suggestedFilename;
+        QString m_suggestedFileName;
         QString m_sMimeType;
         bool m_bRemoveReferrer;
         bool m_bTrustedSource;

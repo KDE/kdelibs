@@ -172,8 +172,8 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
   m_strURL = job->url();
   kDebug(1000) << "slotBrowserMimetype: found " << type << " for " << m_strURL.prettyURL() << endl;
 
-  m_suggestedFilename = job->queryMetaData("content-disposition");
-  //kDebug(1000) << "m_suggestedFilename=" << m_suggestedFilename << endl;
+  m_suggestedFileName = job->queryMetaData("content-disposition");
+  //kDebug(1000) << "m_suggestedFileName=" << m_suggestedFileName << endl;
 
   // Make a copy to avoid a dead reference
   QString _type = type;
@@ -196,9 +196,9 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
         kDebug(1000) << "BrowserRun: ask for saving" << endl;
         KService::Ptr offer = KServiceTypeProfile::preferredService(mimeType, "Application");
         // ... -> ask whether to save
-        KParts::BrowserRun::AskSaveResult res = askSave( m_strURL, offer, mimeType, m_suggestedFilename );
+        KParts::BrowserRun::AskSaveResult res = askSave( m_strURL, offer, mimeType, m_suggestedFileName );
         if ( res == KParts::BrowserRun::Save ) {
-            save( m_strURL, m_suggestedFilename );
+            save( m_strURL, m_suggestedFileName );
             kDebug(1000) << "BrowserRun::handleNonEmbeddable: Save: returning Handled" << endl;
             m_bFinished = true;
             return Handled;
@@ -218,7 +218,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                 kDebug(1000) << "BrowserRun: request comes from a POST, can't pass a URL to another app, need to save" << endl;
                 m_sMimeType = mimeType;
                 QString extension;
-                QString fileName = m_suggestedFilename.isEmpty() ? m_strURL.fileName() : m_suggestedFilename;
+                QString fileName = m_suggestedFileName.isEmpty() ? m_strURL.fileName() : m_suggestedFileName;
                 int extensionPos = fileName.lastIndexOf( '.' );
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'
@@ -259,7 +259,7 @@ bool BrowserRun::allowExecution( const QString &serviceType, const KUrl &url )
     i18n("Execute File?"), i18n("Execute") ) == KMessageBox::Continue );
 }
 
-static QString makeQuestion( const KUrl& url, const QString& mimeType, const QString& suggestedFilename )
+static QString makeQuestion( const KUrl& url, const QString& mimeType, const QString& suggestedFileName )
 {
     QString surl = KStringHandler::csqueeze( url.prettyURL() );
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
@@ -273,20 +273,20 @@ static QString makeQuestion( const KUrl& url, const QString& mimeType, const QSt
     }
     // The strange order in the i18n() calls below is due to the possibility
     // of surl containing a '%'
-    if ( suggestedFilename.isEmpty() )
+    if ( suggestedFileName.isEmpty() )
         return i18n("Open '%2'?\nType: %1", comment, surl);
     else
-        return i18n("Open '%3'?\nName: %2\nType: %1", comment, suggestedFilename, surl);
+        return i18n("Open '%3'?\nName: %2\nType: %1", comment, suggestedFileName, surl);
 }
 
 //static
-BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename )
+BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName )
 {
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
     // NOTE: Keep this function in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
     //       FileTypeDetails::updateAskSave()
 
-    QString question = makeQuestion( url, mimeType, suggestedFilename );
+    QString question = makeQuestion( url, mimeType, suggestedFileName );
 
     // Text used for the open button
     QString openText = (offer && !offer->name().isEmpty())
@@ -303,7 +303,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
 }
 
 //static
-BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFilename, int /*flags*/ )
+BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName, int /*flags*/ )
 {
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
     // NOTE: Keep this funcion in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
@@ -328,7 +328,7 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
          mimeType.startsWith( "print" ) )
         return Open;
 
-    QString question = makeQuestion( url, mimeType, suggestedFilename );
+    QString question = makeQuestion( url, mimeType, suggestedFileName );
 
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, url.host(),
@@ -339,12 +339,12 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
 }
 
 // Default implementation, overridden in KHTMLRun
-void BrowserRun::save( const KUrl & url, const QString & suggestedFilename )
+void BrowserRun::save( const KUrl & url, const QString & suggestedFileName )
 {
-    simpleSave( url, suggestedFilename, m_window );
+    simpleSave( url, suggestedFileName, m_window );
 }
 
-void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFilename,
+void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName,
                              QWidget* window )
 {
     // DownloadManager <-> konqueror integration
@@ -371,13 +371,13 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFilename
             }
             else
             {
-                // ### suggestedFilename not taken into account. Fix this (and
+                // ### suggestedFileName not taken into account. Fix this (and
                 // the duplicated code) with shiny new KDownload class for 3.2 (pfeiffer)
-                // Until the shiny new class comes about, send the suggestedFilename
+                // Until the shiny new class comes about, send the suggestedFileName
                 // along with the actual URL to download. (DA)
                 cmd += " " + KProcess::quote(url.url());
-                if ( !suggestedFilename.isEmpty() )
-                    cmd +=" " + KProcess::quote(suggestedFilename);
+                if ( !suggestedFileName.isEmpty() )
+                    cmd +=" " + KProcess::quote(suggestedFileName);
 
                 kDebug(1000) << "Calling command  " << cmd << endl;
                 // slave is already on hold (slotBrowserMimetype())
@@ -394,7 +394,7 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFilename
     dlg->setOperationMode( KFileDialog::Saving );
     dlg->setCaption(i18n("Save As"));
 
-    dlg->setSelection( suggestedFilename.isEmpty() ? url.fileName() : suggestedFilename );
+    dlg->setSelection( suggestedFileName.isEmpty() ? url.fileName() : suggestedFileName );
     if ( dlg->exec() )
     {
         KUrl destURL( dlg->selectedURL() );
