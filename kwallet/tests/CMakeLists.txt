@@ -9,9 +9,9 @@ set(kwalletasync_SRCS kwalletasync.cpp kwallettest.cpp )
 
 kde4_automoc(${kwalletasync_SRCS})
 
-kde4_add_executable(kwalletasync ${kwalletasync_SRCS})
+kde4_add_executable(kwalletasync NOGUI ${kwalletasync_SRCS})
 
-target_link_libraries(kwalletasync NOGUI ${KDE4_KDECORE_LIBS} kwalletclient )
+target_link_libraries(kwalletasync ${KDE4_KDECORE_LIBS} kwalletclient )
 
 
 ########### next target ###############
