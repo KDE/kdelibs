@@ -121,9 +121,7 @@ add_subdirectory( kdewidgets  )
 add_subdirectory( kate  )
 add_subdirectory( knotify )
 add_subdirectory( kimgio )
-if(DNSSD_FOUND)
-    add_subdirectory( dnssd )
-endif(DNSSD_FOUND)
+add_subdirectory( dnssd )
 
 
 ########### install files ###############
