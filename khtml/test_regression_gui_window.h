@@ -30,7 +30,7 @@
 #include <QProcess>
 
 #include "khtml_part.h"
-#include "test_regression_gui.h"
+#include "ui_test_regression_gui.h"
 
 class TestRegressionWindow : public QMainWindow
 {
