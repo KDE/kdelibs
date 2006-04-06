@@ -1604,7 +1604,7 @@ void KateModOnHdPrompt::slotDiff()
 
   uint lastln =  m_doc->numLines();
   for ( uint l = 0; l <  lastln; l++ )
-    p->writeStdin(  m_doc->textLine( l ), l < lastln );
+    p->writeStdin(  m_doc->textLine( l ) );
 
   p->closeWhenDone();
 }
@@ -1616,10 +1616,15 @@ void KateModOnHdPrompt::slotPRead( KProcIO *p)
     m_tmpfile = new KTempFile();
   // put all the data we have in it
   QString stmp;
+  bool readData = false;
   while ( p->readln( stmp, false ) > -1 )
+  {
     *m_tmpfile->textStream() << stmp << endl;
+    readData = true;
+  }
 
-  p->ackRead();
+  if( readData )
+    p->ackRead();
 }
 
 void KateModOnHdPrompt::slotPDone( KProcess *p )
