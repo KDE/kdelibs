@@ -1634,7 +1634,7 @@ void KateModOnHdPrompt::slotDiff()
   // Start a KProcess that creates a diff
   KProcIO *p = new KProcIO();
   p->setComm( KProcess::All );
-  *p << "diff" << "-ub" << "-" <<  m_doc->url().path();
+  *p << "diff" << "-u" << "-" <<  m_doc->url().path();
   connect( p, SIGNAL(processExited(KProcess*)), this, SLOT(slotPDone(KProcess*)) );
   connect( p, SIGNAL(readReady(KProcIO*)), this, SLOT(slotPRead(KProcIO*)) );
 
@@ -1644,7 +1644,7 @@ void KateModOnHdPrompt::slotDiff()
 
   uint lastln =  m_doc->numLines();
   for ( uint l = 0; l <  lastln; l++ )
-    p->writeStdin(  m_doc->textLine( l ), l < lastln );
+    p->writeStdin( m_doc->textLine( l ) );
 
   p->closeWhenDone();
 }
@@ -1656,15 +1656,32 @@ void KateModOnHdPrompt::slotPRead( KProcIO *p)
     m_tmpfile = new KTempFile();
   // put all the data we have in it
   QString stmp;
+  bool dataRead = false;
   while ( p->readln( stmp, false ) > -1 )
+  {
     *m_tmpfile->textStream() << stmp << endl;
+    dataRead = true;
+  }
 
-  p->ackRead();
+  // dominik: only ackRead(), when we *really* read data, otherwise, this slot
+  // is called initity times, which leads to a crash
+  if( dataRead )
+    p->ackRead();
 }
 
 void KateModOnHdPrompt::slotPDone( KProcess *p )
 {
   setCursor( ArrowCursor );
+  if( ! m_tmpfile )
+  {
+    // dominik: there were only whitespace changes, so that the diff returned by
+    // diff(1) has 0 bytes. So slotPRead() is never called, as there is
+    // no data, so that m_tmpfile was never created and thus is NULL.
+    // NOTE: would be nice, if we could produce a fake-diff, so that kompare
+    //       tells us "The files are identical". Right now, we get an ugly
+    //       "Could not parse diff output".
+    m_tmpfile = new KTempFile();
+  }
   m_tmpfile->close();
 
   if ( ! p->normalExit() /*|| p->exitStatus()*/ )
