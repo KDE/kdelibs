@@ -1,6 +1,10 @@
 //#ifdef    don't do this, this file is supposed to be included
 //#define   multiple times
 
+#include <qglobal.h>
+
+#ifdef Q_WS_X11
+
 /* Usage:
 
  If you get compile errors caused by X11 includes (the line
@@ -258,3 +262,5 @@ char* rindex( const char* s, int c )
 }
 
 using namespace X;
+
+#endif
