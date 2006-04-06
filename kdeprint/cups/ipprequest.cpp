@@ -511,16 +511,6 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 	cupsFreeOptions(n, options);
 
 	// find an remove that annoying "document-format" attribute
-	ipp_attribute_t	*attr = request_->attrs;
-	while (attr)
-	{
-		if (attr->next && strcmp(attr->next->name, "document-format") == 0)
-		{
-			ipp_attribute_t	*attr2 = attr->next;
-			attr->next = attr2->next;
-			//_ipp_free_attr(attr2);
-			break;
-		}
-		attr = attr->next;
-	}
+        ipp_attribute_t *attr = ippFindAttribute(request_, "document-format", IPP_TAG_NAME);
+        ippDeleteAttribute(request_, attr);
 }
