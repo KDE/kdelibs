@@ -17,8 +17,8 @@
 
 */
 
-#ifndef OUTPUTDEVICECHOICE_H
-#define OUTPUTDEVICECHOICE_H
+#ifndef OUTPUTDEVICECHOICE2_H_STUPID_UIC
+#define OUTPUTDEVICECHOICE2_H_STUPID_UIC
 
 #include "ui_outputdevicechoice2.h"
 #include <phonon/namedescriptiontuplemodel.h>
@@ -45,4 +45,4 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
 			m_videoModel2, m_communicationModel2;
 };
 
-#endif // OUTPUTDEVICECHOICE_H
+#endif // OUTPUTDEVICECHOICE2_H_STUPID_UIC
