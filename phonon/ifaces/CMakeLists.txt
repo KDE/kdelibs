@@ -5,7 +5,6 @@ kde4_header()
 install_files( /include/phonon/ifaces FILES
 	abstractmediaproducer.h
 	mediaobject.h
-	soundcardcapture.h
 	audiopath.h
 	backend.h
 	abstractaudiooutput.h
