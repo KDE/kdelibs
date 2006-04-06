@@ -243,9 +243,9 @@ QStringList KFileList::fileList() const
 
 void KFileList::slotAddFile()
 {
-	KURL	fname = KFileDialog::getOpenURL(QString::null, QString::null, this);
-	if (!fname.isEmpty())
-		addFiles(KURL::List(fname));
+	KURL::List fnames = KFileDialog::getOpenURLs(QString::null, QString::null, this);
+	if (!fnames.empty())
+		addFiles(fnames);
 }
 
 void KFileList::slotRemoveFile()
