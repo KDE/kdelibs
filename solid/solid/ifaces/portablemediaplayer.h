@@ -27,6 +27,13 @@ namespace KDEHW
 {
 namespace Ifaces
 {
+    /**
+     * This class implement Portable Media Player capability interface and represent
+     * a portable media player attached to the system.
+     * A portable media player is a portable device able to play multimedia files.
+     * Some of them have even recording capabilities.
+     * @author Davide Bettio <davbet@aliceposta.it>
+     */
     class PortableMediaPlayer : virtual public Capability, public Enums::PortableMediaPlayer
     {
 //        Q_PROPERTY( AccessType accessMethod READ accessMethod )
@@ -36,11 +43,43 @@ namespace Ifaces
 //        Q_ENUMS( AccessType )
 
     public:
+        /**
+         * Destroys a portable media player object.
+         */
         virtual ~PortableMediaPlayer();
 
+        /**
+         * Retrieves the type of method that should be used to access this
+         * device.
+         *
+         * @return the access method type
+         * @see KDEHW::Ifaces::Enums::PortableMediaPlayer::AccessType
+         */
         virtual AccessType accessMethod() const = 0;
+
+        /**
+         * Retrieves a list of MIME-types representing the kind of formats
+         * that the device can play back.
+         *
+         * @return a MIME-type list of the supported output formats
+         */
         virtual QStringList outputFormats() const = 0;
+
+        /**
+         * Retrieves a list of MIME-types representing the kind of formats
+         * that the device can record. If empty, it means that the device
+         * is not capable of recording.
+         *
+         * @return a MIME-type list of the supported input formats
+         */
         virtual QStringList inputFormats() const = 0;
+
+        /**
+         * Retrieves a list of MIME-types representing playlist formats
+         * that the device can read.
+         *
+         * @return a MIME-type list of the supported playlist formats
+         */
         virtual QStringList playlistFormats() const = 0;
     };
 }
