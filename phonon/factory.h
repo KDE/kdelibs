@@ -141,22 +141,17 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		/**
 		 * \return a pointer to the backend interface.
 		 */
-		const Ifaces::Backend* backend() const;
+		const Ifaces::Backend* backend( bool createWhenNull = true );
 
 		/**
 		 * \copydoc Phonon::Ifaces::Backend::uiLibrary()
 		 */
-		const char* uiLibrary() const;
+		const char* uiLibrary();
 		/**
 		 * \copydoc Phonon::Ifaces::Backend::uiSymbol()
 		 */
-		const char* uiSymbol() const;
-#if 0
-		/**
-		 * Checks whether a certain mimetype is playable.
-		 */
-		bool isMimeTypePlayable( const QString & mimetype ) const;
-#endif
+		const char* uiSymbol();
+		
 		/**
 		 * Get the name of the Backend. It's the name from the .desktop file.
 		 */

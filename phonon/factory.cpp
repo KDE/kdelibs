@@ -54,7 +54,6 @@ class Factory::Private
 		Private()
 			: backend( 0 )
 		{
-			createBackend();
 		}
 
 		void createBackend()
@@ -221,12 +220,12 @@ void Factory::objectDestroyed( QObject * obj )
 #define FACTORY_IMPL( classname ) \
 Ifaces::classname* Factory::create ## classname( QObject* parent ) \
 { \
-	return d->backend ? registerObject( d->backend->create ## classname( parent ) ) : 0; \
+	return backend() ? registerObject( d->backend->create ## classname( parent ) ) : 0; \
 }
 #define FACTORY_IMPL_1ARG( type1, classname ) \
 Ifaces::classname* Factory::create ## classname( type1 name1, QObject* parent ) \
 { \
-	return d->backend ? registerObject( d->backend->create ## classname( name1, parent ) ) : 0; \
+	return backend() ? registerObject( d->backend->create ## classname( name1, parent ) ) : 0; \
 }
 
 FACTORY_IMPL( MediaObject )
@@ -242,39 +241,32 @@ FACTORY_IMPL_1ARG( int, VideoEffect )
 
 #undef FACTORY_IMPL
 
-const Ifaces::Backend* Factory::backend() const
+const Ifaces::Backend* Factory::backend( bool createWhenNull )
 {
+	if( createWhenNull && d->backend == 0 )
+	{
+		d->createBackend();
+		// XXX: might create "reentrancy" problems:
+		// a method calls this method and is called again because the
+		// backendChanged signal is emitted
+		emit backendChanged();
+	}
 	return d->backend;
 }
 
-const char* Factory::uiLibrary() const
+const char* Factory::uiLibrary()
 {
-	if( !d->backend )
+	if( !backend() )
 		return 0;
 	return d->backend->uiLibrary();
 }
 
-const char* Factory::uiSymbol() const
+const char* Factory::uiSymbol()
 {
-	if( !d->backend )
+	if( !backend() )
 		return 0;
 	return d->backend->uiSymbol();
 }
-
-#if 0
-bool Factory::isMimeTypePlayable( const QString & type ) const
-{
-	if( d->backend )
-	{
-		KMimeType::Ptr mimetype = KMimeType::mimeType( type );
-		QStringList mimetypes = playableMimeTypes();
-		for( QStringList::ConstIterator i=mimetypes.begin(); i!=mimetypes.end(); i++ )
-			if( mimetype->is( *i ) )
-				return true;
-	}
-	return false;
-}
-#endif
 
 QString Factory::backendName() const
 {

@@ -38,8 +38,6 @@ namespace Phonon
 
 class BackendCapabilities::Private
 {
-	public:
-		const Ifaces::Backend* backend;
 };
 
 BackendCapabilities* BackendCapabilities::m_self = 0;
@@ -52,40 +50,41 @@ BackendCapabilities* BackendCapabilities::self()
 }
 
 BackendCapabilities::BackendCapabilities()
-	: d( new Private() )
+	: d( 0 ) //when changing this also uncomment the delete in the dtor
 {
 	m_self = this;
-	d->backend = Factory::self()->backend();
 	connect( Factory::self(), SIGNAL( backendChanged() ), SLOT( slotBackendChanged() ) );
 }
 
 BackendCapabilities::~BackendCapabilities()
 {
+	// delete d;
+	// d = 0;
 }
 
 bool BackendCapabilities::supportsVideo()
 {
-	const BackendCapabilities::Private* d = self()->d;
-	return d->backend ? d->backend->supportsVideo() : false;
+	const Ifaces::Backend* backend = Factory::self()->backend();
+	return backend ? backend->supportsVideo() : false;
 }
 
 bool BackendCapabilities::supportsOSD()
 {
-	const BackendCapabilities::Private* d = self()->d;
-	return d->backend ? d->backend->supportsOSD() : false;
+	const Ifaces::Backend* backend = Factory::self()->backend();
+	return backend ? backend->supportsOSD() : false;
 }
 
 bool BackendCapabilities::supportsSubtitles()
 {
-	const BackendCapabilities::Private* d = self()->d;
-	return d->backend ? d->backend->supportsSubtitles() : false;
+	const Ifaces::Backend* backend = Factory::self()->backend();
+	return backend ? backend->supportsSubtitles() : false;
 }
 
 QStringList BackendCapabilities::knownMimeTypes()
 {
-	const BackendCapabilities::Private* d = self()->d;
-	if( d->backend )
-		return d->backend->knownMimeTypes();
+	const Ifaces::Backend* backend = Factory::self()->backend( false );
+	if( backend )
+		return backend->knownMimeTypes();
 	else
 	{
 		KTrader::OfferList offers = KTrader::self()->query( "PhononBackend",
@@ -97,9 +96,9 @@ QStringList BackendCapabilities::knownMimeTypes()
 
 bool BackendCapabilities::isMimeTypeKnown( QString mimeType )
 {
-	const BackendCapabilities::Private* d = self()->d;
-	if( d->backend )
-		return d->backend->knownMimeTypes().contains( mimeType );
+	const Ifaces::Backend* backend = Factory::self()->backend( false );
+	if( backend )
+		return backend->knownMimeTypes().contains( mimeType );
 	else
 	{
 		KTrader::OfferList offers = KTrader::self()->query( "PhononBackend",
@@ -111,11 +110,11 @@ bool BackendCapabilities::isMimeTypeKnown( QString mimeType )
 
 QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices()
 {
-	const BackendCapabilities::Private* d = self()->d;
+	const Ifaces::Backend* backend = Factory::self()->backend();
 	QList<AudioOutputDevice> ret;
-	if( d->backend )
+	if( backend )
 	{
-		QSet<int> deviceIndexes = d->backend->audioOutputDeviceIndexes();
+		QSet<int> deviceIndexes = backend->audioOutputDeviceIndexes();
 		foreach( int i, deviceIndexes )
 			ret.append( AudioOutputDevice::fromIndex( i ) );
 	}
@@ -124,11 +123,11 @@ QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices()
 
 QList<AudioCaptureDevice> BackendCapabilities::availableAudioCaptureDevices()
 {
-	const BackendCapabilities::Private* d = self()->d;
+	const Ifaces::Backend* backend = Factory::self()->backend();
 	QList<AudioCaptureDevice> ret;
-	if( d->backend )
+	if( backend )
 	{
-		QSet<int> deviceIndexes = d->backend->audioCaptureDeviceIndexes();
+		QSet<int> deviceIndexes = backend->audioCaptureDeviceIndexes();
 		foreach( int i, deviceIndexes )
 			ret.append( AudioCaptureDevice::fromIndex( i ) );
 	}
@@ -137,11 +136,11 @@ QList<AudioCaptureDevice> BackendCapabilities::availableAudioCaptureDevices()
 
 QList<VideoCaptureDevice> BackendCapabilities::availableVideoCaptureDevices()
 {
-	const BackendCapabilities::Private* d = self()->d;
+	const Ifaces::Backend* backend = Factory::self()->backend();
 	QList<VideoCaptureDevice> ret;
-	if( d->backend )
+	if( backend )
 	{
-		QSet<int> deviceIndexes = d->backend->videoCaptureDeviceIndexes();
+		QSet<int> deviceIndexes = backend->videoCaptureDeviceIndexes();
 		foreach( int i, deviceIndexes )
 			ret.append( VideoCaptureDevice::fromIndex( i ) );
 	}
@@ -150,11 +149,11 @@ QList<VideoCaptureDevice> BackendCapabilities::availableVideoCaptureDevices()
 
 QList<AudioEffectDescription> BackendCapabilities::availableAudioEffects()
 {
-	const BackendCapabilities::Private* d = self()->d;
+	const Ifaces::Backend* backend = Factory::self()->backend();
 	QList<AudioEffectDescription> ret;
-	if( d->backend )
+	if( backend )
 	{
-		QSet<int> deviceIndexes = d->backend->audioEffectIndexes();
+		QSet<int> deviceIndexes = backend->audioEffectIndexes();
 		foreach( int i, deviceIndexes )
 			ret.append( AudioEffectDescription::fromIndex( i ) );
 	}
@@ -163,11 +162,11 @@ QList<AudioEffectDescription> BackendCapabilities::availableAudioEffects()
 
 QList<VideoEffectDescription> BackendCapabilities::availableVideoEffects()
 {
-	const BackendCapabilities::Private* d = self()->d;
+	const Ifaces::Backend* backend = Factory::self()->backend();
 	QList<VideoEffectDescription> ret;
-	if( d->backend )
+	if( backend )
 	{
-		QSet<int> deviceIndexes = d->backend->videoEffectIndexes();
+		QSet<int> deviceIndexes = backend->videoEffectIndexes();
 		foreach( int i, deviceIndexes )
 			ret.append( VideoEffectDescription::fromIndex( i ) );
 	}
@@ -176,7 +175,6 @@ QList<VideoEffectDescription> BackendCapabilities::availableVideoEffects()
 
 void BackendCapabilities::slotBackendChanged()
 {
-	d->backend = Factory::self()->backend();
 	emit capabilitiesChanged();
 }
 

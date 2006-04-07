@@ -30,13 +30,15 @@ namespace Phonon
 			case Phonon::UnspecifiedCategory:
 				return i18n( "Unspecified" );
 			case Phonon::NotificationCategory:
-				return i18n( "Notification" );
+				return i18n( "Notifications" );
 			case Phonon::MusicCategory:
 				return i18n( "Music" );
 			case Phonon::VideoCategory:
 				return i18n( "Video" );
 			case Phonon::CommunicationCategory:
 				return i18n( "Communication" );
+			case Phonon::GameCategory:
+				return i18n( "Games" );
 		}
 		return QString();
 	}

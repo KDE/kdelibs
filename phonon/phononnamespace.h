@@ -114,7 +114,11 @@ namespace Phonon
 		 * If your applications produces sounds from communication with somebody
 		 * else (VoIP, voice chat).
 		 */
-		CommunicationCategory
+		CommunicationCategory,
+		/**
+		 * Sound produced by a computer game should go into this category.
+		 */
+		GameCategory
 	};
 
 	/**

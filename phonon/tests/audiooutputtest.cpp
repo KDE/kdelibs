@@ -63,7 +63,7 @@ void AudioOutputTest::checkCategory()
 	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Unspecified" ) );
 	ao.setCategory( Phonon::NotificationCategory );
 	QCOMPARE( ao.category(), Phonon::NotificationCategory );
-	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Notification" ) );
+	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Notifications" ) );
 	ao.setCategory( Phonon::MusicCategory );
 	QCOMPARE( ao.category(), Phonon::MusicCategory );
 	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Music" ) );
@@ -73,6 +73,9 @@ void AudioOutputTest::checkCategory()
 	ao.setCategory( Phonon::CommunicationCategory );
 	QCOMPARE( ao.category(), Phonon::CommunicationCategory );
 	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Communication" ) );
+	ao.setCategory( Phonon::GameCategory );
+	QCOMPARE( ao.category(), Phonon::GameCategory );
+	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Games" ) );
 }
 
 void AudioOutputTest::cleanupTestCase()
