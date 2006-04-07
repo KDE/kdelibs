@@ -418,6 +418,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 
 		const char *p = 0L;
 		while (!b->isOpen()) {
+			assert(kpd); // kpd can't be null if isOpen() is false
 #ifdef Q_WS_X11
 			XSetTransientForHint(qt_xdisplay(), kpd->winId(), w);
 #endif
