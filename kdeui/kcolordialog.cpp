@@ -1253,30 +1253,26 @@ void KColorDialog::slotDefaultColorClicked()
 void
 KColorDialog::readSettings()
 {
-  KConfig* config = KGlobal::config();
+  KConfigGroup group( KGlobal::config(), "Colors" );
 
-  QString oldgroup = config->group();
-
-  config->setGroup("Colors");
-  QString palette = config->readEntry("CurrentPalette");
+  QString palette = group.readEntry("CurrentPalette");
   d->table->setPalette(palette);
-  config->setGroup( oldgroup );
 }
 
 void
 KColorDialog::slotWriteSettings()
 {
-  KConfig* config = KGlobal::config();
-  config->setGroup("Colors");
+  KConfigGroup group( KGlobal::config(), "Colors" );
+
   QString palette = d->table->palette();
-  if (!config->hasDefault("CurrentPalette") &&
+  if (!group.hasDefault("CurrentPalette") &&
       (d->table->palette() == d->originalPalette))
   {
-     config->revertToDefault("CurrentPalette");
+     group.revertToDefault("CurrentPalette");
   }
   else
   {
-     config->writeEntry("CurrentPalette", d->table->palette());
+     group.writeEntry("CurrentPalette", d->table->palette());
   }
 }
 
