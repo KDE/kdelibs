@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 ServiceTypes=PhononBackend
+MimeType=audio/vorbis;audio/x-mp3;audio/x-wav;video/x-ogm
 X-KDE-Library=phonon_fake
 X-KDE-PhononBackendInfo-InterfaceVersion=1
 X-KDE-PhononBackendInfo-Version=0.1

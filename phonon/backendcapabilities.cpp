@@ -27,6 +27,9 @@
 #include <QList>
 #include <QSet>
 #include "videoeffectdescription.h"
+#include <QStringList>
+#include <ktrader.h>
+#include <kservice.h>
 
 static KStaticDeleter<Phonon::BackendCapabilities> sd;
 
@@ -78,10 +81,32 @@ bool BackendCapabilities::supportsSubtitles()
 	return d->backend ? d->backend->supportsSubtitles() : false;
 }
 
-KMimeType::List BackendCapabilities::knownMimeTypes()
+QStringList BackendCapabilities::knownMimeTypes()
 {
 	const BackendCapabilities::Private* d = self()->d;
-	return d->backend ? d->backend->knownMimeTypes() : KMimeType::List();
+	if( d->backend )
+		return d->backend->knownMimeTypes();
+	else
+	{
+		KTrader::OfferList offers = KTrader::self()->query( "PhononBackend",
+				"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
+		KService::Ptr service = offers.first();
+		return service->serviceTypes();
+	}
+}
+
+bool BackendCapabilities::isMimeTypeKnown( QString mimeType )
+{
+	const BackendCapabilities::Private* d = self()->d;
+	if( d->backend )
+		return d->backend->knownMimeTypes().contains( mimeType );
+	else
+	{
+		KTrader::OfferList offers = KTrader::self()->query( "PhononBackend",
+				"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
+		KService::Ptr service = offers.first();
+		return service->hasServiceType( mimeType );
+	}
 }
 
 QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices()

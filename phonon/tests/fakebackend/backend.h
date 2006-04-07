@@ -23,6 +23,7 @@
 #include "../../ifaces/backend.h"
 #include <QList>
 #include <QPointer>
+#include <QStringList>
 
 class KUrl;
 
@@ -70,7 +71,7 @@ namespace Fake
 			virtual bool supportsVideo() const;
 			virtual bool supportsOSD() const;
 			virtual bool supportsSubtitles() const;
-			virtual const KMimeType::List& knownMimeTypes() const;
+			virtual const QStringList& knownMimeTypes() const;
 
 			virtual void freeSoundcardDevices();
 
@@ -101,8 +102,7 @@ namespace Fake
 			//virtual const char* uiSymbol() const;
 
 		private:
-			KMimeType::List m_supportedMimeTypes;
-			QStringList m_audioEffects, m_videoEffects;
+			QStringList m_supportedMimeTypes;
 			QList<QPointer<AudioOutput> > m_audioOutputs;
 	};
 }} // namespace Phonon::Ifaces

@@ -24,9 +24,9 @@
 
 #include <kdelibs_export.h>
 #include <kstaticdeleter.h>
-#include <kmimetype.h>
 
 template<class T> class QList;
+class QStringList;
 
 namespace Phonon
 {
@@ -79,7 +79,7 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		 *
 		 * \see isMimeTypeKnown()
 		 */
-		static KMimeType::List knownMimeTypes();
+		static QStringList knownMimeTypes();
 
 		/**
 		 * Often all you want to know is whether one given MIME type can be
@@ -88,7 +88,7 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		 *
 		 * \see knownMimeTypes();
 		 */
-		static bool isMimeTypeKnown( KMimeType::Ptr ); //FIXME: not implemented
+		static bool isMimeTypeKnown( QString mimeType );
 
 #if 0
 		/**

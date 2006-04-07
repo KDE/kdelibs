@@ -21,10 +21,10 @@
 #define Phonon_IFACES_BACKEND_H
 
 #include <QObject>
-#include <kmimetype.h>
 #include <kdelibs_export.h>
 
 class KUrl;
+class QStringList;
 template<class T> class QSet;
 
 namespace Phonon
@@ -159,7 +159,7 @@ namespace Ifaces
 			/**
 			 * Lists the MIME types the backend can read and decode.
 			 */
-			virtual const KMimeType::List& knownMimeTypes() const = 0;
+			virtual const QStringList& knownMimeTypes() const = 0;
 
 			/* docu if the IPC method in Phonon::Factory is uncommented:
 			 *

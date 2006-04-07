@@ -116,14 +116,14 @@ bool Backend::supportsSubtitles() const
 	return false;
 }
 
-const KMimeType::List& Backend::knownMimeTypes() const
+const QStringList& Backend::knownMimeTypes() const
 {
 	if( m_supportedMimeTypes.isEmpty() )
 		const_cast<Backend*>( this )->m_supportedMimeTypes
-			<< KMimeType::mimeType( "audio/vorbis" )
-			<< KMimeType::mimeType( "audio/x-mp3" )
-			<< KMimeType::mimeType( "audio/x-wav" )
-			<< KMimeType::mimeType( "video/x-ogm" );
+			<< QLatin1String( "audio/vorbis" )
+			//<< QLatin1String( "audio/x-mp3" )
+			<< QLatin1String( "audio/x-wav" )
+			<< QLatin1String( "video/x-ogm" );
 	return m_supportedMimeTypes;
 }
 
