@@ -3,7 +3,9 @@ kde4_header()
 project(kdefx)
 
 include_directories( ${QT_INCLUDES} )
-
+if(WIN32)
+  include_directories( ${KDEWIN32_INCLUDES} )
+endif(WIN32)
 
 ########### next target ###############
 
