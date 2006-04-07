@@ -11,7 +11,7 @@ if(KDE4_BUILD_TESTS)
    
    kde4_automoc(${dcop_test_SRCS})
    
-   kde4_add_dcop_skels(dcop_test_SRCS test.h )
+   kde4_add_dcop_skels(dcop_test_SRCS ${CMAKE_CURRENT_BINARY_DIR}/test.h )
    
    
    #shell.generated: $(srcdir)/testcases $(srcdir)/generate.pl
@@ -32,7 +32,7 @@ if(KDE4_BUILD_TESTS)
    
    kde4_automoc(${driver_SRCS})
    
-   kde4_add_dcop_stubs(driver_SRCS test.h)
+   kde4_add_dcop_stubs(driver_SRCS ${CMAKE_CURRENT_BINARY_DIR}/test.h)
    
    kde4_add_executable(driver ${driver_SRCS})
    
