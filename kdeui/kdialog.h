@@ -596,83 +596,83 @@ class KDEUI_EXPORT KDialog : public QDialog
   Q_SIGNALS:
     /**
      * The Help button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void helpClicked();
 
     /**
      * The Default button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void defaultClicked();
 
 
     /**
      * The User3 button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void user3Clicked();
 
     /**
      * The User2 button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void user2Clicked();
 
     /**
      * The User1 button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void user1Clicked();
 
     /**
      * The Apply button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void applyClicked();
 
     /**
      * The Try button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void tryClicked();
 
     /**
      * The OK button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void okClicked();
 
     /**
      * The Yes button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void yesClicked();
 
     /**
      * The No button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void noClicked();
 
     /**
      * The Cancel button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void cancelClicked();
 
     /**
      * The Close button was pressed. This signal is only emitted if
-     * slotButtonClicked is not replaced
+     * slotButtonClicked() is not replaced
      */
     void closeClicked();
 
-	/**
-	 * A button has been pressed. This signal is only emitted if
-	 * slotButtonClicked is not replaced
-	 * @param button is the code of the pressed button.
-	 */
-	void buttonClicked( KDialog::ButtonCode button);
+    /**
+     * A button has been pressed. This signal is only emitted if
+     * slotButtonClicked() is not replaced
+     * @param button is the code of the pressed button.
+     */
+    void buttonClicked( KDialog::ButtonCode button);
 
     /**
      * The dialog is about to be hidden.
@@ -724,9 +724,9 @@ class KDEUI_EXPORT KDialog : public QDialog
   protected Q_SLOTS:
     /**
      * Activated when the button @p button is clicked
-	 * @param button is the type ButtonCode
+     * @param button is the type ButtonCode
      */
-	  virtual void slotButtonClicked(int button);
+    virtual void slotButtonClicked(int button);
 
     /**
      * Updates the margins and spacings.
