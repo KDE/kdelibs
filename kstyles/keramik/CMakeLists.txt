@@ -12,7 +12,7 @@ set(genembed_SRCS genembed.cpp )
 
 kde4_automoc(${genembed_SRCS})
 
-kde4_add_executable(genembed TOOL ${genembed_SRCS})
+kde4_add_executable(genembed RUN_UNINSTALLED ${genembed_SRCS})
 
 target_link_libraries(genembed  ${KDE4_KDECORE_LIBS} kdefx )
 
