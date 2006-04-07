@@ -1270,31 +1270,29 @@ void KColorDialog::slotDefaultColorClicked()
 void
 KColorDialog::readSettings()
 {
-  KConfig* config = KGlobal::config();
+  KConfigGroup group( KGlobal::config(), "Colors" );
 
-  QString oldgroup = config->group();
+  QString palette = group.readEntry("CurrentPalette");
+  if (palette.isEmpty())
+    palette=i18nc("palette name",colorPaletteName[fortyColorIndex].m_displayName);
 
-  config->setGroup("Colors");
-  QString palette = config->readEntry("CurrentPalette");
-  if (palette.isEmpty()) palette=i18nc("palette name",colorPaletteName[fortyColorIndex].m_displayName);
   d->table->setPalette(palette);
-  config->setGroup( oldgroup );
 }
 
 void
 KColorDialog::slotWriteSettings()
 {
-  KConfig* config = KGlobal::config();
-  config->setGroup("Colors");
+  KConfigGroup group( KGlobal::config(), "Colors" );
+
   QString palette = d->table->palette();
-  if (!config->hasDefault("CurrentPalette") &&
+  if (!group.hasDefault("CurrentPalette") &&
       (d->table->palette() == d->originalPalette))
   {
-     config->revertToDefault("CurrentPalette");
+     group.revertToDefault("CurrentPalette");
   }
   else
   {
-     config->writeEntry("CurrentPalette", d->table->palette()); //Shouldn't here the unstranslated name be saved ??
+     group.writeEntry("CurrentPalette", d->table->palette()); //Shouldn't here the unstranslated name be saved ??
   }
 }
 
