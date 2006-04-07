@@ -93,11 +93,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent )
 
     (void) new QWidget( box ); // spacer
 
-    QStringList formats;
-    KMimeType::List mimeTypes = BackendCapabilities::self()->knownMimeTypes();
-    foreach( KMimeType::Ptr p, mimeTypes )
-        formats.append( p->name() );
-    setSupportedMimeTypes( formats );
+    setSupportedMimeTypes( BackendCapabilities::self()->knownMimeTypes() );
 
     d->audioOutput = new AudioOutput( this );
     d->audioPath = new AudioPath( this );
