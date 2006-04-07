@@ -17,7 +17,6 @@
 #define THREADWEAVER_JOB_H
 
 #include <QObject>
-#include <QMultiMap>
 
 class QMutex;
 class QWaitCondition;
@@ -27,6 +26,7 @@ namespace ThreadWeaver {
     class Thread;
     class WeaverInterface;
     class JobRunHelper;
+    class JobMultiMap;
 
     /** A Job is a simple abstraction of an action that is to be
         executed in a thread context.
@@ -163,7 +163,8 @@ namespace ThreadWeaver {
 	    may only be executed after A has been finished, an entry will be
 	    added with key A and value B. When A is finished, the entry will
 	    be removed. */
-        static QMultiMap<Job*, Job*> *sm_dep();
+        static JobMultiMap* sm_dep();
+//         static QMultiMap<Job*, Job*> *sm_dep();
 	static QMutex *sm_mutex;
     private:
 	QMutex *m_mutex;

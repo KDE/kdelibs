@@ -16,6 +16,7 @@
 
 #include <QMutex>
 #include <QObject>
+#include <QMultiMap>
 #include <QWaitCondition>
 
 #include <DebuggingAids.h>
@@ -25,7 +26,7 @@
 
 namespace ThreadWeaver {
 
-    typedef QMultiMap<Job*, Job*> JobMultiMap;
+    class JobMultiMap : public QMultiMap<Job*, Job*> {};
     Q_GLOBAL_STATIC(JobMultiMap, g_sm_dep)
 
     QMutex *Job::sm_mutex;
@@ -48,7 +49,7 @@ namespace ThreadWeaver {
         resolveDependencies();
     }
 
-    QMultiMap<Job*, Job*> *Job::sm_dep()
+    JobMultiMap* Job::sm_dep()
     {
         return g_sm_dep();
     }
