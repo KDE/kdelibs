@@ -16,7 +16,7 @@ kde4_automoc(${makekdewidgets_SRCS})
 
 kde4_add_executable(makekdewidgets TOOL ${makekdewidgets_SRCS})
 
-target_link_libraries(makekdewidgets  ${KDE4_KDECORE_LIBS} kdecore )
+target_link_libraries(makekdewidgets  ${KDE4_KDECORE_LIBS} )
 
 install_targets(/bin makekdewidgets )
 
@@ -34,7 +34,7 @@ endif (KDE4_NEED_WRAPPER_SCRIPTS)
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
   COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}"
   ARGS -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets
-  DEPENDS kde.widgets makekdewidgets)
+  MAIN_DEPENDENCY kde.widgets DEPENDS makekdewidgets)
 
 set(kdewidgets_PART_SRCS
    classpreviews.cpp
@@ -45,11 +45,10 @@ qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_BINA
 
 kde4_automoc(classpreviews.cpp)
 
-set( kdewidgets_QRC kdewidgets.qrc )
-
-qt4_add_resources(kdewidgets_PART_SRCS ${kdewidgets_QRC} )
+qt4_add_resources(kdewidgets_PART_SRCS kdewidgets.qrc)
 
 kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
+#add_library(kdewidgets ${kdewidgets_PART_SRCS})
 
 target_link_libraries(kdewidgets  ${KDE4_KDECORE_LIBS} kio )
 

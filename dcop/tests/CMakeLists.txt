@@ -2,51 +2,41 @@ kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
-include_directories( ${KDE4_DCOP_INCLUDES} )
-
-
-########### next target ###############
-
-set(dcop_test_SRCS
-test.cpp
-)
-
-kde4_automoc(${dcop_test_SRCS})
-
-set( dcop_test_DCOP_SKEL_SRCS ${CMAKE_CURRENT_BINARY_DIR}/test.h )
-
-kde4_add_dcop_skels(dcop_test_SRCS ${dcop_test_DCOP_SKEL_SRCS})
-
-
-#shell.generated: $(srcdir)/testcases $(srcdir)/generate.pl
-#	perl $(srcdir)/generate.pl < $(srcdir)/testcases
-
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/test.h
-COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate.pl < ${CMAKE_CURRENT_SOURCE_DIR}/testcases
-)
-
-kde4_add_executable(dcop_test ${dcop_test_SRCS})
-
-target_link_libraries(dcop_test  ${QT_QTCORE_LIBRARY} DCOP )
-
-
-########### next target ###############
-
-set(driver_SRCS
-driver.cpp
-)
-
-kde4_automoc(${driver_SRCS})
-
-set( driver_DCOP_STUB_SRCS
-test.h
-)
-
-kde4_add_dcop_stubs(driver_SRCS ${driver_DCOP_STUB_SRCS})
-
-kde4_add_executable(driver ${driver_SRCS})
-
-target_link_libraries(driver  ${QT_QTCORE_LIBRARY} DCOP )
+   include_directories( ${KDE4_DCOP_INCLUDES} )
+   
+   
+   ########### next target ###############
+   
+   set(dcop_test_SRCS test.cpp )
+   
+   kde4_automoc(${dcop_test_SRCS})
+   
+   kde4_add_dcop_skels(dcop_test_SRCS test.h )
+   
+   
+   #shell.generated: $(srcdir)/testcases $(srcdir)/generate.pl
+   #	perl $(srcdir)/generate.pl < $(srcdir)/testcases
+   
+   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/test.h
+   COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate.pl < ${CMAKE_CURRENT_SOURCE_DIR}/testcases
+   )
+   
+   kde4_add_executable(dcop_test ${dcop_test_SRCS})
+   
+   target_link_libraries(dcop_test  ${QT_QTCORE_LIBRARY} DCOP )
+   
+   
+   ########### next target ###############
+   
+   set(driver_SRCS driver.cpp )
+   
+   kde4_automoc(${driver_SRCS})
+   
+   kde4_add_dcop_stubs(driver_SRCS test.h)
+   
+   kde4_add_executable(driver ${driver_SRCS})
+   
+   target_link_libraries(driver  ${QT_QTCORE_LIBRARY} DCOP )
 
 endif(KDE4_BUILD_TESTS)
 
