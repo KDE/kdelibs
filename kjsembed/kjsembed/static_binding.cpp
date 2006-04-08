@@ -21,6 +21,7 @@
 #include "value_binding.h"
 #include <kjs/interpreter.h>
 #include <kjs/function_object.h>
+#include <kjs/ustring.h>
 #include <qdebug.h>
 
 namespace KJSEmbed {
@@ -128,4 +129,30 @@ KJS::JSObject *StaticConstructor::construct( KJS::ExecState *exec, KJS::JSObject
     }
 //    return throwError( exec, QString("Cannot create %1 objects from javascript.").arg(className.qstring())); // NOTE: fix
     return KJS::throwError( exec, KJS::GeneralError, QString("Cannot create %1 objects from javascript.").arg(className.qstring()) );
+}
+
+// some Qt depending kjs class methods are only defined in kjs and implemented in khtml 
+// (khtml/kjs_binding.cpp) and here (marked with KJS_EXTERNAL_EXPORT) 
+
+namespace KJS {
+	
+UString::UString(const QString &d)
+{
+  unsigned int len = d.length();
+  UChar *dat = static_cast<UChar*>(fastMalloc(sizeof(UChar)*len));
+  memcpy(dat, d.unicode(), len * sizeof(UChar));
+  m_rep = UString::Rep::create(dat, len);
+}
+
+QString UString::qstring() const
+{
+  return QString((QChar*) data(), size());
+}
+
+QString Identifier::qstring() const
+{
+  return QString((QChar*) data(), size());
+}
+
+
 }
