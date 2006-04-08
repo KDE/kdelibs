@@ -342,6 +342,7 @@ KDEWIN32_EXPORT long getpagesize (void)
     return g_pagesize;
 }
 
+#ifndef __MINGW32__
 // XGetopt.cpp  Version 1.2
 //
 // Author:  Hans Dietrich
@@ -433,4 +434,5 @@ KDEWIN32_EXPORT int getopt(int argc, char **argv, const char *optstring)
 
 	return c;
 }
+#endif
 
