@@ -166,7 +166,7 @@ void KShortcutDialog::updateShortcutDisplay()
 				if( d->mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + "+";
 				if( d->mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + "+";
 				if( d->mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + "+";
-#else
+#elif defined(Q_WS_X11)
 				if( d->mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + "+";
 				if( d->mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + "+";
 				if( d->mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + "+";
