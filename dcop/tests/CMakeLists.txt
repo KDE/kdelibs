@@ -11,15 +11,13 @@ if(KDE4_BUILD_TESTS)
    
    kde4_automoc(${dcop_test_SRCS})
    
-   kde4_add_dcop_skels(dcop_test_SRCS ${CMAKE_CURRENT_BINARY_DIR}/test.h )
-   
-   
    #shell.generated: $(srcdir)/testcases $(srcdir)/generate.pl
    #	perl $(srcdir)/generate.pl < $(srcdir)/testcases
    
    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/test.h
-   COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate.pl < ${CMAKE_CURRENT_SOURCE_DIR}/testcases
-   )
+      COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate.pl < ${CMAKE_CURRENT_SOURCE_DIR}/testcases )
+   
+   kde4_add_dcop_skels(dcop_test_SRCS ${CMAKE_CURRENT_BINARY_DIR}/test.h )
    
    kde4_add_executable(dcop_test ${dcop_test_SRCS})
    
