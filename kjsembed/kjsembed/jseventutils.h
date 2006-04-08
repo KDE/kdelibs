@@ -59,7 +59,6 @@ namespace JSEventUtils
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QKeyEvent *ev);
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QInputMethodEvent *ev);
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QResizeEvent *ev);
-    KJS::JSObject *convertEvent( KJS::ExecState *exec, const QFocusEvent *ev);
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QCloseEvent *ev);
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QMoveEvent *ev);
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QWheelEvent *ev);
@@ -67,6 +66,7 @@ namespace JSEventUtils
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QDragMoveEvent *ev);
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QTimerEvent *ev);
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QContextMenuEvent *ev);
+    KJS::JSObject *convertEvent( KJS::ExecState *exec, const QFocusEvent *ev);
 }
 
 } // KJSEmbed

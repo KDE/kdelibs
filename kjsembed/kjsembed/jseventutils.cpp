@@ -34,10 +34,14 @@ namespace JSEventUtils
                 return convertEvent( exec, (QResizeEvent*)ev );
                 break;
             case QEvent::Timer:
+                return convertEvent( exec, (QTimerEvent*)ev );
+                break;
             case QEvent::MouseButtonPress:
             case QEvent::MouseButtonRelease:
             case QEvent::MouseButtonDblClick:
             case QEvent::MouseMove:
+            case QEvent::Enter:
+            case QEvent::Leave:
                 return convertEvent( exec, (QMouseEvent*)ev );
                 break;
             case QEvent::KeyPress:
@@ -46,8 +50,8 @@ namespace JSEventUtils
                 break;
             case QEvent::FocusIn:
             case QEvent::FocusOut:
-            case QEvent::Enter:
-            case QEvent::Leave:
+                return convertEvent( exec, (QFocusEvent*)ev );
+                break;
             case QEvent::Paint:
                 return convertEvent( exec, (QPaintEvent*)ev );
                 break;
@@ -224,15 +228,6 @@ namespace JSEventUtils
         return rev;
     }
 
-    KJS::JSObject *convertEvent( KJS::ExecState *exec, const QFocusEvent *ev)
-    {
-        KJS::JSObject *fev = convertEvent( exec, (QEvent *)ev );
-
-        fev->put( exec, "gotFocus", KJS::Boolean(ev->gotFocus()) );
-        fev->put( exec, "lostFocus", KJS::Boolean(ev->lostFocus()) );
-        return fev;
-    }
-
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QCloseEvent *ev)
     {
         KJS::JSObject *cev = convertEvent( exec, (QEvent *)ev );
@@ -304,6 +299,16 @@ namespace JSEventUtils
         cxev->put( exec, "globalPos", convertToValue( exec, ev->globalPos() ) );
         cxev->put( exec, "reason", KJS::Number((int)ev->reason()) );
         return cxev;
+    }
+
+    KJS::JSObject *convertEvent( KJS::ExecState *exec, const QFocusEvent *ev)
+    {
+         KJS::JSObject *dev = convertEvent( exec, (QEvent *)ev );
+         dev->put( exec, "gotFocus", KJS::Boolean( ev->gotFocus() ) );
+         dev->put( exec, "lostFocus", KJS::Boolean( ev->lostFocus() ));
+         //Gold star trolltech!
+         dev->put( exec, "reason", KJS::Number((int) const_cast<QFocusEvent*>( ev )->reason() ) );
+         return dev;
     }
 }// namespace JSEventUtils
 }// namespace KJSEmbed
