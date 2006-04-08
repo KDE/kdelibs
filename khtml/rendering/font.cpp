@@ -392,7 +392,6 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
     f.setPixelSize( size );
 
     fm = QFontMetrics( f );
-    fontDef.hasNbsp = fm.inFont( 0xa0 );
 
     // small caps
     delete scFont;
