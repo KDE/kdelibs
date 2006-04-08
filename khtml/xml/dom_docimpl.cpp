@@ -388,6 +388,8 @@ DocumentImpl::~DocumentImpl()
     m_styleSheets->deref();
     if (m_addedStyleSheets)
         m_addedStyleSheets->deref();
+    if (m_cssTarget)
+        m_cssTarget->deref();
     if (m_focusNode)
         m_focusNode->deref();
     if ( m_hoverNode )
@@ -2196,11 +2198,18 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
 
 void DocumentImpl::setCSSTarget(NodeImpl* n)
 {
-    if (m_cssTarget)
+    if (n == m_cssTarget)
+        return;
+
+    if (m_cssTarget) {
         m_cssTarget->setChanged();
+        m_cssTarget->deref();
+    }
     m_cssTarget = n;
-    if (n)
+    if (n) {
         n->setChanged();
+        n->ref();
+    }
 }
 
 void DocumentImpl::attachNodeIterator(NodeIteratorImpl *ni)
