@@ -33,6 +33,11 @@ class QToolButton;
  * No changes to the application other than instantiating this class with an
  * appropriate KListView should be needed.
  *
+ * @note { When iterating over items in the KListView, make sure that
+ * the iterator only includes visible items (for example, by adding
+ * QListViewItemIterator::Visible to the iterator flags). Otherwise,
+ * actions (such as deletion) may be taken on items that have been
+ * hidden by the search function. } 
  * @since 3.3
  */
 
