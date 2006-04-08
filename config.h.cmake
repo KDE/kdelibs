@@ -10,7 +10,7 @@
 #define HAVE_MITSHM 1
 #define HAVE_PRELOADED_SYMBOLS 1    /* Define if libtool can extract symbol lists from object files. */
 #define HAVE_SGI_STL 1
-#undef HAVE_DNOTIFY 
+#undef HAVE_DNOTIFY
 
 #cmakedefine HAVE_DNSSD 1
 
@@ -165,7 +165,7 @@
 #cmakedefine HAVE_SYS_TIME_H 1
 #cmakedefine HAVE_SYS_TIMEB_H 1
 #cmakedefine HAVE_SYS_SELECT_H 1
-#cmakedefine HAVE_SYS_STROPTS_H 1 
+#cmakedefine HAVE_SYS_STROPTS_H 1
 #cmakedefine HAVE_SYS_BITYPES_H 1
 #cmakedefine HAVE_SYSENT_H 1
 #cmakedefine HAVE_SYS_MNTTAB_H 1
@@ -220,7 +220,7 @@
 
 #cmakedefine   HAVE_BACKTRACE 1
 #cmakedefine   HAVE_BCOPY 1
-#cmakedefine   HAVE_CRYPT  1  
+#cmakedefine   HAVE_CRYPT  1
 #cmakedefine   HAVE_FADVISE 1
 #cmakedefine   HAVE_FREEADDRINFO 1
 #cmakedefine   HAVE_FUNC__FINITE 1
@@ -302,6 +302,9 @@
 #cmakedefine   HAVE___ARGZ_COUNT 1
 #cmakedefine   HAVE___ARGZ_NEXT  1
 #cmakedefine   HAVE___ARGZ_STRINGIFY 1
+#cmakedefine  HAVE_PTHREAD_GETATTR_NP 1
+#cmakedefine  HAVE_PTHREAD_ATTR_GET_NP 1
+
 
 /* this one seems to be unused:
 cmakedefine   HAVE__ICETRANSNOLISTEN
@@ -324,7 +327,7 @@ cmakedefine   HAVE__ICETRANSNOLISTEN
 #cmakedefine HAVE_SRANDOM_PROTO 1
 #cmakedefine HAVE_SETENV_PROTO 1
 #cmakedefine HAVE_UNSETENV_PROTO 1
-#cmakedefine HAVE_USLEEP_PROTO 1 
+#cmakedefine HAVE_USLEEP_PROTO 1
 #cmakedefine HAVE_RES_INIT_PROTO 1
 #cmakedefine HAVE_GETHOSTNAME_PROTO 1
 #cmakedefine HAVE_INITGROUPS_PROTO 1
