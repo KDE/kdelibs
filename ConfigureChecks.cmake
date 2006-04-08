@@ -318,8 +318,24 @@ endif (HAVE_OPENPTY)
 #set(CMAKE_REQUIRED_LIBRARIES)
 
 #dlopen stuff
-check_library_exists(dl dlopen ""  HAVE_LIBDL)
-check_library_exists(dl dlerror ""  HAVE_DLERROR)
+set(LIBDL)
+set(HAVE_LIBDL)
+# on FreeBSD dlopen is in libc, on Linux it's in libdl
+check_library_exists(dl dlopen ""  DLOPEN_IN_LIBDL)
+check_function_exists(dlopen DLOPEN_IN_LIBC)
+
+if (DLOPEN_IN_LIBC)
+   set(LIBDL c)
+   set(HAVE_LIBDL TRUE)
+   check_function_exists(dlerror HAVE_DLERROR)
+endif (DLOPEN_IN_LIBC)
+
+if (DLOPEN_IN_LIBDL)
+   set(LIBDL dl)
+   set(HAVE_LIBDL TRUE)
+   check_library_exists(dl dlerror ""  HAVE_DLERROR)
+endif (DLOPEN_IN_LIBDL)
+
 check_function_exists(shl_load HAVE_SHL_LOAD)
 check_function_exists(dld_init HAVE_DLD)
 
