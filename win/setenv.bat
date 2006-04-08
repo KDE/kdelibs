@@ -29,8 +29,13 @@ if exist C:\Programme\gnuwin32 set PATH=C:\Programme\gnuwin32\bin;%PATH%
 :: Qt
 if exist C:\Qt\4.1.0 set QTDIR=C:\QT\4.1.0
 if exist C:\Qt\4.1.1 set QTDIR=C:\QT\4.1.1
+if exist F:\Qt\4.1.2 set QTDIR=F:\QT\4.1.2
 if exist F:\Qt\4.1.0 set QTDIR=F:\QT\4.1.0
 if exist F:\Qt\4.1.1 set QTDIR=F:\QT\4.1.1
+if exist F:\Qt\4.1.2 set QTDIR=F:\QT\4.1.2
+if exist \Qt\4.1.0 set QTDIR=\QT\4.1.0
+if exist \Qt\4.1.1 set QTDIR=\QT\4.1.1
+if exist \Qt\4.1.2 set QTDIR=\QT\4.1.2
 if not %QTDIR%=="" (
 	set PATH=%QTDIR%\bin;%PATH%
 )
