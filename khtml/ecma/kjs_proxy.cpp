@@ -20,6 +20,16 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <config.h>
+
+#if defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
+
+#include <valgrind/memcheck.h>
+#define VALGRIND_SUPPORT
+
+#endif
+
+
 #include "kjs_proxy.h"
 
 #include "kjs_window.h"
@@ -369,6 +379,13 @@ KJSProxy *kjs_html_init(khtml::ChildFrame *childframe)
 
 void KJSCPUGuard::start(unsigned int ms, unsigned int i_ms)
 {
+#ifdef VALGRIND_SUPPORT
+    if (RUNNING_ON_VALGRIND) {
+        ms   *= 50;
+        i_ms *= 50;
+    }
+#endif
+
   oldAlarmHandler = signal(SIGVTALRM, alarmHandler);
   itimerval tv = {
       { i_ms / 1000, (i_ms % 1000) * 1000 },
