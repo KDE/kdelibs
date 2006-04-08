@@ -41,7 +41,7 @@ static void writeTestFilesToArchive( KArchive* archive )
     QFile localFile( "test3" );
     ok = localFile.open( QIODevice::WriteOnly );
     QVERIFY( ok );
-    ok = localFile.writeBlock( "Noch so einer", 13 ) == 13;
+    ok = localFile.write( "Noch so einer", 13 ) == 13;
     QVERIFY( ok );
     localFile.close();
     ok = archive->addLocalFile( "test3", "mydir/test3" );

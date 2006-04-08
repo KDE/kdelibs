@@ -15,15 +15,15 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-
+#undef QT3_SUPPORT
 #include "passdlg.h"
 
 #include <QCheckBox>
 #include <QLabel>
 #include <QLayout>
 #include <QTextDocument>
+#include <QTextLayout>
 
-#include <Q3SimpleRichText>
 
 #include <kcombobox.h>
 #include <kconfig.h>
@@ -194,43 +194,47 @@ bool PasswordDialog::keepPassword() const
 
 static void calculateLabelSize(QLabel *label)
 {
-   QString qt_text = label->text();
+    QString qt_text = label->text();
 
-   int pref_width = 0;
-   int pref_height = 0;
-   // Calculate a proper size for the text.
-   {
-       Q3SimpleRichText rt(qt_text, label->font());
-       QRect d = KGlobalSettings::desktopGeometry(label->topLevelWidget());
+    QRect rect;
+    QRect d = KGlobalSettings::desktopGeometry(label->topLevelWidget());
+    QTextLayout newLayout(qt_text, label->font());
 
-       pref_width = d.width() / 4;
-       rt.setWidth(pref_width-10);
-       int used_width = rt.widthUsed();
-       pref_height = rt.height();
-       if (used_width <= pref_width)
-       {
-          while(true)
-          {
-             int new_width = (used_width * 9) / 10;
-             rt.setWidth(new_width-10);
-             int new_height = rt.height();
-             if (new_height > pref_height)
+    qreal curWidth = d.width() / 4;
+    int leading = QFontMetrics(label->font()).leading();
+    int lineCount = -1;
+
+    do {
+        qreal new_width = (curWidth * 0.9);
+        qreal maxWidth = 0.;
+        int cur_height = 0;
+
+        // save current size
+        rect = newLayout.boundingRect().toRect();
+        // do layout calculation
+        newLayout.beginLayout();
+        while (1) {
+            QTextLine line = newLayout.createLine();
+            if (!line.isValid())
                 break;
-             used_width = rt.widthUsed();
-             if (used_width > new_width)
-                break;
-          }
-          pref_width = used_width;
-       }
-       else
-       {
-          if (used_width > (pref_width *2))
-             pref_width = pref_width *2;
-          else
-             pref_width = used_width;
-       }
-    }
-    label->setFixedSize(QSize(pref_width+10, pref_height));
+            line.setLineWidth(new_width);
+            cur_height += leading;
+            line.setPosition(QPoint(0, cur_height));
+            cur_height += (int)(line.height()+0.5);
+            maxWidth = qMax(maxWidth, line.naturalTextWidth());
+        }
+        newLayout.endLayout();
+        if( lineCount == -1 ) {
+            lineCount = newLayout.lineCount();;
+            rect = newLayout.boundingRect().toRect();
+            if( lineCount == 1 )
+                rect.setWidth( (int)maxWidth );
+        }
+        curWidth = rect.width();
+    } while( newLayout.lineCount() > 1 &&
+              newLayout.lineCount() == lineCount );
+
+    label->setFixedSize(rect.width(), rect.height()+leading);
 }
 
 void PasswordDialog::addCommentLine( const QString& label,
