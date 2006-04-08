@@ -23,7 +23,6 @@
 #endif
 
 #include <qtimer.h>
-#include <qplatformdefs.h>
 #include <kde_file.h>	// KDE_fdopen
 
 #include <sys/types.h>
