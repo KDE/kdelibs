@@ -2,10 +2,7 @@ kde4_header()
 
 ########### next target ###############
 
-set(kntlm_LIB_SRCS
-kntlm.cpp
-des.cpp
-)
+set(kntlm_LIB_SRCS kntlm.cpp des.cpp )
 
 kde4_automoc(${kntlm_LIB_SRCS})
 

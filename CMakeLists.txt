@@ -1,20 +1,5 @@
 project(kdelibs)
 
-#########################################################################
-# Disallow in-source build
-string(COMPARE EQUAL "${kdelibs_SOURCE_DIR}" "${kdelibs_BINARY_DIR}" insource)
-if(insource)
-   message(FATAL_ERROR "kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
-endif(insource)
-
-# ... and warn in case of an earlier in-source build
-set(generatedFileInSourceDir EXISTS ${kdelibs_SOURCE_DIR}/kdemacros.h OR EXISTS ${kdelibs_SOURCE_DIR}/config.h)
-if(${generatedFileInSourceDir})
-   message(STATUS "kdemacros.h or config.h exists in your source directory.")
-   message(FATAL_ERROR "Please run svn-clean, it would seem that your source directory has generated files in it.")
-endif(${generatedFileInSourceDir})
-#########################################################################
-
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
@@ -32,6 +17,19 @@ include(KDE4Defaults)
 
 # make some more macros available
 include (MacroLibrary)
+
+#########################################################################
+# Disallow in-source build
+macro_ensure_out_of_source_build("kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
+
+# ... and warn in case of an earlier in-source build
+set(generatedFileInSourceDir EXISTS ${kdelibs_SOURCE_DIR}/kdemacros.h OR EXISTS ${kdelibs_SOURCE_DIR}/config.h)
+if(${generatedFileInSourceDir})
+   message(STATUS "kdemacros.h or config.h exists in your source directory.")
+   message(FATAL_ERROR "Please run svn-clean, it would seem that your source directory has generated files in it.")
+endif(${generatedFileInSourceDir})
+#########################################################################
+
 
 # macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF

@@ -268,7 +268,7 @@ if(ACL_FOUND)
    target_link_libraries(kio ${ACL_LIBS})
 endif(ACL_FOUND)
 
-set_target_properties(kio PROPERTIES VERSION 5.0.0 SOVERSION 5 )
+set_target_properties(kio PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 ########### install files ###############
 
 install_targets(${LIB_INSTALL_DIR} kio )

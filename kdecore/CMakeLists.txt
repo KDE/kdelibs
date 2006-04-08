@@ -108,7 +108,7 @@ add_subdirectory( network )
 if (UNIX)
 
    kde4_add_library(kdefakes SHARED fakes.c)
-   set_target_properties(kdefakes PROPERTIES VERSION 5.0.0 SOVERSION 5 )
+   set_target_properties(kdefakes PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
    install_targets(${LIB_INSTALL_DIR} kdefakes )
 
    #no ttyname on windows
@@ -245,7 +245,7 @@ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
-set_target_properties(kdecore PROPERTIES VERSION 5.0.0 SOVERSION 5 )
+set_target_properties(kdecore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install_targets(${LIB_INSTALL_DIR} kdecore )
 
 

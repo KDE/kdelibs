@@ -307,7 +307,7 @@ kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
 target_link_libraries(khtml  ${KDE4_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
-set_target_properties(khtml PROPERTIES VERSION 5.0.0 SOVERSION 5 )
+set_target_properties(khtml PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install_targets(${LIB_INSTALL_DIR} khtml )
 
 
