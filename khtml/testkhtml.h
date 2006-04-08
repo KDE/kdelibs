@@ -2,6 +2,8 @@
 #define TESTKHTML_H
 
 #include <kdebug.h>
+#include <qvaluelist.h>
+#include <qdatetime.h>
 
 /**
  * @internal
@@ -36,8 +38,18 @@ private slots:
       m_part->setEditable(s);
   }
 
+  void doBenchmark();
+
+  void handleDone();
+
 private:
   KHTMLPart *m_part;
+  QValueList<QString> filesToBenchmark;
+  QMap<QString, QValueList<int> > results;
+  int                 benchmarkRun;
+  QTime               loadTimer;
+
+  void nextRun();
 };
 
 #endif

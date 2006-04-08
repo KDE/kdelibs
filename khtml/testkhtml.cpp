@@ -9,6 +9,7 @@
 // just for memory debugging
 #define protected public
 #include "khtml_part.h"
+#include "khtmlview.h"
 #undef protected
 #include "testkhtml.h"
 #include "testkhtml.moc"
@@ -29,6 +30,7 @@
 #include <kcmdlineargs.h>
 #include <kaction.h>
 #include "domtreeview.h"
+#include <kfiledialog.h>
 
 static KCmdLineOptions options[] = { { "+file", "url to open", 0 } , KCmdLineLastOption };
 
@@ -57,6 +59,8 @@ int main(int argc, char *argv[])
     QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
 		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
 
+    QObject::connect( doc, SIGNAL(completed()), dummy, SLOT(handleDone()) );
+
     if (args->url(0).url().right(4).find(".xml", 0, false) == 0) {
         KParts::URLArgs ags(doc->browserExtension()->urlArgs());
         ags.serviceType = "text/xml";
@@ -81,6 +85,12 @@ int main(int argc, char *argv[])
     e = d.createElement( "action" );
     e.setAttribute( "name", "debugDOMTree" );
     viewMenu.appendChild( e );
+
+
+    e = d.createElement( "action" );
+    e.setAttribute( "name", "debugDoBenchmark" );
+    viewMenu.appendChild( e );
+
     QDomElement toolBar = d.documentElement().firstChild().nextSibling().toElement();
     e = d.createElement( "action" );
     e.setAttribute( "name", "editable" );
@@ -96,6 +106,7 @@ int main(int argc, char *argv[])
     toolBar.insertBefore( e, toolBar.firstChild() );
 
     (void)new KAction( "Reload", "reload", Qt::Key_F5, dummy, SLOT( reload() ), doc->actionCollection(), "reload" );
+    (void)new KAction( "Benchmark...", 0, 0, dummy, SLOT( doBenchmark() ), doc->actionCollection(), "debugDoBenchmark" );
     KAction* kprint = new KAction( "Print", "print", 0, doc->browserExtension(), SLOT( print() ), doc->actionCollection(), "print" );
     kprint->setEnabled(true);
     KToggleAction *ta = new KToggleAction( "Navigable", "editclear", 0, doc->actionCollection(), "navigable" );
@@ -125,3 +136,75 @@ int main(int argc, char *argv[])
     return ret;
 }
 
+void Dummy::doBenchmark()
+{
+    KConfigGroup settings(KGlobal::config(), "bench");
+    results.clear();
+
+    QString directory = KFileDialog::getExistingDirectory(settings.readPathEntry("path"), m_part->view(), 
+            QString::fromLatin1("Please select directory with tests"));
+
+    if (!directory.isEmpty()) {
+        settings.writePathEntry("path", directory);
+
+        QDir dirListing(directory, "*.html");
+        for (int i = 0; i < dirListing.count(); ++i) {
+            filesToBenchmark.append(dirListing.absFilePath(dirListing[i]));
+        }
+    }
+
+    benchmarkRun = 0;
+
+    if (!filesToBenchmark.isEmpty())
+        nextRun();
+}
+
+const int COLD_RUNS = 3;
+const int HOT_RUNS  = 10;
+
+void Dummy::nextRun()
+{
+    if (benchmarkRun == (COLD_RUNS + HOT_RUNS)) {
+        filesToBenchmark.remove(filesToBenchmark.begin());
+        benchmarkRun = 0;
+    }
+
+    if (!filesToBenchmark.isEmpty()) {
+        loadTimer.start();
+        m_part->openURL(filesToBenchmark[0]);
+    } else {
+        //Generate HTML for report.
+        m_part->begin();
+        m_part->write("<table border=1>");
+
+        for (QMap<QString, QValueList<int> >::iterator i = results.begin(); i != results.end(); ++i) {
+            m_part->write("<tr><td>" + i.key() + "</td>");
+            QValueList<int> timings = i.data();
+            int total = 0;
+            for (int pos = 0; pos < timings.size(); ++pos) {
+                int t = timings[pos];
+                if (pos < COLD_RUNS)
+		    m_part->write(QString::fromLatin1("<td>(Cold):") + QString::number(t) + "</td>");
+                else {
+                    total += t;
+                    m_part->write(QString::fromLatin1("<td><i>") + QString::number(t) + "</i></td>");
+                }
+            }
+
+            m_part->write(QString::fromLatin1("<td>Average:<b>") + QString::number(double(total) / HOT_RUNS) + "</b></td>");
+
+            m_part->write("</tr>");
+        }
+
+        m_part->end();
+    }
+}
+
+void Dummy::handleDone() 
+{
+    if (filesToBenchmark.isEmpty()) return;
+
+    results[filesToBenchmark[0]].append(loadTimer.elapsed());
+    ++benchmarkRun;
+    nextRun();
+}
