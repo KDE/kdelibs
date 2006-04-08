@@ -54,13 +54,13 @@
 # endif
 #endif
 
-// some methods are declared inside kjs and defined outside (currently only in khtml)
+// some methods are declared inside kjs and defined outside (currently in khtml and kjsembed)
 // KJS_EXTERNAL_EXPORT should be prefixed to each related method
 #ifndef KJS_EXTERNAL_EXPORT
 # if defined(MAKE_KJS_LIB) 
 #  define KJS_EXTERNAL_EXPORT
 # elif (defined(_WIN32) || defined(_WIN64)) && defined(__GNUC__)
-#  if defined(MAKE_KHTML_LIB)
+#  if defined(MAKE_KHTML_LIB) || defined(MAKE_KJSEMBED_LIB)
 #   define KJS_EXTERNAL_EXPORT __declspec(dllexport)
 #  else 
 #   define KJS_EXTERNAL_EXPORT __declspec(dllimport)
