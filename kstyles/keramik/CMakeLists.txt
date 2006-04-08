@@ -53,7 +53,6 @@ set(keramik_PART_SRCS
 
 if (WIN32)
    set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
-   add_definitions(-DKDEFX_EXPORT=KDE_EXPORT)
 endif (WIN32)
 
 kde4_automoc(${keramik_PART_SRCS})
