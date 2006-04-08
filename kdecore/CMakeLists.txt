@@ -17,6 +17,8 @@ include_directories( ${KDE4_DCOP_INCLUDES} )
 # which are not always compiled into kdecore
 # if it's used, *always* append to it
 set(kdecore_OPTIONAL_SRCS)
+# same for optional libs
+set(kdecore_OPTIONAL_LIBS)
 
 # no more qt3support needed (but we still need qt3support.lib!)
 remove_definitions(-DQT3_SUPPORT_WARNINGS)
@@ -29,19 +31,43 @@ macro_optional_find_package(AGG)
 if (AGG_FOUND)
    include_directories(${AGG_INCLUDE_DIR})
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp )
-	install_files( /include FILES svgicons/ksvgiconengine.h )
+   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${QT_QTXML_LIBRARY} ${AGG_LIBRARIES})
+   install_files( /include FILES svgicons/ksvgiconengine.h )
 endif (AGG_FOUND)
 
 # compile bzip2 support if available
 if(BZIP2_FOUND)
-  include_directories(${BZIP2_INCLUDE_DIR})
-  set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} kbzip2filter.cpp )
+   include_directories(${BZIP2_INCLUDE_DIR})
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} kbzip2filter.cpp )
+   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${BZIP2_LIBRARIES})
 endif(BZIP2_FOUND)
 
 # compile Gettext support if available
 if(GETTEXT_FOUND)
   include_directories(${GETTEXT_INCLUDE_DIR})
+  set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${GETTEXT_LIBRARIES})
 endif(GETTEXT_FOUND)
+
+
+if (HAVE_RESOLV_LIBRARY)
+  set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} resolv)
+endif (HAVE_RESOLV_LIBRARY)
+
+if(HAVE_IDNA_H)
+   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} idn)
+endif(HAVE_IDNA_H)
+
+if(HAVE_LIBDL)
+   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} dl)
+endif(HAVE_LIBDL)
+
+if(X11_XTest_FOUND)
+   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${X11_XTest_LIB})
+endif(X11_XTest_FOUND)
+
+if (APPLE)
+   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CARBON_LIBRARY})
+endif (APPLE)
 
 if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
@@ -50,6 +76,8 @@ if (WIN32)
       ktoolinvocation_win.cpp 
       #netsupp_win32.cpp is obsolete
       )
+
+    add_definitions(-DKIO_EXPORT=)
 endif (WIN32)
 
 
@@ -64,7 +92,8 @@ if (UNIX)
       kwinmodule.cpp 
       network/khttpproxysocketdevice.cpp
       network/ksockssocketdevice.cpp
-      network/knetworkinterface.cpp )
+      network/knetworkinterface.cpp 
+      fakes.c )
 endif (UNIX)
 
 
@@ -76,7 +105,7 @@ add_subdirectory( network )
 
 ########### next target ###############
 
-if (NOT WIN32)
+if (UNIX)
 
    kde4_add_library(kdefakes SHARED fakes.c)
    set_target_properties(kdefakes PROPERTIES VERSION 5.0.0 SOVERSION 5 )
@@ -87,7 +116,7 @@ if (NOT WIN32)
    target_link_libraries(kgrantpty  kdefakes )
    install_targets(/bin kgrantpty )
    
-endif (NOT WIN32)
+endif (UNIX)
 
 
 
@@ -210,46 +239,11 @@ set( kdecore_DCOP_SKEL_SRCS
    kdedmodule.h
 )
 
-if(UNIX)
-    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} fakes.c)
-endif(UNIX)
-
 kde4_add_dcop_skels(kdecore_LIB_SRCS ${kdecore_DCOP_SKEL_SRCS})
 
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
-target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${ZLIB_LIBRARY} ${CARBON_LIBRARY})
-if (HAVE_RESOLV_LIBRARY)
-  target_link_libraries(kdecore  resolv)
-endif (HAVE_RESOLV_LIBRARY)
-
-if (WIN32)
-    add_definitions(-DKIO_EXPORT=)
-endif (WIN32)
-
-if(HAVE_IDNA_H)
-   target_link_libraries(kdecore idn)
-endif(HAVE_IDNA_H)
-
-if(BZIP2_FOUND)
-   target_link_libraries(kdecore  ${BZIP2_LIBRARIES})
-endif(BZIP2_FOUND)
-
-if(AGG_FOUND)
-   target_link_libraries(kdecore  ${QT_QTXML_LIBRARY} ${AGG_LIBRARIES})
-endif(AGG_FOUND)
-
-if(GETTEXT_FOUND)
-  target_link_libraries(kdecore  ${GETTEXT_LIBRARIES})
-endif(GETTEXT_FOUND)
-
-if(HAVE_LIBDL)
-   target_link_libraries(kdecore dl)
-endif(HAVE_LIBDL)
-
-if(X11_XTest_FOUND)
-   target_link_libraries(kdecore ${X11_XTest_LIB})
-endif(X11_XTest_FOUND)
+target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 set_target_properties(kdecore PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install_targets(${LIB_INSTALL_DIR} kdecore )

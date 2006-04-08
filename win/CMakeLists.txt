@@ -75,7 +75,7 @@ set(CMAKE_DEBUG_POSTFIX "d")
 add_library(kdewin32 SHARED ${win_LIB_SRCS} )
 target_link_libraries(kdewin32 ${QT_QTCORE_LIBRARY} advapi32 shell32 ws2_32 )
 set_target_properties(kdewin32 PROPERTIES DEFINE_SYMBOL MAKE_KDEWIN32_LIB )
-set_target_properties(kdewin32 PROPERTIES VERSION 4.2.0 SOVERSION 4 )
+set_target_properties(kdewin32 PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 
 install_targets(/lib kdewin32 )
 

@@ -109,7 +109,7 @@ kde4_add_library(kdeprint SHARED ${kdeprint_LIB_SRCS})
 
 target_link_libraries(kdeprint  ${KDE4_KDECORE_LIBS} kparts )
 
-set_target_properties(kdeprint PROPERTIES VERSION 4.2.0 SOVERSION 4 )
+set_target_properties(kdeprint PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install_targets(${LIB_INSTALL_DIR} kdeprint )
 
 

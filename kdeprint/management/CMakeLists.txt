@@ -69,7 +69,7 @@ kde4_add_library(kdeprint_management SHARED ${kdeprint_management_LIB_SRCS})
 
 target_link_libraries(kdeprint_management  ${KDE4_KDECORE_LIBS} kdeprint )
 
-set_target_properties(kdeprint_management PROPERTIES VERSION 4.2.0 SOVERSION 4 )
+set_target_properties(kdeprint_management PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install_targets(${LIB_INSTALL_DIR} kdeprint_management )
 
 
