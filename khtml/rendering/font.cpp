@@ -338,6 +338,65 @@ int Font::width( QChar *chs, int slen, int pos ) const
     return w;
 }
 
+/** Querying QFontDB whether something is scalable is expensive, so we cache. */
+struct Font::ScalKey 
+{
+    QString family;
+    int     weight;
+    int     italic;
+
+    ScalKey(const QFont& font) : 
+            family(font.family()), weight(font.weight()), italic(font.italic())
+    {}
+
+    ScalKey() {}
+
+    bool operator<(const ScalKey& other) const {
+        if (weight < other.weight)
+            return true;
+        if (weight > other.weight)
+            return false;
+
+        if (italic < other.italic)
+            return true;
+        if (italic > other.italic)
+            return false;
+
+        return family < other.family;
+    }
+
+    bool operator==(const ScalKey& other) const {
+        return (weight == other.weight &&
+                italic == other.italic && 
+                family == other.family);
+    }
+};
+
+QMap<Font::ScalKey, Font::ScalInfo>*   Font::scalCache;
+QMap<Font::ScalKey, QValueList<int> >* Font::scalSizesCache;
+
+bool Font::isFontScalable(QFontDatabase& db, const QFont& font) 
+{
+    if (!scalCache)
+        scalCache = new QMap<ScalKey, ScalInfo>;
+
+    ScalKey key(font);
+
+    ScalInfo &s = (*scalCache)[key];
+    if (s == Unknown) {
+        s = db.isSmoothlyScalable(font.family(), db.styleString(font)) ? Yes : No;
+
+        if (s == No) {
+            /* Cache size info */
+            if (!scalSizesCache)
+                scalSizesCache = new QMap<ScalKey, QValueList<int> >;
+            (*scalSizesCache)[key] = db.smoothSizes(font.family(), db.styleString(font));
+        }
+    }
+
+    return (s == Yes);
+}
+
 
 void Font::update( QPaintDeviceMetrics* devMetrics ) const
 {
@@ -352,9 +411,9 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
 
     // ok, now some magic to get a nice unscaled font
     // all other font properties should be set before this one!!!!
-    if( !db.isSmoothlyScalable(f.family(), db.styleString(f)) )
+    if( !isFontScalable(db, f) )
     {
-        const QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
+        const QValueList<int>& pointSizes = (*scalSizesCache)[ScalKey(f)];
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
         // kdDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;

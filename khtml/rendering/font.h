@@ -27,10 +27,11 @@
 
 #include <qfont.h>
 #include <qfontmetrics.h>
+#include <qmap.h>
 #include <qpainter.h>
 
+class QFontDatabase;
 class QPaintDeviceMetrics;
-
 
 namespace khtml
 {
@@ -162,6 +163,17 @@ private:
     mutable QFont *scFont;
     short letterSpacing;
     short wordSpacing;
+
+    struct ScalKey;
+    enum   ScalInfo {
+        Unknown,
+        No,
+        Yes
+    };
+
+    static QMap<ScalKey, ScalInfo>* scalCache;
+    static QMap<ScalKey, QValueList<int> >* scalSizesCache;
+    static bool isFontScalable(QFontDatabase& db, const QFont& font);
 };
 
 } // namespace
