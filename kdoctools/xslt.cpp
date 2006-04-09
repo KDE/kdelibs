@@ -1,3 +1,7 @@
+#ifdef _WIN32
+#define LIBXML_DLL_IMPORT __declspec(dllimport)
+#endif
+
 #include <libxslt/xsltconfig.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
@@ -59,7 +63,6 @@ QString transform( const QString &pat, const QString& tss,
     if ( !style_sheet ) {
         return parsed;
     }
-
     if (style_sheet->indent == 1)
         xmlIndentTreeOutput = 1;
     else

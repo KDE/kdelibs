@@ -1,3 +1,9 @@
+#ifdef _WIN32
+#define LIBXML_DLL_IMPORT __declspec(dllimport)
+#else
+extern int xmlLoadExtDtdDefaultValue;
+#endif
+
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -18,8 +24,6 @@
 #include <stdlib.h>
 #include "kio_help.h"
 #include <xslt.h>
-
-extern int xmlLoadExtDtdDefaultValue;
 
 extern "C"
 {

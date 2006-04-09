@@ -1,3 +1,9 @@
+#ifdef _WIN32
+#define LIBXML_DLL_IMPORT __declspec(dllimport)
+#else
+extern int xmlLoadExtDtdDefaultValue;
+#endif
+
 #include <config.h>
 #include <string.h>
 #include <sys/time.h>
@@ -27,8 +33,6 @@
 #include <qfileinfo.h>
 #include <kprocess.h>
 #include <QList>
-
-extern int xmlLoadExtDtdDefaultValue;
 
 class MyPair {
 public:
