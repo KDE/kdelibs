@@ -64,7 +64,7 @@ public:
   KToolBarLabelAction(const QString &text,
 		      const KShortcut &cut,
 		      const QObject *receiver, const char *slot,
-		      KActionCollection *parent, const char *name);
+		      KActionCollection *parent, const QString& name);
   /**
    * Constructs a toolbar label setting a buddy for the label.
    *
@@ -80,7 +80,7 @@ public:
   KToolBarLabelAction(QAction* buddy, const QString &text,
 		      const KShortcut &cut,
 		      const QObject *receiver, const char *slot,
-		      KActionCollection *parent, const char *name);
+		      KActionCollection *parent, const QString& name);
 
   virtual ~KToolBarLabelAction();
 

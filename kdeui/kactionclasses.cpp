@@ -69,28 +69,28 @@ public:
 };
 
 
-KToggleAction::KToggleAction( KActionCollection * parent, const char* name, QActionGroup * exclusiveGroup )
+KToggleAction::KToggleAction( KActionCollection * parent, const QString& name, QActionGroup * exclusiveGroup )
     : KAction(parent, name)
 {
   init();
   setActionGroup(exclusiveGroup);
 }
 
-KToggleAction::KToggleAction( const QString & text, KActionCollection * parent, const char* name, QActionGroup * exclusiveGroup )
+KToggleAction::KToggleAction( const QString & text, KActionCollection * parent, const QString& name, QActionGroup * exclusiveGroup )
     : KAction(text, parent, name)
 {
   init();
   setActionGroup(exclusiveGroup);
 }
 
-KToggleAction::KToggleAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name, QActionGroup * exclusiveGroup )
+KToggleAction::KToggleAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name, QActionGroup * exclusiveGroup )
     : KAction(icon, text, parent, name)
 {
   init();
   setActionGroup(exclusiveGroup);
 }
 
-KToggleAction::KToggleAction( const QString & icon, const QString & text, KActionCollection * parent, const char* name, QActionGroup * exclusiveGroup )
+KToggleAction::KToggleAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name, QActionGroup * exclusiveGroup )
     : KAction(icon, text, parent, name)
 {
   init();
@@ -99,7 +99,7 @@ KToggleAction::KToggleAction( const QString & icon, const QString & text, KActio
 
 KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
                               KActionCollection* parent,
-                              const char* name )
+                              const QString& name )
     : KAction( text, cut, 0,0,parent, name )
 {
   init();
@@ -107,7 +107,7 @@ KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
 
 KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
                               const QObject* receiver, const char* slot,
-                              KActionCollection* parent, const char* name )
+                              KActionCollection* parent, const QString& name )
   : KAction( text, cut, receiver, slot, parent, name )
 {
   init();
@@ -115,7 +115,7 @@ KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
 
 KToggleAction::KToggleAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
-                              KActionCollection* parent, const char* name )
+                              KActionCollection* parent, const QString& name )
   : KAction( text, pix, cut, 0,0,parent, name )
 {
   init();
@@ -123,7 +123,7 @@ KToggleAction::KToggleAction( const QString& text, const QIcon& pix,
 
 KToggleAction::KToggleAction( const QString& text, const QString& pix,
                               const KShortcut& cut,
-                              KActionCollection* parent, const char* name )
+                              KActionCollection* parent, const QString& name )
  : KAction( text, pix, cut, 0,0,parent, name )
 {
   init();
@@ -133,7 +133,7 @@ KToggleAction::KToggleAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
                               const QObject* receiver,
                               const char* slot, KActionCollection* parent,
-                              const char* name )
+                              const QString& name )
   : KAction( text, pix, cut, receiver, slot, parent, name )
 {
   init();
@@ -143,7 +143,7 @@ KToggleAction::KToggleAction( const QString& text, const QString& pix,
                               const KShortcut& cut,
                               const QObject* receiver,
                               const char* slot, KActionCollection* parent,
-                              const char* name )
+                              const QString& name )
   : KAction( text, pix, cut, receiver, slot, parent, name )
 {
   init();
@@ -239,28 +239,28 @@ public:
   }
 };
 
-KSelectAction::KSelectAction( KActionCollection * parent, const char* name )
+KSelectAction::KSelectAction( KActionCollection * parent, const QString& name )
   : KAction(parent, name)
   , d(new KSelectActionPrivate())
 {
   init();
 }
 
-KSelectAction::KSelectAction( const QString & text, KActionCollection * parent, const char* name )
+KSelectAction::KSelectAction( const QString & text, KActionCollection * parent, const QString& name )
   : KAction(text, parent, name)
   , d(new KSelectActionPrivate())
 {
   init();
 }
 
-KSelectAction::KSelectAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KSelectAction::KSelectAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KAction(icon, text, parent, name)
   , d(new KSelectActionPrivate())
 {
   init();
 }
 
-KSelectAction::KSelectAction( const QString & icon, const QString & text, KActionCollection * parent, const char* name )
+KSelectAction::KSelectAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KAction(icon, text, parent, name)
   , d(new KSelectActionPrivate())
 {
@@ -268,7 +268,7 @@ KSelectAction::KSelectAction( const QString & icon, const QString & text, KActio
 }
 
 KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
-                              KActionCollection* parent, const char* name )
+                              KActionCollection* parent, const QString& name )
   : KAction( text, cut, 0,0,parent, name )
   , d(new KSelectActionPrivate())
 {
@@ -277,7 +277,7 @@ KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
 
 KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
                               const QObject* receiver, const char* slot,
-                              KActionCollection* parent, const char* name )
+                              KActionCollection* parent, const QString& name )
   : KAction( text, cut, receiver, slot, parent, name )
   , d(new KSelectActionPrivate())
 {
@@ -286,7 +286,7 @@ KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
 
 KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
-                              KActionCollection* parent, const char* name )
+                              KActionCollection* parent, const QString& name )
   : KAction( text, pix, cut, 0,0,parent, name )
   , d(new KSelectActionPrivate())
 {
@@ -295,7 +295,7 @@ KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
 
 KSelectAction::KSelectAction( const QString& text, const QString& pix,
                               const KShortcut& cut,
-                              KActionCollection* parent, const char* name )
+                              KActionCollection* parent, const QString& name )
   : KAction( text, pix, cut, 0,0,parent, name )
   , d(new KSelectActionPrivate())
 {
@@ -306,7 +306,7 @@ KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
                               const QObject* receiver,
                               const char* slot, KActionCollection* parent,
-                              const char* name )
+                              const QString& name )
   : KAction( text, pix, cut, receiver, slot, parent, name )
   , d(new KSelectActionPrivate())
 {
@@ -317,7 +317,7 @@ KSelectAction::KSelectAction( const QString& text, const QString& pix,
                               const KShortcut& cut,
                               const QObject* receiver,
                               const char* slot, KActionCollection* parent,
-                              const char* name )
+                              const QString& name )
   : KAction( text, pix, cut, receiver, slot, parent, name )
   , d(new KSelectActionPrivate())
 {
@@ -701,7 +701,7 @@ public:
 };
 
 
-KRecentFilesAction::KRecentFilesAction( KActionCollection * parent, const char* name )
+KRecentFilesAction::KRecentFilesAction( KActionCollection * parent, const QString& name )
   : KSelectAction(parent, name)
 {
   d = new KRecentFilesActionPrivate;
@@ -709,7 +709,7 @@ KRecentFilesAction::KRecentFilesAction( KActionCollection * parent, const char* 
   init();
 }
 
-KRecentFilesAction::KRecentFilesAction( const QString & text, KActionCollection * parent, const char* name )
+KRecentFilesAction::KRecentFilesAction( const QString & text, KActionCollection * parent, const QString& name )
   : KSelectAction(text, parent, name)
 {
   d = new KRecentFilesActionPrivate;
@@ -720,7 +720,7 @@ KRecentFilesAction::KRecentFilesAction( const QString & text, KActionCollection 
   setText(text);
 }
 
-KRecentFilesAction::KRecentFilesAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KRecentFilesAction::KRecentFilesAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KSelectAction(icon, text, parent, name)
 {
   d = new KRecentFilesActionPrivate;
@@ -731,7 +731,7 @@ KRecentFilesAction::KRecentFilesAction( const KIcon & icon, const QString & text
   setText(text);
 }
 
-KRecentFilesAction::KRecentFilesAction( const QString & icon, const QString & text, KActionCollection * parent, const char* name )
+KRecentFilesAction::KRecentFilesAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KSelectAction(icon, text, parent, name)
 {
   d = new KRecentFilesActionPrivate;
@@ -744,7 +744,7 @@ KRecentFilesAction::KRecentFilesAction( const QString & icon, const QString & te
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const KShortcut& cut,
-                                        KActionCollection* parent, const char* name,
+                                        KActionCollection* parent, const QString& name,
                                         int maxItems )
   : KSelectAction( text, cut, parent, name)
 {
@@ -761,7 +761,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const KShortcut& cut,
                                         const QObject* receiver,
                                         const char* slot,
-                                        KActionCollection* parent, const char* name,
+                                        KActionCollection* parent, const QString& name,
                                         int maxItems )
   : KSelectAction( text, cut, parent, name)
 {
@@ -781,7 +781,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QIcon& pix,
                                         const KShortcut& cut,
-                                        KActionCollection* parent, const char* name,
+                                        KActionCollection* parent, const QString& name,
                                         int maxItems )
   : KSelectAction( text, pix, cut, parent, name)
 {
@@ -797,7 +797,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QString& pix,
                                         const KShortcut& cut,
-                                        KActionCollection* parent, const char* name,
+                                        KActionCollection* parent, const QString& name,
                                         int maxItems )
   : KSelectAction( text, pix, cut, parent, name)
 {
@@ -815,7 +815,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const KShortcut& cut,
                                         const QObject* receiver,
                                         const char* slot,
-                                        KActionCollection* parent, const char* name,
+                                        KActionCollection* parent, const QString& name,
                                         int maxItems )
   : KSelectAction( text, pix, cut, parent, name)
 {
@@ -837,7 +837,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const KShortcut& cut,
                                         const QObject* receiver,
                                         const char* slot,
-                                        KActionCollection* parent, const char* name,
+                                        KActionCollection* parent, const QString& name,
                                         int maxItems )
   : KSelectAction( text, pix, cut, parent, name)
 {
@@ -854,7 +854,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
              receiver, slot );
 }
 
-KRecentFilesAction::KRecentFilesAction( KActionCollection* parent, const char* name,
+KRecentFilesAction::KRecentFilesAction( KActionCollection* parent, const QString& name,
                                         int maxItems )
   : KSelectAction( parent, name )
 {
@@ -1035,7 +1035,7 @@ void KRecentFilesAction::saveEntries( KConfig* config, const QString &groupname 
 // END
 
 // BEGIN KFontAction
-KFontAction::KFontAction( uint fontListCriteria, KActionCollection * parent, const char* name )
+KFontAction::KFontAction( uint fontListCriteria, KActionCollection * parent, const QString& name )
   : KSelectAction( parent, name )
 {
     QStringList list;
@@ -1044,7 +1044,7 @@ KFontAction::KFontAction( uint fontListCriteria, KActionCollection * parent, con
     setEditable( true );
 }
 
-KFontAction::KFontAction( KActionCollection * parent, const char* name )
+KFontAction::KFontAction( KActionCollection * parent, const QString& name )
   : KSelectAction( parent, name )
 {
     QStringList list;
@@ -1053,7 +1053,7 @@ KFontAction::KFontAction( KActionCollection * parent, const char* name )
     setEditable( true );
 }
 
-KFontAction::KFontAction( const QString & text, KActionCollection * parent, const char* name )
+KFontAction::KFontAction( const QString & text, KActionCollection * parent, const QString& name )
   : KSelectAction( text, parent, name )
 {
     QStringList list;
@@ -1062,7 +1062,7 @@ KFontAction::KFontAction( const QString & text, KActionCollection * parent, cons
     setEditable( true );
 }
 
-KFontAction::KFontAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KFontAction::KFontAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KSelectAction( icon, text, parent, name )
 {
     QStringList list;
@@ -1071,7 +1071,7 @@ KFontAction::KFontAction( const KIcon & icon, const QString & text, KActionColle
     setEditable( true );
 }
 
-KFontAction::KFontAction( const QString & icon, const QString & text, KActionCollection * parent, const char* name )
+KFontAction::KFontAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KSelectAction( icon, text, parent, name )
 {
     QStringList list;
@@ -1082,7 +1082,7 @@ KFontAction::KFontAction( const QString & icon, const QString & text, KActionCol
 
 KFontAction::KFontAction( const QString& text,
                           const KShortcut& cut, KActionCollection* parent,
-                          const char* name )
+                          const QString& name )
   : KSelectAction( text, cut, parent, name )
 {
     QStringList list;
@@ -1093,7 +1093,7 @@ KFontAction::KFontAction( const QString& text,
 
 KFontAction::KFontAction( const QString& text, const KShortcut& cut,
                           const QObject* receiver, const char* slot,
-                          KActionCollection* parent, const char* name )
+                          KActionCollection* parent, const QString& name )
     : KSelectAction( text, cut, receiver, slot, parent, name )
 {
     QStringList list;
@@ -1104,7 +1104,7 @@ KFontAction::KFontAction( const QString& text, const KShortcut& cut,
 
 KFontAction::KFontAction( const QString& text, const QIcon& pix,
                           const KShortcut& cut,
-                          KActionCollection* parent, const char* name )
+                          KActionCollection* parent, const QString& name )
     : KSelectAction( text, pix, cut, parent, name )
 {
     QStringList list;
@@ -1115,7 +1115,7 @@ KFontAction::KFontAction( const QString& text, const QIcon& pix,
 
 KFontAction::KFontAction( const QString& text, const QString& pix,
                           const KShortcut& cut,
-                          KActionCollection* parent, const char* name )
+                          KActionCollection* parent, const QString& name )
     : KSelectAction( text, pix, cut, parent, name )
 {
     QStringList list;
@@ -1127,7 +1127,7 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
 KFontAction::KFontAction( const QString& text, const QIcon& pix,
                           const KShortcut& cut,
                           const QObject* receiver, const char* slot,
-                          KActionCollection* parent, const char* name )
+                          KActionCollection* parent, const QString& name )
     : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
     QStringList list;
@@ -1139,7 +1139,7 @@ KFontAction::KFontAction( const QString& text, const QIcon& pix,
 KFontAction::KFontAction( const QString& text, const QString& pix,
                           const KShortcut& cut,
                           const QObject* receiver, const char* slot,
-                          KActionCollection* parent, const char* name )
+                          KActionCollection* parent, const QString& name )
     : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
     QStringList list;
@@ -1150,7 +1150,7 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
 
 KFontAction::KFontAction( uint fontListCriteria, const QString& text,
                           const KShortcut& cut, KActionCollection* parent,
-                          const char* name )
+                          const QString& name )
     : KSelectAction( text, cut, parent, name )
 {
     QStringList list;
@@ -1161,7 +1161,7 @@ KFontAction::KFontAction( uint fontListCriteria, const QString& text,
 
 KFontAction::KFontAction( uint fontListCriteria, const QString& text, const QString& pix,
                           const KShortcut& cut,
-                          KActionCollection* parent, const char* name )
+                          KActionCollection* parent, const QString& name )
     : KSelectAction( text, pix, cut, parent, name )
 {
     QStringList list;
@@ -1211,25 +1211,25 @@ void KFontAction::setFont( const QString &family )
 // END
 
 // BEGIN KFontSizeAction
-KFontSizeAction::KFontSizeAction( KActionCollection * parent, const char* name )
+KFontSizeAction::KFontSizeAction( KActionCollection * parent, const QString& name )
   : KSelectAction( parent, name )
 {
   init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString & text, KActionCollection * parent, const char* name )
+KFontSizeAction::KFontSizeAction( const QString & text, KActionCollection * parent, const QString& name )
   : KSelectAction( text, parent, name )
 {
   init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString & icon, const QString & text, KActionCollection * parent, const char* name )
+KFontSizeAction::KFontSizeAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KSelectAction( icon, text, parent, name )
 {
   init();
 }
 
-KFontSizeAction::KFontSizeAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KFontSizeAction::KFontSizeAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KSelectAction( icon, text, parent, name )
 {
   init();
@@ -1237,7 +1237,7 @@ KFontSizeAction::KFontSizeAction( const KIcon & icon, const QString & text, KAct
 
 KFontSizeAction::KFontSizeAction( const QString& text,
                                   const KShortcut& cut,
-                                  KActionCollection* parent, const char* name )
+                                  KActionCollection* parent, const QString& name )
   : KSelectAction( text, cut, parent, name )
 {
   init();
@@ -1246,7 +1246,7 @@ KFontSizeAction::KFontSizeAction( const QString& text,
 KFontSizeAction::KFontSizeAction( const QString& text,
                                   const KShortcut& cut,
                                   const QObject* receiver, const char* slot,
-                                  KActionCollection* parent, const char* name )
+                                  KActionCollection* parent, const QString& name )
   : KSelectAction( text, cut, receiver, slot, parent, name )
 {
   init();
@@ -1254,7 +1254,7 @@ KFontSizeAction::KFontSizeAction( const QString& text,
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QIcon& pix,
                                   const KShortcut& cut,
-                                  KActionCollection* parent, const char* name )
+                                  KActionCollection* parent, const QString& name )
   : KSelectAction( text, pix, cut, parent, name )
 {
   init();
@@ -1262,7 +1262,7 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QIcon& pix,
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
                                   const KShortcut& cut,
-                                  KActionCollection* parent, const char* name )
+                                  KActionCollection* parent, const QString& name )
   : KSelectAction( text, pix, cut, parent, name )
 {
   init();
@@ -1272,7 +1272,7 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QIcon& pix,
                                   const KShortcut& cut,
                                   const QObject* receiver,
                                   const char* slot, KActionCollection* parent,
-                                  const char* name )
+                                  const QString& name )
     : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
   init();
@@ -1282,7 +1282,7 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
                                   const KShortcut& cut,
                                   const QObject* receiver,
                                   const char* slot, KActionCollection* parent,
-                                  const char* name )
+                                  const QString& name )
   : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
   init();
@@ -1382,7 +1382,7 @@ public:
   bool m_stickyMenu;
 };
 
-KActionMenu::KActionMenu( KActionCollection * parent, const char* name )
+KActionMenu::KActionMenu( KActionCollection * parent, const QString& name )
   : KAction( parent, name )
   , d(new KActionMenuPrivate)
 {
@@ -1390,7 +1390,7 @@ KActionMenu::KActionMenu( KActionCollection * parent, const char* name )
   setToolBarWidgetFactory(this);
 }
 
-KActionMenu::KActionMenu( const QString & text, KActionCollection * parent, const char* name )
+KActionMenu::KActionMenu( const QString & text, KActionCollection * parent, const QString& name )
   : KAction( text, parent, name )
   , d(new KActionMenuPrivate)
 {
@@ -1398,7 +1398,7 @@ KActionMenu::KActionMenu( const QString & text, KActionCollection * parent, cons
   setToolBarWidgetFactory(this);
 }
 
-KActionMenu::KActionMenu( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KActionMenu::KActionMenu( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KAction( icon, text, parent, name )
   , d(new KActionMenuPrivate)
 {
@@ -1523,7 +1523,7 @@ KMenu* KActionMenu::kMenu()
 
 KToolBarPopupAction::KToolBarPopupAction( const KIcon& icon,
                                           const QString& text,
-                                          KActionCollection* parent, const char* name )
+                                          KActionCollection* parent, const QString& name )
   : KAction( icon, text, parent, name )
 {
   m_delayed = true;
@@ -1535,7 +1535,7 @@ KToolBarPopupAction::KToolBarPopupAction( const KIcon& icon,
 KToolBarPopupAction::KToolBarPopupAction( const QString& text,
                                           const QString& icon,
                                           const KShortcut& cut,
-                                          KActionCollection* parent, const char* name )
+                                          KActionCollection* parent, const QString& name )
   : KAction( text, icon, cut, 0,0,parent, name )
 {
   m_delayed = true;
@@ -1549,7 +1549,7 @@ KToolBarPopupAction::KToolBarPopupAction( const QString& text,
                                           const KShortcut& cut,
                                           const QObject* receiver,
                                           const char* slot, KActionCollection* parent,
-                                          const char* name )
+                                          const QString& name )
   : KAction( text, icon, cut, receiver, slot, parent, name )
 {
   m_delayed = true;
@@ -1562,7 +1562,7 @@ KToolBarPopupAction::KToolBarPopupAction( const KGuiItem& item,
                                           const KShortcut& cut,
                                           const QObject* receiver,
                                           const char* slot, KActionCollection* parent,
-                                          const char* name )
+                                          const QString& name )
   : KAction( item, cut, receiver, slot, parent, name )
 {
   m_delayed = true;
@@ -1678,7 +1678,7 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
 
 // BEGIN KToggleToolBarAction
 KToggleToolBarAction::KToggleToolBarAction( const char* toolBarName,
-         const QString& text, KActionCollection* parent, const char* name )
+         const QString& text, KActionCollection* parent, const QString& name )
   : KToggleAction( text, parent, name )
   , m_toolBarName( toolBarName )
   , m_toolBar( 0L )
@@ -1760,7 +1760,7 @@ void KToggleToolBarAction::slotToggled( bool checked )
 // END
 
 // BEGIN KToggleFullScreenAction
-KToggleFullScreenAction::KToggleFullScreenAction( KActionCollection * parent, const char* name )
+KToggleFullScreenAction::KToggleFullScreenAction( KActionCollection * parent, const QString& name )
   : KToggleAction( KIcon("window_fullscreen"), i18n("F&ull Screen Mode"), parent, name ),
     m_window( 0L )
 {
@@ -1769,7 +1769,7 @@ KToggleFullScreenAction::KToggleFullScreenAction( KActionCollection * parent, co
 KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut,
                              const QObject* receiver, const char* slot,
                              KActionCollection* parent, QWidget* window,
-                             const char* name )
+                             const QString& name )
   : KToggleAction( i18n("F&ull Screen Mode"), cut, receiver, slot, parent, name ),
     m_window( 0L )
 {
@@ -1822,7 +1822,7 @@ bool KToggleFullScreenAction::eventFilter( QObject* o, QEvent* e )
 
 // BEGIN KWidgetAction
 KWidgetAction::KWidgetAction( QWidget* widget,
-    const QString& text, KActionCollection* parent, const char* name )
+    const QString& text, KActionCollection* parent, const QString& name )
   : KAction( text, parent, name )
   , m_widget( widget )
 {
@@ -1832,7 +1832,7 @@ KWidgetAction::KWidgetAction( QWidget* widget,
 KWidgetAction::KWidgetAction( QWidget* widget,
     const QString& text, const KShortcut& cut,
     const QObject* receiver, const char* slot,
-    KActionCollection* parent, const char* name )
+    KActionCollection* parent, const QString& name )
   : KAction( text, cut, receiver, slot, parent, name )
   , m_widget( widget )
 {
@@ -1871,25 +1871,25 @@ bool KWidgetAction::event(QEvent* event)
 
 // BEGIN KPasteTextAction
 
-KPasteTextAction::KPasteTextAction( KActionCollection * parent, const char* name )
+KPasteTextAction::KPasteTextAction( KActionCollection * parent, const QString& name )
   : KAction( parent, name )
 {
   init();
 }
 
-KPasteTextAction::KPasteTextAction( const QString & text, KActionCollection * parent, const char* name )
+KPasteTextAction::KPasteTextAction( const QString & text, KActionCollection * parent, const QString& name )
   : KAction( text, parent, name )
 {
   init();
 }
 
-KPasteTextAction::KPasteTextAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KPasteTextAction::KPasteTextAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KAction( icon, text, parent, name )
 {
   init();
 }
 
-KPasteTextAction::KPasteTextAction( const QString & icon, const QString & text, KActionCollection * parent, const char* name )
+KPasteTextAction::KPasteTextAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
   : KAction( icon, text, parent, name )
 {
   init();
@@ -1900,7 +1900,7 @@ KPasteTextAction::KPasteTextAction( const QString& text,
                             const KShortcut& cut,
                             const QObject* receiver,
                             const char* slot, KActionCollection* parent,
-                            const char* name)
+                            const QString& name)
   : KAction( text, icon, cut, receiver, slot,parent, name )
 {
   init();
@@ -1968,7 +1968,7 @@ void KPasteTextAction::slotTriggered(QAction* action)
     }
 }
 
-KActionSeparator::KActionSeparator( KActionCollection * parent, const char* name )
+KActionSeparator::KActionSeparator( KActionCollection * parent, const QString& name )
   : KAction(parent, name)
 {
   setSeparator(true);

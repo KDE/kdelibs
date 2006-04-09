@@ -58,12 +58,14 @@ public:
     connectHighlighted = connectTriggered = false;
 
     configGroup = "Shortcuts";
+
+    enabled = Unchanged;
   }
 
   KInstance *m_instance;
   QList<KActionCollection*> m_docList;
 
-  QMultiMap<QByteArray, KAction*> actionDict;
+  QMultiMap<QString, KAction*> actionDict;
   QList<KAction*> actionList;
 
   const KXMLGUIClient *m_parentGUIClient;
@@ -76,6 +78,12 @@ public:
   Qt::ShortcutContext defaultShortcutContext;
 
   bool connectTriggered, connectHighlighted;
+
+  enum ActionEnableStatus {
+    Enabled,
+    Disabled,
+    Unchanged
+  } enabled;
 };
 
 KActionCollection::KActionCollection( QObject *parent,
@@ -135,11 +143,11 @@ void KActionCollection::clear()
     delete pAction;
 }
 
-KAction* KActionCollection::action( const char* name ) const
+KAction* KActionCollection::action( const QString& name ) const
 {
   KAction* action = 0L;
 
-  if ( name )
+  if ( !name.isEmpty() )
     action = d->actionDict.value (name);
 
   if( !action ) {
@@ -150,11 +158,11 @@ KAction* KActionCollection::action( const char* name ) const
   return action;
 }
 
-QList<KAction*> KActionCollection::actions( const char* name ) const
+QList<KAction*> KActionCollection::actions( const QString& name ) const
 {
   QList<KAction*> ret;
 
-  if ( name )
+  if ( !name.isEmpty() )
     ret += d->actionDict.values(name);
   else
     ret = actions();
@@ -165,9 +173,9 @@ QList<KAction*> KActionCollection::actions( const char* name ) const
   return ret;
 }
 
-KAction* KActionCollection::actionOfTypeInternal( const char* name, const QMetaObject& mo ) const
+KAction* KActionCollection::actionOfTypeInternal( const QString& name, const QMetaObject& mo ) const
 {
-  if (!name)
+  if (!name.isEmpty())
     foreach (KAction* action, d->actionList)
       if (mo.cast(action))
         return action;
@@ -184,11 +192,11 @@ KAction* KActionCollection::actionOfTypeInternal( const char* name, const QMetaO
   return action;
 }
 
-QList<KAction*> KActionCollection::actionsOfTypeInternal( const char* name, const QMetaObject& mo ) const
+QList<KAction*> KActionCollection::actionsOfTypeInternal( const QString& name, const QMetaObject& mo ) const
 {
   QList<KAction*> ret;
 
-  if (!name) {
+  if (!name.isEmpty()) {
     foreach (KAction* action, d->actionList)
       if (mo.cast(action))
         ret.append(action);
@@ -274,16 +282,12 @@ void KActionCollection::insert( KAction* action )
   if (!action)
     return;
 
-  char unnamed_name[100];
-  QByteArray name = action->objectName().toLatin1();
-  if( action->objectName().isEmpty() )
-  {
-     sprintf(unnamed_name, "unnamed-%p", (void *)action);
-     name = QByteArray(unnamed_name);
-  }
+  QString name = action->objectName();
+  if( name.isEmpty() )
+     name = name.sprintf("unnamed-%p", (void*)action);
 
   // look if we already have THIS action under THIS name ;)
-  QMap<QByteArray, KAction*>::const_iterator it = d->actionDict.find (name);
+  QMap<QString, KAction*>::const_iterator it = d->actionDict.find (name);
   while (it != d->actionDict.end() && it.key() == name)
   {
     if ( it.value() == action )
@@ -313,6 +317,9 @@ void KActionCollection::insert( KAction* action )
   } else if (defaultShortcutContext() != -1) {
     action->setShortcutContext(defaultShortcutContext());
   }
+
+  if (d->enabled != KActionCollectionPrivate::Unchanged)
+    action->setEnabled(isEnabled());
 
   emit inserted( action );
 }
@@ -571,6 +578,25 @@ void KActionCollection::virtual_hook( int, void* )
 const QList< KActionCollection * >& KActionCollection::allCollections( )
 {
 	return s_allCollections;
+}
+
+bool KActionCollection::isEnabled( ) const
+{
+  return d->enabled == KActionCollectionPrivate::Unchanged || d->enabled == KActionCollectionPrivate::Enabled;
+}
+
+void KActionCollection::setEnabled( bool enable )
+{
+  if (enable ? d->enabled == KActionCollectionPrivate::Disabled : d->enabled == KActionCollectionPrivate::Enabled) {
+    d->enabled = enable ? KActionCollectionPrivate::Enabled : KActionCollectionPrivate::Disabled;
+    foreach (KAction* action, actions())
+      action->setEnabled(enable);
+  }
+}
+
+void KActionCollection::forgetEnabled( )
+{
+  d->enabled = KActionCollectionPrivate::Unchanged;
 }
 
 /* vim: et sw=2 ts=2

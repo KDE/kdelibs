@@ -183,9 +183,11 @@ class KDEUI_EXPORT KAction : public QAction
   // FIXME KAction port : replace (this hides QAction::shortcut)
   Q_PROPERTY( QString shortcut READ shortcutText WRITE setShortcutText )
 
+  Q_PROPERTY( KShortcut customShortcut READ customShortcut WRITE setCustomShortcut )
   Q_PROPERTY( KShortcut defaultShortcut READ defaultShortcut WRITE setDefaultShortcut )
   Q_PROPERTY( bool shortcutConfigurable READ isShortcutConfigurable WRITE setShortcutConfigurable )
   Q_PROPERTY( KShortcut globalShortcut READ globalShortcut WRITE setGlobalShortcut )
+  Q_PROPERTY( KShortcut customGlobalShortcut READ customGlobalShortcut WRITE setCustomGlobalShortcut )
   Q_PROPERTY( KShortcut defaultGlobalShortcut READ defaultGlobalShortcut WRITE setDefaultGlobalShortcut )
   Q_PROPERTY( bool globalShortcutAllowed READ globalShortcutAllowed WRITE setGlobalShortcutAllowed )
 
@@ -209,7 +211,7 @@ public:
      * @param parent The action collection to contain this action.
      * @param name The internal name for this action.
      */
-    KAction(KActionCollection* parent, const char* name);
+    KAction(KActionCollection* parent, const QString& name);
 
     /**
      * Constructs an action with text; a shortcut may be specified by
@@ -224,7 +226,7 @@ public:
      * @param parent The action collection to contain this action.
      * @param name The internal name for this action.
      */
-    KAction(const QString& text, KActionCollection* parent, const char* name);
+    KAction(const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * Constructs an action with text; a shortcut may be specified by
@@ -238,7 +240,7 @@ public:
      * @param parent The action collection to contain this action.
      * @param name The internal name for this action.
      */
-    KAction(const KIcon& icon, const QString& text, KActionCollection* parent, const char* name);
+    KAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * \overload KAction(const QIcon&, const QString&, KActionCollection*, const char*)
@@ -251,7 +253,7 @@ public:
      * @param parent The action collection to contain this action.
      * @param name The internal name for this action.
      */
-    KDE_CONSTRUCTOR_DEPRECATED KAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
+    KDE_CONSTRUCTOR_DEPRECATED KAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * Constructs an action with text, potential keyboard
@@ -274,7 +276,7 @@ public:
      */
     KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name );
+             KActionCollection* parent, const QString& name );
 
     /**
      * Constructs an action with text, icon, potential keyboard
@@ -301,7 +303,7 @@ public:
      */
     KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name );
+             KActionCollection* parent, const QString& name );
 
     /**
      * Constructs an action with text, icon, potential keyboard
@@ -329,7 +331,7 @@ public:
      */
     KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const QString& pix, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name );
+             KActionCollection* parent, const QString& name );
 
     /**
      * The same as the above constructor, but with a KGuiItem providing
@@ -348,7 +350,7 @@ public:
      */
     KDE_CONSTRUCTOR_DEPRECATED KAction( const KGuiItem& item, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name );
+             KActionCollection* parent, const QString& name );
 
     /**
      * Standard destructor
@@ -398,14 +400,24 @@ public:
     void setShortcutText(const QString& shortcutText);
 
     /**
-     * Get the default shortcut for this action.
+     * Convenience function to retrieve the custom shortcut for this action.
      */
-    const KShortcut& defaultShortcut() const;
+    inline const KShortcut& customShortcut() const { return shortcut(CustomShortcut); }
 
     /**
-     * Set the default shortcut for this action.
+     * Convenience function to set the custom shortcut for this action.
      */
-    void setDefaultShortcut(const KShortcut& shortcut);
+    inline void setCustomShortcut(const KShortcut& shortcut) { setShortcut(shortcut, CustomShortcut); }
+
+    /**
+     * Convenience function to retrieve the default shortcut for this action.
+     */
+    inline const KShortcut& defaultShortcut() const { return shortcut(DefaultShortcut); }
+
+    /**
+     * Convenience function to set the default shortcut for this action.
+     */
+    inline void setDefaultShortcut(const KShortcut& shortcut) { setShortcut(shortcut, DefaultShortcut); }
 
     /**
      * Returns true if this action's shortcut is configurable.
@@ -455,20 +467,36 @@ public:
     void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type = static_cast<ShortcutType>(CustomShortcut | DefaultShortcut));
 
     /**
-     * Get the default global shortcut for this action, if one exists.
+     * Convenience function to retrieve the custom global shortcut for this action, if one exists.
      *
      * \sa globalShortcut()
      */
-    const KShortcut& defaultGlobalShortcut() const;
+    inline const KShortcut& customGlobalShortcut() const { return globalShortcut(CustomShortcut); }
 
     /**
-     * Set the default global shortcut for this action.
+     * Convenience function to set the custom global shortcut for this action.
+     *
+     * \param shortcut custom global shortcut(s).
+     *
+     * \sa customGlobalShortcut()
+     */
+    inline void setCustomGlobalShortcut(const KShortcut& shortcut) { setGlobalShortcut(shortcut, CustomShortcut); }
+
+    /**
+     * Convenience function to retrieve the default global shortcut for this action, if one exists.
+     *
+     * \sa globalShortcut()
+     */
+    inline const KShortcut& defaultGlobalShortcut() const { return globalShortcut(DefaultShortcut); }
+
+    /**
+     * Convenience function to set the default global shortcut for this action.
      *
      * \param shortcut default global shortcut(s).
      *
      * \sa defaultGlobalShortcut()
      */
-    void setDefaultGlobalShortcut(const KShortcut& shortcut);
+    inline void setDefaultGlobalShortcut(const KShortcut& shortcut) { setGlobalShortcut(shortcut, DefaultShortcut); }
 
     /**
      * Returns true if this action is permitted to have a global shortcut.
@@ -611,9 +639,9 @@ protected Q_SLOTS:
 
 private:
     // Core initialization, including Kiosk authorization checking
-    void initPrivate(const char* name);
+    void initPrivate(const QString& name);
     // Compatability initialization functions here only
-    void initPrivate( const KShortcut& cut, const QObject* receiver, const char* slot, const char* name );
+    void initPrivate( const KShortcut& cut, const QObject* receiver, const char* slot, const QString& name );
 
     // You're not supposed to change the action name throughout its life - these methods are here to discourage you
     void setName ( const char * name );

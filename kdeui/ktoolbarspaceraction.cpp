@@ -34,7 +34,7 @@ class KToolbarSpacerActionPrivate
     QList<QWidget*> spacers;
 };
 
-KToolbarSpacerAction::KToolbarSpacerAction(KActionCollection* parent, const char* name)
+KToolbarSpacerAction::KToolbarSpacerAction(KActionCollection* parent, const QString& name)
   : KAction(parent, name)
   , d(new KToolbarSpacerActionPrivate)
 {

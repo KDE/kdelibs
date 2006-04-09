@@ -69,7 +69,7 @@ public:
      *
      * @param parent The action collection to contain this action.
      */
-    KToggleAction(KActionCollection* parent, const char* name, QActionGroup* exclusiveGroup = 0L);
+    KToggleAction(KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
 
     /**
      * Constructs an action with text; a shortcut may be specified by
@@ -83,7 +83,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KToggleAction(const QString& text, KActionCollection* parent, const char* name, QActionGroup* exclusiveGroup = 0L);
+    KToggleAction(const QString& text, KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
 
     /**
      * Constructs an action with text and an icon; a shortcut may be specified by
@@ -96,7 +96,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KToggleAction(const KIcon& icon, const QString& text, KActionCollection* parent, const char* name, QActionGroup* exclusiveGroup = 0L);
+    KToggleAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
 
     /**
      * \overload KSelectAction(const QIcon&, const QString&, KActionCollection*)
@@ -108,7 +108,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KDE_CONSTRUCTOR_DEPRECATED KToggleAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name, QActionGroup* exclusiveGroup = 0L);
+    KDE_CONSTRUCTOR_DEPRECATED KToggleAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
 
     /**
      * Constructs a toggle action with text and potential keyboard
@@ -121,7 +121,7 @@ public:
      * @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const KShortcut& cut = KShortcut(),
-                   KActionCollection* parent = 0, const char* name = 0 );
+                   KActionCollection* parent = 0, const QString& name = QString() );
 
     /**
      *  @param text The text that will be displayed.
@@ -132,7 +132,7 @@ public:
      *  @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const KShortcut& cut,
-                   const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, KActionCollection* parent, const QString& name = QString() );
 
     /**
      *  @param text The text that will be displayed.
@@ -142,7 +142,7 @@ public:
      *  @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-             KActionCollection* parent = 0, const char* name = 0 );
+             KActionCollection* parent = 0, const QString& name = QString() );
 
     /**
      *  @param text The text that will be displayed.
@@ -152,7 +152,7 @@ public:
      *  @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                   KActionCollection* parent = 0, const char* name = 0 );
+                   KActionCollection* parent = 0, const QString& name = QString() );
 
     /**
      *  @param text The text that will be displayed.
@@ -164,7 +164,7 @@ public:
      *  @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                   const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, KActionCollection* parent, const QString& name = QString() );
 
     /**
      *  @param text The text that will be displayed.
@@ -177,7 +177,7 @@ public:
      */
     KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QString& pix, const KShortcut& cut,
                    const QObject* receiver, const char* slot,
-                   KActionCollection* parent, const char* name = 0 );
+                   KActionCollection* parent, const QString& name = QString() );
 
     /**
      * Destructor
@@ -230,7 +230,7 @@ public:
      *
      * @param parent The action collection to contain this action.
      */
-    KSelectAction(KActionCollection* parent, const char* name);
+    KSelectAction(KActionCollection* parent, const QString& name);
 
     /**
      * Constructs an action with text; a shortcut may be specified by
@@ -244,7 +244,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KSelectAction(const QString& text, KActionCollection* parent, const char* name);
+    KSelectAction(const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * Constructs an action with text and an icon; a shortcut may be specified by
@@ -257,7 +257,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KSelectAction(const KIcon& icon, const QString& text, KActionCollection* parent, const char* name);
+    KSelectAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * \overload KSelectAction(const QIcon&, const QString&, KActionCollection*)
@@ -269,7 +269,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KDE_CONSTRUCTOR_DEPRECATED KSelectAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * Constructs a select action with text and potential keyboard
@@ -281,7 +281,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0, const char* name = 0 );
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0, const QString& name = QString() );
 
     /**
      *  @param text The text that will be displayed.
@@ -292,7 +292,7 @@ public:
      *  @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const KShortcut& cut,
-                   const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, KActionCollection* parent, const QString& name = QString() );
 
     /**
      *  @param text The text that will be displayed.
@@ -302,7 +302,7 @@ public:
      *  @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-             KActionCollection* parent = 0, const char* name = 0 );
+             KActionCollection* parent = 0, const QString& name = QString() );
 
     /**
      *  @param text The text that will be displayed.
@@ -312,7 +312,7 @@ public:
      *  @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                   KActionCollection* parent = 0, const char* name = 0 );
+                   KActionCollection* parent = 0, const QString& name = QString() );
 
     /**
      *  @param text The text that will be displayed.
@@ -324,7 +324,7 @@ public:
      *  @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                   const QObject* receiver, const char* slot, KActionCollection* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, KActionCollection* parent, const QString& name = QString() );
 
     /**
      *  @param text The text that will be displayed.
@@ -337,7 +337,7 @@ public:
      */
     KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QString& pix, const KShortcut& cut,
                    const QObject* receiver, const char* slot,
-                   KActionCollection* parent, const char* name = 0 );
+                   KActionCollection* parent, const QString& name = QString() );
 
     /**
      * Destructor
@@ -612,7 +612,7 @@ public:
      *
      * @param parent The action collection to contain this action.
      */
-    KRecentFilesAction(KActionCollection* parent, const char* name);
+    KRecentFilesAction(KActionCollection* parent, const QString& name);
 
     /**
      * Constructs an action with text; a shortcut may be specified by
@@ -626,7 +626,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KRecentFilesAction(const QString& text, KActionCollection* parent, const char* name);
+    KRecentFilesAction(const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * Constructs an action with text and an icon; a shortcut may be specified by
@@ -639,7 +639,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KRecentFilesAction(const KIcon& icon, const QString& text, KActionCollection* parent, const char* name);
+    KRecentFilesAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * \overload KRecentFilesAction(const QIcon&, const QString&, KActionCollection*)
@@ -651,7 +651,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
+    KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
 
   /**
    *  @param text The text that will be displayed.
@@ -661,7 +661,7 @@ public:
    *  @param maxItems The maximum number of files to display
    */
   KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const KShortcut& cut,
-                      KActionCollection* parent, const char* name = 0,
+                      KActionCollection* parent, const QString& name = QString(),
                       int maxItems = 10 );
 
   /**
@@ -676,7 +676,7 @@ public:
    */
   KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
-                      KActionCollection* parent, const char* name = 0,
+                      KActionCollection* parent, const QString& name = QString(),
                       int maxItems = 10 );
 
   /**
@@ -688,7 +688,7 @@ public:
    *  @param maxItems The maximum number of files to display
    */
   KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                      KActionCollection* parent, const char* name = 0,
+                      KActionCollection* parent, const QString& name = QString(),
                       int maxItems = 10 );
 
   /**
@@ -700,7 +700,7 @@ public:
    *  @param maxItems The maximum number of files to display
    */
   KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
-                      KActionCollection* parent, const char* name = 0,
+                      KActionCollection* parent, const QString& name = QString(),
                       int maxItems = 10 );
 
   /**
@@ -716,7 +716,7 @@ public:
    */
   KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
-                      KActionCollection* parent, const char* name = 0,
+                      KActionCollection* parent, const QString& name = QString(),
                       int maxItems = 10 );
 
   /**
@@ -732,7 +732,7 @@ public:
    */
   KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
                       const QObject* receiver, const char* slot,
-                      KActionCollection* parent, const char* name = 0,
+                      KActionCollection* parent, const QString& name = QString(),
                       int maxItems = 10 );
 
   /**
@@ -740,7 +740,7 @@ public:
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
    */
-  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( KActionCollection* parent = 0, const char* name = 0,
+  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( KActionCollection* parent = 0, const QString& name = QString(),
                       int maxItems = 10 );
 
   /**
@@ -837,33 +837,33 @@ class KDEUI_EXPORT KFontAction : public KSelectAction
     Q_OBJECT
     Q_PROPERTY( QString font READ font WRITE setFont )
 public:
-    KFontAction(uint fontListCriteria, KActionCollection* parent, const char* name);
-    KFontAction(KActionCollection* parent, const char* name);
-    KFontAction(const QString& text, KActionCollection* parent, const char* name);
-    KFontAction(const KIcon& icon, const QString& text, KActionCollection* parent, const char* name);
-    KDE_CONSTRUCTOR_DEPRECATED KFontAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
+    KFontAction(uint fontListCriteria, KActionCollection* parent, const QString& name);
+    KFontAction(KActionCollection* parent, const QString& name);
+    KFontAction(const QString& text, KActionCollection* parent, const QString& name);
+    KFontAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
+    KDE_CONSTRUCTOR_DEPRECATED KFontAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
 
     KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
-                 const char* name = 0 );
+                 const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const KShortcut& cut,
                  const QObject* receiver, const char* slot, KActionCollection* parent,
-                 const char* name = 0 );
+                 const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-                 KActionCollection* parent = 0, const char* name = 0 );
+                 KActionCollection* parent = 0, const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                 KActionCollection* parent = 0, const char* name = 0 );
+                 KActionCollection* parent = 0, const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                  const QObject* receiver, const char* slot, KActionCollection* parent,
-                 const char* name = 0 );
+                 const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QString& pix, const KShortcut& cut,
                  const QObject* receiver, const char* slot, KActionCollection* parent,
-                 const char* name = 0 );
+                 const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontAction( uint fontListCriteria, const QString& text,
                  const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
-                 const char* name = 0 );
+                 const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontAction( uint fontListCriteria, const QString& text, const QString& pix,
                  const KShortcut& cut = KShortcut(),
-                 KActionCollection* parent = 0, const char* name = 0 );
+                 KActionCollection* parent = 0, const QString& name = QString() );
 
     virtual ~KFontAction();
 
@@ -886,25 +886,25 @@ class KDEUI_EXPORT KFontSizeAction : public KSelectAction
     Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
 
 public:
-    KFontSizeAction(KActionCollection* parent, const char* name);
-    KFontSizeAction(const QString& text, KActionCollection* parent, const char* name);
-    KFontSizeAction(const KIcon& icon, const QString& text, KActionCollection* parent, const char* name);
-    KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
+    KFontSizeAction(KActionCollection* parent, const QString& name);
+    KFontSizeAction(const QString& text, KActionCollection* parent, const QString& name);
+    KFontSizeAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
+    KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
 
     KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
-                     const char* name = 0 );
+                     const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const KShortcut& cut, const QObject* receiver,
-                     const char* slot, KActionCollection* parent, const char* name = 0 );
+                     const char* slot, KActionCollection* parent, const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-                     KActionCollection* parent = 0, const char* name = 0 );
+                     KActionCollection* parent = 0, const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                     KActionCollection* parent = 0, const char* name = 0 );
+                     KActionCollection* parent = 0, const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const QIcon& pix, const KShortcut& cut,
                      const QObject* receiver, const char* slot,
-                     KActionCollection* parent, const char* name = 0 );
+                     KActionCollection* parent, const QString& name = QString() );
     KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const QString& pix, const KShortcut& cut,
                      const QObject* receiver, const char* slot,
-                     KActionCollection* parent, const char* name = 0 );
+                     KActionCollection* parent, const QString& name = QString() );
 
     virtual ~KFontSizeAction();
 
@@ -946,9 +946,9 @@ class KDEUI_EXPORT KActionMenu : public KAction, public QActionWidgetFactory
   Q_PROPERTY( bool stickyMenu READ stickyMenu WRITE setStickyMenu )
 
 public:
-    KActionMenu(KActionCollection* parent, const char* name);
-    KActionMenu(const QString& text, KActionCollection* parent, const char* name);
-    KActionMenu(const KIcon& icon, const QString& text, KActionCollection* parent, const char* name);
+    KActionMenu(KActionCollection* parent, const QString& name);
+    KActionMenu(const QString& text, KActionCollection* parent, const QString& name);
+    KActionMenu(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
     virtual ~KActionMenu();
 
     KDE_DEPRECATED void insert( KAction*, QAction* before = 0L );
@@ -1017,16 +1017,17 @@ private:
 
 /**
  * This action is a normal action everywhere, except in a toolbar
- * where it also has a popupmenu (optionnally delayed). This action is designed
+ * where it also has a popupmenu (optionally delayed). This action is designed
  * for history actions (back/forward, undo/redo) and for any other action
  * that has more detail in a toolbar than in a menu (e.g. tool chooser
  * with "Other" leading to a dialog...).
  *
- * FIXME KAction port - what does this add over KActionMenu?
- * Answer: a KActionMenu shows a submenu when plugged into a menu, whereas KToolBarPopupAction
- * is a -simple- menuitem when plugged into a menu, and has a popup only in a toolbar.
- * Use cases: Back/Forward, Undo/Redo. Simple click is what's most commonly used, and enough for menus,
- * but in toolbars there is -also- an optional popup to go back N steps or undo N steps.
+ * In contrast to KActionMenu, this action is a \e simple menuitem when plugged 
+ * into a menu, and has a popup only in a toolbar.
+ *
+ * Use cases include Back/Forward, and Undo/Redo. Simple click is what's most commonly
+ * used, and enough for menus, but in toolbars there is \e also an optional popup
+ * to go back N steps or undo N steps.
  */
 class KDEUI_EXPORT KToolBarPopupAction : public KAction, public QActionWidgetFactory
 {
@@ -1046,7 +1047,7 @@ public:
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
-    KToolBarPopupAction( const KIcon& icon, const QString& text, KActionCollection* parent = 0, const char* name = 0 );
+    KToolBarPopupAction( const KIcon& icon, const QString& text, KActionCollection* parent = 0, const QString& name = QString() );
 
     /**
      * Create a KToolBarPopupAction, with a text, an icon, an optional accelerator,
@@ -1059,7 +1060,7 @@ public:
      * @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KToolBarPopupAction( const QString& text, const QString& icon, const KShortcut& cut = KShortcut(),
-                         KActionCollection* parent = 0, const char* name = 0 );
+                         KActionCollection* parent = 0, const QString& name = QString() );
 
     /**
      * Create a KToolBarPopupAction, with a text, an icon, an accelerator,
@@ -1078,7 +1079,7 @@ public:
      */
     KDE_CONSTRUCTOR_DEPRECATED KToolBarPopupAction( const QString& text, const QString& icon, const KShortcut& cut,
                          const QObject* receiver, const char* slot,
-                         KActionCollection* parent = 0, const char* name = 0 );
+                         KActionCollection* parent = 0, const QString& name = QString() );
 
     /**
      * Create a KToolBarPopupAction, with a KGuiItem, an accelerator,
@@ -1097,7 +1098,7 @@ public:
      */
     KDE_CONSTRUCTOR_DEPRECATED KToolBarPopupAction( const KGuiItem& item, const KShortcut& cut,
                          const QObject* receiver, const char* slot,
-                         KActionCollection* parent, const char* name );
+                         KActionCollection* parent, const QString& name );
 
     virtual ~KToolBarPopupAction();
 
@@ -1170,7 +1171,7 @@ public:
      * created with that name.
      */
     KToggleToolBarAction( const char* toolBarName, const QString& text,
-                          KActionCollection* parent, const char* name );
+                          KActionCollection* parent, const QString& name );
     KToggleToolBarAction( KToolBar *toolBar, const QString &text,
                           KActionCollection *parent, const char *name );
     virtual ~KToggleToolBarAction();
@@ -1208,7 +1209,7 @@ class KDEUI_EXPORT KToggleFullScreenAction : public KToggleAction
 {
     Q_OBJECT
 public:
-    KToggleFullScreenAction( KActionCollection* parent, const char* name );
+    KToggleFullScreenAction( KActionCollection* parent, const QString& name );
     /**
      * Create a KToggleFullScreenAction
      *  @param cut The corresponding keyboard accelerator (shortcut).
@@ -1221,7 +1222,7 @@ public:
     KToggleFullScreenAction( const KShortcut &cut,
                              const QObject* receiver, const char* slot,
                              KActionCollection* parent, QWidget* window,
-                             const char* name );
+                             const QString& name );
     virtual ~KToggleFullScreenAction();
 
     /**
@@ -1262,7 +1263,7 @@ public:
      * ONE toolbar.
      */
     KDE_CONSTRUCTOR_DEPRECATED KWidgetAction( QWidget* widget, const QString& text,
-                   KActionCollection* parent, const char* name );
+                   KActionCollection* parent, const QString& name );
 
     /**
      * Create an action that will embed widget into a toolbar
@@ -1272,7 +1273,7 @@ public:
     KDE_CONSTRUCTOR_DEPRECATED KWidgetAction( QWidget* widget, const QString& text,
                    const KShortcut& cut,
                    const QObject* receiver, const char* slot,
-                   KActionCollection* parent, const char* name );
+                   KActionCollection* parent, const QString& name );
     virtual ~KWidgetAction();
 
     /**
@@ -1297,7 +1298,7 @@ class KDEUI_EXPORT KActionSeparator : public KAction
 {
     Q_OBJECT
 public:
-    KActionSeparator( KActionCollection* parent = 0, const char* name = 0 );
+    KActionSeparator( KActionCollection* parent = 0, const QString& name = QString() );
 
 private:
     class KActionSeparatorPrivate;
@@ -1321,7 +1322,7 @@ public:
      *
      * @param parent The action collection to contain this action.
      */
-    KPasteTextAction(KActionCollection* parent, const char* name);
+    KPasteTextAction(KActionCollection* parent, const QString& name);
 
     /**
      * Constructs an action with text; a shortcut may be specified by
@@ -1335,7 +1336,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KPasteTextAction(const QString& text, KActionCollection* parent, const char* name);
+    KPasteTextAction(const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * Constructs an action with text and an icon; a shortcut may be specified by
@@ -1348,7 +1349,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KPasteTextAction(const KIcon& icon, const QString& text, KActionCollection* parent, const char* name);
+    KPasteTextAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * \overload KPasteTextAction(const QIcon&, const QString&, KActionCollection*)
@@ -1360,7 +1361,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
      */
-    KDE_CONSTRUCTOR_DEPRECATED KPasteTextAction(const QString& icon, const QString& text, KActionCollection* parent, const char* name);
+    KDE_CONSTRUCTOR_DEPRECATED KPasteTextAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
 
     /**
      * Create a KPasteTextAction, with a text, an icon, an accelerator,
@@ -1379,7 +1380,7 @@ public:
      */
     KDE_CONSTRUCTOR_DEPRECATED KPasteTextAction( const QString& text, const QString& icon, const KShortcut& cut,
                   const QObject* receiver, const char* slot,
-                  KActionCollection* parent = 0, const char* name = 0 );
+                  KActionCollection* parent = 0, const QString& name = QString() );
 
     virtual ~KPasteTextAction();
 

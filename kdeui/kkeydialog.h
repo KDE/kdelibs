@@ -49,42 +49,59 @@ class KAction;
  *
  * @see KKeyDialog
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
+ * @author Hamish Rodda <rodda@kde.org> (KDE 4 porting)
  */
 class KDEUI_EXPORT KKeyChooser : public QWidget
 {
 	Q_OBJECT
 
 public:
-	enum ActionType { Application, ApplicationGlobal, Standard, Global };
+	enum ActionType {
+		ApplicationAction = 0x1,
+		WindowAction      = 0x2,
+		StandardAction    = 0x4,
+		GlobalAction      = 0x8,
+		AllActions        = 0xff
+	};
+	Q_DECLARE_FLAGS(ActionTypes, ActionType)
+	
+	enum LetterShortcuts {
+		LetterShortcutsAllowed,
+		LetterShortcutsDisallowed
+	};
 
 	/**
 	 * Constructor.
 	 *
-	 * @param parent the parent widget for this widget
-	 * @param type the ActionType for this KKeyChooser
-	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
+	 * @param collection the KActionCollection to configure
+	 * @param parent parent widget
+	 * @param actionTypes types of actions to display in this widget.
+	 * @param allowLetterShortcuts set to LetterShortcutsDisallowed if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
-	 **/
-	KKeyChooser( QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
+	 */
+	KKeyChooser( KActionCollection* collection, QWidget* parent, ActionTypes actionTypes = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed );
 
 	/**
 	 * \overload
+	 *
+	 * Creates a key chooser without a starting action collection.
+	 *
 	 * @param parent parent widget
-	 * @param coll the KActionCollection to configure
-	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
-     *  keys ('A', '1', etc.) are not permissible shortcuts.
-     */
-	KKeyChooser( KActionCollection* coll, QWidget* parent, bool bAllowLetterShortcuts = true );
+	 * @param actionTypes types of actions to display in this widget.
+	 * @param allowLetterShortcuts set to LetterShortcutsDisallowed if unmodified alphanumeric
+	 *  keys ('A', '1', etc.) are not permissible shortcuts.
+	 */
+	KKeyChooser( QWidget* parent, ActionTypes actionType = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed );
 
 	/// Destructor
 	virtual ~KKeyChooser();
 
-    /**
+	/**
 	 * Insert an action collection, i.e. add all its actions to the ones
 	 * already associated with the KKeyChooser object.
 	 * @param title subtree title of this collection of shortcut.
 	 */
-    bool insert( KActionCollection *, const QString &title = QString());
+	bool insert( KActionCollection *, const QString &title = QString());
 
 	/**
 	 * This function writes any shortcut changes back to the original
@@ -143,20 +160,13 @@ public Q_SLOTS:
 	 **/
 	void allDefault();
 
-	/**
-	 * Specifies whether to use the 3 or 4 modifier key scheme.
-	 * This determines which default is used when the 'Default' button is
-	 * clicked.
-	 */
-	void setPreferFourModifierKeys( bool preferFourModifierKeys );
-
 // KDE4 a lot of stuff in this class should be probably private:
 protected:
 	virtual void showEvent(QShowEvent* event);
  
 	enum { NoKey = 1, DefaultKey, CustomKey };
 
-	void initGUI( ActionType type, bool bAllowLetterShortcuts );
+	void initGUI( ActionTypes type, LetterShortcuts allowLetterShortcuts );
 	void buildListView( uint iList, const QString &title = QString() );
 
 	void updateButtons();
@@ -178,17 +188,6 @@ protected Q_SLOTS:
 	void slotListItemSelected( QTreeWidgetItem *item );
 	void slotSettingsChanged( int );
 
-protected:
-	ActionType m_type;
-	bool m_bAllowLetterShortcuts;
-	// When set, pressing the 'Default' button will select the aDefaultKeycode4,
-	//  otherwise aDefaultKeycode.
-	bool m_bPreferFourModifierKeys;
-
-	QRadioButton* m_prbNone;
-	QRadioButton* m_prbDef;
-	QRadioButton* m_prbCustom;
-
 private:
 	bool isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, bool bWarnUser );
 	static bool promptForReassign( const QKeySequence& cut, const QString& sAction, ActionType action, QWidget* parent );
@@ -199,7 +198,7 @@ private:
 	// which currently has @p origCut as shortcut.
 	static void removeGlobalShortcut( KAction* action, KKeyChooser* chooser, const KShortcut &cut );
 	static void readGlobalKeys( QMap< QString, KShortcut >& map );
-	static bool checkGlobalShortcutsConflict( const KShortcut& cut, bool bWarnUser, QWidget* parent, const QString& ignoreAction = QString() );
+	static bool checkGlobalShortcutsConflictInternal( const KShortcut& cut, bool bWarnUser, QWidget* parent, const QString& ignoreAction = QString() );
 	// Remove the key sequences contained in cut from this item
 	bool removeShortcut( const QString& name, const KShortcut &cut );
 
@@ -208,10 +207,13 @@ private Q_SLOTS:
 
 protected:
 	virtual void virtual_hook( int id, void* data );
+
 private:
 	class KKeyChooserPrivate* const d;
 	friend class KKeyDialog;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KKeyChooser::ActionTypes)
 
 /**
  * @short Dialog for configuration of KActionCollection and KGlobalAccel.
@@ -228,6 +230,7 @@ private:
  * \endcode
  *
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
+ * @author Hamish Rodda <rodda@kde.org> (KDE 4 porting)
  */
 class KDEUI_EXPORT KKeyDialog : public KDialog
 {
@@ -239,7 +242,7 @@ public:
 	 * Set @p bAllowLetterShortcuts to false if unmodified alphanumeric
 	 * keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
-	KKeyDialog( bool bAllowLetterShortcuts = true, QWidget* parent = 0 );
+	KKeyDialog( KKeyChooser::ActionTypes types = KKeyChooser::AllActions, KKeyChooser::LetterShortcuts allowLetterShortcuts = KKeyChooser::LetterShortcutsAllowed, QWidget* parent = 0 );
 
 	/**
 	 * Destructor. Deletes all resources used by a KKeyDialog object.
@@ -249,15 +252,12 @@ public:
 	/**
 	 * Insert an action collection, i.e. add all its actions to the ones
 	 * displayed by the dialog.
-	 * This method can be useful in applications following the document/view
-	 * design, with actions in both the document and the view.
 	 * Simply call insert with the action collections of each one in turn.
 	 *
 	 * @param title the title associated with the collection (if null, the
 	 * KAboutData::progName() of the collection's instance is used)
-	 * @return true :)
 	 */
-	bool insert(KActionCollection *, const QString &title = QString());
+	void insert(KActionCollection *, const QString &title = QString());
 
 	/**
 	 * Run the dialog and call commitChanges() if @p bSaveSettings
@@ -279,7 +279,7 @@ public:
 	 * the *uirc file which they were intially read from.
 	 *
 	 * @param coll the KActionCollection to configure
-	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
+	 * @param allowLetterShortcuts set to KKeyChooser::LetterShortcutsDisallowed if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 * @param parent the parent widget to attach to
 	 * @param bSaveSettings if true, the settings will also be saved back to
@@ -287,17 +287,14 @@ public:
 	 *
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 */
-	static int configure( KActionCollection* coll, bool bAllowLetterShortcuts = true, QWidget* parent = 0, bool bSaveSettings = true );
-
-private:
-	KKeyDialog( KKeyChooser::ActionType, bool bAllowLetterShortcuts = true, QWidget* parent = 0 );
+	static int configure( KActionCollection* coll, KKeyChooser::LetterShortcuts allowLetterShortcuts = KKeyChooser::LetterShortcutsAllowed, QWidget* parent = 0, bool bSaveSettings = true );
 
 protected:
 	virtual void virtual_hook( int id, void* data );
 
 private:
 	class KKeyDialogPrivate* d;
-	KKeyChooser* m_pKeyChooser;
+	KKeyChooser* m_keyChooser;
 };
 
 #endif // KKEYDIALOG_H

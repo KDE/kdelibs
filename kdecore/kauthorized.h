@@ -49,7 +49,7 @@ public:
    * with "action/" before being passed to authorize()
    * @return true if the KAction is authorized
    */
-  static bool authorizeKAction(const char* action);
+  static bool authorizeKAction(const QString& action);
 
   /**
    * Returns whether a certain URL related action is authorized.

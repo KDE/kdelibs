@@ -57,6 +57,8 @@ class KDEUI_EXPORT KActionCollection : public QObject
 
   Q_OBJECT
 
+  Q_PROPERTY( bool enabled READ isEnabled WRITE setEnabled RESET forgetEnabled )
+
 public:
   /**
    * Constructor.  Allows specification of a KInstance other than the default
@@ -78,6 +80,28 @@ public:
    * Clears the entire action collection, deleting all actions.
    */
   void clear();
+
+  /**
+   * Returns whether this action collection as a whole has been disabled via 
+   * setEnabled() or not.
+   *
+   * \note this does not check each action to see if its state has been changed
+   *       elsewhere.
+   */
+  bool isEnabled() const;
+
+  /**
+   * Allows you to enable or disable all actions in this action collection.
+   * The state is remembered, and returned in isEnabled().
+   */
+  void setEnabled(bool enable);
+
+  /**
+   * Forgets the enabled state of the action collection.  Actions added
+   * to the collection will not have their enabled state changed, unless there
+   * is a subsequent call to setEnabled().
+   */
+  void forgetEnabled();
 
   /**
    * This sets the default shortcut context for new actions created in this
@@ -239,7 +263,7 @@ public:
    * @return A pointer to the first KAction in the collection which matches the parameters or
    * null if nothing matches.
    */
-  KAction* action( const char* name ) const;
+  KAction* action( const QString& name ) const;
 
   /**
    * Find all actions with a given \a name in the action collection.
@@ -247,7 +271,7 @@ public:
    * @param name Name of the KAction, or null to match all actions
    * @return A list of all KActions in the collection which match the parameters
    */
-  QList<KAction*> actions( const char* name ) const;
+  QList<KAction*> actions( const QString& name ) const;
 
   /**
    * Find the first action of a given subclass of KAction in the action collection.
@@ -257,7 +281,7 @@ public:
    * null if nothing matches.
    */
   template <class T>
-  KAction* actionOfType( const char* name ) const
+  KAction* actionOfType( const QString& name ) const
   { return actionOfTypeInternal(name, ((T)0)->staticMetaObject); }
 
   /**
@@ -267,7 +291,7 @@ public:
    * @return A list of all KActions in the collection which match the parameters
    */
   template <class T>
-  KAction* actionsOfType( const char* name ) const
+  KAction* actionsOfType( const QString& name ) const
   { return actionsOfTypeInternal(name, ((T)0)->staticMetaObject); }
 
   /**
@@ -367,8 +391,8 @@ public:
   KAction* take( KAction* action );
 
 private:
-  KAction* actionOfTypeInternal( const char* name, const QMetaObject& mo ) const;
-  QList<KAction*> actionsOfTypeInternal( const char* name, const QMetaObject& mo ) const;
+  KAction* actionOfTypeInternal( const QString& name, const QMetaObject& mo ) const;
+  QList<KAction*> actionsOfTypeInternal( const QString& name, const QMetaObject& mo ) const;
 
   KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
 

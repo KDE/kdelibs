@@ -124,29 +124,28 @@ class KKeyChooserPrivate
 	//  so 'A' would not be valid, whereas 'Ctrl+A' would be.
 	// Note, however, that this only applies to printable characters.
 	//  'F1', 'Insert', etc., could still be used.
-	bool bAllowLetterShortcuts;
-	// When set, pressing the 'Default' button will select the aDefaultKeycode4,
-	//  otherwise aDefaultKeycode.
-	bool bPreferFourModifierKeys;
+	bool allowLetterShortcuts;
+
+	KKeyChooser::ActionTypes type;
 };
 
 //---------------------------------------------------------------------
 // KKeyChooser
 //---------------------------------------------------------------------
 
-KKeyChooser::KKeyChooser( QWidget* parent, ActionType type, bool bAllowLetterShortcuts )
+KKeyChooser::KKeyChooser( KActionCollection* coll, QWidget* parent, ActionTypes actionType, LetterShortcuts allowLetterShortcuts )
 : QWidget( parent )
 , d(new KKeyChooserPrivate)
 {
-	initGUI( type, bAllowLetterShortcuts );
+	initGUI( actionType, allowLetterShortcuts );
+	insert( coll );
 }
 
-KKeyChooser::KKeyChooser( KActionCollection* coll, QWidget* parent, bool bAllowLetterShortcuts )
+KKeyChooser::KKeyChooser( QWidget* parent, ActionTypes actionType, LetterShortcuts allowLetterShortcuts )
 : QWidget( parent )
 , d(new KKeyChooserPrivate)
 {
-	initGUI( Application, bAllowLetterShortcuts );
-	insert( coll );
+	initGUI( actionType, allowLetterShortcuts );
 }
 
 // list of all existing KKeyChooser's
@@ -197,13 +196,10 @@ void KKeyChooser::save()
 		KGlobalAccel::self()->writeSettings();
 }
 
-void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
+void KKeyChooser::initGUI( ActionTypes type, LetterShortcuts allowLetterShortcuts )
 {
-	  m_type = type;
-	  d->bAllowLetterShortcuts = bAllowLetterShortcuts;
-	
-	  //d->bPreferFourModifierKeys = KGlobalAccel::useFourModifierKeys();
-	  d->bPreferFourModifierKeys = true;
+	  d->type = type;
+	  d->allowLetterShortcuts = allowLetterShortcuts;
 	
 	  d->ui->setupUi(this);
 	
@@ -240,7 +236,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 {
 	const QList<KAction*> pList = d->rgpLists[iList];
 
-	if( m_type == Global || m_type == ApplicationGlobal )
+	if( d->type & GlobalAction || d->type & ApplicationAction )
 	    d->ui->list->setEnabled(false);
 
 	QTreeWidgetItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
@@ -423,11 +419,6 @@ void KKeyChooser::captureCurrentItem()
 		d->ui->localCustomSelector->captureShortcut ( );
 }
 
-void KKeyChooser::setPreferFourModifierKeys( bool bPreferFourModifierKeys )
-{
-	d->bPreferFourModifierKeys = bPreferFourModifierKeys;
-}
-
 void KKeyChooser::slotLocalCapturedShortcut( const KShortcut& cut )
 {
 	if( cut.isNull() )
@@ -457,7 +448,7 @@ void KKeyChooser::setLocalShortcut( const KShortcut& cut )
 		
 		int key = seq[0];
 
-		if( !d->bAllowLetterShortcuts && (key & Qt::KeyboardModifierMask) == 0
+		if( !d->allowLetterShortcuts && (key & Qt::KeyboardModifierMask) == 0
 		    && key < 0x3000 && QChar(key).isLetterOrNumber() ) {
 			QString s = i18n( 	"In order to use the '%1' key as a shortcut, "
 						"it must be combined with the "
@@ -490,7 +481,7 @@ void KKeyChooser::setGlobalShortcut( const KShortcut& cut )
 		
 		int key = seq[0];
 
-		if( !d->bAllowLetterShortcuts && (key & Qt::KeyboardModifierMask) == 0
+		if( !d->allowLetterShortcuts && (key & Qt::KeyboardModifierMask) == 0
 		    && key < 0x3000 && QChar(key).isLetterOrNumber() ) {
 			QString s = i18n( 	"In order to use the '%1' key as a shortcut, "
 						"it must be combined with the "
@@ -543,12 +534,12 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 	for( QList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
 		 it != allChoosers->end();
 		 ++it ) {
-		has_global_chooser |= ((*it)->m_type == Global);
-		has_standard_chooser |= ((*it)->m_type == Standard);
+		has_global_chooser |= ((*it)->d->type & GlobalAction);
+		has_standard_chooser |= ((*it)->d->type & StandardAction);
 	}
 
 	// If editing global shortcuts, check them for conflicts with the stdaccels.
-	if( m_type == ApplicationGlobal || m_type == Global ) {
+	if( d->type & ApplicationAction || d->type & GlobalAction ) {
 		if( !has_standard_chooser ) {
 			if( checkStandardShortcutsConflict( cut, bWarnUser, this ))
 				return true;
@@ -557,8 +548,8 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 
 	// only check the global keys if one of the keychoosers isn't global
 	if( !has_global_chooser ) {
-		if( checkGlobalShortcutsConflict( cut, bWarnUser, this,
-			m_type == Global ? pItem->actionName() : QString() ))
+		if( checkGlobalShortcutsConflictInternal( cut, bWarnUser, this,
+			(d->type & GlobalAction) ? pItem->actionName() : QString() ))
 			return true;
 	}
 
@@ -587,7 +578,7 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 			int iSeq = keyConflict( cut, pItem2->shortcut() );
 			if( iSeq > -1 ) {
 				if( bWarnUser ) {
-					if( !promptForReassign( cut.seq(iSeq), pItem2->actionName(), Application, this ))
+					if( !promptForReassign( cut.seq(iSeq), pItem2->actionName(), WindowAction, this ))
 						return true;
 					// else remove the shortcut from it
 					KShortcut cut2 = pItem2->shortcut();
@@ -600,7 +591,7 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 			iSeq = keyConflict( cut, pItem2->globalShortcut() );
 			if( iSeq > -1 ) {
 				if( bWarnUser ) {
-					if( !promptForReassign( cut.seq(iSeq), pItem2->actionName(), Application, this ))
+					if( !promptForReassign( cut.seq(iSeq), pItem2->actionName(), WindowAction, this ))
 						return true;
 					// else remove the shortcut from it
 					KShortcut cut2 = pItem2->globalShortcut();
@@ -623,7 +614,7 @@ bool KKeyChooser::checkStandardShortcutsConflict( const KShortcut& cut, bool bWa
 		if( id != KStdAccel::AccelNone
 			&& keyConflict( cut, KStdAccel::shortcut( id ) ) > -1 ) {
 			if( bWarnUser ) {
-				if( !promptForReassign( seq, KStdAccel::label(id), Standard, parent ))
+				if( !promptForReassign( seq, KStdAccel::label(id), StandardAction, parent ))
 					return true;
 				removeStandardShortcut( KStdAccel::label(id), dynamic_cast< KKeyChooser* > ( parent ), cut);
 			}
@@ -632,14 +623,14 @@ bool KKeyChooser::checkStandardShortcutsConflict( const KShortcut& cut, bool bWa
 	return false;
 }
 
-bool KKeyChooser::checkGlobalShortcutsConflict( const KShortcut& cut, bool bWarnUser, QWidget* parent, const QString& ignoreAction )
+bool KKeyChooser::checkGlobalShortcutsConflictInternal( const KShortcut& cut, bool bWarnUser, QWidget* parent, const QString& ignoreAction )
 {
 	foreach (KAction* action, KGlobalAccel::self()->actionsWithGlobalShortcut()) {
 		int iSeq = keyConflict( cut, action->globalShortcut() );
 		if( iSeq > -1 ) {
 			if( ignoreAction.isEmpty() || action->objectName() != ignoreAction ) {
 				if( bWarnUser ) {
-					if( !promptForReassign( cut.seq(iSeq), action->objectName(), Global, parent ))
+					if( !promptForReassign( cut.seq(iSeq), action->objectName(), GlobalAction, parent ))
 						return true;
 					removeGlobalShortcut( action, dynamic_cast< KKeyChooser* >( parent ), cut);
 				}
@@ -654,7 +645,7 @@ void KKeyChooser::removeStandardShortcut( const QString& name, KKeyChooser* choo
 	bool was_in_choosers = false;
 	if( allChoosers != NULL ) {
 		foreach (KKeyChooser* c, *allChoosers) {
-			if( c != chooser && c->m_type == Standard ) {
+			if( c != chooser && c->d->type & StandardAction ) {
 				was_in_choosers |= ( c->removeShortcut( name, cut ));
 			}
 		}
@@ -674,7 +665,7 @@ void KKeyChooser::removeGlobalShortcut( KAction* action, KKeyChooser* chooser, c
 	bool was_in_choosers = false;
 	if( allChoosers != NULL ) {
 		foreach (KKeyChooser* c, *allChoosers) {
-			if( c != chooser && c->m_type == Global ) {
+			if( c != chooser && c->d->type & GlobalAction ) {
 				was_in_choosers |= ( c->removeShortcut( action->objectName(), cut ));
 			}
 		}
@@ -715,14 +706,14 @@ bool KKeyChooser::promptForReassign( const QKeySequence& cut, const QString& sAc
 		return true;
 	QString sTitle;
 	QString s;
-	if( type == Standard ) {
+	if( type == StandardAction ) {
 		sTitle = i18n("Conflict with Standard Application Shortcut");
 		s = i18n("The '%1' key combination has already been allocated "
 		"to the standard action \"%2\".\n"
 		"Do you want to reassign it from that action to the current one?",
 		cut.toString(), sAction.trimmed());
 	}
-	else if( type == Global ) {
+	else if( type == GlobalAction ) {
 		sTitle = i18n("Conflict with Global Shortcut");
 		s = i18n("The '%1' key combination has already been allocated "
 		"to the global action \"%2\".\n"
@@ -857,26 +848,13 @@ void KKeyChooserItem::commitChanges()
 /* (by using KDialogBase there is almost no code left ;)                */
 /*                                                                      */
 /************************************************************************/
-KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts, QWidget *parent )
+KKeyDialog::KKeyDialog( KKeyChooser::ActionTypes types, KKeyChooser::LetterShortcuts allowLetterShortcuts, QWidget *parent )
 : KDialog( parent, i18n("Configure Shortcuts"), Default|Ok|Cancel )
 {
 	setModal(true);
-	m_pKeyChooser = new KKeyChooser( this, type, bAllowLetterShortcuts );
-	setMainWidget( m_pKeyChooser );
-	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
-
-	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
-	resize( group.readEntry( "Dialog Size", size() ) );
-}
-
-KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent )
-: KDialog( parent, i18n("Configure Shortcuts"), Default|Ok|Cancel )
-{
-	setModal(true);
-
-	m_pKeyChooser = new KKeyChooser( this, KKeyChooser::Application, bAllowLetterShortcuts );
-	setMainWidget( m_pKeyChooser );
-	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
+	m_keyChooser = new KKeyChooser( this, types, allowLetterShortcuts );
+	setMainWidget( m_keyChooser );
+	connect( this, SIGNAL(defaultClicked()), m_keyChooser, SLOT(allDefault()) );
 
 	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
 	resize( group.readEntry( "Dialog Size", size() ) );
@@ -888,9 +866,9 @@ KKeyDialog::~KKeyDialog()
 	group.writeEntry( "Dialog Size", size(), KConfigBase::Global );
 }
 
-bool KKeyDialog::insert(KActionCollection *pColl, const QString &title)
+void KKeyDialog::insert(KActionCollection *pColl, const QString &title)
 {
-    return m_pKeyChooser->insert(pColl, title);
+	m_keyChooser->insert(pColl, title);
 }
 
 bool KKeyDialog::configure( bool bSaveSettings )
@@ -898,7 +876,7 @@ bool KKeyDialog::configure( bool bSaveSettings )
 	int retcode = exec();
 	if( retcode == Accepted ) {
 		if( bSaveSettings )
-			m_pKeyChooser->save();
+			m_keyChooser->save();
 		else
 			commitChanges();
 	}
@@ -907,14 +885,14 @@ bool KKeyDialog::configure( bool bSaveSettings )
 
 void KKeyDialog::commitChanges()
 {
-	m_pKeyChooser->commitChanges();
+	m_keyChooser->commitChanges();
 }
 
-int KKeyDialog::configure( KActionCollection* coll, bool bAllowLetterShortcuts, QWidget *parent, bool bSaveSettings )
+int KKeyDialog::configure( KActionCollection* coll, KKeyChooser::LetterShortcuts allowLetterShortcuts, QWidget *parent, bool bSaveSettings )
 {
 	kDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << bSaveSettings << " )" << endl;
-	KKeyDialog dlg( bAllowLetterShortcuts, parent );
-	dlg.m_pKeyChooser->insert( coll );
+	KKeyDialog dlg( KKeyChooser::AllActions, allowLetterShortcuts, parent );
+	dlg.m_keyChooser->insert( coll );
 	return dlg.configure( bSaveSettings );
 }
 
@@ -1000,6 +978,11 @@ bool KKeyChooserItem::checkChanged( const KShortcut & cut1, const KShortcut & cu
 KAction * KKeyChooserItem::action( ) const
 {
 	return m_action;
+}
+
+bool KKeyChooser::checkGlobalShortcutsConflict( const KShortcut & cut, bool warnUser, QWidget * parent )
+{
+	return checkGlobalShortcutsConflictInternal(cut, warnUser, parent);
 }
 
 #include "kkeydialog.moc"

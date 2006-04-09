@@ -232,11 +232,11 @@ bool KAuthorized::authorize(const QString &genericAction)
    return cg.readEntry(genericAction, true);
 }
 
-bool KAuthorized::authorizeKAction(const char *action)
+bool KAuthorized::authorizeKAction(const QString& action)
 {
    MY_D
    if (d->blockEverything) return false;
-   if (!d->actionRestrictions || !action)
+   if (!d->actionRestrictions || action.isEmpty())
       return true;
 
    static const QString &action_prefix = KGlobal::staticQString( "action/" );

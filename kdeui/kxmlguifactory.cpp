@@ -530,7 +530,7 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
 
 int KXMLGUIFactory::configureShortcuts(bool bAllowLetterShortcuts , bool bSaveSettings )
 {
-	KKeyDialog dlg( bAllowLetterShortcuts, qobject_cast<QWidget*>(parent()) );
+	KKeyDialog dlg( KKeyChooser::AllActions, bAllowLetterShortcuts ? KKeyChooser::LetterShortcutsAllowed : KKeyChooser::LetterShortcutsDisallowed, qobject_cast<QWidget*>(parent()) );
 	foreach (KXMLGUIClient *client, d->m_clients)
 	{
 		if(!client->xmlFile().isEmpty())

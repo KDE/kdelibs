@@ -39,7 +39,7 @@ KToolBarLabelAction::KToolBarLabelAction(const QString &text,
 					 const QObject *receiver,
 					 const char *slot,
 					 KActionCollection *parent,
-					 const char *name)
+					 const QString& name)
   : KAction(text, parent, name),
     d(new KToolBarLabelActionPrivate)
 {
@@ -56,7 +56,7 @@ KToolBarLabelAction::KToolBarLabelAction(QAction* buddy,
 					 const QObject *receiver,
 					 const char *slot,
  					 KActionCollection *parent,
-					 const char *name)
+					 const QString& name)
   : KAction(text, parent, name),
     d(new KToolBarLabelActionPrivate)
 {

@@ -62,25 +62,25 @@ public:
 // KAction
 //---------------------------------------------------------------------
 
-KAction::KAction( KActionCollection * parent, const char* name )
+KAction::KAction( KActionCollection * parent, const QString& name )
   : QAction(parent), d(new KActionPrivate)
 {
   initPrivate(name);
 }
 
-KAction::KAction( const QString & text, KActionCollection * parent, const char* name )
+KAction::KAction( const QString & text, KActionCollection * parent, const QString& name )
   : QAction(text, parent), d(new KActionPrivate)
 {
   initPrivate(name);
 }
 
-KAction::KAction( const KIcon & icon, const QString & text, KActionCollection * parent, const char* name )
+KAction::KAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
   : QAction(icon, text, parent), d(new KActionPrivate)
 {
   initPrivate(name);
 }
 
-KAction::KAction( const QString & icon, const QString & text, KActionCollection * parent, const char* name )
+KAction::KAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
   : QAction(text, parent), d(new KActionPrivate)
 {
   initPrivate(name);
@@ -89,7 +89,7 @@ KAction::KAction( const QString & icon, const QString & text, KActionCollection 
 
 KAction::KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name )
+             KActionCollection* parent, const QString& name )
 : QAction( text, parent ), d(new KActionPrivate)
 {
   initPrivate( cut, receiver, slot, name );
@@ -97,7 +97,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
 
 KAction::KAction( const QString& text, const QString& sIconName, const KShortcut& cut,
   const QObject* receiver, const char* slot,
-  KActionCollection* parent, const char* name )
+  KActionCollection* parent, const QString& name )
 : QAction(text, parent), d(new KActionPrivate)
 {
   initPrivate( cut, receiver, slot, name );
@@ -106,7 +106,7 @@ KAction::KAction( const QString& text, const QString& sIconName, const KShortcut
 
 KAction::KAction( const QString& text, const QIcon& icon, const KShortcut& cut,
   const QObject* receiver, const char* slot,
-  KActionCollection* parent, const char* name )
+  KActionCollection* parent, const QString& name )
 : QAction(icon, text, parent), d(new KActionPrivate)
 {
   initPrivate( cut, receiver, slot, name );
@@ -114,7 +114,7 @@ KAction::KAction( const QString& text, const QIcon& icon, const KShortcut& cut,
 
 KAction::KAction( const KGuiItem& item, const KShortcut& cut,
   const QObject* receiver, const char* slot,
-  KActionCollection* parent, const char* name )
+  KActionCollection* parent, const QString& name )
 : QAction(item.text(), parent), d(new KActionPrivate)
 {
   initPrivate( cut, receiver, slot, name );
@@ -132,9 +132,9 @@ KAction::~KAction()
     delete d;
 }
 
-void KAction::initPrivate(const char* name)
+void KAction::initPrivate(const QString& name)
 {
-    QAction::setObjectName( QLatin1String( name ) );
+    QAction::setObjectName(name);
 
     if (!KAuthorized::authorizeKAction(name)) {
       // Disable this action
@@ -150,22 +150,14 @@ void KAction::initPrivate(const char* name)
 }
 
 void KAction::initPrivate( const KShortcut& cut,
-                  const QObject* receiver, const char* slot, const char* name )
+                  const QObject* receiver, const char* slot, const QString& name )
 {
     initPrivate(name);
 
-    if ( receiver && slot )
-        connect( this, SIGNAL( activated() ), receiver, slot );
+    if (receiver && slot)
+        connect(this, SIGNAL(triggered(bool)), receiver, slot);
 
-    if( !cut.isNull() && objectName().isEmpty() )
-        kWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
-
-    setShortcut( cut );
-}
-
-const KShortcut& KAction::defaultShortcut() const
-{
-  return d->defaultShortcut;
+    setShortcut(cut);
 }
 
 bool KAction::isShortcutConfigurable() const
@@ -331,21 +323,6 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type 
 
     KGlobalAccel::self()->checkAction(this);
   }
-}
-
-const KShortcut & KAction::defaultGlobalShortcut( ) const
-{
-  return d->defaultGlobalShortcut;
-}
-
-void KAction::setDefaultGlobalShortcut( const KShortcut & shortcut )
-{
-  d->defaultGlobalShortcut = shortcut;
-}
-
-void KAction::setDefaultShortcut( const KShortcut & shortcut )
-{
-  d->defaultShortcut = shortcut;
 }
 
 bool KAction::globalShortcutAllowed( ) const
