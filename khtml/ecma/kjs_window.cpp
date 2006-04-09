@@ -106,6 +106,8 @@ namespace KJS {
     FrameArray(ExecState *exec, KHTMLPart *p)
       : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+    virtual bool implementsCall() const { return true; }
   private:
     QGuardedPtr<KHTMLPart> part;
   };
@@ -2230,6 +2232,19 @@ Value FrameArray::get(ExecState *exec, const Identifier &p) const
 
   return ObjectImp::get(exec, p);
 }
+
+Value FrameArray::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+    //IE supports a subset of the get functionality as call...
+    //... basically, when the return is a window, it supports that, otherwise it 
+    //errors out. We do a cheap-and-easy emulation of that, and just do the same
+    //thing as get does.
+    if (args.size() == 1)
+        return get(exec, Identifier(args[0].toString(exec)));
+
+    return Undefined();
+}
+
 
 ////////////////////// Location Object ////////////////////////
 
