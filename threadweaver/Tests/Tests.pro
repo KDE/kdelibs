@@ -5,8 +5,8 @@
 TEMPLATE = app
 TARGET = JobTests
 DEPENDPATH += .
-INCLUDEPATH += ../Weaver .
-LIBS += -L../Weaver -lThreadWeaver
+INCLUDEPATH += ../Weaver ../Experimental .
+LIBS += -L../Weaver -lThreadWeaver -L../Experimental -lThreadWeaverExperimental
 CONFIG += qtestlib
 
 SOURCES += JobTests.cpp

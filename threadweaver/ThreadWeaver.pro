@@ -1,4 +1,3 @@
 TEMPLATE	= subdirs 
-SUBDIRS		= Weaver Tests Examples
-# Experimental 
+SUBDIRS		= Weaver Experimental Tests Examples
 CONFIG		+= ordered

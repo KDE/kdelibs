@@ -1,5 +1,5 @@
 #include <ThreadWeaver.h>
-
+#include <JobSequence.h>
 #include <QtTest/QtTest>
 
 class AppendCharacterJob : public ThreadWeaver::Job
@@ -37,6 +37,22 @@ private slots:
         ThreadWeaver::Weaver::instance()->enqueue ( &job );
         ThreadWeaver::Weaver::instance()->finish();
         QCOMPARE ( sequence, QString( "1" ) );
+    }
+
+    void ShortSequenceTest() {
+        QString sequence;
+        AppendCharacterJob jobA ( QChar( 'a' ), sequence, this );
+        AppendCharacterJob jobB ( QChar( 'b' ), sequence, this );
+        AppendCharacterJob jobC ( QChar( 'c' ), sequence, this );
+        ThreadWeaver::JobSequence jobSequence( this );
+        jobSequence.append ( &jobA );
+        jobSequence.append ( &jobB );
+        jobSequence.append ( &jobC );
+
+        ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
+        ThreadWeaver::Weaver::instance()->finish();
+        QCOMPARE ( sequence, QString( "abc" ) );
+
     }
 
 };
