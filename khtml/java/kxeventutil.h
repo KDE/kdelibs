@@ -26,7 +26,7 @@
 #include <X11/Xlib.h>
 #include <qstring.h>
 
-class KHTML_JAVA_EXPORT KXEventUtil {
+class KHTML_EXPORT KXEventUtil {
     public:
         static QString getXEventName(XEvent *e);
         static QString getXAnyEventInfo(XEvent *xevent);

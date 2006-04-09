@@ -41,7 +41,7 @@ namespace KIO {
 class KJavaDownloaderPrivate;
 class KJavaUploaderPrivate;
 
-class KHTML_JAVA_EXPORT KJavaKIOJob : public QObject
+class KHTML_EXPORT KJavaKIOJob : public QObject
 {
 Q_OBJECT
 public:
@@ -50,7 +50,7 @@ public:
     virtual void data( const QByteArray& qb );
 };
 
-class KHTML_JAVA_EXPORT KJavaDownloader : public KJavaKIOJob
+class KHTML_EXPORT KJavaDownloader : public KJavaKIOJob
 {
 Q_OBJECT
 
@@ -70,7 +70,7 @@ private:
 
 };
 
-class KHTML_JAVA_EXPORT KJavaUploader : public KJavaKIOJob
+class KHTML_EXPORT KJavaUploader : public KJavaKIOJob
 {
 Q_OBJECT
 

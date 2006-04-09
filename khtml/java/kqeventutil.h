@@ -28,7 +28,7 @@
 
 class QEvent;
 
-class KHTML_JAVA_EXPORT KQEventUtil {
+class KHTML_EXPORT KQEventUtil {
     public:
         static QString getQtEventName(QEvent *e);
 };

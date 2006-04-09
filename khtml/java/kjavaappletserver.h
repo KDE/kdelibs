@@ -40,7 +40,7 @@ class KJavaAppletContext;
 class KJavaAppletServerPrivate;
 class JSStackFrame;
 
-class KHTML_JAVA_EXPORT KJavaAppletServer : public QObject
+class KHTML_EXPORT KJavaAppletServer : public QObject
 {
 Q_OBJECT
 
@@ -163,7 +163,7 @@ private:
 };
 
 
-class KHTML_JAVA_EXPORT PermissionDialog : public QObject
+class KHTML_EXPORT PermissionDialog : public QObject
 {
     Q_OBJECT
 public:

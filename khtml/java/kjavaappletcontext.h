@@ -43,7 +43,7 @@ class KJavaAppletServer;
 class KJavaApplet;
 class KJavaAppletContextPrivate;
 
-class KHTML_JAVA_EXPORT KJavaAppletContext : public QObject
+class KHTML_EXPORT KJavaAppletContext : public QObject
 {
 Q_OBJECT
 

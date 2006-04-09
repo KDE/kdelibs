@@ -80,7 +80,7 @@
 
 class KJavaAppletWidgetPrivate;
 
-class KHTML_JAVA_EXPORT KJavaAppletWidget : public QX11EmbedContainer
+class KHTML_EXPORT KJavaAppletWidget : public QX11EmbedContainer
 {
     Q_OBJECT
 public:

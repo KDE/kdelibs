@@ -40,7 +40,7 @@
  */
 
 class KJavaProcessPrivate;
-class KHTML_JAVA_EXPORT KJavaProcess : public KProcess //QObject
+class KHTML_EXPORT KJavaProcess : public KProcess //QObject
 {
 Q_OBJECT
 
