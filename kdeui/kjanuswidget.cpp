@@ -1,7 +1,7 @@
 /*  This file is part of the KDE Libraries
  *  Copyright (C) 1999-2000 Espen Sand (espensa@online.no)
  *  Copyright (C) 2003 Ravikiran Rajagopal (ravi@kde.org)
- *  Copyright (C) 2005 Hamish Rodda (rodda@kde.org)
+ *  Copyright (C) 2005-2006 Hamish Rodda (rodda@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -155,7 +155,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       d->treeList = new QTreeWidget( d->listFrame );
       d->treeList->setColumnCount(1);
       d->treeList->header()->hide();
-      d->treeList->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+      d->treeList->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
       d->treeList->setMinimumSize(d->treeList->sizeHint());
       d->treeList->setSelectionMode(QAbstractItemView::SingleSelection);
       connect( d->treeList, SIGNAL(itemSelectionChanged()), SLOT(slotShowPage()) );
@@ -167,6 +167,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       // all available space at bottom.
       //
       QFrame *p = new QFrame( d->splitter );
+      p->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
       QHBoxLayout *hbox = new QHBoxLayout( p );
       hbox->setMargin( 0 );
@@ -209,8 +210,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
     vbox->setMargin( 0 );
     vbox->setSpacing( KDialog::spacingHint() );
 
-    d->titleLabel = new QLabel( QLatin1String("Empty Page"), page );
-    d->titleLabel->setObjectName( QLatin1String( "KJanusWidgetTitleLabel" ) );
+    d->titleLabel = new QLabel( i18n("Empty Page"), page );
     vbox->addWidget( d->titleLabel, 0, QApplication::isRightToLeft() ? Qt::AlignRight : Qt::AlignLeft );
 
     QFont titleFont( d->titleLabel->font() );
@@ -222,8 +222,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
     vbox->addWidget( d->titleSep );
 
     d->pageStack = new QStackedWidget( page );
-    connect(d->pageStack, SIGNAL(currentChanged(int)),
-            SLOT(slotCurrentChanged(int)));
+    connect(d->pageStack, SIGNAL(currentChanged(int)), SLOT(slotCurrentChanged(int)));
     vbox->addWidget( d->pageStack, 10 );
   }
   else if( d->face == Tabbed )
@@ -288,7 +287,7 @@ QWidget *KJanusWidget::findParent()
 }
 
 QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
-			       const QPixmap &pixmap )
+                               const QPixmap &pixmap )
 {
   if( !d->valid )
   {
@@ -489,6 +488,8 @@ void KJanusWidget::insertTreeListItem(const QStringList &items, const QPixmap &p
       d->treeListToPageStack.insert(newChild, page);
     }
   }
+
+  layout()->activate();
 }
 
 void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
@@ -783,6 +784,8 @@ void KJanusWidget::slotFontChanged()
     d->iconList->invalidateHeight();
     d->iconList->invalidateWidth();
   }
+
+  layout()->activate();
 }
 
 // makes the treelist behave like the list of kcontrol
@@ -818,7 +821,7 @@ void KJanusWidget::setFocus()
 }
 
 
-QSize KJanusWidget::minimumSizeHint() const
+/*QSize KJanusWidget::minimumSizeHint() const
 {
   if( d->face == TreeList || d->face == IconList )
   {
@@ -876,17 +879,19 @@ QSize KJanusWidget::minimumSizeHint() const
 QSize KJanusWidget::sizeHint() const
 {
   return minimumSizeHint();
-}
+}*/
 
 
 void KJanusWidget::setTreeListAutoResize( bool state )
 {
   if( d->face == TreeList )
   {
-    /*d->treeListResizeMode = !state ? KJanusWidgetPrivate::KeepSize : KJanusWidgetPrivate::Stretch;
+    d->treeListResizeMode = !state ? KJanusWidgetPrivate::KeepSize : KJanusWidgetPrivate::Stretch;
     // the splitter's first widget is d->listFrame
     if( d->splitter && d->splitter->count() > 0 )
-        d->splitter->setStretchFactor( 0, d->treeListResizeMode == KJanusWidgetPrivate::KeepSize ? 0 : 1 );*/
+        d->splitter->setStretchFactor( 0, d->treeListResizeMode == KJanusWidgetPrivate::KeepSize ? 0 : 1 );
+
+    layout()->activate();
   }
 }
 
@@ -908,6 +913,7 @@ void KJanusWidget::setRootIsDecorated( bool state )
 {
   if( d->face == TreeList ) {
     d->treeList->setRootIsDecorated(state);
+    layout()->activate();
   }
 }
 
@@ -924,11 +930,17 @@ void KJanusWidget::unfoldTreeList( bool persist )
 {
   if( d->face == TreeList )
   {
-    if( persist )
-      setRootIsDecorated( false );
+    if( persist ) {
+      d->treeList->setItemsExpandable/*ByUser*/( false );
+      d->treeList->setRootIsDecorated( false );
+    }
 
     for (QTreeWidgetItemIterator it(d->treeList); *it; ++it)
       d->treeList->expandItem(*it);
+
+    layout()->activate();
+
+    kDebug() << k_funcinfo << d->treeList->sizeHint() << endl;
   }
 }
 
@@ -971,43 +983,6 @@ void KJanusWidget::showEvent( QShowEvent * )
         d->splitter->setStretchFactor( 0, d->treeListResizeMode == KJanusWidgetPrivate::KeepSize ? 0 : 1 );
   }
 }
-
-
-//
-// 2000-13-02 Espen Sand
-// It should be obvious that this eventfilter must only be
-// be installed on the vertical scrollbar of the d->iconList.
-//
-/*
-
-20051107 - Hamish Rodda
-Let's try to get away without using this... perhaps we should set the appropriate
-sizehint and sizepolicy.
-
-bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
-{
-  if( e->type() == QEvent::Show )
-  {
-    IconListItem *item = (IconListItem*)d->iconList->item(0);
-    if( item )
-    {
-      int lw = item->width( d->iconList );
-      int sw = d->iconList->verticalScrollBar()->sizeHint().width();
-      d->iconList->setFixedWidth( lw+sw+d->iconList->frameWidth()*2 );
-    }
-  }
-  else if( e->type() == QEvent::Hide )
-  {
-    IconListItem *item = (IconListItem*)d->iconList->item(0);
-    if( item )
-    {
-      int lw = item->width( d->iconList );
-      d->iconList->setFixedWidth( lw+d->iconList->frameWidth()*2 );
-    }
-  }
-  return QWidget::eventFilter( o, e );
-}*/
-
 
 
 //

@@ -1,6 +1,6 @@
 /*  This file is part of the KDE Libraries
  *  Copyright (C) 1999-2000 Espen Sand (espen@kde.org)
- *  Copyright (C) 2005 Hamish Rodda (rodda@kde.org)
+ *  Copyright (C) 2005-2006 Hamish Rodda (rodda@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -176,7 +176,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *
      * @return The minimum size.
      */
-    virtual QSize minimumSizeHint() const;
+    //virtual QSize minimumSizeHint() const;
 
     /**
      * Returns the recommended size for the widget in order to be displayed
@@ -184,7 +184,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *
      * @return The recommended size.
      */
-    virtual QSize sizeHint() const;
+    //virtual QSize sizeHint() const;
 
     /**
      * Returns the empty widget that is available in Plain mode.
