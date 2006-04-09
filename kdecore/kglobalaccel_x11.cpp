@@ -212,7 +212,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 		if( failed ) {
 			kdDebug(125) << "grab failed!\n";
 			for( uint m = 0; m <= 0xff; m++ ) {
-				if( m & keyModMaskX == 0 )
+				if(( m & keyModMaskX ) == 0 )
 					XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | m, qt_xrootwin() );
 				}
                 }
