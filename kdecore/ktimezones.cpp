@@ -135,6 +135,8 @@ const KTimeZones::ZoneMap KTimeZones::zones() const
 
 bool KTimeZones::add(KTimeZone *zone)
 {
+    if (!zone)
+        return false;
     if (d->zones->find(zone->name()) != d->zones->end())
         return false;    // name already exists
     d->zones->insert(zone->name(), zone);
@@ -144,6 +146,8 @@ bool KTimeZones::add(KTimeZone *zone)
 
 bool KTimeZones::addConst(const KTimeZone *zone)
 {
+    if (!zone)
+        return false;
     if (d->zones->find(zone->name()) != d->zones->end())
         return false;    // name already exists
     d->zones->insert(zone->name(), zone);
@@ -185,6 +189,10 @@ const KTimeZone *KTimeZones::detach(const QString &name)
 
 const KTimeZone *KTimeZones::zone(const QString &name) const
 {
+#ifdef Q_WS_WIN
+    // return always the utc for now
+    return KTimeZonesPrivate::utc();
+#else
     if (!name.isEmpty())
     {
         ZoneMap::ConstIterator it = d->zones->find(name);
@@ -192,6 +200,7 @@ const KTimeZone *KTimeZones::zone(const QString &name) const
             return it.value();
     }
     return 0;    // error
+#endif
 }
 
 const KTimeZone *KTimeZones::utc()
