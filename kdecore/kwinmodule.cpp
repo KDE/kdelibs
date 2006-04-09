@@ -224,7 +224,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
         }
 	if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 ) {
             removeStrutWindow( ev->xany.window );
-            if ( !possibleStrutWindows.findIndex( ev->xany.window ) != -1  )
+            if ( possibleStrutWindows.findIndex( ev->xany.window ) == -1 )
         	possibleStrutWindows.append( ev->xany.window );
 	}
 	if ( dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ] ) {
