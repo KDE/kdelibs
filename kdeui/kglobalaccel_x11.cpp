@@ -145,7 +145,7 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 		if( failed ) {
 			kDebug(125) << "grab failed!\n";
 			for( uint m = 0; m <= 0xff; m++ ) {
-				if( m & keyModMaskX == 0 )
+				if(( m & keyModMaskX ) == 0 )
 					XUngrabKey( QX11Info::display(), keyCodeX, keyModX | m, QX11Info::appRootWindow() );
 				}
 			}
@@ -165,10 +165,9 @@ bool KGlobalAccelImpl::x11Event( XEvent* event )
 		 case XKeyPress:
 			if( x11KeyPress( event ) )
 				return true;
-
-		 default:
-			return false;
+			break;
 	}
+	return false;
 }
 
 void KGlobalAccelImpl::x11MappingNotify()
