@@ -23,7 +23,7 @@ namespace ThreadWeaver {
     {
         Q_OBJECT
     public:
-        JobSequence ( QObject *parent );
+        explicit JobSequence ( QObject *parent );
         ~JobSequence ();
         /** Append a job to the sequence.
 

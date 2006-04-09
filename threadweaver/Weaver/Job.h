@@ -51,7 +51,7 @@ namespace ThreadWeaver {
 
             @param parent the parent QObject
         */
-        Job ( QObject* parent = 0 );
+        explicit Job ( QObject* parent = 0 );
 
 	/** Destructor. */
         virtual ~Job();

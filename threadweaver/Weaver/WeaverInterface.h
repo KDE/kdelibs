@@ -36,7 +36,7 @@ namespace ThreadWeaver {
     class WeaverInterface : public QObject {
         Q_OBJECT
     public:
-        WeaverInterface ( QObject* parent = 0 );
+        explicit WeaverInterface ( QObject* parent = 0 );
         virtual ~WeaverInterface() {}
         /** Return the state of the weaver object. */
         virtual const State& state() const = 0;
