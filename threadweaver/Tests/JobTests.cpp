@@ -62,9 +62,9 @@ private slots:
         AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
         AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
         ThreadWeaver::JobSequence jobSequence( this );
-        jobSequence.append ( &jobA );
-        jobSequence.append ( &jobB );
-        jobSequence.append ( &jobC );
+        jobSequence.addJob ( &jobA );
+        jobSequence.addJob ( &jobB );
+        jobSequence.addJob ( &jobC );
 
         ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
         ThreadWeaver::Weaver::instance()->finish();
@@ -94,7 +94,7 @@ private slots:
             QChar c( Alphabet[position] );
             in.append ( c );
             jobs[i].setValues( c, &sequence );
-            jobSequence.append ( & ( jobs[i] ) );
+            jobSequence.addJob ( & ( jobs[i] ) );
         }
         ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
         ThreadWeaver::Weaver::instance()->finish();

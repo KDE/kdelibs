@@ -6,98 +6,25 @@
 namespace ThreadWeaver {
 
     JobSequence::JobSequence ( QObject *parent )
-        : Job ( parent ),
-          m_queued ( false ),
-          m_weaver ( 0 )
+        : JobCollection ( parent )
     {
-    }
-
-    JobSequence::~JobSequence()
-    {
-        // dequeue all remaining jobs:
-        if ( m_weaver )
-        {
-            for ( int i = 0; i < m_elements.size(); ++i )
-            {
-                if ( m_elements.at( i ) ) // ... a QPointer
-                {
-                    if ( ! m_elements.at( i )->isFinished() )
-                    {
-                        m_weaver->dequeue ( m_elements.at( i ) );
-                    }
-                }
-            }
-        }
-    }
-
-    void JobSequence::append ( Job *j )
-    {
-        P_ASSERT ( m_queued == false );
-
-        m_elements.append ( QPointer<Job> ( j ) );
-    }
-
-    void JobSequence::stop( Job *job )
-    {
-        P_ASSERT ( m_queued == true );
-        // job has failed, so we dequeue everything after job:
-        // find job in m_elements:
-        int index = m_elements.indexOf ( job );
-
-        P_ASSERT ( index != -1 && m_weaver != 0 );
-        // dequeue all jobs after it:
-        if ( index != -1 && index < m_elements.size() - 1 )
-        {
-            for ( int i = index; i < m_elements.size(); ++i )
-            {
-                if ( m_elements.at( i ) )
-                {
-                    m_weaver->dequeue ( m_elements.at ( i ) );
-                }
-            }
-        }
     }
 
     void JobSequence::aboutToBeQueued ( WeaverInterface *weaver )
     {
         int i;
 
-        m_weaver = weaver;
-        if ( m_elements.size() > 1 )
+        if ( jobListLength() > 1 )
         {
             // set up the dependencies:
-            for ( i = 1; i < m_elements.size() - 1; ++i )
+            for ( i = 0; i < jobListLength() -1 ; ++i )
             {
-                P_ASSERT ( m_elements.at( i ) != 0 );
-                m_elements.at( i )->addDependency ( m_elements.at( i-1 ) );
-            }
-            addDependency ( m_elements.at( i-1 ) );
-        }
-
-        // queue the sequence:
-        if ( m_elements.size () > 1 )
-        {
-            for ( int index = 0; index < m_elements.size() -1; ++ index )
-            {
-                weaver->enqueue ( m_elements.at( index ) );
+                P_ASSERT ( jobAt( i ) != 0 );
+                P_ASSERT ( jobAt( i+1 ) != 0 );
+                jobAt( i )->addDependency ( jobAt( i+1 ) );
             }
         }
-        m_queued = true;
+
+        JobCollection::aboutToBeQueued( weaver );
     }
-
-    void JobSequence::execute ( Thread *t )
-    {
-        if ( ! m_elements.isEmpty() )
-        {   // this is a hack (but a good one): instead of queueing (this), we
-            // execute the last job, to avoid to have (this) wait for an
-            // available thread (the last operation does not get queued in
-            // aboutToBeQueued() )
-            int pos = m_elements.size() - 1;
-            P_ASSERT ( m_elements.at( pos ) != 0 );
-
-            m_elements.at( pos )->execute ( t );
-        }
-        Job::execute ( t ); // run() is empty
-    }
-
 }

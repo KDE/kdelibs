@@ -31,12 +31,20 @@ namespace ThreadWeaver {
 
     public slots:
         /** Stop processing, dequeue all remaining Jobs.
-            job is supposed to be an element of the collection. */
+            job is supposed to be an element of the collection.
+            FIXME the job parameter is not necessary anymore
+            */
         void stop ( Job *job );
 
     protected:
         /** Overload to queue the collection. */
         void aboutToBeQueued ( WeaverInterface *weaver );
+
+        /** Return a reference to the job in the job list at position i. */
+        Job* jobAt( int i );
+
+        /** Return the number of jobs in the joblist. */
+        const int jobListLength();
 
     private:
         /** Overload the execute method. */

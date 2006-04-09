@@ -47,7 +47,7 @@ namespace ThreadWeaver {
     {
         P_ASSERT ( m_queued == false );
 
-        m_elements->append ( QPointer<Job> ( j ) );
+        m_elements->prepend ( QPointer<Job> ( j ) );
     }
 
     void JobCollection::stop( Job *job )
@@ -101,4 +101,15 @@ namespace ThreadWeaver {
         Job::execute ( t ); // run() is empty
     }
 
+    Job* JobCollection::jobAt( int i )
+    {
+        return m_elements->at( i );
+    }
+
+    const int JobCollection::jobListLength()
+    {
+        return m_elements->size();
+    }
+
 }
+
