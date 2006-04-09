@@ -330,9 +330,9 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_elementMap = new IdNameMapping(ID_LAST_TAG+1);
     m_namespaceMap = new IdNameMapping(2);
     QString xhtml(XHTML_NAMESPACE);
-    m_namespaceMap->names.insert(noNamespace, new DOMStringImpl(""));
+    m_namespaceMap->names.insert(emptyNamespace, new DOMStringImpl(""));
     m_namespaceMap->names.insert(xhtmlNamespace, new DOMStringImpl(xhtml.unicode(), xhtml.length()));
-    m_namespaceMap->names[noNamespace]->ref();
+    m_namespaceMap->names[emptyNamespace]->ref();
     m_namespaceMap->names[xhtmlNamespace]->ref();
     m_namespaceMap->count+=2;
     m_focusNode = 0;
@@ -564,7 +564,7 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     splitPrefixLocalName(_qualifiedName.implementation(), prefix, localName, colonPos);
 
     if ((isHTMLDocument() && _namespaceURI.isNull()) ||
-        (_namespaceURI == XHTML_NAMESPACE && localName == localName.lower())) {
+        (strcasecmp(_namespaceURI, XHTML_NAMESPACE) == 0 && localName == localName.lower())) {
         e = createHTMLElement(localName);
         if (e) {
             int _exceptioncode = 0;
@@ -1757,7 +1757,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
               << ", exceptions: " << (pExceptioncode ? "yes" : "no")
               << " )" << endl;*/
 
-    if(!_name || !_name->l) return 0;
+    if(!_name) return 0;
     IdNameMapping *map;
     IdLookupFunction lookup;
 
@@ -1771,16 +1771,18 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         lookup = getAttrID;
         break;
     case NodeImpl::NamespaceId:
-        if( !strcasecmp(_name, XHTML_NAMESPACE) )
+        if( strcasecmp(_name, XHTML_NAMESPACE) == 0)
             return xhtmlNamespace; //### Id == 0 can't be used with (void*)int based QDicts...
         if( _name->l == 0)
-            return noNamespace;
+            return emptyNamespace;
         map = m_namespaceMap;
         lookup= 0;
         break;
     default:
         return 0;
     }
+    // Names and attributes with ""
+    if (_name->l == 0) return 0;
 
     NodeImpl::Id id, nsid = 0;
     QConstString n(_name->s, _name->l);
@@ -1859,7 +1861,7 @@ DOMString DocumentImpl::getName( NodeImpl::IdType _type, NodeImpl::Id _id ) cons
 {
     IdNameMapping *map;
     NameLookupFunction lookup;
-    bool hasNS = (_id & NodeImpl_IdNSMask);
+    bool hasNS = (namespacePart(_id) != defaultNamespace);
     switch (_type) {
     case NodeImpl::ElementId:
         map = m_elementMap;
@@ -1872,7 +1874,7 @@ DOMString DocumentImpl::getName( NodeImpl::IdType _type, NodeImpl::Id _id ) cons
     case NodeImpl::NamespaceId:
         if( _id == xhtmlNamespace )
             return XHTML_NAMESPACE;
-        if( _id == noNamespace )
+        if( _id == emptyNamespace )
             return "";
         map = m_namespaceMap;
         lookup = 0;
@@ -1880,7 +1882,7 @@ DOMString DocumentImpl::getName( NodeImpl::IdType _type, NodeImpl::Id _id ) cons
     default:
         return DOMString();;
     }
-    _id = _id & NodeImpl_IdLocalMask;
+    _id = localNamePart(_id) ;
     if (_id >= map->idStart) {
         return map->names[_id];
     }
