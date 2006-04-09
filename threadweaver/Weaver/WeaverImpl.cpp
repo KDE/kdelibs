@@ -341,7 +341,7 @@ namespace ThreadWeaver {
             m_jobFinished.wait( &mutex );
             mutex.unlock();
         }
-	debug (1, "WeaverImpl::finish: done.\n\n\n" );
+	debug (2, "WeaverImpl::finish: done.\n\n\n" );
     }
 
     void WeaverImpl::requestAbort()

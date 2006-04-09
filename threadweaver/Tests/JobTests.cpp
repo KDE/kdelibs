@@ -1,5 +1,7 @@
+#include <DebuggingAids.h>
 #include <ThreadWeaver.h>
 #include <JobSequence.h>
+#include <JobCollection.h>
 #include <QtTest/QtTest>
 
 class AppendCharacterJob : public ThreadWeaver::Job
@@ -15,6 +17,8 @@ public:
     void run()
     {
         m_stringref.append( m_c );
+        ThreadWeaver::debug( 0, "AppendCharacterJob: appended %c, result: %s.\n",
+                             m_c.toLatin1(), qPrintable( m_stringref ) );
     }
 private:
     QChar m_c;
@@ -39,7 +43,7 @@ private slots:
         QCOMPARE ( sequence, QString( "1" ) );
     }
 
-    void ShortSequenceTest() {
+    void ShortJobSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), sequence, this );
         AppendCharacterJob jobB ( QChar( 'b' ), sequence, this );
@@ -52,7 +56,25 @@ private slots:
         ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
         ThreadWeaver::Weaver::instance()->finish();
         QCOMPARE ( sequence, QString( "abc" ) );
+    }
 
+    void SimpleJobCollectiontest() {
+        QString sequence;
+        AppendCharacterJob jobA ( QChar( 'a' ), sequence, this );
+        AppendCharacterJob jobB ( QChar( 'b' ), sequence, this );
+        AppendCharacterJob jobC ( QChar( 'c' ), sequence, this );
+        ThreadWeaver::JobCollection jobCollection( this );
+        jobCollection.addJob ( &jobA );
+        jobCollection.addJob ( &jobB );
+        jobCollection.addJob ( &jobC );
+
+        ThreadWeaver::Weaver::instance()->enqueue ( &jobCollection );
+        ThreadWeaver::Weaver::instance()->finish();
+
+        QVERIFY( sequence.length() == 3 );
+        QVERIFY( sequence.count( 'a' ) == 1 );
+        QVERIFY( sequence.count( 'b' ) == 1 );
+        QVERIFY( sequence.count( 'c' ) == 1 );
     }
 
 };
