@@ -76,7 +76,7 @@ protected:
     }
 
     /**
-     Retyrn a size-dimension QRect centered inside the 'in' rectangle
+     Return a size-dimension QRect centered inside the 'in' rectangle
     */
     QRect centerRect(QRect in, QSize size) const
     {
@@ -120,21 +120,21 @@ protected:
         ColorMode(Mode _mode, QPalette::ColorRole _role): mode(_mode), role(_role)
         {}
 
-        ///Represent as an int to store as a property
+        /// Represent as an int to store as a property
         operator int() const
         {
             return int(role) | int(mode);
         }
 
-        ///Decode from an int.
+        /// Decode from an int.
         ColorMode(int encoded)
         {
             mode = (encoded & BWAutoContrastMode) ? BWAutoContrastMode : PaletteEntryMode;
             role = QPalette::ColorRole(encoded & (~BWAutoContrastMode));
         }
 
-	///Return the color corresponding to our role from the palette,
-	///automatically compensating for the contrast mode.
+	/// Return the color corresponding to our role from the palette,
+	/// automatically compensating for the contrast mode.
         QColor color(const QPalette& palette)
         {
             QColor palColor = palette.color(role);
