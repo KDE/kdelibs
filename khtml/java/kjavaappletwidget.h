@@ -24,7 +24,9 @@
 #ifndef KJAVAAPPLETWIDGET_H
 #define KJAVAAPPLETWIDGET_H
 
+#include <kdelibs_export.h>
 #include <qwidget.h>
+
 #include "java/kjavaappletcontext.h"
 #include "java/kjavaapplet.h"
 #ifdef Q_WS_X11
@@ -78,7 +80,7 @@
 
 class KJavaAppletWidgetPrivate;
 
-class KJavaAppletWidget : public QX11EmbedContainer
+class KHTML_JAVA_EXPORT KJavaAppletWidget : public QX11EmbedContainer
 {
     Q_OBJECT
 public:

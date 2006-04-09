@@ -25,6 +25,7 @@
 #define KJAVAAPPLETCONTEXT_H
 
 #include <qobject.h>
+#include <kdelibs_export.h>
 
 /**
  * @short Provides a context for KJavaAppletWidgets
@@ -42,7 +43,7 @@ class KJavaAppletServer;
 class KJavaApplet;
 class KJavaAppletContextPrivate;
 
-class KJavaAppletContext : public QObject
+class KHTML_JAVA_EXPORT KJavaAppletContext : public QObject
 {
 Q_OBJECT
 

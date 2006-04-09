@@ -24,9 +24,11 @@
 #define KQEVENTUTIL_H
 
 #include <qstring.h>
+#include <kdelibs_export.h>
+
 class QEvent;
 
-class KQEventUtil {
+class KHTML_JAVA_EXPORT KQEventUtil {
     public:
         static QString getQtEventName(QEvent *e);
 };

@@ -33,6 +33,7 @@ install_targets(${PLUGIN_INSTALL_DIR} kjavaappletviewer )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kjava.policy.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
+add_definitions(-DMAKE_KHTML_JAVA_LIB)
 
 ########### install files ###############
 

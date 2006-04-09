@@ -197,6 +197,14 @@
 # endif
 #endif
 
+#ifndef KHTML_JAVA_EXPORT
+# ifdef MAKE_KHTML_JAVA_LIB
+#  define KHTML_JAVA_EXPORT KDE_EXPORT
+# else
+#  define KHTML_JAVA_EXPORT KDE_IMPORT
+# endif
+#endif
+
 #ifndef KICE_EXPORT
 # ifdef MAKE_KICE_LIB
 #  define KICE_EXPORT KDE_EXPORT

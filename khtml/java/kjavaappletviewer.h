@@ -23,6 +23,7 @@
 #ifndef KJAVAAPPLETVIEWER_H
 #define KJAVAAPPLETVIEWER_H
 
+#include <kdelibs_export.h>
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
 #include <kparts/statusbarextension.h>
@@ -44,7 +45,7 @@ class KInstance;
 class KConfig;
 class CoverWidget;
 
-class KJavaAppletViewerBrowserExtension : public KParts::BrowserExtension {
+class KHTML_JAVA_EXPORT KJavaAppletViewerBrowserExtension : public KParts::BrowserExtension {
     Q_OBJECT
 public:
     KJavaAppletViewerBrowserExtension (KJavaAppletViewer *parent);
@@ -58,7 +59,7 @@ public Q_SLOTS:
     void showDocument (const QString & doc, const QString & frame);
 };
 
-class KJavaAppletViewerLiveConnectExtension : public KParts::LiveConnectExtension {
+class KHTML_JAVA_EXPORT KJavaAppletViewerLiveConnectExtension : public KParts::LiveConnectExtension {
     Q_OBJECT
 public:
     KJavaAppletViewerLiveConnectExtension(KJavaAppletViewer * parent);
@@ -79,7 +80,7 @@ private:
     static int m_jssessions;
 };
 
-class KJavaAppletViewer : public KParts::ReadOnlyPart {
+class KHTML_JAVA_EXPORT KJavaAppletViewer : public KParts::ReadOnlyPart {
     Q_OBJECT
 public: 
     KJavaAppletViewer (QWidget * wparent, const char * wname,
@@ -117,7 +118,7 @@ private:
     bool m_closed;
 };
 
-class KJavaAppletViewerFactory : public KParts::Factory {
+class KHTML_JAVA_EXPORT KJavaAppletViewerFactory : public KParts::Factory {
     Q_OBJECT
 public:
     KJavaAppletViewerFactory ();

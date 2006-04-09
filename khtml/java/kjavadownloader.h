@@ -22,6 +22,7 @@
 #ifndef KJAVADOWNLOADER_H
 #define KJAVADOWNLOADER_H
 
+#include <kdelibs_export.h>
 #include <qobject.h>
 
 /**
@@ -40,7 +41,7 @@ namespace KIO {
 class KJavaDownloaderPrivate;
 class KJavaUploaderPrivate;
 
-class KJavaKIOJob : public QObject
+class KHTML_JAVA_EXPORT KJavaKIOJob : public QObject
 {
 Q_OBJECT
 public:
@@ -49,7 +50,7 @@ public:
     virtual void data( const QByteArray& qb );
 };
 
-class KJavaDownloader : public KJavaKIOJob
+class KHTML_JAVA_EXPORT KJavaDownloader : public KJavaKIOJob
 {
 Q_OBJECT
 
@@ -69,7 +70,7 @@ private:
 
 };
 
-class KJavaUploader : public KJavaKIOJob
+class KHTML_JAVA_EXPORT KJavaUploader : public KJavaKIOJob
 {
 Q_OBJECT
 
