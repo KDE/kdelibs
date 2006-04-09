@@ -30,6 +30,10 @@ kde4_add_executable(kdeinit_wrapper NOGUI ${kdeinit_wrapper_SRCS})
 
 target_link_libraries(kdeinit_wrapper  ${KDE4_KDECORE_LIBS} )
 
+if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+add_definitions(-DNO_DISPLAY)
+endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+
 install_targets(/bin kdeinit_wrapper )
 
 

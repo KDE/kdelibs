@@ -47,7 +47,7 @@ static char *getDisplay()
    char *colon;
    char *i;
 
-#if !defined(QWS) && !defined(Q_WS_X11)
+#if defined(NO_DISPLAY)
 	/* no such thing as a display on these systems */
 	return NULL;
 #endif
@@ -179,7 +179,7 @@ static int openSocket()
 
   /* append $DISPLAY */
   display = getDisplay();
-#if defined(Q_WS_X11) || defined(QWS)
+#if !defined (NO_DISPLAY)
   if (display == NULL)
   {
      fprintf(stderr, "Error: Could not determine display.\n");
@@ -193,7 +193,7 @@ static int openSocket()
      return -1;
   }
   strcat(sock_file, "/kdeinit_");
-#if defined(Q_WS_X11) || defined(QWS)
+#if !defined (NO_DISPLAY)
   strcat(sock_file, display);
   free(display);
 #endif
