@@ -1,3 +1,6 @@
+#ifndef JOBSEQUENCE_H
+#define JOBSEQUENCE_H
+
 #include <QList>
 #include <QPointer>
 
@@ -53,3 +56,5 @@ namespace ThreadWeaver {
     };
 
 }
+
+#endif

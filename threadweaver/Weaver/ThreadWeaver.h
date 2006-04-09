@@ -58,7 +58,8 @@ namespace ThreadWeaver {
         virtual ~Weaver ();
 	const State& state() const;
         void registerObserver ( WeaverObserver* );
-	/** Return the global Weaver instance.
+
+        /** Return the global Weaver instance.
 	    In some cases, a global Weaver object per application is
 	    sufficient for the applications purpose. If this is the case,
 	    query instance() to a pointer to a global instance.

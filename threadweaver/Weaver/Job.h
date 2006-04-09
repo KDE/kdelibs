@@ -128,6 +128,7 @@ namespace ThreadWeaver {
 	void started ( Job* );
 	/** This signal is emitted when the job has been finished. */
 	void done ( Job* );
+
     protected:
         friend class JobRunHelper;
 
