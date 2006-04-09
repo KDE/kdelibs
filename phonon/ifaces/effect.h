@@ -35,7 +35,7 @@ namespace Ifaces
 	/**
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class Effect : public Base
+	class PHONONCORE_EXPORT Effect : public Base
 	{
 		Q_DECLARE_PRIVATE( Effect )
 		public:
