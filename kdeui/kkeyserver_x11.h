@@ -169,6 +169,17 @@ namespace KKeyServer
 	 */
 	KDEUI_EXPORT bool modXToQt( uint modX, int& modQt );
 
+#ifdef Q_WS_X11
+	/**
+	 * Converts an X keypress event into a Qt key + modifier code
+	 * @param e the X11 keypress event
+	 * @param keyModQt the Qt keycode and mask of Qt key code modifiers will be written here
+	 *        if successful
+	 * @return true if successful, false otherwise
+	 */
+	KDEUI_EXPORT bool xEventToQt( XEvent* e, int& keyModQt );
+#endif
+
 #ifdef Q_WS_WIN
 	/**
 	 * Converts the Qt-compatible button state to KKey modifier.

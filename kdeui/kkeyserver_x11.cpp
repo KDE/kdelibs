@@ -677,6 +677,50 @@ uint accelModMaskX()
 	return modXShift() | modXCtrl() | modXAlt() | modXMeta();
 }
 
+#ifdef Q_WS_X11
+bool xEventToQt( XEvent* e, int& keyQt )
+{
+	uchar keyCodeX = e->xkey.keycode;
+	uint keyModX = e->xkey.state & (accelModMaskX() | MODE_SWITCH);
+
+	KeySym keySym;
+	XLookupString( (XKeyEvent*) e, 0, 0, &keySym, 0 );
+	uint keySymX = (uint)keySym;
+
+	// If numlock is active and a keypad key is pressed, XOR the SHIFT state.
+	//  e.g., KP_4 => Shift+KP_Left, and Shift+KP_4 => KP_Left.
+	if( e->xkey.state & modXNumLock() ) {
+		uint sym = XKeycodeToKeysym( QX11Info::display(), keyCodeX, 0 );
+		// TODO: what's the xor operator in c++?
+		// If this is a keypad key,
+		if( sym >= XK_KP_Space && sym <= XK_KP_9 ) {
+			switch( sym ) {
+				// Leave the following keys unaltered
+				// FIXME: The proper solution is to see which keysyms don't change when shifted.
+				case XK_KP_Multiply:
+				case XK_KP_Add:
+				case XK_KP_Subtract:
+				case XK_KP_Divide:
+					break;
+				default:
+					if( keyModX & modXShift() )
+						keyModX &= ~modXShift();
+					else
+						keyModX |= modXShift();
+			}
+		}
+	}
+
+	int keyCodeQt;
+	int keyModQt;
+	symXToKeyQt(keySymX, keyCodeQt);
+	modXToQt(keyModX, keyModQt);
+	
+	keyQt = keyCodeQt | keyModQt;
+	return true;
+}
+#endif
+
 } // end of namespace KKeyServer block
 
 #endif //Q_WS_X11 || Q_WS_WIN || Q_WS_MAC
