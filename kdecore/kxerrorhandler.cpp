@@ -103,9 +103,9 @@ int KXErrorHandler::handle( Display* dpy, XErrorEvent* e )
         { // it's for us
         //qDebug( "Handling: %p", static_cast< void* >( this ));
         if( user_handler1 != NULL )
-            was_error |= user_handler1( e->request_code, e->error_code, e->resourceid );
+            was_error = was_error || user_handler1( e->request_code, e->error_code, e->resourceid );
         else if( user_handler2 != NULL )
-            was_error |= ( user_handler2( dpy, e ) != 0 );
+            was_error = was_error || ( user_handler2( dpy, e ) != 0 );
         else // no handler set, simply set that there was an error
             was_error = true;
         return 0;
