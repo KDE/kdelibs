@@ -355,7 +355,7 @@ target_link_libraries(khtmlimagepart  ${KDE4_KDECORE_LIBS} khtml)
 install_targets(${LIB_INSTALL_DIR}/kde4 khtmlimagepart )
 
 
-if(KDE4_BUILD_TESTS AND NOT WIN32)
+if(KDE4_BUILD_TESTS)
 
     ########### next target ###############
 
@@ -384,7 +384,9 @@ if(KDE4_BUILD_TESTS AND NOT WIN32)
     target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml )
 
     ########### next target ###############
+endif(KDE4_BUILD_TESTS)
 
+if(KDE4_BUILD_TESTS AND NOT WIN32)
 # #### TODO: declare/set this var somewhere?
 # Note that testregression can't be compiled by default, it needs private Qt headers.
 if (BUILD_TESTREGRESSION)
