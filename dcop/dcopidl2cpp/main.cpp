@@ -33,6 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 
+
 void usage()
 {
     fprintf( stderr, "Usage: dcopidl2cpp [ --no-skel | --no-stub ] [--c++-suffix <suffix>] file\n" );
