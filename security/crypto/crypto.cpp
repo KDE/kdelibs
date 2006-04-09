@@ -1826,7 +1826,7 @@ void KCryptoConfig::slotCAImport() {
 			QByteArray qba;
 			qba.duplicate(cr, qf.size());
 			certtext = KCodecs::base64Encode(qba);
-			delete cr;
+			delete [] cr;
 		}
 
 		qf.close();
