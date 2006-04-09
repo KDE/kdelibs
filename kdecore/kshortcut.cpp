@@ -61,6 +61,13 @@ KShortcut::KShortcut( const QKeySequence& key )
 	init( key );
 }
 
+KShortcut::KShortcut( const QKeySequence& key1, const QKeySequence& key2 )
+	: d(new KShortcutPrivate)
+{
+	init( key1 );
+	d->seq.append(key2);
+}
+
 KShortcut::KShortcut( const KShortcut& cut )
 	: d(cut.d)
 {

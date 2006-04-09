@@ -53,6 +53,7 @@
 * \note This class is implicitly shared, and all functions are reentrant.
 *
 * \todo make constructors explicit
+* \todo needs serious cleaning up (rodda@kde.org)
 */
 class KDECORE_EXPORT KShortcut
 {
@@ -79,6 +80,14 @@ public:
 	 * @param keySeq the qt key sequence to add
 	 */
 	KShortcut( const QKeySequence& keySeq );
+
+	/**
+	 * Creates a new shortcut that contains only the given qt key
+	 * sequences.
+	 * @param keySeq1 the first sequence
+	 * @param keySeq1 the second sequence
+	 */
+	KShortcut( const QKeySequence& keySeq1, const QKeySequence& keySeq2 );
 
 	/**
 	 * Copies the given shortcut.
