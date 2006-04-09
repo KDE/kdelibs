@@ -208,7 +208,7 @@ void KAction::setShortcut( const KShortcut & shortcut, ShortcutTypes type )
   Q_ASSERT(type);
 
   if (type & DefaultShortcut)
-    setDefaultShortcut(shortcut);
+    d->defaultShortcut = shortcut;
 
   if ((type & CustomShortcut) && d->shortcut != shortcut) {
     d->shortcut = shortcut;
@@ -316,7 +316,7 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type 
   Q_ASSERT(type);
 
   if (type & DefaultShortcut)
-    setDefaultGlobalShortcut(shortcut);
+    d->defaultGlobalShortcut = shortcut;
 
   if ((type & CustomShortcut) && d->globalShortcut != shortcut) {
     d->globalShortcut = shortcut;
