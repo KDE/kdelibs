@@ -32,12 +32,11 @@
 #include <kplugininfo.h>
 #include <ktrader.h>
 #include <kconfig.h>
-
+#include <kstaticdeleter.h>
 #include <kdebug.h>
 
 #include <qhash.h>
 #include <qmap.h>
-#include <Q3PtrList>
 
 #define DEFAULT_CONFIG_FILE   "kspellrc"
 
@@ -56,8 +55,9 @@ public:
     DefaultDictionary *defaultDictionary;
 };
 
-// TODO KStaticDeleter
-static QHash<KSharedConfig*, Broker*> *s_brokers = 0;
+typedef QHash<KSharedConfig*, Broker*> BrokerConfigHash;
+static KStaticDeleter<BrokerConfigHash> s_brokerDeleter;
+static BrokerConfigHash *s_brokers = 0;
 
 Broker::Ptr Broker::openBroker( KSharedConfig *config )
 {
@@ -83,8 +83,9 @@ Broker::Broker( KSharedConfig *config )
     KSharedConfig::Ptr preventDeletion( config );
     Q_UNUSED( preventDeletion );
 
-    if ( !s_brokers )
-        s_brokers = new QHash<KSharedConfig*, Broker*>;
+    if ( !s_brokers ) {
+        s_brokerDeleter.setObject( s_brokers, new BrokerConfigHash );
+    }
     s_brokers->insert( config, this );
 
     d->settings = new Settings( this, config );
@@ -215,7 +216,7 @@ QStringList Broker::languagesName() const
       { "wo_accents", I18N_NOOP2("dictionary variant", "without accents") },
       { "w_accents", I18N_NOOP2("dictionary variant", "with accents") },
       { "ye", I18N_NOOP2("dictionary variant", "with ye") },
-      { "yeyo", I18N_NOOP2("dictionary variant", "with yeyo") }, 
+      { "yeyo", I18N_NOOP2("dictionary variant", "with yeyo") },
       { "yo", I18N_NOOP2("dictionary variant", "with yo") },
       { "extended", I18N_NOOP2("dictionary variant", "extended") },
       { 0, 0 }
