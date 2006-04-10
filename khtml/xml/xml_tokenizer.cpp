@@ -148,7 +148,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
     else
         // No namespace declared, default to the no namespace
         nsURI = DOMString("");
-    ElementImpl *newElement = m_doc->document()->createElementNS(namespaceURI,qName);
+    ElementImpl *newElement = m_doc->document()->createElementNS(nsURI,qName);
     if (!newElement)
         return false;
 
