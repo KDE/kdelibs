@@ -15,7 +15,7 @@ set(kconfigtestgui_SRCS kconfigtestgui.cpp )
 
 kde4_automoc(${kconfigtestgui_SRCS})
 
-kde4_add_executable(kconfigtestgui ${kconfigtestgui_SRCS})
+kde4_add_executable(kconfigtestgui RUN_UNINSTALLED ${kconfigtestgui_SRCS})
 
 target_link_libraries(kconfigtestgui  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -29,7 +29,7 @@ kde4_automoc(${klocaletest_SRCS})
 
 kde4_add_executable(klocaletest ${klocaletest_SRCS})
 
-target_link_libraries(klocaletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(klocaletest RUN_UNINSTALLED ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-klocaletest ${EXECUTABLE_OUTPUT_PATH}/klocaletest)
 
@@ -39,7 +39,7 @@ set(klocalizedstringtest_SRCS klocalizedstringtest.cpp )
 
 kde4_automoc(${klocalizedstringtest_SRCS})
 
-kde4_add_executable(klocalizedstringtest ${klocalizedstringtest_SRCS})
+kde4_add_executable(klocalizedstringtest RUN_UNINSTALLED ${klocalizedstringtest_SRCS})
 
 target_link_libraries(klocalizedstringtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -51,7 +51,7 @@ set(kprocesstest_SRCS kprocesstest.cpp )
 
 kde4_automoc(${kprocesstest_SRCS})
 
-kde4_add_executable(kprocesstest ${kprocesstest_SRCS})
+kde4_add_executable(kprocesstest RUN_UNINSTALLED ${kprocesstest_SRCS})
 
 target_link_libraries(kprocesstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -63,7 +63,7 @@ set(ksimpleconfigtest_SRCS ksimpleconfigtest.cpp )
 
 kde4_automoc(${ksimpleconfigtest_SRCS})
 
-kde4_add_executable(ksimpleconfigtest ${ksimpleconfigtest_SRCS})
+kde4_add_executable(ksimpleconfigtest RUN_UNINSTALLED ${ksimpleconfigtest_SRCS})
 
 target_link_libraries(ksimpleconfigtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -75,7 +75,7 @@ set(kstddirstest_SRCS kstddirstest.cpp )
 
 kde4_automoc(${kstddirstest_SRCS})
 
-kde4_add_executable(kstddirstest ${kstddirstest_SRCS})
+kde4_add_executable(kstddirstest RUN_UNINSTALLED ${kstddirstest_SRCS})
 
 target_link_libraries(kstddirstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -87,7 +87,7 @@ set(kurltest4_SRCS kurltest4.cpp )
 
 kde4_automoc(${kurltest4_SRCS})
 
-kde4_add_executable(kurltest4 ${kurltest4_SRCS})
+kde4_add_executable(kurltest4 RUN_UNINSTALLED ${kurltest4_SRCS})
 
 target_link_libraries(kurltest4  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -99,7 +99,7 @@ set(kuniqueapptest_SRCS kuniqueapptest.cpp )
 
 kde4_automoc(${kuniqueapptest_SRCS})
 
-kde4_add_executable(kuniqueapptest ${kuniqueapptest_SRCS})
+kde4_add_executable(kuniqueapptest RUN_UNINSTALLED ${kuniqueapptest_SRCS})
 
 target_link_libraries(kuniqueapptest  ${KDE4_KDECORE_LIBS} )
 
@@ -111,7 +111,7 @@ set(krandomsequencetest_SRCS krandomsequencetest.cpp )
 
 kde4_automoc(${krandomsequencetest_SRCS})
 
-kde4_add_executable(krandomsequencetest ${krandomsequencetest_SRCS})
+kde4_add_executable(krandomsequencetest RUN_UNINSTALLED ${krandomsequencetest_SRCS})
 
 target_link_libraries(krandomsequencetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -123,7 +123,7 @@ set(kdebugtest_SRCS kdebugtest.cpp )
 
 kde4_automoc(${kdebugtest_SRCS})
 
-kde4_add_executable(kdebugtest ${kdebugtest_SRCS})
+kde4_add_executable(kdebugtest RUN_UNINSTALLED ${kdebugtest_SRCS})
 
 target_link_libraries(kdebugtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -135,7 +135,7 @@ set(kstringhandlertest_SRCS kstringhandlertest.cpp )
 
 kde4_automoc(${kstringhandlertest_SRCS})
 
-kde4_add_executable(kstringhandlertest ${kstringhandlertest_SRCS})
+kde4_add_executable(kstringhandlertest RUN_UNINSTALLED ${kstringhandlertest_SRCS})
 
 target_link_libraries(kstringhandlertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -147,7 +147,7 @@ set(kcmdlineargstest_SRCS kcmdlineargstest.cpp )
 
 kde4_automoc(${kcmdlineargstest_SRCS})
 
-kde4_add_executable(kcmdlineargstest ${kcmdlineargstest_SRCS})
+kde4_add_executable(kcmdlineargstest RUN_UNINSTALLED ${kcmdlineargstest_SRCS})
 
 target_link_libraries(kcmdlineargstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -159,7 +159,7 @@ set(kapptest_SRCS kapptest.cpp )
 
 kde4_automoc(${kapptest_SRCS})
 
-kde4_add_executable(kapptest ${kapptest_SRCS})
+kde4_add_executable(kapptest RUN_UNINSTALLED ${kapptest_SRCS})
 
 target_link_libraries(kapptest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -171,7 +171,7 @@ set(kmemtest_SRCS kmemtest.cpp )
 
 kde4_automoc(${kmemtest_SRCS})
 
-kde4_add_executable(kmemtest ${kmemtest_SRCS})
+kde4_add_executable(kmemtest RUN_UNINSTALLED ${kmemtest_SRCS})
 
 target_link_libraries(kmemtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -185,7 +185,7 @@ kde4_automoc(${kidlservertest_SRCS})
 
 kde4_add_dcop_skels(kidlservertest_SRCS KIDLTest.h)
 
-kde4_add_executable(kidlservertest ${kidlservertest_SRCS})
+kde4_add_executable(kidlservertest RUN_UNINSTALLED ${kidlservertest_SRCS})
 
 target_link_libraries(kidlservertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -201,7 +201,7 @@ set( kidlclienttest_DCOP_STUB_SRCS KIDLTest.h )
 
 kde4_add_dcop_stubs(kidlclienttest_SRCS ${kidlclienttest_DCOP_STUB_SRCS})
 
-kde4_add_executable(kidlclienttest ${kidlclienttest_SRCS})
+kde4_add_executable(kidlclienttest RUN_UNINSTALLED ${kidlclienttest_SRCS})
 
 target_link_libraries(kidlclienttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -213,7 +213,7 @@ set(dcopkonqtest_SRCS dcopkonqtest.cpp )
 
 kde4_automoc(${dcopkonqtest_SRCS})
 
-kde4_add_executable(dcopkonqtest ${dcopkonqtest_SRCS})
+kde4_add_executable(dcopkonqtest RUN_UNINSTALLED ${dcopkonqtest_SRCS})
 
 target_link_libraries(dcopkonqtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -225,7 +225,7 @@ set(kipctest_SRCS kipctest.cpp )
 
 kde4_automoc(${kipctest_SRCS})
 
-kde4_add_executable(kipctest ${kipctest_SRCS})
+kde4_add_executable(kipctest RUN_UNINSTALLED ${kipctest_SRCS})
 
 target_link_libraries(kipctest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -237,7 +237,7 @@ set(cplusplustest_SRCS cplusplustest.cpp )
 
 kde4_automoc(${cplusplustest_SRCS})
 
-kde4_add_executable(cplusplustest ${cplusplustest_SRCS})
+kde4_add_executable(cplusplustest RUN_UNINSTALLED ${cplusplustest_SRCS})
 
 target_link_libraries(cplusplustest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -249,7 +249,7 @@ set(kiconloadertest_SRCS kiconloadertest.cpp )
 
 kde4_automoc(${kiconloadertest_SRCS})
 
-kde4_add_executable(kiconloadertest ${kiconloadertest_SRCS})
+kde4_add_executable(kiconloadertest RUN_UNINSTALLED ${kiconloadertest_SRCS})
 
 target_link_libraries(kiconloadertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -261,7 +261,7 @@ set(kmdcodectest_SRCS kmdcodectest.cpp )
 
 kde4_automoc(${kmdcodectest_SRCS})
 
-kde4_add_executable(kmdcodectest ${kmdcodectest_SRCS})
+kde4_add_executable(kmdcodectest RUN_UNINSTALLED ${kmdcodectest_SRCS})
 
 target_link_libraries(kmdcodectest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -273,7 +273,7 @@ set(knotifytest_SRCS knotifytest.cpp )
 
 kde4_automoc(${knotifytest_SRCS})
 
-kde4_add_executable(knotifytest ${knotifytest_SRCS})
+kde4_add_executable(knotifytest RUN_UNINSTALLED ${knotifytest_SRCS})
 
 target_link_libraries(knotifytest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -285,7 +285,7 @@ set(kdatetimetest_SRCS kdatetimetest.cpp )
 
 kde4_automoc(${kdatetimetest_SRCS})
 
-kde4_add_executable(kdatetimetest ${kdatetimetest_SRCS})
+kde4_add_executable(kdatetimetest RUN_UNINSTALLED ${kdatetimetest_SRCS})
 
 target_link_libraries(kdatetimetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -297,7 +297,7 @@ set(ksortablevaluelisttest_SRCS ksortablevaluelisttest.cpp )
 
 kde4_automoc(${ksortablevaluelisttest_SRCS})
 
-kde4_add_executable(ksortablevaluelisttest ${ksortablevaluelisttest_SRCS})
+kde4_add_executable(ksortablevaluelisttest RUN_UNINSTALLED ${ksortablevaluelisttest_SRCS})
 
 target_link_libraries(ksortablevaluelisttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -309,7 +309,7 @@ set(krfcdatetest_SRCS krfcdatetest.cpp )
 
 kde4_automoc(${krfcdatetest_SRCS})
 
-kde4_add_executable(krfcdatetest ${krfcdatetest_SRCS})
+kde4_add_executable(krfcdatetest RUN_UNINSTALLED ${krfcdatetest_SRCS})
 
 target_link_libraries(krfcdatetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -321,7 +321,7 @@ set(testqtargs_SRCS testqtargs.cpp )
 
 kde4_automoc(${testqtargs_SRCS})
 
-kde4_add_executable(testqtargs ${testqtargs_SRCS})
+kde4_add_executable(testqtargs RUN_UNINSTALLED ${testqtargs_SRCS})
 
 target_link_libraries(testqtargs  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -333,7 +333,7 @@ set(kprociotest_SRCS kprociotest.cpp )
 
 kde4_automoc(${kprociotest_SRCS})
 
-kde4_add_executable(kprociotest ${kprociotest_SRCS})
+kde4_add_executable(kprociotest RUN_UNINSTALLED ${kprociotest_SRCS})
 
 target_link_libraries(kprociotest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -345,7 +345,7 @@ set(kcharsetstest_SRCS kcharsetstest.cpp )
 
 kde4_automoc(${kcharsetstest_SRCS})
 
-kde4_add_executable(kcharsetstest ${kcharsetstest_SRCS})
+kde4_add_executable(kcharsetstest RUN_UNINSTALLED ${kcharsetstest_SRCS})
 
 target_link_libraries(kcharsetstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -357,7 +357,7 @@ set(kcalendartest_SRCS kcalendartest.cpp )
 
 kde4_automoc(${kcalendartest_SRCS})
 
-kde4_add_executable(kcalendartest ${kcalendartest_SRCS})
+kde4_add_executable(kcalendartest RUN_UNINSTALLED ${kcalendartest_SRCS})
 
 target_link_libraries(kcalendartest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -369,7 +369,7 @@ set(kmacroexpandertest_SRCS kmacroexpandertest.cpp )
 
 kde4_automoc(${kmacroexpandertest_SRCS})
 
-kde4_add_executable(kmacroexpandertest ${kmacroexpandertest_SRCS})
+kde4_add_executable(kmacroexpandertest RUN_UNINSTALLED ${kmacroexpandertest_SRCS})
 
 target_link_libraries(kmacroexpandertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -381,7 +381,7 @@ set(kshelltest_SRCS kshelltest.cpp )
 
 kde4_automoc(${kshelltest_SRCS})
 
-kde4_add_executable(kshelltest ${kshelltest_SRCS})
+kde4_add_executable(kshelltest RUN_UNINSTALLED ${kshelltest_SRCS})
 
 target_link_libraries(kshelltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -394,7 +394,7 @@ set(kxerrorhandlertest_SRCS kxerrorhandlertest.cpp )
 
 kde4_automoc(${kxerrorhandlertest_SRCS})
 
-kde4_add_executable(kxerrorhandlertest ${kxerrorhandlertest_SRCS})
+kde4_add_executable(kxerrorhandlertest RUN_UNINSTALLED ${kxerrorhandlertest_SRCS})
 
 target_link_libraries(kxerrorhandlertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -407,7 +407,7 @@ set(startserviceby_SRCS startserviceby.cpp )
 
 kde4_automoc(${startserviceby_SRCS})
 
-kde4_add_executable(startserviceby ${startserviceby_SRCS})
+kde4_add_executable(startserviceby RUN_UNINSTALLED ${startserviceby_SRCS})
 
 target_link_libraries(startserviceby  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -419,7 +419,7 @@ set(kglobaltest_SRCS kglobaltest.cpp )
 
 kde4_automoc(${kglobaltest_SRCS})
 
-kde4_add_executable(kglobaltest ${kglobaltest_SRCS})
+kde4_add_executable(kglobaltest RUN_UNINSTALLED ${kglobaltest_SRCS})
 
 target_link_libraries(kglobaltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -431,9 +431,9 @@ set(ktimezonestest_SRCS ktimezonestest.cpp )
 
 kde4_automoc(${ktimezonestest_SRCS})
 
-kde4_add_executable(ktimezonestest ${ktimezonestest_SRCS})
+kde4_add_executable(ktimezonestest RUN_UNINSTALLED ${ktimezonestest_SRCS})
 
-target_link_libraries(ktimezonestest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(ktimezonestest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-ktimezonestest ${EXECUTABLE_OUTPUT_PATH}/ktimezonestest)
 
@@ -443,7 +443,7 @@ set(kconfigtest_SRCS kconfigtest.cpp )
 
 kde4_automoc(${kconfigtest_SRCS})
 
-kde4_add_executable(kconfigtest ${kconfigtest_SRCS})
+kde4_add_executable(kconfigtest RUN_UNINSTALLED ${kconfigtest_SRCS})
 
 target_link_libraries(kconfigtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -455,7 +455,7 @@ set(ktempfiletest_SRCS ktempfiletest.cpp )
 
 kde4_automoc(${ktempfiletest_SRCS})
 
-kde4_add_executable(ktempfiletest ${ktempfiletest_SRCS})
+kde4_add_executable(ktempfiletest RUN_UNINSTALLED ${ktempfiletest_SRCS})
 
 target_link_libraries(ktempfiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -467,7 +467,7 @@ set(kurlmimetest_SRCS kurlmimetest.cpp )
 
 kde4_automoc(${kurlmimetest_SRCS})
 
-kde4_add_executable(kurlmimetest ${kurlmimetest_SRCS})
+kde4_add_executable(kurlmimetest RUN_UNINSTALLED ${kurlmimetest_SRCS})
 
 target_link_libraries(kurlmimetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -479,7 +479,7 @@ set(kstdacceltest_SRCS kstdacceltest.cpp )
 
 kde4_automoc(${kstdacceltest_SRCS})
 
-kde4_add_executable(kstdacceltest ${kstdacceltest_SRCS})
+kde4_add_executable(kstdacceltest RUN_UNINSTALLED ${kstdacceltest_SRCS})
 
 target_link_libraries(kstdacceltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -491,7 +491,7 @@ set(klibloadertest_SRCS klibloadertest.cpp )
 
 kde4_automoc(${klibloadertest_SRCS})
 
-kde4_add_executable(klibloadertest ${klibloadertest_SRCS})
+kde4_add_executable(klibloadertest RUN_UNINSTALLED ${klibloadertest_SRCS})
 
 target_link_libraries(klibloadertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -503,7 +503,7 @@ set(kcompletiontest_SRCS kcompletiontest.cpp )
 
 kde4_automoc(${kcompletiontest_SRCS})
 
-kde4_add_executable(kcompletiontest ${kcompletiontest_SRCS})
+kde4_add_executable(kcompletiontest RUN_UNINSTALLED ${kcompletiontest_SRCS})
 
 target_link_libraries(kcompletiontest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -515,7 +515,7 @@ set(klockfiletest_SRCS klockfiletest.cpp )
 
 kde4_automoc(${klockfiletest_SRCS})
 
-kde4_add_executable(klockfiletest ${klockfiletest_SRCS})
+kde4_add_executable(klockfiletest RUN_UNINSTALLED ${klockfiletest_SRCS})
 
 target_link_libraries(klockfiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -527,7 +527,7 @@ set(ktempdirtest_SRCS ktempdirtest.cpp )
 
 kde4_automoc(${ktempdirtest_SRCS})
 
-kde4_add_executable(ktempdirtest ${ktempdirtest_SRCS})
+kde4_add_executable(ktempdirtest RUN_UNINSTALLED ${ktempdirtest_SRCS})
 
 target_link_libraries(ktempdirtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -539,7 +539,7 @@ set(ksharedptrtest_SRCS ksharedptrtest.cpp )
 
 kde4_automoc(${ksharedptrtest_SRCS})
 
-kde4_add_executable(ksharedptrtest ${ksharedptrtest_SRCS})
+kde4_add_executable(ksharedptrtest RUN_UNINSTALLED ${ksharedptrtest_SRCS})
 
 target_link_libraries(ksharedptrtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -551,7 +551,7 @@ set(kfiltertest_SRCS kfiltertest.cpp )
 
 kde4_automoc(${kfiltertest_SRCS})
 
-kde4_add_executable(kfiltertest ${kfiltertest_SRCS})
+kde4_add_executable(kfiltertest RUN_UNINSTALLED ${kfiltertest_SRCS})
 
 target_link_libraries(kfiltertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -563,7 +563,7 @@ set(kdatetimetest_SRCS dummy.cpp )
 
 kde4_automoc(${kdatetimetest_SRCS})
 
-kde4_add_executable(kdatetimetest ${kdatetimetest_SRCS})
+kde4_add_executable(kdatetimetest RUN_UNINSTALLED ${kdatetimetest_SRCS})
 
 target_link_libraries(kdatetimetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -575,7 +575,7 @@ set(ksavefiletest_SRCS ksavefiletest.cpp )
 
 kde4_automoc(${ksavefiletest_SRCS})
 
-kde4_add_executable(ksavefiletest ${ksavefiletest_SRCS})
+kde4_add_executable(ksavefiletest RUN_UNINSTALLED ${ksavefiletest_SRCS})
 
 target_link_libraries(ksavefiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
@@ -601,7 +601,7 @@ set(knotificationrestrictionstest_SRCS knotificationrestrictionstest.cpp )
 
 kde4_automoc(${knotificationrestrictionstest_SRCS})
 
-kde4_add_executable(knotificationrestrictionstest ${knotificationrestrictionstest_SRCS})
+kde4_add_executable(knotificationrestrictionstest RUN_UNINSTALLED ${knotificationrestrictionstest_SRCS})
 
 target_link_libraries(knotificationrestrictionstest  ${KDE4_KDECORE_LIBS})
 
@@ -613,7 +613,7 @@ set(kautostarttest_SRCS kautostarttest.cpp )
 
 kde4_automoc(${kautostarttest_SRCS})
 
-kde4_add_executable(kautostarttest ${kautostarttest_SRCS})
+kde4_add_executable(kautostarttest RUN_UNINSTALLED ${kautostarttest_SRCS})
 
 target_link_libraries(kautostarttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
