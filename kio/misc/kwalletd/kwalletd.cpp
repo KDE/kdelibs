@@ -20,7 +20,7 @@
 
 */
 
-#include "kbetterthankdialogbase.h"
+#include "kbetterthankdialog.h"
 #include "kwalletwizard.h"
 #include "kwalletd.h"
 #include "ktimeout.h"
@@ -501,7 +501,7 @@ bool KWalletD::isAuthorizedApp(const QByteArray& appid, const QString& wallet, W
 	}
 
 	if (!implicitAllow(wallet, thisApp)) {
-		KBetterThanKDialogBase *dialog = new KBetterThanKDialogBase;
+		KBetterThanKDialog *dialog = new KBetterThanKDialog;
 		if (appid.isEmpty()) {
 			dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.", Qt::escape(wallet)));
 		} else {

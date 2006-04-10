@@ -6,18 +6,18 @@ include_directories( ${CMAKE_SOURCE_DIR}/kwallet/backend ${CMAKE_SOURCE_DIR}/kwa
 ########### next target ###############
 
 set(kded_kwalletd_PART_SRCS
+   kbetterthankdialog.cpp
    kwalletd.cpp
+   kwalletwizard.cpp
    ktimeout.cpp
 )
 
 kde4_automoc(${kded_kwalletd_PART_SRCS})
 
-set( kded_kwalletd_UI3
-   kwalletwizard.ui3
-   kbetterthankdialogbase.ui3
+kde4_add_ui_files(kded_kwalletd_PART_SRCS
+   kwalletwizardbase.ui
+   kbetterthankdialogbase.ui
 )
-
-kde4_add_ui3_files(kded_kwalletd_PART_SRCS ${kded_kwalletd_UI3} )
 
 set( kded_kwalletd_DCOP_SKEL_SRCS kwalletd.h )
 

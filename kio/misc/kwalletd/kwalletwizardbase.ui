@@ -1,0 +1,494 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>KWalletWizardBase</class>
+ <widget class="Q3Wizard" name="KWalletWizardBase" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>556</width>
+    <height>385</height>
+   </rect>
+  </property>
+  <widget class="QWidget" name="page1" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>544</width>
+     <height>299</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" >
+    <property name="margin" >
+     <number>0</number>
+    </property>
+    <property name="spacing" >
+     <number>6</number>
+    </property>
+    <item row="3" column="1" >
+     <spacer>
+      <property name="orientation" >
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType" >
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" >
+       <size>
+        <width>21</width>
+        <height>21</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="0" colspan="3" >
+     <widget class="QLabel" name="textLabel1" >
+      <property name="font" >
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>20</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+        <underline>false</underline>
+        <strikeout>false</strikeout>
+       </font>
+      </property>
+      <property name="text" >
+       <string>&lt;u>KWallet&lt;/u> - The KDE Wallet System</string>
+      </property>
+      <property name="textFormat" >
+       <enum>Qt::RichText</enum>
+      </property>
+      <property name="alignment" >
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="3" >
+     <widget class="QLabel" name="textLabel2" >
+      <property name="sizePolicy" >
+       <sizepolicy>
+        <hsizetype>5</hsizetype>
+        <vsizetype>5</vsizetype>
+        <horstretch>0</horstretch>
+        <verstretch>2</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>Welcome to KWallet, the KDE Wallet System.  KWallet allows you to store your passwords and other personal information on disk in an encrypted file, preventing others from viewing the information.  This wizard will tell you about KWallet and help you configure it for the first time.</string>
+      </property>
+      <property name="textFormat" >
+       <enum>Qt::RichText</enum>
+      </property>
+      <property name="alignment" >
+       <set>Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap" >
+       <bool>true</bool>
+      </property>
+      <property name="margin" >
+       <number>26</number>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1" >
+     <widget class="Q3ButtonGroup" name="buttonGroup1" >
+      <property name="title" >
+       <string/>
+      </property>
+      <property name="flat" >
+       <bool>true</bool>
+      </property>
+      <layout class="QGridLayout" >
+       <property name="margin" >
+        <number>0</number>
+       </property>
+       <property name="spacing" >
+        <number>6</number>
+       </property>
+       <item row="0" column="0" >
+        <widget class="QRadioButton" name="_basic" >
+         <property name="text" >
+          <string>&amp;Basic setup (recommended)</string>
+         </property>
+         <property name="checked" >
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" >
+        <widget class="QRadioButton" name="_advanced" >
+         <property name="text" >
+          <string>&amp;Advanced setup</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="2" column="2" >
+     <spacer>
+      <property name="orientation" >
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType" >
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" >
+       <size>
+        <width>140</width>
+        <height>21</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="0" >
+     <spacer>
+      <property name="orientation" >
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType" >
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" >
+       <size>
+        <width>140</width>
+        <height>31</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="page4" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" >
+    <property name="margin" >
+     <number>0</number>
+    </property>
+    <property name="spacing" >
+     <number>6</number>
+    </property>
+    <item row="0" column="0" >
+     <widget class="QLabel" name="textLabel2_3" >
+      <property name="text" >
+       <string>The KDE Wallet system stores your data in a &lt;i>wallet&lt;/i> file on your local hard disk.  The data is only written in encrypted form, presently using the blowfish algorithm with your password as the key.  When a wallet is opened, the wallet manager application will launch and display an icon in the system tray.  You can use this application to manage your wallets.  It even permits you to drag wallets and wallet contents, allowing you to easily copy a wallet to a remote system.</string>
+      </property>
+      <property name="textFormat" >
+       <enum>Qt::RichText</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="page2" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" >
+    <property name="margin" >
+     <number>0</number>
+    </property>
+    <property name="spacing" >
+     <number>6</number>
+    </property>
+    <item row="0" column="0" colspan="3" >
+     <widget class="QLabel" name="textLabel3" >
+      <property name="text" >
+       <string>Various applications may attempt to use the KDE wallet to store passwords or other information such as web form data and cookies.  If you would like these applications to use the wallet, you must enable it now and choose a password.  The password you choose &lt;i>cannot&lt;/i> be recovered if it is lost, and will allow anyone who knows it to obtain all the information contained in the wallet.</string>
+      </property>
+      <property name="textFormat" >
+       <enum>Qt::RichText</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1" >
+     <layout class="QHBoxLayout" >
+      <property name="margin" >
+       <number>0</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item>
+       <layout class="QVBoxLayout" >
+        <property name="margin" >
+         <number>0</number>
+        </property>
+        <property name="spacing" >
+         <number>6</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="textLabel1_2" >
+          <property name="enabled" >
+           <bool>false</bool>
+          </property>
+          <property name="text" >
+           <string>Enter a new password:</string>
+          </property>
+          <property name="alignment" >
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="buddy" >
+           <cstring>_pass1</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="textLabel2_2" >
+          <property name="enabled" >
+           <bool>false</bool>
+          </property>
+          <property name="text" >
+           <string>Verify password:</string>
+          </property>
+          <property name="alignment" >
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="buddy" >
+           <cstring>_pass2</cstring>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" >
+        <property name="margin" >
+         <number>0</number>
+        </property>
+        <property name="spacing" >
+         <number>6</number>
+        </property>
+        <item>
+         <widget class="QLineEdit" name="_pass1" >
+          <property name="enabled" >
+           <bool>false</bool>
+          </property>
+          <property name="echoMode" >
+           <enum>QLineEdit::Password</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="_pass2" >
+          <property name="enabled" >
+           <bool>false</bool>
+          </property>
+          <property name="echoMode" >
+           <enum>QLineEdit::Password</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0" colspan="3" >
+     <widget class="QCheckBox" name="_useWallet" >
+      <property name="text" >
+       <string>Yes, I wish to use the KDE wallet to store my personal information.</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1" >
+     <spacer>
+      <property name="orientation" >
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType" >
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" >
+       <size>
+        <width>21</width>
+        <height>51</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="3" column="2" >
+     <spacer>
+      <property name="orientation" >
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType" >
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" >
+       <size>
+        <width>101</width>
+        <height>21</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="3" column="0" >
+     <spacer>
+      <property name="orientation" >
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType" >
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" >
+       <size>
+        <width>111</width>
+        <height>31</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="4" column="1" >
+     <spacer>
+      <property name="orientation" >
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType" >
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" >
+       <size>
+        <width>21</width>
+        <height>70</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="5" column="0" colspan="3" >
+     <widget class="QLabel" name="_matchLabel" >
+      <property name="text" >
+       <string/>
+      </property>
+      <property name="alignment" >
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="page3" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" >
+    <property name="margin" >
+     <number>0</number>
+    </property>
+    <property name="spacing" >
+     <number>6</number>
+    </property>
+    <item row="0" column="0" colspan="2" >
+     <widget class="QLabel" name="textLabel1_3" >
+      <property name="text" >
+       <string>The KDE Wallet system allows you to control the level of security of your personal data.  Some of these settings do impact usability.  While the default settings are generally acceptable for most users, you may wish to change some of them.  You may further tune these settings from the KWallet control module.</string>
+      </property>
+      <property name="textFormat" >
+       <enum>Qt::RichText</enum>
+      </property>
+      <property name="alignment" >
+       <set>Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1" >
+     <spacer>
+      <property name="orientation" >
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType" >
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" >
+       <size>
+        <width>21</width>
+        <height>121</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="3" column="0" colspan="2" >
+     <widget class="QCheckBox" name="_networkWallet" >
+      <property name="text" >
+       <string>Store network passwords and local passwords in separate wallet files</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" >
+     <widget class="QCheckBox" name="_closeIdle" >
+      <property name="text" >
+       <string>Automatically close idle wallets</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" >
+     <spacer>
+      <property name="orientation" >
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType" >
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" >
+       <size>
+        <width>21</width>
+        <height>51</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>Q3ButtonGroup</class>
+   <extends></extends>
+   <header>Qt3Support/Q3ButtonGroup</header>
+   <container>1</container>
+   <pixmap></pixmap>
+  </customwidget>
+  <customwidget>
+   <class>Q3Wizard</class>
+   <extends></extends>
+   <header>q3wizard.h</header>
+   <container>1</container>
+   <pixmap></pixmap>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>_basic</tabstop>
+  <tabstop>_advanced</tabstop>
+  <tabstop>_useWallet</tabstop>
+  <tabstop>_pass1</tabstop>
+  <tabstop>_pass2</tabstop>
+ </tabstops>
+ <includes>
+  <include location="global" >qcheckbox.h</include>
+ </includes>
+ <resources/>
+ <connections/>
+</ui>
