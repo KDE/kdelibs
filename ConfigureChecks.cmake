@@ -288,8 +288,6 @@ check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)
 check_function_exists(__argz_count    HAVE___ARGZ_COUNT)
 check_function_exists(__argz_next     HAVE___ARGZ_NEXT)
 check_function_exists(__argz_stringify HAVE___ARGZ_STRINGIFY)
-check_function_exists(pthread_getattr_np HAVE_PTHREAD_GETATTR_NP)
-check_function_exists(pthread_attr_get_np HAVE_PTHREAD_ATTR_GET_NP)
 
 
 check_library_exists(utempter addToUtmp "" HAVE_UTEMPTER)

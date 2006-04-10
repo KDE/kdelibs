@@ -302,8 +302,6 @@
 #cmakedefine   HAVE___ARGZ_COUNT 1
 #cmakedefine   HAVE___ARGZ_NEXT  1
 #cmakedefine   HAVE___ARGZ_STRINGIFY 1
-#cmakedefine  HAVE_PTHREAD_GETATTR_NP 1
-#cmakedefine  HAVE_PTHREAD_ATTR_GET_NP 1
 
 
 /* this one seems to be unused:
