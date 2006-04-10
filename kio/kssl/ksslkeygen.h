@@ -28,8 +28,7 @@
 
 
 class KOpenSSLProxy;
-class KGWizardPage1;
-class KGWizardPage2;
+class Ui_KGWizardPage2;
 
 /**
  * KDE Key Generation dialog
@@ -87,8 +86,8 @@ private:
 	class KSSLKeyGenPrivate;
 	KSSLKeyGenPrivate *d;
 	int _idx;
-	KGWizardPage1 *page1;
-	KGWizardPage2 *page2;
+	Ui_KGWizardPage2 *ui;
+	QWidget *page2;
 };
 
 #endif

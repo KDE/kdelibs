@@ -237,16 +237,13 @@ set(kio_SKEL_HEADERS
 
 kde4_add_dcop_skels(kio_LIB_SRCS ${kio_SKEL_HEADERS} )
 
-kde4_add_ui3_files(kio_LIB_SRCS
-   ${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard.ui3
-   ${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard2.ui3
-)
-
 kde4_add_ui_files(kio_LIB_SRCS
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesdesktopadvbase.ui
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesdesktopbase.ui
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesmimetypebase.ui
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile/knotifywidgetbase.ui
+   ${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard.ui
+   ${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard2.ui
 )
 
 kde4_automoc(${kio_LIB_SRCS})

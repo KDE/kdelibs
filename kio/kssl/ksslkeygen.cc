@@ -20,8 +20,8 @@
 
 
 #include "ksslkeygen.h"
-#include "keygenwizard.h"
-#include "keygenwizard2.h"
+#include "ui_keygenwizard.h"
+#include "ui_keygenwizard2.h"
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -46,15 +46,20 @@ KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal)
 #warning "KDE4 PORTING TO NEW KWIZARD"
 #endif
 #ifdef KSSL_HAVE_SSL
-	page1 = new KGWizardPage1(this, "Wizard Page 1");
+	Ui_KGWizardPage1 ui1;
+	QWidget *page1 = new QWidget(this);
+	ui1.setupUi(page1);
 	addPage(page1, i18n("KDE Certificate Request"));
-	page2 = new KGWizardPage2(this, "Wizard Page 2");
-	addPage(page2, i18n("KDE Certificate Request - Password"));
 	setHelpEnabled(page1, false);
+
+	page2 = new QWidget(this);
+	ui = new Ui_KGWizardPage2;
+	ui->setupUi(page2);
+	addPage(page2, i18n("KDE Certificate Request - Password"));
 	setHelpEnabled(page2, false);
 	setFinishEnabled(page2, false);
-	connect(page2->_password1, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
-	connect(page2->_password2, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
+	connect(ui->_password1, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
+	connect(ui->_password2, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
 	connect(finishButton(), SIGNAL(clicked()), SLOT(slotGenerate()));
 #else
 	// tell him he doesn't have SSL
@@ -68,7 +73,7 @@ KSSLKeyGen::~KSSLKeyGen() {
 
 
 void KSSLKeyGen::slotPassChanged() {
-	setFinishEnabled(page2, page2->_password1->text() == page2->_password2->text() && page2->_password1->text().length() >= 4);
+	setFinishEnabled(page2, ui->_password1->text() == ui->_password2->text() && ui->_password1->text().length() >= 4);
 }
 
 
@@ -104,7 +109,7 @@ void KSSLKeyGen::slotGenerate() {
 	kpd->show();
 	// FIXME - progress dialog won't show this way
 
-	int rc = generateCSR("This CSR" /*FIXME */, page2->_password1->text(), bits, 0x10001 /* This is the traditional exponent used */);
+	int rc = generateCSR("This CSR" /*FIXME */, ui->_password1->text(), bits, 0x10001 /* This is the traditional exponent used */);
 	kpd->setValue(100);
 
 #ifndef Q_OS_WIN //TODO: reenable for WIN32

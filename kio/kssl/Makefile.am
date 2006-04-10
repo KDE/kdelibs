@@ -62,8 +62,8 @@ libkssl_la_SOURCES	= \
 			ksslpemcallback.cc	  \
 			ksslx509map.cc		  \
 			ksslsession.cc		  \
-			keygenwizard.ui3	  \
-			keygenwizard2.ui3	  \
+			keygenwizard.ui	  \
+			keygenwizard2.ui	  \
 			ksmimecrypto.cc		  \
 			ksslcsessioncache.cc
 
