@@ -14,11 +14,11 @@
    $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 */
 
+#include <QSet>
 #include <QMutex>
 #include <QObject>
 #include <QMultiMap>
 #include <QWaitCondition>
-
 #include <DebuggingAids.h>
 #include <Thread.h>
 
@@ -145,6 +145,28 @@ namespace ThreadWeaver {
             {
                 it.remove();
             }
+        }
+    }
+
+    void Job::cloneDependencies( Job* job )
+    {
+        QMutexLocker l(sm_mutex);
+
+        QList<Job*> dependencies = sm_dep()->values ( job );
+
+        QList<Job*> ourDependencies = sm_dep()->values( this );
+
+        // find non-existing ones:
+        QSet<Job*> ourDependenciesSet = QSet<Job*>::fromList( ourDependencies );
+        QSet<Job*> newDependencies = QSet<Job*>::fromList( dependencies );
+
+        newDependencies.subtract( ourDependenciesSet );
+
+        // set:
+        QSet<Job*>::const_iterator it;
+        for ( it = newDependencies.begin(); it != newDependencies.end(); ++it )
+        {
+            	sm_dep()->insert( this, *it );
         }
     }
 

@@ -83,7 +83,10 @@ namespace ThreadWeaver {
                 addDependency( m_elements->at( i ) );
                 m_weaver->enqueue( m_elements->at( i ) );
             }
+            m_elements->at( 0 )->cloneDependencies( this );
+            m_elements->at( 0 )->aboutToBeQueued( weaver );
         }
+
         m_queued = true;
     }
 
