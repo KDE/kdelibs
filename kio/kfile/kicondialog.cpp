@@ -236,14 +236,14 @@ class KIconDialog::KIconDialogPrivate
  */
 
 KIconDialog::KIconDialog(QWidget *parent)
-    : KDialogBase(parent, "icondialog", true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
+    : KDialogBase(Swallow, 0, parent, "icondialog", true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
 {
     mpLoader = KGlobal::iconLoader();
     init();
 }
 
 KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent)
-    : KDialogBase(parent, "icondialog", true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
+    : KDialogBase(Swallow, 0, parent, "icondialog", true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
 {
     mpLoader = loader;
     init();

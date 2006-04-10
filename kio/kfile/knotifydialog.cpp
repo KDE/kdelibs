@@ -124,7 +124,7 @@ int KNotifyDialog::configure( QWidget *parent, const char *name,
 
 KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
                               const KAboutData *aboutData )
-    : KDialogBase(parent, name, modal, i18n("Notification Settings"),
+    : KDialogBase(Swallow, 0, parent, name, modal, i18n("Notification Settings"),
                   Ok | Apply | Cancel | Default, Ok, true )
 {
     KVBox *box = makeVBoxMainWidget();
@@ -184,9 +184,12 @@ public:
 // simple access to all knotify-handled applications
 KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
                               bool handleAllApps )
-    : KNotifyWidgetBase( parent, name ? name : "KNotifyWidget" ),d(new Private)
+    : QWidget( parent ), d(new Private)
 {
+    setupUi( this );
 
+    if ( name )
+        setObjectName( name );
 
     if ( !handleAllApps )
     {
@@ -393,13 +396,13 @@ bool KNotifyWidget::eventFilter( QObject * watched, QEvent * event )
     return true;
   }
   
-  return KNotifyWidgetBase::eventFilter(watched, event);
+  return QWidget::eventFilter(watched, event);
 }
 
 void KNotifyWidget::showEvent( QShowEvent *e )
 {
     selectItem( m_listview->firstChild() );
-    KNotifyWidgetBase::showEvent( e );
+    QWidget::showEvent( e );
 }
 
 void KNotifyWidget::slotEventChanged( Q3ListViewItem *item )

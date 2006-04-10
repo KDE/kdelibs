@@ -763,7 +763,7 @@ private:
   KDevicePropsPluginPrivate* const d;
 };
 
-class KPropertiesDesktopBase;
+class Ui_KPropertiesDesktopBase;
 
 /**
  * Used to edit the files containing
@@ -798,7 +798,8 @@ private:
   void checkCommandChanged();
 
 private:
-  KPropertiesDesktopBase* w;
+  Ui_KPropertiesDesktopBase* w;
+  QWidget *m_frame;
 
   QString m_origCommandStr;
   QString m_terminalOptionStr;

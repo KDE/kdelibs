@@ -118,9 +118,9 @@ extern "C" {
 #include <kacl.h>
 #include "kfilesharedlg.h"
 
-#include "kpropertiesdesktopbase.h"
+#include "ui_kpropertiesdesktopbase.h"
 #include "ui_kpropertiesdesktopadvbase.h"
-#include "kpropertiesmimetypebase.h"
+#include "ui_kpropertiesmimetypebase.h"
 #ifdef USE_POSIX_ACL
 #include "kacleditwidget.h"
 #endif
@@ -1851,7 +1851,7 @@ static bool fileSystemSupportsACL( const QByteArray& path )
 void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   bool isDir = (d->pmode == PermissionsOnlyDirs) || (d->pmode == PermissionsMixed);
-  KDialogBase dlg(properties, 0, true, i18n("Advanced Permissions"),
+  KDialogBase dlg(KDialogBase::Swallow, 0, properties, 0, true, i18n("Advanced Permissions"),
 		  KDialogBase::Ok|KDialogBase::Cancel);
 
   QLabel *l, *cl[3];
@@ -3055,13 +3055,10 @@ void KDevicePropsPlugin::applyChanges()
 KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
-  QFrame *frame = properties->addPage(i18n("&Application"));
-  QVBoxLayout *mainlayout = new QVBoxLayout( frame );
-  mainlayout->setMargin( 0 );
-  mainlayout->setSpacing( KDialog::spacingHint() );
+  m_frame = properties->addPage(i18n("&Application"));
 
-  w = new KPropertiesDesktopBase(frame);
-  mainlayout->addWidget(w);
+  w = new Ui_KPropertiesDesktopBase;
+  w->setupUi(m_frame);
 
   bool bKDesktopMode = (qApp->objectName() == "kdesktop");
 
@@ -3162,6 +3159,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
 
 KDesktopPropsPlugin::~KDesktopPropsPlugin()
 {
+  delete w;
 }
 
 void KDesktopPropsPlugin::slotSelectMimetype()
@@ -3178,7 +3176,7 @@ void KDesktopPropsPlugin::slotSelectMimetype()
 
 void KDesktopPropsPlugin::slotAddFiletype()
 {
-  KDialogBase dlg(w, "KPropertiesMimetypes", true,
+  KDialogBase dlg(KDialogBase::Swallow, 0, m_frame, "KPropertiesMimetypes", true,
                   i18n("Add File Type for %1", properties->kurl().fileName()),
                   KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok);
 
@@ -3187,20 +3185,19 @@ void KDesktopPropsPlugin::slotAddFiletype()
                   i18n("Add the selected file types to\nthe list of supported file types."));
   dlg.setButtonGuiItem(KDialogBase::Ok,okItem);
 
-  KPropertiesMimetypeBase *mw = new KPropertiesMimetypeBase(&dlg);
-
-  dlg.setMainWidget(mw);
+  Ui_KPropertiesMimetypeBase mw;
+  mw.setupUi(&dlg);
 
   {
-     mw->listView->setRootIsDecorated(true);
-     mw->listView->setSelectionMode(Q3ListView::Extended);
-     mw->listView->setAllColumnsShowFocus(true);
-     mw->listView->setFullWidth(true);
-     mw->listView->setMinimumSize(500,400);
+     mw.listView->setRootIsDecorated(true);
+     mw.listView->setSelectionMode(Q3ListView::Extended);
+     mw.listView->setAllColumnsShowFocus(true);
+     mw.listView->setFullWidth(true);
+     mw.listView->setMinimumSize(500,400);
 
-     connect(mw->listView, SIGNAL(selectionChanged()),
+     connect(mw.listView, SIGNAL(selectionChanged()),
              this, SLOT(slotSelectMimetype()));
-     connect(mw->listView, SIGNAL(doubleClicked( Q3ListViewItem *, const QPoint &, int )),
+     connect(mw.listView, SIGNAL(doubleClicked( Q3ListViewItem *, const QPoint &, int )),
              &dlg, SLOT( slotOk()));
 
      QMap<QString,Q3ListViewItem*> majorMap;
@@ -3217,9 +3214,9 @@ void KDesktopPropsPlugin::slotAddFiletype()
 
         QMap<QString,Q3ListViewItem*>::iterator mit = majorMap.find( maj );
         if ( mit == majorMap.end() ) {
-           majorGroup = new Q3ListViewItem( mw->listView, maj );
+           majorGroup = new Q3ListViewItem( mw.listView, maj );
            majorGroup->setExpandable(true);
-           mw->listView->setOpen(majorGroup, true);
+           mw.listView->setOpen(majorGroup, true);
            majorMap.insert( maj, majorGroup );
         }
         else
@@ -3233,15 +3230,15 @@ void KDesktopPropsPlugin::slotAddFiletype()
      QMap<QString,Q3ListViewItem*>::iterator mit = majorMap.find( "all" );
      if ( mit != majorMap.end())
      {
-        mw->listView->setCurrentItem(mit.value());
-        mw->listView->ensureItemVisible(mit.value());
+        mw.listView->setCurrentItem(mit.value());
+        mw.listView->ensureItemVisible(mit.value());
      }
   }
 
   if (dlg.exec() == KDialogBase::Accepted)
   {
      KMimeType::Ptr defaultMimetype = KMimeType::defaultMimeTypePtr();
-     Q3ListViewItem *majorItem = mw->listView->firstChild();
+     Q3ListViewItem *majorItem = mw.listView->firstChild();
      while(majorItem)
      {
         QString major = majorItem->text(0);
@@ -3363,19 +3360,19 @@ void KDesktopPropsPlugin::applyChanges()
      updateNeeded = !sycocaPath.startsWith("/");
   }
   if (updateNeeded)
-     KService::rebuildKSycoca(w);
+     KService::rebuildKSycoca(m_frame);
 }
 
 
 void KDesktopPropsPlugin::slotBrowseExec()
 {
   KUrl f = KFileDialog::getOpenURL( QString(),
-                                      QString(), w );
+                                      QString(), m_frame );
   if ( f.isEmpty() )
     return;
 
   if ( !f.isLocalFile()) {
-    KMessageBox::sorry(w, i18n("Only executables on local file systems are supported."));
+    KMessageBox::sorry(m_frame, i18n("Only executables on local file systems are supported."));
     return;
   }
 
@@ -3386,9 +3383,10 @@ void KDesktopPropsPlugin::slotBrowseExec()
 
 void KDesktopPropsPlugin::slotAdvanced()
 {
-  KDialogBase dlg(w, "KPropertiesDesktopAdv", true,
+  KDialogBase dlg(KDialogBase::Swallow, 0, m_frame, "KPropertiesDesktopAdv", true,
       i18n("Advanced Options for %1", properties->kurl().fileName()),
       KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok);
+
   Ui_KPropertiesDesktopAdvBase w;
   w.setupUi(&dlg);
 

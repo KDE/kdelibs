@@ -24,7 +24,7 @@
 #include <kinstance.h>
 #include <kglobal.h>
 
-#include "knotifywidgetbase.h"
+#include "ui_knotifywidgetbase.h"
 
 class QShowEvent;
 
@@ -187,7 +187,7 @@ namespace KNotify
     /**
      * @internal
      */
-    class KIO_EXPORT_DEPRECATED KNotifyWidget : public KNotifyWidgetBase
+    class KIO_EXPORT_DEPRECATED KNotifyWidget : public QWidget, private Ui_KNotifyWidgetBase
     {
         Q_OBJECT
 

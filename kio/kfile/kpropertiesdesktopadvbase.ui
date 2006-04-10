@@ -9,7 +9,7 @@
     <x>0</x>
     <y>0</y>
     <width>463</width>
-    <height>477</height>
+    <height>490</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" >
@@ -244,16 +244,16 @@
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
-   <class>KLineEdit</class>
-   <extends>QWidget</extends>
-   <header>klineedit.h</header>
+   <class>Q3ButtonGroup</class>
+   <extends></extends>
+   <header>Qt3Support/Q3ButtonGroup</header>
    <container>1</container>
    <pixmap></pixmap>
   </customwidget>
   <customwidget>
-   <class>Q3ButtonGroup</class>
-   <extends></extends>
-   <header>Qt3Support/Q3ButtonGroup</header>
+   <class>KLineEdit</class>
+   <extends>QWidget</extends>
+   <header>klineedit.h</header>
    <container>1</container>
    <pixmap></pixmap>
   </customwidget>

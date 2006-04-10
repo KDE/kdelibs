@@ -1,0 +1,383 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>KNotifyWidgetBase</class>
+ <widget class="QWidget" name="KNotifyWidgetBase" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>489</width>
+    <height>598</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="margin" >
+    <number>0</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <widget class="K3ListView" name="m_listview" >
+     <property name="sizePolicy" >
+      <sizepolicy>
+       <hsizetype>7</hsizetype>
+       <vsizetype>7</vsizetype>
+       <horstretch>10</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Q3GroupBox" name="m_controlsBox" >
+     <property name="title" >
+      <string>Quick Controls</string>
+     </property>
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <layout class="QGridLayout" >
+      <property name="margin" >
+       <number>11</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item row="0" column="0" colspan="4" >
+       <widget class="QCheckBox" name="m_affectAllApps" >
+        <property name="text" >
+         <string>Apply to &amp;all applications</string>
+        </property>
+       </widget>
+      </item>
+      <item rowspan="2" row="1" column="0" >
+       <spacer>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType" >
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" >
+         <size>
+          <width>30</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="3" >
+       <spacer>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType" >
+         <enum>QSizePolicy::Expanding</enum>
+        </property>
+        <property name="sizeHint" >
+         <size>
+          <width>318</width>
+          <height>16</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="1" >
+       <widget class="QPushButton" name="m_buttonDisable" >
+        <property name="toolTip" >
+         <string>Allows you to change the behavior for all events at once</string>
+        </property>
+        <property name="text" >
+         <string>Turn O&amp;ff All</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" >
+       <widget class="QPushButton" name="m_buttonEnable" >
+        <property name="toolTip" >
+         <string>Allows you to change the behavior for all events at once</string>
+        </property>
+        <property name="text" >
+         <string>Turn O&amp;n All</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2" >
+       <widget class="KComboBox" name="m_comboEnable" />
+      </item>
+      <item row="2" column="2" >
+       <widget class="KComboBox" name="m_comboDisable" />
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="Q3GroupBox" name="m_actionsBox" >
+     <property name="title" >
+      <string>Actions</string>
+     </property>
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <layout class="QGridLayout" >
+      <property name="margin" >
+       <number>11</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item row="5" column="0" colspan="3" >
+       <widget class="QCheckBox" name="m_stderr" >
+        <property name="text" >
+         <string>Print a message to standard &amp;error output</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="3" >
+       <widget class="QCheckBox" name="m_messageBox" >
+        <property name="text" >
+         <string>Show a &amp;message in a pop-up window</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2" >
+       <widget class="QCheckBox" name="m_execute" >
+        <property name="text" >
+         <string>E&amp;xecute a program:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2" >
+       <layout class="QHBoxLayout" >
+        <property name="margin" >
+         <number>0</number>
+        </property>
+        <property name="spacing" >
+         <number>6</number>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="m_playSound" >
+          <property name="text" >
+           <string>Play a &amp;sound:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="m_playButton" >
+          <property name="toolTip" >
+           <string>Test the Sound</string>
+          </property>
+          <property name="text" >
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="6" column="0" colspan="3" >
+       <widget class="QCheckBox" name="m_taskbar" >
+        <property name="text" >
+         <string>Mark &amp;taskbar entry</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2" >
+       <widget class="QCheckBox" name="m_logToFile" >
+        <property name="text" >
+         <string>&amp;Log to a file:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0" >
+       <spacer>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType" >
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" >
+         <size>
+          <width>30</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="2" >
+       <widget class="KUrlRequester" name="m_executePath" >
+        <property name="enabled" >
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy" >
+         <sizepolicy>
+          <hsizetype>1</hsizetype>
+          <vsizetype>0</vsizetype>
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2" >
+       <widget class="KUrlRequester" name="m_logfilePath" >
+        <property name="enabled" >
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy" >
+         <sizepolicy>
+          <hsizetype>1</hsizetype>
+          <vsizetype>0</vsizetype>
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" >
+       <widget class="KUrlRequester" name="m_soundPath" >
+        <property name="enabled" >
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy" >
+         <sizepolicy>
+          <hsizetype>1</hsizetype>
+          <vsizetype>0</vsizetype>
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2" >
+       <widget class="QCheckBox" name="m_passivePopup" >
+        <property name="enabled" >
+         <bool>false</bool>
+        </property>
+        <property name="text" >
+         <string>&amp;Use a passive window that does not interrupt other work</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="m_extension" >
+       <property name="sizePolicy" >
+        <sizepolicy>
+         <hsizetype>4</hsizetype>
+         <vsizetype>0</vsizetype>
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text" >
+        <string>Less Options</string>
+       </property>
+       <property name="checkable" >
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType" >
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>20</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_playerButton" >
+       <property name="text" >
+        <string>Player Settings</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <layoutfunction spacing="KDialog::spacingHint" margin="KDialog::marginHint" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>KUrlRequester</class>
+   <extends>QWidget</extends>
+   <header>kurlrequester.h</header>
+   <container>1</container>
+   <pixmap></pixmap>
+  </customwidget>
+  <customwidget>
+   <class>K3ListView</class>
+   <extends>Q3ListView</extends>
+   <header>k3listview.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
+  <customwidget>
+   <class>KComboBox</class>
+   <extends>QComboBox</extends>
+   <header>kcombobox.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
+  <customwidget>
+   <class>Q3ListView</class>
+   <extends></extends>
+   <header>q3listview.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
+  <customwidget>
+   <class>Q3GroupBox</class>
+   <extends></extends>
+   <header>Qt3Support/Q3GroupBox</header>
+   <container>1</container>
+   <pixmap></pixmap>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>m_listview</tabstop>
+  <tabstop>m_playSound</tabstop>
+  <tabstop>m_playButton</tabstop>
+  <tabstop>m_soundPath</tabstop>
+  <tabstop>m_logToFile</tabstop>
+  <tabstop>m_logfilePath</tabstop>
+  <tabstop>m_execute</tabstop>
+  <tabstop>m_executePath</tabstop>
+  <tabstop>m_messageBox</tabstop>
+  <tabstop>m_passivePopup</tabstop>
+  <tabstop>m_stderr</tabstop>
+  <tabstop>m_affectAllApps</tabstop>
+  <tabstop>m_buttonEnable</tabstop>
+  <tabstop>m_comboEnable</tabstop>
+  <tabstop>m_buttonDisable</tabstop>
+  <tabstop>m_comboDisable</tabstop>
+  <tabstop>m_extension</tabstop>
+  <tabstop>m_playerButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
