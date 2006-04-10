@@ -1,11 +1,20 @@
 kde4_header()
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories(
+   ${KDE4_INCLUDE_DIR}
+   ${QT_INCLUDES}
+   ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_CURRENT_BINARY_DIR}
+)
 
 
 ########### next target ###############
 
-set(kdeeduplot_LIB_SRCS kplotobject.cpp kplotaxis.cpp kplotwidget.cpp )
+set(kdeeduplot_LIB_SRCS
+   kplotobject.cpp
+   kplotaxis.cpp
+   kplotwidget.cpp
+)
 
 kde4_automoc(${kdeeduplot_LIB_SRCS})
 
@@ -19,11 +28,13 @@ install_targets(${LIB_INSTALL_DIR} kdeeduplot )
 
 ########### install files ###############
 
-install_files( /include/libkdeedu FILES kplotobject.h kplotaxis.h kplotwidget.h )
+install_files(/include/libkdeedu FILES
+   kplotobject.h
+   kplotaxis.h
+   kplotwidget.h
+)
 
 kde4_footer()
-
-
 
 #original Makefile.am contents follow:
 
