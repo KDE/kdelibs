@@ -1,6 +1,7 @@
 kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR} )
+include_directories( ${KDE4_KIO_INCLUDES} )
 
 
 ########### next target ###############

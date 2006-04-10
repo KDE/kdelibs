@@ -1,7 +1,5 @@
 kde4_header()
 
-
-
 ########### install files ###############
 
 install_files( /include/kio FILES http.h )

@@ -1,7 +1,6 @@
 kde4_header()
 
-include_directories( ${CMAKE_SOURCE_DIR}/interfaces )
-
+include_directories( ${KDE4_KPARTS_INCLUDES} )
 
 ########### next target ###############
 
@@ -11,7 +10,7 @@ kde4_automoc(${kdocument_LIB_SRCS})
 
 kde4_add_library(kdocument SHARED ${kdocument_LIB_SRCS})
 
-target_link_libraries(kdocument  ${KDE4_KDECORE_LIBS} kparts )
+target_link_libraries(kdocument  ${KDE4_KPARTS_LIBS} )
 
 set_target_properties(kdocument PROPERTIES VERSION 0.0.0 SOVERSION 0 )
 install_targets(${LIB_INSTALL_DIR} kdocument )

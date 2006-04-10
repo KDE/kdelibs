@@ -2,7 +2,7 @@ kde4_header()
 
 add_subdirectory( icons )
 
-
+include_directories( ${KDE4_KIO_INCLUDES} )
 
 ########### next target ###############
 
@@ -26,7 +26,7 @@ kde4_add_dcop_stubs(kimproxy_LIB_SRCS ${kimproxy_DCOP_STUB_SRCS})
 
 kde4_add_library(kimproxy SHARED ${kimproxy_LIB_SRCS})
 
-target_link_libraries(kimproxy  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(kimproxy  ${KDE4_KIO_LIBS} )
 
 set_target_properties(kimproxy PROPERTIES VERSION 0.0.0 SOVERSION 0 )
 install_targets(${LIB_INSTALL_DIR} kimproxy )
