@@ -22,7 +22,7 @@
 
 #include "kdelibs_export.h"
 
-#define KDE_VERSION_STRING "3.9.02 (>= 20050906 DONTPORT)"
+#define KDE_VERSION_STRING "3.9.02 (>= 20060410 DONTPORT)"
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 02
