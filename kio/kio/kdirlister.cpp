@@ -944,7 +944,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
   // check if anyone wants the mimetypes immediately
   bool delayedMimeTypes = true;
   for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
-    delayedMimeTypes &= kdl->d->delayedMimeTypes;
+    delayedMimeTypes = delayedMimeTypes && kdl->d->delayedMimeTypes;
 
   // avoid creating these QStrings again and again
   static const QString& dot = KGlobal::staticQString(".");
@@ -1521,7 +1521,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   // check if anyone wants the mimetypes immediately
   bool delayedMimeTypes = true;
   for ( kdl = listers->first(); kdl; kdl = listers->next() )
-    delayedMimeTypes &= kdl->d->delayedMimeTypes;
+    delayedMimeTypes = delayedMimeTypes && kdl->d->delayedMimeTypes;
 
   // should be enough to get reasonable speed in most cases
   QDict<KFileItem> fileItems( 9973 );
