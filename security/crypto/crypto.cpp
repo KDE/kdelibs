@@ -105,8 +105,7 @@ CipherItem::CipherItem( Q3ListView *view, const QString& cipher, int bits,
     m_bits = bits;
     m_module = module;
 
-    QString tmp( i18n("%1 (%2 of %3 bits)") );
-    setText( 0, tmp.arg( cipher ).arg( bits ).arg( maxBits ));
+    setText( 0, i18n("%1 (%2 of %3 bits)", cipher, bits, maxBits ) );
 }
 
 void CipherItem::stateChange( bool )
@@ -1484,7 +1483,7 @@ TryImportPassAgain:
 
    new YourCertItem(yourSSLBox,
                     cert->toString(),
-                    QString(),  // the password - don't store it yet!
+                    QString(), // the password - don't store it yet!
                     name,
                     this );
 
@@ -2190,9 +2189,9 @@ void KCryptoConfig::slotGeneratePersonal() {
                << i18n("SSL Personal Request")
                << i18n("SSL Server Request")
                << i18n("Netscape SSL")
-               << i18n("Server certificate authority", "Server CA")
-               << i18n("Personal certificate authority", "Personal CA")
-               << i18n("Secure MIME certificate authority", "S/MIME CA");
+               << i18nc("Server certificate authority", "Server CA")
+               << i18nc("Personal certificate authority", "Personal CA")
+               << i18nc("Secure MIME certificate authority", "S/MIME CA");
 #endif
 
 }
