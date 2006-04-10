@@ -27,9 +27,9 @@ set(klocaletest_SRCS klocaletest.cpp )
 
 kde4_automoc(${klocaletest_SRCS})
 
-kde4_add_executable(klocaletest ${klocaletest_SRCS})
+kde4_add_executable(klocaletest RUN_UNINSTALLED ${klocaletest_SRCS})
 
-target_link_libraries(klocaletest RUN_UNINSTALLED ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(klocaletest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-klocaletest ${EXECUTABLE_OUTPUT_PATH}/klocaletest)
 
