@@ -50,11 +50,11 @@ SMIVItem::SMIVItem ( Weaver *weaver,
         connect ( m_thumb,  SIGNAL ( done( Job* ) ),
                   SLOT ( computeThumbReady ( Job* ) ) );
 
-        m_sequence->append ( m_fileloader );
+        m_sequence->addJob ( m_fileloader );
         connect ( m_fileloader,  SIGNAL ( failed ( Job* ) ),
                   m_sequence,  SLOT ( stop ( Job* ) ) );
-        m_sequence->append ( m_imageloader );
-        m_sequence->append ( m_thumb );
+        m_sequence->addJob ( m_imageloader );
+        m_sequence->addJob ( m_thumb );
         weaver->enqueue ( m_sequence );
 //         weaver->enqueue( m_fileloader );
 //         weaver->enqueue ( m_imageloader );
