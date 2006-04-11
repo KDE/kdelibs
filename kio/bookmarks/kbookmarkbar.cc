@@ -310,7 +310,7 @@ static QString handleToolbarDragMoveEvent(
     p->m_sepToolBar = tb;
     p->m_sepToolBar->removeItemDelayed(const_sepId);
 
-    int index;
+    int index = 0;
     KToolBarButton* b;
 
     b = dynamic_cast<KToolBarButton*>(tb->childAt(pos));
