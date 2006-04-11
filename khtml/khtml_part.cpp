@@ -30,6 +30,8 @@
 //#define SPEED_DEBUG
 #include "khtml_part.h"
 
+#include "ui_htmlpageinfo.h"
+
 #include "khtml_pagecache.h"
 
 #include "dom/dom_string.h"
@@ -63,8 +65,6 @@ using namespace DOM;
 
 #include <kjs/function.h>
 #include <kjs/interpreter.h>
-
-#include "htmlpageinfo.h"
 
 #include <sys/types.h>
 #include <assert.h>
@@ -4004,11 +4004,15 @@ void KHTMLPart::slotViewDocumentSource()
 
 void KHTMLPart::slotViewPageInfo()
 {
-  KHTMLInfoDlg *dlg = new KHTMLInfoDlg(NULL, "KHTML Page Info Dialog", false, Qt::WDestructiveClose);
-  dlg->_close->setGuiItem(KStdGuiItem::close());
+  Ui_KHTMLInfoDlg ui;
+
+  QDialog *dlg = new QDialog(0, "KHTML Page Info Dialog", false, Qt::WDestructiveClose);
+  ui.setupUi(dlg);
+
+  ui._close->setGuiItem(KStdGuiItem::close());
 
   if (d->m_doc)
-     dlg->_title->setHtml(d->m_doc->title().string());
+     ui._title->setHtml(d->m_doc->title().string());
 
   // If it's a frame, set the caption to "Frame Information"
   if ( parentPart() && d->m_doc && d->m_doc->isHTMLDocument() ) {
@@ -4021,21 +4025,21 @@ void KHTMLPart::slotViewPageInfo()
     editStr = i18n("   <a href=\"%1\">[Properties]</a>", d->m_pageServices);
 
   QString squeezedURL = KStringHandler::csqueeze( url().prettyURL(), 80 );
-  dlg->_url->setHtml("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
+  ui._url->setHtml("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
   if (lastModified().isEmpty())
   {
-    dlg->_lastModified->hide();
-    dlg->_lmLabel->hide();
+    ui._lastModified->hide();
+    ui._lmLabel->hide();
   }
   else
-    dlg->_lastModified->setText(lastModified());
+    ui._lastModified->setText(lastModified());
 
   const QString& enc = encoding();
   if (enc.isEmpty()) {
-    dlg->_eLabel->hide();
-    dlg->_encoding->hide();
+    ui._eLabel->hide();
+    ui._encoding->hide();
   } else {
-    dlg->_encoding->setPlainText(enc);
+    ui._encoding->setPlainText(enc);
   }
   /* populate the list view now */
   const QStringList headers = d->m_httpHeaders.split("\n");
@@ -4047,7 +4051,7 @@ void KHTMLPart::slotViewPageInfo()
     const QStringList header = (*it).split(QRegExp(":[ ]+"));
     if (header.count() != 2)
        continue;
-    new Q3ListViewItem(dlg->_headers, header[0], header[1]);
+    new Q3ListViewItem(ui._headers, header[0], header[1]);
   }
 
   dlg->show();

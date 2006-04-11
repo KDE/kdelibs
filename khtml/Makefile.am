@@ -31,10 +31,10 @@ CLEANFILES = dummy.cpp
 lib_LTLIBRARIES = libkhtml.la
 kde_module_LTLIBRARIES = libkhtmlpart.la khtmlimagepart.la
 
-libkhtml_la_SOURCES = kjserrordlg.ui3 khtmlview.cpp khtml_part.cpp khtml_run.cpp\
+libkhtml_la_SOURCES = kjserrordlg.cpp kjserrordlgbase.ui khtmlview.cpp khtml_part.cpp khtml_run.cpp\
 			khtml_factory.cpp khtml_settings.cc khtml_events.cpp \
 			khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel \
-			khtml_iface.cc khtml_printsettings.cpp htmlpageinfo.ui3 \
+			khtml_iface.cc khtml_printsettings.cpp htmlpageinfo.ui \
 			khtmlimage.cpp
 
 libkhtml_la_METASOURCES = AUTO

@@ -276,6 +276,7 @@ khtml_pagecache.cpp
 khtml_iface.cc
 khtml_printsettings.cpp
 khtmlimage.cpp
+kjserrordlg.cpp
 ${khtmlxml_STAT_SRCS}
 ${khtmlhtml_STAT_SRCS}
 ${khtmlrender_STAT_SRCS}
@@ -290,12 +291,10 @@ ${kjava_STAT_SRCS}
 
 kde4_automoc(${khtml_LIB_SRCS})
 
-set( khtml_UI3
-kjserrordlg.ui3
-htmlpageinfo.ui3
+kde4_add_ui_files(khtml_LIB_SRCS
+ kjserrordlgbase.ui
+ htmlpageinfo.ui
 )
-
-kde4_add_ui3_files(khtml_LIB_SRCS ${khtml_UI3} )
 
 set( khtml_DCOP_SKEL_SRCS
 khtml_iface.h
