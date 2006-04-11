@@ -1218,7 +1218,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
                     && _event->xclient.data.l[ 3 ] != 0 )
                     {
                     if( QX11Info::appUserTime() == 0
-                        || ( _event->xclient.data.l[ 3 ] - QX11Info::appUserTime() ) < 100000U )
+                        || NET::timestampCompare( _event->xclient.data.l[ 3 ], QX11Info::appUserTime() ) > 0 )
                         { // and the timestamp looks reasonable
                         QX11Info::setAppUserTime(_event->xclient.data.l[ 3 ]); // update our qt_x_user_time from it
                         }
@@ -1226,7 +1226,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
                 else // normal DND, only needed until Qt updates qt_x_user_time from XdndDrop
                     {
                     if( QX11Info::appUserTime() == 0
-                        || ( _event->xclient.data.l[ 2 ] - QX11Info::appUserTime() ) < 100000U )
+                        || NET::timestampCompare( _event->xclient.data.l[ 2 ], QX11Info::appUserTime() ) > 0 )
                         { // the timestamp looks reasonable
                         QX11Info::setAppUserTime(_event->xclient.data.l[ 2 ]); // update our qt_x_user_time from it
                         }
@@ -1346,7 +1346,7 @@ void KApplication::updateUserTimestamp( quint32 time )
         XDestroyWindow( QX11Info::display(), w );
     }
     if( QX11Info::appUserTime() == 0
-        || time - QX11Info::appUserTime() < 1000000000U ) // check time > qt_x_user_time, handle wrapping
+        || NET::timestampCompare( time, QX11Info::appUserTime()) > 0 ) // time > appUserTime
         QX11Info::setAppUserTime(time);
 #endif
 }

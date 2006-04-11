@@ -4345,4 +4345,38 @@ void NETRootInfo::virtual_hook( int, void* )
 void NETWinInfo::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
+// Functions for X timestamp comparing. For Time being 32bit they're fairly simple
+// (the #if 0 part), but on 64bit architectures Time is 64bit unsigned long,
+// so there special care needs to be taken to always use only the lower 32bits.
+#if 0
+int NET::timestampCompare( Time time1, Time time2 ) // like strcmp()
+    {
+    if( time1 == time2 )
+        return 0;
+    return ( time1 - time2 ) < 0x7fffffffU ? 1 : -1; // time1 > time2 -> 1, handle wrapping
+    }
+
+Time NET::timestampDiff( Time time1, Time time2 ) // returns time2 - time1
+    { // no need to handle wrapping?
+    return time2 - time1;
+    }
+#else
+int NET::timestampCompare( unsigned long time1_, unsigned long time2_ ) // like strcmp()
+    {
+    quint32 time1 = time1_;
+    quint32 time2 = time2_;
+    if( time1 == time2 )
+        return 0;
+    return quint32( time1 - time2 ) < 0x7fffffffU ? 1 : -1; // time1 > time2 -> 1, handle wrapping
+    }
+
+int NET::timestampDiff( unsigned long time1_, unsigned long time2_ ) // returns time2 - time1
+    { // no need to handle wrapping?
+    quint32 time1 = time1_;
+    quint32 time2 = time2_;
+    return quint32( time2 - time1 );
+    }
+#endif
+
+
 #endif

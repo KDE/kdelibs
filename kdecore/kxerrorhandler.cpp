@@ -26,6 +26,7 @@
 #ifdef Q_WS_X11 //FIXME
 
 #include "kxerrorhandler.h"
+#include "netwm_def.h"
 
 KXErrorHandler** KXErrorHandler::handlers = NULL;
 int KXErrorHandler::pos = 0;
@@ -99,7 +100,8 @@ int KXErrorHandler::handler_wrapper( Display* dpy, XErrorEvent* e )
 int KXErrorHandler::handle( Display* dpy, XErrorEvent* e )
     {
     if( dpy == display
-        && e->serial - first_request < 1000000000 ) // e->serial > first_request, with wrapping
+        // e->serial > first_request , compare like X timestamps to handle wrapping
+        && NET::timestampCompare( e->serial, first_request ) > 0 )
         { // it's for us
         //qDebug( "Handling: %p", static_cast< void* >( this ));
         if( user_handler1 != NULL && user_handler1( e->request_code, e->error_code, e->resourceid ))
