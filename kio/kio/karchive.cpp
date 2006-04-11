@@ -152,6 +152,7 @@ bool KArchive::createDevice( QIODevice::OpenMode mode )
             }
             Q_ASSERT( d->saveFile->file() );
             m_dev = d->saveFile->file();
+            Q_ASSERT( m_dev );
         }
         break;
     case QIODevice::ReadOnly:
