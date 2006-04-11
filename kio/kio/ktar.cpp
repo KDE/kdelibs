@@ -105,7 +105,11 @@ KTar::KTar( const QString& fileName, const QString & _mimetype )
 bool KTar::createDevice( QIODevice::OpenMode mode )
 {
     Q_UNUSED( mode );
-    if( d->mimetype != "application/x-tar" )
+    if( d->mimetype == "application/x-tar" )
+    {
+        return KArchive::createDevice( mode );
+    }
+    else
     {
         // The compression filters are very slow with random access.
         // So instead of applying the filter to the device,
@@ -122,8 +126,8 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
         d->tmpFile->setAutoDelete(true);
 
         setDevice( d->tmpFile->file() );
+        return true;
     }
-    return true;
 }
 
 KTar::KTar( QIODevice * dev )
