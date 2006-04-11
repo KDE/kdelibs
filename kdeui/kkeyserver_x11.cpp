@@ -81,7 +81,7 @@ struct ModInfo
 	int modX;
 #endif
 	const char* psName;
-	QString sLabel;
+	QString* sLabel; // this struct is used in static objects, so must use a pointer here.
 };
 
 struct SymVariation
@@ -107,10 +107,10 @@ struct TransKey {
 
 static ModInfo g_rgModInfo[4] =
 {
-	{ Qt::SHIFT,   X11_ONLY(ShiftMask)   I18N_NOOP("Shift"), QString() },
-	{ Qt::CTRL,    X11_ONLY(ControlMask) I18N_NOOP("Ctrl"), QString() },
-	{ Qt::ALT,     X11_ONLY(Mod1Mask)    I18N_NOOP("Alt"), QString() },
-	{ Qt::META,    X11_ONLY(Mod4Mask)    I18N_NOOP("Meta"), QString() }
+	{ Qt::SHIFT,   X11_ONLY(ShiftMask)   I18N_NOOP("Shift"), 0 },
+	{ Qt::CTRL,    X11_ONLY(ControlMask) I18N_NOOP("Ctrl"), 0 },
+	{ Qt::ALT,     X11_ONLY(Mod1Mask)    I18N_NOOP("Alt"), 0 },
+	{ Qt::META,    X11_ONLY(Mod4Mask)    I18N_NOOP("Meta"), 0 }
 };
 
 // Special Names List
@@ -396,11 +396,11 @@ bool initializeMods()
 static void intializeKKeyLabels()
 {
 	KConfigGroup cg( KGlobal::config(), "Keyboard" );
-	g_rgModInfo[0].sLabel = cg.readEntry( "Label Shift", i18n(g_rgModInfo[0].psName) );
-	g_rgModInfo[1].sLabel = cg.readEntry( "Label Ctrl", i18n(g_rgModInfo[1].psName) );
-	g_rgModInfo[2].sLabel = cg.readEntry( "Label Alt", i18n(g_rgModInfo[2].psName) );
-	g_rgModInfo[3].sLabel = cg.readEntry( "Label Win", i18n(g_rgModInfo[3].psName) );
-	g_bMacLabels = (g_rgModInfo[2].sLabel == "Command");
+	g_rgModInfo[0].sLabel = new QString( cg.readEntry( "Label Shift", i18n(g_rgModInfo[0].psName) ) );
+	g_rgModInfo[1].sLabel = new QString( cg.readEntry( "Label Ctrl", i18n(g_rgModInfo[1].psName) ) );
+	g_rgModInfo[2].sLabel = new QString( cg.readEntry( "Label Alt", i18n(g_rgModInfo[2].psName) ) );
+	g_rgModInfo[3].sLabel = new QString( cg.readEntry( "Label Win", i18n(g_rgModInfo[3].psName) ) );
+	g_bMacLabels = (*g_rgModInfo[2].sLabel == "Command");
 	g_bInitializedKKeyLabels = true;
 }
 
@@ -650,7 +650,7 @@ static QString modToString( uint mod, bool bUserSpace )
 			if( !s.isEmpty() )
 				s += '+';
 			s += (bUserSpace)
-			          ? g_rgModInfo[i].sLabel
+			          ? *g_rgModInfo[i].sLabel
 				  : QString(g_rgModInfo[i].psName);
 		}
 	}
@@ -666,7 +666,7 @@ uint stringUserToMod( const QString& mod )
 {
 	QString s;
 	for( int i = 3; i >= 0; i-- ) {
-		if( mod.toLower() == g_rgModInfo[i].sLabel.toLower())
+		if( mod.toLower() == g_rgModInfo[i].sLabel->toLower())
 			return g_rgModInfo[i].modQt;
 	}
 	return 0;
