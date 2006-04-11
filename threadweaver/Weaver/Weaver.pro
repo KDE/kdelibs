@@ -13,6 +13,13 @@ HEADERS += WeaverInterface.h \
 	SuspendingState.h SuspendedState.h \
         ShuttingDownState.h DestructedState.h \
         WeaverObserver.h 
-CONFIG += dll warn_on debug thread
+CONFIG += dll warn_on thread release
 VERSION = 0.4.0
 TARGET = ThreadWeaver
+
+# CONFIG(debug, debug|release) {
+# 	DEFINES += DEBUG
+# } else {
+#         DEFINES += RELEASE
+# }
+

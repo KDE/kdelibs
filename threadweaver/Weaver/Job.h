@@ -126,7 +126,7 @@ namespace ThreadWeaver {
         /** Query whether the job has an unresolved dependency.
             In case it does, it will not be processed by a thread trying to
             request a job. */
-        bool hasUnresolvedDependencies();
+        virtual bool hasUnresolvedDependencies();
 
     signals:
 	/** This signal is emitted when this job is being processed by a
@@ -178,6 +178,9 @@ namespace ThreadWeaver {
 	/** m_finished is set to true when the Job has been executed. */
         bool m_finished;
 
+    public:
+        /** This method should be useful for debugging purposes. */
+        static void DumpJobDependencies();
     };
 
 }

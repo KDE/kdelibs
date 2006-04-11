@@ -15,11 +15,22 @@ namespace ThreadWeaver {
     */
     class JobCollection::JobList : public QList < QPointer <Job> > {};
 
+    class JobCollection::DummyJob : public Job
+    {
+    public:
+        DummyJob ()
+            : Job ()
+        {}
+
+        void run() {}
+    };
+
     JobCollection::JobCollection ( QObject *parent )
         : Job ( parent )
         , m_elements ( new JobList() )
         , m_queued ( false )
         , m_weaver ( 0 )
+        , m_dummy ( 0 )
     {
     }
 
@@ -55,8 +66,8 @@ namespace ThreadWeaver {
         Q_UNUSED( job );
         P_ASSERT ( m_queued == true ); // should only be stopped once started,
                                        // maybe a bit strict...
-        // job has failed, so we dequeue everything after job:
-        // find job in m_elements:
+
+        // dequeue everything:
         for ( int index = 1; index < m_elements->size(); ++index )
         {   // no job should have been deleted while it is queued:
             P_ASSERT( m_elements->at(  index ) );
@@ -70,20 +81,35 @@ namespace ThreadWeaver {
 
     void JobCollection::aboutToBeQueued ( WeaverInterface *weaver )
     {
+        Q_ASSERT ( m_queued == false ); // never queue twice
+
         int i;
 
         m_weaver = weaver;
+
+        if ( hasUnresolvedDependencies() )
+        {
+            m_dummy = new DummyJob ();
+        }
 
         if ( m_elements->size() > 0 )
         {
             // set up the dependencies:
             for ( i = 1; i < m_elements->size(); ++i )
             {
-                P_ASSERT ( m_elements->at( i ) != 0 );
-                addDependency( m_elements->at( i ) );
-                m_weaver->enqueue( m_elements->at( i ) );
+                Job* job = m_elements->at( i );
+                P_ASSERT ( job != 0 );
+
+                addDependency( job );
+
+                if ( m_dummy ) // we have unresolved dependencies at queueing time
+                {
+                    job->addDependency( m_dummy );
+                }
+
+                m_weaver->enqueue( job );
             }
-            m_elements->at( 0 )->cloneDependencies( this );
+
             m_elements->at( 0 )->aboutToBeQueued( weaver );
         }
 
@@ -112,6 +138,19 @@ namespace ThreadWeaver {
     const int JobCollection::jobListLength()
     {
         return m_elements->size();
+    }
+
+    bool JobCollection::hasUnresolvedDependencies()
+    {
+        bool unresolved = Job::hasUnresolvedDependencies();
+
+        if ( ! unresolved )
+        {   // this will delete the dependencies of all jobs on m_dummy:
+            // delete 0; is ok:
+            delete m_dummy; m_dummy = 0;
+        }
+
+        return unresolved;
     }
 
 }

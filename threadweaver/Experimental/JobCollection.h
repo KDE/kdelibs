@@ -29,6 +29,10 @@ namespace ThreadWeaver {
         */
         virtual void addJob ( Job* );
 
+        /** Overload to manage recursive sets. */
+        bool hasUnresolvedDependencies();
+
+
     public slots:
         /** Stop processing, dequeue all remaining Jobs.
             job is supposed to be an element of the collection.
@@ -64,6 +68,10 @@ namespace ThreadWeaver {
 
         /** The Weaver interface this collection is queued in. */
         WeaverInterface *m_weaver;
+
+        /* A dummy job used to manage dependencies. */
+        class DummyJob;
+        DummyJob* m_dummy;
     };
 
 }

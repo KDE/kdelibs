@@ -12,6 +12,8 @@ QMutex s_GlobalMutex;
 
 class AppendCharacterJob : public ThreadWeaver::Job
 {
+    Q_OBJECT
+
 public:
     AppendCharacterJob ( QChar c = QChar(), QString* stringref = 0 , QObject* parent = 0 )
         : ThreadWeaver::Job ( parent )
@@ -67,6 +69,7 @@ private slots:
         jobCollection.addJob ( &jobC );
 
         ThreadWeaver::Weaver::instance()->enqueue ( &jobCollection );
+        ThreadWeaver::Job::DumpJobDependencies();
         ThreadWeaver::Weaver::instance()->finish();
 
         QVERIFY( sequence.length() == 3 );
@@ -86,6 +89,7 @@ private slots:
         jobSequence.addJob ( &jobC );
 
         ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
+        ThreadWeaver::Job::DumpJobDependencies();
         ThreadWeaver::Weaver::instance()->finish();
         QCOMPARE ( sequence, QString( "abc" ) );
     }
@@ -94,7 +98,7 @@ private slots:
        the execution time. Anyway, it will fail if the jobs are not executed
        in the right order. */
     void MassiveJobSequenceTest() {
-        const int NoOfChars = 2048;
+        const int NoOfChars = 1024;
         const char* Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const int SizeOfAlphabet = strlen( Alphabet );
         AppendCharacterJob jobs [NoOfChars];
@@ -116,6 +120,7 @@ private slots:
             jobSequence.addJob ( & ( jobs[i] ) );
         }
         ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
+        // ThreadWeaver::Job::DumpJobDependencies();
         ThreadWeaver::Weaver::instance()->finish();
         QCOMPARE ( sequence, in );
     }
@@ -123,17 +128,21 @@ private slots:
     void SimpleRecursiveSequences() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
+        AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
+        AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
         ThreadWeaver::JobSequence jobSequence1( this );
-        jobSequence1.addJob( &jobA );
+        jobSequence1.addJob( &jobB );
         ThreadWeaver::JobSequence jobSequence2( this );
+        jobSequence2.addJob( &jobA );
         jobSequence2.addJob( &jobSequence1 );
+        jobSequence2.addJob( &jobC );
 
         ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence2 );
         ThreadWeaver::Weaver::instance()->finish();
-        QCOMPARE ( sequence, QString( "a" ) );
+        QCOMPARE ( sequence, QString( "abc" ) );
     }
 
-    void SequenceOfSequencesTest() {
+/*    void SequenceOfSequencesTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
         AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -169,9 +178,11 @@ private slots:
         ThreadWeaver::Weaver::instance()->finish();
         QCOMPARE ( sequence, QString( "abcdefghij" ) );
     }
+*/
 
 };
 
 QTEST_MAIN ( JobTests )
 
 #include "JobTests.moc"
+

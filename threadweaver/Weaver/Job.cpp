@@ -18,6 +18,7 @@
 #include <QMutex>
 #include <QObject>
 #include <QMultiMap>
+#include <QMetaObject>
 #include <QWaitCondition>
 #include <DebuggingAids.h>
 #include <Thread.h>
@@ -172,6 +173,19 @@ namespace ThreadWeaver {
 
     void Job::aboutToBeQueued ( WeaverInterface* )
     {
+    }
+
+    void Job::DumpJobDependencies()
+    {
+        QMutexLocker l(sm_mutex);
+
+        debug ( 0, "Job Dependencies:\n" );
+        for ( JobMultiMap::const_iterator it = sm_dep()->begin(); it != sm_dep()->end(); ++it )
+        {
+            debug( 0, "  : %p (%s) --> %p (%s)\n", it.key(), it.key()->metaObject()->className(),
+                   it.value(), it.value()->metaObject()->className() );
+        }
+        debug ( 0, "-----------------\n" );
     }
 
 }
