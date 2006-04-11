@@ -33,7 +33,7 @@ static const char collClassDef[] = "class %CollName : public QObject, public QDe
                                 "private:\n"
                                 "	QList<QDesignerCustomWidgetInterface*> m_plugins;\n"
                                 "};\n\n"
-                                "Q_EXPORT_PLUGIN(%CollName)\n\n";
+                                "Q_EXPORT_PLUGIN2(%CollName, %CollName)\n\n";
 
 static const char collClassImpl[] = "%CollName::%CollName(QObject *parent)\n"
                                 "	: QObject(parent)"
