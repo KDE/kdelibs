@@ -1683,7 +1683,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
                     && _event->xclient.data.l[ 3 ] != 0 )
                     {
                     if( qt_x_user_time == 0
-                        || ( _event->xclient.data.l[ 3 ] - qt_x_user_time ) < 100000U )
+                        || NET::timestampCompare( _event->xclient.data.l[ 3 ], qt_x_user_time ) > 0 )
                         { // and the timestamp looks reasonable
                         qt_x_user_time = _event->xclient.data.l[ 3 ]; // update our qt_x_user_time from it
                         }
@@ -1691,7 +1691,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
                 else // normal DND, only needed until Qt updates qt_x_user_time from XdndDrop
                     {
                     if( qt_x_user_time == 0
-                        || ( _event->xclient.data.l[ 2 ] - qt_x_user_time ) < 100000U )
+                        || NET::timestampCompare( _event->xclient.data.l[ 2 ], qt_x_user_time ) > 0 )
                         { // the timestamp looks reasonable
                         qt_x_user_time = _event->xclient.data.l[ 2 ]; // update our qt_x_user_time from it
                         }
@@ -1811,7 +1811,7 @@ void KApplication::updateUserTimestamp( unsigned long time )
         XDestroyWindow( qt_xdisplay(), w );
     }
     if( qt_x_user_time == 0
-        || time - qt_x_user_time < 1000000000U ) // check time > qt_x_user_time, handle wrapping
+        || NET::timestampCompare( time, qt_x_user_time ) > 0 ) // check time > qt_x_user_time
         qt_x_user_time = time;
 #endif
 }
