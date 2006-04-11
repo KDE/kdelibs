@@ -632,7 +632,7 @@ bool KHTMLPart::openURL( const KUrl &url )
         d->m_statusBarUALabel->setUseCursor(false);
         d->m_statusBarExtension->addStatusBarItem(d->m_statusBarUALabel, 0, false);
         d->m_statusBarUALabel->setPixmap(SmallIcon("agent", instance()));
-      } 
+      }
       d->m_statusBarUALabel->setToolTip(i18n("The fake user-agent '%1' is in use.", userAgent));
     } else if (d->m_statusBarUALabel) {
       d->m_statusBarExtension->removeStatusBarItem(d->m_statusBarUALabel);
@@ -3721,7 +3721,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   KMimeType::Ptr typ = KMimeType::findByURL( u );
 
   if ( typ )
-    com = typ->comment( u, false );
+    com = typ->comment( u );
 
   if ( !u.isValid() ) {
     setStatusBarText(Qt::escape(u.prettyURL()), BarHoverText);
@@ -6374,7 +6374,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     {
       // Text or image link...
       u = completeURL( d->m_strSelectedURL );
-      pix = KMimeType::pixmapForURL(u, 0, K3Icon::Desktop, K3Icon::SizeMedium);
+      pix = KIO::pixmapForURL(u, 0, K3Icon::Desktop, K3Icon::SizeMedium);
     }
 
     u.setPass(QString());
@@ -7231,7 +7231,7 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
     d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet_open", instance()));
     connect(d->m_statusBarWalletLabel, SIGNAL(leftClickedURL()), SLOT(launchWalletManager()));
     connect(d->m_statusBarWalletLabel, SIGNAL(rightClickedURL()), SLOT(walletMenu()));
-  } 
+  }
   d->m_statusBarWalletLabel->setToolTip(i18n("The wallet '%1' is open and being used for form data and passwords.", KWallet::Wallet::NetworkWallet()));
 #endif // KHTML_NO_WALLET
 }
@@ -7367,7 +7367,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
         d->m_statusBarPopupLabel->setUseCursor( false );
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );
         d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window_suppressed", instance() ) );
-        
+
 		d->m_statusBarPopupLabel->setToolTip(i18n("This page was prevented from opening a new window via JavaScript." ) );
 
         connect(d->m_statusBarPopupLabel, SIGNAL(leftClickedURL()), SLOT(suppressedPopupMenu()));

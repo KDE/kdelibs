@@ -226,13 +226,16 @@ public:
 protected:
   void init( KDesktopFile *config );
 
-protected:
+private:
   QString m_strName;
   QString m_strIcon;
   QString m_strComment;
+protected: // used by KMimeType
   QMap<QString,QVariant> m_mapProps;
+private:
   QMap<QString,QVariant::Type> m_mapPropDefs;
 
+private:
   bool m_bValid:1;
   bool m_bDerived:1;
 protected:

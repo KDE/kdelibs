@@ -229,7 +229,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             gridLayout->addWidget( lb1, 0, 0, 1, 2 ); // takes the complete first line
 
             lb1 = new QLabel( this );
-            lb1->setPixmap( KMimeType::pixmapForURL( d->dest ) );
+            lb1->setPixmap( KIO::pixmapForURL( d->dest ) );
             gridLayout->addWidget( lb1, 1, 0, 3, 1 ); // takes the first column on rows 1-3
 
             int row = 1;
@@ -263,7 +263,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                 gridLayout->addWidget( lb2, 5, 0, 1, 2 ); // takes the complete first line
 
                 lb2 = new QLabel( this );
-                lb2->setPixmap( KMimeType::pixmapForURL( d->src ) );
+                lb2->setPixmap( KIO::pixmapForURL( d->src ) );
                 gridLayout->addWidget( lb2, 6, 0, 3, 1 ); // takes the first column on rows 6-8
 
                 row = 6;

@@ -795,12 +795,12 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     u.setPath( QDir::rootPath() );
     QString text = i18n("Root Folder: %1",  u.path() );
     d->pathCombo->addDefaultURL( u,
-                                 KMimeType::pixmapForURL( u, 0, K3Icon::Small ),
+                                 KIO::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
 
     u.setPath( QDir::homePath() );
     text = i18n("Home Folder: %1",  u.path( +1 ) );
-    d->pathCombo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, K3Icon::Small ),
+    d->pathCombo->addDefaultURL( u, KIO::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
 
     KUrl docPath;
@@ -810,14 +810,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     {
         text = i18n("Documents: %1",  docPath.path( +1 ) );
         d->pathCombo->addDefaultURL( docPath,
-                                     KMimeType::pixmapForURL( docPath, 0, K3Icon::Small ),
+                                     KIO::pixmapForURL( docPath, 0, K3Icon::Small ),
                                      text );
     }
 
     u.setPath( KGlobalSettings::desktopPath() );
     text = i18n("Desktop: %1",  u.path( +1 ) );
     d->pathCombo->addDefaultURL( u,
-                                 KMimeType::pixmapForURL( u, 0, K3Icon::Small ),
+                                 KIO::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
 
     d->url = getStartURL( startDir, d->fileClass );

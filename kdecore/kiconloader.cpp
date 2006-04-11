@@ -280,7 +280,7 @@ KIconLoader::~KIconLoader()
             break;
             }
         }
-#endif    
+#endif
     /* antlarr: There's no need to delete d->mpThemeRoot as it's already
        deleted when the elements of d->links are deleted */
     d->mpThemeRoot=0;
@@ -583,6 +583,18 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     return icon.path;
 }
 
+QPixmap KIconLoader::loadMimeTypeIcon( const QString& iconName, K3Icon::Group group, int size,
+                                       int state, QString *path_store ) const
+{
+    if ( !d->extraDesktopIconsLoaded )
+    {
+        QPixmap pixmap = loadIcon( iconName, group, size, state, path_store, true );
+        if (!pixmap.isNull() ) return pixmap;
+        const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
+    }
+    return loadIcon( iconName, group, size, state, path_store, false );
+}
+
 QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int size,
                               int state, QString *path_store, bool canReturnNull) const
 {
@@ -857,7 +869,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 #ifdef __GNUC__
     #warning "Check this by going to a site with a favicon. I almost always get masks backwards! - Maks"
 #endif
-            //### I probably screwed it up, and it looked buggy already! 
+            //### I probably screwed it up, and it looked buggy already!
 
             //Merge in favicon mask and the icon mask.
             if (!fmask.isNull())
@@ -875,7 +887,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
                 QPainter p(&mask);
                 p.fillRect(x, y, favIcon.width(), favIcon.height(), Qt::color1);
             }
-	    
+
             pix.setMask(mask);
         }
         QPainter painter( &pix );
@@ -955,14 +967,14 @@ QString KIconLoader::moviePath(const QString& name, K3Icon::Group group, int siz
 	    size = d->mpGroups[group].size;
 
         K3Icon icon;
-	
+
     foreach(KIconThemeNode *themeNode, d->links)
 	{
 	    icon = themeNode->theme->iconPath(file, size, K3Icon::MatchExact);
 	    if (icon.isValid())
 		break;
 	}
-	
+
 	if ( !icon.isValid() )
 	{
     	foreach(KIconThemeNode *themeNode, d->links)
@@ -972,7 +984,7 @@ QString KIconLoader::moviePath(const QString& name, K3Icon::Group group, int siz
 		    break;
 	    }
 	}
-	
+
 	file = icon.isValid() ? icon.path : QString();
     }
     return file;
@@ -1163,7 +1175,7 @@ bool KIconLoader::alphaBlending(K3Icon::Group group) const
 #endif
 
 #ifdef DELAYED_LOADING_PORTED
-   
+
 class KIconFactory
     : public QIconFactory
     {
@@ -1279,7 +1291,7 @@ QPixmap* KIconFactory::createPixmap( const QIcon&, QIcon::Size, QIcon::Mode mode
         return NULL;
 #endif
         }
-#endif    
+#endif
     // QIconSet::Mode to K3Icon::State conversion
     static const K3Icon::States tbl[] = { K3Icon::DefaultState, K3Icon::DisabledState, K3Icon::ActiveState };
     int state = K3Icon::DefaultState;

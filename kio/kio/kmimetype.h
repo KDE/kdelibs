@@ -92,22 +92,13 @@ public:
   /**
    * Return the filename of the icon associated with the mimetype.
    *
-   * The arguments are unused, but provided so that KMimeType-derived classes
-   * can use them (e.g. KFolderType uses the URL to return one out of 2 icons)
+   * The url argument is unused, but is provided so that KMimeType-derived classes
+   * can use it (e.g. KFolderType uses the URL to return one out of 2 icons)
    *
    * @return The path to the icon associated with this MIME type.
    */
-  virtual QString icon( const QString& , bool ) const { return m_strIcon; }
-
-  /**
-   * Return the filename of the icon associated with the mimetype.
-   *
-   * The arguments are unused, but provided so that KMimeType-derived classes
-   * can use them (e.g. KFolderType uses the URL to return one out of 2 icons)
-   *
-   * @return The path to the icon associated with this MIME type.
-   */
-  virtual QString icon( const KUrl& , bool ) const { return m_strIcon; }
+  virtual QString icon( const KUrl& = KUrl() ) const { return KServiceType::icon(); }
+    // TODO KDE4: rename to iconName, to be consistent with iconNameForURL and not sounding like we return a QIcon?
 
   /**
    * Use this function only if you don't have a special URL
@@ -126,7 +117,7 @@ public:
    *              Ignored if 0
    * @return the pixmap of the mime type, can be a default icon if not found
    */
-  virtual QPixmap pixmap( K3Icon::Group group, int force_size = 0, int state = 0,
+  virtual KDE_DEPRECATED QPixmap pixmap( K3Icon::Group group, int force_size = 0, int state = 0,
                           QString * path = 0L ) const;
 
   /**
@@ -145,30 +136,8 @@ public:
    *              Ignored if 0
    * @return the pixmap of the URL, can be a default icon if not found
    */
-  virtual QPixmap pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size = 0,
+  virtual KDE_DEPRECATED QPixmap pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size = 0,
 	    int _state = 0, QString * _path = 0L ) const;
-
-  /**
-   * Convenience method to find the pixmap for a URL.
-   *
-   * Call this one when you don't know the mimetype.
-   *
-   * @param _url URL for the file.
-   * @param _mode the mode of the file. The mode may modify the icon
-   *              with overlays that show special properties of the
-   *              icon. Use 0 for default
-   * @param _group The icon group where the icon is going to be used.
-   * @param _force_size Override globally configured icon size.
-   *        Use 0 for the default size
-   * @param _state The icon state, one of: K3Icon::DefaultState,
-   * K3Icon::ActiveState or K3Icon::DisabledState.
-   * @param _path Output parameter to get the full path. Seldom needed.
-   *              Ignored if 0
-   * @return the pixmap of the URL, can be a default icon if not found
-   */
-  static QPixmap pixmapForURL( const KUrl & _url, mode_t _mode = 0, K3Icon::Group _group = K3Icon::Desktop,
-                               int _force_size = 0, int _state = 0, QString * _path = 0L );
-
 
   /**
    * The same functionality as pixmapForURL(), but this method returns the name
@@ -205,27 +174,12 @@ public:
 
   /**
    * Returns the descriptive comment associated with the MIME type.
-   * @return the descriptive comment associated with the MIME type
-   */
-  QString comment() const { return m_strComment; }
-
-  /**
-   * Returns the descriptive comment associated with the MIME type.
-   * The arguments are unused, but provided so that KMimeType derived classes
-   * can use them.
+   * The url argument is unused, but provided so that KMimeType derived classes
+   * can use it.
    *
    * @return The descriptive comment associated with the MIME type, if any.
    */
-  virtual QString comment( const QString&, bool ) const { return m_strComment; }
-
-  /**
-   * Returns the descriptive comment associated with the MIME type.
-   * The arguments are unused, but provided so that KMimeType derived classes
-   * can use them.
-   *
-   * @return The descriptive comment associated with the MIME type, if any.
-   */
-  virtual QString comment( const KUrl&, bool ) const { return m_strComment; }
+  virtual QString comment( const KUrl& = KUrl() ) const { return KServiceType::comment(); }
 
   /**
    * Retrieve the list of patterns associated with the MIME Type.
@@ -483,9 +437,6 @@ class KIO_EXPORT KFolderType : public KMimeType
   K_SYCOCATYPE( KST_KFolderType, KMimeType )
 
 public:
-//  KFolderType( const QString & _fullpath, const QString& _type, const QString& _icon, const QString& _comment,
-//  	       const QStringList& _patterns );
-//  KFolderType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
   /**
    * Construct a folder mimetype and take all information from a desktop file.
    * @param config the desktop configuration file that describes the mime type
@@ -494,10 +445,8 @@ public:
   /** \internal */
   KFolderType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
-  virtual QString icon( const QString& _url, bool _is_local ) const;
-  virtual QString icon( const KUrl& _url, bool _is_local ) const;
-  virtual QString comment( const QString& _url, bool _is_local ) const;
-  virtual QString comment( const KUrl& _url, bool _is_local ) const;
+  virtual QString icon( const KUrl& _url ) const;
+  virtual QString comment( const KUrl& _url ) const;
 protected:
   virtual void virtual_hook( int id, void* data );
 };
@@ -539,12 +488,10 @@ public:
   /** \internal */
   KDEDesktopMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
-  virtual QString icon( const QString& _url, bool _is_local ) const;
-  virtual QString icon( const KUrl& _url, bool _is_local ) const;
-  virtual QPixmap pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size = 0,
+  virtual QString icon( const KUrl& _url ) const;
+  virtual KDE_DEPRECATED QPixmap pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size = 0,
                           int _state = 0, QString * _path = 0L ) const;
-  virtual QString comment( const QString& _url, bool _is_local ) const;
-  virtual QString comment( const KUrl& _url, bool _is_local ) const;
+  virtual QString comment( const KUrl& _url ) const;
 
   /**
    * Returns a list of services for the given .desktop file that are handled
@@ -605,10 +552,6 @@ public:
   static pid_t run( const KUrl& _url, bool _is_local );
 
 protected:
-  virtual QPixmap pixmap( K3Icon::Group group, int force_size = 0, int state = 0,
-                          QString * path = 0L ) const
-     { return KMimeType::pixmap( group, force_size, state, path ); }
-
   static pid_t runFSDevice( const KUrl& _url, const KSimpleConfig &cfg );
   static pid_t runApplication( const KUrl& _url, const QString & _serviceFile );
   static pid_t runLink( const KUrl& _url, const KSimpleConfig &cfg );
@@ -626,9 +569,6 @@ class KIO_EXPORT KExecMimeType : public KMimeType
   K_SYCOCATYPE( KST_KExecMimeType, KMimeType )
 
 public:
-  // KExecMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
-  //                 const QString& _comment, const QStringList& _patterns );
-  // KExecMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
   /**
    * Construct a executable mimetype and take all information from a desktop file.
    * @param config the desktop configuration file that describes the mime type

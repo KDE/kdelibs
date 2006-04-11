@@ -26,6 +26,9 @@
 #include <qmap.h>
 #include <QList>
 
+#include <kicontheme.h> // K3Icon (for pixmapForURL)
+#include <QtGui/QPixmap> // for pixmapForURL
+
 #include <sys/stat.h> // S_ISDIR
 
 #ifdef Q_OS_WIN
@@ -384,6 +387,27 @@ namespace KIO
    *
    */
   KIO_EXPORT bool testFileSystemFlag(const QString& filename, FileSystemFlag flag);
+
+  /**
+   * Convenience method to find the pixmap for a URL.
+   *
+   * Call this one when you don't know the mimetype.
+   *
+   * @param _url URL for the file.
+   * @param _mode the mode of the file. The mode may modify the icon
+   *              with overlays that show special properties of the
+   *              icon. Use 0 for default
+   * @param _group The icon group where the icon is going to be used.
+   * @param _force_size Override globally configured icon size.
+   *        Use 0 for the default size
+   * @param _state The icon state, one of: K3Icon::DefaultState,
+   * K3Icon::ActiveState or K3Icon::DisabledState.
+   * @param _path Output parameter to get the full path. Seldom needed.
+   *              Ignored if 0
+   * @return the pixmap of the URL, can be a default icon if not found
+   */
+  KIO_EXPORT QPixmap pixmapForURL( const KUrl & _url, mode_t _mode = 0, K3Icon::Group _group = K3Icon::Desktop,
+                                   int _force_size = 0, int _state = 0, QString * _path = 0 );
 
   /**
    * Constants used to specify the type of a UDSField.

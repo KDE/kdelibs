@@ -365,7 +365,7 @@ KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath )
   init ( &_cfg );
 
   if ( !isValid() )
-    kWarning(7009) << "mimetype not valid '" << m_strName << "' (missing entry in the file ?)" << endl;
+    kWarning(7009) << "mimetype not valid '" << name() << "' (missing entry in the file ?)" << endl;
 }
 
 KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config )
@@ -373,7 +373,7 @@ KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config )
   init( config );
 
   if ( !isValid() )
-    kWarning(7009) << "mimetype not valid '" << m_strName << "' (missing entry in the file ?)" << endl;
+    kWarning(7009) << "mimetype not valid '" << name() << "' (missing entry in the file ?)" << endl;
 }
 
 void KMimeType::init( KDesktopFile * config )
@@ -452,51 +452,13 @@ KMimeType::~KMimeType()
 QPixmap KMimeType::pixmap( K3Icon::Group _group, int _force_size, int _state,
                            QString * _path ) const
 {
-  KIconLoader *iconLoader=KGlobal::iconLoader();
-  QString iconName=icon( QString(), false );
-  if (!iconLoader->extraDesktopThemesAdded())
-  {
-    QPixmap pixmap=iconLoader->loadIcon( iconName, _group, _force_size, _state, _path, true );
-    if (!pixmap.isNull() ) return pixmap;
-
-    iconLoader->addExtraDesktopThemes();
-  }
-
-  return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
+  return KGlobal::iconLoader()->loadMimeTypeIcon( icon(), _group, _force_size, _state, _path );
 }
 
 QPixmap KMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size,
                            int _state, QString * _path ) const
 {
-  KIconLoader *iconLoader=KGlobal::iconLoader();
-  QString iconName=icon( _url, _url.isLocalFile() );
-  if (!iconLoader->extraDesktopThemesAdded())
-  {
-    QPixmap pixmap=iconLoader->loadIcon( iconName, _group, _force_size, _state, _path, true );
-    if (!pixmap.isNull() ) return pixmap;
-
-    iconLoader->addExtraDesktopThemes();
-  }
-
-  return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
-}
-
-QPixmap KMimeType::pixmapForURL( const KUrl & _url, mode_t _mode, K3Icon::Group _group,
-                                 int _force_size, int _state, QString * _path )
-{
-  KIconLoader *iconLoader=KGlobal::iconLoader();
-  QString iconName = iconNameForURL( _url, _mode );
-
-  if (!iconLoader->extraDesktopThemesAdded())
-  {
-    QPixmap pixmap=iconLoader->loadIcon( iconName, _group, _force_size, _state, _path, true );
-    if (!pixmap.isNull() ) return pixmap;
-
-    iconLoader->addExtraDesktopThemes();
-  }
-
-  return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
-
+  return KGlobal::iconLoader()->loadMimeTypeIcon( icon( _url ), _group, _force_size, _state, _path );
 }
 
 QString KMimeType::iconForURL( const KUrl & _url, mode_t _mode )
@@ -509,7 +471,7 @@ QString KMimeType::iconNameForURL( const KUrl & _url, mode_t _mode )
     const KMimeType::Ptr mt = findByURL( _url, _mode, _url.isLocalFile(),
                                          false /*HACK*/);
     static const QString& unknown = KGlobal::staticQString("unknown");
-    const QString mimeTypeIcon = mt->icon( _url, _url.isLocalFile() );
+    const QString mimeTypeIcon = mt->icon( _url );
     QString i = mimeTypeIcon;
 
     // if we don't find an icon, maybe we can use the one for the protocol
@@ -591,18 +553,20 @@ int KMimeType::patternsAccuracy() const {
  *
  ******************************************************/
 
+/*
 QString KFolderType::icon( const QString& _url, bool _is_local ) const
 {
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::icon( _url, _is_local );
 
-  return KFolderType::icon( KUrl(_url), _is_local );
+  return KFolderType::icon( KUrl(_url) );
 }
+*/
 
-QString KFolderType::icon( const KUrl& _url, bool _is_local ) const
+QString KFolderType::icon( const KUrl& _url ) const
 {
-  if ( !_is_local )
-    return KMimeType::icon( _url, _is_local );
+  if ( _url.isEmpty() || !_url.isLocalFile() )
+    return KMimeType::icon( _url );
 
   KUrl u( _url );
   u.addPath( ".directory" );
@@ -651,7 +615,7 @@ QString KFolderType::icon( const KUrl& _url, bool _is_local ) const
   }
 
   if ( icon.isEmpty() )
-    return KMimeType::icon( _url, _is_local );
+    return KMimeType::icon( _url );
 
   if ( icon.startsWith( "./" ) ) {
     // path is relative with respect to the location
@@ -664,6 +628,7 @@ QString KFolderType::icon( const KUrl& _url, bool _is_local ) const
   return icon;
 }
 
+/*
 QString KFolderType::comment( const QString& _url, bool _is_local ) const
 {
   if ( !_is_local || _url.isEmpty() )
@@ -671,11 +636,12 @@ QString KFolderType::comment( const QString& _url, bool _is_local ) const
 
   return KFolderType::comment( KUrl(_url), _is_local );
 }
+*/
 
-QString KFolderType::comment( const KUrl& _url, bool _is_local ) const
+QString KFolderType::comment( const KUrl& _url ) const
 {
-  if ( !_is_local )
-    return KMimeType::comment( _url, _is_local );
+  if ( _url.isEmpty() || !_url.isLocalFile() )
+    return KMimeType::comment( _url );
 
   KUrl u( _url );
   u.addPath( ".directory" );
@@ -684,7 +650,7 @@ QString KFolderType::comment( const KUrl& _url, bool _is_local ) const
   cfg.setDesktopGroup();
   QString comment = cfg.readEntry( "Comment" );
   if ( comment.isEmpty() )
-    return KMimeType::comment( _url, _is_local );
+    return KMimeType::comment( _url );
 
   return comment;
 }
@@ -695,19 +661,21 @@ QString KFolderType::comment( const KUrl& _url, bool _is_local ) const
  *
  ******************************************************/
 
+/*
 QString KDEDesktopMimeType::icon( const QString& _url, bool _is_local ) const
 {
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::icon( _url, _is_local );
 
   KUrl u( _url );
-  return icon( u, _is_local );
+  return icon( u );
 }
+*/
 
-QString KDEDesktopMimeType::icon( const KUrl& _url, bool _is_local ) const
+QString KDEDesktopMimeType::icon( const KUrl& _url ) const
 {
-  if ( !_is_local )
-    return KMimeType::icon( _url, _is_local );
+  if ( _url.isEmpty() || !_url.isLocalFile() )
+    return KMimeType::icon( _url );
 
   KSimpleConfig cfg( _url.path(), true );
   cfg.setDesktopGroup();
@@ -744,7 +712,7 @@ QString KDEDesktopMimeType::icon( const KUrl& _url, bool _is_local ) const
   }
 
   if ( icon.isEmpty() )
-    return KMimeType::icon( _url, _is_local );
+    return KMimeType::icon( _url );
 
   return icon;
 }
@@ -752,7 +720,7 @@ QString KDEDesktopMimeType::icon( const KUrl& _url, bool _is_local ) const
 QPixmap KDEDesktopMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size,
                                     int _state, QString * _path ) const
 {
-  QString _icon = icon( _url, _url.isLocalFile() );
+  QString _icon = icon( _url );
   QPixmap pix = KGlobal::iconLoader()->loadIcon( _icon, _group,
         _force_size, _state, _path, false );
   if ( pix.isNull() )
@@ -761,25 +729,25 @@ QPixmap KDEDesktopMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int 
   return pix;
 }
 
-QString KDEDesktopMimeType::comment( const QString& _url, bool _is_local ) const
+/*QString KDEDesktopMimeType::comment( const QString& _url, bool _is_local ) const
 {
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::comment( _url, _is_local );
 
   KUrl u( _url );
   return comment( u, _is_local );
-}
+}*/
 
-QString KDEDesktopMimeType::comment( const KUrl& _url, bool _is_local ) const
+QString KDEDesktopMimeType::comment( const KUrl& _url ) const
 {
-  if ( !_is_local )
-    return KMimeType::comment( _url, _is_local );
+  if ( _url.isEmpty() || !_url.isLocalFile() )
+    return KMimeType::comment( _url );
 
   KSimpleConfig cfg( _url.path(), true );
   cfg.setDesktopGroup();
   QString comment = cfg.readEntry( "Comment" );
   if ( comment.isEmpty() )
-    return KMimeType::comment( _url, _is_local );
+    return KMimeType::comment( _url );
 
   return comment;
 }

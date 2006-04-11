@@ -918,6 +918,14 @@ a listDir result.</li>
     <li>KIO::convertSizeFromKB is now KIO::convertSizeFromKiB since it takes a value in KiB (1 KiB = 1024 B)</li>
 </ul>
 
+<H4>KMimeType</H4>
+<ul>
+    <li>KMimeType::pixmap() has been deprecated (for core/gui separation), use icon() or icon(url)
+    and KIconLoader::loadMimeTypeIcon with that icon name.</li>
+    <li>KMimeType::pixmapForURL &gt; KIO::pixmapForURL</li>
+    <li>KMimeType::comment(KUrl,bool) &gt; KIO::comment(KUrl)</li>
+</ul>
+
 <H4>KIO::Job</H4>
 <ul>
    <li>For Job subclasses: removeSubjob doesn't terminate the parent job anymore, add

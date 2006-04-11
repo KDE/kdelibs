@@ -24,8 +24,10 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kiconloader.h>
 #include <kprotocolmanager.h>
 #include <kde_file.h>
+#include <kmimetype.h>
 
 #include <qbytearray.h>
 #include <qdatetime.h>
@@ -1254,6 +1256,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
 #include <sys/mntctl.h>
 #include <sys/vmount.h>
 #include <sys/vfs.h>
+#include "global.h"
 
 /* AIX does not prototype mntctl anywhere that I can find */
 #ifndef mntctl
@@ -1969,4 +1972,11 @@ QString KIO::getCacheControlString(KIO::CacheControl cacheControl)
 	return "Reload";
     kDebug() << "unrecognized Cache control enum value:"<<cacheControl<<endl;
     return QString();
+}
+
+QPixmap KIO::pixmapForURL( const KUrl & _url, mode_t _mode, K3Icon::Group _group,
+                           int _force_size, int _state, QString * _path )
+{
+    const QString iconName = KMimeType::iconNameForURL( _url, _mode );
+    return KGlobal::iconLoader()->loadMimeTypeIcon( iconName, _group, _force_size, _state, _path );
 }

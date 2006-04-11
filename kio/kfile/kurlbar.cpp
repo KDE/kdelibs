@@ -28,6 +28,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmimetype.h>
+#include <kio/global.h>
 #include <kprotocolinfo.h>
 #include <kstringhandler.h>
 #include <kurlrequester.h>
@@ -128,7 +129,7 @@ void KUrlBarItem::setIcon( const QString& icon, K3Icon::Group group )
     m_group = group;
 
     if ( icon.isEmpty() )
-        m_pixmap = KMimeType::pixmapForURL( m_url, 0, group, iconSize() );
+        m_pixmap = KIO::pixmapForURL( m_url, 0, group, iconSize() );
     else
         m_pixmap = KGlobal::iconLoader()->loadIcon( icon, group, iconSize(),
                                                     K3Icon::DefaultState );

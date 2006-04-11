@@ -120,7 +120,7 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
 
   QMap<QString,Q3ListViewItem*> groups;
   // thanks to kdebase/kcontrol/filetypes/filetypesview
-  KMimeType::List mimetypes = KMimeType::allMimeTypes();
+  const KMimeType::List mimetypes = KMimeType::allMimeTypes();
 
   Q3ListViewItem *groupItem;
   bool agroupisopen = false;
@@ -150,13 +150,13 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
         groupItem = mit.value();
 
     Q3CheckListItem *item = new Q3CheckListItem( groupItem, min, Q3CheckListItem::CheckBox );
-    item->setPixmap( 0, SmallIcon( mt->icon(QString(),false) ) );
+    item->setPixmap( 0, SmallIcon( mt->icon() ) );
 
     int cl = 1;
 
     if ( d->visuals & Comments )
     {
-      item->setText( cl, mt->comment(QString(), false) );
+      item->setText( cl, mt->comment() );
       cl++;
     }
 

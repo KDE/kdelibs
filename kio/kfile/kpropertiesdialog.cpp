@@ -846,8 +846,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
     QString iconStr = KMimeType::findByURL( properties->kurl(),
-                                            mode )->icon( properties->kurl(),
-                                                          isLocal );
+                                            mode )->icon( properties->kurl() );
     if ( bDesktopFile && isLocal )
     {
       KDesktopFile config( properties->kurl().path(), true );
@@ -3616,7 +3615,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   grid = new QGridLayout();
   tmpQGroupBox->layout()->addItem(grid);
-  
+
   grid->setSpacing( KDialog::spacingHint() );
   grid->setColumnStretch(1, 1);
 
@@ -3657,7 +3656,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   grid = new QGridLayout();
   tmpQGroupBox->layout()->addItem(grid);
-  
+
   grid->setSpacing(KDialog::spacingHint());
   grid->setColumnStretch(1, 1);
 

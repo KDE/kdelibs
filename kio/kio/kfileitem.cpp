@@ -461,7 +461,7 @@ QString KFileItem::mimeComment()
  bool isLocalURL;
  KUrl url = mostLocalURL(isLocalURL);
 
- QString comment = mType->comment( url, isLocalURL );
+ QString comment = mType->comment( url );
  //kDebug() << "finding comment for " << url.url() << " : " << m_pMimeType->name() << endl;
   if (!comment.isEmpty())
     return comment;
@@ -477,7 +477,7 @@ QString KFileItem::iconName()
   KUrl url = mostLocalURL(isLocalURL);
 
   //kDebug() << "finding icon for " << url.url() << " : " << m_pMimeType->name() << endl;
-  return determineMimeType()->icon(url, isLocalURL);
+  return determineMimeType()->icon(url);
 }
 
 int KFileItem::overlays() const
@@ -546,7 +546,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   bool isLocalURL;
   KUrl url = mostLocalURL(isLocalURL);
 
-  QPixmap p = mime->pixmap( url, K3Icon::Desktop, _size, _state );
+  QPixmap p = KGlobal::iconLoader()->loadMimeTypeIcon( mime->icon( url ), K3Icon::Desktop, _size, _state );
   //kDebug() << "finding pixmap for " << url.url() << " : " << mime->name() << endl;
   if (p.isNull())
       kWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
@@ -652,7 +652,7 @@ QString KFileItem::getStatusBarInfo()
 
   if ( m_bLink )
   {
-      QString comment = determineMimeType()->comment( m_url, m_bIsLocalURL );
+      QString comment = determineMimeType()->comment( m_url );
       QString tmp;
       if ( comment.isEmpty() )
         tmp = i18n ( "Symbolic Link" );

@@ -65,6 +65,11 @@ struct KPARTS_EXPORT URLArgs
   URLArgs( bool reload, int xOffset, int yOffset, const QString &serviceType = QString() );
   virtual ~URLArgs();
 
+  // KDE4: a struct has the problem that the stuff added after BC-freeze uses methods
+  // so it looks inconsistent with the member vars. -> better use methods for everything,
+  // even if they are inline.
+
+
   /**
    * This buffer can be used by the part to save and restore its contents.
    * See KHTMLPart for instance.

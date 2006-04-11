@@ -853,7 +853,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 				    const QString& _path, Entry* sub_entry )
 {
-  kdDebug(7001) << "KDirWatchPrivate::removeEntry for '" << _path << "' sub_entry: " << sub_entry << endl;
+  kDebug(7001) << "KDirWatchPrivate::removeEntry for '" << _path << "' sub_entry: " << sub_entry << endl;
   Entry* e = entry(_path);
   if (!e) {
     kWarning(7001) << "KDirWatch::removeDir can't handle '" << _path << "'" << endl;

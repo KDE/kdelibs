@@ -123,6 +123,25 @@ public:
 		     bool canReturnNull=false) const;
 
     /**
+     * Loads an icon for a mimetype.
+     * This is basically like loadIcon except that extra desktop themes are loaded if necessary.
+     *
+     * @param iconName The name of the icon, without extension, usually from KMimeType.
+     * @param group The icon group. This will specify the size of and effects to
+     * be applied to the icon.
+     * @param size If nonzero, this overrides the size specified by @p group.
+     *             See K3Icon::StdSizes.
+     * @param state The icon state: @p DefaultState, @p ActiveState or
+     * @p DisabledState. Depending on the user's preferences, the iconloader
+     * may apply a visual effect to hint about its state.
+     * @param path_store If not null, the path of the icon is stored here.
+     * @return the QPixmap. Can not be null, the
+     * "unknown" pixmap is returned when no appropriate icon has been found.
+     */
+    QPixmap loadMimeTypeIcon( const QString& iconName, K3Icon::Group group, int size=0,
+                              int state=K3Icon::DefaultState, QString *path_store=0 ) const;
+
+    /**
      * Creates an icon set, that will do on-demand loading of the icon.
      * Loading itself is done by calling loadIcon .
      *

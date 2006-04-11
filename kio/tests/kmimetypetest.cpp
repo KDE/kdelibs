@@ -42,12 +42,12 @@ void KMimeTypeTest::testByName()
     KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
     QVERIFY( s0 );
     QCOMPARE( s0->name(), QString::fromLatin1("application/x-zerosize") );
-    qDebug("Comment is %s", qPrintable(s0->comment(KUrl(),false)) );
+    qDebug("Comment is %s", qPrintable(s0->comment()) );
 
     KMimeType::Ptr s1 = KMimeType::mimeType("text/plain");
     QVERIFY( s1 );
     QCOMPARE( s1->name(), QString::fromLatin1("text/plain") );
-    qDebug("Comment is %s", qPrintable(s1->comment(KUrl(),false)) );
+    qDebug("Comment is %s", qPrintable(s1->comment()) );
 }
 
 void KMimeTypeTest::testIcons()
