@@ -34,10 +34,6 @@
 #include <QToolButton>
 #include <QHeaderView>
 #include <QHBoxLayout>
-
-// Only feeling a touch guilty about this
-// Need QTreeWidget::itemFromIndex
-#define protected public
 #include <QTreeWidget>
 
 class KTreeWidgetSearchLine::KTreeWidgetSearchLinePrivate
