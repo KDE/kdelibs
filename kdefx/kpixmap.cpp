@@ -43,33 +43,7 @@ static bool kdither_32_to_8( const QImage &src, QImage &dst )
         return false;
     }
 
-    int ncols = 256;
-
-    static uint bm[16][16];
-    static int init=0;
-    if (!init) {
-
-	// Build a Bayer Matrix for dithering
-	init = 1;
-	int n, i, j;
-
-	bm[0][0]=0;
-
-	for (n=1; n<16; n*=2)
-	    for (i=0; i<n; i++)
-		for (j=0; j<n; j++) {
-		    bm[i][j]*=4;
-		    bm[i+n][j]=bm[i][j]+2;
-		    bm[i][j+n]=bm[i][j]+3;
-		    bm[i+n][j+n]=bm[i][j]+1;
-		}
-
-	for (i=0; i<16; i++)
-	    for (j=0; j<16; j++)
-		bm[i][j]<<=8;
-    }
-
-    dst.setNumColors( ncols );
+    dst.setNumColors( 256 );
 
 #define MAX_R 2
 #define MAX_G 2
