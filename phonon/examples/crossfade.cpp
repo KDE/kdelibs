@@ -21,7 +21,7 @@
 #include <phonon/mediaobject.h>
 #include <phonon/audiopath.h>
 #include <phonon/audiooutput.h>
-#include <phonon/fadereffect.h>
+#include <phonon/volumefadereffect.h>
 #include <kurl.h>
 #include <QTimer>
 
@@ -32,7 +32,7 @@ Crossfader::Crossfader( QObject* parent )
 {
 	m1 = new MediaObject( this ); m2 = new MediaObject( this );
 	a1 = new AudioPath( this );   a2 = new AudioPath( this );
-	f1 = new FaderEffect( this ); f2 = new FaderEffect( this );
+	f1 = new VolumeFaderEffect( this ); f2 = new VolumeFaderEffect( this );
 	output = new AudioOutput( this );
 
 	m1->addAudioPath( a1 );  m2->addAudioPath( a2 );

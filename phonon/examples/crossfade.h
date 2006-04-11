@@ -22,7 +22,7 @@
 namespace Phonon {
 	class MediaObject;
 	class AudioPath;
-	class FaderEffect;
+	class VolumeFaderEffect;
 	class AudioOutput;
 }
 class KUrl;
@@ -48,6 +48,6 @@ class Crossfader : public QObject
 	private:
 		MediaObject *m1, *m2;
 		AudioPath *a1, *a2;
-		FaderEffect *f1, *f2;
+		VolumeFaderEffect *f1, *f2;
 		AudioOutput *output;
 };
