@@ -19,7 +19,7 @@
  * 02110-1301  USA
  */
 #include "configwidget.h"
-#include "configui.h"
+#include "ui_configui.h"
 
 #include "broker.h"
 #include "settings.h"
@@ -37,7 +37,8 @@ class ConfigWidget::Private
 {
 public:
     Broker::Ptr broker;
-    KSpell2ConfigUI *ui;
+    Ui_KSpell2ConfigUI ui;
+    QWidget *wdg;
 };
 
 ConfigWidget::ConfigWidget( Broker *broker, QWidget *parent )
@@ -59,22 +60,23 @@ void ConfigWidget::init( Broker *broker )
     layout->setMargin( 0 );
     layout->setSpacing( 0 );
     layout->setObjectName( "KSpell2ConfigUILayout" );
-    d->ui = new KSpell2ConfigUI( this );
+    d->wdg = new QWidget( this );
+    d->ui.setupUi( d->wdg );
 
     //QStringList clients = d->broker->clients();
-    d->ui->m_langCombo->insertItems( 0, d->broker->languagesName() );
+    d->ui.m_langCombo->insertItems( 0, d->broker->languagesName() );
     setCorrectLanguage( d->broker->languages() );
     //d->ui->m_clientCombo->insertStringList( clients );
-    d->ui->m_skipUpperCB->setChecked( !d->broker->settings()->checkUppercase() );
-    d->ui->m_skipRunTogetherCB->setChecked( d->broker->settings()->skipRunTogether() );
+    d->ui.m_skipUpperCB->setChecked( !d->broker->settings()->checkUppercase() );
+    d->ui.m_skipRunTogetherCB->setChecked( d->broker->settings()->skipRunTogether() );
     QStringList ignoreList = d->broker->settings()->currentIgnoreList();
     ignoreList.sort();
-    d->ui->m_ignoreListBox->insertStringList( ignoreList );
-    d->ui->m_bgSpellCB->setChecked( d->broker->settings()->backgroundCheckerEnabled() );
-    d->ui->m_bgSpellCB->hide();//hidden by default
-    connect( d->ui->m_ignoreListBox, SIGNAL(changed()), SLOT(slotChanged()) );
+    d->ui.m_ignoreListBox->insertStringList( ignoreList );
+    d->ui.m_bgSpellCB->setChecked( d->broker->settings()->backgroundCheckerEnabled() );
+    d->ui.m_bgSpellCB->hide();//hidden by default
+    connect( d->ui.m_ignoreListBox, SIGNAL(changed()), SLOT(slotChanged()) );
 
-    layout->addWidget( d->ui );
+    layout->addWidget( d->wdg );
 }
 
 void KSpell2::ConfigWidget::save()
@@ -88,19 +90,19 @@ void ConfigWidget::setFromGUI()
     d->broker->settings()->setDefaultLanguage(
         d->broker->languages()[
             d->broker->languagesName().indexOf(
-                d->ui->m_langCombo->currentText() ) ] );
+                d->ui.m_langCombo->currentText() ) ] );
     d->broker->settings()->setCheckUppercase(
-        !d->ui->m_skipUpperCB->isChecked() );
+        !d->ui.m_skipUpperCB->isChecked() );
     d->broker->settings()->setSkipRunTogether(
-        d->ui->m_skipRunTogetherCB->isChecked() );
+        d->ui.m_skipRunTogetherCB->isChecked() );
     d->broker->settings()->setBackgroundCheckerEnabled(
-        d->ui->m_bgSpellCB->isChecked() );
+        d->ui.m_bgSpellCB->isChecked() );
 }
 
 void ConfigWidget::slotChanged()
 {
     d->broker->settings()->setCurrentIgnoreList(
-        d->ui->m_ignoreListBox->items() );
+        d->ui.m_ignoreListBox->items() );
 }
 
 void ConfigWidget::setCorrectLanguage( const QStringList& langs)
@@ -109,26 +111,26 @@ void ConfigWidget::setCorrectLanguage( const QStringList& langs)
     for ( QStringList::const_iterator itr = langs.begin();
           itr != langs.end(); ++itr, ++idx ) {
         if ( *itr == d->broker->settings()->defaultLanguage() )
-            d->ui->m_langCombo->setCurrentIndex( idx );
+            d->ui.m_langCombo->setCurrentIndex( idx );
     }
 }
 
 void ConfigWidget::setBackgroundCheckingButtonShown( bool b )
 {
-    d->ui->m_bgSpellCB->setVisible( b );
+    d->ui.m_bgSpellCB->setVisible( b );
 }
 
 bool ConfigWidget::backgroundCheckingButtonShown() const
 {
-    return !d->ui->m_bgSpellCB->isHidden();
+    return !d->ui.m_bgSpellCB->isHidden();
 }
 
 void ConfigWidget::slotDefault()
 {
-    d->ui->m_skipUpperCB->setChecked( false );
-    d->ui->m_skipRunTogetherCB->setChecked( false );
-    d->ui->m_bgSpellCB->setChecked( true );
-    d->ui->m_ignoreListBox->clear();
+    d->ui.m_skipUpperCB->setChecked( false );
+    d->ui.m_skipRunTogetherCB->setChecked( false );
+    d->ui.m_bgSpellCB->setChecked( true );
+    d->ui.m_ignoreListBox->clear();
 }
 
 #include "configwidget.moc"

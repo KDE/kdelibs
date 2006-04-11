@@ -19,7 +19,7 @@
  * 02110-1301  USA
  */
 #include "dialog.h"
-#include "kspell2ui.h"
+#include "ui_kspell2ui.h"
 
 #include "backgroundchecker.h"
 #include "broker.h"
@@ -48,7 +48,8 @@ namespace KSpell2
 class Dialog::Private
 {
 public:
-    KSpell2UI *ui;
+    Ui_KSpell2UI ui;
+    QWidget *wdg;
     QString   originalBuffer;
     BackgroundChecker *checker;
 
@@ -68,7 +69,7 @@ Dialog::Dialog( BackgroundChecker *checker,
 
     initGui();
     initConnections();
-    setMainWidget( d->ui );
+    setMainWidget( d->wdg );
 }
 
 Dialog::~Dialog()
@@ -78,21 +79,21 @@ Dialog::~Dialog()
 
 void Dialog::initConnections()
 {
-    connect( d->ui->m_addBtn, SIGNAL(clicked()),
+    connect( d->ui.m_addBtn, SIGNAL(clicked()),
              SLOT(slotAddWord()) );
-    connect( d->ui->m_replaceBtn, SIGNAL(clicked()),
+    connect( d->ui.m_replaceBtn, SIGNAL(clicked()),
              SLOT(slotReplaceWord()) );
-    connect( d->ui->m_replaceAllBtn, SIGNAL(clicked()),
+    connect( d->ui.m_replaceAllBtn, SIGNAL(clicked()),
              SLOT(slotReplaceAll()) );
-    connect( d->ui->m_skipBtn, SIGNAL(clicked()),
+    connect( d->ui.m_skipBtn, SIGNAL(clicked()),
              SLOT(slotSkip()) );
-    connect( d->ui->m_skipAllBtn, SIGNAL(clicked()),
+    connect( d->ui.m_skipAllBtn, SIGNAL(clicked()),
              SLOT(slotSkipAll()) );
-    connect( d->ui->m_suggestBtn, SIGNAL(clicked()),
+    connect( d->ui.m_suggestBtn, SIGNAL(clicked()),
              SLOT(slotSuggest()) );
-    connect( d->ui->m_language, SIGNAL(activated(const QString&)),
+    connect( d->ui.m_language, SIGNAL(activated(const QString&)),
              SLOT(slotChangeLanguage(const QString&)) );
-    connect( d->ui->m_suggestions, SIGNAL(selectionChanged(Q3ListViewItem*)),
+    connect( d->ui.m_suggestions, SIGNAL(selectionChanged(Q3ListViewItem*)),
              SLOT(slotSelectionChanged(Q3ListViewItem*)) );
     connect( d->checker, SIGNAL(misspelling(const QString&, int)),
              SIGNAL(misspelling(const QString&, int)) );
@@ -100,40 +101,42 @@ void Dialog::initConnections()
              SLOT(slotMisspelling(const QString&, int)) );
     connect( d->checker, SIGNAL(done()),
              SLOT(slotDone()) );
-    connect( d->ui->m_suggestions, SIGNAL(doubleClicked(Q3ListViewItem*, const QPoint&, int)),
+    connect( d->ui.m_suggestions, SIGNAL(doubleClicked(Q3ListViewItem*, const QPoint&, int)),
              SLOT( slotReplaceWord() ) );
     connect( this, SIGNAL(user1Clicked()), this, SLOT(slotFinished()) );
     connect( this, SIGNAL(cancelClicked()),this, SLOT(slotCancel()) );
-    connect( d->ui->m_replacement, SIGNAL(returnPressed()), this, SLOT(slotReplaceWord()) );
-    connect( d->ui->m_autoCorrect, SIGNAL(clicked()),
+    connect( d->ui.m_replacement, SIGNAL(returnPressed()), this, SLOT(slotReplaceWord()) );
+    connect( d->ui.m_autoCorrect, SIGNAL(clicked()),
              SLOT(slotAutocorrect()) );
     // button use by kword/kpresenter
     // hide by default
-    d->ui->m_autoCorrect->hide();
+    d->ui.m_autoCorrect->hide();
 }
 
 void Dialog::initGui()
 {
-    d->ui = new KSpell2UI( this );
-    d->ui->m_suggestions->setSorting( NONSORTINGCOLUMN );
-    d->ui->m_language->clear();
-    d->ui->m_language->insertItems( 0, d->checker->broker()->languagesName() );
-    d->ui->m_language->setCurrentIndex( d->checker->broker()->languages().indexOf(
+    d->wdg = new QWidget( this );
+    d->ui.setupUi( d->wdg );
+
+    d->ui.m_suggestions->setSorting( NONSORTINGCOLUMN );
+    d->ui.m_language->clear();
+    d->ui.m_language->insertItems( 0, d->checker->broker()->languagesName() );
+    d->ui.m_language->setCurrentIndex( d->checker->broker()->languages().indexOf(
                                  d->checker->broker()->settings()->defaultLanguage() ) );
 }
 
 void Dialog::activeAutoCorrect( bool _active )
 {
     if ( _active )
-        d->ui->m_autoCorrect->show();
+        d->ui.m_autoCorrect->show();
     else
-        d->ui->m_autoCorrect->hide();
+        d->ui.m_autoCorrect->hide();
 }
 
 void Dialog::slotAutocorrect()
 {
     kDebug()<<"void Dialog::slotAutocorrect()\n";
-    emit autoCorrect(d->currentWord.word, d->ui->m_replacement->text() );
+    emit autoCorrect(d->currentWord.word, d->ui.m_replacement->text() );
     slotReplaceWord();
 }
 
@@ -176,10 +179,10 @@ void Dialog::setFilter( Filter *filter )
 
 void Dialog::updateDialog( const QString& word )
 {
-    d->ui->m_unknownWord->setText( word );
-    d->ui->m_contextLabel->setText( d->checker->filter()->context() );
+    d->ui.m_unknownWord->setText( word );
+    d->ui.m_contextLabel->setText( d->checker->filter()->context() );
     QStringList suggs = d->checker->suggest( word );
-    d->ui->m_replacement->setText( suggs.first() );
+    d->ui.m_replacement->setText( suggs.first() );
     fillSuggestions( suggs );
 }
 
@@ -201,15 +204,15 @@ void Dialog::slotAddWord()
 void Dialog::slotReplaceWord()
 {
     emit replace( d->currentWord.word, d->currentWord.start,
-                  d->ui->m_replacement->text() );
-    d->checker->filter()->replace( d->currentWord, d->ui->m_replacement->text() );
+                  d->ui.m_replacement->text() );
+    d->checker->filter()->replace( d->currentWord, d->ui.m_replacement->text() );
     d->checker->continueChecking();
 }
 
 void Dialog::slotReplaceAll()
 {
     d->replaceAllMap.insert( d->currentWord.word,
-                             d->ui->m_replacement->text() );
+                             d->ui.m_replacement->text() );
     slotReplaceWord();
 }
 
@@ -221,13 +224,13 @@ void Dialog::slotSkip()
 void Dialog::slotSkipAll()
 {
     //### do we want that or should we have a d->ignoreAll list?
-    d->checker->broker()->settings()->addWordToIgnore( d->ui->m_replacement->text() );
+    d->checker->broker()->settings()->addWordToIgnore( d->ui.m_replacement->text() );
     d->checker->continueChecking();
 }
 
 void Dialog::slotSuggest()
 {
-    QStringList suggs = d->checker->suggest( d->ui->m_replacement->text() );
+    QStringList suggs = d->checker->suggest( d->ui.m_replacement->text() );
     fillSuggestions( suggs );
 }
 
@@ -241,14 +244,14 @@ void Dialog::slotChangeLanguage( const QString& lang )
 
 void Dialog::slotSelectionChanged( Q3ListViewItem *item )
 {
-    d->ui->m_replacement->setText( item->text( 0 ) );
+    d->ui.m_replacement->setText( item->text( 0 ) );
 }
 
 void Dialog::fillSuggestions( const QStringList& suggs )
 {
-    d->ui->m_suggestions->clear();
+    d->ui.m_suggestions->clear();
     for ( QStringList::ConstIterator it = suggs.begin(); it != suggs.end(); ++it ) {
-        new Q3ListViewItem( d->ui->m_suggestions, d->ui->m_suggestions->firstChild(),
+        new Q3ListViewItem( d->ui.m_suggestions, d->ui.m_suggestions->firstChild(),
                            *it );
     }
 }
@@ -258,7 +261,7 @@ void Dialog::slotMisspelling(const QString& word, int start )
     kDebug()<<"Dialog misspelling!!"<<endl;
     d->currentWord = Word( word, start );
     if ( d->replaceAllMap.contains( word ) ) {
-        d->ui->m_replacement->setText( d->replaceAllMap[ word ] );
+        d->ui.m_replacement->setText( d->replaceAllMap[ word ] );
         slotReplaceWord();
     } else {
         updateDialog( word );
