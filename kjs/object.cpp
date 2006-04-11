@@ -44,7 +44,7 @@
 //#define JAVASCRIPT_CALL_TRACING 1
 #endif
 
-#if JAVASCRIPT_CALL_TRACING
+#ifdef JAVASCRIPT_CALL_TRACING
 static bool _traceJavaScript = false;
 
 extern "C" {
@@ -71,7 +71,7 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
 #if KJS_MAX_STACK > 0
   static int depth = 0; // sum of all concurrent interpreters
 
-#if JAVASCRIPT_CALL_TRACING
+#ifdef JAVASCRIPT_CALL_TRACING
     static bool tracing = false;
     if (traceJavaScript() && !tracing) {
         tracing = true;
@@ -99,7 +99,7 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
   --depth;
 #endif
 
-#if JAVASCRIPT_CALL_TRACING
+#ifdef JAVASCRIPT_CALL_TRACING
     if (traceJavaScript() && !tracing) {
         tracing = true;
         for (int i = 0; i < depth; i++)

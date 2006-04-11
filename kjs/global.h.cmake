@@ -26,10 +26,6 @@
 #cmakedefine HAVE_PTHREAD_ATTR_GET_NP 1
 #cmakedefine HAVE_PTHREAD_GETATTR_NP 1
 
-// maximum global call stack size. Protects against accidental or
-// malicious infinite recursions. Define to -1 if you want no limit.
-#define KJS_MAX_STACK 1000
-
 // we don't want any padding between UChars (ARM processor)
 #if defined(__GNUC__) || defined(__INTEL_COMPILER)
 #define KJS_PACKED __attribute__((__packed__))
@@ -81,5 +77,8 @@
 //#define KJS_DEBUG_MEM
 
 #endif
+
+// Apple feature which we don't use
+#define KJS_MULTIPLE_THREADS 0
 
 #endif
