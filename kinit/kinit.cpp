@@ -1367,7 +1367,7 @@ static void handle_requests(pid_t waitForPid)
          if (sock >= 0)
          {
 #if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
-            if( !FcConfigUptoDate(NULL))
+            if( FcGetVersion() < 20390 && !FcConfigUptoDate(NULL))
                FcInitReinitialize();
 #endif
             if (fork() == 0)
@@ -1387,7 +1387,7 @@ static void handle_requests(pid_t waitForPid)
          if (sock >= 0)
          {
 #if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
-            if( !FcConfigUptoDate(NULL))
+            if( FcGetVersion() < 20390 && !FcConfigUptoDate(NULL))
                FcInitReinitialize();
 #endif
             if (fork() == 0)
@@ -1782,8 +1782,11 @@ int main(int argc, char **argv, char **envp)
 
    {
 #if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
-      XftInit(0);
-      XftInitFtLibrary();
+      if( FcGetVersion() < 20390 )
+      {
+        XftInit(0);
+        XftInitFtLibrary();
+      }
 #endif
       QFont::initialize();
       setlocale (LC_ALL, "");
