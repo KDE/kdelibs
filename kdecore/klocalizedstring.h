@@ -418,31 +418,31 @@ inline QString KDECORE_EXPORT i18n (const char *text)
     return ki18n(text).toString();
 }
 template <typename A1>
-inline QString KDECORE_EXPORT i18n (const char *text, const A1 &a1)
+inline QString i18n (const char *text, const A1 &a1)
 {
     STATIC_ASSERT_NOT_LITERAL_STRING(A1)
     return ki18n(text).subs(a1).toString();
 }
 template <typename A1, typename A2>
-inline QString KDECORE_EXPORT i18n (const char *text, const A1 &a1, const A2 &a2)
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2)
 {
     STATIC_ASSERT_NOT_LITERAL_STRING(A1)
     return ki18n(text).subs(a1).subs(a2).toString();
 }
 template <typename A1, typename A2, typename A3>
-inline QString KDECORE_EXPORT i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3)
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3)
 {
     STATIC_ASSERT_NOT_LITERAL_STRING(A1)
     return ki18n(text).subs(a1).subs(a2).subs(a3).toString();
 }
 template <typename A1, typename A2, typename A3, typename A4>
-inline QString KDECORE_EXPORT i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
 {
     STATIC_ASSERT_NOT_LITERAL_STRING(A1)
     return ki18n(text).subs(a1).subs(a2).subs(a3).subs(a4).toString();
 }
 template <typename A1, typename A2, typename A3, typename A4, typename A5>
-inline QString KDECORE_EXPORT i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
 {
     STATIC_ASSERT_NOT_LITERAL_STRING(A1)
     return ki18n(text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
@@ -450,49 +450,49 @@ inline QString KDECORE_EXPORT i18n (const char *text, const A1 &a1, const A2 &a2
 // <<< End of basic calls
 
 // >>> Context calls
-inline QString KDECORE_EXPORT i18nc (const char *ctxt, const char *text)
+inline QString i18nc (const char *ctxt, const char *text)
 {
     return ki18nc(ctxt, text).toString();
 }
 template <typename A1>
-inline QString KDECORE_EXPORT i18nc (const char *ctxt, const char *text, const A1 &a1)
+inline QString i18nc (const char *ctxt, const char *text, const A1 &a1)
 {
     return ki18nc(ctxt, text).subs(a1).toString();
 }
 template <typename A1, typename A2>
-inline QString KDECORE_EXPORT i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2)
+inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2)
 {
     return ki18nc(ctxt, text).subs(a1).subs(a2).toString();
 }
 template <typename A1, typename A2, typename A3>
-inline QString KDECORE_EXPORT i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3)
+inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3)
 {
     return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).toString();
 }
 template <typename A1, typename A2, typename A3, typename A4>
-inline QString KDECORE_EXPORT i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
+inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
 {
     return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).toString();
 }
 template <typename A1, typename A2, typename A3, typename A4, typename A5>
-inline QString KDECORE_EXPORT i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
+inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
 {
     return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
 }
 // <<< End of context calls
 
 // >>> Plural calls
-inline QString KDECORE_EXPORT  i18np (const char *sing, const char *plur, int n)
+inline QString i18np (const char *sing, const char *plur, int n)
 {
     return ki18np(sing, plur).subs(n).toString();
 }
 template <typename A1>
-inline QString KDECORE_EXPORT i18np (const char *sing, const char *plur, int n, const A1 &a1)
+inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1)
 {
     return ki18np(sing, plur).subs(n).subs(a1).toString();
 }
 template <typename A1, typename A2>
-inline QString KDECORE_EXPORT i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2)
+inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2)
 {
     return ki18np(sing, plur).subs(n).subs(a1).subs(a2).toString();
 }
@@ -502,44 +502,44 @@ inline QString KDECORE_EXPORT i18np (const char *sing, const char *plur, int n, 
     return ki18np(sing, plur).subs(n).subs(a1).subs(a2).subs(a3).toString();
 }
 template <typename A1, typename A2, typename A3, typename A4>
-inline QString KDECORE_EXPORT i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
+inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
 {
     return ki18np(sing, plur).subs(n).subs(a1).subs(a2).subs(a3).subs(a4).toString();
 }
 template <typename A1, typename A2, typename A3, typename A4, typename A5>
-inline QString KDECORE_EXPORT  i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
+inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
 {
     return ki18np(sing, plur).subs(n).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
 }
 // <<< End of plural calls
 
 // >>> Context plural calls
-inline QString KDECORE_EXPORT i18ncp (const char *ctxt, const char *sing, const char *plur, int n)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n)
 {
     return ki18ncp(ctxt, sing, plur).subs(n).toString();
 }
 template <typename A1>
-inline QString KDECORE_EXPORT  i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1)
 {
     return ki18ncp(ctxt, sing, plur).subs(n).subs(a1).toString();
 }
 template <typename A1, typename A2>
-inline QString KDECORE_EXPORT i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2)
 {
     return ki18ncp(ctxt, sing, plur).subs(n).subs(a1).subs(a2).toString();
 }
 template <typename A1, typename A2, typename A3>
-inline QString KDECORE_EXPORT i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3)
 {
     return ki18ncp(ctxt, sing, plur).subs(n).subs(a1).subs(a2).subs(a3).toString();
 }
 template <typename A1, typename A2, typename A3, typename A4>
-inline QString KDECORE_EXPORT i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
 {
     return ki18ncp(ctxt, sing, plur).subs(n).subs(a1).subs(a2).subs(a3).subs(a4).toString();
 }
 template <typename A1, typename A2, typename A3, typename A4, typename A5>
-inline QString KDECORE_EXPORT i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
 {
     return ki18ncp(ctxt, sing, plur).subs(n).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
 }
@@ -550,7 +550,7 @@ inline QString KDECORE_EXPORT i18ncp (const char *ctxt, const char *sing, const 
  * with our i18n method. We use uic -tr tr2i18n to redirect
  * to the right i18n() function
 **/
-inline QString KDECORE_EXPORT tr2i18n(const char* message, const char* =0) {
+inline QString tr2i18n(const char* message, const char* =0) {
     if (!message || !message[0])
         return QString();
     return i18n(message);
