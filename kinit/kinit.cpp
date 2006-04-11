@@ -95,12 +95,6 @@
 # endif
 #endif
 
-#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
-#include <X11/Xft/Xft.h>
-extern "C" FcBool XftInitFtLibrary (void);
-#include <fontconfig/fontconfig.h>
-#endif
-
 extern char **environ;
 
 extern int lt_dlopen_flag;
@@ -1382,10 +1376,6 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
-#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
-            if( !FcConfigUptoDate(NULL))
-               FcInitReinitialize();
-#endif
             if (fork() == 0)
             {
                 close_fds();
@@ -1402,10 +1392,6 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper_old, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
-#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
-            if( !FcConfigUptoDate(NULL))
-               FcInitReinitialize();
-#endif
             if (fork() == 0)
             {
                 close_fds();
@@ -1804,10 +1790,6 @@ int main(int argc, char **argv, char **envp)
 #endif
 
    {
-#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
-      XftInit(0);
-      XftInitFtLibrary();
-#endif
       QFont::initialize();
       setlocale (LC_ALL, "");
       setlocale (LC_NUMERIC, "C");
