@@ -1,7 +1,7 @@
 #ifndef KWALLETWIZARD_H
 #define KWAlLETWIZARD_H
 
-#include "ui_kwalletwizard.h"
+#include "ui_kwalletwizardbase.h"
 
 class KWalletWizard : public Q3Wizard, public Ui_KWalletWizardBase
 {
