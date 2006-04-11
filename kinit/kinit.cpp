@@ -666,7 +666,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
           if (d.result == 2)
           {
 #ifndef NDEBUG
-             fprintf(stderr, "Could not load library! Trying exec....\n");
+             //fprintf(stderr, "kdeinit: no kdeinit module, trying exec....\n");
 #endif
              exec = true;
              continue;
