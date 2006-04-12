@@ -276,6 +276,7 @@ khtml_pagecache.cpp
 khtml_iface.cc
 khtml_printsettings.cpp
 khtmlimage.cpp
+kjserrordlg.cpp
 ${khtmlxml_STAT_SRCS}
 ${khtmlhtml_STAT_SRCS}
 ${khtmlrender_STAT_SRCS}
