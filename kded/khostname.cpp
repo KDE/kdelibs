@@ -83,11 +83,13 @@ KHostName::KHostName()
    display = ::getenv("DISPLAY");
    // strip the screen number from the display
    display.replace(QRegExp("\\.[0-9]+$"), "");
+#if defined(Q_WS_X11) || defined(Q_WS_QWS)
    if (display.isEmpty())
    {
       fprintf(stderr, "%s", i18n("Error: DISPLAY environment variable not set.\n").toLocal8Bit().data());
       exit(1);
    }
+#endif
 }
 
 static QList<QByteArray> split(const QByteArray &str)
