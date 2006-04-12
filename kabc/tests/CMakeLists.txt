@@ -13,7 +13,7 @@ testlock.cpp
 
 kde4_automoc(${testlock_SRCS})
 
-kde4_add_executable(testlock ${testlock_SRCS})
+kde4_add_executable(testlock RUN_UNINSTALLED ${testlock_SRCS})
 
 target_link_libraries(testlock  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
@@ -24,7 +24,7 @@ set(geotest_SRCS geotest.cpp)
 
 kde4_automoc(${geotest_SRCS})
 
-kde4_add_executable(geotest ${geotest_SRCS})
+kde4_add_executable(geotest RUN_UNINSTALLED ${geotest_SRCS})
 
 target_link_libraries(geotest  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
@@ -36,7 +36,7 @@ testkabc.cpp
 
 kde4_automoc(${testkabc_SRCS})
 
-kde4_add_executable(testkabc ${testkabc_SRCS})
+kde4_add_executable(testkabc RUN_UNINSTALLED ${testkabc_SRCS})
 
 target_link_libraries(testkabc  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
@@ -49,7 +49,7 @@ testkabcdlg.cpp
 
 kde4_automoc(${testkabcdlg_SRCS})
 
-kde4_add_executable(testkabcdlg ${testkabcdlg_SRCS})
+kde4_add_executable(testkabcdlg RUN_UNINSTALLED ${testkabcdlg_SRCS})
 
 target_link_libraries(testkabcdlg  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
@@ -62,7 +62,7 @@ testdistlist.cpp
 
 kde4_automoc(${testdistlist_SRCS})
 
-kde4_add_executable(testdistlist ${testdistlist_SRCS})
+kde4_add_executable(testdistlist RUN_UNINSTALLED ${testdistlist_SRCS})
 
 target_link_libraries(testdistlist  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
@@ -77,7 +77,7 @@ kde4_automoc(${bigread_SRCS})
 
 
 message(STATUS "skipping kabc/tests bigread, how to link to a plugin (kabc_file.so) ?")
-#kde4_add_executable(bigread ${bigread_SRCS})
+#kde4_add_executable(bigread RUN_UNINSTALLED ${bigread_SRCS})
 #
 #target_link_libraries(bigread  ${KDE4_KDECORE_LIBS} kabc kabc_file )
 
@@ -93,7 +93,7 @@ kde4_automoc(${bigwrite_SRCS})
 
 message(STATUS "skipping kabc/tests bigwrite, how to link to a plugin (kabc_file.so) ?")
 
-#kde4_add_executable(bigwrite ${bigwrite_SRCS})
+#kde4_add_executable(bigwrite RUN_UNINSTALLED ${bigwrite_SRCS})
 #
 #target_link_libraries(bigwrite  ${KDE4_KDECORE_LIBS} kabc kabc_file )
 
@@ -109,7 +109,7 @@ kde4_automoc(${testdb_SRCS})
 
 message(STATUS "skipping kabc/tests testdb, mysql check missing")
 
-#kde4_add_executable(testdb ${testdb_SRCS})
+#kde4_add_executable(testdb RUN_UNINSTALLED ${testdb_SRCS})
 #
 #target_link_libraries(testdb  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
@@ -123,7 +123,7 @@ testaddressee.cpp
 kde4_automoc(${testaddressee_SRCS})
 
 
-kde4_add_executable(testaddressee ${testaddressee_SRCS})
+kde4_add_executable(testaddressee RUN_UNINSTALLED ${testaddressee_SRCS})
 
 target_link_libraries(testaddressee  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
@@ -139,7 +139,7 @@ kde4_automoc(${testaddresseelist_SRCS})
 
 message(STATUS "skipping kabc/tests testaddresseelist")
 
-#kde4_add_executable(testaddresseelist ${testaddresseelist_SRCS})
+#kde4_add_executable(testaddresseelist RUN_UNINSTALLED ${testaddresseelist_SRCS})
 #
 #target_link_libraries(testaddresseelist  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
@@ -152,7 +152,7 @@ testaddressfmt.cpp
 
 kde4_automoc(${testaddressfmt_SRCS})
 
-kde4_add_executable(testaddressfmt ${testaddressfmt_SRCS})
+kde4_add_executable(testaddressfmt RUN_UNINSTALLED ${testaddressfmt_SRCS})
 
 target_link_libraries(testaddressfmt  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
@@ -165,7 +165,7 @@ kabcargl.cpp
 
 kde4_automoc(${kabcargl_SRCS})
 
-kde4_add_executable(kabcargl ${kabcargl_SRCS})
+kde4_add_executable(kabcargl RUN_UNINSTALLED ${kabcargl_SRCS})
 
 target_link_libraries(kabcargl  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
@@ -178,7 +178,7 @@ testaddresslineedit.cpp
 
 kde4_automoc(${testaddresslineedit_SRCS})
 
-kde4_add_executable(testaddresslineedit ${testaddresslineedit_SRCS})
+kde4_add_executable(testaddresslineedit RUN_UNINSTALLED ${testaddresslineedit_SRCS})
 
 target_link_libraries(testaddresslineedit  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRARY})
 
