@@ -19,6 +19,7 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/kio
    ${CMAKE_CURRENT_BINARY_DIR}/kssl
    ${CMAKE_CURRENT_BINARY_DIR}/kfile
+   ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
    ${CMAKE_SOURCE_DIR}/kwallet/client
    ${ZLIB_INCLUDE_DIR}
 )
