@@ -94,7 +94,6 @@ target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARIES} )
 
 set_target_properties(DCOP PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 
-kde4_install_libtool_file(${LIB_INSTALL_DIR} DCOP)
 install_targets(${LIB_INSTALL_DIR} DCOP )
 
 
