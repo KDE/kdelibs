@@ -384,7 +384,9 @@ static char *getDisplay()
  but we don't want to include that here) (Simon)
 #ifdef Q_WS_X11
  */
-#if !defined(QWS)
+#ifdef NO_DISPLAY
+   display = "NODISPLAY";
+#elif !defined(QWS)
    display = getenv("DISPLAY");
 #else
    display = getenv("QWS_DISPLAY");

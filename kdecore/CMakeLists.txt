@@ -239,6 +239,10 @@ set( kdecore_DCOP_SKEL_SRCS
    kdedmodule.h
 )
 
+if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+add_definitions(-DNO_DISPLAY)
+endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+
 kde4_add_dcop_skels(kdecore_LIB_SRCS ${kdecore_DCOP_SKEL_SRCS})
 
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
