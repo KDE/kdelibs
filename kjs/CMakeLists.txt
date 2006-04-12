@@ -116,7 +116,7 @@ if(KDE4_BUILD_TESTS)
    
    kde4_automoc(${testkjs_static_SRCS})
    
-   kde4_add_executable(testkjs_static ${testkjs_static_SRCS})
+   kde4_add_executable(testkjs_static NOGUI ${testkjs_static_SRCS})
    
    target_link_libraries(testkjs_static  ${KDE4_KDECORE_LIBS} kjs)
    
@@ -126,7 +126,7 @@ if(KDE4_BUILD_TESTS)
    
    kde4_automoc(${testkjs_SRCS})
    
-   kde4_add_executable(testkjs ${testkjs_SRCS})
+   kde4_add_executable(testkjs NOGUI ${testkjs_SRCS})
    
    target_link_libraries(testkjs  ${KDE4_KDECORE_LIBS} kjs )
 
