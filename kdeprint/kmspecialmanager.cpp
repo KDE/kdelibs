@@ -31,7 +31,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include <sys/stat.h>
+#include <sys/stat.h> // don't move it down the include order, it breaks compilation on MSVC
 #include <unistd.h>
 #include <sys/types.h>
 
