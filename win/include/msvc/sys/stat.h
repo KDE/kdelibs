@@ -32,9 +32,7 @@
 extern "C" {
 #endif
 
-#if !defined _STAT_H_ && !defined _INC_DIRECT
-
-#define	_IFMT		0170000	// type of file 
+#define     _IFMT	0170000	// type of file 
 #define		_IFDIR	0040000	// directory 
 #define		_IFCHR	0020000	// character special 
 #define		_IFBLK	0060000	// block special 
@@ -74,8 +72,6 @@ extern "C" {
 #define	S_ISREG(m)	(((m)&_IFMT) == _IFREG)
 #define	S_ISLNK(m)	(((m)&_IFMT) == _IFLNK)
 #define	S_ISSOCK(m)	(((m)&_IFMT) == _IFSOCK)
-
-#endif
 
 KDEWIN32_EXPORT int lstat( const char *__path, struct stat *__buf);
 KDEWIN32_EXPORT int lstat64( const char *__path, struct stat64 *__buf);

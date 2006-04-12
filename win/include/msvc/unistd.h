@@ -49,24 +49,6 @@ extern "C" {
 #define	W_OK	2
 #define	X_OK	1 
 
-/* + from <sys/stat.h>: */
-#define	_IFMT		0170000	/* type of file */
-#define		_IFDIR	0040000	/* directory */
-#define		_IFCHR	0020000	/* character special */
-#define		_IFBLK	0060000	/* block special */
-#define		_IFREG	0100000	/* regular */
-#define		_IFLNK	0120000	/* symbolic link */
-#define		_IFSOCK	0140000	/* socket */
-#define		_IFIFO	0010000	/* fifo */
-
-#define	S_ISBLK(m)	(((m)&_IFMT) == _IFBLK)
-#define	S_ISCHR(m)	(((m)&_IFMT) == _IFCHR)
-#define	S_ISDIR(m)	(((m)&_IFMT) == _IFDIR)
-#define	S_ISFIFO(m)	(((m)&_IFMT) == _IFIFO)
-#define	S_ISREG(m)	(((m)&_IFMT) == _IFREG)
-#define	S_ISLNK(m)	(((m)&_IFMT) == _IFLNK)
-#define	S_ISSOCK(m)	(((m)&_IFMT) == _IFSOCK)
-
 #ifndef STDOUT_FILENO
 #define STDOUT_FILENO 1
 #endif
