@@ -69,10 +69,8 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
     kdDebug() << "ForwardingSlaveBase::prepareUDSEntry: listing=="
               << listing << endl;
 
-    bool mimetype_found = false;
-    bool name_found = false;
     bool url_found = false;
-    QString name, mimetype;
+    QString name;
     KURL url;
 
     KIO::UDSEntry::iterator it = entry.begin();
@@ -85,7 +83,6 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
         switch( (*it).m_uds )
         {
         case KIO::UDS_NAME:
-            name_found = true;
             name = (*it).m_str;
             kdDebug() << "Name = " << name << endl;
 	    break;
@@ -100,36 +97,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
             kdDebug() << "URL = " << url << endl;
             kdDebug() << "New URL = " << (*it).m_str << endl;
             break;
-        case KIO::UDS_MIME_TYPE:
-            mimetype_found = true;
-            mimetype = (*it).m_str;
-            kdDebug() << "Mimetype = " << (*it).m_str << endl;
-            break;
         }
-    }
-
-    if (!mimetype_found)
-    {
-        KURL new_url = m_processedURL;
-        if (url_found && listing)
-        {
-            new_url.addPath( url.fileName() );
-        }
-        else if (name_found && listing)
-        {
-            new_url.addPath( name );
-        }
-
-        KMimeType::Ptr mime = KMimeType::findByURL(new_url);
-        mimetype = mime->name();
-
-        KIO::UDSAtom atom;
-        atom.m_uds = KIO::UDS_MIME_TYPE;
-        atom.m_long = 0;
-        atom.m_str = mimetype;
-        entry.append(atom);
-
-        kdDebug() << "New Mimetype = " << mime->name() << endl;
     }
 
     if ( m_processedURL.isLocalFile() )
