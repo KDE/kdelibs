@@ -62,8 +62,10 @@ KDEsuClient::KDEsuClient()
         display.chop(1);
     if (display.endsWith('.'))
         display.chop(1);
-#else
+#elif defined(Q_WS_QWS)
     QByteArray display("QWS");
+#else
+    QByteArray display("NODISPLAY");
 #endif
 
     sock = QFile::encodeName(locateLocal("socket", QString("kdesud_").append(display)));
