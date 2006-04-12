@@ -23,6 +23,7 @@
 
 #include "kmimemagic.h"
 
+#include <sys/stat.h>
 #include <qfile.h>
 
 #include <kdebug.h>

@@ -22,10 +22,10 @@
 #include <config.h>
 #endif
 
+#include <sys/stat.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 
 #include <qbytearray.h>

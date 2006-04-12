@@ -46,6 +46,7 @@ extern "C" {
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 }
 #include <unistd.h>
