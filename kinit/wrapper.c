@@ -47,11 +47,6 @@ static char *getDisplay()
    char *colon;
    char *i;
 
-#if defined(NO_DISPLAY)
-	/* no such thing as a display on these systems */
-	return NULL;
-#endif
-
 /*
  don't test for a value from qglobal.h but instead distinguish
  Qt/X11 from Qt/Embedded by the fact that Qt/E apps have -DQWS
@@ -59,7 +54,9 @@ static char *getDisplay()
  but we don't want to include that here) (Simon)
 #ifdef Q_WS_X11
  */
-#if !defined(QWS)
+#if defined(NO_DISPLAY)
+   display = "NODISPLAY";
+#elif !defined(QWS)
    display = getenv("DISPLAY");
 #else
    display = getenv("QWS_DISPLAY");
