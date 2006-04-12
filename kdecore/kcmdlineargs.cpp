@@ -49,6 +49,8 @@
 #define DISPLAY "DISPLAY"
 #elif defined(Q_WS_QWS)
 #define DISPLAY "QWS_DISPLAY"
+#else
+#define DISPLAY "NODISPLAY"
 #endif
 
 #ifdef Q_WS_WIN
@@ -60,8 +62,9 @@ static const KCmdLineOptions qt_options[] =
   //FIXME: Check if other options are specific to Qt/X11
 #ifdef Q_WS_X11
    { "display <displayname>", I18N_NOOP("Use the X-server display 'displayname'"), 0},
-#else
+#elif defined(Q_WS_QWS)
    { "display <displayname>", I18N_NOOP("Use the QWS display 'displayname'"), 0},
+#else
 #endif
    { "session <sessionId>", I18N_NOOP("Restore the application for the given 'sessionId'"), 0},
    { "cmap", I18N_NOOP("Causes the application to install a private color\nmap on an 8-bit display"), 0},
