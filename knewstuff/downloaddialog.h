@@ -85,7 +85,7 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
       @param category a Hotstuff data type such as "korganizer/calendar"
     */
     void setCategory(const QString &category);
-    void setType(const QString &type) KDE_DEPRECATED;
+    KDE_DEPRECATED void setType(const QString &type);
 
     /**
       Explicitly uses this provider list instead of the one read from
