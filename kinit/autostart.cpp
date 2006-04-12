@@ -34,7 +34,7 @@ public:
 };
 
 AutoStart::AutoStart()
-  : m_phase(0), m_phasedone(false)
+  : m_phase(-1), m_phasedone(false)
 {
   m_startList = new AutoStartList;
   KGlobal::dirs()->addResourceType("autostart", "share/autostart");
@@ -125,9 +125,9 @@ AutoStart::loadAutoStartList()
        item->name = extractName(*it);
        item->service = *it;
        item->startAfter = config.readEntry("X-KDE-autostart-after");
-       item->phase = config.readEntry("X-KDE-autostart-phase", 1);
-       if (item->phase < 1)
-          item->phase = 1;
+       item->phase = config.readEntry("X-KDE-autostart-phase", 2);
+       if (item->phase < 0)
+          item->phase = 0;
        m_startList->append(item);
    }
 } 

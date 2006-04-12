@@ -72,6 +72,7 @@ public:
    void registerWindowId(long windowId);
    void unregisterWindowId(long windowId);
    void recreate(bool initial);
+   void loadSecondPhase();
 
 public Q_SLOTS:
    /**

@@ -679,7 +679,7 @@ KLauncher::autoStart(int phase)
    if( mAutoStart.phase() >= phase )
        return;
    mAutoStart.setPhase(phase);
-   if (phase == 1)
+   if (phase == 0)
       mAutoStart.loadAutoStartList();
    mAutoTimer.start(0);
 }
@@ -698,13 +698,9 @@ KLauncher::slotAutoStart()
 	 {
 	    mAutoStart.setPhaseDone();
 	    // Emit signal
-	    DCOPCString autoStartSignal( "autoStartDone()" );
-	    int phase = mAutoStart.phase();
-	    if ( phase > 1 )
-	    {
-	        QString text = QString("autoStart%1Done()").arg( phase );
-	        autoStartSignal = text.toAscii();
-	    }
+	    DCOPCString autoStartSignal;
+            QString text = QString("autoStart%1Done()").arg( mAutoStart.phase());
+	    autoStartSignal = text.toAscii();
             emitDCOPSignal(autoStartSignal, QByteArray());
 	 }
          return;
