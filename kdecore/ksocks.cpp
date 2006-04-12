@@ -238,6 +238,8 @@ void KSocks::setConfig(KConfigBase *config)
 
 bool KSocks::activated() { return (_me != 0L); }
 
+// Function for the KControl module to test if the socks support works.
+KDECORE_EXPORT bool kdeHasSocks() { return KSocks::self()->hasSocks(); }
 
 KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
    _hasSocks = false;
