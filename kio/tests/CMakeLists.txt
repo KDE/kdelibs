@@ -5,7 +5,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
 ########## ktradertest - which is installed
 
-kde4_add_executable(ktradertest ktradertest.cpp)
+kde4_add_executable(ktradertest NOGUI ktradertest.cpp)
 
 target_link_libraries(ktradertest ${KDE4_KIO_LIBS})
 
