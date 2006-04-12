@@ -1,9 +1,0 @@
-dcop_prefix=${prefix}
-if test "${exec_prefix}" != NONE; then
-     dcop_prefix=${exec_prefix}
-fi
-
-AC_DEFINE_UNQUOTED(DCOP_PATH, ["${dcop_prefix}/bin"], [Define where your dcop binary is])
-AM_CONFIG_HEADER([dcop/dcop-path.h])
-
-AC_PATH_PROGS(MD5SUM, [md5sum gmd5sum], [md5sum])

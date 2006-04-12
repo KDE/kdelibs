@@ -23,9 +23,8 @@
  * Generated:	Thu Mar  5 16:05:28 EST 1998
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#include <config-prefix.h> // for KDESYSCONFDIR, __KDE_BINDIR and KDEDIR
 
 #include <stdlib.h>
 #include <assert.h>

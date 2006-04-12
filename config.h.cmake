@@ -72,12 +72,6 @@
 
 #define KDELIBSUFF "${KDELIBSUFF}"
 
-#define KDEDIR "${CMAKE_INSTALL_PREFIX}"
-
-#define KDESYSCONFDIR "${CMAKE_INSTALL_PREFIX}/etc"
-
-#define __KDE_BINDIR "${CMAKE_INSTALL_PREFIX}/bin"
-
 #define KDE_COMPILING_OS  "${CMAKE_SYSTEM}"
 
 #define KDE_DISTRIBUTION_TEXT "compiled sources"
@@ -85,8 +79,6 @@
 #define KDE_COMPILER_VERSION "${CMAKE_C_COMPILER}"
 
 #define __KDE_EXECPREFIX "NONE"
-
-#define DCOP_PATH "${CMAKE_INSTALL_PREFIX}/bin"
 
 #define MAKE_COMMAND "gmake"
 

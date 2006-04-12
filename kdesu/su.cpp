@@ -11,6 +11,7 @@
 */
 
 #include <config.h>
+#include <config-prefix.h> // for __KDE_BINDIR
 
 #include <stdio.h>
 #include <stdlib.h>

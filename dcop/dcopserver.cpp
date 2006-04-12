@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************/
 
 #include <config.h>
+#include <config-prefix.h> // DCOP_PATH
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -61,7 +62,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopsignals.h>
 #include <dcopclient.h>
 #include <dcopglobal.h>
-#include "dcop-path.h"
 
 #ifdef DCOP_LOG
 #undef Unsorted
