@@ -54,6 +54,12 @@ static char *getDisplay()
    char *result;
    char *screen;
    char *colon;
+
+#if defined(NO_DISPLAY)
+	/* no such thing as a display on these systems */
+	return "NODISPLAY";
+#endif
+
 /*
  don't test for a value from qglobal.h but instead distinguish
  Qt/X11 from Qt/Embedded by the fact that Qt/E apps have -DQWS
@@ -119,7 +125,7 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
   display = getDisplay();
   if (display == NULL)
   {
-#if _WIN32
+#if defined(NO_DISPLAY)
   	 strcat(dcop_file,"NODISPLAY");
 #else 
      dcop_file[0] = '\0';

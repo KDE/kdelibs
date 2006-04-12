@@ -32,9 +32,13 @@ set(kICE_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/dcop/KDE-ICE/globals.c
 )
 
-if (WIN32)
+if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+add_definitions(-DNO_DISPLAY)
+endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+
+if (WIN32 OR APPLE)
    add_subdirectory( iceauth )
-endif (WIN32)
+endif (WIN32 OR APPLE)
 
 add_subdirectory( dcopidlng )
 add_subdirectory( dcopidl2cpp )
