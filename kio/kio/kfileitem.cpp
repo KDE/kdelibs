@@ -27,6 +27,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #include <assert.h>
 #include <unistd.h>
