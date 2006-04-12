@@ -170,7 +170,14 @@ DOMStringImpl *DOMStringImpl::collapseWhiteSpace(bool preserveLF, bool preserveW
     bool changedLF = false;
     for(unsigned int i=0; i<l; i++) {
         QChar ch = s[i];
-        if (!preserveLF && (ch == '\n' || ch == '\r')) {
+
+        // We act on \r as we would on \n because CSS uses it to indicate new-line
+        if (ch == '\r') ch = '\n';
+        else
+        // ### The XML parser lets \t through, for now treat them as spaces
+        if (ch == '\t') ch = ' ';
+
+        if (!preserveLF && ch == '\n') {
             // ### Not strictly correct according to CSS3 text-module.
             // - In ideographic languages linefeed should be ignored
             // - and in Thai and Khmer it should be treated as a zero-width space
@@ -181,8 +188,7 @@ DOMStringImpl *DOMStringImpl::collapseWhiteSpace(bool preserveLF, bool preserveW
         if (collapsing) {
             if (ch == ' ')
                 continue;
-            // We act on \r as we would on \n because CSS uses it to indicate new-line
-            if (ch == '\n' || ch == '\r') {
+            if (ch == '\n') {
                 collapsingLF = true;
                 continue;
             }
@@ -197,7 +203,7 @@ DOMStringImpl *DOMStringImpl::collapseWhiteSpace(bool preserveLF, bool preserveW
             continue;
         }
         else
-        if (!preserveWS && (ch == '\n' || ch == '\r')) {
+        if (!preserveWS && ch == '\n') {
             collapsing = true;
             collapsingLF = true;
             continue;
@@ -255,15 +261,15 @@ static Length parseLength(const QChar *s, unsigned int l)
             if (*next == '%')
                 return Length(r, Percent);
 
-            if (*next == '*') 
+            if (*next == '*')
                 return Length(r, Relative);
         }
         return Length(r, Fixed);
     } else {
         if (i < l) {
             const QChar* next = s+i;
-            
-            if (*next == '*') 
+
+            if (*next == '*')
                 return Length(1, Relative);
 
             if (*next == '%')
@@ -367,7 +373,7 @@ DOMStringImpl *DOMStringImpl::capitalize() const
     bool canCapitalize=true;
     DOMStringImpl *c = new DOMStringImpl;
     if(!l) return c;
-    
+
     c->s = QT_ALLOC_QCHAR_VEC(l);
     c->l = l;
 
@@ -385,7 +391,7 @@ DOMStringImpl *DOMStringImpl::capitalize() const
                 canCapitalize=true;
         }
     }
-    
+
     return c;
 }
 
