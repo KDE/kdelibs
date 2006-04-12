@@ -431,6 +431,15 @@ void KTreeWidgetSearchLine::activateSearch()
 // private slots
 ////////////////////////////////////////////////////////////////////////////////
 
+// Hack to make a protected method public
+class QTreeWidgetWorkaround : public QTreeWidget
+{
+public:
+    QTreeWidgetItem *itemFromIndex( const QModelIndex &index ) const {
+        return QTreeWidget::itemFromIndex( index );
+    }
+};
+
 void KTreeWidgetSearchLine::rowsInserted(const QModelIndex & parent, int start, int end) const
 {
     QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>(sender());
@@ -445,15 +454,11 @@ void KTreeWidgetSearchLine::rowsInserted(const QModelIndex & parent, int start, 
 
     if (!widget) return;
 
-#ifdef __GNUC__
-#warning FIX MY COMPILATION
-#endif
-#if 0
+    QTreeWidgetWorkaround* widgetWorkaround = static_cast<QTreeWidgetWorkaround *>( widget );
     for (int i = start; i <= end; ++i) {
-        if (QTreeWidgetItem* item = widget->itemFromIndex(model->index(i, 0, parent)))
+        if (QTreeWidgetItem* item = widgetWorkaround->itemFromIndex(model->index(i, 0, parent)))
             item->treeWidget()->setItemHidden(item, !itemMatches(item, text()));
     }
-#endif
 }
 
 void KTreeWidgetSearchLine::treeWidgetDeleted(QObject *o)
