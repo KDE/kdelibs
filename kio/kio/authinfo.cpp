@@ -22,7 +22,7 @@
 #include <config.h>
 #endif
 
-#include <sys/stat.h>
+#include <sys/stat.h> // don't move it down the include order, it breaks compilation on MSVC
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
