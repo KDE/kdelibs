@@ -192,6 +192,7 @@ int main()
     pid_t pid;
     FILE *fout;
     struct passwd *pw;
+    const char* kdesu_lc_all;
 
     /* Get startup parameters. */
 
@@ -235,6 +236,12 @@ int main()
 
     xsetenv("PATH", params[P_PATH].value);
     xsetenv("DESKTOP_STARTUP_ID", params[P_APP_STARTUP_ID].value);
+
+    kdesu_lc_all = getenv( "KDESU_LC_ALL" );
+    if( kdesu_lc_all != NULL )
+        xsetenv("LC_ALL",kdesu_lc_all);
+    else
+        xsetenv("LC_ALL","");
 
     /* Do we need to change uid? */
 
