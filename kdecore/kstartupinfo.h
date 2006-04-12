@@ -28,12 +28,14 @@ DEALINGS IN THE SOFTWARE.
 #include <sys/types.h>
 #include <qobject.h>
 
-#ifdef Q_WS_X11 // FIXME(E): Redo in a less X11-specific way
-
 #include <qstring.h>
 #include <qcoreevent.h>
 #include <qwindowdefs.h>
 #include <kdelibs_export.h>
+
+#if !defined(Q_WS_X11)
+typedef void Display;
+#endif
 
 class KStartupInfoId;
 class KStartupInfoData;
@@ -645,8 +647,6 @@ class KDECORE_EXPORT KStartupInfoData
         class Private;
         Private *const d;
     };
-
-#endif //Q_WS_X11
 
 #endif
 
