@@ -173,7 +173,6 @@ bool EPSHandler::read(QImage *image)
     //kDebug(399) << "origin point: " << x1 << "," << y1 << "  size:" << x2 << "," << y2 << endl;
     double xScale = 1.0;
     double yScale = 1.0;
-    bool needsScaling = false;
     int wantedWidth = x2;
     int wantedHeight = y2;
 
@@ -205,8 +204,6 @@ bool EPSHandler::read(QImage *image)
     }
 
     fprintf (ghostfd, "\n%d %d translate\n", -qRound(x1*xScale), -qRound(y1*yScale));
-    if ( needsScaling )
-        fprintf (ghostfd, "%g %g scale\n", xScale, yScale);
 
     // write image to gs
 
