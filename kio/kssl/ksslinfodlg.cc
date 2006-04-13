@@ -446,7 +446,7 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
             KUrlLabel *mail = new KUrlLabel(tmp, tmp, _frame);
             connect(mail, SIGNAL(leftClickedURL(const QString &)), mailCatcher, SLOT(mailClicked(const QString &)));
         } else {
-            new QLabel(tmp, _frame);
+            label = new QLabel(tmp, _frame);
         }
     }
     if (label && viewport()) {
