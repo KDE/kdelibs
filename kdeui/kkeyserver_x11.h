@@ -24,6 +24,8 @@
 #define _KKEYSERVER_X11_H
 
 #include "kshortcut.h"
+#include <X11/Xlib.h>
+#include <fixx11h.h>
 
 /**
  * A collection of functions for the conversion of key presses and

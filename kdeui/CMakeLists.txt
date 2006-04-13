@@ -134,16 +134,15 @@ set(kdeui_LIB_SRCS
  kkeyserver.cpp
 )
 
-if (UNIX)
-	if (APPLE)
-		set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_mac.cpp kkeyserver_mac.cpp )
-	else (APPLE)
-   		set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_x11.cpp kkeyserver_x11.cpp )
-	endif (APPLE)
-endif (UNIX)
-if (WIN32)
+if (Q_WS_X11)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_x11.cpp kkeyserver_x11.cpp )
+endif (Q_WS_X11)
+if (Q_WS_MAC)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_mac.cpp kkeyserver_mac.cpp )
+endif (Q_WS_MAC)
+if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_win.cpp )
-endif (WIN32)
+endif (Q_WS_WIN)
 
 
 kde4_automoc(${kdeui_LIB_SRCS})

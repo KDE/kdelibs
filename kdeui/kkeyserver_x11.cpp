@@ -26,8 +26,6 @@
 #include <qwindowdefs.h>
 #include <QFlags>
 
-#if defined(Q_WS_X11) || defined(Q_WS_WIN) || defined(Q_WS_MAC) // Only compile this module if we're compiling for X11 or win32
-
 #include "kkeyserver_x11.h"
 #include "kshortcut.h"
 
@@ -105,10 +103,10 @@ struct TransKey {
 
 static ModInfo g_rgModInfo[4] =
 {
-	{ Qt::SHIFT,   X11_ONLY(ShiftMask)   I18N_NOOP("Shift"), 0 },
-	{ Qt::CTRL,    X11_ONLY(ControlMask) I18N_NOOP("Ctrl"), 0 },
-	{ Qt::ALT,     X11_ONLY(Mod1Mask)    I18N_NOOP("Alt"), 0 },
-	{ Qt::META,    X11_ONLY(Mod4Mask)    I18N_NOOP("Meta"), 0 }
+	{ Qt::SHIFT,   X11_ONLY(ShiftMask) },
+	{ Qt::CTRL,    X11_ONLY(ControlMask) },
+	{ Qt::ALT,     X11_ONLY(Mod1Mask) },
+	{ Qt::META,    X11_ONLY(Mod4Mask) }
 };
 
 // Special Names List
@@ -676,5 +674,3 @@ bool xEventToQt( XEvent* e, int& keyQt )
 #endif
 
 } // end of namespace KKeyServer block
-
-#endif //Q_WS_X11 || Q_WS_WIN || Q_WS_MAC
