@@ -235,10 +235,8 @@ void SMTP::socketClosed()
     sock->enableRead(false);
     kDebug() << "connection terminated" << endl;
     connected = false;
-    if(sock){
-        delete sock;
-        sock = 0L;
-    }
+    delete sock;
+    sock = 0L;
     emit connectionClosed();
 }
 
