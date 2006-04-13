@@ -199,11 +199,8 @@ RenderObject::~RenderObject()
     if(m_style->backgroundImage())
         m_style->backgroundImage()->deref(this);
 
-    if (m_style)
-        m_style->deref();
+    m_style->deref();
 }
-
-
 
 RenderObject* RenderObject::objectBelow() const
 {
