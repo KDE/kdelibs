@@ -482,6 +482,7 @@ START_CTOR( Painter, QPainter, 0 )
         {
             KJS::throwError( exec, KJS::GeneralError, QString("Cannot paint to object %1").arg(args[0]->toString(exec).qstring()) );
             // KJSEmbed::throwError( exec, QString("Cannot paint to object %1").arg(args[0].toString(exec).qstring()) );
+	    return 0L;
         }
     }
     else
