@@ -23,7 +23,27 @@
 #ifndef _KKEYSERVER_H
 #define _KKEYSERVER_H
 
-//FOR COMPATIBILITY
+#if defined Q_WS_X11 or defined Q_WS_WIN
 #include "kkeyserver_x11.h"
+#else if defined Q_WS_MACX
+#include "kkeyserver_mac.h"
+#endif
+
+namespace KKeyServer {
+    /**
+     * Converts the mask of ORed KKey::ModFlag modifiers to a
+	 * user-readable string.
+	 * @param mod the mask of ORed KKey::ModFlag modifiers
+	 * @return the user-readable string
+	 */
+	KDEUI_EXPORT QString modToStringUser( uint mod );
+    
+	/**
+     * Converts the modifier given as user-readable string
+     * to KKey::ModFlag modifier, or 0.
+     * @internal
+	 */
+	KDEUI_EXPORT uint stringUserToMod( const QString& mod );
+} // namespace KKeyServer
 
 #endif // !_KKEYSERVER_H

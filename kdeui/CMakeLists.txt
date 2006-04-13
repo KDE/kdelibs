@@ -131,13 +131,14 @@ set(kdeui_LIB_SRCS
  kmanagerselection.cpp
  kglobalaccel.cpp
  ktreewidgetsearchline.cpp
+ kkeyserver.cpp
 )
 
 if (UNIX)
 	if (APPLE)
-		set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_mac.cpp kkeyserver_x11.cpp )
+		set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_mac.cpp kkeyserver_mac.cpp )
 	else (APPLE)
-   	set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_x11.cpp kkeyserver_x11.cpp )
+   		set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_x11.cpp kkeyserver_x11.cpp )
 	endif (APPLE)
 endif (UNIX)
 if (WIN32)

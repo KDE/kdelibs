@@ -187,21 +187,6 @@ namespace KKeyServer
 	 */
 	KDEUI_EXPORT int qtButtonStateToMod( Qt::KeyboardModifiers s );
 #endif
-
-	/**
-	 * Converts the mask of ORed KKey::ModFlag modifiers to a
-	 * user-readable string.
-	 * @param mod the mask of ORed KKey::ModFlag modifiers
-	 * @return the user-readable string
-	 */
-	KDEUI_EXPORT QString modToStringUser( uint mod );
-
-	/**
-	 * Converts the modifier given as user-readable string
-         * to KKey::ModFlag modifier, or 0.
-         * @internal
-	 */
-	KDEUI_EXPORT uint stringUserToMod( const QString& mod );
 }
 
 #endif // !_KKEYSERVER_X11_H

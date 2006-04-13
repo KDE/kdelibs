@@ -80,8 +80,6 @@ struct ModInfo
 #ifdef Q_WS_X11
 	int modX;
 #endif
-	const char* psName;
-	QString* sLabel; // this struct is used in static objects, so must use a pointer here.
 };
 
 struct SymVariation
@@ -328,8 +326,7 @@ inline void checkDisplay()
 //---------------------------------------------------------------------
 // Initialization
 //---------------------------------------------------------------------
-static bool g_bInitializedMods, g_bInitializedKKeyLabels;
-static bool g_bMacLabels;
+static bool g_bInitializedMods;
 #ifdef Q_WS_X11
 static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch, g_alt_mask, g_meta_mask;
 
@@ -393,16 +390,6 @@ bool initializeMods()
 
 #endif //Q_WS_X11
 
-static void intializeKKeyLabels()
-{
-	KConfigGroup cg( KGlobal::config(), "Keyboard" );
-	g_rgModInfo[0].sLabel = new QString( cg.readEntry( "Label Shift", i18n(g_rgModInfo[0].psName) ) );
-	g_rgModInfo[1].sLabel = new QString( cg.readEntry( "Label Ctrl", i18n(g_rgModInfo[1].psName) ) );
-	g_rgModInfo[2].sLabel = new QString( cg.readEntry( "Label Alt", i18n(g_rgModInfo[2].psName) ) );
-	g_rgModInfo[3].sLabel = new QString( cg.readEntry( "Label Win", i18n(g_rgModInfo[3].psName) ) );
-	g_bMacLabels = (*g_rgModInfo[2].sLabel == "Command");
-	g_bInitializedKKeyLabels = true;
-}
 
 //---------------------------------------------------------------------
 // Public functions
@@ -638,39 +625,6 @@ bool codeXToSym( uchar codeX, uint modX, uint& sym )
 	return true;
 }
 #endif //!Q_WS_WIN
-
-static QString modToString( uint mod, bool bUserSpace )
-{
-	if( bUserSpace && !g_bInitializedKKeyLabels )
-		intializeKKeyLabels();
-
-	QString s;
-	for( int i = 3; i >= 0; i-- ) {
-		if( mod & g_rgModInfo[i].modQt ) {
-			if( !s.isEmpty() )
-				s += '+';
-			s += (bUserSpace)
-			          ? *g_rgModInfo[i].sLabel
-				  : QString(g_rgModInfo[i].psName);
-		}
-	}
-	return s;
-}
-
-QString modToStringUser( uint mod )
-{
-	return modToString( mod, true );
-}
-
-uint stringUserToMod( const QString& mod )
-{
-	QString s;
-	for( int i = 3; i >= 0; i-- ) {
-		if( mod.toLower() == g_rgModInfo[i].sLabel->toLower())
-			return g_rgModInfo[i].modQt;
-	}
-	return 0;
-}
 
 uint accelModMaskX()
 {
