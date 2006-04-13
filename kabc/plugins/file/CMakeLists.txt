@@ -8,30 +8,33 @@ include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_CURRENT_SOURCE_DIR} ${CMAK
 set(kabc_file_LIB_SRCS
 resourcefile.cpp
 resourcefileconfig.cpp
-resourcefileplugin.cpp
 )
+
 
 kde4_automoc(${kabc_file_LIB_SRCS})
 
 kde4_add_library(kabc_file SHARED ${kabc_file_LIB_SRCS})
-target_link_libraries(kabc_file  ${KDE4_KDECORE_LIBS} kabc)
+target_link_libraries(kabc_file ${KDE4_KDECORE_LIBS} kabc)
 
-kde4_install_libtool_file(${LIB_INSTALL_DIR} kabc_file )
+set_target_properties(kabc_file PROPERTIES VERSION 1.0.0 SOVERSION 1 )
+
 install_targets(${LIB_INSTALL_DIR} kabc_file )
 
 
 ########### next target ###############
 
-set(kabc_file_PART_SRCS dummy.cpp )
+set(kabc_file_plugin_PART_SRCS resourcefileplugin.cpp)
 
-kde4_automoc(${kabc_file_PART_SRCS})
+kde4_automoc(${kabc_file_plugin_PART_SRCS})
 
-kde4_add_plugin(kabc_file ${kabc_file_PART_SRCS})
+kde4_add_plugin(kabc_file_plugin ${kabc_file_plugin_PART_SRCS})
 
-target_link_libraries(kabc_file  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(kabc_file_plugin ${KDE4_KDECORE_LIBS} kabc_file)
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_file )
-install_targets(${PLUGIN_INSTALL_DIR} kabc_file )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_file_plugin )
+set_target_properties(kabc_file_plugin PROPERTIES OUTPUT_NAME kabc_file)
+
+install_targets(${PLUGIN_INSTALL_DIR} kabc_file_plugin )
 
 
 ########### install files ###############

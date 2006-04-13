@@ -8,31 +8,32 @@ include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_CURRENT_SOURCE_DIR} ${CMAK
 set(kabc_net_LIB_SRCS
    resourcenet.cpp
    resourcenetconfig.cpp
-   resourcenetplugin.cpp
 )
 
 kde4_automoc(${kabc_net_LIB_SRCS})
 
 kde4_add_library(kabc_net SHARED ${kabc_net_LIB_SRCS})
 
-target_link_libraries(kabc_net  ${KDE4_KDECORE_LIBS} kabc kio )
+target_link_libraries(kabc_net ${KDE4_KDECORE_LIBS} kabc kio )
 
-kde4_install_libtool_file(${LIB_INSTALL_DIR} kabc_net)
+set_target_properties(kabc_net PROPERTIES VERSION 1.0.0 SOVERSION 1 )
+
 install_targets(${LIB_INSTALL_DIR} kabc_net )
 
 
 ########### next target ###############
 
-set(kabc_net_PART_SRCS dummy.cpp )
+set(kabc_net_plugin_PART_SRCS resourcenetplugin.cpp )
 
-kde4_automoc(${kabc_net_PART_SRCS})
+kde4_automoc(${kabc_net_plugin_PART_SRCS})
 
-kde4_add_plugin(kabc_net ${kabc_net_PART_SRCS})
+kde4_add_plugin(kabc_net_plugin ${kabc_net_plugin_PART_SRCS})
 
-target_link_libraries(kabc_net  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(kabc_net_plugin  ${KDE4_KDECORE_LIBS} kabc_net)
+set_target_properties(kabc_net_plugin PROPERTIES OUTPUT_NAME kabc_net)
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_net )
-install_targets(${PLUGIN_INSTALL_DIR} kabc_net )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_net_plugin )
+install_targets(${PLUGIN_INSTALL_DIR} kabc_net_plugin )
 
 
 ########### install files ###############
