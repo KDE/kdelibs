@@ -129,11 +129,13 @@ unsigned char *p;
 int len;
 
    len = kossl->i2d_PKCS7(_pkcs, NULL);
-   char *buf = new char[len];
-   p = (unsigned char *)buf;
-   kossl->i2d_PKCS7(_pkcs, &p);
-   base64 = KCodecs::base64Encode(QByteArray::fromRawData(buf,len));
-   delete[] buf;
+   if (len >= 0) {
+     char *buf = new char[len];
+     p = (unsigned char *)buf;
+     kossl->i2d_PKCS7(_pkcs, &p);
+     base64 = KCodecs::base64Encode(QByteArray::fromRawData(buf,len));
+     delete[] buf;
+   }
 #endif
 return base64;
 }
