@@ -317,7 +317,7 @@ void KUrlLabel::leaveEvent (QEvent* e)
 
 bool KUrlLabel::event (QEvent *e)
 {
-  if (e && e->type() == QEvent::PaletteChange)
+  if (e->type() == QEvent::PaletteChange)
   {
     // use parentWidget() unless you are a toplevel widget, then try qAapp
     QPalette p = parentWidget() ? parentWidget()->palette() : qApp->palette();
