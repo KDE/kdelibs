@@ -109,7 +109,7 @@ public:
 		NoXvfbUse	= 0x8
 	};
 
-	Q_DECLARE_FLAGS(ProcessArguments, ProcessArgument);
+	Q_DECLARE_FLAGS(ProcessArguments, ProcessArgument)
 
 private:
 	Ui::MainWindow m_ui;
