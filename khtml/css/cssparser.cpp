@@ -490,7 +490,8 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
             }
             if (is_valid)
                 parsedValue = quotes;
-            //valueList->next();
+            else
+                delete quotes;
         }
         break;
 
