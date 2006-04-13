@@ -58,10 +58,9 @@ KTabCtl::~KTabCtl()
 
 void KTabCtl::resizeEvent(QResizeEvent *)
 {
-    int i;
-    QRect r = getChildRect();
-
     if (tabs) {
+        int i;
+        QRect r = getChildRect();
         for (i=0; i<(int)pages.size(); i++) {
             pages[i]->setGeometry(r);
         }
