@@ -8,46 +8,32 @@ function write_header( classDoc )
 {
     var compounddef = classDoc.firstChild().toElement();
     var includes = compounddef.firstChildElement('includes').toElement().toString();
-    var compoundName = compounddef.firstChildElement('compoundname').toElement().toString();
+    var compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
 
     var template =
-        '#ifndef BIND_' + compoundName + '_H\n' +
-        '#define BIND_' + compoundName + '_H\n' +
+        '#ifndef BIND_' + compoundname + '_H\n' +
+        '#define BIND_' + compoundname + '_H\n' +
         '\n' +
         '#include <value_binding.h>\n' +
         '#include <static_binding.h>\n' +
         '\n' +
-        'class ' + compoundName + ';\n' +
+        'class ' + compoundname + ';\n' +
         '\n' +
         'namespace KJSEmbed\n' +
         '{\n' +
-        '   class ' + compoundName + 'Binding : public ValueBinding\n' +
+        '   class ' + compoundname + 'Binding : public ValueBinding\n' +
         '   {\n' +
         '       public:\n' +
-        '           ' + compoundName + 'Binding( KJS::ExecState *exec, const ' + compoundName + ' &value );\n' +
+        '           ' + compoundname + 'Binding( KJS::ExecState *exec, const ' + compoundname + ' &value );\n' +
         '       private:\n' +
         '           static const KJS::ClassInfo info;\n' +
         '           virtual const KJS::ClassInfo* classInfo() const { return &info; }\n' +
         '   };\n\n' +
-        '   class ' + compoundName + ' \n' +
-        '   { \n' +
-        '       public: \n' + 
-        '           static const KJSEmbed::Method p_methods[]; \n' +
-        '           static const KJSEmbed::Method p_statics[]; \n' +
-        '           static const KJSEmbed::Enumerator p_enums[]; \n' +
-        '           static const KJSEmbed::Constructor p_constructor; \n' +
-        '           static KJS::JSObject *ctorMethod( KJS::ExecState *exec, const KJS::List &args );\n' +
-        '           static const KJSEmbed::Enumerator *enums() { return p_enums;} \n' +
-        '           static const KJSEmbed::Method *methods() { return p_methods;} \n' +
-        '           static const KJSEmbed::Method *statics() { return p_statics;} \n' +
-        '           static const KJSEmbed::Constructor *constructor() { return &p_constructor;} \n' +
-        '           static const KJS::JSObject *construct(KJS::ExecState *exec, const KJS::List &args)\n' +
-        '                                           { return (*p_constructor.construct)(exec,args); } \n' +
-        '   };\n\n' +
+        '   KJS_BINDING( ' + compoundname + ' )\n\n' +
         '}\n' +
-        '#endif // BIND_' + compoundName + '_H\n\n';
+        '#endif // BIND_' + compoundname + '_H\n\n';
 
-    var fileName = output_dir + compoundName + '_bind.h';
+    var fileName = output_dir + compoundname + '_bind.h';
     header = new File( fileName );
 
     if( !header.open( File.WriteOnly ) )
@@ -57,15 +43,30 @@ function write_header( classDoc )
     header.close();
 }
 
+function write_binding_method( compounddef, method_elem )
+{
+  var compoundname = compounddef.firstChildElement('compoundname').toElement().toString();
+
+  var type = method_elem.firstChildElement('type').toElement().toString();
+  var name = method_elem.firstChildElement('name').toElement().toString();
+  var args = method_elem.firstChildElement('argsstring').toElement().toString();
+
+  var method_template =
+    '\n' +
+    '// ' + type + ' ' + name + args + '\n' +
+    'START_QOBJECT_METHOD( ' + name + ', ' + compoundname + ')\n' +
+    '/* stuff */\n' +
+    'END_QOBJECT_METHOD\n';
+
+  return method_template;
+}
+
 function write_ctor( compoundDef )
 {
     var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
     var ctor =
-        'const Constructor ' + compoundName + '::p_constructor = \n' +
-        '{'+
-        "\"" + compoundName + "\", 0, KJS::DontDelete|KJS::ReadOnly, &' + compoundName + '::ctorMethod, p_statics, p_enums, p_methods };\n" +
-        'KJS::JSObject *' + compoundName + '::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\n' +
-        '{\n';
+        '\n' +
+        'START_CTOR( ' + compoundName + ', ' + compoundName + ', 0 )\n';
 
     // Generate the ctor bindings
     var methodList = compoundDef.elementsByTagName( "memberdef" );
@@ -112,7 +113,7 @@ function write_ctor( compoundDef )
         }
     }
 
-    ctor += '}';
+    ctor += 'END_CTOR\n';
     return ctor;
 }
 
@@ -121,8 +122,7 @@ function write_method_lut( compoundDef )
     var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
     var lut_template =
         '\n' +
-        'const Method ' + compoundName + '::p_methods[] = \n' +
-        '{\n';
+        'START_METHOD_LUT( ' + compoundName + ' )\n';
 
     // Generate the binding for each method
     var methodList = compoundDef.elementsByTagName( "memberdef" );
@@ -148,10 +148,7 @@ function write_method_lut( compoundDef )
             }
         }
     }
-
-    lut_template +=
-    ',{0, 0, 0, 0 }\n' +
-    '};\n';
+    lut_template += 'END_METHOD_LUT\n';
 
     return lut_template;
 }
@@ -214,31 +211,26 @@ function write_binding_new( class_doc )
                         var methodType = methodElement.firstChildElement('type').toElement().toString();
                         var methodArgs = methodElement.firstChildElement('argsstring').toElement().toString();
                         methods +=
+                            '\n' +
                             '// ' + methodType + ' ' + methodName + methodArgs + '\n' +
-                            'KJS::JSValue *'+ methodName + '( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \n' +
-                            '{ \n' +
-                            '   KJS::JSValue *result = KJS::Null(); \n' +
-                            '   KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); \n' +
-                            '   if( imp ) \n' +
-                            '   { \n' +
-                            '       ' + methodType + ' value = imp->value<' + methodType + '>();\n';
+                            'START_VARIANT_METHOD( ' + methodName + ', ' + compoundName + ' )\n';
 
                         // Handle arguments
                         var methodArgList = methodElement.elementsByTagName('param');
                         if ( methodArgList.count() == 0 )
                         {
                             methods +=
-                            '       ' + methodType + ' tmp = value.' + methodName + '();\n';
+                            '   ' + methodType + ' tmp = value.' + methodName + '();\n';
 
                             if ( methodType.indexOf('Qt::') != -1 )  // Enum Value
                             {
                                 methods += 
-                                '       result = KJS::Number( tmp );\n';
+                                '   result = KJS::Number( tmp );\n';
                             }
                             else
                             {
                                 methods +=
-                                "       result = KJSEmbed::createValue( exec, \"" + methodType + "\", tmp );\n";
+                                "   result = KJSEmbed::createValue( exec, \"" + methodType + "\", tmp );\n";
                             }
                         }
                         for ( paramIdx = 0; paramIdx < methodArgList.count(); ++paramIdx )
@@ -252,20 +244,13 @@ function write_binding_new( class_doc )
                         if ( methodName.indexOf('set') != -1 )
                         {   // setter, we can handle this for now
                             if ( paramVarElement.isNull() )
-                                methods += '        value.' + methodName + '(arg0);\n';
+                                methods += '    value.' + methodName + '(arg0);\n';
                             else
-                                methods += '        value.' + methodName + '(' + paramVar + ');\n';
+                                methods += '    value.' + methodName + '(' + paramVar + ');\n';
                         }
 
-                        methods +=
-                        '       imp->setValue(qVariantFromValue(value)); \n' +
-                        '   }\n' +
-                        '   else \n' +
-                        '   {\n' +
-                        "       KJS::throwError(exec, KJS::GeneralError, \"We have a problem baby\");\n" +
-                        '   }\n\n' +
-                        '   return result; \n' +
-                        '}\n\n';
+
+                        methods += 'END_VARIANT_METHOD\n';
                     }
                 }
             }
@@ -279,7 +264,7 @@ function write_binding_new( class_doc )
     enums += 'NO_ENUMS( ' + compoundName + ' ) \n';
 
     // Statics
-    enums += 'NO_STATICS( ' + compoundName + ' )';
+    enums += 'NO_STATICS( ' + compoundName + ' ) \n';
 
     // Ctor
     ctor = write_ctor( compoundDef );
@@ -344,7 +329,7 @@ function extract_parameter( parameter, paramIdx )
     if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
     {
         extracted +=
-            '       ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
+            '   ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
 
         if (!paramDefault.isNull())
             extracted += paramDefault.toString() + '));\n';
@@ -357,13 +342,13 @@ function extract_parameter( parameter, paramIdx )
     {
         //extracted += 'if(args['+paramIdx+'].getObject() != 0 && QByteArray(args['+paramIdx+'].getObject()->classInfo()->className) == "'+paramType+'");\n';
         extracted +=
-            '       ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + paramType + '>(exec, args, ' + paramIdx + ');\n';
+            '   ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + paramType + '>(exec, args, ' + paramIdx + ');\n';
         return extracted;
     }
     else    // It's an object, or something else?
     {
         extracted +=
-            '       ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractObject<' + paramType + '>(exec, args, ' + paramIdx + ', ';
+            '   ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractObject<' + paramType + '>(exec, args, ' + paramIdx + ', ';
     }
 
     if (!paramDefault.isNull())
