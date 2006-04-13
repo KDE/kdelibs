@@ -1109,11 +1109,12 @@ static void handle_launcher_request(int sock = -1)
    {
       d.launcher_ok = true;
    }
-   else if ((request_header.cmd == LAUNCHER_EXEC) ||
+   else if (request_header.arg_length && 
+      ((request_header.cmd == LAUNCHER_EXEC) ||
        (request_header.cmd == LAUNCHER_EXT_EXEC) ||
        (request_header.cmd == LAUNCHER_SHELL ) ||
        (request_header.cmd == LAUNCHER_KWRAPPER) ||
-       (request_header.cmd == LAUNCHER_EXEC_NEW))
+       (request_header.cmd == LAUNCHER_EXEC_NEW)))
    {
       pid_t pid;
       klauncher_header response_header;
