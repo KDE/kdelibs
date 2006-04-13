@@ -575,10 +575,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 	if (!path.isEmpty() || canReturnNull)
 	    return path;
 
-	if (canReturnNull)
-	    return QString();
-        else
-            return unknownIconPath(size);
+        return unknownIconPath(size);
     }
     return icon.path;
 }
