@@ -4,6 +4,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo QFontBinding::info = { "QFontBinding", &ValueBinding::info, 0, 0 };
 QFontBinding::QFont( KJS::ExecState *exec, const QFont &value )
    : ValueBinding(exec, value)
 {

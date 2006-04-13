@@ -12,6 +12,9 @@ namespace KJSEmbed
    {
        public:
            QRectFBinding( KJS::ExecState *exec, const QRectF &value );
+       private:
+           static const KJS::ClassInfo info;
+           virtual const KJS::ClassInfo* classInfo() const { return &info; }
    };
 
    KJS_BINDING( QRectF )

@@ -4,6 +4,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo QRectBinding::info = { "QRectBinding", &ValueBinding::info, 0, 0 };
 QRectBinding::QRect( KJS::ExecState *exec, const QRect &value )
    : ValueBinding(exec, value)
 {

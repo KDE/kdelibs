@@ -12,6 +12,9 @@ namespace KJSEmbed
    {
        public:
            QPointBinding( KJS::ExecState *exec, const QPoint &value );
+       private:
+           static const KJS::ClassInfo info;
+           virtual const KJS::ClassInfo* classInfo() const { return &info; }
    };
 
    KJS_BINDING( QPoint )

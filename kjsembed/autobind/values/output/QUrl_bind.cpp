@@ -4,6 +4,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo QUrlBinding::info = { "QUrlBinding", &ValueBinding::info, 0, 0 };
 QUrlBinding::QUrl( KJS::ExecState *exec, const QUrl &value )
    : ValueBinding(exec, value)
 {

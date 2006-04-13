@@ -1,4 +1,3 @@
-
 var intermediate_dir = 'intermediate/';
 var output_dir = 'output/';
 
@@ -26,6 +25,9 @@ function write_header( classDoc )
         '   {\n' +
         '       public:\n' +
         '           ' + compoundname + 'Binding( KJS::ExecState *exec, const ' + compoundname + ' &value );\n' +
+        '       private:\n' +
+        '           static const KJS::ClassInfo info;\n' +
+        '           virtual const KJS::ClassInfo* classInfo() const { return &info; }\n' +
         '   };\n\n' +
         '   KJS_BINDING( ' + compoundname + ' )\n\n' +
         '}\n' +
@@ -78,7 +80,7 @@ function write_ctor( compoundDef )
         {
             if ( memberName.indexOf('operator') == -1 ) // Make sure this is not an operator.
             {
-                if ( memberName.indexOf(compoundName) != -1 )
+                if ( memberName.indexOf(compoundName) != -1 ) // This _is_ a ctor
                 {
                     if ( memberName.indexOf('~') == -1 )
                     {
@@ -114,7 +116,6 @@ function write_ctor( compoundDef )
     ctor += 'END_CTOR\n';
     return ctor;
 }
-
 
 function write_method_lut( compoundDef )
 {
@@ -178,6 +179,7 @@ function write_binding_new( class_doc )
         '\n' +
         'using namespace KJSEmbed;\n' +
         '\n' +
+        "const KJS::ClassInfo " + compoundName + "Binding::info = { \""+ compoundName + "\", &ValueBinding::info, 0, 0 };\n" +
         compoundName + 'Binding::' + compoundName + '( KJS::ExecState *exec, const ' + compoundName +' &value )\n' +
         '   : ValueBinding(exec, value)\n' +
         '{\n' +

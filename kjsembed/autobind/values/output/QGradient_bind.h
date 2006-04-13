@@ -12,6 +12,9 @@ namespace KJSEmbed
    {
        public:
            QGradientBinding( KJS::ExecState *exec, const QGradient &value );
+       private:
+           static const KJS::ClassInfo info;
+           virtual const KJS::ClassInfo* classInfo() const { return &info; }
    };
 
    KJS_BINDING( QGradient )

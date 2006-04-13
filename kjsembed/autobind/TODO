@@ -11,4 +11,7 @@ f) not all bindings just return values, sometimes they set things on the value p
 
 there's probably a bunch of stuff I forgot, but I'm somewhat hopeful this can work heh, the QBrush bindings are the ones I've been looking at and they're really getting there.. good luck young skywalker :)
 
+Notes:
+ * In valuetypes we can get away with checking enum types in parameters by just searching for "Qt::" this will not hold up in objects.
+
 

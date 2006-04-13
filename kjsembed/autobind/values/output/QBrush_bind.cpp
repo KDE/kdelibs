@@ -4,6 +4,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo QBrushBinding::info = { "QBrushBinding", &ValueBinding::info, 0, 0 };
 QBrushBinding::QBrush( KJS::ExecState *exec, const QBrush &value )
    : ValueBinding(exec, value)
 {

@@ -12,6 +12,9 @@ namespace KJSEmbed
    {
        public:
            QUrlBinding( KJS::ExecState *exec, const QUrl &value );
+       private:
+           static const KJS::ClassInfo info;
+           virtual const KJS::ClassInfo* classInfo() const { return &info; }
    };
 
    KJS_BINDING( QUrl )

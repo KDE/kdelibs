@@ -4,6 +4,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo QGradientBinding::info = { "QGradientBinding", &ValueBinding::info, 0, 0 };
 QGradientBinding::QGradient( KJS::ExecState *exec, const QGradient &value )
    : ValueBinding(exec, value)
 {

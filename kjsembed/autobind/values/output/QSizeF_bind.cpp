@@ -4,6 +4,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo QSizeFBinding::info = { "QSizeFBinding", &ValueBinding::info, 0, 0 };
 QSizeFBinding::QSizeF( KJS::ExecState *exec, const QSizeF &value )
    : ValueBinding(exec, value)
 {

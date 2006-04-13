@@ -4,6 +4,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo QColorBinding::info = { "QColorBinding", &ValueBinding::info, 0, 0 };
 QColorBinding::QColor( KJS::ExecState *exec, const QColor &value )
    : ValueBinding(exec, value)
 {
