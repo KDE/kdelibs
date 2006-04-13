@@ -64,7 +64,7 @@ public:
 	KJobListView( QWidget *parent = 0 );
 
 protected:
-	virtual void dragEnterEvent( QDragEnterEvent* ) const;
+	virtual void dragEnterEvent( QDragEnterEvent* );
 };
 
 KJobListView::KJobListView( QWidget *parent)
@@ -73,7 +73,7 @@ KJobListView::KJobListView( QWidget *parent)
 	setAcceptDrops( true );
 }
 
-void KJobListView::dragEnterEvent( QDragEnterEvent *event ) const
+void KJobListView::dragEnterEvent( QDragEnterEvent *event )
 {
 	if ( KUrl::List::canDecode( event->mimeData() ) )
 		event->acceptProposedAction();
