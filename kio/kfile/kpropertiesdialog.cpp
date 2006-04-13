@@ -2359,7 +2359,7 @@ void KFilePermissionsPropsPlugin::getPermissionMasks(mode_t &andFilePermissions,
     andDirPermissions &= ~(S_IRGRP | S_IWGRP | S_IXGRP);
   }
 
-  m = standardPermissions[d->othersPermCombo->currentIndex()];
+  m = d->othersPermCombo->currentIndex() >= 0 ? standardPermissions[d->othersPermCombo->currentIndex()] : -1;
   if (m != (mode_t) -1) {
     orFilePermissions |= m & UniOthers;
     if ((m & UniOthers) &&
