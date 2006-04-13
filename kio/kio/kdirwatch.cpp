@@ -431,8 +431,8 @@ void KDirWatchPrivate::slotActivated()
               //(void) inotify_rm_watch( m_inotify_fd, e->wd );
               addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
             }
-            if ( event->mask & IN_CREATE ) {
-              kdDebug(7001) << "-->got create subfile signal for " << e->path << endl;
+            if ( event->mask & (IN_CREATE|IN_MOVED_TO) ) {
+              kdDebug(7001) << "-->got new subfile " << path << " in " << e->path << endl;
 
               Entry *sub_entry = e->m_entries.first();
               for(;sub_entry; sub_entry = e->m_entries.next())
@@ -1591,7 +1591,7 @@ KDirWatch::KDirWatch (QObject* parent, const char* name)
 
 KDirWatch::~KDirWatch()
 {
-  if (d) d->removeEntries(this);
+  d->removeEntries(this);
   if ( d->deref() )
   {
     // delete it if it's the last one

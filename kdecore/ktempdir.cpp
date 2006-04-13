@@ -107,6 +107,8 @@ KTempDir::~KTempDir()
 {
    if (bAutoDelete)
       unlink();
+
+   delete d;
 }
 
 int

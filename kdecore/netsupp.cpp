@@ -352,15 +352,9 @@ int kde_getaddrinfo(const char *name, const char *service,
   return 0;
 
  out:
-  // Normal exit of the function
-  if (err == 0)
-    *result = res;
-  else
-    {
-      if (res->data != NULL)
-	freeaddrinfo(res->data);
-      free(res);
-    }
+  if (res->data != NULL)
+      freeaddrinfo(res->data);
+  free(res);
   return err;
 }
 

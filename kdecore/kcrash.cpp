@@ -479,6 +479,7 @@ static int openSocket()
   if (strlen(sock_file)+strlen(display)+strlen("/kdeinit_")+2 > MAX_SOCK_FILE)
   {
      fprintf(stderr, "Warning: Socket name will be too long.\n");
+     free(display);
      return -1;
   }
   strcat(sock_file, "/kdeinit_");

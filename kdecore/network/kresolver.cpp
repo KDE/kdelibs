@@ -609,7 +609,7 @@ bool KResolver::resolveAsync(QObject* userObj, const char *userSlot,
 
 QStrList KResolver::protocolName(int protonum)
 {
-  struct protoent *pe;
+  struct protoent *pe = 0L;
 #ifndef HAVE_GETPROTOBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
@@ -628,6 +628,7 @@ QStrList KResolver::protocolName(int protonum)
       if (getprotobynumber_r(protonum, &protobuf, buf, buflen, &pe) == ERANGE)
 # endif
 	{
+          pe = 0L;
 	  buflen += 1024;
 	  delete [] buf;
 	}
