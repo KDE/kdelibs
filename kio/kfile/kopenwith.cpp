@@ -108,7 +108,7 @@ void KAppTreeListItem::init(const QPixmap& pixmap, bool parse, bool dir, const Q
 /* Ensures that directories sort before non-directories */
 int KAppTreeListItem::compare(Q3ListViewItem *i, int col, bool ascending) const
 {
-	KAppTreeListItem *other = dynamic_cast<KAppTreeListItem *>(i);
+	KAppTreeListItem *other = static_cast<KAppTreeListItem *>(i);
 
 	// Directories sort first
 	if (directory && !other->directory)
