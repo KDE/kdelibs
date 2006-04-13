@@ -445,7 +445,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
     emit needProgressId();
     kDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
     QPointer<SlaveInterface> me = this;
-    m_pConnection->suspend();
+    if (m_pConnection) m_pConnection->suspend();
     int result = Observer::/*self()->*/messageBox( m_progressId, type, text, caption, buttonYes, buttonNo, dontAskAgainName );
     if ( me && m_pConnection ) // Don't do anything if deleted meanwhile
     {
