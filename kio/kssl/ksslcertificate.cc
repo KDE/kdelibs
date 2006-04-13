@@ -956,7 +956,8 @@ return i18n("The certificate is invalid.");
 QByteArray KSSLCertificate::toDer() {
 QByteArray qba;
 #ifdef KSSL_HAVE_SSL
-unsigned int certlen = d->kossl->i2d_X509(getCert(), NULL);
+    int certlen = d->kossl->i2d_X509(getCert(), NULL);
+    if (certlen >= 0) {
 // These should technically be unsigned char * but it doesn't matter
 // for our purposes
 char *cert = new char[certlen];
@@ -967,6 +968,7 @@ char *p = cert;
 	// encode it into a QString
 	qba = QByteArray(cert, certlen);
 	delete[] cert;
+     }
 #endif
 return qba;
 }
