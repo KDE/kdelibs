@@ -52,7 +52,7 @@ static const char classDef[] =  "class %PluginName : public QObject, public QDes
                                 "	virtual ~%PluginName() {}\n"
                                 "	\n"
                                 "	bool isContainer() const { return %IsContainer; }\n"
-                                "	bool isInitialized() { return mInitialized; }\n"
+                                "	bool isInitialized() const { return mInitialized; }\n"
                                 "	QIcon icon() const { return QIcon(\"%IconName\"); }\n"
                                 "	QString codeTemplate() const { return QLatin1String(\"%CodeTemplate\");}\n"
                                 "//	QString domXml() const { return QLatin1String(\"%DomXml\"); }\n"
