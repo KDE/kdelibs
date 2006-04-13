@@ -42,25 +42,28 @@ KSSLSession::~KSSLSession() {
 
 
 QString KSSLSession::toString() const {
-QString rc;
+    QString rc;
 #ifdef KSSL_HAVE_SSL
-SSL_SESSION *session = static_cast<SSL_SESSION*>(_session);
-unsigned int slen = KOpenSSLProxy::self()->i2d_SSL_SESSION(session, 0L);
-// These should technically be unsigned char * but it doesn't matter
-// for our purposes
-char *csess = new char[slen];
-char *p = csess;
+    SSL_SESSION *session = static_cast<SSL_SESSION*>(_session);
+    int slen = KOpenSSLProxy::self()->i2d_SSL_SESSION(session, 0L);
+
+    if (slen >= 0) {
+	// These should technically be unsigned char * but it doesn't matter
+	// for our purposes
+	char *csess = new char[slen];
+	char *p = csess;
 
 	if (!KOpenSSLProxy::self()->i2d_SSL_SESSION(session, (unsigned char **)&p)) {
-		delete[] csess;
-		return QString();
+	    delete[] csess;
+	    return QString();
 	}
 
 	// encode it into a QString
 	rc = KCodecs::base64Encode(QByteArray(csess,slen));
 	delete[] csess;
+     }
 #endif
-return rc;
+    return rc;
 }
 
 
