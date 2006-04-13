@@ -256,7 +256,6 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
         if (*buf++ == '\n')
           break;
       }
-      delete pkcs;
     }
   }
 } else {                                                      // NON SSL CASE
