@@ -25,7 +25,7 @@
 
 #if defined Q_WS_X11 or defined Q_WS_WIN
 #include "kkeyserver_x11.h"
-#else if defined Q_WS_MACX
+#elif defined Q_WS_MACX
 #include "kkeyserver_mac.h"
 #endif
 
