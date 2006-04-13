@@ -183,8 +183,11 @@ void KCombiView::setSelectionMode( KFile::SelectionMode sm )
     // I think the left view (directories should always be in
     // Single-Mode, right?
     // left->setSelectionMode( sm );
-    if ( !right )
+    if ( !right ) {
         kFatal() << "You need to call setRight( someview ) before!" << endl;
+        return;
+    }
+
     right->setSelectionMode( sm );
 }
 
