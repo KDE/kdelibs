@@ -168,13 +168,6 @@ namespace {	// Private.
 			}
 		}
 	};
-	
-
-		if (size < 1)
-		{
-			kdDebug(399) << "This TGA file is broken with size " << size << endl;
-			return false;
-		}
 
 	static bool LoadTGA( QDataStream & s, const TgaHeader & tga, QImage &img )
 	{
