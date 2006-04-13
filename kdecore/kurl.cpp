@@ -1293,7 +1293,7 @@ KUrl KUrl::fromPathOrURL( const QString& text )
         if (!QDir::isRelativePath(text) || text[0] == '~')
             url.setPath( text );
         else
-            url = text;
+            url = KUrl( text );
     }
 
     return url;

@@ -679,8 +679,8 @@ public:
 #endif
 
   // Define those, since the constructors are explicit
-  KUrl& operator=( const char * _url ) { *this = KUrl(_url); return *this; }
-  KUrl& operator=( const QString& _url ) { *this = KUrl(_url); return *this; }
+  //KUrl& operator=( const char * _url ) { *this = KUrl::fromPathOrURL(_url); return *this; }
+  KUrl& operator=( const QString& _url ) { *this = KUrl::fromPathOrURL(_url); return *this; }
 
   bool operator==( const KUrl& _u ) const;
   bool operator==( const QString& _u ) const;
