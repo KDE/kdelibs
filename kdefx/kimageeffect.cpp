@@ -3671,7 +3671,8 @@ QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
                     }
                 }
             }
-            *q++ = (*s);
+            if (s)
+                *q++ = (*s);
         }
     }
     /* liberateMemory((histogram); */
