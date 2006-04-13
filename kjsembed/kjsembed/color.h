@@ -32,6 +32,9 @@ namespace KJSEmbed
     {
         public:
             ColorBinding( KJS::ExecState *exec, const QColor &value );
+	private:
+	    virtual const KJS::ClassInfo* classInfo() const { return &info; }
+	    static const KJS::ClassInfo info;
     };
 
     /**

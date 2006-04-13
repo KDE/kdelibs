@@ -32,6 +32,8 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo ValueBinding::info = { "ValueBinding", 0, 0, 0 };
+
 ValueBinding::ValueBinding( KJS::ExecState *exec, const QVariant &value )
     : KJS::JSObject(exec->interpreter()->builtinObjectPrototype()),
       m_value(value)

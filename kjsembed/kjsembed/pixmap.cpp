@@ -28,6 +28,8 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo PixmapBinding::info = { "QPixmap", 0, 0, 0 };
+
 PixmapBinding::PixmapBinding( KJS::ExecState *exec, const QPixmap &value )
     : ValueBinding(exec, value )
 {

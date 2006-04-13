@@ -106,10 +106,17 @@ START_CTOR( Brush, QBrush, 0)
     }
     else if( args.size() == 2 )
     {
-        return new KJSEmbed::BrushBinding(exec,
-                                    QBrush( KJSEmbed::extractValue<QColor>(exec, args, 0),
-                                            (Qt::BrushStyle)KJSEmbed::extractInt( exec, args, 1 )
-                                            ) );
+	KJS::JSObject* obj1 = args[0]->getObject();
+	KJS::JSObject* obj2 = args[1]->getObject();
+	if(obj1->className() == "QColor") {
+            QColor arg0 = KJSEmbed::extractValue<QColor>(exec, args, 0);
+	    if(obj2 && obj2->className() == "QPixmap") {
+		QPixmap arg1 = KJSEmbed::extractValue<QPixmap>(exec, args, 1);
+		return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
+	    }
+	    Qt::BrushStyle arg1 = (Qt::BrushStyle)KJSEmbed::extractInt(exec, args, 1);
+	    return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
+	}
     }
     return new KJSEmbed::BrushBinding( exec, QBrush() );
 

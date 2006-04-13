@@ -18,32 +18,31 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef PIXMAP_H
-#define PIXMAP_H
+println('Start brush test...');
 
-#include <value_binding.h>
-#include <static_binding.h>
+var pixmap = new QPixmap(120, 120);
+var color = new QColor("blue");
 
-class QPixmap;
+// Test 1 arg constructor
+var brush1 = new QBrush(pixmap);
 
-namespace KJSEmbed
-{
-    class PixmapBinding : public ValueBinding
-    {
-        public:
-            PixmapBinding( KJS::ExecState *exec, const QPixmap &value );
-	private:
-	    virtual const KJS::ClassInfo *classInfo() const { return &info; }
-	    static const KJS::ClassInfo info;
-    };
+if(brush1.texture().width() == 120 && brush1.texture().height() == 120)
+    println("Test1: OK");
+else
+    println("Wrong size: "+ brush1.texture().width()+"x"+brush1.texture().height());
 
-    /**
-    * Constructors:
-    *
-    * Methods:
-    */
-    KJS_BINDING( Pixmap  )
+// QBrush ( const QColor & color, const QPixmap & pixmap )
+var brush2 = new QBrush(color, pixmap);
+if(brush2.texture().height() == 120 && brush2.texture().width() == 120)
+    println("Test2: OK");
+else
+    println("Wrong size: "+ brush2.texture().width()+"x"+brush2.texture().height());
 
+if(brush2.color().blue() == 255)
+    println("Test3: OK");
+else
+    println("Wrong color");
 
-}
-#endif
+// QBrush ( const QColor & color, Qt::BrushStyle style = Qt::SolidPattern )
+var brush3 = new QBrush(color, 11);
+

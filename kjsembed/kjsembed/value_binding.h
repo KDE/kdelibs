@@ -110,6 +110,9 @@ namespace KJSEmbed
 
         protected:
             QVariant m_value;
+	private:
+	    virtual const KJS::ClassInfo* classInfo() const { return &info; }
+	    static const KJS::ClassInfo info;
     };
 
     /**
