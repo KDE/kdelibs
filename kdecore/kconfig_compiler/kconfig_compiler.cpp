@@ -1253,7 +1253,7 @@ int main( int argc, char **argv )
 
   if ( headerIncludes.count() > 0 ) h << endl;
 
-  if ( !singleton && cfgFileNameArg && parameters.isEmpty() )
+  if ( !singleton && parameters.isEmpty() )
     h << "#include <kglobal.h>" << endl;
 
   h << "#include <kconfigskeleton.h>" << endl;
