@@ -2149,19 +2149,18 @@ bool CSSParser::parseShadow(int propId, bool important)
             CSSPrimitiveValueImpl* parsedColor = 0;
             bool isColor = (val->id >= CSS_VAL_AQUA && val->id <= CSS_VAL_WINDOWTEXT || val->id == CSS_VAL_MENU ||
                            (val->id >= CSS_VAL_GREY && val->id <= CSS_VAL__KHTML_TEXT && !strict));
-            if (isColor) {
-                if (!context.allowColor)
-                    return context.failed();
-                parsedColor = new CSSPrimitiveValueImpl(val->id);
-            }
+	    if (!context.allowColor)
+                return context.failed();
+ 
+            if (isColor)
+               parsedColor = new CSSPrimitiveValueImpl(val->id);
 
             if (!parsedColor)
                 // It's not built-in. Try to parse it as a color.
                 parsedColor = parseColorFromValue(val);
 
-            if (!parsedColor || !context.allowColor)
-                return context.failed(); // This value is not a color or length and is invalid or
-                                         // it is a color, but a color isn't allowed at this point.
+            if (!parsedColor)
+                return context.failed();
 
             context.commitColor(parsedColor);
         }
