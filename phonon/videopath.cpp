@@ -80,7 +80,8 @@ bool VideoPath::insertEffect( VideoEffect* newEffect, VideoEffect* insertBefore 
 	if( d->effects.contains( newEffect ) )
 		return false;
 
-	if( iface() && d->iface()->insertEffect( newEffect->iface(), insertBefore->iface() ) )
+	if( iface() && d->iface()->insertEffect( newEffect->iface(), 
+                                             insertBefore ?  insertBefore->iface() : 0L) )
 	{
 		newEffect->addDestructionHandler( this );
 		if( insertBefore )
