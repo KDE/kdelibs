@@ -2094,6 +2094,8 @@ struct ShadowParseContext {
             blur = val;
             allowBlur = false;
         }
+	else
+	    delete val;
     }
 
     void commitColor(CSSPrimitiveValueImpl* val) {
