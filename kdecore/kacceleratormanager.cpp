@@ -252,7 +252,8 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     // calculate the accelerators for the children
     foreach(Item *it, *item->m_children)
     {
-        kDebug(125) << "children " << it->m_widget->metaObject()->className() << endl;
+        if (it->m_widget)
+            kDebug(125) << "children " << it->m_widget->metaObject()->className() << endl;
         if (it->m_widget && it->m_widget->isVisibleTo( item->m_widget ) )
             calculateAccelerators(it, used);
     }
