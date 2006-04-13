@@ -99,8 +99,11 @@ void KCombiView::insertItem( KFileItem *item )
 
 void KCombiView::setSorting( QDir::SortFlags sort )
 {
-    if ( !right )
+    if ( !right ) {
         kFatal() << "You need to call setRight( someview ) before!" << endl;
+        return;
+    }
+
     right->setSorting( sort );
     left->setSorting( sort );
 
