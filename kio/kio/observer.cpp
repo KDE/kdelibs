@@ -398,7 +398,6 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job* job,
                                        bool _multi,
                                        const QString& _error_text )
 {
-  kDebug(KDEBUG_OBSERVER) << "Observer::open_SkipDlg job=" << job << " progressId=" << job->progressId() << endl;
   // Hide existing dialog box if any
   if (job && job->progressId())
       m_uiserver->setJobVisible( job->progressId(), false );
