@@ -139,9 +139,6 @@ DOMStringImpl *DOMStringImpl::split(uint pos)
   if( pos >=l ) return new DOMStringImpl();
 
   uint newLen = l-pos;
-  QChar *c = QT_ALLOC_QCHAR_VEC(newLen);
-  memcpy(c, s+pos, newLen*sizeof(QChar));
-
   DOMStringImpl *str = new DOMStringImpl(s + pos, newLen);
   truncate(pos);
   return str;
