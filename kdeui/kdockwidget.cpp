@@ -762,9 +762,11 @@ void KDockWidget::setHeader( KDockWidgetAbstractHeader* h )
 void KDockWidget::setEnableDocking( int pos )
 {
   eDocking = pos;
-  if( header && header->inherits( "KDockWidgetHeader" ) )
-     ( ( KDockWidgetHeader* ) header )->showUndockButton( pos & DockDesktop );
-  updateHeader();
+  if( header ) {
+     if (header->inherits( "KDockWidgetHeader" ) )
+         ( ( KDockWidgetHeader* ) header )->showUndockButton( pos & DockDesktop );
+    updateHeader();
+  }
 }
 
 void KDockWidget::updateHeader()
