@@ -1240,7 +1240,7 @@ static void handle_launcher_request(int sock = -1)
       }
       d.debug_wait = false;
    }
-   else if (request_header.cmd == LAUNCHER_SETENV)
+   else if (response_header.arg_length && request_header.cmd == LAUNCHER_SETENV)
    {
       const char *env_name;
       const char *env_value;
