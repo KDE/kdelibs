@@ -319,9 +319,11 @@ void KURIFilter::loadPlugins()
     for (; it != end; ++it )
     {
       KURIFilterPlugin *plugin = KParts::ComponentFactory::createInstanceFromService<KURIFilterPlugin>( *it );
-      plugin->setObjectName( (*it)->desktopEntryName() );
-      if ( plugin )
+
+      if ( plugin ) {
+        plugin->setObjectName( (*it)->desktopEntryName() );
         m_lstPlugins.append( plugin );
+      }
     }
 
     // NOTE: Plugin priority is now determined by
