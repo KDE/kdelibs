@@ -1561,7 +1561,7 @@ KDirWatch::KDirWatch (QObject* parent)
 
 KDirWatch::~KDirWatch()
 {
-  if (d) d->removeEntries(this);
+  d->removeEntries(this);
   if ( d->deref() )
   {
     // delete it if it's the last one
