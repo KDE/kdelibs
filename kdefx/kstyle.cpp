@@ -2469,6 +2469,7 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
 
                     //We do handleRTL here to unreflect things if need be
                     QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
+		    Q_ASSERT (slOpt);
 
                     if (slOpt->minimum == slOpt->maximum)
                         return groove;
