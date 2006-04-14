@@ -9,7 +9,6 @@
 #undef HAVE_DNOTIFY
 #undef HAVE_INOTIFY
 #undef HAVE_LUA
-#undef HAVE_OLD_SSL_API
 #undef HAVE_SHORTSETGROUPS /* if setgroups() takes short *as second arg */
 
 /********** structs used by kdecore/network *********/
@@ -41,9 +40,6 @@
 
 /* Define if you have libz */
 #cmakedefine   HAVE_LIBZ 1
-
-/* Define if you have libpng */
-#cmakedefine   HAVE_LIBPNG 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #cmakedefine   HAVE_DLFCN_H 1
@@ -85,11 +81,11 @@
 /* Define if you have the MIT Kerberos libraries */
 #cmakedefine GSSAPI_MIT 1
 
-#cmakedefine HAVE_EXR 1
+/* Defined if the libagg graphics library is present
+   Used by kiconloader and kicondialog */
+#cmakedefine HAVE_LIBAGG 1
+
 #cmakedefine HAVE_FAM 1
-#cmakedefine HAVE_JASPER 1
-#cmakedefine HAVE_LIBART 1
-#cmakedefine HAVE_SSL 1
 #cmakedefine HAVE_VOLMGT 1
 
 #cmakedefine HAVE_LC_MESSAGES 1

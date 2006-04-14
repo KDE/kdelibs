@@ -18,13 +18,14 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
+#include "ksslsettings.h"
+
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
- 
+
 #include <stdlib.h>
 #include <pwd.h>
 #include <unistd.h>
@@ -32,7 +33,6 @@
 #include <qfile.h>
 #include <q3sortedlist.h>
 
-#include "ksslsettings.h"
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
@@ -49,11 +49,11 @@
 
 class CipherNode {
 	public:
-		CipherNode(const char *_name, int _keylen) : 
+		CipherNode(const char *_name, int _keylen) :
 			name(_name), keylen(_keylen) {}
 		QString name;
 		int keylen;
-		inline int operator==(CipherNode &x) 
+		inline int operator==(CipherNode &x)
 		{ return ((x.keylen == keylen) && (x.name == name)); }
 		inline int operator< (CipherNode &x) { return keylen < x.keylen;  }
 		inline int operator<=(CipherNode &x) { return keylen <= x.keylen; }
@@ -85,7 +85,7 @@ class KSSLSettingsPrivate {
 //                      and do not store them in memory.  This should change.
 //
 
-KSSLSettings::KSSLSettings(bool readConfig) 
+KSSLSettings::KSSLSettings(bool readConfig)
 	:d(new KSSLSettingsPrivate)
 {
 	m_cfg = new KConfig("cryptodefaults", false, false);
@@ -150,7 +150,7 @@ QString KSSLSettings::getCipherList() {
 				break;
 			}
 		}
-	} 
+	}
 
 	// now assemble the list  cipher1:cipher2:cipher3:...:ciphern
 	while (!cipherSort.isEmpty()) {
@@ -242,7 +242,7 @@ void KSSLSettings::save() {
 			m_cfg->writeEntry(ciphername, true);
 		} else m_cfg->writeEntry(ciphername, false);
 	}
-#endif 
+#endif
 
 	m_cfg->sync();
 

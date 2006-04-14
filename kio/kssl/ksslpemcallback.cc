@@ -18,9 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 #include <kpassworddialog.h>
 #include <klocale.h>
@@ -41,7 +40,7 @@ int KSSLPemCallback(char *buf, int size, int rwflag, void *userdata) {
 		pass.truncate((unsigned int)size-1);
 
 	qstrncpy(buf, pass.data(), size-1);
-    
+
 	for (unsigned int i = 0; i < passlen; i++)
 		pass[i] = 0;
 	// To be sure that it doesn't optimise the previous loop away

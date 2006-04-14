@@ -1,6 +1,7 @@
 // This library is distributed under the conditions of the GNU LGPL.
 
-#include "config.h"
+#include <config.h>
+#include <config-kimgio.h>
 
 #ifdef HAVE_LIBTIFF
 

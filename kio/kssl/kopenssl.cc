@@ -16,9 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 
 #ifdef KSSL_HAVE_SSL
@@ -284,21 +283,21 @@ KConfig *cfg;
          _cryptoLib = ll->globalLibrary(libname.latin1());
    }
 #elif defined(__CYGWIN__)
-   libpaths << "/usr/bin/"             
-   		<< "/usr/local/bin"             
-   		<< "/usr/local/openssl/bin"     
-   		<< "/opt/openssl/bin"           
-   		<< "/opt/kde3/bin"              
-   		<< "";                          
-                                       
-   libnamess << "cygssl-0.9.7.dll"     
-		 << "cygssl.dll"                    
-		 << "libssl.dll"                    
-		 << "";                         
-                                       
-   libnamesc << "cygcrypto.dll"        
-		 << "libcrypto.dll"                 
-		 << "";                         
+   libpaths << "/usr/bin/"
+   		<< "/usr/local/bin"
+   		<< "/usr/local/openssl/bin"
+   		<< "/opt/openssl/bin"
+   		<< "/opt/kde3/bin"
+   		<< "";
+
+   libnamess << "cygssl-0.9.7.dll"
+		 << "cygssl.dll"
+		 << "libssl.dll"
+		 << "";
+
+   libnamesc << "cygcrypto.dll"
+		 << "libcrypto.dll"
+		 << "";
 #else
    libpaths
             #ifdef _AIX
@@ -312,7 +311,7 @@ KConfig *cfg;
 	    << "/opt/openssl/lib" KDELIBSUFF "/"
 	    << "/lib" KDELIBSUFF "/"
             << "";
-    
+
 // FIXME: #define here for the various OS types to optimize
    libnamess
 	     #ifdef hpux

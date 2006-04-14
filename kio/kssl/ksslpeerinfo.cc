@@ -18,9 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 #include <qregexp.h>
 
@@ -42,7 +41,7 @@ public:
 
 
 
-KSSLPeerInfo::KSSLPeerInfo() 
+KSSLPeerInfo::KSSLPeerInfo()
 	:d(new KSSLPeerInfoPrivate)
 {
 }
@@ -62,9 +61,9 @@ void KSSLPeerInfo::setPeerHost(const QString &realHost) {
 
 #ifdef Q_WS_WIN //TODO kresolver not ported
 	d->peerHost = d->peerHost.toLower();
-#else	
+#else
 	d->peerHost = QLatin1String(KNetwork::KResolver::domainToAscii(d->peerHost));
-#endif	
+#endif
 }
 
 bool KSSLPeerInfo::certMatchesAddress() {

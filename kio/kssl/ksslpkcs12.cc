@@ -19,9 +19,8 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 #include <kopenssl.h>
 
@@ -133,8 +132,8 @@ void KSSLPKCS12::setCert(PKCS12 *c) {
 bool KSSLPKCS12::changePassword(const QString &pold, const QString &pnew) {
 #ifdef KSSL_HAVE_SSL
    // OpenSSL makes me cast away the const here.  argh
-   return (0 == kossl->PKCS12_newpass(_pkcs, 
-                           pold.isNull() ? (char *)"" : (char *)pold.toLatin1().constData(), 
+   return (0 == kossl->PKCS12_newpass(_pkcs,
+                           pold.isNull() ? (char *)"" : (char *)pold.toLatin1().constData(),
                            pnew.isNull() ? (char *)"" : (char *)pnew.toLatin1().constData()));
 #endif
 return false;
@@ -179,7 +178,7 @@ X509 *x = NULL;
     kossl->ERR_clear_error();
   }
 #endif
-return false;  
+return false;
 }
 
 
@@ -193,7 +192,7 @@ KSSLCertificate *KSSLPKCS12::getCertificate() {
 }
 
 
-QString KSSLPKCS12::toString() 
+QString KSSLPKCS12::toString()
 {
    QString base64;
 #ifdef KSSL_HAVE_SSL
@@ -280,7 +279,7 @@ QString KSSLPKCS12::name() const {
    return _cert->getSubject();
 }
 
- 
+
 #ifdef KSSL_HAVE_SSL
 #undef sk_new
 #undef sk_push

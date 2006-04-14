@@ -3,8 +3,27 @@ kde4_header()
 project(kimgio)
 
 macro_optional_find_package(Jasper)
+if(JASPER_FOUND)
+   set(HAVE_JASPER 1)
+else(JASPER_FOUND)
+   set(HAVE_JASPER 0)
+endif(JASPER_FOUND)
+
 macro_optional_find_package(TIFF)
+if(TIFF_FOUND)
+   set(HAVE_LIBTIFF 1)
+else(TIFF_FOUND)
+   set(HAVE_LIBTIFF 0)
+endif(TIFF_FOUND)
+
 macro_optional_find_package(OpenEXR)
+if(OPENEXR_FOUND)
+   set(HAVE_EXR 1)
+else(OPENEXR_FOUND)
+   set(HAVE_EXR 0)
+endif(OPENEXR_FOUND)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kimgio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kimgio.h )
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
@@ -13,15 +32,15 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
 if(JASPER_FOUND)
 
-	set(kimg_jp2_LIB_SRCS jp2.cpp)
-	kde4_add_plugin(kimg_jp2 ${kimg_jp2_LIB_SRCS})
-	target_link_libraries(kimg_jp2  ${KDE4_KDECORE_LIBS} ${JASPER_LIBRARIES} )
-	
-	kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
-	install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
-	install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES jp2.desktop)
-	
-endif(JASPER_FOUND)		
+    set(kimg_jp2_LIB_SRCS jp2.cpp)
+    kde4_add_plugin(kimg_jp2 ${kimg_jp2_LIB_SRCS})
+    target_link_libraries(kimg_jp2  ${KDE4_KDECORE_LIBS} ${JASPER_LIBRARIES} )
+    
+    kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
+    install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
+    install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES jp2.desktop)
+
+endif(JASPER_FOUND)
 
 ##################################
 
@@ -109,18 +128,19 @@ install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xview )
 ##################################
 
 if(OPENEXR_FOUND)
-	include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${OPENEXR_INCLUDE_DIR} )
-	set(kimg_exr_LIB_SRCS exr.cpp)
-	kde4_add_plugin(kimg_exr ${kimg_exr_LIB_SRCS})
-	target_link_libraries(kimg_exr ${KDE4_KDECORE_LIBS} ${OPENEXR_LIBRARIES} )
+    include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${OPENEXR_INCLUDE_DIR} )
+    set(kimg_exr_LIB_SRCS exr.cpp)
+    kde4_add_plugin(kimg_exr ${kimg_exr_LIB_SRCS})
+    target_link_libraries(kimg_exr ${KDE4_KDECORE_LIBS} ${OPENEXR_LIBRARIES} )
 
-	kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )
-	install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )	
-   install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES exr.desktop)
+    kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )
+    install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )
+    install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES exr.desktop)
 endif(OPENEXR_FOUND)
 
 
 if(TIFF_FOUND)
+    include_directories( ${TIFF_INCLUDE_DIR} )
     set(kimg_tiff_LIB_SRCS tiffr.cpp)
     kde4_add_plugin(kimg_tiff ${kimg_tiff_LIB_SRCS})
     target_link_libraries(kimg_tiff ${KDE4_KDECORE_LIBS} ${TIFF_LIBRARY})
@@ -134,7 +154,6 @@ endif(TIFF_FOUND)
 
 ########### install files ###############
 
-# FIX : $(KIMGIO_TIFF_SERVICEFILES) 
 install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES png.desktop xpm.desktop bmp.desktop pbm.desktop pgm.desktop  ppm.desktop xbm.desktop jpeg.desktop xv.desktop eps.desktop ico.desktop gif.desktop pcx.desktop tga.desktop rgb.desktop xcf.desktop dds.desktop mng.desktop psd.desktop hdr.desktop )
 
 install_files( ${SERVICETYPES_INSTALL_DIR}/ FILES qimageio_plugin.desktop)

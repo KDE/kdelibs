@@ -18,9 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
@@ -90,9 +89,9 @@ KSSL::KSSL(bool init) {
 	m_bInit = false;
 	m_bAutoReconfig = true;
 	m_cfg = new KSSLSettings();
-#ifdef KSSL_HAVE_SSL  
+#ifdef KSSL_HAVE_SSL
 	d->m_ssl = 0L;
-#endif  
+#endif
 
 	if (init)
 		initialize();
@@ -111,15 +110,15 @@ int rc = 0;
 #ifdef KSSL_HAVE_SSL
 	if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
 		rc = d->kossl->RAND_egd(m_cfg->getEGDPath().toLatin1().constData());
-		if (rc < 0) 
+		if (rc < 0)
 			kDebug(7029) << "KSSL: Error seeding PRNG with the EGD." << endl;
-		else kDebug(7029) << "KSSL: PRNG was seeded with " << rc 
+		else kDebug(7029) << "KSSL: PRNG was seeded with " << rc
 				   << " bytes from the EGD." << endl;
 	} else if (m_cfg->useEFile() && !m_cfg->getEGDPath().isEmpty()) {
 		rc = d->kossl->RAND_load_file(m_cfg->getEGDPath().toLatin1().constData(), -1);
-		if (rc < 0) 
+		if (rc < 0)
 			kDebug(7029) << "KSSL: Error seeding PRNG with the entropy file." << endl;
-		else kDebug(7029) << "KSSL: PRNG was seeded with " << rc 
+		else kDebug(7029) << "KSSL: PRNG was seeded with " << rc
 				   << " bytes from the entropy file." << endl;
 	}
 #endif
@@ -577,7 +576,7 @@ void KSSL::setPeerInfo() {
 	m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
 	STACK_OF(X509) *xs = d->kossl->SSL_get_peer_cert_chain(d->m_ssl);
 	if (xs)
-		xs = sk_X509_dup(xs);   // Leak? 
+		xs = sk_X509_dup(xs);   // Leak?
 	m_pi.m_cert.setChain((void *)xs);
 #endif
 }

@@ -18,7 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-
 #include "kcertpart.h"
 #include <kparts/genericfactory.h>
 #include <kinstance.h>
@@ -463,7 +462,7 @@ if (_p12) {
 
 
 bool KCertPart::openFile() {
-#ifndef HAVE_SSL
+#ifndef KSSL_HAVE_SSL
 	KMessageBox::sorry(_frame, i18n("You do not seem to have compiled KDE with SSL support."), i18n("Certificate Import"));
 	return false;
 #else

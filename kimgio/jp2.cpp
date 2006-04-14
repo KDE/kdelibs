@@ -1,5 +1,6 @@
 // This library is distributed under the conditions of the GNU LGPL.
-#include "config.h"
+#include <config.h>
+#include <config-kimgio.h>
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -98,7 +99,7 @@ static void jas_stream_initbuf(jas_stream_t *stream, int bufmode, char *buf,
         stream->cnt_ = 0;
         stream->bufmode_ |= bufmode & JAS_STREAM_BUFMODEMASK;
 }
-                                
+
 static int qiodevice_read(jas_stream_obj_t *obj, char *buf, int cnt)
 {
         QIODevice *io = (QIODevice*) obj;
@@ -438,12 +439,12 @@ public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
     QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
 };
-            
+
 QStringList JP2Plugin::keys() const
 {
     return QStringList() << "jp2";
 }
-                
+
 QImageIOPlugin::Capabilities JP2Plugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
     if (format == "jp2")
@@ -452,7 +453,7 @@ QImageIOPlugin::Capabilities JP2Plugin::capabilities(QIODevice *device, const QB
         return 0;
     if (!device->isOpen())
         return 0;
-                                                    
+
     Capabilities cap;
     if (device->isReadable() && JP2Handler::canRead(device))
     cap |= CanRead;
@@ -468,9 +469,9 @@ QImageIOHandler *JP2Plugin::create(QIODevice *device, const QByteArray &format) 
     handler->setFormat(format);
     return handler;
 }
-                                                                                                    
+
 Q_EXPORT_STATIC_PLUGIN(JP2Plugin)
 Q_EXPORT_PLUGIN2(jp2, JP2Plugin)
-                                                                                                    
+
 #endif // HAVE_JASPER
 

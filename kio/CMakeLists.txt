@@ -4,11 +4,10 @@ project(kio)
 
 add_definitions(-D_LARGEFILE64_SOURCE)
 
-if(HAVE_SSL)
+if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)
-   add_definitions(-DKSSL_HAVE_SSL )
    include_directories(${OPENSSL_INCLUDE_DIR})
-endif(HAVE_SSL)
+endif(OPENSSL_FOUND)
 
 # This applies to all subdirs; let's put kio's dependencies (and own dirs) here, once and for all
 include_directories(

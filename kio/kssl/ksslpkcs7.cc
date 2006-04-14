@@ -19,9 +19,8 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 #include <kopenssl.h>
 
@@ -193,7 +192,7 @@ QString KSSLPKCS7::name() const {
    return QString();
 }
 
- 
+
 #ifdef KSSL_HAVE_SSL
 #undef sk_new
 #undef sk_push

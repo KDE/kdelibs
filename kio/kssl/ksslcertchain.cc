@@ -17,9 +17,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifdef HAVE_CONFIG_H 
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 #include "kssldefs.h"
 #include "ksslcertificate.h"
@@ -156,7 +155,7 @@ if (_chain) {
 #endif
 }
 
- 
+
 void KSSLCertChain::setChain(void *stack_of_x509) {
 #ifdef KSSL_HAVE_SSL
 if (_chain) {

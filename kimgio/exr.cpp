@@ -8,7 +8,8 @@
 * This library is distributed under the conditions of the GNU LGPL.
 */
 
-#include "config.h"
+#include <config.h>
+#include <config-kimgio.h>
 
 #ifdef HAVE_EXR
 
@@ -90,15 +91,15 @@ void K_IStream::clear( )
 QRgb RgbaToQrgba(struct Imf::Rgba imagePixel)
 {
 	float r,g,b,a;
-	
+
 	//  1) Compensate for fogging by subtracting defog
 	//     from the raw pixel values.
-	// Response: We work with defog of 0.0, so this is a no-op        
+	// Response: We work with defog of 0.0, so this is a no-op
 
 	//  2) Multiply the defogged pixel values by
 	//     2^(exposure + 2.47393).
 	// Response: We work with exposure of 0.0.
-	// (2^2.47393) is 5.55555 
+	// (2^2.47393) is 5.55555
 	r = imagePixel.r * 5.55555;
 	g = imagePixel.g * 5.55555;
 	b = imagePixel.b * 5.55555;

@@ -19,9 +19,8 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 
 
@@ -224,7 +223,7 @@ void KSSLCertificate::getEmails(QStringList &to) const {
 #ifdef KSSL_HAVE_SSL
 	if (!d->m_cert)
 		return;
-	
+
 	STACK *s = d->kossl->X509_get1_email(d->m_cert);
 	if (s) {
 		for(int n=0; n < s->num; n++) {
@@ -232,8 +231,8 @@ void KSSLCertificate::getEmails(QStringList &to) const {
 		}
 		d->kossl->X509_email_free(s);
 	}
-#endif	
-}	
+#endif
+}
 
 
 QString KSSLCertificate::getKDEKey() const {
@@ -386,7 +385,7 @@ char *x = NULL;
 				}
 				rc += "\n";
 				d->kossl->OPENSSL_free(x);
-	
+
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->g);
 				rc += QString("g: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
@@ -398,7 +397,7 @@ char *x = NULL;
 				}
 				rc += "\n";
 				d->kossl->OPENSSL_free(x);
-	
+
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->pub_key);
 				rc += i18n("Public key: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
@@ -453,7 +452,7 @@ if (c) {
 	d->kossl->X509_check_purpose(c, -1, 0);    // setup the fields (!!)
 
 #if 0
-	kDebug(7029) << "---------------- Certificate ------------------" 
+	kDebug(7029) << "---------------- Certificate ------------------"
 		      << endl;
 	kDebug(7029) << getSubject() << endl;
 #endif
@@ -534,7 +533,7 @@ if (c) {
                 kDebug(7029) << "NOTE: this is a CRL signer." << endl;
         else kDebug(7029) << "NOTE: this is NOT a CRL signer." << endl;
 
-	kDebug(7029) << "-----------------------------------------------" 
+	kDebug(7029) << "-----------------------------------------------"
 		      << endl;
 #endif
 }
@@ -581,7 +580,7 @@ int rc = 0;
 		rc = X509_PURPOSE_ANY;
 	}
 #endif
-return rc;	
+return rc;
 }
 
 
@@ -597,14 +596,14 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate(KSSLCertificate::KSSLP
 		return KSSLCertificate::Ok;
 	else
 		return result.first();
-} 
+}
 
 //
 // See apps/verify.c in OpenSSL for the source of most of this logic.
 //
 
 // CRL files?  we don't do that yet
-KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertificate::KSSLPurpose purpose) 
+KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertificate::KSSLPurpose purpose)
 {
 	return validateVerbose(purpose, 0);
 }
@@ -669,7 +668,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 
 		if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.toAscii().constData(), X509_FILETYPE_PEM)) {
 			// error accessing directory and loading pems
-			kDebug(7029) << "KSSL couldn't read CA root: " 
+			kDebug(7029) << "KSSL couldn't read CA root: "
 					<< _j << endl;
 			ksslv = KSSLCertificate::ErrorReadingRoot;
 			d->kossl->X509_STORE_free(certStore);
@@ -725,7 +724,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		// end of checking code
 		//
 
-		//kDebug(7029) << "KSSL Validation procedure RC: " 
+		//kDebug(7029) << "KSSL Validation procedure RC: "
 		//		<< rc << endl;
 		//kDebug(7029) << "KSSL Validation procedure errcode: "
 		//		<< errcode << endl;
@@ -738,7 +737,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		}
 		break;
 	}
-	
+
 	if (ksslv != KSSLCertificate::Ok)
 		errors << ksslv;
 #else

@@ -20,9 +20,7 @@
 #ifndef _INCLUDE_KCERTPART_H
 #define _INCLUDE_KCERTPART_H
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <kparts/part.h>
 #include <k3listview.h>
@@ -97,7 +95,7 @@ protected:
   QFrame *_pkcsFrame, *_blankFrame, *_x509Frame, *_frame;
 
   // for the PKCS12 widget
-  QLabel *_p12_filenameLabel, *_p12_validFrom, *_p12_validUntil, 
+  QLabel *_p12_filenameLabel, *_p12_validFrom, *_p12_validUntil,
          *_p12_serialNum, *_p12_certState;
   QLabel *_p12_digest;
   KComboBox *_p12_chain;
@@ -105,7 +103,7 @@ protected:
   KSSLCertBox *_p12_subject, *_p12_issuer;
 
   // for the CA widget
-  QLabel *_ca_filenameLabel, *_ca_validFrom, *_ca_validUntil, 
+  QLabel *_ca_filenameLabel, *_ca_validFrom, *_ca_validUntil,
          *_ca_serialNum, *_ca_certState;
   QLabel *_ca_digest;
   QTextEdit *_ca_pubkey, *_ca_sig;

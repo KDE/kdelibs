@@ -18,9 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 #include "ksslx509v3.h"
 #include <kopenssl.h>
@@ -53,7 +52,7 @@ bool KSSLX509V3::certTypeSSLCA()  const {
 #ifdef KSSL_HAVE_SSL
 	return (flags & ((1 << (16+X509_PURPOSE_NS_SSL_SERVER-1))|
                          (1 << (16+X509_PURPOSE_SSL_SERVER-1))|
-                         (1 << (16+X509_PURPOSE_SSL_CLIENT-1)))) ? true : 
+                         (1 << (16+X509_PURPOSE_SSL_CLIENT-1)))) ? true :
 		(false || ((1 << (16+X509_PURPOSE_ANY-1)) &&
 			   (certTypeSSLServer() ||
 			    certTypeSSLClient() ||
@@ -66,7 +65,7 @@ bool KSSLX509V3::certTypeSSLCA()  const {
 bool KSSLX509V3::certTypeEmailCA() const {
 #ifdef KSSL_HAVE_SSL
 	return (flags & ((1 << (16+X509_PURPOSE_SMIME_ENCRYPT-1))|
-                         (1 << (16+X509_PURPOSE_SMIME_SIGN-1)))) ? true : 
+                         (1 << (16+X509_PURPOSE_SMIME_SIGN-1)))) ? true :
 		(false || ((1 << (16+X509_PURPOSE_ANY-1)) &&
 			   certTypeSMIME()));
 #endif

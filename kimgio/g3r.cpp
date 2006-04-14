@@ -1,6 +1,7 @@
 // This library is distributed under the conditions of the GNU LGPL.
 
-#include "config.h"
+#include <config.h>
+#include <config-kimgio.h>
 
 #ifdef HAVE_LIBTIFF
 
@@ -14,10 +15,10 @@
 KDE_EXPORT void kimgio_g3_read( QImageIO *io )
 {
     // This won't work if io is not a QFile !
-  TIFF *tiff = TIFFOpen(QFile::encodeName(io->fileName()), "r");  
+  TIFF *tiff = TIFFOpen(QFile::encodeName(io->fileName()), "r");
   if (!tiff)
     return;
- 
+
   uint32 width, height;
   tsize_t scanlength;
 
@@ -27,7 +28,7 @@ KDE_EXPORT void kimgio_g3_read( QImageIO *io )
   scanlength = TIFFScanlineSize(tiff);
 
   QImage image(width, height, 1, 0, QImage::BigEndian);
-  
+
   if (image.isNull() || scanlength != image.bytesPerLine())
     {
       TIFFClose(tiff);
@@ -38,7 +39,7 @@ KDE_EXPORT void kimgio_g3_read( QImageIO *io )
     TIFFReadScanline(tiff, image.scanLine(y), y);
 
   TIFFClose(tiff);
-  
+
   io->setImage(image);
   io->setStatus(0);
 }

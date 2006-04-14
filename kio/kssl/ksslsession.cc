@@ -20,9 +20,8 @@
 
 #include "ksslsession.h"
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#include <ksslconfig.h>
 
 #include <kopenssl.h>
 #include <kcodecs.h>
