@@ -300,6 +300,9 @@ START_CTOR( Pixmap, QPixmap, 0)
     }
     else if( args.size() == 3 )
     {
+        QString tmp = args[2]->toObject(exec)->className().qstring();
+        qDebug() << tmp;
+
         return new KJSEmbed::PixmapBinding(exec,
                                 QPixmap( KJSEmbed::extractQString( exec, args, 0 ),
                                                 KJSEmbed::extractValue<QByteArray>( exec, args, 1 ).constData(),

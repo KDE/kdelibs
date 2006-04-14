@@ -220,6 +220,7 @@ namespace KJSEmbed
 
         return returnValue;
     }
+
     template< typename T >
     T KJSEMBED_EXPORT extractParameter( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
     {
@@ -227,11 +228,22 @@ namespace KJSEmbed
 	    return defaultValue;
 	else
 	{
-	    KJS::JSObject* object = arg->getObject();
-	    if(!object) // int, float ...
-	    {
-	    }
-	    else if(object->inherits(&ValueBinding::info))
+            switch (arg->type())
+            {
+                case NumberType:
+                    return extractInt(exec, arg, defaultValue);
+                    break;
+                case BooleanType:
+                    return extractBool(exec, arg, 0);
+                    break;
+                case UnspecifiedType:
+                case UndefinedType:
+                    return defaultValue;
+                    break; 
+            }
+
+	    KJS::JSObject* object = arg->toObject(exec);
+	    if(object->inherits(&ValueBinding::info))
 	    {
 		return extractValue<T>(exec, arg, defaultValue);
 	    }
