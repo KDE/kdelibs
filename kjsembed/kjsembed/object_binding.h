@@ -88,6 +88,7 @@ namespace KJSEmbed
             const char *m_name;
             PointerBase *m_value;
             Ownership m_owner;
+	    static const KJS::ClassInfo info;
 
         public:
             template <typename T>
@@ -219,6 +220,30 @@ namespace KJSEmbed
 
         return returnValue;
     }
+    template< typename T >
+    T KJSEMBED_EXPORT extractParameter( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
+    {
+	if( !arg )
+	    return defaultValue;
+	else
+	{
+	    KJS::JSObject* object = arg->getObject();
+	    if(!object) // int, float ...
+	    {
+	    }
+	    else if(object->inherits(&ValueBinding::info))
+	    {
+		return extractValue<T>(exec, arg, defaultValue);
+	    }
+	    else if(object->inherits(&ObjectBinding::info))
+	    {
+		return extractObject<T>(exec, arg, defaultValue);
+	    }
+	    else
+		return defaultValue;
+	}
+    }
+    
 
 }
 #endif
