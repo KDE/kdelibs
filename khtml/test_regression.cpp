@@ -132,7 +132,7 @@ PartMonitor::~PartMonitor()
 void PartMonitor::waitForCompletion()
 {
     if (!m_completed) {
-         
+
         if (sm_highestMonitor)
 		return;
 
@@ -1318,9 +1318,7 @@ void RegressionTest::testStaticFile(const QString & filename)
 
         if ( m_known_failures & PaintFailure )
             m_known_failures = AllFailure;
-        CheckResult dumped = checkPaintdump(filename);
-        reportResult( dumped, "PAINT");
-        if (dumped == Failure)
+        if (!reportResult( checkPaintdump(filename), "PAINT") )
             failures |= PaintFailure;
 
         doFailureReport(filename, failures );
@@ -1420,6 +1418,15 @@ RegressionTest::CheckResult RegressionTest::checkPaintdump(const QString &filena
     if ( !imageEqual( baseline, output ) ) {
         QString outputFilename = m_outputDir + "/" + againstFilename;
         createMissingDirs(outputFilename );
+
+        bool kf = false;
+        if ( m_known_failures & AllFailure )
+            kf = true;
+        else if ( m_known_failures & PaintFailure )
+            kf = true;
+        if ( kf )
+            outputFilename += "-KF";
+
         output.save(outputFilename, "PNG", 60);
     }
     else {
