@@ -117,11 +117,11 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 			pAction = new KAction(KIcon(iconName), sLabel, parent, name ? name : pInfo->psName);
 			break;
 		}
-	}
 
-	KShortcut cut = KStdAccel::shortcut(pInfo->idAccel);
-	if (!cut.isNull())
-		pAction->setShortcut(cut);
+		KShortcut cut = KStdAccel::shortcut(pInfo->idAccel);
+		if (!cut.isNull())
+		    pAction->setShortcut(cut);
+	}
 
 	if (recvr && slot)
 		if (id != OpenRecent)
