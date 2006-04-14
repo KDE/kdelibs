@@ -24,7 +24,7 @@
 
 #include <sys/types.h>
 
-#include "config.h"
+#include "global.h"
 
 #ifdef HAVE_PCREPOSIX
 #include <pcre.h>
