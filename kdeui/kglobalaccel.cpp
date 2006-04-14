@@ -151,8 +151,8 @@ bool KGlobalAccel::writeSettings( KConfigBase* config, bool writeDefaults, KActi
 		foreach (KAction* action, d->actionsWithGlobalShortcuts)
 			if (writeDefaults || action->globalShortcut() != action->defaultGlobalShortcut())
 				cg.writeEntry(action->objectName(), action->globalShortcut().toStringInternal());
-			else if (cg.hasKey(oneAction->objectName()))
-				cg.deleteEntry(oneAction->objectName());
+			else if (cg.hasKey(action->objectName()))
+				cg.deleteEntry(action->objectName());
 	}
 
 	config->sync();
