@@ -183,6 +183,7 @@ struct lt_dlhandle_struct {
 
 #define LT_DLSTRERROR(name)	lt_dlerror_strings[LT_CONC(LT_ERROR_,name)]
 
+#define LTDL_OBJDIR "./"
 static	const char	objdir[]		= LTDL_OBJDIR;
 #ifdef	LTDL_SHLIB_EXT
 static	const char	shlib_ext[]		= LTDL_SHLIB_EXT;

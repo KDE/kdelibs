@@ -21,6 +21,7 @@
 */
 
 #include <config.h>
+#include <config-acl.h>
 
 #include <qglobal.h> //for Q_OS_XXX
 #include <sys/types.h>
@@ -40,7 +41,7 @@
 #include <sys/sendfile.h>
 #endif
 
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
 #include <sys/acl.h>
 #include <acl/libacl.h>
 #endif
@@ -93,7 +94,7 @@ using namespace KIO;
 #define MAX_IPC_SIZE (1024*32)
 
 static QString testLogFile( const QByteArray&_filename );
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
 static bool isExtendedACL(  acl_t p_acl );
 static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
                             mode_t type, bool withACL );
@@ -129,7 +130,7 @@ FileProtocol::FileProtocol( const QByteArray &pool, const QByteArray &app ) : Sl
 int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
 {
     int ret = 0;
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
 
     const QString ACLString = metaData( "ACL_STRING" );
     const QString defaultACLString = metaData( "DEFAULT_ACL_STRING" );
@@ -590,7 +591,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     QByteArray _src( QFile::encodeName(src.path()));
     QByteArray _dest( QFile::encodeName(dest.path()));
     KDE_struct_stat buff_src;
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
     acl_t acl;
 #endif
 
@@ -676,7 +677,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     posix_fadvise(dest_fd,0,0,POSIX_FADV_SEQUENTIAL);
 #endif
 
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
     acl = acl_get_fd(src_fd);
     if ( acl && !isExtendedACL( acl ) ) {
         kDebug(7101) << _dest.data() << " doesn't have extended ACL" << endl;
@@ -730,7 +731,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
           error( KIO::ERR_COULD_NOT_READ, src.path());
           close(src_fd);
           close(dest_fd);
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
           if (acl) acl_free(acl);
 #endif
           return;
@@ -755,7 +756,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
               kWarning(7101) << "Couldn't write[2]. Error:" << strerror(errno) << endl;
               error( KIO::ERR_COULD_NOT_WRITE, dest.path());
            }
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
            if (acl) acl_free(acl);
 #endif
            return;
@@ -773,7 +774,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     {
         kWarning(7101) << "Error when closing file descriptor[2]:" << strerror(errno) << endl;
         error( KIO::ERR_COULD_NOT_WRITE, dest.path());
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
         if (acl) acl_free(acl);
 #endif
         return;
@@ -783,7 +784,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     if ( _mode != -1 )
     {
         if ( (::chmod(_dest.data(), _mode) != 0)
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
           || (acl && acl_set_file(_dest.data(), ACL_TYPE_ACCESS, acl) != 0)
 #endif
         )
@@ -793,7 +794,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
             warning( i18n( "Could not change permissions for\n%1" ,  dest.path() ) );
        }
     }
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
     if (acl) acl_free(acl);
 #endif
 
@@ -979,7 +980,7 @@ QString FileProtocol::getGroupName( gid_t gid ) const
 bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & path, UDSEntry & entry,
                                    short int details, bool withACL )
 {
-#ifndef USE_POSIX_ACL
+#ifndef HAVE_POSIX_ACL
     Q_UNUSED(withACL);
 #endif
     assert(entry.count() == 0); // by contract :-)
@@ -1033,7 +1034,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
 
     entry.insert( KIO::UDS_SIZE, buff.st_size );
 
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
     /* Append an atom indicating whether the file has extended acl information
      * and if withACL is specified also one with the acl itself. If it's a directory
      * and it has a default ACL, also append that. */
@@ -1629,7 +1630,7 @@ static QString testLogFile( const QByteArray& _filename )
  * ACL handling helpers
  *
  *************************************/
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
 
 static bool isExtendedACL( acl_t acl )
 {

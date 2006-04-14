@@ -45,7 +45,6 @@ macro_optional_find_package(LibArt)
 macro_optional_find_package(OpenSSL)
 macro_optional_find_package(DNSSD)
 macro_optional_find_package(PCRE)
-macro_optional_find_package(ACL)
 macro_optional_find_package(Akode)
 macro_optional_find_package(Gettext)
 macro_optional_find_package(GSSAPI)
@@ -71,6 +70,18 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui ${KD
 set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kio ${CMAKE_SOURCE_DIR}/kio/kfile ${CMAKE_SOURCE_DIR}/kio/bookmarks ${KDE4_KDEUI_INCLUDES})
 # kparts depends on kio
 set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts ${KDE4_KIO_INCLUDES})
+
+# ACL stuff (used in kio/ and kioslaves/)
+macro_optional_find_package(ACL)
+if(ACL_FOUND)
+        set(HAVE_LIBACL 1)
+        set(HAVE_POSIX_ACL 1)
+else(ACL_FOUND)
+        set(HAVE_LIBACL 0)
+        set(HAVE_POSIX_ACL 0)
+endif(ACL_FOUND)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
+
 
 # create config.h
 include(ConfigureChecks.cmake)

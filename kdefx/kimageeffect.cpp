@@ -43,6 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "kcpuinfo.h"
 
 #include <config.h>
+#include <config-processor.h>
 
 #if 0
 //disabled until #74478 fixed.

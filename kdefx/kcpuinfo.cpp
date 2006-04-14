@@ -28,6 +28,7 @@
 #include <csetjmp>
 
 #include <config.h>
+#include <config-processor.h>
 #include "kcpuinfo.h"
 
 

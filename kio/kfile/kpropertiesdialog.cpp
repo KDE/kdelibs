@@ -42,6 +42,7 @@
  */
 
 #include <config.h>
+#include <config-acl.h>
 extern "C" {
 #include <pwd.h>
 #include <grp.h>
@@ -71,7 +72,7 @@ extern "C" {
 #include <qprogressbar.h>
 #include <QVector>
 
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
 extern "C" {
 #  include <sys/xattr.h>
 }
@@ -122,7 +123,7 @@ extern "C" {
 #include "ui_kpropertiesdesktopbase.h"
 #include "ui_kpropertiesdesktopadvbase.h"
 #include "ui_kpropertiesmimetypebase.h"
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
 #include "kacleditwidget.h"
 #endif
 
@@ -1832,7 +1833,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   box->addStretch (10);
 }
 
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
 static bool fileSystemSupportsACL( const QByteArray& path )
 {
     bool fileSystemSupportsACLs = false;
@@ -2051,7 +2052,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   }
   gl->setColumnStretch(6, 10);
 
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
   KACLEditWidget *extendedACLs = 0;
 
   // FIXME make it work with partial entries
@@ -2109,7 +2110,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   permissions = orPermissions;
   d->partialPermissions = andPermissions;
 
-#ifdef USE_POSIX_ACL
+#ifdef HAVE_POSIX_ACL
   // override with the acls, if present
   if ( extendedACLs ) {
     d->extendedACL = extendedACLs->getACL();

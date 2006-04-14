@@ -20,11 +20,9 @@
 #ifndef KACLEDITWIDGET_P_H
 #define KACLEDITWIDGET_P_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include <config-acl.h>
 
-#if defined(USE_POSIX_ACL) || defined(Q_MOC_RUN)
+#if defined(HAVE_POSIX_ACL) || defined(Q_MOC_RUN)
 #include <k3listview.h>
 #include <sys/acl.h>
 #include <kacl.h>
