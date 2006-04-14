@@ -230,14 +230,17 @@ namespace KJSEmbed
 	{
             switch (arg->type())
             {
-                case NumberType:
+                case KJS::NumberType:
                     return extractInt(exec, arg, defaultValue);
                     break;
-                case BooleanType:
+                case KJS::BooleanType:
                     return extractBool(exec, arg, 0);
                     break;
-                case UnspecifiedType:
-                case UndefinedType:
+                case KJS::UnspecifiedType:
+                case KJS::UndefinedType:
+                case KJS::NullType:
+                case KJS::GetterSetterType:
+                case KJS::StringType:
                     return defaultValue;
                     break; 
             }
