@@ -58,6 +58,6 @@ const Method BuiltinsFactory::BuiltinMethods[] =
 {
     {"exec", 0, KJS::DontDelete|KJS::ReadOnly, &callExec },
     {"dump", 1, KJS::DontDelete|KJS::ReadOnly, &callDump },
-    {"include", 1, KJS::DontDelete|KJS::ReadOnly, &callDump },
+    {"include", 1, KJS::DontDelete|KJS::ReadOnly, &callInclude },
     {0, 0, 0, 0 }
 };
