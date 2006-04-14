@@ -94,6 +94,7 @@ int init_socket()
 		exit(1);
 
 	if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &bcast, sizeof(bcast)) == -1 ||
+		setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &bcast, sizeof(bcast)) == -1 ||
 		bind(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1)
 		exit(1);
 
