@@ -2,24 +2,17 @@
 
 #cmakedefine HAVE_CUPS 1
 #cmakedefine SVG_SUPPORT 1
-
-/* for the following defines tests have to be written: */
-#define HAVE_MITSHM 1
-#define HAVE_PRELOADED_SYMBOLS 1    /* Define if libtool can extract symbol lists from object files. */
-#define HAVE_SGI_STL 1
-#undef HAVE_DNOTIFY
-
 #cmakedefine HAVE_DNSSD 1
 
+/* TODO: for the following defines, tests have to be written: */
+#define HAVE_MITSHM 1
+#undef HAVE_DNOTIFY
 #undef HAVE_INOTIFY
 #undef HAVE_LUA
 #undef HAVE_OLD_SSL_API
-#undef LTDL_DLOPEN_DEPLIBS  /* not supported by KDE */
 #undef HAVE_SHORTSETGROUPS /* if setgroups() takes short *as second arg */
-#undef HAVE__USR_SRC_SYS_GNU_I386_ISA_SOUND_AWE_VOICE_H /* Define to 1 if you have the </usr/src/sys/gnu/i386/isa/sound/awe_voice.h>  header file. */
-#undef HAVE__USR_SRC_SYS_I386_ISA_SOUND_AWE_VOICE_H     /* Define to 1 if you have the </usr/src/sys/i386/isa/sound/awe_voice.h>  header file. */
 
-/********** structs and their members *********/
+/********** structs used by kdecore/network *********/
 
 #define HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID 1 /* Define to 1 if `sin6_scope_id' is member of `struct sockaddr_in6'. */
 #undef  HAVE_STRUCT_SOCKADDR_SA_LEN  /* Define to 1 if `sa_len' is member of `struct sockaddr'. */
@@ -96,7 +89,6 @@
 #cmakedefine HAVE_FAM 1
 #cmakedefine HAVE_JASPER 1
 #cmakedefine HAVE_LIBART 1
-#cmakedefine HAVE_PCREPOSIX 1
 #cmakedefine HAVE_SSL 1
 #cmakedefine HAVE_VOLMGT 1
 
