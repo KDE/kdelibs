@@ -1,3 +1,3 @@
 println( 'outer' );
-exec( 'inner.js' );
+include( 'inner.js' );
 println( '/outer' );
