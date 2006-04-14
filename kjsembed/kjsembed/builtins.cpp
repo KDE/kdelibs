@@ -21,7 +21,10 @@
 #include "static_binding.h"
 
 #include <QApplication>
+#include <QFile>
+#include <QTextStream>
 #include <QDebug>
+#include "kjsembed.h"
 
 using namespace KJSEmbed;
 
@@ -40,9 +43,21 @@ KJS::JSValue *callDump( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
     return KJS::Null();
 }
 
+KJS::JSValue *callInclude( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
+{
+    Q_UNUSED(self);
+    if( args.size() == 1)
+    {
+        KJS::UString filename = args[0]->toString(exec);
+	Engine::runFile( exec->interpreter(), filename );
+    }
+    return KJS::Null();
+}
+
 const Method BuiltinsFactory::BuiltinMethods[] =
 {
     {"exec", 0, KJS::DontDelete|KJS::ReadOnly, &callExec },
     {"dump", 1, KJS::DontDelete|KJS::ReadOnly, &callDump },
+    {"include", 1, KJS::DontDelete|KJS::ReadOnly, &callDump },
     {0, 0, 0, 0 }
 };

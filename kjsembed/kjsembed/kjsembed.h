@@ -45,6 +45,7 @@ public:
     virtual ~Engine();
 
     ExitStatus runFile( const KJS::UString &file );
+    static ExitStatus runFile( KJS::Interpreter *interpreter, const KJS::UString &file );
     ExitStatus execute( const KJS::UString &code );
 
     KJS::Completion completion() const;
