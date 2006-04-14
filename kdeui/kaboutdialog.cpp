@@ -1334,14 +1334,6 @@ KAboutWidget::KAboutWidget(QWidget *_parent)
     showMaintainer(false),
     d(0)
 {
-  // #################################################################
-  if( !version || !cont || !logo || !author || !maintainer )
-  {
-    // this will nearly never happen (out of memory in about box?)
-    kDebug() << "KAboutWidget::KAboutWidget: Out of memory." << endl;
-    qApp->quit();
-  }
-  // -----
   cont->setText(i18n("Other Contributors:"));
   logo->setText(i18n("(No logo available)"));
   logo->setFrameStyle(QFrame::Panel | QFrame::Raised);
@@ -1521,13 +1513,6 @@ KAboutDialog::KAboutDialog(QWidget *_parent, bool modal)
     about(new KAboutWidget(this)), mContainerBase(0), d(0)
 {
   setModal(modal);
-  // #################################################################
-  if(!about)
-  {
-    // this will nearly never happen (out of memory in about box?)
-    kDebug() << "KAboutDialog::KAboutDialog: Out of memory." << endl;
-    qApp->quit();
-  }
   setMainWidget(about);
   connect(about, SIGNAL(sendEmail(const QString&, const QString&)),
 	  SLOT(sendEmailSlot(const QString&, const QString&)));
