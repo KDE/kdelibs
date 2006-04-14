@@ -193,21 +193,22 @@ void K3IconView::slotAutoSelect()
       //and the one that got the autoselect event
       QRect r;
       QRect redraw;
-      if ( previousItem )
-	r = QRect( qMin( previousItem->x(), m_pCurrentItem->x() ),
-		   qMin( previousItem->y(), m_pCurrentItem->y() ),
-		   0, 0 );
+      if ( previousItem ) {
+        r = QRect( qMin( previousItem->x(), m_pCurrentItem->x() ),
+            qMin( previousItem->y(), m_pCurrentItem->y() ),
+            0, 0 );
+        if ( previousItem->x() < m_pCurrentItem->x() )
+          r.setWidth( m_pCurrentItem->x() - previousItem->x() + m_pCurrentItem->width() );
+        else
+          r.setWidth( previousItem->x() - m_pCurrentItem->x() + previousItem->width() );
+        if ( previousItem->y() < m_pCurrentItem->y() )
+          r.setHeight( m_pCurrentItem->y() - previousItem->y() + m_pCurrentItem->height() );
+        else
+          r.setHeight( previousItem->y() - m_pCurrentItem->y() + previousItem->height() );
+        r = r.normalized();
+      }
       else
 	r = QRect( 0, 0, 0, 0 );
-      if ( previousItem->x() < m_pCurrentItem->x() )
-	r.setWidth( m_pCurrentItem->x() - previousItem->x() + m_pCurrentItem->width() );
-      else
-	r.setWidth( previousItem->x() - m_pCurrentItem->x() + previousItem->width() );
-      if ( previousItem->y() < m_pCurrentItem->y() )
-	r.setHeight( m_pCurrentItem->y() - previousItem->y() + m_pCurrentItem->height() );
-      else
-	r.setHeight( previousItem->y() - m_pCurrentItem->y() + previousItem->height() );
-      r = r.normalized();
 
       //Check for each item whether it is within the rectangle.
       //If yes, select it
