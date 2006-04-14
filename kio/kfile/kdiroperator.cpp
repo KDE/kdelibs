@@ -73,10 +73,12 @@ public:
         dirHighlighting = false;
         dropOptions = 0;
 	configGroup=0;
+        viewActionSeparator = new KActionSeparator();
     }
 
     ~KDirOperatorPrivate() {
         delete progressDelayTimer;
+        delete viewActionSeparator;
     }
 
     bool dirHighlighting;
