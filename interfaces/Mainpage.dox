@@ -9,6 +9,7 @@
 *
 * - KSpeech - The KDE Text-to-Speech API.
 * - Terminal
-* - KTextEditor
+* - <a href="ktexteditor/html/index.html"><b>KTextEditor</b></a> (<a href="ktexteditor/html/classes.html">classes</a>)\n
+*   <i>Interface to plain text editing services in KDE.</i>
 *
 */
