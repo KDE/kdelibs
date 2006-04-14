@@ -84,13 +84,7 @@ install_targets(/bin lnusertemp )
 
 ########### next target ###############
 
-if(WIN32)
-   set(kioslave_SRCS kioslave.cpp
-                  ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
-                  ${CMAKE_SOURCE_DIR}/libltdl/ltdl_win.c)
-else(WIN32)
-   set(kioslave_SRCS kioslave.cpp ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c)
-endif(WIN32)
+set(kioslave_SRCS kioslave.cpp)
 
 kde4_automoc(${kioslave_SRCS})
 
