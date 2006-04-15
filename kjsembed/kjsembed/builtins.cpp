@@ -17,14 +17,16 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include "builtins.h"
-#include "static_binding.h"
 
 #include <QApplication>
 #include <QFile>
+#include <QMessageBox>
 #include <QTextStream>
 #include <QDebug>
+
+#include "static_binding.h"
 #include "kjsembed.h"
+#include "builtins.h"
 
 using namespace KJSEmbed;
 
@@ -49,15 +51,42 @@ KJS::JSValue *callInclude( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
     if( args.size() == 1)
     {
         KJS::UString filename = args[0]->toString(exec);
-	Engine::runFile( exec->interpreter(), filename );
+        Engine::runFile( exec->interpreter(), filename );
     }
     return KJS::Null();
 }
 
+KJS::JSValue *callAlert( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
+{
+    Q_UNUSED(self)
+    if (args.size() == 1)
+    {
+        (*KJSEmbed::conerr()) << "callAlert";
+        QString message = args[0]->toString(exec).qstring();
+        QMessageBox::warning(0, "Alert", message, QMessageBox::Ok, QMessageBox::NoButton); 
+    }
+    return KJS::Null();
+}
+
+KJS::JSValue *callConfirm( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
+{
+    Q_UNUSED(self)
+    if (args.size() == 1)
+    {
+        QString message = args[0]->toString(exec).qstring();
+        int result = QMessageBox::question (0, "Confirm", message, QMessageBox::Yes, QMessageBox::No);
+        if (result == QMessageBox::Yes)
+            return KJS::Boolean(true);
+    }
+    return KJS::Boolean(false);
+}
+
 const Method BuiltinsFactory::BuiltinMethods[] =
 {
-    {"exec", 0, KJS::DontDelete|KJS::ReadOnly, &callExec },
-    {"dump", 1, KJS::DontDelete|KJS::ReadOnly, &callDump },
-    {"include", 1, KJS::DontDelete|KJS::ReadOnly, &callInclude },
+    {"exec", 0, KJS::DontDelete|KJS::ReadOnly, &callExec},
+    {"dump", 1, KJS::DontDelete|KJS::ReadOnly, &callDump},
+    {"include", 1, KJS::DontDelete|KJS::ReadOnly, &callInclude},
+    {"alert", 1, KJS::DontDelete|KJS::ReadOnly, &callAlert},
+    {"confirm", 1, KJS::DontDelete|KJS::ReadOnly, &callConfirm},
     {0, 0, 0, 0 }
 };
