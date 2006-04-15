@@ -172,7 +172,7 @@ KJS::Interpreter *Engine::interpreter() const
     return dptr->m_interpreter;
 }
 
-Engine::ExitStatus Engine::runFile( KJS::Interpreter *interpreter, const KJS::UString &fileName )
+KJS::Completion Engine::runFile( KJS::Interpreter *interpreter, const KJS::UString &fileName )
 {
     KJS::UString code;
     QFile file( fileName.qstring() );
@@ -194,13 +194,19 @@ Engine::ExitStatus Engine::runFile( KJS::Interpreter *interpreter, const KJS::US
         qWarning() << "Could not open file " << fileName.qstring();
     }
     
-    /* status */ interpreter->evaluate( KJS::UString(""), 0, code, 0 );
-    return Engine::Success;
+    return interpreter->evaluate( KJS::UString(""), 0, code, 0 );
 }
 
 Engine::ExitStatus Engine::runFile( const KJS::UString &fileName )
 {
-  runFile( dptr->m_interpreter, fileName );
+   dptr->m_currentResult = runFile( dptr->m_interpreter, fileName );
+
+   if( dptr->m_currentResult.complType() == KJS::Normal )
+     return Engine::Success;
+   else if ( dptr->m_currentResult.complType() == KJS::ReturnValue)
+     return Engine::Success;
+   else
+     return Engine::Failure;
 }
 
 Engine::ExitStatus Engine::execute( const KJS::UString &code )

@@ -64,7 +64,7 @@ public:
      * @param interpreter Interpreter to use.
      * @param file Filename to execute.
      */
-    static ExitStatus runFile( KJS::Interpreter *interpreter, const KJS::UString &file );
+    static KJS::Completion runFile( KJS::Interpreter *interpreter, const KJS::UString &file );
 
     /**
      * Execute a code string using the current interpreter.
