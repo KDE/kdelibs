@@ -217,7 +217,27 @@ function write_binding_new( class_doc )
         '}\n';
 
     // Enums
-    enums += 'NO_ENUMS( ' + compoundName + ' ) \n';
+    var enumList = class_doc.elementsByTagName( "memberdef" );
+    for( idx = 0; idx < enumList.length(); ++idx )
+    {
+        var enumElement = methodList.item(idx).toElement();
+        var enumKind = methodElement.attribute('kind');
+        var enumProt = methodElement.attribute('prot');
+        var enumName = methodElement.firstChildElement('name').toElement().toString();
+
+	println( enumKind );
+
+        if ( enumKind == 'enum' ) // Make sure we're working with an enum here
+        {
+            if ( enumProt == 'public' )
+            {
+	      println( 'Got enum ' + enumName );
+	    }
+	}
+
+    }
+
+    // enums += 'NO_ENUMS( ' + compoundName + ' ) \n';
 
     // Statics
     enums += 'NO_STATICS( ' + compoundName + ' )';
