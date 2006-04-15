@@ -56,7 +56,7 @@ namespace KDocument {
 			/**
 			 * Virtual destructor.
 			 */
-			virtual ~Document() {}
+			virtual ~Document();
 
 			/**
 			 * Create a new view attached to @p parent.
@@ -70,7 +70,7 @@ namespace KDocument {
 			 * @return all document views
 			 * @see createView()
 			 */
-			virtual const QList<View*> &views () = 0;
+			virtual const QList<View*> &views () const = 0;
 
 			/**
 			 * Get the global unique number of this document in your application.
@@ -82,7 +82,6 @@ namespace KDocument {
 			/**
 			 * Private d-pointer
 			 */
-			class Private;
 			class Private *d;
 			/**
 			 * document number

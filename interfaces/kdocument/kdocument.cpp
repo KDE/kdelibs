@@ -5,14 +5,16 @@
 namespace KDocument {
 	/// Contains the current highest document number.
 	static int globalDocumentNumber = 0;
-	class Document::Private {
-	};
 }
 
 KDocument::Document::Document(QObject *parent):
 	KParts::ReadWritePart(parent),
 	d(0),
 	m_documentNumber (++KDocument::globalDocumentNumber) {
+}
+
+KDocument::Document::~Document()
+{
 }
 
 int KDocument::Document::documentNumber () const
