@@ -36,20 +36,50 @@ namespace KJS {
 
 namespace KJSEmbed {
 
+/**
+ * The main interface for running embedded Javascript.
+ */
 class KJSEMBED_EXPORT Engine
 {
 public:
+    /**
+     * Status codes for script execution. Note that you can access the completion
+     * object itself with completion() for more detail.
+     */
     enum ExitStatus { Success = 0, Failure = 1 };
 
+    /** Constructs an embedded JS engine. */
     Engine();
+    /** Clean up. */
     virtual ~Engine();
 
+    /**
+     * Execute the file with the specified name using the current interpreter.
+     * @param file Filename to execute.
+     */
     ExitStatus runFile( const KJS::UString &file );
+
+    /**
+     * Execute the file with the specified name using the specified interpreter.
+     * @param interpreter Interpreter to use.
+     * @param file Filename to execute.
+     */
     static ExitStatus runFile( KJS::Interpreter *interpreter, const KJS::UString &file );
+
+    /**
+     * Execute a code string using the current interpreter.
+     * @param code The script code to execute.
+     */
     ExitStatus execute( const KJS::UString &code );
 
+    /**
+     * Returns the Completion object for the last script executed.
+     */
     KJS::Completion completion() const;
 
+    /**
+     * Returns the current interpreter.
+     */
     KJS::Interpreter *interpreter() const;
 
     /**
