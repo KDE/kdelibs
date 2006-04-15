@@ -4,7 +4,7 @@ function write_ctor( compoundDef )
     var ctor =
         'const Constructor ' + compoundName + '::p_constructor = \n' +
         '{'+
-        "\"" + compoundName + "\", 0, KJS::DontDelete|KJS::ReadOnly, &' + compoundName + '::ctorMethod, p_statics, p_enums, p_methods };\n" +
+        '"' + compoundName + '", 0, KJS::DontDelete|KJS::ReadOnly, &' + compoundName + '::ctorMethod, p_statics, p_enums, p_methods };\n' +
         'KJS::JSObject *' + compoundName + '::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\n' +
         '{\n';
 
