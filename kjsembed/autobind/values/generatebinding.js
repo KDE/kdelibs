@@ -140,6 +140,7 @@ function write_binding_new( class_doc )
 	'\n' +
 	'const Enumerator ' + compoundName + '::p_enums[] = {\n';
 
+    var hasEnums = false;
     var memberList = class_doc.elementsByTagName( "memberdef" );
     for( idx = 0; idx < memberList.length(); ++idx )
     {
@@ -220,6 +221,7 @@ function write_binding_new( class_doc )
 	    if ( memberProt == 'public' )
             {
 		println( '      Processing enum ' + memberName );
+		hasEnums = true;
 		var enumValueList = memberElement.elementsByTagName( 'enumvalue' );
 		for( enumidx = 0; enumidx < enumValueList.length(); ++enumidx )
 		{
@@ -235,12 +237,16 @@ function write_binding_new( class_doc )
     methods +=
         '}\n';
 
-    enums +=
-	'   {0, 0}\n' +
-	'};\n';
+    if ( hasEnums )
+    {
+	enums +=
+	    '   {0, 0}\n' +
+	    '};\n';
+    }
+    else {
+	enums = 'const Enumerator ' + compoundName + '::p_enums[] = {{0, 0 }};\n';
+    }
 
-    // Enums
-    // enums += 'NO_ENUMS( ' + compoundName + ' ) \n';
 
     // Statics
     statics += 'NO_STATICS( ' + compoundName + ' )';
