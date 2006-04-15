@@ -161,7 +161,7 @@ QStringList KJSEmbed::convertArrayToStringList( KJS::ExecState *exec, KJS::JSVal
         int length = obj->get( exec, KJS::Identifier( "length" ) )->toInteger( exec );
         for ( int index = 0; index < length; ++index )
         {
-            char buff[4];
+            char buff[21];
             KJS::JSValue *val = obj->get(exec, KJS::Identifier( itoa( index, buff, 10 ) ) );
             if( val )
                 returnList += convertToVariant(exec, val ).value<QString>();
