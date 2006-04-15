@@ -23,6 +23,7 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QDebug>
+#include <QMetaType>
 
 #include "static_binding.h"
 #include "kjsembed.h"
@@ -81,6 +82,17 @@ KJS::JSValue *callConfirm( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
     return KJS::Boolean(false);
 }
 
+KJS::JSValue *callIsVariantType( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
+{
+    Q_UNUSED(self)
+    if (args.size() == 1)
+    {
+	QString thetypename = args[0]->toString(exec).qstring();
+	return KJS::Boolean( QMetaType::type( thetypename.toLatin1().data() ) );
+    }
+    return KJS::Boolean(false);
+}
+
 const Method BuiltinsFactory::BuiltinMethods[] =
 {
     {"exec", 0, KJS::DontDelete|KJS::ReadOnly, &callExec},
@@ -88,5 +100,6 @@ const Method BuiltinsFactory::BuiltinMethods[] =
     {"include", 1, KJS::DontDelete|KJS::ReadOnly, &callInclude},
     {"alert", 1, KJS::DontDelete|KJS::ReadOnly, &callAlert},
     {"confirm", 1, KJS::DontDelete|KJS::ReadOnly, &callConfirm},
+    {"isVariantType", 1, KJS::DontDelete|KJS::ReadOnly, &callIsVariantType},
     {0, 0, 0, 0 }
 };

@@ -292,12 +292,13 @@ var variant_types = [
 
 function isVariant( variable )
 {
-    for (var i in variant_types)
-    {
-        if (variable.indexOf(variant_types[i]) != -1)
-            return true;
-    }
-    return false;
+//     for (var i in variant_types)
+//     {
+//         if (variable.indexOf(variant_types[i]) != -1)
+//             return true;
+//     }
+//     return false;
+    return isVariantType( variable );
 }
 
 function extract_parameter( parameter, paramIdx )
