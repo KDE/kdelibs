@@ -136,27 +136,31 @@ function write_binding_new( class_doc )
         'namespace ' + compoundName + 'NS\n' +
         '{\n';
 
-    var methodList = class_doc.elementsByTagName( "memberdef" );
-    for( idx = 0; idx < methodList.length(); ++idx )
-    {
-        var methodElement = methodList.item(idx).toElement();
-        var methodKind = methodElement.attribute('kind');
-        var methodProt = methodElement.attribute('prot');
-        var methodName = methodElement.firstChildElement('name').toElement().toString();
+    enums +=
+	'\n' +
+	'START_ENUM_LUT( ' + compoundName + ' )\n';
 
-        if ( methodKind == 'function' ) // Make sure we're working with a function here
+    var memberList = class_doc.elementsByTagName( "memberdef" );
+    for( idx = 0; idx < memberList.length(); ++idx )
+    {
+        var memberElement = memberList.item(idx).toElement();
+        var memberKind = memberElement.attribute('kind');
+        var memberProt = memberElement.attribute('prot');
+        var memberName = memberElement.firstChildElement('name').toElement().toString();
+
+        if ( memberKind == 'function' ) // Make sure we're working with a function here
         {
-            if ( methodProt == 'public' )
+            if ( memberProt == 'public' )
             {
-                if ( methodName.indexOf('operator') == -1 ) // Make sure this is not an operator.
+                if ( memberName.indexOf('operator') == -1 ) // Make sure this is not an operator.
                 {
-                    if ( methodName.indexOf(compoundName) == -1 ) // Not a ctor
+                    if ( memberName.indexOf(compoundName) == -1 ) // Not a ctor
                     {
-                        var methodType = methodElement.firstChildElement('type').toElement().toString();
-                        var methodArgs = methodElement.firstChildElement('argsstring').toElement().toString();
+                        var methodType = memberElement.firstChildElement('type').toElement().toString();
+                        var methodArgs = memberElement.firstChildElement('argsstring').toElement().toString();
                         methods +=
-                            '// ' + methodType + ' ' + methodName + methodArgs + '\n' +
-                            'KJS::JSValue *'+ methodName + '( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \n' +
+                            '// ' + methodType + ' ' + memberName + methodArgs + '\n' +
+                            'KJS::JSValue *'+ memberName + '( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \n' +
                             '{ \n' +
                             '   KJS::JSValue *result = KJS::Null(); \n' +
                             '   KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); \n' +
@@ -165,11 +169,11 @@ function write_binding_new( class_doc )
                             '       ' + methodType + ' value = imp->value<' + methodType + '>();\n';
 
                         // Handle arguments
-                        var methodArgList = methodElement.elementsByTagName('param');
+                        var methodArgList = memberElement.elementsByTagName('param');
                         if ( methodArgList.count() == 0 )
                         {
                             methods +=
-                            '       ' + methodType + ' tmp = value.' + methodName + '();\n';
+                            '       ' + methodType + ' tmp = value.' + memberName + '();\n';
 
                             if ( methodType.indexOf('Qt::') != -1 )  // Enum Value
                             {
@@ -190,12 +194,12 @@ function write_binding_new( class_doc )
                             var paramDefault = param.firstChildElement('defval').toElement();
                             methods += extract_parameter(param, paramIdx);
                         }
-                        if ( methodName.indexOf('set') != -1 )
+                        if ( memberName.indexOf('set') != -1 )
                         {   // setter, we can handle this for now
                             if ( paramVarElement.isNull() )
-                                methods += '        value.' + methodName + '(arg0);\n';
+                                methods += '        value.' + memberName + '(arg0);\n';
                             else
-                                methods += '        value.' + methodName + '(' + paramVar + ');\n';
+                                methods += '        value.' + memberName + '(' + paramVar + ');\n';
                         }
 
                         methods +=
@@ -211,36 +215,33 @@ function write_binding_new( class_doc )
                 }
             }
         }
+	else if ( memberKind == 'enum' )
+	{
+	    if ( memberProt == 'public' )
+            {
+		println( '      Processing enum ' + memberName );
+		var enumValueList = memberElement.elementsByTagName( 'enumvalue' );
+		for( enumidx = 0; enumidx < enumValueList.length(); ++enumidx )
+		{
+		    var valueName = enumValueList.item( enumidx ).toElement().firstChildElement('name').toElement().toString();
+		    println( '         ' + valueName );
+		    enums += '   {"' + valueName + '", ' + compoundName + '::' + valueName + ' },\n';
+		}
+
+	    }
+	}
     }
 
     methods +=
         '}\n';
 
+    enums += 'END_ENUM_LUT\n';
+
     // Enums
-    var enumList = class_doc.elementsByTagName( "memberdef" );
-    for( idx = 0; idx < enumList.length(); ++idx )
-    {
-        var enumElement = methodList.item(idx).toElement();
-        var enumKind = methodElement.attribute('kind');
-        var enumProt = methodElement.attribute('prot');
-        var enumName = methodElement.firstChildElement('name').toElement().toString();
-
-	println( enumKind );
-
-        if ( enumKind == 'enum' ) // Make sure we're working with an enum here
-        {
-            if ( enumProt == 'public' )
-            {
-	      println( 'Got enum ' + enumName );
-	    }
-	}
-
-    }
-
     // enums += 'NO_ENUMS( ' + compoundName + ' ) \n';
 
     // Statics
-    enums += 'NO_STATICS( ' + compoundName + ' )';
+    statics += 'NO_STATICS( ' + compoundName + ' )';
 
     // Ctor
     ctor = write_ctor( compoundDef );
