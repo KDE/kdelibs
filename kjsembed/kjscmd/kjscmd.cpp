@@ -32,6 +32,16 @@
 
 using namespace KJSEmbed;
 
+void printUsage(QString appName)
+{
+    (*KJSEmbed::conerr()) << "Usage: " << appName << " [options] [file]" << endl
+                          << "Options:" << endl
+                          << "    -e, --exec            execute script without gui support." << endl 
+                          << "    -i, --interactive     start interactive kjs interpreter." << endl
+                          << endl;
+}
+
+
 int main( int argc, char **argv )
 {
     QTime time;
@@ -42,38 +52,83 @@ int main( int argc, char **argv )
     RedirectIOToConsole();
 #   endif
 #endif
+
+    // Handle arguments
+    QString appName = argv[0];
+    QStringList args;
+    for (int i = 1; i < argc; i++ )
+    {
+        args << argv[i];
+    }
+
+    QString script;
+    KJS::List scriptArgs;
+    bool gui = true;
+
+    if (argc > 1)
+    {
+        while (!args.isEmpty())
+        {
+            QString arg = args.takeFirst();
+            if (arg.contains('-'))
+            {
+                if ((arg == "--exec") || (arg == "-e"))
+                    gui = false;
+                else if ((arg == "--interactive") || (arg == "-i"))
+                    (*KJSEmbed::conout()) << "Interactive";
+                else
+                {
+                    printUsage(appName);
+                    return 0;
+                }
+            }
+            else
+            {
+                if (!script.isEmpty())
+                    scriptArgs.append(KJS::String(arg));
+                else
+                    script = arg;
+            }
+        }
+    }
+    else
+    {
+        printUsage(appName);
+        return 0;
+    }
+
     // Setup QApplication
-    QApplication app( argc, argv );
-    qDebug(" New QApplication %dms", time.elapsed() );
-    app.connect( &app, SIGNAL( lastWindowClosed() ), SLOT(quit()) );
+    QCoreApplication *app;
+    if (gui)
+    {
+        app = new QApplication( argc, argv );
+        dynamic_cast<QApplication*>(app)->connect( app, SIGNAL( lastWindowClosed() ), SLOT(quit()) );
+    }
+    else
+    {
+        app = new QCoreApplication(argc, argv);
+    }
+    qDebug(" New QApplication %dms", time.elapsed());
+
 
     // Setup Interpreter
     time.restart();
     Engine kernel;
-    qDebug(" New engine %dms", time.elapsed() );
+    qDebug(" New engine %dms", time.elapsed());
     time.restart();
 
     KJS::Interpreter *js = kernel.interpreter();
     KJS::ExecState *exec = js->globalExec();
 
     // Publish bindings
-    KJS::JSObject *appobj = kernel.addObject( &app, "Application" );
-
-    // Build args array
-    KJS::List args;
-    for ( int i = 1 ; i < argc ; i++ )
-    {
-        args.append( KJS::String( argv[i] ) );
-    }
-
-    KJS::JSObject *argobj = js->builtinArray()->construct( exec, args );
-    appobj->put( exec, "args", argobj );
-
+    KJS::JSObject *appObject = kernel.addObject( app, "Application" );
+    KJS::JSObject *argObject = js->builtinArray()->construct( exec, scriptArgs );
+    appObject->put( exec, "args", argObject );
     Engine::ExitStatus result = Engine::Failure;
 
-    if ( argc > 1 ) // Run script
+    if (!script.isEmpty())
     {
-        result = kernel.runFile( argv[1] );
+        result = kernel.runFile(script);
     }
     else // exec shell
     {
@@ -85,9 +140,6 @@ int main( int argc, char **argv )
         KJS::Completion jsres = kernel.completion();
        (*KJSEmbed::conerr()) << jsres.value()->toString(exec).qstring() << endl;
     }
-    return (int) result;
+    return (int)result;
 }
 
-// Local Variables:
-// c-basic-offset: 4
-// End:
