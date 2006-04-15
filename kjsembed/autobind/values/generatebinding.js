@@ -138,7 +138,7 @@ function write_binding_new( class_doc )
 
     enums +=
 	'\n' +
-	'START_ENUM_LUT( ' + compoundName + ' )\n';
+	'const Enumerator ' + compoundName + '::p_enums[] = {\n';
 
     var memberList = class_doc.elementsByTagName( "memberdef" );
     for( idx = 0; idx < memberList.length(); ++idx )
@@ -235,7 +235,9 @@ function write_binding_new( class_doc )
     methods +=
         '}\n';
 
-    enums += 'END_ENUM_LUT\n';
+    enums +=
+	'   {0, 0}\n' +
+	'};\n';
 
     // Enums
     // enums += 'NO_ENUMS( ' + compoundName + ' ) \n';
