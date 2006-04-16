@@ -83,7 +83,7 @@ class KIO_EXPORT KSMIMECrypto {
      * Does not check certificates for validity!
      * @param signedText signed message block
      * @param clearText cleartext of signed message
-     * @foundCerts certificates found in this mesasge
+     * @param foundCerts certificates found in this mesasge
      * @return 0 on success
      */
     rc checkOpaqueSignature(const QByteArray &signedText,
@@ -99,7 +99,7 @@ class KIO_EXPORT KSMIMECrypto {
      * @param clearText MIME representation of message to encrypt
      * @param cipherText returned encrypted message
      * @param algorithm encryption algorithm
-     * @recip recipient certificates
+     * @param recip recipient certificates
      * @return 0 on success
      */
     rc encryptMessage(const QByteArray &clearText,
