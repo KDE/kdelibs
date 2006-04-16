@@ -93,7 +93,12 @@ QModelIndex KJSObjectModel::index(int row, int column, const QModelIndex &parent
     KJS::ExecState *exec = m_js->globalExec();
 
     if (!parent.isValid())
-        parentInstance = m_root;
+    {
+        if (m_root)
+            parentInstance = m_root;
+        else
+            return QModelIndex();
+    }
     else
         parentInstance = static_cast<Node*>(parent.internalPointer())->instance;
     int idx = 0;
