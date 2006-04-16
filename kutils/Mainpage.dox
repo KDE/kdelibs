@@ -1,0 +1,5 @@
+/** @mainpage ./kutils
+ * 
+ * Not much to say.
+*/
+// DOXYGEN_REFERENCES = kdecore kdeui kio

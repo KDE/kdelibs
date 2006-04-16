@@ -1,0 +1,6 @@
+/** @mainpage ./khtml
+ * 
+ * Not much to say.
+*/
+// DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
+// DOXYGEN_EXCLUDE =  test*.* html rendering xml misc pics test 

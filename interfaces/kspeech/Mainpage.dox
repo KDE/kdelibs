@@ -1,0 +1,5 @@
+/** @mainpage ./interfaces/kspeech
+ * 
+ * Not much to say.
+*/
+// DOXYGEN_REFERENCES = kdecore dcop kio kdeui kparts

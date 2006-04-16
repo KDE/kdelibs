@@ -26,3 +26,5 @@ If you want to write a new backend for %Phonon this is for you:
  - \ref Phonon::Ifaces::Backend
 
 */
+// DOXYGEN_REFERENCES = dcop kdecore kio phonon/ui phonon/ifaces phonon/ui/ifaces
+// DOXYGEN_SET_EXPAND_AS_DEFINED = PHONON_ABSTRACTBASE PHONON_OBJECT PHONON_HEIR

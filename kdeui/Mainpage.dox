@@ -40,3 +40,5 @@
 * @see KSpell, KSpellConfig
 */
 
+// DOXYGEN_REFERENCES = kdecore kdefx dcop kio kutils
+// DOXYGEN_SET_INTERNAL_DOCS = YES

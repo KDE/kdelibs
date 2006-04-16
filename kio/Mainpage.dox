@@ -118,3 +118,5 @@
  *   @see KFileMetaInfo.
  *
  */
+// DOXYGEN_REFERENCES = kdecore kdefx kjs dcop kdeui kio/kio kio/kfile
+// DOXYGEN_EXCLUDE = kssl/kssl

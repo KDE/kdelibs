@@ -1,0 +1,6 @@
+/** @mainpage ./kwallet
+ * 
+ * Not much to say.
+*/
+// DOXYGEN_REFERENCES=dcop
+// DOXYGEN_EXCLUDE=backend

@@ -574,3 +574,4 @@ inter-process communication with KDE!  Please direct all comments and/or
 suggestions to the KDE Core Developers List \<kde-core-devel@kde.org\>.
 
 */
+// DOXYGEN_EXCLUDE = KDE-ICE testdcop.h testdcop.cpp dcopidl_test.h

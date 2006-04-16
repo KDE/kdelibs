@@ -1,0 +1,5 @@
+/** @mainpage ./interfaces/kdocument
+ * 
+ * Not much to say.
+*/
+// DOXYGEN_REFERENCES = kparts
