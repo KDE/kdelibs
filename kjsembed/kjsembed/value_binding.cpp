@@ -312,7 +312,7 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
         {
             QMap<QString,QVariant> map = value.toMap();
             QMap<QString,QVariant>::Iterator idx = map.begin();
-            KJS::JSObject *array = exec->interpreter()->builtinArray()->construct( exec, 0 );
+            KJS::JSObject *array = exec->interpreter()->builtinArray()->construct( exec, KJS::List() );
             for ( ; idx != map.end(); ++idx )
             {
                 array->put(exec, KJS::Identifier( idx.key() ), convertToValue( exec,  idx.value() ) );
