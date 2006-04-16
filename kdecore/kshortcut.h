@@ -85,7 +85,7 @@ public:
 	 * Creates a new shortcut that contains only the given qt key
 	 * sequences.
 	 * @param keySeq1 the first sequence
-	 * @param keySeq1 the second sequence
+	 * @param keySeq2 the second sequence
 	 */
 	KShortcut( const QKeySequence& keySeq1, const QKeySequence& keySeq2 );
 
@@ -201,7 +201,7 @@ public:
 	/**
 	 * Checks whether this shortcut contains a sequence that starts
 	 * with the given key.
-	 * @param key the key to check
+	 * @param keyQt the key to check
 	 * @return @c true if a key sequence starts with the key, @c false
 	 *         otherwise
 	 */

@@ -84,7 +84,7 @@ public:
    /**
     * Attempt to acquire the lock
     *
-    * @param flags A set of @ref LockFlags OR'ed together.
+    * @param flags A set of @ref LockFlag values OR'ed together.
     */
    LockResult lock(LockFlags flags=LockFlags());
 

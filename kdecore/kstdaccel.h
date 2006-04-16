@@ -118,7 +118,7 @@ namespace KStdAccel
    * Return the StdAccel id of the standard accel action which
    * has \a keyName as its name, or AccelNone if none of them do.
    * This is used by class KKeyChooser.
-   * @param keySeq the key sequence to search
+   * @param keyName the key sequence to search
    * @return the id of the standard accelerator, or AccelNone if there
    *          is none
    */
