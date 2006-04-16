@@ -21,6 +21,7 @@
 
 #include <QString>
 #include <QApplication>
+#include <QDebug>
 
 #include <kjs/interpreter.h>
 #include <kjs/ustring.h>

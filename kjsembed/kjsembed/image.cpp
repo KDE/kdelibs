@@ -28,6 +28,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo ImageBinding::info = { "QImage", &ValueBinding::info, 0, 0 };
 ImageBinding::ImageBinding( KJS::ExecState *exec, const QImage &value )
     : ValueBinding(exec, value )
 {

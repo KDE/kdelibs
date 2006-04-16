@@ -32,6 +32,9 @@ namespace KJSEmbed
     {
         public:
             ImageBinding( KJS::ExecState *exec, const QImage &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     /**

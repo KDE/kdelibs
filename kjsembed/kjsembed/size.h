@@ -31,6 +31,9 @@ namespace KJSEmbed
     {
         public:
             SizeBinding( KJS::ExecState *exec, const QSize &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     KJS_BINDING( Size )

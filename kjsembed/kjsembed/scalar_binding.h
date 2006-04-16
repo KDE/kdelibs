@@ -122,8 +122,11 @@ namespace KJSEmbed
                 else
                     return T();
             }
+            static const KJS::ClassInfo info;
 
         private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+
             PointerBase *m_value;
             const char *m_name;
 

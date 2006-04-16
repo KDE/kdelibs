@@ -24,6 +24,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo UrlBinding::info = { "QUrl", &ValueBinding::info, 0, 0 };
 UrlBinding::UrlBinding( KJS::ExecState *exec, const QUrl &value )
     : ValueBinding(exec, value )
 {

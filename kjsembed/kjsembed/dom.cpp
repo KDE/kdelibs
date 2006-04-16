@@ -27,6 +27,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo DomNodeBinding::info = { "QDomNode", &ScalarBinding::info, 0, 0 };
 DomNodeBinding::DomNodeBinding( KJS::ExecState *exec, const QDomNode &value )
     : ScalarBinding(exec, "QDomNode", value )
 {
@@ -341,7 +342,7 @@ START_CTOR( DomNode, QDomNode, 0 )
     return new KJSEmbed::DomNodeBinding(exec, QDomNode( ) );
 END_CTOR
 
-
+const KJS::ClassInfo DomDocumentBinding::info = { "QDomDocument", &ScalarBinding::info, 0, 0 };
 DomDocumentBinding::DomDocumentBinding( KJS::ExecState *exec, const QDomDocument &value )
     : ScalarBinding(exec, "QDomDocument", value )
 {
@@ -480,6 +481,7 @@ START_CTOR( DomDocument, QDomDocument, 1 )
     return new KJSEmbed::DomDocumentBinding(exec, QDomDocument(name) );
 END_CTOR
 
+const KJS::ClassInfo DomElementBinding::info = { "QDomElement", &ScalarBinding::info, 0, 0 };
 DomElementBinding::DomElementBinding( KJS::ExecState *exec, const QDomElement &value )
     : ScalarBinding(exec, "QDomElement", value )
 {
@@ -623,6 +625,7 @@ START_CTOR( DomElement, QDomElement, 0 )
     return new KJSEmbed::DomElementBinding(exec, QDomElement( ) );
 END_CTOR
 
+const KJS::ClassInfo DomAttrBinding::info = { "QDomAttr", &ScalarBinding::info, 0, 0 };
 DomAttrBinding::DomAttrBinding( KJS::ExecState *exec, const QDomAttr &value )
     : ScalarBinding(exec, "QDomAttr", value )
 {
@@ -670,6 +673,7 @@ START_CTOR( DomAttr, QDomAttr, 0 )
     return new KJSEmbed::DomAttrBinding(exec, QDomAttr( ) );
 END_CTOR
 
+const KJS::ClassInfo DomNodeListBinding::info = { "QDomNodeList", &ScalarBinding::info, 0, 0 };
 DomNodeListBinding::DomNodeListBinding( KJS::ExecState *exec, const QDomNodeList &value )
     : ScalarBinding(exec, "QDomNodeList", value )
 {
@@ -706,6 +710,7 @@ START_CTOR( DomNodeList, QDomNodeList, 0 )
     return new KJSEmbed::DomNodeListBinding(exec, QDomNodeList( ) );
 END_CTOR
 
+const KJS::ClassInfo DomDocumentTypeBinding::info = { "QDomDocumentType", &ScalarBinding::info, 0, 0 };
 DomDocumentTypeBinding::DomDocumentTypeBinding( KJS::ExecState *exec, const QDomDocumentType &value )
     : ScalarBinding(exec, "QDomDocumentType", value )
 {
@@ -755,6 +760,7 @@ START_CTOR( DomDocumentType, QDomDocumentType, 0 )
     return new KJSEmbed::DomDocumentTypeBinding(exec, QDomDocumentType( ) );
 END_CTOR
 
+const KJS::ClassInfo DomNamedNodeMapBinding::info = { "QDomNamedNodeMap", &ScalarBinding::info, 0, 0 };
 DomNamedNodeMapBinding::DomNamedNodeMapBinding( KJS::ExecState *exec, const QDomNamedNodeMap &value )
     : ScalarBinding(exec, "QDomNamedNodeMap", value )
 {
@@ -841,6 +847,7 @@ START_CTOR( DomNamedNodeMap, QDomNamedNodeMap, 0 )
     return new KJSEmbed::DomNamedNodeMapBinding(exec, QDomNamedNodeMap( ) );
 END_CTOR
 
+const KJS::ClassInfo DomTextBinding::info = { "QDomText", &ScalarBinding::info, 0, 0 };
 DomTextBinding::DomTextBinding( KJS::ExecState *exec, const QDomText &value )
     : ScalarBinding(exec, "QDomText", value )
 {

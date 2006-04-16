@@ -83,12 +83,12 @@ namespace KJSEmbed
     {
         public:
             enum Ownership { CPPOwned, QObjOwned, JSOwned  };
+            static const KJS::ClassInfo info;
 
         private:
             const char *m_name;
             PointerBase *m_value;
             Ownership m_owner;
-	    static const KJS::ClassInfo info;
 
         public:
             template <typename T>

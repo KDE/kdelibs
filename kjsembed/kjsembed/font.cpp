@@ -24,6 +24,7 @@
 #include <QStringList>
 using namespace KJSEmbed;
 
+const KJS::ClassInfo FontBinding::info = { "QFont", &ValueBinding::info, 0, 0 };
 FontBinding::FontBinding( KJS::ExecState *exec, const QFont &value )
     : ValueBinding(exec, value )
 {

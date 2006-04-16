@@ -25,6 +25,9 @@
 #include <QDebug>
 #include <QMetaType>
 
+#include "value_binding.h"
+#include "object_binding.h"
+
 #include "static_binding.h"
 #include "kjsembed.h"
 #include "builtins.h"
@@ -87,8 +90,36 @@ KJS::JSValue *callIsVariantType( KJS::ExecState *exec, KJS::JSObject *self, cons
     Q_UNUSED(self)
     if (args.size() == 1)
     {
-	QString thetypename = args[0]->toString(exec).qstring();
-	return KJS::Boolean( QMetaType::type( thetypename.toLatin1().data() ) );
+        QString thetypename = args[0]->toString(exec).qstring();
+        return KJS::Boolean( QMetaType::type( thetypename.toLatin1().data() ) );
+    }
+    return KJS::Boolean(false);
+}
+
+KJS::JSValue *callIsVariant( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
+{
+    Q_UNUSED(self)
+    if (args.size() == 1)
+    {
+        KJS::JSObject *obj = args[0]->toObject(exec);
+        if (obj->inherits(&ValueBinding::info))
+        {
+            return KJS::Boolean(true);
+        }
+    }
+    return KJS::Boolean(false);
+}
+
+KJS::JSValue *callIsObject( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
+{
+    Q_UNUSED(self)
+    if (args.size() == 1)
+    {
+        KJS::JSObject *obj = args[0]->toObject(exec);
+        if (obj->inherits(&ObjectBinding::info))
+        {
+            return KJS::Boolean(true);
+        }
     }
     return KJS::Boolean(false);
 }
@@ -101,5 +132,7 @@ const Method BuiltinsFactory::BuiltinMethods[] =
     {"alert", 1, KJS::DontDelete|KJS::ReadOnly, &callAlert},
     {"confirm", 1, KJS::DontDelete|KJS::ReadOnly, &callConfirm},
     {"isVariantType", 1, KJS::DontDelete|KJS::ReadOnly, &callIsVariantType},
+    {"isVariant", 1, KJS::DontDelete|KJS::ReadOnly, &callIsVariant},
+    {"isObject", 1, KJS::DontDelete|KJS::ReadOnly, &callIsObject},
     {0, 0, 0, 0 }
 };

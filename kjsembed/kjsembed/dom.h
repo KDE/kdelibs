@@ -40,48 +40,72 @@ namespace KJSEmbed
     {
         public:
             DomNodeBinding( KJS::ExecState *exec, const QDomNode &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     class DomDocumentBinding : public ScalarBinding
     {
         public:
             DomDocumentBinding( KJS::ExecState *exec, const QDomDocument &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     class DomElementBinding : public ScalarBinding
     {
         public:
             DomElementBinding( KJS::ExecState *exec, const QDomElement &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     class DomAttrBinding : public ScalarBinding
     {
         public:
             DomAttrBinding( KJS::ExecState *exec, const QDomAttr &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     class DomDocumentTypeBinding : public ScalarBinding
     {
         public:
             DomDocumentTypeBinding( KJS::ExecState *exec, const QDomDocumentType &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     class DomNodeListBinding : public ScalarBinding
     {
         public:
             DomNodeListBinding( KJS::ExecState *exec, const QDomNodeList &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     class DomNamedNodeMapBinding : public ScalarBinding
     {
         public:
             DomNamedNodeMapBinding( KJS::ExecState *exec, const QDomNamedNodeMap &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     class DomTextBinding : public ScalarBinding
     {
         public:
             DomTextBinding( KJS::ExecState *exec, const QDomText &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     KJS_BINDING( DomNode )

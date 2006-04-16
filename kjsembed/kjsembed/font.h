@@ -33,6 +33,9 @@ namespace KJSEmbed
     {
         public:
             FontBinding( KJS::ExecState *exec, const QFont &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     /**

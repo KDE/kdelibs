@@ -33,6 +33,9 @@ namespace KJSEmbed
     {
         public:
             UrlBinding( KJS::ExecState *exec, const QUrl &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
 

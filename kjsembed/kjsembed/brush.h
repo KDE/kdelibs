@@ -33,6 +33,9 @@ namespace KJSEmbed
     {
         public:
             BrushBinding( KJS::ExecState *exec, const QBrush &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
 

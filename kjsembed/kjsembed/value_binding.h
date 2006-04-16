@@ -108,11 +108,13 @@ namespace KJSEmbed
             */
             QGenericArgument arg( const char *type) const;
 
+            static const KJS::ClassInfo info;
+
         protected:
             QVariant m_value;
-	private:
-	    virtual const KJS::ClassInfo* classInfo() const { return &info; }
-	    static const KJS::ClassInfo info;
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+
     };
 
     /**

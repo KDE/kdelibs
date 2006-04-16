@@ -24,6 +24,7 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo SizeBinding::info = { "QSize", &ValueBinding::info, 0, 0 };
 SizeBinding::SizeBinding( KJS::ExecState *exec, const QSize &value )
     : ValueBinding(exec, value )
 {

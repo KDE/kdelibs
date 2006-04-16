@@ -33,6 +33,9 @@ namespace KJSEmbed
     {
         public:
             PointBinding( KJS::ExecState *exec, const QPoint &value );
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     KJS_BINDING( Point )

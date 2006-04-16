@@ -22,6 +22,8 @@
 
 using namespace KJSEmbed;
 
+const KJS::ClassInfo ScalarBinding::info = { "ScalarBinding", 0, 0, 0 };
+
 KJS::JSValue *callScalarType( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
     KJSEmbed::ScalarBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ScalarBinding>(exec,  self );

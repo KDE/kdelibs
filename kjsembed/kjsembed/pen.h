@@ -33,6 +33,10 @@ namespace KJSEmbed
     {
         public:
             PenBinding( KJS::ExecState *exec, const QPen &value );
+
+        private:
+            virtual const KJS::ClassInfo* classInfo() const { return &info; }
+           static const KJS::ClassInfo info;
     };
 
     KJS_BINDING( Pen )
