@@ -61,7 +61,7 @@ public:
 
 	/**
 	 * Enables or disables the KGlobalAccel
-	 * @param bEnabled true if the KGlobalAccel should be enabled, false if it
+	 * @param enabled true if the KGlobalAccel should be enabled, false if it
 	 *  should be disabled.
 	 */
 	void setEnabled( bool enabled );

@@ -28,7 +28,7 @@ class QLabel;
  * KToolBarLabelAction is a convenience class for displaying a label in a
  * toolbar.
  *
- * It provides easy access to the label's #setBuddy(QWidget*) and #buddy()
+ * It provides easy access to the label's #setBuddy(QAction*) and #buddy()
  * methods and can be used as follows:
  *
  * \code

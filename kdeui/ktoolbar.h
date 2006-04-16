@@ -70,7 +70,6 @@ public:
    * true.  All other toolbars will be IconOnly and use Medium icons.
    *
    * @param parent      The standard toolbar parent (usually a KMainWindow)
-   * @param name        The standard internal name
    * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
@@ -87,7 +86,6 @@ public:
    * @param parentWindow The window that should be the parent of this toolbar
    * @param area        The position of the toolbar. Usually Qt::TopToolBarArea.
    * @param newLine     If true, start a new line in the dock for this toolbar.
-   * @param name        The standard internal name
    * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */

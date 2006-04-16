@@ -40,7 +40,8 @@ class KDEUI_EXPORT KIconEngine : public QIconEngine
     /**
      * Constructs an icon engine for a KDE named icon.
      *
-     * @param loader The KDE icon loader that this engine is to use.
+     * @param iconName the name of the icon to load
+     * @param iconLoader The KDE icon loader that this engine is to use.
      *
      * @sa KIconLoader
      */

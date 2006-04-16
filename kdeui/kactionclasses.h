@@ -68,6 +68,8 @@ public:
      * Constructs an action in the specified KActionCollection.
      *
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
+     * @param exclusiveGroup the group of actions that this action is part of, for exclusive action groups
      */
     KToggleAction(KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
 
@@ -82,6 +84,8 @@ public:
      *
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
+     * @param exclusiveGroup the group of actions that this action is part of, for exclusive action groups
      */
     KToggleAction(const QString& text, KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
 
@@ -95,6 +99,8 @@ public:
      * @param icon The icon to display.
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
+     * @param exclusiveGroup the group of actions that this action is part of, for exclusive action groups
      */
     KToggleAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
 
@@ -107,6 +113,7 @@ public:
      * @param icon The name of the icon to load via KIconLoader.
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KToggleAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
 
@@ -229,6 +236,7 @@ public:
      * Constructs an action in the specified KActionCollection.
      *
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KSelectAction(KActionCollection* parent, const QString& name);
 
@@ -243,6 +251,7 @@ public:
      *
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KSelectAction(const QString& text, KActionCollection* parent, const QString& name);
 
@@ -256,6 +265,7 @@ public:
      * @param icon The icon to display.
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KSelectAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
 
@@ -268,6 +278,7 @@ public:
      * @param icon The name of the icon to load via KIconLoader.
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KDE_CONSTRUCTOR_DEPRECATED KSelectAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
 
@@ -611,6 +622,7 @@ public:
      * Constructs an action in the specified KActionCollection.
      *
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KRecentFilesAction(KActionCollection* parent, const QString& name);
 
@@ -625,6 +637,7 @@ public:
      *
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KRecentFilesAction(const QString& text, KActionCollection* parent, const QString& name);
 
@@ -638,6 +651,7 @@ public:
      * @param icon The icon to display.
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KRecentFilesAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
 
@@ -1321,6 +1335,7 @@ public:
      * Constructs an action in the specified KActionCollection.
      *
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KPasteTextAction(KActionCollection* parent, const QString& name);
 
@@ -1335,6 +1350,7 @@ public:
      *
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KPasteTextAction(const QString& text, KActionCollection* parent, const QString& name);
 
@@ -1348,6 +1364,7 @@ public:
      * @param icon The icon to display.
      * @param text The text that will be displayed.
      * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
      */
     KPasteTextAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
 

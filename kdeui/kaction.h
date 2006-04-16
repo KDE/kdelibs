@@ -368,7 +368,7 @@ public:
      * This is preferred over QAction::shortcut(), as it allows for multiple shortcuts
      * per action.
      *
-     * \param type the type of shortcut to return.  Should both be specified, only the 
+     * \param types the type of shortcut to return.  Should both be specified, only the 
      *             custom shortcut will be returned.  Defaults to the custom shortcut, if one exists.
      */
     const KShortcut& shortcut(ShortcutTypes types = CustomShortcut) const;
@@ -453,7 +453,7 @@ public:
      * for them to be activated.
      *
      * \param shortcut shortcut(s) to grab as global accelerators.
-     * \param the type of shortcut to be set, whether the custom shortcut, the default shortcut,
+     * \param type the type of shortcut to be set, whether the custom shortcut, the default shortcut,
      *            or both (the default).
      *
      * \note For convenience, passing a shortcut also sets the default (as this is by far
@@ -539,8 +539,6 @@ public:
      * Set the icon for this action.
      *
      * \param icon the KDE icon name to pass to KIconLoader.
-     * \param group the icon group
-     * \param instance the KInstance from which to retrieve the icon loader.
      *
      * \deprecated Use setIcon(KIcon("kdeiconname")) instead, or pass KIcon("kdeiconname") to the constructor.
      */

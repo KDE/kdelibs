@@ -43,7 +43,7 @@ class KDEUI_EXPORT KIcon : public QIcon
      * Constructor which takes a kde style icon name, and optionally
      * a custom icon loader.
      *
-     * \param name The name of the kde icon to load
+     * \param iconName The name of the kde icon to load
      * \param iconLoader The icon loader to use in loading this icon, or 
      *                   null to use the default global icon loader.
      */
@@ -52,7 +52,7 @@ class KDEUI_EXPORT KIcon : public QIcon
    /**
      * Copy constructor which takes any QIcon.
      *
-     * \param icon the icon to copy.  This should have once been a KIcon,
+     * \param copy the icon to copy.  This should have once been a KIcon,
      *             if you want to preserve KDE icon effects.
      */
     explicit KIcon(const QIcon& copy);

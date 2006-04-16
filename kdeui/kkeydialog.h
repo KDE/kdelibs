@@ -91,7 +91,7 @@ public:
 	 * @param allowLetterShortcuts set to LetterShortcutsDisallowed if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
-	KKeyChooser( QWidget* parent, ActionTypes actionType = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed );
+	KKeyChooser( QWidget* parent, ActionTypes actionTypes = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed );
 
 	/// Destructor
 	virtual ~KKeyChooser();
