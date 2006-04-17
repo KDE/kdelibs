@@ -54,6 +54,7 @@ Comment[tr]=OASIS OpenDocument Resim
 Comment[tt]=OASIS OpenDocument Süräte
 Comment[uk]=Зображення OASIS OpenDocument
 Comment[uz]=OASIS OpenDocument расм
+Comment[vi]=Ảnh OpenDocument OASIS
 Comment[zh_CN]=OASIS OpenDocument 图像
 [Property::X-KDE-NativeExtension]
 Type=QString

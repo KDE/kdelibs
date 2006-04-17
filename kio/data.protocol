@@ -50,6 +50,7 @@ Description[ta]=தரவு வலைமனைகளுக்கான ஒர�
 Description[tg]=kioslave барои URIs (rfc2397)
 Description[tt]=Biremle URI öçen kioslave (rfc2397)
 Description[uk]=Підлеглий В/В для адрес (URI) даних (rfc2397)
+Description[vi]=Một kioslave cho các địa điểm URI kiểu dữ liệu (rfc2397).
 Description[zh_CN]=data URI(rfc2397) 的 kioslave
 DocPath=kioslave/data.html
 URIMode=rawuri

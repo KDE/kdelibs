@@ -60,6 +60,7 @@ Name[tr]=KDE Kaynakları
 Name[tt]=KDE Resursları
 Name[uk]=Ресурси KDE
 Name[uz]=KDE имкониятлари
+Name[vi]=Tài nguyên KDE
 Name[zh_CN]=KDE 资源
 Name[zh_HK]=KDE 資源
 
@@ -119,6 +120,7 @@ Comment[tr]=KDE Kaynaklarını Yapılandır
 Comment[tt]=KDE Resursların Caylaw
 Comment[uk]=Налаштування ресурсів KDE
 Comment[uz]=KDE манбаларини мослаш
+Comment[vi]=Cấu hình các tài nguyên KDE.
 Comment[zh_CN]=配置 KDE 资源
 Comment[zh_HK]=設定 KDE 使用的資源
 
@@ -166,6 +168,7 @@ Keywords[sv]=resurser,konnector-resurs,kontaktresurs,kalenderresurs,anteckningsr
 Keywords[ta]=மூலங்கள்,இணைப்பு மூலம்,தொடர்பு மூலம்,நாள்காட்டி மூலம்,குறிப்புகள் மூலம்e,imap
 Keywords[tr]=kaynaklar,bağlantı kaynağı,iletiişm kaynağı,takvim kaynak,not kaynağı,imap
 Keywords[uk]=ресурси,ресурс для konnector,ресурс контактів,ресурс календаря,ресурс приміток,imap
+Keywords[vi]=tài nguyên,tài nguyên konnector,tài nguyên liên lạc,tài nguyên lịch,tài nguyên ghi chú,imap
 Keywords[zh_CN]=resources,konnector resource,contact resource,calendar resource,notes resource,imap资源,konnector 资源,联系人资源,日历资源,备忘资源
 
 Categories=Qt;KDE;X-KDE-settings-components;

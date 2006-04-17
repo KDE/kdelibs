@@ -53,6 +53,7 @@ Comment[tg]=ХуҷҷатиКушод OASIS
 Comment[tr]=OASIS OpenDocument Çizelgesi
 Comment[tt]=OASIS OpenDocument Grafiğı
 Comment[uk]=Діаграма OASIS OpenDocument
+Comment[vi]=Biểu đồ OpenDocument OASIS
 Comment[zh_CN]=OASIS OpenDocument 图表
 [Property::X-KDE-NativeExtension]
 Type=QString

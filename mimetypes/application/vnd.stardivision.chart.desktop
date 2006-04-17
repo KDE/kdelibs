@@ -57,6 +57,7 @@ Comment[tg]=Диаграмаи StarOffice
 Comment[tr]=StarOffice Hesap Tablosu
 Comment[tt]=StarOffice Grafiğı
 Comment[uk]=Діаграма StarOffice
+Comment[vi]=Biểu đồ StarOffice
 Comment[zh_CN]=StarOffice 图表
 [Property::X-KDE-NativeExtension]
 Type=QString
