@@ -146,7 +146,7 @@ public:
        CTtyOnly = NoRead, /**< Tells setUsePty() to create a PTY for the process
                            * and make it the process' controlling TTY, but does not
                            * redirect any I/O channel to the PTY. */
-       MergedStderr = 16, /**< If specified with Stdout, the process' stderr will be
+       MergedStderr = 16  /**< If specified with Stdout, the process' stderr will be
                            * redirected onto the same file handle as its stdout, i.e.,
                            * all error output will be signalled with receivedStdout().
                            * Don't specify Stderr if you specify MergedStderr. */
