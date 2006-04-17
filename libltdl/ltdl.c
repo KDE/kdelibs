@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 */
 
+#include <kdelibs_export.h>
+
 #if HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -1300,7 +1302,7 @@ static	lt_dlhandle	handles 	= 0;
 static	int		initialized 	= 0;
 
 /* Initialize libltdl. */
-int
+KDECORE_EXPORT int 
 lt_dlinit ()
 {
   int	      errors   = 0;
@@ -2033,7 +2035,7 @@ free_vars( dlname, oldname, libdir, deplibs)
   return 0;
 }
 
-lt_dlhandle
+KDECORE_EXPORT lt_dlhandle
 lt_dlopen (filename)
      const char *filename;
 {
@@ -2586,7 +2588,7 @@ lt_dlclose (handle)
   return errors;
 }
 
-lt_ptr
+KDECORE_EXPORT lt_ptr
 lt_dlsym (handle, symbol)
      lt_dlhandle handle;
      const char *symbol;
@@ -2689,7 +2691,7 @@ lt_dlsym (handle, symbol)
   return address;
 }
 
-const char *
+KDECORE_EXPORT const char *
 lt_dlerror ()
 {
   const char *error;
