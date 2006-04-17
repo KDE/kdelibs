@@ -34,6 +34,47 @@ namespace KJSEmbed
         object->inherits(ObjectBinding::info);
     }
 
+/*
+So this might be how the val checking would go:
+    JSValue *arg = args[0];
+    if (isBasic(arg))
+    {
+        switch (arg->type())
+        {
+            case KJS::Number:
+                extractInt...;
+                break;
+            case KJS::String:
+                extractString...;
+                break;
+            case KJS::Boolean:
+                extractBool...;
+                break;
+            default: hmmm
+        }
+    }
+    else
+    {
+        JSObject *object = arg->toObject(exec);
+        if (isScalar(object))
+        {
+            extractScalar...
+        }
+        else if (isObject(object))
+        {
+            extractObject...
+        }
+        else
+        {
+            hmmm
+        }
+    }
+
+
+
+
+*/
+
 }
 
 
