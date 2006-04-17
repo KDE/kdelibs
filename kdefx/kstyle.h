@@ -44,7 +44,7 @@ class QStyleOptionTab;
 
 #include <kdelibs_export.h>
 
-/**
+/*
  ### ### TODO:Where does visualRect fit in? Probably should be done already before calling drawKStylePrimitive?
  ...
 All the  basic PE_Primitive calls are also broken down to KStylePrimitive calls by default, as follows:
