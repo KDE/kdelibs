@@ -742,7 +742,7 @@ void DirectoryView::setDir( const QString &s )
     it.current()->setOpen( false );
   }
 
-  QStringList lst( QStringList::split( "/", s ) );
+  QStringList lst( s.split( "/", QString::SkipEmptyParts ) );
   Q3ListViewItem *item = firstChild();
   QStringList::Iterator it2 = lst.begin();
   for ( ; it2 != lst.end(); ++it2 ) {

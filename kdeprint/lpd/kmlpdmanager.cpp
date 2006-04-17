@@ -101,7 +101,7 @@ bool KMLpdManager::completePrinterShort(KMPrinter *printer)
 			QMap<QString,QString>	map = loadPrinttoolCfgFile(entry->arg("sd")+"/.config");
 			if (type == "SMB")
 			{
-				QStringList	l = QStringList::split('\\',map["share"],false);
+				QStringList	l = map["share"].split('\\', QString::SkipEmptyParts);
 				if (map["workgroup"].isEmpty())
 					url = QString::fromLatin1("smb://%1/%2").arg(l[0]).arg(l[1]);
 				else
@@ -586,7 +586,7 @@ bool KMLpdManager::createPrinttoolEntry(KMPrinter *printer, PrintcapEntry *entry
 			}
 			else if (prot == "smb")
 			{
-				QStringList	l = QStringList::split('/',dev.path(),false);
+				QStringList	l = dev.path().split('/', QString::SkipEmptyParts);
 				if (l.count() == 2)
 				{
 					t << "share='\\\\" << l[0] << '\\' << l[1] << '\'' << endl;

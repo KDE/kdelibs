@@ -29,6 +29,7 @@
 
 #include <QPointer>
 
+#include <kdemacros.h>
 #include <kguiitem.h>
 #include <kstdaction.h>
 #include <kicontheme.h>

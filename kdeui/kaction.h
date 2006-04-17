@@ -29,6 +29,7 @@
 #include <QAction>
 
 #include <kdelibs_export.h>
+#include <kdemacros.h>
 #include <kshortcut.h>
 #include <kicontheme.h>
 #include <kglobal.h>

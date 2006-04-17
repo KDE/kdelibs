@@ -190,7 +190,7 @@ extern "C" \
 	\
 	bool test_## factoryName() \
 	{ \
-		QStringList modList = QStringList::split( ",", QString(modules).remove( " " )); \
+		QStringList modList = QString(modules).remove( " " ).split(",", QString::SkipEmptyParts); \
 		for ( QStringList::Iterator it = modList.begin(); it != modList.end(); ++it ) \
 			if ( KCModuleLoader::testModule( *it ) ) \
 				return true; \

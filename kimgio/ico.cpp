@@ -266,12 +266,12 @@ bool ICOHandler::read(QImage *outImage)
 #if 0
     if ( io->parameters() )
     {
-        QStringList params = QStringList::split( ';', io->parameters() );
+        QStringList params = QString(io->parameters()).split( ';', QString::SkipEmptyParts );
         QMap< QString, QString > options;
         for ( QStringList::ConstIterator it = params.begin();
               it != params.end(); ++it )
         {
-            QStringList tmp = QStringList::split( '=', *it );
+            QStringList tmp = (*it).split( '=', QString::SkipEmptyParts );
             if ( tmp.count() == 2 ) options[ tmp[ 0 ] ] = tmp[ 1 ];
         }
         if ( options[ "index" ].toUInt() )

@@ -323,7 +323,7 @@ int main( int argc, char **argv )
                    "ThisThis This, This. This\n"
                    "aGNU\n"
                    "free";
-    KReplaceTest test( QStringList::split( '\n', text, true ), 0 );
+    KReplaceTest test( text.split( '\n' ), 0 );
 
     test.replace( "GNU", "KDE", 0 );
     test.replace( "free", "*free*", 0 );

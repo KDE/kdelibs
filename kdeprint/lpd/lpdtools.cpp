@@ -75,7 +75,7 @@ QString nextWord(const QString& s, int& pos)
 
 bool PrintcapEntry::readLine(const QString& line)
 {
-	QStringList	l = QStringList::split(':',line,false);
+	QStringList	l = line.split(':', QString::SkipEmptyParts);
 	if (l.count() > 0)
 	{
 		m_name = l[0];

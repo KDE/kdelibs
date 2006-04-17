@@ -224,7 +224,9 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
 #else
   QByteArray ba;
   QTextStream txtStream( ba, QIODevice::WriteOnly );
-  QStringList data = QStringList::split("\n", QApplication::clipboard()->text());
+
+  QStringList data = QApplication::clipboard()->text().split("\n", QString::SkipEmptyParts); 
+
   KUrl::List urls;
   KURLDrag::decode(data, urls);
   QStringList::Iterator end(data.end());

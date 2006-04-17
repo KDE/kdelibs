@@ -128,7 +128,6 @@ static QString qrichtextify( const QString& text )
   if ( text.isEmpty() || text[0] == '<' )
     return text;
 
-  //QStringList lines = QStringList::split('\n', text);
   QStringList lines = text.split('\n',QString::SkipEmptyParts);
   for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
   {

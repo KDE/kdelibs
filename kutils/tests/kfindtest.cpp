@@ -180,7 +180,7 @@ int main(int argc, char **argv)
 	                  "line: \"License version 2, as published by the Free Software Foundation.\", index: 39, length: 4\n"
 	                  "line: \"License version 2, as published by the Free Software Foundation.\", index: 44, length: 19\n";
 
-	KFindTest *test = new KFindTest(QStringList::split('\n', text, true));
+	KFindTest *test = new KFindTest(text.split('\n'));
 
 	kDebug() << "Plain static search..." << endl;
 

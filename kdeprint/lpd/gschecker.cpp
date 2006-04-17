@@ -56,6 +56,6 @@ void GsChecker::loadDriverList()
 			else if (line.startsWith(QLatin1String("Available devices:")))
 				ok = true;
 		}
-		m_driverlist = QStringList::split(' ',buffer,false);
+		m_driverlist = buffer.split(' ', QString::SkipEmptyParts);
 	}
 }
