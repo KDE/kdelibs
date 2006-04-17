@@ -164,6 +164,7 @@ public:
 struct KPtyPrivate {
    KPtyPrivate() :
      xonXoff(false),
+     utf8(false),
      masterFd(-1), slaveFd(-1)
    {
      memset(&winSize, 0, sizeof(winSize));
