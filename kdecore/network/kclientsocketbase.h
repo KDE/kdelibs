@@ -215,7 +215,7 @@ public:
   virtual bool bind(const KResolverEntry& address);
 
   /**
-   * Attempts to connect to the these hostname and service,
+   * Attempts to connect to a given hostname and service,
    * or use the default ones if none are given. If a connection attempt
    * is already in progress, check on its state and set the error status
    * (NoError or InProgress).
@@ -239,8 +239,9 @@ public:
    *      then proceed to start the connection itself. Care should be taken
    *      regarding the value of @ref blocking flag.
    *
-   * @param node	the nodename
-   * @param service	the service
+   * @param node	the nodename (host to connect to)
+   * @param service	the service to connect to
+   * @param mode        the mode to open the connection in
    */
   virtual bool connect(const QString& node = QString(),
 		       const QString& service = QString(),

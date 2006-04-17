@@ -268,7 +268,7 @@ protected:
   void acquireResolver();
 
   /**
-   * This function is the counterpart for @ref acquireResolver: the worker
+   * This function is the counterpart for @ref acquireResolver() - the worker
    * thread indicates that it's done with the resolver.
    */
   void releaseResolver();
