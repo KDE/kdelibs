@@ -13,24 +13,77 @@ namespace ThreadWeaver {
        We use a class instead of a typedef to be able to forward-declare the
        class in the declaration.
     */
-    class JobCollection::JobList : public QList < QPointer <Job> > {};
-
-    class JobCollection::DummyJob : public Job
+    class JobCollectionJobRunner : public Job
     {
-    public:
-        DummyJob ()
-            : Job ()
-        {}
+        Q_OBJECT
 
+    public:
+        JobCollectionJobRunner ( Job* guard, Job* payload, QObject* parent )
+            : Job( parent )
+            , m_guard ( guard )
+            , m_payload( payload )
+        {
+            Q_ASSERT ( payload ); // will not accept zero jobs
+            Q_ASSERT ( guard );
+            if ( ! m_payload->objectName().isEmpty() )
+            {   // this is most usefull for debugging...
+                setObjectName ( tr( "JobRunner executing " ) + m_payload->objectName() );
+            }
+        }
+
+        bool hasUnresolvedDependencies()
+        {   // the JobCollectionJobRunner object never have any dependencies:
+            return m_payload->hasUnresolvedDependencies()
+                || m_guard->hasUnresolvedDependencies();
+        }
+
+        Job* payload ()
+        {
+            return m_payload;
+        }
+
+        void aboutToBeQueued ( WeaverInterface *weaver )
+        {
+            m_payload->aboutToBeQueued( weaver );
+        }
+
+        void execute ( Thread *t )
+        {
+            if ( m_payload )
+            {
+                m_payload->execute ( t );
+            } else {
+                debug ( 1, "JobCollection: job in collection has been deleted." );
+            }
+            Job::execute ( t );
+        }
+
+    private:
+        void run () {}
+
+        Job* m_guard;
+        QPointer<Job> m_payload;
+    };
+
+    class JobCollectionNullJob : public Job
+    {
+        Q_OBJECT
+    public:
+        JobCollectionNullJob( QObject* parent )
+            : Job( parent )
+        {}
+    private:
         void run() {}
     };
+
+    class JobCollection::JobList : public QList <JobCollectionJobRunner*> {};
 
     JobCollection::JobCollection ( QObject *parent )
         : Job ( parent )
         , m_elements ( new JobList() )
         , m_queued ( false )
+        , m_guard ( new JobCollectionNullJob( this) )
         , m_weaver ( 0 )
-        , m_dummy ( 0 )
     {
     }
 
@@ -52,13 +105,14 @@ namespace ThreadWeaver {
         }
 
         delete m_elements;
+        // QObject cleanup takes care of the job runners
     }
 
     void JobCollection::addJob ( Job *j )
     {
         P_ASSERT ( m_queued == false );
 
-        m_elements->prepend ( QPointer<Job> ( j ) );
+        m_elements->prepend ( new JobCollectionJobRunner( m_guard, j, this ) );
     }
 
     void JobCollection::stop( Job *job )
@@ -69,8 +123,7 @@ namespace ThreadWeaver {
 
         // dequeue everything:
         for ( int index = 1; index < m_elements->size(); ++index )
-        {   // no job should have been deleted while it is queued:
-            P_ASSERT( m_elements->at(  index ) );
+        {
             if ( ! m_elements->at( index )->isFinished() )
             {
                 m_weaver->dequeue ( m_elements->at( index ) );
@@ -87,26 +140,21 @@ namespace ThreadWeaver {
 
         m_weaver = weaver;
 
-        if ( hasUnresolvedDependencies() )
-        {
-            m_dummy = new DummyJob ();
-        }
-
         if ( m_elements->size() > 0 )
         {
+            // set up a dummy job that has the same dependencies as this, but will not be queued:
+            QList<Job*> dependencies = getDependencies();
+
+            for ( int index = 0; index < dependencies.size(); ++index )
+            {
+                m_guard->addDependency ( dependencies.at( index ) );
+            }
+
             // set up the dependencies:
             for ( i = 1; i < m_elements->size(); ++i )
             {
                 Job* job = m_elements->at( i );
-                P_ASSERT ( job != 0 );
-
                 addDependency( job );
-
-                if ( m_dummy ) // we have unresolved dependencies at queueing time
-                {
-                    job->addDependency( m_dummy );
-                }
-
                 m_weaver->enqueue( job );
             }
 
@@ -123,8 +171,6 @@ namespace ThreadWeaver {
             // execute the last job, to avoid to have (this) wait for an
             // available thread (the last operation does not get queued in
             // aboutToBeQueued() )
-            P_ASSERT ( m_elements->at( 0 ) != 0 );
-
             m_elements->at( 0 )->execute ( t );
         }
         Job::execute ( t ); // run() is empty
@@ -132,7 +178,7 @@ namespace ThreadWeaver {
 
     Job* JobCollection::jobAt( int i )
     {
-        return m_elements->at( i );
+        return m_elements->at( i )->payload();
     }
 
     const int JobCollection::jobListLength()
@@ -142,16 +188,18 @@ namespace ThreadWeaver {
 
     bool JobCollection::hasUnresolvedDependencies()
     {
-        bool unresolved = Job::hasUnresolvedDependencies();
+        bool hasInheritedDependencies;
 
-        if ( ! unresolved )
-        {   // this will delete the dependencies of all jobs on m_dummy:
-            // delete 0; is ok:
-            delete m_dummy; m_dummy = 0;
+        if ( m_elements->size() > 0 )
+        {
+            hasInheritedDependencies = m_elements->at( 0 )->payload()->hasUnresolvedDependencies();
+        } else {
+            hasInheritedDependencies = false;
         }
-
-        return unresolved;
+        return Job::hasUnresolvedDependencies()
+            || hasInheritedDependencies;
     }
 
 }
 
+#include "JobCollection.moc"

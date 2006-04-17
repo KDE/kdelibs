@@ -149,26 +149,19 @@ namespace ThreadWeaver {
         }
     }
 
-    void Job::cloneDependencies( Job* job )
+    QList<Job*> Job::getDependencies() const
     {
+        QList<Job*> result;
         QMutexLocker l(sm_mutex);
-
-        QList<Job*> dependencies = sm_dep()->values ( job );
-
-        QList<Job*> ourDependencies = sm_dep()->values( this );
-
-        // find non-existing ones:
-        QSet<Job*> ourDependenciesSet = QSet<Job*>::fromList( ourDependencies );
-        QSet<Job*> newDependencies = QSet<Job*>::fromList( dependencies );
-
-        newDependencies.subtract( ourDependenciesSet );
-
-        // set:
-        QSet<Job*>::const_iterator it;
-        for ( it = newDependencies.begin(); it != newDependencies.end(); ++it )
+        JobMultiMap::const_iterator it;
+        for ( it = sm_dep()->begin(); it != sm_dep()->end(); ++it )
         {
-            	sm_dep()->insert( this, *it );
+            if ( it.key() == this )
+            {
+                result.append( it.value() );
+            }
         }
+        return result;
     }
 
     void Job::aboutToBeQueued ( WeaverInterface* )
@@ -179,11 +172,16 @@ namespace ThreadWeaver {
     {
         QMutexLocker l(sm_mutex);
 
-        debug ( 0, "Job Dependencies:\n" );
+        debug ( 0, "Job Dependencies (left depends on right side):\n" );
         for ( JobMultiMap::const_iterator it = sm_dep()->begin(); it != sm_dep()->end(); ++it )
         {
-            debug( 0, "  : %p (%s) --> %p (%s)\n", it.key(), it.key()->metaObject()->className(),
-                   it.value(), it.value()->metaObject()->className() );
+            debug( 0, "  : %p (%s%s) <-- %p (%s%s)\n",
+                   it.key(),
+                   it.key()->objectName().isEmpty() ? "" : qPrintable ( it.key()->objectName() + tr ( " of type " ) ),
+                   it.key()->metaObject()->className(),
+                   it.value(),
+                   it.value()->objectName().isEmpty() ? "" : qPrintable ( it.value()->objectName() + tr ( " of type " ) ),
+                   it.value()->metaObject()->className() );
         }
         debug ( 0, "-----------------\n" );
     }

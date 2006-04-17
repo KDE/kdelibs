@@ -66,12 +66,10 @@ namespace ThreadWeaver {
             Weaver. */
         bool m_queued;
 
+        /** A guard job used to manage recursive dependencies. */
+        Job* m_guard;
         /** The Weaver interface this collection is queued in. */
         WeaverInterface *m_weaver;
-
-        /* A dummy job used to manage dependencies. */
-        class DummyJob;
-        DummyJob* m_dummy;
     };
 
 }

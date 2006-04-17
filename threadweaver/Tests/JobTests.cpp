@@ -17,23 +17,21 @@ class AppendCharacterJob : public ThreadWeaver::Job
 public:
     AppendCharacterJob ( QChar c = QChar(), QString* stringref = 0 , QObject* parent = 0 )
         : ThreadWeaver::Job ( parent )
-        , m_c ( c )
-        , m_stringref ( stringref )
     {
+        setValues( c, stringref );
     }
 
     void setValues ( QChar c, QString* stringref )
     {
         m_c = c;
         m_stringref = stringref;
+        setObjectName ( tr ( "Job_" ) + m_c );
     }
 
     void run()
     {
         QMutexLocker locker ( &s_GlobalMutex );
         m_stringref->append( m_c );
-//         ThreadWeaver::debug( 0, "AppendCharacterJob: appended %c, result: %s.\n",
-//                              m_c.toLatin1(), qPrintable( m_stringref ) );
     }
 private:
     QChar m_c;
@@ -46,10 +44,6 @@ class JobTests : public QObject
     Q_OBJECT
 
 private slots:
-    void testTest() {
-        QCOMPARE( 1, 0+1 );
-    }
-
     void SimpleJobTest() {
         QString sequence;
         AppendCharacterJob job( QChar( '1' ), &sequence, this );
@@ -69,7 +63,7 @@ private slots:
         jobCollection.addJob ( &jobC );
 
         ThreadWeaver::Weaver::instance()->enqueue ( &jobCollection );
-        ThreadWeaver::Job::DumpJobDependencies();
+        // ThreadWeaver::Job::DumpJobDependencies();
         ThreadWeaver::Weaver::instance()->finish();
 
         QVERIFY( sequence.length() == 3 );
@@ -89,7 +83,7 @@ private slots:
         jobSequence.addJob ( &jobC );
 
         ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
-        ThreadWeaver::Job::DumpJobDependencies();
+        // ThreadWeaver::Job::DumpJobDependencies();
         ThreadWeaver::Weaver::instance()->finish();
         QCOMPARE ( sequence, QString( "abc" ) );
     }
@@ -125,7 +119,7 @@ private slots:
         QCOMPARE ( sequence, in );
     }
 
-    void SimpleRecursiveSequences() {
+    void SimpleRecursiveSequencesTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
         AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -142,7 +136,7 @@ private slots:
         QCOMPARE ( sequence, QString( "abc" ) );
     }
 
-/*    void SequenceOfSequencesTest() {
+    void SequenceOfSequencesTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
         AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -155,34 +149,38 @@ private slots:
         AppendCharacterJob jobI ( QChar( 'i' ), &sequence, this );
         AppendCharacterJob jobJ ( QChar( 'j' ), &sequence, this );
         ThreadWeaver::JobSequence jobSequence1( this );
+        jobSequence1.setObjectName( "Sequ_1" );
         jobSequence1.addJob ( &jobA );
         jobSequence1.addJob ( &jobB );
         jobSequence1.addJob ( &jobC );
         ThreadWeaver::JobSequence jobSequence2( this );
+        jobSequence2.setObjectName( "Sequ_2" );
         jobSequence2.addJob ( &jobD );
         jobSequence2.addJob ( &jobE );
         jobSequence2.addJob ( &jobF );
         ThreadWeaver::JobSequence jobSequence3( this );
+        jobSequence3.setObjectName( "Sequ_3" );
         jobSequence3.addJob ( &jobG );
         jobSequence3.addJob ( &jobH );
         jobSequence3.addJob ( &jobI );
         jobSequence3.addJob ( &jobJ );
         // sequence 4 will contain sequences 1, 2, and 3, in that order:
         ThreadWeaver::JobSequence jobSequence4( this );
+        jobSequence4.setObjectName( "Sequ_4" );
         jobSequence4.addJob ( &jobSequence1 );
         jobSequence4.addJob ( &jobSequence2 );
         jobSequence4.addJob ( &jobSequence3 );
 
         // now go already:
         ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence4 );
+        // ThreadWeaver::Job::DumpJobDependencies();
         ThreadWeaver::Weaver::instance()->finish();
         QCOMPARE ( sequence, QString( "abcdefghij" ) );
     }
-*/
-
 };
 
 QTEST_MAIN ( JobTests )
 
 #include "JobTests.moc"
+
 

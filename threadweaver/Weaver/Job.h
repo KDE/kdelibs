@@ -16,6 +16,7 @@
 #ifndef THREADWEAVER_JOB_H
 #define THREADWEAVER_JOB_H
 
+#include <QList>
 #include <QObject>
 
 class QMutex;
@@ -117,11 +118,8 @@ namespace ThreadWeaver {
         */
         bool removeDependency (Job *dep);
 
-        /** Clone the dependencies of Job job.
-            The operation will result in this job having all the dependancies
-            job had. Existing dependencies will not be modified, altough
-            dependencies will not be duplicated. */
-        void cloneDependencies ( Job* job );
+        /** Retrieve a list of dependencies of this job. */
+        QList<Job*> getDependencies() const;
 
         /** Query whether the job has an unresolved dependency.
             In case it does, it will not be processed by a thread trying to
