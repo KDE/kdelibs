@@ -1772,11 +1772,12 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         break;
     case NodeImpl::NamespaceId:
         if( strcasecmp(_name, XHTML_NAMESPACE) == 0)
-            return xhtmlNamespace; //### Id == 0 can't be used with (void*)int based QDicts...
+            return xhtmlNamespace;
         if( _name->l == 0)
             return emptyNamespace;
+        // defaultNamespace handled by "if (!_name) return 0"
         map = m_namespaceMap;
-        lookup= 0;
+        lookup = 0;
         break;
     default:
         return 0;
@@ -1874,8 +1875,12 @@ DOMString DocumentImpl::getName( NodeImpl::IdType _type, NodeImpl::Id _id ) cons
     case NodeImpl::NamespaceId:
         if( _id == xhtmlNamespace )
             return XHTML_NAMESPACE;
+        else
         if( _id == emptyNamespace )
-            return "";
+            return DOMString("");
+        else
+        if ( _id == defaultNamespace )
+            return DOMString();
         map = m_namespaceMap;
         lookup = 0;
         break;
