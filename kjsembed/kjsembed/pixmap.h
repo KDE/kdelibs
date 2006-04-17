@@ -32,9 +32,8 @@ namespace KJSEmbed
     {
         public:
             PixmapBinding( KJS::ExecState *exec, const QPixmap &value );
-	private:
-	    virtual const KJS::ClassInfo *classInfo() const { return &info; }
-	    static const KJS::ClassInfo info;
+            virtual const KJS::ClassInfo *classInfo() const { return &info; }
+            static const KJS::ClassInfo info;
     };
 
     /**

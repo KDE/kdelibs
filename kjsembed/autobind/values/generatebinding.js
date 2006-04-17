@@ -10,6 +10,7 @@ function write_ctor( compoundDef )
 
     // Generate the ctor bindings
     var methodList = compoundDef.elementsByTagName( "memberdef" );
+    var methodListList = new Array;
     for( var idx = 0; idx < methodList.length(); ++idx )
     {
         var memberElement = methodList.item(idx).toElement();
@@ -24,37 +25,88 @@ function write_ctor( compoundDef )
                 {
                     if ( memberName.indexOf('~') == -1 )
                     {
-                        ctor += '   if (args.size() == ' + memberArgList.count() + ' )\n' +
-                                '   {\n';
-
-                        var tmpArgs = '';
-                        if ( memberArgList.count() == 0 )
-                        {
-                            tmpArgs = compoundName + '()';
+                        var args = memberArgList.count();
+                        if(!methodListList[args]) {
+                            methodListList[args] = new Array;
                         }
-
-                        for ( argIdx = 0; argIdx < memberArgList.count(); ++argIdx )
-                        {
-                            var param = memberArgList.item(argIdx).toElement();
-                            var paramVar = param.firstChildElement('declname').toElement().toString();
-                            ctor += extract_parameter(param, argIdx);
-                            tmpArgs += paramVar + ', ';
-                        }
-
-                        var tmpIdx = tmpArgs.lastIndexOf(',');
-                        tmpArgs = tmpArgs.substr(0, tmpIdx);
-
-                        ctor +=
-                            '       return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '))\n' +
-                            '   }\n';
+                        methodListList[args].push( memberElement );
                     }
                 }
             }
         }
     }
+    for(var idx = 0; idx < methodListList.length; ++idx)
+    {
+        var memberElement = methodListList[idx][0];
+        //var memberKind = memberElement.attribute( 'kind' );
+        //var memberName = memberElement.firstChildElement('name').toElement().toString();
+        var memberArgList = memberElement.elementsByTagName('param');
+        ctor += '   if (args.size() == ' + memberArgList.count() + ' )\n' +
+        '   {\n';
 
+        var tmpArgs = '';
+        if ( memberArgList.count() == 0 )
+        {
+            tmpArgs = compoundName + '()';
+        }
+
+        for ( argIdx = 0; argIdx < memberArgList.count(); ++argIdx )
+        {
+            var param = memberArgList.item(argIdx).toElement();
+            var paramVar = param.firstChildElement('declname').toElement().toString();
+//             ctor += extract_parameter(param, argIdx);
+            tmpArgs += paramVar + ', ';
+        }
+//         println('Constructor: '+ctor);
+        ctor += extract_parameter_const(methodListList[idx], idx);
+
+        var tmpIdx = tmpArgs.lastIndexOf(',');
+        tmpArgs = tmpArgs.substr(0, tmpIdx);
+
+        ctor +=
+        '       return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '))\n' +
+        '   }\n';
+    }
     ctor += '}';
     return ctor;
+}
+
+function extract_parameter_const(methodList, numArgs)
+{
+    var params = '';
+    for(var argIdx = 0; argIdx < numArgs; ++argIdx)
+    {
+        params += '        KJS::JSValue* value'+argIdx+'=args['+argIdx+'];\n';
+        params += '        KJS::JSObject* object'+argIdx+'=value'+argIdx+'->toObject(exec);\n';
+    }
+    for(var idx = 0; idx < methodList.length; ++idx)
+    {
+        var memberArgList = methodList[idx].elementsByTagName('param');
+        params += '        if(';
+        for(var argIdx = 0; argIdx < numArgs; ++argIdx)
+        {
+            var parameter = memberArgList.item(argIdx).toElement();
+            var paramType = parameter.firstChildElement('type').toElement().toString();
+            if(isVariant(paramType))
+                params += 'object'+argIdx+' && object'+argIdx+'->inherits(&ColorBinding::info) ';
+            else
+                params += 'isBasic(value'+argIdx+') ';
+            if(argIdx < numArgs-1)
+                params += '&& ';
+        }
+        params += '){\n';
+        for(var argIdx = 0; argIdx < numArgs; ++argIdx)
+        {
+            var parameter = memberArgList.item(argIdx).toElement();
+            if(isVariant(paramType))
+                params += '            arg'+argIdx+' = KJSEmbed::extractValue<QColor>(exec, args, '+argIdx+');\n';
+            else
+            params += '            arg'+argIdx+' = ('+paramType+')KJSEmbed::extractInt(exec, args, '+argIdx+');\n';
+        }
+        params += '        }\n'
+    }
+//     println(params);
+    return params;
 }
 
 function write_method_lut( compoundDef )
@@ -292,13 +344,13 @@ var variant_types = [
 
 function isVariant( variable )
 {
-//     for (var i in variant_types)
-//     {
-//         if (variable.indexOf(variant_types[i]) != -1)
-//             return true;
-//     }
-//     return false;
-    return isVariantType( variable );
+    for (var i in variant_types)
+    {
+        if (variable.indexOf(variant_types[i]) != -1)
+            return true;
+    }
+    return false;
+//     return isVariantType( variable );
 }
 
 function extract_parameter( parameter, paramIdx )

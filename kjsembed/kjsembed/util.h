@@ -3,7 +3,7 @@
 
 namespace KJSEmbed
 {
-    bool isBasic(KJS::Value *value)
+    bool isBasic(KJS::JSValue *value)
     {
         switch (value->type())
         {
@@ -21,17 +21,17 @@ namespace KJSEmbed
 
     bool isVariant(KJS::JSObject *object)
     {
-        return object->inherits(ValueBinding::info);
+        return object->inherits(&ValueBinding::info);
     }
 
-    bool isScalar(KJS::JSObject *object)
+    /*bool isScalar(KJS::JSObject *object)
     {
-        return object->inherits(ScalarBinding::info);
-    }
+        return object->inherits(&ScalarBinding::info);
+}*/
 
     bool isObject(KJS::JSObject *object)
     {
-        object->inherits(ObjectBinding::info);
+        return object->inherits(&ObjectBinding::info);
     }
 
 /*

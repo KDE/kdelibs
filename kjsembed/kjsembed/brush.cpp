@@ -24,6 +24,9 @@
 #include <QGradient>
 
 #include "brush.h"
+#include "pixmap.h"
+#include "color.h"
+#include "util.h"
 
 using namespace KJSEmbed;
 
@@ -101,25 +104,63 @@ START_CTOR( Brush, QBrush, 0)
     }
     else if( args.size() == 1 )
     {
-        return new KJSEmbed::BrushBinding( exec,
-                                    QBrush(KJSEmbed::extractValue<QPixmap>(exec, args, 0)
-                                            ) );
+        KJS::JSValue* value0 = args[0];
+        KJS::JSObject* obj0 = value0->toObject(exec);
+        if(obj0)
+        {
+            if(obj0->inherits(&PixmapBinding::info))
+            {
+                QPixmap arg0 = KJSEmbed::extractValue<QPixmap>(exec, args, 0);
+                return new KJSEmbed::BrushBinding(exec, QBrush(arg0));
+            }
+            if(obj0->inherits(&BrushBinding::info))
+            {
+                QBrush arg0 = KJSEmbed::extractValue<QBrush>(exec, args, 0);
+                return new KJSEmbed::BrushBinding(exec, QBrush(arg0));
+            }
+//             if(obj0->inherits(&GradientBinding::info))
+//             {
+//                 QGradient arg0 = KJSEmbed::extractValue<QGradient>(exec, args, 0);
+//                 return new KJSEmbed::BrushBinding(exec, QBrush(arg0));
+//             }
+        }
+        else if(isBasic(value0))
+        {
+                Qt::BrushStyle arg0 = (Qt::BrushStyle)KJSEmbed::extractInt(exec, args, 0);
+                return new KJSEmbed::BrushBinding(exec, QBrush(arg0));
+        }
     }
     else if( args.size() == 2 )
     {
-	KJS::JSObject* obj1 = args[0]->getObject();
-	KJS::JSObject* obj2 = args[1]->getObject();
-	if(obj1->className() == "QColor")
+        KJS::JSValue* value0= args[0];
+        KJS::JSValue* value1= args[1];
+        KJS::JSObject* obj0 = value0->toObject(exec);
+        KJS::JSObject* obj1 = value1->toObject(exec);
+
+        if(obj0 && obj1 && obj0->inherits(&ColorBinding::info) && obj1->inherits(&PixmapBinding::info))
         {
             QColor arg0 = KJSEmbed::extractValue<QColor>(exec, args, 0);
-	    if(obj2 && obj2->className() == "QPixmap")
-            {
-		QPixmap arg1 = KJSEmbed::extractValue<QPixmap>(exec, args, 1);
-		return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
-	    }
-	    Qt::BrushStyle arg1 = (Qt::BrushStyle)KJSEmbed::extractInt(exec, args, 1);
-	    return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
-	}
+            QPixmap arg1 = KJSEmbed::extractValue<QPixmap>(exec, args, 1);
+            return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
+        }
+        if(obj1 && isBasic(value0) && obj1->inherits(&PixmapBinding::info))
+        {
+            Qt::GlobalColor arg0 = (Qt::GlobalColor)KJSEmbed::extractInt(exec, args, 0);
+            QPixmap arg1 = KJSEmbed::extractValue<QPixmap>(exec, args, 1);
+            return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
+        }
+        if(obj0 && obj0->inherits(&ColorBinding::info) && isBasic(value1))
+        {
+            QColor arg0 = KJSEmbed::extractValue<QColor>(exec, args, 0);
+            Qt::BrushStyle arg1 = (Qt::BrushStyle)KJSEmbed::extractInt(exec, args, 1);
+            return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
+        }
+        if(isBasic(value0) && isBasic(value1))
+        {
+            Qt::GlobalColor arg0  = (Qt::GlobalColor)KJSEmbed::extractInt(exec, args, 0);
+            Qt::BrushStyle arg1 = (Qt::BrushStyle)KJSEmbed::extractInt(exec, args, 1);
+            return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
+        }
     }
     return new KJSEmbed::BrushBinding( exec, QBrush() );
 
