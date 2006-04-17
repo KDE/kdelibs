@@ -81,6 +81,11 @@ public:
   void setTrackId(const QString &id);
 
 Q_SIGNALS:
+  /**
+     Emitted when a service description needs to be completed.
+
+     \sa parseMenu
+  */
   void newService(const QString &path, KService::Ptr *entry);
 
 public:
