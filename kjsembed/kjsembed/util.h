@@ -3,36 +3,35 @@
 
 namespace KJSEmbed
 {
-    bool isBasic(const KJS::Value &val)
+    bool isBasic(KJS::Value *value)
     {
-        switch (val.type())
+        switch (value->type())
         {
-
+            case KJS::NumberType:
+            case KJS::BooleanType:
+            case KJS::StringType:
+                return true;
+                break;
+            default:
+                return false;
 
         }
-
     }
 
 
     bool isVariant(KJS::JSObject *object)
     {
-        if (object->inherits(ValueBinding::info))
-            return true;
-        return false;
+        return object->inherits(ValueBinding::info);
     }
 
     bool isScalar(KJS::JSObject *object)
     {
-        if (object->inherits(ScalarBinding::info))
-            return true;
-        return false;
+        return object->inherits(ScalarBinding::info);
     }
 
     bool isObject(KJS::JSObject *object)
     {
-        if (object->inherits(ObjectBinding::info))
-            return true;
-        return false;
+        object->inherits(ObjectBinding::info);
     }
 
 }
