@@ -2258,8 +2258,8 @@ bool noneDef, noneHost;
                            x = static_cast<YourCertItem *>(x->nextSibling())) {
      defCertStrList.append(x->configName());
   }
-  defCertBox->insertStringList(defCertStrList);
-  hostCertBox->insertStringList(defCertStrList);
+  defCertBox->addItems(defCertStrList);
+  hostCertBox->addItems(defCertStrList);
 
 // try to restore it
 
