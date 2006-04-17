@@ -141,8 +141,15 @@ public:
        Stderr = 4, /**< Connect to read from the process' stderr. */
        AllOutput = 6, /**< Connects to all output channels. */
        All = 7, /**< Connects to all channels. */
-       NoRead /**< If specified with Stdout, no data is actually read from stdout,
-               * only the signal receivedStdout(int fd, int &len) is emitted. */
+       NoRead = 8, /**< If specified with Stdout, no data is actually read from stdout,
+                    * only the signal receivedStdout(int fd, int &len) is emitted. */
+       CTtyOnly = NoRead, /**< Tells setUsePty() to create a PTY for the process
+                           * and make it the process' controlling TTY, but does not
+                           * redirect any I/O channel to the PTY. */
+       MergedStderr = 16, /**< If specified with Stdout, the process' stderr will be
+                           * redirected onto the same file handle as its stdout, i.e.,
+                           * all error output will be signalled with receivedStdout().
+                           * Don't specify Stderr if you specify MergedStderr. */
   };
 
   Q_DECLARE_FLAGS(Communication, CommunicationFlag)
@@ -505,9 +512,8 @@ public:
 
   /**
    * Obtains the pty object used by this process. The return value is
-   * valid only after setUsePty() was used to associate at least one
-   * standard I/O stream to a pty. The pty is open only while the process
-   * is running.
+   * valid only after setUsePty() was used with a non-zero argument.
+   * The pty is open only while the process is running.
    * @return a pointer to the pty object
    */
   KPty *pty() const;
