@@ -1090,8 +1090,6 @@ void DocumentImpl::recalcStyle( StyleChange change )
             m_render->setStyle(_style);
 	else
 	    delete _style;
-        if ( change != Force )
-            change = ch;
 
         if (oldStyle)
             oldStyle->deref();
