@@ -31,9 +31,7 @@
 // deep copies for list of dirs. (sven)
 // Mar 28. 1998 - Created.  (sven)
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include <config-kdirwatch.h>
 
 #ifdef HAVE_DNOTIFY
 #include <unistd.h>

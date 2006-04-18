@@ -22,6 +22,7 @@
 */
 
 #include <config.h>
+#include <config-gssapi.h>
 
 #include <limits.h>
 #include <errno.h>
@@ -3521,7 +3522,7 @@ try_again:
         (m_request.url.host() == u.host()) &&
         (m_request.url.protocol() == u.protocol()))
       u.setRef(m_request.url.ref());
-    
+
     m_bRedirect = true;
 
     if (!m_request.id.isEmpty())

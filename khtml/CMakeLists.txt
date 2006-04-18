@@ -333,7 +333,7 @@ install_targets(${PLUGIN_INSTALL_DIR} khtmlpart )
 
 ########### next target ###############
 
-
+# TODO use ${CMAKE_COMMAND} -E copy_if_different to avoid useless recompiles...
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp
 "#include <kdelibs_export.h>\n
 extern \"C\"  KDE_EXPORT void* init_khtmlimagefactory();\n

@@ -2,6 +2,15 @@ kde4_header()
 
 project(dnssd)
 
+macro_optional_find_package(DNSSD)
+if(DNSSD_FOUND)
+    set(HAVE_DNSSD 1)
+else(DNSSD_FOUND)
+    set(HAVE_DNSSD 0)
+endif(DNSSD_FOUND)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
+
+
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${DNSSD_INCLUDE_DIR} )
 

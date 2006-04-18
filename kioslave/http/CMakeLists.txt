@@ -2,15 +2,28 @@ kde4_header()
 
 project(kioslave-http)
 
-if (GSSAPI_FOUND)
-    ADD_DEFINITIONS(${GSSAPI_INCS})
-endif (GSSAPI_FOUND)
+macro_optional_find_package(GSSAPI)
+
+if(GSSAPI_FOUND)
+    set(HAVE_LIBGSSAPI 1)
+    if(GSSAPI_FLAVOR STREQUAL "MIT")
+        set(GSSAPI_MIT 1)
+    else(GSSAPI_FLAVOR STREQUAL "MIT")
+        set(GSSAPI_MIT 0)
+    endif(GSSAPI_FLAVOR STREQUAL "MIT")
+
+    include_directories( ${GSSAPI_INCS} )
+
+else(GSSAPI_FOUND)
+    set(HAVE_LIBGSSAPI 0)
+    set(GSSAPI_MIT 0)
+endif(GSSAPI_FOUND)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-gssapi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-gssapi.h )
+
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio/httpfilter )
-if(GSSAPI_FOUND)
-  include_directories( ${GSSAPI_INCS} )
-endif(GSSAPI_FOUND)
 
 add_subdirectory( kcookiejar )
 
