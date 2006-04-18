@@ -687,7 +687,7 @@ void KPrintDialog::done(int result)
 		// add options from the dialog itself
 		// TODO: ADD PRINTER CHECK MECHANISM !!!
 		prt = KMFactory::self()->manager()->findPrinter(d->m_printers->currentText());
-		if (!ptr) { // this is _very_ unlikely, but better avoid a crash
+		if (!prt) { // this is _very_ unlikely, but better avoid a crash
 			KDialog::done(result);
 			return;
 		}
