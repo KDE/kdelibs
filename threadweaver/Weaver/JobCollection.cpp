@@ -2,6 +2,7 @@
 #include <DebuggingAids.h>
 
 #include <QList>
+#include <QObject>
 #include <QPointer>
 
 #include "JobCollection.h"
