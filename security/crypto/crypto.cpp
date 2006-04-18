@@ -1954,7 +1954,7 @@ void KCryptoConfig::slotCAItemChanged() {
  CAItem *x = static_cast<CAItem *>(caList->selectedItem());
  if (x) {
     caSSLRemove->setEnabled(true);
-    caSubject->setValues(x->getName()));
+    caSubject->setValues(x->getName());
     KSSLCertificate *cert = KSSLCertificate::fromString(x->getCert().toLocal8Bit());
     if (!cert) {
        caIssuer->setValues(QString());
