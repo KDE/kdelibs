@@ -591,6 +591,7 @@ void KXmlCommandAdvancedDlg::slotApplyChanges()
 		DrBase	*opt = (m_opts.contains(item->text(1)) ? m_opts[item->text(1)] : 0);
 		m_opts.remove(item->text(1));
 		delete opt;
+		opt = 0;
 
 		// update tree item
 		item->setText(0, m_desc->text());
@@ -642,11 +643,15 @@ void KXmlCommandAdvancedDlg::slotApplyChanges()
 		else
 			opt = new DrGroup;
 
-		opt->setName((m_name->text().isEmpty() ? generateId(m_opts) : m_name->text()));
-		opt->set("text", m_desc->text());
-		opt->set( "persistent", m_persistent->isChecked() ? "1" : "0" );
+		if (opt)
+		{
+			opt->setName((m_name->text().isEmpty() ? generateId(m_opts) : m_name->text()));
+			opt->set("text", m_desc->text());
+			opt->set( "persistent", m_persistent->isChecked() ? "1" : "0" );
+		}
 
 		m_opts[opt->name()] = opt;
+		
 	}
 }
 
