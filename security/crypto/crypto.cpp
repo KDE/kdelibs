@@ -1516,14 +1516,13 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
       slotYourUnlock();
    }
 
-  // For now, we will only export to PKCS#12
+   // For now, we will only export to PKCS#12
    QString certFile = KFileDialog::getSaveFileName(QString(),
 		                                   "application/x-pkcs12");
-   if (certFile.isEmpty())
-      return;
-
-   if (!pkcs->toFile(certFile))
+   if (!certFile.isEmpty() && !pkcs->toFile(certFile))
       KMessageBox::sorry(this, i18n("Export failed."), i18n("SSL"));
+
+   delete pkcs;
 }
 
 
