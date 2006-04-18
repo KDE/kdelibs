@@ -443,8 +443,8 @@ QString whatstr;
   grid->addWidget(yourSSLPass, 5, 5);
 
   grid->addMultiCellWidget(new KSeparator(Qt::Horizontal, tabYourSSLCert), 6, 6, 0, 5);
-  ySubject = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString(QString()));
-  yIssuer = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString(QString()));
+  ySubject = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString());
+  yIssuer = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString());
   grid->addMultiCellWidget(ySubject, 7, 11, 0, 2);
   grid->addMultiCellWidget(yIssuer, 7, 11, 3, 5);
   whatstr = i18n("This is the information known about the owner of the certificate.");
@@ -598,8 +598,8 @@ QString whatstr;
       otherSSLRemove->setEnabled(false);
 
   grid->addMultiCellWidget(new KSeparator(Qt::Horizontal, tabOtherSSLCert), 8, 8, 0, 5);
-  oSubject = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(QString()));
-  oIssuer = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(QString()));
+  oSubject = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString());
+  oIssuer = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString());
   grid->addMultiCellWidget(oSubject, 9, 13, 0, 2);
   grid->addMultiCellWidget(oIssuer, 9, 13, 3, 5);
   whatstr = i18n("This is the information known about the owner of the certificate.");
@@ -701,8 +701,8 @@ QString whatstr;
   connect(caSSLRestore, SIGNAL(clicked()), SLOT(slotCARestore()));
   grid->addWidget(caSSLRestore, 2, 7);
 
-  caSubject = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(QString()));
-  caIssuer = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(QString()));
+  caSubject = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString());
+  caIssuer = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString());
   grid->addMultiCellWidget(caSubject, 4, 6, 0, 3);
   grid->addMultiCellWidget(caIssuer, 4, 6, 4, 7);
 
@@ -1430,7 +1430,7 @@ QString iss = QString();
    }
 
 
-   oSubject->setValues(x ? x->getSub() : QString(QString()));
+   oSubject->setValues(x ? x->getSub() : QString());
    oIssuer->setValues(iss);
 
 }
@@ -1596,7 +1596,7 @@ QString iss;
 
    // update the info
    iss = pkcs->getCertificate()->getIssuer();
-   ySubject->setValues(x ? x->getName() : QString(QString()));
+   ySubject->setValues(x ? x->getName() : QString());
    yIssuer->setValues(iss);
    QPalette cspl;
    KSSLCertificate *cert = pkcs->getCertificate();
@@ -1668,7 +1668,7 @@ QString iss;
       yHash->clear();
    }
 
-   ySubject->setValues(x ? x->getName() : QString(QString()));
+   ySubject->setValues(x ? x->getName() : QString());
    yIssuer->setValues(iss);
 }
 
@@ -1951,13 +1951,13 @@ void KCryptoConfig::slotCARestore() {
 
 
 void KCryptoConfig::slotCAItemChanged() {
-CAItem *x = static_cast<CAItem *>(caList->selectedItem());
+ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
  if (x) {
     caSSLRemove->setEnabled(true);
-    caSubject->setValues(x ? x->getName() : QString(QString()));
+    caSubject->setValues(x->getName()));
     KSSLCertificate *cert = KSSLCertificate::fromString(x->getCert().toLocal8Bit());
     if (!cert) {
-       caIssuer->setValues(QString(QString()));
+       caIssuer->setValues(QString());
        caSite->setEnabled(false);
        caEmail->setEnabled(false);
        caCode->setEnabled(false);
@@ -1981,8 +1981,8 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
     caSite->setEnabled(false);
     caEmail->setEnabled(false);
     caCode->setEnabled(false);
-    caSubject->setValues(QString(QString()));
-    caIssuer->setValues(QString(QString()));
+    caSubject->setValues(QString());
+    caIssuer->setValues(QString());
     cHash->clear();
  }
 }
