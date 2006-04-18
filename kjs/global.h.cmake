@@ -81,5 +81,7 @@
 
 // Apple feature which we don't use
 #define KJS_MULTIPLE_THREADS 0
+// Debugging features, turned off by default
+#define DEBUG_COLLECTOR 0
 
 #endif

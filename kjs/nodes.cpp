@@ -93,7 +93,7 @@ struct NodeCounter {
 };
 int NodeCounter::count = 0;
 static NodeCounter nodeImplCounter;
-#endif NDEBUG
+#endif
 
 
 Node::Node()

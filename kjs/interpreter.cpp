@@ -36,7 +36,7 @@
 #include "nodes.h"
 #include "object.h"
 #include "operations.h"
-#if APPLE_CHANGES
+#ifdef APPLE_CHANGES
 #include "runtime.h"
 #endif
 #include "types.h"
