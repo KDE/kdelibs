@@ -651,6 +651,9 @@ ValueImp *Window::namedItemGetter(ExecState *exec, JSObject*, const Identifier& 
 ValueImp* Window::getValueProperty(ExecState *exec, int token) const
 {
   KHTMLPart *part = m_frame.isNull() ? 0 : qobject_cast<KHTMLPart*>(m_frame->m_part);
+  if (!part)
+    return token == Closed ? Boolean(true) : Undefined();
+
   switch(token) {
     case Closed:
       return Boolean(!part);
@@ -671,7 +674,7 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
       return retrieve(part && part->parentPart() ? part->parentPart() : (KHTMLPart*)part);
     case Top: {
       KHTMLPart *p = part;
-      while (part && p->parentPart())
+      while (p->parentPart())
         p = p->parentPart();
       return retrieve(p);
     }
