@@ -33,9 +33,6 @@
 // Make sure to include all this X-based shit before we clean up the mess.
 // Needed for --enable-final. Not needed by this file itself!
 #include <X11/Xutil.h>
-#ifdef HAVE_MITSHM
-#include <X11/extensions/XShm.h>
-#endif
 
 #include <netwm.h>
 
