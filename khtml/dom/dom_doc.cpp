@@ -438,10 +438,7 @@ CSSStyleDeclaration Document::getOverrideStyle(const Element &elt, const DOMStri
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    int exceptioncode = 0;
     CSSStyleDeclarationImpl *r = ((DocumentImpl *)impl)->getOverrideStyle(static_cast<ElementImpl*>(elt.handle()),pseudoElt.implementation());
-    if (exceptioncode)
-	throw DOMException(exceptioncode);
     return r;
 }
 
