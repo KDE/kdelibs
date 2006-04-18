@@ -172,7 +172,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 
         if (oldChild->isSelectionBorder()) {
             RenderObject *root = oldChild;
-            while (root && root->parent())
+            while (root->parent())
                 root = root->parent();
             if (root->isCanvas()) {
                 static_cast<RenderCanvas*>(root)->clearSelection();
