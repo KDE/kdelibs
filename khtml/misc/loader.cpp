@@ -1285,7 +1285,7 @@ void Cache::clear()
 template<typename CachedObjectType, enum CachedObject::Type CachedType>
 CachedObjectType* Cache::requestObject( DocLoader* dl, const KUrl& kurl, const char* accept )
 {
-    KIO::CacheControl cachePolicy = dl ? dl->cachePolicy() : KIO::CC_Verify;
+    KIO::CacheControl cachePolicy = dl->cachePolicy();
 
     QString url = kurl.url();
     CachedObject* o = cache->find(url);
