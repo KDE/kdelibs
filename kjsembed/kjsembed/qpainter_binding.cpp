@@ -51,7 +51,7 @@ QPaintDevice *extractPaintDevice( KJS::ExecState *exec, KJS::JSValue *arg)
     else
     {
         ValueBinding *valueImp = extractBindingImp<ValueBinding>(exec,arg);
-        if( valueImp->variant().type() == QVariant::Pixmap ||
+        if( valueImp && valueImp->variant().type() == QVariant::Pixmap ||
                 valueImp->variant().type() == QVariant::Image )
         {
             device = static_cast<QPaintDevice*>( valueImp->pointer() );
