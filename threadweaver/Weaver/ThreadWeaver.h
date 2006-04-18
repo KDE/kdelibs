@@ -68,7 +68,6 @@ namespace ThreadWeaver {
 	*/
 	static ThreadWeaver::Weaver* instance();
         virtual void enqueue (Job*);
-	virtual void enqueue (const QList<Job*>& jobs);
         virtual bool dequeue (Job*);
         virtual void dequeue ();
 	virtual void finish();

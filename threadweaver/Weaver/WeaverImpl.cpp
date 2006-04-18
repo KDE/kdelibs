@@ -160,24 +160,6 @@ namespace ThreadWeaver {
 	}
     }
 
-    void WeaverImpl::enqueue (const QList <Job*>& jobs)
-    {
-        adjustInventory ( jobs.size() );
-	if (!jobs.isEmpty())
-	{
-            for ( int i = 0; i < jobs.size(); ++i )
-            {
-                jobs[i]->aboutToBeQueued ( this );
-            }
-
-	    {
-		QMutexLocker l (m_mutex);
-		m_assignments << jobs;
-	    }
-	    assignJobs();
-	}
-    }
-
     void WeaverImpl::adjustInventory ( int noOfNewJobs )
     {
         // no of threads that can be created:

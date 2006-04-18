@@ -1,17 +1,17 @@
 /* -*- C++ -*-
 
-   This file declares the classes for the GUI Jobs example.
+This file declares the classes for the GUI Jobs example.
 
-   $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
-   $ Contact: mirko@kde.org
-         http://www.kde.org
-         http://www.hackerbuero.org $
-   $ License: LGPL with the following explicit clarification:
-         This code may be linked against any version of the Qt toolkit
-         from Trolltech, Norway. $
+$ Author: Mirko Boehm $
+$ Copyright: (C) 2005, Mirko Boehm $
+$ Contact: mirko@kde.org
+http://www.kde.org
+http://www.hackerbuero.org $
+$ License: LGPL with the following explicit clarification:
+This code may be linked against any version of the Qt toolkit
+from Trolltech, Norway. $
 
-   $Id: Jobs.h 30 2005-08-16 16:16:04Z mirko $
+$Id: Jobs.h 30 2005-08-16 16:16:04Z mirko $
 */
 
 #ifndef Jobs_H
@@ -23,48 +23,51 @@
 #include "ui_JobsBase.h"
 #include "WeaverObserverTest.h"
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
 
+    class JobCollection;
 
-class DummyJob : public Job
-{
-public:
-    DummyJob (QObject* parent = 0);
-protected:
-    void run ();
-};
-
-class Jobs : public QWidget
-{
-    Q_OBJECT
-public:
-    enum State {
-	Initial = 0,
-	Stopped = Initial, 
-	Disable,
-	Stopping = Disable, 
-	ShuttingDown = Disable,
-	Started
+    class DummyJob : public Job
+    {
+    public:
+        DummyJob (QObject* parent = 0);
+    protected:
+        void run ();
     };
-    Jobs (QWidget *parent = 0);
-    virtual ~Jobs();
-protected slots:
-    void slotStart();
-    void slotStop();
-    void slotQuit();
-    void slotLogStateChanged (int);
-protected:
-    void setState ( State s );
-    State state();
-    QList <Job*> m_jobs;
-    bool m_quit;
-    State m_state;
-    Ui::JobsBase ui;
-    Weaver *weaver;
-    WeaverObserverTest *m_log;
-protected slots:
-    void slotJobDone (Job*);
-    void slotStopped ();
-};
+
+    class Jobs : public QWidget
+    {
+        Q_OBJECT
+    public:
+        enum State {
+            Initial = 0,
+            Stopped = Initial,
+            Disable,
+            Stopping = Disable,
+            ShuttingDown = Disable,
+            Started
+        };
+        Jobs (QWidget *parent = 0);
+        virtual ~Jobs();
+    protected slots:
+        void slotStart();
+        void slotStop();
+        void slotQuit();
+        void slotLogStateChanged (int);
+    protected:
+        void setState ( State s );
+        State state();
+        JobCollection* m_jobs;
+        bool m_quit;
+        State m_state;
+        Ui::JobsBase ui;
+        Weaver *weaver;
+        WeaverObserverTest *m_log;
+    protected slots:
+        void slotJobDone (Job*);
+        void slotStopped ();
+    };
+
+}
 
 #endif // defined Jobs_H

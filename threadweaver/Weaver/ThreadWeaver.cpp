@@ -293,11 +293,6 @@ namespace ThreadWeaver {
         m_weaverinterface->enqueue ( j );
     }
 
-    void Weaver::enqueue (const QList<Job*>& jobs)
-    {
-        m_weaverinterface->enqueue ( jobs );
-    }
-
     bool Weaver::dequeue (Job* j)
     {
         return m_weaverinterface->dequeue ( j );

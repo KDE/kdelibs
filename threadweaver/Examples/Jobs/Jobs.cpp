@@ -20,15 +20,18 @@ extern "C" {
 }
 
 #include <QWidget>
+#include <QCheckBox>
 #include <QProgressBar>
 #include <QApplication>
-#include <QCheckBox>
 
 #include <Jobs.h>
 #include <Thread.h>
+#include <JobCollection.h>
 #include <DebuggingAids.h>
 
 const int NoOfJobs = 100;
+
+using namespace ThreadWeaver;
 
 DummyJob::DummyJob (QObject* parent)
     : Job ( parent )
@@ -43,22 +46,17 @@ void DummyJob::run ()
 }
 
 Jobs::Jobs ( QWidget *parent )
-    : QWidget ( parent ),
-      m_quit (false),
-      weaver( new Weaver( this ) ),
-      m_log ( 0 )
+    : QWidget ( parent )
+    , m_jobs ( 0 )
+    , m_quit (false)
+    , weaver( new Weaver( this ) )
+    , m_log ( 0 )
 {
     ui.setupUi( this );
 
     connect ( weaver, SIGNAL ( finished() ), SLOT (slotStopped () ) );
     connect ( weaver, SIGNAL ( jobDone(Job*) ), SLOT (slotJobDone (Job*) ) );
     connect ( weaver, SIGNAL ( suspended() ), SLOT (slotStopped () ) );
-
-    // create the jobs:
-    for (int count = 0; count < NoOfJobs; ++count)
-    {
-        m_jobs.append (new DummyJob (this) );
-    }
 
     connect ( ui.pbStart,  SIGNAL ( clicked() ),  SLOT ( slotStart() ) );
     connect ( ui.pbStop,  SIGNAL ( clicked() ),  SLOT ( slotStop() ) );
@@ -136,6 +134,16 @@ void Jobs::slotStart()
     setState (Disable);
     ui.lcdNumJobsRem->display ( NoOfJobs );
     ui.pbProgress->setRange (0, NoOfJobs);
+
+    delete m_jobs; // remember: cannot queue the same collection twice
+    // remember 2: delete 0; is ok
+    m_jobs = new JobCollection ( this );
+    // create the jobs:
+    for (int count = 0; count < NoOfJobs; ++count)
+    {
+        m_jobs->addJob (new DummyJob (this) );
+    }
+
     weaver->enqueue (m_jobs);
     setState (Started);
 }
