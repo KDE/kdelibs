@@ -29,6 +29,7 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QDir>
 #include <QRegExp>
 #include <QStringList>
 #include <QTextStream>
@@ -552,6 +553,7 @@ public:
 
 private:
     KSystemTimeZonesPrivate() {}
+    bool findZoneTab( QFile& f );
     void readZoneTab();
     static QString calcChecksum(const QString &zoneName, qlonglong size);
     static float convertCoordinate(const QString &coordinate);
@@ -604,91 +606,108 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
     return m_instance;
 }
 
+bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
+{
+    // Find and open zone.tab - it's all easy except knowing where to look. Try the LSB location first.
+    QDir dir;
+    QString zoneinfoDir = "/usr/share/zoneinfo";
+    f.setFileName(zoneinfoDir + "/zone.tab");
+    // make a note if the dir exists; whether it contains zone.tab or not
+    if ( dir.exists( zoneinfoDir ) )
+        m_zoneinfoDir = zoneinfoDir;
+    if (f.open(QIODevice::ReadOnly))
+        return true;
+    kDebug() << "Can't open " << f.fileName() << endl;
+
+    zoneinfoDir = "/usr/lib/zoneinfo";
+    f.setFileName(zoneinfoDir + "/zone.tab");
+    if ( dir.exists( zoneinfoDir ) )
+        m_zoneinfoDir = zoneinfoDir;
+    if (f.open(QIODevice::ReadOnly))
+        return true;
+    kDebug() << "Can't open " << f.fileName() << endl;
+
+    zoneinfoDir = ::getenv("TZDIR");
+    if ( !zoneinfoDir.isEmpty() )
+    {
+        if ( dir.exists( zoneinfoDir ) )
+            m_zoneinfoDir = zoneinfoDir;
+        f.setFileName(zoneinfoDir + "/zone.tab");
+        if (f.open(QIODevice::ReadOnly))
+            return true;
+        kDebug() << "Can't open " << f.fileName() << endl;
+    }
+
+    zoneinfoDir = "/usr/share/lib/zoneinfo";
+    if ( dir.exists( zoneinfoDir + "/src" ) )
+    {
+        m_zoneinfoDir = zoneinfoDir;
+        // Solaris support. Synthesise something that looks like a zone.tab.
+        //
+        // /bin/grep -h ^Zone /usr/share/lib/zoneinfo/src/* | /bin/awk '{print "??\t+9999+99999\t" $2}'
+        //
+        // where the country code is set to "??" and the latitude/longitude
+        // values are dummies.
+        KTempFile temp;
+        KShellProcess reader;
+        reader << "/bin/grep" << "-h" << "^Zone" << zoneinfoDir << "/src/*" << temp.name() << "|" <<
+            "/bin/awk" << "'{print \"??\\t+9999+99999\\t\" $2}'";
+        // Note the use of blocking here...it is a trivial amount of data!
+        temp.close();
+        reader.start(KProcess::Block);
+        f.setFileName(temp.name());
+        if (temp.status() && f.open(QIODevice::ReadOnly))
+            return true;
+
+        kDebug() << "Can't open " << f.fileName() << endl;
+    }
+    return false;
+}
+
 /*
  * Find the location of the zoneinfo files and store in m_zoneinfoDir.
  * Parse zone.tab and for each time zone, create a KSystemTimeZone instance.
  */
 void KSystemTimeZonesPrivate::readZoneTab()
 {
-    // Find and open zone.tab - it's all easy except knowing where to look. Try the LSB location first.
     QFile f;
-    m_zoneinfoDir = "/usr/share/zoneinfo";
-    f.setFileName(m_zoneinfoDir + "/zone.tab");
-    if (!f.open(QIODevice::ReadOnly))
+    if ( !findZoneTab( f ) )
+        return;
+    // Parse the zone.tab.
+    QTextStream str(&f);
+    QRegExp lineSeparator("[ \t]");
+    QRegExp ordinateSeparator("[+-]");
+    if (!m_source)
+        m_source = new KSystemTimeZoneSource;
+    while (!str.atEnd())
     {
-        kDebug() << "Can't open " << f.fileName() << endl;
-        m_zoneinfoDir = "/usr/lib/zoneinfo";
-        f.setFileName(m_zoneinfoDir + "/zone.tab");
-        if (!f.open(QIODevice::ReadOnly))
+        QString line = str.readLine();
+        if (line.isEmpty() || '#' == line[0])
+            continue;
+        QStringList tokens = KStringHandler::perlSplit(lineSeparator, line, 4);
+        int n = tokens.count();
+        if (n < 3)
         {
-            kDebug() << "Can't open " << f.fileName() << endl;
-            m_zoneinfoDir = ::getenv("TZDIR");
-            f.setFileName(m_zoneinfoDir + "/zone.tab");
-            if (m_zoneinfoDir.isEmpty() || !f.open(QIODevice::ReadOnly))
-            {
-                kDebug() << "Can't open " << f.fileName() << endl;
-
-                // Solaris support. Synthesise something that looks like a zone.tab.
-                //
-                // /bin/grep -h ^Zone /usr/share/lib/zoneinfo/src/* | /bin/awk '{print "??\t+9999+99999\t" $2}'
-                //
-                // where the country code is set to "??" and the latitude/longitude
-                // values are dummies.
-                m_zoneinfoDir = "/usr/share/lib/zoneinfo";
-                KTempFile temp;
-                KShellProcess reader;
-                reader << "/bin/grep" << "-h" << "^Zone" << m_zoneinfoDir << "/src/*" << temp.name() << "|" <<
-                    "/bin/awk" << "'{print \"??\\t+9999+99999\\t\" $2}'";
-                // Note the use of blocking here...it is a trivial amount of data!
-                temp.close();
-                reader.start(KProcess::Block);
-                f.setFileName(temp.name());
-                if (!temp.status() || !f.open(QIODevice::ReadOnly))
-                {
-                    kDebug() << "Can't open " << f.fileName() << endl;
-                    m_zoneinfoDir.clear();
-                }
-            }
+            kError() << "invalid record: " << line << endl;
+            continue;
         }
-    }
-    if (!m_zoneinfoDir.isEmpty())
-    {
-        // Parse the zone.tab.
-        QTextStream str(&f);
-        QRegExp lineSeparator("[ \t]");
-        QRegExp ordinateSeparator("[+-]");
-        if (!m_source)
-            m_source = new KSystemTimeZoneSource;
-        while (!str.atEnd())
+
+        // Got three tokens. Now check for two ordinates plus first one is "".
+        QStringList ordinates = KStringHandler::perlSplit(ordinateSeparator, tokens[1], 2);
+        if (ordinates.count() < 2)
         {
-            QString line = str.readLine();
-            if (line.isEmpty() || '#' == line[0])
-                continue;
-            QStringList tokens = KStringHandler::perlSplit(lineSeparator, line, 4);
-            int n = tokens.count();
-            if (n < 3)
-            {
-                kError() << "invalid record: " << line << endl;
-                continue;
-            }
-
-            // Got three tokens. Now check for two ordinates plus first one is "".
-            QStringList ordinates = KStringHandler::perlSplit(ordinateSeparator, tokens[1], 2);
-            if (ordinates.count() < 2)
-            {
-                kError() << "invalid coordinates: " << tokens[1] << endl;
-                continue;
-            }
-
-            float latitude = convertCoordinate(ordinates[0]);
-            float longitude = convertCoordinate(ordinates[1]);
-
-            // Add entry to list.
-            if (tokens[0] == "??")
-                tokens[0] = "";
-            KTimeZone *tzone = new KSystemTimeZone(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
-            add(tzone);
+            kError() << "invalid coordinates: " << tokens[1] << endl;
+            continue;
         }
+
+        float latitude = convertCoordinate(ordinates[0]);
+        float longitude = convertCoordinate(ordinates[1]);
+
+        // Add entry to list.
+        if (tokens[0] == "??")
+            tokens[0] = "";
+        KTimeZone *tzone = new KSystemTimeZone(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
+        add(tzone);
     }
     f.close();
 }
@@ -935,7 +954,7 @@ QString KSystemTimeZonesPrivate::calcChecksum(const QString &zoneName, qlonglong
         QFile f;
         f.setFileName(path);
         if (f.open(QIODevice::ReadOnly))
-        { 
+        {
             KMD5 context("");
             context.reset();
             context.update(f);
