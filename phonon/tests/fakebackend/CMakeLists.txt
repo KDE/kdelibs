@@ -28,7 +28,7 @@ kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} phonon_fake )
 
 target_link_libraries(phonon_fake  ${KDE4_KDECORE_LIBS} phononcore kio )
 
-install_targets(${LIB_INSTALL_DIR}/kde4 phonon_fake )
+install_targets(${PLUGIN_INSTALL_DIR} phonon_fake )
 
 
 ########### install files ###############

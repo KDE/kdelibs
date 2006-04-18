@@ -351,7 +351,7 @@ kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/ khtmlimagepart  )
 
 target_link_libraries(khtmlimagepart  ${KDE4_KDECORE_LIBS} khtml)
 
-install_targets(${LIB_INSTALL_DIR}/kde4 khtmlimagepart )
+install_targets(${PLUGIN_INSTALL_DIR} khtmlimagepart )
 
 
 if(KDE4_BUILD_TESTS)
