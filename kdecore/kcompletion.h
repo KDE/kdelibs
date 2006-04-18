@@ -923,6 +923,8 @@ public:
      * A pure virtual function that must be implemented by
      * all inheriting classes.
      * @param items the list of completed items
+     * @param autoSuggest if @c true, the first element of @p items
+     *        is auto-completed (i.e. pre-selected).
      */
     virtual void setCompletedItems( const QStringList& items, bool autoSuggest =true ) = 0;
 
@@ -931,11 +933,11 @@ public:
      *
      * This method is only different from completionObject()
      * in that it does not create a new KCompletion object even if
-     * the internal pointer is @p NULL. Use this method to get the
+     * the internal pointer is @c NULL. Use this method to get the
      * pointer to a completion object when inheriting so that you
      * won't inadvertently create it!!
      *
-     * @return the completion object or NULL if one does not exist.
+     * @return the completion object or @c NULL if one does not exist.
      */
     KCompletion* compObj() const { return m_delegate ? m_delegate->compObj() : static_cast<KCompletion*>(m_pCompObj); }
 
