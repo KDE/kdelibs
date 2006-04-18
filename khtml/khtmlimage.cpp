@@ -156,10 +156,11 @@ bool KHTMLImage::openURL( const KURL &url )
     m_khtml->setAutoloadImages( true );
 
     DOM::DocumentImpl *impl = dynamic_cast<DOM::DocumentImpl *>( m_khtml->document().handle() ); // ### hack ;-)
-    if ( impl && m_ext->urlArgs().reload )
+    if (!impl) return false;
+    if ( m_ext->urlArgs().reload )
         impl->docLoader()->setCachePolicy( KIO::CC_Reload );
 
-    khtml::DocLoader *dl = impl ? impl->docLoader() : 0;
+    khtml::DocLoader *dl = impl->docLoader();
     m_image = dl->requestImage( m_url.url() );
     if ( m_image )
         m_image->ref( this );
