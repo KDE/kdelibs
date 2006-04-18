@@ -671,7 +671,7 @@ void KPrintDialog::done(int result)
 		QString	msg;
 		QListIterator<KPrintDialogPage*>	it(d->m_pages);
 		while (it.hasNext()) {
-      KPrintDialogPage *page(it.next());
+			KPrintDialogPage *page(it.next());
 			if (page->isEnabled())
 			{
 				if (page->isValid(msg))
@@ -682,11 +682,15 @@ void KPrintDialog::done(int result)
 					return;
 				}
 			}
-    }
+		}
 
 		// add options from the dialog itself
 		// TODO: ADD PRINTER CHECK MECHANISM !!!
 		prt = KMFactory::self()->manager()->findPrinter(d->m_printers->currentText());
+		if (!ptr) { // this is _very_ unlikely, but better avoid a crash
+			KDialog::done(result);
+			return;
+		}
 		if (prt->isSpecial() && prt->option("kde-special-file") == "1")
 		{
 			if (!checkOutputFile()) return;
