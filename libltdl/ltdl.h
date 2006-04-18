@@ -28,6 +28,8 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #ifndef LTDL_H
 #define LTDL_H 1
 
+#include <kdelibs_export.h>
+
 #include <sys/types.h>		/* for size_t declaration */
 
 
@@ -144,7 +146,7 @@ typedef	struct lt_dlhandle_struct *lt_dlhandle;	/* A loaded module.  */
 LT_SCOPE int lt_dlopen_flag;
 
 /* Initialisation and finalisation functions for libltdl. */
-LT_SCOPE	int	    lt_dlinit		LT_PARAMS((void));
+KDECORE_EXPORT	int	    lt_dlinit		LT_PARAMS((void));
 LT_SCOPE	int	    lt_dlexit		LT_PARAMS((void));
 
 /* Module search path manipultation.  */
@@ -153,11 +155,11 @@ LT_SCOPE	int 	    lt_dlsetsearchpath	LT_PARAMS((const char *search_path));
 LT_SCOPE	const char *lt_dlgetsearchpath	LT_PARAMS((void));
 
 /* Portable libltdl versions of the system dlopen() API. */
-LT_SCOPE	lt_dlhandle lt_dlopen		LT_PARAMS((const char *filename));
+KDECORE_EXPORT	lt_dlhandle lt_dlopen		LT_PARAMS((const char *filename));
 LT_SCOPE	lt_dlhandle lt_dlopenext	LT_PARAMS((const char *filename));
-LT_SCOPE	lt_ptr	    lt_dlsym		LT_PARAMS((lt_dlhandle handle,
+KDECORE_EXPORT	lt_ptr	    lt_dlsym		LT_PARAMS((lt_dlhandle handle,
 						     const char *name));
-LT_SCOPE	const char *lt_dlerror		LT_PARAMS((void));
+KDECORE_EXPORT	const char *lt_dlerror		LT_PARAMS((void));
 LT_SCOPE	int	    lt_dlclose		LT_PARAMS((lt_dlhandle handle));
 
 /* Module residency management. */
