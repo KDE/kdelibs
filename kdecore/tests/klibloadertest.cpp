@@ -41,7 +41,7 @@ static const char* s_module = "libklibloadertestmodule";
 void KLibLoaderTest::testWorking()
 {
     int error = 0;
-    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() );
+    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() + "/../../lib" );
     QObject* obj = KLibLoader::createInstance<QObject>( s_module, 0, 0, QStringList(), &error );
     if ( error )
         kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
@@ -50,7 +50,7 @@ void KLibLoaderTest::testWorking()
 
 void KLibLoaderTest::testWrongClass()
 {
-    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() );
+    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() + "/../../lib" );
     int error = 0;
 
     KLibLoaderTest* obj = KLibLoader::createInstance<KLibLoaderTest>( s_module, 0, 0, QStringList(), &error );
