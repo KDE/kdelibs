@@ -37,9 +37,8 @@ function write_ctor( compoundDef )
     }
     for(var idx = 0; idx < methodListList.length; ++idx)
     {
+        if(!methodListList[idx]) continue;
         var memberElement = methodListList[idx][0];
-        //var memberKind = memberElement.attribute( 'kind' );
-        //var memberName = memberElement.firstChildElement('name').toElement().toString();
         var memberArgList = memberElement.elementsByTagName('param');
         ctor += '   if (args.size() == ' + memberArgList.count() + ' )\n' +
         '   {\n';
@@ -57,12 +56,10 @@ function write_ctor( compoundDef )
 //             ctor += extract_parameter(param, argIdx);
             tmpArgs += paramVar + ', ';
         }
-//         println('Constructor: '+ctor);
         ctor += extract_parameter_const(methodListList[idx], idx);
 
         var tmpIdx = tmpArgs.lastIndexOf(',');
         tmpArgs = tmpArgs.substr(0, tmpIdx);
-
         ctor +=
         '       return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '))\n' +
         '   }\n';
@@ -98,14 +95,10 @@ function extract_parameter_const(methodList, numArgs)
         for(var argIdx = 0; argIdx < numArgs; ++argIdx)
         {
             var parameter = memberArgList.item(argIdx).toElement();
-            if(isVariant(paramType))
-                params += '            arg'+argIdx+' = KJSEmbed::extractValue<QColor>(exec, args, '+argIdx+');\n';
-            else
-            params += '            arg'+argIdx+' = ('+paramType+')KJSEmbed::extractInt(exec, args, '+argIdx+');\n';
+            params += extract_parameter(parameter, argIdx);
         }
         params += '        }\n'
     }
-//     println(params);
     return params;
 }
 
