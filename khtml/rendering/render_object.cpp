@@ -1277,8 +1277,7 @@ void RenderObject::setStyle(RenderStyle *style)
 
     updateBackgroundImages(oldStyle);
 
-    if (m_style)
-        m_style->ref();
+    m_style->ref();
 
     if (oldStyle)
         oldStyle->deref();
