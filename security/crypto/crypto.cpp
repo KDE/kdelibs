@@ -1596,7 +1596,7 @@ QString iss;
 
    // update the info
    iss = pkcs->getCertificate()->getIssuer();
-   ySubject->setValues(x ? x->getName() : QString());
+   ySubject->setValues(x->getName());
    yIssuer->setValues(iss);
    QPalette cspl;
    KSSLCertificate *cert = pkcs->getCertificate();
