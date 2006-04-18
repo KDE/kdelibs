@@ -79,6 +79,7 @@ function extract_parameter_const(methodList, numArgs)
     for(var idx = 0; idx < methodList.length; ++idx)
     {
         var memberArgList = methodList[idx].elementsByTagName('param');
+        var variables = '';
         params += '        if(';
         for(var argIdx = 0; argIdx < numArgs; ++argIdx)
         {
@@ -90,13 +91,10 @@ function extract_parameter_const(methodList, numArgs)
                 params += 'isBasic(value'+argIdx+') ';
             if(argIdx < numArgs-1)
                 params += '&& ';
+            variables += extract_parameter(parameter, argIdx);
         }
         params += '){\n';
-        for(var argIdx = 0; argIdx < numArgs; ++argIdx)
-        {
-            var parameter = memberArgList.item(argIdx).toElement();
-            params += extract_parameter(parameter, argIdx);
-        }
+        params += variables;
         params += '        }\n'
     }
     return params;
