@@ -643,7 +643,7 @@ KStandardDirs::findAllResources( const char *type,
     }
     else
     {
-        if (d && d->restrictionsActive && (strcmp(type, "data")==0))
+        if (d->restrictionsActive && (strcmp(type, "data")==0))
             applyDataRestrictions(filter);
         candidates = resourceDirs(type);
     }
