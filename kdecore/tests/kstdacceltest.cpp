@@ -96,7 +96,7 @@ void KStdAccelTest::testKShortcut()
     QCOMPARE( quit.seq(0).toString(), quit.seq(1).toString() );
 
     QKeySequence casted = quit; // is this a good idea?
-    QCOMPARE( QString(casted), seq.toString() );
+    QCOMPARE( casted.toString(), seq.toString() );
     QVERIFY( casted == seq );
 
     QVERIFY( KShortcut::null() == null );
