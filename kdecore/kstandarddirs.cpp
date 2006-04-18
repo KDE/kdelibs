@@ -120,7 +120,7 @@ KStandardDirs::~KStandardDirs()
 
 bool KStandardDirs::isRestrictedResource(const char *type, const QString& relPath) const
 {
-   if (!d || !d->restrictionsActive)
+   if (!d->restrictionsActive)
       return false;
 
    if (d->restrictions.value(type, false))
@@ -147,7 +147,7 @@ void KStandardDirs::applyDataRestrictions(const QString &relPath) const
    else
       key = "data_"+relPath;
 
-   if (d && d->restrictions.value(key.toLatin1(), false))
+   if (d->restrictions.value(key.toLatin1(), false))
       d->dataRestrictionActive = true;
 }
 
@@ -350,7 +350,7 @@ quint32 KStandardDirs::calcResourceHash( const char *type,
         // absolute dirs are absolute dirs, right? :-/
 	return updateHash(filename, hash);
     }
-    if (d && d->restrictionsActive && (strcmp(type, "data")==0))
+    if (d->restrictionsActive && (strcmp(type, "data")==0))
        applyDataRestrictions(filename);
     QStringList candidates = resourceDirs(type);
     QString fullPath;
@@ -386,7 +386,7 @@ QStringList KStandardDirs::findDirs( const char *type,
 
     checkConfig();
 
-    if (d && d->restrictionsActive && (strcmp(type, "data")==0))
+    if (d->restrictionsActive && (strcmp(type, "data")==0))
        applyDataRestrictions(reldir);
     QStringList candidates = resourceDirs(type);
 
@@ -410,7 +410,7 @@ QString KStandardDirs::findResourceDir( const char *type,
     }
 #endif
 
-    if (d && d->restrictionsActive && (strcmp(type, "data")==0))
+    if (d->restrictionsActive && (strcmp(type, "data")==0))
        applyDataRestrictions(filename);
     QStringList candidates = resourceDirs(type);
     QString fullPath;
@@ -794,7 +794,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
         QDir testdir;
 
         bool restrictionActive = false;
-        if (d && d->restrictionsActive)
+        if (d->restrictionsActive)
         {
            if (d->dataRestrictionActive)
               restrictionActive = true;
