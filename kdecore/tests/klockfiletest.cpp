@@ -37,6 +37,7 @@ static const char *const lockName = "klockfiletest.lock";
 void
 Test_KLockFile::initTestCase()
 {
+	QFile::remove( QFile::encodeName( lockName ) );
 	lockFile = new KLockFile(QLatin1String(lockName));
 }
 
@@ -53,7 +54,7 @@ Test_KLockFile::testStale()
 {
 	QVERIFY(lockFile->isLocked());
 
-	const int secs = 5;
+	const int secs = 2;
 	KLockFile lf = KLockFile(QLatin1String(lockName));
 	lf.setStaleTime(secs);
 	QVERIFY(lf.staleTime() == secs);
