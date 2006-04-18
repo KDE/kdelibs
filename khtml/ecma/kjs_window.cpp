@@ -671,7 +671,7 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
       return retrieve(part && part->parentPart() ? part->parentPart() : (KHTMLPart*)part);
     case Top: {
       KHTMLPart *p = part;
-      while (p->parentPart())
+      while (part && p->parentPart())
         p = p->parentPart();
       return retrieve(p);
     }
