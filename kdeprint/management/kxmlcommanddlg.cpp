@@ -636,9 +636,11 @@ void KXmlCommandAdvancedDlg::slotApplyChanges()
 					break;
 
 			}
-			opt->set("format", m_format->text());
-			opt->set("default", m_default->text());
-			opt->setValueText(opt->get("default"));
+			if (opt) {
+			    opt->set("format", m_format->text());
+			    opt->set("default", m_default->text());
+			    opt->setValueText(opt->get("default"));
+			}
 		}
 		else
 			opt = new DrGroup;
