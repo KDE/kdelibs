@@ -41,6 +41,9 @@ void KAutostartTest::testStartDetection_data()
 
 void KAutostartTest::testStartDetection()
 {
+    if ( locate("panel", "autostart").isEmpty() )
+        QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
+
     QFETCH(QString, service);
     QFETCH(bool, doesAutostart);
 
@@ -100,14 +103,19 @@ void KAutostartTest::testStartphase()
 void KAutostartTest::testStartName()
 {
     KAutostart autostart("panel");
+    if ( locate("panel", "autostart").isEmpty() )
+        QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
     QCOMPARE(autostart.visibleName(), QString("KDE Panel"));
 }
 
 void KAutostartTest::testServiceRegistered()
 {
     KAutostart autostart;
-    QCOMPARE(KAutostart::isServiceRegistered("panel"), true);
     QCOMPARE(KAutostart::isServiceRegistered("doesnotexist"), false);
+
+    if ( locate("panel", "autostart").isEmpty() )
+        QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
+    QCOMPARE(KAutostart::isServiceRegistered("panel"), true);
 }
 
 void KAutostartTest::testRegisteringAndManipulatingANewService()
