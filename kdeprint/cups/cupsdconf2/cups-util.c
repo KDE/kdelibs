@@ -6,6 +6,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "cups-util.h"
+
 #define CUPS_SERVERROOT	"/etc/cups"
 static http_t		*cups_server;
 static ipp_status_t	last_error;
@@ -14,7 +16,7 @@ static char		pwdstring[33];
 static int cups_local_auth(http_t *http);
 
 const char *				/* O - Filename for PPD file */
-cupsGetConf()
+cupsGetConf(void)
 {
   int		fd;			/* PPD file */
   int		bytes;			/* Number of bytes read */
@@ -142,7 +144,11 @@ cupsGetConf()
 	*/
 
 	snprintf(plain, sizeof(plain), "%s:%s", cupsUser(), pwdstring);
+#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2
+	httpEncode64_2(encode, sizeof(encode), plain, sizeof(plain));
+#else
 	httpEncode64(encode, plain);
+#endif
 	snprintf(authstring, sizeof(authstring), "Basic %s", encode);
       }
       else
@@ -364,7 +370,11 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
 	*/
 
 	snprintf(plain, sizeof(plain), "%s:%s", cupsUser(), pwdstring);
+#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2
+	httpEncode64_2(encode, sizeof(encode), plain, sizeof(plain));
+#else
 	httpEncode64(encode, plain);
+#endif
 	snprintf(authstring, sizeof(authstring), "Basic %s", encode);
       }
       else
@@ -442,8 +452,7 @@ cups_local_auth(http_t *http)	/* I - Connection */
   * See if we are accessing localhost...
   */
 #if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2
-    if (ntohl(*(int*)&http->_hostaddr.sin_addr) != 0x7f000001 &&
-      strcasecmp(http->hostname, "localhost") != 0)
+    if (!httpAddrLocalhost(http->hostaddr))
 #else
     if (ntohl(*(int*)&http->hostaddr.sin_addr) != 0x7f000001 &&
       strcasecmp(http->hostname, "localhost") != 0)

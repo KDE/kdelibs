@@ -33,6 +33,7 @@ public:
 
 	const QString& host() const;
 	int port() const;
+	const QString hostaddr() const;
 	const QString& login() const;
 	const QString& password() const;
 	const QString& realLogin() const;

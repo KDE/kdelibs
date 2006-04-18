@@ -50,7 +50,7 @@ KMWFax::KMWFax(QWidget *parent)
 	// initialize
 	IppRequest	req;
 	req.setOperation(CUPS_GET_DEVICES);
-	QString	uri = QString::fromLatin1("ipp://%1:%2/printers/").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
+	QString	uri = QString::fromLatin1("ipp://%1/printers/").arg(CupsInfos::self()->hostaddr());
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 	if (req.doRequest("/"))
 	{

@@ -157,3 +157,14 @@ void CupsInfos::configChanged()
 	// we need to reload settings
 	load();
 }
+
+const QString CupsInfos::hostaddr() const
+{
+	if(host_[0] != '/')
+		return QString("%1:%2")
+			.arg(host_)
+			.arg(port_);
+	else
+		return QString("%1")
+			.arg(host_);
+}

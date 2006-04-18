@@ -136,7 +136,7 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 	{
 		req.setOperation(CUPS_ADD_CLASS);
 		QStringList	members = p->members(), uris;
-		QString		s = QString::fromLocal8Bit("ipp://%1:%2/printers/").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
+		QString		s = QString::fromLocal8Bit("ipp://%1/printers/").arg(CupsInfos::self()->hostaddr());
 		for (QStringList::ConstIterator it=members.begin(); it!=members.end(); ++it)
 			uris.append(s+(*it));
 		req.addURI(IPP_TAG_PRINTER,"member-uris",uris);
@@ -876,25 +876,20 @@ void KMCupsManager::ippReport(IppRequest& req, int group, const QString& caption
 
 QString KMCupsManager::stateInformation()
 {
-	return QString("%1: %2:%3")
+	return QString("%1: %2")
 		.arg(i18n("Server"))
-		.arg(CupsInfos::self()->host())
-		.arg(CupsInfos::self()->port());
+		.arg(CupsInfos::self()->hostaddr());
 }
 
 void KMCupsManager::checkUpdatePossibleInternal()
 {
 	kDebug(500) << "Checking for update possible" << endl;
-	connect( &m_socket, SIGNAL( connected( const KNetwork::KResolverEntry& ) ),
-		 SLOT( slotConnectionSuccess() ) );
-	connect( &m_socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
 	QTimer::singleShot( 1, this, SLOT( slotAsyncConnect() ) );
 }
 
 void KMCupsManager::slotConnectionSuccess()
 {
 	kDebug(500) << "Connection success, trying to send a request..." << endl;
-	m_socket.close();
 
 	IppRequest req;
 	req.setOperation( CUPS_GET_PRINTERS );
@@ -920,9 +915,14 @@ void KMCupsManager::slotConnectionSuccess()
 
 void KMCupsManager::slotAsyncConnect()
 {
-	kDebug(500) << "Starting async connect" << endl;
-	m_socket.connect( CupsInfos::self()->host(),
-			  QString::number( CupsInfos::self()->port() ) );
+	kdDebug(500) << "Starting async connect " << CupsInfos::self()->hostaddr() << endl;
+	http_t	*HTTP = httpConnect(CupsInfos::self()->host().latin1(), CupsInfos::self()->port());
+	if(!HTTP)
+		slotConnectionFailed(0);
+	else {
+		slotConnectionSuccess();
+		httpClose(HTTP);
+	}
 }
 
 void KMCupsManager::slotConnectionFailed( int )
@@ -931,13 +931,11 @@ void KMCupsManager::slotConnectionFailed( int )
 	if ( trials > 0 )
 	{
 		trials--;
-		m_socket.close();
 		QTimer::singleShot( 1000, this, SLOT( slotAsyncConnect() ) );
 		return;
 	}
 
-	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
-				"Error: %1." ,  m_socket.errorString() ) );
+	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. " ) );
 	setUpdatePossible( false );
 }
 
@@ -975,7 +973,10 @@ QString printerURI(KMPrinter *p, bool use)
 	if (use && !p->uri().isEmpty())
 		uri = p->uri().prettyURL();
 	else
-		uri = QString("ipp://%1:%2/%4/%3").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(p->printerName()).arg((p->isClass(false) ? "classes" : "printers"));
+		uri = QString("ipp://%1/%3/%2")
+			.arg(CupsInfos::self()->hostaddr())
+			.arg(p->printerName())
+			.arg((p->isClass(false) ? "classes" : "printers"));
 	return uri;
 }
 

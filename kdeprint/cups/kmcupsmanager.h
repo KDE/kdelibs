@@ -94,7 +94,6 @@ protected:
 private:
 	KLibrary	*m_cupsdconf;
 	KMPrinter	*m_currentprinter;
-	KNetwork::KBufferedSocket m_socket;
 	bool m_hostSuccess;
 	bool m_lookupDone;
 };

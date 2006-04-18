@@ -41,7 +41,7 @@ FILE	*debugF = NULL;
 #endif
 
 /* utility functions */
-void error(const char* msg)
+static void error(const char* msg)
 {
 	fprintf(stderr, "%s\n", msg);
 #if USE_LOG
@@ -50,7 +50,7 @@ void error(const char* msg)
 	exit(-1);
 }
 
-void usage()
+static void usage()
 {
 	error("usage: cupsdoprint [-H host[:port]][-P dest][-J name][-o opt=value[,...]][-U login[:password]] files...");
 }
@@ -81,7 +81,7 @@ static char * shell_quote(const char *s)
    return result;
 }
 
-const char* getPasswordCB(const char* prompt)
+static const char* getPasswordCB(const char* prompt)
 {
 	char buf[ 256 ] = {0}, *c;
 	char *_user = shell_quote( cupsUser() ), *_passwd = NULL;
@@ -145,8 +145,8 @@ int main(int argc, char* argv[])
 	char	login[BUFSIZE2] = {0};
 	char	*a;
 	cups_option_t	*options = NULL;
-	int		num_options = 0;
-	char*	files[100] = {0};
+	int	num_options = 0;
+	const char	**files = NULL;
 	int	num_files = 0;
 	int	jobID = 0;
 
@@ -225,7 +225,10 @@ int main(int argc, char* argv[])
 	/* check for files */
 	if (optind < 1 || optind >= argc)
 		error("This utility doesn't support printing from STDIN");
-	else
+	else {
+		files = (const char **)malloc(sizeof(char *) * (argc - optind));
+		if(!files)
+			error("cannot allocate files array");
 		for (c=optind; c<argc; c++)
 		{
 			if (access(argv[c], R_OK) != 0)
@@ -236,6 +239,7 @@ int main(int argc, char* argv[])
 			else
 				files[num_files++] = strdup(argv[c]);
 		}
+	}
 
 #if USE_LOG
 	fprintf(debugF,"Processed options:\n");
@@ -253,5 +257,6 @@ int main(int argc, char* argv[])
 #if USE_LOG
 	fclose(debugF);
 #endif
+	free(files);
 	return 0;
 }

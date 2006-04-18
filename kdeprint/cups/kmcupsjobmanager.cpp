@@ -93,7 +93,9 @@ bool KMCupsJobManager::sendCommandSystemJob(const QList<KMJob*>& jobs, int actio
 			case KMJob::Move:
 				if (argstr.isEmpty()) return false;
 				req.setOperation(CUPS_MOVE_JOB);
-				uri = QString::fromLatin1("ipp://%1:%2/printers/%3").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(argstr);
+				uri = QString::fromLatin1("ipp://%1/printers/%2")
+					.arg(CupsInfos::self()->hostaddr())
+					.arg(argstr);
 				req.addURI(IPP_TAG_OPERATION, "job-printer-uri", uri);
 				break;
 			default:

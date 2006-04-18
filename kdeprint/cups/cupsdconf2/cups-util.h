@@ -20,7 +20,7 @@
 #ifndef CUPS_UTIL_H
 #define CUPS_UTIL_H
 
-const char* cupsGetConf();
+const char* cupsGetConf(void);
 int cupsPutConf(const char *filename);
 
 #endif

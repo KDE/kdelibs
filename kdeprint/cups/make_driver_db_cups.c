@@ -11,7 +11,7 @@
 
 #include "driverparse.h"
 
-void initPpd(const char *dirname)
+static void initPpd(const char *dirname)
 {
 	DIR	*dir = opendir(dirname);
 	struct dirent	*entry;
@@ -69,7 +69,7 @@ void initPpd(const char *dirname)
 	closedir(dir);
 }
 
-int parsePpdFile(const char *filename, FILE *output_file)
+static int parsePpdFile(const char *filename, FILE *output_file)
 {
 	gzFile	ppd_file;
 	char	line[4096], value[256], langver[64] = {0}, desc[256] = {0};
