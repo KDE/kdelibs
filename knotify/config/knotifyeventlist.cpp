@@ -24,7 +24,7 @@ KNotifyEventList::KNotifyEventList(QWidget *parent)
  : QTreeWidget(parent)  , config(0l) , loconf(0l)
 {
   QStringList headerLabels;
-  headerLabels << i18n( "Titre" ) << i18n( "Description" ) << i18n( "Etat" );
+  headerLabels << i18n( "Title" ) << i18n( "Description" ) << i18n( "State" );
   setHeaderLabels( headerLabels );
 
 	connect(this, SIGNAL(itemSelectionChanged()) , this , SLOT(slotSelectionChanged()));
