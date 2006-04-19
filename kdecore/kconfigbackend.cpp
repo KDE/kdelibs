@@ -48,7 +48,7 @@
 #include "kde_file.h"
 #include "kglobal.h"
 #include "klocale.h"
-#include "kprocess.h"
+#include "qprocess.h"
 #include "ksavefile.h"
 #include "kstandarddirs.h"
 #include "kurl.h"
