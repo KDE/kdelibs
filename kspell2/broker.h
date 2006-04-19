@@ -28,8 +28,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qstring.h>
-
-class KSharedConfig;
+#include <kconfig.h>
 
 namespace KSpell2
 {
@@ -63,7 +62,7 @@ namespace KSpell2
          *        and default client values. If no value will
          *        be passed Broker will use global kspellrc file.
          */
-        static Broker::Ptr openBroker( KSharedConfig *config = 0 );
+        static Broker::Ptr openBroker( KSharedConfig::Ptr config = KSharedConfig::Ptr() );
 
     public:
         ~Broker();
@@ -125,7 +124,7 @@ namespace KSpell2
         friend class Settings;
         void changed();
     private:
-        Broker( KSharedConfig *config );
+        Broker( KSharedConfig::Ptr config );
         void loadPlugins();
         void loadPlugin( const QString& );
         mutable QStringList languagesNameCache;

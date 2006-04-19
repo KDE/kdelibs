@@ -59,34 +59,28 @@ typedef QHash<KSharedConfig*, Broker*> BrokerConfigHash;
 static KStaticDeleter<BrokerConfigHash> s_brokerDeleter;
 static BrokerConfigHash *s_brokers = 0;
 
-Broker::Ptr Broker::openBroker( KSharedConfig *config )
+Broker::Ptr Broker::openBroker( KSharedConfig::Ptr config )
 {
-    KSharedConfig::Ptr preventDeletion;
-    if ( !config ) {
-        preventDeletion = KSharedConfig::openConfig( DEFAULT_CONFIG_FILE );
-    } else
-        preventDeletion = config;
+    if ( !config )
+        config = KSharedConfig::openConfig( DEFAULT_CONFIG_FILE );
 
     if ( s_brokers ) {
-        Broker *broker = s_brokers->value( preventDeletion.data() );
+        Broker *broker = s_brokers->value( config.data() );
         if ( broker )
             return Ptr( broker );
     }
 
-    Broker *broker = new Broker( preventDeletion.data() );
+    Broker *broker = new Broker( config );
     return Ptr( broker );
 }
 
-Broker::Broker( KSharedConfig *config )
+Broker::Broker( KSharedConfig::Ptr config )
 	:d(new Private)
 {
-    KSharedConfig::Ptr preventDeletion( config );
-    Q_UNUSED( preventDeletion );
-
     if ( !s_brokers ) {
         s_brokerDeleter.setObject( s_brokers, new BrokerConfigHash );
     }
-    s_brokers->insert( config, this );
+    s_brokers->insert( config.data(), this );
 
     d->settings = new Settings( this, config );
     loadPlugins();

@@ -25,8 +25,7 @@
 #include <qstringlist.h>
 #include <qstring.h>
 #include <kdelibs_export.h>
-
-class KSharedConfig;
+#include <kconfig.h>
 
 namespace KSpell2
 {
@@ -72,7 +71,7 @@ namespace KSpell2
 
     private:
         friend class Broker;
-        Settings( Broker *broker, KSharedConfig *config );
+        Settings( Broker *broker, KSharedConfig::Ptr config );
     private:
         class Private;
         Private* const d;

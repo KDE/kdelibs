@@ -54,7 +54,7 @@ public:
     QMap<QString, bool> ignore;
 };
 
-Settings::Settings( Broker *broker, KSharedConfig *config )
+Settings::Settings( Broker *broker, KSharedConfig::Ptr config )
 	:d(new Private)
 {
     d->broker = broker;
@@ -197,7 +197,7 @@ int Settings::disablePercentageWordError() const
 
 int Settings::disableWordErrorCount() const
 {
-    return d->disableWordCount; 
+    return d->disableWordCount;
 }
 
 void Settings::save()

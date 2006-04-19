@@ -77,7 +77,7 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     textEdit->viewport()->installEventFilter( this );
 
     if ( !configFile.isEmpty() )
-        d->broker = Broker::openBroker( KSharedConfig::openConfig( configFile ).data() );
+        d->broker = Broker::openBroker( KSharedConfig::openConfig( configFile ) );
     else
         d->broker = Broker::openBroker();
 
@@ -118,7 +118,7 @@ void Highlighter::slotRehighlight()
 #warning "Use qt-copy for rehighlight"
 #endif
 	// Qt 4.2 function, see patch: http://websvn.kde.org/trunk/qt-copy/patches/0112-ksyntaxhighlighter-rehighlight-document.diff
-    rehighlight(); 
+    rehighlight();
 
     } else {
 	//rehighlight the current para only (undo/redo safe)
@@ -210,7 +210,7 @@ void Highlighter::setActive( bool active )
 #endif
     // Qt 4.2 function, see patch: http://websvn.kde.org/trunk/qt-copy/patches/0112-ksyntaxhighlighter-rehighlight-document.diff
     rehighlight();
-    
+
 
     if ( d->active )
         emit activeChanged( i18n("As-you-type spell checking enabled.") );
