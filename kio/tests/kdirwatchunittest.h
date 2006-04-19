@@ -56,6 +56,7 @@ private:
 
   void touch_file (const QString& file);
   void remove_file (const QString& file);
+  void rename_file (const QString& from, const QString& to);
 
   QString  m_lastSignal;
   QString m_workingDir;

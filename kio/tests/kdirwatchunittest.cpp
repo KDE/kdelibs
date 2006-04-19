@@ -34,6 +34,8 @@ void KDirWatchTest::VERIFY_NOTHING()
         if (m_s[i] != m_signals[i])
             nothing_failed = false;
 
+    KDirWatch::statistics();
+
     VERIFY (nothing_failed);
 }
 
@@ -99,6 +101,11 @@ void KDirWatchTest::touch_file (const QString& file)
   f.open(IO_WriteOnly);
 }
 
+void KDirWatchTest::rename_file(const QString& from, const QString& to)
+{
+  ::rename(QFile::encodeName(from), QFile::encodeName(to));
+}
+
 KUNITTEST_MODULE ( kunittest_kdirwatch, "KDirWatchTest" )
 KUNITTEST_MODULE_REGISTER_TESTER (KDirWatchTest)
 
@@ -124,7 +131,7 @@ void KDirWatchTest::allTests()
     dir->mkdir ("does");
     VERIFY_DIRTY (m_workingDir);
     touch_file (m_workingDir + "/file");
-    VERIFY_DIRTY (m_workingDir + "/file");
+    VERIFY_DIRTY (m_workingDir);
     VERIFY_NOTHING ();
     remove_file (m_workingDir + "/file");
     d->addDir (m_workingDir + "/does/not/exist");
@@ -142,6 +149,28 @@ void KDirWatchTest::allTests()
     VERIFY_NOTHING();
     dir->rmdir ("does");
     VERIFY_NOTHING();
+
+    d->addFile(m_workingDir + "/a");
+    touch_file(m_workingDir + "/a");
+    VERIFY_CREATED (m_workingDir + "/a");
+
+    rename_file (m_workingDir + "/a", m_workingDir + "/b");
+    VERIFY_DELETED (m_workingDir + "/a");
+    VERIFY_NOTHING();
+
+    touch_file (m_workingDir + "/a");
+    VERIFY_CREATED (m_workingDir + "/a");
+    VERIFY_NOTHING();
+
+    touch_file (m_workingDir + "/a");
+    VERIFY_DIRTY (m_workingDir + "/a");
+
+    remove_file (m_workingDir + "/b");
+    VERIFY_NOTHING();
+
+    d->removeFile(m_workingDir + "/a");
+
+    remove_file(m_workingDir + "/a");
 
     VERIFY (dir->rmdir (m_workingDir));
     delete d;
