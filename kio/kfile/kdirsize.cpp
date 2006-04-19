@@ -125,9 +125,9 @@ KIO::filesize_t KDirSize::dirSize( const KUrl & directory )
 }
 
 
-void KDirSize::slotResult( KIO::Job * job )
+void KDirSize::slotResult( KJob * job )
 {
-    kDebug(kfile_area) << " KDirSize::slotResult( KIO::Job * job ) m_lstItems:" << m_lstItems.count() << endl;
+    kDebug(kfile_area) << " KDirSize::slotResult( KJob * job ) m_lstItems:" << m_lstItems.count() << endl;
     if ( !m_lstItems.isEmpty() )
     {
         removeSubjob(job);

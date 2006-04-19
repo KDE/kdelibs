@@ -54,8 +54,8 @@ struct DownloadDialog::Private
     QWidget *m_page;
     QTreeWidget *m_lvtmp_r, *m_lvtmp_d, *m_lvtmp_l;
     QList<Entry*> m_installlist;
-    QMap<KIO::Job*, Provider*> m_variantjobs;
-    QMap<KIO::Job*, QStringList> m_variants;
+    QMap<KJob*, Provider*> m_variantjobs;
+    QMap<KJob*, QStringList> m_variants;
     QMap<Provider*, Provider*> m_newproviders;
 };
 
@@ -288,7 +288,7 @@ void DownloadDialog::addProvider(Provider *p)
   QTimer::singleShot(100, this, SLOT(slotFinish()));
 }
 
-void DownloadDialog::slotResult(KIO::Job *job)
+void DownloadDialog::slotResult(KJob *job)
 {
   QDomDocument dom;
   QDomElement knewstuff;
@@ -487,7 +487,7 @@ void DownloadDialog::slotInstall()
     KUrl dest = KUrl(m_s->downloadDestination(e));
 
     KIO::FileCopyJob *job = KIO::file_copy(source, dest, -1, true);
-    connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotInstalled(KIO::Job*)));
+    connect(job, SIGNAL(result(KJob*)), SLOT(slotInstalled(KJob*)));
   }
 }
 
@@ -536,7 +536,7 @@ void DownloadDialog::install(Entry *e)
   d->m_installlist.append(e);
 }
 
-void DownloadDialog::slotInstalled(KIO::Job *job)
+void DownloadDialog::slotInstalled(KJob *job)
 {
   bool ret = (job->error() == 0);
   KIO::FileCopyJob *cjob;
@@ -738,7 +738,7 @@ void DownloadDialog::slotPage(QWidget *w)
 
 void DownloadDialog::loadProvider(Provider *p)
 {
-  QMap<KIO::Job*, Provider*>::Iterator it;
+  QMap<KJob*, Provider*>::Iterator it;
 
   for(it = m_jobs.begin(); it != m_jobs.end(); it++)
   {
@@ -784,7 +784,7 @@ void DownloadDialog::loadProvider(Provider *p)
     d->m_variants[variantjob] = urlvariants;
     m_data[variantjob] = "";
 
-    connect(variantjob, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));
+    connect(variantjob, SIGNAL(result(KJob*)), SLOT(slotResult(KJob*)));
     connect(variantjob, SIGNAL(data(KIO::Job*, const QByteArray&)),
       SLOT(slotData(KIO::Job*, const QByteArray&)));
   }
@@ -803,7 +803,7 @@ void DownloadDialog::loadProvider(Provider *p)
   //m_jobs[job] = p; // not used anymore due to variants
   m_data[job] = "";
 
-  connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));
+  connect(job, SIGNAL(result(KJob*)), SLOT(slotResult(KJob*)));
   connect(job, SIGNAL(data(KIO::Job*, const QByteArray&)),
     SLOT(slotData(KIO::Job*, const QByteArray&)));
 }

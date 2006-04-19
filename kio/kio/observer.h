@@ -177,17 +177,17 @@ protected:
 
 public Q_SLOTS:
 
-  void slotTotalSize( KIO::Job*, KIO::filesize_t size );
+  void slotTotalSize( KJob*, qulonglong size );
   void slotTotalFiles( KIO::Job*, unsigned long files );
   void slotTotalDirs( KIO::Job*, unsigned long dirs );
 
-  void slotProcessedSize( KIO::Job*, KIO::filesize_t size );
+  void slotProcessedSize( KJob*, qulonglong size );
   void slotProcessedFiles( KIO::Job*, unsigned long files );
   void slotProcessedDirs( KIO::Job*, unsigned long dirs );
 
   void slotSpeed( KIO::Job*, unsigned long speed );
-  void slotPercent( KIO::Job*, unsigned long percent );
-  void slotInfoMessage( KIO::Job*, const QString & msg );
+  void slotPercent( KJob*, unsigned long percent );
+  void slotInfoMessage( KJob*, const QString & msg );
 
   void slotCopying( KIO::Job*, const KUrl& src, const KUrl& dest );
   void slotMoving( KIO::Job*, const KUrl& src, const KUrl& dest );

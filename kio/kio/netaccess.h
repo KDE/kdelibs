@@ -33,6 +33,7 @@ class QWidget;
 
 template<typename T, typename K> class QMap;
 
+class KJob;
 namespace KIO {
 
   class Job;
@@ -443,7 +444,7 @@ private:
     friend class I_like_this_class;
 
 private Q_SLOTS:
-    void slotResult( KIO::Job * job );
+    void slotResult( KJob * job );
     void slotMimetype( KIO::Job * job, const QString & type );
     void slotData( KIO::Job*, const QByteArray& );
     void slotRedirection( KIO::Job*, const KUrl& );

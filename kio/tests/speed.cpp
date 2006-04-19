@@ -33,8 +33,8 @@ SpeedTest::SpeedTest( const KUrl & url )
     setObjectName( "speed" );
     Job *job = listRecursive( url );
     //Job *job = del( KUrl("file:" + QDir::currentPath()) ); DANGEROUS !
-    connect(job, SIGNAL( result( KIO::Job*)),
-	    SLOT( finished( KIO::Job* ) ));
+    connect(job, SIGNAL( result( KJob*)),
+	    SLOT( finished( KJob* ) ));
     /*connect(job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
 	    SLOT( entries( KIO::Job*, const KIO::UDSEntryList&)));
     */
@@ -49,7 +49,7 @@ void SpeedTest::entries(KIO::Job*, const UDSEntryList& list) {
 }
 
 
-void SpeedTest::finished(Job*) {
+void SpeedTest::finished(KJob*) {
     kDebug() << "job finished" << endl;
     qApp->quit();
 }

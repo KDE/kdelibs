@@ -303,16 +303,16 @@ void ForwardingSlaveBase::connectJob(KIO::Job *job)
         kDebug() << it.key() << " = " << it.data() << endl;
 #endif
 
-    connect( job, SIGNAL( result(KIO::Job *) ),
-             this, SLOT( slotResult(KIO::Job *) ) );
-    connect( job, SIGNAL( warning(KIO::Job *, const QString &) ),
-             this, SLOT( slotWarning(KIO::Job *, const QString &) ) );
-    connect( job, SIGNAL( infoMessage(KIO::Job *, const QString &) ),
-             this, SLOT( slotInfoMessage(KIO::Job *, const QString &) ) );
-    connect( job, SIGNAL( totalSize(KIO::Job *, KIO::filesize_t) ),
-             this, SLOT( slotTotalSize(KIO::Job *, KIO::filesize_t) ) );
-    connect( job, SIGNAL( processedSize(KIO::Job *, KIO::filesize_t) ),
-             this, SLOT( slotProcessedSize(KIO::Job *, KIO::filesize_t) ) );
+    connect( job, SIGNAL( result(KJob *) ),
+             this, SLOT( slotResult(KJob *) ) );
+    connect( job, SIGNAL( warning(KJob *, const QString &, const QString &) ),
+             this, SLOT( slotWarning(KJob *, const QString &) ) );
+    connect( job, SIGNAL( infoMessage(KJob *, const QString &, const QString &) ),
+             this, SLOT( slotInfoMessage(KJob *, const QString &) ) );
+    connect( job, SIGNAL( totalSize(KJob *, qulonglong) ),
+             this, SLOT( slotTotalSize(KJob *, qulonglong) ) );
+    connect( job, SIGNAL( processedSize(KJob *, qulonglong) ),
+             this, SLOT( slotProcessedSize(KJob *, qulonglong) ) );
     connect( job, SIGNAL( speed(KIO::Job *, unsigned long) ),
              this, SLOT( slotSpeed(KIO::Job *, unsigned long) ) );
 }
@@ -346,7 +346,7 @@ void ForwardingSlaveBase::connectTransferJob(KIO::TransferJob *job)
 
 //////////////////////////////////////////////////////////////////////////////
 
-void ForwardingSlaveBase::slotResult(KIO::Job *job)
+void ForwardingSlaveBase::slotResult(KJob *job)
 {
     if ( job->error() != 0)
     {
@@ -367,22 +367,22 @@ void ForwardingSlaveBase::slotResult(KIO::Job *job)
     eventLoop.exit();
 }
 
-void ForwardingSlaveBase::slotWarning(KIO::Job* /*job*/, const QString &msg)
+void ForwardingSlaveBase::slotWarning(KJob* /*job*/, const QString &msg)
 {
     warning(msg);
 }
 
-void ForwardingSlaveBase::slotInfoMessage(KIO::Job* /*job*/, const QString &msg)
+void ForwardingSlaveBase::slotInfoMessage(KJob* /*job*/, const QString &msg)
 {
     infoMessage(msg);
 }
 
-void ForwardingSlaveBase::slotTotalSize(KIO::Job* /*job*/, KIO::filesize_t size)
+void ForwardingSlaveBase::slotTotalSize(KJob* /*job*/, qulonglong size)
 {
     totalSize(size);
 }
 
-void ForwardingSlaveBase::slotProcessedSize(KIO::Job* /*job*/, KIO::filesize_t size)
+void ForwardingSlaveBase::slotProcessedSize(KJob* /*job*/, qulonglong size)
 {
     processedSize(size);
 }

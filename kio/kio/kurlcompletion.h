@@ -176,7 +176,7 @@ protected:
 
 protected Q_SLOTS:
 	void slotEntries( KIO::Job *, const KIO::UDSEntryList& );
-	void slotIOFinished( KIO::Job * );
+	void slotIOFinished( KJob * );
 
 private:
 

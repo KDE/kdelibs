@@ -33,6 +33,8 @@
 #include <kurl.h>
 #include <kio/global.h>
 
+#include <kjob.h>
+
 class Observer;
 class QTimer;
 
@@ -50,8 +52,8 @@ namespace KIO {
      *
      * \code
      *   KIO::Job * job = KIO::someoperation( some parameters );
-     *   connect( job, SIGNAL( result( KIO::Job * ) ),
-     *            this, SLOT( slotResult( KIO::Job * ) ) );
+     *   connect( job, SIGNAL( result( KJob * ) ),
+     *            this, SLOT( slotResult( KJob * ) ) );
      * \endcode
      *   (other connects, specific to the job)
      *
@@ -64,7 +66,7 @@ namespace KIO {
      * @see KIO::Scheduler
      * @see KIO::Slave
      */
-    class KIO_EXPORT Job : public QObject {
+    class KIO_EXPORT Job : public KJob {
         Q_OBJECT
 
     protected:
@@ -72,6 +74,7 @@ namespace KIO {
 
     public:
         virtual ~Job();
+        void start() {} // Since KIO autostarts its jobs
 
         /**
          * Abort this job.
@@ -84,37 +87,6 @@ namespace KIO {
          * on result being emitted or not.
          */
         virtual void kill( bool quietly = true );
-
-        /**
-	 * Returns the error code, if there has been an error.
-         * Only call this method from the slot connected to result().
-         * @return the error code for this job, 0 if no error.
-         * Error codes are defined in KIO::Error.
-         */
-        int error() const { return m_error; }
-
-        /**
-	 * Returns the progress id for this job.
-         * @return the progress id for this job, as returned by uiserver
-         */
-        int progressId() const { return m_progressId; }
-
-        /**
-	 * Sets the progress id for this job.
-	 * SimpleJob calls this with the value it gets from uiserver.
-	 * @internal
-         */
-        void setProgressId( int id ) { m_progressId = id; }
-
-        /**
-	 * Returns the error text if there has been an error.
-         * Only call if error is not 0.
-         * This is really internal, better use errorString or errorDialog.
-	 *
-         * @return a string to help understand the error, usually the url
-         * related to the error. Only valid if error() is not 0.
-         */
-        const QString & errorText() const { return m_errorText; }
 
         /**
          * Converts an error code and a non-i18n error message into an
@@ -309,20 +281,7 @@ namespace KIO {
          */
         QString queryMetaData(const QString &key);
 
-        /**
-         * Returns the processed size for this job.
-         * @see processedSize
-         */
-        KIO::filesize_t getProcessedSize();
-
     Q_SIGNALS:
-        /**
-         * Emitted when the job is finished, in any case (completed, canceled,
-         * failed...). Use error to know the result.
-	 * @param job the job that emitted this signal
-         */
-        void result( KIO::Job *job );
-
         /**
          * @deprecated. Don't use !
          * Emitted when the job is canceled.
@@ -330,24 +289,7 @@ namespace KIO {
          * in this case, ERR_USER_CANCELED.
 	 * @param job the job that emitted this signal
          */
-        void canceled( KIO::Job *job );
-
-        /**
-         * Emitted to display information about this job, as sent by the slave.
-         * Examples of message are "Resolving host", "Connecting to host...", etc.
-	 * @param job the job that emitted this signal
-	 * @param msg the info message
-         */
-        void infoMessage( KIO::Job *job, const QString & msg );
-        // KDE4: Separate rich-text string from plain-text string, for different widgets.
-
-        /**
-         * Emitted to display a warning about this job, as sent by the slave.
-         * @param job the job that emitted this signal
-         * @param msg the info message
-         */
-        void warning( KIO::Job *job, const QString & msg );
-        // KDE4: Separate rich-text string from plain-text string, for different widgets.
+        void canceled( KJob *job );
 
         /**
          * Emitted when the slave successfully connected to the host.
@@ -356,32 +298,6 @@ namespace KIO {
 	 * @param job the job that emitted this signal
          */
         void connected( KIO::Job *job );
-
-        /**
-         * Progress signal showing the overall progress of the job
-         * This is valid for any kind of job, and allows using a
-         * a progress bar very easily. (see KProgressBar).
-	 * Note that this signal is not emitted for finished jobs.
-	 * @param job the job that emitted this signal
-	 * @param percent the percentage
-         */
-        void percent( KIO::Job *job, unsigned long percent );
-
-        /**
-         * Emitted when we know the size of this job (data size for transfers,
-         * number of entries for listings).
-	 * @param job the job that emitted this signal
-	 * @param size the total size in bytes
-         */
-        void totalSize( KIO::Job *job, KIO::filesize_t size );
-
-        /**
-         * Regularly emitted to show the progress of this job
-         * (current data size for transfers, entries listed).
-	 * @param job the job that emitted this signal
-	 * @param size the processed size in bytes
-         */
-        void processedSize( KIO::Job *job, KIO::filesize_t size );
 
         /**
          * Emitted to display information about the speed of this job.
@@ -400,7 +316,9 @@ namespace KIO {
 	 * @param job the subjob
 	 * @see result()
          */
-        virtual void slotResult( KIO::Job *job );
+        virtual void slotResult( KJob *job );
+
+        void slotFinished( KJob *job, int id );
 
         /**
          * Forward signal from subjob.
@@ -415,7 +333,7 @@ namespace KIO {
 	 * @param msg the info message
 	 * @see infoMessage()
          */
-        void slotInfoMessage( KIO::Job *job, const QString &msg );
+        void slotInfoMessage( KJob *job, const QString &msg );
 
         /**
          * Remove speed information.
@@ -443,7 +361,7 @@ namespace KIO {
          * @param mergeMetaData if set, the metadata received by the subjob is
          *                      merged into this job.
          */
-        void removeSubjob( Job *job, bool mergeMetaData = false );
+        void removeSubjob( KJob *job, bool mergeMetaData = false );
 
         /**
          * @return true if we still have subjobs running
@@ -457,32 +375,11 @@ namespace KIO {
 
         /**
          * Utility function for inherited jobs.
-         * Emits the percent signal if bigger than m_percent,
-         * after calculating it from the parameters.
-	 *
-	 * @param processedSize the processed size in bytes
-	 * @param totalSize the total size in bytes
-         */
-        void emitPercent( KIO::filesize_t processedSize, KIO::filesize_t totalSize );
-
-        /**
-         * Utility function for inherited jobs.
          * Emits the speed signal and starts the timer for removing that info
 	 *
 	 * @param speed the speed in bytes/s
          */
         void emitSpeed( unsigned long speed );
-
-        /**
-         * Utility function to emit the result signal, and suicide this job.
-         * It first tells the observer to hide the progress dialog for this job.
-         */
-        void emitResult();
-
-        /**
-         * Set the processed size, does not emit processedSize
-         */
-        void setProcessedSize(KIO::filesize_t size);
 
         /**
          * @internal
@@ -495,9 +392,6 @@ namespace KIO {
                EF_ListJobUnrestricted = (1 << 3) };
         int &extraFlags();
 
-        int m_error;
-        QString m_errorText;
-        unsigned long m_percent;
         MetaData m_incomingMetaData;
         MetaData m_outgoingMetaData;
 
@@ -506,7 +400,6 @@ namespace KIO {
     private:
         // Could be a QSet, but well, it's very typical to have only one item in this list.
         QList<Job *> m_subjobs;
-        int m_progressId; // for uiserver
         QTimer *m_speedTimer;
         QPointer<QWidget> m_window;
 
@@ -536,6 +429,8 @@ namespace KIO {
                   bool showProgressInfo);
 
         ~SimpleJob();
+
+        void start();
 
         /**
 	 * Returns the SimpleJob's URL
@@ -895,7 +790,7 @@ namespace KIO {
          * Called when m_subJob finishes.
 	 * @param job the job that finished
          */
-        virtual void slotResult( KIO::Job *job );
+        virtual void slotResult( KJob *job );
 
         /**
          * Flow control. Suspend data processing from the slave.
@@ -1154,7 +1049,7 @@ namespace KIO {
         /**
          * File transfer completed.
          *
-         * When all files have been processed, result(KIO::Job *) gets
+         * When all files have been processed, result(KJob *) gets
          * emitted.
 	 * @param id the id of the request
          */
@@ -1294,26 +1189,26 @@ namespace KIO {
          * Called whenever a subjob finishes.
 	 * @param job the job that emitted this signal
          */
-        virtual void slotResult( KIO::Job *job );
+        virtual void slotResult( KJob *job );
 
         /**
          * Forward signal from subjob
 	 * @param job the job that emitted this signal
 	 * @param size the processed size in bytes
          */
-        void slotProcessedSize( KIO::Job *job, KIO::filesize_t size );
+        void slotProcessedSize( KJob *job, qulonglong size );
         /**
          * Forward signal from subjob
 	 * @param job the job that emitted this signal
 	 * @param size the total size
          */
-        void slotTotalSize( KIO::Job *job, KIO::filesize_t size );
+        void slotTotalSize( KJob *job, qulonglong size );
         /**
          * Forward signal from subjob
 	 * @param job the job that emitted this signal
 	 * @param pct the percentage
          */
-        void slotPercent( KIO::Job *job, unsigned long pct );
+        void slotPercent( KJob *job, unsigned long pct );
         /**
          * Forward signal from subjob
 	 * @param job the job that emitted this signal
@@ -1431,7 +1326,7 @@ namespace KIO {
     protected Q_SLOTS:
         virtual void slotFinished( );
         virtual void slotMetaData( const KIO::MetaData &_metaData);
-        virtual void slotResult( KIO::Job *job );
+        virtual void slotResult( KJob *job );
         void slotListEntries( const KIO::UDSEntryList& list );
         void slotRedirection( const KUrl &url );
         void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list );
@@ -1642,19 +1537,19 @@ namespace KIO {
         void statNextSrc();
 
         // Those aren't slots but submethods for slotResult.
-        void slotResultStating( KIO::Job * job );
+        void slotResultStating( KJob * job );
         void startListing( const KUrl & src );
-        void slotResultCreatingDirs( KIO::Job * job );
-        void slotResultConflictCreatingDirs( KIO::Job * job );
+        void slotResultCreatingDirs( KJob * job );
+        void slotResultConflictCreatingDirs( KJob * job );
         void createNextDir();
-        void slotResultCopyingFiles( KIO::Job * job );
-        void slotResultConflictCopyingFiles( KIO::Job * job );
+        void slotResultCopyingFiles( KJob * job );
+        void slotResultConflictCopyingFiles( KJob * job );
         void copyNextFile();
-        void slotResultDeletingDirs( KIO::Job * job );
+        void slotResultDeletingDirs( KJob * job );
         void deleteNextDir();
         void skip( const KUrl & sourceURL );
-        void slotResultRenaming( KIO::Job * job );
-        //void slotResultSettingDirAttributes( KIO::Job * job );
+        void slotResultRenaming( KJob * job );
+        //void slotResultSettingDirAttributes( KJob * job );
         void setNextDirAttribute();
     private:
         void startRenameJob(const KUrl &slave_url);
@@ -1665,16 +1560,16 @@ namespace KIO {
     protected Q_SLOTS:
         void slotStart();
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
-        virtual void slotResult( KIO::Job *job );
+        virtual void slotResult( KJob *job );
         /**
          * Forward signal from subjob
          */
-        void slotProcessedSize( KIO::Job*, KIO::filesize_t data_size );
+        void slotProcessedSize( KJob*, qulonglong data_size );
         /**
          * Forward signal from subjob
 	 * @param size the total size
          */
-        void slotTotalSize( KIO::Job*, KIO::filesize_t size );
+        void slotTotalSize( KJob*, qulonglong size );
 
         void slotReport();
     private:
@@ -1786,12 +1681,12 @@ namespace KIO {
     protected Q_SLOTS:
         void slotStart();
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
-        virtual void slotResult( KIO::Job *job );
+        virtual void slotResult( KJob *job );
 
         /**
          * Forward signal from subjob
          */
-        void slotProcessedSize( KIO::Job*, KIO::filesize_t data_size );
+        void slotProcessedSize( KJob*, qulonglong data_size );
         void slotReport();
 
     private:

@@ -94,7 +94,7 @@ TestRegressionWindow::~TestRegressionWindow()
 	{
 		m_activeProcess->kill();
 
-		/* This leads to: 
+		/* This leads to:
 		 * QProcess object destroyed while process is still running.
 		 * Any idea why??
 		delete m_activeProcess;
@@ -200,7 +200,7 @@ void TestRegressionWindow::initTestsDirectory()
 			m_ui.actionRun_tests->setEnabled(true);
 
 		// Initialize map (to prevent assert below)...
-		m_directoryMap.insert(QString(), QStringList()); 
+		m_directoryMap.insert(QString(), QStringList());
 
 		// Setup root tree widget item...
 		(void) new QTreeWidgetItem(m_ui.treeWidget, QStringList(m_testsUrl.path() + "/tests"));
@@ -226,7 +226,7 @@ void TestRegressionWindow::initTestsDirectory()
 		KUrl listUrl = m_testsUrl; listUrl.addPath("tests");
 		KIO::ListJob *job = KIO::listRecursive(listUrl, false /* no progress */, false /* no hidden files */);
 
-		connect(job, SIGNAL(result(KIO::Job *)), SLOT(directoryListingFinished(KIO::Job *)));
+		connect(job, SIGNAL(result(KJob *)), SLOT(directoryListingFinished(KJob *)));
 
 		connect(job, SIGNAL(entries(KIO::Job *, const KIO::UDSEntryList &)),
 				this, SLOT(directoryListingResult(KIO::Job *, const KIO::UDSEntryList &)));
@@ -295,14 +295,14 @@ void TestRegressionWindow::directoryListingResult(KIO::Job *, const KIO::UDSEntr
 
 			QString cachedDirectory = (lastSlashPos > 0 ? name.mid(0, lastSlashPos) : QString());
 			QString cachedFilename = name.mid(lastSlashPos + 1);
-	
+
 			assert(m_directoryMap.constFind(cachedDirectory) != m_directoryMap.constEnd());
 			m_directoryMap[cachedDirectory].append(cachedFilename);
 		}
 	}
 }
 
-void TestRegressionWindow::directoryListingFinished(KIO::Job *)
+void TestRegressionWindow::directoryListingFinished(KJob *)
 {
 	QTreeWidgetItem *topLevelItem = m_ui.treeWidget->topLevelItem(0);
 
@@ -388,7 +388,7 @@ void TestRegressionWindow::directoryListingFinished(KIO::Job *)
 
 			// Check baseline directory for this test...
 			QString baseLinePath = m_testsUrl.path() + "/baseline/" + cacheName;
-	
+
 			bool dom[9], render[9];
 			for(unsigned int i = 0; i < 9; ++i)
 			{
@@ -628,7 +628,7 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 		{
 			KMessageBox::error(0, i18n("Can't find testregression executable!"));
 			return;
-		} 
+		}
 		else
 		{
 			program = program2;
@@ -1100,10 +1100,10 @@ void TestRegressionWindow::treeWidgetContextMenuRequested(const QPoint &pos)
 		menu.addSeparator();
 		menu.addAction(SmallIcon("add"), i18n("Add to ignores..."), this, SLOT(addToIgnores()));
 		menu.addAction(SmallIcon("button_cancel"), i18n("Remove from ignores..."), this, SLOT(removeFromIgnores()));
-		
+
 		if(!menu.exec(m_ui.treeWidget->mapToGlobal(pos)))
 			m_activeTreeItem = 0; // Needs reset...
-	}	
+	}
 }
 
 void TestRegressionWindow::updateLogOutput(const QString &data)
@@ -1161,7 +1161,7 @@ unsigned long TestRegressionWindow::countLogLines() const
 {
 	QTextCursor cursor = m_ui.textEdit->textCursor();
 	cursor.movePosition(QTextCursor::Start);
-	
+
 	unsigned long lines = 0;
 	while(cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor))
 		lines++;

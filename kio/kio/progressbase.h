@@ -24,6 +24,7 @@
 #include <kio/global.h>
 
 class KUrl;
+class KJob;
 namespace KIO {
   class Job;
   class CopyJob;
@@ -145,7 +146,7 @@ public Q_SLOTS:
    * @param job the KIO::Job
    * @param size the total size in bytes
    */
-  virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t size ) {
+  virtual void slotTotalSize( KJob* job, qulonglong size ) {
     Q_UNUSED(job);Q_UNUSED(size);}
   /**
    * Called to set the total number of files.
@@ -167,7 +168,7 @@ public Q_SLOTS:
    * @param job the KIO::Job
    * @param bytes the processed size in bytes
    */
-  virtual void slotProcessedSize( KIO::Job* job, KIO::filesize_t bytes ) {
+  virtual void slotProcessedSize( KJob* job, qulonglong bytes ) {
     Q_UNUSED(job);Q_UNUSED(bytes);}
   /**
    * Called to set the number of processed files.
@@ -197,7 +198,7 @@ public Q_SLOTS:
    * @param job the KIO::Job
    * @param percent the percentage
    */
-  virtual void slotPercent( KIO::Job* job, unsigned long percent ) {
+  virtual void slotPercent( KJob* job, unsigned long percent ) {
     Q_UNUSED(job);Q_UNUSED(percent);}
 
   /**
@@ -246,7 +247,7 @@ Q_SIGNALS:
   void stopped();
 
 protected Q_SLOTS:
-  void slotFinished( KIO::Job* );
+  void slotFinished( KJob* );
 
 protected:
 

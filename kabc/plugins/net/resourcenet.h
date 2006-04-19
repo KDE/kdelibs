@@ -31,9 +31,7 @@ class QFile;
 class QTimer;
 class KTempFile;
 
-namespace KIO {
-class Job;
-}
+class KJob;
 
 namespace KABC {
 
@@ -88,8 +86,8 @@ class KABC_NET_EXPORT ResourceNet : public Resource
     void init( const KUrl &url, const QString &format );
 
   private Q_SLOTS:
-    void downloadFinished( KIO::Job* );
-    void uploadFinished( KIO::Job* );
+    void downloadFinished( KJob* );
+    void uploadFinished( KJob* );
 
   private:
     bool clearAndLoad( QFile *file );

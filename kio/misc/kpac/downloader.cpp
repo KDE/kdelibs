@@ -1,4 +1,4 @@
-/* 
+/*
    Copyright (c) 2003 Malte Starostik <malte@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@ namespace KPAC
         KIO::TransferJob* job = KIO::get( url, false, false );
         connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
                  SLOT( data( KIO::Job*, const QByteArray& ) ) );
-        connect( job, SIGNAL( result( KIO::Job* ) ), SLOT( result( KIO::Job* ) ) );
+        connect( job, SIGNAL( result( KJob* ) ), SLOT( result( KJob* ) ) );
     }
 
     void Downloader::failed()
@@ -66,13 +66,13 @@ namespace KPAC
         std::memcpy( m_data.data() + offset, data.data(), data.size() );
     }
 
-    void Downloader::result( KIO::Job* job )
+    void Downloader::result( KJob* job )
     {
         if ( !job->error() && !static_cast< KIO::TransferJob* >( job )->isErrorPage() )
         {
             bool dummy;
             m_script = KGlobal::charsets()->codecForName(
-                job->queryMetaData( "charset" ), dummy )->toUnicode( m_data );
+                static_cast<KIO::Job*>( job )->queryMetaData( "charset" ), dummy )->toUnicode( m_data );
             emit result( true );
         }
         else

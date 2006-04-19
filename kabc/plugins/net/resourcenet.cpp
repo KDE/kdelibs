@@ -189,8 +189,8 @@ bool ResourceNet::asyncLoad()
   KIO::Scheduler::checkSlaveOnHold( true );
   d->mLoadJob = KIO::file_copy( mUrl, dest, -1, true, false, false );
   d->mIsLoading = true;
-  connect( d->mLoadJob, SIGNAL( result( KIO::Job* ) ),
-           this, SLOT( downloadFinished( KIO::Job* ) ) );
+  connect( d->mLoadJob, SIGNAL( result( KJob* ) ),
+           this, SLOT( downloadFinished( KJob* ) ) );
 
   return true;
 }
@@ -281,8 +281,8 @@ bool ResourceNet::asyncSave( Ticket* )
   KIO::Scheduler::checkSlaveOnHold( true );
   d->mIsSaving = true;
   d->mSaveJob = KIO::file_copy( src, mUrl, -1, true, false, false );
-  connect( d->mSaveJob, SIGNAL( result( KIO::Job* ) ),
-           this, SLOT( uploadFinished( KIO::Job* ) ) );
+  connect( d->mSaveJob, SIGNAL( result( KJob* ) ),
+           this, SLOT( uploadFinished( KJob* ) ) );
 
   return true;
 }
@@ -339,7 +339,7 @@ QString ResourceNet::format() const
   return mFormatName;
 }
 
-void ResourceNet::downloadFinished( KIO::Job* )
+void ResourceNet::downloadFinished( KJob* )
 {
   kDebug(5700) << "ResourceNet::downloadFinished()" << endl;
 
@@ -364,7 +364,7 @@ void ResourceNet::downloadFinished( KIO::Job* )
   deleteLocalTempFile();
 }
 
-void ResourceNet::uploadFinished( KIO::Job *job )
+void ResourceNet::uploadFinished( KJob *job )
 {
   kDebug(5700) << "ResourceFile::uploadFinished()" << endl;
 

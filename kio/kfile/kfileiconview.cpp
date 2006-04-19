@@ -550,15 +550,15 @@ void KFileIconView::showPreviews()
     d->job = KIO::filePreview(*items(), d->previewIconSize,d->previewIconSize);
     d->job->setIgnoreMaximumSize(d->ignoreMaximumSize);
 
-    connect( d->job, SIGNAL( result( KIO::Job * )),
-             this, SLOT( slotPreviewResult( KIO::Job * )));
+    connect( d->job, SIGNAL( result( KJob * )),
+             this, SLOT( slotPreviewResult( KJob * )));
     connect( d->job, SIGNAL( gotPreview( const KFileItem*, const QPixmap& )),
              SLOT( gotPreview( const KFileItem*, const QPixmap& ) ));
 //     connect( d->job, SIGNAL( failed( const KFileItem* )),
 //              this, SLOT( slotFailed( const KFileItem* ) ));
 }
 
-void KFileIconView::slotPreviewResult( KIO::Job *job )
+void KFileIconView::slotPreviewResult( KJob *job )
 {
     if ( job == d->job )
         d->job = 0L;

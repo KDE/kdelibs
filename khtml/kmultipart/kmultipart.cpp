@@ -169,8 +169,8 @@ bool KMultiPart::openURL( const KUrl &url )
 
     emit started( 0 /*m_job*/ ); // don't pass the job, it would interfer with our own infoMessage
 
-    connect( m_job, SIGNAL( result( KIO::Job * ) ),
-             this, SLOT( slotJobFinished( KIO::Job * ) ) );
+    connect( m_job, SIGNAL( result( KJob * ) ),
+             this, SLOT( slotJobFinished( KJob * ) ) );
     connect( m_job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
              this, SLOT( slotData( KIO::Job *, const QByteArray & ) ) );
 
@@ -535,12 +535,12 @@ void KMultiPart::guiActivateEvent( KParts::GUIActivateEvent * )
     //    m_part->guiActivateEvent( e );
 }
 
-void KMultiPart::slotJobFinished( KIO::Job *job )
+void KMultiPart::slotJobFinished( KJob *job )
 {
     if ( job->error() )
     {
         // TODO use khtml's error:// scheme
-        job->showErrorDialog();
+        static_cast<KIO::Job*>( job )->showErrorDialog();
         emit canceled( job->errorString() );
     }
     else

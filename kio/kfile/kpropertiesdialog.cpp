@@ -352,7 +352,7 @@ void KPropertiesDialog::setFileNameReadOnly( bool ro )
     }
 }
 
-void KPropertiesDialog::slotStatResult( KIO::Job * )
+void KPropertiesDialog::slotStatResult( KJob * )
 {
 }
 
@@ -1200,7 +1200,7 @@ void KFilePropsPlugin::slotDirSizeUpdate()
          i18np("1 sub-folder","%n sub-folders",totalSubdirs)));
 }
 
-void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
+void KFilePropsPlugin::slotDirSizeFinished( KJob * job )
 {
   if (job->error())
     m_sizeLabel->setText( job->errorString() );
@@ -1234,8 +1234,8 @@ void KFilePropsPlugin::slotSizeDetermine()
   connect( d->dirSizeUpdateTimer, SIGNAL( timeout() ),
            SLOT( slotDirSizeUpdate() ) );
   d->dirSizeUpdateTimer->start(500);
-  connect( d->dirSizeJob, SIGNAL( result( KIO::Job * ) ),
-           SLOT( slotDirSizeFinished( KIO::Job * ) ) );
+  connect( d->dirSizeJob, SIGNAL( result( KJob * ) ),
+           SLOT( slotDirSizeFinished( KJob * ) ) );
   m_sizeStopButton->setEnabled(true);
   m_sizeDetermineButton->setEnabled(false);
 }
@@ -1312,7 +1312,7 @@ void KFilePropsPlugin::applyChanges()
       else // Copying a template
         job = KIO::copy( oldurl, properties->kurl() );
 
-      connect( job, SIGNAL( result( KIO::Job * ) ),
+      connect( job, SIGNAL( result( KJob * ) ),
                SLOT( slotCopyFinished( KIO::Job * ) ) );
       connect( job, SIGNAL( renamed( KIO::Job *, const KUrl &, const KUrl & ) ),
                SLOT( slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & ) ) );
@@ -2459,8 +2459,8 @@ void KFilePermissionsPropsPlugin::applyChanges()
     if ( defaultACLChange && d->fileSystemSupportsACLs )
       job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
 
-      connect( job, SIGNAL( result( KIO::Job * ) ),
-	       SLOT( slotChmodResult( KIO::Job * ) ) );
+      connect( job, SIGNAL( result( KJob * ) ),
+	       SLOT( slotChmodResult( KJob * ) ) );
       QEventLoop eventLoop;
       connect(this, SIGNAL(leaveModality()),
               &eventLoop, SLOT(quit()));
@@ -2474,8 +2474,8 @@ void KFilePermissionsPropsPlugin::applyChanges()
     if ( defaultACLChange && d->fileSystemSupportsACLs )
       job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
 
-      connect( job, SIGNAL( result( KIO::Job * ) ),
-	       SLOT( slotChmodResult( KIO::Job * ) ) );
+      connect( job, SIGNAL( result( KJob * ) ),
+	       SLOT( slotChmodResult( KJob * ) ) );
       QEventLoop eventLoop;
       connect(this, SIGNAL(leaveModality()),
               &eventLoop, SLOT(quit()));
@@ -2483,11 +2483,11 @@ void KFilePermissionsPropsPlugin::applyChanges()
     }
 }
 
-void KFilePermissionsPropsPlugin::slotChmodResult( KIO::Job * job )
+void KFilePermissionsPropsPlugin::slotChmodResult( KJob * job )
 {
   kDebug(250) << "KFilePermissionsPropsPlugin::slotChmodResult" << endl;
   if (job->error())
-    job->showErrorDialog( d->m_frame );
+      static_cast<KIO::Job*>( job )->showErrorDialog( d->m_frame );
   // allow apply() to return
   emit leaveModality();
 }

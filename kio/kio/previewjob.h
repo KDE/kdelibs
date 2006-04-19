@@ -68,7 +68,7 @@ namespace KIO {
         void removeItem( const KFileItem *item );
 
         /**
-         * If @p ignoreSize is true, then the preview is always 
+         * If @p ignoreSize is true, then the preview is always
          * generated regardless of the settings
          **/
         void setIgnoreMaximumSize(bool ignoreSize = true);
@@ -110,7 +110,7 @@ namespace KIO {
         void createThumbnail( const QString& );
 
     protected Q_SLOTS:
-        virtual void slotResult( KIO::Job *job );
+        virtual void slotResult( KJob *job );
 
     private Q_SLOTS:
         void startPreview();
@@ -128,7 +128,7 @@ namespace KIO {
     };
 
     /**
-     * Creates a PreviewJob to generate or retrieve a preview image 
+     * Creates a PreviewJob to generate or retrieve a preview image
      * for the given URL.
      *
      * @param items files to get previews for
@@ -150,7 +150,7 @@ namespace KIO {
     KIO_EXPORT PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 
     /**
-     * Creates a PreviewJob to generate or retrieve a preview image 
+     * Creates a PreviewJob to generate or retrieve a preview image
      * for the given URL.
      *
      * @param items files to get previews for

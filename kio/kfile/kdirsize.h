@@ -85,7 +85,7 @@ protected:
 
 protected Q_SLOTS:
 
-  virtual void slotResult( KIO::Job *job );
+  virtual void slotResult( KJob *job );
   void slotEntries( KIO::Job * , const KIO::UDSEntryList &);
   void processList();
 

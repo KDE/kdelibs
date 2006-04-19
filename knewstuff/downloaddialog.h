@@ -25,6 +25,7 @@
 
 #include <qmap.h>
 
+class KJob;
 namespace KIO
 {
   class Job;
@@ -169,11 +170,11 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
     void slotOk();
 
   private Q_SLOTS:
-    void slotResult(KIO::Job *job);
+    void slotResult(KJob *job);
     void slotData(KIO::Job *job, const QByteArray &a);
     void slotInstall();
     void slotDetails();
-    void slotInstalled(KIO::Job *job);
+    void slotInstalled(KJob *job);
     void slotTab(int tab);
     void slotSelected();
     void slotPage(QWidget *w);
@@ -202,8 +203,8 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
     QMap<QWidget*, Provider*> m_providers;
     QMap<QWidget*, QTextBrowser*> m_rts;
     QMap<QWidget*, QList<QPushButton*>* > m_buttons;
-    QMap<KIO::Job*, Provider*> m_jobs;
-    QMap<KIO::Job*, QString> m_data;
+    QMap<KJob*, Provider*> m_jobs;
+    QMap<KJob*, QString> m_data;
     QString m_filter;
     Engine *m_engine;
     Private* const d;

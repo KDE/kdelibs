@@ -38,22 +38,22 @@ class ForwardingSlaveBasePrivate;
  *
  * If the resulting ioslave should be a simple proxy, you only need
  * to implement the ForwardingSlaveBase::rewriteURL() method.
- * 
+ *
  * For more advanced behavior, the classic ioslave methods should
  * be reimplemented, because their default behavior in this class
  * is to forward using the ForwardingSlaveBase::rewriteURL() method.
- * 
+ *
  * A possible code snippet for an advanced stat() behavior would look
  * like this in the child class:
- * 
+ *
  * \code
  *     void ChildProtocol::stat(const KUrl &url)
  *     {
  *         bool is_special = false;
- *         
+ *
  *         // Process the URL to see if it should have
  *         // a special treatment
- *         
+ *
  *         if ( is_special )
  *         {
  *             // Handle the URL ourselves
@@ -70,18 +70,18 @@ class ForwardingSlaveBasePrivate;
  *         }
  *     }
  * \endcode
- * 
+ *
  * Of course in this case, you surely need to reimplement listDir()
  * and get() accordingly.
- * 
+ *
  * If you want view on directories to be correctly refreshed when
  * something changes on a forwarded URL, you'll need a companion kded
  * module to emit the KDirNotify Files*() DCOP signals.
- * 
+ *
  * This class was initially used for media:/ ioslave. This ioslave code
  * and the MediaDirNotify class of its companion kded module can be a
  * good source of inspiration.
- * 
+ *
  * @see ForwardingSlaveBase::rewriteURL()
  * @author Kevin Ottens <ervin@ipsquad.net>
  */
@@ -133,7 +133,7 @@ protected:
      * @return true if the given url could be correctly rewritten
      */
     virtual bool rewriteURL(const KUrl &url, KUrl &newURL)=0;
-    
+
     /**
      * Allow to modify a UDSEntry before it's sent to the ioslave enpoint.
      * This is the default implementation working in most case, but sometimes
@@ -146,7 +146,7 @@ protected:
      */
     virtual void prepareUDSEntry(KIO::UDSEntry &entry,
                                  bool listing=false) const;
-    
+
     /**
      * Return the URL being processed by the ioslave
      * Only access it inside prepareUDSEntry()
@@ -163,9 +163,9 @@ private:
     KUrl m_processedURL;
     KUrl m_requestedURL;
     ForwardingSlaveBasePrivate *d;
-    
+
     bool internalRewriteURL(const KUrl &url, KUrl &newURL);
-    
+
     void connectJob(Job *job);
     void connectSimpleJob(SimpleJob *job);
     void connectListJob(ListJob *job);
@@ -175,11 +175,11 @@ private:
 
 private Q_SLOTS:
     // KIO::Job
-    void slotResult(KIO::Job *job);
-    void slotWarning(KIO::Job *job, const QString &msg);
-    void slotInfoMessage(KIO::Job *job, const QString &msg);
-    void slotTotalSize(KIO::Job *job, KIO::filesize_t size);
-    void slotProcessedSize(KIO::Job *job, KIO::filesize_t size);
+    void slotResult(KJob *job);
+    void slotWarning(KJob *job, const QString &msg);
+    void slotInfoMessage(KJob *job, const QString &msg);
+    void slotTotalSize(KJob *job, qulonglong size);
+    void slotProcessedSize(KJob *job, qulonglong size);
     void slotSpeed(KIO::Job *job, unsigned long bytesPerSecond);
 
     // KIO::SimpleJob subclasses

@@ -130,12 +130,12 @@ class KABC_LDAPKIO_EXPORT ResourceLDAPKIO : public Resource
 protected Q_SLOTS:
     void entries( KIO::Job*, const KIO::UDSEntryList& );
     void data( KIO::Job*, const QByteArray& );
-    void result( KIO::Job* );
-    void listResult( KIO::Job* );
-    void syncLoadSaveResult( KIO::Job* );
-    void saveResult( KIO::Job* );
+    void result( KJob* );
+    void listResult( KJob* );
+    void syncLoadSaveResult( KJob* );
+    void saveResult( KJob* );
     void saveData( KIO::Job*, QByteArray& );
-    void loadCacheResult( KIO::Job* );
+    void loadCacheResult( KJob* );
 
 Q_SIGNALS:
     void leaveModality();

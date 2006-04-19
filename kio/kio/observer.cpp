@@ -113,7 +113,7 @@ MetaData Observer::metadata( int progressId )
     return job->metaData();
 }
 
-void Observer::slotTotalSize( KIO::Job* job, KIO::filesize_t size )
+void Observer::slotTotalSize( KJob* job, qulonglong size )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotTotalSize " << job << " " << KIO::number(size) << endl;
   m_uiserver->totalSize64( job->progressId(), size );
@@ -131,7 +131,7 @@ void Observer::slotTotalDirs( KIO::Job* job, unsigned long dirs )
   m_uiserver->totalDirs( job->progressId(), dirs );
 }
 
-void Observer::slotProcessedSize( KIO::Job* job, KIO::filesize_t size )
+void Observer::slotProcessedSize( KJob* job, qulonglong size )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotProcessedSize " << job << " " << job->progressId() << " " << KIO::number(size) << endl;
   m_uiserver->processedSize64( job->progressId(), size );
@@ -155,13 +155,13 @@ void Observer::slotSpeed( KIO::Job* job, unsigned long speed )
   m_uiserver->speed( job->progressId(), speed );
 }
 
-void Observer::slotPercent( KIO::Job* job, unsigned long percent )
+void Observer::slotPercent( KJob* job, unsigned long percent )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotPercent " << job << " " << percent << endl;
   m_uiserver->percent( job->progressId(), percent );
 }
 
-void Observer::slotInfoMessage( KIO::Job* job, const QString & msg )
+void Observer::slotInfoMessage( KJob* job, const QString & msg )
 {
   m_uiserver->infoMessage( job->progressId(), msg );
 }

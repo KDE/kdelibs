@@ -114,7 +114,7 @@ namespace KParts {
          * It is strongly recommended to reimplement this method if
          * you passed hideErrorDialog=true.
          */
-        virtual void handleError( KIO::Job * job );
+        virtual void handleError( KJob * job );
 
         /**
          * NotHandled means that foundMimeType should call KRun::foundMimeType,
@@ -128,10 +128,10 @@ namespace KParts {
         NonEmbeddableResult handleNonEmbeddable( const QString& mimeType );
 
     protected Q_SLOTS:
-        void slotBrowserScanFinished(KIO::Job *job);
+        void slotBrowserScanFinished(KJob *job);
         void slotBrowserMimetype(KIO::Job *job, const QString &type);
-        void slotCopyToTempFileResult(KIO::Job *job);
-        virtual void slotStatResult( KIO::Job *job );
+        void slotCopyToTempFileResult(KJob *job);
+        virtual void slotStatResult( KJob *job );
 
     protected:
         KParts::URLArgs m_args;

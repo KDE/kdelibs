@@ -34,6 +34,7 @@
  * @author Wynn Wilkes, wynnw@calderasystems.com
  */
 
+class KJob;
 namespace KIO {
     class Job;
 }
@@ -63,7 +64,7 @@ protected Q_SLOTS:
     void slotData( KIO::Job*, const QByteArray& );
     void slotConnected( KIO::Job* );
     void slotMimetype( KIO::Job*, const QString& );
-    void slotResult( KIO::Job* );
+    void slotResult( KJob* );
 
 private:
     KJavaDownloaderPrivate* const d;
@@ -83,7 +84,7 @@ public:
     void start();
 protected Q_SLOTS:
     void slotDataRequest( KIO::Job*, QByteArray& );
-    void slotResult( KIO::Job* );
+    void slotResult( KJob* );
 private:
     KJavaUploaderPrivate* const d;
 

@@ -132,14 +132,14 @@ void BrowserRun::scanFile()
 
   job->addMetaData( m_args.metaData() );
   job->setWindow( m_window );
-  connect( job, SIGNAL( result( KIO::Job *)),
-           this, SLOT( slotBrowserScanFinished(KIO::Job *)));
+  connect( job, SIGNAL( result( KJob *)),
+           this, SLOT( slotBrowserScanFinished(KJob *)));
   connect( job, SIGNAL( mimetype( KIO::Job *, const QString &)),
            this, SLOT( slotBrowserMimetype(KIO::Job *, const QString &)));
   m_job = job;
 }
 
-void BrowserRun::slotBrowserScanFinished(KIO::Job *job)
+void BrowserRun::slotBrowserScanFinished(KJob *job)
 {
   kDebug(1000) << "BrowserRun::slotBrowserScanFinished" << endl;
   if ( job->error() == KIO::ERR_IS_DIRECTORY )
@@ -227,8 +227,8 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                 destURL.setPath( tempFile.name() );
                 KIO::Job *job = KIO::file_copy( m_strURL, destURL, 0600, true /*overwrite*/, false /*no resume*/, true /*progress info*/ );
                 job->setWindow (m_window);
-                connect( job, SIGNAL( result( KIO::Job *)),
-                         this, SLOT( slotCopyToTempFileResult(KIO::Job *)) );
+                connect( job, SIGNAL( result( KJob *)),
+                         this, SLOT( slotCopyToTempFileResult(KJob *)) );
                 return Delayed; // We'll continue after the job has finished
             }
         }
@@ -408,7 +408,7 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName
     delete dlg;
 }
 
-void BrowserRun::slotStatResult( KIO::Job *job )
+void BrowserRun::slotStatResult( KJob *job )
 {
     if ( job->error() ) {
         kDebug(1000) << "BrowserRun::slotStatResult : " << job->errorString() << endl;
@@ -417,7 +417,7 @@ void BrowserRun::slotStatResult( KIO::Job *job )
         KRun::slotStatResult( job );
 }
 
-void BrowserRun::handleError( KIO::Job * job )
+void BrowserRun::handleError( KJob * job )
 {
     if ( !job ) { // Shouldn't happen, see docu.
         kWarning(1000) << "BrowserRun::handleError called with job=0! hideErrorDialog=" << d->m_bHideErrorDialog << endl;
@@ -460,10 +460,10 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
     foundMimeType( "text/html" );
 }
 
-void BrowserRun::slotCopyToTempFileResult(KIO::Job *job)
+void BrowserRun::slotCopyToTempFileResult(KJob *job)
 {
     if ( job->error() ) {
-        job->showErrorDialog( m_window );
+        static_cast<KIO::Job*>( job )->showErrorDialog( m_window );
     } else {
         // Same as KRun::foundMimeType but with a different URL
         (void) (KRun::runURL( static_cast<KIO::FileCopyJob *>(job)->destURL(), m_sMimeType ));

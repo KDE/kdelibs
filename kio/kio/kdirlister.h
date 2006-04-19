@@ -29,6 +29,7 @@
 
 #include <kurl.h>
 
+class KJob;
 namespace KIO { class Job; class ListJob; }
 
 /**
@@ -99,7 +100,7 @@ public:
    *                 directory from the disk.
    *                 Use only when opening a dir not yet listed by this lister
    *                 without using the cache. Otherwise use updateDirectory.
-   * @return true    if successful, 
+   * @return true    if successful,
    *         false   otherwise (e.g. invalid @p _url)
    */
   virtual bool openURL( const KUrl& _url, bool _keep = false, bool _reload = false );
@@ -194,7 +195,7 @@ public:
 
   /**
    * Returns the top level URL that is listed by this KDirLister.
-   * It might be different from the one given with openURL() if there was a 
+   * It might be different from the one given with openURL() if there was a
    * redirection. If you called openURL() with @p _keep == true this is the
    * first url opened (e.g. in a treeview this is the root).
    *
@@ -207,7 +208,7 @@ public:
    * useful if you called openURL() with @p _keep == true, as it happens in a
    * treeview, for example. (Note that the base url is included in the list
    * as well, of course.)
-   * 
+   *
    * @return the list of all listed URLs
    */
   const KUrl::List& directories() const;
@@ -370,7 +371,7 @@ public:
    *
    * @param which specifies whether the returned list will contain all entries
    *              or only the ones that passed the nameFilter(), mimeFilter(),
-   *              etc. Note that the latter causes iteration over all the 
+   *              etc. Note that the latter causes iteration over all the
    *              items, filtering them. If this is too slow for you, use the
    *              newItems() signal, sending out filtered items in chunks.
    * @return the items listed for the current url().
@@ -590,10 +591,10 @@ protected:
   virtual void virtual_hook( int id, void *data );
 
 private Q_SLOTS:
-  void slotInfoMessage( KIO::Job *, const QString& );
-  void slotPercent( KIO::Job *, unsigned long );
-  void slotTotalSize( KIO::Job *, KIO::filesize_t );
-  void slotProcessedSize( KIO::Job *, KIO::filesize_t );
+  void slotInfoMessage( KJob *, const QString& );
+  void slotPercent( KJob *, unsigned long );
+  void slotTotalSize( KJob *, qulonglong );
+  void slotProcessedSize( KJob *, qulonglong );
   void slotSpeed( KIO::Job *, unsigned long );
 
 private:

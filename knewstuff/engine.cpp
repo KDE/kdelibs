@@ -109,8 +109,8 @@ void Engine::getMetaInformation( Provider::List *providers )
     if ( p->downloadUrl().isEmpty() ) continue;
 
     KIO::TransferJob *job = KIO::get( p->downloadUrl(), false, false );
-    connect( job, SIGNAL( result( KIO::Job * ) ),
-             SLOT( slotNewStuffJobResult( KIO::Job * ) ) );
+    connect( job, SIGNAL( result( KJob * ) ),
+             SLOT( slotNewStuffJobResult( KJob * ) ) );
     connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
              SLOT( slotNewStuffJobData( KIO::Job *, const QByteArray & ) ) );
 
@@ -128,11 +128,11 @@ void Engine::slotNewStuffJobData( KIO::Job *job, const QByteArray &data )
   mNewStuffJobData[ job ].append( QString::fromUtf8( data ) ); // ####### The fromUtf8 conversion should be done at the end, not chunk by chunk
 }
 
-void Engine::slotNewStuffJobResult( KIO::Job *job )
+void Engine::slotNewStuffJobResult( KJob *job )
 {
   if ( job->error() ) {
     kDebug(5850) << "Error downloading new stuff descriptions." << endl;
-    job->showErrorDialog( mParentWidget );
+    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
   } else {
     QString knewstuffDoc = mNewStuffJobData[ job ];
 
@@ -207,15 +207,15 @@ void Engine::download( Entry *entry )
   kDebug(5850) << "  DESTINATION: " << destination.url() << endl;
 
   KIO::FileCopyJob *job = KIO::file_copy( source, destination, -1, true );
-  connect( job, SIGNAL( result( KIO::Job * ) ),
-           SLOT( slotDownloadJobResult( KIO::Job * ) ) );
+  connect( job, SIGNAL( result( KJob * ) ),
+           SLOT( slotDownloadJobResult( KJob * ) ) );
 }
 
-void Engine::slotDownloadJobResult( KIO::Job *job )
+void Engine::slotDownloadJobResult( KJob *job )
 {
   if ( job->error() ) {
     kDebug(5850) << "Error downloading new stuff payload." << endl;
-    job->showErrorDialog( mParentWidget );
+    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
     return;
   }
 
@@ -224,7 +224,7 @@ void Engine::slotDownloadJobResult( KIO::Job *job )
       KMessageBox::information( mParentWidget,
                                 i18n("Successfully installed hot new stuff.") );
     }
-  } else 
+  } else
     if ( !d->mIgnoreInstallResult ){
       KMessageBox::error( mParentWidget,
                           i18n("Failed to install hot new stuff.") );
@@ -296,7 +296,7 @@ void Engine::upload( Entry *entry )
   if ( !createMetaFile( entry ) ) {
     emit uploadFinished( false );
     return;
-  } 
+  }
 
   QString text = i18n("The files to be uploaded have been created at:\n");
   text.append( i18n("Data file: %1\n",  mUploadFile) );
@@ -330,8 +330,8 @@ void Engine::upload( Entry *entry )
       destination.setFileName( fi.fileName() );
 
       KIO::FileCopyJob *job = KIO::file_copy( KUrl::fromPathOrURL( mUploadFile ), destination );
-      connect( job, SIGNAL( result( KIO::Job * ) ),
-               SLOT( slotUploadPayloadJobResult( KIO::Job * ) ) );
+      connect( job, SIGNAL( result( KJob * ) ),
+               SLOT( slotUploadPayloadJobResult( KJob * ) ) );
     } else {
       emit uploadFinished( false );
     }
@@ -372,11 +372,11 @@ bool Engine::createMetaFile( Entry *entry )
   return true;
 }
 
-void Engine::slotUploadPayloadJobResult( KIO::Job *job )
+void Engine::slotUploadPayloadJobResult( KJob *job )
 {
   if ( job->error() ) {
     kDebug(5850) << "Error uploading new stuff payload." << endl;
-    job->showErrorDialog( mParentWidget );
+    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
     emit uploadFinished( false );
     return;
   }
@@ -392,15 +392,15 @@ void Engine::slotUploadPayloadJobResult( KIO::Job *job )
   previewDestination.setFileName( fi.fileName() );
 
   KIO::FileCopyJob *newJob = KIO::file_copy( KUrl::fromPathOrURL( mPreviewFile ), previewDestination );
-  connect( newJob, SIGNAL( result( KIO::Job * ) ),
-           SLOT( slotUploadPreviewJobResult( KIO::Job * ) ) );
+  connect( newJob, SIGNAL( result( KJob * ) ),
+           SLOT( slotUploadPreviewJobResult( KJob * ) ) );
 }
 
-void Engine::slotUploadPreviewJobResult( KIO::Job *job )
+void Engine::slotUploadPreviewJobResult( KJob *job )
 {
   if ( job->error() ) {
     kDebug(5850) << "Error uploading new stuff preview." << endl;
-    job->showErrorDialog( mParentWidget );
+    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
     emit uploadFinished( true );
     return;
   }
@@ -411,16 +411,16 @@ void Engine::slotUploadPreviewJobResult( KIO::Job *job )
   metaDestination.setFileName( fi.fileName() );
 
   KIO::FileCopyJob *newJob = KIO::file_copy( KUrl::fromPathOrURL( mUploadMetaFile ), metaDestination );
-  connect( newJob, SIGNAL( result( KIO::Job * ) ),
-           SLOT( slotUploadMetaJobResult( KIO::Job * ) ) );
+  connect( newJob, SIGNAL( result( KJob * ) ),
+           SLOT( slotUploadMetaJobResult( KJob * ) ) );
 }
 
-void Engine::slotUploadMetaJobResult( KIO::Job *job )
+void Engine::slotUploadMetaJobResult( KJob *job )
 {
   mUploadMetaFile.clear();
   if ( job->error() ) {
     kDebug(5850) << "Error uploading new stuff metadata." << endl;
-    job->showErrorDialog( mParentWidget );
+    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
     emit uploadFinished( false );
     return;
   }

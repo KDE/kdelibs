@@ -522,8 +522,8 @@ void KFileDialog::slotOk()
             job->setWindow (topLevelWidget());
             KIO::Scheduler::scheduleJob( job );
             d->statJobs.append( job );
-            connect( job, SIGNAL( result(KIO::Job *) ),
-                     SLOT( slotStatResult( KIO::Job *) ));
+            connect( job, SIGNAL( result(KJob *) ),
+                     SLOT( slotStatResult( KJob *) ));
         }
         return;
     }
@@ -531,13 +531,13 @@ void KFileDialog::slotOk()
     job = KIO::stat(d->url,!d->url.isLocalFile());
     job->setWindow (topLevelWidget());
     d->statJobs.append( job );
-    connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotStatResult(KIO::Job*)));
+    connect(job, SIGNAL(result(KJob*)), SLOT(slotStatResult(KJob*)));
 }
 
 // FIXME : count all errors and show messagebox when d->statJobs.count() == 0
 // in case of an error, we cancel the whole operation (clear d->statJobs and
 // don't call accept)
-void KFileDialog::slotStatResult(KIO::Job* job)
+void KFileDialog::slotStatResult(KJob* job)
 {
     kDebug(kfile_area) << "slotStatResult" << endl;
     KIO::StatJob *sJob = static_cast<KIO::StatJob *>( job );

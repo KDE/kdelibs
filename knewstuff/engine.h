@@ -126,13 +126,13 @@ class KDE_EXPORT Engine : public QObject
       @param entry the Hotstuff data object to be uploaded
     */
     void upload( Entry *entry );
-    
+
     /**
     Ignores the return value of the install method. Used internally to
     avoid showing of the success/failure dialog when installation is done
     in another place, like in @ref KNewStuffSecure
      */
-    void ignoreInstallResult(bool ignore);   
+    void ignoreInstallResult(bool ignore);
 
   Q_SIGNALS:
     /** Emitted when the upload has finished.
@@ -144,24 +144,24 @@ class KDE_EXPORT Engine : public QObject
     void selectUploadProvider( Provider::List *providers );
 
     void slotNewStuffJobData( KIO::Job *job, const QByteArray &data );
-    void slotNewStuffJobResult( KIO::Job *job );
+    void slotNewStuffJobResult( KJob *job );
 
-    void slotDownloadJobResult( KIO::Job *job );
+    void slotDownloadJobResult( KJob *job );
 
-    void slotUploadPayloadJobResult( KIO::Job *job );
-    void slotUploadPreviewJobResult (KIO::Job *job );
-    void slotUploadMetaJobResult( KIO::Job *job );
+    void slotUploadPayloadJobResult( KJob *job );
+    void slotUploadPreviewJobResult (KJob *job );
+    void slotUploadMetaJobResult( KJob *job );
 
   protected:
     bool createMetaFile( Entry * );
-    
+
   private:
     QWidget *mParentWidget;
 
     ProviderLoader *mProviderLoader;
 
-    QMap<KIO::Job *,QString> mNewStuffJobData;
-    QMap<KIO::Job *,Provider *> mProviderJobs;
+    QMap<KJob *,QString> mNewStuffJobData;
+    QMap<KJob *,Provider *> mProviderJobs;
 
     QList<Entry*> mNewStuffList;
 

@@ -912,8 +912,8 @@ void KRun::init()
   // It may be a directory or a file, let's stat
   KIO::StatJob *job = KIO::stat( m_strURL, true, 0 /* no details */, m_bProgressInfo );
   job->setWindow (d->m_window);
-  connect( job, SIGNAL( result( KIO::Job * ) ),
-           this, SLOT( slotStatResult( KIO::Job * ) ) );
+  connect( job, SIGNAL( result( KJob * ) ),
+           this, SLOT( slotStatResult( KJob * ) ) );
   m_job = job;
   kDebug(7010) << " Job " << job << " is about stating " << m_strURL.url() << endl;
 }
@@ -961,8 +961,8 @@ void KRun::scanFile()
 
   KIO::TransferJob *job = KIO::get( m_strURL, false /*reload*/, m_bProgressInfo );
   job->setWindow (d->m_window);
-  connect(job, SIGNAL( result(KIO::Job *)),
-          this, SLOT( slotScanFinished(KIO::Job *)));
+  connect(job, SIGNAL( result(KJob *)),
+          this, SLOT( slotScanFinished(KJob *)));
   connect(job, SIGNAL( mimetype(KIO::Job *, const QString &)),
           this, SLOT( slotScanMimeType(KIO::Job *, const QString &)));
   m_job = job;
@@ -1008,14 +1008,14 @@ void KRun::slotTimeout()
   }
 }
 
-void KRun::slotStatResult( KIO::Job * job )
+void KRun::slotStatResult( KJob * job )
 {
   m_job = 0L;
   if (job->error())
   {
     d->m_showingError = true;
     kError(7010) << this << " ERROR " << job->error() << " " << job->errorString() << endl;
-    job->showErrorDialog();
+    static_cast<KIO::Job*>( job )->showErrorDialog();
     //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
     d->m_showingError = false;
 
@@ -1067,14 +1067,14 @@ void KRun::slotScanMimeType( KIO::Job *, const QString &mimetype )
   m_job = 0;
 }
 
-void KRun::slotScanFinished( KIO::Job *job )
+void KRun::slotScanFinished( KJob *job )
 {
   m_job = 0;
   if (job->error())
   {
     d->m_showingError = true;
     kError(7010) << this << " ERROR (stat) : " << job->error() << " " << job->errorString() << endl;
-    job->showErrorDialog();
+    static_cast<KIO::Job*>( job )->showErrorDialog();
     //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
     d->m_showingError = false;
 
@@ -1135,8 +1135,8 @@ void KRun::foundMimeType( const QString& type )
     // (For instance a tar.gz is a directory contained inside a file)
     // It may be a directory or a file, let's stat
     KIO::StatJob *job = KIO::stat( m_strURL, m_bProgressInfo );
-    connect( job, SIGNAL( result( KIO::Job * ) ),
-             this, SLOT( slotStatResult( KIO::Job * ) ) );
+    connect( job, SIGNAL( result( KJob * ) ),
+             this, SLOT( slotStatResult( KJob * ) ) );
     m_job = job;
 
     return;

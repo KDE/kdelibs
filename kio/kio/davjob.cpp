@@ -65,7 +65,7 @@ DavJob::DavJob( const KUrl& url, int method, const QString& request, bool showPr
 
 void DavJob::slotData( const QByteArray& data )
 {
-  if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error) {
+  if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || error()) {
     unsigned int oldSize = d->str_response.size();
     d->str_response.resize( oldSize + data.size() );
     memcpy( d->str_response.data() + oldSize, data.data(), data.size() );

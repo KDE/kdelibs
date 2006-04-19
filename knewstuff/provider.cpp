@@ -180,7 +180,7 @@ void Provider::parseDomElement( const QDomElement &element )
   QDomNode n;
   for ( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
     QDomElement p = n.toElement();
-    
+
     if ( p.tagName() == "noupload" ) setNoUpload( true );
     if ( p.tagName() == "title" ) setName( p.text().trimmed() );
   }
@@ -194,7 +194,7 @@ QDomElement Provider::createDomElement( QDomDocument &doc, QDomElement &parent )
   QDomElement n = doc.createElement( "name" );
   n.appendChild( doc.createTextNode( name() ) );
   entry.appendChild( n );
-  
+
   return entry;
 }
 
@@ -229,15 +229,15 @@ void ProviderLoader::load( const QString &category, const QString &providersList
     // TODO: Replace the default by the real one.
     QString server = cfg->readEntry( "MasterServer",
                                      "http://korganizer.kde.org" );
-  
+
     providersUrl = server + "/knewstuff/" + category + "/providers.xml";
   }
 
   kDebug(5850) << "ProviderLoader::load(): providersUrl: " << providersUrl << endl;
-  
+
   KIO::TransferJob *job = KIO::get( KUrl( providersUrl ), false, false );
-  connect( job, SIGNAL( result( KIO::Job * ) ),
-           SLOT( slotJobResult( KIO::Job * ) ) );
+  connect( job, SIGNAL( result( KJob * ) ),
+           SLOT( slotJobResult( KJob * ) ) );
   connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
            SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
 
@@ -253,10 +253,10 @@ void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
   mJobData.append( QString::fromUtf8( data ) ); // ####### The fromUtf8 conversion should be done at the end, not chunk by chunk
 }
 
-void ProviderLoader::slotJobResult( KIO::Job *job )
+void ProviderLoader::slotJobResult( KJob *job )
 {
   if ( job->error() ) {
-    job->showErrorDialog( mParentWidget );
+    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
   }
 
   kDebug(5850) << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
@@ -277,11 +277,11 @@ void ProviderLoader::slotJobResult( KIO::Job *job )
   QDomNode n;
   for ( n = providers.firstChild(); !n.isNull(); n = n.nextSibling() ) {
     QDomElement p = n.toElement();
- 
+
     if ( p.tagName() == "provider" ) {
       mProviders.append( new Provider( p ) );
     }
   }
-  
+
   emit providersLoaded( &mProviders );
 }

@@ -177,15 +177,15 @@ void JobTest::get()
     KUrl u; u.setPath( filePath );
     m_result = -1;
     KIO::StoredTransferJob* job = KIO::storedGet( u );
-    connect( job, SIGNAL( result( KIO::Job* ) ),
-            this, SLOT( slotGetResult( KIO::Job* ) ) );
+    connect( job, SIGNAL( result( KJob* ) ),
+            this, SLOT( slotGetResult( KJob* ) ) );
     enterLoop();
     QVERIFY( m_result == 0 ); // no error
     QVERIFY( m_data.size() == 11 );
     QVERIFY( QByteArray( m_data ) == "Hello world" );
 }
 
-void JobTest::slotGetResult( KIO::Job* job )
+void JobTest::slotGetResult( KJob* job )
 {
     m_result = job->error();
     m_data = static_cast<KIO::StoredTransferJob *>(job)->data();

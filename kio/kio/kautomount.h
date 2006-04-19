@@ -26,6 +26,7 @@
 
 #ifdef Q_OS_UNIX
 
+class KJob;
 namespace KIO {
 class Job;
 }
@@ -64,7 +65,7 @@ Q_SIGNALS:
   void error();
 
 protected Q_SLOTS:
-  void slotResult( KIO::Job * );
+  void slotResult( KJob * );
 
 protected:
   QString m_strDevice;
@@ -103,7 +104,7 @@ Q_SIGNALS:
   void error();
 
 protected Q_SLOTS:
-  void slotResult( KIO::Job * );
+  void slotResult( KJob * );
 private:
   QString m_desktopFile;
   QString m_mountpoint;

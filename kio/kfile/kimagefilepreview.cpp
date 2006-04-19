@@ -107,9 +107,9 @@ void KImageFilePreview::showPreview( const KUrl &url, bool force )
             m_job =  createJob( url, w, h );
             if ( force ) // explicitly requested previews shall always be generated!
                 m_job->setIgnoreMaximumSize( true );
-            
-            connect( m_job, SIGNAL( result( KIO::Job * )),
-                     this, SLOT( slotResult( KIO::Job * )));
+
+            connect( m_job, SIGNAL( result( KJob * )),
+                     this, SLOT( slotResult( KJob * )));
             connect( m_job, SIGNAL( gotPreview( const KFileItem*,
                                                 const QPixmap& )),
                      SLOT( gotPreview( const KFileItem*, const QPixmap& ) ));
@@ -164,7 +164,7 @@ void KImageFilePreview::slotFailed( const KFileItem* item )
                                           K3Icon::DisabledState ));
 }
 
-void KImageFilePreview::slotResult( KIO::Job *job )
+void KImageFilePreview::slotResult( KJob *job )
 {
     if ( job == m_job )
         m_job = 0L;

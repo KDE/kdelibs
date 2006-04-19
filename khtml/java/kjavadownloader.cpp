@@ -87,8 +87,8 @@ KJavaDownloader::KJavaDownloader( int ID, const QString& url )
              this, SLOT(slotConnected(KIO::Job*)));
     connect( d->job, SIGNAL(mimetype(KIO::Job*, const QString&)),
              this, SLOT(slotMimetype(KIO::Job*, const QString&)));
-    connect( d->job, SIGNAL(result(KIO::Job*)),
-             this,   SLOT(slotResult(KIO::Job*)) );
+    connect( d->job, SIGNAL(result(KJob*)),
+             this,   SLOT(slotResult(KJob*)) );
 }
 
 KJavaDownloader::~KJavaDownloader()
@@ -126,7 +126,7 @@ void KJavaDownloader::slotMimetype(KIO::Job*, const QString & type) {
     kDebug(6100) << "slave mimetype " << type << endl;
 }
 
-void KJavaDownloader::slotResult( KIO::Job* )
+void KJavaDownloader::slotResult( KJob* )
 {
     kDebug(6100) << "slotResult(" << d->loaderID << ")" << endl;
 
@@ -217,8 +217,8 @@ void KJavaUploader::start()
     d->job->suspend();
     connect( d->job, SIGNAL(dataReq( KIO::Job*, QByteArray& )),
             this,   SLOT(slotDataRequest( KIO::Job*, QByteArray& )) );
-    connect( d->job, SIGNAL(result(KIO::Job*)),
-            this,   SLOT(slotResult(KIO::Job*)) );
+    connect( d->job, SIGNAL(result(KJob*)),
+            this,   SLOT(slotResult(KJob*)) );
     server->sendURLData( d->loaderID, CONNECTED, d->file );
     KJavaAppletServer::freeJavaServer();
 }
@@ -256,7 +256,7 @@ void KJavaUploader::data( const QByteArray& qb )
     d->job->resume();
 }
 
-void KJavaUploader::slotResult( KIO::Job* )
+void KJavaUploader::slotResult( KJob* )
 {
     kDebug(6100) << "slotResult(" << d->loaderID << ") job:" << d->job << endl;
 

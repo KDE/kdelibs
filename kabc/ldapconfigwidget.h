@@ -91,7 +91,7 @@ namespace KABC {
 	W_PAGESIZE = 0x2000,
         W_ALL = 0x2fff
       };
-      
+
       Q_DECLARE_FLAGS( WinFlags, WinFlag )
 
       /** Constructs an empty configuration widget.
@@ -255,7 +255,7 @@ namespace KABC {
        * KConfig widget name: kcfg_ldappagesize
        */
       int pageSize() const;
-      
+
       WinFlags features() const;
       void setFeatures( WinFlags features );
 
@@ -274,7 +274,7 @@ namespace KABC {
       void mQueryDNClicked();
       void mQueryMechClicked();
       void loadData( KIO::Job*, const QByteArray& );
-      void loadResult( KIO::Job* );
+      void loadResult( KJob* );
     private:
 
       WinFlags mFeatures;

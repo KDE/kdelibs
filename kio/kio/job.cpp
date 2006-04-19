@@ -87,8 +87,7 @@ class Job::JobPrivate
 {
 public:
     JobPrivate() : m_autoErrorHandling( false ), m_autoWarningHandling( true ),
-                   m_interactive( true ), m_parentJob( 0L ), m_extraFlags(0),
-                   m_processedSize(0)
+                   m_interactive( true ), m_parentJob( 0L ), m_extraFlags(0)
                    {}
 
     bool m_autoErrorHandling;
@@ -99,43 +98,36 @@ public:
     // (requires a new ctor, and moving the ctor code to some init()).
     Job* m_parentJob;
     int m_extraFlags;
-    KIO::filesize_t m_processedSize;
 };
 
-Job::Job(bool showProgressInfo) : QObject(0), m_error(0), m_percent(0)
-   , m_progressId(0), m_speedTimer(0), d( new JobPrivate )
+Job::Job(bool showProgressInfo) : KJob(0), m_speedTimer(0), d( new JobPrivate )
 {
-    setObjectName( "job" );
-    // All jobs delete themselves after emiting 'result'.
-
     // Notify the UI Server and get a progress id
     if ( showProgressInfo )
     {
-        m_progressId = Observer::self()->newJob( this, true );
+        setProgressId( Observer::self()->newJob( this, true ) );
         //kDebug(7007) << "Created job " << this << " with progress info -- m_progressId=" << m_progressId << endl;
         // Connect global progress info signals
-        connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
-                 Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
-        connect( this, SIGNAL( infoMessage( KIO::Job*, const QString & ) ),
-                 Observer::self(), SLOT( slotInfoMessage( KIO::Job*, const QString & ) ) );
-        connect( this, SIGNAL( totalSize( KIO::Job*, KIO::filesize_t ) ),
-                 Observer::self(), SLOT( slotTotalSize( KIO::Job*, KIO::filesize_t ) ) );
-        connect( this, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
-                 Observer::self(), SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
+        connect( this, SIGNAL( percent( KJob*, unsigned long ) ),
+                 Observer::self(), SLOT( slotPercent( KJob*, unsigned long ) ) );
+        connect( this, SIGNAL( infoMessage( KJob*, const QString &, const QString & ) ),
+                 Observer::self(), SLOT( slotInfoMessage( KJob*, const QString & ) ) );
+        connect( this, SIGNAL( totalSize( KJob*, qulonglong ) ),
+                 Observer::self(), SLOT( slotTotalSize( KJob*, qulonglong ) ) );
+        connect( this, SIGNAL( processedSize( KJob*, qulonglong ) ),
+                 Observer::self(), SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
         connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+
+        connect( this, SIGNAL( finished( KJob*, int ) ),
+                 this, SLOT( slotFinished( KJob*, int ) ) );
     }
-    // Don't exit while this job is running
-    if (kapp)
-        kapp->ref();
 }
 
 Job::~Job()
 {
     delete m_speedTimer;
     delete d;
-    if (kapp)
-        kapp->deref();
 }
 
 int& Job::extraFlags()
@@ -143,30 +135,20 @@ int& Job::extraFlags()
     return d->m_extraFlags;
 }
 
-void Job::setProcessedSize(KIO::filesize_t size)
-{
-    d->m_processedSize = size;
-}
-
-KIO::filesize_t Job::getProcessedSize()
-{
-    return d->m_processedSize;
-}
-
 void Job::addSubjob(Job *job, bool inheritMetaData)
 {
     //kDebug(7007) << "addSubjob(" << job << ") this = " << this << endl;
     m_subjobs.append(job);
 
-    connect( job, SIGNAL(result(KIO::Job*)),
-             SLOT(slotResult(KIO::Job*)) );
+    connect( job, SIGNAL(result(KJob*)),
+             SLOT(slotResult(KJob*)) );
 
     // Forward information from that subjob.
     connect( job, SIGNAL(speed( KIO::Job*, unsigned long )),
              SLOT(slotSpeed(KIO::Job*, unsigned long)) );
 
-    connect( job, SIGNAL(infoMessage( KIO::Job*, const QString & )),
-             SLOT(slotInfoMessage(KIO::Job*, const QString &)) );
+    connect( job, SIGNAL(infoMessage( KJob*, const QString &, const QString & )),
+             SLOT(slotInfoMessage(KJob*, const QString &)) );
 
     if (inheritMetaData)
        job->mergeMetaData(m_outgoingMetaData);
@@ -174,29 +156,20 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
     job->setWindow( m_window );
 }
 
-void Job::removeSubjob( Job *job, bool mergeMetaData )
+void Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
 {
+    KIO::Job *job = dynamic_cast<KIO::Job*>( jobBase );
+
+    if ( job == 0 )
+    {
+        return;
+    }
+
     //kDebug(7007) << "removeSubjob(" << job << ") this = " << this << "  subjobs = " << m_subjobs.count() << endl;
     // Merge metadata from subjob
     if ( mergeMetaData )
         m_incomingMetaData += job->metaData();
     m_subjobs.removeAll(job);
-}
-
-void Job::emitPercent( KIO::filesize_t processedSize, KIO::filesize_t totalSize )
-{
-  // calculate percents
-  unsigned long ipercent = m_percent;
-
-  if ( totalSize == 0 )
-    m_percent = 100;
-  else
-    m_percent = (unsigned long)(( (float)(processedSize) / (float)(totalSize) ) * 100.0);
-
-  if ( m_percent != ipercent || m_percent == 100 /* for those buggy total sizes that grow */ ) {
-    emit percent( this, m_percent );
-    //kDebug(7007) << "Job::emitPercent - percent =  " << (unsigned int) m_percent << endl;
-  }
 }
 
 void Job::emitSpeed( unsigned long bytes_per_second )
@@ -211,20 +184,18 @@ void Job::emitSpeed( unsigned long bytes_per_second )
   m_speedTimer->start( 5000 );   // 5 seconds interval should be enough
 }
 
-void Job::emitResult()
+void Job::slotFinished( KJob */*job*/, int /*id*/ )
 {
   // If we are displaying a progress dialog, remove it first.
-  if ( m_progressId ) // Did we get an ID from the observer ?
-    Observer::self()->jobFinished( m_progressId );
-  if ( m_error && d->m_interactive && d->m_autoErrorHandling )
+  if ( progressId() ) // Did we get an ID from the observer ?
+    Observer::self()->jobFinished( progressId() );
+  if ( error() && d->m_interactive && d->m_autoErrorHandling )
     showErrorDialog( d->m_errorParentWidget );
-  emit result(this);
-  deleteLater();
 }
 
 void Job::kill( bool quietly )
 {
-  kDebug(7007) << "Job::kill this=" << this << " " << metaObject()->className() << " m_progressId=" << m_progressId << " quietly=" << quietly << endl;
+  kDebug(7007) << "Job::kill this=" << this << " " << metaObject()->className() << " progressId()=" << progressId() << " quietly=" << quietly << endl;
   // kill all subjobs, without triggering their result slot
   QList<Job *>::const_iterator it = m_subjobs.begin();
   const QList<Job *>::const_iterator end = m_subjobs.end();
@@ -233,25 +204,25 @@ void Job::kill( bool quietly )
   m_subjobs.clear();
 
   if ( ! quietly ) {
-    m_error = ERR_USER_CANCELED;
+    setError( ERR_USER_CANCELED );
     emit canceled( this ); // Not very useful (deprecated)
     emitResult();
   } else
   {
-    if ( m_progressId ) // in both cases we want to hide the progress window
-      Observer::self()->jobFinished( m_progressId );
+    if ( progressId() ) // in both cases we want to hide the progress window
+      Observer::self()->jobFinished( progressId() );
     deleteLater();
   }
 }
 
-void Job::slotResult( Job *job )
+void Job::slotResult( KJob *job )
 {
     // Did job have an error ?
-    if ( job->error() && !m_error )
+    if ( job->error() && !error() )
     {
         // Store it in the parent only if first error
-        m_error = job->error();
-        m_errorText = job->errorText();
+        setError( job->error() );
+        setErrorText( job->errorText() );
     }
     removeSubjob(job);
     if ( m_subjobs.isEmpty() )
@@ -264,7 +235,7 @@ void Job::slotSpeed( KIO::Job*, unsigned long speed )
   emitSpeed( speed );
 }
 
-void Job::slotInfoMessage( KIO::Job*, const QString & msg )
+void Job::slotInfoMessage( KJob*, const QString & msg )
 {
   emit infoMessage( this, msg );
 }
@@ -284,7 +255,7 @@ void Job::showErrorDialog( QWidget * parent )
 {
   //kDebug(7007) << "Job::showErrorDialog parent=" << parent << endl;
   // Show a message box, except for "user canceled" or "no content"
-  if ( (m_error != ERR_USER_CANCELED) && (m_error != ERR_NO_CONTENT) ) {
+  if ( (error() != ERR_USER_CANCELED) && (error() != ERR_NO_CONTENT) ) {
     //old plain error message
     //kDebug(7007) << "Default language: " << KGlobal::locale()->defaultLanguage() << endl;
     if ( 1 )
@@ -293,7 +264,7 @@ void Job::showErrorDialog( QWidget * parent )
     } else {
       QStringList errors = detailedErrorStrings();
       QString caption, err, detail;
-      QStringList::const_iterator it = errors.begin();
+      QStringList::const_iterator errors = it.begin();
       if ( it != errors.end() )
         caption = *(it++);
       if ( it != errors.end() )
@@ -411,8 +382,8 @@ SimpleJob::SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs,
 {
     if (!m_url.isValid())
     {
-        m_error = ERR_MALFORMED_URL;
-        m_errorText = m_url.url();
+        setError( ERR_MALFORMED_URL );
+        setErrorText( m_url.url() );
         QTimer::singleShot(0, this, SLOT(slotFinished()) );
         return;
     }
@@ -428,6 +399,11 @@ SimpleJob::SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs,
     }
 
     Scheduler::doJob(this);
+}
+
+void SimpleJob::start()
+{
+
 }
 
 void SimpleJob::kill( bool quietly )
@@ -551,7 +527,7 @@ void SimpleJob::slotFinished( )
 
     if (!hasSubjobs())
     {
-        if ( !m_error && (m_command == CMD_MKDIR || m_command == CMD_RENAME ) )
+        if ( !error() && (m_command == CMD_MKDIR || m_command == CMD_RENAME ) )
         {
             KDirNotify_stub allDirNotify( "*", "KDirNotify*" );
             if ( m_command == CMD_MKDIR )
@@ -573,12 +549,12 @@ void SimpleJob::slotFinished( )
     }
 }
 
-void SimpleJob::slotError( int error, const QString & errorText )
+void SimpleJob::slotError( int err, const QString & errorText )
 {
-    m_error = error;
-    m_errorText = errorText;
-    if ((m_error == ERR_UNKNOWN_HOST) && m_url.host().isEmpty())
-       m_errorText.clear();
+    setError( err );
+    setErrorText( errorText );
+    if ((error() == ERR_UNKNOWN_HOST) && m_url.host().isEmpty())
+       setErrorText( QString() );
     // error terminates the job
     slotFinished();
 }
@@ -681,8 +657,8 @@ void MkdirJob::slotRedirection( const KUrl &url)
      if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
      {
        kWarning(7007) << "MkdirJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
-       m_error = ERR_ACCESS_DENIED;
-       m_errorText = url.prettyURL();
+       setError( ERR_ACCESS_DENIED );
+       setErrorText( url.prettyURL() );
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
@@ -816,8 +792,8 @@ void StatJob::slotRedirection( const KUrl &url)
      if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
      {
        kWarning(7007) << "StatJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
-       m_error = ERR_ACCESS_DENIED;
-       m_errorText = url.prettyURL();
+       setError( ERR_ACCESS_DENIED );
+       setErrorText( url.prettyURL() );
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
@@ -900,7 +876,7 @@ TransferJob::TransferJob( const KUrl& url, int command,
 // Slave sends data
 void TransferJob::slotData( const QByteArray &_data)
 {
-    if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error)
+    if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || error())
       emit data( this, _data);
 }
 
@@ -920,8 +896,8 @@ void TransferJob::slotRedirection( const KUrl &url)
     if (m_redirectionList.count(url) > 5)
     {
        kDebug(7007) << "TransferJob::slotRedirection: CYCLIC REDIRECTION!" << endl;
-       m_error = ERR_CYCLIC_LINK;
-       m_errorText = m_url.prettyURL();
+       setError( ERR_CYCLIC_LINK );
+       setErrorText( m_url.prettyURL() );
     }
     else
     {
@@ -1011,7 +987,7 @@ void TransferJob::sendAsyncData(const QByteArray &dataForSlave)
        m_slave->send( MSG_DATA, dataForSlave );
        if (extraFlags() & EF_TransferJobDataSent)
        {
-           KIO::filesize_t size = getProcessedSize()+dataForSlave.size();
+           KIO::filesize_t size = processedSize()+dataForSlave.size();
            setProcessedSize(size);
            emit processedSize( this, size );
            if ( size > m_totalSize ) {
@@ -1166,15 +1142,15 @@ void TransferJob::slotCanResume( KIO::filesize_t offset )
     emit canResume(this, offset);
 }
 
-void TransferJob::slotResult( KIO::Job *job)
+void TransferJob::slotResult( KJob *job)
 {
    // This can only be our suburl.
    assert(job == m_subJob);
    // Did job have an error ?
    if ( job->error() )
    {
-      m_error = job->error();
-      m_errorText = job->errorText();
+      setError( job->error() );
+      setErrorText( job->errorText() );
 
       emitResult();
       return;
@@ -1185,7 +1161,7 @@ void TransferJob::slotResult( KIO::Job *job)
       m_subJob = 0; // No action required
       resume(); // Make sure we get the remaining data.
    }
-   removeSubjob( job );
+   removeSubjob(job);
 }
 
 TransferJob *KIO::get( const KUrl& url, bool reload, bool showProgressInfo )
@@ -1205,8 +1181,8 @@ public:
   PostErrorJob(int _error, const QString& url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo)
       : TransferJob(KUrl(), CMD_SPECIAL, packedArgs, postData, showProgressInfo)
   {
-    m_error = _error;
-    m_errorText = url;
+    setError( _error );
+    setErrorText( url );
   }
 
 };
@@ -1445,7 +1421,7 @@ void MimetypeJob::start(Slave *slave)
 void MimetypeJob::slotFinished( )
 {
     //kDebug(7007) << "MimetypeJob::slotFinished()" << endl;
-    if ( m_error == KIO::ERR_IS_DIRECTORY )
+    if ( error() == KIO::ERR_IS_DIRECTORY )
     {
         // It is in fact a directory. This happens when HTTP redirects to FTP.
         // Due to the "protocol doesn't support listing" code in KRun, we
@@ -1453,9 +1429,9 @@ void MimetypeJob::slotFinished( )
         kDebug(7007) << "It is in fact a directory!" << endl;
         m_mimetype = QString::fromLatin1("inode/directory");
         emit TransferJob::mimetype( this, m_mimetype );
-        m_error = 0;
+        setError( 0 );
     }
-    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error )
+    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || error() )
     {
         // Return slave to the scheduler
         TransferJob::slotFinished();
@@ -1645,18 +1621,18 @@ void FileCopyJob::startRenameJob(const KUrl &slave_url)
 
 void FileCopyJob::connectSubjob( SimpleJob * job )
 {
-    connect( job, SIGNAL(totalSize( KIO::Job*, KIO::filesize_t )),
-             this, SLOT( slotTotalSize(KIO::Job*, KIO::filesize_t)) );
+    connect( job, SIGNAL(totalSize( KJob*, qulonglong )),
+             this, SLOT( slotTotalSize(KJob*, qulonglong)) );
 
-    connect( job, SIGNAL(processedSize( KIO::Job*, KIO::filesize_t )),
-             this, SLOT( slotProcessedSize(KIO::Job*, KIO::filesize_t)) );
+    connect( job, SIGNAL(processedSize( KJob*, qulonglong )),
+             this, SLOT( slotProcessedSize(KJob*, qulonglong)) );
 
-    connect( job, SIGNAL(percent( KIO::Job*, unsigned long )),
-             this, SLOT( slotPercent(KIO::Job*, unsigned long)) );
+    connect( job, SIGNAL(percent( KJob*, unsigned long )),
+             this, SLOT( slotPercent(KJob*, unsigned long)) );
 
 }
 
-void FileCopyJob::slotProcessedSize( KIO::Job *, KIO::filesize_t size )
+void FileCopyJob::slotProcessedSize( KJob *, qulonglong size )
 {
     setProcessedSize(size);
     emit processedSize( this, size );
@@ -1666,7 +1642,7 @@ void FileCopyJob::slotProcessedSize( KIO::Job *, KIO::filesize_t size )
     emitPercent( size, m_totalSize );
 }
 
-void FileCopyJob::slotTotalSize( KIO::Job*, KIO::filesize_t size )
+void FileCopyJob::slotTotalSize( KJob*, qulonglong size )
 {
     if (size > m_totalSize)
     {
@@ -1675,12 +1651,12 @@ void FileCopyJob::slotTotalSize( KIO::Job*, KIO::filesize_t size )
     }
 }
 
-void FileCopyJob::slotPercent( KIO::Job*, unsigned long pct )
+void FileCopyJob::slotPercent( KJob*, unsigned long pct )
 {
-    if ( pct > m_percent )
+    if ( pct > percent() )
     {
-        m_percent = pct;
-        emit percent( this, m_percent );
+        setPercent( pct );
+        emit percent( this, percent() );
     }
 }
 
@@ -1737,7 +1713,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
                     m_putJob->kill(true);
                 else
                     m_copyJob->kill(true);
-                m_error = ERR_USER_CANCELED;
+                setError( ERR_USER_CANCELED );
                 emitResult();
                 return;
             }
@@ -1819,8 +1795,8 @@ void FileCopyJob::slotDataReq( KIO::Job * , QByteArray &data)
    if (!m_resumeAnswerSent && !m_getJob)
    {
        // This can't happen (except as a migration bug on 12/10/2000)
-       m_error = ERR_INTERNAL;
-       m_errorText = "'Put' job didn't send canResume or 'Get' job didn't send data!";
+       setError( ERR_INTERNAL );
+       setErrorText( "'Put' job didn't send canResume or 'Get' job didn't send data!" );
        m_putJob->kill(true);
        emitResult();
        return;
@@ -1834,7 +1810,7 @@ void FileCopyJob::slotDataReq( KIO::Job * , QByteArray &data)
    m_buffer = QByteArray();
 }
 
-void FileCopyJob::slotResult( KIO::Job *job)
+void FileCopyJob::slotResult( KJob *job)
 {
    //kDebug(7007) << "FileCopyJob this=" << this << " ::slotResult(" << job << ")" << endl;
    // Did job have an error ?
@@ -1866,8 +1842,8 @@ void FileCopyJob::slotResult( KIO::Job *job)
         if (m_getJob)
           m_getJob->kill(true);
       }
-      m_error = job->error();
-      m_errorText = job->errorText();
+      setError( job->error() );
+      setErrorText( job->errorText() );
       emitResult();
       return;
    }
@@ -2030,7 +2006,7 @@ void ListJob::gotEntries(KIO::Job *, const KIO::UDSEntryList& list )
     emit entries(this, list);
 }
 
-void ListJob::slotResult( KIO::Job * job )
+void ListJob::slotResult( KJob * job )
 {
     // If we can't list a subdir, the result is still ok
     // This is why we override Job::slotResult() - to skip error checking
@@ -2055,19 +2031,19 @@ void ListJob::slotRedirection( const KUrl & url )
 void ListJob::slotFinished()
 {
     // Support for listing archives as directories
-    if ( m_error == KIO::ERR_IS_FILE && m_url.isLocalFile() ) {
+    if ( error() == KIO::ERR_IS_FILE && m_url.isLocalFile() ) {
         KMimeType::Ptr ptr = KMimeType::findByURL( m_url, 0, true, true );
         if ( ptr ) {
             QString proto = ptr->property("X-KDE-LocalProtocol").toString();
             if ( !proto.isEmpty() ) {
                 m_redirectionURL = m_url;
                 m_redirectionURL.setProtocol( proto );
-                m_error = 0;
+                setError( 0 );
                 emit redirection(this,m_redirectionURL);
             }
         }
     }
-    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error ) {
+    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || error() ) {
         // Return slave to the scheduler
         SimpleJob::slotFinished();
     } else {
@@ -2116,8 +2092,8 @@ void ListJob::start(Slave *slave)
 {
     if (!KAuthorized::authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
     {
-        m_error = ERR_ACCESS_DENIED;
-        m_errorText = m_url.url();
+        setError( ERR_ACCESS_DENIED );
+        setErrorText( m_url.url() );
         QTimer::singleShot(0, this, SLOT(slotFinished()) );
         return;
     }
@@ -2217,7 +2193,7 @@ void CopyJob::slotStart()
 // For unit test purposes
 KIO_EXPORT bool kio_resolve_local_urls = true;
 
-void CopyJob::slotResultStating( Job *job )
+void CopyJob::slotResultStating( KJob *job )
 {
     //kDebug(7007) << "CopyJob::slotResultStating" << endl;
     // Was there an error while stating the src ?
@@ -2305,7 +2281,7 @@ void CopyJob::slotResultStating( Job *job )
     // 6 - src is a file, destination doesn't exist, m_dest is the exact destination name
     // Tell slotEntries not to alter the src url
     m_bCurrentSrcIsDir = false;
-    slotEntries(job, lst);
+    slotEntries(static_cast<KIO::Job*>( job ), lst);
 
     KUrl srcurl;
     if (!sLocalPath.isEmpty())
@@ -2339,8 +2315,8 @@ void CopyJob::slotResultStating( Job *job )
         }
         else if ( destinationState == DEST_IS_FILE ) // (case 2)
         {
-            m_error = ERR_IS_FILE;
-            m_errorText = m_dest.prettyURL();
+            setError( ERR_IS_FILE );
+            setErrorText( m_dest.prettyURL() );
             emitResult();
             return;
         }
@@ -2715,7 +2691,7 @@ bool CopyJob::shouldSkip( const QString& path ) const
     return false;
 }
 
-void CopyJob::slotResultCreatingDirs( Job * job )
+void CopyJob::slotResultCreatingDirs( KJob * job )
 {
     // The dir we are trying to create:
     QList<CopyInfo>::Iterator it = dirs.begin();
@@ -2782,7 +2758,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
     createNextDir();
 }
 
-void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
+void CopyJob::slotResultConflictCreatingDirs( KJob * job )
 {
     // We come here after a conflict has been detected and we've stated the existing dir
 
@@ -2829,7 +2805,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
         m_reportTimer->start(REPORT_TIMEOUT);
     switch ( r ) {
         case R_CANCEL:
-            m_error = ERR_USER_CANCELED;
+            setError( ERR_USER_CANCELED );
             emitResult();
             return;
         case R_RENAME:
@@ -2951,7 +2927,7 @@ void CopyJob::createNextDir()
     }
 }
 
-void CopyJob::slotResultCopyingFiles( Job * job )
+void CopyJob::slotResultCopyingFiles( KJob * job )
 {
     // The file we were trying to copy:
     QList<CopyInfo>::Iterator it = files.begin();
@@ -3044,7 +3020,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
     copyNextFile();
 }
 
-void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
+void CopyJob::slotResultConflictCopyingFiles( KJob * job )
 {
     // We come here after a conflict has been detected and we've stated the existing file
     // The file we were trying to create:
@@ -3128,7 +3104,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
     assert ( !hasSubjobs() );
     switch ( res ) {
         case R_CANCEL:
-            m_error = ERR_USER_CANCELED;
+            setError( ERR_USER_CANCELED );
             emitResult();
             return;
         case R_RENAME:
@@ -3259,15 +3235,15 @@ void CopyJob::copyNextFile()
                     else
                     {
                         kDebug(7007) << "CopyJob::copyNextFile ERR_CANNOT_OPEN_FOR_WRITING" << endl;
-                        m_error = ERR_CANNOT_OPEN_FOR_WRITING;
-                        m_errorText = (*it).uDest.path();
+                        setError( ERR_CANNOT_OPEN_FOR_WRITING );
+                        setErrorText( (*it).uDest.path() );
                         emitResult();
                         return;
                     }
                 } else {
                     // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
-                    m_error = ERR_CANNOT_SYMLINK;
-                    m_errorText = (*it).uDest.prettyURL();
+                    setError( ERR_CANNOT_SYMLINK );
+                    setErrorText( (*it).uDest.prettyURL() );
                     emitResult();
                     return;
                 }
@@ -3323,10 +3299,10 @@ void CopyJob::copyNextFile()
             d->m_bURLDirty = true;
         }
         addSubjob(newjob);
-        connect( newjob, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
-                 this, SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
-        connect( newjob, SIGNAL( totalSize( KIO::Job*, KIO::filesize_t ) ),
-                 this, SLOT( slotTotalSize( KIO::Job*, KIO::filesize_t ) ) );
+        connect( newjob, SIGNAL( processedSize( KJob*, qulonglong ) ),
+                 this, SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
+        connect( newjob, SIGNAL( totalSize( KJob*, qulonglong ) ),
+                 this, SLOT( slotTotalSize( KJob*, qulonglong ) ) );
     }
     else
     {
@@ -3409,7 +3385,7 @@ void CopyJob::setNextDirAttribute()
     }
 }
 
-void CopyJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
+void CopyJob::slotProcessedSize( KJob*, qulonglong data_size )
 {
   //kDebug(7007) << "CopyJob::slotProcessedSize " << data_size << endl;
   m_fileProcessedSize = data_size;
@@ -3426,7 +3402,7 @@ void CopyJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
   emitPercent( m_processedSize + m_fileProcessedSize, m_totalSize );
 }
 
-void CopyJob::slotTotalSize( KIO::Job*, KIO::filesize_t size )
+void CopyJob::slotTotalSize( KJob*, qulonglong size )
 {
   //kDebug(7007) << "slotTotalSize: " << size << endl;
   // Special case for copying a single file
@@ -3441,7 +3417,7 @@ void CopyJob::slotTotalSize( KIO::Job*, KIO::filesize_t size )
   }
 }
 
-void CopyJob::slotResultDeletingDirs( Job * job )
+void CopyJob::slotResultDeletingDirs( KJob * job )
 {
     if (job->error())
     {
@@ -3455,7 +3431,7 @@ void CopyJob::slotResultDeletingDirs( Job * job )
 }
 
 #if 0 // TODO KDE4
-void CopyJob::slotResultSettingDirAttributes( Job * job )
+void CopyJob::slotResultSettingDirAttributes( KJob * job )
 {
     if (job->error())
     {
@@ -3469,7 +3445,7 @@ void CopyJob::slotResultSettingDirAttributes( Job * job )
 }
 #endif
 
-void CopyJob::slotResultRenaming( Job* job )
+void CopyJob::slotResultRenaming( KJob* job )
 {
     int err = job->error();
     const QString errText = job->errorText();
@@ -3595,7 +3571,7 @@ void CopyJob::slotResultRenaming( Job* job )
                 {
                 case R_CANCEL:
                 {
-                    m_error = ERR_USER_CANCELED;
+                    setError( ERR_USER_CANCELED );
                     emitResult();
                     return;
                 }
@@ -3636,8 +3612,8 @@ void CopyJob::slotResultRenaming( Job* job )
             }
         } else if ( err != KIO::ERR_UNSUPPORTED_ACTION ) {
             kDebug(7007) << "Couldn't rename " << m_currentSrcURL << " to " << dest << ", aborting" << endl;
-            m_error = err;
-            m_errorText = errText;
+            setError( err );
+            setErrorText( errText );
             emitResult();
             return;
         }
@@ -3656,7 +3632,7 @@ void CopyJob::slotResultRenaming( Job* job )
     }
 }
 
-void CopyJob::slotResult( Job *job )
+void CopyJob::slotResult( KJob *job )
 {
     //kDebug(7007) << "CopyJob::slotResult() state=" << (int) state << endl;
     // In each case, what we have to do is :
@@ -4040,7 +4016,7 @@ void DeleteJob::deleteNextDir()
     emitResult();
 }
 
-void DeleteJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
+void DeleteJob::slotProcessedSize( KJob*, qulonglong data_size )
 {
    // Note: this is the same implementation as CopyJob::slotProcessedSize but
    // it's different from FileCopyJob::slotProcessedSize - which is why this
@@ -4054,22 +4030,22 @@ void DeleteJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
    emit processedSize( this, m_processedSize + m_fileProcessedSize );
 
    // calculate percents
-   unsigned long ipercent = m_percent;
+   unsigned long ipercent = percent();
 
    if ( m_totalSize == 0 )
-      m_percent = 100;
+      setPercent( 100 );
    else
-      m_percent = (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0);
+      setPercent( (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0) );
 
-   if ( m_percent > ipercent )
+   if ( percent() > ipercent )
    {
-      emit percent( this, m_percent );
+      emit percent( this, percent() );
       //kDebug(7007) << "DeleteJob::slotProcessedSize - percent =  " << (unsigned int) m_percent << endl;
    }
 
 }
 
-void DeleteJob::slotResult( Job *job )
+void DeleteJob::slotResult( KJob *job )
 {
     switch ( state )
     {
@@ -4317,7 +4293,7 @@ void MultiGetJob::slotFinished()
      emit result(m_currentEntry.id);
   }
   m_redirectionURL = KUrl();
-  m_error = 0;
+  setError( 0 );
   m_incomingMetaData.clear();
   m_activeQueue.removeAll(m_currentEntry);
   if (m_activeQueue.count() == 0)
@@ -4341,7 +4317,7 @@ void MultiGetJob::slotFinished()
 
 void MultiGetJob::slotData( const QByteArray &_data)
 {
-  if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error)
+  if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || error())
      emit data(m_currentEntry.id, _data);
 }
 

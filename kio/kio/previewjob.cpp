@@ -309,9 +309,9 @@ void PreviewJob::determineNextFile()
     }
 }
 
-void PreviewJob::slotResult( KIO::Job *job )
+void PreviewJob::slotResult( KJob *job )
 {
-    removeSubjob( job );
+    removeSubjob(job);
     Q_ASSERT ( !hasSubjobs() ); // We should have only one job at a time ...
     switch ( d->state )
     {

@@ -84,7 +84,7 @@ protected Q_SLOTS:
   void startJob();
   void stopJob();
 
-  void slotResult( KIO::Job * );
+  void slotResult( KJob * );
   void slotEntries( KIO::Job *, const KIO::UDSEntryList& );
   void slotData( KIO::Job *, const QByteArray &data );
   void slotDataReq( KIO::Job *, QByteArray &data );

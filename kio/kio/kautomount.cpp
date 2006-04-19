@@ -39,14 +39,14 @@ KAutoMount::KAutoMount( bool _readonly, const QByteArray& _format, const QString
   m_bShowFilemanagerWindow = _show_filemanager_window;
 
   KIO::Job* job = KIO::mount( _readonly, _format, _device, _mountpoint );
-  connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotResult( KIO::Job * ) ) );
+  connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotResult( KJob * ) ) );
 }
 
-void KAutoMount::slotResult( KIO::Job * job )
+void KAutoMount::slotResult( KJob * job )
 {
   if ( job->error() ) {
     emit error();
-    job->showErrorDialog();
+    static_cast<KIO::Job*>( job )->showErrorDialog();
   }
   else
   {
@@ -81,14 +81,14 @@ KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _deskto
   : m_desktopFile( _desktopFile ), m_mountpoint( _mountpoint )
 {
   KIO::Job * job = KIO::unmount( m_mountpoint );
-  connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotResult( KIO::Job * ) ) );
+  connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotResult( KJob * ) ) );
 }
 
-void KAutoUnmount::slotResult( KIO::Job * job )
+void KAutoUnmount::slotResult( KJob * job )
 {
   if ( job->error() ) {
     emit error();
-    job->showErrorDialog();
+    static_cast<KIO::Job*>( job )->showErrorDialog();
   }
   else
   {

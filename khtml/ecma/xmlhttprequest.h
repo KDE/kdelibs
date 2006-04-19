@@ -79,7 +79,7 @@ namespace KJS {
 #else
     void slotData( KIO::Job* job, const QByteArray &data );
 #endif
-    void slotFinished( KIO::Job* );
+    void slotFinished( KJob* );
     void slotRedirection( KIO::Job*, const KUrl& );
 
     void processSyncLoadResults(const QByteArray &data, const KUrl &finalURL, const QString &headers);
@@ -128,7 +128,7 @@ namespace KJS {
 
   public Q_SLOTS:
     void slotData( KIO::Job* job, const QByteArray &data );
-    void slotFinished( KIO::Job* job );
+    void slotFinished( KJob* job );
     void slotRedirection( KIO::Job* job, const KUrl& url);
 
   private:

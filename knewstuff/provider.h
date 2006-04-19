@@ -26,6 +26,7 @@
 
 #include <kurl.h>
 
+class KJob;
 namespace KIO { class Job; }
 
 namespace KNS {
@@ -197,7 +198,7 @@ class KNEWSTUFF_EXPORT ProviderLoader : public QObject
 
   protected Q_SLOTS:
     void slotJobData( KIO::Job *, const QByteArray & );
-    void slotJobResult( KIO::Job * );
+    void slotJobResult( KJob * );
 
   private:
     QWidget *mParentWidget;

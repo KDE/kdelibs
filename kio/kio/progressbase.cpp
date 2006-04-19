@@ -37,14 +37,15 @@ ProgressBase::ProgressBase( QWidget *parent )
 void ProgressBase::setJob( KIO::Job *job )
 {
   // first connect all slots
-  connect( job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
-	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( percent( KJob*, unsigned long ) ),
+	   SLOT( slotPercent( KJob*, unsigned long ) ) );
 
-  connect( job, SIGNAL( result( KIO::Job* ) ),
-	   SLOT( slotFinished( KIO::Job* ) ) );
+  connect( job, SIGNAL( result( KJob* ) ),
+	   SLOT( slotFinished( KJob* ) ) );
 
-  connect( job, SIGNAL( canceled( KIO::Job* ) ),
-	   SLOT( slotFinished( KIO::Job* ) ) );
+  // After all cancelled() is supposed to be unused... remove?
+  //connect( job, SIGNAL( canceled( KIO::Job* ) ),
+  //	   SLOT( slotFinished( KIO::Job* ) ) );
 
   // then assign job
   m_pJob = job;
@@ -54,15 +55,15 @@ void ProgressBase::setJob( KIO::Job *job )
 void ProgressBase::setJob( KIO::CopyJob *job )
 {
   // first connect all slots
-  connect( job, SIGNAL( totalSize( KIO::Job*, KIO::filesize_t ) ),
-	   SLOT( slotTotalSize( KIO::Job*, KIO::filesize_t ) ) );
+  connect( job, SIGNAL( totalSize( KJob*, qulonglong ) ),
+	   SLOT( slotTotalSize( KJob*, qulonglong ) ) );
   connect( job, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
 	   SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
   connect( job, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
 	   SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
-  connect( job, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
-	   SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
+  connect( job, SIGNAL( processedSize( KJob*, qulonglong ) ),
+	   SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
   connect( job, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
 	   SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
   connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
@@ -70,8 +71,8 @@ void ProgressBase::setJob( KIO::CopyJob *job )
 
   connect( job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
 	   SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-  connect( job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
-	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( percent( KJob*, unsigned long ) ),
+	   SLOT( slotPercent( KJob*, unsigned long ) ) );
 
   connect( job, SIGNAL( copying( KIO::Job*, const KUrl& , const KUrl& ) ),
 	   SLOT( slotCopying( KIO::Job*, const KUrl&, const KUrl& ) ) );
@@ -80,11 +81,12 @@ void ProgressBase::setJob( KIO::CopyJob *job )
   connect( job, SIGNAL( creatingDir( KIO::Job*, const KUrl& ) ),
  	   SLOT( slotCreatingDir( KIO::Job*, const KUrl& ) ) );
 
-  connect( job, SIGNAL( result( KIO::Job* ) ),
-	   SLOT( slotFinished( KIO::Job* ) ) );
+  connect( job, SIGNAL( result( KJob* ) ),
+	   SLOT( slotFinished( KJob* ) ) );
 
-  connect( job, SIGNAL( canceled( KIO::Job* ) ),
-	   SLOT( slotFinished( KIO::Job* ) ) );
+  // Should be safe to remove...
+  //connect( job, SIGNAL( canceled( KIO::Job* ) ),
+  //	   SLOT( slotFinished( KIO::Job* ) ) );
 
   // then assign job
   m_pJob = job;
@@ -94,15 +96,15 @@ void ProgressBase::setJob( KIO::CopyJob *job )
 void ProgressBase::setJob( KIO::DeleteJob *job )
 {
   // first connect all slots
-  connect( job, SIGNAL( totalSize( KIO::Job*, KIO::filesize_t ) ),
-	   SLOT( slotTotalSize( KIO::Job*, KIO::filesize_t ) ) );
+  connect( job, SIGNAL( totalSize( KJob*, qulonglong ) ),
+	   SLOT( slotTotalSize( KJob*, qulonglong ) ) );
   connect( job, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
 	   SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
   connect( job, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
 	   SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
-  connect( job, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
-	   SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
+  connect( job, SIGNAL( processedSize( KJob*, qulonglong ) ),
+	   SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
   connect( job, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
 	   SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
   connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
@@ -110,17 +112,18 @@ void ProgressBase::setJob( KIO::DeleteJob *job )
 
   connect( job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
 	   SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-  connect( job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
-	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( percent( KJob*, unsigned long ) ),
+	   SLOT( slotPercent( KJob*, unsigned long ) ) );
 
   connect( job, SIGNAL( deleting( KIO::Job*, const KUrl& ) ),
 	   SLOT( slotDeleting( KIO::Job*, const KUrl& ) ) );
 
-  connect( job, SIGNAL( result( KIO::Job* ) ),
-	   SLOT( slotFinished( KIO::Job* ) ) );
+  connect( job, SIGNAL( result( KJob* ) ),
+	   SLOT( slotFinished( KJob* ) ) );
 
-  connect( job, SIGNAL( canceled( KIO::Job* ) ),
-	   SLOT( slotFinished( KIO::Job* ) ) );
+  // Safe to remove?
+  //connect( job, SIGNAL( canceled( KIO::Job* ) ),
+  //	   SLOT( slotFinished( KIO::Job* ) ) );
 
   // then assign job
   m_pJob = job;
@@ -150,7 +153,7 @@ void ProgressBase::finished() {
   }
 }
 
-void ProgressBase::slotFinished( KIO::Job* ) {
+void ProgressBase::slotFinished( KJob* ) {
   finished();
 }
 

@@ -1202,7 +1202,7 @@ void KUrlCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
  * Start a new list job if there are still urls in
  * d->list_urls, otherwise call finished()
  */
-void KUrlCompletion::slotIOFinished( KIO::Job * job )
+void KUrlCompletion::slotIOFinished( KJob * job )
 {
 //	kDebug() << "slotIOFinished() " << endl;
 
@@ -1229,8 +1229,8 @@ void KUrlCompletion::slotIOFinished( KIO::Job * job )
 		assert( d->list_job );
 
 		connect( d->list_job,
-				SIGNAL(result(KIO::Job*)),
-				SLOT(slotIOFinished(KIO::Job*)) );
+				SIGNAL(result(KJob*)),
+				SLOT(slotIOFinished(KJob*)) );
 
 		connect( d->list_job,
 				SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),

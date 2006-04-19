@@ -239,8 +239,8 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
       connect( job, SIGNAL( entries( KIO::Job *, const KIO::UDSEntryList & ) ),
                this, SLOT( slotEntries( KIO::Job *, const KIO::UDSEntryList & ) ) );
-      connect( job, SIGNAL( result( KIO::Job * ) ),
-               this, SLOT( slotResult( KIO::Job * ) ) );
+      connect( job, SIGNAL( result( KJob * ) ),
+               this, SLOT( slotResult( KJob * ) ) );
       connect( job, SIGNAL( redirection( KIO::Job *, const KUrl & ) ),
                this, SLOT( slotRedirection( KIO::Job *, const KUrl & ) ) );
 
@@ -585,8 +585,8 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
 
   connect( job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList & )),
            this, SLOT(slotUpdateEntries( KIO::Job *, const KIO::UDSEntryList & )) );
-  connect( job, SIGNAL(result( KIO::Job * )),
-           this, SLOT(slotUpdateResult( KIO::Job * )) );
+  connect( job, SIGNAL(result( KJob * )),
+           this, SLOT(slotUpdateResult( KJob * )) );
 
   kDebug(7004) << k_funcinfo << "update started in " << _dir << endl;
 
@@ -989,7 +989,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
     kdl->emitItems();
 }
 
-void KDirListerCache::slotResult( KIO::Job *j )
+void KDirListerCache::slotResult( KJob *j )
 {
   Q_ASSERT( j );
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
@@ -1068,7 +1068,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
   oldUrl.adjustPath(-1);
   newUrl.adjustPath(-1);
 
-  if ( oldUrl == newUrl ) 
+  if ( oldUrl == newUrl )
   {
     kDebug(7004) << k_funcinfo << "New redirection url same as old, giving up." << endl;
     return;
@@ -1299,8 +1299,8 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
 
   connect( job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList & )),
            this, SLOT(slotUpdateEntries( KIO::Job *, const KIO::UDSEntryList & )) );
-  connect( job, SIGNAL(result( KIO::Job * )),
-           this, SLOT(slotUpdateResult( KIO::Job * )) );
+  connect( job, SIGNAL(result( KJob * )),
+           this, SLOT(slotUpdateResult( KJob * )) );
 
   // FIXME: autoUpdate-Counts!!
 
@@ -1451,7 +1451,7 @@ void KDirListerCache::slotUpdateEntries( KIO::Job* job, const KIO::UDSEntryList&
   jobs[static_cast<KIO::ListJob*>(job)] += list;
 }
 
-void KDirListerCache::slotUpdateResult( KIO::Job * j )
+void KDirListerCache::slotUpdateResult( KJob * j )
 {
   Q_ASSERT( j );
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
@@ -2334,12 +2334,12 @@ void KDirLister::emitDeleteItem( KFileItem *item )
 
 // ================ private slots ================ //
 
-void KDirLister::slotInfoMessage( KIO::Job *, const QString& message )
+void KDirLister::slotInfoMessage( KJob *, const QString& message )
 {
   emit infoMessage( message );
 }
 
-void KDirLister::slotPercent( KIO::Job *job, unsigned long pcnt )
+void KDirLister::slotPercent( KJob *job, unsigned long pcnt )
 {
   d->jobData[static_cast<KIO::ListJob *>(job)].percent = pcnt;
 
@@ -2362,7 +2362,7 @@ void KDirLister::slotPercent( KIO::Job *job, unsigned long pcnt )
   emit percent( result );
 }
 
-void KDirLister::slotTotalSize( KIO::Job *job, KIO::filesize_t size )
+void KDirLister::slotTotalSize( KJob *job, qulonglong size )
 {
   d->jobData[static_cast<KIO::ListJob *>(job)].totalSize = size;
 
@@ -2377,7 +2377,7 @@ void KDirLister::slotTotalSize( KIO::Job *job, KIO::filesize_t size )
   emit totalSize( result );
 }
 
-void KDirLister::slotProcessedSize( KIO::Job *job, KIO::filesize_t size )
+void KDirLister::slotProcessedSize( KJob *job, qulonglong size )
 {
   d->jobData[static_cast<KIO::ListJob *>(job)].processedSize = size;
 
@@ -2431,14 +2431,14 @@ void KDirLister::jobStarted( KIO::ListJob *job )
 
 void KDirLister::connectJob( KIO::ListJob *job )
 {
-  connect( job, SIGNAL(infoMessage( KIO::Job *, const QString& )),
-           this, SLOT(slotInfoMessage( KIO::Job *, const QString& )) );
-  connect( job, SIGNAL(percent( KIO::Job *, unsigned long )),
-           this, SLOT(slotPercent( KIO::Job *, unsigned long )) );
-  connect( job, SIGNAL(totalSize( KIO::Job *, KIO::filesize_t )),
-           this, SLOT(slotTotalSize( KIO::Job *, KIO::filesize_t )) );
-  connect( job, SIGNAL(processedSize( KIO::Job *, KIO::filesize_t )),
-           this, SLOT(slotProcessedSize( KIO::Job *, KIO::filesize_t )) );
+  connect( job, SIGNAL(infoMessage( KJob *, const QString&, const QString& )),
+           this, SLOT(slotInfoMessage( KJob *, const QString& )) );
+  connect( job, SIGNAL(percent( KJob *, unsigned long )),
+           this, SLOT(slotPercent( KJob *, unsigned long )) );
+  connect( job, SIGNAL(totalSize( KJob *, qulonglong )),
+           this, SLOT(slotTotalSize( KJob *, qulonglong )) );
+  connect( job, SIGNAL(processedSize( KJob *, qulonglong )),
+           this, SLOT(slotProcessedSize( KJob *, qulonglong )) );
   connect( job, SIGNAL(speed( KIO::Job *, unsigned long )),
            this, SLOT(slotSpeed( KIO::Job *, unsigned long )) );
 }

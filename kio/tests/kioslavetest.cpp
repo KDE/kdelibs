@@ -309,11 +309,11 @@ void KioslaveTest::startJob() {
     job = myJob;
   }
 
-  connect( job, SIGNAL( result( KIO::Job * ) ),
-           SLOT( slotResult( KIO::Job * ) ) );
+  connect( job, SIGNAL( result( KJob * ) ),
+           SLOT( slotResult( KJob * ) ) );
 
-  connect( job, SIGNAL( canceled( KIO::Job * ) ),
-           SLOT( slotResult( KIO::Job * ) ) );
+  connect( job, SIGNAL( canceled( KJob * ) ),
+           SLOT( slotResult( KJob * ) ) );
 
   if (progressMode == ProgressStatus) {
     statusProgress->setJob( job );
@@ -323,11 +323,11 @@ void KioslaveTest::startJob() {
 }
 
 
-void KioslaveTest::slotResult( KIO::Job * _job )
+void KioslaveTest::slotResult( KJob * _job )
 {
   if ( _job->error() )
   {
-    _job->showErrorDialog();
+      static_cast<KIO::Job*>(_job)->showErrorDialog();
   }
   else if ( selectedOperation == Stat )
   {

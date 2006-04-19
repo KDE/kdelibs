@@ -271,7 +271,7 @@ public:
    * verbose error description a as page, depending on the users configuration.
    * @p job is the job that signaled the error situation
    */
-  virtual void showError( KIO::Job* job );
+  virtual void showError( KJob* job );
 
   /**
    * Returns a reference to the DOM HTML document (for non-HTML documents, returns null)
@@ -1250,7 +1250,7 @@ private Q_SLOTS:
   /**
   * @internal
   */
-  void slotInfoMessage( KIO::Job*, const QString& msg );
+  void slotInfoMessage( KJob*, const QString& msg );
   /**
    * @internal
    */
@@ -1258,7 +1258,7 @@ private Q_SLOTS:
   /**
    * @internal
    */
-  void slotFinished( KIO::Job* );
+  void slotFinished( KJob* );
   /**
    * @internal
    */
@@ -1409,17 +1409,17 @@ private Q_SLOTS:
   /*
    * @internal
    */
-  void slotJobPercent( KIO::Job*, unsigned long );
+  void slotJobPercent( KJob*, unsigned long );
 
   /*
    * @internal
    */
-  void slotJobDone( KIO::Job* );
+  void slotJobDone( KJob* );
 
   /*
    * @internal
    */
-  void slotUserSheetStatDone( KIO::Job* );
+  void slotUserSheetStatDone( KJob* );
 
   /*
    * @internal
@@ -1527,7 +1527,7 @@ private:
   void openWallet(DOM::HTMLFormElementImpl*);
   void saveToWallet(const QString& key, const QMap<QString,QString>& data);
   void dequeueWallet(DOM::HTMLFormElementImpl*);
-  
+
   void enableFindAheadActions(bool);
 
   /**

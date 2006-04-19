@@ -91,7 +91,7 @@ void XMLHttpRequestQObject::slotData( KIO::Job* job, const QByteArray &data )
 }
 #endif
 
-void XMLHttpRequestQObject::slotFinished( KIO::Job* job )
+void XMLHttpRequestQObject::slotFinished( KJob* job )
 {
   jsObject->slotFinished(job);
 }
@@ -389,8 +389,8 @@ void XMLHttpRequest::send(const QString& _body)
     return;
   }
 
-  qObject->connect( job, SIGNAL( result( KIO::Job* ) ),
-		    SLOT( slotFinished( KIO::Job* ) ) );
+  qObject->connect( job, SIGNAL( result( KJob* ) ),
+		    SLOT( slotFinished( KJob* ) ) );
 #ifdef APPLE_CHANGES
   qObject->connect( job, SIGNAL( data( KIO::Job*, const char*, int ) ),
 		    SLOT( slotData( KIO::Job*, const char*, int ) ) );
@@ -572,7 +572,7 @@ void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KUrl &
   slotFinished(0);
 }
 
-void XMLHttpRequest::slotFinished(KIO::Job *)
+void XMLHttpRequest::slotFinished(KJob *)
 {
   if (decoder) {
     response += decoder->flush();
@@ -720,7 +720,7 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
       DOM::NodeImpl* docNode = toNode(args[0]);
       if (docNode->isDocumentNode()) {
         DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode);
-        
+
         try {
           body = doc->toString().string();
           // FIXME: also need to set content type, including encoding!

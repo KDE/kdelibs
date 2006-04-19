@@ -111,7 +111,7 @@ void MetaInfoJob::determineNextFile()
     getMetaInfo();
 }
 
-void MetaInfoJob::slotResult( KIO::Job *job )
+void MetaInfoJob::slotResult( KJob *job )
 {
     removeSubjob(job);
     Q_ASSERT(!hasSubjobs()); // We should have only one job at a time ...

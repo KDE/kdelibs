@@ -121,11 +121,11 @@ void StatusbarProgress::slotClean() {
 }
 
 
-void StatusbarProgress::slotTotalSize( KIO::Job*, KIO::filesize_t size ) {
+void StatusbarProgress::slotTotalSize( KJob*, qulonglong size ) {
   m_iTotalSize = size;  // size is measured in bytes
 }
 
-void StatusbarProgress::slotPercent( KIO::Job*, unsigned long percent ) {
+void StatusbarProgress::slotPercent( KJob*, unsigned long percent ) {
   m_pProgressBar->setValue( percent );
 }
 

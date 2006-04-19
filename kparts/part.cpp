@@ -366,7 +366,7 @@ bool ReadOnlyPart::openURL( const KUrl &url )
     d->m_job = KIO::file_copy( m_url, destURL, 0600, true, false, d->m_showProgressInfo );
     d->m_job->setWindow( widget() ? widget()->topLevelWidget() : 0 );
     emit started( d->m_job );
-    connect( d->m_job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobFinished ( KIO::Job * ) ) );
+    connect( d->m_job, SIGNAL( result( KJob * ) ), this, SLOT( slotJobFinished ( KJob * ) ) );
     return true;
   }
 }
@@ -396,7 +396,7 @@ bool ReadOnlyPart::closeURL()
   return true;
 }
 
-void ReadOnlyPart::slotJobFinished( KIO::Job * job )
+void ReadOnlyPart::slotJobFinished( KJob * job )
 {
   kDebug(1000) << "ReadOnlyPart::slotJobFinished" << endl;
   assert( job == d->m_job );
@@ -639,12 +639,12 @@ bool ReadWritePart::saveToURL()
     }
     d->m_uploadJob = KIO::file_move( uploadUrl, m_url, -1, true /*overwrite*/ );
     d->m_uploadJob->setWindow( widget() ? widget()->topLevelWidget() : 0 );
-    connect( d->m_uploadJob, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotUploadFinished (KIO::Job *) ) );
+    connect( d->m_uploadJob, SIGNAL( result( KJob * ) ), this, SLOT( slotUploadFinished (KJob *) ) );
     return true;
   }
 }
 
-void ReadWritePart::slotUploadFinished( KIO::Job * )
+void ReadWritePart::slotUploadFinished( KJob * )
 {
   if (d->m_uploadJob->error())
   {

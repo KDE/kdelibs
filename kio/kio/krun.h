@@ -31,6 +31,7 @@
 
 class KProcess;
 class KService;
+class KJob;
 namespace KIO {
    class Job;
    class StatJob;
@@ -317,9 +318,9 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
   void slotTimeout();
-  void slotScanFinished( KIO::Job * );
+  void slotScanFinished( KJob * );
   void slotScanMimeType( KIO::Job *, const QString &type );
-  virtual void slotStatResult( KIO::Job * );
+  virtual void slotStatResult( KJob * );
 
 protected:
   virtual void init();

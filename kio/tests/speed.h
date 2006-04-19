@@ -5,6 +5,7 @@
 #include <kio/global.h>
 #include <kurl.h>
 
+class KJob;
 namespace KIO {
     class Job;
 }
@@ -17,7 +18,7 @@ public:
 
 private Q_SLOTS:
     void entries( KIO::Job *, const KIO::UDSEntryList& );
-    void finished( KIO::Job *job );
+    void finished( KJob *job );
 
 };
 

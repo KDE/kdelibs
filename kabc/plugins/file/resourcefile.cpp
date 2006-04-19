@@ -261,8 +261,8 @@ bool ResourceFile::asyncLoad()
   KIO::Scheduler::checkSlaveOnHold( true );
   d->mLoadJob = KIO::file_copy( src, dest, -1, true, false, false );
   d->mIsLoading = true;
-  connect( d->mLoadJob, SIGNAL( result( KIO::Job* ) ),
-           this, SLOT( downloadFinished( KIO::Job* ) ) );
+  connect( d->mLoadJob, SIGNAL( result( KJob* ) ),
+           this, SLOT( downloadFinished( KJob* ) ) );
 
   return true;
 }
@@ -310,7 +310,7 @@ bool ResourceFile::save( Ticket * )
 
   KSaveFile saveFile( mFileName );
   bool ok = false;
-  
+
   if ( saveFile.status() == 0 && saveFile.file() )
   {
     mFormat->saveAll( addressBook(), this, saveFile.file() );
@@ -360,8 +360,8 @@ bool ResourceFile::asyncSave( Ticket * )
   d->mIsSaving = true;
   mDirWatch.stopScan(); // restarted in uploadFinished()
   d->mSaveJob = KIO::file_copy( src, dest, -1, true, false, false );
-  connect( d->mSaveJob, SIGNAL( result( KIO::Job* ) ),
-           this, SLOT( uploadFinished( KIO::Job* ) ) );
+  connect( d->mSaveJob, SIGNAL( result( KJob* ) ),
+           this, SLOT( uploadFinished( KJob* ) ) );
 
   return true;
 }
@@ -450,7 +450,7 @@ void ResourceFile::removeAddressee( const Addressee &addr )
   mAddrMap.remove( addr.uid() );
 }
 
-void ResourceFile::downloadFinished( KIO::Job* )
+void ResourceFile::downloadFinished( KJob* )
 {
   kDebug(5700) << "ResourceFile::downloadFinished()" << endl;
 
@@ -475,7 +475,7 @@ void ResourceFile::downloadFinished( KIO::Job* )
   deleteLocalTempFile();
 }
 
-void ResourceFile::uploadFinished( KIO::Job *job )
+void ResourceFile::uploadFinished( KJob *job )
 {
   kDebug(5700) << "ResourceFile::uploadFinished()" << endl;
 

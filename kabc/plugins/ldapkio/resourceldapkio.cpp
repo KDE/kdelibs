@@ -140,7 +140,7 @@ void ResourceLDAPKIO::entries( KIO::Job*, const KIO::UDSEntryList & list )
   }
 }
 
-void ResourceLDAPKIO::listResult( KIO::Job *job)
+void ResourceLDAPKIO::listResult( KJob *job)
 {
   d->mError = job->error();
   if ( d->mError && d->mError != KIO::ERR_USER_CANCELED )
@@ -168,8 +168,8 @@ QString ResourceLDAPKIO::findUid( const QString &uid )
   connect( listJob,
     SIGNAL( entries( KIO::Job *, const KIO::UDSEntryList& ) ),
     SLOT( entries( KIO::Job*, const KIO::UDSEntryList& ) ) );
-  connect( listJob, SIGNAL( result( KIO::Job* ) ),
-    this, SLOT( listResult( KIO::Job* ) ) );
+  connect( listJob, SIGNAL( result( KJob* ) ),
+    this, SLOT( listResult( KJob* ) ) );
 
   enter_loop();
   return d->mResultDn;
@@ -530,15 +530,15 @@ bool ResourceLDAPKIO::load()
     job = KIO::get( d->mLDAPUrl, true, false );
     connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
       this, SLOT( data( KIO::Job*, const QByteArray& ) ) );
-    connect( job, SIGNAL( result( KIO::Job* ) ),
-      this, SLOT( syncLoadSaveResult( KIO::Job* ) ) );
+    connect( job, SIGNAL( result( KJob* ) ),
+      this, SLOT( syncLoadSaveResult( KJob* ) ) );
     enter_loop();
   }
 
   job = loadFromCache();
   if ( job ) {
-    connect( job, SIGNAL( result( KIO::Job* ) ),
-      this, SLOT( syncLoadSaveResult( KIO::Job* ) ) );
+    connect( job, SIGNAL( result( KJob* ) ),
+      this, SLOT( syncLoadSaveResult( KJob* ) ) );
     enter_loop();
   }
   if ( mErrorMsg.isEmpty() ) {
@@ -567,8 +567,8 @@ bool ResourceLDAPKIO::asyncLoad()
     KIO::Job *job = KIO::get( d->mLDAPUrl, true, false );
     connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
       this, SLOT( data( KIO::Job*, const QByteArray& ) ) );
-    connect( job, SIGNAL( result( KIO::Job* ) ),
-      this, SLOT( result( KIO::Job* ) ) );
+    connect( job, SIGNAL( result( KJob* ) ),
+      this, SLOT( result( KJob* ) ) );
   } else {
     result( NULL );
   }
@@ -678,7 +678,7 @@ void ResourceLDAPKIO::data( KIO::Job *, const QByteArray &data )
   } while ( ret != LDIF::MoreData );
 }
 
-void ResourceLDAPKIO::loadCacheResult( KIO::Job *job )
+void ResourceLDAPKIO::loadCacheResult( KJob *job )
 {
   mErrorMsg = "";
   d->mError = job->error();
@@ -691,7 +691,7 @@ void ResourceLDAPKIO::loadCacheResult( KIO::Job *job )
     emit loadingFinished( this );
 }
 
-void ResourceLDAPKIO::result( KIO::Job *job )
+void ResourceLDAPKIO::result( KJob *job )
 {
   mErrorMsg = "";
   if ( job ) {
@@ -707,8 +707,8 @@ void ResourceLDAPKIO::result( KIO::Job *job )
   KIO::Job *cjob;
   cjob = loadFromCache();
   if ( cjob ) {
-    connect( cjob, SIGNAL( result( KIO::Job* ) ),
-      this, SLOT( loadCacheResult( KIO::Job* ) ) );
+    connect( cjob, SIGNAL( result( KJob* ) ),
+      this, SLOT( loadCacheResult( KJob* ) ) );
   } else {
     if ( !mErrorMsg.isEmpty() )
       emit loadingError( this, mErrorMsg );
@@ -725,8 +725,8 @@ bool ResourceLDAPKIO::save( Ticket* )
   KIO::Job *job = KIO::put( d->mLDAPUrl, -1, true, false, false );
   connect( job, SIGNAL( dataReq( KIO::Job*, QByteArray& ) ),
     this, SLOT( saveData( KIO::Job*, QByteArray& ) ) );
-  connect( job, SIGNAL( result( KIO::Job* ) ),
-    this, SLOT( syncLoadSaveResult( KIO::Job* ) ) );
+  connect( job, SIGNAL( result( KJob* ) ),
+    this, SLOT( syncLoadSaveResult( KJob* ) ) );
   enter_loop();
   if ( mErrorMsg.isEmpty() ) {
     kDebug(7125) << "ResourceLDAPKIO save ok!" << endl;
@@ -745,12 +745,12 @@ bool ResourceLDAPKIO::asyncSave( Ticket* )
   KIO::Job *job = KIO::put( d->mLDAPUrl, -1, true, false, false );
   connect( job, SIGNAL( dataReq( KIO::Job*, QByteArray& ) ),
     this, SLOT( saveData( KIO::Job*, QByteArray& ) ) );
-  connect( job, SIGNAL( result( KIO::Job* ) ),
-    this, SLOT( saveResult( KIO::Job* ) ) );
+  connect( job, SIGNAL( result( KJob* ) ),
+    this, SLOT( saveResult( KJob* ) ) );
   return true;
 }
 
-void ResourceLDAPKIO::syncLoadSaveResult( KIO::Job *job )
+void ResourceLDAPKIO::syncLoadSaveResult( KJob *job )
 {
   d->mError = job->error();
   if ( d->mError && d->mError != KIO::ERR_USER_CANCELED )
@@ -762,7 +762,7 @@ void ResourceLDAPKIO::syncLoadSaveResult( KIO::Job *job )
   emit leaveModality();
 }
 
-void ResourceLDAPKIO::saveResult( KIO::Job *job )
+void ResourceLDAPKIO::saveResult( KJob *job )
 {
   d->mError = job->error();
   if ( d->mError && d->mError != KIO::ERR_USER_CANCELED )

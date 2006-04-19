@@ -157,7 +157,7 @@ void ChmodJob::chmodNextFile()
                 int answer = KMessageBox::warningContinueCancel( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>. You have insufficient access to the file to perform the change.</qt>" , path), QString(), i18n("&Skip File") );
                 if (answer == KMessageBox::Cancel)
                 {
-                    m_error = ERR_USER_CANCELED;
+                    setError( ERR_USER_CANCELED );
                     emitResult();
                     return;
                 }
@@ -181,16 +181,16 @@ void ChmodJob::chmodNextFile()
         emitResult();
 }
 
-void ChmodJob::slotResult( KIO::Job * job )
+void ChmodJob::slotResult( KJob * job )
 {
     if ( job->error() )
     {
-        m_error = job->error();
-        m_errorText = job->errorText();
+        setError( job->error() );
+        setErrorText( job->errorText() );
         emitResult();
         return;
     }
-    //kDebug(7007) << " ChmodJob::slotResult( KIO::Job * job ) m_lstItems:" << m_lstItems.count() << endl;
+    //kDebug(7007) << " ChmodJob::slotResult( KJob * job ) m_lstItems:" << m_lstItems.count() << endl;
     switch ( state )
     {
         case STATE_LISTING:

@@ -62,7 +62,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& lst );
-    void slotGetResult( KIO::Job* );
+    void slotGetResult( KJob* );
 
 private:
     void enterLoop();

@@ -63,6 +63,7 @@ private:
 
 };
 
+class KJob;
 namespace KIO {
     class Job;
 }
@@ -192,7 +193,7 @@ private Q_SLOTS:
     void slotLargeRows();
     void slotPreviewsToggled( bool );
 
-    void slotPreviewResult( KIO::Job * );
+    void slotPreviewResult( KJob * );
     void gotPreview( const KFileItem *item, const QPixmap& pix );
     void slotAutoOpen();
 

@@ -80,8 +80,8 @@ public:
 
 public Q_SLOTS:
   virtual void slotClean();
-  virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t size );
-  virtual void slotPercent( KIO::Job* job, unsigned long percent );
+  virtual void slotTotalSize( KJob* job, qulonglong size );
+  virtual void slotPercent( KJob* job, unsigned long percent );
   virtual void slotSpeed( KIO::Job* job, unsigned long speed );
 
 protected:

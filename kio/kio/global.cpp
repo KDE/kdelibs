@@ -176,7 +176,7 @@ KIO_EXPORT QString KIO::decodeFileName( const QString & _str )
 
 KIO_EXPORT QString KIO::Job::errorString() const
 {
-  return KIO::buildErrorString(m_error, m_errorText);
+  return KIO::buildErrorString(error(), errorText());
 }
 
 KIO_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText)
@@ -430,7 +430,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
   QString errorName, techName, description, ret2;
   QStringList causes, solutions, ret;
 
-  QByteArray raw = rawErrorDetail( m_error, m_errorText, reqUrl, method );
+  QByteArray raw = rawErrorDetail( error(), errorText(), reqUrl, method );
   QDataStream stream(raw);
 
   stream >> errorName >> techName >> description >> causes >> solutions;
@@ -459,7 +459,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
     ret2 += i18n( "<li>Protocol: %1</li>" ,  protocol );
   }
   ret2 += i18n( "<li>Date and time: %1</li>" ,  datetime );
-  ret2 += i18n( "<li>Additional information: %1</li></ul>" ,  m_errorText );
+  ret2 += i18n( "<li>Additional information: %1</li></ul>" ,  errorText() );
   if ( !causes.isEmpty() ) {
     ret2 += i18n( "<p><b>Possible causes</b>:</p><ul><li>" );
     ret2 += causes.join( "</li><li>" );

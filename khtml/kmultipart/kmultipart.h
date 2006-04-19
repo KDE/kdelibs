@@ -62,7 +62,7 @@ protected:
 private Q_SLOTS:
     void reallySendData( const QByteArray& line );
     //void slotPopupMenu( KXMLGUIClient *cl, const QPoint &pos, const KUrl &u, const QString &mime, mode_t mode );
-    void slotJobFinished( KIO::Job *job );
+    void slotJobFinished( KJob *job );
     void slotData( KIO::Job *, const QByteArray & );
     //void updateWindowCaption();
 

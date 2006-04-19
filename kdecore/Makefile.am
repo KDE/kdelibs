@@ -58,7 +58,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
 	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h \
-	kde_file.h ktimezones.h ktzfiletimezone.h \
+	kde_file.h ktimezones.h ktzfiletimezone.h kjob.h \
 	kfilterbase.h kfilterdev.h kdatetime.h qtest_kde.h conversion_check.h \
 	kdedmodule.h kautostart.h knotificationrestrictions.h kshortcut.h
 
@@ -87,7 +87,7 @@ libkdecore_la_SOURCES = kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
 	klocale.cpp klocalizedstring.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp \
 	kiconloader.cpp kwin.cpp kwinmodule.cpp kcharsets.cpp \
 	kckey.cpp kshortcut.cpp \
-	kstdaccel.cpp \
+	kstdaccel.cpp kjob.cpp \
 	kcrash.cpp kurl.cpp kglobal.cpp kglobalsettings.cpp \
 	kallocator.cpp kvmallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \

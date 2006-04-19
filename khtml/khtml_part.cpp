@@ -738,12 +738,12 @@ bool KHTMLPart::openURL( const KUrl &url )
      d->m_job->setWindow(widget()->topLevelWidget());
   d->m_job->addMetaData(args.metaData());
 
-  connect( d->m_job, SIGNAL( result( KIO::Job* ) ),
-           SLOT( slotFinished( KIO::Job* ) ) );
+  connect( d->m_job, SIGNAL( result( KJob* ) ),
+           SLOT( slotFinished( KJob* ) ) );
   connect( d->m_job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
            SLOT( slotData( KIO::Job*, const QByteArray& ) ) );
-  connect ( d->m_job, SIGNAL( infoMessage( KIO::Job*, const QString& ) ),
-           SLOT( slotInfoMessage(KIO::Job*, const QString& ) ) );
+  connect ( d->m_job, SIGNAL( infoMessage( KJob*, const QString&, const QString& ) ),
+           SLOT( slotInfoMessage(KJob*, const QString& ) ) );
   connect( d->m_job, SIGNAL(redirection(KIO::Job*, const KUrl& ) ),
            SLOT( slotRedirection(KIO::Job*, const KUrl&) ) );
 
@@ -764,11 +764,11 @@ bool KHTMLPart::openURL( const KUrl &url )
   connect( d->m_job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
            this, SLOT( slotJobSpeed( KIO::Job*, unsigned long ) ) );
 
-  connect( d->m_job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
-           this, SLOT( slotJobPercent( KIO::Job*, unsigned long ) ) );
+  connect( d->m_job, SIGNAL( percent( KJob*, unsigned long ) ),
+           this, SLOT( slotJobPercent( KJob*, unsigned long ) ) );
 
-  connect( d->m_job, SIGNAL( result( KIO::Job* ) ),
-           this, SLOT( slotJobDone( KIO::Job* ) ) );
+  connect( d->m_job, SIGNAL( result( KJob* ) ),
+           this, SLOT( slotJobDone( KJob* ) ) );
 
   d->m_jobspeed = 0;
 
@@ -777,8 +777,8 @@ bool KHTMLPart::openURL( const KUrl &url )
   if ( args.reload && !settings()->userStyleSheet().isEmpty() ) {
     KUrl url( settings()->userStyleSheet() );
     KIO::StatJob *job = KIO::stat( url, false /* don't show progress */ );
-    connect( job, SIGNAL( result( KIO::Job * ) ),
-             this, SLOT( slotUserSheetStatDone( KIO::Job * ) ) );
+    connect( job, SIGNAL( result( KJob * ) ),
+             this, SLOT( slotUserSheetStatDone( KJob * ) ) );
   }
   emit started( 0L );
 
@@ -1538,7 +1538,7 @@ DOM::DocumentImpl *KHTMLPart::xmlDocImpl() const
     return 0;
 }
 
-void KHTMLPart::slotInfoMessage(KIO::Job* kio_job, const QString& msg)
+void KHTMLPart::slotInfoMessage(KJob* kio_job, const QString& msg)
 {
   assert(d->m_job == kio_job);
 
@@ -1674,7 +1674,7 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
   }
 }
 
-void KHTMLPart::showError( KIO::Job* job )
+void KHTMLPart::showError( KJob* job )
 {
   kDebug(6050) << "KHTMLPart::showError d->m_bParsing=" << (d->m_doc && d->m_doc->parsing()) << " d->m_bComplete=" << d->m_bComplete
                 << " d->m_bCleared=" << d->m_bCleared << endl;
@@ -1683,7 +1683,7 @@ void KHTMLPart::showError( KIO::Job* job )
 	return;
 
   if ( (d->m_doc && d->m_doc->parsing()) || d->m_workingURL.isEmpty() ) // if we got any data already
-    job->showErrorDialog( /*d->m_view*/ );
+    static_cast<KIO::Job*>( job )->showErrorDialog( /*d->m_view*/ );
   else
   {
     htmlError( job->error(), job->errorText(), d->m_workingURL );
@@ -1790,7 +1790,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   end();
 }
 
-void KHTMLPart::slotFinished( KIO::Job * job )
+void KHTMLPart::slotFinished( KJob * job )
 {
   d->m_job = 0L;
   d->m_jobspeed = 0L;
@@ -2121,7 +2121,7 @@ void KHTMLPart::slotJobSpeed( KIO::Job* /*job*/, unsigned long speed )
     setStatusBarText(jsStatusBarText(), BarOverrideText);
 }
 
-void KHTMLPart::slotJobPercent( KIO::Job* /*job*/, unsigned long percent )
+void KHTMLPart::slotJobPercent( KJob* /*job*/, unsigned long percent )
 {
   d->m_jobPercent = percent;
 
@@ -2131,7 +2131,7 @@ void KHTMLPart::slotJobPercent( KIO::Job* /*job*/, unsigned long percent )
   }
 }
 
-void KHTMLPart::slotJobDone( KIO::Job* /*job*/ )
+void KHTMLPart::slotJobDone( KJob* /*job*/ )
 {
   d->m_jobPercent = 100;
 
@@ -2141,7 +2141,7 @@ void KHTMLPart::slotJobDone( KIO::Job* /*job*/ )
   }
 }
 
-void KHTMLPart::slotUserSheetStatDone( KIO::Job *_job )
+void KHTMLPart::slotUserSheetStatDone( KJob *_job )
 {
   using namespace KIO;
 

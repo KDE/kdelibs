@@ -14,7 +14,7 @@ public:
 
 private Q_SLOTS:
     void slotGenerate();
-    void slotResult(KIO::Job *);
+    void slotResult(KJob *);
     void slotPreview( const KFileItem *, const QPixmap & );
     void slotFailed();
 

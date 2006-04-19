@@ -169,7 +169,7 @@ protected:
 
   bool listDir( KDirLister *lister, const KUrl& _url, bool _keep, bool _reload );
   bool validURL( const KDirLister *lister, const KUrl& _url ) const;
- 
+
   // stop all running jobs for lister
   void stop( KDirLister *lister );
   // stop just the job listing url for lister
@@ -193,11 +193,11 @@ private Q_SLOTS:
   void slotFileDirtyDelayed();
 
   void slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
-  void slotResult( KIO::Job *j );
+  void slotResult( KJob *j );
   void slotRedirection( KIO::Job *job, const KUrl &url );
 
   void slotUpdateEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
-  void slotUpdateResult( KIO::Job *job );
+  void slotUpdateResult( KJob *job );
 
 private:
   KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );

@@ -845,7 +845,7 @@ protected Q_SLOTS:
     void slotFilterChanged();
     void fileHighlighted(const KFileItem *i);
     void fileSelected(const KFileItem *i);
-    void slotStatResult(KIO::Job* job);
+    void slotStatResult(KJob* job);
     void slotLoadingFinished();
     void fileCompletion( const QString& );
     void toggleSpeedbar( bool );

@@ -1,4 +1,4 @@
-/* 
+/*
    Copyright (c) 2003 Malte Starostik <malte@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@
 
 #include <kurl.h>
 
+class KJob;
 namespace KIO { class Job; }
 
 namespace KPAC
@@ -49,7 +50,7 @@ namespace KPAC
 
     private Q_SLOTS:
         void data( KIO::Job*, const QByteArray& );
-        void result( KIO::Job* );
+        void result( KJob* );
 
     private:
         QByteArray m_data;

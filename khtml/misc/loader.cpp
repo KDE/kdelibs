@@ -1058,7 +1058,7 @@ void Loader::servePendingRequests()
             }
         }
 
-        connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
+        connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotFinished( KJob * ) ) );
         connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
                  SLOT( slotData( KIO::Job*, const QByteArray &)));
 
@@ -1069,7 +1069,7 @@ void Loader::servePendingRequests()
     }
 }
 
-void Loader::slotFinished( KIO::Job* job )
+void Loader::slotFinished( KJob* job )
 {
   Request *r = m_requestsLoading.take( job );
   KIO::TransferJob* j = static_cast<KIO::TransferJob*>(job);

@@ -35,6 +35,7 @@ class QEvent;
 class QPoint;
 struct QUnknownInterface;
 
+class KJob;
 namespace KIO {
   class Job;
 }
@@ -500,7 +501,7 @@ Q_SIGNALS:
   void canceled( const QString &errMsg );
 
 protected Q_SLOTS:
-  void slotJobFinished( KIO::Job * job );
+  void slotJobFinished( KJob * job );
 
 protected:
   /**
@@ -696,7 +697,7 @@ protected Q_SLOTS:
   /**
    * @internal
    */
-  void slotUploadFinished( KIO::Job * job );
+  void slotUploadFinished( KJob * job );
 
 private:
   void prepareSaving();

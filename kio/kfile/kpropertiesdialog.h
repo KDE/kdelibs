@@ -49,6 +49,7 @@ class Q3ListBox;
 
 #define KPropsPage KPropsDlgPlugin
 
+class KJob;
 namespace KIO { class Job; }
 
 /**
@@ -407,7 +408,7 @@ private:
   Q3PtrList<KPropsDlgPlugin> m_pageList;
 
 private Q_SLOTS:
-  void slotStatResult( KIO::Job * ); // No longer used
+  void slotStatResult( KJob * ); // No longer used
 Q_SIGNALS:
   void leaveModality();
 protected:
@@ -523,7 +524,7 @@ protected Q_SLOTS:
   void slotCopyFinished( KIO::Job * );
   void slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & );
   void slotDirSizeUpdate();
-  void slotDirSizeFinished( KIO::Job * );
+  void slotDirSizeFinished( KJob * );
   void slotFoundMountPoint( const QString& mp, unsigned long kBSize,
 			    unsigned long kBUsed, unsigned long kBAvail );
   void slotSizeStop();
@@ -599,7 +600,7 @@ public:
 
 private Q_SLOTS:
 
-  void slotChmodResult( KIO::Job * );
+  void slotChmodResult( KJob * );
   void slotShowAdvancedPermissions();
 
 Q_SIGNALS:

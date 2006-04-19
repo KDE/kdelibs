@@ -184,7 +184,7 @@ DefaultProgress::~DefaultProgress()
   delete d;
 }
 
-void DefaultProgress::slotTotalSize( KIO::Job*, KIO::filesize_t size )
+void DefaultProgress::slotTotalSize( KJob*, qulonglong size )
 {
   // size is measured in bytes
   if ( m_iTotalSize == size )
@@ -241,7 +241,7 @@ QString DefaultProgress::makePercentString( unsigned long percent,
       return i18n( "%1 %" ,  percent );
 }
 
-void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
+void DefaultProgress::slotPercent( KJob*, unsigned long percent )
 {
   QString caption = makePercentString( percent, m_iTotalSize, m_iTotalFiles );
   m_pProgressBar->setValue( percent );
@@ -268,14 +268,14 @@ void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
 }
 
 
-void DefaultProgress::slotInfoMessage( KIO::Job*, const QString & msg )
+void DefaultProgress::slotInfoMessage( KJob*, const QString & msg )
 {
   speedLabel->setText( msg );
   speedLabel->setAlignment( speedLabel->alignment() & ~Qt::TextWordWrap );
 }
 
 
-void DefaultProgress::slotProcessedSize( KIO::Job*, KIO::filesize_t bytes ) {
+void DefaultProgress::slotProcessedSize( KJob*, qulonglong bytes ) {
   if ( m_iProcessedSize == bytes )
     return;
   m_iProcessedSize = bytes;

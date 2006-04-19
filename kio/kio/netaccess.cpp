@@ -241,8 +241,8 @@ bool NetAccess::filecopyInternal(const KUrl& src, const KUrl& target, int permis
                    ? KIO::file_move( src, target, permissions, overwrite, resume )
                    : KIO::file_copy( src, target, permissions, overwrite, resume );
   job->setWindow (window);
-  connect( job, SIGNAL( result (KIO::Job *) ),
-           this, SLOT( slotResult (KIO::Job *) ) );
+  connect( job, SIGNAL( result (KJob *) ),
+           this, SLOT( slotResult (KJob *) ) );
 
   enter_loop();
   return bJobOK;
@@ -257,8 +257,8 @@ bool NetAccess::dircopyInternal(const KUrl::List& src, const KUrl& target,
                    ? KIO::move( src, target )
                    : KIO::copy( src, target );
   job->setWindow (window);
-  connect( job, SIGNAL( result (KIO::Job *) ),
-           this, SLOT( slotResult (KIO::Job *) ) );
+  connect( job, SIGNAL( result (KJob *) ),
+           this, SLOT( slotResult (KJob *) ) );
 
   enter_loop();
   return bJobOK;
@@ -272,8 +272,8 @@ bool NetAccess::statInternal( const KUrl & url, int details, bool source,
   job->setWindow (window);
   job->setDetails( details );
   job->setSide( source );
-  connect( job, SIGNAL( result (KIO::Job *) ),
-           this, SLOT( slotResult (KIO::Job *) ) );
+  connect( job, SIGNAL( result (KJob *) ),
+           this, SLOT( slotResult (KJob *) ) );
   enter_loop();
   return bJobOK;
 }
@@ -283,8 +283,8 @@ bool NetAccess::delInternal( const KUrl & url, QWidget* window )
   bJobOK = true; // success unless further error occurs
   KIO::Job * job = KIO::del( url );
   job->setWindow (window);
-  connect( job, SIGNAL( result (KIO::Job *) ),
-           this, SLOT( slotResult (KIO::Job *) ) );
+  connect( job, SIGNAL( result (KJob *) ),
+           this, SLOT( slotResult (KJob *) ) );
   enter_loop();
   return bJobOK;
 }
@@ -295,8 +295,8 @@ bool NetAccess::mkdirInternal( const KUrl & url, int permissions,
   bJobOK = true; // success unless further error occurs
   KIO::Job * job = KIO::mkdir( url, permissions );
   job->setWindow (window);
-  connect( job, SIGNAL( result (KIO::Job *) ),
-           this, SLOT( slotResult (KIO::Job *) ) );
+  connect( job, SIGNAL( result (KJob *) ),
+           this, SLOT( slotResult (KJob *) ) );
   enter_loop();
   return bJobOK;
 }
@@ -307,8 +307,8 @@ QString NetAccess::mimetypeInternal( const KUrl & url, QWidget* window )
   m_mimetype = QLatin1String("unknown");
   KIO::Job * job = KIO::mimetype( url );
   job->setWindow (window);
-  connect( job, SIGNAL( result (KIO::Job *) ),
-           this, SLOT( slotResult (KIO::Job *) ) );
+  connect( job, SIGNAL( result (KJob *) ),
+           this, SLOT( slotResult (KJob *) ) );
   connect( job, SIGNAL( mimetype (KIO::Job *, const QString &) ),
            this, SLOT( slotMimetype (KIO::Job *, const QString &) ) );
   enter_loop();
@@ -345,8 +345,8 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString command,
 
     KIO::Job * job = KIO::special( tempPathUrl, packedArgs, true );
     job->setWindow( window );
-    connect( job, SIGNAL( result (KIO::Job *) ),
-             this, SLOT( slotResult (KIO::Job *) ) );
+    connect( job, SIGNAL( result (KJob *) ),
+             this, SLOT( slotResult (KJob *) ) );
     enter_loop();
 
     // since the KIO::special does not provide feedback we need to download the result
@@ -389,8 +389,8 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
       }
   }
 
-  connect( job, SIGNAL( result (KIO::Job *) ),
-           this, SLOT( slotResult (KIO::Job *) ) );
+  connect( job, SIGNAL( result (KJob *) ),
+           this, SLOT( slotResult (KJob *) ) );
 
   const QMetaObject* meta = job->metaObject();
 
@@ -424,7 +424,7 @@ void NetAccess::enter_loop()
     eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
-void NetAccess::slotResult( KIO::Job * job )
+void NetAccess::slotResult( KJob * job )
 {
   lastErrorCode = job->error();
   bJobOK = !job->error();
@@ -438,8 +438,9 @@ void NetAccess::slotResult( KIO::Job * job )
   if ( statJob )
     m_entry = statJob->statResult();
 
-  if ( m_metaData )
-    *m_metaData = job->metaData();
+  KIO::Job* kioJob = qobject_cast<KIO::Job *>( job );
+  if ( kioJob && m_metaData )
+    *m_metaData = kioJob->metaData();
 
   emit leaveModality();
 }

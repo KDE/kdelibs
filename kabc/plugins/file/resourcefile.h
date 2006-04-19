@@ -32,9 +32,7 @@ class QFile;
 class QTimer;
 class KTempFile;
 
-namespace KIO {
-class Job;
-}
+class KJob;
 
 namespace KABC {
 
@@ -82,7 +80,7 @@ class KABC_FILE_EXPORT ResourceFile : public Resource
       Closes the file again.
      */
     virtual void doClose();
-  
+
     /**
       Requests a save ticket, that is used by save()
      */
@@ -135,8 +133,8 @@ class KABC_FILE_EXPORT ResourceFile : public Resource
     virtual void removeAddressee( const Addressee& addr );
 
   private Q_SLOTS:
-    void downloadFinished( KIO::Job* );
-    void uploadFinished( KIO::Job* );
+    void downloadFinished( KJob* );
+    void uploadFinished( KJob* );
 
   protected Q_SLOTS:
     void fileChanged();
@@ -163,7 +161,7 @@ class KABC_FILE_EXPORT ResourceFile : public Resource
     Format *mFormat;
 
     Lock *mLock;
-    
+
     KDirWatch mDirWatch;
 
     KTempFile *mTempFile;

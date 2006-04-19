@@ -306,7 +306,7 @@ void LdapConfigWidget::loadData( KIO::Job*, const QByteArray& d )
   } while ( ret != LDIF::MoreData );
 }
 
-void LdapConfigWidget::loadResult( KIO::Job* job)
+void LdapConfigWidget::loadResult( KJob* job)
 {
   int error = job->error();
   if ( error && error != KIO::ERR_USER_CANCELED )
@@ -340,8 +340,8 @@ void LdapConfigWidget::sendQuery()
   job->addMetaData("no-auth-prompt","true");
   connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
     this, SLOT( loadData( KIO::Job*, const QByteArray& ) ) );
-  connect( job, SIGNAL( result( KIO::Job* ) ),
-    this, SLOT( loadResult( KIO::Job* ) ) );
+  connect( job, SIGNAL( result( KJob* ) ),
+    this, SLOT( loadResult( KJob* ) ) );
 
   if ( mProg == NULL )
   {

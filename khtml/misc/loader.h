@@ -60,6 +60,7 @@
 class QMovie;
 class KHTMLPart;
 
+class KJob;
 namespace KIO {
   class Job;
   class TransferJob;
@@ -426,7 +427,7 @@ namespace khtml
 	void requestFailed( khtml::DocLoader* dl, khtml::CachedObject *obj );
 
     protected Q_SLOTS:
-	void slotFinished( KIO::Job * );
+	void slotFinished( KJob * );
 	void slotData( KIO::Job *, const QByteArray & );
 	void servePendingRequests();
 

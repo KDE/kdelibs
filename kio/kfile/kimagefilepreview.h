@@ -23,6 +23,7 @@ class QTimer;
 
 class KFileDialog;
 class KFileItem;
+class KJob;
 namespace KIO { class Job; class PreviewJob; }
 
 /**
@@ -55,7 +56,7 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
                                                      int w, int h );
 
 	private Q_SLOTS:
-		void slotResult( KIO::Job * );
+		void slotResult( KJob * );
 		virtual void slotFailed( const KFileItem* );
 
 	private:

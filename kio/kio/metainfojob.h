@@ -28,7 +28,7 @@
 namespace KIO {
     /**
      * MetaInfoJob is a KIO Job to retrieve meta information from files.
-     * 
+     *
      * @short KIO Job to retrieve meta information from files.
      */
     class KIO_EXPORT MetaInfoJob : public KIO::Job
@@ -84,7 +84,7 @@ namespace KIO {
         void getMetaInfo();
 
     protected Q_SLOTS:
-        virtual void slotResult( KIO::Job *job );
+        virtual void slotResult( KJob *job );
 
     private Q_SLOTS:
         void start();
