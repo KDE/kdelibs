@@ -23,6 +23,7 @@
 
 #include <qwidget.h>
 #include <kdelibs_export.h>
+#include "broker.h"
 
 namespace KSpell2
 {
@@ -31,7 +32,7 @@ namespace KSpell2
     {
         Q_OBJECT
     public:
-        ConfigWidget( Broker *broker, QWidget *parent );
+        ConfigWidget( Broker::Ptr broker, QWidget *parent );
         ~ConfigWidget();
 
         bool backgroundCheckingButtonShown() const;
@@ -44,7 +45,7 @@ namespace KSpell2
         void slotChanged();
 
     private:
-        void init( Broker *broker );
+        void init( Broker::Ptr broker );
         void setFromGUI();
         void setCorrectLanguage( const QStringList& langs );
 

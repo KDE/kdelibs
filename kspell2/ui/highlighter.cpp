@@ -114,10 +114,7 @@ void Highlighter::slotRehighlight()
 {
     kDebug(0) << "Highlighter::slotRehighlight()" << endl;
     if (d->completeRehighlightRequired) {
-#ifdef __GNUC__
-#warning "Use qt-copy for rehighlight"
-#endif
-	// Qt 4.2 function, see patch: http://websvn.kde.org/trunk/qt-copy/patches/0112-ksyntaxhighlighter-rehighlight-document.diff
+    // Qt 4.2 function, see patch: http://websvn.kde.org/trunk/qt-copy/patches/0112-ksyntaxhighlighter-rehighlight-document.diff
     rehighlight();
 
     } else {
@@ -205,9 +202,6 @@ void Highlighter::setActive( bool active )
     if ( active == d->active )
         return;
     d->active = active;
-#ifdef __GNUC__
-#warning "Use qt-copy for rehighlight"
-#endif
     // Qt 4.2 function, see patch: http://websvn.kde.org/trunk/qt-copy/patches/0112-ksyntaxhighlighter-rehighlight-document.diff
     rehighlight();
 

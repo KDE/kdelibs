@@ -41,7 +41,7 @@ public:
     QWidget *wdg;
 };
 
-ConfigWidget::ConfigWidget( Broker *broker, QWidget *parent )
+ConfigWidget::ConfigWidget( Broker::Ptr broker, QWidget *parent )
     : QWidget( parent ),d(new Private)
 {
     init( broker );
@@ -52,7 +52,7 @@ ConfigWidget::~ConfigWidget()
     delete d;
 }
 
-void ConfigWidget::init( Broker *broker )
+void ConfigWidget::init( Broker::Ptr broker )
 {
     d->broker = broker;
 
