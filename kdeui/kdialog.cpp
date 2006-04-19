@@ -1026,6 +1026,7 @@ void KDialog::slotButtonClicked(int button)
 		case Close:
 			emit closeClicked();
   			close();
+                        break;
 		case Help:
 			emit helpClicked();
 			if( !d->mAnchor.isEmpty() || !d->mHelpApp.isEmpty() )
