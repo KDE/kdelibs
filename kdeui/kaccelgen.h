@@ -257,7 +257,7 @@ template <class Key>
 inline void
 generateFromValues(const QMap<Key,QString>& source, QStringList& target)
 {
-    generate<class QMap<Key,QString>::ConstIterator, Deref_Key<class QMap<Key,QString>::ConstIterator> >(source.begin(), source.end(), target);
+    generate<typename QMap<Key,QString>::ConstIterator, Deref_Key<typename QMap<Key,QString>::ConstIterator> >(source.begin(), source.end(), target);
 }
 
 /**
