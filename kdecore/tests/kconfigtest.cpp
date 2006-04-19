@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
 #define STRINGENTRY5 " "
 #define STRINGENTRY6 ""
 #define UTF8BITENTRY "Hello äöü"
+#define DOUBLEENTRY 123456.78912345
 #define POINTENTRY QPoint( 4351, 1235 )
 #define SIZEENTRY QSize( 10, 20 )
 #define RECTENTRY QRect( 10, 23, 5321, 13 )
@@ -93,6 +94,7 @@ void KConfigTest::initTestCase()
   sc.deleteEntry( "stringEntry6" );
   sc.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ),
                  KConfigBase::Global|KConfigBase::Persistent );
+  sc.writeEntry( "doubleEntry1", DOUBLEENTRY );
 
   sc.deleteGroup("deleteMe");
 
@@ -211,6 +213,7 @@ void KConfigTest::testSimple()
 
   QCOMPARE( sc2.readEntry( "byteArrayEntry1", QByteArray() ),
             QByteArray( STRINGENTRY1 ) );
+  QCOMPARE( sc2.readEntry( "doubleEntry1", 0.0 ), DOUBLEENTRY );
 }
 
 void KConfigTest::testLists()
@@ -302,7 +305,7 @@ void KConfigTest::testInvalid()
   QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
   QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
   QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
-  
+
   // 3 element list
   list << 303;
   sc.writeEntry( "badList", list);
