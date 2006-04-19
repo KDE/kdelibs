@@ -1470,10 +1470,10 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
                     broadcastApplicationRegistration( conn,
                         "applicationRemoved(QCString)", oldAppId );
                 broadcastApplicationRegistration( conn, "applicationRegistered(QCString)", conn->appId );
+  	        replyType = "QCString";
+	        reply << conn->appId;
+	        return true;
 	    }
-	    replyType = "QCString";
-	    reply << conn->appId;
-	    return true;
 	}
     }
     else if ( fun == "registeredApplications()" ) {
