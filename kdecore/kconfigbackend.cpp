@@ -1106,7 +1106,7 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
     KApplication *app = kapp;
     if (!cmdToExec.isEmpty() && app)
     {
-      QProcess::execute(cmdToExec,"--title" << app->instanceName() << "--msgbox" << errorMsg.toLocal8Bit());
+      QProcess::execute(cmdToExec,QStringList() << "--title" << app->instanceName() << "--msgbox" << errorMsg.toLocal8Bit());
     }
   }
   return allWritable;
