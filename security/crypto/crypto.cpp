@@ -1829,7 +1829,7 @@ void KCryptoConfig::slotCAImport() {
 
 		qf.close();
 
-		x = KSSLCertificate::fromString(certtext.latin1());
+		x = KSSLCertificate::fromString(certtext.toLatin1());
 
 		if (!x) {
 			KMessageBox::sorry(this,
