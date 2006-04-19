@@ -523,7 +523,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 			if (ch) setComboItem(m_papertype, ch->get("text"));
 		}
 		value = opts["InputSlot"];
-		if (m_inputslot->isEnabled() && !value.isEmpty())
+		if (m_inputslot && m_inputslot->isEnabled() && !value.isEmpty())
 		{
 			DrBase	*ch = ((DrListOption*)driver()->findOption("InputSlot"))->findChoice(value);
 			if (ch) setComboItem(m_inputslot, ch->get("text"));
