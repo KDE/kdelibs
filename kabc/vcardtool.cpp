@@ -792,11 +792,8 @@ QStringList VCardTool::splitString( const QChar &sep, const QString &str )
       start = pos + 1;
       pos = value.indexOf( sep, start );
     } else {
-      if ( pos != 0 ) {
-        value.replace( pos - 1, 2, sep );
-        pos = value.indexOf( sep, pos );
-      } else
-        pos = value.indexOf( sep, pos + 1 );
+      value.replace( pos - 1, 2, sep );
+      pos = value.indexOf( sep, pos );
     }
   }
 
