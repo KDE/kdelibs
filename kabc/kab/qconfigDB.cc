@@ -2166,7 +2166,7 @@ QConfigDB::unlock()
 	    }
 	  if (pos!=LockFiles.end())
 	    {
-	      LockFiles.erase(pos); --pos;
+	      pos = LockFiles.erase(pos);
 	    } else {
 	      kDebug() << "QConfigDB::unlock: file not mentioned in lockfile" << endl;
 	    }
