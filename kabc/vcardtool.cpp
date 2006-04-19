@@ -142,11 +142,6 @@ QByteArray VCardTool::createVCards( const Addressee::List& list, VCard::Version 
         (*catIt).replace( ',', "\\," );
 
       VCardLine catLine( "CATEGORIES", categories.join( "," ) );
-      if ( version == VCard::v2_1 && needsEncoding( categories.join( "," ) ) ) {
-        catLine.addParameter( "charset", "UTF-8" );
-        catLine.addParameter( "encoding", "QUOTED-PRINTABLE" );
-      }
-
       card.addLine( catLine );
     }
 
