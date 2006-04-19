@@ -3337,7 +3337,7 @@ void KHTMLView::focusInEvent( QFocusEvent *e )
 
 void KHTMLView::focusOutEvent( QFocusEvent *e )
 {
-    if(m_part) m_part->stopAutoScroll();
+    m_part->stopAutoScroll();
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     if(d->typeAheadActivated)
