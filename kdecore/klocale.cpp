@@ -1073,26 +1073,26 @@ QString KLocale::formatByteSize( double size ) const
     {
         size /= 1073741824.0;
         if ( size > 1024 ) // Tebi-byte
-            s = i18n( "%1 TiB" ).arg( formatNumber(size / 1024.0, 1));
+            s = i18n( "%1 TiB", formatNumber(size / 1024.0, 1));
         else
-            s = i18n( "%1 GiB" ).arg( formatNumber(size, 1));
+            s = i18n( "%1 GiB", formatNumber(size, 1));
     }
     // Mebi-byte
     else if ( size >= 1048576.0 )
     {
         size /= 1048576.0;
-        s = i18n( "%1 MiB" ).arg( formatNumber(size, 1));
+        s = i18n( "%1 MiB", formatNumber(size, 1));
     }
     // Kibi-byte
     else if ( size >= 1024.0 )
     {
         size /= 1024.0;
-        s = i18n( "%1 KiB" ).arg( formatNumber(size, 1));
+        s = i18n( "%1 KiB", formatNumber(size, 1));
     }
     // Just byte
     else if ( size > 0 )
     {
-        s = i18n( "%1 B" ).arg( formatNumber(size, 0));
+        s = i18n( "%1 B", formatNumber(size, 0));
     }
     // Nothing
     else
