@@ -6171,7 +6171,7 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, int offset, DOM::Node& sel
 
     // Go up to first non-inline element.
     khtml::RenderObject *renderNode = renderer;
-    while (renderNode && renderNode->isInline())
+    while (renderNode->isInline())
       renderNode = renderNode->parent();
 
     renderNode = renderNode->firstChild();
