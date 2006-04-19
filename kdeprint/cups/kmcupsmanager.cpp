@@ -915,8 +915,8 @@ void KMCupsManager::slotConnectionSuccess()
 
 void KMCupsManager::slotAsyncConnect()
 {
-	kdDebug(500) << "Starting async connect " << CupsInfos::self()->hostaddr() << endl;
-	http_t	*HTTP = httpConnect(CupsInfos::self()->host().latin1(), CupsInfos::self()->port());
+	kDebug(500) << "Starting async connect " << CupsInfos::self()->hostaddr() << endl;
+	http_t	*HTTP = httpConnect(CupsInfos::self()->host().toLatin1(), CupsInfos::self()->port());
 	if(!HTTP)
 		slotConnectionFailed(0);
 	else {

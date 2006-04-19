@@ -275,7 +275,7 @@ void KPPosterPage::setOptions( const QMap<QString,QString>& opts )
 		if ( !ps.isEmpty() )
 		{
 			m_postersize->setCurrentIndex( findIndex( pageNameToPageSize( ps ) ) );
-			if ( m_postersize->currentIndex() ) >= 0 )
+			if ( m_postersize->currentIndex() >= 0 )
 			{
 				m_lockbtn->setChecked( !prtsize.isEmpty() &&
 					page_sizes[ m_postersize->currentIndex() ].ID == prtsize.toInt() );
@@ -313,7 +313,7 @@ void KPPosterPage::getOptions( QMap<QString,QString>& opts, bool )
 		opts[ "_kde-poster-media" ] = m_mediasize->text();
 		if (m_postersize->currentIndex() >= 0)
 		{
-			opts[ "_kde-poster-size" ] = 
+			opts[ "_kde-poster-size" ] =
 				pageSizeToPageName( ( KPrinter::PageSize )page_sizes[ m_postersize->currentIndex() ].ID );
 		}
 		opts[ "kde-printsize" ] = QString::number( page_sizes[ m_printsize->currentIndex() ].ID );
