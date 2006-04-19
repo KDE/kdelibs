@@ -79,7 +79,7 @@ int main( int argc, char** argv )
 	}
 	else if ( strcmp( argv[argpos], "--c++-suffix" ) == 0)
 	{
-	    if (argc - 1 < argpos) {
+	    if (argc - 2 <= argpos ) {
 		usage();
 		exit(1);
 	    }
@@ -93,9 +93,12 @@ int main( int argc, char** argv )
     }
 
     QFile in( QFile::decodeName(argv[argpos]) );
-    if ( !in.open( QIODevice::ReadOnly ) )
-	qFatal("Could not read %s", argv[argpos] );
-
+    if ( !in.open( QIODevice::ReadOnly ) ) 
+   {
+	fprintf(stderr, "Could not read %s", argv[argpos] );
+	exit(1);
+    }
+ 
     QDomDocument doc;
     doc.setContent( &in );
 
