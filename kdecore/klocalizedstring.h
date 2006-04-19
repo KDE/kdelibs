@@ -479,6 +479,21 @@ inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2
 {
     return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
 }
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6)
+{
+    return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).toString();
+}
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7)
+{
+    return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).toString();
+}
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
+inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7, const A8 &a8)
+{
+    return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).subs(a8).toString();
+}
 // <<< End of context calls
 
 // >>> Plural calls
