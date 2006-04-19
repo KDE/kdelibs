@@ -483,7 +483,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED unsigned int readUnsignedNumEntry( const char *pKey, unsigned int nDefault = 0 ) const 
+  KDE_DEPRECATED unsigned int readUnsignedNumEntry( const char *pKey, unsigned int nDefault = 0 ) const
     { return readEntry( pKey, nDefault ); }
 
   /**
@@ -989,7 +989,7 @@ public:
                    WriteConfigFlags pFlags = Normal );
 
   /**
-   * writeEntry() overridden to accept a list.
+   * writeEntry() overridden to accept a list of variants.
    * @copydoc writeEntry(const char*, const QList<T>&, WriteConfigFlags)
    */
   void writeEntry( const char* pKey, const QVariantList& value,
@@ -997,7 +997,7 @@ public:
     { writeEntry( pKey, QVariant(value), pFlags ); }
 
   /**
-   * Write a (key/value) pair.
+   * Write a (key/value) pair where the value is a const char*.
    *
    * This is stored to the most specific config file when destroying the
    * config object or when calling sync().
@@ -1011,7 +1011,7 @@ public:
     { writeEntry(pKey, QString::fromLatin1(value), pFlags); }
 
   /**
-   * Write a (key/value) pair.
+   * Write a (key/value) pair where the value is a QByteArray.
    *
    * This is stored to the most specific config file when destroying the
    * config object or when calling sync().
