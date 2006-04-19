@@ -2200,7 +2200,7 @@ QConfigDB::CleanLockFiles(int)
 	{
 	  kDebug(GUARD, KAB_KDEBUG_AREA) <<
 	      "                          " << *pos << " removed.\n";
-	  LockFiles.erase(pos); --pos;
+	  pos = LockFiles.erase(pos);
 	} else {
 	    kDebug() << "                          could not remove  " << *pos << endl;
 	}
