@@ -52,7 +52,7 @@
 #include "operations.h"
 #include "nodes.h"
 
-#if __APPLE__
+#ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
@@ -150,7 +150,7 @@ static double parseDate(const UString &);
 static double timeClip(double);
 static void millisecondsToTM(double milli, bool utc, tm *t);
 
-#if __APPLE__
+#ifdef __APPLE__
 
 static CFDateFormatterStyle styleFromArgString(const UString& string, CFDateFormatterStyle defaultStyle)
 {
@@ -562,7 +562,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
 
   JSValue *result = 0;
   UString s;
-#if !__APPLE__
+#ifndef __APPLE__
   const int bufsize=100;
   char timebuffer[bufsize];
   CString oldlocale = setlocale(LC_TIME, 0);
@@ -618,7 +618,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   case ToUTCString:
     return jsString(formatDateUTCVariant(t) + " " + formatTime(t, utc));
     break;
-#if __APPLE__
+#ifdef __APPLE__
   case ToLocaleString:
     return jsString(formatLocaleDate(exec, secs, true, true, args));
     break;

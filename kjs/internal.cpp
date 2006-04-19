@@ -52,7 +52,7 @@ extern int kjsyyparse();
 
 namespace KJS {
 
-#if !__APPLE__
+#ifndef __APPLE__
  
 #ifdef WORDS_BIGENDIAN
   const unsigned char NaN_Bytes[] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };

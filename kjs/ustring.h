@@ -30,7 +30,7 @@
 #include <kxmlcore/RefPtr.h>
 #include <kxmlcore/PassRefPtr.h>
 
-#if __APPLE__
+#ifdef __APPLE__
 #include <sys/types.h>
 #ifndef KWQ_UNSIGNED_TYPES_DEFINED
 #define KWQ_UNSIGNED_TYPES_DEFINED

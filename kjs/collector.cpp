@@ -31,7 +31,7 @@
 #include <setjmp.h>
 #include <algorithm>
 
-#if __APPLE__
+#ifdef __APPLE__
 
 #include <pthread.h>
 #include <mach/mach_port.h>
@@ -300,7 +300,7 @@ void Collector::markCurrentThreadConservatively()
     jmp_buf registers;
     setjmp(registers);
 
-#if __APPLE__
+#ifdef __APPLE__
     pthread_t thread = pthread_self();
     void *stackBase = pthread_get_stackaddr_np(thread);
 #elif defined(_WIN32) || defined(_WIN64)
