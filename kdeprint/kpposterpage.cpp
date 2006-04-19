@@ -311,7 +311,11 @@ void KPPosterPage::getOptions( QMap<QString,QString>& opts, bool )
 			o.append( "poster" );
 		opts[ "_kde-filters" ] = o.join( "," );
 		opts[ "_kde-poster-media" ] = m_mediasize->text();
-		opts[ "_kde-poster-size" ] = pageSizeToPageName( ( KPrinter::PageSize )page_sizes[ m_postersize->currentIndex() ].ID );
+		if (m_postersize->currentIndex() >= 0)
+		{
+			opts[ "_kde-poster-size" ] = 
+				pageSizeToPageName( ( KPrinter::PageSize )page_sizes[ m_postersize->currentIndex() ].ID );
+		}
 		opts[ "kde-printsize" ] = QString::number( page_sizes[ m_printsize->currentIndex() ].ID );
 		opts[ "_kde-poster-cut" ] = QString::number( m_cutmargin->value() );
 		opts[ "_kde-poster-select" ] = m_selection->text().trimmed();
@@ -325,7 +329,9 @@ bool KPPosterPage::isValid()
 
 void KPPosterPage::slotPosterSizeChanged( int value )
 {
-	int ID = page_sizes[ m_postersize->currentIndex() ].ID;
+	if ( value < 0)
+		return;
+	int ID = page_sizes[ value ].ID;
 	m_preview->setPosterSize( ID );
 	if ( m_lockbtn->isChecked() )
 		m_printsize->setCurrentIndex( value );
