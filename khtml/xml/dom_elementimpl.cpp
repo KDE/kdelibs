@@ -722,7 +722,7 @@ void ElementImpl::recalcStyle( StyleChange change )
 		newStyle->deref();
 		return;
             }
-            if( m_render && newStyle ) {
+            if( m_render ) {
                 //qDebug("--> setting style on render element bgcolor=%s", newStyle->backgroundColor().name().toLatin1().constData());
                 m_render->setStyle(newStyle);
             }
