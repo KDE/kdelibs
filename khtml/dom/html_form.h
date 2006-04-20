@@ -466,6 +466,16 @@ public:
     void setChecked( bool );
 
     /**
+     * Describes whether a radio box is indeterminate
+     */
+    bool indeterminate() const;
+
+    /**
+     * see indeterminate
+     */
+    void setIndeterminate( bool );
+
+    /**
      * The control is unavailable in this context. See the <a
      * href="http://www.w3.org/TR/REC-html40/interact/forms.html#adef-disabled">
      * disabled attribute definition </a> in HTML 4.0.

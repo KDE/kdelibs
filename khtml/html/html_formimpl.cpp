@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
+ *           (C) 2004, 2005, 2006 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -40,6 +41,7 @@
 #include "xml/dom_textimpl.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
+// #include "xml/dom_restyler.h"
 #include "khtml_ext.h"
 
 #include "rendering/render_form.h"
@@ -935,7 +937,9 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 {
     if ( m_disabled != _disabled ) {
         m_disabled = _disabled;
+        // Trigger dynamic restyles
         setChanged();
+//         getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
     }
 }
 
@@ -1210,6 +1214,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     m_size = 20;
     m_clicked = false;
     m_checked = false;
+    m_indeterminate = false;
 
     m_haveType = false;
     m_activeSubmit = false;
@@ -1651,9 +1656,24 @@ void HTMLInputElementImpl::setChecked(bool _checked)
 
     if (m_checked == _checked) return;
     m_checked = _checked;
+
+    // Trigger dynamic restyles
     setChanged();
+//     getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
 }
 
+void HTMLInputElementImpl::setIndeterminate(bool _indeterminate)
+{
+    // Only checkboxes honor indeterminate.
+    if (inputType() != CHECKBOX || indeterminate() == _indeterminate)
+        return;
+
+    m_indeterminate = _indeterminate;
+
+    // Trigger dynamic restyles
+    setChanged();
+//     getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+}
 
 DOMString HTMLInputElementImpl::value() const
 {
@@ -2005,7 +2025,7 @@ void HTMLSelectElementImpl::add( const HTMLElement &element, const HTMLElement &
         return;
 
     HTMLOptionElementImpl* option = static_cast<HTMLOptionElementImpl*>(element.handle());;
-    //Fast path for appending an item. Can't be done if it is selected and 
+    //Fast path for appending an item. Can't be done if it is selected and
     //we're single-select, since we may need to drop an implicitly-selected item
     bool fastAppendLast = false;
     if (before.handle() == 0 && (m_multiple || !option->selected()) && !m_recalcListItems)
@@ -2033,10 +2053,10 @@ void HTMLSelectElementImpl::remove( long index )
 
     //Fast path for last element, for e.g. clearing the box
     //Note that if this is a single-select, we may have to recompute
-    //anyway if the item was selected, since we may want to set 
+    //anyway if the item was selected, since we may want to set
     //a different one
     bool fastRemoveLast = false;
-    if ((listIndex == (signed)items.size() - 1) && !m_recalcListItems && 
+    if ((listIndex == (signed)items.size() - 1) && !m_recalcListItems &&
         (m_multiple || !static_cast<HTMLOptionElementImpl*>(items[listIndex])->selected()))
             fastRemoveLast = true;
 
@@ -2292,7 +2312,7 @@ int HTMLSelectElementImpl::optionToListIndex(int optionIndex) const
 
     //See if we're asked for the very last item, and check whether it's an <option>
     //to fastpath clear
-    if (optionIndex == (m_length - 1) && items[itemsSize - 1]->id() == ID_OPTION)
+    if ((unsigned int)optionIndex == (m_length - 1) && items[itemsSize - 1]->id() == ID_OPTION)
         return itemsSize - 1;
 
     int listIndex = 0;

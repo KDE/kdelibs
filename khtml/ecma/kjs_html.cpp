@@ -236,7 +236,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
     } else {
       //Can't tell it just like that, so better go through collection and count stuff. This is the slow path...
       DOM::HTMLMappedNameCollection coll(docImpl, HTMLCollectionImpl::DOCUMENT_NAMED_ITEMS, propertyDOMString);
-      
+
       if (coll.length() == 1) {
         DOM::Node node = coll.firstItem();
         return getDOMNode(exec, node);
@@ -743,7 +743,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   selected	KJS::HTMLElement::OptionSelected	DontDelete
   value		KJS::HTMLElement::OptionValue		DontDelete
 @end
-@begin HTMLInputElementTable 24
+@begin HTMLInputElementTable 25
   defaultValue	KJS::HTMLElement::InputDefaultValue	DontDelete
   defaultChecked KJS::HTMLElement::InputDefaultChecked	DontDelete
   form		KJS::HTMLElement::InputForm		DontDelete|ReadOnly
@@ -752,6 +752,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   align		KJS::HTMLElement::InputAlign		DontDelete
   alt		KJS::HTMLElement::InputAlt		DontDelete
   checked	KJS::HTMLElement::InputChecked		DontDelete
+  indeterminate	KJS::HTMLElement::InputIndeterminate	DontDelete
   status	KJS::HTMLElement::InputChecked		DontDelete
   disabled	KJS::HTMLElement::InputDisabled		DontDelete
   maxLength	KJS::HTMLElement::InputMaxLength	DontDelete
@@ -1350,6 +1351,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case InputAlign:           return String(input.align());
     case InputAlt:             return String(input.alt());
     case InputChecked:         return Boolean(input.checked());
+    case InputIndeterminate:   return Boolean(input.indeterminate());
     case InputDisabled:        return Boolean(input.disabled());
     case InputMaxLength:       return Number(input.maxLength());
     case InputName:            return String(input.name()); // NOT getString (IE gives empty string)
@@ -2603,6 +2605,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case InputAlign:           { input.setAlign(str); return; }
       case InputAlt:             { input.setAlt(str); return; }
       case InputChecked:         { input.setChecked(value.toBoolean(exec)); return; }
+      case InputIndeterminate:   { input.setIndeterminate(value.toBoolean(exec)); return; }
       case InputDisabled:        { input.setDisabled(value.toBoolean(exec)); return; }
       case InputMaxLength:       { input.setMaxLength(value.toInteger(exec)); return; }
       case InputName:            { input.setName(str); return; }

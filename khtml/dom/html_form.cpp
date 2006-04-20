@@ -412,6 +412,18 @@ void HTMLInputElement::setChecked( bool _checked )
 	((HTMLInputElementImpl*)impl)->setChecked(_checked);
 }
 
+bool HTMLInputElement::indeterminate() const
+{
+    if(!impl) return 0;
+    return ((HTMLInputElementImpl*)impl)->indeterminate();
+}
+
+void HTMLInputElement::setIndeterminate( bool _indeterminate )
+{
+    if(impl)
+	((HTMLInputElementImpl*)impl)->setIndeterminate(_indeterminate);
+}
+
 bool HTMLInputElement::disabled() const
 {
     if(!impl) return 0;
