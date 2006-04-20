@@ -194,7 +194,7 @@ void RenderBlock::updateFirstLetter()
             while ( length < oldText->l &&
                     ( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct()) )
                 length++;
-            if ( length < oldText->l && 
+            if ( length < oldText->l &&
                     !( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ))
                 length++;
             while ( length < oldText->l && (oldText->s+length)->isMark() )
@@ -233,17 +233,17 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
 
     // If the requested beforeChild is not one of our children, then this is most likely because
     // there is an anonymous block box within this object that contains the beforeChild. So
-    // just insert the child into the anonymous block box instead of here. This may also be 
+    // just insert the child into the anonymous block box instead of here. This may also be
     // needed in cases of things like anonymous tables.
     if (beforeChild && beforeChild->parent() != this) {
 
         KHTMLAssert(beforeChild->parent());
-        
+
         // In the special case where we are prepending a block-level element before
         // something contained inside an anonymous block, we can just prepend it before
         // the anonymous block.
         if (!newChild->isInline() && beforeChild->parent()->isAnonymousBlock() &&
-            beforeChild->parent()->parent() == this && 
+            beforeChild->parent()->parent() == this &&
             beforeChild->parent()->firstChild() == beforeChild)
             return addChildToFlow(newChild, beforeChild->parent());
 
@@ -774,7 +774,7 @@ void RenderBlock::adjustPositionedBlock(RenderObject* child, const MarginInfo& m
         int y = m_height;
         if (!marginInfo.canCollapseWithTop()) {
             child->calcVerticalMargins();
-            int marginTop = child->marginTop(); 
+            int marginTop = child->marginTop();
             int collapsedTopPos = marginInfo.posMargin();
             int collapsedTopNeg = marginInfo.negMargin();
             if (marginTop > 0) {
@@ -1438,7 +1438,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
         m_overflowHeight = kMax(m_height + overflowDelta, m_overflowHeight);
         m_overflowWidth = kMax(rightChildPos, m_overflowWidth);
-        
+
         m_negativeOverflowWidth = kMax(m_negativeOverflowWidth, child->negativeOverflowWidth());
 
         // Insert our compact into the block margin if we have one.
@@ -1733,6 +1733,10 @@ void RenderBlock::removePositionedObject(RenderObject *o)
                 m_positionedObjects->removeRef(it.current());
             ++it;
         }
+        if (m_positionedObjects->isEmpty()) {
+            delete m_positionedObjects;
+            m_positionedObjects = 0;
+        }
     }
 }
 
@@ -1942,7 +1946,7 @@ RenderBlock::leftRelOffset(int y, int fixedOffset, bool applyTextIndent, int *he
 {
     int left = fixedOffset;
     if (canClearLine) *canClearLine = true;
-    
+
     if (m_floatingObjects) {
         if ( heightRemaining ) *heightRemaining = 1;
         FloatingObject* r;
@@ -2284,7 +2288,7 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     // Prevent floats from being added to the canvas by the root element, e.g., <html>.
     if ( !flow->m_floatingObjects || (child && flow->isRoot()) )
         return;
-        
+
     // if I am clear of my floats, don't add them
     // the CSS spec also mentions that child floats
     // are not cleared.
@@ -2296,12 +2300,12 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     QPtrListIterator<FloatingObject> it(*flow->m_floatingObjects);
     FloatingObject *r;
     for ( ; (r = it.current()); ++it ) {
-    
+
         if (!child && r->type == FloatingObject::FloatLeft && style()->clear() == CLEFT )
             continue;
         if (!child && r->type == FloatingObject::FloatRight && style()->clear() == CRIGHT )
             continue;
-            
+
         if ( ( !child && r->endY > offset ) ||
              ( child && flow->yPos() + r->endY > height() ) ) {
             if (child && !r->crossedLayer) {
