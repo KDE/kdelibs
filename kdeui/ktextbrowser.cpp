@@ -129,17 +129,15 @@ void KTextBrowser::wheelEvent( QWheelEvent *e )
     else // thanks, we don't want to zoom, so skip QTextEdit's impl.
         QAbstractScrollArea::wheelEvent( e );
 }
-
 void KTextBrowser::contextMenuEvent(QContextMenuEvent *e)
 {
     QMenu *popup = createStandardContextMenu();
     QList<QAction *> lstAction = popup->actions ();
-
     if ( !lstAction.isEmpty() )
     {
-        enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
+        enum { UndoAct = 0, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
         if ( isReadOnly() )
-            lstAction[CopyAct]->setIcon( SmallIconSet("editcopy") );
+            lstAction[0]->setIcon( SmallIconSet("editcopy") );
         else
         {
             lstAction[UndoAct]->setIcon( SmallIconSet("undo") );
@@ -150,7 +148,6 @@ void KTextBrowser::contextMenuEvent(QContextMenuEvent *e)
             lstAction[ClearAct]->setIcon( SmallIconSet("editclear") );
         }
     }
-
     popup->exec(e->globalPos());
     delete popup;
 }
