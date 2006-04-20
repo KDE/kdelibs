@@ -476,15 +476,15 @@ target_link_libraries(ksystemtraytest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
-set(klistviewtest_SRCS
-klistviewtest.cpp
+set(k3listviewtest_SRCS
+k3listviewtest.cpp
 )
 
-kde4_automoc(${klistviewtest_SRCS})
+kde4_automoc(${k3listviewtest_SRCS})
 
-kde4_add_executable(klistviewtest RUN_UNINSTALLED ${klistviewtest_SRCS})
+kde4_add_executable(k3listviewtest RUN_UNINSTALLED ${k3listviewtest_SRCS})
 
-target_link_libraries(klistviewtest ${KDE4_KDEUI_LIBS})
+target_link_libraries(k3listviewtest ${KDE4_KDEUI_LIBS})
 
 
 ########### next target ###############
