@@ -236,13 +236,13 @@ KRulerTest::~KRulerTest()
 void
 KRulerTest::slotNewWidth(int width)
 {
-  hruler->setMaxValue(width);
+  hruler->setMaximum(width);
 }
 
 void
 KRulerTest::slotNewHeight(int height)
 {
-  vruler->setMaxValue(height);
+  vruler->setMaximum(height);
 }
 
 void

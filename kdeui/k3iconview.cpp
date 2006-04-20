@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#define QT3_SUPPORT
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

@@ -84,7 +84,7 @@ KAction::KAction( const QString & icon, const QString & text, KActionCollection 
   : QAction(text, parent), d(new KActionPrivate)
 {
   initPrivate(name);
-  setIconName( icon );
+  setIcon( KIcon(icon) );
 }
 
 KAction::KAction( const QString& text, const KShortcut& cut,
@@ -101,7 +101,7 @@ KAction::KAction( const QString& text, const QString& sIconName, const KShortcut
 : QAction(text, parent), d(new KActionPrivate)
 {
   initPrivate( cut, receiver, slot, name );
-  setIconName( sIconName );
+  setIcon( KIcon(sIconName) );
 }
 
 KAction::KAction( const QString& text, const QIcon& icon, const KShortcut& cut,
@@ -119,7 +119,7 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 {
   initPrivate( cut, receiver, slot, name );
   if( item.hasIcon() )
-    setIconName( item.iconName() );
+    setIcon( KIcon(item.iconName()) );
   setToolTip( item.toolTip() );
   setWhatsThis( item.whatsThis() );
 }

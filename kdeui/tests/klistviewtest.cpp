@@ -1,4 +1,6 @@
-#include <k3listview.h>
+#define QT3_SUPPORT
+
+#include "k3listview.h"
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdialogbase.h>

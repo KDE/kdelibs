@@ -4,7 +4,8 @@ project(kdeui)
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/interfaces )
-add_definitions(-DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS)
+
+remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 if (UNIX AND NOT APPLE)
    add_subdirectory( kdetrayproxy )

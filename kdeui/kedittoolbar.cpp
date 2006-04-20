@@ -291,7 +291,7 @@ public:
             kDebug(240) << "    Toolbar: " << toolbarName( *xit, element ) << endl;
         }
         if ( (*xit).m_actionCollection )
-            kDebug(240) << "    " << (*xit).m_actionCollection->count() << " actions in the collection." << endl;
+            kDebug(240) << "    " << (*xit).m_actionCollection->actions().count() << " actions in the collection." << endl;
         else
             kDebug(240) << "    no action collection." << endl;
     }

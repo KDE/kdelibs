@@ -18,6 +18,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#define QT3_SUPPORT
+#define QT3_SUPPORT_WARNINGS
+
 #include "kauthorized.h"
 #include "kxmlguibuilder.h"
 #include "kmenubar.h"

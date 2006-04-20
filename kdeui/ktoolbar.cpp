@@ -889,10 +889,10 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool 
         static const QString &attrHidden  = KGlobal::staticQString("Hidden");
 
         QString position = cg.readEntry(attrPosition, d->PositionDefault);
-        int index = cg.readNumEntry(attrIndex, -1);
-        int offset = cg.readNumEntry(attrOffset, d->OffsetDefault);
-        bool newLine = cg.readBoolEntry(attrNewLine, d->NewLineDefault);
-        bool hidden = cg.readBoolEntry(attrHidden, d->HiddenDefault);
+        int index = cg.readEntry(attrIndex, int(-1));
+        int offset = cg.readEntry(attrOffset, int(d->OffsetDefault));
+        bool newLine = cg.readEntry(attrNewLine, d->NewLineDefault);
+        bool hidden = cg.readEntry(attrHidden, d->HiddenDefault);
 
         Qt::ToolBarArea pos = Qt::TopToolBarArea;
         if ( position == "Top" )
@@ -957,7 +957,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
             d->ToolButtonStyleDefault = Qt::ToolButtonTextUnderIcon;
 
         // Use the default icon size for toolbar icons.
-        d->IconSizeDefault = cg.readNumEntry(attrIconSize, d->IconSizeDefault);
+        d->IconSizeDefault = cg.readEntry(attrIconSize, int(d->IconSizeDefault));
 
         iconSize = d->IconSizeDefault;
         ToolButtonStyle = d->ToolButtonStyleDefault;
@@ -975,7 +975,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
             // now get the size
             if ( config->hasKey( attrIconSize ) ) {
-                iconSize = config->readNumEntry(attrIconSize);
+                iconSize = config->readEntry(attrIconSize, 0);
                 applyIconSize = true;
             }
         }

@@ -218,7 +218,7 @@ void ToolBarHandler::connectToActionContainers()
 
 void ToolBarHandler::connectToActionContainer( KAction *action )
 {
-    uint containerCount = action->containerCount();
+    uint containerCount = action->associatedWidgets().count();
     for ( uint i = 0; i < containerCount; ++i )
         connectToActionContainer( action->container( i ) );
 }

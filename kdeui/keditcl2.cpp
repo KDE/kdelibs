@@ -19,6 +19,10 @@
    Boston, MA 02110-1301, USA.
 */
 
+// remove when Q3PopupMenu is ported
+#define QT3_SUPPORT
+#define QT3_SUPPORT_WARNINGS
+
 #include <limits.h> // INT_MAX
 
 #include <QFrame>
@@ -1126,21 +1130,22 @@ QString KEdit::selectWordUnderCursor( )
 
 Q3PopupMenu *KEdit::createPopupMenu( const QPoint& pos )
 {
-    enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
-
     Q3PopupMenu *menu = Q3MultiLineEdit::createPopupMenu( pos );
-    
-    if ( isReadOnly() )
-      menu->changeItem( menu->idAt(0), SmallIconSet("editcopy"), menu->text( menu->idAt(0) ) );
-    else {
-      int id = menu->idAt(0);
-      menu->changeItem( id - IdUndo, SmallIconSet("undo"), menu->text( id - IdUndo) );
-      menu->changeItem( id - IdRedo, SmallIconSet("redo"), menu->text( id - IdRedo) );
-      menu->changeItem( id - IdCut, SmallIconSet("editcut"), menu->text( id - IdCut) );
-      menu->changeItem( id - IdCopy, SmallIconSet("editcopy"), menu->text( id - IdCopy) );
-      menu->changeItem( id - IdPaste, SmallIconSet("editpaste"), menu->text( id - IdPaste) );
-      menu->changeItem( id - IdClear, SmallIconSet("editclear"), menu->text( id - IdClear) );
+    QList<QAction *> lstAction = menu->actions();
+    if ( !lstAction.isEmpty() )
+    {
+        enum { UndoAct = 0, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
+        if ( isReadOnly() )
+            lstAction[0]->setIcon( SmallIconSet("editcopy") );
+        else
+        {
+            lstAction[UndoAct]->setIcon( SmallIconSet("undo") );
+            lstAction[RedoAct]->setIcon( SmallIconSet("redo") );
+            lstAction[CutAct]->setIcon( SmallIconSet("editcut") );
+            lstAction[CopyAct]->setIcon( SmallIconSet("editcopy") );
+            lstAction[PasteAct]->setIcon( SmallIconSet("editpaste") );
+            lstAction[ClearAct]->setIcon( SmallIconSet("editclear") );
+        }
     }
-
     return menu;
 }
