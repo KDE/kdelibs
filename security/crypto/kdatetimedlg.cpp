@@ -41,7 +41,7 @@ QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
    setCaption(i18n("Date & Time Selector"));
 
    _date = new KDatePicker(this);
-   grid->addMultiCellWidget(_date, 0, 5, 0, 5);
+   grid->addWidget(_date, 0, 0, 6, 6);
 
    grid->addWidget(new QLabel(i18n("Hour:"), this), 7, 0);
    _hours = new KIntNumInput(this);

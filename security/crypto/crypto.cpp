@@ -278,7 +278,7 @@ QString whatstr;
                 " negotiated with the server at connection time.");
   SSLv3Box->setWhatsThis( whatstr);
   SSLv3Box->setSelectionMode(Q3ListView::NoSelection);
-  grid->addMultiCellWidget(SSLv3Box, 2, 2, 0, 1);
+  grid->addWidget(SSLv3Box, 2, 0, 1, 2 );
   loadCiphers();
 
   //
@@ -289,7 +289,7 @@ QString whatstr;
   QVBoxLayout *laygroup2 = new QVBoxLayout(cwbg->layout(), KDialog::spacingHint() );
   QComboBox *cwcb = new QComboBox(cwbg);
     laygroup2->addWidget( cwcb );
-  grid->addMultiCellWidget(cwbg, 3, 3, 0, 1);
+  grid->addWidget(cwbg, 3, 0, 1, 2 );
   QString whatStr = i18n("<qt>Use these preconfigurations to more easily configure the SSL encryption settings. You can choose among the following modes: <ul>");
 
   cwcb->insertItem(QString());
@@ -408,7 +408,7 @@ QString whatstr;
   whatstr = i18n("This list box shows which certificates of yours KDE"
                 " knows about. You can easily manage them from here.");
   yourSSLBox->setWhatsThis( whatstr);
-  grid->addMultiCellWidget(yourSSLBox, 0, 5, 0, 4);
+  grid->addWidget(yourSSLBox, 0, 0, 6, 5 );
   yourSSLBox->addColumn(i18n("Common Name"));
   yourSSLBox->addColumn(i18n("Email Address"));
   connect(yourSSLBox, SIGNAL(selectionChanged()), SLOT(slotYourCertSelect()));
@@ -442,11 +442,11 @@ QString whatstr;
   connect(yourSSLPass, SIGNAL(clicked()), SLOT(slotYourPass()));
   grid->addWidget(yourSSLPass, 5, 5);
 
-  grid->addMultiCellWidget(new KSeparator(Qt::Horizontal, tabYourSSLCert), 6, 6, 0, 5);
+  grid->addWidget(new KSeparator(Qt::Horizontal, tabYourSSLCert), 6, 0, 1, 6);
   ySubject = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString());
   yIssuer = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString());
-  grid->addMultiCellWidget(ySubject, 7, 11, 0, 2);
-  grid->addMultiCellWidget(yIssuer, 7, 11, 3, 5);
+  grid->addWidget(ySubject, 7, 0, 5, 3);
+  grid->addWidget(yIssuer, 7, 3, 5, 3);
   whatstr = i18n("This is the information known about the owner of the certificate.");
   ySubject->setWhatsThis( whatstr);
   whatstr = i18n("This is the information known about the issuer of the certificate.");
@@ -473,13 +473,13 @@ QString whatstr;
   yourSSLUseDefault = new QRadioButton(i18n("&Use default certificate"), ocbg);
   yourSSLList = new QRadioButton(i18n("&List upon connection"), ocbg);
   yourSSLDont = new QRadioButton(i18n("&Do not use certificates"), ocbg);
-  grid->addMultiCellWidget(ocbg, 14, 14, 0, 5);
+  grid->addWidget(ocbg, 14, 0, 1, 6);
 #endif
 #else
   QLabel *nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
                                " because this module was not linked"
                                " with OpenSSL."), tabYourSSLCert);
-  grid->addMultiCellWidget(nossllabel, 3, 3, 0, 5);
+  grid->addWidget(nossllabel, 3, 0, 1, 6);
 #endif
 
 
@@ -491,23 +491,23 @@ QString whatstr;
 #ifdef HAVE_SSL
   grid = new QGridLayout(tabAuth, 20, 6, KDialog::marginHint(), KDialog::spacingHint());
 
-  grid->addMultiCellWidget(new QLabel(i18n("Default Authentication Certificate"), tabAuth), 0, 0, 0, 2);
+  grid->addWidget(new QLabel(i18n("Default Authentication Certificate"), tabAuth), 0, 0, 0, 3 );
   defCertBG = new Q3VButtonGroup(i18n("Default Action"), tabAuth);
   defSend = new QRadioButton(i18n("&Send"), defCertBG);
   defPrompt = new QRadioButton(i18n("&Prompt"), defCertBG);
   defDont = new QRadioButton(i18n("Do &not send"), defCertBG);
-  grid->addMultiCellWidget(defCertBG, 1, 3, 0, 2);
-  grid->addMultiCellWidget(new QLabel(i18n("Default certificate:"), tabAuth), 1, 1, 3, 5);
+  
+  grid->addWidget(defCertBG, 1, 0, 3, 3 );
+  grid->addWidget(new QLabel(i18n("Default certificate:"), tabAuth), 1, 3, 1, 3 );
   defCertBox = new KComboBox(false, tabAuth);
-  grid->addMultiCellWidget(defCertBox, 2, 2, 3, 5);
+  grid->addWidget(defCertBox, 2, 3, 1, 3);
 
-  grid->addMultiCellWidget(new KSeparator(Qt::Horizontal, tabAuth), 4, 4, 0, 5);
+  grid->addWidget(new KSeparator(Qt::Horizontal, tabAuth), 4, 0, 1, 6);
 
-
-  grid->addMultiCellWidget(new QLabel(i18n("Host authentication:"), tabAuth), 5, 5, 0, 1);
+  grid->addWidget(new QLabel(i18n("Host authentication:"), tabAuth), 5, 0, 1, 2 );
   hostAuthList = new Q3ListView(tabAuth);
   hostAuthList->setAllColumnsShowFocus(true);
-  grid->addMultiCellWidget(hostAuthList, 6, 13, 0, 5);
+  grid->addWidget(hostAuthList, 6, 0, 8, 6);
   hostAuthList->addColumn(i18n("Host"));
   hostAuthList->addColumn(i18n("Certificate"));
   hostAuthList->addColumn(i18n("Policy"));
@@ -516,15 +516,15 @@ QString whatstr;
   grid->addWidget(new QLabel(i18n("Certificate:"), tabAuth), 15, 0);
 
   authHost = new QLineEdit(tabAuth);
-  grid->addMultiCellWidget(authHost, 14, 14, 1, 4);
+  grid->addWidget(authHost, 14, 1, 1, 4);
   hostCertBox = new KComboBox(false, tabAuth);
-  grid->addMultiCellWidget(hostCertBox, 15, 15, 1, 4);
+  grid->addWidget(hostCertBox, 15, 1, 1, 4);
 
   hostCertBG = new Q3HButtonGroup(i18n("Action"), tabAuth);
   hostSend = new QRadioButton(i18n("Send"), hostCertBG);
   hostPrompt = new QRadioButton(i18n("Prompt"), hostCertBG);
   hostDont = new QRadioButton(i18n("Do not send"), hostCertBG);
-  grid->addMultiCellWidget(hostCertBG, 16, 16, 0, 5);
+  grid->addWidget(hostCertBG, 16, 0, 1, 6);
 
   authAdd = new QPushButton(i18n("Ne&w"), tabAuth);
   authRemove = new QPushButton(i18n("Remo&ve"), tabAuth);
@@ -549,7 +549,7 @@ QString whatstr;
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
                                " because this module was not linked"
                                " with OpenSSL."), tabAuth);
-  grid->addMultiCellWidget(nossllabel, 3, 3, 0, 5);
+  grid->addWidget(nossllabel, 3, 0, 1, 6);
 #endif
 
 
@@ -570,7 +570,7 @@ QString whatstr;
   otherSSLBox->setWhatsThis( whatstr);
   otherSSLBox->addColumn(i18n("Organization"));
   otherSSLBox->addColumn(i18n("Common Name"));
-  grid->addMultiCellWidget(otherSSLBox, 0, 7, 0, 4);
+  grid->addWidget(otherSSLBox, 0, 0, 8, 5 );
 
   otherSSLExport = new QPushButton(i18n("&Export..."), tabOtherSSLCert);
   connect(otherSSLExport, SIGNAL(clicked()), SLOT(slotExportCert()));
@@ -597,11 +597,11 @@ QString whatstr;
       otherSSLVerify->setEnabled(false);
       otherSSLRemove->setEnabled(false);
 
-  grid->addMultiCellWidget(new KSeparator(Qt::Horizontal, tabOtherSSLCert), 8, 8, 0, 5);
+  grid->addWidget(new KSeparator(Qt::Horizontal, tabOtherSSLCert), 8, 0, 1, 6);
   oSubject = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString());
   oIssuer = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString());
-  grid->addMultiCellWidget(oSubject, 9, 13, 0, 2);
-  grid->addMultiCellWidget(oIssuer, 9, 13, 3, 5);
+  grid->addWidget(oSubject, 9, 0, 5, 3 );
+  grid->addWidget(oIssuer, 9, 3, 5, 3);
   whatstr = i18n("This is the information known about the owner of the certificate.");
   oSubject->setWhatsThis( whatstr);
   whatstr = i18n("This is the information known about the issuer of the certificate.");
@@ -627,7 +627,7 @@ QString whatstr;
   cacheUntil = new QRadioButton(i18n("&Until"), cacheGroup);
   untilDate = new KUrlLabel(QString(), QString(), cacheGroup);
   cacheGroup->setEnabled(false);
-  grid->addMultiCellWidget(cacheGroup, 16, 19, 0, 2);
+  grid->addWidget(cacheGroup, 16, 0, 4, 3 );
 
   cachePerm->setEnabled(false);
   cacheUntil->setEnabled(false);
@@ -647,7 +647,7 @@ QString whatstr;
   policyReject = new QRadioButton(i18n("Re&ject"), policyGroup);
   policyPrompt = new QRadioButton(i18n("&Prompt"), policyGroup);
   policyGroup->setEnabled(false);
-  grid->addMultiCellWidget(policyGroup, 16, 19, 3, 5);
+  grid->addWidget(policyGroup, 16, 3, 4, 3);
   connect(policyGroup, SIGNAL(clicked(int)), SLOT(slotPolicyChanged(int)));
   whatstr = i18n("Select this to always accept this certificate.");
   policyAccept->setWhatsThis( whatstr);
@@ -665,7 +665,7 @@ QString whatstr;
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
                                " because this module was not linked"
                                " with OpenSSL."), tabOtherSSLCert);
-  grid->addMultiCellWidget(nossllabel, 1, 1, 0, 1);
+  grid->addWidget(nossllabel, 1, 0, 1, 2 );
 #endif
 
 
@@ -682,7 +682,7 @@ QString whatstr;
   whatstr = i18n("This list box shows which certificate authorities KDE"
                  " knows about. You can easily manage them from here.");
   caList->setWhatsThis( whatstr);
-  grid->addMultiCellWidget(caList, 0, 3, 0, 6);
+  grid->addWidget(caList, 0, 0, 4, 7);
   caList->addColumn(i18n("Organization"));
   caList->addColumn(i18n("Organizational Unit"));
   caList->addColumn(i18n("Common Name"));
@@ -703,18 +703,18 @@ QString whatstr;
 
   caSubject = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString());
   caIssuer = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString());
-  grid->addMultiCellWidget(caSubject, 4, 6, 0, 3);
-  grid->addMultiCellWidget(caIssuer, 4, 6, 4, 7);
+  grid->addWidget(caSubject, 4, 0, 3, 4 );
+  grid->addWidget(caIssuer, 4, 4, 3, 4);
 
   // Accept for Web Site Signing, Email Signing, Code Signing
   caSite = new QCheckBox(i18n("Accept for site signing"), tabSSLCA);
   caEmail = new QCheckBox(i18n("Accept for email signing"), tabSSLCA);
   caCode = new QCheckBox(i18n("Accept for code signing"), tabSSLCA);
-  grid->addMultiCellWidget(caSite, 7, 7, 0, 3);
+  grid->addWidget(caSite, 7, 0, 1, 4 );
   connect(caSite, SIGNAL(clicked()), SLOT(slotCAChecked()));
-  grid->addMultiCellWidget(caEmail, 8, 8, 0, 3);
+  grid->addWidget(caEmail, 8, 0, 1, 4 );
   connect(caEmail, SIGNAL(clicked()), SLOT(slotCAChecked()));
-  grid->addMultiCellWidget(caCode, 9, 9, 0, 3);
+  grid->addWidget(caCode, 9, 0, 1, 4 );
   connect(caCode, SIGNAL(clicked()), SLOT(slotCAChecked()));
   caSite->setEnabled(false);
   caEmail->setEnabled(false);
@@ -729,7 +729,7 @@ QString whatstr;
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
                                " because this module was not linked"
                                " with OpenSSL."), tabSSLCA);
-  grid->addMultiCellWidget(nossllabel, 1, 1, 0, 1);
+  grid->addWidget(nossllabel, 1, 0, 1, 2 );
 #endif
 
 
@@ -747,12 +747,12 @@ QString whatstr;
   connect(mWarnExpired, SIGNAL(clicked()), SLOT(configChanged()));
   mWarnRevoked = new QCheckBox(i18n("Warn on re&voked certificates"), tabSSLCOpts);
   connect(mWarnRevoked, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addMultiCellWidget(mWarnSelfSigned, 0, 0, 0, 3);
-  grid->addMultiCellWidget(mWarnExpired, 1, 1, 0, 3);
-  grid->addMultiCellWidget(mWarnRevoked, 2, 2, 0, 3);
+  grid->addWidget(mWarnSelfSigned, 0, 0, 1, 4 );
+  grid->addWidget(mWarnExpired, 1, 0, 1, 4 );
+  grid->addWidget(mWarnRevoked, 2, 0, 1, 4 );
 
   macCert = new QLineEdit(tabSSLCOpts);
-  grid->addMultiCellWidget(macCert, 4, 4, 0, 2);
+  grid->addWidget(macCert, 4, 0, 1, 3 );
 
   macBox = new Q3ListBox(tabSSLCOpts);
   whatstr = i18n("This list box shows which sites you have decided to accept"
@@ -761,7 +761,7 @@ QString whatstr;
   macBox->setWhatsThis( whatstr);
   caSSLBox->setSelectionMode(Q3ListBox::Single);
   caSSLBox->setColumnMode(Q3ListBox::FixedNumber);
-  grid->addMultiCellWidget(macBox, 5, 8, 0, 2);
+  grid->addWidget(macBox, 5, 0, 4, 3 );
 
   macAdd = new QPushButton(i18n("&Add"), tabSSLCOpts);
   //connect(macAdd, SIGNAL(), SLOT());
@@ -779,7 +779,7 @@ QString whatstr;
   nossllabel = new QLabel(i18n("These options are not configurable"
                                " because this module was not linked"
                                " with OpenSSL."), tabSSLCOpts);
-  grid->addMultiCellWidget(nossllabel, 1, 1, 0, 1);
+  grid->addWidget(nossllabel, 1, 0, 1, 2 );
 #endif
 #endif
 

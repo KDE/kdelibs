@@ -51,13 +51,13 @@ QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
    _netscape = new QRadioButton(i18n("&Netscape"), bg);
    _der = new QRadioButton(i18n("&DER/ASN1"), bg);
    _text = new QRadioButton(i18n("&Text"), bg);
-   grid->addMultiCellWidget(bg, 0, 4, 0, 3);
+   grid->addWidget(bg, 0, 0, 5, 4 );
    _pem->setChecked(true);
 
-   grid->addMultiCellWidget(new QLabel(i18n("Filename:"), this), 5, 5, 0, 3);
+   grid->addWidget(new QLabel(i18n("Filename:"), this), 5, 0, 1, 4 );
 
    _filename = new KLineEdit(this);
-   grid->addMultiCellWidget(_filename, 6, 6, 0, 4);
+   grid->addWidget(_filename, 6, 0, 1, 5 );
    connect(_filename, SIGNAL(textChanged(const QString &)), this, SLOT(slotTextChanged(const QString &)));
    connect(_filename, SIGNAL(returnPressed()), this, SLOT(slotExport()));
 
