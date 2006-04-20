@@ -180,7 +180,11 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         }
     }
 
-    // remove the child
+    // remove the child from any special layout lists
+    if ( oldChild->isFloating() || oldChild->isPositioned() )
+        oldChild->removeFromObjectLists();
+
+    // remove the child from the render-tree
     if (oldChild->previousSibling())
         oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
     if (oldChild->nextSibling())
@@ -275,7 +279,6 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
     {
         // The child needs to be removed.
         oldContentPresent = false;
-        child->removeFromObjectLists();
         removeChild(child);
         child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
     }

@@ -453,8 +453,8 @@ RenderObject* RenderObject::offsetParent() const
     bool skipTables = isPositioned() || isRelPositioned();
     bool strict = !style()->htmlHacks();
     RenderObject* curr = parent();
-    while (curr && (!curr->element() || 
-                    (!curr->isPositioned() && !curr->isRelPositioned() && 
+    while (curr && (!curr->element() ||
+                    (!curr->isPositioned() && !curr->isRelPositioned() &&
                         !(strict && skipTables ? curr->isRoot() : curr->isBody())))) {
         if (!skipTables && curr->element() && (curr->isTableCell() || curr->isTable()))
             break;
@@ -1294,7 +1294,7 @@ void RenderObject::setStyle(RenderStyle *style)
         } else if (!isText() && d == RenderStyle::Visible) {
             if (layer() && !isInlineFlow()) {
                 layer()->repaint();
-                if (canvas() && canvas()->needsWidgetMasks()) { 
+                if (canvas() && canvas()->needsWidgetMasks()) {
                     RenderLayer *p, *d = 0;
                     for (p=layer()->parent();p;p=p->parent())
                         if (p->hasOverlaidWidgets()) d=p;
@@ -1320,7 +1320,7 @@ void RenderObject::dirtyFormattingContext( bool checkContainer )
                  return;
              else
                  m_parent->dirtyFormattingContext(false);
-         } 
+         }
          else if (checkContainer || style()->width().isVariable() || style()->height().isVariable() ||
                      !(isFloating() || flowAroundFloats() || isTableCell()))
              m_parent->dirtyFormattingContext(false);
@@ -1509,8 +1509,6 @@ DOM::DocumentImpl* RenderObject::document() const
 
 void RenderObject::remove()
 {
-    removeFromObjectLists();
-
     if ( parent() )
         //have parent, take care of the tree integrity
         parent()->removeChild(this);
@@ -2194,7 +2192,7 @@ void RenderObject::updateWidgetMasks() {
         }
         else if (!curr->layer() || !curr->layer()->isStackingContext())
             curr->updateWidgetMasks();
-  
+
     }
 }
 
