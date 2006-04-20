@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000 Dirk Mueller (mueller@kde.org)
+ *           (C) 2004, 2005, 2006 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -271,6 +272,8 @@ public:
 
     bool checked() const { return m_checked; }
     void setChecked(bool);
+    bool indeterminate() const { return m_indeterminate; }
+    void setIndeterminate(bool);
     long maxLength() const { return m_maxLen; }
     int size() const { return m_size; }
     DOMString type() const;
@@ -329,6 +332,7 @@ protected:
     typeEnum m_type : 4;
     bool m_clicked : 1 ;
     bool m_checked : 1;
+    bool m_indeterminate : 1;
     bool m_haveType : 1;
     bool m_activeSubmit : 1;
     bool m_autocomplete : 1;
