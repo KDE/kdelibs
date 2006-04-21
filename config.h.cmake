@@ -36,6 +36,15 @@
 /* Define if you have libz */
 #cmakedefine   HAVE_LIBZ 1
 
+/* Define if you have pcreposix */
+#cmakedefine   HAVE_PCREPOSIX 1
+
+/* Define if you have cups */
+#cmakedefine   HAVE_CUPS 1
+
+/* Define if you have fam */
+#cmakedefine   HAVE_FAM 1
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #cmakedefine   HAVE_DLFCN_H 1
 
