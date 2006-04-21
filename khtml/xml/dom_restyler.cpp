@@ -87,7 +87,7 @@ void DynamicDomRestyler::restyleDepedent(ElementImpl* dependency, StructuralDepe
 
     for (dependent.first(); dependent.current() ; dependent.next())
     {
-        kdDebug() << "Restyling dependent" << endl;
+//         kdDebug() << "Restyling dependent" << endl;
         dependent.current()->setChanged(true);
     }
 }
