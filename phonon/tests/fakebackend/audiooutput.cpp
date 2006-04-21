@@ -26,6 +26,7 @@
 #include <sys/soundcard.h>
 #endif
 #include <sys/ioctl.h>
+#include <errno.h>
 #include <iostream>
 
 namespace Phonon
