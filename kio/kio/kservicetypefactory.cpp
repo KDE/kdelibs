@@ -24,6 +24,7 @@
 #include "kservicetype.h"
 #include "kmimetype.h"
 #include "kuserprofile.h"
+#include "kdedesktopmimetype.h"
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -260,6 +261,7 @@ KServiceType * KServiceTypeFactory::createEntry(int offset)
         newEntry = new KServiceType(*str, offset);
         break;
      case KST_KMimeType:
+   case KST_KExecMimeType: // old type, kept for compatibility, can be removed
         newEntry = new KMimeType(*str, offset);
         break;
      case KST_KFolderType:
@@ -267,9 +269,6 @@ KServiceType * KServiceTypeFactory::createEntry(int offset)
         break;
      case KST_KDEDesktopMimeType:
         newEntry = new KDEDesktopMimeType(*str, offset);
-        break;
-     case KST_KExecMimeType:
-        newEntry = new KExecMimeType(*str, offset);
         break;
 
      default:

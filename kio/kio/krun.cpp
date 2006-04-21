@@ -41,6 +41,7 @@
 #include "kio/netaccess.h"
 #include "kfile/kopenwith.h"
 #include "kfile/krecentdocument.h"
+#include "kdedesktopmimetype.h"
 
 #include <kdatastream.h>
 #include <kmessageboxwrapper.h>

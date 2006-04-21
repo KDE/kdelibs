@@ -19,6 +19,7 @@
 
 #include "kbuildservicetypefactory.h"
 #include "ksycoca.h"
+#include "kdedesktopmimetype.h"
 #include "ksycocadict.h"
 #include "kresourcelist.h"
 
@@ -97,8 +98,6 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
     e = new KFolderType( &desktopFile );
   else if ( mime == "application/x-desktop" )
     e = new KDEDesktopMimeType( &desktopFile );
-  else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
-    e = new KExecMimeType( &desktopFile );
   else if ( !mime.isEmpty() )
     e = new KMimeType( &desktopFile );
   else

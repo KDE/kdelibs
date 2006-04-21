@@ -57,6 +57,7 @@ set(kiocore_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kio/kio/kservicetypefactory.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/kservicetype.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/kmimetype.cpp
+  ${CMAKE_SOURCE_DIR}/kio/kio/kdedesktopmimetype.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/kservicegroup.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/kservice.cpp
   ${CMAKE_SOURCE_DIR}/kio/kio/kservicefactory.cpp
