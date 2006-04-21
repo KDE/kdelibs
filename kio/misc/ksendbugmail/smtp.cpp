@@ -212,6 +212,10 @@ void SMTP::socketRead(KSocket *socket)
     if(socket == 0L || socket->socket() < 0)
         return;
     n = read(socket->socket(), readBuffer, SMTP_READ_BUFFER_SIZE-1 );
+
+    if(n < 0)
+        return;
+
     readBuffer[n] = '\0';
     lineBuffer += readBuffer;
     nl = lineBuffer.find('\n');
