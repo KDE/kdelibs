@@ -510,8 +510,18 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 		cupsEncodeOptions(request_, n, options);
 	cupsFreeOptions(n, options);
 
-	// find and remove that annoying "document-format" attribute
-        ipp_attribute_t *attr = ippFindAttribute(request_, "document-format", IPP_TAG_NAME);
-        ippDeleteAttribute(request_, attr);
-
+	// find an remove that annoying "document-format" attribute
+	// (can't use IppDeleteAttribute as cups 1.0.9 doesn't have that)
+	ipp_attribute_t	*attr = request_->attrs;
+	while (attr)
+	{
+		if (attr->next && strcmp(attr->next->name, "document-format") == 0)
+		{
+			ipp_attribute_t	*attr2 = attr->next;
+			attr->next = attr2->next;
+			_ipp_free_attr(attr2);
+			break;
+		}
+		attr = attr->next;
+	}
 }
