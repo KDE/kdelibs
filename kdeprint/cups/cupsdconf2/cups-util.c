@@ -136,8 +136,8 @@ cupsDoAuthentication(http_t *http,
 	* Digest authentication...
 	*/
 
-        httpGetSubField(http_t, HTTP_FIELD_WWW_AUTHENTICATE, "realm", realm);
-        httpGetSubField(http_t, HTTP_FIELD_WWW_AUTHENTICATE, "nonce", nonce);
+        httpGetSubField(http, HTTP_FIELD_WWW_AUTHENTICATE, "realm", realm);
+        httpGetSubField(http, HTTP_FIELD_WWW_AUTHENTICATE, "nonce", nonce);
 
 	httpMD5(cupsUser(), realm, pwdstring, encode);
 	httpMD5Final(nonce, method, resource, encode);
@@ -231,7 +231,7 @@ cupsGetFd(http_t *http, const char *resource, int fd)
    /*
    * OK, we need to copy the file...
    */
-    while ((bytes = httpRead(cups_server, buffer, sizeof(buffer))) > 0)
+    while ((bytes = httpRead(http, buffer, sizeof(buffer))) > 0)
     {
       write(fd, buffer, bytes);
     }
