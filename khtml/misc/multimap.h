@@ -44,7 +44,7 @@ public:
     void append(void* key, T* element) {
         List *list = dict.find(key);
         if (!list){
-             list = new List(16);
+             list = new List(8);
              dict.insert(key, list);
         }
         list->append(element);

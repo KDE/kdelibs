@@ -1533,12 +1533,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         }
 	case CSSSelector::PseudoChecked: {
-#if 0
            if (e->isHTMLElement() && e->id() == ID_INPUT)
-               return (static_cast<HTMLInputElementImpl*>(e)->checked() &&
-                      !static_cast<HTMLInputElementImpl*>(e)->indeterminate());
+               doc->dynamicDomRestyler().addDependency(element, e, OtherStateDependency);
+               return (static_cast<HTMLInputElementImpl*>(e)->checked());
            return false;
-#endif
         }
  	case CSSSelector::PseudoIndeterminate: {
 #if 0
