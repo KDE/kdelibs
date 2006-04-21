@@ -108,7 +108,8 @@ KTempDir::~KTempDir()
    if (bAutoDelete)
       unlink();
 
-   delete d;
+// KTempDirPrivate doesn't exist, so it can't be deleted
+//   delete d;
 }
 
 int
