@@ -247,7 +247,8 @@ void KRootPixmap::repaint(bool force)
     // TODO: pixmapName() is a nonsense now!
     m_pPixmap->load( pixmapName(m_Desk) );
     if (!m_pPixmap->isNull()) {
-        m_pPixmap->resize( m_Rect.size() );
+	// ###### TODO Qt4 porting
+        //m_pPixmap->resize( m_Rect.size() );
         slotDone(true);
     }
 #endif
