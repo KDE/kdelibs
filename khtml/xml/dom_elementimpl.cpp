@@ -517,7 +517,7 @@ void ElementImpl::attach()
     NodeBaseImpl::attach();
 
     // Trigger all the addChild changes as one large dynamic appendChildren change
-    if (closed() && firstChild())
+    if (closed())
         backwardsStructureChanged();
 }
 
@@ -526,12 +526,14 @@ void ElementImpl::close()
     NodeImpl::close();
 
     // Trigger all the addChild changes as one large dynamic appendChildren change
-    if (attached() && firstChild())
+    if (attached())
         backwardsStructureChanged();
 }
 
 void ElementImpl::structureChanged()
 {
+    NodeBaseImpl::structureChanged();
+
     if (!getDocument()->renderer())
         return; // the document is about to be destroyed
 
@@ -543,6 +545,8 @@ void ElementImpl::structureChanged()
 
 void ElementImpl::backwardsStructureChanged()
 {
+    NodeBaseImpl::backwardsStructureChanged();
+
     if (!getDocument()->renderer())
         return; // the document is about to be destroyed
 
