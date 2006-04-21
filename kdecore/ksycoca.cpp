@@ -62,7 +62,11 @@ public:
         database = 0;
         readError = false;
         updateSig = 0;
+#ifdef Q_WS_WIN
+        autoRebuild = false;
+#else
         autoRebuild = true;
+#endif
     }
     QFile *database;
     QStringList changeList;
