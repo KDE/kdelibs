@@ -19,8 +19,8 @@
 // -*- mode: c++; c-basic-offset: 2 -*-
 
 #include "qtest_kde.h"
-#include "kurltest4.h"
-#include "kurltest4.moc"
+#include "kurltest.h"
+#include "kurltest.moc"
 
 QTEST_KDEMAIN( KUrlTest, NoGUI )
 

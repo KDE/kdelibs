@@ -51,8 +51,8 @@ int main(int argc,char **argv)
   }
   
   QTextStream t( &f );
-  t.setEncoding(QTextStream::UnicodeUTF8);
-  QString text = t.read();
+  t.setCodec(QTextCodec::codecForName("UTF-8"));
+  QString text = t.readAll();
   f.close();
   
   text = QString::fromUtf8( text.toLocal8Bit() );
@@ -64,7 +64,7 @@ int main(int argc,char **argv)
   }
   
   QTextStream t2( &f );
-  t2.setEncoding(QTextStream::UnicodeUTF8);
+  t2.setCodec(QTextCodec::codecForName("UTF-8"));
   t2 << text;
   f.close();
 }

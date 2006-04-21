@@ -48,7 +48,7 @@ int main( int argc, char *argv[] )
 	KApplication app( "kwalletasync" );
 
 	// register with DCOP
-	_out << "DCOP registration returned " << app.dcopClient()->registerAs(app.name()) << endl;
+	_out << "DCOP registration returned " << app.dcopClient()->registerAs(app.objectName().toLatin1()) << endl;
 
 	openWallet();
 

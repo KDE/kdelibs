@@ -36,7 +36,7 @@ void drawColorWheel( QPainter *p )
         matrix.translate( 250.0F, 250.0F );	// move to center
         matrix.shear( 0.0F, 0.3F );		// twist it
         matrix.rotate( (float)i*10 );		// rotate 0,10,20,.. degrees
-        p->setWorldMatrix( matrix );		// use this world matrix
+        p->setMatrix( matrix );		// use this world matrix
 
         QColor c;
         c.setHsv( i*10, 255, 255 );		// rainbow effect
@@ -126,8 +126,10 @@ DrawThing ourDrawFunctions[] = {
 
 DrawView::DrawView()
 {
-    setCaption( "Qt Draw Demo Application" );
-    setBackgroundColor( Qt::white );
+    setWindowTitle( "Qt Draw Demo Application" );
+    QPalette palette;
+    palette.setColor(backgroundRole(), Qt::white);
+    setPalette(palette);
 
     // Create a button group to contain all buttons
     bgroup = new Q3ButtonGroup( this );
@@ -247,7 +249,6 @@ int main( int argc, char **argv )
     KCmdLineArgs::init( argc, argv, "drawdemo",0,0,0,0 );
     KApplication app;
     DrawView   draw;
-    app.setMainWidget( &draw );
     draw.show();
     return app.exec();
 }

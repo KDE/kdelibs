@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
    KCmdLineArgs::init( argc, argv, "klaunchertest", 0, 0, 0, 0);
    KApplication k;
 
-   KApplication::dcopClient()->registerAs( kapp->name()) ;
+   KApplication::dcopClient()->registerAs( kapp->objectName().toLatin1()) ;
 
 #if 0
    QString error;

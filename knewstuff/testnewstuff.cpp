@@ -47,7 +47,7 @@ bool TestNewStuff::install( const QString &fileName )
   }
   QTextStream ts( &f );
   kDebug(5850) << "--BEGIN-NEW_STUFF--" << endl;
-  cout << ts.read().toUtf8().data();
+  cout << ts.readAll().toUtf8().data();
   kDebug(5850) << "---END-NEW_STUFF---" << endl;
   return true;
 }
@@ -113,7 +113,6 @@ int main(int argc,char **argv)
   KApplication app;
 
   MyWidget wid;
-  app.setMainWidget( &wid );
   wid.show();
 
   app.exec();

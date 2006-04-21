@@ -83,15 +83,15 @@ target_link_libraries(kstddirstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### next target ###############
 
-set(kurltest4_SRCS kurltest4.cpp )
+set(kurltest_SRCS kurltest.cpp )
 
-kde4_automoc(${kurltest4_SRCS})
+kde4_automoc(${kurltest_SRCS})
 
-kde4_add_executable(kurltest4 RUN_UNINSTALLED ${kurltest4_SRCS})
+kde4_add_executable(kurltest RUN_UNINSTALLED ${kurltest_SRCS})
 
-target_link_libraries(kurltest4  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kurltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-add_test(kdecore-kurltest4 ${EXECUTABLE_OUTPUT_PATH}/kurltest4)
+add_test(kdecore-kurltest ${EXECUTABLE_OUTPUT_PATH}/kurltest)
 
 ########### next target ###############
 

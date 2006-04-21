@@ -31,7 +31,7 @@
 using namespace KSpell2;
 
 TestDialog::TestDialog()
-    : QObject( 0, "testdialog" )
+    : QObject( 0 )
 {
 
 }

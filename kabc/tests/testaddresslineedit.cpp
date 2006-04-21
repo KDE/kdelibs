@@ -19,11 +19,10 @@ int main( int argc,char **argv )
   AddressLineEdit *lineEdit = new AddressLineEdit( 0 );
 
   lineEdit->show();
-  app.setMainWidget( lineEdit );
-  
+
   QObject::connect( &app, SIGNAL( lastWindowClosed() ), &app, SLOT( quit() ) );
 
   app.exec();
-  
+
   delete lineEdit;
 }

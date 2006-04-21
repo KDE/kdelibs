@@ -31,7 +31,7 @@ int main(int argc,char **argv)
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
   if (args->isSet("list")) {
     QString name = args->getOption("list");
-    
+
     DistributionListManager *manager =
         new DistributionListManager( StdAddressBook::self() );
     manager->load();
@@ -49,11 +49,10 @@ int main(int argc,char **argv)
       new DistributionListEditor( StdAddressBook::self(), 0 );
 
   editor->show();
-  app.setMainWidget(editor);
-  
+
   QObject::connect( &app, SIGNAL( lastWindowClosed() ), &app, SLOT( quit() ) );
 
   app.exec();
-  
+
   delete editor;
 }

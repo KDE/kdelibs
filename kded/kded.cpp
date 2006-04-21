@@ -207,7 +207,7 @@ void Kded::initModules()
 
 void Kded::loadSecondPhase()
 {
-     kdDebug(7020) << "Loading second phase autoload" << endl;
+     kDebug(7020) << "Loading second phase autoload" << endl;
      KConfig *config = KGlobal::config();
      KService::List kdedModules = KServiceType::offers("KDEDModule");
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
@@ -215,7 +215,7 @@ void Kded::loadSecondPhase()
          KService::Ptr service = *it;
          bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
          config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
-         autoload = config->readBoolEntry("autoload", autoload);
+         autoload = config->readEntry("autoload", autoload);
          QVariant phasev = service->property("X-KDE-Kded-phase", QVariant::Int );
          int phase = phasev.isValid() ? phasev.toInt() : 2;
          if( phase == 2 && autoload )
