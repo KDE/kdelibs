@@ -71,7 +71,7 @@ cups_local_auth(http_t *http)	/* I - Connection */
 	return (1);
 }
 
-static int
+int
 cupsDoAuthentication(http_t *http,
         const char *method, const char *resource)
 {
