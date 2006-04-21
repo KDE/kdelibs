@@ -36,9 +36,9 @@ class KCModuleInfo::KCModuleInfoPrivate
   public:
     KCModuleInfoPrivate() :
       testModule( false )
-    {};
+    {}
     ~KCModuleInfoPrivate()
-    { };
+    {}
 
     QString factoryName;
     bool testModule;
