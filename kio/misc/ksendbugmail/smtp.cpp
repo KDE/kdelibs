@@ -213,7 +213,9 @@ void SMTP::socketReadyToRead()
         return;
 
     n = sock->read(readBuffer, SMTP_READ_BUFFER_SIZE-1);
-    readBuffer[n] = '\0';
+    if (n < 0)
+	return;
+    readBuffer[n] = 0;
     lineBuffer += readBuffer;
     nl = lineBuffer.indexOf('\n');
     if(nl == -1)
