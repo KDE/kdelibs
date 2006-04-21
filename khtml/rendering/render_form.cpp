@@ -172,7 +172,8 @@ void RenderCheckBox::updateFromElement()
 
 void RenderCheckBox::slotStateChanged(int state)
 {
-    element()->setChecked(state == 2);
+    element()->setChecked(state == QButton::On);
+    element()->setIndeterminate(state == QButton::NoChange);
 
     ref();
     element()->onChange();
@@ -1793,7 +1794,7 @@ void RenderTextArea::computeParagraphAndIndex(long offset, int* para, int* index
         *index = -1;
         return;
     }
-    
+
     //Find the paragraph that contains us..
     int containingPar = 0;
     long endPos       = 0;
