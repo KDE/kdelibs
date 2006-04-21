@@ -1182,8 +1182,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	switch (sel->pseudoType()) {
         // Pseudo classes:
 	case CSSSelector::PseudoEmpty:
-            // If e is not closed yet we don't know the number of children
             doc->dynamicDomRestyler().addDependency(element, e, BackwardsStructuralDependency);
+            // If e is not closed yet we don't know the number of children
             if (!e->closed()) {
                 return false;
             }
@@ -1533,16 +1533,18 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         }
 	case CSSSelector::PseudoChecked: {
-           if (e->isHTMLElement() && e->id() == ID_INPUT)
+           if (e->isHTMLElement() && e->id() == ID_INPUT) {
                doc->dynamicDomRestyler().addDependency(element, e, OtherStateDependency);
                return (static_cast<HTMLInputElementImpl*>(e)->checked());
+           }
            return false;
         }
  	case CSSSelector::PseudoIndeterminate: {
 #if 0
-           if (e->isHTMLElement() && e->id() == ID_INPUT)
+           if (e->isHTMLElement() && e->id() == ID_INPUT) {
                return (static_cast<HTMLInputElementImpl*>(e)->indeterminate() &&
                       !static_cast<HTMLInputElementImpl*>(e)->checked());
+           }
            return false;
 #endif
         }
