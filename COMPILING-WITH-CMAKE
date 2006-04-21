@@ -10,7 +10,7 @@ WHERE TO GET CMAKE
 
 Sources are at:
 
-http://www.cmake.org/files/v2.3/cmake-2.3.4-20060317.tar.gz
+http://www.cmake.org/files/v2.4/cmake-2.4.0.tar.gz
 
 unpack, run "./configure && make && make install" will install into /usr/local.
 
@@ -19,7 +19,7 @@ Ensure cmake is in your $PATH.
 (I don't think you even need to do this, but it makes some sense:
 Ensure you run 'unsermake clean' first in all your KDE source directories.)
 
-Use a separate builddir to build KDE modules, not the sourcedir.
+Use a separate builddir to build KDE modules, not the sourcedir (example below).
 
 To get regular debugging, pass -DCMAKE_BUILD_TYPE=debug
 To get full debugging, pass -DCMAKE_BUILD_TYPE=debugfull
