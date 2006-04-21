@@ -113,6 +113,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
     m_doc = 0;
     m_implicit = false;
     m_namespaces = 0;
+    m_defaultNamespace = anyNamespace;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, bool _implicit)
@@ -122,6 +123,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, 
     m_doc = parentNode->getDocument();
     m_implicit = _implicit;
     m_namespaces = 0;
+    m_defaultNamespace = anyNamespace;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
@@ -131,6 +133,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     m_doc = 0;
     m_implicit = false;
     m_namespaces = 0;
+    m_defaultNamespace = anyNamespace;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
@@ -146,6 +149,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
     m_doc = parentNode->getDocument();
     m_implicit = false;
     m_namespaces = 0;
+    m_defaultNamespace = anyNamespace;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig)
@@ -162,6 +166,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
     m_doc  = 0;
     m_implicit = false;
     m_namespaces = 0;
+    m_defaultNamespace = anyNamespace;
 }
 
 CSSRuleImpl *CSSStyleSheetImpl::ownerRule() const
@@ -219,9 +224,7 @@ void CSSStyleSheetImpl::addNamespace(CSSParser* p, const DOM::DOMString& prefix,
     if (prefix.isEmpty()) {
         Q_ASSERT(m_doc != 0);
 
-        // Set the default namespace on the parser so that selectors that omit namespace info will
-        // be able to pick it up easily.
-        p->defaultNamespace = m_doc->getId(NodeImpl::NamespaceId, uri.implementation(), false, false, &exceptioncode);
+        m_defaultNamespace = m_doc->getId(NodeImpl::NamespaceId, uri.implementation(), false, false, &exceptioncode);
     }
 }
 

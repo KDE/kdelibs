@@ -41,7 +41,7 @@
 #include "xml/dom_textimpl.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
-// #include "xml/dom_restyler.h"
+#include "xml/dom_restyler.h"
 #include "khtml_ext.h"
 
 #include "rendering/render_form.h"
@@ -938,8 +938,7 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
     if ( m_disabled != _disabled ) {
         m_disabled = _disabled;
         // Trigger dynamic restyles
-        setChanged();
-//         getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+        getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
     }
 }
 

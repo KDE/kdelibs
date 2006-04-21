@@ -4,7 +4,8 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- *           (C) 2002-2003 Apple Computer, Inc.
+ *           (C) 2002-2006 Apple Computer, Inc.
+ *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,6 +31,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "xml/xml_tokenizer.h"
 #include "html/htmltokenizer.h"
+#include "xml/dom_restyler.h"
 
 #include "css/csshelper.h"
 #include "css/cssstyleselector.h"
@@ -337,6 +339,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_namespaceMap->count+=2;
     m_focusNode = 0;
     m_hoverNode = 0;
+    m_activeNode = 0;
     m_defaultView = new AbstractViewImpl(this);
     m_defaultView->ref();
     m_listenerTypes = 0;
@@ -351,13 +354,13 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_inStyleRecalc = false;
     m_pendingStylesheets = 0;
     m_ignorePendingStylesheets = false;
-    m_usesDescendantRules = false;
     m_async = true;
     m_hadLoadError = false;
     m_docLoading = false;
     m_inSyncLoad = false;
     m_loadingXMLDoc = 0;
     m_cssTarget = 0;
+    m_dynamicDomRestyler = new khtml::DynamicDomRestyler();
 }
 
 DocumentImpl::~DocumentImpl()
@@ -700,6 +703,7 @@ unsigned short DocumentImpl::nodeType() const
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 {
     uint id = khtml::getTagID( name.string().lower().latin1(), name.string().length() );
+//     id = makeId(xhtmlNamespace, id);
 
     ElementImpl *n = 0;
     switch(id)
@@ -2146,6 +2150,14 @@ void DocumentImpl::setHoverNode(NodeImpl *newHoverNode)
     if (newHoverNode ) newHoverNode->ref();
     m_hoverNode = newHoverNode;
     if ( oldHoverNode ) oldHoverNode->deref();
+}
+
+void DocumentImpl::setActiveNode(NodeImpl* newActiveNode)
+{
+    NodeImpl* oldActiveNode = m_activeNode;
+    if (newActiveNode ) newActiveNode->ref();
+    m_activeNode = newActiveNode;
+    if ( oldActiveNode ) oldActiveNode->deref();
 }
 
 void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)

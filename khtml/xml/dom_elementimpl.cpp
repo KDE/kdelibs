@@ -5,6 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Peter Kelly (pmk@post.com)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
+ *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,6 +31,7 @@
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_elementimpl.h"
+#include "xml/dom_restyler.h"
 
 #include "html/dtd.h"
 #include "html/htmlparser.h"
@@ -305,9 +307,6 @@ ElementImpl::ElementImpl(DocumentPtr *doc)
     namedAttrMap = 0;
     m_styleDecls = 0;
     m_prefix = 0;
-    m_restyleLate = false;
-    m_restyleSelfLate = false;
-    m_restyleChildrenLate = false;
     m_hasClassList = false;
 }
 
@@ -359,6 +358,7 @@ void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value, const DO
         return;
     }
     attributes()->setValue(id, value.implementation(), (qName.isEmpty() ? 0: qName.implementation()));
+    attributeChanged(id);
 }
 
 void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName,
@@ -380,12 +380,14 @@ void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString
                             prefix.implementation(), localName.implementation(), false, true /*lookupHTML*/);
     attributes()->setValue(id, value.implementation(), 0, prefix.implementation(),
                            true /*nsAware*/, !namespaceURI.isNull() /*hasNS*/);
+    attributeChanged(id);
 }
 
 void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value)
 {
     int exceptioncode = 0;
     setAttribute(id,value,DOMString(),exceptioncode);
+    attributeChanged(id);
 }
 
 void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
@@ -513,32 +515,56 @@ void ElementImpl::attach()
 #endif
 
     NodeBaseImpl::attach();
+
+    // Trigger all the addChild changes as one large dynamic appendChildren change
+    if (closed() && firstChild())
+        backwardsStructureChanged();
 }
 
 void ElementImpl::close()
 {
     NodeImpl::close();
 
+    // Trigger all the addChild changes as one large dynamic appendChildren change
+    if (attached() && firstChild())
+        backwardsStructureChanged();
+}
+
+void ElementImpl::structureChanged()
+{
     if (!getDocument()->renderer())
         return; // the document is about to be destroyed
 
-    if (m_restyleChildrenLate) {
-        NodeImpl *e = firstChild();
-        while(e) {
-            if (e->isElementNode()) {
-                if (static_cast<ElementImpl*>(e)->restyleLate()) {
-                    static_cast<ElementImpl*>(e)->recalcStyle(Force);
-                    static_cast<ElementImpl*>(e)->setRestyleLate(false);
-                }
-            }
-            e = e->nextSibling();
-        }
-        m_restyleChildrenLate = false;
-    }
-    if (m_restyleSelfLate) {
-        recalcStyle(Force);
-        m_restyleSelfLate = false;
-    }
+    getDocument()->dynamicDomRestyler().restyleDepedent(this, StructuralDependency);
+    // In theory BackwardsStructurualDependencies are indifferent to prepend,
+    // but it's too rare to optimize.
+    getDocument()->dynamicDomRestyler().restyleDepedent(this, BackwardsStructuralDependency);
+}
+
+void ElementImpl::backwardsStructureChanged()
+{
+    if (!getDocument()->renderer())
+        return; // the document is about to be destroyed
+
+    // Most selectors are not affected by append. Fire the few that are.
+    getDocument()->dynamicDomRestyler().restyleDepedent(this, BackwardsStructuralDependency);
+}
+
+void ElementImpl::attributeChanged(NodeImpl::Id id)
+{
+    if (!getDocument()->renderer())
+        return; // the document is about to be destroyed
+
+#if 0 // one-one dependencies for attributes disabled
+    getDocument()->dynamicDomRestyler().restyleDepedent(this, AttributeDependency);
+#endif
+    if (getDocument()->dynamicDomRestyler().checkDependency(id, PersonalDependency))
+        setChanged(true);
+    if (getDocument()->dynamicDomRestyler().checkDependency(id, AscendentDependency))
+        setChangedAscendentAttribute(true);
+    if (getDocument()->dynamicDomRestyler().checkDependency(id, PrecedentDependency) && parent())
+        // Any element that dependt on a precedent attribute, also depend structurally on parent
+        parent()->structureChanged();
 }
 
 void ElementImpl::recalcStyle( StyleChange change )
@@ -587,12 +613,13 @@ void ElementImpl::recalcStyle( StyleChange change )
         }
         newStyle->deref();
 
-       if ( change != Force) {
-            if (getDocument()->usesDescendantRules())
-                change = Force;
-            else
-                change = ch;
-        }
+        if ( change != Force)
+            change = ch;
+    }
+    // If a changed attribute has ascendent dependencies, restyle all children
+    if (changedAscendentAttribute()) {
+        change = Force;
+        setChangedAscendentAttribute(false);
     }
 
     NodeImpl *n;
@@ -613,7 +640,7 @@ bool ElementImpl::isFocusable() const
     // Only make editable elements selectable if its parent element
     // is not editable. FIXME: this is not 100% right as non-editable elements
     // within editable elements are focusable too.
-    return contentEditable() && (!parentNode() || !parentNode()->contentEditable());
+    return contentEditable() && !(parentNode() && parentNode()->contentEditable());
 }
 
 // DOM Section 1.1.1

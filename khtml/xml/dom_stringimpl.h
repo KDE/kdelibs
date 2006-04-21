@@ -55,8 +55,8 @@ public:
 	}
     }
 
-    DOMStringImpl(const char *str);
-    DOMStringImpl(const QChar &ch) {
+    explicit DOMStringImpl(const char *str);
+    explicit DOMStringImpl(const QChar &ch) {
 	s = QT_ALLOC_QCHAR_VEC( 1 );
 	s[0] = ch;
 	l = 1;

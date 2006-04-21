@@ -108,6 +108,8 @@ namespace DOM {
 
 	DOM::DocumentImpl *document() const;
 
+	unsigned int defaultNamespace();
+
 	void addProperty( int propId, CSSValueImpl *value, bool important );
 	bool hasProperties() const { return numParsedProperties > 0; }
 	CSSStyleDeclarationImpl *createStyleDeclaration( CSSStyleRuleImpl *rule );
@@ -145,6 +147,7 @@ namespace DOM {
         // CSS3 Parsing Routines (for properties specific to CSS3)
         bool parseShadow(int propId, bool important);
 
+
     public:
 	bool strict;
 	bool important;
@@ -157,7 +160,6 @@ namespace DOM {
 	int numParsedProperties;
 	int maxParsedProperties;
 	bool inParseShortHand;
-	unsigned int defaultNamespace;
 	static CSSParser *currentParser;
 
 	// tokenizer methods and data

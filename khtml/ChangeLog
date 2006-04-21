@@ -1,3 +1,30 @@
+2006-04-20  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement full support for CSS updates on dynamic DOM and user-interaction
+
+        * misc/multimap.h: NEW: A "fast on insert" map with multiple values per key
+        * xml/dom_restyler.{h,cpp}: NEW: The dynamic DOM restyler keeps track of changes and issues restyles
+        * xml/dom_docimpl.h:
+                Remove obsolete usesDescendencyRules.
+                Add a dynamicDomRestyler to the document.
+        * xml/dom_nodeimpl.{h,cpp}: Add dynamic DOM restyler hooks.
+        * xml/dom_elementimpl.{h,cpp}:
+                Remove obsolete usesDescendencyRules logic.
+                Remove obsolete laterestyle logic.
+                Implement DOM restyler hooks.
+        * css/cssstyleselector.{h,cpp}:
+                Clean-up checkSelector, removing obsolete and redundant arguments
+                Fix :link and :visited selector.
+                Setup all dynamic dependencies in checkOneSelector.
+        * css/cssparser.{h,cpp}: Remove defaultNamespace
+        * css/css_stylesheetimpl.{h,cpp}: Add defaultNamespace
+        * css/parser.{y,cpp}:
+                Remove calls to usesDescendencyRules.
+                Use defaultNamespace from stylesheet rather than parser.
+        * rendering/render_style.h: Remove obsolete affectedByHoverRules and affectedByActiveRules
+        * rendering/render_layer.cpp: Use dynamic DOM restyler to restyle :hover and :active nodes.
+        * html/html_formimpl.cpp: Call dynamic restyler for changes to disabled state
+
 2006-04-09  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Distinguish between having no determined namespace, and determined to have no namespace

@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2003 Apple Computer, Inc.
- * Copyright (C) 2006 Germain Garand <germain@ebooksfrance.org>
+ *           (C) 2006 Germain Garand <germain@ebooksfrance.org>
+ *           (C) 2006 Allan Sandfeld Jense <kde@carewolf.com>
  *
  * Portions are Copyright (C) 1998 Netscape Communications Corporation.
  *
@@ -55,6 +56,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "misc/htmltags.h"
 #include "html/html_blockimpl.h"
+#include "xml/dom_restyler.h"
 
 #include <qscrollbar.h>
 #include <qptrvector.h>
@@ -144,8 +146,8 @@ void RenderLayer::updateLayerPosition()
         RenderLayer* positionedParent = enclosingPositionedAncestor();
 
         // For positioned layers, we subtract out the enclosing positioned layer's scroll offset.
-        positionedParent->subtractScrollOffset(x, y);        
-        positionedParent->checkInlineRelOffset(m_object, x, y);        
+        positionedParent->subtractScrollOffset(x, y);
+        positionedParent->checkInlineRelOffset(m_object, x, y);
     }
     else if (parent())
         parent()->subtractScrollOffset(x, y);
@@ -153,7 +155,7 @@ void RenderLayer::updateLayerPosition()
     setPos(x,y);
 }
 
-QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer) 
+QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
 {
     updateZOrderLists();
     QRegion r;
@@ -169,14 +171,14 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
         int x = 0; int y = 0;
         convertToLayerCoords(rootLayer,x,y);
         QRect cr(x,y,width(),height());
-        if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || 
+        if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() ||
              s->scrollsOverflow() || renderer()->isReplaced() ) {
             r += cr;
         } else {
             r += renderer()->visibleFlowRegion(x, y);
         }
     }
-    
+
     if (m_posZOrderList) {
         uint count = m_posZOrderList->count();
         for (uint i = 0; i < count; i++) {
@@ -208,7 +210,7 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
         m_object->repaint();
         checkForRepaint = doFullRepaint = false;
     }
-    
+
     updateLayerPosition(); // For relpositioned layers or non-positioned layers,
                            // we need to keep in sync, since we may have shifted relative
                            // to our parent layer.
@@ -226,7 +228,7 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
     // FIXME: Child object could override visibility.
     if (checkForRepaint && (m_object->style()->visibility() == VISIBLE))
         m_object->repaintAfterLayoutIfNeeded(m_repaintRect, m_fullRepaintRect);
-#else    
+#else
     if (checkForRepaint && m_markedForRepaint) {
         QRect layerBounds, damageRect, fgrect;
         calculateRects(rootLayer, renderer()->viewRect(), layerBounds, damageRect, fgrect);
@@ -236,9 +238,9 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
             m_visibleRect = vr;
         }
     }
-    m_markedForRepaint = false;   
+    m_markedForRepaint = false;
 #endif
-    
+
     for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
         child->updateLayerPositions(rootLayer, doFullRepaint, checkForRepaint);
 
@@ -247,7 +249,7 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
         m_marquee->updateMarqueePosition();
 }
 
-void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer) 
+void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
 {
     if (hasOverlaidWidgets() && !renderer()->canvas()->pagedMode()) {
         updateZOrderLists();
@@ -268,7 +270,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
         }
         if (needUpdate)
             renderer()->updateWidgetMasks();
-    }    
+    }
     for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
         child->updateWidgetMasks(rootLayer);
 }
@@ -506,17 +508,17 @@ void RenderLayer::checkInlineRelOffset(const RenderObject* o, int& x, int& y)
         sy = flow->staticY();
     }
     bool isInlineType = o->style()->isOriginalDisplayInlineType();
-            
+
     if (!o->hasStaticX())
         x += sx;
-            
+
     // Despite the positioned child being a block display type inside an inline, we still keep
-    // its x locked to our left.  Arguably the correct behavior would be to go flush left to 
+    // its x locked to our left.  Arguably the correct behavior would be to go flush left to
     // the block that contains us, but that isn't what other browsers do.
     if (o->hasStaticX() && !isInlineType)
         // Avoid adding in the left border/padding of the containing block twice.  Subtract it out.
         x += sx - (o->containingBlock()->borderLeft() + o->containingBlock()->paddingLeft());
-            
+
     if (!o->hasStaticY())
         y += sy;
 }
@@ -549,7 +551,7 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
     RenderLayer* rootLayer = root();
     for (RenderLayer* child = firstChild(); child; child = child->nextSibling())
         child->updateLayerPositions(rootLayer);
-    
+
     // Fire the scroll DOM event.
     m_object->element()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
 
@@ -1158,23 +1160,24 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
     if (info.readonly())
         return;
 
-    // Check to see if the hovered node has changed.  If not, then we don't need to
-    // do anything.  An exception is if we just went from :hover into :hover:active,
-    // in which case we need to update to get the new :active state.
     DOM::NodeImpl *e = m_object->element();
     DOM::DocumentImpl *doc = e ? e->getDocument() : 0;
-    if (!doc)
-	return;
+    if (!doc) return;
 
+    // Check to see if the hovered node has changed.  If not, then we don't need to
+    // do anything.
     DOM::NodeImpl* oldHoverNode = doc->hoverNode();
     DOM::NodeImpl* newHoverNode = info.innerNode();
 
-    
     if (oldHoverNode == newHoverNode && (!oldHoverNode || oldHoverNode->active() == info.active()))
         return;
 
     // Update our current hover node.
     doc->setHoverNode(newHoverNode);
+    if (info.active())
+        doc->setActiveNode(newHoverNode);
+    else
+        doc->setActiveNode(0);
 
     // We have two different objects.  Fetch their renderers.
     RenderObject* oldHoverObj = oldHoverNode ? oldHoverNode->renderer() : 0;
@@ -1187,11 +1190,8 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
     for (RenderObject* curr = oldHoverObj; curr && curr != ancestor; curr = hoverAncestor(curr)) {
         curr->setMouseInside(false);
         if (curr->element()) {
-            bool oldActive = curr->element()->active();
-            curr->element()->NodeImpl::setActive(false);
-            if (!curr->isText() && (curr->style()->affectedByHoverRules() ||
-                 (curr->style()->affectedByActiveRules() && oldActive)))
-                curr->element()->setChanged();
+            curr->element()->setActive(false);
+            doc->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(curr->element()), HoverDependency);
         }
     }
 
@@ -1200,12 +1200,9 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
         bool oldInside = curr->mouseInside();
         curr->setMouseInside(true);
         if (curr->element()) {
-            bool oldActive = curr->element()->active();
-            curr->element()->NodeImpl::setActive(info.active());
-            if (!curr->isText() && (curr->style()->affectedByHoverRules() && !oldInside) ||
-                 (curr->style()->affectedByActiveRules() && oldActive != info.active())) {
-                curr->element()->setChanged();
-            }
+            curr->element()->setActive(info.active());
+            if (!oldInside)
+                doc->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(curr->element()), HoverDependency);
         }
     }
 }
@@ -1593,7 +1590,7 @@ void Marquee::stop()
         killTimer(m_timerId);
         m_timerId = 0;
     }
- 
+
     m_stopped = true;
 }
 
