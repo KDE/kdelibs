@@ -189,5 +189,6 @@ private:
     Private * d; // can't be const because of special KApplication constructor
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(KInstance::CaptionFlags)
 #endif
 

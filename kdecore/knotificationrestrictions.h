@@ -90,4 +90,5 @@ class KDECORE_EXPORT KNotificationRestrictions : public QObject
         Private *d;
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(KNotificationRestrictions::Services)
 #endif

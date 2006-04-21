@@ -13,7 +13,7 @@
 // Pass GUI if you use any GUI classes
 enum KDEMainFlag { NoGUI = 0, GUI = 1, AutoDcopRegistration = 2 }; // bitfield, next item is 4!
 Q_DECLARE_FLAGS(KDEMainFlags, KDEMainFlag)
-
+Q_DECLARE_OPERATORS_FOR_FLAGS(KDEMainFlags)
 /**
  * \short KDE Replacement for QTEST_MAIN from QTestLib
  *

@@ -230,4 +230,5 @@ class KDECORE_EXPORT KAutostart : public QObject
         Private* const d;
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(KAutostart::Conditions)
 #endif
