@@ -30,7 +30,7 @@ class KDEUI_EXPORT KHBox : public QFrame
 {
     Q_OBJECT
 public:
-    KHBox( QWidget* parentWidget );
+    KHBox( QWidget* parentWidget = 0 );
 
     /**
      * Sets the spacing between the child widgets to @p space

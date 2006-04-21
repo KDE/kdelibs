@@ -273,19 +273,6 @@ int KJanusWidget::face() const
   return d->face;
 }
 
-QWidget *KJanusWidget::findParent()
-{
-  if( d->face == Tabbed ) {
-    return d->tabControl;
-  }
-  else if (d->face == TreeList || d->face == IconList) {
-    return d->pageStack;
-  }
-  else {
-    return this;
-  }
-}
-
 QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
                                const QPixmap &pixmap )
 {
@@ -295,7 +282,7 @@ QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
     return 0;
   }
 
-  QFrame *page = new QFrame( findParent());
+  QFrame *page = new QFrame;
   addPageWidget( page, items, header, pixmap );
 
   return page;
@@ -325,8 +312,7 @@ KVBox *KJanusWidget::addVBoxPage( const QStringList &items,
     return 0;
   }
 
-  QWidget* parent = findParent();
-  KVBox *page = new KVBox(parent);
+  KVBox *page = new KVBox;
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
@@ -351,7 +337,7 @@ KHBox *KJanusWidget::addHBoxPage( const QStringList &items,
     return 0;
   }
 
-  KHBox *page = new KHBox(findParent());
+  KHBox *page = new KHBox;
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
@@ -379,7 +365,7 @@ Q3Grid *KJanusWidget::addGridPage( int n, Qt::Orientation dir,
     return 0;
   }
 
-  Q3Grid *page = new Q3Grid( n, dir, findParent());
+  Q3Grid *page = new Q3Grid( n, dir );
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
