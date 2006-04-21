@@ -105,11 +105,9 @@ void AudioOutput::processBuffer( const QVector<float>& buffer )
 	while( size > 0 )
 	{
 		written = m_dsp.write( towrite, size );
-		if (written < 0) {
-			if (errno == EINTR)
-				continue;
+		// QFSFileEngine loops until errno != EINTR
+		if( written < 0 )
 			break;
-		}
 		size = size - written;
 		if( size > 0 )
 		{
