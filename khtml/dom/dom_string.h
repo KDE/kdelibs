@@ -119,7 +119,7 @@ protected:
 };
 
 #ifndef NDEBUG
-inline kdbgstream &operator<<(kdbgstream &stream, const DOMString &string) { 
+inline kdbgstream &operator<<(kdbgstream &stream, const DOMString &string) {
 	return (stream << string.string());
 }
 #else

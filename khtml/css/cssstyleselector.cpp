@@ -900,7 +900,7 @@ static bool matchNth(int count, const QString& nth)
 }
 
 
-// Recursively work the combinator to compute static attribute dependency, similar to 
+// Recursively work the combinator to compute static attribute dependency, similar to
 //structure of checkSubSelectors
 static void precomputeAttributeDependenciesAux(DOM::DocumentImpl* doc, DOM::CSSSelector* sel, bool isAncestor, bool isSubject)
 {
@@ -1083,8 +1083,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 
     if(sel->attr)
     {
-        DOMString value = e->getAttribute(sel->attr);
-        if(value.isNull()) return false; // attribute is not set
+        DOMStringImpl* value = e->getAttributeImpl(sel->attr);
+        if(!value) return false; // attribute is not set
 
         switch(sel->match)
         {
@@ -1107,46 +1107,33 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::Set:
             break;
         case CSSSelector::Class:
-            if (!e->hasClassList()) {
-                if( (strictParsing && strcmp(sel->value, value) ) ||
-                    (!strictParsing && strcasecmp(sel->value, value)))
-                    return false;
-               return true;
-            }
             // no break
         case CSSSelector::List:
         {
-            if (sel->match != CSSSelector::Class) {
-                const QChar* s = value.unicode();
-                int l = value.length();
-                while( l && !s->isSpace() )
-                    l--,s++;
-                if (!l) {
-		    // There is no list, just a single item.  We can avoid
-		    // allocing QStrings and just treat this as an exact
-		    // match check.
-		    if( (strictParsing && strcmp(sel->value, value) ) ||
-		        (!strictParsing && strcasecmp(sel->value, value)))
-		        return false;
-		    break;
-	        }
-            }
+            int sel_len = sel->value.length();
+            int val_len = value->length();
+            // Be smart compare on length first
+            if (sel_len > val_len) return false;
+            else
+            if (sel_len == val_len)
+                return (strictParsing && !strcmp(sel->value, value)) ||
+		       (!strictParsing && !strcasecmp(sel->value, value));
+            // else the value is longer and can be a list
+            if ( sel->match == CSSSelector::Class && !e->hasClassList() ) return false;
 
-            // The selector's value can't contain a space, or it's totally bogus.
-            // ### check if this can still happen
-            if (sel->value.find(' ') != -1)
-                return false;
+            QChar* sel_uc = sel->value.unicode();
+            QChar* val_uc = value->unicode();
 
-            QString str = value.string();
-            QString selStr = sel->value.string();
-            const int selStrlen = selStr.length();
+            QConstString sel_str(sel_uc, sel_len);
+            QConstString val_str(val_uc, val_len);
+
             int pos = 0;
             for ( ;; ) {
-                pos = str.find(selStr, pos, strictParsing);
+                pos = val_str.string().find(sel_str.string(), pos, strictParsing);
                 if ( pos == -1 ) return false;
-                if ( pos == 0 || str[pos-1].isSpace() ) {
-                    uint endpos = pos + selStrlen;
-                    if ( endpos >= str.length() || str[endpos].isSpace() )
+                if ( pos == 0 || val_uc[pos-1].isSpace() ) {
+                    uint endpos = pos + sel_len;
+                    if ( endpos >= val_len || val_uc[endpos].isSpace() )
                         break; // We have a match.
                 }
                 ++pos;
@@ -1156,39 +1143,31 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::Contain:
         {
             //kdDebug( 6080 ) << "checking for contains match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
-            int pos = str.find(selStr, 0, strictParsing);
-            if(pos == -1) return false;
-            break;
+            QConstString val_str(value->unicode(), value->length());
+            QConstString sel_str(sel->value.unicode(), sel->value.length());
+            return val_str.string().contains(sel_str.string());
         }
         case CSSSelector::Begin:
         {
             //kdDebug( 6080 ) << "checking for beginswith match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
-            int pos = str.find(selStr, 0, strictParsing);
-            if(pos != 0) return false;
-            break;
+            QConstString val_str(value->unicode(), value->length());
+            QConstString sel_str(sel->value.unicode(), sel->value.length());
+            return val_str.string().startsWith(sel_str.string());
         }
         case CSSSelector::End:
         {
             //kdDebug( 6080 ) << "checking for endswith match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
-	    if (strictParsing && !str.endsWith(selStr)) return false;
-	    if (!strictParsing) {
-	        int pos = str.length() - selStr.length();
-		if (pos < 0 || pos != str.find(selStr, pos, false) )
-		    return false;
-	    }
-            break;
+            QConstString val_str(value->unicode(), value->length());
+            QConstString sel_str(sel->value.unicode(), sel->value.length());
+            return val_str.string().endsWith(sel_str.string());
         }
         case CSSSelector::Hyphen:
         {
             //kdDebug( 6080 ) << "checking for hyphen match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
+            QConstString val_str(value->unicode(), value->length());
+            QConstString sel_str(sel->value.unicode(), sel->value.length());
+            const QString& str = val_str.string();
+            const QString& selStr = sel_str.string();
             if(str.length() < selStr.length()) return false;
             // Check if str begins with selStr:
             if(str.find(selStr, 0, strictParsing) != 0) return false;

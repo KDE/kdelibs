@@ -143,6 +143,7 @@ public:
     ~ElementImpl();
 
     DOMString getAttribute( NodeImpl::Id id, bool nsAware = 0, const DOMString& qName = DOMString() ) const;
+    DOMStringImpl* getAttributeImpl( NodeImpl::Id id, bool nsAware = 0, DOMStringImpl* qName = 0 ) const;
     void setAttribute( NodeImpl::Id id, const DOMString &value, const DOMString &qName,
                        int &exceptioncode );
     void setAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName,

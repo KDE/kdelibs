@@ -332,22 +332,27 @@ unsigned short ElementImpl::nodeType() const
     return Node::ELEMENT_NODE;
 }
 
-DOMString ElementImpl::getAttribute( NodeImpl::Id id, bool nsAware, const DOMString& qName) const
+DOMStringImpl* ElementImpl::getAttributeImpl( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName) const
 {
     if (!namedAttrMap)
-	return DOMString();
+	return 0;
 
-    DOMStringImpl *value = namedAttrMap->getValue(id, nsAware, (qName.isEmpty() ? 0: qName.implementation()));
+    DOMStringImpl *value = namedAttrMap->getValue(id, nsAware, qName);
     if (value)
 	return value;
 
     // then search in default attr in case it is not yet set
     NamedAttrMapImpl* dm = defaultMap();
-    value = dm ? dm->getValue(id, nsAware, (qName.isEmpty() ? 0: qName.implementation())) : 0;
+    value = dm ? dm->getValue(id, nsAware, qName) : 0;
     if (value)
 	return value;
 
-    return DOMString();
+    return 0;
+}
+
+DOMString ElementImpl::getAttribute( NodeImpl::Id id, bool nsAware, const DOMString& qName) const
+{
+    return DOMString(getAttributeImpl(id, nsAware, qName.implementation()));
 }
 
 void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value, const DOMString& qName, int &exceptioncode)
@@ -1115,7 +1120,7 @@ DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id, bool nsAware, DOMStri
         if ((m_attrs[i].id() & mask) == id) {
             // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
             if (qName && (namespacePart(m_attrs[i].id()) != defaultNamespace) &&
-                strcasecmp(m_attrs[i].name(), DOMString(qName)))
+                strcasecmp(m_attrs[i].name(), qName))
                 continue;
             return m_attrs[i].val();
         }

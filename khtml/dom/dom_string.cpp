@@ -196,14 +196,14 @@ bool DOMString::percentage(int &_percentage) const
 QChar *DOMString::unicode() const
 {
     if(!impl) return 0;
-    return impl->s;
+    return impl->unicode();
 }
 
 QString DOMString::string() const
 {
     if(!impl) return QString::null;
 
-    return QString(impl->s, impl->l);
+    return impl->string();
 }
 
 int DOMString::toInt() const
@@ -296,6 +296,5 @@ bool DOM::operator==( const DOMString &a, const char *b )
         }
     }
 
-    return !*b;    
+    return !*b;
 }
-

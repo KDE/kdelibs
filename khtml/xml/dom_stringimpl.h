@@ -90,6 +90,10 @@ public:
     DOMStringImpl *upper() const;
     DOMStringImpl *capitalize() const;
 
+    QChar *unicode() const { return s; }
+    uint length() const { return l; }
+    QString string() const;
+
     unsigned int l;
     QChar *s;
 };
