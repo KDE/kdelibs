@@ -1149,7 +1149,16 @@ public:
     */
     bool applyChanges();
 
-    /**
+   /**
+    * This method writes all pending changes of the meta info to the file @p path.
+    * If any items are marked as removed, they are really removed from the
+    * list. The info object as well as all items are updated.
+    *
+    * @return true if successful, false if not
+    */
+    bool applyChanges(const QString& path);
+
+   /**
      * Checks whether an item with the given @p key exists.
      *
      * @param key the key to check
