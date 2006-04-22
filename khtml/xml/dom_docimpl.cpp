@@ -387,6 +387,7 @@ DocumentImpl::~DocumentImpl()
     delete m_elementMap;
     delete m_attrMap;
     delete m_namespaceMap;
+    delete m_dynamicDomRestyler;
     m_defaultView->deref();
     m_styleSheets->deref();
     if (m_addedStyleSheets)
