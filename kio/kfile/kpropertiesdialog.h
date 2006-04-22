@@ -467,7 +467,7 @@ Q_SIGNALS:
   /**
    * Emit this signal when the user changed anything in the plugin's tabs.
    * The hosting PropertiesDialog will call applyChanges only if the
-   * PropsPlugin has emitted this signal before.
+   * PropsPlugin has emitted this signal or if you have called setDirty() before.
    */
   void changed();
 
