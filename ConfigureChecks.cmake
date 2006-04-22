@@ -39,12 +39,6 @@ else(FAM_FOUND)
    set(HAVE_FAM 0)
 endif(FAM_FOUND)
 
-if(PCRE_FOUND)
-   set(HAVE_PCREPOSIX 1)
-else(PCRE_FOUND)
-   set(HAVE_PCREPOSIX 0)
-endif(PCRE_FOUND)
-
 if(CARBON_FOUND)
 	set(HAVE_CARBON 1)
 else(CARBON_FOUND)

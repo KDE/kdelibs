@@ -6,6 +6,13 @@ project(kjs)
 check_library_exists(pthread pthread_attr_get_np "" HAVE_PTHREAD_ATTR_GET_NP)
 check_library_exists(pthread pthread_getattr_np "" HAVE_PTHREAD_GETATTR_NP)
 
+macro_optional_find_package(PCRE)
+if(PCRE_FOUND)
+   set(HAVE_PCREPOSIX 1)
+else(PCRE_FOUND)
+   set(HAVE_PCREPOSIX 0)
+endif(PCRE_FOUND)
+
 # Generate global.h
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 

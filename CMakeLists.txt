@@ -40,7 +40,6 @@ macro_optional_find_package(BZip2)
 macro_optional_find_package(FAM)
 macro_optional_find_package(AGG)
 macro_optional_find_package(OpenSSL)
-macro_optional_find_package(PCRE)
 macro_optional_find_package(Akode)
 macro_optional_find_package(Gettext)
 
