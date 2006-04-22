@@ -48,7 +48,6 @@
 #include <kaboutdata.h>
 #include <kdebug.h>
 #include <kapplication.h>
-#include <dcopclient.h>
 
 #include <../kinit/klauncher_cmds.h>
 
