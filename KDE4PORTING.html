@@ -788,7 +788,7 @@ if needed (see the KURLDrag section)</li>
 <li>insert*() and all associated item-manipulation methods removed - all done through actions now. Compatibility layer possible however so far I haven't found the functions to be used much in KDE programs (mostly it's taken care of by xmlgui instead)</li>
 <li>flat(), setFlat() replaced by movable(), setMovable() (old "flat" concept equivalent to not movable)</li>
 <li>layout-related methods removed (done by QToolBar's layout)</li>
-<li>alignItemRight() removed (as above), replacement is to add a KToolBarSeparator action before the action you want to be aligned right (or if you have a custom action already, just create a container widget and insert a QSpacerItem on the left of your custom widget (see KonqLogoAction in kdebase/konqueror/konq_actions.cc)</li>
+<li>alignItemRight() removed (as above), replacement is to add a KToolBarSpacerAction before the action you want to be aligned right (or if you have a custom action already, just create a container widget and insert a QSpacerItem on the left of your custom widget (see KonqLogoAction in kdebase/konqueror/konq_actions.cc)</li>
 <li><tt>enum BarStatus</tt> and <tt>bool enable(BarStatus stat)</tt> have been
 removed</li>
 <li><tt>void enableMoving(bool flag)</tt> and <tt>void enableFloating (bool
