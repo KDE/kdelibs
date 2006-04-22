@@ -517,6 +517,11 @@ bool KFileMetaInfo::isEmpty() const
 
 bool KFileMetaInfo::applyChanges()
 {
+    return applyChanges( path() );
+}
+
+bool KFileMetaInfo::applyChanges( const QString& path )
+{
     bool doit = false;
 
 //    kDebug(7033) << "KFileMetaInfo::applyChanges()\n";
@@ -553,7 +558,14 @@ bool KFileMetaInfo::applyChanges()
 
 //    kDebug(7033) << "Ok, trying to write the info\n";
 
-    return p->writeInfo(*this);
+    KURL savedURL = url();
+    d->url = KURL();
+    d->url.setPath( path );
+    
+    bool ret = p->writeInfo(*this);
+    
+    d->url = savedURL;
+    return ret;
 }
 
 KFilePlugin * const KFileMetaInfo::plugin() const

@@ -263,7 +263,7 @@ void KFileMetaPropsPlugin::applyChanges()
   Q3PtrListIterator<KFileMetaInfoWidget> it( d->m_editWidgets );
   KFileMetaInfoWidget* w;
   for (; (w = it.current()); ++it) w->apply();
-  d->m_info.applyChanges();
+  d->m_info.applyChanges(properties->kurl().path());
 }
 
 #include "kmetaprops.moc"
