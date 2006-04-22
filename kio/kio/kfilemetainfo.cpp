@@ -558,12 +558,12 @@ bool KFileMetaInfo::applyChanges( const QString& path )
 
 //    kDebug(7033) << "Ok, trying to write the info\n";
 
-    KURL savedURL = url();
-    d->url = KURL();
+    KUrl savedURL = url();
+    d->url = KUrl();
     d->url.setPath( path );
-    
+
     bool ret = p->writeInfo(*this);
-    
+
     d->url = savedURL;
     return ret;
 }
