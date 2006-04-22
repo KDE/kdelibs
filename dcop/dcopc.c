@@ -470,6 +470,7 @@ dcop_call(
   IceFlush(dcop_ice_conn);
 
   free(outputData);
+  outputData = NULL;
 
   if (IceConnectionStatus(dcop_ice_conn) != IceConnectAccepted) {
       fprintf(stderr, "dcop_call(): Connection not accepted\n");
@@ -495,10 +496,9 @@ dcop_call(
       status = IceProcessMessages(dcop_ice_conn, &waitInfo, &readyRet);
 
       if (status == IceProcessMessagesIOError) {
-	  fprintf(stderr, "dcop_call(): IceProcessMessagesIOError\n");
-	  IceCloseConnection(dcop_ice_conn);
-	  free(outputData);
-	  return False;
+        fprintf(stderr, "dcop_call(): IceProcessMessagesIOError\n");
+        IceCloseConnection(dcop_ice_conn);
+        return False;
       }
 
       fprintf(stderr, "dcop_call(): readyRet == %s\n", readyRet ? "True" : "False");
