@@ -876,12 +876,14 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
 
         popup->addSeparator();
 
-        noCompletionAction = subMenu->addAction( i18n("None"));
-        shellCompletionAction = subMenu->addAction( i18n("Manual") );
-        autoCompletionAction = subMenu->addAction( i18n("Automatic") );
-        popupCompletionAction = subMenu->addAction( i18n("Dropdown List") );
-        shortAutoCompletionAction = subMenu->addAction( i18n("Short Automatic") );
-        popupAutoCompletionAction = subMenu->addAction( i18n("Dropdown List && Automatic"));
+        QActionGroup* ag = new QActionGroup( this );
+        noCompletionAction = ag->addAction( i18n("None"));
+        shellCompletionAction = ag->addAction( i18n("Manual") );
+        autoCompletionAction = ag->addAction( i18n("Automatic") );
+        popupCompletionAction = ag->addAction( i18n("Dropdown List") );
+        shortAutoCompletionAction = ag->addAction( i18n("Short Automatic") );
+        popupAutoCompletionAction = ag->addAction( i18n("Dropdown List && Automatic"));
+        subMenu->addActions( ag->actions() );
 
         //subMenu->setAccel( KStdAccel::completion(), ShellCompletion );
 
