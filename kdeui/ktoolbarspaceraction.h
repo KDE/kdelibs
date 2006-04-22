@@ -29,7 +29,7 @@
  *
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT KToolbarSpacerAction : public KAction, public QActionWidgetFactory
+class KDEUI_EXPORT KToolBarSpacerAction : public KAction, public QActionWidgetFactory
 {
   Q_OBJECT
   Q_PROPERTY(int width READ width WRITE setWidth)
@@ -37,7 +37,7 @@ class KDEUI_EXPORT KToolbarSpacerAction : public KAction, public QActionWidgetFa
   Q_PROPERTY(int maximumWidth READ maximumWidth WRITE setMaximumWidth)
 
   public:
-    KToolbarSpacerAction(KActionCollection* parent, const QString& name = QString());
+    KToolBarSpacerAction(KActionCollection* parent, const QString& name = QString());
 
     int width();
     void setWidth(int width);
@@ -54,7 +54,7 @@ class KDEUI_EXPORT KToolbarSpacerAction : public KAction, public QActionWidgetFa
     void spacerDestroyed(QObject* spacer);
 
   private:
-    class KToolbarSpacerActionPrivate* const d;
+    class KToolBarSpacerActionPrivate* const d;
 };
 
 #endif

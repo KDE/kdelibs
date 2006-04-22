@@ -20,10 +20,10 @@
 
 #include <QToolBar>
 
-class KToolbarSpacerActionPrivate
+class KToolBarSpacerActionPrivate
 {
   public:
-    KToolbarSpacerActionPrivate()
+    KToolBarSpacerActionPrivate()
       : width(0)
       , minimumWidth(-1)
       , maximumWidth(-1)
@@ -34,19 +34,19 @@ class KToolbarSpacerActionPrivate
     QList<QWidget*> spacers;
 };
 
-KToolbarSpacerAction::KToolbarSpacerAction(KActionCollection* parent, const QString& name)
+KToolBarSpacerAction::KToolBarSpacerAction(KActionCollection* parent, const QString& name)
   : KAction(parent, name)
-  , d(new KToolbarSpacerActionPrivate)
+  , d(new KToolBarSpacerActionPrivate)
 {
   setToolBarWidgetFactory(this);
 }
 
-int KToolbarSpacerAction::width( )
+int KToolBarSpacerAction::width( )
 {
   return d->width;
 }
 
-void KToolbarSpacerAction::setWidth( int width )
+void KToolBarSpacerAction::setWidth( int width )
 {
   if (d->width == width)
     return;
@@ -57,12 +57,12 @@ void KToolbarSpacerAction::setWidth( int width )
     spacer->resize(width, spacer->height());
 }
 
-int KToolbarSpacerAction::minimumWidth( ) const
+int KToolBarSpacerAction::minimumWidth( ) const
 {
   return d->minimumWidth;
 }
 
-void KToolbarSpacerAction::setMinimumWidth( int width )
+void KToolBarSpacerAction::setMinimumWidth( int width )
 {
   if (d->minimumWidth == width)
     return;
@@ -73,12 +73,12 @@ void KToolbarSpacerAction::setMinimumWidth( int width )
     spacer->setMinimumWidth(width);
 }
 
-int KToolbarSpacerAction::maximumWidth( ) const
+int KToolBarSpacerAction::maximumWidth( ) const
 {
   return d->maximumWidth;
 }
 
-void KToolbarSpacerAction::setMaximumWidth( int width )
+void KToolBarSpacerAction::setMaximumWidth( int width )
 {
   if (d->maximumWidth == width)
     return;
@@ -89,7 +89,7 @@ void KToolbarSpacerAction::setMaximumWidth( int width )
     spacer->setMaximumWidth(width);
 }
 
-QWidget * KToolbarSpacerAction::createToolBarWidget( QToolBar * parent )
+QWidget * KToolBarSpacerAction::createToolBarWidget( QToolBar * parent )
 {
   QWidget* spacer = new QWidget(parent);
   spacer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
@@ -100,7 +100,7 @@ QWidget * KToolbarSpacerAction::createToolBarWidget( QToolBar * parent )
   return spacer;
 }
 
-void KToolbarSpacerAction::spacerDestroyed( QObject * spacer )
+void KToolBarSpacerAction::spacerDestroyed( QObject * spacer )
 {
   d->spacers.removeAll(static_cast<QWidget*>(spacer));
 }
