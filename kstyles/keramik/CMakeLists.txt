@@ -26,11 +26,8 @@ foreach(pics ${keramikPics})
    file(APPEND  ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt "${pics}\n" )
 endforeach(pics ${keramikPics})
 
-if (KDE4_NEED_WRAPPER_SCRIPTS)
-   set(GENEMBED_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genembed.sh)
-else (KDE4_NEED_WRAPPER_SCRIPTS)
-   get_target_property(GENEMBED_EXECUTABLE genembed LOCATION)
-endif (KDE4_NEED_WRAPPER_SCRIPTS)
+# get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
+get_target_property(GENEMBED_EXECUTABLE genembed WRAPPER_SCRIPT)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h
   COMMAND ${GENEMBED_EXECUTABLE}

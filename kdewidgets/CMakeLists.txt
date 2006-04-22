@@ -24,12 +24,8 @@ install_targets(/bin makekdewidgets )
 ########### next target ###############
 
 
-if (KDE4_NEED_WRAPPER_SCRIPTS)
-   set(MAKEKDEWIDGETS_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets.sh)
-else (KDE4_NEED_WRAPPER_SCRIPTS)
-   get_target_property(MAKEKDEWIDGETS_EXECUTABLE makekdewidgets LOCATION)
-endif (KDE4_NEED_WRAPPER_SCRIPTS)
-
+# get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
+get_target_property(MAKEKDEWIDGETS_EXECUTABLE makekdewidgets WRAPPER_SCRIPT)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
   COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}"
